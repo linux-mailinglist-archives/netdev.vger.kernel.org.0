@@ -2,108 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A637F481306
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 14:07:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42AC748130F
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 14:13:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239103AbhL2NHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 08:07:21 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:54970 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238590AbhL2NHV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 08:07:21 -0500
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1BT8iv6w023028;
-        Wed, 29 Dec 2021 13:07:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=cR5jg6gyUrCOgfSj1QR1VXXuy/jfo6NlT02kdC0wAW4=;
- b=bUTx2Hqv0h2lPwCo046c7NTr7R201IwLiZy8ZIsS6DMikdN3szLYloaGXQ23YKvN4mBn
- BgaHQMLaZ4uYorgmAiPERH7kwlkBFhmGXUmvzovpsIS0PxsslbhrbCPkF4BaITDN/Rni
- Y4dr9FWfmpEphv0Nla7s+E3kGxz72Ojat/gi59p/LKt0VRr/FO09GcHE7CRLhZ2x+ZNp
- PU/yeyqx0zPzQZW0+KCDdfy1i30W/H+5QV4+G+CHinLeWeG2TlhQ+XJSGS84mHIaLtpa
- jGg7oO0fCW4a2Xopo7SSyqCSEGpGLdCrbvei/GS4wo4bstbWhmVmEaNZ4f7Y1umbm/RE rA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3d83pe6dak-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Dec 2021 13:07:17 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1BTD7GW4013167;
-        Wed, 29 Dec 2021 13:07:16 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3d83pe6da4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Dec 2021 13:07:16 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1BTD3YTQ002282;
-        Wed, 29 Dec 2021 13:07:15 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma05fra.de.ibm.com with ESMTP id 3d5tx9c3gk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Dec 2021 13:07:14 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1BTD7C8g33620270
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Dec 2021 13:07:12 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 639194C046;
-        Wed, 29 Dec 2021 13:07:12 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0FB574C052;
-        Wed, 29 Dec 2021 13:07:12 +0000 (GMT)
-Received: from [9.145.32.240] (unknown [9.145.32.240])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 29 Dec 2021 13:07:11 +0000 (GMT)
-Message-ID: <07930fec-4109-0dfd-7df4-286cb56ec75b@linux.ibm.com>
-Date:   Wed, 29 Dec 2021 14:07:11 +0100
+        id S239566AbhL2NNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 08:13:18 -0500
+Received: from mga09.intel.com ([134.134.136.24]:10811 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236531AbhL2NNS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Dec 2021 08:13:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1640783598; x=1672319598;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=KU9e2sHqNDNyPQpSY8EwOt7bZ290fvDmMDUxWc/zkOg=;
+  b=mqCZbgfeJaXl1i4CByONN2uuRL3DtXwHLfiBZBqepYyOffXavw3HWE4R
+   urFykf460zgZbzMndRkKpqvpoARKwZ0O53Yzn01TrYHaFrZkSBejA4nAp
+   0A6FjM79dpMscGYWZvf1E0SLBv/frlpFpdAPGNTVlJMH/Ng3FvjI7D/lc
+   XvVd2wvY30X1zq9KWInk4m10gfkxuhLV51Z5cg1Zd/Cn347lYriCstwlw
+   UkyVEOYG/DNO3DxPIVNi+kqNDzUexHF09YSpxNTUuMu3Lv4jBupEan8jH
+   cK+moveiw//x13RhlQJsxDBGAmA5+L8u2wJcDGZ/gEGMRO1vEEbdWxty6
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10211"; a="241320521"
+X-IronPort-AV: E=Sophos;i="5.88,245,1635231600"; 
+   d="scan'208";a="241320521"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2021 05:13:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,245,1635231600"; 
+   d="scan'208";a="468483654"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga003.jf.intel.com with ESMTP; 29 Dec 2021 05:13:16 -0800
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 1BTDDFee026533;
+        Wed, 29 Dec 2021 13:13:15 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, magnus.karlsson@intel.com
+Subject: Re: [PATCH bpf-next v2 3/4] ice: xsk: improve AF_XDP ZC Tx and use batching API
+Date:   Wed, 29 Dec 2021 14:11:31 +0100
+Message-Id: <20211229131131.1460702-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211216135958.3434-4-maciej.fijalkowski@intel.com>
+References: <20211216135958.3434-1-maciej.fijalkowski@intel.com> <20211216135958.3434-4-maciej.fijalkowski@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH net] net/smc: Reset conn->lgr when link group
- registration fails
-Content-Language: en-US
-To:     Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1640677770-112053-1-git-send-email-guwen@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <1640677770-112053-1-git-send-email-guwen@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: -FInu5gqCYLkw_DG8bF5wp3X9ReHs0Iq
-X-Proofpoint-GUID: Zw8V3W5fPc9vQMgGTe_W513h_eG4sBgy
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2021-12-29_05,2021-12-29_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- lowpriorityscore=0 phishscore=0 adultscore=0 malwarescore=0
- mlxlogscore=999 clxscore=1015 mlxscore=0 impostorscore=0
- priorityscore=1501 spamscore=0 bulkscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2112290071
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/12/2021 08:49, Wen Gu wrote:
-> SMC connections might fail to be registered to a link group due to
-> things like unable to find a link to assign to in its creation. As
-> a result, connection creation will return a failure and most
-> resources related to the connection won't be applied or initialized,
-> such as conn->abort_work or conn->lnk.
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Date: Thu, 16 Dec 2021 14:59:57 +0100
 
-I agree with your fix to set conn->lgr to NULL when smc_lgr_register_conn() fails.
+> Follow mostly the logic from commit 9610bd988df9 ("ice: optimize XDP_TX
+> workloads") that has been done in order to address the massive tx_busy
+> statistic bump and improve the performance as well.
+> 
+> Increase the ICE_TX_THRESH to 64 as it seems to work out better for both
+> XDP and AF_XDP. Also, separating the stats structs onto separate cache
+> lines seemed to improve the performance. Batching approach is inspired
+> by i40e's implementation with adjustments to the cleaning logic.
+> 
+> One difference from 'xdpdrv' XDP_TX is when ring has less than
+> ICE_TX_THRESH free entries, the cleaning routine will not stop after
+> cleaning a single ICE_TX_THRESH amount of descs but rather will forward
+> the next_dd pointer and check the DD bit and for this bit being set the
+> cleaning will be repeated. IOW clean until there are descs that can be
+> cleaned.
+> 
+> It takes three separate xdpsock instances in txonly mode to achieve the
+> line rate and this was not previously possible.
+> 
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_txrx.c |   2 +-
+>  drivers/net/ethernet/intel/ice/ice_txrx.h |   4 +-
+>  drivers/net/ethernet/intel/ice/ice_xsk.c  | 249 ++++++++++++++--------
+>  drivers/net/ethernet/intel/ice/ice_xsk.h  |  26 ++-
+>  4 files changed, 182 insertions(+), 99 deletions(-)
+> 
 
-It would probably be better to have smc_lgr_register_conn() set conn->lgr instead to set
-it before in smc_conn_create(). So it would not be set at all then the registration failes.
+-- 8< --
 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.h b/drivers/net/ethernet/intel/ice/ice_xsk.h
+> index 4c7bd8e9dfc4..f2eb99063c1f 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_xsk.h
+> +++ b/drivers/net/ethernet/intel/ice/ice_xsk.h
+> @@ -6,19 +6,36 @@
+>  #include "ice_txrx.h"
+>  #include "ice.h"
+>  
+> +#define PKTS_PER_BATCH 8
+> +
+> +#ifdef __clang__
+> +#define loop_unrolled_for _Pragma("clang loop unroll_count(8)") for
+> +#elif __GNUC__ >= 4
+> +#define loop_unrolled_for _Pragma("GCC unroll 8") for
+> +#else
+> +#define loop_unrolled_for for
+> +#endif
 
-What I do not understand is the extra step after the new label out_unreg: that 
-may invoke smc_lgr_schedule_free_work(). You did not talk about that one.
-Is the idea to have a new link group get freed() when a connection could not
-be registered on it? In that case I would expect this code after label create:
-in smc_lgr_create(), when the rc from smc_lgr_register_conn() is not zero.
-Thoughts?
+It's used in a bunch more places across the tree, what about
+defining that in linux/compiler{,_clang,_gcc}.h?
+Is it possible to pass '8' as an argument? Like
+
+	loop_unrolled_for(PKTS_PER_BATCH) ( ; ; ) { }
+
+Could be quite handy.
+If it is not, I'd maybe try to define a couple of precoded macros
+for 8, 16 and 32, like
+
+#define loop_unrolled_for_8 ...
+#define loop_unrolled_for_16 ...
+...
+
+So they could be used as generic. I don't think I've seen them with
+values other than 8-32.
+
+> +
+>  struct ice_vsi;
+>  
+>  #ifdef CONFIG_XDP_SOCKETS
+>  int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool,
+>  		       u16 qid);
+>  int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget);
+> -bool ice_clean_tx_irq_zc(struct ice_tx_ring *xdp_ring, int budget);
+>  int ice_xsk_wakeup(struct net_device *netdev, u32 queue_id, u32 flags);
+>  bool ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count);
+>  bool ice_xsk_any_rx_ring_ena(struct ice_vsi *vsi);
+>  void ice_xsk_clean_rx_ring(struct ice_rx_ring *rx_ring);
+>  void ice_xsk_clean_xdp_ring(struct ice_tx_ring *xdp_ring);
+> +bool ice_xmit_zc(struct ice_tx_ring *xdp_ring, u32 budget);
+>  #else
+> +static inline bool
+> +ice_xmit_zc(struct ice_tx_ring __always_unused *xdp_ring,
+> +	    u32 __always_unused budget)
+> +{
+> +	return false;
+> +}
+> +
+>  static inline int
+>  ice_xsk_pool_setup(struct ice_vsi __always_unused *vsi,
+>  		   struct xsk_buff_pool __always_unused *pool,
+> @@ -34,13 +51,6 @@ ice_clean_rx_irq_zc(struct ice_rx_ring __always_unused *rx_ring,
+>  	return 0;
+>  }
+>  
+> -static inline bool
+> -ice_clean_tx_irq_zc(struct ice_tx_ring __always_unused *xdp_ring,
+> -		    int __always_unused budget)
+> -{
+> -	return false;
+> -}
+> -
+>  static inline bool
+>  ice_alloc_rx_bufs_zc(struct ice_rx_ring __always_unused *rx_ring,
+>  		     u16 __always_unused count)
+> -- 
+> 2.33.1
+
+Thanks,
+Al
