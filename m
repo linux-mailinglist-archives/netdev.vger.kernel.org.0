@@ -2,64 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDE73480E02
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 00:58:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B2E1480E2C
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 01:20:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232031AbhL1X6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Dec 2021 18:58:48 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34138 "EHLO
+        id S233382AbhL2AUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Dec 2021 19:20:10 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46252 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231940AbhL1X6r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 18:58:47 -0500
+        with ESMTP id S232670AbhL2AUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Dec 2021 19:20:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54CB16134B
-        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 23:58:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88FA3C36AE9;
-        Tue, 28 Dec 2021 23:58:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07BE861370;
+        Wed, 29 Dec 2021 00:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6FEE2C36AED;
+        Wed, 29 Dec 2021 00:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640735926;
-        bh=8gcRmI45+9uXEVIHM0n1M0YbG4yKXvMe/t7pJAf97aE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cui4ha2GrK5NzS04TsAch0aP/8GimI/k2AaZ9I7xFCzCsgSLrr6fcqQ4pmg1dfUEz
-         Y/y2ho6fRqO4uArCXjzT7ONMPcGdb/WfDNSd8f0NWFjuNc81j5yVYuUWWG2Q+KuIkU
-         SCuv29bIAG//rdWvHi1Tc7XZ8KCkJ/6I1Wi3/9/JXx6ceMIvl0RSrR1BRW2LpSqkJH
-         hoth2QRpznXuJhVNPEq7pB9l1MhsniHX32Fv6a4RbGdBnJfsMeb6mMJcLqsRCt1twl
-         9IXPFgJ0ct7KRd0uiD26EPo0eDq7GL15NbbPK4S6c7y9EvYavBVY4oRgmt2CMTohDn
-         Jb/O54Ah3sbHA==
-Date:   Tue, 28 Dec 2021 15:58:45 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH net-next] r8169: don't use pci_irq_vector() in atomic
- context
-Message-ID: <20211228155845.2609de2e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <70cd60cd-5472-25b6-91f5-a2d313dc6294@gmail.com>
-References: <3cd24763-f307-78f5-76ed-a5fbf315fb28@gmail.com>
-        <70cd60cd-5472-25b6-91f5-a2d313dc6294@gmail.com>
+        s=k20201202; t=1640737209;
+        bh=8vWVsDn0KFyPwhRmyaqZKrj1RcwWs7YSNpi5QgEC6wc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ol2e58+CXgHdjGoKBTQTHzn6Bd+HJvyIcQt8+Fmi7DTk0Q3LDGGyaxEWxAfQgTioG
+         cDCre2+g2Wljfdif1YtTI13c9BE+NuwBG7eo+rIkg3XDAUKgJXXxTH+eulJx6dDAEp
+         3vSN1hG2hpx6kKUwjONkSKKyGE5h5QESrx186u1VsI/Q+BktERdmeG2ZZ0JiwGi7yh
+         O0PBFjwy8UDnniSttdfNDWK7hxBhXb1fwWZQSkN9gmfeHddZR9cVVcUoHWX/g3awA+
+         7Z8UPPhlcNgr9LpfAULeoO4LtOg0dAWFqkNZiqc3RVKce41Xe1eHkjtbPAVqDNZmnk
+         N+ppqkQRR4ASg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 49744C395E8;
+        Wed, 29 Dec 2021 00:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] ionic: Initialize the 'lif->dbid_inuse' bitmap
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164073720929.15020.13473393631637951212.git-patchwork-notify@kernel.org>
+Date:   Wed, 29 Dec 2021 00:20:09 +0000
+References: <6a478eae0b5e6c63774e1f0ddb1a3f8c38fa8ade.1640527506.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <6a478eae0b5e6c63774e1f0ddb1a3f8c38fa8ade.1640527506.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     snelson@pensando.io, drivers@pensando.io, davem@davemloft.net,
+        kuba@kernel.org, allenbh@pensando.io, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Dec 2021 23:11:47 +0100 Heiner Kallweit wrote:
-> On 28.12.2021 22:02, Heiner Kallweit wrote:
-> > From: Thomas Gleixner <tglx@linutronix.de>
-> > 
-> > Since referenced change pci_irq_vector() can't be used in atomic
-> > context any longer. This conflicts with our usage of this function
-> > in rtl8169_netpoll(). Therefore store the interrupt number in
-> > struct rtl8169_private.
-> > 
-> > Fixes: 495c66aca3da ("genirq/msi: Convert to new functions")  
-> 
-> Seeing the "fail" in patchwork: The referenced commit just recently
-> showed up in linux-next and isn't in net-next yet.
+Hello:
 
-Thanks for the heads up, looks safe to apply.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Sun, 26 Dec 2021 15:06:17 +0100 you wrote:
+> When allocated, this bitmap is not initialized. Only the first bit is set a
+> few lines below.
+> 
+> Use bitmap_zalloc() to make sure that it is cleared before being used.
+> 
+> Fixes: 6461b446f2a0 ("ionic: Add interrupts and doorbells")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> 
+> [...]
+
+Here is the summary with links:
+  - ionic: Initialize the 'lif->dbid_inuse' bitmap
+    https://git.kernel.org/netdev/net/c/140c7bc7d119
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
