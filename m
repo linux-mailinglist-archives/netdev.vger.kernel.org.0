@@ -2,86 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BABB4815FD
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 19:10:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A5E8481609
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 19:18:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229511AbhL2SKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 13:10:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55404 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbhL2SKN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 13:10:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C6CC061574;
-        Wed, 29 Dec 2021 10:10:12 -0800 (PST)
+        id S229670AbhL2SS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 13:18:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40244 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229472AbhL2SS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 13:18:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 569F9B819C9;
-        Wed, 29 Dec 2021 18:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 00A00C36AE1;
-        Wed, 29 Dec 2021 18:10:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2086EB819CD;
+        Wed, 29 Dec 2021 18:18:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 535BDC36AE7;
+        Wed, 29 Dec 2021 18:18:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640801410;
-        bh=55O5hAxQWm338Eao4qkp9HAY+FvCNX8YKDO7ZyodgL8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Hu0yEVZlemPkRNk5IawZzOVM5RtSt5zA/zT/ar0K/bZmJGF2aIVt/QEvj0GCWkI0y
-         fNn4Y7yqeD42u5GO/56WOxj5y7CAae/gIHtJp1jopKvIKBFu5jbHph4NHdyxLq+R3g
-         hmMb7nCpxu/rgXdO49/WQgY9i0QvqkX6IP4U3RNGddlcfUQhyUynPli1HTTDpWk2Fk
-         CzDkaFlp5ABEKebXIY0ArUuAj98b6PieVUPRjUwI0ZpOgsRnQTyD266yxBKNUzOt53
-         CxUrg234o2LSxiA4psEEyNnfYQ/m4sBkJxUl7fhDei0rK/qrwQ8HA7Ais+bGiG2i+g
-         Rr7ZvEEevFjWw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D73F1C395E4;
-        Wed, 29 Dec 2021 18:10:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1640801903;
+        bh=vCthyItRqvizxx+azzolTtTuoxGMbjuUmtjnpPICm/Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZQXOI5B+oIETYvasY8oymoljGcK/VvE4fSWsWOyEPFTzVu2ksCWiYMwb+YoqJMvUZ
+         er/mnKq1Zvj+eVYLy5cJ7IgSu6jzAiFiCmfiDIIh2PXBsiQhvoxQJ4eTD12t5qs9Zd
+         mKQZsK75Kkx6ncoUUnAX0H1+ZWX3GXof1a26a+Ob/d0sFd7fZpaK266D7hdgrFE4ti
+         ainu63KDMVgNDYVKk3/AF6ZeBgUxhaXUOkmh1OOSUvlztccLE+LFhPuwVv7vFEn/1t
+         1GEuAw6gi3ljFSMJaT9HHaqWe8RbzwhgJJGM213jYewNzEwSzq9Ly9tRKR12kpehJJ
+         Oshf3SSSZX4Fg==
+Date:   Wed, 29 Dec 2021 10:18:22 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     zajec5@gmail.com, andrew@lunn.ch, davem@davemloft.net,
+        devicetree@vger.kernel.org, hkallweit1@gmail.com,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, rafal@milecki.pl, robh+dt@kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: Re: [PATCH] of: net: support NVMEM cells with MAC in text format
+Message-ID: <20211229101822.7a740aed@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20211229124047.1286965-1-michael@walle.cc>
+References: <20211223122747.30448-1-zajec5@gmail.com>
+        <20211229124047.1286965-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] xsk: Initialise xskb free_list_node
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164080140987.31074.14355340530861949666.git-patchwork-notify@kernel.org>
-Date:   Wed, 29 Dec 2021 18:10:09 +0000
-References: <20211220155250.2746-1-ciara.loftus@intel.com>
-In-Reply-To: <20211220155250.2746-1-ciara.loftus@intel.com>
-To:     Loftus@ci.codeaurora.org, Ciara <ciara.loftus@intel.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com, bpf@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, 29 Dec 2021 13:40:47 +0100 Michael Walle wrote:
+> > Some NVMEM devices have text based cells. In such cases MAC is stored in
+> > a XX:XX:XX:XX:XX:XX format. Use mac_pton() to parse such data and
+> > support those NVMEM cells. This is required to support e.g. a very
+> > popular U-Boot and its environment variables.
+> >=20
+> > Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
+> > ---
+> > Please let me know if checking NVMEM cell length (6 B vs. 17 B) can be
+> > considered a good enough solution. Alternatively we could use some DT
+> > property to make it explicity, e.g. something like:
+> >=20
+> > ethernet@18024000 {
+> > 	compatible =3D "brcm,amac";
+> > 	reg =3D <0x18024000 0x800>;
+> >=20
+> > 	nvmem-cells =3D <&mac_addr>;
+> > 	nvmem-cell-names =3D "mac-address";
+> > 	nvmem-mac-format =3D "text";
+> > }; =20
+>=20
+> Please note, that there is also this proposal, which had such a conversion
+> in mind:
+> https://lore.kernel.org/linux-devicetree/20211228142549.1275412-1-michael=
+@walle.cc/
+>=20
+> With this patch, there are now two different places where a mac address
+> format is converted. In of_get_mac_addr_nvmem() and in the imx otp driver.
+> And both have their shortcomings and aren't really flexible. Eg. this one
+> magically detects the format by comparing the length, but can't be used f=
+or
+> to swap bytes (because the length is also ETH_ALEN), which apparently is a
+> use case in the imx otp driver. And having the conversion in an nvmem
+> provider device driver is still a bad thing IMHO.
+>=20
+> I'd really like to see all these kind of transformations in one place.
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+FWIW offsetting from a common base address is relatively common, that's
+why we have:
 
-On Mon, 20 Dec 2021 15:52:50 +0000 you wrote:
-> This commit initialises the xskb's free_list_node when the xskb is
-> allocated. This prevents a potential false negative returned from a call
-> to list_empty for that node, such as the one introduced in commit
-> 199d983bc015 ("xsk: Fix crash on double free in buffer pool")
-> 
-> In my environment this issue caused packets to not be received by
-> the xdpsock application if the traffic was running prior to application
-> launch. This happened when the first batch of packets failed the xskmap
-> lookup and XDP_PASS was returned from the bpf program. This action is
-> handled in the i40e zc driver (and others) by allocating an skbuff,
-> freeing the xdp_buff and adding the associated xskb to the
-> xsk_buff_pool's free_list if it hadn't been added already. Without this
-> fix, the xskb is not added to the free_list because the check to determine
-> if it was added already returns an invalid positive result. Later, this
-> caused allocation errors in the driver and the failure to receive packets.
-> 
-> [...]
-
-Here is the summary with links:
-  - [bpf] xsk: Initialise xskb free_list_node
-    https://git.kernel.org/netdev/net/c/5bec7ca2be69
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+/**
+ * eth_hw_addr_gen - Generate and assign Ethernet address to a port
+ * @dev: pointer to port's net_device structure
+ * @base_addr: base Ethernet address
+ * @id: offset to add to the base address
+ *
+ * Generate a MAC address using a base address and an offset and assign it
+ * to a net_device. Commonly used by switch drivers which need to compute
+ * addresses for all their ports. addr_assign_type is not changed.
+ */
+static inline void eth_hw_addr_gen(struct net_device *dev, const u8 *base_a=
+ddr,
+				   unsigned int id)
