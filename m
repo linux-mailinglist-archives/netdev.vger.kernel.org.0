@@ -2,291 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 023A5481245
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 12:47:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F4EE48122D
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 12:46:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240049AbhL2LrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 06:47:16 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:39060 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235832AbhL2LrL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 06:47:11 -0500
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1BT8Pn7i011761;
-        Wed, 29 Dec 2021 11:45:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=i5NP9XctF1wJk5OjQUo+Vc9uVmlIqZSnBT0u09LTmOk=;
- b=bFPRLC+jl+efdix4uwpI/mccWCcWO/G1P+1Qbs1rTtCAz+rovwnnR8pPTU6lF0Xc0joV
- YXPBuRb7BHXzyjRg7LITTk2SnNio9SeVldUJyNRqyoNhK4M9oyDLsc8IgyEZJiRqRm5A
- iHUmkTc7uG3NhK6BlA+KFy7MBz/iVluQaCQBkvCSyAyJcdcbD85ipXooRay1nJfQKYhr
- pBhuhwTvWtOhRjZ8iX5rVE8/8svHYNhhRkTQSfMP/PoiugU551FyKdeVPLCMOig/L1Pb
- f+O+aj84GXG4UtoEonKAgWOYfXmY61i73T8/AZi6WWLQ0MnyNiHoz+SQfgz7xDZNEMLG PQ== 
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3d7rpyt5s9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Dec 2021 11:45:51 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1BTBg94u031832;
-        Wed, 29 Dec 2021 11:45:48 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma01fra.de.ibm.com with ESMTP id 3d5tx9cy34-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Dec 2021 11:45:48 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1BTBbEnS47841776
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Dec 2021 11:37:14 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1CC32AE055;
-        Wed, 29 Dec 2021 11:45:45 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DA088AE053;
-        Wed, 29 Dec 2021 11:45:38 +0000 (GMT)
-Received: from sig-9-145-13-177.uk.ibm.com (unknown [9.145.13.177])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 29 Dec 2021 11:45:38 +0000 (GMT)
-Message-ID: <8c59271de66dfa230142186d593f3501b8c789b1.camel@linux.ibm.com>
-Subject: Re: [RFC 01/32] Kconfig: introduce and depend on LEGACY_PCI
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Ettore Chimenti <ek5.chimenti@gmail.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        John Garry <john.garry@huawei.com>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Sathya Prakash <sathya.prakash@broadcom.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        Suganath Prabu Subramani 
-        <suganath-prabu.subramani@broadcom.com>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Kalle Valo <kvalo@kernel.org>, Jouni Malinen <j@w1.fi>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Hannes Reinecke <hare@suse.com>,
-        Kashyap Desai <kashyap.desai@broadcom.com>,
-        Sumit Saxena <sumit.saxena@broadcom.com>,
-        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        Mark Brown <broonie@kernel.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Teddy Wang <teddy.wang@siliconmotion.com>,
-        Forest Bond <forest@alittletooquiet.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, netdev@vger.kernel.org,
-        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
-        linux-scsi@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-wireless@vger.kernel.org, megaraidlinux.pdl@broadcom.com,
-        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-watchdog@vger.kernel.org
-Date:   Wed, 29 Dec 2021 12:45:38 +0100
-In-Reply-To: <20211228181107.2d476028@coco.lan>
-References: <20211227164317.4146918-1-schnelle@linux.ibm.com>
-         <20211227164317.4146918-2-schnelle@linux.ibm.com>
-         <YcrJAwsKIxxX18pW@kroah.com> <20211228101435.3a55b983@coco.lan>
-         <b1475f6aecb752a858941f44a957b2183cd68405.camel@linux.ibm.com>
-         <20211228135425.0a69168c@coco.lan>
-         <4b630b7b87bd983291f628c42a1394fc0d2d86bd.camel@linux.ibm.com>
-         <20211228181107.2d476028@coco.lan>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: fDpUVSRh2Ka7hPzyqZG9djJVno3Sdwgn
-X-Proofpoint-ORIG-GUID: fDpUVSRh2Ka7hPzyqZG9djJVno3Sdwgn
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S236067AbhL2Lqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 06:46:50 -0500
+Received: from mail-bn1nam07on2066.outbound.protection.outlook.com ([40.107.212.66]:25614
+        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231320AbhL2Lqr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Dec 2021 06:46:47 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B27YtRPqSyXqyRZRYuySzTjQukpDdk28Idw4NFLbtRJo6lq7C3QBPJz7idPXz7mnb3cU+Y5VVqu4LOdBAaBF/psU9bKH0y2/fGcWVks1KtHTB9cqtnP9sdJ3uk5akntflU8jscUVedb9Ey62HZdyuVps5H8zCZ5y8tRa3y4Pr5Oli9TvnIvFlQta/OgoWFhT67wy5NYRp0/aZMOXKwAUl7BqK0p6PryVr/MRd9zOB+wFv8LYO/mnRLTq8xp3XKIjS5MsDBGALg8di3+q5B5vYeraCn5lGoH7PpVE/Stlr1jKb8UJSxlWlOe/T0EfZiifwDoeqrKUDDzNDua3SDvSew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=h4Nym9iSieGcRP9Mc66kiluCyjNY8rcebbwh7mTxWaw=;
+ b=Nzq1/WgcMPNyC75otVRhD2RjzMfSPu9AiIbPp8avy1E4wO0qynUHLlo2hzTZudAcCt8NpvNvjvdjQAdpmUYECp1BOZrT/KfjWOp31U0UAuewOr2wTE9eeEX16WHqsKv/wKkRMTJ0vOPqF1c83DSS5W2W7nn5Vhag1CI0/pj8JmOwnVjKOjZOBpV7CEPqumVsprnYCB1Y562l65y74D68tGIFZSNlj9s8xNFNi2NniNiiE+jt198O5VglP5su4ga0Bx+4+x7I9ut1Bw/MrnDuCvfwU18TQSO2gq0WHOGwysD7zJOvGsNuBAFsLgIAg89MmoZTKcwy9G1+/QJtsymLGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=pengutronix.de smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=h4Nym9iSieGcRP9Mc66kiluCyjNY8rcebbwh7mTxWaw=;
+ b=XC/M3TZKS/h18UtS9kKeIzXFvrGIZAjXiMXIWJm4sWr976CNfhU0zEUEX/R/LFQMMb5RvoBLcsn6mD3DbHrTbQcg9AH4fb4esQ7utkAUE5LtUFYl6mUmDM7s6Z0q7RWCa0MasfYFORmA2kK3ZiRrtzkTJwuyUzBvQQNfWrvLDTLNK2iKsHRMCYgS8ox4/gAGDxxgUyqlf+nbMqPSzse/dtAMKlkxd8uvNx2RwtHQXyoEVmCAeCmIl6v3W5f7dvgWCd2ASnxoQlPhbcFiO7La9MVLuHILWjk8b4UXXPQqQrXa/lwrHG09PWd2VJbjqybd5pYk1qVSOuZnJlAsp3KKGw==
+Received: from DS7PR06CA0021.namprd06.prod.outlook.com (2603:10b6:8:2a::23) by
+ BN9PR12MB5276.namprd12.prod.outlook.com (2603:10b6:408:101::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.17; Wed, 29 Dec
+ 2021 11:46:44 +0000
+Received: from DM6NAM11FT027.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:2a:cafe::86) by DS7PR06CA0021.outlook.office365.com
+ (2603:10b6:8:2a::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.14 via Frontend
+ Transport; Wed, 29 Dec 2021 11:46:44 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ DM6NAM11FT027.mail.protection.outlook.com (10.13.172.205) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4844.14 via Frontend Transport; Wed, 29 Dec 2021 11:46:44 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 29 Dec
+ 2021 11:46:43 +0000
+Received: from [172.27.12.139] (172.20.187.5) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.9; Wed, 29 Dec 2021
+ 03:46:18 -0800
+Message-ID: <081437ff-a69d-faf5-0981-389156a90668@nvidia.com>
+Date:   Wed, 29 Dec 2021 13:46:14 +0200
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2021-12-29_04,2021-12-29_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- mlxlogscore=999 spamscore=0 phishscore=0 adultscore=0 mlxscore=0
- bulkscore=0 clxscore=1015 malwarescore=0 suspectscore=0 lowpriorityscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2112290062
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH bpf-next v2] net: don't include filter.h from net/sock.h
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>, <marcel@holtmann.org>,
+        <johan.hedberg@gmail.com>, <luiz.dentz@gmail.com>,
+        <dledford@redhat.com>, <jgg@ziepe.ca>, <mustafa.ismail@intel.com>,
+        <shiraz.saleem@intel.com>, <leon@kernel.org>, <ap420073@gmail.com>,
+        <wg@grandegger.com>, <woojung.huh@microchip.com>, <andrew@lunn.ch>,
+        <vivien.didelot@gmail.com>, <f.fainelli@gmail.com>,
+        <olteanv@gmail.com>, <george.mccollister@gmail.com>,
+        <michael.chan@broadcom.com>, <jesse.brandeburg@intel.com>,
+        <anthony.l.nguyen@intel.com>, <hawk@kernel.org>,
+        <john.fastabend@gmail.com>, <tariqt@nvidia.com>,
+        <saeedm@nvidia.com>, <ecree.xilinx@gmail.com>,
+        <habetsm.xilinx@gmail.com>, <jreuter@yaina.de>,
+        <dsahern@kernel.org>, <kvalo@codeaurora.org>, <pkshih@realtek.com>,
+        <trond.myklebust@hammerspace.com>, <anna.schumaker@netapp.com>,
+        <viro@zeniv.linux.org.uk>, <andrii@kernel.org>,
+        <mcgrof@kernel.org>, <keescook@chromium.org>, <yzaikin@google.com>,
+        <jiri@nvidia.com>, <wintera@linux.ibm.com>, <wenjia@linux.ibm.com>,
+        <pablo@netfilter.org>, <kadlec@netfilter.org>, <fw@strlen.de>,
+        <ralf@linux-mips.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <kgraul@linux.ibm.com>,
+        <sgarzare@redhat.com>, <steffen.klassert@secunet.com>,
+        <herbert@gondor.apana.org.au>, <arnd@arndb.de>,
+        <linux-bluetooth@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linux-can@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>,
+        <linux-hams@vger.kernel.org>, <ath11k@lists.infradead.org>,
+        <linux-wireless@vger.kernel.org>, <linux-nfs@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>,
+        <linux-decnet-user@lists.sourceforge.net>,
+        <linux-s390@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
+        <coreteam@netfilter.org>,
+        <virtualization@lists.linux-foundation.org>
+References: <20211229004913.513372-1-kuba@kernel.org>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+In-Reply-To: <20211229004913.513372-1-kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.187.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b8c542b6-9062-40bb-7c97-08d9cac0e325
+X-MS-TrafficTypeDiagnostic: BN9PR12MB5276:EE_
+X-Microsoft-Antispam-PRVS: <BN9PR12MB527648D3B3FBFB4ED3D895B8DF449@BN9PR12MB5276.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CHm9/2IYfUvVN7VgvWnjrJ/+tPBB8AURqCy6xtk6DQUt5CVGCBFPaym5DNTG0w2xcqnuI4Va4jvuNVJbSrVurSR93fU6t7ghCyRB+QPJHjAoQewDCndULQ4RAWxs2UJCidmRhHWckKiUqjO9CvF4xoV0P9aSn+wkcOy6orWJenx6XQRUeoa5DIkUuos6+WG00eze6M+Ml+1KgTamt1XLZ3qBY5UONBguDhIpZIieWpEDSq3g2/JEzRH0HhHhnH2KW0LfMKSKQg44rArOLJ7Wo4ml9frCBrBcUsX2Rkd7PSrq2W7k+kt/fxCMyPT/IQScI/EWxp+VhMRnTmo4LSQ/XQPDGJGI7lUKTjZqUrKhhPp/EhuF+1e+nxvj+oetKwZzuaRfqIM9xOqM1ahz8ieX7S5X4x6OUXzPv2BI1eWLlP/Z6y/SsCfzCqKss7w7+syKDPEowp/ViBNDCIQlddptXu2i9fRyG0h336IhkjxRyhEi3LWnq0flD/E/d7DmyDcnOvHfxDtSy4Wgd651Qm8hgb5StB7KE6XnghNYfAHxSwIfA3BUkeJlIZYCP7AWN6BuFXc2JeDzCpXaOImxezIqoxZhEumxaLjJJhbAdj0L+WTWlICT6U6XTI6I0WvF1HfdGgHEJRuUAsForvDjMiv37lsIxdhCGGgpUpJI/I+jdzu3CbwE3aXpZvLsCrFYGKGf8ximQHcC2aBkvdTUuRrbzcwu+i906bsr/P3mqloN6A4vtqVrMQGJUuZ3LC8RpwAETjC0QOKJalvNL9KFdK6RPfezi2a5sGId2vJNDxlRT/ESFvjrpzVWtmuBR2OiaUS6f8c2Totgzxw1J9vEGsN11ZQRhhhCIJhSTv7kfsMWluu1ODu2+uTVP0dQTiLzurNGAzOeqNn2UkhaZb/i/2mMdfmYIn4QI/thXDIuTsamMyM=
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(40470700002)(36840700001)(426003)(966005)(36860700001)(508600001)(4326008)(36756003)(356005)(2906002)(8676002)(316002)(81166007)(7406005)(336012)(2616005)(53546011)(31686004)(40460700001)(70206006)(110136005)(6666004)(86362001)(47076005)(26005)(82310400004)(83380400001)(186003)(16526019)(54906003)(31696002)(5660300002)(7416002)(7366002)(8936002)(16576012)(70586007)(36900700001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Dec 2021 11:46:44.2114
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b8c542b6-9062-40bb-7c97-08d9cac0e325
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT027.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5276
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-12-28 at 18:12 +0100, Mauro Carvalho Chehab wrote:
-> Em Tue, 28 Dec 2021 16:06:44 +0100
-> Niklas Schnelle <schnelle@linux.ibm.com> escreveu:
+On 29/12/2021 02:49, Jakub Kicinski wrote:
+> sock.h is pretty heavily used (5k objects rebuilt on x86 after
+> it's touched). We can drop the include of filter.h from it and
+> add a forward declaration of struct sk_filter instead.
+> This decreases the number of rebuilt objects when bpf.h
+> is touched from ~5k to ~1k.
 > 
-> (on a side note: the c/c list of this patch is too long. I would try to
-> avoid using a too long list, as otherwise this e-mail may end being rejected
-> by mail servers)
+> There's a lot of missing includes this was masking. Primarily
+> in networking tho, this time.
 > 
-> > On Tue, 2021-12-28 at 13:54 +0100, Mauro Carvalho Chehab wrote:
-> > >  
-> > ---8<---
-> > >     
-> > > > > > All you really care about is the "legacy" I/O spaces here, this isn't
-> > > > > > tied to PCI specifically at all, right?
-> > > > > > 
-> > > > > > So why not just have a OLD_STYLE_IO config option or something like
-> > > > > > that, to show that it's the i/o functions we care about here, not PCI at
-> > > > > > all?
-> > > > > > 
-> > > > > > And maybe not call it "old" or "legacy" as time constantly goes forward,
-> > > > > > just describe it as it is, "DIRECT_IO"?    
-> > > > > 
-> > > > > Agreed. HAVE_PCI_DIRECT_IO (or something similar) seems a more appropriate
-> > > > > name for it.
-> > > > > 
-> > > > > Thanks,
-> > > > > Mauro    
-> > > > 
-> > > > Hmm, I might be missing something here but that sounds a lot like the
-> > > > HAS_IOPORT option added in patch 02.
-> > > > 
-> > > > We add both LEGACY_PCI and HAS_IOPORT to differentiate between two
-> > > > cases. HAS_IOPORT is for PC-style devices that are not on a PCI card
-> > > > while LEGACY_PCI is for PCI drivers that require port I/O.   
-> > > 
-> > > I didn't look at the other patches on this series, but why it is needed
-> > > to deal with them on a separate way? Won't "PCI" and "HAS_IOPORT" be enough? 
-> > > 
-> > > I mean, are there any architecture where HAVE_PCI=y and HAS_IOPORT=y
-> > > where LEGACY_PCI shall be "n"?  
-> > 
-> > In the current patch set LEGACY_PCI is not currently selected by
-> > architectures, though of course it could be if we know that an
-> > architecture requires it. We should probably also set it in any
-> > defconfig that has devices depending on it so as not to break these.
-> > 
-> > Other than that it would be set during kernel configuration if one
-> > wants/needs support for legacy PCI devices. For testing I ran with
-> > HAVE_PCI=y, HAS_IOPORT=y and LEGACY_PCI=n on both my local Ryzen 3990X
-> > based workstation and Raspberry Pi 4 (DT). I guess at the moment it
-> > would make most sense for special configs such as those tailored for
-> > vitualization guets but in the end that would be something for
-> > distributions to decide.
+> Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> v2: https://lore.kernel.org/all/20211228192519.386913-1-kuba@kernel.org/
+>  - fix build in bond on ia64
+>  - fix build in ip6_fib with randconfig
 > 
-> IMO, it makes sense to have a "default y" there, as on systems that
-> support I/O space, disabling it will just randomly disable some drivers
-> that could be required by some hardware. I won't doubt that some of 
-> those could be ported from using inb/outb to use, instead, readb/writeb.
+> CC: marcel@holtmann.org
+> CC: johan.hedberg@gmail.com
+> CC: luiz.dentz@gmail.com
+> CC: dledford@redhat.com
+> CC: jgg@ziepe.ca
+> CC: mustafa.ismail@intel.com
+> CC: shiraz.saleem@intel.com
+> CC: leon@kernel.org
+> CC: ap420073@gmail.com
+> CC: wg@grandegger.com
+> CC: woojung.huh@microchip.com
+> CC: andrew@lunn.ch
+> CC: vivien.didelot@gmail.com
+> CC: f.fainelli@gmail.com
+> CC: olteanv@gmail.com
+> CC: george.mccollister@gmail.com
+> CC: michael.chan@broadcom.com
+> CC: jesse.brandeburg@intel.com
+> CC: anthony.l.nguyen@intel.com
+> CC: ast@kernel.org
+> CC: daniel@iogearbox.net
+> CC: hawk@kernel.org
+> CC: john.fastabend@gmail.com
+> CC: tariqt@nvidia.com
+> CC: saeedm@nvidia.com
+> CC: ecree.xilinx@gmail.com
+> CC: habetsm.xilinx@gmail.com
+> CC: jreuter@yaina.de
+> CC: dsahern@kernel.org
+> CC: kvalo@codeaurora.org
+> CC: pkshih@realtek.com
+> CC: trond.myklebust@hammerspace.com
+> CC: anna.schumaker@netapp.com
+> CC: viro@zeniv.linux.org.uk
+> CC: andrii@kernel.org
+> CC: mcgrof@kernel.org
+> CC: keescook@chromium.org
+> CC: yzaikin@google.com
+> CC: nikolay@nvidia.com
+> CC: jiri@nvidia.com
+> CC: wintera@linux.ibm.com
+> CC: wenjia@linux.ibm.com
+> CC: pablo@netfilter.org
+> CC: kadlec@netfilter.org
+> CC: fw@strlen.de
+> CC: ralf@linux-mips.org
+> CC: jhs@mojatatu.com
+> CC: xiyou.wangcong@gmail.com
+> CC: kgraul@linux.ibm.com
+> CC: sgarzare@redhat.com
+> CC: steffen.klassert@secunet.com
+> CC: herbert@gondor.apana.org.au
+> CC: arnd@arndb.de
+> CC: linux-bluetooth@vger.kernel.org
+> CC: linux-rdma@vger.kernel.org
+> CC: linux-can@vger.kernel.org
+> CC: intel-wired-lan@lists.osuosl.org
+> CC: bpf@vger.kernel.org
+> CC: linux-hams@vger.kernel.org
+> CC: ath11k@lists.infradead.org
+> CC: linux-wireless@vger.kernel.org
+> CC: linux-nfs@vger.kernel.org
+> CC: linux-fsdevel@vger.kernel.org
+> CC: bridge@lists.linux-foundation.org
+> CC: linux-decnet-user@lists.sourceforge.net
+> CC: linux-s390@vger.kernel.org
+> CC: netfilter-devel@vger.kernel.org
+> CC: coreteam@netfilter.org
+> CC: virtualization@lists.linux-foundation.org
+> ---
+[snip]
+>  net/bridge/br_ioctl.c                             | 1 +
+[snip
+>  70 files changed, 80 insertions(+), 1 deletion(-)
+> 
 
-Makes sense, if these get more legacy over time we can always change
-the default. This would also mean we don't need to change defconfigs
-that include legacy PCI devices.
+For the bridge:
+Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-> 
-> > Arnd described the options here:
-> > https://lore.kernel.org/lkml/CAK8P3a3HHeP+Gw_k2P7Qtig0OmErf0HN30G22+qHic_uZTh11Q@mail.gmail.com/
-> 
-> Based on Arnd's description, LEGACY_PCI should depend on HAS_IOPORT.
-> This is missing on patch 1. You should probably reorder your patch
-> series to first create HAS_IOPORT and then add LEGACY_PCI with
-> depends on, as otherwise it may cause randconfig build issues
-> at robots and/or git bisect.
-> 
-> I would also suggest to first introduce such change and then send
-> a per-subsystem LEGACY_PCI patch, as it would be a lot easier for
-> maintainers to review.
-
-Playing around with the reordering I think it might make sense to
-introduce HAS_IOPORT in patch 01, then LEGACY_PCI in patch 02 and then
-add dependencies for both on a per subsystem basis. I think it would be
-overkill to have two series of per subsystem patches.
-
-> 
-> > >   
-> > > > This
-> > > > includes pre-PCIe devices as well as PCIe devices which require
-> > > > features like I/O spaces. The "legacy" naming is comes from the PCIe
-> > > > spec which in section 2.1.1.2 says "PCI Express supports I/O Space for
-> > > > compatibility with legacy devices which require their use. Future
-> > > > revisions of this specification may deprecate the use of I/O Space."  
-> > > 
-> > > I would still avoid calling it LEGACY_PCI, as this sounds too generic.
-> > > 
-> > > I didn't read the PCI/PCIe specs, but I suspect that are a lot more
-> > > features that were/will be deprecated on PCI specs as time goes by.
-> > > 
-> > > So, I would, instead, use something like PCI_LEGACY_IO_SPACE or 
-> > > HAVE_PCI_LEGACY_IO_SPACE, in order to let it clear what "legacy"
-> > > means.  
-> > 
-> > Hmm, I'd like to hear Bjorn's opinion on this. Personally I feel like
-> > LEGACY_PCI is pretty clear since most devices are either pre-PCIe
-> > devices or a compatibility feature allowing drivers for a pre-PCIe
-> > device to work with a PCIe device.
-> 
-> That's the main point: it is *not* disabling pre-PCIe devices or
-> even legacy PCI drivers. It just disables a random set of drivers just
-> because they use inb/outb instead of readb/writeb. It keeps several pure 
-> PCI drivers selected, and disables some PCIe for no real reason.
-
-That is not intentional. The dependencies are certainly not perfect yet
-which is one of the reasons this is still an RFC. I hope getting these
-right will be a lot easier if we do both LEGACY_PCI and HAS_IOPORT
-dependency selection on a per subsystem basis.
-
-> 
-> Just to give one example, this symbol:
-> 
-> > diff --git a/drivers/media/cec/platform/Kconfig b/drivers/media/cec/platform/Kconfig
-> > index b672d3142eb7..5e92ece5b104 100644
-> > --- a/drivers/media/cec/platform/Kconfig
-> > +++ b/drivers/media/cec/platform/Kconfig
-> > @@ -100,7 +100,7 @@ config CEC_TEGRA
-> >  config CEC_SECO
-> >  	tristate "SECO Boards HDMI CEC driver"
-> >  	depends on (X86 || IA64) || COMPILE_TEST
-> > -	depends on PCI && DMI
-> > +	depends on LEGACY_PCI && DMI
-> >  	select CEC_CORE
-> >  	select CEC_NOTIFIER
-> >  	help
-> 
-> Disables HDMI CEC support on some Intel motherboards.
-> Any distro meant to run on generic hardware should keep it selected.
-
-As far as I can see this one actually uses a hardcoded I/O port numbers
-and googling it looks like it's an on-board device on the UDOO x86
-board. I guess that should indeed just be
-"depends on PCI && DMI && HAS_IOPORT".
-
-> 
-> I can see some value of a "PCI_LEGACY" option to disable all
-> non-PCIe drivers, but this is not the case here.
-> 
-> Thanks,
-> Mauro
-
-Ok, I think we definitely need to work on getting the dependencies
-right. I do think we agree that once done correctly there is value in
-such an option independent of HAS_IOPORT only gating inb() etc uses.
 
