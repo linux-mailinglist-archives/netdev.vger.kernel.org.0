@@ -2,97 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18E4E48168B
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 21:09:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC36C48168E
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 21:12:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231714AbhL2UJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 15:09:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53192 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231701AbhL2UJv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 15:09:51 -0500
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07501C061574
-        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 12:09:51 -0800 (PST)
-Received: by mail-qv1-xf33.google.com with SMTP id g15so20195853qvi.6
-        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 12:09:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KSj2+qUZCgU1K73aKvHjqzbhp6fcaLzAfINrbI7Epr4=;
-        b=h+kemzMDFcfAtOETgBmeigo9ANgl4aaMCEtzNp+5V+/785hkeZGQYd/Dzn7jICxCti
-         NmoBvx+kIl3R9kyLf1tSnx/iivv+uCgQ7vWEx5t+TlORDaLHUHUIu7Lm8Df2yRRTEd5K
-         79jaRd8DcjI9fptqsTzyoOQREKdzlc9xQFy1yllw8aOW2tC+TMzh+v24jWjAIM3KPgAj
-         PU54FHtgGWx6NB+GZ4N2gu84sgRWV16mATgErFD5LyA4CbJRYVhow7YXdr2k0pkxKfXZ
-         QndIoIfBi1EsyCdFpsPYmAtzxsxI3JIecfMB3MrpvbjeaCJfM0ltnrD5sdo2WQ5CCcqJ
-         G6rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KSj2+qUZCgU1K73aKvHjqzbhp6fcaLzAfINrbI7Epr4=;
-        b=oj5+pqAmo5G/Mf1WwV7JIx1ezVFTJOMZZz20DkwXYNT0Vj8SZGT+/phrt4AP0CrN+6
-         ysXj2Eqiw6nc1Mendpz5w8BlwLCR8iEBqq6+8OR+Uu0fTXxBgXJxhjn/aQaKjrYtXkf7
-         q74Z9pyYUUDXh/zQw3vXzj1DlOZUibaG0teRBeXunudY74H9hCybHNuJulYeo0fxZT6R
-         mtxqsBH0Vn9+f1iwzdfFrAoj7+cK7Eq/tGKhplO/bVeS/ywGD2zb4uxbn35/5b5/fELa
-         +EuyTx4yBAKTR9mkaKuaQSzuNJvAzMjYIUWil6tKokwW1DXlRl4eViZbFprvB9ilz4CO
-         DavQ==
-X-Gm-Message-State: AOAM533FiQJi/o144AQ6bU4k/xhC3p5mk3glN453IGQamK7rRrVUF00Z
-        ET/TZbAAisJRvU4TxXurWGEqrpVmDHA=
-X-Google-Smtp-Source: ABdhPJzb1kAL61LS5SBKZjjZXwHnEZVIYiYM8YzLBn2hBXOPeog1PXdsDGRsZ+nDC2TEoDAC3qSHRw==
-X-Received: by 2002:a05:6214:27ee:: with SMTP id jt14mr24949562qvb.119.1640808590167;
-        Wed, 29 Dec 2021 12:09:50 -0800 (PST)
-Received: from willemb.c.googlers.com.com (55.87.194.35.bc.googleusercontent.com. [35.194.87.55])
-        by smtp.gmail.com with ESMTPSA id de38sm13504346qkb.5.2021.12.29.12.09.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Dec 2021 12:09:49 -0800 (PST)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Tamir Duberstein <tamird@gmail.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net] ipv6: raw: check passed optlen before reading
-Date:   Wed, 29 Dec 2021 15:09:47 -0500
-Message-Id: <20211229200947.2862255-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
+        id S231740AbhL2UMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 15:12:33 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60692 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231701AbhL2UMc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 15:12:32 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C294614B3;
+        Wed, 29 Dec 2021 20:12:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41703C36AE9;
+        Wed, 29 Dec 2021 20:12:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640808751;
+        bh=vWtanjbewujinnsoAkIMuVPTzg/CYmtOfG32HMGoOIM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=ri2QRYB/7J/7LVZ8rfiwgnIizpgwLsLMSsLF3cm4tBjkhVFJrtTto93EM18va0Yqr
+         FYhWUXtXuIcM5kYowDEonIa23f+MV8wNNdNhi9rHljv2F64NfNznxlJP5uuPmNlxN3
+         we4bma2po+ck6Pxx3nWUGOX/bl5iZ9kbKO+I3mXRKGGsoqNBYEE3+9mpXYmfRvkSmb
+         MfKwkkCRLPNJZ8WvnSrldTdF07hOG1th8BRnvWCOm5BW7Y2d41ctz6KoEjpnWDCJEo
+         NznV53lorTyejhVUqJgmARWf/NOxYjP1+bea/FKfvni2Hr302VZXjHejIp1Vx/FSdd
+         JMKiG/5vDQgag==
+Date:   Wed, 29 Dec 2021 14:12:29 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     m.chetan.kumar@intel.com, linuxwwan@intel.com,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [PATCH 1/2] net: wwan: iosm: Let PCI core handle PCI power
+ transition
+Message-ID: <20211229201229.GA1698801@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211224081914.345292-1-kai.heng.feng@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tamir Duberstein <tamird@gmail.com>
+[+cc Rafael, in case you have insight about the PCI_D0 question below;
+Vaibhav, since this is related to your generic PM conversions]
 
-Add a check that the user-provided option is at least as long as the
-number of bytes we intend to read. Before this patch we would blindly
-read sizeof(int) bytes even in cases where the user passed
-optlen<sizeof(int), which would potentially read garbage or fault.
+On Fri, Dec 24, 2021 at 04:19:13PM +0800, Kai-Heng Feng wrote:
+> pci_pm_suspend_noirq() and pci_pm_resume_noirq() already handle power
+> transition for system-wide suspend and resume, so it's not necessary to
+> do it in the driver.
 
-Discovered by new tests in https://github.com/google/gvisor/pull/6957 .
+I see DaveM has already applied this, but it looks good to me, thanks
+for doing this!
 
-The original get_user call predates history in the git repo.
+One minor question below...
 
-Signed-off-by: Tamir Duberstein <tamird@gmail.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- net/ipv6/raw.c | 3 +++
- 1 file changed, 3 insertions(+)
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+>  drivers/net/wwan/iosm/iosm_ipc_pcie.c | 49 ++-------------------------
+>  1 file changed, 2 insertions(+), 47 deletions(-)
+> 
+> diff --git a/drivers/net/wwan/iosm/iosm_ipc_pcie.c b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> index 2fe88b8be3481..d73894e2a84ed 100644
+> --- a/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> +++ b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> @@ -363,67 +363,22 @@ static int __maybe_unused ipc_pcie_resume_s2idle(struct iosm_pcie *ipc_pcie)
+>  
+>  int __maybe_unused ipc_pcie_suspend(struct iosm_pcie *ipc_pcie)
+>  {
+> -	struct pci_dev *pdev;
+> -	int ret;
+> -
+> -	pdev = ipc_pcie->pci;
+> -
+> -	/* Execute D3 one time. */
+> -	if (pdev->current_state != PCI_D0) {
+> -		dev_dbg(ipc_pcie->dev, "done for PM=%d", pdev->current_state);
+> -		return 0;
+> -	}
 
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index 60f1e4f5be5a..c51d5ce3711c 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -1020,6 +1020,9 @@ static int do_rawv6_setsockopt(struct sock *sk, int level, int optname,
- 	struct raw6_sock *rp = raw6_sk(sk);
- 	int val;
- 
-+	if (optlen < sizeof(val))
-+		return -EINVAL;
-+
- 	if (copy_from_sockptr(&val, optval, sizeof(val)))
- 		return -EFAULT;
- 
--- 
-2.34.1.448.ga2b2bfdf31-goog
+I don't understand the intent of this early exit, and it's not obvious
+to me that pci_pm_suspend_noirq() bails out early when
+(pdev->current_state != PCI_D0).
 
+>  	/* The HAL shall ask the shared memory layer whether D3 is allowed. */
+>  	ipc_imem_pm_suspend(ipc_pcie->imem);
+>  
+> -	/* Save the PCI configuration space of a device before suspending. */
+> -	ret = pci_save_state(pdev);
+> -
+> -	if (ret) {
+> -		dev_err(ipc_pcie->dev, "pci_save_state error=%d", ret);
+> -		return ret;
+> -	}
+> -
+> -	/* Set the power state of a PCI device.
+> -	 * Transition a device to a new power state, using the device's PCI PM
+> -	 * registers.
+> -	 */
+> -	ret = pci_set_power_state(pdev, PCI_D3cold);
+> -
+> -	if (ret) {
+> -		dev_err(ipc_pcie->dev, "pci_set_power_state error=%d", ret);
+> -		return ret;
+> -	}
+> -
+>  	dev_dbg(ipc_pcie->dev, "SUSPEND done");
+> -	return ret;
+> +	return 0;
+>  }
+>  
+>  int __maybe_unused ipc_pcie_resume(struct iosm_pcie *ipc_pcie)
+>  {
+> -	int ret;
+> -
+> -	/* Set the power state of a PCI device.
+> -	 * Transition a device to a new power state, using the device's PCI PM
+> -	 * registers.
+> -	 */
+> -	ret = pci_set_power_state(ipc_pcie->pci, PCI_D0);
+> -
+> -	if (ret) {
+> -		dev_err(ipc_pcie->dev, "pci_set_power_state error=%d", ret);
+> -		return ret;
+> -	}
+> -
+> -	pci_restore_state(ipc_pcie->pci);
+> -
+>  	/* The HAL shall inform the shared memory layer that the device is
+>  	 * active.
+>  	 */
+>  	ipc_imem_pm_resume(ipc_pcie->imem);
+>  
+>  	dev_dbg(ipc_pcie->dev, "RESUME done");
+> -	return ret;
+> +	return 0;
+>  }
+>  
+>  static int __maybe_unused ipc_pcie_suspend_cb(struct device *dev)
+> -- 
+> 2.33.1
+> 
