@@ -2,151 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D3524814D8
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 17:03:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AFB3481508
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 17:13:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237315AbhL2QD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 11:03:26 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54328 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbhL2QDU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 11:03:20 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C75F16151F;
-        Wed, 29 Dec 2021 16:03:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8504C36AE7;
-        Wed, 29 Dec 2021 16:03:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640793799;
-        bh=JjpeFlX1D08ft528esGQ/Dmp3d8gak2dGxLVU5277kI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=JpP2t1WEsiIyRq1md3yeDJqKD5b+v6vPK3dQL5KYtPRU6IzcCE2hfeoejuHeG11gd
-         lC8IFpViEh+GNBkNBx4n5nW244Tql53dIjOETTsQ8i+5UfJvW9Ilc8EhjCT4Q4lOA4
-         QM42sYWxI3kXC/do4dsN3O/F/5QTnKyWIH4D+TjWyd3Qv8ZelIjD6sZhRig841ypqR
-         mTWsO71n3E7t2fJyuxqamjyrcVx+C0YBZwG9aCQStF11NC5RlZEPgKB5Mk28JwNuWp
-         wwR/on9msDkJi5KBJfEq5mX9Wm2DfRpIzk3oUTTCtQJyiHOzO2W6s1m8x+iPToCIeX
-         pL3LlEJMF3ouw==
-Date:   Wed, 29 Dec 2021 10:03:17 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Ettore Chimenti <ek5.chimenti@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        John Garry <john.garry@huawei.com>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Sathya Prakash <sathya.prakash@broadcom.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        Suganath Prabu Subramani 
-        <suganath-prabu.subramani@broadcom.com>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Kalle Valo <kvalo@kernel.org>, Jouni Malinen <j@w1.fi>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Hannes Reinecke <hare@suse.com>,
-        Kashyap Desai <kashyap.desai@broadcom.com>,
-        Sumit Saxena <sumit.saxena@broadcom.com>,
-        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        GR-QLogic-Storage-Upstream@marvell.com,
-        Mark Brown <broonie@kernel.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Teddy Wang <teddy.wang@siliconmotion.com>,
-        Forest Bond <forest@alittletooquiet.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-input@vger.kernel.org, netdev@vger.kernel.org,
-        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
-        linux-scsi@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-wireless@vger.kernel.org, megaraidlinux.pdl@broadcom.com,
-        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-watchdog@vger.kernel.org
-Subject: Re: [RFC 01/32] Kconfig: introduce and depend on LEGACY_PCI
-Message-ID: <20211229160317.GA1681139@bhelgaas>
+        id S236259AbhL2QM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 11:12:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57766 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236232AbhL2QM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 11:12:57 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4C2C061574
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 08:12:57 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id d1so43910370ybh.6
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 08:12:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=Y2B3yK2j0lsc3Zao+C8VOg9HKUf13My+tRftYn/1X8Q=;
+        b=EwF8MdwP3qEIcToBz0+vM1k5CfEtRyXrJOF6DHA4k+vTcQCOUVETX7WLP+Fir9oo9o
+         GXV3/fUT1JfkBMZgb3GIQQsd2PMj+sPdhHpKtChHD3dgLLYB8YyS/fBDZ9VoMN76TnNh
+         wT7Is+2pT4YwVyKPDHj48Wg+DHPUfOE0zHhyjvouar4P6nw3Rhp87osWbqT12w09l4aS
+         KX1rCkgz00stLx2XFt+oxi6CuazIwlLEOcW2LWEz8cpMYJEnZzIQ40vCIHcLLJ/JgYRA
+         QkIUQIOsToWH3KBJm+udH/pyIRAZNCEfxH5OonnuBZQ1VI7AdOSk96veutrHb8c1Oevv
+         ISqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=Y2B3yK2j0lsc3Zao+C8VOg9HKUf13My+tRftYn/1X8Q=;
+        b=IfK9Nr25iFVPawrYX5kjU4o6EQBNyar3O5hx5P9meJtH3kEYzKT/DjV0LOHIZsPpcR
+         bY7jTh92HwiXtoFLSqEIL/6NsG/pBews9F/BdF+9mE0KTc3oTqhSKuuAbMvesC0JsAhS
+         DgybtT5dU3ife/Jw6TK6vHXTSKqlZP7b04Lr24PboFpVvcTA95tJ95oroKgPJCv0YjiM
+         IWWJx4SgRkxW8vA1GOYA8Vt4nkPEiXmFjyd7OCPc2EVOPJ64QcEq0GErV50MHgDh6RlD
+         L2ZMKgYNA4aQN6ER+wznfhjh4RnXKCkzTCeLvEwCGQ1zQ9sd1DjxX2kfh+coaHBrdyEd
+         5/QQ==
+X-Gm-Message-State: AOAM5324U+K8OXPiohHwSvho+UNLGpCuKi8IHMEmHOBMOvUQykaUWHdA
+        A012aRcCBg8YgfL8sJI5ooJlR6217Gf5zMHIiog=
+X-Google-Smtp-Source: ABdhPJzie0U3refVh6r7znfKQ1ncfGwMAtojzjVHu2O6vX6ikSI1W4EtoYQRuH5fW60Sve7L9K5LuhUGxQUsg7lkqcM=
+X-Received: by 2002:a05:6902:120f:: with SMTP id s15mr36806862ybu.390.1640794376874;
+ Wed, 29 Dec 2021 08:12:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211229131207.1ac25424@coco.lan>
+Received: by 2002:a05:7000:38d5:0:0:0:0 with HTTP; Wed, 29 Dec 2021 08:12:56
+ -0800 (PST)
+Reply-To: tonyelumeluoffice96@gmail.com
+From:   UNITED BANK FOR AFRICAN <ubabankoffice426@gmail.com>
+Date:   Wed, 29 Dec 2021 17:12:56 +0100
+Message-ID: <CAGUVprgO7RD04MMdp-26tFBuBbz8vfWfvppJm0R1cxHEmfVjXA@mail.gmail.com>
+Subject: =?UTF-8?B?157XldeY15Eg15nXp9eoLA==?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 29, 2021 at 01:12:07PM +0100, Mauro Carvalho Chehab wrote:
-> Em Wed, 29 Dec 2021 12:45:38 +0100
-> Niklas Schnelle <schnelle@linux.ibm.com> escreveu:
-> > ...
-
-> > I do think we agree that once done correctly there is value in
-> > such an option independent of HAS_IOPORT only gating inb() etc uses.
-
-I'm not sure I'm convinced about this.  For s390, you could do this
-patch series, where you don't define inb() at all, and you add new
-dependencies to prevent compile errors.  Or you could define inb() to
-return ~0, which is what happens on other platforms when the device is
-not present.
-
-> Personally, I don't see much value on a Kconfig var for legacy PCI I/O 
-> space. From maintenance PoV, bots won't be triggered if someone use
-> HAS_IOPORT instead of the PCI specific one - or vice-versa. So, we
-> could end having a mix of both at the wrong places, in long term.
-> 
-> Also, assuming that PCIe hardware will some day abandon support for 
-> "legacy" PCI I/O space, I guess some runtime logic would be needed, 
-> in order to work with both kinds of PCIe controllers. So, having a
-> Kconfig option won't help much, IMO.
-> 
-> So, my personal preference would be to have just one Kconfig var, but
-> I'm ok if the PCI maintainers decide otherwise.
-
-I don't really like the "LEGACY_PCI" Kconfig option.  "Legacy" just
-means something old and out of favor; it doesn't say *what* that
-something is.
-
-I think you're specifically interested in I/O port space usage, and it
-seems that you want all PCI drivers that *only* use I/O port space to
-depend on LEGACY_PCI?  Drivers that can use either I/O or memory
-space or both would not depend on LEGACY_PCI?  This seems a little
-murky and error-prone.
-
-What if you used the approach from [1] but just dropped the warning?
-The inb() would return ~0 if the platform doesn't support I/O port
-space.  Drivers should be prepared to handle that because that's what
-happens if the device doesn't exist.  
-
-HAS_IOPORT and LEGACY_PCI is a lot of Kconfiggery that basically just
-avoids building drivers that aren't useful on s390.  I'm not sure the
-benefit outweighs the complication.
-
-Bjorn
-
-[1] https://lore.kernel.org/lkml/CAHk-=wg80je=K7madF4e7WrRNp37e3qh6y10Svhdc7O8SZ_-8g@mail.gmail.com/
-
+157XldeY15Eg15nXp9eoLA0KDQrXqdec15fXqteZINec15og15DXqiDXlNee15vXqteRINeU15bX
+lCDXnNek16DXmSDXl9eV15PXqSwg15DXkdecINec15Ag16nXntei16rXmSDXntee15osINec15AN
+CteQ16DXmSDXkdeY15XXlyDXqden15nXkdec16og15DXqiDXlteULCDXldeR15LXnNecINeW15Qg
+16nXnNeX16rXmSDXnNeaINeQ16og15bXlCDXqdeV15EsDQrXp9eV15PXnSDXm9ecLCDXkNeg15kg
+15LXkScg16fXqNeZ16HXmNec15nXoNeUINeSJ9eV16jXkifXmdeR15QsINee16DXlNec16og15UN
+Cteg16nXmdeQINen16jXnyDXlNee15jXkdeiINeU15HXmdeg15zXkNeV157XmdeqLg0KDQrXnNee
+16LXqdeULCDXoden16jXoNeVINeQ16og15vXnCDXlNee15vXqdeV15zXmdedINeV15TXkdei15nX
+ldeqINeh15HXmdeRDQrXlNei16HXp9eUINeU15zXkCDXqdec157XlCDXqdec15og15XXl9eV16HX
+qCDXlNeZ15vXldec16og16nXnNeaINec16LXnteV15Mg15HXl9eZ15XXkdeZ150NCteT157XmSDX
+lNei15HXqNeUINep16DXkteR15UsINeb16DXkteT15osINei15HXldeoINeU15DXpNep16jXldeZ
+15XXqiDXqdecDQrXlNei15HXqNeV16og16fXldeT157XldeqLCDXkden16gg15HXkNeq16gg16nX
+nNeg15Ug15zXkNeZ16nXldeoIDM4DQrCsCA1M+KAsjU2IOKAsyBOIDc3IMKwIDIg4oCyIDM5IOKA
+syBXDQoNCteQ16DXl9eg15Ug15TXk9eZ16jXp9eY15XXqNeZ15XXnywg15TXkdeg16cg15TXoteV
+15zXnteZINeV16fXqNefINeU157XmNeR16INCteU15HXmdeg15zXkNeV157XmSAoSU1GKSDXqdec
+INeV15XXqdeZ16DXkteY15XXnyDXlNeR15nXqNeULCDXmdeX15Mg16LXnSDXlNee15fXnNen15Qg
+16nXnA0K157Xqdeo15Mg15TXkNeV16bXqCDXqdecINeQ16jXpteV16og15TXkdeo15nXqiDXldeb
+157XlCDXodeV15vXoNeV15nXldeqINeX16fXmdeo15Qg15DXl9eo15XXqg0K16jXnNeV15XXoNeY
+15kg15vXkNefINeR15DXqNem15XXqiDXlNeR16jXmdeqINep15wg15DXnteo15nXp9eULiDXlNeW
+157XmdefDQrXlNeZ15fXmdeT15Qg16nXnNeg15Ug15zXlNei15HXqNeqINeq16nXnNeV157Xmded
+INeR15fXlSLXnCwgVW5pdGVkIEJhbmsgb2YNCteQ16TXqNeZ16fXlCDXnNeV157XlCDXmNeV15LX
+lSwg15zXlNeg16TXmdenINec15og15vXqNeY15nXoSBWSVNBLCDXqdeR15UgJA0KMS41INee15nX
+nNeZ15XXnyDXnteU16fXqNefINep15zXmiwg16LXkdeV16gg157XqdeZ15vXlCDXkteT15XXnNeU
+INeZ15XXqteoINee15TXp9eo158g16nXnNeaLg0KDQrXkdee15TXnNeaINeU15fXp9eZ16jXlCDX
+qdec16DXlSwg15LXmdec15nXoNeVINei150NCtee15XXk9eQ15Ig157Xm9eaINep15TXqtep15zX
+ldedINep15zXmiDXoteV15vXkSDXotecINeZ15PXmSDXpNen15nXk9eZ150g157Xldep15fXqteZ
+150NCtep15wg15TXkdeg16cg16nXnteg16HXmdedINec15TXpNeg15XXqiDXkNeqINeU15vXodek
+15nXnSDXqdec15og15zXl9ep15HXldeg15XXqiDXqdec15oNCtek1rzWsNeo1rjXmNa015kuDQoN
+CteV15TXmdeV150g15DXoNeVINee15XXk9eZ16LXmdedINec15og16nXlNen16jXnyDXqdec15og
+15bXldeb15Qg15HXm9eo15jXmdehDQpWSVNBINep15wg15HXoNenIFVCQSDXldeU15XXkCDXkted
+INee15XXm9efINec157XodeZ16jXlC4g16LWt9eb16nXgda415nXlQ0K16bXldeoINen16nXqCDX
+otedINee16DXlNecINeR16DXpyBVQkEsINep157XlSDXlNeV15Ag157XqCDXmNeV16DXmQ0KRWx1
+bWVsdSwg15DXmdee15nXmdecOiAoIHRvbnllbHVtZWx1b2ZmaWNlOTZAZ21haWwuY29tICkNCteb
+15PXmSDXnNeV157XqCDXnNeaINeb15nXpteTINec16fXkdecINeQ16og15vXqNeY15nXoSBWSVNB
+IEFUTSDXqdec15ouDQoNCteR15vXoNeV16osDQoNCteS15HXqNeqINen16jXmdeh15jXnNeZ16DX
+lCDXkifXldeo15In15nXkdeU157XldeY15Eg15nXp9eoLA0KDQrXqdec15fXqteZINec15og15DX
+qiDXlNee15vXqteRINeU15bXlCDXnNek16DXmSDXl9eV15PXqSwg15DXkdecINec15Ag16nXntei
+16rXmSDXntee15osINec15ANCteQ16DXmSDXkdeY15XXlyDXqden15nXkdec16og15DXqiDXlteU
+LCDXldeR15LXnNecINeW15Qg16nXnNeX16rXmSDXnNeaINeQ16og15bXlCDXqdeV15EsDQrXp9eV
+15PXnSDXm9ecLCDXkNeg15kg15LXkScg16fXqNeZ16HXmNec15nXoNeUINeSJ9eV16jXkifXmdeR
+15QsINee16DXlNec16og15UNCteg16nXmdeQINen16jXnyDXlNee15jXkdeiINeU15HXmdeg15zX
+kNeV157XmdeqLg0KDQrXnNee16LXqdeULCDXoden16jXoNeVINeQ16og15vXnCDXlNee15vXqdeV
+15zXmdedINeV15TXkdei15nXldeqINeh15HXmdeRDQrXlNei16HXp9eUINeU15zXkCDXqdec157X
+lCDXqdec15og15XXl9eV16HXqCDXlNeZ15vXldec16og16nXnNeaINec16LXnteV15Mg15HXl9eZ
+15XXkdeZ150NCteT157XmSDXlNei15HXqNeUINep16DXkteR15UsINeb16DXkteT15osINei15HX
+ldeoINeU15DXpNep16jXldeZ15XXqiDXqdecDQrXlNei15HXqNeV16og16fXldeT157XldeqLCDX
+kden16gg15HXkNeq16gg16nXnNeg15Ug15zXkNeZ16nXldeoIDM4DQrCsCA1M+KAsjU2IOKAsyBO
+IDc3IMKwIDIg4oCyIDM5IOKAsyBXDQoNCteQ16DXl9eg15Ug15TXk9eZ16jXp9eY15XXqNeZ15XX
+nywg15TXkdeg16cg15TXoteV15zXnteZINeV16fXqNefINeU157XmNeR16INCteU15HXmdeg15zX
+kNeV157XmSAoSU1GKSDXqdecINeV15XXqdeZ16DXkteY15XXnyDXlNeR15nXqNeULCDXmdeX15Mg
+16LXnSDXlNee15fXnNen15Qg16nXnA0K157Xqdeo15Mg15TXkNeV16bXqCDXqdecINeQ16jXpteV
+16og15TXkdeo15nXqiDXldeb157XlCDXodeV15vXoNeV15nXldeqINeX16fXmdeo15Qg15DXl9eo
+15XXqg0K16jXnNeV15XXoNeY15kg15vXkNefINeR15DXqNem15XXqiDXlNeR16jXmdeqINep15wg
+15DXnteo15nXp9eULiDXlNeW157XmdefDQrXlNeZ15fXmdeT15Qg16nXnNeg15Ug15zXlNei15HX
+qNeqINeq16nXnNeV157XmdedINeR15fXlSLXnCwgVW5pdGVkIEJhbmsgb2YNCteQ16TXqNeZ16fX
+lCDXnNeV157XlCDXmNeV15LXlSwg15zXlNeg16TXmdenINec15og15vXqNeY15nXoSBWSVNBLCDX
+qdeR15UgJA0KMS41INee15nXnNeZ15XXnyDXnteU16fXqNefINep15zXmiwg16LXkdeV16gg157X
+qdeZ15vXlCDXkteT15XXnNeUINeZ15XXqteoINee15TXp9eo158g16nXnNeaLg0KDQrXkdee15TX
+nNeaINeU15fXp9eZ16jXlCDXqdec16DXlSwg15LXmdec15nXoNeVINei150NCtee15XXk9eQ15Ig
+157Xm9eaINep15TXqtep15zXldedINep15zXmiDXoteV15vXkSDXotecINeZ15PXmSDXpNen15nX
+k9eZ150g157Xldep15fXqteZ150NCtep15wg15TXkdeg16cg16nXnteg16HXmdedINec15TXpNeg
+15XXqiDXkNeqINeU15vXodek15nXnSDXqdec15og15zXl9ep15HXldeg15XXqiDXqdec15oNCtek
+1rzWsNeo1rjXmNa015kuDQoNCteV15TXmdeV150g15DXoNeVINee15XXk9eZ16LXmdedINec15og
+16nXlNen16jXnyDXqdec15og15bXldeb15Qg15HXm9eo15jXmdehDQpWSVNBINep15wg15HXoNen
+IFVCQSDXldeU15XXkCDXktedINee15XXm9efINec157XodeZ16jXlC4g16LWt9eb16nXgda415nX
+lQ0K16bXldeoINen16nXqCDXotedINee16DXlNecINeR16DXpyBVQkEsINep157XlSDXlNeV15Ag
+157XqCDXmNeV16DXmQ0KRWx1bWVsdSwg15DXmdee15nXmdecOiAoIHRvbnllbHVtZWx1b2ZmaWNl
+OTZAZ21haWwuY29tICkNCteb15PXmSDXnNeV157XqCDXnNeaINeb15nXpteTINec16fXkdecINeQ
+16og15vXqNeY15nXoSBWSVNBIEFUTSDXqdec15ouDQoNCteR15vXoNeV16osDQoNCteS15HXqNeq
+INen16jXmdeh15jXnNeZ16DXlCDXkifXldeo15In15nXkdeUDQo=
