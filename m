@@ -2,159 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51084480FC9
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 06:03:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA91848104B
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 07:25:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238746AbhL2FDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 00:03:51 -0500
-Received: from mail-dm6nam08on2097.outbound.protection.outlook.com ([40.107.102.97]:64800
-        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238747AbhL2FDs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Dec 2021 00:03:48 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aBR8F+M60Xdi4ZCNJIY2uGXnnbiP3zaK4R4aIWMU37sDPA9YHMpf92odjRz2h6ch+OYB9SNPFcmaRhqxcT83z06Cs0q71KQn+J2dyLPSsh6NaiX1oFcaqwzjMz/Ywy/zWOLf1o+535hHPkafQDvw7XM2dhuk+YHLDmcDWqgbwGKSzmM4wLoEsYiOTX9lWq7NhYjqrx/XGH7do658BzBvygHWGOExF4RIMko6AfY2X/3sSMaSkk2/OSCIwGoU/jcnNuN1ffltx/MniTQexYt5i8fE5ftQlNzVzL22+Dy/mUF+Bu/byTgPfxZjO64rXZOUJCRALUstC8C2zDIP3DGmUQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=toz/kREwsP45vdGNTdO8e4m3bTuuZYfc/3+TCfHILJk=;
- b=b4/KvIwmZa9pMuSuGxgkoE09B6f1VOCA3wUFQCMHMatC01Nc52B4VCQ1a3CtCx/z+jIDGLU8NqwHCQ7sggh0ZYtobtzVVRKBi73XrG5c6E5AlwEtC4nCa+PAAIWu4YUuqOtkq5j89DdfA4sh0NGP3V90yhoJgMuZWE4Kd2EWQ+yQ4woBHFyoRBwphUanhBfe0nmJiGYd+1B2sZzhqryNz8gb4PmS3VQ+gRcK1QLbc5kcxmrX4/2Y3KZNJEfyxSmKLdSqWRljlwzmZQD5wNvALSGBXk7kcrKdmCgKgVGqSmhOVW7rgRyUPN5kgMM9it050j6PQsx92OlwjmQlY6R/Dg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=toz/kREwsP45vdGNTdO8e4m3bTuuZYfc/3+TCfHILJk=;
- b=IR9D5RR2kAE9Yf5YSaXzycVyB6Or6QdGQUnZ+0hvCuQprjszYSWCacSZHUPAURIKqGrBvm6s3WELsHtta13mwn8r3FjtPJfuDUK3Itli11pobnIZh+f0P+OkgPMoqutfCBKCJTtuaEcjgVXesyrqPP+Hy8+gcWlB4HBrpX94F+w=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by CO6PR10MB5441.namprd10.prod.outlook.com
- (2603:10b6:5:35a::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.19; Wed, 29 Dec
- 2021 05:03:41 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4823.024; Wed, 29 Dec 2021
- 05:03:41 +0000
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net-next 5/5] net: pcs: lynx: use a common naming scheme for all lynx_pcs variables
-Date:   Tue, 28 Dec 2021 21:03:10 -0800
-Message-Id: <20211229050310.1153868-6-colin.foster@in-advantage.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211229050310.1153868-1-colin.foster@in-advantage.com>
-References: <20211229050310.1153868-1-colin.foster@in-advantage.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MW4P221CA0026.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:303:8b::31) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        id S238940AbhL2GZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 01:25:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238936AbhL2GZG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 01:25:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7452BC061574
+        for <netdev@vger.kernel.org>; Tue, 28 Dec 2021 22:25:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A65B861445
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 06:25:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C52EBC36AE9;
+        Wed, 29 Dec 2021 06:25:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640759105;
+        bh=A92RIvCCKXS4SnLp87ZVeDSXdE1UMLMQ/DTq0taSnxY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jaF5JxAGHe9qJSk0vAjAEnt/85svAVGuQvdH9HTm6brUDDQq593ymoDYOlwvmhB3L
+         EYYdaxJJ+0ZLuqB7vZLgnZKC0C2SYh5HJe9HOPnDfBdXLdqHQml4dapTkk7hMOuZe/
+         3GMDC8MtiDJfkn531zG6RFlACSTaQxwAsziABLtmv9gLZigmY3lYhtOzHbx/1EVrv5
+         l52t/Ef4JAd0igxLcGNJf7dg53QrhMV7PY6wFwIZqCyljk1obRN6S3E9Pz5mc7b1yX
+         GhqSGuVjjTLfB+UN7AuZIiNR034XU6xHMavBt9Y+7EDnPB2sYps9OSgvZatbk5CJGn
+         oXTjuwSE0Ljkw==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/16] mlx5 updates 2021-12-28
+Date:   Tue, 28 Dec 2021 22:24:46 -0800
+Message-Id: <20211229062502.24111-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d6c74d9c-eeaa-4c52-6d55-08d9ca8894e8
-X-MS-TrafficTypeDiagnostic: CO6PR10MB5441:EE_
-X-Microsoft-Antispam-PRVS: <CO6PR10MB544122B36588C3285EDF6C3CA4449@CO6PR10MB5441.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0evBRd9AfcggJ2fUyTZ6tSp5jtzTuAr6NHSXHP3ijk67g/5pAdb1cpukBc5hr6pyOoJLLtnUvgs7XbLMVLSt9H5zfTLJzxMVb8GhCX+FTmRGCVc+Iw0u5Sm9kOyv17V+kCaHyq3bJ3MbmgN37TqQOs9QaPZXwVSsmVIswBgmlPf8q3CprVLzTmSptkMfyV8q+JNzzKxSQHIrNC/iPFatkHPE94lZA+BNstdlFsJC5Rm9X7DG6/nG+rvfIbwdH8cCIyavhL4qZkZ6+gfLyK6zzobAs6OjgSM/bBRmc35za2k0Ik7EAxzo+NC8YYeNCyyVDCDA3bCOUxqBzR1wAaHoDbmdfrjruUkj62PE5lAGdaBKIS8y0A1yB350C55B8HtnRd81ptk8OnhrppEs4B/c2z5DqmwWateAxUGqX/fkQ38oVk+24xmqAvtf17r0OMDnQmyCpXWbKJ3xtRrjsCE4WO3lOWGeA0DM0F8fz5htrFcMpNTIIy0tITl6UQzf7Ch64L7IYdnST5jiLbVI/4GMnxAZcVsNeK2uLofPdyMbVOmkVwnXPwwp+UetPRqHJ9RHsLlKH5VP8b/yumuQgFrtEQxbBkVNIEfZ6D/66EAmr24h6krFaJ8108q4EhVjtFHCcQwitERMM4HEQ9yY70i1bqJsu5tOCd8/APH7Y4v+E4e09UMK36LUnTM0ibBjo7K9X6ODp2ZfFb6znl0UJgHLIA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(39830400003)(376002)(346002)(366004)(42606007)(38100700002)(316002)(1076003)(54906003)(6666004)(66556008)(66946007)(66476007)(2616005)(6506007)(6512007)(38350700002)(86362001)(52116002)(26005)(508600001)(36756003)(4326008)(8936002)(5660300002)(186003)(7416002)(6486002)(44832011)(8676002)(2906002)(83380400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nnsebXso+TZI+4FtyKK8dfPVyERSXSeITBWGj/dWFBSwXgGLBbHJ1QPayHZR?=
- =?us-ascii?Q?8P99j5g46YLLkv7oGoZHfMiCwfv6XvXFIaJ40xyf2vLEIc5rAFDbGbSaP0b6?=
- =?us-ascii?Q?1HRzoHITYgVzfjrZLxDCegHP3sP1CnZ6z5KuPVvLHuumR0+BiNRzYUppNpci?=
- =?us-ascii?Q?5p8ytOmbX5BUiNWlbYf/ooEVFcNlo1NRPquH0YNDbPywFW7rHfrnzUe1evV0?=
- =?us-ascii?Q?VwhN5tfEmfzFWy24TJxL6EaG49NFnHf4mmcGG6tDNsTyNmTtc2RypeO2SRrh?=
- =?us-ascii?Q?d/+VKepHQiZd+tomY0nUG7NNYJ4hYaUlq588e42fKBiTwxDPhUq5GsU6rdh/?=
- =?us-ascii?Q?OGQ4jQ3jJAzBQybpH7cd2sDrVrc36WItvCyfqmtNGR4qxnZgFNi7jPqmdXb0?=
- =?us-ascii?Q?L8zwIrfAwvnpf2ddOpRmdCBXJEKcx4tTLfg1LDUTzkdwekj9IW1dYW1LFV2n?=
- =?us-ascii?Q?famIitCSbB4PjPJMEfw5wSOKnwxNL2kWVQRPG4oLaCJ4TeP33CyafWMG9KB2?=
- =?us-ascii?Q?/vJ4ii3dnC25KMXFyEEAxxpUxHtVB1KLO1/AoQrZSAmEH6pDIcsIapY4KDsa?=
- =?us-ascii?Q?wZZxmUMuiXtHcAYOVM4mBKBbOwUx03+mKKF8ZelTUNQozzr3OZhYUrwEhx1O?=
- =?us-ascii?Q?YxgfKXPdPzPlPE3zCadZ63PS7jlIv5hk4IxX56fCFTviNL20AovMRHgJ15uD?=
- =?us-ascii?Q?O4LW8wWcBoDTm7WrOaYO9ji+bJ8KRCCyM0iaH73amXuEhsxMGhBhvrwkcNgl?=
- =?us-ascii?Q?9FSCzoLtFK7waOtO0Q+kA0E/Afp7SXRORABsepafJ3Wiixs5qpfldbiJY2dl?=
- =?us-ascii?Q?oExUOzEgdsFDNWmP7OrYRJBSoaXpF7Ay5Nfhrrwx93iqCGSagEHmu+y46onO?=
- =?us-ascii?Q?ywjPhf2TUGd4HoBFklHMqU3c2E8amkZvT7jjPtRLSUMC/MH3K9gyvKhyrxDn?=
- =?us-ascii?Q?YcXHmTP8bC2sxeote8VcB6VEJl0vDBZGtvQAhJ7CjdYRoG1spKggxFrdTgUI?=
- =?us-ascii?Q?6n3fJBV6n/Ul5KBIoFMCmGGJ2Zi8/SEt6fkZqd05gE1BEQiLfK3tOD05CK8D?=
- =?us-ascii?Q?Ewn+XINbJwoVKCRyxJmxhDmUf9iOWJS5jdbQV+B8sB4ZGIwxAJi9k+OFJf+8?=
- =?us-ascii?Q?v3E4tXwYnzEoNHbb3GB8NoR1LB7JnSTvvd5+ryK56UQn3QNmZI6s04lzTMHP?=
- =?us-ascii?Q?bKYnkpLQZF2TvtBKB3zqEGVAqzfAF479yMbmpATt7iuZHP1NJvt2uxx85wp4?=
- =?us-ascii?Q?8NFAiTJef6QzddC9xFCmaNoR7oKpsDka98BL0j54ikDyHsgS1muW5GpBaPXW?=
- =?us-ascii?Q?rVx2cs4QuxdiO0/yozDmzE3y2LLqm1BRcarIv+nefKZaUZ+kd/BGpuYCcK5q?=
- =?us-ascii?Q?BFx7bnnnd/LfWLoGH4DmZtaPi1XsLoBCx0wU/5BIpLh+cVMS6mvVOqbfyqcg?=
- =?us-ascii?Q?VgHpCkjVsf0rmOMDkAP2sb5HVv8fz+myfJ7WTGNWaJ6ZoBDhSxPa9kFYDMJj?=
- =?us-ascii?Q?OI9IveoILVqifvRIZaFA+QH8PL8P0kiiIbYjgs1yTaiApxvtzULmTSKI6mwq?=
- =?us-ascii?Q?YF738qarskVSAzwM4shHxA4eCt4pY9SlVRfMg7d1BxSbVvy/B/30bzH5f8ts?=
- =?us-ascii?Q?jEsTaSsf0kIGibgYdpcsvpSCzmyljfJ8o9udA494pzZxiwiuwbEExnID+Xam?=
- =?us-ascii?Q?491LIOvmnEi2uETQWVTR6pY9HLo=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d6c74d9c-eeaa-4c52-6d55-08d9ca8894e8
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Dec 2021 05:03:41.3509
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bPkmx5Tomlk9s45CTm/gcnON+xGpD/moOzT7Ycq97Ma2BcMInIoP3ZxUp5sHSgszfbVazVe0hcOea2sigZ1a4Kco7ooylRdzz30aLeYxGcw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR10MB5441
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pcs-lynx.c used lynx_pcs and lynx as a variable name within the same file.
-This standardizes all internal variables to just "lynx"
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
----
- drivers/net/pcs/pcs-lynx.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+Hi Dave, Hi Jakub,
 
-diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
-index 7ff7f86ad430..fd3445374955 100644
---- a/drivers/net/pcs/pcs-lynx.c
-+++ b/drivers/net/pcs/pcs-lynx.c
-@@ -345,17 +345,17 @@ static const struct phylink_pcs_ops lynx_pcs_phylink_ops = {
- 
- struct phylink_pcs *lynx_pcs_create(struct mdio_device *mdio)
- {
--	struct lynx_pcs *lynx_pcs;
-+	struct lynx_pcs *lynx;
- 
--	lynx_pcs = kzalloc(sizeof(*lynx_pcs), GFP_KERNEL);
--	if (!lynx_pcs)
-+	lynx = kzalloc(sizeof(*lynx), GFP_KERNEL);
-+	if (!lynx)
- 		return NULL;
- 
--	lynx_pcs->mdio = mdio;
--	lynx_pcs->pcs.ops = &lynx_pcs_phylink_ops;
--	lynx_pcs->pcs.poll = true;
-+	lynx->mdio = mdio;
-+	lynx->pcs.ops = &lynx_pcs_phylink_ops;
-+	lynx->pcs.poll = true;
- 
--	return lynx_to_phylink_pcs(lynx_pcs);
-+	return lynx_to_phylink_pcs(lynx);
- }
- EXPORT_SYMBOL(lynx_pcs_create);
- 
--- 
-2.25.1
+Sorry for posting 16 patches this time of year :), but most of the patches
+are trivial and basic, the only patch worth mentioning is the addition of
+debugfs entry for dumping software steering state, as we are defaulting
+to SW steering in this patchset, so we would like to be prepared for any
+debug, just in case.
 
+For more information please see tag log below.
+Please pull and let me know if there is any problem.
+
+If time and window permit, I am planing for one or two more pure mlx5
+net-next PRs, mainly trivial stuff.  Just FYI and I hope it's ok with you.
+
+Happy holidays,
+Saeed.
+
+The following changes since commit 271d3be1c3b6b0be083a99254a0ecac41789929b:
+
+  Merge branch '10GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue (2021-12-28 16:16:57 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-12-28
+
+for you to fetch changes up to c9009d8f4ca73ef8ae33c68e7fcc3dcddc39f81c:
+
+  net/mlx5: Set SMFS as a default steering mode if device supports it (2021-12-28 22:17:50 -0800)
+
+----------------------------------------------------------------
+mlx5-updates-2021-12-28
+
+mlx5 Software steering, New features and optimizations
+
+This patch series brings various SW steering features, optimizations and
+debug-ability focused improvements.
+
+ 1) Expose debugfs for dumping the SW steering resources
+ 2) Removing unused fields
+ 3) support for matching on new fields
+ 4) steering optimization for RX/TX-only rules
+ 5) Make Software steering the default steering mechanism when
+    available, applies only to Switchdev mode FDB
+
+From Yevgeny Kliteynik and Muhammad Sammar:
+
+ - Patch 1 fixes an error flow in creating matchers
+ - Patch 2 fix lower case macro prefix "mlx5_" to "MLX5_"
+ - Patch 3 removes unused struct member in mlx5dr_matcher
+ - Patch 4 renames list field in matcher struct to list_node to reflect the
+   fact that is field is for list node that is stored on another struct's lists
+ - Patch 5 adds checking for valid Flex parser ID value
+ - Patch 6 adds the missing reserved fields to dr_match_param and aligns it to
+   the format that is defined by HW spec
+ - Patch 7 adds support for dumping SW steering (SMFS) resources using debugfs
+   in CSV format: domain and its tables, matchers and rules
+ - Patch 8 adds support for a new destination type - UPLINK
+ - Patch 9 adds WARN_ON_ONCE on refcount checks in SW steering object destructors
+ - Patches 10, 11, 12 add misc5 flow table match parameters and add support for
+   matching on tunnel headers 0 and 1
+ - Patch 13 adds support for matching on geneve_tlv_option_0_exist field
+ - Patch 14 implements performance optimization for for empty or RX/TX-only
+   matchers by splitting RX and TX matchers handling: matcher connection in the
+   matchers chain is split into two separate lists (RX only and TX only), which
+   solves a usecase of many RX or TX only rules that create a long chain of
+   RX/TX-only paths w/o the actual rules
+ - Patch 15 ignores modify TTL if device doesn't support it instead of
+   adding and unsupported action
+ - Patch 16 sets SMFS as a default steering mode
+
+----------------------------------------------------------------
+Muhammad Sammar (5):
+      net/mlx5: DR, Add missing reserved fields to dr_match_param
+      net/mlx5: DR, Add support for dumping steering info
+      net/mlx5: Add misc5 flow table match parameters
+      net/mlx5: DR, Add misc5 to match_param structs
+      net/mlx5: DR, Support matching on tunnel headers 0 and 1
+
+Yevgeny Kliteynik (11):
+      net/mlx5: DR, Fix error flow in creating matcher
+      net/mlx5: DR, Fix lower case macro prefix "mlx5_" to "MLX5_"
+      net/mlx5: DR, Remove unused struct member in matcher
+      net/mlx5: DR, Rename list field in matcher struct to list_node
+      net/mlx5: DR, Add check for flex parser ID value
+      net/mlx5: DR, Add support for UPLINK destination type
+      net/mlx5: DR, Warn on failure to destroy objects due to refcount
+      net/mlx5: DR, Add support for matching on geneve_tlv_option_0_exist field
+      net/mlx5: DR, Improve steering for empty or RX/TX-only matchers
+      net/mlx5: DR, Ignore modify TTL if device doesn't support it
+      net/mlx5: Set SMFS as a default steering mode if device supports it
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c   |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.h  |   2 +-
+ .../mellanox/mlx5/core/steering/dr_action.c        |  23 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |  29 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_dbg.c  | 668 +++++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/steering/dr_dbg.h  |  15 +
+ .../mellanox/mlx5/core/steering/dr_domain.c        |   5 +-
+ .../mellanox/mlx5/core/steering/dr_matcher.c       | 250 ++++----
+ .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  47 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  |  61 ++
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.h  |   2 +
+ .../mellanox/mlx5/core/steering/dr_ste_v0.c        |  25 +-
+ .../mellanox/mlx5/core/steering/dr_ste_v1.c        |  52 +-
+ .../mellanox/mlx5/core/steering/dr_table.c         |  94 +--
+ .../mellanox/mlx5/core/steering/dr_types.h         | 262 +++++---
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |  18 +-
+ .../mellanox/mlx5/core/steering/mlx5_ifc_dr.h      |  16 +
+ include/linux/mlx5/device.h                        |   1 +
+ include/linux/mlx5/mlx5_ifc.h                      |  35 +-
+ include/uapi/rdma/mlx5_user_ioctl_cmds.h           |   2 +-
+ 22 files changed, 1342 insertions(+), 279 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/dr_dbg.h
