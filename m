@@ -2,87 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CE6B48142F
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 15:44:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C71D5481443
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 15:54:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240390AbhL2Oob (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 09:44:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38094 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236856AbhL2Ooa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 09:44:30 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A36DEC061574;
-        Wed, 29 Dec 2021 06:44:30 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id g2so18665136pgo.9;
-        Wed, 29 Dec 2021 06:44:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J1BnpWyg6Q8Toki1+JSbzbJgN5C0a+8hlDW35pc8kRM=;
-        b=RDFQkxEr9DsNWyTuoYuBUQD6hnMeCyMKIHJ6tiE8T1PjYFIsEPvgiFsTAZwfL+TV++
-         Y8/QQaf7QOegA1b5Y4jVfZQ+1gGERj/VabomvY/BV3boXk4H6iMdRhPlT+LmN1hVTXk/
-         TITQ0vAJCWiTI0iySFbyHA+z9fIFoH/eYo6DDvfvKEwSxYx4sRpOrEZbp8P522qcDKjC
-         H+TLHrzYSst5//Ke2XifbNxpk1Xc3f4ZwCvtzQ2Q3wpDskT0DEWEEV2MlbxHd0Eb/j+R
-         AT58jgwRlSAhlN9PtkHgUcWEOMOTbaHhdTbBay0jewExeMiGmZyM+9rIza2qy6iNFGqo
-         fyZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J1BnpWyg6Q8Toki1+JSbzbJgN5C0a+8hlDW35pc8kRM=;
-        b=OAotZ1F2qeZ6HIjLb9505kTOyLgBznxKZusN9T4UiT8Us185rIVjS/e13ICAnJZ1tt
-         FIcUJbFNQBRa8153VeMNZ5v5Z24PD4fJ6xdWgiSJvJZ2lBJs3hHTnMnmjnp2TJ6G05fH
-         GMkpMPOeIEn9UxpQO/UjVuU/Fr3f6H/hmA1lFFEEiJktDLy4gwaXpHoaeZnKk7p+VZ+D
-         9mqPtbrPjMSWzQ7UITXpd8m67XKYi98RDB9GpdQKCXF1G0UVlxcUalgbXqFTVeItdIuG
-         LzNoBPp2cBWL2ARbw1pg/DwAG01BpBmDnSobExTFKFVR4BqLCeTonkliUDOjuj9S7erN
-         z3gg==
-X-Gm-Message-State: AOAM530AwDKR9AF4BkB6UGQbI13I3ENLENtxRw0Lk+T2syTbaL2YKfPI
-        TMj01u2Nj4abmqeNYWMiQPTiUjT+Npy+Y8Fg
-X-Google-Smtp-Source: ABdhPJwb1cEy6kw+pSaYjeaEx2SBs13FEoks3awYQilV/yQWu29YXIIA57l26SVykihLBSThbJ+OzA==
-X-Received: by 2002:aa7:88c4:0:b0:4bb:5a48:9801 with SMTP id k4-20020aa788c4000000b004bb5a489801mr27182190pff.67.1640789070160;
-        Wed, 29 Dec 2021 06:44:30 -0800 (PST)
-Received: from localhost.localdomain ([123.58.219.222])
-        by smtp.gmail.com with ESMTPSA id q22sm25596292pfk.27.2021.12.29.06.44.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Dec 2021 06:44:29 -0800 (PST)
-From:   Leon Huayra <hffilwlqm@gmail.com>
-To:     ast@kernel.org
-Cc:     daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Leon Huayra <hffilwlqm@gmail.com>
-Subject: [PATCH] fix a comment typo of bpf lpm_trie
-Date:   Wed, 29 Dec 2021 22:44:22 +0800
-Message-Id: <20211229144422.70339-1-hffilwlqm@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        id S240440AbhL2Oyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 09:54:33 -0500
+Received: from riva6.ni.fr.eu.org ([163.172.103.116]:46910 "EHLO
+        riva6.ni.fr.eu.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233850AbhL2Oy1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 09:54:27 -0500
+X-Greylist: delayed 519 seconds by postgrey-1.27 at vger.kernel.org; Wed, 29 Dec 2021 09:54:27 EST
+Received: by riva6.ni.fr.eu.org (Postfix, from userid 1000)
+        id 7B98520019; Wed, 29 Dec 2021 15:45:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ni.fr.eu.org;
+        s=riva6-20210311; t=1640789147;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aCq0FYQNYvN2lRDdZ/eTN1s6JWA47rQFTJjimL6/WZg=;
+        b=EHn1/ctEeZGagzjKkFyT4I0wOIF4kilopaP3FW6DpBxAcPLRFNRGqWtDOVQOVLYrEsLjmv
+        FsGBY4eTB745v+FhgcJ4JykwzqSuMDHkUbrdeo9GydVi+otVkNw4PDWv2zsWq87U8GUgZ5
+        QPFPkQz3QEX6JANXSo2VTWx57SX4pelesztvWrr2RZuZsTZA+NE1oeQrp6q/fBFzBM+jk9
+        V1+enLruhPM9lecR5G3eoucZsFB0EuobD4kNU0SWn9uPWFnIZkeUQE8Sl/Sr8ZAHP4S8V3
+        VUtSK48M08GwcLvPuUtWAmh805+VOY5bSrGUj4srpX5RvHa4WmSp/Qw3TfmY/g==
+Date:   Wed, 29 Dec 2021 15:45:47 +0100
+From:   Nicolas Schodet <nico@ni.fr.eu.org>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel list <linux-kernel@vger.kernel.org>
+Subject: Re: [net-next 12/18] net: mac802154: Handle scan requests
+Message-ID: <Ycx0mwQcFsmVqWVH@ni.fr.eu.org>
+References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
+ <20211222155743.256280-13-miquel.raynal@bootlin.com>
+ <CAB_54W6AZ+LGTcFsQjNx7uq=+R5v_kdF0Xm5kwWQ8ONtfOrmAw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAB_54W6AZ+LGTcFsQjNx7uq=+R5v_kdF0Xm5kwWQ8ONtfOrmAw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fix a comment typo of trie_update_elem() in kernel/bpf/lpm_trie.c
+Hi,
 
-Signed-off-by: Leon Huayra <hffilwlqm@gmail.com>
----
- kernel/bpf/lpm_trie.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+* Alexander Aring <alex.aring@gmail.com> [2021-12-29 09:30]:
+> Hi,
+> On Wed, 22 Dec 2021 at 10:58, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> ...
+> > +{
+> > +       bool promiscuous_on = mac802154_check_promiscuous(local);
+> > +       int ret;
+> > +
+> > +       if ((state && promiscuous_on) || (!state && !promiscuous_on))
+> > +               return 0;
+> > +
+> > +       ret = drv_set_promiscuous_mode(local, state);
+> > +       if (ret)
+> > +               pr_err("Failed to %s promiscuous mode for SW scanning",
+> > +                      state ? "set" : "reset");
+> The semantic of promiscuous mode on the driver layer is to turn off
+> ack response, address filtering and crc checking. Some transceivers
+> don't allow a more fine tuning on what to enable/disable. I think we
+> should at least do the checksum checking per software then?
+> Sure there is a possible tune up for more "powerful" transceivers then...
 
-diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
-index 423549d2c..5763cc7ac 100644
---- a/kernel/bpf/lpm_trie.c
-+++ b/kernel/bpf/lpm_trie.c
-@@ -412,7 +412,7 @@ static int trie_update_elem(struct bpf_map *map,
- 		rcu_assign_pointer(im_node->child[1], node);
- 	}
- 
--	/* Finally, assign the intermediate node to the determined spot */
-+	/* Finally, assign the intermediate node to the determined slot */
- 	rcu_assign_pointer(*slot, im_node);
- 
- out:
--- 
-2.34.1
+In this case, the driver could change the (flags &
+IEEE802154_HW_RX_DROP_BAD_CKSUM) bit dynamically to signal it does not
+check the checksum anymore. Would it work?
 
+Nicolas.
