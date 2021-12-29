@@ -2,85 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9472348119A
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 11:19:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C56954811A0
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 11:22:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239705AbhL2KTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 05:19:50 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:51264 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235468AbhL2KTt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Dec 2021 05:19:49 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id B32612061E;
-        Wed, 29 Dec 2021 11:19:48 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id aAGoN1k4GuDg; Wed, 29 Dec 2021 11:19:48 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 3E5712060F;
-        Wed, 29 Dec 2021 11:19:48 +0100 (CET)
-Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout1.secunet.com (Postfix) with ESMTP id 2E48780004A;
-        Wed, 29 Dec 2021 11:19:48 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 29 Dec 2021 11:19:48 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Wed, 29 Dec
- 2021 11:19:47 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 5BEF73182F8D; Wed, 29 Dec 2021 11:19:45 +0100 (CET)
-Date:   Wed, 29 Dec 2021 11:19:45 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Antony Antony <antony.antony@secunet.com>
-CC:     Thomas Egerer <thomas.egerer@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH ipsec-next v3] xfrm: rate limit SA mapping change message
- to user space
-Message-ID: <20211229101945.GQ3272477@gauss3.secunet.de>
-References: <YafsUMtO+zj/2xcC@moon.secunet.de>
- <af6150a0d0ae51bdbbf34c81ca0d0d74b17fa16f.1640178517.git.antony.antony@secunet.com>
+        id S235515AbhL2KWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 05:22:08 -0500
+Received: from smtp25.cstnet.cn ([159.226.251.25]:43446 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231732AbhL2KWH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Dec 2021 05:22:07 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-05 (Coremail) with SMTP id zQCowACHa0G1Nsxhi1hCBQ--.9142S2;
+        Wed, 29 Dec 2021 18:21:41 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] fjes: Check possible NULL pointer returned by vzalloc
+Date:   Wed, 29 Dec 2021 18:21:40 +0800
+Message-Id: <20211229102140.1776466-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <af6150a0d0ae51bdbbf34c81ca0d0d74b17fa16f.1640178517.git.antony.antony@secunet.com>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowACHa0G1Nsxhi1hCBQ--.9142S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrZw18Kry5Gr4DKrW3urW7urg_yoWfGFb_ur
+        s2qF13W34qgr1ktF1UAr43ZryqyrWvqr1Ig34ftrWaq3yDC3Z3AryxurnrG3yUW3y5ZFnr
+        Jr9Fqr13A34SqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbcxFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
+        1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0
+        cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8Jw
+        ACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4DMxAI
+        w28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
+        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxG
+        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8Jw
+        CI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
+        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUboKZJUUUUU==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 22, 2021 at 02:11:18PM +0100, Antony Antony wrote:
-> Kernel generates mapping change message, XFRM_MSG_MAPPING,
-> when a source port chage is detected on a input state with UDP
-> encapsulation set.  Kernel generates a message for each IPsec packet
-> with new source port.  For a high speed flow per packet mapping change
-> message can be excessive, and can overload the user space listener.
-> 
-> Introduce rate limiting for XFRM_MSG_MAPPING message to the user space.
-> 
-> The rate limiting is configurable via netlink, when adding a new SA or
-> updating it. Use the new attribute XFRMA_MTIMER_THRESH in seconds.
-> 
-> v1->v2 change:
-> 	update xfrm_sa_len()
-> 
-> v2->v3 changes:
-> 	use u32 insted unsigned long to reduce size of struct xfrm_state
-> 	fix xfrm_ompat size Reported-by: kernel test robot <lkp@intel.com>
-> 	accept XFRM_MSG_MAPPING only when XFRMA_ENCAP is present
-> 
-> Co-developed-by: Thomas Egerer <thomas.egerer@secunet.com>
-> Signed-off-by: Thomas Egerer <thomas.egerer@secunet.com>
-> Signed-off-by: Antony Antony <antony.antony@secunet.com>
+As the possible alloc failure of the vzalloc(), the 'hw->hw_info.trace'
+could be NULL pointer.
+Therefore it should be better to check it to guarantee the complete
+success of the initiation.
 
-Applied, thanks a lot!
+Fixes: 8cdc3f6c5d22 ("fjes: Hardware initialization routine")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ drivers/net/fjes/fjes_hw.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/fjes/fjes_hw.c b/drivers/net/fjes/fjes_hw.c
+index 065bb0a40b1d..4c83f637a135 100644
+--- a/drivers/net/fjes/fjes_hw.c
++++ b/drivers/net/fjes/fjes_hw.c
+@@ -329,6 +329,9 @@ int fjes_hw_init(struct fjes_hw *hw)
+ 	ret = fjes_hw_setup(hw);
+ 
+ 	hw->hw_info.trace = vzalloc(FJES_DEBUG_BUFFER_SIZE);
++	if (!hw->hw_info.trace)
++		return -ENOMEM;
++
+ 	hw->hw_info.trace_size = FJES_DEBUG_BUFFER_SIZE;
+ 
+ 	return ret;
+-- 
+2.25.1
+
