@@ -2,152 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 952B8481530
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 17:42:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5236481534
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 17:44:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240862AbhL2QmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 11:42:20 -0500
-Received: from sibelius.xs4all.nl ([83.163.83.176]:50403 "EHLO
-        sibelius.xs4all.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234322AbhL2QmU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 11:42:20 -0500
-Received: from localhost (bloch.sibelius.xs4all.nl [local])
-        by bloch.sibelius.xs4all.nl (OpenSMTPD) with ESMTPA id 079f839a;
-        Wed, 29 Dec 2021 17:42:17 +0100 (CET)
-Date:   Wed, 29 Dec 2021 17:42:17 +0100 (CET)
-From:   Mark Kettenis <mark.kettenis@xs4all.nl>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, rafael@kernel.org, lenb@kernel.org,
-        aspriel@gmail.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, chi-hsien.lin@infineon.com,
-        wright.feng@infineon.com, chung-hsien.hsu@infineon.com,
-        marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io,
-        kettenis@openbsd.org, zajec5@gmail.com,
-        pieter-paul.giesberts@broadcom.com, linus.walleij@linaro.org,
-        hdegoede@redhat.com, linville@tuxdriver.com, dekim@broadcom.com,
-        sandals@crustytoothpaste.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-In-Reply-To: <20211226153624.162281-2-marcan@marcan.st> (message from Hector
-        Martin on Mon, 27 Dec 2021 00:35:51 +0900)
-Subject: Re: [PATCH 01/34] dt-bindings: net: bcm4329-fmac: Add Apple properties & chips
-References: <20211226153624.162281-1-marcan@marcan.st> <20211226153624.162281-2-marcan@marcan.st>
-MIME-version: 1.0
-Content-type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Message-ID: <d3cb7b3782b16029@bloch.sibelius.xs4all.nl>
+        id S240869AbhL2QoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 11:44:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234322AbhL2QoU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 11:44:20 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4A3C061574;
+        Wed, 29 Dec 2021 08:44:20 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id l10-20020a17090a384a00b001b22190e075so19963204pjf.3;
+        Wed, 29 Dec 2021 08:44:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=u9SlnkqK38gbFa/5lQSVkRrNE/pyi+RpdtYH3JSS99M=;
+        b=H9TuCnsiq/c74xXRy4eTZ2x8gALL/l3hL3Vr32hYYTnpdTCQ7HDKph6mfL2EVW25KJ
+         nJAlYAdFAMX9n+Umn2FplyKNagbTdaNI3KKNWRIWOYbIlY9A6ZY68S5yaqJeD/qYJmJ8
+         t66cTk1dvDBfD/G8L/Nmf2fvRB12wwAGjzvAr0icqZ4Ff/WuZfuVdqFVmMtB5GtsHFZP
+         mbLIEMPah/zascpsGeWXuj4UVLe7A71LOM+CLt5BXlogswpbKKBt8w2vEyAFG9Jt4x2o
+         +/XI1nfpoTG1AWCerJT9p8w9yM+/G3W/DZDpdiJECFWYsY6wttpCiFteZt8dR3P+Ci+0
+         vt0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u9SlnkqK38gbFa/5lQSVkRrNE/pyi+RpdtYH3JSS99M=;
+        b=Xy2QS0lQM6V1Qk5fwDZDB6Vd31ovNZ3Gn3LhvKlnr6ejVZKEEQsfScVECIeo7V9LgC
+         uXOFV0JRXP2aZTSJmSBk/DThSRXs23h6ol8IkGlpkZehTzth9+NRI5TeJb0i+FWQwckn
+         w0Z6wyoFqH+qYoZhLd4zd1Apl0fiCPdLqOGH1QUMoawYlXMpL2yCm/JZxSZ7sOXeTNqv
+         WgrCFny/0YI+1m+uNxRkHUBH4WB1BpmVlLrkLN8hJRes9qv5h+FWWDg354rl2U9iBSqf
+         tNqARzGpxau18caVt6zVE9Z7T/cL1AzDquJ5cfF8vMRsx/oOcyjpqWaGuA712Og2T4OT
+         wXGQ==
+X-Gm-Message-State: AOAM530arEsXHjgXix7rkAaqGnysPz2EB1OgDygdx2KcsEix8lCLgxRp
+        KmNoHAojY1YQSahS8cQ82Ynq02XU+fQTqJ7ZHVM=
+X-Google-Smtp-Source: ABdhPJwPURyGVwWf33T/6i51jvI8jx135wluxLNbRczUNmaGMT6NYDtgjrFxUSgqWfx/xKnnCtj7b3V5pnY3X8m4oHQ=
+X-Received: by 2002:a17:902:6502:b0:149:1162:f0b5 with SMTP id
+ b2-20020a170902650200b001491162f0b5mr26758521plk.126.1640796259801; Wed, 29
+ Dec 2021 08:44:19 -0800 (PST)
+MIME-Version: 1.0
+References: <20211229085547.206008-1-imagedong@tencent.com>
+In-Reply-To: <20211229085547.206008-1-imagedong@tencent.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 29 Dec 2021 08:44:08 -0800
+Message-ID: <CAADnVQLiqRdE0iqSFM7za2g5UVNDE-ZZmS7+pca176_ePKsZvA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: bpf: hook for inet port bind conflict check
+To:     menglong8.dong@gmail.com
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Menglong Dong <imagedong@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Hector Martin <marcan@marcan.st>
-> Cc: Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
->         Alyssa Rosenzweig <alyssa@rosenzweig.io>,
->         Mark Kettenis <kettenis@openbsd.org>,
->         Rafał Miłecki <zajec5@gmail.com>,
->         Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
->         Linus Walleij <linus.walleij@linaro.org>,
->         Hans de Goede <hdegoede@redhat.com>,
->         "John W. Linville" <linville@tuxdriver.com>,
->         "Daniel (Deognyoun) Kim" <dekim@broadcom.com>,
->         "brian m. carlson" <sandals@crustytoothpaste.net>,
->         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
->         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
->         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
->         SHA-cyfmac-dev-list@infineon.com
-> Date: Mon, 27 Dec 2021 00:35:51 +0900
-> 
-> This binding is currently used for SDIO devices, but these chips are
-> also used as PCIe devices on DT platforms and may be represented in the
-> DT. Re-use the existing binding and add chip compatibles used by Apple
-> T2 and M1 platforms (the T2 ones are not known to be used in DT
-> platforms, but we might as well document them).
-> 
-> Then, add properties required for firmware selection and calibration on
-> M1 machines.
-> 
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
->  .../net/wireless/brcm,bcm4329-fmac.yaml       | 32 +++++++++++++++++--
->  1 file changed, 29 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-> index c11f23b20c4c..2530ff3e7b90 100644
-> --- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-> +++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-> @@ -4,7 +4,7 @@
->  $id: http://devicetree.org/schemas/net/wireless/brcm,bcm4329-fmac.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
->  
-> -title: Broadcom BCM4329 family fullmac wireless SDIO devices
-> +title: Broadcom BCM4329 family fullmac wireless SDIO/PCIE devices
->  
->  maintainers:
->    - Arend van Spriel <arend@broadcom.com>
-> @@ -36,16 +36,22 @@ properties:
->                - brcm,bcm43455-fmac
->                - brcm,bcm43456-fmac
->                - brcm,bcm4354-fmac
-> +              - brcm,bcm4355c1-fmac
->                - brcm,bcm4356-fmac
->                - brcm,bcm4359-fmac
-> +              - brcm,bcm4364b2-fmac
-> +              - brcm,bcm4364b3-fmac
-> +              - brcm,bcm4377b3-fmac
-> +              - brcm,bcm4378b1-fmac
-> +              - brcm,bcm4387c2-fmac
->                - cypress,cyw4373-fmac
->                - cypress,cyw43012-fmac
->            - const: brcm,bcm4329-fmac
->        - const: brcm,bcm4329-fmac
+On Wed, Dec 29, 2021 at 12:56 AM <menglong8.dong@gmail.com> wrote:
+>
+> From: Menglong Dong <imagedong@tencent.com>
+>
+> This hook of cgroup is called while TCP/UDP local port bind conflict
+> check. This is different from the 'commit aac3fc320d94 ("bpf: Post-hooks
+> for sys_bind")', as it is also called in autobind case.
+>
+> For TCP, this hook is called during sys_bind() and autobind. And it
+> is also called during tcp_v4_connect() before hash the sock to ehash,
+> during which src ip, src port, dst ip, and dst port is already
+> allocated, means that we have a chance to determine whether this
+> connect should continue.
+>
+> This can be useful when we want some applications not to use some
+> port (include auto bind port). For autobind, the kernel has the chance
+> to choose another port.
 
-I suppose this helps with validation of device trees.  However, nodes
-for PCI devices are not supposed to have a "compatible" property as
-the PCI vendor and device IDs are supposed to be used to identify a
-device.
-
-That does raise the question how a schema for additional properties
-for PCI device nodes is supposed to be defined...
-
->    reg:
-> -    description: SDIO function number for the device, for most cases
-> -      this will be 1.
-> +    description: SDIO function number for the device (for most cases
-> +      this will be 1) or PCI device identifier.
->  
->    interrupts:
->      maxItems: 1
-> @@ -75,6 +81,26 @@ properties:
->      items:
->        pattern: '^[A-Z][A-Z]-[A-Z][0-9A-Z]-[0-9]+$'
->  
-> +  brcm,cal-blob:
-> +    $ref: /schemas/types.yaml#/definitions/uint8-array
-> +    description: A per-device calibration blob for the Wi-Fi radio. This
-> +      should be filled in by the bootloader from platform configuration
-> +      data, if necessary, and will be uploaded to the device if present.
-> +
-> +  apple,module-instance:
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +    description: Module codename used to identify a specific board on
-> +      Apple platforms. This is used to build the firmware filenames, to allow
-> +      different platforms to have different firmware and/or NVRAM config.
-> +
-> +  apple,antenna-sku:
-> +    $def: /schemas/types.yaml#/definitions/string
-> +    description: Antenna SKU used to identify a specific antenna configuration
-> +      on Apple platforms. This is use to build firmware filenames, to allow
-> +      platforms with different antenna configs to have different firmware and/or
-> +      NVRAM. This would normally be filled in by the bootloader from platform
-> +      configuration data.
-> +
->  required:
->    - compatible
->    - reg
-> -- 
-> 2.33.0
-> 
-> 
+The use case is too vague to consider adding a new hook.
+Also there are no selftests.
