@@ -2,115 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF64948165E
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 20:34:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB19C48166D
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 20:47:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231124AbhL2Teu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 14:34:50 -0500
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:49523 "EHLO
-        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbhL2Teu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 14:34:50 -0500
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 182BC20002;
-        Wed, 29 Dec 2021 19:34:44 +0000 (UTC)
-Date:   Wed, 29 Dec 2021 20:34:44 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        clement.leger@bootlin.com
-Subject: Re: [RFC v5 net-next 02/13] mfd: ocelot: offer an interface for MFD
- children to get regmaps
-Message-ID: <Ycy4VPy+XVgYmfeg@piout.net>
-References: <20211218214954.109755-1-colin.foster@in-advantage.com>
- <20211218214954.109755-3-colin.foster@in-advantage.com>
- <Ycx9j3bflcTGsb7b@google.com>
+        id S231272AbhL2Tq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 14:46:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48134 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230494AbhL2Tq4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 14:46:56 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D7CC061574;
+        Wed, 29 Dec 2021 11:46:55 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id t14so8888263ljh.8;
+        Wed, 29 Dec 2021 11:46:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qVJ/y+64l3sbtg3AQgJAEvi8CQ3pfU+MbHqQhMEFY30=;
+        b=OnPePvU1bXSMAsVXP285imYJz6zhETG+GPOpfoZ6DxhtUCSQK0UaoOIfelgIkSpDKH
+         euAD/aGOfuwgYQvRqkTkO98XPCaFB2SS7DsTWe4y9V6WTDYU2qMDKrakn2DirBRKeTZf
+         +pnVWKBCNyYSjNjztxOm81CwKnyhjayaLsNDYBG6Ltg2vsmtQdAXirfJ51TF/zTpN+0c
+         T/wU5cArvxdDvNR+6hNhhfPllFyTrVzP0KCPBrRlPkrBvyIqhYVe/tyIn4wINrKMdv26
+         VjSPoCruptHSYgxpIqWNwRo7K0A025nRUAWMZjBBUi3eaYLD2rrZRPPb6ikvRHwDxKNI
+         MbXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qVJ/y+64l3sbtg3AQgJAEvi8CQ3pfU+MbHqQhMEFY30=;
+        b=F3NT9GVs3vnyBy4y4YABGrWRiA2/F741nVOt1lQhVkXHAAx4XVWhqR5pmwTW5ipOGz
+         sqhC2lf005VfosErb2YGDLNJuLrzbKX8I4X/cXYqgyT7oD0eZOP4KzUNyH1i2YiwdPSj
+         ipe1t10PCdYXUGFZWus3OleAwrtsqs8WqTm/nCS5CwNIIH/mhyB4+H7J8Gabg4cCZsFY
+         Ou6iUYS+nb/7kwGLcAVi7Ddww9Xw+3c3VImnV/TubOZtP3UBSTaYL/m33lgXR/0fdY5C
+         Hpwac21qcuY4WsJJw4D39/pdjgwpEkc6KfQonNYDlYwJgenmKTLjI28w1XjITnNEnTUc
+         CjPw==
+X-Gm-Message-State: AOAM531j2W+Amp521Wcyp2jI5pLloxrCpa4zs0wwOPw7GjHUwooSY2w0
+        sY50yNZ6llRXAy3PI9jtX+2IVJqheRqvQSKdxhhmkfGg1/M=
+X-Google-Smtp-Source: ABdhPJyfY2mufyPMdyy8F9EqizAC9SnjkCDslGjUAcSoIKMi0atP4YtWsIy3x9E/30/JDqnUgrwOPzvgE2HTnEDkosM=
+X-Received: by 2002:a05:651c:d5:: with SMTP id 21mr20529658ljr.433.1640807212809;
+ Wed, 29 Dec 2021 11:46:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Ycx9j3bflcTGsb7b@google.com>
+References: <CAJ-ks9kd6wWi1S8GSCf1f=vJER=_35BGZzLnXwz36xDQPacyRw@mail.gmail.com>
+ <CAJ-ks9=41PuzGkXmi0-aZPEWicWJ5s2gW2zL+jSHuDjaJ5Lhsg@mail.gmail.com>
+ <20211228155433.3b1c71e5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net> <CA+FuTSeDTJxbPvN6hkXFMaBspVHwL+crOxzC2ukWRzxvKma9bA@mail.gmail.com>
+In-Reply-To: <CA+FuTSeDTJxbPvN6hkXFMaBspVHwL+crOxzC2ukWRzxvKma9bA@mail.gmail.com>
+From:   Tamir Duberstein <tamird@gmail.com>
+Date:   Wed, 29 Dec 2021 14:46:41 -0500
+Message-ID: <CAJ-ks9=3o+rVJd5ztYbkgpcYiWjV+3qajCgOmM7AfjhoZvuOHw@mail.gmail.com>
+Subject: Re: [PATCH] net: check passed optlen before reading
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Lee,
+I'm having some trouble sending this using git send-email because of
+the firewall I'm behind.
 
-On 29/12/2021 15:23:59+0000, Lee Jones wrote:
-> On Sat, 18 Dec 2021, Colin Foster wrote:
-> 
-> > Child devices need to get a regmap from a resource struct, specifically
-> > from the MFD parent. The MFD parent has the interface to the hardware
-> > layer, which could be I2C, SPI, PCIe, etc.
-> > 
-> > This is somewhat a hack... ideally child devices would interface with the
-> > struct device* directly, by way of a function like
-> > devm_get_regmap_from_resource which would be akin to
-> > devm_get_and_ioremap_resource. A less ideal option would be to interface
-> > directly with MFD to get a regmap from the parent.
-> > 
-> > This solution is even less ideal than both of the two suggestions, so is
-> > intentionally left in a separate commit after the initial MFD addition.
-> > 
-> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > ---
-> >  drivers/mfd/ocelot-core.c |  9 +++++++++
-> >  include/soc/mscc/ocelot.h | 12 ++++++++++++
-> >  2 files changed, 21 insertions(+)
-> > 
-> > diff --git a/drivers/mfd/ocelot-core.c b/drivers/mfd/ocelot-core.c
-> > index a65619a8190b..09132ea52760 100644
-> > --- a/drivers/mfd/ocelot-core.c
-> > +++ b/drivers/mfd/ocelot-core.c
-> > @@ -94,6 +94,15 @@ static struct regmap *ocelot_mfd_regmap_init(struct ocelot_mfd_core *core,
-> >  	return regmap;
-> >  }
-> >  
-> > +struct regmap *ocelot_mfd_get_regmap_from_resource(struct device *dev,
-> > +						   const struct resource *res)
-> > +{
-> > +	struct ocelot_mfd_core *core = dev_get_drvdata(dev);
-> > +
-> > +	return ocelot_mfd_regmap_init(core, res);
-> > +}
-> > +EXPORT_SYMBOL(ocelot_mfd_get_regmap_from_resource);
-> 
-> This is almost certainly not the right way to do whatever it is you're
-> trying to do!
-> 
-> Please don't try to upstream "somewhat a hack"s into the Mainline
-> kernel.
-> 
+Please pull from
+  git://github.com/tamird/linux raw-check-optlen
+to get these changes:
+  280c5742aab2 ipv6: raw: check passed optlen before reading
 
-Please elaborate on the correct way to do that. What we have here is a
-SoC (vsc7514) that has MMIO devices. This SoC has a MIPS CPU and
-everything is fine when using it. However, the CPU can be disabled and
-the SoC connected to another CPU using SPI or PCIe. What Colin is doing
-here is using this SoC over SPI. Don't tell me this is not an MFD
-because this is exactly what this is, a single chip with a collection of
-devices that are also available separately.
+If this is not acceptable, I'll send the patch again when I'm outside
+the firewall. Apologies.
 
-The various drivers for the VSC7514 have been written using regmap
-exactly for this use case. The missing piece is probing the devices over
-SPI instead of MMIO.
-
-Notice that all of that gets worse when using PCIe on architectures that
-don't have device tree support and Clément will submit multiple series
-trying to fix that.
-
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+On Wed, Dec 29, 2021 at 10:09 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Tue, Dec 28, 2021 at 6:54 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Tue, 28 Dec 2021 16:02:29 -0500 Tamir Duberstein wrote:
+> > > Errant brace in the earlier version.
+> > >
+> > > From 8586be4d72c6c583b1085d2239076987e1b7c43a Mon Sep 17 00:00:00 2001
+> > > From: Tamir Duberstein <tamird@gmail.com>
+> > > Date: Tue, 28 Dec 2021 15:09:11 -0500
+> > > Subject: [PATCH v2] net: check passed optlen before reading
+> > >
+> > > Add a check that the user-provided option is at least as long as the
+> > > number of bytes we intend to read. Before this patch we would blindly
+> > > read sizeof(int) bytes even in cases where the user passed
+> > > optlen<sizeof(int), which would potentially read garbage or fault.
+> > >
+> > > Discovered by new tests in https://github.com/google/gvisor/pull/6957 .
+> > >
+> > > Signed-off-by: Tamir Duberstein <tamird@gmail.com>
+> >
+> > Your patches are corrupted by your email client.
+> >
+> > Can you try sending the latest version with git send-email?
+>
+> Then perhaps also update the subject line to make it more clear where
+> this applies: "ipv6: raw: check passed optlen before reading".
