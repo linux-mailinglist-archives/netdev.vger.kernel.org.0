@@ -2,86 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 843CB481625
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 20:08:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D21048162A
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 20:13:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230058AbhL2TI2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 29 Dec 2021 14:08:28 -0500
-Received: from mail-lf1-f47.google.com ([209.85.167.47]:37466 "EHLO
-        mail-lf1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229958AbhL2TI1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 14:08:27 -0500
-Received: by mail-lf1-f47.google.com with SMTP id h7so5299785lfu.4;
-        Wed, 29 Dec 2021 11:08:26 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=P/Kf43UjqUP/N5HQm/X7M4mBr0x9sX9Oqu3K1SkYXqo=;
-        b=z2KB5qvBMZ6du03HdjB4UEcnhIUcvQJi9PcySjfr88ChvdOSbUJhEh3qpGcc6h2Ui2
-         Nv9uqxgv2pqLCUC+bte1OCgJxOpiz3biHIaKZR4V4majtganA5EtjM5MoMkOSmm0Lgao
-         O4+fZ+CgX/ygcE9D2x+c4NJwZWytqU2yXBuFIpfA2NslnD5WBolnm5xUZsl1HzRqLoqn
-         O+rEAlYSz2Fsh65aF398iOKPqx2EZTfZ8HCCM3gyPHK40bGiZruHvDpSzE/OWsDjPHuB
-         C/dAOwQ+qRkJyHH7A8+67ZiidB/zJz2KBhoLrT0kJFOlNPdkovWiRIUxBUa8tScbOtlf
-         xSHw==
-X-Gm-Message-State: AOAM5316npTZAxH1PKtEoc6IlrrkleCfsg8KEMwoOkJKLGeA3w14v/cd
-        6asWTw+/qAWQ6aAg6aEYrVb4atqDce3OfV1kPuk=
-X-Google-Smtp-Source: ABdhPJwXaymitpdke/dqffchjdtq4qMJI4MSalF50WjbX6Ae08W7V2AW5SLEMQIQbv3p+7TbyERdj1EqdFfFGTngBrI=
-X-Received: by 2002:a05:6512:3d21:: with SMTP id d33mr25055113lfv.481.1640804905781;
- Wed, 29 Dec 2021 11:08:25 -0800 (PST)
+        id S230181AbhL2TNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 14:13:54 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:34498 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229958AbhL2TNy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 14:13:54 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9C860CE1A14
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 19:13:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7935BC36AE9;
+        Wed, 29 Dec 2021 19:13:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640805230;
+        bh=0xokU4hs4lavhz61rzr3CnV8pLNCBIAS1epk3E8BnFs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=egRJxdflgbi2I6JUYs0BiKIA41f6DEVt/MQYWcF7tgw6mOtesvToS91A6wA4fO6bt
+         PGMW5GxgkjLSIHr2twSVTEkWYBPQpszZeaj/geqLtcHS8czzMc/Lc+BR3ZZxxItNEe
+         hUmWBWQlk31slIvkJjyCQ0zIvYuMzBvOERp8/jgQwWVIwVB1FTc8GpLR6sCBjE/0Sa
+         ybHIc6hZ7xnkumg/rJCQZ+vegCCLuhZ7hngPnzFIlO1Dy4xQBF2wYADLAy3t4My7Xe
+         jWvPUImn6o+T6GW0GoNd3Y7nzkgqgO3GfS3lOk/NBqNfbjLBcl4sxhpQH5IDAI2QJk
+         i1aJzNkoCd23g==
+Date:   Wed, 29 Dec 2021 11:13:49 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Venkata Sudheer Kumar Bhavaraju <vbhavaraju@marvell.com>
+Cc:     <andrew@lunn.ch>, <aelior@marvell.com>, <netdev@vger.kernel.org>,
+        <palok@marvell.com>
+Subject: Re: [PATCH net-next v2 1/1] qed: add prints if request_firmware()
+ failed
+Message-ID: <20211229111349.15f28b34@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20211229110232.336845-1-vbhavaraju@marvell.com>
+References: <YcrmpvMAD5zKHqTE@lunn.ch>
+        <20211229110232.336845-1-vbhavaraju@marvell.com>
 MIME-Version: 1.0
-References: <4C0186FE-729D-4F77-947D-11933BA38818@gmail.com>
-In-Reply-To: <4C0186FE-729D-4F77-947D-11933BA38818@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Wed, 29 Dec 2021 11:08:14 -0800
-Message-ID: <CAM9d7ciroZswudPXAAs9Zo3_veFMugJJZ4XZWhGSKHdFPcDOjQ@mail.gmail.com>
-Subject: Re: Lock problems in linux/tools/perf/util/dso.c
-To:     Ryan Cai <ycaibb@gmail.com>
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, 29 Dec 2021 03:02:32 -0800 Venkata Sudheer Kumar Bhavaraju
+wrote:
+> > Hi Venkata
+> > 
+> > When you decide to do something different to what has been requested,
+> > it is a good idea to say why. There might be a very good reason for
+> > this, but unless you explain it, i have no idea what it is.
+> 
+> I moved the FW_REPO macro to qed_if.h under include/linux since I didn't
+> want to bloat something like include/linux/firmware.h. It's really used
+> (exact URL in a print after request_firmware() fails) at two other places.
+> 
+> If you think it's more useful in include/linux/firmware.h so that other
+> drivers can make use of it in future, I can move it there.
 
-On Wed, Dec 22, 2021 at 3:33 AM Ryan Cai <ycaibb@gmail.com> wrote:
->
-> Hi, I found a potential lock problem in dso_data_get_fd. Because the inconsistent branch conditions of pthread_mutex_lock(&dso__data_open_lock) and pthread_mutex_unlock(&dso__data_open_lock), it is possible that the lock dso__data_open_lock is not released in the dso_data_get_fd. Also, I have a question on why the branch condition of pthread_mutex_lock(&dso__data_open_lock) is <0. I think that the branch condition should be !=0, because pthread_mutex_lock would return 0 when succeeding. Looking forward to further discussion. One this bug is confirmed, I can send a patch.
+If printing this information made sense it should have been done by the
+core, not each driver. In fact your existing print:
 
-Please fix your mail client to wrap around 80 characters.
+ 			DP_NOTICE(cdev,
+ 				  "Failed to find fw file - /lib/firmware/%s\n",
+ 				  QED_FW_FILE_NAME);
 
-1. dso__data_get_fd() should be paired with dso__data_put_fd()
-   when it returns non-negative.  It'd unlock the mutex.
+is redundant and potentially incorrect. Firmware path is configurable,
+it does not have to be /lib/firmware. request_firmware() does not set
+FW_OPT_NO_WARN, so core will already print the warning.
 
-2. I've checked the man page and it seems you're right.
-   It just says that it'd return an error number or zero.
-
-   https://linux.die.net/man/3/pthread_mutex_lock
-
-Thanks,
-Namhyung
-
-
->
->
->
-> https://github.com/torvalds/linux/blob/e851dfae4371d3c751f1e18e8eb5eba993de1467/tools/perf/util/dso.c#L708-L722
->
->
->
-> Best,
->
-> Ryan
->
->
->
->
+As for your current patch vast majority of users will get the firmware
+from distro packages. I don't know why you're trying to print the repo
+link.
