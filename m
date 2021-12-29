@@ -2,135 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E826481471
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 16:26:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D3524814D8
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 17:03:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240560AbhL2P0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 10:26:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47344 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237067AbhL2P0p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 10:26:45 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C3CC061574
-        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 07:26:44 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id d9so45206229wrb.0
-        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 07:26:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=kcQxTAn3v/S923+meTxfcYvk0OXYojNzNro1NaE6gHw=;
-        b=dz4TCQt3ohJzpaDwzE6E7Y/HFTYydbe1ir/EngWnIo4aR08JTnK3XAfx+cziXHNQ+y
-         g+H5l4i6YAiJiRTaYvNEx6LZH81G8I0oBSiXuZunhofR6klKK+n0X8c/VX9KI4xad56E
-         E3j6xA6FI1TP1SxQy8TjJ/qbR6KugoR93eMIgoayPnP3ZxQX5zZNKyVmAdakCiaLR1Cp
-         /uMuhjTovp/RzXiWWv4g0UPBKGeyFxFoM2ucQjEIE4Id+WWx1a7Us3Wtf1qCG1UL8Vdr
-         /UgtUBC+Jl/0w9HmD9fUzreHALL+hBiSb2NaihypBzxw4mtVvuYOMg6G01T5ssC1dcQ1
-         pZCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=kcQxTAn3v/S923+meTxfcYvk0OXYojNzNro1NaE6gHw=;
-        b=nomWWAMp6rr5H0qg6YjVFP0m+a4Ydz8HpMVqXqc7ywdOulU6bYLr4vlDEzI/WXdXgP
-         SL/lNNf0E/5dZH8rKkwOyk3/FBI0ChsrY3Ms7HN/ZRHrwaDEZgcanD06Rwso0b5ASqGF
-         Q5SejiRa3ltgtm7ftE/n1+x2kr5c9vYoDyIvBEMjnqbYaFXrCFQBrQf7IdBMLGPHG8/E
-         XD6qgFoSA9EbTiRKAycWxQAlS1orL0Z7BlaV7O0uIX2yMYurq4M/uq9dP8eBxZmoGkBW
-         RHkg/+Y2fj7OOM6MuRxY5YsQjsAUe/MjRpXbV7Kpq2zmah3sOt9pYurMM7F6QWdfUy08
-         AyuQ==
-X-Gm-Message-State: AOAM530XBmtNUhWCXXWqL7MgguGtIYWH1vQcl151smOrqsATIl/XgiDl
-        u3VLtQ7RD12x23jSqo1mL3PwVg==
-X-Google-Smtp-Source: ABdhPJzS7sCiQ7+uD75qM8a8p9tojwVsOVKYyirHAPGAd3sc/vdNJ6yZAhg7v5WMtjc5cyITCgRRjw==
-X-Received: by 2002:adf:d0cb:: with SMTP id z11mr21322655wrh.470.1640791603195;
-        Wed, 29 Dec 2021 07:26:43 -0800 (PST)
-Received: from google.com ([2.31.167.18])
-        by smtp.gmail.com with ESMTPSA id g187sm20096450wmg.40.2021.12.29.07.26.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Dec 2021 07:26:42 -0800 (PST)
-Date:   Wed, 29 Dec 2021 15:26:40 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+        id S237315AbhL2QD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 11:03:26 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54328 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229528AbhL2QDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 11:03:20 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C75F16151F;
+        Wed, 29 Dec 2021 16:03:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8504C36AE7;
+        Wed, 29 Dec 2021 16:03:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640793799;
+        bh=JjpeFlX1D08ft528esGQ/Dmp3d8gak2dGxLVU5277kI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=JpP2t1WEsiIyRq1md3yeDJqKD5b+v6vPK3dQL5KYtPRU6IzcCE2hfeoejuHeG11gd
+         lC8IFpViEh+GNBkNBx4n5nW244Tql53dIjOETTsQ8i+5UfJvW9Ilc8EhjCT4Q4lOA4
+         QM42sYWxI3kXC/do4dsN3O/F/5QTnKyWIH4D+TjWyd3Qv8ZelIjD6sZhRig841ypqR
+         mTWsO71n3E7t2fJyuxqamjyrcVx+C0YBZwG9aCQStF11NC5RlZEPgKB5Mk28JwNuWp
+         wwR/on9msDkJi5KBJfEq5mX9Wm2DfRpIzk3oUTTCtQJyiHOzO2W6s1m8x+iPToCIeX
+         pL3LlEJMF3ouw==
+Date:   Wed, 29 Dec 2021 10:03:17 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Ettore Chimenti <ek5.chimenti@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        John Garry <john.garry@huawei.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Ian Abbott <abbotti@mev.co.uk>,
+        H Hartley Sweeten <hsweeten@visionengravers.com>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC v5 net-next 13/13] mfd: ocelot: add ocelot-pinctrl as a
- supported child interface
-Message-ID: <Ycx+MNV1edWhdLM5@google.com>
-References: <20211218214954.109755-1-colin.foster@in-advantage.com>
- <20211218214954.109755-14-colin.foster@in-advantage.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, Jouni Malinen <j@w1.fi>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Hannes Reinecke <hare@suse.com>,
+        Kashyap Desai <kashyap.desai@broadcom.com>,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        Mark Brown <broonie@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Teddy Wang <teddy.wang@siliconmotion.com>,
+        Forest Bond <forest@alittletooquiet.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org,
+        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-wireless@vger.kernel.org, megaraidlinux.pdl@broadcom.com,
+        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-serial@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-watchdog@vger.kernel.org
+Subject: Re: [RFC 01/32] Kconfig: introduce and depend on LEGACY_PCI
+Message-ID: <20211229160317.GA1681139@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211218214954.109755-14-colin.foster@in-advantage.com>
+In-Reply-To: <20211229131207.1ac25424@coco.lan>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 18 Dec 2021, Colin Foster wrote:
+On Wed, Dec 29, 2021 at 01:12:07PM +0100, Mauro Carvalho Chehab wrote:
+> Em Wed, 29 Dec 2021 12:45:38 +0100
+> Niklas Schnelle <schnelle@linux.ibm.com> escreveu:
+> > ...
 
-> The ocelot-pinctrl device is able to be utilized by ocelot_mfd. This simply
-> enables that child driver.
+> > I do think we agree that once done correctly there is value in
+> > such an option independent of HAS_IOPORT only gating inb() etc uses.
+
+I'm not sure I'm convinced about this.  For s390, you could do this
+patch series, where you don't define inb() at all, and you add new
+dependencies to prevent compile errors.  Or you could define inb() to
+return ~0, which is what happens on other platforms when the device is
+not present.
+
+> Personally, I don't see much value on a Kconfig var for legacy PCI I/O 
+> space. From maintenance PoV, bots won't be triggered if someone use
+> HAS_IOPORT instead of the PCI specific one - or vice-versa. So, we
+> could end having a mix of both at the wrong places, in long term.
 > 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
->  drivers/mfd/ocelot-core.c | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
+> Also, assuming that PCIe hardware will some day abandon support for 
+> "legacy" PCI I/O space, I guess some runtime logic would be needed, 
+> in order to work with both kinds of PCIe controllers. So, having a
+> Kconfig option won't help much, IMO.
+> 
+> So, my personal preference would be to have just one Kconfig var, but
+> I'm ok if the PCI maintainers decide otherwise.
 
-Squash please.
+I don't really like the "LEGACY_PCI" Kconfig option.  "Legacy" just
+means something old and out of favor; it doesn't say *what* that
+something is.
 
-> diff --git a/drivers/mfd/ocelot-core.c b/drivers/mfd/ocelot-core.c
-> index c67e433f467c..71e062934812 100644
-> --- a/drivers/mfd/ocelot-core.c
-> +++ b/drivers/mfd/ocelot-core.c
-> @@ -113,7 +113,22 @@ static const struct resource vsc7512_miim1_resources[] = {
->  	},
->  };
->  
-> +static const struct resource vsc7512_pinctrl_resources[] = {
-> +	{
-> +		.start = 0x71070034,
-> +		.end = 0x7107009f,
-> +		.name = "gcb_gpio",
-> +		.flags = IORESOURCE_MEM,
-> +	},
-> +};
-> +
->  static const struct mfd_cell vsc7512_devs[] = {
-> +	{
-> +		.name = "pinctrl-ocelot",
-> +		.of_compatible = "mscc,ocelot-pinctrl",
-> +		.num_resources = ARRAY_SIZE(vsc7512_pinctrl_resources),
-> +		.resources = vsc7512_pinctrl_resources,
-> +	},
->  	{
->  		.name = "ocelot-miim1",
->  		.of_compatible = "mscc,ocelot-miim",
-> @@ -164,6 +179,10 @@ int ocelot_mfd_init(struct ocelot_mfd_config *config)
->  
->  	ret = mfd_add_devices(dev, PLATFORM_DEVID_NONE, vsc7512_devs,
->  			      ARRAY_SIZE(vsc7512_devs), NULL, 0, NULL);
-> +	if (ret) {
-> +		dev_err(dev, "error adding mfd devices\n");
-> +		return ret;
-> +	}
->  
->  	dev_info(dev, "ocelot mfd core setup complete\n");
->  
+I think you're specifically interested in I/O port space usage, and it
+seems that you want all PCI drivers that *only* use I/O port space to
+depend on LEGACY_PCI?  Drivers that can use either I/O or memory
+space or both would not depend on LEGACY_PCI?  This seems a little
+murky and error-prone.
 
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+What if you used the approach from [1] but just dropped the warning?
+The inb() would return ~0 if the platform doesn't support I/O port
+space.  Drivers should be prepared to handle that because that's what
+happens if the device doesn't exist.  
+
+HAS_IOPORT and LEGACY_PCI is a lot of Kconfiggery that basically just
+avoids building drivers that aren't useful on s390.  I'm not sure the
+benefit outweighs the complication.
+
+Bjorn
+
+[1] https://lore.kernel.org/lkml/CAHk-=wg80je=K7madF4e7WrRNp37e3qh6y10Svhdc7O8SZ_-8g@mail.gmail.com/
+
