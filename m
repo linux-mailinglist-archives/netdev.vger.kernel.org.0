@@ -2,49 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55A1A48174B
+	by mail.lfdr.de (Postfix) with ESMTP id E9BA948174D
 	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 23:31:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbhL2Wbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 17:31:51 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57642 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230448AbhL2Wbu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 17:31:50 -0500
+        id S231615AbhL2Wbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 17:31:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55852 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231203AbhL2Wbv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 17:31:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D344C061574;
+        Wed, 29 Dec 2021 14:31:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6180CB819C4;
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB8ADB81A45;
         Wed, 29 Dec 2021 22:31:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 086E3C36AEC;
-        Wed, 29 Dec 2021 22:31:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 378AFC36AEA;
+        Wed, 29 Dec 2021 22:31:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1640817108;
-        bh=B4HVt5LABOlLWHuHdH8fZyS2jYElsURWkNBEs1eJcD4=;
+        bh=gmhKpgwx//FxG+hBJDgWuIZLskpitOCiP65PEI0Gdpg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=frU5+fxE/J6Uql1O2WBDMETbgRbTR4pLU9XU7UX0asg9wlJZJLGZWbwANOMSQzO5A
-         lR4u9baiD4O7s6ENK3x4IZTQB6tUEmUn+N2LdX54kvjjRzW1cnMhQp6O9tBqH+uBng
-         4MzzeMcchs5qjCBqOQQYl31OQOtM5mK1DR17Vp38Y6cNyjDQOMh0S/RnVETIAq0TEW
-         635PsES1z6RT4dyrOSC+7jzPWzAVmCb6aAMDjlMom1kPyzTWSf6u5QL62yW5hIxuU6
-         smi1JiutLmqQRZCwBuuoJxCWBIm6lSiFX7/WIB4RbS+FooYV45VhqXJQcpA11NTBSj
-         NvTSNIY8rEE0A==
+        b=kVczEt+fUB9/+/wTqX88tsYZCSLYgAH0KUotPhT6sS1aUsOClDttfNNkttz1Njb9Q
+         jokfY4Skw6peRfe+cmMMl5JmKoHEJqXyJ8P2jkWg3YlDjgALoHIxY6LSkDC+0m7eaF
+         fx2/IWMQINLkhOasMUeKIfD01OX6VWsGfaKlD3RajZ/Lc280NpnXqSrWn9szSOr4L/
+         mK3vEx56Ouo4HxfLjbuxALmtAu+P6Zo4L59xelUIPSDPWLgMx2DVSUpZ/C5qu/rxi+
+         mMYNwWFE1V13oYoenYvxxoQHzePL7bMmudSZ2z6dlS6eIDBMWJfVNU65SP5bsRFmvx
+         MdFW3GV6eanKg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     ast@kernel.org, daniel@iogearbox.net
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, shayagr@amazon.com,
-        akiyano@amazon.com, darinzon@amazon.com, ndagan@amazon.com,
-        saeedb@amazon.com, sgoutham@marvell.com, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        mcoquelin.stm32@gmail.com, grygorii.strashko@ti.com,
-        sameehj@amazon.com, chenhao288@hisilicon.com, moyufeng@huawei.com,
-        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-omap@vger.kernel.org
-Subject: [PATCH bpf-next 1/2] net: add includes masked by netdevice.h including uapi/bpf.h
-Date:   Wed, 29 Dec 2021 14:31:38 -0800
-Message-Id: <20211229223139.708975-2-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH bpf-next 2/2] bpf: invert the dependency between bpf-netns.h and netns/bpf.h
+Date:   Wed, 29 Dec 2021 14:31:39 -0800
+Message-Id: <20211229223139.708975-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20211229223139.708975-1-kuba@kernel.org>
 References: <20211229223139.708975-1-kuba@kernel.org>
@@ -54,118 +47,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add missing includes unmasked by the subsequent change.
+netns/bpf.h gets included by netdevice.h (thru net_namespace.h)
+which in turn gets included in a lot of places. We should keep
+netns/bpf.h as light-weight as possible.
 
-Mostly network drivers missing an include for XDP_PACKET_HEADROOM.
+bpf-netns.h seems to contain more implementation details than
+deserves to be included in a netns header. It needs to pull in
+uapi/bpf.h to get various enum types.
+
+Move enum netns_bpf_attach_type to netns/bpf.h and invert the
+dependency. This makes netns/bpf.h fit the mold of a struct
+definition header more clearly, and drops the number of objects
+rebuilt when uapi/bpf.h is touched from 7.7k to 1.1k.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: shayagr@amazon.com
-CC: akiyano@amazon.com
-CC: darinzon@amazon.com
-CC: ndagan@amazon.com
-CC: saeedb@amazon.com
-CC: sgoutham@marvell.com
-CC: kys@microsoft.com
-CC: haiyangz@microsoft.com
-CC: sthemmin@microsoft.com
-CC: wei.liu@kernel.org
-CC: decui@microsoft.com
-CC: peppe.cavallaro@st.com
-CC: alexandre.torgue@foss.st.com
-CC: joabreu@synopsys.com
-CC: mcoquelin.stm32@gmail.com
-CC: grygorii.strashko@ti.com
-CC: sameehj@amazon.com
-CC: chenhao288@hisilicon.com
-CC: moyufeng@huawei.com
-CC: linux-arm-kernel@lists.infradead.org
-CC: linux-hyperv@vger.kernel.org
-CC: linux-stm32@st-md-mailman.stormreply.com
-CC: linux-omap@vger.kernel.org
----
- drivers/net/ethernet/amazon/ena/ena_netdev.h       | 1 +
- drivers/net/ethernet/cavium/thunder/nicvf_queues.c | 1 +
- drivers/net/ethernet/microsoft/mana/mana_en.c      | 2 ++
- drivers/net/ethernet/stmicro/stmmac/stmmac.h       | 1 +
- drivers/net/ethernet/ti/cpsw_priv.h                | 2 ++
- kernel/bpf/net_namespace.c                         | 1 +
- 6 files changed, 8 insertions(+)
+ include/linux/bpf-netns.h | 8 +-------
+ include/net/netns/bpf.h   | 9 ++++++++-
+ 2 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index 0c39fc2fa345..9391c7101fba 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -14,6 +14,7 @@
- #include <linux/interrupt.h>
- #include <linux/netdevice.h>
- #include <linux/skbuff.h>
-+#include <uapi/linux/bpf.h>
+diff --git a/include/linux/bpf-netns.h b/include/linux/bpf-netns.h
+index 722f799c1a2e..413cfa5e4b07 100644
+--- a/include/linux/bpf-netns.h
++++ b/include/linux/bpf-netns.h
+@@ -3,15 +3,9 @@
+ #define _BPF_NETNS_H
  
- #include "ena_com.h"
- #include "ena_eth_com.h"
-diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
-index 50bbe79fb93d..4367edbdd579 100644
---- a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
-+++ b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
-@@ -10,6 +10,7 @@
- #include <linux/iommu.h>
- #include <net/ip.h>
- #include <net/tso.h>
-+#include <uapi/linux/bpf.h>
+ #include <linux/mutex.h>
++#include <net/netns/bpf.h>
+ #include <uapi/linux/bpf.h>
  
- #include "nic_reg.h"
- #include "nic.h"
-diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index c1d5a374b967..2ece9e90dc50 100644
---- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-+++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -1,6 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- /* Copyright (c) 2021, Microsoft Corporation. */
+-enum netns_bpf_attach_type {
+-	NETNS_BPF_INVALID = -1,
+-	NETNS_BPF_FLOW_DISSECTOR = 0,
+-	NETNS_BPF_SK_LOOKUP,
+-	MAX_NETNS_BPF_ATTACH_TYPE
+-};
+-
+ static inline enum netns_bpf_attach_type
+ to_netns_bpf_attach_type(enum bpf_attach_type attach_type)
+ {
+diff --git a/include/net/netns/bpf.h b/include/net/netns/bpf.h
+index 0ca6a1b87185..2c01a278d1eb 100644
+--- a/include/net/netns/bpf.h
++++ b/include/net/netns/bpf.h
+@@ -6,11 +6,18 @@
+ #ifndef __NETNS_BPF_H__
+ #define __NETNS_BPF_H__
  
-+#include <uapi/linux/bpf.h>
+-#include <linux/bpf-netns.h>
++#include <linux/list.h>
+ 
+ struct bpf_prog;
+ struct bpf_prog_array;
+ 
++enum netns_bpf_attach_type {
++	NETNS_BPF_INVALID = -1,
++	NETNS_BPF_FLOW_DISSECTOR = 0,
++	NETNS_BPF_SK_LOOKUP,
++	MAX_NETNS_BPF_ATTACH_TYPE
++};
 +
- #include <linux/inetdevice.h>
- #include <linux/etherdevice.h>
- #include <linux/ethtool.h>
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 4f5292cadf54..d42b6af32d6e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -22,6 +22,7 @@
- #include <linux/net_tstamp.h>
- #include <linux/reset.h>
- #include <net/page_pool.h>
-+#include <uapi/linux/bpf.h>
- 
- struct stmmac_resources {
- 	void __iomem *addr;
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.h b/drivers/net/ethernet/ti/cpsw_priv.h
-index f33c882eb70e..74555970730c 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.h
-+++ b/drivers/net/ethernet/ti/cpsw_priv.h
-@@ -6,6 +6,8 @@
- #ifndef DRIVERS_NET_ETHERNET_TI_CPSW_PRIV_H_
- #define DRIVERS_NET_ETHERNET_TI_CPSW_PRIV_H_
- 
-+#include <uapi/linux/bpf.h>
-+
- #include "davinci_cpdma.h"
- 
- #define CPSW_DEBUG	(NETIF_MSG_HW		| NETIF_MSG_WOL		| \
-diff --git a/kernel/bpf/net_namespace.c b/kernel/bpf/net_namespace.c
-index 542f275bf252..868cc2c43899 100644
---- a/kernel/bpf/net_namespace.c
-+++ b/kernel/bpf/net_namespace.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- 
- #include <linux/bpf.h>
-+#include <linux/bpf-netns.h>
- #include <linux/filter.h>
- #include <net/net_namespace.h>
- 
+ struct netns_bpf {
+ 	/* Array of programs to run compiled from progs or links */
+ 	struct bpf_prog_array __rcu *run_array[MAX_NETNS_BPF_ATTACH_TYPE];
 -- 
 2.31.1
 
