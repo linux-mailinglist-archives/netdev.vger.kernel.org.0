@@ -2,67 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F27484810A9
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 08:28:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 149744810D7
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 09:10:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239115AbhL2H2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 02:28:04 -0500
-Received: from m12-16.163.com ([220.181.12.16]:44425 "EHLO m12-16.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239095AbhL2H2D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Dec 2021 02:28:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Message-ID:Date:MIME-Version:From:Subject; bh=yApBQ
-        ejXLUlZRFU2jIalUtw1JYozO3kZcFyEnE66wT0=; b=Jdj/almZM9izv9ZSRQHYY
-        Wu2lchUP45o+5PDlRkcU5ucZKWLzVecDXuPkDAqWNGDBBOF2BPpDmc/iiYIqIWlM
-        Cy4bKagi4alJCSEoQzPjAzuWlY+B71+DdspWzlUO427j0F6JdlQa2HbPHdw0JBJQ
-        GsLD2mrd5JvPJIwyiaxZWw=
-Received: from [192.168.16.193] (unknown [110.86.5.92])
-        by smtp12 (Coremail) with SMTP id EMCowAA3PpLiDcxhgfptDw--.67S2;
-        Wed, 29 Dec 2021 15:27:39 +0800 (CST)
-Message-ID: <d247d7c8-a03a-0abf-3c71-4006a051d133@163.com>
-Date:   Wed, 29 Dec 2021 15:27:30 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
+        id S239226AbhL2IJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 03:09:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35522 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239205AbhL2IJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 03:09:54 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6881CC061574
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 00:09:54 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id lr15-20020a17090b4b8f00b001b19671cbebso19285328pjb.1
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 00:09:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jKqbX/Xt6Jj7Kk4e+sViTb1yzc/zA0dEA/5iKGxthj0=;
+        b=gRxmciOLH9rGlosUqLBHnThxYttf/edZ9iW9Pb3dzf3XJX7mRiNbdFCvezFy5sWwxl
+         LoE5RrU97XmlxnQ8QuS7ZcJTpWZlB/WLqUS+KRBuU6uavCPwmKwQjC+rn7io3F/wKqzi
+         2g0tAuVG9U/kQW4v3eGaf6kkHitF70F9qjOSnRmbezu8WtR4+aakQT4zFIff2cfLUNSV
+         l0TtCHm0YBZ3Oq6WVRHfjaKp0VHe/e9+GyBV1vpxPtu/QHHDqA4aCS6VU5GM8fOmcwr8
+         3mRv0vbzQ5eEDuzz3xIqiDnNql5SI1mAS1aztcqWTs1QSHgK9x1AyupEp4fJgBFah+Ax
+         0t/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jKqbX/Xt6Jj7Kk4e+sViTb1yzc/zA0dEA/5iKGxthj0=;
+        b=eJbIiP8ElQh4on+ru0NysVE+mTXDF4OIeRX96ngvCk3KRZ4TW7KlxeepIQZEUgnKBR
+         hDSEWLjjO5qN6Zu09YCGzHCTqRYiXf4FiJn8nnqUCs+pc2svazl5nhGg6MCTahwGOHGt
+         7R+/S9mzkGesYvI1I4m4UT79isxH+gb8FQVK4YDkIySkE+ONLVPrOkF/wlUsg/cdsg4D
+         FHc3fOdhMxH8DbOPahw8CfwoVZvl/cIKLnu0ne+Y2q21/Ljb8GC4GUdhGS9rygn6fnKK
+         bkD2Cbc3EXfq5zSKvmSHPo3utqdTzokAT7f8Sz9MNeXf4hXZI8xiaB585i6yUmuOaw99
+         dTig==
+X-Gm-Message-State: AOAM531wgMR+19BalkWIhRQzbljhpE5EX3wXfN1IbLhq2+5X5Gq3mTsp
+        CPK44ARms0JP8Db8yXqlZsVzwtNoPro=
+X-Google-Smtp-Source: ABdhPJws+o5NXmVNnpB7PwKWN+NASSZ3xmNpnfd5ive11/tj3gp+cJF8wlt4KmtAR9sRkQlGr0nBHA==
+X-Received: by 2002:a17:90a:5893:: with SMTP id j19mr30885384pji.30.1640765393781;
+        Wed, 29 Dec 2021 00:09:53 -0800 (PST)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id z2sm23996709pfe.93.2021.12.29.00.09.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Dec 2021 00:09:53 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>
-From:   Jianguo Wu <wujianguo106@163.com>
-Subject: [PATCH] selftests: net: Fix a typo in udpgro_fwd.sh
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: EMCowAA3PpLiDcxhgfptDw--.67S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtw47GF13Jw47Wr18Xw1rtFb_yoWfGrbEgF
-        srKr4kWrs8AFW2vF17Jwn8ur4F9a15Cr4fJw45Xw1ak34UAa15WF1vyr4UAF4Fg3y5t342
-        vFsYyFyYyr40vjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8Hmh5UUUUU==
-X-Originating-IP: [110.86.5.92]
-X-CM-SenderInfo: 5zxmxt5qjx0iiqw6il2tof0z/1tbiRAt4kFSIjoUZvgAAsX
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net-next 0/2] net: define new hwtstamp flag and return it to userspace
+Date:   Wed, 29 Dec 2021 16:09:36 +0800
+Message-Id: <20211229080938.231324-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jianguo Wu <wujianguo@chinatelecom.cn>
+This patchset defined the new hwtstamp flag HWTSTAMP_FLAG_BONDED_PHC_INDEX
+to make userspace program build pass with old kernel header by settting ifdef.
 
-Fixes: a062260a9d5f ("selftests: net: add UDP GRO forwarding self-tests")
-Signed-off-by: Jianguo Wu <wujianguo@chinatelecom.cn>
----
- tools/testing/selftests/net/udpgro_fwd.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Let's also return the flag when do SIOC[G/S]HWTSTAMP to let userspace know
+that it's necessary for a given netdev.
 
-diff --git a/tools/testing/selftests/net/udpgro_fwd.sh b/tools/testing/selftests/net/udpgro_fwd.sh
-index 7f26591f236b..6a3985b8cd7f 100755
---- a/tools/testing/selftests/net/udpgro_fwd.sh
-+++ b/tools/testing/selftests/net/udpgro_fwd.sh
-@@ -132,7 +132,7 @@ run_test() {
- 	local rcv=`ip netns exec $NS_DST $ipt"-save" -c | grep 'dport 8000' | \
- 							  sed -e 's/\[//' -e 's/:.*//'`
- 	if [ $rcv != $pkts ]; then
--		echo " fail - received $rvs packets, expected $pkts"
-+		echo " fail - received $rcv packets, expected $pkts"
- 		ret=1
- 		return
- 	fi
+Hangbin Liu (2):
+  net_tstamp: define new flag HWTSTAMP_FLAG_BONDED_PHC_INDEX
+  Bonding: return HWTSTAMP_FLAG_BONDED_PHC_INDEX to notify user space
+
+ drivers/net/bonding/bond_main.c | 42 ++++++++++++++++++++-------------
+ include/uapi/linux/net_tstamp.h |  1 +
+ 2 files changed, 27 insertions(+), 16 deletions(-)
+
 -- 
-1.8.3.1
+2.31.1
 
