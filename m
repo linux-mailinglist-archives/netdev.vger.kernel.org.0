@@ -2,84 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4998148112B
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 10:05:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B108848113F
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 10:23:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239455AbhL2JE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 04:04:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234861AbhL2JE6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 04:04:58 -0500
-Received: from mail-ua1-x932.google.com (mail-ua1-x932.google.com [IPv6:2607:f8b0:4864:20::932])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E752C061574
-        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 01:04:58 -0800 (PST)
-Received: by mail-ua1-x932.google.com with SMTP id v12so24389753uar.7
-        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 01:04:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=5p0+WdvJHntrPtTqYOOl5eRIGyKw2vh3yc8Mq6crnNY=;
-        b=RRoqFXzUIeDYu3rVc15fG6t5iSL6sbm6UhEfz/phVbxC8PZ6Mce6SZ7rgEUGG1qBeB
-         sVtHJ9UloVsd4w94EdtqHVQouzW2koc+xd3hd0HeqCCkAzXv8aK7gbkctlv6vr+z6a+1
-         0zuJEdJUwFXVsnMql/+GOcnIpklbTN1iYnnlub+lcrHWUIBzxT0AhXWC50ov9Z0Z68WY
-         zFjiPrVP0Y6n6+Mktl+1T1PX/+Dm80AGVc5E5XMramW9YODNKg8UA/KeerpQgArvbQqf
-         bcc5ZMnOiM6nownIJbo8bFxKYqCv761W4gT/qt9Eyvae779fuBR4fPvm8LDcCjn6iiQg
-         VVVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=5p0+WdvJHntrPtTqYOOl5eRIGyKw2vh3yc8Mq6crnNY=;
-        b=riMeRmYJIIndojJAaEY61rMl8qx1KkwWbaJ9bcxZEgHhfAcvV2EHYnEWuj+Amq2B1r
-         J2oyeyiN4ZWiMamBUxeurPrihhs0Bph8PLoex7a7L/oYN4o4N6HHduKvTU7aUA5dvYi5
-         YLH1fRK8UrHy0+j3CQq9zqgUBgGHUvxItUGCBUEtuOt4w8fIlN6+ewJrEYtema0XXpxe
-         oGhSb2xf1hC4FVGZP41s28dn9OfqbE8/+jArAYFS40o9OP6UNn2ZiNy0g2dMqMcyWdjQ
-         Bs7Rxy/q9YYNhhxNbsjLgmBHt9G6vX+f2tOh7UqlxvvZrwMgmil5bYcqg2WIi6oVAxs5
-         3PBw==
-X-Gm-Message-State: AOAM530z8lmgoSd/6Wgh5KLMBH30dMk25bRslGs/9o+k88O0TpJmuyKD
-        XjSa9EWP+d4qyDXr4eYH6sHLGEIpneVZNJ7u/HM=
-X-Google-Smtp-Source: ABdhPJwYShNP3tqi4pGAyrq++w22yCzPEfIjlVd/Wtz8wVUvOvIfA+3mv2pPNAiB9nDXrLKptRYZy/ipNnovyYP5kzY=
-X-Received: by 2002:a67:6684:: with SMTP id a126mr7650211vsc.87.1640768697607;
- Wed, 29 Dec 2021 01:04:57 -0800 (PST)
+        id S239506AbhL2JXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 04:23:10 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:53942 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232244AbhL2JXJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 04:23:09 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 05FDF210F5;
+        Wed, 29 Dec 2021 09:23:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1640769788; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gjX2JYCUdKwjWkhra23pQM3tjKutHM/bK/bDmjsIPDU=;
+        b=tqrBwF3RX9GUX92t/0vZapYED2/vSBw2fZn1Zn9vIlF1qh0L8XXqQswGcI46ShHO0z876G
+        1UXw3I2gAszRlQJTgvi8/tzhXvg8nWv52piIs0oANEkwUmKPyeIM1Tq7Hcr8MWX+GUrjCc
+        rbQtyiQgxKzSNTG5O/qeQUQwCXRFQ9U=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id B984CA3B83;
+        Wed, 29 Dec 2021 09:23:07 +0000 (UTC)
+Date:   Wed, 29 Dec 2021 10:23:07 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     syzbot <syzbot+bc9e2d2dbcb347dd215a@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        syzkaller-bugs@googlegroups.com, mptcp@lists.linux.dev,
+        netdev@vger.kernel.org
+Subject: Re: [syzbot] WARNING in page_counter_cancel (3)
+Message-ID: <Ycwo+++dToWQ1RMR@dhcp22.suse.cz>
+References: <00000000000021bb9b05d14bf0c7@google.com>
+ <000000000000f1504c05d36c21ea@google.com>
+ <20211221155736.90bbc5928bcd779e76ca8f95@linux-foundation.org>
 MIME-Version: 1.0
-Sender: ifeanyiomaka1@gmail.com
-Received: by 2002:a59:a72c:0:b0:272:b4dc:643c with HTTP; Wed, 29 Dec 2021
- 01:04:57 -0800 (PST)
-From:   Aisha Al-Qaddafi <aishagaddafi1894@gmail.com>
-Date:   Wed, 29 Dec 2021 09:04:57 +0000
-X-Google-Sender-Auth: QYh5hAPCIsHHoeWLssXuPk56IBc
-Message-ID: <CAO-KV18Luao0QYZRu6uiBnZtvnv081Y_MedKYvGuQvimKujnnQ@mail.gmail.com>
-Subject: Investment offer,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211221155736.90bbc5928bcd779e76ca8f95@linux-foundation.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dear Friend,.
+On Tue 21-12-21 15:57:36, Andrew Morton wrote:
+> On Sat, 18 Dec 2021 06:04:22 -0800 syzbot <syzbot+bc9e2d2dbcb347dd215a@syzkaller.appspotmail.com> wrote:
+> 
+> > syzbot has found a reproducer for the following issue on:
+> > 
+> > HEAD commit:    fbf252e09678 Add linux-next specific files for 20211216
+> > git tree:       linux-next
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=1797de99b00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=7fcbb9aa19a433c8
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=bc9e2d2dbcb347dd215a
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=135d179db00000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=113edb6db00000
+> 
+> Useful to have that, thanks.
+> 
+> I'm suspecting that mptcp is doing something strange.
 
-With due respect to your person and much sincerity of purpose I wish
-to write to you today for our mutual benefit in this investment
-transaction.
-I'm Mrs. Aisha Al-Gaddafi, presently residing herein Oman the
-Southeastern coast of the Arabian Peninsula in Western Asia, I'm a
-single Mother and a widow with three Children. I am the only
-biological Daughter of the late Libyan President (Late Colonel Muammar
-Gaddafi). I have an investment funds worth Twenty Seven Million Five
-Hundred Thousand United State Dollars ($27.500.000.00 ) and i need an
-investment Manager/Partner and because of my Asylum Status I will
-authorize you the ownership of the investment funds, However, I am
-interested in you for investment project assistance in your country,
-may be from there,. we can build a business relationship in the
-nearest future..
+Yes.
 
-I am willing to negotiate an investment/business profit sharing ratio
-with you based on the future investment earning profits. If you are
-willing to handle this project kindly reply urgently to enable me to
-provide you more information about the investment funds.
+> Could I as the
+> developers to please take a look?
+> 
+> 
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+bc9e2d2dbcb347dd215a@syzkaller.appspotmail.com
+> > 
+> > R13: 00007ffdeb858640 R14: 00007ffdeb858680 R15: 0000000000000004
+> >  </TASK>
+> > ------------[ cut here ]------------
+> > page_counter underflow: -4294966651 nr_pages=4294967295
 
-Your urgent reply will be appreciated if only you are interested in
-this investment project.
-Best Regards
-Mrs. Aisha Al-Gaddafi.
+__mptcp_mem_reclaim_partial is trying to uncharge (via
+__sk_mem_reduce_allocated) negative amount. nr_pages has overflown when
+converted from int to unsigned int (-1). I would say that
+__mptcp_mem_reclaim_partial has evaluated
+	reclaimable = mptcp_sk(sk)->rmem_fwd_alloc - sk_unused_reserved_mem(sk)
+to 0 and __mptcp_rmem_reclaim(sk, reclaimable - 1) made it -1.
+-- 
+Michal Hocko
+SUSE Labs
