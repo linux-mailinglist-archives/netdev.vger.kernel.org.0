@@ -2,100 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7C564815D5
-	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 18:35:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B43824815F7
+	for <lists+netdev@lfdr.de>; Wed, 29 Dec 2021 19:04:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241117AbhL2RfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 12:35:01 -0500
-Received: from mail-vk1-f169.google.com ([209.85.221.169]:35405 "EHLO
-        mail-vk1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237592AbhL2RfB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 12:35:01 -0500
-Received: by mail-vk1-f169.google.com with SMTP id c10so12181809vkn.2;
-        Wed, 29 Dec 2021 09:35:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=aUHpp8EvSHkbTSOpO7EAhwgN47lj/B2NCRjAH8ogVNY=;
-        b=j2VAyX90SahRtzu7se71HL81ofR90BObMQATOGYTCRTbQeI8MHBQB4hlCtx6sG2rvP
-         4K5/zBZBRne54/yXkpBT5zs+eIy+TwIRR/6SoPXiVa8SS5fXuEJIcumhIpY2GFXqClYM
-         o95NLCZ0Ey4qdykwO1i9XfDLdtxtzrQRVIVsZERAF0WyyflJPvmUn4nMLkMYAyKd2nCn
-         Vu9JN96NbtFXbT3ddKBXEZgraYaVtrzZA/Ma4M+t4bD9NDl3F6GtQx0UsOzp07pO1F4g
-         c0sd/sMO35Snaf5sHxgVvlOCKxTPu71HO9Ft9itDL85FHiXOdm8/A7CosSkR0GnGiwhb
-         ecMw==
-X-Gm-Message-State: AOAM532ClB9fdV3vut6v6JQcOc+jPyF6978iVfkA9RrihGCBEX1XFBmr
-        HQaHXGKwx0SEIeXeRj8Enw==
-X-Google-Smtp-Source: ABdhPJyOF0vl8XP8OvBBTML/uKoHyRuxtjN0Rnlem0Y5Od2GAtuBNGgE57jGrVSn7Nm5hRfh5D2x1w==
-X-Received: by 2002:a05:6122:91e:: with SMTP id j30mr9169182vka.20.1640799299996;
-        Wed, 29 Dec 2021 09:34:59 -0800 (PST)
-Received: from robh.at.kernel.org ([209.91.231.198])
-        by smtp.gmail.com with ESMTPSA id m62sm1805207uam.0.2021.12.29.09.34.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Dec 2021 09:34:59 -0800 (PST)
-Received: (nullmailer pid 824017 invoked by uid 1000);
-        Wed, 29 Dec 2021 17:34:56 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>, netdev@vger.kernel.org,
-        Richard Weinberger <richard@nod.at>,
-        linux-mtd@lists.infradead.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
-        Frank Rowand <frowand.list@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, Li Yang <leoyang.li@nxp.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>
-In-Reply-To: <20211228142549.1275412-3-michael@walle.cc>
-References: <20211228142549.1275412-1-michael@walle.cc> <20211228142549.1275412-3-michael@walle.cc>
-Subject: Re: [PATCH 2/8] dt-bindings: nvmem: add transformation bindings
-Date:   Wed, 29 Dec 2021 13:34:56 -0400
-Message-Id: <1640799296.468454.824016.nullmailer@robh.at.kernel.org>
+        id S241181AbhL2SD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 13:03:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39816 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229778AbhL2SD3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 13:03:29 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CBC361536;
+        Wed, 29 Dec 2021 18:03:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85ABDC36AE7;
+        Wed, 29 Dec 2021 18:03:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640801007;
+        bh=16dWv9yAnLvURJrC8UI+OtoeQ7xeLanB2HzdtpzDUfA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EnYBjOfmgf1ciVGW5SwHW3ZM90GO4hdZoordZ8fNTKrHeoZwAiL8S3/9EmwrrJp+R
+         61Egro6s2BGOKTT6Xh4p/fmnwY66Kh34UNfdEdN0AKfzWgrfdttJ7DGktVpI9Xxl/N
+         pZAp/wg0OH6BmQ1QhQFd33mIo1fEretm2oWMk8rzBj48OdQxMt6Bd9eCIaNNo0vSh+
+         joMIUkr04U9Pd1rujSPyUcLQEPFjrSI+sLrcdbBEPU0sIx7kRBMeskTXTnXK9cHXXP
+         EXHRWHgIIxxzxNIlAtZgm7c1/a/W0qjNgBAbLXtsT74KScC/zuhiS5FQjypQEB50GB
+         wj/wiaQlyLu5A==
+Date:   Wed, 29 Dec 2021 10:03:26 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Loftus, Ciara" <ciara.loftus@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf] xsk: Initialise xskb free_list_node
+Message-ID: <20211229100326.4f398952@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CAADnVQJFu+yvWu9D=mzJ45sF8ncGhfFFUg43Edg_Qzown3pRsg@mail.gmail.com>
+References: <20211220155250.2746-1-ciara.loftus@intel.com>
+        <CAJ8uoz2-jZTqT_XkP6T2c0VAzC=QcENr2dJrE5ZivUx8Ak_6ZA@mail.gmail.com>
+        <PH0PR11MB479171AF2D4CE0B118B47A208E7C9@PH0PR11MB4791.namprd11.prod.outlook.com>
+        <CAJ8uoz3HYUO_NK+GCHtDWiczp-pDqpk6V+f5X5KkAJqN70nAnQ@mail.gmail.com>
+        <20211221122149.72160edc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAADnVQJFu+yvWu9D=mzJ45sF8ncGhfFFUg43Edg_Qzown3pRsg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 28 Dec 2021 15:25:43 +0100, Michael Walle wrote:
-> Just add a simple list of the supported devices which need a nvmem
-> transformations.
+On Tue, 28 Dec 2021 19:04:10 -0800 Alexei Starovoitov wrote:
+> > My $0.02 would be that if all relevant commits form a chain of fixes
+> > it doesn't matter much which one you put in the tag. To me your
+> > suggestion of going with 199d983bc015 makes most sense since from a
+> > cursory look the direct issue doesn't really exist without that commit.
+> >
+> > Plus we probably don't want 199d983bc015 to be backported until we
+> > apply this fix, so it'd be good if "Fixes: 199d983bc015" appeared in
+> > linux-next.
+> >
+> > You can always put multiple Fixes tags on the commit, if you're unsure.  
 > 
-> Also, since the compatible string is prepended to the actual nvmem
-> compatible string, we need to match using "contains" instead of an exact
-> match.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  .../devicetree/bindings/mtd/mtd.yaml          |  7 +--
->  .../bindings/nvmem/nvmem-transformations.yaml | 46 +++++++++++++++++++
->  2 files changed, 50 insertions(+), 3 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/nvmem/nvmem-transformations.yaml
-> 
+> It sounds that the fix should get into net and linus tree asap?
+> In such a case mabe take it into net directly?
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/nvmem/nvmem-transformations.yaml:19:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
-./Documentation/devicetree/bindings/nvmem/nvmem-transformations.yaml:20:11: [warning] wrong indentation: expected 12 but found 10 (indentation)
-
-dtschema/dtc warnings/errors:
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1573687
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Ack
