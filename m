@@ -2,85 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC1F9482044
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 21:28:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93DE5482045
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 21:30:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242093AbhL3U2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 15:28:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34504 "EHLO
+        id S242096AbhL3Uat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 15:30:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242088AbhL3U2L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 15:28:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE9D4C061574
-        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 12:28:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8851B81D14
-        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 20:28:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E760C36AE7;
-        Thu, 30 Dec 2021 20:28:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640896087;
-        bh=sWiuHsWIwIlwWdFNGpoSb2jIAq3+0wIXrBqV7zWcuYU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=P3SRb0GM2FPKqZvQL9mTp7s/Zo3TRU0wK6VEWq9SMFFbcEdnDhCcQYvy5YwUSs8Wj
-         yaReCC9AGVSp7/8qhE2x7LazyhXEZf1dGA+xWNyR/QJhmuFxg335qaexzPA01mfLnP
-         LyfH9RoQq+9DN0rQGZyavwrmuqrBkCMV3DY0la2tdJSjHuGI+6FbY/BhIs6v0i2B0L
-         wMPZRwWS4IFQZVkkrph+M/QPzOcq00ONPMipmqQag2s02SFbBLCmM5gtPC/jLMBczq
-         qWDrc7xCi8qZNhqLBysvEEYFx+ys9S93KmHO31OORV7jr5pn/RlrKF27sWrmPSdjnq
-         sYQMqDOuuJgcA==
-Date:   Thu, 30 Dec 2021 12:28:06 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dimitris Michailidis <d.michailidis@fungible.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 4/8] net/funeth: ethtool operations
-Message-ID: <20211230122806.26b30fe8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20211230163909.160269-5-dmichail@fungible.com>
-References: <20211230163909.160269-1-dmichail@fungible.com>
-        <20211230163909.160269-5-dmichail@fungible.com>
+        with ESMTP id S242088AbhL3Uat (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 15:30:49 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A3DC061574
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 12:30:48 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id q8so26606205ljp.9
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 12:30:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fungible.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DL4aodp5CYPL83EmvEB4xdO9ZsdKYoX6PImtP+LzsC0=;
+        b=e69qMv9yGoRCjPhvy1oH0/sqeo0Jv6m84aWaoEfVlbdgNBb1sq4F8ulxyuy21fEwL1
+         EAv0jfPh3Kd7I9EiyQ75ceuMPWs73iaIxUdFv/LhehleOREDJy4lWUdhR1HkCHTQXpEC
+         ca2r9pfb0NdOm8GYDZ3AwTrV0eZskbKrJZTus=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DL4aodp5CYPL83EmvEB4xdO9ZsdKYoX6PImtP+LzsC0=;
+        b=Yb2y2stEZY16M2iLO4UT78LtMv/FMHU0VKtnpUTHh7KnhQ8bVZEl5x+HEwptL9M6BU
+         PA2gicPDjwMYBtNlr7vrx9KLtYiALRKTYFmxN66KKt/SFZvjsctCkLtXA3zxiJqS3pFP
+         7aOui9rU3xXgEIN1WBoIaf3T/kH6jwPJ4WYs1+xECQ8yJdeH32pQmQfkpsG2P+fuH47x
+         BdHtF3NTIy2og5WGBlL585epnVX9Qxr/gHJ6Uh5PotqKkpenkd4WgNAiOYYMbqAeorHJ
+         bP913W920h237HSWxIzk3KHdtDgQzmNdi63dGD6fBLYyXRugDGG1uDDTMQQTJIdzI030
+         xjZA==
+X-Gm-Message-State: AOAM531dmbk5br0dGBgA7NJdxortGxxsmda43rFLSzXPFTnlWRQInk8L
+        Skt7+2v8K8k9wI9vdn0hORSPmsuOyuUDq98+Om8YFw==
+X-Google-Smtp-Source: ABdhPJwNRDSuEZUv9M7/116V3YIJRr5P0sKXaLBX+fAPlxGFfzdRlla0cmC6aeKayXhEJ7OZvF+FOkGzlzzqZLdQhOk=
+X-Received: by 2002:a2e:7c0b:: with SMTP id x11mr23247444ljc.198.1640896246727;
+ Thu, 30 Dec 2021 12:30:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20211230163909.160269-1-dmichail@fungible.com>
+ <20211230163909.160269-5-dmichail@fungible.com> <Yc30mG7tPQIT2HZK@lunn.ch> <20211230122227.6ca6bfb7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20211230122227.6ca6bfb7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Dimitris Michailidis <d.michailidis@fungible.com>
+Date:   Thu, 30 Dec 2021 12:30:34 -0800
+Message-ID: <CAOkoqZm2uA--rd1JwaR7hD4mc4Mevbu=H+eFK=+A1btmpzB7iA@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/8] net/funeth: ethtool operations
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Dec 2021 08:39:05 -0800 Dimitris Michailidis wrote:
-> +static const char mac_rx_stat_names[][ETH_GSTRING_LEN] = {
-> +	"mac_rx_octets_total",
-> +	"mac_rx_octets_ok",
-> +	"mac_rx_frames_total",
-> +	"mac_rx_frames_ok",
-> +	"mac_rx_VLAN_frames_ok",
-> +	"mac_rx_unicast_frames",
-> +	"mac_rx_multicast_frames",
-> +	"mac_rx_broadcast_frames",
-> +	"mac_rx_frames_64",
-> +	"mac_rx_frames_65_127",
-> +	"mac_rx_frames_128_255",
-> +	"mac_rx_frames_256_511",
-> +	"mac_rx_frames_512_1023",
-> +	"mac_rx_frames_1024_1518",
-> +	"mac_rx_frames_1519_max",
-> +	"mac_rx_drop_events",
-> +	"mac_rx_errors",
-> +	"mac_rx_FCS_errors",
-> +	"mac_rx_alignment_errors",
-> +	"mac_rx_frame_too_long_errors",
-> +	"mac_rx_in_range_length_errors",
-> +	"mac_rx_undersize_frames",
-> +	"mac_rx_oversize_frames",
-> +	"mac_rx_jabbers",
-> +	"mac_rx_fragments",
-> +	"mac_rx_control_frames",
-> +	"mac_rx_pause",
+On Thu, Dec 30, 2021 at 12:22 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 30 Dec 2021 19:04:08 +0100 Andrew Lunn wrote:
+> > > +static void fun_get_drvinfo(struct net_device *netdev,
+> > > +                       struct ethtool_drvinfo *info)
+> > > +{
+> > > +   const struct funeth_priv *fp = netdev_priv(netdev);
+> > > +
+> > > +   strscpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
+> > > +   strcpy(info->fw_version, "N/A");
+> >
+> > Don't set it, if you have nothing useful to put in it.
+>
+> Also, if user has no way of reading the firmware version how do they
+> know when to update the FW in the flash? FW flashing seems pointless
+> without knowing the current FW version.
 
-> +	"mac_rx_CBFCPAUSE15",
-> +	"mac_fec_correctable_errors",
-> +	"mac_fec_uncorrectable_errors",
-
-Please drop all the stats which are reported via the structured API.
-It's a new driver, users are better off using the standard API than
-grepping for yet another unique, driver-specific string.
+It will be available, but FW hasn't settled on the API for it yet.
+There are several FW images on the devices, one will be reported here but
+will rely on devlink for the full set.
