@@ -2,64 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 295FD4820A2
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 23:27:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD1FA4820BA
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 23:51:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242256AbhL3W1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 17:27:49 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:45846 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242253AbhL3W1s (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Dec 2021 17:27:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=zf0yIa2lvfnap0hGKL/WfTKmVu4ulC8jQt2zzfr6YLU=; b=h2e+ExLEf2GTtIEtZ7uVh79YXh
-        unE8lN9ziLJ6uFod4z4dl/Bov+grwjGNzrnc/KVhh4ZjO2bt6mG0BC3vGc5juMEHUHSQ/NioOiHuh
-        5vqkIpL8s5Pj/A4oondig4qQf7750RDIU8dMa8T4Snm1gLEEsPqigypFCqhHimLqlnoY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n33th-000CAD-GK; Thu, 30 Dec 2021 23:27:45 +0100
-Date:   Thu, 30 Dec 2021 23:27:45 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dimitris Michailidis <d.michailidis@fungible.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 8/8] net/fungible: Kconfig, Makefiles, and
- MAINTAINERS
-Message-ID: <Yc4yYWWHb4o+W3Zu@lunn.ch>
-References: <20211230163909.160269-1-dmichail@fungible.com>
- <20211230163909.160269-9-dmichail@fungible.com>
- <20211230094327.69429188@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <CAOkoqZ=18H6CAE8scCV7DWzu9sQDLJHUiVgZi3tmutUNPPE2=A@mail.gmail.com>
+        id S242316AbhL3Wvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 17:51:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37486 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242303AbhL3Wvn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 17:51:43 -0500
+X-Greylist: delayed 378 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 30 Dec 2021 14:51:42 PST
+Received: from smtp-8fa8.mail.infomaniak.ch (smtp-8fa8.mail.infomaniak.ch [IPv6:2001:1600:4:17::8fa8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A79C06173E
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 14:51:42 -0800 (PST)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4JQ3JL6GwHzN3kf8;
+        Thu, 30 Dec 2021 23:45:22 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4JQ3JL1Bj1zlhMCh;
+        Thu, 30 Dec 2021 23:45:21 +0100 (CET)
+Message-ID: <bf9e42b5-5034-561e-b872-7ab20738326b@digikod.net>
+Date:   Thu, 30 Dec 2021 23:50:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOkoqZ=18H6CAE8scCV7DWzu9sQDLJHUiVgZi3tmutUNPPE2=A@mail.gmail.com>
+User-Agent: 
+Content-Language: en-US
+To:     Casey Schaufler <casey@schaufler-ca.com>,
+        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com
+References: <20211228115212.703084-1-konstantin.meskhidze@huawei.com>
+ <ea82de6a-0b28-7d96-a84e-49fa0be39f0e@schaufler-ca.com>
+ <62cf5983-2a81-a273-d892-58b014a90997@huawei.com>
+ <f7c587ab-5449-8c9f-aace-4ca60c60663f@schaufler-ca.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH 0/1] Landlock network PoC
+In-Reply-To: <f7c587ab-5449-8c9f-aace-4ca60c60663f@schaufler-ca.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 30, 2021 at 12:54:07PM -0800, Dimitris Michailidis wrote:
-> On Thu, Dec 30, 2021 at 9:43 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Thu, 30 Dec 2021 08:39:09 -0800 Dimitris Michailidis wrote:
-> > > Hook up the new driver to configuration and build.
-> > >
-> > > Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
-> >
-> > New drivers must build cleanly with W=1 C=1. This one doesn't build at all:
-> >
-> > drivers/net/ethernet/fungible/funeth/funeth.h:10:10: fatal error: fun_dev.h: No such file or directory
-> >    10 | #include "fun_dev.h"
-> >       |          ^~~~~~~~~~~
-> 
-> Hmm, I don't get this error. What I run is
-> 
-> make W=1 C=1 drivers/net/ethernet/fungible/
 
-C=1 implies you need sparse installed. Do you?
+On 30/12/2021 18:59, Casey Schaufler wrote:
+> On 12/29/2021 6:56 PM, Konstantin Meskhidze wrote:
 
-    Andrew
+[...]
+
+> 
+>> But I agree, that socket itself (as collection of data used for 
+>> interproccess communication) could be not be an object.
+>>
+>> Anyway, my approach would not work in containerized environment: RUNC, 
+>> containerd ect. Mickaёl suggested to go another way for Landlock 
+>> network confinement: Defining "object" with connection port.
+> 
+> Oh, the old days of modeling ...
+> 
+> A port number is a name. It identifies a subject. A subject
+> "names" itself by binding to a port number. The port itself
+> isn't a thing.
+
+It depends on the definition of subject, object and action. The action 
+can be connect or bind, and the object a TCP port, i.e. a subject doing 
+an action on an object may require a corresponding access right.
+
+> 
+> You could change that. In fact, Smack includes port labeling
+> for local IPv6. I don't recommend it, as protocol correctness
+> is very difficult to achieve. Smack will forgo port labeling
+> as soon as CALIPSO support (real soon now - priorities permitting)
+> is available.
+Please keep in mind that Landlock is a feature available to unprivileged 
+(then potentially malicious) processes. I'm not sure packet labeling 
+fits this model, but if it does and there is a need, we may consider it 
+in the future. Let's first see with Smack. ;)
+
+Landlock is also designed to be extensible. It makes sense to start with 
+an MVP network access control. Being able to restrict TCP connect and 
+bind actions, with exception for a set of ports, is simple, pragmatic 
+and useful. Let's start with that.
+
+> 
+> Again, on the other hand, you're not doing anything that's an
+> access control decision. You're saying "I don't want to bind to
+> port 3920, stop me if I try".
+
+This is an access control. A subject can define restrictions for itself 
+and others (e.g. future child processes). We may also consider that the 
+same process can transition from one subject to another over time. This 
+may be caused by a call to landlock_restrict_self(2) or, more 
+abstractly, by an exploited vulnerability (e.g. execve, ROP…). Not 
+everyone may agree with this lexical point of view (e.g. we can replace 
+"subject" with "role"…), but the important point is that Landlock is an 
+access control system, which is not (only) configured by the root user.
+
+> All you're doing is asking the
+> kernel to remember something for you, on the off chance you
+> forget. There isn't any reason I can see for this to be associated
+> with the port. It should be associated with the task.
+
+I don't understand your point. What do you want to associate with a 
+task? Landlock domains are already tied to a set of tasks.
+
+> 
+>> Can be checked here:
+>> https://lore.kernel.org/netdev/d9aa57a7-9978-d0a4-3aa0-4512fd9459df@digikod.net 
+>>
+>>
+>> Hope I exlained my point. Thanks again for your comments.
+
+[...]
