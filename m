@@ -2,228 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44F3B481AE6
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 09:53:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A31D6481B22
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 10:32:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237862AbhL3IxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 03:53:05 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:41496 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbhL3IxE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 03:53:04 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id E2B511F37D;
-        Thu, 30 Dec 2021 08:53:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1640854382; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=T3vjpe5wh37Ag5AnOi3WIBaJix43vROrMlLKQ5Y7MOM=;
-        b=HYdkICGnEOe9BvUfM97pUxdpG3i3oD8XkNWLnl4/pNt/gbYCCNbGg/XuF07c+56V8Y71GX
-        jI1PUBUDFW1TSANGTlHWJrSS2PwLtfBKVGA7NJn56sr4Z9k23/6vdzfC5Ihs4ofj/lEBZB
-        ckxG9xl+tJ8Ug+TauAD8bdhYu44th7s=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 4E011A3B83;
-        Thu, 30 Dec 2021 08:53:02 +0000 (UTC)
-Date:   Thu, 30 Dec 2021 09:53:01 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     syzbot <syzbot+864849a13d44b22de04d@syzkaller.appspotmail.com>
-Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        changbin.du@intel.com, daniel@iogearbox.net, davem@davemloft.net,
-        edumazet@google.com, hawk@kernel.org, hkallweit1@gmail.com,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yajun.deng@linux.dev, yhs@fb.com,
-        Shakeel Butt <shakeelb@google.com>
-Subject: Re: [syzbot] general protection fault in mod_memcg_page_state
-Message-ID: <Yc1zbYqVO/6b6Uhf@dhcp22.suse.cz>
-References: <00000000000049f33f05d4535526@google.com>
+        id S238281AbhL3Jc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 04:32:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233708AbhL3Jc5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 04:32:57 -0500
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F47EC061574;
+        Thu, 30 Dec 2021 01:32:57 -0800 (PST)
+Received: by mail-pj1-x1042.google.com with SMTP id jw3so20785761pjb.4;
+        Thu, 30 Dec 2021 01:32:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gh5d05SuRzZuRCOolc1Dq6lmmNP2GLelZWrZbJUqQMw=;
+        b=kdygz1UTLG9gzOM9BzHie5nttyrluZENp1QfnAkZbCfQi43i6Ep1bicjiC6O0zuMba
+         3y80c7axdrAWHyIPEu7rJUB5QC49wWuHRa+G4gQEPqg+7sa18EXfRuHXzRkp1KObyebU
+         vfMvGPUw+9lQoIcatyzlrGQb8wN9TyWQMajMt/3Y3VIGOuNrSKi8Dv6sXqa5XydRdmsd
+         j57x+o1nrjf2FRba7TMLV2BSxOLtMrU2VxqGJhFa8MEOs20iFlnJVb+LwHQ7ZHSi6UcL
+         JgonXhu91tg/fyfS20ghr8FRgty9RDAl1IqQx3pJAFDjR4afaUuzUJyW+8ff5XBa+c4h
+         hFTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gh5d05SuRzZuRCOolc1Dq6lmmNP2GLelZWrZbJUqQMw=;
+        b=erbO0OaiFzxAssuwI5MCXW0GLCcarAriBdC/I3Xg4kr7ZhnVuPWYSokdDY81QRQCZW
+         H+LTfwuy7lpMmY3vnLsuCCprGpOsL2sJxowSsDe4tRnwCdbrHULiqRBGWRy46/r31rDj
+         AYwlfOVR7lD2dYdzx2umn56hnL4emGW9tBTKNXeagyXTVlY/7cFcnYYXN+rjFOr5VglP
+         XtlBlDChzO4XdDTM3I/kTRHEYQshhMHIzoG/JgmgnQAKWWce3HXeKzGK0IoHlcoeS/Su
+         zOzyhpPowFUFQ97VpP+p5/d1plBZw0FOR4L/mXh+f3hlkDzWSjwYkI7vGMMVqcNVckB5
+         UdLw==
+X-Gm-Message-State: AOAM530olWhCNfd3aSwUzYBVgAlZFUcuCHq4VvBVQe2hqPICuiuuZSd3
+        ZAyVMBfhzWtcJ+QSsK9CuMg=
+X-Google-Smtp-Source: ABdhPJz3cA3QuWW57dyXgeF8demFUOsq3Wh0GFd3+pSWvhrteTyprRIcSICypuQDwZ/M81ihsl2fMQ==
+X-Received: by 2002:a17:902:b287:b0:148:db51:7da1 with SMTP id u7-20020a170902b28700b00148db517da1mr28946844plr.31.1640856776782;
+        Thu, 30 Dec 2021 01:32:56 -0800 (PST)
+Received: from localhost.localdomain ([43.132.141.9])
+        by smtp.gmail.com with ESMTPSA id f4sm23231052pfj.25.2021.12.30.01.32.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Dec 2021 01:32:56 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     rostedt@goodmis.org, dsahern@kernel.org
+Cc:     mingo@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        nhorman@tuxdriver.com, edumazet@google.com,
+        yoshfuji@linux-ipv6.org, jonathan.lemon@gmail.com, alobakin@pm.me,
+        keescook@chromium.org, pabeni@redhat.com, talalahmad@google.com,
+        haokexin@gmail.com, imagedong@tencent.com, atenart@kernel.org,
+        bigeasy@linutronix.de, weiwan@google.com, arnd@arndb.de,
+        vvs@virtuozzo.com, cong.wang@bytedance.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        mengensun@tencent.com, mungerjiang@tencent.com
+Subject: [PATCH v2 net-next 0/3] net: skb: introduce kfree_skb_with_reason() and use it for tcp and udp
+Date:   Thu, 30 Dec 2021 17:32:37 +0800
+Message-Id: <20211230093240.1125937-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00000000000049f33f05d4535526@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[Cc Shakeel]
+From: Menglong Dong <imagedong@tencent.com>
 
-On Wed 29-12-21 17:54:21, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    ea586a076e8a Add linux-next specific files for 20211224
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=16dc61edb00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a9c4e3dde2c568fb
-> dashboard link: https://syzkaller.appspot.com/bug?extid=864849a13d44b22de04d
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17371b99b00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14519ac3b00000
-> 
-> The issue was bisected to:
-> 
-> commit e4b8954074f6d0db01c8c97d338a67f9389c042f
-> Author: Eric Dumazet <edumazet@google.com>
-> Date:   Tue Dec 7 01:30:37 2021 +0000
-> 
->     netlink: add net device refcount tracker to struct ethnl_req_info
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14f00ddbb00000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=16f00ddbb00000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=12f00ddbb00000
+In this series patch, the interface kfree_skb_with_reason() is
+introduced(), which is used to collect skb drop reason, and pass
+it to 'kfree_skb' tracepoint. Therefor, 'drop_monitor' or eBPF is
+able to monitor abnormal skb with detail reason.
 
-I am confused. The above log points to the following warning and
-a consequent panic_on_warn
-WARNING: CPU: 0 PID: 10 at lib/ref_tracker.c:38 ref_tracker_dir_exit.cold+0x163/0x1b4
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+864849a13d44b22de04d@syzkaller.appspotmail.com
-> Fixes: e4b8954074f6 ("netlink: add net device refcount tracker to struct ethnl_req_info")
-> 
-> general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-> CPU: 1 PID: 3677 Comm: syz-executor257 Not tainted 5.16.0-rc6-next-20211224-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:_compound_head include/linux/page-flags.h:263 [inline]
-> RIP: 0010:page_memcg include/linux/memcontrol.h:452 [inline]
-> RIP: 0010:mod_memcg_page_state.part.0.constprop.0+0x28/0x5b0 include/linux/memcontrol.h:957
+In fact, this series patches are out of the intelligence of David
+and Steve, I'm just a truck man :/
 
-This might have something to do with http://lkml.kernel.org/r/20211222052457.1960701-1-shakeelb@google.com
-which has added the accounting which is blowing up. The problem happens
-when a memcg is retrieved from the allocated page. This should be NULL
-as the reported commit doesn't really add any __GFP_ACCOUNT user AFAICS.
-Anyway vm_area_alloc_pages can fail the allocation if the current
-context has fatal signals pending. array->pages array is allocated with
-__GFP_ZERO so the failed allocation should have kept the pages[0] NULL.
-I haven't followed the page->memcg path to double check whether that
-could lead to 0xdffffc0000000001 in the end.
+Previous discussion is here:
 
-I believe we need something like
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index 9bf838817a47..d2e392cac909 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -2627,7 +2627,8 @@ static void __vunmap(const void *addr, int deallocate_pages)
- 		unsigned int page_order = vm_area_page_order(area);
- 		int i;
- 
--		mod_memcg_page_state(area->pages[0], MEMCG_VMALLOC,
-+		if (area->pages[0])
-+			mod_memcg_page_state(area->pages[0], MEMCG_VMALLOC,
- 				     -area->nr_pages);
- 
- 		for (i = 0; i < area->nr_pages; i += 1U << page_order) {
-@@ -2968,7 +2969,8 @@ static void *__vmalloc_area_node(struct vm_struct *area, gfp_t gfp_mask,
- 		page_order, nr_small_pages, area->pages);
- 
- 	atomic_long_add(area->nr_pages, &nr_vmalloc_pages);
--	mod_memcg_page_state(area->pages[0], MEMCG_VMALLOC, area->nr_pages);
-+	if (area->pages[0])
-+		mod_memcg_page_state(area->pages[0], MEMCG_VMALLOC, area->nr_pages);
- 
- 	/*
- 	 * If not enough pages were obtained to accomplish an
+https://lore.kernel.org/netdev/20211118105752.1d46e990@gandalf.local.home/
+https://lore.kernel.org/netdev/67b36bd8-2477-88ac-83a0-35a1eeaf40c9@gmail.com/
 
-Or to account each page separately so that we do not have to rely on
-pages[0].
+In the first patch, kfree_skb_with_reason() is introduced and
+the 'reason' field is added to 'kfree_skb' tracepoint. In the
+second patch, 'kfree_skb()' in replaced with 'kfree_skb_with_reason()'
+in tcp_v4_rcv(). In the third patch, 'kfree_skb_with_reason()' is
+used in __udp4_lib_rcv().
 
-> Code: 00 90 41 56 41 55 41 54 41 89 f4 55 48 89 fd 53 4c 8d 6d 08 e8 49 dd c1 ff 4c 89 ea 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <80> 3c 02 00 0f 85 11 05 00 00 4c 8b 75 08 31 ff 4c 89 f3 83 e3 01
-> RSP: 0018:ffffc900028bf5c0 EFLAGS: 00010202
-> 
-> RAX: dffffc0000000000 RBX: 0000000000000001 RCX: 0000000000000000
-> RDX: 0000000000000001 RSI: ffffffff81b62737 RDI: 0000000000000000
-> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-> R10: ffffffff81b745c0 R11: 0000000000000000 R12: 0000000000000000
-> R13: 0000000000000008 R14: ffff88807ee9b628 R15: ffff88807ee9b600
-> FS:  00007f8d769be700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007ffe642c4960 CR3: 000000006fc65000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  mod_memcg_page_state mm/vmalloc.c:2971 [inline]
->  __vmalloc_area_node mm/vmalloc.c:2971 [inline]
->  __vmalloc_node_range+0x678/0xf80 mm/vmalloc.c:3106
->  __vmalloc_node mm/vmalloc.c:3156 [inline]
->  vmalloc+0x67/0x80 mm/vmalloc.c:3197
->  bpf_prog_calc_tag+0xc9/0x6c0 kernel/bpf/core.c:279
->  resolve_pseudo_ldimm64 kernel/bpf/verifier.c:11925 [inline]
->  bpf_check+0x1c86/0xbac0 kernel/bpf/verifier.c:14279
->  bpf_prog_load+0xf55/0x21f0 kernel/bpf/syscall.c:2344
->  __sys_bpf+0x68a/0x5970 kernel/bpf/syscall.c:4634
->  __do_sys_bpf kernel/bpf/syscall.c:4738 [inline]
->  __se_sys_bpf kernel/bpf/syscall.c:4736 [inline]
->  __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:4736
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x7f8d76a0cd09
-> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f8d769be2f8 EFLAGS: 00000246
->  ORIG_RAX: 0000000000000141
-> RAX: ffffffffffffffda RBX: 00007f8d76a954a8 RCX: 00007f8d76a0cd09
-> RDX: 0000000000000080 RSI: 0000000020000200 RDI: 0000000000000005
-> RBP: 00007f8d76a954a0 R08: 0000000000000002 R09: 0000000000003032
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
-> R13: 00007f8d769be300 R14: 00007f8d769be400 R15: 0000000000022000
->  </TASK>
-> Modules linked in:
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:_compound_head include/linux/page-flags.h:263 [inline]
-> RIP: 0010:page_memcg include/linux/memcontrol.h:452 [inline]
-> RIP: 0010:mod_memcg_page_state.part.0.constprop.0+0x28/0x5b0 include/linux/memcontrol.h:957
-> Code: 00 90 41 56 41 55 41 54 41 89 f4 55 48 89 fd 53 4c 8d 6d 08 e8 49 dd c1 ff 4c 89 ea 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <80> 3c 02 00 0f 85 11 05 00 00 4c 8b 75 08 31 ff 4c 89 f3 83 e3 01
-> RSP: 0018:ffffc900028bf5c0 EFLAGS: 00010202
-> 
-> RAX: dffffc0000000000 RBX: 0000000000000001 RCX: 0000000000000000
-> RDX: 0000000000000001 RSI: ffffffff81b62737 RDI: 0000000000000000
-> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-> R10: ffffffff81b745c0 R11: 0000000000000000 R12: 0000000000000000
-> R13: 0000000000000008 R14: ffff88807ee9b628 R15: ffff88807ee9b600
-> FS:  00007f8d769be700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f8d76a76e84 CR3: 000000006fc65000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> ----------------
-> Code disassembly (best guess):
->    0:	00 90 41 56 41 55    	add    %dl,0x55415641(%rax)
->    6:	41 54                	push   %r12
->    8:	41 89 f4             	mov    %esi,%r12d
->    b:	55                   	push   %rbp
->    c:	48 89 fd             	mov    %rdi,%rbp
->    f:	53                   	push   %rbx
->   10:	4c 8d 6d 08          	lea    0x8(%rbp),%r13
->   14:	e8 49 dd c1 ff       	callq  0xffc1dd62
->   19:	4c 89 ea             	mov    %r13,%rdx
->   1c:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
->   23:	fc ff df
->   26:	48 c1 ea 03          	shr    $0x3,%rdx
-> * 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
->   2e:	0f 85 11 05 00 00    	jne    0x545
->   34:	4c 8b 75 08          	mov    0x8(%rbp),%r14
->   38:	31 ff                	xor    %edi,%edi
->   3a:	4c 89 f3             	mov    %r14,%rbx
->   3d:	83 e3 01             	and    $0x1,%ebx
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> syzbot can test patches for this issue, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
+Changes since v1:
+- rename some drop reason, as David suggested
+- add the third patch
+
+
+Menglong Dong (3):
+  net: skb: introduce kfree_skb_with_reason()
+  net: skb: use kfree_skb_with_reason() in tcp_v4_rcv()
+  net: skb: use kfree_skb_with_reason() in __udp4_lib_rcv()
+
+ include/linux/skbuff.h     | 18 +++++++++++++++++
+ include/trace/events/skb.h | 41 +++++++++++++++++++++++++++++++-------
+ net/core/dev.c             |  3 ++-
+ net/core/drop_monitor.c    | 10 +++++++---
+ net/core/skbuff.c          | 22 +++++++++++++++++++-
+ net/ipv4/tcp_ipv4.c        | 14 ++++++++++---
+ net/ipv4/udp.c             | 10 ++++++++--
+ 7 files changed, 101 insertions(+), 17 deletions(-)
 
 -- 
-Michal Hocko
-SUSE Labs
+2.27.0
+
