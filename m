@@ -2,125 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 218AC481D39
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 15:42:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12136481C78
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 14:30:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240370AbhL3OmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 09:42:23 -0500
-Received: from lizzy.crudebyte.com ([91.194.90.13]:56681 "EHLO
-        lizzy.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240346AbhL3OmW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 09:42:22 -0500
-X-Greylist: delayed 1811 seconds by postgrey-1.27 at vger.kernel.org; Thu, 30 Dec 2021 09:42:21 EST
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
-        Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=JMpUBU0faqNlIU1d4S3Q7wytCNCfKZ32SXUnAyXuU0s=; b=Phykm
-        t05EaqbB/CZ5TwdHKPcGyn+dANi8bGKZM9GIcJagQTdZouiyTlIwtIC5wXDf+Xty/rcoeB2TX452U
-        IsKkwYw4yN02brunzuY5oXdGaPP/HrCXgZMS7psSOI5+Zc45cu+U2/FOafE19bQcZYmR54dzKMBhy
-        5V0b2Fl2N5DVFILqUDHSN0f/Xm1tu2iWLm9DGISXoCaKPcVJ/xvOBADhoyw0D7VPliMAtpxCzdrGQ
-        i5WxT/VbSn7CrS4fHkxmsKy20wZkLZTRh2KZL7NclCOhBUPqhpML9gKtqkv6nNJBPz6crEw4UsZx1
-        a0ifNS2aunqCnf0y/d33yCrQgoe3Q==;
-Message-Id: <4b96331e3d113aeab2cfbe6e8f39da934eda418a.1640870037.git.linux_oss@crudebyte.com>
-In-Reply-To: <cover.1640870037.git.linux_oss@crudebyte.com>
-References: <cover.1640870037.git.linux_oss@crudebyte.com>
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Thu, 30 Dec 2021 14:23:18 +0100
-Subject: [PATCH v4 09/12] net/9p: split message size argument into 't_size'
- and 'r_size' pair
-To:     v9fs-developer@lists.sourceforge.net
-Cc:     netdev@vger.kernel.org,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>,
-        Nikolay Kichukov <nikolay@oldum.net>
+        id S239538AbhL3NaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 08:30:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52830 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239514AbhL3NaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 08:30:12 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0C43B81C52;
+        Thu, 30 Dec 2021 13:30:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 93BB0C36AEC;
+        Thu, 30 Dec 2021 13:30:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640871009;
+        bh=MBCCPISAwIuV2IgcqTzqAI4VZBsEfHTUkt9lOE8w5bY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Jh5Fm5fBuiNsCUUbPIVU8+MFNtaiNCgRosGM6ZBfNdc4SmgjBs6Te8NE4cBNdP3c3
+         s+TTB/GSse9BkV2JH6Bvq0vAWYdHeXdZgzInJoPICMnesRuQjC50qk2vufii6w9dEu
+         drc0w05aNPWjlFmumGBpd6P7tD6ki9EGZOYsH3CMzVjdjqzW8UPsPZKuzWlgjPoRzm
+         +KMFw7NE8vk+S8yREhndtiLHvIxwAClfNRApxqd+G8uhe5lgVItYUArVcXHj3hF7gr
+         UfvouAK0ZSnuZBGARtEtROTDQkqr+6D54IECPu5xLWRhqI8fZMRI3ucsAUVHptjaTZ
+         Mc7LDLWn2+Uhg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7C474C395E4;
+        Thu, 30 Dec 2021 13:30:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] Documentation: fix outdated interpretation of
+ ip_no_pmtu_disc
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164087100950.9335.18212536955460808575.git-patchwork-notify@kernel.org>
+Date:   Thu, 30 Dec 2021 13:30:09 +0000
+References: <20211230032856.584972-1-xu.xin16@zte.com.cn>
+In-Reply-To: <20211230032856.584972-1-xu.xin16@zte.com.cn>
+To:     CGEL <cgel.zte@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, corbet@lwn.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, xu.xin16@zte.com.cn, zealci@zte.com.cn
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Refactor 'max_size' argument of p9_tag_alloc() and 'req_size' argument
-of p9_client_prepare_req() both into a pair of arguments 't_size' and
-'r_size' respectively to allow handling the buffer size for request and
-reply separately from each other.
+Hello:
 
-Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
----
- net/9p/client.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/net/9p/client.c b/net/9p/client.c
-index fab939541c81..56be1658870d 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -255,24 +255,26 @@ static struct kmem_cache *p9_req_cache;
-  * p9_tag_alloc - Allocate a new request.
-  * @c: Client session.
-  * @type: Transaction type.
-- * @max_size: Maximum packet size for this request.
-+ * @t_size: Buffer size for holding this request.
-+ * @r_size: Buffer size for holding server's reply on this request.
-  *
-  * Context: Process context.
-  * Return: Pointer to new request.
-  */
- static struct p9_req_t *
--p9_tag_alloc(struct p9_client *c, int8_t type, unsigned int max_size)
-+p9_tag_alloc(struct p9_client *c, int8_t type, uint t_size, uint r_size)
- {
- 	struct p9_req_t *req = kmem_cache_alloc(p9_req_cache, GFP_NOFS);
--	int alloc_msize = min(c->msize, max_size);
-+	int alloc_tsize = min(c->msize, t_size);
-+	int alloc_rsize = min(c->msize, r_size);
- 	int tag;
- 
- 	if (!req)
- 		return ERR_PTR(-ENOMEM);
- 
--	if (p9_fcall_init(c, &req->tc, alloc_msize))
-+	if (p9_fcall_init(c, &req->tc, alloc_tsize))
- 		goto free_req;
--	if (p9_fcall_init(c, &req->rc, alloc_msize))
-+	if (p9_fcall_init(c, &req->rc, alloc_rsize))
- 		goto free;
- 
- 	p9pdu_reset(&req->tc);
-@@ -678,7 +680,7 @@ static int p9_client_flush(struct p9_client *c, struct p9_req_t *oldreq)
- }
- 
- static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
--					      int8_t type, int req_size,
-+					      int8_t type, uint t_size, uint r_size,
- 					      const char *fmt, va_list ap)
- {
- 	int err;
-@@ -694,7 +696,7 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
- 	if (c->status == BeginDisconnect && type != P9_TCLUNK)
- 		return ERR_PTR(-EIO);
- 
--	req = p9_tag_alloc(c, type, req_size);
-+	req = p9_tag_alloc(c, type, t_size, r_size);
- 	if (IS_ERR(req))
- 		return req;
- 
-@@ -731,7 +733,7 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
- 	struct p9_req_t *req;
- 
- 	va_start(ap, fmt);
--	req = p9_client_prepare_req(c, type, c->msize, fmt, ap);
-+	req = p9_client_prepare_req(c, type, c->msize, c->msize, fmt, ap);
- 	va_end(ap);
- 	if (IS_ERR(req))
- 		return req;
-@@ -829,7 +831,7 @@ static struct p9_req_t *p9_client_zc_rpc(struct p9_client *c, int8_t type,
- 	/* We allocate a inline protocol data of only 4k bytes.
- 	 * The actual content is passed in zero-copy fashion.
- 	 */
--	req = p9_client_prepare_req(c, type, P9_ZC_HDR_SZ, fmt, ap);
-+	req = p9_client_prepare_req(c, type, P9_ZC_HDR_SZ, P9_ZC_HDR_SZ, fmt, ap);
- 	va_end(ap);
- 	if (IS_ERR(req))
- 		return req;
+On Thu, 30 Dec 2021 03:28:56 +0000 you wrote:
+> From: xu xin <xu.xin16@zte.com.cn>
+> 
+> The updating way of pmtu has changed, but documentation is still in the
+> old way. So this patch updates the interpretation of ip_no_pmtu_disc and
+> min_pmtu.
+> 
+> See commit 28d35bcdd3925 ("net: ipv4: don't let PMTU updates increase
+> route MTU")
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2] Documentation: fix outdated interpretation of ip_no_pmtu_disc
+    https://git.kernel.org/netdev/net/c/be1c5b53227b
+
+You are awesome, thank you!
 -- 
-2.30.2
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
