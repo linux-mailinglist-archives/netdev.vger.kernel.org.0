@@ -2,162 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5472481ECF
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 18:51:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68985481ED2
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 18:52:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241563AbhL3RvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 12:51:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55728 "EHLO
+        id S236713AbhL3Rwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 12:52:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241541AbhL3RvC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 12:51:02 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF35C061574;
-        Thu, 30 Dec 2021 09:51:02 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id 196so21922700pfw.10;
-        Thu, 30 Dec 2021 09:51:02 -0800 (PST)
+        with ESMTP id S233945AbhL3Rwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 12:52:40 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C135C061574;
+        Thu, 30 Dec 2021 09:52:40 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id rj2-20020a17090b3e8200b001b1944bad25so23748641pjb.5;
+        Thu, 30 Dec 2021 09:52:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6ju2VgPfHsj6DPGG27hsnZVYzZFDSJ2tinufjtPhmlw=;
-        b=U+RyHlPuf+XH5Tq8K6Y/SFClgKqSssTqMO59CX1vV/Geo2kT53iIFVXZyaXvgdApke
-         136N5t+ffq3mMyZyh2Lu+arxBqGWARuwvYqnCO5lx20yOxtfqLFmWCxHAQMf8iXkcTP9
-         1zjUAt1Mz+ZB2+JfI5DCo/mcQ/cMOV4ZmKItafi9oD3Pg/z3dwNdZcLCBltSn8CKwPlO
-         RuoZf1+kmnDQ4dcojQDNw+Gcgudm9xZL38XW3j+Em2VXp2hQR4hB/1kV2QlvdTL9i/mf
-         dyOSRIqvK0UfuFlGxTMJrdlWIAj9WgPMj+TPI0cfUVNU/wtZrErCiMs4Jufz7QdOTxdM
-         rRug==
+        bh=dq2E6g/viDgXFbLgjfa6p0MLq/dB8qnH50bjxF94Y4s=;
+        b=HnSF0Pc5UoeSa/FhqjDvEnsa2QElgA8qZNUsR7mq09O0MsDDGG8tIdg16zvRw1NY4R
+         5ojg9P7qSQrdb3apd0dJhIHALlHhZrNnkDg5Jy5uHDb5ipjH3MzKmpxutRLFeGTuBnyn
+         /jN7iszgVhb0uy/7cpFCpWq3J+BpkyYg+ivnYNb5xeI9LrhBvT5pQfnTsWew0EdwZeVV
+         RVcE/6XYeffOIDaqqhfPc8P4KNQQrRK2Nd9nhLkTyQ/0g5CVLYLz2H1HIJZgVJt3pxqj
+         Fc1ZwDxqsRW0DURgjhbGWYuzvPYfh/O77qLCYPFcT7B+bNmiYQUGSTt+FbkC7B+HkMRC
+         cCHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6ju2VgPfHsj6DPGG27hsnZVYzZFDSJ2tinufjtPhmlw=;
-        b=lTMj45nfWHn5FxkkuiMGrBwgQZvWZt1Epo+FtOq/FQZxIKgRShFLuA5piymmEGFN45
-         kE/GUycFawCCna4Ca9PgL8r4mq4F22/W4iqZYNexSTET/vmCMjRal9nvpqfzsHQ4vGZ9
-         bcB7dhUcARixg1qHEJD9FpQ/Tv98fJsCLebaFq9QeP5EJhpThCbuhW41y/Gd8vt1vVPk
-         itvdKeNKeWEKewH4Nm1Jazid0mthfq1yunCbpYpoLcZ6wlDN9RoCzpyT5hIseE8oK/Ic
-         MJKvJqIad9LElO9kuh37hp2OJEcogPJZm8qwYcGcv8c5VIIFY62ysYxFT3y3EIIl7Gka
-         6M2A==
-X-Gm-Message-State: AOAM530l+l+tb/gF+T4Cmp3xjomPcDpEfgKp67cynhFU9R0cNvdyFn0e
-        AJ8dYwdFRlvUYc3SLdXI5+0=
-X-Google-Smtp-Source: ABdhPJzm4F1UvDkN7WWxskOS6Xwlx3ozewhFMgkxivjSV6TAn/DttM8oQxukAAuDXUb9nh6tOWpr1A==
-X-Received: by 2002:a05:6a00:1818:b0:4ba:c287:a406 with SMTP id y24-20020a056a00181800b004bac287a406mr32277721pfa.6.1640886661680;
-        Thu, 30 Dec 2021 09:51:01 -0800 (PST)
+        bh=dq2E6g/viDgXFbLgjfa6p0MLq/dB8qnH50bjxF94Y4s=;
+        b=it8BlB+nKdN9ZWzeKYXDaD2m8pr/Sbrdp3Xdu5XoKD8LeiLOb1bXVZjaw2c+wCbZzj
+         3Osz4i9H37qBCUFfTEe3SCL/aIUHZYXR7mMYIY/XCwQTr0FhKAMv4e62PCW2fLxF+iEl
+         OuSNtKjqmvz8isISCvZTQiPlgsBcu/1bqcG3/W/4KO2/JehR1hF56fjg9XNCXk2/Zl/D
+         bdhV2Tyb8Grljm/v75qb0+Pd7hCaQDnUasc4W+vLRcdq2Gu+hNeFtwObpNh8OPhhiQYv
+         SjuuKQK3wZDzNfNoEntzziXbjT/TWWIhnCPZpXxAj3gdbWfgbN28rM6zdOZqwGuPr4xP
+         ZVmg==
+X-Gm-Message-State: AOAM533waeyKwwmHizE+ViqXJvtUQESKVI9t8TDu4UqPkaV/bHHzfES/
+        MSWzNcF8J6OEPuF38DCzy2k=
+X-Google-Smtp-Source: ABdhPJxvPXRN1fUkZigkt67KioWHWu7AhlGxl/UBrJp9uKf+WeC3crS01et3xu1/K6ogXley8W+tRA==
+X-Received: by 2002:a17:90a:a00e:: with SMTP id q14mr39001863pjp.88.1640886759870;
+        Thu, 30 Dec 2021 09:52:39 -0800 (PST)
 Received: from integral2.. ([180.254.126.2])
-        by smtp.gmail.com with ESMTPSA id s34sm29980811pfg.198.2021.12.30.09.50.59
+        by smtp.gmail.com with ESMTPSA id 185sm9244188pfe.26.2021.12.30.09.52.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Dec 2021 09:51:01 -0800 (PST)
+        Thu, 30 Dec 2021 09:52:39 -0800 (PST)
 From:   Ammar Faizi <ammarfaizi2@gmail.com>
 To:     Jens Axboe <axboe@kernel.dk>
 Cc:     io-uring Mailing List <io-uring@vger.kernel.org>,
         Pavel Begunkov <asml.silence@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Nugra <richiisei@gmail.com>,
-        Ammar Faizi <ammarfaizi2@gmail.com>
-Subject: [RFC PATCH liburing v1 5/5] man: Add `io_uring_prep_{sendto,recvfrom}` docs
-Date:   Fri, 31 Dec 2021 00:50:19 +0700
-Message-Id: <20211230174548.178641-6-ammar.faizi@intel.com>
+        linux-kernel@vger.kernel.org, Ammar Faizi <ammarfaizi2@gmail.com>,
+        Nugra <richiisei@gmail.com>
+Subject: [RFC PATCH v3 0/3] io_uring: Add sendto(2) and recvfrom(2) support
+Date:   Fri, 31 Dec 2021 00:52:29 +0700
+Message-Id: <20211230173126.174350-1-ammar.faizi@intel.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211230174548.178641-1-ammar.faizi@intel.com>
-References: <20211230174548.178641-1-ammar.faizi@intel.com>
+In-Reply-To: <20211230115057.139187-3-ammar.faizi@intel.com>
+References: <20211230115057.139187-3-ammar.faizi@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nugra <richiisei@gmail.com>
+Hello,
 
-Cc: Ammar Faizi <ammarfaizi2@gmail.com>
-Signed-off-by: Nugra <richiisei@gmail.com>
+This RFC patchset adds sendto(2) and recvfrom(2) support for io_uring.
+It also addresses an issue in the liburing GitHub repository [1].
+
+
+## Motivations:
+1) By using `sendto()` and `recvfrom()` we can make the submission
+   simpler compared to always using `sendmsg()` and `recvmsg()` from
+   the userspace.
+
+2) There is a historical patch that tried to add the same
+   functionality, but did not end up being applied. [2]
+
+On Tue, 7 Jul 2020 12:29:18 -0600, Jens Axboe <axboe@kernel.dk> wrote:
+> In a private conversation with the author, a good point was brought
+> up that the sendto/recvfrom do not require an allocation of an async
+> context, if we need to defer or go async with the request. I think
+> that's a major win, to be honest. There are other benefits as well
+> (like shorter path), but to me, the async less part is nice and will
+> reduce overhead
+
+
+## Changes summary
+There are 3 patches in this series.
+
+PATCH 1/3 renames io_recv to io_recvfrom and io_send to io_sendto.
+Note that
+
+    send(sockfd, buf, len, flags);
+
+  is equivalent to
+
+    sendto(sockfd, buf, len, flags, NULL, 0);
+
+and
+    recv(sockfd, buf, len, flags);
+
+  is equivalent to
+
+    recvfrom(sockfd, buf, len, flags, NULL, NULL);
+
+So it is saner to have `send` and `recv` directed to `sendto` and
+`recvfrom` instead of the opposite with respect to the name.
+
+
+PATCH 2/3 makes `move_addr_to_user()` be a non static function. This
+function lives in net/socket.c, we need to call this from io_uring
+to add `recvfrom()` support for liburing. Added net files maintainers
+to the CC list.
+
+PATCH 3/3 adds `sendto(2)` and `recvfrom(2)` support for io_uring.
+Added two new opcodes: IORING_OP_SENDTO and IORING_OP_RECVFROM.
+
+
+## How to test
+
+This patchset is based on "for-next" branch commit:
+
+  bb3294e22482db4b7ec7cfbb2d0f5b53c1adcf86 ("Merge branch 'for-5.17/drivers' into for-next")
+
+It is also available in the Git repository at:
+
+  https://github.com/ammarfaizi2/linux-block ammarfaizi2/linux-block/io_uring-recvfrom-sendto
+
+
+I also added the liburing support and test. The liburing support is
+based on "xattr-getdents64" branch commit:
+
+  55a9bf979f27f3a5c9f456f26dcfe16c4791667b ("src/include/liburing.h: style cleanups")
+
+It is available in the Git repository at:
+
+  https://github.com/ammarfaizi2/liburing sendto-recvfrom
+
+---
+v3:
+  - Fix build error when CONFIG_NET is undefined for PATCH 1/3. I
+    tried to fix it in PATCH 3/3, but it should be fixed in PATCH 1/3,
+    otherwise it breaks the build in PATCH 1/3.
+
+  - Added `io_uring_prep_{sendto,recvfrom}` docs to the liburing.
+
+v2:
+  - Rebased the work, now this patchset is based on commit
+    bb3294e22482db4b7ec ("Merge branch 'for-5.17/drivers' into
+    for-next").
+
+  - In `io_recvfrom()`, mark the error check of `move_addr_to_user()`
+    call as unlikely.
+
+  - Fix build error when CONFIG_NET is undefined.
+
+  - Update liburing test (the branch is still the same, just force
+    pushed).
+
+  - Added Nugra to CC list (tester).
+
+---
+RFC v2: https://lore.kernel.org/io-uring/20211230114846.137954-1-ammar.faizi@intel.com/
+RFC v1: https://lore.kernel.org/io-uring/20211230013154.102910-1-ammar.faizi@intel.com/
+Link: https://github.com/axboe/liburing/issues/397 [1]
+Link: https://lore.kernel.org/io-uring/a2399c89-2c45-375c-7395-b5caf556ec3d@kernel.dk/ [2]
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
+Cc: Nugra <richiisei@gmail.com>
 Signed-off-by: Ammar Faizi <ammarfaizi2@gmail.com>
 ---
- man/io_uring_prep_recvfrom.3 | 33 +++++++++++++++++++++++++++++++++
- man/io_uring_prep_sendto.3   | 34 ++++++++++++++++++++++++++++++++++
- 2 files changed, 67 insertions(+)
- create mode 100644 man/io_uring_prep_recvfrom.3
- create mode 100644 man/io_uring_prep_sendto.3
 
-diff --git a/man/io_uring_prep_recvfrom.3 b/man/io_uring_prep_recvfrom.3
-new file mode 100644
-index 0000000..b6cfea7
---- /dev/null
-+++ b/man/io_uring_prep_recvfrom.3
-@@ -0,0 +1,33 @@
-+.\" Copyright (C) 2021 Nugra <richiisei@gmail.com>
-+.\"
-+.\" SPDX-License-Identifier: LGPL-2.0-or-later
-+.\"
-+.TH io_uring_prep_recvfrom 3 "December 30, 2021" "liburing-2.1" "liburing Manual"
-+.SH NAME
-+io_uring_prep_recvfrom   - prepare I/O recvfrom request
-+
-+.SH SYNOPSIS
-+.nf
-+.BR "#include <liburing.h>"
-+.PP
-+.BI "void io_uring_prep_recvfrom(struct io_uring_sqe *sqe, int sockfd,"
-+.BI "					   void *buf, size_t len, int flags,
-+.BI "					   struct sockaddr *src_addr,"
-+.BI "					   socklen_t *addrlen)"
-+.SH DESCRIPTION
-+The io_uring_prep_recvfrom() prepares receive messages from a socket. The submission queue entry
-+.I sqe
-+is setup to use the file descriptor
-+.I fd
-+transmit the request.
-+
-+After the submission queue entry
-+.I sqe
-+has been prepared as
-+.I recvfrom
-+op, it can be submitted with one of the submit functions.
-+
-+.SH RETURN VALUE
-+None
-+.SH SEE ALSO
-+.BR io_uring_get_sqe (3), io_uring_submit (3)
-diff --git a/man/io_uring_prep_sendto.3 b/man/io_uring_prep_sendto.3
-new file mode 100644
-index 0000000..2ed8263
---- /dev/null
-+++ b/man/io_uring_prep_sendto.3
-@@ -0,0 +1,34 @@
-+.\" Copyright (C) 2021 Nugra <richiisei@gmail.com>
-+.\"
-+.\" SPDX-License-Identifier: LGPL-2.0-or-later
-+.\"
-+.TH io_uring_prep_sendto 3 "December 30, 2021" "liburing-2.1" "liburing Manual"
-+.SH NAME
-+io_uring_prep_sendto   - prepare I/O sendto request
-+
-+.SH SYNOPSIS
-+.nf
-+.BR "#include <liburing.h>"
-+.PP
-+.BI "void io_uring_prep_sendto(struct io_uring_sqe *sqe, int sockfd,"
-+.BI "					 const void *buf, size_t len, int flags,"
-+.BI "					 const struct sockaddr *dest_addr,"
-+.BI "					 socklen_t addrlen)"
-+.PP
-+.SH DESCRIPTION
-+The io_uring_prep_sendto() prepares transmit request to another socket. The submission queue entry
-+.I sqe
-+is setup to use the file descriptor
-+.I fd
-+transmit the request.
-+
-+After the submission queue entry
-+.I sqe
-+has been prepared as
-+.I sendto
-+op, it can be submitted with one of the submit functions.
-+
-+.SH RETURN VALUE
-+None
-+.SH SEE ALSO
-+.BR io_uring_get_sqe (3), io_uring_submit (3)
+Ammar Faizi (3):
+  io_uring: Rename `io_{send,recv}` to `io_{sendto,recvfrom}`
+  net: Make `move_addr_to_user()` be a non static function
+  io_uring: Add `sendto(2)` and `recvfrom(2)` support
+
+ fs/io_uring.c                 | 92 +++++++++++++++++++++++++++++++----
+ include/linux/socket.h        |  2 +
+ include/uapi/linux/io_uring.h |  2 +
+ net/socket.c                  |  4 +-
+ 4 files changed, 88 insertions(+), 12 deletions(-)
+
+
+base-commit: bb3294e22482db4b7ec7cfbb2d0f5b53c1adcf86
 -- 
-2.32.0
+Ammar Faizi
 
