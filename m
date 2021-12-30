@@ -2,32 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6411481D34
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 15:42:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D69DA481CCB
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 15:12:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240047AbhL3OmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 09:42:09 -0500
-Received: from lizzy.crudebyte.com ([91.194.90.13]:49973 "EHLO
+        id S239809AbhL3OMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 09:12:14 -0500
+Received: from lizzy.crudebyte.com ([91.194.90.13]:37057 "EHLO
         lizzy.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239861AbhL3OmJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 09:42:09 -0500
-X-Greylist: delayed 1785 seconds by postgrey-1.27 at vger.kernel.org; Thu, 30 Dec 2021 09:42:09 EST
+        with ESMTP id S239798AbhL3OMN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 09:12:13 -0500
+X-Greylist: delayed 2521 seconds by postgrey-1.27 at vger.kernel.org; Thu, 30 Dec 2021 09:12:13 EST
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
         Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=WFwvsfcLSvXImvKzK0ROel4mXqUzpd6lHVm/jLVuHDE=; b=Ee7g7
-        G5HnqQhJEGfMv81jpIi6G1UhfTVbCfBVtiukJitpqyfq8ZruhC6YCbwQ7ZwpExnWgsHbx8qc/i0y3
-        T88FRIn3KMppGu/24A4Fl5PSZ0710wl7zR9KqA3TnnNMIw0Ap77JIgvJJT5sLAXFAifZqZJcFVY6r
-        i2oTBQSZKKQdgiPrsYN8JuTMwtJ+YjkA84q+VbdUrTIh0+cjzUkwbpZCeUSeu6Uryekmb/8BpLGBv
-        ZX7fMve5ywcVDl5NTqmgpG5jSI0OgypKZRZ6xwCK1a5tH8hfeJBXQgvhyokXLM82lxmaKs7bE6AyP
-        BgIedodHR7RQXAQPPvA+Ab3XaIVLQ==;
-Message-Id: <35f29eb71a713fd6e595d8ea4d4f5131df5e33b8.1640870037.git.linux_oss@crudebyte.com>
+        Content-Description; bh=uZFzuHVsW9bTvGYFZ5r4LS0YJPrnwxn1A5YEmCqKBXY=; b=BrRO1
+        HJTeJ6iQrZzlzkcE4NYROqhLo9tAP30o3VGlvhOOqLApJs/b4gdHwh8cKNrdUBAb/N4/W1PSlx8ZN
+        z2HZ+05Bg4GaeTnOBKgKLXJUprO1FikVXHA23JkAIFtpkWMnUrCHXYnaw13yALG6UckZGbZFycP2F
+        xYhX2vDByNjtT+GJV/2Cgf6N0gjklYzDgUUX2DZtt8pfpxD3fqFT9U8v73M7qrQd6MMkmjozeqSh+
+        Q3/vkcgJeFXVo6MLg5WtBRTQAp/QrNwYwcZWA/EMMqC5uvDbfOEClVhdzbwuRHxOVHAUzqDg1ZHsb
+        ot/8DoxOxj/X1FK0gcjM5PELiKczg==;
+Message-Id: <8c305df4646b65218978fc6474aa0f5f29b216a0.1640870037.git.linux_oss@crudebyte.com>
 In-Reply-To: <cover.1640870037.git.linux_oss@crudebyte.com>
 References: <cover.1640870037.git.linux_oss@crudebyte.com>
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
 Date:   Thu, 30 Dec 2021 14:23:18 +0100
-Subject: [PATCH v4 07/12] 9p/trans_virtio: resize sg lists to whatever is
- possible
+Subject: [PATCH v4 12/12] net/9p: allocate appropriate reduced message buffers
 To:     v9fs-developer@lists.sourceforge.net
 Cc:     netdev@vger.kernel.org,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -39,125 +38,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Right now vq_sg_resize() used a lazy implementation following
-the all-or-nothing princible. So it either resized exactly to
-the requested new amount of sg lists, or it did not resize at
-all.
+So far 'msize' was simply used for all 9p message types, which is far
+too much and slowed down performance tremendously with large values
+for user configurable 'msize' option.
 
-The problem with this is if a user supplies a very large msize
-value, resize would simply fail and the user would stick to
-the default maximum msize supported by the virtio transport.
-
-To resolve this potential issue, change vq_sg_resize() to resize
-the passed sg list to whatever is possible on the machine.
+Let's stop this waste by using the new p9_msg_buf_size() function for
+allocating more appropriate, smaller buffers according to what is
+actually sent over the wire.
 
 Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
- net/9p/trans_virtio.c | 68 ++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 60 insertions(+), 8 deletions(-)
+ net/9p/client.c | 33 ++++++++++++++++++++++++++-------
+ 1 file changed, 26 insertions(+), 7 deletions(-)
 
-diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-index a02050c9742a..580efa95eabd 100644
---- a/net/9p/trans_virtio.c
-+++ b/net/9p/trans_virtio.c
-@@ -208,24 +208,67 @@ static struct virtqueue_sg *vq_sg_alloc(unsigned int nsgl)
-  * amount of lists
-  * @_vq_sg: scatter/gather lists to be resized
-  * @nsgl: new amount of scatter/gather lists
-+ *
-+ * Old scatter/gather lists are retained. Only growing the size is supported.
-+ * If the requested amount cannot be satisfied, then lists are increased to
-+ * whatever is possible.
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 56be1658870d..773915c95219 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -255,19 +255,35 @@ static struct kmem_cache *p9_req_cache;
+  * p9_tag_alloc - Allocate a new request.
+  * @c: Client session.
+  * @type: Transaction type.
+- * @t_size: Buffer size for holding this request.
+- * @r_size: Buffer size for holding server's reply on this request.
++ * @t_size: Buffer size for holding this request
++ * (automatic calculation by format template if 0).
++ * @r_size: Buffer size for holding server's reply on this request
++ * (automatic calculation by format template if 0).
++ * @fmt: Format template for assembling 9p request message
++ * (see p9pdu_vwritef).
++ * @ap: Variable arguments to be fed to passed format template
++ * (see p9pdu_vwritef).
+  *
+  * Context: Process context.
+  * Return: Pointer to new request.
   */
- static int vq_sg_resize(struct virtqueue_sg **_vq_sg, unsigned int nsgl)
+ static struct p9_req_t *
+-p9_tag_alloc(struct p9_client *c, int8_t type, uint t_size, uint r_size)
++p9_tag_alloc(struct p9_client *c, int8_t type, uint t_size, uint r_size,
++	      const char *fmt, va_list ap)
  {
- 	struct virtqueue_sg *vq_sg;
-+	unsigned int i;
-+	size_t sz;
-+	int ret = 0;
- 
- 	BUG_ON(!_vq_sg || !nsgl);
- 	vq_sg = *_vq_sg;
-+	if (nsgl > VIRTQUEUE_SG_NSGL_MAX)
-+		nsgl = VIRTQUEUE_SG_NSGL_MAX;
- 	if (vq_sg->nsgl == nsgl)
- 		return 0;
-+	if (vq_sg->nsgl > nsgl)
-+		return -ENOTSUPP;
+ 	struct p9_req_t *req = kmem_cache_alloc(p9_req_cache, GFP_NOFS);
+-	int alloc_tsize = min(c->msize, t_size);
+-	int alloc_rsize = min(c->msize, r_size);
++	int alloc_tsize;
++	int alloc_rsize;
+ 	int tag;
++	va_list apc;
 +
-+	vq_sg = kzalloc(sizeof(struct virtqueue_sg) +
-+			nsgl * sizeof(struct scatterlist *),
-+			GFP_KERNEL);
- 
--	/* lazy resize implementation for now */
--	vq_sg = vq_sg_alloc(nsgl);
- 	if (!vq_sg)
- 		return -ENOMEM;
- 
-+	/* copy over old scatter gather lists */
-+	sz = sizeof(struct virtqueue_sg) +
-+		(*_vq_sg)->nsgl * sizeof(struct scatterlist *);
-+	memcpy(vq_sg, *_vq_sg, sz);
++	va_copy(apc, ap);
++	alloc_tsize = min_t(size_t, c->msize,
++			    t_size ?: p9_msg_buf_size(c, type, fmt, apc));
++	va_end(apc);
 +
-+	vq_sg->nsgl = nsgl;
-+
-+	for (i = (*_vq_sg)->nsgl; i < nsgl; ++i) {
-+		vq_sg->sgl[i] = kmalloc_array(
-+			SG_MAX_SINGLE_ALLOC, sizeof(struct scatterlist),
-+			GFP_KERNEL
-+		);
-+		/*
-+		 * handle failed allocation as soft error, we take whatever
-+		 * we get
-+		 */
-+		if (!vq_sg->sgl[i]) {
-+			ret = -ENOMEM;
-+			vq_sg->nsgl = nsgl = i;
-+			break;
-+		}
-+		sg_init_table(vq_sg->sgl[i], SG_MAX_SINGLE_ALLOC);
-+		if (i) {
-+			/* chain the lists */
-+			sg_chain(vq_sg->sgl[i - 1], SG_MAX_SINGLE_ALLOC,
-+				 vq_sg->sgl[i]);
-+		}
-+	}
-+	sg_mark_end(&vq_sg->sgl[nsgl - 1][SG_MAX_SINGLE_ALLOC - 1]);
-+
- 	kfree(*_vq_sg);
- 	*_vq_sg = vq_sg;
--	return 0;
-+	return ret;
- }
++	alloc_rsize = min_t(size_t, c->msize,
++			    r_size ?: p9_msg_buf_size(c, type + 1, fmt, ap));
  
- /**
-@@ -846,12 +889,21 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
- 		if (nsgl > chan->vq_sg->nsgl) {
- 			/*
- 			 * if resize fails, no big deal, then just
--			 * continue with default msize instead
-+			 * continue with whatever we got
-+			 */
-+			vq_sg_resize(&chan->vq_sg, nsgl);
-+			/*
-+			 * actual allocation size might be less than
-+			 * requested, so use vq_sg->nsgl instead of nsgl
- 			 */
--			if (!vq_sg_resize(&chan->vq_sg, nsgl)) {
--				client->trans_maxsize =
--					PAGE_SIZE *
--					((nsgl * SG_USER_PAGES_PER_LIST) - 3);
-+			client->trans_maxsize =
-+				PAGE_SIZE * ((chan->vq_sg->nsgl *
-+				SG_USER_PAGES_PER_LIST) - 3);
-+			if (nsgl > chan->vq_sg->nsgl) {
-+				pr_info("limiting 'msize' to %d as only %d "
-+					"of %zu SG lists could be allocated",
-+					client->trans_maxsize,
-+					chan->vq_sg->nsgl, nsgl);
- 			}
- 		}
- #endif /* CONFIG_ARCH_NO_SG_CHAIN */
+ 	if (!req)
+ 		return ERR_PTR(-ENOMEM);
+@@ -685,6 +701,7 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
+ {
+ 	int err;
+ 	struct p9_req_t *req;
++	va_list apc;
+ 
+ 	p9_debug(P9_DEBUG_MUX, "client %p op %d\n", c, type);
+ 
+@@ -696,7 +713,9 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
+ 	if (c->status == BeginDisconnect && type != P9_TCLUNK)
+ 		return ERR_PTR(-EIO);
+ 
+-	req = p9_tag_alloc(c, type, t_size, r_size);
++	va_copy(apc, ap);
++	req = p9_tag_alloc(c, type, t_size, r_size, fmt, apc);
++	va_end(apc);
+ 	if (IS_ERR(req))
+ 		return req;
+ 
+@@ -733,7 +752,7 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
+ 	struct p9_req_t *req;
+ 
+ 	va_start(ap, fmt);
+-	req = p9_client_prepare_req(c, type, c->msize, c->msize, fmt, ap);
++	req = p9_client_prepare_req(c, type, 0, 0, fmt, ap);
+ 	va_end(ap);
+ 	if (IS_ERR(req))
+ 		return req;
 -- 
 2.30.2
 
