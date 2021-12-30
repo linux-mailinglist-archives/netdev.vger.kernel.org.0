@@ -2,196 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4423A481C96
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 14:41:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5341D481C99
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 14:44:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239507AbhL3Nl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 08:41:28 -0500
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:54319 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235159AbhL3Nl2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 08:41:28 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 68B735802B9;
-        Thu, 30 Dec 2021 08:41:27 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 30 Dec 2021 08:41:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=4AY61D
-        BtQwXFCFWHjL38zj2+iJ873KyOoGnaOBAx+Ec=; b=fL96CM3VIZzVuFOhlLf39o
-        D2gTH4HMzOOUyr6UktCZqU5/Wj4cGhKDyGeTloPAnec+tzLbhqhXBYLq1BQO7Eii
-        xl3z5OJrJVYd2Z8FYZE0e0NxWZ9Q6PMzM7RX0ZCkqHsyZk5dY1HLLO5Vt3359MP3
-        T+DrBy5n71dOdZg1cbVfHt1LoEVOS38jjdiiMb/NDLyRXK0Bwm5DMJDE2IbmIYV4
-        LKg09YFpqkfeHBcA06H23jPnqz0yBiF6hzIuXGEgCMBk6nThzpV+sMI9JI+GccF+
-        Sa0DeMiHoIK0+9Ocp9gHzGhp6/zNu+o/YeCDuyiOpdLmH2SrULuGrkKTh/ekqPrw
-        ==
-X-ME-Sender: <xms:B7fNYTxk5ee88EBxmjM3E11ZJuhaMwRFUw2svchiQXshG2YdivqnIw>
-    <xme:B7fNYbSx_4syuE2nIr6Wx9EjMV-ZlyqV1hUgRSHOENJClvZe78Eb2qIQVdlbJE_6z
-    AnDLJOWTvVc2ks>
-X-ME-Received: <xmr:B7fNYdW51jYBWVmZs0ZNX-SN_NRzw2SeyleHZcRt_nDyPAGVwiDpo9DsSaaMSIE54POhybYVHY-EBaXsm-l8Z-FZVOrC6w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddruddvfedgheehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:B7fNYdjpoY_w_VnsCJbrbzkCyBbL178KGlaHYghrJsKkVoGgjdi2nA>
-    <xmx:B7fNYVBlbL-2SpRDZhGC4rQbeH6COwhwNbIiJ9CthG3AIq0g1PZ7OA>
-    <xmx:B7fNYWKf0ypFaR8FGEPBPfTVepAaXcCFDMbfp3xh1VeEKHWFd15CMg>
-    <xmx:B7fNYZ7r9uslSANGbKF5pfQ6PivFpDXLMmDqwfIlkbeDWWkbuTo-Ow>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 30 Dec 2021 08:41:26 -0500 (EST)
-Date:   Thu, 30 Dec 2021 15:41:21 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Yevhen Orlov <yevhen.orlov@plvision.eu>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org, andrew@lunn.ch,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        id S239671AbhL3NoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 08:44:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239626AbhL3NoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 08:44:05 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7EE8C06173E
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 05:44:02 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id q16so50565790wrg.7
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 05:44:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Ig6zmVlsXZoVU3qS9GYP8SWQ0yGF84n3e2wM7iJ8EaM=;
+        b=xuHu6OJyHwstTvs/pGh7nrljGZGVw4IATi8sBlZfVNUgOzeSetWxHN/cP27hJfg3ed
+         HSyktYnCNEjgn9hsuZuJSLS3WuIScLK/TDCmP+ZSvIxJskvBJNJgvDFdgmAZdXWLFs4z
+         A/nKRKNPqThw3dxfxtdukMBXvShPb5S1Z2QMSaZSpr5Fa8Pa5QgHsfpibYfqNwwAnZWS
+         J2FePdAyaAuKl0iTxdHPQormUYAGFymTNIFabqIPSpTTu/UaE0S2RilRBBUxah0t9e4V
+         GrP8KTKIPHdbm6C1WSLwk3Hej0S7zkSHAnvoiWAHxzu9iIF+Kfw/VMGZHJ6cPnS0zlpg
+         B2gQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Ig6zmVlsXZoVU3qS9GYP8SWQ0yGF84n3e2wM7iJ8EaM=;
+        b=K23Zg9fIkp63Qarre0zNjOhQ/RdO4gJpOF2Dd+2gmAI+fSW4Xe7cMSr9RjtmpnwVH5
+         23R3MvUItqB1ni24sJiNG/jCOJ1l/QLP2RzcJcXqTO8GGBORESZ+Z34jQHYiqiPbbRSK
+         yXU5xQ2Ni8FhuBNKfwgOoX04Kokn1JAZD8WlkDc67q6+/5nI1E0ZrVoN+d3lbnUTQCHL
+         4oUgR78XjvL7l6iX8hzBl4mz9cFxof0dtH3t5FvUTxsuDMsvaKY1rlNBb2dCh3hXD7hh
+         dwtxUFO0/eTbZP1/CiMyzno12TUDxI+QZ5LDecs5VNDI8pvpZvOr9g+yG2u+vTW0HADw
+         UBmg==
+X-Gm-Message-State: AOAM531RO6mqpLo9o7I4DMSqlxEsArEEIYEhEp2hMaiBiTvmR0AJAHqP
+        F3/CuB/ku8Nmr4WP50IKpPM1Zg==
+X-Google-Smtp-Source: ABdhPJzxPkunGX9tRgikCmqk6FG7VSXFwaZometrgf66b91ZcRQVpqO+FoZ4PpOTn2e5axxy42HAtw==
+X-Received: by 2002:adf:ed82:: with SMTP id c2mr25290496wro.183.1640871841367;
+        Thu, 30 Dec 2021 05:44:01 -0800 (PST)
+Received: from google.com ([31.124.24.179])
+        by smtp.gmail.com with ESMTPSA id g7sm24269589wrx.104.2021.12.30.05.44.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Dec 2021 05:44:00 -0800 (PST)
+Date:   Thu, 30 Dec 2021 13:43:53 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 1/6] net: marvell: prestera: add virtual
- router ABI
-Message-ID: <Yc23AVK2STkzGuHg@shredder>
-References: <20211227215233.31220-1-yevhen.orlov@plvision.eu>
- <20211227215233.31220-2-yevhen.orlov@plvision.eu>
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC v5 net-next 08/13] mfd: add interface to check whether a
+ device is mfd
+Message-ID: <Yc23mTo6g1tBiMjT@google.com>
+References: <20211218214954.109755-1-colin.foster@in-advantage.com>
+ <20211218214954.109755-9-colin.foster@in-advantage.com>
+ <Ycx+A4KNKiVmH2PJ@google.com>
+ <20211230020443.GB1347882@euler>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20211227215233.31220-2-yevhen.orlov@plvision.eu>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211230020443.GB1347882@euler>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 27, 2021 at 11:52:26PM +0200, Yevhen Orlov wrote:
-> Add functions and structures to allocate virtual router.
-> prestera_hw_vr_create() return index of allocated VR so that we can move
+On Wed, 29 Dec 2021, Colin Foster wrote:
 
-s/return/returns/
-
-> forward and also add another objects (e.g. router interface),
-> which has link to VR.
+> On Wed, Dec 29, 2021 at 03:25:55PM +0000, Lee Jones wrote:
+> > On Sat, 18 Dec 2021, Colin Foster wrote:
+> > 
+> > > Some drivers will need to create regmaps differently based on whether they
+> > > are a child of an MFD or a standalone device. An example of this would be
+> > > if a regmap were directly memory-mapped or an external bus. In the
+> > > memory-mapped case a call to devm_regmap_init_mmio would return the correct
+> > > regmap. In the case of an MFD, the regmap would need to be requested from
+> > > the parent device.
+> > > 
+> > > This addition allows the driver to correctly reason about these scenarios.
+> > > 
+> > > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> > > ---
+> > >  drivers/mfd/mfd-core.c   |  5 +++++
+> > >  include/linux/mfd/core.h | 10 ++++++++++
+> > >  2 files changed, 15 insertions(+)
+> > > 
+> > > diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
+> > > index 684a011a6396..905f508a31b4 100644
+> > > --- a/drivers/mfd/mfd-core.c
+> > > +++ b/drivers/mfd/mfd-core.c
+> > > @@ -33,6 +33,11 @@ static struct device_type mfd_dev_type = {
+> > >  	.name	= "mfd_device",
+> > >  };
+> > >  
+> > > +int device_is_mfd(struct platform_device *pdev)
+> > > +{
+> > > +	return (!strcmp(pdev->dev.type->name, mfd_dev_type.name));
+> > > +}
+> > > +
+> > 
+> > Why is this device different to any other that has ever been
+> > mainlined?
 > 
-> Co-developed-by: Taras Chornyi <tchornyi@marvell.com>
-> Signed-off-by: Taras Chornyi <tchornyi@marvell.com>
-> Co-developed-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-> Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
-> ---
-> v1-->v2
-> * No changes
-> ---
->  .../ethernet/marvell/prestera/prestera_hw.c   | 42 +++++++++++++++++++
->  .../ethernet/marvell/prestera/prestera_hw.h   |  4 ++
->  2 files changed, 46 insertions(+)
+> Hi Lee,
 > 
-> diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-> index 6282c9822e2b..8783adbad593 100644
-> --- a/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-> +++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-> @@ -53,6 +53,9 @@ enum prestera_cmd_type_t {
->  	PRESTERA_CMD_TYPE_VTCAM_IFACE_BIND = 0x560,
->  	PRESTERA_CMD_TYPE_VTCAM_IFACE_UNBIND = 0x561,
->  
-> +	PRESTERA_CMD_TYPE_ROUTER_VR_CREATE = 0x630,
-> +	PRESTERA_CMD_TYPE_ROUTER_VR_DELETE = 0x631,
-> +
->  	PRESTERA_CMD_TYPE_RXTX_INIT = 0x800,
->  
->  	PRESTERA_CMD_TYPE_LAG_MEMBER_ADD = 0x900,
-> @@ -480,6 +483,18 @@ struct prestera_msg_rxtx_resp {
->  	__le32 map_addr;
->  };
->  
-> +struct prestera_msg_vr_req {
-> +	struct prestera_msg_cmd cmd;
-> +	__le16 vr_id;
-> +	u8 __pad[2];
-> +};
-> +
-> +struct prestera_msg_vr_resp {
-> +	struct prestera_msg_ret ret;
-> +	__le16 vr_id;
-> +	u8 __pad[2];
-> +};
-> +
->  struct prestera_msg_lag_req {
->  	struct prestera_msg_cmd cmd;
->  	__le32 port;
-> @@ -549,6 +564,7 @@ static void prestera_hw_build_tests(void)
->  	BUILD_BUG_ON(sizeof(struct prestera_msg_acl_action) != 32);
->  	BUILD_BUG_ON(sizeof(struct prestera_msg_counter_req) != 16);
->  	BUILD_BUG_ON(sizeof(struct prestera_msg_counter_stats) != 16);
-> +	BUILD_BUG_ON(sizeof(struct prestera_msg_vr_req) != 8);
->  
->  	/* check responses */
->  	BUILD_BUG_ON(sizeof(struct prestera_msg_common_resp) != 8);
-> @@ -561,6 +577,7 @@ static void prestera_hw_build_tests(void)
->  	BUILD_BUG_ON(sizeof(struct prestera_msg_rxtx_resp) != 12);
->  	BUILD_BUG_ON(sizeof(struct prestera_msg_vtcam_resp) != 16);
->  	BUILD_BUG_ON(sizeof(struct prestera_msg_counter_resp) != 24);
-> +	BUILD_BUG_ON(sizeof(struct prestera_msg_vr_resp) != 12);
->  
->  	/* check events */
->  	BUILD_BUG_ON(sizeof(struct prestera_msg_event_port) != 20);
-> @@ -1752,6 +1769,31 @@ int prestera_hw_bridge_port_delete(struct prestera_port *port, u16 bridge_id)
->  			    &req.cmd, sizeof(req));
->  }
->  
-> +int prestera_hw_vr_create(struct prestera_switch *sw, u16 *vr_id)
-> +{
-> +	int err;
-> +	struct prestera_msg_vr_resp resp;
-> +	struct prestera_msg_vr_req req;
-
-Order local variables from longest to shortest (reverse xmas tree), so
-'int err' should be at the end. Same in other places I might have missed
-
-> +
-> +	err = prestera_cmd_ret(sw, PRESTERA_CMD_TYPE_ROUTER_VR_CREATE,
-> +			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
-> +	if (err)
-> +		return err;
-> +
-> +	*vr_id = __le16_to_cpu(resp.vr_id);
-> +	return err;
-> +}
-> +
-> +int prestera_hw_vr_delete(struct prestera_switch *sw, u16 vr_id)
-> +{
-> +	struct prestera_msg_vr_req req = {
-> +		.vr_id = __cpu_to_le16(vr_id),
-> +	};
-> +
-> +	return prestera_cmd(sw, PRESTERA_CMD_TYPE_ROUTER_VR_DELETE, &req.cmd,
-> +			    sizeof(req));
-> +}
-> +
->  int prestera_hw_rxtx_init(struct prestera_switch *sw,
->  			  struct prestera_rxtx_params *params)
->  {
-> diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-> index 0496e454e148..6d9fafad451d 100644
-> --- a/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-> +++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-> @@ -238,6 +238,10 @@ int prestera_hw_span_bind(const struct prestera_port *port, u8 span_id);
->  int prestera_hw_span_unbind(const struct prestera_port *port);
->  int prestera_hw_span_release(struct prestera_switch *sw, u8 span_id);
->  
-> +/* Virtual Router API */
-> +int prestera_hw_vr_create(struct prestera_switch *sw, u16 *vr_id);
-> +int prestera_hw_vr_delete(struct prestera_switch *sw, u16 vr_id);
-> +
->  /* Event handlers */
->  int prestera_hw_event_handler_register(struct prestera_switch *sw,
->  				       enum prestera_event_type type,
-> -- 
-> 2.17.1
+> First, let me apologize for not responding to your response from the
+> related RFC from earlier this month. It had been blocked by my spam
+> filter and I had not seen it until just now. I'll have to check that
+> more diligently now.
 > 
+> Moving on...
+> 
+> That's a question I keep asking myself. Either there's something I'm
+> missing, or there's something new I'm doing.
+> 
+> This is taking existing drivers that work via MMIO regmaps and making
+> them interface-independent. As Vladimir pointed out here:
+> https://lore.kernel.org/all/20211204022037.dkipkk42qet4u7go@skbuf/T/
+> device_is_mfd could be dropped in lieu of an mfd-specific probe
+> function.
+> 
+> If there's something I'm missing, please let me know. But it feels like
+> devm_get_regmap_from_resource at the end of the day would be the best
+> solution to the design, and that doesn't exist. And implementing
+> something like that is a task that I feel I'm not capable of tackling at
+> this time.
+
+I'm really not a fan of leaking any MFD API outside of drivers/mfd.
+MFD isn't a tangible thing.  It's a Linuxiusm, something we made up, a
+figment of your imagination.
+
+What happens if you were to all dev_get_regmap() in the non-MFD case
+or when you call devm_regmap_init_mmio() when the driver was
+registered via the MFD framework?
+
+-- 
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
