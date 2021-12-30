@@ -2,164 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 589E2481B28
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 10:33:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FE89481B88
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 11:55:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238373AbhL3JdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 04:33:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238389AbhL3JdR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 04:33:17 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8620DC061401;
-        Thu, 30 Dec 2021 01:33:17 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id w24so17852588ply.12;
-        Thu, 30 Dec 2021 01:33:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hLhOt4oAKEoBQ8Mh83vcTQErz7uX8CzDjKjnYPRBdKw=;
-        b=TjZFYY6aMR6riflOoKrCejyNab82OH6OFe5xmQCvrj1Ou95VB5wdiqBP0a1KM+M8aQ
-         VVZ4Lr+Mc8DGhOgq5p0Hbr1nLBu/6wLqQxqhgKA1CfijnJk6aLCqp44tqXFXUlyLWMfm
-         YV/K4Hog2KLFk6PnzG2qODTF5Txb4tXKj4Tx1UCovClQESZc8nilmCdN0994EQQmvYgF
-         YMpGIu8ho6GjlG/7ToRV5AhApKgOq26n9sdo/rrpaEUwnN4n6qxDTAn0HYHOcHj+eez4
-         KJPswjLnr2r+mToLukpuWZ3tbJgDQtIqOBfct7m2Uk/67bXl+dSZe1/ZEV53j0LvAQoZ
-         Fs1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hLhOt4oAKEoBQ8Mh83vcTQErz7uX8CzDjKjnYPRBdKw=;
-        b=JsgEmJXfo+jf3fLkYFn5LUJMudAKnkqGuPj9CAsKZRhNMFypsctWdZorC8r0aupR0R
-         CULCjfiHFn7KttVx530S9l1jLfrq43y36e5SC2M0nuxJ4lL2EtEBj2mMfm2rItDiuxTQ
-         CG3VZql6XsyuoNdCivEKpEvqpYngsw5Rjyh+XO4B/8w6j3xePOpw8gRiQfaS+Istl0nm
-         niqZFrztX45wP5Bo5vfEzQXWssqm1QT0qeBXVl7cwyMzY7DhqIDm7u9yGRNmcfmkwJor
-         Q8rQcbPSoCvWCdGep8INZ6t5Mqq0N9osej9Avwb9Dj6Cj7bUb2Qlj7rnyDbIJ1R1JXfA
-         WmrQ==
-X-Gm-Message-State: AOAM531pgvGVwmMnZdGLTaN7TtK+GC6ZLmj+Hej2JkObyWMokkU2MgHL
-        ojHrJP5OnWa/TVsUmK9JMpA=
-X-Google-Smtp-Source: ABdhPJxlPxVRcx3M5gcSjYd6AAzcuxgZwfM/7FrYYkG14UdtPr3Z3v7FOBuP1VfLqaqFaxskxHOZTQ==
-X-Received: by 2002:a17:903:32c7:b0:149:7657:bbaf with SMTP id i7-20020a17090332c700b001497657bbafmr21373356plr.156.1640856797104;
-        Thu, 30 Dec 2021 01:33:17 -0800 (PST)
-Received: from localhost.localdomain ([43.132.141.9])
-        by smtp.gmail.com with ESMTPSA id f4sm23231052pfj.25.2021.12.30.01.33.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Dec 2021 01:33:16 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     rostedt@goodmis.org, dsahern@kernel.org
-Cc:     mingo@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        nhorman@tuxdriver.com, edumazet@google.com,
-        yoshfuji@linux-ipv6.org, jonathan.lemon@gmail.com, alobakin@pm.me,
-        keescook@chromium.org, pabeni@redhat.com, talalahmad@google.com,
-        haokexin@gmail.com, imagedong@tencent.com, atenart@kernel.org,
-        bigeasy@linutronix.de, weiwan@google.com, arnd@arndb.de,
-        vvs@virtuozzo.com, cong.wang@bytedance.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        mengensun@tencent.com, mungerjiang@tencent.com
-Subject: [PATCH net-next 3/3] net: skb: use kfree_skb_with_reason() in __udp4_lib_rcv()
-Date:   Thu, 30 Dec 2021 17:32:40 +0800
-Message-Id: <20211230093240.1125937-4-imagedong@tencent.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20211230093240.1125937-1-imagedong@tencent.com>
-References: <20211230093240.1125937-1-imagedong@tencent.com>
+        id S238749AbhL3Kz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 05:55:56 -0500
+Received: from m12-17.163.com ([220.181.12.17]:34760 "EHLO m12-17.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235617AbhL3Kz4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Dec 2021 05:55:56 -0500
+X-Greylist: delayed 912 seconds by postgrey-1.27 at vger.kernel.org; Thu, 30 Dec 2021 05:55:55 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Message-ID:Date:MIME-Version:From:Subject; bh=1Tko/
+        f1eUzxJY4rYpd6U0/jOTngytUzstrkVlw497eQ=; b=IUuthj/WLymVS7YHQ+VYZ
+        N9oa6F58QvgP2rlnWy1TJrIeJoHR1ClP9tOqylb459KWnvyq1t5mBb+qjRO1nkrd
+        QcbDwXNO12QN3i2c22gZTrSaryh7fIjJ3UYlYUlwOnlMhDiPuByjbkdlGlrQPhQy
+        VpbG10Mu1T4iFZnHX8Wpbw=
+Received: from [192.168.16.100] (unknown [110.80.1.43])
+        by smtp13 (Coremail) with SMTP id EcCowABnYT+bjM1hPNIeFQ--.2705S2;
+        Thu, 30 Dec 2021 18:40:28 +0800 (CST)
+Message-ID: <61d2d31c-ac20-287d-a931-44356f7cc370@163.com>
+Date:   Thu, 30 Dec 2021 18:40:29 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+From:   Jianguo Wu <wujianguo106@163.com>
+Subject: [PATCH] selftests: net: using ping6 for IPv6 in udpgro_fwd.sh
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: EcCowABnYT+bjM1hPNIeFQ--.2705S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7KFWfAr4kXw47Cr4UGw4fuFg_yoW8Jw4Dpr
+        W8C3yYvrW0qF1fJr1rW3WjgFZYgaykXa1FkF1vgF1UZa45XFyxArW0gr17AFy7urWvyws8
+        AFyIg3WUuF48GaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UN_-QUUUUU=
+X-Originating-IP: [110.80.1.43]
+X-CM-SenderInfo: 5zxmxt5qjx0iiqw6il2tof0z/1tbiRA15kFSIjpVydAAAsh
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+From: Jianguo Wu <wujianguo@chinatelecom.cn>
 
-Replace kfree_skb() with kfree_skb_with_reason() in __udp4_lib_rcv.
-New drop reason 'SKB_DROP_REASON_UDP_CSUM' is added for udp csum
-error.
+udpgro_fwd.sh output following message:
+  ping: 2001:db8:1::100: Address family for hostname not supported
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
+Using ping6 when pinging IPv6 addresses.
+
+Fixes: a062260a9d5f ("selftests: net: add UDP GRO forwarding self-tests")
+Signed-off-by: Jianguo Wu <wujianguo@chinatelecom.cn>
 ---
- include/linux/skbuff.h     |  1 +
- include/trace/events/skb.h |  1 +
- net/ipv4/udp.c             | 10 ++++++++--
- 3 files changed, 10 insertions(+), 2 deletions(-)
+ tools/testing/selftests/net/udpgro_fwd.sh | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 43cb3b75b5af..f0c6949fd19c 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -317,6 +317,7 @@ enum skb_drop_reason {
- 	SKB_DROP_REASON_PKT_TOO_SMALL,
- 	SKB_DROP_REASON_TCP_CSUM,
- 	SKB_DROP_REASON_TCP_FILTER,
-+	SKB_DROP_REASON_UDP_CSUM,
- 	SKB_DROP_REASON_MAX,
- };
- 
-diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index c6f4ecf6781e..f616547dddc6 100644
---- a/include/trace/events/skb.h
-+++ b/include/trace/events/skb.h
-@@ -15,6 +15,7 @@
- 	EM(SKB_DROP_REASON_PKT_TOO_SMALL, PKT_TOO_SMALL)	\
- 	EM(SKB_DROP_REASON_TCP_CSUM, TCP_CSUM)			\
- 	EM(SKB_DROP_REASON_TCP_FILTER, TCP_FILTER)		\
-+	EM(SKB_DROP_REASON_UDP_CSUM, UDP_CSUM)			\
- 	EMe(SKB_DROP_REASON_MAX, HAHA_MAX)
- 
- #undef EM
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index f376c777e8fc..463a5adcaacf 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2410,6 +2410,9 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	__be32 saddr, daddr;
- 	struct net *net = dev_net(skb->dev);
- 	bool refcounted;
-+	int drop_reason;
-+
-+	drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 
- 	/*
- 	 *  Validate the packet.
-@@ -2465,6 +2468,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	if (udp_lib_checksum_complete(skb))
- 		goto csum_error;
- 
-+	drop_reason = SKB_DROP_REASON_NO_SOCKET;
- 	__UDP_INC_STATS(net, UDP_MIB_NOPORTS, proto == IPPROTO_UDPLITE);
- 	icmp_send(skb, ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, 0);
- 
-@@ -2472,10 +2476,11 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	 * Hmm.  We got an UDP packet to a port to which we
- 	 * don't wanna listen.  Ignore it.
- 	 */
--	kfree_skb(skb);
-+	kfree_skb_with_reason(skb, drop_reason);
- 	return 0;
- 
- short_packet:
-+	drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
- 	net_dbg_ratelimited("UDP%s: short packet: From %pI4:%u %d/%d to %pI4:%u\n",
- 			    proto == IPPROTO_UDPLITE ? "Lite" : "",
- 			    &saddr, ntohs(uh->source),
-@@ -2488,6 +2493,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	 * RFC1122: OK.  Discards the bad packet silently (as far as
- 	 * the network is concerned, anyway) as per 4.1.3.4 (MUST).
- 	 */
-+	drop_reason = SKB_DROP_REASON_UDP_CSUM;
- 	net_dbg_ratelimited("UDP%s: bad checksum. From %pI4:%u to %pI4:%u ulen %d\n",
- 			    proto == IPPROTO_UDPLITE ? "Lite" : "",
- 			    &saddr, ntohs(uh->source), &daddr, ntohs(uh->dest),
-@@ -2495,7 +2501,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	__UDP_INC_STATS(net, UDP_MIB_CSUMERRORS, proto == IPPROTO_UDPLITE);
- drop:
- 	__UDP_INC_STATS(net, UDP_MIB_INERRORS, proto == IPPROTO_UDPLITE);
--	kfree_skb(skb);
-+	kfree_skb_with_reason(skb, drop_reason);
- 	return 0;
- }
- 
+diff --git a/tools/testing/selftests/net/udpgro_fwd.sh b/tools/testing/selftests/net/udpgro_fwd.sh
+index 6a3985b..5fdb505f 100755
+--- a/tools/testing/selftests/net/udpgro_fwd.sh
++++ b/tools/testing/selftests/net/udpgro_fwd.sh
+@@ -185,6 +185,7 @@ for family in 4 6; do
+ 	IPT=iptables
+ 	SUFFIX=24
+ 	VXDEV=vxlan
++	PING=ping
+
+ 	if [ $family = 6 ]; then
+ 		BM_NET=$BM_NET_V6
+@@ -192,6 +193,7 @@ for family in 4 6; do
+ 		SUFFIX="64 nodad"
+ 		VXDEV=vxlan6
+ 		IPT=ip6tables
++		PING="ping6"
+ 	fi
+
+ 	echo "IPv$family"
+@@ -237,7 +239,7 @@ for family in 4 6; do
+
+ 	# load arp cache before running the test to reduce the amount of
+ 	# stray traffic on top of the UDP tunnel
+-	ip netns exec $NS_SRC ping -q -c 1 $OL_NET$DST_NAT >/dev/null
++	ip netns exec $NS_SRC $PING -q -c 1 $OL_NET$DST_NAT >/dev/null
+ 	run_test "GRO fwd over UDP tunnel" $OL_NET$DST_NAT 1 1 $OL_NET$DST
+ 	cleanup
+
 -- 
-2.30.2
+1.8.3.1
 
