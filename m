@@ -2,85 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5632F48192D
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 05:00:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 572A248193C
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 05:10:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235704AbhL3EAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 23:00:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42536 "EHLO
+        id S235714AbhL3EKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 23:10:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235692AbhL3EAs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 23:00:48 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C53EC061574;
-        Wed, 29 Dec 2021 20:00:48 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id h1so14136235pls.11;
-        Wed, 29 Dec 2021 20:00:48 -0800 (PST)
+        with ESMTP id S235408AbhL3EKK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 23:10:10 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C504BC061574;
+        Wed, 29 Dec 2021 20:10:09 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id l10-20020a17090a384a00b001b22190e075so21554938pjf.3;
+        Wed, 29 Dec 2021 20:10:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=aulNbFPCcjXwCXZwEfInFO0zkigoTVrqB4tOC/J40PY=;
-        b=I6VFi5bBovASXleoCsxW2hMexWoAPvtGac+HfZRpC/AgPmPrxdoGGrMtfSaJmMPznt
-         pYyiU1MfsynufUQrHGEY+cYYPyXaPa7BjQJxVfdj74uLTUDNDq1WT0QWNnjf3dx1Vh0K
-         PfUTwglfxTb7/zNcBXpMIUR2vLJ8jIPZBS1RNDTH0S+vyoeVVO1BtAyXEPXh4nMf3tEi
-         O1R/0FQM1pK166ETicrNGSGV1GUyi7Wqz9b2x2LPo/mDV9sgFA7dBr5lnBkqh2JpcCQF
-         kS0xRaQkS1uBCxiB0+Ug8VD2GQ8P2zoBCzmuC8DCoUH8PQdMO0lue/zsS/zkVQ8suqgi
-         vxAg==
+        bh=ZLIxhQfqHzNnkuLNry5nbVJx3WYwLnh+KYZ/hremSLY=;
+        b=B3/K+sda+rwLtfeMfE++F8BwmemdcsIc6erDJnIjfByvWQ4pue5i3SA24et0OmxEhA
+         0mNQMucr/MKEW4nON6OUHd81CAPI/LJo31ITzfnZTJbY74UT2tlTenR5XRsh38yGJx2d
+         IZPAEzqwbZDXfCrsKjDnCQX81Ky8jZIlGlgnNQMiZkIo0BapsgMxHRHW251+uAxWMq1f
+         XaVVKzT3H2us3AARw7dE+hR5/GpKm16BBVnkgIbBddRIcv4fZsCvPjUACl7xImoMYTCW
+         d9m+uQYiv5+tq+no4p6BMtJBq85MrOBTrovaXipzBmSBc63mr/6Oqd9FryltBHs0iiDQ
+         IXhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=aulNbFPCcjXwCXZwEfInFO0zkigoTVrqB4tOC/J40PY=;
-        b=5jFl1C7AqLGz2V6raXDBIUkNhDbecbALMevhX8JKDS8mS2s8QiPctXpjU4bIPLNhCJ
-         KpinogqhWYAQgfcBPp8R3EukF0Pz9wa66Z0a5dg70tU/0+jLtGU1nNlcafRZNVjqMPr0
-         r2QxqTUXrmdSEqE0St6OMoKyjtPS7ErAf5F6AAakOCoTQIi8nFqt02ErXHYWwJESwfZ2
-         pMoPBgoF8q7dz1ciHEfMCm6Dh1gTdpFTq0YF8a7ULcmrMlenHRxEbVrJx2SFVjV/cWKA
-         NWBsPBK6mSFInlYSmcK+V/iyOKM3txmO/40MXYl51R/Kpui0BBc4A9Eu85WbQmULIPwE
-         A0SA==
-X-Gm-Message-State: AOAM533GHzGIyGgUayiIou7rD3QGd7wRXv8IJvTca395AmoXnNXLh6ML
-        dhQx//03Cy4zDLomtI2fOo5GSIRrLHyqJwDt04YGYBpd
-X-Google-Smtp-Source: ABdhPJwXqLwtF3TmVOnQxiCm8I7Zcoupa6hvU0jLBVqISMQNeVhd82MG6ZztSOOW9N0TZBcW97T+7GNzzZ7voTMyhIE=
-X-Received: by 2002:a17:902:c443:b0:148:f689:d924 with SMTP id
- m3-20020a170902c44300b00148f689d924mr29428656plm.78.1640836847380; Wed, 29
- Dec 2021 20:00:47 -0800 (PST)
+        bh=ZLIxhQfqHzNnkuLNry5nbVJx3WYwLnh+KYZ/hremSLY=;
+        b=hI5YgPvhElKiN+GYtXpuExBZ0cndUFThRYunjjXt2aEZmKMdkgYUXgw042NcKi1Spb
+         SMoYuzcb3xlJi0RtuCp8IORKDoCsHVFynOtwl3TcFGun/gfs52irT42IaS5g4CdeWSFh
+         D+0m3g8xEEc+hc1rESXY47h7dx0/Ue11jnBJPEe+lsRCA5l6BLMposzSMRhFAdHFT0EN
+         EKWtaQos0cgl8LQwwcPWt28AUyBkc7M7l7ioBtO8HSCo37toEhzsN7rCeacs7A9y0pgU
+         Ymws+gPQmGNg7zQnSm42ZhSqGcaQ3ECH3OFxFrFHxKguLiKwfEnME+5emHnJNf+fgvf+
+         2wNw==
+X-Gm-Message-State: AOAM531YvLLAsuqI1W1s/3JDGlqAUy+xKzhbU1QEy4ETNvdzkeVnP/VA
+        zXI6IxMyr86wbbWWHr1n8lRW2sQVXKG9wHttbNM=
+X-Google-Smtp-Source: ABdhPJzQFvsAtKMsnGmAhA78hZKzB1/xwuLIOkqqGKVlQehXSLtzKa6i4MKYPfz6cPChRMtZz/oJKdcPmgkWHeX4nVc=
+X-Received: by 2002:a17:902:6502:b0:149:1162:f0b5 with SMTP id
+ b2-20020a170902650200b001491162f0b5mr28967222plk.126.1640837409318; Wed, 29
+ Dec 2021 20:10:09 -0800 (PST)
 MIME-Version: 1.0
-References: <CAFcO6XMpbL4OsWy1Pmsnvf8zut7wFXdvY_KofR-m0WK1Bgutpg@mail.gmail.com>
- <CAADnVQJK5mPOB7B4KBa6q1NRYVQx1Eya5mtNb6=L0p-BaCxX=w@mail.gmail.com> <CAFcO6XMxZqQo4_C7s0T2dv3JRn4Vq4RDFqJO6ZQFr6kZzsnx9g@mail.gmail.com>
-In-Reply-To: <CAFcO6XMxZqQo4_C7s0T2dv3JRn4Vq4RDFqJO6ZQFr6kZzsnx9g@mail.gmail.com>
+References: <20211230012742.770642-1-kuba@kernel.org>
+In-Reply-To: <20211230012742.770642-1-kuba@kernel.org>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 29 Dec 2021 20:00:36 -0800
-Message-ID: <CAADnVQ+HJnZOqGjXKXut51BUqi=+na4cj=PFaE35u9QwZDgeVQ@mail.gmail.com>
-Subject: Re: A slab-out-of-bounds Read bug in __htab_map_lookup_and_delete_batch
-To:     butt3rflyh4ck <butterflyhuangxx@gmail.com>
+Date:   Wed, 29 Dec 2021 20:09:58 -0800
+Message-ID: <CAADnVQLRJQSMca_Ojc5K5vUzpJQewg_f=DgeHK5-sk1BMWuyAg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/2] lighten uapi/bpf.h rebuilds
+To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 29, 2021 at 7:24 PM butt3rflyh4ck
-<butterflyhuangxx@gmail.com> wrote:
+On Wed, Dec 29, 2021 at 5:27 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> Hi, the attachment is a reproducer. Enjoy it.
+> Last change in the bpf headers - disentangling BPF uapi from
+> netdevice.h. Both linux/bpf.h and uapi/bpf.h changes should
+> now rebuild ~1k objects down from the original ~18k. There's
+> probably more that can be done but it's diminishing returns.
+>
+> Split into two patches for ease of review.
 
-Please do not top-post.
-Forwarding a syzbot reproducer with zero effort to analyze
-what's going on is kinda lame.
-Maybe try harder and come up with a fix?
-Or at least try git bisect and based on a commit find and
-cc an author so it can be fixed (assuming issue still exists
-in bpf-next) ?
-
-> Regards,
->    butt3rflyh4ck.
-
-Better stay humble.
+Applied. Thanks
