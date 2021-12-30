@@ -2,104 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42523481F56
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 19:55:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21C04481F5B
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 20:00:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241741AbhL3SzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 13:55:12 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:31984 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S241661AbhL3SzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 13:55:11 -0500
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1BUF2laN012223;
-        Thu, 30 Dec 2021 18:55:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=Y2+11PFKAFAinMj5TTgQRiquEgA30BhgYDn1/Wa3RXY=;
- b=Kq9fjWXZ/LG71R78u0eHLGfoT4u0bJIxR4t7qa7gdzdWZ57bP4XDr7L3TilXs3cK+D1x
- DZLZsB8uOX5UbMaXrB0szMee5z1y0SA2ur0/v8rR4MGeez+eJGOtmnhaQHPlCmY41uJr
- szIBz8Rg8eX9cUysJUPUEtLnz3vrJWjlhN9JR0QufS9AewxuLopGv5WAO8EAsnfwSsi4
- Z3rDj1S15ogw9tvlY9IC5fECUFBOLxL9O/m9cAr4OHyDXC1JIop7pd+ZJBgR/d7+f5tm
- NXoYwzB1+zh68FqUVRdPRA9WoAiSAnQlf+H64N1dJFl1Unm98oPyt9d2TNQFLWHo+aAw 3g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3d9f2m3bs6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Dec 2021 18:55:06 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1BUIRrm6001554;
-        Thu, 30 Dec 2021 18:55:06 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3d9f2m3brt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Dec 2021 18:55:06 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1BUIqRXZ013461;
-        Thu, 30 Dec 2021 18:55:04 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3d5txb66y6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 30 Dec 2021 18:55:04 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1BUIt1cB37093750
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 30 Dec 2021 18:55:01 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9045D42045;
-        Thu, 30 Dec 2021 18:55:01 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 365194204D;
-        Thu, 30 Dec 2021 18:55:01 +0000 (GMT)
-Received: from [9.145.32.195] (unknown [9.145.32.195])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 30 Dec 2021 18:55:01 +0000 (GMT)
-Message-ID: <c4f5827f-fe48-d295-6d97-3848cc144171@linux.ibm.com>
-Date:   Thu, 30 Dec 2021 19:55:01 +0100
+        id S241744AbhL3TA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 14:00:26 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:45584 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240323AbhL3TA0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 30 Dec 2021 14:00:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=JCaguvZJred69+OwQjeSn/23D9RZwu02S0tDcpDSXbo=; b=HvVX/l0iBKS+2inWVACGi41QKJ
+        HCwAr7mxYT6DS4Dpp0xHZo2mm3gxsxnf/HFpsDOzVlpcKyYfshT1as9yfkJ01RNFdWfRADZ38E0wA
+        bapH/0rmYaaZI0gXTbF+fli8ffuCo6eoazupBnOF588bKexSeGVH9yV2LW44Fp8MF3XE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n30f0-000BTf-1h; Thu, 30 Dec 2021 20:00:22 +0100
+Date:   Thu, 30 Dec 2021 20:00:22 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dimitris Michailidis <d.michailidis@fungible.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/8] net/fungible: Add service module for
+ Fungible drivers
+Message-ID: <Yc4Bxu8f9S5w3VsM@lunn.ch>
+References: <20211230163909.160269-1-dmichail@fungible.com>
+ <20211230163909.160269-3-dmichail@fungible.com>
+ <Yc3sLEjF6O1CaMZZ@lunn.ch>
+ <CAOkoqZnoOgGDGcnDeOQxjZ_eYh8eyFHK_E+w7E6QHWAvaembKw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH net 1/2] net/smc: don't send CDC/LLC message if link not
- ready
-Content-Language: en-US
-To:     dust.li@linux.alibaba.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        Wen Gu <guwen@linux.alibaba.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-References: <20211228090325.27263-1-dust.li@linux.alibaba.com>
- <20211228090325.27263-2-dust.li@linux.alibaba.com>
- <2b3dd919-029c-cd44-b39c-5467bb723c0f@linux.ibm.com>
- <20211230030226.GA55356@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20211230030226.GA55356@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: VVxIcB3SCYgJ6yH7qp2JlpJla32hWWk3
-X-Proofpoint-ORIG-GUID: TTFxzlXsMDKiendUqJCe80E5Es3mmSmp
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2021-12-30_06,2021-12-30_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- mlxlogscore=999 impostorscore=0 bulkscore=0 clxscore=1015
- priorityscore=1501 spamscore=0 mlxscore=0 lowpriorityscore=0 adultscore=0
- phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2110150000 definitions=main-2112300107
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOkoqZnoOgGDGcnDeOQxjZ_eYh8eyFHK_E+w7E6QHWAvaembKw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/12/2021 04:02, dust.li wrote:
-> On Wed, Dec 29, 2021 at 01:36:06PM +0100, Karsten Graul wrote:
->> On 28/12/2021 10:03, Dust Li wrote:
-> I saw David has already applied this to net, should I send another
-> patch to add some comments ?
+On Thu, Dec 30, 2021 at 10:24:10AM -0800, Dimitris Michailidis wrote:
+> On Thu, Dec 30, 2021 at 9:28 AM Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > > +/* Wait for the CSTS.RDY bit to match @enabled. */
+> > > +static int fun_wait_ready(struct fun_dev *fdev, bool enabled)
+> > > +{
+> > > +     unsigned int cap_to = NVME_CAP_TIMEOUT(fdev->cap_reg);
+> > > +     unsigned long timeout = ((cap_to + 1) * HZ / 2) + jiffies;
+> > > +     u32 bit = enabled ? NVME_CSTS_RDY : 0;
+> >
+> > Reverse Christmas tree, since this is a network driver.
+> 
+> The longer line in the middle depends on the previous line, I'd need to
+> remove the initializers to sort these by length.
 
-You could send a follow-on patch with your additional information, which
-I find is very helpful! Thanks.
+Yes.
 
--- 
-Karsten
+
+> > Please also consider using include/linux/iopoll.h. The signal handling
+> > might make that not possible, but signal handling in driver code is in
+> > itself very unusual.
+> 
+> This initialization is based on NVMe, hence the use of NVMe registers,
+> and this function is based on nvme_wait_ready(). The check sequence
+> including signal handling comes from there.
+> 
+> iopoll is possible with the signal check removed, though I see I'd need a
+> shorter delay than the 100ms used here and it doesn't check for reads of
+> all 1s, which happen occasionally. My preference though would be to keep
+> this close to the NVMe version. Let me know.
+
+I knew it would be hard to directly use iopoll, which is why i only
+said 'consider'. The problem is, this implementation has the same bug
+nearly everybody makes when writing their own implementation of what
+iopoll does, which is why i always point people at iopoll.
+
+msleep(100) guarantees that it will not return within 100ms. That is
+all. Consider what happens when msleep(100) actually sleeps for
+1000.
+
+	Andrew
