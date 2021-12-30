@@ -2,92 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ED9C481EFE
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 19:04:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1037481F2C
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 19:24:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241600AbhL3SEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 13:04:13 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:45548 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241595AbhL3SEM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Dec 2021 13:04:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=UMW7lfaA3lveC8YHi/MarLbb/OntTpCkslN7sKw0i+8=; b=3PIR+QAvfGFO30RQY9o6kXSUpA
-        jrKSqLfU3nbktJU0au1/FdZ9NTofj5qDXSM9zbaulIZrSb5FmHQi1NQjqb5pzmQOuCKvPertmG6u1
-        jomxAOIZARHH+o/xpKaFGV3gfRXi/6PskIIVXJEbvhE5MMUqC6Sw/+RdW71vFMmYIK6E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n2zma-000BKL-Gp; Thu, 30 Dec 2021 19:04:08 +0100
-Date:   Thu, 30 Dec 2021 19:04:08 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dimitris Michailidis <d.michailidis@fungible.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 4/8] net/funeth: ethtool operations
-Message-ID: <Yc30mG7tPQIT2HZK@lunn.ch>
-References: <20211230163909.160269-1-dmichail@fungible.com>
- <20211230163909.160269-5-dmichail@fungible.com>
+        id S237129AbhL3SYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 13:24:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35024 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233228AbhL3SYZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 13:24:25 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7ADAC061574
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 10:24:24 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id i31so55996819lfv.10
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 10:24:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fungible.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1db2pLvrUlBX+EBsSswBEqIzkkJUEqfzs6ogW7D0rXY=;
+        b=bvG+ydJxOeS8mf+Tg0fJJIHhetXZDkchWx/zhKv8fYg+ictaBt74qBKm1A2ohfeer5
+         XS0k72y4Ln8HGu94mgwOy2N3ap8LO8CJNtEYy2mRcV8ysd6a4P+NltL4fShnCA77DCsi
+         UhiyW360z9OilgBAmbwRBHLpH8P+BUfmXDXZM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1db2pLvrUlBX+EBsSswBEqIzkkJUEqfzs6ogW7D0rXY=;
+        b=BK/BC2kyL8nZGaNGLthqVM6WrvmZGgtsM/tFkLfbO//U/CO+Mx1eiX+nQzHdBz1H+s
+         HguJ212GgMFTigGHvjfxMwh75kACumxakkQSCWzwcO9s8bzXudQYz+iBY/iWzZEkf/uB
+         EYHCz8rYjC/n7QpZ+zdOjk9xmvb0nTw+0vPU3/eOgY0pWyRnV/4EQJMeaP0dUWuwMFyU
+         2Hm6m/z+wHgq/EbzFkJ0UCBhh6CjXHBBn0g/sxbtMXL6eU5GGDAYVfUnoOe5hgOIS4Wo
+         Pok4YJaVovK5hvEGBQRnUiaEZSW2r/4AFJEnv3U0X00ODBcwPhvs4VhDe0kZ3Cgi3yOu
+         BfGg==
+X-Gm-Message-State: AOAM530FficsSvcvmIXV5TxzGjJYTqv8nu+uQz4ouTW8RbL0d0DXJyBF
+        cMlGkduX5kAUaMQl4v/rJm9him2NpdbcclkHTfGqIaOA2lODUA==
+X-Google-Smtp-Source: ABdhPJztKxxn8NiH9+anjwmdpzwbPZtvMsOeV8NORUfvD2bv6EnoXC9Dhb6UavarOtN+j6DHxZi36JlnlY4oi6GTcSM=
+X-Received: by 2002:a05:6512:3093:: with SMTP id z19mr20622990lfd.670.1640888662888;
+ Thu, 30 Dec 2021 10:24:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211230163909.160269-5-dmichail@fungible.com>
+References: <20211230163909.160269-1-dmichail@fungible.com>
+ <20211230163909.160269-3-dmichail@fungible.com> <Yc3sLEjF6O1CaMZZ@lunn.ch>
+In-Reply-To: <Yc3sLEjF6O1CaMZZ@lunn.ch>
+From:   Dimitris Michailidis <d.michailidis@fungible.com>
+Date:   Thu, 30 Dec 2021 10:24:10 -0800
+Message-ID: <CAOkoqZnoOgGDGcnDeOQxjZ_eYh8eyFHK_E+w7E6QHWAvaembKw@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/8] net/fungible: Add service module for
+ Fungible drivers
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static void fun_get_pauseparam(struct net_device *netdev,
-> +			       struct ethtool_pauseparam *pause)
-> +{
-> +	const struct funeth_priv *fp = netdev_priv(netdev);
-> +	u8 active_pause = fp->active_fc;
-> +
-> +	pause->rx_pause = active_pause & FUN_PORT_CAP_RX_PAUSE;
-> +	pause->tx_pause = active_pause & FUN_PORT_CAP_TX_PAUSE;
-> +	pause->autoneg = !!(fp->advertising & FUN_PORT_CAP_AUTONEG);
-> +}
-> +
-> +static int fun_set_pauseparam(struct net_device *netdev,
-> +			      struct ethtool_pauseparam *pause)
-> +{
-> +	struct funeth_priv *fp = netdev_priv(netdev);
-> +	u64 new_advert;
-> +
-> +	if (fp->port_caps & FUN_PORT_CAP_VPORT)
-> +		return -EOPNOTSUPP;
-> +	if (pause->autoneg && !(fp->advertising & FUN_PORT_CAP_AUTONEG))
-> +		return -EINVAL;
-> +	if (pause->tx_pause & !(fp->port_caps & FUN_PORT_CAP_TX_PAUSE))
-> +		return -EINVAL;
-> +	if (pause->rx_pause & !(fp->port_caps & FUN_PORT_CAP_RX_PAUSE))
-> +		return -EINVAL;
-> +
+On Thu, Dec 30, 2021 at 9:28 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > +/* Wait for the CSTS.RDY bit to match @enabled. */
+> > +static int fun_wait_ready(struct fun_dev *fdev, bool enabled)
+> > +{
+> > +     unsigned int cap_to = NVME_CAP_TIMEOUT(fdev->cap_reg);
+> > +     unsigned long timeout = ((cap_to + 1) * HZ / 2) + jiffies;
+> > +     u32 bit = enabled ? NVME_CSTS_RDY : 0;
+>
+> Reverse Christmas tree, since this is a network driver.
 
-I _think_ this is wrong. pause->autoneg means we are autoneg'ing
-pause, not that we are using auto-neg in general. The user can have
-autoneg turned on, but force pause by setting pause->autoneg to False.
-In that case, the pause->rx_pause and pause->tx_pause are given direct
-to the MAC, not auto negotiated.
+The longer line in the middle depends on the previous line, I'd need to
+remove the initializers to sort these by length.
 
-> +static void fun_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
-> +{
-> +	wol->supported = 0;
-> +	wol->wolopts = 0;
-> +}
+> Please also consider using include/linux/iopoll.h. The signal handling
+> might make that not possible, but signal handling in driver code is in
+> itself very unusual.
 
-Not required. If you don't provide the callback, the core will return
--EOPNOTSUPP.
+This initialization is based on NVMe, hence the use of NVMe registers,
+and this function is based on nvme_wait_ready(). The check sequence
+including signal handling comes from there.
 
-> +static void fun_get_drvinfo(struct net_device *netdev,
-> +			    struct ethtool_drvinfo *info)
-> +{
-> +	const struct funeth_priv *fp = netdev_priv(netdev);
-> +
-> +	strscpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
-> +	strcpy(info->fw_version, "N/A");
+iopoll is possible with the signal check removed, though I see I'd need a
+shorter delay than the 100ms used here and it doesn't check for reads of
+all 1s, which happen occasionally. My preference though would be to keep
+this close to the NVMe version. Let me know.
 
-Don't set it, if you have nothing useful to put in it.
-
-      Andrew
+> > +
+> > +     do {
+> > +             u32 csts = readl(fdev->bar + NVME_REG_CSTS);
+> > +
+> > +             if (csts == ~0) {
+> > +                     dev_err(fdev->dev, "CSTS register read %#x\n", csts);
+> > +                     return -EIO;
+> > +             }
+> > +
+> > +             if ((csts & NVME_CSTS_RDY) == bit)
+> > +                     return 0;
+> > +
+> > +             msleep(100);
+> > +             if (fatal_signal_pending(current))
+> > +                     return -EINTR;
+> > +     } while (time_is_after_eq_jiffies(timeout));
+> > +
+> > +     dev_err(fdev->dev,
+> > +             "Timed out waiting for device to indicate RDY %u; aborting %s\n",
+> > +             enabled, enabled ? "initialization" : "reset");
+> > +     return -ETIMEDOUT;
+> > +}
+>
+>   Andrew
