@@ -2,93 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69290481885
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 03:29:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34DBF48188A
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 03:30:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234766AbhL3C3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 21:29:50 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:53478 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233070AbhL3C3t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Dec 2021 21:29:49 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowACnrlqHGc1hLmPlBA--.17413S2;
-        Thu, 30 Dec 2021 10:29:27 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] net/wireless/ray_cs: Check of ioremap return value
-Date:   Thu, 30 Dec 2021 10:29:26 +0800
-Message-Id: <20211230022926.1846757-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S234807AbhL3CaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 21:30:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51016 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234793AbhL3CaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 21:30:14 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7D0C061574
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 18:30:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4542ACE1AB2
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 02:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6B02DC36AE1;
+        Thu, 30 Dec 2021 02:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640831410;
+        bh=Yk3b/zTOW5YeoA/GLqsIDEpm/Ybd6BznLjqoorHTT60=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=WbfWjeObGHC+1uZwb0O52MQMKjEYcGKJp+RQ+21BjRlYFwJHnP/yzqGVgm+XNk5y3
+         5Zz6bKY5Y+ZicFXoxGT/9iT7astxMPMrlFX7cfl4mMRiDzskN1pj1tP+x59CA40/av
+         ro9L/K3XP/hppmy5W7rNB7w2AckdOkG3nRTPTieoOp9VPoZaAChL+TY/aPvEyH5gav
+         6MM9yEjQT5IsQT58RwgZ5rrKdfvlxAEN5GeP345qWqaF+4BR9WAzZprbr6MtUFZcVv
+         0DwGhQGe1V4Khjlbu2Ueekap5NXo+6awuq8qw8UFoSq1VIbEey34x2DVt+IxI08A9H
+         xrFU0cF60JP2w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 50467C395E4;
+        Thu, 30 Dec 2021 02:30:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowACnrlqHGc1hLmPlBA--.17413S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Cry3Zry5Gw4UCr4DuryUJrb_yoW8Wr1kpw
-        4fAFWYgrW8X3WDuanrJr1kuF4kZan3tF4xG34ay345Jwnxt3sIyryvgFyUXr1qgrWDKF1r
-        tFW0k34fZFyDAFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
-        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4U
-        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
-        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
-        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
-        W8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
-        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbpwZ7UUUU
-        U==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Subject: Re: [net 1/2] net/mlx5e: TC,
+ Fix memory leak with rules with internal port
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164083141032.11132.2786231068394087418.git-patchwork-notify@kernel.org>
+Date:   Thu, 30 Dec 2021 02:30:10 +0000
+References: <20211229065352.30178-2-saeed@kernel.org>
+In-Reply-To: <20211229065352.30178-2-saeed@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        roid@nvidia.com, saeedm@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the possible failure of the ioremap(), the 'local->sram' and other
-two could be NULL.
-Therefore it should be better to check it in order to avoid the later
-dev_dbg.
+Hello:
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/net/wireless/ray_cs.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+This series was applied to netdev/net.git (master)
+by Saeed Mahameed <saeedm@nvidia.com>:
 
-diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
-index 590bd974d94f..556b9713e99c 100644
---- a/drivers/net/wireless/ray_cs.c
-+++ b/drivers/net/wireless/ray_cs.c
-@@ -382,6 +382,8 @@ static int ray_config(struct pcmcia_device *link)
- 		goto failed;
- 	local->sram = ioremap(link->resource[2]->start,
- 			resource_size(link->resource[2]));
-+	if (!local->sram)
-+		goto failed;
- 
- /*** Set up 16k window for shared memory (receive buffer) ***************/
- 	link->resource[3]->flags |=
-@@ -396,6 +398,8 @@ static int ray_config(struct pcmcia_device *link)
- 		goto failed;
- 	local->rmem = ioremap(link->resource[3]->start,
- 			resource_size(link->resource[3]));
-+	if (!local->rmem)
-+		goto failed;
- 
- /*** Set up window for attribute memory ***********************************/
- 	link->resource[4]->flags |=
-@@ -410,6 +414,8 @@ static int ray_config(struct pcmcia_device *link)
- 		goto failed;
- 	local->amem = ioremap(link->resource[4]->start,
- 			resource_size(link->resource[4]));
-+	if (!local->amem)
-+		goto failed;
- 
- 	dev_dbg(&link->dev, "ray_config sram=%p\n", local->sram);
- 	dev_dbg(&link->dev, "ray_config rmem=%p\n", local->rmem);
+On Tue, 28 Dec 2021 22:53:51 -0800 you wrote:
+> From: Roi Dayan <roid@nvidia.com>
+> 
+> Fix a memory leak with decap rule with internal port as destination
+> device. The driver allocates a modify hdr action but doesn't set
+> the flow attr modify hdr action which results in skipping releasing
+> the modify hdr action when releasing the flow.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/2] net/mlx5e: TC, Fix memory leak with rules with internal port
+    https://git.kernel.org/netdev/net/c/077cdda764c7
+  - [net,2/2] net/mlx5e: Fix wrong features assignment in case of error
+    https://git.kernel.org/netdev/net/c/992d8a4e38f0
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
