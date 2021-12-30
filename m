@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9485481BDD
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 13:01:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14500481BE0
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 13:01:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239118AbhL3MBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 07:01:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
+        id S239135AbhL3MBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 07:01:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235352AbhL3MBL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 07:01:11 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3466BC061574;
-        Thu, 30 Dec 2021 04:01:11 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so27782998pjj.2;
-        Thu, 30 Dec 2021 04:01:11 -0800 (PST)
+        with ESMTP id S239136AbhL3MBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 07:01:20 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274A7C061574;
+        Thu, 30 Dec 2021 04:01:20 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id c3so4886674pls.5;
+        Thu, 30 Dec 2021 04:01:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Sb4g3VsIegSPMmpYpqxjEW0uci7clyl11pHi9PsfY+E=;
-        b=Rvx/UFYTBER+iaj7RZaEpECqX8Mv2q+VOlYhJAh24HS2An/6ooKrjvfdI03B8E2qon
-         jDZgE9jieZrcvRs/m0F/Mlzo7BfMrQliosuTZz7e7EQddGC4QqkRI/MjuCuXIlLdISQu
-         TLG6TUz85bN6g3Lc1vur1CIgMuOxkED8gjdDa0jUb81gZgjIv532v/zMkDdn+WYcy15b
-         p1QW7qCxAIp8cBl8zGqh2DmkZSc5Atip3P/95Ka6ABRcpA3I5RrJT2UKGSraiQ6SOTdy
-         ZCoLCizQJKxsa25gXA/R51qjJoyHyaCnuZwq2XQEleV3PnOLNUHZuhBDwpoozpt6S4p7
-         xutA==
+        bh=Zo8MqU7um74x8FzU/Cge4ipaSqWEBCRhFz3uE6S7/GE=;
+        b=i/HzMOcV4lYhLZ4t43adzpIbSrK5BIqylqbtgWU599ncKVBhXaDK7e+XyQL+ddWLUl
+         tFkSMmjg2+tgtacKhJolp7mUlG/dOIr6Lb2u0eOl8hNgFMnqQBpac2zhn63I8ir/jWsU
+         uB8uoM9zu7bln35zW4m8QIoqEwC3UnkDY4H1hx0DvPfuwo2O/aVm2Q5vRQx8AlvtXnao
+         EXi42044hzYZE3kWJXICzlNirMsOriurO3Ag5TElHlvrh/C454bh/LVzNVodoxeADAk8
+         lWSFhJOkSynHG0NvBxTYzaQXRAe4mfdcnm53+Bl1i64ihyLTQtvVeVPKUYXgXuDhwkV+
+         fhsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Sb4g3VsIegSPMmpYpqxjEW0uci7clyl11pHi9PsfY+E=;
-        b=eVothtqyvnyRzNULwYrgY182Px57Ntg5Vc6LuSNLPRcdlQD2Yvip2UALHyEIkv4FRf
-         FUyt6+jdznSz3058//kQ4wUXCapKzIPM/NZBZdmKlrWd2vpjIQoPyyWYxQz2LArUI7Q2
-         6gygMvz1PFVNUODk4m3TWZl0bSAZxX6XHivIThZrlyDVoWxsMj/9Uk7FFUzdpmBAFB8M
-         EAnUNedSuNKnq8mFGrwSLB34VZQLoU5iu9STiZo2XrYDPpaXqmvpKQsMsv63jmZkbn1N
-         vHuTOoetD1Ca4fCs9PrMTJnR+4mj6CuGwNNOB318FO1yY2tzDIdgtpcUHaDMf+g3cMPl
-         qIpw==
-X-Gm-Message-State: AOAM531k4gCQVSSrV70VpnicCZVo3dh5yuZi48ghhlio0UHAfWj8u4N7
-        FSoOSgNwLLJn+ZALFkoU1rI=
-X-Google-Smtp-Source: ABdhPJwbl+HzdvlUGZW5Sb7kgep8oCfMyyHMb31gvcCY3Hov6qNKHpEGPnpURGzNcaQypGTUp58nzQ==
-X-Received: by 2002:a17:90b:4ac3:: with SMTP id mh3mr19574401pjb.220.1640865670532;
-        Thu, 30 Dec 2021 04:01:10 -0800 (PST)
+        bh=Zo8MqU7um74x8FzU/Cge4ipaSqWEBCRhFz3uE6S7/GE=;
+        b=j81mYbkKeIO3h31dATEg3stbbj+9UKEcb0aXBLWvKBurfnZfrtj58J3XbO5eZe8cyl
+         peVtMqXd0kGPbkXfGTVreJZwVeZP+DWZdHcpUz0ceTgfuL+dCnZJqnI+l0/wB79cMZCE
+         EJnQNJEurG5/q46nfQiXSxGAhN2jk05bOtOld/BHYWYR1SPujrQE6lD6XGhqpKboXuh/
+         oDQf90yG01fm2eV/kJxggyA006ra/nCHDe7lhD9dK+4HLldkcPD851RfTwVLiZDYfVJA
+         6T/rz3dTlo/YpNn5v5L+TKyMynGgf0o4AncEZ1D6WQD4+WKeFk5XY+qRBsL5LHE/0pfH
+         lDKA==
+X-Gm-Message-State: AOAM533oc9NoY5Wjbpx8lBnxqgVcu9Q2iISngaZVzUp+nEViun4k3IY4
+        wnUy/b7apKZtj4jB8YWii7M=
+X-Google-Smtp-Source: ABdhPJwN2YNvvBPxemF14e5XC0gLkj9dMX87HImTBE8sXe9NgyN2SvD2n20xcRp8cbZn5f6ASrGZpQ==
+X-Received: by 2002:a17:90a:d3c2:: with SMTP id d2mr17592450pjw.219.1640865679742;
+        Thu, 30 Dec 2021 04:01:19 -0800 (PST)
 Received: from integral2.. ([180.254.126.2])
-        by smtp.gmail.com with ESMTPSA id nn16sm30121257pjb.54.2021.12.30.04.01.07
+        by smtp.gmail.com with ESMTPSA id nn16sm30121257pjb.54.2021.12.30.04.01.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Dec 2021 04:01:10 -0800 (PST)
+        Thu, 30 Dec 2021 04:01:19 -0800 (PST)
 From:   Ammar Faizi <ammarfaizi2@gmail.com>
 To:     Jens Axboe <axboe@kernel.dk>
 Cc:     io-uring Mailing List <io-uring@vger.kernel.org>,
@@ -55,132 +55,78 @@ Cc:     io-uring Mailing List <io-uring@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Ammar Faizi <ammarfaizi2@gmail.com>,
         Nugra <richiisei@gmail.com>
-Subject: [RFC PATCH v2 0/3] io_uring: Add sendto(2) and recvfrom(2) support
-Date:   Thu, 30 Dec 2021 19:00:41 +0700
-Message-Id: <20211230114846.137954-1-ammar.faizi@intel.com>
+Subject: [RFC PATCH v2 1/3] io_uring: Rename `io_{send,recv}` to `io_{sendto,recvfrom}`
+Date:   Thu, 30 Dec 2021 19:00:42 +0700
+Message-Id: <20211230115057.139187-1-ammar.faizi@intel.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211230013250.103267-3-ammar.faizi@intel.com>
-References: 
+In-Reply-To: <20211230114846.137954-1-ammar.faizi@intel.com>
+References: <20211230114846.137954-1-ammar.faizi@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Currently we can perform `send` and `recv` via io_uring. And now, we
+are going to add `sendto` and `recvfrom` support for io_uring.
 
-This RFC patchset adds sendto(2) and recvfrom(2) support for io_uring.
-It also addresses an issue in the liburing GitHub repository [1].
+Note that:
+  Calling `send(fd, buf, len, flags)` is equivalent to calling
+  `sendto(fd, buf, len, flags, NULL, 0)`. Therefore, `sendto`
+  is a superset of `send`.
 
+  Calling `recv(fd, buf, len, flags)` is equivalent to calling
+  `recvfrom(fd, buf, len, flags, NULL, NULL)`. Therefore, `recvfrom`
+  is a superset of `recv`.
 
-## Motivations:
-1) By using `sendto()` and `recvfrom()` we can make the submission
-   simpler compared to always using `sendmsg()` and `recvmsg()` from
-   the userspace.
+As such, let's direct the current supported `IORING_OP_{SEND,RECV}` to
+`io_{sendto,recvfrom}`. These functions will also be used for
+`IORING_OP_{SENDTO,RECVFROM}` operation in the next patches.
 
-2) There is a historical patch that tried to add the same
-   functionality, but did not end up being applied. [2]
-
-On Tue, 7 Jul 2020 12:29:18 -0600, Jens Axboe <axboe@kernel.dk> wrote:
-> In a private conversation with the author, a good point was brought
-> up that the sendto/recvfrom do not require an allocation of an async
-> context, if we need to defer or go async with the request. I think
-> that's a major win, to be honest. There are other benefits as well
-> (like shorter path), but to me, the async less part is nice and will
-> reduce overhead
-
-
-## Changes summary
-There are 3 patches in this series.
-
-PATCH 1/3 renames io_recv to io_recvfrom and io_send to io_sendto.
-Note that
-
-    send(sockfd, buf, len, flags);
-
-  is equivalent to
-
-    sendto(sockfd, buf, len, flags, NULL, 0);
-
-and
-    recv(sockfd, buf, len, flags);
-
-  is equivalent to
-
-    recvfrom(sockfd, buf, len, flags, NULL, NULL);
-
-So it is saner to have `send` and `recv` directed to `sendto` and
-`recvfrom` instead of the opposite with respect to the name.
-
-
-PATCH 2/3 makes `move_addr_to_user()` be a non static function. This
-function lives in net/socket.c, we need to call this from io_uring
-to add `recvfrom()` support for liburing. Added net files maintainers
-to the CC list.
-
-PATCH 3/3 adds `sendto(2)` and `recvfrom(2)` support for io_uring.
-Added two new opcodes: IORING_OP_SENDTO and IORING_OP_RECVFROM.
-
-
-## How to test
-
-This patchset is based on "for-next" branch commit:
-
-  bb3294e22482db4b7ec7cfbb2d0f5b53c1adcf86 ("Merge branch 'for-5.17/drivers' into for-next")
-
-It is also available in the Git repository at:
-
-  https://github.com/ammarfaizi2/linux-block ammarfaizi2/linux-block/io_uring-recvfrom-sendto
-
-
-I also added the liburing support and test. The liburing support is
-based on "xattr-getdents64" branch commit:
-
-  55a9bf979f27f3a5c9f456f26dcfe16c4791667b ("src/include/liburing.h: style cleanups")
-
-It is available in the Git repository at:
-
-  https://github.com/ammarfaizi2/liburing sendto-recvfrom
-
----
-v2:
-  - Rebased the work, now this patchset is based on commit
-    bb3294e22482db4b7ec ("Merge branch 'for-5.17/drivers' into
-    for-next").
-
-  - In `io_recvfrom()`, mark the error check of `move_addr_to_user()`
-    call as unlikely.
-
-  - Fix build error when CONFIG_NET is undefined.
-
-  - Update liburing test (the branch is still the same, just force
-    pushed).
-
-  - Added Nugra to CC list (tester).
-
----
-RFC v1: https://lore.kernel.org/io-uring/20211230013154.102910-1-ammar.faizi@intel.com/
-Link: https://github.com/axboe/liburing/issues/397 [1]
-Link: https://lore.kernel.org/io-uring/a2399c89-2c45-375c-7395-b5caf556ec3d@kernel.dk/ [2]
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
 Cc: Nugra <richiisei@gmail.com>
 Signed-off-by: Ammar Faizi <ammarfaizi2@gmail.com>
 ---
-Ammar Faizi (3):
-  io_uring: Rename `io_{send,recv}` to `io_{sendto,recvfrom}`
-  net: Make `move_addr_to_user()` be a non static function
-  io_uring: Add `sendto(2)` and `recvfrom(2)` support
+ fs/io_uring.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
- fs/io_uring.c                 | 92 +++++++++++++++++++++++++++++++----
- include/linux/socket.h        |  2 +
- include/uapi/linux/io_uring.h |  2 +
- net/socket.c                  |  4 +-
- 4 files changed, 88 insertions(+), 12 deletions(-)
-
-
-base-commit: bb3294e22482db4b7ec7cfbb2d0f5b53c1adcf86
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 90002bb3fdf4..d564f98d5d3b 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -5273,7 +5273,7 @@ static int io_sendmsg(struct io_kiocb *req, unsigned int issue_flags)
+ 	return 0;
+ }
+ 
+-static int io_send(struct io_kiocb *req, unsigned int issue_flags)
++static int io_sendto(struct io_kiocb *req, unsigned int issue_flags)
+ {
+ 	struct io_sr_msg *sr = &req->sr_msg;
+ 	struct msghdr msg;
+@@ -5499,7 +5499,7 @@ static int io_recvmsg(struct io_kiocb *req, unsigned int issue_flags)
+ 	return 0;
+ }
+ 
+-static int io_recv(struct io_kiocb *req, unsigned int issue_flags)
++static int io_recvfrom(struct io_kiocb *req, unsigned int issue_flags)
+ {
+ 	struct io_buffer *kbuf;
+ 	struct io_sr_msg *sr = &req->sr_msg;
+@@ -7061,13 +7061,13 @@ static int io_issue_sqe(struct io_kiocb *req, unsigned int issue_flags)
+ 		ret = io_sendmsg(req, issue_flags);
+ 		break;
+ 	case IORING_OP_SEND:
+-		ret = io_send(req, issue_flags);
++		ret = io_sendto(req, issue_flags);
+ 		break;
+ 	case IORING_OP_RECVMSG:
+ 		ret = io_recvmsg(req, issue_flags);
+ 		break;
+ 	case IORING_OP_RECV:
+-		ret = io_recv(req, issue_flags);
++		ret = io_recvfrom(req, issue_flags);
+ 		break;
+ 	case IORING_OP_TIMEOUT:
+ 		ret = io_timeout(req, issue_flags);
 -- 
 2.32.0
 
