@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF44E481B26
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 10:33:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 589E2481B28
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 10:33:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238333AbhL3JdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 04:33:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58872 "EHLO
+        id S238373AbhL3JdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 04:33:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238250AbhL3JdL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 04:33:11 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0FFC06173E;
-        Thu, 30 Dec 2021 01:33:11 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id 7so8358813pgn.0;
-        Thu, 30 Dec 2021 01:33:11 -0800 (PST)
+        with ESMTP id S238389AbhL3JdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 04:33:17 -0500
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8620DC061401;
+        Thu, 30 Dec 2021 01:33:17 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id w24so17852588ply.12;
+        Thu, 30 Dec 2021 01:33:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XpmOdo48v0qorMGRdhSjMbUK9NGsQvJ8d68QyMk6C44=;
-        b=W4wXqbBhjMsExgMq12VwD9kkaHiiMGAjooi6wH1pc7N6bz3HMwHLSklbyUNiJSu2eM
-         KnCdfmmq8KJnJUX2GGNuwrwSSYKqUWhE3EP6f9kJibCu9EaCa1E0IuMD28FGbu2XeSU/
-         S2mnDExTRn9GFwRS/QieMnK+bTv8x1/4DBzK1/UcRYpBpAZ+Sq56ssq6oafo6vnoONAM
-         mUZyaNGiT0ZJylB8F1Kq43rvS6Ii3sLeEUbbixlc2xwaHOnQSIIA16weQb8Bk8w4qP64
-         KSDSWiiowaZg1evwOyEonVeZ3HImV1eTzYwFvQM0Kl9AqYw2lNOzBNOj97TArJj+p3sp
-         YSBw==
+        bh=hLhOt4oAKEoBQ8Mh83vcTQErz7uX8CzDjKjnYPRBdKw=;
+        b=TjZFYY6aMR6riflOoKrCejyNab82OH6OFe5xmQCvrj1Ou95VB5wdiqBP0a1KM+M8aQ
+         VVZ4Lr+Mc8DGhOgq5p0Hbr1nLBu/6wLqQxqhgKA1CfijnJk6aLCqp44tqXFXUlyLWMfm
+         YV/K4Hog2KLFk6PnzG2qODTF5Txb4tXKj4Tx1UCovClQESZc8nilmCdN0994EQQmvYgF
+         YMpGIu8ho6GjlG/7ToRV5AhApKgOq26n9sdo/rrpaEUwnN4n6qxDTAn0HYHOcHj+eez4
+         KJPswjLnr2r+mToLukpuWZ3tbJgDQtIqOBfct7m2Uk/67bXl+dSZe1/ZEV53j0LvAQoZ
+         Fs1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XpmOdo48v0qorMGRdhSjMbUK9NGsQvJ8d68QyMk6C44=;
-        b=0YVAS8Qo0E8x78CrFfvGKaQL2pPni9o1gijdV87r5WsvWCtc3Jn5iZsDrihOlBq1i7
-         35JrHTKFG6Z85u82EqRSz/m41LjtjaLP9sdU0pZpXF7THF84/PS/gSydpbudoY6lNmi5
-         0TzS6G81Xv3Df9o/uRmc2bsqdj3nl/PBRUvaEM6Mjrmw3OSvXF4WKR4MXBTncsuQNgiA
-         kiHGL6ajN/wS/ztNoq+0H60v6piw94h57VtQz3+uDyDOzbsNYBelm5zpQECO9vCWLXuI
-         Qb/wGDE2qnf4DgJpid/gThYy39xxzIhQz5wWgq6MKEXNu/0nonUx6zZ8leTxsFLRagVb
-         QiRQ==
-X-Gm-Message-State: AOAM532CGCDRU6t/c+l8R6UGJT1CDUllyjl8VHlpKcXQRZjKYKjFAbU5
-        /ILlw8AX4lztjEQR5MYZL0Q=
-X-Google-Smtp-Source: ABdhPJyaeZtLd+AeE8YLqhMSR+mMGi2UJ9FzTaQLtbdU18hnXXj4L6Eu4Hy+acrk5Qu/AjG73a/uWg==
-X-Received: by 2002:a63:575c:: with SMTP id h28mr26513220pgm.171.1640856791070;
-        Thu, 30 Dec 2021 01:33:11 -0800 (PST)
+        bh=hLhOt4oAKEoBQ8Mh83vcTQErz7uX8CzDjKjnYPRBdKw=;
+        b=JsgEmJXfo+jf3fLkYFn5LUJMudAKnkqGuPj9CAsKZRhNMFypsctWdZorC8r0aupR0R
+         CULCjfiHFn7KttVx530S9l1jLfrq43y36e5SC2M0nuxJ4lL2EtEBj2mMfm2rItDiuxTQ
+         CG3VZql6XsyuoNdCivEKpEvqpYngsw5Rjyh+XO4B/8w6j3xePOpw8gRiQfaS+Istl0nm
+         niqZFrztX45wP5Bo5vfEzQXWssqm1QT0qeBXVl7cwyMzY7DhqIDm7u9yGRNmcfmkwJor
+         Q8rQcbPSoCvWCdGep8INZ6t5Mqq0N9osej9Avwb9Dj6Cj7bUb2Qlj7rnyDbIJ1R1JXfA
+         WmrQ==
+X-Gm-Message-State: AOAM531pgvGVwmMnZdGLTaN7TtK+GC6ZLmj+Hej2JkObyWMokkU2MgHL
+        ojHrJP5OnWa/TVsUmK9JMpA=
+X-Google-Smtp-Source: ABdhPJxlPxVRcx3M5gcSjYd6AAzcuxgZwfM/7FrYYkG14UdtPr3Z3v7FOBuP1VfLqaqFaxskxHOZTQ==
+X-Received: by 2002:a17:903:32c7:b0:149:7657:bbaf with SMTP id i7-20020a17090332c700b001497657bbafmr21373356plr.156.1640856797104;
+        Thu, 30 Dec 2021 01:33:17 -0800 (PST)
 Received: from localhost.localdomain ([43.132.141.9])
-        by smtp.gmail.com with ESMTPSA id f4sm23231052pfj.25.2021.12.30.01.33.06
+        by smtp.gmail.com with ESMTPSA id f4sm23231052pfj.25.2021.12.30.01.33.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Dec 2021 01:33:10 -0800 (PST)
+        Thu, 30 Dec 2021 01:33:16 -0800 (PST)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     rostedt@goodmis.org, dsahern@kernel.org
@@ -59,9 +59,9 @@ Cc:     mingo@redhat.com, davem@davemloft.net, kuba@kernel.org,
         vvs@virtuozzo.com, cong.wang@bytedance.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         mengensun@tencent.com, mungerjiang@tencent.com
-Subject: [PATCH v2 net-next 2/3] net: skb: use kfree_skb_with_reason() in tcp_v4_rcv()
-Date:   Thu, 30 Dec 2021 17:32:39 +0800
-Message-Id: <20211230093240.1125937-3-imagedong@tencent.com>
+Subject: [PATCH net-next 3/3] net: skb: use kfree_skb_with_reason() in __udp4_lib_rcv()
+Date:   Thu, 30 Dec 2021 17:32:40 +0800
+Message-Id: <20211230093240.1125937-4-imagedong@tencent.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20211230093240.1125937-1-imagedong@tencent.com>
 References: <20211230093240.1125937-1-imagedong@tencent.com>
@@ -73,127 +73,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Replace kfree_skb() with kfree_skb_with_reason() in tcp_v4_rcv().
-Following drop reason are added:
-
-SKB_DROP_REASON_NO_SOCKET
-SKB_DROP_REASON_PKT_TOO_SMALL
-SKB_DROP_REASON_TCP_CSUM
-SKB_DROP_REASON_TCP_FILTER
-
-After this patch, 'kfree_skb' event will print message like this:
-
-$           TASK-PID     CPU#  |||||  TIMESTAMP  FUNCTION
-$              | |         |   |||||     |         |
-          <idle>-0       [000] ..s1.    36.113438: kfree_skb: skbaddr=(____ptrval____) protocol=2048 location=(____ptrval____) reason: NO_SOCKET
-
-The reason of skb drop is printed too.
+Replace kfree_skb() with kfree_skb_with_reason() in __udp4_lib_rcv.
+New drop reason 'SKB_DROP_REASON_UDP_CSUM' is added for udp csum
+error.
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
-v2:
-- rename some reason name as David suggested
-- add the new reason: SKB_DROP_REASON_TCP_FILTER
----
- include/linux/skbuff.h     |  4 ++++
- include/trace/events/skb.h |  4 ++++
- net/ipv4/tcp_ipv4.c        | 14 +++++++++++---
- 3 files changed, 19 insertions(+), 3 deletions(-)
+ include/linux/skbuff.h     |  1 +
+ include/trace/events/skb.h |  1 +
+ net/ipv4/udp.c             | 10 ++++++++--
+ 3 files changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 3620b3ff2154..43cb3b75b5af 100644
+index 43cb3b75b5af..f0c6949fd19c 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -313,6 +313,10 @@ struct sk_buff;
-  */
- enum skb_drop_reason {
- 	SKB_DROP_REASON_NOT_SPECIFIED,
-+	SKB_DROP_REASON_NO_SOCKET,
-+	SKB_DROP_REASON_PKT_TOO_SMALL,
-+	SKB_DROP_REASON_TCP_CSUM,
-+	SKB_DROP_REASON_TCP_FILTER,
+@@ -317,6 +317,7 @@ enum skb_drop_reason {
+ 	SKB_DROP_REASON_PKT_TOO_SMALL,
+ 	SKB_DROP_REASON_TCP_CSUM,
+ 	SKB_DROP_REASON_TCP_FILTER,
++	SKB_DROP_REASON_UDP_CSUM,
  	SKB_DROP_REASON_MAX,
  };
  
 diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index cab1c08a30cd..c6f4ecf6781e 100644
+index c6f4ecf6781e..f616547dddc6 100644
 --- a/include/trace/events/skb.h
 +++ b/include/trace/events/skb.h
-@@ -11,6 +11,10 @@
- 
- #define TRACE_SKB_DROP_REASON					\
- 	EM(SKB_DROP_REASON_NOT_SPECIFIED, NOT_SPECIFIED)	\
-+	EM(SKB_DROP_REASON_NO_SOCKET, NO_SOCKET)		\
-+	EM(SKB_DROP_REASON_PKT_TOO_SMALL, PKT_TOO_SMALL)	\
-+	EM(SKB_DROP_REASON_TCP_CSUM, TCP_CSUM)			\
-+	EM(SKB_DROP_REASON_TCP_FILTER, TCP_FILTER)		\
+@@ -15,6 +15,7 @@
+ 	EM(SKB_DROP_REASON_PKT_TOO_SMALL, PKT_TOO_SMALL)	\
+ 	EM(SKB_DROP_REASON_TCP_CSUM, TCP_CSUM)			\
+ 	EM(SKB_DROP_REASON_TCP_FILTER, TCP_FILTER)		\
++	EM(SKB_DROP_REASON_UDP_CSUM, UDP_CSUM)			\
  	EMe(SKB_DROP_REASON_MAX, HAHA_MAX)
  
  #undef EM
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index ac10e4cdd8d0..61832949fc93 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1971,8 +1971,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 	const struct tcphdr *th;
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index f376c777e8fc..463a5adcaacf 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -2410,6 +2410,9 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 	__be32 saddr, daddr;
+ 	struct net *net = dev_net(skb->dev);
  	bool refcounted;
- 	struct sock *sk;
 +	int drop_reason;
- 	int ret;
- 
++
 +	drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 	if (skb->pkt_type != PACKET_HOST)
- 		goto discard_it;
  
-@@ -1984,8 +1986,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 	/*
+ 	 *  Validate the packet.
+@@ -2465,6 +2468,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 	if (udp_lib_checksum_complete(skb))
+ 		goto csum_error;
  
- 	th = (const struct tcphdr *)skb->data;
- 
--	if (unlikely(th->doff < sizeof(struct tcphdr) / 4))
-+	if (unlikely(th->doff < sizeof(struct tcphdr) / 4)) {
-+		drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
- 		goto bad_packet;
-+	}
- 	if (!pskb_may_pull(skb, th->doff * 4))
- 		goto discard_it;
- 
-@@ -2090,8 +2094,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 
- 	nf_reset_ct(skb);
- 
--	if (tcp_filter(sk, skb))
-+	if (tcp_filter(sk, skb)) {
-+		drop_reason = SKB_DROP_REASON_TCP_FILTER;
- 		goto discard_and_relse;
-+	}
- 	th = (const struct tcphdr *)skb->data;
- 	iph = ip_hdr(skb);
- 	tcp_v4_fill_cb(skb, iph, th);
-@@ -2124,6 +2130,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 	return ret;
- 
- no_tcp_socket:
 +	drop_reason = SKB_DROP_REASON_NO_SOCKET;
- 	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb))
- 		goto discard_it;
+ 	__UDP_INC_STATS(net, UDP_MIB_NOPORTS, proto == IPPROTO_UDPLITE);
+ 	icmp_send(skb, ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, 0);
  
-@@ -2131,6 +2138,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 
- 	if (tcp_checksum_complete(skb)) {
- csum_error:
-+		drop_reason = SKB_DROP_REASON_TCP_CSUM;
- 		trace_tcp_bad_csum(skb);
- 		__TCP_INC_STATS(net, TCP_MIB_CSUMERRORS);
- bad_packet:
-@@ -2141,7 +2149,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 
- discard_it:
- 	/* Discard frame. */
+@@ -2472,10 +2476,11 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 	 * Hmm.  We got an UDP packet to a port to which we
+ 	 * don't wanna listen.  Ignore it.
+ 	 */
 -	kfree_skb(skb);
 +	kfree_skb_with_reason(skb, drop_reason);
  	return 0;
  
- discard_and_relse:
+ short_packet:
++	drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
+ 	net_dbg_ratelimited("UDP%s: short packet: From %pI4:%u %d/%d to %pI4:%u\n",
+ 			    proto == IPPROTO_UDPLITE ? "Lite" : "",
+ 			    &saddr, ntohs(uh->source),
+@@ -2488,6 +2493,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 	 * RFC1122: OK.  Discards the bad packet silently (as far as
+ 	 * the network is concerned, anyway) as per 4.1.3.4 (MUST).
+ 	 */
++	drop_reason = SKB_DROP_REASON_UDP_CSUM;
+ 	net_dbg_ratelimited("UDP%s: bad checksum. From %pI4:%u to %pI4:%u ulen %d\n",
+ 			    proto == IPPROTO_UDPLITE ? "Lite" : "",
+ 			    &saddr, ntohs(uh->source), &daddr, ntohs(uh->dest),
+@@ -2495,7 +2501,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 	__UDP_INC_STATS(net, UDP_MIB_CSUMERRORS, proto == IPPROTO_UDPLITE);
+ drop:
+ 	__UDP_INC_STATS(net, UDP_MIB_INERRORS, proto == IPPROTO_UDPLITE);
+-	kfree_skb(skb);
++	kfree_skb_with_reason(skb, drop_reason);
+ 	return 0;
+ }
+ 
 -- 
 2.30.2
 
