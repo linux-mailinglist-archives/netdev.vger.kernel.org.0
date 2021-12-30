@@ -2,61 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3BC8481EAB
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 18:43:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD68481EC0
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 18:50:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241481AbhL3Rnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 12:43:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54038 "EHLO
+        id S236109AbhL3Ruq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 12:50:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231386AbhL3Rn3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 12:43:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB9D3C061574
-        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 09:43:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47B1E61710
-        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 17:43:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F1E1C36AE7;
-        Thu, 30 Dec 2021 17:43:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640886208;
-        bh=0UTH7Khp+VY00Lf2AIxPNp30Hher7GGpnu9jWmTGLtU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=W9Y/mM/hmm/LvjDoXvoeakBACPnkmgj0VMhsQyK7TfrIXnE3RbvPfOkJRDqvYKhQ5
-         QiPhgo8biLgcmLgLyOtzaWbtrQasj06R8HuoGEZiefyMR7nVdDbWC0Whq6aCwJ69wr
-         gohGih6NrPRtw4pqypyrGMhISrpAy9BwDMfg+yI9qPPmFEu4Qdet2kOIrFwDYfMx2I
-         Ga3Ood4xPGv3DhZ9k0a5VbIzpfCTFHcMCoSMyUj5megm2nWIDbWsXh/DZi3lGH1X3Y
-         +Y6q21zMjZb6+0leBJvuAETWe9F3njQMHlQmt9YZX3IUpW+lMusj+q9YCjxhZu/JBf
-         MskQP8o+cFLOQ==
-Date:   Thu, 30 Dec 2021 09:43:27 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dimitris Michailidis <d.michailidis@fungible.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 8/8] net/fungible: Kconfig, Makefiles, and
- MAINTAINERS
-Message-ID: <20211230094327.69429188@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20211230163909.160269-9-dmichail@fungible.com>
-References: <20211230163909.160269-1-dmichail@fungible.com>
-        <20211230163909.160269-9-dmichail@fungible.com>
+        with ESMTP id S229914AbhL3Rup (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 12:50:45 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E29C061574;
+        Thu, 30 Dec 2021 09:50:45 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id b22so21904483pfb.5;
+        Thu, 30 Dec 2021 09:50:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XD1PBLWCU+Wd5wgLSL4PPf6wiHtTvn/c3ckq8ac1Qlo=;
+        b=iZcBNzqqZEPdGcPvtFpJW1L763zW4VB2am4IknSlJpiW4SDwYbEGbgyfSVAFiFc+Ij
+         Pna+3VXxavyn6t28BGKwHaS62q5ekLcF6zQZVTxSoEK0bJr0+W1Pu4+mNTZ9/BWl80oL
+         R/a0Pa2Beobu8zOk/RHvywQBGJf4sG0ZDtbao6iWeT4uyLnR7AfV7ic3TyqtyazRRmeI
+         44Nk5XfEWItfDBSef5B6dNeH1UNMA4JRHMOzSO0+PkfLNohqtezZKFrXScvRQoRTRCCk
+         dZM6UCdwaiBn7TQOqzzW+6OqesV9WC4YmJ0IgXXQmvQl7WohaGxz32VRbrVV7JsmLAwI
+         uj2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XD1PBLWCU+Wd5wgLSL4PPf6wiHtTvn/c3ckq8ac1Qlo=;
+        b=o0XXgpzgykVHXcAOeCRJYaCy/413CtoPQ21zrkTNcXIFWA+fIne15IJ0kKUJ7SLsfe
+         ftC6MlxKPOhkK2Ie1LplxC+ihJV72Kbt0Lua7wL/zxY1XRLiNCXMPQx3Vi0linAzMnF6
+         bBuj5BrPXDc6nhYnMwiQ1LwTI9CZZgE6Ni2bNbDaMph1O3gT13mT+8gwk1EEgf7Fe6zb
+         I3Z0sC/8EH+dp89EBop9401Mv0IT2h7oVi6XN1MAtiOD+svYXH2P+JG6zyeOWGYQn6w5
+         RVyXcjDe3ihEYfCtvDBoFIckUZoMjuS7cSNirDjQ7lRyy55pIxksSYg66EikNmEoshY1
+         0nPQ==
+X-Gm-Message-State: AOAM532oKIkd8um1m9oCHwBIpbUsZTiiQSjVXYy/HT6z2NwDb+6oQQkD
+        KgRbh6DaSl9rHwYulPbVvLk=
+X-Google-Smtp-Source: ABdhPJxmUXSCIaytsRADgXQo1VF1eD7leC83pLPvYJ6+CAc5oCVzJZ0wmSppKXiZEO3+vSCpQtUVkA==
+X-Received: by 2002:a63:b34c:: with SMTP id x12mr17059473pgt.541.1640886644567;
+        Thu, 30 Dec 2021 09:50:44 -0800 (PST)
+Received: from integral2.. ([180.254.126.2])
+        by smtp.gmail.com with ESMTPSA id s34sm29980811pfg.198.2021.12.30.09.50.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Dec 2021 09:50:44 -0800 (PST)
+From:   Ammar Faizi <ammarfaizi2@gmail.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     io-uring Mailing List <io-uring@vger.kernel.org>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ammar Faizi <ammarfaizi2@gmail.com>,
+        Nugra <richiisei@gmail.com>
+Subject: [RFC PATCH liburing v1 0/5] liburing: Add sendto(2) and recvfrom(2) support
+Date:   Fri, 31 Dec 2021 00:50:14 +0700
+Message-Id: <20211230174548.178641-1-ammar.faizi@intel.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Dec 2021 08:39:09 -0800 Dimitris Michailidis wrote:
-> Hook up the new driver to configuration and build.
-> 
-> Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
+Hello,
 
-New drivers must build cleanly with W=1 C=1. This one doesn't build at all:
+I submitted an RFC patchset to add sendto(2) and recvfrom(2) support
+for io_uring. This RFC patchset adds the support for the liburing.
 
-drivers/net/ethernet/fungible/funeth/funeth.h:10:10: fatal error: fun_dev.h: No such file or directory
-   10 | #include "fun_dev.h"
-      |          ^~~~~~~~~~~
+There are 5 patches in this series. 4 from me. 1 from Nugra.
 
+For PATCH 1/5, it is just a .gitignore clean up.
+
+## Changes Summary
+ - Update io_uring.h header (sync with the kernel).
+
+ - Add `io_uring_prep_{sendto,sendto}` functions.
+
+ - Add test program for `IORING_OP_SENDTO` and `IORING_OP_RECVFROM`.
+
+ - Add documentation for `io_uring_prep_{sendto,sendto}` functions.
+
+
+## How to test
+
+This patchset is based on branch "xattr-getdents64" commit:
+
+  18d71076f6c97e1b25aa0e3b0e12a913ec4717fa ("src/include/liburing.h: style cleanups")
+
+
+Signed-off-by: Nugra <richiisei@gmail.com>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gmail.com>
+---
+
+Ammar Faizi (4):
+  .gitignore: Add `/test/xattr` and `/test/getdents`
+  io_uring.h: Add `IORING_OP_SENDTO` and `IORING_OP_RECVFROM`
+  liburing.h: Add `io_uring_prep_{sendto,sendto}` helper
+  test: Add sendto_recvfrom test program
+
+Nugra (1):
+  man: Add `io_uring_prep_{sendto,recvfrom}` docs
+
+ .gitignore                      |   3 +
+ man/io_uring_prep_recvfrom.3    |  33 +++
+ man/io_uring_prep_sendto.3      |  34 +++
+ src/include/liburing.h          |  22 ++
+ src/include/liburing/io_uring.h |   2 +
+ test/Makefile                   |   2 +
+ test/sendto_recvfrom.c          | 384 ++++++++++++++++++++++++++++++++
+ 7 files changed, 480 insertions(+)
+ create mode 100644 man/io_uring_prep_recvfrom.3
+ create mode 100644 man/io_uring_prep_sendto.3
+ create mode 100644 test/sendto_recvfrom.c
+
+
+base-commit: 18d71076f6c97e1b25aa0e3b0e12a913ec4717fa
+-- 
+2.32.0
 
