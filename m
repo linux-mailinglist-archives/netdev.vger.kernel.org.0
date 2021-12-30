@@ -2,69 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B748148192A
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 05:00:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5632F48192D
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 05:00:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235670AbhL3EAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 23:00:25 -0500
-Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:44413 "EHLO
-        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229558AbhL3EAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 23:00:25 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R901e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V0Ii-rQ_1640836822;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0V0Ii-rQ_1640836822)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 30 Dec 2021 12:00:23 +0800
-Date:   Thu, 30 Dec 2021 12:00:22 +0800
-From:   "dust.li" <dust.li@linux.alibaba.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>,
-        Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, tonylu@linux.alibaba.com
-Subject: Re: [RFC PATCH net v2 2/2] net/smc: Resolve the race between SMC-R
- link access and clear
-Message-ID: <20211230040022.GC55356@linux.alibaba.com>
-Reply-To: dust.li@linux.alibaba.com
-References: <1640704432-76825-1-git-send-email-guwen@linux.alibaba.com>
- <1640704432-76825-3-git-send-email-guwen@linux.alibaba.com>
- <7311029c-2c56-d9c7-9ed5-87bc6a36511f@linux.ibm.com>
+        id S235704AbhL3EAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 23:00:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235692AbhL3EAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 23:00:48 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C53EC061574;
+        Wed, 29 Dec 2021 20:00:48 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id h1so14136235pls.11;
+        Wed, 29 Dec 2021 20:00:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aulNbFPCcjXwCXZwEfInFO0zkigoTVrqB4tOC/J40PY=;
+        b=I6VFi5bBovASXleoCsxW2hMexWoAPvtGac+HfZRpC/AgPmPrxdoGGrMtfSaJmMPznt
+         pYyiU1MfsynufUQrHGEY+cYYPyXaPa7BjQJxVfdj74uLTUDNDq1WT0QWNnjf3dx1Vh0K
+         PfUTwglfxTb7/zNcBXpMIUR2vLJ8jIPZBS1RNDTH0S+vyoeVVO1BtAyXEPXh4nMf3tEi
+         O1R/0FQM1pK166ETicrNGSGV1GUyi7Wqz9b2x2LPo/mDV9sgFA7dBr5lnBkqh2JpcCQF
+         kS0xRaQkS1uBCxiB0+Ug8VD2GQ8P2zoBCzmuC8DCoUH8PQdMO0lue/zsS/zkVQ8suqgi
+         vxAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aulNbFPCcjXwCXZwEfInFO0zkigoTVrqB4tOC/J40PY=;
+        b=5jFl1C7AqLGz2V6raXDBIUkNhDbecbALMevhX8JKDS8mS2s8QiPctXpjU4bIPLNhCJ
+         KpinogqhWYAQgfcBPp8R3EukF0Pz9wa66Z0a5dg70tU/0+jLtGU1nNlcafRZNVjqMPr0
+         r2QxqTUXrmdSEqE0St6OMoKyjtPS7ErAf5F6AAakOCoTQIi8nFqt02ErXHYWwJESwfZ2
+         pMoPBgoF8q7dz1ciHEfMCm6Dh1gTdpFTq0YF8a7ULcmrMlenHRxEbVrJx2SFVjV/cWKA
+         NWBsPBK6mSFInlYSmcK+V/iyOKM3txmO/40MXYl51R/Kpui0BBc4A9Eu85WbQmULIPwE
+         A0SA==
+X-Gm-Message-State: AOAM533GHzGIyGgUayiIou7rD3QGd7wRXv8IJvTca395AmoXnNXLh6ML
+        dhQx//03Cy4zDLomtI2fOo5GSIRrLHyqJwDt04YGYBpd
+X-Google-Smtp-Source: ABdhPJwXqLwtF3TmVOnQxiCm8I7Zcoupa6hvU0jLBVqISMQNeVhd82MG6ZztSOOW9N0TZBcW97T+7GNzzZ7voTMyhIE=
+X-Received: by 2002:a17:902:c443:b0:148:f689:d924 with SMTP id
+ m3-20020a170902c44300b00148f689d924mr29428656plm.78.1640836847380; Wed, 29
+ Dec 2021 20:00:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7311029c-2c56-d9c7-9ed5-87bc6a36511f@linux.ibm.com>
+References: <CAFcO6XMpbL4OsWy1Pmsnvf8zut7wFXdvY_KofR-m0WK1Bgutpg@mail.gmail.com>
+ <CAADnVQJK5mPOB7B4KBa6q1NRYVQx1Eya5mtNb6=L0p-BaCxX=w@mail.gmail.com> <CAFcO6XMxZqQo4_C7s0T2dv3JRn4Vq4RDFqJO6ZQFr6kZzsnx9g@mail.gmail.com>
+In-Reply-To: <CAFcO6XMxZqQo4_C7s0T2dv3JRn4Vq4RDFqJO6ZQFr6kZzsnx9g@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 29 Dec 2021 20:00:36 -0800
+Message-ID: <CAADnVQ+HJnZOqGjXKXut51BUqi=+na4cj=PFaE35u9QwZDgeVQ@mail.gmail.com>
+Subject: Re: A slab-out-of-bounds Read bug in __htab_map_lookup_and_delete_batch
+To:     butt3rflyh4ck <butterflyhuangxx@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 29, 2021 at 01:51:27PM +0100, Karsten Graul wrote:
->On 28/12/2021 16:13, Wen Gu wrote:
->> We encountered some crashes caused by the race between SMC-R
->> link access and link clear triggered by link group termination
->> in abnormal case, like port error.
+On Wed, Dec 29, 2021 at 7:24 PM butt3rflyh4ck
+<butterflyhuangxx@gmail.com> wrote:
 >
->Without to dig deeper into this, there is already a refcount for links, see smc_wr_tx_link_hold().
->In smc_wr_free_link() there are waits for the refcounts to become zero.
->
->Why do you need to introduce another refcounting instead of using the existing?
->And if you have a good reason, do we still need the existing refcounting with your new
->implementation?
->
->Maybe its enough to use the existing refcounting in the other functions like smc_llc_flow_initiate()?
->
->Btw: it is interesting what kind of crashes you see, we never met them in our setup.
+> Hi, the attachment is a reproducer. Enjoy it.
 
-We are trying to using SMC + RDMA to boost application performance,
-we now have a product in the cloud called ERDMA which can be used
-in the virtual machine.
+Please do not top-post.
+Forwarding a syzbot reproducer with zero effort to analyze
+what's going on is kinda lame.
+Maybe try harder and come up with a fix?
+Or at least try git bisect and based on a commit find and
+cc an author so it can be fixed (assuming issue still exists
+in bpf-next) ?
 
-We are testing SMC with link down/up with short flow cases since
-in the cloud environment the RDMA device may be plugged in/out
-frequently, and there are many different applications, some of them
-may have pretty much short flows.
+> Regards,
+>    butt3rflyh4ck.
 
->Its great to see you evaluating SMC in a cloud environment!
-
-Thanks! We are trying to use SMC to boost performance for cloud
-applications, and we hope SMC can be more generic and widely used.
-
+Better stay humble.
