@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C21848191A
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 04:58:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45F6B48191C
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 04:58:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235580AbhL3D6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 22:58:24 -0500
+        id S235591AbhL3D62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 22:58:28 -0500
 Received: from mga11.intel.com ([192.55.52.93]:3816 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233004AbhL3D6Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Dec 2021 22:58:24 -0500
+        id S233004AbhL3D62 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Dec 2021 22:58:28 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640836704; x=1672372704;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=qA4qXuFzsM17bl0+F2oanP1CfIWqGLkjjVJzEV1J2zo=;
-  b=E/dFu0CDa7s3TZypsF9k+sUy6hWPXYBdFnePGSqNZ9bSyfvA/qgsvj+t
-   KiAdQR3mjs8uyaZf+xxxUEfQ/B+u5uGOZVcEk7ipheKaIlhN76cxAry4U
-   rt6JHJChIrcWqp5UJkaRpy3yUQwoQIv6TwX+glTkm4CDhT+dhTQicN+ID
-   aISEua7XPqR5gzSuNIhEk/CkUMI2DegwTWKMkS5cwI72/JDYTaxMSojqZ
-   KHDV7+A7iLzR739P7W0cWgZOyKvNRmOnglGxBKUI35Z+IoGd6BdEEQ4Ii
-   JItpd3wzAtm9KBk/y4TNGf9fjZ9hbrc5ZLdiEIbw6DxhRedZQtjLauYxW
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10212"; a="239154609"
+  t=1640836708; x=1672372708;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=XH+OH2B7oAGbJjGlDAbt1/kCzbYLah1qjhrfWjUB6Sg=;
+  b=cZJKbwPsMpNy2Z+K/HuC/599xExi3aeOpw7MY0lHkIFgcgORBiamSsQl
+   L/Jm59Uw8HFYwHTxI7napPcn/LOUf9uEGrLm6rmnXLl2zxnOw7ZRh1Kuw
+   L2gnz5PZ2BkdymawJzBtuL/G8QQAoJh2iIubBtDIBXwGgmJBljD+gHboy
+   krtkYC+UsWWqcEkpO6KOvpFegE7sLw5V7qzE7DFIbXQzFwdZWwdxOeLoW
+   jaGBRrBClTQHdUBJntCkmadbeJKLtq8hJu5ElGm3EYpj0UFuLyex9CTis
+   3MPoLJzUFnwZhFh/RuLoLuQdUX735lCjn+GxQOjzkYxqrm5gbeaP5dXQa
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10212"; a="239154616"
 X-IronPort-AV: E=Sophos;i="5.88,247,1635231600"; 
-   d="scan'208";a="239154609"
+   d="scan'208";a="239154616"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2021 19:58:23 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2021 19:58:28 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,247,1635231600"; 
-   d="scan'208";a="609801520"
+   d="scan'208";a="609801526"
 Received: from p12hl98bong5.png.intel.com ([10.158.65.178])
-  by FMSMGA003.fm.intel.com with ESMTP; 29 Dec 2021 19:58:20 -0800
+  by FMSMGA003.fm.intel.com with ESMTP; 29 Dec 2021 19:58:24 -0800
 From:   Ong Boon Leong <boon.leong.ong@intel.com>
 To:     bjorn@kernel.org, Magnus Karlsson <magnus.karlsson@intel.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
@@ -49,162 +49,205 @@ To:     bjorn@kernel.org, Magnus Karlsson <magnus.karlsson@intel.com>,
         KP Singh <kpsingh@kernel.org>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH bpf-next v2 0/7] samples/bpf: xdpsock app enhancements
-Date:   Thu, 30 Dec 2021 11:54:40 +0800
-Message-Id: <20211230035447.523177-1-boon.leong.ong@intel.com>
+Subject: [PATCH bpf-next v2 1/7] samples/bpf: xdpsock: add VLAN support for Tx-only operation
+Date:   Thu, 30 Dec 2021 11:54:41 +0800
+Message-Id: <20211230035447.523177-2-boon.leong.ong@intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20211230035447.523177-1-boon.leong.ong@intel.com>
+References: <20211230035447.523177-1-boon.leong.ong@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-First of all, sorry for taking more time to get back to this series and
-thanks to all valuble feedback in series-1 at [1] from Jesper and Song
-Liu.
+In multi-queue environment testing, the support for VLAN-tag based
+steering is useful. So, this patch adds the capability to add
+VLAN tag (VLAN ID and Priority) to the generated Tx frame.
 
-Since then I have looked into what Jesper suggested in [2] and worked on
-revising the patch series into several patches for ease of review:
+To set the VLAN ID=10 and Priority=2 for Tx only through TxQ=3:
+ $ xdpsock -i eth0 -t -N -z -q 3 -V -J 10 -K 2
 
-v1->v2:
-1/7: [No change]. Add VLAN tag (ID & Priority) to the generated Tx-Only
-     frames.
+If VLAN ID (-J) and Priority (-K) is set, it default to
+  VLAN ID = 1
+  VLAN Priority = 0.
 
-2/7: [No change]. Add DMAC and SMAC setting to the generated Tx-Only
-     frames. If parameters are not set, previous DMAC and SMAC are used.
+For example, VLAN-tagged Tx only, xdp copy mode through TxQ=1:
+ $ xdpsock -i eth0 -t -N -c -q 1 -V
 
-3/7: [New]. Add support for selecting different CLOCK for clock_gettime()
-     used in get_nsecs.
+Acked-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+---
+ samples/bpf/xdpsock_user.c | 90 +++++++++++++++++++++++++++++++-------
+ 1 file changed, 75 insertions(+), 15 deletions(-)
 
-4/7: [New]. This is a total rework from series-1 3/4-patch [3]. It uses
-     clock_nanosleep() suggested by Jesper. In addition, added statistic
-     for Tx schedule variance under application stat (-a|--app-stats).
-     Make the cyclic Tx operation and --poll mode to be mutually-
-     exclusive. Still, the ability to specify TX cycle time and used
-     together with batch size and packet count remain the same.
-
-5/7: [New]. Add the support for TX process schedule policy and priority
-     setting. By default, SCHED_OTHER policy is used. This too is matching
-     the schedule policy setting in [2].
-
-6/7: [Change]. This is update from series-1 4/4-patch [4]. Added TX clean
-     process time-out in 1s granularity with configurable retries count
-     (-O|--retries).
-
-7/7: [New]. Added timestamp for TX packet following pktgen_hdr format
-     matching the implementation in [2]. However, the sequence ID remains
-     the same as it is instead of process schedule diff in [2].
-
-To summarize on what program options have been added with v2 series
-using an example below:-
-
- DMAC (-G)                 = fa:8d:f1:e2:0b:e8
- SMAC (-H)                 = ce:17:07:17:3e:3a
-
- VLAN tagged (-V)
- VLAN ID (-J)              = 12
- VLAN Pri (-K)             = 3
-
- Tx Queue (-q)             = 3
- Cycle Time in us (-T)     = 1000
- Batch (-b)                = 2
- Packet Count              = 6
- Tx schedule policy (-W)   = FIFO
- Tx schedule priority (-U) = 50
- Clock selection (-w)      = REALTIME
-
- Tx timeout retries(-O)    = 5
- Tx timestamp (-y)
- Cyclic Tx schedule stat (-a)
-
-Note: xdpsock sets UDP dest-port and src-port to 0x1000 as default.
-
- Sending Board
- =============
- $ xdpsock -i eth0 -t -N -z -H ce:17:07:17:3e:3a -G fa:8d:f1:e2:0b:e8 \
-   -V -J 12 -K 3 -q 3 \
-   -T 1000 -b 2 -C 6 -W FIFO -U 50 -w REALTIME \
-   -O 5 -y -a
-
-  sock0@eth0:3 txonly xdp-drv
-                    pps            pkts           0.00
- rx                 0              0
- tx                 0              6
-
-                    calls/s        count
- rx empty polls     0              0
- fill fail polls    0              0
- copy tx sendtos    0              0
- tx wakeup sendtos  0              5
- opt polls          0              0
-
-                    period     min        ave        max        cycle
- Cyclic TX          1000000    31033      32009      33397      3
-
- Receiving Board
- ===============
- $ tcpdump -nei eth0 udp port 0x1000 -vv -Q in -X \
-    --time-stamp-precision nano
-tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
-03:46:40.520111580 ce:17:07:17:3e:3a > fa:8d:f1:e2:0b:e8, ethertype 802.1Q (0x8100), length 62: vlan 12, p 3, ethertype IPv4, (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 44)
-    10.10.10.16.4096 > 10.10.10.32.4096: [udp sum ok] UDP, length 16
-        0x0000:  4500 002c 0000 0000 4011 527e 0a0a 0a10  E..,....@.R~....
-        0x0010:  0a0a 0a20 1000 1000 0018 e997 be9b e955  ...............U
-        0x0020:  0000 0000 61cd 2ba1 0006 987c            ....a.+....|
-03:46:40.520112163 ce:17:07:17:3e:3a > fa:8d:f1:e2:0b:e8, ethertype 802.1Q (0x8100), length 62: vlan 12, p 3, ethertype IPv4, (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 44)
-    10.10.10.16.4096 > 10.10.10.32.4096: [udp sum ok] UDP, length 16
-        0x0000:  4500 002c 0000 0000 4011 527e 0a0a 0a10  E..,....@.R~....
-        0x0010:  0a0a 0a20 1000 1000 0018 e996 be9b e955  ...............U
-        0x0020:  0000 0001 61cd 2ba1 0006 987c            ....a.+....|
-03:46:40.521066860 ce:17:07:17:3e:3a > fa:8d:f1:e2:0b:e8, ethertype 802.1Q (0x8100), length 62: vlan 12, p 3, ethertype IPv4, (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 44)
-    10.10.10.16.4096 > 10.10.10.32.4096: [udp sum ok] UDP, length 16
-        0x0000:  4500 002c 0000 0000 4011 527e 0a0a 0a10  E..,....@.R~....
-        0x0010:  0a0a 0a20 1000 1000 0018 e5af be9b e955  ...............U
-        0x0020:  0000 0002 61cd 2ba1 0006 9c62            ....a.+....b
-03:46:40.521067012 ce:17:07:17:3e:3a > fa:8d:f1:e2:0b:e8, ethertype 802.1Q (0x8100), length 62: vlan 12, p 3, ethertype IPv4, (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 44)
-    10.10.10.16.4096 > 10.10.10.32.4096: [udp sum ok] UDP, length 16
-        0x0000:  4500 002c 0000 0000 4011 527e 0a0a 0a10  E..,....@.R~....
-        0x0010:  0a0a 0a20 1000 1000 0018 e5ae be9b e955  ...............U
-        0x0020:  0000 0003 61cd 2ba1 0006 9c62            ....a.+....b
-03:46:40.522061935 ce:17:07:17:3e:3a > fa:8d:f1:e2:0b:e8, ethertype 802.1Q (0x8100), length 62: vlan 12, p 3, ethertype IPv4, (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 44)
-    10.10.10.16.4096 > 10.10.10.32.4096: [udp sum ok] UDP, length 16
-        0x0000:  4500 002c 0000 0000 4011 527e 0a0a 0a10  E..,....@.R~....
-        0x0010:  0a0a 0a20 1000 1000 0018 e1c5 be9b e955  ...............U
-        0x0020:  0000 0004 61cd 2ba1 0006 a04a            ....a.+....J
-03:46:40.522062173 ce:17:07:17:3e:3a > fa:8d:f1:e2:0b:e8, ethertype 802.1Q (0x8100), length 62: vlan 12, p 3, ethertype IPv4, (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 44)
-    10.10.10.16.4096 > 10.10.10.32.4096: [udp sum ok] UDP, length 16
-        0x0000:  4500 002c 0000 0000 4011 527e 0a0a 0a10  E..,....@.R~....
-        0x0010:  0a0a 0a20 1000 1000 0018 e1c4 be9b e955  ...............U
-        0x0020:  0000 0005 61cd 2ba1 0006 a04a            ....a.+....J
-
-I have tested the above with both tagged and untagged packet format and
-based on the timestamp in tcpdump found that the timing of the batch
-cyclic transmission is correct.
-
-Appreciate if community can give the patch series v2 a try and point out
-any gap.
-
-Thanks
-Boon Leong
-
-[1] https://patchwork.kernel.org/project/netdevbpf/cover/20211124091821.3916046-1-boon.leong.ong@intel.com/
-[2] https://github.com/netoptimizer/network-testing/blob/master/src/udp_pacer.c
-[3] https://patchwork.kernel.org/project/netdevbpf/patch/20211124091821.3916046-4-boon.leong.ong@intel.com/
-[4] https://patchwork.kernel.org/project/netdevbpf/patch/20211124091821.3916046-5-boon.leong.ong@intel.com/
-
-Ong Boon Leong (7):
-  samples/bpf: xdpsock: add VLAN support for Tx-only operation
-  samples/bpf: xdpsock: add Dest and Src MAC setting for Tx-only
-    operation
-  samples/bpf: xdpsock: add clockid selection support
-  samples/bpf: xdpsock: add cyclic TX operation capability
-  samples/bpf: xdpsock: add sched policy and priority support
-  samples/bpf: xdpsock: add time-out for cleaning Tx
-  samples/bpf: xdpsock: add timestamp for Tx-only operation
-
- samples/bpf/xdpsock_user.c | 363 ++++++++++++++++++++++++++++++++++---
- 1 file changed, 341 insertions(+), 22 deletions(-)
-
+diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
+index 616d663d55a..d5e298ccf49 100644
+--- a/samples/bpf/xdpsock_user.c
++++ b/samples/bpf/xdpsock_user.c
+@@ -56,6 +56,12 @@
+ 
+ #define DEBUG_HEXDUMP 0
+ 
++#define VLAN_PRIO_MASK		0xe000 /* Priority Code Point */
++#define VLAN_PRIO_SHIFT		13
++#define VLAN_VID_MASK		0x0fff /* VLAN Identifier */
++#define VLAN_VID__DEFAULT	1
++#define VLAN_PRI__DEFAULT	0
++
+ typedef __u64 u64;
+ typedef __u32 u32;
+ typedef __u16 u16;
+@@ -81,6 +87,9 @@ static u32 opt_batch_size = 64;
+ static int opt_pkt_count;
+ static u16 opt_pkt_size = MIN_PKT_SIZE;
+ static u32 opt_pkt_fill_pattern = 0x12345678;
++static bool opt_vlan_tag;
++static u16 opt_pkt_vlan_id = VLAN_VID__DEFAULT;
++static u16 opt_pkt_vlan_pri = VLAN_PRI__DEFAULT;
+ static bool opt_extra_stats;
+ static bool opt_quiet;
+ static bool opt_app_stats;
+@@ -101,6 +110,14 @@ static u32 prog_id;
+ static bool opt_busy_poll;
+ static bool opt_reduced_cap;
+ 
++struct vlan_ethhdr {
++	unsigned char h_dest[6];
++	unsigned char h_source[6];
++	__be16 h_vlan_proto;
++	__be16 h_vlan_TCI;
++	__be16 h_vlan_encapsulated_proto;
++};
++
+ struct xsk_ring_stats {
+ 	unsigned long rx_npkts;
+ 	unsigned long tx_npkts;
+@@ -740,11 +757,13 @@ static inline u16 udp_csum(u32 saddr, u32 daddr, u32 len,
+ 
+ #define ETH_FCS_SIZE 4
+ 
+-#define PKT_HDR_SIZE (sizeof(struct ethhdr) + sizeof(struct iphdr) + \
++#define ETH_HDR_SIZE (opt_vlan_tag ? sizeof(struct vlan_ethhdr) : \
++		      sizeof(struct ethhdr))
++#define PKT_HDR_SIZE (ETH_HDR_SIZE + sizeof(struct iphdr) + \
+ 		      sizeof(struct udphdr))
+ 
+ #define PKT_SIZE		(opt_pkt_size - ETH_FCS_SIZE)
+-#define IP_PKT_SIZE		(PKT_SIZE - sizeof(struct ethhdr))
++#define IP_PKT_SIZE		(PKT_SIZE - ETH_HDR_SIZE)
+ #define UDP_PKT_SIZE		(IP_PKT_SIZE - sizeof(struct iphdr))
+ #define UDP_PKT_DATA_SIZE	(UDP_PKT_SIZE - sizeof(struct udphdr))
+ 
+@@ -752,17 +771,42 @@ static u8 pkt_data[XSK_UMEM__DEFAULT_FRAME_SIZE];
+ 
+ static void gen_eth_hdr_data(void)
+ {
+-	struct udphdr *udp_hdr = (struct udphdr *)(pkt_data +
+-						   sizeof(struct ethhdr) +
+-						   sizeof(struct iphdr));
+-	struct iphdr *ip_hdr = (struct iphdr *)(pkt_data +
+-						sizeof(struct ethhdr));
+-	struct ethhdr *eth_hdr = (struct ethhdr *)pkt_data;
+-
+-	/* ethernet header */
+-	memcpy(eth_hdr->h_dest, "\x3c\xfd\xfe\x9e\x7f\x71", ETH_ALEN);
+-	memcpy(eth_hdr->h_source, "\xec\xb1\xd7\x98\x3a\xc0", ETH_ALEN);
+-	eth_hdr->h_proto = htons(ETH_P_IP);
++	struct udphdr *udp_hdr;
++	struct iphdr *ip_hdr;
++
++	if (opt_vlan_tag) {
++		struct vlan_ethhdr *veth_hdr = (struct vlan_ethhdr *)pkt_data;
++		u16 vlan_tci = 0;
++
++		udp_hdr = (struct udphdr *)(pkt_data +
++					    sizeof(struct vlan_ethhdr) +
++					    sizeof(struct iphdr));
++		ip_hdr = (struct iphdr *)(pkt_data +
++					  sizeof(struct vlan_ethhdr));
++
++		/* ethernet & VLAN header */
++		memcpy(veth_hdr->h_dest, "\x3c\xfd\xfe\x9e\x7f\x71", ETH_ALEN);
++		memcpy(veth_hdr->h_source, "\xec\xb1\xd7\x98\x3a\xc0", ETH_ALEN);
++		veth_hdr->h_vlan_proto = htons(ETH_P_8021Q);
++		vlan_tci = opt_pkt_vlan_id & VLAN_VID_MASK;
++		vlan_tci |= (opt_pkt_vlan_pri << VLAN_PRIO_SHIFT) & VLAN_PRIO_MASK;
++		veth_hdr->h_vlan_TCI = htons(vlan_tci);
++		veth_hdr->h_vlan_encapsulated_proto = htons(ETH_P_IP);
++	} else {
++		struct ethhdr *eth_hdr = (struct ethhdr *)pkt_data;
++
++		udp_hdr = (struct udphdr *)(pkt_data +
++					    sizeof(struct ethhdr) +
++					    sizeof(struct iphdr));
++		ip_hdr = (struct iphdr *)(pkt_data +
++					  sizeof(struct ethhdr));
++
++		/* ethernet header */
++		memcpy(eth_hdr->h_dest, "\x3c\xfd\xfe\x9e\x7f\x71", ETH_ALEN);
++		memcpy(eth_hdr->h_source, "\xec\xb1\xd7\x98\x3a\xc0", ETH_ALEN);
++		eth_hdr->h_proto = htons(ETH_P_IP);
++	}
++
+ 
+ 	/* IP header */
+ 	ip_hdr->version = IPVERSION;
+@@ -920,6 +964,9 @@ static struct option long_options[] = {
+ 	{"tx-pkt-count", required_argument, 0, 'C'},
+ 	{"tx-pkt-size", required_argument, 0, 's'},
+ 	{"tx-pkt-pattern", required_argument, 0, 'P'},
++	{"tx-vlan", no_argument, 0, 'V'},
++	{"tx-vlan-id", required_argument, 0, 'J'},
++	{"tx-vlan-pri", required_argument, 0, 'K'},
+ 	{"extra-stats", no_argument, 0, 'x'},
+ 	{"quiet", no_argument, 0, 'Q'},
+ 	{"app-stats", no_argument, 0, 'a'},
+@@ -960,6 +1007,9 @@ static void usage(const char *prog)
+ 		"			(Default: %d bytes)\n"
+ 		"			Min size: %d, Max size %d.\n"
+ 		"  -P, --tx-pkt-pattern=nPacket fill pattern. Default: 0x%x\n"
++		"  -V, --tx-vlan        Send VLAN tagged  packets (For -t|--txonly)\n"
++		"  -J, --tx-vlan-id=n   Tx VLAN ID [1-4095]. Default: %d (For -V|--tx-vlan)\n"
++		"  -K, --tx-vlan-pri=n  Tx VLAN Priority [0-7]. Default: %d (For -V|--tx-vlan)\n"
+ 		"  -x, --extra-stats	Display extra statistics.\n"
+ 		"  -Q, --quiet          Do not display any stats.\n"
+ 		"  -a, --app-stats	Display application (syscall) statistics.\n"
+@@ -969,7 +1019,8 @@ static void usage(const char *prog)
+ 		"\n";
+ 	fprintf(stderr, str, prog, XSK_UMEM__DEFAULT_FRAME_SIZE,
+ 		opt_batch_size, MIN_PKT_SIZE, MIN_PKT_SIZE,
+-		XSK_UMEM__DEFAULT_FRAME_SIZE, opt_pkt_fill_pattern);
++		XSK_UMEM__DEFAULT_FRAME_SIZE, opt_pkt_fill_pattern,
++		VLAN_VID__DEFAULT, VLAN_PRI__DEFAULT);
+ 
+ 	exit(EXIT_FAILURE);
+ }
+@@ -981,7 +1032,7 @@ static void parse_command_line(int argc, char **argv)
+ 	opterr = 0;
+ 
+ 	for (;;) {
+-		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:xQaI:BR",
++		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:VJ:K:xQaI:BR",
+ 				long_options, &option_index);
+ 		if (c == -1)
+ 			break;
+@@ -1062,6 +1113,15 @@ static void parse_command_line(int argc, char **argv)
+ 		case 'P':
+ 			opt_pkt_fill_pattern = strtol(optarg, NULL, 16);
+ 			break;
++		case 'V':
++			opt_vlan_tag = true;
++			break;
++		case 'J':
++			opt_pkt_vlan_id = atoi(optarg);
++			break;
++		case 'K':
++			opt_pkt_vlan_pri = atoi(optarg);
++			break;
+ 		case 'x':
+ 			opt_extra_stats = 1;
+ 			break;
 -- 
 2.25.1
 
