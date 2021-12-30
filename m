@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 082FD4818A4
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 03:37:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF8274818A6
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 03:37:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234971AbhL3ChS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 21:37:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52614 "EHLO
+        id S234982AbhL3ChT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 21:37:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234954AbhL3ChQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 21:37:16 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F953C06173E;
-        Wed, 29 Dec 2021 18:37:15 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id 200so20257488pgg.3;
-        Wed, 29 Dec 2021 18:37:15 -0800 (PST)
+        with ESMTP id S234959AbhL3ChS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 21:37:18 -0500
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD59C061574;
+        Wed, 29 Dec 2021 18:37:18 -0800 (PST)
+Received: by mail-pf1-x443.google.com with SMTP id c2so20195187pfc.1;
+        Wed, 29 Dec 2021 18:37:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7v1RMRkuFj4G6xAOfpI/bF6UhKve5y7okLLeaIxFT3A=;
-        b=Ebujbor4hyvwEX+lPWMaGPDZKKwsx+o+oPNJd2Jiz6fdbSFK/oquEp8Z60ECN0TmxF
-         C13kw1uEDGS5eOzOd/J3dq+XOAmu+PBTspote3UGk1Guveq7+/jG4n7V3iJwAw0rExaj
-         gpxfzYOHtWYfqCCGRcakRgYMgskpRSDx27od+i52o+vI5o2D9DR12wg+y+kb2O0Cmonw
-         GkjHq9txGHq+xoFWqlK5ogFXiMA1hhecb71syxg3yMkF6k5qu5qpeuSPe+LYTVRHudPh
-         8TnlTSzwWAZR/N+dvY4ZmnbvG9JiIzztYAgxJ2d15ldZQgpZQ85wTRORZ6rveYpGKqfm
-         +ViA==
+        bh=WM5oD1Byg/t6Sbbjt4usMoaSXxzVr3wYCRglQIFf25Q=;
+        b=o3CjyFOQWk5AC5itRB8KodMVnXHZpK8lnhAOKoLhozpiaZE56cEStdx5Jg91lZuiaS
+         oqAzGdGSZImuN8iF7D8BRgvBx/KzPivWG/0E9WLoNYX2AwiPqVAlLkvxuUm/f6f3yk6N
+         /cI/vh4vBSgIl7CH9Tt6dge5qWEX8qGcBdL/Nn2Wkvt5paSyxyFfAPdwXlC7f0ImMLIw
+         5wH2172C2hUjJHWMrAgdwW9Z+J5U64xZOy6qvqO9QY7OPw9YQXsEyE6w08QkCNGX0vhz
+         Kmub28oAuSbg3rxw75wCpGVUkgihTa23uIaWMoutM5LSGG4iGNocxWpMh21cIHKf9Wts
+         vn6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7v1RMRkuFj4G6xAOfpI/bF6UhKve5y7okLLeaIxFT3A=;
-        b=lCLS9vQnrzKBcHCqwDtgOwD9wyCGW2EtWRVEpaBPaOf8o/jBU3qLvm/H1irE+H8XUu
-         txzXBM6miLnm99CNjaJ+x89GfISBAYo4txgpHu3f+IOyBDHPc46ctvJDEZzd51tW0W+H
-         FEhfemxOT6Xm07F/z0Rtqxx7BNHTclF24SRyWvhbROtop1MlxTAvjcFsUSrNxeQGz9WK
-         cuCrS4kaZOO2G9cFspgCXbVNCkKREnYA+jlHBiHH5x8pcUDqh9+mpHDlDbm+WL4/pU8g
-         wjJCdxBqiF24NSTBoaD6f6pmyPMHkByKK+t5S9lxnmphjOvcjt/6oKlzgiRq3SLEmLm2
-         mg0Q==
-X-Gm-Message-State: AOAM533D1MvgUktucq1FGu3Uf3MOQYSouUJgqF314dKiH21yOTNLbh0I
-        oWJ6LF4p8pu3fYyO48FnsDc9+R4tsEA=
-X-Google-Smtp-Source: ABdhPJzSiaCr7IHSwfzGjVW1+Hg3lQFxShzx0nTyw6gvX2tiFofJbuOsfLNa1/1euC5B2/tgsAjUhQ==
-X-Received: by 2002:a63:6a49:: with SMTP id f70mr25921548pgc.244.1640831834762;
-        Wed, 29 Dec 2021 18:37:14 -0800 (PST)
+        bh=WM5oD1Byg/t6Sbbjt4usMoaSXxzVr3wYCRglQIFf25Q=;
+        b=HL0K2/PSBrbiuhNkhifRA1Na+WJSHEsXGM/eW2TRUY2Hxyku0Q2SIqraKgO40+6mIT
+         GA6XecYIDYYT3wcMy1BwD8mCJUWQsufmYq09HbyC31jZhdnRYo4/e2brtNUMwFHPRSwT
+         nDGg9p/VQ5nGHj3Rk9mhqklodLEo8wrOiOIXmyXSAUSPagNE5eP7XB5FDrGosn04h9r4
+         8+BbLfBbw/cBZXEdZ2y5x2M6Adft04CdJBE2Ce4thr30cgLvNEtOnvyZGaQtqQ8ipBdF
+         ihXSGYAJuE2ZVtOJ/Bcm3q4LbaU9lvQFx0C4AU5cS3m0iDcT2cKBYNWPmLK8IXGTTNCw
+         eYHA==
+X-Gm-Message-State: AOAM530oA73SK6vJqdOr+vSHT1ebPPtB4703uVkDgkKj6DOixjt+uvBB
+        ZjY3vQnVUmEznwPbiS7YRdClpbRuAAU=
+X-Google-Smtp-Source: ABdhPJw9ub+WY5Pt3+oMTBBtq6OvCNORNy7x0p+5Lv/8KVP83CLY1h8mYv07uCTNiG7XHmW4caB1SQ==
+X-Received: by 2002:a63:b959:: with SMTP id v25mr20205561pgo.573.1640831837746;
+        Wed, 29 Dec 2021 18:37:17 -0800 (PST)
 Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id c17sm25977793pfc.163.2021.12.29.18.37.14
+        by smtp.gmail.com with ESMTPSA id f7sm23069470pfc.141.2021.12.29.18.37.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Dec 2021 18:37:14 -0800 (PST)
+        Wed, 29 Dec 2021 18:37:17 -0800 (PST)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         netfilter-devel@vger.kernel.org
@@ -61,512 +61,512 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Florian Westphal <fw@strlen.de>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf-next v5 2/9] bpf: Prepare kfunc BTF ID sets when parsing kernel BTF
-Date:   Thu, 30 Dec 2021 08:06:58 +0530
-Message-Id: <20211230023705.3860970-3-memxor@gmail.com>
+Subject: [PATCH bpf-next v5 3/9] bpf: Remove check_kfunc_call callback and old kfunc BTF ID API
+Date:   Thu, 30 Dec 2021 08:06:59 +0530
+Message-Id: <20211230023705.3860970-4-memxor@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211230023705.3860970-1-memxor@gmail.com>
 References: <20211230023705.3860970-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=14942; h=from:subject; bh=yfZs0iMFP/tsKe7SiiX8t+sBleMKMgjpw7VLf3GL+Cg=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhzRr9eB1u1lrO8gIOriHiqjl4CdC9C0X8EhmcBPz7 fPG1lUeJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYc0a/QAKCRBM4MiGSL8RygIMD/ 42y0cJ8e8ZVS1Kfij4T4wwF1WFHof5TRa+sGcxL1VNQGuy/AOY0x7zSg7I+rU8JhiJwL7m7hqG2M6e nfKKbvR+KXZZndDniIy8Hy7yzc+gFY4NRAzxSiv9sQxFroRpj2+zEbj7lgLaiQTHiekSvm7r0BbBqu yLX5pmfrV6y6nKTsEtiXVIapFqE81B/j4wCOPpGfVqGi4LCj7W/iFl4L5QFvmN/wkS22eqHNHh3XVU zPoZ/E62ZYjtUs+EefqmyCOnh7ca9hHbdDow1ltV4fMz4lM936TAfHqKoF+Ss7+aEca4ap3OgI79yb AP2uGF6HhoWCKVOBl26lQDOG8qseL1JfEBgXopNonpowQmlc/ixqpnjU8tvtIpGON1Kl1OlMOX3qZv dnTqXPxQ5qSsKMTnKVKZQMOy3GKlUxVCiYmJlPFBLLIo3ODEc6dhyuGKd8BSiwuTvlS/6mO+Qcpxu8 8gR1U8B38ZWR0skuKvas0Ke0DIrmVsuHpuiJwuzF/m9xAXYZw0SWRaXWapV1/L2ixuDo4/mS7wN9t0 xmSN6i4Tw/Cs/BA2pqNReeJN/muusPa5ogRDhhY9LZ51QOWG/03F7NbSh5lLqu49vgMA6mYrdVzcWJ 1ZGJ0a9W9NBlprTjegur/dm730IBZDIRhSG5p6JkShgonqp5R9mJf4pG/F5A==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=17005; h=from:subject; bh=XUnv8DMXqQDwcp1DhXfFt5bSP7odVUmpnz03ia6Ar2A=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBhzRr9FseVawTd2CgXgQfZfveNOU3GQHEoDJuHSh45 l5RN5b+JAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYc0a/QAKCRBM4MiGSL8RymOnEA CHQM3hdZIPuck0jUBLzc7AE5jfMgvJJFMJQqmEx3jBacQ4QQ2brTUm5+2PS6323mhJKAeV7kfMQZks 8mAbiuABqJGfBCZCC05VwsLGqts21MuAP6NGRqbUYbGFgT96fRQC6jv2jhpIxoOohunofwbiJm5aUr eSlE9eeaYdYTZbESn4qNmX/nB703JfQM3e0sFXsEID6isQWXTafigb323fYpCFaxMBFZXqUAdwKPsw iqL78JAkIAtwPc0K9wDykmeLWVBNzgS2SAeOLlFm9WgRUyDyTuIZtAXWgrk3YdU53Q744nX1aHphhI pHpxERG7bBsqryN4QJLu2+cFrFLdDI0uIYuXmXDaSm/98V65E5nqM75R/qviP4TbHDIp/7Ge9QPz8f w25PeC298OjVuPPilFo8I5+dfAiian22hv5XUEXjq7sT/YrKu120sXS4ABHSaRPAHkHgqITTwsYu+B EXGf7kh+rmse7qWE0FAUFFkhI6N/vvNZPLB+dzDd4YeZNFJPib8+FP0y6M+z5w/kYZS4GGUowOa21p 9HaOv9umT1PLdpZLBMEgxgX+F/HtIFE+MSllqDnhNA8OKT1f2Tgk1nw0phT17NI5j9yA+CVAV1aAmt J/aqWW4jgN2QwHO/fYgGmmhBAWWZz6n9Qt1Gd1n+xB/imGDN2wJdNUx1znMQ==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit prepares the BTF parsing functions for vmlinux and module
-BTFs to find all kfunc BTF ID sets from the vmlinux and module symbols
-and concatentate all sets into single unified set which is sorted and
-keyed by the 'hook' it is meant for, and 'type' of set.
+Completely remove the old code for check_kfunc_call to help it work
+with modules.
 
-The 'hook' is one of the many program types, e.g. XDP and TC/SCHED_CLS,
-STRUCT_OPS, and 'types' are check (allowed or not), acquire, release,
-and ret_null (with PTR_TO_BTF_ID_OR_NULL return type).
+The previous commit finds all symbols in vmlinux or modules while
+parsing and preparing their BTF, and concatenates all related sets
+organized by the hook and the type. Then, they are sorted to enable
+bsearch using btf_id_set_contains.
 
-A maximum of BTF_KFUNC_SET_MAX_CNT (32) kfunc BTF IDs are permitted in a
-set of certain hook and type. They are also allocated on demand, and
-otherwise set as NULL.
-
-A new btf_kfunc_id_set_contains function is exposed for use in verifier,
-this new method is faster than the existing list searching method, and
-is also automatic. It also lets other code not care whether the set is
-unallocated or not.
-
-Next commit will update the kernel users to make use of this
-infrastructure.
-
-Finally, add __maybe_unused annotation for BTF ID macros for the
-!CONFIG_DEBUG_INFO_BTF case , so that they don't produce warnings during
-build time.
+Also, since we don't need the 'owner' module anywhere when doing
+check_kfunc_call, drop the 'btf_modp' module parameter from
+find_kfunc_desc_btf.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-
-fixup maybe_unused
 ---
- include/linux/btf.h     |  25 ++++
- include/linux/btf_ids.h |  20 ++-
- kernel/bpf/btf.c        | 275 +++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 312 insertions(+), 8 deletions(-)
+ include/linux/bpf.h                           |  8 ----
+ include/linux/btf.h                           | 44 -----------------
+ kernel/bpf/btf.c                              | 48 -------------------
+ kernel/bpf/verifier.c                         | 20 ++++----
+ net/bpf/test_run.c                            | 11 +----
+ net/core/filter.c                             |  1 -
+ net/ipv4/bpf_tcp_ca.c                         | 12 +----
+ net/ipv4/tcp_bbr.c                            | 15 ++----
+ net/ipv4/tcp_cubic.c                          | 15 ++----
+ net/ipv4/tcp_dctcp.c                          | 15 ++----
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 15 ++----
+ 11 files changed, 24 insertions(+), 180 deletions(-)
 
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index 0c74348cbc9d..48ac2dc437a2 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -300,6 +300,21 @@ static inline const struct btf_var_secinfo *btf_type_var_secinfo(
- 	return (const struct btf_var_secinfo *)(t + 1);
- }
- 
-+enum btf_kfunc_hook {
-+	BTF_KFUNC_HOOK_XDP,
-+	BTF_KFUNC_HOOK_TC,
-+	BTF_KFUNC_HOOK_STRUCT_OPS,
-+	_BTF_KFUNC_HOOK_MAX,
-+};
-+
-+enum btf_kfunc_type {
-+	BTF_KFUNC_TYPE_CHECK,
-+	BTF_KFUNC_TYPE_ACQUIRE,
-+	BTF_KFUNC_TYPE_RELEASE,
-+	BTF_KFUNC_TYPE_RET_NULL,
-+	_BTF_KFUNC_TYPE_MAX,
-+};
-+
- #ifdef CONFIG_BPF_SYSCALL
- struct bpf_prog;
- 
-@@ -307,6 +322,9 @@ const struct btf_type *btf_type_by_id(const struct btf *btf, u32 type_id);
- const char *btf_name_by_offset(const struct btf *btf, u32 offset);
- struct btf *btf_parse_vmlinux(void);
- struct btf *bpf_prog_get_target_btf(const struct bpf_prog *prog);
-+bool btf_kfunc_id_set_contains(const struct btf *btf,
-+			       enum bpf_prog_type prog_type,
-+			       enum btf_kfunc_type type, u32 kfunc_btf_id);
- #else
- static inline const struct btf_type *btf_type_by_id(const struct btf *btf,
- 						    u32 type_id)
-@@ -318,6 +336,13 @@ static inline const char *btf_name_by_offset(const struct btf *btf,
- {
- 	return NULL;
- }
-+static inline bool btf_kfunc_id_set_contains(const struct btf *btf,
-+					     enum bpf_prog_type prog_type,
-+					     enum btf_kfunc_type type,
-+					     u32 kfunc_btf_id)
-+{
-+	return false;
-+}
- #endif
- 
- struct kfunc_btf_id_set {
-diff --git a/include/linux/btf_ids.h b/include/linux/btf_ids.h
-index 919c0fde1c51..835fbf626ef1 100644
---- a/include/linux/btf_ids.h
-+++ b/include/linux/btf_ids.h
-@@ -11,6 +11,7 @@ struct btf_id_set {
- #ifdef CONFIG_DEBUG_INFO_BTF
- 
- #include <linux/compiler.h> /* for __PASTE */
-+#include <linux/compiler_attributes.h> /* for __maybe_unused */
- 
- /*
-  * Following macros help to define lists of BTF IDs placed
-@@ -144,17 +145,24 @@ asm(							\
- ".popsection;                                 \n");	\
- extern struct btf_id_set name;
- 
-+#define BTF_KFUNC_SET_START(hook, type, name)			\
-+	BTF_SET_START(btf_kfunc_set_##hook##_##type##_##name)
-+#define BTF_KFUNC_SET_END(hook, type, name)                     \
-+	BTF_SET_END(btf_kfunc_set_##hook##_##type##_##name)
-+
- #else
- 
--#define BTF_ID_LIST(name) static u32 name[5];
-+#define BTF_ID_LIST(name) static u32 __maybe_unused name[5];
- #define BTF_ID(prefix, name)
- #define BTF_ID_UNUSED
--#define BTF_ID_LIST_GLOBAL(name, n) u32 name[n];
--#define BTF_ID_LIST_SINGLE(name, prefix, typename) static u32 name[1];
--#define BTF_ID_LIST_GLOBAL_SINGLE(name, prefix, typename) u32 name[1];
--#define BTF_SET_START(name) static struct btf_id_set name = { 0 };
--#define BTF_SET_START_GLOBAL(name) static struct btf_id_set name = { 0 };
-+#define BTF_ID_LIST_GLOBAL(name, n) u32 __maybe_unused name[n];
-+#define BTF_ID_LIST_SINGLE(name, prefix, typename) static u32 __maybe_unused name[1];
-+#define BTF_ID_LIST_GLOBAL_SINGLE(name, prefix, typename) u32 __maybe_unused name[1];
-+#define BTF_SET_START(name) static struct btf_id_set __maybe_unused name = { 0 };
-+#define BTF_SET_START_GLOBAL(name) static struct btf_id_set __maybe_unused name = { 0 };
- #define BTF_SET_END(name)
-+#define BTF_KFUNC_SET_START(hook, type, name) BTF_SET_START(name)
-+#define BTF_KFUNC_SET_END(hook, type, name) BTF_SET_END(name)
- 
- #endif /* CONFIG_DEBUG_INFO_BTF */
- 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 33bb8ae4a804..c03c7b5a417c 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -1,6 +1,8 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /* Copyright (c) 2018 Facebook */
- 
-+#include <linux/kallsyms.h>
-+#include <linux/module.h>
- #include <uapi/linux/btf.h>
- #include <uapi/linux/bpf.h>
- #include <uapi/linux/bpf_perf_event.h>
-@@ -198,6 +200,8 @@
- DEFINE_IDR(btf_idr);
- DEFINE_SPINLOCK(btf_idr_lock);
- 
-+struct btf_kfunc_set_tab;
-+
- struct btf {
- 	void *data;
- 	struct btf_type **types;
-@@ -212,6 +216,7 @@ struct btf {
- 	refcount_t refcnt;
- 	u32 id;
- 	struct rcu_head rcu;
-+	struct btf_kfunc_set_tab *kfunc_set_tab;
- 
- 	/* split BTF support */
- 	struct btf *base_btf;
-@@ -221,6 +226,31 @@ struct btf {
- 	bool kernel_btf;
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 26753139d5b4..e381aeeffdd2 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -573,7 +573,6 @@ struct bpf_verifier_ops {
+ 				 const struct btf_type *t, int off, int size,
+ 				 enum bpf_access_type atype,
+ 				 u32 *next_btf_id);
+-	bool (*check_kfunc_call)(u32 kfunc_btf_id, struct module *owner);
  };
  
-+#define BTF_KFUNC_SET_PREFIX "btf_kfunc_set_"
-+
-+BTF_ID_LIST_SINGLE(btf_id_set_id, struct, btf_id_set)
-+
-+static const char *kfunc_hook_str[_BTF_KFUNC_HOOK_MAX] = {
-+	[BTF_KFUNC_HOOK_XDP]        = "xdp_",
-+	[BTF_KFUNC_HOOK_TC]         = "tc_",
-+	[BTF_KFUNC_HOOK_STRUCT_OPS] = "struct_ops_",
-+};
-+
-+static const char *kfunc_type_str[_BTF_KFUNC_TYPE_MAX] = {
-+	[BTF_KFUNC_TYPE_CHECK]    = "check_",
-+	[BTF_KFUNC_TYPE_ACQUIRE]  = "acquire_",
-+	[BTF_KFUNC_TYPE_RELEASE]  = "release_",
-+	[BTF_KFUNC_TYPE_RET_NULL] = "ret_null_",
-+};
-+
-+enum {
-+	BTF_KFUNC_SET_MAX_CNT = 32,
-+};
-+
-+struct btf_kfunc_set_tab {
-+	struct btf_id_set *sets[_BTF_KFUNC_HOOK_MAX][_BTF_KFUNC_TYPE_MAX];
-+};
-+
- enum verifier_phase {
- 	CHECK_META,
- 	CHECK_TYPE,
-@@ -1531,8 +1561,21 @@ static void btf_free_id(struct btf *btf)
- 	spin_unlock_irqrestore(&btf_idr_lock, flags);
+ struct bpf_prog_offload_ops {
+@@ -1719,7 +1718,6 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
+ int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog,
+ 				const union bpf_attr *kattr,
+ 				union bpf_attr __user *uattr);
+-bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner);
+ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		    const struct bpf_prog *prog,
+ 		    struct bpf_insn_access_aux *info);
+@@ -1971,12 +1969,6 @@ static inline int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog,
+ 	return -ENOTSUPP;
  }
  
-+static void btf_free_kfunc_set_tab(struct btf_kfunc_set_tab *tab)
-+{
-+	int hook, type;
-+
-+	if (!tab)
-+		return;
-+	for (hook = 0; hook < ARRAY_SIZE(tab->sets); hook++) {
-+		for (type = 0; type < ARRAY_SIZE(tab->sets[0]); type++)
-+			kfree(tab->sets[hook][type]);
-+	}
-+}
-+
- static void btf_free(struct btf *btf)
+-static inline bool bpf_prog_test_check_kfunc_call(u32 kfunc_id,
+-						  struct module *owner)
+-{
+-	return false;
+-}
+-
+ static inline void bpf_map_put(struct bpf_map *map)
  {
-+	btf_free_kfunc_set_tab(btf->kfunc_set_tab);
- 	kvfree(btf->types);
- 	kvfree(btf->resolved_sizes);
- 	kvfree(btf->resolved_ids);
-@@ -4675,6 +4718,223 @@ static int btf_translate_to_vmlinux(struct bpf_verifier_log *log,
- BTF_ID_LIST(bpf_ctx_convert_btf_id)
- BTF_ID(struct, bpf_ctx_convert)
+ }
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index 48ac2dc437a2..b0283a1778c3 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -345,48 +345,4 @@ static inline bool btf_kfunc_id_set_contains(const struct btf *btf,
+ }
+ #endif
  
-+struct btf_parse_kfunc_data {
-+	struct btf *btf;
-+	struct bpf_verifier_log *log;
-+};
-+
-+static int btf_populate_kfunc_sets(struct btf *btf,
-+				   struct bpf_verifier_log *log,
-+				   enum btf_kfunc_hook hook,
-+				   enum btf_kfunc_type type,
-+				   struct btf_id_set *add_set)
-+{
-+	struct btf_id_set *set, *tmp_set;
-+	struct btf_kfunc_set_tab *tab;
-+	u32 set_cnt;
-+	int ret;
-+
-+	if (WARN_ON_ONCE(hook >= _BTF_KFUNC_HOOK_MAX || type >= _BTF_KFUNC_TYPE_MAX))
-+		return -EINVAL;
-+	if (!add_set->cnt)
-+		return 0;
-+
-+	tab = btf->kfunc_set_tab;
-+	if (!tab) {
-+		tab = kzalloc(sizeof(*tab), GFP_KERNEL | __GFP_NOWARN);
-+		if (!tab)
-+			return -ENOMEM;
-+		btf->kfunc_set_tab = tab;
-+	}
-+
-+	set = tab->sets[hook][type];
-+	set_cnt = set ? set->cnt : 0;
-+
-+	if (set_cnt > U32_MAX - add_set->cnt) {
-+		ret = -EOVERFLOW;
-+		goto end;
-+	}
-+
-+	if (set_cnt + add_set->cnt > BTF_KFUNC_SET_MAX_CNT) {
-+		bpf_log(log, "max kfunc (%d) for hook '%s' type '%s' exceeded\n",
-+			BTF_KFUNC_SET_MAX_CNT, kfunc_hook_str[hook], kfunc_type_str[type]);
-+		ret = -E2BIG;
-+		goto end;
-+	}
-+
-+	/* Grow set */
-+	tmp_set = krealloc(set, offsetof(struct btf_id_set, ids[set_cnt + add_set->cnt]),
-+			   GFP_KERNEL | __GFP_NOWARN);
-+	if (!tmp_set) {
-+		ret = -ENOMEM;
-+		goto end;
-+	}
-+
-+	/* For newly allocated set, initialize set->cnt to 0 */
-+	if (!set)
-+		tmp_set->cnt = 0;
-+
-+	tab->sets[hook][type] = tmp_set;
-+	set = tmp_set;
-+
-+	/* Concatenate the two sets */
-+	memcpy(set->ids + set->cnt, add_set->ids, add_set->cnt * sizeof(set->ids[0]));
-+	set->cnt += add_set->cnt;
-+
-+	return 0;
-+end:
-+	btf_free_kfunc_set_tab(tab);
-+	btf->kfunc_set_tab = NULL;
-+	return ret;
-+}
-+
-+static int btf_kfunc_ids_cmp(const void *a, const void *b)
-+{
-+	const u32 *id1 = a;
-+	const u32 *id2 = b;
-+
-+	if (*id1 < *id2)
-+		return -1;
-+	if (*id1 > *id2)
-+		return 1;
-+	return 0;
-+}
-+
-+static int btf_parse_kfunc_sets_cb(void *data, const char *symbol_name,
-+				   struct module *mod,
-+				   unsigned long symbol_value)
-+{
-+	int pfx_size = sizeof(BTF_KFUNC_SET_PREFIX) - 1;
-+	struct btf_id_set *set = (void *)symbol_value;
-+	struct btf_parse_kfunc_data *bdata = data;
-+	const char *orig_name = symbol_name;
-+	int i, hook, type;
-+
-+	BUILD_BUG_ON(ARRAY_SIZE(kfunc_hook_str) != _BTF_KFUNC_HOOK_MAX);
-+	BUILD_BUG_ON(ARRAY_SIZE(kfunc_type_str) != _BTF_KFUNC_TYPE_MAX);
-+
-+	if (strncmp(symbol_name, BTF_KFUNC_SET_PREFIX, pfx_size))
-+		return 0;
-+
-+	/* Identify hook */
-+	symbol_name += pfx_size;
-+	if (!*symbol_name) {
-+		bpf_log(bdata->log, "incomplete kfunc btf_id_set specification: %s\n", orig_name);
-+		return -EINVAL;
-+	}
-+	for (i = 0; i < ARRAY_SIZE(kfunc_hook_str); i++) {
-+		pfx_size = strlen(kfunc_hook_str[i]);
-+		if (strncmp(symbol_name, kfunc_hook_str[i], pfx_size))
-+			continue;
-+		break;
-+	}
-+	if (i == ARRAY_SIZE(kfunc_hook_str)) {
-+		bpf_log(bdata->log, "invalid hook '%s' for kfunc_btf_id_set %s\n", symbol_name,
-+			orig_name);
-+		return -EINVAL;
-+	}
-+	hook = i;
-+
-+	/* Identify type */
-+	symbol_name += pfx_size;
-+	if (!*symbol_name) {
-+		bpf_log(bdata->log, "incomplete kfunc btf_id_set specification: %s\n", orig_name);
-+		return -EINVAL;
-+	}
-+	for (i = 0; i < ARRAY_SIZE(kfunc_type_str); i++) {
-+		pfx_size = strlen(kfunc_type_str[i]);
-+		if (strncmp(symbol_name, kfunc_type_str[i], pfx_size))
-+			continue;
-+		break;
-+	}
-+	if (i == ARRAY_SIZE(kfunc_type_str)) {
-+		bpf_log(bdata->log, "invalid type '%s' for kfunc_btf_id_set %s\n", symbol_name,
-+			orig_name);
-+		return -EINVAL;
-+	}
-+	type = i;
-+
-+	return btf_populate_kfunc_sets(bdata->btf, bdata->log, hook, type, set);
-+}
-+
-+static int btf_parse_kfunc_sets(struct btf *btf, struct module *mod,
-+				struct bpf_verifier_log *log)
-+{
-+	struct btf_parse_kfunc_data data = { .btf = btf, .log = log, };
-+	struct btf_kfunc_set_tab *tab;
-+	int hook, type, ret;
-+
-+	if (!btf_is_kernel(btf))
-+		return -EINVAL;
-+	if (WARN_ON_ONCE(btf_is_module(btf) && !mod)) {
-+		bpf_log(log, "btf internal error: no module for module BTF %s\n", btf->name);
-+		return -EFAULT;
-+	}
-+	if (mod)
-+		ret = module_kallsyms_on_each_symbol(mod, btf_parse_kfunc_sets_cb, &data);
-+	else
-+		ret = kallsyms_on_each_symbol(btf_parse_kfunc_sets_cb, &data);
-+
-+	tab = btf->kfunc_set_tab;
-+	if (!ret && tab) {
-+		/* Sort all populated sets */
-+		for (hook = 0; hook < ARRAY_SIZE(tab->sets); hook++) {
-+			for (type = 0; type < ARRAY_SIZE(tab->sets[0]); type++) {
-+				struct btf_id_set *set = tab->sets[hook][type];
-+
-+				/* Not all sets may be populated */
-+				if (!set)
-+					continue;
-+				sort(set->ids, set->cnt, sizeof(set->ids[0]), btf_kfunc_ids_cmp,
-+				     NULL);
-+			}
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static bool __btf_kfunc_id_set_contains(const struct btf *btf,
-+					enum btf_kfunc_hook hook,
-+					enum btf_kfunc_type type,
-+					u32 kfunc_btf_id)
-+{
-+	struct btf_id_set *set;
-+
-+	if (WARN_ON_ONCE(hook >= _BTF_KFUNC_HOOK_MAX || type >= _BTF_KFUNC_TYPE_MAX))
-+		return false;
-+	if (!btf->kfunc_set_tab)
-+		return false;
-+	set = btf->kfunc_set_tab->sets[hook][type];
-+	if (!set)
-+		return false;
-+	return btf_id_set_contains(set, kfunc_btf_id);
-+}
-+
-+bool btf_kfunc_id_set_contains(const struct btf *btf,
-+			       enum bpf_prog_type prog_type,
-+			       enum btf_kfunc_type type,
-+			       u32 kfunc_btf_id)
-+{
-+	enum btf_kfunc_hook hook;
-+
-+	switch (prog_type) {
-+	case BPF_PROG_TYPE_XDP:
-+		hook = BTF_KFUNC_HOOK_XDP;
-+		break;
-+	case BPF_PROG_TYPE_SCHED_CLS:
-+		hook = BTF_KFUNC_HOOK_TC;
-+		break;
-+	case BPF_PROG_TYPE_STRUCT_OPS:
-+		hook = BTF_KFUNC_HOOK_STRUCT_OPS;
-+		break;
-+	default:
-+		return false;
-+	}
-+
-+	return __btf_kfunc_id_set_contains(btf, hook, type, kfunc_btf_id);
-+}
-+
- struct btf *btf_parse_vmlinux(void)
+-struct kfunc_btf_id_set {
+-	struct list_head list;
+-	struct btf_id_set *set;
+-	struct module *owner;
+-};
+-
+-struct kfunc_btf_id_list {
+-	struct list_head list;
+-	struct mutex mutex;
+-};
+-
+-#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+-void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+-			       struct kfunc_btf_id_set *s);
+-void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+-				 struct kfunc_btf_id_set *s);
+-bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
+-			      struct module *owner);
+-
+-extern struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list;
+-extern struct kfunc_btf_id_list prog_test_kfunc_list;
+-#else
+-static inline void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+-					     struct kfunc_btf_id_set *s)
+-{
+-}
+-static inline void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+-					       struct kfunc_btf_id_set *s)
+-{
+-}
+-static inline bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist,
+-					    u32 kfunc_id, struct module *owner)
+-{
+-	return false;
+-}
+-
+-static struct kfunc_btf_id_list bpf_tcp_ca_kfunc_list __maybe_unused;
+-static struct kfunc_btf_id_list prog_test_kfunc_list __maybe_unused;
+-#endif
+-
+-#define DEFINE_KFUNC_BTF_ID_SET(set, name)                                     \
+-	struct kfunc_btf_id_set name = { LIST_HEAD_INIT(name.list), (set),     \
+-					 THIS_MODULE }
+-
+ #endif
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index c03c7b5a417c..f5b3049a56e0 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6687,54 +6687,6 @@ BTF_ID_LIST_GLOBAL(btf_tracing_ids, MAX_BTF_TRACING_TYPE)
+ BTF_TRACING_TYPE_xxx
+ #undef BTF_TRACING_TYPE
+ 
+-/* BTF ID set registration API for modules */
+-
+-#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+-
+-void register_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+-			       struct kfunc_btf_id_set *s)
+-{
+-	mutex_lock(&l->mutex);
+-	list_add(&s->list, &l->list);
+-	mutex_unlock(&l->mutex);
+-}
+-EXPORT_SYMBOL_GPL(register_kfunc_btf_id_set);
+-
+-void unregister_kfunc_btf_id_set(struct kfunc_btf_id_list *l,
+-				 struct kfunc_btf_id_set *s)
+-{
+-	mutex_lock(&l->mutex);
+-	list_del_init(&s->list);
+-	mutex_unlock(&l->mutex);
+-}
+-EXPORT_SYMBOL_GPL(unregister_kfunc_btf_id_set);
+-
+-bool bpf_check_mod_kfunc_call(struct kfunc_btf_id_list *klist, u32 kfunc_id,
+-			      struct module *owner)
+-{
+-	struct kfunc_btf_id_set *s;
+-
+-	mutex_lock(&klist->mutex);
+-	list_for_each_entry(s, &klist->list, list) {
+-		if (s->owner == owner && btf_id_set_contains(s->set, kfunc_id)) {
+-			mutex_unlock(&klist->mutex);
+-			return true;
+-		}
+-	}
+-	mutex_unlock(&klist->mutex);
+-	return false;
+-}
+-
+-#define DEFINE_KFUNC_BTF_ID_LIST(name)                                         \
+-	struct kfunc_btf_id_list name = { LIST_HEAD_INIT(name.list),           \
+-					  __MUTEX_INITIALIZER(name.mutex) };   \
+-	EXPORT_SYMBOL_GPL(name)
+-
+-DEFINE_KFUNC_BTF_ID_LIST(bpf_tcp_ca_kfunc_list);
+-DEFINE_KFUNC_BTF_ID_LIST(prog_test_kfunc_list);
+-
+-#endif
+-
+ int bpf_core_types_are_compat(const struct btf *local_btf, __u32 local_id,
+ 			      const struct btf *targ_btf, __u32 targ_id)
  {
- 	struct btf_verifier_env *env = NULL;
-@@ -4725,6 +4985,10 @@ struct btf *btf_parse_vmlinux(void)
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index ca5cd0de804c..e9503192101f 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -1735,7 +1735,7 @@ find_kfunc_desc(const struct bpf_prog *prog, u32 func_id, u16 offset)
+ }
  
- 	bpf_struct_ops_init(btf, log);
- 
-+	err = btf_parse_kfunc_sets(btf, NULL, log);
-+	if (err < 0)
-+		goto errout;
-+
- 	refcount_set(&btf->refcnt, 1);
- 
- 	err = btf_alloc_id(btf);
-@@ -4737,6 +5001,7 @@ struct btf *btf_parse_vmlinux(void)
- errout:
- 	btf_verifier_env_free(env);
- 	if (btf) {
-+		btf_free_kfunc_set_tab(btf->kfunc_set_tab);
- 		kvfree(btf->types);
- 		kfree(btf);
+ static struct btf *__find_kfunc_desc_btf(struct bpf_verifier_env *env,
+-					 s16 offset, struct module **btf_modp)
++					 s16 offset)
+ {
+ 	struct bpf_kfunc_btf kf_btf = { .offset = offset };
+ 	struct bpf_kfunc_btf_tab *tab;
+@@ -1789,8 +1789,6 @@ static struct btf *__find_kfunc_desc_btf(struct bpf_verifier_env *env,
+ 		sort(tab->descs, tab->nr_descs, sizeof(tab->descs[0]),
+ 		     kfunc_btf_cmp_by_off, NULL);
  	}
-@@ -4745,7 +5010,8 @@ struct btf *btf_parse_vmlinux(void)
+-	if (btf_modp)
+-		*btf_modp = b->module;
+ 	return b->btf;
+ }
  
- #ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+@@ -1807,8 +1805,7 @@ void bpf_free_kfunc_btf_tab(struct bpf_kfunc_btf_tab *tab)
+ }
  
--static struct btf *btf_parse_module(const char *module_name, const void *data, unsigned int data_size)
-+static struct btf *btf_parse_module(struct module *mod, const char *module_name,
-+				    const void *data, unsigned int data_size)
+ static struct btf *find_kfunc_desc_btf(struct bpf_verifier_env *env,
+-				       u32 func_id, s16 offset,
+-				       struct module **btf_modp)
++				       u32 func_id, s16 offset)
  {
- 	struct btf_verifier_env *env = NULL;
- 	struct bpf_verifier_log *log;
-@@ -4800,6 +5066,10 @@ static struct btf *btf_parse_module(const char *module_name, const void *data, u
- 	if (err)
- 		goto errout;
- 
-+	err = btf_parse_kfunc_sets(btf, mod, log);
-+	if (err)
-+		goto errout;
-+
- 	btf_verifier_env_free(env);
- 	refcount_set(&btf->refcnt, 1);
- 	return btf;
-@@ -4807,6 +5077,7 @@ static struct btf *btf_parse_module(const char *module_name, const void *data, u
- errout:
- 	btf_verifier_env_free(env);
- 	if (btf) {
-+		btf_free_kfunc_set_tab(btf->kfunc_set_tab);
- 		kvfree(btf->data);
- 		kvfree(btf->types);
- 		kfree(btf);
-@@ -6243,7 +6514,7 @@ static int btf_module_notify(struct notifier_block *nb, unsigned long op,
- 			err = -ENOMEM;
- 			goto out;
+ 	if (offset) {
+ 		if (offset < 0) {
+@@ -1819,7 +1816,7 @@ static struct btf *find_kfunc_desc_btf(struct bpf_verifier_env *env,
+ 			return ERR_PTR(-EINVAL);
  		}
--		btf = btf_parse_module(mod->name, mod->btf_data, mod->btf_data_size);
-+		btf = btf_parse_module(mod, mod->name, mod->btf_data, mod->btf_data_size);
- 		if (IS_ERR(btf)) {
- 			pr_warn("failed to validate module [%s] BTF: %ld\n",
- 				mod->name, PTR_ERR(btf));
+ 
+-		return __find_kfunc_desc_btf(env, offset, btf_modp);
++		return __find_kfunc_desc_btf(env, offset);
+ 	}
+ 	return btf_vmlinux ?: ERR_PTR(-ENOENT);
+ }
+@@ -1882,7 +1879,7 @@ static int add_kfunc_call(struct bpf_verifier_env *env, u32 func_id, s16 offset)
+ 		prog_aux->kfunc_btf_tab = btf_tab;
+ 	}
+ 
+-	desc_btf = find_kfunc_desc_btf(env, func_id, offset, NULL);
++	desc_btf = find_kfunc_desc_btf(env, func_id, offset);
+ 	if (IS_ERR(desc_btf)) {
+ 		verbose(env, "failed to find BTF for kernel function\n");
+ 		return PTR_ERR(desc_btf);
+@@ -2343,7 +2340,7 @@ static const char *disasm_kfunc_name(void *data, const struct bpf_insn *insn)
+ 	if (insn->src_reg != BPF_PSEUDO_KFUNC_CALL)
+ 		return NULL;
+ 
+-	desc_btf = find_kfunc_desc_btf(data, insn->imm, insn->off, NULL);
++	desc_btf = find_kfunc_desc_btf(data, insn->imm, insn->off);
+ 	if (IS_ERR(desc_btf))
+ 		return "<error>";
+ 
+@@ -6804,7 +6801,6 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn)
+ 	struct bpf_reg_state *regs = cur_regs(env);
+ 	const char *func_name, *ptr_type_name;
+ 	u32 i, nargs, func_id, ptr_type_id;
+-	struct module *btf_mod = NULL;
+ 	const struct btf_param *args;
+ 	struct btf *desc_btf;
+ 	int err;
+@@ -6813,7 +6809,7 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn)
+ 	if (!insn->imm)
+ 		return 0;
+ 
+-	desc_btf = find_kfunc_desc_btf(env, insn->imm, insn->off, &btf_mod);
++	desc_btf = find_kfunc_desc_btf(env, insn->imm, insn->off);
+ 	if (IS_ERR(desc_btf))
+ 		return PTR_ERR(desc_btf);
+ 
+@@ -6822,8 +6818,8 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn)
+ 	func_name = btf_name_by_offset(desc_btf, func->name_off);
+ 	func_proto = btf_type_by_id(desc_btf, func->type);
+ 
+-	if (!env->ops->check_kfunc_call ||
+-	    !env->ops->check_kfunc_call(func_id, btf_mod)) {
++	if (!btf_kfunc_id_set_contains(desc_btf, resolve_prog_type(env->prog),
++				      BTF_KFUNC_TYPE_CHECK, func_id)) {
+ 		verbose(env, "calling kernel function %s is not allowed\n",
+ 			func_name);
+ 		return -EACCES;
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 46dd95755967..2ccd567aa514 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -236,18 +236,11 @@ __diag_pop();
+ 
+ ALLOW_ERROR_INJECTION(bpf_modify_return_test, ERRNO);
+ 
+-BTF_SET_START(test_sk_kfunc_ids)
++BTF_KFUNC_SET_START(tc, check, test_sk_kfunc_ids)
+ BTF_ID(func, bpf_kfunc_call_test1)
+ BTF_ID(func, bpf_kfunc_call_test2)
+ BTF_ID(func, bpf_kfunc_call_test3)
+-BTF_SET_END(test_sk_kfunc_ids)
+-
+-bool bpf_prog_test_check_kfunc_call(u32 kfunc_id, struct module *owner)
+-{
+-	if (btf_id_set_contains(&test_sk_kfunc_ids, kfunc_id))
+-		return true;
+-	return bpf_check_mod_kfunc_call(&prog_test_kfunc_list, kfunc_id, owner);
+-}
++BTF_KFUNC_SET_END(tc, check, test_sk_kfunc_ids)
+ 
+ static void *bpf_test_init(const union bpf_attr *kattr, u32 size,
+ 			   u32 headroom, u32 tailroom)
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 606ab5a98a1a..404a9530ed25 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -10001,7 +10001,6 @@ const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
+ 	.convert_ctx_access	= tc_cls_act_convert_ctx_access,
+ 	.gen_prologue		= tc_cls_act_prologue,
+ 	.gen_ld_abs		= bpf_gen_ld_abs,
+-	.check_kfunc_call	= bpf_prog_test_check_kfunc_call,
+ };
+ 
+ const struct bpf_prog_ops tc_cls_act_prog_ops = {
+diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
+index de610cb83694..468fe66220f3 100644
+--- a/net/ipv4/bpf_tcp_ca.c
++++ b/net/ipv4/bpf_tcp_ca.c
+@@ -212,26 +212,18 @@ bpf_tcp_ca_get_func_proto(enum bpf_func_id func_id,
+ 	}
+ }
+ 
+-BTF_SET_START(bpf_tcp_ca_kfunc_ids)
++BTF_KFUNC_SET_START(struct_ops, check, bpf_tcp_ca)
+ BTF_ID(func, tcp_reno_ssthresh)
+ BTF_ID(func, tcp_reno_cong_avoid)
+ BTF_ID(func, tcp_reno_undo_cwnd)
+ BTF_ID(func, tcp_slow_start)
+ BTF_ID(func, tcp_cong_avoid_ai)
+-BTF_SET_END(bpf_tcp_ca_kfunc_ids)
+-
+-static bool bpf_tcp_ca_check_kfunc_call(u32 kfunc_btf_id, struct module *owner)
+-{
+-	if (btf_id_set_contains(&bpf_tcp_ca_kfunc_ids, kfunc_btf_id))
+-		return true;
+-	return bpf_check_mod_kfunc_call(&bpf_tcp_ca_kfunc_list, kfunc_btf_id, owner);
+-}
++BTF_KFUNC_SET_END(struct_ops, check, bpf_tcp_ca)
+ 
+ static const struct bpf_verifier_ops bpf_tcp_ca_verifier_ops = {
+ 	.get_func_proto		= bpf_tcp_ca_get_func_proto,
+ 	.is_valid_access	= bpf_tcp_ca_is_valid_access,
+ 	.btf_struct_access	= bpf_tcp_ca_btf_struct_access,
+-	.check_kfunc_call	= bpf_tcp_ca_check_kfunc_call,
+ };
+ 
+ static int bpf_tcp_ca_init_member(const struct btf_type *t,
+diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
+index ec5550089b4d..f65582f3795c 100644
+--- a/net/ipv4/tcp_bbr.c
++++ b/net/ipv4/tcp_bbr.c
+@@ -1154,7 +1154,7 @@ static struct tcp_congestion_ops tcp_bbr_cong_ops __read_mostly = {
+ 	.set_state	= bbr_set_state,
+ };
+ 
+-BTF_SET_START(tcp_bbr_kfunc_ids)
++BTF_KFUNC_SET_START(struct_ops, check, tcp_bbr)
+ #ifdef CONFIG_X86
+ #ifdef CONFIG_DYNAMIC_FTRACE
+ BTF_ID(func, bbr_init)
+@@ -1167,25 +1167,16 @@ BTF_ID(func, bbr_min_tso_segs)
+ BTF_ID(func, bbr_set_state)
+ #endif
+ #endif
+-BTF_SET_END(tcp_bbr_kfunc_ids)
+-
+-static DEFINE_KFUNC_BTF_ID_SET(&tcp_bbr_kfunc_ids, tcp_bbr_kfunc_btf_set);
++BTF_KFUNC_SET_END(struct_ops, check, tcp_bbr)
+ 
+ static int __init bbr_register(void)
+ {
+-	int ret;
+-
+ 	BUILD_BUG_ON(sizeof(struct bbr) > ICSK_CA_PRIV_SIZE);
+-	ret = tcp_register_congestion_control(&tcp_bbr_cong_ops);
+-	if (ret)
+-		return ret;
+-	register_kfunc_btf_id_set(&bpf_tcp_ca_kfunc_list, &tcp_bbr_kfunc_btf_set);
+-	return 0;
++	return tcp_register_congestion_control(&tcp_bbr_cong_ops);
+ }
+ 
+ static void __exit bbr_unregister(void)
+ {
+-	unregister_kfunc_btf_id_set(&bpf_tcp_ca_kfunc_list, &tcp_bbr_kfunc_btf_set);
+ 	tcp_unregister_congestion_control(&tcp_bbr_cong_ops);
+ }
+ 
+diff --git a/net/ipv4/tcp_cubic.c b/net/ipv4/tcp_cubic.c
+index e07837e23b3f..a67bad26b69e 100644
+--- a/net/ipv4/tcp_cubic.c
++++ b/net/ipv4/tcp_cubic.c
+@@ -485,7 +485,7 @@ static struct tcp_congestion_ops cubictcp __read_mostly = {
+ 	.name		= "cubic",
+ };
+ 
+-BTF_SET_START(tcp_cubic_kfunc_ids)
++BTF_KFUNC_SET_START(struct_ops, check, tcp_cubic)
+ #ifdef CONFIG_X86
+ #ifdef CONFIG_DYNAMIC_FTRACE
+ BTF_ID(func, cubictcp_init)
+@@ -496,14 +496,10 @@ BTF_ID(func, cubictcp_cwnd_event)
+ BTF_ID(func, cubictcp_acked)
+ #endif
+ #endif
+-BTF_SET_END(tcp_cubic_kfunc_ids)
+-
+-static DEFINE_KFUNC_BTF_ID_SET(&tcp_cubic_kfunc_ids, tcp_cubic_kfunc_btf_set);
++BTF_KFUNC_SET_END(struct_ops, check, tcp_cubic)
+ 
+ static int __init cubictcp_register(void)
+ {
+-	int ret;
+-
+ 	BUILD_BUG_ON(sizeof(struct bictcp) > ICSK_CA_PRIV_SIZE);
+ 
+ 	/* Precompute a bunch of the scaling factors that are used per-packet
+@@ -534,16 +530,11 @@ static int __init cubictcp_register(void)
+ 	/* divide by bic_scale and by constant Srtt (100ms) */
+ 	do_div(cube_factor, bic_scale * 10);
+ 
+-	ret = tcp_register_congestion_control(&cubictcp);
+-	if (ret)
+-		return ret;
+-	register_kfunc_btf_id_set(&bpf_tcp_ca_kfunc_list, &tcp_cubic_kfunc_btf_set);
+-	return 0;
++	return tcp_register_congestion_control(&cubictcp);
+ }
+ 
+ static void __exit cubictcp_unregister(void)
+ {
+-	unregister_kfunc_btf_id_set(&bpf_tcp_ca_kfunc_list, &tcp_cubic_kfunc_btf_set);
+ 	tcp_unregister_congestion_control(&cubictcp);
+ }
+ 
+diff --git a/net/ipv4/tcp_dctcp.c b/net/ipv4/tcp_dctcp.c
+index 0d7ab3cc7b61..b5d7b1b914b3 100644
+--- a/net/ipv4/tcp_dctcp.c
++++ b/net/ipv4/tcp_dctcp.c
+@@ -238,7 +238,7 @@ static struct tcp_congestion_ops dctcp_reno __read_mostly = {
+ 	.name		= "dctcp-reno",
+ };
+ 
+-BTF_SET_START(tcp_dctcp_kfunc_ids)
++BTF_KFUNC_SET_START(struct_ops, check, tcp_dctcp)
+ #ifdef CONFIG_X86
+ #ifdef CONFIG_DYNAMIC_FTRACE
+ BTF_ID(func, dctcp_init)
+@@ -249,25 +249,16 @@ BTF_ID(func, dctcp_cwnd_undo)
+ BTF_ID(func, dctcp_state)
+ #endif
+ #endif
+-BTF_SET_END(tcp_dctcp_kfunc_ids)
+-
+-static DEFINE_KFUNC_BTF_ID_SET(&tcp_dctcp_kfunc_ids, tcp_dctcp_kfunc_btf_set);
++BTF_KFUNC_SET_END(struct_ops, check, tcp_dctcp)
+ 
+ static int __init dctcp_register(void)
+ {
+-	int ret;
+-
+ 	BUILD_BUG_ON(sizeof(struct dctcp) > ICSK_CA_PRIV_SIZE);
+-	ret = tcp_register_congestion_control(&dctcp);
+-	if (ret)
+-		return ret;
+-	register_kfunc_btf_id_set(&bpf_tcp_ca_kfunc_list, &tcp_dctcp_kfunc_btf_set);
+-	return 0;
++	return tcp_register_congestion_control(&dctcp);
+ }
+ 
+ static void __exit dctcp_unregister(void)
+ {
+-	unregister_kfunc_btf_id_set(&bpf_tcp_ca_kfunc_list, &tcp_dctcp_kfunc_btf_set);
+ 	tcp_unregister_congestion_control(&dctcp);
+ }
+ 
+diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+index 5d52ea2768df..13b2af3fa17a 100644
+--- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
++++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+@@ -89,26 +89,17 @@ static struct bin_attribute bin_attr_bpf_testmod_file __ro_after_init = {
+ 	.write = bpf_testmod_test_write,
+ };
+ 
+-BTF_SET_START(bpf_testmod_kfunc_ids)
++BTF_KFUNC_SET_START(tc, check, bpf_testmod)
+ BTF_ID(func, bpf_testmod_test_mod_kfunc)
+-BTF_SET_END(bpf_testmod_kfunc_ids)
+-
+-static DEFINE_KFUNC_BTF_ID_SET(&bpf_testmod_kfunc_ids, bpf_testmod_kfunc_btf_set);
++BTF_KFUNC_SET_END(tc, check, bpf_testmod)
+ 
+ static int bpf_testmod_init(void)
+ {
+-	int ret;
+-
+-	ret = sysfs_create_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
+-	if (ret)
+-		return ret;
+-	register_kfunc_btf_id_set(&prog_test_kfunc_list, &bpf_testmod_kfunc_btf_set);
+-	return 0;
++	return sysfs_create_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
+ }
+ 
+ static void bpf_testmod_exit(void)
+ {
+-	unregister_kfunc_btf_id_set(&prog_test_kfunc_list, &bpf_testmod_kfunc_btf_set);
+ 	return sysfs_remove_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
+ }
+ 
 -- 
 2.34.1
 
