@@ -2,89 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 768B2481DC3
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 16:39:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8A59481DF0
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 17:07:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238283AbhL3PjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 10:39:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54882 "EHLO
+        id S240540AbhL3QHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 11:07:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232051AbhL3PjD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 10:39:03 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF55CC061574;
-        Thu, 30 Dec 2021 07:39:02 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id e5so15438550wmq.1;
-        Thu, 30 Dec 2021 07:39:02 -0800 (PST)
+        with ESMTP id S238908AbhL3QHi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 11:07:38 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83825C061574
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 08:07:38 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id o185so46542263ybo.12
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 08:07:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=I9AZkgxt3oFSjtraDfx1nRfiDkrhrG6Pm0tqqpcNvhc=;
-        b=bqflPPc6wCUWpZKMBhJUPA2bKbVNizdp9h9CqGwu1nvA9ojekEPyDZSSjipxZagjKW
-         p8tBUpKebeCpx2sr/TH9TFEllj2Urz4QcUSrbtptbXu/FucCajlXEZZDeXnFXiu+CuhU
-         riz6tBfZ8qCq87gTQPmmslOujbVrwAwM7p+lf75XVmb0RAAZeCsMElvvUspAW23pQB28
-         vE3iiKqls5JrNK0ZHxgEHXRtKW/GW2pMdH9O0utp6stUWlOBR59ffP8f9r0jYRc4PQsv
-         qu2ysjxnGCIRL6G25bLzpBR9yA7ZvZmJT0VED+fSu6DgAP2AsXyhSVnPhmEFZX+opzgH
-         351A==
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=KpVasdcvO2084v9jKVAkwMz4o0Bdb19/FCor2U/5oeM=;
+        b=Hm0Rp/yircrFciRtDUl79i0RMiiGYBTHfNfybZnA59RTcRgauBiyQiW42BelJvWINz
+         y6rLhRpfqjEZxg1ard8ivbYw/ur7OWmAObdz7ocOmGSsTLABnN9cnlCTxjWh6HlFKTOX
+         AYUbPzlKQg4Wrbz23RUxA9nLXQ5JQYEHuWN+B3l3/XjFQ9SNecaZD5xrEU1mRKerH/RD
+         3Ez9GinSFT0kx1UuIQCKaDvlQNxuHDU5bhm3vAKNzfcdgDLZG0fRW0txW6JYbHTpQ/Lg
+         gZpNRtjpgkqy0N/3sybWUzX2Y1G350EOqPmBqI1H2RV6RNs4p4diyyo7Tz+5mfTfz8r+
+         TCog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=I9AZkgxt3oFSjtraDfx1nRfiDkrhrG6Pm0tqqpcNvhc=;
-        b=WbxJEpqP+ymVnIjP+nKkS/n3HXJrw3+Vm18irG4st0T4f05OdTF/Ieww7HdH0waFLo
-         igpAy9ARpjbaG8HN2yL1KRLUL9WqBqZE1KKBLfuogDdP5rfkBVAEWds2WUrRPYehW4iM
-         mSsPuuhNjsqrLshVh3Wb94h5hB6Ou4RfDPzU6gah7E6ZfRx4OCcpCScvzcUCYujIBd5Y
-         uJwy9CVR5LvCUEIGkw3KjUylTpiMC091S35HBUcA8TRndHrb+K7T6t1iWEhtbyWkjBoy
-         rWnO7UGgrJj2J+xaSxeGbh7ie3ygpyoP1GQE6HyyHrozDBikQ+M/pUB/uU5XgekwZix6
-         9iwg==
-X-Gm-Message-State: AOAM5306409FXcxIp58TlPZ587hXmS/oSjOPUcbFWZLTTpxFi7NOkh9O
-        ENgcxZJHtpcq8HpJbmCVAhW01ljKuO6M4IJm
-X-Google-Smtp-Source: ABdhPJwqcNkIbynb98xsLnxKmoiJ0xLF5vj/higGzJ5TgPDJZWn7rWwXX/VzeccMBY/5BOugHCIh/w==
-X-Received: by 2002:a05:600c:4e11:: with SMTP id b17mr26171361wmq.66.1640878741390;
-        Thu, 30 Dec 2021 07:39:01 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id h19sm23297518wmm.13.2021.12.30.07.39.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Dec 2021 07:39:01 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net/smc: remove redundant re-assignment of pointer link
-Date:   Thu, 30 Dec 2021 15:39:00 +0000
-Message-Id: <20211230153900.274049-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=KpVasdcvO2084v9jKVAkwMz4o0Bdb19/FCor2U/5oeM=;
+        b=0Tl0aR6RmcqNElvzv4qqJRZbc+Sm/O716FtCfxiR69bko2TqW3XG1u9mJ9RGfMlfvZ
+         MEhGUoTalNAKEoxM3viOLpoe5y3kHpcBpY3utnbc9U14pqEuykJkt5uDnPsbRf2Icxaz
+         I0GqjqAVYIT8DTshfNTcjSn2OnzLnVhltkLFJEuldGs81+9G+HyKnjfxIibSpU/Z/Idx
+         dS2+Lzn16utI9AkaDDIw2xtONtFp6gB5JVv1nnV3RZLIrsH7CEyCN/UD/mXY+PgtHMpl
+         oDBD28eZZyiYcOQPLJr3Q1v6NkkGpdEQNpz4WseqQp6Isf2DTAD2tOMbNAKYO2yJvj93
+         zQ8Q==
+X-Gm-Message-State: AOAM530dqITLy2BeCX7569l11pqDBCDPikIYKZraN5fc5ng93MlatAxc
+        I8icQQXtfLpJQM61NgTqkQq4C41q1JUcEr+LHg==
+X-Google-Smtp-Source: ABdhPJxCxJDPmeZgSwX8WJRh6eDEU8/Amu5a6V9aColDHsfzl37Gw6gdLQxRPLCM4Zr/9H2Rh6e15tYNbxH96jAFtvo=
+X-Received: by 2002:a25:2554:: with SMTP id l81mr16466269ybl.101.1640880456831;
+ Thu, 30 Dec 2021 08:07:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Sender: anera.lenneh@gmail.com
+Received: by 2002:a05:7110:4b09:b0:11e:f454:286b with HTTP; Thu, 30 Dec 2021
+ 08:07:36 -0800 (PST)
+From:   Mrs Aisha Gaddafi <aishagarddaff@gmail.com>
+Date:   Thu, 30 Dec 2021 08:07:36 -0800
+X-Google-Sender-Auth: wWhFzDhvMN3L-ntsbsGt3HN-73I
+Message-ID: <CAKsGGvNviNfsXJ2kp8g82UoOQcn7QYYm07Oj-5S2Xfg8XQVtnQ@mail.gmail.com>
+Subject: Urgent Message From Mrs Aisha Gaddafi.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pointer link is being re-assigned the same value that it was
-initialized with in the previous declaration statement. The
-re-assignment is redundant and can be removed.
+Dear Friend,
+Greetings and Nice Day.
+Assalamu Alaikum
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- net/smc/smc_clc.c | 1 -
- 1 file changed, 1 deletion(-)
 
-diff --git a/net/smc/smc_clc.c b/net/smc/smc_clc.c
-index 8409ab71a5e4..6be95a2a7b25 100644
---- a/net/smc/smc_clc.c
-+++ b/net/smc/smc_clc.c
-@@ -1021,7 +1021,6 @@ static int smc_clc_send_confirm_accept(struct smc_sock *smc,
- 		struct smc_link *link = conn->lnk;
- 
- 		/* SMC-R specific settings */
--		link = conn->lnk;
- 		memcpy(clc->hdr.eyecatcher, SMC_EYECATCHER,
- 		       sizeof(SMC_EYECATCHER));
- 		clc->hdr.typev1 = SMC_TYPE_R;
--- 
-2.33.1
+May i  use this medium to open a mutual communication with you seeking
+your acceptance towards investing in your country under your
+management as my partner, My name is Aisha  Gaddafi and presently
+living in Oman, i am a Widow and single Mother with three Children,
+the only biological Daughter of late Libyan President (Late Colonel
+Muammar Gaddafi) and presently i am under political asylum protection
+by the Omani Government.
 
+I have funds worth "EIGHT Million Five Hundred Thousand United State
+Dollars" -$8.500.000.00 US Dollars which i want to entrust on you for
+investment project in your country.If you are willing to handle this
+project on my behalf, kindly reply urgent to enable me provide you
+more details to start the transfer process.
+I shall appreciate your urgent response through my email address.
+
+Best Regards
+Mrs Aisha Gaddafi
