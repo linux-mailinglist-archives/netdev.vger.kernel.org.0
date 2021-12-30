@@ -2,96 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA042481DFB
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 17:12:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF34C481E3B
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 17:39:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241158AbhL3QMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 11:12:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34044 "EHLO
+        id S240002AbhL3QjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 11:39:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236629AbhL3QMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 11:12:38 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280ECC061574;
-        Thu, 30 Dec 2021 08:12:38 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id l4so15897666wmq.3;
-        Thu, 30 Dec 2021 08:12:38 -0800 (PST)
+        with ESMTP id S236669AbhL3QjM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 11:39:12 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31220C061574
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 08:39:12 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id rj2-20020a17090b3e8200b001b1944bad25so23592485pjb.5
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 08:39:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        d=fungible.com; s=google;
+        h=from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=0Pnjdq429wkLvZ7QQ8EgNC1pfMpkmAT54Uvk5bVoFhM=;
-        b=BEiSf4gbp1br/LVg3r+zcs+4bkXIDqrEeZ85F9p58DS3Qt02rlPTygB3F5hgf5kbTz
-         FDipKDJduJOGHsrGf8lv3+Tkw0ieW3jmAOrem+U0/Z2gGjpHDWWpM/ZM2A+k4VuSgy5A
-         GDgjKrEZj3y1iPneHT+EJOvU1dH4FFTuGbRrv4qYMN8qW/ciRXMLT+Z6/Jvfy390SZ3V
-         ElLRAc7herXxFKTThTPXr9m8FoRPtzECxfrP/S1N1vTNOZfFBKc0jgc+oX9HWBx6AsbS
-         C0J3/uGz8XIzuov5xDD+Vb4vfC4ngCdM3F1SRlgY7cMgnYt5UcKkH4/EBKlITRZpFTos
-         4zhQ==
+        bh=rMAhLN+b37njsmb/RPK/nPY6dBg7tR0XgBX+MHpXka4=;
+        b=egqYwYfWYXbT2QfNId+gD9U2DuRXR5c94KrxSnL17N7dltwRGdNhKoj7Pfhuy/fD4P
+         gxLzXtUtItdMXChd/PSMlUDBmolPKCaaG7gF8g46z4ri08HP0V8Aoug9CJZRM1yM7F1q
+         ZS1K6US2B6vKv7Fw4dLGvJvn0IwRk26/AlnBA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=0Pnjdq429wkLvZ7QQ8EgNC1pfMpkmAT54Uvk5bVoFhM=;
-        b=JL+HuhWzxlRyacx1B9pK2PPPISlAFzhdNk2+lEI4SZV4lrMHBW859rBlpu7J0MjJpQ
-         vdEMnSPidncx5USJNl5L1ttyqahP7B8q6ANrvaWzKByoS2ZgOTuRMPwGLO4cEnfGvSZv
-         7Ak7CUE6DmaiwhzEZ4d2AjMJPySnpxyezzO8Av3xQ2WBvHMldbuLW2ZaZCNNn4RhU7t1
-         sQad2zfADiNK/fe4gxNT7wpxDE7xo6DtDDYuo5rolIuBmpoLSwig+07tS2e6JUuCCVhX
-         NWUKs9AXbFFGF7qBdSAQuDSEp1js6PBgQJT3FKxl3g1ZvJROG0l5N65NoyBm8XiY5s4k
-         F5Iw==
-X-Gm-Message-State: AOAM532rDpBlsbEnrD3eBCY4BxDzs+T3dmrEM6p++wcvdUrLVd4zDFv2
-        +L5OHhS3Sgl6fSFW62SrxB0=
-X-Google-Smtp-Source: ABdhPJy2dR79PiS8oIFSey0wDOUHMJPpwdSHdt3d8X6C2mRhOqvFfHypLxgtkKGOIHePbSSjleoqZA==
-X-Received: by 2002:a7b:c958:: with SMTP id i24mr26172837wml.75.1640880751645;
-        Thu, 30 Dec 2021 08:12:31 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id m17sm24300651wrw.11.2021.12.30.08.12.31
+        bh=rMAhLN+b37njsmb/RPK/nPY6dBg7tR0XgBX+MHpXka4=;
+        b=K27kAyma9nacd+GFlgzbNMV79c1eJL5nyhKhmqIWRwmbBNFwtAkxPneMJz8o1LCobv
+         emmpsbPGGTvxc1hKW8ZH69tvO0PYTVe9SZr830MAT7jJNjGEJ108V5vG/4+Ciaq9T0j8
+         tIWfi4601FYK/e1qD8veNF0+yLHJ/xQlH43I5oNwUulJTWLmyEijecCGydTYUCgkhq6s
+         BBfWA13uHlpFuOoWsjajrMwqq1T9a+l4R1aakJ3ea1XzczZ7yRnsiqHrh16sI+2yQVnd
+         CkO5tyf0cUvoON5kx1/e+/egkXSU1BOJUatnoYtgnbNEeedBOVOPh6CohcwPtXvD5kxd
+         AawQ==
+X-Gm-Message-State: AOAM531/hCu7lMSBqCeGmwqmXtsPgTVHcWQwXc5wbgpMRGwpVI4ahqS4
+        knU7sQDsRvCOPFoj2lHeCj/Z29NsKSJQFA==
+X-Google-Smtp-Source: ABdhPJxXX61NcvstlFkYw7j5KmDe48tI985On7dofyd8eUxMDsHrojlAFg2uGPd4zDjkQ5jEgLhhZw==
+X-Received: by 2002:a17:902:f54e:b0:148:e8ae:ffde with SMTP id h14-20020a170902f54e00b00148e8aeffdemr32498644plf.25.1640882351574;
+        Thu, 30 Dec 2021 08:39:11 -0800 (PST)
+Received: from cab09-qa-09.fungible.local ([12.190.10.11])
+        by smtp.gmail.com with ESMTPSA id l6sm27390380pfu.63.2021.12.30.08.39.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Dec 2021 08:12:31 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, llvm@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] nfc: st21nfca: remove redundant assignment to variable i
-Date:   Thu, 30 Dec 2021 16:12:30 +0000
-Message-Id: <20211230161230.428457-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        Thu, 30 Dec 2021 08:39:11 -0800 (PST)
+From:   Dimitris Michailidis <d.michailidis@fungible.com>
+X-Google-Original-From: Dimitris Michailidis <dmichail@fungible.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/8] new Fungible Ethernet driver
+Date:   Thu, 30 Dec 2021 08:39:01 -0800
+Message-Id: <20211230163909.160269-1-dmichail@fungible.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Variable i is being assigned a value that is never read, the
-assignment is redundant and can be removed. Cleans up clang-scan
-build warning:
+This patch series contains a new network driver for the Ethernet
+functionality of Fungible cards.
 
-drivers/nfc/st21nfca/i2c.c:319:4: warning: Value stored to 'i'
-is never read [deadcode.DeadStores]
-                        i = 0;
+It contains two modules. The first one in patch 2 is a library module
+that implements some of the device setup, queue managenent, and support
+for operating an admin queue. These are placed in a separate module
+because the cards provide a number of PCI functions handled by different
+types of drivers and all use the same common means to interact with the
+device. Each of the drivers will be relying on this library module for
+them.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/nfc/st21nfca/i2c.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+The remaining patches provide the Ethernet driver for the cards.
 
-diff --git a/drivers/nfc/st21nfca/i2c.c b/drivers/nfc/st21nfca/i2c.c
-index f126ce96a7df..05157fc0f4eb 100644
---- a/drivers/nfc/st21nfca/i2c.c
-+++ b/drivers/nfc/st21nfca/i2c.c
-@@ -315,10 +315,8 @@ static int st21nfca_hci_i2c_repack(struct sk_buff *skb)
- 		skb_pull(skb, 1);
- 
- 		r = check_crc(skb->data, skb->len);
--		if (r != 0) {
--			i = 0;
-+		if (r != 0)
- 			return -EBADMSG;
--		}
- 
- 		/* remove headbyte */
- 		skb_pull(skb, 1);
+Dimitris Michailidis (8):
+  PCI: add Fungible vendor ID to pci_ids.h
+  net/fungible: Add service module for Fungible drivers
+  net/funeth: probing and netdev ops
+  net/funeth: ethtool operations
+  net/funeth: devlink support
+  net/funeth: add the data path
+  net/funeth: add kTLS TX control part
+  net/fungible: Kconfig, Makefiles, and MAINTAINERS
+
+ MAINTAINERS                                   |    6 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/fungible/Kconfig         |   27 +
+ drivers/net/ethernet/fungible/Makefile        |    7 +
+ .../net/ethernet/fungible/funcore/Makefile    |    5 +
+ .../net/ethernet/fungible/funcore/fun_dev.c   |  879 ++++++++
+ .../net/ethernet/fungible/funcore/fun_dev.h   |  152 ++
+ .../net/ethernet/fungible/funcore/fun_hci.h   | 1163 +++++++++++
+ .../net/ethernet/fungible/funcore/fun_queue.c |  620 ++++++
+ .../net/ethernet/fungible/funcore/fun_queue.h |  178 ++
+ drivers/net/ethernet/fungible/funeth/Kconfig  |   17 +
+ drivers/net/ethernet/fungible/funeth/Makefile |   10 +
+ .../net/ethernet/fungible/funeth/fun_port.h   |   97 +
+ drivers/net/ethernet/fungible/funeth/funeth.h |  153 ++
+ .../ethernet/fungible/funeth/funeth_devlink.c |  273 +++
+ .../ethernet/fungible/funeth/funeth_devlink.h |   13 +
+ .../ethernet/fungible/funeth/funeth_ethtool.c | 1255 ++++++++++++
+ .../ethernet/fungible/funeth/funeth_ktls.c    |  181 ++
+ .../ethernet/fungible/funeth/funeth_ktls.h    |   33 +
+ .../ethernet/fungible/funeth/funeth_main.c    | 1772 +++++++++++++++++
+ .../net/ethernet/fungible/funeth/funeth_rx.c  |  725 +++++++
+ .../ethernet/fungible/funeth/funeth_trace.h   |  117 ++
+ .../net/ethernet/fungible/funeth/funeth_tx.c  |  701 +++++++
+ .../ethernet/fungible/funeth/funeth_txrx.h    |  242 +++
+ include/linux/pci_ids.h                       |    2 +
+ 26 files changed, 8630 insertions(+)
+ create mode 100644 drivers/net/ethernet/fungible/Kconfig
+ create mode 100644 drivers/net/ethernet/fungible/Makefile
+ create mode 100644 drivers/net/ethernet/fungible/funcore/Makefile
+ create mode 100644 drivers/net/ethernet/fungible/funcore/fun_dev.c
+ create mode 100644 drivers/net/ethernet/fungible/funcore/fun_dev.h
+ create mode 100644 drivers/net/ethernet/fungible/funcore/fun_hci.h
+ create mode 100644 drivers/net/ethernet/fungible/funcore/fun_queue.c
+ create mode 100644 drivers/net/ethernet/fungible/funcore/fun_queue.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/Kconfig
+ create mode 100644 drivers/net/ethernet/fungible/funeth/Makefile
+ create mode 100644 drivers/net/ethernet/fungible/funeth/fun_port.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_devlink.c
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_devlink.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_ethtool.c
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_ktls.c
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_ktls.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_main.c
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_rx.c
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_trace.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_tx.c
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_txrx.h
+
 -- 
-2.33.1
+2.25.1
 
