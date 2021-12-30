@@ -2,198 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29A684817F3
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 01:57:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ECFC4817F8
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 01:58:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233762AbhL3A52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 19:57:28 -0500
-Received: from mga06.intel.com ([134.134.136.31]:51232 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233673AbhL3A52 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Dec 2021 19:57:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640825848; x=1672361848;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WwDri9jJu3hZEwl7yyP74fwvRjKINBNWg+MB7eyLwL4=;
-  b=kfS+8hspyeJjmSoJZ/EDUAnwzq5k3Juob3IfTtu4ptbkf0y6yEymsJQ8
-   4vn8OsXrolUZw+f5bDQ8unhU+mWj7KzemqNTe4g6+oO66YOLtUgc5856s
-   /fjPekcPTgvqY6gIuiUD9fz8//pEKxQksux0G47wtRrdYv4T3mOw8e+v4
-   33sPprJrdIprIM9WIEv3qOBP41Qgu8fNcIdvNizzxWo6GbxCZttTA3CaW
-   ghtXUIAURLapoMHQaV67j9sVp7fsLox3dtgpxjq11987/0uo29zWQ58gx
-   yrXX9K8mlsmRr2BLNHxIhWrKjfx4oA03cRBRfHlMaYtjoUEFCvV7hMNnK
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10212"; a="302346504"
-X-IronPort-AV: E=Sophos;i="5.88,246,1635231600"; 
-   d="scan'208";a="302346504"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2021 16:57:27 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,246,1635231600"; 
-   d="scan'208";a="619225745"
-Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 29 Dec 2021 16:57:25 -0800
-Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n2jkz-0009Wi-0O; Thu, 30 Dec 2021 00:57:25 +0000
-Date:   Thu, 30 Dec 2021 08:57:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>, ast@kernel.org,
-        daniel@iogearbox.net
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH bpf-next 2/2] bpf: invert the dependency between
- bpf-netns.h and netns/bpf.h
-Message-ID: <202112300828.wqqaIPJ3-lkp@intel.com>
-References: <20211229223139.708975-3-kuba@kernel.org>
+        id S233805AbhL3A56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 19:57:58 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:47794
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233486AbhL3A55 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 19:57:57 -0500
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 83FA93F207
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 00:57:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1640825876;
+        bh=9Hwlmcj0whxK49ykZw434uUikfx+0hXzEWWfpG3itis=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=tITYeT6KcBWIVEN2XOBh+4Y+l4Yf8zDaTEO+PnPyl3uzRwyxDyiNjwOjJGZIDLpzV
+         CuO54i6BhsW0f5eEzqfZEQfvBXfuhyrB9eK2NFuPGj8WMX3ue8mgnAyN6IKB7a53uz
+         TP3lgEC1lQ18adV0z9C8hpGk6pVUryxp9uU2IPDdxew5xskvnb85v2nACQyhRrutVx
+         JPM5I0Abz2Krd/FQZjhTLbN9VJ0EXTTzYMgbk6jwWe55/O7DC1z2kDulb2fw38zR1J
+         jINBzByB0S9u1Xho6IKh+ETsZftpLMHuOIqw5M+ILheji3cn3r97AxQBkQjlC3hp+S
+         IQ9PFmczyHpDQ==
+Received: by mail-ot1-f70.google.com with SMTP id z16-20020a056830129000b0055c7b3ceaf5so7167458otp.8
+        for <netdev@vger.kernel.org>; Wed, 29 Dec 2021 16:57:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9Hwlmcj0whxK49ykZw434uUikfx+0hXzEWWfpG3itis=;
+        b=gaIg1hYzvRr47/byORDnB8Yl9hFca+Iy7i8M06r4Z+RzltNO07q2Jq1mIz6SL5q8WJ
+         iNbBqj81JXowkbEKX2eNvPUiEbwxEebBOnFMyzFdNQyoKzeJcNElE7J80QRJ7X2UEB3h
+         UA8FOQOTriR+4I9OxwI5KAIYFFZMwGEdql2oLyn1RNBKwuWUAa2fLTTJccJed/oSeLmb
+         itGTU8o900fy8zNS6YjpTGhpspID3uinAdKqlm+PC+8+1dviXIpDvppzqaHcdo+hPyQy
+         /5mZtln8JIfiRJHjfY/t5mMxpli63dq3WhcLfBInTq1ErSpc8M6OZVMzICZsg+L7vATF
+         VU9Q==
+X-Gm-Message-State: AOAM5337+3AcNeU3Qaa6cMMDdXP1d6FU4nAGuqSKd+CZqxI/XtQMpvkR
+        zNRzQfqf/5K9m4xxbbKH4QeR6kXZ+SmGZSO8diaA5wWpjA5DQ1KHiO8bZLXzXV+Pf+uRCld623T
+        ALdWaC9b9auw/s4Bz9fuvtFKqcQ7yjJJZVDypYuhB18gTy0/BGg==
+X-Received: by 2002:a4a:9406:: with SMTP id h6mr17864663ooi.80.1640825875120;
+        Wed, 29 Dec 2021 16:57:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwCOxmVFWE0YLjVd6KBaomVjMm7A0pPvlpZY/iwXtxTaHI020iaE+lbr1yOC/2PkujCMzC8WJeCzYUhLg1b854=
+X-Received: by 2002:a4a:9406:: with SMTP id h6mr17864647ooi.80.1640825874776;
+ Wed, 29 Dec 2021 16:57:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211229223139.708975-3-kuba@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20211224081914.345292-1-kai.heng.feng@canonical.com> <20211229201229.GA1698801@bhelgaas>
+In-Reply-To: <20211229201229.GA1698801@bhelgaas>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Thu, 30 Dec 2021 08:57:42 +0800
+Message-ID: <CAAd53p5GJRqRUvNSqNBLq2yTjjvJnSq5hFPSJYv08wuSLExx_w@mail.gmail.com>
+Subject: Re: [PATCH 1/2] net: wwan: iosm: Let PCI core handle PCI power transition
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     m.chetan.kumar@intel.com, linuxwwan@intel.com,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+On Thu, Dec 30, 2021 at 4:12 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> [+cc Rafael, in case you have insight about the PCI_D0 question below;
+> Vaibhav, since this is related to your generic PM conversions]
+>
+> On Fri, Dec 24, 2021 at 04:19:13PM +0800, Kai-Heng Feng wrote:
+> > pci_pm_suspend_noirq() and pci_pm_resume_noirq() already handle power
+> > transition for system-wide suspend and resume, so it's not necessary to
+> > do it in the driver.
+>
+> I see DaveM has already applied this, but it looks good to me, thanks
+> for doing this!
+>
+> One minor question below...
+>
+> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> > ---
+> >  drivers/net/wwan/iosm/iosm_ipc_pcie.c | 49 ++-------------------------
+> >  1 file changed, 2 insertions(+), 47 deletions(-)
+> >
+> > diff --git a/drivers/net/wwan/iosm/iosm_ipc_pcie.c b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> > index 2fe88b8be3481..d73894e2a84ed 100644
+> > --- a/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> > +++ b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
+> > @@ -363,67 +363,22 @@ static int __maybe_unused ipc_pcie_resume_s2idle(struct iosm_pcie *ipc_pcie)
+> >
+> >  int __maybe_unused ipc_pcie_suspend(struct iosm_pcie *ipc_pcie)
+> >  {
+> > -     struct pci_dev *pdev;
+> > -     int ret;
+> > -
+> > -     pdev = ipc_pcie->pci;
+> > -
+> > -     /* Execute D3 one time. */
+> > -     if (pdev->current_state != PCI_D0) {
+> > -             dev_dbg(ipc_pcie->dev, "done for PM=%d", pdev->current_state);
+> > -             return 0;
+> > -     }
+>
+> I don't understand the intent of this early exit, and it's not obvious
+> to me that pci_pm_suspend_noirq() bails out early when
+> (pdev->current_state != PCI_D0).
 
-I love your patch! Yet something to improve:
+Yes, I think this can be removed too. Please let me send v2.
 
-[auto build test ERROR on bpf-next/master]
+Kai-Heng
 
-url:    https://github.com/0day-ci/linux/commits/Jakub-Kicinski/lighten-uapi-bpf-h-rebuilds/20211230-063309
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: x86_64-randconfig-a002-20211230 (https://download.01.org/0day-ci/archive/20211230/202112300828.wqqaIPJ3-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project cd284b7ac0615afc6e0f1a30da2777e361de27a3)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/df4183ffb29b84cb3cfb6ac82457f151e6fa2a28
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Jakub-Kicinski/lighten-uapi-bpf-h-rebuilds/20211230-063309
-        git checkout df4183ffb29b84cb3cfb6ac82457f151e6fa2a28
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/ipv6/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All error/warnings (new ones prefixed by >>):
-
-   In file included from net/ipv6/anycast.c:39:
-   In file included from include/net/ip6_route.h:24:
->> include/net/ip6_fib.h:548:2: error: type name requires a specifier or qualifier
-           __bpf_md_ptr(struct bpf_iter_meta *, meta);
-           ^
->> include/net/ip6_fib.h:548:22: warning: declaration of 'struct bpf_iter_meta' will not be visible outside of this function [-Wvisibility]
-           __bpf_md_ptr(struct bpf_iter_meta *, meta);
-                               ^
->> include/net/ip6_fib.h:548:39: warning: declaration specifier missing, defaulting to 'int'
-           __bpf_md_ptr(struct bpf_iter_meta *, meta);
-                                                ^
-                                                int
-   include/net/ip6_fib.h:549:2: error: type name requires a specifier or qualifier
-           __bpf_md_ptr(struct fib6_info *, rt);
-           ^
-   include/net/ip6_fib.h:549:35: warning: declaration specifier missing, defaulting to 'int'
-           __bpf_md_ptr(struct fib6_info *, rt);
-                                            ^
-                                            int
->> include/net/ip6_fib.h:549:2: error: duplicate member '__bpf_md_ptr'
-           __bpf_md_ptr(struct fib6_info *, rt);
-           ^
-   include/net/ip6_fib.h:548:2: note: previous declaration is here
-           __bpf_md_ptr(struct bpf_iter_meta *, meta);
-           ^
-   3 warnings and 3 errors generated.
---
-   In file included from net/ipv6/route.c:48:
->> include/net/ip6_fib.h:548:2: error: type name requires a specifier or qualifier
-           __bpf_md_ptr(struct bpf_iter_meta *, meta);
-           ^
->> include/net/ip6_fib.h:548:22: warning: declaration of 'struct bpf_iter_meta' will not be visible outside of this function [-Wvisibility]
-           __bpf_md_ptr(struct bpf_iter_meta *, meta);
-                               ^
->> include/net/ip6_fib.h:548:39: warning: declaration specifier missing, defaulting to 'int'
-           __bpf_md_ptr(struct bpf_iter_meta *, meta);
-                                                ^
-                                                int
-   include/net/ip6_fib.h:549:2: error: type name requires a specifier or qualifier
-           __bpf_md_ptr(struct fib6_info *, rt);
-           ^
-   include/net/ip6_fib.h:549:35: warning: declaration specifier missing, defaulting to 'int'
-           __bpf_md_ptr(struct fib6_info *, rt);
-                                            ^
-                                            int
->> include/net/ip6_fib.h:549:2: error: duplicate member '__bpf_md_ptr'
-           __bpf_md_ptr(struct fib6_info *, rt);
-           ^
-   include/net/ip6_fib.h:548:2: note: previous declaration is here
-           __bpf_md_ptr(struct bpf_iter_meta *, meta);
-           ^
->> net/ipv6/route.c:6612:5: error: no member named 'rt' in 'bpf_iter__ipv6_route'
-                   { offsetof(struct bpf_iter__ipv6_route, rt),
-                     ^                                     ~~
-   include/linux/stddef.h:17:32: note: expanded from macro 'offsetof'
-   #define offsetof(TYPE, MEMBER)  __compiler_offsetof(TYPE, MEMBER)
-                                   ^                         ~~~~~~
-   include/linux/compiler_types.h:140:35: note: expanded from macro '__compiler_offsetof'
-   #define __compiler_offsetof(a, b)       __builtin_offsetof(a, b)
-                                           ^                     ~
-   3 warnings and 4 errors generated.
---
-   In file included from net/ipv6/netfilter/nf_reject_ipv6.c:8:
-   In file included from include/net/ip6_route.h:24:
->> include/net/ip6_fib.h:548:2: error: type name requires a specifier or qualifier
-           __bpf_md_ptr(struct bpf_iter_meta *, meta);
-           ^
->> include/net/ip6_fib.h:548:22: warning: declaration of 'struct bpf_iter_meta' will not be visible outside of this function [-Wvisibility]
-           __bpf_md_ptr(struct bpf_iter_meta *, meta);
-                               ^
->> include/net/ip6_fib.h:548:39: warning: declaration specifier missing, defaulting to 'int'
-           __bpf_md_ptr(struct bpf_iter_meta *, meta);
-                                                ^
-                                                int
-   include/net/ip6_fib.h:549:2: error: type name requires a specifier or qualifier
-           __bpf_md_ptr(struct fib6_info *, rt);
-           ^
-   include/net/ip6_fib.h:549:35: warning: declaration specifier missing, defaulting to 'int'
-           __bpf_md_ptr(struct fib6_info *, rt);
-                                            ^
-                                            int
->> include/net/ip6_fib.h:549:2: error: duplicate member '__bpf_md_ptr'
-           __bpf_md_ptr(struct fib6_info *, rt);
-           ^
-   include/net/ip6_fib.h:548:2: note: previous declaration is here
-           __bpf_md_ptr(struct bpf_iter_meta *, meta);
-           ^
-   net/ipv6/netfilter/nf_reject_ipv6.c:287:18: warning: variable 'ip6h' set but not used [-Wunused-but-set-variable]
-           struct ipv6hdr *ip6h;
-                           ^
-   4 warnings and 3 errors generated.
-
-
-vim +548 include/net/ip6_fib.h
-
-180ca444b985c4 Wei Wang      2017-10-06  537  
-8d1c802b2815ed David Ahern   2018-04-17  538  void fib6_metric_set(struct fib6_info *f6i, int metric, u32 val);
-8d1c802b2815ed David Ahern   2018-04-17  539  static inline bool fib6_metric_locked(struct fib6_info *f6i, int metric)
-d4ead6b34b67fd David Ahern   2018-04-17  540  {
-d4ead6b34b67fd David Ahern   2018-04-17  541  	return !!(f6i->fib6_metrics->metrics[RTAX_LOCK - 1] & (1 << metric));
-d4ead6b34b67fd David Ahern   2018-04-17  542  }
-907eea486888cf Amit Cohen    2021-02-01  543  void fib6_info_hw_flags_set(struct net *net, struct fib6_info *f6i,
-0c5fcf9e249ee1 Amit Cohen    2021-02-07  544  			    bool offload, bool trap, bool offload_failed);
-180ca444b985c4 Wei Wang      2017-10-06  545  
-3c32cc1bceba8a Yonghong Song 2020-05-13  546  #if IS_BUILTIN(CONFIG_IPV6) && defined(CONFIG_BPF_SYSCALL)
-3c32cc1bceba8a Yonghong Song 2020-05-13  547  struct bpf_iter__ipv6_route {
-3c32cc1bceba8a Yonghong Song 2020-05-13 @548  	__bpf_md_ptr(struct bpf_iter_meta *, meta);
-3c32cc1bceba8a Yonghong Song 2020-05-13 @549  	__bpf_md_ptr(struct fib6_info *, rt);
-3c32cc1bceba8a Yonghong Song 2020-05-13  550  };
-3c32cc1bceba8a Yonghong Song 2020-05-13  551  #endif
-3c32cc1bceba8a Yonghong Song 2020-05-13  552  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>
+> >       /* The HAL shall ask the shared memory layer whether D3 is allowed. */
+> >       ipc_imem_pm_suspend(ipc_pcie->imem);
+> >
+> > -     /* Save the PCI configuration space of a device before suspending. */
+> > -     ret = pci_save_state(pdev);
+> > -
+> > -     if (ret) {
+> > -             dev_err(ipc_pcie->dev, "pci_save_state error=%d", ret);
+> > -             return ret;
+> > -     }
+> > -
+> > -     /* Set the power state of a PCI device.
+> > -      * Transition a device to a new power state, using the device's PCI PM
+> > -      * registers.
+> > -      */
+> > -     ret = pci_set_power_state(pdev, PCI_D3cold);
+> > -
+> > -     if (ret) {
+> > -             dev_err(ipc_pcie->dev, "pci_set_power_state error=%d", ret);
+> > -             return ret;
+> > -     }
+> > -
+> >       dev_dbg(ipc_pcie->dev, "SUSPEND done");
+> > -     return ret;
+> > +     return 0;
+> >  }
+> >
+> >  int __maybe_unused ipc_pcie_resume(struct iosm_pcie *ipc_pcie)
+> >  {
+> > -     int ret;
+> > -
+> > -     /* Set the power state of a PCI device.
+> > -      * Transition a device to a new power state, using the device's PCI PM
+> > -      * registers.
+> > -      */
+> > -     ret = pci_set_power_state(ipc_pcie->pci, PCI_D0);
+> > -
+> > -     if (ret) {
+> > -             dev_err(ipc_pcie->dev, "pci_set_power_state error=%d", ret);
+> > -             return ret;
+> > -     }
+> > -
+> > -     pci_restore_state(ipc_pcie->pci);
+> > -
+> >       /* The HAL shall inform the shared memory layer that the device is
+> >        * active.
+> >        */
+> >       ipc_imem_pm_resume(ipc_pcie->imem);
+> >
+> >       dev_dbg(ipc_pcie->dev, "RESUME done");
+> > -     return ret;
+> > +     return 0;
+> >  }
+> >
+> >  static int __maybe_unused ipc_pcie_suspend_cb(struct device *dev)
+> > --
+> > 2.33.1
+> >
