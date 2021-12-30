@@ -2,72 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 572A248193C
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 05:10:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7DCB481944
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 05:16:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235714AbhL3EKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Dec 2021 23:10:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235408AbhL3EKK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 23:10:10 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C504BC061574;
-        Wed, 29 Dec 2021 20:10:09 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id l10-20020a17090a384a00b001b22190e075so21554938pjf.3;
-        Wed, 29 Dec 2021 20:10:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZLIxhQfqHzNnkuLNry5nbVJx3WYwLnh+KYZ/hremSLY=;
-        b=B3/K+sda+rwLtfeMfE++F8BwmemdcsIc6erDJnIjfByvWQ4pue5i3SA24et0OmxEhA
-         0mNQMucr/MKEW4nON6OUHd81CAPI/LJo31ITzfnZTJbY74UT2tlTenR5XRsh38yGJx2d
-         IZPAEzqwbZDXfCrsKjDnCQX81Ky8jZIlGlgnNQMiZkIo0BapsgMxHRHW251+uAxWMq1f
-         XaVVKzT3H2us3AARw7dE+hR5/GpKm16BBVnkgIbBddRIcv4fZsCvPjUACl7xImoMYTCW
-         d9m+uQYiv5+tq+no4p6BMtJBq85MrOBTrovaXipzBmSBc63mr/6Oqd9FryltBHs0iiDQ
-         IXhg==
+        id S235835AbhL3EQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Dec 2021 23:16:55 -0500
+Received: from mail-qk1-f175.google.com ([209.85.222.175]:33626 "EHLO
+        mail-qk1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233912AbhL3EQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Dec 2021 23:16:54 -0500
+Received: by mail-qk1-f175.google.com with SMTP id de30so21717087qkb.0;
+        Wed, 29 Dec 2021 20:16:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZLIxhQfqHzNnkuLNry5nbVJx3WYwLnh+KYZ/hremSLY=;
-        b=hI5YgPvhElKiN+GYtXpuExBZ0cndUFThRYunjjXt2aEZmKMdkgYUXgw042NcKi1Spb
-         SMoYuzcb3xlJi0RtuCp8IORKDoCsHVFynOtwl3TcFGun/gfs52irT42IaS5g4CdeWSFh
-         D+0m3g8xEEc+hc1rESXY47h7dx0/Ue11jnBJPEe+lsRCA5l6BLMposzSMRhFAdHFT0EN
-         EKWtaQos0cgl8LQwwcPWt28AUyBkc7M7l7ioBtO8HSCo37toEhzsN7rCeacs7A9y0pgU
-         Ymws+gPQmGNg7zQnSm42ZhSqGcaQ3ECH3OFxFrFHxKguLiKwfEnME+5emHnJNf+fgvf+
-         2wNw==
-X-Gm-Message-State: AOAM531YvLLAsuqI1W1s/3JDGlqAUy+xKzhbU1QEy4ETNvdzkeVnP/VA
-        zXI6IxMyr86wbbWWHr1n8lRW2sQVXKG9wHttbNM=
-X-Google-Smtp-Source: ABdhPJzQFvsAtKMsnGmAhA78hZKzB1/xwuLIOkqqGKVlQehXSLtzKa6i4MKYPfz6cPChRMtZz/oJKdcPmgkWHeX4nVc=
-X-Received: by 2002:a17:902:6502:b0:149:1162:f0b5 with SMTP id
- b2-20020a170902650200b001491162f0b5mr28967222plk.126.1640837409318; Wed, 29
- Dec 2021 20:10:09 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=DMt/az0eWUgDPeK+xQBQ/1ORAuUzfUrR/WRqazjMwVI=;
+        b=m6udy6hxqgGMpRHcRQUpWbokEsNqlOtSJSB1HIgGmpb8AmHVJDHwR5wjA88oCHVE22
+         l1MVNLNDZ90ZGM+HcIKlnvd1HJ3FuR8z7NaCptx/TdDgMLUXyJaJ3hNufhVIHscsy/nb
+         lpVmdlNuS/AsyaOsUT034HPR1xaCSAESzVEbM/sr5xjiUgaZQGPlqU7A9quPwEU355pH
+         tl4hU2Pjg0e+VmiRpeObh4EGBt4VsE+hKeNhD3lM6b+083YvXbfeeebziej5Q+GewR7A
+         FALJCWlK+C5HLjPmdqkZK9Ksq+t0YbsAFqhObdWxz6thOywo7dSBaSEQwIOQQhxgETAB
+         9aKA==
+X-Gm-Message-State: AOAM5306iveK+P9XMTHtE6j8BhkDsF9ZnZUi/YbvZQ2gmu7f3T1JKl81
+        0LfN/CoQK89h5cKDcrGXOhLQi/HnnD2VHQ==
+X-Google-Smtp-Source: ABdhPJziRq8H61UMeCPVVziRrMIUUKj0hBHpYBoJW3a00mf2YuFxxDjYQX8Bhux60UvKPk9CvQwVZA==
+X-Received: by 2002:a37:6941:: with SMTP id e62mr20755790qkc.735.1640837813124;
+        Wed, 29 Dec 2021 20:16:53 -0800 (PST)
+Received: from dev0025.ash9.facebook.com (fwdproxy-ash-016.fbsv.net. [2a03:2880:20ff:10::face:b00c])
+        by smtp.gmail.com with ESMTPSA id u19sm13736320qke.1.2021.12.29.20.16.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Dec 2021 20:16:52 -0800 (PST)
+Date:   Wed, 29 Dec 2021 20:16:50 -0800
+From:   David Vernet <void@manifault.com>
+To:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jpoimboe@redhat.com, pmladek@suse.com, jikos@kernel.org,
+        mbenes@suse.cz, joe.lawrence@redhat.com
+Cc:     linux-modules@vger.kernel.org, mcgrof@kernel.org, jeyu@kernel.org,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, memxor@gmail.com
+Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
+Message-ID: <Yc0yskk0m2bePLu6@dev0025.ash9.facebook.com>
 MIME-Version: 1.0
-References: <20211230012742.770642-1-kuba@kernel.org>
-In-Reply-To: <20211230012742.770642-1-kuba@kernel.org>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 29 Dec 2021 20:09:58 -0800
-Message-ID: <CAADnVQLRJQSMca_Ojc5K5vUzpJQewg_f=DgeHK5-sk1BMWuyAg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 0/2] lighten uapi/bpf.h rebuilds
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 29, 2021 at 5:27 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Last change in the bpf headers - disentangling BPF uapi from
-> netdevice.h. Both linux/bpf.h and uapi/bpf.h changes should
-> now rebuild ~1k objects down from the original ~18k. There's
-> probably more that can be done but it's diminishing returns.
->
-> Split into two patches for ease of review.
+Adding modules + BPF list and maintainers to this thread.
 
-Applied. Thanks
+David Vernet <void@manifault.com> wrote on Wed [2021-Dec-29 13:56:47 -0800]:
+> When initializing a 'struct klp_object' in klp_init_object_loaded(), and
+> performing relocations in klp_resolve_symbols(), klp_find_object_symbol()
+> is invoked to look up the address of a symbol in an already-loaded module
+> (or vmlinux). This, in turn, calls kallsyms_on_each_symbol() or
+> module_kallsyms_on_each_symbol() to find the address of the symbol that is
+> being patched.
+> 
+> It turns out that symbol lookups often take up the most CPU time when
+> enabling and disabling a patch, and may hog the CPU and cause other tasks
+> on that CPU's runqueue to starve -- even in paths where interrupts are
+> enabled.  For example, under certain workloads, enabling a KLP patch with
+> many objects or functions may cause ksoftirqd to be starved, and thus for
+> interrupts to be backlogged and delayed. This may end up causing TCP
+> retransmits on the host where the KLP patch is being applied, and in
+> general, may cause any interrupts serviced by softirqd to be delayed while
+> the patch is being applied.
+> 
+> So as to ensure that kallsyms_on_each_symbol() does not end up hogging the
+> CPU, this patch adds a call to cond_resched() in kallsyms_on_each_symbol()
+> and module_kallsyms_on_each_symbol(), which are invoked when doing a symbol
+> lookup in vmlinux and a module respectively.  Without this patch, if a
+> live-patch is applied on a 36-core Intel host with heavy TCP traffic, a
+> ~10x spike is observed in TCP retransmits while the patch is being applied.
+> Additionally, collecting sched events with perf indicates that ksoftirqd is
+> awakened ~1.3 seconds before it's eventually scheduled.  With the patch, no
+> increase in TCP retransmit events is observed, and ksoftirqd is scheduled
+> shortly after it's awakened.
+> 
+> Signed-off-by: David Vernet <void@manifault.com>
+> ---
+>  kernel/kallsyms.c | 1 +
+>  kernel/module.c   | 2 ++
+>  2 files changed, 3 insertions(+)
+> 
+> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+> index 0ba87982d017..2a9afe484aec 100644
+> --- a/kernel/kallsyms.c
+> +++ b/kernel/kallsyms.c
+> @@ -223,6 +223,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
+>  		ret = fn(data, namebuf, NULL, kallsyms_sym_address(i));
+>  		if (ret != 0)
+>  			return ret;
+> +		cond_resched();
+>  	}
+>  	return 0;
+>  }
+> diff --git a/kernel/module.c b/kernel/module.c
+> index 40ec9a030eec..c96160f7f3f5 100644
+> --- a/kernel/module.c
+> +++ b/kernel/module.c
+> @@ -4462,6 +4462,8 @@ int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
+>  				 mod, kallsyms_symbol_value(sym));
+>  			if (ret != 0)
+>  				goto out;
+> +
+> +			cond_resched();
+>  		}
+>  	}
+>  out:
+> -- 
+> 2.30.2
+> 
