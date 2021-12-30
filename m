@@ -2,308 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88E3A481BE6
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 13:01:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44605481C03
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 13:26:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239182AbhL3MBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 07:01:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34942 "EHLO
+        id S239212AbhL3M0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 07:26:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239155AbhL3MB2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 07:01:28 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C32C061574;
-        Thu, 30 Dec 2021 04:01:28 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id u16so18099454plg.9;
-        Thu, 30 Dec 2021 04:01:28 -0800 (PST)
+        with ESMTP id S229463AbhL3M0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 07:26:35 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4DBEC061574;
+        Thu, 30 Dec 2021 04:26:33 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id 196so21284720pfw.10;
+        Thu, 30 Dec 2021 04:26:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TDgv196gWb07CUyUUcwYdYWixQvIpSIJ3cIHNOMMxdA=;
-        b=h2E5pj3CBlbfIatpL/8mghPAEsde92sVrILb0KJsZOaoWzMBWAKlozW0XVAzLgVtrX
-         3N2oOmWrlihbXpVJbdRwHtW/jTsaFaPkTdOtQaTH4suqdLxSRFZ0wFCKMwIlUrP1PkeY
-         U6d8IU6ah+7xRYShRqLAhtlBO3gcky4wiy85UR66CLHZhIcpOsmN3pBgbqeGkIhwUV/D
-         luX6UwRh6c4e0T96thxfdgi6HrnwQ3hwSeUu9IxLxWkujfZeUJY9zzd5QM6PDBWod5Cz
-         oXjG1dX2ePP1EcPRJeclyb3W6avcmC/S1gxrvx6ZWsCOuPeV1Ny2bMHdBVelKOROSA8k
-         Ptxw==
+        h=from:to:cc:subject:date:message-id;
+        bh=AlZcCMoJjFYZAvzPn7pUk3yUkEsqxoQZGmBCqnTuRDc=;
+        b=jBhp7aBh2xdhDcSElxrQTbeRh/3NtfT5iCVD7X+bsfTaSMoJFqaCZkYYxC5TAE/k7Q
+         6dfcpV8HNhYgEZ1GjAThFKvm/Jw7pSmXk1Nbl/QkiCQDz0vP8DBImv80Czf+lTd7BSmt
+         VJVgQ+ASW/DeXvqDokJ6OQNv2+saZNszU5pBp0U2K/Bg1BVCDd5siwE6S0849z5U0SXU
+         NpglYR1xDtrIOpinjGQvXo8p0kVNdJx657+8KAQ3JCFtRcBB62nRfShIzYkoVCl76qKM
+         PRrIKtu4L+PXNtm+lqyk7SSSYv2VugEraDvDjFGEWYiKgwaIfFoCJAsJHukXuHD2WF1t
+         pBlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TDgv196gWb07CUyUUcwYdYWixQvIpSIJ3cIHNOMMxdA=;
-        b=Gat45n+t/zU4dO9SFnzjn9g0t0yfZdMeliPNUpTom8R23h1KoFkiJgdtX5hvlDk/IX
-         rdcL46YLwiVjQ01+4yhve/lbn19WQdknzR4uIOxf6LVWBeednYnIa3s/VoBH/uUorS/i
-         P4AjDZiDccAv02aqXeE5kW4+ZWnintBpElT63NSd5j5YwWYxyYqlrFkipWhzlwm6/+9s
-         oGaODvF1Vneesz3LMIgiR276liNQdjoZK8u7SUsdg5mPcYHv5Fuxvfi5pfXOiKRy+2vg
-         MxZ/3LYZf3z9gzpDfDwzoRPDIXq674qmC3LtOWnWFPeG1go7MyHpEgdsjdXGLqeVnsCF
-         qUtQ==
-X-Gm-Message-State: AOAM533hIWsyF2c+g+i1BjCu4WvNo8uuN1yTHjNYGfvzavda8hnL889q
-        qobp/53Q6i2r2ZFpWajAq5A=
-X-Google-Smtp-Source: ABdhPJxaQCUygBLiCTLvaAZ6SpNVkdZhcWBaL38Hipx0lk3rO69WkkThN8edSm63kJ3fnFp0c2cMGw==
-X-Received: by 2002:a17:903:11c5:b0:149:a8cf:37da with SMTP id q5-20020a17090311c500b00149a8cf37damr1350032plh.132.1640865688190;
-        Thu, 30 Dec 2021 04:01:28 -0800 (PST)
-Received: from integral2.. ([180.254.126.2])
-        by smtp.gmail.com with ESMTPSA id nn16sm30121257pjb.54.2021.12.30.04.01.25
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=AlZcCMoJjFYZAvzPn7pUk3yUkEsqxoQZGmBCqnTuRDc=;
+        b=VNrxXUHQRD4MFakgGPCj3jUWOKvok+ztidQG5w+HsePp/xAIpssL4ZlVp0yGclvRbj
+         8WzQk8aE6joX2NPnNHv+/jCphzgi/pJgPoC9gv2ItcdgkRTBugG77PPeuxUnmzBGGfl8
+         hdAzIiO91pMZX6q95bFAZr5PhNcL9vO+TdKGFDHEqvAzR/RDcQXlBuRxUxiCPJhCUWij
+         oeaYg8tfGod9Wd4cP0ZBziLAEEWZGGNApNWz6LkNZ7zlBeFZp2YNJnAWLCQRrmiUY9+i
+         aqhYPng8IaoW+YOGUbkLZtALELcRciDjjE9aYZdI0F4yjyxRNYwMr4rt/hunJ6yv7w6A
+         aGpw==
+X-Gm-Message-State: AOAM530/fe1nb/9swhNlBorb6EFZ1Njws9Y8L9+F4KHrNy3jRngqZNr/
+        a6iRCkzPLkq8Hrqouhtbweg=
+X-Google-Smtp-Source: ABdhPJzkTgfsMIIczH49mDOaUK/Jh+DGJr8H5IQFN56Sn9GyI6DvZHyXx8xqMbG0KRBdIS/TuDNR3A==
+X-Received: by 2002:a63:413:: with SMTP id 19mr27372546pge.382.1640867193163;
+        Thu, 30 Dec 2021 04:26:33 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id w9sm22452943pge.18.2021.12.30.04.26.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Dec 2021 04:01:27 -0800 (PST)
-From:   Ammar Faizi <ammarfaizi2@gmail.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     io-uring Mailing List <io-uring@vger.kernel.org>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ammar Faizi <ammarfaizi2@gmail.com>,
-        Nugra <richiisei@gmail.com>
-Subject: [RFC PATCH v2 3/3] io_uring: Add `sendto(2)` and `recvfrom(2)` support
-Date:   Thu, 30 Dec 2021 19:00:44 +0700
-Message-Id: <20211230115057.139187-3-ammar.faizi@intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211230114846.137954-1-ammar.faizi@intel.com>
-References: <20211230114846.137954-1-ammar.faizi@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 30 Dec 2021 04:26:32 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+Cc:     linmq006@gmail.com, Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Igal Liberman <igal.liberman@freescale.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] fsl/fman: Fix missing put_device() call in fman_port_probe
+Date:   Thu, 30 Dec 2021 12:26:27 +0000
+Message-Id: <20211230122628.22619-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds sendto(2) and recvfrom(2) support for io_uring.
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore.
+Add the corresponding 'put_device()' in the and error handling paths.
 
-New opcodes:
-  IORING_OP_SENDTO
-  IORING_OP_RECVFROM
-
-Cc: Nugra <richiisei@gmail.com>
-Link: https://github.com/axboe/liburing/issues/397
-Signed-off-by: Ammar Faizi <ammarfaizi2@gmail.com>
+Fixes: 18a6c85fcc78 ("fsl/fman: Add FMan Port Support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
+ drivers/net/ethernet/freescale/fman/fman_port.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-v2:
-  - In `io_recvfrom()`, mark the error check of `move_addr_to_user()`
-    call as unlikely.
-
-  - Fix build error when CONFIG_NET is undefined.
-
- fs/io_uring.c                 | 84 ++++++++++++++++++++++++++++++++---
- include/uapi/linux/io_uring.h |  2 +
- 2 files changed, 80 insertions(+), 6 deletions(-)
-
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index d564f98d5d3b..3726958f8f58 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -575,7 +575,15 @@ struct io_sr_msg {
- 	union {
- 		struct compat_msghdr __user	*umsg_compat;
- 		struct user_msghdr __user	*umsg;
--		void __user			*buf;
-+
-+		struct {
-+			void __user		*buf;
-+			struct sockaddr __user	*addr;
-+			union {
-+				int		sendto_addr_len;
-+				int __user	*recvfrom_addr_len;
-+			};
-+		};
- 	};
- 	int				msg_flags;
- 	int				bgid;
-@@ -1133,6 +1141,19 @@ static const struct io_op_def io_op_defs[] = {
- 		.needs_file = 1
- 	},
- 	[IORING_OP_GETXATTR] = {},
-+	[IORING_OP_SENDTO] = {
-+		.needs_file		= 1,
-+		.unbound_nonreg_file	= 1,
-+		.pollout		= 1,
-+		.audit_skip		= 1,
-+	},
-+	[IORING_OP_RECVFROM] = {
-+		.needs_file		= 1,
-+		.unbound_nonreg_file	= 1,
-+		.pollin			= 1,
-+		.buffer_select		= 1,
-+		.audit_skip		= 1,
-+	},
- };
- 
- /* requests with any of those set should undergo io_disarm_next() */
-@@ -5216,12 +5237,24 @@ static int io_sendmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
- 		return -EINVAL;
- 
-+	/*
-+	 * For IORING_OP_SEND{,TO}, the assignment to @sr->umsg
-+	 * is equivalent to an assignment to @sr->buf.
-+	 */
- 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
-+
- 	sr->len = READ_ONCE(sqe->len);
- 	sr->msg_flags = READ_ONCE(sqe->msg_flags) | MSG_NOSIGNAL;
- 	if (sr->msg_flags & MSG_DONTWAIT)
- 		req->flags |= REQ_F_NOWAIT;
- 
-+	if (req->opcode == IORING_OP_SENDTO) {
-+		sr->addr = u64_to_user_ptr(READ_ONCE(sqe->addr2));
-+		sr->sendto_addr_len = READ_ONCE(sqe->addr3);
-+	} else {
-+		sr->addr = (struct sockaddr __user *) NULL;
-+	}
-+
- #ifdef CONFIG_COMPAT
- 	if (req->ctx->compat)
- 		sr->msg_flags |= MSG_CMSG_COMPAT;
-@@ -5275,6 +5308,7 @@ static int io_sendmsg(struct io_kiocb *req, unsigned int issue_flags)
- 
- static int io_sendto(struct io_kiocb *req, unsigned int issue_flags)
- {
-+	struct sockaddr_storage address;
- 	struct io_sr_msg *sr = &req->sr_msg;
- 	struct msghdr msg;
- 	struct iovec iov;
-@@ -5291,10 +5325,20 @@ static int io_sendto(struct io_kiocb *req, unsigned int issue_flags)
- 	if (unlikely(ret))
- 		return ret;
- 
--	msg.msg_name = NULL;
-+
- 	msg.msg_control = NULL;
- 	msg.msg_controllen = 0;
--	msg.msg_namelen = 0;
-+	if (sr->addr) {
-+		ret = move_addr_to_kernel(sr->addr, sr->sendto_addr_len,
-+					  &address);
-+		if (unlikely(ret < 0))
-+			goto fail;
-+		msg.msg_name = (struct sockaddr *) &address;
-+		msg.msg_namelen = sr->sendto_addr_len;
-+	} else {
-+		msg.msg_name = NULL;
-+		msg.msg_namelen = 0;
-+	}
- 
- 	flags = req->sr_msg.msg_flags;
- 	if (issue_flags & IO_URING_F_NONBLOCK)
-@@ -5309,6 +5353,7 @@ static int io_sendto(struct io_kiocb *req, unsigned int issue_flags)
- 			return -EAGAIN;
- 		if (ret == -ERESTARTSYS)
- 			ret = -EINTR;
-+	fail:
- 		req_set_fail(req);
+diff --git a/drivers/net/ethernet/freescale/fman/fman_port.c b/drivers/net/ethernet/freescale/fman/fman_port.c
+index d9baac0dbc7d..4c9d05c45c03 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_port.c
++++ b/drivers/net/ethernet/freescale/fman/fman_port.c
+@@ -1805,7 +1805,7 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 	fman = dev_get_drvdata(&fm_pdev->dev);
+ 	if (!fman) {
+ 		err = -EINVAL;
+-		goto return_err;
++		goto put_device;
  	}
- 	__io_req_complete(req, issue_flags, ret, 0);
-@@ -5427,13 +5472,25 @@ static int io_recvmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
- 		return -EINVAL;
  
-+	/*
-+	 * For IORING_OP_RECV{,FROM}, the assignment to @sr->umsg
-+	 * is equivalent to an assignment to @sr->buf.
-+	 */
- 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
-+
- 	sr->len = READ_ONCE(sqe->len);
- 	sr->bgid = READ_ONCE(sqe->buf_group);
- 	sr->msg_flags = READ_ONCE(sqe->msg_flags) | MSG_NOSIGNAL;
- 	if (sr->msg_flags & MSG_DONTWAIT)
- 		req->flags |= REQ_F_NOWAIT;
+ 	err = of_property_read_u32(port_node, "cell-index", &val);
+@@ -1813,7 +1813,7 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 		dev_err(port->dev, "%s: reading cell-index for %pOF failed\n",
+ 			__func__, port_node);
+ 		err = -EINVAL;
+-		goto return_err;
++		goto put_device;
+ 	}
+ 	port_id = (u8)val;
+ 	port->dts_params.id = port_id;
+@@ -1847,7 +1847,7 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 	}  else {
+ 		dev_err(port->dev, "%s: Illegal port type\n", __func__);
+ 		err = -EINVAL;
+-		goto return_err;
++		goto put_device;
+ 	}
  
-+	if (req->opcode == IORING_OP_RECVFROM) {
-+		sr->addr = u64_to_user_ptr(READ_ONCE(sqe->addr2));
-+		sr->recvfrom_addr_len = u64_to_user_ptr(READ_ONCE(sqe->addr3));
-+	} else {
-+		sr->addr = (struct sockaddr __user *) NULL;
-+	}
-+
- #ifdef CONFIG_COMPAT
- 	if (req->ctx->compat)
- 		sr->msg_flags |= MSG_CMSG_COMPAT;
-@@ -5509,6 +5566,7 @@ static int io_recvfrom(struct io_kiocb *req, unsigned int issue_flags)
- 	struct iovec iov;
- 	unsigned flags;
- 	int ret, min_ret = 0;
-+	struct sockaddr_storage address;
- 	bool force_nonblock = issue_flags & IO_URING_F_NONBLOCK;
+ 	port->dts_params.type = port_type;
+@@ -1861,7 +1861,7 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 			dev_err(port->dev, "%s: incorrect qman-channel-id\n",
+ 				__func__);
+ 			err = -EINVAL;
+-			goto return_err;
++			goto put_device;
+ 		}
+ 		port->dts_params.qman_channel_id = qman_channel_id;
+ 	}
+@@ -1871,7 +1871,7 @@ static int fman_port_probe(struct platform_device *of_dev)
+ 		dev_err(port->dev, "%s: of_address_to_resource() failed\n",
+ 			__func__);
+ 		err = -ENOMEM;
+-		goto return_err;
++		goto put_device;
+ 	}
  
- 	sock = sock_from_file(req->file);
-@@ -5526,7 +5584,7 @@ static int io_recvfrom(struct io_kiocb *req, unsigned int issue_flags)
- 	if (unlikely(ret))
- 		goto out_free;
+ 	port->dts_params.fman = fman;
+@@ -1896,6 +1896,8 @@ static int fman_port_probe(struct platform_device *of_dev)
  
--	msg.msg_name = NULL;
-+	msg.msg_name = sr->addr ? (struct sockaddr *) &address : NULL;
- 	msg.msg_control = NULL;
- 	msg.msg_controllen = 0;
- 	msg.msg_namelen = 0;
-@@ -5540,6 +5598,16 @@ static int io_recvfrom(struct io_kiocb *req, unsigned int issue_flags)
- 		min_ret = iov_iter_count(&msg.msg_iter);
+ 	return 0;
  
- 	ret = sock_recvmsg(sock, &msg, flags);
-+
-+	if (ret >= 0 && sr->addr != NULL) {
-+		int tmp;
-+
-+		tmp = move_addr_to_user(&address, msg.msg_namelen, sr->addr,
-+					sr->recvfrom_addr_len);
-+		if (unlikely(tmp < 0))
-+			ret = tmp;
-+	}
-+
- out_free:
- 	if (ret < min_ret) {
- 		if (ret == -EAGAIN && force_nonblock)
-@@ -5707,8 +5775,8 @@ IO_NETOP_PREP_ASYNC(sendmsg);
- IO_NETOP_PREP_ASYNC(recvmsg);
- IO_NETOP_PREP_ASYNC(connect);
- IO_NETOP_PREP(accept);
--IO_NETOP_FN(send);
--IO_NETOP_FN(recv);
-+IO_NETOP_FN(sendto);
-+IO_NETOP_FN(recvfrom);
- #endif /* CONFIG_NET */
- 
- struct io_poll_table {
-@@ -6778,9 +6846,11 @@ static int io_req_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 	case IORING_OP_SYNC_FILE_RANGE:
- 		return io_sfr_prep(req, sqe);
- 	case IORING_OP_SENDMSG:
-+	case IORING_OP_SENDTO:
- 	case IORING_OP_SEND:
- 		return io_sendmsg_prep(req, sqe);
- 	case IORING_OP_RECVMSG:
-+	case IORING_OP_RECVFROM:
- 	case IORING_OP_RECV:
- 		return io_recvmsg_prep(req, sqe);
- 	case IORING_OP_CONNECT:
-@@ -7060,12 +7130,14 @@ static int io_issue_sqe(struct io_kiocb *req, unsigned int issue_flags)
- 	case IORING_OP_SENDMSG:
- 		ret = io_sendmsg(req, issue_flags);
- 		break;
-+	case IORING_OP_SENDTO:
- 	case IORING_OP_SEND:
- 		ret = io_sendto(req, issue_flags);
- 		break;
- 	case IORING_OP_RECVMSG:
- 		ret = io_recvmsg(req, issue_flags);
- 		break;
-+	case IORING_OP_RECVFROM:
- 	case IORING_OP_RECV:
- 		ret = io_recvfrom(req, issue_flags);
- 		break;
-diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
-index efc7ac9b3a6b..a360069d1e8e 100644
---- a/include/uapi/linux/io_uring.h
-+++ b/include/uapi/linux/io_uring.h
-@@ -150,6 +150,8 @@ enum {
- 	IORING_OP_SETXATTR,
- 	IORING_OP_FGETXATTR,
- 	IORING_OP_GETXATTR,
-+	IORING_OP_SENDTO,
-+	IORING_OP_RECVFROM,
- 
- 	/* this goes last, obviously */
- 	IORING_OP_LAST,
++put_device:
++	put_device(&fm_pdev->dev);
+ return_err:
+ 	of_node_put(port_node);
+ free_port:
 -- 
-2.32.0
+2.17.1
 
