@@ -2,121 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 402C6481D40
-	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 15:47:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BDBC481D89
+	for <lists+netdev@lfdr.de>; Thu, 30 Dec 2021 16:04:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236261AbhL3Ora (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 09:47:30 -0500
-Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:51615 "EHLO
-        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231320AbhL3Ora (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 09:47:30 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id E6D243201A17;
-        Thu, 30 Dec 2021 09:47:28 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 30 Dec 2021 09:47:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=57dHqV
-        yHv8lZVITJ8UlcUlQXPS1xJBApe4kt8G+rfV4=; b=irjRxB8DGwaHfUxVTBnwhj
-        7RoF1CnEmtalKrmKibxF/HsmYRU2Z9nJ4mvRuo7gWFpr9L7G5BIZkhZdNWA7TFOv
-        fo+wnnvM7MCrtrAI00m0ZhhZXtXwNueR5euatUysqwEM+3m0rBwG6pjSeX8BfxiN
-        hWYQOKOhOrHq66aKBpeiwUTycRHf0RdXgCVE4801s+6uU0eL9+nEJ7xg7Qt/6lKK
-        ZSuSCu4eyUcXIBFjWCYwE3/X0bIFgCA8HTaeGE8MceFWei13N5SEfaJ0wOrKiNm2
-        HUhwQhBRogwtiFZmpKQCE/q0ZkgpFN9bomzem8D6N22YU7gz28ShZkQn2ek69n9w
-        ==
-X-ME-Sender: <xms:f8bNYSzskpotpP-KvDLHw-bWjyiC6m6qgB_Os5vTr0B1Y9SdPa8Rmw>
-    <xme:f8bNYeQyRPke3BdteFYlnZ14Ro9Q2Fv7_axiBtr37Niu0DtcwRA96lhk53mV7R6le
-    TQRhk3ij1MVQUA>
-X-ME-Received: <xmr:f8bNYUXbUgHFKM5Y6shKc21WWZVTeFSjYpYzQYU4uwuWxjEVB9b0DW6O8cTjsEgac80c6N3qW_TeqD1yba9EwZuWB37mow>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddruddvfedgieelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:f8bNYYjGxj9GWi7TFY6freHvnmDax433R8mOC7jvQfuzq70e5dbPgA>
-    <xmx:f8bNYUB8pO_NQBHL5IFUpC0iPuEX-skSwAWKjRClQ8CXKlKj1Cj6Yg>
-    <xmx:f8bNYZIDkVzLGLsxEtaWXEaZEFo_EPbRGfsxLL8islBnsST2C9kpxQ>
-    <xmx:gMbNYXOJqxc5X1RL-wVMgE7UewVE8aaUwon1qDfgmWL783ydr300ug>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 30 Dec 2021 09:47:27 -0500 (EST)
-Date:   Thu, 30 Dec 2021 16:47:23 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Justin Iurman <justin.iurman@uliege.be>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        dsahern@kernel.org, yoshfuji@linux-ipv6.org
-Subject: Re: [PATCH net-next v2] ipv6: ioam: Support for Queue depth data
- field
-Message-ID: <Yc3GeyeVliLWC7El@shredder>
-References: <20211224135000.9291-1-justin.iurman@uliege.be>
- <YcYJD2trOaoc5y7Z@shredder>
- <331558573.246297129.1640519271432.JavaMail.zimbra@uliege.be>
- <Ychiyd0AgeLspEvP@shredder>
- <462116834.246327590.1640523548154.JavaMail.zimbra@uliege.be>
- <Ychq4ggTdpVG24Zp@shredder>
- <751671897.247201108.1640614002305.JavaMail.zimbra@uliege.be>
+        id S241284AbhL3PEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 10:04:04 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:36602 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S241274AbhL3PDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 10:03:34 -0500
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1BUCUF4b014515;
+        Thu, 30 Dec 2021 15:03:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=jMANrreSLuC0gqJrEjbxLuoNWlZQVAoSFbMHXBX4/Mk=;
+ b=kRK18YdEOm9QKHe2KinXTUv9D/x2oUz61GndQ7F98SsEmQ3qbPeSOh8f4CzYjeAphhQ5
+ vvoD3ZEJRc7aFljtPbwQeDPypCB3uuJ2EAw2ijafdtI9x8dS0BGp5PdFxRU/tYtjWOA+
+ hA0HjjPnHGRP4GSeHDFbwMCAHDBlCE7PKRyx+4WFefJ35qXLpzuawZMUR62ciZUNtdWN
+ /2WRLBki1hFDKG0+w6If7i7Mh62vrjX+WCI6Z3gGDFm+GUt+c1l59ZQXVG2Cm4Pf75Vk
+ XI2nJcvii3BmP7jIplrskf4gPJC2ydtZyfVO9vpWGpK/4W/omjrR7/Ah797LUAzMWG3T og== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3d844r9r4s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Dec 2021 15:03:23 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 1BUEXBZg008869;
+        Thu, 30 Dec 2021 15:03:23 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3d844r9r4e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Dec 2021 15:03:23 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 1BUEvjTS010363;
+        Thu, 30 Dec 2021 15:03:21 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma05fra.de.ibm.com with ESMTP id 3d5tx9j9as-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 30 Dec 2021 15:03:21 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1BUF3JkV38404588
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 30 Dec 2021 15:03:19 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3453742056;
+        Thu, 30 Dec 2021 15:03:19 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E1E3F4204D;
+        Thu, 30 Dec 2021 15:03:18 +0000 (GMT)
+Received: from [9.145.32.195] (unknown [9.145.32.195])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 30 Dec 2021 15:03:18 +0000 (GMT)
+Message-ID: <97ea52de-5419-22ee-7f55-b92887dcaada@linux.ibm.com>
+Date:   Thu, 30 Dec 2021 16:03:19 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <751671897.247201108.1640614002305.JavaMail.zimbra@uliege.be>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH net-next] net/smc: Introduce TCP ULP support
+Content-Language: en-US
+To:     Tony Lu <tonylu@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <20211228134435.41774-1-tonylu@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20211228134435.41774-1-tonylu@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Ok5tmxyyKmLor-2JuexOo-b-FXNbPq8n
+X-Proofpoint-ORIG-GUID: Pz2JW6LtT05ZB5xM5YOhZR5hnK7MIA0z
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-30_05,2021-12-30_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 phishscore=0
+ suspectscore=0 impostorscore=0 malwarescore=0 adultscore=0
+ priorityscore=1501 lowpriorityscore=0 mlxscore=0 mlxlogscore=999
+ bulkscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2112300083
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 27, 2021 at 03:06:42PM +0100, Justin Iurman wrote:
-> On Dec 26, 2021, at 2:15 PM, Ido Schimmel idosch@idosch.org wrote:
-> > On Sun, Dec 26, 2021 at 01:59:08PM +0100, Justin Iurman wrote:
-> >> On Dec 26, 2021, at 1:40 PM, Ido Schimmel idosch@idosch.org wrote:
-> >> > On Sun, Dec 26, 2021 at 12:47:51PM +0100, Justin Iurman wrote:
-> >> >> On Dec 24, 2021, at 6:53 PM, Ido Schimmel idosch@idosch.org wrote:
-> >> >> > Why 'qlen' is used and not 'backlog'? From the paragraph you quoted it
-> >> >> > seems that queue depth needs to take into account the size of the
-> >> >> > enqueued packets, not only their number.
-> >> >> 
-> >> >> The quoted paragraph contains the following sentence:
-> >> >> 
-> >> >>    "The queue depth is expressed as the current amount of memory
-> >> >>     buffers used by the queue"
-> >> >> 
-> >> >> So my understanding is that we need their number, not their size.
-> >> > 
-> >> > It also says "a packet could consume one or more memory buffers,
-> >> > depending on its size". If, for example, you define tc-red limit as 1M,
-> >> > then it makes a lot of difference if the 1,000 packets you have in the
-> >> > queue are 9,000 bytes in size or 64 bytes.
-> >> 
-> >> Agree. We probably could use 'backlog' instead, regarding this
-> >> statement:
-> >> 
-> >>   "It should be noted that the semantics of some of the node data fields
-> >>    that are defined below, such as the queue depth and buffer occupancy,
-> >>    are implementation specific.  This approach is intended to allow IOAM
-> >>    nodes with various different architectures."
-> >> 
-> >> It would indeed make more sense, based on your example. However, the
-> >> limit (32 bits) could be reached faster using 'backlog' rather than
-> >> 'qlen'. But I guess this tradeoff is the price to pay to be as close
-> >> as possible to the spec.
-> > 
-> > At least in Linux 'backlog' is 32 bits so we are OK :)
-> > We don't have such big buffers in hardware and I'm not sure what
-> > insights an operator will get from a queue depth larger than 4GB...
+On 28/12/2021 14:44, Tony Lu wrote:
+> This implements TCP ULP for SMC, helps applications to replace TCP with
+> SMC protocol in place. And we use it to implement transparent
+> replacement.
 > 
-> Indeed :-)
-> 
-> > I just got an OOO auto-reply from my colleague so I'm not sure I will be
-> > able to share his input before next week. Anyway, reporting 'backlog'
-> > makes sense to me, FWIW.
-> 
-> Right. I read that Linus is planning to release a -rc8 so I think I can
-> wait another week before posting -v3.
+> This replaces original TCP sockets with SMC, reuse TCP as clcsock when
+> calling setsockopt with TCP_ULP option, and without any overhead.
 
-The answer I got from my colleagues is that they expect the field to
-either encode bytes (what Mellanox/Nvidia is doing) or "cells", which is
-an "allocation granularity of memory within the shared buffer" (see man
-devlink-sb).
+This looks very interesting. Can you provide a simple userspace example about 
+how to use ULP with smc?
+
+And how do you make sure that the in-band CLC handshake doesn't interfere with the
+previous TCP traffic, is the idea to put some kind of protocol around it so both
+sides 'know' when the protocol ended and the CLC handshake starts?
