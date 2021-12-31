@@ -2,93 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2A8482355
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 11:27:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56D16482382
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 11:44:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230102AbhLaK1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 05:27:19 -0500
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:63203 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230109AbhLaK1S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 05:27:18 -0500
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 376DE40003;
-        Fri, 31 Dec 2021 10:27:17 +0000 (UTC)
-Date:   Fri, 31 Dec 2021 11:27:16 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: Re: packets trickling out of STP-blocked ports
-Message-ID: <Yc7bBLupVUQC9b3X@piout.net>
-References: <20211230230740.GA1510894@euler>
+        id S229456AbhLaKoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 05:44:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50416 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229446AbhLaKn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 05:43:59 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E2CC061574;
+        Fri, 31 Dec 2021 02:43:59 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id b186-20020a1c1bc3000000b00345734afe78so14595315wmb.0;
+        Fri, 31 Dec 2021 02:43:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=bLUkTU6YF+8VLXQUQIWE9F/hQfPP+FolDFiTd3ZDtrs=;
+        b=bmY1kbjIlV/sLw6YhqPG6UsoOX4iiCGCWwkkibgh5ixxQ8zdbpjVi0HUXeLfI9ELdE
+         rGqCLvHCBDW+/qRxI1fur/cYvuGt7PU0tnaIw4dhjS+2KQ5ST5/V3bWySd8d1ZD6V/2b
+         egZamqr04QzT8IhF2ZTU0idJTQSJHxetevaG04biYD4Su1cy+vYsJp4YWpSNkAvfvsXl
+         WTYox+UlLJHQXCiyKl3bqRboxKW3PqBF7EEZGA3vTCIgF+xwMzBL9I8gX41UA40DV33s
+         xZ4U7hvU6vmu7Qwm1ka5Xq2mp6K32Kmarc4UXIkOadVRR0TdjyHelHw0qtbnzli5tNlt
+         p0AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=bLUkTU6YF+8VLXQUQIWE9F/hQfPP+FolDFiTd3ZDtrs=;
+        b=K6qZurkjqNtVF2zJhqn2EoOIAcwkFMiqOaY1uuJ7UAU+Dpcl5me1i8u8+7eY3ATw9D
+         trzCjPib/w9UpizPjceI+6d5Y0s5cth7NIg+Y2xixGIDC24adGMfXNJBAse0ogz7WIvp
+         Hrjkr97xfcDWEqF/LnL+xNunJKf5K6LFEf+EeHURZSHu5ATIACzwGj7jw0uC7Ln6cbIZ
+         xry01eyakAvgCslffr2nXpvyZn+tqPBouIjfOJgNbOK35MpXnNYnOacZz20HQ/rstxwb
+         uj0/bNhrKPBkqvWyS6oAExRj0FOA3oB3iC7Eu8ht5MXLbWUsrtLRrnWOCEavnwlP9uSl
+         BJ7w==
+X-Gm-Message-State: AOAM531y8Jm1IeY7mzSy2RqD2baSqY32TOR6iATFFflxKi/Ryc2MK4uS
+        owC9DQ/jTc3i8QNdbxjZJYQDO5/k0qs=
+X-Google-Smtp-Source: ABdhPJwaB4oZMlIVWbJDarcy1yJ7NaobnlWBgzU0JfLp+wnpSa6WOB8j7cUNARKMaRDf+3/cuWS3cg==
+X-Received: by 2002:a05:600c:1991:: with SMTP id t17mr29701332wmq.21.1640947437988;
+        Fri, 31 Dec 2021 02:43:57 -0800 (PST)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id b1sm29584285wrd.92.2021.12.31.02.43.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Dec 2021 02:43:57 -0800 (PST)
+Date:   Fri, 31 Dec 2021 11:43:53 +0100
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     conleylee@foxmail.com
+Cc:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+        wens@csie.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
+Message-ID: <Yc7e6V9/oioEpx8c@Red>
+References: <20211228164817.1297c1c9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <tencent_DE05ADA53D5B084D4605BE6CB11E49EF7408@qq.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20211230230740.GA1510894@euler>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <tencent_DE05ADA53D5B084D4605BE6CB11E49EF7408@qq.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 30/12/2021 15:07:40-0800, Colin Foster wrote:
-> Hi all,
+Le Wed, Dec 29, 2021 at 09:43:51AM +0800, conleylee@foxmail.com a écrit :
+> From: Conley Lee <conleylee@foxmail.com>
 > 
-> I'm not sure who all to include in this email, but I'm starting with
-> this list to start.
+> Thanks for your review. Here is the new version for this patch.
 > 
-> Probably obvious to those in this email list, I'm testing a VSC7512 dev
-> board controlled via SPI. The patches are still out-of-tree, but I
-> figured I'll report these findings, since they seem real.
+> This patch adds support for the emac rx dma present on sun4i. The emac
+> is able to move packets from rx fifo to RAM by using dma.
 > 
-> My setup is port 0 of the 7512 is tied to a Beaglebone Black. Port 1 is
-> tied to my development PC. Ports 2 and 3 are tied together to test STP.
+> Change since v4.
+>   - rename sbk field to skb
+>   - rename alloc_emac_dma_req to emac_alloc_dma_req
+>   - using kzalloc(..., GPF_ATOMIC) in interrupt context to avoid
+>     sleeping
+>   - retry by using emac_inblk_32bit when emac_dma_inblk_32bit fails
+>   - fix some code style issues 
 > 
-> I run the commands:
-> 
-> ip link set eth0 up
-> ip link set swp[1-3] up
-> ip link add name br0 type bridge stp_state 1
-> ip link set dev swp[1-3] master br0
-> ip addr add 10.100.3.1/16 dev br0
-> ip link set dev br0 up
-> 
-> After running this, the STP blocks swp3, and swp1/2 are forwarding.
-> 
-> Periodically I see messages saying that swp2 is receiving packets with
-> own address as source address.
-> 
-> I can confirm that via ethtool that TX packets are increasing on swp3. I
-> believe I captured the event via tshark. A 4 minute capture showed three
-> non-STP packets on swp2. All three of these packets are ICMPv6 Router
-> Solicitation packets. 
-> 
-> I would expect no packets at all to egress swp3. Is this an issue that
-> is unique to me and my in-development configuration? Or is this an issue
-> with all Ocelot / Felix devices?
-> 
-> If this is an Ocelot thing, I can try to come up with a different test 
-> setup to capture more data... printing the packet when it is received,
-> capturing the traffic externally, capturing eth0 traffic to see if it is
-> coming from the kernel or being hardware-forwarded...
-> 
-> (side note - if there's a place where a parser for Ocelot NPI traffic is
-> hidden, that might eventually save me a lot of debugging in Lua)
-> 
-> 
-> An idea of how frequently this happens - my system has been currently up
-> for 3700 seconds. Eight "own address as source address" events have
-> happened at 66, 96, 156, 279, 509, 996, 1897, and 3699 seconds. 
+> Change since v5.
+>   - fix some code style issue
 > 
 
-This is something I solved back in 2017. I can exactly remember how, you
-can try:
+Hello
 
-sysctl -w net.ipv6.conf.swp3.autoconf=0
+I just tested this on a sun4i-a10-olinuxino-lime
 
+I got:
+[    2.922812] sun4i-emac 1c0b000.ethernet (unnamed net_device) (uninitialized): get io resource from device: 0x1c0b000, size = 4096
+[    2.934512] sun4i-emac 1c0b000.ethernet (unnamed net_device) (uninitialized): failed to request dma channel. dma is disabled
+[    2.945740] sun4i-emac 1c0b000.ethernet (unnamed net_device) (uninitialized): configure dma failed. disable dma.
+[    2.957887] sun4i-emac 1c0b000.ethernet: eth0: at (ptrval), IRQ 19 MAC: 02:49:09:40:ab:3d
 
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+On which board did you test it and how ?
+
+Regards
