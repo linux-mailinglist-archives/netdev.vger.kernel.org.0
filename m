@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 879DC4822C2
+	by mail.lfdr.de (Postfix) with ESMTP id 10D8A4822C1
 	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 09:21:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242790AbhLaIU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 03:20:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47074 "EHLO
+        id S242800AbhLaIU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 03:20:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242815AbhLaIUz (ORCPT
+        with ESMTP id S242814AbhLaIUz (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 03:20:55 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D474CC06175C
-        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 00:20:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C2CCC061757
+        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 00:20:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9EE41B81D19
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34527B81D55
         for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 08:20:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C75C36AEE;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DD21C36AE9;
         Fri, 31 Dec 2021 08:20:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1640938850;
-        bh=55FAHFQlaHmGnIEL8r+Yida2dZnKtjV7nsmurxLMxHE=;
+        bh=o2khhIZamMyXsj5MPZ4TFNTNwOS3sDu6p5LvJHhAKs4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u0FRj5L9AVjjsfLFw22FQk0I4vNSOAWepbEDg4d0yrOWECV/hRKfPq82AgGMsbB76
-         hCdjlIjgpOMx/5S0EDR+XMjInuZkkrQJX3OBjLTtfrSAtpl70D+nRwEksAOuo+cxSE
-         EPR0ggKsRRawYK/aEnlCCnj39qc1/dvNv5SdVfiw0VHfye+S8xUZI4TnLqoY+d+nfK
-         CqEag0YPAN9G825q3OPGkV8TNZ9Xqz5t7rqjZulExRGpOvclkWmmYVJnO84DTTQj6W
-         qk+opFC/5OmTsv6cu37ZHQRRbE42zqjNfw9XmuY4RGqEeSn+6nN6twmVw6S4CnyYXc
-         rpBmT0FgtJ7OQ==
+        b=aoQB4XTVQgv9C8Y1CcsWKUpiX1LWzgzCOLFc4VMzdY2B7xgGMDIsgv62c6iYVJITQ
+         seFAWpwqwmR3CRCOkHy/dLhtcqwMLXb6u/ZcLfLqQ/z4rWh9cLXP0rzc02H1vTm0ne
+         xfy99ItcI4X5eMaRMiBKE4rgwdCzRnWMKk5zTJ5kg0rhcmIOeSRqA0XCalV4BhaE4o
+         4QQ0TdM0AAhXyRwmPc1Xyb3yZ0aHG9bc4ju2pDEvfqrQifRKL8XTZXUe1E53H0Z2N2
+         GK0zHNbybl6X50zHdB8FTBX0QfgtmvE3yeaOBSObErkDj5yxkUPoL1RiHfvzx1wgVc
+         rLChT+IuQK+8w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next v2 15/16] net/mlx5: DR, Ignore modify TTL if device doesn't support it
-Date:   Fri, 31 Dec 2021 00:20:37 -0800
-Message-Id: <20211231082038.106490-16-saeed@kernel.org>
+Subject: [net-next v2 16/16] net/mlx5: Set SMFS as a default steering mode if device supports it
+Date:   Fri, 31 Dec 2021 00:20:38 -0800
+Message-Id: <20211231082038.106490-17-saeed@kernel.org>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211231082038.106490-1-saeed@kernel.org>
 References: <20211231082038.106490-1-saeed@kernel.org>
@@ -50,86 +50,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-When modifying TTL, packet's csum has to be recalculated.
-Due to HW issue in ConnectX-5, csum recalculation for modify TTL
-is supported through a work-around that is specifically enabled
-by configuration.
-If the work-around isn't enabled, ignore the modify TTL action
-rather than adding an unsupported action.
+Set SMFS (SW-managed flow steering) as a default steering mode
+instead of DMFS (device-managed flow steering)
+
+In SMFS, the driver writes the STEs (Steering Table Entries) directly
+to the device's ICM, which allows for a higher rule insertion rate
+than through using FW command interface, as it is done in DMFS.
+
+SMFS/DMFS steering modes can be configured through devlink param
+'flow_steering_mode'. The possible values are 'smfs' or 'dmfs'.
+The desired 'flow_steering_mode' param value should be set before
+enabling switchdev mode.
+
+Example:
+
+  # devlink dev param set pci/0000:05:00.0 name flow_steering_mode smfs
+  # devlink dev eswitch set pci/0000:05:00.0 mode switchdev
 
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_action.c   | 21 ++++++++++++++++---
- include/linux/mlx5/mlx5_ifc.h                 |  2 +-
- 2 files changed, 19 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-index f0faf04536d3..c61a5e83c78c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-@@ -1560,6 +1560,12 @@ dr_action_modify_check_is_ttl_modify(const void *sw_action)
- 	return sw_field == MLX5_ACTION_IN_FIELD_OUT_IP_TTL;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index cc76ceebd208..b628917e38e4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -3083,6 +3083,11 @@ int mlx5_init_fs(struct mlx5_core_dev *dev)
+ 	steering->dev = dev;
+ 	dev->priv.steering = steering;
  
-+static bool dr_action_modify_ttl_ignore(struct mlx5dr_domain *dmn)
-+{
-+	return !mlx5dr_ste_supp_ttl_cs_recalc(&dmn->info.caps) &&
-+	       !MLX5_CAP_ESW_FLOWTABLE(dmn->mdev, fdb_ipv4_ttl_modify);
-+}
++	if (mlx5_fs_dr_is_supported(dev))
++		steering->mode = MLX5_FLOW_STEERING_MODE_SMFS;
++	else
++		steering->mode = MLX5_FLOW_STEERING_MODE_DMFS;
 +
- static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
- 					    u32 max_hw_actions,
- 					    u32 num_sw_actions,
-@@ -1591,8 +1597,13 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
- 		if (ret)
- 			return ret;
- 
--		if (!(*modify_ttl))
--			*modify_ttl = dr_action_modify_check_is_ttl_modify(sw_action);
-+		if (!(*modify_ttl) &&
-+		    dr_action_modify_check_is_ttl_modify(sw_action)) {
-+			if (dr_action_modify_ttl_ignore(dmn))
-+				continue;
-+
-+			*modify_ttl = true;
-+		}
- 
- 		/* Convert SW action to HW action */
- 		ret = dr_action_modify_sw_to_hw(dmn,
-@@ -1631,7 +1642,7 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
- 			 * modify actions doesn't exceeds the limit
- 			 */
- 			hw_idx++;
--			if ((num_sw_actions + hw_idx - i) >= max_hw_actions) {
-+			if (hw_idx >= max_hw_actions) {
- 				mlx5dr_dbg(dmn, "Modify header action number exceeds HW limit\n");
- 				return -EINVAL;
- 			}
-@@ -1642,6 +1653,10 @@ static int dr_actions_convert_modify_header(struct mlx5dr_action *action,
- 		hw_idx++;
- 	}
- 
-+	/* if the resulting HW actions list is empty, add NOP action */
-+	if (!hw_idx)
-+		hw_idx++;
-+
- 	*num_hw_actions = hw_idx;
- 
- 	return 0;
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index deaa0f71213f..598ac3bcc901 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -833,7 +833,7 @@ struct mlx5_ifc_flow_table_eswitch_cap_bits {
- 	u8      fdb_to_vport_reg_c_id[0x8];
- 	u8      reserved_at_8[0xd];
- 	u8      fdb_modify_header_fwd_to_table[0x1];
--	u8      reserved_at_16[0x1];
-+	u8      fdb_ipv4_ttl_modify[0x1];
- 	u8      flow_source[0x1];
- 	u8      reserved_at_18[0x2];
- 	u8      multi_fdb_encap[0x1];
+ 	steering->fgs_cache = kmem_cache_create("mlx5_fs_fgs",
+ 						sizeof(struct mlx5_flow_group), 0,
+ 						0, NULL);
 -- 
 2.33.1
 
