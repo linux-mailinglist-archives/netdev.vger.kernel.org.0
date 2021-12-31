@@ -2,96 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FE6A482326
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 11:05:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CE75482334
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 11:19:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229770AbhLaKFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 05:05:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41426 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229532AbhLaKFT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 05:05:19 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F489C061574
-        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 02:05:19 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id y22so107466306edq.2
-        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 02:05:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=FCAlHwKghI205wTZ5Z0xQp3SR9+6820WRK8lRLKqL7g=;
-        b=Ys2vfN/wB40kwZFrRmtNcPDXaPYh4PHwdqWnaTavJEVyuo8eXJEFYyqYgSc8Qf3UNA
-         aNPdBsvOxNOLiKnErsLxJptrHofv+fWlX9JK9SJgPHSD8ko3vn5/3fkCwGZ839y9w5UU
-         aUWE3GWAL2e4APc6iaVL7ecYF32SaOPaY2GoSNxNKNgAWeaXuHsJBU6m4d/jQeqwaEtg
-         cMd8TlBk/dWZRBnviDHxUpF2kJN9uKo2yiQS2yfd6qA96xtOBVirsHIKb8cyUksrZT4v
-         u7yXEEeiv7rJbNQa45qPQSROYW0qT7C1X6YthSLJjtR5+PGFlU6WHSgGDW8Z/jWPuKNz
-         2z5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=FCAlHwKghI205wTZ5Z0xQp3SR9+6820WRK8lRLKqL7g=;
-        b=DwHnTZPTcde2xQEOGrS3OfngwcFk6cNadX4lUimA9AnXUkypkjUgidTn3x0cUap8y/
-         QDXMWLTUSI3DrCp5Ytsj5LY77657s7oacUC2c1+j2yIRn3hsWE+IyAJWCxiXvDhBV/K/
-         CElBcvm9KhFTKC5vp85FSk1T/FUODzhMzjSj6vrYjNvbBXenrUGJ8TknO21TUC9IG0K6
-         OBl/3qK3pJp4jzwfjD+QDj6J7tqLUgS3M+gCLYSHDecMigjYxZ8LMgPIO/dcfbsANsQF
-         rIjCrOoKr7XWQ0R3IORFnF6ubP7QoYrZf2znMZq7QZa1cYKvIulz8eSOPpFbR/+3NqHJ
-         5G7w==
-X-Gm-Message-State: AOAM531yIrN+Bt7HqWtgtERUCH702SE7USgw6+azqJE9h3IKROAKG8r9
-        cfSeGQTn9ZUz02HN6ZgyZfUJXUPxfo9xkBd+YwA=
-X-Google-Smtp-Source: ABdhPJy4zHibs9YbZ7p4Ai0fEcbC//umLk+ddDVOvb4yNCN6zcsJldLRW8Xj+m/rG3BQsq7NjGb5c3S/TmI7h3j0KmE=
-X-Received: by 2002:a17:907:96a6:: with SMTP id hd38mr27823137ejc.479.1640945116894;
- Fri, 31 Dec 2021 02:05:16 -0800 (PST)
+        id S229868AbhLaKT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 05:19:56 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:29316 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229823AbhLaKTz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 05:19:55 -0500
+Received: from kwepemi100008.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JQLj74fcpzbjgS;
+        Fri, 31 Dec 2021 18:19:23 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi100008.china.huawei.com (7.221.188.57) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 31 Dec 2021 18:19:53 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 31 Dec 2021 18:19:53 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net-next 00/10] net: hns3: refactor cmdq functions in PF/VF
+Date:   Fri, 31 Dec 2021 18:14:49 +0800
+Message-ID: <20211231101459.56083-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Reply-To: davidschantal90@gmail.com
-Sender: phaeboon750@gmail.com
-Received: by 2002:aa7:cd04:0:0:0:0:0 with HTTP; Fri, 31 Dec 2021 02:05:16
- -0800 (PST)
-From:   "Dr. Abu Salam" <abu347454@gmail.com>
-Date:   Fri, 31 Dec 2021 02:05:16 -0800
-X-Google-Sender-Auth: u3Lt-p6KTbfTktoOG99vTDgYMVM
-Message-ID: <CAKrA9cNO=3SCu8PSoiwbt+=HZRk7boJ0VzX=nhww0TN9fVJjZA@mail.gmail.com>
-Subject: GREETINGS FROM ABU SALAM.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+Currently, hns3 PF and VF module have two sets of cmdq APIs to provide
+cmdq message interaction functions. Most of these APIs are the same. The
+only differences are the function variables and names with pf and vf
+suffixes. These two sets of cmdq APIs are redundent and add extra bug fix
+work.
 
-I'm sorry but happy to inform you about my success in getting those
-funds transferred under the cooperation of a new partner from Vietnam,
-though I tried my best to involve you in the business but God decided
-the whole situations. Presently I=E2=80=99m in Vietnam for investment proje=
-cts
-with my own share of the total sum. Meanwhile, I didn't forget your
-past efforts and attempts to assist me in transferring those funds
-despite that it failed us some how.
+This series refactor the cmdq APIs in hns3 PF and VF by implementing one
+set of common cmdq APIs for PF and VF reuse and deleting the old APIs.
 
-Now contact my secretary in Burkina Faso her name is Ms. Chantal
-Davids on her e-mail address below (davidschantal90@gmail.com) ask her
-to send you the total of $1.450,000.00 (One million four hundred and
-fifty thousand united state of America dollars) which I kept for your
-compensation for all the past efforts and attempts to assist me in
-this matter. I appreciated your efforts at that time very much. So
-feel free and get in touched with my secretary Ms. Chantal Davids and
-instruct her where to send the amount to you. Please do let me know
-immediately you receive it so that we can share joy after all the
-sufferness at that time.
+Jie Wang (10):
+  net: hns3: create new set of unified hclge_comm_cmd_send APIs
+  net: hns3: refactor hclge_cmd_send with new hclge_comm_cmd_send API
+  net: hns3: refactor hclgevf_cmd_send with new hclge_comm_cmd_send API
+  net: hns3: create common cmdq resource allocate/free/query APIs
+  net: hns3: refactor PF cmdq resource APIs with new common APIs
+  net: hns3: refactor VF cmdq resource APIs with new common APIs
+  net: hns3: create common cmdq init and uninit APIs
+  net: hns3: refactor PF cmdq init and uninit APIs with new common APIs
+  net: hns3: refactor VF cmdq init and uninit APIs with new common APIs
+  net: hns3: delete the hclge_cmd.c and hclgevf_cmd.c
 
-In the moment, I=E2=80=99m very busy here because of the investment project=
-s
-which I and the new partner are having at hand, finally, remember that
-I had forwarded instruction to the secretary on your behalf to receive
-that money, so feel free to get in touch with Ms. Chantal Davids she
-will send the amount to you without any delay OK. Extend my greetings
-to your family.
+ drivers/net/ethernet/hisilicon/hns3/Makefile  |   9 +-
+ .../hns3/hns3_common/hclge_comm_cmd.c         | 626 ++++++++++++++++++
+ .../hns3/hns3_common/hclge_comm_cmd.h         | 172 +++++
+ .../hisilicon/hns3/hns3pf/hclge_cmd.c         | 591 -----------------
+ .../hisilicon/hns3/hns3pf/hclge_cmd.h         | 153 +----
+ .../hisilicon/hns3/hns3pf/hclge_debugfs.c     |  10 +-
+ .../hisilicon/hns3/hns3pf/hclge_err.c         |  25 +-
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 170 ++---
+ .../hisilicon/hns3/hns3pf/hclge_main.h        |  23 +-
+ .../hisilicon/hns3/hns3pf/hclge_mbx.c         |  16 +-
+ .../hisilicon/hns3/hns3pf/hclge_mdio.c        |   4 +-
+ .../hisilicon/hns3/hns3pf/hclge_ptp.c         |   2 +-
+ .../hisilicon/hns3/hns3vf/hclgevf_cmd.c       | 556 ----------------
+ .../hisilicon/hns3/hns3vf/hclgevf_cmd.h       | 140 +---
+ .../hisilicon/hns3/hns3vf/hclgevf_main.c      | 133 ++--
+ .../hisilicon/hns3/hns3vf/hclgevf_main.h      |  30 +-
+ .../hisilicon/hns3/hns3vf/hclgevf_mbx.c       |  19 +-
+ 17 files changed, 1046 insertions(+), 1633 deletions(-)
+ create mode 100644 drivers/net/ethernet/hisilicon/hns3/hns3_common/hclge_comm_cmd.c
+ delete mode 100644 drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
+ delete mode 100644 drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
 
-My Best regards
+-- 
+2.33.0
 
-Yours brother
-Dr. Abu Salam
-Greetings from Vietnam.
