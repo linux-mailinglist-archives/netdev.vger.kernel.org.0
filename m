@@ -2,86 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9224E4822A7
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 08:56:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4204D4822AB
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 09:09:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242773AbhLaH4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 02:56:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41908 "EHLO
+        id S242782AbhLaIJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 03:09:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbhLaH4t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 02:56:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777BFC061574;
-        Thu, 30 Dec 2021 23:56:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1B90B81D18;
-        Fri, 31 Dec 2021 07:56:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 290A4C36AE9;
-        Fri, 31 Dec 2021 07:56:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640937406;
-        bh=fopNdx8omm5Fdxk8QkckX3qGnamr+tEqCZEK4dP7puk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Pz6XF5xm12yC8AYxLuKDsvK6ovNbvw7tjgt1d7b0v7gOGwlMYDZGnTU5s3CnDWNto
-         xb5wErjn/8bzjxkKG7L7sIp0PYEfn8+YUvtPqGRjU91CFqEBWcR19OVL0s+9MhzQ2k
-         Vnf04KmzpLmz6qUfqv8m+yAqwaj6+ZjsEVVEH7KIoCAUcxE57xQOr1ax95GMXfrvMt
-         sZUHm7NzYdx/pH1ltPgQFL66WBXcIA7YeZ0cj8utelX+yw4PJVHJ3/QYYxuvC0ppgL
-         mv/amhRqz0nV8+FSYsUBRnajE8HkOm3dMZn7kwQS60qniLfQmZz76ILeaB3cnmWYuN
-         ABLgm7Ko19o+w==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>
-Subject: [PATCH net] scripts/pahole-flags.sh: Make sure pahole --version works
-Date:   Thu, 30 Dec 2021 23:56:07 -0800
-Message-Id: <20211231075607.94752-1-saeed@kernel.org>
-X-Mailer: git-send-email 2.33.1
+        with ESMTP id S229667AbhLaIJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 03:09:10 -0500
+Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF0EC061574
+        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 00:09:10 -0800 (PST)
+Received: by mail-ua1-x934.google.com with SMTP id o63so46225651uao.5
+        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 00:09:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=SZlflNwJM/FoSzNidwvG3Q12/AiRGSJaNEWCCSkms7g=;
+        b=MsQeotgVRjuy9qCNYV09+q1PoJqV+PTAGJDNDM1m/chG3PmNQnrH7AKeltVsOXe51G
+         Wk4aVOgqChH+fjLqccGQSGf4PgR1wG0xA95Rq6pJUia8/29A2QxBtunAkzFWErF+VwpE
+         RMGrw9n1Muo1rClhqvXzK13cFZLA9Kl2nLzvBxb6kRgWj8tiBXVcds5HTCChXrt3zalX
+         DXjZ8xLlfyEZ4pQX7PaZkVxVXxkDcXfa6cLwRtD5C5UgN7gevVr/DBfietv4fT16jSz2
+         bzfgsnmGSVmEx6Cu0FRk2fw3qtLfj/p2k/PGGGsZIUokamYD9jX6aC+mpEblUsGUzWnO
+         mXlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=SZlflNwJM/FoSzNidwvG3Q12/AiRGSJaNEWCCSkms7g=;
+        b=Z7t+OSzDdJnhqZgfHo6iRlk+k1mHaO+ObH3qh3bVOelLDdUr/jlogTm0vGsvBOpPnc
+         Lswa6cHArPede8wRAL/UhfMuTAuUl3XZSIFQ2pp6LmmGCGnkWPKHSEBGgzYxato2RSCd
+         F3c7NP0J0jw3lD2LAb0zNAl40d2RUuh7bsBKhPcQCLiT73TvZcNKCfLv4EakM5qjPPBZ
+         LS1vGkZWsLGBH7k0I0UA0sNRdDqMI8F+F6XeJXgrU7J+Z9LHeliMcoKKkBgrnZwIs3Du
+         AVreYgblV9Hq2x0fO5ZiJTLYg2fM/j9jHwhFQmcCU8NSs5bsGQtLnjE1g3D3h21hTyk9
+         LjEQ==
+X-Gm-Message-State: AOAM53234R2yJUufWxeztYQvm3mYn4+4ze2XVIJyxT4vcaKoabhMsJUn
+        6yxTXStVGJSLOl+xNkOhn9N5CDhDgDyOxwPxLpA=
+X-Google-Smtp-Source: ABdhPJzbp9pxI+QG14+bP4OfdaHX8TtzpiyRlPzJsdtcdKqAK5xAiLtF3HVXz/9vMjOe6UFUZE6mBZz6vh0ifUUQs5M=
+X-Received: by 2002:a05:6102:5113:: with SMTP id bm19mr10779862vsb.10.1640938149302;
+ Fri, 31 Dec 2021 00:09:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Sender: davisbrook764@gmail.com
+Received: by 2002:a67:f945:0:0:0:0:0 with HTTP; Fri, 31 Dec 2021 00:09:09
+ -0800 (PST)
+From:   Hannah Johnson <hannahjohnson8856@gmail.com>
+Date:   Fri, 31 Dec 2021 08:09:09 +0000
+X-Google-Sender-Auth: U-eGR0AkzDvyL9NwG9GyDgAZfRM
+Message-ID: <CAE6EjdgbWUkV=hX+1YwsMyrsezLTseZJSaUFjhv-AkCW2TY2Fw@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
-
-I had a broken pahole and it's been driving me crazy to see tons of the
-following error messages on every build.
-
-pahole: symbol lookup error: pahole: undefined symbol: btf_gen_floats
-scripts/pahole-flags.sh: line 12: [: : integer expression expected
-scripts/pahole-flags.sh: line 16: [: : integer expression expected
-
-Address this by redirecting pahole --version stderr to devnull,
-and validate stdout has a non empty string, otherwise exit silently.
-
-Fixes: 9741e07ece7c ("kbuild: Unify options for BTF generation for vmlinux and modules")
-CC: Andrii Nakryiko <andrii@kernel.org>
-CC: Jiri Olsa <jolsa@redhat.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- scripts/pahole-flags.sh | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/scripts/pahole-flags.sh b/scripts/pahole-flags.sh
-index e6093adf4c06..b3b53f890d40 100755
---- a/scripts/pahole-flags.sh
-+++ b/scripts/pahole-flags.sh
-@@ -7,7 +7,8 @@ if ! [ -x "$(command -v ${PAHOLE})" ]; then
- 	exit 0
- fi
- 
--pahole_ver=$(${PAHOLE} --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/')
-+pahole_ver=$(${PAHOLE} --version 2>/dev/null | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/')
-+[ -z "${pahole_ver}" ] && exit 0
- 
- if [ "${pahole_ver}" -ge "118" ] && [ "${pahole_ver}" -le "121" ]; then
- 	# pahole 1.18 through 1.21 can't handle zero-sized per-CPU vars
 -- 
-2.33.1
-
+Hello
+Nice to meet you
+my name is Hannah Johnson i will be glad if we get to know each other more
+better and share pictures i am  expecting your reply
+thank you
