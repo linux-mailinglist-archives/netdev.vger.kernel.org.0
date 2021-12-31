@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5AD34821FB
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 05:35:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A3E44821FC
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 05:35:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242694AbhLaEe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S242688AbhLaEe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 30 Dec 2021 23:34:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55024 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242693AbhLaEew (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 23:34:52 -0500
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F49C06173E
-        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 20:34:52 -0800 (PST)
-Received: by mail-qt1-x831.google.com with SMTP id a1so23421251qtx.11
-        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 20:34:52 -0800 (PST)
+        with ESMTP id S242687AbhLaEez (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 23:34:55 -0500
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB6DC061401
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 20:34:54 -0800 (PST)
+Received: by mail-qv1-xf2a.google.com with SMTP id h5so23820910qvh.8
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 20:34:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NjjYxIWZ3/SYEO84Ek6ILDsNAoDCYNe5Zcpftmwl8Wo=;
-        b=hEjTnJWd+QoqAO8eLaCj+Oexki3k2DlbFBvmXHzoK6/ri4nTT/Oyk+c02Tghsh2aYk
-         3o0IoRBpZ+A8jnQcy9beruEPTzGElDnuxNowmPALvzsavL/58z/vTFX7RVEQ2fIlNRS2
-         vRNKm0WjhdK+VUatM3RY/thAphkWIUG0hy3tIpG62xiF4WkQcUAnhN/ew3HqFdJTVgVQ
-         bogb8y07dfDuiX17GA7G3/zLcSMJ5Fp0Ak2adI6Qvthk+mVgU/UGMc2ZFI3TU5tfoyrq
-         gSl6l9g9eIpGqUmHFIX0ovyQgiUwd+yXag6SyIwtyj56CVBM17RxJCbr0lXyfrHFdLXb
-         HGyw==
+        bh=JTpPGoBeiRiM2jGE6s71hAaMpzMJvJZoE5UyHRCbt88=;
+        b=Gjrp6e5ZtcG7g+GMJQOCBpdzzNWaHetbwAZWC1Jq/J0rcBiXv4Rm680hsHQt3LlyXL
+         8AJKSJJuw3opXfSazvTre9kl2y06JIXkdUw0SXQU9QPlnjymPbxgMu8lAnNz9mifEaUx
+         EqIfm/6ebmSKsqDaEtNykzpvpHbExMFImaf7Z8GTwJT1MT7RwaNtKCzOwzJ+30H5a0Jx
+         KJg/0GWn7PFQFt9qcE0LCJgv0UhqRouw5IyjUo8ZjU807qeqvyfNWWZjoDTpbQfmsHez
+         26hlnbXVXxoD4FKX0+KwNm8Zr8Fa3mQ9+nQdZiLMUyoiFlvZSBOBm8a13CtGlq2YIY1M
+         8BZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NjjYxIWZ3/SYEO84Ek6ILDsNAoDCYNe5Zcpftmwl8Wo=;
-        b=YuS8mZxGfHt/xxhZPJzJcvH3GfxWqj6t6LQqjb5bURePLta1t6Om34VEwTIe42dsCt
-         WBSFezRfZwIZLHESD1Qkj0+wKalAVtTwn+ur7a5fvt88B/m3sPDvHIAhA6ylt3YJkGNC
-         FOL9YpzTnNsFpnvY+W6cV33/PR6Mwg5RPnW4vkYslt2rK9HSTTK6DQojzhgm0iOqw8vZ
-         uXBBMtyW8jPcqDnrndMX0EHjCDcLDe+XrM764CAJ6OtGmNtXRQoL6zFCwl6aJm/S5WN+
-         iPvOC0V8FOggKMiDav8JfjRetqcqcAN0+pSWazP5VGQVfbK2p4ISmbhmJVFyupSkWM6e
-         82iQ==
-X-Gm-Message-State: AOAM5320r8KplEa1fZgS6XxYKQ/AYqEiotKqLteTS/wERTiM6TpJ9Lrn
-        VanvFTm/Sq4ypQNcY7QY6SRzNaXFxKi1oOmE
-X-Google-Smtp-Source: ABdhPJwP0wjVey7NUPWcU2kwrWlDh1VnowrPrtoQX8UOpJZfUr66y4i8ZW0uvJcO117KC+7T2pCXdw==
-X-Received: by 2002:a05:622a:58b:: with SMTP id c11mr28899139qtb.470.1640925291147;
-        Thu, 30 Dec 2021 20:34:51 -0800 (PST)
+        bh=JTpPGoBeiRiM2jGE6s71hAaMpzMJvJZoE5UyHRCbt88=;
+        b=wqwCFNzuJBhB95l8zKuY/U+73AYyTLtaeRe/FndtISDg5DQgqxDvegxWps9QpEM63c
+         asfOCC9eFFpE57OZdpNstJh2KOnl50frhJHoWfcqTUqBBNYMAUzf25sJB1Ia4fVuW/ON
+         rb4GdWJDgc+FbA4UYMx/I/HEad3kKr4olOLRUumsyCsYhVRWnn6BishkAHKQYSF+0Q/F
+         Slifrv1t+DJJ4gBVW4VNmSFClR2pz6Y/QA3GFhHq/xEDWDcQnEVwHgKd5Dd/3tgDVDPa
+         6IHhts86eusZHPEYZSeOvuV3vc6BkNQruPMfjlzVgnsTIs9GKwyZkzRAIyEN6OEETEoL
+         JTCQ==
+X-Gm-Message-State: AOAM532xefF/JGu2MQ1jMUq24+4BnTgEAKwTjlvfymAjjx4xx2/xRJLU
+        z3fD1XkLQsjs5gzNtQlitMTCMtFvu1OwI4EP
+X-Google-Smtp-Source: ABdhPJwbXfgufxUl1iL+FWxaNA1mfI7VRpXfffzZhg4kJbErTsKojGufl51f5Vw1Fg1Tg/ezuWC78Q==
+X-Received: by 2002:ad4:5fcf:: with SMTP id jq15mr29817585qvb.0.1640925293990;
+        Thu, 30 Dec 2021 20:34:53 -0800 (PST)
 Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
-        by smtp.gmail.com with ESMTPSA id i5sm8020030qti.27.2021.12.30.20.34.48
+        by smtp.gmail.com with ESMTPSA id i5sm8020030qti.27.2021.12.30.20.34.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Dec 2021 20:34:50 -0800 (PST)
+        Thu, 30 Dec 2021 20:34:53 -0800 (PST)
 From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, olteanv@gmail.com, alsi@bang-olufsen.dk,
         arinc.unal@arinc9.com, frank-w@public-files.de,
         Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [PATCH net-next v3 07/11] net: dsa: realtek: rtl8365mb: rename extport to extint, add "realtek,ext-int"
-Date:   Fri, 31 Dec 2021 01:33:02 -0300
-Message-Id: <20211231043306.12322-8-luizluca@gmail.com>
+Subject: [PATCH net-next v3 08/11] net: dsa: realtek: rtl8365mb: use GENMASK(n-1,0) instead of BIT(n)-1
+Date:   Fri, 31 Dec 2021 01:33:03 -0300
+Message-Id: <20211231043306.12322-9-luizluca@gmail.com>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20211231043306.12322-1-luizluca@gmail.com>
 References: <20211231043306.12322-1-luizluca@gmail.com>
@@ -66,293 +66,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"extport" 0, 1, 2 was used to reference external ports (ext0,
-ext1, ext2). Meanwhile, port 0..9 is used as switch ports,
-including external ports. "extport" was renamed to extint to
-make it clear it does not mean the port number but the external
-interface number.
-
-The macros that map extint numbers to registers addresses now
-use inline ifs instead of binary arithmetic.
-
-"extint" was hardcoded to 1. However, some chips have multiple
-external interfaces. It's not right to assume the CPU port uses
-extint 1 nor that all extint are CPU ports. Now the association
-between the port and the external interface can be defined with
-a device-tree port property "realtek,ext-int".
-
-This patch still does not allow multiple CPU ports nor extint
-as a non CPU port.
-
 Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/net/dsa/realtek/rtl8365mb.c | 135 ++++++++++++++++++----------
- 1 file changed, 88 insertions(+), 47 deletions(-)
+ drivers/net/dsa/realtek/rtl8365mb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index 11a985900c57..e115129cd5cd 100644
+index e115129cd5cd..b22f50a9d1ef 100644
 --- a/drivers/net/dsa/realtek/rtl8365mb.c
 +++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -191,7 +191,13 @@
- /* The PHY OCP addresses of PHY registers 0~31 start here */
- #define RTL8365MB_PHY_OCP_ADDR_PHYREG_BASE		0xA400
- 
--/* EXT port interface mode values - used in DIGITAL_INTERFACE_SELECT */
-+/* EXT interface numbers */
-+#define RTL8365MB_NOT_EXT			-1
-+#define RTL8365MB_EXT0				 0
-+#define RTL8365MB_EXT1				 1
-+#define RTL8365MB_EXT2				 2
-+
-+/* EXT interface port mode values - used in DIGITAL_INTERFACE_SELECT */
- #define RTL8365MB_EXT_PORT_MODE_DISABLE		0
- #define RTL8365MB_EXT_PORT_MODE_RGMII		1
- #define RTL8365MB_EXT_PORT_MODE_MII_MAC		2
-@@ -207,39 +213,44 @@
- #define RTL8365MB_EXT_PORT_MODE_1000X		12
- #define RTL8365MB_EXT_PORT_MODE_100FX		13
- 
--/* EXT port interface mode configuration registers 0~1 */
--#define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG0		0x1305
--#define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG1		0x13C3
--#define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG(_extport)   \
--		(RTL8365MB_DIGITAL_INTERFACE_SELECT_REG0 + \
--		 ((_extport) >> 1) * (0x13C3 - 0x1305))
--#define   RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_MASK(_extport) \
--		(0xF << (((_extport) % 2)))
--#define   RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_OFFSET(_extport) \
--		(((_extport) % 2) * 4)
--
--/* EXT port RGMII TX/RX delay configuration registers 1~2 */
--#define RTL8365MB_EXT_RGMXF_REG1		0x1307
--#define RTL8365MB_EXT_RGMXF_REG2		0x13C5
--#define RTL8365MB_EXT_RGMXF_REG(_extport)   \
--		(RTL8365MB_EXT_RGMXF_REG1 + \
--		 (((_extport) >> 1) * (0x13C5 - 0x1307)))
-+/* EXT interface mode configuration registers 0~1 */
-+#define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG0		0x1305 /* EXT1 */
-+#define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG1		0x13C3 /* EXT2 */
-+#define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG(_extint) \
-+		((_extint) == 1 ? RTL8365MB_DIGITAL_INTERFACE_SELECT_REG0 : \
-+		 (_extint) == 2 ? RTL8365MB_DIGITAL_INTERFACE_SELECT_REG1 : \
-+		 0x0)
-+#define   RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_MASK(_extint) \
-+		(0xF << (((_extint) % 2)))
-+#define   RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_OFFSET(_extint) \
-+		(((_extint) % 2) * 4)
-+
-+/* EXT interface RGMII TX/RX delay configuration registers 0~2 */
-+#define RTL8365MB_EXT_RGMXF_REG0		0x1306 /* EXT0 */
-+#define RTL8365MB_EXT_RGMXF_REG1		0x1307 /* EXT1 */
-+#define RTL8365MB_EXT_RGMXF_REG2		0x13C5 /* EXT2 */
-+#define RTL8365MB_EXT_RGMXF_REG(_extint) \
-+		((_extint) == 0 ? RTL8365MB_EXT_RGMXF_REG0 : \
-+		 (_extint) == 1 ? RTL8365MB_EXT_RGMXF_REG1 : \
-+		 (_extint) == 2 ? RTL8365MB_EXT_RGMXF_REG2 : \
-+		 0x0)
- #define   RTL8365MB_EXT_RGMXF_RXDELAY_MASK	0x0007
- #define   RTL8365MB_EXT_RGMXF_TXDELAY_MASK	0x0008
- 
--/* External port speed values - used in DIGITAL_INTERFACE_FORCE */
-+/* External interface port speed values - used in DIGITAL_INTERFACE_FORCE */
- #define RTL8365MB_PORT_SPEED_10M	0
- #define RTL8365MB_PORT_SPEED_100M	1
- #define RTL8365MB_PORT_SPEED_1000M	2
- 
--/* EXT port force configuration registers 0~2 */
--#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG0			0x1310
--#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG1			0x1311
--#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG2			0x13C4
--#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG(_extport)   \
--		(RTL8365MB_DIGITAL_INTERFACE_FORCE_REG0 + \
--		 ((_extport) & 0x1) +                     \
--		 ((((_extport) >> 1) & 0x1) * (0x13C4 - 0x1310)))
-+/* EXT interface force configuration registers 0~2 */
-+#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG0		0x1310 /* EXT0 */
-+#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG1		0x1311 /* EXT1 */
-+#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG2		0x13C4 /* EXT2 */
-+#define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG(_extint) \
-+		((_extint) == 0 ? RTL8365MB_DIGITAL_INTERFACE_FORCE_REG0 : \
-+		 (_extint) == 1 ? RTL8365MB_DIGITAL_INTERFACE_FORCE_REG1 : \
-+		 (_extint) == 2 ? RTL8365MB_DIGITAL_INTERFACE_FORCE_REG2 : \
-+		 0x0)
- #define   RTL8365MB_DIGITAL_INTERFACE_FORCE_EN_MASK		0x1000
- #define   RTL8365MB_DIGITAL_INTERFACE_FORCE_NWAY_MASK		0x0080
- #define   RTL8365MB_DIGITAL_INTERFACE_FORCE_TXPAUSE_MASK	0x0040
-@@ -522,6 +533,7 @@ struct rtl8365mb_cpu {
-  *         access via rtl8365mb_get_stats64
-  * @stats_lock: protect the stats structure during read/update
-  * @mib_work: delayed work for polling MIB counters
-+ * @ext_int: the external interface port related to this port, RTL8365MB_NOT_EXT(-1) if none
-  */
- struct rtl8365mb_port {
- 	struct realtek_priv *priv;
-@@ -529,6 +541,7 @@ struct rtl8365mb_port {
- 	struct rtnl_link_stats64 stats;
- 	spinlock_t stats_lock;
- 	struct delayed_work mib_work;
-+	int ext_int;
- };
- 
- /**
-@@ -742,24 +755,28 @@ rtl8365mb_get_tag_protocol(struct dsa_switch *ds, int port,
- static int rtl8365mb_ext_config_rgmii(struct realtek_priv *priv, int port,
- 				      phy_interface_t interface)
- {
-+	struct rtl8365mb_port *p;
- 	struct device_node *dn;
-+	struct rtl8365mb *mb;
- 	struct dsa_port *dp;
- 	int tx_delay = 0;
- 	int rx_delay = 0;
--	int ext_port;
-+	int ext_int;
- 	u32 val;
- 	int ret;
- 
--	if (port == priv->cpu_port) {
--		ext_port = 1;
--	} else {
--		dev_err(priv->dev, "only one EXT port is currently supported\n");
-+	if (port != priv->cpu_port) {
-+		dev_err(priv->dev, "only one EXT interface is currently supported\n");
- 		return -EINVAL;
- 	}
- 
- 	dp = dsa_to_port(priv->ds, port);
- 	dn = dp->dn;
- 
-+	mb = priv->chip_data;
-+	p = &mb->ports[port];
-+	ext_int = p->ext_int;
-+
- 	/* Set the RGMII TX/RX delay
- 	 *
- 	 * The Realtek vendor driver indicates the following possible
-@@ -789,7 +806,7 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_priv *priv, int port,
- 			tx_delay = val / 2;
- 		else
- 			dev_warn(priv->dev,
--				 "EXT port TX delay must be 0 or 2 ns\n");
-+				 "EXT interface TX delay must be 0 or 2 ns\n");
- 	}
- 
- 	if (!of_property_read_u32(dn, "rx-internal-delay-ps", &val)) {
-@@ -799,11 +816,11 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_priv *priv, int port,
- 			rx_delay = val;
- 		else
- 			dev_warn(priv->dev,
--				 "EXT port RX delay must be 0 to 2.1 ns\n");
-+				 "EXT interface RX delay must be 0 to 2.1 ns\n");
- 	}
- 
- 	ret = regmap_update_bits(
--		priv->map, RTL8365MB_EXT_RGMXF_REG(ext_port),
-+		priv->map, RTL8365MB_EXT_RGMXF_REG(ext_int),
- 		RTL8365MB_EXT_RGMXF_TXDELAY_MASK |
- 			RTL8365MB_EXT_RGMXF_RXDELAY_MASK,
- 		FIELD_PREP(RTL8365MB_EXT_RGMXF_TXDELAY_MASK, tx_delay) |
-@@ -812,11 +829,11 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_priv *priv, int port,
- 		return ret;
- 
- 	ret = regmap_update_bits(
--		priv->map, RTL8365MB_DIGITAL_INTERFACE_SELECT_REG(ext_port),
--		RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_MASK(ext_port),
-+		priv->map, RTL8365MB_DIGITAL_INTERFACE_SELECT_REG(ext_int),
-+		RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_MASK(ext_int),
- 		RTL8365MB_EXT_PORT_MODE_RGMII
- 			<< RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_OFFSET(
--				   ext_port));
-+				   ext_int));
- 	if (ret)
- 		return ret;
- 
-@@ -827,22 +844,26 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
- 					  bool link, int speed, int duplex,
- 					  bool tx_pause, bool rx_pause)
- {
-+	struct rtl8365mb_port *p;
-+	struct rtl8365mb *mb;
- 	u32 r_tx_pause;
- 	u32 r_rx_pause;
- 	u32 r_duplex;
- 	u32 r_speed;
- 	u32 r_link;
--	int ext_port;
-+	int ext_int;
- 	int val;
- 	int ret;
- 
--	if (port == priv->cpu_port) {
--		ext_port = 1;
--	} else {
--		dev_err(priv->dev, "only one EXT port is currently supported\n");
-+	if (port != priv->cpu_port) {
-+		dev_err(priv->dev, "only one EXT interface is currently supported\n");
- 		return -EINVAL;
- 	}
- 
-+	mb = priv->chip_data;
-+	p = &mb->ports[port];
-+	ext_int = p->ext_int;
-+
- 	if (link) {
- 		/* Force the link up with the desired configuration */
- 		r_link = 1;
-@@ -889,7 +910,7 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
- 			 r_duplex) |
- 	      FIELD_PREP(RTL8365MB_DIGITAL_INTERFACE_FORCE_SPEED_MASK, r_speed);
- 	ret = regmap_write(priv->map,
--			   RTL8365MB_DIGITAL_INTERFACE_FORCE_REG(ext_port),
-+			   RTL8365MB_DIGITAL_INTERFACE_FORCE_REG(ext_int),
- 			   val);
- 	if (ret)
- 		return ret;
-@@ -1819,13 +1840,13 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
- 	/* Configure ports */
- 	for (i = 0; i < priv->num_ports; i++) {
- 		struct rtl8365mb_port *p = &mb->ports[i];
-+		struct device_node *dn;
-+		u32 val;
- 
- 		if (dsa_is_unused_port(priv->ds, i))
- 			continue;
- 
--		/* Set up per-port private data */
--		p->priv = priv;
--		p->index = i;
-+		dn = dsa_to_port(priv->ds, i)->dn;
- 
- 		/* Forward only to the CPU */
- 		ret = rtl8365mb_port_set_isolation(priv, i, BIT(priv->cpu_port));
-@@ -1842,6 +1863,26 @@ static int rtl8365mb_setup(struct dsa_switch *ds)
- 		 * administratively down by default.
- 		 */
- 		rtl8365mb_port_stp_state_set(priv->ds, i, BR_STATE_DISABLED);
-+
-+		/* Set up per-port private data */
-+		p->priv = priv;
-+		p->index = i;
-+
-+		if (!of_property_read_u32(dn, "realtek,ext-int", &val)) {
-+			if (val < 0 || val > 2) {
-+				dev_err(priv->dev,
-+					"realtek,ext-int must be between 0 and 2\n");
-+				return -EINVAL;
-+			}
-+
-+			p->ext_int = val;
-+		} else {
-+			if (dsa_is_cpu_port(priv->ds, i))
-+				/* Default for compatibility with older device trees */
-+				p->ext_int = RTL8365MB_EXT1;
-+			else
-+				p->ext_int = RTL8365MB_NOT_EXT;
-+		}
- 	}
- 
- 	/* Set maximum packet length to 1536 bytes */
+@@ -1973,7 +1973,7 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+ 		mb->priv = priv;
+ 		mb->chip_id = chip_id;
+ 		mb->chip_ver = chip_ver;
+-		mb->port_mask = BIT(priv->num_ports) - 1;
++		mb->port_mask = GENMASK(priv->num_ports - 1, 0);
+ 		mb->learn_limit_max = RTL8365MB_LEARN_LIMIT_MAX_8365MB_VC;
+ 		mb->jam_table = rtl8365mb_init_jam_8365mb_vc;
+ 		mb->jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc);
 -- 
 2.34.0
 
