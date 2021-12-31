@@ -2,73 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB645482161
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 03:01:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F673482164
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 03:09:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237525AbhLaCB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 21:01:27 -0500
-Received: from m12-15.163.com ([220.181.12.15]:4472 "EHLO m12-15.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229890AbhLaCB0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 30 Dec 2021 21:01:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Message-ID:Date:MIME-Version:From:Subject; bh=KCebF
-        ao3q610ZuO1duvuoDynHTEv5kKdcS7T/o08FQg=; b=YHr1Bkuu+3D8c7t8+xbJh
-        pMUS1FKPH+n+rYVQ+p0AKiIKKeowvofQ6B3Yln7M4KDWn+B2aRG27ExgdL9c5Zdh
-        fIc862rWOBSeEZ/NYlROLGw3zvp6Sg7VZtOVs1UcY/pwuQ5HZQo1j5j2q1R+MNlG
-        ikBdohr/AWJBX18+GgSkxk=
-Received: from [192.168.16.100] (unknown [110.86.5.91])
-        by smtp11 (Coremail) with SMTP id D8CowACnHmNjZM5hUO57Dw--.8S2;
-        Fri, 31 Dec 2021 10:01:11 +0800 (CST)
-Message-ID: <825ee22b-4245-dbf7-d2f7-a230770d6e21@163.com>
-Date:   Fri, 31 Dec 2021 10:01:08 +0800
+        id S241006AbhLaCJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 21:09:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229890AbhLaCJx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 21:09:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA089C061574;
+        Thu, 30 Dec 2021 18:09:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5658AB81CAC;
+        Fri, 31 Dec 2021 02:09:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2997C36AEA;
+        Fri, 31 Dec 2021 02:09:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1640916590;
+        bh=gSzqPQ6IFufxMDlKjpZbLlQez/c+rK8RGCTrCFGHhxU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LoaCpH9pkvjfXP4SFT0NyFKJnUkHF0dKM5Yat4hA3+OeZ0nd42MtApzhEGjEGwaoq
+         n+2YgnhSLOEWSvWexCfZTLtfNZxDiKMc7UxuBb9aPeJRZiGo0GNuIJWa013nksqtBv
+         NswdCVooUdtdJfg1PzMbM/eBRNw9Y9gUW5O0Wq7jDjJebvU+aRG5YfQsnA2I4rf+Uk
+         qKMBq10l2ywLz3Fx/Lyoplrziule/+kFhbOMlxCw5hNfRaflcdJdwEKRfhtqG9+feP
+         5VZXnq4AkUdSWdh4uIUtsfdK9tYRl317cjX3biCHZakfwrrIgjuXcRMTfu6wTlHRqh
+         LJQGad7A0tt0g==
+Date:   Thu, 30 Dec 2021 18:09:48 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Muhammad Sammar <muhammads@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, linux-doc@vger.kernel.org
+Subject: Re: [net-next  07/16] net/mlx5: DR, Add support for dumping
+ steering info
+Message-ID: <20211230180948.7be1ddb5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <MW2PR12MB2489C8551828CFE500F4492EC0469@MW2PR12MB2489.namprd12.prod.outlook.com>
+References: <20211229062502.24111-1-saeed@kernel.org>
+        <20211229062502.24111-8-saeed@kernel.org>
+        <20211229181650.33978893@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <MW2PR12MB2489C8551828CFE500F4492EC0469@MW2PR12MB2489.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-From:   Jianguo Wu <wujianguo106@163.com>
-Subject: [PATCH] selftests: net: udpgro_fwd.sh: explicitly checking the
- available ping feature
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: D8CowACnHmNjZM5hUO57Dw--.8S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWruw4rCryruF1rXFyUtFW8Zwb_yoWDJwbEqr
-        sFgwn3Wr45ArW2yw4xKr1Y9r9aka15C397Jw4xXw1avryUAa17WFWktF17AF43W398K34a
-        vFsYvF13C3yjvjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8HGQ3UUUUU==
-X-Originating-IP: [110.86.5.91]
-X-CM-SenderInfo: 5zxmxt5qjx0iiqw6il2tof0z/xtbB9w96kF2Mbnf80AACs0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jianguo Wu <wujianguo@chinatelecom.cn>
+On Fri, 31 Dec 2021 01:49:54 +0000 Yevgeny Kliteynik wrote:
+> Actually, this was written based on debugfs functions documentation, where
+> it states that "if an error occurs, NULL will be returned"
+> 
+> https://www.kernel.org/doc/htmldocs/filesystems/API-debugfs-create-dir.html
+> 
+> Looking at the code, I see that it's no longer the case.
 
-As Paolo pointed out, the result of ping IPv6 address depends on
-the running distro. So explicitly checking the available ping feature,
-as e.g. do the bareudp.sh self-tests.
+Oh, I see. That looks like some old, out of date version of the docs.
+The text was already correct in 5.15, it seems:
 
-Fixes: 8b3170e07539 ("selftests: net: using ping6 for IPv6 in udpgro_fwd.sh")
-Signed-off-by: Jianguo Wu <wujianguo@chinatelecom.cn>
----
- tools/testing/selftests/net/udpgro_fwd.sh | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+https://elixir.bootlin.com/linux/v5.15/source/fs/debugfs/inode.c#L549
 
-diff --git a/tools/testing/selftests/net/udpgro_fwd.sh b/tools/testing/selftests/net/udpgro_fwd.sh
-index 3ea7301..6f05e06 100755
---- a/tools/testing/selftests/net/udpgro_fwd.sh
-+++ b/tools/testing/selftests/net/udpgro_fwd.sh
-@@ -193,7 +193,8 @@ for family in 4 6; do
- 		SUFFIX="64 nodad"
- 		VXDEV=vxlan6
- 		IPT=ip6tables
--		PING="ping6"
-+		# Use ping6 on systems where ping doesn't handle IPv6
-+		ping -w 1 -c 1 ::1 > /dev/null 2>&1 || PING="ping6"
- 	fi
+Also this render of the docs is correct:
 
- 	echo "IPv$family"
--- 
-1.8.3.1
+https://www.kernel.org/doc/html/latest/filesystems/api-summary.html#c.debugfs_create_dir
 
+I don't really know who's responsible for the kernel.org docs... 
+Let's CC Jon.
+
+Jon, is the www.kernel.org/doc/htmldocs/ copy intentionally what it is?
+Anyone we should talk to?
