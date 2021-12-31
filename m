@@ -2,132 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3F34482608
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 23:46:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22B46482613
+	for <lists+netdev@lfdr.de>; Sat,  1 Jan 2022 00:05:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231866AbhLaWqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 17:46:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56552 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231847AbhLaWqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 17:46:18 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E4C261826;
-        Fri, 31 Dec 2021 22:46:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7488FC36AE9;
-        Fri, 31 Dec 2021 22:46:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640990776;
-        bh=WH9X1Ez5mzTdfGWS1Cc+jTto7XALQCuzQE0nmz4pGvY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=INeUZ04sSy4VFgM2zqD2UAtAPMbCQLZ8/5cIP1UNP8DMsIf6tBZzEgGGekmgGRbPY
-         6vESN3V8WuvuFqvbwkcRUlc3hZ9C+rj0EK8TQqGQ1d98eHhN397VwOo+r9+5r6U0cr
-         Ow5nZEikvDg4r2/fYY5xQM7bL7icWI0OUJkzkpIdX0MLb5E5u1eWPohQ5lEos2W64s
-         Xe2XvGXA9GGvi8xUtgnNEUaG8M78Ia3PCQOU5yvrP3n7y6SJf1bg+9f3Q8b0JPQSG8
-         KM4M3X1lZ2WREvp2yMkWRs9lcrbFkmlEYrUXqzVOfRz+psNSctYDcakpG6RAA3UUKV
-         bAK8IEikQzOOA==
-Date:   Fri, 31 Dec 2021 14:46:15 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Zizhuang Deng <sunsetdzz@gmail.com>, mbloch@nvidia.com
-Cc:     saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/mlx5: Add vport return value checks
-Message-ID: <20211231224615.oneibk4ks5wofgf7@sx1>
-References: <20211230052558.959617-1-sunsetdzz@gmail.com>
+        id S231896AbhLaXFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 18:05:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230094AbhLaXFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 18:05:54 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28FD2C061574;
+        Fri, 31 Dec 2021 15:05:54 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id x15so21005274plg.1;
+        Fri, 31 Dec 2021 15:05:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=g5v1xPzowAYu3QM3an7egFraB+wrAFLcZhivMPg3KZ4=;
+        b=CuXocwPY1LkIGBBMnlAvjl1KAGA+hh8/mmpui7RbE6MbUWGHMiiBnWklZg16g7bnfW
+         VInYAmQuN3ZzoOGApQaNTUIDYvdX5tibV9MycFnF4+NJisK4XvzBx9LCWxUm3UXvke2D
+         gPa7BamE97GqNJxLtvh7jdKnI3N2M1XMclwJXaY8GpvAnBNKAHD2kNzyDqsjuz2g4sCP
+         lJryWI4ce9QzLQ8wjlbJfsePyHauKpvxzkUVKYCX4JhwjHfk/r8k6wssDjew4ELQAgP1
+         XDsBmPiFpfB4gp5RWsQQmng/kF6SPWA5gvUSBtID43qZ3suSMLW0VefjrdnkZWGVB1yX
+         Seag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=g5v1xPzowAYu3QM3an7egFraB+wrAFLcZhivMPg3KZ4=;
+        b=tH5/0eF/yH+/W+gu35R2g4SlV1VkiUR9ErAZ+iuF+tSI4wLqEv/yvJ6oOtPwUNOyFK
+         SaK5MWOYzpVx/Jb6xXP1548TPWSUuUDufpjXS9+Ct1Vve4VF5RaOL+JX2bOogvbcQvcC
+         S3txEPlZ6Ufa/2jQatjJo87GSE9dD5RvEL3B219J0XHUkUZtiqwVcvjz3UtDhaJ0XlM8
+         jG4pcgNaHPdV2L6ef3r7mHndcz/BVZ95RKUiVYMjRatywFwoA4KehhAkQCEjIs4gByzt
+         xOnp+IdHzFzpDkQUTlSOGs9cT/sIn7sNlx+r657dWinuq9qTLk/5FxBqhfhT4rmmyVMT
+         PMsg==
+X-Gm-Message-State: AOAM532ENQ6yKDED9x9hpPy+heuyWXwe5QJMCBw4U0GrGT8rs1g3PLkd
+        RZ9z0fjeVsAcdnLkQZDPWbOVJLIqLxI=
+X-Google-Smtp-Source: ABdhPJwAXDdng5LIu7g1RaPML/kmSMWkLIJVrRea+7I/d8/AqEU0qSTAiGnHS1teHg6tlLkqby536w==
+X-Received: by 2002:a17:902:e843:b0:148:f219:afb7 with SMTP id t3-20020a170902e84300b00148f219afb7mr38168648plg.81.1640991953323;
+        Fri, 31 Dec 2021 15:05:53 -0800 (PST)
+Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
+        by smtp.gmail.com with ESMTPSA id k8sm33927314pfu.72.2021.12.31.15.05.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Dec 2021 15:05:52 -0800 (PST)
+Date:   Sat, 1 Jan 2022 04:35:50 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     David Vernet <void@manifault.com>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jpoimboe@redhat.com, pmladek@suse.com, jikos@kernel.org,
+        mbenes@suse.cz, joe.lawrence@redhat.com,
+        linux-modules@vger.kernel.org, mcgrof@kernel.org, jeyu@kernel.org,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
+Message-ID: <20211231230550.t2wjz5g5ancrqx7d@apollo.legion>
+References: <Yc0yskk0m2bePLu6@dev0025.ash9.facebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211230052558.959617-1-sunsetdzz@gmail.com>
+In-Reply-To: <Yc0yskk0m2bePLu6@dev0025.ash9.facebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 30, 2021 at 01:25:58PM +0800, Zizhuang Deng wrote:
->add missing vport return value checks for recent code, as in [1].
->
->Ref:
->[1] https://lkml.org/lkml/2020/11/1/315
+On Thu, Dec 30, 2021 at 09:46:50AM IST, David Vernet wrote:
+> Adding modules + BPF list and maintainers to this thread.
 >
 
-Where did this patch come from ? real bug ? or just aligning the code to
-be according the link below ? 
-because all the use-cases below are supposed to be guaranteed to have a
-valid vport object for uplink/pf/and ecpf vportrs, i am not against the
-patch, I am just trying to understand if there is a hidden bug somewhere .. 
+Thanks for the Cc, but I'm dropping my patch for the next revision, so there
+should be no conflicts with this one.
 
+> [...]
 
-
->Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
->---
-> .../mellanox/mlx5/core/eswitch_offloads.c     | 20 +++++++++++++++++++
-> 1 file changed, 20 insertions(+)
->
->diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
->index f4eaa5893886..fda214021738 100644
->--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
->+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-
-[...]
-
->@@ -1309,11 +1317,15 @@ static void esw_del_fdb_peer_miss_rules(struct mlx5_eswitch *esw)
->
-> 	if (mlx5_ecpf_vport_exists(esw->dev)) {
-> 		vport = mlx5_eswitch_get_vport(esw, MLX5_VPORT_ECPF);
->+		if (IS_ERR(vport))
->+			return;
-
-memleak, we need to hit kvfree(flows) below, 
-instead of returning you should make the del_flow conditional and continue
-to next steps in the esw_del_fdb_peer_miss_rules routine, 
-e.g:
-if (vport)
-	mlx5_del_flow_rules(flows[vport->index]);
-
-> 		mlx5_del_flow_rules(flows[vport->index]);
-> 	}
->
-> 	if (mlx5_core_is_ecpf_esw_manager(esw->dev)) {
-> 		vport = mlx5_eswitch_get_vport(esw, MLX5_VPORT_PF);
->+		if (IS_ERR(vport))
->+			return;
-
-ditto 
-
-> 		mlx5_del_flow_rules(flows[vport->index]);
-> 	}
-> 	kvfree(flows);
->@@ -2385,6 +2397,9 @@ static int esw_set_uplink_slave_ingress_root(struct mlx5_core_dev *master,
-> 	if (master) {
-> 		esw = master->priv.eswitch;
-> 		vport = mlx5_eswitch_get_vport(esw, MLX5_VPORT_UPLINK);
->+		if (IS_ERR(vport))
->+			return PTR_ERR(vport);
->+
-> 		MLX5_SET(set_flow_table_root_in, in, table_of_other_vport, 1);
-> 		MLX5_SET(set_flow_table_root_in, in, table_vport_number,
-> 			 MLX5_VPORT_UPLINK);
->@@ -2405,6 +2420,9 @@ static int esw_set_uplink_slave_ingress_root(struct mlx5_core_dev *master,
-> 	} else {
-> 		esw = slave->priv.eswitch;
-> 		vport = mlx5_eswitch_get_vport(esw, MLX5_VPORT_UPLINK);
->+		if (IS_ERR(vport))
->+			return PTR_ERR(vport);
->+
-> 		ns = mlx5_get_flow_vport_acl_namespace(slave,
-> 						       MLX5_FLOW_NAMESPACE_ESW_INGRESS,
-> 						       vport->index);
->@@ -2590,6 +2608,8 @@ static void esw_unset_master_egress_rule(struct mlx5_core_dev *dev)
->
-> 	vport = mlx5_eswitch_get_vport(dev->priv.eswitch,
-> 				       dev->priv.eswitch->manager_vport);
->+	if (IS_ERR(vport))
->+		return;
->
-> 	esw_acl_egress_ofld_cleanup(vport);
-> }
->-- 
->2.25.1
->
+--
+Kartikeya
