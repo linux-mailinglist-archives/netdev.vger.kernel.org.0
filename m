@@ -2,93 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10D8A4822C1
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 09:21:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA18A4822E4
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 10:09:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242800AbhLaIU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 03:20:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
+        id S230027AbhLaJIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 04:08:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242814AbhLaIUz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 03:20:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C2CCC061757
-        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 00:20:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34527B81D55
-        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 08:20:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DD21C36AE9;
-        Fri, 31 Dec 2021 08:20:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1640938850;
-        bh=o2khhIZamMyXsj5MPZ4TFNTNwOS3sDu6p5LvJHhAKs4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aoQB4XTVQgv9C8Y1CcsWKUpiX1LWzgzCOLFc4VMzdY2B7xgGMDIsgv62c6iYVJITQ
-         seFAWpwqwmR3CRCOkHy/dLhtcqwMLXb6u/ZcLfLqQ/z4rWh9cLXP0rzc02H1vTm0ne
-         xfy99ItcI4X5eMaRMiBKE4rgwdCzRnWMKk5zTJ5kg0rhcmIOeSRqA0XCalV4BhaE4o
-         4QQ0TdM0AAhXyRwmPc1Xyb3yZ0aHG9bc4ju2pDEvfqrQifRKL8XTZXUe1E53H0Z2N2
-         GK0zHNbybl6X50zHdB8FTBX0QfgtmvE3yeaOBSObErkDj5yxkUPoL1RiHfvzx1wgVc
-         rLChT+IuQK+8w==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next v2 16/16] net/mlx5: Set SMFS as a default steering mode if device supports it
-Date:   Fri, 31 Dec 2021 00:20:38 -0800
-Message-Id: <20211231082038.106490-17-saeed@kernel.org>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20211231082038.106490-1-saeed@kernel.org>
-References: <20211231082038.106490-1-saeed@kernel.org>
+        with ESMTP id S229862AbhLaJIg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 04:08:36 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DEFC061574
+        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 01:08:35 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id r5so23363779pgi.6
+        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 01:08:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fungible.com; s=google;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NUdyT3RHXa5RFyihd3KxZfov8E2pydBPAFvG+pEE9ts=;
+        b=RQDcYvsL7qiK405f+1+jtAOjkepxxpW9q8injlx4OIB0F4rWUUnQLK62meg57vNSc3
+         G59MwzBqEGQ7rc0lDfYnBUW/7zwb8St46Gne01FoJTjd/WhHKhBPFNsx/m8/18uMTfj6
+         TTwEAYctnF6Ld3Qu4NJM3DM5l2ySzFXrPY8Dg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NUdyT3RHXa5RFyihd3KxZfov8E2pydBPAFvG+pEE9ts=;
+        b=hY+axFvCC6PKakiHRVnvybyCYu3OymclstLrDQXjhutILIxGkJXSOXec4hfdERdtof
+         kDZOryKlFqrZHxwc9IGXVpoEfK4I2LX4ilhMTSkyWC0dc5Y1vClkpylY6pnSLdZkYShi
+         RN5kzNadZKpewiOHY1qyHe/+M6nwgtnCg9IUY8TmiMnq8cocgX4vaUClF/Tnu7lkoNEL
+         yqs5CXK2R3A3aqg29HrakEtJRRJ/8BiNz/b5qQmtSnNRXc+VekGtkSDf4bgNXM7kluor
+         8sW5iVAX9tyo+sE1juh3YjukpbvuShpX86T2MiHJ4rTlPlUMaUYhiV1RQ2IwHLentICR
+         zHuw==
+X-Gm-Message-State: AOAM532yu8ljBYibNZVDd1WywzBALe5nWCUxbIRpahrnCWlLE6S+9R+t
+        fVAYyThFKM0lUG08PW3rKnHPLA==
+X-Google-Smtp-Source: ABdhPJyb9WnxWyKTgRBd0yxv25BCFg3czpznGrJdh8dbQcbShsofO9Ro5EFNdqspr+h1HPkOhYEGsA==
+X-Received: by 2002:a63:b50d:: with SMTP id y13mr30252274pge.286.1640941715373;
+        Fri, 31 Dec 2021 01:08:35 -0800 (PST)
+Received: from cab09-qa-09.fungible.local ([12.190.10.11])
+        by smtp.gmail.com with ESMTPSA id t31sm19875192pfg.184.2021.12.31.01.08.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Dec 2021 01:08:34 -0800 (PST)
+From:   Dimitris Michailidis <d.michailidis@fungible.com>
+X-Google-Original-From: Dimitris Michailidis <dmichail@fungible.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        andrew@lunn.ch, d.michailidis@fungible.com
+Subject: [PATCH net-next v2 0/8] new Fungible Ethernet driver
+Date:   Fri, 31 Dec 2021 01:08:25 -0800
+Message-Id: <20211231090833.98977-1-dmichail@fungible.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+This patch series contains a new network driver for the Ethernet
+functionality of Fungible cards.
 
-Set SMFS (SW-managed flow steering) as a default steering mode
-instead of DMFS (device-managed flow steering)
+It contains two modules. The first one in patch 2 is a library module
+that implements some of the device setup, queue managenent, and support
+for operating an admin queue. These are placed in a separate module
+because the cards provide a number of PCI functions handled by different
+types of drivers and all use the same common means to interact with the
+device. Each of the drivers will be relying on this library module for
+them.
 
-In SMFS, the driver writes the STEs (Steering Table Entries) directly
-to the device's ICM, which allows for a higher rule insertion rate
-than through using FW command interface, as it is done in DMFS.
+The remaining patches provide the Ethernet driver for the cards.
 
-SMFS/DMFS steering modes can be configured through devlink param
-'flow_steering_mode'. The possible values are 'smfs' or 'dmfs'.
-The desired 'flow_steering_mode' param value should be set before
-enabling switchdev mode.
+v2:
+- Fix set_pauseparam, remove get_wol, remove module param (Andrew Lunn)
+- Fix a register poll loop (Andrew)
+- Replace constants defined with 'static const'
+- make W=1 C=1 is clean
+- Remove devlink FW update (Jakub)
+- Remove duplicate ethtool stats covered by structured API (Jakub)
 
-Example:
+Dimitris Michailidis (8):
+  PCI: add Fungible vendor ID to pci_ids.h
+  net/fungible: Add service module for Fungible drivers
+  net/funeth: probing and netdev ops
+  net/funeth: ethtool operations
+  net/funeth: devlink support
+  net/funeth: add the data path
+  net/funeth: add kTLS TX control part
+  net/fungible: Kconfig, Makefiles, and MAINTAINERS
 
-  # devlink dev param set pci/0000:05:00.0 name flow_steering_mode smfs
-  # devlink dev eswitch set pci/0000:05:00.0 mode switchdev
+ MAINTAINERS                                   |    6 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/fungible/Kconfig         |   27 +
+ drivers/net/ethernet/fungible/Makefile        |    7 +
+ .../net/ethernet/fungible/funcore/Makefile    |    5 +
+ .../net/ethernet/fungible/funcore/fun_dev.c   |  846 ++++++++
+ .../net/ethernet/fungible/funcore/fun_dev.h   |  151 ++
+ .../net/ethernet/fungible/funcore/fun_hci.h   | 1187 +++++++++++
+ .../net/ethernet/fungible/funcore/fun_queue.c |  620 ++++++
+ .../net/ethernet/fungible/funcore/fun_queue.h |  178 ++
+ drivers/net/ethernet/fungible/funeth/Kconfig  |   17 +
+ drivers/net/ethernet/fungible/funeth/Makefile |   10 +
+ .../net/ethernet/fungible/funeth/fun_port.h   |   97 +
+ drivers/net/ethernet/fungible/funeth/funeth.h |  151 ++
+ .../ethernet/fungible/funeth/funeth_devlink.c |   40 +
+ .../ethernet/fungible/funeth/funeth_devlink.h |   13 +
+ .../ethernet/fungible/funeth/funeth_ethtool.c | 1182 +++++++++++
+ .../ethernet/fungible/funeth/funeth_ktls.c    |  181 ++
+ .../ethernet/fungible/funeth/funeth_ktls.h    |   33 +
+ .../ethernet/fungible/funeth/funeth_main.c    | 1773 +++++++++++++++++
+ .../net/ethernet/fungible/funeth/funeth_rx.c  |  725 +++++++
+ .../ethernet/fungible/funeth/funeth_trace.h   |  117 ++
+ .../net/ethernet/fungible/funeth/funeth_tx.c  |  701 +++++++
+ .../ethernet/fungible/funeth/funeth_txrx.h    |  242 +++
+ include/linux/pci_ids.h                       |    2 +
+ 26 files changed, 8313 insertions(+)
+ create mode 100644 drivers/net/ethernet/fungible/Kconfig
+ create mode 100644 drivers/net/ethernet/fungible/Makefile
+ create mode 100644 drivers/net/ethernet/fungible/funcore/Makefile
+ create mode 100644 drivers/net/ethernet/fungible/funcore/fun_dev.c
+ create mode 100644 drivers/net/ethernet/fungible/funcore/fun_dev.h
+ create mode 100644 drivers/net/ethernet/fungible/funcore/fun_hci.h
+ create mode 100644 drivers/net/ethernet/fungible/funcore/fun_queue.c
+ create mode 100644 drivers/net/ethernet/fungible/funcore/fun_queue.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/Kconfig
+ create mode 100644 drivers/net/ethernet/fungible/funeth/Makefile
+ create mode 100644 drivers/net/ethernet/fungible/funeth/fun_port.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_devlink.c
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_devlink.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_ethtool.c
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_ktls.c
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_ktls.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_main.c
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_rx.c
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_trace.h
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_tx.c
+ create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_txrx.h
 
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index cc76ceebd208..b628917e38e4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -3083,6 +3083,11 @@ int mlx5_init_fs(struct mlx5_core_dev *dev)
- 	steering->dev = dev;
- 	dev->priv.steering = steering;
- 
-+	if (mlx5_fs_dr_is_supported(dev))
-+		steering->mode = MLX5_FLOW_STEERING_MODE_SMFS;
-+	else
-+		steering->mode = MLX5_FLOW_STEERING_MODE_DMFS;
-+
- 	steering->fgs_cache = kmem_cache_create("mlx5_fs_fgs",
- 						sizeof(struct mlx5_flow_group), 0,
- 						0, NULL);
 -- 
-2.33.1
+2.25.1
 
