@@ -2,82 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBC0B4824AF
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 17:00:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAB7A48252D
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 17:33:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231216AbhLaQAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 11:00:53 -0500
-Received: from www62.your-server.de ([213.133.104.62]:48488 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231209AbhLaQAx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 11:00:53 -0500
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1n3KKo-000A5p-UF; Fri, 31 Dec 2021 17:00:51 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2021-12-31
-Date:   Fri, 31 Dec 2021 17:00:50 +0100
-Message-Id: <20211231160050.16105-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S229892AbhLaQdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 11:33:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229498AbhLaQdB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 11:33:01 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04604C061574;
+        Fri, 31 Dec 2021 08:33:01 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id p14so20464959plf.3;
+        Fri, 31 Dec 2021 08:33:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QYkfI2lt/GY9SHQWwHyxFcycOWwFfQwKdXXFkZw1qm0=;
+        b=VR1utab4LzjntxdgFUljyqrFbwGNJzksfjcZUoJHYaAG3K6tMu4mFV9wZkPDiRKFE9
+         dnYnx1AG8Wu+Es9dO7XiSOLTmkiDuQFv8R1jz+XBt9uSekrGGF6EJNiyaoCuUa6xEYLX
+         l0dHPD8iAHPpynO46A5At72iuNL6hRZoJYfXjGfWkJ7ZabWE+6LbXrk2Qz1foDlOrrt6
+         8r37EcvcrHs6OSqhBbhZzgbi+xWDUhTnA5ufn2b3TjlPNbsINbAFdB9ftI1SIanrOOIb
+         RMvrihCS+6msYLuGHwrjS7/dOlweaJq08Xmwne/DYULUj1f2MRCOYBA/5NVxFn2wU4C7
+         eqnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QYkfI2lt/GY9SHQWwHyxFcycOWwFfQwKdXXFkZw1qm0=;
+        b=EX5uYTCXAPqHnqudOqOfXWr68+na2BA7nvpKu3oZqOXoPjkm3UdnfoF3kMHxGZaH+m
+         M6dZ5HUjWW/ocJDrypY4rQRvOAE6zwFAcyjpewib/I8oRX3KcpWo6Z0uS+nvIyKXJJ8Y
+         GCYtBss/pi4KKVQ+UzFm9ako2A+mKEyLFCV786GNL6iOvS3c6um645nUB9pudqboIwgE
+         uUGuZl39jWy32Og71rdvps7pedF7buDfcutZ+nW5QWmNPU7IkcDZZ8tqdoCFPX5hl00i
+         x4/OVjP5Rj8lmApjy1rXRKMyqC3+/SCIHJ7qRCqomdBexLodPc4F1mHWrQldVLrIASOR
+         JCSg==
+X-Gm-Message-State: AOAM5305avEuWv63c8ibm33dTZIHN/a4q05WhdaFMibNjtc8YoDBolfd
+        mMsOmVdt3j6x7XSOS479KmdiRHXVhdiiERhomdk=
+X-Google-Smtp-Source: ABdhPJwUUmvcggc7fwNX2mgthnOh09IiedQF63NEiOxG4/o68b5hbtlSO2jgXHo69YG9PP6MgHdMI0SqbrkWwo1DKHM=
+X-Received: by 2002:a17:902:c443:b0:148:f689:d924 with SMTP id
+ m3-20020a170902c44300b00148f689d924mr35913517plm.78.1640968380417; Fri, 31
+ Dec 2021 08:33:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26408/Fri Dec 31 10:22:11 2021)
+References: <20211231153550.3807430-1-houtao1@huawei.com>
+In-Reply-To: <20211231153550.3807430-1-houtao1@huawei.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 31 Dec 2021 08:32:49 -0800
+Message-ID: <CAADnVQLfCq9urgtNuW2dgjUj-wb+AxSj5YzHb4GvSZR-TtZ7kw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: support bpf_jit_enable=2 for CONFIG_BPF_JIT_ALWAYS_ON
+To:     Hou Tao <houtao1@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+On Fri, Dec 31, 2021 at 7:20 AM Hou Tao <houtao1@huawei.com> wrote:
+>
+> bpf_jit_enable=2 is used to dump the jited images for debug purpose,
+> however if CONFIG_BPF_JIT_ALWAYS_ON is enabled, its value is fixed
+> as one and can not be changed. So make the debug switch work again.
+>
+> Signed-off-by: Hou Tao <houtao1@huawei.com>
 
-First of all, we wish you both a happy new year! :-)
-
-The following pull-request contains BPF updates for your *net* tree.
-
-We've added 2 non-merge commits during the last 14 day(s) which contain
-a total of 2 files changed, 3 insertions(+), 3 deletions(-).
-
-The main changes are:
-
-1) Revert of an earlier attempt to fix xsk's poll() behavior where it
-   turned out that the fix for a rare problem made it much worse in
-   general, from Magnus Karlsson. (Fyi, Magnus mentioned that a proper
-   fix is coming early next year, so the revert is mainly to avoid
-   slipping the behavior into 5.16.)
-
-2) Minor misc spell fix in BPF selftests, from Colin Ian King.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-----------------------------------------------------------------
-
-The following changes since commit 8ca4090fec0217bcb89531c8be80fcfa66a397a1:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf (2021-12-17 10:52:04 +0000)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 819d11507f6637731947836e6308f5966d64cf9d:
-
-  bpf, selftests: Fix spelling mistake "tained" -> "tainted" (2021-12-17 23:15:16 +0100)
-
-----------------------------------------------------------------
-Colin Ian King (1):
-      bpf, selftests: Fix spelling mistake "tained" -> "tainted"
-
-Magnus Karlsson (1):
-      Revert "xsk: Do not sleep in poll() when need_wakeup set"
-
- net/xdp/xsk.c                                          | 4 ++--
- tools/testing/selftests/bpf/verifier/value_ptr_arith.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+That was discussed in the past:
+https://lore.kernel.org/bpf/20210326124030.1138964-1-Jianlin.Lv@arm.com/
+The old point stands.
