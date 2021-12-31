@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D342A482369
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 11:28:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7780482366
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 11:28:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230203AbhLaK2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 05:28:08 -0500
-Received: from szxga03-in.huawei.com ([45.249.212.189]:31135 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbhLaK1p (ORCPT
+        id S230329AbhLaK2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 05:28:06 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:17319 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230185AbhLaK1p (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 05:27:45 -0500
-Received: from kwepemi100006.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JQLqs0Dc6z8w6W;
-        Fri, 31 Dec 2021 18:25:13 +0800 (CST)
+Received: from kwepemi100003.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JQLsd2zwHz9s2S;
+        Fri, 31 Dec 2021 18:26:45 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi100006.china.huawei.com (7.221.188.165) with Microsoft SMTP Server
+ kwepemi100003.china.huawei.com (7.221.188.122) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Fri, 31 Dec 2021 18:27:42 +0800
+ 15.1.2308.20; Fri, 31 Dec 2021 18:27:43 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net-next 11/13] net: hns3: refactor PF cmdq init and uninit APIs with new common APIs
-Date:   Fri, 31 Dec 2021 18:22:41 +0800
-Message-ID: <20211231102243.3006-12-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 12/13] net: hns3: refactor VF cmdq init and uninit APIs with new common APIs
+Date:   Fri, 31 Dec 2021 18:22:42 +0800
+Message-ID: <20211231102243.3006-13-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211231102243.3006-1-huangguangbin2@huawei.com>
 References: <20211231102243.3006-1-huangguangbin2@huawei.com>
@@ -47,48 +47,43 @@ X-Mailing-List: netdev@vger.kernel.org
 From: Jie Wang <wangjie125@huawei.com>
 
 This patch uses common cmdq init and uninit APIs to replace the old APIs in
-PF cmdq module init and uninit modules. Then the old PF init and uninit
+VF cmdq module init and uninit module. Then the old VF init and uninit
 APIs is deleted.
 
 Signed-off-by: Jie Wang <wangjie125@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- .../hisilicon/hns3/hns3pf/hclge_cmd.c         | 149 ------------------
- .../hisilicon/hns3/hns3pf/hclge_cmd.h         |  11 --
- .../hisilicon/hns3/hns3pf/hclge_main.c        |  46 +++---
- .../hisilicon/hns3/hns3pf/hclge_main.h        |  13 --
- .../hisilicon/hns3/hns3pf/hclge_mbx.c         |   5 +-
- 5 files changed, 27 insertions(+), 197 deletions(-)
+ .../hisilicon/hns3/hns3vf/hclgevf_cmd.c       | 134 +-----------------
+ .../hisilicon/hns3/hns3vf/hclgevf_cmd.h       |  25 +---
+ .../hisilicon/hns3/hns3vf/hclgevf_main.c      |  58 ++++----
+ .../hisilicon/hns3/hns3vf/hclgevf_main.h      |  19 ---
+ .../hisilicon/hns3/hns3vf/hclgevf_mbx.c       |   4 +-
+ 5 files changed, 36 insertions(+), 204 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-index 0f4b934c0683..6a066d3ac86e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-@@ -24,152 +24,3 @@ int hclge_cmd_send(struct hclge_hw *hw, struct hclge_desc *desc, int num)
- {
- 	return hclge_comm_cmd_send(&hw->hw, desc, num, true);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
+index 9e0d900d2fb5..fc9dc506cfd2 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
+@@ -24,147 +24,15 @@ int hclgevf_cmd_send(struct hclgevf_hw *hw, struct hclge_desc *desc, int num)
+ 	return hclge_comm_cmd_send(&hw->hw, desc, num, false);
  }
--
--int hclge_cmd_queue_init(struct hclge_dev *hdev)
--{
--	struct hclge_comm_cmq *cmdq = &hdev->hw.hw.cmq;
+ 
+-int hclgevf_cmd_queue_init(struct hclgevf_dev *hdev)
++void hclgevf_arq_init(struct hclgevf_dev *hdev)
+ {
+ 	struct hclge_comm_cmq *cmdq = &hdev->hw.hw.cmq;
 -	int ret;
--
+ 
 -	/* Setup the lock for command queue */
 -	spin_lock_init(&cmdq->csq.lock);
 -	spin_lock_init(&cmdq->crq.lock);
 -
 -	cmdq->csq.pdev = hdev->pdev;
 -	cmdq->crq.pdev = hdev->pdev;
+-	cmdq->tx_timeout = HCLGEVF_CMDQ_TX_TIMEOUT;
+-	cmdq->csq.desc_num = HCLGEVF_NIC_CMQ_DESC_NUM;
+-	cmdq->crq.desc_num = HCLGEVF_NIC_CMQ_DESC_NUM;
 -
--	/* Setup the queue entries for use cmd queue */
--	cmdq->csq.desc_num = HCLGE_NIC_CMQ_DESC_NUM;
--	cmdq->crq.desc_num = HCLGE_NIC_CMQ_DESC_NUM;
--
--	/* Setup Tx write back timeout */
--	cmdq->tx_timeout = HCLGE_CMDQ_TX_TIMEOUT;
--
--	/* Setup queue rings */
 -	ret = hclge_comm_alloc_cmd_queue(&hdev->hw.hw, HCLGE_COMM_TYPE_CSQ);
 -	if (ret) {
 -		dev_err(&hdev->pdev->dev,
@@ -105,18 +100,24 @@ index 0f4b934c0683..6a066d3ac86e 100644
 -
 -	return 0;
 -err_csq:
--	hclge_comm_free_cmd_desc(&hdev->hw.hw.cmq.csq);
+-	hclge_comm_free_cmd_desc(&cmdq->csq);
 -	return ret;
 -}
 -
--int hclge_cmd_init(struct hclge_dev *hdev)
+-int hclgevf_cmd_init(struct hclgevf_dev *hdev)
 -{
+-	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
 -	struct hclge_comm_cmq *cmdq = &hdev->hw.hw.cmq;
 -	int ret;
 -
 -	spin_lock_bh(&cmdq->csq.lock);
--	spin_lock(&cmdq->crq.lock);
+ 	spin_lock(&cmdq->crq.lock);
 -
+ 	/* initialize the pointers of async rx queue of mailbox */
+ 	hdev->arq.hdev = hdev;
+ 	hdev->arq.head = 0;
+ 	hdev->arq.tail = 0;
+ 	atomic_set(&hdev->arq.count, 0);
 -	cmdq->csq.next_to_clean = 0;
 -	cmdq->csq.next_to_use = 0;
 -	cmdq->crq.next_to_clean = 0;
@@ -124,7 +125,7 @@ index 0f4b934c0683..6a066d3ac86e 100644
 -
 -	hclge_comm_cmd_init_regs(&hdev->hw.hw);
 -
--	spin_unlock(&cmdq->crq.lock);
+ 	spin_unlock(&cmdq->crq.lock);
 -	spin_unlock_bh(&cmdq->csq.lock);
 -
 -	clear_bit(HCLGE_COMM_STATE_CMD_DISABLE, &hdev->hw.hw.comm_state);
@@ -132,10 +133,7 @@ index 0f4b934c0683..6a066d3ac86e 100644
 -	/* Check if there is new reset pending, because the higher level
 -	 * reset may happen when lower level reset is being processed.
 -	 */
--	if ((hclge_is_reset_pending(hdev))) {
--		dev_err(&hdev->pdev->dev,
--			"failed to init cmd since reset %#lx pending\n",
--			hdev->reset_pending);
+-	if (hclgevf_is_reset_pending(hdev)) {
 -		ret = -EBUSY;
 -		goto err_cmd_init;
 -	}
@@ -144,11 +142,10 @@ index 0f4b934c0683..6a066d3ac86e 100644
 -	ret = hclge_comm_cmd_query_version_and_capability(hdev->ae_dev,
 -							  &hdev->hw.hw,
 -							  &hdev->fw_version,
--							  true);
+-							  false);
 -	if (ret) {
 -		dev_err(&hdev->pdev->dev,
--			"failed to query version and capabilities, ret = %d\n",
--			ret);
+-			"failed to query version and capabilities, ret = %d\n", ret);
 -		goto err_cmd_init;
 -	}
 -
@@ -162,15 +159,17 @@ index 0f4b934c0683..6a066d3ac86e 100644
 -		 hnae3_get_field(hdev->fw_version, HNAE3_FW_VERSION_BYTE0_MASK,
 -				 HNAE3_FW_VERSION_BYTE0_SHIFT));
 -
--	/* ask the firmware to enable some features, driver can work without
--	 * it.
--	 */
--	ret = hclge_comm_firmware_compat_config(hdev->ae_dev, true,
--						&hdev->hw.hw, true);
--	if (ret)
--		dev_warn(&hdev->pdev->dev,
--			 "Firmware compatible features not enabled(%d).\n",
--			 ret);
+-	if (ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3) {
+-		/* ask the firmware to enable some features, driver can work
+-		 * without it.
+-		 */
+-		ret = hclge_comm_firmware_compat_config(hdev->ae_dev, false,
+-							&hdev->hw.hw, true);
+-		if (ret)
+-			dev_warn(&hdev->pdev->dev,
+-				 "Firmware compatible features not enabled(%d).\n",
+-				 ret);
+-	}
 -
 -	return 0;
 -
@@ -180,105 +179,111 @@ index 0f4b934c0683..6a066d3ac86e 100644
 -	return ret;
 -}
 -
--static void hclge_cmd_uninit_regs(struct hclge_hw *hw)
+-static void hclgevf_cmd_uninit_regs(struct hclgevf_hw *hw)
 -{
--	hclge_write_dev(hw, HCLGE_NIC_CSQ_BASEADDR_L_REG, 0);
--	hclge_write_dev(hw, HCLGE_NIC_CSQ_BASEADDR_H_REG, 0);
--	hclge_write_dev(hw, HCLGE_NIC_CSQ_DEPTH_REG, 0);
--	hclge_write_dev(hw, HCLGE_NIC_CSQ_HEAD_REG, 0);
--	hclge_write_dev(hw, HCLGE_NIC_CSQ_TAIL_REG, 0);
--	hclge_write_dev(hw, HCLGE_NIC_CRQ_BASEADDR_L_REG, 0);
--	hclge_write_dev(hw, HCLGE_NIC_CRQ_BASEADDR_H_REG, 0);
--	hclge_write_dev(hw, HCLGE_NIC_CRQ_DEPTH_REG, 0);
--	hclge_write_dev(hw, HCLGE_NIC_CRQ_HEAD_REG, 0);
--	hclge_write_dev(hw, HCLGE_NIC_CRQ_TAIL_REG, 0);
+-	hclgevf_write_dev(hw, HCLGEVF_NIC_CSQ_BASEADDR_L_REG, 0);
+-	hclgevf_write_dev(hw, HCLGEVF_NIC_CSQ_BASEADDR_H_REG, 0);
+-	hclgevf_write_dev(hw, HCLGEVF_NIC_CSQ_DEPTH_REG, 0);
+-	hclgevf_write_dev(hw, HCLGEVF_NIC_CSQ_HEAD_REG, 0);
+-	hclgevf_write_dev(hw, HCLGEVF_NIC_CSQ_TAIL_REG, 0);
+-	hclgevf_write_dev(hw, HCLGEVF_NIC_CRQ_BASEADDR_L_REG, 0);
+-	hclgevf_write_dev(hw, HCLGEVF_NIC_CRQ_BASEADDR_H_REG, 0);
+-	hclgevf_write_dev(hw, HCLGEVF_NIC_CRQ_DEPTH_REG, 0);
+-	hclgevf_write_dev(hw, HCLGEVF_NIC_CRQ_HEAD_REG, 0);
+-	hclgevf_write_dev(hw, HCLGEVF_NIC_CRQ_TAIL_REG, 0);
 -}
 -
--void hclge_cmd_uninit(struct hclge_dev *hdev)
+-void hclgevf_cmd_uninit(struct hclgevf_dev *hdev)
 -{
 -	struct hclge_comm_cmq *cmdq = &hdev->hw.hw.cmq;
--
--	cmdq->csq.pdev = hdev->pdev;
--
--	hclge_comm_firmware_compat_config(hdev->ae_dev, true, &hdev->hw.hw,
+-	hclge_comm_firmware_compat_config(hdev->ae_dev, false, &hdev->hw.hw,
 -					  false);
--
 -	set_bit(HCLGE_COMM_STATE_CMD_DISABLE, &hdev->hw.hw.comm_state);
+-
 -	/* wait to ensure that the firmware completes the possible left
 -	 * over commands.
 -	 */
--	msleep(HCLGE_CMDQ_CLEAR_WAIT_TIME);
+-	msleep(HCLGEVF_CMDQ_CLEAR_WAIT_TIME);
 -	spin_lock_bh(&cmdq->csq.lock);
 -	spin_lock(&cmdq->crq.lock);
--	hclge_cmd_uninit_regs(&hdev->hw);
+-	hclgevf_cmd_uninit_regs(&hdev->hw);
 -	spin_unlock(&cmdq->crq.lock);
 -	spin_unlock_bh(&cmdq->csq.lock);
 -
 -	hclge_comm_free_cmd_desc(&cmdq->csq);
 -	hclge_comm_free_cmd_desc(&cmdq->crq);
--}
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index b239b5bde1de..ac0f2f17275b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -9,9 +9,6 @@
+ }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
+index 1ed70849bf63..ab8329e7d2bd 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
+@@ -8,8 +8,6 @@
  #include "hnae3.h"
  #include "hclge_comm_cmd.h"
  
--#define HCLGE_CMDQ_TX_TIMEOUT		30000
--#define HCLGE_CMDQ_CLEAR_WAIT_TIME	200
+-#define HCLGEVF_CMDQ_TX_TIMEOUT		30000
+-#define HCLGEVF_CMDQ_CLEAR_WAIT_TIME	200
+ #define HCLGEVF_CMDQ_RX_INVLD_B		0
+ #define HCLGEVF_CMDQ_RX_OUTVLD_B	1
+ 
+@@ -17,24 +15,6 @@ struct hclgevf_hw;
+ struct hclgevf_dev;
+ 
+ #define HCLGEVF_SYNC_RX_RING_HEAD_EN_B	4
+-struct hclgevf_firmware_compat_cmd {
+-	__le32 compat;
+-	u8 rsv[20];
+-};
 -
- struct hclge_dev;
- 
- #define HCLGE_CMDQ_RX_INVLD_B		0
-@@ -928,9 +925,6 @@ struct hclge_common_lb_cmd {
- #define HCLGE_DEFAULT_NON_DCB_DV	0x7800	/* 30K byte */
- #define HCLGE_NON_DCB_ADDITIONAL_BUF	0x1400	/* 5120 byte */
- 
--#define HCLGE_NIC_CMQ_DESC_NUM		1024
--#define HCLGE_NIC_CMQ_DESC_NUM_S	3
+-#define HCLGEVF_CMD_FLAG_IN_VALID_SHIFT		0
+-#define HCLGEVF_CMD_FLAG_OUT_VALID_SHIFT	1
+-#define HCLGEVF_CMD_FLAG_NEXT_SHIFT		2
+-#define HCLGEVF_CMD_FLAG_WR_OR_RD_SHIFT		3
+-#define HCLGEVF_CMD_FLAG_NO_INTR_SHIFT		4
+-#define HCLGEVF_CMD_FLAG_ERR_INTR_SHIFT		5
 -
- #define HCLGE_LED_LOCATE_STATE_S	0
- #define HCLGE_LED_LOCATE_STATE_M	GENMASK(1, 0)
+-#define HCLGEVF_CMD_FLAG_IN		BIT(HCLGEVF_CMD_FLAG_IN_VALID_SHIFT)
+-#define HCLGEVF_CMD_FLAG_OUT		BIT(HCLGEVF_CMD_FLAG_OUT_VALID_SHIFT)
+-#define HCLGEVF_CMD_FLAG_NEXT		BIT(HCLGEVF_CMD_FLAG_NEXT_SHIFT)
+-#define HCLGEVF_CMD_FLAG_WR		BIT(HCLGEVF_CMD_FLAG_WR_OR_RD_SHIFT)
+-#define HCLGEVF_CMD_FLAG_NO_INTR	BIT(HCLGEVF_CMD_FLAG_NO_INTR_SHIFT)
+-#define HCLGEVF_CMD_FLAG_ERR_INTR	BIT(HCLGEVF_CMD_FLAG_ERR_INTR_SHIFT)
  
-@@ -1135,15 +1129,10 @@ struct hclge_phy_reg_cmd {
+ enum hclgevf_opcode_type {
+ 	/* Generic command */
+@@ -220,9 +200,6 @@ struct hclgevf_dev_specs_1_cmd {
  	u8 rsv1[18];
  };
  
--int hclge_cmd_init(struct hclge_dev *hdev);
+-int hclgevf_cmd_init(struct hclgevf_dev *hdev);
+-void hclgevf_cmd_uninit(struct hclgevf_dev *hdev);
+-int hclgevf_cmd_queue_init(struct hclgevf_dev *hdev);
 -
- struct hclge_hw;
- int hclge_cmd_send(struct hclge_hw *hw, struct hclge_desc *desc, int num);
- enum hclge_comm_cmd_status hclge_cmd_mdio_write(struct hclge_hw *hw,
- 						struct hclge_desc *desc);
- enum hclge_comm_cmd_status hclge_cmd_mdio_read(struct hclge_hw *hw,
- 					       struct hclge_desc *desc);
--
--void hclge_cmd_uninit(struct hclge_dev *hdev);
--int hclge_cmd_queue_init(struct hclge_dev *hdev);
+ int hclgevf_cmd_send(struct hclgevf_hw *hw, struct hclge_desc *desc, int num);
++void hclgevf_arq_init(struct hclgevf_dev *hdev);
  #endif
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 068d0adaab68..9eab97f804c8 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -91,20 +91,20 @@ static const struct pci_device_id ae_algo_pci_tbl[] = {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 30eafb6251c6..2889c75195c5 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -40,20 +40,20 @@ static const u8 hclgevf_hash_key[] = {
  
- MODULE_DEVICE_TABLE(pci, ae_algo_pci_tbl);
+ MODULE_DEVICE_TABLE(pci, ae_algovf_pci_tbl);
  
--static const u32 cmdq_reg_addr_list[] = {HCLGE_NIC_CSQ_BASEADDR_L_REG,
--					 HCLGE_NIC_CSQ_BASEADDR_H_REG,
--					 HCLGE_NIC_CSQ_DEPTH_REG,
--					 HCLGE_NIC_CSQ_TAIL_REG,
--					 HCLGE_NIC_CSQ_HEAD_REG,
--					 HCLGE_NIC_CRQ_BASEADDR_L_REG,
--					 HCLGE_NIC_CRQ_BASEADDR_H_REG,
--					 HCLGE_NIC_CRQ_DEPTH_REG,
--					 HCLGE_NIC_CRQ_TAIL_REG,
--					 HCLGE_NIC_CRQ_HEAD_REG,
--					 HCLGE_VECTOR0_CMDQ_SRC_REG,
--					 HCLGE_CMDQ_INTR_STS_REG,
--					 HCLGE_CMDQ_INTR_EN_REG,
--					 HCLGE_CMDQ_INTR_GEN_REG};
+-static const u32 cmdq_reg_addr_list[] = {HCLGEVF_NIC_CSQ_BASEADDR_L_REG,
+-					 HCLGEVF_NIC_CSQ_BASEADDR_H_REG,
+-					 HCLGEVF_NIC_CSQ_DEPTH_REG,
+-					 HCLGEVF_NIC_CSQ_TAIL_REG,
+-					 HCLGEVF_NIC_CSQ_HEAD_REG,
+-					 HCLGEVF_NIC_CRQ_BASEADDR_L_REG,
+-					 HCLGEVF_NIC_CRQ_BASEADDR_H_REG,
+-					 HCLGEVF_NIC_CRQ_DEPTH_REG,
+-					 HCLGEVF_NIC_CRQ_TAIL_REG,
+-					 HCLGEVF_NIC_CRQ_HEAD_REG,
+-					 HCLGEVF_VECTOR0_CMDQ_SRC_REG,
+-					 HCLGEVF_VECTOR0_CMDQ_STATE_REG,
+-					 HCLGEVF_CMDQ_INTR_EN_REG,
+-					 HCLGEVF_CMDQ_INTR_GEN_REG};
 +static const u32 cmdq_reg_addr_list[] = {HCLGE_COMM_NIC_CSQ_BASEADDR_L_REG,
 +					 HCLGE_COMM_NIC_CSQ_BASEADDR_H_REG,
 +					 HCLGE_COMM_NIC_CSQ_DEPTH_REG,
@@ -290,127 +295,173 @@ index 068d0adaab68..9eab97f804c8 100644
 +					 HCLGE_COMM_NIC_CRQ_TAIL_REG,
 +					 HCLGE_COMM_NIC_CRQ_HEAD_REG,
 +					 HCLGE_COMM_VECTOR0_CMDQ_SRC_REG,
-+					 HCLGE_COMM_CMDQ_INTR_STS_REG,
++					 HCLGE_COMM_VECTOR0_CMDQ_STATE_REG,
 +					 HCLGE_COMM_CMDQ_INTR_EN_REG,
 +					 HCLGE_COMM_CMDQ_INTR_GEN_REG};
  
- static const u32 common_reg_addr_list[] = {HCLGE_MISC_VECTOR_REG_BASE,
- 					   HCLGE_PF_OTHER_INT_REG,
-@@ -4032,13 +4032,13 @@ static void hclge_reset_handshake(struct hclge_dev *hdev, bool enable)
+ static const u32 common_reg_addr_list[] = {HCLGEVF_MISC_VECTOR_REG_BASE,
+ 					   HCLGEVF_RST_ING,
+@@ -1894,13 +1894,13 @@ static void hclgevf_reset_handshake(struct hclgevf_dev *hdev, bool enable)
  {
  	u32 reg_val;
  
--	reg_val = hclge_read_dev(&hdev->hw, HCLGE_NIC_CSQ_DEPTH_REG);
-+	reg_val = hclge_read_dev(&hdev->hw, HCLGE_COMM_NIC_CSQ_DEPTH_REG);
+-	reg_val = hclgevf_read_dev(&hdev->hw, HCLGEVF_NIC_CSQ_DEPTH_REG);
++	reg_val = hclgevf_read_dev(&hdev->hw, HCLGE_COMM_NIC_CSQ_DEPTH_REG);
  	if (enable)
- 		reg_val |= HCLGE_COMM_NIC_SW_RST_RDY;
+ 		reg_val |= HCLGEVF_NIC_SW_RST_RDY;
  	else
- 		reg_val &= ~HCLGE_COMM_NIC_SW_RST_RDY;
+ 		reg_val &= ~HCLGEVF_NIC_SW_RST_RDY;
  
--	hclge_write_dev(&hdev->hw, HCLGE_NIC_CSQ_DEPTH_REG, reg_val);
-+	hclge_write_dev(&hdev->hw, HCLGE_COMM_NIC_CSQ_DEPTH_REG, reg_val);
+-	hclgevf_write_dev(&hdev->hw, HCLGEVF_NIC_CSQ_DEPTH_REG,
++	hclgevf_write_dev(&hdev->hw, HCLGE_COMM_NIC_CSQ_DEPTH_REG,
+ 			  reg_val);
  }
  
- static int hclge_func_reset_notify_vf(struct hclge_dev *hdev)
-@@ -4075,7 +4075,7 @@ static int hclge_reset_prepare_wait(struct hclge_dev *hdev)
- 		/* After performaning pf reset, it is not necessary to do the
- 		 * mailbox handling or send any command to firmware, because
- 		 * any mailbox handling or command to firmware is only valid
--		 * after hclge_cmd_init is called.
-+		 * after hclge_comm_cmd_init is called.
- 		 */
- 		set_bit(HCLGE_COMM_STATE_CMD_DISABLE, &hdev->hw.hw.comm_state);
- 		hdev->rst_stats.pf_rst_cnt++;
-@@ -11775,12 +11775,13 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
- 		goto err_pci_uninit;
+@@ -1980,9 +1980,9 @@ static void hclgevf_dump_rst_info(struct hclgevf_dev *hdev)
+ 	dev_info(&hdev->pdev->dev, "vector0 interrupt enable status: 0x%x\n",
+ 		 hclgevf_read_dev(&hdev->hw, HCLGEVF_MISC_VECTOR_REG_BASE));
+ 	dev_info(&hdev->pdev->dev, "vector0 interrupt status: 0x%x\n",
+-		 hclgevf_read_dev(&hdev->hw, HCLGEVF_VECTOR0_CMDQ_STATE_REG));
++		 hclgevf_read_dev(&hdev->hw, HCLGE_COMM_VECTOR0_CMDQ_STATE_REG));
+ 	dev_info(&hdev->pdev->dev, "handshake status: 0x%x\n",
+-		 hclgevf_read_dev(&hdev->hw, HCLGEVF_NIC_CSQ_DEPTH_REG));
++		 hclgevf_read_dev(&hdev->hw, HCLGE_COMM_NIC_CSQ_DEPTH_REG));
+ 	dev_info(&hdev->pdev->dev, "function reset status: 0x%x\n",
+ 		 hclgevf_read_dev(&hdev->hw, HCLGEVF_RST_ING));
+ 	dev_info(&hdev->pdev->dev, "hdev state: 0x%lx\n", hdev->state);
+@@ -2418,7 +2418,7 @@ static void hclgevf_service_task(struct work_struct *work)
  
- 	/* Firmware command queue initialize */
--	ret = hclge_cmd_queue_init(hdev);
-+	ret = hclge_comm_cmd_queue_init(hdev->pdev, &hdev->hw.hw);
- 	if (ret)
- 		goto err_devlink_uninit;
+ static void hclgevf_clear_event_cause(struct hclgevf_dev *hdev, u32 regclr)
+ {
+-	hclgevf_write_dev(&hdev->hw, HCLGEVF_VECTOR0_CMDQ_SRC_REG, regclr);
++	hclgevf_write_dev(&hdev->hw, HCLGE_COMM_VECTOR0_CMDQ_SRC_REG, regclr);
+ }
  
- 	/* Firmware command initialize */
--	ret = hclge_cmd_init(hdev);
-+	ret = hclge_comm_cmd_init(hdev->ae_dev, &hdev->hw.hw, &hdev->fw_version,
-+				  true, hdev->reset_pending);
- 	if (ret)
- 		goto err_cmd_uninit;
+ static enum hclgevf_evt_cause hclgevf_check_evt_cause(struct hclgevf_dev *hdev,
+@@ -2428,7 +2428,7 @@ static enum hclgevf_evt_cause hclgevf_check_evt_cause(struct hclgevf_dev *hdev,
  
-@@ -11953,7 +11954,7 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
- err_msi_uninit:
- 	pci_free_irq_vectors(pdev);
- err_cmd_uninit:
--	hclge_cmd_uninit(hdev);
-+	hclge_comm_cmd_uninit(hdev->ae_dev, true, &hdev->hw.hw);
- err_devlink_uninit:
- 	hclge_devlink_uninit(hdev);
- err_pci_uninit:
-@@ -12204,7 +12205,8 @@ static int hclge_reset_ae_dev(struct hnae3_ae_dev *ae_dev)
- 		hclge_reset_umv_space(hdev);
+ 	/* fetch the events from their corresponding regs */
+ 	cmdq_stat_reg = hclgevf_read_dev(&hdev->hw,
+-					 HCLGEVF_VECTOR0_CMDQ_STATE_REG);
++					 HCLGE_COMM_VECTOR0_CMDQ_STATE_REG);
+ 	if (BIT(HCLGEVF_VECTOR0_RST_INT_B) & cmdq_stat_reg) {
+ 		rst_ing_reg = hclgevf_read_dev(&hdev->hw, HCLGEVF_RST_ING);
+ 		dev_info(&hdev->pdev->dev,
+@@ -3234,7 +3234,7 @@ static int hclgevf_query_dev_specs(struct hclgevf_dev *hdev)
+ 	for (i = 0; i < HCLGEVF_QUERY_DEV_SPECS_BD_NUM - 1; i++) {
+ 		hclgevf_cmd_setup_basic_desc(&desc[i],
+ 					     HCLGEVF_OPC_QUERY_DEV_SPECS, true);
+-		desc[i].flag |= cpu_to_le16(HCLGEVF_CMD_FLAG_NEXT);
++		desc[i].flag |= cpu_to_le16(HCLGE_COMM_CMD_FLAG_NEXT);
+ 	}
+ 	hclgevf_cmd_setup_basic_desc(&desc[i], HCLGEVF_OPC_QUERY_DEV_SPECS,
+ 				     true);
+@@ -3316,7 +3316,10 @@ static int hclgevf_reset_hdev(struct hclgevf_dev *hdev)
+ 		return ret;
  	}
  
--	ret = hclge_cmd_init(hdev);
-+	ret = hclge_comm_cmd_init(hdev->ae_dev, &hdev->hw.hw, &hdev->fw_version,
-+				  true, hdev->reset_pending);
+-	ret = hclgevf_cmd_init(hdev);
++	hclgevf_arq_init(hdev);
++	ret = hclge_comm_cmd_init(hdev->ae_dev, &hdev->hw.hw,
++				  &hdev->fw_version, false,
++				  hdev->reset_pending);
  	if (ret) {
- 		dev_err(&pdev->dev, "Cmd queue init failed\n");
+ 		dev_err(&pdev->dev, "cmd failed %d\n", ret);
  		return ret;
-@@ -12344,7 +12346,7 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
- 	hclge_config_nic_hw_error(hdev, false);
- 	hclge_config_rocee_ras_interrupt(hdev, false);
+@@ -3362,11 +3365,14 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
+ 	if (ret)
+ 		goto err_devlink_init;
  
--	hclge_cmd_uninit(hdev);
-+	hclge_comm_cmd_uninit(hdev->ae_dev, true, &hdev->hw.hw);
- 	hclge_misc_irq_uninit(hdev);
- 	hclge_devlink_uninit(hdev);
- 	hclge_pci_uninit(hdev);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 531dec523671..9764094aadec 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -38,20 +38,7 @@
- #define HCLGE_VECTOR_REG_OFFSET_H	0x1000
- #define HCLGE_VECTOR_VF_OFFSET		0x100000
+-	ret = hclgevf_cmd_queue_init(hdev);
++	ret = hclge_comm_cmd_queue_init(hdev->pdev, &hdev->hw.hw);
+ 	if (ret)
+ 		goto err_cmd_queue_init;
  
--#define HCLGE_NIC_CSQ_BASEADDR_L_REG	0x27000
--#define HCLGE_NIC_CSQ_BASEADDR_H_REG	0x27004
- #define HCLGE_NIC_CSQ_DEPTH_REG		0x27008
--#define HCLGE_NIC_CSQ_TAIL_REG		0x27010
--#define HCLGE_NIC_CSQ_HEAD_REG		0x27014
--#define HCLGE_NIC_CRQ_BASEADDR_L_REG	0x27018
--#define HCLGE_NIC_CRQ_BASEADDR_H_REG	0x2701C
--#define HCLGE_NIC_CRQ_DEPTH_REG		0x27020
--#define HCLGE_NIC_CRQ_TAIL_REG		0x27024
--#define HCLGE_NIC_CRQ_HEAD_REG		0x27028
+-	ret = hclgevf_cmd_init(hdev);
++	hclgevf_arq_init(hdev);
++	ret = hclge_comm_cmd_init(hdev->ae_dev, &hdev->hw.hw,
++				  &hdev->fw_version, false,
++				  hdev->reset_pending);
+ 	if (ret)
+ 		goto err_cmd_init;
+ 
+@@ -3466,7 +3472,7 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
+ 	hclgevf_state_uninit(hdev);
+ 	hclgevf_uninit_msi(hdev);
+ err_cmd_init:
+-	hclgevf_cmd_uninit(hdev);
++	hclge_comm_cmd_uninit(hdev->ae_dev, false, &hdev->hw.hw);
+ err_cmd_queue_init:
+ 	hclgevf_devlink_uninit(hdev);
+ err_devlink_init:
+@@ -3490,7 +3496,7 @@ static void hclgevf_uninit_hdev(struct hclgevf_dev *hdev)
+ 		hclgevf_uninit_msi(hdev);
+ 	}
+ 
+-	hclgevf_cmd_uninit(hdev);
++	hclge_comm_cmd_uninit(hdev->ae_dev, false, &hdev->hw.hw);
+ 	hclgevf_devlink_uninit(hdev);
+ 	hclgevf_pci_uninit(hdev);
+ 	hclgevf_uninit_mac_list(hdev);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
+index ae90925c4f4b..20db6edab306 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
+@@ -32,21 +32,6 @@
+ #define HCLGEVF_VECTOR_REG_OFFSET	0x4
+ #define HCLGEVF_VECTOR_VF_OFFSET		0x100000
+ 
+-/* bar registers for cmdq */
+-#define HCLGEVF_NIC_CSQ_BASEADDR_L_REG		0x27000
+-#define HCLGEVF_NIC_CSQ_BASEADDR_H_REG		0x27004
+-#define HCLGEVF_NIC_CSQ_DEPTH_REG		0x27008
+-#define HCLGEVF_NIC_CSQ_TAIL_REG		0x27010
+-#define HCLGEVF_NIC_CSQ_HEAD_REG		0x27014
+-#define HCLGEVF_NIC_CRQ_BASEADDR_L_REG		0x27018
+-#define HCLGEVF_NIC_CRQ_BASEADDR_H_REG		0x2701C
+-#define HCLGEVF_NIC_CRQ_DEPTH_REG		0x27020
+-#define HCLGEVF_NIC_CRQ_TAIL_REG		0x27024
+-#define HCLGEVF_NIC_CRQ_HEAD_REG		0x27028
 -
--#define HCLGE_CMDQ_INTR_STS_REG		0x27104
--#define HCLGE_CMDQ_INTR_EN_REG		0x27108
--#define HCLGE_CMDQ_INTR_GEN_REG		0x2710C
- 
+-#define HCLGEVF_CMDQ_INTR_EN_REG		0x27108
+-#define HCLGEVF_CMDQ_INTR_GEN_REG		0x2710C
+-
  /* bar registers for common func */
- #define HCLGE_GRO_EN_REG		0x28000
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 908351234238..db13033b60f4 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -661,7 +661,7 @@ static void hclge_handle_link_change_event(struct hclge_dev *hdev,
+ #define HCLGEVF_GRO_EN_REG			0x28000
+ #define HCLGEVF_RXD_ADV_LAYOUT_EN_REG		0x28008
+@@ -86,10 +71,6 @@
+ #define HCLGEVF_TQP_INTR_GL2_REG		0x20300
+ #define HCLGEVF_TQP_INTR_RL_REG			0x20900
  
- static bool hclge_cmd_crq_empty(struct hclge_hw *hw)
+-/* Vector0 interrupt CMDQ event source register(RW) */
+-#define HCLGEVF_VECTOR0_CMDQ_SRC_REG	0x27100
+-/* Vector0 interrupt CMDQ event status register(RO) */
+-#define HCLGEVF_VECTOR0_CMDQ_STATE_REG	0x27104
+ /* CMDQ register bits for RX event(=MBX event) */
+ #define HCLGEVF_VECTOR0_RX_CMDQ_INT_B	1
+ /* RST register bits for RESET event */
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
+index a1040bab9a10..d5e0a3f762f7 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
+@@ -152,7 +152,7 @@ int hclgevf_send_mbx_msg(struct hclgevf_dev *hdev,
+ 
+ static bool hclgevf_cmd_crq_empty(struct hclgevf_hw *hw)
  {
--	u32 tail = hclge_read_dev(hw, HCLGE_NIC_CRQ_TAIL_REG);
-+	u32 tail = hclge_read_dev(hw, HCLGE_COMM_NIC_CRQ_TAIL_REG);
+-	u32 tail = hclgevf_read_dev(hw, HCLGEVF_NIC_CRQ_TAIL_REG);
++	u32 tail = hclgevf_read_dev(hw, HCLGE_COMM_NIC_CRQ_TAIL_REG);
  
  	return tail == hw->hw.cmq.crq.next_to_use;
  }
-@@ -868,5 +868,6 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
+@@ -271,7 +271,7 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
  	}
  
  	/* Write back CMDQ_RQ header pointer, M7 need this pointer */
--	hclge_write_dev(&hdev->hw, HCLGE_NIC_CRQ_HEAD_REG, crq->next_to_use);
-+	hclge_write_dev(&hdev->hw, HCLGE_COMM_NIC_CRQ_HEAD_REG,
-+			crq->next_to_use);
+-	hclgevf_write_dev(&hdev->hw, HCLGEVF_NIC_CRQ_HEAD_REG,
++	hclgevf_write_dev(&hdev->hw, HCLGE_COMM_NIC_CRQ_HEAD_REG,
+ 			  crq->next_to_use);
  }
+ 
 -- 
 2.33.0
 
