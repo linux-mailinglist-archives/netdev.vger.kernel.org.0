@@ -2,225 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 315DD4820F9
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 01:22:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF6A24820FC
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 01:28:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242368AbhLaAVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 19:21:49 -0500
-Received: from sonic308-16.consmr.mail.ne1.yahoo.com ([66.163.187.39]:35392
-        "EHLO sonic308-16.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233018AbhLaAVt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 19:21:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1640910109; bh=nxhR7UYX/odb7gfWh6xmKUk4pkVVvEwbriMukrNU3tE=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=lsFM2oKFcvE3pu7kuen9fagcpKxN+H6nLlPYKAuqoTo5Q9ysgUT1Ooni7ZVGnVg4D9Wis8e9yaSebtU7c0h9MYY/zceDify8eYFOvFEPI1p86LHu6i2uF/oWgIq5JzY8t6GfW0cZL/WZY+w5+hh0ztaaB6vEy31Yt9eG/XD7Av/56+tLiWIsWKaBkhOwKzreNelpXuI7PDcO1VX1iKlujlRR6q2QcwdyxykAabydRbTaR1u9R9br9PYTBxTcNGaaFYCNGxKYBSa1RGxdPAbz1rTUwTbHFNC1iRGBB1QtLIGvJ7eDC3zX2EXMr+gAmc4FqiGPs9YcUdezvH87FR10rQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1640910109; bh=qS7Bko7Lj2GzG8DfpLVTdjMknegT030WeUssUoIht0Y=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=EaStMz+6KeqVF1qv6rNSJud2hDslBaL+9D3DKm2tZQp44tCwfKMMlmUqKux7ycwoLLUndHNHMV6X+6nwap4wnlVJbNg2uv4iyXdjiH1zuRUbv7goBsT/S5uDC2pYeFjuYTVwYZGB0wRWqhrGOJolW96IyAhQD+fXlVk5K4gYB7lQX5DAiyM3a4kvcnBi3H1VjCqezIb5b1BbdEwvd6jxjNfAMB9H3tvrubRkke0FFR98A2Zvvo3bwvSgmK439F15EyxKdlxXEh5XzFyLiCx0TC1Ps+xRrCWsnS+PvuCGC8bCRsOqsaKa40pgcc7sX+poWZMP/W1VqrtVu7gnA98QHw==
-X-YMail-OSG: t37v.RMVM1lN8xj.GAFesf4VIEKYy8YMq6gxVG8BZgK32f3NPf8Oeppl4m1NgzK
- nXy83KBnahSigupfBukDajq.9QpsfiGycN826TqmCBAoLGtFw_8WEi_UtR_.DWVUIuqRWzVw5gCB
- cKfMwBHtG0s7R39YrNcPEJKYqfja3VyuBRxoRgDFW0DKvrEVH1iv6O6ggDRwcTXE.ZP6Zb4MebcD
- NpamYQAJFuRypUnwLMIxwqGFzXOlnUykltLa0AHzkGASjE0ZJ.a0i5jnK7So3qARAV9nfX5a_Ydq
- lCN_HHgLpu45VbMAQx6uS0HMj5lJn_DudZgS98w.rZvCM0HlsXYraXZThxOIRjhDg4b8bZqrCtW7
- 2pMwvj.2ZW00O3ijsJI3FEu.J0Thmo7DtFJjRq1QiMfasz6NCcybd70llqK.v5PyfUZBZab6x89F
- 5EQLLiGGraORCyz3eG1st.c2Yw.ZDugMzwZBJVXMSN6kz2vwu8ouddgN_ATu26NTaLIqZUZSj2v1
- NVFu0cGCj9a3LX37RhvFwBnAqCuSzRpDfotu_AwbDqjNSTeoghpbMorRSSruejmw8twvuumc9B2U
- snAyjNHnROUSZuzLXYLewnekPWPsOjIBkNwNCZRsjGqXQh_ntsDtAd9FOFxiuF8KiV8T6DEkwV0c
- U1Oog9DJnJGjt8eJ34LpVtXVhWjoCuAnODbDOHzU2pKDwf6y0YQcYMqgbw3nARKql.y_mrNNca9b
- E.E4.l3aeinFLmO0PjuFbDFBW85iRhTmv.BoSnUFBQRsGgI8qOxXAXJ6WEJsm_nm3By6VXI9u4wn
- ZUktEzJgE8xltGzhPlHw7ZB8T3UAEYmUnQdl_kjHluJaBL4WLgZr.K6tWlDrwJJvURsauqxG0kqQ
- f5PFZhBLH3kSUUkJJ5ED9DaJhOw8YqruVXHasdl6d4A201Q5OJAg0n9B.O8.LIxKnG4EFG6T9GKz
- UNHo_IAg0XYy5NGbnKjo2zrwWl2y8egORElMPqogTJtDQKjDA1kIJpAtLa4I1NXiYAbiQfgsAkVE
- mnNDfjoviZlcNJ68Ui38qy3kmsn_Wpw_2mDTtlZx_GP04ZD0MBcCFimfa8.2xLWJUmyipCcfPux4
- eLMJCNp_btnzCvNTnGdFih1U.HJlNnkWfB0feoaWHKfllmejE7kNx7XN.V6cxgeEX619APGj0GID
- ZGDIDFaPXzkRO66BjQM5wQnaRG6DLpOfgehC2Q1YrP5akyvCBZ3HgrDK7PWndySVNDQwKWeSgnqr
- V.KC3JTfqhXTvCKEdp3hbVr68N7bgnKtF_CXTMIT7GjTlx.CrfVA6UCUz.01XRW3FqByukUQzlpl
- RMnaduJtFwiguUA3LzJzD5LKsS6zeBFvfqSfV4S19nTpZK76v6zYG4FoMmLymaP8PEPgT5_e9c1V
- nHC2OiaXLptrhLkZvGJs1GXrLby7BU7Rpo36BKWgXuvdWjbu1nVOwSR8n5uOVxqk8wzX5o.hE.4f
- DHmQRhab_7GUMicYGgsIlEph0Mmqd9IkZ8PRXPrhL0gnv5qyhl.WSJpkl6yz3pKQfjZpPfEs9kzP
- iypxoSu.VpWKTf25lmW3QUon0LrFAFIpzqJIlma3568UrEd14PnXoH7UMuv2bnVq_Q_3KBO8y8LQ
- K4XwTh27Jxsq7nx1TFiucEQqfBiXXIa1RcuV3K3vS5oTLl0_iiOkjOnxxEW.iAMil9FKbSP276OW
- RxTfXd1J7IqTymoHLvmHWOR86MyyfU.1DH.BL7p.DgUNn11NOf2l0VJsTvFO4tx0bvmyXjdZ0cqN
- w.zOtaju9Tt8Y8dgUd1AuRxD38xdHgCIJOZR92Jn.LDd1lRQoE_qIrcTx6UtmvS0Hnt_UHb67phn
- U8UiBBQjtb6MvbOHwrsJMdi38xwLUNV5_1ERG6V5bc9ZxURN.xRao6gQJ3TiF1kkwkA28ulJVqYl
- v9XXQpNJApIt3dd75mAhG_T3SAR.0zH9AvHsPlJs8g7m5C6MsWOGWS5i5s2gUGV4c.yp8Lh5OwOq
- .mB921nNM3TfkOLM_L432GmHo5b8YmtA_hNtN19l_0xcAgUe8SIrkStLX9GI6e4JDfR9zNi2HbRU
- zqe2Dg8Zet.sPLgV2JeP_IR7M6AZlowU8YR4wxhrs.a_b0X.m.X9s6qRW_MXXyE.KdmP0rrhFrWX
- fvHkENH.sVjClaf6sOShM6ZB31FRKr8VaDtkqdmZb93oFPCv3ixGi_7lMq3eXnKZa5orGYkW9nnc
- _j9oRT9E.rW_2zuJdugaHaVpmIddXKpkbk9K99BOhhEspfDu3dYBy70SLHRGP05T6Hz3R
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic308.consmr.mail.ne1.yahoo.com with HTTP; Fri, 31 Dec 2021 00:21:49 +0000
-Received: by kubenode532.mail-prod1.omega.gq1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 00c69a60d0a97c60d9fdb048a2091845;
-          Fri, 31 Dec 2021 00:21:47 +0000 (UTC)
-Message-ID: <3a389006-6080-575f-37a1-364c5e1a3773@schaufler-ca.com>
-Date:   Thu, 30 Dec 2021 16:21:46 -0800
+        id S240932AbhLaA21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 19:28:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233018AbhLaA20 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 19:28:26 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E185C061574
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 16:28:26 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id j21so103534655edt.9
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 16:28:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=J/QOWSwymh9x6Pc0I82xNfd4AAYcas7Hw3OKeAYZvFQ=;
+        b=MXVvBL/o/qebl1Q82xYM6bhlZGt/jU3RHg7FmDUz2K+BIyHeHHmt8h1IuIqwHP58Zf
+         UMK5uHx7dJppIlhnQGjx9EzQu59CUW+s+ZThEyBvuMcO60O/ERccvJiFRqD9tg/c5hju
+         M2PHKLiiK16FQByd8r2kPwWtF9bYGa7oC/jWzIdMPz1wBlFDyYzz5+IQX8YaZSdGKDJI
+         ft1rHvtLp2jHyb6r6KsBJGfkOebQdjR3u00YSWgBcNOPR+szzpB54oVoqZKsI6T8oDPg
+         cde89JZ9ZnYu3Q/C1yrMQ6grrjjWyXnxnnnnS2k+F8IpUDlRNbnHwE+0FmFtxLH6a2TO
+         2l9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=J/QOWSwymh9x6Pc0I82xNfd4AAYcas7Hw3OKeAYZvFQ=;
+        b=GwlUoCY9udWoz8jDCxTh4AYcU7r/0bzuQdQYha8j1nV/Vj/Vp4JARS6QwZT6XuaFiN
+         GAH9MFdxHL5MdOMeftQMYMuyO95whWD2S8pZ62oZplVGbapU2RXWf7Y+BDjcEES3wb7D
+         VRvBJD1MMdlY4Lh8nb/+LEKu9kGRNXdnoyPpiiJuBzpqGZkbVnfvRz8UAK0hJ2GMAV0S
+         4AhWCMUSkenhr9qWwuPwuVkxwBqTmgeKFhBWQM1RN2/S+ZecHvVik81iNf2Kx9yTvcOk
+         ZR0QNXsKXp0/aKxDqVFPC9hsTwzUh2FuLbKKEXVq9GfCIGiZuXPvMfonR4bX7r0tXZFT
+         lQOg==
+X-Gm-Message-State: AOAM53103x8YBFSTzKySrfMiLTj6dwvlOBy57G0psQ3F7VuxphpaE6Ja
+        qHxdk332CqJU71AknesMEHA=
+X-Google-Smtp-Source: ABdhPJzzQc30+9S0vUnkYZxPg+hp+SnePeNFllNMF9ojZYS0gHUlo6GRipTa1OUAq4Gz6eb3IAYZcg==
+X-Received: by 2002:a17:907:7d8b:: with SMTP id oz11mr26248549ejc.12.1640910504520;
+        Thu, 30 Dec 2021 16:28:24 -0800 (PST)
+Received: from skbuf ([188.25.255.2])
+        by smtp.gmail.com with ESMTPSA id z26sm9885881edr.11.2021.12.30.16.28.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Dec 2021 16:28:24 -0800 (PST)
+Date:   Fri, 31 Dec 2021 02:28:23 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     netdev@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: Re: packets trickling out of STP-blocked ports
+Message-ID: <20211231002823.de3ugpurq3fv343b@skbuf>
+References: <20211230230740.GA1510894@euler>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH 0/1] Landlock network PoC
-Content-Language: en-US
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
-        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter@vger.kernel.org, yusongping@huawei.com,
-        artem.kuzin@huawei.com, Casey Schaufler <casey@schaufler-ca.com>
-References: <20211228115212.703084-1-konstantin.meskhidze@huawei.com>
- <ea82de6a-0b28-7d96-a84e-49fa0be39f0e@schaufler-ca.com>
- <62cf5983-2a81-a273-d892-58b014a90997@huawei.com>
- <f7c587ab-5449-8c9f-aace-4ca60c60663f@schaufler-ca.com>
- <bf9e42b5-5034-561e-b872-7ab20738326b@digikod.net>
- <15442102-8fa7-8665-831a-dc442f1fa073@schaufler-ca.com>
- <a24ffb44-8f3c-e043-61fa-3652e3e648b1@digikod.net>
-From:   Casey Schaufler <casey@schaufler-ca.com>
-In-Reply-To: <a24ffb44-8f3c-e043-61fa-3652e3e648b1@digikod.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Mailer: WebService/1.1.19551 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211230230740.GA1510894@euler>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/30/2021 4:00 PM, Mickaël Salaün wrote:
->
-> On 31/12/2021 00:23, Casey Schaufler wrote:
->> On 12/30/2021 2:50 PM, Mickaël Salaün wrote:
->>>
->>> On 30/12/2021 18:59, Casey Schaufler wrote:
->>>> On 12/29/2021 6:56 PM, Konstantin Meskhidze wrote:
->>>
->>> [...]
->>>
->>>>
->>>>> But I agree, that socket itself (as collection of data used for interproccess communication) could be not be an object.
->>>>>
->>>>> Anyway, my approach would not work in containerized environment: RUNC, containerd ect. Mickaёl suggested to go another way for Landlock network confinement: Defining "object" with connection port.
->>>>
->>>> Oh, the old days of modeling ...
->>>>
->>>> A port number is a name. It identifies a subject. A subject
->>>> "names" itself by binding to a port number. The port itself
->>>> isn't a thing.
->>>
->>> It depends on the definition of subject, object and action.
->>
->> You are correct. And I am referring to the classic computer security
->> model definitions.
->
-> Me too! :)
->
->> If you want to redefine those terms to justify your
->> position it isn't going to make me very happy.
->>
->>
->>> The action can be connect or bind,
->>
->> Nope. Sorry. Bind isn't an "action" because it does not involve a subject
->> and an object.
->
-> In this context, the subject is the process calling bind. In a traditional model, we would probably identify the socket as the object though.
+Hi Colin,
 
-Neither a socket nor a port meet the traditional definition of an object.
-You don't need to have either a socket or port be an object to decide
-that your process shouldn't bind to a port. All you have to do is mark
-yourself as "unable to bind to port 7843". No access is required.
+On Thu, Dec 30, 2021 at 03:07:40PM -0800, Colin Foster wrote:
+> After running this, the STP blocks swp3, and swp1/2 are forwarding.
+>
+> Periodically I see messages saying that swp2 is receiving packets with
+> own address as source address.
+>
+> I can confirm that via ethtool that TX packets are increasing on swp3. I
+> believe I captured the event via tshark. A 4 minute capture showed three
+> non-STP packets on swp2. All three of these packets are ICMPv6 Router
+> Solicitation packets.
+>
+> I would expect no packets at all to egress swp3. Is this an issue that
+> is unique to me and my in-development configuration? Or is this an issue
+> with all Ocelot / Felix devices?
 
->
->>
->>> and the object a TCP port,
->>
->> As I pointed out earlier, a port isn't an object, it is a name.
->> A port as no security attributes. "Privileged ports" are a convention.
->> A port is meaningless unless it is bond, in which case all meaning is
->> tied up with the process that bound it.
->
-> A port is not a kernel object, but in this case it can still be defined as an (abstract) object in a security policy. I think this is the misunderstanding here.
+I don't remember noticing these (or maybe I did and I forgot), but
+reasoning about it, it's a pretty logical consequence of some of the
+design decisions that were made.
 
-"When I use a word," Humpty Dumpty said, in rather a scornful tone, "it means just what I
-choose it to mean—neither more nor less."
+One would think that when a network interface is under a bridge, it is
+unavailable for direct IP termination by itself - you do the IP
+termination through the br0 interface. But that isn't really enforced
+anywhere - it's just that the bridge breaks IP termination by default on
+its individual member ports by stealing all their traffic with its RX handler.
+That RX handler can be taught what to steal and what not to steal using
+netfilter ebtables rules. With some carefully designed rules, you could
+still have some IP termination through the individual bridge ports.
 
->
->>
->>
->>> i.e. a subject doing an action on an object may require a corresponding access right.
->>
->> You're claiming that because you want to restrict what processes can
->> bind a port, ports must be objects. But that's not what you're doing here.
->> You are making the problem harder than it needs to be
->>
->>>
->>>>
->>>> You could change that. In fact, Smack includes port labeling
->>>> for local IPv6. I don't recommend it, as protocol correctness
->>>> is very difficult to achieve. Smack will forgo port labeling
->>>> as soon as CALIPSO support (real soon now - priorities permitting)
->>>> is available.
->>> Please keep in mind that Landlock is a feature available to unprivileged (then potentially malicious) processes. I'm not sure packet labeling fits this model, but if it does and there is a need, we may consider it in the future. Let's first see with Smack. ;)
->>>
->>> Landlock is also designed to be extensible. It makes sense to start with an MVP network access control. Being able to restrict TCP connect and bind actions, with exception for a set of ports, is simple, pragmatic and useful. Let's start with that.
->>
->> I'm not saying it isn't useful, I'm saying that it has nothing to do
->> with subjects, objects and accesses. A process changing it's own state
->> does not require access to any object.
->>
->>>
->>>>
->>>> Again, on the other hand, you're not doing anything that's an
->>>> access control decision. You're saying "I don't want to bind to
->>>> port 3920, stop me if I try".
->>>
->>> This is an access control.
->>
->> No.
->
-> :)
->
->>
->>> A subject can define restrictions for itself and others (e.g. future child processes).
->>
->> The "others" are subjects whose initial state is defined to be the
->> state of the parent at time of exec. This is trivially modeled.
->
-> This doesn't change much.
->
->>
->>> We may also consider that the same process can transition from one subject to another over time.
->>
->> No, you cannot. A process pretty well defines a subject on a Linux system.
->> Where the blazes did you get this notion?
->
-> I'm thinking in a more abstract way. I wanted to give this example because of your thinking about what is an access control or not. We don't have to tie semantic to concrete kernel data/objects. Because a process fits well to a subject for some use cases, it may not for others. In the end it doesn't matter much.
+Hardware isn't carved out according to your expectation that no packets
+should egress a blocked port, either. Switches in general, and Ocelot in
+particular, have a way to send "control" packets that bypass the
+analyzer block and STP state (the bridging service, basically) and are
+sent towards a precise set of destination ports. This is done by setting
+the BYPASS bit from the injection frame header. Currently, Linux sends
+"control" packets to the switch all the time, and that is fine, because
+although those packets have the ability to go where they don't belong,
+the OS (the bridge driver) is supposed to know that, and just not send
+packets there. As a side note, there was some work to allow switch
+drivers to send "data" packets to the switch, and these correspond to
+traffic that originates from a bridge device, but I am just mentioning
+this to clarify that it is irrelevant for the purpose of the discussion here.
 
-Then don't use the terminology. You'll confuse the next generation.
+Even considering an Intel card with no bridging offload at all, if you
+put it in the same situation (eth0 under br0, and eth0 is blocked), you
+can still put an IP address on eth0 and ping away just fine (you won't
+get back the reply as mentioned above, but that's separate really).
+Nobody will prevent packets from eth0 from being sent, since the bridge
+driver code path isn't invoked on TX unless the socket is bound to br0.
 
->
->>
->>> This may be caused by a call to landlock_restrict_self(2) or, more abstractly, by an exploited vulnerability (e.g. execve, ROP…). Not everyone may agree with this lexical point of view (e.g. we can replace "subject" with "role"…), but the important point is that Landlock is an access control system, which is not (only) configured by the root user.
->>
->> No. Landlock is a mechanism for processes to prevent themselves from performing
->> operations they would normally be allowed. No access control, subjects or
->> objects are required to do this is many cases. Including bind.
->
-> I don't agree. An access control is a mechanism, backed by a security policy, which enforces restrictions on a system. 
+The key point is that the direct xmit data path through swp3, as well as
+the data path br0 -> swp3, both exist, in hardware and in software. And
+while in hardware they're a bit more clearly separated (in IEEE 802.1Q
+there's even a block diagram to clarify that both exist), in software
+they're entangled in a bit of a mess, and there are parts of the network
+stack and of user space that aren't aware that swp3 is under a bridge,
+so IPv6 Router Solicitation messages being sent through swp3 shouldn't
+be much of a surprise.
 
-No, that's the definition of privilege.
 
-> Landlock is a way to drop privileges but also to enforce a set of security policies. We can see Smack, SELinux or others as a way for root to drop privileges too and for other users to restrict accesses they could have otherwise.
->
->>
->>>
->>>> All you're doing is asking the
->>>> kernel to remember something for you, on the off chance you
->>>> forget. There isn't any reason I can see for this to be associated
->>>> with the port. It should be associated with the task.
->>>
->>> I don't understand your point. What do you want to associate with a task? Landlock domains are already tied to a set of tasks.
->>
->> That's pretty much what I'm saying. It's all task data.
->
-> OK
->
->>
->>>
->>>>
->>>>> Can be checked here:
->>>>> https://lore.kernel.org/netdev/d9aa57a7-9978-d0a4-3aa0-4512fd9459df@digikod.net
->>>>>
->>>>> Hope I exlained my point. Thanks again for your comments.
->>>
->>> [...]
+
+With that out of the way.
+
+Traditionally, DSA has made a design decision that all switch ports
+inherit the single MAC address of the DSA master. IOW, if you have 1 DSA
+master and 4 switch ports, you have 5 interfaces in the system with the
+same MAC address. It was like this for a long time, and relatively
+recently, Xiaofei Shen added the ability for individual DSA interfaces
+to have their own MAC address stored in the device tree.
+
+As an argument in favor of the status quo, Florian explained that:
+
+| By default, DSA switch need to come up in a configuration where all
+| ports (except CPU/management) must be strictly separate from every other
+| port such that we can achieve what a standalone Ethernet NIC would do.
+| This works because all ports are isolated from one another, so there is
+| no cross talk and so having the same MAC address (the one from the CPU)
+| on the DSA slave network devices just works, each port is a separate
+| broadcast domain.
+| 
+| Once you start bridging one or ore ports, the bridge root port will have
+| a MAC address, most likely the one the CPU/management Ethernet MAC, but
+| similarly, this is not an issue and that's exactly how a software bridge
+| would work as well.
+
+https://patchwork.kernel.org/project/linux-arm-msm/patch/20190222125815.12866-1-vkoul@kernel.org/
+
+Although yes, that does make some level of sense, it kind of omits the
+fact that two DSA ports can be used for communication in loopback too
+(either through a direct cable, or through an externally switched network).
+In that case, having a MAC SA != MAC DA in the Ethernet packets is kind
+of important (I found that out while trying to compose some selftests
+for DSA).
+
+
+If my intuition is correct, you are using the default configuration
+where all DSA interfaces have the MAC address inherited from the DSA
+master. Corrolary, swp2 and swp3 have the same MAC address.
+
+swp3 is a bridged port, and a blocked port at that, but not all parts of
+the network stack know that. So from time to time, you get these IPv6
+Router Solicitation messages. They could be anything else, in fact.
+
+swp2 is a bridged port, and in the forwarding state. So packets it
+receives are eligible for learning.
+
+When br0 receives a packet via swp2 that originated from swp3, it just
+complains: "hey, learning the route for this packet's MAC SA to go
+towards swp2 would mean that I would no longer terminate packets with
+this MAC DA locally, which is kinda weird, since that MAC address is
+also marked as non-forwarded." Which is fair.
+
+
+So IMHO, this behavior is neither good nor bad, it is just the way it is,
+nothing to worry about if that's what concerns you. To prove or disprove
+what I said you could try to configure individual MAC addresses and see
+whether that fixes the problem.
+
+> (side note - if there's a place where a parser for Ocelot NPI traffic is
+> hidden, that might eventually save me a lot of debugging in Lua)
+
+Nope, there isn't, although it would certainly be great if you could
+teach tcpdump about it, similar to what Vivien has done for Marvell:
+https://github.com/the-tcpdump-group/tcpdump/blob/master/print-dsa.c
+
+I've wanted to do that for a long time, but I've had lots of other
+priorities, and it's tricky for various reasons (there isn't exactly a
+single on-the-wire format, but it depends on whether you configure the
+NPI port to have no prefix, a short prefix or a long prefix; this
+configuration is independent for the RX and TX directions; currently we
+use short prefix on RX and TX, but in older kernels we used to use no
+prefix on TX, and long prefix on RX on some older kernels, all while the
+tagging protocol was still "ocelot"; I'm not sure whether the presence
+or absence of a prefix, and what kind, can be deduced by looking at the
+packet alone).
