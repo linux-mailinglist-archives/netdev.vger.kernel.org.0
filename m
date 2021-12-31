@@ -2,40 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C180E4822C6
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 09:21:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 425274822BE
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 09:20:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242815AbhLaIVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 03:21:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60686 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242764AbhLaIUt (ORCPT
+        id S239991AbhLaIU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 03:20:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47032 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242770AbhLaIUt (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 03:20:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391F9C06173E
+        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 00:20:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F9B6B81D5E
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05118B81D55
         for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 08:20:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFBD8C36AED;
-        Fri, 31 Dec 2021 08:20:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66B93C36AF1;
+        Fri, 31 Dec 2021 08:20:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1640938847;
-        bh=twkHIeSEL9x5YS6C4JIT+BbMRzp5+MTMJkEcNhpMMTY=;
+        bh=Qdz1VJY+TwYDX4UKgodSpwOjlDZHzF8btOPJj2UvQAs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BtO2Ls/hz86iGaW++oL0oUw/9bZ1VcdeOXR6NYmLISR9BIIIW9UbfjBHb+hMCc9X7
-         0djlm6S8syZTFNzDlDlVE1NSpFhBlN50e84Z8s7e2NxSuSArY4fB3WqAp0aTREynyo
-         nkzJ0285FJKizFlpvBMq3pqx+ki0HUrdoDfodlGoQvefY2Uel1MfKfVCgX4BJS6RJj
-         cP6BNdMNq7kObxzrH+8l3aevm7UblJm+r7PKmG0FZRxDIbQpf6HI3Zw/Spdz282mIJ
-         G6F3vMPb0BZ7YrpAWjGgxf67Q1s310untHORQTMRB399h5w3r7Q+v9qnCJk5I1O2Zb
-         Vda2DFA+k/eZA==
+        b=EiGc3WPtmqxk1CdqhFi0/xJ7rRpusHCc+WBujyYe1VnVqlnc77LywlE8sX1yXJSDe
+         SGa0ka8km9tdcfmXbqnIEq163sv22KYRmGOQeazbTKrO0uDpfR6uzKj+uulsgK/14O
+         v1kNGKLX7amjFIpurHMdhXmoIy1JxL6QmbGFZeqg5Pj/dzVY8FwirRh7nNc+75ryuF
+         amfB/8aGUgHB83JIqeafImhvcbPhznGZvgq5HKJQND8pm3k6YyQTOM/bxqfzfo9cIM
+         BBefx6JRDvTcd4eoY4tD3D7mQtrNAgWoBis3n1vp441xMqALSoxA71a65zfOsEkHDt
+         R0515r7S1JjbQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Paul Blakey <paulb@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next v2 08/16] net/mlx5: DR, Add support for UPLINK destination type
-Date:   Fri, 31 Dec 2021 00:20:30 -0800
-Message-Id: <20211231082038.106490-9-saeed@kernel.org>
+Subject: [net-next v2 09/16] net/mlx5: DR, Warn on failure to destroy objects due to refcount
+Date:   Fri, 31 Dec 2021 00:20:31 -0800
+Message-Id: <20211231082038.106490-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211231082038.106490-1-saeed@kernel.org>
 References: <20211231082038.106490-1-saeed@kernel.org>
@@ -47,135 +51,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Add support for a new destination type - UPLINK.
+Add WARN_ON_ONCE on refcount checks in SW steering object destructors
 
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/fs_cmd.c  |  3 ++-
- .../net/ethernet/mellanox/mlx5/core/fs_core.c |  3 ++-
- .../mellanox/mlx5/core/steering/dr_cmd.c      | 20 +++++++++++++------
- .../mellanox/mlx5/core/steering/fs_dr.c       | 18 +++++++++++++++--
- 4 files changed, 34 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c  | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c  | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c   | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-index 762b9730a897..dafe341358c7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-@@ -451,7 +451,8 @@ static int mlx5_set_extended_dest(struct mlx5_core_dev *dev,
- 	list_for_each_entry(dst, &fte->node.children, node.list) {
- 		if (dst->dest_attr.type == MLX5_FLOW_DESTINATION_TYPE_COUNTER)
- 			continue;
--		if (dst->dest_attr.type == MLX5_FLOW_DESTINATION_TYPE_VPORT &&
-+		if ((dst->dest_attr.type == MLX5_FLOW_DESTINATION_TYPE_VPORT ||
-+		     dst->dest_attr.type == MLX5_FLOW_DESTINATION_TYPE_UPLINK) &&
- 		    dst->dest_attr.vport.flags & MLX5_FLOW_DEST_VPORT_REFORMAT_ID)
- 			num_encap++;
- 		num_fwd_destinations++;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index a8671d7b7ca8..cc76ceebd208 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -1525,7 +1525,8 @@ static bool mlx5_flow_dests_cmp(struct mlx5_flow_destination *d1,
- 				struct mlx5_flow_destination *d2)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+index 07936841ce99..f0faf04536d3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
+@@ -1792,7 +1792,7 @@ mlx5dr_action_create_dest_vport(struct mlx5dr_domain *dmn,
+ 
+ int mlx5dr_action_destroy(struct mlx5dr_action *action)
  {
- 	if (d1->type == d2->type) {
--		if ((d1->type == MLX5_FLOW_DESTINATION_TYPE_VPORT &&
-+		if (((d1->type == MLX5_FLOW_DESTINATION_TYPE_VPORT ||
-+		      d1->type == MLX5_FLOW_DESTINATION_TYPE_UPLINK) &&
- 		     d1->vport.num == d2->vport.num &&
- 		     d1->vport.flags == d2->vport.flags &&
- 		     ((d1->vport.flags & MLX5_FLOW_DEST_VPORT_VHCA_ID) ?
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-index 0d7575b64ca4..e1a79eb66f3c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-@@ -599,7 +599,8 @@ static int mlx5dr_cmd_set_extended_dest(struct mlx5_core_dev *dev,
- 	for (i = 0; i < fte->dests_size; i++) {
- 		if (fte->dest_arr[i].type == MLX5_FLOW_DESTINATION_TYPE_COUNTER)
- 			continue;
--		if (fte->dest_arr[i].type == MLX5_FLOW_DESTINATION_TYPE_VPORT &&
-+		if ((fte->dest_arr[i].type == MLX5_FLOW_DESTINATION_TYPE_VPORT ||
-+		     fte->dest_arr[i].type == MLX5_FLOW_DESTINATION_TYPE_UPLINK) &&
- 		    fte->dest_arr[i].vport.flags & MLX5_FLOW_DEST_VPORT_REFORMAT_ID)
- 			num_encap++;
- 		num_fwd_destinations++;
-@@ -724,12 +725,19 @@ int mlx5dr_cmd_set_fte(struct mlx5_core_dev *dev,
- 			case MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE:
- 				id = fte->dest_arr[i].ft_id;
- 				break;
-+			case MLX5_FLOW_DESTINATION_TYPE_UPLINK:
- 			case MLX5_FLOW_DESTINATION_TYPE_VPORT:
--				id = fte->dest_arr[i].vport.num;
--				MLX5_SET(dest_format_struct, in_dests,
--					 destination_eswitch_owner_vhca_id_valid,
--					 !!(fte->dest_arr[i].vport.flags &
--					    MLX5_FLOW_DEST_VPORT_VHCA_ID));
-+				if (type == MLX5_FLOW_DESTINATION_TYPE_VPORT) {
-+					id = fte->dest_arr[i].vport.num;
-+					MLX5_SET(dest_format_struct, in_dests,
-+						 destination_eswitch_owner_vhca_id_valid,
-+						 !!(fte->dest_arr[i].vport.flags &
-+						    MLX5_FLOW_DEST_VPORT_VHCA_ID));
-+				} else {
-+					id = 0;
-+					MLX5_SET(dest_format_struct, in_dests,
-+						 destination_eswitch_owner_vhca_id_valid, 1);
-+				}
- 				MLX5_SET(dest_format_struct, in_dests,
- 					 destination_eswitch_owner_vhca_id,
- 					 fte->dest_arr[i].vport.vhca_id);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-index 2632d5ae9bc0..a476da2424f8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- /* Copyright (c) 2019 Mellanox Technologies */
+-	if (refcount_read(&action->refcount) > 1)
++	if (WARN_ON_ONCE(refcount_read(&action->refcount) > 1))
+ 		return -EBUSY;
  
-+#include <linux/mlx5/vport.h>
- #include "mlx5_core.h"
- #include "fs_core.h"
- #include "fs_cmd.h"
-@@ -194,6 +195,15 @@ static struct mlx5dr_action *create_vport_action(struct mlx5dr_domain *domain,
- 					       dest_attr->vport.vhca_id);
- }
+ 	switch (action->action_type) {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+index 97a41b2b36e5..5fa7f9d6d8b9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+@@ -431,7 +431,7 @@ int mlx5dr_domain_sync(struct mlx5dr_domain *dmn, u32 flags)
  
-+static struct mlx5dr_action *create_uplink_action(struct mlx5dr_domain *domain,
-+						  struct mlx5_flow_rule *dst)
-+{
-+	struct mlx5_flow_destination *dest_attr = &dst->dest_attr;
-+
-+	return mlx5dr_action_create_dest_vport(domain, MLX5_VPORT_UPLINK, 1,
-+					       dest_attr->vport.vhca_id);
-+}
-+
- static struct mlx5dr_action *create_ft_action(struct mlx5dr_domain *domain,
- 					      struct mlx5_flow_rule *dst)
+ int mlx5dr_domain_destroy(struct mlx5dr_domain *dmn)
  {
-@@ -218,7 +228,8 @@ static struct mlx5dr_action *create_action_push_vlan(struct mlx5dr_domain *domai
+-	if (refcount_read(&dmn->refcount) > 1)
++	if (WARN_ON_ONCE(refcount_read(&dmn->refcount) > 1))
+ 		return -EBUSY;
  
- static bool contain_vport_reformat_action(struct mlx5_flow_rule *dst)
+ 	/* make sure resources are not used by the hardware */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
+index 88288c02d6ea..12ebb7adea4d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
+@@ -1069,7 +1069,7 @@ int mlx5dr_matcher_destroy(struct mlx5dr_matcher *matcher)
  {
--	return dst->dest_attr.type == MLX5_FLOW_DESTINATION_TYPE_VPORT &&
-+	return (dst->dest_attr.type == MLX5_FLOW_DESTINATION_TYPE_VPORT ||
-+		dst->dest_attr.type == MLX5_FLOW_DESTINATION_TYPE_UPLINK) &&
- 		dst->dest_attr.vport.flags & MLX5_FLOW_DEST_VPORT_REFORMAT_ID;
- }
+ 	struct mlx5dr_table *tbl = matcher->tbl;
  
-@@ -411,8 +422,11 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
- 				fs_dr_actions[fs_dr_num_actions++] = tmp_action;
- 				term_actions[num_term_actions++].dest = tmp_action;
- 				break;
-+			case MLX5_FLOW_DESTINATION_TYPE_UPLINK:
- 			case MLX5_FLOW_DESTINATION_TYPE_VPORT:
--				tmp_action = create_vport_action(domain, dst);
-+				tmp_action = type == MLX5_FLOW_DESTINATION_TYPE_VPORT ?
-+					     create_vport_action(domain, dst) :
-+					     create_uplink_action(domain, dst);
- 				if (!tmp_action) {
- 					err = -ENOMEM;
- 					goto free_actions;
+-	if (refcount_read(&matcher->refcount) > 1)
++	if (WARN_ON_ONCE(refcount_read(&matcher->refcount) > 1))
+ 		return -EBUSY;
+ 
+ 	mlx5dr_domain_lock(tbl->dmn);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c
+index 241ee49a24ba..1d6b43a52c58 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_table.c
+@@ -283,7 +283,7 @@ int mlx5dr_table_destroy(struct mlx5dr_table *tbl)
+ {
+ 	int ret;
+ 
+-	if (refcount_read(&tbl->refcount) > 1)
++	if (WARN_ON_ONCE(refcount_read(&tbl->refcount) > 1))
+ 		return -EBUSY;
+ 
+ 	mlx5dr_dbg_tbl_del(tbl);
 -- 
 2.33.1
 
