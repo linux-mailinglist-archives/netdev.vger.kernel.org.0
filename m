@@ -2,208 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B4BD4820E5
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 00:55:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B364F4820F6
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 01:19:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240855AbhL3XzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 30 Dec 2021 18:55:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51214 "EHLO
+        id S235309AbhLaASg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 30 Dec 2021 19:18:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237257AbhL3XzI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 18:55:08 -0500
-Received: from smtp-42ad.mail.infomaniak.ch (smtp-42ad.mail.infomaniak.ch [IPv6:2001:1600:3:17::42ad])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF99C061574
-        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 15:55:08 -0800 (PST)
-Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4JQ4rn6538zMqW4L;
-        Fri, 31 Dec 2021 00:55:05 +0100 (CET)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4JQ4rn0x4RzlhPJV;
-        Fri, 31 Dec 2021 00:55:04 +0100 (CET)
-Message-ID: <a24ffb44-8f3c-e043-61fa-3652e3e648b1@digikod.net>
-Date:   Fri, 31 Dec 2021 01:00:00 +0100
+        with ESMTP id S233018AbhLaASg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 30 Dec 2021 19:18:36 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59BFCC061574
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 16:18:35 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id m15so22586594pgu.11
+        for <netdev@vger.kernel.org>; Thu, 30 Dec 2021 16:18:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zqdRAwqhgbtTUZHSUQRCwSaes34Cojc3zlrwAOEvrEM=;
+        b=YcU61lq/fMTCZfLKfDPwoXhXA9jDf3eYgdyBJjYqy73rciZDIMqjQ9C/3Z53CP8kgo
+         zCzrZEPCsGgIp12U04/JjEaI9z4t4h+m/kGNS5xWCwyXuztfcpkhA+qD3TdWQITjPzxS
+         OCFFpotjUHwdGDcLFOtQZaeUlbpSC02yz95E6Vck7QFkarePqH3X2Wjh7/65gotAPKcG
+         o0zi97E7jBaRHaxXQDZrq8FSI6NLTdh5GVK11ZNy59xLcOBb2i/4/KuvRTVIb0Cylf3u
+         Y+cUVyBEnzJ0D2R4Rgzyl/Bs/MQYBfWpfeYFGYv8EKl8AmLANU0Vay5N5zQPJHKQpm3B
+         +BJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zqdRAwqhgbtTUZHSUQRCwSaes34Cojc3zlrwAOEvrEM=;
+        b=12OeEgoiaYXqPORPBBI23o7PfxIM8Aiv21NVjQ2Hy373486K5fRq1WD3yaPlCkULWq
+         p/NfS35uJklt8tCtbgfWzHEP+GSYWW8VwmjOA66tu7tE6xNukqidw573TcC1Sy/Cephi
+         wW6420bQBC2KNkeYWMIsPmfLTzuQu07qAuFgzB7ab8/G5DyUIlcAmZf1ZmL4AfJuB6WR
+         5NMxYfRwM3X4BqkEuUx4ahMZxuJ0GYWfTg2LfuuTKUHwjJv7ky6QiAax/sENuW7yhBk5
+         swhwjIYJ40nII4k7Da4iNqkvEoB8HPWpPonoDTEmkYVAv1Xs9uqGGjmgHWY/36yTNJyK
+         CfeA==
+X-Gm-Message-State: AOAM532y7G753Av9XkljXGjD/U3EzjWFMEGORb6IiTF5I08Y62WFP4Z3
+        fnXUVa9vjmYAbvki8KECy09QzwbZLVc3GrLaTvQ=
+X-Google-Smtp-Source: ABdhPJyC8DFYKfU3Mim7Hw5SHU216Id9wA87VxVyjyQ61rWn3vGRO1RIEimr8CTIzyg7TUhUqiZttALzbt10uXqisK8=
+X-Received: by 2002:a63:461c:: with SMTP id t28mr29448062pga.547.1640909914730;
+ Thu, 30 Dec 2021 16:18:34 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Casey Schaufler <casey@schaufler-ca.com>,
-        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter@vger.kernel.org, yusongping@huawei.com,
-        artem.kuzin@huawei.com
-References: <20211228115212.703084-1-konstantin.meskhidze@huawei.com>
- <ea82de6a-0b28-7d96-a84e-49fa0be39f0e@schaufler-ca.com>
- <62cf5983-2a81-a273-d892-58b014a90997@huawei.com>
- <f7c587ab-5449-8c9f-aace-4ca60c60663f@schaufler-ca.com>
- <bf9e42b5-5034-561e-b872-7ab20738326b@digikod.net>
- <15442102-8fa7-8665-831a-dc442f1fa073@schaufler-ca.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [RFC PATCH 0/1] Landlock network PoC
-In-Reply-To: <15442102-8fa7-8665-831a-dc442f1fa073@schaufler-ca.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20211216201342.25587-1-luizluca@gmail.com> <20211218081425.18722-1-luizluca@gmail.com>
+ <20211218081425.18722-13-luizluca@gmail.com> <c4f4aef5-aeb5-047b-d3e1-78e7b4c2c968@bang-olufsen.dk>
+In-Reply-To: <c4f4aef5-aeb5-047b-d3e1-78e7b4c2c968@bang-olufsen.dk>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Thu, 30 Dec 2021 21:18:23 -0300
+Message-ID: <CAJq09z6mCrg58_RwygetF2hnWV0Kq5YMYWOg4sF3eLAASzqJTg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 12/13] net: dsa: realtek: rtl8365mb: add
+ RTL8367S support
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> > @@ -31,7 +31,10 @@ config NET_DSA_REALTEK_RTL8365MB
+> >       depends on NET_DSA_REALTEK_SMI || NET_DSA_REALTEK_MDIO
+> >       select NET_DSA_TAG_RTL8_4
+> >       help
+> > -       Select to enable support for Realtek RTL8365MB
+> > +       Select to enable support for Realtek RTL8365MB-VC and RTL8367S. This subdriver
+> > +       might also support RTL8363NB, RTL8363NB-VB, RTL8363SC, RTL8363SC-VB, RTL8364NB,
+> > +       RTL8364NB-VB, RTL8366SC, RTL8367RB-VB, RTL8367SB, RTL8370MB, RTL8310SR
+> > +       in the future.
+>
+> Not sure how useful this marketing is when I am configuring my kernel.
+>
 
-On 31/12/2021 00:23, Casey Schaufler wrote:
-> On 12/30/2021 2:50 PM, Mickaël Salaün wrote:
->>
->> On 30/12/2021 18:59, Casey Schaufler wrote:
->>> On 12/29/2021 6:56 PM, Konstantin Meskhidze wrote:
->>
->> [...]
->>
->>>
->>>> But I agree, that socket itself (as collection of data used for 
->>>> interproccess communication) could be not be an object.
->>>>
->>>> Anyway, my approach would not work in containerized environment: 
->>>> RUNC, containerd ect. Mickaёl suggested to go another way for 
->>>> Landlock network confinement: Defining "object" with connection port.
->>>
->>> Oh, the old days of modeling ...
->>>
->>> A port number is a name. It identifies a subject. A subject
->>> "names" itself by binding to a port number. The port itself
->>> isn't a thing.
->>
->> It depends on the definition of subject, object and action.
-> 
-> You are correct. And I am referring to the classic computer security
-> model definitions.
+I'll clean it, mentioning only the supported drivers.
 
-Me too! :)
+> >   /* Chip-specific data and limits */
+> >   #define RTL8365MB_CHIP_ID_8365MB_VC         0x6367
+> > -#define RTL8365MB_LEARN_LIMIT_MAX_8365MB_VC  2112
+>
+> The learn limit actually seems to be chip-specific and not family
+> specific, that's why I placed it here to begin with. For example,
+> something called RTL8370B has a limit of 4160...
+>
 
-> If you want to redefine those terms to justify your
-> position it isn't going to make me very happy.
-> 
-> 
->> The action can be connect or bind,
-> 
-> Nope. Sorry. Bind isn't an "action" because it does not involve a subject
-> and an object.
+From Realtek rtl8367c driver:
 
-In this context, the subject is the process calling bind. In a 
-traditional model, we would probably identify the socket as the object 
-though.
+typedef enum switch_chip_e
+{
+    CHIP_RTL8367C = 0,
+    CHIP_RTL8370B,
+    CHIP_RTL8364B,
+    CHIP_RTL8363SC_VB,
+    CHIP_END
+}switch_chip_t;
 
-> 
->> and the object a TCP port,
-> 
-> As I pointed out earlier, a port isn't an object, it is a name.
-> A port as no security attributes. "Privileged ports" are a convention.
-> A port is meaningless unless it is bond, in which case all meaning is
-> tied up with the process that bound it.
+and
 
-A port is not a kernel object, but in this case it can still be defined 
-as an (abstract) object in a security policy. I think this is the 
-misunderstanding here.
+    switch (data)
+    {
+        case 0x0276:
+        case 0x0597:
+        case 0x6367:
+            *pSwitchChip = CHIP_RTL8367C;
+            halCtrl = &rtl8367c_hal_Ctrl;
+            break;
+        case 0x0652:
+        case 0x6368:
+            *pSwitchChip = CHIP_RTL8370B;
+            halCtrl = &rtl8370b_hal_Ctrl;
+            break;
+        case 0x0801:
+        case 0x6511:
+            if( (regValue & 0x00F0) == 0x0080)
+            {
+                *pSwitchChip = CHIP_RTL8363SC_VB;
+                halCtrl = &rtl8363sc_vb_hal_Ctrl;
+            }
+            else
+            {
+                *pSwitchChip = CHIP_RTL8364B;
+                halCtrl = &rtl8364b_hal_Ctrl;
+            }
+            break;
+        default:
+            return RT_ERR_FAILED;
+    }
 
-> 
-> 
->> i.e. a subject doing an action on an object may require a 
->> corresponding access right.
-> 
-> You're claiming that because you want to restrict what processes can
-> bind a port, ports must be objects. But that's not what you're doing here.
-> You are making the problem harder than it needs to be
-> 
->>
->>>
->>> You could change that. In fact, Smack includes port labeling
->>> for local IPv6. I don't recommend it, as protocol correctness
->>> is very difficult to achieve. Smack will forgo port labeling
->>> as soon as CALIPSO support (real soon now - priorities permitting)
->>> is available.
->> Please keep in mind that Landlock is a feature available to 
->> unprivileged (then potentially malicious) processes. I'm not sure 
->> packet labeling fits this model, but if it does and there is a need, 
->> we may consider it in the future. Let's first see with Smack. ;)
->>
->> Landlock is also designed to be extensible. It makes sense to start 
->> with an MVP network access control. Being able to restrict TCP connect 
->> and bind actions, with exception for a set of ports, is simple, 
->> pragmatic and useful. Let's start with that.
-> 
-> I'm not saying it isn't useful, I'm saying that it has nothing to do
-> with subjects, objects and accesses. A process changing it's own state
-> does not require access to any object.
-> 
->>
->>>
->>> Again, on the other hand, you're not doing anything that's an
->>> access control decision. You're saying "I don't want to bind to
->>> port 3920, stop me if I try".
->>
->> This is an access control.
-> 
-> No.
+RTL8370B does not seem to be a real device, but another "(sub)family",
+like RTL8367C. I can leave it as chip_version specific but the
+RTL8365MB is, for now, about RTL8367C chips. I think it is better to
+leave it as a family limit.
 
-:)
+It would make sense to have it specific for each chip family if all
+Realtek DSA drivers get merged into a single one.
 
-> 
->> A subject can define restrictions for itself and others (e.g. future 
->> child processes).
-> 
-> The "others" are subjects whose initial state is defined to be the
-> state of the parent at time of exec. This is trivially modeled.
-
-This doesn't change much.
-
-> 
->> We may also consider that the same process can transition from one 
->> subject to another over time.
-> 
-> No, you cannot. A process pretty well defines a subject on a Linux system.
-> Where the blazes did you get this notion?
-
-I'm thinking in a more abstract way. I wanted to give this example 
-because of your thinking about what is an access control or not. We 
-don't have to tie semantic to concrete kernel data/objects. Because a 
-process fits well to a subject for some use cases, it may not for 
-others. In the end it doesn't matter much.
-
-> 
->> This may be caused by a call to landlock_restrict_self(2) or, more 
->> abstractly, by an exploited vulnerability (e.g. execve, ROP…). Not 
->> everyone may agree with this lexical point of view (e.g. we can 
->> replace "subject" with "role"…), but the important point is that 
->> Landlock is an access control system, which is not (only) configured 
->> by the root user.
-> 
-> No. Landlock is a mechanism for processes to prevent themselves from 
-> performing
-> operations they would normally be allowed. No access control, subjects or
-> objects are required to do this is many cases. Including bind.
-
-I don't agree. An access control is a mechanism, backed by a security 
-policy, which enforces restrictions on a system. Landlock is a way to 
-drop privileges but also to enforce a set of security policies. We can 
-see Smack, SELinux or others as a way for root to drop privileges too 
-and for other users to restrict accesses they could have otherwise.
-
-> 
->>
->>> All you're doing is asking the
->>> kernel to remember something for you, on the off chance you
->>> forget. There isn't any reason I can see for this to be associated
->>> with the port. It should be associated with the task.
->>
->> I don't understand your point. What do you want to associate with a 
->> task? Landlock domains are already tied to a set of tasks.
-> 
-> That's pretty much what I'm saying. It's all task data.
+> > +#define RTL8365MB_CHIP_VER_8365MB_VC         0x0040
+> > +
+> > +#define RTL8365MB_CHIP_ID_8367S                      0x6367
+> > +#define RTL8365MB_CHIP_VER_8367S             0x00A0
+> > +
+> > +#define RTL8365MB_LEARN_LIMIT_MAX            2112
+>
+> But anyways, if you are going to make it family-specific rather than
+> chip-specific, place it ...
 
 OK
 
-> 
->>
->>>
->>>> Can be checked here:
->>>> https://lore.kernel.org/netdev/d9aa57a7-9978-d0a4-3aa0-4512fd9459df@digikod.net 
->>>>
->>>>
->>>> Hope I exlained my point. Thanks again for your comments.
->>
->> [...]
+>
+> >
+> >   /* Family-specific data and limits */
+>
+> ... somewhere under here.
+>
+> >   #define RTL8365MB_PHYADDRMAX        7
+> >   #define RTL8365MB_NUM_PHYREGS       32
+> >   #define RTL8365MB_PHYREGMAX (RTL8365MB_NUM_PHYREGS - 1)
+> > -#define RTL8365MB_MAX_NUM_PORTS  7
+> > +// RTL8370MB and RTL8310SR, possibly suportable by this driver, have 10 ports
+>
+> C style comments :-)
+>
+> > +#define RTL8365MB_MAX_NUM_PORTS              10
+>
+> Did you mess up the indentation here? Also seems unrelated to RTL8367S
+> support...
+
+It looks like...
+
+>
+> >
+> >   /* Chip identification registers */
+> >   #define RTL8365MB_CHIP_ID_REG               0x1300
+> > @@ -1964,9 +1970,22 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+> >
+> >       switch (chip_id) {
+> >       case RTL8365MB_CHIP_ID_8365MB_VC:
+> > -             dev_info(priv->dev,
+> > -                      "found an RTL8365MB-VC switch (ver=0x%04x)\n",
+> > -                      chip_ver);
+> > +             switch (chip_ver) {
+> > +             case RTL8365MB_CHIP_VER_8365MB_VC:
+> > +                     dev_info(priv->dev,
+> > +                              "found an RTL8365MB-VC switch (ver=0x%04x)\n",
+> > +                              chip_ver);
+> > +                     break;
+> > +             case RTL8365MB_CHIP_VER_8367S:
+> > +                     dev_info(priv->dev,
+> > +                              "found an RTL8367S switch (ver=0x%04x)\n",
+> > +                              chip_ver);
+> > +                     break;
+> > +             default:
+> > +                     dev_err(priv->dev, "unrecognized switch version (ver=0x%04x)",
+> > +                             chip_ver);
+> > +                     return -ENODEV;
+> > +             }
+> >
+> >               priv->num_ports = RTL8365MB_MAX_NUM_PORTS;
+> >
+> > @@ -1974,7 +1993,7 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+> >               mb->chip_id = chip_id;
+> >               mb->chip_ver = chip_ver;
+> >               mb->port_mask = GENMASK(priv->num_ports - 1, 0);
+> > -             mb->learn_limit_max = RTL8365MB_LEARN_LIMIT_MAX_8365MB_VC;
+> > +             mb->learn_limit_max = RTL8365MB_LEARN_LIMIT_MAX;
+> >               mb->jam_table = rtl8365mb_init_jam_8365mb_vc;
+> >               mb->jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc);
+> >
+>
