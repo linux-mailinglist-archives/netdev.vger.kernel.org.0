@@ -2,78 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC8A5482322
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 11:03:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FE6A482326
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 11:05:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbhLaKDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 05:03:38 -0500
-Received: from smtp25.cstnet.cn ([159.226.251.25]:40350 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229448AbhLaKDi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 31 Dec 2021 05:03:38 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowACniBVg1c5hbcFdBQ--.39772S2;
-        Fri, 31 Dec 2021 18:03:12 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] mac80211: mlme: check for null after calling kmemdup
-Date:   Fri, 31 Dec 2021 18:03:11 +0800
-Message-Id: <20211231100311.1964437-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S229770AbhLaKFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 05:05:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41426 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229532AbhLaKFT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 05:05:19 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F489C061574
+        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 02:05:19 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id y22so107466306edq.2
+        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 02:05:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=FCAlHwKghI205wTZ5Z0xQp3SR9+6820WRK8lRLKqL7g=;
+        b=Ys2vfN/wB40kwZFrRmtNcPDXaPYh4PHwdqWnaTavJEVyuo8eXJEFYyqYgSc8Qf3UNA
+         aNPdBsvOxNOLiKnErsLxJptrHofv+fWlX9JK9SJgPHSD8ko3vn5/3fkCwGZ839y9w5UU
+         aUWE3GWAL2e4APc6iaVL7ecYF32SaOPaY2GoSNxNKNgAWeaXuHsJBU6m4d/jQeqwaEtg
+         cMd8TlBk/dWZRBnviDHxUpF2kJN9uKo2yiQS2yfd6qA96xtOBVirsHIKb8cyUksrZT4v
+         u7yXEEeiv7rJbNQa45qPQSROYW0qT7C1X6YthSLJjtR5+PGFlU6WHSgGDW8Z/jWPuKNz
+         2z5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=FCAlHwKghI205wTZ5Z0xQp3SR9+6820WRK8lRLKqL7g=;
+        b=DwHnTZPTcde2xQEOGrS3OfngwcFk6cNadX4lUimA9AnXUkypkjUgidTn3x0cUap8y/
+         QDXMWLTUSI3DrCp5Ytsj5LY77657s7oacUC2c1+j2yIRn3hsWE+IyAJWCxiXvDhBV/K/
+         CElBcvm9KhFTKC5vp85FSk1T/FUODzhMzjSj6vrYjNvbBXenrUGJ8TknO21TUC9IG0K6
+         OBl/3qK3pJp4jzwfjD+QDj6J7tqLUgS3M+gCLYSHDecMigjYxZ8LMgPIO/dcfbsANsQF
+         rIjCrOoKr7XWQ0R3IORFnF6ubP7QoYrZf2znMZq7QZa1cYKvIulz8eSOPpFbR/+3NqHJ
+         5G7w==
+X-Gm-Message-State: AOAM531yIrN+Bt7HqWtgtERUCH702SE7USgw6+azqJE9h3IKROAKG8r9
+        cfSeGQTn9ZUz02HN6ZgyZfUJXUPxfo9xkBd+YwA=
+X-Google-Smtp-Source: ABdhPJy4zHibs9YbZ7p4Ai0fEcbC//umLk+ddDVOvb4yNCN6zcsJldLRW8Xj+m/rG3BQsq7NjGb5c3S/TmI7h3j0KmE=
+X-Received: by 2002:a17:907:96a6:: with SMTP id hd38mr27823137ejc.479.1640945116894;
+ Fri, 31 Dec 2021 02:05:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowACniBVg1c5hbcFdBQ--.39772S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Wr45Gw1UWr4xJF4DtF18Zrb_yoWkXrb_KF
-        1qyrs8Zw17t3y3JrW8KayjqFs7GrsaqFWfKF9a9FZavwn3J3y7Cws3JwnxGr4xC3yYvrZx
-        W34qvryrtanrWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbckFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
-        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
-        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8twCF
-        04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
-        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUd-B_UUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Reply-To: davidschantal90@gmail.com
+Sender: phaeboon750@gmail.com
+Received: by 2002:aa7:cd04:0:0:0:0:0 with HTTP; Fri, 31 Dec 2021 02:05:16
+ -0800 (PST)
+From:   "Dr. Abu Salam" <abu347454@gmail.com>
+Date:   Fri, 31 Dec 2021 02:05:16 -0800
+X-Google-Sender-Auth: u3Lt-p6KTbfTktoOG99vTDgYMVM
+Message-ID: <CAKrA9cNO=3SCu8PSoiwbt+=HZRk7boJ0VzX=nhww0TN9fVJjZA@mail.gmail.com>
+Subject: GREETINGS FROM ABU SALAM.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the possible failure of the alloc, the ifmgd->assoc_req_ies might be
-NULL pointer and will be used by cfg80211_rx_assoc_resp() with the wrong
-length.
-Therefore it might be better to set length to 0 if fails as same as
-ieee80211_mgd_stop().
+Dear Friend,
 
-Fixes: 4d9ec73d2b78 ("cfg80211: Report Association Request frame IEs in association events")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- net/mac80211/mlme.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+I'm sorry but happy to inform you about my success in getting those
+funds transferred under the cooperation of a new partner from Vietnam,
+though I tried my best to involve you in the business but God decided
+the whole situations. Presently I=E2=80=99m in Vietnam for investment proje=
+cts
+with my own share of the total sum. Meanwhile, I didn't forget your
+past efforts and attempts to assist me in transferring those funds
+despite that it failed us some how.
 
-diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 9bed6464c5bd..258b492c699c 100644
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -1058,7 +1058,10 @@ static void ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
- 	pos = skb_tail_pointer(skb);
- 	kfree(ifmgd->assoc_req_ies);
- 	ifmgd->assoc_req_ies = kmemdup(ie_start, pos - ie_start, GFP_ATOMIC);
--	ifmgd->assoc_req_ies_len = pos - ie_start;
-+	if (!ifmgd->assoc_req_ies)
-+		ifmgd->assoc_req_ies_len = 0;
-+	else
-+		ifmgd->assoc_req_ies_len = pos - ie_start;
- 
- 	drv_mgd_prepare_tx(local, sdata, 0);
- 
--- 
-2.25.1
+Now contact my secretary in Burkina Faso her name is Ms. Chantal
+Davids on her e-mail address below (davidschantal90@gmail.com) ask her
+to send you the total of $1.450,000.00 (One million four hundred and
+fifty thousand united state of America dollars) which I kept for your
+compensation for all the past efforts and attempts to assist me in
+this matter. I appreciated your efforts at that time very much. So
+feel free and get in touched with my secretary Ms. Chantal Davids and
+instruct her where to send the amount to you. Please do let me know
+immediately you receive it so that we can share joy after all the
+sufferness at that time.
 
+In the moment, I=E2=80=99m very busy here because of the investment project=
+s
+which I and the new partner are having at hand, finally, remember that
+I had forwarded instruction to the secretary on your behalf to receive
+that money, so feel free to get in touch with Ms. Chantal Davids she
+will send the amount to you without any delay OK. Extend my greetings
+to your family.
+
+My Best regards
+
+Yours brother
+Dr. Abu Salam
+Greetings from Vietnam.
