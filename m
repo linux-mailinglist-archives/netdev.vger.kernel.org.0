@@ -2,207 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 895F14822EC
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 10:09:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7C414822F5
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 10:13:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229462AbhLaJJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 04:09:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbhLaJIq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 04:08:46 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15CE0C06173F
-        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 01:08:46 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so30086427pjj.2
-        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 01:08:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fungible.com; s=google;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=3tbf/QMgSLhmrgPLVXaUs5TOJ6oJ8v+CH7K1FVj9Z7g=;
-        b=kgj9JNA3Pa7RbQKdI9JoA14bjSnvwtK8CH5jmGjLcWT3Ydm5N+pJAbpQqrA2rCPAcO
-         7tW5/RLJmhDxIov7XeKNoYXxXzd+ut7RTuM/lVLyhZyjLtwSvL38YESh8FvFIePJApvm
-         MAZ7txrWDou3saE1xzUmpYTI1kHhh1bs+z6Xo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3tbf/QMgSLhmrgPLVXaUs5TOJ6oJ8v+CH7K1FVj9Z7g=;
-        b=np1ZJuMucza5U098jZwPYFZd3/jwkSqSqWENcUteqbjHFtNKvPaUOIFqdDEY0hpzRA
-         t9p5Sgtx3sMUcvUTpCNwqfqHRmeXM7hjXIcgE7uV6KH+U7Rewr5yOyFEkKpH7VUVktRl
-         z8Y45AvzNStOPOkyFPEX7vq3Ss1ZVN1M9qeFOxxXwUUJlHPOHwyf0C7Fn6XmuUXFERE3
-         LomxPxl0NIFvtBtXp4sZC9G475qfJhk+OEmGCyLa5ZjOhv1vOlfGnNOXxty/cbNT1cs8
-         996ZJJ6Xt555Xk8U19z/gzq16wwkg3Vh8VZXzaFJGjcSys4Gkp2GUkXwpA04t5aoYbWZ
-         OHFQ==
-X-Gm-Message-State: AOAM533hD3wJUYb8ZfdXyddUtjiw+Es82xA6C8uBeBDu0Ao2XeHp+J6h
-        g7GWjis9w4tGPpIbkJCq6h7sXy8Ns2CBnA==
-X-Google-Smtp-Source: ABdhPJyjyC/aLVk3ofjIM6VYmSn5V6dPKmIDrD39t8V4dpDtN5AZbhfTKXjkFlHbTuMDh5FohBSwiA==
-X-Received: by 2002:a17:90b:1a88:: with SMTP id ng8mr42260709pjb.180.1640941725592;
-        Fri, 31 Dec 2021 01:08:45 -0800 (PST)
-Received: from cab09-qa-09.fungible.local ([12.190.10.11])
-        by smtp.gmail.com with ESMTPSA id t31sm19875192pfg.184.2021.12.31.01.08.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Dec 2021 01:08:45 -0800 (PST)
-From:   Dimitris Michailidis <d.michailidis@fungible.com>
-X-Google-Original-From: Dimitris Michailidis <dmichail@fungible.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        andrew@lunn.ch, d.michailidis@fungible.com
-Subject: [PATCH net-next v2 8/8] net/fungible: Kconfig, Makefiles, and MAINTAINERS
-Date:   Fri, 31 Dec 2021 01:08:33 -0800
-Message-Id: <20211231090833.98977-9-dmichail@fungible.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211231090833.98977-1-dmichail@fungible.com>
-References: <20211231090833.98977-1-dmichail@fungible.com>
+        id S229550AbhLaJNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 04:13:13 -0500
+Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:48393 "EHLO
+        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229475AbhLaJNL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 04:13:11 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V0Q87DI_1640941988;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V0Q87DI_1640941988)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 31 Dec 2021 17:13:09 +0800
+Date:   Fri, 31 Dec 2021 17:13:08 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next] net/smc: Introduce TCP ULP support
+Message-ID: <Yc7JpBuI718bVzW3@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20211228134435.41774-1-tonylu@linux.alibaba.com>
+ <97ea52de-5419-22ee-7f55-b92887dcaada@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <97ea52de-5419-22ee-7f55-b92887dcaada@linux.ibm.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hook up the new driver to configuration and build.
+On Thu, Dec 30, 2021 at 04:03:19PM +0100, Karsten Graul wrote:
+> On 28/12/2021 14:44, Tony Lu wrote:
+> > This implements TCP ULP for SMC, helps applications to replace TCP with
+> > SMC protocol in place. And we use it to implement transparent
+> > replacement.
+> > 
+> > This replaces original TCP sockets with SMC, reuse TCP as clcsock when
+> > calling setsockopt with TCP_ULP option, and without any overhead.
+> 
+> This looks very interesting. Can you provide a simple userspace example about 
+> how to use ULP with smc?
 
-Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
----
- MAINTAINERS                                   |  6 +++++
- drivers/net/ethernet/Kconfig                  |  1 +
- drivers/net/ethernet/Makefile                 |  1 +
- drivers/net/ethernet/fungible/Kconfig         | 27 +++++++++++++++++++
- drivers/net/ethernet/fungible/Makefile        |  7 +++++
- drivers/net/ethernet/fungible/funeth/Kconfig  | 17 ++++++++++++
- drivers/net/ethernet/fungible/funeth/Makefile | 10 +++++++
- 7 files changed, 69 insertions(+)
- create mode 100644 drivers/net/ethernet/fungible/Kconfig
- create mode 100644 drivers/net/ethernet/fungible/Makefile
- create mode 100644 drivers/net/ethernet/fungible/funeth/Kconfig
- create mode 100644 drivers/net/ethernet/fungible/funeth/Makefile
+Here is a userspace C/S application:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 0b5fdb517c76..850f762df779 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7853,6 +7853,12 @@ L:	platform-driver-x86@vger.kernel.org
- S:	Maintained
- F:	drivers/platform/x86/fujitsu-tablet.c
- 
-+FUNGIBLE ETHERNET DRIVERS
-+M:	Dimitris Michailidis <dmichail@fungible.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	drivers/net/ethernet/fungible/
-+
- FUSE: FILESYSTEM IN USERSPACE
- M:	Miklos Szeredi <miklos@szeredi.hu>
- L:	linux-fsdevel@vger.kernel.org
-diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
-index db3ec4768159..bd4cb9d7c35d 100644
---- a/drivers/net/ethernet/Kconfig
-+++ b/drivers/net/ethernet/Kconfig
-@@ -78,6 +78,7 @@ source "drivers/net/ethernet/ezchip/Kconfig"
- source "drivers/net/ethernet/faraday/Kconfig"
- source "drivers/net/ethernet/freescale/Kconfig"
- source "drivers/net/ethernet/fujitsu/Kconfig"
-+source "drivers/net/ethernet/fungible/Kconfig"
- source "drivers/net/ethernet/google/Kconfig"
- source "drivers/net/ethernet/hisilicon/Kconfig"
- source "drivers/net/ethernet/huawei/Kconfig"
-diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
-index 8a87c1083d1d..8ef43e0c33c0 100644
---- a/drivers/net/ethernet/Makefile
-+++ b/drivers/net/ethernet/Makefile
-@@ -41,6 +41,7 @@ obj-$(CONFIG_NET_VENDOR_EZCHIP) += ezchip/
- obj-$(CONFIG_NET_VENDOR_FARADAY) += faraday/
- obj-$(CONFIG_NET_VENDOR_FREESCALE) += freescale/
- obj-$(CONFIG_NET_VENDOR_FUJITSU) += fujitsu/
-+obj-$(CONFIG_NET_VENDOR_FUNGIBLE) += fungible/
- obj-$(CONFIG_NET_VENDOR_GOOGLE) += google/
- obj-$(CONFIG_NET_VENDOR_HISILICON) += hisilicon/
- obj-$(CONFIG_NET_VENDOR_HUAWEI) += huawei/
-diff --git a/drivers/net/ethernet/fungible/Kconfig b/drivers/net/ethernet/fungible/Kconfig
-new file mode 100644
-index 000000000000..2ff5138d0448
---- /dev/null
-+++ b/drivers/net/ethernet/fungible/Kconfig
-@@ -0,0 +1,27 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Fungible network driver configuration
-+#
-+
-+config NET_VENDOR_FUNGIBLE
-+	bool "Fungible devices"
-+	default y
-+	help
-+	  If you have a Fungible network device, say Y.
-+
-+	  Note that the answer to this question doesn't directly affect the
-+	  kernel: saying N will just cause the configurator to skip all
-+	  the questions about Fungible cards. If you say Y, you will be asked
-+	  for your specific card in the following questions.
-+
-+if NET_VENDOR_FUNGIBLE
-+
-+config FUN_CORE
-+	tristate
-+	help
-+	  A service module offering basic common services to Fungible
-+	  device drivers.
-+
-+source "drivers/net/ethernet/fungible/funeth/Kconfig"
-+
-+endif # NET_VENDOR_FUNGIBLE
-diff --git a/drivers/net/ethernet/fungible/Makefile b/drivers/net/ethernet/fungible/Makefile
-new file mode 100644
-index 000000000000..df759f1585a1
---- /dev/null
-+++ b/drivers/net/ethernet/fungible/Makefile
-@@ -0,0 +1,7 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-+#
-+# Makefile for the Fungible network device drivers.
-+#
-+
-+obj-$(CONFIG_FUN_CORE) += funcore/
-+obj-$(CONFIG_FUN_ETH) += funeth/
-diff --git a/drivers/net/ethernet/fungible/funeth/Kconfig b/drivers/net/ethernet/fungible/funeth/Kconfig
-new file mode 100644
-index 000000000000..c72ad9386400
---- /dev/null
-+++ b/drivers/net/ethernet/fungible/funeth/Kconfig
-@@ -0,0 +1,17 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Fungible Ethernet driver configuration
-+#
-+
-+config FUN_ETH
-+	tristate "Fungible Ethernet device driver"
-+	depends on PCI && PCI_MSI
-+	depends on TLS && TLS_DEVICE || TLS_DEVICE=n
-+	select NET_DEVLINK
-+	select FUN_CORE
-+	help
-+	  This driver supports the Ethernet functionality of Fungible adapters.
-+	  It works with both physical and virtual functions.
-+
-+	  To compile this driver as a module, choose M here. The module
-+          will be called funeth.
-diff --git a/drivers/net/ethernet/fungible/funeth/Makefile b/drivers/net/ethernet/fungible/funeth/Makefile
-new file mode 100644
-index 000000000000..132945164da9
---- /dev/null
-+++ b/drivers/net/ethernet/fungible/funeth/Makefile
-@@ -0,0 +1,10 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-+
-+subdir-ccflags-y += -I$(src)/../funcore -I$(src)
-+
-+obj-$(CONFIG_FUN_ETH) += funeth.o
-+
-+funeth-y := funeth_main.o funeth_rx.o funeth_tx.o funeth_devlink.o \
-+	    funeth_ethtool.o
-+
-+funeth-$(CONFIG_TLS_DEVICE) += funeth_ktls.o
--- 
-2.25.1
+	fd = socket(AF_INET, SOCK_STREAM, 0);
 
+	addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);      /* for server */
+	addr.sin_addr.s_addr = inet_addr("127.0.0.1"); /* for client */
+    addr.sin_port = htons(PORT);
+
+	/* kernel will find and load smc module, init smc socket and replace
+	 * tcp with smc, use the "clean" tcp as clcsock.
+	 */
+	ret = setsockopt(fd, SOL_TCP, TCP_ULP, "smc", sizeof("smc"));
+	if (ret) /* if ulp init failed, TCP progress can be continued */
+		printf("replace tcp with smc failed, use tcp");
+	
+	/* After this, this tcp socket will behave as smc socket. If error
+	 * happened, this socket is still a normal tcp socket.
+	 *
+	 * We check tcp socket's state, so after bind(), connect() or listen(),
+	 * ulp setup will be failed.
+	 */
+	bind(fd, (struct sockaddr *)&addr, sizeof(addr)); /* calls smc_bind() */
+	connect(...); /* for client, smc_connect() */
+	listen(...);  /* for server, smc_listen() */
+	accept(...);  /* for server, smc_accept() */
+
+This approach is not convenient to use, it is a possible usage in
+userspace. The more important scene is to work with BPF.
+
+Transparent replacement with BPF:
+	
+	BPF provides a series of attach points, like:
+	- BPF_CGROUP_INET_SOCK_CREATE, /* calls in the end of inet_create() */
+	- BPF_CGROUP_INET4_BIND,       /* calls in the end of inet_bind() */
+	- BPF_CGROUP_INET6_BIND,
+
+	So that we can inject BPF programs into these points in userspace:
+
+	SEC("cgroup/connect4")
+	int replace_to_smc(struct bpf_sock_addr *addr)
+	{
+		int pid = bpf_get_current_pid_tgid() >> 32;
+		long ret;
+
+		/* use-defined rules/filters, such as pid, tcp src/dst address, etc...*/
+		if (pid != DESIRED_PID)
+			return 0;
+
+		<...>
+	
+		ret = bpf_setsockopt(addr, SOL_TCP, TCP_ULP, "smc", sizeof("smc"));
+		if (ret) {
+			bpf_printk("replace TCP with SMC error: %ld\n", ret);
+			return 0;
+		}
+		return 0;
+	}
+
+	Then use libbpf to load it with attach type BPF_CGROUP_INET4_CONNECT.
+	Everytime userspace appliations try to bind socket, it will run this
+	BPF prog, check user-defined rule and determine to replace with
+	SMC. Because this BPF is injected outside of user applications, so
+	we can use BPF to implement flexible and non-intrusive transparent
+	replacement.
+
+	BPF helper bpf_setsockopt() limits the options to call, so TCP_ULP
+	is not allowed now. I will send patches out to allow TCP_ULP option
+	after this approach is merged, which is suggested by BPF's developer.
+	Here is the link about BPF patch:
+
+	https://lore.kernel.org/netdev/20211209090250.73927-1-tonylu@linux.alibaba.com/
+
+> And how do you make sure that the in-band CLC handshake doesn't interfere with the
+> previous TCP traffic, is the idea to put some kind of protocol around it so both
+> sides 'know' when the protocol ended and the CLC handshake starts?
+
+Yes, we need a "clean" TCP socket to replace with SMC. To archive it,
+smc_ulp_init will check the state of TCP socket.
+
+First, we make sure that socket is a REALLY TCP sockets.
+
+	if (tcp->type != SOCK_STREAM || sk->sk_protocol != IPPROTO_TCP ||
+		(sk->sk_family != AF_INET && sk->sk_family != AF_INET6))
+
+Then check the state of socket, and makes sure this socket is a newly
+created userspace socket, not connects to others, no data transferred
+ever.
+
+	if (tcp->state != SS_UNCONNECTED || !tcp->file || tcp->wq.fasync_list)
+
+Consider this, we don't need to multiplex this socket, clcsock
+handshaking is the first "user". This behaves likes LD_PRELOAD (smc_run),
+the difference is the location to replace, user-space or kernel-space.
+
+Setting this in an old socket (has traffic already) is more general than
+current state, and we need more methods to handle this like a protocol
+wrap it. I would improve this ability in the future. Currently,
+transparent replace it in create and bind stage can coverage most
+scenes.
+
+Thank you.
+Tony Lu
