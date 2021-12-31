@@ -2,149 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7C414822F5
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 10:13:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 777E948230B
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 10:44:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229550AbhLaJNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 04:13:13 -0500
-Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:48393 "EHLO
-        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229475AbhLaJNL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 04:13:11 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V0Q87DI_1640941988;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V0Q87DI_1640941988)
+        id S229694AbhLaJoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 04:44:25 -0500
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:33896 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229555AbhLaJoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 04:44:24 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V0QblSr_1640943860;
+Received: from 30.225.24.30(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V0QblSr_1640943860)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 31 Dec 2021 17:13:09 +0800
-Date:   Fri, 31 Dec 2021 17:13:08 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next] net/smc: Introduce TCP ULP support
-Message-ID: <Yc7JpBuI718bVzW3@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20211228134435.41774-1-tonylu@linux.alibaba.com>
- <97ea52de-5419-22ee-7f55-b92887dcaada@linux.ibm.com>
+          Fri, 31 Dec 2021 17:44:22 +0800
+Message-ID: <0a972bf8-1d7b-a211-2c11-50e86c87700e@linux.alibaba.com>
+Date:   Fri, 31 Dec 2021 17:44:20 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <97ea52de-5419-22ee-7f55-b92887dcaada@linux.ibm.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+From:   Wen Gu <guwen@linux.alibaba.com>
+Subject: Re: [RFC PATCH net v2 1/2] net/smc: Resolve the race between link
+ group access and termination
+To:     Karsten Graul <kgraul@linux.ibm.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dust.li@linux.alibaba.com,
+        tonylu@linux.alibaba.com
+References: <1640704432-76825-1-git-send-email-guwen@linux.alibaba.com>
+ <1640704432-76825-2-git-send-email-guwen@linux.alibaba.com>
+ <4ec6e460-96d1-fedc-96ff-79a98fd38de8@linux.ibm.com>
+In-Reply-To: <4ec6e460-96d1-fedc-96ff-79a98fd38de8@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 30, 2021 at 04:03:19PM +0100, Karsten Graul wrote:
-> On 28/12/2021 14:44, Tony Lu wrote:
-> > This implements TCP ULP for SMC, helps applications to replace TCP with
-> > SMC protocol in place. And we use it to implement transparent
-> > replacement.
-> > 
-> > This replaces original TCP sockets with SMC, reuse TCP as clcsock when
-> > calling setsockopt with TCP_ULP option, and without any overhead.
+Hi Karsten,
+
+Thanks for your suggestions.
+
+Wish you and your family a happy New Year!
+
+
+On 2021/12/29 8:56 pm, Karsten Graul wrote:
+
+> On 28/12/2021 16:13, Wen Gu wrote:
+>> We encountered some crashes caused by the race between the access
+>> and the termination of link groups.
 > 
-> This looks very interesting. Can you provide a simple userspace example about 
-> how to use ULP with smc?
+> While I agree with the problems you found I am not sure if the solution is the right one.
+> At the moment conn->lgr is checked all over the code as indication if a connection
+> still has a valid link group. When you change this semantic by leaving conn->lgr set
+> after the connection was unregistered from its link group then I expect various new problems
+> to happen.
 
-Here is a userspace C/S application:
+Actually we also thought about this semantic mismatch problem. But we haven't encountered any
+problems caused by leaving conn->lgr set in our tests. After careful consideration, we chose
+to use this patch as a trade off against the more serious problems -- the crashes in mutliple
+places caused by abnormal termination.
 
-	fd = socket(AF_INET, SOCK_STREAM, 0);
+If any specific problems caused by leaving conn->lgr set can be expected, please inform us.
+Thanks.
 
-	addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);      /* for server */
-	addr.sin_addr.s_addr = inet_addr("127.0.0.1"); /* for client */
-    addr.sin_port = htons(PORT);
+> 
+> For me the right solution would be to use correct locking  before conn->lgr is checked and used.
+> 
 
-	/* kernel will find and load smc module, init smc socket and replace
-	 * tcp with smc, use the "clean" tcp as clcsock.
-	 */
-	ret = setsockopt(fd, SOL_TCP, TCP_ULP, "smc", sizeof("smc"));
-	if (ret) /* if ulp init failed, TCP progress can be continued */
-		printf("replace tcp with smc failed, use tcp");
-	
-	/* After this, this tcp socket will behave as smc socket. If error
-	 * happened, this socket is still a normal tcp socket.
-	 *
-	 * We check tcp socket's state, so after bind(), connect() or listen(),
-	 * ulp setup will be failed.
-	 */
-	bind(fd, (struct sockaddr *)&addr, sizeof(addr)); /* calls smc_bind() */
-	connect(...); /* for client, smc_connect() */
-	listen(...);  /* for server, smc_listen() */
-	accept(...);  /* for server, smc_accept() */
+In my humble opinion, the key point is not avoiding access to a NULL pointer (conn->lgr)
+by checking it before, but avoiding access link group after it is freed, which becomes a
+piece of dirty memory. This patch focuses on how to ensure the safe access to link group,
+which is from conn->lgr or link->lgr.
 
-This approach is not convenient to use, it is a possible usage in
-userspace. The more important scene is to work with BPF.
+> In smc_lgr_unregister_conn() the lgr->conns_lock is used when conn->lgr is unset (note that
+> it is better to have that "conn->lgr = NULL;" line INSIDE the lock in this function).
+> 
 
-Transparent replacement with BPF:
-	
-	BPF provides a series of attach points, like:
-	- BPF_CGROUP_INET_SOCK_CREATE, /* calls in the end of inet_create() */
-	- BPF_CGROUP_INET4_BIND,       /* calls in the end of inet_bind() */
-	- BPF_CGROUP_INET6_BIND,
+I think lgr->conns_lock is used to make the read and modify to lgr->conns_all mutually
+exclusive. As mentioned above, we are aimed to avoid access link group after it is freed.
+It might be inappropriate to avoid access to a freed lgr by lgr->conns_lock.
 
-	So that we can inject BPF programs into these points in userspace:
+> And on any places in the code where conn->lgr is used you get the read_lock while lgr is accessed.
+> This could solve the problem, using existing mechanisms, right? Opinions?
 
-	SEC("cgroup/connect4")
-	int replace_to_smc(struct bpf_sock_addr *addr)
-	{
-		int pid = bpf_get_current_pid_tgid() >> 32;
-		long ret;
+We also considered to protect the access to link group by locking at the beginning as you
+suggested, like RCU. But we found some imperfections of this way.
 
-		/* use-defined rules/filters, such as pid, tcp src/dst address, etc...*/
-		if (pid != DESIRED_PID)
-			return 0;
+1) It is hard to cover all the race.
 
-		<...>
-	
-		ret = bpf_setsockopt(addr, SOL_TCP, TCP_ULP, "smc", sizeof("smc"));
-		if (ret) {
-			bpf_printk("replace TCP with SMC error: %ld\n", ret);
-			return 0;
-		}
-		return 0;
-	}
+    link group is referred to all over the code and link group termination may be triggered
+    at any time. So it is hard to find all the exact potential race code and protected each
+    one respectively by locking. The discover of race code will rely heavily on testing and
+    we may have to continuously add patches to fix each new race we find.
 
-	Then use libbpf to load it with attach type BPF_CGROUP_INET4_CONNECT.
-	Everytime userspace appliations try to bind socket, it will run this
-	BPF prog, check user-defined rule and determine to replace with
-	SMC. Because this BPF is injected outside of user applications, so
-	we can use BPF to implement flexible and non-intrusive transparent
-	replacement.
+2) It is hard to hold lock during all the link group access.
 
-	BPF helper bpf_setsockopt() limits the options to call, so TCP_ULP
-	is not allowed now. I will send patches out to allow TCP_ULP option
-	after this approach is merged, which is suggested by BPF's developer.
-	Here is the link about BPF patch:
+    Only checking conn->lgr before accessing to link group is not safe even with correct
+    locking. Even though conn->lgr is checked, link group may have been freed during the
+    following access.
 
-	https://lore.kernel.org/netdev/20211209090250.73927-1-tonylu@linux.alibaba.com/
+    access                         termination
+    -----------------------------------------------------------
+    if (conn->lgr)               |
+                                 | kfree(lgr)
+    access to lgr (undesired)    |
 
-> And how do you make sure that the in-band CLC handshake doesn't interfere with the
-> previous TCP traffic, is the idea to put some kind of protocol around it so both
-> sides 'know' when the protocol ended and the CLC handshake starts?
+    To ensure link group access safe, we need to hold the lock before every link group
+    access and not put until link group access finishes, it will cover too much codes and
+    we need to pay attention to the behavior in the lock-holding section.
 
-Yes, we need a "clean" TCP socket to replace with SMC. To archive it,
-smc_ulp_init will check the state of TCP socket.
+So we chose to use reference count and consider this issue from a life cycle perspective.
+Introducing reference count can overcome the imperfections mentioned above by:
 
-First, we make sure that socket is a REALLY TCP sockets.
+1) Prolonging the life cycle of link group.
 
-	if (tcp->type != SOCK_STREAM || sk->sk_protocol != IPPROTO_TCP ||
-		(sk->sk_family != AF_INET && sk->sk_family != AF_INET6))
+    Instead of finding all the race, the main idea of the patch is to prolong the life cycle
+    of link group, making it longer than the access cycle of connections and links over the
+    link group. So even link group is being terminated, the free of link group is later than
+    all the access to it.
 
-Then check the state of socket, and makes sure this socket is a newly
-created userspace socket, not connects to others, no data transferred
-ever.
+    We think the access cycle to link group of connections is from smc_lgr_register_conn() to
+    smc_conn_free() and the access cycle to link group of links is from smcr_link_init() to
+    smcr_link_clear().
 
-	if (tcp->state != SS_UNCONNECTED || !tcp->file || tcp->wq.fasync_list)
+2) Introducing reference count.
 
-Consider this, we don't need to multiplex this socket, clcsock
-handshaking is the first "user". This behaves likes LD_PRELOAD (smc_run),
-the difference is the location to replace, user-space or kernel-space.
+    Instead of using lock, we use reference count to ensure link group is freed only when no
+    one refers to it. No need to find every place which needs holding lock and pay attention
+    to the behavior in lock-holding sections.
 
-Setting this in an old socket (has traffic already) is more general than
-current state, and we need more methods to handle this like a protocol
-wrap it. I would improve this ability in the future. Currently,
-transparent replace it in create and bind stage can coverage most
-scenes.
 
-Thank you.
-Tony Lu
+What do you think about it?
+
+Thanks,
+Wen Gu
+
+
+
