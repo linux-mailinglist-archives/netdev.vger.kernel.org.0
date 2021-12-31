@@ -2,41 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECAC74822BD
-	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 09:20:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97E664822C0
+	for <lists+netdev@lfdr.de>; Fri, 31 Dec 2021 09:21:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242801AbhLaIUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 31 Dec 2021 03:20:55 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60684 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242760AbhLaIUt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 03:20:49 -0500
+        id S242799AbhLaIU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 31 Dec 2021 03:20:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242813AbhLaIUz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 31 Dec 2021 03:20:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB514C061756
+        for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 00:20:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79E3EB81D5F
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3666B81D62
         for <netdev@vger.kernel.org>; Fri, 31 Dec 2021 08:20:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBF67C36AEF;
-        Fri, 31 Dec 2021 08:20:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CF7FC36AEB;
+        Fri, 31 Dec 2021 08:20:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1640938848;
-        bh=8+WlqGNBuo6dY/go1zKrGhKWxfnXDdgRG1xrqx1hDbs=;
+        bh=RmD0xSSatcAPhqCfVzE1NUPl+rgVM4xu7xkEJfBbUyA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MRIbcLyHDWWfFJymHTd2V0IqaxkRKQ+rJDEuDisq0S4MM4cJ+g54beVkjFDXqD8k/
-         +M4eh2QEggM4uMFfIpDvpIZfej/edon65i7+hvG6sNun5m43qJwfirI31N7BQr6zxo
-         TT+Wgwd8bJdd9RVuZ3vB5BDYRAfzlDJjVb0FaHYXUgZ7id1bGXQ96kxsSMRNRSq4xv
-         OEPlNc6DnE84BusGnhUxayOvo8h83T8SKUAGesT31ujNskaGTJyHmVY24iU1jQpmHB
-         cDwQpz4K5tLQbwGAWwA8YsqC4tOg307m+CnyGfpAm6prpH5alKwaq7sodPCa6IMGlQ
-         OjDD1JrDRBmaA==
+        b=ECDUEjqXeM9ZPFIDpEEXK6uoMmGLzgt/1WrSPt6QYtg3lUKBtwbYP9DhqRTQkQRrE
+         8rLS5AeHjIv3AwZHqOzEqBI+9qtNM9gqnEJ+NuzZpKhbnkGWDXw2kmQpCxADAdf+qW
+         lKfbuAjVP6kpdEBAat5OtGGw7P80kZ6OkLTV1e99sGMGoi2/Rhj4rGe/NWkOsu93mk
+         s64Hl4fbsaXTy4eASIwKbNYI/kim9EC3d8V2+wIbmx3vTKgN6bkx7sX4sf07DJJjgz
+         +9RWehSJfINU4WhTurwXaUWogoftm7+w3agzNiQ8NxTrEHp9HceesXV/0a3Iq63P0Z
+         oM1nVEfi2fm1A==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Muhammad Sammar <muhammads@nvidia.com>,
-        Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next v2 10/16] net/mlx5: Add misc5 flow table match parameters
-Date:   Fri, 31 Dec 2021 00:20:32 -0800
-Message-Id: <20211231082038.106490-11-saeed@kernel.org>
+Subject: [net-next v2 11/16] net/mlx5: DR, Add misc5 to match_param structs
+Date:   Fri, 31 Dec 2021 00:20:33 -0800
+Message-Id: <20211231082038.106490-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20211231082038.106490-1-saeed@kernel.org>
 References: <20211231082038.106490-1-saeed@kernel.org>
@@ -48,107 +50,144 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Muhammad Sammar <muhammads@nvidia.com>
 
-Add support for misc5 match parameter as per HW spec, this will allow
-matching on tunnel_header fields.
+Add misc5 match params to enable matching tunnel headers.
 
 Signed-off-by: Muhammad Sammar <muhammads@nvidia.com>
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/fs_core.h |  2 +-
- include/linux/mlx5/device.h                   |  1 +
- include/linux/mlx5/mlx5_ifc.h                 | 25 ++++++++++++++++++-
- include/uapi/rdma/mlx5_user_ioctl_cmds.h      |  2 +-
- 4 files changed, 27 insertions(+), 3 deletions(-)
+ .../mellanox/mlx5/core/steering/dr_matcher.c  |  3 ++
+ .../mellanox/mlx5/core/steering/dr_rule.c     | 10 ++++++
+ .../mellanox/mlx5/core/steering/dr_ste.c      | 34 +++++++++++++++++++
+ .../mellanox/mlx5/core/steering/dr_types.h    | 15 +++++++-
+ 4 files changed, 61 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
-index 7711db245c63..5469b08d635f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.h
-@@ -203,7 +203,7 @@ struct mlx5_ft_underlay_qp {
- 	u32 qpn;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
+index 12ebb7adea4d..856541a60d8c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
+@@ -424,6 +424,9 @@ static int dr_matcher_set_ste_builders(struct mlx5dr_matcher *matcher,
+ 	if (matcher->match_criteria & DR_MATCHER_CRITERIA_MISC4)
+ 		mask.misc4 = matcher->mask.misc4;
+ 
++	if (matcher->match_criteria & DR_MATCHER_CRITERIA_MISC5)
++		mask.misc5 = matcher->mask.misc5;
++
+ 	ret = mlx5dr_ste_build_pre_check(dmn, matcher->match_criteria,
+ 					 &matcher->mask, NULL);
+ 	if (ret)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+index 3b4cd3160c27..43e7fe85cbc7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
+@@ -974,6 +974,16 @@ static bool dr_rule_verify(struct mlx5dr_matcher *matcher,
+ 			return false;
+ 		}
+ 	}
++
++	if (match_criteria & DR_MATCHER_CRITERIA_MISC5) {
++		s_idx = offsetof(struct mlx5dr_match_param, misc5);
++		e_idx = min(s_idx + sizeof(param->misc5), value_size);
++
++		if (!dr_rule_cmp_value_to_mask(mask_p, param_p, s_idx, e_idx)) {
++			mlx5dr_err(matcher->tbl->dmn, "Rule misc5 parameters contains a value not specified by mask\n");
++			return false;
++		}
++	}
+ 	return true;
+ }
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+index 219a5474a8a4..9bf25231c9c9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+@@ -880,6 +880,26 @@ static void dr_ste_copy_mask_misc4(char *mask, struct mlx5dr_match_misc4 *spec,
+ 		IFC_GET_CLR(fte_match_set_misc4, mask, prog_sample_field_value_3, clr);
+ }
+ 
++static void dr_ste_copy_mask_misc5(char *mask, struct mlx5dr_match_misc5 *spec, bool clr)
++{
++	spec->macsec_tag_0 =
++		IFC_GET_CLR(fte_match_set_misc5, mask, macsec_tag_0, clr);
++	spec->macsec_tag_1 =
++		IFC_GET_CLR(fte_match_set_misc5, mask, macsec_tag_1, clr);
++	spec->macsec_tag_2 =
++		IFC_GET_CLR(fte_match_set_misc5, mask, macsec_tag_2, clr);
++	spec->macsec_tag_3 =
++		IFC_GET_CLR(fte_match_set_misc5, mask, macsec_tag_3, clr);
++	spec->tunnel_header_0 =
++		IFC_GET_CLR(fte_match_set_misc5, mask, tunnel_header_0, clr);
++	spec->tunnel_header_1 =
++		IFC_GET_CLR(fte_match_set_misc5, mask, tunnel_header_1, clr);
++	spec->tunnel_header_2 =
++		IFC_GET_CLR(fte_match_set_misc5, mask, tunnel_header_2, clr);
++	spec->tunnel_header_3 =
++		IFC_GET_CLR(fte_match_set_misc5, mask, tunnel_header_3, clr);
++}
++
+ void mlx5dr_ste_copy_param(u8 match_criteria,
+ 			   struct mlx5dr_match_param *set_param,
+ 			   struct mlx5dr_match_parameters *mask,
+@@ -966,6 +986,20 @@ void mlx5dr_ste_copy_param(u8 match_criteria,
+ 		}
+ 		dr_ste_copy_mask_misc4(buff, &set_param->misc4, clr);
+ 	}
++
++	param_location += sizeof(struct mlx5dr_match_misc4);
++
++	if (match_criteria & DR_MATCHER_CRITERIA_MISC5) {
++		if (mask->match_sz < param_location +
++		    sizeof(struct mlx5dr_match_misc5)) {
++			memcpy(tail_param, data + param_location,
++			       mask->match_sz - param_location);
++			buff = tail_param;
++		} else {
++			buff = data + param_location;
++		}
++		dr_ste_copy_mask_misc5(buff, &set_param->misc5, clr);
++	}
+ }
+ 
+ void mlx5dr_ste_build_eth_l2_src_dst(struct mlx5dr_ste_ctx *ste_ctx,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+index 584d2b0eb016..b4987822a81a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+@@ -105,7 +105,8 @@ enum mlx5dr_matcher_criteria {
+ 	DR_MATCHER_CRITERIA_MISC2 = 1 << 3,
+ 	DR_MATCHER_CRITERIA_MISC3 = 1 << 4,
+ 	DR_MATCHER_CRITERIA_MISC4 = 1 << 5,
+-	DR_MATCHER_CRITERIA_MAX = 1 << 6,
++	DR_MATCHER_CRITERIA_MISC5 = 1 << 6,
++	DR_MATCHER_CRITERIA_MAX = 1 << 7,
  };
  
--#define MLX5_FTE_MATCH_PARAM_RESERVED	reserved_at_c00
-+#define MLX5_FTE_MATCH_PARAM_RESERVED	reserved_at_e00
- /* Calculate the fte_match_param length and without the reserved length.
-  * Make sure the reserved field is the last.
-  */
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index 9c25edfd59a6..604b85dd770a 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -1117,6 +1117,7 @@ enum {
- 	MLX5_MATCH_MISC_PARAMETERS_2	= 1 << 3,
- 	MLX5_MATCH_MISC_PARAMETERS_3	= 1 << 4,
- 	MLX5_MATCH_MISC_PARAMETERS_4	= 1 << 5,
-+	MLX5_MATCH_MISC_PARAMETERS_5	= 1 << 6,
+ enum mlx5dr_action_type {
+@@ -762,6 +763,17 @@ struct mlx5dr_match_misc4 {
+ 	u32 reserved_auto1[8];
  };
  
- enum {
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 18b816b41545..c74c5e147cb9 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -670,6 +670,26 @@ struct mlx5_ifc_fte_match_set_misc4_bits {
- 	u8         reserved_at_100[0x100];
- };
- 
-+struct mlx5_ifc_fte_match_set_misc5_bits {
-+	u8         macsec_tag_0[0x20];
-+
-+	u8         macsec_tag_1[0x20];
-+
-+	u8         macsec_tag_2[0x20];
-+
-+	u8         macsec_tag_3[0x20];
-+
-+	u8         tunnel_header_0[0x20];
-+
-+	u8         tunnel_header_1[0x20];
-+
-+	u8         tunnel_header_2[0x20];
-+
-+	u8         tunnel_header_3[0x20];
-+
-+	u8         reserved_at_100[0x100];
++struct mlx5dr_match_misc5 {
++	u32 macsec_tag_0;
++	u32 macsec_tag_1;
++	u32 macsec_tag_2;
++	u32 macsec_tag_3;
++	u32 tunnel_header_0;
++	u32 tunnel_header_1;
++	u32 tunnel_header_2;
++	u32 tunnel_header_3;
 +};
 +
- struct mlx5_ifc_cmd_pas_bits {
- 	u8         pa_h[0x20];
- 
-@@ -1839,7 +1859,9 @@ struct mlx5_ifc_fte_match_param_bits {
- 
- 	struct mlx5_ifc_fte_match_set_misc4_bits misc_parameters_4;
- 
--	u8         reserved_at_c00[0x400];
-+	struct mlx5_ifc_fte_match_set_misc5_bits misc_parameters_5;
-+
-+	u8         reserved_at_e00[0x200];
+ struct mlx5dr_match_param {
+ 	struct mlx5dr_match_spec outer;
+ 	struct mlx5dr_match_misc misc;
+@@ -769,6 +781,7 @@ struct mlx5dr_match_param {
+ 	struct mlx5dr_match_misc2 misc2;
+ 	struct mlx5dr_match_misc3 misc3;
+ 	struct mlx5dr_match_misc4 misc4;
++	struct mlx5dr_match_misc5 misc5;
  };
  
- enum {
-@@ -5977,6 +5999,7 @@ enum {
- 	MLX5_QUERY_FLOW_GROUP_IN_MATCH_CRITERIA_ENABLE_MISC_PARAMETERS_2 = 0x3,
- 	MLX5_QUERY_FLOW_GROUP_IN_MATCH_CRITERIA_ENABLE_MISC_PARAMETERS_3 = 0x4,
- 	MLX5_QUERY_FLOW_GROUP_IN_MATCH_CRITERIA_ENABLE_MISC_PARAMETERS_4 = 0x5,
-+	MLX5_QUERY_FLOW_GROUP_IN_MATCH_CRITERIA_ENABLE_MISC_PARAMETERS_5 = 0x6,
- };
- 
- struct mlx5_ifc_query_flow_group_out_bits {
-diff --git a/include/uapi/rdma/mlx5_user_ioctl_cmds.h b/include/uapi/rdma/mlx5_user_ioctl_cmds.h
-index ca2372864b70..e539c84d63f1 100644
---- a/include/uapi/rdma/mlx5_user_ioctl_cmds.h
-+++ b/include/uapi/rdma/mlx5_user_ioctl_cmds.h
-@@ -252,7 +252,7 @@ enum mlx5_ib_device_query_context_attrs {
- 	MLX5_IB_ATTR_QUERY_CONTEXT_RESP_UCTX = (1U << UVERBS_ID_NS_SHIFT),
- };
- 
--#define MLX5_IB_DW_MATCH_PARAM 0x90
-+#define MLX5_IB_DW_MATCH_PARAM 0xA0
- 
- struct mlx5_ib_match_params {
- 	__u32	match_params[MLX5_IB_DW_MATCH_PARAM];
+ #define DR_MASK_IS_ICMPV4_SET(_misc3) ((_misc3)->icmpv4_type || \
 -- 
 2.33.1
 
