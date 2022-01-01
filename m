@@ -2,68 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 599F7482810
-	for <lists+netdev@lfdr.de>; Sat,  1 Jan 2022 18:41:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5C7B482813
+	for <lists+netdev@lfdr.de>; Sat,  1 Jan 2022 18:45:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232603AbiAARl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jan 2022 12:41:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52768 "EHLO
+        id S231470AbiAARpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jan 2022 12:45:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230259AbiAARl1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jan 2022 12:41:27 -0500
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD6CC061574;
-        Sat,  1 Jan 2022 09:41:27 -0800 (PST)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.94.2)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1n3iNV-0007Lq-3h; Sat, 01 Jan 2022 18:41:13 +0100
-Date:   Sat, 1 Jan 2022 17:41:07 +0000
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Lee <igvtee@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v9 1/3] net: mdio: add helpers to extract clause 45 regad
- and devad fields
-Message-ID: <YdCSM7DiJ+vvfmji@makrotopia.org>
-References: <Ycr5Cna76eg2B0An@shell.armlinux.org.uk>
- <Yc9tk6IZ0ldqHx4Y@makrotopia.org>
- <YdCM/mbeT66asmj7@lunn.ch>
+        with ESMTP id S230259AbiAARpZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jan 2022 12:45:25 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B7AC061574
+        for <netdev@vger.kernel.org>; Sat,  1 Jan 2022 09:45:25 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id q3so21646567pfs.7
+        for <netdev@vger.kernel.org>; Sat, 01 Jan 2022 09:45:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SDSXlOcXodSnlvM7J21wWZupnQy2iDygaGuwZjjUF0M=;
+        b=lbgQYQ1Ex6wNggtqSVrM3W3ytVwLA6xnGXliAqwOvVOQglzjyEhCbeyw5eO3+6ByCK
+         PH/4eDqqvLD6lQwVV+kpOr2oGXKbBKZUq6+zs/Lm0m/WhWzpYRe4XhgBEo5v0CW+0z5E
+         KsgWTkK7AhN4FHTNi2mhmTCjGJoMV7tyd6tZnQk09Q4g+7gI+P28vdYoiCGsD4FrSH9Q
+         AFa0Kyzlk+eh62sUxyDe2h7kj/uOujmvf/G+B5mybhaGjHOuWIlAEq5wzk2VUcOkmQPT
+         pIAzQgwqw1rDszU6R4OONBkxUbtteEOSmva7BcNywRV7wpG9KqxE61fs2JnM4q8B60yV
+         FrZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SDSXlOcXodSnlvM7J21wWZupnQy2iDygaGuwZjjUF0M=;
+        b=ItAxuL15zCPf/ziwZbAEFAu8LUtbKVhks4NV/yDVrjTNbeqvo+aUViJ5LbNY7zWV7W
+         6jEJZVZ9vBCkS7PHm9zuMyIKUPBvOexUrHSI0LKQfqDsxt3CapxY6pqljACj5zcsl4kJ
+         b/l5fwVe/Zfp8C1NtvK/WJX1psWNys/b+y3+25jqVIHc/JobGTjuyMvnTwccCrVJ1BcQ
+         v/0sCYgN9TRPVUCWyfZzBRw+we7zyotwBTMeStHb6ADbFp5FoCDuJZ9sADUqO66Sy995
+         Pr4KArdqlGjREecQrhfUI5LHY36IppSVWosTpgocnBPn+lY3GBMeUszlKbvP6juTIwuj
+         FyKQ==
+X-Gm-Message-State: AOAM532YUHmaBSSZ0DcCvbk3NYb3pAFmqk03BzKnnf2e6++9cVbhivfZ
+        Apw3sVGzQdAr1kB4wqlAmrk=
+X-Google-Smtp-Source: ABdhPJzLPtUnanhMzvMWQa9oP5W78WAWeyJAyTq8GuvyXtl76sBj44qJRRCd1EkLjod/aexKvIIPYw==
+X-Received: by 2002:a05:6a00:1a43:b0:4bb:8507:9568 with SMTP id h3-20020a056a001a4300b004bb85079568mr39270670pfv.42.1641059124780;
+        Sat, 01 Jan 2022 09:45:24 -0800 (PST)
+Received: from ?IPV6:2600:8802:b00:4a48:15d3:103e:dff7:3c99? ([2600:8802:b00:4a48:15d3:103e:dff7:3c99])
+        by smtp.gmail.com with ESMTPSA id s8sm33042382pfk.165.2022.01.01.09.45.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 01 Jan 2022 09:45:24 -0800 (PST)
+Message-ID: <46a8f724-9a20-baf4-e774-d2c1a3d1e9c5@gmail.com>
+Date:   Sat, 1 Jan 2022 09:45:22 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YdCM/mbeT66asmj7@lunn.ch>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH net-next v3 01/11] net: dsa: realtek-smi: move to
+ subdirectory
+Content-Language: en-US
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        olteanv@gmail.com, alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
+        frank-w@public-files.de
+References: <20211231043306.12322-1-luizluca@gmail.com>
+ <20211231043306.12322-2-luizluca@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20211231043306.12322-2-luizluca@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 01, 2022 at 06:18:54PM +0100, Andrew Lunn wrote:
-> On Fri, Dec 31, 2021 at 08:52:35PM +0000, Russell King (Oracle) wrote:
-> > Add a couple of helpers and definitions to extract the clause 45 regad
-> > and devad fields from the regnum passed into MDIO drivers.
-> > 
-> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> 
-> This email has me confused. It seems to be coming directly from
-> Russell, but is part of a patchset? Then there is a second 1/3 later
-> in the patchset?
 
-That happened by accident when using git-send-email and hence the
-first time it was sent with Russell's From: in the RFC822 headers it
-was (rightly) rejected.
-I noticed that shortly after and resend the patch with my sender
-address set as From: in the RFC822 headers and Russell's From: in the
-mail body for only git, and not mailservers, to care about.
 
-Sorry for that additional noise.
+On 12/30/2021 20:32, Luiz Angelo Daros de Luca wrote:
+> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
