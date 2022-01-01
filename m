@@ -2,78 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1E11482840
-	for <lists+netdev@lfdr.de>; Sat,  1 Jan 2022 19:50:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9932482846
+	for <lists+netdev@lfdr.de>; Sat,  1 Jan 2022 20:05:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232414AbiAASuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jan 2022 13:50:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229839AbiAASuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jan 2022 13:50:06 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417A7C061574
-        for <netdev@vger.kernel.org>; Sat,  1 Jan 2022 10:50:06 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id rj2-20020a17090b3e8200b001b1944bad25so28312414pjb.5
-        for <netdev@vger.kernel.org>; Sat, 01 Jan 2022 10:50:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dd6PVg5WSkD41CeoJs2SN7dgK92SQxSU3fKdbeoh60c=;
-        b=gDipbxdpFCQNccRdBPNV6a4930qobcfqOBh2sJrDX3Q7mfaVGeumhw9PvVdc5XRJX0
-         LObT1l/9m/dgf+gdiwEImpFUevFVcQ7S8wRdZozTMQZf/m7UT8rX0Vh2u7611aKcg4Lq
-         2LDQlzQrv0vSJFU8vF4c2RxeNUUHpUimP+w0ZMaNlXJ0NMXE0FoyFTzQddCyGWdBHz5O
-         K2T/gMfePTDPlk+Tp/u3RvtKiXbCL4ZhQenzxU2oYpCH9QTaWeWNA4HFJpgHEwsjl3Pa
-         mjohcYXarFlGPAhvCC/xPMXc6xG/BFInyzi4/AWlTRgsiz8NQCVfOAhkBd8iOh1cfUyL
-         F1EA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dd6PVg5WSkD41CeoJs2SN7dgK92SQxSU3fKdbeoh60c=;
-        b=dJ6fdQk/MFlVNmQ0riV42bUSIXFcX9DRqau4KPkEw9U4i1vvbWOt/WvdrCG65UneoN
-         HoYLdtfvh/YqWml+vgIsre42uEfaNjQSc2+K0Ih+vCLpygH8ESnIi1Gbz79AuP7UiT6e
-         vjNU90/vMQ++uh9X2OjJXvnva45xGTz59p//iM/Tfre2vZL5hpLdT4KEYG10XzgPrNNp
-         hdAxUC1oZtch/3osKp/C+I/IsmCh8y81J6zVZHG2+m6DhS+vH90/Vtj1fuuMaUNtKgS4
-         IHCapwjehqjfIl3HPIvU4ow3X+ItMfnEmjsWc0cafB19MIlhOSZ1s3fGzgrr/l7Ckkmj
-         dUcw==
-X-Gm-Message-State: AOAM532xzYvXaZNw4wwcfbMVMVKy2RU7/yQe6FPY62wSSsZwzeNZu87D
-        u46wEL141m40ywaWF/hVO53nhxEj4pLrw3R6PbB/P9+p
-X-Google-Smtp-Source: ABdhPJz9JLy5wn95PR3tqsspVG5l9sghe94tg7WNezaB91vpB2WaudZiAAqznpiS+tzRR08fnBV/Ngxu4Ln33Qz//7M=
-X-Received: by 2002:a17:90a:f405:: with SMTP id ch5mr49171636pjb.32.1641063005685;
- Sat, 01 Jan 2022 10:50:05 -0800 (PST)
+        id S232488AbiAATEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jan 2022 14:04:51 -0500
+Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:60852 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232434AbiAATEu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jan 2022 14:04:50 -0500
+Received: from pop-os.home ([86.243.171.122])
+        by smtp.orange.fr with ESMTPA
+        id 3jgMnLu6Bbyf93jgMn77BQ; Sat, 01 Jan 2022 20:04:49 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 01 Jan 2022 20:04:49 +0100
+X-ME-IP: 86.243.171.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     jgg@ziepe.ca, davem@davemloft.net, kuba@kernel.org, arnd@arndb.de,
+        tanghui20@huawei.com, gustavoars@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] sun/cassini: Use dma_set_mask_and_coherent() and simplify code
+Date:   Sat,  1 Jan 2022 20:04:45 +0100
+Message-Id: <9608eda38887c50ac7399ea1b41f977709678ea3.1641063795.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20211231043306.12322-1-luizluca@gmail.com> <20211231183022.316f6705@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20211231183022.316f6705@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Sat, 1 Jan 2022 15:49:54 -0300
-Message-ID: <CAJq09z5MFZ5jhud5+_0tPx8Vx9A5RGvC-F_cs0A=8zK+dhsjRw@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/13 v3] net: dsa: realtek: MDIO interface and RTL8367S
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Fri, 31 Dec 2021 01:32:55 -0300 Luiz Angelo Daros de Luca wrote:
-> > Subject: [PATCH net-next 00/13 v3] net: dsa: realtek: MDIO interface and RTL8367S
->
-> Would you mind reposting with the subject fixed? It says 00/13 even
-> though there is only 11 patches. That confuses patchwork into expecting
-> 13 patches and considering the series incomplete.
+Use dma_set_mask_and_coherent() instead of unrolling it with some
+dma_set_mask()+dma_set_coherent_mask().
 
-Thanks Jakub. Sorry for the noise. I'll resend a v4 tomorrow with the
-cover letter fixed (and any received Reviewed-by).
-There is another missing static that the kernel bot reported.
+Moreover, as stated in [1], dma_set_mask() with a 64-bit mask will never
+fail if dev->dma_mask is non-NULL.
+So, if it fails, the 32 bits case will also fail for the same reason.
 
-Luiz,
+That said, 'pci_using_dac' can only be 1 after a successful
+dma_set_mask_and_coherent().
+
+Simplify code and remove some dead code accordingly.
+
+[1]: https://lkml.org/lkml/2021/6/7/398
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/ethernet/sun/cassini.c | 26 ++++++--------------------
+ 1 file changed, 6 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
+index d2d4f47c7e28..dba9f12efa1c 100644
+--- a/drivers/net/ethernet/sun/cassini.c
++++ b/drivers/net/ethernet/sun/cassini.c
+@@ -4893,8 +4893,8 @@ static int cas_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	unsigned long casreg_len;
+ 	struct net_device *dev;
+ 	struct cas *cp;
+-	int i, err, pci_using_dac;
+ 	u16 pci_cmd;
++	int i, err;
+ 	u8 orig_cacheline_size = 0, cas_cacheline_size = 0;
+ 
+ 	if (cas_version_printed++ == 0)
+@@ -4965,23 +4965,10 @@ static int cas_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 
+ 	/* Configure DMA attributes. */
+-	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) {
+-		pci_using_dac = 1;
+-		err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
+-		if (err < 0) {
+-			dev_err(&pdev->dev, "Unable to obtain 64-bit DMA "
+-			       "for consistent allocations\n");
+-			goto err_out_free_res;
+-		}
+-
+-	} else {
+-		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+-		if (err) {
+-			dev_err(&pdev->dev, "No usable DMA configuration, "
+-			       "aborting\n");
+-			goto err_out_free_res;
+-		}
+-		pci_using_dac = 0;
++	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
++	if (err) {
++		dev_err(&pdev->dev, "No usable DMA configuration, aborting\n");
++		goto err_out_free_res;
+ 	}
+ 
+ 	casreg_len = pci_resource_len(pdev, 0);
+@@ -5087,8 +5074,7 @@ static int cas_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if ((cp->cas_flags & CAS_FLAG_NO_HW_CSUM) == 0)
+ 		dev->features |= NETIF_F_HW_CSUM | NETIF_F_SG;
+ 
+-	if (pci_using_dac)
+-		dev->features |= NETIF_F_HIGHDMA;
++	dev->features |= NETIF_F_HIGHDMA;
+ 
+ 	/* MTU range: 60 - varies or 9000 */
+ 	dev->min_mtu = CAS_MIN_MTU;
+-- 
+2.32.0
+
