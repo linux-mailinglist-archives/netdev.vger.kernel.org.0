@@ -2,59 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C330C482794
-	for <lists+netdev@lfdr.de>; Sat,  1 Jan 2022 13:21:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28D844827A0
+	for <lists+netdev@lfdr.de>; Sat,  1 Jan 2022 13:38:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230195AbiAAMVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jan 2022 07:21:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40848 "EHLO
+        id S232401AbiAAMio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jan 2022 07:38:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbiAAMVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jan 2022 07:21:36 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C426C061574
-        for <netdev@vger.kernel.org>; Sat,  1 Jan 2022 04:21:36 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id e202so43595167ybf.4
-        for <netdev@vger.kernel.org>; Sat, 01 Jan 2022 04:21:36 -0800 (PST)
+        with ESMTP id S229549AbiAAMio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jan 2022 07:38:44 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8F2C061574
+        for <netdev@vger.kernel.org>; Sat,  1 Jan 2022 04:38:43 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id z3so21787522plg.8
+        for <netdev@vger.kernel.org>; Sat, 01 Jan 2022 04:38:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=VS5pNjM+dtzy9PLwNcG+/sVOQHrdlQb2MUBNj5cMGEA=;
-        b=XcovfPYpj8B+gmJL+evuMdkKyntDSD6J9972raID5WdeBsVCVUbU/J0RDGouQH+F4X
-         7Ga4l6H3NayI5YfE90aZNMHRdpgOIQ4WbmCxSZNEMJ7KX8adA2qQyYt6yG6IVH6w9w2w
-         j7sYSxwjPtMP85GrNaNiOqvatlwEjg2Eyw59bqBeBPlNx9mDaIc7QBkgspyUnQGVyfTb
-         I2hxUY0+Q8c/Czcq3Pjp26LYq1/zwvKK+p0OedsDQRf+BnMbnQuVO+Pn2ZAcrtdvYGw7
-         24ibDZHRi7+WaffOIqNktcDzSCwguHXaZFOy4OPEKNdO0CZxjji3cj9zEOL1iZNGK+QI
-         6Vdg==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=dKee10LPOQ8lHJfO6IhvX7z329Z/K3nO+p+MPBHNtPw=;
+        b=CkYUegwmIGlXEAJFldbB0y1S5XEEA/94386iiUK7BwOFyS0twFtENoSJYJJiEM0oBx
+         bjv5qgPs7F5KivzO8ACC0ukpkgnk/unhf1/aGISdu7yHVhzAIaVvhryeeU4HyGNZxKeS
+         7VLhxHSns+yP+HRtyiSXb+qnFclqSP3+QCwAzFyDpfXQdI9q4npqzbXcNkLmot0Ycwxw
+         tK0n+cOCtnhTx2ZjPl9Xyny501UYm2sJSUCsohjoxebiRcA4XoZShI0VsH1uPNk83J7D
+         AqB+tbwsuPm0rzpn7x7SR1s7GJvcXQRs3uWVKfKEEpby9nFCnAvLtUmgrI9hL37HaxlA
+         FBMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=VS5pNjM+dtzy9PLwNcG+/sVOQHrdlQb2MUBNj5cMGEA=;
-        b=lSNpzsDid1YZj0u6EDhirZ7YF7W0MRfhUN2Xvbsn6MQCAZoEu8VYU4oGKSEGeBtxNY
-         dIsqhBLIHq/FSPzCs+Qbt3FxS7/nzpIVoaoqmUh38kRY9C4oB7BHCG+62Pr5svWi5nva
-         F7SJB+/qgxC2DMPesVwKt3zfBQ8T/Dg+dLqg8LzbOBgJ5R2SxQDiFH9mVMPjhSSn7h9L
-         axXDMB+enMz5xwv4OXYsiCvk+eAkVLVlAb73nYyzrgCN2+8pfxUzUWdhzu5SM4drL7pi
-         WfMT5GyPzSP5RJ6ypFMaj3aOmP4l/LtdeC346LIVR/nIASDIX2Tr9Etio1n5fG5c4sGz
-         CitQ==
-X-Gm-Message-State: AOAM532Ah8vm3+KdHw8DML2EEm9V8L3PPz8LieB5J4I3gQJJaALgenrh
-        kUhyou3bslYE8L8qXehaiu693/IkboW9+gOrA2A=
-X-Google-Smtp-Source: ABdhPJxtuy81C2AJwWuFCGGdCTLgbC098urapuaFXmNf3GSnUWe+gcVorZ09NAXfesoDsh53AzDG9c+Ffn1Z461bRLc=
-X-Received: by 2002:a25:3716:: with SMTP id e22mr33489367yba.57.1641039695631;
- Sat, 01 Jan 2022 04:21:35 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=dKee10LPOQ8lHJfO6IhvX7z329Z/K3nO+p+MPBHNtPw=;
+        b=61fnsFfFktVG6PhrTIt/Oem227ETj4KTG9JBQ7XHnkfmePO24neMmpEOnaWKu8AeDv
+         clWfPXlRbSeS6rMatguEW95nLWAQ60HpvgaSt+J/Qd4kRmnr9ZjvXS0TrVA35X3qzG3A
+         yoPByWLtuO+5gdsNkLIX6EuR+s7sfj/TxptAQaDn/DHovFUpgBZtqAVLyUR3J/ReBUSw
+         t5ef2FQ+soHe8oTmTnoqLHHZfGw9hxXuXSMOe9aWP31dYtfIiguyY0X87gSSNwF2H/42
+         eb16X2IsPdKB/8RiSERTUZaYFssKD6fnfWWGRXtLCQ8aypVMpJbhFSGoQlgdM+ONh/0X
+         //Cw==
+X-Gm-Message-State: AOAM531TwPfSryceHbqTzOxZ+FV9k2R6v6uo43b1L/nLV4P186lPZ3ap
+        CA7BBzqIkdMcEgIWNaOW4kcaSEM8C68=
+X-Google-Smtp-Source: ABdhPJw2a2ejs+rxhEB8CZO+kOUV5D4SAuIGHEsovzwPLMLglltbSi4mECZBZ4xdtgzv3VEKsPW2Qw==
+X-Received: by 2002:a17:90b:3ec5:: with SMTP id rm5mr47175833pjb.100.1641040723134;
+        Sat, 01 Jan 2022 04:38:43 -0800 (PST)
+Received: from elusivenode-Oryx-Pro ([121.210.74.231])
+        by smtp.gmail.com with ESMTPSA id 72sm31731620pfu.70.2022.01.01.04.38.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 01 Jan 2022 04:38:42 -0800 (PST)
+Date:   Sat, 1 Jan 2022 22:38:25 +1000
+From:   Hamish MacDonald <elusivenode@gmail.com>
+To:     kuba@kernel.org
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] net: socket.c: style fix
+Message-ID: <20220101123825.GA28230@elusivenode-Oryx-Pro>
 MIME-Version: 1.0
-Received: by 2002:a0d:d48e:0:0:0:0:0 with HTTP; Sat, 1 Jan 2022 04:21:35 -0800 (PST)
-Reply-To: fionahill.usa@hotmail.com
-From:   Fiona Hill <mrs.isabellahelmreich@gmail.com>
-Date:   Sat, 1 Jan 2022 04:21:35 -0800
-Message-ID: <CAFwWomdCJQ1E8aMqNL2_xR7v5qZ5khmc0XrEU9Xu0qNd5Y1yEQ@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
+Removed spaces and added a tab that was causing an error on checkpatch
 
-Happy new year to you. Please  did you receive my message i send to you?
+Signed-off-by: Hamish MacDonald <elusivenode@gmail.com>
+---
+ net/socket.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/socket.c b/net/socket.c
+index 7f64a6eccf63..f492a324f7f8 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -1946,7 +1946,7 @@ int __sys_getsockname(int fd, struct sockaddr __user *usockaddr,
+ 	err = sock->ops->getname(sock, (struct sockaddr *)&address, 0);
+ 	if (err < 0)
+ 		goto out_put;
+-        /* "err" is actually length in this case */
++	/* "err" is actually length in this case */
+ 	err = move_addr_to_user(&address, err, usockaddr, usockaddr_len);
+ 
+ out_put:
+-- 
+2.25.1
+
