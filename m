@@ -2,69 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46AB9482C28
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 17:57:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4D92482C49
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 18:01:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229546AbiABQ4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 11:56:02 -0500
-Received: from mout.kundenserver.de ([212.227.126.134]:48561 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiABQ4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 11:56:02 -0500
-Received: from localhost.localdomain ([88.152.184.187]) by
- mrelayeu.kundenserver.de (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis)
- id 1MeDYt-1mW6yT055z-00bICq; Sun, 02 Jan 2022 17:55:54 +0100
-From:   Markus Koch <markus@notsyncing.net>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Markus Koch <markus@notsyncing.net>
-Subject: [PATCH] net/fsl: Remove leftover definition in xgmac_mdio
-Date:   Sun,  2 Jan 2022 17:54:08 +0100
-Message-Id: <20220102165406.136860-1-markus@notsyncing.net>
-X-Mailer: git-send-email 2.34.1
+        id S229736AbiABRBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 12:01:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42354 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229648AbiABRBB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 12:01:01 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2A2C061761
+        for <netdev@vger.kernel.org>; Sun,  2 Jan 2022 09:01:00 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id o185so66258942ybo.12
+        for <netdev@vger.kernel.org>; Sun, 02 Jan 2022 09:01:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=k1eFEFzm2gbUkBLn/vGb2RFFDboOoQwRQSyFxZUo/6M=;
+        b=WP2iFXaTifKPUpelOkxRWCaJUql2ZN+XVVWRqq3sFQmzBA6uolXlXNyRgBDuXNrdZ3
+         aCxqdMSSe76sNDonDTDQy4kEtmRj6O9BpsQ/cAisj1G6hHntukVAlEb2Q8VKaZbgDtm7
+         pqgVyArLr2twBB75twkR61rl2HNTJEVrYA7F5Behe3e7zsIFlLtF/DoC9KHa2yVLrwqG
+         D6eIDJFXRFVv43GziczbhoJJ8KMrtqTQiHiZnAnO+dtp62qpFBK3PAjSnJQku+ct/fgb
+         AvujhGGKAyGjo0EYEbB3OQDbg3SjNyx/PcVcqVlAU25GelCqVuwIWzbHJeyQ0JVzg2Ez
+         rN7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=k1eFEFzm2gbUkBLn/vGb2RFFDboOoQwRQSyFxZUo/6M=;
+        b=ahG/S1NZ5rr3nW2Zs8WneS8DTg5cWyWgOH4TNpb7nrHmlEymFEWwykPGWNS4fJNXVJ
+         mJmU4pjxl5hZTq8DgmuuLviWpesA52fCWdH2/VZyKSTmt7TX4zF27H2UxTUPiABqDEHx
+         na1ZlIyaa12ubHIoArh9qIibCIXomYbCqLYnM/SRiNmDafhBsRgh3C19NCYPFSZiCkDj
+         +S/GJ5E9hR9wVm+KZ9kIsN23KJVP73P9OP+LLrtbpISy6dQvllxTvDurRSsVh4XcADYt
+         ERHPxDReVgq6P+sZ442kQn0KaXYY8xDXEaIwFhquy8jTnLsyqO4MsZO5Sh8H1kU+w9S5
+         V91Q==
+X-Gm-Message-State: AOAM531ZJSR2z7BoXiYkvuCfFCRgmNgFZXtl5XlDvxua7U7O2dDGI3m8
+        Da0WHc17bV923D9E2R1xUTnZAajxUqEm9DAdGg==
+X-Google-Smtp-Source: ABdhPJyPD0iTTKjWEj9PvzhEHh78DqkI6joJoaz8WudZAd7SCDWI8ZRWqGG633Axw+verpUy9v/bkE90ax5OJt6RBg0=
+X-Received: by 2002:a25:f449:: with SMTP id p9mr51599736ybe.594.1641142860003;
+ Sun, 02 Jan 2022 09:01:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:e0Ra41rzTo/PSXIi8J7gbQVRHkWtzninq55+zAKIo4A8BdC5oa7
- 2ptwJQfY6LyUuwrc/9vN82XuQ/zg+5uvFrbg9shjsL7miIRVSQ6uii6MjNEtqE+/BNFe+Mw
- u+LStQ0Q7uvAzuTMkTA8RuEsbH9QCsro4U069aS8XfcvLLTjorGp3RBcxOZaQ0P+nR1Oq1M
- jYUGAEqLm+r3fUO7fmBSQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:hzqwXEgBuQk=:FzlDBBAtHKxUVJqSqBF9dC
- 0V+5UvndL5U637Dh3Xu2lHInrFyov13kJvYEWnYCcOFjhIX04O1XPp2EFEc89twFbkeWViuBV
- 8Q4TjIhWCuegJdMSsk01pIpCjjeJgzdo41nR0457t284gUwvXqK++jQQMSU9YVhC//P16U32p
- Fhkg70Afp+mbfWPQljyaFkPVnNmqSzlUnTSinhuoghb7lFfcRIxAS0UF5WTBHx5mBBDyZDqpk
- FCWxTNRdhgG6V5uTXaMFYPkCnsEW7Pu1cEXv480OQHkpvHrEY2Ra0SM0u7MykArlyps7aXZ3a
- aREz/cNUmKbElxn2v9CRmiq+SxCCi9L4ALeQ5Usa6FUoo+E8xcHiAc82m0Op/G91Qo+surLv6
- dEb3rkZn+VLdcKGpQl0l0GzqWF1ArgJ8DV/mTa/TYDMh86lKFCMn4ODLH49eRVD31/APazavH
- qYHWyYBoYeRE8nVJNaHaC2H5HUnzTrvF+tYF/kB5XT5ZFQUJ4hLs2dCUZUUZ3UfLFQWDkODu0
- cBZhu7rn75vh2vJwkWjmIAAwQbDebzCjDM3aC5YYY4xlRD3Ajh5OHWXMjAG77RycE7Jf0pCIr
- b/TnqitZXYkZ3BopnQ3bLJoniykqscRfS6Isr7P39rHPdl+hrI+B/IWzdQuyw0D9fvkihexCv
- Qn4jdV+wMVApy6e63lLq2CMOWIz3dcP1M6CljrdJ82NrSrP+Nk4QAGfIO1CvRH8me6n6ej025
- MGDAH6+kiuRHNLw6
+Received: by 2002:a05:7108:211:0:0:0:0 with HTTP; Sun, 2 Jan 2022 09:00:59
+ -0800 (PST)
+Reply-To: mr.luisfernando5050@gmail.com
+From:   "Mr. Luis Fernando" <ellaemiantor2@gmail.com>
+Date:   Sun, 2 Jan 2022 09:00:59 -0800
+Message-ID: <CAHRdPM41Baj9p4NY_s_fbkWi_Wfn_HFnXzFvcW6snZvVt--Dww@mail.gmail.com>
+Subject: GOOD DAY
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit 26eee0210ad7 ("net/fsl: fix a bug in xgmac_mdio") fixed a bug in
-the QorIQ mdio driver but left the (now unused) incorrect bit definition
-for MDIO_DATA_BSY in the code. This commit removes it.
-
-Signed-off-by: Markus Koch <markus@notsyncing.net>
----
- drivers/net/ethernet/freescale/xgmac_mdio.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
-index 0b68852379da..5b8b9bcf41a2 100644
---- a/drivers/net/ethernet/freescale/xgmac_mdio.c
-+++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
-@@ -47,7 +47,6 @@ struct tgec_mdio_controller {
- #define MDIO_CTL_READ		BIT(15)
- 
- #define MDIO_DATA(x)		(x & 0xffff)
--#define MDIO_DATA_BSY		BIT(31)
- 
- struct mdio_fsl_priv {
- 	struct	tgec_mdio_controller __iomem *mdio_base;
--- 
-2.34.1
-
+LS0gDQrmiJHmmK/ot6/mmJPmlq/Ct+i0ueWwlOWNl+WkmuWFiOeUnw0K5Zeo77yM5pyL5Y+L77yM
+5oiR5Zyo5biD5Z+657qz5rOV57Si55qE6Z2e5rSy6IGU5ZCI6ZO26KGMIChCT0EpIOW3peS9nO+8
+jOaIkeaDs+mAmui/hyBBVE0gVklTQSBDQVJEIOWwhuS4gOeslCAyNzUwDQrkuIfnvo7lhYPnmoTl
+up/lvIPmrL7pobnovaznu5nmgqjvvIwwLjUwJSDlsIbpgILlkIjmgqjjgIIg5LiN5raJ5Y+K6aOO
+6Zmp44CCDQogIOiuuOWkmumdnua0suaUv+WuouWIqeeUqCAoQk9BKSDpk7booYzlsIbotYTph5Hv
+vIjmlL/lrqLmjqDlpLrkuobotoXov4cgNTANCuS6v+e+juWFg++8iei9rOenu+WIsOS7luS7rOea
+hOWkluWbvei0puaIt++8jOS7luS7rOS5n+aHkuW+l+efpemBk+i9rOenu+S6huWkmuWwke+8jOWb
+oOS4uui/meS6m+i1hOmHkeWxnuS6juKAnOWbveWutuKAnQ0K5Li65LuA5LmI5oiR6L+Y5Yaz5a6a
+5oqK546w5Zyo6ZW/5pyf5L+d566h5Zyo5oiR5Lus6ZO26KGM55qEMjc1MOS4h+e+juWFg+WIhuW8
+gO+8gSDmiJHlv4Xpobvnu5nkvaDmiYDmnInlv4XopoHnmoTmjIflr7zmlrnpkojvvIzov5nmoLfk
+vaDlsLHkuI3kvJrniq/ku7vkvZXplJnor6/jgIINCuWmguaenOaCqOacieiDveWKm+WkhOeQhuS6
+pOaYk++8jOivt+iBlOezu+aIkeS6huino+abtOWkmuivpuaDheOAgiDor7flm57lpI3miJHnmoTl
+pIfnlKjnlLXlrZDpgq7ku7blnLDlnYAgKG1yLmx1aXNmZXJuYW5kbzUwNTBAZ21haWwuY29tKQ0K
+TXIubHVpcyBGZXJuYW5kbw0KDQoNCg0KSSBhbSBNci5sdWlzIGZlcm5hbmRvDQpIaSBGcmllbmQg
+SSB3b3JrIGluIFVuaXRlZCBCYW5rIGZvciBBZnJpY2EgKEJPQSkgaGVyZSBpbiBCVVJLSU5BIEZB
+U08NCkkgd2FudHMgdG8gdHJhbnNmZXIgYW4gYWJhbmRvbmVkIHN1bSBvZiAyNy41IG1pbGxpb25z
+IFVTRCB0byB5b3UNCnRocm91Z2ggQVRNIFZJU0EgQ0FSRCAuNTAlIHdpbGwgYmUgZm9yIHlvdS4g
+Tm8gcmlzayBpbnZvbHZlZC4NClRoZSAoQk9BKSBiYW5rIHdhcyBiZWluZyB1c2VkIGJ5IG1hbnkg
+QWZyaWNhbiBQb2xpdGljaWFucyB0byBkaXZlcnQNCmZ1bmRzICh0aGUgUG9saXRpY2lhbnMgbG9v
+dGVkIG92ZXI1YmlsbGlvbiBVbml0ZWQgU3RhdGVzIGRvbGxhcnMpIHRvDQp0aGVpciBmb3JlaWdu
+IGFjY291bnRzIGFuZCB0aGV5IGRpZCBOb3QgYm90aGVyIHRvIGtub3cgaG93IG11Y2ggd2FzDQp0
+cmFuc2ZlcnJlZCBiZWNhdXNlIHRoZSBmdW5kcyBiZWxvbmdlZCB0byB0aGUgJ1N0YXRlJyB0aGF0
+IGlzIHdoeSBJDQphbHNvIGRlY2lkZWQgdG8gcHV0IGFwYXJ0IHRoZSBzdW0gb2YgICQyNy41bWls
+bGlvbiBEb2xsYXJzIHdoaWNoIGlzDQpzdGlsbCBpbiBvdXIgYmFuayB1bmRlciBteSBjdXN0b2R5
+IGZvciBhIGxvbmcgcGVyaW9kIG5vdyEgSSBoYXZlIHRvDQpnaXZlIHlvdSBhbGwgdGhlIHJlcXVp
+cmVkIGd1aWRlbGluZXMgc28gdGhhdCB5b3UgZG8gbm90IG1ha2UgYW55DQptaXN0YWtlLiBJZiB5
+b3UgYXJlIGNhcGFibGUgdG8gaGFuZGxlIHRoZSB0cmFuc2FjdGlvbiBDb250YWN0IG1lIGZvcg0K
+bW9yZSBkZXRhaWxzLiBLaW5kbHkgcmVwbHkgbWUgYmFjayB0byBteSBhbHRlcm5hdGl2ZSBlbWFp
+bCBhZGRyZXNzDQoobXIubHVpc2Zlcm5hbmRvNTA1MEBnbWFpbC5jb20pIE1yLmx1aXMgRmVybmFu
+ZG8NCg==
