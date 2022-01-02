@@ -2,48 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B916C482BE7
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 17:20:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FACB482BE3
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 17:20:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233398AbiABQUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 11:20:18 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49604 "EHLO
+        id S233425AbiABQUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 11:20:20 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49602 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233341AbiABQUM (ORCPT
+        with ESMTP id S233315AbiABQUM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 11:20:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33226B80DB7;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D50EB80DBE;
         Sun,  2 Jan 2022 16:20:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E35BBC36AF4;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D2C7CC36AF2;
         Sun,  2 Jan 2022 16:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1641140409;
-        bh=LFPdMZ/ubkBr7uyX7kzJTw9/g6V5SxfeW4zWOrPcKtQ=;
+        bh=MkbRx2G9HQtHNdDdCkTPNo/vksJZg+ZBdMRHMC7jVto=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WhCpS7G4XljrfoNL661wOzFC6fBsG/coHBx5jx9bb/gTWY51/TdVMqFTrrKOP8Iwp
-         Hl9unTquyszscFUcTwgJZySQBI02aBpsY9qC0UKCMTLM+NAtd/jxKQfPnevzkDVypY
-         fCJkOoUEQ9XDPrRBg6hF9IFrXydAdooxO+J33QtCUszPU/uKF6Sl6ktJrlNJIc6jDN
-         msEqv4tW5XpVe/vMwqZPR+5Es5qMD1YfLKfF+o6VUzAxKCMnuGQdkOLTrdp1WDkH50
-         ILyjzj5oC5OP8gW3z06ZKAdp7kZtsSSkIqE9YBa9QsYVYJqvrfqLxO+apte97LBKB8
-         /Nq2tiYTxulBA==
+        b=nOrqt5YWgyDEHp9ljy7XCTOO0++WtFgO4brqRldoi4JQN4ppyLaP2QLCdO06lcfes
+         Q+l4bPvnUnrXN5E/fn7jnaftJIvRhB4vHwfukLBiVOgR4MRYWHw7hQrkJlS0fRbAzm
+         RKypoCta9LCiN3e+YKR54dd8gbm2Jc/7zfP4kgP152p0EvpAE1KX6MtNJWCDKrEa4s
+         1GGuv2XA8r8ZoHsbnI8G7yrYmsKBhzUM2ls+7Zy2psQWfR7ADqjgt7IvsCF/hnkjrr
+         JJ2C+FQFx39QXXaFaexUrC6nsIGdFms4BZYR8YAnUvlo1+CJRaHcoHM+kJi8KSAx5V
+         RjACg6+n4iamw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C8526C395EB;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BF330C32795;
         Sun,  2 Jan 2022 16:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/smc: add comments for smc_link_{usable|sendable}
+Subject: Re: [PATCH] sun/cassini: Use dma_set_mask_and_coherent() and simplify
+ code
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164114040981.20715.13036176120282476805.git-patchwork-notify@kernel.org>
+Message-Id: <164114040977.20715.10088664674731936619.git-patchwork-notify@kernel.org>
 Date:   Sun, 02 Jan 2022 16:20:09 +0000
-References: <20211231060853.8106-1-dust.li@linux.alibaba.com>
-In-Reply-To: <20211231060853.8106-1-dust.li@linux.alibaba.com>
-To:     Dust Li <dust.li@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        guwen@linux.alibaba.com, tonylu@linux.alibaba.com
+References: <9608eda38887c50ac7399ea1b41f977709678ea3.1641063795.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <9608eda38887c50ac7399ea1b41f977709678ea3.1641063795.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     jgg@ziepe.ca, davem@davemloft.net, kuba@kernel.org, arnd@arndb.de,
+        tanghui20@huawei.com, gustavoars@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -53,19 +55,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 31 Dec 2021 14:08:53 +0800 you wrote:
-> Add comments for both smc_link_sendable() and smc_link_usable()
-> to help better distinguish and use them.
+On Sat,  1 Jan 2022 20:04:45 +0100 you wrote:
+> Use dma_set_mask_and_coherent() instead of unrolling it with some
+> dma_set_mask()+dma_set_coherent_mask().
 > 
-> No function changes.
-> 
-> Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+> Moreover, as stated in [1], dma_set_mask() with a 64-bit mask will never
+> fail if dev->dma_mask is non-NULL.
+> So, if it fails, the 32 bits case will also fail for the same reason.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net/smc: add comments for smc_link_{usable|sendable}
-    https://git.kernel.org/netdev/net-next/c/1f52a9380ff1
+  - sun/cassini: Use dma_set_mask_and_coherent() and simplify code
+    https://git.kernel.org/netdev/net-next/c/584c61cedb12
 
 You are awesome, thank you!
 -- 
