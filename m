@@ -2,74 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C89482ABC
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 11:23:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02B14482ADD
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 12:54:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232248AbiABKXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 05:23:47 -0500
-Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:59285 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229899AbiABKXq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 05:23:46 -0500
-Received: from pop-os.home ([86.243.171.122])
-        by smtp.orange.fr with ESMTPA
-        id 3y1dnH4CtFGqt3y1dntg15; Sun, 02 Jan 2022 11:23:45 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 02 Jan 2022 11:23:45 +0100
-X-ME-IP: 86.243.171.122
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     benve@cisco.com, _govind@gmx.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] enic: Remove usage of the deprecated "pci-dma-compat.h" API
-Date:   Sun,  2 Jan 2022 11:23:39 +0100
-Message-Id: <5080845d91e115300252298fe17fac5333458491.1641118952.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        id S232989AbiABLxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 06:53:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60462 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229811AbiABLxE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 06:53:04 -0500
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B619CC061574
+        for <netdev@vger.kernel.org>; Sun,  2 Jan 2022 03:53:03 -0800 (PST)
+Received: by mail-il1-x12d.google.com with SMTP id v10so24096211ilj.3
+        for <netdev@vger.kernel.org>; Sun, 02 Jan 2022 03:53:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=qeMD55mLc3TmX+GFQFugC7Nm7KY7RN1dOBUMTXvcSk8=;
+        b=NxHWNB9AdpUuHFZTAx9GoxS31ez3u/nK2LDMt9u+o+SqnDRx+qo4nx0kkwknSvkGPR
+         IJXxAxYYeChw4O1Kfdxjomp82GDGbFEV4COJtEVfCspI1LZe1N/y/DZTXQTAT7SRxzkD
+         V/uYYS5P//CIeH6bfhC/Xz79xhheYirmO+Yts0Ssb60gc39BsZEWKGI8eiGhgliSmCbg
+         Qorfr8nLQfZsyTX4mbPBZ3/RBWVlfm4hqjOFwwMzgsGM+QYDSPhrfeUsq8irNymM1rfF
+         mB2vNy3ong1PPs9D3cKoBssOF8RsHPhMhRJUJsUNEstw79K8jHuVDTS+UTZNIaviObzd
+         jG4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=qeMD55mLc3TmX+GFQFugC7Nm7KY7RN1dOBUMTXvcSk8=;
+        b=NNa6Vrr2FqOyKiZVgcJDCyJtEq4D+CjKOjjzMDD8el2hMfmzk3UUPngCPB9UhNEnXX
+         Dn+hlDBz8zmqdvEIyU0AcS5TcI0vUyj+AnoSUEp9SnPpU2zSL6l5gHKtHKfTy+7sP1ZF
+         mI31MDH+qq+ECouk+R/6Y53W7cwoMF/RqRFsZ+jffazx1gVHKvMkHbaRiS8eJ+9Exes1
+         tJV51yGDvF4m4j4sySF/Tq/tjd9nL4rcOqXYNfqOyhgk5QX2rUrLKAVbyYnNOjvSqoPu
+         9TBK2S1kQnM6+APPwwuODcAQe5SrGCEHJiJz7Ft+qXRq9KQ/UZE9MqmM9m5XfvzncTC1
+         r/fQ==
+X-Gm-Message-State: AOAM5305OTGA/sq3saoXoLoesdTZRzLDH7bOd1EBnwQwOlDR0uhWODyy
+        HqH6UtKwiTk6eqaZp1mdJ1XSIe9+SS4kKzUbeUA=
+X-Google-Smtp-Source: ABdhPJzaFLBbjaeM3dZBrNAg4smIBHaEfMAVxa1/NrhnHSH/vtpr4tLMHtiugo0k16TqwsBIsos2jcbdtnDyQCqjLrU=
+X-Received: by 2002:a05:6e02:1d1c:: with SMTP id i28mr14165257ila.190.1641124382969;
+ Sun, 02 Jan 2022 03:53:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a92:8747:0:0:0:0:0 with HTTP; Sun, 2 Jan 2022 03:53:02 -0800 (PST)
+From:   mrnoman saleem <saleemmrnoman6@gmail.com>
+Date:   Sun, 2 Jan 2022 03:53:02 -0800
+Message-ID: <CAF-d7LXjitXceBmRv15=oKaVqVWTDa4Uhc7GTUKo6-mbGzib9Q@mail.gmail.com>
+Subject: DEAR FRIEND CONTACTS MY SECRETARY HIS E-MAIL nelson_salah@aol.com.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In [1], Christoph Hellwig has proposed to remove the wrappers in
-include/linux/pci-dma-compat.h.
+DEAR FRIEND CONTACTS MY SECRETARY HIS E-MAIL nelson_salah@aol.com
 
-Some reasons why this API should be removed have been given by Julia
-Lawall in [2].
+I'M SORRY BUT HAPPY TO INFORM YOU ABOUT MY SUCCESS IN GETTING THOSE
+FUNDS TRANSFERRED UNDER THE CO-OPERATION OF A NEW PARTNER FROM
+PARAGUAY THOUGH I TRIED MY BEST TO INVOLVE YOU IN THE GOLD/DIAMOND
+BUSINESS BUT GOD DECIDED THE WHOLE SITUATIONS. PRESENTLY AM IN UNITED
+ARAB EMIRATES FOR INVESTMENT PROJECTS WITH MY OWN SHARE OF THE TOTAL
+SUM OF THE MONEY. MEANWHILE, I DIDN'T FORGET YOU=E2=80=99RE PAST EFFORTS AN=
+D
+ATTEMPTS TO ASSIST ME IN TRANSFERRING THOSE FUNDS DESPITE THAT
+EVERYTHING FAILED US SOMEHOW. NOW CONTACT MY SECRETARY IN BURKINA
+FASO. MR. NELSON SALAH BY NAME: HIS E-MAIL nelson_salah@aol.com.
 
-A coccinelle script has been used to perform the needed transformation
-Only relevant parts are given below.
+ASK HIM TO SEND YOU THE VISA CARD TOTAL SUM OF $2.500, 000.00.USD
+WHICH I KEPT FOR YOUR COMPENSATION FOR ALL THE PAST EFFORTS AND
+ATTEMPT TO ASSIST ME IN THIS MATTER. I DEEPLY APPRECIATED YOUR EFFORTS
+AT THAT TIME VERY MUCH. SO FEEL FREE AND KEEP IN TOUCHED WITH MY
+SECRETARY; MR. NELSON SALAH AND INSTRUCT HIM WHERE TO SEND THE VISA
+CARD VALUE SUM OF $2.500, 000.00.USD TO YOU. NOW THIS AMOUNT IS ME AND
+THE NEW PARTNER CONTRIBUTE AND OFFER YOU THIS AMOUNT
+$1.500.000.00.USD. IS FROM MY OWN SHARE WHILE MY NEW PARTNER SUPPORTED
+YOU ALSO WITH SUM OF $ 1000000.USD. FROM HIS OWN SHARE ALSO BECAUSE I
+EXPLAIN THE WHOLE FACTS TO HIM THAT YOU ARE THE FIRST PERSON I
+CONTACTED THAT WANTED TO ASSIST ME WHILE YOU COULD NOT MAKE IT AND HE
+SAID OKAY THERE'S NO PROBLEM.
 
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
+SO YOU HAVE TO KEEP THE WHOLE SECRET ABOUT MY SUCCESS, BECAUSE I
+BELIEVE ONLY YOU KNOW HOW I MADE THIS MONEY SO TRY TO KEEP EVERYTHING
+SECRET. I HOPE YOU UNDERSTAND THE REASON WHY THIS HUGE AMOUNT OF FUNDS
+WAS KEPT FOR YOU? PLEASE DO LET ME KNOW IMMEDIATELY YOU RECEIVE THE
+VISA CARD SO THAT WE CAN SHARE THE JOY AFTER ALL THE SUFFERINGS AT
+THAT TIME; IN THIS MOMENT OF TIME, I'M VERY BUSY HERE BECAUSE OF THE
+INVESTMENT PROJECTS WHICH MYSELF AND THE NEW PARTNER ARE HAVING AT
+HAND, FINALLY;
 
-[1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
-[2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
+REMEMBER THAT I HAVE ALREADY FORWARD THE INSTRUCTION TO THE SECRETARY
+ON YOUR BEHALF TO RECEIVE THAT MONEY, SO FEEL FREE TO KEEP IN TOUCH
+WITH HIM, SO THAT HE WILL SEND THE VISA CARD VALUE SUM OF
+$2.500,000.00.USD. TWO MILLION FIVE HUNDRED THOUSAND UNITED STATE
+DOLLARS TO YOU WITHOUT ANY DELAY.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/ethernet/cisco/enic/enic.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/cisco/enic/enic.h b/drivers/net/ethernet/cisco/enic/enic.h
-index c67a16a48d62..52aaf1bb5205 100644
---- a/drivers/net/ethernet/cisco/enic/enic.h
-+++ b/drivers/net/ethernet/cisco/enic/enic.h
-@@ -304,7 +304,7 @@ static inline bool enic_is_notify_intr(struct enic *enic, int intr)
- 
- static inline int enic_dma_map_check(struct enic *enic, dma_addr_t dma_addr)
- {
--	if (unlikely(pci_dma_mapping_error(enic->pdev, dma_addr))) {
-+	if (unlikely(dma_mapping_error(&enic->pdev->dev, dma_addr))) {
- 		net_warn_ratelimited("%s: PCI dma mapping failed!\n",
- 				     enic->netdev->name);
- 		enic->gen_stats.dma_map_error++;
--- 
-2.32.0
-
+BEST REGARDS,
+MR. NORMAN SALEEM.
