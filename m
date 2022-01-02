@@ -2,84 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94040482C24
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 17:48:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46AB9482C28
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 17:57:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229530AbiABQsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 11:48:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiABQsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 11:48:06 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604BCC061761
-        for <netdev@vger.kernel.org>; Sun,  2 Jan 2022 08:48:06 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id m15so28379718pgu.11
-        for <netdev@vger.kernel.org>; Sun, 02 Jan 2022 08:48:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8MGU7Bkxzsh4kSGgz7CgbOanZQ6i0lFiDarUZC8lk4A=;
-        b=PBL4HSlh4BIBv0JQCgR/3XQ6IjM93MWzS7O5YSZ/asQSC5NtMKy95n/0piN5mbrjSo
-         g+jzMoDz7/geg3L9pPT4NF2JIYjqrlF4hyS7DWBSBOXLlvqQZzQqDKQicNKvvi239Vly
-         KPhgbS7duyQgglO5fdqdNZHSTx5QRTR4V0H/LmPzuE2oYg5Mu1JYeNFXB1nBiwp7ohLU
-         E1sY1iVOhDkHwktfEhq76iMKaQvHSLT9QhzaGhzUMGAEV2vs4VKV/M+kBQfyFXTybsvb
-         3xj1FwZBgwGdvgtPPkQxIFts6xNgISxkoah84l5OKKRM6OPZGePhOkimFFh88gQ6YwW7
-         2ALQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8MGU7Bkxzsh4kSGgz7CgbOanZQ6i0lFiDarUZC8lk4A=;
-        b=7fGc7n9KpVjxFZrb2DIj1v7xvNRKADcMWsXpiX/l3uYTu3IdRcq6gOKHkhUoWJlTmQ
-         RxPpa1gTCnWulYLWXlX05XkbCpwgvDhV51NOL8II0rBINJGXxcq5MR/Eu/BdGKXqXci2
-         XNyKzOWEaV+rLywbwD1nizcmg/r9ZRo4YCl+jVnJgmkp3/DN31wbXE6o7p64MFI+MbYH
-         AxKhoeEoQ30Qr9GBxlu5cqhx4Hlfe+ENu2Aw1+4391e9B/AGD+6olupIyUUYfjaF0wRd
-         R5kzx9npTTR6fhe7Tet74oN7HgGEYt0jxUUc/V6YDIPLvuSkLlwO7Cybc7Jonk2vtYLW
-         uYlQ==
-X-Gm-Message-State: AOAM530b1SwLNsiwLE2GEdjxeEfKfcHIW/tcNzs6u2g5u+g5PGWQcxSf
-        v4wdGFKeOJyRGt1V3CmFqwo=
-X-Google-Smtp-Source: ABdhPJyRNtIMVEAZwWSYVJuHrmPwi9/hnF28q2VIYD/utTZw7zyXKI0HfCEHb/kbvIBoSsrAyQOzHg==
-X-Received: by 2002:a63:9d4a:: with SMTP id i71mr7951272pgd.570.1641142085697;
-        Sun, 02 Jan 2022 08:48:05 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id g16sm33549610pfv.159.2022.01.02.08.48.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Jan 2022 08:48:05 -0800 (PST)
-Message-ID: <2ddcd362-004a-7af6-6cab-75992dcebde9@gmail.com>
-Date:   Sun, 2 Jan 2022 08:48:03 -0800
+        id S229546AbiABQ4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 11:56:02 -0500
+Received: from mout.kundenserver.de ([212.227.126.134]:48561 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229515AbiABQ4C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 11:56:02 -0500
+Received: from localhost.localdomain ([88.152.184.187]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MeDYt-1mW6yT055z-00bICq; Sun, 02 Jan 2022 17:55:54 +0100
+From:   Markus Koch <markus@notsyncing.net>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Markus Koch <markus@notsyncing.net>
+Subject: [PATCH] net/fsl: Remove leftover definition in xgmac_mdio
+Date:   Sun,  2 Jan 2022 17:54:08 +0100
+Message-Id: <20220102165406.136860-1-markus@notsyncing.net>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH net-next v3 02/11] net: dsa: realtek: rename realtek_smi
- to realtek_priv
-Content-Language: en-US
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        olteanv@gmail.com, alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
-        frank-w@public-files.de
-References: <20211231043306.12322-1-luizluca@gmail.com>
- <20211231043306.12322-3-luizluca@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20211231043306.12322-3-luizluca@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:e0Ra41rzTo/PSXIi8J7gbQVRHkWtzninq55+zAKIo4A8BdC5oa7
+ 2ptwJQfY6LyUuwrc/9vN82XuQ/zg+5uvFrbg9shjsL7miIRVSQ6uii6MjNEtqE+/BNFe+Mw
+ u+LStQ0Q7uvAzuTMkTA8RuEsbH9QCsro4U069aS8XfcvLLTjorGp3RBcxOZaQ0P+nR1Oq1M
+ jYUGAEqLm+r3fUO7fmBSQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:hzqwXEgBuQk=:FzlDBBAtHKxUVJqSqBF9dC
+ 0V+5UvndL5U637Dh3Xu2lHInrFyov13kJvYEWnYCcOFjhIX04O1XPp2EFEc89twFbkeWViuBV
+ 8Q4TjIhWCuegJdMSsk01pIpCjjeJgzdo41nR0457t284gUwvXqK++jQQMSU9YVhC//P16U32p
+ Fhkg70Afp+mbfWPQljyaFkPVnNmqSzlUnTSinhuoghb7lFfcRIxAS0UF5WTBHx5mBBDyZDqpk
+ FCWxTNRdhgG6V5uTXaMFYPkCnsEW7Pu1cEXv480OQHkpvHrEY2Ra0SM0u7MykArlyps7aXZ3a
+ aREz/cNUmKbElxn2v9CRmiq+SxCCi9L4ALeQ5Usa6FUoo+E8xcHiAc82m0Op/G91Qo+surLv6
+ dEb3rkZn+VLdcKGpQl0l0GzqWF1ArgJ8DV/mTa/TYDMh86lKFCMn4ODLH49eRVD31/APazavH
+ qYHWyYBoYeRE8nVJNaHaC2H5HUnzTrvF+tYF/kB5XT5ZFQUJ4hLs2dCUZUUZ3UfLFQWDkODu0
+ cBZhu7rn75vh2vJwkWjmIAAwQbDebzCjDM3aC5YYY4xlRD3Ajh5OHWXMjAG77RycE7Jf0pCIr
+ b/TnqitZXYkZ3BopnQ3bLJoniykqscRfS6Isr7P39rHPdl+hrI+B/IWzdQuyw0D9fvkihexCv
+ Qn4jdV+wMVApy6e63lLq2CMOWIz3dcP1M6CljrdJ82NrSrP+Nk4QAGfIO1CvRH8me6n6ej025
+ MGDAH6+kiuRHNLw6
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+commit 26eee0210ad7 ("net/fsl: fix a bug in xgmac_mdio") fixed a bug in
+the QorIQ mdio driver but left the (now unused) incorrect bit definition
+for MDIO_DATA_BSY in the code. This commit removes it.
 
+Signed-off-by: Markus Koch <markus@notsyncing.net>
+---
+ drivers/net/ethernet/freescale/xgmac_mdio.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-On 12/30/2021 8:32 PM, Luiz Angelo Daros de Luca wrote:
-> In preparation to adding other interfaces, the private data structure
-> was renamed to priv.
-> 
-> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
+index 0b68852379da..5b8b9bcf41a2 100644
+--- a/drivers/net/ethernet/freescale/xgmac_mdio.c
++++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+@@ -47,7 +47,6 @@ struct tgec_mdio_controller {
+ #define MDIO_CTL_READ		BIT(15)
+ 
+ #define MDIO_DATA(x)		(x & 0xffff)
+-#define MDIO_DATA_BSY		BIT(31)
+ 
+ struct mdio_fsl_priv {
+ 	struct	tgec_mdio_controller __iomem *mdio_base;
 -- 
-Florian
+2.34.1
+
