@@ -2,99 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8442482C21
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 17:45:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94040482C24
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 17:48:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229522AbiABQpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 11:45:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38826 "EHLO
+        id S229530AbiABQsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 11:48:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiABQpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 11:45:14 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B88C061761
-        for <netdev@vger.kernel.org>; Sun,  2 Jan 2022 08:45:14 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id l3so35659722iol.10
-        for <netdev@vger.kernel.org>; Sun, 02 Jan 2022 08:45:13 -0800 (PST)
+        with ESMTP id S229515AbiABQsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 11:48:06 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604BCC061761
+        for <netdev@vger.kernel.org>; Sun,  2 Jan 2022 08:48:06 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id m15so28379718pgu.11
+        for <netdev@vger.kernel.org>; Sun, 02 Jan 2022 08:48:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=8iD61ggUb3gwYWGxe14jO8A6voeqSHv452r75cpLQLY=;
-        b=id0g+0M7wxhyvg3ku5BnhNiOjpeHgcTIGfMeXwRUybgwIZ7+mqhze6gPusS/q9qyul
-         /meuQra6OkIWxLmlXxTseRH+h2jZlzUZruAjV6DgrIDPiYvsBHE0nsVoUftcbuwDKNw1
-         a8TNS7VgRFZjFO3PddRDcfjpYxrUcL7W0ji/c3suI7++Bf/1BKYN/W8/et6LGMsVl8VE
-         I0N2zUZHWLc1yK5I2tueeMvxzNVwjnveSR2dpMcpezKT8EWdj+We4oyP8qFRZF1fQ8HS
-         lCkPYsYgK4Ri4ZRfy+7EKY9z0K8LKZanNGam+S5NaU0/1CY9Ei5l0Ta1uNUTriaMMunw
-         wobA==
+        bh=8MGU7Bkxzsh4kSGgz7CgbOanZQ6i0lFiDarUZC8lk4A=;
+        b=PBL4HSlh4BIBv0JQCgR/3XQ6IjM93MWzS7O5YSZ/asQSC5NtMKy95n/0piN5mbrjSo
+         g+jzMoDz7/geg3L9pPT4NF2JIYjqrlF4hyS7DWBSBOXLlvqQZzQqDKQicNKvvi239Vly
+         KPhgbS7duyQgglO5fdqdNZHSTx5QRTR4V0H/LmPzuE2oYg5Mu1JYeNFXB1nBiwp7ohLU
+         E1sY1iVOhDkHwktfEhq76iMKaQvHSLT9QhzaGhzUMGAEV2vs4VKV/M+kBQfyFXTybsvb
+         3xj1FwZBgwGdvgtPPkQxIFts6xNgISxkoah84l5OKKRM6OPZGePhOkimFFh88gQ6YwW7
+         2ALQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=8iD61ggUb3gwYWGxe14jO8A6voeqSHv452r75cpLQLY=;
-        b=5LpRaLZdPr2eJy3wJ1qtgbOkgRkS2zbhKNJ4DEtRq4DIbFHppyzoDfAB6m1A26SPVm
-         K4vjhcZzZXYMUC2r6lkJ0AlVcB7X2oMcAONbLE9MevptV6bYUmKPWPklUXTDQij4UVKm
-         LCnWnH2nIa2kN1b5TbETVqQQOf5iJUNwpPmOcanIyA47Y0ceCmGnMyRInGqzOCH7LHoH
-         I+7QJlYOJhnhCpMK0DZ1XfEPvEG3izSOSXjGEQW3neCsVeR5rrW1z3IYg1Uj1CNWJK+D
-         zKX3EtAOwTGe291rJGKU67osC/RDHxjHeyk8AtYVx9IUqE1PIwey7+z2eN5KaAFJzFvu
-         HQLQ==
-X-Gm-Message-State: AOAM533VTCRhjocagcxVi+hGYGyVovj3t6/A6K7+N6CVRl1XQUthjJER
-        nyXfR3CT1Iiqn567getrecE/PBTsVoc=
-X-Google-Smtp-Source: ABdhPJynX/A/NJqKryd6EY2QEdPhBypAU4orCTWDOlIfDUKtQDlHNOxMMGt9PfWXTbcmJh0geJHuMQ==
-X-Received: by 2002:a05:6638:387:: with SMTP id y7mr18638833jap.135.1641141913189;
-        Sun, 02 Jan 2022 08:45:13 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.30])
-        by smtp.googlemail.com with ESMTPSA id s20sm19975876iog.25.2022.01.02.08.45.12
+        bh=8MGU7Bkxzsh4kSGgz7CgbOanZQ6i0lFiDarUZC8lk4A=;
+        b=7fGc7n9KpVjxFZrb2DIj1v7xvNRKADcMWsXpiX/l3uYTu3IdRcq6gOKHkhUoWJlTmQ
+         RxPpa1gTCnWulYLWXlX05XkbCpwgvDhV51NOL8II0rBINJGXxcq5MR/Eu/BdGKXqXci2
+         XNyKzOWEaV+rLywbwD1nizcmg/r9ZRo4YCl+jVnJgmkp3/DN31wbXE6o7p64MFI+MbYH
+         AxKhoeEoQ30Qr9GBxlu5cqhx4Hlfe+ENu2Aw1+4391e9B/AGD+6olupIyUUYfjaF0wRd
+         R5kzx9npTTR6fhe7Tet74oN7HgGEYt0jxUUc/V6YDIPLvuSkLlwO7Cybc7Jonk2vtYLW
+         uYlQ==
+X-Gm-Message-State: AOAM530b1SwLNsiwLE2GEdjxeEfKfcHIW/tcNzs6u2g5u+g5PGWQcxSf
+        v4wdGFKeOJyRGt1V3CmFqwo=
+X-Google-Smtp-Source: ABdhPJyRNtIMVEAZwWSYVJuHrmPwi9/hnF28q2VIYD/utTZw7zyXKI0HfCEHb/kbvIBoSsrAyQOzHg==
+X-Received: by 2002:a63:9d4a:: with SMTP id i71mr7951272pgd.570.1641142085697;
+        Sun, 02 Jan 2022 08:48:05 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id g16sm33549610pfv.159.2022.01.02.08.48.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Jan 2022 08:45:12 -0800 (PST)
-Message-ID: <a9706c13-a519-9942-958e-20bc4ce6df9e@gmail.com>
-Date:   Sun, 2 Jan 2022 09:45:11 -0700
+        Sun, 02 Jan 2022 08:48:05 -0800 (PST)
+Message-ID: <2ddcd362-004a-7af6-6cab-75992dcebde9@gmail.com>
+Date:   Sun, 2 Jan 2022 08:48:03 -0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH net 3/5] ipv6: Check attribute length for RTA_GATEWAY in
- multipath route
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH net-next v3 02/11] net: dsa: realtek: rename realtek_smi
+ to realtek_priv
 Content-Language: en-US
-To:     nicolas.dichtel@6wind.com, netdev@vger.kernel.org
-Cc:     idosch@idosch.org
-References: <20211231003635.91219-1-dsahern@kernel.org>
- <20211231003635.91219-4-dsahern@kernel.org>
- <468b1a92-7613-e89e-d89d-48c0aa48e71c@6wind.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <468b1a92-7613-e89e-d89d-48c0aa48e71c@6wind.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        olteanv@gmail.com, alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
+        frank-w@public-files.de
+References: <20211231043306.12322-1-luizluca@gmail.com>
+ <20211231043306.12322-3-luizluca@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20211231043306.12322-3-luizluca@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/31/21 8:30 AM, Nicolas Dichtel wrote:
-> Le 31/12/2021 à 01:36, David Ahern a écrit :
->> Commit referenced in the Fixes tag used nla_memcpy for RTA_GATEWAY as
->> does the current nla_get_in6_addr. nla_memcpy protects against accessing
->> memory greater than what is in the attribute, but there is no check
->> requiring the attribute to have an IPv6 address. Add it.
->>
->> Fixes: 51ebd3181572 ("ipv6: add support of equal cost multipath (ECMP)")
->> Signed-off-by: David Ahern <dsahern@kernel.org>
->> Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
->> ---
->>  net/ipv6/route.c | 21 ++++++++++++++++++++-
->>  1 file changed, 20 insertions(+), 1 deletion(-)
->>
-> [snip]
->> @@ -5264,7 +5277,13 @@ static int ip6_route_multipath_add(struct fib6_config *cfg,
->>  
->>  			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
->>  			if (nla) {
->> -				r_cfg.fc_gateway = nla_get_in6_addr(nla);
->> +				int ret;
->> +
->> +				ret = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
->> +							extack);
->> +				if (ret)
->> +					return ret;
-> A 'goto cleanup;' is needed is case of error.
 
-good catch; will send a followup.
+
+On 12/30/2021 8:32 PM, Luiz Angelo Daros de Luca wrote:
+> In preparation to adding other interfaces, the private data structure
+> was renamed to priv.
+> 
+> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
