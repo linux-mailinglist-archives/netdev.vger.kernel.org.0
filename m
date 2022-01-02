@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 529EF4829B1
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 06:51:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 324E34829B8
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 06:52:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231203AbiABFvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 00:51:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38808 "EHLO
+        id S231243AbiABFwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 00:52:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231160AbiABFvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 00:51:12 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB80C061746
-        for <netdev@vger.kernel.org>; Sat,  1 Jan 2022 21:51:12 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id r4so25246737lfe.7
-        for <netdev@vger.kernel.org>; Sat, 01 Jan 2022 21:51:12 -0800 (PST)
+        with ESMTP id S231204AbiABFwD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 00:52:03 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079EBC061746
+        for <netdev@vger.kernel.org>; Sat,  1 Jan 2022 21:52:03 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id v15so51222714ljc.0
+        for <netdev@vger.kernel.org>; Sat, 01 Jan 2022 21:52:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qDnP0Au89kxg0ZktkB8gjrBE3sK+TqWdC3PYi49Fzuc=;
-        b=sqI6tb5Yhxl44aUD4rV0XWlBCd6pd+2y3MwBqKwbEexrBmOJdyv50iqeARE1vmFa7N
-         O0b2YyA4CFmrRUsQ7Vk8YAg1pVIHrRzA48/Q6xRcqbcgdffYNtmyRcAtpgweggkKcCzb
-         29YTlzRaR3Njp14PfiymPLUbj+54cGpdBSgkqGiFMy4AP94t9hlnA600h9K7VItiSmci
-         1dvzEFHK3gNO5QPL1v7/tfvsNtoN2XyEN6ixmzMkaP7KFhhfcSzGpzg+TeEX2gLzczkm
-         Olc/c1p+Dq9JoOVfZvjljCvE5eeJaesWpdQcsyFb+Ruuzktlb3vSt97B4qxwXoQSn2Nt
-         mB+g==
+        bh=n1IdkO2v3WWPYSUTncvDnfGDMDrfABtHyJ12lBtRt4A=;
+        b=wDPn0Jr+i3Ne3uIfUMRrc8qtDSm3mBZfR4pC/cTBiQ5xoFgztpIkqZE0aoMSWL9CYM
+         p4empsBUWq+plhKvwpWgg1psHX4gHau9FVaXoOrzVCDiQqIL0ecOMx5kNHBMWD/tzoKp
+         s+CYL0Qz7pVSkPyVn7ui/EuafYsSDUAodi63H145X98ARPys1LR/H2YAQ9ZA8zRy5ZZV
+         B8SMHR+rk9xm9TzIGdveVWHO1vtVb4wsf6WXaWtOyhev38qygrVRNprhkiSpjkSA8PlV
+         26trSfYiYZGfE0+NYotRn+hrXSiykF763+t+fzNBLCdtjcdkFWwLFFrCcYYHLelEZuCg
+         dhEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qDnP0Au89kxg0ZktkB8gjrBE3sK+TqWdC3PYi49Fzuc=;
-        b=6fIPky/5VMpOZtTnUwdvn2I/8e2NTma542QP8Mw77Ax4iTPfNEM+CGrqqT+/haGPk2
-         9zSEof/+wdSkFQWYZm7Yr3j72sKDuLs3Qj0XFNu30wsLcMx0qIaFz+12Vs9S9JKc20lE
-         2aLKsUWqJHNXpxTSNL/a5/gvucs8jNIYQLRpi+a/Aq5eUIKDL9eATSaCgFd6L9pD3fSR
-         K1KUYqkZtTQYLDwtlEO+EeZrz9RHgi9oe2ASauQywVBZyt0DDJRkUV0sD7tC7z5CcDjO
-         +JKyZwYVxvgM+qtziN8joPAuvGWGqYMpRe339DrjJZQSjmBgmTaUVFB/BguSEuZBj4zh
-         na5w==
-X-Gm-Message-State: AOAM531CSHSVJ8C07KWpL/jke/8VMCl+jPzqFwKJDLNu3uF5YqoTuK71
-        2Vs8eUombeijANXgQN7BT3CgMlkYAlJ3VV4HZe91dw==
-X-Google-Smtp-Source: ABdhPJxhmHbx0oUdcdHa07STYhT30zeD9sgrQrDqujcMSIFpQ0Tyz64sau2iz8SFac5UrBYp6N7pg6BGuOPtufdRtb4=
-X-Received: by 2002:a05:6512:750:: with SMTP id c16mr37604619lfs.622.1641102670552;
- Sat, 01 Jan 2022 21:51:10 -0800 (PST)
+        bh=n1IdkO2v3WWPYSUTncvDnfGDMDrfABtHyJ12lBtRt4A=;
+        b=Whs2L+t/265zrXPD+OcYaOpoBFGEFg/ivMwYJEMvECRr4SNu+aCxoWeKOlTZSpJrvW
+         rSQUbcY5/XTZAmXToBVxnkO5vPQScpF15p52vk1cePA95k2RViTxQidFk2qp6Kq+Escn
+         m5SJrNGcWdzmqOw1hDgAjvtcRs/B3iJ7iZLhbxJtmnn0aS0feao8BtbU+rMEVjtass40
+         CTx/BbUve4cuIiPgZTC+459/OEHkquETWEYi52xzTFvI/ZQsJ/dzLZQpXAO/30fN6pSE
+         pBKoNeYF1tfsBWOF1GRe0ljrZLveqvWd9PzHp02f0ygjwtH8/slDc3kycbUR0lAxOFDe
+         d6pw==
+X-Gm-Message-State: AOAM530yHSkloVEgUX0N5C5dPr1QxOxmL1ccu0GVxxIZujG/tyALs84G
+        A8p84+XGBJxgG+CYZIeUcvJcPJ6UVuvx0LIzT3mGLg==
+X-Google-Smtp-Source: ABdhPJz3850HYLW8wxEtlvPJb84T9SqXhem/mi/73BSeo5E7P0JHUZBkParKaPmI6AIp8XQ33Vb7i+PVLJ6RLVAtbBE=
+X-Received: by 2002:a2e:b808:: with SMTP id u8mr24141804ljo.282.1641102721114;
+ Sat, 01 Jan 2022 21:52:01 -0800 (PST)
 MIME-Version: 1.0
-References: <20211226153624.162281-1-marcan@marcan.st> <20211226153624.162281-12-marcan@marcan.st>
-In-Reply-To: <20211226153624.162281-12-marcan@marcan.st>
+References: <20211226153624.162281-1-marcan@marcan.st> <20211226153624.162281-13-marcan@marcan.st>
+In-Reply-To: <20211226153624.162281-13-marcan@marcan.st>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 2 Jan 2022 06:50:58 +0100
-Message-ID: <CACRpkdY9bm07-bJVu8KfUXzQBrLBexsPhSuEmkyi-aGpd0zyqA@mail.gmail.com>
-Subject: Re: [PATCH 11/34] brcmfmac: msgbuf: Increase RX ring sizes to 1024
+Date:   Sun, 2 Jan 2022 06:51:49 +0100
+Message-ID: <CACRpkdYZUBjOG-kW4Gj4HfzvQySsjpU_h8+mzywwFHxMCuHUYQ@mail.gmail.com>
+Subject: Re: [PATCH 12/34] brcmfmac: pcie: Fix crashes due to early IRQs
 To:     Hector Martin <marcan@marcan.st>
 Cc:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -83,10 +83,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Sun, Dec 26, 2021 at 4:38 PM Hector Martin <marcan@marcan.st> wrote:
 
-> Newer chips used on Apple platforms have more than max_rxbufpost greater
-> than 512, which causes warnings when brcmf_msgbuf_rxbuf_data_fill tries
-> to put more in the ring than fit. Increase the ring sizes to 1024.
+> The driver was enabling IRQs before the message processing was
+> initialized. This could cause IRQs to come in too early and crash the
+> driver. Instead, move the IRQ enable and hostready to a bus preinit
+> function, at which point everything is properly initialized.
 >
+> Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
 > Signed-off-by: Hector Martin <marcan@marcan.st>
 
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
