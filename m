@@ -2,100 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02B14482ADD
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 12:54:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D68AC482B02
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 13:20:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232989AbiABLxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 06:53:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60462 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbiABLxE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 06:53:04 -0500
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B619CC061574
-        for <netdev@vger.kernel.org>; Sun,  2 Jan 2022 03:53:03 -0800 (PST)
-Received: by mail-il1-x12d.google.com with SMTP id v10so24096211ilj.3
-        for <netdev@vger.kernel.org>; Sun, 02 Jan 2022 03:53:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=qeMD55mLc3TmX+GFQFugC7Nm7KY7RN1dOBUMTXvcSk8=;
-        b=NxHWNB9AdpUuHFZTAx9GoxS31ez3u/nK2LDMt9u+o+SqnDRx+qo4nx0kkwknSvkGPR
-         IJXxAxYYeChw4O1Kfdxjomp82GDGbFEV4COJtEVfCspI1LZe1N/y/DZTXQTAT7SRxzkD
-         V/uYYS5P//CIeH6bfhC/Xz79xhheYirmO+Yts0Ssb60gc39BsZEWKGI8eiGhgliSmCbg
-         Qorfr8nLQfZsyTX4mbPBZ3/RBWVlfm4hqjOFwwMzgsGM+QYDSPhrfeUsq8irNymM1rfF
-         mB2vNy3ong1PPs9D3cKoBssOF8RsHPhMhRJUJsUNEstw79K8jHuVDTS+UTZNIaviObzd
-         jG4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=qeMD55mLc3TmX+GFQFugC7Nm7KY7RN1dOBUMTXvcSk8=;
-        b=NNa6Vrr2FqOyKiZVgcJDCyJtEq4D+CjKOjjzMDD8el2hMfmzk3UUPngCPB9UhNEnXX
-         Dn+hlDBz8zmqdvEIyU0AcS5TcI0vUyj+AnoSUEp9SnPpU2zSL6l5gHKtHKfTy+7sP1ZF
-         mI31MDH+qq+ECouk+R/6Y53W7cwoMF/RqRFsZ+jffazx1gVHKvMkHbaRiS8eJ+9Exes1
-         tJV51yGDvF4m4j4sySF/Tq/tjd9nL4rcOqXYNfqOyhgk5QX2rUrLKAVbyYnNOjvSqoPu
-         9TBK2S1kQnM6+APPwwuODcAQe5SrGCEHJiJz7Ft+qXRq9KQ/UZE9MqmM9m5XfvzncTC1
-         r/fQ==
-X-Gm-Message-State: AOAM5305OTGA/sq3saoXoLoesdTZRzLDH7bOd1EBnwQwOlDR0uhWODyy
-        HqH6UtKwiTk6eqaZp1mdJ1XSIe9+SS4kKzUbeUA=
-X-Google-Smtp-Source: ABdhPJzaFLBbjaeM3dZBrNAg4smIBHaEfMAVxa1/NrhnHSH/vtpr4tLMHtiugo0k16TqwsBIsos2jcbdtnDyQCqjLrU=
-X-Received: by 2002:a05:6e02:1d1c:: with SMTP id i28mr14165257ila.190.1641124382969;
- Sun, 02 Jan 2022 03:53:02 -0800 (PST)
+        id S230022AbiABMUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 07:20:10 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58606 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229693AbiABMUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 07:20:10 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D70AE60C4E;
+        Sun,  2 Jan 2022 12:20:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3F7CDC36AEF;
+        Sun,  2 Jan 2022 12:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641126009;
+        bh=gFw9Bkudy0WLB2fmuCTRkFdkoevTtHNSg81TjK3q9gw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=NgtXRrBDjh8OA7Clto8L1rpBiFobiwPToRtn0UXC/C+ufRXJIcksXa3V3Fy2jvlVO
+         K3dtfluaf46QwRhgVIBylq9RyuqXuTUwj1Zqg4OpgIBIGeU3esDECBQiOrqXlWSYO3
+         V+CXMD6kdR+g6EFLgUX/4REd2F7I7c8KHZQur6cBDplYZxMVsDJKojKKmRia9fUOG3
+         KLOPE64IW2O88xzsWA13d/xrLHcMr4IIEqaJdNLNUiS2csKUeRR+S/F3lT9VMyRutT
+         LtkX6yVQMXnw8CWQf965GccZVh64o//ntpFUvoEIu4LEjy9lAVC8NL6ERjaKXm8yDP
+         YF2jSAH20Zy+w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 25C72C395E8;
+        Sun,  2 Jan 2022 12:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a92:8747:0:0:0:0:0 with HTTP; Sun, 2 Jan 2022 03:53:02 -0800 (PST)
-From:   mrnoman saleem <saleemmrnoman6@gmail.com>
-Date:   Sun, 2 Jan 2022 03:53:02 -0800
-Message-ID: <CAF-d7LXjitXceBmRv15=oKaVqVWTDa4Uhc7GTUKo6-mbGzib9Q@mail.gmail.com>
-Subject: DEAR FRIEND CONTACTS MY SECRETARY HIS E-MAIL nelson_salah@aol.com.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] mctp: Remove only static neighbour on RTM_DELNEIGH
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164112600914.23508.794588778406331918.git-patchwork-notify@kernel.org>
+Date:   Sun, 02 Jan 2022 12:20:09 +0000
+References: <20220101054125.9104-1-gagan1kumar.cs@gmail.com>
+In-Reply-To: <20220101054125.9104-1-gagan1kumar.cs@gmail.com>
+To:     Gagan Kumar <gagan1kumar.cs@gmail.com>
+Cc:     kuba@kernel.org, jk@codeconstruct.com.au,
+        matt@codeconstruct.com.au, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DEAR FRIEND CONTACTS MY SECRETARY HIS E-MAIL nelson_salah@aol.com
+Hello:
 
-I'M SORRY BUT HAPPY TO INFORM YOU ABOUT MY SUCCESS IN GETTING THOSE
-FUNDS TRANSFERRED UNDER THE CO-OPERATION OF A NEW PARTNER FROM
-PARAGUAY THOUGH I TRIED MY BEST TO INVOLVE YOU IN THE GOLD/DIAMOND
-BUSINESS BUT GOD DECIDED THE WHOLE SITUATIONS. PRESENTLY AM IN UNITED
-ARAB EMIRATES FOR INVESTMENT PROJECTS WITH MY OWN SHARE OF THE TOTAL
-SUM OF THE MONEY. MEANWHILE, I DIDN'T FORGET YOU=E2=80=99RE PAST EFFORTS AN=
-D
-ATTEMPTS TO ASSIST ME IN TRANSFERRING THOSE FUNDS DESPITE THAT
-EVERYTHING FAILED US SOMEHOW. NOW CONTACT MY SECRETARY IN BURKINA
-FASO. MR. NELSON SALAH BY NAME: HIS E-MAIL nelson_salah@aol.com.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-ASK HIM TO SEND YOU THE VISA CARD TOTAL SUM OF $2.500, 000.00.USD
-WHICH I KEPT FOR YOUR COMPENSATION FOR ALL THE PAST EFFORTS AND
-ATTEMPT TO ASSIST ME IN THIS MATTER. I DEEPLY APPRECIATED YOUR EFFORTS
-AT THAT TIME VERY MUCH. SO FEEL FREE AND KEEP IN TOUCHED WITH MY
-SECRETARY; MR. NELSON SALAH AND INSTRUCT HIM WHERE TO SEND THE VISA
-CARD VALUE SUM OF $2.500, 000.00.USD TO YOU. NOW THIS AMOUNT IS ME AND
-THE NEW PARTNER CONTRIBUTE AND OFFER YOU THIS AMOUNT
-$1.500.000.00.USD. IS FROM MY OWN SHARE WHILE MY NEW PARTNER SUPPORTED
-YOU ALSO WITH SUM OF $ 1000000.USD. FROM HIS OWN SHARE ALSO BECAUSE I
-EXPLAIN THE WHOLE FACTS TO HIM THAT YOU ARE THE FIRST PERSON I
-CONTACTED THAT WANTED TO ASSIST ME WHILE YOU COULD NOT MAKE IT AND HE
-SAID OKAY THERE'S NO PROBLEM.
+On Sat,  1 Jan 2022 11:11:25 +0530 you wrote:
+> Add neighbour source flag in mctp_neigh_remove(...) to allow removal of
+> only static neighbours.
+> 
+> This should be a no-op change and might be useful later when mctp can
+> have MCTP_NEIGH_DISCOVER neighbours.
+> 
+> Signed-off-by: Gagan Kumar <gagan1kumar.cs@gmail.com>
+> 
+> [...]
 
-SO YOU HAVE TO KEEP THE WHOLE SECRET ABOUT MY SUCCESS, BECAUSE I
-BELIEVE ONLY YOU KNOW HOW I MADE THIS MONEY SO TRY TO KEEP EVERYTHING
-SECRET. I HOPE YOU UNDERSTAND THE REASON WHY THIS HUGE AMOUNT OF FUNDS
-WAS KEPT FOR YOU? PLEASE DO LET ME KNOW IMMEDIATELY YOU RECEIVE THE
-VISA CARD SO THAT WE CAN SHARE THE JOY AFTER ALL THE SUFFERINGS AT
-THAT TIME; IN THIS MOMENT OF TIME, I'M VERY BUSY HERE BECAUSE OF THE
-INVESTMENT PROJECTS WHICH MYSELF AND THE NEW PARTNER ARE HAVING AT
-HAND, FINALLY;
+Here is the summary with links:
+  - [v2] mctp: Remove only static neighbour on RTM_DELNEIGH
+    https://git.kernel.org/netdev/net/c/ae81de737885
 
-REMEMBER THAT I HAVE ALREADY FORWARD THE INSTRUCTION TO THE SECRETARY
-ON YOUR BEHALF TO RECEIVE THAT MONEY, SO FEEL FREE TO KEEP IN TOUCH
-WITH HIM, SO THAT HE WILL SEND THE VISA CARD VALUE SUM OF
-$2.500,000.00.USD. TWO MILLION FIVE HUNDRED THOUSAND UNITED STATE
-DOLLARS TO YOU WITHOUT ANY DELAY.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-BEST REGARDS,
-MR. NORMAN SALEEM.
+
