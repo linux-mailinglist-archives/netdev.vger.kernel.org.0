@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 324E34829B8
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 06:52:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E785D4829BB
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 06:53:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231243AbiABFwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 00:52:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39014 "EHLO
+        id S231177AbiABFx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 00:53:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231204AbiABFwD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 00:52:03 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079EBC061746
-        for <netdev@vger.kernel.org>; Sat,  1 Jan 2022 21:52:03 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id v15so51222714ljc.0
-        for <netdev@vger.kernel.org>; Sat, 01 Jan 2022 21:52:02 -0800 (PST)
+        with ESMTP id S229943AbiABFx1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 00:53:27 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B06CC06173F
+        for <netdev@vger.kernel.org>; Sat,  1 Jan 2022 21:53:27 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id h7so23869315lfu.4
+        for <netdev@vger.kernel.org>; Sat, 01 Jan 2022 21:53:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=n1IdkO2v3WWPYSUTncvDnfGDMDrfABtHyJ12lBtRt4A=;
-        b=wDPn0Jr+i3Ne3uIfUMRrc8qtDSm3mBZfR4pC/cTBiQ5xoFgztpIkqZE0aoMSWL9CYM
-         p4empsBUWq+plhKvwpWgg1psHX4gHau9FVaXoOrzVCDiQqIL0ecOMx5kNHBMWD/tzoKp
-         s+CYL0Qz7pVSkPyVn7ui/EuafYsSDUAodi63H145X98ARPys1LR/H2YAQ9ZA8zRy5ZZV
-         B8SMHR+rk9xm9TzIGdveVWHO1vtVb4wsf6WXaWtOyhev38qygrVRNprhkiSpjkSA8PlV
-         26trSfYiYZGfE0+NYotRn+hrXSiykF763+t+fzNBLCdtjcdkFWwLFFrCcYYHLelEZuCg
-         dhEQ==
+        bh=kN/N2rVxzZIMtOuMAHgQvn9VJQIKF/QJv0SmhaxabsE=;
+        b=aAO3Nsb+2goe0QtK+PU3kzXBJ+vF7zKe/y1uxGrsZkEtSQavHFyz9DJ730ecAAEPiX
+         0/9vG1Xj9qdCFJ7oyeTQ57wmKtRFtzc1kzecVEKn6A5+UhAGMB47NpBMK8jLCMv9Qwij
+         gp4V64XiQCtCyfHmDkQRxv88odYg4jfcyzWnGfkr7yLqz+tW+dtQgrJbQF1a0o3SzF2t
+         huMo+mJf0nWGzCrIBNTGUkQj7t3tttPK+jMDjPP6oubAXQM2lTYa2Y4Ut0On7Zj2ECvt
+         GHm9SW7oQFKWEYn+eotYRh4e4o8T9Y79pp5x/Ups/NKOXRB0A6ifdFA18LalhZalUuBt
+         kLAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=n1IdkO2v3WWPYSUTncvDnfGDMDrfABtHyJ12lBtRt4A=;
-        b=Whs2L+t/265zrXPD+OcYaOpoBFGEFg/ivMwYJEMvECRr4SNu+aCxoWeKOlTZSpJrvW
-         rSQUbcY5/XTZAmXToBVxnkO5vPQScpF15p52vk1cePA95k2RViTxQidFk2qp6Kq+Escn
-         m5SJrNGcWdzmqOw1hDgAjvtcRs/B3iJ7iZLhbxJtmnn0aS0feao8BtbU+rMEVjtass40
-         CTx/BbUve4cuIiPgZTC+459/OEHkquETWEYi52xzTFvI/ZQsJ/dzLZQpXAO/30fN6pSE
-         pBKoNeYF1tfsBWOF1GRe0ljrZLveqvWd9PzHp02f0ygjwtH8/slDc3kycbUR0lAxOFDe
-         d6pw==
-X-Gm-Message-State: AOAM530yHSkloVEgUX0N5C5dPr1QxOxmL1ccu0GVxxIZujG/tyALs84G
-        A8p84+XGBJxgG+CYZIeUcvJcPJ6UVuvx0LIzT3mGLg==
-X-Google-Smtp-Source: ABdhPJz3850HYLW8wxEtlvPJb84T9SqXhem/mi/73BSeo5E7P0JHUZBkParKaPmI6AIp8XQ33Vb7i+PVLJ6RLVAtbBE=
-X-Received: by 2002:a2e:b808:: with SMTP id u8mr24141804ljo.282.1641102721114;
- Sat, 01 Jan 2022 21:52:01 -0800 (PST)
+        bh=kN/N2rVxzZIMtOuMAHgQvn9VJQIKF/QJv0SmhaxabsE=;
+        b=K0Vllctgjd7EbAQ91vYlaPiNOtDr7Wqcp3u0hYUY6egr1XAXg8XM9hkMsBi/hL4vI1
+         zOn2vme3pbitm2v+5zjoK3kufyXuiNlq8ugBsUlKSMO6XZogu+/ZPDZy9lyPAIqwGghm
+         2aWre/DudCJbv5hZ0PXFXMhHbYLDAjpJ5xc2NqXLxdPhIU3SiR9FbzIEIO5Y4vHBMTG/
+         u3dGwW+ef8Ur72uDlt+d00BZDaYdZSfFtATQrZko3f4es/hYp5+BY7jmfd2q40qDcV9O
+         zHUajVok1SwZSj0nVCUuNwqnasO9UMCxUHyqnVkUEVnnFBPw3J0BcvnRj8IcfBCRFPSg
+         hjQQ==
+X-Gm-Message-State: AOAM5308PowAdrf75PDP8VHH7LJ/axKH3pPdy934CYfIgiXQtC25IY5v
+        oJnH9uE7fq2bSFBLXgoemvmS5VNGjxmoZ++mrOeD1g==
+X-Google-Smtp-Source: ABdhPJylWhyOHbTj5KdXcatouGqU6VlN+Ex8KSXONqXfEUf+0KJhJA5+rfp4hk+4n+4kIRy98MPV/jipmTrNjcARuIc=
+X-Received: by 2002:a05:6512:2304:: with SMTP id o4mr35027621lfu.563.1641102805229;
+ Sat, 01 Jan 2022 21:53:25 -0800 (PST)
 MIME-Version: 1.0
-References: <20211226153624.162281-1-marcan@marcan.st> <20211226153624.162281-13-marcan@marcan.st>
-In-Reply-To: <20211226153624.162281-13-marcan@marcan.st>
+References: <20211226153624.162281-1-marcan@marcan.st> <20211226153624.162281-14-marcan@marcan.st>
+In-Reply-To: <20211226153624.162281-14-marcan@marcan.st>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 2 Jan 2022 06:51:49 +0100
-Message-ID: <CACRpkdYZUBjOG-kW4Gj4HfzvQySsjpU_h8+mzywwFHxMCuHUYQ@mail.gmail.com>
-Subject: Re: [PATCH 12/34] brcmfmac: pcie: Fix crashes due to early IRQs
+Date:   Sun, 2 Jan 2022 06:53:12 +0100
+Message-ID: <CACRpkdYj1Fi5+jazp+MBsgSkHwq2CGcpBf86mYii7K5RzyO0pg@mail.gmail.com>
+Subject: Re: [PATCH 13/34] brcmfmac: pcie: Support PCIe core revisions >= 64
 To:     Hector Martin <marcan@marcan.st>
 Cc:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -83,12 +83,11 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Sun, Dec 26, 2021 at 4:38 PM Hector Martin <marcan@marcan.st> wrote:
 
-> The driver was enabling IRQs before the message processing was
-> initialized. This could cause IRQs to come in too early and crash the
-> driver. Instead, move the IRQ enable and hostready to a bus preinit
-> function, at which point everything is properly initialized.
+> These newer PCIe core revisions include new sets of registers that must
+> be used instead of the legacy ones. Introduce a brcmf_pcie_reginfo to
+> hold the specific register offsets and values to use for a given
+> platform, and change all the register accesses to indirect through it.
 >
-> Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
 > Signed-off-by: Hector Martin <marcan@marcan.st>
 
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
