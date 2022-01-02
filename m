@@ -2,198 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23A44482BE9
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 17:21:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B34D482BEE
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 17:21:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233335AbiABQVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 11:21:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33614 "EHLO
+        id S233397AbiABQVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 11:21:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232489AbiABQVT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 11:21:19 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22198C061761;
-        Sun,  2 Jan 2022 08:21:19 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id a11-20020a17090a854b00b001b11aae38d6so30318163pjw.2;
-        Sun, 02 Jan 2022 08:21:19 -0800 (PST)
+        with ESMTP id S233348AbiABQVW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 11:21:22 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCB2C061761;
+        Sun,  2 Jan 2022 08:21:21 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id m1so27597095pfk.8;
+        Sun, 02 Jan 2022 08:21:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DzBK87F7QZIll1WMaPdK83Kv7/hgUDudXTuVIROiUcI=;
-        b=FsRiThMTy94VYM5cR+NDog1FGP/jyaZSCzhdDhja1YnmAUDdhIqexieEe3g+vpFw2t
-         Z4U5bYPh5XntivEoJHRtYNMwcQthhouTGcD6bEj1TNV26ga4cJz4wGhZk8ygCcr5uAZL
-         xgkCKVLpaRg1eF77TB4OnzVpe1UTl3H/2+kxqebqHocwU1S4pkiqzIIWR/3W6NPu/dTa
-         j6Ful4NUdmJz1UFzgpQlJWwfEPThNvkA3KNr0hKGHtz9t59VHhrRiF18BlCRlZ35y0HK
-         hkeZcJ5fJNJW5/HLzw4FnYmPRTtbobdCsI4D/WFw/RRH9ETC6pXO0znq6/2D2gb4X35X
-         ZVJA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=FneKfEeM6t7V97+0czUOEIIjpFG+NHNOywBYdTBFn8U=;
+        b=d8rvVb5aVUB1pTIgKc1H8z543k51Z2LKbeO20W3Z4HjpXQIaAna573nwuoP2ivR0EL
+         dWA0NWeoolgtGm7fVeLN3Ky8thD4bjFnfZTSXSGymH3H5VtyhOEVShEOBRgZGPQso4hX
+         zvnZ9XdU3TxlpK/RxrFZzJW/qnrjVidVRY77E0+tsqV+fkU+zWmvcL99oOOC0tVZ0rUD
+         f0lqZzrIge9MMVYuVDhT6mipi9zeU45mzFeuLF2MXuetgCi6i5viNV3jl7UjsyPphulN
+         a5DzCAZn3/cdiTVXsIEtGACzci17wRD45l80oiTCOXRRkjsWjSt0ooUWITZ3VzsrLMWU
+         UwMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DzBK87F7QZIll1WMaPdK83Kv7/hgUDudXTuVIROiUcI=;
-        b=pdM2+I3qs04mGN7145lP1dkmUcMg9hpYBWV+S+nDKuZhGHR+jdsrq+1QQm2RnPEUja
-         shqvS2Z+fEz68fZZ7Oyya3CUVmBHSb7RLB7qbHCupl1fEGFtBWa0aNicE2Rpt3vMqyNd
-         B0x/6IariVFofdZI1cWN33IjPCI/dK9bxWArZoMUFQ3zdeASEBhYw7MPvloG3df2FnxZ
-         uv7mgSpWTU8y1XG4y2qORaPQY3XL7yPFu+ZEL4PeN1L9bcXVeJ2QTZEdTIPyw3ONjFlc
-         oESRIj1n0YF6RI5Y5sjjsVbMArnQkgATNIzoLKoZe/oMR30My6LpH0oLAZ7vefV5YCLh
-         Oheg==
-X-Gm-Message-State: AOAM533U3tCTrr04hN6OWu9U6EOi1xveGfVsmOpg7vwIQU+wQjYofcGz
-        +zYUypAci2tLU12FNvsiS1EK+plrWZ8=
-X-Google-Smtp-Source: ABdhPJwapQSYeo8A7B6hkT4df4leVOnJQYPOV1dedkda8p5/hpktvm9/Mh91cggY6qJn1B9iu66ttw==
-X-Received: by 2002:a17:90b:1d82:: with SMTP id pf2mr52017630pjb.96.1641140478445;
-        Sun, 02 Jan 2022 08:21:18 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=FneKfEeM6t7V97+0czUOEIIjpFG+NHNOywBYdTBFn8U=;
+        b=z7vkRL18a18yoYl9wy2VTPlC5iIhmVU6yPSc7q0zw9DON7jHQ2GRBZXLvey7b+j+Op
+         yry56btRlWi9n9dyDfhmhbV5yF3Ym6+aCUCBVsmUO2410W92r9OTg1pLf8G6u/Qkvi+8
+         9S3KHc2A5+i+GqzpoGF7ZmK1gRaBduuWfE8Rw8ipNbF0sKx7IfJ5z2mntEHirFsu8cnV
+         mY94qnyCzV7Q6yNbt9UFcT3RtINfMLcxPEK4eY61AKuBFaii7IGOTXKnhiQZL9i6x276
+         hZcqxY1RxFws2AD0Bb1V57GVujmosIVYF8AXN8j2hg/bRe7js5qlBMkfcIpFlYDTvzLV
+         NY0g==
+X-Gm-Message-State: AOAM533ggHdg9/5DkdN5FGGLeuKr1/+bw4+vKW55y83u+vd//+o97eOY
+        NE02X6T9pu5eJSAMQpjMwAdZoce8k4o=
+X-Google-Smtp-Source: ABdhPJxhLC5HZgy3skPzbcJW6m0dJ+4wOlZXhhrjj/zRu8XYzOFAUP4PW7TM84s5/+F2AiXfJyOpKQ==
+X-Received: by 2002:a05:6a00:14c9:b0:4bb:68c5:b649 with SMTP id w9-20020a056a0014c900b004bb68c5b649mr43531087pfu.25.1641140481360;
+        Sun, 02 Jan 2022 08:21:21 -0800 (PST)
 Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id i1sm10979896pgk.89.2022.01.02.08.21.17
+        by smtp.gmail.com with ESMTPSA id cx5sm33102383pjb.22.2022.01.02.08.21.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Jan 2022 08:21:18 -0800 (PST)
+        Sun, 02 Jan 2022 08:21:21 -0800 (PST)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
         netfilter-devel@vger.kernel.org
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
+Cc:     Luis Chamberlain <mcgrof@kernel.org>, Jessica Yu <jeyu@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Florian Westphal <fw@strlen.de>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf-next v6 00/11] Introduce unstable CT lookup helpers
-Date:   Sun,  2 Jan 2022 21:51:04 +0530
-Message-Id: <20220102162115.1506833-1-memxor@gmail.com>
+Subject: [PATCH bpf-next v6 01/11] kernel: Implement try_module_get_live
+Date:   Sun,  2 Jan 2022 21:51:05 +0530
+Message-Id: <20220102162115.1506833-2-memxor@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220102162115.1506833-1-memxor@gmail.com>
+References: <20220102162115.1506833-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6437; h=from:subject; bh=mB+i1BrL1/wa+kkQcT2Mp0Z7IphshbapPPWmeGkB5bM=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBh0dCJAN+xWdAjBPpTi+zXD+pjj89NrA34IIpKCevC 2NZ0R0SJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYdHQiQAKCRBM4MiGSL8Ryg6kEA CnAoM59mlT1texWpwvX32iYgUJ/C/OqnAl8OCtJe1JGmFriXzh+WpIZ998rO4Fbww8FwYlT138/NvX hmlWwUvFumYWeE3/4hrvkumQxKlXaKZfkI1WGNtU8/qmemkM17TUpDE2ymcxnNrdo9YXqjXX1mh79k AxLKXaJEltkYNbZD28wLazFXlWbF+lJicEZeqH6kMnMreeyk89WI4lyxwNH6C89l6jc4Z2jv/Qptzg jMdx6P8Mub8MCMdZUTU4WhhT9sXW742GnkAxvyZzB8+C0Be7zoNbilbQ0qUeK1PMjg5n5toe7Oe0dF boKiiw6POEZSRUpq7KH5/Sv85FbG6BTmNYZnnX59wuDyYGyV8FXJOUytBYKhTpP/jwfsZ5AQh463PD EhRcCkOZGQZfmmm0gpUVOf2xIU4qZPfxwx7KN8O+egXUDyGQm5eZaeiGXVJYToatADay9in+2W6hVh E4nE/66+QNV521YRcCkyEUjudqmqhjZmF7kW3ZMRVu7tXRJeBnSsmf7khiZM2VubnSU86Kmnn1chzO Dvw79es4xlIGkuNcycpMJCgkaVG36qphSDVt0ptzfEnvkDFZKIUPNfR+Vp6mpX6VyB8hv/wjW9c9Tc 0AU9la6M/U4+J9DQNUbZhTOam3JItm/Y5e0Z2reDjkthc4fs5KR5q46+qebg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3900; h=from:subject; bh=0xQJuMPHF9jAUeRRbCHR10LRMBj3BLengC9L+D9l2vg=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBh0dCJpKFzooU7tf/91QImFry8ZYWdj9EwitOF8zeJ IfebNjOJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYdHQiQAKCRBM4MiGSL8RysKWD/ 0UCxYPovkVO+6WskDoPzJXUpeIYsU1jxycTSodueyhUQ1gyCzKDP8HlRnBrPJ14ERamRB4Mp+71308 qHgB9L9w6zmhznEBSiNnvRz98nuDUSqJKC1lELMV8R3s5/pUT8ZjMmWx8RAJuMD5H78AHjf1r32rGa dG4wl1td5iFclrwvszFzDfL1NEGancPqRUbAzH0tl3pIFt7FL2jwAH0/PxaFPe209oOMDaOP0lGps1 VdPe+Y/NqyY8re2D8RLMj9vMLQ7dkxamPQqLuVEltejNSwWlFQ9I5xyXBojre/Kl8cZVS5+y8gYo9Z SVdf7arL6xVKIsFSkRXkp6BMimhhFBb8E8PaVaDhIKP2iHM3jG1IiN8EXwSVt67baFxQTM+74kWBHY 75nDMIVKQ6bF5zdrnxdTXmwoJ1rnPKc4o58wLIToaPK0cuzWtttTQlASO2oIGXUQ5mPavEN9je6F5a C9kPYGQl85v4diiE1Vb5ZofnyDRr40BohBINBDfQPT3X6IC+dLPbTx4kiZ4NLMqZv9D/7zZ00Ac4Vj ycYvblVmq2Y70q5vxjlY6GnbmR6+Jfrhg09wHpF5XrVpDYHV42TS59bNjCbCd0K+SXb4U4j0uDPp31 lvUHUNBzuiiDoaxBXtAw2m41B0DaS0+qXSYLY1yEcjBtN5/8KEq4l0KcuU5w==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds unstable conntrack lookup helpers using BPF kfunc support.  The
-patch adding the lookup helper is based off of Maxim's recent patch to aid in
-rebasing their series on top of this, all adjusted to work with module kfuncs [0].
+Refactor shared functionality between strong_try_module_get and
+try_module_get into a common helper, and expose try_module_get_live
+that returns a bool similar to try_module_get.
 
-  [0]: https://lore.kernel.org/bpf/20211019144655.3483197-8-maximmi@nvidia.com
+It will be used in the next patch for btf_try_get_module, to eliminate a
+race between module __init function invocation and module_put from BPF
+side.
 
-To enable returning a reference to struct nf_conn, the verifier is extended to
-support reference tracking for PTR_TO_BTF_ID, and kfunc is extended with support
-for working as acquire/release functions, similar to existing BPF helpers. kfunc
-returning pointer (limited to PTR_TO_BTF_ID in the kernel) can also return a
-PTR_TO_BTF_ID_OR_NULL now, typically needed when acquiring a resource can fail.
-kfunc can also receive PTR_TO_CTX and PTR_TO_MEM (with some limitations) as
-arguments now. There is also support for passing a mem, len pair as argument
-to kfunc now. In such cases, passing pointer to unsized type (void) is also
-permitted.
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Jessica Yu <jeyu@kernel.org>
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-modules@vger.kernel.org
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+---
+ include/linux/module.h | 26 +++++++++++++++++++-------
+ kernel/module.c        | 20 ++++++++------------
+ 2 files changed, 27 insertions(+), 19 deletions(-)
 
-Please see individual commits for details.
-
-Changelog:
-----------
-v5 -> v6:
-v5: https://lore.kernel.org/bpf/20211230023705.3860970-1-memxor@gmail.com
-
- * Fix for a bug in btf_try_get_module leading to use-after-free
- * Drop *kallsyms_on_each_symbol loop, reinstate register_btf_kfunc_id_set (Alexei)
- * btf_free_kfunc_set_tab now takes struct btf, and handles resetting tab to NULL
- * Check return value btf_name_by_offset for param_name
- * Instead of using tmp_set, use btf->kfunc_set_tab directly, and simplify cleanup
-
-v4 -> v5:
-v4: https://lore.kernel.org/bpf/20211217015031.1278167-1-memxor@gmail.com
-
- * Move nf_conntrack helpers code to its own separate file (Toke, Pablo)
- * Remove verifier callbacks, put btf_id_sets in struct btf (Alexei)
-  * Convert the in-kernel users away from the old API
- * Change len__ prefix convention to __sz suffix (Alexei)
- * Drop parent_ref_obj_id patch (Alexei)
-
-v3 -> v4:
-v3: https://lore.kernel.org/bpf/20211210130230.4128676-1-memxor@gmail.com
-
- * Guard unstable CT helpers with CONFIG_DEBUG_INFO_BTF_MODULES
- * Move addition of prog_test test kfuncs to selftest commit
- * Move negative kfunc tests to test_verifier suite
- * Limit struct nesting depth to 4, which should be enough for now
-
-v2 -> v3:
-v2: https://lore.kernel.org/bpf/20211209170929.3485242-1-memxor@gmail.com
-
- * Fix build error for !CONFIG_BPF_SYSCALL (Patchwork)
-
-RFC v1 -> v2:
-v1: https://lore.kernel.org/bpf/20211030144609.263572-1-memxor@gmail.com
-
- * Limit PTR_TO_MEM support to pointer to scalar, or struct with scalars (Alexei)
- * Use btf_id_set for checking acquire, release, ret type null (Alexei)
- * Introduce opts struct for CT helpers, move int err parameter to it
- * Add l4proto as parameter to CT helper's opts, remove separate tcp/udp helpers
- * Add support for mem, len argument pair to kfunc
- * Allow void * as pointer type for mem, len argument pair
- * Extend selftests to cover new additions to kfuncs
- * Copy ref_obj_id to PTR_TO_BTF_ID dst_reg on btf_struct_access, test it
- * Fix other misc nits, bugs, and expand commit messages
-
-Kumar Kartikeya Dwivedi (11):
-  kernel: Implement try_module_get_live
-  bpf: Fix UAF due to race between btf_try_get_module and load_module
-  bpf: Populate kfunc BTF ID sets in struct btf
-  bpf: Remove check_kfunc_call callback and old kfunc BTF ID API
-  bpf: Introduce mem, size argument pair support for kfunc
-  bpf: Add reference tracking support to kfunc
-  net/netfilter: Add unstable CT lookup helpers for XDP and TC-BPF
-  selftests/bpf: Add test for unstable CT lookup API
-  selftests/bpf: Add test_verifier support to fixup kfunc call insns
-  selftests/bpf: Extend kfunc selftests
-  selftests/bpf: Add test for race in btf_try_get_module
-
- include/linux/bpf.h                           |   8 -
- include/linux/bpf_verifier.h                  |   7 +
- include/linux/btf.h                           |  82 ++---
- include/linux/btf_ids.h                       |  13 +-
- include/linux/module.h                        |  26 +-
- include/net/netfilter/nf_conntrack_bpf.h      |  23 ++
- kernel/bpf/btf.c                              | 327 ++++++++++++++++--
- kernel/bpf/verifier.c                         | 197 +++++++----
- kernel/module.c                               |  20 +-
- net/bpf/test_run.c                            | 150 +++++++-
- net/core/filter.c                             |   1 -
- net/core/net_namespace.c                      |   1 +
- net/ipv4/bpf_tcp_ca.c                         |  22 +-
- net/ipv4/tcp_bbr.c                            |  18 +-
- net/ipv4/tcp_cubic.c                          |  17 +-
- net/ipv4/tcp_dctcp.c                          |  18 +-
- net/netfilter/Makefile                        |   5 +
- net/netfilter/nf_conntrack_bpf.c              | 257 ++++++++++++++
- net/netfilter/nf_conntrack_core.c             |   8 +
- tools/testing/selftests/bpf/Makefile          |  11 +-
- .../selftests/bpf/bpf_testmod/Makefile        |   5 +-
- .../bpf/bpf_testmod/bpf_mod_kfunc_race.c      |  50 +++
- .../selftests/bpf/bpf_testmod/bpf_testmod.c   |  17 +-
- tools/testing/selftests/bpf/config            |   4 +
- .../selftests/bpf/prog_tests/bpf_mod_race.c   | 221 ++++++++++++
- .../testing/selftests/bpf/prog_tests/bpf_nf.c |  48 +++
- .../selftests/bpf/prog_tests/kfunc_call.c     |   6 +
- .../selftests/bpf/progs/bpf_mod_race.c        | 100 ++++++
- .../selftests/bpf/progs/kfunc_call_race.c     |  14 +
- .../selftests/bpf/progs/kfunc_call_test.c     |  52 ++-
- tools/testing/selftests/bpf/progs/ksym_race.c |  13 +
- .../testing/selftests/bpf/progs/test_bpf_nf.c | 105 ++++++
- tools/testing/selftests/bpf/test_verifier.c   |  28 ++
- tools/testing/selftests/bpf/verifier/calls.c  |  75 ++++
- 34 files changed, 1713 insertions(+), 236 deletions(-)
- create mode 100644 include/net/netfilter/nf_conntrack_bpf.h
- create mode 100644 net/netfilter/nf_conntrack_bpf.c
- create mode 100644 tools/testing/selftests/bpf/bpf_testmod/bpf_mod_kfunc_race.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_mod_race.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_nf.c
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_mod_race.c
- create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_race.c
- create mode 100644 tools/testing/selftests/bpf/progs/ksym_race.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_bpf_nf.c
-
+diff --git a/include/linux/module.h b/include/linux/module.h
+index c9f1200b2312..eb83aaeaa76e 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -608,17 +608,17 @@ void symbol_put_addr(void *addr);
+ /* Sometimes we know we already have a refcount, and it's easier not
+    to handle the error case (which only happens with rmmod --wait). */
+ extern void __module_get(struct module *module);
+-
+-/* This is the Right Way to get a module: if it fails, it's being removed,
+- * so pretend it's not there. */
+-extern bool try_module_get(struct module *module);
+-
++extern int __try_module_get(struct module *module, bool strong);
+ extern void module_put(struct module *module);
+ 
+ #else /*!CONFIG_MODULE_UNLOAD*/
+-static inline bool try_module_get(struct module *module)
++static inline int __try_module_get(struct module *module, bool strong)
+ {
+-	return !module || module_is_live(module);
++	if (module && !module_is_live(module))
++		return -ENOENT;
++	if (strong && module && module->state == MODULE_STATE_COMING)
++		return -EBUSY;
++	return 0;
+ }
+ static inline void module_put(struct module *module)
+ {
+@@ -631,6 +631,18 @@ static inline void __module_get(struct module *module)
+ 
+ #endif /* CONFIG_MODULE_UNLOAD */
+ 
++/* This is the Right Way to get a module: if it fails, it's being removed,
++ * so pretend it's not there. */
++static inline bool try_module_get(struct module *module)
++{
++	return !__try_module_get(module, false);
++}
++/* Only take reference for modules which have fully initialized */
++static inline bool try_module_get_live(struct module *module)
++{
++	return !__try_module_get(module, true);
++}
++
+ /* This is a #define so the string doesn't get put in every .o file */
+ #define module_name(mod)			\
+ ({						\
+diff --git a/kernel/module.c b/kernel/module.c
+index 84a9141a5e15..a9bb0a5576c8 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -318,12 +318,7 @@ EXPORT_SYMBOL(unregister_module_notifier);
+ static inline int strong_try_module_get(struct module *mod)
+ {
+ 	BUG_ON(mod && mod->state == MODULE_STATE_UNFORMED);
+-	if (mod && mod->state == MODULE_STATE_COMING)
+-		return -EBUSY;
+-	if (try_module_get(mod))
+-		return 0;
+-	else
+-		return -ENOENT;
++	return __try_module_get(mod, true);
+ }
+ 
+ static inline void add_taint_module(struct module *mod, unsigned flag,
+@@ -1066,24 +1061,25 @@ void __module_get(struct module *module)
+ }
+ EXPORT_SYMBOL(__module_get);
+ 
+-bool try_module_get(struct module *module)
++int __try_module_get(struct module *module, bool strong)
+ {
+-	bool ret = true;
++	int ret = 0;
+ 
+ 	if (module) {
+ 		preempt_disable();
++		if (strong && module->state == MODULE_STATE_COMING)
++			ret = -EBUSY;
+ 		/* Note: here, we can fail to get a reference */
+-		if (likely(module_is_live(module) &&
++		else if (likely(module_is_live(module) &&
+ 			   atomic_inc_not_zero(&module->refcnt) != 0))
+ 			trace_module_get(module, _RET_IP_);
+ 		else
+-			ret = false;
+-
++			ret = -ENOENT;
+ 		preempt_enable();
+ 	}
+ 	return ret;
+ }
+-EXPORT_SYMBOL(try_module_get);
++EXPORT_SYMBOL(__try_module_get);
+ 
+ void module_put(struct module *module)
+ {
 -- 
 2.34.1
 
