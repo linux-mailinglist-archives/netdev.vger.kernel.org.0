@@ -2,218 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AECA482C55
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 18:20:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65839482C6C
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 18:39:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbiABRUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 12:20:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
+        id S230122AbiABRi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 12:38:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiABRUA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 12:20:00 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4EAFC061761;
-        Sun,  2 Jan 2022 09:19:59 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id i31so70594274lfv.10;
-        Sun, 02 Jan 2022 09:19:59 -0800 (PST)
+        with ESMTP id S229683AbiABRiz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 12:38:55 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703F2C061761;
+        Sun,  2 Jan 2022 09:38:55 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id s1so65817270wra.6;
+        Sun, 02 Jan 2022 09:38:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zeIz7SpaGchv068gfQcu2/c3ylmt2DT39R9W0+3wJqA=;
-        b=NFQTL8r5c4YsZSk6PoTHW83Yeme+g/ldhGk4UTcz00ptGs1dMmsi7iCjUuNLthFX9f
-         kUQHyo0ua6nPyUPenu92NX+HCMioWfeHO+aHRudimuYSVLdjPyp6s3tWOp2okCVbYv1Z
-         ADIZvlfVwu3LBBsJna993kECPGxWFpXfl/Ci2/XWzjj3vRDw1GWKlGhKa3RD0WyJhCtW
-         QreJeWMsDZzSvIW+lrCk9Qd5Kp25ak3Iy6JzbSEYOJUIGof8Da7jRnoI35BYibaKQ7yA
-         yrPFFIGR7k2wpnu/7TNP3Z2hFkKvzhwh1uKQw144FR+Q7yyKkhppFbselT0shpskkJ+P
-         bJ3A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=wWLcKGVB1L+M/AiUcBrGPhY5Q0k7V6b5eY3DoUOJMD8=;
+        b=csZHGY26pjatP+CDAnS2WMlOd0K0PgW1V0FMFl7ejbepqwQz/MGKn+eRen/1UweBeu
+         GGi0g8PdQ87eLfPzL1mDNUcGf3cF70JSGhz3D4AYURckPR/vcZ3y5hpw1fP40aIJgfTn
+         Fne7LZ7shhqEYP3gT8cXawpvhAYyPbm5mBHWnTKcaEag+ms7hlf3U+q9D+b3NiF3paUS
+         eRwVJxbpHMBEPdatzAl7z648n5OBTRNH16Ll703ovq0c/3RGCxYPje9jcq+QIMe1Olj+
+         +FpO7R98DAJZnP+/fbvUbBUNQrivxylkP2iIcUBAk16cbT7oMhGBtvfiq1+SlNZg2Xnp
+         yj0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zeIz7SpaGchv068gfQcu2/c3ylmt2DT39R9W0+3wJqA=;
-        b=cV83Pk8I5uvVxWpAwzgeX87jfAnFpNCjipPnQbSZGHxaPm25Wos+6ePxcSjsFz3q/N
-         LJHtrcl6gcBhHUlthMlpv2kHst1e8LRzyuqGfxl9n5EEPCBlpTYVI43lah+XUW+8fB46
-         Gky5iW64w4xOjwBu6MAH1FM6/nM9TREuJQWQ8kLotTUY8lKSd7ila+rB18Z8/Ci8EUPV
-         m6S882g6HpaZZs5yBGzccf4jfE0gxpD+rtvL+Pzb19uoRjVCuFhdwP47xGbQKwL0/KKE
-         wDLDqBx+0ru6SNKLUchOKTv3teNmYaaxms4oBf1HpKEWJqeaBlakPwJ4/N/Kt8O4qjMI
-         om2g==
-X-Gm-Message-State: AOAM533vsdjUr46IRPxSQMH0Q+/KbUuAO9LF+5TyjZSw2vh8DVfPtzga
-        72Ea3KQIQbemEMXA/t39ZMU=
-X-Google-Smtp-Source: ABdhPJyglLbS47dxDNoj9LAWgXaANJ1ArO/SIIBU1yq01Qjf7OkvalYeZSX7iSvTqTGdTt64XdpiRQ==
-X-Received: by 2002:a19:6042:: with SMTP id p2mr38331806lfk.381.1641143998046;
-        Sun, 02 Jan 2022 09:19:58 -0800 (PST)
-Received: from localhost.localdomain ([217.117.245.177])
-        by smtp.gmail.com with ESMTPSA id s7sm2662018ljc.110.2022.01.02.09.19.57
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=wWLcKGVB1L+M/AiUcBrGPhY5Q0k7V6b5eY3DoUOJMD8=;
+        b=m014omXsg8GeKq/Pt2hX6kS0XRchoKDXq5hrZRKVcSBlXWX9x+QxCT08/4vHD5E/do
+         B1hbGegeSXI4/kf3GR6XcDNq6TLEH5meaVsZd/ppK07OgdFMgnzW9OKo/xFQ2i3zUt7u
+         Ii4pk/R70TOcQFMLMxvmHwojmw9RXrZJFbhN5HCZbv+T+hKmnjK0G4BOuaj50HGViyGk
+         lVnfcTB0ra8K7cKqtIg3hUZO8LNKKEfwGtPS1qE4VIUgYJQJMQ2NDXil+HtxZ9heITHs
+         BThGuAS1VlXdHaUNu2vR93YtNFHnYH+VkgpkNcoHKOTbrPYCtjaEaW0nZfoe7SSW/GG0
+         J5AA==
+X-Gm-Message-State: AOAM530Tg6CiiHYFuUxd6gTGwObsPJ5gCz3mQGE+PVmE1AiJumjT6MS8
+        k6x+/nSLkqBbw+RHX95WzdZCM8meI2Q=
+X-Google-Smtp-Source: ABdhPJx3omdWEPyY14zY26ZL/okoE6UgJ7jwIZfMCKhDBqivpngpgjI4u0TAz3uLzlOh77rjr6U7+A==
+X-Received: by 2002:a5d:4ac1:: with SMTP id y1mr24447262wrs.588.1641145134005;
+        Sun, 02 Jan 2022 09:38:54 -0800 (PST)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id b16sm35872809wmq.41.2022.01.02.09.38.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 02 Jan 2022 09:19:57 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     stefan@datenfreihafen.org, alex.aring@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>, stable@vger.kernel.org,
-        Alexander Potapenko <glider@google.com>
-Subject: [PATCH RFT] ieee802154: atusb: move to new USB API
-Date:   Sun,  2 Jan 2022 20:19:43 +0300
-Message-Id: <20220102171943.28846-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <CAG_fn=VDEoQx5c7XzWX1yaYBd5y5FrG1aagrkv+SZ03c8TfQYQ@mail.gmail.com>
-References: <CAG_fn=VDEoQx5c7XzWX1yaYBd5y5FrG1aagrkv+SZ03c8TfQYQ@mail.gmail.com>
+        Sun, 02 Jan 2022 09:38:53 -0800 (PST)
+Date:   Sun, 2 Jan 2022 18:38:51 +0100
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     Conley Lee <conleylee@foxmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+        wens@csie.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, jernej.skrabec@gmail.com
+Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
+Message-ID: <YdHjK+/SzaeI/V2Q@Red>
+References: <20211228164817.1297c1c9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <tencent_DE05ADA53D5B084D4605BE6CB11E49EF7408@qq.com>
+ <Yc7e6V9/oioEpx8c@Red>
+ <tencent_57960DDC83F43DA3E0A2F47DEBAD69A4A005@qq.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <tencent_57960DDC83F43DA3E0A2F47DEBAD69A4A005@qq.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexander reported a use of uninitialized value in
-atusb_set_extended_addr(), that is caused by reading 0 bytes via
-usb_control_msg().
+Le Sat, Jan 01, 2022 at 03:09:01PM +0800, Conley Lee a écrit :
+> On 12/31/21 at 11:43上午, Corentin Labbe wrote:
+> > Date: Fri, 31 Dec 2021 11:43:53 +0100
+> > From: Corentin Labbe <clabbe.montjoie@gmail.com>
+> > To: conleylee@foxmail.com
+> > Cc: davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+> >  wens@csie.org, netdev@vger.kernel.org,
+> >  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+> > Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
+> > 
+> > Le Wed, Dec 29, 2021 at 09:43:51AM +0800, conleylee@foxmail.com a écrit :
+> > > From: Conley Lee <conleylee@foxmail.com>
+> > > 
+> > > Thanks for your review. Here is the new version for this patch.
+> > > 
+> > > This patch adds support for the emac rx dma present on sun4i. The emac
+> > > is able to move packets from rx fifo to RAM by using dma.
+> > > 
+> > > Change since v4.
+> > >   - rename sbk field to skb
+> > >   - rename alloc_emac_dma_req to emac_alloc_dma_req
+> > >   - using kzalloc(..., GPF_ATOMIC) in interrupt context to avoid
+> > >     sleeping
+> > >   - retry by using emac_inblk_32bit when emac_dma_inblk_32bit fails
+> > >   - fix some code style issues 
+> > > 
+> > > Change since v5.
+> > >   - fix some code style issue
+> > > 
+> > 
+> > Hello
+> > 
+> > I just tested this on a sun4i-a10-olinuxino-lime
+> > 
+> > I got:
+> > [    2.922812] sun4i-emac 1c0b000.ethernet (unnamed net_device) (uninitialized): get io resource from device: 0x1c0b000, size = 4096
+> > [    2.934512] sun4i-emac 1c0b000.ethernet (unnamed net_device) (uninitialized): failed to request dma channel. dma is disabled
+> > [    2.945740] sun4i-emac 1c0b000.ethernet (unnamed net_device) (uninitialized): configure dma failed. disable dma.
+> > [    2.957887] sun4i-emac 1c0b000.ethernet: eth0: at (ptrval), IRQ 19 MAC: 02:49:09:40:ab:3d
+> > 
+> > On which board did you test it and how ?
+> > 
+> > Regards
+> 
+> Sorry. I sent the email with text/html format. This email is an clean version.
+> 
+> In order to enable dma rx channel. `dmas` and `dma-names` properties
+> should be added to emac section in dts:
+> 
+> emac: ethernet@1c0b000 {
+> 	...
+> 	dmas = <&dma SUN4I_DMA_DEDICATED 7>;
+> 	dma-names = "rx";
+> 	...
+> }
 
-Since there is an API, that cannot read less bytes, than was requested,
-let's move atusb driver to use it. It will fix all potintial bugs with
-uninit values and make code more modern
+Helo
 
-Fail log:
+Yes I figured that out. But you should have done a patch serie adding this.
+Your patch is now applied but it is a useless change without the dtb change.
+You should also probably update the driver binding (Documentation/devicetree/bindings/net/allwinner,sun4i-a10-emac.yaml) since you add new members to DT node.
 
-BUG: KASAN: uninit-cmp in ieee802154_is_valid_extended_unicast_addr include/linux/ieee802154.h:310 [inline]
-BUG: KASAN: uninit-cmp in atusb_set_extended_addr drivers/net/ieee802154/atusb.c:1000 [inline]
-BUG: KASAN: uninit-cmp in atusb_probe.cold+0x29f/0x14db drivers/net/ieee802154/atusb.c:1056
-Uninit value used in comparison: 311daa649a2003bd stack handle: 000000009a2003bd
- ieee802154_is_valid_extended_unicast_addr include/linux/ieee802154.h:310 [inline]
- atusb_set_extended_addr drivers/net/ieee802154/atusb.c:1000 [inline]
- atusb_probe.cold+0x29f/0x14db drivers/net/ieee802154/atusb.c:1056
- usb_probe_interface+0x314/0x7f0 drivers/usb/core/driver.c:396
+Furthermore, why did you add RX only and not TX dma also ?
 
-Fixes: 7490b008d123 ("ieee802154: add support for atusb transceiver")
-Cc: stable@vger.kernel.org # 5.9
-Reported-by: Alexander Potapenko <glider@google.com>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- drivers/net/ieee802154/atusb.c | 61 +++++++++++++++++++++-------------
- 1 file changed, 38 insertions(+), 23 deletions(-)
+Probably it is too late since patch is applied but it is:
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Tested-on: sun4i-a10-olinuxino-lime
 
-diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
-index 23ee0b14cbfa..43befea0110f 100644
---- a/drivers/net/ieee802154/atusb.c
-+++ b/drivers/net/ieee802154/atusb.c
-@@ -80,10 +80,9 @@ struct atusb_chip_data {
-  * in atusb->err and reject all subsequent requests until the error is cleared.
-  */
- 
--static int atusb_control_msg(struct atusb *atusb, unsigned int pipe,
--			     __u8 request, __u8 requesttype,
--			     __u16 value, __u16 index,
--			     void *data, __u16 size, int timeout)
-+static int atusb_control_msg_recv(struct atusb *atusb, __u8 request, __u8 requesttype,
-+				  __u16 value, __u16 index,
-+				  void *data, __u16 size, int timeout)
- {
- 	struct usb_device *usb_dev = atusb->usb_dev;
- 	int ret;
-@@ -91,8 +90,30 @@ static int atusb_control_msg(struct atusb *atusb, unsigned int pipe,
- 	if (atusb->err)
- 		return atusb->err;
- 
--	ret = usb_control_msg(usb_dev, pipe, request, requesttype,
--			      value, index, data, size, timeout);
-+	ret = usb_control_msg_recv(usb_dev, 0, request, requesttype,
-+				   value, index, data, size, timeout, GFP_KERNEL);
-+	if (ret < 0) {
-+		atusb->err = ret;
-+		dev_err(&usb_dev->dev,
-+			"%s: req 0x%02x val 0x%x idx 0x%x, error %d\n",
-+			__func__, request, value, index, ret);
-+	}
-+
-+	return ret;
-+}
-+
-+static int atusb_control_msg_send(struct atusb *atusb, __u8 request, __u8 requesttype,
-+				  __u16 value, __u16 index,
-+				  void *data, __u16 size, int timeout)
-+{
-+	struct usb_device *usb_dev = atusb->usb_dev;
-+	int ret;
-+
-+	if (atusb->err)
-+		return atusb->err;
-+
-+	ret = usb_control_msg_send(usb_dev, 0, request, requesttype,
-+				   value, index, data, size, timeout, GFP_KERNEL);
- 	if (ret < 0) {
- 		atusb->err = ret;
- 		dev_err(&usb_dev->dev,
-@@ -107,8 +128,7 @@ static int atusb_command(struct atusb *atusb, u8 cmd, u8 arg)
- 	struct usb_device *usb_dev = atusb->usb_dev;
- 
- 	dev_dbg(&usb_dev->dev, "%s: cmd = 0x%x\n", __func__, cmd);
--	return atusb_control_msg(atusb, usb_sndctrlpipe(usb_dev, 0),
--				 cmd, ATUSB_REQ_TO_DEV, arg, 0, NULL, 0, 1000);
-+	return atusb_control_msg_send(atusb, cmd, ATUSB_REQ_TO_DEV, arg, 0, NULL, 0, 1000);
- }
- 
- static int atusb_write_reg(struct atusb *atusb, u8 reg, u8 value)
-@@ -116,9 +136,8 @@ static int atusb_write_reg(struct atusb *atusb, u8 reg, u8 value)
- 	struct usb_device *usb_dev = atusb->usb_dev;
- 
- 	dev_dbg(&usb_dev->dev, "%s: 0x%02x <- 0x%02x\n", __func__, reg, value);
--	return atusb_control_msg(atusb, usb_sndctrlpipe(usb_dev, 0),
--				 ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
--				 value, reg, NULL, 0, 1000);
-+	return atusb_control_msg_send(atusb, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
-+				      value, reg, NULL, 0, 1000);
- }
- 
- static int atusb_read_reg(struct atusb *atusb, u8 reg)
-@@ -133,9 +152,8 @@ static int atusb_read_reg(struct atusb *atusb, u8 reg)
- 		return -ENOMEM;
- 
- 	dev_dbg(&usb_dev->dev, "%s: reg = 0x%x\n", __func__, reg);
--	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
--				ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
--				0, reg, buffer, 1, 1000);
-+	ret = atusb_control_msg_recv(atusb, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
-+				     0, reg, buffer, 1, 1000);
- 
- 	if (ret >= 0) {
- 		value = buffer[0];
-@@ -805,9 +823,8 @@ static int atusb_get_and_show_revision(struct atusb *atusb)
- 		return -ENOMEM;
- 
- 	/* Get a couple of the ATMega Firmware values */
--	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
--				ATUSB_ID, ATUSB_REQ_FROM_DEV, 0, 0,
--				buffer, 3, 1000);
-+	ret = atusb_control_msg_recv(atusb, ATUSB_ID, ATUSB_REQ_FROM_DEV, 0, 0,
-+				     buffer, 3, 1000);
- 	if (ret >= 0) {
- 		atusb->fw_ver_maj = buffer[0];
- 		atusb->fw_ver_min = buffer[1];
-@@ -861,9 +878,8 @@ static int atusb_get_and_show_build(struct atusb *atusb)
- 	if (!build)
- 		return -ENOMEM;
- 
--	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
--				ATUSB_BUILD, ATUSB_REQ_FROM_DEV, 0, 0,
--				build, ATUSB_BUILD_SIZE, 1000);
-+	ret = atusb_control_msg_recv(atusb, ATUSB_BUILD, ATUSB_REQ_FROM_DEV, 0, 0,
-+				     build, ATUSB_BUILD_SIZE, 1000);
- 	if (ret >= 0) {
- 		build[ret] = 0;
- 		dev_info(&usb_dev->dev, "Firmware: build %s\n", build);
-@@ -985,9 +1001,8 @@ static int atusb_set_extended_addr(struct atusb *atusb)
- 		return -ENOMEM;
- 
- 	/* Firmware is new enough so we fetch the address from EEPROM */
--	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
--				ATUSB_EUI64_READ, ATUSB_REQ_FROM_DEV, 0, 0,
--				buffer, IEEE802154_EXTENDED_ADDR_LEN, 1000);
-+	ret = atusb_control_msg_recv(atusb, ATUSB_EUI64_READ, ATUSB_REQ_FROM_DEV, 0, 0,
-+				     buffer, IEEE802154_EXTENDED_ADDR_LEN, 1000);
- 	if (ret < 0) {
- 		dev_err(&usb_dev->dev, "failed to fetch extended address, random address set\n");
- 		ieee802154_random_extended_addr(&atusb->hw->phy->perm_extended_addr);
--- 
-2.34.1
-
+Regards
