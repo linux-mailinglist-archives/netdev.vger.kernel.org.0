@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 649C7482A41
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 07:26:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49B09482A4C
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 07:38:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232019AbiABG0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 01:26:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46970 "EHLO
+        id S232021AbiABGiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 01:38:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231534AbiABG0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 01:26:18 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF5B9C061574
-        for <netdev@vger.kernel.org>; Sat,  1 Jan 2022 22:26:17 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id p7so50335238ljj.1
-        for <netdev@vger.kernel.org>; Sat, 01 Jan 2022 22:26:17 -0800 (PST)
+        with ESMTP id S230374AbiABGiR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 01:38:17 -0500
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695EAC061574;
+        Sat,  1 Jan 2022 22:38:17 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id u22so51071452lju.7;
+        Sat, 01 Jan 2022 22:38:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7Ny9IOrp5AKhlKTAYswE45XRnsrR6ugsPgi1A08bE1w=;
-        b=TKg2YDlA4UU2vpZUOddZ+gAYQofb8wN0yjqnKj8J888QfbSRQVOoL7VmuWZgDhSvfK
-         cadBoTx+ddiKnJl+yr0VTL3S+0hDUi5IqxqKuS0qvOW1O21OmiilONgxAUlBxU7rfRpH
-         FLKQgrAYMm/7CJftZ3vmOpeGT0vSpT6y3Qfs//tdUGswleZFB2+CPxZQkyU9K3WKP1aB
-         ZW8Yian1Tm6Ij3UoYAHNOpoMQecvP9t/HOo/nT3sLavAKL4b04gj5kXQIWh+xUec9lje
-         KmDLdjigN4cnRCg7LNxjt6QGcYfIxc7drNymNAaxY5rg3Y5jeG4QzYeYxYv+VUI9c1GE
-         0AAg==
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=RY/U1mpEKxFZojyoZ97q8tWXTVzCIHhjBCHLYYMtIr8=;
+        b=nHsU7FKiC1V5YYqkluEY6hG4KFarKP2yzppwyAiIUjCKH4hfRxFWIPkkwtpVpBAWun
+         qviHdevED9XzS+i/3x9khk5Cs8Mtm7p6N4mdiOAGwkUTkAoN1xZlmU1VvYT3wGiKn3Ms
+         MfVs6LjuVO4ucTjgq3cF3NJA46bgiVZgTyW5M2ExUSbOVdQ/yD25oH5mCNxpr0eW18km
+         lX16cASexynWPol0RAQ9y6JRRK384Sjr0eeURq62k6buWgHIDj40traQnrPd3bn0Npej
+         DiMJCbkqkDRcswJSJS/Z/oqDS0ExkWOOPqToxroUBTbbOcs4TjnAm9NpAXC+ECVPj9bG
+         WjZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7Ny9IOrp5AKhlKTAYswE45XRnsrR6ugsPgi1A08bE1w=;
-        b=IK2OXXeEb8Nc6p5JqPwZE5p9ZjiwZFMLB2vD1U2e24mtspuf5RBKWQFYiiCYgfZnZq
-         ja06TMl/cRh7XF+1yVRCY/OsUsjNvWA6JXn7zPahDbJac8odr6S/Y3vVgqOX776RVax2
-         4rXA9/a05zLcNsrB3XEGY6tcI7WlAwDzyTtE2B+QTt80idphZtmcCoDgG2nBdxYLhN1s
-         AYMcqWapvC1k4nH+lyBQIKMyX9U9gCEivkiq1L6m19U+UbG3jctAVyDOjh1+Ap5tkpPK
-         JjQ2cRCVeE6IhU6QTk10RfDvS7vS29bKV6fBybxKCd1HI2BXcvrTQwItSbzTwwSoLWbK
-         pKPA==
-X-Gm-Message-State: AOAM533sIKe3E+4zQQowfnrCfrQFy2jO5wgLYB7fvu//0nF5ZPNkDABc
-        mzFf5k9mKbGlsawyTlu2p73oFWFDET9b7ciYD1DDXQ==
-X-Google-Smtp-Source: ABdhPJyRzuMEVAx8+y8buo4E3ptNZEMM3+VBbQLibGlevyTYSkZ6ULIp8S7z3qvrnwEJadDN6IFlYjiNNsX6dqdcAtI=
-X-Received: by 2002:a2e:7c01:: with SMTP id x1mr33744057ljc.145.1641104776175;
- Sat, 01 Jan 2022 22:26:16 -0800 (PST)
-MIME-Version: 1.0
-References: <20211226153624.162281-1-marcan@marcan.st>
-In-Reply-To: <20211226153624.162281-1-marcan@marcan.st>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 2 Jan 2022 07:25:27 +0100
-Message-ID: <CACRpkdY1qL6s45qMq65mCrdDDjNfoksadO3Va=zSUhT41pBktw@mail.gmail.com>
-Subject: Re: [RFC PATCH 00/34] brcmfmac: Support Apple T2 and M1 platforms
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RY/U1mpEKxFZojyoZ97q8tWXTVzCIHhjBCHLYYMtIr8=;
+        b=eCSM/7YpN908ohBMmnFD5a8/XJw7yYM7PI0OuClZjGGEgRqp8zPlQaF4rbjsK7hxIk
+         1K/o0Cp0cD6AVQADxWd+2Pp+Prv8uVukY4NubxV6fq2qpQniylSpbnQ5NFNFIpfOXvwX
+         qX15SXIDxG2c+024PYVcLxVkHk3axSjbM+662xlfUqDgDn8sezDrHW7uNDxXdOk7YEXg
+         pSwxf/gFn6zcF+0SFFLXmTj1GzAJMfxXrSQzepxRKVb9C74CbsneC4b6RHI/0HxXt2TR
+         cqa1XKf8lKdkOCp4PV4RaNm0p3vNUkA1EALZ1186tEWtwNHcB0YvhzQT55HIPwO5Z6SD
+         c1vg==
+X-Gm-Message-State: AOAM531ZIbXN5cU5FmBrBcdpsc2+UVWNHjjdD2tj5VvjpSRr1vRRZekp
+        +the8XleZxd0ZuvJ4VDLIM4=
+X-Google-Smtp-Source: ABdhPJya1AJlz6j758QzPpJT+m/4CvnYx+/OXQX5TwjL0M+LEGylW6FcMTook3yFztb7fsQNkEY2jw==
+X-Received: by 2002:a05:651c:d5:: with SMTP id 21mr31546294ljr.433.1641105495746;
+        Sat, 01 Jan 2022 22:38:15 -0800 (PST)
+Received: from [192.168.2.145] (46-138-43-24.dynamic.spd-mgts.ru. [46.138.43.24])
+        by smtp.googlemail.com with ESMTPSA id p21sm2642428lfu.154.2022.01.01.22.38.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 01 Jan 2022 22:38:15 -0800 (PST)
+Subject: Re: [PATCH 03/34] brcmfmac: firmware: Support having multiple alt
+ paths
+To:     Hector Martin <marcan@marcan.st>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -62,12 +62,13 @@ Cc:     Kalle Valo <kvalo@codeaurora.org>,
         Hante Meuleman <hante.meuleman@broadcom.com>,
         Chi-hsien Lin <chi-hsien.lin@infineon.com>,
         Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        Sven Peter <sven@svenpeter.dev>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
         Alyssa Rosenzweig <alyssa@rosenzweig.io>,
         Mark Kettenis <kettenis@openbsd.org>,
         =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
         Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Hans de Goede <hdegoede@redhat.com>,
         "John W. Linville" <linville@tuxdriver.com>,
         "Daniel (Deognyoun) Kim" <dekim@broadcom.com>,
@@ -76,24 +77,90 @@ Cc:     Kalle Valo <kvalo@codeaurora.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Content-Type: text/plain; charset="UTF-8"
+References: <20211226153624.162281-1-marcan@marcan.st>
+ <20211226153624.162281-4-marcan@marcan.st>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <17b997d2-708e-4ed7-7e27-1c3e0cd5c428@gmail.com>
+Date:   Sun, 2 Jan 2022 09:38:13 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <20211226153624.162281-4-marcan@marcan.st>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 26, 2021 at 4:36 PM Hector Martin <marcan@marcan.st> wrote:
+26.12.2021 18:35, Hector Martin пишет:
+> Apple platforms have firmware and config files identified with multiple
+> dimensions. We want to be able to find the most specific firmware
+> available for any given platform, progressively trying more general
+> firmwares.
+> 
+> First, add support for having multiple alternate firmware paths.
+> 
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+>  .../broadcom/brcm80211/brcmfmac/firmware.c    | 73 ++++++++++++++-----
+>  1 file changed, 55 insertions(+), 18 deletions(-)
 
-> Merry Christmas! This year Santa brings us a 34-patch series to add
-> proper support for the Broadcom FullMAC chips used on Apple T2 and M1
-> platforms:
+...
+> -static char *brcm_alt_fw_path(const char *path, const char *board_type)
+> +static const char **brcm_alt_fw_paths(const char *path, const char *board_type)
+...
+>  static int brcmf_fw_request_firmware(const struct firmware **fw,
+>  				     struct brcmf_fw *fwctx)
+>  {
+>  	struct brcmf_fw_item *cur = &fwctx->req->items[fwctx->curpos];
+> -	int ret;
+> +	int ret, i;
+>  
+>  	/* Files can be board-specific, first try a board-specific path */
+>  	if (cur->type == BRCMF_FW_TYPE_NVRAM && fwctx->req->board_type) {
+> -		char *alt_path;
+> +		const char **alt_paths = brcm_alt_fw_paths(cur->path, fwctx);
 
-I tried to review as best I could, when I think I know what I'm doing I state
-Reviewed-by and when I think it just LooksGoodToMe(TM) I replied
-Acked-by. If I missed some patch you can assume Acked-by from me
-on these as well.
+The brcm_alt_fw_paths() takes "board_type" argument, while you're
+passing the "fwctx" to it. This patch doesn't compile.
 
-Thanks for doing this, some really old bugs and code improvements long
-overdue is in the series, much appreciated.
+If this code is changed by a further patch, then please use "git rebase
+--exec" to compile-test all the patches.
 
-Yours,
-Linus Walleij
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c: In function
+‘brcmf_fw_request_firmware’:
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c:642:71:
+error: passing argument 2 of ‘brcm_alt_fw_paths’ from incompatible
+pointer type [-Werror=incompatible-pointer-types]
+  642 |                 const char **alt_paths =
+brcm_alt_fw_paths(cur->path, fwctx);
+      |
+      ^~~~~
+      |
+      |
+      |
+      struct brcmf_fw *
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c:597:69:
+note: expected ‘const char *’ but argument is of type ‘struct brcmf_fw *’
+  597 | static const char **brcm_alt_fw_paths(const char *path, const
+char *board_type)
+      |
+~~~~~~~~~~~~^~~~~~~~~~
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c: In function
+‘brcmf_fw_get_firmwares’:
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c:752:59:
+error: passing argument 2 of ‘brcm_alt_fw_paths’ from incompatible
+pointer type [-Werror=incompatible-pointer-types]
+  752 |         fwctx->alt_paths = brcm_alt_fw_paths(first->path, fwctx);
+      |                                                           ^~~~~
+      |                                                           |
+      |                                                           struct
+brcmf_fw *
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c:597:69:
+note: expected ‘const char *’ but argument is of type ‘struct brcmf_fw *’
+  597 | static const char **brcm_alt_fw_paths(const char *path, const
+char *board_type)
+      |
+~~~~~~~~~~~~^~~~~~~~~~
+cc1: some warnings being treated as errors
