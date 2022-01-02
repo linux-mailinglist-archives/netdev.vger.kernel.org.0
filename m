@@ -2,107 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 108D648288B
-	for <lists+netdev@lfdr.de>; Sat,  1 Jan 2022 22:15:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D20E64828E5
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 02:24:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232715AbiAAVPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 1 Jan 2022 16:15:35 -0500
-Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:65221 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231552AbiAAVPf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jan 2022 16:15:35 -0500
-Received: from pop-os.home ([86.243.171.122])
-        by smtp.orange.fr with ESMTPA
-        id 3lisnPd6Q1yYB3lisn10zq; Sat, 01 Jan 2022 22:15:33 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 01 Jan 2022 22:15:33 +0100
-X-ME-IP: 86.243.171.122
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     bigeasy@linutronix.de, davem@davemloft.net, kuba@kernel.org,
-        tanhuazhong@huawei.com, arnd@arndb.de, moyufeng@huawei.com,
-        chenhao288@hisilicon.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] chelsio: cxgb: Use dma_set_mask_and_coherent() and simplify code
-Date:   Sat,  1 Jan 2022 22:15:29 +0100
-Message-Id: <80d7dd276d9be857f090fbe1f3dbbdc4b07141ec.1641071656.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        id S229538AbiABBY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 1 Jan 2022 20:24:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229448AbiABBY2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 1 Jan 2022 20:24:28 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899ABC061574
+        for <netdev@vger.kernel.org>; Sat,  1 Jan 2022 17:24:28 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id z29so122055451edl.7
+        for <netdev@vger.kernel.org>; Sat, 01 Jan 2022 17:24:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=mrxhTGCiJdlGC+eJy5UXznUx973zEpGxFnhRGTjwkGI=;
+        b=dg22SqwFcUsIjq9ouI3Vh3HFZGb5f6o33qQOTTpgMy595b0v7nqWp6iSSXFdEh7Cyh
+         MsDTjAZhXrX/zUVS20b2DwdLjkkpFhkmWeyWBcqDUDaljFGgoR0o3w0mNGJ4jiZDoaj8
+         OIF4BecCl+qaBz1EFPK+YJps8pHCE2Iov/NqYOzghlrKs/ld2aHCldhScotEPbLKJAZp
+         5vP653G9IqgSwCot2HqssmQwr2Ag6TZe7iaQCKgIB6eqR1aQ6saDA2LiPDGGaRbWTVCv
+         8bzknDRVdJtk2Nj4F3qdzeXAqYoU+aUf7rjLVFhd+G1DVxsDiJEBPg3o/hCxu8jF3UeU
+         /d+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=mrxhTGCiJdlGC+eJy5UXznUx973zEpGxFnhRGTjwkGI=;
+        b=YMxf1H22qAflsYt+mKNtdw85hrs9vE576jGUC62pFqqrQo8KYVH0uPiqF8rWpKeDij
+         xiOzmuAGsCSeGTrljHPxheBNQzbVHpd/hT6ote0JREO5bDP/7IqnTE9wNHj58PKnIBSo
+         2ymDNl2fLCJg9Q1BnPzVLqG5DBEQ1Cv46RIAK3lhss6nYIlQe2wQhU97tRSbN7DgQyWp
+         5Rjq62lNrzbMneVvlCcl6tctX9dqz6jssx12elSDjBlEAxXjJsTdQn7oSyLmHlE6FWka
+         6RC43vojtMNG8yUjSo9m1jKFsQVVPsfufn8PbbrM8B9geiz7KTOYtjXiDF6UTRnjs8nz
+         AKDw==
+X-Gm-Message-State: AOAM530xrAbfE1SELV1NYM3Q3gq3Ac6zRjp+McgtH+tV1vMtQSxd+DoN
+        hfFs+uZ3OiiPYt/Jz2H7cWCxCiEBI+oeC3UZkw==
+X-Google-Smtp-Source: ABdhPJyiH5BmAV1kLgXkFUG9G7FkkjekTRZ+u5fRp6u4uCVdDzbJvqubrQ6uLEGG9Xh5FcDWJZa3MgTnOIIty3kxXQA=
+X-Received: by 2002:a17:906:40ca:: with SMTP id a10mr34006495ejk.377.1641086667065;
+ Sat, 01 Jan 2022 17:24:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Reply-To: asad1ibn@gmail.com
+Sender: 0015ayida.amodu@gmail.com
+Received: by 2002:a17:906:478d:0:0:0:0 with HTTP; Sat, 1 Jan 2022 17:24:26
+ -0800 (PST)
+From:   Mr Asad Ibn <asadibn22@gmail.com>
+Date:   Sat, 1 Jan 2022 17:24:26 -0800
+X-Google-Sender-Auth: HsDpy8mce-YHsuN21YY1RcaKcrg
+Message-ID: <CAE=xPajbpyNDFodjE02xhBvVPgGL7SDE9BSqy5tPsHdzCt8B1g@mail.gmail.com>
+Subject: Dear Sir/Madam
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use dma_set_mask_and_coherent() instead of unrolling it with some
-dma_set_mask()+dma_set_coherent_mask().
+I=E2=80=99M Barrister Assad LBN.from Burkina Faso, I am sending this brief
+letter to solicit your support. I have a Client who is an Indian, his
+name is Mr. Dasya Kahaan. He was a gold dealer here in Burkina Faso
+before he died six years ago when he went for kidney transplants in
+his country India.
 
-Moreover, as stated in [1], dma_set_mask() with a 64-bit mask will never
-fail if dev->dma_mask is non-NULL.
-So, if it fails, the 32 bits case will also fail for the same reason.
+He deposited the sum of $5.5 Million dollars in one of the legendary
+banks here in Burkina Faso. I have tried all I can to get in touch
+with any of his friends or family members but no way.
 
-That said, 'pci_using_dac' can only be 1 after a successful
-dma_set_mask_and_coherent().
+So i want you to apply to the bank as his Business partner so that the
+bank can release Mr.Dasya Kahaan. fund into your bank account. I will
+give you the guidelines on how to contact the bank and we have to do
+this with trust because I don't want the bank to transfer the fund
+into the Government treasury account as an unclaimed fund, so I need
+your response.
 
-Simplify code and remove some dead code accordingly.
-
-[1]: https://lkml.org/lkml/2021/6/7/398
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/ethernet/chelsio/cxgb/cxgb2.c | 19 ++++---------------
- 1 file changed, 4 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb/cxgb2.c b/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
-index 18acd7cf3d6d..f4054d2553ea 100644
---- a/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
-+++ b/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
-@@ -944,11 +944,11 @@ static const struct net_device_ops cxgb_netdev_ops = {
- 
- static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- {
--	int i, err, pci_using_dac = 0;
- 	unsigned long mmio_start, mmio_len;
- 	const struct board_info *bi;
- 	struct adapter *adapter = NULL;
- 	struct port_info *pi;
-+	int i, err;
- 
- 	err = pci_enable_device(pdev);
- 	if (err)
-@@ -961,17 +961,8 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto out_disable_pdev;
- 	}
- 
--	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) {
--		pci_using_dac = 1;
--
--		if (dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64))) {
--			pr_err("%s: unable to obtain 64-bit DMA for coherent allocations\n",
--			       pci_name(pdev));
--			err = -ENODEV;
--			goto out_disable_pdev;
--		}
--
--	} else if ((err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) != 0) {
-+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-+	if (err) {
- 		pr_err("%s: no usable DMA configuration\n", pci_name(pdev));
- 		goto out_disable_pdev;
- 	}
-@@ -1043,10 +1034,8 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		netdev->hw_features |= NETIF_F_SG | NETIF_F_IP_CSUM |
- 			NETIF_F_RXCSUM;
- 		netdev->features |= NETIF_F_SG | NETIF_F_IP_CSUM |
--			NETIF_F_RXCSUM | NETIF_F_LLTX;
-+			NETIF_F_RXCSUM | NETIF_F_LLTX | NETIF_F_HIGHDMA;
- 
--		if (pci_using_dac)
--			netdev->features |= NETIF_F_HIGHDMA;
- 		if (vlan_tso_capable(adapter)) {
- 			netdev->features |=
- 				NETIF_F_HW_VLAN_CTAG_TX |
--- 
-2.32.0
-
+Warm Regards,
+Email.asad1ibn@gmail.com,
+Barr.Assad LBN.
