@@ -2,103 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1DD8482B80
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 15:16:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F026482B86
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 15:18:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232862AbiABOQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 09:16:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34888 "EHLO
+        id S233170AbiABOSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 09:18:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229760AbiABOQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 09:16:10 -0500
-Received: from mirix.in-vpn.de (mirix.in-vpn.de [IPv6:2001:67c:1407:a0::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96383C061761;
-        Sun,  2 Jan 2022 06:16:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mirix.org;
-        s=43974b1a7d21b2cf; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=cGoCtpTkA60zMI0CaZaCImZORodnlAxnp76Po/MQWW8=; b=RHd9qkEz6oskgA2AwpuV1UtHVH
-        nX83L45KGUtNTQFmZch+xDxZdz35DJvoizM1080950UgwjZOCgo72ISkt/q0h3zzBFhtgwshl3iFm
-        cFDLVkL+H95WKLCz1crl4tQSsTsSzFCWZE8AZ9OmmCBz/4mTxNqKwMNKh0/7EHmfH3TUpB6NHZIiM
-        wOFj9Z+yOZVFmviEc61zbpgJO6JB+efMkjqn96uMg2E3uYdsO9Sb+2mkBPwBKIrfz0+BKqhRMqpqk
-        +FbB3pdvFFmqujbB9Uxvv7LbfmXX9Nj/9z+kGLPPUSP4tRm2v6Ut4LrmFr6aQP65wuOnCuLjc97ET
-        gGNWFFbw==;
-Received: from [::1] (helo=localhost.localdomain)
-        by mirix.in-vpn.de with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128)
-        (Exim)
-        id 1n41eX-0001vv-R8; Sun, 02 Jan 2022 14:16:05 +0000
-Subject: Re: [PATCH net v2] net: usb: pegasus: Do not drop long Ethernet
- frames
-To:     Petko Manolov <petkan@nucleusys.com>
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org
-References: <20211226221208.2583-1-ott@mirix.org>
- <YcmfbX5o0XHn1Uhx@karbon.k.g>
-From:   Matthias-Christian Ott <ott@mirix.org>
-Message-ID: <87aa9378-ac72-7221-6bf1-ee4d6ed2009d@mirix.org>
-Date:   Sun, 2 Jan 2022 15:16:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S229760AbiABOSQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 09:18:16 -0500
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FD8FC061761;
+        Sun,  2 Jan 2022 06:18:16 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 6262D425C1;
+        Sun,  2 Jan 2022 14:18:06 +0000 (UTC)
+Message-ID: <e9ecbd0b-8741-1e7d-ae7a-f839287cb5c9@marcan.st>
+Date:   Sun, 2 Jan 2022 23:18:04 +0900
 MIME-Version: 1.0
-In-Reply-To: <YcmfbX5o0XHn1Uhx@karbon.k.g>
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH 03/34] brcmfmac: firmware: Support having multiple alt
+ paths
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+To:     Dmitry Osipenko <digetx@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "Daniel (Deognyoun) Kim" <dekim@broadcom.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20211226153624.162281-1-marcan@marcan.st>
+ <20211226153624.162281-4-marcan@marcan.st>
+ <8e99eb47-2bc1-7899-5829-96f2a515b2cb@gmail.com>
+From:   Hector Martin <marcan@marcan.st>
+In-Reply-To: <8e99eb47-2bc1-7899-5829-96f2a515b2cb@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/12/2021 12:11, Petko Manolov wrote:
-> On 21-12-26 23:12:08, Matthias-Christian Ott wrote:
->> The D-Link DSB-650TX (2001:4002) is unable to receive Ethernet frames that are
->> longer than 1518 octets, for example, Ethernet frames that contain 802.1Q VLAN
->> tags.
->>
->> The frames are sent to the pegasus driver via USB but the driver discards them
->> because they have the Long_pkt field set to 1 in the received status report.
->> The function read_bulk_callback of the pegasus driver treats such received
->> "packets" (in the terminology of the hardware) as errors but the field simply
->> does just indicate that the Ethernet frame (MAC destination to FCS) is longer
->> than 1518 octets.
->>
->> It seems that in the 1990s there was a distinction between "giant" (> 1518)
->> and "runt" (< 64) frames and the hardware includes flags to indicate this
->> distinction. It seems that the purpose of the distinction "giant" frames was
->> to not allow infinitely long frames due to transmission errors and to allow
->> hardware to have an upper limit of the frame size. However, the hardware
->> already has such limit with its 2048 octet receive buffer and, therefore,
->> Long_pkt is merely a convention and should not be treated as a receive error.
->>
->> Actually, the hardware is even able to receive Ethernet frames with 2048
->> octets which exceeds the claimed limit frame size limit of the driver of 1536
->> octets (PEGASUS_MTU).
+On 2022/01/02 15:45, Dmitry Osipenko wrote:
+> 26.12.2021 18:35, Hector Martin пишет:
+>> -static char *brcm_alt_fw_path(const char *path, const char *board_type)
+>> +static const char **brcm_alt_fw_paths(const char *path, const char *board_type)
+>>  {
+>>  	char alt_path[BRCMF_FW_NAME_LEN];
+>> +	char **alt_paths;
+>>  	char suffix[5];
+>>  
+>>  	strscpy(alt_path, path, BRCMF_FW_NAME_LEN);
+>> @@ -609,27 +612,46 @@ static char *brcm_alt_fw_path(const char *path, const char *board_type)
+>>  	strlcat(alt_path, board_type, BRCMF_FW_NAME_LEN);
+>>  	strlcat(alt_path, suffix, BRCMF_FW_NAME_LEN);
+>>  
+>> -	return kstrdup(alt_path, GFP_KERNEL);
+>> +	alt_paths = kzalloc(sizeof(char *) * 2, GFP_KERNEL);
 > 
-> 2048 is not mentioned anywhere in both, adm8511 and adm8515 documents.  In the
-> latter I found 1638 as max packet length, but that's not the default.  The
-> default is 1528 and i don't feel like changing it without further investigation.
+> array_size()?
 
-I can't remember where I found the number. I adapted the original bug
-report that I wrote months ago for the commit message. I'm assuming that
-the number comes from the size of the SRAM transmit buffer/TX FIFO. I
-also remember that I did some experiments with the MTU to find out what
-the hardware supports. However, I don't remember the results of these
-experiments. So treat the 2048 as an unverified and perhaps wrong claim.
-I will remove it a subsequent version of the patch.
+Of what array?
 
-The ADM8515/X datasheet states that the 2 KiB SRAM TX FIFO can hold 4
-Ethernet frames which equals a MTU of 512 Octets and that the 24 KiB
-SRAM RX FIFO can hold 16 Ethernet frames which equals a MTU of 1536
-Octets. This somewhat contradicts the 1638 Octets from the same
-datasheet. So it seems best to me find it out with an experiment.
+> 
+>> +	alt_paths[0] = kstrdup(alt_path, GFP_KERNEL);
+>> +
+>> +	return (const char **)alt_paths;
+> 
+> Why this casting is needed?
 
-> Thus, i assume it is safe to change PEGASUS_MTU to 1528 for the moment.  VLAN
-> frames have 4 additional bytes so we aren't breaking neither pegasus I nor
-> pegasus II devices.
+Because implicit conversion from char ** to const char ** is not legal
+in C, as that could cause const unsoundness if you do this:
 
-Yes, this also not the subject or intent of the commit. I will remove
-the sentence from the paragraph in a subsequent version of the patch.
+char *foo[1];
+const char **bar = foo;
 
-Kind regards,
-Matthias-Christian Ott
+bar[0] = "constant string";
+foo[0][0] = '!'; // clobbers constant string
+
+But it's fine in this case since the non-const pointer disappears so
+nothing can ever write through it again.
+
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
