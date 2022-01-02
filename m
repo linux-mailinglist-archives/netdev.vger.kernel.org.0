@@ -2,150 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FF79482B91
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 15:25:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF975482BAC
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 16:18:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233205AbiABOZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 09:25:40 -0500
-Received: from marcansoft.com ([212.63.210.85]:53004 "EHLO mail.marcansoft.com"
+        id S232458AbiABPSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 10:18:23 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:47224 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229760AbiABOZk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 2 Jan 2022 09:25:40 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 70505425C1;
-        Sun,  2 Jan 2022 14:25:29 +0000 (UTC)
-Message-ID: <f35bed9b-aefd-cdf1-500f-194d5699cffd@marcan.st>
-Date:   Sun, 2 Jan 2022 23:25:27 +0900
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH 03/34] brcmfmac: firmware: Support having multiple alt
- paths
-Content-Language: en-US
-To:     Dmitry Osipenko <digetx@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        id S232447AbiABPSX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 2 Jan 2022 10:18:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=n93Bdc5Jo8H/r2AjLEnJjEPpghadROP9e+QlOQhfu4g=; b=x1asSTAVrN+BxiDfnIMJOSOS8s
+        85hbQrfG1eth6w4qS8gvVmfdDy8bAm5IUopwdrlQPx9KLGnF9F7qZm7Ap9lKUgUKVV2krjo7y0WSw
+        tNUlPevGJz7sPy/r9HuO+yRi6F82B43x30sLdqMd56rNfGTBZ9ZVqTYqwfXj8NCSvPyQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n42cZ-000Jds-LK; Sun, 02 Jan 2022 16:18:07 +0100
+Date:   Sun, 2 Jan 2022 16:18:07 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sam Ravnborg <sam@ravnborg.org>
+Cc:     Miaoqian Lin <linmq006@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20211226153624.162281-1-marcan@marcan.st>
- <20211226153624.162281-4-marcan@marcan.st>
- <c79d67af-2d4c-2c9d-bb7d-630faf9de175@gmail.com>
-From:   Hector Martin <marcan@marcan.st>
-In-Reply-To: <c79d67af-2d4c-2c9d-bb7d-630faf9de175@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: No network [Was: [PATCH] net: phy: fixed_phy: Fix NULL vs
+ IS_ERR() checking in __fixed_phy_register]
+Message-ID: <YdHCL6KpX525KTtr@lunn.ch>
+References: <20211224021500.10362-1-linmq006@gmail.com>
+ <YdGBwfbALNBrEwus@ravnborg.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdGBwfbALNBrEwus@ravnborg.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/01/02 16:08, Dmitry Osipenko wrote:
-> 26.12.2021 18:35, Hector Martin пишет:
->> +static void brcm_free_alt_fw_paths(const char **alt_paths)
->> +{
->> +	int i;
->> +
->> +	if (!alt_paths)
->> +		return;
->> +
->> +	for (i = 0; alt_paths[i]; i++)
->> +		kfree(alt_paths[i]);
->> +
->> +	kfree(alt_paths);
->>  }
->>  
->>  static int brcmf_fw_request_firmware(const struct firmware **fw,
->>  				     struct brcmf_fw *fwctx)
->>  {
->>  	struct brcmf_fw_item *cur = &fwctx->req->items[fwctx->curpos];
->> -	int ret;
->> +	int ret, i;
->>  
->>  	/* Files can be board-specific, first try a board-specific path */
->>  	if (cur->type == BRCMF_FW_TYPE_NVRAM && fwctx->req->board_type) {
->> -		char *alt_path;
->> +		const char **alt_paths = brcm_alt_fw_paths(cur->path, fwctx);
->>  
->> -		alt_path = brcm_alt_fw_path(cur->path, fwctx->req->board_type);
->> -		if (!alt_path)
->> +		if (!alt_paths)
->>  			goto fallback;
->>  
->> -		ret = request_firmware(fw, alt_path, fwctx->dev);
->> -		kfree(alt_path);
->> -		if (ret == 0)
->> -			return ret;
->> +		for (i = 0; alt_paths[i]; i++) {
->> +			ret = firmware_request_nowarn(fw, alt_paths[i], fwctx->dev);
->> +			if (ret == 0) {
->> +				brcm_free_alt_fw_paths(alt_paths);
->> +				return ret;
->> +			}
->> +		}
->> +		brcm_free_alt_fw_paths(alt_paths);
->>  	}
->>  
->>  fallback:
->> @@ -641,6 +663,9 @@ static void brcmf_fw_request_done(const struct firmware *fw, void *ctx)
->>  	struct brcmf_fw *fwctx = ctx;
->>  	int ret;
->>  
->> +	brcm_free_alt_fw_paths(fwctx->alt_paths);
->> +	fwctx->alt_paths = NULL;
+On Sun, Jan 02, 2022 at 11:43:13AM +0100, Sam Ravnborg wrote:
+> Hi Miaoqian,
 > 
-> It looks suspicious that fwctx->alt_paths isn't zero'ed by other code
-> paths. The brcm_free_alt_fw_paths() should take fwctx for the argument
-> and fwctx->alt_paths should be set to NULL there.
-
-There are multiple code paths for alt_paths; the initial firmware lookup
-uses fwctx->alt_paths, and once we know the firmware load succeeded we
-use blocking firmware requests for NVRAM/CLM/etc and those do not use
-the fwctx member, but rather just keep alt_paths in function scope
-(brcmf_fw_request_firmware). You're right that there was a rebase SNAFU
-there though, I'll compile test each patch before sending v2. Sorry
-about that. In this series the code should build again by patch #6.
-
-Are you thinking of any particular code paths? As far as I saw when
-writing this, brcmf_fw_request_done() should always get called whether
-things succeed or fail. There are no other code paths that free
-fwctx->alt_paths.
-
-> On the other hand, I'd change the **alt_paths to a fixed-size array.
-> This should simplify the code, making it easier to follow and maintain.
+> On Fri, Dec 24, 2021 at 02:14:59AM +0000, Miaoqian Lin wrote:
+> > The fixed_phy_get_gpiod function() returns NULL, it doesn't return error
+> > pointers, using NULL checking to fix this.i
+> > 
+> > Fixes: 5468e82f7034 ("net: phy: fixed-phy: Drop GPIO from fixed_phy_add()")
+> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 > 
-> -	const char **alt_paths;
-> +	char *alt_paths[BRCM_MAX_ALT_FW_PATHS];
+> This patch has the side-effect that the node <link-gpios> is now
+> mandatory. As the DT file I use do not have this node there is no
+> network.
+> The error I see in the log is:
 > 
-> Then you also won't need to NULL-terminate the array, which is a common
-> source of bugs in kernel.
+> 	fec 2188000.ethernet: broken fixed-link specification
+> 	fec: probe of 2188000.ethernet failed with error -22
+> 
+> Reverting this patch gave me network again.
+> This is on top of 8008293888188c3923f5bd8a69370dae25ed14e5.
+> 
+> Note: I have issues with my mail provider, so this mail may not hit the
+> mailing list.
 
-That sounds reasonable, it'll certainly make the code simpler. I'll do
-that for v2.
+I think the real problem is:
 
+commit b45396afa4177f2b1ddfeff7185da733fade1dc3
+Author: Miaoqian Lin <linmq006@gmail.com>
+Date:   Fri Dec 24 02:14:59 2021 +0000
 
--- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+    net: phy: fixed_phy: Fix NULL vs IS_ERR() checking in __fixed_phy_register
+    
+    The fixed_phy_get_gpiod function() returns NULL, it doesn't return error
+    pointers, using NULL checking to fix this.i
+
+The phy_get_gpiod function() does in fact return an error code pointer
+for one important case:
+
+        gpiod = fwnode_gpiod_get_index(of_fwnode_handle(fixed_link_node),
+                                       "link", 0, GPIOD_IN, "mdio");
+        if (IS_ERR(gpiod) && PTR_ERR(gpiod) != -EPROBE_DEFER) {
+                if (PTR_ERR(gpiod) != -ENOENT)
+                        pr_err("error getting GPIO for fixed link %pOF, proceed without\n",
+                               fixed_link_node);
+                gpiod = NULL;
+        }
+        of_node_put(fixed_link_node);
+
+        return gpiod;
+
+So if fwnode_gpiod_get_index() returns -EPROBE_DEFFER, and error code
+pointer is returned. And that error code pointer needs to be returned
+up the call stack in order that the driver gets probed again later
+when the GPIO driver has loaded.
+
+Miaoqian, please could you submit a fix for this.
+
+     Andrew
