@@ -2,114 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44EA3482CF9
-	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 23:21:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D17B9482CFC
+	for <lists+netdev@lfdr.de>; Sun,  2 Jan 2022 23:23:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbiABWVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 17:21:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230150AbiABWVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 17:21:36 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8431C061761;
-        Sun,  2 Jan 2022 14:21:35 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id r22so53211775ljk.11;
-        Sun, 02 Jan 2022 14:21:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=KV6JjPRe31wWSA2vdPikR0rw/SIDmr8VFEMbJalDcrc=;
-        b=KI/M7iOY2gYCBJXT+C+bOW0dc7REzvKcjrhXE0ejMunOEJhK+d6OyEVoESx6F61vYx
-         RdScJJ+j6LXCxTHD6rb3+zygVBPJADm+bE8AZx5INGCAhX37/g6vA/PymdbNm5+xg3eK
-         CfPsDLJJ0nIYCLVJ2UNolGJ+FHvN9nyVXBqUzbYLSdq3uyhxcnz8JR2hDNW/01m8FjPL
-         I3MIoDj1RjQZja85nLH2E90Yz3f5KTstHJMM1BECijPjqC2r+btnbe+6eYTf14W33BPY
-         lm5zFfq68k2FpNdE14eP99amKGhNPFILdpKEC6KUlhTXaX3pH7puhlL2l5UpdEzrjPYj
-         10Kw==
+        id S230387AbiABWXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 2 Jan 2022 17:23:19 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:40578 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230150AbiABWXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 17:23:19 -0500
+Received: by mail-io1-f70.google.com with SMTP id d12-20020a0566022d4c00b005ebda1035b1so16595333iow.7
+        for <netdev@vger.kernel.org>; Sun, 02 Jan 2022 14:23:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KV6JjPRe31wWSA2vdPikR0rw/SIDmr8VFEMbJalDcrc=;
-        b=uTOSX39yH7G8lKb5b+ZxNIiW9A9howJMMqP3mCplCWtfu9zcKTvE0NevkZInKtBUkt
-         9UbaxXzQtHkjCDT/5Jfj8UnD6XgymtbjM7xtZBLNJpKjsCtQk8uTkCfdhlmP6WPjq1c7
-         gtPB5Bh35dS6GRL7X38yrAlnCvZuxyp+8AcVIe0p+W09p3b9wzPb8cCk93eoIqxaxwx9
-         rYhWzcWtDBXVIZULLzfR1rewYc0GVNNAokTYrNEngzMwwSdwnMO5jOboLl3YT0F9/4Ab
-         VlOuf6KF++iHFSlFWyc64fMDPmB7WL7cdGPaAeDf1nr4ctZ47muyioXZSvkPd+Wvdv+P
-         sNag==
-X-Gm-Message-State: AOAM531KZb+V5pyIYeQYjbjYUf8wUYwtpdaBEeNTVSlITmFVKb8uqRD6
-        Bg9u4J3T4lfqykiRbWp7ZoQwjL+flU0=
-X-Google-Smtp-Source: ABdhPJyNWxjAqH4qq4FVJDqCnL8zYQkh/gj6v1iHSuUEnYoRiGL0MMwRdP+pZFj4+qlB/NBN4ilp9g==
-X-Received: by 2002:a2e:9f15:: with SMTP id u21mr34720542ljk.9.1641162094091;
-        Sun, 02 Jan 2022 14:21:34 -0800 (PST)
-Received: from [192.168.1.11] ([217.117.245.177])
-        by smtp.gmail.com with ESMTPSA id f19sm2560715lfv.100.2022.01.02.14.21.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Jan 2022 14:21:33 -0800 (PST)
-Message-ID: <81467464-630a-25c4-425d-d8c5c01a739c@gmail.com>
-Date:   Mon, 3 Jan 2022 01:21:32 +0300
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=RZcgwQ127RRDjLwS9pjPoFiYu/8bbP+WbwniW4lbksU=;
+        b=wkuF46g6zUAHcTK6z2ma8GzMnprNWPDIpkfqikvBc7LcooLHKmXKK/IVG6N0rtNxWT
+         v3o5aLlRU/Nir8QC48qJOdI4wetKHcU1fcYGcgRkAe5d8NYovpyPJrG5uG2nfAU17cFp
+         gavSVdZ9PxovVUfpG0DyINim/3MeJCTFUYJFr1fLwdov+m3Q+9ZbgaHvfSt+298iqieV
+         VeOOLzbd2uTh2jip2I9MzL7dFuaOW0A4HRtv6aTxoPIppa1B6GgSxHfttTCG9jpwYMKi
+         yZAgPZx1OVF2tbHIEghYvcl2QEwMMlFfzUmrqYG7HSGOUSVMfodua5xszM6+TWkkNs09
+         Ac6w==
+X-Gm-Message-State: AOAM530nMV1+kQpxEOdzhzxuMtFmqihCDhfA7AAqbvjyu3ZtPVGw0AGZ
+        KmCPZteqiSdPnt/+jSnekLS4CPApiZ2iviVvb2AcSpN0iR5J
+X-Google-Smtp-Source: ABdhPJwkty2r3iKRy9Ev0KrYdlKg+iUkF3bJryENYKIu+EoHKfmvPOjd2isAbm3FYF7brT3/9lzTxBwNdg5ry4C2wjkTvPgwDcUP
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH RFT] ieee802154: atusb: move to new USB API
-Content-Language: en-US
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        "# 3.19.x" <stable@vger.kernel.org>,
-        Alexander Potapenko <glider@google.com>
-References: <CAG_fn=VDEoQx5c7XzWX1yaYBd5y5FrG1aagrkv+SZ03c8TfQYQ@mail.gmail.com>
- <20220102171943.28846-1-paskripkin@gmail.com>
- <CAB_54W6i9-fy8Vc-uypXPtj3Uy0VuZpidFuRH0DVoWJ8utcWiw@mail.gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <CAB_54W6i9-fy8Vc-uypXPtj3Uy0VuZpidFuRH0DVoWJ8utcWiw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6602:14d3:: with SMTP id b19mr19555616iow.17.1641162198638;
+ Sun, 02 Jan 2022 14:23:18 -0800 (PST)
+Date:   Sun, 02 Jan 2022 14:23:18 -0800
+In-Reply-To: <000000000000f5dc0805cf7807a7@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000de69a305d4a0d958@google.com>
+Subject: Re: [syzbot] KMSAN: uninit-value in hci_conn_request_evt
+From:   syzbot <syzbot+8f84cf3ec5c288e779ef@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/3/22 01:15, Alexander Aring wrote:
-> Hi,
-> 
-> On Sun, 2 Jan 2022 at 12:19, Pavel Skripkin <paskripkin@gmail.com> wrote:
->>
->> Alexander reported a use of uninitialized value in
->> atusb_set_extended_addr(), that is caused by reading 0 bytes via
->> usb_control_msg().
->>
-> 
-> Does there exist no way to check on this and return an error on USB
-> API caller level?
-> 
->> Since there is an API, that cannot read less bytes, than was requested,
->> let's move atusb driver to use it. It will fix all potintial bugs with
->> uninit values and make code more modern
->>
-> 
-> If this is not possible to fix with the "old" USB API then I think the
-> "old" USB API needs to be fixed.
-> Changing to the new USB API as "making the code more modern" is a new
-> feature and is a candidate for next.
-> 
+syzbot has found a reproducer for the following issue on:
 
-It can be fixed with the old one. Something like that should work:
+HEAD commit:    81c325bbf94e kmsan: hooks: do not check memory in kmsan_in..
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=103ea4c7b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2d8b9a11641dc9aa
+dashboard link: https://syzkaller.appspot.com/bug?extid=8f84cf3ec5c288e779ef
+compiler:       clang version 14.0.0 (/usr/local/google/src/llvm-git-monorepo 2b554920f11c8b763cd9ed9003f4e19b919b8e1f), GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10051b67b00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12148a3bb00000
 
--	if (ret < 0) {
--		atusb->err = ret;
-+	if (ret < size) {
-+		atusb->err = ret < 0: ret: -ENODATA;		
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8f84cf3ec5c288e779ef@syzkaller.appspotmail.com
 
-But I thought, that moving to new API is better fix, just because old 
-one prone to uninit value bugs if error checking is wrong
+=====================================================
+BUG: KMSAN: uninit-value in hci_proto_connect_ind include/net/bluetooth/hci_core.h:1485 [inline]
+BUG: KMSAN: uninit-value in hci_conn_request_evt+0x22b/0x13c0 net/bluetooth/hci_event.c:2827
+ hci_proto_connect_ind include/net/bluetooth/hci_core.h:1485 [inline]
+ hci_conn_request_evt+0x22b/0x13c0 net/bluetooth/hci_event.c:2827
+ hci_event_packet+0x1452/0x23e0 net/bluetooth/hci_event.c:6360
+ hci_rx_work+0x6a0/0xd00 net/bluetooth/hci_core.c:5084
+ process_one_work+0xdb9/0x1820 kernel/workqueue.c:2298
+ worker_thread+0x10bc/0x21f0 kernel/workqueue.c:2445
+ kthread+0x721/0x850 kernel/kthread.c:327
+ ret_from_fork+0x1f/0x30
 
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:524 [inline]
+ slab_alloc_node mm/slub.c:3251 [inline]
+ __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1126 [inline]
+ bt_skb_alloc include/net/bluetooth/bluetooth.h:413 [inline]
+ vhci_get_user drivers/bluetooth/hci_vhci.c:287 [inline]
+ vhci_write+0x187/0x8f0 drivers/bluetooth/hci_vhci.c:407
+ call_write_iter include/linux/fs.h:2162 [inline]
+ new_sync_write fs/read_write.c:503 [inline]
+ vfs_write+0x1318/0x2030 fs/read_write.c:590
+ ksys_write+0x28b/0x510 fs/read_write.c:643
+ __do_sys_write fs/read_write.c:655 [inline]
+ __se_sys_write fs/read_write.c:652 [inline]
+ __x64_sys_write+0xdb/0x120 fs/read_write.c:652
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
+CPU: 1 PID: 43 Comm: kworker/u5:0 Not tainted 5.16.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: hci0 hci_rx_work
+=====================================================
 
-With regards,
-Pavel Skripkin
