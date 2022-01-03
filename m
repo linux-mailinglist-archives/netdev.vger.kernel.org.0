@@ -2,132 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFFC9483583
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:23:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C12C4835A8
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:29:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235207AbiACRXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 12:23:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51670 "EHLO
+        id S235295AbiACR3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 12:29:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232003AbiACRXE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:23:04 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB257C061761;
-        Mon,  3 Jan 2022 09:23:03 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        with ESMTP id S235312AbiACR3U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:29:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9898CC061784;
+        Mon,  3 Jan 2022 09:29:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 8BDD4419BC;
-        Mon,  3 Jan 2022 17:22:53 +0000 (UTC)
-Message-ID: <87cd5244-501d-1a3a-35d1-2687cf145bb9@marcan.st>
-Date:   Tue, 4 Jan 2022 02:22:50 +0900
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3785B6112B;
+        Mon,  3 Jan 2022 17:29:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 709BDC36AEB;
+        Mon,  3 Jan 2022 17:29:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641230958;
+        bh=W/r+DM4H3sntKk5hryHgWFidQAklF5kpkLJXcnj6abk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Hkv5jYbTb0vWDBw4k8q4T0WIo4l7mZS+Y4bMTgQZW7SRtS6GKfHh9MRpM5rvDGWwy
+         QwoMdV+pjvkrF9yCnIfIaJecwumt342gdFI+tsk26+0vt9TO46aTEUH05+bDnvdA00
+         MRMupuxixlsSJd72BgkAAaSxwE7A+E/+TQdXXNenuouPKw2810Err4lN4Ngt2RX94K
+         WSRv/SKR5qKu2meCiQSYcGX0Pbz9KaHabRGRHI/LfKQbM3mDZTbioW85rqYbPbv5e3
+         WSKUAka0LkpI+/dkepOX9z+ABw2bd8pO591c4nKjj41EvOXgHgnFUIGVLe0Gf1rwuG
+         C5UUl1uJJmaqg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     William Zhao <wizhao@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, steffen.klassert@secunet.com,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 06/16] ip6_vti: initialize __ip6_tnl_parm struct in vti6_siocdevprivate
+Date:   Mon,  3 Jan 2022 12:28:39 -0500
+Message-Id: <20220103172849.1612731-6-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220103172849.1612731-1-sashal@kernel.org>
+References: <20220103172849.1612731-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH 16/34] brcmfmac: acpi: Add support for fetching Apple ACPI
- properties
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        "brcm80211-dev-list.pdl@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>
-References: <20211226153624.162281-1-marcan@marcan.st>
- <20211226153624.162281-17-marcan@marcan.st>
- <CAHp75VcZcJ+zCDL-J+w8gEeKXGYdJajjLoa1JTj_kkJixrV12Q@mail.gmail.com>
-From:   Hector Martin <marcan@marcan.st>
-In-Reply-To: <CAHp75VcZcJ+zCDL-J+w8gEeKXGYdJajjLoa1JTj_kkJixrV12Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/01/04 1:20, Andy Shevchenko wrote:
->     +void brcmf_acpi_probe(struct device *dev, enum brcmf_bus_type bus_type,
->     +                     struct brcmf_mp_device *settings)
->     +{
->     +       acpi_status status;
->     +       struct acpi_device *adev = ACPI_COMPANION(dev);
-> 
-> 
-> Please, move the assignment closer to its first user 
+From: William Zhao <wizhao@redhat.com>
 
-So... two lines down? :-)
+[ Upstream commit c1833c3964d5bd8c163bd4e01736a38bc473cb8a ]
 
->   
-> 
->     +       const union acpi_object *o;
->     +       struct acpi_buffer buf = {ACPI_ALLOCATE_BUFFER, NULL};
->     +
->     +       if (!adev)
->     +               return;
->     +
->     +       if (!ACPI_FAILURE(acpi_dev_get_property(adev, "module-instance",
->     +                                               ACPI_TYPE_STRING,
->     &o))) {
->     +               const char *prefix = "apple,";
->     +               int len = strlen(prefix) + o->string.length + 1;
->     +               char *board_type = devm_kzalloc(dev, len, GFP_KERNEL);
->     +
->     +               strscpy(board_type, prefix, len);
->     +               strlcat(board_type, o->string.pointer, 
-> 
-> 
-> NIH devm_kasprintf()?
+The "__ip6_tnl_parm" struct was left uninitialized causing an invalid
+load of random data when the "__ip6_tnl_parm" struct was used elsewhere.
+As an example, in the function "ip6_tnl_xmit_ctl()", it tries to access
+the "collect_md" member. With "__ip6_tnl_parm" being uninitialized and
+containing random data, the UBSAN detected that "collect_md" held a
+non-boolean value.
 
-That sounds useful, didn't know that existed. Thanks!
+The UBSAN issue is as follows:
+===============================================================
+UBSAN: invalid-load in net/ipv6/ip6_tunnel.c:1025:14
+load of value 30 is not a valid value for type '_Bool'
+CPU: 1 PID: 228 Comm: kworker/1:3 Not tainted 5.16.0-rc4+ #8
+Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
+Workqueue: ipv6_addrconf addrconf_dad_work
+Call Trace:
+<TASK>
+dump_stack_lvl+0x44/0x57
+ubsan_epilogue+0x5/0x40
+__ubsan_handle_load_invalid_value+0x66/0x70
+? __cpuhp_setup_state+0x1d3/0x210
+ip6_tnl_xmit_ctl.cold.52+0x2c/0x6f [ip6_tunnel]
+vti6_tnl_xmit+0x79c/0x1e96 [ip6_vti]
+? lock_is_held_type+0xd9/0x130
+? vti6_rcv+0x100/0x100 [ip6_vti]
+? lock_is_held_type+0xd9/0x130
+? rcu_read_lock_bh_held+0xc0/0xc0
+? lock_acquired+0x262/0xb10
+dev_hard_start_xmit+0x1e6/0x820
+__dev_queue_xmit+0x2079/0x3340
+? mark_lock.part.52+0xf7/0x1050
+? netdev_core_pick_tx+0x290/0x290
+? kvm_clock_read+0x14/0x30
+? kvm_sched_clock_read+0x5/0x10
+? sched_clock_cpu+0x15/0x200
+? find_held_lock+0x3a/0x1c0
+? lock_release+0x42f/0xc90
+? lock_downgrade+0x6b0/0x6b0
+? mark_held_locks+0xb7/0x120
+? neigh_connected_output+0x31f/0x470
+? lockdep_hardirqs_on+0x79/0x100
+? neigh_connected_output+0x31f/0x470
+? ip6_finish_output2+0x9b0/0x1d90
+? rcu_read_lock_bh_held+0x62/0xc0
+? ip6_finish_output2+0x9b0/0x1d90
+ip6_finish_output2+0x9b0/0x1d90
+? ip6_append_data+0x330/0x330
+? ip6_mtu+0x166/0x370
+? __ip6_finish_output+0x1ad/0xfb0
+? nf_hook_slow+0xa6/0x170
+ip6_output+0x1fb/0x710
+? nf_hook.constprop.32+0x317/0x430
+? ip6_finish_output+0x180/0x180
+? __ip6_finish_output+0xfb0/0xfb0
+? lock_is_held_type+0xd9/0x130
+ndisc_send_skb+0xb33/0x1590
+? __sk_mem_raise_allocated+0x11cf/0x1560
+? dst_output+0x4a0/0x4a0
+? ndisc_send_rs+0x432/0x610
+addrconf_dad_completed+0x30c/0xbb0
+? addrconf_rs_timer+0x650/0x650
+? addrconf_dad_work+0x73c/0x10e0
+addrconf_dad_work+0x73c/0x10e0
+? addrconf_dad_completed+0xbb0/0xbb0
+? rcu_read_lock_sched_held+0xaf/0xe0
+? rcu_read_lock_bh_held+0xc0/0xc0
+process_one_work+0x97b/0x1740
+? pwq_dec_nr_in_flight+0x270/0x270
+worker_thread+0x87/0xbf0
+? process_one_work+0x1740/0x1740
+kthread+0x3ac/0x490
+? set_kthread_struct+0x100/0x100
+ret_from_fork+0x22/0x30
+</TASK>
+===============================================================
 
->  
-> 
->     +               brcmf_dbg(INFO, "ACPI module-instance=%s\n",
->     o->string.pointer);
->     +               settings->board_type = board_type;
->     +       } else {
->     +               brcmf_dbg(INFO, "No ACPI module-instance\n");
->     +       }
->     +
->     +       status = acpi_evaluate_object(adev->handle, "RWCV", NULL, &buf);
->     +       o = buf.pointer;
->     +       if (!ACPI_FAILURE(status) && o && o->type == ACPI_TYPE_BUFFER &&
->     +           o->buffer.length >= 2) {
->     +               char *antenna_sku = devm_kzalloc(dev, 3, GFP_KERNEL);
->     +
->     +               memcpy(antenna_sku, o->buffer.pointer, 2);
-> 
-> 
-> NIH devm_kmemdup()?
+The solution is to initialize "__ip6_tnl_parm" struct to zeros in the
+"vti6_siocdevprivate()" function.
 
-Not *quite*. I take the first two bytes of the returned buffer and turn
-them into a null-terminated 3-byte string. kmemdup wouldn't
-null-terminate or would copy too much, depending on length.
+Signed-off-by: William Zhao <wizhao@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv6/ip6_vti.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
+index 1d8e3ffa225d8..42c37ec832f15 100644
+--- a/net/ipv6/ip6_vti.c
++++ b/net/ipv6/ip6_vti.c
+@@ -808,6 +808,8 @@ vti6_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __user *data
+ 	struct net *net = dev_net(dev);
+ 	struct vti6_net *ip6n = net_generic(net, vti6_net_id);
+ 
++	memset(&p1, 0, sizeof(p1));
++
+ 	switch (cmd) {
+ 	case SIOCGETTUNNEL:
+ 		if (dev == ip6n->fb_tnl_dev) {
 -- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+2.34.1
+
