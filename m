@@ -2,65 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9A90483819
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 21:53:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3044048381A
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 21:56:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229612AbiACUxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 15:53:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42712 "EHLO
+        id S229630AbiACU4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 15:56:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiACUxO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 15:53:14 -0500
-Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D5EC061761
-        for <netdev@vger.kernel.org>; Mon,  3 Jan 2022 12:53:14 -0800 (PST)
-Received: by mail-ua1-x92d.google.com with SMTP id v14so42088889uau.2
-        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 12:53:14 -0800 (PST)
+        with ESMTP id S229478AbiACU4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 15:56:00 -0500
+Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FFF9C061761
+        for <netdev@vger.kernel.org>; Mon,  3 Jan 2022 12:56:00 -0800 (PST)
+Received: by mail-vk1-xa36.google.com with SMTP id j4so16797738vkr.12
+        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 12:56:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qN7fe4mmHGgFy/d8+J43DIO3BZsqvDSIvbErVhx/mCE=;
-        b=KieuSJYARazc+vaV0zJkPkAL4N/9rFLFMpYr4j9Rr5TT2vrvFRQYFUFT9xPci/VCGJ
-         L5xzMh32JamKyN6EHiG+t5AYEmQLkhc79bz2jHWVPWNKa7jyzlXVuQK+XA5iq1bdKrHs
-         k7P+n2AyBemSEXwTcqS7xhyuNwW5bg3Fhtixo30gE86yV12JP8YceORSNGv9KWfJmOwR
-         6H0Nub0Vz0nP0XAKdx56nBVu3Z1ngeKMRxYFrbgZ55agEFI01NWqkdMBdeC9l21u9WMZ
-         VSGShgzUSF/qDnZO6MhdWKV9aSxSYOmB+DLv0c32TRwDGe+NOrrkE3WOsCCzQrYodk+E
-         KMYw==
+        bh=kBCv1hiVhuuOp+1hg/IIlyCmZYHEVIeQLXIAB0ScoQc=;
+        b=k42xQLw+JNbk3cFjxgmKHfaPbImKtsZicapYBIK6L0nnU+wDnFwpOFs0CkDbpzBfvE
+         WZD+qzLjUIz+u7YEJhRksPEUkaHjDNWnh3BptnYGVQm4UYvPtuwoOpctAIADd/Brdevw
+         xdrib5l3CKvzZmWmCKHL7SP6saAc4MnmEU9ENQVtFehWGsJIvJAy1wIVkmPmIC7Ai2xu
+         q8YZqGdJua/deUcv/bHil6p0nhMzEqlhG8BuxOSWYQ2Pk3xXKbAXOzgBPM1G3pg2TXeX
+         /dXaz3446BJcUwRK2n6i7Eha7ADvttCsl6PLkU7ka1/6LZ7OOy9JokBa2Dn38tibEf5H
+         quyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qN7fe4mmHGgFy/d8+J43DIO3BZsqvDSIvbErVhx/mCE=;
-        b=0+uoR+LrK9b9LrzMVfwPT1yaIrJWOtWh26KMdXEDpmhXypL/0Ob1Z7OXwuhWF1Ap4a
-         4AC6lyAj+1gwUc8vkZjxRyL42A3BXVnWFuP0xixG+7ZTri9qRgl0qBlzSajFXZNhDEb7
-         H7lIt6bULpflu93CqRUeqJDs7CAIIRf5HwDgMdZa/S4ID6bbbhTFcGSkWB/6YyuNQEyZ
-         267ctHmrMPtUq83lZ/GeNRpiCyr1ZLPu37rBoLHwynFS52H8VYo26rW70YuLiNbe99xo
-         +FSuN187Js0xotif840udUdUqnDQgRTj3ocqsEFKVRpe5VC0K/lbP0Y81ZaPcfX0FMvp
-         S6Qg==
-X-Gm-Message-State: AOAM5333gHwrkx8v1rt/XjjHwTKpLzTBZ43VEMj9sjoKQgEDjDrBBySH
-        yAif9W+10LEKsI2wqh3Mfsh7Auij0sM=
-X-Google-Smtp-Source: ABdhPJxfS0/7oOnmsG7AJK1/GP1N6AMDtaQU7LMIRHtngTV8rIaNzYbnpj1PQWUotKn6GhJ6d+ZKJA==
-X-Received: by 2002:ab0:6518:: with SMTP id w24mr11172721uam.63.1641243193410;
-        Mon, 03 Jan 2022 12:53:13 -0800 (PST)
-Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com. [209.85.222.50])
-        by smtp.gmail.com with ESMTPSA id k23sm7847961vsm.1.2022.01.03.12.53.12
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Jan 2022 12:53:12 -0800 (PST)
-Received: by mail-ua1-f50.google.com with SMTP id i5so44680323uaq.10
-        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 12:53:12 -0800 (PST)
-X-Received: by 2002:a67:f141:: with SMTP id t1mr13485768vsm.35.1641243192352;
- Mon, 03 Jan 2022 12:53:12 -0800 (PST)
+        bh=kBCv1hiVhuuOp+1hg/IIlyCmZYHEVIeQLXIAB0ScoQc=;
+        b=e2/6n0mr8WxbAbRjGm0LhYVnOdg7cX6bMG9NeGrlEZJE6vmOOV9ILza3GH1kuR33O0
+         TlY/cxBqvmoQa9mBh/skAVQ4TwEmPKv8eSiae3AUfUIKtc3Wb97HD/t2KJa8mMLpF7zq
+         Ebp5O6/eN1CmbmJm/h1SCSJ14F0gxqFoUxfvrUULIV8LtOOLvIL2KIpg1TpAbvHPW9Mt
+         hvdSQYE3Ct2pvHDucqROyRCeWPlh70t4PsokivYV04N15MYRlSytFHIK4gU8l9kRRsMP
+         tg1gv6/YhdZmFswkr1REkmQHH3j+SdCTWGYD45BOm7xdfBv1Mpjobi25Hb61MNJMlfXN
+         ZL9g==
+X-Gm-Message-State: AOAM531weRfScT7Z664GbKooEmCYPPxjUBbicxa20rOk/oEoWTUqABLB
+        P8w8qg1z66RM9bNG4PQ22rL3xB2zfokV5auuWDxwiQ==
+X-Google-Smtp-Source: ABdhPJx15ZOGWrTLmHj+i3xcEeTDQfTjpItj5Ol4R9v8Zra8VzcC89dKmtXYti9oXVvKv7DSD70tn9ObzuYt+Yw+QdU=
+X-Received: by 2002:ac5:c5c7:: with SMTP id g7mr14963612vkl.29.1641243359602;
+ Mon, 03 Jan 2022 12:55:59 -0800 (PST)
 MIME-Version: 1.0
-References: <20220103171132.93456-1-andrew@lunn.ch> <20220103171132.93456-2-andrew@lunn.ch>
- <b675e0e5-3469-0854-3767-b2a9ec68bd8f@gmail.com>
-In-Reply-To: <b675e0e5-3469-0854-3767-b2a9ec68bd8f@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 3 Jan 2022 15:52:36 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSeydAbz296i_ObW9ci1ddPqOzC=JvYUOwQA2ngaqA8CaA@mail.gmail.com>
-Message-ID: <CA+FuTSeydAbz296i_ObW9ci1ddPqOzC=JvYUOwQA2ngaqA8CaA@mail.gmail.com>
-Subject: Re: [PATCH v5 net-next 1/3] seg6: export get_srh() for ICMP handling
+References: <20220103171132.93456-1-andrew@lunn.ch> <20220103171132.93456-3-andrew@lunn.ch>
+ <c67d22c7-2f1b-b619-b14e-2f5076b92a15@gmail.com>
+In-Reply-To: <c67d22c7-2f1b-b619-b14e-2f5076b92a15@gmail.com>
+From:   Willem de Bruijn <willemb@google.com>
+Date:   Mon, 3 Jan 2022 15:55:23 -0500
+Message-ID: <CA+FuTSewvc1k_JJtZc-NCZmo0y+mjradkP3mM7=1obA2LQFcWA@mail.gmail.com>
+Subject: Re: [PATCH v5 net-next 2/3] icmp: ICMPV6: Examine invoking packet for
+ Segment Route Headers.
 To:     David Ahern <dsahern@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -77,26 +68,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 3, 2022 at 12:31 PM David Ahern <dsahern@gmail.com> wrote:
+On Mon, Jan 3, 2022 at 12:34 PM David Ahern <dsahern@gmail.com> wrote:
 >
 > On 1/3/22 10:11 AM, Andrew Lunn wrote:
-> > An ICMP error message can contain in its message body part of an IPv6
-> > packet which invoked the error. Such a packet might contain a segment
-> > router header. Export get_srh() so the ICMP code can make use of it.
+> > RFC8754 says:
 > >
-> > Since his changes the scope of the function from local to global, add
-> > the seg6_ prefix to keep the namespace clean. And move it into seg6.c
-> > so it is always available, not just when IPV6_SEG6_LWTUNNEL is
-> > enabled.
+> > ICMP error packets generated within the SR domain are sent to source
+> > nodes within the SR domain.  The invoking packet in the ICMP error
+> > message may contain an SRH.  Since the destination address of a packet
+> > with an SRH changes as each segment is processed, it may not be the
+> > destination used by the socket or application that generated the
+> > invoking packet.
+> >
+> > For the source of an invoking packet to process the ICMP error
+> > message, the ultimate destination address of the IPv6 header may be
+> > required.  The following logic is used to determine the destination
+> > address for use by protocol-error handlers.
+> >
+> > *  Walk all extension headers of the invoking IPv6 packet to the
+> >    routing extension header preceding the upper-layer header.
+> >
+> >    -  If routing header is type 4 Segment Routing Header (SRH)
+> >
+> >       o  The SID at Segment List[0] may be used as the destination
+> >          address of the invoking packet.
+> >
+> > Mangle the skb so the network header points to the invoking packet
+> > inside the ICMP packet. The seg6 helpers can then be used on the skb
+> > to find any segment routing headers. If found, mark this fact in the
+> > IPv6 control block of the skb, and store the offset into the packet of
+> > the SRH. Then restore the skb back to its old state.
 > >
 > > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 > > ---
-> >  include/net/seg6.h    |  1 +
-> >  net/ipv6/seg6.c       | 29 +++++++++++++++++++++++++++++
-> >  net/ipv6/seg6_local.c | 33 ++-------------------------------
-> >  3 files changed, 32 insertions(+), 31 deletions(-)
+> >  include/linux/ipv6.h |  2 ++
+> >  include/net/seg6.h   |  1 +
+> >  net/ipv6/icmp.c      |  6 +++++-
+> >  net/ipv6/seg6.c      | 30 ++++++++++++++++++++++++++++++
+> >  4 files changed, 38 insertions(+), 1 deletion(-)
 > >
 >
 > Reviewed-by: David Ahern <dsahern@kernel.org>
-
+>
 Reviewed-by: Willem de Bruijn <willemb@google.com>
