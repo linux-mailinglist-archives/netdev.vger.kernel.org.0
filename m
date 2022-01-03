@@ -2,184 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DE02482DEB
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 05:59:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43D18482DF5
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 06:05:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229852AbiACE72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 2 Jan 2022 23:59:28 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:63798 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229677AbiACE71 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 2 Jan 2022 23:59:27 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 202MqVlH009945;
-        Sun, 2 Jan 2022 20:58:47 -0800
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3daqbrjqb9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 02 Jan 2022 20:58:47 -0800
-Received: from m0045851.ppops.net (m0045851.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2034wkQF020703;
-        Sun, 2 Jan 2022 20:58:46 -0800
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2108.outbound.protection.outlook.com [104.47.58.108])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3daqbrjqaq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 02 Jan 2022 20:58:46 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Krlm7ycpaDw2QXIbrlYq2+pJ+QTQefP49mYsr6qldls8dn7GXLzOsBVhKaO6WaEY99T2yiL2khBYipzrvtI/juOFsMjfAc6qqyv1gmkvLtsFGkM3v8wLymWQOKz0sZixe1eC++yEzQDEZyQrNUMHTIaYoSf9sknxkioQTSuhv10kRuKvKDXZAGpEjg51Z3yf/5zgfo4bUCU4/4z4+Ce8zQV+21pi6xSOqwt55budeWR3SiKQZVjv3m1xN0DOAiFK5Y+chWyoZrCjePSGRqZpP/GxOTLvvfrBDfQhfGyLAmONJM+0ake4Wal+lJxHf4kS+hBMcN16i5mdBvjyS+OU+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bu1uIiO5ckzWvWLC2ZQuy8PeU619/3WkHEb4fZSK+8c=;
- b=edMdV2XjVAJ3vQbLJu9ogHPtVfcgHT++rssTFOdypZv6c0Mh+1a3WmEfzoy6mu4q7lS0QG6UfOVvS4S9JQmSeDgtfxe4D1HD+W6pDQKJ2CAZfhzh0LXkqzZu3CyXiZiECoBNzMMeTRi7IlmvxYRshVIcK1dIJO+dFxsZqt29zQ/ZpZXeAvtDvTEVwdgFEZ5K/i8c9Jn33RqMSUkl2zRNTSTypjIWkv3zv5LEZrpL5piN7df9qcrWnrR9IAgKnVCZWmC0OpUvMMZxFIqv83ztdKemLbjCitWhGkt4NbDURe1kKZIy7/cGqaNw22naRilWRb2pHrzQl/5fJA0Y7Thghw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bu1uIiO5ckzWvWLC2ZQuy8PeU619/3WkHEb4fZSK+8c=;
- b=mpLY8zZJXY1iSg1PHUO83gNHLTbp4OToY/t09c3qm1QrcxMf35hEuCy9c8CQ8wRmZO9igMil+nxjj8BFYavONDAJjD2Wm+yLSWJKWkvRNY5uGoBgzqNCtW0IQZgxfayKizPWohUOGyZXYEJE8272ta/HZObL4Eun429laUKoIAQ=
-Received: from DM6PR18MB3034.namprd18.prod.outlook.com (2603:10b6:5:18c::32)
- by DM6PR18MB3036.namprd18.prod.outlook.com (2603:10b6:5:18d::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.14; Mon, 3 Jan
- 2022 04:58:42 +0000
-Received: from DM6PR18MB3034.namprd18.prod.outlook.com
- ([fe80::bdc7:54c4:7093:290c]) by DM6PR18MB3034.namprd18.prod.outlook.com
- ([fe80::bdc7:54c4:7093:290c%5]) with mapi id 15.20.4844.016; Mon, 3 Jan 2022
- 04:58:41 +0000
-From:   Saurav Kashyap <skashyap@marvell.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Javed Hasan <jhasan@marvell.com>,
-        GR-QLogic-Storage-Upstream <GR-QLogic-Storage-Upstream@marvell.com>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>
-CC:     "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] [PATCH] scsi: qedf: potential dereference of null pointer
-Thread-Topic: [EXT] [PATCH] scsi: qedf: potential dereference of null pointer
-Thread-Index: AQHX8mXGRWO7SF21CECbm2a/GitlN6xQ15PQ
-Date:   Mon, 3 Jan 2022 04:58:41 +0000
-Message-ID: <DM6PR18MB30344528373170A95E67B50CD2499@DM6PR18MB3034.namprd18.prod.outlook.com>
-References: <20211216101449.375953-1-jiasheng@iscas.ac.cn>
-In-Reply-To: <20211216101449.375953-1-jiasheng@iscas.ac.cn>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7d4b14d3-a1f2-49e5-d742-08d9ce75b69d
-x-ms-traffictypediagnostic: DM6PR18MB3036:EE_
-x-microsoft-antispam-prvs: <DM6PR18MB3036C6E3D179D3269EC8488CD2499@DM6PR18MB3036.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: T3rSUnc9R3qQXlmrkJp5+c5NsTaDfMuEzCmCJw0P1awGJjGtGpouK4M6UFSuU9eIvWIBtEEVBWZec620pu5tL5gPUDUCkubE0zh+ZcVfcn8jBcW051Q3o+5dyPiQzEsU4Ho2ffhAkT/anICDyarTNkEPOObQek6CDc0dcQ0tQYiStvwNkIy+oGo1ZvI9/kx1hGilKENXDz0/yTNA5EW33WtSTkx/XYjqiWTvSHCPzu2TFMZ3GFE5WbKB1VaYFv9djQyoKNYqVtEjEWDnkYSYA3q2ePnT1TpGnOOOtHWpdm4xVyvQGI2CoTRXbFDhE8j/Y8m+XqfAFGMhGbJZ41KjBBPnHIkORy9zFrAQv0KPCkud+5TC9ffeLMbu/wmbaDg3GCvgX6nye2VrzbNhKgbKPaYtaIQAFb+vdwSvnApCkzJd93sZaxp/gV+MI1iP0zYnLxQ6aF5l5oMBJrrC2SfZrtAxrp6qGSL5IqdAe+2UXN6VADKFtyu6e3eOp2vURtQre0Wy4SEsXcmJasam9kH2D7UXmF5jRQVRUOi7pQ6aT/xvCEed0JwYRMRSabPYq944pm+A7rjLL3oVsbwuQIXOgd3uxjssr+xdHr1Pbu7Hr+OT8ZHuwAMFmjyV9CP4nQgZvxZ76OZ30bAbaIjGgbXFriNDBCI8+Z0eLMvW6BZpjVDvyb37sFQq1bw6oFm4yXt5I0LKMsGqO2BWdI9EjbklKA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR18MB3034.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8936002)(26005)(66476007)(64756008)(8676002)(316002)(66556008)(76116006)(66446008)(55236004)(508600001)(186003)(5660300002)(52536014)(110136005)(66946007)(54906003)(53546011)(6506007)(38100700002)(2906002)(7696005)(71200400001)(122000001)(33656002)(9686003)(86362001)(4326008)(38070700005)(55016003)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?V4M6Zo9l8ax/lRKm1hHI9XYZT0fBaWmG74ZV/jB6orrCzJ//F5cYat9BVSEY?=
- =?us-ascii?Q?BOZFPOPygDzZdymQOVT/MY8RD+xsuVVBmn6vIlrVnCB0/zgpHkv3XvEd8d0U?=
- =?us-ascii?Q?jdr6ktN+/5sYpFwtGczuMwjYajSLuvNHzR30F3K512kaMYkuYBIM+v7NuUyk?=
- =?us-ascii?Q?olr1svGYyJOBZj6hw2/Lf5xNzlO3kqn6FEYnc+1fpMh2QsTsKxp2ZwVbARv9?=
- =?us-ascii?Q?5GVYfLJlQlTLd1SrMNnXn4tB+BGbboHPYwm02EBtUV9IdQN2alRJOFwjmyg2?=
- =?us-ascii?Q?wTSBylsSzBejBRpDBH9HzXnz0eVKIQ6FaUeNEaYZi2ZtlVhKBEfgVUz4SkvT?=
- =?us-ascii?Q?Ogou90xyL0Ce73lCX3ENr1HNqxj8XdVjt9SRZt8bSLHA9ycfFytFwl/si2zg?=
- =?us-ascii?Q?rvn4fUqLp/OmHMhcBcNYxD+BLdcH7D4PI9demfVNzWAJmV4zVMKokgaek4GF?=
- =?us-ascii?Q?Q9kL11OsQvykLcfC45lbT/7BzFblWbsDeFh0NLGzAxzGvrOd2527zPfTVyx8?=
- =?us-ascii?Q?59MqEF6ieZtWcrTezDQVyxe1GMhqEoMcBUWPqhcQSV8ffMDhcP/u6P1DLXNC?=
- =?us-ascii?Q?tmgWTrSY6dCUV8viAQEjqrxxYgEcTSmyB803PaT18HFxGa4a1fzJlVVpezbb?=
- =?us-ascii?Q?fN6I0VUgkT8NGRYDrCj7SGWhUiMHs9HKd+V3OoSzzyPGX2QsV/E48aM6ZhFB?=
- =?us-ascii?Q?OLTXVACtGZwJh8N/wp2O8qXkDdB0h7PTR6OmpZkVuPwdZKPRkGq9XEWK61iD?=
- =?us-ascii?Q?I+FUgvrBrnRx2o7+G/eJC+k39rcbM3JzxXJTZB+c0WYzd9r6YvBa9s8ijT6C?=
- =?us-ascii?Q?heTiFzRTjVJSaD/sxHyG6PgVt0hBOzRhHBOAXzavr4RGLHgH53fea094+1Ge?=
- =?us-ascii?Q?OAi79eYE/51EE+qZXWQZxXFRkSw7doHzcUQRrSclsmEgnGsC/pSnigCzAbPT?=
- =?us-ascii?Q?hS1RcUNTQi3he0SeNErR9v+rn0OQKQNm/tlemFXt1KODswoEAA+eAEpekOzB?=
- =?us-ascii?Q?716s2a14mKeQpI7VG3IuEInSO/nvUpW5m8Tpq36xoPSm2JEkf6lw37vbR1ff?=
- =?us-ascii?Q?YXTFy937bXZ0CiyJyw9DAZu8zTk4lfma1yPsWJlMmfQLLo5WP80MsTmp3kV2?=
- =?us-ascii?Q?VQYiDmBWG/R7bin8xV1UxXPz6tTNhv+D57mtAQkExWoe10gVhC0GdDDgH3iG?=
- =?us-ascii?Q?ZFjHwmfQiogtBSeNx/MG53dYjehvYvpD4jPggdGO7L8aY3J2Of/Wle6LWomw?=
- =?us-ascii?Q?+czB2bugNHU42ZIk8kCgruswMNS9qzcxEyEm6gnxoP1VPD8Jct+N4t7TMwFa?=
- =?us-ascii?Q?F6l/M5H69yZwmu7ZsC8OEim1k82D1efoQhzKmXYdGyaa2dZW5g/C4TqoFriP?=
- =?us-ascii?Q?3nwiCcXKYk06rohEwcpzSuvUvm2C6nMbf5M79CyjkzXs1u8p7OiTCGblgc2P?=
- =?us-ascii?Q?Y1iYEHB+TPicFlSKMO7u+Tbf/qMf7gjgSxR8bxT5RFz4Mny5vpFRBmvh9aQ/?=
- =?us-ascii?Q?FfWmZ3QpflFg6j2vuQ3Vs+mh8H/l5bTYbtQunRegqRxwfCPKhmPvEwnaaIur?=
- =?us-ascii?Q?oqdQg09cXOF2KP6xP8Ae/bnZTG1QAx+aImi7De9dJbO42vljRpP1llzzXwZw?=
- =?us-ascii?Q?VAZhBq+HhUXyFIeuz4bFMBY=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S230250AbiACFFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 00:05:02 -0500
+Received: from sonic309-22.consmr.mail.ne1.yahoo.com ([66.163.184.148]:42696
+        "EHLO sonic309-22.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229638AbiACFFC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 00:05:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aol.com; s=a2048; t=1641186301; bh=yBDBE0PZweAkDrHcHiTGpa/UvqNIVeFYn63WXzwZdms=; h=From:To:Cc:Subject:Date:References:From:Subject:Reply-To; b=A4c9U3URMTQqdoad06nVvVrj9A13U69y2Gw7IVhqde5+9myycPrJmUqmqwxAO9pJ3JLBQFtQvNifSCJNpSesjNhChk7I9FlEEe2xR7ReR2iQsO/bbNhFcPzsf4JkEdwqSO/sUgD0IUrty+RE3A0TnUV512pctvmd4FkUeN4ukAxsCkcIWN/J6jwSRHdm+Ng4TssZ0VZGNd6pneiuN+3KdPPrioNj4HwV3BO3TCXHFOvaw8ZOlJDFAl1ssuQFYayjztZ+iZFpil0daPN7SH8+qo9WbYbTUfFNzlig/OvFfCLufmqMTigQRpsEY1aWdS+IOH6J4RW0z75plhqW4V1baA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1641186301; bh=pKJFiU57z6Xj1JXVQtJay2V5q/iTflziEJRGxvPZsGg=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=W1qp0tg+apCOCjXoMN11y2fnRzzXMB8jedJkZ7pMHvKEQ1fYsxyk0e/Dzd2Cqqpg3k3xkinlKMKQWVEql9CKc8YYvlMZTMM6/zASyd076Rl2fJ40bYS8I1xHoDNfSYfZFQYmuRo3uwOPWmUsz/sZoDvePdCcbecpJK/Np85dzSdjGSDFQyZjnni6+cF55jdxBy7k8EaJg2dTuHa1NWIjjF6SaqRoohtRm/Quh82ivQ4JDDOwijAn9B1HydHjNZXrsrlLB3yZXp9hAsiUWBh9Pps8IA+Ba4MEgO4absni8gGXcou1Ma7nMZAoO9U7BcsFYnNX0Gi/E6vdOwemJpo8IA==
+X-YMail-OSG: 9jGWoYMVM1kRwrEA.igP5sBldOMm2w83EreTMib9w1smGwVWUFMMGNRAJ37UgGR
+ pbXBzny7y2soZw58aBpc5X1HCDyOfJGaNpLW1hJli2VDSD5sN6YD5qD6EJzM9eUMlG9oci58no7d
+ vQI0hcis.SLfekmBOoFgUcsqCk4heLEJB7bkD1GLWCVQRuQmSeVsybcgJIsP96VAcQXQjAS6Fnfn
+ u41aFOYZ5UiOSvwRTNHTD1retNpXjA3.RrVeVSIbQC6BQmiAuyINA7tFl6jNOmdsoCepEPHM.WbW
+ KkwOsAw5l2l4f5QjWwcMmUp64sLZ44Rs1sA4V7pph47K56Rn8gAHk_5T3VnoxwbkZRoaoqfdlzfi
+ T9F73doldsiIuavPhOl90s7iNut.k_.1XZWsuZhEEjEPhtxqJMS7yYcIA86zbsaI.hR6e53oSco4
+ W5ff2h3nATnQWODN91SQe5xu6k2nDOcUBLwFg8bRyOHgzjMmrqFc0J18R7DedJjet6aEIHWzphyw
+ 5fKveKv.sREqccWdrMhYeWf0mzQskfL_GRLOBdYZNsdVAGnQA7DbMEsqXLjkUzg2PmlAPcQP2p6L
+ lwtsZuHAgwN9WK9zRurt46c3Q9z2QW4mcNQHP3nKx6SUlQ8UkkPV1pIXCLtFWPFgQw.BDvKCFbk2
+ x4HwA0czauii9BXzeeLYJkBmry4K663QdvGwSLw5FJiWvTLMV4arcw0VmGNIuVHGnjZFq8HJk9Kp
+ RDeilDQ_tDdHSfx4FG4tGhkWgmwftOfKu1CEvLfpdRS46wJ1ZEfRzMoRL0_LZS.WlVT3BSt89gDY
+ GyKt1L4a7Q5qHmbKwUvvnuNfFswCtQvr_JGXt_vSxH.1lYscxz2k4VWK.C5W7Plfj_SgMhTPRcRQ
+ 5IWJK3R0BbYn7zHL.FK88JTycnCwT0rjuyCliY9g9ELCLV54ZgMtyKg6WHrZQjXUiKiyS_lxYbo.
+ gyGNpzaf2zN5jLQTdL0x02RN2wMMaoSSpaU_4Rc8mAOlwtnSExGtc.sbcMnBYeQCoYa6uxByCT3C
+ iaUjVXMSqRg__s7beEI3b90SY6Th.NjVQyppkivRUcZAq7JISnlgXwIDRJ92LJJGOmdo_tXmAZ3L
+ hO4cSq5EoFM.sVmMzj2zOUtOJKVCn984VzvddsBWC6ugNIed5W43IVUc5_0b9as8GljnSu8zB_fx
+ cvSvTny8mZO5VOjB.oLSF_Ef5y5vSUz730GhRtypeVOytm1YOTf4fCx3ahmGH.3uB11uyMY7MEXH
+ d2cbSSuiQRf1CQHw73iw.p.biATLHLBpmGEdxr.YsB0nzu2sGTpHW6_oD7fCJMSAJrMleJArWIP3
+ bwxnICLtTQlBNCDBB9nEi8lGrMSgETlVID6hqN8s2x3ffAWhQZNtbXSQce_rgefiXQUNa4xKhth4
+ f.bmceezPcfEJ1iCI5dLOZbjgciaYvmBdNYkS_70w91Y0L2a5T8BpjWO.fCgCTwCcjHYGdIZkNtL
+ xOGU2CuzOt7PnwoQkDw4qafYTGvgAgCMg0Ak2LBIooz7pNSJNAKCLfups3Cj.Jn143QPYt8__LZN
+ DP0mayV41IMsBaVN8onPWy6vNR0Vip37XVXhJuO3Cmz5sIUIHpltpT3Jm.T1roqvUJUzILw_DQEb
+ GZCI4z8BHgPV8Gm8A1LpLswcKm5TTkm8tU0y3vbwFV4st1QwZJbAcHi47xmejiao3XtH48yrtspW
+ 2IvcKqxbiP6PEyica2GSzM40I8tLhHYLwnL.CvXHtBOofaanjuNrfb2L4IVYCiHYeQjBL_Z_DDkO
+ TnWiqkCUgGqEG7ye1jwc4rmBSbmiC3jkgT4JsefEpSt6GTZSahmcHKvztWWCv0g9nKmJKSO6YfLA
+ NY_LSvghfkn7AoiyBY6qBoaa8ZrG9WDXl25R_8dJEqYHP4x7ppT8HbSwjA0IkVtUO7FKzt.QiHC2
+ uxfvVKdFLsQJ4g6OSYSTQzYRzpMqqHBWK3i._vOtAwxZV2muyXTkIGVhe3._hBM2YkkOT4xhwW_X
+ kMhUASbnww4_La1KB.htWGZMmglscoA0avg7rtL5hCX.jOw3HqDtegm.ocKhl0A4mDeRsCMcIb5c
+ IoVo_CX6IZBQ.9CQtI6iepvouOvVMR5XebyepaDSQnsoQido1HfBUirm8LkEZYTVVz3Cjp8rs8zZ
+ IK3y.TIdTTUzBUn_nkC5vEnBRO1uor9vrMQlehA74FgXWv95uQgailIjxrccEfl1ZRgpOKWnDYos
+ JtP5.mA0BFFurYu6IwL3xIgdsmy.clclrAYd5_.7pfF.czy9SQSfeOWNHVy0zi8hIA7BkYaX6L_b
+ JeUnIMA--
+X-Sonic-MF: <xiangyu.chen@aol.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic309.consmr.mail.ne1.yahoo.com with HTTP; Mon, 3 Jan 2022 05:05:01 +0000
+Received: by kubenode512.mail-prod1.omega.sg3.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID ee53bc8633c4367d8e7d99fb5970b2f8;
+          Mon, 03 Jan 2022 05:04:56 +0000 (UTC)
+From:   Xiangyu Chen <xiangyu.chen@aol.com>
+To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     xiangyu.chen@msn.com, Xiangyu Chen <xiangyu.chen@aol.com>
+Subject: [PATCH 2/2] dt-bindings: net: ti:add support slave interface using internal clock in dual rmii emac mode
+Date:   Mon,  3 Jan 2022 13:02:02 +0800
+Message-Id: <20220103050200.6382-1-xiangyu.chen@aol.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR18MB3034.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d4b14d3-a1f2-49e5-d742-08d9ce75b69d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jan 2022 04:58:41.8991
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wg/SD1iUqGLF7SNou4Z4eYjw4zBnd1b+GgITc9gT6k2puJec+ESJEsigjjhE0Z5r5n/12Sycw6Ghx68hu9wZ+Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR18MB3036
-X-Proofpoint-GUID: kqnictLs6-e-M-X4IbVOYhc60RwhowMR
-X-Proofpoint-ORIG-GUID: hRF2YRBtNKQlWR-vqdMjWC-rVmnk9eNW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-03_01,2022-01-01_01,2021-12-02_01
+Content-Transfer-Encoding: 8bit
+References: <20220103050200.6382-1-xiangyu.chen.ref@aol.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jiasheng Jiang,
+This is the second patch of as subject said topic. It contains dts
+ document modification.
 
-> -----Original Message-----
-> From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> Sent: Thursday, December 16, 2021 3:45 PM
-> To: Saurav Kashyap <skashyap@marvell.com>; Javed Hasan
-> <jhasan@marvell.com>; GR-QLogic-Storage-Upstream <GR-QLogic-Storage-
-> Upstream@marvell.com>; jejb@linux.ibm.com; martin.petersen@oracle.com;
-> linux@armlinux.org.uk
-> Cc: linux-scsi@vger.kernel.org; linux-kernel@vger.kernel.org;
-> netdev@vger.kernel.org; Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> Subject: [EXT] [PATCH] scsi: qedf: potential dereference of null pointer
->=20
-> External Email
->=20
-> ----------------------------------------------------------------------
-> The return value of dma_alloc_coherent() needs to be checked.
-> To avoid use of null pointer in case of the failure of alloc.
->=20
-> Fixes: 61d8658b4a43 ("scsi: qedf: Add QLogic FastLinQ offload FCoE driver
-> framework.")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
->  drivers/scsi/qedf/qedf_main.c | 2 ++
->  1 file changed, 2 insertions(+)
->=20
-> diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.=
-c
-> index b92570a7c309..309e205a8e70 100644
-> --- a/drivers/scsi/qedf/qedf_main.c
-> +++ b/drivers/scsi/qedf/qedf_main.c
-> @@ -1415,6 +1415,8 @@ static void qedf_upload_connection(struct qedf_ctx
-> *qedf,
->  	 */
->  	term_params =3D dma_alloc_coherent(&qedf->pdev->dev,
-> QEDF_TERM_BUFF_SIZE,
->  		&term_params_dma, GFP_KERNEL);
-> +	if (!term_params)
-> +		return;
 
-<SK> Adding message about failure before returning will help in debugging.
+Those patches regarding to add a way to setup/config the TI-AM335x series
+Soc for 2 ways phy clock mode under RMII mode.
 
-Thanks,
-~Saurav
->=20
->  	QEDF_INFO(&(qedf->dbg_ctx), QEDF_LOG_CONN, "Uploading
-> connection "
->  		   "port_id=3D%06x.\n", fcport->rdata->ids.port_id);
-> --
-> 2.25.1
+The basic scenario is when we have 2 PHYs connected to AM335x in RMII
+mode, either we set the both of phy in external clock mode or we set the phy in internal
+clock mode.
+
+As TI suggetsion, when under RMII mode, the clock should use an external
+osc due to AM335x cannot generate a low-jitter stable 50MHz clock, this
+might cause some PHY cannot work correctly. But in some case (e.g. our
+design, no impact on using low speed PHY for debugging/management).
+There is no impact on some model phys.
+
+So I think we should provide a way to allow user can set/config the PHY
+chose clock mode in dual RMII emac mode.
+
+Tests:
+
+Below is my testing environment:
+
+am335x SOC --RMII 1--> PHY1 (eth0) which using internal clock
+          |-RMII 2--> PHY2 (eth1) which using external clock
+
+Booting log:
+Booting log:
+
+[    1.843108] cpsw 4a100000.ethernet: Detected MACID = 78:04:73:37:68:6c
+[    1.850924] cpsw 4a100000.ethernet: initialized cpsw ale version 1.4
+[    1.857842] cpsw 4a100000.ethernet: ALE Table size 1024
+[    1.863449] cpsw 4a100000.ethernet: cpts: overflow check period 500 (jiffies)
+[    1.874620] cpsw 4a100000.ethernet: cpsw: Detected MACID = 78:04:73:37:68:6e
+[    4.017695] net eth0: initializing cpsw version 1.12 (0)
+[    5.207867] cpsw 4a100000.ethernet eth0: Link is Up - 10Mbps/Full - flow control off
+[  29.747480] net eth1: initializing cpsw version 1.12 (0)
+[  30.806444] cpsw 4a100000.ethernet eth1: Link is Up - 100Mbps/Full - flow control off
+
+# ifconfig
+
+eth0      Link encap:Ethernet  HWaddr 00:FA:F9:00:61:88
+          inet addr:192.168.0.20  Bcast:192.168.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::2fa:f9ff:fe00:6188/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:20 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:35 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:1394 (1.3 KiB)  TX bytes:3272 (3.1 KiB)
+          Interrupt:50
+
+eth1      Link encap:Ethernet  HWaddr 78:04:73:37:68:6E
+          inet addr:10.176.28.165  Bcast:10.176.29.255  Mask:255.255.254.0
+          inet6 addr: fe80::7a04:73ff:fe37:686e/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:1809 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:99 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:123057 (120.1 KiB)  TX bytes:9012 (8.8 KiB)
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:44 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:44 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:4872 (4.7 KiB)  TX bytes:4872 (4.7 KiB)
+
+PHY1 (eth0, using internal clock from AM335x) ping:
+#ping 192.168.0.20
+
+PING 192.168.0.20 (192.168.0.20): 56 data bytes
+64 bytes from 192.168.0.20: seq=0 ttl=64 time=1.340 ms
+
+^C
+
+--- 192.168.0.20 ping statistics ---
+1 packets transmitted, 1 packets received, 0% packet loss
+round-trip min/avg/max = 1.340/1.340/1.340 ms
+
+PHY2 (eth1, using external clock to AM335x) ping:
+# ping 10.176.28.1
+
+PING 10.176.28.1 (10.176.28.1): 56 data bytes
+64 bytes from 10.176.28.1: seq=1 ttl=254 time=1.967 ms
+64 bytes from 10.176.28.1: seq=2 ttl=254 time=1.652 ms
+64 bytes from 10.176.28.1: seq=3 ttl=254 time=1.688 ms
+
+^C
+
+--- 10.176.28.1 ping statistics ---
+
+
+Both phy working normally.
+
+
+Thanks and Best regrads,
+
+Xiangyu
+
+From df2b0c2f7723deedcf4195e48e851de16b400775 Mon Sep 17 00:00:00 2001
+From: Xiangyu Chen <xiangyu.chen@aol.com>
+Date: Fri, 31 Dec 2021 10:38:03 +0800
+Subject: [PATCH 2/2] dt-bindings: net: ti:add support slave interface using
+ internal clock in dual rmii emac mode
+
+The am335x support dual emac in rmii mode, the rmii clock can be
+provided by external osc or internal soc by ref_clk pin.
+When rmii-clock-ext has been set in device tree, both emac has been
+set to external clock mode, otherwise both emac has been set to internal
+clock mode.
+
+In some case, one slave can be used external clock, another slave can be
+used internal clock.
+
+This commit to support define a method to tell driver which slave phy
+use internal clock when the "rmii-clock-ext" has been set.
+
+Signed-off-by: Xiangyu Chen <xiangyu.chen@aol.com>
+---
+ .../devicetree/bindings/net/cpsw-phy-sel.txt        | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/net/cpsw-phy-sel.txt b/Documentation/devicetree/bindings/net/cpsw-phy-sel.txt
+index 5d76f991c..d3b91824d 100644
+--- a/Documentation/devicetree/bindings/net/cpsw-phy-sel.txt
++++ b/Documentation/devicetree/bindings/net/cpsw-phy-sel.txt
+@@ -13,6 +13,10 @@ Optional properties:
+ -rmii-clock-ext		: If present, the driver will configure the RMII
+ 			  interface to external clock usage
+ 
++-ignore-slave		: If dual rmii emac enabled and rmii-clock-ext present,
++			  this value will tell driver which slave want to use
++			  internal clock instead of external clock
++
+ Examples:
+ 
+ 	phy_sel: cpsw-phy-sel@44e10650 {
+@@ -28,3 +32,12 @@ Examples:
+ 		reg-names = "gmii-sel";
+ 		rmii-clock-ext;
+ 	};
++
++(or)
++	phy_sel: cpsw-phy-sel@44e10650 {
++		compatible = "ti,am3352-cpsw-phy-sel";
++		reg= <0x44e10650 0x4>;
++		reg-names = "gmii-sel";
++		rmii-clock-ext;
++		ignore-slave = <0>;
++	};
+-- 
+2.25.1
 
