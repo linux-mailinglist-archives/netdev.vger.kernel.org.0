@@ -2,41 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6A2E4835D6
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:31:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 499EB4835D9
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:31:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235424AbiACRae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 12:30:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60300 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235314AbiACRaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:30:11 -0500
+        id S235448AbiACRag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 12:30:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235520AbiACRaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:30:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F46C0617A0;
+        Mon,  3 Jan 2022 09:30:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16BDD611AE;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 850A96112B;
+        Mon,  3 Jan 2022 17:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17581C36AEE;
         Mon,  3 Jan 2022 17:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0666C36AEB;
-        Mon,  3 Jan 2022 17:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641231010;
-        bh=rQWPm9cXJfuksOaoRvd/2G82SysMisSSSu3E4i638IY=;
+        s=k20201202; t=1641231012;
+        bh=/gdLnShWLpQP/o/mRaKeBqi4pXaE52yQZMGAJPcUVUY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O+4Tpozcu4xvqHhiupFvSqltV8gUhwJgvvPJWy1kUFm7/8u/IscF3J8gzOlhWMgGL
-         hVTDYpdUePYEQ15ZHgqBqw00LXImyvWSQ4P/tC8feWg6qjw+xv3oFhuhjHh4/e7Sug
-         DmUvfHkXxs2Wz8FiNciht67MgDl2PM15AEm9xESP0UVFGgD3aBYzd6NUwqrdBBfcdi
-         JWnaolUJ9qgHDNYQOTc1dvQvV7ud7hXEozWhP1B37snAYTiR9we9cRDhCfzdNZZRw/
-         inoYRbbN1fjSX4f+qtCpUwL7F8Qr3kS8dBODTHT0jFvgRY2MyPsCxwAI5C6Lor7RAA
-         W9F4+9NhL685Q==
+        b=p1r0romz/guw4ccxt9TXMCOf7ViUiz3XyG6bHweprsvZbFycCpgJxeDPbj+8BHzIt
+         j82W6mjhfkTcOeurwXxUUHihG4049ItRyzMcPga4i1HywQbavVR35aDBZoJ2GNXmZ1
+         QZxuuXt8WwmScY6JpOyFb63WVe6qIwdGqX232Mp2bzbLnNPO8kUz/4jfaxtcYOh7EY
+         pXnONS+HZTU2r/lKFQ1NCY7KujHPVUslpPvQ3BOAtwiklXj19DfTdUMHagYmxD7iPu
+         1cVHS+xG4tekKra8msJtOVgH6rJ6Pe14TH5GUCB2n6CwMTNkzCc5Z9EisTXFXjDFj+
+         k98rXPioIj+1g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+Cc:     wolfgang huang <huangjinhui@kylinos.cn>,
+        k2ci <kernel-bot@kylinos.cn>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 5/8] atlantic: Fix buff_ring OOB in aq_ring_rx_clean
-Date:   Mon,  3 Jan 2022 12:29:58 -0500
-Message-Id: <20220103173001.1613277-5-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, isdn@linux-pingi.de,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 6/8] mISDN: change function names to avoid conflicts
+Date:   Mon,  3 Jan 2022 12:29:59 -0500
+Message-Id: <20220103173001.1613277-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220103173001.1613277-1-sashal@kernel.org>
 References: <20220103173001.1613277-1-sashal@kernel.org>
@@ -48,81 +52,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: wolfgang huang <huangjinhui@kylinos.cn>
 
-[ Upstream commit 5f50153288452e10b6edd69ec9112c49442b054a ]
+[ Upstream commit 8b5fdfc57cc2471179d1c51081424ded833c16c8 ]
 
-The function obtain the next buffer without boundary check.
-We should return with I/O error code.
+As we build for mips, we meet following error. l1_init error with
+multiple definition. Some architecture devices usually marked with
+l1, l2, lxx as the start-up phase. so we change the mISDN function
+names, align with Isdnl2_xxx.
 
-The bug is found by fuzzing and the crash report is attached.
-It is an OOB bug although reported as use-after-free.
+mips-linux-gnu-ld: drivers/isdn/mISDN/layer1.o: in function `l1_init':
+(.text+0x890): multiple definition of `l1_init'; \
+arch/mips/kernel/bmips_5xxx_init.o:(.text+0xf0): first defined here
+make[1]: *** [home/mips/kernel-build/linux/Makefile:1161: vmlinux] Error 1
 
-[    4.804724] BUG: KASAN: use-after-free in aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.805661] Read of size 4 at addr ffff888034fe93a8 by task ksoftirqd/0/9
-[    4.806505]
-[    4.806703] CPU: 0 PID: 9 Comm: ksoftirqd/0 Tainted: G        W         5.6.0 #34
-[    4.809030] Call Trace:
-[    4.809343]  dump_stack+0x76/0xa0
-[    4.809755]  print_address_description.constprop.0+0x16/0x200
-[    4.810455]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.811234]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.813183]  __kasan_report.cold+0x37/0x7c
-[    4.813715]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.814393]  kasan_report+0xe/0x20
-[    4.814837]  aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.815499]  ? hw_atl_b0_hw_ring_rx_receive+0x9a5/0xb90 [atlantic]
-[    4.816290]  aq_vec_poll+0x179/0x5d0 [atlantic]
-[    4.816870]  ? _GLOBAL__sub_I_65535_1_aq_pci_func_init+0x20/0x20 [atlantic]
-[    4.817746]  ? __next_timer_interrupt+0xba/0xf0
-[    4.818322]  net_rx_action+0x363/0xbd0
-[    4.818803]  ? call_timer_fn+0x240/0x240
-[    4.819302]  ? __switch_to_asm+0x40/0x70
-[    4.819809]  ? napi_busy_loop+0x520/0x520
-[    4.820324]  __do_softirq+0x18c/0x634
-[    4.820797]  ? takeover_tasklets+0x5f0/0x5f0
-[    4.821343]  run_ksoftirqd+0x15/0x20
-[    4.821804]  smpboot_thread_fn+0x2f1/0x6b0
-[    4.822331]  ? smpboot_unregister_percpu_thread+0x160/0x160
-[    4.823041]  ? __kthread_parkme+0x80/0x100
-[    4.823571]  ? smpboot_unregister_percpu_thread+0x160/0x160
-[    4.824301]  kthread+0x2b5/0x3b0
-[    4.824723]  ? kthread_create_on_node+0xd0/0xd0
-[    4.825304]  ret_from_fork+0x35/0x40
-
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: wolfgang huang <huangjinhui@kylinos.cn>
+Reported-by: k2ci <kernel-bot@kylinos.cn>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/isdn/mISDN/core.c   | 6 +++---
+ drivers/isdn/mISDN/core.h   | 4 ++--
+ drivers/isdn/mISDN/layer1.c | 4 ++--
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index 24122ccda614c..72f8751784c31 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -365,6 +365,10 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 		if (!buff->is_eop) {
- 			buff_ = buff;
- 			do {
-+				if (buff_->next >= self->size) {
-+					err = -EIO;
-+					goto err_exit;
-+				}
- 				next_ = buff_->next,
- 				buff_ = &self->buff_ring[next_];
- 				is_rsc_completed =
-@@ -388,6 +392,10 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 			    (buff->is_lro && buff->is_cso_err)) {
- 				buff_ = buff;
- 				do {
-+					if (buff_->next >= self->size) {
-+						err = -EIO;
-+						goto err_exit;
-+					}
- 					next_ = buff_->next,
- 					buff_ = &self->buff_ring[next_];
+diff --git a/drivers/isdn/mISDN/core.c b/drivers/isdn/mISDN/core.c
+index 55891e4204460..a41b4b2645941 100644
+--- a/drivers/isdn/mISDN/core.c
++++ b/drivers/isdn/mISDN/core.c
+@@ -381,7 +381,7 @@ mISDNInit(void)
+ 	err = mISDN_inittimer(&debug);
+ 	if (err)
+ 		goto error2;
+-	err = l1_init(&debug);
++	err = Isdnl1_Init(&debug);
+ 	if (err)
+ 		goto error3;
+ 	err = Isdnl2_Init(&debug);
+@@ -395,7 +395,7 @@ mISDNInit(void)
+ error5:
+ 	Isdnl2_cleanup();
+ error4:
+-	l1_cleanup();
++	Isdnl1_cleanup();
+ error3:
+ 	mISDN_timer_cleanup();
+ error2:
+@@ -408,7 +408,7 @@ static void mISDN_cleanup(void)
+ {
+ 	misdn_sock_cleanup();
+ 	Isdnl2_cleanup();
+-	l1_cleanup();
++	Isdnl1_cleanup();
+ 	mISDN_timer_cleanup();
+ 	class_unregister(&mISDN_class);
  
+diff --git a/drivers/isdn/mISDN/core.h b/drivers/isdn/mISDN/core.h
+index 23b44d3033279..42599f49c189d 100644
+--- a/drivers/isdn/mISDN/core.h
++++ b/drivers/isdn/mISDN/core.h
+@@ -60,8 +60,8 @@ struct Bprotocol	*get_Bprotocol4id(u_int);
+ extern int	mISDN_inittimer(u_int *);
+ extern void	mISDN_timer_cleanup(void);
+ 
+-extern int	l1_init(u_int *);
+-extern void	l1_cleanup(void);
++extern int	Isdnl1_Init(u_int *);
++extern void	Isdnl1_cleanup(void);
+ extern int	Isdnl2_Init(u_int *);
+ extern void	Isdnl2_cleanup(void);
+ 
+diff --git a/drivers/isdn/mISDN/layer1.c b/drivers/isdn/mISDN/layer1.c
+index 98a3bc6c17009..7b31c25a550e3 100644
+--- a/drivers/isdn/mISDN/layer1.c
++++ b/drivers/isdn/mISDN/layer1.c
+@@ -398,7 +398,7 @@ create_l1(struct dchannel *dch, dchannel_l1callback *dcb) {
+ EXPORT_SYMBOL(create_l1);
+ 
+ int
+-l1_init(u_int *deb)
++Isdnl1_Init(u_int *deb)
+ {
+ 	debug = deb;
+ 	l1fsm_s.state_count = L1S_STATE_COUNT;
+@@ -409,7 +409,7 @@ l1_init(u_int *deb)
+ }
+ 
+ void
+-l1_cleanup(void)
++Isdnl1_cleanup(void)
+ {
+ 	mISDN_FsmFree(&l1fsm_s);
+ }
 -- 
 2.34.1
 
