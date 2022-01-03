@@ -2,79 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 315C6483599
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:29:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 414A04835CC
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:30:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235307AbiACR3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 12:29:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53084 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230448AbiACR3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:29:05 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCB2C061784
-        for <netdev@vger.kernel.org>; Mon,  3 Jan 2022 09:29:05 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id b73so21825336wmd.0
-        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 09:29:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0A8BHjkgCfIkWc+2lQcMczHEzJvePax1izJu0k3TidE=;
-        b=eLmCDCgbSpEBP/sA17Z9jet6DGd8/tCirS4zFk5h8KfTk7cRPKUhRCyN5N3NEv7dIh
-         h37AalMVfikzqYa1QpLBhJLoWEA1zQg3o9X0FKFWamnW7lLSBQduW3aOcmBVhOcOG9WR
-         5zNcdxsLcyEcLN3UaQMWGA8MjZNTrj+OuE3nXpGnYXoKbSl5qa+tAXKs40EM13hR6itb
-         rngU2wzYAQsLxQ1MO7gwETifjYWx+vLy4QZiDgdZ/cbL3ytFoJJt2WTKPqQXoPq2Ld8p
-         q6+rcFrLyNbsJGGHW2AqG6qv/tkHsukx9RGcj+PFZPlRKHW7ap9kbnn9BI2hmCdT+SbT
-         HLjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:subject:to:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=0A8BHjkgCfIkWc+2lQcMczHEzJvePax1izJu0k3TidE=;
-        b=ekPvzAgQF4/xn/yi8zbJVCfG2uDLX2v4gcgvFY8J5JgUwtM5tLEIUVXeO/9jN1zNRG
-         kqeI6eMpVrIQERHXkRg4LSLWu1K389R7Y8yuPuM1n3AvnEI6enqKiupFyY3xWz5QSMuG
-         IAGK1N/yJguCUqDAeujhYB7pqqvrfN/7NzwnMoIVJgAjAey1ejngYUB1xQ7JknzOiF7s
-         /cXwbFX/uygeWlaSu4UeIx1Cbys4sQUqcsBXX8gZ+qiQvJ6DglCwX3EYneyhL9jw6Pd1
-         py1uqibFei6cY08SIbbwCKFtAQnJicy6WrrAqZcyQ6NKDfPPCUrVgT3fhpJRR5Deuwd5
-         FXFQ==
-X-Gm-Message-State: AOAM5330Yg/kugciyis/8Sd1kXHNn+xItPbh1CqZrYwyU8UdVbQcaYKa
-        hV6w/pbi8thBnivYIS9AsFoBg4ZMTVAalQ==
-X-Google-Smtp-Source: ABdhPJw54C7R+vPJlq7AGwMBf2GVfzutuXoZMUTA7yPMX2qvOmy6kB8USK30e7FfE8q5Q/TTCN+/Mw==
-X-Received: by 2002:a1c:a54e:: with SMTP id o75mr39146520wme.121.1641230944075;
-        Mon, 03 Jan 2022 09:29:04 -0800 (PST)
-Received: from ?IPv6:2a01:e0a:b41:c160:b97a:ae5f:e798:c587? ([2a01:e0a:b41:c160:b97a:ae5f:e798:c587])
-        by smtp.gmail.com with ESMTPSA id u10sm37074003wrs.28.2022.01.03.09.29.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 03 Jan 2022 09:29:03 -0800 (PST)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net] ipv6: Do cleanup if attribute validation fails in
- multipath route
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-References: <20220103170555.94638-1-dsahern@kernel.org>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <b90df133-61c0-aeae-1e6b-595eac1a33e3@6wind.com>
-Date:   Mon, 3 Jan 2022 18:29:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S235563AbiACRaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 12:30:25 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60240 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233277AbiACRaI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:30:08 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5190B61169;
+        Mon,  3 Jan 2022 17:30:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBFC9C36AEE;
+        Mon,  3 Jan 2022 17:30:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641231007;
+        bh=Ch0NtGZEkIqSBrM14f5tjhJhGFMmjni0sdxWta+UxUc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mO/OAfkSm5Cwcjerywz9FW+lXNdyLHduKyBIFdJhfLcsXsEtM1qTbDUpmV1XxDm60
+         LJ9cKgZEA7+q+71EWw4MQa+/Yd06LNvpv0ApEbOCBOyUk4vPnK/DhL8lNeQB7+2sJF
+         ZNjDEQsF4/f34LBUOflM5NRj1A2zggb5dF9h5eAjBHx6TNCvWeMmfgxgHQV/w1vajO
+         qeiv574m3Kfr816GXKst4XEoQJtV1ssu8MQ9VeKv+fhui+vkJR0dLDol2jH88jKXJk
+         zYKaNq7XoYTbXghVoJqMPPUeSVXt+Ip4Ji+7msa85x8zgmtxG9gJTcOvEJlzHNFN1g
+         GJkTZo9dQt9bA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     William Zhao <wizhao@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, steffen.klassert@secunet.com,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 3/8] ip6_vti: initialize __ip6_tnl_parm struct in vti6_siocdevprivate
+Date:   Mon,  3 Jan 2022 12:29:56 -0500
+Message-Id: <20220103173001.1613277-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220103173001.1613277-1-sashal@kernel.org>
+References: <20220103173001.1613277-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20220103170555.94638-1-dsahern@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 03/01/2022 à 18:05, David Ahern a écrit :
-> As Nicolas noted, if gateway validation fails walking the multipath
-> attribute the code should jump to the cleanup to free previously
-> allocated memory.
-> 
-> Fixes: 23fb261977fd ("ipv6: Check attribute length for RTA_GATEWAY in multipath route")
-> Signed-off-by: David Ahern <dsahern@kernel.org>
-> Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: William Zhao <wizhao@redhat.com>
+
+[ Upstream commit c1833c3964d5bd8c163bd4e01736a38bc473cb8a ]
+
+The "__ip6_tnl_parm" struct was left uninitialized causing an invalid
+load of random data when the "__ip6_tnl_parm" struct was used elsewhere.
+As an example, in the function "ip6_tnl_xmit_ctl()", it tries to access
+the "collect_md" member. With "__ip6_tnl_parm" being uninitialized and
+containing random data, the UBSAN detected that "collect_md" held a
+non-boolean value.
+
+The UBSAN issue is as follows:
+===============================================================
+UBSAN: invalid-load in net/ipv6/ip6_tunnel.c:1025:14
+load of value 30 is not a valid value for type '_Bool'
+CPU: 1 PID: 228 Comm: kworker/1:3 Not tainted 5.16.0-rc4+ #8
+Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
+Workqueue: ipv6_addrconf addrconf_dad_work
+Call Trace:
+<TASK>
+dump_stack_lvl+0x44/0x57
+ubsan_epilogue+0x5/0x40
+__ubsan_handle_load_invalid_value+0x66/0x70
+? __cpuhp_setup_state+0x1d3/0x210
+ip6_tnl_xmit_ctl.cold.52+0x2c/0x6f [ip6_tunnel]
+vti6_tnl_xmit+0x79c/0x1e96 [ip6_vti]
+? lock_is_held_type+0xd9/0x130
+? vti6_rcv+0x100/0x100 [ip6_vti]
+? lock_is_held_type+0xd9/0x130
+? rcu_read_lock_bh_held+0xc0/0xc0
+? lock_acquired+0x262/0xb10
+dev_hard_start_xmit+0x1e6/0x820
+__dev_queue_xmit+0x2079/0x3340
+? mark_lock.part.52+0xf7/0x1050
+? netdev_core_pick_tx+0x290/0x290
+? kvm_clock_read+0x14/0x30
+? kvm_sched_clock_read+0x5/0x10
+? sched_clock_cpu+0x15/0x200
+? find_held_lock+0x3a/0x1c0
+? lock_release+0x42f/0xc90
+? lock_downgrade+0x6b0/0x6b0
+? mark_held_locks+0xb7/0x120
+? neigh_connected_output+0x31f/0x470
+? lockdep_hardirqs_on+0x79/0x100
+? neigh_connected_output+0x31f/0x470
+? ip6_finish_output2+0x9b0/0x1d90
+? rcu_read_lock_bh_held+0x62/0xc0
+? ip6_finish_output2+0x9b0/0x1d90
+ip6_finish_output2+0x9b0/0x1d90
+? ip6_append_data+0x330/0x330
+? ip6_mtu+0x166/0x370
+? __ip6_finish_output+0x1ad/0xfb0
+? nf_hook_slow+0xa6/0x170
+ip6_output+0x1fb/0x710
+? nf_hook.constprop.32+0x317/0x430
+? ip6_finish_output+0x180/0x180
+? __ip6_finish_output+0xfb0/0xfb0
+? lock_is_held_type+0xd9/0x130
+ndisc_send_skb+0xb33/0x1590
+? __sk_mem_raise_allocated+0x11cf/0x1560
+? dst_output+0x4a0/0x4a0
+? ndisc_send_rs+0x432/0x610
+addrconf_dad_completed+0x30c/0xbb0
+? addrconf_rs_timer+0x650/0x650
+? addrconf_dad_work+0x73c/0x10e0
+addrconf_dad_work+0x73c/0x10e0
+? addrconf_dad_completed+0xbb0/0xbb0
+? rcu_read_lock_sched_held+0xaf/0xe0
+? rcu_read_lock_bh_held+0xc0/0xc0
+process_one_work+0x97b/0x1740
+? pwq_dec_nr_in_flight+0x270/0x270
+worker_thread+0x87/0xbf0
+? process_one_work+0x1740/0x1740
+kthread+0x3ac/0x490
+? set_kthread_struct+0x100/0x100
+ret_from_fork+0x22/0x30
+</TASK>
+===============================================================
+
+The solution is to initialize "__ip6_tnl_parm" struct to zeros in the
+"vti6_siocdevprivate()" function.
+
+Signed-off-by: William Zhao <wizhao@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv6/ip6_vti.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
+index 23aeeb46f99fc..99f2dc802e366 100644
+--- a/net/ipv6/ip6_vti.c
++++ b/net/ipv6/ip6_vti.c
+@@ -804,6 +804,8 @@ vti6_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	struct net *net = dev_net(dev);
+ 	struct vti6_net *ip6n = net_generic(net, vti6_net_id);
+ 
++	memset(&p1, 0, sizeof(p1));
++
+ 	switch (cmd) {
+ 	case SIOCGETTUNNEL:
+ 		if (dev == ip6n->fb_tnl_dev) {
+-- 
+2.34.1
+
