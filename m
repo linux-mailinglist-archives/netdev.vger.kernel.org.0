@@ -2,78 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F1F248389A
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 22:42:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C9FD4838B9
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 23:12:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbiACVmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 16:42:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53716 "EHLO
+        id S230145AbiACWMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 17:12:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiACVmK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 16:42:10 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FF5C061761
-        for <netdev@vger.kernel.org>; Mon,  3 Jan 2022 13:42:09 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id k21so77563085lfu.0
-        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 13:42:09 -0800 (PST)
+        with ESMTP id S229525AbiACWMO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 17:12:14 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B6EC061761
+        for <netdev@vger.kernel.org>; Mon,  3 Jan 2022 14:12:13 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id u13so77488839lff.12
+        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 14:12:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=fungible.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5KDjk+ndg5cvhUb20FFrW+RbKvyb529Te3a2jOAmACY=;
-        b=EfezxFkq9di8jkbQHG8//2IJCGREJjfJRcqdBaSH8QAr6YxnrPa6otyYY/quw0RZ4S
-         /FpQ0NE8PLJDhPpJCQKZ6qKuK7KswaK6IjaBiIzWcPZzfRxaPunmHW+NuaK9NRk7aB8O
-         lGYUuWTnALEH3Yn+bpKFTbzg5HOLJgKibPTOY=
+        bh=51SeiMN2YeEtJCnVth0rnX6YO72iTsj6U/EZKpHYfu0=;
+        b=iJHVe9UttaC7K6EmEmHQiGyK+V2faqXo2qfHHvxHqx5hVhVyaZXyo+471STKwcT2Um
+         Q/73wXOp5w1nlaHQ/cs27z7dxlPKTTQ910IMjzrFep85z+ytZ0f6YSpXJ8LbXVF4ypHf
+         r0JCC4KqwKw/LcJzt/Da55/PdXdfaCSV1z5OY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5KDjk+ndg5cvhUb20FFrW+RbKvyb529Te3a2jOAmACY=;
-        b=P1lXQGSE2hcvZI4GFbrO8A9t2pSIFTr4VieOkE4m/Cdk2wW6wf52sPaHakdWOXJV3v
-         ohsrss3YWsV95KuktpwNT94qb4HLSPgyv2gPzLDnGdGI6yNj67RhN9sIWVhbaHamqy/l
-         odzdh+zqXAOV7F2s72G445ZdaHhCArEw4bFznCeJ5KfuHLyJ/jggjuEQrxZr0uZBLBJy
-         Vz5D3yqc2HDLAXmSypd2kvoTcvh54rkFVZ7KnUckIH9jX7BcowYmFulO+sfMj/8dXwH7
-         nVEjhX3HLJ2e9z/OeUsQEs3pVU6SVQQ/dvxS4GsMZ4S8g/om3Z+pToyCTaQobEjpAtfe
-         7AGQ==
-X-Gm-Message-State: AOAM530cAYWaWntaL2deUVeJCrCeiiJd2sdeyygW/rqb4zBM+oad5tKf
-        3IJ9CGIUhZ2esuTktkF7/ybX+XwlFhqTfP1tkv0tDv8q6ro=
-X-Google-Smtp-Source: ABdhPJw8pMWyOhtV++1/NhLU8O2+dShnPOavf854zMf4trE4sWQMA9v2+jy8e7sQ92SnixqnX4mXZ0NRf2RLAO3q2Hg=
-X-Received: by 2002:a05:6512:3093:: with SMTP id z19mr32757722lfd.670.1641246127826;
- Mon, 03 Jan 2022 13:42:07 -0800 (PST)
+        bh=51SeiMN2YeEtJCnVth0rnX6YO72iTsj6U/EZKpHYfu0=;
+        b=GxJMXVNNv9XLpkc8UaLUBvowHYzSDxGvb846CQWqg+Lm4va6uVRPxlh+u6NFsF9M5r
+         DXmoZfWR24gDfuAHOcB5hAukb8h1yB2ONeeNWzSt5yjskpZqog1POqmPHB374mB9+AGB
+         QvD+beKK4ItfoaTppE1JkzKT+1m6sMExtehNzSo6plJe9UhNSDeGYOqWK4BB8fLGP+RW
+         QWnIsWEN2ueyP7h7Ni4ahN6/2IOMGShq8Xp7u7wyfgktqOUBi4wEvrzL9elp9M8jvj10
+         /uyMltUU/DCEZGLN6XLeb39ZEBOyNYTb3qC5zw7QEoColTjhQQId+i0f5VfNTGkVbZ/Z
+         SqVg==
+X-Gm-Message-State: AOAM531BjGRqJtP1V4RGAVQgVInN+VHcqdfwvpyYuTOLM5dzqdCSUixk
+        2nkbpE5OQgICWojOrHfOeBUE3UQlcLzjkfPKqZjyTA==
+X-Google-Smtp-Source: ABdhPJwt/6lmqhX/C03kU7/fYnd6qfnkeAth8MCej0egZDiE/iG4Zrbm0LBlw/t1DAw9L7Gn7CmhybycHo5hAy3ztpc=
+X-Received: by 2002:a05:6512:2292:: with SMTP id f18mr38669271lfu.51.1641247931479;
+ Mon, 03 Jan 2022 14:12:11 -0800 (PST)
 MIME-Version: 1.0
-References: <20211231090833.98977-1-dmichail@fungible.com> <20211231182643.3f4fa542@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20211231182643.3f4fa542@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+References: <20211230163909.160269-1-dmichail@fungible.com>
+ <20211230163909.160269-4-dmichail@fungible.com> <9f552d88-0aa3-b46e-a85f-f661cc338ebc@gmail.com>
+In-Reply-To: <9f552d88-0aa3-b46e-a85f-f661cc338ebc@gmail.com>
 From:   Dimitris Michailidis <d.michailidis@fungible.com>
-Date:   Mon, 3 Jan 2022 13:41:55 -0800
-Message-ID: <CAOkoqZnbUzxdud0XVNwmz_9QiLBcmnqe1xaNana_+TD+TBUHJA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 0/8] new Fungible Ethernet driver
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>
+Date:   Mon, 3 Jan 2022 14:11:58 -0800
+Message-ID: <CAOkoqZne1uH9k1O-S8-rfgqRQtk8XEdvBYZHC4VPyDRConaRJw@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/8] net/funeth: probing and netdev ops
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 31, 2021 at 6:26 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Fri, Dec 31, 2021 at 3:15 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
 >
-> On Fri, 31 Dec 2021 01:08:25 -0800 Dimitris Michailidis wrote:
-> > This patch series contains a new network driver for the Ethernet
-> > functionality of Fungible cards.
+> On 30.12.2021 17:39, Dimitris Michailidis wrote:
+> > This is the first part of the Fungible ethernet driver. It deals with
+> > device probing, net_device creation, and netdev ops.
 > >
-> > It contains two modules. The first one in patch 2 is a library module
-> > that implements some of the device setup, queue managenent, and support
-> > for operating an admin queue. These are placed in a separate module
-> > because the cards provide a number of PCI functions handled by different
-> > types of drivers and all use the same common means to interact with the
-> > device. Each of the drivers will be relying on this library module for
-> > them.
+> > Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
+> > ---
+> >  drivers/net/ethernet/fungible/funeth/funeth.h |  153 ++
+> >  .../ethernet/fungible/funeth/funeth_main.c    | 1772 +++++++++++++++++
+> >  2 files changed, 1925 insertions(+)
+> >  create mode 100644 drivers/net/ethernet/fungible/funeth/funeth.h
+> >  create mode 100644 drivers/net/ethernet/fungible/funeth/funeth_main.c
 > >
-> > The remaining patches provide the Ethernet driver for the cards.
+> > diff --git a/drivers/net/ethernet/fungible/funeth/funeth.h b/drivers/net/ethernet/fungible/funeth/funeth.h
+> > new file mode 100644
+> > index 000000000000..0c089f685c7f
+> > --- /dev/null
+> > +++ b/drivers/net/ethernet/fungible/funeth/funeth.h
+> > @@ -0,0 +1,153 @@
+> > +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+> > +
+> > +#ifndef _FUNETH_H
+> > +#define _FUNETH_H
+> > +
+> > +#include <uapi/linux/if_ether.h>
+> > +#include <uapi/linux/net_tstamp.h>
+> > +#include <linux/seqlock.h>
+> > +#include <net/devlink.h>
+> > +#include "fun_dev.h"
+> > +
+> > +#define ADMIN_SQE_SIZE SZ_128
+> > +#define ADMIN_CQE_SIZE SZ_64
+> > +#define ADMIN_RSP_MAX_LEN (ADMIN_CQE_SIZE - sizeof(struct fun_cqe_info))
+> > +
+> > +#define FUN_MAX_MTU 9024
+> > +
+> > +#define SQ_DEPTH 512U
+> > +#define CQ_DEPTH 1024U
+> > +#define RQ_DEPTH (512U / (PAGE_SIZE / 4096))
+> > +
+> > +#define CQ_INTCOAL_USEC 10
+> > +#define CQ_INTCOAL_NPKT 16
+> > +#define SQ_INTCOAL_USEC 10
+> > +#define SQ_INTCOAL_NPKT 16
+> > +
+> > +#define INVALID_LPORT 0xffff
+> > +
+> > +#define FUN_PORT_CAP_PAUSE_MASK (FUN_PORT_CAP_TX_PAUSE | FUN_PORT_CAP_RX_PAUSE)
+> > +
+> > +struct fun_vport_info {
+> > +     u8 mac[ETH_ALEN];
+> > +     u16 vlan;
+> > +     __be16 vlan_proto;
+> > +     u8 qos;
+> > +     u8 spoofchk:1;
+> > +     u8 trusted:1;
+> > +     unsigned int max_rate;
+> > +};
+> > +
+> > +/* "subclass" of fun_dev for Ethernet functions */
+> > +struct fun_ethdev {
+> > +     struct fun_dev fdev;
+> > +
+> > +     /* the function's network ports */
+> > +     struct net_device **netdevs;
+> > +     unsigned int num_ports;
+> > +
+> > +     /* configuration for the function's virtual ports */
+> > +     unsigned int num_vports;
+> > +     struct fun_vport_info *vport_info;
+> > +
+> > +     unsigned int nsqs_per_port;
+> > +};
+> > +
+> > +static inline struct fun_ethdev *to_fun_ethdev(struct fun_dev *p)
+> > +{
+> > +     return container_of(p, struct fun_ethdev, fdev);
+> > +}
+> > +
+> > +/* Per netdevice driver state, i.e., netdev_priv. */
+> > +struct funeth_priv {
+> > +     struct fun_dev *fdev;
+> > +     struct pci_dev *pdev;
+> > +     struct net_device *netdev;
+> > +
+> > +     struct funeth_rxq * __rcu *rxqs;
+> > +     struct funeth_txq **txqs;
+> > +     struct funeth_txq **xdpqs;
+> > +
+> > +     struct fun_irq *irqs;
+> > +     unsigned int num_irqs;
+> > +     unsigned int num_tx_irqs;
+> > +
+> > +     unsigned int lane_attrs;
+> > +     u16 lport;
+> > +
+> > +     /* link settings */
+> > +     u64 port_caps;
+> > +     u64 advertising;
+> > +     u64 lp_advertising;
+> > +     unsigned int link_speed;
 >
-> Still fails to build for me, I use:
->
-> make C=1 W=1 O=build_allmodconfig/ drivers/net/ethernet/fungible/
+> Any specific reason for handling this manually?
+> Why not using phylib/phylink?
 
-I've figured it out and will be fixed in v3. There's one issue with O= and
-one with builds on 32b architectures.
+Linux here doesn't have access to the MAC/PHY. They are handled
+by FW. The driver for the most part sits between FW and ethtool
+converting commands and state between them and these fields store
+either what FW has reported or what ethtool has requested.
