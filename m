@@ -2,42 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A31704835B9
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:30:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFE594835C4
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:30:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235349AbiACR3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 12:29:51 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37838 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235314AbiACR3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:29:42 -0500
+        id S233244AbiACRaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 12:30:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53362 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235400AbiACRaB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:30:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA08C061792;
+        Mon,  3 Jan 2022 09:30:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7C59B8106C;
-        Mon,  3 Jan 2022 17:29:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B095C36AED;
-        Mon,  3 Jan 2022 17:29:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54E76B8107B;
+        Mon,  3 Jan 2022 17:30:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E713AC36AF8;
+        Mon,  3 Jan 2022 17:29:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641230979;
-        bh=/gdLnShWLpQP/o/mRaKeBqi4pXaE52yQZMGAJPcUVUY=;
+        s=k20201202; t=1641230999;
+        bh=Y0J8XBrSx5+EYNohAi7G2j5UtwGyHqbFfjrqlSDfVyk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N7Yj9LaRwqr1jOiEO0QxQxpK/eyPjuTK/1d8twEhjqx+geSeDHlgs7BgbWJKYu9+1
-         CgCpH6uFKZUzIrP2Zl/4bPMeDeKWB+LKg8k2AXvcLsDDmKCnFP2zW07b3411/USIA2
-         du9l/8/CiuHbD1YYohmY2oj842GuKaILW9dRCKvqovtPb0U0M8mw8qTZI4SAlW7o51
-         4OH1npjXmYQ/rdMmzhL4u+/bSyvJRLXMJKO9HD7FugCn2U0K4vs/vMxrYdAL+tgjfd
-         ibfQ7gAEZB1lApPGdwVqtraPlowYhmvSjpm6fdT0jbXrJWjPJAMlbLWduvYHQiD4Nq
-         UgsO6Gr5Gu/rg==
+        b=YlUC0lUUhqzPOqeJtqigQRSmE2T17zZIeM045sco/KznQc0M3T1oSaccAKVv5rjWP
+         kuSnnLtVb0rGohKSYaEd/PLaXzz/W5VDWYP1EgskjAAYmKHK7G5cx3EJgjMRBhrPSE
+         qnvdol9ctNtoU+cty4QssBRh70spbkq9RNX3iBLU7xe+vbnrppQKPFfPuYHei8z5Lu
+         ItkAs5bp0DLxlfan3MS2qCDJXZRUSg2H77WGhDUEwF47eFZqXbcx5/NAXJV9VAr71w
+         5mYfzg5cqoGl6RcgHlvTKaHDzoanjUFqwufqnlUhe502v4EEb4KW/aihBabZNG2YvN
+         x5BMZQGBlEZdQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     wolfgang huang <huangjinhui@kylinos.cn>,
-        k2ci <kernel-bot@kylinos.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, isdn@linux-pingi.de,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 12/16] mISDN: change function names to avoid conflicts
-Date:   Mon,  3 Jan 2022 12:28:45 -0500
-Message-Id: <20220103172849.1612731-12-sashal@kernel.org>
+Cc:     Tamir Duberstein <tamird@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 15/16] ipv6: raw: check passed optlen before reading
+Date:   Mon,  3 Jan 2022 12:28:48 -0500
+Message-Id: <20220103172849.1612731-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220103172849.1612731-1-sashal@kernel.org>
 References: <20220103172849.1612731-1-sashal@kernel.org>
@@ -49,98 +52,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wolfgang huang <huangjinhui@kylinos.cn>
+From: Tamir Duberstein <tamird@gmail.com>
 
-[ Upstream commit 8b5fdfc57cc2471179d1c51081424ded833c16c8 ]
+[ Upstream commit fb7bc9204095090731430c8921f9e629740c110a ]
 
-As we build for mips, we meet following error. l1_init error with
-multiple definition. Some architecture devices usually marked with
-l1, l2, lxx as the start-up phase. so we change the mISDN function
-names, align with Isdnl2_xxx.
+Add a check that the user-provided option is at least as long as the
+number of bytes we intend to read. Before this patch we would blindly
+read sizeof(int) bytes even in cases where the user passed
+optlen<sizeof(int), which would potentially read garbage or fault.
 
-mips-linux-gnu-ld: drivers/isdn/mISDN/layer1.o: in function `l1_init':
-(.text+0x890): multiple definition of `l1_init'; \
-arch/mips/kernel/bmips_5xxx_init.o:(.text+0xf0): first defined here
-make[1]: *** [home/mips/kernel-build/linux/Makefile:1161: vmlinux] Error 1
+Discovered by new tests in https://github.com/google/gvisor/pull/6957 .
 
-Signed-off-by: wolfgang huang <huangjinhui@kylinos.cn>
-Reported-by: k2ci <kernel-bot@kylinos.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The original get_user call predates history in the git repo.
+
+Signed-off-by: Tamir Duberstein <tamird@gmail.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+Link: https://lore.kernel.org/r/20211229200947.2862255-1-willemdebruijn.kernel@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/mISDN/core.c   | 6 +++---
- drivers/isdn/mISDN/core.h   | 4 ++--
- drivers/isdn/mISDN/layer1.c | 4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ net/ipv6/raw.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/isdn/mISDN/core.c b/drivers/isdn/mISDN/core.c
-index 55891e4204460..a41b4b2645941 100644
---- a/drivers/isdn/mISDN/core.c
-+++ b/drivers/isdn/mISDN/core.c
-@@ -381,7 +381,7 @@ mISDNInit(void)
- 	err = mISDN_inittimer(&debug);
- 	if (err)
- 		goto error2;
--	err = l1_init(&debug);
-+	err = Isdnl1_Init(&debug);
- 	if (err)
- 		goto error3;
- 	err = Isdnl2_Init(&debug);
-@@ -395,7 +395,7 @@ mISDNInit(void)
- error5:
- 	Isdnl2_cleanup();
- error4:
--	l1_cleanup();
-+	Isdnl1_cleanup();
- error3:
- 	mISDN_timer_cleanup();
- error2:
-@@ -408,7 +408,7 @@ static void mISDN_cleanup(void)
- {
- 	misdn_sock_cleanup();
- 	Isdnl2_cleanup();
--	l1_cleanup();
-+	Isdnl1_cleanup();
- 	mISDN_timer_cleanup();
- 	class_unregister(&mISDN_class);
+diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+index 60f1e4f5be5aa..c51d5ce3711c2 100644
+--- a/net/ipv6/raw.c
++++ b/net/ipv6/raw.c
+@@ -1020,6 +1020,9 @@ static int do_rawv6_setsockopt(struct sock *sk, int level, int optname,
+ 	struct raw6_sock *rp = raw6_sk(sk);
+ 	int val;
  
-diff --git a/drivers/isdn/mISDN/core.h b/drivers/isdn/mISDN/core.h
-index 23b44d3033279..42599f49c189d 100644
---- a/drivers/isdn/mISDN/core.h
-+++ b/drivers/isdn/mISDN/core.h
-@@ -60,8 +60,8 @@ struct Bprotocol	*get_Bprotocol4id(u_int);
- extern int	mISDN_inittimer(u_int *);
- extern void	mISDN_timer_cleanup(void);
++	if (optlen < sizeof(val))
++		return -EINVAL;
++
+ 	if (copy_from_sockptr(&val, optval, sizeof(val)))
+ 		return -EFAULT;
  
--extern int	l1_init(u_int *);
--extern void	l1_cleanup(void);
-+extern int	Isdnl1_Init(u_int *);
-+extern void	Isdnl1_cleanup(void);
- extern int	Isdnl2_Init(u_int *);
- extern void	Isdnl2_cleanup(void);
- 
-diff --git a/drivers/isdn/mISDN/layer1.c b/drivers/isdn/mISDN/layer1.c
-index 98a3bc6c17009..7b31c25a550e3 100644
---- a/drivers/isdn/mISDN/layer1.c
-+++ b/drivers/isdn/mISDN/layer1.c
-@@ -398,7 +398,7 @@ create_l1(struct dchannel *dch, dchannel_l1callback *dcb) {
- EXPORT_SYMBOL(create_l1);
- 
- int
--l1_init(u_int *deb)
-+Isdnl1_Init(u_int *deb)
- {
- 	debug = deb;
- 	l1fsm_s.state_count = L1S_STATE_COUNT;
-@@ -409,7 +409,7 @@ l1_init(u_int *deb)
- }
- 
- void
--l1_cleanup(void)
-+Isdnl1_cleanup(void)
- {
- 	mISDN_FsmFree(&l1fsm_s);
- }
 -- 
 2.34.1
 
