@@ -2,76 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2264483686
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 19:00:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88322483688
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 19:02:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234926AbiACSAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 13:00:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:26308 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231395AbiACSAv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 13:00:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641232849;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=xd1myrkSFzvm5J2fnWxw06OIhq1aEOsMtPWufprRxcg=;
-        b=H3tzfKM+Fu63CcrmU2y+w3KZWXRvwAl4aaHGzNZ3XmRHNkITudv9Y3+z0P+c4ObMiYEn+H
-        TivqzIb06mS+fNkqpJax2e4Tb/xQlMcjpbNh4pqfVpB2YcdQ4wQYCpiUp7ZeLrrHp6RxGx
-        6nIpY6vknhuoVNlEmJXfASe978Q18c4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-387-hqVnurj3OUeAmG4omj0uzw-1; Mon, 03 Jan 2022 13:00:48 -0500
-X-MC-Unique: hqVnurj3OUeAmG4omj0uzw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S233249AbiACSC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 13:02:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231395AbiACSC5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 13:02:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1A5C061761
+        for <netdev@vger.kernel.org>; Mon,  3 Jan 2022 10:02:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 54B4D363A7;
-        Mon,  3 Jan 2022 18:00:47 +0000 (UTC)
-Received: from tc2.redhat.com (unknown [10.39.192.203])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 71D4F85EE4;
-        Mon,  3 Jan 2022 18:00:46 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com
-Subject: [PATCH iproute2] testsuite: Fix tc/vlan.t test
-Date:   Mon,  3 Jan 2022 19:00:22 +0100
-Message-Id: <31ec3c6473b76d320301767cc3920ce6dac33e4c.1641232756.git.aclaudi@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC3AEB80B4C
+        for <netdev@vger.kernel.org>; Mon,  3 Jan 2022 18:02:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61405C36AEE;
+        Mon,  3 Jan 2022 18:02:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641232974;
+        bh=M/oFKtrfG3GB8Rk2NcsZbETcA6f6nkwDsxujhY+49Bw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=O+n6SN6qQCo+FIMrHCzqdjdZXrSF1qigOIkXfz6sN6sRPyl04P7t48FA5CHDL7/US
+         irC40ckBJ5rRYZ3O7mJMEZdptfADVBovpaneiAGxinbNMLrDiQw/w/89c6FD7k6K8E
+         3ecBwyj/7tLrT3eEFwyN3CYim+Ig/EP1wI4rnitUW5DROQiAEjz4T+qZpwZUN0/PeZ
+         5w9dyNa7ZrfYOggI8XEoNi2FK9d1XJVgCYBylI2uROcNJcfu/jhXodl9qaqqoue0yw
+         k5LHbRICB42ONO2dutPKlPsgMduQqxBvPgZQjhUzy0xuj2uP1ttrsz3EdUjNsOuhAd
+         UND/ho+JRgPfw==
+Date:   Mon, 3 Jan 2022 10:02:53 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net] ipv6: Continue processing multipath route even if
+ gateway attribute is invalid
+Message-ID: <20220103100253.40a2f914@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <a850c493-ec47-d73d-35f4-3666892fceb3@6wind.com>
+References: <20220103171911.94739-1-dsahern@kernel.org>
+        <a850c493-ec47-d73d-35f4-3666892fceb3@6wind.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Following commit 8323b20f1d76 ("net/sched: act_vlan: No dump for unset
-priority"), the kernel no longer dump vlan priority if not explicitly
-set before.
+On Mon, 3 Jan 2022 18:31:03 +0100 Nicolas Dichtel wrote:
+> Le 03/01/2022 =C3=A0 18:19, David Ahern a =C3=A9crit=C2=A0:
+> > ip6_route_multipath_del loop continues processing the multipath
+> > attribute even if delete of a nexthop path fails. For consistency,
+> > do the same if the gateway attribute is invalid.
+> >=20
+> > Fixes: d5297ac885b5 ("ipv6: Check attribute length for RTA_GATEWAY when=
+ deleting multipath route")
+> > Signed-off-by: David Ahern <dsahern@kernel.org>
+> > Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com> =20
+> Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-When modifying a vlan, tc/vlan.t test expects to find priority set to 0
-without setting it explicitly. Thus, after 8323b20f1d76 this test fails.
-
-Fix this simply removing the check on priority.
-
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- testsuite/tests/tc/vlan.t | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/testsuite/tests/tc/vlan.t b/testsuite/tests/tc/vlan.t
-index b86dc364..51529b2d 100755
---- a/testsuite/tests/tc/vlan.t
-+++ b/testsuite/tests/tc/vlan.t
-@@ -50,7 +50,6 @@ test_on "vlan"
- test_on "modify"
- test_on "id 5"
- test_on "protocol 802.1Q"
--test_on "priority 0"
- test_on "pipe"
- 
- reset_qdisc
--- 
-2.33.1
-
+Fixed the commit ID and applied, thanks!
