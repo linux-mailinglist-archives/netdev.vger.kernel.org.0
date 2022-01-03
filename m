@@ -2,73 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE5C748357E
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:21:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFFC9483583
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:23:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234860AbiACRVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 12:21:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51406 "EHLO
+        id S235207AbiACRXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 12:23:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232003AbiACRVx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:21:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38685C061761;
-        Mon,  3 Jan 2022 09:21:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S232003AbiACRXE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:23:04 -0500
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB257C061761;
+        Mon,  3 Jan 2022 09:23:03 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D79EE61174;
-        Mon,  3 Jan 2022 17:21:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE3FAC36AEB;
-        Mon,  3 Jan 2022 17:21:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641230512;
-        bh=KDcOrgZIU1XDeH6Uo1OKvN4VTlGEYf+34WT5LyZU3Fc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OkyGR7z2+zOu07oK66nwXVdb+DmZa00050akbOjEWkut2RPlEW48yHw2a8JORhR8m
-         CDUOGu/TQpvvaD7FXF0daltKw9AexNjTGDmbe30S0vT9NYLY3hppLE2cBiCWSy04uN
-         0YwLKOWqTOB3nYLiVhhbqVmeP70W7j/N7kEoh7r1KbHfBZkQDs5+tWQ2k0xB6V+K0V
-         Y1denEl8lwJxNhVv6bRxZkqPeXn7zpcKAKaWWs8W/UT/0EuEGEGCJtrspy7+TJeuM0
-         jnrfsKBJUPQy0YVds91tvgifgIfLzm9+8kaFaGrU4Ghdd/IviSWe5KvWAvdw0mdUQV
-         Qxxt1VsxT9l1Q==
-Date:   Mon, 3 Jan 2022 09:21:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Kumar, M Chetan" <m.chetan.kumar@intel.com>
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linuxwwan <linuxwwan@intel.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        "Sergey Ryazanov" <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Vaibhav Gupta <vaibhavgupta40@gmail.com>
-Subject: Re: [PATCH 2/2] net: wwan: iosm: Keep device at D0 for s2idle case
-Message-ID: <20220103092142.102c272f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <SJ0PR11MB500869254A4E9DEEC1DF3B5DD7499@SJ0PR11MB5008.namprd11.prod.outlook.com>
-References: <20211224081914.345292-2-kai.heng.feng@canonical.com>
-        <20211229201814.GA1699315@bhelgaas>
-        <CAAd53p74bHYmQJzKuriDrRWpJwXivfYCfNCsUjC47d1WKUZ=gQ@mail.gmail.com>
-        <SJ0PR11MB500869254A4E9DEEC1DF3B5DD7499@SJ0PR11MB5008.namprd11.prod.outlook.com>
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 8BDD4419BC;
+        Mon,  3 Jan 2022 17:22:53 +0000 (UTC)
+Message-ID: <87cd5244-501d-1a3a-35d1-2687cf145bb9@marcan.st>
+Date:   Tue, 4 Jan 2022 02:22:50 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH 16/34] brcmfmac: acpi: Add support for fetching Apple ACPI
+ properties
+Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>
+References: <20211226153624.162281-1-marcan@marcan.st>
+ <20211226153624.162281-17-marcan@marcan.st>
+ <CAHp75VcZcJ+zCDL-J+w8gEeKXGYdJajjLoa1JTj_kkJixrV12Q@mail.gmail.com>
+From:   Hector Martin <marcan@marcan.st>
+In-Reply-To: <CAHp75VcZcJ+zCDL-J+w8gEeKXGYdJajjLoa1JTj_kkJixrV12Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 3 Jan 2022 15:28:18 +0000 Kumar, M Chetan wrote:
-> > Dave, can you drop it from netdev until IOSM devs confirm this patch is
-> > correct?  
+On 2022/01/04 1:20, Andy Shevchenko wrote:
+>     +void brcmf_acpi_probe(struct device *dev, enum brcmf_bus_type bus_type,
+>     +                     struct brcmf_mp_device *settings)
+>     +{
+>     +       acpi_status status;
+>     +       struct acpi_device *adev = ACPI_COMPANION(dev);
 > 
-> Dave, please drop this patch from netdev.
+> 
+> Please, move the assignment closer to its first user 
 
-YMMV but these sort of requests aren't usually acted on. netdev doesn't
-rebase so revert is needed, and the developers involved are best at
-writing commit messages for those since they have all the context. 
-So sending a revert patch, with Link to the discussion and context
-explained is the best way.
+So... two lines down? :-)
+
+>   
+> 
+>     +       const union acpi_object *o;
+>     +       struct acpi_buffer buf = {ACPI_ALLOCATE_BUFFER, NULL};
+>     +
+>     +       if (!adev)
+>     +               return;
+>     +
+>     +       if (!ACPI_FAILURE(acpi_dev_get_property(adev, "module-instance",
+>     +                                               ACPI_TYPE_STRING,
+>     &o))) {
+>     +               const char *prefix = "apple,";
+>     +               int len = strlen(prefix) + o->string.length + 1;
+>     +               char *board_type = devm_kzalloc(dev, len, GFP_KERNEL);
+>     +
+>     +               strscpy(board_type, prefix, len);
+>     +               strlcat(board_type, o->string.pointer, 
+> 
+> 
+> NIH devm_kasprintf()?
+
+That sounds useful, didn't know that existed. Thanks!
+
+>  
+> 
+>     +               brcmf_dbg(INFO, "ACPI module-instance=%s\n",
+>     o->string.pointer);
+>     +               settings->board_type = board_type;
+>     +       } else {
+>     +               brcmf_dbg(INFO, "No ACPI module-instance\n");
+>     +       }
+>     +
+>     +       status = acpi_evaluate_object(adev->handle, "RWCV", NULL, &buf);
+>     +       o = buf.pointer;
+>     +       if (!ACPI_FAILURE(status) && o && o->type == ACPI_TYPE_BUFFER &&
+>     +           o->buffer.length >= 2) {
+>     +               char *antenna_sku = devm_kzalloc(dev, 3, GFP_KERNEL);
+>     +
+>     +               memcpy(antenna_sku, o->buffer.pointer, 2);
+> 
+> 
+> NIH devm_kmemdup()?
+
+Not *quite*. I take the first two bytes of the returned buffer and turn
+them into a null-terminated 3-byte string. kmemdup wouldn't
+null-terminate or would copy too much, depending on length.
+
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
