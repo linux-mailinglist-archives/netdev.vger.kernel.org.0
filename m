@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 566FB483610
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:32:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34132483617
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:32:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235994AbiACRbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 12:31:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53412 "EHLO
+        id S236015AbiACRcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 12:32:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235339AbiACRbB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:31:01 -0500
+        with ESMTP id S235383AbiACRbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:31:17 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C664C06137A;
-        Mon,  3 Jan 2022 09:30:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8806DC0619D8;
+        Mon,  3 Jan 2022 09:30:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19FDB611A8;
-        Mon,  3 Jan 2022 17:30:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BCBAC36AED;
-        Mon,  3 Jan 2022 17:30:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27D8761178;
+        Mon,  3 Jan 2022 17:30:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84B0CC36AEE;
+        Mon,  3 Jan 2022 17:30:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641231038;
-        bh=Ryn0r3NAKNZ9E1Jqj6JP6t4Ph3g8R6NUFHrMJ/x8N4I=;
+        s=k20201202; t=1641231043;
+        bh=QyEdKKKCLfqLkT9uNEGvzANi09tnLa5PEEacqi6uv10=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jYaxibQKekZngHxBUq4jR8ukSlwGnUTrMVm3I2lAXxRbaX/wx7cJn35PDJRdh2DyY
-         N0rodCVxeHAhMx0AS4aFXjeNzs3QV+laQbECl30DvFOEiNR+ASRt/xC2R1lvn92Hby
-         gbbPirZ3lPp3Rb/yHdyWQvmJb6+Rhy0Q+cs92hwpA4eqLtpxyjRjNuSzLP9UGRN1bI
-         CJ7pEGbv04rOJhMdugdrBLbJWyAolt3/+vadSz7tNzbF8Wxl7FwcwHI0z3XFwi21za
-         0iaOP+r4gxuyNbp+S6K0D0hQMrRj73RYMQrpFp3aoPnJASL7FxHWB+FFrEKAGs3Y0J
-         T4c8GSWv+GMDA==
+        b=u7yX2OJ6Dx75H0NffhzILUHTIcZh10q/kfpL4vvpauw3cScm1mcHgCuHVezB52iCP
+         N4F/CBMbt/AXKO4Rwwry+J1hHzb6SWvP88RH8+/VmKy1vIRHwEU8qxPAsruqf7isez
+         gqct+iIeRroYxGZ12HHlzULIutGFU1RFDCNsVZOfQjzLPxwp+lH92bOAMnBVgu31OQ
+         IxhqAj4/Grh3GLazpEMdgGAtd9IwCLVv5AKL7/wHSqoAPom8SN5HbewaIWokK4FLDP
+         a2srCG2NYHyKP8OrC6JsijfTZKqplyrzvdl2L5+z7zek+SgY8vWTozajqR8V+FRjHf
+         oO9bOtGP1vepw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     wolfgang huang <huangjinhui@kylinos.cn>,
-        k2ci <kernel-bot@kylinos.cn>,
+Cc:     William Zhao <wizhao@redhat.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, isdn@linux-pingi.de,
+        Sasha Levin <sashal@kernel.org>, steffen.klassert@secunet.com,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 5/5] mISDN: change function names to avoid conflicts
-Date:   Mon,  3 Jan 2022 12:30:29 -0500
-Message-Id: <20220103173029.1613474-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 2/4] ip6_vti: initialize __ip6_tnl_parm struct in vti6_siocdevprivate
+Date:   Mon,  3 Jan 2022 12:30:37 -0500
+Message-Id: <20220103173039.1613564-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220103173029.1613474-1-sashal@kernel.org>
-References: <20220103173029.1613474-1-sashal@kernel.org>
+In-Reply-To: <20220103173039.1613564-1-sashal@kernel.org>
+References: <20220103173039.1613564-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,98 +52,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wolfgang huang <huangjinhui@kylinos.cn>
+From: William Zhao <wizhao@redhat.com>
 
-[ Upstream commit 8b5fdfc57cc2471179d1c51081424ded833c16c8 ]
+[ Upstream commit c1833c3964d5bd8c163bd4e01736a38bc473cb8a ]
 
-As we build for mips, we meet following error. l1_init error with
-multiple definition. Some architecture devices usually marked with
-l1, l2, lxx as the start-up phase. so we change the mISDN function
-names, align with Isdnl2_xxx.
+The "__ip6_tnl_parm" struct was left uninitialized causing an invalid
+load of random data when the "__ip6_tnl_parm" struct was used elsewhere.
+As an example, in the function "ip6_tnl_xmit_ctl()", it tries to access
+the "collect_md" member. With "__ip6_tnl_parm" being uninitialized and
+containing random data, the UBSAN detected that "collect_md" held a
+non-boolean value.
 
-mips-linux-gnu-ld: drivers/isdn/mISDN/layer1.o: in function `l1_init':
-(.text+0x890): multiple definition of `l1_init'; \
-arch/mips/kernel/bmips_5xxx_init.o:(.text+0xf0): first defined here
-make[1]: *** [home/mips/kernel-build/linux/Makefile:1161: vmlinux] Error 1
+The UBSAN issue is as follows:
+===============================================================
+UBSAN: invalid-load in net/ipv6/ip6_tunnel.c:1025:14
+load of value 30 is not a valid value for type '_Bool'
+CPU: 1 PID: 228 Comm: kworker/1:3 Not tainted 5.16.0-rc4+ #8
+Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
+Workqueue: ipv6_addrconf addrconf_dad_work
+Call Trace:
+<TASK>
+dump_stack_lvl+0x44/0x57
+ubsan_epilogue+0x5/0x40
+__ubsan_handle_load_invalid_value+0x66/0x70
+? __cpuhp_setup_state+0x1d3/0x210
+ip6_tnl_xmit_ctl.cold.52+0x2c/0x6f [ip6_tunnel]
+vti6_tnl_xmit+0x79c/0x1e96 [ip6_vti]
+? lock_is_held_type+0xd9/0x130
+? vti6_rcv+0x100/0x100 [ip6_vti]
+? lock_is_held_type+0xd9/0x130
+? rcu_read_lock_bh_held+0xc0/0xc0
+? lock_acquired+0x262/0xb10
+dev_hard_start_xmit+0x1e6/0x820
+__dev_queue_xmit+0x2079/0x3340
+? mark_lock.part.52+0xf7/0x1050
+? netdev_core_pick_tx+0x290/0x290
+? kvm_clock_read+0x14/0x30
+? kvm_sched_clock_read+0x5/0x10
+? sched_clock_cpu+0x15/0x200
+? find_held_lock+0x3a/0x1c0
+? lock_release+0x42f/0xc90
+? lock_downgrade+0x6b0/0x6b0
+? mark_held_locks+0xb7/0x120
+? neigh_connected_output+0x31f/0x470
+? lockdep_hardirqs_on+0x79/0x100
+? neigh_connected_output+0x31f/0x470
+? ip6_finish_output2+0x9b0/0x1d90
+? rcu_read_lock_bh_held+0x62/0xc0
+? ip6_finish_output2+0x9b0/0x1d90
+ip6_finish_output2+0x9b0/0x1d90
+? ip6_append_data+0x330/0x330
+? ip6_mtu+0x166/0x370
+? __ip6_finish_output+0x1ad/0xfb0
+? nf_hook_slow+0xa6/0x170
+ip6_output+0x1fb/0x710
+? nf_hook.constprop.32+0x317/0x430
+? ip6_finish_output+0x180/0x180
+? __ip6_finish_output+0xfb0/0xfb0
+? lock_is_held_type+0xd9/0x130
+ndisc_send_skb+0xb33/0x1590
+? __sk_mem_raise_allocated+0x11cf/0x1560
+? dst_output+0x4a0/0x4a0
+? ndisc_send_rs+0x432/0x610
+addrconf_dad_completed+0x30c/0xbb0
+? addrconf_rs_timer+0x650/0x650
+? addrconf_dad_work+0x73c/0x10e0
+addrconf_dad_work+0x73c/0x10e0
+? addrconf_dad_completed+0xbb0/0xbb0
+? rcu_read_lock_sched_held+0xaf/0xe0
+? rcu_read_lock_bh_held+0xc0/0xc0
+process_one_work+0x97b/0x1740
+? pwq_dec_nr_in_flight+0x270/0x270
+worker_thread+0x87/0xbf0
+? process_one_work+0x1740/0x1740
+kthread+0x3ac/0x490
+? set_kthread_struct+0x100/0x100
+ret_from_fork+0x22/0x30
+</TASK>
+===============================================================
 
-Signed-off-by: wolfgang huang <huangjinhui@kylinos.cn>
-Reported-by: k2ci <kernel-bot@kylinos.cn>
+The solution is to initialize "__ip6_tnl_parm" struct to zeros in the
+"vti6_siocdevprivate()" function.
+
+Signed-off-by: William Zhao <wizhao@redhat.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/mISDN/core.c   | 6 +++---
- drivers/isdn/mISDN/core.h   | 4 ++--
- drivers/isdn/mISDN/layer1.c | 4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ net/ipv6/ip6_vti.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/isdn/mISDN/core.c b/drivers/isdn/mISDN/core.c
-index faf505462a4f5..f5a06a6fb297f 100644
---- a/drivers/isdn/mISDN/core.c
-+++ b/drivers/isdn/mISDN/core.c
-@@ -390,7 +390,7 @@ mISDNInit(void)
- 	err = mISDN_inittimer(&debug);
- 	if (err)
- 		goto error2;
--	err = l1_init(&debug);
-+	err = Isdnl1_Init(&debug);
- 	if (err)
- 		goto error3;
- 	err = Isdnl2_Init(&debug);
-@@ -404,7 +404,7 @@ mISDNInit(void)
- error5:
- 	Isdnl2_cleanup();
- error4:
--	l1_cleanup();
-+	Isdnl1_cleanup();
- error3:
- 	mISDN_timer_cleanup();
- error2:
-@@ -417,7 +417,7 @@ static void mISDN_cleanup(void)
- {
- 	misdn_sock_cleanup();
- 	Isdnl2_cleanup();
--	l1_cleanup();
-+	Isdnl1_cleanup();
- 	mISDN_timer_cleanup();
- 	class_unregister(&mISDN_class);
+diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
+index 299226b57ba50..a4ba470186482 100644
+--- a/net/ipv6/ip6_vti.c
++++ b/net/ipv6/ip6_vti.c
+@@ -775,6 +775,8 @@ vti6_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	struct net *net = dev_net(dev);
+ 	struct vti6_net *ip6n = net_generic(net, vti6_net_id);
  
-diff --git a/drivers/isdn/mISDN/core.h b/drivers/isdn/mISDN/core.h
-index 52695bb81ee7a..3c039b6ade2e1 100644
---- a/drivers/isdn/mISDN/core.h
-+++ b/drivers/isdn/mISDN/core.h
-@@ -69,8 +69,8 @@ struct Bprotocol	*get_Bprotocol4id(u_int);
- extern int	mISDN_inittimer(u_int *);
- extern void	mISDN_timer_cleanup(void);
- 
--extern int	l1_init(u_int *);
--extern void	l1_cleanup(void);
-+extern int	Isdnl1_Init(u_int *);
-+extern void	Isdnl1_cleanup(void);
- extern int	Isdnl2_Init(u_int *);
- extern void	Isdnl2_cleanup(void);
- 
-diff --git a/drivers/isdn/mISDN/layer1.c b/drivers/isdn/mISDN/layer1.c
-index 3192b0eb39445..284d3a9c7df7d 100644
---- a/drivers/isdn/mISDN/layer1.c
-+++ b/drivers/isdn/mISDN/layer1.c
-@@ -407,7 +407,7 @@ create_l1(struct dchannel *dch, dchannel_l1callback *dcb) {
- EXPORT_SYMBOL(create_l1);
- 
- int
--l1_init(u_int *deb)
-+Isdnl1_Init(u_int *deb)
- {
- 	debug = deb;
- 	l1fsm_s.state_count = L1S_STATE_COUNT;
-@@ -418,7 +418,7 @@ l1_init(u_int *deb)
- }
- 
- void
--l1_cleanup(void)
-+Isdnl1_cleanup(void)
- {
- 	mISDN_FsmFree(&l1fsm_s);
- }
++	memset(&p1, 0, sizeof(p1));
++
+ 	switch (cmd) {
+ 	case SIOCGETTUNNEL:
+ 		if (dev == ip6n->fb_tnl_dev) {
 -- 
 2.34.1
 
