@@ -2,117 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E4A04830DE
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 13:09:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A23483126
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 13:53:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231819AbiACMJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 07:09:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36252 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231398AbiACMJb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 07:09:31 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B83C061761;
-        Mon,  3 Jan 2022 04:09:30 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id t14so27063490ljh.8;
-        Mon, 03 Jan 2022 04:09:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UukyjmK4YO+JAfUbdkXWjCdeVRCY8BxgquJ5yskx9Jg=;
-        b=aWUjFGhW5nXqlUcE7KmEecswKjBKIAnC3Z9I1LFR8jbC/fgxjalQLBA223E/WVevze
-         8EV8FDkB45ybcG8GQS5BR0yVpoqbNLDtgjBhiwRR26Lb8HSKecTGYyVYH8UnX/anh/+Y
-         N51E050c1fuesDk0W+xjM1XoDfaALSyL6Yf7yQyjhjU8r671dgmSZQqmec9kySaDEy3Q
-         MjprMLZUrvf4BkImDsYefPhVpCpVuVe11yylvToXOTMbXdgOmIRZqUM43m7TYFnXrFwu
-         ft5JLvOc2RUffhyTPAwenFX1nkfntD9fjB5lKgFuHtx8o+tS4WJaA6zA4A9pXdeixzkU
-         AlfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UukyjmK4YO+JAfUbdkXWjCdeVRCY8BxgquJ5yskx9Jg=;
-        b=Xt8PInwsu22XmEeVtwHr5Jp1EDxFViYPWdL5pTXUKykz/GlWAjp8LjouGj7R3dQKG9
-         63BXjwp3k/Wby8iib/9kMaYlH7k+vGyYsX3PbbbVZXs+EraMUGA+7zfV2danpUvALrn9
-         BPuqhurRnelQw/jic+utP71zqzYUQ0+gA8CVY5svB2yRgHVX2allMPxZT3EETdYuoGC6
-         K1J2vZwxhpTdJ0bbH3ikizpjqiIkq4Q249wHCdL6OGxk0fd1TaCdA2yrpXibEO/bjQMt
-         BDYVV78h1k/y2zLH7HtEXgLEPWCMDUh/ahlBjxYT4I1U4TomhCuMw0hVkngnzNZRZi37
-         L2Pg==
-X-Gm-Message-State: AOAM532o1GvPxi1T3WEg2fNee9C+FUEYgcd81/HJvcwnd+t8SQR+xcFo
-        /2i/vKryOyKZIqQjC6BjLgc=
-X-Google-Smtp-Source: ABdhPJweKSRJfLpRC+gpZp4f8LcMCQwhZRJtQqwFODRf7noArKTJotGPveDtQ0YDV14jVg+24kjkXw==
-X-Received: by 2002:a2e:87d6:: with SMTP id v22mr37373886ljj.251.1641211768710;
-        Mon, 03 Jan 2022 04:09:28 -0800 (PST)
-Received: from localhost.localdomain ([94.103.235.100])
-        by smtp.gmail.com with ESMTPSA id y7sm3359433lfb.272.2022.01.03.04.09.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Jan 2022 04:09:28 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     stefan@datenfreihafen.org, alex.aring@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Alexander Potapenko <glider@google.com>
-Subject: [PATCH v2] ieee802154: atusb: fix uninit value in atusb_set_extended_addr
-Date:   Mon,  3 Jan 2022 15:09:25 +0300
-Message-Id: <20220103120925.25207-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <CAB_54W50xKFCWZ5vYuDG2p4ijpd63cSutRrV4MLs9oasLmKgzQ@mail.gmail.com>
-References: <CAB_54W50xKFCWZ5vYuDG2p4ijpd63cSutRrV4MLs9oasLmKgzQ@mail.gmail.com>
+        id S231978AbiACMxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 07:53:24 -0500
+Received: from out162-62-57-137.mail.qq.com ([162.62.57.137]:49007 "EHLO
+        out162-62-57-137.mail.qq.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229514AbiACMxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 07:53:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1641214399;
+        bh=5UnHtZFJgrqLBAR8Hrb/PgFy4iZk/U0MY7LdjigH0ic=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=wKwUpR5EbNhjAaKsQSA4S9mT6NU8YGcUsWl9ElTUbyEicYpjXqf+NjatrPYzctXSU
+         R0k6pEiCk3G1rGwDd2s4tZfRC8icf6F1DpCq5krBfEF+1iAc4/CdDuK1UXxFj92lFW
+         jlw44Dz7zCSMEx1yy4Hg4bvEAg/iBHsa9/dGCsyI=
+Received: from localhost ([119.33.249.242])
+        by newxmesmtplogicsvrszc7.qq.com (NewEsmtp) with SMTP
+        id 559874A7; Mon, 03 Jan 2022 20:21:25 +0800
+X-QQ-mid: xmsmtpt1641212485tv9xhm9b7
+Message-ID: <tencent_E30BB769A8609EADCF03F1FDA7C0AF146205@qq.com>
+X-QQ-XMAILINFO: MFX4IRS9whvrf5HDZtuPh7vVui8uydB0fUmSNFEih2xKoZzCct6DBpCCwi9U2w
+         hTq++kehHUe32B8lLEm6hnJ5slUnK2CIMU9evNbEEM5u6HPwecQD3y1OyR7Nx27tRlHGyCzAU/6O
+         u2nvF9t4VkyQJjqkOazznSk8emzw4MW+/dL3Z8aG9DvNxG0pmEEk9rRJqapoqSCyBOMXNTGMHYTS
+         Bc90UB+q8/D4XhthBihZ7fLhjiWzrCVM0hBm0VietBwSmznC9C37jTa4aL5mJbRUzn0hYUoz4lBI
+         UBvuxxTnnNDrb55SXRo/29/9Khn1FsBAnd4aLA8nPaltO7mutkLakW2KzPecG9YxJ+5z1uIC+7gs
+         sdVhzlq6JDlE9pM0K5CgajoKCxhpkHVOLjdWxCA3jFL9YXLWYnR/DsPk6dqMwVTsvzbg+FjneZuF
+         Ja1uDckS8AjMBddLh24DEcyZb3XghcXaLB3tOTD3RBcyuj/DQ+ukkV3l39RLgFCIhUEaGPbYIBA8
+         fda6QaFst4otTN2rs8ruX39SKSC7RzFvS6uy5vjrS8fqiYz+/XqJX0l/lNJv/QWVdl6UbeoxloER
+         mVghavEMr7JXJMnfDSsVJpqvGHhR8PagJISXREkd9A8ky+UYyvT0IINwCUS54c9gpFi2C86//NN5
+         muoHqRbt1X16Vj+bBag14xMrWR37wyX3ZuGMCOYw23+4RZsF2BKDT9h0NjPY3+1iSugtumKj9m7r
+         CeF2SwAIRw2+HwICmqKUIX/1BxSqpD24Q/CLgDhx6zKOLkwdRzc1C+jKE+IRLX7mLWacj/u8H8/U
+         7Og62zRksgpD8niQUgcc6jBOGRDyCW2U49eSt4Zj2fVtrEggYfpRCBe/NhPNpftuCzFe05ZJlThA
+         ==
+Date:   Mon, 3 Jan 2022 20:21:25 +0800
+From:   Conley Lee <conleylee@foxmail.com>
+To:     Corentin Labbe <clabbe.montjoie@gmail.com>
+Cc:     davem@davemloft.net, mripard@kernel.org, wens@csie.org,
+        jernej.skrabec@gmail.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
+X-OQ-MSGID: <YdLqRWGsVXwBzl/3@fedora>
+References: <20211228164817.1297c1c9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <tencent_DE05ADA53D5B084D4605BE6CB11E49EF7408@qq.com>
+ <Yc7e6V9/oioEpx8c@Red>
+ <tencent_57960DDC83F43DA3E0A2F47DEBAD69A4A005@qq.com>
+ <YdHjK+/SzaeI/V2Q@Red>
+ <tencent_67023336008FE777A58293D2D32DEFA69107@qq.com>
+ <YdLhQjUTobcLq73j@Red>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YdLhQjUTobcLq73j@Red>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexander reported a use of uninitialized value in
-atusb_set_extended_addr(), that is caused by reading 0 bytes via
-usb_control_msg().
+On 01/03/22 at 12:42下午, Corentin Labbe wrote:
+> Date: Mon, 3 Jan 2022 12:42:58 +0100
+> From: Corentin Labbe <clabbe.montjoie@gmail.com>
+> To: Conley Lee <conleylee@foxmail.com>
+> Cc: davem@davemloft.net, mripard@kernel.org, wens@csie.org,
+>  jernej.skrabec@gmail.com, netdev@vger.kernel.org,
+>  linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+>  linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
+> 
+> Le Mon, Jan 03, 2022 at 10:55:04AM +0800, Conley Lee a écrit :
+> > On 01/02/22 at 06:38下午, Corentin Labbe wrote:
+> > > Date: Sun, 2 Jan 2022 18:38:51 +0100
+> > > From: Corentin Labbe <clabbe.montjoie@gmail.com>
+> > > To: Conley Lee <conleylee@foxmail.com>
+> > > Cc: davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+> > >  wens@csie.org, netdev@vger.kernel.org,
+> > >  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+> > >  linux-sunxi@lists.linux.dev, jernej.skrabec@gmail.com
+> > > Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
+> > > 
+> > > Le Sat, Jan 01, 2022 at 03:09:01PM +0800, Conley Lee a écrit :
+> > > > On 12/31/21 at 11:43上午, Corentin Labbe wrote:
+> > > > > Date: Fri, 31 Dec 2021 11:43:53 +0100
+> > > > > From: Corentin Labbe <clabbe.montjoie@gmail.com>
+> > > > > To: conleylee@foxmail.com
+> > > > > Cc: davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+> > > > >  wens@csie.org, netdev@vger.kernel.org,
+> > > > >  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+> > > > > Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
+> > > > > 
+> > > > > Le Wed, Dec 29, 2021 at 09:43:51AM +0800, conleylee@foxmail.com a écrit :
+> > > > > > From: Conley Lee <conleylee@foxmail.com>
+> > > > > > 
+> > > > > > Thanks for your review. Here is the new version for this patch.
+> > > > > > 
+> > > > > > This patch adds support for the emac rx dma present on sun4i. The emac
+> > > > > > is able to move packets from rx fifo to RAM by using dma.
+> > > > > > 
+> > > > > > Change since v4.
+> > > > > >   - rename sbk field to skb
+> > > > > >   - rename alloc_emac_dma_req to emac_alloc_dma_req
+> > > > > >   - using kzalloc(..., GPF_ATOMIC) in interrupt context to avoid
+> > > > > >     sleeping
+> > > > > >   - retry by using emac_inblk_32bit when emac_dma_inblk_32bit fails
+> > > > > >   - fix some code style issues 
+> > > > > > 
+> > > > > > Change since v5.
+> > > > > >   - fix some code style issue
+> > > > > > 
+> > > > > 
+> > > > > Hello
+> > > > > 
+> > > > > I just tested this on a sun4i-a10-olinuxino-lime
+> > > > > 
+> > > > > I got:
+> > > > > [    2.922812] sun4i-emac 1c0b000.ethernet (unnamed net_device) (uninitialized): get io resource from device: 0x1c0b000, size = 4096
+> > > > > [    2.934512] sun4i-emac 1c0b000.ethernet (unnamed net_device) (uninitialized): failed to request dma channel. dma is disabled
+> > > > > [    2.945740] sun4i-emac 1c0b000.ethernet (unnamed net_device) (uninitialized): configure dma failed. disable dma.
+> > > > > [    2.957887] sun4i-emac 1c0b000.ethernet: eth0: at (ptrval), IRQ 19 MAC: 02:49:09:40:ab:3d
+> > > > > 
+> > > > > On which board did you test it and how ?
+> > > > > 
+> > > > > Regards
+> > > > 
+> > > > Sorry. I sent the email with text/html format. This email is an clean version.
+> > > > 
+> > > > In order to enable dma rx channel. `dmas` and `dma-names` properties
+> > > > should be added to emac section in dts:
+> > > > 
+> > > > emac: ethernet@1c0b000 {
+> > > > 	...
+> > > > 	dmas = <&dma SUN4I_DMA_DEDICATED 7>;
+> > > > 	dma-names = "rx";
+> > > > 	...
+> > > > }
+> > > 
+> > > Helo
+> > > 
+> > > Yes I figured that out. But you should have done a patch serie adding this.
+> > > Your patch is now applied but it is a useless change without the dtb change.
+> > > You should also probably update the driver binding (Documentation/devicetree/bindings/net/allwinner,sun4i-a10-emac.yaml) since you add new members to DT node.
+> > > 
+> > > Furthermore, why did you add RX only and not TX dma also ?
+> > > 
+> > > Probably it is too late since patch is applied but it is:
+> > > Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+> > > Tested-on: sun4i-a10-olinuxino-lime
+> > > 
+> > > Regards
+> > 
+> > Thanks for your suggestion. I will submit a patch to add those changes
+> > later. 
+> > 
+> > And the reason why I didn't add TX support is becasuse there is no any
+> > public page to describe sun4i emac TX DMA register map. So, I don't known
+> > how to enable TX DMA at hardware level. If you has any page or datasheet
+> > about EMAC TX DMA, can you share with me ? Thanks.
+> 
+> Hello
+> 
+> You can find TX DMA info on the R40 Use manual (8.10.5.2 Register Name: EMAC_TX_MODE)
+> 
+> You should keep all people in CC when you answer to someone.
+> 
+> Regards
 
-Fix it by validating if the number of bytes transferred is actually
-correct, since usb_control_msg() may read less bytes, than was requested
-by caller.
-
-Fail log:
-
-BUG: KASAN: uninit-cmp in ieee802154_is_valid_extended_unicast_addr include/linux/ieee802154.h:310 [inline]
-BUG: KASAN: uninit-cmp in atusb_set_extended_addr drivers/net/ieee802154/atusb.c:1000 [inline]
-BUG: KASAN: uninit-cmp in atusb_probe.cold+0x29f/0x14db drivers/net/ieee802154/atusb.c:1056
-Uninit value used in comparison: 311daa649a2003bd stack handle: 000000009a2003bd
- ieee802154_is_valid_extended_unicast_addr include/linux/ieee802154.h:310 [inline]
- atusb_set_extended_addr drivers/net/ieee802154/atusb.c:1000 [inline]
- atusb_probe.cold+0x29f/0x14db drivers/net/ieee802154/atusb.c:1056
- usb_probe_interface+0x314/0x7f0 drivers/usb/core/driver.c:396
-
-Fixes: 7490b008d123 ("ieee802154: add support for atusb transceiver")
-Reported-by: Alexander Potapenko <glider@google.com>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
-
-Changes in v2:
-	- Reworked fix approach, since moving to new USB API is not
-	  suitable for backporting to stable kernels
-
----
- drivers/net/ieee802154/atusb.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
-index 23ee0b14cbfa..e6cc816dd7a1 100644
---- a/drivers/net/ieee802154/atusb.c
-+++ b/drivers/net/ieee802154/atusb.c
-@@ -93,7 +93,9 @@ static int atusb_control_msg(struct atusb *atusb, unsigned int pipe,
- 
- 	ret = usb_control_msg(usb_dev, pipe, request, requesttype,
- 			      value, index, data, size, timeout);
--	if (ret < 0) {
-+	if (ret < size) {
-+		ret = ret < 0 ? ret : -ENODATA;
-+
- 		atusb->err = ret;
- 		dev_err(&usb_dev->dev,
- 			"%s: req 0x%02x val 0x%x idx 0x%x, error %d\n",
--- 
-2.34.1
-
+Haha, got it! I have been looking for the docs about emac register map
+for a long time. You really help me a lot. I will submit a new patch to
+add driver bidding and enable both RX and TX channels. Thanks ~
