@@ -2,119 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA083483016
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 11:52:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C42148302A
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 12:04:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231479AbiACKwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 05:52:30 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:24462 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229651AbiACKw3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 05:52:29 -0500
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 203ADPqs023973;
-        Mon, 3 Jan 2022 10:52:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=n6Xbthcr2r/+NQ+vvbKwFRU8b7SKMTkmNEAkxM2vAmQ=;
- b=BCtZdSr+Xqu/MfL80y//uW/6N6LToGN5Xoqs/RHUcyQnY+HbnhCoNxPhlIWY4fGbJU0S
- rlCikX2FeoXjbmAqlxo+gnhS8TyUZCWTk9oWex5DZwc4m7OBtzK6g+GYBFtdM4x5gMPc
- k7qjxcHXrFvo/AasmpFTxnWBDYhOhneA/U4bE9PvGC3+J/NCG8PnBc6XvvFOQl4wYAkF
- C3or5asBy9YN1XvfqmIJanCM1o3X2VBcnThzduju28JjKornTP9x8bmKsus8hW8rb69n
- IW6OH/egtKpESJJEdT9DsXB+oA+koMlL+paZTV/vEvnRM9xojFs5gysYe+Wo1JDR3ToM 2Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dby70gkhm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 03 Jan 2022 10:52:27 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 203ApbSE018976;
-        Mon, 3 Jan 2022 10:52:27 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dby70gkh1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 03 Jan 2022 10:52:27 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 203AnvIo017501;
-        Mon, 3 Jan 2022 10:52:25 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3daek9svqt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 03 Jan 2022 10:52:24 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 203AqMmV47120718
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 3 Jan 2022 10:52:22 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 642FB11C04A;
-        Mon,  3 Jan 2022 10:52:22 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DE08411C050;
-        Mon,  3 Jan 2022 10:52:21 +0000 (GMT)
-Received: from [9.145.23.206] (unknown [9.145.23.206])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  3 Jan 2022 10:52:21 +0000 (GMT)
-Message-ID: <3cef644a-aeb3-ee15-9809-e560f7b24a5c@linux.ibm.com>
-Date:   Mon, 3 Jan 2022 11:52:21 +0100
+        id S232814AbiACLE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 06:04:56 -0500
+Received: from mail-bn7nam10on2087.outbound.protection.outlook.com ([40.107.92.87]:15745
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229651AbiACLEz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jan 2022 06:04:55 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iAuNXfqLTS2ZaqfmTNinGPd0HCcIavOxirYhabbTRHxcc18+G+SAutBVlDrTBuv9dQ/BM6njahAdLA3WhzVPzkqU/usq4GBlU/jFg173s+vMwAQOgEy7ekCCanV2FHFoajoO4SbtR5+n8rF2ab6OvTYtGRRQo1kvK+kYKU9WDAuCRmSVGu0/L9Jlqkx5baFj8X1HyPpimvnOaA3spyMDC6a/vEoi/zDjbisl0U9RuNayffGa1gxpwgQJ97xm8XasCb/2MrHv5wCcgrop69uKbzrHU+lLq6DvQ+dj+GfOSDKZfGliUtvqde8j5dLnXxATQQ3H0lU4cDgxQdUEnnNW/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=agd7bUwMhbbV9ucMFdQiYr8eGxQEktx7I5Pzfng2YCc=;
+ b=muLf97OzbO1okc8IyNfUlP+lgbf6r/83+pZMpzMRbZIEoLBxRkJEd+nWKNnvFdEqttTVEmTx2Dzr3ADINuVXbxMccYaK7xx/zAEUpkplIndiSukYqApq3yYyQ3vdIwNHwYlb9eaXcbNoyaCr9iMI3w+lC/Grqh9yunCxjAPHfHTx7+nxsClUVdSxc1DBGjGWfXZbk/DS2lxxDsoIQ2xIHNPSw9vTJWOm6LpZE8+arZRF5elpXnUJE6WnpCEJ2Lf4R5aD9RTJqd4uxu9T0Io/mPWTTn/WKkXIallRo6wO0douNyBrwet0NQl5smWs1Rg/GotlHhfR/Fqg3CfpQ1A7fA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=secunet.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=agd7bUwMhbbV9ucMFdQiYr8eGxQEktx7I5Pzfng2YCc=;
+ b=Q/ibNCV4EHIRpTXAlPXsuuYLCkrUCL++wmMT27F8wJRpXydnqNGgxBzlE5vOt8h9gVFZehed89cs2N17EV6LUFXFas7ahbE1KsE7DxXtXCIVzfFr0jKFObFGGPOxrODReli1FIkRh4S55CP0IxPr8OhuRD7chtqeUwX/he/DNUSJ2ShdBCmkI9zwQDsrdA60VxgA6dAD1X08GULwhSNX6M7CRWkS/X1q/+BfEb8s0QFyZpt5EHjQ+3ZdwTl2+GB2vPj1ZIo41iQk4TUO3/OI6grWClHspG0aCgRAKdv/TBwwMfo1+FoJR1EJ4AXA4xmvgNsMKXe749QO+M+cWxwmZw==
+Received: from DM3PR14CA0133.namprd14.prod.outlook.com (2603:10b6:0:53::17) by
+ MN2PR12MB3903.namprd12.prod.outlook.com (2603:10b6:208:15a::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.15; Mon, 3 Jan
+ 2022 11:04:53 +0000
+Received: from DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:0:53:cafe::9f) by DM3PR14CA0133.outlook.office365.com
+ (2603:10b6:0:53::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.13 via Frontend
+ Transport; Mon, 3 Jan 2022 11:04:53 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ DM6NAM11FT012.mail.protection.outlook.com (10.13.173.109) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4844.14 via Frontend Transport; Mon, 3 Jan 2022 11:04:52 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 3 Jan
+ 2022 11:04:51 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 3 Jan
+ 2022 03:04:50 -0800
+Received: from vdi.nvidia.com (172.20.187.5) by mail.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Mon, 3 Jan 2022 11:04:48 +0000
+From:   Raed Salem <raeds@nvidia.com>
+To:     <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <huyn@nvidia.com>,
+        <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Raed Salem <raeds@nvidia.com>
+Subject: [PATCH net] net/xfrm: IPsec tunnel mode fix inner_ipproto setting in sec_path
+Date:   Mon, 3 Jan 2022 13:04:44 +0200
+Message-ID: <20220103110444.10964-1-raeds@nvidia.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH net] net/smc: Reset conn->lgr when link group
- registration fails
-Content-Language: en-US
-To:     Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Dust Li <dust.li@linux.alibaba.com>,
-        tonylu_linux <tonylu@linux.alibaba.com>
-References: <1640677770-112053-1-git-send-email-guwen@linux.alibaba.com>
- <07930fec-4109-0dfd-7df4-286cb56ec75b@linux.ibm.com>
- <0082289b-d3dc-d202-ec37-844d8fe5303f@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <0082289b-d3dc-d202-ec37-844d8fe5303f@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: kjcXOSipcoxLMLl1XAASjP1Rk-ZEhroT
-X-Proofpoint-GUID: hZYybA6DboBQYg6FnSW6WTRbCPo6E3Gw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-03_03,2022-01-01_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
- lowpriorityscore=0 adultscore=0 mlxscore=0 malwarescore=0
- priorityscore=1501 impostorscore=0 spamscore=0 mlxlogscore=999 bulkscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201030068
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 75983761-93c9-43e6-950a-08d9cea8dde9
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3903:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB39036A2716C5B7F98DAF0FC3C9499@MN2PR12MB3903.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SDgk3OlQZJkffLYlnisJKcz6ISEE2AVBJB6T+K1EzY3PrSVEaozfCEnoeabYIZDliIE18BGSYUJU5UL7/W+mY9cfHP7NTG24XquHET82RmowY1f81r0KSdPPCSGFAWp5kuD5zBPMAU87XxHgTI9M6KWMog4Mk2/V+ab3liMqF4yvHB3rbxgGZQ+EjgZQF5B8k99sDLrtxRVtp5kKz9Hp8RVcb+y1ynSS/OtJ6RksQTi2wlJKYhUVkasetsGePOmCaSIbLzPzhwz8WbiRz68HpAV0IOdwydaHNkjD8/ImNK72VNoPy0meTfniBMSCEz80xrPyVFzYScRV55E0GwQ1yg6b/0nxXLWTO0tUj4yHd9173I23w7+Dj5AF9cwJVLl+K+TjYxR8q0OtR3i7b6XyqY/HZCWnRuAIbLWAjxcQiX2AQE2kYL7oEsKMzlO8Li8OMD+H6Biq6wAv8rHL1VXuVizQJwqAbklUronyO/BHO9KLoJULGkRTSXbxSUcXB8OEfWJktEpXKI/XroH3kOHXVX3W4rffdHIyIP/3GOdvKoJ9jBv/GBmR2Uu9vNx9tfNU5Uqkq+mKAlFB6LPPLjuXDRv3eANShpGbmDNhGjKFVdsWyBOoFy7mgzEPX6xsFTuPuHKfam9Zqgr25328OLjSfEBHj2uVHr3LMj0Ho5x9e280mk3t+n95LfS7X+wTzSOwy4xHkRFwYuWAuV+FrLloAr97lax0LpWq9NWKPD76hvx8OEMCvR+W5x9G3Hb85RsM8Y3S3kjjOg18Sxzz16bzkH5DUp/SVfMx02ajnjr6GNs=
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700002)(46966006)(36840700001)(86362001)(316002)(8676002)(26005)(70206006)(5660300002)(70586007)(4326008)(8936002)(54906003)(36756003)(110136005)(2906002)(356005)(508600001)(107886003)(6666004)(36860700001)(82310400004)(2616005)(1076003)(336012)(81166007)(186003)(47076005)(7696005)(83380400001)(426003)(40460700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jan 2022 11:04:52.1286
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 75983761-93c9-43e6-950a-08d9cea8dde9
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3903
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/12/2021 04:50, Wen Gu wrote:
-> Thanks for your reply.
-> 
-> On 2021/12/29 9:07 pm, Karsten Graul wrote:
->> On 28/12/2021 08:49, Wen Gu wrote:
->>> SMC connections might fail to be registered to a link group due to
->>> things like unable to find a link to assign to in its creation. As
->>> a result, connection creation will return a failure and most
->>> resources related to the connection won't be applied or initialized,
->>> such as conn->abort_work or conn->lnk.
->> What I do not understand is the extra step after the new label out_unreg: that
->> may invoke smc_lgr_schedule_free_work(). You did not talk about that one.
->> Is the idea to have a new link group get freed() when a connection could not
->> be registered on it?
-> Maybe we should try to free the link group when the registration fails, no matter
-> it is new created or already existing? If so, is it better to do it in the same
-> place like label 'out_unreg'?
+The inner_ipproto saves the inner IP protocol of the plain
+text packet. This allows vendor's IPsec feature making offload
+decision at skb's features_check and configuring hardware at
+ndo_start_xmit, current code implenetation did not handle the
+case where IPsec is used in tunnel mode.
 
-I agree with your idea. 
+Fix by handling the case when IPsec is used in tunnel mode by
+reading the protocol of the plain text packet IP protocol.
 
-With the proposed change that conn->lgr gets not even set when the registration fails 
-we would not need the "conn->lgr = NULL;" after label out_unreg?
+Fixes: fa4535238fb5 ("net/xfrm: Add inner_ipproto into sec_path")
+Change-Id: I8c109cd3f1de1d983b2f49ea5f8f7a403c6023a5
+Signed-off-by: Raed Salem <raeds@nvidia.com>
+---
+ net/xfrm/xfrm_output.c | 30 +++++++++++++++++++++++++-----
+ 1 file changed, 25 insertions(+), 5 deletions(-)
 
-And as far as I understand the invocation of smc_lgr_schedule_free_work(lgr) is only
-needed after label "create", because when an existing link group was found and the registration
-failed then its free work would already be started when no more connections are assigned
-to the link group, right?
+diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+index 229544b..4dc4a7b 100644
+--- a/net/xfrm/xfrm_output.c
++++ b/net/xfrm/xfrm_output.c
+@@ -647,10 +647,12 @@ static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_buff *skb
+  * This requires hardware to know the inner packet type to calculate
+  * the inner header checksum. Save inner ip protocol here to avoid
+  * traversing the packet in the vendor's xmit code.
+- * If the encap type is IPIP, just save skb->inner_ipproto. Otherwise,
+- * get the ip protocol from the IP header.
++ * For IPsec tunnel mode save the ip protocol from the IP header of the
++ * plain text packet. Otherwise If the encap type is IPIP, just save
++ * skb->inner_ipproto in any other case get the ip protocol from the IP
++ * header.
+  */
+-static void xfrm_get_inner_ipproto(struct sk_buff *skb)
++static void xfrm_get_inner_ipproto(struct sk_buff *skb, struct xfrm_state *x)
+ {
+ 	struct xfrm_offload *xo = xfrm_offload(skb);
+ 	const struct ethhdr *eth;
+@@ -658,6 +660,25 @@ static void xfrm_get_inner_ipproto(struct sk_buff *skb)
+ 	if (!xo)
+ 		return;
+ 
++	if (x->outer_mode.encap == XFRM_MODE_TUNNEL) {
++		switch (x->outer_mode.family) {
++		case AF_INET:
++			xo->inner_ipproto = ip_hdr(skb)->protocol;
++			break;
++		case AF_INET6:
++			xo->inner_ipproto = ipv6_hdr(skb)->nexthdr;
++			break;
++		default:
++			break;
++		}
++
++		return;
++	}
++
++	/* non-Tunnel Mode */
++	if (!skb->encapsulation)
++		return;
++
+ 	if (skb->inner_protocol_type == ENCAP_TYPE_IPPROTO) {
+ 		xo->inner_ipproto = skb->inner_ipproto;
+ 		return;
+@@ -712,8 +733,7 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
+ 		sp->xvec[sp->len++] = x;
+ 		xfrm_state_hold(x);
+ 
+-		if (skb->encapsulation)
+-			xfrm_get_inner_ipproto(skb);
++		xfrm_get_inner_ipproto(skb, x);
+ 		skb->encapsulation = 1;
+ 
+ 		if (skb_is_gso(skb)) {
+-- 
+1.8.3.1
 
