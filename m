@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCF6F483908
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 00:26:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEAEE48390A
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 00:26:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230515AbiACX0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 18:26:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47962 "EHLO
+        id S231130AbiACX0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 18:26:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbiACX0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 18:26:02 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B03C061761;
-        Mon,  3 Jan 2022 15:26:02 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id z3so25820852plg.8;
-        Mon, 03 Jan 2022 15:26:02 -0800 (PST)
+        with ESMTP id S230501AbiACX0D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 18:26:03 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79C52C061761;
+        Mon,  3 Jan 2022 15:26:03 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id t187so17104012pfb.11;
+        Mon, 03 Jan 2022 15:26:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=tRbA9VyOjLVvoknHXvMJ6qY2wU3zvdmza99A/Uu0abA=;
-        b=Z+85qpx9leulsSqxTd77xcqihNi07ZXv6tL8A3Hgw2tYFWfVP/c260x2sm6U9fFSpO
-         0yl2Cl5JkdRJk9jumUxYqRXS/DMEt7JJ4B8bA9lhOg0+d8SCV9KxifW6sP5c33G/7Ntu
-         QnpfOjz8/veOsrqB/pluigIMGeZm5UFDUv5tnvMomCW2nizaeGNIhr4sFXdP+hPptzWT
-         EZ31GX8tS5YUyhTZuFtaI+ak528IpmAA+ZG/A5ptzcogkPPF7K4xNkuw9ArsUgpvnQHi
-         exjUXeQArDvach8gHBEK7XDKWtgiA5i+kDpFvRnCy8BMUpAwiHH/dAAVYyPaVKsRQxuw
-         jMPA==
+        bh=nunRUnjuTlZ2TkjRJzWs2h82t5bGSvU4/zGNqg54R6s=;
+        b=cUUBnoXtq1vx7LD8nnJg56cLY42F8nERJOLNmLfhPcDB4ZFAi+MrSkHblqc5Jt73eb
+         8WAJ2tpYfcx+QezaXXTysW0+u+VfN7eukl0rnpEC0+2AL7FMsg64GXSZEJozgQhAFUkI
+         QJlEkow7zpac+ufwnNECt+5LgDMZY0pGUr8vId/kj3Er7VROCVmomfxfskDG6BJ4KcnJ
+         eov8rkeIFGUHRnc7tS6++G0oUNVGJ5Pud0tRA4auQEV3MV12Fqvl701bwoQVTRfsmvFJ
+         RRQpwsp8vJTQNnBzoNovxd03PxLaaGg8TEBBrTkOZZpo4BXCp2x0EcZkKhMaYXMhl0m5
+         PSlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=tRbA9VyOjLVvoknHXvMJ6qY2wU3zvdmza99A/Uu0abA=;
-        b=HCd8tR7kHjHe2F4IOagRvxCZ7agcE0eWO9ZIQPJpwM6Pi+iS05O0ks/fWXilyv35HC
-         swBMRVrv4tfbq16ZZlMMWlXwgx1EbO+EfSAdjLA3ya/4MoKgMP0V1w00M1ARi9vsHJYa
-         flON2jUVIXUxp0JWFmJVr2S59uCvG59caZIlDSuJT8puZweeJOZ/GXf3+PwQwWaWey7S
-         VTuyhRsk63GgdoIip7qEpjmKTTrLX5yTTWVnZFNU9r8YVFZkPXUKKHhDI7h+QQMj6lOq
-         1R40/z3lb3TtTQPY3B19vTcNEFsJvmfZTzS2FPAUaQfc+fzGv+sylgaic5b1rqOE1jp3
-         Qqng==
-X-Gm-Message-State: AOAM532jFl3oNZUnw6SoMyoHkn4WWaQbbAcy3TnRUPxcnoETpwmjE7T0
-        a51c5NX/RbSGBZbdyIjSafnnqXzMcLw=
-X-Google-Smtp-Source: ABdhPJzbFGPyBHeabrShgT2zS30eSrQJFXKU5DFm67QkXsLT06zy66akf3/lXzJuvW6ahfcSQftZkw==
-X-Received: by 2002:a17:902:7443:b0:149:b16d:c527 with SMTP id e3-20020a170902744300b00149b16dc527mr12811751plt.89.1641252361409;
-        Mon, 03 Jan 2022 15:26:01 -0800 (PST)
+        bh=nunRUnjuTlZ2TkjRJzWs2h82t5bGSvU4/zGNqg54R6s=;
+        b=K55KvcvHNHxhPges8DqACqa10LXZgBCdASfEdtggqB0Ns83lmAhIHiNwjc5q2L2l3N
+         3VfQUzX9ppeNyDZUzQ0oLNoXFTuRPmoGty2mVlORv+Nn7CgvpJiBE5oaTLUBH2Y7Y6uT
+         3HDHk5s8gbZ/pGcovJe/RKbeKIpRYcL20rInG2kzjyB9OHRtQNh5/+Ulj5zaUQGlQ+iV
+         ocgLT1XkeNywaoNN2YBRbj9IVK+EVsiCM5KJsWLyulNbQzBi+/0pBQ4gLrc9XYAxXFLO
+         1oGKjOj4Hd1YN0osqXU00Om7I/XyO3OP/jhJ+ADCYusj8X2SDiSPUBHGNV2aC1feboUT
+         NlBA==
+X-Gm-Message-State: AOAM530S7aonyxxkFWqAluMKqgY61SvK8i8sPMahFfS6uAbe+b7kGSQb
+        xEV98OT0BNP3ceZLBcy5LXIad2YWRKs=
+X-Google-Smtp-Source: ABdhPJzpzuFJv3nBIb7tK8IXIzoyfa98OakrwcFZCAI4dRsFtuolDGYYNvE/uyeEWjFtL3daFee9ng==
+X-Received: by 2002:a63:154f:: with SMTP id 15mr41804582pgv.521.1641252362841;
+        Mon, 03 Jan 2022 15:26:02 -0800 (PST)
 Received: from localhost.localdomain ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id k6sm41340191pff.106.2022.01.03.15.26.00
+        by smtp.gmail.com with ESMTPSA id k6sm41340191pff.106.2022.01.03.15.26.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Jan 2022 15:26:01 -0800 (PST)
+        Mon, 03 Jan 2022 15:26:02 -0800 (PST)
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
@@ -58,9 +58,9 @@ Cc:     linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Miroslav Lichvar <mlichvar@redhat.com>,
         Russell King <linux@arm.linux.org.uk>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping layer be selectable.
-Date:   Mon,  3 Jan 2022 15:25:54 -0800
-Message-Id: <20220103232555.19791-4-richardcochran@gmail.com>
+Subject: [PATCH RFC V1 net-next 4/4] net: fix up drivers WRT phy time stamping
+Date:   Mon,  3 Jan 2022 15:25:55 -0800
+Message-Id: <20220103232555.19791-5-richardcochran@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -68,224 +68,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make the sysfs knob writable, and add checks in the ioctl and time
-stamping paths to respect the currently selected time stamping layer.
+For "git bisect" correctness, this patch should be squashed in to the
+previous one, but it is broken out here for the purpose of review.
 
 Signed-off-by: Richard Cochran <richardcochran@gmail.com>
 ---
- .../ABI/testing/sysfs-class-net-timestamping  |  5 +-
- net/core/dev_ioctl.c                          | 44 ++++++++++++++--
- net/core/net-sysfs.c                          | 50 +++++++++++++++++--
- net/core/timestamping.c                       |  6 +++
- net/ethtool/common.c                          | 18 +++++--
- 5 files changed, 111 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/freescale/fec_main.c | 23 +++++++++-----------
+ drivers/net/ethernet/mscc/ocelot_net.c    | 21 +++++++++---------
+ drivers/net/ethernet/ti/cpsw_priv.c       | 12 +++++------
+ drivers/net/ethernet/ti/netcp_ethss.c     | 26 +++++------------------
+ drivers/net/macvlan.c                     |  4 +---
+ 5 files changed, 32 insertions(+), 54 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-class-net-timestamping b/Documentation/ABI/testing/sysfs-class-net-timestamping
-index 529c3a6eb607..6dfd59740cad 100644
---- a/Documentation/ABI/testing/sysfs-class-net-timestamping
-+++ b/Documentation/ABI/testing/sysfs-class-net-timestamping
-@@ -11,7 +11,10 @@ What:		/sys/class/net/<iface>/current_timestamping_provider
- Date:		January 2022
- Contact:	Richard Cochran <richardcochran@gmail.com>
- Description:
--		Show the current SO_TIMESTAMPING provider.
-+		Shows or sets the current SO_TIMESTAMPING provider.
-+		When changing the value, some packets in the kernel
-+		networking stack may still be delivered with time
-+		stamps from the previous provider.
- 		The possible values are:
- 		- "mac"  The MAC provides time stamping.
- 		- "phy"  The PHY or MII device provides time stamping.
-diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-index 1b807d119da5..269068ce3a51 100644
---- a/net/core/dev_ioctl.c
-+++ b/net/core/dev_ioctl.c
-@@ -260,6 +260,43 @@ static int dev_eth_ioctl(struct net_device *dev,
- 	return err;
- }
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 796133de527e..2f62990f9ced 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -2935,22 +2935,19 @@ static int fec_enet_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
+ 	if (!netif_running(ndev))
+ 		return -EINVAL;
  
-+static int dev_hwtstamp_ioctl(struct net_device *dev,
-+			      struct ifreq *ifr, unsigned int cmd)
-+{
-+	const struct net_device_ops *ops = dev->netdev_ops;
-+	int err;
++	switch (cmd) {
++	case SIOCSHWTSTAMP:
++		return fep->bufdesc_ex ? fec_ptp_set(ndev, rq) :
++		-EOPNOTSUPP;
 +
-+	err = dsa_ndo_eth_ioctl(dev, ifr, cmd);
-+	if (err == 0 || err != -EOPNOTSUPP)
-+		return err;
-+
-+	if (!netif_device_present(dev))
-+		return -ENODEV;
-+
-+	switch (dev->selected_timestamping_layer) {
-+
-+	case MAC_TIMESTAMPING:
-+		if (ops->ndo_do_ioctl == phy_do_ioctl) {
-+			/* Some drivers set .ndo_do_ioctl to phy_do_ioctl. */
-+			err = -EOPNOTSUPP;
-+		} else {
-+			err = ops->ndo_eth_ioctl(dev, ifr, cmd);
-+		}
-+		break;
-+
-+	case PHY_TIMESTAMPING:
-+		if (phy_has_hwtstamp(dev->phydev)) {
-+			err = phy_mii_ioctl(dev->phydev, ifr, cmd);
-+		} else {
-+			err = -ENODEV;
-+			WARN_ON(1);
-+		}
-+		break;
++	case SIOCGHWTSTAMP:
++		return fep->bufdesc_ex ? fec_ptp_get(ndev, rq) :
++		-EOPNOTSUPP;
 +	}
 +
-+	return err;
-+}
-+
- static int dev_siocbond(struct net_device *dev,
- 			struct ifreq *ifr, unsigned int cmd)
- {
-@@ -395,6 +432,9 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
- 			return err;
- 		fallthrough;
+ 	if (!phydev)
+ 		return -ENODEV;
  
+-	if (fep->bufdesc_ex) {
+-		bool use_fec_hwts = !phy_has_hwtstamp(phydev);
+-
+-		if (cmd == SIOCSHWTSTAMP) {
+-			if (use_fec_hwts)
+-				return fec_ptp_set(ndev, rq);
+-			fec_ptp_disable_hwts(ndev);
+-		} else if (cmd == SIOCGHWTSTAMP) {
+-			if (use_fec_hwts)
+-				return fec_ptp_get(ndev, rq);
+-		}
+-	}
+-
+ 	return phy_mii_ioctl(phydev, rq, cmd);
+ }
+ 
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index 8115c3db252e..d9a0988404d0 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -755,18 +755,19 @@ static int ocelot_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	struct ocelot *ocelot = priv->port.ocelot;
+ 	int port = priv->chip_port;
+ 
+-	/* If the attached PHY device isn't capable of timestamping operations,
+-	 * use our own (when possible).
+-	 */
+-	if (!phy_has_hwtstamp(dev->phydev) && ocelot->ptp) {
+-		switch (cmd) {
+-		case SIOCSHWTSTAMP:
+-			return ocelot_hwstamp_set(ocelot, port, ifr);
+-		case SIOCGHWTSTAMP:
+-			return ocelot_hwstamp_get(ocelot, port, ifr);
+-		}
++	switch (cmd) {
++	case SIOCSHWTSTAMP:
++		return ocelot->ptp ? ocelot_hwstamp_set(ocelot, port, ifr) :
++		-EOPNOTSUPP;
++
 +	case SIOCGHWTSTAMP:
-+		return dev_hwtstamp_ioctl(dev, ifr, cmd);
-+
- 	/*
- 	 *	Unknown or private ioctl
- 	 */
-@@ -405,9 +445,7 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
- 
- 		if (cmd == SIOCGMIIPHY ||
- 		    cmd == SIOCGMIIREG ||
--		    cmd == SIOCSMIIREG ||
--		    cmd == SIOCSHWTSTAMP ||
--		    cmd == SIOCGHWTSTAMP) {
-+		    cmd == SIOCSMIIREG) {
- 			err = dev_eth_ioctl(dev, ifr, cmd);
- 		} else if (cmd == SIOCBONDENSLAVE ||
- 		    cmd == SIOCBONDRELEASE ||
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 4ff7ef417c38..c27f01a1a285 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -664,17 +664,59 @@ static ssize_t current_timestamping_provider_show(struct device *dev,
- 	if (!rtnl_trylock())
- 		return restart_syscall();
- 
--	if (phy_has_tsinfo(phydev)) {
--		ret = sprintf(buf, "%s\n", "phy");
--	} else {
-+	switch (netdev->selected_timestamping_layer) {
-+	case MAC_TIMESTAMPING:
- 		ret = sprintf(buf, "%s\n", "mac");
-+		break;
-+	case PHY_TIMESTAMPING:
-+		ret = sprintf(buf, "%s\n", "phy");
-+		break;
++		return ocelot->ptp ? ocelot_hwstamp_get(ocelot, port, ifr) :
++		-EOPNOTSUPP;
  	}
  
- 	rtnl_unlock();
- 
- 	return ret;
- }
--static DEVICE_ATTR_RO(current_timestamping_provider);
-+
-+static ssize_t current_timestamping_provider_store(struct device *dev,
-+						   struct device_attribute *attr,
-+						   const char *buf, size_t len)
-+{
-+	struct net_device *netdev = to_net_dev(dev);
-+	struct net *net = dev_net(netdev);
-+	enum timestamping_layer flavor;
-+
-+	if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
-+		return -EPERM;
-+
-+	if (!strcmp(buf, "mac\n"))
-+		flavor = MAC_TIMESTAMPING;
-+	else if (!strcmp(buf, "phy\n"))
-+		flavor = PHY_TIMESTAMPING;
-+	else
-+		return -EINVAL;
-+
-+	if (!rtnl_trylock())
-+		return restart_syscall();
-+
-+	if (!dev_isalive(netdev))
-+		goto out;
-+
-+	if (netdev->selected_timestamping_layer != flavor) {
-+		const struct net_device_ops *ops = netdev->netdev_ops;
-+		struct ifreq ifr = {0};
-+
-+		/* Disable time stamping in the current layer. */
-+		if (netif_device_present(netdev) && ops->ndo_eth_ioctl)
-+			ops->ndo_eth_ioctl(netdev, &ifr, SIOCSHWTSTAMP);
-+
-+		netdev->selected_timestamping_layer = flavor;
-+	}
-+out:
-+	rtnl_unlock();
-+	return len;
-+}
-+static DEVICE_ATTR_RW(current_timestamping_provider);
- 
- static struct attribute *net_class_attrs[] __ro_after_init = {
- 	&dev_attr_netdev_group.attr,
-diff --git a/net/core/timestamping.c b/net/core/timestamping.c
-index 04840697fe79..31c3142787b7 100644
---- a/net/core/timestamping.c
-+++ b/net/core/timestamping.c
-@@ -28,6 +28,9 @@ void skb_clone_tx_timestamp(struct sk_buff *skb)
- 	if (!skb->sk)
- 		return;
- 
-+	if (skb->dev->selected_timestamping_layer != PHY_TIMESTAMPING)
-+		return;
-+
- 	type = classify(skb);
- 	if (type == PTP_CLASS_NONE)
- 		return;
-@@ -50,6 +53,9 @@ bool skb_defer_rx_timestamp(struct sk_buff *skb)
- 	if (!skb->dev || !skb->dev->phydev || !skb->dev->phydev->mii_ts)
- 		return false;
- 
-+	if (skb->dev->selected_timestamping_layer != PHY_TIMESTAMPING)
-+		return false;
-+
- 	if (skb_headroom(skb) < ETH_HLEN)
- 		return false;
- 
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index 651d18eef589..7b50820c1d1d 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -545,10 +545,20 @@ int __ethtool_get_ts_info(struct net_device *dev, struct ethtool_ts_info *info)
- 	memset(info, 0, sizeof(*info));
- 	info->cmd = ETHTOOL_GET_TS_INFO;
- 
--	if (phy_has_tsinfo(phydev))
--		return phy_ts_info(phydev, info);
--	if (ops->get_ts_info)
--		return ops->get_ts_info(dev, info);
-+	switch (dev->selected_timestamping_layer) {
-+
-+	case MAC_TIMESTAMPING:
-+		if (ops->get_ts_info)
-+			return ops->get_ts_info(dev, info);
-+		break;
-+
-+	case PHY_TIMESTAMPING:
-+		if (phy_has_tsinfo(phydev)) {
-+			return phy_ts_info(phydev, info);
-+		}
-+		WARN_ON(1);
++	if (!dev->phydev)
 +		return -ENODEV;
-+	}
++
+ 	return phy_mii_ioctl(dev->phydev, ifr, cmd);
+ }
  
- 	info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
- 				SOF_TIMESTAMPING_SOFTWARE;
+diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+index 8624a044776f..5825efc6426e 100644
+--- a/drivers/net/ethernet/ti/cpsw_priv.c
++++ b/drivers/net/ethernet/ti/cpsw_priv.c
+@@ -713,13 +713,11 @@ int cpsw_ndo_ioctl(struct net_device *dev, struct ifreq *req, int cmd)
+ 
+ 	phy = cpsw->slaves[slave_no].phy;
+ 
+-	if (!phy_has_hwtstamp(phy)) {
+-		switch (cmd) {
+-		case SIOCSHWTSTAMP:
+-			return cpsw_hwtstamp_set(dev, req);
+-		case SIOCGHWTSTAMP:
+-			return cpsw_hwtstamp_get(dev, req);
+-		}
++	switch (cmd) {
++	case SIOCSHWTSTAMP:
++		return cpsw_hwtstamp_set(dev, req);
++	case SIOCGHWTSTAMP:
++		return cpsw_hwtstamp_get(dev, req);
+ 	}
+ 
+ 	if (phy)
+diff --git a/drivers/net/ethernet/ti/netcp_ethss.c b/drivers/net/ethernet/ti/netcp_ethss.c
+index 751fb0bc65c5..36ce80f8bd6b 100644
+--- a/drivers/net/ethernet/ti/netcp_ethss.c
++++ b/drivers/net/ethernet/ti/netcp_ethss.c
+@@ -2557,15 +2557,6 @@ static int gbe_txtstamp_mark_pkt(struct gbe_intf *gbe_intf,
+ 	    !gbe_dev->tx_ts_enabled)
+ 		return 0;
+ 
+-	/* If phy has the txtstamp api, assume it will do it.
+-	 * We mark it here because skb_tx_timestamp() is called
+-	 * after all the txhooks are called.
+-	 */
+-	if (phy_has_txtstamp(phydev)) {
+-		skb_shinfo(p_info->skb)->tx_flags |= SKBTX_IN_PROGRESS;
+-		return 0;
+-	}
+-
+ 	if (gbe_need_txtstamp(gbe_intf, p_info)) {
+ 		p_info->txtstamp = gbe_txtstamp;
+ 		p_info->ts_context = (void *)gbe_intf;
+@@ -2583,11 +2574,6 @@ static int gbe_rxtstamp(struct gbe_intf *gbe_intf, struct netcp_packet *p_info)
+ 	if (p_info->rxtstamp_complete)
+ 		return 0;
+ 
+-	if (phy_has_rxtstamp(phydev)) {
+-		p_info->rxtstamp_complete = true;
+-		return 0;
+-	}
+-
+ 	if (gbe_dev->rx_ts_enabled)
+ 		cpts_rx_timestamp(gbe_dev->cpts, p_info->skb);
+ 
+@@ -2821,13 +2807,11 @@ static int gbe_ioctl(void *intf_priv, struct ifreq *req, int cmd)
+ 	struct gbe_intf *gbe_intf = intf_priv;
+ 	struct phy_device *phy = gbe_intf->slave->phy;
+ 
+-	if (!phy_has_hwtstamp(phy)) {
+-		switch (cmd) {
+-		case SIOCGHWTSTAMP:
+-			return gbe_hwtstamp_get(gbe_intf, req);
+-		case SIOCSHWTSTAMP:
+-			return gbe_hwtstamp_set(gbe_intf, req);
+-		}
++	switch (cmd) {
++	case SIOCGHWTSTAMP:
++		return gbe_hwtstamp_get(gbe_intf, req);
++	case SIOCSHWTSTAMP:
++		return gbe_hwtstamp_set(gbe_intf, req);
+ 	}
+ 
+ 	if (phy)
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 6ef5f77be4d0..13264c3e4192 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -1055,9 +1055,7 @@ static int macvlan_ethtool_get_ts_info(struct net_device *dev,
+ 	const struct ethtool_ops *ops = real_dev->ethtool_ops;
+ 	struct phy_device *phydev = real_dev->phydev;
+ 
+-	if (phy_has_tsinfo(phydev)) {
+-		return phy_ts_info(phydev, info);
+-	} else if (ops->get_ts_info) {
++	if (ops->get_ts_info) {
+ 		return ops->get_ts_info(real_dev, info);
+ 	} else {
+ 		info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
 -- 
 2.20.1
 
