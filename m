@@ -2,214 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A99D7483579
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:20:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC6C1483564
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:12:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235196AbiACRUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 12:20:33 -0500
-Received: from simonwunderlich.de ([23.88.38.48]:33888 "EHLO
-        simonwunderlich.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233102AbiACRUd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:20:33 -0500
-Received: from kero.packetmixer.de (p200300C597476fc09Af9dad664F33736.dip0.t-ipconnect.de [IPv6:2003:c5:9747:6fc0:9af9:dad6:64f3:3736])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S235121AbiACRM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 12:12:26 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52826 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232507AbiACRMZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:12:25 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by simonwunderlich.de (Postfix) with ESMTPSA id AC149FA1B7;
-        Mon,  3 Jan 2022 18:12:07 +0100 (CET)
-From:   Simon Wunderlich <sw@simonwunderlich.de>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
-        =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 1/1] batman-adv: mcast: don't send link-local multicast to mcast routers
-Date:   Mon,  3 Jan 2022 18:12:03 +0100
-Message-Id: <20220103171203.1124980-2-sw@simonwunderlich.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220103171203.1124980-1-sw@simonwunderlich.de>
-References: <20220103171203.1124980-1-sw@simonwunderlich.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2FD761169;
+        Mon,  3 Jan 2022 17:12:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8D1EC36AED;
+        Mon,  3 Jan 2022 17:12:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641229944;
+        bh=uhzW4lvNDD6+3QU4kFJO1P9RzyroNM4hVqwkOjyflFc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=M2C4rtgqdlCu80hsauE4XK+QHhJS7coc0dG8D+GRHVmz+dhBJhEe420k0mRD4iAEI
+         xOWmfPnKDsIyz77uSNyGOUws/sy3crm7/DAd1KEF9GjPq08NNiSjb6U54ynMJrIWHy
+         f/OZpQCx2j47wmbEe4n8yBwdimxTuceHV2Qp2Y1Silre2Bm0PZYlmwXPZK3b/4cdrD
+         DfOuOSgp3sHu6qu8n7mFOCGgt/J9td/TAUPxJeivcuxGpoW93XWc5mon48pw3oBf0f
+         fyKZYCkUoa8DQPXitZLAEk96xKCJ4pGtaluKai+8pBlNSgpvCyZw5DFVqHUeRiCO96
+         Qrp9IL1RHhqLg==
+Date:   Mon, 3 Jan 2022 09:12:22 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saurav Kashyap <skashyap@marvell.com>
+Cc:     Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Javed Hasan <jhasan@marvell.com>,
+        GR-QLogic-Storage-Upstream <GR-QLogic-Storage-Upstream@marvell.com>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [EXT] [PATCH] scsi: qedf: potential dereference of null pointer
+Message-ID: <20220103091222.194ef58f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <DM6PR18MB30344528373170A95E67B50CD2499@DM6PR18MB3034.namprd18.prod.outlook.com>
+References: <20211216101449.375953-1-jiasheng@iscas.ac.cn>
+        <DM6PR18MB30344528373170A95E67B50CD2499@DM6PR18MB3034.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Linus Lüssing <linus.luessing@c0d3.blue>
+On Mon, 3 Jan 2022 04:58:41 +0000 Saurav Kashyap wrote:
+> > QEDF_TERM_BUFF_SIZE,
+> >  		&term_params_dma, GFP_KERNEL);
+> > +	if (!term_params)
+> > +		return;  
+> 
+> <SK> Adding message about failure before returning will help in debugging.
 
-The addition of routable multicast TX handling introduced a
-bug/regression for packets with a link-local multicast destination:
-These packets would be sent to all batman-adv nodes with a multicast
-router and to all batman-adv nodes with an old version without multicast
-router detection.
-
-This even disregards the batman-adv multicast fanout setting, which can
-potentially lead to an unwanted, high number of unicast transmissions or
-even congestion.
-
-Fixing this by avoiding to send link-local multicast packets to nodes in
-the multicast router list.
-
-Fixes: 11d458c1cb9b ("batman-adv: mcast: apply optimizations for routable packets, too")
-Signed-off-by: Linus Lüssing <linus.luessing@c0d3.blue>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
----
- net/batman-adv/multicast.c      | 15 ++++++++++-----
- net/batman-adv/multicast.h      | 10 ++++++----
- net/batman-adv/soft-interface.c |  7 +++++--
- 3 files changed, 21 insertions(+), 11 deletions(-)
-
-diff --git a/net/batman-adv/multicast.c b/net/batman-adv/multicast.c
-index 433901dcf0c3..f4004cf0ff6f 100644
---- a/net/batman-adv/multicast.c
-+++ b/net/batman-adv/multicast.c
-@@ -1339,6 +1339,7 @@ batadv_mcast_forw_rtr_node_get(struct batadv_priv *bat_priv,
-  * @bat_priv: the bat priv with all the soft interface information
-  * @skb: The multicast packet to check
-  * @orig: an originator to be set to forward the skb to
-+ * @is_routable: stores whether the destination is routable
-  *
-  * Return: the forwarding mode as enum batadv_forw_mode and in case of
-  * BATADV_FORW_SINGLE set the orig to the single originator the skb
-@@ -1346,17 +1347,16 @@ batadv_mcast_forw_rtr_node_get(struct batadv_priv *bat_priv,
-  */
- enum batadv_forw_mode
- batadv_mcast_forw_mode(struct batadv_priv *bat_priv, struct sk_buff *skb,
--		       struct batadv_orig_node **orig)
-+		       struct batadv_orig_node **orig, int *is_routable)
- {
- 	int ret, tt_count, ip_count, unsnoop_count, total_count;
- 	bool is_unsnoopable = false;
- 	unsigned int mcast_fanout;
- 	struct ethhdr *ethhdr;
--	int is_routable = 0;
- 	int rtr_count = 0;
- 
- 	ret = batadv_mcast_forw_mode_check(bat_priv, skb, &is_unsnoopable,
--					   &is_routable);
-+					   is_routable);
- 	if (ret == -ENOMEM)
- 		return BATADV_FORW_NONE;
- 	else if (ret < 0)
-@@ -1369,7 +1369,7 @@ batadv_mcast_forw_mode(struct batadv_priv *bat_priv, struct sk_buff *skb,
- 	ip_count = batadv_mcast_forw_want_all_ip_count(bat_priv, ethhdr);
- 	unsnoop_count = !is_unsnoopable ? 0 :
- 			atomic_read(&bat_priv->mcast.num_want_all_unsnoopables);
--	rtr_count = batadv_mcast_forw_rtr_count(bat_priv, is_routable);
-+	rtr_count = batadv_mcast_forw_rtr_count(bat_priv, *is_routable);
- 
- 	total_count = tt_count + ip_count + unsnoop_count + rtr_count;
- 
-@@ -1689,6 +1689,7 @@ batadv_mcast_forw_want_rtr(struct batadv_priv *bat_priv,
-  * @bat_priv: the bat priv with all the soft interface information
-  * @skb: the multicast packet to transmit
-  * @vid: the vlan identifier
-+ * @is_routable: stores whether the destination is routable
-  *
-  * Sends copies of a frame with multicast destination to any node that signaled
-  * interest in it, that is either via the translation table or the according
-@@ -1701,7 +1702,7 @@ batadv_mcast_forw_want_rtr(struct batadv_priv *bat_priv,
-  * is neither IPv4 nor IPv6. NET_XMIT_SUCCESS otherwise.
-  */
- int batadv_mcast_forw_send(struct batadv_priv *bat_priv, struct sk_buff *skb,
--			   unsigned short vid)
-+			   unsigned short vid, int is_routable)
- {
- 	int ret;
- 
-@@ -1717,12 +1718,16 @@ int batadv_mcast_forw_send(struct batadv_priv *bat_priv, struct sk_buff *skb,
- 		return ret;
- 	}
- 
-+	if (!is_routable)
-+		goto skip_mc_router;
-+
- 	ret = batadv_mcast_forw_want_rtr(bat_priv, skb, vid);
- 	if (ret != NET_XMIT_SUCCESS) {
- 		kfree_skb(skb);
- 		return ret;
- 	}
- 
-+skip_mc_router:
- 	consume_skb(skb);
- 	return ret;
- }
-diff --git a/net/batman-adv/multicast.h b/net/batman-adv/multicast.h
-index 9fee5da08311..8aec818d0bf6 100644
---- a/net/batman-adv/multicast.h
-+++ b/net/batman-adv/multicast.h
-@@ -43,7 +43,8 @@ enum batadv_forw_mode {
- 
- enum batadv_forw_mode
- batadv_mcast_forw_mode(struct batadv_priv *bat_priv, struct sk_buff *skb,
--		       struct batadv_orig_node **mcast_single_orig);
-+		       struct batadv_orig_node **mcast_single_orig,
-+		       int *is_routable);
- 
- int batadv_mcast_forw_send_orig(struct batadv_priv *bat_priv,
- 				struct sk_buff *skb,
-@@ -51,7 +52,7 @@ int batadv_mcast_forw_send_orig(struct batadv_priv *bat_priv,
- 				struct batadv_orig_node *orig_node);
- 
- int batadv_mcast_forw_send(struct batadv_priv *bat_priv, struct sk_buff *skb,
--			   unsigned short vid);
-+			   unsigned short vid, int is_routable);
- 
- void batadv_mcast_init(struct batadv_priv *bat_priv);
- 
-@@ -68,7 +69,8 @@ void batadv_mcast_purge_orig(struct batadv_orig_node *orig_node);
- 
- static inline enum batadv_forw_mode
- batadv_mcast_forw_mode(struct batadv_priv *bat_priv, struct sk_buff *skb,
--		       struct batadv_orig_node **mcast_single_orig)
-+		       struct batadv_orig_node **mcast_single_orig,
-+		       int *is_routable)
- {
- 	return BATADV_FORW_ALL;
- }
-@@ -85,7 +87,7 @@ batadv_mcast_forw_send_orig(struct batadv_priv *bat_priv,
- 
- static inline int
- batadv_mcast_forw_send(struct batadv_priv *bat_priv, struct sk_buff *skb,
--		       unsigned short vid)
-+		       unsigned short vid, int is_routable)
- {
- 	kfree_skb(skb);
- 	return NET_XMIT_DROP;
-diff --git a/net/batman-adv/soft-interface.c b/net/batman-adv/soft-interface.c
-index 7ee09337fc40..2dbbe6c19609 100644
---- a/net/batman-adv/soft-interface.c
-+++ b/net/batman-adv/soft-interface.c
-@@ -198,6 +198,7 @@ static netdev_tx_t batadv_interface_tx(struct sk_buff *skb,
- 	int gw_mode;
- 	enum batadv_forw_mode forw_mode = BATADV_FORW_SINGLE;
- 	struct batadv_orig_node *mcast_single_orig = NULL;
-+	int mcast_is_routable = 0;
- 	int network_offset = ETH_HLEN;
- 	__be16 proto;
- 
-@@ -300,7 +301,8 @@ static netdev_tx_t batadv_interface_tx(struct sk_buff *skb,
- send:
- 		if (do_bcast && !is_broadcast_ether_addr(ethhdr->h_dest)) {
- 			forw_mode = batadv_mcast_forw_mode(bat_priv, skb,
--							   &mcast_single_orig);
-+							   &mcast_single_orig,
-+							   &mcast_is_routable);
- 			if (forw_mode == BATADV_FORW_NONE)
- 				goto dropped;
- 
-@@ -359,7 +361,8 @@ static netdev_tx_t batadv_interface_tx(struct sk_buff *skb,
- 			ret = batadv_mcast_forw_send_orig(bat_priv, skb, vid,
- 							  mcast_single_orig);
- 		} else if (forw_mode == BATADV_FORW_SOME) {
--			ret = batadv_mcast_forw_send(bat_priv, skb, vid);
-+			ret = batadv_mcast_forw_send(bat_priv, skb, vid,
-+						     mcast_is_routable);
- 		} else {
- 			if (batadv_dat_snoop_outgoing_arp_request(bat_priv,
- 								  skb))
--- 
-2.30.2
-
+Memory allocations produce a pretty detailed splat.
