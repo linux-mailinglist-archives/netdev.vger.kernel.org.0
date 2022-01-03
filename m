@@ -2,80 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EA6648367B
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:56:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53D82483679
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:56:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233879AbiACR4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 12:56:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59528 "EHLO
+        id S230489AbiACR4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 12:56:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233635AbiACR4m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:56:42 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A960C061784
-        for <netdev@vger.kernel.org>; Mon,  3 Jan 2022 09:56:42 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id g7-20020a7bc4c7000000b00345c4bb365aso18752815wmk.4
-        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 09:56:42 -0800 (PST)
+        with ESMTP id S233928AbiACR4n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:56:43 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B026C061785
+        for <netdev@vger.kernel.org>; Mon,  3 Jan 2022 09:56:43 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id r17so71290182wrc.3
+        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 09:56:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6WMK9r9U40TC3q1VP7bdOOZDIr/rVvLVzPk/2iDskuQ=;
-        b=vOJu7+LvPnji/6CMcHF1ZEi/tNY0JzDumoerl3uWTrZlBM31/cVL0gPqHe0QWNrqEu
-         OukXRNTrYFCXcJJCXcccdIUv/wAP5Edbi4Mhd5Cu/C5Xd4RdfanHnNmpFP8qlkhx9+Ge
-         hmO8fe57tgdsyVDZOsROxdE5MJd4z40FGK/KNHF2ZkXarBuoivACBbbRMk/s30nKEM8w
-         RaXGuo21q3nC1wxfppyiosK1sDcAZqC5PfeUtmbn8/lDoCLPxSKYC1WnrEgPVz5gDnXs
-         NkCQ1AwCjGSdVxrHNUlrLsj2Pm88RjtfkHI6JYyDEsiTggNKoN+1Yka3y+ZGtr+QBnzZ
-         RNLQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=neH7i+26OYLpeC5cMlHViFNMwrfPO3xPJ5Z7DAt5pN8=;
+        b=XvTHDJevsy0ZSrMi+se2sklxBwlITB/hybQLSG/lMV6WXD0xQn+yILwcirk/NVHH8N
+         y5cSTYrKo/Z515VeTJsDn3ON6gufP4KRJNeoc3luWerqUVvGFkKB06JcyTcrTCIl9l/M
+         ygPKlJgUlChyH36b8GV0ox/Isxi8z+lV1ckPQPQwDphX+q42mcFH3qe18mDTe+OGrF2+
+         QyVmUvkcCSigenymoDPRF6E8uDgEnoyqfXlM77ZRQn26WSGFn9RyGSrbmDd1zy/Dm7LT
+         0Y5Wfi/pkxGViP79Io2eyNB5PH2dc04N5zhpKGpYuXUmB0YGFnVUWaNDI0AXO5xtoZjW
+         vcVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6WMK9r9U40TC3q1VP7bdOOZDIr/rVvLVzPk/2iDskuQ=;
-        b=h6c8IU5DuC3X8y428WncjvEojjKHwZ4CmZaSM6a0n2tYauknffsBIt25WFi8PQDlls
-         h6lvp1Mvje4Z9viN1oVQO0RTC7dldD5NMyJEo1b6X0rPdDqs7iC1FNp9TU0/Td5SlQhP
-         KKfOAotnv2EuMpl2gsdvlwELKMrrpykGsRbzgvlIiKh6wZKyTxJp30N13LGGeq++Dy/Q
-         NpTYc52wXgTvIuzZpZj5HnhMmkx15I8PJSHoyvJRPPR+V+leX84craMNwEoclos2IbZg
-         ZJXqt8vxv0/ht3W1lSPeIA9It4PCnE+Cqc2sU+DZkW8DQ82bE325BwLv9lDXdUa+uWik
-         6Daw==
-X-Gm-Message-State: AOAM531Wyviu+4j70krnksNv/xD8h2XXZU1WmaOgeR0f0PpsiT3yJasu
-        B03sLOrojHt7HF4iCO2bX1f15w==
-X-Google-Smtp-Source: ABdhPJxLb2ZC1xXpCfFP6Tqr5DY5BlCu/MTHXlOBRaDiFcQM3Abd5EiKgwYAYFl7qmLi4DwRApdIRA==
-X-Received: by 2002:a05:600c:acf:: with SMTP id c15mr37063822wmr.7.1641232600541;
-        Mon, 03 Jan 2022 09:56:40 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=neH7i+26OYLpeC5cMlHViFNMwrfPO3xPJ5Z7DAt5pN8=;
+        b=m/dFQ4+Kdn3jQWJ1XDwXoIStp1F4tOndGWXmRyNH8SvN8KSFrYHuih0m4ZmVnVJMSM
+         aJis+K9AicJLo40vbWyStmHNQSVzsHhuEdQyTWuafTcrZ8LNOnLDGLzV4rzLU6WJuLtj
+         1LJtRW+bMFuNW48UhM+qN1R4bYyluas/LelInR8FTLvsB9tInNQgObSNnhXBjeu3rAtQ
+         p6e2gtsv/kpXL0EsnIjVjSeNswF8oAXiUMeGUpEgECwZEIWQq+Oxn/Qw0mz5ico7LNAJ
+         vfCez4S8tBceZM5s/9fy/d8VSDFN8HJ2kU3uTQcaoxOxI/iWvNYdu1ZWr+KgE+Zew4/l
+         047w==
+X-Gm-Message-State: AOAM532ec97kG5A8YfKawijoRu3oqfSjeAnMwZWyD7fxi5eU93Ou9jFG
+        c+4lSl74YSyLV9ebc1Q2O225IQ==
+X-Google-Smtp-Source: ABdhPJw7NRuoQzYialN/ofxRojlC+rMlNFgTAaoktigERArvcxUcZfxMwsO4ZIqBe2qOY/2d56FPug==
+X-Received: by 2002:a05:6000:2a4:: with SMTP id l4mr40910111wry.460.1641232601515;
+        Mon, 03 Jan 2022 09:56:41 -0800 (PST)
 Received: from localhost.localdomain ([2001:861:44c0:66c0:7c9d:a967:38e2:5220])
-        by smtp.gmail.com with ESMTPSA id f13sm35763228wri.51.2022.01.03.09.56.39
+        by smtp.gmail.com with ESMTPSA id f13sm35763228wri.51.2022.01.03.09.56.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Mon, 03 Jan 2022 09:56:40 -0800 (PST)
 From:   Neil Armstrong <narmstrong@baylibre.com>
-To:     davem@davemloft.net
+To:     davem@davemloft.net, devicetree@vger.kernel.org
 Cc:     Neil Armstrong <narmstrong@baylibre.com>, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-oxnas@groups.io,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] ARM: ox810se: Add Ethernet support
-Date:   Mon,  3 Jan 2022 18:56:35 +0100
-Message-Id: <20220103175638.89625-1-narmstrong@baylibre.com>
+Subject: [PATCH net-next 1/3] dt-bindings: net: oxnas-dwmac: Add bindings for OX810SE
+Date:   Mon,  3 Jan 2022 18:56:36 +0100
+Message-Id: <20220103175638.89625-2-narmstrong@baylibre.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220103175638.89625-1-narmstrong@baylibre.com>
+References: <20220103175638.89625-1-narmstrong@baylibre.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds support for the Synopsys DWMAC controller found in the
-OX820SE SoC, by using almost the same glue code as the OX820.
+Add SoC specific bindings for OX810SE support.
 
-Neil Armstrong (3):
-  dt-bindings: net: oxnas-dwmac: Add bindings for OX810SE
-  net: stmmac: dwmac-oxnas: Add support for OX810SE
-  ARM: dts: ox810se: Add Ethernet support
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ Documentation/devicetree/bindings/net/oxnas-dwmac.txt | 3 +++
+ 1 file changed, 3 insertions(+)
 
- .../devicetree/bindings/net/oxnas-dwmac.txt   |  3 +
- arch/arm/boot/dts/ox810se-wd-mbwe.dts         |  4 +
- arch/arm/boot/dts/ox810se.dtsi                | 18 ++++
- .../net/ethernet/stmicro/stmmac/dwmac-oxnas.c | 92 ++++++++++++++-----
- 4 files changed, 95 insertions(+), 22 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/oxnas-dwmac.txt b/Documentation/devicetree/bindings/net/oxnas-dwmac.txt
+index d7117a22fd87..27db496f1ce8 100644
+--- a/Documentation/devicetree/bindings/net/oxnas-dwmac.txt
++++ b/Documentation/devicetree/bindings/net/oxnas-dwmac.txt
+@@ -9,6 +9,9 @@ Required properties on all platforms:
+ - compatible:	For the OX820 SoC, it should be :
+ 		- "oxsemi,ox820-dwmac" to select glue
+ 		- "snps,dwmac-3.512" to select IP version.
++		For the OX810SE SoC, it should be :
++		- "oxsemi,ox810se-dwmac" to select glue
++		- "snps,dwmac-3.512" to select IP version.
+ 
+ - clocks: Should contain phandles to the following clocks
+ - clock-names:	Should contain the following:
 -- 
 2.25.1
 
