@@ -2,92 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C971482E78
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 07:27:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DDC4482F19
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 09:47:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231865AbiACG1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 01:27:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
+        id S232249AbiACIrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 03:47:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbiACG1h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 01:27:37 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FBB9C061761;
-        Sun,  2 Jan 2022 22:27:37 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 6FC5D42528;
-        Mon,  3 Jan 2022 06:27:27 +0000 (UTC)
-Message-ID: <9974e68b-f591-81ec-d91f-1b9b14c09edd@marcan.st>
-Date:   Mon, 3 Jan 2022 15:27:25 +0900
+        with ESMTP id S230040AbiACIrg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 03:47:36 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3558C061761;
+        Mon,  3 Jan 2022 00:47:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=llnu8QJu6fQ5fARI5nnJE4VOSVCuPtj0YARKDQ1XaDk=; b=iwanQ2KgFNcFbhFTx85/rdZzlu
+        rWCNk7ZUS0f9diiadn9UNHsIQfNSHDMdaBYWMHbgDBzBkb8GjTC38YqoahD1rbTgYCYLiHtIIeX50
+        U+GpCJB6LjP85sYpFftg0OtUNs1wkdwmGZ1L85NOeE4dNAadtlMSSLqQg9lzTjB00HGnQHTonC79A
+        KdtvRZAGwvTWZUBw0K/IZWJZP0eV/LLqst/9LlRvlDmfEmw+T4qtwRbCV/BlXA3IRc49lwOgHpq1u
+        6Uq1tmb5lreDO2Jst+fpcGiOIoMEeIYeogyVIj3dBfFzisxvogpiEAOPNEBX1uAlykqYT9z3TfdoZ
+        OrFpM22w==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n4J04-008c8E-Jv; Mon, 03 Jan 2022 08:47:28 +0000
+Date:   Mon, 3 Jan 2022 00:47:28 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     benve@cisco.com, govind@gmx.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] enic: Use dma_set_mask_and_coherent()
+Message-ID: <YdK4IIFvi5O5eXHC@infradead.org>
+References: <f926eab883a3e5c4dbfd3eb5108b3e1828e6513b.1641045708.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [RFC PATCH 00/34] brcmfmac: Support Apple T2 and M1 platforms
-Content-Language: en-US
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20211226153624.162281-1-marcan@marcan.st>
- <CACRpkdY1qL6s45qMq65mCrdDDjNfoksadO3Va=zSUhT41pBktw@mail.gmail.com>
-From:   Hector Martin <marcan@marcan.st>
-In-Reply-To: <CACRpkdY1qL6s45qMq65mCrdDDjNfoksadO3Va=zSUhT41pBktw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f926eab883a3e5c4dbfd3eb5108b3e1828e6513b.1641045708.git.christophe.jaillet@wanadoo.fr>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/01/02 15:25, Linus Walleij wrote:
-> On Sun, Dec 26, 2021 at 4:36 PM Hector Martin <marcan@marcan.st> wrote:
-> 
->> Merry Christmas! This year Santa brings us a 34-patch series to add
->> proper support for the Broadcom FullMAC chips used on Apple T2 and M1
->> platforms:
-> 
-> I tried to review as best I could, when I think I know what I'm doing I state
-> Reviewed-by and when I think it just LooksGoodToMe(TM) I replied
-> Acked-by. If I missed some patch you can assume Acked-by from me
-> on these as well.
-> 
-> Thanks for doing this, some really old bugs and code improvements long
-> overdue is in the series, much appreciated.
-> 
-> Yours,
-> Linus Walleij
-> 
+On Sat, Jan 01, 2022 at 03:02:45PM +0100, Christophe JAILLET wrote:
+> -	err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(47));
+> +	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(47));
+>  	if (err) {
+> +		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+>  		if (err) {
+>  			dev_err(dev, "No usable DMA configuration, aborting\n");
+>  			goto err_out_release_regions;
+>  		}
+>  	} else {
+>  		using_dac = 1;
 
-Thanks for the comprehensive review! I'm glad this all makes some sense
-and I'm not crazy about the approach :)
-
-I'll wait a bit for any other feedback that might come in and then
-submit a v2 with the fixes/changes mentioned so far.
-
-Cheers,
--- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+There is no need for the callback.  All the routines to set a DMA mask
+will only fail if the passed in mask is too small, but never if it is
+larger than what is supported.  Also the using_dac variable is not
+needed, NETIF_F_HIGHDMA can and should be set unconditionally.
