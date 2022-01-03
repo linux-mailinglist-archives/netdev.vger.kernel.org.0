@@ -2,113 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7493A48355E
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:11:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F27B648357A
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 18:20:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235089AbiACRL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 12:11:57 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48558 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230316AbiACRL5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 3 Jan 2022 12:11:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
-        Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=XIJzjC4tEAGFoIhNjwKKSvz3/L4fw2WVs8Z+uLD/AME=; b=XxJyDBf85gcZGR0WtW9mabY6rm
-        mb2QEdD0vSPUm9ZNBjwoOHrmJtAL+qvu+ZvIKBFFlwg6kUfb8W1nlkvWkALOhzpMS5p1UMIoAi6KU
-        zc44FdVVN9nfgkx84bN1nNbCBGA984uJ5o3DnTN6g8JfIAn/5n9EtcCL4EzM5DYqSPlU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n4Qs0-000OKJ-V6; Mon, 03 Jan 2022 18:11:40 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        James Prestwood <prestwoj@gmail.com>,
-        Justin Iurman <justin.iurman@uliege.be>,
-        Praveen Chaudhary <praveen5582@gmail.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Eric Dumazet <edumazet@google.com>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH v5 net-next 3/3] udp6: Use Segment Routing Header for dest address if present
-Date:   Mon,  3 Jan 2022 18:11:32 +0100
-Message-Id: <20220103171132.93456-4-andrew@lunn.ch>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220103171132.93456-1-andrew@lunn.ch>
-References: <20220103171132.93456-1-andrew@lunn.ch>
+        id S235197AbiACRUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 12:20:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235193AbiACRUe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 12:20:34 -0500
+Received: from simonwunderlich.de (simonwunderlich.de [IPv6:2a01:4f8:c17:e8c0::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5297C061761
+        for <netdev@vger.kernel.org>; Mon,  3 Jan 2022 09:20:33 -0800 (PST)
+Received: from kero.packetmixer.de (p200300c597476Fc09AF9daD664F33736.dip0.t-ipconnect.de [IPv6:2003:c5:9747:6fc0:9af9:dad6:64f3:3736])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by simonwunderlich.de (Postfix) with ESMTPSA id 352C4FA194;
+        Mon,  3 Jan 2022 18:12:07 +0100 (CET)
+From:   Simon Wunderlich <sw@simonwunderlich.de>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
+        Simon Wunderlich <sw@simonwunderlich.de>
+Subject: [PATCH 0/1] pull request for net: batman-adv 2022-01-03
+Date:   Mon,  3 Jan 2022 18:12:02 +0100
+Message-Id: <20220103171203.1124980-1-sw@simonwunderlich.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When finding the socket to report an error on, if the invoking packet
-is using Segment Routing, the IPv6 destination address is that of an
-intermediate router, not the end destination. Extract the ultimate
-destination address from the segment address.
+Hi David, hi Jakub,
 
-This change allows traceroute to function in the presence of Segment
-Routing.
+happy new year! Here is a bugfix for batman-adv which we would like to have integrated into net.
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- include/net/seg6.h | 19 +++++++++++++++++++
- net/ipv6/udp.c     |  3 ++-
- 2 files changed, 21 insertions(+), 1 deletion(-)
+Please pull or let me know of any problem!
 
-diff --git a/include/net/seg6.h b/include/net/seg6.h
-index 02b0cd305787..af668f17b398 100644
---- a/include/net/seg6.h
-+++ b/include/net/seg6.h
-@@ -65,4 +65,23 @@ extern int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh,
- extern int seg6_do_srh_inline(struct sk_buff *skb, struct ipv6_sr_hdr *osrh);
- extern int seg6_lookup_nexthop(struct sk_buff *skb, struct in6_addr *nhaddr,
- 			       u32 tbl_id);
-+
-+/* If the packet which invoked an ICMP error contains an SRH return
-+ * the true destination address from within the SRH, otherwise use the
-+ * destination address in the IP header.
-+ */
-+static inline const struct in6_addr *seg6_get_daddr(struct sk_buff *skb,
-+						    struct inet6_skb_parm *opt)
-+{
-+	struct ipv6_sr_hdr *srh;
-+
-+	if (opt->flags & IP6SKB_SEG6) {
-+		srh = (struct ipv6_sr_hdr *)(skb->data + opt->srhoff);
-+		return  &srh->segments[0];
-+	}
-+
-+	return NULL;
-+}
-+
-+
- #endif
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 1accc06abc54..df216268cb02 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -41,6 +41,7 @@
- #include <net/transp_v6.h>
- #include <net/ip6_route.h>
- #include <net/raw.h>
-+#include <net/seg6.h>
- #include <net/tcp_states.h>
- #include <net/ip6_checksum.h>
- #include <net/ip6_tunnel.h>
-@@ -562,7 +563,7 @@ int __udp6_lib_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
- 	struct ipv6_pinfo *np;
- 	const struct ipv6hdr *hdr = (const struct ipv6hdr *)skb->data;
- 	const struct in6_addr *saddr = &hdr->saddr;
--	const struct in6_addr *daddr = &hdr->daddr;
-+	const struct in6_addr *daddr = seg6_get_daddr(skb, opt) ? : &hdr->daddr;
- 	struct udphdr *uh = (struct udphdr *)(skb->data+offset);
- 	bool tunnel = false;
- 	struct sock *sk;
--- 
-2.34.1
+Thank you,
+      Simon
 
+The following changes since commit 66f4beaa6c1d28161f534471484b2daa2de1dce0:
+
+  Merge branch 'linus' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6 (2021-11-12 12:35:46 -0800)
+
+are available in the Git repository at:
+
+  git://git.open-mesh.org/linux-merge.git tags/batadv-net-pullrequest-20220103
+
+for you to fetch changes up to 938f2e0b57ffe8a6df71e1e177b2978b1b33fe5e:
+
+  batman-adv: mcast: don't send link-local multicast to mcast routers (2022-01-02 09:31:17 +0100)
+
+----------------------------------------------------------------
+Here is a batman-adv bugfix:
+
+ - avoid sending link-local multicast to multicast routers,
+   by Linus Lüssing
+
+----------------------------------------------------------------
+Linus Lüssing (1):
+      batman-adv: mcast: don't send link-local multicast to mcast routers
+
+ net/batman-adv/multicast.c      | 15 ++++++++++-----
+ net/batman-adv/multicast.h      | 10 ++++++----
+ net/batman-adv/soft-interface.c |  7 +++++--
+ 3 files changed, 21 insertions(+), 11 deletions(-)
