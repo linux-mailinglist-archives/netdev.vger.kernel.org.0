@@ -2,107 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCFB7483822
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 21:59:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C4A4483845
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 22:18:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229492AbiACU7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 15:59:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:47644 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229504AbiACU7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 15:59:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641243546;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IoV+MoGm8eJqU5c6p8KMUsKzlrjsSrE11cNQDWg57+4=;
-        b=Cfynz1W+/v7kYixFI+1owTGAknE/Zd9V9vFCc0OWY7RlggoxSX3A46GmkFjViSSjoMf6/7
-        rqo93hnDruzuX57Igb1mWb2fBMkF/Un4T4BlurWz8QUNJtB/bZxXNX5bJTVLLVf0dq5YB3
-        NPS4gMcNtgt7ePOkDHTXO8TVQ1/4egY=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-295-J3jtOkq7PNqQ5jNAyu0MCw-1; Mon, 03 Jan 2022 15:59:05 -0500
-X-MC-Unique: J3jtOkq7PNqQ5jNAyu0MCw-1
-Received: by mail-ed1-f70.google.com with SMTP id z10-20020a05640235ca00b003f8efab3342so16672438edc.2
-        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 12:59:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=IoV+MoGm8eJqU5c6p8KMUsKzlrjsSrE11cNQDWg57+4=;
-        b=7YIaquS7VujNzFvpDY0UGyNJvj8iAiLJXMLMGoH8yC3jr41ujzlBHd0dtU5GXMnXJe
-         PC1GH4NdUeMtESWSazmAL70R0ZV4EDIO5+PJ9QwK0f/lTdGFEAZEEk61Ze+M2AIT+rUm
-         BoOdaOihpl6464InF20yOFVqEhS7No3oISUtouMp+Hr6sHE3byI4y9bcUwoHjsuPCsZ9
-         vWvg8ZSoAjePjq2nLLzAGcuoyuiEyrXy4lFB7mWAJAHjZOI3qrz8ybll4lahPVe7rbwb
-         fwjb+9vC9Tw43d5EjfPJ77zGYMi8mHIp48GXnTtmCJVj4r/iCG8BdQ7l8R4Dd4Ea4xQK
-         s5gg==
-X-Gm-Message-State: AOAM531RUaq6b1TtelSkSTJqAJ8ZKVv7XYX8F43QR8z7azYS0ORZ4b0E
-        zsU93Fl+I+VVvPVmLpBSzuY0vOAs6ffGOBLh0pwQKkT7sCEZtK3Vw21XhxJAQNPl2VwNqVIsu7W
-        nE/V/dP9XrlsACxzD
-X-Received: by 2002:a05:6402:40d1:: with SMTP id z17mr45130394edb.203.1641243542559;
-        Mon, 03 Jan 2022 12:59:02 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzcnFRuqu7KsDy9wu4YJ9kmnqk+TrclTeu3tWYfzLOW5prWeTPsbGIFru8jiMgP4WZKcJxY8Q==
-X-Received: by 2002:a05:6402:40d1:: with SMTP id z17mr45130369edb.203.1641243541860;
-        Mon, 03 Jan 2022 12:59:01 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id i8sm11812976edc.91.2022.01.03.12.59.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Jan 2022 12:59:01 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C2199180300; Mon,  3 Jan 2022 21:59:00 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Tyler Wear <twear@quicinc.com>, Martin KaFai Lau <kafai@fb.com>,
-        Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>
-Cc:     "Tyler Wear (QUIC)" <quic_twear@quicinc.com>,
-        Yonghong Song <yhs@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: RE: [PATCH] Bpf Helper Function BPF_FUNC_skb_change_dsfield
-In-Reply-To: <BYAPR02MB52382D9342669D4D578C85D8AA7C9@BYAPR02MB5238.namprd02.prod.outlook.com>
-References: <20211220204034.24443-1-quic_twear@quicinc.com>
- <41e6f9da-a375-3e72-aed3-f3b76b134d9b@fb.com>
- <20211221061652.n4f47xh67uxqq5p4@kafai-mbp.dhcp.thefacebook.com>
- <BYAPR02MB5238740A681CD4E64D1EE0F0AA7C9@BYAPR02MB5238.namprd02.prod.outlook.com>
- <CANP3RGeNVSwSfb9T_6Xp8GyggbwnY7YQjv1Fw5L2wTtqiFJbpw@mail.gmail.com>
- <20211221215227.4kpw65oeusfskenx@kafai-mbp.dhcp.thefacebook.com>
- <CANP3RGdbYsue7xiYgVavnq2ysg6N6bWpFKnHxg4YkpQF9gv4oA@mail.gmail.com>
- <20211221230725.mm5ycvkof3sgihh6@kafai-mbp.dhcp.thefacebook.com>
- <BYAPR02MB52382D9342669D4D578C85D8AA7C9@BYAPR02MB5238.namprd02.prod.outlook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 03 Jan 2022 21:59:00 +0100
-Message-ID: <87a6gccz8r.fsf@toke.dk>
+        id S229794AbiACVSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 16:18:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229788AbiACVSq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 16:18:46 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EAE2C061785;
+        Mon,  3 Jan 2022 13:18:45 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JSTBW75YYz4y41;
+        Tue,  4 Jan 2022 08:18:43 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1641244724;
+        bh=Hh0Xu8CzloJ18V1XW3SwWA1qevripO3Bu5X5uKT101E=;
+        h=Date:From:To:Cc:Subject:From;
+        b=M9HaJx3/tOuTkm9Fmk7aOy5QwPDkOLq6bNsuhLIwL2t8/81zuQeCDNJy4ITxl5ElF
+         IPjB8+R1SSY2czXXZCicqB6hSGoWeXIa+rjXrLdYspKGuwiLzZQp/9oTIFswKVH4sr
+         fanYzbXzoIS1xVpM02cau6+jJB0ahWV2kCXuvTFX109/tjs7fHuEWRKrrTmqD/gPcf
+         hb5D6kSjKoDcn9C/2/l6JXieiqL0qiCPiS6gTEEs3+H4nFNG3Qbe1VReZxaSFXf6Hk
+         Ha4X9RexQYsMpe+6+zERXrxoYQVcsjoEIrmXlOCaswbjFFP1ZZofO6Jsf1yPcKdqYk
+         m7c8Smb9ldwHQ==
+Date:   Tue, 4 Jan 2022 08:18:42 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Signed-off-by missing for commit in the net-next tree
+Message-ID: <20220104081842.0fd7d1e2@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; boundary="Sig_/UQ5wYEelhfA+eJJ/QtD0dxh";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tyler Wear <twear@quicinc.com> writes:
+--Sig_/UQ5wYEelhfA+eJJ/QtD0dxh
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
->> On Tue, Dec 21, 2021 at 02:13:04PM -0800, Maciej =C5=BBenczykowski wrote:
->> > > > As for what is driving this?  Upcoming wifi standard to allow
->> > > > access points to inform client devices how to dscp mark individual=
- flows.
->> > > Interesting.
->> > >
->> > > How does the sending host get this dscp value from wifi and then
->> > > affect the dscp of a particular flow?  Is the dscp going to be
->> > > stored in a bpf map for the bpf prog to use?
->> >
->> > It gets it out of band via some wifi signaling mechanism.
->> > Tyler probably knows the details.
->> >
->> > Storing flow match information to dscp mapping in a bpf map is indeed =
-the plan.
->> >
->
-> This is for an upcoming QoS Wifi Alliance spec.
+Hi all,
 
-Got a link, or some other information about the specifics of this? :)
+Commits
 
--Toke
+  aa36c94853b2 ("net/mlx5: Set SMFS as a default steering mode if device su=
+pports it")
+  4ff725e1d4ad ("net/mlx5: DR, Ignore modify TTL if device doesn't support =
+it")
+  cc2295cd54e4 ("net/mlx5: DR, Improve steering for empty or RX/TX-only mat=
+chers")
+  f59464e257bd ("net/mlx5: DR, Add support for matching on geneve_tlv_optio=
+n_0_exist field")
+  09753babaf46 ("net/mlx5: DR, Support matching on tunnel headers 0 and 1")
+  8c2b4fee9c4b ("net/mlx5: DR, Add misc5 to match_param structs")
+  0f2a6c3b9219 ("net/mlx5: Add misc5 flow table match parameters")
+  b54128275ef8 ("net/mlx5: DR, Warn on failure to destroy objects due to re=
+fcount")
+  e3a0f40b2f90 ("net/mlx5: DR, Add support for UPLINK destination type")
+  9222f0b27da2 ("net/mlx5: DR, Add support for dumping steering info")
+  7766c9b922fe ("net/mlx5: DR, Add missing reserved fields to dr_match_para=
+m")
+  89cdba3224f0 ("net/mlx5: DR, Add check for flex parser ID value")
+  08fac109f7bb ("net/mlx5: DR, Rename list field in matcher struct to list_=
+node")
+  32e9bd585307 ("net/mlx5: DR, Remove unused struct member in matcher")
+  c3fb0e280b4c ("net/mlx5: DR, Fix lower case macro prefix "mlx5_" to "MLX5=
+_"")
+  84dfac39c61f ("net/mlx5: DR, Fix error flow in creating matcher")
 
+are missing a Signed-off-by from their committer.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/UQ5wYEelhfA+eJJ/QtD0dxh
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHTaDIACgkQAVBC80lX
+0GwczggAhf01PzOu8pvO3cPuESZB3B+7nuX0/gLE3YR9EHbi7Th+v7mPThk177A4
+MCBipWJxq7XuC1WqIi7zBRHO7Ps6Cl1j+06F5yM5fnP+DrdMyPdY2F5D8Fm3k4Bm
+RaMBlCRG4zubTErgvnHmibiWrS6sysCYbd7OCu55mSJJ7W0BkSOBinhb3PYYQ/5t
+XXhNmo9PHfODK52q1VOTdk3KqMx9ujhlBNDgdEFcvRFmDeRudLLARwOuuUF7x1Te
+WfpBOUN619g6ncqMOYCv3V5R1kO3lX2Pdj1AKDfkrKPN8Fwj/RYV18VPXhfgBuur
+yA6VoIyB4c8ISR4sGWMg2U2GY32l8A==
+=7Cqa
+-----END PGP SIGNATURE-----
+
+--Sig_/UQ5wYEelhfA+eJJ/QtD0dxh--
