@@ -2,172 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57A23483126
-	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 13:53:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 832BC483100
+	for <lists+netdev@lfdr.de>; Mon,  3 Jan 2022 13:28:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231978AbiACMxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 07:53:24 -0500
-Received: from out162-62-57-137.mail.qq.com ([162.62.57.137]:49007 "EHLO
-        out162-62-57-137.mail.qq.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229514AbiACMxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 07:53:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1641214399;
-        bh=5UnHtZFJgrqLBAR8Hrb/PgFy4iZk/U0MY7LdjigH0ic=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=wKwUpR5EbNhjAaKsQSA4S9mT6NU8YGcUsWl9ElTUbyEicYpjXqf+NjatrPYzctXSU
-         R0k6pEiCk3G1rGwDd2s4tZfRC8icf6F1DpCq5krBfEF+1iAc4/CdDuK1UXxFj92lFW
-         jlw44Dz7zCSMEx1yy4Hg4bvEAg/iBHsa9/dGCsyI=
-Received: from localhost ([119.33.249.242])
-        by newxmesmtplogicsvrszc7.qq.com (NewEsmtp) with SMTP
-        id 559874A7; Mon, 03 Jan 2022 20:21:25 +0800
-X-QQ-mid: xmsmtpt1641212485tv9xhm9b7
-Message-ID: <tencent_E30BB769A8609EADCF03F1FDA7C0AF146205@qq.com>
-X-QQ-XMAILINFO: MFX4IRS9whvrf5HDZtuPh7vVui8uydB0fUmSNFEih2xKoZzCct6DBpCCwi9U2w
-         hTq++kehHUe32B8lLEm6hnJ5slUnK2CIMU9evNbEEM5u6HPwecQD3y1OyR7Nx27tRlHGyCzAU/6O
-         u2nvF9t4VkyQJjqkOazznSk8emzw4MW+/dL3Z8aG9DvNxG0pmEEk9rRJqapoqSCyBOMXNTGMHYTS
-         Bc90UB+q8/D4XhthBihZ7fLhjiWzrCVM0hBm0VietBwSmznC9C37jTa4aL5mJbRUzn0hYUoz4lBI
-         UBvuxxTnnNDrb55SXRo/29/9Khn1FsBAnd4aLA8nPaltO7mutkLakW2KzPecG9YxJ+5z1uIC+7gs
-         sdVhzlq6JDlE9pM0K5CgajoKCxhpkHVOLjdWxCA3jFL9YXLWYnR/DsPk6dqMwVTsvzbg+FjneZuF
-         Ja1uDckS8AjMBddLh24DEcyZb3XghcXaLB3tOTD3RBcyuj/DQ+ukkV3l39RLgFCIhUEaGPbYIBA8
-         fda6QaFst4otTN2rs8ruX39SKSC7RzFvS6uy5vjrS8fqiYz+/XqJX0l/lNJv/QWVdl6UbeoxloER
-         mVghavEMr7JXJMnfDSsVJpqvGHhR8PagJISXREkd9A8ky+UYyvT0IINwCUS54c9gpFi2C86//NN5
-         muoHqRbt1X16Vj+bBag14xMrWR37wyX3ZuGMCOYw23+4RZsF2BKDT9h0NjPY3+1iSugtumKj9m7r
-         CeF2SwAIRw2+HwICmqKUIX/1BxSqpD24Q/CLgDhx6zKOLkwdRzc1C+jKE+IRLX7mLWacj/u8H8/U
-         7Og62zRksgpD8niQUgcc6jBOGRDyCW2U49eSt4Zj2fVtrEggYfpRCBe/NhPNpftuCzFe05ZJlThA
-         ==
-Date:   Mon, 3 Jan 2022 20:21:25 +0800
-From:   Conley Lee <conleylee@foxmail.com>
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>
-Cc:     davem@davemloft.net, mripard@kernel.org, wens@csie.org,
-        jernej.skrabec@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
-X-OQ-MSGID: <YdLqRWGsVXwBzl/3@fedora>
-References: <20211228164817.1297c1c9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <tencent_DE05ADA53D5B084D4605BE6CB11E49EF7408@qq.com>
- <Yc7e6V9/oioEpx8c@Red>
- <tencent_57960DDC83F43DA3E0A2F47DEBAD69A4A005@qq.com>
- <YdHjK+/SzaeI/V2Q@Red>
- <tencent_67023336008FE777A58293D2D32DEFA69107@qq.com>
- <YdLhQjUTobcLq73j@Red>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+        id S231653AbiACM2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 07:28:53 -0500
+Received: from mail-am6eur05on2086.outbound.protection.outlook.com ([40.107.22.86]:64865
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229586AbiACM2w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 3 Jan 2022 07:28:52 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KrWVUjCn701SMO+ma15494phPAzuI4IQSyRtyUstbW8MFmVmEP1oRcY+r1J+3pqRAoV5JTTE3hFj108RK61r5g5CXKvxatZ10M6YUCyAgIjZZkJw8HSGpM2zumadVdS+I/cDGexONDhjKtgikqpxv3jtJqwSqodZow4A+EZ0wCxI0Y6zXzl7hsQLf5aJu1Oap8u65y0LksftVRclnLEOcYq8r5vmtjT6PeA6O+1cdJ8ndEb6pF/Em7dqdmOzj49rs2c6qcMA9EzAJvBwviic/rzbm8hXs6F1xEtAp6mAMd0AqUvBDexxtlkQoU/Fpud9KQpruZmNqhgi2+vNbal01w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UjCQo3l2T7uxwmQO1Lnmt/o/VIqUIwvPMPyVKdFlNZw=;
+ b=U2oeYSyCqBtXholNVpwN5VeHVxXG1iVgsFrWBb7pqxv7Smh7oy30H5YGPGAfFxwPxsOoE6xWZU5Tn01Wna98wT5Fc6nG/ryXtKDy+H41pDJd5FNHxAYkgi+IwTtSwPInjKfxmQETCaDK/nr8Z5LmfRflNU1jD58SfVOrVk1vKnfHSn7rx1BgGelo6VNIm3Vid3VSkbxAbpSXMdVDZDFvKk0Bbl0kkGmphDTHMSx85MSMckgyLDOUt1KpktqRI+ysx8r1tPK0WkgZmaLVrDWcwyeihcmJfWcd1l5MCCj1IgwM2BQf/IqWZ1KnPBqxTjxUXXPp+kTBHr3LQwUYcMUlQQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UjCQo3l2T7uxwmQO1Lnmt/o/VIqUIwvPMPyVKdFlNZw=;
+ b=Q6bKLZvsf5bqzFHb8s7wb/IODOyJ2JerbT2wSYkVsq0zxqnyQEGnYS1BCh7rFx4PJg5dAnckWHalLF67YscvcYO+/naFGcB+BUBsY9i2cw6hkWEMmAoMhAygnP0xNhut9UWWJYL7TncYxz0HmLYk4SFrGNAiHMPhjHDbmrandIM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM9PR04MB8954.eurprd04.prod.outlook.com (2603:10a6:20b:409::7)
+ by AM9PR04MB8699.eurprd04.prod.outlook.com (2603:10a6:20b:43e::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.15; Mon, 3 Jan
+ 2022 12:28:50 +0000
+Received: from AM9PR04MB8954.eurprd04.prod.outlook.com
+ ([fe80::1109:76b5:b071:7fce]) by AM9PR04MB8954.eurprd04.prod.outlook.com
+ ([fe80::1109:76b5:b071:7fce%8]) with mapi id 15.20.4844.016; Mon, 3 Jan 2022
+ 12:28:50 +0000
+Message-ID: <3c21a8909a745d5ae1bfa466aaac5c40752cdfef.camel@oss.nxp.com>
+Subject: Re: [PATCH v2 2/2] phy: nxp-c45-tja11xx: read the tx timestamp
+ without lock
+From:   "Radu Nicolae Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        christian.herber@nxp.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
+Date:   Mon, 03 Jan 2022 14:28:43 +0200
+In-Reply-To: <20211223202417.GC29492@hoboy.vegasvil.org>
+References: <20211222213453.969005-1-radu-nicolae.pirea@oss.nxp.com>
+         <20211222213453.969005-3-radu-nicolae.pirea@oss.nxp.com>
+         <20211223202417.GC29492@hoboy.vegasvil.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.2 
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YdLhQjUTobcLq73j@Red>
+X-ClientProxiedBy: VE1PR03CA0059.eurprd03.prod.outlook.com
+ (2603:10a6:803:118::48) To AM9PR04MB8954.eurprd04.prod.outlook.com
+ (2603:10a6:20b:409::7)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1d56d3ef-1ee2-496c-220f-08d9ceb498b2
+X-MS-TrafficTypeDiagnostic: AM9PR04MB8699:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <AM9PR04MB8699E09CE55093D60C7BA0199F499@AM9PR04MB8699.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WQpNumk5n/KK7BkUkUkejZHVnAsz5r/M4P7ZAIOTyAM9YO/6wa3vOKb6OZ6QT2qtVlUzsy3oXtN/zU8a7Fl6ueU3Jk7r3g2CQBrvWsO17eCo7Cm9VSczxU/F16qvsi9wk8GQS2GrzcDRBsU22O8r0HUdx9fnL6PUHctbqZkjJ0rCD+wyI+c+3qV211HidDW6SVuYI+yeFfVWIVmZq3Hb5kuSl1YR737afI828f3P1hW3vSvPBn4FxiTBx2UQNpAo/Y7ZLs3HywQX231OsLYu91Ea+m33Qsx7HaTXaKp6jC05uszSUSCTCO7XuuzcJT2E75yrh4mTMlz5VgousDTqBCfa9yaxcg8rGZEGtbK1+NA28n4tjqGzTZG4Tye2r0zI8hlGxcA78iivp1md1AFfpRqIMPahOLEGPoS9n238sKFt2X28xks+fPN6j9rrDA0IAPTw0vYr/nPLXQtpEYnI+5bUtmHUy89O96x74bTIZODhjKCBoZwJ+iQPZTht5RmY5e+yD+zYWzgH2EfDu2Vmkh1+PjOEMcECJJrV+CuxPr4nE5OpkuCG9PChLmxA1FM6SmYnI/zTbCTrKmuN69hlN7XU1pKqeau1jHODGW4M4r0Yv+Rqr1VxKjCEet0ggVbpCYu7bJt+ewes5M/oslPDRc9QpIXWHF26qvB0h/aQCUd2eIL1uUnOG1sktlIcZ9LdSBqA/baZXfXLaC3lrOZQ7Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8954.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52116002)(6486002)(316002)(2906002)(83380400001)(6916009)(4001150100001)(6512007)(8936002)(26005)(2616005)(4744005)(86362001)(8676002)(6666004)(66946007)(66476007)(5660300002)(66556008)(38100700002)(508600001)(4326008)(38350700002)(66574015)(186003)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MEpEdU8xK3JHb1JrMVBJWTE4SFg5c2JHU2h5QU5XTzRRSDZVWk00WWtMNnRS?=
+ =?utf-8?B?Nk00RDBPWS9hQktqaHFUYlVuUFpTREYrSlhZQmpNRHFPMUtudkR6YjR2cG1t?=
+ =?utf-8?B?VDhKMkVBa2k0bDRoTTZ5d1hSeE90czJyRklVOHpSUGNabzFyRFF3TGJ6OG8x?=
+ =?utf-8?B?V2M5TFA3S21heG1RalMrczFHN0JleFBCeWw4NlZjMFBWWW0wTUkvcUsyWkZw?=
+ =?utf-8?B?bG9RK3ljZ2FHRE5zR2U4WG5JRzlXODFCSXFlR3Y5bzBSeEhzYXpkbzRvbmU4?=
+ =?utf-8?B?MGthV0pJN2dxdlo3K2RhRFNEZEF2Z2VIWHdDY05kYnFud1Z1ZFpkNWw5Ty9M?=
+ =?utf-8?B?bFlMNnBSS05uRkc5Y0s5enhtTC9la2hwV20yOWRURVN2K0NnRTJGWmppMkVj?=
+ =?utf-8?B?bHJsNFB4V3RDUGxMUnVnN1h4MXhBVGdlTmxwdDBsUFJLUzU2a2Q0YU5JaGpZ?=
+ =?utf-8?B?cXJoMkdZQkRQZXcwNmJOdDNreWxYYnN6a2syS2FkSzlpUjVSMmsza2pISWVr?=
+ =?utf-8?B?NkR5TEFYdEdZVFYxOWZCbElSNXBnY0d0RGZ5TDBDQkhJUWp5MGV0UUtmRUQr?=
+ =?utf-8?B?NnFRTWVRYUNvOUZWNDdLeFJxR2tOV25PUmlzdU52WEhjeTBrNkE0TW4vWVpX?=
+ =?utf-8?B?QW9YNlE0WkY3RlZHZzJzTlRkNmtWT2dEM2JYVFFVQVNuK05VbXVHRzF1aFdX?=
+ =?utf-8?B?Z0JlS1hsTXhwdEVnZTN3eTZDWEY4anFtdmlVZTFrUzRHNDZ6M3UzMlV4WnVI?=
+ =?utf-8?B?RklLMXJWdWFqZloxeFIzbG10ekp3R3RVSHZvTmxTT0l1TldyY0JRcEVqUW91?=
+ =?utf-8?B?MGNHdVRFeFJ6THFXR3UxZ1JVMnBQOTIvb1Rsd3doRVk4aFJmNXJQT3FNOStk?=
+ =?utf-8?B?TkRGTkd5QnIrYVlsQStHaEpUSnJ6WVkwZi9uY1ZKT1R0b3RBVlVLZm5lYmJ2?=
+ =?utf-8?B?ZEd2SVJlUkNTWkZlbTU4c01ZdU1uQnBhaW5qVnhmeTVhaFVWUGVoeDFJRTBP?=
+ =?utf-8?B?Z2Y4SjlBSFZQOG5EV1psQjBnc0NjaUVnQjN4QSszMjBoWFc5bUErVTlraEs3?=
+ =?utf-8?B?TE9UeEcyRTBxMWRxREZMNlFROHkwTlBYckFDUEN0dHhiamQ2aVRIcmZYTVhi?=
+ =?utf-8?B?R2M2QzFxa29zSHpYR0FmVk5VNVBsRjVGTU02RDhCUmkwMDFKMDlmZUJya2U4?=
+ =?utf-8?B?TDl3d2F6bjFjOVYxTThGbzVCOExGTG1LQk9YMEhaQ2FWZzFQaDRiaUtOODV0?=
+ =?utf-8?B?ekc0SEcrdVo2M0dicVJWMHhjTUt4SENDenRpaXc2Vm05dUZrR2pzZEgwWUhW?=
+ =?utf-8?B?NWxWcjF2TFlTMGJBNXdBQlEwdzhJMGxGNW8vbXdYL21FZVdGU2RUTlRRRFhr?=
+ =?utf-8?B?RjVwZlpUM3drOXhXdzRjMnowQm55bnovSTNsUVR6QWdMeHRzcUlOemljRjMz?=
+ =?utf-8?B?bjlBVFVKV2xtU1RpcXBwaGZjSDJvNzh6K01RTEh2TVI5c2kvN2RqS3NTaVZm?=
+ =?utf-8?B?b2tQczk4dFF5WUJETXJQcDF1Vit3WmpxYndiOTdQOHZzTUpXdHY4NEtaT3ZR?=
+ =?utf-8?B?TmwxcTdRNUl0YkFjNWg2ODNnSS9jWll3UHhhbkpwL09qbm80Vk0xWHJ5NVR4?=
+ =?utf-8?B?cUEwTFViaTljSExCb1dib0NlNHhxRmNtbEpYREdqcDJNbVhsSHZyVnhvS3lX?=
+ =?utf-8?B?ZGN6aENucVk2QkpGUDU1N2EwR2p5Um11SGdZcUptVHQvY2IyZW1PcGJzRHg2?=
+ =?utf-8?B?b2dsSlRlZmpxTFBuRGpCb29YdENrTjBRc0JTV29iUTBlNXcrcTA3cHh6TVc5?=
+ =?utf-8?B?UFdtTDMwWFd0UzZvQTlPTlVyWDZlaFpXeUlsbnZQM3ZjYnUvaXY4RFYxRWV2?=
+ =?utf-8?B?SGRiOGtSYjBNamowaE11NmtXcGh0VFpQbTNqUjVsNnhzOXV1cExhdDlVWm1U?=
+ =?utf-8?B?cHZZK2tLNzZBa2RTLzZQMldRUlFCaDFLQVZac0Nta0ZMaUtiNFdxMXMvZWRV?=
+ =?utf-8?B?dkFGVTk0a1FoYW03VmRuSDZ1KzQ5TTVsMlhXUkI0dlg1R3lkVUw2ZVFkM1Qv?=
+ =?utf-8?B?MnlLNFRyZUQxVTgwQnUwMHZnU0wxN2UrQ0ZoekY5YThaeUtYVEFiUE5SQXkr?=
+ =?utf-8?B?YmtnaXdjMDdKNHBUa0VOZGlFWTk3OERKWkdQOXArL3QzeXpkZHB4aWxYd3Vq?=
+ =?utf-8?B?VWp0cE13OUZQQ3VUVjl4WUFMeDR2OGVGS3Y3ZGZmMHdJWDNRdm1IWTJDVytD?=
+ =?utf-8?B?QkNrRVhpUHBucEtRTVhTSGI4cHl3PT0=?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1d56d3ef-1ee2-496c-220f-08d9ceb498b2
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8954.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jan 2022 12:28:50.3848
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aEeRbJhcsB9DOrV1TMQSak2rt1r3vvo5uqWoqxcQ/ynXJ6xhxsMh1Ttf946aOCHkKMZptCXng/agELlpQVHbslrS6rEztYhigSXq1SvadYk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8699
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/03/22 at 12:42下午, Corentin Labbe wrote:
-> Date: Mon, 3 Jan 2022 12:42:58 +0100
-> From: Corentin Labbe <clabbe.montjoie@gmail.com>
-> To: Conley Lee <conleylee@foxmail.com>
-> Cc: davem@davemloft.net, mripard@kernel.org, wens@csie.org,
->  jernej.skrabec@gmail.com, netdev@vger.kernel.org,
->  linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
->  linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
-> 
-> Le Mon, Jan 03, 2022 at 10:55:04AM +0800, Conley Lee a écrit :
-> > On 01/02/22 at 06:38下午, Corentin Labbe wrote:
-> > > Date: Sun, 2 Jan 2022 18:38:51 +0100
-> > > From: Corentin Labbe <clabbe.montjoie@gmail.com>
-> > > To: Conley Lee <conleylee@foxmail.com>
-> > > Cc: davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
-> > >  wens@csie.org, netdev@vger.kernel.org,
-> > >  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-> > >  linux-sunxi@lists.linux.dev, jernej.skrabec@gmail.com
-> > > Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
-> > > 
-> > > Le Sat, Jan 01, 2022 at 03:09:01PM +0800, Conley Lee a écrit :
-> > > > On 12/31/21 at 11:43上午, Corentin Labbe wrote:
-> > > > > Date: Fri, 31 Dec 2021 11:43:53 +0100
-> > > > > From: Corentin Labbe <clabbe.montjoie@gmail.com>
-> > > > > To: conleylee@foxmail.com
-> > > > > Cc: davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
-> > > > >  wens@csie.org, netdev@vger.kernel.org,
-> > > > >  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-> > > > > Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
-> > > > > 
-> > > > > Le Wed, Dec 29, 2021 at 09:43:51AM +0800, conleylee@foxmail.com a écrit :
-> > > > > > From: Conley Lee <conleylee@foxmail.com>
-> > > > > > 
-> > > > > > Thanks for your review. Here is the new version for this patch.
-> > > > > > 
-> > > > > > This patch adds support for the emac rx dma present on sun4i. The emac
-> > > > > > is able to move packets from rx fifo to RAM by using dma.
-> > > > > > 
-> > > > > > Change since v4.
-> > > > > >   - rename sbk field to skb
-> > > > > >   - rename alloc_emac_dma_req to emac_alloc_dma_req
-> > > > > >   - using kzalloc(..., GPF_ATOMIC) in interrupt context to avoid
-> > > > > >     sleeping
-> > > > > >   - retry by using emac_inblk_32bit when emac_dma_inblk_32bit fails
-> > > > > >   - fix some code style issues 
-> > > > > > 
-> > > > > > Change since v5.
-> > > > > >   - fix some code style issue
-> > > > > > 
-> > > > > 
-> > > > > Hello
-> > > > > 
-> > > > > I just tested this on a sun4i-a10-olinuxino-lime
-> > > > > 
-> > > > > I got:
-> > > > > [    2.922812] sun4i-emac 1c0b000.ethernet (unnamed net_device) (uninitialized): get io resource from device: 0x1c0b000, size = 4096
-> > > > > [    2.934512] sun4i-emac 1c0b000.ethernet (unnamed net_device) (uninitialized): failed to request dma channel. dma is disabled
-> > > > > [    2.945740] sun4i-emac 1c0b000.ethernet (unnamed net_device) (uninitialized): configure dma failed. disable dma.
-> > > > > [    2.957887] sun4i-emac 1c0b000.ethernet: eth0: at (ptrval), IRQ 19 MAC: 02:49:09:40:ab:3d
-> > > > > 
-> > > > > On which board did you test it and how ?
-> > > > > 
-> > > > > Regards
-> > > > 
-> > > > Sorry. I sent the email with text/html format. This email is an clean version.
-> > > > 
-> > > > In order to enable dma rx channel. `dmas` and `dma-names` properties
-> > > > should be added to emac section in dts:
-> > > > 
-> > > > emac: ethernet@1c0b000 {
-> > > > 	...
-> > > > 	dmas = <&dma SUN4I_DMA_DEDICATED 7>;
-> > > > 	dma-names = "rx";
-> > > > 	...
-> > > > }
-> > > 
-> > > Helo
-> > > 
-> > > Yes I figured that out. But you should have done a patch serie adding this.
-> > > Your patch is now applied but it is a useless change without the dtb change.
-> > > You should also probably update the driver binding (Documentation/devicetree/bindings/net/allwinner,sun4i-a10-emac.yaml) since you add new members to DT node.
-> > > 
-> > > Furthermore, why did you add RX only and not TX dma also ?
-> > > 
-> > > Probably it is too late since patch is applied but it is:
-> > > Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-> > > Tested-on: sun4i-a10-olinuxino-lime
-> > > 
-> > > Regards
+On Thu, 2021-12-23 at 12:24 -0800, Richard Cochran wrote:
+> On Wed, Dec 22, 2021 at 11:34:53PM +0200, Radu Pirea (NXP OSS) wrote:
+> > Reading the tx timestamps can be done in parallel with adjusting
+> > the LTC
+> > value.
 > > 
-> > Thanks for your suggestion. I will submit a patch to add those changes
-> > later. 
-> > 
-> > And the reason why I didn't add TX support is becasuse there is no any
-> > public page to describe sun4i emac TX DMA register map. So, I don't known
-> > how to enable TX DMA at hardware level. If you has any page or datasheet
-> > about EMAC TX DMA, can you share with me ? Thanks.
+> > Calls to nxp_c45_get_hwtxts() are always serialised. If the phy
+> > interrupt is enabled, .do_aux_work() will not call
+> > nxp_c45_get_hwtxts.
 > 
-> Hello
+> Reviewing the code, I see what you mean.  However, the serialization
+> is completely non-obvious, and future changes to the driver could
+> easily spoil the implicit serialization.  Given that the mutex is not
+> highly contended, I suggest dropping this patch in order to
+> future-proof the driver.
 > 
-> You can find TX DMA info on the R40 Use manual (8.10.5.2 Register Name: EMAC_TX_MODE)
-> 
-> You should keep all people in CC when you answer to someone.
-> 
-> Regards
 
-Haha, got it! I have been looking for the docs about emac register map
-for a long time. You really help me a lot. I will submit a new patch to
-add driver bidding and enable both RX and TX channels. Thanks ~
+I agree. This patch can be dropped.
+
+Radu P.
+
+> Thanks,
+> Richard
+
