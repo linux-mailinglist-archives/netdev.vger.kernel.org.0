@@ -2,125 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0AEA484186
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 13:10:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E913D484187
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 13:12:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232925AbiADMKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 07:10:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53851 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232909AbiADMKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 07:10:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641298233;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=e23GvwFEUXHbUBSCX1HU3wptIv1SCmph2aHQnK4TxcA=;
-        b=LbxljXck+0TuwPMqRzBKVxd2zyjYzhj9ceGyeTeZRk+2Em62BcBx7CRYpU96fQmQH2lGZx
-        8OYVEpj9zIlBSY9989USTCGf05XqnngYihjYCQken4EfYnN4/vlRCyEPT7X0xzsJ9/1W2R
-        M+RWWMz0284eG0Eu3oeYwMNEpBsCuCI=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-568-5eiQ8_ofMNOiGBM1dIASUQ-1; Tue, 04 Jan 2022 07:10:32 -0500
-X-MC-Unique: 5eiQ8_ofMNOiGBM1dIASUQ-1
-Received: by mail-wm1-f70.google.com with SMTP id j8-20020a05600c1c0800b00346504f5743so3010783wms.6
-        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 04:10:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e23GvwFEUXHbUBSCX1HU3wptIv1SCmph2aHQnK4TxcA=;
-        b=0eKLZkQP/IwUUUNcGEaD8+lUVDcNZsQYm9H63BI5Y8v9tF3OIgVNjfe/rUhn1jfrFV
-         r9yg+qrdmvStbvprUBdTvU2RAWPPYMRn23SzReQuwqpYD+pF1NXbS0qUE85jPTD5Z+a6
-         StQI017W8tvEPE4wMwDDvOBZKR7U6zMaRM/O/ogdwkQrP2+BPLOXisrSr3QIVAmJjg9P
-         OrBma+9YvXDxxHBfdN2AvS8Hv5SK6czDDFjWzWadix5Cw6RJudjSWAKXqGDSm0C9AfOJ
-         DrSk2f5cLQwEmUIR4yGxQwem+0m5IOAMOyv1y9Vvejx7av3Pgyi34ZxJ8iNjeK08vt51
-         ro5w==
-X-Gm-Message-State: AOAM531V7MA5hjp3rcR6fRl8DLT17psmTl4jXSGhI687HB2oi9ZtmgkB
-        GCocG+zh1uwcr26ypYE9ZTMinYdQerHphTdnErPPkvFK6oHjSKxeqTyehBMzphHxJOJN7s8+rCv
-        8rTv2LFolA9cPAvMw
-X-Received: by 2002:a05:600c:3657:: with SMTP id y23mr42035060wmq.160.1641298231346;
-        Tue, 04 Jan 2022 04:10:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzoMiXH8X2tDQsRX9319UAmIiBDBaixOkpfg3ScIJMlw9L8taNLaIkYq9NCFQt4cVSN5EKCcQ==
-X-Received: by 2002:a05:600c:3657:: with SMTP id y23mr42035045wmq.160.1641298231147;
-        Tue, 04 Jan 2022 04:10:31 -0800 (PST)
-Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id b19sm42835575wmb.38.2022.01.04.04.10.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Jan 2022 04:10:30 -0800 (PST)
-From:   Jiri Olsa <jolsa@redhat.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Jussi Maki <joamaki@gmail.com>, Hangbin Liu <haliu@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [PATCH] bpf/selftests: Fix namespace mount setup in tc_redirect
-Date:   Tue,  4 Jan 2022 13:10:30 +0100
-Message-Id: <20220104121030.138216-1-jolsa@kernel.org>
-X-Mailer: git-send-email 2.33.1
+        id S232933AbiADMMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 07:12:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232904AbiADMMC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 07:12:02 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D2AC061761;
+        Tue,  4 Jan 2022 04:12:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=TFFCZLl2eneLOZlZGY6q1GbZK+goF4stAeNLc8bB24Y=; b=JCsLKVY7+IepRwzG9OQSMg6lT+
+        /uyxZw8iWsDVhcp+SZvOAmra5nAV9LuRlZaqkLF7tqh72Q0ShevMHPEKRbl8w6+q2pVQXba8+8n/M
+        57REDZWuEiMI7FndL/P4ASTgetgSuP1VQNGus36htmpQLr0ZuzW2iAeZc064CdDopwWqk7lI9f8er
+        K5JUbmK9xibXOKguOlREFBmL+C/nCHTnseyoloKuOEMU/oL3uUnz1KUjHk6J/ET/zAkSTDlE4dHE+
+        ujEi7eCNqGrvoRiAhGf69TjN7s6e+/FF1JIJDs6J2eRrBceWFoW2SRZoP1NEpZns3oXzNaoaccIbL
+        Lofdm+Bw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56556)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1n4ifU-0006ym-SF; Tue, 04 Jan 2022 12:11:56 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1n4ifT-0007Dp-Rq; Tue, 04 Jan 2022 12:11:55 +0000
+Date:   Tue, 4 Jan 2022 12:11:55 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Corentin Labbe <clabbe.montjoie@gmail.com>
+Cc:     linus.walleij@linaro.org, ulli.kroll@googlemail.com,
+        kuba@kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: net: phy: marvell: network working with generic PHY and not with
+ marvell PHY
+Message-ID: <YdQ5i+//UITSbxS/@shell.armlinux.org.uk>
+References: <YdQoOSXS98+Af1wO@Red>
+ <YdQsJnfqjaFrtC0m@shell.armlinux.org.uk>
+ <YdQwexJVfrdzEfZK@Red>
+ <YdQydK4GhI0P5RYL@shell.armlinux.org.uk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YdQydK4GhI0P5RYL@shell.armlinux.org.uk>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tc_redirect umounts /sys in the new namespace, which can be
-mounted as shared and cause global umount. The lazy umount also
-takes down mounted trees under /sys like debugfs, which won't be
-available after sysfs mounts again and could cause fails in other
-tests.
+On Tue, Jan 04, 2022 at 11:41:40AM +0000, Russell King (Oracle) wrote:
+> On Tue, Jan 04, 2022 at 12:33:15PM +0100, Corentin Labbe wrote:
+> > Le Tue, Jan 04, 2022 at 11:14:46AM +0000, Russell King (Oracle) a écrit :
+> > > On Tue, Jan 04, 2022 at 11:58:01AM +0100, Corentin Labbe wrote:
+> > > > Hello
+> > > > 
+> > > > I have a gemini SSI 1328 box which has a cortina ethernet MAC with a Marvell 88E1118 as given by:
+> > > > Marvell 88E1118 gpio-0:01: attached PHY driver (mii_bus:phy_addr=gpio-0:01, irq=POLL)
+> > > > So booting with CONFIG_MARVELL_PHY=y lead to a non-working network with link set at 1Gbit
+> > > > Setting 'max-speed = <100>;' (as current state in mainline dtb) lead to a working network.
+> > > > By not working, I mean kernel started with ip=dhcp cannot get an IP.
+> > > 
+> > > How is the PHY connected to the host (which interface mode?) If it's
+> > > RGMII, it could be that the wrong RGMII interface mode is specified in
+> > > DT.
+> > > 
+> > 
+> > The PHY is set as RGMII in DT (arch/arm/boot/dts/gemini-ssi1328.dts)
+> > The only change to the mainline dtb is removing the max-speed.
+> 
+> So, it's using "rgmii" with no delay configured at the PHY with the
+> speed limited to 100Mbps. You then remove the speed limitation and
+> it doesn't work at 1Gbps.
+> 
+> I think I've seen this on other platforms (imx6 + ar8035) when the
+> RGMII delay is not correctly configured - it will work at slower
+> speeds but not 1G.
+> 
+> The RGMII spec specifies that there will be a delay - and the delay can
+> be introduced by either the MAC, PHY or by PCB track routing. It sounds
+> to me like your boot environment configures the PHY to introduce the
+> necessary delay, but then, because the DT "rgmii" mode means "no delay
+> at the PHY" when you use the Marvell driver (which respects that), the
+> Marvell driver configures the PHY for no delay, resulting in a non-
+> working situation at 1G.
+> 
+> I would suggest checking how the boot environment configures the PHY,
+> and change the "rgmii" mode in DT to match. There is a description of
+> the four RGMII modes in Documentation/networking/phy.rst that may help
+> understand what each one means.
 
-  # cat /proc/self/mountinfo | grep debugfs
-  34 23 0:7 / /sys/kernel/debug rw,nosuid,nodev,noexec,relatime shared:14 - debugfs debugfs rw
-  # cat /proc/self/mountinfo | grep sysfs
-  23 86 0:22 / /sys rw,nosuid,nodev,noexec,relatime shared:2 - sysfs sysfs rw
-  # mount | grep debugfs
-  debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
+Hmm. Sorry, I'm leading you stray. It looks like the 88E1118 code does
+not program any delays depending on the interface mode, so changing that
+will have no effect.
 
-  # ./test_progs -t tc_redirect
-  #164 tc_redirect:OK
-  Summary: 1/4 PASSED, 0 SKIPPED, 0 FAILED
+I suspect, looking at m88e1118_config_init(), that the write to register
+0x15 in the MSCR page could be the problem.
 
-  # mount | grep debugfs
-  # cat /proc/self/mountinfo | grep debugfs
-  # cat /proc/self/mountinfo | grep sysfs
-  25 86 0:22 / /sys rw,relatime shared:2 - sysfs sysfs rw
+0x15 is 21, which is MII_88E1121_PHY_MSCR_REG. In other Marvell PHYs,
+bits 4 and 5 are the tx and rx delays, both of which are set. Looking
+at m88e1121_config_aneg_rgmii_delays(), this would seem to indicate
+that the PHY is being placed into rgmii-id mode.
 
-Making the sysfs private under the new namespace so the umount won't
-trigger the global sysfs umount.
+Can you try changing:
 
-Cc: Jussi Maki <joamaki@gmail.com>
-Reported-by: Hangbin Liu <haliu@redhat.com>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/testing/selftests/bpf/prog_tests/tc_redirect.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+	err = phy_write(phydev, 0x15, 0x1070);
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-index 4b18b73df10b..c2426df58e17 100644
---- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-@@ -105,6 +105,13 @@ static int setns_by_fd(int nsfd)
- 	if (!ASSERT_OK(err, "unshare"))
- 		return err;
- 
-+	/* Make our /sys mount private, so the following umount won't
-+	 * trigger the global umount in case it's shared.
-+	 */
-+	err = mount("none", "/sys", NULL, MS_PRIVATE, NULL);
-+	if (!ASSERT_OK(err, "remount private /sys"))
-+		return err;
-+
- 	err = umount2("/sys", MNT_DETACH);
- 	if (!ASSERT_OK(err, "umount2 /sys"))
- 		return err;
+to:
+
+	err = phy_write(phydev, 0x15, 0x1040);
+
+and see what happens? Maybe trying other combinations of bits 4 and 5
+to find a working combination.
+
+I think if we discover a setting there that works, we may have a problem,
+since changing this could end up breaking some platforms. Looking at the
+commit history...
+
+2f495c398edc net/phy/marvell: Expose IDs and flags in a .h and add dns323 LEDs setup flag
+605f196efbf8 phy: Add support for Marvell 88E1118 PHY
+
+and the second is a less than helpful commit message...
+
 -- 
-2.33.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
