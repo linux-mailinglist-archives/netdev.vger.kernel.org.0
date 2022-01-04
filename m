@@ -2,199 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14104483B1B
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 04:40:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DA2D483B25
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 04:44:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232734AbiADDkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 22:40:00 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:59642 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S232678AbiADDj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 22:39:56 -0500
-X-UUID: 248c0e17e5a04d56b759596ab87ee96e-20220104
-X-UUID: 248c0e17e5a04d56b759596ab87ee96e-20220104
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 872503568; Tue, 04 Jan 2022 11:39:52 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 4 Jan 2022 11:39:51 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 4 Jan 2022 11:39:50 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <angelogioacchino.delregno@collabora.com>, <dkirjanov@suse.de>
-Subject: [PATCH net-next v11 6/6] net: dt-bindings: dwmac: add support for mt8195
-Date:   Tue, 4 Jan 2022 11:39:40 +0800
-Message-ID: <20220104033940.5497-7-biao.huang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220104033940.5497-1-biao.huang@mediatek.com>
-References: <20220104033940.5497-1-biao.huang@mediatek.com>
+        id S231419AbiADDoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 22:44:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:37991 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231218AbiADDoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 22:44:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641267864;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=U3bRp9PDw2PtdlQN7RsHKxoF/g+6HtYTrwOQVxpYpkg=;
+        b=ewJoEVH/asVTt1uuHPZuNvkintjY7r3X64UHDyxis0Y4qICDXE/MaFi1oUS6iMNgf2yx9n
+        2L0JGW/QlGFw0Dpy/2zUBwmH9Jw1u2Nxd1BhPONTIBTwR5bFcH7dbO0tvTv+gO4rTrtymp
+        oZjojhIoy0X4fCVfa2padaL5W4ppxvg=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-491-eYR-_xs1OYyc0pzXCPwUhw-1; Mon, 03 Jan 2022 22:44:22 -0500
+X-MC-Unique: eYR-_xs1OYyc0pzXCPwUhw-1
+Received: by mail-lj1-f200.google.com with SMTP id j15-20020a2e6e0f000000b0022db2724332so9236561ljc.3
+        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 19:44:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U3bRp9PDw2PtdlQN7RsHKxoF/g+6HtYTrwOQVxpYpkg=;
+        b=fztnQSJcbdeSYO6UJk8o4Usg/OSZlNuxzW7Nk1j/O5SUnp5HanN74wrh2ACt6hsWMF
+         NWdYC9TVGlkcWHGv1LrrVl/LNq7v+BP5A2VL9HH6fDg4BIzpHJvih4FRV5RNGRtOiLPn
+         WnC8Uusv9mQKg9mgnH61BWk7NpJyLtZVZsack7Ish1VRBOHIwRfzVR/XHIBmz4KCbiWk
+         KI1rQ2oM1DttxUqWF4XX3A2xZDdzE8P+cTSuVXhkxPWF3W28zO6qdtUPe2yT7OoIHnce
+         DRe4EBC0ilQBZGp0FVBPv0gspT435OkOv/ug9QgQkGcehijmojZEl3X6hfvXmXpOSy/G
+         raXg==
+X-Gm-Message-State: AOAM531kQ3Y1A4tmHWoSBvhgL/2VVvza+cQxBCjchDI/lGckt+K73Po9
+        d5NoMx9Jdh0b3xiv9/tVT9jMXBxZi3y/NeG6sUeB0FgkGJiHkEy+UImFynUFyTH7udA5qRoq7RB
+        7j5ktYhxg8NeR8Gb7evOlMQSjdr89WxTn
+X-Received: by 2002:a05:6512:22d6:: with SMTP id g22mr42525580lfu.199.1641267861377;
+        Mon, 03 Jan 2022 19:44:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwPfKa8UYDWk8yXRh/Tynib8SG3CWPXUC55CynDHAaf3IrbQwAAOOMAqfKLA5ICJGqVqiZgR88MAce8maqcssc=
+X-Received: by 2002:a05:6512:22d6:: with SMTP id g22mr42525557lfu.199.1641267861109;
+ Mon, 03 Jan 2022 19:44:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+References: <20211224070404.54840-1-wang.yi59@zte.com.cn>
+In-Reply-To: <20211224070404.54840-1-wang.yi59@zte.com.cn>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 4 Jan 2022 11:44:10 +0800
+Message-ID: <CACGkMEvdKATVvLVQtfPfSeev83Ajskg4gFoHDhWT7wrWEQ3FEA@mail.gmail.com>
+Subject: Re: [PATCH v2] vdpa: regist vhost-vdpa dev class
+To:     Yi Wang <wang.yi59@zte.com.cn>
+Cc:     mst <mst@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>,
+        kvm <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        xue.zhihong@zte.com.cn, wang.liang82@zte.com.cn,
+        Zhang Min <zhang.min9@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add binding document for the ethernet on mt8195.
+On Fri, Dec 24, 2021 at 3:13 PM Yi Wang <wang.yi59@zte.com.cn> wrote:
+>
+> From: Zhang Min <zhang.min9@zte.com.cn>
+>
+> Some applications like kata-containers need to acquire MAJOR/MINOR/DEVNAME
+> for devInfo [1], so regist vhost-vdpa dev class to expose uevent.
 
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
----
- .../bindings/net/mediatek-dwmac.yaml          | 95 +++++++++++++++----
- 1 file changed, 75 insertions(+), 20 deletions(-)
+Hi:
 
-diff --git a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-index 8ad6e19661b8..fb04166404d8 100644
---- a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-@@ -19,34 +19,79 @@ select:
-       contains:
-         enum:
-           - mediatek,mt2712-gmac
-+          - mediatek,mt8195-gmac
-   required:
-     - compatible
- 
- allOf:
-   - $ref: "snps,dwmac.yaml#"
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - mediatek,mt2712-gmac
-+
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 5
-+          items:
-+            - description: AXI clock
-+            - description: APB clock
-+            - description: MAC Main clock
-+            - description: PTP clock
-+            - description: RMII reference clock provided by MAC
-+
-+        clock-names:
-+          minItems: 5
-+          items:
-+            - const: axi
-+            - const: apb
-+            - const: mac_main
-+            - const: ptp_ref
-+            - const: rmii_internal
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - mediatek,mt8195-gmac
-+
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 6
-+          items:
-+            - description: AXI clock
-+            - description: APB clock
-+            - description: MAC clock gate
-+            - description: MAC Main clock
-+            - description: PTP clock
-+            - description: RMII reference clock provided by MAC
-+
-+        clock-names:
-+          minItems: 6
-+          items:
-+            - const: axi
-+            - const: apb
-+            - const: mac_cg
-+            - const: mac_main
-+            - const: ptp_ref
-+            - const: rmii_internal
- 
- properties:
-   compatible:
--    items:
--      - enum:
--          - mediatek,mt2712-gmac
--      - const: snps,dwmac-4.20a
--
--  clocks:
--    items:
--      - description: AXI clock
--      - description: APB clock
--      - description: MAC Main clock
--      - description: PTP clock
--      - description: RMII reference clock provided by MAC
--
--  clock-names:
--    items:
--      - const: axi
--      - const: apb
--      - const: mac_main
--      - const: ptp_ref
--      - const: rmii_internal
-+    oneOf:
-+      - items:
-+          - enum:
-+              - mediatek,mt2712-gmac
-+          - const: snps,dwmac-4.20a
-+      - items:
-+          - enum:
-+              - mediatek,mt8195-gmac
-+          - const: snps,dwmac-5.10a
- 
-   mediatek,pericfg:
-     $ref: /schemas/types.yaml#/definitions/phandle
-@@ -61,6 +106,8 @@ properties:
-       or will round down. Range 0~31*170.
-       For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
-       or will round down. Range 0~31*550.
-+      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple of 290,
-+      or will round down. Range 0~31*290.
- 
-   mediatek,rx-delay-ps:
-     description:
-@@ -69,6 +116,8 @@ properties:
-       or will round down. Range 0~31*170.
-       For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
-       or will round down. Range 0~31*550.
-+      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple
-+      of 290, or will round down. Range 0~31*290.
- 
-   mediatek,rmii-rxc:
-     type: boolean
-@@ -102,6 +151,12 @@ properties:
-       3. the inside clock, which be sent to MAC, will be inversed in RMII case when
-          the reference clock is from MAC.
- 
-+  mediatek,mac-wol:
-+    type: boolean
-+    description:
-+      If present, indicates that MAC supports WOL(Wake-On-LAN), and MAC WOL will be enabled.
-+      Otherwise, PHY WOL is perferred.
-+
- required:
-   - compatible
-   - reg
--- 
-2.25.1
+I think we need to be more verbose here e.g:
+
+1) why can't we get major/minor with the current interface
+2) what kind of the uevent is required and not supported currently
+
+Thanks
+
+>
+> 1. https://github.com/kata-containers/kata-containers/blob/main/src/runtime/virtcontainers/device/config/config.go
+>
+> Signed-off-by: Zhang Min <zhang.min9@zte.com.cn>
+> Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+> ---
+> v2: remove redundant vhost_vdpa_class reset and pr_warn, adjust location
+>     of *vhost_vdpa_class impl and class_destroy.
+>
+>  drivers/vhost/vdpa.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index e3c4f059b21a..55e966c508c8 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -53,6 +53,7 @@ struct vhost_vdpa {
+>  static DEFINE_IDA(vhost_vdpa_ida);
+>
+>  static dev_t vhost_vdpa_major;
+> +static struct class *vhost_vdpa_class;
+>
+>  static void handle_vq_kick(struct vhost_work *work)
+>  {
+> @@ -1140,6 +1141,7 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+>         v->dev.release = vhost_vdpa_release_dev;
+>         v->dev.parent = &vdpa->dev;
+>         v->dev.devt = MKDEV(MAJOR(vhost_vdpa_major), minor);
+> +       v->dev.class = vhost_vdpa_class;
+>         v->vqs = kmalloc_array(v->nvqs, sizeof(struct vhost_virtqueue),
+>                                GFP_KERNEL);
+>         if (!v->vqs) {
+> @@ -1197,6 +1199,10 @@ static int __init vhost_vdpa_init(void)
+>  {
+>         int r;
+>
+> +       vhost_vdpa_class = class_create(THIS_MODULE, "vhost-vdpa");
+> +       if (IS_ERR(vhost_vdpa_class))
+> +               return PTR_ERR(vhost_vdpa_class);
+> +
+>         r = alloc_chrdev_region(&vhost_vdpa_major, 0, VHOST_VDPA_DEV_MAX,
+>                                 "vhost-vdpa");
+>         if (r)
+> @@ -1211,6 +1217,7 @@ static int __init vhost_vdpa_init(void)
+>  err_vdpa_register_driver:
+>         unregister_chrdev_region(vhost_vdpa_major, VHOST_VDPA_DEV_MAX);
+>  err_alloc_chrdev:
+> +       class_destroy(vhost_vdpa_class);
+>         return r;
+>  }
+>  module_init(vhost_vdpa_init);
+> @@ -1219,6 +1226,7 @@ static void __exit vhost_vdpa_exit(void)
+>  {
+>         vdpa_unregister_driver(&vhost_vdpa_driver);
+>         unregister_chrdev_region(vhost_vdpa_major, VHOST_VDPA_DEV_MAX);
+> +       class_destroy(vhost_vdpa_class);
+>  }
+>  module_exit(vhost_vdpa_exit);
+>
+> --
+> 2.27.0
+>
 
