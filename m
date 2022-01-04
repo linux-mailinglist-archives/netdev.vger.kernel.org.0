@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB42F484112
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 12:42:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C1A1484117
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 12:43:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232471AbiADLmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 06:42:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43600 "EHLO
+        id S231390AbiADLnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 06:43:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232462AbiADLmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 06:42:24 -0500
+        with ESMTP id S229535AbiADLnh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 06:43:37 -0500
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95995C061761;
-        Tue,  4 Jan 2022 03:42:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A8FAC061761;
+        Tue,  4 Jan 2022 03:43:37 -0800 (PST)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.94.2)
         (envelope-from <daniel@makrotopia.org>)
-        id 1n4iCs-0000EF-2L; Tue, 04 Jan 2022 12:42:22 +0100
-Date:   Tue, 4 Jan 2022 11:42:14 +0000
+        id 1n4iE2-0000F0-JM; Tue, 04 Jan 2022 12:43:34 +0100
+Date:   Tue, 4 Jan 2022 11:43:28 +0000
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
@@ -32,9 +32,9 @@ Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
         Russell King <linux@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v11 1/3] net: ethernet: mtk_eth_soc: fix return values and
- refactor MDIO ops
-Message-ID: <YdQylhz+WNkxZDMn@makrotopia.org>
+Subject: [PATCH v11 2/3] net: mdio: add helpers to extract clause 45 regad
+ and devad fields
+Message-ID: <YdQy4HOftY6ASoJH@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -42,143 +42,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of returning -1 (-EPERM) when MDIO bus is stuck busy
-while writing or 0xffff if it happens while reading, return the
-appropriate -ETIMEDOUT. Also fix return type to int instead of u32.
-Refactor functions to use bitfield helpers instead of having various
-masking and shifting constants in the code, which also results in the
-register definitions in the header file being more obviously related
-to what is stated in the MediaTek's Reference Manual.
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-Fixes: 656e705243fd0 ("net-next: mediatek: add support for MT7623 ethernet")
+Add a couple of helpers and definitions to extract the clause 45 regad
+and devad fields from the regnum passed into MDIO drivers.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Tested-by: Daniel Golle <daniel@makrotopia.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
-v11: also address return value of mtk_mdio_busy_wait
-v10: unchanged
-v9: improved formatting and Cc missing maintainer
-v8: switch to bitfield helper macros
-v7: remove unneeded variables
-v6: further clean up functions and more cleanly separate patches
-v5: fix wrong variable name in first patch covered by follow-up patch
-v4: clean-up return values and types, split into two commits
-v3: return -1 instead of 0xffff on error in _mtk_mdio_write
-v2: use MII_DEVADDR_C45_SHIFT and MII_REGADDR_C45_MASK to extract
-    device id and register address. Unify read and write functions to
-    have identical types and parameter names where possible as we are
-    anyway already replacing both function bodies.
+v11: unchanged, added Reviewed-by: line from Andrew Lunn
+v10: correct order of SoB lines
+v9: unchanged
+v8: First inclusing upon comment on mailing list
 
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 53 ++++++++++++---------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h | 16 +++++--
- 2 files changed, 41 insertions(+), 28 deletions(-)
+ include/linux/mdio.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index bcb91b01e69f5..3809ea6e31ce2 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -91,46 +91,53 @@ static int mtk_mdio_busy_wait(struct mtk_eth *eth)
- 	}
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index 9f3587a61e145..ecac96d52e010 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -7,6 +7,7 @@
+ #define __LINUX_MDIO_H__
  
- 	dev_err(eth->dev, "mdio: MDIO timeout\n");
--	return -1;
-+	return -ETIMEDOUT;
+ #include <uapi/linux/mdio.h>
++#include <linux/bitfield.h>
+ #include <linux/mod_devicetable.h>
+ 
+ /* Or MII_ADDR_C45 into regnum for read/write on mii_bus to enable the 21 bit
+@@ -14,6 +15,7 @@
+  */
+ #define MII_ADDR_C45		(1<<30)
+ #define MII_DEVADDR_C45_SHIFT	16
++#define MII_DEVADDR_C45_MASK	GENMASK(20, 16)
+ #define MII_REGADDR_C45_MASK	GENMASK(15, 0)
+ 
+ struct gpio_desc;
+@@ -381,6 +383,16 @@ static inline u32 mdiobus_c45_addr(int devad, u16 regnum)
+ 	return MII_ADDR_C45 | devad << MII_DEVADDR_C45_SHIFT | regnum;
  }
  
--static u32 _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr,
--			   u32 phy_register, u32 write_data)
-+static int _mtk_mdio_write(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg,
-+			   u32 write_data)
++static inline u16 mdiobus_c45_regad(u32 regnum)
++{
++	return FIELD_GET(MII_REGADDR_C45_MASK, regnum);
++}
++
++static inline u16 mdiobus_c45_devad(u32 regnum)
++{
++	return FIELD_GET(MII_DEVADDR_C45_MASK, regnum);
++}
++
+ static inline int __mdiobus_c45_read(struct mii_bus *bus, int prtad, int devad,
+ 				     u16 regnum)
  {
--	if (mtk_mdio_busy_wait(eth))
--		return -1;
-+	int ret;
- 
--	write_data &= 0xffff;
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret)
-+		return ret;
- 
--	mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START | PHY_IAC_WRITE |
--		(phy_register << PHY_IAC_REG_SHIFT) |
--		(phy_addr << PHY_IAC_ADDR_SHIFT) | write_data,
-+	mtk_w32(eth, PHY_IAC_ACCESS |
-+		     PHY_IAC_START_C22 |
-+		     PHY_IAC_CMD_WRITE |
-+		     PHY_IAC_REG(phy_reg) |
-+		     PHY_IAC_ADDR(phy_addr) |
-+		     PHY_IAC_DATA(write_data),
- 		MTK_PHY_IAC);
- 
--	if (mtk_mdio_busy_wait(eth))
--		return -1;
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret < 0)
-+		return ret;
- 
- 	return 0;
- }
- 
--static u32 _mtk_mdio_read(struct mtk_eth *eth, int phy_addr, int phy_reg)
-+static int _mtk_mdio_read(struct mtk_eth *eth, u32 phy_addr, u32 phy_reg)
- {
--	u32 d;
-+	int ret;
- 
--	if (mtk_mdio_busy_wait(eth))
--		return 0xffff;
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret)
-+		return ret;
- 
--	mtk_w32(eth, PHY_IAC_ACCESS | PHY_IAC_START | PHY_IAC_READ |
--		(phy_reg << PHY_IAC_REG_SHIFT) |
--		(phy_addr << PHY_IAC_ADDR_SHIFT),
-+	mtk_w32(eth, PHY_IAC_ACCESS |
-+		     PHY_IAC_START_C22 |
-+		     PHY_IAC_CMD_C22_READ |
-+		     PHY_IAC_REG(phy_reg) |
-+		     PHY_IAC_ADDR(phy_addr),
- 		MTK_PHY_IAC);
- 
--	if (mtk_mdio_busy_wait(eth))
--		return 0xffff;
--
--	d = mtk_r32(eth, MTK_PHY_IAC) & 0xffff;
-+	ret = mtk_mdio_busy_wait(eth);
-+	if (ret < 0)
-+		return ret;
- 
--	return d;
-+	return mtk_r32(eth, MTK_PHY_IAC) & PHY_IAC_DATA_MASK;
- }
- 
- static int mtk_mdio_write(struct mii_bus *bus, int phy_addr,
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 5ef70dd8b49c6..f2d90639d7ed1 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -341,11 +341,17 @@
- /* PHY Indirect Access Control registers */
- #define MTK_PHY_IAC		0x10004
- #define PHY_IAC_ACCESS		BIT(31)
--#define PHY_IAC_READ		BIT(19)
--#define PHY_IAC_WRITE		BIT(18)
--#define PHY_IAC_START		BIT(16)
--#define PHY_IAC_ADDR_SHIFT	20
--#define PHY_IAC_REG_SHIFT	25
-+#define PHY_IAC_REG_MASK	GENMASK(29, 25)
-+#define PHY_IAC_REG(x)		FIELD_PREP(PHY_IAC_REG_MASK, (x))
-+#define PHY_IAC_ADDR_MASK	GENMASK(24, 20)
-+#define PHY_IAC_ADDR(x)		FIELD_PREP(PHY_IAC_ADDR_MASK, (x))
-+#define PHY_IAC_CMD_MASK	GENMASK(19, 18)
-+#define PHY_IAC_CMD_WRITE	FIELD_PREP(PHY_IAC_CMD_MASK, 1)
-+#define PHY_IAC_CMD_C22_READ	FIELD_PREP(PHY_IAC_CMD_MASK, 2)
-+#define PHY_IAC_START_MASK	GENMASK(17, 16)
-+#define PHY_IAC_START_C22	FIELD_PREP(PHY_IAC_START_MASK, 1)
-+#define PHY_IAC_DATA_MASK	GENMASK(15, 0)
-+#define PHY_IAC_DATA(x)		FIELD_PREP(PHY_IAC_DATA_MASK, (x))
- #define PHY_IAC_TIMEOUT		HZ
- 
- #define MTK_MAC_MISC		0x1000c
 -- 
 2.34.1
 
