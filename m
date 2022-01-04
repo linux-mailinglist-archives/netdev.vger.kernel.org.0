@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93BD84846C4
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 18:14:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EF864846C6
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 18:15:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234285AbiADROw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 12:14:52 -0500
+        id S234391AbiADROy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 12:14:54 -0500
 Received: from mail-eopbgr150045.outbound.protection.outlook.com ([40.107.15.45]:22762
         "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234664AbiADROj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 12:14:39 -0500
+        id S235164AbiADROk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jan 2022 12:14:40 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MD+25wmJQfxzaEv9adRs++owEv+9N+psXOvOPD90Oqg/IBcgURizgrt20dYth6LWQyvuk5mzlPYd0I1PcImybg4rxdTMHWDZjpEez6eadxSPYbysqkIin6D1qJwvZVnYgIeJ1NZJMMO9Q8BZ+YCdOrMAaC31MWf1LVcMv+hbOd/WonyQFq1hOPJXBQjlVwLdJAPpumFR0myOnvFJIDLQ4ipNTeWrC1cWcUn7Fmm8rX1G5XFZpHrgq2TrfjQeQA+zXIdV2HBfCts0mF4tBz6ToCKjK+9RK2P85HDFFTxEf9T7p5ZPIf8PMEFDY/diFrGW/7I0nEg76zEDMewQEhhAPA==
+ b=NWXYHbvdRQV/wBgQvGkLREAJE/TF1Au4dfVYYbF+JjD4244mPrt3Vsv5XBr72z9es1qRBhM0TOruHTmahDqVz0tDIjMMaSXFjIXgEvUWqGV/Kpeen0d1LyRUmnW/MYFOT3HwUgfhHR1fE0MFcnwH8hrJtXeONvRVZJbPD2S/DlfSV379yLpxM9qgQ7lROqqkYT/Mi2wXqhFrRcOUT57FPs4s5dZfTH3cC7LrDz48FSpN54gMkKxXq0utFVXgG9IgGR8tnKlTKGohfhkYLeROpqGeGwNekznl2JXgifWKza5VveOdwkPUje8ljNAI1iwF9XjqxWrEWrfUMeW0U4RxiQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IE0nWSyN9SY7th6dNrW+vLPOcu4ZRMUzGGRo45+S744=;
- b=RNjW2J/5Zvxfa1e11iQ0yleNOPgRpL2v78QatD5a7R0HnTUxWis6q2Ko9/uyv4WD7FUSJN2/wAfTqaEivUKW3dXjnhkcqwqX3KkxhywND6GZqGeiEvUaycPtDKIxcGL5DErhgX3rPA9qtDqU5FLG0qhfhwedmfewhyUiNY3m13araXtEigvG3kMoieExDeiL1DTBugi9E5+QeXnxAlUtnPKF0J6O0SQNTMUKUtov57Y9ik7G1VjHm5jK+3ZJ9qScSus7YMn5g+DqjdNn3j6MVtKgeynr52WOOIyJgui6VXwddYrRvdxEAd3Eu5vgZSe/NTJjwrt6KY3U/+8Oe6Ewgw==
+ bh=xb1zDDpFMRhp132ds2IcotRd3mPrhUId3l/T8ApLK0s=;
+ b=YUxxmGARQ/Zxn3t4493RLdVlHiQNM6OSFgcKd/rckb2KIlmxGnIfEGX3Kj+Nylx+u/q85azcMz4gYC9L/pjfgDL0Z8+/J95mV3DcDuX5IG0piZy5Lx0XDIL4EIJsGxTvTylBAckoretNDFhGh9gkCjarGKsF7yjhIWOQxYUupvsOr1Isylj3wIGZ8MERE/JrZ1mJCQ6EMGhLN28Qbg6YEnbo/e+CRQ2HDb8+2Z23DsAzXiPE56Ssz3Bs2IMcmjp6MMwDvc1UFGUr+1bDmA4MJQBv+TsypKKTW8ZmTqp9u5yHruTNCDwKzj5nzC8PeIFFyvqi8Bg3znNuagFG5CeOfA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IE0nWSyN9SY7th6dNrW+vLPOcu4ZRMUzGGRo45+S744=;
- b=CheHdioRlZC+M/dX98jWWCBYurkkpwrLhJfHCoVOZQeTCgMtUU0/wf5SXC+PsHW3ZFxu7ARYq15S2q/HY73/eTcQdJpTfYQQVI12Z4CiLhycO5fN26NvkObv5sgv6h7x/3XkgjL06sTBZNBuvvZB6cn2cB+opzG7N3xOycxU8NM=
+ bh=xb1zDDpFMRhp132ds2IcotRd3mPrhUId3l/T8ApLK0s=;
+ b=KqAbWlJ9/4IFKf1r0nFGuKtx8IOJZ7biDNOt9YSbOJRt7JiE0awmAmPpfLfV2JKLDeFPtcqakxbrmGBhi64E4U7O7zX78Z+129df2Av9lzXxfYD8Ao+2Km8RJuYP+3uGoZcNGnlCv7GGhPS7VciwRhCP0R9OUtVBqCeVftuvEFc=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
@@ -43,9 +43,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH net-next 05/15] net: dsa: first set up shared ports, then non-shared ports
-Date:   Tue,  4 Jan 2022 19:14:03 +0200
-Message-Id: <20220104171413.2293847-6-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 06/15] net: dsa: setup master before ports
+Date:   Tue,  4 Jan 2022 19:14:04 +0200
+Message-Id: <20220104171413.2293847-7-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220104171413.2293847-1-vladimir.oltean@nxp.com>
 References: <20220104171413.2293847-1-vladimir.oltean@nxp.com>
@@ -56,171 +56,169 @@ X-ClientProxiedBy: AM0PR02CA0192.eurprd02.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 77ebb45b-5279-40d0-0469-08d9cfa5ae25
+X-MS-Office365-Filtering-Correlation-Id: b3b33c43-fc74-4969-859e-08d9cfa5aeaa
 X-MS-TrafficTypeDiagnostic: VI1PR04MB7104:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB710472B2FD7DF734EFD38471E04A9@VI1PR04MB7104.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2043;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB71048E8A5338478B49140E48E04A9@VI1PR04MB7104.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ufSDksvuebPle+yxenIHMaH/gp5OMcD2ISw4hAIWfLd7IWvPVCXgLAtXzEFkCk47Knt6VsP9HbDwHuv8uHhMsoMdo5dRNS7sX0yTH0XbPdGr8+D3pnGmoVGpRxQ1XFHGqCxuZqTCxTMhLJbk33gBRAC8l8XdR++6kaI6X79XCXXWCqnXwflNae+Oa0ddj3OHe4eDqjlQIXWN+6cWnGVym4L6Q2kK14ubF6dG5Ek74VWb3kHV9GCDEt3QzFly0LFGH49JgZV2gETLmFUVbAcFXgyG5VN4LW8ZcMdqRbpg07eRpOuOF16ImCAwY8gZTFYnEskjATIqNH/rCi1fmt76ssDrswHJnSUO+z1eN8lJvfBE/wwTcwEXPaWTm/LtJbD5g35+Nh9F01ybva0mBUY6hgfqecagKuARB0WL/uS2ntPUgrLZYwOnjJk+xD9wEg1StJvJSgJ/9RSMmmBIdxumnIrqgGaxhgpTD5vJaEQwSgI/O+RPb92ulsp1Wng9S+qvqlLAvV1o/2A7X9D0hxa7JU+cqFH3dX90uKxoY6BwbmShpOfoQ7FTuDVvl07Dhpmn6F9TRT0uJuKlGPsN9ds2cC0QVehLVmLjIMv09AESCqDA0ulSpaz0BQZsdQ+VnNErk/vqN185aUmujay9JPt/qHl2vL881mHj2xx4btZ5TlVX91Xh2swZvkizhg0fo1adRtBmX11zVE/vzlWADzLsfg==
+X-Microsoft-Antispam-Message-Info: d+k+u4h1GZIGSyTP4AEN5CLsYZIBHJK4V3FKkUSr6pmFaHNqXiknmu/2ljC9Kg5XfS8IhRpIUmb3jJaagYxKMyPVOB8IBASE+OOYQ8IZIhPc6PLM2HcmW9vHZ3AWQX1Mk9de5LGeqfZ4oECL7KNFS+EQwenyqGnBb4PmknovHITTYnzKbNm1czF1LYQSVObDnnWolPY7lLLQlr/MYBsm6pJWiID27LnQhk1bMzr6t5QxO2N5fAHAhLdHSkKWKNkYmBaNADPsBY9KbljTSoPTbjtSGAz9kI5K96VEeNPqcjDyBYGHrlQ/rt/0cu8kWPjs4vf3UzUxvaIi8yQ7YVbM/w4CAmy0vuLziuFtQOLb7WnIPTrusRnZOlRxKz7/OntsCDgTzeFSrVoceUCERtb6KrqOPPwWLCz06IleZNG24yvJl2YHaqXTJDHpuq3bE/97WBIdyz1ykKw48HnmnP6PFXx4s0Y1aXhY2OeqHekdVltcv7S3+ggtT6JGj2EgOmP2nituhJODM7M+q4ufyeh4ze25+3hFwUo4lpTn/DP9VN5Dg5cUsH9Rt1CUmcKUHqRAhVGlavpQvzCFZJazpE2+LgU5daE1RYtaNqui7v0bRe7xeXQGaGkbxfjihHQTj45ZtAEa4n7WMctm/EO58bx0JmP3xp2qM/9d8ClREosvZEpa9kCk7ddg2+SVzlQ3Q/qqdWDdigzf8/0OtCGVaxpvpA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(54906003)(86362001)(8936002)(8676002)(5660300002)(66946007)(6506007)(52116002)(186003)(6486002)(26005)(6916009)(66476007)(66556008)(4326008)(508600001)(38350700002)(38100700002)(6666004)(36756003)(1076003)(2906002)(83380400001)(316002)(6512007)(2616005)(44832011);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EkCQBJnxzOPVCf67QBwpzB065PMOoi83PMAIwAfZwwmWq6wcyfbXCy/24Sm0?=
- =?us-ascii?Q?QW+5PVh+a49iwacLtRMF0mALrK1rjj4cR9yY64/ao3Z0Ds+WQARt7on4oI6u?=
- =?us-ascii?Q?gfug5ndtQw7U/0OblQNMgTwq1H0t+zEhXGbvT5XTdsjGl0h9q+a0pdeJytYV?=
- =?us-ascii?Q?FXhohQ0esNCMCvTZP9JGTuajGi+mh0V+SZU0iMoXQwOXKSGY5sKCIp8AdkrZ?=
- =?us-ascii?Q?jWnzAtgcUO8TadD1nlYolpqX1PG9+6gbJL34/q+H1inNpsSi76kJQngZRaOS?=
- =?us-ascii?Q?flcBtWSOURRqU/l8E2+c+TZkW5/XDReNtSoPqWp/5dEKAfasG15QMshyvLyz?=
- =?us-ascii?Q?g+br3CeTRnkZrZkXZKF7JAv5ZlbUw4eqENLXmZr9PSbgtxJKdeIfgrMgGbuE?=
- =?us-ascii?Q?V36E4v/oTMpxbDIKKak9/9nf+h4e4kZFdTyF2aF+vlpm2LkScBLxiALSnU9Y?=
- =?us-ascii?Q?atgBFR4RpOSNyRl2DdUZqc7G/4w9NrVnU/kn3I40zbRMoRnu9LEgUOfOydlf?=
- =?us-ascii?Q?ozjo1OFtQUr0JIGyPuXifVt23onYEZLi9+IHNkvCkf+luO4MDFQ+K3Brhmin?=
- =?us-ascii?Q?F3c4Le8Bf/xtdFuOy0FJIMh5OaqHzr2aPgGOmI+IbTsWYwzhdBhxb4Dp2bJg?=
- =?us-ascii?Q?oI+arQvjb4o8+/flf0iCwnH2G3NTfENBg69ugb0USC4kdCh7R1w5psvatrDz?=
- =?us-ascii?Q?UM7JHqE/X6ABmVt5QgQBBT6g5VwRFuUVVTuuhokzQNucmlizpnx9LBT+JV9K?=
- =?us-ascii?Q?cWq17nh7L0ahSJDPQzU/sHXeQP/pQxUTnSr18XrbXEH/3bQKtv4yI/E9liJ8?=
- =?us-ascii?Q?dyl60xLRWiYtF98vXA1cAENnZ83e2xwjg3MednAqGPwe8EsaGOUZCbNIdxVs?=
- =?us-ascii?Q?AJtn0RFzRr/RPjC7QF4/hfPQkrFwCBBS+ML6t/jbUUNxxi324x7jRHOokhx8?=
- =?us-ascii?Q?Gwuuzs0TSVdOyiyCG1mXqLRPM78H9VRzFMDp1nKC8vKQZNUDdljThff9ViDi?=
- =?us-ascii?Q?i+eulEm9JhOyqzhU4QcUh3SVGqrkmz4jknPh/UlymfHUJgEvMjo3mE1ykKiG?=
- =?us-ascii?Q?yaOmnavEuIHk9igsaM5SWsIt+xgH/xKiKtNNvTkM4Iw7HyKYA8pVHYTKgu4f?=
- =?us-ascii?Q?lglj8y6RSf5O+q8fueysGK/WT8IBkMMEZG6Idsl4gYhoWF4uzb30725ElqKK?=
- =?us-ascii?Q?zVuz0iy83VQ0DOQj4k8/TYIy+Wssc3Ip2Y7Kq1KnznMElY2Fm+a+0mYMHsEa?=
- =?us-ascii?Q?Jc4paVrK6frAcr8jl3+tWG5MtNKuW76QerVDopQhF2hqe6iLFhS7GLOkQm33?=
- =?us-ascii?Q?tSw4pNNBxGad4KnTlnAAMtgn7baAAnhvskwdcctMu9mS4l/HofxVXaQmdiAp?=
- =?us-ascii?Q?iyWKDirdRuXP1gcwqBTppZ6B1NJ/f5VBxmUeRCYcKUDyeZvF4JK5/46ngHdA?=
- =?us-ascii?Q?pYBSaGhUZfIMNx4qoqa+8vAki+nzBYhqJCYIIAHUeEgT6lg08iVwQZxP+eEi?=
- =?us-ascii?Q?q6PfovxRO2BJfjLfuSLY88j+Av45B8DqgWiilEatB2tp75+fQywPFGSDt3Wy?=
- =?us-ascii?Q?nvqDTBJxXOHZwbQeIyO9xP0uU1fT5dp0z6owc+ggOE4eWyDvwcZ3/viPupmD?=
- =?us-ascii?Q?/Umo1A47X5m8kMwjo55jFxs=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?h7JRWaxiLt+NcWiOFr/aZoJ5LIRxWBWcQ05FcRxnfo/HsWQ6lYFd2mFHPqwM?=
+ =?us-ascii?Q?F4Zz/FoqWMc2i0DqYrXb7RBNibBbEo4mJLfIHxj9mriVF6PONr3vyTHpPlwp?=
+ =?us-ascii?Q?bcKy/lFKgtpsJXOzkDroOK0m6939Gnq02fqpMDCKVaRk9phLbzcE0yzmbihJ?=
+ =?us-ascii?Q?GF2mbePmZyaDYFxNgBl29v3uRJHe3vtvXTT498r0iZfwH6AgT7lcmuDckErG?=
+ =?us-ascii?Q?wie1VitDJDWAPCYKXmPlttqrqDGnAhfeqZFWzeGSGrJsAumhshwzBJk4LqOL?=
+ =?us-ascii?Q?BUxVric6AIs2IVRXIcIR87/vOqR03/MET4E6APWtifLcbYgi8B67U00HBT2W?=
+ =?us-ascii?Q?cJBRc5dJbhY/I/Z++6AnxlWvGbWzIpPgC5jsC8Jjsn9d4FuDL3Z3N98poXKc?=
+ =?us-ascii?Q?kbGJXe4qbdolzcVvEd0ZeEPdQdOfVDD0ZuR5WgiMYXssGtJ4gY49xKbtx42E?=
+ =?us-ascii?Q?JJrsWeeq14NLrcoq+e4QZXoX5+fuRSINe28zSuJS96QlQOT2HJ/02ykz/vKE?=
+ =?us-ascii?Q?Ym6AFjHaVoNIaViVK6Vw2V+16veO5CVS6wsEqOvHM3QvoIN6bCyBH2lej3+M?=
+ =?us-ascii?Q?PnQhyKSyMb/PP1YVUdA7n/ajaqj19ad98mSTJf71BXAMoiq7KrKVCl0o6doI?=
+ =?us-ascii?Q?mpUQCdGn1ezUhFf8k14TImK+PS8MmWi2UXQfTNDyjZfskwj0Ze5smv94d0cR?=
+ =?us-ascii?Q?rtudlLtfmywhhESZIggk+OJkf6WPZVAIBe9Slx7QuiiLcBhYYTGshpelb06d?=
+ =?us-ascii?Q?YY6KNB34U2OCc/00AqWrq1KYzPd9l0dSaSU4Eb3zDSzzxKpFZebbquBfmmMt?=
+ =?us-ascii?Q?dOlsKEDqKEogU3Kig3KCiSy0+RL8/K1R6yLjvt0C1ZvHLScAVJqxSxwtuUlT?=
+ =?us-ascii?Q?a92ulHmI31QZmqw7LvL45H2PGuvolQrXIzKIEYxmb1l+uil78vdjwTJbZyJh?=
+ =?us-ascii?Q?xkVZLkZIN07tNgwgW2GByWmSguZxEIrI6G/nzX3wi1/rrUi0fwRes9aQ9fLa?=
+ =?us-ascii?Q?iTV6J2BR5UiMpzVuqBLzlpKj+0P4whmp3Yq5uzFfm+7YPgbUisae5klmkrQd?=
+ =?us-ascii?Q?0afHmYR4OjqS7T2FZ+yfxDvfPTvkgbTStea3JjrUiZQVbU5/Wqxka57QJ5DD?=
+ =?us-ascii?Q?ka6kKU6Mllsjd0MY1UZN6sLjYInzVudHez/jju2E6+EGqYVER1FYM0z1Wp+p?=
+ =?us-ascii?Q?CpR9xTdx8mXy7u/mkdOTxxOdCTLk3dljQTp/05uDo1qqfyqBwX/ps6Aa8QIb?=
+ =?us-ascii?Q?ZHYrH8eK+DKEOPVtAf6wM+fPCiOl09Tyjz+FYxh2GQsZofRYXgn6Z5kr7HNu?=
+ =?us-ascii?Q?Du+GVczmf2FhrPq0T0OPHANZMnrz/ALp98QSu3d5ILbO789Mi1yoM1iA60pG?=
+ =?us-ascii?Q?6SPHtVEGuvZ/7QL/rI/QLyxaSpmMbDeAEcj/6JorJAId9WMjCdGx2oGC1TaS?=
+ =?us-ascii?Q?9nebLwhxMs6jhwxR3uruEwfsYOU3tsO5Tjc5ROPtkc/QgNaX9I8IlX0XAqCq?=
+ =?us-ascii?Q?Y/YQeKthEEpqgh0nITu7vhNlgNOEsmmoUu7DRNBeXHJzFCrfgiypsWGIyxAs?=
+ =?us-ascii?Q?oMc5jXaTWuMKtCqfOsD483uYurNlD5SRRkoih05uZOD9EakeOPwHnKTDan3X?=
+ =?us-ascii?Q?puiviOa/rTPDnPDtw3pI6gA=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77ebb45b-5279-40d0-0469-08d9cfa5ae25
+X-MS-Exchange-CrossTenant-Network-Message-Id: b3b33c43-fc74-4969-859e-08d9cfa5aeaa
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2022 17:14:34.9569
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2022 17:14:35.8162
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GkX8p6jLNEVWf68Y8tb1E2SyrxQ92UQ65I0jx3cMcietfssKj4ilcg6XxY4ABix51jTYvklzWkgGnOPAaVAyoQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: SdKHFgNqi5AWKCG8LvTpB1XcB28R/m5hWkdN8pvZ8Nnh4Db4GT/QVah/Bf3nHNDoymuXN/J7mCzwGVn/0XPTMA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit a57d8c217aad ("net: dsa: flush switchdev workqueue before
-tearing down CPU/DSA ports"), the port setup and teardown procedure
-became asymmetric.
+It is said that as soon as a network interface is registered, all its
+resources should have already been prepared, so that it is available for
+sending and receiving traffic. One of the resources needed by a DSA
+slave interface is the master.
 
-The fact of the matter is that user ports need the shared ports to be up
-before they can be used for CPU-initiated termination. And since we
-register net devices for the user ports, those won't be functional until
-we also call the setup for the shared (CPU, DSA) ports. But we may do
-that later, depending on the port numbering scheme of the hardware we
-are dealing with.
+dsa_tree_setup
+-> dsa_tree_setup_ports
+   -> dsa_port_setup
+      -> dsa_slave_create
+         -> register_netdevice
+-> dsa_tree_setup_master
+   -> dsa_master_setup
+      -> sets up master->dsa_ptr, which enables reception
 
-It just makes sense that all shared ports are brought up before any user
-port is. I can't pinpoint any issue due to the current behavior, but
-let's change it nonetheless, for consistency's sake.
+Therefore, there is a short period of time after register_netdevice()
+during which the master isn't prepared to pass traffic to the DSA layer
+(master->dsa_ptr is checked by eth_type_trans). Same thing during
+unregistration, there is a time frame in which packets might be missed.
+
+Note that this change opens us to another race: dsa_master_find_slave()
+will get invoked potentially earlier than the slave creation, and later
+than the slave deletion. Since dp->slave starts off as a NULL pointer,
+the earlier calls aren't a problem, but the later calls are. To avoid
+use-after-free, we should zeroize dp->slave before calling
+dsa_slave_destroy().
+
+In practice I cannot really test real life improvements brought by this
+change, since in my systems, netdevice creation races with PHY autoneg
+which takes a few seconds to complete, and that masks quite a few races.
+Effects might be noticeable in a setup with fixed links all the way to
+an external system.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/dsa2.c | 50 +++++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 37 insertions(+), 13 deletions(-)
+ net/dsa/dsa2.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index f044136f3625..1ca78d83fa39 100644
+index 1ca78d83fa39..c1da813786a4 100644
 --- a/net/dsa/dsa2.c
 +++ b/net/dsa/dsa2.c
-@@ -1003,23 +1003,28 @@ static void dsa_tree_teardown_switches(struct dsa_switch_tree *dst)
- 		dsa_switch_teardown(dp->ds);
- }
+@@ -561,6 +561,7 @@ static void dsa_port_teardown(struct dsa_port *dp)
+ 	struct devlink_port *dlp = &dp->devlink_port;
+ 	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_mac_addr *a, *tmp;
++	struct net_device *slave;
  
--static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
-+/* Bring shared ports up first, then non-shared ports */
-+static int dsa_tree_setup_ports(struct dsa_switch_tree *dst)
- {
- 	struct dsa_port *dp;
--	int err;
-+	int err = 0;
- 
- 	list_for_each_entry(dp, &dst->ports, list) {
--		err = dsa_switch_setup(dp->ds);
--		if (err)
--			goto teardown;
-+		if (dsa_port_is_dsa(dp) || dsa_port_is_cpu(dp)) {
-+			err = dsa_port_setup(dp);
-+			if (err)
-+				goto teardown;
-+		}
- 	}
- 
- 	list_for_each_entry(dp, &dst->ports, list) {
--		err = dsa_port_setup(dp);
--		if (err) {
--			err = dsa_port_reinit_as_unused(dp);
--			if (err)
--				goto teardown;
-+		if (dsa_port_is_user(dp) || dsa_port_is_unused(dp)) {
-+			err = dsa_port_setup(dp);
-+			if (err) {
-+				err = dsa_port_reinit_as_unused(dp);
-+				if (err)
-+					goto teardown;
-+			}
+ 	if (!dp->setup)
+ 		return;
+@@ -582,9 +583,11 @@ static void dsa_port_teardown(struct dsa_port *dp)
+ 		dsa_port_link_unregister_of(dp);
+ 		break;
+ 	case DSA_PORT_TYPE_USER:
+-		if (dp->slave) {
+-			dsa_slave_destroy(dp->slave);
++		slave = dp->slave;
++
++		if (slave) {
+ 			dp->slave = NULL;
++			dsa_slave_destroy(slave);
  		}
+ 		break;
  	}
- 
-@@ -1028,7 +1033,21 @@ static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
- teardown:
- 	dsa_tree_teardown_ports(dst);
- 
--	dsa_tree_teardown_switches(dst);
-+	return err;
-+}
-+
-+static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
-+{
-+	struct dsa_port *dp;
-+	int err = 0;
-+
-+	list_for_each_entry(dp, &dst->ports, list) {
-+		err = dsa_switch_setup(dp->ds);
-+		if (err) {
-+			dsa_tree_teardown_switches(dst);
-+			break;
-+		}
-+	}
- 
- 	return err;
- }
-@@ -1115,10 +1134,14 @@ static int dsa_tree_setup(struct dsa_switch_tree *dst)
+@@ -1134,17 +1137,17 @@ static int dsa_tree_setup(struct dsa_switch_tree *dst)
  	if (err)
  		goto teardown_cpu_ports;
+ 
+-	err = dsa_tree_setup_ports(dst);
++	err = dsa_tree_setup_master(dst);
+ 	if (err)
+ 		goto teardown_switches;
  
 -	err = dsa_tree_setup_master(dst);
 +	err = dsa_tree_setup_ports(dst);
  	if (err)
- 		goto teardown_switches;
+-		goto teardown_ports;
++		goto teardown_master;
  
-+	err = dsa_tree_setup_master(dst);
-+	if (err)
-+		goto teardown_ports;
-+
  	err = dsa_tree_setup_lags(dst);
  	if (err)
- 		goto teardown_master;
-@@ -1131,8 +1154,9 @@ static int dsa_tree_setup(struct dsa_switch_tree *dst)
+-		goto teardown_master;
++		goto teardown_ports;
  
- teardown_master:
- 	dsa_tree_teardown_master(dst);
--teardown_switches:
-+teardown_ports:
+ 	dst->setup = true;
+ 
+@@ -1152,10 +1155,10 @@ static int dsa_tree_setup(struct dsa_switch_tree *dst)
+ 
+ 	return 0;
+ 
+-teardown_master:
+-	dsa_tree_teardown_master(dst);
+ teardown_ports:
  	dsa_tree_teardown_ports(dst);
-+teardown_switches:
++teardown_master:
++	dsa_tree_teardown_master(dst);
+ teardown_switches:
  	dsa_tree_teardown_switches(dst);
  teardown_cpu_ports:
+@@ -1173,10 +1176,10 @@ static void dsa_tree_teardown(struct dsa_switch_tree *dst)
+ 
+ 	dsa_tree_teardown_lags(dst);
+ 
+-	dsa_tree_teardown_master(dst);
+-
+ 	dsa_tree_teardown_ports(dst);
+ 
++	dsa_tree_teardown_master(dst);
++
+ 	dsa_tree_teardown_switches(dst);
+ 
  	dsa_tree_teardown_cpu_ports(dst);
 -- 
 2.25.1
