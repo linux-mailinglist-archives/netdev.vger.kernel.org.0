@@ -2,97 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FD5A4844B4
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 16:34:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5081848452E
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 16:49:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233612AbiADPeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 10:34:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41440 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231406AbiADPeM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 10:34:12 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF241C061761;
-        Tue,  4 Jan 2022 07:34:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
-        Resent-Message-ID:In-Reply-To:References;
-        bh=m+xMehLESnZE+MHCEBfhc+Ab4EEeMmNaYRMbaBZFbxM=; t=1641310451; x=1642520051; 
-        b=sPbv/qkKs3+tCkwTdF0cu+xMS1iS7Szv3cRjym0Zr15Pf2NRvChZxiTBnt3SVxxApEr3BajBY6y
-        PzOJp6Nbnid0dLlv6cbrX8JAA4k24dFReK+hTHeOGfNrPTH5lIcdk7ZOEwT8kZfm8PeMGlYpA/J3o
-        qgGt9xnNLVTXnN/hXQU6M60RmUs3G7rlAtPZzQPkGBZwJZHcLw6rs3ExqzQhwkDuP3+Qum/P3HjaL
-        5iQeQQV5+32i/2MhAfUMn1nBJspUiM7K89kUEP2ukcfOYrmSXN2nAQU7hGj8My5NoI2tChGeVngfV
-        dzXZdgWLZHZHtAbgOIyWik+cGYvwD+4CzINQ==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1n4lpC-001noH-3I;
-        Tue, 04 Jan 2022 16:34:10 +0100
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211-next 2022-01-04
-Date:   Tue,  4 Jan 2022 16:34:02 +0100
-Message-Id: <20220104153403.69749-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.33.1
+        id S232739AbiADPtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 10:49:07 -0500
+Received: from proxima.lasnet.de ([78.47.171.185]:52038 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230352AbiADPtG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 10:49:06 -0500
+X-Greylist: delayed 501 seconds by postgrey-1.27 at vger.kernel.org; Tue, 04 Jan 2022 10:49:06 EST
+Received: from [IPV6:2003:e9:d728:ec47:4b31:73e4:34c5:505a] (p200300e9d728ec474b3173e434c5505a.dip0.t-ipconnect.de [IPv6:2003:e9:d728:ec47:4b31:73e4:34c5:505a])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 120EAC055C;
+        Tue,  4 Jan 2022 16:40:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1641310843;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fzrSYWdpug8dV2D+vjEBY0DdwVSV7UgruGe2VxZhMYQ=;
+        b=wMtj+/+SQEzNvk7geCsi6F8u7AI0xwhhl98uuCWCZNgKfj6mugjmItNNOXweG1ESnJYKvv
+        1Xjpl9tjKW0IPX9xK5g/1C+TQM9blc0CxuUUqyhC5Q6G6OcW0s1Pt0Mj2WygkrGqz18Twk
+        H6OdYiPDZQTLzBd1Bq7ZVEP2gNpb5eexDji955LofwwI3j35/HloYjyUnoFaq7OgYSSCs6
+        ciYVNffIlOiuWFPj44xtDZIrE4LUBH/UyYTfUWZUPy2vmE9UESYZobGM0B6fgai+/TGGWs
+        JuR7TOHx22BlMHDf5G9fYwVGwNv+MvKy5CwqK6dsTsxFvhwkROqtxqRBBVwBpA==
+Message-ID: <ed39cbe6-0885-a3ab-fc30-7c292e1acc53@datenfreihafen.org>
+Date:   Tue, 4 Jan 2022 16:40:41 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH v2] ieee802154: atusb: fix uninit value in
+ atusb_set_extended_addr
+Content-Language: en-US
+To:     Pavel Skripkin <paskripkin@gmail.com>, alex.aring@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexander Potapenko <glider@google.com>
+References: <CAB_54W50xKFCWZ5vYuDG2p4ijpd63cSutRrV4MLs9oasLmKgzQ@mail.gmail.com>
+ <20220103120925.25207-1-paskripkin@gmail.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20220103120925.25207-1-paskripkin@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello.
 
-And a couple of more patches for -next... I have more, but most
-of those are related to EHT (WiFi 7) and so not really relevant
-in the short term - not going to send them this time around, as
-I still need to review anyway.
+On 03.01.22 13:09, Pavel Skripkin wrote:
+> Alexander reported a use of uninitialized value in
+> atusb_set_extended_addr(), that is caused by reading 0 bytes via
+> usb_control_msg().
+> 
+> Fix it by validating if the number of bytes transferred is actually
+> correct, since usb_control_msg() may read less bytes, than was requested
+> by caller.
+> 
+> Fail log:
+> 
+> BUG: KASAN: uninit-cmp in ieee802154_is_valid_extended_unicast_addr include/linux/ieee802154.h:310 [inline]
+> BUG: KASAN: uninit-cmp in atusb_set_extended_addr drivers/net/ieee802154/atusb.c:1000 [inline]
+> BUG: KASAN: uninit-cmp in atusb_probe.cold+0x29f/0x14db drivers/net/ieee802154/atusb.c:1056
+> Uninit value used in comparison: 311daa649a2003bd stack handle: 000000009a2003bd
+>   ieee802154_is_valid_extended_unicast_addr include/linux/ieee802154.h:310 [inline]
+>   atusb_set_extended_addr drivers/net/ieee802154/atusb.c:1000 [inline]
+>   atusb_probe.cold+0x29f/0x14db drivers/net/ieee802154/atusb.c:1056
+>   usb_probe_interface+0x314/0x7f0 drivers/usb/core/driver.c:396
+> 
+> Fixes: 7490b008d123 ("ieee802154: add support for atusb transceiver")
+> Reported-by: Alexander Potapenko <glider@google.com>
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
+> 
+> Changes in v2:
+> 	- Reworked fix approach, since moving to new USB API is not
+> 	  suitable for backporting to stable kernels
+> 
+> ---
+>   drivers/net/ieee802154/atusb.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
+> index 23ee0b14cbfa..e6cc816dd7a1 100644
+> --- a/drivers/net/ieee802154/atusb.c
+> +++ b/drivers/net/ieee802154/atusb.c
+> @@ -93,7 +93,9 @@ static int atusb_control_msg(struct atusb *atusb, unsigned int pipe,
+>   
+>   	ret = usb_control_msg(usb_dev, pipe, request, requesttype,
+>   			      value, index, data, size, timeout);
+> -	if (ret < 0) {
+> +	if (ret < size) {
+> +		ret = ret < 0 ? ret : -ENODATA;
+> +
+>   		atusb->err = ret;
+>   		dev_err(&usb_dev->dev,
+>   			"%s: req 0x%02x val 0x%x idx 0x%x, error %d\n",
+> 
 
-Please pull and let me know if there's any problem.
+It compiles, but does not work on the real hardware.
 
-Thanks,
-johannes
+[    1.114698] usb 1-1: new full-speed USB device number 2 using uhci_hcd
+[    1.261691] usb 1-1: New USB device found, idVendor=20b7, 
+idProduct=1540, bcdDevice= 0.01
+[    1.263421] usb 1-1: New USB device strings: Mfr=0, Product=0, 
+SerialNumber=1
+[    1.264952] usb 1-1: SerialNumber: 4630333438371502231a
+[    1.278042] usb 1-1: ATUSB: AT86RF231 version 2
+[    1.281087] usb 1-1: Firmware: major: 0, minor: 3, hardware type: 
+ATUSB (2)
+[    1.285191] usb 1-1: atusb_control_msg: req 0x01 val 0x0 idx 0x0, 
+error -61
+[    1.286903] usb 1-1: failed to fetch extended address, random address set
+[    1.288757] usb 1-1: atusb_probe: initialization failed, error = -61
+[    1.290922] atusb: probe of 1-1:1.0 failed with error -61
 
 
+Without your patch it works as expected:
 
-The following changes since commit 416b27439df9ecb36b03da63dc37a8840b6f2efe:
+[    1.091925] usb 1-1: new full-speed USB device number 2 using uhci_hcd
+[    1.237743] usb 1-1: New USB device found, idVendor=20b7, 
+idProduct=1540, bcdDevice= 0.01
+[    1.239788] usb 1-1: New USB device strings: Mfr=0, Product=0, 
+SerialNumber=1
+[    1.241432] usb 1-1: SerialNumber: 4630333438371502231a
+[    1.255012] usb 1-1: ATUSB: AT86RF231 version 2
+[    1.258073] usb 1-1: Firmware: major: 0, minor: 3, hardware type: 
+ATUSB (2)
+[    1.262170] usb 1-1: Firmware: build #132 Mo 28. Nov 16:20:35 CET 2016
+[    1.266195] usb 1-1: Read permanent extended address 
+10:e2:d5:ff:ff:00:02:e8 from device
 
-  ethernet/sfc: remove redundant rc variable (2022-01-04 12:41:41 +0000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-net-next-2022-01-04
-
-for you to fetch changes up to b3c1906ed02ad2b9f4db2f652cb7ea7b333963e5:
-
-  mac80211: use ieee80211_bss_get_elem() (2022-01-04 15:50:36 +0100)
-
-----------------------------------------------------------------
-Just a few more changes:
- * mac80211: allow non-standard VHT MCSes 10/11
- * mac80211: add sleepable station iterator for drivers
- * nl80211: clarify a comment
- * mac80211: small cleanup to use typed element helpers
-
-----------------------------------------------------------------
-Felix Fietkau (1):
-      nl80211: clarify comment for mesh PLINK_BLOCKED state
-
-Johannes Berg (1):
-      mac80211: use ieee80211_bss_get_elem()
-
-Martin Blumenstingl (1):
-      mac80211: Add stations iterator where the iterator function may sleep
-
-Ping-Ke Shih (1):
-      mac80211: allow non-standard VHT MCS-10/11
-
- include/net/mac80211.h       | 21 +++++++++++++++++++++
- include/uapi/linux/nl80211.h |  2 +-
- net/mac80211/mlme.c          | 14 +++++++-------
- net/mac80211/rx.c            |  2 +-
- net/mac80211/util.c          | 13 +++++++++++++
- 5 files changed, 43 insertions(+), 9 deletions(-)
+regards
+Stefan Schmidt
 
