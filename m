@@ -2,138 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2CBA48471D
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 18:41:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1250E48471F
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 18:41:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235841AbiADRlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 12:41:04 -0500
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:39252
-        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235820AbiADRlD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 12:41:03 -0500
-Received: from [192.168.1.7] (unknown [222.129.35.96])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 8190A3F11D;
-        Tue,  4 Jan 2022 17:40:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641318055;
-        bh=LuQb28R2FkLy01iYLZ8QkxirC3IlNK0sfWy4RR2SAYQ=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=WInJL35A2sSz8464pePpjabQuyPyIdKmTnNd67/ANReKaMADAzM49Ndk++AO7MUcA
-         8qG6DVCAkZKtihyq91fz8nlVH2OmAOljd76XnlA+oiF00ul+JdYvOpyC+KRoxwNwZb
-         pWKADSlqJ9StQgzxhi/xIOiWHvrmcjXvbeRNo++eK30BIgMu//OgFh2QQh9tFyqbOm
-         oh9bU58Dp0kU8RrFud7zRXw83b4Q4C8soHwnma+CwJ3zViipuE807j3S+qYQ4h7Bs9
-         rf7USO2TlGjfaQj5dz9vL8irmmYnLBPOBIsmuppKh83v8wCSZVn4mWu9WPXBv8j47A
-         SJ78JCw5DZ8yA==
-Message-ID: <601815fe-a10e-fe48-254c-ed2ef1accffc@canonical.com>
-Date:   Wed, 5 Jan 2022 01:40:42 +0800
+        id S235892AbiADRl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 12:41:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42900 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235864AbiADRlW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 12:41:22 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F64CC06179C;
+        Tue,  4 Jan 2022 09:41:16 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id d198-20020a1c1dcf000000b0034569cdd2a2so1844692wmd.5;
+        Tue, 04 Jan 2022 09:41:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=p7d4ATVOqgVJzPZhbhfgXdi7JK3IlTXgeAj0xIpqxpQ=;
+        b=E0qK5PRMm7iO1cNCfybAmbXBv3ez9jHa4YRyj0t2Mu9Y09oBKtcRJhk3ikKZ2X3Fru
+         LrCZzujfGiIsd7303DWnJCqz+/AIebOAvVnmo4MPcLjVXD5eYYR5YQWxQ/0kZgCz1NCt
+         uyexMGGq2sXUlqi9S0a2WacdszOWkijoLJFqkNlYR3q45qMuOmyawPPRhsmQALybmHU4
+         5kPzZ+s31itdC3BHQ7/QXCGRyRpoNtdVHSdGL3LMZG6iDe4onTjOlN1ZD+8XPjKFpdkP
+         udIpmUKuBYydqynCk1pzUDWjUhE61SaNkrnwy1LmnaUd6Ko2qirdjE6/+5Od57ZjiP6c
+         IKxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=p7d4ATVOqgVJzPZhbhfgXdi7JK3IlTXgeAj0xIpqxpQ=;
+        b=FWYenK/2joV6MZ1eBptASi7tc3+us9yMT9D1gLnlkA7mU15Ln5ekIBSFPmc57/OduB
+         cMpl5U7caJxhd9t5bZ9dsI42knbDTUCCg5Wpe75LyMWa/r77CGX2BUYlJsVzdz72E2oM
+         o88ZGJU+I5oerxDxygH6ZJpsyzny+4kSYLM/8WbkUBPj+hlIMvMeyykeebMlt6NxlDzi
+         IKtmVLZLF+OSNP9gxifW+7s4hOMPofc8wc+qsWXhLcQK4MIPqIvT9qt63p0CWAI/yYS4
+         RdGS8GDd1azY0Z1+U1NMT0mWtWSKq/VIEG0m3E7IcaWKcW8aA2sPgt6GgD+xmAqJhJVA
+         Iqaw==
+X-Gm-Message-State: AOAM530b/5tWsgkwa+OrdyUPXMB776B9tN0mSHGCeGkYPOFCyMF6g52T
+        xY7cVme5/uQTeEHCJGjdmMct3trVHjKZ3A==
+X-Google-Smtp-Source: ABdhPJxU5E7HPujTnVS3JaiI6qCKagtfA8FeTWGh+b9HXHFLfNidqlEY62VvLikAmixN06fy9HtM9A==
+X-Received: by 2002:a1c:4e17:: with SMTP id g23mr43273240wmh.109.1641318075228;
+        Tue, 04 Jan 2022 09:41:15 -0800 (PST)
+Received: from [10.0.0.4] ([37.165.184.46])
+        by smtp.gmail.com with ESMTPSA id a144sm566847wmd.2.2022.01.04.09.41.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Jan 2022 09:41:14 -0800 (PST)
+Message-ID: <0215980e-a258-5322-13e9-42fe868817b3@gmail.com>
+Date:   Tue, 4 Jan 2022 09:41:13 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] net: usb: r8152: Add MAC passthrough support for more
- Lenovo Docks
+ Thunderbird/91.3.2
+Subject: Re: [PATCH net-next] net: lantiq_xrx200: add ingress SG DMA support
 Content-Language: en-US
-To:     Henning Schild <henning.schild@siemens.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+To:     Aleksander Jan Bajkowski <olek2@wp.pl>, hauke@hauke-m.de,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20211116141917.31661-1-aaron.ma@canonical.com>
- <20220104123814.32bf179e@md1za8fc.ad001.siemens.net>
- <20220104065326.2a73f674@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20220104180715.7ecb0980@md1za8fc.ad001.siemens.net>
-From:   Aaron Ma <aaron.ma@canonical.com>
-In-Reply-To: <20220104180715.7ecb0980@md1za8fc.ad001.siemens.net>
+References: <20220103194316.1116630-1-olek2@wp.pl>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <20220103194316.1116630-1-olek2@wp.pl>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+On 1/3/22 11:43, Aleksander Jan Bajkowski wrote:
+> This patch adds support for scatter gather DMA. DMA in PMAC splits
+> the packet into several buffers when the MTU on the CPU port is
+> less than the MTU of the switch. The first buffer starts at an
+> offset of NET_IP_ALIGN. In subsequent buffers, dma ignores the
+> offset. Thanks to this patch, the user can still connect to the
+> device in such a situation. For normal configurations, the patch
+> has no effect on performance.
+>
+> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+> ---
+>   drivers/net/ethernet/lantiq_xrx200.c | 47 +++++++++++++++++++++++-----
+>   1 file changed, 40 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+> index 80bfaf2fec92..503fb99c5b90 100644
+> --- a/drivers/net/ethernet/lantiq_xrx200.c
+> +++ b/drivers/net/ethernet/lantiq_xrx200.c
+> @@ -27,6 +27,9 @@
+>   #define XRX200_DMA_TX		1
+>   #define XRX200_DMA_BURST_LEN	8
+>   
+> +#define XRX200_DMA_PACKET_COMPLETE	0
+> +#define XRX200_DMA_PACKET_IN_PROGRESS	1
+> +
+>   /* cpu port mac */
+>   #define PMAC_RX_IPG		0x0024
+>   #define PMAC_RX_IPG_MASK	0xf
+> @@ -62,6 +65,9 @@ struct xrx200_chan {
+>   	struct ltq_dma_channel dma;
+>   	struct sk_buff *skb[LTQ_DESC_NUM];
+>   
+> +	struct sk_buff *skb_head;
+> +	struct sk_buff *skb_tail;
+> +
+>   	struct xrx200_priv *priv;
+>   };
+>   
+> @@ -205,7 +211,8 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
+>   	struct xrx200_priv *priv = ch->priv;
+>   	struct ltq_dma_desc *desc = &ch->dma.desc_base[ch->dma.desc];
+>   	struct sk_buff *skb = ch->skb[ch->dma.desc];
+> -	int len = (desc->ctl & LTQ_DMA_SIZE_MASK);
+> +	u32 ctl = desc->ctl;
+> +	int len = (ctl & LTQ_DMA_SIZE_MASK);
+>   	struct net_device *net_dev = priv->net_dev;
+>   	int ret;
+>   
+> @@ -221,12 +228,36 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
+>   	}
+>   
+>   	skb_put(skb, len);
+> -	skb->protocol = eth_type_trans(skb, net_dev);
+> -	netif_receive_skb(skb);
+> -	net_dev->stats.rx_packets++;
+> -	net_dev->stats.rx_bytes += len;
+>   
+> -	return 0;
+> +	/* add buffers to skb via skb->frag_list */
+> +	if (ctl & LTQ_DMA_SOP) {
+> +		ch->skb_head = skb;
+> +		ch->skb_tail = skb;
+> +	} else if (ch->skb_head) {
+> +		if (ch->skb_head == ch->skb_tail)
+> +			skb_shinfo(ch->skb_tail)->frag_list = skb;
+> +		else
+> +			ch->skb_tail->next = skb;
+> +		ch->skb_tail = skb;
+> +		skb_reserve(ch->skb_tail, -NET_IP_ALIGN);
+> +		ch->skb_head->len += skb->len;
+> +		ch->skb_head->data_len += skb->len;
+> +		ch->skb_head->truesize += skb->truesize;
+> +	}
+> +
+> +	if (ctl & LTQ_DMA_EOP) {
+> +		ch->skb_head->protocol = eth_type_trans(ch->skb_head, net_dev);
+> +		netif_receive_skb(ch->skb_head);
+> +		net_dev->stats.rx_packets++;
+> +		net_dev->stats.rx_bytes += ch->skb_head->len;
 
-On 1/5/22 01:07, Henning Schild wrote:
-> Am Tue, 4 Jan 2022 06:53:26 -0800
-> schrieb Jakub Kicinski <kuba@kernel.org>:
-> 
->> On Tue, 4 Jan 2022 12:38:14 +0100 Henning Schild wrote:
->>> This patch is wrong and taking the MAC inheritance way too far. Now
->>> any USB Ethernet dongle connected to a Lenovo USB Hub will go into
->>> inheritance (which is meant for docks).
->>>
->>> It means that such dongles plugged directly into the laptop will do
->>> that, or travel adaptors/hubs which are not "active docks".
->>>
->>> I have USB-Ethernet dongles on two desks and both stopped working as
->>> expected because they took the main MAC, even with it being used at
->>> the same time. The inheritance should (if at all) only be done for
->>> clearly identified docks and only for one r8152 instance ... not
->>> all. Maybe even double checking if that main PHY is "plugged" and
->>> monitoring it to back off as soon as it is.
->>>
->>> With this patch applied users can not use multiple ethernet devices
->>> anymore ... if some of them are r8152 and connected to "Lenovo" ...
->>> which is more than likely!
->>>
->>> Reverting that patch solved my problem, but i later went to
->>> disabling that very questionable BIOS feature to disable things for
->>> good without having to patch my kernel.
->>>
->>> I strongly suggest to revert that. And if not please drop the
->>> defines of
->>>> -		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
->>>> -		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
->>>
->>> And instead of crapping out with "(unnamed net_device)
->>> (uninitialized): Invalid header when reading pass-thru MAC addr"
->>> when the BIOS feature is turned off, one might want to check
->>> DSDT/WMT1/ITEM/"MACAddressPassThrough" which is my best for asking
->>> the BIOS if the feature is wanted.
->>
->> Thank you for the report!
->>
->> Aaron, will you be able to fix this quickly? 5.16 is about to be
->> released.
-> 
-> If you guys agree with a revert and potentially other actions, i would
-> be willing to help. In any case it is not super-urgent since we can
-> maybe agree an regression and push it back into stable kernels.
-> 
-> I first wanted to place the report and see how people would react ...
-> if you guys agree that this is a bug and the inheritance is going "way
-> too far".
-> 
-> But i would only do some repairs on the surface, the feature itself is
-> horrific to say the least and i am very happy with that BIOS switch to
-> ditch it for good. Giving the MAC out is something a dock physically
-> blocking the original PHY could do ... but year ... only once and it
-> might be pretty hard to say which r8152 is built-in from the hub and
-> which is plugged in additionally in that very hub.
-> Not to mention multiple hubs of the same type ... in a nice USB-C chain.
-> 
 
-Yes, it's expected to be a mess if multiple r8152 are attached to Lenovo USB-C/TBT docks.
-The issue had been discussed for several times in LKML.
-Either lose this feature or add potential risk for multiple r8152.
+Use after free alert.
 
-The idea is to make the Dock work which only ship with one r8152.
-It's really hard to say r8152 is from dock or another plugin one.
+Please add/test the following fix.
 
-If revert this patch, then most users with the original shipped dock may lose this feature.
-That's the problem this patch try to fix.
-
-For now I suggest to disable it in BIOS if you got multiple r8152.
-
-Let me try to make some changes to limit this feature in one r8152.
-
-Aaron
+(It is illegal to deref skb after netif_receive_skb())
 
 
-> MAC spoofing is something NetworkManager and others can take care of,
-> or udev ... doing that in the driver is ... spooky.
-> 
-> regards,
-> Henning
+diff --git a/drivers/net/ethernet/lantiq_xrx200.c 
+b/drivers/net/ethernet/lantiq_xrx200.c
+index 503fb99c5b90..bf7e3c7910d1 100644
+--- a/drivers/net/ethernet/lantiq_xrx200.c
++++ b/drivers/net/ethernet/lantiq_xrx200.c
+@@ -247,9 +247,9 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
+
+         if (ctl & LTQ_DMA_EOP) {
+                 ch->skb_head->protocol = eth_type_trans(ch->skb_head, 
+net_dev);
+-               netif_receive_skb(ch->skb_head);
+                 net_dev->stats.rx_packets++;
+                 net_dev->stats.rx_bytes += ch->skb_head->len;
++               netif_receive_skb(ch->skb_head);
+                 ch->skb_head = NULL;
+                 ch->skb_tail = NULL;
+                 ret = XRX200_DMA_PACKET_COMPLETE;
+
+
+
+> +		ch->skb_head = NULL;
+> +		ch->skb_tail = NULL;
+> +		ret = XRX200_DMA_PACKET_COMPLETE;
+> +	} else {
+> +		ret = XRX200_DMA_PACKET_IN_PROGRESS;
+> +	}
+> +
+> +	return ret;
+>   }
+>   
+>   static int xrx200_poll_rx(struct napi_struct *napi, int budget)
+> @@ -241,7 +272,9 @@ static int xrx200_poll_rx(struct napi_struct *napi, int budget)
+>   
+>   		if ((desc->ctl & (LTQ_DMA_OWN | LTQ_DMA_C)) == LTQ_DMA_C) {
+>   			ret = xrx200_hw_receive(ch);
+> -			if (ret)
+> +			if (ret == XRX200_DMA_PACKET_IN_PROGRESS)
+> +				continue;
+> +			if (ret != XRX200_DMA_PACKET_COMPLETE)
+>   				return ret;
+>   			rx++;
+>   		} else {
