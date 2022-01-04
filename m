@@ -2,120 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ACA54843F1
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 15:57:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7699F4843F9
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 15:57:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234493AbiADO5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 09:57:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
+        id S234466AbiADO5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 09:57:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234404AbiADO4z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 09:56:55 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AE7C061792
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 06:56:55 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id p1-20020a1c7401000000b00345c2d068bdso20348663wmc.3
-        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 06:56:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EjC9RoatGf4NuVo6mZRinaRaNOZbl6EwcNrtjHiT4O4=;
-        b=pVKyM/tpT8WV2u9dQSjWb2R2+yIp2RFRzYSVHtO1Z9f1E6ly/Q+A1sfyVjPJHK8nda
-         1CJXRxRLD/OQW9iXB6ddlL2BwpjbSXUNER2HA30aAcMNpF2hWRWBjQ1MfdRgBaSszfaT
-         7gC90tLlau/wWwAL8N8gqPmmRrrwOGD9o4epZ1DKNRWUDzPi0AEY0Z1hFazx9ec6m/eg
-         0MjTRqsZiLYS/tQqN6amr22bO4z8G4xpIz9HXtXucEYIkivGLk84vl2f2pAZdOJ0EqfT
-         44zO+/qQYMZQBqdw8zLkXXo/17FcLasTNYxAPFykx6ZMU5vw3N1D12Or/eZzMTe4QhEw
-         AAug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EjC9RoatGf4NuVo6mZRinaRaNOZbl6EwcNrtjHiT4O4=;
-        b=YISAYBs/mlB3NDxgRA7REMYHyGCGi8eSGpp3AB18yigyzThy9DMDiiPJV1tAh6YmDi
-         RMDyE/OBSWgtfx+TSM02B3wWPh4rn7u7XMcJOtUcslTo93SSx26mdzRFVP8hLBEBo6fV
-         Kg7CzcGsuiXvmH5hCVUV4pzBPDRSx5DrZOLT2inZYu5CId5CmatfdszJZe5E+EO6GtdJ
-         b2jADarkL61m9ELIHS1G/lcqsp82sLYHZP+cTRUzHSyNT9PclOtx4/w7FiH21gbMPTw9
-         IVubk2E78YmTR517LZddpspg/8XQQapQ3w+UvEINJv18s9g7h0rM0yQLwsNQ5Ak0YrBd
-         ztYQ==
-X-Gm-Message-State: AOAM533dZDs9EiOqNj7/xKxOtci+1LpoNgW//HIzdHfySdCYwjRsoPD6
-        feSDJiSNiswAcma3wX31+neIhQ==
-X-Google-Smtp-Source: ABdhPJxFptGtlJldG0ByIqvEYEbbrflwjVjobp1qK+74UeP6+B5JY8OVsdELT/IyNlyDInC3z44YDQ==
-X-Received: by 2002:a1c:4c08:: with SMTP id z8mr41067300wmf.48.1641308214010;
-        Tue, 04 Jan 2022 06:56:54 -0800 (PST)
-Received: from localhost.localdomain ([2001:861:44c0:66c0:f6da:6ac:481:1df0])
-        by smtp.gmail.com with ESMTPSA id k10sm19309859wrz.113.2022.01.04.06.56.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Jan 2022 06:56:53 -0800 (PST)
-From:   Neil Armstrong <narmstrong@baylibre.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-oxnas@groups.io,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Neil Armstrong <narmstrong@baylibre.com>
-Subject: [PATCH arm-soc-next v2 3/3] ARM: dts: ox810se: Add Ethernet support
-Date:   Tue,  4 Jan 2022 15:56:46 +0100
-Message-Id: <20220104145646.135877-4-narmstrong@baylibre.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220104145646.135877-1-narmstrong@baylibre.com>
-References: <20220104145646.135877-1-narmstrong@baylibre.com>
+        with ESMTP id S232974AbiADO5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 09:57:40 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD89C061761;
+        Tue,  4 Jan 2022 06:57:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=9iomVx+1dyKtO7ifnBatBp+MkPLAfaNf9PXQTH5ZKCY=; b=nxjXLUm7MZFDMTTOTD6d+X1Hwr
+        trz/TxODNHcJNtM+lPi8f+nH7vupO5XHq6g06NoQthBjMkmnhSZDjORFDLEEJfHgMCS9cSXtQNgAP
+        I/ZNHdgtcQezgNn020+ZkaXETw1jI1wlBeZCMfPZ0rmcDXZOKYThW1xlcpv5OkB/r8jiDOe//eq7y
+        nlQz6HgpIVC4abrDJHNggJGLPcMNKpfC8y+RXAyGPdOi967G4V1xZ1WznRviu5jkGhaUiIAguwwr/
+        PYT0+BSbQwSIlyxg6iBng71FK621/j/ckdgqy0Re1gV5XsV/3JLU0Err+Un+fHn+GccVAkPnq17Eu
+        x4TPzH2A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56566)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1n4lFm-00077c-IE; Tue, 04 Jan 2022 14:57:34 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1n4lFl-0007KF-4Y; Tue, 04 Jan 2022 14:57:33 +0000
+Date:   Tue, 4 Jan 2022 14:57:33 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Corentin Labbe <clabbe.montjoie@gmail.com>,
+        linus.walleij@linaro.org, ulli.kroll@googlemail.com,
+        kuba@kernel.org, davem@davemloft.net, hkallweit1@gmail.com,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: net: phy: marvell: network working with generic PHY and not with
+ marvell PHY
+Message-ID: <YdRgXbpK6CFB/eCU@shell.armlinux.org.uk>
+References: <YdQoOSXS98+Af1wO@Red>
+ <YdQsJnfqjaFrtC0m@shell.armlinux.org.uk>
+ <YdQwexJVfrdzEfZK@Red>
+ <YdQydK4GhI0P5RYL@shell.armlinux.org.uk>
+ <YdQ5i+//UITSbxS/@shell.armlinux.org.uk>
+ <YdRVovG9mgEWffkn@Red>
+ <YdRZQl6U0y19P/0+@shell.armlinux.org.uk>
+ <YdRdu3jFPnGd1DsH@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdRdu3jFPnGd1DsH@lunn.ch>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add nodes for the embedded Synopsys DWMAC Ethernet controller.
+On Tue, Jan 04, 2022 at 03:46:19PM +0100, Andrew Lunn wrote:
+> > @@ -1227,16 +1227,18 @@ static int m88e1118_config_init(struct phy_device *phydev)
+> >  {
+> >  	int err;
+> >  
+> > -	/* Change address */
+> > -	err = marvell_set_page(phydev, MII_MARVELL_MSCR_PAGE);
+> > -	if (err < 0)
+> > -		return err;
+> > -
+> >  	/* Enable 1000 Mbit */
+> > -	err = phy_write(phydev, 0x15, 0x1070);
+> > +	err = phy_write_paged(phydev, MII_MARVELL_MSCR_PAGE,
+> > +			      MII_88E1121_PHY_MSCR_REG, 0x1070);
+> 
+> Ah, yes, keeping this makes it more backwards compatible.
+> 
+> It would be nice to replace the 0x1070 with #defines.
+> 
+> We already have:
+> 
+> #define MII_88E1121_PHY_MSCR_RX_DELAY	BIT(5)
+> #define MII_88E1121_PHY_MSCR_TX_DELAY	BIT(4)
+> #define MII_88E1121_PHY_MSCR_DELAY_MASK	(BIT(5) | BIT(4))
+> 
+> Bits 6 is the MSB of the default MAC speed.
+> Bit 13 is the LSB of the default MAC speed. These two should default to 10b = 1000Mbps
+> Bit 12 is reserved, and should be written 1.
 
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
----
- arch/arm/boot/dts/ox810se-wd-mbwe.dts |  4 ++++
- arch/arm/boot/dts/ox810se.dtsi        | 18 ++++++++++++++++++
- 2 files changed, 22 insertions(+)
+Hmm, seems odd that these speed bits match BMCR, and I'm not sure why
+the default MAC speed would have any bearing on whether gigabit mode
+is enabled. If they default to 10b, then the write should have no effect
+unless boot firmware has changed them.
 
-diff --git a/arch/arm/boot/dts/ox810se-wd-mbwe.dts b/arch/arm/boot/dts/ox810se-wd-mbwe.dts
-index 7e2fcb220aea..c59e06ff2423 100644
---- a/arch/arm/boot/dts/ox810se-wd-mbwe.dts
-+++ b/arch/arm/boot/dts/ox810se-wd-mbwe.dts
-@@ -103,6 +103,10 @@ rtc0: rtc@48 {
- 	};
- };
- 
-+&etha {
-+	status = "okay";
-+};
-+
- &uart1 {
- 	status = "okay";
- 
-diff --git a/arch/arm/boot/dts/ox810se.dtsi b/arch/arm/boot/dts/ox810se.dtsi
-index 0755e5864c4a..96c0745f7b70 100644
---- a/arch/arm/boot/dts/ox810se.dtsi
-+++ b/arch/arm/boot/dts/ox810se.dtsi
-@@ -81,6 +81,24 @@ soc {
- 		ranges;
- 		interrupt-parent = <&intc>;
- 
-+		etha: ethernet@40400000 {
-+			compatible = "oxsemi,ox810se-dwmac", "snps,dwmac";
-+			reg = <0x40400000 0x2000>;
-+			interrupts = <8>;
-+			interrupt-names = "macirq";
-+			mac-address = [000000000000]; /* Filled in by U-Boot */
-+			phy-mode = "rgmii";
-+
-+			clocks = <&stdclk 6>, <&gmacclk>;
-+			clock-names = "gmac", "stmmaceth";
-+			resets = <&reset 6>;
-+
-+			/* Regmap for sys registers */
-+			oxsemi,sys-ctrl = <&sys>;
-+
-+			status = "disabled";
-+		};
-+
- 		apb-bridge@44000000 {
- 			#address-cells = <1>;
- 			#size-cells = <1>;
 -- 
-2.25.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
