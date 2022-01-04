@@ -2,108 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E88AA483AC9
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 04:00:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB358483AD1
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 04:08:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232464AbiADC77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 21:59:59 -0500
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:59861 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232440AbiADC77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 21:59:59 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V0oYYYM_1641265187;
-Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V0oYYYM_1641265187)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 04 Jan 2022 10:59:57 +0800
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dust.li@linux.alibaba.com,
-        tonylu@linux.alibaba.com
-Subject: [PATCH net v2] net/smc: Reset conn->lgr when link group registration fails
-Date:   Tue,  4 Jan 2022 10:59:47 +0800
-Message-Id: <1641265187-108970-1-git-send-email-guwen@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S232482AbiADDIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 22:08:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232440AbiADDIa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 22:08:30 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF85C061761
+        for <netdev@vger.kernel.org>; Mon,  3 Jan 2022 19:08:29 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id j83so85387973ybg.2
+        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 19:08:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=mrxhTGCiJdlGC+eJy5UXznUx973zEpGxFnhRGTjwkGI=;
+        b=TWQNAwos3BnFIj2Fjt2dp3jplOAleWn9oVI7HZ2N4UBbgHELP0x2gJEjitiAxcxGmg
+         G9+UNqnvDHxU87pgTIkBWnLp36ysLUEhT3VfUnV5ogLKmrlAee+Adynltq1C0Ybfxr3w
+         Gb9L/3U5TsAnCVOM7qQe9sTeFphg4Z3ldnTp1C5OWVOYDz9wWywUoicz6U927MSiQmtp
+         6eF3fFASv6aAm2REzqkLx7Pnw6RFylAcalYz0WXjRc7ZleFHlG81cyuRCZRFaCddjK5z
+         kqJjJ9KGNdcgW4YJYw8zGz72vrUIV8/EozaWmCmseyCpUtoqBA4hhZiKfzzD2OZvUfBI
+         Bpmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=mrxhTGCiJdlGC+eJy5UXznUx973zEpGxFnhRGTjwkGI=;
+        b=ZkHODRTJ4QPhtXCQr69seqkA4j2c/m66nLvwhj/OcJ7cJWuh4jUOnVUOammM4TqaXN
+         VCKM6lquNceh9NlL1R4ec16YIfgWHAy2nbkxtqvhm3pb94bgZFTrbVxj/2YurrwWFuFX
+         pFBV9FivjPU/0e3nK97y4h4hWzUbSgL7EHwDLiwVfHaab6oBjlxUQrKataRSky3N9SMo
+         K5hBAIGKTWmJc+an36h/GHMhaoEk0jP5Ix5b4BAW5xO9kK7IYJ4IkeIYRc3J2wTg7/Fb
+         1s9t1X0uiZVA7B14MQDs8vBaGKqjvLxVSlGPCuSR6eoa17ezWumzT3eGQeugAN+L+MXf
+         dm3A==
+X-Gm-Message-State: AOAM532a3hoKIlc7KE3Aqx6LM2yVjVC8DooiAgN9yEdMg2WY14wm4krp
+        VeOLiw+O6Qs0/jWZEQ9Xb4FR8AVE0Y1SOIs5rpA=
+X-Google-Smtp-Source: ABdhPJwDh+M/YeZpcPatC31fAso8h6s8v1N5eZXi6A8jP8QxTMR00rxh/ZQYWO0Py+q2M9dHRsoJV0YsCmaiYrCpj7Q=
+X-Received: by 2002:a25:2554:: with SMTP id l81mr38275921ybl.101.1641265708944;
+ Mon, 03 Jan 2022 19:08:28 -0800 (PST)
+MIME-Version: 1.0
+Reply-To: asad1ibn@gmail.com
+Sender: carolinmartin250@gmail.com
+Received: by 2002:a05:7000:9845:0:0:0:0 with HTTP; Mon, 3 Jan 2022 19:08:28
+ -0800 (PST)
+From:   Mr Asad Ibn <asadibn22@gmail.com>
+Date:   Mon, 3 Jan 2022 19:08:28 -0800
+X-Google-Sender-Auth: zoHEnz7h5iTDfzbd7ntp0mxxMyw
+Message-ID: <CAGrhT3AJD6=N+couDA7t3CeMt6V=-uoaPyV5R6i6ZS2hsRty3g@mail.gmail.com>
+Subject: Dear Sir/Madam
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SMC connections might fail to be registered to a link group due to
-things like unable to find a link to assign to in its creation. As
-a result, connection creation will return a failure and most
-resources related to the connection won't be applied or initialized,
-such as conn->abort_work or conn->lnk.
+I=E2=80=99M Barrister Assad LBN.from Burkina Faso, I am sending this brief
+letter to solicit your support. I have a Client who is an Indian, his
+name is Mr. Dasya Kahaan. He was a gold dealer here in Burkina Faso
+before he died six years ago when he went for kidney transplants in
+his country India.
 
-If smc_conn_free() is invoked later, it will try to access the
-resources related to the connection, which wasn't initialized, thus
-causing a panic.
+He deposited the sum of $5.5 Million dollars in one of the legendary
+banks here in Burkina Faso. I have tried all I can to get in touch
+with any of his friends or family members but no way.
 
-Here is an example, a SMC-R connection failed to be registered
-to a link group and conn->lnk is NULL. The following crash will
-happen if smc_conn_free() tries to access conn->lnk in
-smc_cdc_tx_dismiss_slots().
+So i want you to apply to the bank as his Business partner so that the
+bank can release Mr.Dasya Kahaan. fund into your bank account. I will
+give you the guidelines on how to contact the bank and we have to do
+this with trust because I don't want the bank to transfer the fund
+into the Government treasury account as an unclaimed fund, so I need
+your response.
 
- BUG: kernel NULL pointer dereference, address: 0000000000000168
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP PTI
- CPU: 4 PID: 68 Comm: kworker/4:1 Kdump: loaded Tainted: G E     5.16.0-rc5+ #52
- Workqueue: smc_hs_wq smc_listen_work [smc]
- RIP: 0010:smc_wr_tx_dismiss_slots+0x1e/0xc0 [smc]
- Call Trace:
-  <TASK>
-  smc_conn_free+0xd8/0x100 [smc]
-  smc_lgr_cleanup_early+0x15/0x90 [smc]
-  smc_listen_work+0x302/0x1230 [smc]
-  ? process_one_work+0x25c/0x600
-  process_one_work+0x25c/0x600
-  worker_thread+0x4f/0x3a0
-  ? process_one_work+0x600/0x600
-  kthread+0x15d/0x1a0
-  ? set_kthread_struct+0x40/0x40
-  ret_from_fork+0x1f/0x30
-  </TASK>
-
-This patch tries to fix this by resetting conn->lgr to NULL if an
-abnormal exit occurs in smc_lgr_register_conn(), thus avoiding the
-crash caused by accessing the uninitialized resources in smc_conn_free(),
-and scheduling the link group's free work if it is new created.
-
-Fixes: 56bc3b2094b4 ("net/smc: assign link to a new connection")
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
----
- net/smc/smc_core.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 412bc85..8edc43a 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -171,8 +171,10 @@ static int smc_lgr_register_conn(struct smc_connection *conn, bool first)
- 
- 	if (!conn->lgr->is_smcd) {
- 		rc = smcr_lgr_conn_assign_link(conn, first);
--		if (rc)
-+		if (rc) {
-+			conn->lgr = NULL;
- 			return rc;
-+		}
- 	}
- 	/* find a new alert_token_local value not yet used by some connection
- 	 * in this link group
-@@ -1835,8 +1837,10 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
- 		write_lock_bh(&lgr->conns_lock);
- 		rc = smc_lgr_register_conn(conn, true);
- 		write_unlock_bh(&lgr->conns_lock);
--		if (rc)
-+		if (rc) {
-+			smc_lgr_schedule_free_work(lgr);
- 			goto out;
-+		}
- 	}
- 	conn->local_tx_ctrl.common.type = SMC_CDC_MSG_TYPE;
- 	conn->local_tx_ctrl.len = SMC_WR_TX_SIZE;
--- 
-1.8.3.1
-
+Warm Regards,
+Email.asad1ibn@gmail.com,
+Barr.Assad LBN.
