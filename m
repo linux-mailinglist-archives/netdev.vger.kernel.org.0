@@ -2,216 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7321548434F
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 15:26:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BDBB484356
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 15:27:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232868AbiADO0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 09:26:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
+        id S232832AbiADO1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 09:27:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbiADO0h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 09:26:37 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E50C061761;
-        Tue,  4 Jan 2022 06:26:36 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id y22so149246519edq.2;
-        Tue, 04 Jan 2022 06:26:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CG+rHtZHuoElrdyDC84Mj1DiZQU3+b7Wo+ZjIpKoo+4=;
-        b=RQhTxZkEuTB/il/R45lXihVcPmDhg1TCkC+WCIdEXMfnSWZV/yRncSYK361LdK47hz
-         YBtwwNpitCs0UnSoYG/ZTKXq1ygSNfm4by7KWSqb7fCVEvaxStLwKDFdDRHM3rRldXut
-         lw+sJICRllp9hJPOzkOHGYAtzEqfEpKRSnyvohzJQ5+yiuP2X5ntILnLUS3PSS0tfAiP
-         vlur6CUC3g7YxCSjHXDnioqeDIcwXOaoUY9vGYOJNvTjovyGzh46LBAKn6j897Ue2vr+
-         UFJMgjvKBW0dpzqYCOIJW+ehwYHVFs0udRuxn+X1gcVLzAIMeY0yigYxhObsE174MbWZ
-         jatQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CG+rHtZHuoElrdyDC84Mj1DiZQU3+b7Wo+ZjIpKoo+4=;
-        b=Weup6xp8PlHVzihJxPdYdCHgqe9jwp+khE3PPUej0f2LAN2I2m55LvIiO1F+LmZLzR
-         vZ+FayOgvZCgrCaO4ZNca1yCoyyVTT8ULZgclHMd5UJ//Z10lo/ZAv7hNEqpPopbhnEV
-         CxSWUtjF4LsNspHZrY8GnDoP7rqbViWAx4Gc6GVYR6aNY1d7hAvPoLl9zctqpBtL+Ch8
-         kaznzD57fLYdWFf5G2RlbAQnGh0kPlUI2UkM7QSCrC/XmCuoGw72iudjQ/9B3YpaR9XX
-         5/PdrlsVdYlwFixClLPZIMKlyCQu2ieT5fT9C1ZJiL9rtky51KbEIrZLliiMP7pz5HsX
-         1qpw==
-X-Gm-Message-State: AOAM532DT+tzxF4VZAMQD+ZwEl8jv7Cnv3xOVcyQN5LZThgoQBp89+Ss
-        eGveJm6mVCVFjTVGdgh5CVTQh3f+NTie2utALOI=
-X-Google-Smtp-Source: ABdhPJzt05oF6uWJcvUFJYXQYC2SL6Ipb2PJXCH9MFydobGwXpZl9+vxtfy8aHc/r4Rte+VhAFkal2ooF19EGXTMlJo=
-X-Received: by 2002:a05:6402:2693:: with SMTP id w19mr47375705edd.158.1641306395280;
- Tue, 04 Jan 2022 06:26:35 -0800 (PST)
+        with ESMTP id S229798AbiADO1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 09:27:24 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11FE1C061761;
+        Tue,  4 Jan 2022 06:27:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=l/38noLlC9bygWlqwvSGvCDfRF6wbT+DbAAENu5XJW4=; b=aCN0lKBhPDXvl3f2xKvfYi8B0y
+        sRSqTJLHccwKA/HcPJzu3OBB6wgi7n0xHI/ycBBcrrSJdoaWoGSF4xRqD80rAPa9KmPGv/jNPfrpJ
+        L7PfDecdHMN7uFCda0aUEldGSMvWcwVT9IQfu0f2v1kEV5cSubB+IPRCJCAxLrPW51Yy1sGjO5Ll5
+        j6Rm+LuN7fq3TWTGMly55pjdo4K7i/VHPDbEwPlDSxzpHUgotTNECktKDbDBLFzNGPHrdWw/xOkP3
+        7GlSO2P6pxHNTDNNThvt986vWP7G4327agLjEYI2DXocAOGMlWkmqhjkvHkM3TF84aOoebRAYVZSE
+        J8NaYpEQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56564)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1n4kmS-00075T-V6; Tue, 04 Jan 2022 14:27:16 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1n4kmQ-0007JA-Tz; Tue, 04 Jan 2022 14:27:14 +0000
+Date:   Tue, 4 Jan 2022 14:27:14 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Corentin Labbe <clabbe.montjoie@gmail.com>
+Cc:     linus.walleij@linaro.org, ulli.kroll@googlemail.com,
+        kuba@kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: net: phy: marvell: network working with generic PHY and not with
+ marvell PHY
+Message-ID: <YdRZQl6U0y19P/0+@shell.armlinux.org.uk>
+References: <YdQoOSXS98+Af1wO@Red>
+ <YdQsJnfqjaFrtC0m@shell.armlinux.org.uk>
+ <YdQwexJVfrdzEfZK@Red>
+ <YdQydK4GhI0P5RYL@shell.armlinux.org.uk>
+ <YdQ5i+//UITSbxS/@shell.armlinux.org.uk>
+ <YdRVovG9mgEWffkn@Red>
 MIME-Version: 1.0
-References: <20220104072658.69756-1-marcan@marcan.st> <20220104072658.69756-10-marcan@marcan.st>
-In-Reply-To: <20220104072658.69756-10-marcan@marcan.st>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 4 Jan 2022 16:24:44 +0200
-Message-ID: <CAHp75VeN=RkBHnNkQB7_WwjtKuk9OP=utZp+tMf18VF2=CogkA@mail.gmail.com>
-Subject: Re: [PATCH v2 09/35] brcmfmac: pcie: Perform firmware selection for
- Apple platforms
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YdRVovG9mgEWffkn@Red>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 4, 2022 at 9:28 AM Hector Martin <marcan@marcan.st> wrote:
->
-> On Apple platforms, firmware selection uses the following elements:
->
->   Property         Example   Source
->   ==============   =======   ========================
-> * Chip name        4378      Device ID
-> * Chip revision    B1        OTP
-> * Platform         shikoku   DT (ARM64) or ACPI (x86)
-> * Module type      RASP      OTP
-> * Module vendor    m         OTP
-> * Module version   6.11      OTP
-> * Antenna SKU      X3        DT (ARM64) or ACPI (x86)
->
-> In macOS, these firmwares are stored using filenames in this format
-> under /usr/share/firmware/wifi:
->
->     C-4378__s-B1/P-shikoku-X3_M-RASP_V-m__m-6.11.txt
->
-> To prepare firmwares for Linux, we rename these to a scheme following
-> the existing brcmfmac convention:
->
->     brcmfmac<chip><lower(rev)>-pcie.apple,<platform>-<mod_type>-\
->         <mod_vendor>-<mod_version>-<antenna_sku>.txt
->
-> The NVRAM uses all the components, while the firmware and CLM blob only
-> use the chip/revision/platform/antenna_sku:
->
->     brcmfmac<chip><lower(rev)>-pcie.apple,<platform>-<antenna_sku>.bin
->
-> e.g.
->
->     brcm/brcmfmac4378b1-pcie.apple,shikoku-RASP-m-6.11-X3.txt
->     brcm/brcmfmac4378b1-pcie.apple,shikoku-X3.bin
->
-> In addition, since there are over 1000 files in total, many of which are
-> symlinks or outright duplicates, we deduplicate and prune the firmware
-> tree to reduce firmware filenames to fewer dimensions. For example, the
-> shikoku platform (MacBook Air M1 2020) simplifies to just 4 files:
->
->     brcm/brcmfmac4378b1-pcie.apple,shikoku.clm_blob
->     brcm/brcmfmac4378b1-pcie.apple,shikoku.bin
->     brcm/brcmfmac4378b1-pcie.apple,shikoku-RASP-m.txt
->     brcm/brcmfmac4378b1-pcie.apple,shikoku-RASP-u.txt
->
-> This reduces the total file count to around 170, of which 75 are
-> symlinks and 95 are regular files: 7 firmware blobs, 27 CLM blobs, and
-> 61 NVRAM config files. We also slightly process NVRAM files to correct
-> some formatting issues.
->
-> To handle this, the driver must try the following path formats when
-> looking for firmware files:
->
->     brcm/brcmfmac4378b1-pcie.apple,shikoku-RASP-m-6.11-X3.txt
->     brcm/brcmfmac4378b1-pcie.apple,shikoku-RASP-m-6.11.txt
->     brcm/brcmfmac4378b1-pcie.apple,shikoku-RASP-m.txt
->     brcm/brcmfmac4378b1-pcie.apple,shikoku-RASP.txt
->     brcm/brcmfmac4378b1-pcie.apple,shikoku-X3.txt *
->     brcm/brcmfmac4378b1-pcie.apple,shikoku.txt
->
-> * Not relevant for NVRAM, only for firmware/CLM.
->
-> The chip revision nominally comes from OTP on Apple platforms, but it
-> can be mapped to the PCI revision number, so we ignore the OTP revision
-> and continue to use the existing PCI revision mechanism to identify chip
-> revisions, as the driver already does for other chips. Unfortunately,
-> the mapping is not consistent between different chip types, so this has
-> to be determined experimentally.
+On Tue, Jan 04, 2022 at 03:11:46PM +0100, Corentin Labbe wrote:
+> Le Tue, Jan 04, 2022 at 12:11:55PM +0000, Russell King (Oracle) a écrit :
+> > On Tue, Jan 04, 2022 at 11:41:40AM +0000, Russell King (Oracle) wrote:
+> > > On Tue, Jan 04, 2022 at 12:33:15PM +0100, Corentin Labbe wrote:
+> > > > Le Tue, Jan 04, 2022 at 11:14:46AM +0000, Russell King (Oracle) a écrit :
+> > > > > On Tue, Jan 04, 2022 at 11:58:01AM +0100, Corentin Labbe wrote:
+> > > > > > Hello
+> > > > > > 
+> > > > > > I have a gemini SSI 1328 box which has a cortina ethernet MAC with a Marvell 88E1118 as given by:
+> > > > > > Marvell 88E1118 gpio-0:01: attached PHY driver (mii_bus:phy_addr=gpio-0:01, irq=POLL)
+> > > > > > So booting with CONFIG_MARVELL_PHY=y lead to a non-working network with link set at 1Gbit
+> > > > > > Setting 'max-speed = <100>;' (as current state in mainline dtb) lead to a working network.
+> > > > > > By not working, I mean kernel started with ip=dhcp cannot get an IP.
+> > > > > 
+> > > > > How is the PHY connected to the host (which interface mode?) If it's
+> > > > > RGMII, it could be that the wrong RGMII interface mode is specified in
+> > > > > DT.
+> > > > > 
+> > > > 
+> > > > The PHY is set as RGMII in DT (arch/arm/boot/dts/gemini-ssi1328.dts)
+> > > > The only change to the mainline dtb is removing the max-speed.
+> > > 
+> > > So, it's using "rgmii" with no delay configured at the PHY with the
+> > > speed limited to 100Mbps. You then remove the speed limitation and
+> > > it doesn't work at 1Gbps.
+> > > 
+> > > I think I've seen this on other platforms (imx6 + ar8035) when the
+> > > RGMII delay is not correctly configured - it will work at slower
+> > > speeds but not 1G.
+> > > 
+> > > The RGMII spec specifies that there will be a delay - and the delay can
+> > > be introduced by either the MAC, PHY or by PCB track routing. It sounds
+> > > to me like your boot environment configures the PHY to introduce the
+> > > necessary delay, but then, because the DT "rgmii" mode means "no delay
+> > > at the PHY" when you use the Marvell driver (which respects that), the
+> > > Marvell driver configures the PHY for no delay, resulting in a non-
+> > > working situation at 1G.
+> > > 
+> > > I would suggest checking how the boot environment configures the PHY,
+> > > and change the "rgmii" mode in DT to match. There is a description of
+> > > the four RGMII modes in Documentation/networking/phy.rst that may help
+> > > understand what each one means.
+> > 
+> > Hmm. Sorry, I'm leading you stray. It looks like the 88E1118 code does
+> > not program any delays depending on the interface mode, so changing that
+> > will have no effect.
+> > 
+> > I suspect, looking at m88e1118_config_init(), that the write to register
+> > 0x15 in the MSCR page could be the problem.
+> > 
+> > 0x15 is 21, which is MII_88E1121_PHY_MSCR_REG. In other Marvell PHYs,
+> > bits 4 and 5 are the tx and rx delays, both of which are set. Looking
+> > at m88e1121_config_aneg_rgmii_delays(), this would seem to indicate
+> > that the PHY is being placed into rgmii-id mode.
+> > 
+> > Can you try changing:
+> > 
+> > 	err = phy_write(phydev, 0x15, 0x1070);
+> > 
+> > to:
+> > 
+> > 	err = phy_write(phydev, 0x15, 0x1040);
+> > 
+> > and see what happens? Maybe trying other combinations of bits 4 and 5
+> > to find a working combination.
+> > 
+> 
+> Forget my other message, using 0x1040 lead to success.
+> My problem was that I tried rgmii-id which net/ethernet/cortina does not support on some code path. (everything test PHY_INTERFACE_MODE_RGMII only)
+> So I retry tests with original phy-mode = "rgmii".
+> 
+> So with the following changes everything is ok:
+> diff --git a/arch/arm/boot/dts/gemini-ssi1328.dts b/arch/arm/boot/dts/gemini-ssi1328.dts
+> index 113feb1c4922..7543d117a13a 100644
+> --- a/arch/arm/boot/dts/gemini-ssi1328.dts
+> +++ b/arch/arm/boot/dts/gemini-ssi1328.dts
+> @@ -40,10 +40,6 @@ mdio0: mdio {
+>                 phy0: ethernet-phy@1 {
+>                         reg = <1>;
+>                         device_type = "ethernet-phy";
+> -                       /* We lack the knowledge of necessary GPIO to achieve
+> -                        * Gigabit
+> -                        */
+> -                       max-speed = <100>;
+>                 };
+>                 /* WAN ICPlus IP101A */
+>                 phy1: ethernet-phy@2 {
+> diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+> index 4fcfca4e1702..af7fc9d8eaa7 100644
+> --- a/drivers/net/phy/marvell.c
+> +++ b/drivers/net/phy/marvell.c
+> @@ -1233,7 +1233,7 @@ static int m88e1118_config_init(struct phy_device *phydev)
+>                 return err;
+>  
+>         /* Enable 1000 Mbit */
+> -       err = phy_write(phydev, 0x15, 0x1070);
+> +       err = phy_write(phydev, 0x15, 0x1040);
+>         if (err < 0)
+>                 return err;
+>  
 
-...
+Okay, so we have two things that need fixing:
 
-> +       /* Apple platforms with fancy firmware/NVRAM selection */
-> +       if (devinfo->settings->board_type &&
-> +           devinfo->settings->antenna_sku &&
-> +           devinfo->otp.valid) {
-> +               char *buf;
-> +               int len;
-> +
-> +               brcmf_dbg(PCIE, "Apple board: %s\n",
-> +                         devinfo->settings->board_type);
-> +
-> +               /* Example: apple,shikoku-RASP-m-6.11-X3 */
-> +               len = (strlen(devinfo->settings->board_type) + 1 +
-> +                      strlen(devinfo->otp.module) + 1 +
-> +                      strlen(devinfo->otp.vendor) + 1 +
-> +                      strlen(devinfo->otp.version) + 1 +
-> +                      strlen(devinfo->settings->antenna_sku) + 1);
+1) We need m88e1118_config_init() to take note of the interface mode
+if it's RGMII, and program MSCR appropriately.
 
-NIH devm_kasprrintf() ?
+2) We need drivers/net/ethernet/cortina/gemini.c to accept any RGMII
+interface mode.
 
-> +               /* apple,shikoku */
-> +               fwreq->board_types[5] = devinfo->settings->board_type;
-> +
-> +               buf = devm_kzalloc(&devinfo->pdev->dev, len, GFP_KERNEL);
-> +
-> +               strscpy(buf, devinfo->settings->board_type, len);
-> +               strlcat(buf, "-", len);
-> +               strlcat(buf, devinfo->settings->antenna_sku, len);
-> +               /* apple,shikoku-X3 */
-> +               fwreq->board_types[4] = devm_kstrdup(&devinfo->pdev->dev, buf,
-> +                                                    GFP_KERNEL);
-> +
-> +               strscpy(buf, devinfo->settings->board_type, len);
-> +               strlcat(buf, "-", len);
-> +               strlcat(buf, devinfo->otp.module, len);
-> +               /* apple,shikoku-RASP */
-> +               fwreq->board_types[3] = devm_kstrdup(&devinfo->pdev->dev, buf,
-> +                                                    GFP_KERNEL);
-> +
-> +               strlcat(buf, "-", len);
-> +               strlcat(buf, devinfo->otp.vendor, len);
-> +               /* apple,shikoku-RASP-m */
-> +               fwreq->board_types[2] = devm_kstrdup(&devinfo->pdev->dev, buf,
-> +                                                    GFP_KERNEL);
-> +
-> +               strlcat(buf, "-", len);
-> +               strlcat(buf, devinfo->otp.version, len);
-> +               /* apple,shikoku-RASP-m-6.11 */
-> +               fwreq->board_types[1] = devm_kstrdup(&devinfo->pdev->dev, buf,
-> +                                                    GFP_KERNEL);
-> +
-> +               strlcat(buf, "-", len);
-> +               strlcat(buf, devinfo->settings->antenna_sku, len);
-> +               /* apple,shikoku-RASP-m-6.11-X3 */
-> +               fwreq->board_types[0] = buf;
+Here's an untested patch for both - I've also converted the MSCR write
+to be more modern. Please let me know if this resolves your issue.
+We then need to consider whether it breaks any existing platform.
+
+diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
+index 07add311f65d..c78b99a497df 100644
+--- a/drivers/net/ethernet/cortina/gemini.c
++++ b/drivers/net/ethernet/cortina/gemini.c
+@@ -305,21 +305,21 @@ static void gmac_speed_set(struct net_device *netdev)
+ 	switch (phydev->speed) {
+ 	case 1000:
+ 		status.bits.speed = GMAC_SPEED_1000;
+-		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
++		if (phy_interface_mode_is_rgmii(phydev->interface))
+ 			status.bits.mii_rmii = GMAC_PHY_RGMII_1000;
+ 		netdev_dbg(netdev, "connect %s to RGMII @ 1Gbit\n",
+ 			   phydev_name(phydev));
+ 		break;
+ 	case 100:
+ 		status.bits.speed = GMAC_SPEED_100;
+-		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
++		if (phy_interface_mode_is_rgmii(phydev->interface))
+ 			status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
+ 		netdev_dbg(netdev, "connect %s to RGMII @ 100 Mbit\n",
+ 			   phydev_name(phydev));
+ 		break;
+ 	case 10:
+ 		status.bits.speed = GMAC_SPEED_10;
+-		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
++		if (phy_interface_mode_is_rgmii(phydev->interface))
+ 			status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
+ 		netdev_dbg(netdev, "connect %s to RGMII @ 10 Mbit\n",
+ 			   phydev_name(phydev));
+@@ -389,6 +389,9 @@ static int gmac_setup_phy(struct net_device *netdev)
+ 		status.bits.mii_rmii = GMAC_PHY_GMII;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
+ 		netdev_dbg(netdev,
+ 			   "RGMII: set GMAC0 and GMAC1 to MII/RGMII mode\n");
+ 		status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 4fcfca4e1702..ccf142ce55d8 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -1227,16 +1227,18 @@ static int m88e1118_config_init(struct phy_device *phydev)
+ {
+ 	int err;
+ 
+-	/* Change address */
+-	err = marvell_set_page(phydev, MII_MARVELL_MSCR_PAGE);
+-	if (err < 0)
+-		return err;
+-
+ 	/* Enable 1000 Mbit */
+-	err = phy_write(phydev, 0x15, 0x1070);
++	err = phy_write_paged(phydev, MII_MARVELL_MSCR_PAGE,
++			      MII_88E1121_PHY_MSCR_REG, 0x1070);
+ 	if (err < 0)
+ 		return err;
+ 
++	if (phy_interface_is_rgmii(phydev)) {
++		err = m88e1121_config_aneg_rgmii_delays(phydev);
++		if (err < 0)
++			return err;
++	}
++
+ 	/* Change address */
+ 	err = marvell_set_page(phydev, MII_MARVELL_LED_PAGE);
+ 	if (err < 0)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
