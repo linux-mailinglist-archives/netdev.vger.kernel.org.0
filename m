@@ -2,93 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2688484AD9
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 23:39:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C4B1484AD4
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 23:38:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235784AbiADWjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 17:39:25 -0500
-Received: from mga12.intel.com ([192.55.52.136]:28280 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235687AbiADWjX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 17:39:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641335963; x=1672871963;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WBvELqUnpuM4kCN1CCV0/Lyq4Qkno910uPUNHJVeZCg=;
-  b=QyoIcAGQ7EfDNrb+u+LL8jiT1CFbBw8XMfVZRuAkL6okC9FYZENRRV+J
-   DTBGB2NdA/2SiX2QgowrDw86025c/dEb0JjPXgPdAWdItQrvR6pHkZygw
-   9234H9eCfJKzd5Mm4p41XpiY2HkoBuIFDorb2LOz4U8Z2nUFQLR0meFY7
-   aKcmzyEFQXyKl0Zu9natJPPKRKVgqzy2qGC1dJz/s2ohRjgqIgnpz8Pc5
-   1xd79M76W/ZlZsuqzx648Acc4bLQphQvyH7wj7F/6UOE0T4ImKM7YWE2d
-   /MJ73CKMlc9sCLEkhWdGqRfrE7qCVfMo/e27+y6SEzWOI1I/wYA36vF2n
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="222305239"
-X-IronPort-AV: E=Sophos;i="5.88,262,1635231600"; 
-   d="scan'208";a="222305239"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2022 14:39:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,262,1635231600"; 
-   d="scan'208";a="470312808"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga003.jf.intel.com with ESMTP; 04 Jan 2022 14:39:21 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Karen Sornek <karen.sornek@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, sassmann@redhat.com,
-        Ashwin Vijayavel <ashwin.vijayavel@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 5/5] iavf: Fix limit of total number of queues to active queues of VF
-Date:   Tue,  4 Jan 2022 14:38:42 -0800
-Message-Id: <20220104223842.2325297-6-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220104223842.2325297-1-anthony.l.nguyen@intel.com>
-References: <20220104223842.2325297-1-anthony.l.nguyen@intel.com>
+        id S235627AbiADWiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 17:38:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235613AbiADWiw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 17:38:52 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844C6C061761;
+        Tue,  4 Jan 2022 14:38:51 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id bp20so84919265lfb.6;
+        Tue, 04 Jan 2022 14:38:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ltp8LALALJteT6noWWok492G/OMAgatm1CDGi/K+eLI=;
+        b=h+/IOsru5P7OYh1PfOWHFlhgLEOIzWl+bNQxEPvgggaydWshTCfq5FPyeeI5X6Q14m
+         FiGzeAz626D9ZmL4GdW0gH79tNctOCD4vElNcP3ceb8TXhTstP3T9srSmzuiEsTbIpXY
+         lbhq5M9j6cgRbgKREN+PQD8c3kEnEPN97S0yPCFWRjNc2T9IUOl8TMVnkNPHbc0BN3bH
+         dQXLJegBXhlxjU2kwceyavjWqjK28FDtHB4q5JnrBMW2LfZWAaRjYVvms6y/QM5i4gqS
+         Dr/5yyDm0mNTVdIxUkJWTOI9tON4UwAD+931M2ch4E3aBYbnofgfAER2UyMRtabhJl/y
+         692g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ltp8LALALJteT6noWWok492G/OMAgatm1CDGi/K+eLI=;
+        b=1BWR1yA33OWqiesASkpljX2m8lw4zhx0HPbo3GSlqCVZSMoAuaCxbP32rICwkpAl8r
+         b64+hF3pzzaeWIY0Fey52CsmEDqNPpEL0l9pv9Epdkj0X3ry/WjyyzBMImyYgMhuvHx/
+         0Ip3ZjpVmenuvPaEeSWMLI/m2Jpp79fCQPDGxNSjPWoX1Kokcmk+b9sXi+zuklXr4wTj
+         NloYyKiGOeO9KmVRgelc90Ki3SVS9e8uUdI1VXelDgjM3ZfGJsYdSeDdjBFlHfhXRd4o
+         BnmWQSQtHH3NmGlJ1zoi9wsTS1FsEJNNjkUYAFs7KgIHUC0pYdZHl2ux95RJIT1+FkEK
+         S0Ew==
+X-Gm-Message-State: AOAM5324NHnsC680jHkk3AWMgY2S3/jRXrPDDIRcCKsjnaQQ3Cw461KV
+        KOsonFm/Et+yMQ64FdUNcsg=
+X-Google-Smtp-Source: ABdhPJwzMivr9lO9qHzC3ODAHRJzhhdx/OjIM55OwP6/sJjhsn9GbAEmtEYlY8MTXz9TyyLP7kEwiQ==
+X-Received: by 2002:a05:6512:118b:: with SMTP id g11mr9776235lfr.570.1641335929880;
+        Tue, 04 Jan 2022 14:38:49 -0800 (PST)
+Received: from [192.168.2.145] (46-138-43-24.dynamic.spd-mgts.ru. [46.138.43.24])
+        by smtp.googlemail.com with ESMTPSA id u19sm3138690ljd.94.2022.01.04.14.38.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Jan 2022 14:38:49 -0800 (PST)
+Subject: Re: [PATCH v2 04/35] brcmfmac: firmware: Support having multiple alt
+ paths
+To:     Hector Martin <marcan@marcan.st>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20220104072658.69756-1-marcan@marcan.st>
+ <20220104072658.69756-5-marcan@marcan.st>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <226a78e1-fa51-1f1b-c547-636797d831e4@gmail.com>
+Date:   Wed, 5 Jan 2022 01:38:46 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20220104072658.69756-5-marcan@marcan.st>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Karen Sornek <karen.sornek@intel.com>
+04.01.2022 10:26, Hector Martin пишет:
+> +static int brcm_alt_fw_paths(const char *path, const char *board_type,
+> +			     const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS])
+>  {
+...
+> +static void
+> +brcm_free_alt_fw_paths(const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS])
+> +{
 
-In the absence of this validation, if the user requests to
-configure queues more than the enabled queues, it results in
-sending the requested number of queues to the kernel stack
-(due to the asynchronous nature of VF response), in which
-case the stack might pick a queue to transmit that is not
-enabled and result in Tx hang. Fix this bug by
-limiting the total number of queues allocated for VF to
-active queues of VF.
-
-Fixes: d5b33d024496 ("i40evf: add ndo_setup_tc callback to i40evf")
-Signed-off-by: Ashwin Vijayavel <ashwin.vijayavel@intel.com>
-Signed-off-by: Karen Sornek <karen.sornek@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/iavf/iavf_main.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 4e7c04047f91..e4439b095533 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2708,8 +2708,11 @@ static int iavf_validate_ch_config(struct iavf_adapter *adapter,
- 		total_max_rate += tx_rate;
- 		num_qps += mqprio_qopt->qopt.count[i];
- 	}
--	if (num_qps > IAVF_MAX_REQ_QUEUES)
-+	if (num_qps > adapter->num_active_queues) {
-+		dev_err(&adapter->pdev->dev,
-+			"Cannot support requested number of queues\n");
- 		return -EINVAL;
-+	}
- 
- 	ret = iavf_validate_tx_bandwidth(adapter, total_max_rate);
- 	return ret;
--- 
-2.31.1
-
+I'd rename this funcs to brcm_init/deinit_alt_fw_paths(), for
+consistency and clarity.
