@@ -2,363 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BEC6483DDE
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 09:11:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F028483E00
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 09:21:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233960AbiADILb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 03:11:31 -0500
-Received: from dispatch1-eu1.ppe-hosted.com ([185.132.181.8]:47308 "EHLO
+        id S233729AbiADIVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 03:21:34 -0500
+Received: from dispatch1-eu1.ppe-hosted.com ([185.183.29.34]:37176 "EHLO
         dispatch1-eu1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232557AbiADILK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 03:11:10 -0500
+        by vger.kernel.org with ESMTP id S232321AbiADIVd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 03:21:33 -0500
 X-Virus-Scanned: Proofpoint Essentials engine
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01lp2054.outbound.protection.outlook.com [104.47.0.54])
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04lp2059.outbound.protection.outlook.com [104.47.13.59])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 5242F80071;
-        Tue,  4 Jan 2022 08:11:07 +0000 (UTC)
+        by mx1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C9F604C0061;
+        Tue,  4 Jan 2022 08:21:30 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a2hLcmyOWlK0xOZsfxuuqV8GJfRhXw/gq48ZenyWr8Dd/R9vsSbPvJU2JxVJJXCtk/ayST88NTpDn/RHdvGFzeEc2ji4EYqY0NOby4keYT055a9Ut0wVKvis5lxZccom9EDPkMpPcci2F3L2ahiCqKEeICns+T8PcaBVn2W7tFwOHBxFo1FR2Gy85044S1czI2LFZT4j1iiw/dd+IsPboN8r7dlB/qXLPbonIxCunql5306BiriiFRW31WlWnXJUTFaHvOJ5KpLoNv8Ur66OjD4+dV6MH2hL07tLtpqv4YDKCVIdg0MTmon3RlTW/CLIlHEW1ZataJV/kmzKK8VeOQ==
+ b=aBx4UT1d4UT/68UAKapuzVTgcO5XMAWzsNfTYO6tyW6ayBD9EMc09yNiPgxNBsrQ4PAJFiC6xOQ5MvmIncbDuubXOEu+k8M7A7BXVNBTS1wPNioG3xFejvqUCFvaneBLuGeC+1heYIC49UeTH2zDSx344ZQWsnhOfij7oqxj9JYKSBN9LsVIkx1MP+qEigX/i0AaZoYMaD8vJZnJDnRAJpZL5nxZyyV0IsbsTTyOC1L9kRJxmwtlIrsbNxumi1HZHvCkPZ8J1kD5gxCgEZSS1MetFhUb7fsH7CotFqZ/DE/5kT6Y9IL6+L+chUtrdtUUfZvwuKkYbUWvQkChg9/8Eg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uKAUE06PpRsWSC7B09vqGeMohgBAb6xRkIRhX769o6o=;
- b=eqPG/VJ8ihz5oMCIQpPAKWJxKd0ukQAU1US+TFXMR6aGwjO8YZ/thLekOkoFGl+iOeBEkE1rGsI2sV1e55ZSpcB1OyN2/3USIV8NFg8ctYnX9Kq8rNKAbxMjmrLXeQU7xio8SlS4m/zD3fP3yf7FQMcXMoyZierskTSbNJ/s1kLSFdFgVucDfkfuRf9rWsed9E8bQ5CZhv0CBgtfqjxDrKK3VIY/Iyv0fsa/T8P/HZufdBbPjwpUApbTL3HeZscgvCJHzQNmW6xGmctwMCCrrlEcdEHpJafPDnR3on5g1cF+sD0RDCNSDo0tm5+H5k0/8oO+RZPhuUTbGXJBULPs0A==
+ bh=GDryGJ7yceiuCk+nA9+PGbRCqfpVGZAu5JrIDJ6wd/c=;
+ b=mfM8PpdOA5rw4/fxuzK++0q16Ld4Tc7uXdPCOzVy64DAVGyD7WH+rik1SWPmKGwuRwNS67t/x7GNQwTLYc3pJYoAWTS3llzwBMSpPT1s62JZM2A1S0nUaNeTrSwNSX2BRxba+Ok4YsTqk/0hVQdxNdw/rN1j/JUzlMaxHN/lI6hZaWoipFt4955/i/Q8NvPI8nRzUBxiiVry3/ngvh880JhlCkzIQ0RilK3LIAgMMHCog4UOOnzPru4NhE5WX/RewNvgwru2uWy5VQTh5/otejaRbgP4dqgIMSSxPDGeBNcAsObXGEFAH9xZ8sp8lW5f0bJW5bOpysXiMLovvZURag==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=drivenets.com; dmarc=pass action=none
  header.from=drivenets.com; dkim=pass header.d=drivenets.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=drivenets.onmicrosoft.com; s=selector2-drivenets-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uKAUE06PpRsWSC7B09vqGeMohgBAb6xRkIRhX769o6o=;
- b=bOPB4nBolgeQA7TIP1dzH2IA3BdO7dHpkI7eaJYuLAlAUkqQ49wwPJ8XMmMHEEaqowgx1J1VPptmRkM2tdKAiLuiYXCGhOJgXmbEIm2Eherye0zXnCwPhIGX0rUx32AcKQmi8XKT9IF8MBUy6P48Wb2QYOOlwAUhIngIhEzFKKU=
+ bh=GDryGJ7yceiuCk+nA9+PGbRCqfpVGZAu5JrIDJ6wd/c=;
+ b=cJnU5CrRQ3s7GQ31zDba6QIuA9RIHlxKpLDdkd7sHMEo5RjzbIpRsUpKXBnTkAfzSipPYO2fZ/tJQM/o9p4LCZjVKlOHksiE8NpW+ya4sIO8M6QaJJyg5vyVhwcun608t8RMdOVOT02ZTIwCbERP/w+MjoHUz/Mut5bmy1MT3Pg=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=drivenets.com;
 Received: from VI1PR08MB3518.eurprd08.prod.outlook.com (2603:10a6:803:7a::23)
- by VI1PR0802MB2464.eurprd08.prod.outlook.com (2603:10a6:800:ae::17) with
+ by VE1PR08MB5853.eurprd08.prod.outlook.com (2603:10a6:800:1a5::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.14; Tue, 4 Jan
- 2022 08:11:04 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.15; Tue, 4 Jan
+ 2022 08:21:29 +0000
 Received: from VI1PR08MB3518.eurprd08.prod.outlook.com
  ([fe80::28b3:9174:b581:3037]) by VI1PR08MB3518.eurprd08.prod.outlook.com
  ([fe80::28b3:9174:b581:3037%6]) with mapi id 15.20.4844.016; Tue, 4 Jan 2022
- 08:11:04 +0000
+ 08:21:29 +0000
+Date:   Tue, 4 Jan 2022 10:21:21 +0200
 From:   Lahav Schlesinger <lschlesinger@drivenets.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, kuba@kernel.org, idosch@idosch.org,
-        nicolas.dichtel@6wind.com, nikolay@nvidia.com
-Subject: [PATCH net-next v6] rtnetlink: Support fine-grained netdevice bulk deletion
-Date:   Tue,  4 Jan 2022 10:10:53 +0200
-Message-Id: <20220104081053.33416-1-lschlesinger@drivenets.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR08CA0111.eurprd08.prod.outlook.com
- (2603:10a6:800:d4::13) To VI1PR08MB3518.eurprd08.prod.outlook.com
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        nikolay@nvidia.com
+Subject: Re: [PATCH net-next v5] rtnetlink: Support fine-grained netdevice
+ bulk deletion
+Message-ID: <20220104082057.x34hxf7pf4tdo3zd@kgollan-pc>
+References: <20211205093658.37107-1-lschlesinger@drivenets.com>
+ <e5d8a127-fc98-4b3d-7887-a5398951a9a0@gmail.com>
+ <20211208214711.zr4ljxqpb5u7z3op@kgollan-pc>
+ <05fe0ea9-56ba-9248-fa05-b359d6166c9f@gmail.com>
+ <20211208160405.18c7d30f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <7ae281fa-3d05-542f-941c-ba86bd35c31e@gmail.com>
+ <20211208164544.64792d51@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211208164544.64792d51@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: NeoMutt/20171215
+X-ClientProxiedBy: AM5PR0701CA0019.eurprd07.prod.outlook.com
+ (2603:10a6:203:51::29) To VI1PR08MB3518.eurprd08.prod.outlook.com
  (2603:10a6:803:7a::23)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 86d018c2-dc06-4596-5312-08d9cf59c085
-X-MS-TrafficTypeDiagnostic: VI1PR0802MB2464:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR0802MB2464FCBE64DFBFEC5EA0BDE4CC4A9@VI1PR0802MB2464.eurprd08.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:73;
+X-MS-Office365-Filtering-Correlation-Id: 98201edc-19c0-44aa-9dfd-08d9cf5b356d
+X-MS-TrafficTypeDiagnostic: VE1PR08MB5853:EE_
+X-Microsoft-Antispam-PRVS: <VE1PR08MB58538356905D913AD8F4ADBBCC4A9@VE1PR08MB5853.eurprd08.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WWdshCSuo8Li7hO273VYZacuT362f7Dmh/GGi73+GrWYmSPs7CgXFsXCvb2PEi5z+ng8NVYb8UFtPxAyDvqWkyjXTHEFh+4sVZzt7mFWlNhvJBa8L7jSL9jvmcQQCnBjaMlSLQAulgmwTJ/9V8TiquWIB3UoUk9qoTIpJPs2HLnFKmwwnGYixkiVM66XC7OMVZkZ75V0iNlrvPvVB4cGj5nqmstwUFtPPV+Hq8EKECz50Wn6OqwiiwBJhCxY8QkBegemWMDCt6DBm/4KNIvirA71U3LFaP3zDmyHCzk1NtoputXRLqIZ57kV8Bm5eFTC2/e4jW/col4dTmQem2OO3Ok8aaDTXeEzVNB3yItAVuVgXc9nk7Bsh5hN8k4KQDr74D4mxSGZCaHB2h9kKPOR9RZjn1srmUyZUP8yQj0Oc6OIxACPkYPeoxL+otbSCgUBUbnADA9gdGnGsWFe8UDO5SWj3JEfUZXVMrCx3F9kqZp9qihY7L7H9w6wUsQmG5YhC78ehAoHgW86S7DGFpdnE0Ym9CGmvQN1WT1iO5V1g0cqy48FMxSxdKQfu0PeNLmd0uz87bgGSiMBzsRPYUSRsYFQ/rG789BeWEpwZ0bK2K21eNJPan5mDHGanoJYoKyyZoR4K7FDeDXk8hxPSSV7AEDgzPbSEXb/DsCoh9+y9z/revTBefA9YVatawUGNWPrzgRKdTpBRqP2G6Sa2vkfzw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR08MB3518.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(4326008)(38350700002)(6506007)(2616005)(52116002)(5660300002)(36756003)(186003)(2906002)(66556008)(66946007)(6486002)(26005)(66476007)(6666004)(6512007)(8936002)(8676002)(66574015)(508600001)(1076003)(316002)(6916009)(83380400001)(38100700002)(86362001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: gjNn3iVNOtxB4NZcZRybWrmuv/WwlqbsPc+20fJ3kZybasI/h3mnTKRq1lXBuDG0mxU7vO9gSxUpt/i9yfHAVWrh2ykyaJyGOVBuwo3n+KEvnrcsLXapBaRLfFFghhVEE1BkjMOvZv1iPlqQs2WorV4/T+SAgn5ZObiMQNGmFL0j8WyEgOVoPYIFD2KRxWg2VCOrcHxbPMUOOvISeXShzTIfKFScsY2uy3MZsaDPZkBOtClAWMqmYFVgy1ukPe5InR6M3/L+0h9+9epgOWzbrORNA6dnUDBhgOAejt739v1Ir4/zJRl1nrcVgq5CUYijXu1rIP+bJ0UTdgHOwh12VhKaKyuOoVcBFS/Q5JeYh/oqsqeKCpEfp7NzgR+XuTkUuO3CRqjCZzLKKUGA8qn7BfV0Y95KWD7QjTzQBC738GjaJHBUDw0fmSGZq33ddUCjav5J7O6l88ZSVWqtm3kafCx+geTOtd5F8BM8xtth9qTzfHEE56YUuA/BQmZtSAmNal80iemQJ/FlWK55Gq/E1kY2yrHA0dr/h3kTTdcFPgLXokvQI0Yrwi9l4ghtU1ei3ft/eJthFcnPNAHHN11eXC7s4KBOmP5HiMFYFz6WBFKBg8gwhvdc7bpqDKrH4otmyih67H7fjZNGrXcCpRmbdHttgE89jozR80SUGV5sdRHAJLnNW/1WMnb0K85OISrmST+krEhEkYcHVbIFIkKhaNPUvUElVHjVi2W9U3m4N+J8t9joVwF+LFNC1ixdC7cVg22oBIa+BViaQVi5tiWX57IIyTO0SKprfC//W6cXd9Q=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR08MB3518.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(86362001)(66946007)(66476007)(53546011)(508600001)(66556008)(8936002)(52116002)(4326008)(33716001)(9686003)(8676002)(6506007)(5660300002)(6512007)(316002)(6916009)(2906002)(38100700002)(1076003)(966005)(38350700002)(6486002)(6666004)(83380400001)(26005)(186003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VMmd6nFMJYvttwIbG5UUj6I8djtjUs9Fdt2IXrG33OuUVDsF8UA7c3hFo9hi?=
- =?us-ascii?Q?4/ElIcAidmjNMuLHXvsDa20MmBDjcJ2fmYb9aRZWDWdYx2Jtm13hKnznSVDd?=
- =?us-ascii?Q?s0SCNrUGPncKZsq56VDSXDyIKg5EPop1bJSmOmFR4pVJUGuVCo/apd2rQTc9?=
- =?us-ascii?Q?n5r4WgI+w5mY+LKklRtF45lqfxd+SminOcBLMAzlDrjVaXeHpdKgVvLOzxcF?=
- =?us-ascii?Q?DtAVfUQKHabzEGWpFV51xvT33QLStb4lQ1GEmBMJwiBzhGD05GlBqBH5fwFM?=
- =?us-ascii?Q?kADH1qsqyZeksdMPaJ5R/lKi1jeZPnXlmnTRVnXzzzOiSryIfS6Dk7cgACAo?=
- =?us-ascii?Q?HdRDSlmz6CFpWmcg4OFMKlyAJ2QE9Vi+e6KjK2bj35z6kx3ukhfCYgM5Gxl3?=
- =?us-ascii?Q?p8gKgfIgq6s/X9243IOTrVAuA54Nj8YrKI63VHaUClAa8vdookYKwgb0d0pN?=
- =?us-ascii?Q?ig2qjyIg7KbhmsPKIOuknqO0w7vHihrsCtQNUwIO/CpnY/QJ/sPKEpmRpjX0?=
- =?us-ascii?Q?ZKCS0C5sOA63Rn0+ZFyNMiFu3JHqrdBIFDi9rb0d5IwmL8eLU5DlKQRy45VL?=
- =?us-ascii?Q?32ePsubSaNvfdG8M0JBY+dK7sYR+MjwCTp8X2ikc0rKt6pNiL/M4+eF2tqOQ?=
- =?us-ascii?Q?2Iw2YYH8UzPsNGA0uuhdhsvcEkKwwjxtInavI31iQ5Zp0GbOFt21d+BZDbQY?=
- =?us-ascii?Q?ipv8gqSCHJdLJXFyWlJHU9iAFrVr+Eyr93zuhBwwjqn6RH0e2/uOD81aJqFl?=
- =?us-ascii?Q?rpG86/NEcpZfbBWGADrC8g2OhSETLaLOs5nwpH2m2BYgu8M6hYGc2jdiI3B7?=
- =?us-ascii?Q?56ZAswG3d45e1RU8fiohd81MQDgAkQlOijwgtiEYnJXKrprkPtxsom3+PSsy?=
- =?us-ascii?Q?rDcFnCz62AWQl8dgo1zL0KL5JrBEWhYLfkBsVk53pcWHJIXNPvonvBtFWesl?=
- =?us-ascii?Q?WkAqiq61xFldWBlAnrRiSM0bEMcJ99+u1SSsZ3eAgtkxR+z4s9t4g7zUSne+?=
- =?us-ascii?Q?+lftabA8RVgfKG81OwZLteYAJJD19WVOqbTMt4kbJIC3Wlhp41B1E68UNp5y?=
- =?us-ascii?Q?kM9qWnuDAf5bsqtHCFdIzqrzmeiIZuUecfHEiHPYCPrB/5Ue+1d77yVTZeZW?=
- =?us-ascii?Q?ehoQTEEOip6YW2+j8Fa3qt/fKPEpkt2+mAhNNPBoznGjF7kgtDjTwUu3qEzD?=
- =?us-ascii?Q?adJ8aKti88jp2dKqwEYFf2N3ENWZ8yeHfcXP3v9SgIcGPUVrw2U9SnBpiH0W?=
- =?us-ascii?Q?yk88mhKV7tjEEmhpJ9b+ErPyx2hroHlwnU3+/HwKq+Tjr6QC8gS8U1vlsEOd?=
- =?us-ascii?Q?T8Nm6msB1n277ek0wqKrDhyLpBu3sxaks02bXTyRk5mCjRP8MOH3lcx2P/fe?=
- =?us-ascii?Q?viNuR3YGIxoJ8YDXZ7THxHZYBmCxpm3Avc5D4QCofEmBFIrL0Y0t9sWPIg4C?=
- =?us-ascii?Q?JRspjXRXKdz6RtkLjbQTeKkoXsxVR05UzAE/AAjSPvzq6BvHShjUA3uQmqXO?=
- =?us-ascii?Q?2VrjWrdBZ3dN1Y8bGShKH45jZL/3tOXL9/M6a9m6Cbi1JWTj7iSesLj+LGXm?=
- =?us-ascii?Q?9gTaZ2QM776ddFj4wh421J10ghsGB47oG4m0z4M9GU/zjWogtzhhMWiYVAiG?=
- =?us-ascii?Q?Wo4iFOhCjdWP8u6Ye1ettkdF2Sm3yXpnHtLAKjy0dX2Oj8mjMoDpcwpr/Rwh?=
- =?us-ascii?Q?7S0k000mmIj9EcB0EV4RVouUloY=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?plygLYfz/f6EHyIA/yUJvIEKZ08Vfg1DUWrow3vm3dMh2txQ+PrdGr39XO0C?=
+ =?us-ascii?Q?Hq+nu1Vs6cgLl9stQMu3Z6sa9KP/jo6FXBMBdWfiKMMrtd7y9e3f7ET3D09P?=
+ =?us-ascii?Q?Qomu6Gdhw8+0xwRAYgx/lL1cmMxjH9RcNRwbhg+Ez//c/wyg1XHREQqp2o98?=
+ =?us-ascii?Q?PZdKChWyKPNa7ZSqgCI2E34mHyMa5XuwOKTbCNIVKohfjyD2/KpWz09oReE8?=
+ =?us-ascii?Q?VG5OqcHW4En/BMY13CLayvzCd3VD6U56VvOmbvx24zalqT+7PTePgCZSfq9L?=
+ =?us-ascii?Q?EVqFhQahu2eqGaaUT7Q6sgbSEVsDTtwsTQrf6Fcb3RR3rH6EWkbindapVgZH?=
+ =?us-ascii?Q?uZO9e/QSsu7OTFWH9wHYEO+UZmFAjX9XMQLX1qq+oJXzGYhYkWlcBASgTsl1?=
+ =?us-ascii?Q?Kq5maf36EeG8nxUmAZ3ynzn9cx4P7gHC+O5Zuu8brxxMH4VkXAdqlDEb0jJc?=
+ =?us-ascii?Q?1Jl7xs5dIiVLKwKcyTLXNU/uVGE4l7qJiKJtBJTBvHVcDjLxqP4bJ7fSnpca?=
+ =?us-ascii?Q?vvtvmuA88as90s3mSGYJiWGl2H0OQ6ofCl4HArsEkDamaTBjFy7iBxc7W6gc?=
+ =?us-ascii?Q?byl9yJ6GWnDOnImj3N1BFAte2YJZZ/XzX7YCFr4vCGkjBlQpK/y4CnbTCmGq?=
+ =?us-ascii?Q?6YGNeiHlJQfnJB7UpVIeI7OaFpf6WE9OesXGv40JowOyBVY3LJp3SxRfHKb0?=
+ =?us-ascii?Q?w3QIgnk/8THbxeFTKKBOMgy3OskT9ilgX+AbXUuAaJZuPcKXw2QnzbGH0fdw?=
+ =?us-ascii?Q?V2swy9AD8BiDwcFDKCVPmarC3o8F66GSDo6myyEpyvXKmwP7RlWj9d2tK0Wm?=
+ =?us-ascii?Q?w0i7xxQ9gYi5oP3hjZWiq1syxg3LZzDL+eI9RtIM1pi7zExsCcFekIrkXPLv?=
+ =?us-ascii?Q?mPybB9NFWO0GF9Iwo7kDxrNkP7RYU4qizAWA27uxmsiHlSizzZY3p4iWLp8D?=
+ =?us-ascii?Q?a2F4D/6qePrWfd+5AEvdodn1qdMyqqVxFdl/hklunRrm1x5GRYQVUpPiXt1K?=
+ =?us-ascii?Q?OPfSJpsY14ZusujVkEuS/9jrC6n064rZDQ3MZtVu0ngFRrLTSZjZlecNurFn?=
+ =?us-ascii?Q?Ele6mx9lpuQXedJ/RcZg+nEB3E6WYVIKwTHYsAwb/pOydbdm56nXCqhmHoHR?=
+ =?us-ascii?Q?CaC3PWOplSTlJYBljeSg3sgMbRkn0lrmhkc5uBVccVv08hAJ80XYxQTHhEyy?=
+ =?us-ascii?Q?B7uU9pz5dLliKDa9zv8dP6FYrAI05o/VPpqdpvyRUPp2JiiHzstlDgIn2YZr?=
+ =?us-ascii?Q?xVR9CYYOwPB3EL2kxQ/n3NOUYtHHyeaZNIKjQLc2TJY0bR1upuYGwDWivXv6?=
+ =?us-ascii?Q?gTHPPqLBTh5RN9FFub0/+t1zJAyaI5D9Bzf3CLLDbEuIDeSi8vjosrtR50RV?=
+ =?us-ascii?Q?PAel5/fCi4V113mNDZNEbtOWpvyY/JpkCz0572TpoNSR3Y6O5DnIdUlEoXMp?=
+ =?us-ascii?Q?v9yuGft1RwJnHWrso31m5lNxplbM0BTnNWzK3P8qq9lMts/AWR0K0xJY1Ea1?=
+ =?us-ascii?Q?dGu+fWVRb7JBkUL8/BD61MI4OQSH0AH2Xd4KgTkAedMCzONEjkAALppmwEV6?=
+ =?us-ascii?Q?XuY6emLi1ix5E3doa27cCKqvg1Eqkhr69hyg99EIPE3yg6bseTUMUB80ISbo?=
+ =?us-ascii?Q?1rRfolFSx1MwGctOrwrssgfCdYoC3bP5VRQt5mZF6hs3FN1z5S89Fio/sWh5?=
+ =?us-ascii?Q?foNXExZQV436cWOVdZeBhbXRzXw=3D?=
 X-OriginatorOrg: drivenets.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86d018c2-dc06-4596-5312-08d9cf59c085
+X-MS-Exchange-CrossTenant-Network-Message-Id: 98201edc-19c0-44aa-9dfd-08d9cf5b356d
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR08MB3518.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2022 08:11:04.1066
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2022 08:21:29.6674
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 662f82da-cf45-4bdf-b295-33b083f5d229
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: T3osse9OsIS4wyNtlJ+JpZlDOHI/zLROZP5WoAXGtZWcUb/X8SaL1w8lTsN3Bf9low3O5o9yobftmmAEZkmG+1FwkIsKaidNoNE50TaF1UE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0802MB2464
-X-MDID: 1641283868-qMkV-cnA4swZ
+X-MS-Exchange-CrossTenant-UserPrincipalName: gILKpL8Jx+sNGNXOlPK8CoH7Rp5rjtdHUG5j0sTl0SFD/Rryh+5VOyDYPXgMtgFGTBQCz6lGiH/iXDaJ/cBz+tNLHWeWXpaPs0zezSYiMgM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR08MB5853
+X-MDID: 1641284491-PZjyetU2pNte
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Under large scale, some routers are required to support tens of thousands
-of devices at once, both physical and virtual (e.g. loopbacks, tunnels,
-vrfs, etc).
-At times such routers are required to delete massive amounts of devices
-at once, such as when a factory reset is performed on the router (causing
-a deletion of all devices), or when a configuration is restored after an
-upgrade, or as a request from an operator.
+On Wed, Dec 08, 2021 at 04:45:44PM -0800, Jakub Kicinski wrote:
+> CAUTION: External E-Mail - Use caution with links and attachments
+>
+>
+> On Wed, 8 Dec 2021 17:18:48 -0700 David Ahern wrote:
+> > On 12/8/21 5:04 PM, Jakub Kicinski wrote:
+> > >> I think marking the dev's and then using a delete loop is going to be
+> > >> the better approach - avoid the sort and duplicate problem. I use that
+> > >> approach for nexthop deletes:
+> > >>
+> > >> https://urldefense.proofpoint.com/v2/url?u=https-3A__git.kernel.org_pub_scm_linux_kernel_git_netdev_net-2Dnext.git_tree_net_ipv4_nexthop.c-23n1849&d=DwICAg&c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&r=-WbGKi6-8WU3IfnrkySymtcZWJMn_aVdolIPebPZGu4&m=td9sv1_NnALM3QjLFg8h9u1P7DUJJL2YhzqyneZ95Gc&s=nEGgvxCwd3MrSXWhv-5Fo7mUlBkuKbHRBAO4VO9mG2o&e=
+> > >>
+> > >> Find a hole in net_device struct in an area used only for control path
+> > >> and add 'bool grp_delete' (or a 1-bit hole). Mark the devices on pass
+> > >> and delete them on another.
+> > >
+> > > If we want to keep state in the netdev itself we can probably piggy
+> > > back on dev->unreg_list. It should be initialized to empty and not
+> > > touched unless device goes thru unregister.
+> >
+> > isn't that used when the delink function calls unregister_netdevice_queue?
+>
+> Sure but all the validation is before we start calling delink, so
+> doesn't matter?
+>
+> list to_kill, queued;
+>
+> for_each_attr(nest) {
+>         ...
+>
+>         dev = get_by_index(nla_get_s32(..));
+>         if (!dev)
+>                 goto cleanup;
+>         if (!list_empty(&dev->unreg_list))
+>                 goto cleanup;
+>         ...
+>
+>         list_add(&to_kill, &dev->unreg_list);
+> }
+>
+> for_each_entry_safe(to_kill) {
+>         list_del_init(&dev->unreg_list);
+>         ->dellink(dev, queued);
+> }
+>
+> unreg_many(queued);
+>
+> return
+>
+> cleanup:
+>         for_each_entry_safe(to_kill) {
+>                 list_del_init(&dev->unreg_list);
+>         }
+>
+> No?
 
-Currently there are 2 means of deleting devices using Netlink:
-1. Deleting a single device (either by ifindex using ifinfomsg::ifi_index,
-or by name using IFLA_IFNAME)
-2. Delete all device that belong to a group (using IFLA_GROUP)
+Hi Jakub, I just sent a V6 for this patch. Just wanted to note that I
+tried this approach of using unreg_list, but it caused issues with e.g.
+veth deletion - the dellink() of a veth peer automatically adds the
+other peer to the queued list. So if the list of ifindices contains
+both peers then when 'to_kill' is iterated, both the current device
+and the next pointer will have their 'unreg_list' moved to the other
+list, which later raised a page fault when 'to_kill' was further
+iterated upon.
 
-Deletion of devices one-by-one has poor performance on large scale of
-devices compared to "group deletion":
-After all device are handled, netdev_run_todo() is called which
-calls rcu_barrier() to finish any outstanding RCU callbacks that were
-registered during the deletion of the device, then wait until the
-refcount of all the devices is 0, then perform final cleanups.
-
-However, calling rcu_barrier() is a very costly operation, each call
-taking in the order of 10s of milliseconds.
-
-When deleting a large number of device one-by-one, rcu_barrier()
-will be called for each device being deleted.
-As an example, following benchmark deletes 10K loopback devices,
-all of which are UP and with only IPv6 LLA being configured:
-
-1. Deleting one-by-one using 1 thread : 243 seconds
-2. Deleting one-by-one using 10 thread: 70 seconds
-3. Deleting one-by-one using 50 thread: 54 seconds
-4. Deleting all using "group deletion": 30 seconds
-
-Note that even though the deletion logic takes place under the rtnl
-lock, since the call to rcu_barrier() is outside the lock we gain
-some improvements.
-
-But, while "group deletion" is the fastest, it is not suited for
-deleting large number of arbitrary devices which are unknown a head of
-time. Furthermore, moving large number of devices to a group is also a
-costly operation.
-
-This patch adds support for passing an arbitrary list of ifindex of
-devices to delete with a new IFLA_IFINDEX attribute. A single message
-may contain multiple instances of this attribute).
-This gives a more fine-grained control over which devices to delete,
-while still resulting in rcu_barrier() being called only once.
-Indeed, the timings of using this new API to delete 10K devices is
-the same as using the existing "group" deletion.
-
-Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
----
-v5 -> v6
- - Convert back to single IFLA_IFINDEX_LIST attribute instead of
-   IFLA_IFINDEX
- - Added struct net_device::bulk_delete to avoid sorting ifindex list,
-   in order to call ->dellink() only once per potentially duplicated ifindex
-   (no increase in struct size)
- - Make sure IFLA_IFINDEX_LIST cannot be used in
-   setlink()/newlink()/getlink()
-
-v4 -> v5
- - Don't call ->dellink() multiple times if device is duplicated.
-
-v3 -> v4
- - Change single IFLA_INDEX_LIST into multiple IFLA_IFINDEX
- - Fail if passing both IFLA_GROUP and at least one IFLA_IFNEX
-
-v2 -> v3
- - Rename 'ifindex_list' to 'ifindices', and pass it as int*
- - Clamp 'ops' variable in second loop.
-
-v1 -> v2
- - Unset 'len' of IFLA_IFINDEX_LIST in policy.
- - Use __dev_get_by_index() instead of n^2 loop.
- - Return -ENODEV if any ifindex is not present.
- - Saved devices in an array.
- - Fix formatting.
-
- include/linux/netdevice.h    |  3 ++
- include/uapi/linux/if_link.h |  1 +
- net/core/rtnetlink.c         | 77 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 81 insertions(+)
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index df049864661d..c3cfbfaf7f06 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1926,6 +1926,8 @@ enum netdev_ml_priv_type {
-  *
-  *	@threaded:	napi threaded mode is enabled
-  *
-+ *	@bulk_delete:	Device is marked for of bulk deletion
-+ *
-  *	@net_notifier_list:	List of per-net netdev notifier block
-  *				that follow this device when it is moved
-  *				to another network namespace.
-@@ -2258,6 +2260,7 @@ struct net_device {
- 	bool			proto_down;
- 	unsigned		wol_enabled:1;
- 	unsigned		threaded:1;
-+	unsigned		bulk_delete:1;
- 
- 	struct list_head	net_notifier_list;
- 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index eebd3894fe89..f950bf6ed025 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -348,6 +348,7 @@ enum {
- 	IFLA_PARENT_DEV_NAME,
- 	IFLA_PARENT_DEV_BUS_NAME,
- 
-+	IFLA_IFINDEX_LIST,
- 	__IFLA_MAX
- };
- 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index fd030e02f16d..530371767565 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -1880,6 +1880,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
- 	[IFLA_PROTO_DOWN_REASON] = { .type = NLA_NESTED },
- 	[IFLA_NEW_IFINDEX]	= NLA_POLICY_MIN(NLA_S32, 1),
- 	[IFLA_PARENT_DEV_NAME]	= { .type = NLA_NUL_STRING },
-+	[IFLA_IFINDEX_LIST]     = { .type = NLA_BINARY },
- };
- 
- static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
-@@ -3009,6 +3010,11 @@ static int rtnl_setlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		goto errout;
- 	}
- 
-+	if (tb[IFLA_IFINDEX_LIST]) {
-+		NL_SET_ERR_MSG(extack, "ifindex list attribute cannot be used in setlink");
-+		goto errout;
-+	}
-+
- 	err = do_setlink(skb, dev, ifm, extack, tb, ifname, 0);
- errout:
- 	return err;
-@@ -3050,6 +3056,57 @@ static int rtnl_group_dellink(const struct net *net, int group)
- 	return 0;
- }
- 
-+static int rtnl_list_dellink(struct net *net, int *ifindices, int size,
-+			     struct netlink_ext_ack *extack)
-+{
-+	const int num_devices = size / sizeof(int);
-+	struct net_device *dev;
-+	LIST_HEAD(list_kill);
-+	int i, j, ret;
-+
-+	if (size <= 0 || size % sizeof(int))
-+		return -EINVAL;
-+
-+	for (i = 0; i < num_devices; i++) {
-+		const struct rtnl_link_ops *ops;
-+
-+		ret = -ENODEV;
-+		dev = __dev_get_by_index(net, ifindices[i]);
-+		if (!dev) {
-+			NL_SET_ERR_MSG(extack, "Unknown ifindex");
-+			goto cleanup;
-+		}
-+
-+		ret = -EOPNOTSUPP;
-+		ops = dev->rtnl_link_ops;
-+		if (!ops || !ops->dellink) {
-+			NL_SET_ERR_MSG(extack, "Device cannot be deleted");
-+			goto cleanup;
-+		}
-+
-+		dev->bulk_delete = 1;
-+	}
-+
-+	for_each_netdev(net, dev) {
-+		if (dev->bulk_delete) {
-+			dev->rtnl_link_ops->dellink(dev, &list_kill);
-+			dev->bulk_delete = 0;
-+		}
-+	}
-+
-+	unregister_netdevice_many(&list_kill);
-+
-+	return 0;
-+
-+cleanup:
-+	for (j = 0; j < i; j++) {
-+		dev = __dev_get_by_index(net, ifindices[j]);
-+		dev->bulk_delete = 0;
-+	}
-+
-+	return ret;
-+}
-+
- int rtnl_delete_link(struct net_device *dev)
- {
- 	const struct rtnl_link_ops *ops;
-@@ -3093,6 +3150,11 @@ static int rtnl_dellink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			return PTR_ERR(tgt_net);
- 	}
- 
-+	if (tb[IFLA_GROUP] && tb[IFLA_IFINDEX_LIST]) {
-+		NL_SET_ERR_MSG(extack, "Can't pass both IFLA_GROUP and IFLA_IFINDEX_LIST");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	err = -EINVAL;
- 	ifm = nlmsg_data(nlh);
- 	if (ifm->ifi_index > 0)
-@@ -3102,6 +3164,9 @@ static int rtnl_dellink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 				   tb[IFLA_ALT_IFNAME], NULL);
- 	else if (tb[IFLA_GROUP])
- 		err = rtnl_group_dellink(tgt_net, nla_get_u32(tb[IFLA_GROUP]));
-+	else if (tb[IFLA_IFINDEX_LIST])
-+		err = rtnl_list_dellink(tgt_net, nla_data(tb[IFLA_IFINDEX_LIST]),
-+					nla_len(tb[IFLA_IFINDEX_LIST]), extack);
- 	else
- 		goto out;
- 
-@@ -3285,6 +3350,12 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	else
- 		ifname[0] = '\0';
- 
-+	err = -EINVAL;
-+	if (tb[IFLA_IFINDEX_LIST]) {
-+		NL_SET_ERR_MSG(extack, "ifindex list attribute cannot be used in newlink");
-+		return err;
-+	}
-+
- 	ifm = nlmsg_data(nlh);
- 	if (ifm->ifi_index > 0)
- 		dev = __dev_get_by_index(net, ifm->ifi_index);
-@@ -3577,6 +3648,12 @@ static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	if (err < 0)
- 		return err;
- 
-+	err = -EINVAL;
-+	if (tb[IFLA_IFINDEX_LIST]) {
-+		NL_SET_ERR_MSG(extack, "ifindex list attribute cannot be used in getlink");
-+		return err;
-+	}
-+
- 	if (tb[IFLA_TARGET_NETNSID]) {
- 		netnsid = nla_get_s32(tb[IFLA_TARGET_NETNSID]);
- 		tgt_net = rtnl_get_net_ns_capable(NETLINK_CB(skb).sk, netnsid);
--- 
-2.25.1
-
+Therefore instead I added a big flag in a "hole" inside struct
+net_device, as David suggested.
