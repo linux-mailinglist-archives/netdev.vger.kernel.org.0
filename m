@@ -2,226 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD303483E56
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 09:42:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C9C5483E59
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 09:42:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234045AbiADImY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 03:42:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58954 "EHLO
+        id S234196AbiADImy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 03:42:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233909AbiADImY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 03:42:24 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B639C061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 00:42:24 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id o3so16420892wrh.10
-        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 00:42:24 -0800 (PST)
+        with ESMTP id S232500AbiADImx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 03:42:53 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A06C061761;
+        Tue,  4 Jan 2022 00:42:53 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id y130so81610037ybe.8;
+        Tue, 04 Jan 2022 00:42:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=barqnjH3p7fRKT0tLe0JVFPAeiGFjop5m8QS0KnEoeg=;
-        b=1AxwPuYFc4Sam8ETMwAlTVU3EtGwflcPbf7StDTivbydGIbH4r3b3msG5YYo8jtZVC
-         oXyyKVBq9rZjjnSzyoI+nJNpAtJQ9jvAZj3Xkd2GNE5mexKfYP9q2FhTR1dRHbrsgTJH
-         pTIAAwCpYWLMkR7VRxr3hSVpoovjiyiz2kQUnDwHCIzcpOG4hq0Y25f4UiMmqanLYTNR
-         HaLOGPp//ja8tax9EnjWy8pUQ6Jj1KE6NDFM8lgGniUJ+qvZdNLdg5eUnxRkxB22FHwG
-         5nxRIJjkIJAFwSUAov73Jdc8qQCkBbpfoBDrSzyYUX28YDYhiuOUeqOjPWuSxvpm37d2
-         XELA==
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=2Mu/yLPI08BwOs4ENrx5eMAkD+Wr+U3dBWXV5FX6VSY=;
+        b=c/WGsnSye+YudOci/VpOtQq5W+cvMoZPnV00eQJmRYv28XdiHX8GZTC8Yz/4HD+cvo
+         SbornMjSbudqdENxcGeeQM4jFmdlTb0JIOtPMCLF/egajvcIz+fpF/3mjQ3pjlhJ1VAZ
+         HJb0sX7eZJabBbCYqyAJIJsm5O/q//tn6xlyx8boSRHnvGkA5ySe4Z408gDkYxKyMi78
+         /NKAMQQ9BQSWOLH1UCw83nvFSiPNtJBZEsv/SH6jpJY4IFD18LvBfuajjFdMuNXibXZ/
+         K6xWQ2ho5pKMgEEGC5Gk215pIrvWY3cJBLC6DilZGVwmh6Hz/U1E2ESOcnxZNA/6Ici8
+         WyjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=barqnjH3p7fRKT0tLe0JVFPAeiGFjop5m8QS0KnEoeg=;
-        b=tDXkyfDsnRLRFR7ldnfpwgIq2ywYIK+2K7X7eNxvbiYATwnYPoOpD9ixtpHNET/aym
-         OgsoDNM0BnDOmWvAR7/g1Wp3Boigugd58asi8aSANEhKqB2qLGwPVCd6wqgpGlURiJdJ
-         FCd6FVAM2qyQY1moPfOMFZQEsUmwZspkbLn51parN+atNIgqI/rf0NT7jCUIeiV/Ttcb
-         T2W+c1kSu7LMip6/hpyJ/uGnZruNJ+SJyN4WPWRVPNHSAyao5kQuIjJ40wQp9/mhB/GM
-         hr2YvBoIQswDMyi3mv0/u1XLoTlIh7Vv6A5tBC9m2xe7ZGvEWblRnXEVDeIZwIgnCHnP
-         s6aw==
-X-Gm-Message-State: AOAM532aQKsg5kojFzPnc2U3Tp9q4CN5SbovFJG8hOxiFvvrGk+LU3dY
-        uwcDiMSmL6zyoxGQURmRiJ4Z/w==
-X-Google-Smtp-Source: ABdhPJz+klqyzLgB8Ih+zYN1plyHR9OQ5WQs4Sk3Da4D+c9ZDZbfpGhv3+zj/sjyuElh2AEzzQzS/Q==
-X-Received: by 2002:a5d:4568:: with SMTP id a8mr42639622wrc.471.1641285742516;
-        Tue, 04 Jan 2022 00:42:22 -0800 (PST)
-Received: from ?IPv6:2001:861:44c0:66c0:f6da:6ac:481:1df0? ([2001:861:44c0:66c0:f6da:6ac:481:1df0])
-        by smtp.gmail.com with ESMTPSA id n8sm39740782wri.47.2022.01.04.00.42.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Jan 2022 00:42:22 -0800 (PST)
-Subject: Re: [PATCH net-next 2/3] net: stmmac: dwmac-oxnas: Add support for
- OX810SE
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-oxnas@groups.io, linux-kernel@vger.kernel.org
-References: <20220103175638.89625-1-narmstrong@baylibre.com>
- <20220103175638.89625-3-narmstrong@baylibre.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-Message-ID: <4a0ea0f1-9cc5-a242-75af-ed4bd0537b16@baylibre.com>
-Date:   Tue, 4 Jan 2022 09:42:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=2Mu/yLPI08BwOs4ENrx5eMAkD+Wr+U3dBWXV5FX6VSY=;
+        b=5iMi3reQB3X3Yf9V6CQdcSCQUoHYHNAJkjtH49d9tsUz0HC4/wOLsUah/x/LPm2l/4
+         Bys4uLvxxX9v+n5o8RnrE8DlVfDHQRFJbiA2Ds+/a65IATzGhTdrEsHoLXyW/nJAi8Cu
+         zgvLtKyiLXIiBNplJnweo/xwV2PMMmDMWHmmMdWEGIgTIbk2vor7Xbfw5jj1IOSxT1qX
+         bVDgeqlq5EG4LlhJkkStmLEaRxYlLfr7LuykBMkQjS5CFxLXCJcP5n2FNqFFYs5+ovOz
+         oC9BP1BzLUVvOAY0z8Sg7FYLIUCHqIUSpqFdA3vOjmRhNw6/jzM4N4KG3QIpTOcRIJ6L
+         k/vg==
+X-Gm-Message-State: AOAM530y6qpw/aUuHpQU2KpIwOcc15+vjp7PevmMcE2yRN4AZ1WClwjW
+        NavcRCtQGlbBS0xrPrijEH+HJi1YW6mfEx+MBihFW4WjBOrRQqwT
+X-Google-Smtp-Source: ABdhPJyICnYdCnhvxmn9XyQ16XC7PGiFGh8huMczNEoXVQaNTlnyrbJtDT/ZhOFGJsmecfYz8kMquy8INn1Yd+y2M74=
+X-Received: by 2002:a25:b293:: with SMTP id k19mr54608303ybj.627.1641285772881;
+ Tue, 04 Jan 2022 00:42:52 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220103175638.89625-3-narmstrong@baylibre.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From:   kvartet <xyru1999@gmail.com>
+Date:   Tue, 4 Jan 2022 16:42:42 +0800
+Message-ID: <CAFkrUshXhoAttBomV3ngTa2rWUebiKOb4D2QkXMrL+YB05Bx_g@mail.gmail.com>
+Subject: INFO: task hung in sit_exit_batch_net
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Cc:     sunhao.th@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/01/2022 18:56, Neil Armstrong wrote:
-> Add support for OX810SE dwmac glue setup, which is a simplified version
-> of the OX820 introduced later with more control on the PHY interface.
-> 
-> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-> ---
->  .../net/ethernet/stmicro/stmmac/dwmac-oxnas.c | 92 ++++++++++++++-----
->  1 file changed, 70 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-oxnas.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-oxnas.c
-> index adfeb8d3293d..7ffa4a4eb30f 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-oxnas.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-oxnas.c
-> @@ -12,6 +12,7 @@
->  #include <linux/io.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
-> +#include <linux/of_device.h>
->  #include <linux/platform_device.h>
->  #include <linux/regmap.h>
->  #include <linux/mfd/syscon.h>
-> @@ -48,12 +49,58 @@
->  #define DWMAC_RX_VARDELAY(d)		((d) << DWMAC_RX_VARDELAY_SHIFT)
->  #define DWMAC_RXN_VARDELAY(d)		((d) << DWMAC_RXN_VARDELAY_SHIFT)
->  
-> +struct oxnas_dwmac;
-> +
-> +struct oxnas_dwmac_data {
-> +	void (*setup)(struct oxnas_dwmac *dwmac);
-> +};
-> +
->  struct oxnas_dwmac {
->  	struct device	*dev;
->  	struct clk	*clk;
->  	struct regmap	*regmap;
-> +	const struct oxnas_dwmac_data	*data;
->  };
->  
-> +static void oxnas_dwmac_setup_ox810se(struct oxnas_dwmac *dwmac)
-> +{
-> +	unsigned int value;
-> +
-> +	/* Enable GMII_GTXCLK to follow GMII_REFCLK, required for gigabit PHY */
-> +	value = BIT(DWMAC_CKEN_GTX)		|
-> +		 /* Use simple mux for 25/125 Mhz clock switching */
-> +		 BIT(DWMAC_SIMPLE_MUX);
-> +
-> +	regmap_write(dwmac->regmap, OXNAS_DWMAC_CTRL_REGOFFSET, value);
-> +}
-> +
-> +static void oxnas_dwmac_setup_ox820(struct oxnas_dwmac *dwmac)
-> +{
-> +	unsigned int value;
-> +
-> +	/* Enable GMII_GTXCLK to follow GMII_REFCLK, required for gigabit PHY */
-> +	value = BIT(DWMAC_CKEN_GTX)		|
-> +		 /* Use simple mux for 25/125 Mhz clock switching */
-> +		BIT(DWMAC_SIMPLE_MUX)		|
-> +		/* set auto switch tx clock source */
-> +		BIT(DWMAC_AUTO_TX_SOURCE)	|
-> +		/* enable tx & rx vardelay */
-> +		BIT(DWMAC_CKEN_TX_OUT)		|
-> +		BIT(DWMAC_CKEN_TXN_OUT)	|
-> +		BIT(DWMAC_CKEN_TX_IN)		|
-> +		BIT(DWMAC_CKEN_RX_OUT)		|
-> +		BIT(DWMAC_CKEN_RXN_OUT)	|
-> +		BIT(DWMAC_CKEN_RX_IN);
-> +	regmap_write(dwmac->regmap, OXNAS_DWMAC_CTRL_REGOFFSET, value);
-> +
-> +	/* set tx & rx vardelay */
-> +	value = DWMAC_TX_VARDELAY(4)	|
-> +		DWMAC_TXN_VARDELAY(2)	|
-> +		DWMAC_RX_VARDELAY(10)	|
-> +		DWMAC_RXN_VARDELAY(8);
-> +	regmap_write(dwmac->regmap, OXNAS_DWMAC_DELAY_REGOFFSET, value);
-> +}
-> +
->  static int oxnas_dwmac_init(struct platform_device *pdev, void *priv)
->  {
->  	struct oxnas_dwmac *dwmac = priv;
-> @@ -75,27 +122,7 @@ static int oxnas_dwmac_init(struct platform_device *pdev, void *priv)
->  		return ret;
->  	}
+Hello,
 
-There's an issue with the patch, the value read from register is not used, I'll send a V2 with the fix.
+When using Syzkaller to fuzz the latest Linux kernel, the following
+crash was triggered.
 
-Neil
+HEAD commit: a7904a538933 Linux 5.16-rc6
+git tree: upstream
+console output: https://paste.ubuntu.com/p/b8pTJKKYkB/plain/
+kernel config: https://paste.ubuntu.com/p/FDDNHDxtwz/plain/
 
->  
-> -	/* Enable GMII_GTXCLK to follow GMII_REFCLK, required for gigabit PHY */
-> -	value |= BIT(DWMAC_CKEN_GTX)		|
-> -		 /* Use simple mux for 25/125 Mhz clock switching */
-> -		 BIT(DWMAC_SIMPLE_MUX)		|
-> -		 /* set auto switch tx clock source */
-> -		 BIT(DWMAC_AUTO_TX_SOURCE)	|
-> -		 /* enable tx & rx vardelay */
-> -		 BIT(DWMAC_CKEN_TX_OUT)		|
-> -		 BIT(DWMAC_CKEN_TXN_OUT)	|
-> -		 BIT(DWMAC_CKEN_TX_IN)		|
-> -		 BIT(DWMAC_CKEN_RX_OUT)		|
-> -		 BIT(DWMAC_CKEN_RXN_OUT)	|
-> -		 BIT(DWMAC_CKEN_RX_IN);
-> -	regmap_write(dwmac->regmap, OXNAS_DWMAC_CTRL_REGOFFSET, value);
-> -
-> -	/* set tx & rx vardelay */
-> -	value = DWMAC_TX_VARDELAY(4)	|
-> -		DWMAC_TXN_VARDELAY(2)	|
-> -		DWMAC_RX_VARDELAY(10)	|
-> -		DWMAC_RXN_VARDELAY(8);
-> -	regmap_write(dwmac->regmap, OXNAS_DWMAC_DELAY_REGOFFSET, value);
-> +	dwmac->data->setup(dwmac);
->  
->  	return 0;
->  }
-> @@ -128,6 +155,12 @@ static int oxnas_dwmac_probe(struct platform_device *pdev)
->  		goto err_remove_config_dt;
->  	}
->  
-> +	dwmac->data = (const struct oxnas_dwmac_data *)of_device_get_match_data(&pdev->dev);
-> +	if (!dwmac->data) {
-> +		ret = -EINVAL;
-> +		goto err_remove_config_dt;
-> +	}
-> +
->  	dwmac->dev = &pdev->dev;
->  	plat_dat->bsp_priv = dwmac;
->  	plat_dat->init = oxnas_dwmac_init;
-> @@ -166,8 +199,23 @@ static int oxnas_dwmac_probe(struct platform_device *pdev)
->  	return ret;
->  }
->  
-> +static const struct oxnas_dwmac_data ox810se_dwmac_data = {
-> +	.setup = oxnas_dwmac_setup_ox810se,
-> +};
-> +
-> +static const struct oxnas_dwmac_data ox820_dwmac_data = {
-> +	.setup = oxnas_dwmac_setup_ox820,
-> +};
-> +
->  static const struct of_device_id oxnas_dwmac_match[] = {
-> -	{ .compatible = "oxsemi,ox820-dwmac" },
-> +	{
-> +		.compatible = "oxsemi,ox810se-dwmac",
-> +		.data = &ox810se_dwmac_data,
-> +	},
-> +	{
-> +		.compatible = "oxsemi,ox820-dwmac",
-> +		.data = &ox820_dwmac_data,
-> +	},
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, oxnas_dwmac_match);
-> 
+Sorry, I don't have a reproducer for this crash, hope the symbolized
+report can help.
+If you fix this issue, please add the following tag to the commit:
+Reported-by: Yiru Xu <xyru1999@gmail.com>
 
+
+INFO: task kworker/u8:6:11437 blocked for more than 143 seconds.
+      Not tainted 5.16.0-rc6 #9
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:kworker/u8:6    state:D stack:26360 pid:11437 ppid:     2 flags:0x00004000
+Workqueue: netns cleanup_net
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:4972 [inline]
+ __schedule+0xcd9/0x2530 kernel/sched/core.c:6253
+ schedule+0xd2/0x260 kernel/sched/core.c:6326
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6385
+ __mutex_lock_common kernel/locking/mutex.c:680 [inline]
+ __mutex_lock+0xc48/0x1610 kernel/locking/mutex.c:740
+ sit_exit_batch_net+0x88/0x770 net/ipv6/sit.c:1946
+ ops_exit_list.isra.0+0x103/0x150 net/core/net_namespace.c:171
+ cleanup_net+0x511/0xa90 net/core/net_namespace.c:593
+ process_one_work+0x9df/0x16d0 kernel/workqueue.c:2298
+ worker_thread+0x90/0xed0 kernel/workqueue.c:2445
+
+
+Best Regards,
+Yiru
