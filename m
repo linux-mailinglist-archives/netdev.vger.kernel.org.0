@@ -2,149 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C8848403C
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 11:58:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CE90484059
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 11:59:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231749AbiADK6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 05:58:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230319AbiADK6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 05:58:05 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00494C061761;
-        Tue,  4 Jan 2022 02:58:04 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id s1so75460209wrg.1;
-        Tue, 04 Jan 2022 02:58:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=XwiyCQ7yR+CMUiUvd+BfT2dIsFx0sX/3lOPVw29IqQw=;
-        b=jZ4cJJoJu17LrCOPORHI9Lpw3FiL/o9pszi7TMu0AlMIk4w79TJy/CENBjYWX32t7o
-         LtQig/hYKTORCM3GF3BE6sgVh0NHlQCEBM2P1Rv4e8k5MVI2RbVhNnE6Xwa2a/kykrck
-         2zZwd5oFJS1OI/rzge4acgscDN52YUgb9yB9k2+A7iz8NBeErW9iUYjncZwWRlCo2V+6
-         J+L2Y8plnNRqHC4ezh/S7HeJHwra8H11mLJfd38R4iMizWsZJXoou5bdDhYjV6SGMgO9
-         /L8KQAQ2en1rXamVRXa6tRZbnGtFPvs+zLN5eCeOMm7bZQmBCqfsaanhzvO7otMO0RTx
-         QmPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=XwiyCQ7yR+CMUiUvd+BfT2dIsFx0sX/3lOPVw29IqQw=;
-        b=SOmxft6mKZ/9dTWQdxI0352Unt47fTMcC8UeYy/Ag81zxpqHd2B3sCLe36IGMwMifH
-         u1XEQwLG/JVXBuPQEGGNYkDiIIwufk/LZezky+XbBljvQrFCaejFJTS0Az9qCNiBTsNs
-         qjYPAM5FD+r3QkznAPio5ivTerwIfojATAxR91f7PQqSVHHd5VPhvC9Cs0K65CO5sYsP
-         4zFEb0gFCFRO38n8JGmgLCtIqbt1rwqRDRXtiJONxDFXu/1pDC1jM/+XAyMpMQNLQxeW
-         nYQuMEHVr2/88y8EMBc7upPMeThAkarEmXUE7pZOnSEbxp1DnLu/kGP8o+963noSneEv
-         mmqA==
-X-Gm-Message-State: AOAM533Wcx4P1/JB1xs2upjrcLRRHoLJ4ZG0n3Y/NiruBP2LtPbpSVwk
-        rte/IaD85aAX6ChsgERYDVc=
-X-Google-Smtp-Source: ABdhPJxg1KT31JAfVaurZWg0EjNGqK/h/8kpGuYTAM1jNkDJ99dzdERH932G2B24uCLA27EIqKB0ag==
-X-Received: by 2002:adf:9146:: with SMTP id j64mr42451311wrj.487.1641293883589;
-        Tue, 04 Jan 2022 02:58:03 -0800 (PST)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id 14sm40735660wry.23.2022.01.04.02.58.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Jan 2022 02:58:03 -0800 (PST)
-Date:   Tue, 4 Jan 2022 11:58:01 +0100
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     linus.walleij@linaro.org, ulli.kroll@googlemail.com,
-        kuba@kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk
-Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: net: phy: marvell: network working with generic PHY and not with
- marvell PHY
-Message-ID: <YdQoOSXS98+Af1wO@Red>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        id S230447AbiADK7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 05:59:02 -0500
+Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:57592 "EHLO
+        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231776AbiADK7C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 05:59:02 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V0vAWLj_1641293939;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V0vAWLj_1641293939)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 04 Jan 2022 18:58:59 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        "D. Wythe" <alibuda@linux.alibaba.com>
+Subject: [PATCH net-next] net/smc: Reduce overflow of smc clcsock listen queue
+Date:   Tue,  4 Jan 2022 18:58:50 +0800
+Message-Id: <1641293930-110897-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-I have a gemini SSI 1328 box which has a cortina ethernet MAC with a Marvell 88E1118 as given by:
-Marvell 88E1118 gpio-0:01: attached PHY driver (mii_bus:phy_addr=gpio-0:01, irq=POLL)
-So booting with CONFIG_MARVELL_PHY=y lead to a non-working network with link set at 1Gbit
-Setting 'max-speed = <100>;' (as current state in mainline dtb) lead to a working network.
-By not working, I mean kernel started with ip=dhcp cannot get an IP.
+In nginx/wrk multithread and 10K connections benchmark, the
+backend TCP connection established very slowly, and lots of TCP
+connections stay in SYN_SENT state.
 
-Without CONFIG_MARVELL_PHY, the PHY is detected as generic:
-Generic PHY gpio-0:01: attached PHY driver (mii_bus:phy_addr=gpio-0:01, irq=POLL)
-but with a 1Gbit link, network is now working.
-I am able to get an IP via DHCP and iperf give:
-Test Complete. Summary Results:
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.04  sec   185 MBytes   154 Mbits/sec    2             sender
-[  5]   0.00-10.09  sec   185 MBytes   154 Mbits/sec                  receiver
-CPU Utilization: local/sender 77.8% (0.5%u/77.2%s), remote/receiver 13.3% (0.6%u/12.7%s)
+Server: smc_run nginx
 
-ethtool confirms the gigabit link:
-Settings for eth0:
-	Supported ports: [ TP MII ]
-	Supported link modes:   10baseT/Half 10baseT/Full 
-	                        100baseT/Half 100baseT/Full 
-	                        1000baseT/Half 1000baseT/Full 
-	Supported pause frame use: Symmetric Receive-only
-	Supports auto-negotiation: Yes
-	Supported FEC modes: Not reported
-	Advertised link modes:  10baseT/Half 10baseT/Full 
-	                        100baseT/Half 100baseT/Full 
-	                        1000baseT/Half 1000baseT/Full 
-	Advertised pause frame use: Symmetric Receive-only
-	Advertised auto-negotiation: Yes
-	Advertised FEC modes: Not reported
-	Link partner advertised link modes:  10baseT/Half 10baseT/Full 
-	                                     100baseT/Half 100baseT/Full 
-	                                     1000baseT/Full 
-	Link partner advertised pause frame use: No
-	Link partner advertised auto-negotiation: Yes
-	Link partner advertised FEC modes: Not reported
-	Speed: 1000Mb/s
-	Duplex: Full
-	Port: MII
-	PHYAD: 1
-	Transceiver: external
-	Auto-negotiation: on
-	Current message level: 0x00000007 (7)
-			       drv probe link
-	Link detected: yes
+Client: smc_run wrk -c 10000 -t 4 http://server
 
-With the marvell PHY, ethtool reports:
-Settings for eth0:
-	Supported ports: [ TP MII ]
-	Supported link modes:   10baseT/Half 10baseT/Full 
-	                        100baseT/Half 100baseT/Full 
-	                        1000baseT/Half 1000baseT/Full 
-	Supported pause frame use: Symmetric Receive-only
-	Supports auto-negotiation: Yes
-	Supported FEC modes: Not reported
-	Advertised link modes:  10baseT/Half 10baseT/Full 
-	                        100baseT/Half 100baseT/Full 
-	                        1000baseT/Half 1000baseT/Full 
-	Advertised pause frame use: Symmetric Receive-only
-	Advertised auto-negotiation: Yes
-	Advertised FEC modes: Not reported
-	Link partner advertised link modes:  10baseT/Half 10baseT/Full 
-	                                     100baseT/Half 100baseT/Full 
-	                                     1000baseT/Full 
-	Link partner advertised pause frame use: No
-	Link partner advertised auto-negotiation: Yes
-	Link partner advertised FEC modes: Not reported
-	Speed: 1000Mb/s
-	Duplex: Full
-	Port: Twisted Pair
-	PHYAD: 1
-	Transceiver: external
-	Auto-negotiation: on
-	MDI-X: Unknown
-	Current message level: 0x00000007 (7)
-			       drv probe link
-	Link detected: yes
-Only change vs generic I saw is MDI-X and Port: values
+Socket state in client host (wrk) shows like:
 
-Do you have any idea why the marvell PHY "break" the network ?
+ss -t  | wc -l
+10000
 
-Regards
+ss -t  | grep "SYN-SENT"  | wc -l
+6248
+
+While the socket state in server host (nginx) shows like:
+
+ss -t  | wc -l
+3752
+
+Furthermore, the netstate of server host shows like:
+    145042 times the listen queue of a socket overflowed
+    145042 SYNs to LISTEN sockets dropped
+
+This issue caused by smc_listen_work(), since the smc_tcp_listen_work()
+shared the same workqueue (smc_hs_wq) with smc_listen_work(), while
+smc_listen_work() do blocking wait for smc connection established, which
+meanwhile block the accept() from TCP listen queue.
+
+This patch create a independent workqueue(smc_tcp_ls_wq) for
+smc_tcp_listen_work(), separate it from smc_listen_work(), which is
+quite acceptable considering that smc_tcp_listen_work() runs very fast.
+
+After this patch, the smc 10K connections benchmark in my case is 5
+times faster than before.
+
+Before patch :
+
+smc_run  ./wrk -c 10000 -t 3 -d 20  http://server
+  3 threads and 10000 connections
+  143300 requests in 20.04s, 94.29MB read
+Requests/sec:   7150.33
+Transfer/sec:      4.70MB
+
+After patch:
+
+smc_run  ./wrk -c 10000 -t 3 -d 20  http://server
+  3 threads and 10000 connections
+  902091 requests in 21.99s, 593.56MB read
+Requests/sec:  41017.52
+Transfer/sec:     26.99MB
+
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+---
+ net/smc/af_smc.c | 13 +++++++++++--
+ net/smc/smc.h    |  1 +
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 0bb614e..4d0bc0d 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -62,6 +62,7 @@
+ 						 * creation on client
+ 						 */
+ 
++struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work*/
+ struct workqueue_struct	*smc_hs_wq;	/* wq for handshake work */
+ struct workqueue_struct	*smc_close_wq;	/* wq for close work */
+ 
+@@ -1872,7 +1873,7 @@ static void smc_clcsock_data_ready(struct sock *listen_clcsock)
+ 	lsmc->clcsk_data_ready(listen_clcsock);
+ 	if (lsmc->sk.sk_state == SMC_LISTEN) {
+ 		sock_hold(&lsmc->sk); /* sock_put in smc_tcp_listen_work() */
+-		if (!queue_work(smc_hs_wq, &lsmc->tcp_listen_work))
++		if (!queue_work(smc_tcp_ls_wq, &lsmc->tcp_listen_work))
+ 			sock_put(&lsmc->sk);
+ 	}
+ }
+@@ -2610,9 +2611,14 @@ static int __init smc_init(void)
+ 		goto out_nl;
+ 
+ 	rc = -ENOMEM;
++
++	smc_tcp_ls_wq = alloc_workqueue("smc_tcp_ls_wq", 0, 0);
++	if (!smc_tcp_ls_wq)
++		goto out_pnet;
++
+ 	smc_hs_wq = alloc_workqueue("smc_hs_wq", 0, 0);
+ 	if (!smc_hs_wq)
+-		goto out_pnet;
++		goto out_alloc_tcp_ls_wq;
+ 
+ 	smc_close_wq = alloc_workqueue("smc_close_wq", 0, 0);
+ 	if (!smc_close_wq)
+@@ -2709,6 +2715,8 @@ static int __init smc_init(void)
+ 	destroy_workqueue(smc_close_wq);
+ out_alloc_hs_wq:
+ 	destroy_workqueue(smc_hs_wq);
++out_alloc_tcp_ls_wq:
++	destroy_workqueue(smc_tcp_ls_wq);
+ out_pnet:
+ 	smc_pnet_exit();
+ out_nl:
+@@ -2728,6 +2736,7 @@ static void __exit smc_exit(void)
+ 	smc_core_exit();
+ 	smc_ib_unregister_client();
+ 	destroy_workqueue(smc_close_wq);
++	destroy_workqueue(smc_tcp_ls_wq);
+ 	destroy_workqueue(smc_hs_wq);
+ 	proto_unregister(&smc_proto6);
+ 	proto_unregister(&smc_proto);
+diff --git a/net/smc/smc.h b/net/smc/smc.h
+index b1d6625..f3bb4be 100644
+--- a/net/smc/smc.h
++++ b/net/smc/smc.h
+@@ -256,6 +256,7 @@ static inline struct smc_sock *smc_sk(const struct sock *sk)
+ 	return (struct smc_sock *)sk;
+ }
+ 
++extern struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work*/
+ extern struct workqueue_struct	*smc_hs_wq;	/* wq for handshake work */
+ extern struct workqueue_struct	*smc_close_wq;	/* wq for close work */
+ 
+-- 
+1.8.3.1
+
