@@ -2,119 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAA4F48476A
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 19:05:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5218348477D
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 19:08:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236075AbiADSFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 13:05:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48280 "EHLO
+        id S234535AbiADSIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 13:08:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233070AbiADSFD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 13:05:03 -0500
-X-Greylist: delayed 8655 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 04 Jan 2022 10:05:02 PST
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC97C061761;
-        Tue,  4 Jan 2022 10:05:02 -0800 (PST)
-Received: from [IPV6:2003:e9:d728:ec47:4b31:73e4:34c5:505a] (p200300e9d728ec474b3173e434c5505a.dip0.t-ipconnect.de [IPv6:2003:e9:d728:ec47:4b31:73e4:34c5:505a])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        with ESMTP id S234495AbiADSIj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 13:08:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B093BC061761
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 10:08:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 0115BC0415;
-        Tue,  4 Jan 2022 19:04:58 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1641319499;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DKQgdD9UVcoJQH9gQCvyiU77/QftK6OHmHhiDWE5QIg=;
-        b=n29ks7y+azv5RfM5srljIY8TOtYBNRriyQe3KisZ3F2HczxWmSJutqqJA1dUj5s2KulEl3
-        HUjsf12Dc11nVUu8Pd2gJuvFASp0NdT3ev4YWzEzGBhyPc5gvK7lpbzcI/yHRacapMj9iv
-        gaggDAp0pGnNiXtz1bTa/Epp2LTRl+HLe+D7ylf28psbyBw1NtWrIskrWWiG+Z1cyfkEI4
-        s0OB39ZLTs1x+FW9FhsCgmLDUle8SPHA38X+wV0HRswC33akrH9Kvx7ypesDMD8mqSoC7Y
-        7MYmTLmmcq+UXygAbmxbcGNPdp60fqJrsTTt47+hS8L3Ae6XvCUgeTlxk5BTkQ==
-Message-ID: <e8e73fcc-b902-4972-6001-84671361146d@datenfreihafen.org>
-Date:   Tue, 4 Jan 2022 19:04:58 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id 849E2B817B9
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 18:08:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7755C36AE9;
+        Tue,  4 Jan 2022 18:08:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641319717;
+        bh=tzJNwzbQYjEHm+8zSBtVyaMtIQxHRpyqZ/EP3SIRP1Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=X9N3rIMg+SRxzpJjS6ummS7E5T0soh+HtSgssOQuOemu0jcAbDk3mUwG/Ye5/MbOS
+         WHbAfqDJja/vqPOSF6/mbUKZktsljH3MCV+eUhtfr3qFJpqmUIcAmpoapxqTZITJVB
+         Tg5/bDOH09S73LE2nD1BnKoHVY9+GYJUuz3/e//T09dufYo2TYdNU7CirL3+pIo6Vj
+         gBwtZOcQQA1NQLMqUgz/JRxXZbsn1on2KMX/sClk3E/4VDYUM58RBIPlESNpOlwRj8
+         qpLQuUkqk62ygRL1hSvPaAjFUAM6X5yh5bBK/fs6slY2u1A9iQqKIRDXEA/Mfp+Dff
+         JBZa2lhYzhaPA==
+Date:   Tue, 4 Jan 2022 10:08:35 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Paul Blakey <paulb@nvidia.com>
+Cc:     <dev@openvswitch.org>, <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "Jamal Hadi Salim" <jhs@mojatatu.com>,
+        Pravin B Shelar <pshelar@ovn.org>, <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Oz Shlomo <ozsh@nvidia.com>, "Vlad Buslov" <vladbu@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>
+Subject: Re: [PATCH net 1/1] net: openvswitch: Fix ct_state nat flags for
+ conns arriving from tc
+Message-ID: <20220104100835.57e51cb0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220104082821.22487-1-paulb@nvidia.com>
+References: <20220104082821.22487-1-paulb@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.0
-Subject: Re: [PATCH v2] ieee802154: atusb: fix uninit value in
- atusb_set_extended_addr
-Content-Language: en-US
-To:     Pavel Skripkin <paskripkin@gmail.com>, alex.aring@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexander Potapenko <glider@google.com>
-References: <CAB_54W50xKFCWZ5vYuDG2p4ijpd63cSutRrV4MLs9oasLmKgzQ@mail.gmail.com>
- <20220103120925.25207-1-paskripkin@gmail.com>
- <ed39cbe6-0885-a3ab-fc30-7c292e1acc53@datenfreihafen.org>
- <5b0b8dc6-f038-bfaa-550c-dc23636f0497@gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <5b0b8dc6-f038-bfaa-550c-dc23636f0497@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
-
-On 04.01.22 18:27, Pavel Skripkin wrote:
-> On 1/4/22 18:40, Stefan Schmidt wrote:
->>
->> It compiles, but does not work on the real hardware.
->>
->> [    1.114698] usb 1-1: new full-speed USB device number 2 using uhci_hcd
->> [    1.261691] usb 1-1: New USB device found, idVendor=20b7,
->> idProduct=1540, bcdDevice= 0.01
->> [    1.263421] usb 1-1: New USB device strings: Mfr=0, Product=0,
->> SerialNumber=1
->> [    1.264952] usb 1-1: SerialNumber: 4630333438371502231a
->> [    1.278042] usb 1-1: ATUSB: AT86RF231 version 2
->> [    1.281087] usb 1-1: Firmware: major: 0, minor: 3, hardware type:
->> ATUSB (2)
->> [    1.285191] usb 1-1: atusb_control_msg: req 0x01 val 0x0 idx 0x0,
->> error -61
->> [    1.286903] usb 1-1: failed to fetch extended address, random 
->> address set
->> [    1.288757] usb 1-1: atusb_probe: initialization failed, error = -61
->> [    1.290922] atusb: probe of 1-1:1.0 failed with error -61
->>
->>
->> Without your patch it works as expected:
->>
->> [    1.091925] usb 1-1: new full-speed USB device number 2 using uhci_hcd
->> [    1.237743] usb 1-1: New USB device found, idVendor=20b7,
->> idProduct=1540, bcdDevice= 0.01
->> [    1.239788] usb 1-1: New USB device strings: Mfr=0, Product=0,
->> SerialNumber=1
->> [    1.241432] usb 1-1: SerialNumber: 4630333438371502231a
->> [    1.255012] usb 1-1: ATUSB: AT86RF231 version 2
->> [    1.258073] usb 1-1: Firmware: major: 0, minor: 3, hardware type:
->> ATUSB (2)
->> [    1.262170] usb 1-1: Firmware: build #132 Mo 28. Nov 16:20:35 CET 2016
->> [    1.266195] usb 1-1: Read permanent extended address
->> 10:e2:d5:ff:ff:00:02:e8 from device
->>
+On Tue, 4 Jan 2022 10:28:21 +0200 Paul Blakey wrote:
+> Netfilter conntrack maintains NAT flags per connection indicating
+> whether NAT was configured for the connection. Openvswitch maintains
+> NAT flags on the per packet flow key ct_state field, indicating
+> whether NAT was actually executed on the packet.
 > 
-> Hi Stefan,
+> When a packet misses from tc to ovs the conntrack NAT flags are set.
+> However, NAT was not necessarily executed on the packet because the
+> connection's state might still be in NEW state. As such, openvswitch wrongly
+> assumes that NAT was executed and sets an incorrect flow key NAT flags.
 > 
-> thanks for testing on real hw.
-> 
-> It looks like there is corner case, that Greg mentioned in this thread. 
-> atusb_get_and_show_build() reads firmware build info, which may have 
-> various length.
-> 
-> Maybe we can change atusb_control_msg() to usb_control_msg() in 
-> atusb_get_and_show_build(), since other callers do not have this problem
+> Fix this, by flagging to openvswitch which NAT was actually done in
+> act_ct via tc_skb_ext and tc_skb_cb to the openvswitch module, so
+> the packet flow key NAT flags will be correctly set.
 
-That works for me.
+Fixes ?
 
-I will also have a look at the use of the modern USB API for next. The 
-fix here has a higher prio for me to get in and backported though. Once 
-we have this we can look at bigger changes in atusb.
+> Signed-off-by: Paul Blakey <paulb@nvidia.com>
 
-regards
-Stefan Schmidt
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 4507d77d6941..bab45a009310 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -287,7 +287,9 @@ struct tc_skb_ext {
+>  	__u32 chain;
+>  	__u16 mru;
+>  	__u16 zone;
+> -	bool post_ct;
+> +	bool post_ct:1;
+> +	bool post_ct_snat:1;
+> +	bool post_ct_dnat:1;
+
+single bit bool variables seem weird, use a unsigned int type, like u8.
+
+>  };
+>  #endif
+>  
+> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+> index 9e71691c491b..a171dfa91910 100644
+> --- a/include/net/pkt_sched.h
+> +++ b/include/net/pkt_sched.h
+> @@ -197,7 +197,9 @@ struct tc_skb_cb {
+>  	struct qdisc_skb_cb qdisc_cb;
+>  
+>  	u16 mru;
+> -	bool post_ct;
+> +	bool post_ct: 1;
+
+extra space
+
+> +	bool post_ct_snat:1;
+> +	bool post_ct_dnat:1;
+>  	u16 zone; /* Only valid if post_ct = true */
+>  };
