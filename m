@@ -2,25 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF69A483C56
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:28:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31A03483C59
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:28:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233256AbiADH22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 02:28:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233233AbiADH20 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 02:28:26 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBC4C061761;
-        Mon,  3 Jan 2022 23:28:25 -0800 (PST)
+        id S233282AbiADH2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 02:28:37 -0500
+Received: from marcansoft.com ([212.63.210.85]:45950 "EHLO mail.marcansoft.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233243AbiADH2e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jan 2022 02:28:34 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id A6745419BC;
-        Tue,  4 Jan 2022 07:28:16 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id EF6BD41F5D;
+        Tue,  4 Jan 2022 07:28:24 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -48,9 +45,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH v2 05/35] brcmfmac: pcie/sdio/usb: Get CLM blob via standard firmware mechanism
-Date:   Tue,  4 Jan 2022 16:26:28 +0900
-Message-Id: <20220104072658.69756-6-marcan@marcan.st>
+Subject: [PATCH v2 06/35] brcmfmac: firmware: Support passing in multiple board_types
+Date:   Tue,  4 Jan 2022 16:26:29 +0900
+Message-Id: <20220104072658.69756-7-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220104072658.69756-1-marcan@marcan.st>
 References: <20220104072658.69756-1-marcan@marcan.st>
@@ -60,372 +57,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that the firmware fetcher can handle per-board CLM files, load the
-CLM blob alongside the other firmware files and change the bus API to
-just return the existing blob, instead of fetching the filename.
-
-This enables per-board CLM blobs, which are required on Apple platforms.
+In order to make use of the multiple alt_path functionality, change
+board_type to an array. Bus drivers can pass in a NULL-terminated list
+of board type strings to try for the firmware fetch.
 
 Acked-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- .../broadcom/brcm80211/brcmfmac/bus.h         | 19 ++++++---
- .../broadcom/brcm80211/brcmfmac/common.c      | 12 +-----
- .../broadcom/brcm80211/brcmfmac/pcie.c        | 39 ++++++++++++-------
- .../broadcom/brcm80211/brcmfmac/sdio.c        | 36 ++++++++++-------
- .../broadcom/brcm80211/brcmfmac/sdio.h        |  2 +
- .../broadcom/brcm80211/brcmfmac/usb.c         | 23 +++--------
- 6 files changed, 69 insertions(+), 62 deletions(-)
+ .../broadcom/brcm80211/brcmfmac/firmware.c    | 35 ++++++++++++-------
+ .../broadcom/brcm80211/brcmfmac/firmware.h    |  2 +-
+ .../broadcom/brcm80211/brcmfmac/pcie.c        |  4 ++-
+ .../broadcom/brcm80211/brcmfmac/sdio.c        |  2 +-
+ 4 files changed, 27 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h
-index 3f5da3bb6aa5..b13af8f631f3 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h
-@@ -7,6 +7,8 @@
- #define BRCMFMAC_BUS_H
- 
- #include "debug.h"
-+#include <linux/kernel.h>
-+#include <linux/firmware.h>
- 
- /* IDs of the 6 default common rings of msgbuf protocol */
- #define BRCMF_H2D_MSGRING_CONTROL_SUBMIT	0
-@@ -34,6 +36,11 @@ enum brcmf_bus_protocol_type {
- 	BRCMF_PROTO_MSGBUF
- };
- 
-+/* Firmware blobs that may be available */
-+enum brcmf_blob_type {
-+	BRCMF_BLOB_CLM,
-+};
-+
- struct brcmf_mp_device;
- 
- struct brcmf_bus_dcmd {
-@@ -60,7 +67,7 @@ struct brcmf_bus_dcmd {
-  * @wowl_config: specify if dongle is configured for wowl when going to suspend
-  * @get_ramsize: obtain size of device memory.
-  * @get_memdump: obtain device memory dump in provided buffer.
-- * @get_fwname: obtain firmware name.
-+ * @get_blob: obtain a firmware blob.
-  *
-  * This structure provides an abstract interface towards the
-  * bus specific driver. For control messages to common driver
-@@ -77,8 +84,8 @@ struct brcmf_bus_ops {
- 	void (*wowl_config)(struct device *dev, bool enabled);
- 	size_t (*get_ramsize)(struct device *dev);
- 	int (*get_memdump)(struct device *dev, void *data, size_t len);
--	int (*get_fwname)(struct device *dev, const char *ext,
--			  unsigned char *fw_name);
-+	int (*get_blob)(struct device *dev, const struct firmware **fw,
-+			enum brcmf_blob_type type);
- 	void (*debugfs_create)(struct device *dev);
- 	int (*reset)(struct device *dev);
- };
-@@ -220,10 +227,10 @@ int brcmf_bus_get_memdump(struct brcmf_bus *bus, void *data, size_t len)
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+index 7570dbf22cdd..054ea3ed133e 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+@@ -594,28 +594,39 @@ static int brcmf_fw_complete_request(const struct firmware *fw,
+ 	return (cur->flags & BRCMF_FW_REQF_OPTIONAL) ? 0 : ret;
  }
  
- static inline
--int brcmf_bus_get_fwname(struct brcmf_bus *bus, const char *ext,
--			 unsigned char *fw_name)
-+int brcmf_bus_get_blob(struct brcmf_bus *bus, const struct firmware **fw,
-+		       enum brcmf_blob_type type)
+-static int brcm_alt_fw_paths(const char *path, const char *board_type,
++static int brcm_alt_fw_paths(const char *path, struct brcmf_fw *fwctx,
+ 			     const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS])
  {
--	return bus->ops->get_fwname(bus->dev, ext, fw_name);
-+	return bus->ops->get_blob(bus->dev, fw, type);
++	const char **board_types = fwctx->req->board_types;
++	unsigned int i;
+ 	char alt_path[BRCMF_FW_NAME_LEN];
+ 	const char *suffix;
+ 
+ 	memset(alt_paths, 0, array_size(sizeof(*alt_paths),
+ 					BRCMF_FW_MAX_ALT_PATHS));
+ 
++	if (!board_types[0])
++		return -ENOENT;
++
+ 	suffix = strrchr(path, '.');
+ 	if (!suffix || suffix == path)
+ 		return -EINVAL;
+ 
+-	/* strip extension at the end */
+-	strscpy(alt_path, path, BRCMF_FW_NAME_LEN);
+-	alt_path[suffix - path] = 0;
++	for (i = 0; i < BRCMF_FW_MAX_ALT_PATHS; i++) {
++		if (!board_types[i])
++		    break;
+ 
+-	strlcat(alt_path, ".", BRCMF_FW_NAME_LEN);
+-	strlcat(alt_path, board_type, BRCMF_FW_NAME_LEN);
+-	strlcat(alt_path, suffix, BRCMF_FW_NAME_LEN);
++		/* strip extension at the end */
++		strscpy(alt_path, path, BRCMF_FW_NAME_LEN);
++		alt_path[suffix - path] = 0;
+ 
+-	alt_paths[0] = kstrdup(alt_path, GFP_KERNEL);
++		strlcat(alt_path, ".", BRCMF_FW_NAME_LEN);
++		strlcat(alt_path, board_types[i], BRCMF_FW_NAME_LEN);
++		strlcat(alt_path, suffix, BRCMF_FW_NAME_LEN);
++
++		alt_paths[i] = kstrdup(alt_path, GFP_KERNEL);
++		brcmf_dbg(TRACE, "FW alt path: %s\n", alt_paths[i]);
++	}
+ 
+ 	return 0;
  }
+@@ -637,11 +648,10 @@ static int brcmf_fw_request_firmware(const struct firmware **fw,
+ 	unsigned int i;
  
- static inline
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-index e3758bd86acf..b8ed851129b4 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-@@ -123,7 +123,6 @@ static int brcmf_c_process_clm_blob(struct brcmf_if *ifp)
- 	struct brcmf_bus *bus = drvr->bus_if;
- 	struct brcmf_dload_data_le *chunk_buf;
- 	const struct firmware *clm = NULL;
--	u8 clm_name[BRCMF_FW_NAME_LEN];
- 	u32 chunk_len;
- 	u32 datalen;
- 	u32 cumulative_len;
-@@ -133,15 +132,8 @@ static int brcmf_c_process_clm_blob(struct brcmf_if *ifp)
+ 	/* Files can be board-specific, first try a board-specific path */
+-	if (fwctx->req->board_type) {
++	if (fwctx->req->board_types[0]) {
+ 		const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS];
  
- 	brcmf_dbg(TRACE, "Enter\n");
+-		if (brcm_alt_fw_paths(cur->path, fwctx->req->board_type,
+-				      alt_paths) != 0)
++		if (brcm_alt_fw_paths(cur->path, fwctx, alt_paths) != 0)
+ 			goto fallback;
  
--	memset(clm_name, 0, sizeof(clm_name));
--	err = brcmf_bus_get_fwname(bus, ".clm_blob", clm_name);
--	if (err) {
--		bphy_err(drvr, "get CLM blob file name failed (%d)\n", err);
--		return err;
--	}
--
--	err = firmware_request_nowarn(&clm, clm_name, bus->dev);
--	if (err) {
-+	err = brcmf_bus_get_blob(bus, &clm, BRCMF_BLOB_CLM);
-+	if (err || !clm) {
- 		brcmf_info("no clm_blob available (err=%d), device may have limited channels available\n",
- 			   err);
- 		return 0;
+ 		for (i = 0; i < BRCMF_FW_MAX_ALT_PATHS && alt_paths[i]; i++) {
+@@ -750,8 +760,7 @@ int brcmf_fw_get_firmwares(struct device *dev, struct brcmf_fw_request *req,
+ 	fwctx->done = fw_cb;
+ 
+ 	/* First try alternative board-specific path if any */
+-	if (brcm_alt_fw_paths(first->path, req->board_type,
+-			      fwctx->alt_paths) == 0) {
++	if (brcm_alt_fw_paths(first->path, fwctx, fwctx->alt_paths) == 0) {
+ 		fwctx->alt_index = 0;
+ 		ret = request_firmware_nowait(THIS_MODULE, true,
+ 					      fwctx->alt_paths[0],
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
+index 7f4e6e359c82..3b60a0e290b0 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
+@@ -68,7 +68,7 @@ struct brcmf_fw_request {
+ 	u16 domain_nr;
+ 	u16 bus_nr;
+ 	u32 n_items;
+-	const char *board_type;
++	const char *board_types[BRCMF_FW_MAX_ALT_PATHS];
+ 	struct brcmf_fw_item items[];
+ };
+ 
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index aed49416c434..591f870d1e47 100644
+index 591f870d1e47..a52a6f8081eb 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -65,6 +65,7 @@ MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.txt");
- 
- /* per-board firmware binaries */
- MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.bin");
-+MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.clm_blob");
- 
- static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
- 	BRCMF_FW_ENTRY(BRCM_CC_43602_CHIP_ID, 0xFFFFFFFF, 43602),
-@@ -260,6 +261,8 @@ struct brcmf_pciedev_info {
- 	struct pci_dev *pdev;
- 	char fw_name[BRCMF_FW_NAME_LEN];
- 	char nvram_name[BRCMF_FW_NAME_LEN];
-+	char clm_name[BRCMF_FW_NAME_LEN];
-+	const struct firmware *clm_fw;
- 	void __iomem *regs;
- 	void __iomem *tcm;
- 	u32 ram_base;
-@@ -1408,23 +1411,25 @@ static int brcmf_pcie_get_memdump(struct device *dev, void *data, size_t len)
- 	return 0;
- }
- 
--static
--int brcmf_pcie_get_fwname(struct device *dev, const char *ext, u8 *fw_name)
-+static int brcmf_pcie_get_blob(struct device *dev, const struct firmware **fw,
-+			       enum brcmf_blob_type type)
- {
- 	struct brcmf_bus *bus_if = dev_get_drvdata(dev);
--	struct brcmf_fw_request *fwreq;
--	struct brcmf_fw_name fwnames[] = {
--		{ ext, fw_name },
--	};
-+	struct brcmf_pciedev *buspub = bus_if->bus_priv.pcie;
-+	struct brcmf_pciedev_info *devinfo = buspub->devinfo;
- 
--	fwreq = brcmf_fw_alloc_request(bus_if->chip, bus_if->chiprev,
--				       brcmf_pcie_fwnames,
--				       ARRAY_SIZE(brcmf_pcie_fwnames),
--				       fwnames, ARRAY_SIZE(fwnames));
--	if (!fwreq)
--		return -ENOMEM;
-+	switch (type) {
-+	case BRCMF_BLOB_CLM:
-+		*fw = devinfo->clm_fw;
-+		devinfo->clm_fw = NULL;
-+		break;
-+	default:
-+		return -ENOENT;
-+	}
-+
-+	if (!*fw)
-+		return -ENOENT;
- 
--	kfree(fwreq);
- 	return 0;
- }
- 
-@@ -1470,7 +1475,7 @@ static const struct brcmf_bus_ops brcmf_pcie_bus_ops = {
- 	.wowl_config = brcmf_pcie_wowl_config,
- 	.get_ramsize = brcmf_pcie_get_ramsize,
- 	.get_memdump = brcmf_pcie_get_memdump,
--	.get_fwname = brcmf_pcie_get_fwname,
-+	.get_blob = brcmf_pcie_get_blob,
- 	.reset = brcmf_pcie_reset,
- };
- 
-@@ -1755,6 +1760,7 @@ static const struct brcmf_buscore_ops brcmf_pcie_buscore_ops = {
- 
- #define BRCMF_PCIE_FW_CODE	0
- #define BRCMF_PCIE_FW_NVRAM	1
-+#define BRCMF_PCIE_FW_CLM	2
- 
- static void brcmf_pcie_setup(struct device *dev, int ret,
- 			     struct brcmf_fw_request *fwreq)
-@@ -1779,6 +1785,7 @@ static void brcmf_pcie_setup(struct device *dev, int ret,
- 	fw = fwreq->items[BRCMF_PCIE_FW_CODE].binary;
- 	nvram = fwreq->items[BRCMF_PCIE_FW_NVRAM].nv_data.data;
- 	nvram_len = fwreq->items[BRCMF_PCIE_FW_NVRAM].nv_data.len;
-+	devinfo->clm_fw = fwreq->items[BRCMF_PCIE_FW_CLM].binary;
- 	kfree(fwreq);
- 
- 	ret = brcmf_chip_get_raminfo(devinfo->ci);
-@@ -1855,6 +1862,7 @@ brcmf_pcie_prepare_fw_request(struct brcmf_pciedev_info *devinfo)
- 	struct brcmf_fw_name fwnames[] = {
- 		{ ".bin", devinfo->fw_name },
- 		{ ".txt", devinfo->nvram_name },
-+		{ ".clm_blob", devinfo->clm_name },
- 	};
- 
- 	fwreq = brcmf_fw_alloc_request(devinfo->ci->chip, devinfo->ci->chiprev,
-@@ -1867,6 +1875,8 @@ brcmf_pcie_prepare_fw_request(struct brcmf_pciedev_info *devinfo)
- 	fwreq->items[BRCMF_PCIE_FW_CODE].type = BRCMF_FW_TYPE_BINARY;
- 	fwreq->items[BRCMF_PCIE_FW_NVRAM].type = BRCMF_FW_TYPE_NVRAM;
+@@ -1877,11 +1877,13 @@ brcmf_pcie_prepare_fw_request(struct brcmf_pciedev_info *devinfo)
  	fwreq->items[BRCMF_PCIE_FW_NVRAM].flags = BRCMF_FW_REQF_OPTIONAL;
-+	fwreq->items[BRCMF_PCIE_FW_CLM].type = BRCMF_FW_TYPE_BINARY;
-+	fwreq->items[BRCMF_PCIE_FW_CLM].flags = BRCMF_FW_REQF_OPTIONAL;
- 	fwreq->board_type = devinfo->settings->board_type;
+ 	fwreq->items[BRCMF_PCIE_FW_CLM].type = BRCMF_FW_TYPE_BINARY;
+ 	fwreq->items[BRCMF_PCIE_FW_CLM].flags = BRCMF_FW_REQF_OPTIONAL;
+-	fwreq->board_type = devinfo->settings->board_type;
  	/* NVRAM reserves PCI domain 0 for Broadcom's SDK faked bus */
  	fwreq->domain_nr = pci_domain_nr(devinfo->pdev->bus) + 1;
-@@ -2005,6 +2015,7 @@ brcmf_pcie_remove(struct pci_dev *pdev)
- 	brcmf_pcie_release_ringbuffers(devinfo);
- 	brcmf_pcie_reset_device(devinfo);
- 	brcmf_pcie_release_resource(devinfo);
-+	release_firmware(devinfo->clm_fw);
+ 	fwreq->bus_nr = devinfo->pdev->bus->number;
  
- 	if (devinfo->ci)
- 		brcmf_chip_detach(devinfo->ci);
++	brcmf_dbg(PCIE, "Board: %s\n", devinfo->settings->board_type);
++	fwreq->board_types[0] = devinfo->settings->board_type;
++
+ 	return fwreq;
+ }
+ 
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index 5d156e591b35..7466e6fd6eca 100644
+index 7466e6fd6eca..ed944764f6ea 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -4129,23 +4129,24 @@ brcmf_sdio_watchdog(struct timer_list *t)
- 	}
- }
- 
--static
--int brcmf_sdio_get_fwname(struct device *dev, const char *ext, u8 *fw_name)
-+static int brcmf_sdio_get_blob(struct device *dev, const struct firmware **fw,
-+			       enum brcmf_blob_type type)
- {
- 	struct brcmf_bus *bus_if = dev_get_drvdata(dev);
--	struct brcmf_fw_request *fwreq;
--	struct brcmf_fw_name fwnames[] = {
--		{ ext, fw_name },
--	};
-+	struct brcmf_sdio_dev *sdiodev = bus_if->bus_priv.sdio;
- 
--	fwreq = brcmf_fw_alloc_request(bus_if->chip, bus_if->chiprev,
--				       brcmf_sdio_fwnames,
--				       ARRAY_SIZE(brcmf_sdio_fwnames),
--				       fwnames, ARRAY_SIZE(fwnames));
--	if (!fwreq)
--		return -ENOMEM;
-+	switch (type) {
-+	case BRCMF_BLOB_CLM:
-+		*fw = sdiodev->clm_fw;
-+		sdiodev->clm_fw = NULL;
-+		break;
-+	default:
-+		return -ENOENT;
-+	}
-+
-+	if (!*fw)
-+		return -ENOENT;
- 
--	kfree(fwreq);
- 	return 0;
- }
- 
-@@ -4188,13 +4189,14 @@ static const struct brcmf_bus_ops brcmf_sdio_bus_ops = {
- 	.wowl_config = brcmf_sdio_wowl_config,
- 	.get_ramsize = brcmf_sdio_bus_get_ramsize,
- 	.get_memdump = brcmf_sdio_bus_get_memdump,
--	.get_fwname = brcmf_sdio_get_fwname,
-+	.get_blob = brcmf_sdio_get_blob,
- 	.debugfs_create = brcmf_sdio_debugfs_create,
- 	.reset = brcmf_sdio_bus_reset
- };
- 
- #define BRCMF_SDIO_FW_CODE	0
- #define BRCMF_SDIO_FW_NVRAM	1
-+#define BRCMF_SDIO_FW_CLM	2
- 
- static void brcmf_sdio_firmware_callback(struct device *dev, int err,
- 					 struct brcmf_fw_request *fwreq)
-@@ -4217,6 +4219,7 @@ static void brcmf_sdio_firmware_callback(struct device *dev, int err,
- 	code = fwreq->items[BRCMF_SDIO_FW_CODE].binary;
- 	nvram = fwreq->items[BRCMF_SDIO_FW_NVRAM].nv_data.data;
- 	nvram_len = fwreq->items[BRCMF_SDIO_FW_NVRAM].nv_data.len;
-+	sdiod->clm_fw = fwreq->items[BRCMF_SDIO_FW_CLM].binary;
- 	kfree(fwreq);
- 
- 	/* try to download image and nvram to the dongle */
-@@ -4415,6 +4418,7 @@ brcmf_sdio_prepare_fw_request(struct brcmf_sdio *bus)
- 	struct brcmf_fw_name fwnames[] = {
- 		{ ".bin", bus->sdiodev->fw_name },
- 		{ ".txt", bus->sdiodev->nvram_name },
-+		{ ".clm_blob", bus->sdiodev->clm_name },
- 	};
- 
- 	fwreq = brcmf_fw_alloc_request(bus->ci->chip, bus->ci->chiprev,
-@@ -4426,6 +4430,8 @@ brcmf_sdio_prepare_fw_request(struct brcmf_sdio *bus)
- 
- 	fwreq->items[BRCMF_SDIO_FW_CODE].type = BRCMF_FW_TYPE_BINARY;
+@@ -4432,7 +4432,7 @@ brcmf_sdio_prepare_fw_request(struct brcmf_sdio *bus)
  	fwreq->items[BRCMF_SDIO_FW_NVRAM].type = BRCMF_FW_TYPE_NVRAM;
-+	fwreq->items[BRCMF_SDIO_FW_CLM].type = BRCMF_FW_TYPE_BINARY;
-+	fwreq->items[BRCMF_SDIO_FW_CLM].flags = BRCMF_FW_REQF_OPTIONAL;
- 	fwreq->board_type = bus->sdiodev->settings->board_type;
+ 	fwreq->items[BRCMF_SDIO_FW_CLM].type = BRCMF_FW_TYPE_BINARY;
+ 	fwreq->items[BRCMF_SDIO_FW_CLM].flags = BRCMF_FW_REQF_OPTIONAL;
+-	fwreq->board_type = bus->sdiodev->settings->board_type;
++	fwreq->board_types[0] = bus->sdiodev->settings->board_type;
  
  	return fwreq;
-@@ -4582,6 +4588,8 @@ void brcmf_sdio_remove(struct brcmf_sdio *bus)
- 		if (bus->sdiodev->settings)
- 			brcmf_release_module_param(bus->sdiodev->settings);
- 
-+		release_firmware(bus->sdiodev->clm_fw);
-+		bus->sdiodev->clm_fw = NULL;
- 		kfree(bus->rxbuf);
- 		kfree(bus->hdrbuf);
- 		kfree(bus);
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
-index 15d2c02fa3ec..7b74c295e4c9 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
-@@ -186,9 +186,11 @@ struct brcmf_sdio_dev {
- 	struct sg_table sgtable;
- 	char fw_name[BRCMF_FW_NAME_LEN];
- 	char nvram_name[BRCMF_FW_NAME_LEN];
-+	char clm_name[BRCMF_FW_NAME_LEN];
- 	bool wowl_enabled;
- 	enum brcmf_sdiod_state state;
- 	struct brcmf_sdiod_freezer *freezer;
-+	const struct firmware *clm_fw;
- };
- 
- /* sdio core registers */
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-index 9fb68c2dc7e3..85e18fb9c497 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-@@ -1154,24 +1154,11 @@ struct brcmf_usbdev *brcmf_usb_attach(struct brcmf_usbdev_info *devinfo,
- 	return NULL;
  }
- 
--static
--int brcmf_usb_get_fwname(struct device *dev, const char *ext, u8 *fw_name)
-+static int brcmf_usb_get_blob(struct device *dev, const struct firmware **fw,
-+			      enum brcmf_blob_type type)
- {
--	struct brcmf_bus *bus = dev_get_drvdata(dev);
--	struct brcmf_fw_request *fwreq;
--	struct brcmf_fw_name fwnames[] = {
--		{ ext, fw_name },
--	};
--
--	fwreq = brcmf_fw_alloc_request(bus->chip, bus->chiprev,
--				       brcmf_usb_fwnames,
--				       ARRAY_SIZE(brcmf_usb_fwnames),
--				       fwnames, ARRAY_SIZE(fwnames));
--	if (!fwreq)
--		return -ENOMEM;
--
--	kfree(fwreq);
--	return 0;
-+	/* No blobs for USB devices... */
-+	return -ENOENT;
- }
- 
- static const struct brcmf_bus_ops brcmf_usb_bus_ops = {
-@@ -1180,7 +1167,7 @@ static const struct brcmf_bus_ops brcmf_usb_bus_ops = {
- 	.txdata = brcmf_usb_tx,
- 	.txctl = brcmf_usb_tx_ctlpkt,
- 	.rxctl = brcmf_usb_rx_ctlpkt,
--	.get_fwname = brcmf_usb_get_fwname,
-+	.get_blob = brcmf_usb_get_blob,
- };
- 
- #define BRCMF_USB_FW_CODE	0
 -- 
 2.33.0
 
