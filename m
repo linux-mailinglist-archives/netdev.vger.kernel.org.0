@@ -2,71 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48BDE484489
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 16:29:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B797484497
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 16:31:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231601AbiADP3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 10:29:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229957AbiADP33 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 10:29:29 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C48C061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 07:29:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=SWnAKA+vU71FHF9oIaor3jET4lPKNfCAO3t8mNJ9hCU=;
-        t=1641310169; x=1642519769; b=yA5Swe1EiO0YFYEA/GFqxWubXoGXoM/7iEmNJoaedJp97Ql
-        NmBzrBro8bHM2CA6rP+84uHdptSFEwiJEpfeq2PJwZpnJAyEXXYQNp4skr9YSvHuRiU+ltGZyMZ4v
-        imlJMf8P/mEDh0d5thQzX+Ncm5JHkr8uChBZcSWGzzDJ5ItPMkXI4c3sZQuxiwytTsvVd4ZLL7RD9
-        joK+Sn9lNzklFUV7L+ykfQPO4URgzqlnQIrR14A/AfQzvqvwAyhX8nPFmO1+MKab43GQHFRdO+/OC
-        UugJzRS4qLB+08PgkwAv4HcEqJsyoIYY17WdGxTRt4mQFGMksm3ZgDysClpnhqHg==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1n4lkZ-001njy-Sv;
-        Tue, 04 Jan 2022 16:29:24 +0100
-Message-ID: <5836510f3ea87678e1a3bf6d9ff09c0e70942d13.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next 11/13] netlink: add net device refcount tracker
- to struct ethnl_req_info
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>
-Date:   Tue, 04 Jan 2022 16:29:23 +0100
-In-Reply-To: <20211207013039.1868645-12-eric.dumazet@gmail.com>
-References: <20211207013039.1868645-1-eric.dumazet@gmail.com>
-         <20211207013039.1868645-12-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+        id S234838AbiADPba (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 10:31:30 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:42895 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233405AbiADPba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 10:31:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1641310290; x=1672846290;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=D+nNloB9Ju1xXoW173i1Md8Bk6VNvrMQj8pmRK55e30=;
+  b=Rt9yupnPvEBDgadq3WzCESFqNjNo545c9ueWj1P+RnjBweVeeNCK1A+D
+   nBW8MDLLFzE2I3WKR0756VcVwfrf4FTNK/dfv0M8JI8T03KAWZsSzi4gL
+   TAs6TsIJKARVLjCYk4FyaX7rdjbDiZl0zV7sx/ch08c7ZrvUH3wXaxHuG
+   D6GBlLoPLFiPcntOhSWDl2Tdk3HPlLmaxXPcG+9/AJEuGVR+CmvmeRftP
+   1LC3i0m7GAhrUj4Rc/UZVpnCnEDqM/B36duGJpP1EEPpY/VXItmATnaxV
+   /Oq1lPsT+lpnBGIAg+2W8lr58SrUF4zatF6tny88J6DoffNriQ0vVCHqw
+   g==;
+IronPort-SDR: C78Bk5j/BjvmFJ4Uu7pVZ3s8X5x80zn9Gmf/+68u5UdLZuL3wXgSZr6InyRP8Km5pQd1tWoOMJ
+ LKC79QCrGwrPPrGgPjpPIPUVWFfONvGXQLEnEzc7diizbbAd2GNrJ+40kR2gDk+n23/es8eRxp
+ f5Io9l0MyNWUoI9yHsSJX3BqlQzh5Nl7cfG+t2+HVIt578J2RQeuSZDGCiKF9LVaADw3K8DNUl
+ /KuguQ3K+e1c2/nHJ1b+Vi6zg9e+4b8D/8wmSH5MxpPmdT0YE6dKVnKRO8ZE0yKRbcK6i1y/gh
+ dBs2Rx/JFNaCrS2FNV9cOlBL
+X-IronPort-AV: E=Sophos;i="5.88,261,1635231600"; 
+   d="scan'208";a="157467708"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jan 2022 08:31:29 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 4 Jan 2022 08:31:28 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 4 Jan 2022 08:31:26 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <f.fainelli@gmail.com>,
+        <vivien.didelot@gmail.com>, <vladimir.oltean@nxp.com>,
+        <andrew@lunn.ch>, Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v3 0/3] net: lan966x: Extend switchdev with mdb support
+Date:   Tue, 4 Jan 2022 16:33:35 +0100
+Message-ID: <20220104153338.425250-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-12-06 at 17:30 -0800, Eric Dumazet wrote:
-> 
-> @@ -624,6 +625,7 @@ static void ethnl_default_notify(struct net_device *dev, unsigned int cmd,
->  	}
->  
->  	req_info->dev = dev;
-> +	netdev_tracker_alloc(dev, &req_info->dev_tracker, GFP_KERNEL);
->  	req_info->flags |= ETHTOOL_FLAG_COMPACT_BITSETS;
-> 
+This patch series extends lan966x with mdb support by implementing
+the switchdev callbacks: SWITCHDEV_OBJ_ID_PORT_MDB and
+SWITCHDEV_OBJ_ID_HOST_MDB.
+It adds support for both ipv4/ipv6 entries and l2 entries.
 
-I may have missed a follow-up patch (did a search on netdev now, but
-...), but I'm hitting warnings from this and I'm not sure it's right?
+v2->v3:
+- rename PGID_FIRST and PGID_LAST to PGID_GP_START and PGID_GP_END
+- don't forget and relearn an entry for the CPU if there are more
+  references to the cpu.
 
-This req_info is just allocated briefly and freed again, and I'm not
-even sure there's a dev_get/dev_put involved here, I didn't see any?
+v1->v2:
+- rename lan966x_mac_learn_impl to __lan966x_mac_learn
+- rename lan966x_mac_cpu_copy to lan966x_mac_ip_learn
+- fix grammar and typos in comments and commit messages
+- add reference counter for entries that copy frames to CPU
 
-At least it would seem we need to free the tracker at the end of this
-function, or perhaps never even create one?
+Horatiu Vultur (3):
+  net: lan966x: Add function lan966x_mac_ip_learn()
+  net: lan966x: Add PGID_GP_START and PGID_GP_END
+  net: lan966x: Extend switchdev with mdb support
 
-johannes
+ .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
+ .../ethernet/microchip/lan966x/lan966x_mac.c  |  36 +-
+ .../ethernet/microchip/lan966x/lan966x_main.c |   2 +
+ .../ethernet/microchip/lan966x/lan966x_main.h |  26 +-
+ .../ethernet/microchip/lan966x/lan966x_mdb.c  | 506 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_regs.h |   6 +
+ .../microchip/lan966x/lan966x_switchdev.c     |   8 +
+ .../ethernet/microchip/lan966x/lan966x_vlan.c |   7 +-
+ 8 files changed, 584 insertions(+), 9 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_mdb.c
+
+-- 
+2.33.0
+
