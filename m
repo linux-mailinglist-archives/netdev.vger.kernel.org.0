@@ -2,83 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E5934845C7
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 17:07:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2554A4845DD
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 17:17:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234103AbiADQHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 11:07:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49596 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233501AbiADQHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 11:07:37 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1C4C061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 08:07:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=XXVGZ/BgLrLhjwZ75h4eDhHflCypstRSBlRdwyIhLDc=;
-        t=1641312456; x=1642522056; b=vzdmJLlA6KQCfqa2a2V6aI2tQ23Ze3DE/QtbsBAf5nBJ8gg
-        UQdtWjdFOxlQiYAMmjQKRzHXh4MIeGdDGv5DyRw5nqLbJAtoWfnu/2ZJi6ITJFyvpNlmQvv48v+O8
-        hHwCdMjHvxOvPXjlCI9Wxa05utKRE1JNKEDF3Kg/8oFo+Wrsun2jW67AI5OkvKaU/u1oO2gPtVYkQ
-        EmL8CKSNw652Do1e0cuGN20gdccvTNOSgE66CpSuJ7/V9SLd4AvdkzyEbbwrbTAJGbi3ybl3UqiP/
-        TUCNJrLFVr7KLq9puGYYus0kwvu02QfCtjssxBPQOyMP0m2vzkzgGewS/DIbc7ng==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1n4mLT-001oDa-5P;
-        Tue, 04 Jan 2022 17:07:31 +0100
-Message-ID: <c14b5872799b071145c79a78aab238884510f2a9.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next 11/13] netlink: add net device refcount tracker
- to struct ethnl_req_info
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Date:   Tue, 04 Jan 2022 17:07:30 +0100
-In-Reply-To: <CANn89i+yzt=Y_fgjYJb3VMYCn7aodFVRbZ9hUjb0e4+T+d14ww@mail.gmail.com>
-References: <20211207013039.1868645-1-eric.dumazet@gmail.com>
-         <20211207013039.1868645-12-eric.dumazet@gmail.com>
-         <5836510f3ea87678e1a3bf6d9ff09c0e70942d13.camel@sipsolutions.net>
-         <CANn89i+yzt=Y_fgjYJb3VMYCn7aodFVRbZ9hUjb0e4+T+d14ww@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+        id S235195AbiADQRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 11:17:30 -0500
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:41964 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229956AbiADQR3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 11:17:29 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R391e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V0yrv7C_1641313047;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V0yrv7C_1641313047)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 05 Jan 2022 00:17:27 +0800
+Date:   Wed, 5 Jan 2022 00:17:27 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net/smc: Reduce overflow of smc clcsock
+ listen queue
+Message-ID: <20220104161727.GA123107@e02h04389.eu6sqa>
+Reply-To: "D. Wythe" <alibuda@linux.alibaba.com>
+References: <1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com>
+ <8a60dabb-1799-316c-80b5-14c920fe98ab@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8a60dabb-1799-316c-80b5-14c920fe98ab@linux.ibm.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
 
-> > > @@ -624,6 +625,7 @@ static void ethnl_default_notify(struct net_device *dev, unsigned int cmd,
-> > >       }
-> > > 
-> > >       req_info->dev = dev;
-> > > +     netdev_tracker_alloc(dev, &req_info->dev_tracker, GFP_KERNEL);
-> > >       req_info->flags |= ETHTOOL_FLAG_COMPACT_BITSETS;
-> > > 
+It's seems last mail has been rejected by some reason, resend it for
+confirm. sry to bother you if you already seen it.
+
+Thanks.
+
+-- 
+
+Got your point, it's quite a problem within this patch. 
+As you noted, may be we can use the backlog parameter of the listen socket
+to limit the dangling connections,  just like tcp does.   
+
+I'll work on it in the next few days. Please let me know if you have more suggestions for it.
+ 
+Thanks.
+
+
+On Tue, Jan 04, 2022 at 02:45:35PM +0100, Karsten Graul wrote:
+> On 04/01/2022 14:12, D. Wythe wrote:
+> > From: "D. Wythe" <alibuda@linux.alibaba.com>
 > > 
-> > I may have missed a follow-up patch (did a search on netdev now, but
-> > ...), but I'm hitting warnings from this and I'm not sure it's right?
-> > 
-> > This req_info is just allocated briefly and freed again, and I'm not
-> > even sure there's a dev_get/dev_put involved here, I didn't see any?
+> > In nginx/wrk multithread and 10K connections benchmark, the
+> > backend TCP connection established very slowly, and lots of TCP
+> > connections stay in SYN_SENT state.
 > 
-> We had a fix.
+> I see what you are trying to solve here.
+> So what happens with your patch now is that we are accepting way more connections
+> in advance and queue them up for the SMC connection handshake worker.
+> The connection handshake worker itself will not run faster with this change, so overall
+> it should be the same time that is needed to establish all connections.
+> What you solve is that when 10k connections are started at the same time, some of them
+> will be dropped due to tcp 3-way handshake timeouts. Your patch avoids that but one can now flood
+> the stack with an ~infinite amount of dangling sockets waiting for the SMC handshake, maybe even 
+> causing oom conditions.
 > 
-> commit 34ac17ecbf575eb079094d44f1bd30c66897aa21
-> Author: Eric Dumazet <edumazet@google.com>
-> Date:   Tue Dec 14 00:42:30 2021 -0800
-> 
->     ethtool: use ethnl_parse_header_dev_put()
-> 
-
-Hmm. I have this in my tree, and I don't think it affected
-ethnl_default_notify() anyway?
-
-johannes
+> What should be respected with such a change would be the backlog parameter for the listen socket,
+> i.e. how many backlog connections are requested by the user space application?
+> There is no such handling of backlog right now, and due to the 'braking' workers we avoided
+> to flood the kernel with too many dangling connections. With your change there should be a way to limit
+> this ind of connections in some way.
