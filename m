@@ -2,87 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C762C48439E
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 15:44:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ED704843A4
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 15:46:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234340AbiADOo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 09:44:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234151AbiADOo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 09:44:57 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8528EC061761;
-        Tue,  4 Jan 2022 06:44:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
-        Resent-Message-ID:In-Reply-To:References;
-        bh=C9wVj34hcXacMvzo/tgZg0X8D36JV4yUehWYG3GA9+w=; t=1641307496; x=1642517096; 
-        b=vgKVkU/rTNhVmdvdNaVcKBkiRHmdZ8BlhB2B7jyRcwfFBNt+dY4rDnWVEDDUxZ1cQWDHCXY6hN0
-        ZSe7lPCP94wzVCk0ExyDPvC8qery6YB95ln3/wZJUxUVYIZokBfs/3xan1myIjBDs4gae5DPy/Prx
-        70Up666g3jHrpmYg/4GJKcwUHb7iQMV1VEhX17IBsLKSJoCDAo+OUSqbJwZFK5dnmMveQxmpaaK+F
-        eTVVwksvVR2G6CKtTFNqIsGRYM7U+5wl9SgMGNuifgNvr51u4ZFz1GrAiAZK+c/TQA+Qk/DUt18Is
-        7S/NJrpeXAHLB9y4/3puL6E/DbvARPYHV2Nw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1n4l3W-001n4R-UD;
-        Tue, 04 Jan 2022 15:44:55 +0100
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211 2022-01-04
-Date:   Tue,  4 Jan 2022 15:44:48 +0100
-Message-Id: <20220104144449.64937-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.33.1
+        id S234356AbiADOqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 09:46:25 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:50896 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231519AbiADOqY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jan 2022 09:46:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Ud2jEnjGhrKvClBdA1a2WDyh6jHKcxWAWDDYyIRsGk0=; b=tQqzpviI6bB84IlZ0GaWEC7Sc+
+        URKX2jrs31pTvEouEzWKbnvJvWgmaEeHEWXOdsuVXhZ82O+Gjijch0fOp1JBwttwZd49SYT6onwDT
+        EYok7dm9PHLBeD5J4liIOKv+Ce1nXQQ9TGAhMZbc1qntHqeok9AX35FoG+Qnb8OJ1/dI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n4l4t-000TOh-5U; Tue, 04 Jan 2022 15:46:19 +0100
+Date:   Tue, 4 Jan 2022 15:46:19 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Corentin Labbe <clabbe.montjoie@gmail.com>,
+        linus.walleij@linaro.org, ulli.kroll@googlemail.com,
+        kuba@kernel.org, davem@davemloft.net, hkallweit1@gmail.com,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: net: phy: marvell: network working with generic PHY and not with
+ marvell PHY
+Message-ID: <YdRdu3jFPnGd1DsH@lunn.ch>
+References: <YdQoOSXS98+Af1wO@Red>
+ <YdQsJnfqjaFrtC0m@shell.armlinux.org.uk>
+ <YdQwexJVfrdzEfZK@Red>
+ <YdQydK4GhI0P5RYL@shell.armlinux.org.uk>
+ <YdQ5i+//UITSbxS/@shell.armlinux.org.uk>
+ <YdRVovG9mgEWffkn@Red>
+ <YdRZQl6U0y19P/0+@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdRZQl6U0y19P/0+@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+> @@ -1227,16 +1227,18 @@ static int m88e1118_config_init(struct phy_device *phydev)
+>  {
+>  	int err;
+>  
+> -	/* Change address */
+> -	err = marvell_set_page(phydev, MII_MARVELL_MSCR_PAGE);
+> -	if (err < 0)
+> -		return err;
+> -
+>  	/* Enable 1000 Mbit */
+> -	err = phy_write(phydev, 0x15, 0x1070);
+> +	err = phy_write_paged(phydev, MII_MARVELL_MSCR_PAGE,
+> +			      MII_88E1121_PHY_MSCR_REG, 0x1070);
 
-So I know it's getting late, but two more fixes came to
-me over the holidays/vacations.
+Ah, yes, keeping this makes it more backwards compatible.
 
-Please pull and let me know if there's any problem.
+It would be nice to replace the 0x1070 with #defines.
 
-Thanks,
-johannes
+We already have:
 
+#define MII_88E1121_PHY_MSCR_RX_DELAY	BIT(5)
+#define MII_88E1121_PHY_MSCR_TX_DELAY	BIT(4)
+#define MII_88E1121_PHY_MSCR_DELAY_MASK	(BIT(5) | BIT(4))
 
+Bits 6 is the MSB of the default MAC speed.
+Bit 13 is the LSB of the default MAC speed. These two should default to 10b = 1000Mbps
+Bit 12 is reserved, and should be written 1.
 
-The following changes since commit 1ef5e1d0dca5b4ffd49d7dec4a83660882f1fda4:
-
-  net/fsl: Remove leftover definition in xgmac_mdio (2022-01-02 18:43:42 +0000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-net-2022-01-04
-
-for you to fetch changes up to 8b5cb7e41d9d77ffca036b0239177de123394a55:
-
-  mac80211: mesh: embedd mesh_paths and mpp_paths into ieee80211_if_mesh (2022-01-04 15:11:49 +0100)
-
-----------------------------------------------------------------
-Two more changes:
- * mac80211: initialize a variable to avoid using it uninitialized
- * mac80211 mesh: put some data structures into the container to
-   fix bugs with and not have to deal with allocation failures
-
-----------------------------------------------------------------
-Pavel Skripkin (1):
-      mac80211: mesh: embedd mesh_paths and mpp_paths into ieee80211_if_mesh
-
-Tom Rix (1):
-      mac80211: initialize variable have_higher_than_11mbit
-
- net/mac80211/ieee80211_i.h  | 24 +++++++++++-
- net/mac80211/mesh.h         | 22 +----------
- net/mac80211/mesh_pathtbl.c | 89 ++++++++++++++++-----------------------------
- net/mac80211/mlme.c         |  2 +-
- 4 files changed, 55 insertions(+), 82 deletions(-)
-
+    Andrew
