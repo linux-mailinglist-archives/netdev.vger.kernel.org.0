@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1E07483CA4
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:30:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CF9A483CAC
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:30:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231210AbiADHac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 02:30:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42148 "EHLO
+        id S233477AbiADHar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 02:30:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233365AbiADHa1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 02:30:27 -0500
+        with ESMTP id S233468AbiADHae (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 02:30:34 -0500
 Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8437BC061799;
-        Mon,  3 Jan 2022 23:30:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84728C061761;
+        Mon,  3 Jan 2022 23:30:34 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 958214261F;
-        Tue,  4 Jan 2022 07:30:17 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id A7B06422CC;
+        Tue,  4 Jan 2022 07:30:25 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -48,9 +48,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH v2 20/35] brcmfmac: pcie: Perform correct BCM4364 firmware selection
-Date:   Tue,  4 Jan 2022 16:26:43 +0900
-Message-Id: <20220104072658.69756-21-marcan@marcan.st>
+Subject: [PATCH v2 21/35] brcmfmac: chip: Only disable D11 cores; handle an arbitrary number
+Date:   Tue,  4 Jan 2022 16:26:44 +0900
+Message-Id: <20220104072658.69756-22-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220104072658.69756-1-marcan@marcan.st>
 References: <20220104072658.69756-1-marcan@marcan.st>
@@ -60,75 +60,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This chip exists in two revisions (B2=r3 and B3=r4) on different
-platforms, and was added without regard to doing proper firmware
-selection or differentiating between them. Fix this to have proper
-per-revision firmwares and support Apple NVRAM selection.
+At least on BCM4387, the D11 cores are held in reset on cold startup and
+firmware expects to release reset itself. Just assert reset here and let
+firmware deassert it. Premature deassertion results in the firmware
+failing to initialize properly some of the time, with strange AXI bus
+errors.
 
-Revision B2 is present on at least these Apple T2 Macs:
+Also, BCM4387 has 3 cores, up from 2. The logic for handling that is in
+brcmf_chip_ai_resetcore(), but since we aren't using that any more, just
+handle it here.
 
-kauai:    MacBook Pro 15" (Touch/2018-2019)
-maui:     MacBook Pro 13" (Touch/2018-2019)
-lanai:    Mac mini (Late 2018)
-ekans:    iMac Pro 27" (5K, Late 2017)
-
-And these non-T2 Macs:
-
-nihau:    iMac 27" (5K, 2019)
-
-Revision B3 is present on at least these Apple T2 Macs:
-
-bali:     MacBook Pro 16" (2019)
-trinidad: MacBook Pro 13" (2020, 4 TB3)
-borneo:   MacBook Pro 16" (2019, 5600M)
-kahana:   Mac Pro (2019)
-kahana:   Mac Pro (2019, Rack)
-hanauma:  iMac 27" (5K, 2020)
-kure:     iMac 27" (5K, 2020, 5700/XT)
-
-Fixes: 24f0bd136264 ("brcmfmac: add the BRCM 4364 found in MacBook Pro 15,2")
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- .../net/wireless/broadcom/brcm80211/brcmfmac/pcie.c   | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ .../net/wireless/broadcom/brcm80211/brcmfmac/chip.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index 87daabb15cd0..e4f2aff3c0d5 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -54,7 +54,8 @@ BRCMF_FW_CLM_DEF(4356, "brcmfmac4356-pcie");
- BRCMF_FW_CLM_DEF(43570, "brcmfmac43570-pcie");
- BRCMF_FW_DEF(4358, "brcmfmac4358-pcie");
- BRCMF_FW_DEF(4359, "brcmfmac4359-pcie");
--BRCMF_FW_DEF(4364, "brcmfmac4364-pcie");
-+BRCMF_FW_CLM_DEF(4364B2, "brcmfmac4364b2-pcie");
-+BRCMF_FW_CLM_DEF(4364B3, "brcmfmac4364b3-pcie");
- BRCMF_FW_DEF(4365B, "brcmfmac4365b-pcie");
- BRCMF_FW_DEF(4365C, "brcmfmac4365c-pcie");
- BRCMF_FW_DEF(4366B, "brcmfmac4366b-pcie");
-@@ -84,7 +85,8 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
- 	BRCMF_FW_ENTRY(BRCM_CC_43570_CHIP_ID, 0xFFFFFFFF, 43570),
- 	BRCMF_FW_ENTRY(BRCM_CC_4358_CHIP_ID, 0xFFFFFFFF, 4358),
- 	BRCMF_FW_ENTRY(BRCM_CC_4359_CHIP_ID, 0xFFFFFFFF, 4359),
--	BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0xFFFFFFFF, 4364),
-+	BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0x0000000F, 4364B2), /* 3 */
-+	BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0xFFFFFFF0, 4364B3), /* 4 */
- 	BRCMF_FW_ENTRY(BRCM_CC_4365_CHIP_ID, 0x0000000F, 4365B),
- 	BRCMF_FW_ENTRY(BRCM_CC_4365_CHIP_ID, 0xFFFFFFF0, 4365C),
- 	BRCMF_FW_ENTRY(BRCM_CC_4366_CHIP_ID, 0x0000000F, 4366B),
-@@ -2051,6 +2053,11 @@ static int brcmf_pcie_read_otp(struct brcmf_pciedev_info *devinfo)
- 		base = 0x8c0;
- 		words = 0xb2;
- 		break;
-+	case BRCM_CC_4364_CHIP_ID:
-+		coreid = BCMA_CORE_CHIPCOMMON;
-+		base = 0x8c0;
-+		words = 0x1a0;
-+		break;
- 	case BRCM_CC_4377_CHIP_ID:
- 	case BRCM_CC_4378_CHIP_ID:
- 		coreid = BCMA_CORE_GCI;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
+index 73ab96968ac6..713546cebd5a 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
+@@ -1289,15 +1289,18 @@ static bool brcmf_chip_cm3_set_active(struct brcmf_chip_priv *chip)
+ static inline void
+ brcmf_chip_cr4_set_passive(struct brcmf_chip_priv *chip)
+ {
++	int i;
+ 	struct brcmf_core *core;
+ 
+ 	brcmf_chip_disable_arm(chip, BCMA_CORE_ARM_CR4);
+ 
+-	core = brcmf_chip_get_core(&chip->pub, BCMA_CORE_80211);
+-	brcmf_chip_resetcore(core, D11_BCMA_IOCTL_PHYRESET |
+-				   D11_BCMA_IOCTL_PHYCLOCKEN,
+-			     D11_BCMA_IOCTL_PHYCLOCKEN,
+-			     D11_BCMA_IOCTL_PHYCLOCKEN);
++	/* Disable the cores only and let the firmware enable them.
++	 * Releasing reset ourselves breaks BCM4387 in weird ways.
++	 */
++	for (i = 0; (core = brcmf_chip_get_d11core(&chip->pub, i)); i++)
++		brcmf_chip_coredisable(core, D11_BCMA_IOCTL_PHYRESET |
++				       D11_BCMA_IOCTL_PHYCLOCKEN,
++				       D11_BCMA_IOCTL_PHYCLOCKEN);
+ }
+ 
+ static bool brcmf_chip_cr4_set_active(struct brcmf_chip_priv *chip, u32 rstvec)
 -- 
 2.33.0
 
