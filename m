@@ -2,146 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DA2D483B25
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 04:44:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EF55483B2B
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 04:48:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231419AbiADDoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 22:44:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:37991 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231218AbiADDoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 22:44:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641267864;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=U3bRp9PDw2PtdlQN7RsHKxoF/g+6HtYTrwOQVxpYpkg=;
-        b=ewJoEVH/asVTt1uuHPZuNvkintjY7r3X64UHDyxis0Y4qICDXE/MaFi1oUS6iMNgf2yx9n
-        2L0JGW/QlGFw0Dpy/2zUBwmH9Jw1u2Nxd1BhPONTIBTwR5bFcH7dbO0tvTv+gO4rTrtymp
-        oZjojhIoy0X4fCVfa2padaL5W4ppxvg=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-491-eYR-_xs1OYyc0pzXCPwUhw-1; Mon, 03 Jan 2022 22:44:22 -0500
-X-MC-Unique: eYR-_xs1OYyc0pzXCPwUhw-1
-Received: by mail-lj1-f200.google.com with SMTP id j15-20020a2e6e0f000000b0022db2724332so9236561ljc.3
-        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 19:44:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U3bRp9PDw2PtdlQN7RsHKxoF/g+6HtYTrwOQVxpYpkg=;
-        b=fztnQSJcbdeSYO6UJk8o4Usg/OSZlNuxzW7Nk1j/O5SUnp5HanN74wrh2ACt6hsWMF
-         NWdYC9TVGlkcWHGv1LrrVl/LNq7v+BP5A2VL9HH6fDg4BIzpHJvih4FRV5RNGRtOiLPn
-         WnC8Uusv9mQKg9mgnH61BWk7NpJyLtZVZsack7Ish1VRBOHIwRfzVR/XHIBmz4KCbiWk
-         KI1rQ2oM1DttxUqWF4XX3A2xZDdzE8P+cTSuVXhkxPWF3W28zO6qdtUPe2yT7OoIHnce
-         DRe4EBC0ilQBZGp0FVBPv0gspT435OkOv/ug9QgQkGcehijmojZEl3X6hfvXmXpOSy/G
-         raXg==
-X-Gm-Message-State: AOAM531kQ3Y1A4tmHWoSBvhgL/2VVvza+cQxBCjchDI/lGckt+K73Po9
-        d5NoMx9Jdh0b3xiv9/tVT9jMXBxZi3y/NeG6sUeB0FgkGJiHkEy+UImFynUFyTH7udA5qRoq7RB
-        7j5ktYhxg8NeR8Gb7evOlMQSjdr89WxTn
-X-Received: by 2002:a05:6512:22d6:: with SMTP id g22mr42525580lfu.199.1641267861377;
-        Mon, 03 Jan 2022 19:44:21 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwPfKa8UYDWk8yXRh/Tynib8SG3CWPXUC55CynDHAaf3IrbQwAAOOMAqfKLA5ICJGqVqiZgR88MAce8maqcssc=
-X-Received: by 2002:a05:6512:22d6:: with SMTP id g22mr42525557lfu.199.1641267861109;
- Mon, 03 Jan 2022 19:44:21 -0800 (PST)
+        id S231549AbiADDse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 22:48:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50144 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231165AbiADDse (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 22:48:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF11C061761;
+        Mon,  3 Jan 2022 19:48:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFF58B81097;
+        Tue,  4 Jan 2022 03:48:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C52C36AED;
+        Tue,  4 Jan 2022 03:48:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641268111;
+        bh=5LCZIuAEU9VEEYcUacketTtZ45/TX/jS7+iR46o4+b4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hBLX91dPaJ5m7coXPc0vYUzoTQvDz5OEqG/JGstFAz8r5oQtT4ldw6W0A4ub81Ls3
+         /HxkH731k2CDr55eQBRAI1sFwd2Frx4L/2nFKPlxDM2Le7fWDWymrymYG5Fg1PYnNx
+         is0owU/UfAz7GZcmFWj6M6bzEDB/lRTwzTxIwXQ7l/iEi/I4++uhjKfAPzItwDLelB
+         K/rU03Y6gQeoCXzvn5oIGhyaJjmr0Rt3CrM47cOoB6z5T/DOEKQvZzCL5e4+AAvkj9
+         6ld3TIIAh/adL3LyeIm3nKoilUgZJ2b4sXQSZ0yybzNcOEVRwmpxTiaDlwDHVYwRfB
+         P8CyNdYhFuJaA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Abdul Haleem <abdhalee@linux.vnet.ibm.com>,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        saeedm@nvidia.com, leon@kernel.org,
+        intel-wired-lan@lists.osuosl.org, linux-rdma@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH net-next] net: fixup build after bpf header changes
+Date:   Mon,  3 Jan 2022 19:48:27 -0800
+Message-Id: <20220104034827.1564167-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20211224070404.54840-1-wang.yi59@zte.com.cn>
-In-Reply-To: <20211224070404.54840-1-wang.yi59@zte.com.cn>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 4 Jan 2022 11:44:10 +0800
-Message-ID: <CACGkMEvdKATVvLVQtfPfSeev83Ajskg4gFoHDhWT7wrWEQ3FEA@mail.gmail.com>
-Subject: Re: [PATCH v2] vdpa: regist vhost-vdpa dev class
-To:     Yi Wang <wang.yi59@zte.com.cn>
-Cc:     mst <mst@redhat.com>, Stefano Garzarella <sgarzare@redhat.com>,
-        kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        xue.zhihong@zte.com.cn, wang.liang82@zte.com.cn,
-        Zhang Min <zhang.min9@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 24, 2021 at 3:13 PM Yi Wang <wang.yi59@zte.com.cn> wrote:
->
-> From: Zhang Min <zhang.min9@zte.com.cn>
->
-> Some applications like kata-containers need to acquire MAJOR/MINOR/DEVNAME
-> for devInfo [1], so regist vhost-vdpa dev class to expose uevent.
+Recent bpf-next merge brought in header changes which uncovered
+includes missing in net-next which were not present in bpf-next.
+Build problems happen only on less-popular arches like hppa,
+sparc, alpha etc.
 
-Hi:
+I could repro the build problem with ice but not the mlx5 problem
+Abdul was reporting. mlx5 does look like it should include filter.h,
+anyway.
 
-I think we need to be more verbose here e.g:
+Reported-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
+Fixes: e63a02348958 ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next")
+Link: https://lore.kernel.org/all/7c03768d-d948-c935-a7ab-b1f963ac7eed@linux.vnet.ibm.com/
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: jesse.brandeburg@intel.com
+CC: anthony.l.nguyen@intel.com
+CC: saeedm@nvidia.com
+CC: leon@kernel.org
+CC: intel-wired-lan@lists.osuosl.org
+CC: linux-rdma@vger.kernel.org
+CC: bpf@vger.kernel.org
+---
+ drivers/net/ethernet/intel/ice/ice_nvm.c          | 2 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 1 +
+ 2 files changed, 3 insertions(+)
 
-1) why can't we get major/minor with the current interface
-2) what kind of the uevent is required and not supported currently
-
-Thanks
-
->
-> 1. https://github.com/kata-containers/kata-containers/blob/main/src/runtime/virtcontainers/device/config/config.go
->
-> Signed-off-by: Zhang Min <zhang.min9@zte.com.cn>
-> Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
-> ---
-> v2: remove redundant vhost_vdpa_class reset and pr_warn, adjust location
->     of *vhost_vdpa_class impl and class_destroy.
->
->  drivers/vhost/vdpa.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index e3c4f059b21a..55e966c508c8 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -53,6 +53,7 @@ struct vhost_vdpa {
->  static DEFINE_IDA(vhost_vdpa_ida);
->
->  static dev_t vhost_vdpa_major;
-> +static struct class *vhost_vdpa_class;
->
->  static void handle_vq_kick(struct vhost_work *work)
->  {
-> @@ -1140,6 +1141,7 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
->         v->dev.release = vhost_vdpa_release_dev;
->         v->dev.parent = &vdpa->dev;
->         v->dev.devt = MKDEV(MAJOR(vhost_vdpa_major), minor);
-> +       v->dev.class = vhost_vdpa_class;
->         v->vqs = kmalloc_array(v->nvqs, sizeof(struct vhost_virtqueue),
->                                GFP_KERNEL);
->         if (!v->vqs) {
-> @@ -1197,6 +1199,10 @@ static int __init vhost_vdpa_init(void)
->  {
->         int r;
->
-> +       vhost_vdpa_class = class_create(THIS_MODULE, "vhost-vdpa");
-> +       if (IS_ERR(vhost_vdpa_class))
-> +               return PTR_ERR(vhost_vdpa_class);
-> +
->         r = alloc_chrdev_region(&vhost_vdpa_major, 0, VHOST_VDPA_DEV_MAX,
->                                 "vhost-vdpa");
->         if (r)
-> @@ -1211,6 +1217,7 @@ static int __init vhost_vdpa_init(void)
->  err_vdpa_register_driver:
->         unregister_chrdev_region(vhost_vdpa_major, VHOST_VDPA_DEV_MAX);
->  err_alloc_chrdev:
-> +       class_destroy(vhost_vdpa_class);
->         return r;
->  }
->  module_init(vhost_vdpa_init);
-> @@ -1219,6 +1226,7 @@ static void __exit vhost_vdpa_exit(void)
->  {
->         vdpa_unregister_driver(&vhost_vdpa_driver);
->         unregister_chrdev_region(vhost_vdpa_major, VHOST_VDPA_DEV_MAX);
-> +       class_destroy(vhost_vdpa_class);
->  }
->  module_exit(vhost_vdpa_exit);
->
-> --
-> 2.27.0
->
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
+index cd739a2c64e8..4eb0599714f4 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.c
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2018, Intel Corporation. */
+ 
++#include <linux/vmalloc.h>
++
+ #include "ice_common.h"
+ 
+ /**
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index efcf9d30b131..31c911182498 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -37,6 +37,7 @@
+ #include <net/geneve.h>
+ #include <linux/bpf.h>
+ #include <linux/if_bridge.h>
++#include <linux/filter.h>
+ #include <net/page_pool.h>
+ #include <net/xdp_sock_drv.h>
+ #include "eswitch.h"
+-- 
+2.31.1
 
