@@ -2,87 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0751483A00
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 02:51:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 417F0483A6E
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 03:01:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231923AbiADBvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 20:51:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51670 "EHLO
+        id S231214AbiADCBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 21:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231920AbiADBvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 20:51:10 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F65C061784
-        for <netdev@vger.kernel.org>; Mon,  3 Jan 2022 17:51:10 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id i3so89201070ybh.11
-        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 17:51:10 -0800 (PST)
+        with ESMTP id S230200AbiADCBf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 21:01:35 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83186C061761;
+        Mon,  3 Jan 2022 18:01:35 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id o7so40624340ioo.9;
+        Mon, 03 Jan 2022 18:01:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=Jh/++QFZbrSzG4WM6hkL2qrI9gSoZqeICvJv3F8KbaA=;
-        b=LiSO3qRiTsSlk1rJCPWl4QfcOn+R2yGHmCHqcuFoOScTsixIei7IwZzvG4j67DrWlQ
-         b0IM/tsu6W9PO4oHsqTeLxBASBv9Buu9Oh9MKwPKqrXhFVFjijbDssVRykxLTqdLfWQx
-         c8FiPi/uKcojTwIUQB5Ia3SrNRtogO/EUGuPsWMgoZxOsFh+iRqxiUBf9wdn1srW1T3j
-         2PaNSm4x3o6nFvp5Fny4QFSXZzlQDt6oKwEKuaRAC3L1Tt/R3XL3Pilv5tzcKYAKQNJZ
-         jOMPSlNjUpo4vgiC9sdJb7aRJfQIFaMxiQ3LD82jU0pKj8NjQs98GJ3uAqkDazLeSZt5
-         o3fw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Y8wJ+6Hc060UZZZN5D+qY5rqy6SgLLcG5cbwkD9/0Ps=;
+        b=F9AMwjN15gZmCBk9yZH7TB9zlQ62c8e138Hpm+V3jKCaguL46Ww0aPwXTtaTMuwc6o
+         V/uH782DDfu/qe8sbkA0zJkWoc6gZzB2orrSOlw46J76yxmG/0GfHveWE8D1AR+zqXaJ
+         eOfQvMJoWVD9hv/Ub6CBb4y7zOAguZF2Ggpc+O8USvX5ITDGXTlUxC+WxYYtbTWpTe+v
+         Ksz/Hk4LUu6zRXUNoLeDTILIlCT5Efa3B5FrKUNDquXvVm55XBOkE9XZwvy/K3zyx/xm
+         i+ZGPCwOxgMg1eOunqrUZUOvv97TWk/MWrJeNxTRE+LHITJ45tZRf/CUQCB7yjj8uIHT
+         UjKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=Jh/++QFZbrSzG4WM6hkL2qrI9gSoZqeICvJv3F8KbaA=;
-        b=NNcSrgah6SgLJARFEzQ8IgsxVaW6afimr4L3JeMyFXQszx8tiD1AJwhN9CrenCgpvJ
-         ETWgYxneaio405JI9hti+2653hcIGm8cjQGnwnkxW/dPdR2dLo8P1Tnv8HOM420HcN5p
-         RqCkM5LU5jCTS4Wo2gdmhy8rZbTyaYJbNVl/fHCqOMA1uWImbI2Yqu9nifUhWLuJ+fkn
-         YgFDeVw6eKHFpyjnNm34pYEbJ/TkCUaBk6CISsp9A5uJWl9c8LD3dMSPjuWypbX0J6J2
-         oaLqNa5mKrVjjcwkbQLzyJDnKyrYAJOrbRc86jXXMbiffI78HWEglaDT0nNdSOXJlUQ2
-         SH2A==
-X-Gm-Message-State: AOAM5339r2BpO8+vSAavu9z1rbCvfvJJN19dmXSb0Jv6WJ5M16ieItYQ
-        EgF9W/FoXGQi7BfxN7IkmegRvbH2FG9MWPLFiFo=
-X-Google-Smtp-Source: ABdhPJzL2/U20kBdsR1eGNqbCbIge7O4LXH6gcjH4EulpgYfG28xzDUSFqC68YUhIyXLRSjWjw2ycdINe8isrBCa/cs=
-X-Received: by 2002:a25:e787:: with SMTP id e129mr34724593ybh.492.1641261069351;
- Mon, 03 Jan 2022 17:51:09 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Y8wJ+6Hc060UZZZN5D+qY5rqy6SgLLcG5cbwkD9/0Ps=;
+        b=apbyAq+SlkQ85tofff2Jb9wEwhGl/2awRuieftjZ2K947+lGJC/ljq93jFxtSuBuSL
+         MLfd3OSzWdGht5XTjousrBsTBYrLXXNhLiLwTMuv3sggG8cD3tsONCfhiGfSENJRAwBg
+         7fR8f+P/mx4ky04GH1i2ZLY4A7OLhVwUNfdf06dboZCX0oYGI/N8qjP4OgVpajniQA4I
+         SjNeuaKwkwQLOJaxViXFcPycSyvnYs/auzm3utUNzgpyKWaHk4gC23zqiOA6gGmWulxO
+         GfMTZnqly0paVY8Q6yvEczLHjAmN/T1Qk4Bpzl9iUNoy+y4r0DBrMj1FDzBHMIwJAcDn
+         TYXQ==
+X-Gm-Message-State: AOAM53227wPqy7t85THg1fTVvzew4boQzLj77XV+hfM92Yk1TM42LvcP
+        nQdsOjoenCKk4LdYIkM4EUI=
+X-Google-Smtp-Source: ABdhPJxi6XwpS0nEmpGYCIS9Fm+n8lH1DYPtlkJfR0pYKwMKAf0+DWtS17alOK5ycXlr4cW7e5pcdA==
+X-Received: by 2002:a05:6602:2cce:: with SMTP id j14mr22687615iow.111.1641261694963;
+        Mon, 03 Jan 2022 18:01:34 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id q17sm18633273ilj.40.2022.01.03.18.01.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 03 Jan 2022 18:01:34 -0800 (PST)
+Message-ID: <810dd93c-c6a2-6f8b-beb9-a2119c1876fb@gmail.com>
+Date:   Mon, 3 Jan 2022 19:01:30 -0700
 MIME-Version: 1.0
-Received: by 2002:a05:7010:499f:b0:1e5:b949:3632 with HTTP; Mon, 3 Jan 2022
- 17:51:09 -0800 (PST)
-Reply-To: ecobankbenin2021@yahoo.com
-From:   Stephanie Adamou <notifications206@gmail.com>
-Date:   Tue, 4 Jan 2022 02:51:09 +0100
-Message-ID: <CAKk52Qz8Dv9=u+++4_KH6DOiEAtcQaz8gSL7pfF_Aw3vPT0z4Q@mail.gmail.com>
-Subject: APPROVED REFERENCE CODE: UNHRD/BPC0665
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH v2 net-next 0/3] net: skb: introduce
+ kfree_skb_with_reason() and use it for tcp and udp
+Content-Language: en-US
+To:     Cong Wang <xiyou.wangcong@gmail.com>, menglong8.dong@gmail.com
+Cc:     rostedt@goodmis.org, dsahern@kernel.org, mingo@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, nhorman@tuxdriver.com,
+        edumazet@google.com, yoshfuji@linux-ipv6.org,
+        jonathan.lemon@gmail.com, alobakin@pm.me, keescook@chromium.org,
+        pabeni@redhat.com, talalahmad@google.com, haokexin@gmail.com,
+        imagedong@tencent.com, atenart@kernel.org, bigeasy@linutronix.de,
+        weiwan@google.com, arnd@arndb.de, vvs@virtuozzo.com,
+        cong.wang@bytedance.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, mengensun@tencent.com,
+        mungerjiang@tencent.com
+References: <20211230093240.1125937-1-imagedong@tencent.com>
+ <YdOnTcSBq8z961da@pop-os.localdomain>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <YdOnTcSBq8z961da@pop-os.localdomain>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ecobank Republic of Benin
-Address: Ganhi, Rue Du Gouverneur Bayol 01 BP 1280TH Cotonou, Benin
+On 1/3/22 6:47 PM, Cong Wang wrote:
+> On Thu, Dec 30, 2021 at 05:32:37PM +0800, menglong8.dong@gmail.com wrote:
+>> From: Menglong Dong <imagedong@tencent.com>
+>>
+>> In this series patch, the interface kfree_skb_with_reason() is
+>> introduced(), which is used to collect skb drop reason, and pass
+>> it to 'kfree_skb' tracepoint. Therefor, 'drop_monitor' or eBPF is
+>> able to monitor abnormal skb with detail reason.
+>>
+> 
+> We already something close, __dev_kfree_skb_any(). Can't we unify
+> all of these?
 
-APPROVED REFERENCE CODE: UNHRD/BPC0665
+Specifically?
 
-Hello, greetings to you and your family. This is Stephanie Adamou from
-the Ecobank Republic of Benin. I am writing to inform you that we have
-received a Compensation Fund of $5,800,000.00 from the United Nations
-Humanitarian Response Depot (UNHRD) to transfer to you through our
-MoneyGram remittance service. You will receive an amount of $3,000.00
-twice a day until the full $5,800,000.00 has been transferred to you.
-Please contact our general manager with the following information to
-receive your first $3,000.00 payment today.
+The 'reason' passed around by those is either SKB_REASON_CONSUMED or
+SKB_REASON_DROPPED and is used to call kfree_skb vs consume_skb. i.e.,
+this is unrelated to this patch set and goal.
 
-Full name: ___________
-Country: ___________
-City: ___________
-Mobile phone number: ___________
-Current residence address: ___________
+> 
+> 
+>> In fact, this series patches are out of the intelligence of David
+>> and Steve, I'm just a truck man :/
+>>
+> 
+> I think there was another discussion before yours, which I got involved
+> as well.
+> 
+>> Previous discussion is here:
+>>
+>> https://lore.kernel.org/netdev/20211118105752.1d46e990@gandalf.local.home/
+>> https://lore.kernel.org/netdev/67b36bd8-2477-88ac-83a0-35a1eeaf40c9@gmail.com/
+>>
+>> In the first patch, kfree_skb_with_reason() is introduced and
+>> the 'reason' field is added to 'kfree_skb' tracepoint. In the
+>> second patch, 'kfree_skb()' in replaced with 'kfree_skb_with_reason()'
+>> in tcp_v4_rcv(). In the third patch, 'kfree_skb_with_reason()' is
+>> used in __udp4_lib_rcv().
+>>
+> 
+> I don't follow all the discussions here, but IIRC it would be nice
+> if we can provide the SNMP stat code (for instance, TCP_MIB_CSUMERRORS) to
+> user-space, because those stats are already exposed to user-space, so
+> you don't have to invent new ones.
 
-Contact Person: Olga ADONON
-Office E-mail (ecobankbenin2021@yahoo.com)
+Those SNMP macros are not unique and can not be fed into a generic
+kfree_skb_reason function.
 
-Please note that the deadline to claim your fund is exactly from today
-until July 31, 2022, after this deadline your fund will be returned to
-the ordering Office.
-
-Yours sincerely
-Stephanie Adamou
-Ecobank Republic of Benin
