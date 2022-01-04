@@ -2,163 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4028648422B
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 14:12:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DCC4484241
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 14:20:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233352AbiADNMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 08:12:47 -0500
-Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:48625 "EHLO
-        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229568AbiADNMq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 08:12:46 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R961e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V0xwEaA_1641301963;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V0xwEaA_1641301963)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 04 Jan 2022 21:12:44 +0800
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
-        "D. Wythe" <alibuda@linux.alibaba.com>
-Subject: [PATCH net-next v2] net/smc: Reduce overflow of smc clcsock listen queue
-Date:   Tue,  4 Jan 2022 21:12:41 +0800
-Message-Id: <1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S233409AbiADNUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 08:20:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37946 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232156AbiADNUq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 08:20:46 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25ABDC061784
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 05:20:44 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id m21so149636673edc.0
+        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 05:20:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w/GkwF7Da5XIamKReKsj0HsZhSVJSApc2Gxuc5P0F58=;
+        b=Orcz1Ulcpgxql5P3geTM4KS23mA4oqud5iffrm073yQbrJxGUBcEMP5qDl5yBdDLQI
+         AkkRJeK0J2hxjMSkDJ/LI0n8tZaXDcEU8IsmptJNOyU/nfjPGY6b6EPr6vi/WVV7vlPW
+         dcqTdvgIn4kjdLIVjHudOJWHuI2jvgO4PwYlA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w/GkwF7Da5XIamKReKsj0HsZhSVJSApc2Gxuc5P0F58=;
+        b=OVctkAX/r2GCVgZVyH0EV6YdD5ONSOpoMNhOutCk8QdmuILaRSr1//Oiv9cCu2ZTsB
+         D5IHgM2bnjFF7LsBrpxpLrkcDzX8LSR4boAQJydDvSCoDIhB6OH60AqfxxZ6uwWcV4KC
+         ot9NnKj82de9mikad7rWOTDdhThA28skxSBb2mcAMPif51MLazKIws6/NuFDuC31aXLr
+         KURVvE09aeG04FpynAjySh/M5SwUQUZFJ/x/IwJE4yDbr1XoLh3WbINwaR/mEUbAGm9l
+         HaAAjpMH1Let6XtEYMX/rHcojmP5FV9luG4pqf10TbfjgtVh1fz2jE3sjbBvlOtk6mvP
+         aJmA==
+X-Gm-Message-State: AOAM533SdSEGETE6tEKqgc+9VK4/GnETTRkIzPaCE9XMltXMBOTAZgt9
+        ZXHPXxAAoOlpZGphaeJ84DImSg==
+X-Google-Smtp-Source: ABdhPJyJMtxLvzivI2st83HvXyyfiTOFhY2WMHimu9EkqSxFO2LU/qKMIFCwsOUEHgckh0mm3Sj7Hw==
+X-Received: by 2002:a05:6402:491:: with SMTP id k17mr48221773edv.333.1641302442702;
+        Tue, 04 Jan 2022 05:20:42 -0800 (PST)
+Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-95-244-92-231.retail.telecomitalia.it. [95.244.92.231])
+        by smtp.gmail.com with ESMTPSA id y13sm14765575edq.77.2022.01.04.05.20.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Jan 2022 05:20:42 -0800 (PST)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Michael Trimarchi <michael@amarulasolutions.com>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [RFC PATCH 0/2] Change flexcan features at runtime
+Date:   Tue,  4 Jan 2022 14:20:24 +0100
+Message-Id: <20220104132026.3062763-1-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "D. Wythe" <alibuda@linux.alibaba.com>
+This series was born from the review https://lkml.org/lkml/2022/1/2/127
+by Marc Kleine-Budde. The ethtool module is minimal and lacks the
+callback to change the setting at runtime (this has yet to be defined).
+I'm certainly not an expert but might it make sense to use the
+set_features() callback? Although I understand that it belongs to
+`struct net_device_ops' and not to 'struct ethtool_ops'.
 
-In nginx/wrk multithread and 10K connections benchmark, the
-backend TCP connection established very slowly, and lots of TCP
-connections stay in SYN_SENT state.
 
-Server: smc_run nginx
+Dario Binacchi (2):
+  can: flexcan: allow to change quirks at runtime
+  can: flexcan: add ethtool support
 
-Client: smc_run wrk -c 10000 -t 4 http://server
+ drivers/net/can/Makefile                      |   3 +
+ drivers/net/can/flexcan.h                     | 107 +++++++++++++
+ drivers/net/can/flexcan_ethtool.c             |  29 ++++
+ drivers/net/can/{flexcan.c => flexcan_main.c} | 144 ++++--------------
+ 4 files changed, 166 insertions(+), 117 deletions(-)
+ create mode 100644 drivers/net/can/flexcan.h
+ create mode 100644 drivers/net/can/flexcan_ethtool.c
+ rename drivers/net/can/{flexcan.c => flexcan_main.c} (92%)
 
-Socket state in client host (wrk) shows like:
-
-ss -t  | wc -l
-10000
-
-ss -t  | grep "SYN-SENT"  | wc -l
-6248
-
-While the socket state in server host (nginx) shows like:
-
-ss -t  | wc -l
-3752
-
-Furthermore, the netstate of server host shows like:
-    145042 times the listen queue of a socket overflowed
-    145042 SYNs to LISTEN sockets dropped
-
-This issue caused by smc_listen_work(), since the smc_tcp_listen_work()
-shared the same workqueue (smc_hs_wq) with smc_listen_work(), while
-smc_listen_work() do blocking wait for smc connection established, which
-meanwhile block the accept() from TCP listen queue.
-
-This patch creates a independent workqueue(smc_tcp_ls_wq) for
-smc_tcp_listen_work(), separate it from smc_listen_work(), which is
-quite acceptable considering that smc_tcp_listen_work() runs very fast.
-
-After this patch, the smc 10K connections benchmark in my case is 5
-times faster than before.
-
-Before patch :
-
-smc_run  ./wrk -c 10000 -t 3 -d 20  http://server
-  3 threads and 10000 connections
-  143300 requests in 20.04s, 94.29MB read
-Requests/sec:   7150.33
-Transfer/sec:      4.70MB
-
-After patch:
-
-smc_run  ./wrk -c 10000 -t 3 -d 20  http://server
-  3 threads and 10000 connections
-  902091 requests in 21.99s, 593.56MB read
-Requests/sec:  41017.52
-Transfer/sec:     26.99MB
-
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
-Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
----
-changelog:
-v2: code format
----
- net/smc/af_smc.c | 13 +++++++++++--
- net/smc/smc.h    |  1 +
- 2 files changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 0bb614e..08722c0 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -62,6 +62,7 @@
- 						 * creation on client
- 						 */
- 
-+struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work */
- struct workqueue_struct	*smc_hs_wq;	/* wq for handshake work */
- struct workqueue_struct	*smc_close_wq;	/* wq for close work */
- 
-@@ -1872,7 +1873,7 @@ static void smc_clcsock_data_ready(struct sock *listen_clcsock)
- 	lsmc->clcsk_data_ready(listen_clcsock);
- 	if (lsmc->sk.sk_state == SMC_LISTEN) {
- 		sock_hold(&lsmc->sk); /* sock_put in smc_tcp_listen_work() */
--		if (!queue_work(smc_hs_wq, &lsmc->tcp_listen_work))
-+		if (!queue_work(smc_tcp_ls_wq, &lsmc->tcp_listen_work))
- 			sock_put(&lsmc->sk);
- 	}
- }
-@@ -2610,9 +2611,14 @@ static int __init smc_init(void)
- 		goto out_nl;
- 
- 	rc = -ENOMEM;
-+
-+	smc_tcp_ls_wq = alloc_workqueue("smc_tcp_ls_wq", 0, 0);
-+	if (!smc_tcp_ls_wq)
-+		goto out_pnet;
-+
- 	smc_hs_wq = alloc_workqueue("smc_hs_wq", 0, 0);
- 	if (!smc_hs_wq)
--		goto out_pnet;
-+		goto out_alloc_tcp_ls_wq;
- 
- 	smc_close_wq = alloc_workqueue("smc_close_wq", 0, 0);
- 	if (!smc_close_wq)
-@@ -2709,6 +2715,8 @@ static int __init smc_init(void)
- 	destroy_workqueue(smc_close_wq);
- out_alloc_hs_wq:
- 	destroy_workqueue(smc_hs_wq);
-+out_alloc_tcp_ls_wq:
-+	destroy_workqueue(smc_tcp_ls_wq);
- out_pnet:
- 	smc_pnet_exit();
- out_nl:
-@@ -2728,6 +2736,7 @@ static void __exit smc_exit(void)
- 	smc_core_exit();
- 	smc_ib_unregister_client();
- 	destroy_workqueue(smc_close_wq);
-+	destroy_workqueue(smc_tcp_ls_wq);
- 	destroy_workqueue(smc_hs_wq);
- 	proto_unregister(&smc_proto6);
- 	proto_unregister(&smc_proto);
-diff --git a/net/smc/smc.h b/net/smc/smc.h
-index b1d6625..18fa803 100644
---- a/net/smc/smc.h
-+++ b/net/smc/smc.h
-@@ -256,6 +256,7 @@ static inline struct smc_sock *smc_sk(const struct sock *sk)
- 	return (struct smc_sock *)sk;
- }
- 
-+extern struct workqueue_struct	*smc_tcp_ls_wq;	/* wq for tcp listen work */
- extern struct workqueue_struct	*smc_hs_wq;	/* wq for handshake work */
- extern struct workqueue_struct	*smc_close_wq;	/* wq for close work */
- 
 -- 
-1.8.3.1
+2.32.0
 
