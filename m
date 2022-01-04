@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B99F64846CD
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 18:15:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 910514846CE
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 18:15:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234923AbiADRPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 12:15:09 -0500
+        id S234464AbiADRPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 12:15:11 -0500
 Received: from mail-eopbgr150045.outbound.protection.outlook.com ([40.107.15.45]:22762
         "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233884AbiADROq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 12:14:46 -0500
+        id S234215AbiADROs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jan 2022 12:14:48 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cNCTyZ+iwWutsdoMDOeml8FC+UZqopNULNlScELxQYupawIVAYPzltHrSeOXwosluldxki/YlMverC4+ewMAoicmI7DGkVs967He6lz9wn8tgT6mzM6KY7ckFeV0n/q2WpOtDziKhiT7/dryA73vogyXkTbbXs8lFcCQ40CyFMyMCPLMhOn2T2E705zTmICrKQ1wP4UnHov2WhLnDWJflAovVxdP/g7CmDxp6e6NmphBP5ss027ZHXqokmvJEaCbsXvETqPpDe4kmzFjE7z4kzkYO22na1dax9GtzkoaDvduV7jJIy9XZV8dFOgtArL07ZjukfUEGCEZBcVKGO/Xtw==
+ b=UpFpVlSKvLyb20liMZSh7dRmYyfQd5OIt6CSq6mPuXpCPkjrmrR0NQuJG2Ot1AZV714Wpf7U+27uTyC+B9nIkOh5iyQYh2ZcSVD5DOcv7eEAl5ZNzU4VmB97znxyqxvfguLUYJkc5KyiA6gMvtEBMDZEjeU/+/QxKFv4EVFMadM8+MNK2a6+lOSCplU0axdXHpgwkuhLvvMJOq+aY9pK8v8XU27nGpk6f9KpF5St/xkCvjlIGAnm6/773IDpwjS5isjzxXIZTMq5d8zwyD6TRiREJqWY3pn7KjCrhHcjdLnZXx8kuRBjnQ6/e4G0TaGtB/V+Hy0IL7luK9k2oarhBA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UKrwzzw3/o7/9morQIfzIY9KE+aQwy1TqbbcCH/VCuM=;
- b=drypHfgfkUQannvKHLsKg/o5krzYuOM0iJMrz1iwiaWVHhaNK4iDIldAZMVG+Uwbu+n9YKMPQVmN4CmpPII+Z996qKM+L2IhAfvffZyu6OQKDJKQkAg+fX759/++vWypY67sHn/ohXbjE8vKuar8XCz/PKT3tzijPImCHkXq3bdG1o/81V2VO4QY/i8/yO3z+sHFXngR05WM+QtBURLRA7VVRixeEnxRvsbnn39C7KAbYqB67430LTLEpO0eRTWSOCaLaW4ITjyWw916otqSQrlKFBCdc4+u1wlOv+6FCq1W+j1jiPWYY11AdWTfzD8zjeJddZ1TiiSWQtrNUUjqwg==
+ bh=OVes2I22LqyvIMkv7l6UANxjhDHISZ2RgZXPj5KUsgw=;
+ b=OycatTFnjBZOR/zi0p2zn0WrHvmQfNqzpFqtBo0s06Lq/mxlYLWcoHlCFqel1jwHS5pvkahGthwG17prHmVrnFuJvUTYIx+lxSQdwZqLzafixJLgjG+/7rEe6pmyByfTahJTI//YE0jgZGN0NESPH/5jd1hDeslNpl58Ep762uBv8EKoCkjCCIuuJrbVIKTAmTNZCNcapYfiNnuvewCduNypZMGQTbAlm/OIAi/d2XSImDs6vrBHu+p5dgUimGwoBM92jHIKEAvmNH0LRqvumDNB92fOyBzNJfaVBQ4HwklwFa8iWHqfcy/HUBGSXD/M97SANkubyNwGmcDbylQKrw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UKrwzzw3/o7/9morQIfzIY9KE+aQwy1TqbbcCH/VCuM=;
- b=TK/G0im89K+llim2nVVZQV0R+exkd5VmOjR/JzckO2HIG8ez7BMmkha4/4AFyGebbuAWmnGfPh2pp8wDp/X9mQY/bWnrmqyLdm6LmjxKETYw/51W1gf6MZmqKRkJfMvoUFZse6GcZ/9AQNXIV0h8XRLt8JT6AJKKUkioufEvwG0=
+ bh=OVes2I22LqyvIMkv7l6UANxjhDHISZ2RgZXPj5KUsgw=;
+ b=BUNtWG+TXDrVUxuWZW7oWVVqFVGBj0/VvWIUJhcHyv7X+Kf3dfjF4ncAQizz40E3gjzVJ8JhmQflueRfkn50qGhVeZzRlOkDCFu1C5ePy+9qlI/Ilo+s9M8bhFNvPTxbI8btr1jqivD6eHkd3F0wTVuM0H+Fj2tO3f1xju6x9ck=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB7104.eurprd04.prod.outlook.com (2603:10a6:800:126::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Tue, 4 Jan
- 2022 17:14:42 +0000
+ 2022 17:14:43 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4844.016; Tue, 4 Jan 2022
- 17:14:42 +0000
+ 17:14:43 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH net-next 13/15] net: dsa: make dsa_switch :: num_ports an unsigned int
-Date:   Tue,  4 Jan 2022 19:14:11 +0200
-Message-Id: <20220104171413.2293847-14-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 14/15] net: dsa: move dsa_switch_tree :: ports and lags to first cache line
+Date:   Tue,  4 Jan 2022 19:14:12 +0200
+Message-Id: <20220104171413.2293847-15-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220104171413.2293847-1-vladimir.oltean@nxp.com>
 References: <20220104171413.2293847-1-vladimir.oltean@nxp.com>
@@ -56,205 +56,177 @@ X-ClientProxiedBy: AM0PR02CA0192.eurprd02.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d1b68fe5-b007-4502-9596-08d9cfa5b279
+X-MS-Office365-Filtering-Correlation-Id: 813a96f0-7f00-4917-b48d-08d9cfa5b2fc
 X-MS-TrafficTypeDiagnostic: VI1PR04MB7104:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB7104DB17227C4C9D6005A7F0E04A9@VI1PR04MB7104.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB7104FE85D4DF775251D574B4E04A9@VI1PR04MB7104.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OelnH+CeqJ/7fnSXzobgztFY/aRKyf0Ro6hnlKNkD0I9H3pEJHHBirbC39t3mIKE4W0iGEnlYpD3ycVLr1K6bE2dEhVeD1f2ejvpctYcr1uR3I4Oto1EcB9nJQ50VzwMYMKaVbaUemAV2OoSDaswjZp0FPX8aUpJctq4AgDKTjdWmiaYDJxTdlv4E6agvt7r9IwsBeTXeJxi8e2rtsFNHb0wHUDIT3hDzt37RzE28lpuU/4QtNGybwlcan8aBBOUU0RgAv+8sW8g0rpMq0uLyS6W1x5cM1MfXVo9i0zgL2s2hEdxcqK9JeSDntiuOmuEK7oEaDCyXXlp32LSHBiMiUsm9x2RnDMnbmvLqUT3U5PFDCiqz18oVBe35fGrZccovT40E5HO3sP9EXyqszvMfqsxeLl6ClH4whNGL5gt7SdtVGlLiuiLCIqhRn8/Dir2bTGUJk8uAMqLIQLEvmRj1nLKDeAYLiGtNBGzL0rSa4tkWqGdBV0LNzrXCMBwpGVl0zQ2jM/8cREY5SEvZNVtgKpWyHmcyc8qt3PMqsWUV9kiN5aw738YZ9cP88KK7CeXP1uajD6Pmhvx9puu0CVJR3L8ZkR/tpDbXfvP0H0NnEItrq4I4HqT5tcGhFc4HERVeMq4OIcYZOwtPRfO6iDZW0JH+E23eeijQmuCJXAl2Y0S/jV5PvcE8FIDFBfNGX7mvu3M3qtMuYxtubIKtvihRZx0KOwi0JBMFSyawyPipHs=
+X-Microsoft-Antispam-Message-Info: A4r/fGW5aAznRx3bHHStUmmwg4eZi/4jdMztvQmReVItH2BFPNLv3SFDFbvbfR5Xp+8icchcwET3m4s29bDzMd/PodCWzLMVWmVcGMVsvSwH7BjWpYKtmZNv6Hr/Tqjgw4bulUsJMQ/txIwFFI6DQh1Uu1/GI1PSXdGDJXd7QUJgnZSskLN7NykD0n33pVII0DWj1YOJe0beIPSN7x95Ezea11+bFMgfphUrSNM8JnpJAeaBl5oYk/ffhWV5X7pwNKaB3UFxxTReOMRUjbhOzUownW5Ea1ZHiboVC04hmoj3hrtFebB7sn+7GFN2sU3Zm94taU3IaIKVXHEUQA5i6zyrdScMzmnxwj2QHzq0M81OLP1jQMZV0zYzj+sNAKie2MgaxdI+wkXaDaUlcyxU8Gexwyfc3bmkeOFU1ELmrYF8LChOngpw5Y6Jv0VBUpDXAOH7nyRpMAs2nQ8zc+7WnH1+eE1Ps1+PN8GuOci9t+2JcavNUonQqEhiR4bp8uPRSnvB/9TtmDBMcx2o5T2H9lzSFNIpI6Pyu09zaVOr39YYDkzdz43PzKP1lFxwQ//lzoeC8KRNhxEnOz0OaFmYOjljA73eQ0aZz6EnPVlxqoc6yrHB1ExBBd0zs4jEtEZaR+UOkroKdXJuHEkQKS6atIbIYuYuKDO1XzvyAX5aAHJOypaaF7eugHeh7niZyuSBcsIcYIAVHgN0RFjtJELG8sTF95Vbp/dR6P8aqsGpdso=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(54906003)(86362001)(8936002)(8676002)(5660300002)(66946007)(6506007)(52116002)(186003)(6486002)(26005)(6916009)(66476007)(66556008)(4326008)(508600001)(38350700002)(38100700002)(6666004)(36756003)(1076003)(2906002)(83380400001)(316002)(6512007)(2616005)(44832011)(21314003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3eD4mhT+gMaPkuKzHjEUq7NoH1Q9C+x/jDTjIA10KZ/gGEIFarWfXdPh1k6j?=
- =?us-ascii?Q?zoplOPEdsbQaPGntpYqPkf5OlVi1nsxE7hahACmW4QBwoDl63y9O1rDx35XX?=
- =?us-ascii?Q?8fvuw1SuXCoDNrtiok4X2AjOUqCCsPYH5z5pXCqFG0dwsWOJ1w/TP5gvSRnH?=
- =?us-ascii?Q?Pa3ykwA1lFbBPPkzFcLj7fHBhheeglxnLCWm6zfWX/+cTaKmItAYSx/OU/pt?=
- =?us-ascii?Q?fBIfUcntv7VJ05aoiREyTklwzZkhyyp0BGJqgjssk9z1tZb2A8mfX+DgSTfL?=
- =?us-ascii?Q?vQEiyTnTMrQV3ZWlXz7PegJaCAYTbOWVW9b7gFYlFBsT7HIT9op6GK1jM81N?=
- =?us-ascii?Q?Sg859xGW2gGbLeqgPa1lZZL1wVezJRXvI+5bg3nn0kedy0nDNY0SdlA894E3?=
- =?us-ascii?Q?Do13YjerLb4CpB/xbsbE2PSEi6nuEondXDlXf/g3dYCjUf3J2F0OKjeAg4Ma?=
- =?us-ascii?Q?FFO+eNLwtRllhtl95zt/TeQilQo2V1ktrJ5anOZ5viP0qVnG5IzZN8jcmNfJ?=
- =?us-ascii?Q?VOMUCofJfJVnCrPhqa5EQlWpzqm6tOgWfQjmOIJmKjYkN+MgUzj0/6F0lpPx?=
- =?us-ascii?Q?CxOuu3l8TXsjZidX6X1lDO+k6lvrfkM0Um0q/GmdzHe2BBKwSdEi925DqBKc?=
- =?us-ascii?Q?wnW7Eq77njbMQztLmgQ1L/bKqcp+wBzgz9g0c4tvnCp/QMu3Osk/RQxbN1kg?=
- =?us-ascii?Q?eBIM2SQ2PEFUw7QYHkrEc40lSeJpYfsuZGE808nSVHWO1RpXecRUvPU4/ze8?=
- =?us-ascii?Q?UzVyYbv7XU60RjujZ1YAhH0WVdGVRbGLXLowlAbmY6OiwXsUL7DSbD1eGMFi?=
- =?us-ascii?Q?/GA1SwoKBhhZv8GZ6qGSZYUK/+ysXsFvufvLGjmRYo4cFeEH3qRUYYbQKkAN?=
- =?us-ascii?Q?PTmwtlPeK75GHg4RMynt1PkYeTkVIFdMj7ZSV+6S7DubQm4KqsL/GPV12v8Z?=
- =?us-ascii?Q?SRV1F1Lp6a7qlSDkpuvsf1MVxZRMyzQt8p3RSnjL4IVG/oovWUgO6C74YJhV?=
- =?us-ascii?Q?IVekC+ybfDChcmZHYhpGFGiWKKxOnGA6hm6VKVAxfx7eGNLDQt+xrelTRtS8?=
- =?us-ascii?Q?fh4eRqHNiNs3lpLcN6I++bbnI0Ygjx+kzewldZcuL9vrJfzmQ6UmJsqxR4OJ?=
- =?us-ascii?Q?p8m/8TUpF0hYE8902VwpaHw4+A8vo886V42Rsp9Mjuxj5VHH3tj1wi1mlUkD?=
- =?us-ascii?Q?pT+i8IvkyOh7mXxlv++pQNNReP5msbvzNBOFX0y4cqKh8A36qI6Rc0ubLH3y?=
- =?us-ascii?Q?8dTgda0TdO2r8pZctkjUvKiBFYePNad/E9/cRYMi6cUPWd/zVPdZZ+x04FsA?=
- =?us-ascii?Q?MQ0/CmV3EOSSkdkKEAbvdOosqA2GFCnYF7BOIEl2LLSZtS5sJ21BONHz4qln?=
- =?us-ascii?Q?GGtQnzQ0WoH9QiYoMbWHRs7qhcjXjcFX+gN5fJMphBhTNcIPdIeulSZNMg+0?=
- =?us-ascii?Q?Mqaa9Cfc7RzbWsn128jeuTiX4SrsnVDK1K2wDYUmSSFSKAyOt7gDIeylhebm?=
- =?us-ascii?Q?C6qhPhbzLYplj1Oir+7w2AyffjOWgXWymIhdlghpbC1+l5a5hrOiHmltyupy?=
- =?us-ascii?Q?NKHfT0MOiG0vQmr5LeMGpG4uREq5snsi+4esb+8JYqBWVIf+NK3hlCxAAYt0?=
- =?us-ascii?Q?3FmuZIUjkieTGNmaCJQPlWo=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QkZzz+QJy0pUlbc/Apr3dZG94/Oo9JbPuXKKfa2csGt5AxD2dJrw4is4gUju?=
+ =?us-ascii?Q?GR8x7KpfTSlxxx8om5amBISaL/PY9Y7s+e8AOLUYLbHcx4nJhV0LAzPORAWv?=
+ =?us-ascii?Q?uUq2+3ciiyAaXAg2b9jbQx6Cd4eIfJDUCr2zp6triJOl0f96mZS/ZFvoRCCj?=
+ =?us-ascii?Q?Gd+yYWBflJ0i6jrjNBkafWJalaVV9UQltji7eF6xpTIpxxA0Kp+uc/LWVwUU?=
+ =?us-ascii?Q?J3cwXkcvBRg+ty0pzi2h3J0CLGN7MM0GHPImAxKaMtrH1Wbk9GzrsY/svKbB?=
+ =?us-ascii?Q?IMu4qDDFDxOGhr7lV1Wnt/aW1k83RSvbbF7zdG+ioYq17Cm6bikmAg9maVRH?=
+ =?us-ascii?Q?ZUTk22Ap9IhRoSqcGOJhYgM7bIkvwdHE1Utzj0OKkzap9fBlFqbvY5tozRlt?=
+ =?us-ascii?Q?nJ7HJQYt8qLda4e7tWQMvmEme1GCHHFnEJ+5eax/GzV1D1KoOKTxphf13XfZ?=
+ =?us-ascii?Q?U7LI7cRmi0c7K1m4GnHHnUnQDVbcNnHNWb+tZdhIEBmXh2sge5jAvQ/NspbU?=
+ =?us-ascii?Q?rJXlg5cIQo1xt06dd90BkC9SB4gF9yVMorKJZwJqDCE3IxWXUne387zq21sB?=
+ =?us-ascii?Q?cr3Q7DM29pA0E0pwO9DAoTklbFaeLUl27nYJklBt5Me8cTM/vrvDnMcxWoBP?=
+ =?us-ascii?Q?6kXVllnfLO8JP9YM+pNBNzYRxMuMvE1yle0v2GyFLqhdL3DjjmZBe2aSvuLC?=
+ =?us-ascii?Q?uazM4q6v+uP8x5gpEJxYDEzQtVxzDg9dIIDLlbYE85YQxBUzIQnafYRubUVi?=
+ =?us-ascii?Q?s5MCojtUs9/c8MzYBoGHsfF05GyVocKGz3fUvNgLZ9DKQSxjekmJGgrWsyi/?=
+ =?us-ascii?Q?T6EjaVGfbKRPrs60QlnAr6n3yGkuhxnBJDOR/CqA8EreMuvjYVVYmvTH8rqb?=
+ =?us-ascii?Q?E/OHJhgV1TKianPr/YUUlL2/mO4yRk5NOJiPfCwz3pmn4l7iB1EAC0XrT37u?=
+ =?us-ascii?Q?63nao/DYLe7M1VShZncNloswcP1WoRS/Qvrv+vpGAtOCjmWTj2JkUeVi4Bq9?=
+ =?us-ascii?Q?DRr/xe5h7U30q9NvvWgzBC+8ne0LKeTuQzNtpdvMLeFh+usQJNer2bVA7RYi?=
+ =?us-ascii?Q?7mpYTZB56GSpvoA2lBx5DvEimTmyDlkBOwClpHjxjpAV5v29EKERzJaOZWJn?=
+ =?us-ascii?Q?Rfk4nTt/rnvOhSJgSffbBOYr7lun/Cv3ActaHZs3WazqxAfgDG4Nmmtj3X/o?=
+ =?us-ascii?Q?swERs468QqAzKjN7FA5CVxFGdy2kNp49CDwscXZfeSzYiSeJID7lDGwwwPk7?=
+ =?us-ascii?Q?BB2TgcGH9YgoFzalnpIbXbBIshtJRhsgp6h3twZkTwUA5Nv5Awn5uVLCb1ig?=
+ =?us-ascii?Q?873bFAUdZNqV3kNU6kkR8fznIIshx/jqHmPUwB95fldaWV9SHwC6VFRFEtvP?=
+ =?us-ascii?Q?+yWoplJH5JGbxcCi+T+khso4e3ZAdRsvrlNIoBbMt0s5KI2LJKR8daRAJPsp?=
+ =?us-ascii?Q?kRDy3np2bb1wOHqFYh7316WzoU8nGhq0kS+CJZN9OdgVhRcrP0nGK5HGJZbu?=
+ =?us-ascii?Q?D6PqP3wAGrz0CCJzWI/HEy8GYOj6CQ2FcQGRypBf295KVliD/JcKnJIhzYJ4?=
+ =?us-ascii?Q?n4ZGwxcnq6aHTQ+aXJ/voJo9ArswIkfPaijNK0mMkxaE4ymP3/Yho1H4vauw?=
+ =?us-ascii?Q?BiGga21Yp2CwOUMA4CnIJLg=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1b68fe5-b007-4502-9596-08d9cfa5b279
+X-MS-Exchange-CrossTenant-Network-Message-Id: 813a96f0-7f00-4917-b48d-08d9cfa5b2fc
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2022 17:14:42.1908
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2022 17:14:43.0501
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 96JhQHnbAMN8ahPVonL94zeWfveEi1N5a6prkaKWORdss02/xilqvQm0eu2LQUQqO8AnbG2iVFfCyI5PPlylNw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: XNvGluvtTk9jYcez04dcE8MR3tVosdO3fWrfzbfsRwNyPPOz5H/I9KJGXIckUfU8xJQBPOm24uANWsNQbTbLKQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, num_ports is declared as size_t, which is defined as
-__kernel_ulong_t, therefore it occupies 8 bytes of memory.
+dst->ports is accessed most notably by dsa_master_find_slave(), which is
+invoked in the RX path.
 
-Even switches with port numbers in the range of tens are exotic, so
-there is no need for this amount of storage.
+dst->lags is accessed by dsa_lag_dev(), which is invoked in the RX path
+of tag_dsa.c.
 
-Additionally, because the max_num_bridges member right above it is also
-4 bytes, it means the compiler needs to add padding between the last 2
-fields. By reducing the size, we don't need that padding and can reduce
-the struct size.
+dst->tag_ops, dst->default_proto and dst->pd don't need to be in the
+first cache line, so they are moved out by this change.
 
 Before:
 
-pahole -C dsa_switch net/dsa/slave.o
-struct dsa_switch {
-        struct device *            dev;                  /*     0     8 */
-        struct dsa_switch_tree *   dst;                  /*     8     8 */
-        unsigned int               index;                /*    16     4 */
-        u32                        setup:1;              /*    20: 0  4 */
-        u32                        vlan_filtering_is_global:1; /*    20: 1  4 */
-        u32                        needs_standalone_vlan_filtering:1; /*    20: 2  4 */
-        u32                        configure_vlan_while_not_filtering:1; /*    20: 3  4 */
-        u32                        untag_bridge_pvid:1;  /*    20: 4  4 */
-        u32                        assisted_learning_on_cpu_port:1; /*    20: 5  4 */
-        u32                        vlan_filtering:1;     /*    20: 6  4 */
-        u32                        pcs_poll:1;           /*    20: 7  4 */
-        u32                        mtu_enforcement_ingress:1; /*    20: 8  4 */
+pahole -C dsa_switch_tree net/dsa/slave.o
+struct dsa_switch_tree {
+        struct list_head           list;                 /*     0    16 */
+        struct raw_notifier_head   nh;                   /*    16     8 */
+        unsigned int               index;                /*    24     4 */
+        struct kref                refcount;             /*    28     4 */
+        bool                       setup;                /*    32     1 */
 
-        /* XXX 23 bits hole, try to pack */
+        /* XXX 7 bytes hole, try to pack */
 
-        struct notifier_block      nb;                   /*    24    24 */
+        const struct dsa_device_ops  * tag_ops;          /*    40     8 */
+        enum dsa_tag_protocol      default_proto;        /*    48     4 */
 
-        /* XXX last struct has 4 bytes of padding */
+        /* XXX 4 bytes hole, try to pack */
 
-        void *                     priv;                 /*    48     8 */
-        void *                     tagger_data;          /*    56     8 */
+        struct dsa_platform_data * pd;                   /*    56     8 */
         /* --- cacheline 1 boundary (64 bytes) --- */
-        struct dsa_chip_data *     cd;                   /*    64     8 */
-        const struct dsa_switch_ops  * ops;              /*    72     8 */
-        u32                        phys_mii_mask;        /*    80     4 */
+        struct list_head           ports;                /*    64    16 */
+        struct list_head           rtable;               /*    80    16 */
+        struct net_device * *      lags;                 /*    96     8 */
+        unsigned int               lags_len;             /*   104     4 */
+        unsigned int               last_switch;          /*   108     4 */
 
-        /* XXX 4 bytes hole, try to pack */
-
-        struct mii_bus *           slave_mii_bus;        /*    88     8 */
-        unsigned int               ageing_time_min;      /*    96     4 */
-        unsigned int               ageing_time_max;      /*   100     4 */
-        struct dsa_8021q_context * tag_8021q_ctx;        /*   104     8 */
-        struct devlink *           devlink;              /*   112     8 */
-        unsigned int               num_tx_queues;        /*   120     4 */
-        unsigned int               num_lag_ids;          /*   124     4 */
-        /* --- cacheline 2 boundary (128 bytes) --- */
-        unsigned int               max_num_bridges;      /*   128     4 */
-
-        /* XXX 4 bytes hole, try to pack */
-
-        size_t                     num_ports;            /*   136     8 */
-
-        /* size: 144, cachelines: 3, members: 27 */
-        /* sum members: 132, holes: 2, sum holes: 8 */
-        /* sum bitfield members: 9 bits, bit holes: 1, sum bit holes: 23 bits */
-        /* paddings: 1, sum paddings: 4 */
-        /* last cacheline: 16 bytes */
+        /* size: 112, cachelines: 2, members: 13 */
+        /* sum members: 101, holes: 2, sum holes: 11 */
+        /* last cacheline: 48 bytes */
 };
 
 After:
 
-pahole -C dsa_switch net/dsa/slave.o
-struct dsa_switch {
-        struct device *            dev;                  /*     0     8 */
-        struct dsa_switch_tree *   dst;                  /*     8     8 */
-        unsigned int               index;                /*    16     4 */
-        u32                        setup:1;              /*    20: 0  4 */
-        u32                        vlan_filtering_is_global:1; /*    20: 1  4 */
-        u32                        needs_standalone_vlan_filtering:1; /*    20: 2  4 */
-        u32                        configure_vlan_while_not_filtering:1; /*    20: 3  4 */
-        u32                        untag_bridge_pvid:1;  /*    20: 4  4 */
-        u32                        assisted_learning_on_cpu_port:1; /*    20: 5  4 */
-        u32                        vlan_filtering:1;     /*    20: 6  4 */
-        u32                        pcs_poll:1;           /*    20: 7  4 */
-        u32                        mtu_enforcement_ingress:1; /*    20: 8  4 */
+pahole -C dsa_switch_tree net/dsa/slave.o
+struct dsa_switch_tree {
+        struct list_head           list;                 /*     0    16 */
+        struct list_head           ports;                /*    16    16 */
+        struct raw_notifier_head   nh;                   /*    32     8 */
+        unsigned int               index;                /*    40     4 */
+        struct kref                refcount;             /*    44     4 */
+        struct net_device * *      lags;                 /*    48     8 */
+        bool                       setup;                /*    56     1 */
 
-        /* XXX 23 bits hole, try to pack */
+        /* XXX 7 bytes hole, try to pack */
 
-        struct notifier_block      nb;                   /*    24    24 */
-
-        /* XXX last struct has 4 bytes of padding */
-
-        void *                     priv;                 /*    48     8 */
-        void *                     tagger_data;          /*    56     8 */
         /* --- cacheline 1 boundary (64 bytes) --- */
-        struct dsa_chip_data *     cd;                   /*    64     8 */
-        const struct dsa_switch_ops  * ops;              /*    72     8 */
-        u32                        phys_mii_mask;        /*    80     4 */
+        const struct dsa_device_ops  * tag_ops;          /*    64     8 */
+        enum dsa_tag_protocol      default_proto;        /*    72     4 */
 
         /* XXX 4 bytes hole, try to pack */
 
-        struct mii_bus *           slave_mii_bus;        /*    88     8 */
-        unsigned int               ageing_time_min;      /*    96     4 */
-        unsigned int               ageing_time_max;      /*   100     4 */
-        struct dsa_8021q_context * tag_8021q_ctx;        /*   104     8 */
-        struct devlink *           devlink;              /*   112     8 */
-        unsigned int               num_tx_queues;        /*   120     4 */
-        unsigned int               num_lag_ids;          /*   124     4 */
-        /* --- cacheline 2 boundary (128 bytes) --- */
-        unsigned int               max_num_bridges;      /*   128     4 */
-        unsigned int               num_ports;            /*   132     4 */
+        struct dsa_platform_data * pd;                   /*    80     8 */
+        struct list_head           rtable;               /*    88    16 */
+        unsigned int               lags_len;             /*   104     4 */
+        unsigned int               last_switch;          /*   108     4 */
 
-        /* size: 136, cachelines: 3, members: 27 */
-        /* sum members: 128, holes: 1, sum holes: 4 */
-        /* sum bitfield members: 9 bits, bit holes: 1, sum bit holes: 23 bits */
-        /* paddings: 1, sum paddings: 4 */
-        /* last cacheline: 8 bytes */
+        /* size: 112, cachelines: 2, members: 13 */
+        /* sum members: 101, holes: 2, sum holes: 11 */
+        /* last cacheline: 48 bytes */
 };
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/net/dsa.h | 2 +-
- net/dsa/dsa2.c    | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ include/net/dsa.h | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index a8a586039033..fef9d8bb5190 100644
+index fef9d8bb5190..cbbac75138d9 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -435,7 +435,7 @@ struct dsa_switch {
+@@ -119,6 +119,9 @@ struct dsa_netdevice_ops {
+ struct dsa_switch_tree {
+ 	struct list_head	list;
+ 
++	/* List of switch ports */
++	struct list_head ports;
++
+ 	/* Notifier chain for switch-wide events */
+ 	struct raw_notifier_head	nh;
+ 
+@@ -128,6 +131,11 @@ struct dsa_switch_tree {
+ 	/* Number of switches attached to this tree */
+ 	struct kref refcount;
+ 
++	/* Maps offloaded LAG netdevs to a zero-based linear ID for
++	 * drivers that need it.
++	 */
++	struct net_device **lags;
++
+ 	/* Has this tree been applied to the hardware? */
+ 	bool setup;
+ 
+@@ -145,16 +153,10 @@ struct dsa_switch_tree {
  	 */
- 	unsigned int		max_num_bridges;
+ 	struct dsa_platform_data	*pd;
  
--	size_t num_ports;
-+	unsigned int		num_ports;
- };
+-	/* List of switch ports */
+-	struct list_head ports;
+-
+ 	/* List of DSA links composing the routing table */
+ 	struct list_head rtable;
  
- static inline struct dsa_port *dsa_to_port(struct dsa_switch *ds, int p)
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index c1da813786a4..3d21521453fe 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1475,7 +1475,7 @@ static int dsa_switch_parse_ports_of(struct dsa_switch *ds,
- 		}
+-	/* Maps offloaded LAG netdevs to a zero-based linear ID for
+-	 * drivers that need it.
+-	 */
+-	struct net_device **lags;
++	/* Length of "lags" array */
+ 	unsigned int lags_len;
  
- 		if (reg >= ds->num_ports) {
--			dev_err(ds->dev, "port %pOF index %u exceeds num_ports (%zu)\n",
-+			dev_err(ds->dev, "port %pOF index %u exceeds num_ports (%u)\n",
- 				port, reg, ds->num_ports);
- 			of_node_put(port);
- 			err = -EINVAL;
+ 	/* Track the largest switch index within a tree */
 -- 
 2.25.1
 
