@@ -2,260 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41AD6484365
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 15:30:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 063B448435D
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 15:29:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234195AbiADOaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 09:30:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54516 "EHLO
+        id S234183AbiADO3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 09:29:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229808AbiADOav (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 09:30:51 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CFEFC061761;
-        Tue,  4 Jan 2022 06:30:51 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id n30so37092207eda.13;
-        Tue, 04 Jan 2022 06:30:51 -0800 (PST)
+        with ESMTP id S232834AbiADO3o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 09:29:44 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15920C061761
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 06:29:44 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id d9so76639484wrb.0
+        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 06:29:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ipzSJZpP+W6o704GM9POWbumVjv2ztu0YINjQPeKhVg=;
-        b=GJiecoxlhc01vvlK70zqTzHh7XslNL7CTE3tOAPG2IocD3XwPd01tP94oBYP0qOBN2
-         Mc/y3FprG8xdj9IfVqkLnDzYlHR2Lmlhtrd4mOyxRATgqFHoRyh4zfu2kIN5pTqpDY0k
-         Ot8ZVRmjK3eg0fJLwMBeuYdbAr5qNqA8MJAZ/e4NQOuxXMHMGmswoCEWwxl3irnaWm3J
-         wOqGckcGX1u8XWZ8JDABGRdY3zP+mbQGNzWP5TAQ2f+e6UxbKwUVyaEXrXqd6xI9f2fe
-         733NBaDnRTwDw6AHnTcubldpDxVARJuz2WIE5yX436BqONLtGjJrwqiqu/xuPKOu5yOS
-         ooLA==
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=HLHOlHryxYErnP8dg3V2B68uF9oClAjK8B8A3zmM0Ps=;
+        b=eD0ISYUEKBIjX1yr9v+PNPAVFbviQUYFXgtVKrxKTM5jaNhKPrYBQ8mWrcw/tyL+dG
+         W6XdPmSa4VUXEJSXeIN9KpAUMlUPfIVZndn026rO3HELFf8H5DGj95Vmu9CK1QaoirEY
+         NtYZHYY1XxYcRKt59nerDI25jSFiu1+bpniGCrmogvJ5R52NF/Vsa69BF5R+J/R76a7A
+         SvxIYCIpNHEtyu78EdRkGoCQdm6ymM9yPtRt4xM6mYz9uz5xqtI8eIMUxcc1zwTIomC0
+         YWP+oEkFSWj60IXHU7wGOF0rOah8M8OJN9QF4uo6RYf0CScyR7reQDGtV9o+43e/LSkZ
+         aHTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ipzSJZpP+W6o704GM9POWbumVjv2ztu0YINjQPeKhVg=;
-        b=k4WSnzxeJqpQj5lmTHEaWwrXyzND10DFAdSkUHukzecV/WG4RMOIiY/9MOE5GBsuN0
-         pRzYQykTZKHNPh1UjZiy1tZsZqrHRi6s4c9jC2wQWVEkbjsvVluPCQA38DgSl8gen3Tj
-         Qm9JbywCvWrsQXO30n4TrTWA4daZGPh13uNNKPS4w1ROL6ydu0RynPXG9p6n05JJt8dB
-         l8RRNDdt5edQ3K2+Oul+TDmpp1l9oUQTDHQPBY4VG/wGCYdjCKn9IspGTuPSgE7A0iUQ
-         bbJTb/dF5XZKL9eAuQOMfWSUPAcpfWuhH2RBze36/s85tLbMD/dP/a9+nxZJog4JFRhH
-         Km0w==
-X-Gm-Message-State: AOAM530xIckEFfwE30b/UtHQqnYlOkV88cPBQckpo2alq/EP99ZZXhww
-        ETtpZsNthPIefWDik7wy/BVJQ52t8jNV6Vf8kOQ=
-X-Google-Smtp-Source: ABdhPJxvMHAKUDKUaYOLQC9uJERFiKIEfT8jSuKAKEXO7h9Qyff1qhwD2N1DIrZxDaTa515DKmPkBFm3AbH2mY7xZYo=
-X-Received: by 2002:a05:6402:12c4:: with SMTP id k4mr47490896edx.218.1641306649506;
- Tue, 04 Jan 2022 06:30:49 -0800 (PST)
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=HLHOlHryxYErnP8dg3V2B68uF9oClAjK8B8A3zmM0Ps=;
+        b=supCEIKo5ksmATy1baX2z3/MsLzOwTuXrfVviKIRIDixGIhv88DmNBf68Sr/24JSRZ
+         Sk7mOVzTVzhCxs2ZdmJ7FCmlb55pp+I9IvdH0eTjE2o4zmry5xa8Fq0PXSrkYjMQ4VMT
+         3XDrING96K+0Q+sKgl5nGU3hvHp4RK+bxs95kDcFP8+d6lX2L2s8OI8xuqQAm+oLiAaz
+         i+FOZXqYmqpU1K9tpvAh4i1abT7It1tg4MhZnP2ul/lVsu55+gI4wa4k5GMwce4Zeo1E
+         u5bblMTp8Ht8qPwuI+FscfwvQ6JJmErfI7zMPEu6DVYokhgcc0C5w4vdCuvxV+Jnr4GY
+         9A7Q==
+X-Gm-Message-State: AOAM533wLcTNR0/Dk+9TBG6MfwVXaTI1kNeCUt6qTs5rHkJ888Vs5tC5
+        LJhviANqtArv71m6spJOoW6S1GYXnzuteJBpBcI=
+X-Google-Smtp-Source: ABdhPJwpBXU9FZboiB4A2+H77sz/NHni9kr7lwY/2oRYe9T6aO+GJyE/ZJNDTuoxbAamOy/nEJ/W0Yp/OHVVBFoiB9A=
+X-Received: by 2002:a5d:4acf:: with SMTP id y15mr42105061wrs.340.1641306582647;
+ Tue, 04 Jan 2022 06:29:42 -0800 (PST)
 MIME-Version: 1.0
-References: <20220104072658.69756-1-marcan@marcan.st>
-In-Reply-To: <20220104072658.69756-1-marcan@marcan.st>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 4 Jan 2022 16:28:58 +0200
-Message-ID: <CAHp75VdnSCV0HczotPoZRZane90Mt-uQ4MauvFKNR-uJ11sx3Q@mail.gmail.com>
-Subject: Re: [PATCH v2 00/35] brcmfmac: Support Apple T2 and M1 platforms
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
+Sender: miriamkipkalya10@gmail.com
+Received: by 2002:adf:ea43:0:0:0:0:0 with HTTP; Tue, 4 Jan 2022 06:29:42 -0800 (PST)
+From:   "mrs.sophia.robin" <mrs.sophiar.robin424@gmail.com>
+Date:   Tue, 4 Jan 2022 15:29:42 +0100
+X-Google-Sender-Auth: lJp2brQXIWF-7lNW91l-pPnroGw
+Message-ID: <CAERXgTnpyL-9_GHz0aeD+J3CZivoAa2530-URUowkg2JAFDABw@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 4, 2022 at 9:27 AM Hector Martin <marcan@marcan.st> wrote:
->
-> Hi everyone,
->
-> Happy new year! This 35-patch series adds proper support for the
-> Broadcom FullMAC chips used on Apple T2 and M1 platforms:
->
-> - BCM4355C1
-> - BCM4364B2/B3
-> - BCM4377B3
-> - BCM4378B1
-> - BCM4387C2
->
-> As usual for Apple, things are ever so slightly different on these
-> machines from every other Broadcom platform. In particular, besides
-> the normal device/firmware support changes, a large fraction of this
-> series deals with selecting and loading the correct firmware. These
-> platforms use multiple dimensions for firmware selection, and the values
-> for these dimensions are variously sourced from DT or OTP (see the
-> commit message for #9 for the gory details).
->
-> This is what is included:
->
-> # 01: DT bindings (M1 platforms)
->
-> On M1 platforms, we use the device tree to provide properties for PCIe
-> devices like these cards. This patch re-uses the existing SDIO binding
-> and adds the compatibles for these PCIe chips, plus the properties we
-> need to correctly instantiate them:
->
-> - brcm,board-type: Overrides the board-type which is used for firmware
->   selection on all platforms, which normally comes from the DMI device
->   name or the root node compatible. Apple have their own
->   mapping/identifier here ("island" name), so we prefix it with "apple,"
->   and use it as the board-type override.
->
-> - apple,antenna-sku: Specifies the specific antenna configuration in a
->   produt. This would normally be filled in by the bootloader from
->   device-specific configuration data. On ACPI platforms, this is
->   provided via ACPI instead. This is used to build the funky Apple
->   firmware filenames. Note: it seems the antenna doesn't actually matter
->   for any of the above platforms (they are all aliases to the same files
->   and our firmware copier collapses down this dimension), but since
->   Apple do support having different firmware or NVRAM depending on
->   antenna SKU, we ough to support it in case it starts mattering on a
->   future platform.
->
-> - brcm,cal-blob: A calibration blob for the Wi-Fi module, specific to a
->   given unit. On most platforms, this is stored in SROM on the module,
->   and does not need to be provided externally, but Apple instead stores
->   this in platform configuration for M1 machines and the driver needs to
->   upload it to the device after initializing the firmware. This has a
->   generic brcm name, since a priori this mechanism shouldn't be
->   Apple-specific, although chances are only Apple do it like this so far.
->
-> # 02~09: Apple firmware selection (M1 platforms)
->
-> These patches add support for choosing firmwares (binaries, CLM blobs,
-> and NVRAM configs alike) using all the dimensions that Apple uses. The
-> firmware files are renamed to conform to the existing brcmfmac
-> convention. See the commit message for #9 for the gory details as to how
-> these filenames are constructed. The data to make the firmware selection
-> comes from the above DT properties and from an OTP ROM on the chips on
-> M1 platforms.
->
-> # 10~14: BCM4378 support (M1 T8103 platforms)
->
-> These patches make changes required to support the BCM4378 chip present
-> in Apple M1 (T8103) platforms. This includes adding support for passing
-> in the MAC address via the DT (this is standard on DT platforms) since
-> the chip does not have a burned-in MAC; adding support for PCIe core
-> revs >64 (which moved around some registers); tweaking ring buffer
-> sizes; and fixing a bug.
->
-> # 15~20: BCM4355/4364/4377 support (T2 platforms)
->
-> These patches add support for the chips found across T2 Mac platforms.
-> This includes ACPI support for fetching properties instead of using DT,
-> providing a buffer of entropy to the devices (required for some of the
-> firmwares), and adding the required IDs. This also fixes the BCM4364
-> firmware naming; it was added without consideration that there are two
-> incompatible chip revisions. To avoid this ambiguity in the future, all
-> the chips added by this series use firmware names ending in the revision
-> (apple/brcm style, that is letter+number), so that future revisions can
-> be added without creating confusion.
->
-> # 21~27: BCM4387 support (M1 Pro/Max T600x platforms)
->
-> These patches add support for the newer BCM4387 present in the recently
-> launched M1 Pro/Max platforms. This chip requires a few changes to D11
-> reset behavior and TCM size calculation to work properly, and it uses
-> newer firmware which needs support for newer firmware interfaces
-> in the cfg80211 support. Backwards compatibility is maintained via
-> feature flags discovered at runtime from information provided by the
-> firmware.
->
-> A note on #26: it seems this chip broke the old hack of passing the PMK
-> in hexdump form as a PSK, but it seems brcmfmac chips supported passing
-> it in binary all along. I'm not sure why it was done this way in the
-> Linux driver, but it seems OpenBSD always did it in binary and works
-> with older chips, so this should be reasonably well tested. Any further
-> insight as to why this was done this way would be appreciated.
->
-> # 28~32: Fixes
->
-> These are just random things I came across while developing this series.
-> #31 is required to avoid a compile warning in subsequent patches. None
-> of these are strictly required to support these chips/platforms.
->
-> # 33-35: TxCap and calibration blobs
->
-> These patches add support for uploading TxCap blobs, which are another
-> kind of firmware blob that Apple platforms use (T2 and M1), as well as
-> providing Wi-Fi calibration data from the device tree (M1).
->
-> I'm not sure what the TxCap blobs do. Given the stray function
-> prototype at [5], it would seem the Broadcom folks in charge of Linux
-> drivers also know all about Apple's fancy OTP for firmware selection
-> and the existence of TxCap blobs, so it would be great if you could
-> share any insight here ;-)
->
-> These patches are not required for the chips to function, but presumably
-> having proper per-device calibration data available matters, and I
-> assume the TxCap blobs aren't just for show either.
->
-> # On firmware
->
-> As you might expect, the firmware for these machines is not available
-> under a redistributable license; however, every owner of one of these
-> machines *is* implicitly licensed to posess the firmware, and the OS
-> packages containing it are available under well-known URLs on Apple's
-> CDN with no authentication.
->
-> Our plan to support this is to propose a platform firmware mechanism,
-> where platforms can provide a firmware package in the EFI system
-> partition along with a manifest, and distros will extract it to
-> /lib/firmware on boot or otherwise make it available to the kernel.
->
-> Then, on M1 platforms, our install script, which performs all the
-> bootloader installation steps required to run Linux on these machines in
-> the first place, will also take care of copying the firmware from the
-> base macOS image to the EFI partition. On T2 platforms, we'll provide an
-> analogous script that users can manually run prior to a normal EFI Linux
-> installation to just grab the firmware from /usr/share/firmware/wifi in
-> the running macOS.
->
-> There is an example firmware manifest at [1] which details the files
-> copied by our firmware rename script [2], as of macOS 12.0.1.
->
-> To test this series on a supported Mac today (T2 or M1), boot into macOS
-> and run:
->
-> $ git clone https://github.com/AsahiLinux/asahi-installer
-> $ cd asahi-installer/src
-> $ python -m firmware.wifi /usr/share/firmware/wifi firmware.tar
->
-> Then copy firmware.tar to Linux and extract it into /lib/firmware.
+   am Mrs.Sophia Robin,a citizen of the united state of America,I work
+at HSBC Bank in Milan Italy,as Telex Manager charge of wire transfer
+department,am contacting you personally for investment assistance and
+a long term business relationship in your Country.am contacting you
+for an important and urgent business transaction,I want the bank to
+transfer the money left by Dr.Cheng Chao,a Chinese Politician who
+died,March 17th 2020,without any trace of his family members,he used
+our bank to launder money overseas through the help of their Political
+advisers.and most of the funds which they transferred out of the
+shores of China,were gold and oil money that was supposed to have been
+used to develop the continent.
 
-I looked into the ~half of the series and basically common mistakes
-you have are (but not limited to):
- - missed checks for error from allocator calls
- - NIH devm_kasprintf()
- - quite possible reinveting a wheel of many functions we have already
-implemented in the kernel.
+Can you invest this money and also help the poor? The amount value at
+$15.5million Dollars($US15,500,000),left in his account still
+unclaimed,if you know that you are capable to invest this fund into
+any profitable business in your country kindly send me your details
+information as listed below to enable me draft you an application form
+of claim along with the deposit certificate which you are going to
+fill with your bank account detail necessary and contact the HSBC Bank
+in Italy for immediate transfer of the Amounted sum into your bank
+account direct. Percentage share will be 60,for me/40,for you.
 
-Suggestion for the last one is to use `git grep ...`, which is very
-powerful instrument, and just always questioning yourself "I'm doing
-XYZ and my gut feeling is that XYZ is (so) generic I can't believe
-there is no implementation of it already exists in the kernel". This
-is how I come up with a lot of cleanups done in the past.
+(1) Your full name.....................
+(2) Your address................
+(3) Your Nationality...............
+(4) Your Age/Sex.....................
+(5) Your  Occupation.......................
+(6) Your marital status........................
+(7) Your direct telephone number..................
+(8) Your photo..................
 
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks with my best regards.Mrs.Sophia Robin,
+Telex Manager Milan Italy,(H.S.B.C)
