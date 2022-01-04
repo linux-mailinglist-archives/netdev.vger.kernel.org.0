@@ -2,132 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B36848418E
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 13:17:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22700484194
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 13:20:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232959AbiADMRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 07:17:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51694 "EHLO
+        id S229654AbiADMUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 07:20:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232527AbiADMRS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 07:17:18 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB08C061761;
-        Tue,  4 Jan 2022 04:17:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QqWNNemBUxEL73cqzXct8FhwcLpCWeQp6HEGpBCZd58=; b=Cpl6L30xc2G9MnJjhbKZB6Csyo
-        HnS/0WSvJfxIfiYlIvE1dNSdlzeMqdBTZOhSfdDYp/UMnkGk+peNb6vIFc2H3sck1lP7NRhTiC61T
-        Vzcj8/Rg0vme1rQHjSbkQcNad1ORYuOAJzKcsKZhtT1X9OZYcd7K+M4hF8BtvoIA1MJZnP21e5jfP
-        vs3anQNVkdeSiL+RgoOc5XZZ86aNnWMCd3krdz9xlkcSF5xiAQ+x112naoHIFC1+6R9f0SLAhPfkR
-        BQfMpC7zO7RAYUQUAOwdq2ysXhVUQQn6psuxbkGUh4X87ab8t+zrllexaAFF8JEgMCmGxptgLY0sY
-        ADlKL/RQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56558)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1n4ika-0006zG-VR; Tue, 04 Jan 2022 12:17:12 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1n4ikZ-0007E0-R6; Tue, 04 Jan 2022 12:17:11 +0000
-Date:   Tue, 4 Jan 2022 12:17:11 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>
-Cc:     linus.walleij@linaro.org, ulli.kroll@googlemail.com,
-        kuba@kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: net: phy: marvell: network working with generic PHY and not with
- marvell PHY
-Message-ID: <YdQ6x2Mz2lOJOQdp@shell.armlinux.org.uk>
-References: <YdQoOSXS98+Af1wO@Red>
- <YdQsJnfqjaFrtC0m@shell.armlinux.org.uk>
- <YdQwexJVfrdzEfZK@Red>
- <YdQydK4GhI0P5RYL@shell.armlinux.org.uk>
- <YdQ46conUeZ3Qaac@Red>
+        with ESMTP id S232527AbiADMUN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 07:20:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9054C061761
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 04:20:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 790E3B811DA
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 12:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3F269C36AE9;
+        Tue,  4 Jan 2022 12:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641298810;
+        bh=SAEk7PUuTaxxv7sTtF9s0VXGNn+9FGL6m+eKkC3122k=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=i8bFvlNTPu0Jzil47tQjN+lPN2UzfXzGC24wcsY6VtrXIUFHALGodyYLLWgmaOA4K
+         JubUNWtDmfiXs2NSF6nxvEMxv5KfwiNFOVlmybViECPFrl5TcGgnC6XkwS0mFFmlcS
+         86uUmz8PR3ljM/Cap6cvOW0vBVBx75WexPcRvjafoXdQ/p0MYaV/7xvCHhGFLZYmVw
+         8DJj1y9rhAB6mBvfFAPmCrw3IGIK7/D0fDZ5838vngAXzqnfaXW5C3R7UwFW2bEecX
+         5LmMkdZzE39zwY/aXSmRJqzRqM6xdygWs+1sYLl/Lh93ZQBhZKEWCUtGFtSfUcp9h+
+         TYqKUHQAetgZA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2068EF79402;
+        Tue,  4 Jan 2022 12:20:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YdQ46conUeZ3Qaac@Red>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next 0/3] net/sched: Pass originating device to drivers
+ offloading ct connection
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164129881012.16438.7486914070926806905.git-patchwork-notify@kernel.org>
+Date:   Tue, 04 Jan 2022 12:20:10 +0000
+References: <20220103114452.406-1-paulb@nvidia.com>
+In-Reply-To: <20220103114452.406-1-paulb@nvidia.com>
+To:     Paul Blakey <paulb@nvidia.com>
+Cc:     dev@openvswitch.org, netdev@vger.kernel.org, saeedm@nvidia.com,
+        xiyou.wangcong@gmail.com, jhs@mojatatu.com, pshelar@ovn.org,
+        davem@davemloft.net, jiri@nvidia.com, kuba@kernel.org,
+        marcelo.leitner@gmail.com, ozsh@nvidia.com, vladbu@nvidia.com,
+        roid@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 04, 2022 at 01:09:13PM +0100, Corentin Labbe wrote:
-> Le Tue, Jan 04, 2022 at 11:41:40AM +0000, Russell King (Oracle) a écrit :
-> > On Tue, Jan 04, 2022 at 12:33:15PM +0100, Corentin Labbe wrote:
-> > > Le Tue, Jan 04, 2022 at 11:14:46AM +0000, Russell King (Oracle) a écrit :
-> > > > On Tue, Jan 04, 2022 at 11:58:01AM +0100, Corentin Labbe wrote:
-> > > > > Hello
-> > > > > 
-> > > > > I have a gemini SSI 1328 box which has a cortina ethernet MAC with a Marvell 88E1118 as given by:
-> > > > > Marvell 88E1118 gpio-0:01: attached PHY driver (mii_bus:phy_addr=gpio-0:01, irq=POLL)
-> > > > > So booting with CONFIG_MARVELL_PHY=y lead to a non-working network with link set at 1Gbit
-> > > > > Setting 'max-speed = <100>;' (as current state in mainline dtb) lead to a working network.
-> > > > > By not working, I mean kernel started with ip=dhcp cannot get an IP.
-> > > > 
-> > > > How is the PHY connected to the host (which interface mode?) If it's
-> > > > RGMII, it could be that the wrong RGMII interface mode is specified in
-> > > > DT.
-> > > > 
-> > > 
-> > > The PHY is set as RGMII in DT (arch/arm/boot/dts/gemini-ssi1328.dts)
-> > > The only change to the mainline dtb is removing the max-speed.
-> > 
-> > So, it's using "rgmii" with no delay configured at the PHY with the
-> > speed limited to 100Mbps. You then remove the speed limitation and
-> > it doesn't work at 1Gbps.
-> > 
-> > I think I've seen this on other platforms (imx6 + ar8035) when the
-> > RGMII delay is not correctly configured - it will work at slower
-> > speeds but not 1G.
-> > 
-> > The RGMII spec specifies that there will be a delay - and the delay can
-> > be introduced by either the MAC, PHY or by PCB track routing. It sounds
-> > to me like your boot environment configures the PHY to introduce the
-> > necessary delay, but then, because the DT "rgmii" mode means "no delay
-> > at the PHY" when you use the Marvell driver (which respects that), the
-> > Marvell driver configures the PHY for no delay, resulting in a non-
-> > working situation at 1G.
-> > 
-> > I would suggest checking how the boot environment configures the PHY,
-> > and change the "rgmii" mode in DT to match. There is a description of
-> > the four RGMII modes in Documentation/networking/phy.rst that may help
-> > understand what each one means.
-> > 
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon, 3 Jan 2022 13:44:49 +0200 you wrote:
+> Hi,
 > 
-> So if I understand, the generic PHY does not touch delays and so values set by bootloader are kept.
+> Currently, drivers register to a ct zone that can be shared by multiple
+> devices. This can be inefficient for the driver to offload, as it
+> needs to handle all the cases where the tuple can come from,
+> instead of where it's most likely will arive from.
+> 
+> [...]
 
-Correct - the RGMII delays are not part of the standard 802.3 clause 22
-register set, so the generic driver has no knowledge how to change
-these.
+Here is the summary with links:
+  - [net-next,1/3] net/sched: act_ct: Fill offloading tuple iifidx
+    https://git.kernel.org/netdev/net-next/c/9795ded7f924
+  - [net-next,2/3] net: openvswitch: Fill act ct extension
+    https://git.kernel.org/netdev/net-next/c/b702436a51df
+  - [net-next,3/3] net/mlx5: CT: Set flow source hint from provided tuple device
+    https://git.kernel.org/netdev/net-next/c/c9c079b4deaa
 
-> The boot environment give no clue on how the PHY is set.
-> Only debug showed is:
-> PHY 0 Addr 1 Vendor ID: 0x01410e11
-> mii_write: phy_addr=0x1 reg_addr=0x4 value=0x5e1 
-> mii_write: phy_addr=0x1 reg_addr=0x9 value=0x300 
-> mii_write: phy_addr=0x1 reg_addr=0x0 value=0x1200 
-> mii_write: phy_addr=0x1 reg_addr=0x0 value=0x9200 
-> mii_write: phy_addr=0x1 reg_addr=0x0 value=0x1200
-
-Hmm, it doesn't. The first two register writes set the advertisement.
-The last three are just the PHY reset.
-
-> Does it is possible to dump PHY registers when using generic PHY and
-> find delay values ? For example ethtool -d eth0 ?
-
-Even if that were possible, Marvell PHYs use a paged scheme to access
-configuration registers, so merely reading the 32 registers would
-probably not help. However, see my follow-up to my previous reply for
-some further thoughts.
-
+You are awesome, thank you!
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
