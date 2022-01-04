@@ -2,225 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 167644847A2
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 19:18:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 922B54847A6
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 19:19:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236181AbiADSSH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Jan 2022 13:18:07 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:60751 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiADSSH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 13:18:07 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id A8FD56000A;
-        Tue,  4 Jan 2022 18:18:03 +0000 (UTC)
-Date:   Tue, 4 Jan 2022 19:18:02 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Nicolas Schodet <nico@ni.fr.eu.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel list <linux-kernel@vger.kernel.org>
-Subject: Re: [net-next 12/18] net: mac802154: Handle scan requests
-Message-ID: <20220104191802.2323e44a@xps13>
-In-Reply-To: <CAB_54W6gHE1S9Q+-SVbrnAWPxBxnvf54XVTCmddtj8g-bZzMRA@mail.gmail.com>
-References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
-        <20211222155743.256280-13-miquel.raynal@bootlin.com>
-        <CAB_54W6AZ+LGTcFsQjNx7uq=+R5v_kdF0Xm5kwWQ8ONtfOrmAw@mail.gmail.com>
-        <Ycx0mwQcFsmVqWVH@ni.fr.eu.org>
-        <CAB_54W41ZEoXzoD2_wadfMTY8anv9D9e2T5wRckdXjs7jKTTCA@mail.gmail.com>
-        <CAB_54W6gHE1S9Q+-SVbrnAWPxBxnvf54XVTCmddtj8g-bZzMRA@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S236200AbiADSTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 13:19:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236201AbiADSTh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 13:19:37 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DD4C061761;
+        Tue,  4 Jan 2022 10:19:37 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id 196so32917231pfw.10;
+        Tue, 04 Jan 2022 10:19:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b2EhUOxCKs6rziROIdG8qDACzBoihdnlepJ1sGGPMQA=;
+        b=fyapymGWVpZnIAXD/KNEFEz/3tp3LTW8/oCD8mCOCmq7dfoMsFNc2xwxnpBWpQaCnX
+         QS2gqNcQWl6rx5173FHiwxfyAY5/98ePwffZ0YvrM6zSgLkYwY70nqo3dMz0RvCOz+z5
+         A1MY5IjCp2Y4xceDMo0fyW2OlEpRn81I3MrToYsbNGxBwJ1/f9vTczywxDKrqnRCc1Up
+         AvYCf2a8Zx7HZMC6P0HLuMGxdmOVhdOeoTuxs2cCfqjo6JqtW2R/wOSbUVyTyTZmTKxd
+         TAMkhB2lS0NbgkZfez1LeGXh9aoGEFqmdv5dWFIT/xhNAEk+KcH/ks0sFyEN2fNYW0GR
+         ukZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b2EhUOxCKs6rziROIdG8qDACzBoihdnlepJ1sGGPMQA=;
+        b=y6NyoR/Q4qVCfD1ezeKyqt/Kzt8lmDHSi5OzrvkBiiMAhtNR0QiYhTS8Ng+uRpBRXq
+         jIsPWNU8fl332NDQKy1j7DJfI1AsQp3N9IsZfoLnm5elLqdoZR8YlNfIQWw6vpSa15MT
+         fqGRrSYlVc0FJQRG+poq70KeU8TVAudgJJaXyZge4IPEQx5Zqwonayxoe4MzR39fZpyj
+         aludx23Zjv68X6kPiaNIe22luysBJ4xb5vqM/0MI5lyD+0Wzdk5Mi8JvEVPDtqQMbj10
+         U6W0dxkcuincmU/ka8GKgVLu9nS63o82bEil1O03DKtmzAXVqwtFmX2Pp9zdl2jHPvs/
+         vxiQ==
+X-Gm-Message-State: AOAM533Fm77Cbh6dzOzSV2MjMjkhS6nlrJKVlci4nck0kpw0r9f2OzuJ
+        faqbAzUY8+o+UJwfI1n9aMu1qIiM6U7uqJdtEcM=
+X-Google-Smtp-Source: ABdhPJwX+C/gsltMItc5oiL/7sX3GTDabrztWuLq8W0P8CeVVU9MV8Pwhy8mmpNLPfPr+8kIeH5F4Aq2DcCzmPGTDBI=
+X-Received: by 2002:aa7:8c59:0:b0:4bc:9dd2:6c12 with SMTP id
+ e25-20020aa78c59000000b004bc9dd26c12mr12468407pfd.59.1641320376688; Tue, 04
+ Jan 2022 10:19:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+References: <20210715005417.78572-1-alexei.starovoitov@gmail.com>
+ <20210715005417.78572-9-alexei.starovoitov@gmail.com> <20220104171557.GB1559@oracle.com>
+In-Reply-To: <20220104171557.GB1559@oracle.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 4 Jan 2022 10:19:25 -0800
+Message-ID: <CAADnVQ+MAWVmXoDYx6XOaqbnit2kSE9wx5ejEAW0ZTjrcsF=9A@mail.gmail.com>
+Subject: Re: [PATCH v7 bpf-next 08/11] bpf: Implement verifier support for
+ validation of async callbacks.
+To:     Kris Van Hees <kris.van.hees@oracle.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+On Tue, Jan 4, 2022 at 9:16 AM Kris Van Hees <kris.van.hees@oracle.com> wrote:
+>
+> I ran into a problem due to this patch.  Specifically, the test in the
+> __check_func_call() function is flaweed because it can actually mis-interpret
+> a regular BPF-to-BPF pseudo-call as a callback call.
+>
+> Consider the conditional in the code:
+>
+>         if (insn->code == (BPF_JMP | BPF_CALL) &&
+>             insn->imm == BPF_FUNC_timer_set_callback) {
+>
+> The BPF_FUNC_timer_set_callback has value 170.  This means that if you have
+> a BPF program that contains a pseudo-call with an instruction delta of 170,
+> this conditional will be found to be true by the verifier, and it will
+> interpret the pseudo-call as a callback.  This leads to a mess with the
+> verification of the program because it makes the wrong assumptions about the
+> nature of this call.
+>
+> As far as I can see, the solution is simple.  Include an explicit check to
+> ensure that src_reg is not a pseudo-call.  I.e. make the conditional:
+>
+>         if (insn->code == (BPF_JMP | BPF_CALL) &&
+>             insn->src_reg != BPF_PSEUDO_CALL &&
+>             insn->imm == BPF_FUNC_timer_set_callback) {
+>
+> It is of course a pretty rare case that this would go wrong, but since my
+> code makes extensive use of BPF-to-BPF pseudo-calls, it was only a matter of
+> time before I would run into a call with instruction delta 170.
 
-alex.aring@gmail.com wrote on Fri, 31 Dec 2021 14:27:12 -0500:
-
-> Hi,
-> 
-> On Thu, 30 Dec 2021 at 14:47, Alexander Aring <alex.aring@gmail.com> wrote:
-> >
-> > Hi,
-> >
-> > On Wed, 29 Dec 2021 at 09:45, Nicolas Schodet <nico@ni.fr.eu.org> wrote:  
-> > >
-> > > Hi,
-> > >
-> > > * Alexander Aring <alex.aring@gmail.com> [2021-12-29 09:30]:  
-> > > > Hi,
-> > > > On Wed, 22 Dec 2021 at 10:58, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > > > ...  
-> > > > > +{
-> > > > > +       bool promiscuous_on = mac802154_check_promiscuous(local);
-> > > > > +       int ret;
-> > > > > +
-> > > > > +       if ((state && promiscuous_on) || (!state && !promiscuous_on))
-> > > > > +               return 0;
-> > > > > +
-> > > > > +       ret = drv_set_promiscuous_mode(local, state);
-> > > > > +       if (ret)
-> > > > > +               pr_err("Failed to %s promiscuous mode for SW scanning",
-> > > > > +                      state ? "set" : "reset");  
-> > > > The semantic of promiscuous mode on the driver layer is to turn off
-> > > > ack response, address filtering and crc checking. Some transceivers
-> > > > don't allow a more fine tuning on what to enable/disable. I think we
-> > > > should at least do the checksum checking per software then?
-> > > > Sure there is a possible tune up for more "powerful" transceivers then...  
-> > >
-> > > In this case, the driver could change the (flags &
-> > > IEEE802154_HW_RX_DROP_BAD_CKSUM) bit dynamically to signal it does not
-> > > check the checksum anymore. Would it work?  
-> >
-> > I think that would work, although the intention of the hw->flags is to
-> > define what the hardware is supposed to support as not changing those
-> > values dynamically during runtime so mac will care about it. However
-> > we don't expose those flags to the userspace, so far I know. We can
-> > still introduce two separated flags if necessary in future.
-> >
-> > Why do we need promiscuous mode at all? Why is it necessary for a
-> > scan? What of "ack response, address filtering and crc checking" you
-> > want to disable and why?
-> >  
-> 
-> I see now why promiscuous mode is necessary here. The actual
-> promiscuous mode setting for the driver is not the same as promiscuous
-> mode in 802.15.4 spec. For until now it was there for running a
-> sniffer device only.
-> As the 802.15.4 spec defines some "filtering levels" I came up with a
-> draft so we can define which filtering level should be done on the
-> hardware.
-
-I like the idea but I'm not sure on what side you want to tackle the
-problem first. Is it the phy drivers which should advertise the mac
-about the promiscuous mode they support (which matches the description
-below but does not fit the purpose of an enum very well)? Or is it the
-MAC that requests a particular filtering mode? In this case what a phy
-driver should do if:
-- the requested mode is more constrained than its usual promiscuous
-  capabilities?
-- the requested mode is less constrained than its usual promiscuous
-  capabilities?
-
-> 
-> diff --git a/include/net/mac802154.h b/include/net/mac802154.h
-> index 72978fb72a3a..3839ed3f8f0d 100644
-> --- a/include/net/mac802154.h
-> +++ b/include/net/mac802154.h
-> @@ -130,6 +130,48 @@ enum ieee802154_hw_flags {
->  #define IEEE802154_HW_OMIT_CKSUM       (IEEE802154_HW_TX_OMIT_CKSUM | \
->                                          IEEE802154_HW_RX_OMIT_CKSUM)
-> 
-> +/**
-> + * enum ieee802154_filter_mode - hardware filter mode that a driver
-> will pass to
-> + *                              pass to mac802154.
-
-Isn't it the opposite: The filtering level the mac is requesting? Here
-it looks like we are describing driver capabilities (ie what drivers
-advertise supporting).
-
-> + *
-> + * @IEEE802154_FILTER_MODE_0: No MFR filtering at all.
-
-I suppose this would be for a sniffer accepting all frames, including
-the bad ones.
-
-> + *
-> + * @IEEE802154_FILTER_MODE_1: IEEE802154_FILTER_MODE_1 with a bad FCS filter.
-
-This means that the driver should only discard bad frames and propagate
-all the remaining frames, right? So this typically is a regular sniffer
-mode.
-
-> + *
-> + * @IEEE802154_FILTER_MODE_2: Same as IEEE802154_FILTER_MODE_1, known as
-> + *                           802.15.4 promiscuous mode, sets
-> + *                           mib.PromiscuousMode.
-
-I believe what you call mib.PromiscuousMode is the mode that is
-referred in the spec, ie. being in the official promiscuous mode? So
-that is the mode that should be used "by default" when really asking
-for a 802154 promiscuous mode.
-
-Is there really a need for a different mode than mode_1 ?
-
-> + *
-> + * @IEEE802154_FILTER_MODE_3_SCAN: Same as IEEE802154_FILTER_MODE_2 without
-> + *                                set mib.PromiscuousMode.
-
-And here what is the difference between MODE_1 and MODE_3 ?
-
-I suppose here we should as well drop all non-beacon frames?
-
-> + *
-> + * @IEEE802154_FILTER_MODE_3_NO_SCAN:
-> + *     IEEE802154_FILTER_MODE_3_SCAN with MFR additional filter on:
-> + *
-> + *     - No reserved value in frame type
-> + *     - No reserved value in frame version
-> + *     - Match mib.PanId or broadcast
-> + *     - Destination address field:
-> + *       - Match mib.ShortAddress or broadcast
-> + *       - Match mib.ExtendedAddress or GroupRxMode is true
-> + *       - ImplicitBroadcast is true and destination address field/destination
-> + *         panid is not included.
-> + *       - Device is coordinator only source address present in data
-> + *         frame/command frame and source panid matches mib.PanId
-> + *       - Device is coordinator only source address present in multipurpose
-> + *         frame and destination panid matches macPanId
-> + *     - Beacon frames source panid matches mib.PanId. If mib.PanId is
-> + *       broadcast it should always be accepted.
-
-This is a bit counter intuitive, but do we agree on the fact that the
-higher level of filtering should refer to promiscuous = false?
-
-> + *
-> + */
-> +enum ieee802154_filter_mode {
-> +       IEEE802154_FILTER_MODE_0,
-> +       IEEE802154_FILTER_MODE_1,
-> +       IEEE802154_FILTER_MODE_2,
-> +       IEEE802154_FILTER_MODE_3_SCAN,
-> +       IEEE802154_FILTER_MODE_3_NO_SCAN,
-> +};
-> +
->  /* struct ieee802154_ops - callbacks from mac802154 to the driver
->   *
->   * This structure contains various callbacks that the driver may
-> @@ -249,7 +291,7 @@ struct ieee802154_ops {
->         int             (*set_frame_retries)(struct ieee802154_hw *hw,
->                                              s8 retries);
->         int             (*set_promiscuous_mode)(struct ieee802154_hw *hw,
-> -                                               const bool on);
-> +                                               enum
-> ieee802154_filter_mode mode);
->         int             (*enter_scan_mode)(struct ieee802154_hw *hw,
->                                            struct
-> cfg802154_scan_request *request);
->         int             (*exit_scan_mode)(struct ieee802154_hw *hw);
-> 
-> ---
-> 
-> In your case it will be IEEE802154_FILTER_MODE_3_SCAN mode, for a
-> sniffer we probably want as default IEEE802154_FILTER_MODE_0, as
-> "promiscuous mode" currently is.
-> 
-> - Alex
-
-
-Thanks,
-Miquèl
+Great catch. All makes sense.
+Could you please submit an official patch ?
+Checking for insn->src_reg == 0 is probably better,
+since src_reg can be BPF_PSEUDO_KFUNC_CALL as well
+though __check_func_call is not called for it.
