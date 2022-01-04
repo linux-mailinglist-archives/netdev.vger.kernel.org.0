@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 046DD483CB9
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:31:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D434483CBE
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:31:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233613AbiADHbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 02:31:12 -0500
-Received: from marcansoft.com ([212.63.210.85]:47090 "EHLO mail.marcansoft.com"
+        id S233530AbiADHbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 02:31:20 -0500
+Received: from marcansoft.com ([212.63.210.85]:47148 "EHLO mail.marcansoft.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233541AbiADHa7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 02:30:59 -0500
+        id S233523AbiADHbH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jan 2022 02:31:07 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id C3A474261F;
-        Tue,  4 Jan 2022 07:30:49 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id C6167422CC;
+        Tue,  4 Jan 2022 07:30:57 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -45,9 +45,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH v2 24/35] brcmfmac: feature: Add support for setting feats based on WLC version
-Date:   Tue,  4 Jan 2022 16:26:47 +0900
-Message-Id: <20220104072658.69756-25-marcan@marcan.st>
+Subject: [PATCH v2 25/35] brcmfmac: cfg80211: Add support for PMKID_V3 operations
+Date:   Tue,  4 Jan 2022 16:26:48 +0900
+Message-Id: <20220104072658.69756-26-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220104072658.69756-1-marcan@marcan.st>
 References: <20220104072658.69756-1-marcan@marcan.st>
@@ -57,134 +57,224 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "wlc_ver" iovar returns information on the WLC and EPI versions.
-This can be used to determine whether the PMKID_V2 and _V3 features are
-supported.
+Add support for the new PMKID_V3 API, which allows performing PMKID
+mutations individually, instead of requiring the driver to keep track of
+the full list. This new API is required by at least BCM4387.
+
+Note that PMKID_V2 is not implemented yet.
 
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- .../broadcom/brcm80211/brcmfmac/feature.c     | 48 +++++++++++++++++++
- .../broadcom/brcm80211/brcmfmac/feature.h     |  4 +-
- .../broadcom/brcm80211/brcmfmac/fwil_types.h  | 25 ++++++++++
- 3 files changed, 76 insertions(+), 1 deletion(-)
+ .../broadcom/brcm80211/brcmfmac/cfg80211.c    | 52 +++++++++++-
+ .../broadcom/brcm80211/brcmfmac/fwil_types.h  | 83 +++++++++++++++++++
+ 2 files changed, 132 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c
-index d0fada88f0f0..def4c9648645 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c
-@@ -126,6 +126,53 @@ static void brcmf_feat_firmware_overrides(struct brcmf_pub *drv)
- 	drv->feat_flags |= feat_flags;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index 71e932a8302c..6dc194924bc1 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -4029,6 +4029,37 @@ static s32 brcmf_cfg80211_suspend(struct wiphy *wiphy,
+ 	return 0;
  }
  
-+struct brcmf_feat_wlcfeat {
-+	u16 min_ver_major;
-+	u16 min_ver_minor;
-+	u32 feat_flags;
-+};
-+
-+static const struct brcmf_feat_wlcfeat brcmf_feat_wlcfeat_map[] = {
-+	{ 12, 0, BIT(BRCMF_FEAT_PMKID_V2) },
-+	{ 13, 0, BIT(BRCMF_FEAT_PMKID_V3) },
-+};
-+
-+static void brcmf_feat_wlc_version_overrides(struct brcmf_pub *drv)
++static s32
++brcmf_pmksa_v3_op(struct brcmf_if *ifp, struct cfg80211_pmksa *pmksa,
++		  bool alive)
 +{
-+	struct brcmf_if *ifp = brcmf_get_ifp(drv, 0);
-+	const struct brcmf_feat_wlcfeat *e;
-+	struct brcmf_wlc_version_le ver;
-+	u32 feat_flags = 0;
-+	int i, err, major, minor;
++	struct brcmf_pmk_op_v3_le *pmk_op;
++	int length = offsetof(struct brcmf_pmk_op_v3_le, pmk);
++	int ret;
 +
-+	err = brcmf_fil_iovar_data_get(ifp, "wlc_ver", &ver, sizeof(ver));
-+	if (err)
-+		return;
++	pmk_op = kzalloc(sizeof(*pmk_op), GFP_KERNEL);
++	pmk_op->version = cpu_to_le16(BRCMF_PMKSA_VER_3);
 +
-+	major = le16_to_cpu(ver.wlc_ver_major);
-+	minor = le16_to_cpu(ver.wlc_ver_minor);
-+
-+	brcmf_dbg(INFO, "WLC version: %d.%d\n", major, minor);
-+
-+	for (i = 0; i < ARRAY_SIZE(brcmf_feat_wlcfeat_map); i++) {
-+		e = &brcmf_feat_wlcfeat_map[i];
-+		if (major > e->min_ver_major ||
-+		    (major == e->min_ver_major &&
-+		     minor >= e->min_ver_minor)) {
-+			feat_flags |= e->feat_flags;
-+		}
++	if (!pmksa) {
++		/* Flush operation, operate on entire list */
++		pmk_op->count = cpu_to_le16(0);
++	} else {
++		/* Single PMK operation */
++		pmk_op->count = cpu_to_le16(1);
++		length += sizeof(struct brcmf_pmksa_v3);
++		memcpy(pmk_op->pmk[0].bssid, pmksa->bssid, ETH_ALEN);
++		memcpy(pmk_op->pmk[0].pmkid, pmksa->pmkid, WLAN_PMKID_LEN);
++		pmk_op->pmk[0].pmkid_len = WLAN_PMKID_LEN;
++		pmk_op->pmk[0].time_left = alive ? BRCMF_PMKSA_NO_EXPIRY : 0;
 +	}
 +
-+	if (!feat_flags)
-+		return;
++	pmk_op->length = cpu_to_le16(length);
 +
-+	for (i = 0; i < BRCMF_FEAT_LAST; i++)
-+		if (feat_flags & BIT(i))
-+			brcmf_dbg(INFO, "enabling firmware feature: %s\n",
-+				  brcmf_feat_names[i]);
-+	drv->feat_flags |= feat_flags;
++	ret = brcmf_fil_iovar_data_set(ifp, "pmkid_info", pmk_op, sizeof(*pmk_op));
++	kfree(pmk_op);
++	return ret;
 +}
 +
- /**
-  * brcmf_feat_iovar_int_get() - determine feature through iovar query.
-  *
-@@ -296,6 +343,7 @@ void brcmf_feat_attach(struct brcmf_pub *drvr)
- 		ifp->drvr->feat_flags &= ~drvr->settings->feature_disable;
+ static __used s32
+ brcmf_update_pmklist(struct brcmf_cfg80211_info *cfg, struct brcmf_if *ifp)
+ {
+@@ -4065,6 +4096,14 @@ brcmf_cfg80211_set_pmksa(struct wiphy *wiphy, struct net_device *ndev,
+ 	if (!check_vif_up(ifp->vif))
+ 		return -EIO;
+ 
++	brcmf_dbg(CONN, "set_pmksa - PMK bssid: %pM =\n", pmksa->bssid);
++	brcmf_dbg(CONN, "%*ph\n", WLAN_PMKID_LEN, pmksa->pmkid);
++
++	if (brcmf_feat_is_enabled(ifp, BRCMF_FEAT_PMKID_V3))
++		return brcmf_pmksa_v3_op(ifp, pmksa, true);
++
++	/* TODO: implement PMKID_V2 */
++
+ 	npmk = le32_to_cpu(cfg->pmk_list.npmk);
+ 	for (i = 0; i < npmk; i++)
+ 		if (!memcmp(pmksa->bssid, pmk[i].bssid, ETH_ALEN))
+@@ -4081,9 +4120,6 @@ brcmf_cfg80211_set_pmksa(struct wiphy *wiphy, struct net_device *ndev,
+ 		return -EINVAL;
  	}
  
-+	brcmf_feat_wlc_version_overrides(drvr);
- 	brcmf_feat_firmware_overrides(drvr);
+-	brcmf_dbg(CONN, "set_pmksa - PMK bssid: %pM =\n", pmk[npmk].bssid);
+-	brcmf_dbg(CONN, "%*ph\n", WLAN_PMKID_LEN, pmk[npmk].pmkid);
+-
+ 	err = brcmf_update_pmklist(cfg, ifp);
  
- 	/* set chip related quirks */
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.h
-index 9d098a068d13..becbcc50d57a 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.h
-@@ -53,7 +53,9 @@
- 	BRCMF_FEAT_DEF(DOT11H) \
- 	BRCMF_FEAT_DEF(SAE) \
- 	BRCMF_FEAT_DEF(FWAUTH) \
--	BRCMF_FEAT_DEF(SCAN_V2)
-+	BRCMF_FEAT_DEF(SCAN_V2) \
-+	BRCMF_FEAT_DEF(PMKID_V2) \
-+	BRCMF_FEAT_DEF(PMKID_V3)
+ 	brcmf_dbg(TRACE, "Exit\n");
+@@ -4107,6 +4143,11 @@ brcmf_cfg80211_del_pmksa(struct wiphy *wiphy, struct net_device *ndev,
  
- /*
-  * Quirks:
+ 	brcmf_dbg(CONN, "del_pmksa - PMK bssid = %pM\n", pmksa->bssid);
+ 
++	if (brcmf_feat_is_enabled(ifp, BRCMF_FEAT_PMKID_V3))
++		return brcmf_pmksa_v3_op(ifp, pmksa, false);
++
++	/* TODO: implement PMKID_V2 */
++
+ 	npmk = le32_to_cpu(cfg->pmk_list.npmk);
+ 	for (i = 0; i < npmk; i++)
+ 		if (!memcmp(pmksa->bssid, pmk[i].bssid, ETH_ALEN))
+@@ -4143,6 +4184,11 @@ brcmf_cfg80211_flush_pmksa(struct wiphy *wiphy, struct net_device *ndev)
+ 	if (!check_vif_up(ifp->vif))
+ 		return -EIO;
+ 
++	if (brcmf_feat_is_enabled(ifp, BRCMF_FEAT_PMKID_V3))
++		return brcmf_pmksa_v3_op(ifp, NULL, false);
++
++	/* TODO: implement PMKID_V2 */
++
+ 	memset(&cfg->pmk_list, 0, sizeof(cfg->pmk_list));
+ 	err = brcmf_update_pmklist(cfg, ifp);
+ 
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h
-index 2ef3fcbb00b9..19d300dadc28 100644
+index 19d300dadc28..2c8063a546b6 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil_types.h
-@@ -788,6 +788,31 @@ struct brcmf_rev_info_le {
- 	__le32 nvramrev;
+@@ -174,6 +174,10 @@
+ 
+ #define BRCMF_HE_CAP_MCS_MAP_NSS_MAX	8
+ 
++#define BRCMF_PMKSA_VER_2		2
++#define BRCMF_PMKSA_VER_3		3
++#define BRCMF_PMKSA_NO_EXPIRY		0xffffffff
++
+ /* MAX_CHUNK_LEN is the maximum length for data passing to firmware in each
+  * ioctl. It is relatively small because firmware has small maximum size input
+  * playload restriction for ioctls.
+@@ -355,6 +359,12 @@ struct brcmf_ssid_le {
+ 	unsigned char SSID[IEEE80211_MAX_SSID_LEN];
+ };
+ 
++/* Alternate SSID structure used in some places... */
++struct brcmf_ssid8_le {
++	u8 SSID_len;
++	unsigned char SSID[IEEE80211_MAX_SSID_LEN];
++};
++
+ struct brcmf_scan_params_le {
+ 	struct brcmf_ssid_le ssid_le;	/* default: {0, ""} */
+ 	u8 bssid[ETH_ALEN];	/* default: bcast */
+@@ -875,6 +885,51 @@ struct brcmf_pmksa {
+ 	u8 pmkid[WLAN_PMKID_LEN];
  };
  
 +/**
-+ * struct brcmf_wlc_version_le - firmware revision info.
++ * struct brcmf_pmksa_v2 - PMK Security Association
 + *
-+ * @version: structure version.
-+ * @length: structure length.
-+ * @epi_ver_major: EPI major version
-+ * @epi_ver_minor: EPI minor version
-+ * @epi_ver_rc: EPI rc version
-+ * @epi_ver_incr: EPI increment version
-+ * @wlc_ver_major: WLC major version
-+ * @wlc_ver_minor: WLC minor version
++ * @length: Length of the structure.
++ * @bssid: The AP's BSSID.
++ * @pmkid: The PMK ID.
++ * @pmk: PMK material for FILS key derivation.
++ * @pmk_len: Length of PMK data.
++ * @ssid: The AP's SSID.
++ * @fils_cache_id: FILS cache identifier
 + */
-+struct brcmf_wlc_version_le {
-+	__le16 version;
++struct brcmf_pmksa_v2 {
 +	__le16 length;
++	u8 bssid[ETH_ALEN];
++	u8 pmkid[WLAN_PMKID_LEN];
++	u8 pmk[WLAN_PMK_LEN_SUITE_B_192];
++	__le16 pmk_len;
++	struct brcmf_ssid8_le ssid;
++	u16 fils_cache_id;
++};
 +
-+	__le16 epi_ver_major;
-+	__le16 epi_ver_minor;
-+	__le16 epi_ver_rc;
-+	__le16 epi_ver_incr;
-+
-+	__le16 wlc_ver_major;
-+	__le16 wlc_ver_minor;
++/**
++ * struct brcmf_pmksa_v3 - PMK Security Association
++ *
++ * @bssid: The AP's BSSID.
++ * @pmkid: The PMK ID.
++ * @pmkid_len: The length of the PMK ID.
++ * @pmk: PMK material for FILS key derivation.
++ * @pmk_len: Length of PMK data.
++ * @fils_cache_id: FILS cache identifier
++ * @ssid: The AP's SSID.
++ * @time_left: Remaining time until expiry. 0 = expired, ~0 = no expiry.
++ */
++struct brcmf_pmksa_v3 {
++	u8 bssid[ETH_ALEN];
++	u8 pmkid[WLAN_PMKID_LEN];
++	u8 pmkid_len;
++	u8 pmk[WLAN_PMK_LEN_SUITE_B_192];
++	u8 pmk_len;
++	__le16 fils_cache_id;
++	u8 pad;
++	struct brcmf_ssid8_le ssid;
++	__le32 time_left;
 +};
 +
  /**
-  * struct brcmf_assoclist_le - request assoc list.
+  * struct brcmf_pmk_list_le - List of pmksa's.
+  *
+@@ -886,6 +941,34 @@ struct brcmf_pmk_list_le {
+ 	struct brcmf_pmksa pmk[BRCMF_MAXPMKID];
+ };
+ 
++/**
++ * struct brcmf_pmk_list_v2_le - List of pmksa's.
++ *
++ * @version: Request version.
++ * @length: Length of this structure.
++ * @pmk: PMK SA information.
++ */
++struct brcmf_pmk_list_v2_le {
++	__le16 version;
++	__le16 length;
++	struct brcmf_pmksa_v2 pmk[BRCMF_MAXPMKID];
++};
++
++/**
++ * struct brcmf_pmk_op_v3_le - Operation on PMKSA list.
++ *
++ * @version: Request version.
++ * @length: Length of this structure.
++ * @pmk: PMK SA information.
++ */
++struct brcmf_pmk_op_v3_le {
++	__le16 version;
++	__le16 length;
++	__le16 count;
++	__le16 pad;
++	struct brcmf_pmksa_v3 pmk[BRCMF_MAXPMKID];
++};
++
+ /**
+  * struct brcmf_pno_param_le - PNO scan configuration parameters
   *
 -- 
 2.33.0
