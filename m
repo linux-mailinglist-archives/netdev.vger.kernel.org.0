@@ -2,103 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ECE6483EA2
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 10:01:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1CD5483EA4
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 10:01:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229577AbiADJBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 04:01:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35054 "EHLO
+        id S229728AbiADJBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 04:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbiADJBJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 04:01:09 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F87C061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 01:01:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=W8Jz48f7bRk1ckbh4lsS0Wqn9maF4BXhcKl5LWNLDcE=; b=rKPFBLWVfgwe1ZR7mZ4fAzfexV
-        CM+neKQzyz7koeftNBXpsry0RaGRmOqF7zTj3pU0bzG6c6+P7m+cOxyA0FVLDCXqayEIdl3+Xe/U/
-        3wR7qz4qRpgQ1ueeJOHYOuuuz44cmKoSD+vbCXSvoclRIg1rA1CdBhPqHmoIjLVUDbdY6idLUX/l+
-        QRDb2K7+vW917cWR89mCcE4fP/IdK+t5HHkvruDSkj0q2fIKBia7lPulVvfOYMBK3rKZw0Gobi7sx
-        Rq0MzJMujVMZnOp3RE5zT2HZ3qdsh2WBF/zMT4Ad0DirE0JXzcMiMjj7FlBXzjTVBFUJaAmjhlnqD
-        b9cPUyTQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56546)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1n4fgh-0006nD-G9; Tue, 04 Jan 2022 09:00:59 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1n4fgf-00075v-EL; Tue, 04 Jan 2022 09:00:57 +0000
-Date:   Tue, 4 Jan 2022 09:00:57 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Harini Katakam <harinik@xilinx.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229545AbiADJBf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 04:01:35 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60639C061761;
+        Tue,  4 Jan 2022 01:01:35 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id x15so26651737plg.1;
+        Tue, 04 Jan 2022 01:01:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ctf1mWWuee2eocXQttVjNpLZ1hE7ZOnUoALCiLBOPEA=;
+        b=jYMtqxtumplVH2Og2dIphyxiDE6m/XKNJmYAzMiOJ0yekjIHnvYYnH74Nl85Tb77BA
+         kjRS7/ZW4BckNOq7iusCoF52A9XFR01wf3YR6tsU4NYUfecpyyoZaTV3WVtgCzOQ9Wz5
+         dw38hJrYpQnWlOWTt885knE7M/3IZvjCFYikUowvXmgkHIHeL4ct7cRS5jskJU+RPA2/
+         jHMABuZcPAtJJYMKE8UMn4ouJAuDsWeOF7I/QAbwenKYIPqdGSMMWKoWNNjHL4czOJqc
+         5CHk5t+fF7TRT0hL9IlxwjJflpgihWc+7YlygOQ6SBYjycXRNlE48/disQ+e62SwsE4J
+         pL3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ctf1mWWuee2eocXQttVjNpLZ1hE7ZOnUoALCiLBOPEA=;
+        b=svH0SgOracH1nbLt3jW2/YrLVryJP7mp3rlPrg6TYSbZOxNbpivDumwYb6tLLlBT7i
+         CUs8alfOJdfN1kijCX/L5IDyqJprO3oabzoYs7HSwSH6qbutYp5iUvGc1aN42tAKgP/q
+         wE324iJTFmcw8TmlVkXjXQTAsgKUwtIxmxEmTtx7OYkKA0w6nxAtYAlM5nPqrIQhsZ/Y
+         yKHuBDbEeZtBFfMEJoxHromGu9lbpYaGJa6m+y0gXhD/armvZnjLKwD4fgke1hthvG5r
+         4or9wdWYo0vq35y8xWdiP2a6BPOZM6Ktgb0Q4wB28qNISKV/hV4DXuF8g4Jrr2vP+VWy
+         gy+g==
+X-Gm-Message-State: AOAM533ftkMz1h3s+uTQtFk0yCz7l86w/NG+gnQ8uiVY+kSY8IM7nUd3
+        iKUcO9F3Jck3YXNjRWLWYJY=
+X-Google-Smtp-Source: ABdhPJxhuxgGPpARWIATroqM3eoHGWmimeE0qyxNCFBP1FaICeye0IKsZAui4ZEoWwI6/FX+4xzLOA==
+X-Received: by 2002:a17:902:c64b:b0:148:b614:5498 with SMTP id s11-20020a170902c64b00b00148b6145498mr48835956pls.168.1641286894932;
+        Tue, 04 Jan 2022 01:01:34 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:823c:b112:bdfb:7ef1])
+        by smtp.gmail.com with ESMTPSA id h7sm43019183pfv.35.2022.01.04.01.01.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Jan 2022 01:01:34 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH CFT net-next 1/2] net: axienet: convert to phylink_pcs
-Message-ID: <YdQMyfYU0wxHrT40@shell.armlinux.org.uk>
-References: <Ybs1cdM3KUTsq4Vx@shell.armlinux.org.uk>
- <E1mxqBh-00GWxo-51@rmk-PC.armlinux.org.uk>
- <20211216071513.6d1e0f55@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YbtxGLrXoR9oHRmM@shell.armlinux.org.uk>
- <CAFcVECJeRwgjGsxtcGpMuA23nnmywsNkA2Yngk6aDK_JuVE3NQ@mail.gmail.com>
- <CAFcVEC+N0Y7ESFe-qcfpmkbPjRSvCJ=AOXoM6XSK6xGo=J1YNw@mail.gmail.com>
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        bpf <bpf@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>,
+        Yonghong Song <yhs@fb.com>
+Subject: [PATCH net] bpf: Add missing map_get_next_key method to bloom filter map
+Date:   Tue,  4 Jan 2022 01:01:30 -0800
+Message-Id: <20220104090130.3121751-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFcVEC+N0Y7ESFe-qcfpmkbPjRSvCJ=AOXoM6XSK6xGo=J1YNw@mail.gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 04, 2022 at 01:26:28PM +0530, Harini Katakam wrote:
-> On Fri, Dec 17, 2021 at 1:55 PM Harini Katakam <harinik@xilinx.com> wrote:
-> >
-> > Hi Russell,
-> >
-> > On Fri, Dec 17, 2021 at 5:26 AM Russell King (Oracle)
-> > <linux@armlinux.org.uk> wrote:
-> > >
-> > > On Thu, Dec 16, 2021 at 07:15:13AM -0800, Jakub Kicinski wrote:
-> > > > On Thu, 16 Dec 2021 12:48:45 +0000 Russell King (Oracle) wrote:
-> > > > > Convert axienet to use the phylink_pcs layer, resulting in it no longer
-> > > > > being a legacy driver.
-> > > > >
-> > > > > One oddity in this driver is that lp->switch_x_sgmii controls whether
-> > > > > we support switching between SGMII and 1000baseX. However, when clear,
-> > > > > this also blocks updating the 1000baseX advertisement, which it
-> > > > > probably should not be doing. Nevertheless, this behaviour is preserved
-> > > > > but a comment is added.
-> > > > >
-> > > > > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > > >
-> > > > drivers/net/ethernet/xilinx/xilinx_axienet.h:479: warning: Function parameter or member 'pcs' not described in 'axienet_local'
-> > >
-> > > Fixed that and the sha1 issue you raised in patch 2. Since both are
-> > > "documentation" issues, I won't send out replacement patches until
-> > > I've heard they've been tested on hardware though.
-> >
-> > Thanks for the patches.
-> > Series looks good and we're testing at our end; will get back to you
-> > early next week.
-> 
-> Thanks Russell. I've tested AXI Ethernet and it works fine.
+From: Eric Dumazet <edumazet@google.com>
 
-Happy new year!
+It appears map_get_next_key() method is mandatory,
+as syzbot is able to trigger a NULL deref in map_get_next_key().
 
-Thanks - can I use that as a tested-by please, and would you be happy
-for me to send the patches for merging this week?
+Fixes: 9330986c0300 ("bpf: Add bloom filter map implementation")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Yonghong Song <yhs@fb.com>
+---
+ kernel/bpf/bloom_filter.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
+diff --git a/kernel/bpf/bloom_filter.c b/kernel/bpf/bloom_filter.c
+index 277a05e9c9849324a277d77eeec12963cc7519b7..34f48058515cfd3f8ea6816ccad1f4a26eba0ebf 100644
+--- a/kernel/bpf/bloom_filter.c
++++ b/kernel/bpf/bloom_filter.c
+@@ -82,6 +82,12 @@ static int bloom_map_delete_elem(struct bpf_map *map, void *value)
+ 	return -EOPNOTSUPP;
+ }
+ 
++static int bloom_get_next_key(struct bpf_map *map, void *key,
++			      void *next_key)
++{
++	return -ENOTSUPP;
++}
++
+ static struct bpf_map *bloom_map_alloc(union bpf_attr *attr)
+ {
+ 	u32 bitset_bytes, bitset_mask, nr_hash_funcs, nr_bits;
+@@ -201,4 +207,5 @@ const struct bpf_map_ops bloom_filter_map_ops = {
+ 	.map_check_btf = bloom_map_check_btf,
+ 	.map_btf_name = "bpf_bloom_filter",
+ 	.map_btf_id = &bpf_bloom_map_btf_id,
++	.map_get_next_key = bloom_get_next_key,
+ };
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.34.1.448.ga2b2bfdf31-goog
+
