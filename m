@@ -2,379 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B392484A80
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 23:12:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49A26484A94
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 23:18:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235261AbiADWMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 17:12:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48716 "EHLO
+        id S235348AbiADWSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 17:18:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231725AbiADWMl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 17:12:41 -0500
-Received: from mail-vk1-xa29.google.com (mail-vk1-xa29.google.com [IPv6:2607:f8b0:4864:20::a29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DE1C061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 14:12:41 -0800 (PST)
-Received: by mail-vk1-xa29.google.com with SMTP id o2so21682997vkn.0
-        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 14:12:41 -0800 (PST)
+        with ESMTP id S234985AbiADWSp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 17:18:45 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BECC061761
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 14:18:45 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id d201so88276756ybc.7
+        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 14:18:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ghWlUwHScyjanmVKBkVLVZKb8bP03ojD1BVlH/ERFN4=;
-        b=S9ULJTeYAZCyowbSRKpbvBk5rx9B9RC54OmC8bnI2voi6nLP3uEmWEgLqRkdvqSmxB
-         +o+bhKmdrw4msc2ovoEkjtAncsfKfzc+R2W4s+zGpgNodaZZwPPbdlAfNbik4AZWKBIn
-         qmWA1tYpTni5jArCYq6Gp5oalb66AX5Dyumc6C1/PZYeJUOoSGwXbEkW5m/3I5FvyRKm
-         yuVd4KeVlY7JCwIUVOUiGWrmPsllwBB3QcoJqwZcZSh18Uo5mm9UR2p4kGWuEb0CEnFf
-         8Edqyb2WMDwkzTPQYqe/WHPXOR/Hxr0NMmkEkU6d5ftQ4Bi9z2qzxDGniWcAsFavzZKk
-         Atpg==
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=nVd9OQN7G1F7y5Ay3yNkaBCGLW9d/l8HpdKFdG4MNXE=;
+        b=gv6taWtGTlC+ycQTPEFNSvlB5NKDzDBdgQ6TSJPL/pppf36bFTfdCP6qhFHX/YJDPM
+         BV5PRFdIJQpc8eg9bsYLguH9fgUnGXH6cuWWFzH4VtTm9Rf5Fmp9hQ4ezrpAaVhQunTe
+         2840m6c25ZHK/fVIBUOuVbu421CBy14t7HsNBzQYAJvSDwDWmeYc8O4bOYCP+iZEzcwz
+         qoXGDfDUk3lIaMssO1sMTfvO9h8sdGnCIyerH0A5oiQzFaxGzfpbMumOupMcuTjZqo4s
+         x5VcnN/5zXVu+Fuv/5yCg0s7VFUqJof2E1TgAji5ioJm7PqQxfPs4eoRO5R8yY+B42ES
+         Bt3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ghWlUwHScyjanmVKBkVLVZKb8bP03ojD1BVlH/ERFN4=;
-        b=LI879/Pwx4zEnlqyCYZX4sMmggZOZjU9MpyAhnGOdXk5VwlNzBbDf+3NfdGOQPQuhl
-         MFdDb09reF0DU8Uor8wh8fnT48Lfdtf9gMbZGFkYkZQ4I4CnCVvoETfEoIORgfgJK9MR
-         LGdlpeBILrPh7s1I4gW5zvxI4AMRy9mrc4QmFDH+xkgbJOoEYAWMKtT5UnFSFKWbJGvH
-         r0RRVJzdmdVIVHVPY2Hkri+Bdf3Opyyp5Fp+Uo0RDEOmabz8SYadsdjH2fT6wKxKcJeX
-         QZW9Aw+7GZLBMRm3N8Viv3rDzDRNz/pQKf8m+Z6fyIgRBKX3xnk82q8r2KZBK/fDMsbh
-         2j1Q==
-X-Gm-Message-State: AOAM532YQ4bMSFoHvr4UI/No0yu0GtYWFaAOeDMyPq9YXGRaZai8qg0C
-        /+QbVsxTXkxorelK3v9BScEBeJcV4WL3ssqLfTvk/dtsP9Xk1zIU
-X-Google-Smtp-Source: ABdhPJx7OzfARaoyZgL1isEgucFGEHj/jPsrZbPaH0W5jprW/o56vOgmKq3wX7nlQ4M6SgwTrjRMJ5mzMUXZ/2NIRHY=
-X-Received: by 2002:a05:6122:84c:: with SMTP id 12mr17436270vkk.4.1641334360510;
- Tue, 04 Jan 2022 14:12:40 -0800 (PST)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=nVd9OQN7G1F7y5Ay3yNkaBCGLW9d/l8HpdKFdG4MNXE=;
+        b=ZOwp3+kg9L6PzgQqOYgq2g0mM5GDScr5gcTb9r6/XM+dz6R8G06lRs8yczJuPM4FRf
+         Bbq62gayaoz5UQnAH7QxJvydyj2PeCbi77XWbz9fSD8qnIwi+2LcuGk+i+PWrx2JF7a7
+         1MN/gynTFcGSI6ssSIVlizOVX1AQlTsyokTOywPfd6jC4kD6rHt7M3PJWdTZ00aJO8nm
+         OSN0CxOmmigbGFHydN0vsk7TG0nHhR3ybpkij7epqUDMUlKbpRjokoOmfoBlzCrGwNzH
+         iwRhgKbwRVXZiPK5HtVp45UNGsES0AbaRgqGqPew3sY1Vf7/J5/r6l5mK3dM8N7ZptNJ
+         DODQ==
+X-Gm-Message-State: AOAM531NyQxWj9osYK9iCNimvXHpwykabab15oXkwafE9yJrRLHuUGew
+        Dvrt7/nBXYgtvEG/hr9bybaEJ4dchvU1TaKi61A=
+X-Google-Smtp-Source: ABdhPJzzLeC533TdeFXS+5lr12RouiDLOzs5tUgjkvHokIX/FdgBTqMb0olL/RhYMYb5RYzKpXnMyAz42Diu5pk5GcI=
+X-Received: by 2002:a25:81cb:: with SMTP id n11mr51504482ybm.462.1641334724619;
+ Tue, 04 Jan 2022 14:18:44 -0800 (PST)
 MIME-Version: 1.0
-References: <CANr-f5x0_RDAfVQiqpcWOG2iVAtson0F6arQMSbrBXjB73kw+A@mail.gmail.com>
- <87bl1150rj.fsf@intel.com> <CANr-f5xtGh_gChnbvWxeUFxk5txEPB5bujvU9bP0ayHc4cgCkA@mail.gmail.com>
- <CAJ8uoz3K6=29FssGvKk3gK1Lk2-ppTTGhj9J7w37x4pE-AECEA@mail.gmail.com>
-In-Reply-To: <CAJ8uoz3K6=29FssGvKk3gK1Lk2-ppTTGhj9J7w37x4pE-AECEA@mail.gmail.com>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-Date:   Tue, 4 Jan 2022 23:12:29 +0100
-Message-ID: <CANr-f5z0Qmg7=uguAXke=L4BT=pvDha_XPiMt2XKQUunu4_5nQ@mail.gmail.com>
-Subject: Re: RFC: tsnep: ETF, AF_XDP, UIO or driver specific interface for real-time
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        gregkh@linuxfoundation.org, Andrew Lunn <andrew@lunn.ch>,
-        netdev <netdev@vger.kernel.org>
+Received: by 2002:a05:7000:12ca:0:0:0:0 with HTTP; Tue, 4 Jan 2022 14:18:44
+ -0800 (PST)
+Reply-To: mmamie_shimirah@yahoo.com
+From:   "Miss.Mmamie Shimirah" <www.microlottry@gmail.com>
+Date:   Tue, 4 Jan 2022 14:18:44 -0800
+Message-ID: <CABiuYNmxSVdFDDcWyMj-K-__fUZ_tH5L_6+UhU=BTv0=Wd7LQA@mail.gmail.com>
+Subject: Regarding Of My Late Father's Fund $10,200,000,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 4, 2022 at 9:26 AM Magnus Karlsson
-<magnus.karlsson@gmail.com> wrote:
->
-> On Fri, Dec 31, 2021 at 10:44 AM Gerhard Engleder
-> <gerhard@engleder-embedded.com> wrote:
-> >
-> > On Mon, Dec 27, 2021 at 8:03 PM Vinicius Costa Gomes
-> > <vinicius.gomes@intel.com> wrote:
-> > >
-> > > Hi Gerhard,
-> > >
-> > > Gerhard Engleder <gerhard@engleder-embedded.com> writes:
-> > >
-> > > > Hello,
-> > > >
-> > > > the driver for my FPGA based TSN endpoint Ethernet MAC is now in net-next. As
-> > > > a first step, it supports a single TX/RX queue pair for normal Ethernet
-> > > > communication. For TSN it supports hardware timestamps (PTP) and TAPRIO (gate
-> > > > control). The next step is the user space interface for real-time communication
-> > > > over additional TX/RX queue pairs.
-> > > >
-> > > > Multiple interfaces are used for real-time communication in user space:
-> > > > A) ETF for timed transmit
-> > > > B) AF_XDP for direct access omitting the network stack
-> > > > C) UIO for mapping devices to user space
-> > > > D) driver specific interfaces for direct access to DMA buffers and IO memory
-> > > >    (out of tree)
-> > > >
-> > > > The additional TX/RX queue pairs of my Ethernet MAC are optimized for real-time
-> > > > communication. The mapping to ETF or AF_XDP is not straightforward. I know a
-> > > > little about UIO and ETF and I have read Documentation/networking/af_xdp.rst,
-> > > > but that does not qualify me as an expert. So I want to discuss if ETF, AF_XDP,
-> > > > UIO or any other standard Linux user space interface is the right choice for my
-> > > > driver?
-> > > >
-> > > > First I want to describe the main real-time feature of the device, the periodic
-> > > > TX schedule:
-> > > >
-> > > > The data exchange between hardware and software is done similarly to other
-> > > > Ethernet MACs. Descriptor rings are used and the ownership of descriptors
-> > > > is transferred from software to hardware and vice versa during operation.
-> > > >
-> > > > Usually TX descriptor rings are queues, which transfer data from RAM to
-> > > > Ethernet MAC as fast as possible. This is the case for the first TX/RX queue
-> > > > pair, which is used by the Ethernet driver. For real-time communication
-> > > > transmission at defined points in time is a requirement. Additionally, the
-> > > > transmitted data shall be as up-to-data as possible. Therefore, the data shall
-> > > > be transferred to the Ethernet MAC as late as possible. This enables minimal
-> > > > reaction time for closed loop control. So there are actually two points in time.
-> > > > First, the start of the DMA transfer of data from RAM to Ethernet MAC. Second,
-> > > > the start of the transmission over Ethernet.
-> > > >
-> > > > Therefore, the TX descriptor ring of additional TX/RX queue pairs is enhanced
-> > > > with timing information. This timing information defines both points in time.
-> > > > As a result, the TX descriptor ring is processed at defined points in time and
-> > > > not as fast as possible.
-> > > >
-> > > > Real-time communication is usually periodic. The timing pattern repeats after
-> > > > the least common multiple of all cycle times. The relative timing information
-> > > > of two consecutive TX descriptors is constant. So relative timing information
-> > > > is used within the TX descriptor ring. There is no need to update this relative
-> > > > timing information during operation. Only transmitted data and ownership must
-> > > > be updated. The TAPRIO gate control list is good example for a periodic
-> > > > schedule.
-> > > >
-> > > > The periodic nature of real-time communication has another side effect. The
-> > > > timing is known in advance. So a TX descriptor is able to define the timing of
-> > > > the next TX descriptor. As a result, the hardware knows the timing of the next
-> > > > TX descriptor without fetching it from RAM. This prevents a chicken egg problem:
-> > > > the TX descriptor cannot define its own DMA timing, because DMA would be needed
-> > > > to read this timing.
-> > > >
-> > > > All these properties lead to a periodic TX schedule implemented with an
-> > > > enhanced TX descriptor ring. Let's describe the details with an example:
-> > > >
-> > > > - two cycle times
-> > > >   - single Ethernet frame every 100us, first TX at absolute time 7000us
-> > > >     - TX times: 7000us, 7100us, 7200us, ...
-> > > >   - single Ethernet frame every 200us, first TX at absolute time 7050us
-> > > >     - TX times: 7050us, 7250us, 7450us, ...
-> > > > - DMA shall be done as late as possible for 100us cycle time
-> > > > - DMA of 200us cycle time shall be done directly after DMA of 100us cycle time
-> > > >
-> > > > The perdiodic TX schedule for this example looks like this:
-> > > >
-> > > > +-------------<-------------------------<-------------------------<------------+
-> > > > |                                                                              |
-> > > > +-->+-------------------+---->+-------------------+---->+-------------------+->+
-> > > >     | TX desc 1 @0x1000 |     | TX desc 2 @0x2000 |     | TX desc 3 @0x3000 |
-> > > >     |                   |     |                   |     |                   |
-> > > >     | next_desc=0x2000  |     | next_desc=0x3000  |     | next_desc=0x1000  |
-> > > >     | dma_incr=10us     |     | dma_incr=90us     |     | dma_incr=100us    |
-> > > >     | tx_incr=50us      |     | tx_incr=50us      |     | tx_incr=100us     |
-> > > >     +-------------------+     +-------------------+     +-------------------+
-> > > >
-> > > > "next_desc" is the address of the next TX descriptor. "dma_incr" defines the
-> > > > DMA start time of the next TX descriptor:
-> > > >
-> > > > "DMA start time" = "Current DMA start time" + dma_incr
-> > > >
-> > > > Similar "tx_incr" defines the Ethernet TX start time of the next TX descriptor:
-> > > >
-> > > > "Ethernet TX start time" = "Current Ethernet TX start time" + tx_incr
-> > > >
-> > > > The TX descriptor processing needs initial values for the address of the first
-> > > > descriptor, the DMA start time of the first descriptor, and the Ethernet TX
-> > > > start time of the first descriptor. These initial values are written to
-> > > > registers:
-> > > >
-> > > > - "TX descriptor address" register  = 0x1000
-> > > > - "DMA start time" register         =   6980us
-> > > > - "Ethernet TX start time" register =   7000us
-> > > >
-> > > > These three registers always hold information about the next TX descriptor. The
-> > > > location in the RAM, the point it time when it shall be read by DMA, the point
-> > > > in time when it shall be transmitted.
-> > > >
-> > > > The least common multiple of the cycle times is 200us. Thus, the sum of all
-> > > > "tx_incr" values must be 200us. Also the sum of all "dma_incr" values must be
-> > > > 200us. Otherwise DMA and TX timing would drift away from each other.
-> > > >
-> > > > TX descriptors 1 and 3 belong to the 100us cycle time. TX descriptor 2
-> > > > belongs to
-> > > > the 200us cycle time. The TX schedule is processed in the following steps:
-> > > >
-> > > >               cycle time | DMA read | Ethernet TX
-> > > > 1) TX desc 1       100us |  @6980us |     @7000us
-> > > > 2) TX desc 2       200us |  @6990us |     @7050us
-> > > > 3) TX desc 3       100us |  @7080us |     @7100us
-> > > > 4) TX desc 1       100us |  @7180us |     @7200us
-> > > > 5) TX desc 2       200us |  @7190us |     @7250us
-> > > > 6) TX desc 3       100us |  @7280us |     @7300us
-> > > > 7) TX desc 1       100us |  @7380us |     @7400us
-> > > > 8) TX desc 2       200us |  @7390us |     @7450us
-> > > > 9) TX desc 3       100us |  @7480us |     @7500us
-> > > > ...
-> > > >
-> > > > First DMA read is done at 6980us. This point in time is defined with the initial
-> > > > value of the "DMA start time" register. The following DMA reads are
-> > > > determined by
-> > > > the "dma_incr" values of the TX descriptors. Every DMA read is started before
-> > > > the Ethernet TX.
-> > > >
-> > > > First Ethernet TX is done at 7000us. This point in time is defined with the
-> > > > initial value of the "Ethernet TX start time" register. The following Ethernet
-> > > > TX times are determined by the "tx_incr" values of the TX descriptors.
-> > > >
-> > > > So the periodic TX schedule actually contains two schedules. One for DMA read
-> > > > and another one for Ethernet TX. As a result, the timing of DMA and Ethernet TX
-> > > > can be optimized independently from each other. The only restriction is that
-> > > > DMA has to be done before the corresponding Ethernet TX.
-> > >
-> > > At the risk of repeating what you said, here's what I could gather that
-> > > you would need.
-> > >
-> > >  1. Exclusive access of one application (or closely cooperating group of
-> > >     applications) to one TX ring;
-> > >  2. Direct access to the device DMA mapped memory;
-> > >  3. A way to configure the {DMA,TX} start times and the {DMA,TX}
-> > >     increments;
-> >
-> > Yes, that's a good summary.
-> >
-> > > > This periodic TX schedule has been used in a similar way for the
-> > > > EtherCAT fieldbus
-> > > > for nearly 10 years with positive experience. So for OPC UA Pub/Sub TSN it
-> > > > shall be used again.
-> > > >
-> > > > This periodic TX schedule does not fit to ETF, because ETF uses absolute time
-> > > > stamps and the timing is not known in advance. Additionally, the intention of
-> > > > the periodic TX schedule is that the real-time application writes the data
-> > > > directly to the TX descriptor ring. AF_XDP has a similar direction, but does
-> > > > not support any TX timing.
-> > >
-> > > That's the magic of AF_XDP, as it is only a data path abstraction, you
-> > > can move the control path somewhere else. One idea below.
-> >
-> > I assume you mean control path stuff like ethtool flow-type ether.
-> >
-> > > > I have no knowledge about any other Ethernet MAC which supports timed TX in
-> > > > a similar way like this device.
-> > > >
-> > > > Currently a simple device/driver specific interface is used. Similar to UIO it
-> > > > supports the mapping of registers of TX/RX queue pairs to user space. Every
-> > > > additional TX/RX queue pair has its own register set within a separate 4kB
-> > > > IO-memory. Thus, only the register sets of the additional TX/RX queue pairs are
-> > > > mapped to user space. Every TX/RX queue pair is more less a separate device,
-> > > > which can be operated independent of any other TX/RX queue pair. Additionally,
-> > > > this device/driver specific interface supports the mapping of DMA buffers.
-> > > >
-> > > > A similar approach has been used for years for the periodic TX schedule in
-> > > > combination with the EtherCAT fieldbus (out of tree driver). The main advantage
-> > > > of this approach is that no hard or soft IRQs are needed for operation. There is
-> > > > no need to increase to priority of soft IRQs, which can lead to real-time
-> > > > problems.
-> > > >
-> > > > Which user space interface shall be used for this periodic TX schedule? Is
-> > > > ETF or XDP an option? Shall UIO be used like for other real-time controllers?
-> > > > Is a device/driver specific interface the way to go, because no other Ethernet
-> > > > MAC has an interface like this?
-> > >
-> > > I think that AF_XDP (with zero copy) already has everything you need for
-> > > the data plane, (1) and (2) above.
-> >
-> > I'm not sure. AF_XDP ring size is a power of 2, but in my case the
-> > ring size is the
-> > number of Ethernet frames within the least common multiple of all cycle times.
-> > Also AF_XDP works like a FIFO, the Ethernet frames are transmitted one after the
-> > other. In my case every Ethernet frame has to be placed at a certain
-> > position in the
-> > TX ring. This can be done at any time before the transmission and does
-> > not need to
-> > match the transmission order.
-> > To be able to put the Ethernet frame at the right position in the TX
-> > ring additional
-> > information is required. Otherwise, the transmission time cannot be
-> > determined. At
-> > least some reference to the control plane (3) data is needed.
->
-> Yes, the AF_XDP rings are strictly FIFO, so you would have to consume
-> the descriptors in the driver in FIFO order and store them in some
-> buffer there so you can put them onto your HW in arbitrary order.
-> Would make your driver look very different from the other zero-copy
-> drivers that have zero buffering in the data path.
+Dear,
 
-That doesn't sound like a good fit to me. Zero-copy is something I would
-like to achieve. But hiding the periodic TX schedule behind the AF_XDP
-FIFO interface seems to be a misuse.
+I got your contact through the internet due to serious searching for a
+reliable personality.
+I am Mmamie Shimirah from Free Town Capital of Sierra Leone. Time of
+opposed to the government of President Ahmad Tejan Kebbah the
+ex-leader.
 
-> One thing to note is that entries in the completion ring are reserved
-> as a prerequisite for consuming a Tx ring entry. As you probably want
-> to buffer packets in the driver, you would have to have a completion
-> ring that is as least as large as the number of outstanding Tx packets
-> plus the number of buffered packets in your driver. Otherwise, the
-> application will not be able to send packets in all circumstances.
->
-> > > So what's seems to be really missing is the control plane, (3).
-> >
-> > At least for static timing information moving the timing information
-> > like {DMA,TX}
-> > start times and the {DMA,TX} increments out of the data plane should
-> > be possible.
-> > For runtime changes, e.g. add/remove Ethernet frames to/from TX schedule during
-> > operation, I'm not so sure, because data and control is tied together
-> > in the TX descriptor.
->
-> You probably want to stick this info in the metadata section before
-> the packet as done in this RFC [1]. This would be the Tx analogue of
-> the Rx part in [2]. Lot of work still remains here though.
+Since 21st November, 2005 But I am current residing in Calavi Benin
+Republic due to war of my country, my mother killed on 04/01/2002 for
+Sierra Leone civilian war my father decided to change another
+residence country with me because I am only child for my family bad
+news that my father passed away on 25/11/2018. During the war, My
+father made a lot of money through the illegal sales of Diamonds. To
+the tune of $10,200,000.
 
-XDP hints are new to me. Interesting to read for me as I know only little
-about BPF. Metadata like timestamps sounds reasonable to me. Not only
-for PTP, but also for diagnosis of timing problems in real-time applications
-(actual TX/RX time). Besides timestamps, my device supports additional
-metadata for diagnosis: DMA timing measurement (time until first/last dword).
+This money is currently and secretly kept in ECOWAS security company
+here in Porto-Novo Benin , but because of the political turmoil which
+still exists here in Africa, I can not invest the money by myself,
+hence am soliciting your help to help me take these funds into your
+custody and also advise me on how to invest it.
 
-> > > What I would do is something like this, I would add a few debugfs
-> > > entries to the driver allowing me to configure the "extra" per ring
-> > > parameters. This also gives some chance to see what is best format for
-> > > communicating those parameters to the driver.
-> > >
-> > > With that I could see if something is not quite working from the AF_XDP
-> > > side, fix those (I think the community will have some interest in having
-> > > these cases fixed) while discussing where is the best place to put those
-> > > configuration knobs. My first shot would be ethtool.
-> >
-> > Is it a possible future goal of AF_XDP to enable TX/RX of Ethernet
-> > frames without
-> > any kernel mode interactions? E.g. a hardware implementation of the AF_XDP
-> > interface, or some VDSO code for descriptor ring handling?
->
-> I have heard about people wanting to try to build a HW AF_XDP
-> implementation using an FPGA. Do not know if anything came through in
-> the end. Will dig around a bit.
->
-> As for the VDSO approach, what are you thinking there? To be able to
-> have different flavors of rings (or other structures) for
-> communication between user-space and kernel?
+And I want to add here that if agreed 35% of the total worth of the
+fund will be yours minus your total expenses incurred during the
+clearing of the fund in
+Porto Novo that if agreed 35% that's $3,570,000 I would like to invest
+on heavy duty agricultural equipment and earth moving machines to
+enable me go into a full scale mechanized farming.
 
-I would say yes. Hide the actual flavor of rings (or other structures) behind
-VDSO.
-
-Direct access to descriptor rings without kernel mode interaction is currently
-done the following way: Descriptor rings of network devices are mapped to
-user space. Device specific driver code is used to handle the descriptor ring
-(transfer ownership to hardware, check ownership, write frame to TX descriptor,
-read frame from RX descriptor, ...). This results in a device specific interface
-and makes the application device specific. But the application should not be
-tied to specific devices.
-
-Rough idea is, that device specific code is provided to user space over VDSO.
-Descriptor rings are mapped to user space and handled with device specific
-VDSO code. The VDSO functions are the interface, not the device specific
-descriptor ring. The application could rely on this interface and wouldn't be
-device specific.
-
-I assume that VDSO is not intended for that. But VDSO clock_gettime() is great.
-So my idea is to copy its "do it in user space if possible, but let the kernel
-determine how" approach.
-
->
-> [1] https://lists.xdp-project.net/xdp-hints/20210803010331.39453-1-ederson.desouza@intel.com/
-> [2] https://lore.kernel.org/bpf/20210526125848.1c7adbb0@carbon/
->
-> /Magnus
->
-> > > > I'm looking forward to your comments.
-> > > >
-> > > > Gerhard
-> > >
-> > > Cheers,
-> > > --
-> > > Vinicius
+While l wait to hear from you soon, my warm regards to you and your family.
