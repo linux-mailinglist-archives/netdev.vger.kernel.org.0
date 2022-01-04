@@ -2,106 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D03548490C
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 21:00:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99A8848491F
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 21:16:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232095AbiADUAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 15:00:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229962AbiADUAb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 15:00:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D8A2C061761;
-        Tue,  4 Jan 2022 12:00:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 330C86159D;
-        Tue,  4 Jan 2022 20:00:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 272F8C36AEB;
-        Tue,  4 Jan 2022 20:00:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641326429;
-        bh=sQBg8Y7qecsMNIktMN2imf4TjCv8rYLDyWd3vuZtTxE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QlF7Z3pV7qgO1ENoOkiP5b1vxTg+E++D8xbTtbWdRiMEnvjv/AdPzMAmCsqfoxjw/
-         1qyBn/+vH7kMNjkn3oxskahyN8iG6X+uTqnjdvU2y2g/aYH/urAygMV58yz6WiMnwd
-         Ac+mDyW32y2hvjWhKk/AR3T/UUzn7zqXjtlO2cz1mpJbKDto595jR0nuthP1B3yahG
-         SRQwaC8moqMP47Nd5ETkctcUOjcIzleVmoHj/CsG9RwNlALoDPsWKMF5AEJ5cLTY+q
-         2TMronwNzzdPTXr7gnar8jkURFzuVlInyPxj3EsXUeaokxVZ+BKY9+c1yBAy2VGYPZ
-         A8+Wcr/1La5uA==
-Date:   Tue, 4 Jan 2022 12:00:27 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Henning Schild <henning.schild@siemens.com>
-Cc:     Aaron Ma <aaron.ma@canonical.com>, <davem@davemloft.net>,
-        <hayeswang@realtek.com>, <tiwai@suse.de>,
-        <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: usb: r8152: Add MAC passthrough support for more
- Lenovo Docks
-Message-ID: <20220104120027.611f8830@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220104193455.6b8a21fc@md1za8fc.ad001.siemens.net>
-References: <20211116141917.31661-1-aaron.ma@canonical.com>
-        <20220104123814.32bf179e@md1za8fc.ad001.siemens.net>
-        <20220104065326.2a73f674@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <20220104180715.7ecb0980@md1za8fc.ad001.siemens.net>
-        <601815fe-a10e-fe48-254c-ed2ef1accffc@canonical.com>
-        <20220104193455.6b8a21fc@md1za8fc.ad001.siemens.net>
+        id S231579AbiADUQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 15:16:30 -0500
+Received: from mail-oi1-f180.google.com ([209.85.167.180]:38513 "EHLO
+        mail-oi1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230072AbiADUQ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 15:16:29 -0500
+Received: by mail-oi1-f180.google.com with SMTP id s73so61154502oie.5;
+        Tue, 04 Jan 2022 12:16:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=75KdaeRZ1jVa25k2aqyDkyMYUVMAqnMfp8vxvIY/EvM=;
+        b=xEk0wtRlgQQ9bO1CpmDfrw+bFyIWtrrl+/uN3pEHq0pz/J/o+qQjGWtOGN8M95+qYS
+         F4GqPPLx2p18iBW/70rc9XIz1ObIyP9sfDPb7VtkZsNgtodwiF46FeTzA2g3PPJV0X5L
+         NPMKCAzTz4erArOEuUgY0B/v4rQhIHPTi0ClWFmYhKBsWrCFTZgL7/ilYkeU8+7OFIim
+         Mx483ovykdZmXLg3va0GWo0KCDyuiOCQYcrVFSLzFqgXOqzwH8Gs9l5mFoiY8Kij9UX4
+         Sawyc9S7XfuUCNBY77rhh0a2VJgFBIFVcUE6lGiAYHbuImUT0zatbVHxxEEA5nAtSTFt
+         VWxg==
+X-Gm-Message-State: AOAM532hmmbZOk0K5nCiEspwD4NqBjS/n+TF508fCeWK4Jpd2Mvafiva
+        TeqKC26o0ypx04sui/jvjH0kyAh95Q==
+X-Google-Smtp-Source: ABdhPJwkJhG+egsjUnjaP/dqAPbfiVolA6ZKSBcVw6ZOEQkNx5bPZrT2/dlciwh//xOu4pUbzDKEGg==
+X-Received: by 2002:a05:6808:16a4:: with SMTP id bb36mr38016oib.112.1641327389124;
+        Tue, 04 Jan 2022 12:16:29 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id i28sm8164650otf.12.2022.01.04.12.16.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Jan 2022 12:16:28 -0800 (PST)
+Received: (nullmailer pid 1345397 invoked by uid 1000);
+        Tue, 04 Jan 2022 20:16:27 -0000
+Date:   Tue, 4 Jan 2022 14:16:27 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Subject: Re: [PATCH 3/5] dt-bindings: nvmem: allow referencing device defined
+ cells by names
+Message-ID: <YdSrG3EGDHMmhm1Y@robh.at.kernel.org>
+References: <20211223110755.22722-1-zajec5@gmail.com>
+ <20211223110755.22722-4-zajec5@gmail.com>
+ <CAL_JsqK2TMu+h4MgQqjN0bvEzqdhsEviBwWiiR9hfNbC5eOCKg@mail.gmail.com>
+ <f173d7a6-70e7-498f-8a04-b025c75f2b66@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f173d7a6-70e7-498f-8a04-b025c75f2b66@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 4 Jan 2022 19:34:55 +0100 Henning Schild wrote:
-> Am Wed, 5 Jan 2022 01:40:42 +0800
-> schrieb Aaron Ma <aaron.ma@canonical.com>:
-> > Yes, it's expected to be a mess if multiple r8152 are attached to
-> > Lenovo USB-C/TBT docks. The issue had been discussed for several
-> > times in LKML. Either lose this feature or add potential risk for
-> > multiple r8152.
+On Thu, Dec 23, 2021 at 10:58:56PM +0100, Rafał Miłecki wrote:
+> On 23.12.2021 22:18, Rob Herring wrote:
+> > On Thu, Dec 23, 2021 at 7:08 AM Rafał Miłecki <zajec5@gmail.com> wrote:
+> > > 
+> > > From: Rafał Miłecki <rafal@milecki.pl>
+> > > 
+> > > Not every NVMEM has predefined cells at hardcoded addresses. Some
+> > > devices store cells in internal structs and custom formats. Referencing
+> > > such cells is still required to let other bindings use them.
+> > > 
+> > > Modify binding to require "reg" xor "label". The later one can be used
+> > > to match "dynamic" NVMEM cells by their names.
 > > 
-> > The idea is to make the Dock work which only ship with one r8152.
-> > It's really hard to say r8152 is from dock or another plugin one.
-> > 
-> > If revert this patch, then most users with the original shipped dock
-> > may lose this feature. That's the problem this patch try to fix.  
+> > 'label' is supposed to correspond to a sticker on a port or something
+> > human identifiable. It generally should be something optional to
+> > making the OS functional. Yes, there are already some abuses of that,
+> > but this case is too far for me.
 > 
-> I understand that. But i would say people can not expect such a crap
-> feature on Linux, or we really need very good reasoning to cause MAC
-> collisions with the real PHY and on top claim ETOOMANY of the dongles.
+> Good to learn that!
 > 
-> The other vendors seem to check bits of the "golden" dongle. At least
-> that is how i understand BD/AD/BND_MASK
-> 
-> How about making it a module param and default to off, and dev_warn if
-> BIOS has it turned on. That sounds like a reasonable compromise and
-> whoever turns it on twice probably really wants it. (note that BIOS
-> defaults to on ... so that was never intended by users, and corporate
-> users might not be allowed/able to turn that off)
-> 
-> MACs change ... all the time, people should use radius x509. The
-> request is probably coming from corporate users, and they are all on a
-> zero trust journey and will eventually stop relying on MACs anyways.
-> 
-> And if ubuntu wants to cater by default, there can always be an udev
-> rule or setting that module param to "on".
+> "name" is special & not allowed I think.
 
-Let's split the problem into the clear regression caused by the patch
-and support of the feature on newer docks. I think we should fix the
-regression ASAP (the patch has also been backported to 5.15, so it's
-going to get more and more widely deployed). Then we can worry about
-the MAC addr copy on newer docks and the feature in a wider context.
-Is there really nothing in the usb info of the r8152 instance to
-indicate that it's part of the dock? Does the device have EEPROM which
-could contain useful info, maybe?
+It's the node name essentially. Why is using node names not sufficient? 
+Do you have some specific examples?
 
-> > For now I suggest to disable it in BIOS if you got multiple r8152.
-> > 
-> > Let me try to make some changes to limit this feature in one r8152.  
-> 
-> Which one? ;) And how to deal with the real NIC once you picked one?
-> Looking forward, please Cc me.
-
+Rob
