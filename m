@@ -2,102 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C463D4839EF
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 02:42:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8E6C4839CA
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 02:27:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231829AbiADBmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 3 Jan 2022 20:42:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49704 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230341AbiADBmS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 20:42:18 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FBBC061761;
-        Mon,  3 Jan 2022 17:42:18 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id l15so11204986pls.7;
-        Mon, 03 Jan 2022 17:42:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=o6C20VmBcv+nmS+7ue+qVqUNPArDkdLd7xrcun84wt8=;
-        b=bdkRCfqMEAEppLm3HcDbB+ar7oAYffrj58ZEQEMUvQmbROu+aHoMhPKBK9A1i5xA4f
-         jDmwafAkvbrpSvIPPZlLtTg6hziyRIePDf5FxTOb3dyZ2JMKp5EgTIrGdCr816YUK0j6
-         nx/AUbTGLzXnShl5ZZXoq5AJyui2TWNcEXgxMtFGqoBuVr/yGPng7tjGo9pO8v6bsu/s
-         rZyBntxf998bzFWRRYon7d5LAl2peja5d65Lhf4um4r+7MGDOnsCNr3u9VInbY9A81ce
-         PufLGZJwMDeg413pp1d8ElYKiKGB1fX+PEM4+R2ws3nDlpSpo+MEeHTCiLM9AQAhmthJ
-         VSZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=o6C20VmBcv+nmS+7ue+qVqUNPArDkdLd7xrcun84wt8=;
-        b=sPBNYGmyWsmoqtExLSFQG31jTkm6KSqWTDKhqdc8+Z2mEfjc0UM3ls3gSHbd2D/e9C
-         1OatNxm5ywJqxIagGd5RL/0dSm/aqnTSQwxXll3uiOVzsH9gTLLc0JDGcDI+xs1yA0MC
-         yEVzp1TVZDcnF3rv11dIfnKW22V0W5uEBie2kWp3LPJoEhnH5Op3gyP/aciyVM5IXxDD
-         fMzy+DARjIyad42H6qmtSBqQT+l98OfR66iHXy/y2uWA82wtdAeha6Z6uTGivgsVjgpX
-         GaL8It4s+0Cz0U/+jMKfRW2mJFWq+MgB6SJ9zcEals+o4gta+JZhizFJtW10aYsupEDV
-         +pUg==
-X-Gm-Message-State: AOAM531FbGRbfkneWHZ2LIkG6oDDWyYCl1kMceRubtvpqcv5XERXByGG
-        fYE7Nsj1i5juGOw5t+yYObo=
-X-Google-Smtp-Source: ABdhPJxhi4U0dfEuYH6XId7KcJPjpuFjGFYp/j4ZZlZGGKolygfkz3YGRy3onHs8SYrK9/BlnB6ZGA==
-X-Received: by 2002:a17:902:e549:b0:149:ad2b:f0fa with SMTP id n9-20020a170902e54900b00149ad2bf0famr16188568plf.123.1641260537866;
-        Mon, 03 Jan 2022 17:42:17 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id pg12sm43916433pjb.4.2022.01.03.17.42.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Jan 2022 17:42:17 -0800 (PST)
-Date:   Mon, 3 Jan 2022 17:42:15 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        David Miller <davem@davemloft.net>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-Message-ID: <20220104014215.GA20062@hoboy.vegasvil.org>
-References: <20220103232555.19791-4-richardcochran@gmail.com>
- <YdOMlfbMH9b553V/@shell.armlinux.org.uk>
+        id S231731AbiADB1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 3 Jan 2022 20:27:24 -0500
+Received: from szxga08-in.huawei.com ([45.249.212.255]:31065 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229617AbiADB1X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 3 Jan 2022 20:27:23 -0500
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JSZdS28Xsz1DKM0;
+        Tue,  4 Jan 2022 09:23:56 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
+ (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Tue, 4 Jan
+ 2022 09:27:20 +0800
+From:   Hou Tao <houtao1@huawei.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <houtao1@huawei.com>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH bpf] bpf, arm64: calculate offset as byte-offset for bpf line info
+Date:   Tue, 4 Jan 2022 09:42:36 +0800
+Message-ID: <20220104014236.1512639-1-houtao1@huawei.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YdOMlfbMH9b553V/@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 03, 2022 at 11:53:57PM +0000, Russell King (Oracle) wrote:
-> On Mon, Jan 03, 2022 at 03:25:54PM -0800, Richard Cochran wrote:
-> > Make the sysfs knob writable, and add checks in the ioctl and time
-> > stamping paths to respect the currently selected time stamping layer.
-> > 
-> > Signed-off-by: Richard Cochran <richardcochran@gmail.com>
-> 
-> As I stated for patch 2, this patch will break mvpp2 PTP support,
-> since as soon as we bind a PHY, whether or not it supports PTP, you
-> will switch "selected_timestamping_layer" to be PHY mode PTP, and
-> direct all PTP calls to the PHY layer whether or not the PHY has
-> PTP support, away from the MAC layer.
+The bpf line info for arm64 is broken due to two reasons:
+(1) insn_to_jit_off passed to bpf_prog_fill_jited_linfo() is
+    calculated in instruction granularity instead of bytes
+    granularity.
+(2) insn_to_jit_off only considers the body itself and ignores
+    prologue before the body.
 
-Oh, that was a brain fart of mine.
+So fix it by calculating offset as byte-offset and do build_prologue()
+first in the first JIT pass.
 
-I'll amend that to switch selected_timestamping_layer only if the PHY
-does support time stamping.
+Fixes: 37ab566c178d ("bpf: arm64: Enable arm64 jit to provide bpf_line_info")
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+---
+ arch/arm64/net/bpf_jit_comp.c | 27 +++++++++++++++++----------
+ 1 file changed, 17 insertions(+), 10 deletions(-)
 
-IMO, the default should be PHY because up until now the PHY layer was
-prefered.
-
-Or would you say the MAC layer should take default priority?
-
-(that may well break some existing systems)
-
-Thanks,
-Richard
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index 148ca51325bb..d7a6d4b523c9 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -24,6 +24,8 @@
+ 
+ #include "bpf_jit.h"
+ 
++#define INSN_SZ (sizeof(u32))
++
+ #define TMP_REG_1 (MAX_BPF_JIT_REG + 0)
+ #define TMP_REG_2 (MAX_BPF_JIT_REG + 1)
+ #define TCALL_CNT (MAX_BPF_JIT_REG + 2)
+@@ -154,10 +156,11 @@ static inline int bpf2a64_offset(int bpf_insn, int off,
+ 	bpf_insn++;
+ 	/*
+ 	 * Whereas arm64 branch instructions encode the offset
+-	 * from the branch itself, so we must subtract 1 from the
++	 * from the branch itself, so we must subtract 4 from the
+ 	 * instruction offset.
+ 	 */
+-	return ctx->offset[bpf_insn + off] - (ctx->offset[bpf_insn] - 1);
++	return (ctx->offset[bpf_insn + off] -
++		(ctx->offset[bpf_insn] - INSN_SZ)) / INSN_SZ;
+ }
+ 
+ static void jit_fill_hole(void *area, unsigned int size)
+@@ -955,13 +958,14 @@ static int build_body(struct jit_ctx *ctx, bool extra_pass)
+ 		const struct bpf_insn *insn = &prog->insnsi[i];
+ 		int ret;
+ 
++		/* BPF line info needs byte-offset instead of insn-offset */
+ 		if (ctx->image == NULL)
+-			ctx->offset[i] = ctx->idx;
++			ctx->offset[i] = ctx->idx * INSN_SZ;
+ 		ret = build_insn(insn, ctx, extra_pass);
+ 		if (ret > 0) {
+ 			i++;
+ 			if (ctx->image == NULL)
+-				ctx->offset[i] = ctx->idx;
++				ctx->offset[i] = ctx->idx * INSN_SZ;
+ 			continue;
+ 		}
+ 		if (ret)
+@@ -973,7 +977,7 @@ static int build_body(struct jit_ctx *ctx, bool extra_pass)
+ 	 * instruction (end of program)
+ 	 */
+ 	if (ctx->image == NULL)
+-		ctx->offset[i] = ctx->idx;
++		ctx->offset[i] = ctx->idx * INSN_SZ;
+ 
+ 	return 0;
+ }
+@@ -1058,15 +1062,18 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 		goto out_off;
+ 	}
+ 
+-	/* 1. Initial fake pass to compute ctx->idx. */
+-
+-	/* Fake pass to fill in ctx->offset. */
+-	if (build_body(&ctx, extra_pass)) {
++	/*
++	 * 1. Initial fake pass to compute ctx->idx and ctx->offset.
++	 *
++	 * BPF line info needs ctx->offset[i] to be the byte offset
++	 * of instruction[i] in jited image, so build prologue first.
++	 */
++	if (build_prologue(&ctx, was_classic)) {
+ 		prog = orig_prog;
+ 		goto out_off;
+ 	}
+ 
+-	if (build_prologue(&ctx, was_classic)) {
++	if (build_body(&ctx, extra_pass)) {
+ 		prog = orig_prog;
+ 		goto out_off;
+ 	}
+-- 
+2.27.0
 
