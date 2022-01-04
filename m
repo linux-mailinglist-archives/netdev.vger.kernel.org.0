@@ -2,701 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D915C483FB2
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 11:17:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A76483FBE
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 11:21:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231183AbiADKQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 05:16:52 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:21184 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231162AbiADKQt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 05:16:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1641291409; x=1672827409;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=c1L4UTWjcmNA1opPDwPMCnanHkAdqC2D6FZ4IxOyuBc=;
-  b=SvB9bsf6ZC8YQbu0C+2eD0WQyaMlyi/lfV4uFpJ8885QIswX1jprW+8t
-   rzySvYEFAZqoGP3KOh+kahky6G3WrhFtY6ibzkn4U5oHTwg7R4MxB+AhR
-   Qt71Z0TUri3BGNf/oFhY5ZbchChNTW2vSNaN5LplaBzsFy3Zv2LN0T7MT
-   82VU3fvQVnGVRFFDql2tcWWY9J5gOX1tmorvSYsfcRP8I11FMx48qULfd
-   Z1ownJwsm9dsmX6hXnwQlrvZOlWDpZ0ulD+qe5DGWQ6hNSaRErwmwwtot
-   FzqudSxOa4lWfegYbgbOZ5Wp9HfUXDU7uu+rMMGbYw8k4appaDf9Hm7/V
-   A==;
-IronPort-SDR: TT01TkbcQJFk3ObIXOvTvHWrZJTLeuPr+u9N5uRVMYfycjfItxQ2Ea3RGXKuhn4+Wgsg0wtbiO
- ouXPIGrABbI++ptkmtjxBaTt0EU4h+nBzuzEVe15TWdwENbPWkVxgD6WqxQ2J3LMcsLN65G90H
- 8UX3aF6aLsyY+8JtRbPEc6Y1hclcRNcf9b/sgdJUekklgxRctkPLvmxtSCkKyAq8O7hZuLh5bX
- smZ5HbS6EPOCs+oieMLEAn5tXwEsPweORhEg8Jk2KqlyljwMtNaCjxUzkcbxS7NTeyGaPNdPa8
- eyKUT9RcHb7DopBTLypKpuV4
-X-IronPort-AV: E=Sophos;i="5.88,260,1635231600"; 
-   d="scan'208";a="141568095"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jan 2022 03:16:48 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 4 Jan 2022 03:16:48 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 4 Jan 2022 03:16:46 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <f.fainelli@gmail.com>,
-        <vivien.didelot@gmail.com>, <vladimir.oltean@nxp.com>,
-        <andrew@lunn.ch>, Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2 3/3] net: lan966x: Extend switchdev with mdb support
-Date:   Tue, 4 Jan 2022 11:18:49 +0100
-Message-ID: <20220104101849.229195-4-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220104101849.229195-1-horatiu.vultur@microchip.com>
-References: <20220104101849.229195-1-horatiu.vultur@microchip.com>
+        id S231259AbiADKVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 05:21:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231241AbiADKVf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 05:21:35 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6377C061799
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 02:21:34 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id jw3so30939242pjb.4
+        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 02:21:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to;
+        bh=DBlJz4rdiNS/shMCu/W7JY3Y+o5SlWJ0bra0UFgmHMM=;
+        b=EOaJvRAmABIWqjSjqmFvY0c5O8SbK9eWLC3IH13B7uA+s7TfEBxhqNtnNwK3x3K2NP
+         QqgDhfWb8pf38+7BvvEzXg0ODMDXBJpw1yQZ+XjYMSAg9Ckl+blZPtEBZJag/Qt530Cf
+         6Cug+yhmIej/3fnmvcRYNRI5p+jmNcKN5ua4M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to;
+        bh=DBlJz4rdiNS/shMCu/W7JY3Y+o5SlWJ0bra0UFgmHMM=;
+        b=GBw2iQKZShbfLwtay/DChqmaElZDKxKtY2vVt34WicNOXSk69ZTtgwmDbrMeUoftu/
+         qTYZwuSJsxYgDOlVECw/XhtoRxjojQtm6IldO5j1vlqee/geQr9pAbppG2klmsWVzLDP
+         MtCljsVVR3ASTOGSMu5MZtNz/c6nB9avdzeg0qDEtdoNtndamGN+LOu6m/rmUrzzLSDB
+         1KMZLfjuvV/Vs4uLl7rFA/FFQifRpMQE+2VOqknaigKMhPvG2X79QenYwspGKC8Du62M
+         SuxAfRqgCySbc0PG9IehkFgbNfA3yDs/GcKgmB1Y+cpo1H+R5dySnlPcjiscgtMw8oT4
+         jApQ==
+X-Gm-Message-State: AOAM533wq73q8ZAmdNnDi10ZeKg5wPkV5jHt/vtU0yl4uqQ8G9pOLeZ9
+        kiIfqaPx7PREVn3dth/e4v1WgA==
+X-Google-Smtp-Source: ABdhPJxt6OBthtvvZrLi+n+/1plQapFxmWrH4JXTjsSi2R+JGB6b5nzVoeHEvKC19iRBP2wNlW/OHw==
+X-Received: by 2002:a17:903:183:b0:149:2b6:65ff with SMTP id z3-20020a170903018300b0014902b665ffmr48440359plg.128.1641291694198;
+        Tue, 04 Jan 2022 02:21:34 -0800 (PST)
+Received: from [192.168.178.242] (f140230.upc-f.chello.nl. [80.56.140.230])
+        by smtp.gmail.com with ESMTPSA id h7sm42646573pfc.152.2022.01.04.02.21.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Jan 2022 02:21:33 -0800 (PST)
+Message-ID: <a50d7d46-9298-3d4b-049d-4b3360c6efa7@broadcom.com>
+Date:   Tue, 4 Jan 2022 11:21:24 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v2 16/35] brcmfmac: acpi: Add support for fetching Apple
+ ACPI properties
+To:     Hector Martin <marcan@marcan.st>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20220104072658.69756-1-marcan@marcan.st>
+ <20220104072658.69756-17-marcan@marcan.st>
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+In-Reply-To: <20220104072658.69756-17-marcan@marcan.st>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000006d9a0805d4bf002e"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend lan966x driver with mdb support by implementing the switchdev
-calls: SWITCHDEV_OBJ_ID_PORT_MDB and SWITCHDEV_OBJ_ID_HOST_MDB.
-It is allowed to add both ipv4/ipv6 entries and l2 entries. To add
-ipv4/ipv6 entries is not required to use the PGID table while for l2
-entries it is required. The PGID table is much smaller than MAC table
-so only fewer l2 entries can be added.
+--0000000000006d9a0805d4bf002e
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
- .../ethernet/microchip/lan966x/lan966x_main.c |   2 +
- .../ethernet/microchip/lan966x/lan966x_main.h |  13 +
- .../ethernet/microchip/lan966x/lan966x_mdb.c  | 487 ++++++++++++++++++
- .../microchip/lan966x/lan966x_switchdev.c     |   8 +
- .../ethernet/microchip/lan966x/lan966x_vlan.c |   7 +-
- 6 files changed, 517 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_mdb.c
+On 1/4/2022 8:26 AM, Hector Martin wrote:
+> On DT platforms, the module-instance and antenna-sku-info properties
+> are passed in the DT. On ACPI platforms, module-instance is passed via
+> the analogous Apple device property mechanism, while the antenna SKU
+> info is instead obtained via an ACPI method that grabs it from
+> non-volatile storage.
+> 
+> Add support for this, to allow proper firmware selection on Apple
+> platforms.
+> 
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+>   .../broadcom/brcm80211/brcmfmac/Makefile      |  2 +
+>   .../broadcom/brcm80211/brcmfmac/acpi.c        | 47 +++++++++++++++++++
+>   .../broadcom/brcm80211/brcmfmac/common.c      |  1 +
+>   .../broadcom/brcm80211/brcmfmac/common.h      |  9 ++++
+>   4 files changed, 59 insertions(+)
+>   create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/acpi.c
+> 
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/Makefile b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/Makefile
+> index 13c13504a6e8..19009eb9db93 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/Makefile
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/Makefile
+> @@ -47,3 +47,5 @@ brcmfmac-$(CONFIG_OF) += \
+>   		of.o
+>   brcmfmac-$(CONFIG_DMI) += \
+>   		dmi.o
+> +brcmfmac-$(CONFIG_ACPI) += \
+> +		acpi.o
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/acpi.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/acpi.c
+> new file mode 100644
+> index 000000000000..2b1a4448b291
+> --- /dev/null
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/acpi.c
+> @@ -0,0 +1,47 @@
+> +// SPDX-License-Identifier: ISC
+> +/*
+> + * Copyright The Asahi Linux Contributors
+> + */
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/Makefile b/drivers/net/ethernet/microchip/lan966x/Makefile
-index ec1a1fa8b0d5..040cfff9f577 100644
---- a/drivers/net/ethernet/microchip/lan966x/Makefile
-+++ b/drivers/net/ethernet/microchip/lan966x/Makefile
-@@ -7,4 +7,4 @@ obj-$(CONFIG_LAN966X_SWITCH) += lan966x-switch.o
- 
- lan966x-switch-objs  := lan966x_main.o lan966x_phylink.o lan966x_port.o \
- 			lan966x_mac.o lan966x_ethtool.o lan966x_switchdev.o \
--			lan966x_vlan.o lan966x_fdb.o
-+			lan966x_vlan.o lan966x_fdb.o lan966x_mdb.o
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 2c6bf7b0afdf..2cb70da63db3 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -926,6 +926,7 @@ static int lan966x_probe(struct platform_device *pdev)
- 		lan966x_port_init(lan966x->ports[p]);
- 	}
- 
-+	lan966x_mdb_init(lan966x);
- 	err = lan966x_fdb_init(lan966x);
- 	if (err)
- 		goto cleanup_ports;
-@@ -955,6 +956,7 @@ static int lan966x_remove(struct platform_device *pdev)
- 	mutex_destroy(&lan966x->stats_lock);
- 
- 	lan966x_mac_purge_entries(lan966x);
-+	lan966x_mdb_deinit(lan966x);
- 	lan966x_fdb_deinit(lan966x);
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index 190d62ced3fd..b6c9ec7b5253 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -107,6 +107,10 @@ struct lan966x {
- 	/* worqueue for fdb */
- 	struct workqueue_struct *fdb_work;
- 	struct list_head fdb_entries;
-+
-+	/* mdb */
-+	struct list_head mdb_entries;
-+	struct list_head pgid_entries;
- };
- 
- struct lan966x_port_config {
-@@ -213,6 +217,15 @@ int lan966x_handle_fdb(struct net_device *dev,
- 		       unsigned long event, const void *ctx,
- 		       const struct switchdev_notifier_fdb_info *fdb_info);
- 
-+void lan966x_mdb_init(struct lan966x *lan966x);
-+void lan966x_mdb_deinit(struct lan966x *lan966x);
-+int lan966x_handle_port_mdb_add(struct lan966x_port *port,
-+				const struct switchdev_obj *obj);
-+int lan966x_handle_port_mdb_del(struct lan966x_port *port,
-+				const struct switchdev_obj *obj);
-+void lan966x_mdb_erase_entries(struct lan966x *lan966x, u16 vid);
-+void lan966x_mdb_write_entries(struct lan966x *lan966x, u16 vid);
-+
- static inline void __iomem *lan_addr(void __iomem *base[],
- 				     int id, int tinst, int tcnt,
- 				     int gbase, int ginst,
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mdb.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mdb.c
-new file mode 100644
-index 000000000000..0caee4103406
---- /dev/null
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mdb.c
-@@ -0,0 +1,487 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+
-+#include <net/switchdev.h>
-+
-+#include "lan966x_main.h"
-+
-+struct lan966x_pgid_entry {
-+	struct list_head list;
-+	int index;
-+	refcount_t refcount;
-+	u16 ports;
-+};
-+
-+struct lan966x_mdb_entry {
-+	struct list_head list;
-+	unsigned char mac[ETH_ALEN];
-+	u16 vid;
-+	u16 ports;
-+	struct lan966x_pgid_entry *pgid;
-+	u8 cpu_copy;
-+};
-+
-+void lan966x_mdb_init(struct lan966x *lan966x)
-+{
-+	INIT_LIST_HEAD(&lan966x->mdb_entries);
-+	INIT_LIST_HEAD(&lan966x->pgid_entries);
-+}
-+
-+static void lan966x_mdb_purge_mdb_entries(struct lan966x *lan966x)
-+{
-+	struct lan966x_mdb_entry *mdb_entry, *tmp;
-+
-+	list_for_each_entry_safe(mdb_entry, tmp, &lan966x->mdb_entries, list) {
-+		list_del(&mdb_entry->list);
-+		kfree(mdb_entry);
-+	}
-+}
-+
-+static void lan966x_mdb_purge_pgid_entries(struct lan966x *lan966x)
-+{
-+	struct lan966x_pgid_entry *pgid_entry, *tmp;
-+
-+	list_for_each_entry_safe(pgid_entry, tmp, &lan966x->pgid_entries, list) {
-+		list_del(&pgid_entry->list);
-+		kfree(pgid_entry);
-+	}
-+}
-+
-+void lan966x_mdb_deinit(struct lan966x *lan966x)
-+{
-+	lan966x_mdb_purge_mdb_entries(lan966x);
-+	lan966x_mdb_purge_pgid_entries(lan966x);
-+}
-+
-+static struct lan966x_mdb_entry *
-+lan966x_mdb_entry_get(struct lan966x *lan966x,
-+		      const unsigned char *mac,
-+		      u16 vid)
-+{
-+	struct lan966x_mdb_entry *mdb_entry;
-+
-+	list_for_each_entry(mdb_entry, &lan966x->mdb_entries, list) {
-+		if (ether_addr_equal(mdb_entry->mac, mac) &&
-+		    mdb_entry->vid == vid)
-+			return mdb_entry;
-+	}
-+
-+	return NULL;
-+}
-+
-+static struct lan966x_mdb_entry *
-+lan966x_mdb_entry_add(struct lan966x *lan966x,
-+		      const struct switchdev_obj_port_mdb *mdb)
-+{
-+	struct lan966x_mdb_entry *mdb_entry;
-+
-+	mdb_entry = kzalloc(sizeof(*mdb_entry), GFP_KERNEL);
-+	if (!mdb_entry)
-+		return ERR_PTR(-ENOMEM);
-+
-+	ether_addr_copy(mdb_entry->mac, mdb->addr);
-+	mdb_entry->vid = mdb->vid;
-+
-+	list_add_tail(&mdb_entry->list, &lan966x->mdb_entries);
-+
-+	return mdb_entry;
-+}
-+
-+static void lan966x_mdb_encode_mac(unsigned char *mac,
-+				   struct lan966x_mdb_entry *mdb_entry,
-+				   enum macaccess_entry_type type)
-+{
-+	ether_addr_copy(mac, mdb_entry->mac);
-+
-+	if (type == ENTRYTYPE_MACV4) {
-+		mac[0] = 0;
-+		mac[1] = mdb_entry->ports >> 8;
-+		mac[2] = mdb_entry->ports & 0xff;
-+	} else if (type == ENTRYTYPE_MACV6) {
-+		mac[0] = mdb_entry->ports >> 8;
-+		mac[1] = mdb_entry->ports & 0xff;
-+	}
-+}
-+
-+static int lan966x_mdb_ip_add(struct lan966x_port *port,
-+			      const struct switchdev_obj_port_mdb *mdb,
-+			      enum macaccess_entry_type type)
-+{
-+	bool cpu_port = netif_is_bridge_master(mdb->obj.orig_dev);
-+	struct lan966x *lan966x = port->lan966x;
-+	struct lan966x_mdb_entry *mdb_entry;
-+	unsigned char mac[ETH_ALEN];
-+	bool cpu_copy = false;
-+
-+	mdb_entry = lan966x_mdb_entry_get(lan966x, mdb->addr, mdb->vid);
-+	if (!mdb_entry) {
-+		mdb_entry = lan966x_mdb_entry_add(lan966x, mdb);
-+		if (IS_ERR(mdb_entry))
-+			return PTR_ERR(mdb_entry);
-+	} else {
-+		lan966x_mdb_encode_mac(mac, mdb_entry, type);
-+		lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
-+	}
-+
-+	if (cpu_port)
-+		mdb_entry->cpu_copy++;
-+	else
-+		mdb_entry->ports |= BIT(port->chip_port);
-+
-+	/* Copy the frame to CPU only if the CPU is in the VLAN */
-+	if (lan966x_vlan_cpu_member_cpu_vlan_mask(lan966x, mdb_entry->vid) &&
-+	    mdb_entry->cpu_copy)
-+		cpu_copy = true;
-+
-+	lan966x_mdb_encode_mac(mac, mdb_entry, type);
-+	return lan966x_mac_ip_learn(lan966x, cpu_copy,
-+				    mac, mdb_entry->vid, type);
-+}
-+
-+static int lan966x_mdb_ip_del(struct lan966x_port *port,
-+			      const struct switchdev_obj_port_mdb *mdb,
-+			      enum macaccess_entry_type type)
-+{
-+	bool cpu_port = netif_is_bridge_master(mdb->obj.orig_dev);
-+	struct lan966x *lan966x = port->lan966x;
-+	struct lan966x_mdb_entry *mdb_entry;
-+	unsigned char mac[ETH_ALEN];
-+
-+	mdb_entry = lan966x_mdb_entry_get(lan966x, mdb->addr, mdb->vid);
-+	if (!mdb_entry)
-+		return -ENOENT;
-+
-+	lan966x_mdb_encode_mac(mac, mdb_entry, type);
-+	lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
-+
-+	if (cpu_port)
-+		mdb_entry->cpu_copy--;
-+	else
-+		mdb_entry->ports &= ~BIT(port->chip_port);
-+
-+	if (!mdb_entry->ports && !mdb_entry->cpu_copy) {
-+		list_del(&mdb_entry->list);
-+		kfree(mdb_entry);
-+		return 0;
-+	}
-+
-+	lan966x_mdb_encode_mac(mac, mdb_entry, type);
-+	return lan966x_mac_ip_learn(lan966x, mdb_entry->cpu_copy,
-+				    mac, mdb_entry->vid, type);
-+}
-+
-+static struct lan966x_pgid_entry *
-+lan966x_pgid_entry_add(struct lan966x *lan966x, int index, u16 ports)
-+{
-+	struct lan966x_pgid_entry *pgid_entry;
-+
-+	pgid_entry = kzalloc(sizeof(*pgid_entry), GFP_KERNEL);
-+	if (!pgid_entry)
-+		return ERR_PTR(-ENOMEM);
-+
-+	pgid_entry->ports = ports;
-+	pgid_entry->index = index;
-+	refcount_set(&pgid_entry->refcount, 1);
-+
-+	list_add_tail(&pgid_entry->list, &lan966x->pgid_entries);
-+
-+	return pgid_entry;
-+}
-+
-+static struct lan966x_pgid_entry *
-+lan966x_pgid_entry_get(struct lan966x *lan966x,
-+		       struct lan966x_mdb_entry *mdb_entry)
-+{
-+	struct lan966x_pgid_entry *pgid_entry;
-+	int index;
-+
-+	/* Try to find an existing pgid that uses the same ports as the
-+	 * mdb_entry
-+	 */
-+	list_for_each_entry(pgid_entry, &lan966x->pgid_entries, list) {
-+		if (pgid_entry->ports == mdb_entry->ports) {
-+			refcount_inc(&pgid_entry->refcount);
-+			return pgid_entry;
-+		}
-+	}
-+
-+	/* Try to find an empty pgid entry and allocate one in case it finds it,
-+	 * otherwise it means that there are no more resources
-+	 */
-+	for (index = PGID_FIRST; index < PGID_LAST; index++) {
-+		bool used = false;
-+
-+		list_for_each_entry(pgid_entry, &lan966x->pgid_entries, list) {
-+			if (pgid_entry->index == index) {
-+				used = true;
-+				break;
-+			}
-+		}
-+
-+		if (!used)
-+			return lan966x_pgid_entry_add(lan966x, index,
-+						      mdb_entry->ports);
-+	}
-+
-+	return ERR_PTR(-ENOSPC);
-+}
-+
-+static void lan966x_pgid_entry_del(struct lan966x *lan966x,
-+				   struct lan966x_pgid_entry *pgid_entry)
-+{
-+	if (!refcount_dec_and_test(&pgid_entry->refcount))
-+		return;
-+
-+	list_del(&pgid_entry->list);
-+	kfree(pgid_entry);
-+}
-+
-+static int lan966x_mdb_l2_add(struct lan966x_port *port,
-+			      const struct switchdev_obj_port_mdb *mdb,
-+			      enum macaccess_entry_type type)
-+{
-+	bool cpu_port = netif_is_bridge_master(mdb->obj.orig_dev);
-+	struct lan966x *lan966x = port->lan966x;
-+	struct lan966x_pgid_entry *pgid_entry;
-+	struct lan966x_mdb_entry *mdb_entry;
-+	unsigned char mac[ETH_ALEN];
-+
-+	mdb_entry = lan966x_mdb_entry_get(lan966x, mdb->addr, mdb->vid);
-+	if (!mdb_entry) {
-+		mdb_entry = lan966x_mdb_entry_add(lan966x, mdb);
-+		if (IS_ERR(mdb_entry))
-+			return PTR_ERR(mdb_entry);
-+	} else {
-+		lan966x_pgid_entry_del(lan966x, mdb_entry->pgid);
-+		lan966x_mdb_encode_mac(mac, mdb_entry, type);
-+		lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
-+	}
-+
-+	if (cpu_port) {
-+		mdb_entry->ports |= BIT(CPU_PORT);
-+		mdb_entry->cpu_copy++;
-+	} else {
-+		mdb_entry->ports |= BIT(port->chip_port);
-+	}
-+
-+	pgid_entry = lan966x_pgid_entry_get(lan966x, mdb_entry);
-+	if (IS_ERR(pgid_entry)) {
-+		list_del(&mdb_entry->list);
-+		kfree(mdb_entry);
-+		return PTR_ERR(pgid_entry);
-+	}
-+	mdb_entry->pgid = pgid_entry;
-+
-+	/* Copy the frame to CPU only if the CPU is in the VLAN */
-+	if (!lan966x_vlan_cpu_member_cpu_vlan_mask(lan966x, mdb_entry->vid) &&
-+	    mdb_entry->cpu_copy)
-+		mdb_entry->ports &= BIT(CPU_PORT);
-+
-+	lan_rmw(ANA_PGID_PGID_SET(mdb_entry->ports),
-+		ANA_PGID_PGID,
-+		lan966x, ANA_PGID(pgid_entry->index));
-+
-+	return lan966x_mac_learn(lan966x, pgid_entry->index, mdb_entry->mac,
-+				 mdb_entry->vid, type);
-+}
-+
-+static int lan966x_mdb_l2_del(struct lan966x_port *port,
-+			      const struct switchdev_obj_port_mdb *mdb,
-+			      enum macaccess_entry_type type)
-+{
-+	bool cpu_port = netif_is_bridge_master(mdb->obj.orig_dev);
-+	struct lan966x *lan966x = port->lan966x;
-+	struct lan966x_pgid_entry *pgid_entry;
-+	struct lan966x_mdb_entry *mdb_entry;
-+	unsigned char mac[ETH_ALEN];
-+
-+	mdb_entry = lan966x_mdb_entry_get(lan966x, mdb->addr, mdb->vid);
-+	if (!mdb_entry)
-+		return -ENOENT;
-+
-+	lan966x_mdb_encode_mac(mac, mdb_entry, type);
-+	lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
-+	lan966x_pgid_entry_del(lan966x, mdb_entry->pgid);
-+
-+	if (cpu_port) {
-+		mdb_entry->cpu_copy--;
-+		if (!mdb_entry->cpu_copy)
-+			mdb_entry->ports &= ~BIT(CPU_PORT);
-+	} else {
-+		mdb_entry->ports &= ~BIT(port->chip_port);
-+	}
-+
-+	if (!mdb_entry->ports) {
-+		list_del(&mdb_entry->list);
-+		kfree(mdb_entry);
-+		return 0;
-+	}
-+
-+	pgid_entry = lan966x_pgid_entry_get(lan966x, mdb_entry);
-+	if (IS_ERR(pgid_entry)) {
-+		list_del(&mdb_entry->list);
-+		kfree(mdb_entry);
-+		return PTR_ERR(pgid_entry);
-+	}
-+	mdb_entry->pgid = pgid_entry;
-+
-+	lan_rmw(ANA_PGID_PGID_SET(mdb_entry->ports),
-+		ANA_PGID_PGID,
-+		lan966x, ANA_PGID(pgid_entry->index));
-+
-+	return lan966x_mac_learn(lan966x, pgid_entry->index, mdb_entry->mac,
-+				 mdb_entry->vid, type);
-+}
-+
-+static enum macaccess_entry_type
-+lan966x_mdb_classify(const unsigned char *mac)
-+{
-+	if (mac[0] == 0x01 && mac[1] == 0x00 && mac[2] == 0x5e)
-+		return ENTRYTYPE_MACV4;
-+	if (mac[0] == 0x33 && mac[1] == 0x33)
-+		return ENTRYTYPE_MACV6;
-+	return ENTRYTYPE_LOCKED;
-+}
-+
-+int lan966x_handle_port_mdb_add(struct lan966x_port *port,
-+				const struct switchdev_obj *obj)
-+{
-+	const struct switchdev_obj_port_mdb *mdb = SWITCHDEV_OBJ_PORT_MDB(obj);
-+	enum macaccess_entry_type type;
-+
-+	/* Split the way the entries are added for ipv4/ipv6 and for l2. The
-+	 * reason is that for ipv4/ipv6 it doesn't require to use any pgid
-+	 * entry, while for l2 is required to use pgid entries
-+	 */
-+	type = lan966x_mdb_classify(mdb->addr);
-+	if (type == ENTRYTYPE_MACV4 || type == ENTRYTYPE_MACV6)
-+		return lan966x_mdb_ip_add(port, mdb, type);
-+
-+	return lan966x_mdb_l2_add(port, mdb, type);
-+}
-+
-+int lan966x_handle_port_mdb_del(struct lan966x_port *port,
-+				const struct switchdev_obj *obj)
-+{
-+	const struct switchdev_obj_port_mdb *mdb = SWITCHDEV_OBJ_PORT_MDB(obj);
-+	enum macaccess_entry_type type;
-+
-+	/* Split the way the entries are removed for ipv4/ipv6 and for l2. The
-+	 * reason is that for ipv4/ipv6 it doesn't require to use any pgid
-+	 * entry, while for l2 is required to use pgid entries
-+	 */
-+	type = lan966x_mdb_classify(mdb->addr);
-+	if (type == ENTRYTYPE_MACV4 || type == ENTRYTYPE_MACV6)
-+		return lan966x_mdb_ip_del(port, mdb, type);
-+
-+	return lan966x_mdb_l2_del(port, mdb, type);
-+}
-+
-+static void lan966x_mdb_ip_cpu_copy(struct lan966x *lan966x,
-+				    struct lan966x_mdb_entry *mdb_entry,
-+				    enum macaccess_entry_type type)
-+{
-+	unsigned char mac[ETH_ALEN];
-+
-+	lan966x_mdb_encode_mac(mac, mdb_entry, type);
-+	lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
-+	lan966x_mac_ip_learn(lan966x, true, mac, mdb_entry->vid, type);
-+}
-+
-+static void lan966x_mdb_l2_cpu_copy(struct lan966x *lan966x,
-+				    struct lan966x_mdb_entry *mdb_entry,
-+				    enum macaccess_entry_type type)
-+{
-+	struct lan966x_pgid_entry *pgid_entry;
-+	unsigned char mac[ETH_ALEN];
-+
-+	lan966x_pgid_entry_del(lan966x, mdb_entry->pgid);
-+	lan966x_mdb_encode_mac(mac, mdb_entry, type);
-+	lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
-+
-+	mdb_entry->ports |= BIT(CPU_PORT);
-+
-+	pgid_entry = lan966x_pgid_entry_get(lan966x, mdb_entry);
-+	if (IS_ERR(pgid_entry))
-+		return;
-+
-+	mdb_entry->pgid = pgid_entry;
-+
-+	lan_rmw(ANA_PGID_PGID_SET(mdb_entry->ports),
-+		ANA_PGID_PGID,
-+		lan966x, ANA_PGID(pgid_entry->index));
-+
-+	lan966x_mac_learn(lan966x, pgid_entry->index, mdb_entry->mac,
-+			  mdb_entry->vid, type);
-+}
-+
-+void lan966x_mdb_write_entries(struct lan966x *lan966x, u16 vid)
-+{
-+	struct lan966x_mdb_entry *mdb_entry;
-+	enum macaccess_entry_type type;
-+
-+	list_for_each_entry(mdb_entry, &lan966x->mdb_entries, list) {
-+		if (mdb_entry->vid != vid || !mdb_entry->cpu_copy)
-+			continue;
-+
-+		type = lan966x_mdb_classify(mdb_entry->mac);
-+		if (type == ENTRYTYPE_MACV4 || type == ENTRYTYPE_MACV6)
-+			lan966x_mdb_ip_cpu_copy(lan966x, mdb_entry, type);
-+		else
-+			lan966x_mdb_l2_cpu_copy(lan966x, mdb_entry, type);
-+	}
-+}
-+
-+static void lan966x_mdb_ip_cpu_remove(struct lan966x *lan966x,
-+				      struct lan966x_mdb_entry *mdb_entry,
-+				      enum macaccess_entry_type type)
-+{
-+	unsigned char mac[ETH_ALEN];
-+
-+	lan966x_mdb_encode_mac(mac, mdb_entry, type);
-+	lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
-+	lan966x_mac_ip_learn(lan966x, false, mac, mdb_entry->vid, type);
-+}
-+
-+static void lan966x_mdb_l2_cpu_remove(struct lan966x *lan966x,
-+				      struct lan966x_mdb_entry *mdb_entry,
-+				      enum macaccess_entry_type type)
-+{
-+	struct lan966x_pgid_entry *pgid_entry;
-+	unsigned char mac[ETH_ALEN];
-+
-+	lan966x_pgid_entry_del(lan966x, mdb_entry->pgid);
-+	lan966x_mdb_encode_mac(mac, mdb_entry, type);
-+	lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
-+
-+	mdb_entry->ports &= ~BIT(CPU_PORT);
-+
-+	pgid_entry = lan966x_pgid_entry_get(lan966x, mdb_entry);
-+	if (IS_ERR(pgid_entry))
-+		return;
-+
-+	mdb_entry->pgid = pgid_entry;
-+
-+	lan_rmw(ANA_PGID_PGID_SET(mdb_entry->ports),
-+		ANA_PGID_PGID,
-+		lan966x, ANA_PGID(pgid_entry->index));
-+
-+	lan966x_mac_learn(lan966x, pgid_entry->index, mdb_entry->mac,
-+			  mdb_entry->vid, type);
-+}
-+
-+void lan966x_mdb_erase_entries(struct lan966x *lan966x, u16 vid)
-+{
-+	struct lan966x_mdb_entry *mdb_entry;
-+	enum macaccess_entry_type type;
-+
-+	list_for_each_entry(mdb_entry, &lan966x->mdb_entries, list) {
-+		if (mdb_entry->vid != vid || !mdb_entry->cpu_copy)
-+			continue;
-+
-+		type = lan966x_mdb_classify(mdb_entry->mac);
-+		if (type == ENTRYTYPE_MACV4 || type == ENTRYTYPE_MACV6)
-+			lan966x_mdb_ip_cpu_remove(lan966x, mdb_entry, type);
-+		else
-+			lan966x_mdb_l2_cpu_remove(lan966x, mdb_entry, type);
-+	}
-+}
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-index deb3dd5be67a..7de55f6a4da8 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
-@@ -438,6 +438,10 @@ static int lan966x_handle_port_obj_add(struct net_device *dev, const void *ctx,
- 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
- 		err = lan966x_handle_port_vlan_add(port, obj);
- 		break;
-+	case SWITCHDEV_OBJ_ID_PORT_MDB:
-+	case SWITCHDEV_OBJ_ID_HOST_MDB:
-+		err = lan966x_handle_port_mdb_add(port, obj);
-+		break;
- 	default:
- 		err = -EOPNOTSUPP;
- 		break;
-@@ -473,6 +477,10 @@ static int lan966x_handle_port_obj_del(struct net_device *dev, const void *ctx,
- 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
- 		err = lan966x_handle_port_vlan_del(port, obj);
- 		break;
-+	case SWITCHDEV_OBJ_ID_PORT_MDB:
-+	case SWITCHDEV_OBJ_ID_HOST_MDB:
-+		err = lan966x_handle_port_mdb_del(port, obj);
-+		break;
- 	default:
- 		err = -EOPNOTSUPP;
- 		break;
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_vlan.c b/drivers/net/ethernet/microchip/lan966x/lan966x_vlan.c
-index 057f48ddf22c..8d7260cd7da9 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_vlan.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_vlan.c
-@@ -219,6 +219,7 @@ void lan966x_vlan_port_add_vlan(struct lan966x_port *port,
- 	if (lan966x_vlan_cpu_member_cpu_vlan_mask(lan966x, vid)) {
- 		lan966x_vlan_cpu_add_vlan_mask(lan966x, vid);
- 		lan966x_fdb_write_entries(lan966x, vid);
-+		lan966x_mdb_write_entries(lan966x, vid);
- 	}
- 
- 	lan966x_vlan_port_set_vid(port, vid, pvid, untagged);
-@@ -241,6 +242,7 @@ void lan966x_vlan_port_del_vlan(struct lan966x_port *port, u16 vid)
- 	if (!lan966x_vlan_port_any_vlan_mask(lan966x, vid)) {
- 		lan966x_vlan_cpu_del_vlan_mask(lan966x, vid);
- 		lan966x_fdb_erase_entries(lan966x, vid);
-+		lan966x_mdb_erase_entries(lan966x, vid);
- 	}
- }
- 
-@@ -254,8 +256,10 @@ void lan966x_vlan_cpu_add_vlan(struct lan966x *lan966x, u16 vid)
- 	 * information so when a front port is added then it would add also the
- 	 * CPU port.
- 	 */
--	if (lan966x_vlan_port_any_vlan_mask(lan966x, vid))
-+	if (lan966x_vlan_port_any_vlan_mask(lan966x, vid)) {
- 		lan966x_vlan_cpu_add_vlan_mask(lan966x, vid);
-+		lan966x_mdb_write_entries(lan966x, vid);
-+	}
- 
- 	lan966x_vlan_cpu_add_cpu_vlan_mask(lan966x, vid);
- 	lan966x_fdb_write_entries(lan966x, vid);
-@@ -267,6 +271,7 @@ void lan966x_vlan_cpu_del_vlan(struct lan966x *lan966x, u16 vid)
- 	lan966x_vlan_cpu_del_cpu_vlan_mask(lan966x, vid);
- 	lan966x_vlan_cpu_del_vlan_mask(lan966x, vid);
- 	lan966x_fdb_erase_entries(lan966x, vid);
-+	lan966x_mdb_erase_entries(lan966x, vid);
- }
- 
- void lan966x_vlan_init(struct lan966x *lan966x)
--- 
-2.33.0
+Common format for copyright statement (in this folder) seems to be:
 
+Copyright (c) <YEAR> <COPYRIGHT_HOLDER>
+
+Regards,
+Arend
+
+--0000000000006d9a0805d4bf002e
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+XSlOP9s1dqWlRRnnNxV7BVC87lkKKy0+1M2DOF6qRYQlnW4EfOyCToYLAG5zeV+AjepMoX6J9bUz
+yj4BlDtwH4HFjaRIlPPbdLshUA54/tV84x8woATuLGBq+hTZEpkZAgMBAAGjggHdMIIB2TAOBgNV
+HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
+Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
+KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
+Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
+dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
+OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
+MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
+BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKb+3b9pz8zo
+0QsCHGb/p0UrBlU+MA0GCSqGSIb3DQEBCwUAA4IBAQCHisuRNqP0NfYfG3U3XF+bocf//aGLOCGj
+NvbnSbaUDT/ZkRFb9dQfDRVnZUJ7eDZWHfC+kukEzFwiSK1irDPZQAG9diwy4p9dM0xw5RXSAC1w
+FzQ0ClJvhK8PsjXF2yzITFmZsEhYEToTn2owD613HvBNijAnDDLV8D0K5gtDnVqkVB9TUAGjHsmo
+aAwIDFKdqL0O19Kui0WI1qNsu1tE2wAZk0XE9FG0OKyY2a2oFwJ85c5IO0q53U7+YePIwv4/J5aP
+OGM6lFPJCVnfKc3H76g/FyPyaE4AL/hfdNP8ObvCB6N/BVCccjNdglRsL2ewttAG3GM06LkvrLhv
+UCvjMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
+YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMMSnY
+h9J/RI6gsHbuMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCAICMxJ8gqwRoi8GQ7r
+ZEYbotw57lRNVZ96qg6AdVkf5jAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0yMjAxMDQxMDIxMzRaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
+AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
+BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEALKn+kwb2MtKuky6rIv9kcAdMtDzFv19BBFY9
+OEU82Xy3xxrSpnt03LbopcYbXWvjJThqIlWhZnheCtAaX6Uv6828jcAEMDg+4IIf848EOinIo2Rh
+fJYmLCcXg41qsMPlhxG1r8qm22HWsKwitjhRARKXgMEiM14jPlwpsGTqJooGw2vO4Tdwsb/x8bQc
+6U8sVE1eQtmWGtY/CKl60RLC2lDhy90JmYi9mEPfycj5DQTuZi2gmnE+JmROQlY1h899gchxfJHx
+W0EPqonfA1jjs5fnmjytEamHs0S/km9OT/ObhgZMaL2faQrBJ4Ng/Av4vjIeGmosf46noUynKBKe
+gQ==
+--0000000000006d9a0805d4bf002e--
