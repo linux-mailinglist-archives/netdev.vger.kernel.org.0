@@ -2,103 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92938484783
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 19:11:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 167644847A2
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 19:18:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235844AbiADSL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 13:11:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234495AbiADSL2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 13:11:28 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63320C061761;
-        Tue,  4 Jan 2022 10:11:28 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id h7so38924272lfu.4;
-        Tue, 04 Jan 2022 10:11:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=SwnVw/SiATSMFYtdV81zng3Pvd+zDkySvHzChGqV1zI=;
-        b=HEFoguWtofBQbkgCS9YmycC2OsfWcV6EnHVaZWA5xLdwSacYLul4y1JXyPeuOT2DAj
-         3Q+Tj1pjpfyVsubK931TKGtflfI7fbSBiChjkQjqlVABqPXAoHsF5udy+HRSuy0ArQLQ
-         puLwVu/WOm3dYVG0nTLnDm6wQDBKLBMCBIL9fJ4GK0sH0KN0CZV5qnNgUd3N2cLxwdRa
-         aAmQ8GqvivZ1Jv/wyRA+e1nhiFwWN5kDIozNxzXpYfnHZJVZbCaqxDukTiQ2g2XEeU9+
-         p0zEAqz+UdGcTjhMnzva0rKCdWkQKQUY4mzYSZ6n5a4HdQtcj/mTftdUqK6bQ9FF/7h6
-         oXrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SwnVw/SiATSMFYtdV81zng3Pvd+zDkySvHzChGqV1zI=;
-        b=Oat/iQNFp4tKvLyR4nteF+JEb8YZlJvUObFjIa6A90QXotbePvy0vuqNpGVPi5URHk
-         XM/lo+lmQkqBt+dxC37n4sL54pcXDhVGdAVOs/SLM/6UNz9mezWU94CJyQnFAAbr3MQG
-         Fq8X342sZsKhtT53xopkw8jDiS+rAgdzEUSbhvG0i/5cGSuIhCBmHYbAuXAuRqX9tqxa
-         4WY4xxizI7JCyw/fTE16ubpVN09520ywF9kjdNB3TvwUuyEFLliCN/4jIQZM7mNUilk9
-         mTjBdqmLkJTz05LjYhGuEGqsYCBm0lwkHyAhXGmAd9TTTkGII1dIvg7j5fWyfZyzYvfY
-         PXWg==
-X-Gm-Message-State: AOAM533UNImkyZpQI+BMnLVxYTm28BPNiIsD22hjkanDXm9BYVuIDtyj
-        OA4ALgxm5db+Z63JigGh5Gw=
-X-Google-Smtp-Source: ABdhPJyJqaV0NQGWX8BdYzjEE7zgijv2NGHZYq8ADDv3RIQG8ux3EIgRARvgxP8gjWMm9JwKFMeL0Q==
-X-Received: by 2002:ac2:528a:: with SMTP id q10mr42919559lfm.28.1641319886721;
-        Tue, 04 Jan 2022 10:11:26 -0800 (PST)
-Received: from [192.168.1.11] ([94.103.235.38])
-        by smtp.gmail.com with ESMTPSA id u12sm623551ljj.134.2022.01.04.10.11.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Jan 2022 10:11:26 -0800 (PST)
-Message-ID: <a1f63e82-7a3f-7cf9-ddb3-fc0a863dce40@gmail.com>
-Date:   Tue, 4 Jan 2022 21:11:25 +0300
+        id S236181AbiADSSH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Jan 2022 13:18:07 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:60751 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229504AbiADSSH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 13:18:07 -0500
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id A8FD56000A;
+        Tue,  4 Jan 2022 18:18:03 +0000 (UTC)
+Date:   Tue, 4 Jan 2022 19:18:02 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Nicolas Schodet <nico@ni.fr.eu.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel list <linux-kernel@vger.kernel.org>
+Subject: Re: [net-next 12/18] net: mac802154: Handle scan requests
+Message-ID: <20220104191802.2323e44a@xps13>
+In-Reply-To: <CAB_54W6gHE1S9Q+-SVbrnAWPxBxnvf54XVTCmddtj8g-bZzMRA@mail.gmail.com>
+References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
+        <20211222155743.256280-13-miquel.raynal@bootlin.com>
+        <CAB_54W6AZ+LGTcFsQjNx7uq=+R5v_kdF0Xm5kwWQ8ONtfOrmAw@mail.gmail.com>
+        <Ycx0mwQcFsmVqWVH@ni.fr.eu.org>
+        <CAB_54W41ZEoXzoD2_wadfMTY8anv9D9e2T5wRckdXjs7jKTTCA@mail.gmail.com>
+        <CAB_54W6gHE1S9Q+-SVbrnAWPxBxnvf54XVTCmddtj8g-bZzMRA@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v2] ieee802154: atusb: fix uninit value in
- atusb_set_extended_addr
-Content-Language: en-US
-To:     Stefan Schmidt <stefan@datenfreihafen.org>, alex.aring@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexander Potapenko <glider@google.com>
-References: <CAB_54W50xKFCWZ5vYuDG2p4ijpd63cSutRrV4MLs9oasLmKgzQ@mail.gmail.com>
- <20220103120925.25207-1-paskripkin@gmail.com>
- <ed39cbe6-0885-a3ab-fc30-7c292e1acc53@datenfreihafen.org>
- <5b0b8dc6-f038-bfaa-550c-dc23636f0497@gmail.com>
- <e8e73fcc-b902-4972-6001-84671361146d@datenfreihafen.org>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <e8e73fcc-b902-4972-6001-84671361146d@datenfreihafen.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/4/22 21:04, Stefan Schmidt wrote:
->> Hi Stefan,
->> 
->> thanks for testing on real hw.
->> 
->> It looks like there is corner case, that Greg mentioned in this thread. 
->> atusb_get_and_show_build() reads firmware build info, which may have 
->> various length.
->> 
->> Maybe we can change atusb_control_msg() to usb_control_msg() in 
->> atusb_get_and_show_build(), since other callers do not have this problem
+Hi Alexander,
+
+alex.aring@gmail.com wrote on Fri, 31 Dec 2021 14:27:12 -0500:
+
+> Hi,
 > 
-> That works for me.
+> On Thu, 30 Dec 2021 at 14:47, Alexander Aring <alex.aring@gmail.com> wrote:
+> >
+> > Hi,
+> >
+> > On Wed, 29 Dec 2021 at 09:45, Nicolas Schodet <nico@ni.fr.eu.org> wrote:  
+> > >
+> > > Hi,
+> > >
+> > > * Alexander Aring <alex.aring@gmail.com> [2021-12-29 09:30]:  
+> > > > Hi,
+> > > > On Wed, 22 Dec 2021 at 10:58, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > > > ...  
+> > > > > +{
+> > > > > +       bool promiscuous_on = mac802154_check_promiscuous(local);
+> > > > > +       int ret;
+> > > > > +
+> > > > > +       if ((state && promiscuous_on) || (!state && !promiscuous_on))
+> > > > > +               return 0;
+> > > > > +
+> > > > > +       ret = drv_set_promiscuous_mode(local, state);
+> > > > > +       if (ret)
+> > > > > +               pr_err("Failed to %s promiscuous mode for SW scanning",
+> > > > > +                      state ? "set" : "reset");  
+> > > > The semantic of promiscuous mode on the driver layer is to turn off
+> > > > ack response, address filtering and crc checking. Some transceivers
+> > > > don't allow a more fine tuning on what to enable/disable. I think we
+> > > > should at least do the checksum checking per software then?
+> > > > Sure there is a possible tune up for more "powerful" transceivers then...  
+> > >
+> > > In this case, the driver could change the (flags &
+> > > IEEE802154_HW_RX_DROP_BAD_CKSUM) bit dynamically to signal it does not
+> > > check the checksum anymore. Would it work?  
+> >
+> > I think that would work, although the intention of the hw->flags is to
+> > define what the hardware is supposed to support as not changing those
+> > values dynamically during runtime so mac will care about it. However
+> > we don't expose those flags to the userspace, so far I know. We can
+> > still introduce two separated flags if necessary in future.
+> >
+> > Why do we need promiscuous mode at all? Why is it necessary for a
+> > scan? What of "ack response, address filtering and crc checking" you
+> > want to disable and why?
+> >  
 > 
+> I see now why promiscuous mode is necessary here. The actual
+> promiscuous mode setting for the driver is not the same as promiscuous
+> mode in 802.15.4 spec. For until now it was there for running a
+> sniffer device only.
+> As the 802.15.4 spec defines some "filtering levels" I came up with a
+> draft so we can define which filtering level should be done on the
+> hardware.
 
-Nice! Will prepare v3.
+I like the idea but I'm not sure on what side you want to tackle the
+problem first. Is it the phy drivers which should advertise the mac
+about the promiscuous mode they support (which matches the description
+below but does not fit the purpose of an enum very well)? Or is it the
+MAC that requests a particular filtering mode? In this case what a phy
+driver should do if:
+- the requested mode is more constrained than its usual promiscuous
+  capabilities?
+- the requested mode is less constrained than its usual promiscuous
+  capabilities?
 
-
-Thanks for testing once again!
-
-> I will also have a look at the use of the modern USB API for next. The
-> fix here has a higher prio for me to get in and backported though. Once
-> we have this we can look at bigger changes in atusb.
 > 
+> diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+> index 72978fb72a3a..3839ed3f8f0d 100644
+> --- a/include/net/mac802154.h
+> +++ b/include/net/mac802154.h
+> @@ -130,6 +130,48 @@ enum ieee802154_hw_flags {
+>  #define IEEE802154_HW_OMIT_CKSUM       (IEEE802154_HW_TX_OMIT_CKSUM | \
+>                                          IEEE802154_HW_RX_OMIT_CKSUM)
+> 
+> +/**
+> + * enum ieee802154_filter_mode - hardware filter mode that a driver
+> will pass to
+> + *                              pass to mac802154.
+
+Isn't it the opposite: The filtering level the mac is requesting? Here
+it looks like we are describing driver capabilities (ie what drivers
+advertise supporting).
+
+> + *
+> + * @IEEE802154_FILTER_MODE_0: No MFR filtering at all.
+
+I suppose this would be for a sniffer accepting all frames, including
+the bad ones.
+
+> + *
+> + * @IEEE802154_FILTER_MODE_1: IEEE802154_FILTER_MODE_1 with a bad FCS filter.
+
+This means that the driver should only discard bad frames and propagate
+all the remaining frames, right? So this typically is a regular sniffer
+mode.
+
+> + *
+> + * @IEEE802154_FILTER_MODE_2: Same as IEEE802154_FILTER_MODE_1, known as
+> + *                           802.15.4 promiscuous mode, sets
+> + *                           mib.PromiscuousMode.
+
+I believe what you call mib.PromiscuousMode is the mode that is
+referred in the spec, ie. being in the official promiscuous mode? So
+that is the mode that should be used "by default" when really asking
+for a 802154 promiscuous mode.
+
+Is there really a need for a different mode than mode_1 ?
+
+> + *
+> + * @IEEE802154_FILTER_MODE_3_SCAN: Same as IEEE802154_FILTER_MODE_2 without
+> + *                                set mib.PromiscuousMode.
+
+And here what is the difference between MODE_1 and MODE_3 ?
+
+I suppose here we should as well drop all non-beacon frames?
+
+> + *
+> + * @IEEE802154_FILTER_MODE_3_NO_SCAN:
+> + *     IEEE802154_FILTER_MODE_3_SCAN with MFR additional filter on:
+> + *
+> + *     - No reserved value in frame type
+> + *     - No reserved value in frame version
+> + *     - Match mib.PanId or broadcast
+> + *     - Destination address field:
+> + *       - Match mib.ShortAddress or broadcast
+> + *       - Match mib.ExtendedAddress or GroupRxMode is true
+> + *       - ImplicitBroadcast is true and destination address field/destination
+> + *         panid is not included.
+> + *       - Device is coordinator only source address present in data
+> + *         frame/command frame and source panid matches mib.PanId
+> + *       - Device is coordinator only source address present in multipurpose
+> + *         frame and destination panid matches macPanId
+> + *     - Beacon frames source panid matches mib.PanId. If mib.PanId is
+> + *       broadcast it should always be accepted.
+
+This is a bit counter intuitive, but do we agree on the fact that the
+higher level of filtering should refer to promiscuous = false?
+
+> + *
+> + */
+> +enum ieee802154_filter_mode {
+> +       IEEE802154_FILTER_MODE_0,
+> +       IEEE802154_FILTER_MODE_1,
+> +       IEEE802154_FILTER_MODE_2,
+> +       IEEE802154_FILTER_MODE_3_SCAN,
+> +       IEEE802154_FILTER_MODE_3_NO_SCAN,
+> +};
+> +
+>  /* struct ieee802154_ops - callbacks from mac802154 to the driver
+>   *
+>   * This structure contains various callbacks that the driver may
+> @@ -249,7 +291,7 @@ struct ieee802154_ops {
+>         int             (*set_frame_retries)(struct ieee802154_hw *hw,
+>                                              s8 retries);
+>         int             (*set_promiscuous_mode)(struct ieee802154_hw *hw,
+> -                                               const bool on);
+> +                                               enum
+> ieee802154_filter_mode mode);
+>         int             (*enter_scan_mode)(struct ieee802154_hw *hw,
+>                                            struct
+> cfg802154_scan_request *request);
+>         int             (*exit_scan_mode)(struct ieee802154_hw *hw);
+> 
+> ---
+> 
+> In your case it will be IEEE802154_FILTER_MODE_3_SCAN mode, for a
+> sniffer we probably want as default IEEE802154_FILTER_MODE_0, as
+> "promiscuous mode" currently is.
+> 
+> - Alex
 
 
-With regards,
-Pavel Skripkin
+Thanks,
+Miquèl
