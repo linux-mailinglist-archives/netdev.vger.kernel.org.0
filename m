@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B107483C9D
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:30:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1E07483CA4
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:30:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233406AbiADHa2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 02:30:28 -0500
+        id S231210AbiADHac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 02:30:32 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233389AbiADHaS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 02:30:18 -0500
+        with ESMTP id S233365AbiADHa1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 02:30:27 -0500
 Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7371BC061394;
-        Mon,  3 Jan 2022 23:30:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8437BC061799;
+        Mon,  3 Jan 2022 23:30:26 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 937EC41F5D;
-        Tue,  4 Jan 2022 07:30:09 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 958214261F;
+        Tue,  4 Jan 2022 07:30:17 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -48,9 +48,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH v2 19/35] brcmfmac: pcie: Add IDs/properties for BCM4377
-Date:   Tue,  4 Jan 2022 16:26:42 +0900
-Message-Id: <20220104072658.69756-20-marcan@marcan.st>
+Subject: [PATCH v2 20/35] brcmfmac: pcie: Perform correct BCM4364 firmware selection
+Date:   Tue,  4 Jan 2022 16:26:43 +0900
+Message-Id: <20220104072658.69756-21-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220104072658.69756-1-marcan@marcan.st>
 References: <20220104072658.69756-1-marcan@marcan.st>
@@ -60,88 +60,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This chip is present on at least these Apple T2 Macs:
+This chip exists in two revisions (B2=r3 and B3=r4) on different
+platforms, and was added without regard to doing proper firmware
+selection or differentiating between them. Fix this to have proper
+per-revision firmwares and support Apple NVRAM selection.
 
-* tahiti:  MacBook Pro 13" (2020, 2 TB3)
-* formosa: MacBook Pro 13" (Touch/2019)
-* fiji:    MacBook Air 13" (Scissor, 2020)
+Revision B2 is present on at least these Apple T2 Macs:
 
+kauai:    MacBook Pro 15" (Touch/2018-2019)
+maui:     MacBook Pro 13" (Touch/2018-2019)
+lanai:    Mac mini (Late 2018)
+ekans:    iMac Pro 27" (5K, Late 2017)
+
+And these non-T2 Macs:
+
+nihau:    iMac 27" (5K, 2019)
+
+Revision B3 is present on at least these Apple T2 Macs:
+
+bali:     MacBook Pro 16" (2019)
+trinidad: MacBook Pro 13" (2020, 4 TB3)
+borneo:   MacBook Pro 16" (2019, 5600M)
+kahana:   Mac Pro (2019)
+kahana:   Mac Pro (2019, Rack)
+hanauma:  iMac 27" (5K, 2020)
+kure:     iMac 27" (5K, 2020, 5700/XT)
+
+Fixes: 24f0bd136264 ("brcmfmac: add the BRCM 4364 found in MacBook Pro 15,2")
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c       | 1 +
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c       | 4 ++++
- drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h | 2 ++
- 3 files changed, 7 insertions(+)
+ .../net/wireless/broadcom/brcm80211/brcmfmac/pcie.c   | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-index fdff7f5fc34e..73ab96968ac6 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-@@ -731,6 +731,7 @@ static u32 brcmf_chip_tcm_rambase(struct brcmf_chip_priv *ci)
- 	case CY_CC_4373_CHIP_ID:
- 		return 0x160000;
- 	case CY_CC_43752_CHIP_ID:
-+	case BRCM_CC_4377_CHIP_ID:
- 		return 0x170000;
- 	case BRCM_CC_4378_CHIP_ID:
- 		return 0x352000;
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index fdba2b5b46f0..87daabb15cd0 100644
+index 87daabb15cd0..e4f2aff3c0d5 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -60,6 +60,7 @@ BRCMF_FW_DEF(4365C, "brcmfmac4365c-pcie");
+@@ -54,7 +54,8 @@ BRCMF_FW_CLM_DEF(4356, "brcmfmac4356-pcie");
+ BRCMF_FW_CLM_DEF(43570, "brcmfmac43570-pcie");
+ BRCMF_FW_DEF(4358, "brcmfmac4358-pcie");
+ BRCMF_FW_DEF(4359, "brcmfmac4359-pcie");
+-BRCMF_FW_DEF(4364, "brcmfmac4364-pcie");
++BRCMF_FW_CLM_DEF(4364B2, "brcmfmac4364b2-pcie");
++BRCMF_FW_CLM_DEF(4364B3, "brcmfmac4364b3-pcie");
+ BRCMF_FW_DEF(4365B, "brcmfmac4365b-pcie");
+ BRCMF_FW_DEF(4365C, "brcmfmac4365c-pcie");
  BRCMF_FW_DEF(4366B, "brcmfmac4366b-pcie");
- BRCMF_FW_DEF(4366C, "brcmfmac4366c-pcie");
- BRCMF_FW_DEF(4371, "brcmfmac4371-pcie");
-+BRCMF_FW_CLM_DEF(4377B3, "brcmfmac4377b3-pcie");
- BRCMF_FW_CLM_DEF(4378B1, "brcmfmac4378b1-pcie");
- 
- /* firmware config files */
-@@ -91,6 +92,7 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
- 	BRCMF_FW_ENTRY(BRCM_CC_43664_CHIP_ID, 0xFFFFFFF0, 4366C),
- 	BRCMF_FW_ENTRY(BRCM_CC_43666_CHIP_ID, 0xFFFFFFF0, 4366C),
- 	BRCMF_FW_ENTRY(BRCM_CC_4371_CHIP_ID, 0xFFFFFFFF, 4371),
-+	BRCMF_FW_ENTRY(BRCM_CC_4377_CHIP_ID, 0xFFFFFFFF, 4377B3), /* 4 */
- 	BRCMF_FW_ENTRY(BRCM_CC_4378_CHIP_ID, 0xFFFFFFFF, 4378B1), /* 3 */
- };
- 
-@@ -2049,6 +2051,7 @@ static int brcmf_pcie_read_otp(struct brcmf_pciedev_info *devinfo)
+@@ -84,7 +85,8 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
+ 	BRCMF_FW_ENTRY(BRCM_CC_43570_CHIP_ID, 0xFFFFFFFF, 43570),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4358_CHIP_ID, 0xFFFFFFFF, 4358),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4359_CHIP_ID, 0xFFFFFFFF, 4359),
+-	BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0xFFFFFFFF, 4364),
++	BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0x0000000F, 4364B2), /* 3 */
++	BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0xFFFFFFF0, 4364B3), /* 4 */
+ 	BRCMF_FW_ENTRY(BRCM_CC_4365_CHIP_ID, 0x0000000F, 4365B),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4365_CHIP_ID, 0xFFFFFFF0, 4365C),
+ 	BRCMF_FW_ENTRY(BRCM_CC_4366_CHIP_ID, 0x0000000F, 4366B),
+@@ -2051,6 +2053,11 @@ static int brcmf_pcie_read_otp(struct brcmf_pciedev_info *devinfo)
  		base = 0x8c0;
  		words = 0xb2;
  		break;
-+	case BRCM_CC_4377_CHIP_ID:
++	case BRCM_CC_4364_CHIP_ID:
++		coreid = BCMA_CORE_CHIPCOMMON;
++		base = 0x8c0;
++		words = 0x1a0;
++		break;
+ 	case BRCM_CC_4377_CHIP_ID:
  	case BRCM_CC_4378_CHIP_ID:
  		coreid = BCMA_CORE_GCI;
- 		base = 0x1120;
-@@ -2554,6 +2557,7 @@ static const struct pci_device_id brcmf_pcie_devid_table[] = {
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4366_2G_DEVICE_ID),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4366_5G_DEVICE_ID),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4371_DEVICE_ID),
-+	BRCMF_PCIE_DEVICE(BRCM_PCIE_4377_DEVICE_ID),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4378_DEVICE_ID),
- 	{ /* end: all zeroes */ }
- };
-diff --git a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-index 9636ab4dd17f..54d7ec515e1d 100644
---- a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-@@ -51,6 +51,7 @@
- #define BRCM_CC_43664_CHIP_ID		43664
- #define BRCM_CC_43666_CHIP_ID		43666
- #define BRCM_CC_4371_CHIP_ID		0x4371
-+#define BRCM_CC_4377_CHIP_ID		0x4377
- #define BRCM_CC_4378_CHIP_ID		0x4378
- #define CY_CC_4373_CHIP_ID		0x4373
- #define CY_CC_43012_CHIP_ID		43012
-@@ -88,6 +89,7 @@
- #define BRCM_PCIE_4366_2G_DEVICE_ID	0x43c4
- #define BRCM_PCIE_4366_5G_DEVICE_ID	0x43c5
- #define BRCM_PCIE_4371_DEVICE_ID	0x440d
-+#define BRCM_PCIE_4377_DEVICE_ID	0x4488
- #define BRCM_PCIE_4378_DEVICE_ID	0x4425
- 
- 
 -- 
 2.33.0
 
