@@ -2,386 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1DF5484245
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 14:20:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC591484258
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 14:25:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233468AbiADNUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 08:20:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37980 "EHLO
+        id S233483AbiADNZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 08:25:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233441AbiADNUv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 08:20:51 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36430C061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 05:20:51 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id b13so148390840edd.8
-        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 05:20:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=x92F48qdygAQPuHSXvnlERxbW3P7rZ7paNpbbL8fdA8=;
-        b=Lo798ZuRMRuckPy1lZyAuJ9aFuQxJKQgFRaFl4PdO+kxeSV4Bg2vhsWkkGysCjz8nJ
-         4wUWBwynEf+qmUa9NLIHhXtQaRkejkbAUliduMBBmhboSGY4HyaMh4V8gN3FkJb3O17F
-         il+ReC3YuDiMLZKjB3Rn9bdS2nXCsTrhU6uT4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=x92F48qdygAQPuHSXvnlERxbW3P7rZ7paNpbbL8fdA8=;
-        b=29kLECffOqzHMpHx2akik+LcS9yzGXs/UehjIqdnGoQAdp8KZjjxKJvebz3smmoDMU
-         cdYnPRqNhcPejTI4JpHc8fVA8VsdcbyTXXYhQRorfs3dxV49RQVWlSGJp6jfL4ZMrchv
-         FPVB89Ppsnq5QmblyXbPEutz7eDq16y7ZzEI6lmXQUg+LVwjZXhYRu71NmZXTXKjVOhv
-         MfNa1z9Jcwu97ufyn6zmSvGJ446TO+aOw/ktPdzVm4BT/VrDXfar5rgHvngwKbn2wxjh
-         gSA+Jo2y9KjGxtiO0cVnafvgxQif/wlXtigQ+S6/Bw8kRpfsSNW5406y69mIfsx/JNzu
-         EMPQ==
-X-Gm-Message-State: AOAM532kza84t0V2yjlNaMxg6qKnXVS8boC30P/6jcU15Mo+RKhKnBOH
-        kQ1Whg9asbw/Ln/zcszmT1GV7g==
-X-Google-Smtp-Source: ABdhPJzihpSM66xT+uOQ2iGayOBWdCnTTJsExBsJGNtT36Hu+cB1rtVfAsg5pERYJFtj65+zbqZ9RA==
-X-Received: by 2002:a17:906:f1c1:: with SMTP id gx1mr40813289ejb.554.1641302449791;
-        Tue, 04 Jan 2022 05:20:49 -0800 (PST)
-Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-95-244-92-231.retail.telecomitalia.it. [95.244.92.231])
-        by smtp.gmail.com with ESMTPSA id y13sm14765575edq.77.2022.01.04.05.20.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Jan 2022 05:20:49 -0800 (PST)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Michael Trimarchi <michael@amarulasolutions.com>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [RFC PATCH 2/2] can: flexcan: add ethtool support
-Date:   Tue,  4 Jan 2022 14:20:26 +0100
-Message-Id: <20220104132026.3062763-3-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220104132026.3062763-1-dario.binacchi@amarulasolutions.com>
-References: <20220104132026.3062763-1-dario.binacchi@amarulasolutions.com>
+        with ESMTP id S232029AbiADNZS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 08:25:18 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD529C061761;
+        Tue,  4 Jan 2022 05:25:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=dlRlk2wYEk2DcEqB0eWfT2wU9WqSJ+uo3N+tcXCm11Y=; b=KGMx4rfBbqbGNXr4D1mA4fjhfh
+        prgjQ8LufvAghOqFX3n7LpJZa7dIK0XyL5tKpCKnLpP2ahG/Or7tGusW2PkO0g6WumQpB0g9vGIjn
+        +kpHW3+GQjc+BdCxh0MANNaPiX6OEEvLO26mAWYKEqNBh6VzONfdOz1wY1jNyMVU7NWLQhmYkwTyx
+        kX5Xw0Myy6K75K0ZwFm9T0nklXDQvwnaSvUx0vt9HQ625UXKFJmK+gI8LrwH1WlHsc9SvibNtbuBO
+        zFxooRd09L1LIZi7fjB6KbA7fksTeo0wPKnBtMm9KSVitb/+EY33LyDRYRjDVMAW2Mh27sPtXdRe6
+        jFLWHteg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56562)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1n4joK-00071l-2M; Tue, 04 Jan 2022 13:25:08 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1n4joF-0007Gq-MK; Tue, 04 Jan 2022 13:25:03 +0000
+Date:   Tue, 4 Jan 2022 13:25:03 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     zhuyinbo <zhuyinbo@loongson.cn>
+Cc:     Andrew Lunn <andrew@lunn.ch>, hkallweit1@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, masahiroy@kernel.org,
+        michal.lkml@markovi.net, ndesaulniers@google.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] modpost: file2alias: fixup mdio alias garbled
+ code in modules.alias
+Message-ID: <YdRKr4rxUj9EnDh3@shell.armlinux.org.uk>
+References: <1637919957-21635-1-git-send-email-zhuyinbo@loongson.cn>
+ <c6d37ae0-9ccb-a527-4f55-e96972813a53@gmail.com>
+ <YaYPMOJ/+OXIWcnj@shell.armlinux.org.uk>
+ <YabEHd+Z5SPAhAT5@lunn.ch>
+ <f91f4fff-8bdf-663b-68f5-b8ccbd0c187a@loongson.cn>
+ <257a0fbf-941e-2d9e-50b4-6e34d7061405@loongson.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <257a0fbf-941e-2d9e-50b4-6e34d7061405@loongson.cn>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For now, the driver information is added but the target is to change the
-type of reception at runtime (RxFIFO enabled / disabled).
+On Tue, Jan 04, 2022 at 09:11:56PM +0800, zhuyinbo wrote:
+> From the present point of view, no matter what the situation, my supplement
+> can cover udev or request_module for auto load module.
+> 
+> if that phy driver isn't platform driver my patch cover it I think there is
+> no doubt, if phy driver is platform driver and platform driver udev will
+> cover it. My only requestion is the request_module not work well.
+> 
+> about xgmiitorgmii_of_match that it belongs to platform driver load, please
+> you note. and about your doubt usepace whether disable module load that
+> module load function is okay becuase other device driver auto load is okay.
 
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+xgmiitorgmii is *not* a platform driver.
 
+> > Please report back what the following command produces on your
+> > problem system:
+> >
+> > /sbin/modprobe -vn mdio:00000001010000010000110111010001
+> >
+> > Thanks.
+> 
+> [root@localhost ~]# lsmod | grep marvell
+> [root@localhost ~]# ls
+> /lib/modules/4.19.190+/kernel/drivers/net/phy/marvell.ko
+> /lib/modules/4.19.190+/kernel/drivers/net/phy/marvell.ko
+> [root@localhost ~]# /sbin/modprobe -vn mdio:00000001010000010000110111010001
+> insmod /lib/modules/4.19.190+/kernel/drivers/net/phy/marvell.ko
+> insmod /lib/modules/4.19.190+/kernel/drivers/net/phy/marvell.ko
+> [root@localhost ~]#
+> [root@localhost ~]# cat /proc/sys/kernel/modprobe
+> /sbin/modprobe
+
+Great, so the current scheme using "mdio:<binary digits>" works
+perfectly for you. What is missing is having that modalias in the
+uevent file.
+
+So, my patch on the 4th December should cause the marvell module to
+be loaded at boot time. Please test that patch ASAP, which I have
+already asked you to do. I'll include it again in this email so you
+don't have to hunt for it.
+
+8<===
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH] net: phy: generate PHY mdio modalias
+
+The modalias string provided in the uevent sysfs file does not conform
+to the format used in PHY driver modules. One of the reasons is that
+udev loading of PHY driver modules has not been an expected use case.
+
+This patch changes the MODALIAS entry for only PHY devices from:
+        MODALIAS=of:Nethernet-phyT(null)
+to:
+        MODALIAS=mdio:00000000001000100001010100010011
+
+Other MDIO devices (such as DSA) remain as before.
+
+However, having udev automatically load the module has the advantage
+of making use of existing functionality to have the module loaded
+before the device is bound to the driver, thus taking advantage of
+multithreaded boot systems, potentially decreasing the boot time.
+
+However, this patch will not solve any issues with the driver module
+not being loaded prior to the network device needing to use the PHY.
+This is something that is completely out of control of any patch to
+change the uevent mechanism.
+
+Reported-by: Yinbo Zhu <zhuyinbo@loongson.cn>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
+ drivers/net/phy/mdio_bus.c   |  8 ++++++++
+ drivers/net/phy/phy_device.c | 14 ++++++++++++++
+ include/linux/mdio.h         |  2 ++
+ 3 files changed, 24 insertions(+)
 
- drivers/net/can/Makefile                      |   3 +
- drivers/net/can/flexcan.h                     | 107 ++++++++++++++++++
- drivers/net/can/flexcan_ethtool.c             |  29 +++++
- drivers/net/can/{flexcan.c => flexcan_main.c} |  96 +---------------
- 4 files changed, 142 insertions(+), 93 deletions(-)
- create mode 100644 drivers/net/can/flexcan.h
- create mode 100644 drivers/net/can/flexcan_ethtool.c
- rename drivers/net/can/{flexcan.c => flexcan_main.c} (94%)
-
-diff --git a/drivers/net/can/Makefile b/drivers/net/can/Makefile
-index a2b4463d8480..34728cfa6430 100644
---- a/drivers/net/can/Makefile
-+++ b/drivers/net/can/Makefile
-@@ -16,7 +16,10 @@ obj-y				+= softing/
- obj-$(CONFIG_CAN_AT91)		+= at91_can.o
- obj-$(CONFIG_CAN_CC770)		+= cc770/
- obj-$(CONFIG_CAN_C_CAN)		+= c_can/
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 4638d7375943..663bd98760fb 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -1010,8 +1010,16 @@ static int mdio_bus_match(struct device *dev, struct device_driver *drv)
+ 
+ static int mdio_uevent(struct device *dev, struct kobj_uevent_env *env)
+ {
++	struct mdio_device *mdio = to_mdio_device(dev);
+ 	int rc;
+ 
++	/* Use the device-specific uevent if specified */
++	if (mdio->bus_uevent) {
++		rc = mdio->bus_uevent(mdio, env);
++		if (rc != -ENODEV)
++			return rc;
++	}
 +
- obj-$(CONFIG_CAN_FLEXCAN)	+= flexcan.o
-+flexcan-objs			+= flexcan_main.o flexcan_ethtool.o
-+
- obj-$(CONFIG_CAN_GRCAN)		+= grcan.o
- obj-$(CONFIG_CAN_IFI_CANFD)	+= ifi_canfd/
- obj-$(CONFIG_CAN_JANZ_ICAN3)	+= janz-ican3.o
-diff --git a/drivers/net/can/flexcan.h b/drivers/net/can/flexcan.h
-new file mode 100644
-index 000000000000..722b8edc3ff8
---- /dev/null
-+++ b/drivers/net/can/flexcan.h
-@@ -0,0 +1,107 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * Copyright (C) 2022 Amarula Solutions
-+ *
-+ * Author: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-+ */
-+
-+#ifndef FLEXCAN_H
-+#define FLEXCAN_H
-+
-+#include <linux/can/rx-offload.h>
-+
-+/* FLEXCAN hardware feature flags
-+ *
-+ * Below is some version info we got:
-+ *    SOC   Version   IP-Version  Glitch- [TR]WRN_INT IRQ Err Memory err RTR rece-   FD Mode     MB
-+ *                                Filter? connected?  Passive detection  ption in MB Supported?
-+ * MCF5441X FlexCAN2  ?               no       yes        no       no       yes           no     16
-+ *    MX25  FlexCAN2  03.00.00.00     no        no        no       no        no           no     64
-+ *    MX28  FlexCAN2  03.00.04.00    yes       yes        no       no        no           no     64
-+ *    MX35  FlexCAN2  03.00.00.00     no        no        no       no        no           no     64
-+ *    MX53  FlexCAN2  03.00.00.00    yes        no        no       no        no           no     64
-+ *    MX6s  FlexCAN3  10.00.12.00    yes       yes        no       no       yes           no     64
-+ *    MX8QM FlexCAN3  03.00.23.00    yes       yes        no       no       yes          yes     64
-+ *    MX8MP FlexCAN3  03.00.17.01    yes       yes        no      yes       yes          yes     64
-+ *    VF610 FlexCAN3  ?               no       yes        no      yes       yes?          no     64
-+ *  LS1021A FlexCAN2  03.00.04.00     no       yes        no       no       yes           no     64
-+ *  LX2160A FlexCAN3  03.00.23.00     no       yes        no      yes       yes          yes     64
-+ *
-+ * Some SOCs do not have the RX_WARN & TX_WARN interrupt line connected.
-+ */
-+
-+/* [TR]WRN_INT not connected */
-+#define FLEXCAN_QUIRK_BROKEN_WERR_STATE BIT(1)
-+ /* Disable RX FIFO Global mask */
-+#define FLEXCAN_QUIRK_DISABLE_RXFG BIT(2)
-+/* Enable EACEN and RRS bit in ctrl2 */
-+#define FLEXCAN_QUIRK_ENABLE_EACEN_RRS  BIT(3)
-+/* Disable non-correctable errors interrupt and freeze mode */
-+#define FLEXCAN_QUIRK_DISABLE_MECR BIT(4)
-+/* Use timestamp based offloading */
-+#define FLEXCAN_QUIRK_USE_OFF_TIMESTAMP BIT(5)
-+/* No interrupt for error passive */
-+#define FLEXCAN_QUIRK_BROKEN_PERR_STATE BIT(6)
-+/* default to BE register access */
-+#define FLEXCAN_QUIRK_DEFAULT_BIG_ENDIAN BIT(7)
-+/* Setup stop mode with GPR to support wakeup */
-+#define FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR BIT(8)
-+/* Support CAN-FD mode */
-+#define FLEXCAN_QUIRK_SUPPORT_FD BIT(9)
-+/* support memory detection and correction */
-+#define FLEXCAN_QUIRK_SUPPORT_ECC BIT(10)
-+/* Setup stop mode with SCU firmware to support wakeup */
-+#define FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW BIT(11)
-+/* Setup 3 separate interrupts, main, boff and err */
-+#define FLEXCAN_QUIRK_NR_IRQ_3 BIT(12)
-+/* Setup 16 mailboxes */
-+#define FLEXCAN_QUIRK_NR_MB_16 BIT(13)
-+
-+struct flexcan_devtype_data {
-+	u32 quirks;		/* quirks needed for different IP cores */
-+};
-+
-+struct flexcan_stop_mode {
-+	struct regmap *gpr;
-+	u8 req_gpr;
-+	u8 req_bit;
-+};
-+
-+struct flexcan_priv {
-+	struct can_priv can;
-+	struct can_rx_offload offload;
-+	struct device *dev;
-+
-+	struct flexcan_regs __iomem *regs;
-+	struct flexcan_mb __iomem *tx_mb;
-+	struct flexcan_mb __iomem *tx_mb_reserved;
-+	u8 tx_mb_idx;
-+	u8 mb_count;
-+	u8 mb_size;
-+	u8 clk_src;	/* clock source of CAN Protocol Engine */
-+	u8 scu_idx;
-+
-+	u64 rx_mask;
-+	u64 tx_mask;
-+	u32 reg_ctrl_default;
-+
-+	struct clk *clk_ipg;
-+	struct clk *clk_per;
-+	struct flexcan_devtype_data devtype_data;
-+	struct regulator *reg_xceiver;
-+	struct flexcan_stop_mode stm;
-+
-+	int irq_boff;
-+	int irq_err;
-+
-+	/* IPC handle when setup stop mode by System Controller firmware(scfw) */
-+	struct imx_sc_ipc *sc_ipc_handle;
-+
-+	/* Read and Write APIs */
-+	u32 (*read)(void __iomem *addr);
-+	void (*write)(u32 val, void __iomem *addr);
-+};
-+
-+void flexcan_set_ethtool_ops(struct net_device *dev);
-+
-+#endif /* FLEXCAN_H */
-diff --git a/drivers/net/can/flexcan_ethtool.c b/drivers/net/can/flexcan_ethtool.c
-new file mode 100644
-index 000000000000..55c6b59bb6bf
---- /dev/null
-+++ b/drivers/net/can/flexcan_ethtool.c
-@@ -0,0 +1,29 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright (C) 2022 Amarula Solutions
-+ *
-+ * Author: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-+ */
-+
-+#include <linux/ethtool.h>
-+#include <linux/kernel.h>
-+#include <linux/platform_device.h>
-+#include <linux/netdevice.h>
-+#include <linux/can/dev.h>
-+
-+#include "flexcan.h"
-+
-+static void flexcan_get_drvinfo(struct net_device *netdev,
-+				struct ethtool_drvinfo *info)
+ 	/* Some devices have extra OF data and an OF-style MODALIAS */
+ 	rc = of_device_uevent_modalias(dev, env);
+ 	if (rc != -ENODEV)
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 23667658b9c6..f4c2057f0202 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -563,6 +563,19 @@ static int phy_request_driver_module(struct phy_device *dev, u32 phy_id)
+ 	return 0;
+ }
+ 
++static int phy_bus_uevent(struct mdio_device *mdiodev,
++			  struct kobj_uevent_env *env)
 +{
-+	strscpy(info->driver, "flexcan", sizeof(info->driver));
++	struct phy_device *phydev;
++
++	phydev = container_of(mdiodev, struct phy_device, mdio);
++
++	add_uevent_var(env, "MODALIAS=" MDIO_MODULE_PREFIX MDIO_ID_FMT,
++		       MDIO_ID_ARGS(phydev->phy_id));
++
++	return 0;
 +}
 +
-+static const struct ethtool_ops flexcan_ethtool_ops = {
-+	.get_drvinfo = flexcan_get_drvinfo,
-+};
-+
-+void flexcan_set_ethtool_ops(struct net_device *netdev)
-+{
-+	netdev->ethtool_ops = &flexcan_ethtool_ops;
-+}
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan_main.c
-similarity index 94%
-rename from drivers/net/can/flexcan.c
-rename to drivers/net/can/flexcan_main.c
-index 223c32bf1f6c..e3e43e9cfbd6 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan_main.c
-@@ -15,7 +15,6 @@
- #include <linux/can/dev.h>
- #include <linux/can/error.h>
- #include <linux/can/led.h>
--#include <linux/can/rx-offload.h>
- #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/firmware/imx/sci.h>
-@@ -33,6 +32,8 @@
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
+ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
+ 				     bool is_c45,
+ 				     struct phy_c45_device_ids *c45_ids)
+@@ -582,6 +595,7 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
+ 	mdiodev->dev.type = &mdio_bus_phy_type;
+ 	mdiodev->bus = bus;
+ 	mdiodev->bus_match = phy_bus_match;
++	mdiodev->bus_uevent = phy_bus_uevent;
+ 	mdiodev->addr = addr;
+ 	mdiodev->flags = MDIO_DEVICE_FLAG_PHY;
+ 	mdiodev->device_free = phy_mdio_device_free;
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index df9c96e56907..5c6676d3de23 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -38,6 +38,8 @@ struct mdio_device {
+ 	char modalias[MDIO_NAME_SIZE];
  
-+#include "flexcan.h"
-+
- #define DRV_NAME			"flexcan"
- 
- /* 8 for RX fifo and 2 error handling */
-@@ -206,53 +207,6 @@
- 
- #define FLEXCAN_TIMEOUT_US		(250)
- 
--/* FLEXCAN hardware feature flags
-- *
-- * Below is some version info we got:
-- *    SOC   Version   IP-Version  Glitch- [TR]WRN_INT IRQ Err Memory err RTR rece-   FD Mode     MB
-- *                                Filter? connected?  Passive detection  ption in MB Supported?
-- * MCF5441X FlexCAN2  ?               no       yes        no       no       yes           no     16
-- *    MX25  FlexCAN2  03.00.00.00     no        no        no       no        no           no     64
-- *    MX28  FlexCAN2  03.00.04.00    yes       yes        no       no        no           no     64
-- *    MX35  FlexCAN2  03.00.00.00     no        no        no       no        no           no     64
-- *    MX53  FlexCAN2  03.00.00.00    yes        no        no       no        no           no     64
-- *    MX6s  FlexCAN3  10.00.12.00    yes       yes        no       no       yes           no     64
-- *    MX8QM FlexCAN3  03.00.23.00    yes       yes        no       no       yes          yes     64
-- *    MX8MP FlexCAN3  03.00.17.01    yes       yes        no      yes       yes          yes     64
-- *    VF610 FlexCAN3  ?               no       yes        no      yes       yes?          no     64
-- *  LS1021A FlexCAN2  03.00.04.00     no       yes        no       no       yes           no     64
-- *  LX2160A FlexCAN3  03.00.23.00     no       yes        no      yes       yes          yes     64
-- *
-- * Some SOCs do not have the RX_WARN & TX_WARN interrupt line connected.
-- */
--
--/* [TR]WRN_INT not connected */
--#define FLEXCAN_QUIRK_BROKEN_WERR_STATE BIT(1)
-- /* Disable RX FIFO Global mask */
--#define FLEXCAN_QUIRK_DISABLE_RXFG BIT(2)
--/* Enable EACEN and RRS bit in ctrl2 */
--#define FLEXCAN_QUIRK_ENABLE_EACEN_RRS  BIT(3)
--/* Disable non-correctable errors interrupt and freeze mode */
--#define FLEXCAN_QUIRK_DISABLE_MECR BIT(4)
--/* Use timestamp based offloading */
--#define FLEXCAN_QUIRK_USE_OFF_TIMESTAMP BIT(5)
--/* No interrupt for error passive */
--#define FLEXCAN_QUIRK_BROKEN_PERR_STATE BIT(6)
--/* default to BE register access */
--#define FLEXCAN_QUIRK_DEFAULT_BIG_ENDIAN BIT(7)
--/* Setup stop mode with GPR to support wakeup */
--#define FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR BIT(8)
--/* Support CAN-FD mode */
--#define FLEXCAN_QUIRK_SUPPORT_FD BIT(9)
--/* support memory detection and correction */
--#define FLEXCAN_QUIRK_SUPPORT_ECC BIT(10)
--/* Setup stop mode with SCU firmware to support wakeup */
--#define FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW BIT(11)
--/* Setup 3 separate interrupts, main, boff and err */
--#define FLEXCAN_QUIRK_NR_IRQ_3 BIT(12)
--/* Setup 16 mailboxes */
--#define FLEXCAN_QUIRK_NR_MB_16 BIT(13)
--
- /* Structure of the message buffer */
- struct flexcan_mb {
- 	u32 can_ctrl;
-@@ -339,51 +293,6 @@ struct flexcan_regs {
- 
- static_assert(sizeof(struct flexcan_regs) ==  0x4 * 18 + 0xfb8);
- 
--struct flexcan_devtype_data {
--	u32 quirks;		/* quirks needed for different IP cores */
--};
--
--struct flexcan_stop_mode {
--	struct regmap *gpr;
--	u8 req_gpr;
--	u8 req_bit;
--};
--
--struct flexcan_priv {
--	struct can_priv can;
--	struct can_rx_offload offload;
--	struct device *dev;
--
--	struct flexcan_regs __iomem *regs;
--	struct flexcan_mb __iomem *tx_mb;
--	struct flexcan_mb __iomem *tx_mb_reserved;
--	u8 tx_mb_idx;
--	u8 mb_count;
--	u8 mb_size;
--	u8 clk_src;	/* clock source of CAN Protocol Engine */
--	u8 scu_idx;
--
--	u64 rx_mask;
--	u64 tx_mask;
--	u32 reg_ctrl_default;
--
--	struct clk *clk_ipg;
--	struct clk *clk_per;
--	struct flexcan_devtype_data devtype_data;
--	struct regulator *reg_xceiver;
--	struct flexcan_stop_mode stm;
--
--	int irq_boff;
--	int irq_err;
--
--	/* IPC handle when setup stop mode by System Controller firmware(scfw) */
--	struct imx_sc_ipc *sc_ipc_handle;
--
--	/* Read and Write APIs */
--	u32 (*read)(void __iomem *addr);
--	void (*write)(u32 val, void __iomem *addr);
--};
--
- static const struct flexcan_devtype_data fsl_mcf5441x_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_BROKEN_PERR_STATE |
- 		FLEXCAN_QUIRK_NR_IRQ_3 | FLEXCAN_QUIRK_NR_MB_16,
-@@ -2177,6 +2086,7 @@ static int flexcan_probe(struct platform_device *pdev)
- 	SET_NETDEV_DEV(dev, &pdev->dev);
- 
- 	dev->netdev_ops = &flexcan_netdev_ops;
-+	flexcan_set_ethtool_ops(dev);
- 	dev->irq = irq;
- 	dev->flags |= IFF_ECHO;
+ 	int (*bus_match)(struct device *dev, struct device_driver *drv);
++	int (*bus_uevent)(struct mdio_device *mdiodev,
++			  struct kobj_uevent_env *env);
+ 	void (*device_free)(struct mdio_device *mdiodev);
+ 	void (*device_remove)(struct mdio_device *mdiodev);
  
 -- 
-2.32.0
+2.30.2
 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
