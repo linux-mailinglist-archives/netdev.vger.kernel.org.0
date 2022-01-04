@@ -2,86 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91C21483D4B
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:56:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 931E9483DB0
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 09:09:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232140AbiADH4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 02:56:39 -0500
-Received: from mail-pf1-f174.google.com ([209.85.210.174]:34397 "EHLO
-        mail-pf1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232016AbiADH4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 02:56:39 -0500
-Received: by mail-pf1-f174.google.com with SMTP id c2so31543020pfc.1
-        for <netdev@vger.kernel.org>; Mon, 03 Jan 2022 23:56:39 -0800 (PST)
+        id S233693AbiADIJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 03:09:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35363 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232800AbiADIJr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 03:09:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641283787;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=r+pJGFCaBi00UwfNIQiKj+H5FCtGgxgoDD8u3lefA54=;
+        b=ABXoDyLUOi142VOtMDGVh5sOdhpXyYAe9ugtx+VwE4Zqs2c2iq9wIV1LUoh2ExssvRidle
+        etEA5Fqnm3PEdKnOTDSg+0Sr33XXGDQCT5Azp/5+aTo/4PqAG23UHlX95pud2EP6MeU0ti
+        01ImIyJK9tzJz98Ir2RV4C80i2BmMlo=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-171-jCQ95dmjNZuZroY0cBev5Q-1; Tue, 04 Jan 2022 03:09:46 -0500
+X-MC-Unique: jCQ95dmjNZuZroY0cBev5Q-1
+Received: by mail-wm1-f70.google.com with SMTP id j8-20020a05600c1c0800b00346504f5743so2785746wms.6
+        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 00:09:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=k5yr3AtuD8K4pTVC0bU9zhjFIm+jZFJwQDj+V0I/7XU=;
-        b=YvbZaGmZCoMoFaq0PMnpZvzP3rhdD5wLTYg5E7TXril+v4OYVRr+sYBRIa8Ky5Vu/j
-         lA2537nlyj6NftVsJI4RzpGxSAOHM81EGshkRZ4db7dYWarHW1JbBxoUMucRdxMM5GIk
-         ylKNF+t8sNynkXLcKbHDyUPxCDEigifhkZLVjFPv3GRH0mp1UywRZugmOniH0jmDIz6x
-         WlRpL2Q6RFbBfuXzXupK2VjQ/vCc4TBkCEvYG5QFeltR++aLKCnrRyrQ1h3kIkVPrBFg
-         FbydqBFckr228vW5vCj5sdFKhIilw+9Wa7JgyeHQdqbMInnwz7bhQL7pr+NKEtWJSB+G
-         8Uog==
-X-Gm-Message-State: AOAM533rMbHNAIwpx0nded6/YGgLJigjkRc0N7Vj822k2URvbLbkqLPi
-        dwNWOH4GbNreRy5p2TiH7nfDYP8FJWiXxxtvduqUUPIT8Hc=
-X-Google-Smtp-Source: ABdhPJzliGwRtRWEHZo1cYG12T+zI+2TUN07TYx0MRPmu3TxQE6EYTrioYv1dPdatOcrYUXYWNz8AHNz6s8o3zJHIG0=
-X-Received: by 2002:a63:5f84:: with SMTP id t126mr42933525pgb.553.1641282998891;
- Mon, 03 Jan 2022 23:56:38 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r+pJGFCaBi00UwfNIQiKj+H5FCtGgxgoDD8u3lefA54=;
+        b=5wDgq1opZhCmTl7g8OMFttD8ycbUAH4jIk9rhcs09r0WvgLAZWzIbKm6GlBdgldDq8
+         lopUHPt95PQDbo8Qj50mm8UpBELrlyzazVg0NPP30mV9b/+JjPRKd1SvgAUx+df1RXKH
+         6ijn0SuKoFKIVBeK576BSmG26TaM947gQIU2IZuU6QuFF8vwzm8R7KN1tctDntI10Ssp
+         EzA5N5kiBntXWkUWq13IdNit3+SondWgiav9pC+T11Wdn80xLcExNNLQadIhpktxs3a/
+         Zct8KI4yMgwhptveV20KDvl9DJsjRrkw6n/GvqN/usN9sIvPy6Rk2QYa4mia+0sgcjQT
+         tFmw==
+X-Gm-Message-State: AOAM530x/NyWvET/jaL9lsQdY13RpPBTpIHiRTsdY7jjWiWfZqpcf8j/
+        YiwrwfhtMVkr7oGnOSdQb4Jg8Qj2df1ykfM4vi0EpFoPaamNMyon3rKEvK0xvWwzlG0k9uKAecx
+        eIFAdlASEJa+TqvY7
+X-Received: by 2002:a1c:4641:: with SMTP id t62mr41502882wma.100.1641283784864;
+        Tue, 04 Jan 2022 00:09:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzRAl10hto62ikaFvjmh+RWxhdWA+ui1s2lKp3RllvobTON1Us//OixMaQvQYZghnkwzi/66Q==
+X-Received: by 2002:a1c:4641:: with SMTP id t62mr41502858wma.100.1641283784619;
+        Tue, 04 Jan 2022 00:09:44 -0800 (PST)
+Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id p13sm31211324wrs.54.2022.01.04.00.09.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Jan 2022 00:09:44 -0800 (PST)
+From:   Jiri Olsa <jolsa@redhat.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [RFC 00/13] kprobe/bpf: Add support to attach multiple kprobes
+Date:   Tue,  4 Jan 2022 09:09:30 +0100
+Message-Id: <20220104080943.113249-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-References: <Ybs1cdM3KUTsq4Vx@shell.armlinux.org.uk> <E1mxqBh-00GWxo-51@rmk-PC.armlinux.org.uk>
- <20211216071513.6d1e0f55@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YbtxGLrXoR9oHRmM@shell.armlinux.org.uk> <CAFcVECJeRwgjGsxtcGpMuA23nnmywsNkA2Yngk6aDK_JuVE3NQ@mail.gmail.com>
-In-Reply-To: <CAFcVECJeRwgjGsxtcGpMuA23nnmywsNkA2Yngk6aDK_JuVE3NQ@mail.gmail.com>
-From:   Harini Katakam <harinik@xilinx.com>
-Date:   Tue, 4 Jan 2022 13:26:28 +0530
-Message-ID: <CAFcVEC+N0Y7ESFe-qcfpmkbPjRSvCJ=AOXoM6XSK6xGo=J1YNw@mail.gmail.com>
-Subject: Re: [PATCH CFT net-next 1/2] net: axienet: convert to phylink_pcs
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 17, 2021 at 1:55 PM Harini Katakam <harinik@xilinx.com> wrote:
->
-> Hi Russell,
->
-> On Fri, Dec 17, 2021 at 5:26 AM Russell King (Oracle)
-> <linux@armlinux.org.uk> wrote:
-> >
-> > On Thu, Dec 16, 2021 at 07:15:13AM -0800, Jakub Kicinski wrote:
-> > > On Thu, 16 Dec 2021 12:48:45 +0000 Russell King (Oracle) wrote:
-> > > > Convert axienet to use the phylink_pcs layer, resulting in it no longer
-> > > > being a legacy driver.
-> > > >
-> > > > One oddity in this driver is that lp->switch_x_sgmii controls whether
-> > > > we support switching between SGMII and 1000baseX. However, when clear,
-> > > > this also blocks updating the 1000baseX advertisement, which it
-> > > > probably should not be doing. Nevertheless, this behaviour is preserved
-> > > > but a comment is added.
-> > > >
-> > > > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > >
-> > > drivers/net/ethernet/xilinx/xilinx_axienet.h:479: warning: Function parameter or member 'pcs' not described in 'axienet_local'
-> >
-> > Fixed that and the sha1 issue you raised in patch 2. Since both are
-> > "documentation" issues, I won't send out replacement patches until
-> > I've heard they've been tested on hardware though.
->
-> Thanks for the patches.
-> Series looks good and we're testing at our end; will get back to you
-> early next week.
+hi,
+adding support to attach multiple kprobes within single syscall
+and speed up attachment of many kprobes.
 
-Thanks Russell. I've tested AXI Ethernet and it works fine.
+The previous attempt [1] wasn't fast enough, so coming with new
+approach that adds new kprobe interface.
 
-Regards,
-Harini
+The attachment speed of of this approach (tested in bpftrace)
+is now comparable to ftrace tracer attachment speed.. fast ;-)
+
+The limit of this approach is forced by using ftrace as attach
+layer, so it allows only kprobes on function's entry (plus
+return probes).
+
+This patchset contains:
+  - kprobes support to register multiple kprobes with current
+    kprobe API (patches 1 - 8)
+  - bpf support ot create new kprobe link allowing to attach
+    multiple addresses (patches 9 - 14)
+
+We don't need to care about multiple probes on same functions
+because it's taken care on the ftrace_ops layer.
+
+Also available at:
+  https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+  kprobe/multi
+
+thanks,
+jirka
+
+[1] https://lore.kernel.org/bpf/20211124084119.260239-1-jolsa@kernel.org/
+
+
+---
+Jiri Olsa (13):
+      ftrace: Add ftrace_set_filter_ips function
+      kprobe: Keep traced function address
+      kprobe: Add support to register multiple ftrace kprobes
+      kprobe: Add support to register multiple ftrace kretprobes
+      kprobe: Allow to get traced function address for multi ftrace kprobes
+      samples/kprobes: Add support for multi kprobe interface
+      samples/kprobes: Add support for multi kretprobe interface
+      bpf: Add kprobe link for attaching raw kprobes
+      libbpf: Add libbpf__kallsyms_parse function
+      libbpf: Add bpf_link_create support for multi kprobes
+      libbpf: Add bpf_program__attach_kprobe_opts for multi kprobes
+      selftest/bpf: Add raw kprobe attach test
+      selftest/bpf: Add bpf_cookie test for raw_k[ret]probe
+
+ arch/Kconfig                                             |   3 ++
+ arch/x86/Kconfig                                         |   1 +
+ arch/x86/kernel/kprobes/ftrace.c                         |  51 +++++++++++++-----
+ include/linux/bpf_types.h                                |   1 +
+ include/linux/ftrace.h                                   |   3 ++
+ include/linux/kprobes.h                                  |  55 ++++++++++++++++++++
+ include/uapi/linux/bpf.h                                 |  12 +++++
+ kernel/bpf/syscall.c                                     | 191 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ kernel/kprobes.c                                         | 264 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++---------------
+ kernel/trace/bpf_trace.c                                 |   7 ++-
+ kernel/trace/ftrace.c                                    |  53 +++++++++++++++----
+ samples/kprobes/kprobe_example.c                         |  47 +++++++++++++++--
+ samples/kprobes/kretprobe_example.c                      |  43 +++++++++++++++-
+ tools/include/uapi/linux/bpf.h                           |  12 +++++
+ tools/lib/bpf/bpf.c                                      |   5 ++
+ tools/lib/bpf/bpf.h                                      |   7 ++-
+ tools/lib/bpf/libbpf.c                                   | 186 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++---------
+ tools/lib/bpf/libbpf_internal.h                          |   5 ++
+ tools/testing/selftests/bpf/prog_tests/bpf_cookie.c      |  42 +++++++++++++++
+ tools/testing/selftests/bpf/prog_tests/raw_kprobe_test.c |  92 +++++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/get_func_ip_test.c     |   4 +-
+ tools/testing/selftests/bpf/progs/raw_kprobe.c           |  58 +++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/test_bpf_cookie.c      |  24 ++++++++-
+ 23 files changed, 1062 insertions(+), 104 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/raw_kprobe_test.c
+ create mode 100644 tools/testing/selftests/bpf/progs/raw_kprobe.c
+
