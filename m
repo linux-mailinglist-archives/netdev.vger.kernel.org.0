@@ -2,122 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D33E8484508
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 16:44:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BD66484532
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 16:50:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234020AbiADPoz convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 4 Jan 2022 10:44:55 -0500
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:38821 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234929AbiADPoy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 10:44:54 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id BE972E0005;
-        Tue,  4 Jan 2022 15:44:50 +0000 (UTC)
-Date:   Tue, 4 Jan 2022 16:44:49 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel list <linux-kernel@vger.kernel.org>
-Subject: Re: [net-next 01/18] ieee802154: hwsim: Ensure proper channel
- selection at probe time
-Message-ID: <20220104164449.1179bfc7@xps13>
-In-Reply-To: <CAB_54W7BeSA+2GVzb9Yvz1kj12wkRSqHj9Ybr8cK7oYd7804RQ@mail.gmail.com>
-References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
-        <20211222155743.256280-2-miquel.raynal@bootlin.com>
-        <CAB_54W7BeSA+2GVzb9Yvz1kj12wkRSqHj9Ybr8cK7oYd7804RQ@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S232658AbiADPul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 10:50:41 -0500
+Received: from mail-co1nam11on2076.outbound.protection.outlook.com ([40.107.220.76]:7649
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229798AbiADPuk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jan 2022 10:50:40 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n16vfrtuLIz7z9KJ9T8Dfi5o/H9dObUTrBQg0DjjKwkYZOQ4KvmNo0fhjgNt6RWaN5RUhjInah1oVFS8R18Z8MoiXAWV6P+tTeZ6gcYqpPE8Grtf3QYRBuyISh6HHcQYLDN/8SUKnoE+/T/XdL1rtZteiKrYciGdZsFbdoRtAXixLf/wDQcjeRjAQ4LoDbPpEmcTiTbdMwBvliPXoN3LmEDI8ufXD/iDuLktDtvtPGOWqP/PI/uu2T2ikBP2hukkHbJEk037jXe2jU8MI8sRgrbRNoU/l3dpI2VymaSTrJMBMrHZYXxz6RDwTI4NVS187/ux1bmDuBdnDPSe7hH69Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8y830wVd9WtuoW6+KYzcLa/tZ9lKtXJwbTv14VYS38Q=;
+ b=jrFyHC8Km/HJKKTqthV+ok6j/bKTkcq6awy06YsU7li/PLFPwcvl+Ka/HSH1LIAalYnydNhwMCDAgSS1h27vuCBRQZhbYODyG3FuSvPRPOsOHUmL4/h6V1y/m7qKqcjP9rJObTjz7QR6n6ej76nZqsvV+LeDHl5RVHg+Va5+730DWuz3ll1dVJq6zhE2n5IGq6Q4E94cChLLUvJQa6F3EanozAL5x19Fg5rzm5etCRYYqWytWsdEQr3bF27Sotb0v/8MzvD1w2xAuSz/QEdHRoUvPRPbC8Ffash4UBpBFe1vVXyOg3Vgm8dv5HFjcGFrK1MbYYzr90kRJ/dQIutsYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8y830wVd9WtuoW6+KYzcLa/tZ9lKtXJwbTv14VYS38Q=;
+ b=eNF1HQr/Vp8M8f+nvYnF9wVVrI4pSJCl3rj9SjJcmumiM525Z0hiqOEOBkJspSBNIyArrofelgo57IsjPe3WBLE0b2ZusHcE1439vGej6AvH0JoohQZlMRfNIDUQ8qksAJcF5ERxnJqykIm4hPWGbl12krtwH/UwyDiNaVYdUPaN5LVvrno6w/jevGqurazYJ9js7ZGAOcMCVxZ57X1cgvtm8AiFcxA+lUIm+KNKqy9HqW05zE6qscjfnXnhw500cLaC/Rw/oBK0dqg9LL5/kKeWgR1wv3EhLrjRB/cJzYwSeEz2JLzt1Cl4RbT+/56Evd17R/vep1fS/fqNGpBHnA==
+Received: from MWHPR04CA0030.namprd04.prod.outlook.com (2603:10b6:300:ee::16)
+ by BN8PR12MB3235.namprd12.prod.outlook.com (2603:10b6:408:6e::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.15; Tue, 4 Jan
+ 2022 15:50:38 +0000
+Received: from CO1NAM11FT042.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:ee:cafe::7d) by MWHPR04CA0030.outlook.office365.com
+ (2603:10b6:300:ee::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.16 via Frontend
+ Transport; Tue, 4 Jan 2022 15:50:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ CO1NAM11FT042.mail.protection.outlook.com (10.13.174.250) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4844.14 via Frontend Transport; Tue, 4 Jan 2022 15:50:38 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 4 Jan
+ 2022 15:50:37 +0000
+Received: from [172.27.12.20] (172.20.187.5) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.9; Tue, 4 Jan 2022
+ 07:50:35 -0800
+Message-ID: <1335eea9-463b-3f99-d9bb-ce158a11d03b@nvidia.com>
+Date:   Tue, 4 Jan 2022 17:50:32 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: htb offload support in i40e (intel nic)
+Content-Language: en-US
+To:     =?UTF-8?Q?Stanis=c5=82aw_Czech?= <s.czech@nowatel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Maxim Mikityanskiy <maximmi@mellanox.com>
+References: <1429844592.20211229205044@nowatel.com>
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+In-Reply-To: <1429844592.20211229205044@nowatel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.20.187.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d9c58404-283a-4738-bebb-08d9cf99f414
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3235:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB323512259CA3ECCB31E1B4E2DC4A9@BN8PR12MB3235.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2276;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uROJDszGU/8DlCXp1iqzUWRbuCNjv7rfEn1t39isaTI1LXN4Hda73Iw1yVC+usx5mAKn1pL414vrR8YA+s36L3BXFfR/leMPyIkOEEde7tyvEwaS6LcZPk9zUeRbCey/d+qDfqBmHOUYO2YbXKW3h8blJI2zmUbNlZ49Eunt71j7Up07daIeXDG+PPzbnNPr5w9jx+nQynDXGv7ilc8cBtvubXfOCgHHOFaNtpWvSrbSGa07XmQVBvGmoOX1gAXz+nD4P5woszZ5749XRQ9Ecde/jw5uvMbBR9iqSm0VveJH+eJ13XqeVhpiOzFOTOxWpGW4BgAaJf9xxbovKfHM8sMIVjhM8bh28D04DrP5ZwaKL66J9mdWRlaRlHHUEViWlqxMlmF4L+UtbjZMjWa8/uVOrdJm6CeRr+Mcy+cOpvjoYDNi2rIyEkSeIDCFYJDFqE+M82HuFmwtG6sywu2tBMHdq6x1Cn6DEC8NASX2dI+F/fgw4nJRVLfI5G5mfeg9ZsqSvF50lZCfcjtMiFk05/r5mUykNz5zDtPZIsNXbtLXyCefdefLXwPYcPyqwOpYPcy9T4HXHzbWPOzdczvM9PpmjVsyAL+Gt2xsfFPPbz7UfMtfhM+0FYhOpr7uvOvpaL0VScBIjfRudhcctkyoGG94MkAnpEkLGZhU1Qd/1EveKhFYKY7lZuk3aFmCdD95MkCxjchjgWiZh/MIFqoqghEL3YzeMVnxSxJOUJAQIQuU6qeUgpsKf74Q+yJAV4mgLewP+PPlipkdT2gPkZ8HgHMbOzKE6fmSoqiWK8mC8I9GGz0kYMLiZCCJiSmN6SfqCXyRIHSsDd2iYYo6aog4bg==
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700002)(36840700001)(46966006)(107886003)(6666004)(426003)(47076005)(31696002)(83380400001)(40460700001)(2906002)(81166007)(66574015)(5660300002)(82310400004)(26005)(16576012)(31686004)(36860700001)(16526019)(8936002)(2616005)(508600001)(316002)(53546011)(110136005)(86362001)(186003)(336012)(36756003)(70586007)(4001150100001)(8676002)(70206006)(4326008)(356005)(36900700001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2022 15:50:38.0488
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9c58404-283a-4738-bebb-08d9cf99f414
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT042.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3235
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
-
-alex.aring@gmail.com wrote on Tue, 28 Dec 2021 16:05:43 -0500:
-
+On 2021-12-29 21:50, Stanisław Czech wrote:
 > Hi,
 > 
-> On Wed, 22 Dec 2021 at 10:57, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> >
-> > A default channel is selected by default (13), let's clarify that this
-> > is page 0 channel 13. Call the right helper to ensure the necessary
-> > configuration for this channel has been applied.
-> >
-> > So far there is very little configuration done in this helper but we
-> > will soon add more information (like the symbol duration which is
-> > missing) and having this helper called at probe time will prevent us to
-> > this type of initialization at two different locations.
-> >  
+> I saw that the htb offload needs additional changes in the mlx5 driver to support it.
+> I couldn't find any info regarding the htb offload support on any other drivers/vendors like intel
+> nic (i40e) We use multiple XL710 that seems to support hardware tc queues:
 > 
-> I see why this patch is necessary because in later patches the symbol
-> duration is set at ".set_channel()" callback like the at86rf230 driver
-> is doing it.
-> However there is an old TODO [0]. I think we should combine it and
-> implement it in ieee802154_set_channel() of "net/mac802154/cfg.c".
-> Also do the symbol duration setting according to the channel/page when
-> we call ieee802154_register_hw(), so we have it for the default
-> settings.
-
-While I totally agree on the background idea, I don't really see how
-this is possible. Every driver internally knows what it supports but
-AFAIU the core itself has no easy and standard access to it?
-
-Another question that I have: is the protocol and center frequency
-enough to always derive the symbol rate? I am not sure this is correct,
-but I thought not all symbol rates could be derived, like for example
-certain UWB PHY protocols which can use different PRF on a single
-channel which has an effect on the symbol duration?
-
-> > So far there is very little configuration done in this helper but thanks
-> > to this improvement, future enhancements in this area (like setting a
-> > symbol duration, which is missing) will be reflected automatically in
-> > the default probe state.
-> >
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> >  drivers/net/ieee802154/mac802154_hwsim.c | 7 +++++--
-> >  1 file changed, 5 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
-> > index 62ced7a30d92..b1a4ee7dceda 100644
-> > --- a/drivers/net/ieee802154/mac802154_hwsim.c
-> > +++ b/drivers/net/ieee802154/mac802154_hwsim.c
-> > @@ -778,8 +778,6 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
-> >
-> >         ieee802154_random_extended_addr(&hw->phy->perm_extended_addr);
-> >
-> > -       /* hwsim phy channel 13 as default */
-> > -       hw->phy->current_channel = 13;
-> >         pib = kzalloc(sizeof(*pib), GFP_KERNEL);
-> >         if (!pib) {
-> >                 err = -ENOMEM;
-> > @@ -793,6 +791,11 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
-> >         hw->flags = IEEE802154_HW_PROMISCUOUS | IEEE802154_HW_RX_DROP_BAD_CKSUM;  
+> qdisc noqueue 0: dev lo root refcnt 2
+> qdisc mq 0: dev enp65s0f1 root
+> qdisc fq_codel 0: dev enp65s0f1 parent :18 limit 10240p flows 1024 quantum 1514                                                                                                              target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :17 limit 10240p flows 1024 quantum 1514                                                                                                              target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :16 limit 10240p flows 1024 quantum 1514                                                                                                              target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :15 limit 10240p flows 1024 quantum 1514                                                                                                              target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :14 limit 10240p flows 1024 quantum 1514                                                                                                              target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :13 limit 10240p flows 1024 quantum 1514                                                                                                              target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :12 limit 10240p flows 1024 quantum 1514                                                                                                              target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :11 limit 10240p flows 1024 quantum 1514                                                                                                              target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :10 limit 10240p flows 1024 quantum 1514                                                                                                              target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :f limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :e limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :d limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :c limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :b limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :a limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :9 limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :8 limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :7 limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :6 limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :5 limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :4 limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :3 limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :2 limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
+> qdisc fq_codel 0: dev enp65s0f1 parent :1 limit 10240p flows 1024 quantum 1514 t                                                                                                             arget 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64
 > 
-> sadly this patch doesn't apply on current net-next/master because
-> IEEE802154_HW_RX_DROP_BAD_CKSUM is not set.
-> I agree that it should be set, so we need a patch for it.
+> Is this enough to support the htb offload or we must wait for the driver update to support it?
 
-Right, I just have a patch aside setting this to enforce beacons
-checksum were good. I can certainly set this flag officially.
+Hi,
+
+The HTB offload requires hardware and driver support. The NIC has to 
+support hierarchical rate limiting, and the driver has to implement the 
+API used by sch_htb to communicate the hierarchy. Mellanox NICs starting 
+from ConnectX-5 should support the HTB offload (see the original commit 
+message for more details).
+
+So far, in-tree drivers other than mlx5 don't implement the HTB API. I'm 
+not aware whether the corresponding hardware has the needed capabilities 
+- that is a question to developers from Intel.
 
 > 
-> - Alex
 > 
-> [0] https://elixir.bootlin.com/linux/v5.16-rc7/source/drivers/net/ieee802154/at86rf230.c#L1059
+> Greetings,
+> Stanisław Czech
+> 
+>   
+> 
 
-
-Thanks,
-Miquèl
