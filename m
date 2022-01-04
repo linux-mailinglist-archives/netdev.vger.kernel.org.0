@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 468D04846C3
+	by mail.lfdr.de (Postfix) with ESMTP id 93BD84846C4
 	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 18:14:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234359AbiADROv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 12:14:51 -0500
+        id S234285AbiADROw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 12:14:52 -0500
 Received: from mail-eopbgr150045.outbound.protection.outlook.com ([40.107.15.45]:22762
         "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234561AbiADROi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 12:14:38 -0500
+        id S234664AbiADROj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jan 2022 12:14:39 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d4qQVQAmWD0FxQp7HuvXacfjdmz2+Hhr7aaUveX24djwddl9RAHvm6nMBUB9yiK2tSD6qkrSeafByLcmo8waI+VEJ9S8+qbad88u2q4DPNUqlj3Wd8zunHJ/nZs3K2VCrN2NkOG0H6ljiz3mHI2hYXvSuVdslGJYlkEnkr44OctQaZOfdR6Xgu7fcJhJm8ghDrKVzvV+X8sq1zPvO+ozXFOB7FB2HczscOgu2yzuChdaGHvweELlHAYTDGVdnJd6zXSH0NuLKg95MAEgDWa4ADFfXLOpULpbAzVw1f1sqYhlRxqzN4WjO4B+LxJNdsRplCZtB5k972t3Qb6r6b6MQw==
+ b=MD+25wmJQfxzaEv9adRs++owEv+9N+psXOvOPD90Oqg/IBcgURizgrt20dYth6LWQyvuk5mzlPYd0I1PcImybg4rxdTMHWDZjpEez6eadxSPYbysqkIin6D1qJwvZVnYgIeJ1NZJMMO9Q8BZ+YCdOrMAaC31MWf1LVcMv+hbOd/WonyQFq1hOPJXBQjlVwLdJAPpumFR0myOnvFJIDLQ4ipNTeWrC1cWcUn7Fmm8rX1G5XFZpHrgq2TrfjQeQA+zXIdV2HBfCts0mF4tBz6ToCKjK+9RK2P85HDFFTxEf9T7p5ZPIf8PMEFDY/diFrGW/7I0nEg76zEDMewQEhhAPA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HaRSNNiMBiIhexsZdIJXTpbjavnD6hm4BOBeFKlTttI=;
- b=SoIRBXbyPU4rGemMeh9A5N6uOkfBn3mJpaqKJM2YC0AUchl6MA4cKlxCVSVNTVGj6bb6rqiXTLAE+56TDB0XudLFleMhoRxCDUNKjmDKxY1wvP35z7+yj7CNvt9uJG8S9hXj6PdqVGMr88YA7m7LFL4YHH715+WOaIsOKPgSueoRlu0oLxebhfZokUYIX+eS9aQ3k278mH8ujKa4Djsc+H5OWpZmWQZUd5BY8EVA2kLNiaGd5cvgUs4JX3Gp2Rn3uer2kS3rJ20wi1FjVTva2xnKbmxhUdVhuGp/bnXBS6FDWDwIep1NTuaUwp4l/0lZ5cz5ucMXLbNZIz66Q2NgXg==
+ bh=IE0nWSyN9SY7th6dNrW+vLPOcu4ZRMUzGGRo45+S744=;
+ b=RNjW2J/5Zvxfa1e11iQ0yleNOPgRpL2v78QatD5a7R0HnTUxWis6q2Ko9/uyv4WD7FUSJN2/wAfTqaEivUKW3dXjnhkcqwqX3KkxhywND6GZqGeiEvUaycPtDKIxcGL5DErhgX3rPA9qtDqU5FLG0qhfhwedmfewhyUiNY3m13araXtEigvG3kMoieExDeiL1DTBugi9E5+QeXnxAlUtnPKF0J6O0SQNTMUKUtov57Y9ik7G1VjHm5jK+3ZJ9qScSus7YMn5g+DqjdNn3j6MVtKgeynr52WOOIyJgui6VXwddYrRvdxEAd3Eu5vgZSe/NTJjwrt6KY3U/+8Oe6Ewgw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HaRSNNiMBiIhexsZdIJXTpbjavnD6hm4BOBeFKlTttI=;
- b=IjP+xSZxahhCfA4+QBr0NXmYkT/1lq+VTYf4Y/DanYluRplopi9EOEF6A5zozmogTA7rpXonDHyTc3vkBB8mMCw47LgZAexSW+rpDvHKlNumkuCmHfpc0A1IVJyd+SWip+8IDrMHNPDERKVoPtOIx3ZPP9K0EynkFBA3qrm72rk=
+ bh=IE0nWSyN9SY7th6dNrW+vLPOcu4ZRMUzGGRo45+S744=;
+ b=CheHdioRlZC+M/dX98jWWCBYurkkpwrLhJfHCoVOZQeTCgMtUU0/wf5SXC+PsHW3ZFxu7ARYq15S2q/HY73/eTcQdJpTfYQQVI12Z4CiLhycO5fN26NvkObv5sgv6h7x/3XkgjL06sTBZNBuvvZB6cn2cB+opzG7N3xOycxU8NM=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB7104.eurprd04.prod.outlook.com (2603:10a6:800:126::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Tue, 4 Jan
- 2022 17:14:34 +0000
+ 2022 17:14:35 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4844.016; Tue, 4 Jan 2022
- 17:14:34 +0000
+ 17:14:35 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH net-next 04/15] net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
-Date:   Tue,  4 Jan 2022 19:14:02 +0200
-Message-Id: <20220104171413.2293847-5-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 05/15] net: dsa: first set up shared ports, then non-shared ports
+Date:   Tue,  4 Jan 2022 19:14:03 +0200
+Message-Id: <20220104171413.2293847-6-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220104171413.2293847-1-vladimir.oltean@nxp.com>
 References: <20220104171413.2293847-1-vladimir.oltean@nxp.com>
@@ -56,134 +56,172 @@ X-ClientProxiedBy: AM0PR02CA0192.eurprd02.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 855b5ee5-ab5a-4508-20d6-08d9cfa5ad9d
+X-MS-Office365-Filtering-Correlation-Id: 77ebb45b-5279-40d0-0469-08d9cfa5ae25
 X-MS-TrafficTypeDiagnostic: VI1PR04MB7104:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB71047C4FDD3384082A33B42EE04A9@VI1PR04MB7104.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB710472B2FD7DF734EFD38471E04A9@VI1PR04MB7104.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2043;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sX8/f2gFCxNWOGMun3J9ZPolci9plfj1zCVMCabYCaI+P3ni9EseW5QEfu9EQCbgTNufhFv8CSZTgQjHA9Lq3ujmB7ofsceIoF/Ky6gfM3Hox6lmDdwk8VtU2BHbbpdwTKfGzyJsDBzmRzvBF08sI1hTRjisbHnvIplc47VWnUclpK5Ddu21AjaaoM30G4dJ/j3c19d6YbEMzEwB0kysN5zRNOc5LtzEECZy48Et55IRyn1kV5HWxkY4DaNyTLfQVtclMIYLk+9Zxli+JvsSIfmkmFszut9H1mKUznNhRqWX3Z7227DqNTyoW8kc9QNz9GMMOfKxwh0YNgjVKgvg2BHqsAQIVfSglRvzuNVrJYKk9b5vEiulk7cZzCZh09WgdsUDnNZ2F58yXxlm7CfBBs9a+rZkNon++5CYveLgWt45SXymiyowM+C7sQ4/DYk65ORZp4IFSmFPZCCIj2fgeQsscN/MoUbSp9SQokgFSazh46anmbF6aWxznrAAgkt9u/CBRbeINbgzr7qFGn9i8VmIvbV9zia+oB5IRqeYq+pCzF4JxRg0kbBcN2Ry21LSR/uNaPIzRCtQAqfFLy/G0xGvhbg86lmIRdA2XS/xeYST1PDLr+78ywXVrUAh1Wva3oHQzJPMmdtNglzpp4DEGscpZmR9gAIahRCYTsvleH5PL6cnyth/G2IbNV2dYTg2VbwMkrAHuQbyFmkTF2VM4Q==
+X-Microsoft-Antispam-Message-Info: ufSDksvuebPle+yxenIHMaH/gp5OMcD2ISw4hAIWfLd7IWvPVCXgLAtXzEFkCk47Knt6VsP9HbDwHuv8uHhMsoMdo5dRNS7sX0yTH0XbPdGr8+D3pnGmoVGpRxQ1XFHGqCxuZqTCxTMhLJbk33gBRAC8l8XdR++6kaI6X79XCXXWCqnXwflNae+Oa0ddj3OHe4eDqjlQIXWN+6cWnGVym4L6Q2kK14ubF6dG5Ek74VWb3kHV9GCDEt3QzFly0LFGH49JgZV2gETLmFUVbAcFXgyG5VN4LW8ZcMdqRbpg07eRpOuOF16ImCAwY8gZTFYnEskjATIqNH/rCi1fmt76ssDrswHJnSUO+z1eN8lJvfBE/wwTcwEXPaWTm/LtJbD5g35+Nh9F01ybva0mBUY6hgfqecagKuARB0WL/uS2ntPUgrLZYwOnjJk+xD9wEg1StJvJSgJ/9RSMmmBIdxumnIrqgGaxhgpTD5vJaEQwSgI/O+RPb92ulsp1Wng9S+qvqlLAvV1o/2A7X9D0hxa7JU+cqFH3dX90uKxoY6BwbmShpOfoQ7FTuDVvl07Dhpmn6F9TRT0uJuKlGPsN9ds2cC0QVehLVmLjIMv09AESCqDA0ulSpaz0BQZsdQ+VnNErk/vqN185aUmujay9JPt/qHl2vL881mHj2xx4btZ5TlVX91Xh2swZvkizhg0fo1adRtBmX11zVE/vzlWADzLsfg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(54906003)(86362001)(8936002)(8676002)(5660300002)(66946007)(6506007)(52116002)(186003)(6486002)(26005)(6916009)(66476007)(66556008)(4326008)(508600001)(38350700002)(38100700002)(6666004)(36756003)(1076003)(2906002)(83380400001)(316002)(6512007)(2616005)(44832011);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wKkF/tOg8b5506EmkfbORRfEvnpI9k0RxwOZ/FZC9jqFqFIPDTliw08UG8kc?=
- =?us-ascii?Q?pybzgmUZOEM87/QuXc1/PqbPcOEJHTsOzpHGFJSsMNqNCH7Xeku/ns1E83Dh?=
- =?us-ascii?Q?xVHYJcrMcv7135WIdJnyhTxx8fS0zuRAt30IOCw7Irdkd6Ggas1c1lfZ2eNL?=
- =?us-ascii?Q?91k2l8UdEJYwy3IF2qRP4Z2zdsW009t8k4MCG5AaOr2o+JUrcoGbPYblltYE?=
- =?us-ascii?Q?Tj88bR9CBKgA4t5jUssPDeOMGNZaUFsq6AWhXOuT0NUL5MHbkklxagb8sAul?=
- =?us-ascii?Q?bCARr6713DVV4f9jkqWJLsM41JkCldUPwhbCCUzGQ+EMvkMW9ckFU1fr2C87?=
- =?us-ascii?Q?Wa3wHf7nJt1uKQUudIIh063wsjGdCQEm30OD+93ucryvZ7TNgFzSVKMJbGND?=
- =?us-ascii?Q?PqCev3dxQAjcbNzJke3QF++mt45zEYHWng+z9Wb3nbPgOsj33Q2vhUngyLfa?=
- =?us-ascii?Q?ExIvTKeRlAP4muvET0oZeWIxLo1Ka+9CGPs8Q0JJX9h8u7BrCwLD3BDvOSI6?=
- =?us-ascii?Q?XSKELQ/zzhZcn31bp5Ijl/u0APix7AgGjUbJsSfSvNesSRkp6/bRmwRPh8Hz?=
- =?us-ascii?Q?qOiTCNmH4pZUQ7n5PIPMSs09v7xecrowZZKLr7MkXO6oyvBaDgjWWBGR0J7p?=
- =?us-ascii?Q?OJBcGhm/FwAwPtu9pENuxmpnqoAccpXHWq8QAtE8mvUNjJWYrhTJpvh8YT9B?=
- =?us-ascii?Q?a6M75brzlX2fbNC0qwWbOUbtsTgnPMoObE1gd/d8tcr97Ok916QUDwM/bKNF?=
- =?us-ascii?Q?6rCkPJ6pTPS0da6oS8rYXRifu7EBwvbbdHmsjognTUoS7UgUFAUyGPQnaktD?=
- =?us-ascii?Q?BuKyKiKYyM08oymlno29/WT96kWFcv96Vf58hIeLqKJbiTMxubyK9cYSzClb?=
- =?us-ascii?Q?EuQETgNn0Zri3dr3VgmidjiUq3gNI0j1mW5Ad0f24ZvlEiqW0HzdLmoqLJ4K?=
- =?us-ascii?Q?whYlepmOZzi856tGCKE5gbjQPyPab+XNh4DQFhwYzy56cGq5Z8MO2Q8Naewo?=
- =?us-ascii?Q?DtOMXJDM7QN91vAeSXSQfygES4kCO0GOy+52VIc8H28ux55pX8k48K7NrFL4?=
- =?us-ascii?Q?oRMYdx5shuQ3gzPMfzW+JV0TS9O7QJ1dwNnKVaq5UJNlezVv7uomRcV4LBPN?=
- =?us-ascii?Q?2nA71epjAk53i2Ad6DYcWytJCYakEMVCVglA2eYt7vQYMOYRJyagNgPFOn9u?=
- =?us-ascii?Q?TNnNi85R5th1yV/17EXXdCtB61MTyGwVHOP013PA2o/9IOaZaHcbnWqmIFbk?=
- =?us-ascii?Q?i2oB5UcNi5rNp3cfnNCSZNmG9ruu7EvCQ3GWI8SIglOJAV4t1dvv8cL25R3l?=
- =?us-ascii?Q?ZMPEzc1lK573Jio4yIeouD9r7uHyJLCE98cXxPcUtaaYxwV0FyXZlyH7ULiW?=
- =?us-ascii?Q?G1ddABdnMwxOirfHI00QyL5lMO0DlB+FS3wjjb+NRibQqdPXLFHmu2b5Wzf7?=
- =?us-ascii?Q?TbI2BJVP5nyhSKXzo4LqphBcDaKdbyqfLqhNar+tD8eIF0kBQvuBw58RIf87?=
- =?us-ascii?Q?LTiUdVCg4qizgftDO/V0ub7gbgsIdTbIRBmOd4MOSC+WgM+xfEOHeaOOA82d?=
- =?us-ascii?Q?dca4kNuBS3Mob3pklqTmPSlDC0oObz8XPFwgKdQOnkoYUeMRvXW/Fvuz/DQT?=
- =?us-ascii?Q?FX/3dbaVgrre1LyAN5X88TM=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EkCQBJnxzOPVCf67QBwpzB065PMOoi83PMAIwAfZwwmWq6wcyfbXCy/24Sm0?=
+ =?us-ascii?Q?QW+5PVh+a49iwacLtRMF0mALrK1rjj4cR9yY64/ao3Z0Ds+WQARt7on4oI6u?=
+ =?us-ascii?Q?gfug5ndtQw7U/0OblQNMgTwq1H0t+zEhXGbvT5XTdsjGl0h9q+a0pdeJytYV?=
+ =?us-ascii?Q?FXhohQ0esNCMCvTZP9JGTuajGi+mh0V+SZU0iMoXQwOXKSGY5sKCIp8AdkrZ?=
+ =?us-ascii?Q?jWnzAtgcUO8TadD1nlYolpqX1PG9+6gbJL34/q+H1inNpsSi76kJQngZRaOS?=
+ =?us-ascii?Q?flcBtWSOURRqU/l8E2+c+TZkW5/XDReNtSoPqWp/5dEKAfasG15QMshyvLyz?=
+ =?us-ascii?Q?g+br3CeTRnkZrZkXZKF7JAv5ZlbUw4eqENLXmZr9PSbgtxJKdeIfgrMgGbuE?=
+ =?us-ascii?Q?V36E4v/oTMpxbDIKKak9/9nf+h4e4kZFdTyF2aF+vlpm2LkScBLxiALSnU9Y?=
+ =?us-ascii?Q?atgBFR4RpOSNyRl2DdUZqc7G/4w9NrVnU/kn3I40zbRMoRnu9LEgUOfOydlf?=
+ =?us-ascii?Q?ozjo1OFtQUr0JIGyPuXifVt23onYEZLi9+IHNkvCkf+luO4MDFQ+K3Brhmin?=
+ =?us-ascii?Q?F3c4Le8Bf/xtdFuOy0FJIMh5OaqHzr2aPgGOmI+IbTsWYwzhdBhxb4Dp2bJg?=
+ =?us-ascii?Q?oI+arQvjb4o8+/flf0iCwnH2G3NTfENBg69ugb0USC4kdCh7R1w5psvatrDz?=
+ =?us-ascii?Q?UM7JHqE/X6ABmVt5QgQBBT6g5VwRFuUVVTuuhokzQNucmlizpnx9LBT+JV9K?=
+ =?us-ascii?Q?cWq17nh7L0ahSJDPQzU/sHXeQP/pQxUTnSr18XrbXEH/3bQKtv4yI/E9liJ8?=
+ =?us-ascii?Q?dyl60xLRWiYtF98vXA1cAENnZ83e2xwjg3MednAqGPwe8EsaGOUZCbNIdxVs?=
+ =?us-ascii?Q?AJtn0RFzRr/RPjC7QF4/hfPQkrFwCBBS+ML6t/jbUUNxxi324x7jRHOokhx8?=
+ =?us-ascii?Q?Gwuuzs0TSVdOyiyCG1mXqLRPM78H9VRzFMDp1nKC8vKQZNUDdljThff9ViDi?=
+ =?us-ascii?Q?i+eulEm9JhOyqzhU4QcUh3SVGqrkmz4jknPh/UlymfHUJgEvMjo3mE1ykKiG?=
+ =?us-ascii?Q?yaOmnavEuIHk9igsaM5SWsIt+xgH/xKiKtNNvTkM4Iw7HyKYA8pVHYTKgu4f?=
+ =?us-ascii?Q?lglj8y6RSf5O+q8fueysGK/WT8IBkMMEZG6Idsl4gYhoWF4uzb30725ElqKK?=
+ =?us-ascii?Q?zVuz0iy83VQ0DOQj4k8/TYIy+Wssc3Ip2Y7Kq1KnznMElY2Fm+a+0mYMHsEa?=
+ =?us-ascii?Q?Jc4paVrK6frAcr8jl3+tWG5MtNKuW76QerVDopQhF2hqe6iLFhS7GLOkQm33?=
+ =?us-ascii?Q?tSw4pNNBxGad4KnTlnAAMtgn7baAAnhvskwdcctMu9mS4l/HofxVXaQmdiAp?=
+ =?us-ascii?Q?iyWKDirdRuXP1gcwqBTppZ6B1NJ/f5VBxmUeRCYcKUDyeZvF4JK5/46ngHdA?=
+ =?us-ascii?Q?pYBSaGhUZfIMNx4qoqa+8vAki+nzBYhqJCYIIAHUeEgT6lg08iVwQZxP+eEi?=
+ =?us-ascii?Q?q6PfovxRO2BJfjLfuSLY88j+Av45B8DqgWiilEatB2tp75+fQywPFGSDt3Wy?=
+ =?us-ascii?Q?nvqDTBJxXOHZwbQeIyO9xP0uU1fT5dp0z6owc+ggOE4eWyDvwcZ3/viPupmD?=
+ =?us-ascii?Q?/Umo1A47X5m8kMwjo55jFxs=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 855b5ee5-ab5a-4508-20d6-08d9cfa5ad9d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 77ebb45b-5279-40d0-0469-08d9cfa5ae25
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2022 17:14:34.0351
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2022 17:14:34.9569
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qlHaQBm2kRWoG7wzep7Np18La/UQYzNcHR5pAba+8mxGoiLMJwrerR89rg/NPSMSigeaaLdV/sIPhkz5coLPtw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: GkX8p6jLNEVWf68Y8tb1E2SyrxQ92UQ65I0jx3cMcietfssKj4ilcg6XxY4ABix51jTYvklzWkgGnOPAaVAyoQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DSA needs to simulate master tracking events when a binding is first
-with a DSA master established and torn down, in order to give drivers
-the simplifying guarantee that ->master_state_change calls are made
-only when the master's readiness state to pass traffic changes.
-master_state_change() provide a operational bool that DSA driver can use
-to understand if DSA master is operational or not.
-To avoid races, we need to block the reception of
-NETDEV_UP/NETDEV_CHANGE/NETDEV_GOING_DOWN events in the netdev notifier
-chain while we are changing the master's dev->dsa_ptr (this changes what
-netdev_uses_dsa(dev) reports).
+After commit a57d8c217aad ("net: dsa: flush switchdev workqueue before
+tearing down CPU/DSA ports"), the port setup and teardown procedure
+became asymmetric.
 
-The dsa_master_setup() and dsa_master_teardown() functions optionally
-require the rtnl_mutex to be held, if the tagger needs the master to be
-promiscuous, these functions call dev_set_promiscuity(). Move the
-rtnl_lock() from that function and make it top-level.
+The fact of the matter is that user ports need the shared ports to be up
+before they can be used for CPU-initiated termination. And since we
+register net devices for the user ports, those won't be functional until
+we also call the setup for the shared (CPU, DSA) ports. But we may do
+that later, depending on the port numbering scheme of the hardware we
+are dealing with.
+
+It just makes sense that all shared ports are brought up before any user
+port is. I can't pinpoint any issue due to the current behavior, but
+let's change it nonetheless, for consistency's sake.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- net/dsa/dsa2.c   | 8 ++++++++
- net/dsa/master.c | 4 ++--
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ net/dsa/dsa2.c | 50 +++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 37 insertions(+), 13 deletions(-)
 
 diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index c18b22c0bf55..f044136f3625 100644
+index f044136f3625..1ca78d83fa39 100644
 --- a/net/dsa/dsa2.c
 +++ b/net/dsa/dsa2.c
-@@ -1038,6 +1038,8 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
- 	struct dsa_port *dp;
- 	int err;
+@@ -1003,23 +1003,28 @@ static void dsa_tree_teardown_switches(struct dsa_switch_tree *dst)
+ 		dsa_switch_teardown(dp->ds);
+ }
  
-+	rtnl_lock();
-+
+-static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
++/* Bring shared ports up first, then non-shared ports */
++static int dsa_tree_setup_ports(struct dsa_switch_tree *dst)
+ {
+ 	struct dsa_port *dp;
+-	int err;
++	int err = 0;
+ 
  	list_for_each_entry(dp, &dst->ports, list) {
- 		if (dsa_port_is_cpu(dp)) {
- 			err = dsa_master_setup(dp->master, dp);
-@@ -1046,6 +1048,8 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
+-		err = dsa_switch_setup(dp->ds);
+-		if (err)
+-			goto teardown;
++		if (dsa_port_is_dsa(dp) || dsa_port_is_cpu(dp)) {
++			err = dsa_port_setup(dp);
++			if (err)
++				goto teardown;
++		}
+ 	}
+ 
+ 	list_for_each_entry(dp, &dst->ports, list) {
+-		err = dsa_port_setup(dp);
+-		if (err) {
+-			err = dsa_port_reinit_as_unused(dp);
+-			if (err)
+-				goto teardown;
++		if (dsa_port_is_user(dp) || dsa_port_is_unused(dp)) {
++			err = dsa_port_setup(dp);
++			if (err) {
++				err = dsa_port_reinit_as_unused(dp);
++				if (err)
++					goto teardown;
++			}
  		}
  	}
  
-+	rtnl_unlock();
+@@ -1028,7 +1033,21 @@ static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
+ teardown:
+ 	dsa_tree_teardown_ports(dst);
+ 
+-	dsa_tree_teardown_switches(dst);
++	return err;
++}
 +
- 	return 0;
++static int dsa_tree_setup_switches(struct dsa_switch_tree *dst)
++{
++	struct dsa_port *dp;
++	int err = 0;
++
++	list_for_each_entry(dp, &dst->ports, list) {
++		err = dsa_switch_setup(dp->ds);
++		if (err) {
++			dsa_tree_teardown_switches(dst);
++			break;
++		}
++	}
+ 
+ 	return err;
  }
+@@ -1115,10 +1134,14 @@ static int dsa_tree_setup(struct dsa_switch_tree *dst)
+ 	if (err)
+ 		goto teardown_cpu_ports;
  
-@@ -1053,9 +1057,13 @@ static void dsa_tree_teardown_master(struct dsa_switch_tree *dst)
- {
- 	struct dsa_port *dp;
+-	err = dsa_tree_setup_master(dst);
++	err = dsa_tree_setup_ports(dst);
+ 	if (err)
+ 		goto teardown_switches;
  
-+	rtnl_lock();
++	err = dsa_tree_setup_master(dst);
++	if (err)
++		goto teardown_ports;
 +
- 	list_for_each_entry(dp, &dst->ports, list)
- 		if (dsa_port_is_cpu(dp))
- 			dsa_master_teardown(dp->master);
-+
-+	rtnl_unlock();
- }
+ 	err = dsa_tree_setup_lags(dst);
+ 	if (err)
+ 		goto teardown_master;
+@@ -1131,8 +1154,9 @@ static int dsa_tree_setup(struct dsa_switch_tree *dst)
  
- static int dsa_tree_setup_lags(struct dsa_switch_tree *dst)
-diff --git a/net/dsa/master.c b/net/dsa/master.c
-index f4efb244f91d..2199104ca7df 100644
---- a/net/dsa/master.c
-+++ b/net/dsa/master.c
-@@ -267,9 +267,9 @@ static void dsa_master_set_promiscuity(struct net_device *dev, int inc)
- 	if (!ops->promisc_on_master)
- 		return;
- 
--	rtnl_lock();
-+	ASSERT_RTNL();
-+
- 	dev_set_promiscuity(dev, inc);
--	rtnl_unlock();
- }
- 
- static ssize_t tagging_show(struct device *d, struct device_attribute *attr,
+ teardown_master:
+ 	dsa_tree_teardown_master(dst);
+-teardown_switches:
++teardown_ports:
+ 	dsa_tree_teardown_ports(dst);
++teardown_switches:
+ 	dsa_tree_teardown_switches(dst);
+ teardown_cpu_ports:
+ 	dsa_tree_teardown_cpu_ports(dst);
 -- 
 2.25.1
 
