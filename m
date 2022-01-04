@@ -2,89 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41BFB484286
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 14:31:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 925BE484291
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 14:34:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233624AbiADNbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 08:31:02 -0500
-Received: from mga01.intel.com ([192.55.52.88]:34504 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230287AbiADNbC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 08:31:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641303062; x=1672839062;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YSDR7VqnIEeScX1Ku+T5goZVV0p2a1T6EU3r17XKwSo=;
-  b=TX7/rIMyfc9IuuvW8hKdNJ+lZYFku4YMrAwYdZNQIwEVxFYe9PmM5EkG
-   vbr3THLzyjpi1tCZ/BTJGcXBEnhSaYyMoazf9EPe2VM84fsVddSmqoukZ
-   k/n8+2mwBpPFaDow2RBugYm05aDbQs4hnNEbfly9391aryy5z704J6/1a
-   if5R2Oq+hROBTt0iz+SYNVTtL428W8HLvS5sNv4HmlN03gOZwc3AZuEKy
-   A7r7dxFg1kR4S7LfJS/XnBEM3/OcUKpGI4PqZp2vnaG4r48ZyzzJlmcZo
-   csgjYmMRmdgP9YLkeKpGjECCG3vc/W6tTKsGBMEUmgBAeGcC7drmOevXD
+        id S233696AbiADNe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 08:34:56 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:53486 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233661AbiADNem (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 08:34:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1641303282; x=1672839282;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dFfeySson+DcY9L2qqyi99YbeNz8/S8kE5nTdweljcA=;
+  b=qB+WecfuVDkTETgGZo28UN3GyVd1CYe+6tT3FuglVIKJqDUMembgRaYs
+   ESTR11V0zc3ryHcscUSTPkXXbP923wwU3wTp4coqSc6rETTKBuqDnZ/lq
+   +XlpuDmSOUxJnaN12jkcvzJAbMzhoH0zbHim9ZsPMV2U16sUQkVyoiwsX
+   9awr4zw7MQm05Wh4n8xFfMAy81bY0Juc6C1MSe7mTXmSvaH5qFCwipPw1
+   yqdTQa/7Lqty4lcS7IxLfcAIMroA3+BVfnPGXWDDsfjaPMh7O97HRX5c9
+   9FniMXoisR5XK2e8lGG7Jg2c+nwZW17e+Vjj/k7gxU5VPgWf9xlwy6/wc
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10216"; a="266490495"
+IronPort-SDR: Zm9ryX6ThUQ435XZWTQeM8NY6E4nqwJXf43jLv9bWD0CZMCWIvVEHxsXglb05H3MKmd8tjKiIp
+ 1zhf8ceh7WlSN3+Y93y0Qum5Gfq31RqDnj0yAK9E6aAWh8LUwgRdt/XnQUDzE9D003Gt0WcglO
+ syrZ/NtfS0nZjksycxcGhy8cNDPe1B2hiX42MUk2fq6bLrmhJHuAXHXwOVqmyACTFDCewkig59
+ 7lgUmITeSHUnnJ3EmxMEaIxbKgg/YAg8+BfsDxzkwzw9UzrtpV/CO6iHzBkkMdjU/Cj3w8L7Cu
+ oKZNEfDEdFT5LV6yWAduZwja
 X-IronPort-AV: E=Sophos;i="5.88,261,1635231600"; 
-   d="scan'208";a="266490495"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2022 05:31:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,261,1635231600"; 
-   d="scan'208";a="526049715"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga008.jf.intel.com with ESMTP; 04 Jan 2022 05:30:58 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 204DUvm7014924;
-        Tue, 4 Jan 2022 13:30:57 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [Intel-wired-lan] [PATCH] intel: Simplify DMA setting
-Date:   Tue,  4 Jan 2022 14:29:36 +0100
-Message-Id: <20220104132936.252202-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <c7a34d0096eb4ba98dd9ce5b64ba079126cab708.1641255235.git.christophe.jaillet@wanadoo.fr>
-References: <c7a34d0096eb4ba98dd9ce5b64ba079126cab708.1641255235.git.christophe.jaillet@wanadoo.fr>
+   d="scan'208";a="144275914"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jan 2022 06:34:41 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 4 Jan 2022 06:34:41 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 4 Jan 2022 06:34:40 -0700
+Date:   Tue, 4 Jan 2022 14:36:54 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>
+Subject: Re: [PATCH net-next v2 3/3] net: lan966x: Extend switchdev with mdb
+ support
+Message-ID: <20220104133654.oaqtrnee6bxfs6fe@soft-dev3-1.localhost>
+References: <20220104101849.229195-1-horatiu.vultur@microchip.com>
+ <20220104101849.229195-4-horatiu.vultur@microchip.com>
+ <20220104111209.2ky2n5gdqaxzf5fh@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20220104111209.2ky2n5gdqaxzf5fh@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Date: Tue, 4 Jan 2022 01:15:20 +0100
-
-> As stated in [1], dma_set_mask() with a 64-bit mask will never fail if
-> dev->dma_mask is non-NULL.
-> So, if it fails, the 32 bits case will also fail for the same reason.
+The 01/04/2022 11:12, Vladimir Oltean wrote:
 > 
-> Simplify code and remove some dead code accordingly.
+> On Tue, Jan 04, 2022 at 11:18:49AM +0100, Horatiu Vultur wrote:
+> > +static int lan966x_mdb_ip_del(struct lan966x_port *port,
+> > +                           const struct switchdev_obj_port_mdb *mdb,
+> > +                           enum macaccess_entry_type type)
+> > +{
+> > +     bool cpu_port = netif_is_bridge_master(mdb->obj.orig_dev);
+> > +     struct lan966x *lan966x = port->lan966x;
+> > +     struct lan966x_mdb_entry *mdb_entry;
+> > +     unsigned char mac[ETH_ALEN];
+> > +
+> > +     mdb_entry = lan966x_mdb_entry_get(lan966x, mdb->addr, mdb->vid);
+> > +     if (!mdb_entry)
+> > +             return -ENOENT;
+> > +
+> > +     lan966x_mdb_encode_mac(mac, mdb_entry, type);
+> > +     lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
+> > +
+> > +     if (cpu_port)
+> > +             mdb_entry->cpu_copy--;
 > 
-> [1]: https://lkml.org/lkml/2021/6/7/398
+> Can you code this in such a way that you don't forget and then re-learn
+> the entry if you only do a cpu_copy-- which doesn't reach zero?
+
+I think it is possible to do this. I will do that.
+
 > 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->  drivers/net/ethernet/intel/e1000e/netdev.c    | 22 ++++++-------------
->  drivers/net/ethernet/intel/i40e/i40e_main.c   |  9 +++-----
->  drivers/net/ethernet/intel/iavf/iavf_main.c   |  9 +++-----
->  drivers/net/ethernet/intel/ice/ice_main.c     |  2 --
->  drivers/net/ethernet/intel/ixgb/ixgb_main.c   | 19 +++++-----------
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 20 ++++++-----------
->  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c | 20 +++++------------
->  7 files changed, 31 insertions(+), 70 deletions(-)
+> > +     else
+> > +             mdb_entry->ports &= ~BIT(port->chip_port);
+> > +
+> > +     if (!mdb_entry->ports && !mdb_entry->cpu_copy) {
+> > +             list_del(&mdb_entry->list);
+> > +             kfree(mdb_entry);
+> > +             return 0;
+> > +     }
+> > +
+> > +     lan966x_mdb_encode_mac(mac, mdb_entry, type);
+> > +     return lan966x_mac_ip_learn(lan966x, mdb_entry->cpu_copy,
+> > +                                 mac, mdb_entry->vid, type);
+> > +}
 
-I like it, thanks!
-
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-
-Tony might ask to split it into per-driver patches tho, will see.
-
---- 8< ---
-
-Al
+-- 
+/Horatiu
