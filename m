@@ -2,109 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CFF94840DF
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 12:30:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 912F84840E9
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 12:33:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232286AbiADLah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 06:30:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40914 "EHLO
+        id S232314AbiADLdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 06:33:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229964AbiADLah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 06:30:37 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E829C061761;
-        Tue,  4 Jan 2022 03:30:36 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id q14so139440733edi.3;
-        Tue, 04 Jan 2022 03:30:36 -0800 (PST)
+        with ESMTP id S230229AbiADLdU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 06:33:20 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99300C061761;
+        Tue,  4 Jan 2022 03:33:19 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id i22so75522337wrb.13;
+        Tue, 04 Jan 2022 03:33:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0yty/Vql/ha5wH7OZotX+MYGyccXlZrjOYzGRLc8osI=;
-        b=Ob1v2V/1KmrPCwBo+PVBUCo0h9Yl9nquFidnZ8qBujjcJn1jOUUljpHnQMqCS7tPci
-         HLE7SFA0YHB334q34rR9tA8qGWWO4Ln2svhzpOTrj20UxtANmtpCZwCbZQ5UhvXQQC9E
-         Ve98gHi3SaDehDkyPzU5f88IztLdsJgRrbHNvKbXU1V1pzJV4OHgbOFmUG9H04JqpxlW
-         1aVJ1SxwLbAkxqS4REP4JvObUEJw1uppLw1yJnz4LMLzKPGx0OC+OugT4oNW4R/uvgw1
-         N2RfLJ7hUflX7cmDAffiCRRY+vkvO9OF0tD1Iv83TBSk/9a0j4XubYzDuvlW+qfak3pp
-         0AhA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=K1B3s/Iyg8kOfoQT3YZHQpq29FuzQTyUhgevv3DY7WE=;
+        b=QCuzwYMyCxw27llSQlhw08xuDEpypnKLsXZcy24BNHON+BE1JcTmPp5u1iYNcxBJ3h
+         EZ5W2QEd7Qg3JTbVo0S2CBPMG/13XXNYMgtTsGUngU/3QDlCPdB5nq7iSpLFANVjE/Bq
+         oYnuE/3BqOW+TXIMOTeO0+tW7QltgoSUziB5YSvll5tO8O6Jqtk5leCCnCuHkVWUJgZg
+         /B2vXA6LAI3kal7FdtrN/f3uwqSeVmNNyXa1/CI6TnM0Lg3DVJnjp1PJIyqqh9ClM2zS
+         kg6Oc7NS1jz60afuzQKImB2bqL3O88Z2eVpgkYKQg5Bxtj7k4LDJdd/izkRx58tI61cb
+         aing==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0yty/Vql/ha5wH7OZotX+MYGyccXlZrjOYzGRLc8osI=;
-        b=z900lw44t4Kt7PtqiyLHo5IHVL9je4y60XXOK9BjlcUfK5rZ4/12Na+6aJWt6n/Qih
-         tkpoGmQjrxpgbIL4MdBMRQZB5zsYJUlAZTzv98+3XYCOw6ua8jTiuc0HAxdHqAtwL9nP
-         eQMR41IaoIeFJ6M2U/0kxcc+NXiDUMusyKJ51JDgnHMqUUvraAX5wF44vpKQSSGHr9hD
-         clvtDUYBAUVHHXo7TMopuWKS2DYjl621/I9bNeugFjkNYRydNxb1ojTmlcS3mhkJ42Ux
-         6s9fn+UbaT2dzmzh0kg75m/ZBEPcn8M+9fYaKxtvWTYRaV2/G50b3Zw/vXqEvRK/v4uD
-         ekZg==
-X-Gm-Message-State: AOAM5313Zrx+jeXDuaT5H63MaKQBJ0f8LJgUsqD3VixaFWzOWWk6P3U8
-        g0fBHFlmGEQf13t2ABaDCrSNBWSpYsGwyYx5vTY=
-X-Google-Smtp-Source: ABdhPJzstuNjGXH7i4SJZO7W6jJ03BLb3g5gKSn1e6dIAouguCI/zvBRkWCkEcva7qTCxiSiFsVGFOqOCRh/YPwjBtU=
-X-Received: by 2002:a17:906:3ed0:: with SMTP id d16mr38212898ejj.636.1641295835170;
- Tue, 04 Jan 2022 03:30:35 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=K1B3s/Iyg8kOfoQT3YZHQpq29FuzQTyUhgevv3DY7WE=;
+        b=wOk+5ZAynrINVyv/e5Ug9QIYJ70TvSEsIRJWilDef+dWVBrar56sMDSAxgtQvS4w3E
+         QQAjjnOLWXN1Z5gbWDKocqo3FRY9b3jmMovPB+kuhAzFV44IMSnL5/RKd6TOuycaDTPf
+         ymmkTR20O+OKfYmQILn9kkExoj9JZsL7WkEmQKR206EV7u2MvoxomRhZ569m3EUNLyHs
+         8EsS6Fe/34hldH20s0xGxt3PYFYxmNobQmwAqDwjov/sPDzuMuhypc0Srv0okpXcl+wh
+         uG69jCQSgT4azLGvBNbafaXlpGrdrNw4fXGzlOA18AJiIMl57KQUpTvTGKLapfoQ3Lu2
+         qBuQ==
+X-Gm-Message-State: AOAM5329A5Sr3MniowEe+MFY7IYGzOAQdFm31bFT1Luqt2b8Uqn8JBKC
+        3cJsNx0ZVXtw0kvwtIXm1d0=
+X-Google-Smtp-Source: ABdhPJzmlL3Q0kCPhxEMRvMnViX7ZIBziNKLzBM51UKace5jcFsIknnh+g2IzyPkDHuJMEgWAXIeIw==
+X-Received: by 2002:a05:6000:137a:: with SMTP id q26mr18236641wrz.634.1641295998291;
+        Tue, 04 Jan 2022 03:33:18 -0800 (PST)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id x20sm11436482wmi.43.2022.01.04.03.33.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Jan 2022 03:33:18 -0800 (PST)
+Date:   Tue, 4 Jan 2022 12:33:15 +0100
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     linus.walleij@linaro.org, ulli.kroll@googlemail.com,
+        kuba@kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: net: phy: marvell: network working with generic PHY and not with
+ marvell PHY
+Message-ID: <YdQwexJVfrdzEfZK@Red>
+References: <YdQoOSXS98+Af1wO@Red>
+ <YdQsJnfqjaFrtC0m@shell.armlinux.org.uk>
 MIME-Version: 1.0
-References: <20220104072658.69756-1-marcan@marcan.st> <20220104072658.69756-7-marcan@marcan.st>
-In-Reply-To: <20220104072658.69756-7-marcan@marcan.st>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 4 Jan 2022 13:28:44 +0200
-Message-ID: <CAHp75VcXgVTZhPiPmbpAJr21xUopRXU6yi=wvyzs6ByR8C+rzw@mail.gmail.com>
-Subject: Re: [PATCH v2 06/35] brcmfmac: firmware: Support passing in multiple board_types
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YdQsJnfqjaFrtC0m@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 4, 2022 at 9:28 AM Hector Martin <marcan@marcan.st> wrote:
->
-> In order to make use of the multiple alt_path functionality, change
-> board_type to an array. Bus drivers can pass in a NULL-terminated list
-> of board type strings to try for the firmware fetch.
+Le Tue, Jan 04, 2022 at 11:14:46AM +0000, Russell King (Oracle) a écrit :
+> On Tue, Jan 04, 2022 at 11:58:01AM +0100, Corentin Labbe wrote:
+> > Hello
+> > 
+> > I have a gemini SSI 1328 box which has a cortina ethernet MAC with a Marvell 88E1118 as given by:
+> > Marvell 88E1118 gpio-0:01: attached PHY driver (mii_bus:phy_addr=gpio-0:01, irq=POLL)
+> > So booting with CONFIG_MARVELL_PHY=y lead to a non-working network with link set at 1Gbit
+> > Setting 'max-speed = <100>;' (as current state in mainline dtb) lead to a working network.
+> > By not working, I mean kernel started with ip=dhcp cannot get an IP.
+> 
+> How is the PHY connected to the host (which interface mode?) If it's
+> RGMII, it could be that the wrong RGMII interface mode is specified in
+> DT.
+> 
 
-> +               /* strip extension at the end */
-> +               strscpy(alt_path, path, BRCMF_FW_NAME_LEN);
-> +               alt_path[suffix - path] = 0;
->
-> -       alt_paths[0] = kstrdup(alt_path, GFP_KERNEL);
-> +               strlcat(alt_path, ".", BRCMF_FW_NAME_LEN);
-> +               strlcat(alt_path, board_types[i], BRCMF_FW_NAME_LEN);
-> +               strlcat(alt_path, suffix, BRCMF_FW_NAME_LEN);
-> +
-> +               alt_paths[i] = kstrdup(alt_path, GFP_KERNEL);
-> +               brcmf_dbg(TRACE, "FW alt path: %s\n", alt_paths[i]);
+The PHY is set as RGMII in DT (arch/arm/boot/dts/gemini-ssi1328.dts)
+The only change to the mainline dtb is removing the max-speed.
 
-Consider replacing these string manipulations with kasprintf().
-
--- 
-With Best Regards,
-Andy Shevchenko
+Regards
