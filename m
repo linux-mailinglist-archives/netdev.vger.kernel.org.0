@@ -2,109 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5218348477D
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 19:08:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92938484783
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 19:11:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234535AbiADSIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 13:08:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49152 "EHLO
+        id S235844AbiADSL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 13:11:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234495AbiADSIj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 13:08:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B093BC061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 10:08:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 849E2B817B9
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 18:08:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7755C36AE9;
-        Tue,  4 Jan 2022 18:08:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641319717;
-        bh=tzJNwzbQYjEHm+8zSBtVyaMtIQxHRpyqZ/EP3SIRP1Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=X9N3rIMg+SRxzpJjS6ummS7E5T0soh+HtSgssOQuOemu0jcAbDk3mUwG/Ye5/MbOS
-         WHbAfqDJja/vqPOSF6/mbUKZktsljH3MCV+eUhtfr3qFJpqmUIcAmpoapxqTZITJVB
-         Tg5/bDOH09S73LE2nD1BnKoHVY9+GYJUuz3/e//T09dufYo2TYdNU7CirL3+pIo6Vj
-         gBwtZOcQQA1NQLMqUgz/JRxXZbsn1on2KMX/sClk3E/4VDYUM58RBIPlESNpOlwRj8
-         qpLQuUkqk62ygRL1hSvPaAjFUAM6X5yh5bBK/fs6slY2u1A9iQqKIRDXEA/Mfp+Dff
-         JBZa2lhYzhaPA==
-Date:   Tue, 4 Jan 2022 10:08:35 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paul Blakey <paulb@nvidia.com>
-Cc:     <dev@openvswitch.org>, <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "Jamal Hadi Salim" <jhs@mojatatu.com>,
-        Pravin B Shelar <pshelar@ovn.org>, <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Oz Shlomo <ozsh@nvidia.com>, "Vlad Buslov" <vladbu@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>
-Subject: Re: [PATCH net 1/1] net: openvswitch: Fix ct_state nat flags for
- conns arriving from tc
-Message-ID: <20220104100835.57e51cb0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220104082821.22487-1-paulb@nvidia.com>
-References: <20220104082821.22487-1-paulb@nvidia.com>
+        with ESMTP id S234495AbiADSL2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 13:11:28 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63320C061761;
+        Tue,  4 Jan 2022 10:11:28 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id h7so38924272lfu.4;
+        Tue, 04 Jan 2022 10:11:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SwnVw/SiATSMFYtdV81zng3Pvd+zDkySvHzChGqV1zI=;
+        b=HEFoguWtofBQbkgCS9YmycC2OsfWcV6EnHVaZWA5xLdwSacYLul4y1JXyPeuOT2DAj
+         3Q+Tj1pjpfyVsubK931TKGtflfI7fbSBiChjkQjqlVABqPXAoHsF5udy+HRSuy0ArQLQ
+         puLwVu/WOm3dYVG0nTLnDm6wQDBKLBMCBIL9fJ4GK0sH0KN0CZV5qnNgUd3N2cLxwdRa
+         aAmQ8GqvivZ1Jv/wyRA+e1nhiFwWN5kDIozNxzXpYfnHZJVZbCaqxDukTiQ2g2XEeU9+
+         p0zEAqz+UdGcTjhMnzva0rKCdWkQKQUY4mzYSZ6n5a4HdQtcj/mTftdUqK6bQ9FF/7h6
+         oXrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SwnVw/SiATSMFYtdV81zng3Pvd+zDkySvHzChGqV1zI=;
+        b=Oat/iQNFp4tKvLyR4nteF+JEb8YZlJvUObFjIa6A90QXotbePvy0vuqNpGVPi5URHk
+         XM/lo+lmQkqBt+dxC37n4sL54pcXDhVGdAVOs/SLM/6UNz9mezWU94CJyQnFAAbr3MQG
+         Fq8X342sZsKhtT53xopkw8jDiS+rAgdzEUSbhvG0i/5cGSuIhCBmHYbAuXAuRqX9tqxa
+         4WY4xxizI7JCyw/fTE16ubpVN09520ywF9kjdNB3TvwUuyEFLliCN/4jIQZM7mNUilk9
+         mTjBdqmLkJTz05LjYhGuEGqsYCBm0lwkHyAhXGmAd9TTTkGII1dIvg7j5fWyfZyzYvfY
+         PXWg==
+X-Gm-Message-State: AOAM533UNImkyZpQI+BMnLVxYTm28BPNiIsD22hjkanDXm9BYVuIDtyj
+        OA4ALgxm5db+Z63JigGh5Gw=
+X-Google-Smtp-Source: ABdhPJyJqaV0NQGWX8BdYzjEE7zgijv2NGHZYq8ADDv3RIQG8ux3EIgRARvgxP8gjWMm9JwKFMeL0Q==
+X-Received: by 2002:ac2:528a:: with SMTP id q10mr42919559lfm.28.1641319886721;
+        Tue, 04 Jan 2022 10:11:26 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.235.38])
+        by smtp.gmail.com with ESMTPSA id u12sm623551ljj.134.2022.01.04.10.11.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Jan 2022 10:11:26 -0800 (PST)
+Message-ID: <a1f63e82-7a3f-7cf9-ddb3-fc0a863dce40@gmail.com>
+Date:   Tue, 4 Jan 2022 21:11:25 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v2] ieee802154: atusb: fix uninit value in
+ atusb_set_extended_addr
+Content-Language: en-US
+To:     Stefan Schmidt <stefan@datenfreihafen.org>, alex.aring@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexander Potapenko <glider@google.com>
+References: <CAB_54W50xKFCWZ5vYuDG2p4ijpd63cSutRrV4MLs9oasLmKgzQ@mail.gmail.com>
+ <20220103120925.25207-1-paskripkin@gmail.com>
+ <ed39cbe6-0885-a3ab-fc30-7c292e1acc53@datenfreihafen.org>
+ <5b0b8dc6-f038-bfaa-550c-dc23636f0497@gmail.com>
+ <e8e73fcc-b902-4972-6001-84671361146d@datenfreihafen.org>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <e8e73fcc-b902-4972-6001-84671361146d@datenfreihafen.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 4 Jan 2022 10:28:21 +0200 Paul Blakey wrote:
-> Netfilter conntrack maintains NAT flags per connection indicating
-> whether NAT was configured for the connection. Openvswitch maintains
-> NAT flags on the per packet flow key ct_state field, indicating
-> whether NAT was actually executed on the packet.
+On 1/4/22 21:04, Stefan Schmidt wrote:
+>> Hi Stefan,
+>> 
+>> thanks for testing on real hw.
+>> 
+>> It looks like there is corner case, that Greg mentioned in this thread. 
+>> atusb_get_and_show_build() reads firmware build info, which may have 
+>> various length.
+>> 
+>> Maybe we can change atusb_control_msg() to usb_control_msg() in 
+>> atusb_get_and_show_build(), since other callers do not have this problem
 > 
-> When a packet misses from tc to ovs the conntrack NAT flags are set.
-> However, NAT was not necessarily executed on the packet because the
-> connection's state might still be in NEW state. As such, openvswitch wrongly
-> assumes that NAT was executed and sets an incorrect flow key NAT flags.
+> That works for me.
 > 
-> Fix this, by flagging to openvswitch which NAT was actually done in
-> act_ct via tc_skb_ext and tc_skb_cb to the openvswitch module, so
-> the packet flow key NAT flags will be correctly set.
 
-Fixes ?
+Nice! Will prepare v3.
 
-> Signed-off-by: Paul Blakey <paulb@nvidia.com>
 
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 4507d77d6941..bab45a009310 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -287,7 +287,9 @@ struct tc_skb_ext {
->  	__u32 chain;
->  	__u16 mru;
->  	__u16 zone;
-> -	bool post_ct;
-> +	bool post_ct:1;
-> +	bool post_ct_snat:1;
-> +	bool post_ct_dnat:1;
+Thanks for testing once again!
 
-single bit bool variables seem weird, use a unsigned int type, like u8.
+> I will also have a look at the use of the modern USB API for next. The
+> fix here has a higher prio for me to get in and backported though. Once
+> we have this we can look at bigger changes in atusb.
+> 
 
->  };
->  #endif
->  
-> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-> index 9e71691c491b..a171dfa91910 100644
-> --- a/include/net/pkt_sched.h
-> +++ b/include/net/pkt_sched.h
-> @@ -197,7 +197,9 @@ struct tc_skb_cb {
->  	struct qdisc_skb_cb qdisc_cb;
->  
->  	u16 mru;
-> -	bool post_ct;
-> +	bool post_ct: 1;
 
-extra space
-
-> +	bool post_ct_snat:1;
-> +	bool post_ct_dnat:1;
->  	u16 zone; /* Only valid if post_ct = true */
->  };
+With regards,
+Pavel Skripkin
