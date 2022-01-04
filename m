@@ -2,343 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E339483E0F
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 09:26:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D24A483E12
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 09:27:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234014AbiADI0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 03:26:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55480 "EHLO
+        id S234063AbiADI1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 03:27:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232221AbiADI0w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 03:26:52 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB216C061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 00:26:52 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id v25so32107825pge.2
-        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 00:26:52 -0800 (PST)
+        with ESMTP id S232221AbiADI1A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 03:27:00 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81129C061761;
+        Tue,  4 Jan 2022 00:27:00 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id by39so59501622ljb.2;
+        Tue, 04 Jan 2022 00:27:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PKZGn9sNBzKX0e3A359eV46NTzCr7xfvBUbuh0wHk+4=;
-        b=gAJ62VNIqGPITsSJd5uvqM/SPc8zbL40SZu8krOMoWT4btgkHdhy2DxRxlbMMElwpE
-         5YKT2kfAW5UZ4ovPjIw9yYGmMMJWupGhucK/eazfQTCp5uYLpkun8F/nad6xpFbjrthH
-         pS4x2u82DKvhrjXani8NyeDA3lwsFvd/FNaLvEMJFVrApZzNYMvuSV6iR6TPtbZFasXD
-         oF4d0fqwe9rLAQnUa1XIorXTvQkDxbgFT593XzYpvHD2UwjbvkSUZuFMd0Z+5N2xsW9c
-         6gffy/kyoxQw9/+QSJ9X2lbEyC6ju3c46vEaX9IkAa3ZHnFzSSd+a5RncvlY1zcbywHW
-         xHLg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vl2+K30hIBppyx7gf5vYs0vg7twk5+LRUR5dzc5wH34=;
+        b=JprZSpCJ4bfg/fEV7ERvLTNNu1WG5WMKWkq4xHGZbh6Quez/KZ50JRMFwyQyvCzuhe
+         j6ZpECsfs6ax86zAx75HCGBb7BQOdy9e8FiJ+0QHK0WOnhx8//w7VjNylR0V+bNM1o9O
+         vhjGC3caKqVwPwUe8uGdq17rqzETXYlJEk28Rw/caahdAQQ2H63CHzLCFe2v5zAfjerQ
+         dvmv9EtnZhK7ldwsqlEMrT3NRFIEgfFgVrUMzqNs1aS7o2qaijC3XW7C0grA4HZVpA+Y
+         vMrbGzAys79FBPhTBSYC/eVgqNYCdMx8QAEvUbWegUJjnemxvr9FtuqwNpPThTDlYg1I
+         32oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PKZGn9sNBzKX0e3A359eV46NTzCr7xfvBUbuh0wHk+4=;
-        b=val0lYQYPsfsOZq3YHKJeeh9yWpm9cThPHmp88PfFFh0poocyxycdjTOiDHBtaPKk3
-         TcC6r+YacRDKGkClVVmlVeo1NA0DfrGsPYbCW5nsGxERVS2O5va1sVF1SPdI51yzWF9b
-         eDdP+43ntbZlXi+6zjjCR2HIfaOleWufa+HCeHeSrqDIi+o04gSE5gVhlKW5zaVya9eL
-         wglPtPh874IZ2ARmG0aF265+g+Jqsyb4eUec9Cis/4kdV8YQuDB/5HCOolyYowcw//0d
-         GkwEkVcI5wGcwYAuoi2XTtuLJabTSLqU2aISpiAPrxQYmjnhNzMWeXtDVwwPHFS5O8Dy
-         b/EQ==
-X-Gm-Message-State: AOAM531Cpl/UBbhKaiU6zDCg/bsfY3JxzkvFg0UUduhrRW7xp3+A8RKe
-        wlx70flw5lLifqllulsDWVdPP9O1Ejl4470EdUU=
-X-Google-Smtp-Source: ABdhPJznbgud8AyKxWPHQiQxTC9t7Hrb+KLBWCHGCRzOwm6w5rS4qH+OE8MXmF9yjEPaRjE9porb18XRDvIre2nZf9A=
-X-Received: by 2002:a63:bf0b:: with SMTP id v11mr28667250pgf.144.1641284811979;
- Tue, 04 Jan 2022 00:26:51 -0800 (PST)
-MIME-Version: 1.0
-References: <CANr-f5x0_RDAfVQiqpcWOG2iVAtson0F6arQMSbrBXjB73kw+A@mail.gmail.com>
- <87bl1150rj.fsf@intel.com> <CANr-f5xtGh_gChnbvWxeUFxk5txEPB5bujvU9bP0ayHc4cgCkA@mail.gmail.com>
-In-Reply-To: <CANr-f5xtGh_gChnbvWxeUFxk5txEPB5bujvU9bP0ayHc4cgCkA@mail.gmail.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 4 Jan 2022 09:26:41 +0100
-Message-ID: <CAJ8uoz3K6=29FssGvKk3gK1Lk2-ppTTGhj9J7w37x4pE-AECEA@mail.gmail.com>
-Subject: Re: RFC: tsnep: ETF, AF_XDP, UIO or driver specific interface for real-time
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        David Miller <davem@davemloft.net>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vl2+K30hIBppyx7gf5vYs0vg7twk5+LRUR5dzc5wH34=;
+        b=G9GnSZF1iAiCHP4+cb4CALmJQ7p+LQREfYSiMZS+AvRt7FjLwQ/U/Nfrz1RQH/672A
+         Hg80Yo8QfbhwbUh3Mm84cRb1hwGzyki2cG8yK+dxFbkNhGW6BVjnEyhy3FD2YlgsYX6S
+         0OCPz6B4KgmWSZSsn+g6C1U+LJyWLnNb2RUXm3p1bvm/pKjfSL2SQGNta9CG6WuX4yfu
+         C3tZR3pYoTKS5T2eNBDmrrJOB5YD/OwzusN2KXJRiRXY/kI+AvUjSQF6wNbWhSPn0EEX
+         A1zPoyUagItcSO5jo6GuMsPht7iEUUNTbVXmvdS0FsU0RiiNXdqe2gfR/4UuJVOa3wlV
+         aOng==
+X-Gm-Message-State: AOAM532hikKqzYfvj7eX8RZ507vJ0d2PqaT//tZ5AKnb090EtGZshQyf
+        BO1ZcrEZVwq9HzmCNhsrbtE=
+X-Google-Smtp-Source: ABdhPJwN4wMdxUZ9jWeCOrza7QHw/N8ibrejGlnER2ABU8kOT4o25zd9EtdVDJJGT+R75DxSepdxvQ==
+X-Received: by 2002:a2e:3508:: with SMTP id z8mr34664796ljz.37.1641284818802;
+        Tue, 04 Jan 2022 00:26:58 -0800 (PST)
+Received: from [192.168.2.145] (46-138-43-24.dynamic.spd-mgts.ru. [46.138.43.24])
+        by smtp.googlemail.com with ESMTPSA id k9sm1945647ljq.33.2022.01.04.00.26.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Jan 2022 00:26:58 -0800 (PST)
+Subject: Re: [PATCH v2 04/35] brcmfmac: firmware: Support having multiple alt
+ paths
+To:     Hector Martin <marcan@marcan.st>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        gregkh@linuxfoundation.org, Andrew Lunn <andrew@lunn.ch>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20220104072658.69756-1-marcan@marcan.st>
+ <20220104072658.69756-5-marcan@marcan.st>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <5ddde705-f3fa-ff78-4d43-7a02d6efaaa6@gmail.com>
+Date:   Tue, 4 Jan 2022 11:26:57 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <20220104072658.69756-5-marcan@marcan.st>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 31, 2021 at 10:44 AM Gerhard Engleder
-<gerhard@engleder-embedded.com> wrote:
->
-> On Mon, Dec 27, 2021 at 8:03 PM Vinicius Costa Gomes
-> <vinicius.gomes@intel.com> wrote:
-> >
-> > Hi Gerhard,
-> >
-> > Gerhard Engleder <gerhard@engleder-embedded.com> writes:
-> >
-> > > Hello,
-> > >
-> > > the driver for my FPGA based TSN endpoint Ethernet MAC is now in net-next. As
-> > > a first step, it supports a single TX/RX queue pair for normal Ethernet
-> > > communication. For TSN it supports hardware timestamps (PTP) and TAPRIO (gate
-> > > control). The next step is the user space interface for real-time communication
-> > > over additional TX/RX queue pairs.
-> > >
-> > > Multiple interfaces are used for real-time communication in user space:
-> > > A) ETF for timed transmit
-> > > B) AF_XDP for direct access omitting the network stack
-> > > C) UIO for mapping devices to user space
-> > > D) driver specific interfaces for direct access to DMA buffers and IO memory
-> > >    (out of tree)
-> > >
-> > > The additional TX/RX queue pairs of my Ethernet MAC are optimized for real-time
-> > > communication. The mapping to ETF or AF_XDP is not straightforward. I know a
-> > > little about UIO and ETF and I have read Documentation/networking/af_xdp.rst,
-> > > but that does not qualify me as an expert. So I want to discuss if ETF, AF_XDP,
-> > > UIO or any other standard Linux user space interface is the right choice for my
-> > > driver?
-> > >
-> > > First I want to describe the main real-time feature of the device, the periodic
-> > > TX schedule:
-> > >
-> > > The data exchange between hardware and software is done similarly to other
-> > > Ethernet MACs. Descriptor rings are used and the ownership of descriptors
-> > > is transferred from software to hardware and vice versa during operation.
-> > >
-> > > Usually TX descriptor rings are queues, which transfer data from RAM to
-> > > Ethernet MAC as fast as possible. This is the case for the first TX/RX queue
-> > > pair, which is used by the Ethernet driver. For real-time communication
-> > > transmission at defined points in time is a requirement. Additionally, the
-> > > transmitted data shall be as up-to-data as possible. Therefore, the data shall
-> > > be transferred to the Ethernet MAC as late as possible. This enables minimal
-> > > reaction time for closed loop control. So there are actually two points in time.
-> > > First, the start of the DMA transfer of data from RAM to Ethernet MAC. Second,
-> > > the start of the transmission over Ethernet.
-> > >
-> > > Therefore, the TX descriptor ring of additional TX/RX queue pairs is enhanced
-> > > with timing information. This timing information defines both points in time.
-> > > As a result, the TX descriptor ring is processed at defined points in time and
-> > > not as fast as possible.
-> > >
-> > > Real-time communication is usually periodic. The timing pattern repeats after
-> > > the least common multiple of all cycle times. The relative timing information
-> > > of two consecutive TX descriptors is constant. So relative timing information
-> > > is used within the TX descriptor ring. There is no need to update this relative
-> > > timing information during operation. Only transmitted data and ownership must
-> > > be updated. The TAPRIO gate control list is good example for a periodic
-> > > schedule.
-> > >
-> > > The periodic nature of real-time communication has another side effect. The
-> > > timing is known in advance. So a TX descriptor is able to define the timing of
-> > > the next TX descriptor. As a result, the hardware knows the timing of the next
-> > > TX descriptor without fetching it from RAM. This prevents a chicken egg problem:
-> > > the TX descriptor cannot define its own DMA timing, because DMA would be needed
-> > > to read this timing.
-> > >
-> > > All these properties lead to a periodic TX schedule implemented with an
-> > > enhanced TX descriptor ring. Let's describe the details with an example:
-> > >
-> > > - two cycle times
-> > >   - single Ethernet frame every 100us, first TX at absolute time 7000us
-> > >     - TX times: 7000us, 7100us, 7200us, ...
-> > >   - single Ethernet frame every 200us, first TX at absolute time 7050us
-> > >     - TX times: 7050us, 7250us, 7450us, ...
-> > > - DMA shall be done as late as possible for 100us cycle time
-> > > - DMA of 200us cycle time shall be done directly after DMA of 100us cycle time
-> > >
-> > > The perdiodic TX schedule for this example looks like this:
-> > >
-> > > +-------------<-------------------------<-------------------------<------------+
-> > > |                                                                              |
-> > > +-->+-------------------+---->+-------------------+---->+-------------------+->+
-> > >     | TX desc 1 @0x1000 |     | TX desc 2 @0x2000 |     | TX desc 3 @0x3000 |
-> > >     |                   |     |                   |     |                   |
-> > >     | next_desc=0x2000  |     | next_desc=0x3000  |     | next_desc=0x1000  |
-> > >     | dma_incr=10us     |     | dma_incr=90us     |     | dma_incr=100us    |
-> > >     | tx_incr=50us      |     | tx_incr=50us      |     | tx_incr=100us     |
-> > >     +-------------------+     +-------------------+     +-------------------+
-> > >
-> > > "next_desc" is the address of the next TX descriptor. "dma_incr" defines the
-> > > DMA start time of the next TX descriptor:
-> > >
-> > > "DMA start time" = "Current DMA start time" + dma_incr
-> > >
-> > > Similar "tx_incr" defines the Ethernet TX start time of the next TX descriptor:
-> > >
-> > > "Ethernet TX start time" = "Current Ethernet TX start time" + tx_incr
-> > >
-> > > The TX descriptor processing needs initial values for the address of the first
-> > > descriptor, the DMA start time of the first descriptor, and the Ethernet TX
-> > > start time of the first descriptor. These initial values are written to
-> > > registers:
-> > >
-> > > - "TX descriptor address" register  = 0x1000
-> > > - "DMA start time" register         =   6980us
-> > > - "Ethernet TX start time" register =   7000us
-> > >
-> > > These three registers always hold information about the next TX descriptor. The
-> > > location in the RAM, the point it time when it shall be read by DMA, the point
-> > > in time when it shall be transmitted.
-> > >
-> > > The least common multiple of the cycle times is 200us. Thus, the sum of all
-> > > "tx_incr" values must be 200us. Also the sum of all "dma_incr" values must be
-> > > 200us. Otherwise DMA and TX timing would drift away from each other.
-> > >
-> > > TX descriptors 1 and 3 belong to the 100us cycle time. TX descriptor 2
-> > > belongs to
-> > > the 200us cycle time. The TX schedule is processed in the following steps:
-> > >
-> > >               cycle time | DMA read | Ethernet TX
-> > > 1) TX desc 1       100us |  @6980us |     @7000us
-> > > 2) TX desc 2       200us |  @6990us |     @7050us
-> > > 3) TX desc 3       100us |  @7080us |     @7100us
-> > > 4) TX desc 1       100us |  @7180us |     @7200us
-> > > 5) TX desc 2       200us |  @7190us |     @7250us
-> > > 6) TX desc 3       100us |  @7280us |     @7300us
-> > > 7) TX desc 1       100us |  @7380us |     @7400us
-> > > 8) TX desc 2       200us |  @7390us |     @7450us
-> > > 9) TX desc 3       100us |  @7480us |     @7500us
-> > > ...
-> > >
-> > > First DMA read is done at 6980us. This point in time is defined with the initial
-> > > value of the "DMA start time" register. The following DMA reads are
-> > > determined by
-> > > the "dma_incr" values of the TX descriptors. Every DMA read is started before
-> > > the Ethernet TX.
-> > >
-> > > First Ethernet TX is done at 7000us. This point in time is defined with the
-> > > initial value of the "Ethernet TX start time" register. The following Ethernet
-> > > TX times are determined by the "tx_incr" values of the TX descriptors.
-> > >
-> > > So the periodic TX schedule actually contains two schedules. One for DMA read
-> > > and another one for Ethernet TX. As a result, the timing of DMA and Ethernet TX
-> > > can be optimized independently from each other. The only restriction is that
-> > > DMA has to be done before the corresponding Ethernet TX.
-> >
-> > At the risk of repeating what you said, here's what I could gather that
-> > you would need.
-> >
-> >  1. Exclusive access of one application (or closely cooperating group of
-> >     applications) to one TX ring;
-> >  2. Direct access to the device DMA mapped memory;
-> >  3. A way to configure the {DMA,TX} start times and the {DMA,TX}
-> >     increments;
->
-> Yes, that's a good summary.
->
-> > > This periodic TX schedule has been used in a similar way for the
-> > > EtherCAT fieldbus
-> > > for nearly 10 years with positive experience. So for OPC UA Pub/Sub TSN it
-> > > shall be used again.
-> > >
-> > > This periodic TX schedule does not fit to ETF, because ETF uses absolute time
-> > > stamps and the timing is not known in advance. Additionally, the intention of
-> > > the periodic TX schedule is that the real-time application writes the data
-> > > directly to the TX descriptor ring. AF_XDP has a similar direction, but does
-> > > not support any TX timing.
-> >
-> > That's the magic of AF_XDP, as it is only a data path abstraction, you
-> > can move the control path somewhere else. One idea below.
->
-> I assume you mean control path stuff like ethtool flow-type ether.
->
-> > > I have no knowledge about any other Ethernet MAC which supports timed TX in
-> > > a similar way like this device.
-> > >
-> > > Currently a simple device/driver specific interface is used. Similar to UIO it
-> > > supports the mapping of registers of TX/RX queue pairs to user space. Every
-> > > additional TX/RX queue pair has its own register set within a separate 4kB
-> > > IO-memory. Thus, only the register sets of the additional TX/RX queue pairs are
-> > > mapped to user space. Every TX/RX queue pair is more less a separate device,
-> > > which can be operated independent of any other TX/RX queue pair. Additionally,
-> > > this device/driver specific interface supports the mapping of DMA buffers.
-> > >
-> > > A similar approach has been used for years for the periodic TX schedule in
-> > > combination with the EtherCAT fieldbus (out of tree driver). The main advantage
-> > > of this approach is that no hard or soft IRQs are needed for operation. There is
-> > > no need to increase to priority of soft IRQs, which can lead to real-time
-> > > problems.
-> > >
-> > > Which user space interface shall be used for this periodic TX schedule? Is
-> > > ETF or XDP an option? Shall UIO be used like for other real-time controllers?
-> > > Is a device/driver specific interface the way to go, because no other Ethernet
-> > > MAC has an interface like this?
-> >
-> > I think that AF_XDP (with zero copy) already has everything you need for
-> > the data plane, (1) and (2) above.
->
-> I'm not sure. AF_XDP ring size is a power of 2, but in my case the
-> ring size is the
-> number of Ethernet frames within the least common multiple of all cycle times.
-> Also AF_XDP works like a FIFO, the Ethernet frames are transmitted one after the
-> other. In my case every Ethernet frame has to be placed at a certain
-> position in the
-> TX ring. This can be done at any time before the transmission and does
-> not need to
-> match the transmission order.
-> To be able to put the Ethernet frame at the right position in the TX
-> ring additional
-> information is required. Otherwise, the transmission time cannot be
-> determined. At
-> least some reference to the control plane (3) data is needed.
+04.01.2022 10:26, Hector Martin пишет:
+> Apple platforms have firmware and config files identified with multiple
+> dimensions. We want to be able to find the most specific firmware
+> available for any given platform, progressively trying more general
+> firmwares.
+> 
+> First, add support for having multiple alternate firmware paths.
+> 
+> Acked-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+>  .../broadcom/brcm80211/brcmfmac/firmware.c    | 75 ++++++++++++++-----
+>  .../broadcom/brcm80211/brcmfmac/firmware.h    |  2 +
+>  2 files changed, 59 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+> index 0497b721136a..7570dbf22cdd 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+> @@ -427,6 +427,8 @@ void brcmf_fw_nvram_free(void *nvram)
+>  struct brcmf_fw {
+>  	struct device *dev;
+>  	struct brcmf_fw_request *req;
+> +	const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS];
+> +	int alt_index;
 
-Yes, the AF_XDP rings are strictly FIFO, so you would have to consume
-the descriptors in the driver in FIFO order and store them in some
-buffer there so you can put them onto your HW in arbitrary order.
-Would make your driver look very different from the other zero-copy
-drivers that have zero buffering in the data path.
+unsigned int
 
-One thing to note is that entries in the completion ring are reserved
-as a prerequisite for consuming a Tx ring entry. As you probably want
-to buffer packets in the driver, you would have to have a completion
-ring that is as least as large as the number of outstanding Tx packets
-plus the number of buffered packets in your driver. Otherwise, the
-application will not be able to send packets in all circumstances.
+>  	u32 curpos;
+>  	void (*done)(struct device *dev, int err, struct brcmf_fw_request *req);
+>  };
+> @@ -592,14 +594,18 @@ static int brcmf_fw_complete_request(const struct firmware *fw,
+>  	return (cur->flags & BRCMF_FW_REQF_OPTIONAL) ? 0 : ret;
+>  }
+>  
+> -static char *brcm_alt_fw_path(const char *path, const char *board_type)
+> +static int brcm_alt_fw_paths(const char *path, const char *board_type,
+> +			     const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS])>  {
+>  	char alt_path[BRCMF_FW_NAME_LEN];
+>  	const char *suffix;
+>  
+> +	memset(alt_paths, 0, array_size(sizeof(*alt_paths),
+> +					BRCMF_FW_MAX_ALT_PATHS));
+You don't need to use array_size() since size of a fixed array is
+already known.
 
-> > So what's seems to be really missing is the control plane, (3).
->
-> At least for static timing information moving the timing information
-> like {DMA,TX}
-> start times and the {DMA,TX} increments out of the data plane should
-> be possible.
-> For runtime changes, e.g. add/remove Ethernet frames to/from TX schedule during
-> operation, I'm not so sure, because data and control is tied together
-> in the TX descriptor.
+memset(alt_paths, 0, sizeof(alt_paths));
 
-You probably want to stick this info in the metadata section before
-the packet as done in this RFC [1]. This would be the Tx analogue of
-the Rx part in [2]. Lot of work still remains here though.
+...
+> +static void
+> +brcm_free_alt_fw_paths(const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS])
+> +{
+> +	unsigned int i;
+> +
+> +	for (i = 0; alt_paths[i]; i++)
 
-> > What I would do is something like this, I would add a few debugfs
-> > entries to the driver allowing me to configure the "extra" per ring
-> > parameters. This also gives some chance to see what is best format for
-> > communicating those parameters to the driver.
-> >
-> > With that I could see if something is not quite working from the AF_XDP
-> > side, fix those (I think the community will have some interest in having
-> > these cases fixed) while discussing where is the best place to put those
-> > configuration knobs. My first shot would be ethtool.
->
-> Is it a possible future goal of AF_XDP to enable TX/RX of Ethernet
-> frames without
-> any kernel mode interactions? E.g. a hardware implementation of the AF_XDP
-> interface, or some VDSO code for descriptor ring handling?
+What if array is fully populated and there is no null in the end? Please
+don't do this, use BRCMF_FW_MAX_ALT_PATHS or ARRAY_SIZE().
 
-I have heard about people wanting to try to build a HW AF_XDP
-implementation using an FPGA. Do not know if anything came through in
-the end. Will dig around a bit.
+> +		kfree(alt_paths[i]);
+>  }
+>  
+>  static int brcmf_fw_request_firmware(const struct firmware **fw,
+> @@ -617,19 +634,25 @@ static int brcmf_fw_request_firmware(const struct firmware **fw,
+>  {
+>  	struct brcmf_fw_item *cur = &fwctx->req->items[fwctx->curpos];
+>  	int ret;
+> +	unsigned int i;
 
-As for the VDSO approach, what are you thinking there? To be able to
-have different flavors of rings (or other structures) for
-communication between user-space and kernel?
+Keep reverse Xmas tree coding style.
 
-[1] https://lists.xdp-project.net/xdp-hints/20210803010331.39453-1-ederson.desouza@intel.com/
-[2] https://lore.kernel.org/bpf/20210526125848.1c7adbb0@carbon/
+...
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
+> @@ -11,6 +11,8 @@
+>  
+>  #define BRCMF_FW_DEFAULT_PATH		"brcm/"
+>  
+> +#define BRCMF_FW_MAX_ALT_PATHS	8
 
-/Magnus
-
-> > > I'm looking forward to your comments.
-> > >
-> > > Gerhard
-> >
-> > Cheers,
-> > --
-> > Vinicius
+Two tabs are needed here.
