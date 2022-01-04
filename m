@@ -2,203 +2,443 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9BF84846CF
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 18:15:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCBF84846D7
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 18:16:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235289AbiADRPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 12:15:12 -0500
-Received: from mail-eopbgr150045.outbound.protection.outlook.com ([40.107.15.45]:22762
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234323AbiADROv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 12:14:51 -0500
+        id S234421AbiADRQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 12:16:29 -0500
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:37492 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234294AbiADRQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 12:16:27 -0500
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 204GIfiV014246;
+        Tue, 4 Jan 2022 17:16:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=fHL9fZ6CiFsAkBrMDUbDbI0wE+i30WqRzn5M8pP++WI=;
+ b=IMpYv7Bw6D3WNXHjrmY4/TheDQm9lvz1RMdMWG02SNGy+VlrMTod7fePvWjHd70c7v0x
+ kRn5EjXGxU3kb5+sAu7R2WJD9F6VQQ0UOwUyo9ZHVCN+180hCVN8Xk8aNTPl4qBC8SvS
+ dP7RrdiCxB9LwLeUWMYWQ76Kc2xT4dvz3THx1RLLkbWyZrV1H6+ME4GHvUNR6QT0B79x
+ 5oI0GOC0lfnvoNkQeKaxK3AO/PCEb+FFA7DKzPibGh/Hky/BkP34OJ8/p2UjLPvy1sZ4
+ 919pWeKvMmWUp1k/M+6vOYanD5R8aYUPSldCCc88c+6rXHbN2Oq7L/cXR7+/knRraYy+ mA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dc9d91x9b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 04 Jan 2022 17:16:03 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 204HFbPZ022447;
+        Tue, 4 Jan 2022 17:16:02 GMT
+Received: from nam02-bn1-obe.outbound.protection.outlook.com (mail-bn1nam07lp2043.outbound.protection.outlook.com [104.47.51.43])
+        by aserp3020.oracle.com with ESMTP id 3daes3yuac-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 04 Jan 2022 17:16:02 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RvDw7pl9QbcybvLboSXNMC/E4YZEUgUo8a5e5Jh6HxN29pVM0zW749ZcrC+WdKWGE8zjq6UtzlAXnxYkRrS/ddYCF4TbBgMwsKySm5LQga75I3GUof0ScDVBTSEYqTWHF48Ra3b1aWregJgTqey1zBE84U7By6iGjY4/trNNKHfJAJBW3T0NrUuKsfeI3RiqZuuSeyu5lSDChZFop/eAvRiBZ1FV2hN1NVrqqKWpifg6VLgCSRh9Sxi/yaHVGy/xzxSQ0I5oOXprzBgK3//mhpBfAvpEOl1vh+2tKO6xthJ2hHMUiE2XMFm9EvYdl0vX3bLT/N5plWO9kF1BZ3aa0g==
+ b=Wh7y/xPt8EsaBG3vB2wWpifnCj3W5eEIYNfFBtFyemfdOdg/gA9ZKplZPUMpEl6ezxKShqcNwNpTwYGawUAnOJbQnRNiaN8PqkoHo7mEL6ap0fg9szfllnli0UybSIMcT+8wQNJJC/4WN1brzR0vOyUXq7eHhbtFY8YoG+CN6vQyuSFJ+d5gn3abuCGmKYF6e6KOvjiXNdDC0oGp4BLMrwSPZHael6Q6DUNNGJyXFJzUYsYXgesMmosJu+wIawtw8au8KlaBhcQUp/L0kyfStFIIXU8m0efX3zMjR6r7mZhiAgqs9I4DRyeZ6CR3P+0OomcG6SigteOjpMBW42VjTw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mavQUYFYXwhcIFmdkles8ujxVOHZYvjvkNhUq/6aKME=;
- b=chRCHamcbgz1Pd1HmjJJnke9aVByXqRwUYeo7c/rMcIzrm0QpgEq36Hh6OD0zhEyb1eVpjz0RfKEFgZnQuzsgo/3IZnNrGWebtio+ho0G2AcY8tR0NSBjlCcUqYFvaokBAfXuVus2gtYWFQNzs6n2te/SDWmbsDv76ZL7a/D5jwpI9WD43/1hiO0mPVLP6FpPG78gf1etJgfWUizCw/c1dmSVk+0ZMFH28ndlbVqR2RBog5q+16RVEaf8pMopNKEKNsNqgF9pq/LUNdJKhT+iSMhVkEWY84zbBnI3HVmb4IhBDk9+G+q/eFMQzin/+8ryS+bH9kdbhNFWrUEKZ/TCQ==
+ bh=fHL9fZ6CiFsAkBrMDUbDbI0wE+i30WqRzn5M8pP++WI=;
+ b=JfBrf6dp5MjhLMeUVtFJGZDYmz6ON/HfAqqS8GJXR35CIbmxQMQYjP4d7WKChQks3wFIosAE3wXStF3aYiUmZw6jKpyPjt6NzGoKp6MZ7ccLg4E22e6yO0n41+4V1l3Zs9AvhwetmeAp9yKmAOU6QAceZ65FXuFA2J/vzTXmWDFriHDDFhMNVgimZtlVw8P0LDiJ29Flo/uimU2qiFwL+NPlHeZ+O4yYFXh6FbyMjWPYXSouiifPr/8C9ft5GTZ6IzAz8BFZVhs+b0CsxLbq+oX6DGOcXpTmZjaamTPnIGi4B9yA72Xet+m13KNwwknW+v3moiq0zta+sieORACH1g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mavQUYFYXwhcIFmdkles8ujxVOHZYvjvkNhUq/6aKME=;
- b=QyL1KTrFVE6CjikZ4KwcyvEmPXuM7ldh0mKYQH1ATI4v8UY6ErLVtiZUxqXrFZpxFKJJn89KDMXbeWceo3LFst+nZ708gV3dtJ4bQUqrTTzxvg4y3Io5ICqVPWycB6DCxBIpChU5ZTO+LT/Ph8K3Bzjs82wQVgXI6+kGiHan+IE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB7104.eurprd04.prod.outlook.com (2603:10a6:800:126::9) with
+ bh=fHL9fZ6CiFsAkBrMDUbDbI0wE+i30WqRzn5M8pP++WI=;
+ b=lslgiRGpKrcVEz4LrG78amZiCXSFd//mPgmcWYU+OzLnd+O2jauDlmYY3dHGA3+e2krY+vJYsKEzVWUvd6zVPED6s9QTfVIBlcwECLtV275Elx6vN8ZKRA/GyFNpSPpT0b19Kq4Tjdbjh+fssWFFNr+2scBMJBhN78a/y12Djws=
+Received: from SN6PR10MB2975.namprd10.prod.outlook.com (2603:10b6:805:d2::10)
+ by SN6PR10MB2974.namprd10.prod.outlook.com (2603:10b6:805:cb::31) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Tue, 4 Jan
- 2022 17:14:44 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4844.016; Tue, 4 Jan 2022
- 17:14:44 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH net-next 15/15] net: dsa: combine two holes in struct dsa_switch_tree
-Date:   Tue,  4 Jan 2022 19:14:13 +0200
-Message-Id: <20220104171413.2293847-16-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220104171413.2293847-1-vladimir.oltean@nxp.com>
-References: <20220104171413.2293847-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR02CA0192.eurprd02.prod.outlook.com
- (2603:10a6:20b:28e::29) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.15; Tue, 4 Jan
+ 2022 17:16:00 +0000
+Received: from SN6PR10MB2975.namprd10.prod.outlook.com
+ ([fe80::208b:c637:9c1b:758f]) by SN6PR10MB2975.namprd10.prod.outlook.com
+ ([fe80::208b:c637:9c1b:758f%6]) with mapi id 15.20.4844.016; Tue, 4 Jan 2022
+ 17:16:00 +0000
+Date:   Tue, 4 Jan 2022 12:15:57 -0500
+From:   Kris Van Hees <kris.van.hees@oracle.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH v7 bpf-next 08/11] bpf: Implement verifier support for
+ validation of async callbacks.
+Message-ID: <20220104171557.GB1559@oracle.com>
+References: <20210715005417.78572-1-alexei.starovoitov@gmail.com>
+ <20210715005417.78572-9-alexei.starovoitov@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210715005417.78572-9-alexei.starovoitov@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: BYAPR07CA0059.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::36) To SN6PR10MB2975.namprd10.prod.outlook.com
+ (2603:10b6:805:d2::10)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8969788e-1d1e-4d5f-7153-08d9cfa5b37d
-X-MS-TrafficTypeDiagnostic: VI1PR04MB7104:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB7104D8BAAF88D143AF1F1DA0E04A9@VI1PR04MB7104.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-MS-Office365-Filtering-Correlation-Id: 76215d26-81e6-498f-b3a3-08d9cfa5e0fc
+X-MS-TrafficTypeDiagnostic: SN6PR10MB2974:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR10MB29742DC7ECC8EAFD55EDEF7DC24A9@SN6PR10MB2974.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3LjFV6H0B7MKEanxhPWczsrbL/HeE3V3HiA6Ho6iNy0376yrI0QYTftVKKVBbkmnA2HXwR0VSGk4Vr2HnBO7egyAzbxJ7ZiX3ziqdQ/eKAgviSEXeOqaxJ5cgbIHrh+Uo5MqCHxAZBwN7vonaGTE4u7aggkZJ1av0/X11VcgztopZYUpqLncy8YrBgJzN5t39Y3qRl1IC78f0UvBZSyQ8OCTzAQT0wDxT3s08aIeIPSWyNH1JFUPlh4wicsJRRFb4efTHT/ttosRH0ukFoOs96Eri2FNhE+1DSGyBuD9ekOYr2rasRZSOQEnNIFDPvp0za0trVU/iwfefrjKgzaiBHoqutrRL8245rmn/BNgPgeokZLjovikGfdgedSEyywSg3eFtmw2G5o6tHMUtdiJ/Vh072ANLB3hvoG2F0P0ww6hVFi2yFnukOV/vdCFxbLah5sLKv29VjvoB52CoiZpluGO7PJbX1oYorelbLUd45JKdD0LlnaqL3zd7FwczE1tlydwuqbvvDLO5nROGl5fu5ZxWbtALqFi6SFCSn9n2MBJ9pqCLXYR6cn5IFE0X7YdkvuJxJrouq9zU6bvPfS/Sqem8S8ex8382PeytjIdSvskScP2EGDlzqn8WlelAgJgCQoAETGB0z+Lbckg98uOJJV4fFceIJgt+xMnt6GoiTpAIj981R/mYOxgGFh/J7aqyYbqoHWljOl7E+4M08HUfzAQOA/mYYFR+LcPROsZA1s=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(54906003)(86362001)(8936002)(8676002)(5660300002)(66946007)(6506007)(52116002)(186003)(6486002)(26005)(6916009)(66476007)(66556008)(4326008)(508600001)(38350700002)(38100700002)(6666004)(36756003)(1076003)(2906002)(83380400001)(316002)(6512007)(2616005)(44832011)(21314003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: yU4zKVkzIpJ7Ax1ZcsPFudYNLE9k/K1oM5UxWm+42GZECFpq6eLl57iq0igx7LcSAEy41bFKZE7WYemkYfRooWZ6hdRA8opuEG3YPTi7kGXd2Kt3f8S9FXy70sqJo4TiZMmd0zmwuyy2tF4lniNTlGRMM6fcA2S3e8g2euLaaBvsmEEUlwHe9U1HDcm1uq42/4fbboO+EgN/yZopj7VaNWEkoFzSvGLSmz2lCHJnt9y5tWMdIvW7rz/6mUMFJ/jjHH86CscbOGPGS9TivCKoxOO2yYl8tUvtV7X1btAONcv+SwEBmZ81/MCV0TZDygfc+70fpWVG6wKE8iiajdV4hGlkTK7aicEihfhMWwy/aKsJJTQNpW6WfUwsrMzeyfIuLb+h5gfn4b0TM+RahcZswQWdn6K5q54qbiF3cVkBsUhJp/j631/Oo69fgIM7eStcm3jpRsJn4J4d3IORw4YWYskXSW8sNhwR6ZWLSUaHGyTA6iuuObjOdHtTaj9JLQ72inBjffB8cxc+yblra4p8JFjtGZQlNGVZdPP+tmbydlDe0QEuQqSe236gxBJWRzmaJO/gOnZKVNvAgtto6vWPgmL6yJbqK7RQENTlnCmlMrwbpdhk/TeqaA80guBradFSQnaK38i2WOGAraYDzODzzQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB2975.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(6506007)(316002)(30864003)(2906002)(38100700002)(6486002)(8936002)(2616005)(6512007)(5660300002)(6916009)(66556008)(66476007)(33656002)(66946007)(52116002)(186003)(1076003)(36756003)(508600001)(86362001)(83380400001)(4326008)(8676002)(6666004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?F6RUXcIe/vEgZb9ScCxUb8Ul9a7TXXCL/iJ211hDaBSS7j72P4yO6Tj/F0ye?=
- =?us-ascii?Q?bpVZGE4cTkIj65rxFDoDe/zrQUfLEa3l6IISq4A7d7BcLld/w1fha0F4Ukx5?=
- =?us-ascii?Q?T3OGvx0SE4WTw8iwa4xrw3w3s6rEHLuySfjUJsKhjK+npL6wcWww1U/PpvNu?=
- =?us-ascii?Q?/M99gas5XYjDMPcu3NbnWythXC8DMkB9tbQW2qJ1o70WDayQWTQxY0skSnxg?=
- =?us-ascii?Q?BeSgdL/0K5Bp6nzOQGWw0iQJUcScl6yrVqBfuo1x8WN/KTJK2qxIXQAi1or4?=
- =?us-ascii?Q?jwZj5cZf1DSlLLX066nzLm/S5ggKhdXFcWLL2orRmf8Vj/RqzobHFjjsYQFT?=
- =?us-ascii?Q?x/WHT+zQ8fUyBiJomdIRxPLjBH5U5BezOlLdteulPBRUJHy0EjUCfNKAHhHk?=
- =?us-ascii?Q?0vSlvo7K+rciRXzXhiqwHBi4VrsRPfMAtr/7K42vYxYJZN7igjnR3GIH4re1?=
- =?us-ascii?Q?dkC7d9NNDRwe5E/P/HYOEDI1hVhXCxzCz6YAOBJx7Gih/l3FySttYt1MbmxQ?=
- =?us-ascii?Q?RDicZajsO7dWc9yX4L+WDPJW2doQgf6VA554TrmWBK3GAcRChMuYjJ+Blg0B?=
- =?us-ascii?Q?NdTnhnji/cOLNTf2iR3pzHW+1Pic985J3ffT6oMvu9xNd/XX0/49n20NLrws?=
- =?us-ascii?Q?YPrHxKkOxgjvr5GZQAD+V8iZHRHeGlXfwjTM8sXpo05KuOVayAka8OKY8UhW?=
- =?us-ascii?Q?Ux/PsqdWWj29QjgOGe4muTXam5WSktLqCZsN8GlMKEJN9ZMOQSRzgwgVlhIF?=
- =?us-ascii?Q?HD8ur3162C3PiovyNmRjbMw6wg1eRcXCT7h38eLCOl56Si2wNQ6AqCNi/4gm?=
- =?us-ascii?Q?r4gzSLDDe3EjmdgcG2SoFe0zLLfYC8F00zf0Bniv5Z1cl3waSYt5ObCvPUR6?=
- =?us-ascii?Q?kslL8Zn8nf/UHq04P/U9/QpYlHBPOloqq4dE0IbSub/4DUjbfxubQQnTEoNe?=
- =?us-ascii?Q?C9Bg0dVenNAy+1Y4RUms7kFVVW6bvC9+AZGZN3SVbRupR24ErhWjlByiaxuL?=
- =?us-ascii?Q?mrWEfqhuTmOzovzJarYcYr6lNb+Bui2U3+GqNnmlhsi2/8iM8aizHSxN8RH0?=
- =?us-ascii?Q?dNG9aK+1g9FWD5puYH95s6tHfpvAcOV9XDKLity6hy5hKmHInD0qsYgeFiIr?=
- =?us-ascii?Q?SKorasQiJw2l9Lj9jWjbvNdN1dB7sSRz6hnXsusXPGcLDnJz1dAXrlLUyuqR?=
- =?us-ascii?Q?DHZCWuTl5J5RwSKSB4pAxGhHLA0ofQcT+X/rbjBS8w7tbHdNwEc0vBKrizzW?=
- =?us-ascii?Q?gtGqFhWanBqR6pmuulai+Qgh9bmD0+ufdivl75q6z01CETqY5IA6jGQMqeZ7?=
- =?us-ascii?Q?oU04fpyyh/WZElMbm32jACw8HN/i4NKHUDXOUtHKKgn9fCs90tqoIrhMuqca?=
- =?us-ascii?Q?3iXM74YWqZom5G5B7sc65bNKvfKF/Sahl2isfdnXRfudkhoU2PmG2LlmwwXh?=
- =?us-ascii?Q?3O9ibEmsMXY885ZVWKkjCwDWaaq7vs2wtwXZ/SuxOSmFCp15HPJxQU7+y3j6?=
- =?us-ascii?Q?hh+4Hhl3jAo+2UnwMhkIls7GA3LldbPan59pJ1fEzRhUCq8Ruj60wRZdWm1/?=
- =?us-ascii?Q?N+y3eJ+uYVh54eyiLc9tqw6SoRPL2eDnyUEELSEKxkNlFpuBHbnGgjlcBIxG?=
- =?us-ascii?Q?6C7Wh7uEVKXDe2XtF2mcUfk=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8969788e-1d1e-4d5f-7153-08d9cfa5b37d
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bsDzA5EkUZilN5woT3nvprfzL5DzOT69QRMiA9PAsMtG+HrpxQWGdUksn2uj?=
+ =?us-ascii?Q?LsIYEfIgP0M33abtJSW6gOEBCYF3XD2iWnCa5Xe6hKOoPDgVuNFunEHXpAkP?=
+ =?us-ascii?Q?Gny5w++6uXqMPpDW4bzyCNAtlgyM4PdlWEIKCH2l9DRrqmNzCF0t/IR7I4m2?=
+ =?us-ascii?Q?QHuUsMBCdLJaUeMfYtuinE7/5ZDzhzwkuv86lMKU4+FjywrB6zog2nvOj6fC?=
+ =?us-ascii?Q?pZS4Whtx6lZ93oNtoL4ynhz93n3nyRi8Iytz7KlBJGfiXhMWyoUIhqf5SWUe?=
+ =?us-ascii?Q?6USYmHZ3oamnYHHFyjssFRBNIZcdvtPji8tk2f/5e3dJ/xbnAOzP2HJOg/dG?=
+ =?us-ascii?Q?SiXWngS6Empnd0VrtZgWdypAJyWxicgZrHF3agre+cMIii8XH0MYGOiGSnFN?=
+ =?us-ascii?Q?eNfDUeTrEEEdjx5MU45oQhG3vDpY0GP9/HEq+1W0ifd2I1mooj0nyF2Z0pR2?=
+ =?us-ascii?Q?ad7isa6/4G6H13DIsXWgBLB+bIJdr+6WwHQm26TZmnGlUYmzA+3rVlxfuidN?=
+ =?us-ascii?Q?zXnSVa0cKFf6xANCOMtlyj4kqWUrcwvTHJ5RCQ51J0xx+diCtzRGeVBlMfiX?=
+ =?us-ascii?Q?i95mRwP8w9wOeVyecg8JGvkJCPGmPKMpCSxLjowX7IvrZtRZysaRz7cuNFOT?=
+ =?us-ascii?Q?nOFcZ1E3IxVldjEpKHbWh13zUFZjw6ybX5Cp9lweIMT19NE0bUsdh/AoQ4sF?=
+ =?us-ascii?Q?0kDNlD2Ry+lwaDVZQH8TFu/ZGuhuW9PK4tcEFyvMFio8jbk5P/o75zuCaxBH?=
+ =?us-ascii?Q?dDmXxB09Cj/lnDPW2GTjGiggaehUQ/GoF5mitGqW9efxeNEKv5siabfH4q8v?=
+ =?us-ascii?Q?QWfloVm2zfIkaP5rmVWrmp0fu6clraq7hwoo5G5goYv7AhrH2wGFBi0prweY?=
+ =?us-ascii?Q?hD6EgSBSxmOHTBz6IyYKUCJQUJTHo8jZJw9H9KAu/giXoNixHiomtebQFvpn?=
+ =?us-ascii?Q?VWSu2eyRg5u4mpJdGGz48KP8aLCbZe3tgAfi6As3VfgXC12PC1d5yqHuF74T?=
+ =?us-ascii?Q?pVmMmgymhsFt+0QUsblvB3npkVRuyz/xYE9bMcelD6Sdj6QT4hyfDXHKF5cs?=
+ =?us-ascii?Q?yoBuWA+mqpnoFqwghczCBXM17A2EY/no+sm8WGUEEfx4xXmr8dscpXmgRzSi?=
+ =?us-ascii?Q?pvb3quzQCBMG68BDWnzquCDfrL+WEYfMdcWeET88bl/6A5KqhKHcP5tlx+jt?=
+ =?us-ascii?Q?7ZJnsORJuZDJ6biBVpzymzBtmR2fcDwhwHstjWvA6lRVvmBTUf3wWTCcQmZx?=
+ =?us-ascii?Q?zrtoPHm0SCDQRpqxtGav8bUizML+yB4Mfkr0etO7huDMdquQlTd+02MN6Yx8?=
+ =?us-ascii?Q?R5WAgHvcB4BukcJZpE9lmfdTnSEznDUW8SIQos8kcq5yAm+1UmCG4gPMQxWc?=
+ =?us-ascii?Q?xPF5rf+P823xJBPPle0CmzgUJpC+YJQPHzX8WjbDy4qkB52SN43neZjmcRKC?=
+ =?us-ascii?Q?W8uvdoRGorbjmmnc1mIgGKXm2Agqz4npnGJbYLwEvLtNYcl4GSQjryOPKOyH?=
+ =?us-ascii?Q?eelWNBxi/vr8Y8EfhOGjkG3m5R8xnJX5j/g6ldrr4XgOI5Ph6R/Kf5PJmGuV?=
+ =?us-ascii?Q?gCpWNBj/tf/SU/ygR4psW9XNLtUCNtp2UZCTgefc5wSqat4/KtGt2M5BNqcY?=
+ =?us-ascii?Q?yrUssbWtqrlAp7buU0KoT5VrhYosbiC3ycW+aut2lWqf6ekPDQ5L5twjelrS?=
+ =?us-ascii?Q?JAy9jUzINuw/KELP2MFrvpxOfeYSzr2Rodx6CC4ypOYlM+T2?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 76215d26-81e6-498f-b3a3-08d9cfa5e0fc
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB2975.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2022 17:14:43.9094
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jan 2022 17:16:00.4596
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TB7y3XaxXWPF7JBfKI2G+IfZ9LSvM3l1OAp04MuwudIAEdB4lwSlKsoh1xvWgWHT0w+LVAlbh+zMpGC1J42o5A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7104
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8XUWJy/Xk5awUOziLznjpIbTVUNwYvYBv6mvT1PQbfJDvqxNNfFQ2ifUk9vH8eSA/+6MqHysEHjgPJLZ5zgSPOI5XYIEYsYy6fejHQZdrI0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR10MB2974
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10216 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 bulkscore=0
+ spamscore=0 adultscore=0 phishscore=0 mlxlogscore=999 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2201040116
+X-Proofpoint-ORIG-GUID: bfHY0OkK_dN2LiiSX9T5CEAnhJfJB0Ns
+X-Proofpoint-GUID: bfHY0OkK_dN2LiiSX9T5CEAnhJfJB0Ns
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a 7 byte hole after dst->setup and a 4 byte hole after
-dst->default_proto. Combining them, we have a single hole of just 3
-bytes on 64 bit machines.
+I ran into a problem due to this patch.  Specifically, the test in the
+__check_func_call() function is flaweed because it can actually mis-interpret
+a regular BPF-to-BPF pseudo-call as a callback call.
 
-Before:
+Consider the conditional in the code:
 
-pahole -C dsa_switch_tree net/dsa/slave.o
-struct dsa_switch_tree {
-        struct list_head           list;                 /*     0    16 */
-        struct list_head           ports;                /*    16    16 */
-        struct raw_notifier_head   nh;                   /*    32     8 */
-        unsigned int               index;                /*    40     4 */
-        struct kref                refcount;             /*    44     4 */
-        struct net_device * *      lags;                 /*    48     8 */
-        bool                       setup;                /*    56     1 */
+	if (insn->code == (BPF_JMP | BPF_CALL) &&
+	    insn->imm == BPF_FUNC_timer_set_callback) {
 
-        /* XXX 7 bytes hole, try to pack */
+The BPF_FUNC_timer_set_callback has value 170.  This means that if you have
+a BPF program that contains a pseudo-call with an instruction delta of 170,
+this conditional will be found to be true by the verifier, and it will
+interpret the pseudo-call as a callback.  This leads to a mess with the
+verification of the program because it makes the wrong assumptions about the
+nature of this call.
 
-        /* --- cacheline 1 boundary (64 bytes) --- */
-        const struct dsa_device_ops  * tag_ops;          /*    64     8 */
-        enum dsa_tag_protocol      default_proto;        /*    72     4 */
+As far as I can see, the solution is simple.  Include an explicit check to
+ensure that src_reg is not a pseudo-call.  I.e. make the conditional:
 
-        /* XXX 4 bytes hole, try to pack */
+	if (insn->code == (BPF_JMP | BPF_CALL) &&
+	    insn->src_reg != BPF_PSEUDO_CALL &&
+	    insn->imm == BPF_FUNC_timer_set_callback) {
 
-        struct dsa_platform_data * pd;                   /*    80     8 */
-        struct list_head           rtable;               /*    88    16 */
-        unsigned int               lags_len;             /*   104     4 */
-        unsigned int               last_switch;          /*   108     4 */
+It is of course a pretty rare case that this would go wrong, but since my
+code makes extensive use of BPF-to-BPF pseudo-calls, it was only a matter of
+time before I would run into a call with instruction delta 170.
 
-        /* size: 112, cachelines: 2, members: 13 */
-        /* sum members: 101, holes: 2, sum holes: 11 */
-        /* last cacheline: 48 bytes */
-};
+	Kris
 
-After:
-
-pahole -C dsa_switch_tree net/dsa/slave.o
-struct dsa_switch_tree {
-        struct list_head           list;                 /*     0    16 */
-        struct list_head           ports;                /*    16    16 */
-        struct raw_notifier_head   nh;                   /*    32     8 */
-        unsigned int               index;                /*    40     4 */
-        struct kref                refcount;             /*    44     4 */
-        struct net_device * *      lags;                 /*    48     8 */
-        const struct dsa_device_ops  * tag_ops;          /*    56     8 */
-        /* --- cacheline 1 boundary (64 bytes) --- */
-        enum dsa_tag_protocol      default_proto;        /*    64     4 */
-        bool                       setup;                /*    68     1 */
-
-        /* XXX 3 bytes hole, try to pack */
-
-        struct dsa_platform_data * pd;                   /*    72     8 */
-        struct list_head           rtable;               /*    80    16 */
-        unsigned int               lags_len;             /*    96     4 */
-        unsigned int               last_switch;          /*   100     4 */
-
-        /* size: 104, cachelines: 2, members: 13 */
-        /* sum members: 101, holes: 1, sum holes: 3 */
-        /* last cacheline: 40 bytes */
-};
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- include/net/dsa.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index cbbac75138d9..5d0fec6db3ae 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -136,9 +136,6 @@ struct dsa_switch_tree {
- 	 */
- 	struct net_device **lags;
- 
--	/* Has this tree been applied to the hardware? */
--	bool setup;
--
- 	/* Tagging protocol operations */
- 	const struct dsa_device_ops *tag_ops;
- 
-@@ -147,6 +144,9 @@ struct dsa_switch_tree {
- 	 */
- 	enum dsa_tag_protocol default_proto;
- 
-+	/* Has this tree been applied to the hardware? */
-+	bool setup;
-+
- 	/*
- 	 * Configuration data for the platform device that owns
- 	 * this dsa switch tree instance.
--- 
-2.25.1
-
+On Wed, Jul 14, 2021 at 05:54:14PM -0700, Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
+> 
+> bpf_for_each_map_elem() and bpf_timer_set_callback() helpers are relying on
+> PTR_TO_FUNC infra in the verifier to validate addresses to subprograms
+> and pass them into the helpers as function callbacks.
+> In case of bpf_for_each_map_elem() the callback is invoked synchronously
+> and the verifier treats it as a normal subprogram call by adding another
+> bpf_func_state and new frame in __check_func_call().
+> bpf_timer_set_callback() doesn't invoke the callback directly.
+> The subprogram will be called asynchronously from bpf_timer_cb().
+> Teach the verifier to validate such async callbacks as special kind
+> of jump by pushing verifier state into stack and let pop_stack() process it.
+> 
+> Special care needs to be taken during state pruning.
+> The call insn doing bpf_timer_set_callback has to be a prune_point.
+> Otherwise short timer callbacks might not have prune points in front of
+> bpf_timer_set_callback() which means is_state_visited() will be called
+> after this call insn is processed in __check_func_call(). Which means that
+> another async_cb state will be pushed to be walked later and the verifier
+> will eventually hit BPF_COMPLEXITY_LIMIT_JMP_SEQ limit.
+> Since push_async_cb() looks like another push_stack() branch the
+> infinite loop detection will trigger false positive. To recognize
+> this case mark such states as in_async_callback_fn.
+> To distinguish infinite loop in async callback vs the same callback called
+> with different arguments for different map and timer add async_entry_cnt
+> to bpf_func_state.
+> 
+> Enforce return zero from async callbacks.
+> 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> ---
+>  include/linux/bpf_verifier.h |   9 ++-
+>  kernel/bpf/helpers.c         |   8 +--
+>  kernel/bpf/verifier.c        | 123 ++++++++++++++++++++++++++++++++++-
+>  3 files changed, 131 insertions(+), 9 deletions(-)
+> 
+> diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+> index 5d3169b57e6e..242d0b1a0772 100644
+> --- a/include/linux/bpf_verifier.h
+> +++ b/include/linux/bpf_verifier.h
+> @@ -208,12 +208,19 @@ struct bpf_func_state {
+>  	 * zero == main subprog
+>  	 */
+>  	u32 subprogno;
+> +	/* Every bpf_timer_start will increment async_entry_cnt.
+> +	 * It's used to distinguish:
+> +	 * void foo(void) { for(;;); }
+> +	 * void foo(void) { bpf_timer_set_callback(,foo); }
+> +	 */
+> +	u32 async_entry_cnt;
+> +	bool in_callback_fn;
+> +	bool in_async_callback_fn;
+>  
+>  	/* The following fields should be last. See copy_func_state() */
+>  	int acquired_refs;
+>  	struct bpf_reference_state *refs;
+>  	int allocated_stack;
+> -	bool in_callback_fn;
+>  	struct bpf_stack_state *stack;
+>  };
+>  
+> diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> index 74b16593983d..9fe846ec6bd1 100644
+> --- a/kernel/bpf/helpers.c
+> +++ b/kernel/bpf/helpers.c
+> @@ -1043,7 +1043,6 @@ static enum hrtimer_restart bpf_timer_cb(struct hrtimer *hrtimer)
+>  	void *callback_fn;
+>  	void *key;
+>  	u32 idx;
+> -	int ret;
+>  
+>  	callback_fn = rcu_dereference_check(t->callback_fn, rcu_read_lock_bh_held());
+>  	if (!callback_fn)
+> @@ -1066,10 +1065,9 @@ static enum hrtimer_restart bpf_timer_cb(struct hrtimer *hrtimer)
+>  		key = value - round_up(map->key_size, 8);
+>  	}
+>  
+> -	ret = BPF_CAST_CALL(callback_fn)((u64)(long)map,
+> -					 (u64)(long)key,
+> -					 (u64)(long)value, 0, 0);
+> -	WARN_ON(ret != 0); /* Next patch moves this check into the verifier */
+> +	BPF_CAST_CALL(callback_fn)((u64)(long)map, (u64)(long)key,
+> +				   (u64)(long)value, 0, 0);
+> +	/* The verifier checked that return value is zero. */
+>  
+>  	this_cpu_write(hrtimer_running, NULL);
+>  out:
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 1511f92b4cf4..ab6ce598a652 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -735,6 +735,10 @@ static void print_verifier_state(struct bpf_verifier_env *env,
+>  			if (state->refs[i].id)
+>  				verbose(env, ",%d", state->refs[i].id);
+>  	}
+> +	if (state->in_callback_fn)
+> +		verbose(env, " cb");
+> +	if (state->in_async_callback_fn)
+> +		verbose(env, " async_cb");
+>  	verbose(env, "\n");
+>  }
+>  
+> @@ -1527,6 +1531,54 @@ static void init_func_state(struct bpf_verifier_env *env,
+>  	init_reg_state(env, state);
+>  }
+>  
+> +/* Similar to push_stack(), but for async callbacks */
+> +static struct bpf_verifier_state *push_async_cb(struct bpf_verifier_env *env,
+> +						int insn_idx, int prev_insn_idx,
+> +						int subprog)
+> +{
+> +	struct bpf_verifier_stack_elem *elem;
+> +	struct bpf_func_state *frame;
+> +
+> +	elem = kzalloc(sizeof(struct bpf_verifier_stack_elem), GFP_KERNEL);
+> +	if (!elem)
+> +		goto err;
+> +
+> +	elem->insn_idx = insn_idx;
+> +	elem->prev_insn_idx = prev_insn_idx;
+> +	elem->next = env->head;
+> +	elem->log_pos = env->log.len_used;
+> +	env->head = elem;
+> +	env->stack_size++;
+> +	if (env->stack_size > BPF_COMPLEXITY_LIMIT_JMP_SEQ) {
+> +		verbose(env,
+> +			"The sequence of %d jumps is too complex for async cb.\n",
+> +			env->stack_size);
+> +		goto err;
+> +	}
+> +	/* Unlike push_stack() do not copy_verifier_state().
+> +	 * The caller state doesn't matter.
+> +	 * This is async callback. It starts in a fresh stack.
+> +	 * Initialize it similar to do_check_common().
+> +	 */
+> +	elem->st.branches = 1;
+> +	frame = kzalloc(sizeof(*frame), GFP_KERNEL);
+> +	if (!frame)
+> +		goto err;
+> +	init_func_state(env, frame,
+> +			BPF_MAIN_FUNC /* callsite */,
+> +			0 /* frameno within this callchain */,
+> +			subprog /* subprog number within this prog */);
+> +	elem->st.frame[0] = frame;
+> +	return &elem->st;
+> +err:
+> +	free_verifier_state(env->cur_state, true);
+> +	env->cur_state = NULL;
+> +	/* pop all elements and return */
+> +	while (!pop_stack(env, NULL, NULL, false));
+> +	return NULL;
+> +}
+> +
+> +
+>  enum reg_arg_type {
+>  	SRC_OP,		/* register is used as source operand */
+>  	DST_OP,		/* register is used as destination operand */
+> @@ -5704,6 +5756,30 @@ static int __check_func_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+>  		}
+>  	}
+>  
+> +	if (insn->code == (BPF_JMP | BPF_CALL) &&
+> +	    insn->imm == BPF_FUNC_timer_set_callback) {
+> +		struct bpf_verifier_state *async_cb;
+> +
+> +		/* there is no real recursion here. timer callbacks are async */
+> +		async_cb = push_async_cb(env, env->subprog_info[subprog].start,
+> +					 *insn_idx, subprog);
+> +		if (!async_cb)
+> +			return -EFAULT;
+> +		callee = async_cb->frame[0];
+> +		callee->async_entry_cnt = caller->async_entry_cnt + 1;
+> +
+> +		/* Convert bpf_timer_set_callback() args into timer callback args */
+> +		err = set_callee_state_cb(env, caller, callee, *insn_idx);
+> +		if (err)
+> +			return err;
+> +
+> +		clear_caller_saved_regs(env, caller->regs);
+> +		mark_reg_unknown(env, caller->regs, BPF_REG_0);
+> +		caller->regs[BPF_REG_0].subreg_def = DEF_NOT_SUBREG;
+> +		/* continue with next insn after call */
+> +		return 0;
+> +	}
+> +
+>  	callee = kzalloc(sizeof(*callee), GFP_KERNEL);
+>  	if (!callee)
+>  		return -ENOMEM;
+> @@ -5856,6 +5932,7 @@ static int set_timer_callback_state(struct bpf_verifier_env *env,
+>  	/* unused */
+>  	__mark_reg_not_init(env, &callee->regs[BPF_REG_4]);
+>  	__mark_reg_not_init(env, &callee->regs[BPF_REG_5]);
+> +	callee->in_async_callback_fn = true;
+>  	return 0;
+>  }
+>  
+> @@ -9224,7 +9301,8 @@ static int check_return_code(struct bpf_verifier_env *env)
+>  	struct tnum range = tnum_range(0, 1);
+>  	enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
+>  	int err;
+> -	const bool is_subprog = env->cur_state->frame[0]->subprogno;
+> +	struct bpf_func_state *frame = env->cur_state->frame[0];
+> +	const bool is_subprog = frame->subprogno;
+>  
+>  	/* LSM and struct_ops func-ptr's return type could be "void" */
+>  	if (!is_subprog &&
+> @@ -9249,6 +9327,22 @@ static int check_return_code(struct bpf_verifier_env *env)
+>  	}
+>  
+>  	reg = cur_regs(env) + BPF_REG_0;
+> +
+> +	if (frame->in_async_callback_fn) {
+> +		/* enforce return zero from async callbacks like timer */
+> +		if (reg->type != SCALAR_VALUE) {
+> +			verbose(env, "In async callback the register R0 is not a known value (%s)\n",
+> +				reg_type_str[reg->type]);
+> +			return -EINVAL;
+> +		}
+> +
+> +		if (!tnum_in(tnum_const(0), reg->var_off)) {
+> +			verbose_invalid_scalar(env, reg, &range, "async callback", "R0");
+> +			return -EINVAL;
+> +		}
+> +		return 0;
+> +	}
+> +
+>  	if (is_subprog) {
+>  		if (reg->type != SCALAR_VALUE) {
+>  			verbose(env, "At subprogram exit the register R0 is not a scalar value (%s)\n",
+> @@ -9496,6 +9590,13 @@ static int visit_insn(int t, int insn_cnt, struct bpf_verifier_env *env)
+>  		return DONE_EXPLORING;
+>  
+>  	case BPF_CALL:
+> +		if (insns[t].imm == BPF_FUNC_timer_set_callback)
+> +			/* Mark this call insn to trigger is_state_visited() check
+> +			 * before call itself is processed by __check_func_call().
+> +			 * Otherwise new async state will be pushed for further
+> +			 * exploration.
+> +			 */
+> +			init_explored_state(env, t);
+>  		return visit_func_call_insn(t, insn_cnt, insns, env,
+>  					    insns[t].src_reg == BPF_PSEUDO_CALL);
+>  
+> @@ -10503,9 +10604,25 @@ static int is_state_visited(struct bpf_verifier_env *env, int insn_idx)
+>  		states_cnt++;
+>  		if (sl->state.insn_idx != insn_idx)
+>  			goto next;
+> +
+>  		if (sl->state.branches) {
+> -			if (states_maybe_looping(&sl->state, cur) &&
+> -			    states_equal(env, &sl->state, cur)) {
+> +			struct bpf_func_state *frame = sl->state.frame[sl->state.curframe];
+> +
+> +			if (frame->in_async_callback_fn &&
+> +			    frame->async_entry_cnt != cur->frame[cur->curframe]->async_entry_cnt) {
+> +				/* Different async_entry_cnt means that the verifier is
+> +				 * processing another entry into async callback.
+> +				 * Seeing the same state is not an indication of infinite
+> +				 * loop or infinite recursion.
+> +				 * But finding the same state doesn't mean that it's safe
+> +				 * to stop processing the current state. The previous state
+> +				 * hasn't yet reached bpf_exit, since state.branches > 0.
+> +				 * Checking in_async_callback_fn alone is not enough either.
+> +				 * Since the verifier still needs to catch infinite loops
+> +				 * inside async callbacks.
+> +				 */
+> +			} else if (states_maybe_looping(&sl->state, cur) &&
+> +				   states_equal(env, &sl->state, cur)) {
+>  				verbose_linfo(env, insn_idx, "; ");
+>  				verbose(env, "infinite loop detected at insn %d\n", insn_idx);
+>  				return -EINVAL;
+> -- 
+> 2.30.2
