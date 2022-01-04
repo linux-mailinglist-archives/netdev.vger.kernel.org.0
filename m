@@ -2,125 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAC88483FF3
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 11:31:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FCCC483FF7
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 11:34:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231491AbiADKbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 05:31:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55526 "EHLO
+        id S230146AbiADKeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 05:34:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231481AbiADKbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 05:31:07 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C05CC061761;
-        Tue,  4 Jan 2022 02:31:07 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 9FA4641982;
-        Tue,  4 Jan 2022 10:30:56 +0000 (UTC)
-Message-ID: <a6e6696c-493a-f044-47ba-d8d256a88672@marcan.st>
-Date:   Tue, 4 Jan 2022 19:30:53 +0900
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH v2 06/35] brcmfmac: firmware: Support passing in multiple
- board_types
-Content-Language: en-US
-To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        with ESMTP id S229731AbiADKen (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 05:34:43 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F5C9C061761
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 02:34:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=cVEsL33VDlCXI6mXM0CqiL0PUax/E1YvZ8pPRTBh6jY=; b=07jjMVDYblOHkE8qvN1ebvddym
+        TNj4MrRG83/veai3Y2nvGViDZr+7U1fLmZdGlqkCv0I/8WH7/XfrcqqwcMRanLhtqBrpYU3sNR8+s
+        6OHDsPhs5b46+eHh5S8mt+u9sZPk78OZJX1u6sqCnoLb6lWlg1kaT44cMxhRiApjj92UGDXC7D0cq
+        u+1KyFbbhrWbEPL8BX/HVmKajudkpgfXvSh12CzQVreyKUwpuG9s68jsi/QaxlA1JwThIK/9PSDwc
+        442145qiGgDGQSHPtaC1r2dTGTInhTqTAvAt3Tg1fpPWgrTPsskOhbr+tsE3DS4vLwi0sF5xcBps2
+        Hi17G0Mw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56548)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1n4h9G-0006rq-Ck; Tue, 04 Jan 2022 10:34:34 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1n4h9D-00079K-Hz; Tue, 04 Jan 2022 10:34:31 +0000
+Date:   Tue, 4 Jan 2022 10:34:31 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Harini Katakam <harinik@xilinx.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Michal Simek <michals@xilinx.com>,
+        Radhey Shyam Pandey <radheys@xilinx.com>,
+        Sean Anderson <sean.anderson@seco.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20220104072658.69756-1-marcan@marcan.st>
- <20220104072658.69756-7-marcan@marcan.st>
- <aeff20d6-03e7-b071-79c8-7a7e10d2d686@broadcom.com>
-From:   Hector Martin <marcan@marcan.st>
-In-Reply-To: <aeff20d6-03e7-b071-79c8-7a7e10d2d686@broadcom.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        netdev <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH CFT net-next 1/2] net: axienet: convert to phylink_pcs
+Message-ID: <YdQity1FDX0oNEN5@shell.armlinux.org.uk>
+References: <Ybs1cdM3KUTsq4Vx@shell.armlinux.org.uk>
+ <E1mxqBh-00GWxo-51@rmk-PC.armlinux.org.uk>
+ <20211216071513.6d1e0f55@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <YbtxGLrXoR9oHRmM@shell.armlinux.org.uk>
+ <CAFcVECJeRwgjGsxtcGpMuA23nnmywsNkA2Yngk6aDK_JuVE3NQ@mail.gmail.com>
+ <CAFcVEC+N0Y7ESFe-qcfpmkbPjRSvCJ=AOXoM6XSK6xGo=J1YNw@mail.gmail.com>
+ <YdQMyfYU0wxHrT40@shell.armlinux.org.uk>
+ <BL3PR02MB8187165DAF278F65C8024567C94A9@BL3PR02MB8187.namprd02.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BL3PR02MB8187165DAF278F65C8024567C94A9@BL3PR02MB8187.namprd02.prod.outlook.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/01/04 19:22, Arend van Spriel wrote:
-> On 1/4/2022 8:26 AM, Hector Martin wrote:
->> In order to make use of the multiple alt_path functionality, change
->> board_type to an array. Bus drivers can pass in a NULL-terminated list
->> of board type strings to try for the firmware fetch.
->>
->> Acked-by: Linus Walleij <linus.walleij@linaro.org>
->> Signed-off-by: Hector Martin <marcan@marcan.st>
->> ---
->>   .../broadcom/brcm80211/brcmfmac/firmware.c    | 35 ++++++++++++-------
->>   .../broadcom/brcm80211/brcmfmac/firmware.h    |  2 +-
->>   .../broadcom/brcm80211/brcmfmac/pcie.c        |  4 ++-
->>   .../broadcom/brcm80211/brcmfmac/sdio.c        |  2 +-
->>   4 files changed, 27 insertions(+), 16 deletions(-)
->>
->> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
->> index 7570dbf22cdd..054ea3ed133e 100644
->> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
->> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
->> @@ -594,28 +594,39 @@ static int brcmf_fw_complete_request(const struct firmware *fw,
->>   	return (cur->flags & BRCMF_FW_REQF_OPTIONAL) ? 0 : ret;
->>   }
->>   
->> -static int brcm_alt_fw_paths(const char *path, const char *board_type,
->> +static int brcm_alt_fw_paths(const char *path, struct brcmf_fw *fwctx,
->>   			     const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS])
->>   {
->> +	const char **board_types = fwctx->req->board_types;
->> +	unsigned int i;
->>   	char alt_path[BRCMF_FW_NAME_LEN];
->>   	const char *suffix;
->>   
->>   	memset(alt_paths, 0, array_size(sizeof(*alt_paths),
->>   					BRCMF_FW_MAX_ALT_PATHS));
->>   
->> +	if (!board_types[0])
->> +		return -ENOENT;
->> +
->>   	suffix = strrchr(path, '.');
->>   	if (!suffix || suffix == path)
->>   		return -EINVAL;
->>   
->> -	/* strip extension at the end */
->> -	strscpy(alt_path, path, BRCMF_FW_NAME_LEN);
->> -	alt_path[suffix - path] = 0;
->> +	for (i = 0; i < BRCMF_FW_MAX_ALT_PATHS; i++) {
->> +		if (!board_types[i])
->> +		    break;
+On Tue, Jan 04, 2022 at 09:12:06AM +0000, Harini Katakam wrote:
+> > -----Original Message-----
+> > From: Russell King <linux@armlinux.org.uk>
+> > Sent: Tuesday, January 4, 2022 2:31 PM
+> > To: Harini Katakam <harinik@xilinx.com>
+> > Cc: Jakub Kicinski <kuba@kernel.org>; Michal Simek <michals@xilinx.com>;
+> > Radhey Shyam Pandey <radheys@xilinx.com>; Sean Anderson
+> > <sean.anderson@seco.com>; David S. Miller <davem@davemloft.net>;
+> > netdev <netdev@vger.kernel.org>; linux-arm-kernel@lists.infradead.org
+> > Subject: Re: [PATCH CFT net-next 1/2] net: axienet: convert to phylink_pcs
+> > 
+> > On Tue, Jan 04, 2022 at 01:26:28PM +0530, Harini Katakam wrote:
+> > > On Fri, Dec 17, 2021 at 1:55 PM Harini Katakam <harinik@xilinx.com> wrote:
+> > > >
+> > > > Hi Russell,
+> > > >
+> > > > On Fri, Dec 17, 2021 at 5:26 AM Russell King (Oracle)
+> > > > <linux@armlinux.org.uk> wrote:
+> > > > >
+> > > > > On Thu, Dec 16, 2021 at 07:15:13AM -0800, Jakub Kicinski wrote:
+> > > > > > On Thu, 16 Dec 2021 12:48:45 +0000 Russell King (Oracle) wrote:
+> > > > > > > Convert axienet to use the phylink_pcs layer, resulting in it
+> > > > > > > no longer being a legacy driver.
+> > > > > > >
+> > > > > > > One oddity in this driver is that lp->switch_x_sgmii controls
+> > > > > > > whether we support switching between SGMII and 1000baseX.
+> > > > > > > However, when clear, this also blocks updating the 1000baseX
+> > > > > > > advertisement, which it probably should not be doing.
+> > > > > > > Nevertheless, this behaviour is preserved but a comment is added.
+> > > > > > >
+> > > > > > > Signed-off-by: Russell King (Oracle)
+> > > > > > > <rmk+kernel@armlinux.org.uk>
+> > > > > >
+> > > > > > drivers/net/ethernet/xilinx/xilinx_axienet.h:479: warning: Function
+> > parameter or member 'pcs' not described in 'axienet_local'
+> > > > >
+> > > > > Fixed that and the sha1 issue you raised in patch 2. Since both
+> > > > > are "documentation" issues, I won't send out replacement patches
+> > > > > until I've heard they've been tested on hardware though.
+> > > >
+> > > > Thanks for the patches.
+> > > > Series looks good and we're testing at our end; will get back to you
+> > > > early next week.
+> > >
+> > > Thanks Russell. I've tested AXI Ethernet and it works fine.
+> > 
+> > Happy new year!
+> > 
+> > Thanks - can I use that as a tested-by please, and would you be happy for me
+> > to send the patches for merging this week?
 > 
-> Indentation error
+> Sure, yes and yes.
+> Tested-by: Harini Katakam <harini.katakam@xilinx.com>
+> 
+> Happy new year to you too!
 
-I knew I had a feeling I was forgetting to do something... that was
-running v2 through checkpatch. Sigh. Thanks for catching that, fixed :)
+Thanks. While adding the attributation, I was reminded of this comment in
+the commit message:
+
+  One oddity in this driver is that lp->switch_x_sgmii controls whether
+  we support switching between SGMII and 1000baseX. However, when clear,
+  this also blocks updating the 1000baseX advertisement, which it
+  probably should not be doing. Nevertheless, this behaviour is preserved
+  but a comment is added.
+
+went back to look at that, and realised that this was not the case at
+all, so patch 1 introduces a behaviour that wasn't originally there.
+I'll post an update, but essentially the change to patch 1 is:
+
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index a556f0215049..fbe0de4bc8dd 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -1533,18 +1533,17 @@ static int axienet_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+ 	struct axienet_local *lp = netdev_priv(ndev);
+ 	int ret;
+ 
+-	/* We don't support changing the advertisement in 1000base-X? --rmk */
+-	if (!lp->switch_x_sgmii)
+-		return 0;
+-
+-	ret = mdiobus_write(pcs_phy->bus, pcs_phy->addr,
+-			    XLNX_MII_STD_SELECT_REG,
+-			    interface == PHY_INTERFACE_MODE_SGMII ?
+-				XLNX_MII_STD_SELECT_SGMII : 0);
+-	if (ret < 0) {
+-		netdev_warn(ndev, "Failed to switch PHY interface: %d\n",
+-			    ret);
+-		return ret;
++	if (lp->switch_x_sgmii) {
++		ret = mdiobus_write(pcs_phy->bus, pcs_phy->addr,
++				    XLNX_MII_STD_SELECT_REG,
++				    interface == PHY_INTERFACE_MODE_SGMII ?
++					XLNX_MII_STD_SELECT_SGMII : 0);
++		if (ret < 0) {
++			netdev_warn(ndev,
++				    "Failed to switch PHY interface: %d\n",
++				    ret);
++			return ret;
++		}
+ 	}
+ 
+ 	ret = phylink_mii_c22_pcs_config(pcs_phy, mode, interface, advertising);
+
+and a corresponding change to patch 2 for the change in code formatting.
 
 -- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
