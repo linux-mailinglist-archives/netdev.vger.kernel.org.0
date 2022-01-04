@@ -2,90 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A43484900
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 20:53:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D03548490C
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 21:00:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231620AbiADTxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 14:53:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45284 "EHLO
+        id S232095AbiADUAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 15:00:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229962AbiADTxo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 14:53:44 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F14DC061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 11:53:44 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id t26so78310182wrb.4
-        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 11:53:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Z0Uhcf3wpqU1I6Qm7gNJzDOXeWTEJXqtF5s9xsAUgjc=;
-        b=Y/m5KJymBfJQQ3eyL6PVm+OQrAvNgwHjp2roFMkU9SMK96iNLyOPUDwBQBQj5zMrrB
-         DliZoHoBqaq/RyYEohvd1GI6iVT1MYC8rKE4CGa4qI1IkDvNkaaYOh4GGgsPZz6QiNDm
-         UitpVT/wdX6LtZ0qR2nO7Vx/g1niSyrnK5wKHgJpwSJyZmw0mKn9gCmPn5ape0u1F+zX
-         XW4AW8ASTSR8ucZz+TDw4b8JI1JiJ1rwySAlJidkGmcbRw/4U3peCyBLk3kP3SoLUd8z
-         kjQNBCvmBUJ2GzsvArw1fCoXVLI72TxwzkoIPoilGH+0nGukku1Gc5j4EQWdUZuos7ja
-         gSKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Z0Uhcf3wpqU1I6Qm7gNJzDOXeWTEJXqtF5s9xsAUgjc=;
-        b=s7WeYehi/Bp+OtDfZptIaRivQHgt9r6VEJA7iD8GIZ2+br73lGaZGT1UbqsNtj57a+
-         iarIAv4JsMXxyne5uHxWHenzlYUVUC2spJn7xmxdbMlnPN7kvASUtN1Gtbk98hBBVMa9
-         cLvYayMUGfRvBtTHkWCfuUSGvtk+Bsk25DZhgzqIP4U6y83I3jrrN3Rq4UeoHSnrnviu
-         ettfL41ARBuD/u+wnsuO9IJOgu54WPQOtbAG4YmHx0AQ0icroSz2ohNdmh2HjCRi8GBc
-         AtJE24V9gJLJSeKAH2OvR99Rm5KocD93PcBPnE6UwgtD7LR6187/4GltW3AXJgFxn1Ws
-         SwzA==
-X-Gm-Message-State: AOAM532bIsTzj7ylosb9ELsAef/gMUdJJMWNLPV/h8QtDcNDV92JxwR+
-        lMdo2aB6cqLIA1BMczdsNxWICD9WvIo=
-X-Google-Smtp-Source: ABdhPJzKEXTpmxJSSBs2+KMamNZt+HG/tCwtDbymAYHiYbx1bNO42rs11RU77/zKXDJmYEkEKGixJQ==
-X-Received: by 2002:a05:6000:118a:: with SMTP id g10mr42184820wrx.533.1641326023125;
-        Tue, 04 Jan 2022 11:53:43 -0800 (PST)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id c11sm422360wmq.48.2022.01.04.11.53.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Jan 2022 11:53:42 -0800 (PST)
-Date:   Tue, 4 Jan 2022 20:53:41 +0100
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net-next] net: gemini: allow any RGMII interface mode
-Message-ID: <YdSlxW8mi+Xa4zlr@Red>
-References: <E1n4mpT-002PLd-Ha@rmk-PC.armlinux.org.uk>
+        with ESMTP id S229962AbiADUAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 15:00:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D8A2C061761;
+        Tue,  4 Jan 2022 12:00:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 330C86159D;
+        Tue,  4 Jan 2022 20:00:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 272F8C36AEB;
+        Tue,  4 Jan 2022 20:00:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641326429;
+        bh=sQBg8Y7qecsMNIktMN2imf4TjCv8rYLDyWd3vuZtTxE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QlF7Z3pV7qgO1ENoOkiP5b1vxTg+E++D8xbTtbWdRiMEnvjv/AdPzMAmCsqfoxjw/
+         1qyBn/+vH7kMNjkn3oxskahyN8iG6X+uTqnjdvU2y2g/aYH/urAygMV58yz6WiMnwd
+         Ac+mDyW32y2hvjWhKk/AR3T/UUzn7zqXjtlO2cz1mpJbKDto595jR0nuthP1B3yahG
+         SRQwaC8moqMP47Nd5ETkctcUOjcIzleVmoHj/CsG9RwNlALoDPsWKMF5AEJ5cLTY+q
+         2TMronwNzzdPTXr7gnar8jkURFzuVlInyPxj3EsXUeaokxVZ+BKY9+c1yBAy2VGYPZ
+         A8+Wcr/1La5uA==
+Date:   Tue, 4 Jan 2022 12:00:27 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Henning Schild <henning.schild@siemens.com>
+Cc:     Aaron Ma <aaron.ma@canonical.com>, <davem@davemloft.net>,
+        <hayeswang@realtek.com>, <tiwai@suse.de>,
+        <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: usb: r8152: Add MAC passthrough support for more
+ Lenovo Docks
+Message-ID: <20220104120027.611f8830@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220104193455.6b8a21fc@md1za8fc.ad001.siemens.net>
+References: <20211116141917.31661-1-aaron.ma@canonical.com>
+        <20220104123814.32bf179e@md1za8fc.ad001.siemens.net>
+        <20220104065326.2a73f674@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <20220104180715.7ecb0980@md1za8fc.ad001.siemens.net>
+        <601815fe-a10e-fe48-254c-ed2ef1accffc@canonical.com>
+        <20220104193455.6b8a21fc@md1za8fc.ad001.siemens.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <E1n4mpT-002PLd-Ha@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Tue, Jan 04, 2022 at 04:38:31PM +0000, Russell King (Oracle) a écrit :
-> The four RGMII interface modes take care of the required RGMII delay
-> configuration at the PHY and should not be limited by the network MAC
-> driver. Sadly, gemini was only permitting RGMII mode with no delays,
-> which would require the required delay to be inserted via PCB tracking
-> or by the MAC.
+On Tue, 4 Jan 2022 19:34:55 +0100 Henning Schild wrote:
+> Am Wed, 5 Jan 2022 01:40:42 +0800
+> schrieb Aaron Ma <aaron.ma@canonical.com>:
+> > Yes, it's expected to be a mess if multiple r8152 are attached to
+> > Lenovo USB-C/TBT docks. The issue had been discussed for several
+> > times in LKML. Either lose this feature or add potential risk for
+> > multiple r8152.
+> > 
+> > The idea is to make the Dock work which only ship with one r8152.
+> > It's really hard to say r8152 is from dock or another plugin one.
+> > 
+> > If revert this patch, then most users with the original shipped dock
+> > may lose this feature. That's the problem this patch try to fix.  
 > 
-> However, there are designs that require the PHY to add the delay, which
-> is impossible without Gemini permitting the other three PHY interface
-> modes. Fix the driver to allow these.
+> I understand that. But i would say people can not expect such a crap
+> feature on Linux, or we really need very good reasoning to cause MAC
+> collisions with the real PHY and on top claim ETOOMANY of the dongles.
 > 
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
->  drivers/net/ethernet/cortina/gemini.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
+> The other vendors seem to check bits of the "golden" dongle. At least
+> that is how i understand BD/AD/BND_MASK
+> 
+> How about making it a module param and default to off, and dev_warn if
+> BIOS has it turned on. That sounds like a reasonable compromise and
+> whoever turns it on twice probably really wants it. (note that BIOS
+> defaults to on ... so that was never intended by users, and corporate
+> users might not be allowed/able to turn that off)
+> 
+> MACs change ... all the time, people should use radius x509. The
+> request is probably coming from corporate users, and they are all on a
+> zero trust journey and will eventually stop relying on MACs anyways.
+> 
+> And if ubuntu wants to cater by default, there can always be an udev
+> rule or setting that module param to "on".
 
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Let's split the problem into the clear regression caused by the patch
+and support of the feature on newer docks. I think we should fix the
+regression ASAP (the patch has also been backported to 5.15, so it's
+going to get more and more widely deployed). Then we can worry about
+the MAC addr copy on newer docks and the feature in a wider context.
+Is there really nothing in the usb info of the r8152 instance to
+indicate that it's part of the dock? Does the device have EEPROM which
+could contain useful info, maybe?
 
-Thanks!
+> > For now I suggest to disable it in BIOS if you got multiple r8152.
+> > 
+> > Let me try to make some changes to limit this feature in one r8152.  
+> 
+> Which one? ;) And how to deal with the real NIC once you picked one?
+> Looking forward, please Cc me.
+
