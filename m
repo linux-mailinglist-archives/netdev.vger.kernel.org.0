@@ -2,80 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22700484194
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 13:20:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 452BD484192
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 13:20:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229654AbiADMUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 07:20:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52346 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232527AbiADMUN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 07:20:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9054C061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 04:20:12 -0800 (PST)
+        id S231767AbiADMUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 07:20:13 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34198 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229654AbiADMUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 07:20:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 790E3B811DA
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 12:20:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3F269C36AE9;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95E3BB81167;
+        Tue,  4 Jan 2022 12:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4A387C36AF3;
         Tue,  4 Jan 2022 12:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1641298810;
-        bh=SAEk7PUuTaxxv7sTtF9s0VXGNn+9FGL6m+eKkC3122k=;
+        bh=8Xm91s3bE3nSv4cB1QLVhZb6nwlckLG5R7vuzxHXO2g=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=i8bFvlNTPu0Jzil47tQjN+lPN2UzfXzGC24wcsY6VtrXIUFHALGodyYLLWgmaOA4K
-         JubUNWtDmfiXs2NSF6nxvEMxv5KfwiNFOVlmybViECPFrl5TcGgnC6XkwS0mFFmlcS
-         86uUmz8PR3ljM/Cap6cvOW0vBVBx75WexPcRvjafoXdQ/p0MYaV/7xvCHhGFLZYmVw
-         8DJj1y9rhAB6mBvfFAPmCrw3IGIK7/D0fDZ5838vngAXzqnfaXW5C3R7UwFW2bEecX
-         5LmMkdZzE39zwY/aXSmRJqzRqM6xdygWs+1sYLl/Lh93ZQBhZKEWCUtGFtSfUcp9h+
-         TYqKUHQAetgZA==
+        b=p2tHtyxAvBs9PAOT84sPe6CttPCCEYxbGcfaqfrVsEoO9U8jpGKXFY/QF3NvTrdga
+         jEdk3HPYgQlV217Uy62Voii/0ex7+uCgXR0f4SGlDdyG7Fz8z704e4VjDsKrBNmdGe
+         oCLFPO/YzizcG9xx9h1VUeQxh0ltTsjHsPwl5fo6gg26SoUz4KswonrDTAaDpHciS3
+         P3c2ZxL+NzKFeoQk6Cj2a4/DAhggFYtQHICVNLYI/L3D0032wbPV6rWSjg3kqVFpNU
+         08uaNRFMy0isnLjXJ9BU+j0F+KEVutuW0485xjc4FxbGYTm5/hiIh39NKQ/V1X8dRz
+         fEesFpSP77d0w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2068EF79402;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2B7D5F79407;
         Tue,  4 Jan 2022 12:20:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] net/sched: Pass originating device to drivers
- offloading ct connection
+Subject: Re: [PATCH v3 0/1] TJA1103 perout and extts
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164129881012.16438.7486914070926806905.git-patchwork-notify@kernel.org>
+Message-Id: <164129881017.16438.12801597321137933657.git-patchwork-notify@kernel.org>
 Date:   Tue, 04 Jan 2022 12:20:10 +0000
-References: <20220103114452.406-1-paulb@nvidia.com>
-In-Reply-To: <20220103114452.406-1-paulb@nvidia.com>
-To:     Paul Blakey <paulb@nvidia.com>
-Cc:     dev@openvswitch.org, netdev@vger.kernel.org, saeedm@nvidia.com,
-        xiyou.wangcong@gmail.com, jhs@mojatatu.com, pshelar@ovn.org,
-        davem@davemloft.net, jiri@nvidia.com, kuba@kernel.org,
-        marcelo.leitner@gmail.com, ozsh@nvidia.com, vladbu@nvidia.com,
-        roid@nvidia.com
+References: <20220103160125.142782-1-radu-nicolae.pirea@oss.nxp.com>
+In-Reply-To: <20220103160125.142782-1-radu-nicolae.pirea@oss.nxp.com>
+To:     Radu Pirea (NXP OSS) <radu-nicolae.pirea@oss.nxp.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        christian.herber@nxp.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        richardcochran@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Mon, 3 Jan 2022 13:44:49 +0200 you wrote:
+On Mon,  3 Jan 2022 18:01:24 +0200 you wrote:
 > Hi,
 > 
-> Currently, drivers register to a ct zone that can be shared by multiple
-> devices. This can be inefficient for the driver to offload, as it
-> needs to handle all the cases where the tuple can come from,
-> instead of where it's most likely will arive from.
+> This is the PEROUT and EXTTS implementation for TJA1103.
+> 
+> Changes in v3:
+> - removed "phy: nxp-c45-tja11xx: read the tx timestamp without
+>  lock" patch
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/3] net/sched: act_ct: Fill offloading tuple iifidx
-    https://git.kernel.org/netdev/net-next/c/9795ded7f924
-  - [net-next,2/3] net: openvswitch: Fill act ct extension
-    https://git.kernel.org/netdev/net-next/c/b702436a51df
-  - [net-next,3/3] net/mlx5: CT: Set flow source hint from provided tuple device
-    https://git.kernel.org/netdev/net-next/c/c9c079b4deaa
+  - [v3,1/1] phy: nxp-c45-tja11xx: add extts and perout support
+    https://git.kernel.org/netdev/net-next/c/7a71c8aa0a75
 
 You are awesome, thank you!
 -- 
