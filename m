@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1CE3483FB0
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 11:17:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D915C483FB2
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 11:17:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231151AbiADKQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 05:16:48 -0500
+        id S231183AbiADKQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 05:16:52 -0500
 Received: from esa.microchip.iphmx.com ([68.232.154.123]:21184 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231147AbiADKQr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 05:16:47 -0500
+        with ESMTP id S231162AbiADKQt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 05:16:49 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1641291406; x=1672827406;
+  t=1641291409; x=1672827409;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=dRYARUHei31enuqRahGGzA296fgpHte2654n07syC9c=;
-  b=TfJwUmvOlXaoUoZsOXSZ2LRUP7DtXVFgY68nbO3irlTdQxyUIb1a3l3B
-   mUQ1uHz9kuSgfpQ79Oab6wyiWrJ4JfYzRJtv4St8T4sSboM2/4ooL8DJY
-   aTMEMrKQ0JpHSK7NJR3ufWboRkYu914mwvXwOO1f//W252hgGeSXAorEX
-   tPPU8pP/wTC8CufGvm7tcNwRpQRwdLcHI1pBY+QyffZi0/R1n4Wn/PvF3
-   hc5y6vxMZPKn+qRv1wTcRIO/KHZFeSrCvUIyEYg/h1ad/dMGB51s7baaF
-   7iNsUn4xMqTyzMXx2Kn9YKNeO8X268wmiW/gjGUT1b9m0aIAuKFfSV2YD
-   g==;
-IronPort-SDR: WV7FbLTctoC4rsP0sV5iDoVPeTv2QMQ2g+Kw4dh7RexAQ/eHE1zWk9w2FtceYxVpwxuxRvtQUP
- EJtrP+vucaJPTVknF/FVUJiC+E3XYmLWdOFTLzT4RcpaDu+1NhoUNihRdrUlFGXKRLfg9ls1+s
- fs/ogaA50An6cq7T/6QJqn/Axydp0tGXTKeWJihyCNO64pAS3ytkzjpjTzq3L+v1t+yMtNYvlD
- QEz/CtqwKZRi/t+D/2GhON+pM4Pty7A2nP48e0NzAxQVARpZEMnBM3pJCB0BfcgPAOuY0bRrvz
- hwYmQKzyFF7B4fSAaS3qAGEB
+  bh=c1L4UTWjcmNA1opPDwPMCnanHkAdqC2D6FZ4IxOyuBc=;
+  b=SvB9bsf6ZC8YQbu0C+2eD0WQyaMlyi/lfV4uFpJ8885QIswX1jprW+8t
+   rzySvYEFAZqoGP3KOh+kahky6G3WrhFtY6ibzkn4U5oHTwg7R4MxB+AhR
+   Qt71Z0TUri3BGNf/oFhY5ZbchChNTW2vSNaN5LplaBzsFy3Zv2LN0T7MT
+   82VU3fvQVnGVRFFDql2tcWWY9J5gOX1tmorvSYsfcRP8I11FMx48qULfd
+   Z1ownJwsm9dsmX6hXnwQlrvZOlWDpZ0ulD+qe5DGWQ6hNSaRErwmwwtot
+   FzqudSxOa4lWfegYbgbOZ5Wp9HfUXDU7uu+rMMGbYw8k4appaDf9Hm7/V
+   A==;
+IronPort-SDR: TT01TkbcQJFk3ObIXOvTvHWrZJTLeuPr+u9N5uRVMYfycjfItxQ2Ea3RGXKuhn4+Wgsg0wtbiO
+ ouXPIGrABbI++ptkmtjxBaTt0EU4h+nBzuzEVe15TWdwENbPWkVxgD6WqxQ2J3LMcsLN65G90H
+ 8UX3aF6aLsyY+8JtRbPEc6Y1hclcRNcf9b/sgdJUekklgxRctkPLvmxtSCkKyAq8O7hZuLh5bX
+ smZ5HbS6EPOCs+oieMLEAn5tXwEsPweORhEg8Jk2KqlyljwMtNaCjxUzkcbxS7NTeyGaPNdPa8
+ eyKUT9RcHb7DopBTLypKpuV4
 X-IronPort-AV: E=Sophos;i="5.88,260,1635231600"; 
-   d="scan'208";a="141568088"
+   d="scan'208";a="141568095"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jan 2022 03:16:46 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Jan 2022 03:16:48 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 4 Jan 2022 03:16:46 -0700
+ 15.1.2375.17; Tue, 4 Jan 2022 03:16:48 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 4 Jan 2022 03:16:44 -0700
+ 15.1.2375.17 via Frontend Transport; Tue, 4 Jan 2022 03:16:46 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
         <kuba@kernel.org>, <f.fainelli@gmail.com>,
         <vivien.didelot@gmail.com>, <vladimir.oltean@nxp.com>,
         <andrew@lunn.ch>, Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2 2/3] net: lan966x: Add PGID_FIRST and PGID_LAST
-Date:   Tue, 4 Jan 2022 11:18:48 +0100
-Message-ID: <20220104101849.229195-3-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2 3/3] net: lan966x: Extend switchdev with mdb support
+Date:   Tue, 4 Jan 2022 11:18:49 +0100
+Message-ID: <20220104101849.229195-4-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220104101849.229195-1-horatiu.vultur@microchip.com>
 References: <20220104101849.229195-1-horatiu.vultur@microchip.com>
@@ -59,41 +59,644 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The first entries in the PGID table are used by the front ports while
-the last entries are used for different purposes like flooding mask,
-copy to CPU, etc. So add these macros to define which entries can be
-used for general purpose.
+Extend lan966x driver with mdb support by implementing the switchdev
+calls: SWITCHDEV_OBJ_ID_PORT_MDB and SWITCHDEV_OBJ_ID_HOST_MDB.
+It is allowed to add both ipv4/ipv6 entries and l2 entries. To add
+ipv4/ipv6 entries is not required to use the PGID table while for l2
+entries it is required. The PGID table is much smaller than MAC table
+so only fewer l2 entries can be added.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_main.h | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
+ .../ethernet/microchip/lan966x/lan966x_main.c |   2 +
+ .../ethernet/microchip/lan966x/lan966x_main.h |  13 +
+ .../ethernet/microchip/lan966x/lan966x_mdb.c  | 487 ++++++++++++++++++
+ .../microchip/lan966x/lan966x_switchdev.c     |   8 +
+ .../ethernet/microchip/lan966x/lan966x_vlan.c |   7 +-
+ 6 files changed, 517 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_mdb.c
 
+diff --git a/drivers/net/ethernet/microchip/lan966x/Makefile b/drivers/net/ethernet/microchip/lan966x/Makefile
+index ec1a1fa8b0d5..040cfff9f577 100644
+--- a/drivers/net/ethernet/microchip/lan966x/Makefile
++++ b/drivers/net/ethernet/microchip/lan966x/Makefile
+@@ -7,4 +7,4 @@ obj-$(CONFIG_LAN966X_SWITCH) += lan966x-switch.o
+ 
+ lan966x-switch-objs  := lan966x_main.o lan966x_phylink.o lan966x_port.o \
+ 			lan966x_mac.o lan966x_ethtool.o lan966x_switchdev.o \
+-			lan966x_vlan.o lan966x_fdb.o
++			lan966x_vlan.o lan966x_fdb.o lan966x_mdb.o
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 2c6bf7b0afdf..2cb70da63db3 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -926,6 +926,7 @@ static int lan966x_probe(struct platform_device *pdev)
+ 		lan966x_port_init(lan966x->ports[p]);
+ 	}
+ 
++	lan966x_mdb_init(lan966x);
+ 	err = lan966x_fdb_init(lan966x);
+ 	if (err)
+ 		goto cleanup_ports;
+@@ -955,6 +956,7 @@ static int lan966x_remove(struct platform_device *pdev)
+ 	mutex_destroy(&lan966x->stats_lock);
+ 
+ 	lan966x_mac_purge_entries(lan966x);
++	lan966x_mdb_deinit(lan966x);
+ 	lan966x_fdb_deinit(lan966x);
+ 
+ 	return 0;
 diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index f70e54526f53..190d62ced3fd 100644
+index 190d62ced3fd..b6c9ec7b5253 100644
 --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
 +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -30,7 +30,11 @@
- /* Reserved amount for (SRC, PRIO) at index 8*SRC + PRIO */
- #define QSYS_Q_RSRV			95
- 
-+#define CPU_PORT			8
+@@ -107,6 +107,10 @@ struct lan966x {
+ 	/* worqueue for fdb */
+ 	struct workqueue_struct *fdb_work;
+ 	struct list_head fdb_entries;
 +
- /* Reserved PGIDs */
-+#define PGID_FIRST			(CPU_PORT + 1)
-+#define PGID_LAST			PGID_CPU
- #define PGID_CPU			(PGID_AGGR - 6)
- #define PGID_UC				(PGID_AGGR - 5)
- #define PGID_BC				(PGID_AGGR - 4)
-@@ -44,8 +48,6 @@
- #define LAN966X_SPEED_100		2
- #define LAN966X_SPEED_10		3
++	/* mdb */
++	struct list_head mdb_entries;
++	struct list_head pgid_entries;
+ };
  
--#define CPU_PORT			8
--
- /* MAC table entry types.
-  * ENTRYTYPE_NORMAL is subject to aging.
-  * ENTRYTYPE_LOCKED is not subject to aging.
+ struct lan966x_port_config {
+@@ -213,6 +217,15 @@ int lan966x_handle_fdb(struct net_device *dev,
+ 		       unsigned long event, const void *ctx,
+ 		       const struct switchdev_notifier_fdb_info *fdb_info);
+ 
++void lan966x_mdb_init(struct lan966x *lan966x);
++void lan966x_mdb_deinit(struct lan966x *lan966x);
++int lan966x_handle_port_mdb_add(struct lan966x_port *port,
++				const struct switchdev_obj *obj);
++int lan966x_handle_port_mdb_del(struct lan966x_port *port,
++				const struct switchdev_obj *obj);
++void lan966x_mdb_erase_entries(struct lan966x *lan966x, u16 vid);
++void lan966x_mdb_write_entries(struct lan966x *lan966x, u16 vid);
++
+ static inline void __iomem *lan_addr(void __iomem *base[],
+ 				     int id, int tinst, int tcnt,
+ 				     int gbase, int ginst,
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mdb.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mdb.c
+new file mode 100644
+index 000000000000..0caee4103406
+--- /dev/null
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mdb.c
+@@ -0,0 +1,487 @@
++// SPDX-License-Identifier: GPL-2.0+
++
++#include <net/switchdev.h>
++
++#include "lan966x_main.h"
++
++struct lan966x_pgid_entry {
++	struct list_head list;
++	int index;
++	refcount_t refcount;
++	u16 ports;
++};
++
++struct lan966x_mdb_entry {
++	struct list_head list;
++	unsigned char mac[ETH_ALEN];
++	u16 vid;
++	u16 ports;
++	struct lan966x_pgid_entry *pgid;
++	u8 cpu_copy;
++};
++
++void lan966x_mdb_init(struct lan966x *lan966x)
++{
++	INIT_LIST_HEAD(&lan966x->mdb_entries);
++	INIT_LIST_HEAD(&lan966x->pgid_entries);
++}
++
++static void lan966x_mdb_purge_mdb_entries(struct lan966x *lan966x)
++{
++	struct lan966x_mdb_entry *mdb_entry, *tmp;
++
++	list_for_each_entry_safe(mdb_entry, tmp, &lan966x->mdb_entries, list) {
++		list_del(&mdb_entry->list);
++		kfree(mdb_entry);
++	}
++}
++
++static void lan966x_mdb_purge_pgid_entries(struct lan966x *lan966x)
++{
++	struct lan966x_pgid_entry *pgid_entry, *tmp;
++
++	list_for_each_entry_safe(pgid_entry, tmp, &lan966x->pgid_entries, list) {
++		list_del(&pgid_entry->list);
++		kfree(pgid_entry);
++	}
++}
++
++void lan966x_mdb_deinit(struct lan966x *lan966x)
++{
++	lan966x_mdb_purge_mdb_entries(lan966x);
++	lan966x_mdb_purge_pgid_entries(lan966x);
++}
++
++static struct lan966x_mdb_entry *
++lan966x_mdb_entry_get(struct lan966x *lan966x,
++		      const unsigned char *mac,
++		      u16 vid)
++{
++	struct lan966x_mdb_entry *mdb_entry;
++
++	list_for_each_entry(mdb_entry, &lan966x->mdb_entries, list) {
++		if (ether_addr_equal(mdb_entry->mac, mac) &&
++		    mdb_entry->vid == vid)
++			return mdb_entry;
++	}
++
++	return NULL;
++}
++
++static struct lan966x_mdb_entry *
++lan966x_mdb_entry_add(struct lan966x *lan966x,
++		      const struct switchdev_obj_port_mdb *mdb)
++{
++	struct lan966x_mdb_entry *mdb_entry;
++
++	mdb_entry = kzalloc(sizeof(*mdb_entry), GFP_KERNEL);
++	if (!mdb_entry)
++		return ERR_PTR(-ENOMEM);
++
++	ether_addr_copy(mdb_entry->mac, mdb->addr);
++	mdb_entry->vid = mdb->vid;
++
++	list_add_tail(&mdb_entry->list, &lan966x->mdb_entries);
++
++	return mdb_entry;
++}
++
++static void lan966x_mdb_encode_mac(unsigned char *mac,
++				   struct lan966x_mdb_entry *mdb_entry,
++				   enum macaccess_entry_type type)
++{
++	ether_addr_copy(mac, mdb_entry->mac);
++
++	if (type == ENTRYTYPE_MACV4) {
++		mac[0] = 0;
++		mac[1] = mdb_entry->ports >> 8;
++		mac[2] = mdb_entry->ports & 0xff;
++	} else if (type == ENTRYTYPE_MACV6) {
++		mac[0] = mdb_entry->ports >> 8;
++		mac[1] = mdb_entry->ports & 0xff;
++	}
++}
++
++static int lan966x_mdb_ip_add(struct lan966x_port *port,
++			      const struct switchdev_obj_port_mdb *mdb,
++			      enum macaccess_entry_type type)
++{
++	bool cpu_port = netif_is_bridge_master(mdb->obj.orig_dev);
++	struct lan966x *lan966x = port->lan966x;
++	struct lan966x_mdb_entry *mdb_entry;
++	unsigned char mac[ETH_ALEN];
++	bool cpu_copy = false;
++
++	mdb_entry = lan966x_mdb_entry_get(lan966x, mdb->addr, mdb->vid);
++	if (!mdb_entry) {
++		mdb_entry = lan966x_mdb_entry_add(lan966x, mdb);
++		if (IS_ERR(mdb_entry))
++			return PTR_ERR(mdb_entry);
++	} else {
++		lan966x_mdb_encode_mac(mac, mdb_entry, type);
++		lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
++	}
++
++	if (cpu_port)
++		mdb_entry->cpu_copy++;
++	else
++		mdb_entry->ports |= BIT(port->chip_port);
++
++	/* Copy the frame to CPU only if the CPU is in the VLAN */
++	if (lan966x_vlan_cpu_member_cpu_vlan_mask(lan966x, mdb_entry->vid) &&
++	    mdb_entry->cpu_copy)
++		cpu_copy = true;
++
++	lan966x_mdb_encode_mac(mac, mdb_entry, type);
++	return lan966x_mac_ip_learn(lan966x, cpu_copy,
++				    mac, mdb_entry->vid, type);
++}
++
++static int lan966x_mdb_ip_del(struct lan966x_port *port,
++			      const struct switchdev_obj_port_mdb *mdb,
++			      enum macaccess_entry_type type)
++{
++	bool cpu_port = netif_is_bridge_master(mdb->obj.orig_dev);
++	struct lan966x *lan966x = port->lan966x;
++	struct lan966x_mdb_entry *mdb_entry;
++	unsigned char mac[ETH_ALEN];
++
++	mdb_entry = lan966x_mdb_entry_get(lan966x, mdb->addr, mdb->vid);
++	if (!mdb_entry)
++		return -ENOENT;
++
++	lan966x_mdb_encode_mac(mac, mdb_entry, type);
++	lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
++
++	if (cpu_port)
++		mdb_entry->cpu_copy--;
++	else
++		mdb_entry->ports &= ~BIT(port->chip_port);
++
++	if (!mdb_entry->ports && !mdb_entry->cpu_copy) {
++		list_del(&mdb_entry->list);
++		kfree(mdb_entry);
++		return 0;
++	}
++
++	lan966x_mdb_encode_mac(mac, mdb_entry, type);
++	return lan966x_mac_ip_learn(lan966x, mdb_entry->cpu_copy,
++				    mac, mdb_entry->vid, type);
++}
++
++static struct lan966x_pgid_entry *
++lan966x_pgid_entry_add(struct lan966x *lan966x, int index, u16 ports)
++{
++	struct lan966x_pgid_entry *pgid_entry;
++
++	pgid_entry = kzalloc(sizeof(*pgid_entry), GFP_KERNEL);
++	if (!pgid_entry)
++		return ERR_PTR(-ENOMEM);
++
++	pgid_entry->ports = ports;
++	pgid_entry->index = index;
++	refcount_set(&pgid_entry->refcount, 1);
++
++	list_add_tail(&pgid_entry->list, &lan966x->pgid_entries);
++
++	return pgid_entry;
++}
++
++static struct lan966x_pgid_entry *
++lan966x_pgid_entry_get(struct lan966x *lan966x,
++		       struct lan966x_mdb_entry *mdb_entry)
++{
++	struct lan966x_pgid_entry *pgid_entry;
++	int index;
++
++	/* Try to find an existing pgid that uses the same ports as the
++	 * mdb_entry
++	 */
++	list_for_each_entry(pgid_entry, &lan966x->pgid_entries, list) {
++		if (pgid_entry->ports == mdb_entry->ports) {
++			refcount_inc(&pgid_entry->refcount);
++			return pgid_entry;
++		}
++	}
++
++	/* Try to find an empty pgid entry and allocate one in case it finds it,
++	 * otherwise it means that there are no more resources
++	 */
++	for (index = PGID_FIRST; index < PGID_LAST; index++) {
++		bool used = false;
++
++		list_for_each_entry(pgid_entry, &lan966x->pgid_entries, list) {
++			if (pgid_entry->index == index) {
++				used = true;
++				break;
++			}
++		}
++
++		if (!used)
++			return lan966x_pgid_entry_add(lan966x, index,
++						      mdb_entry->ports);
++	}
++
++	return ERR_PTR(-ENOSPC);
++}
++
++static void lan966x_pgid_entry_del(struct lan966x *lan966x,
++				   struct lan966x_pgid_entry *pgid_entry)
++{
++	if (!refcount_dec_and_test(&pgid_entry->refcount))
++		return;
++
++	list_del(&pgid_entry->list);
++	kfree(pgid_entry);
++}
++
++static int lan966x_mdb_l2_add(struct lan966x_port *port,
++			      const struct switchdev_obj_port_mdb *mdb,
++			      enum macaccess_entry_type type)
++{
++	bool cpu_port = netif_is_bridge_master(mdb->obj.orig_dev);
++	struct lan966x *lan966x = port->lan966x;
++	struct lan966x_pgid_entry *pgid_entry;
++	struct lan966x_mdb_entry *mdb_entry;
++	unsigned char mac[ETH_ALEN];
++
++	mdb_entry = lan966x_mdb_entry_get(lan966x, mdb->addr, mdb->vid);
++	if (!mdb_entry) {
++		mdb_entry = lan966x_mdb_entry_add(lan966x, mdb);
++		if (IS_ERR(mdb_entry))
++			return PTR_ERR(mdb_entry);
++	} else {
++		lan966x_pgid_entry_del(lan966x, mdb_entry->pgid);
++		lan966x_mdb_encode_mac(mac, mdb_entry, type);
++		lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
++	}
++
++	if (cpu_port) {
++		mdb_entry->ports |= BIT(CPU_PORT);
++		mdb_entry->cpu_copy++;
++	} else {
++		mdb_entry->ports |= BIT(port->chip_port);
++	}
++
++	pgid_entry = lan966x_pgid_entry_get(lan966x, mdb_entry);
++	if (IS_ERR(pgid_entry)) {
++		list_del(&mdb_entry->list);
++		kfree(mdb_entry);
++		return PTR_ERR(pgid_entry);
++	}
++	mdb_entry->pgid = pgid_entry;
++
++	/* Copy the frame to CPU only if the CPU is in the VLAN */
++	if (!lan966x_vlan_cpu_member_cpu_vlan_mask(lan966x, mdb_entry->vid) &&
++	    mdb_entry->cpu_copy)
++		mdb_entry->ports &= BIT(CPU_PORT);
++
++	lan_rmw(ANA_PGID_PGID_SET(mdb_entry->ports),
++		ANA_PGID_PGID,
++		lan966x, ANA_PGID(pgid_entry->index));
++
++	return lan966x_mac_learn(lan966x, pgid_entry->index, mdb_entry->mac,
++				 mdb_entry->vid, type);
++}
++
++static int lan966x_mdb_l2_del(struct lan966x_port *port,
++			      const struct switchdev_obj_port_mdb *mdb,
++			      enum macaccess_entry_type type)
++{
++	bool cpu_port = netif_is_bridge_master(mdb->obj.orig_dev);
++	struct lan966x *lan966x = port->lan966x;
++	struct lan966x_pgid_entry *pgid_entry;
++	struct lan966x_mdb_entry *mdb_entry;
++	unsigned char mac[ETH_ALEN];
++
++	mdb_entry = lan966x_mdb_entry_get(lan966x, mdb->addr, mdb->vid);
++	if (!mdb_entry)
++		return -ENOENT;
++
++	lan966x_mdb_encode_mac(mac, mdb_entry, type);
++	lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
++	lan966x_pgid_entry_del(lan966x, mdb_entry->pgid);
++
++	if (cpu_port) {
++		mdb_entry->cpu_copy--;
++		if (!mdb_entry->cpu_copy)
++			mdb_entry->ports &= ~BIT(CPU_PORT);
++	} else {
++		mdb_entry->ports &= ~BIT(port->chip_port);
++	}
++
++	if (!mdb_entry->ports) {
++		list_del(&mdb_entry->list);
++		kfree(mdb_entry);
++		return 0;
++	}
++
++	pgid_entry = lan966x_pgid_entry_get(lan966x, mdb_entry);
++	if (IS_ERR(pgid_entry)) {
++		list_del(&mdb_entry->list);
++		kfree(mdb_entry);
++		return PTR_ERR(pgid_entry);
++	}
++	mdb_entry->pgid = pgid_entry;
++
++	lan_rmw(ANA_PGID_PGID_SET(mdb_entry->ports),
++		ANA_PGID_PGID,
++		lan966x, ANA_PGID(pgid_entry->index));
++
++	return lan966x_mac_learn(lan966x, pgid_entry->index, mdb_entry->mac,
++				 mdb_entry->vid, type);
++}
++
++static enum macaccess_entry_type
++lan966x_mdb_classify(const unsigned char *mac)
++{
++	if (mac[0] == 0x01 && mac[1] == 0x00 && mac[2] == 0x5e)
++		return ENTRYTYPE_MACV4;
++	if (mac[0] == 0x33 && mac[1] == 0x33)
++		return ENTRYTYPE_MACV6;
++	return ENTRYTYPE_LOCKED;
++}
++
++int lan966x_handle_port_mdb_add(struct lan966x_port *port,
++				const struct switchdev_obj *obj)
++{
++	const struct switchdev_obj_port_mdb *mdb = SWITCHDEV_OBJ_PORT_MDB(obj);
++	enum macaccess_entry_type type;
++
++	/* Split the way the entries are added for ipv4/ipv6 and for l2. The
++	 * reason is that for ipv4/ipv6 it doesn't require to use any pgid
++	 * entry, while for l2 is required to use pgid entries
++	 */
++	type = lan966x_mdb_classify(mdb->addr);
++	if (type == ENTRYTYPE_MACV4 || type == ENTRYTYPE_MACV6)
++		return lan966x_mdb_ip_add(port, mdb, type);
++
++	return lan966x_mdb_l2_add(port, mdb, type);
++}
++
++int lan966x_handle_port_mdb_del(struct lan966x_port *port,
++				const struct switchdev_obj *obj)
++{
++	const struct switchdev_obj_port_mdb *mdb = SWITCHDEV_OBJ_PORT_MDB(obj);
++	enum macaccess_entry_type type;
++
++	/* Split the way the entries are removed for ipv4/ipv6 and for l2. The
++	 * reason is that for ipv4/ipv6 it doesn't require to use any pgid
++	 * entry, while for l2 is required to use pgid entries
++	 */
++	type = lan966x_mdb_classify(mdb->addr);
++	if (type == ENTRYTYPE_MACV4 || type == ENTRYTYPE_MACV6)
++		return lan966x_mdb_ip_del(port, mdb, type);
++
++	return lan966x_mdb_l2_del(port, mdb, type);
++}
++
++static void lan966x_mdb_ip_cpu_copy(struct lan966x *lan966x,
++				    struct lan966x_mdb_entry *mdb_entry,
++				    enum macaccess_entry_type type)
++{
++	unsigned char mac[ETH_ALEN];
++
++	lan966x_mdb_encode_mac(mac, mdb_entry, type);
++	lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
++	lan966x_mac_ip_learn(lan966x, true, mac, mdb_entry->vid, type);
++}
++
++static void lan966x_mdb_l2_cpu_copy(struct lan966x *lan966x,
++				    struct lan966x_mdb_entry *mdb_entry,
++				    enum macaccess_entry_type type)
++{
++	struct lan966x_pgid_entry *pgid_entry;
++	unsigned char mac[ETH_ALEN];
++
++	lan966x_pgid_entry_del(lan966x, mdb_entry->pgid);
++	lan966x_mdb_encode_mac(mac, mdb_entry, type);
++	lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
++
++	mdb_entry->ports |= BIT(CPU_PORT);
++
++	pgid_entry = lan966x_pgid_entry_get(lan966x, mdb_entry);
++	if (IS_ERR(pgid_entry))
++		return;
++
++	mdb_entry->pgid = pgid_entry;
++
++	lan_rmw(ANA_PGID_PGID_SET(mdb_entry->ports),
++		ANA_PGID_PGID,
++		lan966x, ANA_PGID(pgid_entry->index));
++
++	lan966x_mac_learn(lan966x, pgid_entry->index, mdb_entry->mac,
++			  mdb_entry->vid, type);
++}
++
++void lan966x_mdb_write_entries(struct lan966x *lan966x, u16 vid)
++{
++	struct lan966x_mdb_entry *mdb_entry;
++	enum macaccess_entry_type type;
++
++	list_for_each_entry(mdb_entry, &lan966x->mdb_entries, list) {
++		if (mdb_entry->vid != vid || !mdb_entry->cpu_copy)
++			continue;
++
++		type = lan966x_mdb_classify(mdb_entry->mac);
++		if (type == ENTRYTYPE_MACV4 || type == ENTRYTYPE_MACV6)
++			lan966x_mdb_ip_cpu_copy(lan966x, mdb_entry, type);
++		else
++			lan966x_mdb_l2_cpu_copy(lan966x, mdb_entry, type);
++	}
++}
++
++static void lan966x_mdb_ip_cpu_remove(struct lan966x *lan966x,
++				      struct lan966x_mdb_entry *mdb_entry,
++				      enum macaccess_entry_type type)
++{
++	unsigned char mac[ETH_ALEN];
++
++	lan966x_mdb_encode_mac(mac, mdb_entry, type);
++	lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
++	lan966x_mac_ip_learn(lan966x, false, mac, mdb_entry->vid, type);
++}
++
++static void lan966x_mdb_l2_cpu_remove(struct lan966x *lan966x,
++				      struct lan966x_mdb_entry *mdb_entry,
++				      enum macaccess_entry_type type)
++{
++	struct lan966x_pgid_entry *pgid_entry;
++	unsigned char mac[ETH_ALEN];
++
++	lan966x_pgid_entry_del(lan966x, mdb_entry->pgid);
++	lan966x_mdb_encode_mac(mac, mdb_entry, type);
++	lan966x_mac_forget(lan966x, mac, mdb_entry->vid, type);
++
++	mdb_entry->ports &= ~BIT(CPU_PORT);
++
++	pgid_entry = lan966x_pgid_entry_get(lan966x, mdb_entry);
++	if (IS_ERR(pgid_entry))
++		return;
++
++	mdb_entry->pgid = pgid_entry;
++
++	lan_rmw(ANA_PGID_PGID_SET(mdb_entry->ports),
++		ANA_PGID_PGID,
++		lan966x, ANA_PGID(pgid_entry->index));
++
++	lan966x_mac_learn(lan966x, pgid_entry->index, mdb_entry->mac,
++			  mdb_entry->vid, type);
++}
++
++void lan966x_mdb_erase_entries(struct lan966x *lan966x, u16 vid)
++{
++	struct lan966x_mdb_entry *mdb_entry;
++	enum macaccess_entry_type type;
++
++	list_for_each_entry(mdb_entry, &lan966x->mdb_entries, list) {
++		if (mdb_entry->vid != vid || !mdb_entry->cpu_copy)
++			continue;
++
++		type = lan966x_mdb_classify(mdb_entry->mac);
++		if (type == ENTRYTYPE_MACV4 || type == ENTRYTYPE_MACV6)
++			lan966x_mdb_ip_cpu_remove(lan966x, mdb_entry, type);
++		else
++			lan966x_mdb_l2_cpu_remove(lan966x, mdb_entry, type);
++	}
++}
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+index deb3dd5be67a..7de55f6a4da8 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_switchdev.c
+@@ -438,6 +438,10 @@ static int lan966x_handle_port_obj_add(struct net_device *dev, const void *ctx,
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+ 		err = lan966x_handle_port_vlan_add(port, obj);
+ 		break;
++	case SWITCHDEV_OBJ_ID_PORT_MDB:
++	case SWITCHDEV_OBJ_ID_HOST_MDB:
++		err = lan966x_handle_port_mdb_add(port, obj);
++		break;
+ 	default:
+ 		err = -EOPNOTSUPP;
+ 		break;
+@@ -473,6 +477,10 @@ static int lan966x_handle_port_obj_del(struct net_device *dev, const void *ctx,
+ 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
+ 		err = lan966x_handle_port_vlan_del(port, obj);
+ 		break;
++	case SWITCHDEV_OBJ_ID_PORT_MDB:
++	case SWITCHDEV_OBJ_ID_HOST_MDB:
++		err = lan966x_handle_port_mdb_del(port, obj);
++		break;
+ 	default:
+ 		err = -EOPNOTSUPP;
+ 		break;
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_vlan.c b/drivers/net/ethernet/microchip/lan966x/lan966x_vlan.c
+index 057f48ddf22c..8d7260cd7da9 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_vlan.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_vlan.c
+@@ -219,6 +219,7 @@ void lan966x_vlan_port_add_vlan(struct lan966x_port *port,
+ 	if (lan966x_vlan_cpu_member_cpu_vlan_mask(lan966x, vid)) {
+ 		lan966x_vlan_cpu_add_vlan_mask(lan966x, vid);
+ 		lan966x_fdb_write_entries(lan966x, vid);
++		lan966x_mdb_write_entries(lan966x, vid);
+ 	}
+ 
+ 	lan966x_vlan_port_set_vid(port, vid, pvid, untagged);
+@@ -241,6 +242,7 @@ void lan966x_vlan_port_del_vlan(struct lan966x_port *port, u16 vid)
+ 	if (!lan966x_vlan_port_any_vlan_mask(lan966x, vid)) {
+ 		lan966x_vlan_cpu_del_vlan_mask(lan966x, vid);
+ 		lan966x_fdb_erase_entries(lan966x, vid);
++		lan966x_mdb_erase_entries(lan966x, vid);
+ 	}
+ }
+ 
+@@ -254,8 +256,10 @@ void lan966x_vlan_cpu_add_vlan(struct lan966x *lan966x, u16 vid)
+ 	 * information so when a front port is added then it would add also the
+ 	 * CPU port.
+ 	 */
+-	if (lan966x_vlan_port_any_vlan_mask(lan966x, vid))
++	if (lan966x_vlan_port_any_vlan_mask(lan966x, vid)) {
+ 		lan966x_vlan_cpu_add_vlan_mask(lan966x, vid);
++		lan966x_mdb_write_entries(lan966x, vid);
++	}
+ 
+ 	lan966x_vlan_cpu_add_cpu_vlan_mask(lan966x, vid);
+ 	lan966x_fdb_write_entries(lan966x, vid);
+@@ -267,6 +271,7 @@ void lan966x_vlan_cpu_del_vlan(struct lan966x *lan966x, u16 vid)
+ 	lan966x_vlan_cpu_del_cpu_vlan_mask(lan966x, vid);
+ 	lan966x_vlan_cpu_del_vlan_mask(lan966x, vid);
+ 	lan966x_fdb_erase_entries(lan966x, vid);
++	lan966x_mdb_erase_entries(lan966x, vid);
+ }
+ 
+ void lan966x_vlan_init(struct lan966x *lan966x)
 -- 
 2.33.0
 
