@@ -2,93 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3CF74843DE
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 15:54:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC16C484416
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 16:02:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233375AbiADOyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 09:54:36 -0500
-Received: from mga09.intel.com ([134.134.136.24]:32944 "EHLO mga09.intel.com"
+        id S234581AbiADPCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 10:02:54 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:50966 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229504AbiADOyf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 09:54:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641308075; x=1672844075;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=3luvkNGyvd1+OW48scUQT4CKeF1YmcTsyDfG5YS/Ek0=;
-  b=h0n4y8Bg51X3YYb0LYP13s1pNDnCJ5X1qj7qY/OgOpImuMH6QlSgLgrc
-   KkVm6+GRtTxj1VZw84OJNWUvwcrnUlQJ+S3tbvnlxZwTLZ0Azf/vM/otm
-   cqrRT+1lEkU561dk8ZM3H1yNxSPhxz/slZiG7BcfwmBhJp3KfPe4hQ8Vt
-   3qFfYQyjgl2vcX8W7yUliuNq9CHr9ZKpO3XlhKXc/4Kzt5cNGaFPLx6EV
-   zO8F7smISPCNYFAIV8WGHV6oUcya/fZ+Jp2REWtr2A7vbtXgavzJyRClH
-   gt9KzSCGBVH4Ommp7IFyXZODexHzRkCr2TfMv4PbBOShvwchbsjH92P93
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10216"; a="242031312"
-X-IronPort-AV: E=Sophos;i="5.88,261,1635231600"; 
-   d="scan'208";a="242031312"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2022 06:54:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,261,1635231600"; 
-   d="scan'208";a="667761163"
-Received: from ccgwwan-desktop15.iind.intel.com ([10.224.174.19])
-  by fmsmga001.fm.intel.com with ESMTP; 04 Jan 2022 06:54:32 -0800
-From:   M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        krishna.c.sudi@intel.com, m.chetan.kumar@intel.com,
-        m.chetan.kumar@linux.intel.com, linuxwwan@intel.com,
-        kai.heng.feng@canonical.com
-Subject: [PATCH net-next] Revert "net: wwan: iosm: Keep device at D0 for s2idle case"
-Date:   Tue,  4 Jan 2022 20:32:13 +0530
-Message-Id: <20220104150213.1894-1-m.chetan.kumar@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        id S234570AbiADPCw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jan 2022 10:02:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=09yxHMawDZ1z7mKKYD6EvM/m9RBDRbBGLNGga/wkLxY=; b=Aq8VGdFksWWCYmQGjMkY3Yuauv
+        48uEw3tJbJzwy+EIZA1QBynJF3WoUdUz/czXggGL0owr6v2Vxgc3+fEyWfducR71K7DIimCJ/k3hy
+        77wlD4rNhTXO65wv3cxpmw2OCbCHIMFOL3aucbH553pMpe6jysyoKcO0T1C/JBcU7tgg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n4lKo-000TVw-0W; Tue, 04 Jan 2022 16:02:46 +0100
+Date:   Tue, 4 Jan 2022 16:02:45 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Corentin Labbe <clabbe.montjoie@gmail.com>,
+        linus.walleij@linaro.org, ulli.kroll@googlemail.com,
+        kuba@kernel.org, davem@davemloft.net, hkallweit1@gmail.com,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: net: phy: marvell: network working with generic PHY and not with
+ marvell PHY
+Message-ID: <YdRhlUR4ukwS5WMH@lunn.ch>
+References: <YdQoOSXS98+Af1wO@Red>
+ <YdQsJnfqjaFrtC0m@shell.armlinux.org.uk>
+ <YdQwexJVfrdzEfZK@Red>
+ <YdQydK4GhI0P5RYL@shell.armlinux.org.uk>
+ <YdQ5i+//UITSbxS/@shell.armlinux.org.uk>
+ <YdRVovG9mgEWffkn@Red>
+ <YdRZQl6U0y19P/0+@shell.armlinux.org.uk>
+ <YdRdu3jFPnGd1DsH@lunn.ch>
+ <YdRgXbpK6CFB/eCU@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdRgXbpK6CFB/eCU@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Depending on BIOS configuration IOSM driver exchanges
-protocol required for putting device into D3L2 or D3L1.2.
+> > #define MII_88E1121_PHY_MSCR_RX_DELAY	BIT(5)
+> > #define MII_88E1121_PHY_MSCR_TX_DELAY	BIT(4)
+> > #define MII_88E1121_PHY_MSCR_DELAY_MASK	(BIT(5) | BIT(4))
+> > 
+> > Bits 6 is the MSB of the default MAC speed.
+> > Bit 13 is the LSB of the default MAC speed. These two should default to 10b = 1000Mbps
+> > Bit 12 is reserved, and should be written 1.
+> 
+> Hmm, seems odd that these speed bits match BMCR, and I'm not sure why
+> the default MAC speed would have any bearing on whether gigabit mode
+> is enabled. If they default to 10b, then the write should have no effect
+> unless boot firmware has changed them.
 
-ipc_pcie_suspend_s2idle() is implemented to put device to D3L1.2.
+There is a bit more, which is did not copy:
 
-This patch forces PCI core know this device should stay at D0.
-- pci_save_state()is expensive since it does a lot of slow PCI
-config reads.
+    Also, used for setting speed of MAC interface during MAC side
+    loop-back. Requires that customer set both these bits and force
+    speed using register 0 to the same speed.  MAC Interface Speed
+    during Link down.
 
-The reported issue is not observed on x86 platform. The supurios
-wake on AMD platform needs to be futher debugged with orignal patch
-submitter [1]. Also the impact of adding pci_save_state() needs to be
-assessed by testing it on other platforms.
+So i don't think they matter during normal operation.
 
-This reverts commit f4dd5174e273("net: wwan: iosm: Keep device
-at D0 for s2idle case").
-
-[1] https://lore.kernel.org/all/20211224081914.345292-2-kai.heng.feng@canonical.com/
-
-Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
----
- drivers/net/wwan/iosm/iosm_ipc_pcie.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_pcie.c b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
-index af1d0e837fe9..d73894e2a84e 100644
---- a/drivers/net/wwan/iosm/iosm_ipc_pcie.c
-+++ b/drivers/net/wwan/iosm/iosm_ipc_pcie.c
-@@ -340,9 +340,6 @@ static int __maybe_unused ipc_pcie_suspend_s2idle(struct iosm_pcie *ipc_pcie)
- 
- 	ipc_imem_pm_s2idle_sleep(ipc_pcie->imem, true);
- 
--	/* Let PCI core know this device should stay at D0 */
--	pci_save_state(ipc_pcie->pci);
--
- 	return 0;
- }
- 
--- 
-2.25.1
-
+   Andrew
