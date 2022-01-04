@@ -2,22 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A03483C59
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:28:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2EB7483C5F
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:28:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233282AbiADH2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 02:28:37 -0500
-Received: from marcansoft.com ([212.63.210.85]:45950 "EHLO mail.marcansoft.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233243AbiADH2e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 02:28:34 -0500
+        id S233277AbiADH2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 02:28:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41630 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232033AbiADH2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 02:28:42 -0500
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0360C061761;
+        Mon,  3 Jan 2022 23:28:41 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id EF6BD41F5D;
-        Tue,  4 Jan 2022 07:28:24 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id F365D422CC;
+        Tue,  4 Jan 2022 07:28:32 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -45,9 +48,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH v2 06/35] brcmfmac: firmware: Support passing in multiple board_types
-Date:   Tue,  4 Jan 2022 16:26:29 +0900
-Message-Id: <20220104072658.69756-7-marcan@marcan.st>
+Subject: [PATCH v2 07/35] brcmfmac: pcie: Read Apple OTP information
+Date:   Tue,  4 Jan 2022 16:26:30 +0900
+Message-Id: <20220104072658.69756-8-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220104072658.69756-1-marcan@marcan.st>
 References: <20220104072658.69756-1-marcan@marcan.st>
@@ -57,140 +60,297 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to make use of the multiple alt_path functionality, change
-board_type to an array. Bus drivers can pass in a NULL-terminated list
-of board type strings to try for the firmware fetch.
+On Apple platforms, the One Time Programmable ROM in the Broadcom chips
+contains information about the specific board design (module, vendor,
+version) that is required to select the correct NVRAM file. Parse this
+OTP ROM and extract the required strings.
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Note that the user OTP offset/size is per-chip. This patch does not add
+any chips yet.
+
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- .../broadcom/brcm80211/brcmfmac/firmware.c    | 35 ++++++++++++-------
- .../broadcom/brcm80211/brcmfmac/firmware.h    |  2 +-
- .../broadcom/brcm80211/brcmfmac/pcie.c        |  4 ++-
- .../broadcom/brcm80211/brcmfmac/sdio.c        |  2 +-
- 4 files changed, 27 insertions(+), 16 deletions(-)
+ .../broadcom/brcm80211/brcmfmac/pcie.c        | 219 ++++++++++++++++++
+ include/linux/bcma/bcma_driver_chipcommon.h   |   1 +
+ 2 files changed, 220 insertions(+)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-index 7570dbf22cdd..054ea3ed133e 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-@@ -594,28 +594,39 @@ static int brcmf_fw_complete_request(const struct firmware *fw,
- 	return (cur->flags & BRCMF_FW_REQF_OPTIONAL) ? 0 : ret;
- }
- 
--static int brcm_alt_fw_paths(const char *path, const char *board_type,
-+static int brcm_alt_fw_paths(const char *path, struct brcmf_fw *fwctx,
- 			     const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS])
- {
-+	const char **board_types = fwctx->req->board_types;
-+	unsigned int i;
- 	char alt_path[BRCMF_FW_NAME_LEN];
- 	const char *suffix;
- 
- 	memset(alt_paths, 0, array_size(sizeof(*alt_paths),
- 					BRCMF_FW_MAX_ALT_PATHS));
- 
-+	if (!board_types[0])
-+		return -ENOENT;
-+
- 	suffix = strrchr(path, '.');
- 	if (!suffix || suffix == path)
- 		return -EINVAL;
- 
--	/* strip extension at the end */
--	strscpy(alt_path, path, BRCMF_FW_NAME_LEN);
--	alt_path[suffix - path] = 0;
-+	for (i = 0; i < BRCMF_FW_MAX_ALT_PATHS; i++) {
-+		if (!board_types[i])
-+		    break;
- 
--	strlcat(alt_path, ".", BRCMF_FW_NAME_LEN);
--	strlcat(alt_path, board_type, BRCMF_FW_NAME_LEN);
--	strlcat(alt_path, suffix, BRCMF_FW_NAME_LEN);
-+		/* strip extension at the end */
-+		strscpy(alt_path, path, BRCMF_FW_NAME_LEN);
-+		alt_path[suffix - path] = 0;
- 
--	alt_paths[0] = kstrdup(alt_path, GFP_KERNEL);
-+		strlcat(alt_path, ".", BRCMF_FW_NAME_LEN);
-+		strlcat(alt_path, board_types[i], BRCMF_FW_NAME_LEN);
-+		strlcat(alt_path, suffix, BRCMF_FW_NAME_LEN);
-+
-+		alt_paths[i] = kstrdup(alt_path, GFP_KERNEL);
-+		brcmf_dbg(TRACE, "FW alt path: %s\n", alt_paths[i]);
-+	}
- 
- 	return 0;
- }
-@@ -637,11 +648,10 @@ static int brcmf_fw_request_firmware(const struct firmware **fw,
- 	unsigned int i;
- 
- 	/* Files can be board-specific, first try a board-specific path */
--	if (fwctx->req->board_type) {
-+	if (fwctx->req->board_types[0]) {
- 		const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS];
- 
--		if (brcm_alt_fw_paths(cur->path, fwctx->req->board_type,
--				      alt_paths) != 0)
-+		if (brcm_alt_fw_paths(cur->path, fwctx, alt_paths) != 0)
- 			goto fallback;
- 
- 		for (i = 0; i < BRCMF_FW_MAX_ALT_PATHS && alt_paths[i]; i++) {
-@@ -750,8 +760,7 @@ int brcmf_fw_get_firmwares(struct device *dev, struct brcmf_fw_request *req,
- 	fwctx->done = fw_cb;
- 
- 	/* First try alternative board-specific path if any */
--	if (brcm_alt_fw_paths(first->path, req->board_type,
--			      fwctx->alt_paths) == 0) {
-+	if (brcm_alt_fw_paths(first->path, fwctx, fwctx->alt_paths) == 0) {
- 		fwctx->alt_index = 0;
- 		ret = request_firmware_nowait(THIS_MODULE, true,
- 					      fwctx->alt_paths[0],
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
-index 7f4e6e359c82..3b60a0e290b0 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
-@@ -68,7 +68,7 @@ struct brcmf_fw_request {
- 	u16 domain_nr;
- 	u16 bus_nr;
- 	u32 n_items;
--	const char *board_type;
-+	const char *board_types[BRCMF_FW_MAX_ALT_PATHS];
- 	struct brcmf_fw_item items[];
- };
- 
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index 591f870d1e47..a52a6f8081eb 100644
+index a52a6f8081eb..74c9a4f74813 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -1877,11 +1877,13 @@ brcmf_pcie_prepare_fw_request(struct brcmf_pciedev_info *devinfo)
- 	fwreq->items[BRCMF_PCIE_FW_NVRAM].flags = BRCMF_FW_REQF_OPTIONAL;
- 	fwreq->items[BRCMF_PCIE_FW_CLM].type = BRCMF_FW_TYPE_BINARY;
- 	fwreq->items[BRCMF_PCIE_FW_CLM].flags = BRCMF_FW_REQF_OPTIONAL;
--	fwreq->board_type = devinfo->settings->board_type;
- 	/* NVRAM reserves PCI domain 0 for Broadcom's SDK faked bus */
- 	fwreq->domain_nr = pci_domain_nr(devinfo->pdev->bus) + 1;
- 	fwreq->bus_nr = devinfo->pdev->bus->number;
+@@ -255,6 +255,15 @@ struct brcmf_pcie_core_info {
+ 	u32 wrapbase;
+ };
  
-+	brcmf_dbg(PCIE, "Board: %s\n", devinfo->settings->board_type);
-+	fwreq->board_types[0] = devinfo->settings->board_type;
++#define BRCMF_OTP_MAX_PARAM_LEN 16
 +
- 	return fwreq;
++struct brcmf_otp_params {
++	char module[BRCMF_OTP_MAX_PARAM_LEN];
++	char vendor[BRCMF_OTP_MAX_PARAM_LEN];
++	char version[BRCMF_OTP_MAX_PARAM_LEN];
++	bool valid;
++};
++
+ struct brcmf_pciedev_info {
+ 	enum brcmf_pcie_state state;
+ 	bool in_irq;
+@@ -282,6 +291,7 @@ struct brcmf_pciedev_info {
+ 	void (*write_ptr)(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
+ 			  u16 value);
+ 	struct brcmf_mp_device *settings;
++	struct brcmf_otp_params otp;
+ };
+ 
+ struct brcmf_pcie_ringbuf {
+@@ -353,6 +363,14 @@ static void brcmf_pcie_setup(struct device *dev, int ret,
+ static struct brcmf_fw_request *
+ brcmf_pcie_prepare_fw_request(struct brcmf_pciedev_info *devinfo);
+ 
++static u16
++brcmf_pcie_read_reg16(struct brcmf_pciedev_info *devinfo, u32 reg_offset)
++{
++	void __iomem *address = devinfo->regs + reg_offset;
++
++	return ioread16(address);
++}
++
+ static u32
+ brcmf_pcie_read_reg32(struct brcmf_pciedev_info *devinfo, u32 reg_offset)
+ {
+@@ -539,6 +557,8 @@ brcmf_pcie_copy_dev_tomem(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
  }
  
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index 7466e6fd6eca..ed944764f6ea 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -4432,7 +4432,7 @@ brcmf_sdio_prepare_fw_request(struct brcmf_sdio *bus)
- 	fwreq->items[BRCMF_SDIO_FW_NVRAM].type = BRCMF_FW_TYPE_NVRAM;
- 	fwreq->items[BRCMF_SDIO_FW_CLM].type = BRCMF_FW_TYPE_BINARY;
- 	fwreq->items[BRCMF_SDIO_FW_CLM].flags = BRCMF_FW_REQF_OPTIONAL;
--	fwreq->board_type = bus->sdiodev->settings->board_type;
-+	fwreq->board_types[0] = bus->sdiodev->settings->board_type;
  
- 	return fwreq;
- }
++#define READCC32(devinfo, reg) brcmf_pcie_read_reg32(devinfo, \
++		CHIPCREGOFFS(reg))
+ #define WRITECC32(devinfo, reg, value) brcmf_pcie_write_reg32(devinfo, \
+ 		CHIPCREGOFFS(reg), value)
+ 
+@@ -1758,6 +1778,199 @@ static const struct brcmf_buscore_ops brcmf_pcie_buscore_ops = {
+ 	.write32 = brcmf_pcie_buscore_write32,
+ };
+ 
++#define BRCMF_OTP_SYS_VENDOR	0x15
++#define BRCMF_OTP_BRCM_CIS	0x80
++
++#define BRCMF_OTP_VENDOR_HDR	0x00000008
++
++static int
++brcmf_pcie_parse_otp_sys_vendor(struct brcmf_pciedev_info *devinfo,
++				u8 *data, size_t size)
++{
++	int idx = 4;
++	const char *chip_params;
++	const char *board_params;
++	const char *p;
++
++	/* 4-byte header and two empty strings */
++	if (size < 6)
++		return -EINVAL;
++
++	if (get_unaligned_le32(data) != BRCMF_OTP_VENDOR_HDR)
++		return -EINVAL;
++
++	chip_params = &data[idx];
++
++	/* Skip first string, including terminator */
++	idx += strnlen(chip_params, size - idx) + 1;
++	if (idx >= size)
++		return -EINVAL;
++
++	board_params = &data[idx];
++
++	/* Skip to terminator of second string */
++	idx += strnlen(board_params, size - idx);
++	if (idx >= size)
++		return -EINVAL;
++
++	/* At this point both strings are guaranteed NUL-terminated */
++	brcmf_dbg(PCIE, "OTP: chip_params='%s' board_params='%s'\n",
++		  chip_params, board_params);
++
++	p = board_params;
++	while (*p) {
++		char tag = *p++;
++		const char *end;
++		size_t len;
++
++		if (tag == ' ') /* Skip extra spaces */
++			continue;
++
++		if (*p++ != '=') /* implicit NUL check */
++			return -EINVAL;
++
++		/* *p might be NUL here, if so end == p and len == 0 */
++		end = strchrnul(p, ' ');
++		len = end - p;
++
++		/* leave 1 byte for NUL in destination string */
++		if (len > (BRCMF_OTP_MAX_PARAM_LEN - 1))
++			return -EINVAL;
++
++		/* Copy len characters plus a NUL terminator */
++		switch (tag) {
++		case 'M':
++			strscpy(devinfo->otp.module, p, len + 1);
++			break;
++		case 'V':
++			strscpy(devinfo->otp.vendor, p, len + 1);
++			break;
++		case 'm':
++			strscpy(devinfo->otp.version, p, len + 1);
++			break;
++		}
++
++		/* Skip to space separator or NUL */
++		p = end;
++	}
++
++	brcmf_dbg(PCIE, "OTP: module=%s vendor=%s version=%s\n",
++		  devinfo->otp.module, devinfo->otp.vendor,
++		  devinfo->otp.version);
++
++	if (!devinfo->otp.module ||
++	    !devinfo->otp.vendor ||
++	    !devinfo->otp.version)
++		return -EINVAL;
++
++	devinfo->otp.valid = true;
++	return 0;
++}
++
++static int
++brcmf_pcie_parse_otp(struct brcmf_pciedev_info *devinfo, u8 *otp, size_t size)
++{
++	int p = 0;
++	int ret = -1;
++
++	brcmf_dbg(PCIE, "parse_otp size=%ld\n", size);
++
++	while (p < (size - 1)) {
++		u8 type = otp[p];
++		u8 length = otp[p + 1];
++
++		if (type == 0)
++			break;
++
++		if ((p + 2 + length) > size)
++			break;
++
++		switch (type) {
++		case BRCMF_OTP_SYS_VENDOR:
++			brcmf_dbg(PCIE, "OTP @ 0x%x (0x%x): SYS_VENDOR\n",
++				  p, length);
++			ret = brcmf_pcie_parse_otp_sys_vendor(devinfo,
++							      &otp[p + 2],
++							      length);
++			break;
++		case BRCMF_OTP_BRCM_CIS:
++			brcmf_dbg(PCIE, "OTP @ 0x%x (0x%x): BRCM_CIS\n",
++				  p, length);
++			break;
++		default:
++			brcmf_dbg(PCIE, "OTP @ 0x%x (0x%x): Unknown type 0x%x\n",
++				  p, length, type);
++			break;
++		}
++
++		p += 2 + length;
++	}
++
++	return ret;
++}
++
++static int brcmf_pcie_read_otp(struct brcmf_pciedev_info *devinfo)
++{
++	const struct pci_dev *pdev = devinfo->pdev;
++	struct brcmf_bus *bus = dev_get_drvdata(&pdev->dev);
++	u32 coreid, base, words, idx, sromctl;
++	u16 *otp;
++	struct brcmf_core *core;
++	int ret;
++
++	switch (devinfo->ci->chip) {
++	default:
++		/* OTP not supported on this chip */
++		return 0;
++	}
++
++	core = brcmf_chip_get_core(devinfo->ci, coreid);
++	if (!core) {
++		brcmf_err(bus, "No OTP core\n");
++		return -ENODEV;
++	}
++
++	if (coreid == BCMA_CORE_CHIPCOMMON) {
++		/* Chips with OTP accessed via ChipCommon need additional
++		 * handling to access the OTP
++		 */
++		brcmf_pcie_select_core(devinfo, coreid);
++		sromctl = READCC32(devinfo, sromcontrol);
++
++		if (!(sromctl & BCMA_CC_SROM_CONTROL_OTP_PRESENT)) {
++			/* Chip lacks OTP, try without it... */
++			brcmf_err(bus,
++				  "OTP unavailable, using default firmware\n");
++			return 0;
++		}
++
++		/* Map OTP to shadow area */
++		WRITECC32(devinfo, sromcontrol,
++			  sromctl | BCMA_CC_SROM_CONTROL_OTPSEL);
++	}
++
++	otp = kzalloc(sizeof(u16) * words, GFP_KERNEL);
++
++	/* Map bus window to SROM/OTP shadow area in core */
++	base = brcmf_pcie_buscore_prep_addr(devinfo->pdev, base + core->base);
++
++	brcmf_dbg(PCIE, "OTP data:\n");
++	for (idx = 0; idx < words; idx++) {
++		otp[idx] = brcmf_pcie_read_reg16(devinfo, base + 2 * idx);
++		brcmf_dbg(PCIE, "[%8x] 0x%04x\n", base + 2 * idx, otp[idx]);
++	}
++
++	if (coreid == BCMA_CORE_CHIPCOMMON) {
++		brcmf_pcie_select_core(devinfo, coreid);
++		WRITECC32(devinfo, sromcontrol, sromctl);
++	}
++
++	ret = brcmf_pcie_parse_otp(devinfo, (u8 *)otp, 2 * words);
++	kfree(otp);
++
++	return ret;
++}
++
+ #define BRCMF_PCIE_FW_CODE	0
+ #define BRCMF_PCIE_FW_NVRAM	1
+ #define BRCMF_PCIE_FW_CLM	2
+@@ -1955,6 +2168,12 @@ brcmf_pcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (ret)
+ 		goto fail_bus;
+ 
++	ret = brcmf_pcie_read_otp(devinfo);
++	if (ret) {
++		brcmf_err(bus, "failed to parse OTP\n");
++		goto fail_brcmf;
++	}
++
+ 	fwreq = brcmf_pcie_prepare_fw_request(devinfo);
+ 	if (!fwreq) {
+ 		ret = -ENOMEM;
+diff --git a/include/linux/bcma/bcma_driver_chipcommon.h b/include/linux/bcma/bcma_driver_chipcommon.h
+index d35b9206096d..c91db7460190 100644
+--- a/include/linux/bcma/bcma_driver_chipcommon.h
++++ b/include/linux/bcma/bcma_driver_chipcommon.h
+@@ -270,6 +270,7 @@
+ #define  BCMA_CC_SROM_CONTROL_OP_WRDIS	0x40000000
+ #define  BCMA_CC_SROM_CONTROL_OP_WREN	0x60000000
+ #define  BCMA_CC_SROM_CONTROL_OTPSEL	0x00000010
++#define  BCMA_CC_SROM_CONTROL_OTP_PRESENT	0x00000020
+ #define  BCMA_CC_SROM_CONTROL_LOCK	0x00000008
+ #define  BCMA_CC_SROM_CONTROL_SIZE_MASK	0x00000006
+ #define  BCMA_CC_SROM_CONTROL_SIZE_1K	0x00000000
 -- 
 2.33.0
 
