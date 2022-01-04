@@ -2,129 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8DD148417F
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 13:09:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0AEA484186
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 13:10:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229693AbiADMJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 07:09:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49930 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230044AbiADMJR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 07:09:17 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488F6C061761;
-        Tue,  4 Jan 2022 04:09:17 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id a203-20020a1c7fd4000000b003457874263aso22601660wmd.2;
-        Tue, 04 Jan 2022 04:09:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=jaqyMdJNQ92L1SoQFR/daU3pPOKRwHwALSLpJhqen9k=;
-        b=cwzeN/qob+a0OJuuFE6Z8TOIP7VRVbhH7uHSIj8AD1Nnga/UOoHvCSQgTuicgfCPr0
-         mNYT5OxcyEYxQ5Gi/kphWklpLzfOoUdcZRKxDApBUxxn5Z2eUsYMwnXjPitVNJ7w+BPs
-         x1pVV2/nFr+SzOYxuvwU6fzs9bXZgrTpkk/dWXiEUbrQasLbAdwGCU/IqfE8DdExlxvF
-         p/MNWRaoZ8ij4rc7tCkdfA6kateTwa+6dom8XitNA2e0RvOBfzdHsXxz9Ww0JFm8phf9
-         iXES3WbIvuAE+56zqdXplzNblwE72dAKzNvA0GAzBAeVuO2lRyWqTyY8IPwzHWxBOyJK
-         U/Wg==
+        id S232925AbiADMKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 07:10:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53851 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232909AbiADMKe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 07:10:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641298233;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=e23GvwFEUXHbUBSCX1HU3wptIv1SCmph2aHQnK4TxcA=;
+        b=LbxljXck+0TuwPMqRzBKVxd2zyjYzhj9ceGyeTeZRk+2Em62BcBx7CRYpU96fQmQH2lGZx
+        8OYVEpj9zIlBSY9989USTCGf05XqnngYihjYCQken4EfYnN4/vlRCyEPT7X0xzsJ9/1W2R
+        M+RWWMz0284eG0Eu3oeYwMNEpBsCuCI=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-568-5eiQ8_ofMNOiGBM1dIASUQ-1; Tue, 04 Jan 2022 07:10:32 -0500
+X-MC-Unique: 5eiQ8_ofMNOiGBM1dIASUQ-1
+Received: by mail-wm1-f70.google.com with SMTP id j8-20020a05600c1c0800b00346504f5743so3010783wms.6
+        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 04:10:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=jaqyMdJNQ92L1SoQFR/daU3pPOKRwHwALSLpJhqen9k=;
-        b=gyKYgUwDFlhFCXpIkWIV+cS4BOhOEZp17RCvVF0f+JqAkeQNpQGg6C3b67IggqSep1
-         FQJ+u0Kaz/Gbc1uFPJBbfAA2D55Ge4s2gdeYke+xR4CYMFo7hKoC2NCbx7VBXfydU5zU
-         4FfGjqijrqKBlSwcWEoL4S5wivt5TYgUWgISfPH1sj1A10fIUSE5UraqjGrnaththIr1
-         BNlb8WlVCjWKKOu91hYL+cNXpgxTiAE0VPR9O19WBdx+khSdbBCIQADtsMLbCuly8NjK
-         urlfmBopxjoxJ/IDjhIbMDw33NOuqT4Yvq+b04edlWKxuWmyNeT3FUpZ1uIyBZCBIKUW
-         qnwQ==
-X-Gm-Message-State: AOAM532UV0gh9yAhkoUoOizIwh6AlKmBbfVuwk54f+y2y17NmMtRYeay
-        mGMir6A5DhOS+5jKuHBVeHs=
-X-Google-Smtp-Source: ABdhPJzwtHSsinhDjC9nNlm5oH9ALeaF0WE8I7TlbzhvXxzf+JSyTZJRT/cZ1rNAs0zs5Eic3SCYLw==
-X-Received: by 2002:a05:600c:3844:: with SMTP id s4mr41619971wmr.124.1641298155935;
-        Tue, 04 Jan 2022 04:09:15 -0800 (PST)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id u16sm6807769wrn.24.2022.01.04.04.09.15
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e23GvwFEUXHbUBSCX1HU3wptIv1SCmph2aHQnK4TxcA=;
+        b=0eKLZkQP/IwUUUNcGEaD8+lUVDcNZsQYm9H63BI5Y8v9tF3OIgVNjfe/rUhn1jfrFV
+         r9yg+qrdmvStbvprUBdTvU2RAWPPYMRn23SzReQuwqpYD+pF1NXbS0qUE85jPTD5Z+a6
+         StQI017W8tvEPE4wMwDDvOBZKR7U6zMaRM/O/ogdwkQrP2+BPLOXisrSr3QIVAmJjg9P
+         OrBma+9YvXDxxHBfdN2AvS8Hv5SK6czDDFjWzWadix5Cw6RJudjSWAKXqGDSm0C9AfOJ
+         DrSk2f5cLQwEmUIR4yGxQwem+0m5IOAMOyv1y9Vvejx7av3Pgyi34ZxJ8iNjeK08vt51
+         ro5w==
+X-Gm-Message-State: AOAM531V7MA5hjp3rcR6fRl8DLT17psmTl4jXSGhI687HB2oi9ZtmgkB
+        GCocG+zh1uwcr26ypYE9ZTMinYdQerHphTdnErPPkvFK6oHjSKxeqTyehBMzphHxJOJN7s8+rCv
+        8rTv2LFolA9cPAvMw
+X-Received: by 2002:a05:600c:3657:: with SMTP id y23mr42035060wmq.160.1641298231346;
+        Tue, 04 Jan 2022 04:10:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzoMiXH8X2tDQsRX9319UAmIiBDBaixOkpfg3ScIJMlw9L8taNLaIkYq9NCFQt4cVSN5EKCcQ==
+X-Received: by 2002:a05:600c:3657:: with SMTP id y23mr42035045wmq.160.1641298231147;
+        Tue, 04 Jan 2022 04:10:31 -0800 (PST)
+Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id b19sm42835575wmb.38.2022.01.04.04.10.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Jan 2022 04:09:15 -0800 (PST)
-Date:   Tue, 4 Jan 2022 13:09:13 +0100
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     linus.walleij@linaro.org, ulli.kroll@googlemail.com,
-        kuba@kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: net: phy: marvell: network working with generic PHY and not with
- marvell PHY
-Message-ID: <YdQ46conUeZ3Qaac@Red>
-References: <YdQoOSXS98+Af1wO@Red>
- <YdQsJnfqjaFrtC0m@shell.armlinux.org.uk>
- <YdQwexJVfrdzEfZK@Red>
- <YdQydK4GhI0P5RYL@shell.armlinux.org.uk>
+        Tue, 04 Jan 2022 04:10:30 -0800 (PST)
+From:   Jiri Olsa <jolsa@redhat.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Jussi Maki <joamaki@gmail.com>, Hangbin Liu <haliu@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCH] bpf/selftests: Fix namespace mount setup in tc_redirect
+Date:   Tue,  4 Jan 2022 13:10:30 +0100
+Message-Id: <20220104121030.138216-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YdQydK4GhI0P5RYL@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Tue, Jan 04, 2022 at 11:41:40AM +0000, Russell King (Oracle) a écrit :
-> On Tue, Jan 04, 2022 at 12:33:15PM +0100, Corentin Labbe wrote:
-> > Le Tue, Jan 04, 2022 at 11:14:46AM +0000, Russell King (Oracle) a écrit :
-> > > On Tue, Jan 04, 2022 at 11:58:01AM +0100, Corentin Labbe wrote:
-> > > > Hello
-> > > > 
-> > > > I have a gemini SSI 1328 box which has a cortina ethernet MAC with a Marvell 88E1118 as given by:
-> > > > Marvell 88E1118 gpio-0:01: attached PHY driver (mii_bus:phy_addr=gpio-0:01, irq=POLL)
-> > > > So booting with CONFIG_MARVELL_PHY=y lead to a non-working network with link set at 1Gbit
-> > > > Setting 'max-speed = <100>;' (as current state in mainline dtb) lead to a working network.
-> > > > By not working, I mean kernel started with ip=dhcp cannot get an IP.
-> > > 
-> > > How is the PHY connected to the host (which interface mode?) If it's
-> > > RGMII, it could be that the wrong RGMII interface mode is specified in
-> > > DT.
-> > > 
-> > 
-> > The PHY is set as RGMII in DT (arch/arm/boot/dts/gemini-ssi1328.dts)
-> > The only change to the mainline dtb is removing the max-speed.
-> 
-> So, it's using "rgmii" with no delay configured at the PHY with the
-> speed limited to 100Mbps. You then remove the speed limitation and
-> it doesn't work at 1Gbps.
-> 
-> I think I've seen this on other platforms (imx6 + ar8035) when the
-> RGMII delay is not correctly configured - it will work at slower
-> speeds but not 1G.
-> 
-> The RGMII spec specifies that there will be a delay - and the delay can
-> be introduced by either the MAC, PHY or by PCB track routing. It sounds
-> to me like your boot environment configures the PHY to introduce the
-> necessary delay, but then, because the DT "rgmii" mode means "no delay
-> at the PHY" when you use the Marvell driver (which respects that), the
-> Marvell driver configures the PHY for no delay, resulting in a non-
-> working situation at 1G.
-> 
-> I would suggest checking how the boot environment configures the PHY,
-> and change the "rgmii" mode in DT to match. There is a description of
-> the four RGMII modes in Documentation/networking/phy.rst that may help
-> understand what each one means.
-> 
+The tc_redirect umounts /sys in the new namespace, which can be
+mounted as shared and cause global umount. The lazy umount also
+takes down mounted trees under /sys like debugfs, which won't be
+available after sysfs mounts again and could cause fails in other
+tests.
 
-So if I understand, the generic PHY does not touch delays and so values set by bootloader are kept.
+  # cat /proc/self/mountinfo | grep debugfs
+  34 23 0:7 / /sys/kernel/debug rw,nosuid,nodev,noexec,relatime shared:14 - debugfs debugfs rw
+  # cat /proc/self/mountinfo | grep sysfs
+  23 86 0:22 / /sys rw,nosuid,nodev,noexec,relatime shared:2 - sysfs sysfs rw
+  # mount | grep debugfs
+  debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
 
-The boot environment give no clue on how the PHY is set.
-Only debug showed is:
-PHY 0 Addr 1 Vendor ID: 0x01410e11
-mii_write: phy_addr=0x1 reg_addr=0x4 value=0x5e1 
-mii_write: phy_addr=0x1 reg_addr=0x9 value=0x300 
-mii_write: phy_addr=0x1 reg_addr=0x0 value=0x1200 
-mii_write: phy_addr=0x1 reg_addr=0x0 value=0x9200 
-mii_write: phy_addr=0x1 reg_addr=0x0 value=0x1200
+  # ./test_progs -t tc_redirect
+  #164 tc_redirect:OK
+  Summary: 1/4 PASSED, 0 SKIPPED, 0 FAILED
 
-Does it is possible to dump PHY registers when using generic PHY and find delay values ?
-For example ethtool -d eth0 ?
+  # mount | grep debugfs
+  # cat /proc/self/mountinfo | grep debugfs
+  # cat /proc/self/mountinfo | grep sysfs
+  25 86 0:22 / /sys rw,relatime shared:2 - sysfs sysfs rw
 
-If not, my only choice is to bruteforce all delay values until it works.
+Making the sysfs private under the new namespace so the umount won't
+trigger the global sysfs umount.
+
+Cc: Jussi Maki <joamaki@gmail.com>
+Reported-by: Hangbin Liu <haliu@redhat.com>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ tools/testing/selftests/bpf/prog_tests/tc_redirect.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
+index 4b18b73df10b..c2426df58e17 100644
+--- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
++++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
+@@ -105,6 +105,13 @@ static int setns_by_fd(int nsfd)
+ 	if (!ASSERT_OK(err, "unshare"))
+ 		return err;
+ 
++	/* Make our /sys mount private, so the following umount won't
++	 * trigger the global umount in case it's shared.
++	 */
++	err = mount("none", "/sys", NULL, MS_PRIVATE, NULL);
++	if (!ASSERT_OK(err, "remount private /sys"))
++		return err;
++
+ 	err = umount2("/sys", MNT_DETACH);
+ 	if (!ASSERT_OK(err, "umount2 /sys"))
+ 		return err;
+-- 
+2.33.1
+
