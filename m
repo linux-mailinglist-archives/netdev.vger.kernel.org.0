@@ -2,77 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2554A4845DD
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 17:17:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8C764845E5
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 17:20:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235195AbiADQRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 11:17:30 -0500
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:41964 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229956AbiADQR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 11:17:29 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R391e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V0yrv7C_1641313047;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V0yrv7C_1641313047)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 05 Jan 2022 00:17:27 +0800
-Date:   Wed, 5 Jan 2022 00:17:27 +0800
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net/smc: Reduce overflow of smc clcsock
- listen queue
-Message-ID: <20220104161727.GA123107@e02h04389.eu6sqa>
-Reply-To: "D. Wythe" <alibuda@linux.alibaba.com>
-References: <1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com>
- <8a60dabb-1799-316c-80b5-14c920fe98ab@linux.ibm.com>
+        id S235179AbiADQUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 11:20:11 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58138 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229956AbiADQUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 11:20:10 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65918614E6;
+        Tue,  4 Jan 2022 16:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C9FB8C36AEF;
+        Tue,  4 Jan 2022 16:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641313209;
+        bh=FJtuvM8YQnl01zVoAmyXpL2GI3zMzGlsZrtsERlt1tY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TOlk/2RRG1f3/PnNBgW1bztREPtXMenWC2PC3qZIKq5rBZIDZe5I1TVwhFbxLPSSy
+         Nlru8k/HCApBxF2n+bBeGOMnfjUgJVc20Hz2YHwMuHn8Jc3G+9UWc1uHV4LCq55/wx
+         2qpIUO4BZNotAbJfEaCHO3HDhtrjEET2LBcC24ar3nY01KxCULQfguoAmJoJRopWwB
+         6w5ruCyPbq/g/JsRCXJWv7gh+20n8HxIOdqYOHa0UyWXf6ulhQbmXPKDq2wCWq/yd4
+         Lfk26BaAKnKE1WPpXV3qXHNMIhJkLA2on2LeBKQjaBkFq7ZkoQMDsAtgoR/RZEeF3p
+         h7FlxUGmugMZg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AA837F79406;
+        Tue,  4 Jan 2022 16:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <8a60dabb-1799-316c-80b5-14c920fe98ab@linux.ibm.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Subject: Re: pull-request: mac80211 2022-01-04
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164131320968.12087.6626970751515749989.git-patchwork-notify@kernel.org>
+Date:   Tue, 04 Jan 2022 16:20:09 +0000
+References: <20220104144449.64937-1-johannes@sipsolutions.net>
+In-Reply-To: <20220104144449.64937-1-johannes@sipsolutions.net>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-It's seems last mail has been rejected by some reason, resend it for
-confirm. sry to bother you if you already seen it.
+This pull request was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Thanks.
+On Tue,  4 Jan 2022 15:44:48 +0100 you wrote:
+> Hi,
+> 
+> So I know it's getting late, but two more fixes came to
+> me over the holidays/vacations.
+> 
+> Please pull and let me know if there's any problem.
+> 
+> [...]
 
+Here is the summary with links:
+  - pull-request: mac80211 2022-01-04
+    https://git.kernel.org/netdev/net/c/6f89ecf10af1
+
+You are awesome, thank you!
 -- 
-
-Got your point, it's quite a problem within this patch. 
-As you noted, may be we can use the backlog parameter of the listen socket
-to limit the dangling connections,  just like tcp does.   
-
-I'll work on it in the next few days. Please let me know if you have more suggestions for it.
- 
-Thanks.
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-On Tue, Jan 04, 2022 at 02:45:35PM +0100, Karsten Graul wrote:
-> On 04/01/2022 14:12, D. Wythe wrote:
-> > From: "D. Wythe" <alibuda@linux.alibaba.com>
-> > 
-> > In nginx/wrk multithread and 10K connections benchmark, the
-> > backend TCP connection established very slowly, and lots of TCP
-> > connections stay in SYN_SENT state.
-> 
-> I see what you are trying to solve here.
-> So what happens with your patch now is that we are accepting way more connections
-> in advance and queue them up for the SMC connection handshake worker.
-> The connection handshake worker itself will not run faster with this change, so overall
-> it should be the same time that is needed to establish all connections.
-> What you solve is that when 10k connections are started at the same time, some of them
-> will be dropped due to tcp 3-way handshake timeouts. Your patch avoids that but one can now flood
-> the stack with an ~infinite amount of dangling sockets waiting for the SMC handshake, maybe even 
-> causing oom conditions.
-> 
-> What should be respected with such a change would be the backlog parameter for the listen socket,
-> i.e. how many backlog connections are requested by the user space application?
-> There is no such handling of backlog right now, and due to the 'braking' workers we avoided
-> to flood the kernel with too many dangling connections. With your change there should be a way to limit
-> this ind of connections in some way.
