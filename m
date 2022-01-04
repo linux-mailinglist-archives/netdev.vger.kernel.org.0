@@ -2,74 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC16C484416
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 16:02:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 640EE48441B
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 16:03:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234581AbiADPCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 10:02:54 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:50966 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234570AbiADPCw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 10:02:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=09yxHMawDZ1z7mKKYD6EvM/m9RBDRbBGLNGga/wkLxY=; b=Aq8VGdFksWWCYmQGjMkY3Yuauv
-        48uEw3tJbJzwy+EIZA1QBynJF3WoUdUz/czXggGL0owr6v2Vxgc3+fEyWfducR71K7DIimCJ/k3hy
-        77wlD4rNhTXO65wv3cxpmw2OCbCHIMFOL3aucbH553pMpe6jysyoKcO0T1C/JBcU7tgg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n4lKo-000TVw-0W; Tue, 04 Jan 2022 16:02:46 +0100
-Date:   Tue, 4 Jan 2022 16:02:45 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Corentin Labbe <clabbe.montjoie@gmail.com>,
-        linus.walleij@linaro.org, ulli.kroll@googlemail.com,
-        kuba@kernel.org, davem@davemloft.net, hkallweit1@gmail.com,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: net: phy: marvell: network working with generic PHY and not with
- marvell PHY
-Message-ID: <YdRhlUR4ukwS5WMH@lunn.ch>
-References: <YdQoOSXS98+Af1wO@Red>
- <YdQsJnfqjaFrtC0m@shell.armlinux.org.uk>
- <YdQwexJVfrdzEfZK@Red>
- <YdQydK4GhI0P5RYL@shell.armlinux.org.uk>
- <YdQ5i+//UITSbxS/@shell.armlinux.org.uk>
- <YdRVovG9mgEWffkn@Red>
- <YdRZQl6U0y19P/0+@shell.armlinux.org.uk>
- <YdRdu3jFPnGd1DsH@lunn.ch>
- <YdRgXbpK6CFB/eCU@shell.armlinux.org.uk>
+        id S234605AbiADPDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 10:03:30 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:36598 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234603AbiADPDa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 10:03:30 -0500
+Received: by mail-il1-f197.google.com with SMTP id m15-20020a056e021c2f00b002b536f2ae9dso15319009ilh.3
+        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 07:03:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=0vqYoUnftc9mdEB2IiFQ/k7igJoXunPY4Yl/oQfbqUk=;
+        b=GTzW6Ssy8mNzjr5xMiW0VEjEye056vu5FT7W/ECQ5rKGxpTKYSte2MbES1ZFdBYsr2
+         IeZlWvNwEB5W0afxYdYSY0fyW8FuUKE6oMnEu69Do4RJgt1Lk9XG0h6PmPz3k3TAC+al
+         OFFXMA8f98BHv5/Ev6D5BGawfZH+nUfnagVDXBp25nITh8DZeUJC11HuJys5NsPTpL76
+         BsoBw8XmsHq/ZWaopSMR1FdQ5SwrCYL6L6H/JOvy8snXQDGTAbyLh7gwuyN+gX7MkgCT
+         oDDHzV0dO+EF1Gyb7hZdShhJoC8JgXzYY2gNvdHdJvkXu/KKGDcee/ZcYjWRDa/G0lzg
+         oJcQ==
+X-Gm-Message-State: AOAM532YKH5xFHoxhr0uLLWUhXo92ZiSSxYYnC2HovBGN/6aBHNQG92E
+        3xJ/a5EIe8FQva8ykc4mC0Ab+gDfXpQ742/iQJQiqg4L/el8
+X-Google-Smtp-Source: ABdhPJxwhA2c2DvWHALhBAsb1Qa3jWcOJ88fFeArBIDNO7107nmDzkpgwXvLZvUeiQn4e5k/dxq1o0Xrs9oNNOWqtVwkJ+BEh6II
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YdRgXbpK6CFB/eCU@shell.armlinux.org.uk>
+X-Received: by 2002:a05:6638:770:: with SMTP id y16mr3540179jad.242.1641308609956;
+ Tue, 04 Jan 2022 07:03:29 -0800 (PST)
+Date:   Tue, 04 Jan 2022 07:03:29 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a9cf6105d4c2f0ee@google.com>
+Subject: [syzbot] net test error: BUG: program execution failed: executor NUM:
+ failed to write control pipe: write |NUM: broken pipe
+From:   syzbot <syzbot+acdc85fe587a899a4336@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > #define MII_88E1121_PHY_MSCR_RX_DELAY	BIT(5)
-> > #define MII_88E1121_PHY_MSCR_TX_DELAY	BIT(4)
-> > #define MII_88E1121_PHY_MSCR_DELAY_MASK	(BIT(5) | BIT(4))
-> > 
-> > Bits 6 is the MSB of the default MAC speed.
-> > Bit 13 is the LSB of the default MAC speed. These two should default to 10b = 1000Mbps
-> > Bit 12 is reserved, and should be written 1.
-> 
-> Hmm, seems odd that these speed bits match BMCR, and I'm not sure why
-> the default MAC speed would have any bearing on whether gigabit mode
-> is enabled. If they default to 10b, then the write should have no effect
-> unless boot firmware has changed them.
+Hello,
 
-There is a bit more, which is did not copy:
+syzbot found the following issue on:
 
-    Also, used for setting speed of MAC interface during MAC side
-    loop-back. Requires that customer set both these bits and force
-    speed using register 0 to the same speed.  MAC Interface Speed
-    during Link down.
+HEAD commit:    4760abaac684 Merge branch 'mpr-len-checks' David Ahern says:
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=10b49a35b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=1a86c22260afac2f
+dashboard link: https://syzkaller.appspot.com/bug?extid=acdc85fe587a899a4336
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-So i don't think they matter during normal operation.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+acdc85fe587a899a4336@syzkaller.appspotmail.com
 
-   Andrew
+2021/12/31 14:59:00 checking revisions...
+2021/12/31 14:59:01 testing simple program...
+executing program
+executing program
+executing program
+2021/12/31 14:59:12 BUG: program execution failed: executor 0: failed to write control pipe: write |1: broken pipe
+SYZFAIL: wrong response packet
+ (errno 16: Device or resource busy)
+loop exited with status 67
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
