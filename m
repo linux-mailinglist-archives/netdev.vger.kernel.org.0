@@ -2,25 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDED2483C3D
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:27:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97595483C41
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:28:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233173AbiADH1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 02:27:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231707AbiADH1q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 02:27:46 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BC9C061761;
-        Mon,  3 Jan 2022 23:27:46 -0800 (PST)
+        id S233202AbiADH1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 02:27:55 -0500
+Received: from marcansoft.com ([212.63.210.85]:45638 "EHLO mail.marcansoft.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233188AbiADH1y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jan 2022 02:27:54 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 56BCF419BC;
-        Tue,  4 Jan 2022 07:27:36 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 9C59841F5D;
+        Tue,  4 Jan 2022 07:27:44 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -48,267 +45,97 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH v2 00/35] brcmfmac: Support Apple T2 and M1 platforms
-Date:   Tue,  4 Jan 2022 16:26:23 +0900
-Message-Id: <20220104072658.69756-1-marcan@marcan.st>
+Subject: [PATCH v2 01/35] dt-bindings: net: bcm4329-fmac: Add Apple properties & chips
+Date:   Tue,  4 Jan 2022 16:26:24 +0900
+Message-Id: <20220104072658.69756-2-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220104072658.69756-1-marcan@marcan.st>
+References: <20220104072658.69756-1-marcan@marcan.st>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi everyone,
+This binding is currently used for SDIO devices, but these chips are
+also used as PCIe devices on DT platforms and may be represented in the
+DT. Re-use the existing binding and add chip compatibles used by Apple
+T2 and M1 platforms (the T2 ones are not known to be used in DT
+platforms, but we might as well document them).
 
-Happy new year! This 35-patch series adds proper support for the
-Broadcom FullMAC chips used on Apple T2 and M1 platforms:
+Then, add properties required for firmware selection and calibration on
+M1 machines.
 
-- BCM4355C1
-- BCM4364B2/B3
-- BCM4377B3
-- BCM4378B1
-- BCM4387C2
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+---
+ .../net/wireless/brcm,bcm4329-fmac.yaml       | 37 +++++++++++++++++--
+ 1 file changed, 34 insertions(+), 3 deletions(-)
 
-As usual for Apple, things are ever so slightly different on these
-machines from every other Broadcom platform. In particular, besides
-the normal device/firmware support changes, a large fraction of this
-series deals with selecting and loading the correct firmware. These
-platforms use multiple dimensions for firmware selection, and the values
-for these dimensions are variously sourced from DT or OTP (see the
-commit message for #9 for the gory details).
-
-This is what is included:
-
-# 01: DT bindings (M1 platforms)
-
-On M1 platforms, we use the device tree to provide properties for PCIe
-devices like these cards. This patch re-uses the existing SDIO binding
-and adds the compatibles for these PCIe chips, plus the properties we
-need to correctly instantiate them:
-
-- brcm,board-type: Overrides the board-type which is used for firmware
-  selection on all platforms, which normally comes from the DMI device
-  name or the root node compatible. Apple have their own
-  mapping/identifier here ("island" name), so we prefix it with "apple,"
-  and use it as the board-type override.
-
-- apple,antenna-sku: Specifies the specific antenna configuration in a
-  produt. This would normally be filled in by the bootloader from
-  device-specific configuration data. On ACPI platforms, this is
-  provided via ACPI instead. This is used to build the funky Apple
-  firmware filenames. Note: it seems the antenna doesn't actually matter
-  for any of the above platforms (they are all aliases to the same files
-  and our firmware copier collapses down this dimension), but since
-  Apple do support having different firmware or NVRAM depending on
-  antenna SKU, we ough to support it in case it starts mattering on a
-  future platform.
-
-- brcm,cal-blob: A calibration blob for the Wi-Fi module, specific to a
-  given unit. On most platforms, this is stored in SROM on the module,
-  and does not need to be provided externally, but Apple instead stores
-  this in platform configuration for M1 machines and the driver needs to
-  upload it to the device after initializing the firmware. This has a
-  generic brcm name, since a priori this mechanism shouldn't be
-  Apple-specific, although chances are only Apple do it like this so far.
-
-# 02~09: Apple firmware selection (M1 platforms)
-
-These patches add support for choosing firmwares (binaries, CLM blobs,
-and NVRAM configs alike) using all the dimensions that Apple uses. The
-firmware files are renamed to conform to the existing brcmfmac
-convention. See the commit message for #9 for the gory details as to how
-these filenames are constructed. The data to make the firmware selection
-comes from the above DT properties and from an OTP ROM on the chips on
-M1 platforms.
-
-# 10~14: BCM4378 support (M1 T8103 platforms)
-
-These patches make changes required to support the BCM4378 chip present
-in Apple M1 (T8103) platforms. This includes adding support for passing
-in the MAC address via the DT (this is standard on DT platforms) since
-the chip does not have a burned-in MAC; adding support for PCIe core
-revs >64 (which moved around some registers); tweaking ring buffer
-sizes; and fixing a bug.
-
-# 15~20: BCM4355/4364/4377 support (T2 platforms)
-
-These patches add support for the chips found across T2 Mac platforms.
-This includes ACPI support for fetching properties instead of using DT,
-providing a buffer of entropy to the devices (required for some of the
-firmwares), and adding the required IDs. This also fixes the BCM4364
-firmware naming; it was added without consideration that there are two
-incompatible chip revisions. To avoid this ambiguity in the future, all
-the chips added by this series use firmware names ending in the revision
-(apple/brcm style, that is letter+number), so that future revisions can
-be added without creating confusion.
-
-# 21~27: BCM4387 support (M1 Pro/Max T600x platforms)
-
-These patches add support for the newer BCM4387 present in the recently
-launched M1 Pro/Max platforms. This chip requires a few changes to D11
-reset behavior and TCM size calculation to work properly, and it uses
-newer firmware which needs support for newer firmware interfaces
-in the cfg80211 support. Backwards compatibility is maintained via
-feature flags discovered at runtime from information provided by the
-firmware.
-
-A note on #26: it seems this chip broke the old hack of passing the PMK
-in hexdump form as a PSK, but it seems brcmfmac chips supported passing
-it in binary all along. I'm not sure why it was done this way in the
-Linux driver, but it seems OpenBSD always did it in binary and works
-with older chips, so this should be reasonably well tested. Any further
-insight as to why this was done this way would be appreciated.
-
-# 28~32: Fixes
-
-These are just random things I came across while developing this series.
-#31 is required to avoid a compile warning in subsequent patches. None
-of these are strictly required to support these chips/platforms.
-
-# 33-35: TxCap and calibration blobs
-
-These patches add support for uploading TxCap blobs, which are another
-kind of firmware blob that Apple platforms use (T2 and M1), as well as
-providing Wi-Fi calibration data from the device tree (M1).
-
-I'm not sure what the TxCap blobs do. Given the stray function
-prototype at [5], it would seem the Broadcom folks in charge of Linux
-drivers also know all about Apple's fancy OTP for firmware selection
-and the existence of TxCap blobs, so it would be great if you could
-share any insight here ;-)
-
-These patches are not required for the chips to function, but presumably
-having proper per-device calibration data available matters, and I
-assume the TxCap blobs aren't just for show either.
-
-# On firmware
-
-As you might expect, the firmware for these machines is not available
-under a redistributable license; however, every owner of one of these
-machines *is* implicitly licensed to posess the firmware, and the OS
-packages containing it are available under well-known URLs on Apple's
-CDN with no authentication.
-
-Our plan to support this is to propose a platform firmware mechanism,
-where platforms can provide a firmware package in the EFI system
-partition along with a manifest, and distros will extract it to
-/lib/firmware on boot or otherwise make it available to the kernel.
-
-Then, on M1 platforms, our install script, which performs all the
-bootloader installation steps required to run Linux on these machines in
-the first place, will also take care of copying the firmware from the
-base macOS image to the EFI partition. On T2 platforms, we'll provide an
-analogous script that users can manually run prior to a normal EFI Linux
-installation to just grab the firmware from /usr/share/firmware/wifi in
-the running macOS.
-
-There is an example firmware manifest at [1] which details the files
-copied by our firmware rename script [2], as of macOS 12.0.1.
-
-To test this series on a supported Mac today (T2 or M1), boot into macOS
-and run:
-
-$ git clone https://github.com/AsahiLinux/asahi-installer
-$ cd asahi-installer/src
-$ python -m firmware.wifi /usr/share/firmware/wifi firmware.tar
-
-Then copy firmware.tar to Linux and extract it into /lib/firmware.
-
-# Acknowledgements
-
-This patch series was developed referencing the OpenBSD support for the
-BCM4378 [3] and the bcmdhd-4359 GPL release [4], which contained some
-interesting tidbits about newer chips, registers, OTP, etc.
-
-[1] https://gist.github.com/marcan/5cfaad948e224279f09a4a79ccafd9b6
-[2] https://github.com/AsahiLinux/asahi-installer/blob/main/src/firmware/wifi.py
-[3] https://github.com/openbsd/src/blob/master/sys/dev/pci/if_bwfm_pci.c
-[4] https://github.com/StreamUnlimited/broadcom-bcmdhd-4359/
-[5] https://github.com/StreamUnlimited/broadcom-bcmdhd-4359/blob/master/dhd_pcie.h#L594
-
-# Known bugs
-
-WPA3 does not yet work on M1 platforms. This is probably more missing
-firmware interfaces; I'll look into it shortly and it can go into v3 or
-a separate add-on patch.
-
-# Changes since v1
-
-- Replaced new DT compatibles with pciXXXX,YYYY ones (this seems to be
-  the way to do it)
-- Replaced apple,module instance DT prop with brcm,board-type (more
-  generic)
-- Reduced stack usage of brcmf_pmksa_v3_op
-- Changed alt_paths/board_names to be a fixed, max size instead of
-  statically allocated.
-- Fixed broken build halfway through the series
-- Addressed other review comments (style/etc)
-- Fixed typos and other minor issues
-
-Hector Martin (35):
-  dt-bindings: net: bcm4329-fmac: Add Apple properties & chips
-  brcmfmac: pcie: Declare missing firmware files in pcie.c
-  brcmfmac: firmware: Handle per-board clm_blob files
-  brcmfmac: firmware: Support having multiple alt paths
-  brcmfmac: pcie/sdio/usb: Get CLM blob via standard firmware mechanism
-  brcmfmac: firmware: Support passing in multiple board_types
-  brcmfmac: pcie: Read Apple OTP information
-  brcmfmac: of: Fetch Apple properties
-  brcmfmac: pcie: Perform firmware selection for Apple platforms
-  brcmfmac: firmware: Allow platform to override macaddr
-  brcmfmac: msgbuf: Increase RX ring sizes to 1024
-  brcmfmac: pcie: Fix crashes due to early IRQs
-  brcmfmac: pcie: Support PCIe core revisions >= 64
-  brcmfmac: pcie: Add IDs/properties for BCM4378
-  ACPI / property: Support strings in Apple _DSM props
-  brcmfmac: acpi: Add support for fetching Apple ACPI properties
-  brcmfmac: pcie: Provide a buffer of random bytes to the device
-  brcmfmac: pcie: Add IDs/properties for BCM4355
-  brcmfmac: pcie: Add IDs/properties for BCM4377
-  brcmfmac: pcie: Perform correct BCM4364 firmware selection
-  brcmfmac: chip: Only disable D11 cores; handle an arbitrary number
-  brcmfmac: chip: Handle 1024-unit sizes for TCM blocks
-  brcmfmac: cfg80211: Add support for scan params v2
-  brcmfmac: feature: Add support for setting feats based on WLC version
-  brcmfmac: cfg80211: Add support for PMKID_V3 operations
-  brcmfmac: cfg80211: Pass the PMK in binary instead of hex
-  brcmfmac: pcie: Add IDs/properties for BCM4387
-  brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
-  brcmfmac: pcie: Read the console on init and shutdown
-  brcmfmac: pcie: Release firmwares in the brcmf_pcie_setup error path
-  brcmfmac: firmware: Allocate space for default boardrev in nvram
-  brcmfmac: fwil: Constify iovar name arguments
-  brcmfmac: common: Add support for downloading TxCap blobs
-  brcmfmac: pcie: Load and provide TxCap blobs
-  brcmfmac: common: Add support for external calibration blobs
-
- .../net/wireless/brcm,bcm4329-fmac.yaml       |  37 +-
- drivers/acpi/x86/apple.c                      |  11 +-
- .../broadcom/brcm80211/brcmfmac/Makefile      |   2 +
- .../broadcom/brcm80211/brcmfmac/acpi.c        |  47 ++
- .../broadcom/brcm80211/brcmfmac/bus.h         |  20 +-
- .../broadcom/brcm80211/brcmfmac/cfg80211.c    | 178 +++++-
- .../broadcom/brcm80211/brcmfmac/chip.c        |  36 +-
- .../broadcom/brcm80211/brcmfmac/common.c      | 130 +++-
- .../broadcom/brcm80211/brcmfmac/common.h      |  12 +
- .../broadcom/brcm80211/brcmfmac/feature.c     |  49 ++
- .../broadcom/brcm80211/brcmfmac/feature.h     |   6 +-
- .../broadcom/brcm80211/brcmfmac/firmware.c    | 136 +++-
- .../broadcom/brcm80211/brcmfmac/firmware.h    |   4 +-
- .../broadcom/brcm80211/brcmfmac/fwil.c        |  34 +-
- .../broadcom/brcm80211/brcmfmac/fwil.h        |  28 +-
- .../broadcom/brcm80211/brcmfmac/fwil_types.h  | 157 ++++-
- .../broadcom/brcm80211/brcmfmac/msgbuf.h      |   4 +-
- .../wireless/broadcom/brcm80211/brcmfmac/of.c |  20 +-
- .../broadcom/brcm80211/brcmfmac/pcie.c        | 599 +++++++++++++++---
- .../broadcom/brcm80211/brcmfmac/sdio.c        |  39 +-
- .../broadcom/brcm80211/brcmfmac/sdio.h        |   2 +
- .../broadcom/brcm80211/brcmfmac/usb.c         |  23 +-
- .../broadcom/brcm80211/include/brcm_hw_ids.h  |   8 +
- include/linux/bcma/bcma_driver_chipcommon.h   |   1 +
- 24 files changed, 1313 insertions(+), 270 deletions(-)
- create mode 100644 drivers/net/wireless/broadcom/brcm80211/brcmfmac/acpi.c
-
+diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+index c11f23b20c4c..8b4147c64355 100644
+--- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
++++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+@@ -4,7 +4,7 @@
+ $id: http://devicetree.org/schemas/net/wireless/brcm,bcm4329-fmac.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: Broadcom BCM4329 family fullmac wireless SDIO devices
++title: Broadcom BCM4329 family fullmac wireless SDIO/PCIE devices
+ 
+ maintainers:
+   - Arend van Spriel <arend@broadcom.com>
+@@ -42,10 +42,16 @@ properties:
+               - cypress,cyw43012-fmac
+           - const: brcm,bcm4329-fmac
+       - const: brcm,bcm4329-fmac
++      - enum:
++          - pci14e4,43dc  # BCM4355
++          - pci14e4,4464  # BCM4364
++          - pci14e4,4488  # BCM4377
++          - pci14e4,4425  # BCM4378
++          - pci14e4,4433  # BCM4387
+ 
+   reg:
+-    description: SDIO function number for the device, for most cases
+-      this will be 1.
++    description: SDIO function number for the device (for most cases
++      this will be 1) or PCI device identifier.
+ 
+   interrupts:
+     maxItems: 1
+@@ -75,6 +81,31 @@ properties:
+     items:
+       pattern: '^[A-Z][A-Z]-[A-Z][0-9A-Z]-[0-9]+$'
+ 
++  brcm,cal-blob:
++    $ref: /schemas/types.yaml#/definitions/uint8-array
++    description: A per-device calibration blob for the Wi-Fi radio. This
++      should be filled in by the bootloader from platform configuration
++      data, if necessary, and will be uploaded to the device if present.
++
++  brcm,board-type:
++    $ref: /schemas/types.yaml#/definitions/string
++    description: Overrides the board type, which is normally the compatible of
++      the root node. This can be used to decouple the overall system board or
++      device name from the board type for WiFi purposes, which is used to
++      construct firmware and NVRAM configuration filenames, allowing for
++      multiple devices that share the same module or characteristics for the
++      WiFi subsystem to share the same firmware/NVRAM files. On Apple platforms,
++      this should be the Apple module-instance codename prefixed by "apple,",
++      e.g. "apple,honshu".
++
++  apple,antenna-sku:
++    $ref: /schemas/types.yaml#/definitions/string
++    description: Antenna SKU used to identify a specific antenna configuration
++      on Apple platforms. This is use to build firmware filenames, to allow
++      platforms with different antenna configs to have different firmware and/or
++      NVRAM. This would normally be filled in by the bootloader from platform
++      configuration data.
++
+ required:
+   - compatible
+   - reg
 -- 
 2.33.0
 
