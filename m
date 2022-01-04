@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A263C483DB2
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 09:09:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEE8C483DB8
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 09:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233788AbiADIJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 03:09:54 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:57215 "EHLO
+        id S233829AbiADIKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 03:10:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36880 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233811AbiADIJx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 03:09:53 -0500
+        by vger.kernel.org with ESMTP id S233849AbiADIJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 03:09:59 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641283793;
+        s=mimecast20190719; t=1641283799;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=deFFbtnYM3i/92CnuiUzL3EKyDWx93Ga+Yj6cLk2tzA=;
-        b=XlJcEmcpeM5rR+erGWRS+dgNm1uW6n6+l0kNlRZPvaK5TxPUnKVqEhyuqT9yKMloexlvcq
-        6xCW4B6xdJzMgjYvvTsncgx1DwAqB7NSW+ZrPOrGVxcfgQypWgtVqWzjhRd9PcljIGLr5E
-        NbbHabSQ2Y/ZmmowaK/D3eaaKbLKkUc=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=wC25vJidXOSulDOMTh98GoQfpZN9ZJGJe/vhERr1/WY=;
+        b=EE05GDFr+C+XzLeJEPOStvJs2gtdMByWDDZd2qJ0RlRoXk2NZvjU2Kq4WlQThiwi3VY2Iy
+        prsFSuyPXupEqxOeZoPenTyfSHG2Hp5xq9TzDMbCsEAA1u9bWFlv1AfQFoUlehxTWIGGNl
+        Q7RWK4ly68OnMOrh5acp8CojLb7QtWA=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-121-H0NB9X_vMaODOHpYMtySsA-1; Tue, 04 Jan 2022 03:09:52 -0500
-X-MC-Unique: H0NB9X_vMaODOHpYMtySsA-1
-Received: by mail-ed1-f72.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso24622212edt.20
-        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 00:09:51 -0800 (PST)
+ us-mta-86-SWFN2s9UNhWVPwjA9-AuQQ-1; Tue, 04 Jan 2022 03:09:58 -0500
+X-MC-Unique: SWFN2s9UNhWVPwjA9-AuQQ-1
+Received: by mail-ed1-f71.google.com with SMTP id y10-20020a056402358a00b003f88b132849so24908512edc.0
+        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 00:09:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=deFFbtnYM3i/92CnuiUzL3EKyDWx93Ga+Yj6cLk2tzA=;
-        b=2Xjg1MpfCsFalJEIP3s+W5IlwVdxb2oXF5RWaHLVg6ppDmoRKeQWierH4k4jgts4cl
-         xfrtVrjJ3l3NF1eT/HR2jJeXvrGXoHKOITcXrXjML9rsKPtT4kyz7W03KB+ob6q1Tzjy
-         hLGJBVuKgsO7nUTccaV7BA4p8mQYDifqBhSebg9fXw6y8hPb03yU++ZGwmK02m5oti7I
-         CX0lpZhSeq4JXCIWXpYGAFEjXeJ4Da/IUHKRs/ZtCwJefgvwDBeOhlTlzmYBjGPWtPBB
-         UeUS/YJJpWq3/Ffd2Dg/kOCVPl7f0RzJiaYvkeMAa1ViUNgNChxmwpyjPUsI7g1GekxP
-         qK8g==
-X-Gm-Message-State: AOAM5335DzkdISK0N42zKzMJrFz1wx3/dvivBtjjt4XdzojSSI34HpUd
-        S4thld6JCsDBoE6g7zSJSCVBvbct8Fuq1GHBV/5IWT9TJmOpJlsbEgAZVr1rJe+QHFAvERJ8aLd
-        32JvMMzt2OF6yHNpk
-X-Received: by 2002:a17:906:8a43:: with SMTP id gx3mr37707284ejc.185.1641283790861;
-        Tue, 04 Jan 2022 00:09:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxyNUpljah6tzm7i53XGrcK3Z5LHujpoocm6FeZnksRU3h8LpWhIH/IXYbvH/5LaWEcQ2c4dQ==
-X-Received: by 2002:a17:906:8a43:: with SMTP id gx3mr37707268ejc.185.1641283790690;
-        Tue, 04 Jan 2022 00:09:50 -0800 (PST)
+        bh=wC25vJidXOSulDOMTh98GoQfpZN9ZJGJe/vhERr1/WY=;
+        b=QKhIzLnCJ1wF4i8WM1TwF97+CqoxF0cni5N6dAr+LZJyMrKp6SpeBcym/9G1kAIkKK
+         3ekw4eBX/m0DzsOm8SX+HswUQkK7/Gl/6nwcfF2FhkrTBTZjzlBCulKedH/LUKf3Kl91
+         4bhN0+KUCGOX7VwhiUfkF8K0GgrVfl8fR9fPwAhwNZldwKlmk9yDxHv6OtfQfUa33UFJ
+         4N+IjTINK79/5pdGQxzw0h7tzEmz8IK954m49N5yDl+kse0tu0O/9TZEVrfbtAX3v1ey
+         2I8dg2+++HHTlaHvCG7+y3we5N4ALKSm+rlBiqQhKM5kYa8S5aMM1b4s+lU5A7T6/YSn
+         CchA==
+X-Gm-Message-State: AOAM533kqUEL7IaESPJADOCvI4C/qqf+hiakpaYo0qqJBhJBqtfj7znb
+        AjLTtWjf3Yk3NZvAzGhyvGS8Ln8LsRuTvD4crf3Nsh6dYt49dZigmPAd4nIMVQ+mZwCgV+XaOCo
+        D3DDNjNKnOzHwI47A
+X-Received: by 2002:a17:907:82a6:: with SMTP id mr38mr37035509ejc.744.1641283796926;
+        Tue, 04 Jan 2022 00:09:56 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxsV54Czj67uFIcbN98S4rvhYvKQh3lGyoyRpY5hJVl008UQ+Cuw2N++aiqMvvkhk7MQ3Geww==
+X-Received: by 2002:a17:907:82a6:: with SMTP id mr38mr37035499ejc.744.1641283796706;
+        Tue, 04 Jan 2022 00:09:56 -0800 (PST)
 Received: from krava.redhat.com (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id go10sm11251843ejc.100.2022.01.04.00.09.50
+        by smtp.gmail.com with ESMTPSA id 19sm8284197ejv.207.2022.01.04.00.09.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Jan 2022 00:09:50 -0800 (PST)
+        Tue, 04 Jan 2022 00:09:56 -0800 (PST)
 From:   Jiri Olsa <jolsa@redhat.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -67,9 +67,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
         Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 01/13] ftrace: Add ftrace_set_filter_ips function
-Date:   Tue,  4 Jan 2022 09:09:31 +0100
-Message-Id: <20220104080943.113249-2-jolsa@kernel.org>
+Subject: [PATCH 02/13] kprobe: Keep traced function address
+Date:   Tue,  4 Jan 2022 09:09:32 +0100
+Message-Id: <20220104080943.113249-3-jolsa@kernel.org>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220104080943.113249-1-jolsa@kernel.org>
 References: <20220104080943.113249-1-jolsa@kernel.org>
@@ -79,148 +79,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding ftrace_set_filter_ips function to be able to set filter on
-multiple ip addresses at once.
+The bpf_get_func_ip_kprobe helper should return traced function
+address, but it's doing so only for kprobes that are placed on
+the function entry.
 
-With the kprobe multi attach interface we have cases where we need to
-initialize ftrace_ops object with thousands of functions, so having
-single function diving into ftrace_hash_move_and_update_ops with
-ftrace_lock is faster.
+If kprobe is placed within the function, bpf_get_func_ip_kprobe
+returns that address instead of function entry.
 
-The functions ips are passed as unsigned long array with count.
+Storing the function entry directly in kprobe object, so it could
+be used in bpf_get_func_ip_kprobe helper.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- include/linux/ftrace.h |  3 +++
- kernel/trace/ftrace.c  | 53 +++++++++++++++++++++++++++++++++++-------
- 2 files changed, 47 insertions(+), 9 deletions(-)
+ include/linux/kprobes.h                              |  3 +++
+ kernel/kprobes.c                                     | 12 ++++++++++++
+ kernel/trace/bpf_trace.c                             |  2 +-
+ tools/testing/selftests/bpf/progs/get_func_ip_test.c |  4 ++--
+ 4 files changed, 18 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
-index 9999e29187de..60847cbce0da 100644
---- a/include/linux/ftrace.h
-+++ b/include/linux/ftrace.h
-@@ -512,6 +512,8 @@ struct dyn_ftrace {
+diff --git a/include/linux/kprobes.h b/include/linux/kprobes.h
+index 8c8f7a4d93af..a204df4fef96 100644
+--- a/include/linux/kprobes.h
++++ b/include/linux/kprobes.h
+@@ -74,6 +74,9 @@ struct kprobe {
+ 	/* Offset into the symbol */
+ 	unsigned int offset;
  
- int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
- 			 int remove, int reset);
-+int ftrace_set_filter_ips(struct ftrace_ops *ops, unsigned long *ips,
-+			  unsigned int cnt, int remove, int reset);
- int ftrace_set_filter(struct ftrace_ops *ops, unsigned char *buf,
- 		       int len, int reset);
- int ftrace_set_notrace(struct ftrace_ops *ops, unsigned char *buf,
-@@ -802,6 +804,7 @@ static inline unsigned long ftrace_location(unsigned long ip)
- #define ftrace_regex_open(ops, flag, inod, file) ({ -ENODEV; })
- #define ftrace_set_early_filter(ops, buf, enable) do { } while (0)
- #define ftrace_set_filter_ip(ops, ip, remove, reset) ({ -ENODEV; })
-+#define ftrace_set_filter_ips(ops, ips, cnt, remove, reset) ({ -ENODEV; })
- #define ftrace_set_filter(ops, buf, len, reset) ({ -ENODEV; })
- #define ftrace_set_notrace(ops, buf, len, reset) ({ -ENODEV; })
- #define ftrace_free_filter(ops) do { } while (0)
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index be5f6b32a012..39350aa38649 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -4958,7 +4958,7 @@ ftrace_notrace_write(struct file *file, const char __user *ubuf,
- }
- 
- static int
--ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
-+__ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
- {
- 	struct ftrace_func_entry *entry;
- 
-@@ -4976,9 +4976,25 @@ ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
- 	return add_hash_entry(hash, ip);
- }
- 
-+static int
-+ftrace_match_addr(struct ftrace_hash *hash, unsigned long *ips,
-+		  unsigned int cnt, int remove)
-+{
-+	unsigned int i;
-+	int err;
++	/* traced function address */
++	unsigned long func_addr;
 +
-+	for (i = 0; i < cnt; i++) {
-+		err = __ftrace_match_addr(hash, ips[i], remove);
-+		if (err)
-+			return err;
-+	}
+ 	/* Called before addr is executed. */
+ 	kprobe_pre_handler_t pre_handler;
+ 
+diff --git a/kernel/kprobes.c b/kernel/kprobes.c
+index d20ae8232835..c4060a8da050 100644
+--- a/kernel/kprobes.c
++++ b/kernel/kprobes.c
+@@ -1310,6 +1310,7 @@ static void init_aggr_kprobe(struct kprobe *ap, struct kprobe *p)
+ 	copy_kprobe(p, ap);
+ 	flush_insn_slot(ap);
+ 	ap->addr = p->addr;
++	ap->func_addr = p->func_addr;
+ 	ap->flags = p->flags & ~KPROBE_FLAG_OPTIMIZED;
+ 	ap->pre_handler = aggr_pre_handler;
+ 	/* We don't care the kprobe which has gone. */
+@@ -1588,6 +1589,16 @@ static int check_kprobe_address_safe(struct kprobe *p,
+ 	return ret;
+ }
+ 
++static unsigned long resolve_func_addr(kprobe_opcode_t *addr)
++{
++	char str[KSYM_SYMBOL_LEN];
++	unsigned long offset;
++
++	if (kallsyms_lookup((unsigned long) addr, NULL, &offset, NULL, str))
++		return (unsigned long) addr - offset;
 +	return 0;
 +}
 +
- static int
- ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
--		unsigned long ip, int remove, int reset, int enable)
-+		unsigned long *ips, unsigned int cnt,
-+		int remove, int reset, int enable)
+ int register_kprobe(struct kprobe *p)
  {
- 	struct ftrace_hash **orig_hash;
- 	struct ftrace_hash *hash;
-@@ -5008,8 +5024,8 @@ ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
- 		ret = -EINVAL;
- 		goto out_regex_unlock;
- 	}
--	if (ip) {
--		ret = ftrace_match_addr(hash, ip, remove);
-+	if (ips) {
-+		ret = ftrace_match_addr(hash, ips, cnt, remove);
- 		if (ret < 0)
- 			goto out_regex_unlock;
- 	}
-@@ -5026,10 +5042,10 @@ ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
+ 	int ret;
+@@ -1600,6 +1611,7 @@ int register_kprobe(struct kprobe *p)
+ 	if (IS_ERR(addr))
+ 		return PTR_ERR(addr);
+ 	p->addr = addr;
++	p->func_addr = resolve_func_addr(addr);
+ 
+ 	ret = warn_kprobe_rereg(p);
+ 	if (ret)
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 21aa30644219..25631253084a 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1026,7 +1026,7 @@ BPF_CALL_1(bpf_get_func_ip_kprobe, struct pt_regs *, regs)
+ {
+ 	struct kprobe *kp = kprobe_running();
+ 
+-	return kp ? (uintptr_t)kp->addr : 0;
++	return kp ? (uintptr_t)kp->func_addr : 0;
  }
  
- static int
--ftrace_set_addr(struct ftrace_ops *ops, unsigned long ip, int remove,
--		int reset, int enable)
-+ftrace_set_addr(struct ftrace_ops *ops, unsigned long *ips, unsigned int cnt,
-+		int remove, int reset, int enable)
+ static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
+diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+index a587aeca5ae0..e988aefa567e 100644
+--- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
++++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+@@ -69,7 +69,7 @@ int test6(struct pt_regs *ctx)
  {
--	return ftrace_set_hash(ops, NULL, 0, ip, remove, reset, enable);
-+	return ftrace_set_hash(ops, NULL, 0, ips, cnt, remove, reset, enable);
+ 	__u64 addr = bpf_get_func_ip(ctx);
+ 
+-	test6_result = (const void *) addr == &bpf_fentry_test6 + 5;
++	test6_result = (const void *) addr == &bpf_fentry_test6;
+ 	return 0;
  }
  
- #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
-@@ -5634,10 +5650,29 @@ int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
- 			 int remove, int reset)
+@@ -79,6 +79,6 @@ int test7(struct pt_regs *ctx)
  {
- 	ftrace_ops_init(ops);
--	return ftrace_set_addr(ops, ip, remove, reset, 1);
-+	return ftrace_set_addr(ops, &ip, 1, remove, reset, 1);
- }
- EXPORT_SYMBOL_GPL(ftrace_set_filter_ip);
+ 	__u64 addr = bpf_get_func_ip(ctx);
  
-+/**
-+ * ftrace_set_filter_ips - set a functions to filter on in ftrace by addresses
-+ * @ops - the ops to set the filter with
-+ * @ips - the array of addresses to add to or remove from the filter.
-+ * @cnt - the number of addresses in @ips
-+ * @remove - non zero to remove ips from the filter
-+ * @reset - non zero to reset all filters before applying this filter.
-+ *
-+ * Filters denote which functions should be enabled when tracing is enabled
-+ * If @ips array or any ip specified within is NULL , it fails to update filter.
-+ */
-+int ftrace_set_filter_ips(struct ftrace_ops *ops, unsigned long *ips,
-+			  unsigned int cnt, int remove, int reset)
-+{
-+	ftrace_ops_init(ops);
-+	return ftrace_set_addr(ops, ips, cnt, remove, reset, 1);
-+}
-+EXPORT_SYMBOL_GPL(ftrace_set_filter_ips);
-+
- /**
-  * ftrace_ops_set_global_filter - setup ops to use global filters
-  * @ops - the ops which will use the global filters
-@@ -5659,7 +5694,7 @@ static int
- ftrace_set_regex(struct ftrace_ops *ops, unsigned char *buf, int len,
- 		 int reset, int enable)
- {
--	return ftrace_set_hash(ops, buf, len, 0, 0, reset, enable);
-+	return ftrace_set_hash(ops, buf, len, NULL, 0, 0, reset, enable);
+-	test7_result = (const void *) addr == &bpf_fentry_test7 + 5;
++	test7_result = (const void *) addr == &bpf_fentry_test7;
+ 	return 0;
  }
- 
- /**
 -- 
 2.33.1
 
