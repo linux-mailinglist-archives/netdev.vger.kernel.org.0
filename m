@@ -2,22 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C792483CE9
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:32:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E5D7483CF0
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 08:32:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231531AbiADHc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 02:32:28 -0500
-Received: from marcansoft.com ([212.63.210.85]:47642 "EHLO mail.marcansoft.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232560AbiADHcL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 02:32:11 -0500
+        id S233660AbiADHch (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 02:32:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42650 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233680AbiADHcT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 02:32:19 -0500
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BBCC061396;
+        Mon,  3 Jan 2022 23:32:18 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 0C1ED422CC;
-        Tue,  4 Jan 2022 07:32:01 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 0D2AF4206F;
+        Tue,  4 Jan 2022 07:32:09 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -45,9 +48,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH v2 33/35] brcmfmac: common: Add support for downloading TxCap blobs
-Date:   Tue,  4 Jan 2022 16:26:56 +0900
-Message-Id: <20220104072658.69756-34-marcan@marcan.st>
+Subject: [PATCH v2 34/35] brcmfmac: pcie: Load and provide TxCap blobs
+Date:   Tue,  4 Jan 2022 16:26:57 +0900
+Message-Id: <20220104072658.69756-35-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220104072658.69756-1-marcan@marcan.st>
 References: <20220104072658.69756-1-marcan@marcan.st>
@@ -57,187 +60,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TxCap blobs are additional data blobs used on Apple devices, and
-are uploaded analogously to CLM blobs. Add core support for doing this.
+These blobs are named .txcap_blob, and exist alongside the existing
+.clm_blob files. Use the existing firmware machinery to provide them to
+the core.
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- .../broadcom/brcm80211/brcmfmac/bus.h         |  1 +
- .../broadcom/brcm80211/brcmfmac/common.c      | 97 +++++++++++++------
- 2 files changed, 71 insertions(+), 27 deletions(-)
+ .../net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h
-index b13af8f631f3..f4bd98da9761 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bus.h
-@@ -39,6 +39,7 @@ enum brcmf_bus_protocol_type {
- /* Firmware blobs that may be available */
- enum brcmf_blob_type {
- 	BRCMF_BLOB_CLM,
-+	BRCMF_BLOB_TXCAP,
- };
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+index 18903906de55..ee0b68f5e28e 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -73,6 +73,7 @@ MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.txt");
+ /* per-board firmware binaries */
+ MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.bin");
+ MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.clm_blob");
++MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcmfmac*-pcie.*.txcap_blob");
  
- struct brcmf_mp_device;
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-index c84c48e49fde..d65308c3f070 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
-@@ -101,7 +101,7 @@ void brcmf_c_set_joinpref_default(struct brcmf_if *ifp)
- 
- static int brcmf_c_download(struct brcmf_if *ifp, u16 flag,
- 			    struct brcmf_dload_data_le *dload_buf,
--			    u32 len)
-+			    u32 len, const char *var)
- {
- 	s32 err;
- 
-@@ -112,17 +112,17 @@ static int brcmf_c_download(struct brcmf_if *ifp, u16 flag,
- 	dload_buf->crc = cpu_to_le32(0);
- 	len = sizeof(*dload_buf) + len - 1;
- 
--	err = brcmf_fil_iovar_data_set(ifp, "clmload", dload_buf, len);
-+	err = brcmf_fil_iovar_data_set(ifp, var, dload_buf, len);
- 
- 	return err;
- }
- 
--static int brcmf_c_process_clm_blob(struct brcmf_if *ifp)
-+static int brcmf_c_download_blob(struct brcmf_if *ifp,
-+				 const void *data, size_t size,
-+				 const char *loadvar, const char *statvar)
- {
- 	struct brcmf_pub *drvr = ifp->drvr;
--	struct brcmf_bus *bus = drvr->bus_if;
- 	struct brcmf_dload_data_le *chunk_buf;
--	const struct firmware *clm = NULL;
- 	u32 chunk_len;
- 	u32 datalen;
- 	u32 cumulative_len;
-@@ -132,20 +132,11 @@ static int brcmf_c_process_clm_blob(struct brcmf_if *ifp)
- 
- 	brcmf_dbg(TRACE, "Enter\n");
- 
--	err = brcmf_bus_get_blob(bus, &clm, BRCMF_BLOB_CLM);
--	if (err || !clm) {
--		brcmf_info("no clm_blob available (err=%d), device may have limited channels available\n",
--			   err);
--		return 0;
--	}
--
- 	chunk_buf = kzalloc(sizeof(*chunk_buf) + MAX_CHUNK_LEN - 1, GFP_KERNEL);
--	if (!chunk_buf) {
--		err = -ENOMEM;
--		goto done;
--	}
-+	if (!chunk_buf)
-+		return -ENOMEM;
- 
--	datalen = clm->size;
-+	datalen = size;
- 	cumulative_len = 0;
- 	do {
- 		if (datalen > MAX_CHUNK_LEN) {
-@@ -154,9 +145,10 @@ static int brcmf_c_process_clm_blob(struct brcmf_if *ifp)
- 			chunk_len = datalen;
- 			dl_flag |= DL_END;
- 		}
--		memcpy(chunk_buf->data, clm->data + cumulative_len, chunk_len);
-+		memcpy(chunk_buf->data, data + cumulative_len, chunk_len);
- 
--		err = brcmf_c_download(ifp, dl_flag, chunk_buf, chunk_len);
-+		err = brcmf_c_download(ifp, dl_flag, chunk_buf, chunk_len,
-+				       loadvar);
- 
- 		dl_flag &= ~DL_BEGIN;
- 
-@@ -165,20 +157,64 @@ static int brcmf_c_process_clm_blob(struct brcmf_if *ifp)
- 	} while ((datalen > 0) && (err == 0));
- 
- 	if (err) {
--		bphy_err(drvr, "clmload (%zu byte file) failed (%d)\n",
--			 clm->size, err);
--		/* Retrieve clmload_status and print */
--		err = brcmf_fil_iovar_int_get(ifp, "clmload_status", &status);
-+		bphy_err(drvr, "%s (%zu byte file) failed (%d)\n",
-+			 loadvar, size, err);
-+		/* Retrieve status and print */
-+		err = brcmf_fil_iovar_int_get(ifp, statvar, &status);
- 		if (err)
--			bphy_err(drvr, "get clmload_status failed (%d)\n", err);
-+			bphy_err(drvr, "get %s failed (%d)\n", statvar, err);
- 		else
--			brcmf_dbg(INFO, "clmload_status=%d\n", status);
-+			brcmf_dbg(INFO, "%s=%d\n", statvar, status);
- 		err = -EIO;
+ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
+ 	BRCMF_FW_ENTRY(BRCM_CC_43602_CHIP_ID, 0xFFFFFFFF, 43602),
+@@ -325,7 +326,9 @@ struct brcmf_pciedev_info {
+ 	char fw_name[BRCMF_FW_NAME_LEN];
+ 	char nvram_name[BRCMF_FW_NAME_LEN];
+ 	char clm_name[BRCMF_FW_NAME_LEN];
++	char txcap_name[BRCMF_FW_NAME_LEN];
+ 	const struct firmware *clm_fw;
++	const struct firmware *txcap_fw;
+ 	const struct brcmf_pcie_reginfo *reginfo;
+ 	void __iomem *regs;
+ 	void __iomem *tcm;
+@@ -1499,6 +1502,10 @@ static int brcmf_pcie_get_blob(struct device *dev, const struct firmware **fw,
+ 		*fw = devinfo->clm_fw;
+ 		devinfo->clm_fw = NULL;
+ 		break;
++	case BRCMF_BLOB_TXCAP:
++		*fw = devinfo->txcap_fw;
++		devinfo->txcap_fw = NULL;
++		break;
+ 	default:
+ 		return -ENOENT;
  	}
+@@ -2088,6 +2095,7 @@ static int brcmf_pcie_read_otp(struct brcmf_pciedev_info *devinfo)
+ #define BRCMF_PCIE_FW_CODE	0
+ #define BRCMF_PCIE_FW_NVRAM	1
+ #define BRCMF_PCIE_FW_CLM	2
++#define BRCMF_PCIE_FW_TXCAP	3
  
- 	kfree(chunk_buf);
--done:
--	release_firmware(clm);
-+	return err;
-+}
-+
-+static int brcmf_c_process_clm_blob(struct brcmf_if *ifp)
-+{
-+	struct brcmf_pub *drvr = ifp->drvr;
-+	struct brcmf_bus *bus = drvr->bus_if;
-+	const struct firmware *fw = NULL;
-+	s32 err;
-+
-+	brcmf_dbg(TRACE, "Enter\n");
-+
-+	err = brcmf_bus_get_blob(bus, &fw, BRCMF_BLOB_CLM);
-+	if (err || !fw) {
-+		brcmf_info("no clm_blob available (err=%d), device may have limited channels available\n",
-+			   err);
-+		return 0;
-+	}
-+
-+	err = brcmf_c_download_blob(ifp, fw->data, fw->size,
-+				    "clmload", "clmload_status");
-+
-+	release_firmware(fw);
-+	return err;
-+}
-+
-+static int brcmf_c_process_txcap_blob(struct brcmf_if *ifp)
-+{
-+	struct brcmf_pub *drvr = ifp->drvr;
-+	struct brcmf_bus *bus = drvr->bus_if;
-+	const struct firmware *fw = NULL;
-+	s32 err;
-+
-+	brcmf_dbg(TRACE, "Enter\n");
-+
-+	err = brcmf_bus_get_blob(bus, &fw, BRCMF_BLOB_TXCAP);
-+	if (err || !fw) {
-+		brcmf_info("no txcap_blob available (err=%d)\n", err);
-+		return 0;
-+	}
-+
-+	brcmf_info("TxCap blob found, loading\n");
-+	err = brcmf_c_download_blob(ifp, fw->data, fw->size,
-+				    "txcapload", "txcapload_status");
-+
-+	release_firmware(fw);
- 	return err;
- }
+ static void brcmf_pcie_setup(struct device *dev, int ret,
+ 			     struct brcmf_fw_request *fwreq)
+@@ -2113,6 +2121,7 @@ static void brcmf_pcie_setup(struct device *dev, int ret,
+ 	nvram = fwreq->items[BRCMF_PCIE_FW_NVRAM].nv_data.data;
+ 	nvram_len = fwreq->items[BRCMF_PCIE_FW_NVRAM].nv_data.len;
+ 	devinfo->clm_fw = fwreq->items[BRCMF_PCIE_FW_CLM].binary;
++	devinfo->txcap_fw = fwreq->items[BRCMF_PCIE_FW_TXCAP].binary;
+ 	kfree(fwreq);
  
-@@ -248,6 +284,13 @@ int brcmf_c_preinit_dcmds(struct brcmf_if *ifp)
- 		goto done;
- 	}
+ 	ret = brcmf_chip_get_raminfo(devinfo->ci);
+@@ -2189,6 +2198,7 @@ brcmf_pcie_prepare_fw_request(struct brcmf_pciedev_info *devinfo)
+ 		{ ".bin", devinfo->fw_name },
+ 		{ ".txt", devinfo->nvram_name },
+ 		{ ".clm_blob", devinfo->clm_name },
++		{ ".txcap_blob", devinfo->txcap_name },
+ 	};
  
-+	/* Do TxCap downloading, if needed */
-+	err = brcmf_c_process_txcap_blob(ifp);
-+	if (err < 0) {
-+		bphy_err(drvr, "download TxCap blob file failed, %d\n", err);
-+		goto done;
-+	}
-+
- 	/* query for 'ver' to get version info from firmware */
- 	memset(buf, 0, sizeof(buf));
- 	err = brcmf_fil_iovar_data_get(ifp, "ver", buf, sizeof(buf));
+ 	fwreq = brcmf_fw_alloc_request(devinfo->ci->chip, devinfo->ci->chiprev,
+@@ -2203,6 +2213,8 @@ brcmf_pcie_prepare_fw_request(struct brcmf_pciedev_info *devinfo)
+ 	fwreq->items[BRCMF_PCIE_FW_NVRAM].flags = BRCMF_FW_REQF_OPTIONAL;
+ 	fwreq->items[BRCMF_PCIE_FW_CLM].type = BRCMF_FW_TYPE_BINARY;
+ 	fwreq->items[BRCMF_PCIE_FW_CLM].flags = BRCMF_FW_REQF_OPTIONAL;
++	fwreq->items[BRCMF_PCIE_FW_TXCAP].type = BRCMF_FW_TYPE_BINARY;
++	fwreq->items[BRCMF_PCIE_FW_TXCAP].flags = BRCMF_FW_REQF_OPTIONAL;
+ 	/* NVRAM reserves PCI domain 0 for Broadcom's SDK faked bus */
+ 	fwreq->domain_nr = pci_domain_nr(devinfo->pdev->bus) + 1;
+ 	fwreq->bus_nr = devinfo->pdev->bus->number;
+@@ -2412,6 +2424,7 @@ brcmf_pcie_remove(struct pci_dev *pdev)
+ 	brcmf_pcie_reset_device(devinfo);
+ 	brcmf_pcie_release_resource(devinfo);
+ 	release_firmware(devinfo->clm_fw);
++	release_firmware(devinfo->txcap_fw);
+ 
+ 	if (devinfo->ci)
+ 		brcmf_chip_detach(devinfo->ci);
 -- 
 2.33.0
 
