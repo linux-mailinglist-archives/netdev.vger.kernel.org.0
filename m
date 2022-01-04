@@ -2,124 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA01C4846F9
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 18:27:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2CBA48471D
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 18:41:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235523AbiADR1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 12:27:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232884AbiADR1b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 12:27:31 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C84C061761;
-        Tue,  4 Jan 2022 09:27:31 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id j11so81475296lfg.3;
-        Tue, 04 Jan 2022 09:27:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=oEpnYAm67CBx/UycGy4K6PJ7NPnBfxvjloHj5Duq34Q=;
-        b=nVw2UAiB6xthSU977wls63qlOy/xOCnv8ZomXUTgIWL3zEdNoc6OyFtMlm/cOvg6r1
-         dLEi7/HHba0k9iYS016eh5ZjvBEzd7vqYDI0vg97d/IuEHhun7CJF7zRZBJ6RRuXl9He
-         QtaqH8xW++i7QlRATLPVS2VQq7QfjMYfdQvYQr1b11Dr4w+DL3vt7qrr1QSfCAMBd5FO
-         Lkf25fOMuhaHgUE3Q7i/sz56iBYNGxqk22eIcATQiWvZMFoCExIuJjef8YH2DwKu/x+1
-         FGaYiigyNFSMXgC239AE/mXgjfV9OOZHiuWxw5gwVR4iR5k9RWc7HXclCkOKMqCRX7ZI
-         nszw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oEpnYAm67CBx/UycGy4K6PJ7NPnBfxvjloHj5Duq34Q=;
-        b=gbOc14JDbv2BQEyYNAFoO09Dw8mPEsnnRiQXZ8b6OpC6jgraAYVEsVAezaR2vNiVdA
-         Y8G+Fom0roYxyJHMa7m/qkUCDCoK1EtkcrydvaXuZD0Sud32hmx0B/uAGCn43KymCaWR
-         WTkDbp3B4QzkkFL0fm2M5jWMIkCxaWKWJyWaQti8GLZdB92jtoDcvOub1W8yAtOUt5Ho
-         H1l+J2oJQn+J/iHysRSTKDqfaOjRfjCwA3Ii2h5GaQi3xr4HMa82Gl9rYiJzvoFjaPvm
-         hjP6mdMVQFFavIrTtJAchWb7IWPtSRgz0Xl0UNHfcqpNptS0D0ezEb8eNrYXdhmDmjDa
-         QUqw==
-X-Gm-Message-State: AOAM531oymOJnrBwUfRzE9LF96/Fc7hR8BuDqspHhbmReHJOVwN9NR7Z
-        rLyp55og+9Jkcwh2D23Qi0s=
-X-Google-Smtp-Source: ABdhPJzcTWddpB4EQvW94F90YPyJtOXWx2ZegvKevNmhAZzYtRfDTtyzybQXGcnD+0YnfK/2who+zg==
-X-Received: by 2002:a05:6512:3056:: with SMTP id b22mr41917697lfb.142.1641317249615;
-        Tue, 04 Jan 2022 09:27:29 -0800 (PST)
-Received: from [192.168.1.11] ([94.103.235.38])
-        by smtp.gmail.com with ESMTPSA id br34sm3949699lfb.305.2022.01.04.09.27.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Jan 2022 09:27:29 -0800 (PST)
-Message-ID: <5b0b8dc6-f038-bfaa-550c-dc23636f0497@gmail.com>
-Date:   Tue, 4 Jan 2022 20:27:28 +0300
+        id S235841AbiADRlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 12:41:04 -0500
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:39252
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235820AbiADRlD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 12:41:03 -0500
+Received: from [192.168.1.7] (unknown [222.129.35.96])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 8190A3F11D;
+        Tue,  4 Jan 2022 17:40:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1641318055;
+        bh=LuQb28R2FkLy01iYLZ8QkxirC3IlNK0sfWy4RR2SAYQ=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=WInJL35A2sSz8464pePpjabQuyPyIdKmTnNd67/ANReKaMADAzM49Ndk++AO7MUcA
+         8qG6DVCAkZKtihyq91fz8nlVH2OmAOljd76XnlA+oiF00ul+JdYvOpyC+KRoxwNwZb
+         pWKADSlqJ9StQgzxhi/xIOiWHvrmcjXvbeRNo++eK30BIgMu//OgFh2QQh9tFyqbOm
+         oh9bU58Dp0kU8RrFud7zRXw83b4Q4C8soHwnma+CwJ3zViipuE807j3S+qYQ4h7Bs9
+         rf7USO2TlGjfaQj5dz9vL8irmmYnLBPOBIsmuppKh83v8wCSZVn4mWu9WPXBv8j47A
+         SJ78JCw5DZ8yA==
+Message-ID: <601815fe-a10e-fe48-254c-ed2ef1accffc@canonical.com>
+Date:   Wed, 5 Jan 2022 01:40:42 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v2] ieee802154: atusb: fix uninit value in
- atusb_set_extended_addr
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] net: usb: r8152: Add MAC passthrough support for more
+ Lenovo Docks
 Content-Language: en-US
-To:     Stefan Schmidt <stefan@datenfreihafen.org>, alex.aring@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexander Potapenko <glider@google.com>
-References: <CAB_54W50xKFCWZ5vYuDG2p4ijpd63cSutRrV4MLs9oasLmKgzQ@mail.gmail.com>
- <20220103120925.25207-1-paskripkin@gmail.com>
- <ed39cbe6-0885-a3ab-fc30-7c292e1acc53@datenfreihafen.org>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <ed39cbe6-0885-a3ab-fc30-7c292e1acc53@datenfreihafen.org>
+To:     Henning Schild <henning.schild@siemens.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20211116141917.31661-1-aaron.ma@canonical.com>
+ <20220104123814.32bf179e@md1za8fc.ad001.siemens.net>
+ <20220104065326.2a73f674@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220104180715.7ecb0980@md1za8fc.ad001.siemens.net>
+From:   Aaron Ma <aaron.ma@canonical.com>
+In-Reply-To: <20220104180715.7ecb0980@md1za8fc.ad001.siemens.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/4/22 18:40, Stefan Schmidt wrote:
+
+
+On 1/5/22 01:07, Henning Schild wrote:
+> Am Tue, 4 Jan 2022 06:53:26 -0800
+> schrieb Jakub Kicinski <kuba@kernel.org>:
 > 
-> It compiles, but does not work on the real hardware.
+>> On Tue, 4 Jan 2022 12:38:14 +0100 Henning Schild wrote:
+>>> This patch is wrong and taking the MAC inheritance way too far. Now
+>>> any USB Ethernet dongle connected to a Lenovo USB Hub will go into
+>>> inheritance (which is meant for docks).
+>>>
+>>> It means that such dongles plugged directly into the laptop will do
+>>> that, or travel adaptors/hubs which are not "active docks".
+>>>
+>>> I have USB-Ethernet dongles on two desks and both stopped working as
+>>> expected because they took the main MAC, even with it being used at
+>>> the same time. The inheritance should (if at all) only be done for
+>>> clearly identified docks and only for one r8152 instance ... not
+>>> all. Maybe even double checking if that main PHY is "plugged" and
+>>> monitoring it to back off as soon as it is.
+>>>
+>>> With this patch applied users can not use multiple ethernet devices
+>>> anymore ... if some of them are r8152 and connected to "Lenovo" ...
+>>> which is more than likely!
+>>>
+>>> Reverting that patch solved my problem, but i later went to
+>>> disabling that very questionable BIOS feature to disable things for
+>>> good without having to patch my kernel.
+>>>
+>>> I strongly suggest to revert that. And if not please drop the
+>>> defines of
+>>>> -		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
+>>>> -		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
+>>>
+>>> And instead of crapping out with "(unnamed net_device)
+>>> (uninitialized): Invalid header when reading pass-thru MAC addr"
+>>> when the BIOS feature is turned off, one might want to check
+>>> DSDT/WMT1/ITEM/"MACAddressPassThrough" which is my best for asking
+>>> the BIOS if the feature is wanted.
+>>
+>> Thank you for the report!
+>>
+>> Aaron, will you be able to fix this quickly? 5.16 is about to be
+>> released.
 > 
-> [    1.114698] usb 1-1: new full-speed USB device number 2 using uhci_hcd
-> [    1.261691] usb 1-1: New USB device found, idVendor=20b7,
-> idProduct=1540, bcdDevice= 0.01
-> [    1.263421] usb 1-1: New USB device strings: Mfr=0, Product=0,
-> SerialNumber=1
-> [    1.264952] usb 1-1: SerialNumber: 4630333438371502231a
-> [    1.278042] usb 1-1: ATUSB: AT86RF231 version 2
-> [    1.281087] usb 1-1: Firmware: major: 0, minor: 3, hardware type:
-> ATUSB (2)
-> [    1.285191] usb 1-1: atusb_control_msg: req 0x01 val 0x0 idx 0x0,
-> error -61
-> [    1.286903] usb 1-1: failed to fetch extended address, random address set
-> [    1.288757] usb 1-1: atusb_probe: initialization failed, error = -61
-> [    1.290922] atusb: probe of 1-1:1.0 failed with error -61
+> If you guys agree with a revert and potentially other actions, i would
+> be willing to help. In any case it is not super-urgent since we can
+> maybe agree an regression and push it back into stable kernels.
 > 
+> I first wanted to place the report and see how people would react ...
+> if you guys agree that this is a bug and the inheritance is going "way
+> too far".
 > 
-> Without your patch it works as expected:
-> 
-> [    1.091925] usb 1-1: new full-speed USB device number 2 using uhci_hcd
-> [    1.237743] usb 1-1: New USB device found, idVendor=20b7,
-> idProduct=1540, bcdDevice= 0.01
-> [    1.239788] usb 1-1: New USB device strings: Mfr=0, Product=0,
-> SerialNumber=1
-> [    1.241432] usb 1-1: SerialNumber: 4630333438371502231a
-> [    1.255012] usb 1-1: ATUSB: AT86RF231 version 2
-> [    1.258073] usb 1-1: Firmware: major: 0, minor: 3, hardware type:
-> ATUSB (2)
-> [    1.262170] usb 1-1: Firmware: build #132 Mo 28. Nov 16:20:35 CET 2016
-> [    1.266195] usb 1-1: Read permanent extended address
-> 10:e2:d5:ff:ff:00:02:e8 from device
+> But i would only do some repairs on the surface, the feature itself is
+> horrific to say the least and i am very happy with that BIOS switch to
+> ditch it for good. Giving the MAC out is something a dock physically
+> blocking the original PHY could do ... but year ... only once and it
+> might be pretty hard to say which r8152 is built-in from the hub and
+> which is plugged in additionally in that very hub.
+> Not to mention multiple hubs of the same type ... in a nice USB-C chain.
 > 
 
-Hi Stefan,
+Yes, it's expected to be a mess if multiple r8152 are attached to Lenovo USB-C/TBT docks.
+The issue had been discussed for several times in LKML.
+Either lose this feature or add potential risk for multiple r8152.
 
-thanks for testing on real hw.
+The idea is to make the Dock work which only ship with one r8152.
+It's really hard to say r8152 is from dock or another plugin one.
 
-It looks like there is corner case, that Greg mentioned in this thread. 
-atusb_get_and_show_build() reads firmware build info, which may have 
-various length.
+If revert this patch, then most users with the original shipped dock may lose this feature.
+That's the problem this patch try to fix.
 
-Maybe we can change atusb_control_msg() to usb_control_msg() in 
-atusb_get_and_show_build(), since other callers do not have this problem
+For now I suggest to disable it in BIOS if you got multiple r8152.
+
+Let me try to make some changes to limit this feature in one r8152.
+
+Aaron
 
 
-
-With regards,
-Pavel Skripkin
+> MAC spoofing is something NetworkManager and others can take care of,
+> or udev ... doing that in the driver is ... spooky.
+> 
+> regards,
+> Henning
