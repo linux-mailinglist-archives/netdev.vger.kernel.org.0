@@ -2,104 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C4B1484AD4
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 23:38:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5B53484B24
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 00:23:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235627AbiADWiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 17:38:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235613AbiADWiw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 17:38:52 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844C6C061761;
-        Tue,  4 Jan 2022 14:38:51 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id bp20so84919265lfb.6;
-        Tue, 04 Jan 2022 14:38:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ltp8LALALJteT6noWWok492G/OMAgatm1CDGi/K+eLI=;
-        b=h+/IOsru5P7OYh1PfOWHFlhgLEOIzWl+bNQxEPvgggaydWshTCfq5FPyeeI5X6Q14m
-         FiGzeAz626D9ZmL4GdW0gH79tNctOCD4vElNcP3ceb8TXhTstP3T9srSmzuiEsTbIpXY
-         lbhq5M9j6cgRbgKREN+PQD8c3kEnEPN97S0yPCFWRjNc2T9IUOl8TMVnkNPHbc0BN3bH
-         dQXLJegBXhlxjU2kwceyavjWqjK28FDtHB4q5JnrBMW2LfZWAaRjYVvms6y/QM5i4gqS
-         Dr/5yyDm0mNTVdIxUkJWTOI9tON4UwAD+931M2ch4E3aBYbnofgfAER2UyMRtabhJl/y
-         692g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ltp8LALALJteT6noWWok492G/OMAgatm1CDGi/K+eLI=;
-        b=1BWR1yA33OWqiesASkpljX2m8lw4zhx0HPbo3GSlqCVZSMoAuaCxbP32rICwkpAl8r
-         b64+hF3pzzaeWIY0Fey52CsmEDqNPpEL0l9pv9Epdkj0X3ry/WjyyzBMImyYgMhuvHx/
-         0Ip3ZjpVmenuvPaEeSWMLI/m2Jpp79fCQPDGxNSjPWoX1Kokcmk+b9sXi+zuklXr4wTj
-         NloYyKiGOeO9KmVRgelc90Ki3SVS9e8uUdI1VXelDgjM3ZfGJsYdSeDdjBFlHfhXRd4o
-         BnmWQSQtHH3NmGlJ1zoi9wsTS1FsEJNNjkUYAFs7KgIHUC0pYdZHl2ux95RJIT1+FkEK
-         S0Ew==
-X-Gm-Message-State: AOAM5324NHnsC680jHkk3AWMgY2S3/jRXrPDDIRcCKsjnaQQ3Cw461KV
-        KOsonFm/Et+yMQ64FdUNcsg=
-X-Google-Smtp-Source: ABdhPJwzMivr9lO9qHzC3ODAHRJzhhdx/OjIM55OwP6/sJjhsn9GbAEmtEYlY8MTXz9TyyLP7kEwiQ==
-X-Received: by 2002:a05:6512:118b:: with SMTP id g11mr9776235lfr.570.1641335929880;
-        Tue, 04 Jan 2022 14:38:49 -0800 (PST)
-Received: from [192.168.2.145] (46-138-43-24.dynamic.spd-mgts.ru. [46.138.43.24])
-        by smtp.googlemail.com with ESMTPSA id u19sm3138690ljd.94.2022.01.04.14.38.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Jan 2022 14:38:49 -0800 (PST)
-Subject: Re: [PATCH v2 04/35] brcmfmac: firmware: Support having multiple alt
- paths
-To:     Hector Martin <marcan@marcan.st>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20220104072658.69756-1-marcan@marcan.st>
- <20220104072658.69756-5-marcan@marcan.st>
-From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <226a78e1-fa51-1f1b-c547-636797d831e4@gmail.com>
-Date:   Wed, 5 Jan 2022 01:38:46 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S235810AbiADXXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 18:23:10 -0500
+Received: from 6.mo560.mail-out.ovh.net ([87.98.165.38]:41957 "EHLO
+        6.mo560.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234152AbiADXXH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 18:23:07 -0500
+X-Greylist: delayed 8817 seconds by postgrey-1.27 at vger.kernel.org; Tue, 04 Jan 2022 18:23:07 EST
+Received: from player728.ha.ovh.net (unknown [10.109.143.208])
+        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 38A992436B
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 20:56:09 +0000 (UTC)
+Received: from milecki.pl (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player728.ha.ovh.net (Postfix) with ESMTPSA id D340D25E4B2BB;
+        Tue,  4 Jan 2022 20:56:02 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-98R0026380bf79-739d-4914-9f9d-9982a54db208,
+                    711BEDA5BDA1217D757D3668A2C77AE5119AF47D) smtp.auth=rafal@milecki.pl
+X-OVh-ClientIp: 194.187.74.233
+Message-ID: <0463d60e-b58e-84cc-df5e-d5030e8fdc1d@milecki.pl>
+Date:   Tue, 4 Jan 2022 21:56:01 +0100
 MIME-Version: 1.0
-In-Reply-To: <20220104072658.69756-5-marcan@marcan.st>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: [PATCH 3/5] dt-bindings: nvmem: allow referencing device defined
+ cells by names
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Rob Herring <robh@kernel.org>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20211223110755.22722-1-zajec5@gmail.com>
+ <20211223110755.22722-4-zajec5@gmail.com>
+ <CAL_JsqK2TMu+h4MgQqjN0bvEzqdhsEviBwWiiR9hfNbC5eOCKg@mail.gmail.com>
+ <f173d7a6-70e7-498f-8a04-b025c75f2b66@gmail.com>
+ <YdSrG3EGDHMmhm1Y@robh.at.kernel.org>
+ <49a2b78e-67a8-2e5c-f0c4-542851eabbf2@gmail.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+In-Reply-To: <49a2b78e-67a8-2e5c-f0c4-542851eabbf2@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 12999921799475342199
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvuddrudeffedgudegfecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfhfhfgjtgfgsehtkeertddtfeejnecuhfhrohhmpeftrghfrghlucfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeejteeludegjedtveehteeiudehgfetvdegffdtvdefvdeiveejgeelffelgedtueenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejvdekrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhrtghpthhtohepnhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-04.01.2022 10:26, Hector Martin пишет:
-> +static int brcm_alt_fw_paths(const char *path, const char *board_type,
-> +			     const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS])
->  {
-...
-> +static void
-> +brcm_free_alt_fw_paths(const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS])
-> +{
+On 4.01.2022 21:50, Rafał Miłecki wrote:
+> On 4.01.2022 21:16, Rob Herring wrote:
+>> On Thu, Dec 23, 2021 at 10:58:56PM +0100, Rafał Miłecki wrote:
+>>> On 23.12.2021 22:18, Rob Herring wrote:
+>>>> On Thu, Dec 23, 2021 at 7:08 AM Rafał Miłecki <zajec5@gmail.com> wrote:
+>>>>>
+>>>>> From: Rafał Miłecki <rafal@milecki.pl>
+>>>>>
+>>>>> Not every NVMEM has predefined cells at hardcoded addresses. Some
+>>>>> devices store cells in internal structs and custom formats. Referencing
+>>>>> such cells is still required to let other bindings use them.
+>>>>>
+>>>>> Modify binding to require "reg" xor "label". The later one can be used
+>>>>> to match "dynamic" NVMEM cells by their names.
+>>>>
+>>>> 'label' is supposed to correspond to a sticker on a port or something
+>>>> human identifiable. It generally should be something optional to
+>>>> making the OS functional. Yes, there are already some abuses of that,
+>>>> but this case is too far for me.
+>>>
+>>> Good to learn that!
+>>>
+>>> "name" is special & not allowed I think.
+>>
+>> It's the node name essentially. Why is using node names not sufficient?
+>> Do you have some specific examples?
+> 
+> I tried to explain in
+> [PATCH 1/5] dt-bindings: nvmem: add "label" property to allow more flexible cells names
+> that some vendors come with fancy names that can't fit node names.
+> 
+> Broadcom's NVRAM examples:
+> 0:macaddr
+> 1:macaddr
+> 2:macaddr
+> 0:ccode
+> 1:ccode
+> 2:ccode
+> 0:regrev
 
-I'd rename this funcs to brcm_init/deinit_alt_fw_paths(), for
-consistency and clarity.
+In other words I'd like to have something like:
+
+nvram@1eff0000 {
+	compatible = "brcm,nvram";
+	reg = <0x1eff0000 0x10000>;
+
+	mac: cell-0 {
+		label = "1:macaddr";
+	};
+};
+
+ethernet@1000 {
+	compatible = "brcm,ethernet";
+	reg = <0x1000 0x1000>;
+	nvmem-cells = <&mac>;
+	nvmem-cell-names = "mac-address";
+};
