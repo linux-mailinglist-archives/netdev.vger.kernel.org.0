@@ -2,78 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ED704843A4
-	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 15:46:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A1E24843DC
+	for <lists+netdev@lfdr.de>; Tue,  4 Jan 2022 15:53:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234356AbiADOqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 09:46:25 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:50896 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231519AbiADOqY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 09:46:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Ud2jEnjGhrKvClBdA1a2WDyh6jHKcxWAWDDYyIRsGk0=; b=tQqzpviI6bB84IlZ0GaWEC7Sc+
-        URKX2jrs31pTvEouEzWKbnvJvWgmaEeHEWXOdsuVXhZ82O+Gjijch0fOp1JBwttwZd49SYT6onwDT
-        EYok7dm9PHLBeD5J4liIOKv+Ce1nXQQ9TGAhMZbc1qntHqeok9AX35FoG+Qnb8OJ1/dI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n4l4t-000TOh-5U; Tue, 04 Jan 2022 15:46:19 +0100
-Date:   Tue, 4 Jan 2022 15:46:19 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Corentin Labbe <clabbe.montjoie@gmail.com>,
-        linus.walleij@linaro.org, ulli.kroll@googlemail.com,
-        kuba@kernel.org, davem@davemloft.net, hkallweit1@gmail.com,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: net: phy: marvell: network working with generic PHY and not with
- marvell PHY
-Message-ID: <YdRdu3jFPnGd1DsH@lunn.ch>
-References: <YdQoOSXS98+Af1wO@Red>
- <YdQsJnfqjaFrtC0m@shell.armlinux.org.uk>
- <YdQwexJVfrdzEfZK@Red>
- <YdQydK4GhI0P5RYL@shell.armlinux.org.uk>
- <YdQ5i+//UITSbxS/@shell.armlinux.org.uk>
- <YdRVovG9mgEWffkn@Red>
- <YdRZQl6U0y19P/0+@shell.armlinux.org.uk>
+        id S232078AbiADOx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 09:53:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59954 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229504AbiADOx3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 09:53:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55AC4C061761;
+        Tue,  4 Jan 2022 06:53:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E70CA612E7;
+        Tue,  4 Jan 2022 14:53:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01D2AC36AED;
+        Tue,  4 Jan 2022 14:53:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641308008;
+        bh=0y3hkgpNcGJVZzPYwC7KrnbZbGGnlR7BZtECqLgn7uA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=M4FpgfBHDjWLkSAutnr6OJl0w+HHGWaCjjXRfPZZ0jxQj1VZ4IZ1JuYHJNJhHP/eB
+         +FR8TvC3p8i9iYKYgi/f6AzbwqkBVAagzF8KQVcQuW1J98oGTgmkDEYOsd0qqAQ71K
+         W66bRITleZOgOJJE/G7px0hXfU5K5V+KSLsH7qm09z2rcgKxURjNRS4FBqv2c/7PxE
+         dvwXUkjinEfZD9298/wBDlA+SoTkLEfvY1fGF/hyqPgN5+OtY5z95DuulsU8QEbi14
+         hcEB1nypWwm0EgPzVcaPSUkI095Pqht58e185upg4tjp603k45/5ga3tcygNVdsJfj
+         i9Z4B4PouY5TQ==
+Date:   Tue, 4 Jan 2022 06:53:26 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Henning Schild <henning.schild@siemens.com>,
+        Aaron Ma <aaron.ma@canonical.com>
+Cc:     <davem@davemloft.net>, <hayeswang@realtek.com>, <tiwai@suse.de>,
+        <linux-usb@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: usb: r8152: Add MAC passthrough support for more
+ Lenovo Docks
+Message-ID: <20220104065326.2a73f674@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220104123814.32bf179e@md1za8fc.ad001.siemens.net>
+References: <20211116141917.31661-1-aaron.ma@canonical.com>
+        <20220104123814.32bf179e@md1za8fc.ad001.siemens.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YdRZQl6U0y19P/0+@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -1227,16 +1227,18 @@ static int m88e1118_config_init(struct phy_device *phydev)
->  {
->  	int err;
->  
-> -	/* Change address */
-> -	err = marvell_set_page(phydev, MII_MARVELL_MSCR_PAGE);
-> -	if (err < 0)
-> -		return err;
-> -
->  	/* Enable 1000 Mbit */
-> -	err = phy_write(phydev, 0x15, 0x1070);
-> +	err = phy_write_paged(phydev, MII_MARVELL_MSCR_PAGE,
-> +			      MII_88E1121_PHY_MSCR_REG, 0x1070);
+On Tue, 4 Jan 2022 12:38:14 +0100 Henning Schild wrote:
+> This patch is wrong and taking the MAC inheritance way too far. Now any
+> USB Ethernet dongle connected to a Lenovo USB Hub will go into
+> inheritance (which is meant for docks).
+> 
+> It means that such dongles plugged directly into the laptop will do
+> that, or travel adaptors/hubs which are not "active docks".
+> 
+> I have USB-Ethernet dongles on two desks and both stopped working as
+> expected because they took the main MAC, even with it being used at the
+> same time. The inheritance should (if at all) only be done for clearly
+> identified docks and only for one r8152 instance ... not all. Maybe
+> even double checking if that main PHY is "plugged" and monitoring it to
+> back off as soon as it is.
+> 
+> With this patch applied users can not use multiple ethernet devices
+> anymore ... if some of them are r8152 and connected to "Lenovo" ...
+> which is more than likely!
+> 
+> Reverting that patch solved my problem, but i later went to disabling
+> that very questionable BIOS feature to disable things for good without
+> having to patch my kernel.
+> 
+> I strongly suggest to revert that. And if not please drop the defines of
+> 
+> > -		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
+> > -		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:  
+> 
+> And instead of crapping out with "(unnamed net_device) (uninitialized):
+> Invalid header when reading pass-thru MAC addr" when the BIOS feature
+> is turned off, one might want to check
+> DSDT/WMT1/ITEM/"MACAddressPassThrough" which is my best for asking the
+> BIOS if the feature is wanted.
 
-Ah, yes, keeping this makes it more backwards compatible.
+Thank you for the report!
 
-It would be nice to replace the 0x1070 with #defines.
-
-We already have:
-
-#define MII_88E1121_PHY_MSCR_RX_DELAY	BIT(5)
-#define MII_88E1121_PHY_MSCR_TX_DELAY	BIT(4)
-#define MII_88E1121_PHY_MSCR_DELAY_MASK	(BIT(5) | BIT(4))
-
-Bits 6 is the MSB of the default MAC speed.
-Bit 13 is the LSB of the default MAC speed. These two should default to 10b = 1000Mbps
-Bit 12 is reserved, and should be written 1.
-
-    Andrew
+Aaron, will you be able to fix this quickly? 5.16 is about to be
+released.
