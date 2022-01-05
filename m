@@ -2,158 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E3D94854F7
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:46:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69B8C4854FF
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:48:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241043AbiAEOqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 09:46:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46050 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241016AbiAEOqC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 09:46:02 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC07C061761;
-        Wed,  5 Jan 2022 06:46:01 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id n30so50791111eda.13;
-        Wed, 05 Jan 2022 06:46:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tsD8f9xe/yOoJyzdLoBuH5tO2pYgzHZZxGASx3vHHzc=;
-        b=DIxyCLkUahoU3M+mxj7Jnpgjin2quX9tiF8LVbOUOS77Ig8gN6twbyS4ggZgDKGwJp
-         dwkGGjW3obwD/nXAl0hnZuaSkAyRyIm6Q/zAsh7C6ny1yPDD/7J34wmIkTPHNo1qql1s
-         dvzL6xD5oTQdr/sjbmnUrEtAVrxayDvnmxsqHER16jaMiuvuUIwAbXsXOONDIrhJCsIp
-         I6kxo1XZvtJQBqbCavTxSwfjdZhQ11o3x9pGestofLnfbtNZ/rakyIqTAxat4QEYdYgw
-         KqcYECfGxS0GD0mNf0eQHD9BMdD0AobA1c85F5puEmGmmeVzlMCPxJGnweKzBH8rvv+G
-         ryDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tsD8f9xe/yOoJyzdLoBuH5tO2pYgzHZZxGASx3vHHzc=;
-        b=mtKsuGnxc4uTtOEnEyCYOkivgzbw8y35mquhDeBk+S1MPtOqeaKY6qTKJ7vxV8ekWM
-         VmQEHpYk72E5ikn9Mi7tIr/I9v5/lBdBSF16+MyJ4Rcj7DgI9DQ6p/kghWoQdZL3pitt
-         pBrPFazOXXQTNg6jg1kkLjXvxknF46XZAyeNXKy15AaTSUXhJUlYGfka5zKUZTh5B9sT
-         /ldOzYOl18+PtPuQ7JdrRauaHVGcqvXGDYCN4HY2TXq/8bgX4/7M1PRpICuPxIYfeR/4
-         GNR5IQl/ZJdv/xMLJafsT2wMv7b5T9lUChosiyo8fe51434fmjMfu22w2NZA7G7d8pOZ
-         jktA==
-X-Gm-Message-State: AOAM5310caH8mf9ePnHPgtnovPqQdT9eVaoBE2Gq+mvLGaOmfIGpO2Eo
-        sd268EnRGdYbzqfiGDUOCuHl3ewPHwfSj7yTN/s=
-X-Google-Smtp-Source: ABdhPJzqdTl12XqIiJxzbnH7n36IgPGIQLTJWVcS4lHqMHrwIOSL3dEE9I5pAkIRrQootrBZoBpAV7jdyKZtXiGWL6g=
-X-Received: by 2002:a05:6402:40cd:: with SMTP id z13mr52996828edb.103.1641393960293;
- Wed, 05 Jan 2022 06:46:00 -0800 (PST)
+        id S241062AbiAEOsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 09:48:47 -0500
+Received: from mga14.intel.com ([192.55.52.115]:25975 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240844AbiAEOsp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jan 2022 09:48:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641394125; x=1672930125;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BluWvZ/SzIyu7H1lFCAHJFGwIQioSeRbHSiFGYvZDCg=;
+  b=amsm9mw3qkThqE5nsuFWMts4AvL70fG9y5aI9F2CpmKg2ryy8GWREK5R
+   sJSdf0d8LeubW9uH320y/ChV1fjjBaWsipEbXkgdJsx2iQIqR8e/oOcGl
+   3C7DAZRZ7nbxOow4QSXSM9goxuLEz1wpGnprTa5df4OXRF6mgnR1iehnd
+   MXuWNn6ECWKs8y9/NMVoLaNKI/5sI3sT0buuu4a4sOJM0xRq75ry5uY/D
+   Yq2nsiHks0zv5ikNlDmkD00ZUILoSTE0vPVvI63Dk6iCrpPaX8UbLlTY3
+   BIf8ZY+lkhrBJ/lGHq31FNKg80sbrGwUPg4iCnc2/X80vVneNJeP+02Gb
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="242665290"
+X-IronPort-AV: E=Sophos;i="5.88,264,1635231600"; 
+   d="scan'208";a="242665290"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 06:48:45 -0800
+X-IronPort-AV: E=Sophos;i="5.88,264,1635231600"; 
+   d="scan'208";a="526561703"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 06:48:42 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1n57ZV-006jg0-SK;
+        Wed, 05 Jan 2022 16:47:25 +0200
+Date:   Wed, 5 Jan 2022 16:47:25 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v1 1/1] can: mcp251x: Get rid of duplicate of_node
+ assignment
+Message-ID: <YdWvfdRTpPZ0YcSD@smile.fi.intel.com>
+References: <20211202205855.76946-1-andriy.shevchenko@linux.intel.com>
+ <YbHvcDhtZFTyfThT@smile.fi.intel.com>
+ <20211210130607.rajkkzr7lf6l4tok@pengutronix.de>
+ <YbNT4iOj+jfMiIDu@smile.fi.intel.com>
+ <YdWpWSMhzmElnIJH@smile.fi.intel.com>
+ <20220105143448.pnckx2wgal2y3rll@pengutronix.de>
 MIME-Version: 1.0
-References: <20220105131849.2559506-1-imagedong@tencent.com>
- <20220105131849.2559506-3-imagedong@tencent.com> <CANn89iLMNK0Yo=5LmcV=NMLmAUEZsb1V__V5bY+ZNh347UE-xg@mail.gmail.com>
-In-Reply-To: <CANn89iLMNK0Yo=5LmcV=NMLmAUEZsb1V__V5bY+ZNh347UE-xg@mail.gmail.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Wed, 5 Jan 2022 22:45:48 +0800
-Message-ID: <CADxym3YKfp5=oyJRyM9AVp8GW7+fLuboeW0gs-LagLDy+hfj_g@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 2/2] bpf: selftests: add bind retry for
- post_bind{4, 6}
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Menglong Dong <imagedong@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220105143448.pnckx2wgal2y3rll@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 5, 2022 at 9:57 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Wed, Jan 5, 2022 at 5:21 AM <menglong8.dong@gmail.com> wrote:
-> >
-> > From: Menglong Dong <imagedong@tencent.com>
-> >
-> > With previous patch, kernel is able to 'put_port' after sys_bind()
-> > fails. Add the test for that case: rebind another port after
-> > sys_bind() fails. If the bind success, it means previous bind
-> > operation is already undoed.
-> >
-> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> > ---
-> >  tools/testing/selftests/bpf/test_sock.c | 166 +++++++++++++++++++++---
-> >  1 file changed, 146 insertions(+), 20 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_sock.c b/tools/testing/selftests/bpf/test_sock.c
-> > index e8edd3dd3ec2..68525d68d4e5 100644
-> > --- a/tools/testing/selftests/bpf/test_sock.c
-> > +++ b/tools/testing/selftests/bpf/test_sock.c
-> > @@ -35,12 +35,15 @@ struct sock_test {
-> >         /* Endpoint to bind() to */
-> >         const char *ip;
-> >         unsigned short port;
-> > +       unsigned short port_retry;
-> >         /* Expected test result */
-> >         enum {
-> >                 LOAD_REJECT,
-> >                 ATTACH_REJECT,
-> >                 BIND_REJECT,
-> >                 SUCCESS,
-> > +               RETRY_SUCCESS,
-> > +               RETRY_REJECT
-> >         } result;
-> >  };
-> >
-> > @@ -60,6 +63,7 @@ static struct sock_test tests[] = {
-> >                 0,
-> >                 NULL,
-> >                 0,
-> > +               0,
-> >                 LOAD_REJECT,
-> >         },
->
->
-> I assume we tried C99 initializers here, and this failed for some reason ?
->
+On Wed, Jan 05, 2022 at 03:34:48PM +0100, Marc Kleine-Budde wrote:
+> On 05.01.2022 16:21:13, Andy Shevchenko wrote:
+> > On Fri, Dec 10, 2021 at 03:19:31PM +0200, Andy Shevchenko wrote:
+> > > On Fri, Dec 10, 2021 at 02:06:07PM +0100, Marc Kleine-Budde wrote:
+> > > > On 09.12.2021 13:58:40, Andy Shevchenko wrote:
+> > > > > On Thu, Dec 02, 2021 at 10:58:55PM +0200, Andy Shevchenko wrote:
+> > > 
+> > > ...
+> > > 
+> > > > > Marc, what do you think about this change?
+> > > > 
+> > > > LGTM, added to linux-can-next/testing.
+> > > 
+> > > Thanks for applying this and hi311x patches!
+> > 
+> > Can we have a chance to see it in the v5.17-rc1?
+> 
+> Yes:
+> https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/log/?h=linux-can-next-for-5.17-20220105
+> 
+> 'about to send that PR.
 
-Yeah, C99 initializers should be a good choice here, therefore
-I don't need to change every entry here after I add a new field to
-'struct sock_test'.
+Cool, thanks! Happy new year!
 
-I think C99 initializers should work here, I'll give it a try.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Thanks!
-Menglong Dong
 
-> diff --git a/tools/testing/selftests/bpf/test_sock.c
-> b/tools/testing/selftests/bpf/test_sock.c
-> index e8edd3dd3ec2..b57ce9f3eabf 100644
-> --- a/tools/testing/selftests/bpf/test_sock.c
-> +++ b/tools/testing/selftests/bpf/test_sock.c
-> @@ -54,13 +54,13 @@ static struct sock_test tests[] = {
->                         BPF_MOV64_IMM(BPF_REG_0, 1),
->                         BPF_EXIT_INSN(),
->                 },
-> -               BPF_CGROUP_INET4_POST_BIND,
-> -               BPF_CGROUP_INET4_POST_BIND,
-> -               0,
-> -               0,
-> -               NULL,
-> -               0,
-> -               LOAD_REJECT,
-> +               .expected_attach_type = BPF_CGROUP_INET4_POST_BIND,
-> +               .attach_type = BPF_CGROUP_INET4_POST_BIND,
-> +               .domain = 0,
-> +               .type = 0,
-> +               .ip = NULL,
-> +               .port = 0,
-> +               .result = LOAD_REJECT,
->         },
->         {
->                 "bind4 load with invalid access: mark",
