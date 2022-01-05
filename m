@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14087485359
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4888048535A
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:18:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237076AbiAENSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 08:18:30 -0500
+        id S237084AbiAENSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 08:18:31 -0500
 Received: from mail-eopbgr40062.outbound.protection.outlook.com ([40.107.4.62]:24383
         "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237058AbiAENS0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jan 2022 08:18:26 -0500
+        id S237074AbiAENS2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jan 2022 08:18:28 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N3aDA3pjZRIk6mIA1qTmSnH9GAifQ6AuWL3Pcg+vTCpMyS3sDibEAfmbVtK1/RMKS9cIgmt+e00LTg/u0rA0zxFKWp05Bp13EXvr03RuWDAW35RNoGUI78Vm0pNaK0nF5AuKsAYS2USzymsLLBduM74sOZqMNJSLYzmcrWqFsjCnCR7yQ1oKTwKHn+Bne/R6/0HXlZF/c6NoZKbjDzplbWNHow2X0ViCQSqbywPdfujeYSipjhovmwpHa/cGg7GZsdFd5FYa5UtDbmBuFSO5Y/Uod+p4FSO4uJvD17g+nTS+FnzdsvefNA3zlPJCSqa/hBbxjf0gIUJ+37zuOTs7rw==
+ b=jrZhvideN+JhgrCsq2vEovRu3ycXSV8BfrmS8t6hQitZKh06nlshgE8cqmNnG44hVR6L3x2esaC0qK1Zrr8uyjhqFMLOSoyg4kPJpmvMlSYTW6fZ5kNSyyDK8EhQP7NqsA7QlmLrGpw0TdpO9ZJjhh4yGWqXgRjIXjv1xirA4Q5tQdHTfmSX5/kh99HKdbuQVfw4/yjSl/dTT8gWvLS3hR9EYC/7u9zwNfWvwEHY2SezEjBwUb69v0zn1R8yZDLtkOBVzzzz9gr13k3RmdNfFl1Ae+Y4nZuGuvKPdLGEOjHRYHyNqXEpQT/Hj0TgvQh6UjBBK1Y8mGc2vsQqvIiW3w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Qxt9uz6moe8ELzNcgditIjjctbZWzxS81uhY+a5RhFA=;
- b=HHW8B2q8j0d8vSMqHGPaZXXlZmK2VLI+C/8AjZipeVozHlr1Hlr75tv0f7F3UrSdxxrdVTztkaR+pCYokLVVpe5QPcLAaXrhWd1i6TCPkNl9Biu56puKhwW2FdGOSeog+KfFPX2s+dOazNDnmo4eZoAraUcKfVdEXdt7UKi8Hmpn8ZdcB83le1gQxyTBdq6CazG1DXEoZ+xkyU02BYo10z1lw3GLDduwisWkvjMTBZtEHee01NKCyyki+sQxNDsYgi5XnHi7x+8xn/BzqVWGk/Z0ZRf6EAyh012m0rVJcKUYIiWuyBPTqKBIT59O+nX6ddvCsr8BHDHctaF+FZExNw==
+ bh=b5cnKkCIVO9FpCrLXWpU9V+tbKe6rGwVN049sIBnwy0=;
+ b=mEsAFCuqQUEeCUAi7OvyWgWA4MCUEbvkoMNLlg5At06aObHmR/PP6vYoN7mk1C6anGhAqHF/zHW56pRjp2xIv/7WxxKHRGdpEpRKXETNse0yPhAUjc1hFHv8hVAiOj+tSx3UDcELWiG8jwkgS5sevTsTmWfATnY5rpFbslo++K/y3ONhF7IoY1dqmFJ0XLpmW+5ZDChi2XbSs4Cyo/cKJstdNZydmFIRnY+I+gng26lWZrem0IU9h+SviOhe2KjbNEMdfo7Z5Q3EtUtMduiO6vbROi0JDELyhWw/VWlPlVD+9DLE6xOhByB7UQ81l+ogSoON4CQiHxa8kD45qYlOgg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qxt9uz6moe8ELzNcgditIjjctbZWzxS81uhY+a5RhFA=;
- b=n9VANzjjStbX9RwZskVm0/M1/sAOrz5MIc/NNnsdN+2XIpm8lGPcw/BGNbAvxlT1Lz1Xqgvg5n7ghqOM+XpkfvEfAU/A/ZEZ46ZZk8BBDQjik4ctgwMaTxgT2ktSB9DjWcwXVCiGijwug/qkq9arlzF3Ia/BvbBxoXz3CWxq89s=
+ bh=b5cnKkCIVO9FpCrLXWpU9V+tbKe6rGwVN049sIBnwy0=;
+ b=Sbv1DRp3JbCP4MDX6CHu3iW5zyIYRt7AQdvunW4ZZ8d7fPqDQoKenO8WY49446LzHEZUV2LqqvXZoHywxOha03KpZ8aSDMAUFyCYU57758DuGN3b5bCBla82nqNHzIIMbHrc1PnYsFSPkuuHnAE336c2qNcW0EQ2kLrGKekYVe0=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB6942.eurprd04.prod.outlook.com (2603:10a6:803:136::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Wed, 5 Jan
- 2022 13:18:23 +0000
+ 2022 13:18:24 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4844.016; Wed, 5 Jan 2022
- 13:18:23 +0000
+ 13:18:24 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -44,9 +44,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH v2 net-next 1/3] net: dsa: fix incorrect function pointer check for MRP ring roles
-Date:   Wed,  5 Jan 2022 15:18:11 +0200
-Message-Id: <20220105131813.2647558-2-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 2/3] net: dsa: remove cross-chip support for MRP
+Date:   Wed,  5 Jan 2022 15:18:12 +0200
+Message-Id: <20220105131813.2647558-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220105131813.2647558-1-vladimir.oltean@nxp.com>
 References: <20220105131813.2647558-1-vladimir.oltean@nxp.com>
@@ -57,101 +57,269 @@ X-ClientProxiedBy: AS8PR04CA0106.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d2794fc7-11d9-4dd1-d91b-08d9d04dd9f0
+X-MS-Office365-Filtering-Correlation-Id: 429fbc38-39b7-44bd-45de-08d9d04dda82
 X-MS-TrafficTypeDiagnostic: VI1PR04MB6942:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB6942AC44049CA7381BF29744E04B9@VI1PR04MB6942.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB6942541292747AE791B47F24E04B9@VI1PR04MB6942.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BNCMudYolFxAEcHIOYsMCbBoYRM6HECsekPCR+EvvYGjPcErQFV4jokIvOeJI6GNOGFAQaIPRe8wkc/E3huQ1+MrWlKyQSRlWcVcqKD3/X71qfN/GP/Gsa9kKZYe53RtdcSd1zUQ3Gm+aFWBm019GPj6ja4E5r7sRiFnVVHry8oXtf76u/flEQNRdT132OjdiXkRQWAq5DIJlcTmkyH9KSLFJkoJjzltc7mtTpJML7B7qocIWFBewnuXH+n85GQ73OM8g86J1PZe8DZZurtdChhimVU+BHO/obA8K5C1DVphuZPB3hpGNCsCm07qy9tdnByiZ6CYMJN+LsMQBL+7Es46DBb5wX8eAS8XS47tJonDU1eDRYhp4nlITYSsKjrF4hmta2tKkx935XsmiGZ4TEnb2Y0Qs7o5AcEOPdAkrbzkPV34lSTPUMfZM6VH6wk31hJBh9sOV0zLWsRsz/YglgnJoOIbvDt4JOBlux7Yz5IOSTXN5alvlxtuxp9mruWKEQ0JUyIN47uH+poe5fzjpi8te4FF7HLUArFtV3YBX4oVk3reCWNQQruFxS+3KsS8ZF86H9+g7Ocv2F8cgL8JoRQDAgU0y9sKs3xrpbv2h5d+J6xumpQ92wZOtOZDkUEgLjP2HnYOyXLwKjfTKItiEDPU6uI87kxAF7FsgLq5GcFTV36j2gLWQU2Qg+g8ZNEZD9xB8fyYs3Ppb/E4khtP9g==
+X-Microsoft-Antispam-Message-Info: 1RSqg2zScCJREvr2vIVPJg5oxdOGDo04bB20WffqR5dInsTBggNMNPQwdGG31fI3XdkSdHo8a/4rXFF/9jQjbMBba6JXK7Yh/HNQrdOB23ehv2XNr7MiifzQ/Xo0znvboATkAKF4RwKWwj485GmBwK8mtSZNnOIQee3xoPnuPPm7shxckgOiLwIqSxEZxUGmuTE2P2uFP5FULqj3fO1+O7KR13Ge6kJ3MGcU4DgP9sV6l1U0gag4IvFQGvFkFtYFiI/TG8TI/EjPLcXBV4J45XfuG9OWPP69SEzN0wGMNa3czmmAEGweWjvjcRlMYyAnp3p1C19jBT/8lk/YaPH2yCC7qbS80JGyLkel0o2QxL0jFsJ3/om0CZLENokpIP8AW4FyO3JMsb3bgFYDxklbN4aXvToGv3OqArMDIvIMbra1EAFEPupXGR8OJ6KbDzukK7ZQp3Q5tBOatIdiIQxjX0tvfG2jB1752swxrVyBHvfNwkokcEGPPqBmyW9N3sWGgGcrnaTCd5kUIMWPvsuIvwi5cZvdfjqoNFLTlwujcNpinBnuhmUCYP9q6OgKvBRgwv7l7L/Xvgn+bag3xSB2O5tIzSE2zWN0woFjae32c0jUSshf8UYC+XN6ulbbl0yeywIEyNiOGYPLzZtjrH/KkSDuSSOFSvaqLXdchDSWkxbsWpfk5kCZ5I4coVwzQemrOOdhMwTKzcyUHkYLxgeXWg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52116002)(8936002)(6512007)(83380400001)(508600001)(2616005)(6506007)(36756003)(5660300002)(38100700002)(38350700002)(1076003)(6666004)(4326008)(44832011)(316002)(66476007)(66556008)(66946007)(86362001)(186003)(26005)(8676002)(6916009)(2906002)(54906003)(6486002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9QIc7zeQpAB1xVrkB6Tv+BXSrZ7R6Y2PC5+oyJUnEsMqXi9OCPseJHHsK1JX?=
- =?us-ascii?Q?po0o2QOVAay60AMlvSLolyK6jGHOD34ffzo+jiFD5OcAULH0wdiUfE+ZS26k?=
- =?us-ascii?Q?PvS+fH0uYkF2qkf2MZL7/lxTpiY1oAa6+Dgahin0g2mBIbJBFHe2XQs2v3+O?=
- =?us-ascii?Q?euMUFGQRBolhU3BSBrA04+5beB9dUPScLGrtVArdglZF6lD07PjDUN+lBOm3?=
- =?us-ascii?Q?SOPLvkp8N0vOXBQS68H6/0nYgc/CCa/4Yei6aylujlXFsr5a1U6c5RlzEn0F?=
- =?us-ascii?Q?GJR1zXTReIJbTSOQsJ89AC+iDF1AN6AQLfvJ6EjrFac9NJL2JAlxk8yVr1aZ?=
- =?us-ascii?Q?VaHLCGNmwZd7qJC13U5Q3EfI+/2yun5vVuYuxOFTfQaV/CmoSSzVejfmDW5p?=
- =?us-ascii?Q?i5pj0G2dleRX7R4L+Q2fYgjHJNoOVcLycpkt6sn97Jf4IZEIWuiDXxYLxJWC?=
- =?us-ascii?Q?OxiwoSSfEI6obKxkB4DDSJ/pxUuHjUCs2Lmyy5kudvT1f1MqUQ48IQDOCp6e?=
- =?us-ascii?Q?qY5a8Uc66Cq/Nwp7Q9fII1/dYXDbdTSI/OqApqWp9zK5C9LrJmsS/8gCd9Yy?=
- =?us-ascii?Q?o5x2grcBuPuC9BuJRWqWGr0qAs3iR59PNhVhjjymnvLLseQVXmj2D37RDTLn?=
- =?us-ascii?Q?Fsppyvaor/tPG7568jSQH065tnBeO7MU6micuNTqoKutTqVOX9bUlaxzrrDM?=
- =?us-ascii?Q?OD+kTUXEpKQH2v9zt1BiASmNLSwMQjgPg868Jg3f7/35AqR9lBibRq4pDFoe?=
- =?us-ascii?Q?hGVyjWHfBPgYXmPlJhYO2FTDbof+RCjiqI0l31VZEL5hJS/mPa0cGzkamQia?=
- =?us-ascii?Q?RuTscteM47AP8qhP2+A9gAUyiGNCN/aTGNZg7J3yGQEQdbEiX/D3S4Bi6Omo?=
- =?us-ascii?Q?9GvfTyMXmLzXhBklw5lfdwu2LbAF+SlacKnMaYyOphSiWjqWl/09zGV8nd5V?=
- =?us-ascii?Q?iiscFbNc/Pnw/ITg8iR/Qy+vbkJj3bfIbuHFgG9PhXNmCApsSntlTTfVaqoy?=
- =?us-ascii?Q?q3u/0mkQO2MHP26Fia0nXeMS72eaR0JTCJ/qW3hDXnWVSTzK1fB+F1xrHacL?=
- =?us-ascii?Q?9NHa3SY9JtlsJHAzme5OPJooxXkr8Dwx6tpDR9IaCVql/L8aHPLLredL8v1I?=
- =?us-ascii?Q?bIsg2b+mNgxNbjI/9C4pgM0eR7L6d7/px9/VbRgPMMaOQITWIHz18ZB43yqu?=
- =?us-ascii?Q?wcpY4LJsRB8gip+9mZ3+vvYOv0HPPOwxyHtewh9eRZVn5N59epGjPYzXj2yg?=
- =?us-ascii?Q?74PmJAeZV4NJgGlpXnIlKBpeiq0zwAVOmbyNCNgv9vKDpoMcnXoUkViXRSiZ?=
- =?us-ascii?Q?Hr8cFFs8eKOWK/LnnaRfHsxOxzEOW0FjQlqUBOggaHVQJlnZZVf92XKw0vIt?=
- =?us-ascii?Q?c+WJL5g7NnkgK11uEwXBDlC6NITR8Er3Hf+yDulNoC4gZzIGmHqmuaP3UnLt?=
- =?us-ascii?Q?jGqo8GOS1KbKV8OQI5S+YZq8q+l1/oHvkgMZ4WXNHayrV979bSBRngQOA4Pq?=
- =?us-ascii?Q?fTEiKz31ECydBr0nT1vDWJMEssdqLQSI/1SnfDar8Npoz59OZpcmSK/akrSC?=
- =?us-ascii?Q?+FRpdlAlupzcGI1vS2dlSOO5+C2AVGpu1JVmxY34EY5yZiSe7AiOqJIkJi/6?=
- =?us-ascii?Q?LaUCiIMaeJ3r2NS9jFZuEl8=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?trXjEjhG98Pr8U49gRQMHtRL5F1MyTGRuMYfX1pZ6/IlcxLmdyWlb4VviB6u?=
+ =?us-ascii?Q?uIbtjJ5bYa++Zx3+u+wJlaYJq7nHsmfQAnBV/5p5n4LP7Mx2Xa9fzPCUa5DP?=
+ =?us-ascii?Q?/S8/I0NL6xfKE0O1cXXD+IpGztrXXQxBbiTvJTRYnapXJGaSgJ6FwGhfzuno?=
+ =?us-ascii?Q?BSfadxM9eXKSJh6UnEDidtcE9DUzNZcS+JqeAejBdrj78Q+PWm7OOzOyly/k?=
+ =?us-ascii?Q?Zcn5DSmX+z8GxyX5hiPrESR75IZSjqIVfo+4qd35Bd0ZYHkxaE7btY/NK4J5?=
+ =?us-ascii?Q?TvC+wVnrcxOJg9DIE3E+0ec1IpNlru/BAzwozsmy7xvNPhGTBER9yaVX4iva?=
+ =?us-ascii?Q?AiNL1/xcSlnHl30uKQzrnjHHSOzXblNqdeRiitWP+hxmc3Gsm8DeJVFwLf45?=
+ =?us-ascii?Q?KM1bYpblBbGA4clTiH+jtKXdK6SrDdnIIe2jGXxJVHZrZOSROmC7phyps0+h?=
+ =?us-ascii?Q?yc6v0iCwfeWvJxDHa1UvwO2mOBC7SnQB6v5ydwDTdM/oqUW3QHWb4e77znoq?=
+ =?us-ascii?Q?8bLt/STz+LtynKoKLNqyu3QO1I67oKxTiFjjBHlYmH3uAgVxgc8VfvbIdDw9?=
+ =?us-ascii?Q?aeSZue/CbltVVAKqSDNXiJsM44nWbKkaiew1+CupMWbgpFuY4WbiIUJFEqBy?=
+ =?us-ascii?Q?fkyI8aJVCR1WCQwF+g8BOvHiJt2lmpUWQ2n4bIpi6W4U9ucpPHIdsLY7yQQh?=
+ =?us-ascii?Q?vCgT/Mjqj5z3sPmt1s0m80bKRdupUaMTOPTo08MBJWziRLf34IIPRLJzcU3v?=
+ =?us-ascii?Q?CW8WjzYysPASG3QjtbRzSFrIJitQFpErBRGhm5QOlJsma3JeZ18Ajx5Wi8KK?=
+ =?us-ascii?Q?S3VKNVQmXFc3izBG0qU3O+YPxweFa7PuwO+tRW1pyqZ7PDIMm7gUk2u0oPRc?=
+ =?us-ascii?Q?3mCo11QBPNsgcKxCwt7982YevuEfiQTOxY3k4jNP4gePeyLlmqZNaTz3toYd?=
+ =?us-ascii?Q?HNJmokhWGLkkpheek2rUlgfiqbi7C3hV5bYw+358mudmLub2bt+JxSTbPFl6?=
+ =?us-ascii?Q?bE4QnvU3Y6BFQTUUpAUa5syXIFU2511vTJFk9jKYHPJ/2bhUmlJhEAJzTSoU?=
+ =?us-ascii?Q?tVxR9aQ1vH+rB1qmfFKHQuyuFsEv2Uv7u0MpuuSr7TU+z4jgUen43vcsE6NU?=
+ =?us-ascii?Q?9f8f9DVUPYF7F5lQgXP9+NJTiEoqiE7u5i1G5N06MeSHWHL0lYoq9a+DP3hO?=
+ =?us-ascii?Q?LNMGWCa0FES8EULdrGL7n1XvQ1r+sAxPV5kxyYM5vbvBxrCMaY/1gmxvBMgZ?=
+ =?us-ascii?Q?gUgd2fZy94VBvHx/T2hqUxcYd8zUsqHCM81wtsQph6QLuICdUlzLgZ1DXGYx?=
+ =?us-ascii?Q?/zjvN8L0IGbG1CUCJApuNTQqQx+FtFVhOYvkj8IJtQR0D0J5JRNYwGLAUsKZ?=
+ =?us-ascii?Q?t8BB2S97CgLx2vcfICPdYe3Vpkdu/F5/lmXdhveDXfggrhlgn5fphDBcSJuN?=
+ =?us-ascii?Q?4eOhv0ya3CJk7h0y+VRdk0kp7uIxEIIEthTMISPYLHilpaK8Y8WgUGVMp0eB?=
+ =?us-ascii?Q?sP7jTtxrkcbOKHWaUSs/ZCP1Iw+/e60+04Pcoe5+W7CQoGUH/DVpyRVtpTnU?=
+ =?us-ascii?Q?KgQgZ2ETh8ioXo3XaqZRTfrtct5McN/LrWTP6cVnyKEHP4CXVIxegZ/Xvr1M?=
+ =?us-ascii?Q?Uauc0q7y+aSa+h8ep/zle08=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d2794fc7-11d9-4dd1-d91b-08d9d04dd9f0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 429fbc38-39b7-44bd-45de-08d9d04dda82
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 13:18:23.8853
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 13:18:24.8228
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gxgJQ4MRYJuJmOy8T9j8nt7I9WRDVH/eOXQQOfKRnEmGHNOpe57PQLVbEs2MSdJEtFDkZWf3WcSxnN14MMg/NQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: /Ep4HP5ylhwmOVHmJNTHaK5ZfOc3PwMUxsqCb7RmWXJdAAvnhxXgLmpQo+v4w5iFnunazmY/SMA2onaUmb5E8Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6942
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The cross-chip notifier boilerplate code meant to check the presence of
-ds->ops->port_mrp_add_ring_role before calling it, but checked
-ds->ops->port_mrp_add instead, before calling
-ds->ops->port_mrp_add_ring_role.
+The cross-chip notifiers for MRP are bypass operations, meaning that
+even though all switches in a tree are notified, only the switch
+specified in the info structure is targeted.
 
-Therefore, a driver which implements one operation but not the other
-would trigger a NULL pointer dereference.
-
-There isn't any such driver in DSA yet, so there is no reason to
-backport the change. Issue found through code inspection.
+We can eliminate the unnecessary complexity by deleting the cross-chip
+notifier logic and calling the ds->ops straight from port.c.
 
 Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
-Fixes: c595c4330da0 ("net: dsa: add MRP support")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v1->v2: patch is new
+v1->v2: delete leftover definitions of struct dsa_notifier_mrp_info and
+        struct dsa_notifier_mrp_ring_role_info.
 
- net/dsa/switch.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/dsa/dsa_priv.h | 18 -------------
+ net/dsa/port.c     | 44 +++++++++++++++----------------
+ net/dsa/switch.c   | 64 ----------------------------------------------
+ 3 files changed, 20 insertions(+), 106 deletions(-)
 
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index b5ae21f172a8..c593d56c94b3 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -40,10 +40,6 @@ enum {
+ 	DSA_NOTIFIER_TAG_PROTO,
+ 	DSA_NOTIFIER_TAG_PROTO_CONNECT,
+ 	DSA_NOTIFIER_TAG_PROTO_DISCONNECT,
+-	DSA_NOTIFIER_MRP_ADD,
+-	DSA_NOTIFIER_MRP_DEL,
+-	DSA_NOTIFIER_MRP_ADD_RING_ROLE,
+-	DSA_NOTIFIER_MRP_DEL_RING_ROLE,
+ 	DSA_NOTIFIER_TAG_8021Q_VLAN_ADD,
+ 	DSA_NOTIFIER_TAG_8021Q_VLAN_DEL,
+ };
+@@ -107,20 +103,6 @@ struct dsa_notifier_tag_proto_info {
+ 	const struct dsa_device_ops *tag_ops;
+ };
+ 
+-/* DSA_NOTIFIER_MRP_* */
+-struct dsa_notifier_mrp_info {
+-	const struct switchdev_obj_mrp *mrp;
+-	int sw_index;
+-	int port;
+-};
+-
+-/* DSA_NOTIFIER_MRP_* */
+-struct dsa_notifier_mrp_ring_role_info {
+-	const struct switchdev_obj_ring_role_mrp *mrp;
+-	int sw_index;
+-	int port;
+-};
+-
+ /* DSA_NOTIFIER_TAG_8021Q_VLAN_* */
+ struct dsa_notifier_tag_8021q_vlan_info {
+ 	int tree_index;
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 05677e016982..05be4577b044 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -907,49 +907,45 @@ int dsa_port_vlan_del(struct dsa_port *dp,
+ int dsa_port_mrp_add(const struct dsa_port *dp,
+ 		     const struct switchdev_obj_mrp *mrp)
+ {
+-	struct dsa_notifier_mrp_info info = {
+-		.sw_index = dp->ds->index,
+-		.port = dp->index,
+-		.mrp = mrp,
+-	};
++	struct dsa_switch *ds = dp->ds;
++
++	if (!ds->ops->port_mrp_add)
++		return -EOPNOTSUPP;
+ 
+-	return dsa_port_notify(dp, DSA_NOTIFIER_MRP_ADD, &info);
++	return ds->ops->port_mrp_add(ds, dp->index, mrp);
+ }
+ 
+ int dsa_port_mrp_del(const struct dsa_port *dp,
+ 		     const struct switchdev_obj_mrp *mrp)
+ {
+-	struct dsa_notifier_mrp_info info = {
+-		.sw_index = dp->ds->index,
+-		.port = dp->index,
+-		.mrp = mrp,
+-	};
++	struct dsa_switch *ds = dp->ds;
++
++	if (!ds->ops->port_mrp_del)
++		return -EOPNOTSUPP;
+ 
+-	return dsa_port_notify(dp, DSA_NOTIFIER_MRP_DEL, &info);
++	return ds->ops->port_mrp_del(ds, dp->index, mrp);
+ }
+ 
+ int dsa_port_mrp_add_ring_role(const struct dsa_port *dp,
+ 			       const struct switchdev_obj_ring_role_mrp *mrp)
+ {
+-	struct dsa_notifier_mrp_ring_role_info info = {
+-		.sw_index = dp->ds->index,
+-		.port = dp->index,
+-		.mrp = mrp,
+-	};
++	struct dsa_switch *ds = dp->ds;
++
++	if (!ds->ops->port_mrp_add_ring_role)
++		return -EOPNOTSUPP;
+ 
+-	return dsa_port_notify(dp, DSA_NOTIFIER_MRP_ADD_RING_ROLE, &info);
++	return ds->ops->port_mrp_add_ring_role(ds, dp->index, mrp);
+ }
+ 
+ int dsa_port_mrp_del_ring_role(const struct dsa_port *dp,
+ 			       const struct switchdev_obj_ring_role_mrp *mrp)
+ {
+-	struct dsa_notifier_mrp_ring_role_info info = {
+-		.sw_index = dp->ds->index,
+-		.port = dp->index,
+-		.mrp = mrp,
+-	};
++	struct dsa_switch *ds = dp->ds;
++
++	if (!ds->ops->port_mrp_del_ring_role)
++		return -EOPNOTSUPP;
+ 
+-	return dsa_port_notify(dp, DSA_NOTIFIER_MRP_DEL_RING_ROLE, &info);
++	return ds->ops->port_mrp_del_ring_role(ds, dp->index, mrp);
+ }
+ 
+ void dsa_port_set_tag_protocol(struct dsa_port *cpu_dp,
 diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 393f2d8a860a..260d8e7d6e5a 100644
+index 260d8e7d6e5a..a164ec02b4e9 100644
 --- a/net/dsa/switch.c
 +++ b/net/dsa/switch.c
-@@ -729,7 +729,7 @@ static int
- dsa_switch_mrp_add_ring_role(struct dsa_switch *ds,
- 			     struct dsa_notifier_mrp_ring_role_info *info)
- {
+@@ -701,58 +701,6 @@ dsa_switch_disconnect_tag_proto(struct dsa_switch *ds,
+ 	return 0;
+ }
+ 
+-static int dsa_switch_mrp_add(struct dsa_switch *ds,
+-			      struct dsa_notifier_mrp_info *info)
+-{
 -	if (!ds->ops->port_mrp_add)
-+	if (!ds->ops->port_mrp_add_ring_role)
- 		return -EOPNOTSUPP;
- 
- 	if (ds->index == info->sw_index)
-@@ -743,7 +743,7 @@ static int
- dsa_switch_mrp_del_ring_role(struct dsa_switch *ds,
- 			     struct dsa_notifier_mrp_ring_role_info *info)
- {
+-		return -EOPNOTSUPP;
+-
+-	if (ds->index == info->sw_index)
+-		return ds->ops->port_mrp_add(ds, info->port, info->mrp);
+-
+-	return 0;
+-}
+-
+-static int dsa_switch_mrp_del(struct dsa_switch *ds,
+-			      struct dsa_notifier_mrp_info *info)
+-{
 -	if (!ds->ops->port_mrp_del)
-+	if (!ds->ops->port_mrp_del_ring_role)
- 		return -EOPNOTSUPP;
- 
- 	if (ds->index == info->sw_index)
+-		return -EOPNOTSUPP;
+-
+-	if (ds->index == info->sw_index)
+-		return ds->ops->port_mrp_del(ds, info->port, info->mrp);
+-
+-	return 0;
+-}
+-
+-static int
+-dsa_switch_mrp_add_ring_role(struct dsa_switch *ds,
+-			     struct dsa_notifier_mrp_ring_role_info *info)
+-{
+-	if (!ds->ops->port_mrp_add_ring_role)
+-		return -EOPNOTSUPP;
+-
+-	if (ds->index == info->sw_index)
+-		return ds->ops->port_mrp_add_ring_role(ds, info->port,
+-						       info->mrp);
+-
+-	return 0;
+-}
+-
+-static int
+-dsa_switch_mrp_del_ring_role(struct dsa_switch *ds,
+-			     struct dsa_notifier_mrp_ring_role_info *info)
+-{
+-	if (!ds->ops->port_mrp_del_ring_role)
+-		return -EOPNOTSUPP;
+-
+-	if (ds->index == info->sw_index)
+-		return ds->ops->port_mrp_del_ring_role(ds, info->port,
+-						       info->mrp);
+-
+-	return 0;
+-}
+-
+ static int dsa_switch_event(struct notifier_block *nb,
+ 			    unsigned long event, void *info)
+ {
+@@ -826,18 +774,6 @@ static int dsa_switch_event(struct notifier_block *nb,
+ 	case DSA_NOTIFIER_TAG_PROTO_DISCONNECT:
+ 		err = dsa_switch_disconnect_tag_proto(ds, info);
+ 		break;
+-	case DSA_NOTIFIER_MRP_ADD:
+-		err = dsa_switch_mrp_add(ds, info);
+-		break;
+-	case DSA_NOTIFIER_MRP_DEL:
+-		err = dsa_switch_mrp_del(ds, info);
+-		break;
+-	case DSA_NOTIFIER_MRP_ADD_RING_ROLE:
+-		err = dsa_switch_mrp_add_ring_role(ds, info);
+-		break;
+-	case DSA_NOTIFIER_MRP_DEL_RING_ROLE:
+-		err = dsa_switch_mrp_del_ring_role(ds, info);
+-		break;
+ 	case DSA_NOTIFIER_TAG_8021Q_VLAN_ADD:
+ 		err = dsa_switch_tag_8021q_vlan_add(ds, info);
+ 		break;
 -- 
 2.25.1
 
