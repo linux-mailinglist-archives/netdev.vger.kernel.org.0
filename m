@@ -2,117 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 000AB485A04
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 21:28:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13095485A24
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 21:40:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244042AbiAEU2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 15:28:02 -0500
-Received: from proxima.lasnet.de ([78.47.171.185]:48778 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244044AbiAEU1t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 15:27:49 -0500
-Received: from [IPV6:2003:e9:d722:f5b8:9ccb:8d7f:17cf:c65d] (p200300e9d722f5b89ccb8d7f17cfc65d.dip0.t-ipconnect.de [IPv6:2003:e9:d722:f5b8:9ccb:8d7f:17cf:c65d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id D7F44C0879;
-        Wed,  5 Jan 2022 21:27:43 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1641414464;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dpMLHMR//JIi9iap6ZA0k6rlKpmAkoFNdKjlI8yBUV8=;
-        b=j/3cQkOsdp6F3vHHOFYXCmZERpfQYl6N31/6fSnsALAkzOzBrSO8UE5IKpFMZDW0svfl8z
-        BlC/2l5i0ZSWlLnPpo+JoBlFhLYBi26FXUMnfypMLtG1RFOl7Och+d7CDTpjMFra4K2eIk
-        xVJMMvZ5+/H3yfB6YoEmncA+BFl7IG50lBa7fOWVUijZk4WMvQZVjpwiGMA8XVguzWwv86
-        CfYjfSdMiycbCXUrSZOB7Xi6TInzDhRBQ+uOXEEW/VyTbjxPajjTeXOz50lXcRhQOoC7f3
-        2yHLm1/1hDh3ztuRFl7gEQ80Z+FHNsyQn+NRD+uNxUZawydZmMjppRGOGGhqDw==
-Message-ID: <4186d48a-ea7e-39c1-d1fa-1db3f6627a3a@datenfreihafen.org>
-Date:   Wed, 5 Jan 2022 21:27:43 +0100
+        id S244144AbiAEUkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 15:40:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244127AbiAEUkq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 15:40:46 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13806C061245;
+        Wed,  5 Jan 2022 12:40:46 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id q5so576638ioj.7;
+        Wed, 05 Jan 2022 12:40:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=45SP3bqnZoHbEc/qN8LNfImZ/YeuvDvy9LOD6oQtizc=;
+        b=ZVNnYwfLnJ+VojOtedXPo9wsSncszCXEGLqxeFiv0cSvYCfEuXKUZzUz24Q0rTyE5L
+         liw4nrhmGy9KHAEDDvwMr7/3sQbhlM16FaWF8V/p0MCi5mT/edk4FXpX4ok/yoAjcjeO
+         QVUyteWuGvf9ueQE7C+tHLFD4LMmv3NeHuR9vZLp90GDnEsvSdeM9uFMtFNUNJ7kvEUv
+         J1D7ZZOA6Y8yexvtLELBDpjs9D9E8qV/pVXEUiBp09vsrEoq23/Q2GG2kb29g5XT+KSq
+         pEtSyc/W6wuvYRoGomG9DWbJGbCCN599K5e0zqTsvXuiYff3w3yCcs9jIV7X6K8Slq0P
+         OkQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=45SP3bqnZoHbEc/qN8LNfImZ/YeuvDvy9LOD6oQtizc=;
+        b=6+nkQgs6mKT6DG1srIRacbWqnakfm7qExvhMDecxr8s+jrh+PMmHI9RVXxuI2gniOI
+         Iubu9vxXmIXDhm+Lfa2wFxmF8HnsME8/lonrmlGVQ9hmpaYTb/sIUHj/czbbFDFhF6uO
+         eAnu914r5Qvtq6NSM2F2YR5K1rDDNt/L72o0vfDj59eoby86q7wLCWtaVzgZ1TW27HRB
+         AYEdySyiaZd9VmwyZb4l9cnvjLqLixwfojhECv7dKxB2HNALbx2/VCKblajJkd1oA5KU
+         7puvCTXYkshzmgez0B4VQksuxXq+DHMjv6Qbd5JEn+/lOhRKibwPS9FkQ7gVa20AFDi1
+         5PaA==
+X-Gm-Message-State: AOAM531/peNXcaSw7OpXi5qsT3a7E9TwX7hiLrNHfjGMls8LQ9yn/VMW
+        TI7CZseSq7sgO6VzDcM1rGe4h8cuT97pLpAMgNw=
+X-Google-Smtp-Source: ABdhPJyBwku1U1w4AAxvzgmc//dVuyBdCj8HysKq+5CBS+QAK19GVbV1nnmEqFC6AlveVlq1rBKBR+7vzkwtTSCwJpI=
+X-Received: by 2002:a05:6602:2d81:: with SMTP id k1mr25810715iow.112.1641415245384;
+ Wed, 05 Jan 2022 12:40:45 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.0
-Subject: Re: [PATCH -next] ieee802154: atusb: move to new USB API
-Content-Language: en-US
-To:     Pavel Skripkin <paskripkin@gmail.com>, alex.aring@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220105144947.12540-1-paskripkin@gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220105144947.12540-1-paskripkin@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220104121030.138216-1-jolsa@kernel.org>
+In-Reply-To: <20220104121030.138216-1-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 5 Jan 2022 12:40:34 -0800
+Message-ID: <CAEf4BzZK1=zdy1_ZdwWXK7Ryk+uWQeSApcpxFT9yMp4bRNanDQ@mail.gmail.com>
+Subject: Re: [PATCH] bpf/selftests: Fix namespace mount setup in tc_redirect
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jussi Maki <joamaki@gmail.com>, Hangbin Liu <haliu@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jan 4, 2022 at 4:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> The tc_redirect umounts /sys in the new namespace, which can be
+> mounted as shared and cause global umount. The lazy umount also
+> takes down mounted trees under /sys like debugfs, which won't be
+> available after sysfs mounts again and could cause fails in other
+> tests.
+>
+>   # cat /proc/self/mountinfo | grep debugfs
+>   34 23 0:7 / /sys/kernel/debug rw,nosuid,nodev,noexec,relatime shared:14 - debugfs debugfs rw
+>   # cat /proc/self/mountinfo | grep sysfs
+>   23 86 0:22 / /sys rw,nosuid,nodev,noexec,relatime shared:2 - sysfs sysfs rw
+>   # mount | grep debugfs
+>   debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
+>
+>   # ./test_progs -t tc_redirect
+>   #164 tc_redirect:OK
+>   Summary: 1/4 PASSED, 0 SKIPPED, 0 FAILED
+>
+>   # mount | grep debugfs
+>   # cat /proc/self/mountinfo | grep debugfs
+>   # cat /proc/self/mountinfo | grep sysfs
+>   25 86 0:22 / /sys rw,relatime shared:2 - sysfs sysfs rw
+>
+> Making the sysfs private under the new namespace so the umount won't
+> trigger the global sysfs umount.
 
-Hello.
+Hey Jiri,
 
-On 05.01.22 15:49, Pavel Skripkin wrote:
-> Old USB API is prone to uninit value bugs if error handling is not
-> correct. Let's move atusb to use new USB API to
-> 
-> 	1) Make code more simple, since new API does not require memory
-> 	   to be allocates via kmalloc()
-> 
-> 	2) Defend driver from usb-related uninit value bugs.
-> 
-> 	3) Make code more modern and simple
-> 
-> This patch removes atusb usb wrappers as Greg suggested [0], this will make
-> code more obvious and easier to understand over time, and replaces old
-> API calls with new ones.
-> 
-> Also this patch adds and updates usb related error handling to prevent
-> possible uninit value bugs in future
-> 
-> Link: https://lore.kernel.org/all/YdL0GPxy4TdGDzOO@kroah.com/ [0]
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Thanks for the fix. Did you try making tc_redirect non-serial again
+(s/serial_test_tc_redirect/test_tc_redirect/) and doing parallelized
+test_progs run (./test_progs -j) in a tight loop for a while? I
+suspect this might have been an issue forcing us to make this test
+serial in the first place, so now that it's fixed, we can make
+parallel test_progs a bit faster.
+
+>
+> Cc: Jussi Maki <joamaki@gmail.com>
+> Reported-by: Hangbin Liu <haliu@redhat.com>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
-> 
-> Only build tested.
-
-Gave it a first quick run on real hardware here. Besides one small bug 
-(see below) it looked good.
-
-Will give it a bit more testing over the next days.
-
-
-
-> @@ -881,14 +819,27 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
->   	u8 man_id_0, man_id_1, part_num, version_num;
->   	const char *chip;
->   	struct ieee802154_hw *hw = atusb->hw;
-> +	int ret;
->   
-> -	man_id_0 = atusb_read_reg(atusb, RG_MAN_ID_0);
-> -	man_id_1 = atusb_read_reg(atusb, RG_MAN_ID_1);
-> -	part_num = atusb_read_reg(atusb, RG_PART_NUM);
-> -	version_num = atusb_read_reg(atusb, RG_VERSION_NUM);
-> +	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
-> +				   0, RG_MAN_ID_0, &man_id_0, 1, 1000, GFP_KERNEL);
-> +	if (ret < 0)
-> +		return ret;
->   
-> -	if (atusb->err)
-> -		return atusb->err;
-> +	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
-> +				   0, RG_MAN_ID_1, &man_id_1, 1, 1000, GFP_KERNEL);
-> +	if (ret < 0)
-> +		return ret;
+>  tools/testing/selftests/bpf/prog_tests/tc_redirect.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
+> index 4b18b73df10b..c2426df58e17 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
+> @@ -105,6 +105,13 @@ static int setns_by_fd(int nsfd)
+>         if (!ASSERT_OK(err, "unshare"))
+>                 return err;
+>
+> +       /* Make our /sys mount private, so the following umount won't
+> +        * trigger the global umount in case it's shared.
+> +        */
+> +       err = mount("none", "/sys", NULL, MS_PRIVATE, NULL);
+> +       if (!ASSERT_OK(err, "remount private /sys"))
+> +               return err;
 > +
-> +	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
-> +				   0, RG_PART_NUM, &atusb, 1, 1000, GFP_KERNEL);
-
-This needs to be written to &part_num and not &atusb.
-
-Pretty nice for a first blind try without hardware. Thanks.
-
-Will let you know if I find anything else from testing.
-
-regards
-Stefan Schmidt
+>         err = umount2("/sys", MNT_DETACH);
+>         if (!ASSERT_OK(err, "umount2 /sys"))
+>                 return err;
+> --
+> 2.33.1
+>
