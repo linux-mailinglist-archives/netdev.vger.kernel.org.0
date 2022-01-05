@@ -2,70 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CF034859D8
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 21:13:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 000AB485A04
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 21:28:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243948AbiAEUMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 15:12:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243921AbiAEUMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 15:12:39 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABCFDC061201
-        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 12:12:38 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id i11so584968ljm.13
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 12:12:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=Db2mQxADcnB4Y0Y5fpffuJoiOxsZDM1AOxk+ZDm/G3M=;
-        b=AgIMT/UdeSKJsdW6vo2zAIE8hdInbjf9wFncbADGzkEU7bGCtqM1tvY6baCNcvI+AG
-         FPr6vssFc9nyeYNiK04vX0jB+2+GUzJujqRhATo0mhAxVgLOkWWqz7eDFv2FbJaTK7yz
-         0bdQbbeR9e89PGQbechyCvWlHYtVnnlwbSwoZu0pQI1m67h+TiHAkWrOT0IKgLALhFIj
-         WDFgN0+4jc574CTQE+iimG8JH6BiW0kBCC9AKtTHEumXaaoYWiRpC02vrJ1td/dsdHQT
-         KSogijBYwZ4fJvOznhn0+ak9dzLSivukLKrVcMWRc82+x4HeL/e6qYHeTAT4ElOszgjw
-         fqRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=Db2mQxADcnB4Y0Y5fpffuJoiOxsZDM1AOxk+ZDm/G3M=;
-        b=Xo+4VYwpO81sDhQLqsAvXg2xYtDs0SaOYM4zLfXz7bf6kQRa2mTt4nnEPEXVUqeE0+
-         qFxY+85VxD11LJ7AsvvzvsVpgyfs0i4bvzwpEsr6furml+j399fkcwylZQFN/DNbsOSm
-         GdVayscstSoZcsZCpGtzbmjYpfwf3RtUGt9o7X92Qf+52/XR25KvnQ7Jx/BxFkVvq0a2
-         lxqXmBaGU4mNDPUJfVWGsh8tAUnCiLJcEMwBdcLOLmiOlL3upj+A3F+SAigubc0D8K3m
-         pOhWE2Xb7e8pUbtYF16qXL0OdTvDlY0DwdxzDHfc9dt8jaVNJWPCZ5lJ6+AW2gYIHg/3
-         aapQ==
-X-Gm-Message-State: AOAM531wJ7xLx2PL8Z77UCJVncVkFpdF/YV9Ftx1ld/M6EE4s9f2STl8
-        ofvOdqTAvJWgPQZSxX1HJX1M59zMseKDoN02LZI=
-X-Google-Smtp-Source: ABdhPJxL/PYBl9dUxyl8nuL/OYzo+k4ix/13V85xiixC2kSodkTMnUjtCKWnqcQYajilUB7l60MQVHi3eEROBBm7Jlc=
-X-Received: by 2002:a2e:b88d:: with SMTP id r13mr34208159ljp.151.1641413556758;
- Wed, 05 Jan 2022 12:12:36 -0800 (PST)
+        id S244042AbiAEU2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 15:28:02 -0500
+Received: from proxima.lasnet.de ([78.47.171.185]:48778 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244044AbiAEU1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 15:27:49 -0500
+Received: from [IPV6:2003:e9:d722:f5b8:9ccb:8d7f:17cf:c65d] (p200300e9d722f5b89ccb8d7f17cfc65d.dip0.t-ipconnect.de [IPv6:2003:e9:d722:f5b8:9ccb:8d7f:17cf:c65d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id D7F44C0879;
+        Wed,  5 Jan 2022 21:27:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1641414464;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dpMLHMR//JIi9iap6ZA0k6rlKpmAkoFNdKjlI8yBUV8=;
+        b=j/3cQkOsdp6F3vHHOFYXCmZERpfQYl6N31/6fSnsALAkzOzBrSO8UE5IKpFMZDW0svfl8z
+        BlC/2l5i0ZSWlLnPpo+JoBlFhLYBi26FXUMnfypMLtG1RFOl7Och+d7CDTpjMFra4K2eIk
+        xVJMMvZ5+/H3yfB6YoEmncA+BFl7IG50lBa7fOWVUijZk4WMvQZVjpwiGMA8XVguzWwv86
+        CfYjfSdMiycbCXUrSZOB7Xi6TInzDhRBQ+uOXEEW/VyTbjxPajjTeXOz50lXcRhQOoC7f3
+        2yHLm1/1hDh3ztuRFl7gEQ80Z+FHNsyQn+NRD+uNxUZawydZmMjppRGOGGhqDw==
+Message-ID: <4186d48a-ea7e-39c1-d1fa-1db3f6627a3a@datenfreihafen.org>
+Date:   Wed, 5 Jan 2022 21:27:43 +0100
 MIME-Version: 1.0
-Sender: groupcompanyltd2001@gmail.com
-Received: by 2002:a2e:8950:0:0:0:0:0 with HTTP; Wed, 5 Jan 2022 12:12:36 -0800 (PST)
-From:   Mrs Riva Mimi <mrsriva8mimi@gmail.com>
-Date:   Wed, 5 Jan 2022 12:12:36 -0800
-X-Google-Sender-Auth: sRTFey5rEV0-uh-_1TzCE-f9rKM
-Message-ID: <CAFkacvSR+O6GDr9C5xGbL=A3ugff7HvTYREW_YyFhWuicievqw@mail.gmail.com>
-Subject: HELLO
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [PATCH -next] ieee802154: atusb: move to new USB API
+Content-Language: en-US
+To:     Pavel Skripkin <paskripkin@gmail.com>, alex.aring@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220105144947.12540-1-paskripkin@gmail.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20220105144947.12540-1-paskripkin@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello
-I'm "Mrs Riva Mimi." married to Mr. Riva( an International
-Contractor and Oil Merchant/ jointly in Exposition of Agro  Equipment
-) who died in  Burkina Faso attack, and diagnosed of cancer for about
-2 years ago  and my husband informed me that he deposited the sum of
-(22.3Million USD Only) with a Finance house) in OUAGADOUGOU BURKINA
-FASO.
-I want you to help me to use this money  for a charity project before
-I die, for the Poor, Less-privileged and  ORPHANAGES in
-your country.  Please kindly respond quickly for further details.
 
-Yours fairly friend,
-Mrs Riva Mimi.
+Hello.
+
+On 05.01.22 15:49, Pavel Skripkin wrote:
+> Old USB API is prone to uninit value bugs if error handling is not
+> correct. Let's move atusb to use new USB API to
+> 
+> 	1) Make code more simple, since new API does not require memory
+> 	   to be allocates via kmalloc()
+> 
+> 	2) Defend driver from usb-related uninit value bugs.
+> 
+> 	3) Make code more modern and simple
+> 
+> This patch removes atusb usb wrappers as Greg suggested [0], this will make
+> code more obvious and easier to understand over time, and replaces old
+> API calls with new ones.
+> 
+> Also this patch adds and updates usb related error handling to prevent
+> possible uninit value bugs in future
+> 
+> Link: https://lore.kernel.org/all/YdL0GPxy4TdGDzOO@kroah.com/ [0]
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
+> 
+> Only build tested.
+
+Gave it a first quick run on real hardware here. Besides one small bug 
+(see below) it looked good.
+
+Will give it a bit more testing over the next days.
+
+
+
+> @@ -881,14 +819,27 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
+>   	u8 man_id_0, man_id_1, part_num, version_num;
+>   	const char *chip;
+>   	struct ieee802154_hw *hw = atusb->hw;
+> +	int ret;
+>   
+> -	man_id_0 = atusb_read_reg(atusb, RG_MAN_ID_0);
+> -	man_id_1 = atusb_read_reg(atusb, RG_MAN_ID_1);
+> -	part_num = atusb_read_reg(atusb, RG_PART_NUM);
+> -	version_num = atusb_read_reg(atusb, RG_VERSION_NUM);
+> +	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
+> +				   0, RG_MAN_ID_0, &man_id_0, 1, 1000, GFP_KERNEL);
+> +	if (ret < 0)
+> +		return ret;
+>   
+> -	if (atusb->err)
+> -		return atusb->err;
+> +	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
+> +				   0, RG_MAN_ID_1, &man_id_1, 1, 1000, GFP_KERNEL);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
+> +				   0, RG_PART_NUM, &atusb, 1, 1000, GFP_KERNEL);
+
+This needs to be written to &part_num and not &atusb.
+
+Pretty nice for a first blind try without hardware. Thanks.
+
+Will let you know if I find anything else from testing.
+
+regards
+Stefan Schmidt
