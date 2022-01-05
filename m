@@ -2,131 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F476485621
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 16:44:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79AA848567E
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 17:10:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241643AbiAEPoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 10:44:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241641AbiAEPoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 10:44:25 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E048DC061245
-        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 07:44:24 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id z29so163644124edl.7
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 07:44:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eqwGD9UokDN9AU9Zm6Xj/LCn+ypWHHeElujYubQFiIY=;
-        b=b7gu7rCJbh1dh63GXGswMoMuO9W0ouFVjIKzPtPeyimsPdhtoarMb7we6G2P8n8RHD
-         NhxsbRRk+CL7D/OXd4E8iT2RzNQYI6M1xYv9ZbwtVwGpcRxqg8gunUNVYlJdIbi8pPvg
-         dahHy2I2MehIJ1HCqp/d6GNX059hVYjW45ObOZPFg7fLQ0/DFeeSAHY7hsQq0u+pl6cP
-         jjgGJJimpHJb3tcK0PHyx4yZUhMpobQH9WE0RAhkq8xhV0w+hdLhkJfNIEJ4iOAyM497
-         0MzkakAXwmghGTPcHnIXu74cPLbjgTI62ihoXZDXP+dnqVwD1P6WTt+CgdrhPC51jBj3
-         YENw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eqwGD9UokDN9AU9Zm6Xj/LCn+ypWHHeElujYubQFiIY=;
-        b=XwOAnNhn7PTh4I36lwMaKzohoI801ygz+6dZOSIqT6Ua0h6VWw51lsVOI3rYUMlV0O
-         BfADhQtEGRe70VEAd0hyuX9eNp+ZCcRwJkJesyyH0kfJw1aIZo1hisqxuTj4Wdh3yKrL
-         FLeZFp7RziI8yXU3UWGYJy9SuLYrgEU8CnOyt+p6cEIJzfLjQ5oA4opU7ZumHWjKctcM
-         luSxJcxsGorflcEHojjgsypyMW0SFFmrAC6XinZKjzkceNOnuWBxRUVj10egPwFgOkPn
-         VZ8fKCgnol7LAU+577xwJqFZjtCgpUaYs5O0HWWQkDa6Pi4JSPyabnzonsR6Q5RQ2U+w
-         y0dQ==
-X-Gm-Message-State: AOAM531vqPu28BBCSd/RyqKT/MrLO5Ko0T4bs4wKByYZMdW1Hvcc5g08
-        lc9hp3DKM5BXBRwq82AGRiA=
-X-Google-Smtp-Source: ABdhPJxd1bbXhuZiZbaIM5epOqENOZeCAJmCsxhL97CBJyBoELMIfYo7qvj9VhTrn46yitbtCqjJLA==
-X-Received: by 2002:a17:907:a412:: with SMTP id sg18mr42688548ejc.2.1641397463390;
-        Wed, 05 Jan 2022 07:44:23 -0800 (PST)
-Received: from skbuf ([188.25.255.2])
-        by smtp.gmail.com with ESMTPSA id ky5sm4120983ejc.204.2022.01.05.07.44.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 07:44:22 -0800 (PST)
-Date:   Wed, 5 Jan 2022 17:44:22 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Miroslav Lichvar <mlichvar@redhat.com>
-Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH net-next] testptp: set pin function before other requests
-Message-ID: <20220105154422.r7pkgikdiffxpl77@skbuf>
-References: <20220105152506.3256026-1-mlichvar@redhat.com>
+        id S241840AbiAEQKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 11:10:18 -0500
+Received: from slot0.cofercan.com ([194.99.46.247]:33831 "EHLO
+        slot0.cofercan.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241841AbiAEQKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 11:10:15 -0500
+X-Greylist: delayed 696 seconds by postgrey-1.27 at vger.kernel.org; Wed, 05 Jan 2022 11:10:13 EST
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=cofercan.com;
+ h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=khi.hod@cofercan.com;
+ bh=4IdbPnwTD1vdSOhIUgti/1HTi08=;
+ b=bLXdNMj6BRo4fzCqpqXYKw3P+lx1VZF8gbjKwYWWkyJe4ZHMndYeeMSIC2ef6yVC+66YO3qgBu5F
+   XqjVLvVLddF+51GslpN7oJ4LBfNRI6HlWfWlt1M5d919kFkgayA6w8H0QnhcOsyF9oYoy2jKcFGH
+   pPyYpNY7+9dbN1KrZyKmcFh0RvaA7zgWhHphhXb5qIPuIRu80F+PU+q90m2Wu//2sJqCuiZ0OBI6
+   XBOi0o/kXqxByQufOZfSJhckT08pHhm2oa/vsioRjj3Wx5kE6qLz0wOIjbzyh6FfY98Tm9GjbjPd
+   LxF9IwsVmPCd9REV4mEhz1Cz7xSobUWyhWmL+Q==
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=cofercan.com;
+ b=A2nEK5FI+xwGpz+oYpbHkybK99UgMO0zDzgjlGkm+txokTylxMHhec4CwaiGHoi4EAz3m+FzW0tt
+   2GtxcLFFQvtWFzvmF6bee9apxjdhSP2hP9NND36YjhOVddZUNCQ5BCb1nNeEVyAGv44wr2R+p6u2
+   nGfYxLzH94THz4KHI9KqPYUa4UmyEVQgy1GNfmKfFMGyjysqsZgbZUejInYfWdHpfjiwZhri3Ibq
+   bKTFa9lqMwxj1Ji1EyAMcOyvN3XH4yyEIrgg+6wdfieXjauZq37BG81lSs7FogAXTrphxZG8juLD
+   GP9gns3lcNcKX8a7xHZFlqytV/FSbkxJaetxNg==;
+Reply-To: inbox.mustafaa@gmail.com
+From:   "Mustafa Ayvaz" <khi.hod@cofercan.com>
+To:     netdev@vger.kernel.org
+Subject: MES: 
+Date:   5 Jan 2022 15:50:13 +0000
+Message-ID: <20220105155013.7EB8D1D4BC72D3E1@cofercan.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220105152506.3256026-1-mlichvar@redhat.com>
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 04:25:06PM +0100, Miroslav Lichvar wrote:
-> When the -L option of the testptp utility is specified with other
-> options (e.g. -p to enable PPS output), the user probably wants to
-> apply it to the pin configured by the -L option.
-> 
-> Reorder the code to set the pin function before other function requests
-> to avoid confusing users.
-> 
-> Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
-> Cc: Richard Cochran <richardcochran@gmail.com>
-> Cc: Vladimir Oltean <olteanv@gmail.com>
-> ---
+Hello netdev,
 
-This makes sense. Looking back at my logs, I was setting the pin
-function via sysfs, but if the code was structured differently I could
-have done it in a single command using testptp. Not sure why I didn't
-think of that.
+I was only wondering if you got my previous email? I have been=20
+trying to reach you on your email netdev@vger.kernel.org , kindly=20
+get back to me swiftly, it is very important.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-
->  tools/testing/selftests/ptp/testptp.c | 24 ++++++++++++------------
->  1 file changed, 12 insertions(+), 12 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/ptp/testptp.c b/tools/testing/selftests/ptp/testptp.c
-> index f7911aaeb007..c0f6a062364d 100644
-> --- a/tools/testing/selftests/ptp/testptp.c
-> +++ b/tools/testing/selftests/ptp/testptp.c
-> @@ -354,6 +354,18 @@ int main(int argc, char *argv[])
->  		}
->  	}
->  
-> +	if (pin_index >= 0) {
-> +		memset(&desc, 0, sizeof(desc));
-> +		desc.index = pin_index;
-> +		desc.func = pin_func;
-> +		desc.chan = index;
-> +		if (ioctl(fd, PTP_PIN_SETFUNC, &desc)) {
-> +			perror("PTP_PIN_SETFUNC");
-> +		} else {
-> +			puts("set pin function okay");
-> +		}
-> +	}
-> +
->  	if (extts) {
->  		memset(&extts_request, 0, sizeof(extts_request));
->  		extts_request.index = index;
-> @@ -444,18 +456,6 @@ int main(int argc, char *argv[])
->  		}
->  	}
->  
-> -	if (pin_index >= 0) {
-> -		memset(&desc, 0, sizeof(desc));
-> -		desc.index = pin_index;
-> -		desc.func = pin_func;
-> -		desc.chan = index;
-> -		if (ioctl(fd, PTP_PIN_SETFUNC, &desc)) {
-> -			perror("PTP_PIN_SETFUNC");
-> -		} else {
-> -			puts("set pin function okay");
-> -		}
-> -	}
-> -
->  	if (pps != -1) {
->  		int enable = pps ? 1 : 0;
->  		if (ioctl(fd, PTP_ENABLE_PPS, enable)) {
-> -- 
-> 2.33.1
-> 
+Thanks
+Mustafa Ayvaz
+mustafa@ayvazburosu.com
