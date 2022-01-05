@@ -2,162 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9053A48534E
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:15:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FCE0485355
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:17:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236954AbiAENPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 08:15:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232983AbiAENPU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 08:15:20 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A89AC061761
-        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 05:15:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ZRrjH6jdJrqkxNFeeQvp8tj83hjb5AGIe2VfjpV7jG8=; b=WShwrltq8q0ykYSoQY5WrxHHkD
-        27iHB6JoaGSPyT9+MR6KY50+XN8npS3zONNq6nXqJweYY8t0RI/+sugIKibdwZno8OX4eoi9A2lXl
-        SAdQy8ip26w0YYfqiiYHOWxj0lAcygHQebvm2HlJUf/XnoPcvkPnJo3O7c4Bbdlh5EYpz8LUUu/dD
-        h1x9FYZQDg7mwNRurtDKNbTyQBA4B4PkSMqUye0r4a3p0E5NxZbqCiCoCPnxN90LkWEP/gaznzJZA
-        2MVv5DWK7lNNDTAYIQabBMyPrREnzFvG7kFOO2btq44SJbgl61UhYdGAoyYnNwtR9TkXFpQVrouHf
-        2MSh4t5A==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:58298 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1n568K-00082z-2r; Wed, 05 Jan 2022 13:15:16 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1n568J-002SZX-Gr; Wed, 05 Jan 2022 13:15:15 +0000
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next] net: macb: use .mac_select_pcs() interface
+        id S237050AbiAENRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 08:17:51 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:61778 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236649AbiAENRs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 08:17:48 -0500
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 205D11pW019768;
+        Wed, 5 Jan 2022 13:17:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=u7glOY0ToYHSLYnAbKYG9m4dFze5avT9cZpp+RSe43A=;
+ b=euWVFDQ9bYWjdczY286fYV1fEw+vlhxFNmSv42ivGA/y0c6dSBbL1NVwVuxtjyz0l6R8
+ jqstN8Zu9rGBhB8xzgWmJVprvlqtFq7PPRP9dU7yzaW1Lg3IW7JzB7dN16DoluFZT62z
+ Ccob1omO5Ik2v/xuSgeK6Xr1SK4nJD7GMbebdWL4qn9RQcVCxWCYGd/cV5DXS2rDjXeD
+ 8BV3fTi7ueosgAD6ED04CU0gpWsbrI1oIh+fMB1z1y+RctbyvZS8BSubG4jkVZ9zws2v
+ YcQHiXf/PREZv7dcHD2RWG7DWYa1BqCQJ0Wf176HQ5WdWzKgZW2HOpbhyc18O6p+Ev47 uA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dck05juvg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 05 Jan 2022 13:17:45 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 205CmDlb008855;
+        Wed, 5 Jan 2022 13:17:45 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dck05juum-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 05 Jan 2022 13:17:45 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 205DEmEr009319;
+        Wed, 5 Jan 2022 13:17:43 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma02fra.de.ibm.com with ESMTP id 3daek9gg3x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 05 Jan 2022 13:17:43 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 205DHeQ229950426
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 5 Jan 2022 13:17:40 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3D7C442045;
+        Wed,  5 Jan 2022 13:17:40 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D0C4142041;
+        Wed,  5 Jan 2022 13:17:39 +0000 (GMT)
+Received: from [9.145.181.244] (unknown [9.145.181.244])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  5 Jan 2022 13:17:39 +0000 (GMT)
+Message-ID: <b98aefce-e425-9501-aacc-8e5a4a12953e@linux.ibm.com>
+Date:   Wed, 5 Jan 2022 14:17:41 +0100
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1n568J-002SZX-Gr@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 05 Jan 2022 13:15:15 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH net-next v2] net/smc: Reduce overflow of smc clcsock
+ listen queue
+Content-Language: en-US
+To:     dust.li@linux.alibaba.com, "D. Wythe" <alibuda@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com>
+ <8a60dabb-1799-316c-80b5-14c920fe98ab@linux.ibm.com>
+ <20220105044049.GA107642@e02h04389.eu6sqa>
+ <20220105085748.GD31579@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20220105085748.GD31579@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: FLQB7EdiG4mYcuDQxIaeDWeypL36VmXQ
+X-Proofpoint-GUID: Qo6dK0PV52P9q8oAXfnKrm03Nj9L3UzX
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-05_03,2022-01-04_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ spamscore=0 mlxscore=0 phishscore=0 adultscore=0 clxscore=1015
+ malwarescore=0 bulkscore=0 mlxlogscore=999 impostorscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201050088
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the PCS selection to use mac_select_pcs, which allows the PCS
-to perform any validation it needs.
+On 05/01/2022 09:57, dust.li wrote:
+> On Wed, Jan 05, 2022 at 12:40:49PM +0800, D. Wythe wrote:
+> I'm thinking maybe we can actively fall back to TCP in this case ? Not
+> sure if this is a good idea.
 
-We must use separate phylink_pcs instances for the USX and SGMII PCS,
-rather than just changing the "ops" pointer before re-setting it to
-phylink as this interface queries the PCS, rather than requesting it
-to be changed.
-
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/ethernet/cadence/macb.h      |  3 ++-
- drivers/net/ethernet/cadence/macb_main.c | 26 +++++++++++-------------
- 2 files changed, 14 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-index 5620b97b3482..9ddbee7de72b 100644
---- a/drivers/net/ethernet/cadence/macb.h
-+++ b/drivers/net/ethernet/cadence/macb.h
-@@ -1271,7 +1271,8 @@ struct macb {
- 	struct mii_bus		*mii_bus;
- 	struct phylink		*phylink;
- 	struct phylink_config	phylink_config;
--	struct phylink_pcs	phylink_pcs;
-+	struct phylink_pcs	phylink_usx_pcs;
-+	struct phylink_pcs	phylink_sgmii_pcs;
- 
- 	u32			caps;
- 	unsigned int		dma_burst_length;
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index d4da9adf6777..a363da928e8b 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -510,7 +510,7 @@ static void macb_usx_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
- 				 phy_interface_t interface, int speed,
- 				 int duplex)
- {
--	struct macb *bp = container_of(pcs, struct macb, phylink_pcs);
-+	struct macb *bp = container_of(pcs, struct macb, phylink_usx_pcs);
- 	u32 config;
- 
- 	config = gem_readl(bp, USX_CONTROL);
-@@ -524,7 +524,7 @@ static void macb_usx_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
- static void macb_usx_pcs_get_state(struct phylink_pcs *pcs,
- 				   struct phylink_link_state *state)
- {
--	struct macb *bp = container_of(pcs, struct macb, phylink_pcs);
-+	struct macb *bp = container_of(pcs, struct macb, phylink_usx_pcs);
- 	u32 val;
- 
- 	state->speed = SPEED_10000;
-@@ -544,7 +544,7 @@ static int macb_usx_pcs_config(struct phylink_pcs *pcs,
- 			       const unsigned long *advertising,
- 			       bool permit_pause_to_mac)
- {
--	struct macb *bp = container_of(pcs, struct macb, phylink_pcs);
-+	struct macb *bp = container_of(pcs, struct macb, phylink_usx_pcs);
- 
- 	gem_writel(bp, USX_CONTROL, gem_readl(bp, USX_CONTROL) |
- 		   GEM_BIT(SIGNAL_OK));
-@@ -727,28 +727,23 @@ static void macb_mac_link_up(struct phylink_config *config,
- 	netif_tx_wake_all_queues(ndev);
- }
- 
--static int macb_mac_prepare(struct phylink_config *config, unsigned int mode,
--			    phy_interface_t interface)
-+static struct phylink_pcs *macb_mac_select_pcs(struct phylink_config *config,
-+					       phy_interface_t interface)
- {
- 	struct net_device *ndev = to_net_dev(config->dev);
- 	struct macb *bp = netdev_priv(ndev);
- 
- 	if (interface == PHY_INTERFACE_MODE_10GBASER)
--		bp->phylink_pcs.ops = &macb_phylink_usx_pcs_ops;
-+		return &bp->phylink_usx_pcs;
- 	else if (interface == PHY_INTERFACE_MODE_SGMII)
--		bp->phylink_pcs.ops = &macb_phylink_pcs_ops;
-+		return &bp->phylink_sgmii_pcs;
- 	else
--		bp->phylink_pcs.ops = NULL;
--
--	if (bp->phylink_pcs.ops)
--		phylink_set_pcs(bp->phylink, &bp->phylink_pcs);
--
--	return 0;
-+		return NULL;
- }
- 
- static const struct phylink_mac_ops macb_phylink_ops = {
- 	.validate = phylink_generic_validate,
--	.mac_prepare = macb_mac_prepare,
-+	.mac_select_pcs = macb_mac_select_pcs,
- 	.mac_config = macb_mac_config,
- 	.mac_link_down = macb_mac_link_down,
- 	.mac_link_up = macb_mac_link_up,
-@@ -806,6 +801,9 @@ static int macb_mii_probe(struct net_device *dev)
- {
- 	struct macb *bp = netdev_priv(dev);
- 
-+	bp->phylink_sgmii_pcs.ops = &macb_phylink_pcs_ops;
-+	bp->phylink_usx_pcs.ops = &macb_phylink_usx_pcs_ops;
-+
- 	bp->phylink_config.dev = &dev->dev;
- 	bp->phylink_config.type = PHYLINK_NETDEV;
- 
--- 
-2.30.2
-
+I think its a good decision to switch new connections to use the TCP fallback when the
+current queue of connections waiting for a SMC handshake is too large.
+With this the application is able to accept all incoming connections and they are not
+dropped. The only thing that is be different compared to TCP is that the order of the
+accepted connections is changed, connections that came in later might reach the user space 
+application earlier than connections that still run the SMC hand shake processing. 
+But I think that is semantically okay.
