@@ -2,144 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3C65484F22
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 09:14:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2943484F25
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 09:16:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231458AbiAEIOs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 5 Jan 2022 03:14:48 -0500
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:39521 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbiAEIOr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 03:14:47 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 66B3F24000D;
-        Wed,  5 Jan 2022 08:14:43 +0000 (UTC)
-Date:   Wed, 5 Jan 2022 09:14:41 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel list <linux-kernel@vger.kernel.org>
-Subject: Re: [net-next 01/18] ieee802154: hwsim: Ensure proper channel
- selection at probe time
-Message-ID: <20220105091441.10e96b34@xps13>
-In-Reply-To: <CAB_54W6o-wBD2wu7sohCD0ack5PR_wqc2NqOnYC6WEVV5VF8FQ@mail.gmail.com>
-References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
-        <20211222155743.256280-2-miquel.raynal@bootlin.com>
-        <CAB_54W7BeSA+2GVzb9Yvz1kj12wkRSqHj9Ybr8cK7oYd7804RQ@mail.gmail.com>
-        <20220104164449.1179bfc7@xps13>
-        <CAB_54W6LG4SKdS4HDSj1o2A64UiA6BEv_Bh_5e9WCyyJKeAbtg@mail.gmail.com>
-        <CAB_54W6o-wBD2wu7sohCD0ack5PR_wqc2NqOnYC6WEVV5VF8FQ@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S232046AbiAEIQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 03:16:28 -0500
+Received: from smtp21.cstnet.cn ([159.226.251.21]:52198 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229821AbiAEIQ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jan 2022 03:16:27 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-01 (Coremail) with SMTP id qwCowACHjlbAU9Vhsz3RBQ--.44200S2;
+        Wed, 05 Jan 2022 16:16:01 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v3] mac80211: mlme: check for null after calling kmemdup
+Date:   Wed,  5 Jan 2022 16:15:59 +0800
+Message-Id: <20220105081559.2387083-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowACHjlbAU9Vhsz3RBQ--.44200S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxCrW5WFyxCrWkXF4kWF48JFb_yoW5tF4rpF
+        WUZ3yUtr4UJF1DZF1rAr45XFyfCF4UAa4Sy34xAa1kZF9YgF1kGF48u3yvvF10yF4kGa43
+        ZrZ5tF45Ww1DCrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r43
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1l
+        IxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjNJ55UUUU
+        U==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+As the possible failure of the alloc, the ifmgd->assoc_req_ies might be
+NULL pointer returned from kmemdup().
+Therefore it might be better to free the skb and return error in order
+to fail the association, like ieee80211_assoc_success().
+Also, the caller, ieee80211_do_assoc(), needs to deal with the return
+value from ieee80211_send_assoc().
 
-alex.aring@gmail.com wrote on Tue, 4 Jan 2022 18:10:44 -0500:
+Fixes: 4d9ec73d2b78 ("cfg80211: Report Association Request frame IEs in association events")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+v3: Return error if fails and deal with the error in ieee80211_do_assoc.
+v2: Change to fail the association if kmemdup returns NULL.
+---
+ net/mac80211/mlme.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
-> Hi,
-> 
-> On Tue, 4 Jan 2022 at 18:08, Alexander Aring <alex.aring@gmail.com> wrote:
-> >
-> > Hi,
-> >
-> > On Tue, 4 Jan 2022 at 10:44, Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
-> > >
-> > > Hi Alexander,
-> > >
-> > > alex.aring@gmail.com wrote on Tue, 28 Dec 2021 16:05:43 -0500:
-> > >  
-> > > > Hi,
-> > > >
-> > > > On Wed, 22 Dec 2021 at 10:57, Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
-> > > > >
-> > > > > A default channel is selected by default (13), let's clarify that this
-> > > > > is page 0 channel 13. Call the right helper to ensure the necessary
-> > > > > configuration for this channel has been applied.
-> > > > >
-> > > > > So far there is very little configuration done in this helper but we
-> > > > > will soon add more information (like the symbol duration which is
-> > > > > missing) and having this helper called at probe time will prevent us to
-> > > > > this type of initialization at two different locations.
-> > > > >  
-> > > >
-> > > > I see why this patch is necessary because in later patches the symbol
-> > > > duration is set at ".set_channel()" callback like the at86rf230 driver
-> > > > is doing it.
-> > > > However there is an old TODO [0]. I think we should combine it and
-> > > > implement it in ieee802154_set_channel() of "net/mac802154/cfg.c".
-> > > > Also do the symbol duration setting according to the channel/page when
-> > > > we call ieee802154_register_hw(), so we have it for the default
-> > > > settings.  
-> > >
-> > > While I totally agree on the background idea, I don't really see how
-> > > this is possible. Every driver internally knows what it supports but
-> > > AFAIU the core itself has no easy and standard access to it?
-> > >  
-> >
-> > I am a little bit confused here, because a lot of timing related
-> > things in the phy information rate points to "x times symbols". If  
-> 
-> s/rate/base/
+diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+index 9bed6464c5bd..e4bb7e290828 100644
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -695,7 +695,7 @@ static void ieee80211_add_he_ie(struct ieee80211_sub_if_data *sdata,
+ 	ieee80211_ie_build_he_6ghz_cap(sdata, skb);
+ }
+ 
+-static void ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
++static int ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
+ {
+ 	struct ieee80211_local *local = sdata->local;
+ 	struct ieee80211_if_managed *ifmgd = &sdata->u.mgd;
+@@ -725,7 +725,7 @@ static void ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
+ 	chanctx_conf = rcu_dereference(sdata->vif.chanctx_conf);
+ 	if (WARN_ON(!chanctx_conf)) {
+ 		rcu_read_unlock();
+-		return;
++		return 0;
+ 	}
+ 	chan = chanctx_conf->def.chan;
+ 	rcu_read_unlock();
+@@ -773,7 +773,7 @@ static void ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
+ 			9, /* WMM */
+ 			GFP_KERNEL);
+ 	if (!skb)
+-		return;
++		return 0;
+ 
+ 	skb_reserve(skb, local->hw.extra_tx_headroom);
+ 
+@@ -1052,12 +1052,17 @@ static void ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
+ 	if (assoc_data->fils_kek_len &&
+ 	    fils_encrypt_assoc_req(skb, assoc_data) < 0) {
+ 		dev_kfree_skb(skb);
+-		return;
++		return 0;
+ 	}
+ 
+ 	pos = skb_tail_pointer(skb);
+ 	kfree(ifmgd->assoc_req_ies);
+ 	ifmgd->assoc_req_ies = kmemdup(ie_start, pos - ie_start, GFP_ATOMIC);
++	if (!ifmgd->assoc_req_ies) {
++		dev_kfree_skb(skb);
++		return -ENOMEM;
++	}
++
+ 	ifmgd->assoc_req_ies_len = pos - ie_start;
+ 
+ 	drv_mgd_prepare_tx(local, sdata, 0);
+@@ -1067,6 +1072,8 @@ static void ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
+ 		IEEE80211_SKB_CB(skb)->flags |= IEEE80211_TX_CTL_REQ_TX_STATUS |
+ 						IEEE80211_TX_INTFL_MLME_CONN_TX;
+ 	ieee80211_tx_skb(sdata, skb);
++
++	return 0;
+ }
+ 
+ void ieee80211_send_pspoll(struct ieee80211_local *local,
+@@ -4470,6 +4477,7 @@ static int ieee80211_do_assoc(struct ieee80211_sub_if_data *sdata)
+ {
+ 	struct ieee80211_mgd_assoc_data *assoc_data = sdata->u.mgd.assoc_data;
+ 	struct ieee80211_local *local = sdata->local;
++	int ret;
+ 
+ 	sdata_assert_lock(sdata);
+ 
+@@ -4490,7 +4498,9 @@ static int ieee80211_do_assoc(struct ieee80211_sub_if_data *sdata)
+ 	sdata_info(sdata, "associate with %pM (try %d/%d)\n",
+ 		   assoc_data->bss->bssid, assoc_data->tries,
+ 		   IEEE80211_ASSOC_MAX_TRIES);
+-	ieee80211_send_assoc(sdata);
++	ret = ieee80211_send_assoc(sdata);
++	if (ret)
++		return ret;
+ 
+ 	if (!ieee80211_hw_check(&local->hw, REPORTS_TX_ACK_STATUS)) {
+ 		assoc_data->timeout = jiffies + IEEE80211_ASSOC_TIMEOUT;
+-- 
+2.25.1
 
-Yes indeed, but I bet it works because the phy drivers set the symbol
-duration by themselves. You can see that none of them does something
-clever like:
-
-switch (phy.protocol) {
-	case XXXXX:
-		symbol_duration = y;
-		break;
-	...
-
-Instead, they all go through the page/channel list in a quite hardcoded
-way because the phy driver knows internally that protocol X is used on
-{page, channel}, but the protocol id, while not being totally absent
-from drivers, is always provided as a comment.
-
-So getting rid of the core TODO you mentioned earlier means:
-- Listing properly the PHY protocols in the core (if not already done)
-- For each PHY protocol knowing the possible base frequencies
-- For each of these base frequencies knowing the symbol duration
-- Having the possibility to add more information such as the PRF in
-  order to let the core pick the right symbol duration when there is
-  more than one possibility for a {protocol, base frequency} couple
-- Convert the phy drivers (at least hwsim) to fill these new fields
-  correctly and expect the core to set the symbol duration properly.
-
-Two side notes as well:
-- I was not able to find all the the corresponding protocol from the
-  hwsim driver in the spec (these channels are marked "unknown")
-- The symbol duration in a few specific UWB cases is below 1us while
-  the core expects a value in us. Should we change the symbol duration
-  to ns?
-
-I believe all this is doable in a reasonable time frame provided that
-I only focus on the few protocols supported by hwsim which I already
-"addressed" and perhaps a couple of simple drivers. On the core side,
-the logic might be: "is the driver providing information about the phy
-protocols used? if yes, then set the symbol duration if we have enough
-data, otherwise let the driver handle it by itself". Such logic would
-allow a progressive shift towards the situation where drivers do not
-have to bother with symbol duration by themselves.
-
-As this looks like a project on its own and my first goal was to be
-able to use hwsim to demonstrate the different scan features, maybe we
-can continue to discuss this and consider tackling it as a separate
-series whish would apply on top of the current one, what do you think?
-
-Thanks,
-Miquèl
