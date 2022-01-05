@@ -2,94 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71C01485713
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 18:08:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED635485717
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 18:10:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242159AbiAERI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 12:08:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242157AbiAERIy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 12:08:54 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B48C061245
-        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 09:08:53 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id j16so27637pll.10
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 09:08:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6Cw+kSmh3qidWp8seDKtiehDtN7HN/f+44m8eCLTHA4=;
-        b=QFXRS5qNKAlc3XdfWnLXjf1wCj5DFZSffgC8cyhdI+cNKKfgwabtaRygRDo7D1kKlS
-         zuM1fOPOCcAwxVTn5JaUmdsE6ZeDD6AS0tl4E0BZiD6hMgK8pyebAht/7SA9ltLqV2jk
-         SrP01nqEHDgDHcBJzF8HOtnlogwcgLrNuGYDUyD9klvFCq4bGWKj+k5ncI8/b7xg5MmL
-         yrzWDSCRNmCOfLx/R+sGdbYOuh+Jeac5t6Y00AY5zvOKMB5ASoELJr091A8qLcMGv2DQ
-         HLY99dft6XAUzh6SzGtl5rmRZ5LGAMuj83zH2Xo98iFho4Ml6G/mBwpORJLoSPtgTn/P
-         NNMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6Cw+kSmh3qidWp8seDKtiehDtN7HN/f+44m8eCLTHA4=;
-        b=hdqy2c//WuPZghthAZ3Ezdlmp3h6o29rpLrkUkyzOlzSPhbPoq6RRArm5QL5G9mg7F
-         rHfpXBVD3eAQsRu2oEqPvo+PCHUmpCaIbKbUwRYPbc6A0kz5gVvvI3IpGXud9bCBBbxJ
-         vJ8bsi3p35CpUamnldJuDC+SgU+SDkrOVwWBDoih0jv/F2lNreBW5TK37Lr12bHYwmux
-         VAdxtZeHQCdyfj6okbS6q9Nr6zmlw9q1dck/bpYC2eEiS4DYh8Vz3Bpx8aJ6d7GeDgQz
-         3JRmI4O3HSc4c3LLgKkRSZrbprmPbHf0Q1aXnwFvbJvPi2vWnNNEDRPeP4Nn0+bYqJtr
-         aQEQ==
-X-Gm-Message-State: AOAM531eCQcdLSmIFVHpQyCtIqJJiWz5+R2mQEPLJlqdnZot78bxSVEn
-        rIiHimjIZTnq2ArMHw2TCCI=
-X-Google-Smtp-Source: ABdhPJyM/YHq8Gg9iopAQiHSMN9DM4xp16Wd36Izk3iG8q3HeRK/SqlDjcSDIH2DCVoxCw42v6qOHg==
-X-Received: by 2002:a17:90b:1646:: with SMTP id il6mr5168768pjb.143.1641402533439;
-        Wed, 05 Jan 2022 09:08:53 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:2814:439c:a4c8:3675])
-        by smtp.gmail.com with ESMTPSA id p37sm43808182pfh.97.2022.01.05.09.08.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 09:08:53 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>
-Subject: [PATCH net-next] netlink: do not allocate a device refcount tracker in ethnl_default_notify()
-Date:   Wed,  5 Jan 2022 09:08:49 -0800
-Message-Id: <20220105170849.2610470-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
+        id S242162AbiAERKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 12:10:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51966 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242157AbiAERKO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 12:10:14 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBC20B81A88;
+        Wed,  5 Jan 2022 17:10:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B86A4C36AE9;
+        Wed,  5 Jan 2022 17:10:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641402611;
+        bh=0+7jAeT7eLb75NzaqVossLjW10fIz9vo2PdB2I5VB5E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=aA1yJkl+GZVvXnAUfXMDIvlBEFFSCcfybDweD9qTASFD0UuyIj0ULLhd++6ltFlom
+         90op36G1g/dKf+LGhQPZq8ZfJEdARJMWM6Vq4ii5RWtCFOy1MrcG0OZSFwtiWCnugv
+         1i8Y6lsYDyc3UKyJZ3PfT7LFOMs8moAGVvYX8CfOwvW2hrFJCOgbJQLTDoxd128mwM
+         WModrgWeMZB1TmjIpc66RGTO0G/gng4ihQdt3gpyQNIteX7mT+Ha3696vTrPZ516H5
+         bBbKQQtR0tdncpn3zz+CrTovjvdtjhGUJ6dTPrPnkE23/Hszm3SFDG6XHPEhvgEvcw
+         4oT2mSvs/u8/Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9E755F79401;
+        Wed,  5 Jan 2022 17:10:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: ieee802154 for net 2022-01-05
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164140261164.10107.11009091878573559432.git-patchwork-notify@kernel.org>
+Date:   Wed, 05 Jan 2022 17:10:11 +0000
+References: <20220105153914.512305-1-stefan@datenfreihafen.org>
+In-Reply-To: <20220105153914.512305-1-stefan@datenfreihafen.org>
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
+        alex.aring@gmail.com, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Hello:
 
-As reported by Johannes, the tracker allocated in
-ethnl_default_notify() is not really needed, as this
-function is not expected to change a device reference count.
+This pull request was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Fixes: e4b8954074f6 ("netlink: add net device refcount tracker to struct ethnl_req_info")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Johannes Berg <johannes@sipsolutions.net>
-Tested-by: Johannes Berg <johannes@sipsolutions.net>
----
- net/ethtool/netlink.c | 1 -
- 1 file changed, 1 deletion(-)
+On Wed,  5 Jan 2022 16:39:14 +0100 you wrote:
+> Hello Dave, Jakub.
+> 
+> An update from ieee802154 for your *net* tree.
+> 
+> Below I have a last minute fix for the atusb driver.
+> 
+> Pavel fixes a KASAN uninit report for the driver. This version is the
+> minimal impact fix to ease backporting. A bigger rework of the driver to
+> avoid potential similar problems is ongoing and will come through net-next
+> when ready.
+> 
+> [...]
 
-diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index ea23659fab28c734d1a8c11d857b3795f104beec..5fe8f4ae2cebc48eed6d0ce2b9d6607546e66bd6 100644
---- a/net/ethtool/netlink.c
-+++ b/net/ethtool/netlink.c
-@@ -627,7 +627,6 @@ static void ethnl_default_notify(struct net_device *dev, unsigned int cmd,
- 	}
- 
- 	req_info->dev = dev;
--	netdev_tracker_alloc(dev, &req_info->dev_tracker, GFP_KERNEL);
- 	req_info->flags |= ETHTOOL_FLAG_COMPACT_BITSETS;
- 
- 	ethnl_init_reply_data(reply_data, ops, dev);
+Here is the summary with links:
+  - pull-request: ieee802154 for net 2022-01-05
+    https://git.kernel.org/netdev/net/c/af872b691926
+
+You are awesome, thank you!
 -- 
-2.34.1.448.ga2b2bfdf31-goog
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
