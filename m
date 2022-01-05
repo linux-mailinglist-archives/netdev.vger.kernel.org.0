@@ -2,165 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD23048546E
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:26:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 987BF485485
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:30:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240805AbiAEOZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 09:25:49 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:51936 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240727AbiAEOZc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 09:25:32 -0500
-Received: by mail-il1-f200.google.com with SMTP id y2-20020a056e020f4200b002b4313fb71aso21552071ilj.18
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 06:25:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=MYej9f0V1knAmgZWksqkg7FcalnkNH/T2YiXfjlkjw0=;
-        b=CzuxwQVa/dyW5vjdrYyZQvNJFKnALXvRdpxFUiMzrH7T8aFTolZtvhsOTpOn9aCMc4
-         DDRY/yfnTHUtJljjLI7rHHGGdAfsolWKGJWumAitHmXAx10aTF3ewo3vS9gwbztZFOKz
-         gkBMrAH+MYox14cj3LrmE02UfA9tgw618nlrM9WG9oAZWMrtyifSl0nZTVduW6/LHLM7
-         rn9EWpp4YTM568F678sE6h5gbgLFQYfuf2+IHok/ARCqV19XqO3NvVvdGMlJ3mG0+U4P
-         x6L7A8hmXRg0utI/VMFdXyrMKXDKuMWsU1lkyrBHa3XWVQWtAlvRCzg+Yx6yOsTqXZou
-         GB6Q==
-X-Gm-Message-State: AOAM530s3QaMqKm1wCspdfMl7mi5PSh+yTZw/KBs25j1M270JeFDFuga
-        AEzthR1szT9b7Z0SfJzEgjQ+9NH4ZhxEd4a7rHl0Zd7+79wT
-X-Google-Smtp-Source: ABdhPJxzUcYLzYmAgXLXJ50Ksi6Msv3ITFrs24KdHJHMtyu/F7k/SMbtXLQSfsGkNOBhHviw7G6VAABHsHvqOj6nYUxCB9zKUUYt
+        id S240697AbiAEO2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 09:28:42 -0500
+Received: from mail-eopbgr150077.outbound.protection.outlook.com ([40.107.15.77]:42208
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237136AbiAEO2l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jan 2022 09:28:41 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I1aeSfyWv11a6hdeVtjS8DWvUSd2pgIQvTE5AM6cmW4eQ+2q9CttacUWBbDoqXBwUBMrft3HylZS1hfUn2G0EqZL6TFy55TCtt9C8bNElpo8Fs+mPdpZX1JNV7s5Gh5w+cDnaSB6gZos4p2dGMgKH+Nv7i3K8IJr8oytJEYHA8FrMRtdGKwNPIiGXvc1RHhhV9Xkyhde8kzsqdg7MADmH8IjRHGotJyduseke6QvwfYKYzXddFBmr43qLN8miToq5lDsTbSlncC7rPxRNroxzTiyjW6LUHBTV73udtXUxnb4c5YgzsOdJJN8LRUiLD/ZASntHlv3EiX/5sVmw32PFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IwmmPGZcXLsyV08yapbMxBjL4/WCekawrCAv4Lg3DOo=;
+ b=OeDU0DXg0zrbEYm3D1ewGUm4+GynV54DYhf8tqKMDQr4BkziJBFTDdPZePVqc0ZedAB6GWQMZ39ZfW+R/YoJKRvYQOgHQY+3GfqIoE7OHO3hBUG9XybXIvXjAIZ8q7y/zsy55TaIfPe0EZizi+oNFdjkNa/qbmQlEsvUiO14+nxPruTtwXeggaa2pnoBb06D0BpB+2k/4+8ZEWnWCPI27qN7swPpi3gX53noETzO7e4CBxkhOVm9+CF9lzStN7pWhWasntzQNbqr+GyPhPZRiNU7hPwTDq/jCnAIP+aMPzjfGnulNBCxwFigNPe9AvxqcUbj56tSJf+adLjW0VB2Ng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IwmmPGZcXLsyV08yapbMxBjL4/WCekawrCAv4Lg3DOo=;
+ b=qGCb4l7EgeW2oJG48YaAMJL9baTV1KsayqYkhHSUL103HxWADNG/GWC31SbtCW10s7xuRvZD492LHo6H9FxjUsWtl8yt6ewxVwQnjbi4Ih+tyCd3Xjq3q1BID8IJDeyNqxKjl/I8KztSpFVEWLEfSCnss2WFtiKayAlzux//ZP4=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VE1PR04MB6510.eurprd04.prod.outlook.com (2603:10a6:803:127::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Wed, 5 Jan
+ 2022 14:28:39 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4844.016; Wed, 5 Jan 2022
+ 14:28:39 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH v2 net-next 0/7] Cleanup to main DSA structures
+Thread-Topic: [PATCH v2 net-next 0/7] Cleanup to main DSA structures
+Thread-Index: AQHYAjcz7PA8h1MVMEuDn2+fyJJZ2qxUfKAA
+Date:   Wed, 5 Jan 2022 14:28:38 +0000
+Message-ID: <20220105142838.uzanzmozesap63om@skbuf>
+References: <20220105132141.2648876-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220105132141.2648876-1-vladimir.oltean@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d02faf3a-34fe-40b5-51c0-08d9d057aa78
+x-ms-traffictypediagnostic: VE1PR04MB6510:EE_
+x-microsoft-antispam-prvs: <VE1PR04MB6510527BE67DFFC1C6D3C5F2E04B9@VE1PR04MB6510.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: dMBcQDutqyBxBx91+xYs2WoFDm3ZJwygdFSp8jSeLsnqvf1i27ABF8eCFG2nw2s2RmCyh7PL6lkR3At2u2egWL56ToMhYdZg51IUxOH9nBrq54liz2QA3iCXYtVQihtMsU7o/rZUmDNaegDiCjAkXrNWx4JjQZJiLe9oZ9gscxQN6nANASYS1l7dGutAGfmeNm5ug9scxnmI7TCOoNNqMcXRjR0mIr+Ns0I+mXWcabrT6/DfZdqyeQQxQ0Dy3yodTLBjaNLDQbxX5nQyOq+k8wU/TSUgi9DSAk/JP5hF55iTgZEhnriMIs2JjNXzc0kS6rfxzKpDKUokdHx4daie+a1B+NT/tAHi3gg0lhTC/QeELF8N1GaI2yglqSry6cuplCmrRQZavidATg4x98+il1oICDHcqP93j6YS2wdEzHnzodQNfIEIs/VZo820yB78pG5BYjxJ+aRpMG508NYc7KQg+FYu08zdjojMHzNnkEd6XjlIYbxqvnVicqVZ5ZMlxH4v9EnilNXsRwv5tXLMBzr/Dg5wMpiVPlAgWCc6Q5nm8o562rn/dXd9He+fAqmcu7gfGxLm6f1naaJhUJF9ddvzshq6RGYNaW9ANYOjNeycOAv3JDr6YLy1sX3j3gJ+nL9bbIIJzKQZ8cOCUcJn/dWcD16ntlKyy+1jb6nL6mV2jj5KPVdJLebxg9OkRWz9RM3135tHgCUmKco7E2y7UQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(1076003)(71200400001)(44832011)(9686003)(6506007)(4326008)(91956017)(76116006)(6512007)(66946007)(2906002)(66446008)(66476007)(64756008)(66556008)(6486002)(316002)(33716001)(186003)(54906003)(508600001)(26005)(6916009)(122000001)(38100700002)(83380400001)(38070700005)(86362001)(8676002)(5660300002)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?M7qoqdJ090DZiQ2Vc2RLq/kRYcX14c4YjxooTJJwTPiNqDj9ShMyVVc0f6Xo?=
+ =?us-ascii?Q?46mTx4AhODlCcHb9lQ+LWxMVnf4ScH0p6cOJasRtOy1STWvujIzvoPFWfnK0?=
+ =?us-ascii?Q?tKmBAbfL0r9BGzdNav+GMEwSCrVnk+KHqFFKO+aAwA/StO4JDmHebPL/2dtR?=
+ =?us-ascii?Q?UAHPxjbU28ofKbhFJNrWkqn3i+gkjRp4oHcESOzNz76h/ChvPakdtLHxEWRy?=
+ =?us-ascii?Q?c9C2NQBA5VGWW1DLQ1ESMrAvi40/DeE9LzdrrdXq0enklFbwDaGSekgoUGSD?=
+ =?us-ascii?Q?gkFE98jKLoFJAPlOh3BUm59qJvZJgxQNpqrIikCeXmeOeejch1LpTHj6juDR?=
+ =?us-ascii?Q?a9diHPeH/bxiJJ0mdyLjLtRQ2fXQ4k3I8YL2YnZ5FaJhEwz1mJT52gZvfNxy?=
+ =?us-ascii?Q?rz1och61rNFAgVFkKCw+/X+oErw09HiiBV05FVZgIHd6TmsPcbVkdMVQpNf1?=
+ =?us-ascii?Q?zqVPQLfEruSlkf5poWOXVNhJDXch2FGql58QhxA0flwgoIKPHpm5u8xhe0xz?=
+ =?us-ascii?Q?qwdS2WQs2rZBUvJexz2iCYZClECK89s7p8sGFGNZfdKhdz1z2nprfm3wjNlr?=
+ =?us-ascii?Q?SLXHjA+pHmmqKQ+pJGJHPbAVSDOtPCTm5sDQbIFasqVujrEZOBdXa6vllLb2?=
+ =?us-ascii?Q?WOKLXefq1AkxXyV9oVRYOC8bdKhMucFfATkVKOme7ZPnpcMMIODPowHdC6Bg?=
+ =?us-ascii?Q?j+73uVn+A7KbtyU8vioCyFLfVrSWiKySyK4xY8DhHkb8SX5rfUAjVfjIq2pA?=
+ =?us-ascii?Q?DX6T68cLegHUtmp1P3XkUcUrScpCHgzGw1fIc4xoDdP7t1MRTZguLLJl363m?=
+ =?us-ascii?Q?yBbQasJ38Q6RORkAAQl3OcX1pJ4P1+Uon5hC279Tcwn78QdE8pH5z51FZOlc?=
+ =?us-ascii?Q?4TRIeEbJTnAg03RNWSLekfpm07gYWObfljA50bITO4ZC3KNwxMPn9gfGp0g8?=
+ =?us-ascii?Q?M+v58AupLHwscsGN8bza0jtbeVxZNJylcBjks61vUUQx8mt06K7u3gNgOTRW?=
+ =?us-ascii?Q?+ibwWQFDahNqRdyrgVQ68Rd3WFLLfHR4srrV/CFNAZ7jRI1ZF8raAuXA/AUX?=
+ =?us-ascii?Q?u9bCTiH7yo8Ux75lF9vsBsYvbe7f6rZoKLS2T03FT6/nyQny+L7V7iUyDnK7?=
+ =?us-ascii?Q?DdgPhUPgn+itV57bUhB2coWhTBt6YWu+rSGY4Mh1dvMFZZ5yq+423aFmwy1p?=
+ =?us-ascii?Q?a33hi8AppPRPVHjTYr9REdueGb5jkSfQxgucQhIaFtpYjpb8WTKb2sLzM37E?=
+ =?us-ascii?Q?tU0kwAsMvvorFk9g5OT6zUblNzWb+TYR2wqzhRrg8ZS7hcdQ3hi6PkNnFpN6?=
+ =?us-ascii?Q?4wxdg4jrg+nC4i0BuC3Tx1Tu6CXutw7C0T9N4yx14yxnkCmCv2FWKbMuQt6y?=
+ =?us-ascii?Q?kE6MKp4sHRJWe9ug7i4zAsJG9rCXvmCAmlNpXqga3nS3rgA8dlHPCfCGs0tG?=
+ =?us-ascii?Q?HSY24lUijucuWeZkN1bLQ68JWFQB6z1nizH/hB6KZLasrhD9vGHTZlJFcGcT?=
+ =?us-ascii?Q?FM6oSsUd44wpjqTHyS5fgr9JhxV+/Gvl4WLpnvMwl2HITefsyISuaH4FAnyi?=
+ =?us-ascii?Q?vtdBgIgtNZn3t0q1H93Td/wJc1SbsgB1WsS7CUYc+nYvG35EmRF0oahTc1yZ?=
+ =?us-ascii?Q?Zh6+X9cjbGEpV/9mClRqDSk=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <0AF9B5D9A1372947802567265C6F20BD@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:2188:: with SMTP id s8mr24766622jaj.141.1641392731710;
- Wed, 05 Jan 2022 06:25:31 -0800 (PST)
-Date:   Wed, 05 Jan 2022 06:25:31 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b5eac805d4d686d4@google.com>
-Subject: [syzbot] general protection fault in nfc_alloc_send_skb
-From:   syzbot <syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, krzysztof.kozlowski@canonical.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, nixiaoming@huawei.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d02faf3a-34fe-40b5-51c0-08d9d057aa78
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jan 2022 14:28:38.8973
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kpofE/ffjVbXZ9rvwslWNKCD2lEn0xlq9cJxIY5lNXrsfBdoLDrEy3tz4gH74goUL0qx0/3xL4RRGJS5nDlmKw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6510
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Jan 05, 2022 at 03:21:34PM +0200, Vladimir Oltean wrote:
+> This series contains changes that do the following:
+>=20
+> - struct dsa_port reduced from 576 to 544 bytes, and first cache line a
+>   bit better organized
+> - struct dsa_switch from 160 to 136 bytes, and first cache line a bit
+>   better organized
+> - struct dsa_switch_tree from 112 to 104 bytes, and first cache line a
+>   bit better organized
+>=20
+> No changes compared to v1, just split into a separate patch set.
+>=20
+> Vladimir Oltean (7):
+>   net: dsa: move dsa_port :: stp_state near dsa_port :: mac
+>   net: dsa: merge all bools of struct dsa_port into a single u8
+>   net: dsa: move dsa_port :: type near dsa_port :: index
+>   net: dsa: merge all bools of struct dsa_switch into a single u32
+>   net: dsa: make dsa_switch :: num_ports an unsigned int
+>   net: dsa: move dsa_switch_tree :: ports and lags to first cache line
+>   net: dsa: combine two holes in struct dsa_switch_tree
+>=20
+>  include/net/dsa.h | 146 +++++++++++++++++++++++++---------------------
+>  net/dsa/dsa2.c    |   2 +-
+>  2 files changed, 81 insertions(+), 67 deletions(-)
+>=20
+> --=20
+> 2.25.1
+>
 
-syzbot found the following issue on:
+Let's keep this version for review only (RFC). For the final version I
+just figured that I can use this syntax:
 
-HEAD commit:    eec4df26e24e Merge tag 's390-5.16-6' of git://git.kernel.o..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=149771a5b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=dc943eeb68074e3
-dashboard link: https://syzkaller.appspot.com/bug?extid=7f23bcddf626e0593a39
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=133e5e2bb00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=152e6571b00000
+	u8			vlan_filtering:1;
 
-The issue was bisected to:
+	/* Managed by DSA on user ports and by drivers on CPU and DSA ports */
+	u8			learning:1;
 
-commit c33b1cc62ac05c1dbb1cdafe2eb66da01c76ca8d
-Author: Xiaoming Ni <nixiaoming@huawei.com>
-Date:   Thu Mar 25 03:51:10 2021 +0000
+	u8			lag_tx_enabled:1;
 
-    nfc: fix refcount leak in llcp_sock_bind()
+	u8			devlink_port_setup:1;
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16b92ba3b00000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=15b92ba3b00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=11b92ba3b00000
+	u8			setup:1;
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
-Fixes: c33b1cc62ac0 ("nfc: fix refcount leak in llcp_sock_bind()")
+instead of this syntax:
 
-general protection fault, probably for non-canonical address 0xdffffc00000000c2: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000610-0x0000000000000617]
-CPU: 1 PID: 7219 Comm: syz-executor408 Not tainted 5.16.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:nfc_alloc_send_skb+0x3a/0x190 net/nfc/core.c:722
-Code: 54 41 89 d4 55 53 48 89 fb 48 8d ab 10 06 00 00 48 83 ec 08 e8 47 53 92 f8 48 89 ea 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 14 01 00 00 48 8d bb 14 06 00
-RSP: 0018:ffffc9000ca97888 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 00000000000000c2 RSI: ffffffff88e474b9 RDI: 0000000000000000
-RBP: 0000000000000610 R08: ffffc9000ca97938 R09: 0000000000000880
-R10: ffffffff88e6031d R11: 000000000000087f R12: 0000000000000000
-R13: 0000000000000082 R14: ffff88807ca8b000 R15: ffffc9000ca97938
-FS:  00007f6b81ae2700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fff1b2fd960 CR3: 000000007ca3a000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- nfc_llcp_send_ui_frame+0x2c0/0x430 net/nfc/llcp_commands.c:759
- llcp_sock_sendmsg+0x2b9/0x3a0 net/nfc/llcp_sock.c:803
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:724
- ____sys_sendmsg+0x331/0x810 net/socket.c:2409
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
- __sys_sendmmsg+0x195/0x470 net/socket.c:2549
- __do_sys_sendmmsg net/socket.c:2578 [inline]
- __se_sys_sendmmsg net/socket.c:2575 [inline]
- __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2575
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f6b81b51f89
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f6b81ae22f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 0000000000000033 RCX: 00007f6b81b51f89
-RDX: 0000000000000006 RSI: 0000000020004540 RDI: 0000000000000003
-RBP: 00007f6b81bdb3f8 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000040 R11: 0000000000000246 R12: 00007f6b81bdb3f0
-R13: 93cb663f6753dadd R14: 4b973dfbaeacdab3 R15: f981dd66eb1318f7
- </TASK>
-Modules linked in:
----[ end trace 570920f865b173be ]---
-RIP: 0010:nfc_alloc_send_skb+0x3a/0x190 net/nfc/core.c:722
-Code: 54 41 89 d4 55 53 48 89 fb 48 8d ab 10 06 00 00 48 83 ec 08 e8 47 53 92 f8 48 89 ea 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <0f> b6 04 02 84 c0 74 08 3c 03 0f 8e 14 01 00 00 48 8d bb 14 06 00
-RSP: 0018:ffffc9000ca97888 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 00000000000000c2 RSI: ffffffff88e474b9 RDI: 0000000000000000
-RBP: 0000000000000610 R08: ffffc9000ca97938 R09: 0000000000000880
-R10: ffffffff88e6031d R11: 000000000000087f R12: 0000000000000000
-R13: 0000000000000082 R14: ffff88807ca8b000 R15: ffffc9000ca97938
-FS:  00007f6b81ae2700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fff1b2fd960 CR3: 000000007ca3a000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess):
-   0:	54                   	push   %rsp
-   1:	41 89 d4             	mov    %edx,%r12d
-   4:	55                   	push   %rbp
-   5:	53                   	push   %rbx
-   6:	48 89 fb             	mov    %rdi,%rbx
-   9:	48 8d ab 10 06 00 00 	lea    0x610(%rbx),%rbp
-  10:	48 83 ec 08          	sub    $0x8,%rsp
-  14:	e8 47 53 92 f8       	callq  0xf8925360
-  19:	48 89 ea             	mov    %rbp,%rdx
-  1c:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  23:	fc ff df
-  26:	48 c1 ea 03          	shr    $0x3,%rdx
-* 2a:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax <-- trapping instruction
-  2e:	84 c0                	test   %al,%al
-  30:	74 08                	je     0x3a
-  32:	3c 03                	cmp    $0x3,%al
-  34:	0f 8e 14 01 00 00    	jle    0x14e
-  3a:	48                   	rex.W
-  3b:	8d                   	.byte 0x8d
-  3c:	bb                   	.byte 0xbb
-  3d:	14 06                	adc    $0x6,%al
+	u8			vlan_filtering:1,
+				/* Managed by DSA on user ports and by
+				 * drivers on CPU and DSA ports
+				 */
+				learning:1,
+				lag_tx_enabled:1,
+				devlink_port_setup:1,
+				setup:1;
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+which is what I'm going to prefer.=
