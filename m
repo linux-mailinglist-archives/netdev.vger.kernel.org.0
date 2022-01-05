@@ -2,150 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D298E485A4E
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 21:55:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E71F1485A50
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 21:56:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244249AbiAEUz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 15:55:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46076 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244239AbiAEUzw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 15:55:52 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87898C061245;
-        Wed,  5 Jan 2022 12:55:52 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id w7so461473plp.13;
-        Wed, 05 Jan 2022 12:55:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cBznVAld5K088tv2SFB3Jx7CG3DaWx7P5YgQ6E60k30=;
-        b=ZX/ipq78Z/qT9BexoxBGBt5nTLa4YCb42OcArXJsesE/Zc06YCebybONJaio6L+MHV
-         RrKMTV0quo8yrORE3OAi6FzWVIE5kapedqd11p8wYxmMTIxa3yFRFpEXdp7qo8cWT6S1
-         stc6p+J+GXDmzOW3RoakGC1HvscyK+bASVbQeDPSQwfwWnCjnfe4XzWg5d4hVKFh5eQd
-         7NjXOsK56kIwBW5Rp5oiUSREcMEq+ekabMU0gwSm7LwKpbTqrezacOEi9ujQOQmNSNbL
-         MpaJ3rDOB4pQWrdN+jfNTX42DuVfFbY0u2jxfgDpN2SCrU8QtP8QFJDX0st4Tz9tpnjK
-         SfMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cBznVAld5K088tv2SFB3Jx7CG3DaWx7P5YgQ6E60k30=;
-        b=smFvlVa7xsWrLeSp0yCIFpKTl9bUyGVZwNOaqHXnFk5UVMiAEqRmp0Y11G2vQb5TMQ
-         Rm3y8o0Rr8PAahAo8AVhar7J/13XNeFN+XduiQEvdGPdo1/4fI6ARtuG0kdhm0t6IUx8
-         pqgixBQHE2sGjw8zlSogEYbNyWoxQ9zXhgw0+nsbw/um5lIulVkL+mkGH9OHjOh1nYnP
-         ckQJ/8Vo+FklthCVm32H6Jp5VS++u7SBsckMj/U9XDAX0U9n6O4Ce6Qm96vBZdc9zNVB
-         AnvJCShCAD3Q2KNoID0lRo+oZW3Z502nzlpOSUo34+5+6Rr2VddglLZDURIgoFXqmhHD
-         pCUA==
-X-Gm-Message-State: AOAM533AoU+Tf1lUP16amutVzrk9BgQIcRI7U/C/1uzcjhyjly3J3Ji+
-        p8tsc8Y36XdKPyKH7e7MGQ5qG85vebZSvQV2Afw=
-X-Google-Smtp-Source: ABdhPJyeNoxNyXrXYGhHTjrkUMnCGi/lEoxOeWAFRzdO51AMks+q6og/kJz9AUDfPKek229TrSxKU1boMr21vQh+3Ms=
-X-Received: by 2002:a17:902:c443:b0:148:f689:d924 with SMTP id
- m3-20020a170902c44300b00148f689d924mr55310145plm.78.1641416151921; Wed, 05
- Jan 2022 12:55:51 -0800 (PST)
-MIME-Version: 1.0
-References: <20211216135958.3434-1-maciej.fijalkowski@intel.com>
- <20211216135958.3434-4-maciej.fijalkowski@intel.com> <20211229131131.1460702-1-alexandr.lobakin@intel.com>
- <Yc2wZvfA8qr/XB8P@boxer> <20211230160755.26019-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20211230160755.26019-1-alexandr.lobakin@intel.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 5 Jan 2022 12:55:40 -0800
-Message-ID: <CAADnVQKjGykDYuCS=LQJ3g0brWACpMyaKjgQ9qm4szxHOLXV=A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 3/4] ice: xsk: improve AF_XDP ZC Tx and use
- batching API
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        id S244258AbiAEU4B convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 5 Jan 2022 15:56:01 -0500
+Received: from relay10.mail.gandi.net ([217.70.178.230]:46595 "EHLO
+        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244248AbiAEUz5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 15:55:57 -0500
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 4E72B240003;
+        Wed,  5 Jan 2022 20:55:53 +0000 (UTC)
+Date:   Wed, 5 Jan 2022 21:55:51 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Nicolas Schodet <nico@ni.fr.eu.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel list <linux-kernel@vger.kernel.org>
+Subject: Re: [net-next 12/18] net: mac802154: Handle scan requests
+Message-ID: <20220105215551.1693eba4@xps13>
+In-Reply-To: <CAB_54W5quZz8rVrbdx+cotTRZZpJ4ouRDZkxeW6S1L775Si=cw@mail.gmail.com>
+References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
+        <20211222155743.256280-13-miquel.raynal@bootlin.com>
+        <CAB_54W6AZ+LGTcFsQjNx7uq=+R5v_kdF0Xm5kwWQ8ONtfOrmAw@mail.gmail.com>
+        <Ycx0mwQcFsmVqWVH@ni.fr.eu.org>
+        <CAB_54W41ZEoXzoD2_wadfMTY8anv9D9e2T5wRckdXjs7jKTTCA@mail.gmail.com>
+        <CAB_54W6gHE1S9Q+-SVbrnAWPxBxnvf54XVTCmddtj8g-bZzMRA@mail.gmail.com>
+        <20220104191802.2323e44a@xps13>
+        <CAB_54W5quZz8rVrbdx+cotTRZZpJ4ouRDZkxeW6S1L775Si=cw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 30, 2021 at 8:09 AM Alexander Lobakin
-<alexandr.lobakin@intel.com> wrote:
->
-> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Date: Thu, 30 Dec 2021 14:13:10 +0100
->
-> > On Wed, Dec 29, 2021 at 02:11:31PM +0100, Alexander Lobakin wrote:
-> > > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > > Date: Thu, 16 Dec 2021 14:59:57 +0100
-> > >
-> > > > Follow mostly the logic from commit 9610bd988df9 ("ice: optimize XDP_TX
-> > > > workloads") that has been done in order to address the massive tx_busy
-> > > > statistic bump and improve the performance as well.
-> > > >
-> > > > Increase the ICE_TX_THRESH to 64 as it seems to work out better for both
-> > > > XDP and AF_XDP. Also, separating the stats structs onto separate cache
-> > > > lines seemed to improve the performance. Batching approach is inspired
-> > > > by i40e's implementation with adjustments to the cleaning logic.
-> > > >
-> > > > One difference from 'xdpdrv' XDP_TX is when ring has less than
-> > > > ICE_TX_THRESH free entries, the cleaning routine will not stop after
-> > > > cleaning a single ICE_TX_THRESH amount of descs but rather will forward
-> > > > the next_dd pointer and check the DD bit and for this bit being set the
-> > > > cleaning will be repeated. IOW clean until there are descs that can be
-> > > > cleaned.
-> > > >
-> > > > It takes three separate xdpsock instances in txonly mode to achieve the
-> > > > line rate and this was not previously possible.
-> > > >
-> > > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > > > ---
-> > > >  drivers/net/ethernet/intel/ice/ice_txrx.c |   2 +-
-> > > >  drivers/net/ethernet/intel/ice/ice_txrx.h |   4 +-
-> > > >  drivers/net/ethernet/intel/ice/ice_xsk.c  | 249 ++++++++++++++--------
-> > > >  drivers/net/ethernet/intel/ice/ice_xsk.h  |  26 ++-
-> > > >  4 files changed, 182 insertions(+), 99 deletions(-)
-> > > >
-> > >
-> > > -- 8< --
-> > >
-> > > > diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.h b/drivers/net/ethernet/intel/ice/ice_xsk.h
-> > > > index 4c7bd8e9dfc4..f2eb99063c1f 100644
-> > > > --- a/drivers/net/ethernet/intel/ice/ice_xsk.h
-> > > > +++ b/drivers/net/ethernet/intel/ice/ice_xsk.h
-> > > > @@ -6,19 +6,36 @@
-> > > >  #include "ice_txrx.h"
-> > > >  #include "ice.h"
-> > > >
-> > > > +#define PKTS_PER_BATCH 8
-> > > > +
-> > > > +#ifdef __clang__
-> > > > +#define loop_unrolled_for _Pragma("clang loop unroll_count(8)") for
-> > > > +#elif __GNUC__ >= 4
-> > > > +#define loop_unrolled_for _Pragma("GCC unroll 8") for
-> > > > +#else
-> > > > +#define loop_unrolled_for for
-> > > > +#endif
-> > >
-> > > It's used in a bunch more places across the tree, what about
-> > > defining that in linux/compiler{,_clang,_gcc}.h?
-> > > Is it possible to pass '8' as an argument? Like
-> >
-> > Like where besides i40e? I might currently suck at grepping, let's blame
-> > christmas break for that.
->
-> Ah okay, I confused it with a work around this pragma here: [0]
->
-> >
-> > If there are actually other callsites besides i40e then this is a good
-> > idea to me, maybe as a follow-up?
->
-> I think there are more potential call sites for that to come, I'd
-> make linux/unroll.h in the future I guess. But not as a part of
-> this series, right.
+Hi Alexander,
 
-Please don't, since loop unroll pragma is a hint.
-The compilers don't have to actually do the unroll.
-Both gcc and clang try to do it when it looks ok-ish from
-compiler perspective, but they don't have to.
-Try large unroll values and check the code.
-Ideally add compiler debug flags, so it can tell what it's actually doing.
-It's hard to figure out loop unroll factor looking at the assembly.
+alex.aring@gmail.com wrote on Tue, 4 Jan 2022 20:16:30 -0500:
+
+> Hi.
+> 
+> On Tue, 4 Jan 2022 at 13:18, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> >
+> > Hi Alexander,
+> >  
+> ...
+> > >
+> > > I see now why promiscuous mode is necessary here. The actual
+> > > promiscuous mode setting for the driver is not the same as promiscuous
+> > > mode in 802.15.4 spec. For until now it was there for running a
+> > > sniffer device only.
+> > > As the 802.15.4 spec defines some "filtering levels" I came up with a
+> > > draft so we can define which filtering level should be done on the
+> > > hardware.  
+> >
+> > I like the idea but I'm not sure on what side you want to tackle the
+> > problem first. Is it the phy drivers which should advertise the mac
+> > about the promiscuous mode they support (which matches the description
+> > below but does not fit the purpose of an enum very well)? Or is it the
+> > MAC that requests a particular filtering mode? In this case what a phy
+> > driver should do if:
+> > - the requested mode is more constrained than its usual promiscuous
+> >   capabilities?  
+> 
+> Then, the driver needs to go one level lower and tell mac802154 to
+> filter more out.
+> 
+> > - the requested mode is less constrained than its usual promiscuous
+> >   capabilities?
+> >  
+> 
+> Then mac802154 needs to filter more out.
+> 
+> I am more worried at the point the transceiver will shut off automatic
+> acknowledge handling which we probably can't do in software in cases
+> where it's required. Some transceivers will shut that off if they turn
+> off address filtering and if they don't have a detailed setting for
+> that they will ack every frame what they see, which is... not so good.
+> 
+> Future work would be to warn about mismatch of seeing frames, what the
+> hardware would filter out vs what mac802154 sees. More further work
+> could be to use a monitor interface and raw sockets and verify
+> transceivers how they act to frames.
+> 
+> > >
+> > > diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+> > > index 72978fb72a3a..3839ed3f8f0d 100644
+> > > --- a/include/net/mac802154.h
+> > > +++ b/include/net/mac802154.h
+> > > @@ -130,6 +130,48 @@ enum ieee802154_hw_flags {
+> > >  #define IEEE802154_HW_OMIT_CKSUM       (IEEE802154_HW_TX_OMIT_CKSUM | \
+> > >                                          IEEE802154_HW_RX_OMIT_CKSUM)
+> > >
+> > > +/**
+> > > + * enum ieee802154_filter_mode - hardware filter mode that a driver
+> > > will pass to
+> > > + *                              pass to mac802154.  
+> >
+> > Isn't it the opposite: The filtering level the mac is requesting? Here
+> > it looks like we are describing driver capabilities (ie what drivers
+> > advertise supporting).
+> >  
+> 
+> I am sorry. I meant what the transceiver "should" deliver or "level
+> less" to mac802154.
+> 
+> I think the filtering when not much resources are required can also be
+> done in a hardirq context. There exists a tasklet which is there to
+> switch to a softirq context [0], currently we do all parsing there.
+> 
+> > > + *
+> > > + * @IEEE802154_FILTER_MODE_0: No MFR filtering at all.  
+> >
+> > I suppose this would be for a sniffer accepting all frames, including
+> > the bad ones.
+> >  
+> 
+> yes.
+> 
+> > > + *
+> > > + * @IEEE802154_FILTER_MODE_1: IEEE802154_FILTER_MODE_1 with a bad FCS filter.  
+> >
+> > This means that the driver should only discard bad frames and propagate
+> > all the remaining frames, right? So this typically is a regular sniffer
+> > mode.
+> >  
+> 
+> I think this depends on what you want to filter out, so far I know in
+> wireless this is configurable. Wireshark always expects the FCS in
+> their payload for a linux 802.15.4 monitor interface and I think this
+> is because of some historical reason to support the first 802.15.4
+> sniffers in wireshark.
+> There is a difference between filter bad FCS and cutoff FCS. I need to
+> look it up but I think wireless would cut off the checksum if FCS is
+> filtered on hardware (may even some transceivers will not deliver FCS
+> to you if you enable filtering).
+> 
+> > > + *
+> > > + * @IEEE802154_FILTER_MODE_2: Same as IEEE802154_FILTER_MODE_1, known as
+> > > + *                           802.15.4 promiscuous mode, sets
+> > > + *                           mib.PromiscuousMode.  
+> >
+> > I believe what you call mib.PromiscuousMode is the mode that is
+> > referred in the spec, ie. being in the official promiscuous mode? So
+> > that is the mode that should be used "by default" when really asking
+> > for a 802154 promiscuous mode.
+> >  
+> 
+> then we don't call it in driver level promiscuous mode, we call it
+> "filtering level". And this is the filtering for cases when the
+> standard says set "mib.PromiscuousMode".
+> 
+> > Is there really a need for a different mode than mode_1 ?
+> >  
+> 
+> I think so, I am not sure what they or will define if PromiscuousMode
+> is set or not and might the transceiver need to get notice about it?
+> It's not needed now, but we might keep it in mind then.
+> 
+> > > + *
+> > > + * @IEEE802154_FILTER_MODE_3_SCAN: Same as IEEE802154_FILTER_MODE_2 without
+> > > + *                                set mib.PromiscuousMode.  
+> >
+> > And here what is the difference between MODE_1 and MODE_3 ?
+> >
+> > I suppose here we should as well drop all non-beacon frames?  
+> 
+> Yes, additionally there could be a transceiver doing this filtering on
+> hardware and tell that it's in scan and this is the difference.
+> 
+> >  
+> > > + *
+> > > + * @IEEE802154_FILTER_MODE_3_NO_SCAN:
+> > > + *     IEEE802154_FILTER_MODE_3_SCAN with MFR additional filter on:
+> > > + *  
+> 
+> should be IEEE802154_FILTER_MODE_2. Maybe we can also get some better
+> names for that but the standard describes it with numbers as well.
+> 
+> > > + *     - No reserved value in frame type
+> > > + *     - No reserved value in frame version
+> > > + *     - Match mib.PanId or broadcast
+> > > + *     - Destination address field:
+> > > + *       - Match mib.ShortAddress or broadcast
+> > > + *       - Match mib.ExtendedAddress or GroupRxMode is true
+> > > + *       - ImplicitBroadcast is true and destination address field/destination
+> > > + *         panid is not included.
+> > > + *       - Device is coordinator only source address present in data
+> > > + *         frame/command frame and source panid matches mib.PanId
+> > > + *       - Device is coordinator only source address present in multipurpose
+> > > + *         frame and destination panid matches macPanId
+> > > + *     - Beacon frames source panid matches mib.PanId. If mib.PanId is
+> > > + *       broadcast it should always be accepted.  
+> >
+> > This is a bit counter intuitive, but do we agree on the fact that the
+> > higher level of filtering should refer to promiscuous = false?
+> >  
+> 
+> Yes, it's a lot of filter rules at this level.
+> Yes, promiscuous is false in this case. That is what currently what
+> wpan "node" interface should filter at mac802154 [1] (for cases device
+> coordinator is false).
+> 
+> I might mention a lot of future work here. I think we can live for now
+> to make a difference between those levels and be sure that we drop
+> everything else in the scan operation (inclusive check fcs in
+> software). Moving stuff that we can do in hardware to hardware and the
+> rest in software is a bigger task here...
+
+On the symbol duration side I feel I'm close to a working PoC.
+
+So there is 'only' this item left in my mind. Could you please clarify
+what you expect from me exactly in terms of support for the promiscuous
+filters we discussed so far?
+
+Also, just for the record,
+- should I keep copying the netdev list for v2?
+- should I monitor if net-next is open before sending or do you have
+  your own set of rules?
+
+> [0] https://elixir.bootlin.com/linux/v5.16-rc8/source/net/mac802154/rx.c#L294
+> [1] https://elixir.bootlin.com/linux/v5.16-rc8/source/net/mac802154/rx.c#L132
+
+Thanks,
+Miquèl
