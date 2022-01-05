@@ -2,118 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2EAA48599A
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 20:57:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D72E4859CD
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 21:09:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243783AbiAET4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 14:56:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:33742 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243777AbiAET4e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 14:56:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641412593;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZE/0PMrZWO2x1/w3+hWWU/7F65/qXMf+4hY3YrWAdwo=;
-        b=YvbRid5UtmkOcXh5Axr72nidN9AzCA5motqXA0GtD510uXY7pc8n+mOVLJDT//HDbgGA09
-        GAP+IfokhMqeRNhkRtXnGR9aw4LCYOyBSofX/tWgzQWNFTVdT5OHHhE8dTILJ4URgY2Iwb
-        NSogkQtw0Pvx23adHz55h5EUkoECXRU=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-50-3NgIsbSwOBSETfPKdasbpQ-1; Wed, 05 Jan 2022 14:56:32 -0500
-X-MC-Unique: 3NgIsbSwOBSETfPKdasbpQ-1
-Received: by mail-wm1-f70.google.com with SMTP id n3-20020a05600c3b8300b00345c3fc40b0so2301253wms.3
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 11:56:31 -0800 (PST)
+        id S243870AbiAEUJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 15:09:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35624 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232127AbiAEUJz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 15:09:55 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1EAFC061245
+        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 12:09:54 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id p37so348327pfh.4
+        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 12:09:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=eIfkhHCNLVveKZqHORZeVZkWuCfGvdjKa4I2e2SBo6Y=;
+        b=lv/XegQtBt/wOX7nlBECei9SUENRvXhGwdftcwxAjPpN5ZqqKRl1oAmo4db6mA7Qlx
+         c5nJq3fp5O10vFkmT7mZbOZubt48Ft0BvWN4ZrvUaAphRdUDYzZwj/vKLSOTFB+cgC8W
+         b1Y/TmGT3jfrW8Mnz4MAdhhuoNM77JoBagdE27DLISXewbhHXgdI405NxabbzVfv2qic
+         yTknLWpegqOyvHiENcimCg891CEyFI1dZpYMOwqb+79YoGl2tUjPnNmYZHK1xW1shFrU
+         M00vZdgTdHBhrIkNixJXw47iFYwpjWdBxEQUUw8j4eH3YclFT472gOiPEhkYpgjtTbL2
+         X9qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZE/0PMrZWO2x1/w3+hWWU/7F65/qXMf+4hY3YrWAdwo=;
-        b=xTRoaICtCBKbN9ZQQEKUmiK6509jlteoM6O1ghQVxK+jkDB3c0AdKzW4ecSBCjYs/4
-         3UeyRHG8QcmAeLN7azXTz4ivGU52oS8kR5JMPyUZ1FnAp3hQz6pmwjjDuiiZkdx/TP1X
-         aiUyi6gRvg+mQ1N+tMV32ffzG58XKv14TFnCiWzT2O2uSp3t2ziEnkgPqhf3mz+pzgFQ
-         xYf2N/wi6jjFjf8SJZWDSIbUu60hGNGheu+wM0kZnb63+NdtQntOzl8hyt32RiVo24EQ
-         Y/fY/Cw1L/HpfePt25rppBSgIV873l/dIvhdRZGuegit8IWal0rSck6dZqeX1QipvKDQ
-         DHow==
-X-Gm-Message-State: AOAM530mRipcs3nubeTadVKMjmfKHVPdnyZeOsUYhwenCYw7tiz6XC/7
-        H160MoH3FlBAg2S+I9pOyTMltDTk90rSFkN4mcMeg6YSaw7+Qpe4d3I4uVWZxI53EnY3S6birIQ
-        98JITANnDvfUNy9yZ
-X-Received: by 2002:a05:6000:1366:: with SMTP id q6mr1884188wrz.551.1641412590723;
-        Wed, 05 Jan 2022 11:56:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy4Gcm5HZyFcGx6Uo3mDJoaiWkckllmSvcL5zCVS3l1YkcLkxIs8yLB7NJleBzjW/x/XTIUzA==
-X-Received: by 2002:a05:6000:1366:: with SMTP id q6mr1884180wrz.551.1641412590590;
-        Wed, 05 Jan 2022 11:56:30 -0800 (PST)
-Received: from pc-1.home (2a01cb058d24940001d1c23ad2b4ba61.ipv6.abo.wanadoo.fr. [2a01:cb05:8d24:9400:1d1:c23a:d2b4:ba61])
-        by smtp.gmail.com with ESMTPSA id i12sm42424859wrp.96.2022.01.05.11.56.29
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=eIfkhHCNLVveKZqHORZeVZkWuCfGvdjKa4I2e2SBo6Y=;
+        b=iaxLN2hgKG5Iy4wPvIGCFBf3ghVewAPRTdtXtON5nD+13hO8zeH0wwik7/Cb/e+gH5
+         srlPUcH2Aj6cC9Pmvdl8w0QikhknHHYfSkpZWrCoQ/Ng4EWE/T3YzsbpV02a9lA3Ma6E
+         Cxv8XgtzDMmte6aQPKl2V44KKfP0Th4rUyUex10rd2Cj9aHusaiEHO8qn6g25FTSVVeH
+         3ktVRRxRjRULYGItQ9Dy1mSw7CLsXJAFIUSe/sFSRFKp2lAraMUeUQpiTplzVRFtrCp6
+         DXFAdlVVodKO5tiYuojDurP139kJ1h6qiD7XuByxUXURu2f1rTRZdubOBRDEsqHbdZNX
+         tpgg==
+X-Gm-Message-State: AOAM533MEymWh4tvqFhC3lepDKm7c7VEgNwqFCNXT1ieqjcEV+9yZ0db
+        BBf4laS7n0ec8XhW6ljOl0s=
+X-Google-Smtp-Source: ABdhPJw0xlLuuQEu/D/wtK61542zFKlK1FsmfHSb/f5Dd37QiIkYb66qlkMhsYuzJAaGQieWjLbbGw==
+X-Received: by 2002:a05:6a00:16c7:b0:4a5:d9c1:89da with SMTP id l7-20020a056a0016c700b004a5d9c189damr57274397pfc.34.1641413394503;
+        Wed, 05 Jan 2022 12:09:54 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id k62sm3460038pja.23.2022.01.05.12.09.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 11:56:29 -0800 (PST)
-Date:   Wed, 5 Jan 2022 20:56:28 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>
-Subject: [PATCH net 4/4] mlx5: Don't accidentally set RTO_ONLINK before
- mlx5e_route_lookup_ipv4_get()
-Message-ID: <a0ba792bbbf088882a55507c932f1abec915c3b6.1641407336.git.gnault@redhat.com>
-References: <cover.1641407336.git.gnault@redhat.com>
+        Wed, 05 Jan 2022 12:09:54 -0800 (PST)
+Date:   Wed, 5 Jan 2022 12:09:52 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Miroslav Lichvar <mlichvar@redhat.com>
+Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next] testptp: set pin function before other requests
+Message-ID: <20220105200952.GA27023@hoboy.vegasvil.org>
+References: <20220105152506.3256026-1-mlichvar@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1641407336.git.gnault@redhat.com>
+In-Reply-To: <20220105152506.3256026-1-mlichvar@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mask the ECN bits before calling mlx5e_route_lookup_ipv4_get(). The
-tunnel key might have the last ECN bit set. This interferes with the
-route lookup process as ip_route_output_key_hash() interpretes this bit
-specially (to restrict the route scope).
+On Wed, Jan 05, 2022 at 04:25:06PM +0100, Miroslav Lichvar wrote:
+> When the -L option of the testptp utility is specified with other
+> options (e.g. -p to enable PPS output), the user probably wants to
+> apply it to the pin configured by the -L option.
+> 
+> Reorder the code to set the pin function before other function requests
+> to avoid confusing users.
 
-Found by code inspection, compile tested only.
-
-Fixes: c7b9038d8af6 ("net/mlx5e: TC preparation refactoring for routing update event")
-Fixes: 9a941117fb76 ("net/mlx5e: Maximize ip tunnel key usage on the TC offloading path")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-index a5e450973225..bc5f1dcb75e1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
- /* Copyright (c) 2018 Mellanox Technologies. */
- 
-+#include <net/inet_ecn.h>
- #include <net/vxlan.h>
- #include <net/gre.h>
- #include <net/geneve.h>
-@@ -235,7 +236,7 @@ int mlx5e_tc_tun_create_header_ipv4(struct mlx5e_priv *priv,
- 	int err;
- 
- 	/* add the IP fields */
--	attr.fl.fl4.flowi4_tos = tun_key->tos;
-+	attr.fl.fl4.flowi4_tos = tun_key->tos & ~INET_ECN_MASK;
- 	attr.fl.fl4.daddr = tun_key->u.ipv4.dst;
- 	attr.fl.fl4.saddr = tun_key->u.ipv4.src;
- 	attr.ttl = tun_key->ttl;
-@@ -350,7 +351,7 @@ int mlx5e_tc_tun_update_header_ipv4(struct mlx5e_priv *priv,
- 	int err;
- 
- 	/* add the IP fields */
--	attr.fl.fl4.flowi4_tos = tun_key->tos;
-+	attr.fl.fl4.flowi4_tos = tun_key->tos & ~INET_ECN_MASK;
- 	attr.fl.fl4.daddr = tun_key->u.ipv4.dst;
- 	attr.fl.fl4.saddr = tun_key->u.ipv4.src;
- 	attr.ttl = tun_key->ttl;
--- 
-2.21.3
-
+Acked-by: Richard Cochran <richardcochran@gmail.com>
