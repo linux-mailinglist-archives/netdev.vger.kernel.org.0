@@ -2,86 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1848485894
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 19:39:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A155E485895
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 19:39:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243113AbiAESjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 13:39:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243098AbiAESjG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 13:39:06 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E502C061245
-        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 10:39:06 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id n16so284677plc.2
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 10:39:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WF6W7HvfgSnJtLamRHxmmuS1/5W2U1J5aEv6Rw9KNYU=;
-        b=qNWnkAsnRz6ZgSnU4CYuRgE42+hQ8anu1bDXXfenuKBCZY7TXZd51MLTYdabzB6Rxk
-         kPB5GgsYazHcPTJr5FzQIyNq4Ep/7kbSm+8R1MaDhLp4uMjqp9VHZIOPbI4i7Z71pu59
-         d50sBa7iUGBW2HMr+BehqofrcaxOtMZYmsTONQ6Jn1GS3hJGSyIsrlLb3AkDhGVJNGen
-         rgc4nhDRzglRRx5m3oNeFxA9TC1vOlqdn1/QxxFo+jKHQH5PZgDdo/SvFuQpDDMqttaY
-         9tInScKExq6q9BRF4yUK2Ja9ciI5uCtFCmPFVh1Y79ZIJVB79i2JnGK05mojdTj0TML4
-         FoDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=WF6W7HvfgSnJtLamRHxmmuS1/5W2U1J5aEv6Rw9KNYU=;
-        b=bwvvHUnYbPRD1273uQ5p3ghtpY6QCMx/N2Swlam0XaAnSmLukZYOS4MkcTn9c5/I83
-         43Ra/N2v/30F1evUxsVtEDlEB3LVGNAxv8wWY/0jqJk/rIqSRlsSv8XNs89nQRjvoRMX
-         p9DD8AFv5UlhuVHtdZcQThjwrdwkWhKevGIXbjYFX0/0fImiScMHt7QlYxsl8t79zn0q
-         WYGHrm3PJRsh0nSiMFdzi+K5lEdyCrBaEXPD6wvcsU1fwumRcFhXm7tPlnFS6bgK4P1L
-         lLV4rRbFPXmBSFsbS47WMw8+RXJfLOWzoHogLkr6PvYbsJNzZVxTwrm6XQ6ragRSY8V1
-         dlGA==
-X-Gm-Message-State: AOAM533V8hHF4+vxHoCKkx0SztyUqqtfd3NM0vPYqEKZOywRE8uhY/4M
-        uzsX/Y4YrovQ8cdGcJUUI+E=
-X-Google-Smtp-Source: ABdhPJxk1Bj8LFnze5hxDyMrzwHSasxNbB0J9f3Fm7Ux9KEeCfDSyKjmDmYdyAqGUOg/USYeDMETtA==
-X-Received: by 2002:a17:903:246:b0:149:e881:9e36 with SMTP id j6-20020a170903024600b00149e8819e36mr1315320plh.26.1641407945942;
-        Wed, 05 Jan 2022 10:39:05 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h13sm27220461pgq.63.2022.01.05.10.39.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jan 2022 10:39:05 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 0/7] Cleanup to main DSA structures
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S243112AbiAESjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 13:39:45 -0500
+Received: from mail-eopbgr140075.outbound.protection.outlook.com ([40.107.14.75]:62434
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S243156AbiAESjh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jan 2022 13:39:37 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L9FI+pRIlmoMAWO2PttNk1HmvOC7/45rNVynA0ew5hOxrv0oHh4ERL2NtHOfKKU2cWWznmiNnmD2Yc+l+vdTQZb3t66K18UTdJR7dlLbb/+nzTrOahVrml7StsJsDaH6RftpyL/IgaS8rRXjVQIApgTZqxqZV37ErnovQCz50tsebdHGoFP/jvazmRc/GYIhuhJeGJl5qLaqCqS3xICKOxiGAkyCQKQwxF7yQk821kdyi170pDDJUJBq+FZISfxVMx5act8kow2Js3cOw1Wupx6hnpXuy46JPuiNTNhRtLSMHwO0psVg+NJg8am1QM6Y8T9ty12E7DdAR85MtuT8Lg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Gf5e/Zd63hOZksU0Q2KDW6Dm3ICh4simKu2sSUMBgZ4=;
+ b=GtgUkLh/VFBitU2K6NanaHSvlq1IjYsjyDwPi0thYaT6+vJ/uomBDSsgrOkMmqypPfnS1BtkYr+h5/2BVcp34N6Vizw5Q2pWmpaWlEMtsaefHx8TkelWMShuLCAD6V1/IGUAq0AzqeYHq1ZVUgIfgNzFffRk8ijviujauCdPdf89uFUWJAL31CAGdzzL3RGaKvVK0T0/bSQp9/5sfsXfJyfMp2EivrJev6oDlDMr2qqqRH5Zpk9Zr/CAWpab7J577pg2EBL5X+x1Qdo2ZJsg4zmhVzg1T8uP4sEXcsSSlfVaof3LTDEo0NW5Ot67Z5E7PxbEetm/PyvZIO7BCcpoRA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Gf5e/Zd63hOZksU0Q2KDW6Dm3ICh4simKu2sSUMBgZ4=;
+ b=U3ESxJujnQgoC0D/MxJeHjLXOkeL4FigMxMQR4SYyqRnoEITo7N8R7ToH63sVDlu0SufW2ksLe0DE/gRMYz2qTttgnfTQxZiuKXFnUlMs5h6RrvBOt4zlPQ/+Y1FoEKhft2GsErrLyey8YC2o1CijJ8UWKT3JPIB1IO3x6eDEFQ=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB6013.eurprd04.prod.outlook.com (2603:10a6:803:cb::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.15; Wed, 5 Jan
+ 2022 18:39:35 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4844.016; Wed, 5 Jan 2022
+ 18:39:35 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH v2 net-next 2/7] net: dsa: merge all bools of struct
+ dsa_port into a single u8
+Thread-Topic: [PATCH v2 net-next 2/7] net: dsa: merge all bools of struct
+ dsa_port into a single u8
+Thread-Index: AQHYAjc04aU5hROR7Ua9AmYaIwi8WKxUwFAAgAACbAA=
+Date:   Wed, 5 Jan 2022 18:39:34 +0000
+Message-ID: <20220105183934.yxidfrcwcuirm7au@skbuf>
 References: <20220105132141.2648876-1-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <f6d50994-6022-be0f-4df2-1dc3c8199c09@gmail.com>
-Date:   Wed, 5 Jan 2022 10:39:04 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <20220105132141.2648876-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=utf-8
+ <20220105132141.2648876-3-vladimir.oltean@nxp.com>
+ <d41c058c-d20f-2e9f-ea2c-0a26bdb5fea3@gmail.com>
+In-Reply-To: <d41c058c-d20f-2e9f-ea2c-0a26bdb5fea3@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fa8e03ab-0cf4-4ec1-81f1-08d9d07ab887
+x-ms-traffictypediagnostic: VI1PR04MB6013:EE_
+x-microsoft-antispam-prvs: <VI1PR04MB6013207EDE75C28BD9A1F106E04B9@VI1PR04MB6013.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: buhiXKUF3rv8PnZ4HRPAOBajVJGdJlICEJLS5NFjrSUAjyp0lEZgJbj2aAPvcM36u+/S7VX922qTwfP5FsZgxXye0f9PKKdQCWPEP/5o0VCbrrbcWba/Nppl8F73B3s075DvVHYu8D8Ju8encpOrVUxyJ+t/TxnRFqT0kNgZmAoD6kxm4uKDCGfk85vxEJn2q+Cj+FhgRXYihNcvg6doR1dwgUtf+ybMUwEir+dxh18UXc0a0fVPJC/475/zLr4uMz5OZfxQXxW4ERFyUsjnN/V+ALtP3zoiqnLOuHpnRH8vY7g23qkvpYEKMyFv5JSHDlhhivc+4EM3ScHiFeJOPUDbDGuHQiq/yJA89obsI/4FZACrxJnMh2sp49ANAP30xBe7b/lgetUbeF8ckRb03f5iNOeG5IrggHk8klLTwJQstka0/femkytt8iXYKgtjRqA+GEqDjhchtiw5xtlijXRBIphch7rIDjdrCgnVqA6+cSSvQM8Pr6Dd+vrAhc7t/UPpjfQ7c6GMTX7wsshETW6tkgTl4srSJphzyeKzJtGz0+q7bXTcUC2IaewqjAPFsXUXan/K3F1xSwvH93CM6wKMAT0zT+gsNOZ14r4K3hmfan9yhUdT2Zh8JVrG4++D3suJI6ZELX6c+gaRbM2zVWxeSpo5jL3jsJrMdQzzfLjghnTck5TWBNEQcua7lm1W
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(4744005)(83380400001)(66476007)(2906002)(66946007)(186003)(508600001)(6512007)(26005)(38070700005)(6506007)(8676002)(1076003)(5660300002)(76116006)(71200400001)(66446008)(33716001)(38100700002)(66556008)(86362001)(316002)(122000001)(64756008)(4326008)(6486002)(44832011)(8936002)(6916009)(54906003)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ILkN1yKEACpXYPksYxWhoh9iBPWP2rh1rJ7TdKmGqUQzU1YGYkYyGDOUuNux?=
+ =?us-ascii?Q?bhqZ7MFgaLfw3ESL66SNRQ7TG9Lin3YBQ0O5u412tkmDI9vog2bWCcWd5IRb?=
+ =?us-ascii?Q?f73HNKY2+kQ71NsZbcdTp2eecUp+XUazfdD8kziAENllJzDLwwAJ1Ln+1WXA?=
+ =?us-ascii?Q?HZzRs5lsRpLdntt66x8rsqfUKKgjzj6yZ3wM3t7kR6IHrgsZMNWTkYoncPJs?=
+ =?us-ascii?Q?BcpDCK94wewUeSHSkkRbj+iCcLRX2btVPHpiPwRvvIsBFiTaAZ+ycM0H2gkk?=
+ =?us-ascii?Q?DYBkkonZvNMfiji5UU0CL1bQWCIT95QX0Lh/jXDwe1afnlm/IhVZJBOMB0Ok?=
+ =?us-ascii?Q?VNDf1lGJOF4N/ShEw5yWrmigRBw6ZUNEAl9r2wKmFK5fPvc7F5f6UwGAROjf?=
+ =?us-ascii?Q?QruvgeHtVet9hZaU76Qz8IFg+yHIQjOv9Sl56HZpCWyQCqX1XnZDbvIUrpEp?=
+ =?us-ascii?Q?17RgdUL6BWYABOCtPPH1pFpI62oN/14mtLjH9SkBnVcHK4jCKo5k5i6yOjyx?=
+ =?us-ascii?Q?f7CQNfNx6OTJ0okGO/n8QOtGuWZTQLF9O1Sn/bQPEyjNzIzpdLm1gLY9gSy5?=
+ =?us-ascii?Q?LyHKEpduYTIDP5JZ1GGmGHhR8O5VlT1FBEHpQFv477RVHau7UrVa2VLZ3kRJ?=
+ =?us-ascii?Q?3QZ+HJfjEFeCGn8S5w/BpFiqiU+aL9UyLdHoe4/VDYWIaknWCfpOBFZ62EAe?=
+ =?us-ascii?Q?dHp/RlngRExfwO8VJcAGW281JaE7ZUuxXLov9Pl1o7FZwVbH7jDRLw2q2W1j?=
+ =?us-ascii?Q?zHSV4JzeH9PtMc/4Azl2RK30UFw4+CYUTGvf+PDwKNjc0pgPwgEu4SW+J4Mj?=
+ =?us-ascii?Q?1siJXiRKlKRjheNg/nh57/k00jtvB2F6aGSpi/kPTCnTA2vCFtGLPi6cDJKU?=
+ =?us-ascii?Q?ipzsXUXwbeY89wA+yZYP25ak2Edxjxv32Po/7YnSDHMJuHEDAJief7kbcpE3?=
+ =?us-ascii?Q?TRmG6iwQa09oI1bfCe4anayD59H8ggcHHwgseNY8pSMfF6uaGMUOBmmE4VoB?=
+ =?us-ascii?Q?A0VPy5JDfL72T/+j9c6n+T69jLDrZb6+OEoFy1bNhmnMatGyAMjYCKbvAw9Q?=
+ =?us-ascii?Q?dFMFQgF8Lo5XdZWRT+H9LiWkTEn998dc7XseNUsKSFMU833U1rCSbdxcnIZH?=
+ =?us-ascii?Q?mRRH9qL2RX3xjSRRNGv4n96HD5k+R5iY0k4hX/izC7Zz7XgO24XlJf//qdCT?=
+ =?us-ascii?Q?jpd4f7Zp7wuPyjH5uLsWQfidpNyRyVIT8M+2r3crLJ1oOgqXudyk0VVrEVCK?=
+ =?us-ascii?Q?G00yWgAC5MYcjUeXGOmj7XM26CJ638MqFXDT1yxzZXhcFm1T8+Z5b+awYj7C?=
+ =?us-ascii?Q?oA+B2W/D5ZNeQHcpLkMO3RzpDZaqARmbvUJjXUifSxCjEfAAI7oqOAwKF7ov?=
+ =?us-ascii?Q?0te/5NeDG1pT6PgNhXEoQeExGSdwmwsELyyfLlS/r9ceCEP4MbayYKTXt3k3?=
+ =?us-ascii?Q?37eayyvKLCp85SqZ5XZmiCguJm4EB8U6PVBaUFBDEhw6azMygOfQQIkcCdPk?=
+ =?us-ascii?Q?jelOCiDnAa0svv6fvfmJea+wqbgOk4aNJGKnIBiUQPeRtXrA2/X6aEsNdX8V?=
+ =?us-ascii?Q?J6txMSDN214V45Uu4e4nzqyefQF65ipfIEi2SW6OX3ZWmtMEvqyeagZme5qp?=
+ =?us-ascii?Q?xGvwcuoEC306Q3Veirye12Y=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <E83F98950D5AAD4184527F43066499C5@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fa8e03ab-0cf4-4ec1-81f1-08d9d07ab887
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jan 2022 18:39:34.9643
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ZaoXvVD3KuVcqIuQVwe061MoFsljJem6IoQKhCGQd6M+q4r6hZ4df/ugyBBVNCZzM92cpIbGHNtDGQboSWHFKw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6013
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/5/22 5:21 AM, Vladimir Oltean wrote:
-> This series contains changes that do the following:
-> 
-> - struct dsa_port reduced from 576 to 544 bytes, and first cache line a
->   bit better organized
-> - struct dsa_switch from 160 to 136 bytes, and first cache line a bit
->   better organized
-> - struct dsa_switch_tree from 112 to 104 bytes, and first cache line a
->   bit better organized
-> 
-> No changes compared to v1, just split into a separate patch set.
+Hi Florian,
 
-This is all looking good to me. I suppose we could possibly swap the
-'nh' and 'tag_ops' member since dst->tag_ops is used in
-dsa_tag_generic_flow_dissect() which is a fast path, what do you think?
--- 
-Florian
+On Wed, Jan 05, 2022 at 10:30:54AM -0800, Florian Fainelli wrote:
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Thanks a lot for the review.
+
+I'm a bit on the fence on this patch and the other one for dsa_switch.
+The thing is that bit fields are not atomic in C89, so if we update any
+of the flags inside dp or ds concurrently (like dp->vlan_filtering),
+we're in trouble. Right now this isn't a problem, because most of the
+flags are set either during probe, or during ds->ops->setup, or are
+serialized by the rtnl_mutex in ways that are there to stay (switchdev
+notifiers). That's why I didn't say anything about it. But it may be a
+caveat to watch out for in the future. Do you think we need to do
+something about it? A lock would not be necessary, strictly speaking.=
