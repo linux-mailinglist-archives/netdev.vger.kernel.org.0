@@ -2,168 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 987BF485485
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:30:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63BD24854A8
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:34:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240697AbiAEO2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 09:28:42 -0500
-Received: from mail-eopbgr150077.outbound.protection.outlook.com ([40.107.15.77]:42208
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237136AbiAEO2l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jan 2022 09:28:41 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I1aeSfyWv11a6hdeVtjS8DWvUSd2pgIQvTE5AM6cmW4eQ+2q9CttacUWBbDoqXBwUBMrft3HylZS1hfUn2G0EqZL6TFy55TCtt9C8bNElpo8Fs+mPdpZX1JNV7s5Gh5w+cDnaSB6gZos4p2dGMgKH+Nv7i3K8IJr8oytJEYHA8FrMRtdGKwNPIiGXvc1RHhhV9Xkyhde8kzsqdg7MADmH8IjRHGotJyduseke6QvwfYKYzXddFBmr43qLN8miToq5lDsTbSlncC7rPxRNroxzTiyjW6LUHBTV73udtXUxnb4c5YgzsOdJJN8LRUiLD/ZASntHlv3EiX/5sVmw32PFw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IwmmPGZcXLsyV08yapbMxBjL4/WCekawrCAv4Lg3DOo=;
- b=OeDU0DXg0zrbEYm3D1ewGUm4+GynV54DYhf8tqKMDQr4BkziJBFTDdPZePVqc0ZedAB6GWQMZ39ZfW+R/YoJKRvYQOgHQY+3GfqIoE7OHO3hBUG9XybXIvXjAIZ8q7y/zsy55TaIfPe0EZizi+oNFdjkNa/qbmQlEsvUiO14+nxPruTtwXeggaa2pnoBb06D0BpB+2k/4+8ZEWnWCPI27qN7swPpi3gX53noETzO7e4CBxkhOVm9+CF9lzStN7pWhWasntzQNbqr+GyPhPZRiNU7hPwTDq/jCnAIP+aMPzjfGnulNBCxwFigNPe9AvxqcUbj56tSJf+adLjW0VB2Ng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IwmmPGZcXLsyV08yapbMxBjL4/WCekawrCAv4Lg3DOo=;
- b=qGCb4l7EgeW2oJG48YaAMJL9baTV1KsayqYkhHSUL103HxWADNG/GWC31SbtCW10s7xuRvZD492LHo6H9FxjUsWtl8yt6ewxVwQnjbi4Ih+tyCd3Xjq3q1BID8IJDeyNqxKjl/I8KztSpFVEWLEfSCnss2WFtiKayAlzux//ZP4=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB6510.eurprd04.prod.outlook.com (2603:10a6:803:127::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Wed, 5 Jan
- 2022 14:28:39 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4844.016; Wed, 5 Jan 2022
- 14:28:39 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH v2 net-next 0/7] Cleanup to main DSA structures
-Thread-Topic: [PATCH v2 net-next 0/7] Cleanup to main DSA structures
-Thread-Index: AQHYAjcz7PA8h1MVMEuDn2+fyJJZ2qxUfKAA
-Date:   Wed, 5 Jan 2022 14:28:38 +0000
-Message-ID: <20220105142838.uzanzmozesap63om@skbuf>
-References: <20220105132141.2648876-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220105132141.2648876-1-vladimir.oltean@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d02faf3a-34fe-40b5-51c0-08d9d057aa78
-x-ms-traffictypediagnostic: VE1PR04MB6510:EE_
-x-microsoft-antispam-prvs: <VE1PR04MB6510527BE67DFFC1C6D3C5F2E04B9@VE1PR04MB6510.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dMBcQDutqyBxBx91+xYs2WoFDm3ZJwygdFSp8jSeLsnqvf1i27ABF8eCFG2nw2s2RmCyh7PL6lkR3At2u2egWL56ToMhYdZg51IUxOH9nBrq54liz2QA3iCXYtVQihtMsU7o/rZUmDNaegDiCjAkXrNWx4JjQZJiLe9oZ9gscxQN6nANASYS1l7dGutAGfmeNm5ug9scxnmI7TCOoNNqMcXRjR0mIr+Ns0I+mXWcabrT6/DfZdqyeQQxQ0Dy3yodTLBjaNLDQbxX5nQyOq+k8wU/TSUgi9DSAk/JP5hF55iTgZEhnriMIs2JjNXzc0kS6rfxzKpDKUokdHx4daie+a1B+NT/tAHi3gg0lhTC/QeELF8N1GaI2yglqSry6cuplCmrRQZavidATg4x98+il1oICDHcqP93j6YS2wdEzHnzodQNfIEIs/VZo820yB78pG5BYjxJ+aRpMG508NYc7KQg+FYu08zdjojMHzNnkEd6XjlIYbxqvnVicqVZ5ZMlxH4v9EnilNXsRwv5tXLMBzr/Dg5wMpiVPlAgWCc6Q5nm8o562rn/dXd9He+fAqmcu7gfGxLm6f1naaJhUJF9ddvzshq6RGYNaW9ANYOjNeycOAv3JDr6YLy1sX3j3gJ+nL9bbIIJzKQZ8cOCUcJn/dWcD16ntlKyy+1jb6nL6mV2jj5KPVdJLebxg9OkRWz9RM3135tHgCUmKco7E2y7UQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(1076003)(71200400001)(44832011)(9686003)(6506007)(4326008)(91956017)(76116006)(6512007)(66946007)(2906002)(66446008)(66476007)(64756008)(66556008)(6486002)(316002)(33716001)(186003)(54906003)(508600001)(26005)(6916009)(122000001)(38100700002)(83380400001)(38070700005)(86362001)(8676002)(5660300002)(8936002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?M7qoqdJ090DZiQ2Vc2RLq/kRYcX14c4YjxooTJJwTPiNqDj9ShMyVVc0f6Xo?=
- =?us-ascii?Q?46mTx4AhODlCcHb9lQ+LWxMVnf4ScH0p6cOJasRtOy1STWvujIzvoPFWfnK0?=
- =?us-ascii?Q?tKmBAbfL0r9BGzdNav+GMEwSCrVnk+KHqFFKO+aAwA/StO4JDmHebPL/2dtR?=
- =?us-ascii?Q?UAHPxjbU28ofKbhFJNrWkqn3i+gkjRp4oHcESOzNz76h/ChvPakdtLHxEWRy?=
- =?us-ascii?Q?c9C2NQBA5VGWW1DLQ1ESMrAvi40/DeE9LzdrrdXq0enklFbwDaGSekgoUGSD?=
- =?us-ascii?Q?gkFE98jKLoFJAPlOh3BUm59qJvZJgxQNpqrIikCeXmeOeejch1LpTHj6juDR?=
- =?us-ascii?Q?a9diHPeH/bxiJJ0mdyLjLtRQ2fXQ4k3I8YL2YnZ5FaJhEwz1mJT52gZvfNxy?=
- =?us-ascii?Q?rz1och61rNFAgVFkKCw+/X+oErw09HiiBV05FVZgIHd6TmsPcbVkdMVQpNf1?=
- =?us-ascii?Q?zqVPQLfEruSlkf5poWOXVNhJDXch2FGql58QhxA0flwgoIKPHpm5u8xhe0xz?=
- =?us-ascii?Q?qwdS2WQs2rZBUvJexz2iCYZClECK89s7p8sGFGNZfdKhdz1z2nprfm3wjNlr?=
- =?us-ascii?Q?SLXHjA+pHmmqKQ+pJGJHPbAVSDOtPCTm5sDQbIFasqVujrEZOBdXa6vllLb2?=
- =?us-ascii?Q?WOKLXefq1AkxXyV9oVRYOC8bdKhMucFfATkVKOme7ZPnpcMMIODPowHdC6Bg?=
- =?us-ascii?Q?j+73uVn+A7KbtyU8vioCyFLfVrSWiKySyK4xY8DhHkb8SX5rfUAjVfjIq2pA?=
- =?us-ascii?Q?DX6T68cLegHUtmp1P3XkUcUrScpCHgzGw1fIc4xoDdP7t1MRTZguLLJl363m?=
- =?us-ascii?Q?yBbQasJ38Q6RORkAAQl3OcX1pJ4P1+Uon5hC279Tcwn78QdE8pH5z51FZOlc?=
- =?us-ascii?Q?4TRIeEbJTnAg03RNWSLekfpm07gYWObfljA50bITO4ZC3KNwxMPn9gfGp0g8?=
- =?us-ascii?Q?M+v58AupLHwscsGN8bza0jtbeVxZNJylcBjks61vUUQx8mt06K7u3gNgOTRW?=
- =?us-ascii?Q?+ibwWQFDahNqRdyrgVQ68Rd3WFLLfHR4srrV/CFNAZ7jRI1ZF8raAuXA/AUX?=
- =?us-ascii?Q?u9bCTiH7yo8Ux75lF9vsBsYvbe7f6rZoKLS2T03FT6/nyQny+L7V7iUyDnK7?=
- =?us-ascii?Q?DdgPhUPgn+itV57bUhB2coWhTBt6YWu+rSGY4Mh1dvMFZZ5yq+423aFmwy1p?=
- =?us-ascii?Q?a33hi8AppPRPVHjTYr9REdueGb5jkSfQxgucQhIaFtpYjpb8WTKb2sLzM37E?=
- =?us-ascii?Q?tU0kwAsMvvorFk9g5OT6zUblNzWb+TYR2wqzhRrg8ZS7hcdQ3hi6PkNnFpN6?=
- =?us-ascii?Q?4wxdg4jrg+nC4i0BuC3Tx1Tu6CXutw7C0T9N4yx14yxnkCmCv2FWKbMuQt6y?=
- =?us-ascii?Q?kE6MKp4sHRJWe9ug7i4zAsJG9rCXvmCAmlNpXqga3nS3rgA8dlHPCfCGs0tG?=
- =?us-ascii?Q?HSY24lUijucuWeZkN1bLQ68JWFQB6z1nizH/hB6KZLasrhD9vGHTZlJFcGcT?=
- =?us-ascii?Q?FM6oSsUd44wpjqTHyS5fgr9JhxV+/Gvl4WLpnvMwl2HITefsyISuaH4FAnyi?=
- =?us-ascii?Q?vtdBgIgtNZn3t0q1H93Td/wJc1SbsgB1WsS7CUYc+nYvG35EmRF0oahTc1yZ?=
- =?us-ascii?Q?Zh6+X9cjbGEpV/9mClRqDSk=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <0AF9B5D9A1372947802567265C6F20BD@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d02faf3a-34fe-40b5-51c0-08d9d057aa78
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jan 2022 14:28:38.8973
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kpofE/ffjVbXZ9rvwslWNKCD2lEn0xlq9cJxIY5lNXrsfBdoLDrEy3tz4gH74goUL0qx0/3xL4RRGJS5nDlmKw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6510
+        id S240942AbiAEOdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 09:33:03 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42908 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240913AbiAEOdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 09:33:02 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77EC5B81B60;
+        Wed,  5 Jan 2022 14:33:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76943C36AE9;
+        Wed,  5 Jan 2022 14:32:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641393179;
+        bh=Kw96vXcxJrrUVhwGqm3/YXrxz5qus1Y9+XKUh4pYQuA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=c0+hVicSFx41Aoucb0+tNaX6sWkED4MZ/2ZzKItQ/6IJPrSkd3qgYANQO0NX2WqVf
+         Lv+jMEhqvzBtivgBvMNNVA+5h1SSBW5idy8ai4f2/GfsBGFOMxCspgeCzLgTMIngJi
+         sxV4lDMHUZbqyzCaW8pyRe6cLLgsh5LKSdRtpywk8QjUaBx6+TZzGiPc2t4rMsTTFO
+         VnZbD6SmGFcKjJTpOKZX0ZAJ9UJpD6i2ZzF8EjIE96FeaqLAaV+rUFnMUG15zGftAv
+         1ZBDnf4UxxthaUSd0F5w3SRVuIFTY9cDYMV1+SaIcsXkdbOYQK0eGb3maU9JGKphbq
+         qzyfjzyVjG1JQ==
+Date:   Wed, 5 Jan 2022 23:32:52 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 02/13] kprobe: Keep traced function address
+Message-Id: <20220105233252.2bc92d14c42827328109d9d0@kernel.org>
+In-Reply-To: <20220104080943.113249-3-jolsa@kernel.org>
+References: <20220104080943.113249-1-jolsa@kernel.org>
+        <20220104080943.113249-3-jolsa@kernel.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 03:21:34PM +0200, Vladimir Oltean wrote:
-> This series contains changes that do the following:
->=20
-> - struct dsa_port reduced from 576 to 544 bytes, and first cache line a
->   bit better organized
-> - struct dsa_switch from 160 to 136 bytes, and first cache line a bit
->   better organized
-> - struct dsa_switch_tree from 112 to 104 bytes, and first cache line a
->   bit better organized
->=20
-> No changes compared to v1, just split into a separate patch set.
->=20
-> Vladimir Oltean (7):
->   net: dsa: move dsa_port :: stp_state near dsa_port :: mac
->   net: dsa: merge all bools of struct dsa_port into a single u8
->   net: dsa: move dsa_port :: type near dsa_port :: index
->   net: dsa: merge all bools of struct dsa_switch into a single u32
->   net: dsa: make dsa_switch :: num_ports an unsigned int
->   net: dsa: move dsa_switch_tree :: ports and lags to first cache line
->   net: dsa: combine two holes in struct dsa_switch_tree
->=20
->  include/net/dsa.h | 146 +++++++++++++++++++++++++---------------------
->  net/dsa/dsa2.c    |   2 +-
->  2 files changed, 81 insertions(+), 67 deletions(-)
->=20
-> --=20
-> 2.25.1
->
+On Tue,  4 Jan 2022 09:09:32 +0100
+Jiri Olsa <jolsa@redhat.com> wrote:
 
-Let's keep this version for review only (RFC). For the final version I
-just figured that I can use this syntax:
+> The bpf_get_func_ip_kprobe helper should return traced function
+> address, but it's doing so only for kprobes that are placed on
+> the function entry.
+> 
+> If kprobe is placed within the function, bpf_get_func_ip_kprobe
+> returns that address instead of function entry.
+> 
+> Storing the function entry directly in kprobe object, so it could
+> be used in bpf_get_func_ip_kprobe helper.
 
-	u8			vlan_filtering:1;
+Hmm, please do this in bpf side, which should have some data structure
+around the kprobe itself. Do not add this "specialized" field to
+the kprobe data structure.
 
-	/* Managed by DSA on user ports and by drivers on CPU and DSA ports */
-	u8			learning:1;
+Thank you,
 
-	u8			lag_tx_enabled:1;
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  include/linux/kprobes.h                              |  3 +++
+>  kernel/kprobes.c                                     | 12 ++++++++++++
+>  kernel/trace/bpf_trace.c                             |  2 +-
+>  tools/testing/selftests/bpf/progs/get_func_ip_test.c |  4 ++--
+>  4 files changed, 18 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/kprobes.h b/include/linux/kprobes.h
+> index 8c8f7a4d93af..a204df4fef96 100644
+> --- a/include/linux/kprobes.h
+> +++ b/include/linux/kprobes.h
+> @@ -74,6 +74,9 @@ struct kprobe {
+>  	/* Offset into the symbol */
+>  	unsigned int offset;
+>  
+> +	/* traced function address */
+> +	unsigned long func_addr;
+> +
+>  	/* Called before addr is executed. */
+>  	kprobe_pre_handler_t pre_handler;
+>  
+> diff --git a/kernel/kprobes.c b/kernel/kprobes.c
+> index d20ae8232835..c4060a8da050 100644
+> --- a/kernel/kprobes.c
+> +++ b/kernel/kprobes.c
+> @@ -1310,6 +1310,7 @@ static void init_aggr_kprobe(struct kprobe *ap, struct kprobe *p)
+>  	copy_kprobe(p, ap);
+>  	flush_insn_slot(ap);
+>  	ap->addr = p->addr;
+> +	ap->func_addr = p->func_addr;
+>  	ap->flags = p->flags & ~KPROBE_FLAG_OPTIMIZED;
+>  	ap->pre_handler = aggr_pre_handler;
+>  	/* We don't care the kprobe which has gone. */
+> @@ -1588,6 +1589,16 @@ static int check_kprobe_address_safe(struct kprobe *p,
+>  	return ret;
+>  }
+>  
+> +static unsigned long resolve_func_addr(kprobe_opcode_t *addr)
+> +{
+> +	char str[KSYM_SYMBOL_LEN];
+> +	unsigned long offset;
+> +
+> +	if (kallsyms_lookup((unsigned long) addr, NULL, &offset, NULL, str))
+> +		return (unsigned long) addr - offset;
+> +	return 0;
+> +}
+> +
+>  int register_kprobe(struct kprobe *p)
+>  {
+>  	int ret;
+> @@ -1600,6 +1611,7 @@ int register_kprobe(struct kprobe *p)
+>  	if (IS_ERR(addr))
+>  		return PTR_ERR(addr);
+>  	p->addr = addr;
+> +	p->func_addr = resolve_func_addr(addr);
+>  
+>  	ret = warn_kprobe_rereg(p);
+>  	if (ret)
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index 21aa30644219..25631253084a 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -1026,7 +1026,7 @@ BPF_CALL_1(bpf_get_func_ip_kprobe, struct pt_regs *, regs)
+>  {
+>  	struct kprobe *kp = kprobe_running();
+>  
+> -	return kp ? (uintptr_t)kp->addr : 0;
+> +	return kp ? (uintptr_t)kp->func_addr : 0;
+>  }
+>  
+>  static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
+> diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+> index a587aeca5ae0..e988aefa567e 100644
+> --- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+> +++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+> @@ -69,7 +69,7 @@ int test6(struct pt_regs *ctx)
+>  {
+>  	__u64 addr = bpf_get_func_ip(ctx);
+>  
+> -	test6_result = (const void *) addr == &bpf_fentry_test6 + 5;
+> +	test6_result = (const void *) addr == &bpf_fentry_test6;
+>  	return 0;
+>  }
+>  
+> @@ -79,6 +79,6 @@ int test7(struct pt_regs *ctx)
+>  {
+>  	__u64 addr = bpf_get_func_ip(ctx);
+>  
+> -	test7_result = (const void *) addr == &bpf_fentry_test7 + 5;
+> +	test7_result = (const void *) addr == &bpf_fentry_test7;
+>  	return 0;
+>  }
+> -- 
+> 2.33.1
+> 
 
-	u8			devlink_port_setup:1;
 
-	u8			setup:1;
-
-instead of this syntax:
-
-	u8			vlan_filtering:1,
-				/* Managed by DSA on user ports and by
-				 * drivers on CPU and DSA ports
-				 */
-				learning:1,
-				lag_tx_enabled:1,
-				devlink_port_setup:1,
-				setup:1;
-
-which is what I'm going to prefer.=
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
