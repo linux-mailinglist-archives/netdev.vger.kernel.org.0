@@ -2,88 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99192484B8B
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 01:13:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11EE1484B8F
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 01:14:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234636AbiAEANB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 19:13:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47500 "EHLO
+        id S234363AbiAEAO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 19:14:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234119AbiAEANA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 19:13:00 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB6DC061761;
-        Tue,  4 Jan 2022 16:13:00 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id c9-20020a17090a1d0900b001b2b54bd6c5so1507812pjd.1;
-        Tue, 04 Jan 2022 16:13:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yEEjORyDHr/UE6RbMr2kar9GaUil9VsJ5e9/kxtvdtk=;
-        b=FlrXMiPJxNmwbFLoDC7Hs5wUH07aJa+mVYLGH13U77XLHEOW1o7M9l9a8dtuf/xb8Y
-         EZKjtnvQcnZ49HgQGtgNuiYNPlvEK6mTmZVPRCniaS9wvpcO+AIAh174ZxAdR/E/CIy/
-         Bb8EBXkzb3hqmBq5jq06V7jGeJqe2Aj4Lbmrb76FQ8oM8uVNc8i1N4N/AkdjtKaHJXrc
-         RRXmexTg+I21R8DmwQOetO+2xl0otqimCu+tGN3SLYymaqNtLP0mUWGyZ++NzrSO9il3
-         h0tMuxyxIDKNBZ6F7761/Cjcf4uXjbmhZ0wbuUd8XAxaAiCryEL9EOxjznOhPgCLTzBh
-         /irQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yEEjORyDHr/UE6RbMr2kar9GaUil9VsJ5e9/kxtvdtk=;
-        b=Z3vnmKflXzOc+JLj7HLqy8lXGL8ILVdlBC4w1I8524ALz6/lBDKDuZWwdgSSDjVYrZ
-         KZ2ULKvCHtQPTRBBJO+FkWIZKUloWJUzc5KpbjaQB5y3+N34aaC7okld5v7baRkLi2Hn
-         u4WUpqPjZytp4Y1wWv57Qj2AI788D048zPN2XubnF9zLacXAw0pCapu8P1ckpDCOpMDl
-         sMaQg7NcSsawT4Uc1gztEWCCyW8QrcW6TN9ixKQEpBopRphIt8Rn50t7FPFkM8IO+N2e
-         YGQSQZLF0mrNAgXNgdNnM5K/eXyzWwB3AKDvBtH46u200DaxBhXQTwi7XdZx5iITwcjz
-         stTw==
-X-Gm-Message-State: AOAM530STSLg3k7i+0QBSPef/+n2oNXxuLATMvw2WqtekBUAvNOti0CX
-        QQgSiMPsxBP3Izuor27eyL4ExtAW5yZv4/VDL1I=
-X-Google-Smtp-Source: ABdhPJxGSypl4WHoICJiUI/E0we9KC0f2nA//dCM8Gk8uR0KdRsPmdnHlgQjkmp0+804oDbgNnhPb78KFhhmzDHB1/o=
-X-Received: by 2002:a17:902:7003:b0:149:ba80:8740 with SMTP id
- y3-20020a170902700300b00149ba808740mr13670625plk.143.1641341580039; Tue, 04
- Jan 2022 16:13:00 -0800 (PST)
-MIME-Version: 1.0
-References: <20211223181741.3999-1-f.fainelli@gmail.com> <CACRpkda_6Uwzoxiq=vpftusKFtQ8_Qbtoau9Wtm_AM8p3BqpVg@mail.gmail.com>
- <CAJq09z6_o9W8h=UUy7jw+Ngwg26F8pZVRX5p0VYsgoDKFJRgnA@mail.gmail.com> <YdSry15jzwdbh6GO@robh.at.kernel.org>
-In-Reply-To: <YdSry15jzwdbh6GO@robh.at.kernel.org>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Tue, 4 Jan 2022 21:12:48 -0300
-Message-ID: <CAJq09z5gBwDi+iPGYm0+=HWCiiGUDfLk62fKzwbimzgchLd2Nw@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: net: dsa: Fix realtek-smi example
-To:     Rob Herring <robh@kernel.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        devicetree@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S234119AbiAEAO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 19:14:57 -0500
+Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E485FC061761
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 16:14:56 -0800 (PST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1641341693; bh=62pljZmRd6NMnpHMPwgl99yyovGJnGDhsktjlFBjqOo=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=bL2V2p5xSb2BkXNp2vGERr9Zmb2mYnlK3t0vX17WrhVubBgdZgzsrbuaUs3b2D0Kq
+         G0ZHJaorPz892dwOGzESeUD6A6Tjy6PSPZv5Phv/9D8sHuLBUntn8zzZkRMkXR4huy
+         QheUsbayMK4kimQSf+hPOp2bMnKdA3zXGxfQhYBEQoGvApWxt2NMswJMf9ehhRrzSA
+         YzkORZe8Yply5PxzgLJfzWgMjfm48/GSHlbpbj8UzZzxmjZ0yGwDHI2yIoZ5ncgXSI
+         FmoKiwxe0atd3rylu+z4TEpg2papMaojEtrplctom4w4GHKOXwiEHrqW2Lo/ZyTkA1
+         w6GmNY43wVapw==
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [RFC] wiregard RX packet processing.
+In-Reply-To: <CAHmME9rzEjKg41eq5jBtsLXF+vZSEnvdomZJ-rTzx8Q=ac1ayg@mail.gmail.com>
+References: <20211208173205.zajfvg6zvi4g5kln@linutronix.de>
+ <CAHmME9rzEjKg41eq5jBtsLXF+vZSEnvdomZJ-rTzx8Q=ac1ayg@mail.gmail.com>
+Date:   Wed, 05 Jan 2022 01:14:47 +0100
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87mtkbavig.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Then just fix this in the conversion.
+"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
 
-Hi Rob,
+> Hi Sebastian,
+>
+> Seems like you've identified two things, the use of need_resched, and
+> potentially surrounding napi_schedule in local_bh_{disable,enable}.
+>
+> Regarding need_resched, I pulled that out of other code that seemed to
+> have the "same requirements", as vaguely conceived. It indeed might
+> not be right. The intent is to have that worker running at maximum
+> throughput for extended periods of time, but not preventing other
+> threads from running elsewhere, so that, e.g., a user's machine
+> doesn't have a jenky mouse when downloading a file.
+>
+> What are the effects of unconditionally calling cond_resched() without
+> checking for if (need_resched())? Sounds like you're saying none at
+> all?
 
-I'm not sure if I got your suggestion. Should I post the new patch
-in-reply to this thread?
-It is related but something completely different.
+I believe so: AFAIU, you use need_resched() if you need to do some kind
+of teardown before the schedule point, like this example I was recently
+looking at:
 
-I sent YAML conversion v1 a little while ago.
-https://lore.kernel.org/netdev/20211228072645.32341-1-luizluca@gmail.com/
+https://elixir.bootlin.com/linux/latest/source/net/bpf/test_run.c#L73
 
-I'll send v2 soon. I'll mention it in this thread when I do it.
+If you just need to maybe reschedule, you can just call cond_resched()
+and it'll do what it says on the tin: do a schedule if needed, and
+return immediately otherwise.
 
-Best,
+> Regarding napi_schedule, I actually wasn't aware that it's requirement
+> to _only_ ever run from softirq was a strict one. When I switched to
+> using napi_schedule in this way, throughput really jumped up
+> significantly. Part of this indeed is from the batching, so that the
+> napi callback can then handle more packets in one go later. But I
+> assumed it was something inside of NAPI that was batching and
+> scheduling it, rather than a mistake on my part to call this from a wq
+> and not from a softirq.
+>
+> What, then, are the effects of surrounding that in
+> local_bh_{disable,enable} as you've done in the patch? You mentioned
+> one aspect is that it will "invoke wg_packet_rx_poll() where you see
+> only one skb." It sounds like that'd be bad for performance, though,
+> given that the design of napi is really geared toward batching.
 
-Luiz
+Heh, I wrote a whole long explanation he about variable batch sizes
+because you don't control when the NAPI is scheduled, etc... And then I
+noticed the while loop is calling ptr_ring_consume_bh(), which means
+that there's already a local_bh_disable/enable pair on every loop
+invocation. So you already have this :)
+
+Which of course raises the question of whether there's anything to gain
+from *adding* batching to the worker? Something like:
+
+#define BATCH_SIZE 8
+void wg_packet_decrypt_worker(struct work_struct *work)
+{
+	struct crypt_queue *queue = container_of(work, struct multicore_worker,
+						 work)->ptr;
+	void *skbs[BATCH_SIZE];
+	bool again;
+	int i;
+
+restart:
+	local_bh_disable();
+	ptr_ring_consume_batched(&queue->ring, skbs, BATCH_SIZE);
+
+	for (i = 0; i < BATCH_SIZE; i++) {
+		struct sk_buff *skb = skbs[i];
+		enum packet_state state;
+
+		if (!skb)
+			break;
+
+		state = likely(decrypt_packet(skb, PACKET_CB(skb)->keypair)) ?
+				PACKET_STATE_CRYPTED : PACKET_STATE_DEAD;
+		wg_queue_enqueue_per_peer_rx(skb, state);
+	}
+        
+	again = !ptr_ring_empty(&queue->ring);
+	local_bh_enable();
+
+	if (again) {
+		cond_resched();
+		goto restart;
+	}
+}
+
+
+Another thing that might be worth looking into is whether it makes sense
+to enable threaded NAPI for Wireguard. See:
+https://lore.kernel.org/r/20210208193410.3859094-1-weiwan@google.com
+
+-Toke
