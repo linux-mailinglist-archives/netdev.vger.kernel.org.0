@@ -2,131 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13095485A24
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 21:40:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A3F0485A30
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 21:45:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244144AbiAEUkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 15:40:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244127AbiAEUkq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 15:40:46 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13806C061245;
-        Wed,  5 Jan 2022 12:40:46 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id q5so576638ioj.7;
-        Wed, 05 Jan 2022 12:40:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=45SP3bqnZoHbEc/qN8LNfImZ/YeuvDvy9LOD6oQtizc=;
-        b=ZVNnYwfLnJ+VojOtedXPo9wsSncszCXEGLqxeFiv0cSvYCfEuXKUZzUz24Q0rTyE5L
-         liw4nrhmGy9KHAEDDvwMr7/3sQbhlM16FaWF8V/p0MCi5mT/edk4FXpX4ok/yoAjcjeO
-         QVUyteWuGvf9ueQE7C+tHLFD4LMmv3NeHuR9vZLp90GDnEsvSdeM9uFMtFNUNJ7kvEUv
-         J1D7ZZOA6Y8yexvtLELBDpjs9D9E8qV/pVXEUiBp09vsrEoq23/Q2GG2kb29g5XT+KSq
-         pEtSyc/W6wuvYRoGomG9DWbJGbCCN599K5e0zqTsvXuiYff3w3yCcs9jIV7X6K8Slq0P
-         OkQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=45SP3bqnZoHbEc/qN8LNfImZ/YeuvDvy9LOD6oQtizc=;
-        b=6+nkQgs6mKT6DG1srIRacbWqnakfm7qExvhMDecxr8s+jrh+PMmHI9RVXxuI2gniOI
-         Iubu9vxXmIXDhm+Lfa2wFxmF8HnsME8/lonrmlGVQ9hmpaYTb/sIUHj/czbbFDFhF6uO
-         eAnu914r5Qvtq6NSM2F2YR5K1rDDNt/L72o0vfDj59eoby86q7wLCWtaVzgZ1TW27HRB
-         AYEdySyiaZd9VmwyZb4l9cnvjLqLixwfojhECv7dKxB2HNALbx2/VCKblajJkd1oA5KU
-         7puvCTXYkshzmgez0B4VQksuxXq+DHMjv6Qbd5JEn+/lOhRKibwPS9FkQ7gVa20AFDi1
-         5PaA==
-X-Gm-Message-State: AOAM531/peNXcaSw7OpXi5qsT3a7E9TwX7hiLrNHfjGMls8LQ9yn/VMW
-        TI7CZseSq7sgO6VzDcM1rGe4h8cuT97pLpAMgNw=
-X-Google-Smtp-Source: ABdhPJyBwku1U1w4AAxvzgmc//dVuyBdCj8HysKq+5CBS+QAK19GVbV1nnmEqFC6AlveVlq1rBKBR+7vzkwtTSCwJpI=
-X-Received: by 2002:a05:6602:2d81:: with SMTP id k1mr25810715iow.112.1641415245384;
- Wed, 05 Jan 2022 12:40:45 -0800 (PST)
+        id S244179AbiAEUpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 15:45:34 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55716 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231591AbiAEUpd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 15:45:33 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6608BB81D6D;
+        Wed,  5 Jan 2022 20:45:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0A16C36AE9;
+        Wed,  5 Jan 2022 20:45:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641415531;
+        bh=G7G9G+DNY8AQXWaodNb7uY5xeH89Trio4fhtqX8RDis=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tNFzoQ4NpV/Bn6E2XIV+Yaa6ujiMyq6eqcmvNSIZV2avo7ACXhMzgh/brzF+5BUoD
+         PjTmA9DsNSjNBN8Jjz41/QX99go6ZAydjktxW8Jp7yZSTxF9y2+kfnIjeF/QGBYcfX
+         QPw506ttW3X0Rfp7IH9HeKAq/1Ass2e+a7mFnqrV3Wpf8frKNKXRHJIutyEwn2iWfL
+         2xWOSbz0FjJeevsEotlbvF8so9tzzoupYElQSd4brcFhFUIlWbU0tySa1Db3GbwuRn
+         NVimxwXzwfXGcfQCVxDj9aFaO787tmHCKGm5TvqCozRK+5QxevYb/3whoLWAdlwHun
+         PQwYKjfPVDBEQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Networking for 5.16-final
+Date:   Wed,  5 Jan 2022 12:45:30 -0800
+Message-Id: <20220105204530.3706167-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20220104121030.138216-1-jolsa@kernel.org>
-In-Reply-To: <20220104121030.138216-1-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 5 Jan 2022 12:40:34 -0800
-Message-ID: <CAEf4BzZK1=zdy1_ZdwWXK7Ryk+uWQeSApcpxFT9yMp4bRNanDQ@mail.gmail.com>
-Subject: Re: [PATCH] bpf/selftests: Fix namespace mount setup in tc_redirect
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jussi Maki <joamaki@gmail.com>, Hangbin Liu <haliu@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 4, 2022 at 4:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> The tc_redirect umounts /sys in the new namespace, which can be
-> mounted as shared and cause global umount. The lazy umount also
-> takes down mounted trees under /sys like debugfs, which won't be
-> available after sysfs mounts again and could cause fails in other
-> tests.
->
->   # cat /proc/self/mountinfo | grep debugfs
->   34 23 0:7 / /sys/kernel/debug rw,nosuid,nodev,noexec,relatime shared:14 - debugfs debugfs rw
->   # cat /proc/self/mountinfo | grep sysfs
->   23 86 0:22 / /sys rw,nosuid,nodev,noexec,relatime shared:2 - sysfs sysfs rw
->   # mount | grep debugfs
->   debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
->
->   # ./test_progs -t tc_redirect
->   #164 tc_redirect:OK
->   Summary: 1/4 PASSED, 0 SKIPPED, 0 FAILED
->
->   # mount | grep debugfs
->   # cat /proc/self/mountinfo | grep debugfs
->   # cat /proc/self/mountinfo | grep sysfs
->   25 86 0:22 / /sys rw,relatime shared:2 - sysfs sysfs rw
->
-> Making the sysfs private under the new namespace so the umount won't
-> trigger the global sysfs umount.
+Hi Linus!
 
-Hey Jiri,
+One last PR, turns out some of the recent fixes did more harm than good.
 
-Thanks for the fix. Did you try making tc_redirect non-serial again
-(s/serial_test_tc_redirect/test_tc_redirect/) and doing parallelized
-test_progs run (./test_progs -j) in a tight loop for a while? I
-suspect this might have been an issue forcing us to make this test
-serial in the first place, so now that it's fixed, we can make
-parallel test_progs a bit faster.
+The following changes since commit 74c78b4291b4466b44a57b3b7c3b98ad02628686:
 
->
-> Cc: Jussi Maki <joamaki@gmail.com>
-> Reported-by: Hangbin Liu <haliu@redhat.com>
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  tools/testing/selftests/bpf/prog_tests/tc_redirect.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-> index 4b18b73df10b..c2426df58e17 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-> @@ -105,6 +105,13 @@ static int setns_by_fd(int nsfd)
->         if (!ASSERT_OK(err, "unshare"))
->                 return err;
->
-> +       /* Make our /sys mount private, so the following umount won't
-> +        * trigger the global umount in case it's shared.
-> +        */
-> +       err = mount("none", "/sys", NULL, MS_PRIVATE, NULL);
-> +       if (!ASSERT_OK(err, "remount private /sys"))
-> +               return err;
-> +
->         err = umount2("/sys", MNT_DETACH);
->         if (!ASSERT_OK(err, "umount2 /sys"))
->                 return err;
-> --
-> 2.33.1
->
+  Merge tag 'net-5.16-rc8' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2021-12-30 11:12:12 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.16-final
+
+for you to fetch changes up to db54c12a3d7e3eedd37aa08efc9362e905f07716:
+
+  selftests: set amt.sh executable (2022-01-05 10:27:19 -0800)
+
+----------------------------------------------------------------
+Networking fixes for 5.16-final, including fixes from bpf, and WiFi.
+
+Current release - regressions:
+
+  - Revert "xsk: Do not sleep in poll() when need_wakeup set",
+    made the problem worse
+
+  - Revert "net: phy: fixed_phy: Fix NULL vs IS_ERR() checking in
+    __fixed_phy_register", broke EPROBE_DEFER handling
+
+  - Revert "net: usb: r8152: Add MAC pass-through support for more
+    Lenovo Docks", broke setups without a Lenovo dock
+
+Current release - new code bugs:
+
+  - selftests: set amt.sh executable
+
+Previous releases - regressions:
+
+  - batman-adv: mcast: don't send link-local multicast to mcast routers
+
+Previous releases - always broken:
+
+  - ipv4/ipv6: check attribute length for RTA_FLOW / RTA_GATEWAY
+
+  - sctp: hold endpoint before calling cb in
+	sctp_transport_lookup_process
+
+  - mac80211: mesh: embed mesh_paths and mpp_paths into
+    ieee80211_if_mesh to avoid complicated handling of sub-object
+    allocation failures
+
+  - seg6: fix traceroute in the presence of SRv6
+
+  - tipc: fix a kernel-infoleak in __tipc_sendmsg()
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+----------------------------------------------------------------
+Aaron Ma (1):
+      Revert "net: usb: r8152: Add MAC passthrough support for more Lenovo Docks"
+
+Andrew Lunn (3):
+      seg6: export get_srh() for ICMP handling
+      icmp: ICMPV6: Examine invoking packet for Segment Route Headers.
+      udp6: Use Segment Routing Header for dest address if present
+
+Arthur Kiyanovski (3):
+      net: ena: Fix undefined state when tx request id is out of bounds
+      net: ena: Fix wrong rx request id by resetting device
+      net: ena: Fix error handling when calculating max IO queues number
+
+Christoph Hellwig (1):
+      netrom: fix copying in user data in nr_setsockopt
+
+Colin Ian King (1):
+      bpf, selftests: Fix spelling mistake "tained" -> "tainted"
+
+David Ahern (7):
+      ipv4: Check attribute length for RTA_GATEWAY in multipath route
+      ipv4: Check attribute length for RTA_FLOW in multipath route
+      ipv6: Check attribute length for RTA_GATEWAY in multipath route
+      ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route
+      lwtunnel: Validate RTA_ENCAP_TYPE attribute length
+      ipv6: Continue processing multipath route even if gateway attribute is invalid
+      ipv6: Do cleanup if attribute validation fails in multipath route
+
+David S. Miller (4):
+      Merge branch 'mpr-len-checks' David Ahern says:
+      Merge branch 'ena-fixes'
+      Merge branch 'srv6-traceroute'
+      Merge branch '40GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
+
+Di Zhu (1):
+      i40e: fix use-after-free in i40e_sync_filters_subtask()
+
+Eric Dumazet (1):
+      sch_qfq: prevent shift-out-of-bounds in qfq_init_qdisc
+
+Florian Fainelli (1):
+      Revert "net: phy: fixed_phy: Fix NULL vs IS_ERR() checking in __fixed_phy_register"
+
+Gagan Kumar (1):
+      mctp: Remove only static neighbour on RTM_DELNEIGH
+
+Haimin Zhang (1):
+      net ticp:fix a kernel-infoleak in __tipc_sendmsg()
+
+Jakub Kicinski (4):
+      Merge https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
+      Merge tag 'batadv-net-pullrequest-20220103' of git://git.open-mesh.org/linux-merge
+      Merge tag 'mac80211-for-net-2022-01-04' of git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211
+      Merge tag 'ieee802154-for-net-2022-01-05' of git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan
+
+Jedrzej Jagielski (1):
+      i40e: Fix incorrect netdev's real number of RX/TX queues
+
+Jianguo Wu (1):
+      selftests: net: udpgro_fwd.sh: explicitly checking the available ping feature
+
+Karen Sornek (1):
+      iavf: Fix limit of total number of queues to active queues of VF
+
+Linus Lüssing (1):
+      batman-adv: mcast: don't send link-local multicast to mcast routers
+
+Magnus Karlsson (1):
+      Revert "xsk: Do not sleep in poll() when need_wakeup set"
+
+Markus Koch (1):
+      net/fsl: Remove leftover definition in xgmac_mdio
+
+Martin Habets (1):
+      sfc: The RX page_ring is optional
+
+Mateusz Palczewski (2):
+      i40e: Fix to not show opcode msg on unsuccessful VF MAC change
+      i40e: Fix for displaying message regarding NVM version
+
+Pavel Skripkin (2):
+      mac80211: mesh: embedd mesh_paths and mpp_paths into ieee80211_if_mesh
+      ieee802154: atusb: fix uninit value in atusb_set_extended_addr
+
+Taehee Yoo (1):
+      selftests: set amt.sh executable
+
+Thomas Toye (1):
+      rndis_host: support Hytera digital radios
+
+Tom Rix (1):
+      mac80211: initialize variable have_higher_than_11mbit
+
+Xin Long (1):
+      sctp: hold endpoint before calling cb in sctp_transport_lookup_process
+
+ drivers/net/ethernet/amazon/ena/ena_netdev.c       | 49 +++++++-----
+ drivers/net/ethernet/freescale/xgmac_mdio.c        |  1 -
+ drivers/net/ethernet/intel/i40e/i40e_main.c        | 60 ++++++++++++---
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 40 ++++++++--
+ drivers/net/ethernet/intel/iavf/iavf_main.c        |  5 +-
+ drivers/net/ethernet/sfc/falcon/rx.c               |  5 ++
+ drivers/net/ethernet/sfc/rx_common.c               |  5 ++
+ drivers/net/ieee802154/atusb.c                     | 10 ++-
+ drivers/net/phy/fixed_phy.c                        |  4 +-
+ drivers/net/usb/r8152.c                            |  9 ++-
+ drivers/net/usb/rndis_host.c                       |  5 ++
+ include/linux/ipv6.h                               |  2 +
+ include/net/sctp/sctp.h                            |  3 +-
+ include/net/seg6.h                                 | 21 +++++
+ net/batman-adv/multicast.c                         | 15 ++--
+ net/batman-adv/multicast.h                         | 10 ++-
+ net/batman-adv/soft-interface.c                    |  7 +-
+ net/core/lwtunnel.c                                |  4 +
+ net/ipv4/fib_semantics.c                           | 49 ++++++++++--
+ net/ipv6/icmp.c                                    |  6 +-
+ net/ipv6/route.c                                   | 32 +++++++-
+ net/ipv6/seg6.c                                    | 59 ++++++++++++++
+ net/ipv6/seg6_local.c                              | 33 +-------
+ net/ipv6/udp.c                                     |  3 +-
+ net/mac80211/ieee80211_i.h                         | 24 +++++-
+ net/mac80211/mesh.h                                | 22 +-----
+ net/mac80211/mesh_pathtbl.c                        | 89 ++++++++--------------
+ net/mac80211/mlme.c                                |  2 +-
+ net/mctp/neigh.c                                   |  9 ++-
+ net/netrom/af_netrom.c                             |  2 +-
+ net/sched/sch_qfq.c                                |  6 +-
+ net/sctp/diag.c                                    | 46 +++++------
+ net/sctp/socket.c                                  | 22 ++++--
+ net/tipc/socket.c                                  |  2 +
+ net/xdp/xsk.c                                      |  4 +-
+ .../selftests/bpf/verifier/value_ptr_arith.c       |  2 +-
+ tools/testing/selftests/net/amt.sh                 |  0
+ tools/testing/selftests/net/udpgro_fwd.sh          |  3 +-
+ 38 files changed, 441 insertions(+), 229 deletions(-)
+ mode change 100644 => 100755 tools/testing/selftests/net/amt.sh
