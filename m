@@ -2,63 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 022F54854EF
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:44:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC5F74854E1
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:44:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241038AbiAEOon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 09:44:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45646 "EHLO
+        id S241027AbiAEOoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 09:44:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241060AbiAEOoc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 09:44:32 -0500
+        with ESMTP id S241025AbiAEOoT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 09:44:19 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2307C061397
-        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 06:44:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CD9C061761
+        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 06:44:18 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1n57Wc-0004Ss-2H
-        for netdev@vger.kernel.org; Wed, 05 Jan 2022 15:44:26 +0100
+        id 1n57WT-0004C4-04
+        for netdev@vger.kernel.org; Wed, 05 Jan 2022 15:44:17 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 17E776D1B4E
-        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 14:44:14 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 630696D1B0B
+        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 14:44:09 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 4A30D6D1AC2;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 8F4836D1AC5;
         Wed,  5 Jan 2022 14:44:05 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 691f3dd3;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id d952fa11;
         Wed, 5 Jan 2022 14:44:04 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Stephane Grosjean <s.grosjean@peak-system.com>,
         Jimmy Assarsson <extja@kvaser.com>,
-        =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>
-Subject: [PATCH net-next 07/15] can: do not increase rx statistics when generating a CAN rx error message frame
-Date:   Wed,  5 Jan 2022 15:43:54 +0100
-Message-Id: <20220105144402.1174191-8-mkl@pengutronix.de>
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH net-next 08/15] can: kvaser_usb: do not increase tx statistics when sending error message frames
+Date:   Wed,  5 Jan 2022 15:43:55 +0100
+Message-Id: <20220105144402.1174191-9-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220105144402.1174191-1-mkl@pengutronix.de>
 References: <20220105144402.1174191-1-mkl@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
@@ -76,622 +63,61 @@ does not correspond to any actual data sent on the wire. Only an error
 flag and a delimiter are transmitted when an error occurs (c.f. ISO
 11898-1 section 10.4.4.2 "Error flag").
 
-For this reason, it makes no sense to increment the rx_packets and
-rx_bytes fields of struct net_device_stats because no actual payload
-were transmitted on the wire.
+For this reason, it makes no sense to increment the tx_packets and
+tx_bytes fields of struct net_device_stats when sending an error
+message frame because no actual payload will be transmitted on the
+wire.
 
-This patch fixes all the CAN drivers.
+N.B. Sending error message frames is a very specific feature which, at
+the moment, is only supported by the Kvaser Hydra hardware. Please
+refer to [1] for more details on the topic.
 
-Link: https://lore.kernel.org/all/20211207121531.42941-2-mailhol.vincent@wanadoo.fr
-CC: Marc Kleine-Budde <mkl@pengutronix.de>
-CC: Nicolas Ferre <nicolas.ferre@microchip.com>
-CC: Alexandre Belloni <alexandre.belloni@bootlin.com>
-CC: Ludovic Desroches <ludovic.desroches@microchip.com>
-CC: Chandrasekar Ramakrishnan <rcsekar@samsung.com>
-CC: Maxime Ripard <mripard@kernel.org>
-CC: Chen-Yu Tsai <wens@csie.org>
-CC: Jernej Skrabec <jernej.skrabec@gmail.com>
-CC: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-CC: Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>
-CC: Michal Simek <michal.simek@xilinx.com>
-CC: Stephane Grosjean <s.grosjean@peak-system.com>
-Tested-by: Jimmy Assarsson <extja@kvaser.com> # kvaser
+[1] https://lore.kernel.org/linux-can/CAMZ6RqK0rTNg3u3mBpZOoY51jLZ-et-J01tY6-+mWsM4meVw-A@mail.gmail.com/t/#u
+
+Link: https://lore.kernel.org/all/20211207121531.42941-3-mailhol.vincent@wanadoo.fr
+Co-developed-by: Jimmy Assarsson <extja@kvaser.com>
+Signed-off-by: Jimmy Assarsson <extja@kvaser.com>
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Acked-by: Stefan Mätje <stefan.maetje@esd.eu> # esd_usb2
-Tested-by: Stefan Mätje <stefan.maetje@esd.eu> # esd_usb2
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/at91_can.c                        | 6 ------
- drivers/net/can/c_can/c_can_main.c                | 5 -----
- drivers/net/can/cc770/cc770.c                     | 3 ---
- drivers/net/can/dev/dev.c                         | 4 ----
- drivers/net/can/dev/rx-offload.c                  | 6 ++++--
- drivers/net/can/ifi_canfd/ifi_canfd.c             | 5 -----
- drivers/net/can/kvaser_pciefd.c                   | 5 -----
- drivers/net/can/m_can/m_can.c                     | 7 -------
- drivers/net/can/mscan/mscan.c                     | 9 +++++----
- drivers/net/can/pch_can.c                         | 3 ---
- drivers/net/can/peak_canfd/peak_canfd.c           | 4 ----
- drivers/net/can/rcar/rcar_can.c                   | 6 +-----
- drivers/net/can/rcar/rcar_canfd.c                 | 4 ----
- drivers/net/can/sja1000/sja1000.c                 | 2 --
- drivers/net/can/sun4i_can.c                       | 7 ++-----
- drivers/net/can/usb/ems_usb.c                     | 2 --
- drivers/net/can/usb/esd_usb2.c                    | 2 --
- drivers/net/can/usb/etas_es58x/es58x_core.c       | 7 -------
- drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c  | 2 --
- drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c | 8 --------
- drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c  | 4 ----
- drivers/net/can/usb/peak_usb/pcan_usb.c           | 2 --
- drivers/net/can/usb/peak_usb/pcan_usb_fd.c        | 3 ---
- drivers/net/can/usb/peak_usb/pcan_usb_pro.c       | 2 --
- drivers/net/can/usb/ucan.c                        | 6 ++++--
- drivers/net/can/usb/usb_8dev.c                    | 2 --
- drivers/net/can/xilinx_can.c                      | 9 +--------
- 27 files changed, 17 insertions(+), 108 deletions(-)
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/at91_can.c b/drivers/net/can/at91_can.c
-index 3aea32c9b108..3cd872cf9be6 100644
---- a/drivers/net/can/at91_can.c
-+++ b/drivers/net/can/at91_can.c
-@@ -553,8 +553,6 @@ static void at91_rx_overflow_err(struct net_device *dev)
- 	cf->can_id |= CAN_ERR_CRTL;
- 	cf->data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_receive_skb(skb);
- }
- 
-@@ -779,8 +777,6 @@ static int at91_poll_err(struct net_device *dev, int quota, u32 reg_sr)
- 
- 	at91_poll_err_frame(dev, cf, reg_sr);
- 
--	dev->stats.rx_packets++;
--	dev->stats.rx_bytes += cf->len;
- 	netif_receive_skb(skb);
- 
- 	return 1;
-@@ -1037,8 +1033,6 @@ static void at91_irq_err(struct net_device *dev)
- 
- 	at91_irq_err_state(dev, cf, new_state);
- 
--	dev->stats.rx_packets++;
--	dev->stats.rx_bytes += cf->len;
- 	netif_rx(skb);
- 
- 	priv->can.state = new_state;
-diff --git a/drivers/net/can/c_can/c_can_main.c b/drivers/net/can/c_can/c_can_main.c
-index 52671d1ea17d..670754a12984 100644
---- a/drivers/net/can/c_can/c_can_main.c
-+++ b/drivers/net/can/c_can/c_can_main.c
-@@ -920,7 +920,6 @@ static int c_can_handle_state_change(struct net_device *dev,
- 	unsigned int reg_err_counter;
- 	unsigned int rx_err_passive;
- 	struct c_can_priv *priv = netdev_priv(dev);
--	struct net_device_stats *stats = &dev->stats;
- 	struct can_frame *cf;
- 	struct sk_buff *skb;
- 	struct can_berr_counter bec;
-@@ -996,8 +995,6 @@ static int c_can_handle_state_change(struct net_device *dev,
- 		break;
- 	}
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_receive_skb(skb);
- 
- 	return 1;
-@@ -1064,8 +1061,6 @@ static int c_can_handle_bus_err(struct net_device *dev,
- 		break;
- 	}
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_receive_skb(skb);
- 	return 1;
- }
-diff --git a/drivers/net/can/cc770/cc770.c b/drivers/net/can/cc770/cc770.c
-index f8a130f594e2..a5fd8ccedec2 100644
---- a/drivers/net/can/cc770/cc770.c
-+++ b/drivers/net/can/cc770/cc770.c
-@@ -499,7 +499,6 @@ static void cc770_rx(struct net_device *dev, unsigned int mo, u8 ctrl1)
- static int cc770_err(struct net_device *dev, u8 status)
- {
- 	struct cc770_priv *priv = netdev_priv(dev);
--	struct net_device_stats *stats = &dev->stats;
- 	struct can_frame *cf;
- 	struct sk_buff *skb;
- 	u8 lec;
-@@ -571,8 +570,6 @@ static int cc770_err(struct net_device *dev, u8 status)
- 	}
- 
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_rx(skb);
- 
- 	return 0;
-diff --git a/drivers/net/can/dev/dev.c b/drivers/net/can/dev/dev.c
-index e3d840b81357..4845ae6456e1 100644
---- a/drivers/net/can/dev/dev.c
-+++ b/drivers/net/can/dev/dev.c
-@@ -136,7 +136,6 @@ EXPORT_SYMBOL_GPL(can_change_state);
- static void can_restart(struct net_device *dev)
- {
- 	struct can_priv *priv = netdev_priv(dev);
--	struct net_device_stats *stats = &dev->stats;
- 	struct sk_buff *skb;
- 	struct can_frame *cf;
- 	int err;
-@@ -155,9 +154,6 @@ static void can_restart(struct net_device *dev)
- 
- 	cf->can_id |= CAN_ERR_RESTARTED;
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
--
- 	netif_rx_ni(skb);
- 
- restart:
-diff --git a/drivers/net/can/dev/rx-offload.c b/drivers/net/can/dev/rx-offload.c
-index 37b0cc65237b..7dbf46b9ca5d 100644
---- a/drivers/net/can/dev/rx-offload.c
-+++ b/drivers/net/can/dev/rx-offload.c
-@@ -54,8 +54,10 @@ static int can_rx_offload_napi_poll(struct napi_struct *napi, int quota)
- 		struct can_frame *cf = (struct can_frame *)skb->data;
- 
- 		work_done++;
--		stats->rx_packets++;
--		stats->rx_bytes += cf->len;
-+		if (!(cf->can_id & CAN_ERR_FLAG)) {
-+			stats->rx_packets++;
-+			stats->rx_bytes += cf->len;
-+		}
- 		netif_receive_skb(skb);
- 	}
- 
-diff --git a/drivers/net/can/ifi_canfd/ifi_canfd.c b/drivers/net/can/ifi_canfd/ifi_canfd.c
-index 5bb957a26bc6..e8318e984bf2 100644
---- a/drivers/net/can/ifi_canfd/ifi_canfd.c
-+++ b/drivers/net/can/ifi_canfd/ifi_canfd.c
-@@ -430,8 +430,6 @@ static int ifi_canfd_handle_lec_err(struct net_device *ndev)
- 	       priv->base + IFI_CANFD_INTERRUPT);
- 	writel(IFI_CANFD_ERROR_CTR_ER_ENABLE, priv->base + IFI_CANFD_ERROR_CTR);
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_receive_skb(skb);
- 
- 	return 1;
-@@ -456,7 +454,6 @@ static int ifi_canfd_handle_state_change(struct net_device *ndev,
- 					 enum can_state new_state)
- {
- 	struct ifi_canfd_priv *priv = netdev_priv(ndev);
--	struct net_device_stats *stats = &ndev->stats;
- 	struct can_frame *cf;
- 	struct sk_buff *skb;
- 	struct can_berr_counter bec;
-@@ -522,8 +519,6 @@ static int ifi_canfd_handle_state_change(struct net_device *ndev,
- 		break;
- 	}
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_receive_skb(skb);
- 
- 	return 1;
-diff --git a/drivers/net/can/kvaser_pciefd.c b/drivers/net/can/kvaser_pciefd.c
-index eb74cdf26b88..ab672c92ab07 100644
---- a/drivers/net/can/kvaser_pciefd.c
-+++ b/drivers/net/can/kvaser_pciefd.c
-@@ -1310,9 +1310,6 @@ static int kvaser_pciefd_rx_error_frame(struct kvaser_pciefd_can *can,
- 	cf->data[6] = bec.txerr;
- 	cf->data[7] = bec.rxerr;
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
--
- 	netif_rx(skb);
- 	return 0;
- }
-@@ -1510,8 +1507,6 @@ static void kvaser_pciefd_handle_nack_packet(struct kvaser_pciefd_can *can,
- 
- 	if (skb) {
- 		cf->can_id |= CAN_ERR_BUSERROR;
--		stats->rx_bytes += cf->len;
--		stats->rx_packets++;
- 		netif_rx(skb);
- 	} else {
- 		stats->rx_dropped++;
-diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index c2a8421e7845..30d94cb43113 100644
---- a/drivers/net/can/m_can/m_can.c
-+++ b/drivers/net/can/m_can/m_can.c
-@@ -647,9 +647,6 @@ static int m_can_handle_lec_err(struct net_device *dev,
- 		break;
- 	}
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
--
- 	if (cdev->is_peripheral)
- 		timestamp = m_can_get_timestamp(cdev);
- 
-@@ -706,7 +703,6 @@ static int m_can_handle_state_change(struct net_device *dev,
- 				     enum can_state new_state)
- {
- 	struct m_can_classdev *cdev = netdev_priv(dev);
--	struct net_device_stats *stats = &dev->stats;
- 	struct can_frame *cf;
- 	struct sk_buff *skb;
- 	struct can_berr_counter bec;
-@@ -771,9 +767,6 @@ static int m_can_handle_state_change(struct net_device *dev,
- 		break;
- 	}
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
--
- 	if (cdev->is_peripheral)
- 		timestamp = m_can_get_timestamp(cdev);
- 
-diff --git a/drivers/net/can/mscan/mscan.c b/drivers/net/can/mscan/mscan.c
-index fa32e418eb29..9e1cce0260da 100644
---- a/drivers/net/can/mscan/mscan.c
-+++ b/drivers/net/can/mscan/mscan.c
-@@ -401,13 +401,14 @@ static int mscan_rx_poll(struct napi_struct *napi, int quota)
- 			continue;
- 		}
- 
--		if (canrflg & MSCAN_RXF)
-+		if (canrflg & MSCAN_RXF) {
- 			mscan_get_rx_frame(dev, frame);
--		else if (canrflg & MSCAN_ERR_IF)
-+			stats->rx_packets++;
-+			stats->rx_bytes += frame->len;
-+		} else if (canrflg & MSCAN_ERR_IF) {
- 			mscan_get_err_frame(dev, frame, canrflg);
-+		}
- 
--		stats->rx_packets++;
--		stats->rx_bytes += frame->len;
- 		work_done++;
- 		netif_receive_skb(skb);
- 	}
-diff --git a/drivers/net/can/pch_can.c b/drivers/net/can/pch_can.c
-index 964c8a09226a..6b45840db1f9 100644
---- a/drivers/net/can/pch_can.c
-+++ b/drivers/net/can/pch_can.c
-@@ -561,9 +561,6 @@ static void pch_can_error(struct net_device *ndev, u32 status)
- 
- 	priv->can.state = state;
- 	netif_receive_skb(skb);
--
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- }
- 
- static irqreturn_t pch_can_interrupt(int irq, void *dev_id)
-diff --git a/drivers/net/can/peak_canfd/peak_canfd.c b/drivers/net/can/peak_canfd/peak_canfd.c
-index d08718e98e11..d5b8bc6d2980 100644
---- a/drivers/net/can/peak_canfd/peak_canfd.c
-+++ b/drivers/net/can/peak_canfd/peak_canfd.c
-@@ -409,8 +409,6 @@ static int pucan_handle_status(struct peak_canfd_priv *priv,
- 		return -ENOMEM;
- 	}
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	pucan_netif_rx(skb, msg->ts_low, msg->ts_high);
- 
- 	return 0;
-@@ -438,8 +436,6 @@ static int pucan_handle_cache_critical(struct peak_canfd_priv *priv)
- 	cf->data[6] = priv->bec.txerr;
- 	cf->data[7] = priv->bec.rxerr;
- 
--	stats->rx_bytes += cf->len;
--	stats->rx_packets++;
- 	netif_rx(skb);
- 
- 	return 0;
-diff --git a/drivers/net/can/rcar/rcar_can.c b/drivers/net/can/rcar/rcar_can.c
-index 8999ec9455ec..f408ed9a6ccd 100644
---- a/drivers/net/can/rcar/rcar_can.c
-+++ b/drivers/net/can/rcar/rcar_can.c
-@@ -223,7 +223,6 @@ static void tx_failure_cleanup(struct net_device *ndev)
- static void rcar_can_error(struct net_device *ndev)
- {
- 	struct rcar_can_priv *priv = netdev_priv(ndev);
--	struct net_device_stats *stats = &ndev->stats;
- 	struct can_frame *cf;
- 	struct sk_buff *skb;
- 	u8 eifr, txerr = 0, rxerr = 0;
-@@ -362,11 +361,8 @@ static void rcar_can_error(struct net_device *ndev)
- 		}
- 	}
- 
--	if (skb) {
--		stats->rx_packets++;
--		stats->rx_bytes += cf->len;
-+	if (skb)
- 		netif_rx(skb);
--	}
- }
- 
- static void rcar_can_tx_done(struct net_device *ndev)
-diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index ff9d0f5ae0dd..db9d62874e15 100644
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -1033,8 +1033,6 @@ static void rcar_canfd_error(struct net_device *ndev, u32 cerfl,
- 	/* Clear channel error interrupts that are handled */
- 	rcar_canfd_write(priv->base, RCANFD_CERFL(ch),
- 			 RCANFD_CERFL_ERR(~cerfl));
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_rx(skb);
- }
- 
-@@ -1174,8 +1172,6 @@ static void rcar_canfd_state_change(struct net_device *ndev,
- 		rx_state = txerr <= rxerr ? state : 0;
- 
- 		can_change_state(ndev, cf, tx_state, rx_state);
--		stats->rx_packets++;
--		stats->rx_bytes += cf->len;
- 		netif_rx(skb);
- 	}
- }
-diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
-index 3fad54646746..a65546ca9461 100644
---- a/drivers/net/can/sja1000/sja1000.c
-+++ b/drivers/net/can/sja1000/sja1000.c
-@@ -487,8 +487,6 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
- 			can_bus_off(dev);
- 	}
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_rx(skb);
- 
- 	return 0;
-diff --git a/drivers/net/can/sun4i_can.c b/drivers/net/can/sun4i_can.c
-index 37862e7f6840..a2d8d77d11ef 100644
---- a/drivers/net/can/sun4i_can.c
-+++ b/drivers/net/can/sun4i_can.c
-@@ -633,13 +633,10 @@ static int sun4i_can_err(struct net_device *dev, u8 isrc, u8 status)
- 			can_bus_off(dev);
- 	}
- 
--	if (likely(skb)) {
--		stats->rx_packets++;
--		stats->rx_bytes += cf->len;
-+	if (likely(skb))
- 		netif_rx(skb);
--	} else {
-+	else
- 		return -ENOMEM;
--	}
- 
- 	return 0;
- }
-diff --git a/drivers/net/can/usb/ems_usb.c b/drivers/net/can/usb/ems_usb.c
-index 2b5302e72435..7cf65936d02e 100644
---- a/drivers/net/can/usb/ems_usb.c
-+++ b/drivers/net/can/usb/ems_usb.c
-@@ -397,8 +397,6 @@ static void ems_usb_rx_err(struct ems_usb *dev, struct ems_cpc_msg *msg)
- 		stats->rx_errors++;
- 	}
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_rx(skb);
- }
- 
-diff --git a/drivers/net/can/usb/esd_usb2.c b/drivers/net/can/usb/esd_usb2.c
-index c6068a251fbe..5f6915a27b3d 100644
---- a/drivers/net/can/usb/esd_usb2.c
-+++ b/drivers/net/can/usb/esd_usb2.c
-@@ -293,8 +293,6 @@ static void esd_usb2_rx_event(struct esd_usb2_net_priv *priv,
- 		priv->bec.txerr = txerr;
- 		priv->bec.rxerr = rxerr;
- 
--		stats->rx_packets++;
--		stats->rx_bytes += cf->len;
- 		netif_rx(skb);
- 	}
- }
-diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
-index 8508a73d648e..2ed2370a3166 100644
---- a/drivers/net/can/usb/etas_es58x/es58x_core.c
-+++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
-@@ -849,13 +849,6 @@ int es58x_rx_err_msg(struct net_device *netdev, enum es58x_err error,
- 		break;
- 	}
- 
--	/* driver/net/can/dev.c:can_restart() takes in account error
--	 * messages in the RX stats. Doing the same here for
--	 * consistency.
--	 */
--	netdev->stats.rx_packets++;
--	netdev->stats.rx_bytes += CAN_ERR_DLC;
--
- 	if (cf) {
- 		if (cf->data[1])
- 			cf->can_id |= CAN_ERR_CRTL;
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-index 0cc0fc866a2a..3e682ef43f8e 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-@@ -279,8 +279,6 @@ int kvaser_usb_can_rx_over_error(struct net_device *netdev)
- 	cf->can_id |= CAN_ERR_CRTL;
- 	cf->data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_rx(skb);
- 
- 	return 0;
 diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-index cec36295fdc5..8e2ff08d1083 100644
+index 8e2ff08d1083..60e7c5f27a5f 100644
 --- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
 +++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
-@@ -870,7 +870,6 @@ static void kvaser_usb_hydra_update_state(struct kvaser_usb_net_priv *priv,
- 	struct net_device *netdev = priv->netdev;
- 	struct can_frame *cf;
- 	struct sk_buff *skb;
--	struct net_device_stats *stats;
- 	enum can_state new_state, old_state;
+@@ -296,6 +296,7 @@ struct kvaser_cmd {
+ #define KVASER_USB_HYDRA_CF_FLAG_OVERRUN	BIT(1)
+ #define KVASER_USB_HYDRA_CF_FLAG_REMOTE_FRAME	BIT(4)
+ #define KVASER_USB_HYDRA_CF_FLAG_EXTENDED_ID	BIT(5)
++#define KVASER_USB_HYDRA_CF_FLAG_TX_ACK		BIT(6)
+ /* CAN frame flags. Used in ext_rx_can and ext_tx_can */
+ #define KVASER_USB_HYDRA_CF_FLAG_OSM_NACK	BIT(12)
+ #define KVASER_USB_HYDRA_CF_FLAG_ABL		BIT(13)
+@@ -1114,6 +1115,7 @@ static void kvaser_usb_hydra_tx_acknowledge(const struct kvaser_usb *dev,
+ 	struct kvaser_usb_net_priv *priv;
+ 	unsigned long irq_flags;
+ 	bool one_shot_fail = false;
++	bool is_err_frame = false;
+ 	u16 transid = kvaser_usb_hydra_get_cmd_transid(cmd);
  
- 	old_state = priv->can.state;
-@@ -920,9 +919,6 @@ static void kvaser_usb_hydra_update_state(struct kvaser_usb_net_priv *priv,
- 	cf->data[6] = bec->txerr;
- 	cf->data[7] = bec->rxerr;
- 
--	stats = &netdev->stats;
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_rx(skb);
- }
- 
-@@ -1075,8 +1071,6 @@ kvaser_usb_hydra_error_frame(struct kvaser_usb_net_priv *priv,
- 	cf->data[6] = bec.txerr;
- 	cf->data[7] = bec.rxerr;
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_rx(skb);
- 
- 	priv->bec.txerr = bec.txerr;
-@@ -1110,8 +1104,6 @@ static void kvaser_usb_hydra_one_shot_fail(struct kvaser_usb_net_priv *priv,
- 	}
- 
- 	stats->tx_errors++;
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_rx(skb);
- }
- 
-diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-index aed271d5f3bb..d7e8e9b8a7c3 100644
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-@@ -642,8 +642,6 @@ static void kvaser_usb_leaf_tx_acknowledge(const struct kvaser_usb *dev,
- 		if (skb) {
- 			cf->can_id |= CAN_ERR_RESTARTED;
- 
--			stats->rx_packets++;
--			stats->rx_bytes += cf->len;
- 			netif_rx(skb);
- 		} else {
- 			netdev_err(priv->netdev,
-@@ -844,8 +842,6 @@ static void kvaser_usb_leaf_rx_error(const struct kvaser_usb *dev,
- 	cf->data[6] = es->txerr;
- 	cf->data[7] = es->rxerr;
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_rx(skb);
- }
- 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb.c b/drivers/net/can/usb/peak_usb/pcan_usb.c
-index ac6772fe9746..a59417827168 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb.c
-@@ -521,8 +521,6 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_context *mc, u8 n,
- 				     &hwts->hwtstamp);
- 	}
- 
--	mc->netdev->stats.rx_packets++;
--	mc->netdev->stats.rx_bytes += cf->len;
- 	netif_rx(skb);
- 
- 	return 0;
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
-index 6bd12549f101..185f5a98d217 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
-@@ -577,9 +577,6 @@ static int pcan_usb_fd_decode_status(struct pcan_usb_fd_if *usb_if,
- 	if (!skb)
- 		return -ENOMEM;
- 
--	netdev->stats.rx_packets++;
--	netdev->stats.rx_bytes += cf->len;
--
- 	peak_usb_netif_rx_64(skb, le32_to_cpu(sm->ts_low),
- 			     le32_to_cpu(sm->ts_high));
- 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-index 858ab22708fc..f6d19879bf40 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-@@ -660,8 +660,6 @@ static int pcan_usb_pro_handle_error(struct pcan_usb_pro_interface *usb_if,
- 
- 	hwts = skb_hwtstamps(skb);
- 	peak_usb_get_ts_time(&usb_if->time_ref, le32_to_cpu(er->ts32), &hwts->hwtstamp);
--	netdev->stats.rx_packets++;
--	netdev->stats.rx_bytes += can_frame->len;
- 	netif_rx(skb);
- 
- 	return 0;
-diff --git a/drivers/net/can/usb/ucan.c b/drivers/net/can/usb/ucan.c
-index 1679cbe45ded..d582c39fc8d0 100644
---- a/drivers/net/can/usb/ucan.c
-+++ b/drivers/net/can/usb/ucan.c
-@@ -621,8 +621,10 @@ static void ucan_rx_can_msg(struct ucan_priv *up, struct ucan_message_in *m)
- 		memcpy(cf->data, m->msg.can_msg.data, cf->len);
- 
- 	/* don't count error frames as real packets */
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
-+	if (!(cf->can_id & CAN_ERR_FLAG)) {
-+		stats->rx_packets++;
-+		stats->rx_bytes += cf->len;
-+	}
- 
- 	/* pass it to Linux */
- 	netif_rx(skb);
-diff --git a/drivers/net/can/usb/usb_8dev.c b/drivers/net/can/usb/usb_8dev.c
-index 1fa02905e7ec..c81ca5e81446 100644
---- a/drivers/net/can/usb/usb_8dev.c
-+++ b/drivers/net/can/usb/usb_8dev.c
-@@ -447,8 +447,6 @@ static void usb_8dev_rx_err_msg(struct usb_8dev_priv *priv,
- 	priv->bec.txerr = txerr;
- 	priv->bec.rxerr = rxerr;
- 
--	stats->rx_packets++;
--	stats->rx_bytes += cf->len;
- 	netif_rx(skb);
- }
- 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index e2b15d29d15e..275e240ab293 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -965,13 +965,8 @@ static void xcan_update_error_state_after_rxtx(struct net_device *ndev)
- 
- 		xcan_set_error_state(ndev, new_state, skb ? cf : NULL);
- 
--		if (skb) {
--			struct net_device_stats *stats = &ndev->stats;
--
--			stats->rx_packets++;
--			stats->rx_bytes += cf->len;
-+		if (skb)
- 			netif_rx(skb);
--		}
- 	}
- }
- 
-@@ -1095,8 +1090,6 @@ static void xcan_err_interrupt(struct net_device *ndev, u32 isr)
- 		if (skb) {
- 			skb_cf->can_id |= cf.can_id;
- 			memcpy(skb_cf->data, cf.data, CAN_ERR_DLC);
--			stats->rx_packets++;
--			stats->rx_bytes += CAN_ERR_DLC;
- 			netif_rx(skb);
+ 	priv = kvaser_usb_hydra_net_priv_from_cmd(dev, cmd);
+@@ -1132,10 +1134,13 @@ static void kvaser_usb_hydra_tx_acknowledge(const struct kvaser_usb *dev,
+ 			kvaser_usb_hydra_one_shot_fail(priv, cmd_ext);
+ 			one_shot_fail = true;
  		}
++
++		is_err_frame = flags & KVASER_USB_HYDRA_CF_FLAG_TX_ACK &&
++			       flags & KVASER_USB_HYDRA_CF_FLAG_ERROR_FRAME;
  	}
+ 
+ 	context = &priv->tx_contexts[transid % dev->max_tx_urbs];
+-	if (!one_shot_fail) {
++	if (!one_shot_fail && !is_err_frame) {
+ 		struct net_device_stats *stats = &priv->netdev->stats;
+ 
+ 		stats->tx_packets++;
 -- 
 2.34.1
 
