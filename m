@@ -2,83 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2A87484E0C
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 07:12:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 540F7484E47
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 07:19:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234847AbiAEGMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 01:12:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234814AbiAEGMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 01:12:53 -0500
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15EBAC061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 22:12:53 -0800 (PST)
-Received: by mail-lj1-x234.google.com with SMTP id s4so46249435ljd.5
-        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 22:12:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fungible.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ThhaoEo3tPJOBVEZG3l25kaZXkBQdpwhMcYgiUiUQFE=;
-        b=Kw8Kq9kT8CTBoSReGjhK3FmUcYBgUg8D1jZ5goLmq0YcprvQwdGNayVCTHfW1kmCeY
-         jbJm85dGJgJUMnhZmwn9dknzPf5TqhJzWtudVCQVm04gKzisedN/IyoStvFzJdLkl/lF
-         hLQxt1gFEkirAdNX4VS7CaeN30gh25ZcJy/24=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ThhaoEo3tPJOBVEZG3l25kaZXkBQdpwhMcYgiUiUQFE=;
-        b=iss2QP7a1HGQfxfX7qOohie+HkRi33vmEqOiZY1Mmm2nwymHX6qXAtsw9I8zjj64WJ
-         A1s7xIN8NUHxQ2asZRrZT/0Eh9qzNMbit+lU/t7xZSGSgW0njv/S66B+5W6rnSApyMl0
-         BAG57jNyYy3kfsbEpnhTgr26CEmRryuZBYDs3eZ9SL6G9lWF3A4wHO2xBvfq+iX9vxvC
-         4v9E29aoqLHg/HELaVPpotAapcWJ0j9peXLv6r9FMEWJ2Mul+8bexVyjojzwqMFIlcxh
-         GCNddBGkqUNx44sWspwLPIft+SjRfElHh8zQm0O5rkarDAsYXAqVIbfjvL6HZSnLiyFb
-         N6hQ==
-X-Gm-Message-State: AOAM532ajkBXSo/XzI+1YDoNMrT7ctwxwaWa76vK3asDLdTYoxmHcBVX
-        IL7i/T3MPjmBaOcOzI8uC2T4OzfANxJMlyrxMAA9x3VX9U+Ypg==
-X-Google-Smtp-Source: ABdhPJygvroOMqH3mJsA2L7XSEs530uObRZbCduC72jJEx04eb8hgVJSFQ+0ZblprQjSgNBjM3UD0dY3pKnoUyBluI0=
-X-Received: by 2002:a2e:9cd8:: with SMTP id g24mr18949666ljj.509.1641363171369;
- Tue, 04 Jan 2022 22:12:51 -0800 (PST)
+        id S231817AbiAEGTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 01:19:00 -0500
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:33450
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232071AbiAEGSM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 01:18:12 -0500
+Received: from localhost.localdomain (unknown [222.129.35.96])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id B7C9F3F118;
+        Wed,  5 Jan 2022 06:18:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1641363491;
+        bh=susPpOXdW3sPmuZ++MaBrHyoO48nzh+p35//AkrGgmY=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=E0BvXRLluxfjiI6ndBfdyeDrkCq3Wd6BMNhIsYCWWdklGWqxObhgIVrRHNAoPolpP
+         inuF3kUOT18W7QkmJKQBZLGdIrOg+qL5FIAqHJo7V9lQka7g5RrUWLARATnM2zxqPR
+         fQ1tgrM7KkHHeMYeHIvhJ/IQGWcm+xPhQd1CRJRSFhdkaH05WYve8Ey5JaG/4lEgjG
+         AgAL/2yaO/iI4li/jm7BLQ1r11Ban1qlIEwsViXf8LEjDAeqd9pgTVL/cpK6ISrzOp
+         EJu6YBzqIH7ajnVcqgp0zsRxyIu/qaoUKHUM7NuYq1lRd3d5PgudihNdUXC7pYDNa7
+         j5DoJoIzNiotw==
+From:   Aaron Ma <aaron.ma@canonical.com>
+To:     aaron.ma@canonical.com, kuba@kernel.org,
+        henning.schild@siemens.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
+Subject: [PATCH] net: usb: r8152: Check used MAC passthrough address
+Date:   Wed,  5 Jan 2022 14:17:47 +0800
+Message-Id: <20220105061747.7104-1-aaron.ma@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220104064657.2095041-1-dmichail@fungible.com>
- <20220104064657.2095041-3-dmichail@fungible.com> <20220104180959.1291af97@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAOkoqZnTv_xc6oB13jdTEK65wbYzyOO1kigmMv7KsJug58bBpA@mail.gmail.com>
-In-Reply-To: <CAOkoqZnTv_xc6oB13jdTEK65wbYzyOO1kigmMv7KsJug58bBpA@mail.gmail.com>
-From:   Dimitris Michailidis <d.michailidis@fungible.com>
-Date:   Tue, 4 Jan 2022 22:12:35 -0800
-Message-ID: <CAOkoqZmom=Yqxq7FkF=3oBrtd+0BenZZMES3nvUxf2b3CCiyfg@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/8] net/fungible: Add service module for
- Fungible drivers
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 4, 2022 at 8:49 PM Dimitris Michailidis
-<d.michailidis@fungible.com> wrote:
->
-> On Tue, Jan 4, 2022 at 6:10 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Mon,  3 Jan 2022 22:46:51 -0800 Dimitris Michailidis wrote:
-> > > Fungible cards have a number of different PCI functions and thus
-> > > different drivers, all of which use a common method to initialize and
-> > > interact with the device. This commit adds a library module that
-> > > collects these common mechanisms. They mainly deal with device
-> > > initialization, setting up and destroying queues, and operating an admin
-> > > queue. A subset of the FW interface is also included here.
-> > >
-> > > Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
-> >
-> > CHECK: Unnecessary parentheses around 'fdev->admin_q->rq_depth > 0'
-> > #630: FILE: drivers/net/ethernet/fungible/funcore/fun_dev.c:584:
-> > +       if (cq_count < 2 || sq_count < 2 + (fdev->admin_q->rq_depth > 0))
->
-> I saw this one but checkpatch misunderstands this expression.
-> There are different equivalent expressions that wouldn't have them
-> but this one needs them.
+When plugin multiple r8152 ethernet dongles to Lenovo Docks
+or USB hub, MAC passthrough address from BIOS should be
+checked if it had been used to avoid using on other dongles.
 
-What I wrote is probably unclear. By 'them' I meant the parentheses.
+Currently builtin r8152 on Dock still can't be identified.
+First detected r8152 will use the MAC passthrough address.
+
+Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+---
+ drivers/net/usb/r8152.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index f9877a3e83ac..77f11b3f847b 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -1605,6 +1605,7 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
+ 	char *mac_obj_name;
+ 	acpi_object_type mac_obj_type;
+ 	int mac_strlen;
++	struct net_device *ndev;
+ 
+ 	if (tp->lenovo_macpassthru) {
+ 		mac_obj_name = "\\MACA";
+@@ -1662,6 +1663,15 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
+ 		ret = -EINVAL;
+ 		goto amacout;
+ 	}
++	rcu_read_lock();
++	for_each_netdev_rcu(&init_net, ndev) {
++		if (strncmp(buf, ndev->dev_addr, 6) == 0) {
++			rcu_read_unlock();
++			goto amacout;
++		}
++	}
++	rcu_read_unlock();
++
+ 	memcpy(sa->sa_data, buf, 6);
+ 	netif_info(tp, probe, tp->netdev,
+ 		   "Using pass-thru MAC addr %pM\n", sa->sa_data);
+-- 
+2.30.2
+
