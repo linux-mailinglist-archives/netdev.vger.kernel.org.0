@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA511485465
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:26:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A15C48546C
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:26:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240760AbiAEOZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 09:25:38 -0500
-Received: from szxga03-in.huawei.com ([45.249.212.189]:31144 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240696AbiAEOZV (ORCPT
+        id S240686AbiAEOZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 09:25:48 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:29326 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240697AbiAEOZV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 09:25:21 -0500
-Received: from kwepemi100008.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JTWsb3YDlzRhf1;
-        Wed,  5 Jan 2022 22:22:43 +0800 (CST)
+Received: from kwepemi500001.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JTWvw6b7zzbjpQ;
+        Wed,  5 Jan 2022 22:24:44 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi100008.china.huawei.com (7.221.188.57) with Microsoft SMTP Server
+ kwepemi500001.china.huawei.com (7.221.188.114) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 5 Jan 2022 22:25:18 +0800
+ 15.1.2308.20; Wed, 5 Jan 2022 22:25:19 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net-next 13/15] net: hns3: refactor PF tqp stats APIs with new common tqp stats APIs
-Date:   Wed, 5 Jan 2022 22:20:13 +0800
-Message-ID: <20220105142015.51097-14-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 14/15] net: hns3: refactor VF tqp stats APIs with new common tqp stats APIs
+Date:   Wed, 5 Jan 2022 22:20:14 +0800
+Message-ID: <20220105142015.51097-15-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220105142015.51097-1-huangguangbin2@huawei.com>
 References: <20220105142015.51097-1-huangguangbin2@huawei.com>
@@ -46,318 +46,262 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jie Wang <wangjie125@huawei.com>
 
-This patch firstly uses new tqp struct(hclge_comm_tqp) and deletes the
-old PF tqp struct(hclge_tqp). All the tqp stats members used in PF module
+This patch firstly uses new tqp struct(hclge_comm_tqp) and removes the
+old VF tqp struct(hclgevf_tqp). All the tqp stats members used in VF module
 are modified according to the new hclge_comm_tqp.
 
-Secondly PF tqp stats APIs are refactored to use new common tqp stats APIs.
-The old tqp stats APIs in PF are deleted.
+Secondly VF tqp stats APIs are refactored to use new common tqp stats APIs.
+The old tqp stats APIs in VF are deleted.
 
 Signed-off-by: Jie Wang <wangjie125@huawei.com>
 ---
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 147 ++----------------
- .../hisilicon/hns3/hns3pf/hclge_main.h        |  26 +---
- 2 files changed, 17 insertions(+), 156 deletions(-)
+ .../hisilicon/hns3/hns3vf/hclgevf_main.c      | 125 ++----------------
+ .../hisilicon/hns3/hns3vf/hclgevf_main.h      |  20 +--
+ 2 files changed, 11 insertions(+), 134 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 4d835be1fb2c..24f7afacae02 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -611,111 +611,6 @@ int hclge_mac_update_stats(struct hclge_dev *hdev)
- 		return hclge_mac_update_stats_defective(hdev);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 3c42ca50f590..5b2379252478 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -121,108 +121,13 @@ static struct hclgevf_dev *hclgevf_ae_get_hdev(struct hnae3_handle *handle)
+ 		return container_of(handle, struct hclgevf_dev, nic);
  }
  
--static int hclge_tqps_update_stats(struct hnae3_handle *handle)
+-static int hclgevf_tqps_update_stats(struct hnae3_handle *handle)
 -{
 -	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
--	struct hclge_vport *vport = hclge_get_vport(handle);
--	struct hclge_dev *hdev = vport->back;
--	struct hnae3_queue *queue;
--	struct hclge_desc desc[1];
--	struct hclge_tqp *tqp;
--	int ret, i;
+-	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
+-	struct hclge_desc desc;
+-	struct hclgevf_tqp *tqp;
+-	int status;
+-	int i;
 -
 -	for (i = 0; i < kinfo->num_tqps; i++) {
--		queue = handle->kinfo.tqp[i];
--		tqp = container_of(queue, struct hclge_tqp, q);
--		/* command : HCLGE_OPC_QUERY_IGU_STAT */
--		hclge_cmd_setup_basic_desc(&desc[0], HCLGE_OPC_QUERY_RX_STATS,
--					   true);
+-		tqp = container_of(kinfo->tqp[i], struct hclgevf_tqp, q);
+-		hclgevf_cmd_setup_basic_desc(&desc,
+-					     HCLGEVF_OPC_QUERY_RX_STATUS,
+-					     true);
 -
--		desc[0].data[0] = cpu_to_le32(tqp->index);
--		ret = hclge_cmd_send(&hdev->hw, desc, 1);
--		if (ret) {
+-		desc.data[0] = cpu_to_le32(tqp->index & 0x1ff);
+-		status = hclgevf_cmd_send(&hdev->hw, &desc, 1);
+-		if (status) {
 -			dev_err(&hdev->pdev->dev,
 -				"Query tqp stat fail, status = %d,queue = %d\n",
--				ret, i);
--			return ret;
+-				status,	i);
+-			return status;
 -		}
 -		tqp->tqp_stats.rcb_rx_ring_pktnum_rcd +=
--			le32_to_cpu(desc[0].data[1]);
--	}
+-			le32_to_cpu(desc.data[1]);
 -
--	for (i = 0; i < kinfo->num_tqps; i++) {
--		queue = handle->kinfo.tqp[i];
--		tqp = container_of(queue, struct hclge_tqp, q);
--		/* command : HCLGE_OPC_QUERY_IGU_STAT */
--		hclge_cmd_setup_basic_desc(&desc[0],
--					   HCLGE_OPC_QUERY_TX_STATS,
--					   true);
+-		hclgevf_cmd_setup_basic_desc(&desc, HCLGEVF_OPC_QUERY_TX_STATUS,
+-					     true);
 -
--		desc[0].data[0] = cpu_to_le32(tqp->index);
--		ret = hclge_cmd_send(&hdev->hw, desc, 1);
--		if (ret) {
+-		desc.data[0] = cpu_to_le32(tqp->index & 0x1ff);
+-		status = hclgevf_cmd_send(&hdev->hw, &desc, 1);
+-		if (status) {
 -			dev_err(&hdev->pdev->dev,
 -				"Query tqp stat fail, status = %d,queue = %d\n",
--				ret, i);
--			return ret;
+-				status, i);
+-			return status;
 -		}
 -		tqp->tqp_stats.rcb_tx_ring_pktnum_rcd +=
--			le32_to_cpu(desc[0].data[1]);
+-			le32_to_cpu(desc.data[1]);
 -	}
 -
 -	return 0;
 -}
 -
--static u64 *hclge_tqps_get_stats(struct hnae3_handle *handle, u64 *data)
+-static u64 *hclgevf_tqps_get_stats(struct hnae3_handle *handle, u64 *data)
 -{
 -	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
--	struct hclge_tqp *tqp;
+-	struct hclgevf_tqp *tqp;
 -	u64 *buff = data;
 -	int i;
 -
 -	for (i = 0; i < kinfo->num_tqps; i++) {
--		tqp = container_of(kinfo->tqp[i], struct hclge_tqp, q);
+-		tqp = container_of(kinfo->tqp[i], struct hclgevf_tqp, q);
 -		*buff++ = tqp->tqp_stats.rcb_tx_ring_pktnum_rcd;
 -	}
--
 -	for (i = 0; i < kinfo->num_tqps; i++) {
--		tqp = container_of(kinfo->tqp[i], struct hclge_tqp, q);
+-		tqp = container_of(kinfo->tqp[i], struct hclgevf_tqp, q);
 -		*buff++ = tqp->tqp_stats.rcb_rx_ring_pktnum_rcd;
 -	}
 -
 -	return buff;
 -}
 -
--static int hclge_tqps_get_sset_count(struct hnae3_handle *handle, int stringset)
+-static int hclgevf_tqps_get_sset_count(struct hnae3_handle *handle, int strset)
 -{
 -	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
 -
--	/* each tqp has TX & RX two queues */
--	return kinfo->num_tqps * (2);
+-	return kinfo->num_tqps * 2;
 -}
 -
--static u8 *hclge_tqps_get_strings(struct hnae3_handle *handle, u8 *data)
+-static u8 *hclgevf_tqps_get_strings(struct hnae3_handle *handle, u8 *data)
 -{
 -	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
 -	u8 *buff = data;
 -	int i;
 -
 -	for (i = 0; i < kinfo->num_tqps; i++) {
--		struct hclge_tqp *tqp = container_of(handle->kinfo.tqp[i],
--			struct hclge_tqp, q);
+-		struct hclgevf_tqp *tqp = container_of(kinfo->tqp[i],
+-						       struct hclgevf_tqp, q);
 -		snprintf(buff, ETH_GSTRING_LEN, "txq%u_pktnum_rcd",
 -			 tqp->index);
--		buff = buff + ETH_GSTRING_LEN;
+-		buff += ETH_GSTRING_LEN;
 -	}
 -
 -	for (i = 0; i < kinfo->num_tqps; i++) {
--		struct hclge_tqp *tqp = container_of(kinfo->tqp[i],
--			struct hclge_tqp, q);
+-		struct hclgevf_tqp *tqp = container_of(kinfo->tqp[i],
+-						       struct hclgevf_tqp, q);
 -		snprintf(buff, ETH_GSTRING_LEN, "rxq%u_pktnum_rcd",
 -			 tqp->index);
--		buff = buff + ETH_GSTRING_LEN;
+-		buff += ETH_GSTRING_LEN;
 -	}
 -
 -	return buff;
 -}
 -
- static int hclge_comm_get_count(struct hclge_dev *hdev,
- 				const struct hclge_comm_stats_str strs[],
- 				u32 size)
-@@ -776,7 +671,7 @@ static void hclge_update_stats_for_all(struct hclge_dev *hdev)
+ static void hclgevf_update_stats(struct hnae3_handle *handle,
+ 				 struct net_device_stats *net_stats)
+ {
+ 	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
+ 	int status;
  
- 	handle = &hdev->vport[0].nic;
- 	if (handle->client) {
--		status = hclge_tqps_update_stats(handle);
-+		status = hclge_comm_tqps_update_stats(handle, &hdev->hw.hw);
- 		if (status) {
- 			dev_err(&hdev->pdev->dev,
- 				"Update TQPS stats fail, status = %d.\n",
-@@ -806,7 +701,7 @@ static void hclge_update_stats(struct hnae3_handle *handle,
- 			"Update MAC stats fail, status = %d.\n",
- 			status);
- 
--	status = hclge_tqps_update_stats(handle);
+-	status = hclgevf_tqps_update_stats(handle);
 +	status = hclge_comm_tqps_update_stats(handle, &hdev->hw.hw);
  	if (status)
  		dev_err(&hdev->pdev->dev,
- 			"Update TQPS stats fail, status = %d.\n",
-@@ -855,7 +750,7 @@ static int hclge_get_sset_count(struct hnae3_handle *handle, int stringset)
- 	} else if (stringset == ETH_SS_STATS) {
- 		count = hclge_comm_get_count(hdev, g_mac_stats_string,
- 					     ARRAY_SIZE(g_mac_stats_string)) +
--			hclge_tqps_get_sset_count(handle, stringset);
-+			hclge_comm_tqps_get_sset_count(handle);
- 	}
+ 			"VF update of TQPS stats fail, status = %d.\n",
+@@ -234,7 +139,7 @@ static int hclgevf_get_sset_count(struct hnae3_handle *handle, int strset)
+ 	if (strset == ETH_SS_TEST)
+ 		return -EOPNOTSUPP;
+ 	else if (strset == ETH_SS_STATS)
+-		return hclgevf_tqps_get_sset_count(handle, strset);
++		return hclge_comm_tqps_get_sset_count(handle);
  
- 	return count;
-@@ -873,7 +768,7 @@ static void hclge_get_strings(struct hnae3_handle *handle, u32 stringset,
- 		size = ARRAY_SIZE(g_mac_stats_string);
- 		p = hclge_comm_get_strings(hdev, stringset, g_mac_stats_string,
- 					   size, p);
--		p = hclge_tqps_get_strings(handle, p);
+ 	return 0;
+ }
+@@ -245,12 +150,12 @@ static void hclgevf_get_strings(struct hnae3_handle *handle, u32 strset,
+ 	u8 *p = (char *)data;
+ 
+ 	if (strset == ETH_SS_STATS)
+-		p = hclgevf_tqps_get_strings(handle, p);
 +		p = hclge_comm_tqps_get_strings(handle, p);
- 	} else if (stringset == ETH_SS_TEST) {
- 		if (handle->flags & HNAE3_SUPPORT_APP_LOOPBACK) {
- 			memcpy(p, hns3_nic_test_strs[HNAE3_LOOP_APP],
-@@ -907,7 +802,7 @@ static void hclge_get_stats(struct hnae3_handle *handle, u64 *data)
- 
- 	p = hclge_comm_get_stats(hdev, g_mac_stats_string,
- 				 ARRAY_SIZE(g_mac_stats_string), data);
--	p = hclge_tqps_get_stats(handle, p);
-+	p = hclge_comm_tqps_get_stats(handle, p);
  }
  
- static void hclge_get_mac_stat(struct hnae3_handle *handle,
-@@ -1748,11 +1643,11 @@ static int hclge_config_gro(struct hclge_dev *hdev)
- 
- static int hclge_alloc_tqps(struct hclge_dev *hdev)
+ static void hclgevf_get_stats(struct hnae3_handle *handle, u64 *data)
  {
--	struct hclge_tqp *tqp;
+-	hclgevf_tqps_get_stats(handle, data);
++	hclge_comm_tqps_get_stats(handle, data);
+ }
+ 
+ static void hclgevf_build_send_msg(struct hclge_vf_to_pf_msg *msg, u8 code,
+@@ -416,11 +321,11 @@ static int hclgevf_get_pf_media_type(struct hclgevf_dev *hdev)
+ 
+ static int hclgevf_alloc_tqps(struct hclgevf_dev *hdev)
+ {
+-	struct hclgevf_tqp *tqp;
 +	struct hclge_comm_tqp *tqp;
  	int i;
  
  	hdev->htqp = devm_kcalloc(&hdev->pdev->dev, hdev->num_tqps,
--				  sizeof(struct hclge_tqp), GFP_KERNEL);
+-				  sizeof(struct hclgevf_tqp), GFP_KERNEL);
 +				  sizeof(struct hclge_comm_tqp), GFP_KERNEL);
  	if (!hdev->htqp)
  		return -ENOMEM;
  
-@@ -1876,8 +1771,8 @@ static int hclge_map_tqp_to_vport(struct hclge_dev *hdev,
- 
- 	kinfo = &nic->kinfo;
- 	for (i = 0; i < vport->alloc_tqps; i++) {
--		struct hclge_tqp *q =
--			container_of(kinfo->tqp[i], struct hclge_tqp, q);
-+		struct hclge_comm_tqp *q =
-+			container_of(kinfo->tqp[i], struct hclge_comm_tqp, q);
- 		bool is_pf;
- 		int ret;
- 
-@@ -7869,22 +7764,6 @@ static int hclge_set_default_loopback(struct hclge_dev *hdev)
- 					 HNAE3_LOOP_PARALLEL_SERDES);
+@@ -958,18 +863,6 @@ static int hclgevf_tqp_enable(struct hnae3_handle *handle, bool enable)
+ 	return 0;
  }
  
--static void hclge_reset_tqp_stats(struct hnae3_handle *handle)
+-static void hclgevf_reset_tqp_stats(struct hnae3_handle *handle)
 -{
--	struct hclge_vport *vport = hclge_get_vport(handle);
--	struct hnae3_knic_private_info *kinfo;
--	struct hnae3_queue *queue;
--	struct hclge_tqp *tqp;
+-	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
+-	struct hclgevf_tqp *tqp;
 -	int i;
 -
--	kinfo = &vport->nic.kinfo;
 -	for (i = 0; i < kinfo->num_tqps; i++) {
--		queue = handle->kinfo.tqp[i];
--		tqp = container_of(queue, struct hclge_tqp, q);
+-		tqp = container_of(kinfo->tqp[i], struct hclgevf_tqp, q);
 -		memset(&tqp->tqp_stats, 0, sizeof(tqp->tqp_stats));
 -	}
 -}
 -
- static void hclge_flush_link_update(struct hclge_dev *hdev)
+ static int hclgevf_get_host_mac_addr(struct hclgevf_dev *hdev, u8 *p)
  {
- #define HCLGE_FLUSH_LINK_TIMEOUT	100000
-@@ -7926,7 +7805,7 @@ static int hclge_ae_start(struct hnae3_handle *handle)
- 	hdev->hw.mac.link = 0;
+ 	struct hclge_vf_to_pf_msg send_msg;
+@@ -2033,7 +1926,7 @@ static void hclgevf_periodic_service_task(struct hclgevf_dev *hdev)
+ 	}
  
- 	/* reset tqp stats */
--	hclge_reset_tqp_stats(handle);
+ 	if (!(hdev->serv_processed_cnt % HCLGEVF_STATS_TIMER_INTERVAL))
+-		hclgevf_tqps_update_stats(handle);
++		hclge_comm_tqps_update_stats(handle, &hdev->hw.hw);
+ 
+ 	/* VF does not need to request link status when this bit is set, because
+ 	 * PF will push its link status to VFs when link status changed.
+@@ -2332,7 +2225,7 @@ static int hclgevf_ae_start(struct hnae3_handle *handle)
+ 	clear_bit(HCLGEVF_STATE_DOWN, &hdev->state);
+ 	clear_bit(HCLGEVF_STATE_PF_PUSH_LINK_STATUS, &hdev->state);
+ 
+-	hclgevf_reset_tqp_stats(handle);
 +	hclge_comm_reset_tqp_stats(handle);
  
- 	hclge_mac_start_phy(hdev);
+ 	hclgevf_request_link_info(hdev);
  
-@@ -7964,7 +7843,7 @@ static void hclge_ae_stop(struct hnae3_handle *handle)
- 	hclge_mac_stop_phy(hdev);
+@@ -2350,7 +2243,7 @@ static void hclgevf_ae_stop(struct hnae3_handle *handle)
+ 	if (hdev->reset_type != HNAE3_VF_RESET)
+ 		hclgevf_reset_tqp(handle);
  
- 	/* reset tqp stats */
--	hclge_reset_tqp_stats(handle);
+-	hclgevf_reset_tqp_stats(handle);
 +	hclge_comm_reset_tqp_stats(handle);
- 	hclge_update_link_status(hdev);
+ 	hclgevf_update_link_status(hdev, 0);
  }
  
-@@ -10577,11 +10456,11 @@ static int hclge_get_reset_status(struct hclge_dev *hdev, u16 queue_id,
- 
- u16 hclge_covert_handle_qid_global(struct hnae3_handle *handle, u16 queue_id)
- {
-+	struct hclge_comm_tqp *tqp;
- 	struct hnae3_queue *queue;
--	struct hclge_tqp *tqp;
- 
- 	queue = handle->kinfo.tqp[queue_id];
--	tqp = container_of(queue, struct hclge_tqp, q);
-+	tqp = container_of(queue, struct hclge_comm_tqp, q);
- 
- 	return tqp->index;
- }
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index d4436d593350..adfb26e79262 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -14,6 +14,7 @@
- #include "hclge_ptp.h"
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
+index 50e347a2ed18..502ca1ce1a90 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
+@@ -11,6 +11,7 @@
+ #include "hclgevf_cmd.h"
  #include "hnae3.h"
  #include "hclge_comm_rss.h"
 +#include "hclge_comm_tqp_stats.h"
  
- #define HCLGE_MOD_VERSION "1.0"
- #define HCLGE_DRIVER_NAME "hclge"
-@@ -270,26 +271,6 @@ struct hclge_hw {
- 	int num_vec;
+ #define HCLGEVF_MOD_VERSION "1.0"
+ #define HCLGEVF_DRIVER_NAME "hclgevf"
+@@ -148,23 +149,6 @@ struct hclgevf_hw {
+ 	struct hclgevf_mac mac;
  };
  
 -/* TQP stats */
--struct hlcge_tqp_stats {
--	/* query_tqp_tx_queue_statistics ,opcode id:  0x0B03 */
+-struct hlcgevf_tqp_stats {
+-	/* query_tqp_tx_queue_statistics, opcode id: 0x0B03 */
 -	u64 rcb_tx_ring_pktnum_rcd; /* 32bit */
--	/* query_tqp_rx_queue_statistics ,opcode id:  0x0B13 */
+-	/* query_tqp_rx_queue_statistics, opcode id: 0x0B13 */
 -	u64 rcb_rx_ring_pktnum_rcd; /* 32bit */
 -};
 -
--struct hclge_tqp {
--	/* copy of device pointer from pci_dev,
--	 * used when perform DMA mapping
--	 */
--	struct device *dev;
+-struct hclgevf_tqp {
+-	struct device *dev;	/* device for DMA mapping */
 -	struct hnae3_queue q;
--	struct hlcge_tqp_stats tqp_stats;
--	u16 index;	/* Global index in a NIC controller */
+-	struct hlcgevf_tqp_stats tqp_stats;
+-	u16 index;		/* global index in a NIC controller */
 -
 -	bool alloced;
 -};
 -
- enum hclge_fc_mode {
- 	HCLGE_FC_NONE,
- 	HCLGE_FC_RX_PAUSE,
-@@ -894,7 +875,7 @@ struct hclge_dev {
- 	bool cur_promisc;
- 	int num_alloc_vfs;	/* Actual number of VFs allocated */
+ struct hclgevf_cfg {
+ 	u8 tc_num;
+ 	u16 tqp_desc_num;
+@@ -270,7 +254,7 @@ struct hclgevf_dev {
  
--	struct hclge_tqp *htqp;
+ 	struct delayed_work service_task;
+ 
+-	struct hclgevf_tqp *htqp;
 +	struct hclge_comm_tqp *htqp;
- 	struct hclge_vport *vport;
  
- 	struct dentry *hclge_dbgfs;
-@@ -1073,7 +1054,8 @@ int hclge_bind_ring_with_vector(struct hclge_vport *vport,
- 
- static inline int hclge_get_queue_id(struct hnae3_queue *queue)
- {
--	struct hclge_tqp *tqp = container_of(queue, struct hclge_tqp, q);
-+	struct hclge_comm_tqp *tqp =
-+			container_of(queue, struct hclge_comm_tqp, q);
- 
- 	return tqp->index;
- }
+ 	struct hnae3_handle nic;
+ 	struct hnae3_handle roce;
 -- 
 2.33.0
 
