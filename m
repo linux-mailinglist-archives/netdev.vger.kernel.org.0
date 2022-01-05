@@ -2,169 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B71C1484F57
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 09:29:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64EAA484F5F
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 09:32:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238513AbiAEI3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 03:29:49 -0500
-Received: from mail-bn1nam07on2041.outbound.protection.outlook.com ([40.107.212.41]:51929
-        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
+        id S232475AbiAEIcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 03:32:24 -0500
+Received: from mail-am6eur05on2045.outbound.protection.outlook.com ([40.107.22.45]:17505
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229962AbiAEI3s (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jan 2022 03:29:48 -0500
+        id S229962AbiAEIcX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jan 2022 03:32:23 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ffwjNxYwWKyl+MERJkDjpf6v/aimAufGG2cZdpv2MsyctpkZRtaoc2cyaHr4bJ32ai3sCtG7YVB6dkCjhjXkuO6veFijIlhhSFMFO4/yyIuXxjYLUAgkjMN33FXjoQ2ii/Z9EMuSKfbie6spJDL9lFDyPrOUNfP/G692/HsYPqpMBNRHawGjBNVoPWfsus938POLRuYy2p+bzapoyFdNnKeR1dzndFvFLUU2H3d0/FDWAIFssbDXOm8QjOozSxwuUqxg+YDxGxymkGdCCbYoO1yzWP1suLAIN9YTE5gcFMk/bg/LFEDJ4S6GtTgs3L4bdgyak82bwPtvzzL02Dr7xQ==
+ b=FXIiQsoxkMsquTe5ISxmSoHwOzVlSbhC4m2Kj1tDxUfcPpOGSnvhqFH7iq5x/5JfjR027l+YPMkkuSg3dRzX6cppSJcmwsykAygIbaWmsc+iC2Wr7MWMEG+VgRob/TVHbkIW8TQi1Vk392tymnjlh7HN4Z5cDU0RUXUT+W/8ukVRJti1tUgAzTbgWWAmlGV7vvLIdkHmRFlK3PU0F/i0SD7lP1z75yg5P0YQLM/MBgBYm5wSJRzSfESXbFWilJfaV9INcUD/7UebBfOF17UMr8lSvE3JsYYRy6O8ayBtNNL4fHzUSbiTlZTkaj0Ws7+LUlEjPlYTGcSfIt/q5krbJA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fmSa+5isvJTgo+IPnfbjMEjR4+ZMZnRAqJKfSCoRUec=;
- b=ER7psvypcZrnz0lfkMhp479cAOKXqz/r11v+7vu+WcPtmHQO3HJjzq1cWvEGWC+IjDiGQSr3oeZ0vejo6VPxtbAeDuk/sy9hr/5KwzeE/bdQfy7cgcXdOTUHlXbErZ3Q/EB2e3/eSc3ae9hm9OZcE8oszYx0LqPFxJN4XdOHlewzvUYjF2z/fRqdRkVv1S+LNjdrJjBpHoUmSCCTkVkghwMgGwKtEnx9uaZiCtZ7rNsri8fe+gf2iyX4ISmHFqjir+CfwKSfFSNyAFmuShvUFUxPrRNAQ61ye7L3i5eSYHFlO0v5L2CZmPLxo2FFzyDVwZOMMdVcIgBjClKmvRDLhA==
+ bh=1v9Csecy9Xok7z0XddFg29K1uWcVbckPAwyX0W5nTwE=;
+ b=PBC3lMd2Z90CbAVWbMPmpz/ZSjT3umooUf3flDs+V+mP90iF1VBVup/MpINCiQMjsFp5hC/MKDXNcgsRSe1de/0nYpu5NHW5gy0vdsgMyLFwZTMCJ4vG7MFVBznhrDE36FWZPYGGrpm10PYI4JuOXOZwMZ/ffLDBIJvVUQO/1PHYQ2dF8fP9jfMUISSpVdwTkxfXcuJtzkUu1L0ZGF1qKZhPdI0SsHFKkVBiGLKgblGKSips0imMbcwENjtqynOI6RWxpJ04uLbcvL5h+m2mkxgT+imjUzhNiVx2/GllzvZO32wNsSBsjGV1yYwTzJZZwCgvF3++27zWwtaWU+sHOQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=mojatatu.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ 194.138.21.72) smtp.rcpttodomain=canonical.com smtp.mailfrom=siemens.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
  dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fmSa+5isvJTgo+IPnfbjMEjR4+ZMZnRAqJKfSCoRUec=;
- b=S9JwET6W+4mh5ESGlsosNdPKPCvGsZ9kg2lbzn2sNDbzWZ3uq5W/OuSe5sdSP1CPNJ+ykg0Q9L1QQd5gwe+xK0xFiNI1Vo21KeC8oqvxjfLffaV/b77nzKajs0TWPPULuLcWFmP/EROB499V5F4KGGue2kO15y7y6XPkdrTevVGCfK9xcrlRLkCd0+JD9+lDi3o+nSHLo8GO/2IUajJRwnTjORfw9uckjI2Mx0cGqqS7d846P4hUD/veCatzC5svg9sI+DtvUdMIAOTMdmE/DO99nyOpWmmNCNzEY1rKOQ1W5MsXzYBY5fHJo12xX0DhyLTDA/ZGnp1l0BhzsfGJkg==
-Received: from MWHPR13CA0018.namprd13.prod.outlook.com (2603:10b6:300:16::28)
- by BN6PR1201MB0148.namprd12.prod.outlook.com (2603:10b6:405:55::21) with
+ bh=1v9Csecy9Xok7z0XddFg29K1uWcVbckPAwyX0W5nTwE=;
+ b=yp6rZ6TVfhMxR5zUi2FcrIJfl8pELpt1iU3gFi6kCV1bmFTiaVt9cy0F6qk0FvjgVUzdbl2Kw3mChjfb6M+MHMIbKb7JPQebNQf1lN347uluQP97pl17F62xy1fIZr2qRtelaiWXlknAgGxed3s2SXVIVHPbRHN9YOmb+MC95AtOfFw1yRHgGzgO5bUXn3ZU9a83EwUJK5GYpB5peRprgGRxWRyPQXKyAkRtBf8xx3f3jeIu/aIZqWLo6v7cLzWEyDQm5C+xxXZD+sr1Lc3rKMgWOgO++qmHLlHddJe9RmWmuiH8G52NE77VMPpvjWLha9H1voUyPSwiff6SuwCD2Q==
+Received: from AM5PR0601CA0057.eurprd06.prod.outlook.com (2603:10a6:206::22)
+ by AM8PR10MB4705.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:363::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Wed, 5 Jan
- 2022 08:29:46 +0000
-Received: from CO1NAM11FT033.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:16:cafe::1) by MWHPR13CA0018.outlook.office365.com
- (2603:10b6:300:16::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.4 via Frontend
- Transport; Wed, 5 Jan 2022 08:29:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT033.mail.protection.outlook.com (10.13.174.247) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4867.7 via Frontend Transport; Wed, 5 Jan 2022 08:29:45 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 5 Jan
- 2022 08:29:45 +0000
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (172.20.187.6) by
- rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.9;
- Wed, 5 Jan 2022 00:29:42 -0800
-Date:   Wed, 5 Jan 2022 10:29:32 +0200
-From:   Paul Blakey <paulb@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <dev@openvswitch.org>, <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        "Pravin B Shelar" <pshelar@ovn.org>, <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>
-Subject: Re: [PATCH net 1/1] net: openvswitch: Fix ct_state nat flags for
- conns arriving from tc
-In-Reply-To: <20220104100835.57e51cb0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Message-ID: <3fd43dfd-f44b-5afc-83c6-d3c9ae7d1a30@nvidia.com>
-References: <20220104082821.22487-1-paulb@nvidia.com> <20220104100835.57e51cb0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ 2022 08:32:21 +0000
+Received: from VE1EUR01FT019.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:206:0:cafe::60) by AM5PR0601CA0057.outlook.office365.com
+ (2603:10a6:206::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9 via Frontend
+ Transport; Wed, 5 Jan 2022 08:32:21 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.72)
+ smtp.mailfrom=siemens.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=siemens.com;
+Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
+ 194.138.21.72 as permitted sender) receiver=protection.outlook.com;
+ client-ip=194.138.21.72; helo=hybrid.siemens.com;
+Received: from hybrid.siemens.com (194.138.21.72) by
+ VE1EUR01FT019.mail.protection.outlook.com (10.152.2.231) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4844.14 via Frontend Transport; Wed, 5 Jan 2022 08:32:20 +0000
+Received: from DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) by
+ DEMCHDC9SMA.ad011.siemens.net (194.138.21.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 5 Jan 2022 09:32:20 +0100
+Received: from md1za8fc.ad001.siemens.net (158.92.8.107) by
+ DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 5 Jan 2022 09:32:19 +0100
+Date:   Wed, 5 Jan 2022 09:32:18 +0100
+From:   Henning Schild <henning.schild@siemens.com>
+To:     Aaron Ma <aaron.ma@canonical.com>
+CC:     <kuba@kernel.org>, <linux-usb@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <hayeswang@realtek.com>, <tiwai@suse.de>
+Subject: Re: [PATCH] net: usb: r8152: Check used MAC passthrough address
+Message-ID: <20220105093218.283c9538@md1za8fc.ad001.siemens.net>
+In-Reply-To: <fc72ca69-9043-dc46-6548-dbc3c4d40289@canonical.com>
+References: <20220105061747.7104-1-aaron.ma@canonical.com>
+        <20220105082355.79d44349@md1za8fc.ad001.siemens.net>
+        <20220105083238.4278d331@md1za8fc.ad001.siemens.net>
+        <e71f3dfd-5f17-6cdc-8f1b-9b5ad15ca793@canonical.com>
+        <20220105085525.31873db2@md1za8fc.ad001.siemens.net>
+        <fc72ca69-9043-dc46-6548-dbc3c4d40289@canonical.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset="US-ASCII"
-X-Originating-IP: [172.20.187.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- rnnvmail201.nvidia.com (10.129.68.8)
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [158.92.8.107]
+X-ClientProxiedBy: DEMCHDC89XA.ad011.siemens.net (139.25.226.103) To
+ DEMCHDC8A0A.ad011.siemens.net (139.25.226.106)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d93bc760-0c83-4344-342f-08d9d02587cb
-X-MS-TrafficTypeDiagnostic: BN6PR1201MB0148:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR1201MB014846873113FD64F2CB295DC24B9@BN6PR1201MB0148.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Office365-Filtering-Correlation-Id: 04c9483b-f4a2-460a-ee1a-08d9d025e428
+X-MS-TrafficTypeDiagnostic: AM8PR10MB4705:EE_
+X-Microsoft-Antispam-PRVS: <AM8PR10MB47059E6C3E60DD1EE7243C07854B9@AM8PR10MB4705.EURPRD10.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: K58FJTRmWzwavAl9WGxVykUDPxGaqwrv9UzKYVP0ZvCHy5RyehTMsevLzyUn243CrS876XgPkxlrzP7nUVKtW6zcR/b4FigtRXLXdDjNgzZ3T67MIPtR0FQyuHwjzXH37OklZRJVCLnRnSirv+/gXFVR+dnsJ99fdQ4gfpG0YCFV8kyQ30PqqUWKXk1LBLmdc62NEbhYrS5YcDw0hCmykNNtbTXL4gpl5w3L7H8z/h9eQbuSTZAk/1u6aL25tJiCEFVsP7Qxmlhx5iSZ1zvPicEK263wjzmjhC0kRBNu4A0aepALRmM6aFbBdbRsU0d9BdaKWHPpT5gXPNOKj+GIGEgEEk2BHMDO13QDZ5LH8JxOIJoyv0eathBufT5lcfLBtT8LoKBzeqGU3of8TzdDi0CZfYq0cmndNIt8jAsJiIpPClyglcDGskJ94mzJ82YLurZ4c0LoLm1BCnAzxsEbHMWpzhl4Uzq6a0fZM5n/jlbd8WlX1q/O1aAY8fwQ9+/GYNIKPozufgR9TWlwL0trl3TimPkBinrWgzzN+m5hYPcGr5eSSCiP0p+ZUTWJ1iUO4DagyfaDaURbGy2NpodKFzmbomnF7mJMKK9xqPI9GfpxqV6H7Ou2O+dFBVriqLZidsrLpoOUiq9K8/nELDMd844Z3MJV+GYPxzCVPcBnMuXe0jdh0PHN89lotUaf/ZojR4a9rJ34MaU6qBpE5UJWz7P9BpA/plF9vxmvt2bK0uh+BVY9nYeoGjO3MpyFib2fdLtZL9s9xuFyTZGPBIXTLeqC2Y85Hj/tq77ZAVhjcjs=
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(40470700002)(36840700001)(70206006)(70586007)(508600001)(336012)(26005)(6666004)(54906003)(36860700001)(8936002)(31686004)(4326008)(5660300002)(36756003)(426003)(47076005)(186003)(16526019)(31696002)(6916009)(82310400004)(316002)(86362001)(40460700001)(356005)(81166007)(8676002)(2616005)(107886003)(2906002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 08:29:45.8994
+X-Microsoft-Antispam-Message-Info: BC4QrrHGZ73lozIXaLOlu0APKUh8sJSVdB70tdWYmdjohDTiQ46ZB98Z+IH1fzd/YLALWVftzR2plohq6hJFswY0kIDvL3b8sdti/X7tRZX0b9676RqgyY1lEOo6lOtNHoIrCxivHfgNTUGLFldke2B8H7PNi2KnXg9R4mNUc0jdHVXBoWVlBcvR8euGrCsV2XX77c1gtJmgFxi615uMMaMJfyyUZWP3Cs23R1msU0KzaDajgQ2WUV8U9aVlK33q2x/xkB2GZ2lKI0EVcErucgllWi8pQlFKx8rgxjMoeUghDKzBfTwO70JwgJNKjqKYVzdGQyXcXX7y34mW4HSSKtY5aOc8TMKCS7gtdxlmE0NkYJXQy1avg2iR7CKSZBd42Fu2P+BhG2nEi674+WEK8ZTGy5cAhIAS6qUmVs2izBABWV1nNTFaTw2PsPYg/pmiIxpnXpnYSCHAZkZHU1YVLT4GpnL77tX5w4e/bZPm87gHdzTT1FYJZN0obvc+upZlf7mMIHJjWyDLzeqFg9kuId7texXHCCxr7q1wZ5hcOZJzAfLCv1BXHMxTCfaFPD6QHeZoEXlIsilRo8enN5j5R8FWgdiRTj4ioQ4/VDAoqYGDFvaibGXncVFRXpeQ3xcuK3WbNV3d63oKSIc6H5bd80IZoMF9CSuz4wjWGrifj+GZnzfKFsX3fIU26h3vBIwuyOQgx3Ygb8KCybB9LuAmr4G3PL476S/1B20IyPUtT/T5r455gKrbpO19dxkj7tFeVa4jet7moXbu2fK3Z2EkCDqdwd8Y8y1sFTW4OuCrLYE=
+X-Forefront-Antispam-Report: CIP:194.138.21.72;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(4636009)(40470700002)(36840700001)(46966006)(44832011)(82310400004)(956004)(8936002)(55016003)(54906003)(86362001)(82960400001)(70586007)(40460700001)(5660300002)(336012)(16526019)(26005)(83380400001)(7696005)(4326008)(508600001)(1076003)(186003)(36860700001)(316002)(53546011)(70206006)(47076005)(356005)(8676002)(6916009)(9686003)(81166007)(2906002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 08:32:20.9265
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d93bc760-0c83-4344-342f-08d9d02587cb
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT033.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 04c9483b-f4a2-460a-ee1a-08d9d025e428
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.72];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-AuthSource: VE1EUR01FT019.eop-EUR01.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0148
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR10MB4705
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Am Wed, 5 Jan 2022 16:01:24 +0800
+schrieb Aaron Ma <aaron.ma@canonical.com>:
 
-
-
-On Tue, 4 Jan 2022, Jakub Kicinski wrote:
-
-> On Tue, 4 Jan 2022 10:28:21 +0200 Paul Blakey wrote:
-> > Netfilter conntrack maintains NAT flags per connection indicating
-> > whether NAT was configured for the connection. Openvswitch maintains
-> > NAT flags on the per packet flow key ct_state field, indicating
-> > whether NAT was actually executed on the packet.
+> On 1/5/22 15:55, Henning Schild wrote:
+> > Am Wed, 5 Jan 2022 15:38:51 +0800
+> > schrieb Aaron Ma <aaron.ma@canonical.com>:
+> >   
+> >> On 1/5/22 15:32, Henning Schild wrote:  
+> >>> Am Wed, 5 Jan 2022 08:23:55 +0100
+> >>> schrieb Henning Schild <henning.schild@siemens.com>:
+> >>>      
+> >>>> Hi Aaron,
+> >>>>
+> >>>> if this or something similar goes in, please add another patch to
+> >>>> remove the left-over defines.
+> >>>>     
+> >>
+> >> Sure, I will do it.
+> >>  
+> >>>> Am Wed,  5 Jan 2022 14:17:47 +0800
+> >>>> schrieb Aaron Ma <aaron.ma@canonical.com>:
+> >>>>     
+> >>>>> When plugin multiple r8152 ethernet dongles to Lenovo Docks
+> >>>>> or USB hub, MAC passthrough address from BIOS should be
+> >>>>> checked if it had been used to avoid using on other dongles.
+> >>>>>
+> >>>>> Currently builtin r8152 on Dock still can't be identified.
+> >>>>> First detected r8152 will use the MAC passthrough address.
+> >>>>>
+> >>>>> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+> >>>>> ---
+> >>>>>    drivers/net/usb/r8152.c | 10 ++++++++++
+> >>>>>    1 file changed, 10 insertions(+)
+> >>>>>
+> >>>>> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+> >>>>> index f9877a3e83ac..77f11b3f847b 100644
+> >>>>> --- a/drivers/net/usb/r8152.c
+> >>>>> +++ b/drivers/net/usb/r8152.c
+> >>>>> @@ -1605,6 +1605,7 @@ static int
+> >>>>> vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr
+> >>>>> *sa) char *mac_obj_name; acpi_object_type mac_obj_type;
+> >>>>>    	int mac_strlen;
+> >>>>> +	struct net_device *ndev;
+> >>>>>    
+> >>>>>    	if (tp->lenovo_macpassthru) {
+> >>>>>    		mac_obj_name = "\\MACA";
+> >>>>> @@ -1662,6 +1663,15 @@ static int
+> >>>>> vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr
+> >>>>> *sa) ret = -EINVAL; goto amacout;
+> >>>>>    	}
+> >>>>> +	rcu_read_lock();
+> >>>>> +	for_each_netdev_rcu(&init_net, ndev) {
+> >>>>> +		if (strncmp(buf, ndev->dev_addr, 6) == 0) {
+> >>>>> +			rcu_read_unlock();
+> >>>>> +			goto amacout;  
+> >>>>
+> >>>> Since the original PCI netdev will always be there, that would
+> >>>> disable inheritance would it not?
+> >>>> I guess a strncmp(MODULE_NAME, info->driver, strlen(MODULE_NAME))
+> >>>> is needed as well.
+> >>>>     
+> >>
+> >> PCI ethernet could be a builtin one on dock since there will be
+> >> TBT4 dock.  
 > > 
-> > When a packet misses from tc to ovs the conntrack NAT flags are set.
-> > However, NAT was not necessarily executed on the packet because the
-> > connection's state might still be in NEW state. As such, openvswitch wrongly
-> > assumes that NAT was executed and sets an incorrect flow key NAT flags.
+> > In my X280 there is a PCI device in the laptop, always there. And
+> > its MAC is the one found in ACPI. Did not try but i think for such
+> > devices there would never be inheritance even if one wanted and
+> > used a Lenovo dock that is supposed to do it.
+> >   
+> 
+> There will more TBT4 docks in market, the new ethernet is just the
+> same as PCI device, connected by thunderbolt.
+> 
+> For exmaple, connect a TBT4 dock which uses i225 pcie base ethernet,
+> then connect another TBT3 dock which uses r8152.
+> If skip PCI check, then i225 and r8152 will use the same MAC.
+
+In current 5.15 i have that sort of collision already. All r8152s will
+happily grab the MAC of the I219. In fact i have only ever seen it with
+one r8152 at a time but while the I219 was actively in use.
+While this patch will probably solve that, i bet it would defeat MAC
+pass-thru altogether. Even when turned on in the BIOS.
+Or does that iterator take "up"/"down" state into consideration? But
+even if, the I219 could become "up" any time later.
+
+These collisions are simply bound to happen and probably very hard to
+avoid once you have set your mind on allowing pass-thru in the first
+place. Not sure whether that even has potential to disturb network
+equipment like switches.
+
+Henning
+
+> Aaron
+> 
+> > Maybe i should try the patch but it seems like it defeats
+> > inheritance completely. Well depending on probe order ...
 > > 
-> > Fix this, by flagging to openvswitch which NAT was actually done in
-> > act_ct via tc_skb_ext and tc_skb_cb to the openvswitch module, so
-> > the packet flow key NAT flags will be correctly set.
-> 
-> Fixes ?
+> > regards,
+> > Henning
+> > 
+> >   
+> >>>> Maybe leave here with
+> >>>> netif_info()
+> >>>>     
+> >>
+> >> Not good to print in rcu lock.
+> >>  
+> >>>> And move the whole block up, we can skip the whole ACPI story if
+> >>>> we find the MAC busy.  
+> >>>
+> >>> That is wrong, need to know that MAC so can not move up too much.
+> >>> But maybe above the is_valid_ether_addr  
+> >>
+> >> The MAC passthough address is read from ACPI.
+> >> ACPI read only happens once during r8152 driver probe.
+> >> To keep the lock less time, do it after is_valid_ether_addr.
+> >>  
+> >>>
+> >>> Henning
+> >>>      
+> >>>>> +		}
+> >>>>> +	}
+> >>>>> +	rcu_read_unlock();  
+> >>>>
+> >>>> Not sure if this function is guaranteed to only run once at a
+> >>>> time, otherwise i think that is a race. Multiple instances could
+> >>>> make it to this very point at the same time.
+> >>>>     
+> >>
+> >> Run once for one device.
+> >> So add a safe lock.
+> >>
+> >> Aaron
+> >>  
+> >>>> Henning
+> >>>>     
+> >>>>>    	memcpy(sa->sa_data, buf, 6);
+> >>>>>    	netif_info(tp, probe, tp->netdev,
+> >>>>>    		   "Using pass-thru MAC addr %pM\n",
+> >>>>> sa->sa_data);  
+> >>>>     
+> >>>      
+> >   
 
-I wasn't sure which patches to blame, I guess the bug was there from the
-introduction of action ct in tc, so I'll blame that. 
-
-> 
-> > Signed-off-by: Paul Blakey <paulb@nvidia.com>
-> 
-> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index 4507d77d6941..bab45a009310 100644
-> > --- a/include/linux/skbuff.h
-> > +++ b/include/linux/skbuff.h
-> > @@ -287,7 +287,9 @@ struct tc_skb_ext {
-> >  	__u32 chain;
-> >  	__u16 mru;
-> >  	__u16 zone;
-> > -	bool post_ct;
-> > +	bool post_ct:1;
-> > +	bool post_ct_snat:1;
-> > +	bool post_ct_dnat:1;
-> 
-> single bit bool variables seem weird, use a unsigned int type, like u8.
-> 
-> >  };
-> >  #endif
-> >  
-> > diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-> > index 9e71691c491b..a171dfa91910 100644
-> > --- a/include/net/pkt_sched.h
-> > +++ b/include/net/pkt_sched.h
-> > @@ -197,7 +197,9 @@ struct tc_skb_cb {
-> >  	struct qdisc_skb_cb qdisc_cb;
-> >  
-> >  	u16 mru;
-> > -	bool post_ct;
-> > +	bool post_ct: 1;
-> 
-> extra space
-
-Will remove, and send v2.
-
-> 
-> > +	bool post_ct_snat:1;
-> > +	bool post_ct_dnat:1;
-> >  	u16 zone; /* Only valid if post_ct = true */
-> >  };
-> 
