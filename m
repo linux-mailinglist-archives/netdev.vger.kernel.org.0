@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36441485857
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 19:31:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C8C6485865
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 19:33:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243003AbiAESbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 13:31:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
+        id S243011AbiAESc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 13:32:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242995AbiAESbR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 13:31:17 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB05C0611FD
-        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 10:31:17 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id s15so126113pfk.6
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 10:31:17 -0800 (PST)
+        with ESMTP id S243012AbiAEScv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 13:32:51 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5E7C061245
+        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 10:32:50 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id w7so219803plp.13
+        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 10:32:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=i/O9AdWK5YYZzrUHl+3wniYor2pQinQNogOqvNMXt0I=;
-        b=jfhvqBPCNMsYM00EokT4/NiLbgpds2S4mCYwFoqWXIorSp3vicw4TDxaRWja97jxlN
-         7VxPVemDUkMCE/+ekInFSzA3BCfN4l21DnZqEYsFlRhvPtDcT2ZYKdQ7ZOe2aNvhFnaV
-         Mha84RXoCIHMTWadbQBohRZ1i1xSwqwxA5ERmK28y3p4MInCqdW1keYn/cCILUg4cOXK
-         Ug0BThAHr8Q8/kO0zUGFnuXRU3idax9BUCCjxhp0pR9lVcRlzX+8UjcxBC9McD430L0E
-         Y6gpu0+IUvg/93Vo3eJBIpqDxxSyV8Er1C7O2UwFaP33KHVQMLhb4lY7dE3yeI9BTllj
-         mjbA==
+        bh=npGv5ZlvCr3q6bCN+G4C/LCqkRtJ1nv2D1XF6wv8wNc=;
+        b=GlGG9c2ZyuoKTRfN90bMWUW3wBtJjC7H4uxws0vrfHjo10PLE5pelYav0QVV1M1Xz4
+         XSrWs+RRdvTe+O2dyS1gR120YPa88KIx60ARIndjTEHRRw0LU2OuEpqPjPodMVvXNgh9
+         DPdrarQJ1sbWLJ/mYXz5++wU2+2cBkbzp2+3a8vY+TmLMpwkIunaRfeQp0Qj9QTmtIHP
+         VEpwzUdEh14QfTQz5Dz5OP14nwRpDrJhgu/nHAD9dX9z+ViDI31kRUlxbDcMcuOx6uTY
+         RhjFrHyQHLVzE0CyNazD+E44cfLZ/6MiRc3TbvZLepcrCL77/PbhjkXnp4+wovX9Br3O
+         PdjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=i/O9AdWK5YYZzrUHl+3wniYor2pQinQNogOqvNMXt0I=;
-        b=NCGfoG4Gf/3N+lHlMmX8Dqm82YhYI0cAF4iCJGlYZhdlDXqwC7kGSlXkKzDzSJE35J
-         GCodYTpA1ZWt2ISmE36/dQLS07aKFaj+5k4x/ammk2tQezgG0PPaq2YhOKnRP1LTT9Cf
-         gXEXXBS0ZjC63Rpqopg8S5rM0bfp9TjtLd1085QSMX7OOgxZ+pho/hmU5rWnsMGzGm31
-         q12vePvFFOxmzVs1ms0itnkFstu04lOAm2AyJxuqYUOFAFgahIj+xeMQf65v68R7PF1v
-         feGtK1CKtPf/smrfIEha3Y797DmIqagsc7DLz+8Ll1UB6Ub4NX/JXN2SThEJmH2qgyfX
-         gi8A==
-X-Gm-Message-State: AOAM533TqwZVeJNTs09Lb4rwtWgkpIaBBEomcs7tJMvHzP4Loj3NAloD
-        1jfWZoyx0AZnO8qvzpldAtI=
-X-Google-Smtp-Source: ABdhPJwU86gJev+lLYy/Iil3FsUruFxR4H6G0JAAlrH1qIY/cBM9ao5QXegHwHodkAtWi2rgV/bOQg==
-X-Received: by 2002:a63:6b81:: with SMTP id g123mr50792604pgc.140.1641407476878;
-        Wed, 05 Jan 2022 10:31:16 -0800 (PST)
+        bh=npGv5ZlvCr3q6bCN+G4C/LCqkRtJ1nv2D1XF6wv8wNc=;
+        b=h6aZTqSWcslQ6Wlp8SOP3NkwIewxg3zvddYGVtHpH3HfoKbNEAb4FwNdY6owQcjlQ0
+         TAD3lUmNrk7gLqDX1fEUdIf8B539hVcZrXAQYB1ssKXrK7zbK3fBqRMsdrbiW2vgSjFW
+         +bxvyZWNWlSg/RDEmo6fA+gCIv5kVDWqsacs6sXvNw4X8/J7VyDFiyeKF2BAuV+fGmuu
+         YsBkrMP+DJPxy4UBY1aPhR7ljaiRnZLpblqdFex4V8gVmiSPApxRHClz9SiUsdcXB6aH
+         ND+JX58dWhgdOaeBVQsEI+U26zXMAN8PRkn9lpYq+eeIOzFMJhWL9d84lkgmoVGTrOei
+         6jvQ==
+X-Gm-Message-State: AOAM5324xfnQoqHQ9F+Zb7EmMpf+LKkDjIBbuB+kb7oyjaIKVZ/03/8x
+        6HeLTN6rSeZdyVucbVlgC18=
+X-Google-Smtp-Source: ABdhPJyWZKfiYTCjnQ2OmA8Xr+rSY87J+bMdcvFi28uIG5aatIYwLj9kcyfmDgOlJXjqA9/B9OP1XQ==
+X-Received: by 2002:a17:90a:7101:: with SMTP id h1mr5545900pjk.93.1641407570401;
+        Wed, 05 Jan 2022 10:32:50 -0800 (PST)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id l18sm3337082pjy.6.2022.01.05.10.31.15
+        by smtp.googlemail.com with ESMTPSA id z13sm28532650pgi.75.2022.01.05.10.32.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jan 2022 10:31:16 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 3/7] net: dsa: move dsa_port :: type near
- dsa_port :: index
+        Wed, 05 Jan 2022 10:32:49 -0800 (PST)
+Subject: Re: [PATCH v2 net-next 4/7] net: dsa: merge all bools of struct
+ dsa_switch into a single u32
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
 References: <20220105132141.2648876-1-vladimir.oltean@nxp.com>
- <20220105132141.2648876-4-vladimir.oltean@nxp.com>
+ <20220105132141.2648876-5-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <a98f915a-3bb4-5b46-7905-af722acf0437@gmail.com>
-Date:   Wed, 5 Jan 2022 10:31:14 -0800
+Message-ID: <ac686bdb-470b-07ab-2ef9-3d47fd06e6cd@gmail.com>
+Date:   Wed, 5 Jan 2022 10:32:48 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <20220105132141.2648876-4-vladimir.oltean@nxp.com>
+In-Reply-To: <20220105132141.2648876-5-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,134 +71,127 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 1/5/22 5:21 AM, Vladimir Oltean wrote:
-> Both dsa_port :: type and dsa_port :: index introduce a 4 octet hole
-> after them, so we can group them together and the holes would be
-> eliminated, turning 16 octets of storage into just 8. This makes the
-> cpu_dp pointer fit in the first cache line, which is good, because
-> dsa_slave_to_master(), called by dsa_enqueue_skb(), uses it.
+> struct dsa_switch has 9 boolean properties, many of which are in fact
+> set by drivers for custom behavior (vlan_filtering_is_global,
+> needs_standalone_vlan_filtering, etc etc). The binary layout of the
+> structure could be improved. For example, the "bool setup" at the
+> beginning introduces a gratuitous 7 byte hole in the first cache line.
+> 
+> The change merges all boolean properties into bitfields of an u32, and
+> places that u32 in the first cache line of the structure, since many
+> bools are accessed from the data path (untag_bridge_pvid, vlan_filtering,
+> vlan_filtering_is_global).
+> 
+> We place this u32 after the existing ds->index, which is also 4 bytes in
+> size. As a positive side effect, ds->tagger_data now fits into the first
+> cache line too, because 4 bytes are saved.
 > 
 > Before:
 > 
-> pahole -C dsa_port net/dsa/slave.o
-> struct dsa_port {
->         union {
->                 struct net_device * master;              /*     0     8 */
->                 struct net_device * slave;               /*     0     8 */
->         };                                               /*     0     8 */
->         const struct dsa_device_ops  * tag_ops;          /*     8     8 */
+> pahole -C dsa_switch net/dsa/slave.o
+> struct dsa_switch {
+>         bool                       setup;                /*     0     1 */
+> 
+>         /* XXX 7 bytes hole, try to pack */
+> 
+>         struct device *            dev;                  /*     8     8 */
 >         struct dsa_switch_tree *   dst;                  /*    16     8 */
->         struct sk_buff *           (*rcv)(struct sk_buff *, struct net_device *); /*    24     8 */
->         enum {
->                 DSA_PORT_TYPE_UNUSED = 0,
->                 DSA_PORT_TYPE_CPU    = 1,
->                 DSA_PORT_TYPE_DSA    = 2,
->                 DSA_PORT_TYPE_USER   = 3,
->         } type;                                          /*    32     4 */
+>         unsigned int               index;                /*    24     4 */
 > 
 >         /* XXX 4 bytes hole, try to pack */
 > 
->         struct dsa_switch *        ds;                   /*    40     8 */
->         unsigned int               index;                /*    48     4 */
+>         struct notifier_block      nb;                   /*    32    24 */
 > 
->         /* XXX 4 bytes hole, try to pack */
+>         /* XXX last struct has 4 bytes of padding */
 > 
->         const char  *              name;                 /*    56     8 */
+>         void *                     priv;                 /*    56     8 */
 >         /* --- cacheline 1 boundary (64 bytes) --- */
->         struct dsa_port *          cpu_dp;               /*    64     8 */
->         u8                         mac[6];               /*    72     6 */
->         u8                         stp_state;            /*    78     1 */
->         u8                         vlan_filtering:1;     /*    79: 0  1 */
->         u8                         learning:1;           /*    79: 1  1 */
->         u8                         lag_tx_enabled:1;     /*    79: 2  1 */
->         u8                         devlink_port_setup:1; /*    79: 3  1 */
->         u8                         setup:1;              /*    79: 4  1 */
-> 
->         /* XXX 3 bits hole, try to pack */
-> 
->         struct device_node *       dn;                   /*    80     8 */
->         unsigned int               ageing_time;          /*    88     4 */
+>         void *                     tagger_data;          /*    64     8 */
+>         struct dsa_chip_data *     cd;                   /*    72     8 */
+>         const struct dsa_switch_ops  * ops;              /*    80     8 */
+>         u32                        phys_mii_mask;        /*    88     4 */
 > 
 >         /* XXX 4 bytes hole, try to pack */
 > 
->         struct dsa_bridge *        bridge;               /*    96     8 */
->         struct devlink_port        devlink_port;         /*   104   288 */
->         /* --- cacheline 6 boundary (384 bytes) was 8 bytes ago --- */
->         struct phylink *           pl;                   /*   392     8 */
->         struct phylink_config      pl_config;            /*   400    40 */
->         struct net_device *        lag_dev;              /*   440     8 */
->         /* --- cacheline 7 boundary (448 bytes) --- */
->         struct net_device *        hsr_dev;              /*   448     8 */
->         struct list_head           list;                 /*   456    16 */
->         const struct ethtool_ops  * orig_ethtool_ops;    /*   472     8 */
->         const struct dsa_netdevice_ops  * netdev_ops;    /*   480     8 */
->         struct mutex               addr_lists_lock;      /*   488    32 */
->         /* --- cacheline 8 boundary (512 bytes) was 8 bytes ago --- */
->         struct list_head           fdbs;                 /*   520    16 */
->         struct list_head           mdbs;                 /*   536    16 */
+>         struct mii_bus *           slave_mii_bus;        /*    96     8 */
+>         unsigned int               ageing_time_min;      /*   104     4 */
+>         unsigned int               ageing_time_max;      /*   108     4 */
+>         struct dsa_8021q_context * tag_8021q_ctx;        /*   112     8 */
+>         struct devlink *           devlink;              /*   120     8 */
+>         /* --- cacheline 2 boundary (128 bytes) --- */
+>         unsigned int               num_tx_queues;        /*   128     4 */
+>         bool                       vlan_filtering_is_global; /*   132     1 */
+>         bool                       needs_standalone_vlan_filtering; /*   133     1 */
+>         bool                       configure_vlan_while_not_filtering; /*   134     1 */
+>         bool                       untag_bridge_pvid;    /*   135     1 */
+>         bool                       assisted_learning_on_cpu_port; /*   136     1 */
+>         bool                       vlan_filtering;       /*   137     1 */
+>         bool                       pcs_poll;             /*   138     1 */
+>         bool                       mtu_enforcement_ingress; /*   139     1 */
+>         unsigned int               num_lag_ids;          /*   140     4 */
+>         unsigned int               max_num_bridges;      /*   144     4 */
 > 
->         /* size: 552, cachelines: 9, members: 30 */
->         /* sum members: 539, holes: 3, sum holes: 12 */
->         /* sum bitfield members: 5 bits, bit holes: 1, sum bit holes: 3 bits */
->         /* last cacheline: 40 bytes */
+>         /* XXX 4 bytes hole, try to pack */
+> 
+>         size_t                     num_ports;            /*   152     8 */
+> 
+>         /* size: 160, cachelines: 3, members: 27 */
+>         /* sum members: 141, holes: 4, sum holes: 19 */
+>         /* paddings: 1, sum paddings: 4 */
+>         /* last cacheline: 32 bytes */
 > };
 > 
 > After:
 > 
-> pahole -C dsa_port net/dsa/slave.o
-> struct dsa_port {
->         union {
->                 struct net_device * master;              /*     0     8 */
->                 struct net_device * slave;               /*     0     8 */
->         };                                               /*     0     8 */
->         const struct dsa_device_ops  * tag_ops;          /*     8     8 */
->         struct dsa_switch_tree *   dst;                  /*    16     8 */
->         struct sk_buff *           (*rcv)(struct sk_buff *, struct net_device *); /*    24     8 */
->         struct dsa_switch *        ds;                   /*    32     8 */
->         unsigned int               index;                /*    40     4 */
->         enum {
->                 DSA_PORT_TYPE_UNUSED = 0,
->                 DSA_PORT_TYPE_CPU    = 1,
->                 DSA_PORT_TYPE_DSA    = 2,
->                 DSA_PORT_TYPE_USER   = 3,
->         } type;                                          /*    44     4 */
->         const char  *              name;                 /*    48     8 */
->         struct dsa_port *          cpu_dp;               /*    56     8 */
+> pahole -C dsa_switch net/dsa/slave.o
+> struct dsa_switch {
+>         struct device *            dev;                  /*     0     8 */
+>         struct dsa_switch_tree *   dst;                  /*     8     8 */
+>         unsigned int               index;                /*    16     4 */
+>         u32                        setup:1;              /*    20: 0  4 */
+>         u32                        vlan_filtering_is_global:1; /*    20: 1  4 */
+>         u32                        needs_standalone_vlan_filtering:1; /*    20: 2  4 */
+>         u32                        configure_vlan_while_not_filtering:1; /*    20: 3  4 */
+>         u32                        untag_bridge_pvid:1;  /*    20: 4  4 */
+>         u32                        assisted_learning_on_cpu_port:1; /*    20: 5  4 */
+>         u32                        vlan_filtering:1;     /*    20: 6  4 */
+>         u32                        pcs_poll:1;           /*    20: 7  4 */
+>         u32                        mtu_enforcement_ingress:1; /*    20: 8  4 */
+> 
+>         /* XXX 23 bits hole, try to pack */
+> 
+>         struct notifier_block      nb;                   /*    24    24 */
+> 
+>         /* XXX last struct has 4 bytes of padding */
+> 
+>         void *                     priv;                 /*    48     8 */
+>         void *                     tagger_data;          /*    56     8 */
 >         /* --- cacheline 1 boundary (64 bytes) --- */
->         u8                         mac[6];               /*    64     6 */
->         u8                         stp_state;            /*    70     1 */
->         u8                         vlan_filtering:1;     /*    71: 0  1 */
->         u8                         learning:1;           /*    71: 1  1 */
->         u8                         lag_tx_enabled:1;     /*    71: 2  1 */
->         u8                         devlink_port_setup:1; /*    71: 3  1 */
->         u8                         setup:1;              /*    71: 4  1 */
-> 
->         /* XXX 3 bits hole, try to pack */
-> 
->         struct device_node *       dn;                   /*    72     8 */
->         unsigned int               ageing_time;          /*    80     4 */
+>         struct dsa_chip_data *     cd;                   /*    64     8 */
+>         const struct dsa_switch_ops  * ops;              /*    72     8 */
+>         u32                        phys_mii_mask;        /*    80     4 */
 > 
 >         /* XXX 4 bytes hole, try to pack */
 > 
->         struct dsa_bridge *        bridge;               /*    88     8 */
->         struct devlink_port        devlink_port;         /*    96   288 */
->         /* --- cacheline 6 boundary (384 bytes) --- */
->         struct phylink *           pl;                   /*   384     8 */
->         struct phylink_config      pl_config;            /*   392    40 */
->         struct net_device *        lag_dev;              /*   432     8 */
->         struct net_device *        hsr_dev;              /*   440     8 */
->         /* --- cacheline 7 boundary (448 bytes) --- */
->         struct list_head           list;                 /*   448    16 */
->         const struct ethtool_ops  * orig_ethtool_ops;    /*   464     8 */
->         const struct dsa_netdevice_ops  * netdev_ops;    /*   472     8 */
->         struct mutex               addr_lists_lock;      /*   480    32 */
->         /* --- cacheline 8 boundary (512 bytes) --- */
->         struct list_head           fdbs;                 /*   512    16 */
->         struct list_head           mdbs;                 /*   528    16 */
+>         struct mii_bus *           slave_mii_bus;        /*    88     8 */
+>         unsigned int               ageing_time_min;      /*    96     4 */
+>         unsigned int               ageing_time_max;      /*   100     4 */
+>         struct dsa_8021q_context * tag_8021q_ctx;        /*   104     8 */
+>         struct devlink *           devlink;              /*   112     8 */
+>         unsigned int               num_tx_queues;        /*   120     4 */
+>         unsigned int               num_lag_ids;          /*   124     4 */
+>         /* --- cacheline 2 boundary (128 bytes) --- */
+>         unsigned int               max_num_bridges;      /*   128     4 */
 > 
->         /* size: 544, cachelines: 9, members: 30 */
->         /* sum members: 539, holes: 1, sum holes: 4 */
->         /* sum bitfield members: 5 bits, bit holes: 1, sum bit holes: 3 bits */
->         /* last cacheline: 32 bytes */
+>         /* XXX 4 bytes hole, try to pack */
+> 
+>         size_t                     num_ports;            /*   136     8 */
+> 
+>         /* size: 144, cachelines: 3, members: 27 */
+>         /* sum members: 132, holes: 2, sum holes: 8 */
+>         /* sum bitfield members: 9 bits, bit holes: 1, sum bit holes: 23 bits */
+>         /* paddings: 1, sum paddings: 4 */
+>         /* last cacheline: 16 bytes */
 > };
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
