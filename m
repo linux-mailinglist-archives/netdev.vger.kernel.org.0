@@ -2,306 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CD6248563C
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 16:53:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 282AB485639
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 16:52:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241722AbiAEPwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 10:52:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33194 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231191AbiAEPwl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 10:52:41 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C82CC061201
-        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 07:52:38 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id h7so45493732lfu.4
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 07:52:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fungible.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3tScpzsvs4vCd0ND7vB0d0otJSPL2erhDWI/+koxaVk=;
-        b=B0U0j2OEtvXU8NA/ABUJ4jAjT3v70RSgTYCbCUpxBL/DGeaXC2FKI2LYlrUHkK/Jpu
-         CTd/qmDdorDKGCG+sLQuhSyfEWnU3M0NaJ0EoJwrvcBdwbIJlc/jPOe4XNn9fAZ4H0Ab
-         c+TG+ew0zA0LKaYWD/3SL/k7SvrbqNJ8zlyqY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3tScpzsvs4vCd0ND7vB0d0otJSPL2erhDWI/+koxaVk=;
-        b=ZSB3jvg7v69Kd9S5olk+O9j8Gk7ZwjZAfSogv3XhaRzR2AeMKqf0sRNM+hUfXsbXoy
-         trKLvYNmhRPlGolTFStEiEdAnNcRLDfqiDyOsc8CelHRjYSOo9P3d6K2UW3lLO1o3i7r
-         hBG6CBIyc4G07+TJo6dXtU7/uQreqO7qQWRmJZZsJh/6cNVyp3pLYUmbnYMP9MOYwUz3
-         36h8wOK5oiWT808mI1b6tGYBI5/JFSw3AAqJSkfZ1JS1SKgEHY+H6mowPRG8DDuvy8P5
-         M+dubzVuZJjF2gbktqWMKpk1MWRbW82WqYLC8xxuzYVzm1sMQIefp8WyzNwPpv8GvdYy
-         CH0A==
-X-Gm-Message-State: AOAM531OGjwWuxIScK4y2pqK0DiR3sKW5HgvcUYaj6QJafY5Ph9rOjzy
-        iGOKbRoqtj4afaKlxrq6CYcV7KlHOq/PWDiBXoZwyrDNM2v7Vg==
-X-Google-Smtp-Source: ABdhPJySs2Hms+lUgh/K5hRqzMvAzIPsmXXmDB6Pk9UftyywUn4ScmcCq/hGixV5hBN0/5N/g7Zj9N9l12gXIdqlv7Y=
-X-Received: by 2002:a05:6512:1599:: with SMTP id bp25mr46229045lfb.689.1641397956473;
- Wed, 05 Jan 2022 07:52:36 -0800 (PST)
+        id S241702AbiAEPw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 10:52:26 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39236 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231191AbiAEPwZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 10:52:25 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA9606173C;
+        Wed,  5 Jan 2022 15:52:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9D93C36AE3;
+        Wed,  5 Jan 2022 15:52:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641397944;
+        bh=lqtOSNY8JGMgXV+sZ88NwiORJyhj7dkGa6kNk+lkw2g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QJupnXDTtTpu1RySBX1NMxjmUAbLt8fNQCe9UOGxtgNOUoF92okTaKPSgsXG8CwG2
+         tOHzDAEex8JcodflV09eKO1LILJO/BqY62McJ6WMv0GmY3CNNcn0A4t6a6MPmbeXo1
+         XLXntD/NoLTNIme2DbCR3LV+lwTYtEVdmwOB4dd1j01N+CpL5yEELj7dppxfvF9pMa
+         0dEaNMdYbz90V876aKXLe+ySoQyYdstUAHO415xo1dpwFkICenupk+KXQvtOg2oeVB
+         kOr/cZIY9+iD8pzgMmX7bEiS308SPcuqxJ5xx/B/NcjWIWHujojlc6Ho/fYF/+n2eM
+         CS+y5oOvD0FZg==
+Date:   Wed, 5 Jan 2022 07:52:22 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        io-uring@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        syzbot <syzbot+5426c7ed6868c705ca14@syzkaller.appspotmail.com>,
+        changbin.du@intel.com, Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: Re: [syzbot] WARNING in signalfd_cleanup
+Message-ID: <YdW+trV0x25fhTqV@sol.localdomain>
+References: <000000000000c9a3fb05d4d787a3@google.com>
+ <CANn89iK3tP3rANSWM7_=imMeMcUknT0U2GyfA9W4v12ad6_PkQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220104064657.2095041-1-dmichail@fungible.com>
- <20220104064657.2095041-4-dmichail@fungible.com> <20220104180739.572a80ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220104180739.572a80ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Dimitris Michailidis <d.michailidis@fungible.com>
-Date:   Wed, 5 Jan 2022 07:52:21 -0800
-Message-ID: <CAOkoqZmxHZ6KTZQPe+w23E_UPYWLNRiU8gVX32EFsNXgyzkucg@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 3/8] net/funeth: probing and netdev ops
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iK3tP3rANSWM7_=imMeMcUknT0U2GyfA9W4v12ad6_PkQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 4, 2022 at 6:07 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon,  3 Jan 2022 22:46:52 -0800 Dimitris Michailidis wrote:
-> > This is the first part of the Fungible ethernet driver. It deals with
-> > device probing, net_device creation, and netdev ops.
->
-> > +static int fun_xdp_setup(struct net_device *dev, struct netdev_bpf *xdp)
-> > +{
-> > +     struct bpf_prog *old_prog, *prog = xdp->prog;
-> > +     struct funeth_priv *fp = netdev_priv(dev);
-> > +     bool reconfig;
-> > +     int rc, i;
-> > +
-> > +     /* XDP uses at most one buffer */
-> > +     if (prog && dev->mtu > XDP_MAX_MTU) {
-> > +             netdev_err(dev, "device MTU %u too large for XDP\n", dev->mtu);
-> > +             NL_SET_ERR_MSG_MOD(xdp->extack,
-> > +                                "Device MTU too large for XDP");
-> > +             return -EINVAL;
-> > +     }
-> > +
-> > +     reconfig = netif_running(dev) && (!!fp->xdp_prog ^ !!prog);
-> > +     if (reconfig) {
-> > +             rc = funeth_close(dev);
->
-> Please rework runtime reconfig to not do the close and then open thing.
-> This will prevent users from reconfiguring their NICs at runtime.
-> You should allocate the resources first, then take the datapath down,
-> reconfigure, swap and free the old resources.
+[+io_uring list and maintainers]
 
-I imagine you have in mind something like nfp_net_ring_reconfig() but that
-doesn't work as well here. We have the linux part of the data path (ring memory,
-interrupts, etc) and the device part, handled by FW. I can't clone the device
-portion for a quick swap during downtime. Since it involves messages to FW
-updating the device portion is by far the bulk of the work and it needs to be
-during the downtime. Doing Linux allocations before downtime offers little
-improvement I think.
+This appears to be the known bug in io_uring where it doesn't POLLFREE
+notifications.  See previous discussion:
+https://lore.kernel.org/all/4a472e72-d527-db79-d46e-efa9d4cad5bb@kernel.dk/
 
-There is ongoing work for FW to be able to modify live queues. When that
-is available I expect this function will be able to move in and out of XDP with
-no downtime.
-
-> > +             if (rc) {
-> > +                     NL_SET_ERR_MSG_MOD(xdp->extack,
-> > +                                        "Failed to reconfigure Rx queues.");
-> > +                     return rc;
-> > +             }
-> > +     }
-> > +
-> > +     dev->max_mtu = prog ? XDP_MAX_MTU : FUN_MAX_MTU;
-> > +     fp->num_xdpqs = prog ? num_online_cpus() : 0;
-> > +     old_prog = xchg(&fp->xdp_prog, prog);
-> > +
-> > +     if (reconfig) {
-> > +             rc = funeth_open(dev);
-> > +             if (rc) {
-> > +                     NL_SET_ERR_MSG_MOD(xdp->extack,
-> > +                                        "Failed to reconfigure Rx queues.");
-> > +                     dev->max_mtu = old_prog ? XDP_MAX_MTU : FUN_MAX_MTU;
-> > +                     fp->num_xdpqs = old_prog ? num_online_cpus() : 0;
-> > +                     xchg(&fp->xdp_prog, old_prog);
-> > +                     return rc;
-> > +             }
-> > +     } else if (netif_running(dev)) {
-> > +             struct funeth_rxq **rxqs = rtnl_dereference(fp->rxqs);
-> > +
-> > +             for (i = 0; i < dev->real_num_rx_queues; i++)
-> > +                     WRITE_ONCE(rxqs[i]->xdp_prog, prog);
-> > +     }
-> > +
-> > +     if (old_prog)
-> > +             bpf_prog_put(old_prog);
-> > +     return 0;
-> > +}
->
->
-> > +static int fun_create_netdev(struct fun_ethdev *ed, unsigned int portid)
-> > +{
-> > +     struct fun_dev *fdev = &ed->fdev;
-> > +     struct net_device *netdev;
-> > +     unsigned int ntx, nrx;
-> > +     struct funeth_priv *fp;
->
-> rev xmas tree
-
-OK
-
-> > +     int rc;
->
-> > +static void fun_destroy_netdev(struct net_device *netdev)
-> > +{
-> > +     if (likely(netdev)) {
->
-> defensive programming?
-
-Looks that way but I'd rather have this function work with any input.
-
-> try to avoid wrapping the entire function in an if condition,
-> return early instead.
-
-Will do.
-
-> > +             struct funeth_priv *fp = netdev_priv(netdev);
-> > +
-> > +             if (fp->dl_port.devlink) {
-> > +                     devlink_port_type_clear(&fp->dl_port);
-> > +                     devlink_port_unregister(&fp->dl_port);
-> > +             }
-> > +             unregister_netdev(netdev);
-> > +             fun_ktls_cleanup(fp);
-> > +             fun_free_stats_area(fp);
-> > +             fun_free_rss(fp);
-> > +             fun_port_destroy(netdev);
-> > +             free_netdev(netdev);
-> > +     }
-> > +}
->
->
-> > +     if ((notif->link_state | notif->missed_events) & FUN_PORT_FLAG_MAC_DOWN)
-> > +             netif_carrier_off(netdev);
-> > +     if (notif->link_state & FUN_PORT_FLAG_NH_DOWN)
-> > +             netif_dormant_on(netdev);
-> > +     if (notif->link_state & FUN_PORT_FLAG_NH_UP)
-> > +             netif_dormant_off(netdev);
->
-> What does this do?
-
-FW may get exclusive access to the ports in some cases and during those times
-host traffic isn't serviced. Changing a port to dormant is its way of
-telling the host
-the port is unavailable though it has link up.
-
->
-> > +     if (notif->link_state & FUN_PORT_FLAG_MAC_UP)
-> > +             netif_carrier_on(netdev);
-> > +
-> > +     write_seqcount_end(&fp->link_seq);
-> > +     fun_report_link(netdev);
-> > +}
->
-> > +static int funeth_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> > +{
-> > +     struct devlink *devlink;
-> > +     struct fun_ethdev *ed;
-> > +     struct fun_dev *fdev;
-> > +     int rc;
-> > +
-> > +     struct fun_dev_params aqreq = {
-> > +             .cqe_size_log2 = ilog2(ADMIN_CQE_SIZE),
-> > +             .sqe_size_log2 = ilog2(ADMIN_SQE_SIZE),
-> > +             .cq_depth      = ADMIN_CQ_DEPTH,
-> > +             .sq_depth      = ADMIN_SQ_DEPTH,
-> > +             .rq_depth      = ADMIN_RQ_DEPTH,
-> > +             .min_msix      = 2,              /* 1 Rx + 1 Tx */
-> > +             .event_cb      = fun_event_cb,
-> > +             .serv_cb       = fun_service_cb,
-> > +     };
->
-> no empty lines between variable declarations, you can make this the
-> first variable instead since it has longest lines
-
-OK
-
-> > +     devlink = fun_devlink_alloc(&pdev->dev);
-> > +     if (!devlink) {
-> > +             dev_err(&pdev->dev, "devlink alloc failed\n");
-> > +             return -ENOMEM;
-> > +     }
->
-> > +static void __funeth_remove(struct pci_dev *pdev)
-> > +{
-> > +     struct fun_dev *fdev = pci_get_drvdata(pdev);
-> > +     struct devlink *devlink;
-> > +     struct fun_ethdev *ed;
-> > +
-> > +     if (!fdev)
-> > +             return;
->
-> defensive programming, please remove
-
-OK
-
-> > +     ed = to_fun_ethdev(fdev);
-> > +     devlink = priv_to_devlink(ed);
-> > +     fun_devlink_unregister(devlink);
-> > +
-> > +#ifdef CONFIG_PCI_IOV
-> > +     funeth_sriov_configure(pdev, 0);
-> > +#endif
-> > +
-> > +     fun_serv_stop(fdev);
-> > +     fun_destroy_ports(ed);
-> > +     fun_dev_disable(fdev);
-> > +
-> > +     fun_devlink_free(devlink);
-> > +}
-> > +
-> > +static void funeth_remove(struct pci_dev *pdev)
-> > +{
-> > +     __funeth_remove(pdev);
-> > +}
-> > +
-> > +static void funeth_shutdown(struct pci_dev *pdev)
-> > +{
-> > +     __funeth_remove(pdev);
-> > +}
->
-> Why the two identical wrappers?
-
-I've dropped them both and removed __ from __funeth_remove.
-
-> > +static struct pci_driver funeth_driver = {
-> > +     .name            = KBUILD_MODNAME,
-> > +     .id_table        = funeth_id_table,
-> > +     .probe           = funeth_probe,
-> > +     .remove          = funeth_remove,
-> > +     .shutdown        = funeth_shutdown,
-> > +     .sriov_configure = funeth_sriov_configure,
-> > +};
-> > +
-> > +static int __init funeth_init(void)
-> > +{
-> > +     int ret;
-> > +
-> > +     ret = pci_register_driver(&funeth_driver);
-> > +     if (ret) {
-> > +             pr_err("%s pci_register_driver failed ret %d\n",
-> > +                    KBUILD_MODNAME, ret);
->
-> not worth it, plus you have unnecessary parenthesis here
->
-> you can remove the print and use module_pci_driver()
-
-OK.
-
->
-> > +     }
-> > +     return ret;
-> > +}
-> > +
-> > +static void __exit funeth_exit(void)
-> > +{
-> > +     pci_unregister_driver(&funeth_driver);
-> > +}
-> > +
-> > +module_init(funeth_init);
-> > +module_exit(funeth_exit);
->
->
+On Wed, Jan 05, 2022 at 07:42:10AM -0800, 'Eric Dumazet' via syzkaller-bugs wrote:
+> On Wed, Jan 5, 2022 at 7:37 AM syzbot
+> <syzbot+5426c7ed6868c705ca14@syzkaller.appspotmail.com> wrote:
+> >
+> > Hello,
+> >
+> > syzbot found the following issue on:
+> >
+> > HEAD commit:    6b8d4927540e Add linux-next specific files for 20220104
+> > git tree:       linux-next
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=159d88e3b00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=45c9bbbf2ae8e3d3
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=5426c7ed6868c705ca14
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=117be65db00000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15a75c8db00000
+> >
+> 
+> C repro looks legit, point to an io_uring issue.
+> 
+> > The issue was bisected to:
+> 
+> Please ignore the bisection.
+> 
+> >
+> > commit e4b8954074f6d0db01c8c97d338a67f9389c042f
+> > Author: Eric Dumazet <edumazet@google.com>
+> > Date:   Tue Dec 7 01:30:37 2021 +0000
+> >
+> >     netlink: add net device refcount tracker to struct ethnl_req_info
+> >
+> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12bca4e3b00000
+> > final oops:     https://syzkaller.appspot.com/x/report.txt?x=11bca4e3b00000
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=16bca4e3b00000
+> >
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+5426c7ed6868c705ca14@syzkaller.appspotmail.com
+> > Fixes: e4b8954074f6 ("netlink: add net device refcount tracker to struct ethnl_req_info")
+> >
+> > ------------[ cut here ]------------
+> > WARNING: CPU: 0 PID: 3604 at kernel/sched/wait.c:245 __wake_up_pollfree+0x40/0x50 kernel/sched/wait.c:246
+> > Modules linked in:
+> > CPU: 0 PID: 3604 Comm: syz-executor714 Not tainted 5.16.0-rc8-next-20220104-syzkaller #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > RIP: 0010:__wake_up_pollfree+0x40/0x50 kernel/sched/wait.c:245
+> > Code: f3 ff ff 48 8d 6b 40 48 b8 00 00 00 00 00 fc ff df 48 89 ea 48 c1 ea 03 80 3c 02 00 75 11 48 8b 43 40 48 39 c5 75 03 5b 5d c3 <0f> 0b 5b 5d c3 48 89 ef e8 13 d8 69 00 eb e5 cc 48 c1 e7 06 48 63
+> > RSP: 0018:ffffc90001aaf9f8 EFLAGS: 00010083
+> > RAX: ffff88801cd623f0 RBX: ffff88801bec8048 RCX: 0000000000000000
+> > RDX: 1ffff110037d9011 RSI: 0000000000000004 RDI: 0000000000000001
+> > RBP: ffff88801bec8088 R08: 0000000000000000 R09: ffff88801bec804b
+> > R10: ffffed10037d9009 R11: 0000000000000000 R12: ffff88801bec8040
+> > R13: ffff88801e029d40 R14: dffffc0000000000 R15: ffff88807eb50000
+> > FS:  00005555573ad300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 00000000200000c0 CR3: 000000001e5e4000 CR4: 00000000003506f0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Call Trace:
+> >  <TASK>
+> >  wake_up_pollfree include/linux/wait.h:271 [inline]
+> >  signalfd_cleanup+0x42/0x60 fs/signalfd.c:38
+> >  __cleanup_sighand kernel/fork.c:1596 [inline]
+> >  __cleanup_sighand+0x72/0xb0 kernel/fork.c:1593
+> >  __exit_signal kernel/exit.c:159 [inline]
+> >  release_task+0xc02/0x17e0 kernel/exit.c:200
+> >  wait_task_zombie kernel/exit.c:1117 [inline]
+> >  wait_consider_task+0x2fa6/0x3b80 kernel/exit.c:1344
+> >  do_wait_thread kernel/exit.c:1407 [inline]
+> >  do_wait+0x6ca/0xce0 kernel/exit.c:1524
+> >  kernel_wait4+0x14c/0x260 kernel/exit.c:1687
+> >  __do_sys_wait4+0x13f/0x150 kernel/exit.c:1715
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > RIP: 0033:0x7facd6682386
+> > Code: 0f 1f 40 00 31 c9 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 49 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 11 b8 3d 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 5a c3 90 48 83 ec 28 89 54 24 14 48 89 74 24
+> > RSP: 002b:00007ffdb91adef8 EFLAGS: 00000246 ORIG_RAX: 000000000000003d
+> > RAX: ffffffffffffffda RBX: 000000000000c646 RCX: 00007facd6682386
+> > RDX: 0000000040000001 RSI: 00007ffdb91adf14 RDI: 00000000ffffffff
+> > RBP: 0000000000000f17 R08: 0000000000000032 R09: 00007ffdb91ec080
+> > R10: 0000000000000000 R11: 0000000000000246 R12: 431bde82d7b634db
+> > R13: 00007ffdb91adf14 R14: 0000000000000000 R15: 0000000000000000
+> >  </TASK>
+> >
+> >
+> > ---
+> > This report is generated by a bot. It may contain errors.
+> > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> >
+> > syzbot will keep track of this issue. See:
+> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> > syzbot can test patches for this issue, for details see:
+> > https://goo.gl/tpsmEJ#testing-patches
+> 
+> -- 
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/CANn89iK3tP3rANSWM7_%3DimMeMcUknT0U2GyfA9W4v12ad6_PkQ%40mail.gmail.com.
