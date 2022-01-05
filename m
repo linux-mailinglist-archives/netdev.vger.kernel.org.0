@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10C89485377
+	by mail.lfdr.de (Postfix) with ESMTP id 7C7F7485378
 	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:22:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240259AbiAENV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 08:21:57 -0500
+        id S240269AbiAENV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 08:21:59 -0500
 Received: from mail-vi1eur05on2060.outbound.protection.outlook.com ([40.107.21.60]:53697
         "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234458AbiAENV4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jan 2022 08:21:56 -0500
+        id S235186AbiAENV5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jan 2022 08:21:57 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gwVqeWSvaTKIQDncjlDNxj4OkYbMPtV2pFAshP3OVP+J443ijiQgqT4v26tLyCvBDAL3iCLAZqaE7v27p638oH/kYuyOP1rbPpquLOCLjdhk0HcUrpz4Zl6zJwGRlD7hcRCNcWftPgpmP+vXeXtZJeKoPKBTCIJpVA2BLBAUx0PFsOxn89EQHm6ZJiTp+AwRoPHTzp1OBx1I2C3RuBt4A1Vipq8T5M3SjHiXlzcCyVnnWjuE0RlRdHAEhBqcTEFGw/TvQvsEy4R/JYuzRCXjeoWzxr/Lv68w0YfZIcMr2s0yLxKubk6dOUgzpHsxZJvuY2nCmP0XYtnBJkPLurPr4Q==
+ b=QgSRq5umjdKmb3zESq34POGbhfe6ZF/I6yImtg9VOvFVNsf5aA5wxfxdGLZ/vql3pAT79s/YKr3JFvFupd9PEpMUwODxqmwGgp5lidmPOUvceFBre2ZCsj7t7pUduLkX1nfh7fDtbjwsDcshbCchIIYTgrWR3w6kqJxmies/qmpUiaPj6iK7wRsEOAA2yv+6PKFee4WQMnJsXkSl5E//c54q6YXeI5KYqtHhawmNqNMAltABaJSvrND9EGXVANDwvOtZdXRzC+u/iek47Wiwx/6JdX1ix1yTGYWBgo3iJpHwCAdHEzFEYEwPxUsVe3UBA6MZZvBhCwprSfCRFW/zNg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Z26c5Hm9BM3R9Ri0xrzsaCOXV+PbNTah+U5ZyoIK0Ss=;
- b=X5V5ACjtINKJkAkS3d/XvJOl8mctJsR5fWoB7567UyrjxaHJqDW+ia1JQ6eL0XM08bvnCywUFDTUL0q/en14yxySUo13Z37qjoC/kgBaDvZmEhw/AnqRtbFFwm5ili0T8O0P24oczgTgA5owlU0TAjGf03leDdlUm4g7d7eFCDhJ5xYa3IZTPPxSJ4py3flR11BEO/B2uwhS4khZwayaFs/ujinMT5XtPobwJVDUzCKfX4FXUvT0vVBkU3HCXuU9hoJvVAPOw52IIehabFWLHk1PLX8xU8RAl2SmFUXGaNvuLIb8RJ5pjj8cQlZ7UUzuAoCRPd9VtieP07Jv8yMTMw==
+ bh=v78TTxDRv5KP48eXVu+ERE5yLA062w4etMoW1ObC4v4=;
+ b=fp19wscdI+xzP6om9cV71TSkfBZ9cigjTtkrcu6KiSP50/zdozaMF8d1RqsaN6dyFdphspBrblgwFz23qHU0LSgXGn/R+HSETDGWMXSuETky3CAFDQCQw6etFxDgiFxg9YwyRLRsj5JHRP4FSgdZ1mLNcOCkvDsVOxn4IZNEU/NH5Iug5+A2o3eOqELID0G5QXgATDFTEUWohuxFs6u5Ss4nYM91RGBKBqT2OX5DEkRcRS1RrhfmwY0idDmSlk4iM95S8aZfwumonn4z8XcXMnTWQcpQMwwCiAbiIPxq4omIUy2+za9ZX8Rr37HMm65dpj1b7wD8k/qyTPQ7JCV5Hg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z26c5Hm9BM3R9Ri0xrzsaCOXV+PbNTah+U5ZyoIK0Ss=;
- b=bB52zRtrOVOYlhMUicxn6Uz10uhAZhNqWcPV0scE1j4e3nCkG1KByhopET/uv2KoJ5X9v8k0RfYN64z5/vk0ajs/qnC8GD4VfnOH6grpgJbcXqkpX+8NcQcadtEgdwzPUNGrQvE7tvMhgYCKJceDfUNcCZsMyy7prPYdkiY6eZw=
+ bh=v78TTxDRv5KP48eXVu+ERE5yLA062w4etMoW1ObC4v4=;
+ b=Iw4e4EM57h7yNx+n4moOIfhDv3qJt2EpHriMbEoksZrPyOPZS4I+8uv0cEKxhG4ZWd2BeQx4FeCLWTUBIqzWHLDMhgcVmCCJItUHZ7hceX9vDLrwbGjH8ZXjzUl896PjkQ3jurWFoqiARY9gNCs9F+ypU9u6PoP9nGnvP9yyxNk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VE1PR04MB7408.eurprd04.prod.outlook.com (2603:10a6:800:1b3::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.15; Wed, 5 Jan
- 2022 13:21:53 +0000
+ 2022 13:21:54 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4844.016; Wed, 5 Jan 2022
- 13:21:53 +0000
+ 13:21:54 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH v2 net-next 2/7] net: dsa: merge all bools of struct dsa_port into a single u8
-Date:   Wed,  5 Jan 2022 15:21:36 +0200
-Message-Id: <20220105132141.2648876-3-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 3/7] net: dsa: move dsa_port :: type near dsa_port :: index
+Date:   Wed,  5 Jan 2022 15:21:37 +0200
+Message-Id: <20220105132141.2648876-4-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220105132141.2648876-1-vladimir.oltean@nxp.com>
 References: <20220105132141.2648876-1-vladimir.oltean@nxp.com>
@@ -56,135 +56,66 @@ X-ClientProxiedBy: AS9PR06CA0150.eurprd06.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 93ffef7b-1c42-4c51-909a-08d9d04e5704
+X-MS-Office365-Filtering-Correlation-Id: 54dfb5a0-5963-45f2-4d3a-08d9d04e5785
 X-MS-TrafficTypeDiagnostic: VE1PR04MB7408:EE_
-X-Microsoft-Antispam-PRVS: <VE1PR04MB7408AF27DE7476185AB066FBE04B9@VE1PR04MB7408.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB740804AB5D34DC6715F72ECCE04B9@VE1PR04MB7408.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7Tx46F0QKyjYgsRmYPq0/dGlBy6/IgYF0HEXWkg+t8OsXtxV24m2hIOFIDlds08wwxFsd/FZ3YeO1asgY7mjVUKvG1mn7I4om/XVS7dWgMucaKp6+eAQkaNgrKyQDfSfuqS2rRYKG7fXKKBvJVKX/uQoLAOCt2tNfx+vlena3eECN753C2orq0u6pOSD2bdPAretASUk1F7nLiAziHBNf9wTf5NJrTIi5L1mY7qoLxM44S8TKJZmXapFz/cudOJB8fDSr1Pc73N3AN/x7HBCl79e8g8ST02SHiOYrefXIFljfrqcUhXQQaWLjrAN/9EB1qUjUb1+zlBmiKqMjLRcJ6Ca7xS1fYXISOuM26sBuIfBxrQBYpG64EfYwLIxGR35ACozh7cEDb/a1+hI4c8/dSJt09jg3D64Uv9dLoMBydxQnNhmHyxcTT5ro9APGO70bLnDYzFlMJVagdN17iy/xxBkC7ryDEfQ8RQJjITeSSp3rKyUCYHiYXv6vcQSytfl0pNrf4DVMlRBt7REJRwctAM7S9mp3dXQqYp/pl8UzLcurATpF3MQDRWrydlTkLtuP721WXTqu4bHYfTT403xCa0tBU36HlONPVrhEt5lv7RH0JZw0hIZSXRx656O/QgydxTKbng3csf2qoKVuO0aXhptbEgMuE94xIdfGfZ4cqPxrVGQI4ckGeH4fmSDHblBCr3oBOsT/9Z9N1c5mnHjrOs6jr9mRSt5RBqEjiFzknc=
+X-Microsoft-Antispam-Message-Info: yKc8d72s0cQy9Yt/024xUSxq4iWR/Lj4Ghoq4MT6YcBnZFxbOuXj778a7j6500W8HHLv7bQ6Qs/wae4yUSGv3DFHtdddZL/fe4OsosfGIYe2A1ZcZPSRV9piTyuxX8J63EujA3FUAt4Wu+wUgSDokuok4j+D+bXmWNYRFHvwnavt/hqlR2yxVE9rZ2Mh5pB8rQeHOioXSK7Z9f8SzMR8r0qiH49gBzvH+ltVVh7cQI/3rbgZZ/DRYP8s8y/w6hNnHxX1CWV3IMGzMsdsGDW1ODMvlduOFci3CF9M/QWkfjc+m7GkCaL05zZ8JsMDPYQU5aInA14uIR0JZA+/0uGy6B3AbDxUFGOUEJ9ioVUvUMuEF9KfEFAM2+rOTz6xpXZ6mi5oYmB1AT7gx4lw29+u8cDszr1pCA0U1uL+t7UMAE+CcFqCDj2AQsaT+CmVi/3u+XKH7hv7x/aOcfxstXf74vZNGvw4xmG0oZQ5q0UHCBPfpl2BI3qZ6IvlnntnKzUSwwfjUE1XX8FrWfKlEEDXco39VHkHKr1X4DmSoP/eVmeC/gLUHr8xu9TJd913cHzZwi/Xj9oJsQtKCcWpng+qfRUBRkpzOd6n58bzVJWx82pXGNqzYaKYOQ31B8IZ2Z0BrwT/1kj58jR/ufdn9VAXWLkAEOU4wU2GtdxuDopFyiSdWf29a0nhshyo5rRKNYh7yXtnHiUqqRfdcTrdE757NemNl2LmLRLog66S1Z+JnPk=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6506007)(66476007)(8936002)(38100700002)(38350700002)(316002)(36756003)(2616005)(2906002)(6486002)(66556008)(66946007)(6916009)(5660300002)(44832011)(83380400001)(6512007)(508600001)(86362001)(54906003)(4326008)(8676002)(1076003)(186003)(26005)(6666004)(52116002)(21314003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?atK+Ea7ij3F1bFvF+QV9VURxt5/0t6miqueR7YtJ7GYoHmbcrdVNBkSPas6n?=
- =?us-ascii?Q?Hs0KC6Ccy1Uk13ZSe6TW0HUfpgmxTYzD3qDLHxswwVAvM27dHz+8DyWB4iEJ?=
- =?us-ascii?Q?HpL2B/8m/+EJcugo+UN7IvpYgeyZZLTaYSmUL2vugyQPncphZ15KfeqntkLv?=
- =?us-ascii?Q?Pq+dsefeCQSBwbXXOGXg0RfsT9NrbRd3N+ofvx147KS2YBsnieXX881iwf6+?=
- =?us-ascii?Q?zwIx2ZTkRdNNLUGMau1c6t8/znRxdQzmbxPU7ELflONjsGsgsr6LQdCNVyNn?=
- =?us-ascii?Q?1nuZLdHfgTTLzI/Jt2wHsfJvShGSheqFqexzeCCAKjRk2NQj5yESW2eSJCOe?=
- =?us-ascii?Q?caGIepSpq3JiFkp8qI8v+xdHfDcorj7WKnjgAso1YjwPoCMQfLkfd6rzGYNl?=
- =?us-ascii?Q?Omy7+SVQhxBJQMQaEiKRFwIiDfR7CE7GLvURBstmEfyo1OJFi4VQBRWtalu1?=
- =?us-ascii?Q?2z/DJJWgZzMvHhIEyGz9QLHNAHt3cay7BuEMFOx1DrhWZ+ktPzvGMZ9zNHpN?=
- =?us-ascii?Q?ju2Sbod7A18je1qvusaeAzt2VbvlSrnqCUhYI0tBCLJNz2s64Zy5EPqSi21v?=
- =?us-ascii?Q?umI/jkbewry2MtNEyRzVCJIye3di1QbM9FaYnZjq2qW+0s/GtH6wkhW2R3It?=
- =?us-ascii?Q?o7+7sJXuW7IwJucnu7bCvvSe/ISP1X9+SecKcYQxfUycp3cPFxf9nXlotw5w?=
- =?us-ascii?Q?4dPoA7pksw3OJ04lwLGo5Y6G9OAItJk93mTeL+AqBNH6GsOgbyZ8v1W4g7EK?=
- =?us-ascii?Q?inQs07ktBc0G7+QRoq72atMk28+qdtZDYUWRRGMMkYfp4dU0TXQm5R0ZZ53l?=
- =?us-ascii?Q?OtS7XOBa3VeF6sI5x+JxFskmvmyN9RsAxP2Y3YEHNpKYEf2+dvHJ2DSW6srT?=
- =?us-ascii?Q?wpwIJ2iSniqZW40swEKwtbfBvjnEkvFtkv65VCeNBeZ92GqQYzEswK3uCtXZ?=
- =?us-ascii?Q?x2Sq7gy/trjCG4Xnql3zrKUSff1cOXWJ0aa+W/oApYrCdvgdXI2TQ6vzDFrf?=
- =?us-ascii?Q?A8xX5A2t7ujmSSSxyQ3RjJ7IqJl9sRbbCpKgiovEq0kjXF/HQ7K66cKBzh58?=
- =?us-ascii?Q?N3bVGZo6t0pNAF3+NetyhngHfR+jRILvr/aX9QTjsHiiZuvxewQs8u+z7Ynf?=
- =?us-ascii?Q?vyDicXEiNex0vmz6H/Dh2eiEZ9FvkCNNq4GHKDI8aXXnSbosaqSRyRQg5QZR?=
- =?us-ascii?Q?Xkl6ve+klgwhBg2vLyCiqeM3JyJ1mwbDvdrAn1iMnHzWp5PsslXuVVjgI8vU?=
- =?us-ascii?Q?DkEizpeBRpVxZZ/yB/WQZvWREu2n3W7S/wfU43+5wPsmKm5Rbz5qjK6ktJ7y?=
- =?us-ascii?Q?ydDwL2d/8lAlJMcEn43TM1udmcX0tDzQyTmQYI7I4i7CIJt3fDDQouEjJHLp?=
- =?us-ascii?Q?sohBoc6o+t92RkQuydasHrJ2aF0y64bHtBJY40CwXlzIXZeE+3fty6/9O23s?=
- =?us-ascii?Q?2xMAEjAyC6FUA2rQuhs+IxVsdeykIlIoAYPXXyIfPhSLbsu6V2Qmuui16kjF?=
- =?us-ascii?Q?wwjG8ACVOze3RSOEDEWjEsaB9tLYFsUh2pVkDPnGOaUvImP3+IxnYCiTCpeh?=
- =?us-ascii?Q?Yvz42/mpO47+NPnSTZSzd23vfpDG51Pq9dCOgRumg1jMfaDwLeBth/mpe5Qg?=
- =?us-ascii?Q?3h+7pEoWxZcVHFeT6fIoevU=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4KvCFOsMOgYeWmJ9tmJHhp1pNpyU6a2eh8ALlMqJ9frRUv2uwBw77P+9bb55?=
+ =?us-ascii?Q?0EB6SGarnk4ScEpkF6Uvh5XVZ9LXyRlFH1acHKNd/10LTJLJ33w59W7PTGZy?=
+ =?us-ascii?Q?wSScQdlJP4QytueyXRqkfymoABT54cR8zzKaPpmslquRQbQyAL4Do8x3AyKw?=
+ =?us-ascii?Q?uXQ0g7axlwNW90GkTL2hojAp36QwW4giF1yUAh4MAmcdsvXUhBKL44NiNoeX?=
+ =?us-ascii?Q?hUkI+hZ9FyXQAXvZClLxMna6AaKSYuMvDeF5T1tTdP1rAIM//ss74XI5lSh6?=
+ =?us-ascii?Q?3nhLB3HrR8nBiHoUwaRPbtfrufM2mJoyWMIBcr+IwJ+2G71/zKBi8NbM4YNY?=
+ =?us-ascii?Q?9Ll0JEn7JrdK5amQ10TpDAmMV+UwxOkM0wThqqiYvOAor+WxTk88Ub0reKsF?=
+ =?us-ascii?Q?UW/eZFRvt2NJAIze3T7yxdhTujy6N0ufVAw2p/AcF4KbIkPIFIPir+mYIOwm?=
+ =?us-ascii?Q?Eda2POzjGXXfqc8i2qfU2PTpRTWSahMCiR2rF0NwKzYjTkrOQRQfdslgGY8b?=
+ =?us-ascii?Q?rB+XsMUt3G7+bkcaKwCFdv6ByLh5VGV8F4x6CTYMeRUCpc3onDfigUx5yVBY?=
+ =?us-ascii?Q?tSNjzBxA0UCOEe7bjtwTFyJDVfSE/dbUkuS7vH70+D0PtEygO2GHasBxizOb?=
+ =?us-ascii?Q?qIsht18MuGppOgy2kpbQJrZal+33+WPs7ABBr/TlTum56B92pAKaPVW7Tb3y?=
+ =?us-ascii?Q?ub0McbSEuGPpYp+tt8uMjeu5nc3jcT+Qr7omGlvNbmROU1vyeC69Uu5JuKkL?=
+ =?us-ascii?Q?ssUxgARkY3zUg8ljGB4PpYba/ox0VLuIAo/pXjUBeA0s9LqW1851sTGhq8q3?=
+ =?us-ascii?Q?CH+Dp/K/3TRE2mUAzpbSEe0Q3VvQudvYx+23BbsDaqx2fzk0L4ZYMe2nLaZ9?=
+ =?us-ascii?Q?WbZogiaSzwMjkOgNilVFz7yaHbjU83IXtV/qbq07mA/7wQG3zbDM/o6ehtol?=
+ =?us-ascii?Q?2v5Shnn7vQKhhLvaIDHAaMCITkmMJ0zSQXJaVTOZ0IDG9Lfv4BIfRv6M/XD9?=
+ =?us-ascii?Q?mlKRZN94ugoUlzIWzHBqcIyXDQjhAzo3IWcz13wxazkb4fBqHEdO3C/OAx7x?=
+ =?us-ascii?Q?BMfwK4Zo0ZFZI8ZFVOhpZJIJXOT8Be2wqYOdEQsXLLe6Kjk8d8yhqZdpAS/P?=
+ =?us-ascii?Q?o1FL+G9KToK4rPXZwq0IiU1r/BKm4SPhWeL20jnIgu9aQheSXk3EMZyuPmpv?=
+ =?us-ascii?Q?fVq5wOaMIytU1ngqUqO96ce37tysjk1t8vRsVuxv+6iyuQJHHBhE+1vl681b?=
+ =?us-ascii?Q?jiwjb/7UmEI51zJ4STczWi5CaOvf6sskIgS+eVDKodXlZwlWxl14stbrYU7Z?=
+ =?us-ascii?Q?b9hYW6Wlw8e7QvWGUwwg+V6W7J2y4xl1D7aEX1/6ZDsGe2iXcumIpZrUL4m4?=
+ =?us-ascii?Q?74+LYDiUOEA5IrsWJX4v5nd8KoTTIuPfoATOht/+QiXm2/me7ypPv6v3eoKk?=
+ =?us-ascii?Q?Gh1G47zSFXimvKqza2tb1pfXRm3SamWiXycjQ0tTpIb9JtkMd6GFaXHoFoef?=
+ =?us-ascii?Q?Je9gu6n7KxJ2WjAOpx0RfLOVdtWo6FNoMKSGMNWaJ5lZFSIVm2eutZgf96nP?=
+ =?us-ascii?Q?Nh5WVwC71RfRXEM8sxW8zcBXXVgFMg3JjgBqJN1L+PSdNoBr96DvnRoE6Ncf?=
+ =?us-ascii?Q?x4u1J+9d4NRyiXsK+qlcWkw=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 93ffef7b-1c42-4c51-909a-08d9d04e5704
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54dfb5a0-5963-45f2-4d3a-08d9d04e5785
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 13:21:53.7297
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 13:21:54.5422
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: x71JlRdcHzO56qt2je3w0h5jivH4l033xnStmlD0mhy7JXg6jPKPcwvHhqvXI9B0lhzo+KeOk1qNheMsjlZkcQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: Cd80f5Sw4rLAPZNFb9xgYSHC1oSDHlU2+uQ4hfv7vSwAK+RXYbfUofbVjX5kYvMikYq9RG48bzeA0HidC2zT+A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7408
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct dsa_port has 5 bool members which create quite a number of 7 byte
-holes in the structure layout. By merging them all into bitfields of an
-u8, and placing that u8 in the 1-byte hole after dp->mac and dp->stp_state,
-we can reduce the structure size from 576 bytes to 552 bytes on arm64.
+Both dsa_port :: type and dsa_port :: index introduce a 4 octet hole
+after them, so we can group them together and the holes would be
+eliminated, turning 16 octets of storage into just 8. This makes the
+cpu_dp pointer fit in the first cache line, which is good, because
+dsa_slave_to_master(), called by dsa_enqueue_skb(), uses it.
 
 Before:
-
-pahole -C dsa_port net/dsa/slave.o
-struct dsa_port {
-        union {
-                struct net_device * master;              /*     0     8 */
-                struct net_device * slave;               /*     0     8 */
-        };                                               /*     0     8 */
-        const struct dsa_device_ops  * tag_ops;          /*     8     8 */
-        struct dsa_switch_tree *   dst;                  /*    16     8 */
-        struct sk_buff *           (*rcv)(struct sk_buff *, struct net_device *); /*    24     8 */
-        enum {
-                DSA_PORT_TYPE_UNUSED = 0,
-                DSA_PORT_TYPE_CPU    = 1,
-                DSA_PORT_TYPE_DSA    = 2,
-                DSA_PORT_TYPE_USER   = 3,
-        } type;                                          /*    32     4 */
-
-        /* XXX 4 bytes hole, try to pack */
-
-        struct dsa_switch *        ds;                   /*    40     8 */
-        unsigned int               index;                /*    48     4 */
-
-        /* XXX 4 bytes hole, try to pack */
-
-        const char  *              name;                 /*    56     8 */
-        /* --- cacheline 1 boundary (64 bytes) --- */
-        struct dsa_port *          cpu_dp;               /*    64     8 */
-        u8                         mac[6];               /*    72     6 */
-        u8                         stp_state;            /*    78     1 */
-
-        /* XXX 1 byte hole, try to pack */
-
-        struct device_node *       dn;                   /*    80     8 */
-        unsigned int               ageing_time;          /*    88     4 */
-        bool                       vlan_filtering;       /*    92     1 */
-        bool                       learning;             /*    93     1 */
-
-        /* XXX 2 bytes hole, try to pack */
-
-        struct dsa_bridge *        bridge;               /*    96     8 */
-        struct devlink_port        devlink_port;         /*   104   288 */
-        /* --- cacheline 6 boundary (384 bytes) was 8 bytes ago --- */
-        bool                       devlink_port_setup;   /*   392     1 */
-
-        /* XXX 7 bytes hole, try to pack */
-
-        struct phylink *           pl;                   /*   400     8 */
-        struct phylink_config      pl_config;            /*   408    40 */
-        /* --- cacheline 7 boundary (448 bytes) --- */
-        struct net_device *        lag_dev;              /*   448     8 */
-        bool                       lag_tx_enabled;       /*   456     1 */
-
-        /* XXX 7 bytes hole, try to pack */
-
-        struct net_device *        hsr_dev;              /*   464     8 */
-        struct list_head           list;                 /*   472    16 */
-        const struct ethtool_ops  * orig_ethtool_ops;    /*   488     8 */
-        const struct dsa_netdevice_ops  * netdev_ops;    /*   496     8 */
-        struct mutex               addr_lists_lock;      /*   504    32 */
-        /* --- cacheline 8 boundary (512 bytes) was 24 bytes ago --- */
-        struct list_head           fdbs;                 /*   536    16 */
-        struct list_head           mdbs;                 /*   552    16 */
-        bool                       setup;                /*   568     1 */
-
-        /* size: 576, cachelines: 9, members: 30 */
-        /* sum members: 544, holes: 6, sum holes: 25 */
-        /* padding: 7 */
-};
-
-After:
 
 pahole -C dsa_port net/dsa/slave.o
 struct dsa_port {
@@ -249,53 +180,94 @@ struct dsa_port {
         /* last cacheline: 40 bytes */
 };
 
+After:
+
+pahole -C dsa_port net/dsa/slave.o
+struct dsa_port {
+        union {
+                struct net_device * master;              /*     0     8 */
+                struct net_device * slave;               /*     0     8 */
+        };                                               /*     0     8 */
+        const struct dsa_device_ops  * tag_ops;          /*     8     8 */
+        struct dsa_switch_tree *   dst;                  /*    16     8 */
+        struct sk_buff *           (*rcv)(struct sk_buff *, struct net_device *); /*    24     8 */
+        struct dsa_switch *        ds;                   /*    32     8 */
+        unsigned int               index;                /*    40     4 */
+        enum {
+                DSA_PORT_TYPE_UNUSED = 0,
+                DSA_PORT_TYPE_CPU    = 1,
+                DSA_PORT_TYPE_DSA    = 2,
+                DSA_PORT_TYPE_USER   = 3,
+        } type;                                          /*    44     4 */
+        const char  *              name;                 /*    48     8 */
+        struct dsa_port *          cpu_dp;               /*    56     8 */
+        /* --- cacheline 1 boundary (64 bytes) --- */
+        u8                         mac[6];               /*    64     6 */
+        u8                         stp_state;            /*    70     1 */
+        u8                         vlan_filtering:1;     /*    71: 0  1 */
+        u8                         learning:1;           /*    71: 1  1 */
+        u8                         lag_tx_enabled:1;     /*    71: 2  1 */
+        u8                         devlink_port_setup:1; /*    71: 3  1 */
+        u8                         setup:1;              /*    71: 4  1 */
+
+        /* XXX 3 bits hole, try to pack */
+
+        struct device_node *       dn;                   /*    72     8 */
+        unsigned int               ageing_time;          /*    80     4 */
+
+        /* XXX 4 bytes hole, try to pack */
+
+        struct dsa_bridge *        bridge;               /*    88     8 */
+        struct devlink_port        devlink_port;         /*    96   288 */
+        /* --- cacheline 6 boundary (384 bytes) --- */
+        struct phylink *           pl;                   /*   384     8 */
+        struct phylink_config      pl_config;            /*   392    40 */
+        struct net_device *        lag_dev;              /*   432     8 */
+        struct net_device *        hsr_dev;              /*   440     8 */
+        /* --- cacheline 7 boundary (448 bytes) --- */
+        struct list_head           list;                 /*   448    16 */
+        const struct ethtool_ops  * orig_ethtool_ops;    /*   464     8 */
+        const struct dsa_netdevice_ops  * netdev_ops;    /*   472     8 */
+        struct mutex               addr_lists_lock;      /*   480    32 */
+        /* --- cacheline 8 boundary (512 bytes) --- */
+        struct list_head           fdbs;                 /*   512    16 */
+        struct list_head           mdbs;                 /*   528    16 */
+
+        /* size: 544, cachelines: 9, members: 30 */
+        /* sum members: 539, holes: 1, sum holes: 4 */
+        /* sum bitfield members: 5 bits, bit holes: 1, sum bit holes: 3 bits */
+        /* last cacheline: 32 bytes */
+};
+
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/net/dsa.h | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ include/net/dsa.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 8878f9ce251b..a8f0037b58e2 100644
+index a8f0037b58e2..5e42fa7ea377 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -261,18 +261,23 @@ struct dsa_port {
+@@ -246,6 +246,10 @@ struct dsa_port {
+ 	struct dsa_switch_tree *dst;
+ 	struct sk_buff *(*rcv)(struct sk_buff *skb, struct net_device *dev);
  
- 	u8			stp_state;
- 
-+	u8			vlan_filtering:1,
-+				/* Managed by DSA on user ports and by
-+				 * drivers on CPU and DSA ports
-+				 */
-+				learning:1,
-+				lag_tx_enabled:1,
-+				devlink_port_setup:1,
-+				setup:1;
++	struct dsa_switch	*ds;
 +
- 	struct device_node	*dn;
- 	unsigned int		ageing_time;
--	bool			vlan_filtering;
--	/* Managed by DSA on user ports and by drivers on CPU and DSA ports */
--	bool			learning;
++	unsigned int		index;
 +
- 	struct dsa_bridge	*bridge;
- 	struct devlink_port	devlink_port;
--	bool			devlink_port_setup;
- 	struct phylink		*pl;
- 	struct phylink_config	pl_config;
- 	struct net_device	*lag_dev;
--	bool			lag_tx_enabled;
- 	struct net_device	*hsr_dev;
+ 	enum {
+ 		DSA_PORT_TYPE_UNUSED = 0,
+ 		DSA_PORT_TYPE_CPU,
+@@ -253,8 +257,6 @@ struct dsa_port {
+ 		DSA_PORT_TYPE_USER,
+ 	} type;
  
- 	struct list_head list;
-@@ -293,8 +298,6 @@ struct dsa_port {
- 	struct mutex		addr_lists_lock;
- 	struct list_head	fdbs;
- 	struct list_head	mdbs;
--
--	bool setup;
- };
- 
- /* TODO: ideally DSA ports would have a single dp->link_dp member,
+-	struct dsa_switch	*ds;
+-	unsigned int		index;
+ 	const char		*name;
+ 	struct dsa_port		*cpu_dp;
+ 	u8			mac[ETH_ALEN];
 -- 
 2.25.1
 
