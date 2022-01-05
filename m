@@ -2,223 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC018484B73
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 01:05:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 080B6484B7D
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 01:08:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236630AbiAEAFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 19:05:45 -0500
-Received: from mga12.intel.com ([192.55.52.136]:35819 "EHLO mga12.intel.com"
+        id S231976AbiAEAIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 19:08:49 -0500
+Received: from mga01.intel.com ([192.55.52.88]:25352 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236623AbiAEAFo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 4 Jan 2022 19:05:44 -0500
+        id S231153AbiAEAIs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 4 Jan 2022 19:08:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641341144; x=1672877144;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=bbi0QvWwneW+bRXSdcHVXuxVugIJClBwG+2Tla/5rA4=;
-  b=TGf89SVyVINwijl6axguh4gs9kdKBkF8MGv/C8qj7aMrcACCrA869LZN
-   XQj0KmmZjoQKbU1gb7/zbmHQXnK5Bau1A/VHx7gQg7kwY5SkRvL6oYKCC
-   HLgdyMixeAAtqdqkkcqqTh2HTN2zf2nKJG5+8OeoxUKX6uSnCn+1MB3Y6
-   iQPCm1RDtZuebzDi+nEWWc9BMAFI9ekfJ1uVD3ROlVUtYM7bKD3Lfj77i
-   ygFLRbqQScQHC0cpVjCkgcdMJr8vBUBViY03R3Mdh8SljPyxsGB7B2ndM
-   wVoCO1eCmxbWPyH0YVnTayQ4TiIso7v6mGxXGCYpJzyZsXDP/8m0MNT0f
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="222326412"
+  t=1641341328; x=1672877328;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=JepRpJLYzlSaO6plfJUd7N28rd7f8sx/+iAnJFEy6K0=;
+  b=C7uyUJDebfjsI2MkqTnRB1FaIn36Vl/mww3xK39DE1LxfAg3/u6c8xD1
+   2mDKQ2ePB5kAybvni1ftiaYjgXSD47Jt80+t3bKR0cfEahFnfcAlPndsv
+   mU8uCAxW7kOl3DoRVCmxnLNPIN86UF8lvemasIWswEK+Zy5tuWTjIr+dN
+   Ba9A0M9ABGpaxGL318vYe9GQRe4NeiB5WhBK3y0/BjVSgFc9JJrY15wPE
+   EA4Yz0qVe+6HO1Ev6en52q9QPNYV2k7AL7DAOjbnWek5yWAdmagQpouz2
+   r/ppAx1U1qWg++3Xioo0nynQWuO594XIDdoEtQ2N/u5D0T+BmOy45ooUN
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="266605095"
 X-IronPort-AV: E=Sophos;i="5.88,262,1635231600"; 
-   d="scan'208";a="222326412"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2022 16:05:43 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="266605095"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2022 16:08:48 -0800
 X-IronPort-AV: E=Sophos;i="5.88,262,1635231600"; 
-   d="scan'208";a="470336977"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga003.jf.intel.com with ESMTP; 04 Jan 2022 16:05:43 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, linux-rdma@vger.kernel.org,
-        shiraz.saleem@intel.com, mustafa.ismail@intel.com,
-        Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>
-Subject: [PATCH net-next 1/1] ice: Simplify tracking status of RDMA support
-Date:   Tue,  4 Jan 2022 16:04:56 -0800
-Message-Id: <20220105000456.2510590-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
+   d="scan'208";a="611267959"
+Received: from marcquat-mobl.amr.corp.intel.com ([10.212.247.3])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2022 16:08:48 -0800
+Date:   Tue, 4 Jan 2022 16:08:47 -0800 (PST)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>
+cc:     syzbot <syzbot+bc9e2d2dbcb347dd215a@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        syzkaller-bugs@googlegroups.com, mptcp@lists.linux.dev,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [syzbot] WARNING in page_counter_cancel (3)
+In-Reply-To: <Ycwo+++dToWQ1RMR@dhcp22.suse.cz>
+Message-ID: <2bc36f6f-e1e5-52-e62-15adf696bdc@linux.intel.com>
+References: <00000000000021bb9b05d14bf0c7@google.com> <000000000000f1504c05d36c21ea@google.com> <20211221155736.90bbc5928bcd779e76ca8f95@linux-foundation.org> <Ycwo+++dToWQ1RMR@dhcp22.suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dave Ertman <david.m.ertman@intel.com>
+On Wed, 29 Dec 2021, Michal Hocko wrote:
 
-The status of support for RDMA is currently being tracked with two
-separate status flags.  This is unnecessary with the current state of
-the driver.
+> On Tue 21-12-21 15:57:36, Andrew Morton wrote:
+>> On Sat, 18 Dec 2021 06:04:22 -0800 syzbot <syzbot+bc9e2d2dbcb347dd215a@syzkaller.appspotmail.com> wrote:
+>>
+>>> syzbot has found a reproducer for the following issue on:
+>>>
+>>> HEAD commit:    fbf252e09678 Add linux-next specific files for 20211216
+>>> git tree:       linux-next
+>>> console output: https://syzkaller.appspot.com/x/log.txt?x=1797de99b00000
+>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=7fcbb9aa19a433c8
+>>> dashboard link: https://syzkaller.appspot.com/bug?extid=bc9e2d2dbcb347dd215a
+>>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+>>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=135d179db00000
+>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=113edb6db00000
+>>
+>> Useful to have that, thanks.
+>>
+>> I'm suspecting that mptcp is doing something strange.
+>
+> Yes.
+>
+>> Could I as the
+>> developers to please take a look?
+>>
 
-Simplify status tracking down to a single flag.
+Andrew -
 
-Rename the helper function to denote the RDMA specific status and
-universally use the helper function to test the status bit.
+Yes, we'll get a fix in to net-next soon - thanks for adding the mptcp & 
+netdev lists.
 
-Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-Tested-by: Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice.h      |  3 ---
- drivers/net/ethernet/intel/ice/ice_idc.c  |  6 +++---
- drivers/net/ethernet/intel/ice/ice_lib.c  |  8 ++++----
- drivers/net/ethernet/intel/ice/ice_lib.h  |  2 +-
- drivers/net/ethernet/intel/ice/ice_main.c | 13 +++++--------
- 5 files changed, 13 insertions(+), 19 deletions(-)
+>>
+>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>>> Reported-by: syzbot+bc9e2d2dbcb347dd215a@syzkaller.appspotmail.com
+>>>
+>>> R13: 00007ffdeb858640 R14: 00007ffdeb858680 R15: 0000000000000004
+>>>  </TASK>
+>>> ------------[ cut here ]------------
+>>> page_counter underflow: -4294966651 nr_pages=4294967295
+>
+> __mptcp_mem_reclaim_partial is trying to uncharge (via
+> __sk_mem_reduce_allocated) negative amount. nr_pages has overflown when
+> converted from int to unsigned int (-1). I would say that
+> __mptcp_mem_reclaim_partial has evaluated
+> 	reclaimable = mptcp_sk(sk)->rmem_fwd_alloc - sk_unused_reserved_mem(sk)
+> to 0 and __mptcp_rmem_reclaim(sk, reclaimable - 1) made it -1.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 4e16d185077d..6f445cc3390f 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -468,7 +468,6 @@ enum ice_pf_flags {
- 	ICE_FLAG_FD_ENA,
- 	ICE_FLAG_PTP_SUPPORTED,		/* PTP is supported by NVM */
- 	ICE_FLAG_PTP,			/* PTP is enabled by software */
--	ICE_FLAG_AUX_ENA,
- 	ICE_FLAG_ADV_FEATURES,
- 	ICE_FLAG_TC_MQPRIO,		/* support for Multi queue TC */
- 	ICE_FLAG_CLS_FLOWER,
-@@ -886,7 +885,6 @@ static inline void ice_set_rdma_cap(struct ice_pf *pf)
- {
- 	if (pf->hw.func_caps.common_cap.rdma && pf->num_rdma_msix) {
- 		set_bit(ICE_FLAG_RDMA_ENA, pf->flags);
--		set_bit(ICE_FLAG_AUX_ENA, pf->flags);
- 		ice_plug_aux_dev(pf);
- 	}
- }
-@@ -899,6 +897,5 @@ static inline void ice_clear_rdma_cap(struct ice_pf *pf)
- {
- 	ice_unplug_aux_dev(pf);
- 	clear_bit(ICE_FLAG_RDMA_ENA, pf->flags);
--	clear_bit(ICE_FLAG_AUX_ENA, pf->flags);
- }
- #endif /* _ICE_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-index fc3580167e7b..9493a38182f5 100644
---- a/drivers/net/ethernet/intel/ice/ice_idc.c
-+++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-@@ -79,7 +79,7 @@ int ice_add_rdma_qset(struct ice_pf *pf, struct iidc_rdma_qset_params *qset)
- 
- 	dev = ice_pf_to_dev(pf);
- 
--	if (!test_bit(ICE_FLAG_RDMA_ENA, pf->flags))
-+	if (!ice_is_rdma_ena(pf))
- 		return -EINVAL;
- 
- 	vsi = ice_get_main_vsi(pf);
-@@ -236,7 +236,7 @@ EXPORT_SYMBOL_GPL(ice_get_qos_params);
-  */
- static int ice_reserve_rdma_qvector(struct ice_pf *pf)
- {
--	if (test_bit(ICE_FLAG_RDMA_ENA, pf->flags)) {
-+	if (ice_is_rdma_ena(pf)) {
- 		int index;
- 
- 		index = ice_get_res(pf, pf->irq_tracker, pf->num_rdma_msix,
-@@ -274,7 +274,7 @@ int ice_plug_aux_dev(struct ice_pf *pf)
- 	/* if this PF doesn't support a technology that requires auxiliary
- 	 * devices, then gracefully exit
- 	 */
--	if (!ice_is_aux_ena(pf))
-+	if (!ice_is_rdma_ena(pf))
- 		return 0;
- 
- 	iadev = kzalloc(sizeof(*iadev), GFP_KERNEL);
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 0c187cf04fcf..b1c164b8066c 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -732,14 +732,14 @@ bool ice_is_safe_mode(struct ice_pf *pf)
- }
- 
- /**
-- * ice_is_aux_ena
-+ * ice_is_rdma_ena
-  * @pf: pointer to the PF struct
-  *
-- * returns true if AUX devices/drivers are supported, false otherwise
-+ * returns true if RDMA is currently supported, false otherwise
-  */
--bool ice_is_aux_ena(struct ice_pf *pf)
-+bool ice_is_rdma_ena(struct ice_pf *pf)
- {
--	return test_bit(ICE_FLAG_AUX_ENA, pf->flags);
-+	return test_bit(ICE_FLAG_RDMA_ENA, pf->flags);
- }
- 
- /**
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
-index b2ed189527d6..a2f54fbdc170 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.h
-@@ -110,7 +110,7 @@ void ice_set_q_vector_intrl(struct ice_q_vector *q_vector);
- int ice_vsi_cfg_mac_fltr(struct ice_vsi *vsi, const u8 *macaddr, bool set);
- 
- bool ice_is_safe_mode(struct ice_pf *pf);
--bool ice_is_aux_ena(struct ice_pf *pf);
-+bool ice_is_rdma_ena(struct ice_pf *pf);
- bool ice_is_dflt_vsi_in_use(struct ice_sw *sw);
- 
- bool ice_is_vsi_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi);
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index e29176889c23..078eb588f41e 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3653,11 +3653,8 @@ static void ice_set_pf_caps(struct ice_pf *pf)
- 	struct ice_hw_func_caps *func_caps = &pf->hw.func_caps;
- 
- 	clear_bit(ICE_FLAG_RDMA_ENA, pf->flags);
--	clear_bit(ICE_FLAG_AUX_ENA, pf->flags);
--	if (func_caps->common_cap.rdma) {
-+	if (func_caps->common_cap.rdma)
- 		set_bit(ICE_FLAG_RDMA_ENA, pf->flags);
--		set_bit(ICE_FLAG_AUX_ENA, pf->flags);
--	}
- 	clear_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
- 	if (func_caps->common_cap.dcb)
- 		set_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
-@@ -3785,7 +3782,7 @@ static int ice_ena_msix_range(struct ice_pf *pf)
- 	v_left -= needed;
- 
- 	/* reserve vectors for RDMA auxiliary driver */
--	if (test_bit(ICE_FLAG_RDMA_ENA, pf->flags)) {
-+	if (ice_is_rdma_ena(pf)) {
- 		needed = num_cpus + ICE_RDMA_NUM_AEQ_MSIX;
- 		if (v_left < needed)
- 			goto no_hw_vecs_left_err;
-@@ -3826,7 +3823,7 @@ static int ice_ena_msix_range(struct ice_pf *pf)
- 			int v_remain = v_actual - v_other;
- 			int v_rdma = 0, v_min_rdma = 0;
- 
--			if (test_bit(ICE_FLAG_RDMA_ENA, pf->flags)) {
-+			if (ice_is_rdma_ena(pf)) {
- 				/* Need at least 1 interrupt in addition to
- 				 * AEQ MSIX
- 				 */
-@@ -3860,7 +3857,7 @@ static int ice_ena_msix_range(struct ice_pf *pf)
- 			dev_notice(dev, "Enabled %d MSI-X vectors for LAN traffic.\n",
- 				   pf->num_lan_msix);
- 
--			if (test_bit(ICE_FLAG_RDMA_ENA, pf->flags))
-+			if (ice_is_rdma_ena(pf))
- 				dev_notice(dev, "Enabled %d MSI-X vectors for RDMA.\n",
- 					   pf->num_rdma_msix);
- 		}
-@@ -4688,7 +4685,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 
- 	/* ready to go, so clear down state bit */
- 	clear_bit(ICE_DOWN, pf->state);
--	if (ice_is_aux_ena(pf)) {
-+	if (ice_is_rdma_ena(pf)) {
- 		pf->aux_idx = ida_alloc(&ice_aux_ida, GFP_KERNEL);
- 		if (pf->aux_idx < 0) {
- 			dev_err(dev, "Failed to allocate device ID for AUX driver\n");
--- 
-2.31.1
+Thanks for the analysis Michal.
 
+--
+Mat Martineau
+Intel
