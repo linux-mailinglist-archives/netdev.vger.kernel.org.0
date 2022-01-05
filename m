@@ -2,95 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 487484856B8
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 17:36:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 054654856E5
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 17:54:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbiAEQgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 11:36:14 -0500
-Received: from carlson.workingcode.com ([50.78.21.49]:40810 "EHLO
-        carlson.workingcode.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbiAEQgN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 11:36:13 -0500
-Received: from [50.78.21.49] (carlson [50.78.21.49])
-        (authenticated bits=0)
-        by carlson.workingcode.com (8.17.0.3/8.17.0.3/SUSE Linux 0.8) with ESMTPSA id 205GZqk1030880
-        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-        Wed, 5 Jan 2022 11:35:52 -0500
-DKIM-Filter: OpenDKIM Filter v2.11.0 carlson.workingcode.com 205GZqk1030880
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=workingcode.com;
-        s=carlson; t=1641400557;
-        bh=yK4p/+uRKKYsr3yTjJQtJfTHMIdsfz2oInv5aFubXlY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=targrst+mEl1f/HF4qUCCF8ArUpeizd1jdElEVe7u95ygJJYZhwwcf7neNn/VpM2F
-         J0JxhtvFZV1lKC6Qu5Wxse2d8k6D5qbByrgASe9Jk24vfXEH8lPCFOCqdDC5K6YOjg
-         rjOeuEozuU0A3r2RiBBcCSy++DlhhOxvK+fyEijc=
-Message-ID: <f78e2051-714d-ff74-7e36-bea3b4edc682@workingcode.com>
-Date:   Wed, 5 Jan 2022 11:35:52 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH net] ppp: ensure minimum packet size in ppp_write()
-Content-Language: en-US
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S242049AbiAEQyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 11:54:43 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:53274 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242052AbiAEQyf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jan 2022 11:54:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=OGLmCVA9YeUOqhx/cnHK+DXaXavbXqNR5Epny/NqukM=; b=Umcx5XUxSmrgiMjf0njGLlNnE2
+        f+uzBKr/Gx5VB9jEnMv2D7RZ8h+l2xLMrQUlb3oux1L//DZ8u6JFO77DlL5SScBmDrvefnHkdqbyh
+        +Ei8fo9+vaKSmbh1wzL01K1U7Ho32yNl7MBqTqOGjr9qqWr6Wt6KXkurP5ojD6Fd8XBU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n59YP-000Zu8-Jc; Wed, 05 Jan 2022 17:54:25 +0100
+Date:   Wed, 5 Jan 2022 17:54:25 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joseph CHAMG <josright123@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org,
-        syzbot <syzkaller@googlegroups.com>
-References: <20220105114842.2380951-1-eric.dumazet@gmail.com>
- <20220105131929.GA17823@pc-1.home>
- <dbde2a45-a7dd-0e8a-d04c-233f69631885@workingcode.com>
- <20220105162954.GB17823@pc-1.home>
-From:   James Carlson <carlsonj@workingcode.com>
-In-Reply-To: <20220105162954.GB17823@pc-1.home>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-DCC-x.dcc-servers-Metrics: carlson 104; Body=9 Fuz1=9 Fuz2=9
+        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Leon Romanovsky <leon@kernel.org>,
+        andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v10, 2/2] net: Add dm9051 driver
+Message-ID: <YdXNQY4YrcemElBK@lunn.ch>
+References: <20220105081728.4289-1-josright123@gmail.com>
+ <20220105081728.4289-3-josright123@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220105081728.4289-3-josright123@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/5/22 11:29, Guillaume Nault wrote:
-> On Wed, Jan 05, 2022 at 10:30:09AM -0500, James Carlson wrote:
->> On 1/5/22 08:19, Guillaume Nault wrote:
->>> On Wed, Jan 05, 2022 at 03:48:42AM -0800, Eric Dumazet wrote:
->>>> From: Eric Dumazet <edumazet@google.com>
->>>>
->>>> It seems pretty clear ppp layer assumed user space
->>>> would always be kind to provide enough data
->>>> in their write() to a ppp device.
->>>>
->>>> This patch makes sure user provides at least
->>>> 2 bytes.
->>>>
->>>> It adds PPP_PROTO_LEN macro that could replace
->>>> in net-next many occurrences of hard-coded 2 value.
->>>
->>> The PPP header can be compressed to only 1 byte, but since 2 bytes is
->>> assumed in several parts of the code, rejecting such packets in
->>> ppp_xmit() is probably the best we can do.
->>
->> The only ones that can be compressed are those less than 0x0100, which
->> are (intentionally) all network layer protocols.  We should be getting
->> only control protocol messages though the user-space interface, not
->> network layer, so I'd say it's not just the best we can do, but indeed
->> the right thing to do by design.
-> 
-> Well, I know of at least one implementation that used to transmit data
-> by writing on ppp unit file descriptors. That was a hack to work around
-> some other problems. Not a beautiful one, but it worked.
-> 
+> +static int regmap_dm9051_phy_reg_write(void *context, unsigned int reg, unsigned int val)
+> +{
+> +	struct board_info *db = context;
+> +	int ret;
+> +
+> +	regmap_write(db->regmap, DM9051_EPAR, DM9051_PHY | reg);
 
-So, if you do that sort of hack, then you're constrained to send
-uncompressed protocol numbers regardless of what's negotiated. That
-seems like a tiny concession. (And receivers are required to handle
-uncompressed no matter what LCP negotiation says, per 1661 6.5.)
+regmap_write() can return an error code. You should check for it, and
+return it. The driver is full of code like this. Always check the
+return code.
 
-And I'd still maintain that the intended design is that control
-protocols are handled by the user portion, while network layer protocols
-are connected in the kernel.
+> +	regmap_write(db->regmap, DM9051_EPDRL, val & 0xff);
+> +	regmap_write(db->regmap, DM9051_EPDRH, (val >> 8) && 0xff);
+> +	regmap_write(db->regmap, DM9051_EPCR, EPCR_EPOS | EPCR_ERPRW);
+> +	ret = dm9051_map_poll(db);
+> +	regmap_write(db->regmap, DM9051_EPCR, 0x0);
+> +
+> +	if (reg == MII_BMCR && !(val & 0x0800))
 
--- 
-James Carlson         42.703N 71.076W         <carlsonj@workingcode.com>
+Use the available defines, BMCR_RESET. This then makes a lot more
+sense.
+
+> +		mdelay(1); /* need for if activate phyxcer */
+
+However, the MAC driver should not be touching the PHY. The PHY driver
+should be resetting the PHY. If the PHY driver uses
+genphy_soft_reset(), phy_poll_reset() will poll until the BMCR_RESET
+bit is cleared by the PHY indicating it is has completed reset. Or is
+the PHY broken and needs longer?
+
+> +static bool dm9051_phymap_writeable(struct device *dev, unsigned int reg)
+> +{
+> +	if (reg == MII_BMSR || reg == MII_PHYSID1 || reg == MII_PHYSID2)
+> +		return false;
+> +	return true;
+> +}
+
+Do bad things actually happen if you write to these registers?
+
+> +static u8 dm9051_map_read(struct board_info *db, u8 reg)
+> +{
+> +	struct net_device *ndev = db->ndev;
+> +	unsigned int val = 0;
+> +	int ret;
+> +
+> +	ret = regmap_read(db->regmap, reg, &val); /* read only one byte */
+> +	if (unlikely(ret))
+> +		netif_err(db, drv, ndev, "%s: error %d reading reg %02x\n",
+> +			  __func__, ret, reg);
+
+Don't discard the error, return it to the caller.
+
+> +	return val;
+> +}
+> +
+> +static void dm9051_map_write(struct board_info *db, u8 reg, u16 val)
+> +{
+> +	struct net_device *ndev = db->ndev;
+> +	int ret = regmap_write(db->regmap, reg, val);
+> +
+> +	if (unlikely(ret))
+> +		netif_err(db, drv, ndev, "%s: error %d writing reg %02x=%04x\n",
+> +			  __func__, ret, reg, val);
+
+Return the error to the caller.
+
+> +static int dm9051_dumpblk(struct board_info *db, unsigned int len)
+> +{
+> +	int ret;
+> +	u8 rxb[1];
+> +
+> +	while (len--) {
+> +		ret = hw_dm9051_spi_read(db, DM_SPI_MRCMD, rxb, 1);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +	return ret;
+> +}
+
+It would be good to have a comment why this function is needed. It
+appears to be discarding whatever it reads. Why do you need to do
+that?
+
+> +static int dm9051_direct_phyread(struct board_info *db, int reg, int *pvalue)
+> +{
+> +	u8 eph, epl;
+> +	int ret;
+> +
+> +	ret = dm9051_direct_write(db, DM9051_EPAR, DM9051_PHY | reg);
+> +	if (ret < 0)
+> +		return ret;
+> +	ret = dm9051_direct_write(db, DM9051_EPCR, EPCR_ERPRR | EPCR_EPOS);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = dm9051_direct_poll(db);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = dm9051_direct_write(db, DM9051_EPCR, 0x0);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = dm9051_direct_read(db, DM9051_EPDRH, &eph);
+> +	if (ret < 0)
+> +		return ret;
+> +	ret = dm9051_direct_read(db, DM9051_EPDRL, &epl);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	*pvalue = (eph << 8) | epl;
+> +	return ret;
+> +}
+> +
+> +static int dm9051_direct_phywrite(struct board_info *db, int reg, int value)
+> +{
+
+It is not clear why you need this. You already setup a regmap for
+access to the PHY. Why are you not using it?
+
+> +static int dm9051_mdio_read(struct mii_bus *mdiobus, int phy_id, int reg)
+> +{
+> +	struct board_info *db = mdiobus->priv;
+> +	int val, ret;
+> +
+> +	if (phy_id == DM9051_PHY_ID) {
+> +		mutex_lock(&db->addr_lock);
+> +		ret = dm9051_direct_phyread(db, reg, &val);
+> +		mutex_unlock(&db->addr_lock);
+
+At some point, the locking needs a good looking at. The MDIO layer
+provides a lock, so there will not be parallel MDIO operations. regmap
+also has a lock. So i wonder if this lock is actually required?
+
+> +static unsigned int dm9051_chipid(struct board_info *db)
+> +{
+> +	struct device *dev = &db->spidev->dev;
+> +	unsigned int wpidh, wpidl;
+> +	u16 id = 0;
+> +
+> +	regmap_read(db->regmap, DM9051_PIDH, &wpidh);
+> +	regmap_read(db->regmap, DM9051_PIDL, &wpidl);
+
+I'm guessing this is one of the first accesses made to the hardware?
+You definitely should be looking at the error codes these return.
+
+> +static int dm9051_direct_reset_code(struct board_info *db)
+> +{
+> +	int ret;
+> +
+> +	mdelay(2); /* need before NCR_RST */
+> +	ret = dm9051_direct_write(db, DM9051_NCR, NCR_RST); /* NCR reset */
+> +	if (ret < 0)
+> +		return ret;
+
+A pause before doing a reset? That is odd. What is actually happening
+before dm9051_direct_reset_code() is called which means this pause is
+required?
+
+	Andrew
