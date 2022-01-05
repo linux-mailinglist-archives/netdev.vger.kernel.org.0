@@ -2,78 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9A7F485442
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:22:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10ECD485448
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:24:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240647AbiAEOWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 09:22:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237081AbiAEOWC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 09:22:02 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8186C061761
-        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 06:22:02 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id x6so48315202iol.13
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 06:22:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=l4J9Z+m4hmgZbWtQHlC70w1zjUmiI7wjClCwm6dHAnY=;
-        b=aCtGNF0VfS1r3qm6JG4+EsYWwNf7ZX40Nujdgj+BayQNPCqU9unqoMsmp8D4ZEXNYm
-         7kC86oRTvVhTSn/u8Gct44BZc5D2162oGpoMd39cHjb5RKHo48gImHmBHrLPUXLg97rO
-         3KFwmTxzwIsg4rQtrf+x3P1RF0riHtCCRfFSc4LvFB6P8tWvupM3RiAzCPE+rOLnAE/S
-         47G3o384AgC1H+EVfNWu/TXpGIFnFcmc+tpYHgabEacXuxGf/0a6inSjnGeq9pC/guvP
-         OB+AXyGe1Je7zg2IJdUaOHaljenU0ltpTL99v11p8qEM08+U2VP1r8UqJrl0G+koq8zN
-         exmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=l4J9Z+m4hmgZbWtQHlC70w1zjUmiI7wjClCwm6dHAnY=;
-        b=PD5IGAOWCB0qCoJLUHogXZTt0Roto51gL0JbO7KGXKe08eRYgiifV3Riu+aR5v0OkP
-         TT65AsvrGQC4wGqyOHUgI3kCNOUgXaFSgo5iuWB3e9FbFOaX0q9GK8DxPg/X/k/SznCJ
-         7poBfsdwpc31GwiJEzsv0EIHUkGO7io1Q/vJbCX+gW26HcofMZbN1z+YJAbzyL/gm3NE
-         c5avNqHY0TvE7dGamAWwbM0wV88hGeufOdg519Ym45T0G0eswxaBUupKc/RRtBxk049Z
-         IDXKYGACXjX1N7SXo4MeGbaA6LLt3SK7bQChngpb6WsmA2ZoONka3eco1HVCoUHFE6gZ
-         Xpfw==
-X-Gm-Message-State: AOAM530Lrq6/zqDlZf8VOKIILX5AwodwIA8ZvKVsUUpWH4OW13uk2iXx
-        dFgMo/FCkcQc5nv/fW2gC6d1g8FCuEXhij7N/t4=
-X-Google-Smtp-Source: ABdhPJw5kLy92R8NjASXuvhE2CzBhm4RGnVROPBLde180N/MQswk3ftkPr5v59rCqy704+CvNQ5vensDXABXN0YydGs=
-X-Received: by 2002:a02:920a:: with SMTP id x10mr22944298jag.12.1641392521957;
- Wed, 05 Jan 2022 06:22:01 -0800 (PST)
+        id S240649AbiAEOYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 09:24:23 -0500
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:38698
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237053AbiAEOYW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 09:24:22 -0500
+Received: from localhost.localdomain (unknown [222.129.35.96])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 7531F3F128;
+        Wed,  5 Jan 2022 14:24:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1641392657;
+        bh=dJNzo6SiEX3Gi2Px27mlhp0zXbiR0HYOw7Oc0LeGGYk=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=BS+cqfzePlG5R2ww5lIIQJG+/eqlqmS2rkXQduVdDXRSObQBbMm9EdFWmec764uN9
+         1xg2bpmr+SanyRiZkeqkWnTQak6n29A9miGhJtvGMoj87R+5v361H/O68S+QF5rWvp
+         DEfOmpaChmKC/fnKMn1zNQTlz6slEhlPSGNo0/RpKTnwPHg6hyXAl1aSwFkXKWrhs0
+         bQCt5akOENIh1HlxwSRqeCaEioYeWBxv1H9GzyjAfGe9hAyRtY3BfDLoMJgANKBbGJ
+         EZfJU+2ii4Cv1m9djlXa7FB1OjwcoluS7ILF75iWHlVs2Ju4Qkkj4bL1f7OP5KYXh+
+         Zxxwr8yyxaeCQ==
+From:   Aaron Ma <aaron.ma@canonical.com>
+To:     aaron.ma@canonical.com, kuba@kernel.org,
+        henning.schild@siemens.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
+Subject: [PATCH 1/3] net: usb: r8152: Check used MAC passthrough address
+Date:   Wed,  5 Jan 2022 22:23:49 +0800
+Message-Id: <20220105142351.8026-1-aaron.ma@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Sender: asaswillson@gmail.com
-Received: by 2002:a05:6622:e03:0:0:0:0 with HTTP; Wed, 5 Jan 2022 06:22:01
- -0800 (PST)
-From:   "Mrs. Orgil Baatar" <mrs.orgilbaatar21@gmail.com>
-Date:   Wed, 5 Jan 2022 06:22:01 -0800
-X-Google-Sender-Auth: odEXrgy5bjvUB2jNDP2eAncfWg0
-Message-ID: <CAB+YWqcr4j5Aj_S_cMiHB1W3skjbTVaB_Ov3e_jYPu9BqBtwzw@mail.gmail.com>
-Subject: Your long awaited part payment of $2.5.000.00Usd
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attention: Beneficiary, Your long awaited part payment of
-$2.5.000.00Usd (TWO MILLION FIVE Hundred Thousand United State
-Dollars) is ready for immediate release to you, and it was
-electronically credited into an ATM Visa Card for easy delivery.
+When plugin multiple r8152 ethernet dongles to Lenovo Docks
+or USB hub, MAC passthrough address from BIOS should be
+checked if it had been used to avoid using on other dongles.
 
-Your new Payment Reference No.- 6363836,
-Pin Code No: 1787
-Your Certificate of Merit Payment No: 05872,
+Skip builtin PCI MAC address which is share MAC address with
+passthrough MAC.
+Check thunderbolt based ethernet.
 
-Your Names: |
-Address: |
+Currently builtin r8152 on Dock still can't be identified.
+First detected r8152 will use the MAC passthrough address.
 
-Person to Contact:MR KELLY HALL the Director of the International
-Audit unit ATM Payment Center,
+Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+---
+ drivers/net/usb/r8152.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-Email: uba-bf@e-ubabf.com
-TELEPHONE: +226 64865611 You can whatsApp the bank
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index f9877a3e83ac..91f4b2761f8e 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -25,6 +25,7 @@
+ #include <linux/atomic.h>
+ #include <linux/acpi.h>
+ #include <linux/firmware.h>
++#include <linux/pci.h>
+ #include <crypto/hash.h>
+ #include <linux/usb/r8152.h>
+ 
+@@ -1605,6 +1606,7 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
+ 	char *mac_obj_name;
+ 	acpi_object_type mac_obj_type;
+ 	int mac_strlen;
++	struct net_device *ndev;
+ 
+ 	if (tp->lenovo_macpassthru) {
+ 		mac_obj_name = "\\MACA";
+@@ -1662,6 +1664,18 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
+ 		ret = -EINVAL;
+ 		goto amacout;
+ 	}
++	rcu_read_lock();
++	for_each_netdev_rcu(&init_net, ndev) {
++		if (ndev->dev.parent && dev_is_pci(ndev->dev.parent) &&
++				!pci_is_thunderbolt_attached(to_pci_dev(ndev->dev.parent)))
++			continue;
++		if (strncmp(buf, ndev->dev_addr, 6) == 0) {
++			rcu_read_unlock();
++			goto amacout;
++		}
++	}
++	rcu_read_unlock();
++
+ 	memcpy(sa->sa_data, buf, 6);
+ 	netif_info(tp, probe, tp->netdev,
+ 		   "Using pass-thru MAC addr %pM\n", sa->sa_data);
+-- 
+2.30.2
 
-Regards.
-Mrs ORGIL BAATAR
