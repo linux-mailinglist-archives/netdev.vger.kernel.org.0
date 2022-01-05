@@ -2,173 +2,430 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9AE3485505
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:50:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87909485513
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:52:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241077AbiAEOtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 09:49:04 -0500
-Received: from mail-eopbgr10064.outbound.protection.outlook.com ([40.107.1.64]:56900
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241071AbiAEOtD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jan 2022 09:49:03 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UdTBdk+HUFvW05mpl64D64R0Uxp7rSpjknvsIiyrSFwAPBJfmXCab2PDpO9EHYwXHDEVo31nloVmjibEKGpfZePj8s7f388X7OwjU+8uVOfg8QrZ+EbyAQJi8AuPceUpw48GfHqbcQKSiG/r5tBfJHJLlm9rjL5YmF5n92iwAVuMQvhtLO74X4esDhEIhQWnqzR3t/25hqrpByerpe+xsCfz4/FfD37fKUbcNVIfmoRHiEX5tbSPnSmK45gz3hPt8Mkpqdqm6fHajd0qNDqQITUMcb+snxiGGXnYHSMKkOlBneWZcNql6HNhBETv5GjQ/X3TgGc+eppXE4IARu/dVA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NDBOKM0VDV+dWwwPijlLW5eiXsPc22iB7Z+CJo3YO0g=;
- b=k1BOKu1fXwTVWqYKACM0/01rsMS/7LhCu4Up73PGyIO2KnwUOujrTdPjjKg+OsvYaZe+qzVWafVdYX+XYuXUnDfF4vGdh1K8CWgP1DkqVBYRGxA0phAL0uAcXIaInJmCOnKcH+o7WQR3iJARF9TZ3HirzHV8tRxAkrbcyBSv1u0QOzBwGhFJ6hxENtRhKEPzPg+pzl8dltDWACOHbwSslettKac9HJXWrz5vF6UV+YfnWAaM9Z+q5/YDk7cOHdsNB8Wf5tlfoO11AJoinWYNAqFRWBC/Eq4PP+kMadikUqjED4k6P8VlbabgxXe4M2U1VfK+L5iQMfe1q69of4uNbA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 194.138.21.72) smtp.rcpttodomain=canonical.com smtp.mailfrom=siemens.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NDBOKM0VDV+dWwwPijlLW5eiXsPc22iB7Z+CJo3YO0g=;
- b=bsu85nd6wfX8IWGTgFJ0q7F0KGfim0l1THsXRN0lsJDETAabxSRBd6ral0iT82SRJ64vIiUyiKfN2862HN+DdrYBjzlHgIApHGPHzuYQP+7l2VFRLqc+nXuR2+07FNs8JmB0rWfhmOO8IqddCcPyoQE6xGnFzzQmAi/qz1HzH4lp0WlUHKSTRzuyUZcGP98XkKirIakl/ABYAFeMtiwBFmgCVkAHpwt1nDEJRxfaO5FnSM6PpbbKNY+X0+5YA7aO902ngEnBawobHuMmrm2knACajh6vCsqb0EcCAXRI6sqGdxBgKQr3u9ShNb40cmQ8Ej6xbCEl54wjPgkCYb3t6g==
-Received: from SV0P279CA0013.NORP279.PROD.OUTLOOK.COM (2603:10a6:f10:11::18)
- by AM6PR10MB3415.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:ed::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.15; Wed, 5 Jan
- 2022 14:49:00 +0000
-Received: from HE1EUR01FT043.eop-EUR01.prod.protection.outlook.com
- (2603:10a6:f10:11:cafe::44) by SV0P279CA0013.outlook.office365.com
- (2603:10a6:f10:11::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7 via Frontend
- Transport; Wed, 5 Jan 2022 14:49:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.72)
- smtp.mailfrom=siemens.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=siemens.com;
-Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
- 194.138.21.72 as permitted sender) receiver=protection.outlook.com;
- client-ip=194.138.21.72; helo=hybrid.siemens.com;
-Received: from hybrid.siemens.com (194.138.21.72) by
- HE1EUR01FT043.mail.protection.outlook.com (10.152.0.207) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4867.9 via Frontend Transport; Wed, 5 Jan 2022 14:49:00 +0000
-Received: from DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) by
- DEMCHDC9SMA.ad011.siemens.net (194.138.21.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 5 Jan 2022 15:48:59 +0100
-Received: from md1za8fc.ad001.siemens.net (139.25.68.217) by
- DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 5 Jan 2022 15:48:59 +0100
-Date:   Wed, 5 Jan 2022 15:48:57 +0100
-From:   Henning Schild <henning.schild@siemens.com>
-To:     Aaron Ma <aaron.ma@canonical.com>
-CC:     <kuba@kernel.org>, <linux-usb@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <hayeswang@realtek.com>, <tiwai@suse.de>
-Subject: Re: [PATCH 1/3] net: usb: r8152: Check used MAC passthrough address
-Message-ID: <20220105154857.3ee15748@md1za8fc.ad001.siemens.net>
-In-Reply-To: <20220105142351.8026-1-aaron.ma@canonical.com>
-References: <20220105142351.8026-1-aaron.ma@canonical.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S241124AbiAEOvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 09:51:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241098AbiAEOvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 09:51:22 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14581C061761;
+        Wed,  5 Jan 2022 06:51:22 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id h7so45076694lfu.4;
+        Wed, 05 Jan 2022 06:51:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vY0/qJLogBJH3Ul/Esr0RJ3V4ov1CvvFsCX6ygtZfpg=;
+        b=RJnMwzmpgONLXkYczYDa6ANm4jt6I43BMc8i7htDJ/mwFdZXNZhwIrY2BpLfu3dp2z
+         Meov1UZdQ25GTM49GB7Jix4Ooz/c9OtJMN3/58CQVHPZo/bXzE+RbG/sTTMkuH1cE36h
+         02wNcfaTd9927RmAST58M7QzjgQo9X+EPV9KvS5r24sPxtzaB8lKP5kdTzjfXNDNfiOX
+         sNeq/01ysD/4TOvywDtXfE8y/uiWbgUCzFrzdOQync/xzvOLk7YI1iWZkLXuvoAMh8A8
+         CrK3pBP0knTkK8vnb4X4tT6UkhHD4Sg43fUi13i3jPn6/R9qQFHhjJNQW0khC7O5gXuq
+         8I8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vY0/qJLogBJH3Ul/Esr0RJ3V4ov1CvvFsCX6ygtZfpg=;
+        b=TquEZHH8X1/SjzX5LUnItGiYWGR8VgzvZ7BtMEzyPCsENT/x8ps2EsTS6b8HuNhpIz
+         kWEa5xXgaSDtGwvEvTM1k+QmBVRolVCCAgETHu7Rgn6NsFEp48dSAmFo3TbLF0auivaz
+         bbLporhx2v7N33R4PziFahwKKrHt2UezX/TvNYnaKotuEv53TepVJNM7PGv4zsbhIoZe
+         MrOru92Xyitr+uPV9WsBgoiSocf7ivZH0ne5qrJjoNffFQxGBlEy/kIe6RdknMSdEAZw
+         IBbuOy2gZN9GSSq7rzk/uruP5R+Oqyl/jegZkI89T7O0slgNtKv4q2m9gbOzAz1FQTl0
+         AaiA==
+X-Gm-Message-State: AOAM531n9JAjCVlwN/RpBWBzyQCe4bpiaTLhKamz2qt/rvJrdUfU27gG
+        xdcEHTjnd93viMZ3DdfjKEo=
+X-Google-Smtp-Source: ABdhPJzQczwI0SGN+I0ePDs9qwN40Mb3xiO0hEc2mHUumXyNzTmISQLRDt+gImvpu/aOEK4ic5Kv9g==
+X-Received: by 2002:a19:6912:: with SMTP id e18mr48212282lfc.25.1641394280239;
+        Wed, 05 Jan 2022 06:51:20 -0800 (PST)
+Received: from localhost.localdomain ([94.103.235.38])
+        by smtp.gmail.com with ESMTPSA id t24sm4206700lfg.168.2022.01.05.06.51.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Jan 2022 06:51:19 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     stefan@datenfreihafen.org, alex.aring@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Pavel Skripkin <paskripkin@gmail.com>
+Subject: [PATCH -next] ieee802154: atusb: move to new USB API
+Date:   Wed,  5 Jan 2022 17:49:47 +0300
+Message-Id: <20220105144947.12540-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [139.25.68.217]
-X-ClientProxiedBy: DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) To
- DEMCHDC8A0A.ad011.siemens.net (139.25.226.106)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3d6db1ce-16e9-403d-dbbb-08d9d05a828a
-X-MS-TrafficTypeDiagnostic: AM6PR10MB3415:EE_
-X-Microsoft-Antispam-PRVS: <AM6PR10MB3415E264846A98E44C057D62854B9@AM6PR10MB3415.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ji4G4XWTf0wgAI9hK6txvFcTBVKLAcHuzkjrlul9cRzuIILZyjgH3nYh2DrOL6wH9Ti6ThMt9pUsRPXkW+xU60o/e/bWbnei7k3Iv+w/4xBaC+j+mrVsuEMjcrufrinYBeitLQXLyCUuUiTIIlQ5Df+OX9Wz0uWW74IskXKgIynMJbxiU7bDTQtdCt0cL4QRUGvNiGIdsTer7itxbWJRm9MhrbQ1MeF+8NbYlJyGsNCTB8l9p8ZWzKvGhoyhmaWNk1+V6hPvlLUJTCx6Pz5RKDxh4/kOgTU7gqW51qWbrpcCtRQmhqXxSa3AZ60+FCItWyl3EEav5/t5pTKTj1XEKTM7avvNzYj5C8IRnuDyLaXRTLzWo4sYhV7s6YsPP2NE9TALhdBN40t/89q1HwQrD0N21myRdLPzAPyJXhqspt5NaFuwnFWevlusiodzFVlqJfzVHQGLE+6aryp0PaGH7qlN75CVzVtNgrXwA+ns1Iczi88FfwMIbajNSdyqdiBj5E0sSMgN7b5A4qdY8pvHoUIfbI5YAXyTs5sv6hPBGBjt7BKHReDU96cpSH+6neI3yZAskgM4sFXvNVl53rqYF1BA6q81BtVAznCCscmul7rh9BOs/0j2b6a3U0BB3MVQltcfKVedbDNca/m9DAz0wAyw++OA/lhFFkPTN2CT0xSQHledvBeb5Nvg5R8RDK+bnG5X6LRQcsyI6OXK1giipOtC87BSTSSwNBoPMSrVBDPHKUVct0A1O5uOqw3CPRyr8FFn1GM4SFd5UGkjwzbwdj7pWLiLFxBrf7m5Pl1K53s=
-X-Forefront-Antispam-Report: CIP:194.138.21.72;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(4636009)(40470700002)(36840700001)(46966006)(83380400001)(26005)(316002)(16526019)(8676002)(9686003)(70206006)(36860700001)(186003)(70586007)(47076005)(7696005)(956004)(356005)(2906002)(6916009)(5660300002)(86362001)(8936002)(82310400004)(54906003)(81166007)(336012)(4326008)(1076003)(40460700001)(55016003)(44832011)(82960400001)(508600001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 14:49:00.4470
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d6db1ce-16e9-403d-dbbb-08d9d05a828a
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.72];Helo=[hybrid.siemens.com]
-X-MS-Exchange-CrossTenant-AuthSource: HE1EUR01FT043.eop-EUR01.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR10MB3415
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No cover letter?
+Old USB API is prone to uninit value bugs if error handling is not
+correct. Let's move atusb to use new USB API to
 
-I think p1 and 2 should be squashed.
+	1) Make code more simple, since new API does not require memory
+	   to be allocates via kmalloc()
 
-Am Wed,  5 Jan 2022 22:23:49 +0800
-schrieb Aaron Ma <aaron.ma@canonical.com>:
+	2) Defend driver from usb-related uninit value bugs.
 
-> When plugin multiple r8152 ethernet dongles to Lenovo Docks
-> or USB hub, MAC passthrough address from BIOS should be
-> checked if it had been used to avoid using on other dongles.
-> 
-> Skip builtin PCI MAC address which is share MAC address with
-> passthrough MAC.
-> Check thunderbolt based ethernet.
-> 
-> Currently builtin r8152 on Dock still can't be identified.
-> First detected r8152 will use the MAC passthrough address.
-> 
-> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
-> ---
->  drivers/net/usb/r8152.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
-> 
-> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-> index f9877a3e83ac..91f4b2761f8e 100644
-> --- a/drivers/net/usb/r8152.c
-> +++ b/drivers/net/usb/r8152.c
-> @@ -25,6 +25,7 @@
->  #include <linux/atomic.h>
->  #include <linux/acpi.h>
->  #include <linux/firmware.h>
-> +#include <linux/pci.h>
->  #include <crypto/hash.h>
->  #include <linux/usb/r8152.h>
->  
-> @@ -1605,6 +1606,7 @@ static int vendor_mac_passthru_addr_read(struct
-> r8152 *tp, struct sockaddr *sa) char *mac_obj_name;
->  	acpi_object_type mac_obj_type;
->  	int mac_strlen;
-> +	struct net_device *ndev;
+	3) Make code more modern and simple
 
-reverse xmas tree
+This patch removes atusb usb wrappers as Greg suggested [0], this will make
+code more obvious and easier to understand over time, and replaces old
+API calls with new ones.
 
->  
->  	if (tp->lenovo_macpassthru) {
->  		mac_obj_name = "\\MACA";
-> @@ -1662,6 +1664,18 @@ static int
-> vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
-> ret = -EINVAL; goto amacout;
->  	}
-> +	rcu_read_lock();
-> +	for_each_netdev_rcu(&init_net, ndev) {
-> +		if (ndev->dev.parent && dev_is_pci(ndev->dev.parent)
-> &&
-> +
-> !pci_is_thunderbolt_attached(to_pci_dev(ndev->dev.parent)))
-> +			continue;
-> +		if (strncmp(buf, ndev->dev_addr, 6) == 0) {
-> +			rcu_read_unlock();
+Also this patch adds and updates usb related error handling to prevent
+possible uninit value bugs in future
 
-ret = -EBUSY; or anything but 0, otherwise you get a random MAC from a
-calling stack.
+Link: https://lore.kernel.org/all/YdL0GPxy4TdGDzOO@kroah.com/ [0]
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
-Henning
+Only build tested.
 
-> +			goto amacout;
-> +		}
-> +	}
-> +	rcu_read_unlock();
-> +
->  	memcpy(sa->sa_data, buf, 6);
->  	netif_info(tp, probe, tp->netdev,
->  		   "Using pass-thru MAC addr %pM\n", sa->sa_data);
+---
+ drivers/net/ieee802154/atusb.c | 182 ++++++++++++---------------------
+ 1 file changed, 65 insertions(+), 117 deletions(-)
+
+diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
+index 2f5e7b31032a..1ba057bfec45 100644
+--- a/drivers/net/ieee802154/atusb.c
++++ b/drivers/net/ieee802154/atusb.c
+@@ -74,81 +74,6 @@ struct atusb_chip_data {
+ 	int (*set_txpower)(struct ieee802154_hw*, s32);
+ };
+ 
+-/* ----- USB commands without data ----------------------------------------- */
+-
+-/* To reduce the number of error checks in the code, we record the first error
+- * in atusb->err and reject all subsequent requests until the error is cleared.
+- */
+-
+-static int atusb_control_msg(struct atusb *atusb, unsigned int pipe,
+-			     __u8 request, __u8 requesttype,
+-			     __u16 value, __u16 index,
+-			     void *data, __u16 size, int timeout)
+-{
+-	struct usb_device *usb_dev = atusb->usb_dev;
+-	int ret;
+-
+-	if (atusb->err)
+-		return atusb->err;
+-
+-	ret = usb_control_msg(usb_dev, pipe, request, requesttype,
+-			      value, index, data, size, timeout);
+-	if (ret < size) {
+-		ret = ret < 0 ? ret : -ENODATA;
+-
+-		atusb->err = ret;
+-		dev_err(&usb_dev->dev,
+-			"%s: req 0x%02x val 0x%x idx 0x%x, error %d\n",
+-			__func__, request, value, index, ret);
+-	}
+-	return ret;
+-}
+-
+-static int atusb_command(struct atusb *atusb, u8 cmd, u8 arg)
+-{
+-	struct usb_device *usb_dev = atusb->usb_dev;
+-
+-	dev_dbg(&usb_dev->dev, "%s: cmd = 0x%x\n", __func__, cmd);
+-	return atusb_control_msg(atusb, usb_sndctrlpipe(usb_dev, 0),
+-				 cmd, ATUSB_REQ_TO_DEV, arg, 0, NULL, 0, 1000);
+-}
+-
+-static int atusb_write_reg(struct atusb *atusb, u8 reg, u8 value)
+-{
+-	struct usb_device *usb_dev = atusb->usb_dev;
+-
+-	dev_dbg(&usb_dev->dev, "%s: 0x%02x <- 0x%02x\n", __func__, reg, value);
+-	return atusb_control_msg(atusb, usb_sndctrlpipe(usb_dev, 0),
+-				 ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
+-				 value, reg, NULL, 0, 1000);
+-}
+-
+-static int atusb_read_reg(struct atusb *atusb, u8 reg)
+-{
+-	struct usb_device *usb_dev = atusb->usb_dev;
+-	int ret;
+-	u8 *buffer;
+-	u8 value;
+-
+-	buffer = kmalloc(1, GFP_KERNEL);
+-	if (!buffer)
+-		return -ENOMEM;
+-
+-	dev_dbg(&usb_dev->dev, "%s: reg = 0x%x\n", __func__, reg);
+-	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
+-				ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
+-				0, reg, buffer, 1, 1000);
+-
+-	if (ret >= 0) {
+-		value = buffer[0];
+-		kfree(buffer);
+-		return value;
+-	} else {
+-		kfree(buffer);
+-		return ret;
+-	}
+-}
+-
+ static int atusb_write_subreg(struct atusb *atusb, u8 reg, u8 mask,
+ 			      u8 shift, u8 value)
+ {
+@@ -158,7 +83,10 @@ static int atusb_write_subreg(struct atusb *atusb, u8 reg, u8 mask,
+ 
+ 	dev_dbg(&usb_dev->dev, "%s: 0x%02x <- 0x%02x\n", __func__, reg, value);
+ 
+-	orig = atusb_read_reg(atusb, reg);
++	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
++				   0, reg, &orig, 1, 1000, GFP_KERNEL);
++	if (ret < 0)
++		return ret;
+ 
+ 	/* Write the value only into that part of the register which is allowed
+ 	 * by the mask. All other bits stay as before.
+@@ -167,7 +95,8 @@ static int atusb_write_subreg(struct atusb *atusb, u8 reg, u8 mask,
+ 	tmp |= (value << shift) & mask;
+ 
+ 	if (tmp != orig)
+-		ret = atusb_write_reg(atusb, reg, tmp);
++		ret = usb_control_msg_send(usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
++					   tmp, reg, NULL, 0, 1000, GFP_KERNEL);
+ 
+ 	return ret;
+ }
+@@ -176,9 +105,13 @@ static int atusb_read_subreg(struct atusb *lp,
+ 			     unsigned int addr, unsigned int mask,
+ 			     unsigned int shift)
+ {
+-	int rc;
++	int rc, ret;
++
++	ret = usb_control_msg_recv(lp->usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
++				   0, addr, &rc, 1, 1000, GFP_KERNEL);
++	if (ret < 0)
++		return ret;
+ 
+-	rc = atusb_read_reg(lp, addr);
+ 	rc = (rc & mask) >> shift;
+ 
+ 	return rc;
+@@ -419,16 +352,22 @@ static int atusb_set_hw_addr_filt(struct ieee802154_hw *hw,
+ 		u16 addr = le16_to_cpu(filt->short_addr);
+ 
+ 		dev_vdbg(dev, "%s called for saddr\n", __func__);
+-		atusb_write_reg(atusb, RG_SHORT_ADDR_0, addr);
+-		atusb_write_reg(atusb, RG_SHORT_ADDR_1, addr >> 8);
++		usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
++				     addr, RG_SHORT_ADDR_0, NULL, 0, 1000, GFP_KERNEL);
++
++		usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
++				     addr >> 8, RG_SHORT_ADDR_1, NULL, 0, 1000, GFP_KERNEL);
+ 	}
+ 
+ 	if (changed & IEEE802154_AFILT_PANID_CHANGED) {
+ 		u16 pan = le16_to_cpu(filt->pan_id);
+ 
+ 		dev_vdbg(dev, "%s called for pan id\n", __func__);
+-		atusb_write_reg(atusb, RG_PAN_ID_0, pan);
+-		atusb_write_reg(atusb, RG_PAN_ID_1, pan >> 8);
++		usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
++				     pan, RG_PAN_ID_0, NULL, 0, 1000, GFP_KERNEL);
++
++		usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
++				     pan >> 8, RG_PAN_ID_1, NULL, 0, 1000, GFP_KERNEL);
+ 	}
+ 
+ 	if (changed & IEEE802154_AFILT_IEEEADDR_CHANGED) {
+@@ -437,7 +376,9 @@ static int atusb_set_hw_addr_filt(struct ieee802154_hw *hw,
+ 		memcpy(addr, &filt->ieee_addr, IEEE802154_EXTENDED_ADDR_LEN);
+ 		dev_vdbg(dev, "%s called for IEEE addr\n", __func__);
+ 		for (i = 0; i < 8; i++)
+-			atusb_write_reg(atusb, RG_IEEE_ADDR_0 + i, addr[i]);
++			usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
++					     addr[i], RG_IEEE_ADDR_0 + i, NULL, 0,
++					     1000, GFP_KERNEL);
+ 	}
+ 
+ 	if (changed & IEEE802154_AFILT_PANC_CHANGED) {
+@@ -459,7 +400,8 @@ static int atusb_start(struct ieee802154_hw *hw)
+ 
+ 	dev_dbg(&usb_dev->dev, "%s\n", __func__);
+ 	schedule_delayed_work(&atusb->work, 0);
+-	atusb_command(atusb, ATUSB_RX_MODE, 1);
++	usb_control_msg_send(atusb->usb_dev, 0, ATUSB_RX_MODE, ATUSB_REQ_TO_DEV, 1, 0,
++			     NULL, 0, 1000, GFP_KERNEL);
+ 	ret = atusb_get_and_clear_error(atusb);
+ 	if (ret < 0)
+ 		usb_kill_anchored_urbs(&atusb->idle_urbs);
+@@ -473,7 +415,8 @@ static void atusb_stop(struct ieee802154_hw *hw)
+ 
+ 	dev_dbg(&usb_dev->dev, "%s\n", __func__);
+ 	usb_kill_anchored_urbs(&atusb->idle_urbs);
+-	atusb_command(atusb, ATUSB_RX_MODE, 0);
++	usb_control_msg_send(atusb->usb_dev, 0, ATUSB_RX_MODE, ATUSB_REQ_TO_DEV, 0, 0,
++			     NULL, 0, 1000, GFP_KERNEL);
+ 	atusb_get_and_clear_error(atusb);
+ }
+ 
+@@ -580,9 +523,11 @@ atusb_set_cca_mode(struct ieee802154_hw *hw, const struct wpan_phy_cca *cca)
+ 
+ static int hulusb_set_cca_ed_level(struct atusb *lp, int rssi_base_val)
+ {
+-	unsigned int cca_ed_thres;
++	int cca_ed_thres;
+ 
+ 	cca_ed_thres = atusb_read_subreg(lp, SR_CCA_ED_THRES);
++	if (cca_ed_thres < 0)
++		return cca_ed_thres;
+ 
+ 	switch (rssi_base_val) {
+ 	case -98:
+@@ -799,18 +744,13 @@ static int atusb_get_and_show_revision(struct atusb *atusb)
+ {
+ 	struct usb_device *usb_dev = atusb->usb_dev;
+ 	char *hw_name;
+-	unsigned char *buffer;
++	unsigned char buffer[3];
+ 	int ret;
+ 
+-	buffer = kmalloc(3, GFP_KERNEL);
+-	if (!buffer)
+-		return -ENOMEM;
+-
+ 	/* Get a couple of the ATMega Firmware values */
+-	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
+-				ATUSB_ID, ATUSB_REQ_FROM_DEV, 0, 0,
+-				buffer, 3, 1000);
+-	if (ret >= 0) {
++	ret = usb_control_msg_recv(atusb->usb_dev, 0, ATUSB_ID, ATUSB_REQ_FROM_DEV, 0, 0,
++				   buffer, 3, 1000, GFP_KERNEL);
++	if (!ret) {
+ 		atusb->fw_ver_maj = buffer[0];
+ 		atusb->fw_ver_min = buffer[1];
+ 		atusb->fw_hw_type = buffer[2];
+@@ -849,7 +789,6 @@ static int atusb_get_and_show_revision(struct atusb *atusb)
+ 		dev_info(&usb_dev->dev, "Please update to version 0.2 or newer");
+ 	}
+ 
+-	kfree(buffer);
+ 	return ret;
+ }
+ 
+@@ -863,7 +802,6 @@ static int atusb_get_and_show_build(struct atusb *atusb)
+ 	if (!build)
+ 		return -ENOMEM;
+ 
+-	/* We cannot call atusb_control_msg() here, since this request may read various length data */
+ 	ret = usb_control_msg(atusb->usb_dev, usb_rcvctrlpipe(usb_dev, 0), ATUSB_BUILD,
+ 			      ATUSB_REQ_FROM_DEV, 0, 0, build, ATUSB_BUILD_SIZE, 1000);
+ 	if (ret >= 0) {
+@@ -881,14 +819,27 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
+ 	u8 man_id_0, man_id_1, part_num, version_num;
+ 	const char *chip;
+ 	struct ieee802154_hw *hw = atusb->hw;
++	int ret;
+ 
+-	man_id_0 = atusb_read_reg(atusb, RG_MAN_ID_0);
+-	man_id_1 = atusb_read_reg(atusb, RG_MAN_ID_1);
+-	part_num = atusb_read_reg(atusb, RG_PART_NUM);
+-	version_num = atusb_read_reg(atusb, RG_VERSION_NUM);
++	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
++				   0, RG_MAN_ID_0, &man_id_0, 1, 1000, GFP_KERNEL);
++	if (ret < 0)
++		return ret;
+ 
+-	if (atusb->err)
+-		return atusb->err;
++	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
++				   0, RG_MAN_ID_1, &man_id_1, 1, 1000, GFP_KERNEL);
++	if (ret < 0)
++		return ret;
++
++	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
++				   0, RG_PART_NUM, &atusb, 1, 1000, GFP_KERNEL);
++	if (ret < 0)
++		return ret;
++
++	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
++				   0, RG_VERSION_NUM, &version_num, 1, 1000, GFP_KERNEL);
++	if (ret < 0)
++		return ret;
+ 
+ 	hw->flags = IEEE802154_HW_TX_OMIT_CKSUM | IEEE802154_HW_AFILT |
+ 		    IEEE802154_HW_PROMISCUOUS | IEEE802154_HW_CSMA_PARAMS;
+@@ -969,7 +920,7 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
+ static int atusb_set_extended_addr(struct atusb *atusb)
+ {
+ 	struct usb_device *usb_dev = atusb->usb_dev;
+-	unsigned char *buffer;
++	unsigned char buffer[IEEE802154_EXTENDED_ADDR_LEN];
+ 	__le64 extended_addr;
+ 	u64 addr;
+ 	int ret;
+@@ -982,18 +933,12 @@ static int atusb_set_extended_addr(struct atusb *atusb)
+ 		return 0;
+ 	}
+ 
+-	buffer = kmalloc(IEEE802154_EXTENDED_ADDR_LEN, GFP_KERNEL);
+-	if (!buffer)
+-		return -ENOMEM;
+-
+ 	/* Firmware is new enough so we fetch the address from EEPROM */
+-	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
+-				ATUSB_EUI64_READ, ATUSB_REQ_FROM_DEV, 0, 0,
+-				buffer, IEEE802154_EXTENDED_ADDR_LEN, 1000);
++	ret = usb_control_msg_recv(atusb->usb_dev, 0, ATUSB_EUI64_READ, ATUSB_REQ_FROM_DEV, 0, 0,
++				   buffer, IEEE802154_EXTENDED_ADDR_LEN, 1000, GFP_KERNEL);
+ 	if (ret < 0) {
+ 		dev_err(&usb_dev->dev, "failed to fetch extended address, random address set\n");
+ 		ieee802154_random_extended_addr(&atusb->hw->phy->perm_extended_addr);
+-		kfree(buffer);
+ 		return ret;
+ 	}
+ 
+@@ -1009,7 +954,6 @@ static int atusb_set_extended_addr(struct atusb *atusb)
+ 			 &addr);
+ 	}
+ 
+-	kfree(buffer);
+ 	return ret;
+ }
+ 
+@@ -1051,7 +995,8 @@ static int atusb_probe(struct usb_interface *interface,
+ 
+ 	hw->parent = &usb_dev->dev;
+ 
+-	atusb_command(atusb, ATUSB_RF_RESET, 0);
++	usb_control_msg_send(atusb->usb_dev, 0, ATUSB_RF_RESET, ATUSB_REQ_TO_DEV, 0, 0,
++			     NULL, 0, 1000, GFP_KERNEL);
+ 	atusb_get_and_conf_chip(atusb);
+ 	atusb_get_and_show_revision(atusb);
+ 	atusb_get_and_show_build(atusb);
+@@ -1076,7 +1021,9 @@ static int atusb_probe(struct usb_interface *interface,
+ 	 * explicitly. Any resets after that will send us straight to TRX_OFF,
+ 	 * making the command below redundant.
+ 	 */
+-	atusb_write_reg(atusb, RG_TRX_STATE, STATE_FORCE_TRX_OFF);
++	usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
++			     STATE_FORCE_TRX_OFF, RG_TRX_STATE, NULL, 0, 1000, GFP_KERNEL);
++
+ 	msleep(1);	/* reset => TRX_OFF, tTR13 = 37 us */
+ 
+ #if 0
+@@ -1104,7 +1051,8 @@ static int atusb_probe(struct usb_interface *interface,
+ 
+ 	atusb_write_subreg(atusb, SR_RX_SAFE_MODE, 1);
+ #endif
+-	atusb_write_reg(atusb, RG_IRQ_MASK, 0xff);
++	usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
++			     0xff, RG_IRQ_MASK, NULL, 0, 1000, GFP_KERNEL);
+ 
+ 	ret = atusb_get_and_clear_error(atusb);
+ 	if (!ret)
+-- 
+2.34.1
 
