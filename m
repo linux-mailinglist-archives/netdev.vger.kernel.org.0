@@ -2,65 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41470485B5E
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 23:11:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD6B0485B69
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 23:12:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244774AbiAEWLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 17:11:38 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:53664 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244752AbiAEWKk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jan 2022 17:10:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=sV+cVGNhfu4EhoH05ZyDTLIELwabBgpwLOZPBe9qnEY=; b=WnLSb4zo9m4IMxpCchfBOjvpvp
-        SkhT2oV/yEwW28XAShvaZSb+OpVGbTgYf4gK5rcfrFLRIpFtAeR9kUXCcPj+DKAuez39SlBf+3U2O
-        6OwSjT0i6UzJuhm5BARTOpuTckMRI1peV9A3b1cjVcQdd5MKAhRiFEDgTb2JNc34yKO4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n5EUN-000bFF-D2; Wed, 05 Jan 2022 23:10:35 +0100
-Date:   Wed, 5 Jan 2022 23:10:35 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH v2 net-next 2/7] net: dsa: merge all bools of struct
- dsa_port into a single u8
-Message-ID: <YdYXWy241wJo5wuC@lunn.ch>
-References: <20220105132141.2648876-1-vladimir.oltean@nxp.com>
- <20220105132141.2648876-3-vladimir.oltean@nxp.com>
- <d41c058c-d20f-2e9f-ea2c-0a26bdb5fea3@gmail.com>
- <20220105183934.yxidfrcwcuirm7au@skbuf>
+        id S244921AbiAEWMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 17:12:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34736 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245029AbiAEWLf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 17:11:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92E7C033271;
+        Wed,  5 Jan 2022 14:10:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 799B5617D1;
+        Wed,  5 Jan 2022 22:10:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B518C36AEB;
+        Wed,  5 Jan 2022 22:10:51 +0000 (UTC)
+Date:   Wed, 5 Jan 2022 17:10:49 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     xkernel.wang@foxmail.com
+Cc:     mingo@redhat.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH v2] tracing: check the return value of kstrdup()
+Message-ID: <20220105171049.5858901b@gandalf.local.home>
+In-Reply-To: <tencent_3C2E330722056D7891D2C83F29C802734B06@qq.com>
+References: <tencent_3C2E330722056D7891D2C83F29C802734B06@qq.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220105183934.yxidfrcwcuirm7au@skbuf>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 06:39:34PM +0000, Vladimir Oltean wrote:
-> Hi Florian,
-> 
-> On Wed, Jan 05, 2022 at 10:30:54AM -0800, Florian Fainelli wrote:
-> > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> 
-> Thanks a lot for the review.
-> 
-> I'm a bit on the fence on this patch and the other one for dsa_switch.
-> The thing is that bit fields are not atomic in C89, so if we update any
-> of the flags inside dp or ds concurrently (like dp->vlan_filtering),
-> we're in trouble. Right now this isn't a problem, because most of the
-> flags are set either during probe, or during ds->ops->setup
+Masami, can you ack this ?
 
-I've no idea if it ever got merged, but:
+-- Steve
 
-https://lwn.net/Articles/724319/
 
-	Andrew
+On Tue, 14 Dec 2021 09:28:02 +0800
+xkernel.wang@foxmail.com wrote:
+
+> From: Xiaoke Wang <xkernel.wang@foxmail.com>
+> 
+> kstrdup() returns NULL when some internal memory errors happen, it is
+> better to check the return value of it so to catch the memory error in
+> time.
+> 
+> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+> ---
+> Changelogs:
+> Compare with the last email, this one is using my full name.
+> And I am sorry that I did not notice the bugs in trace_boot.c had been
+> already patched. So I removed the content about trace_boot.c.
+> ---
+>  kernel/trace/trace_uprobe.c | 5 +++++
+>  1 files changed, 5 insertions(+)
+> 
+> diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
+> index 225ce56..173ff0f 100644
+> --- a/kernel/trace/trace_uprobe.c
+> +++ b/kernel/trace/trace_uprobe.c
+> @@ -1618,6 +1618,11 @@ create_local_trace_uprobe(char *name, unsigned long offs,
+>  	tu->path = path;
+>  	tu->ref_ctr_offset = ref_ctr_offset;
+>  	tu->filename = kstrdup(name, GFP_KERNEL);
+> +	if (!tu->filename) {
+> +		ret = -ENOMEM;
+> +		goto error;
+> +	}
+> +
+>  	init_trace_event_call(tu);
+>  
+>  	ptype = is_ret_probe(tu) ? PROBE_PRINT_RETURN : PROBE_PRINT_NORMAL;
+
