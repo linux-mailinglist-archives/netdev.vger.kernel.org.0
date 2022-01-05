@@ -2,109 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 808214855CA
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 16:24:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 254884855CE
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 16:25:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241438AbiAEPYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 10:24:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241491AbiAEPYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 10:24:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10004C061245;
-        Wed,  5 Jan 2022 07:24:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S241449AbiAEPZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 10:25:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52317 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241448AbiAEPZO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 10:25:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641396312;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=COh4UeC2bqXHmXhCc7ECa97usAk8YBt4hAgkTrp6kr4=;
+        b=NM9vtoHrrbTEDBduFPVPtAQYYjZ2wHpQ4wUF0/5W1je6yVoj1xnFdIPD4kmUJq2t8rheVK
+        XmKMdPKaSQJVUlgVIgwfVAjBGkypCTlXYxzJ3Ro0auho30de2s9zm2i+JUcordL+q86gzw
+        pc2qdOVyv7bbuVDHZe8wHCuNOQpyxhM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-20-xic4Smq2Mm6ArKOaV7kzoQ-1; Wed, 05 Jan 2022 10:25:09 -0500
+X-MC-Unique: xic4Smq2Mm6ArKOaV7kzoQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C145EB81C24;
-        Wed,  5 Jan 2022 15:24:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12DBAC36AE0;
-        Wed,  5 Jan 2022 15:24:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641396281;
-        bh=uvTf2jfh+MIhZI5PPr+ElM4TeMYS68HmJo8Y431Rbb8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XLLsY6/rbs/SuZzN5aITI0C9UZVuzQzHpif9Moqjc5iDwu95kw4Hm73Dxa0xDHa6S
-         6KuYbA9QF6sCcoolwsAMdFB+RyRMc2TsK7jtJlTkNGpivyufe1kL05FUd9zkL+aVTk
-         PadlCRQm1Lmn0xuvTzkux81vSoTMK86po9OpncyY+lci+XYxQn2x/dcyFtACygXDUu
-         LwBWA4k536qgB8sTP3kpE4zG3qwo/0jPOPcTS0Gxsihzhk3Cw06qrqMXlrNw68whhh
-         Dd9bjgwF9cz5vuDgMs/a8YW357Wi4qvt9BDbrfyzJZeCi70hf0fVgg741RpQI9/ICW
-         Bna8M10ILkbMg==
-Date:   Thu, 6 Jan 2022 00:24:35 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [RFC 00/13] kprobe/bpf: Add support to attach multiple kprobes
-Message-Id: <20220106002435.d73e4010c93462fbee9ef074@kernel.org>
-In-Reply-To: <20220104080943.113249-1-jolsa@kernel.org>
-References: <20220104080943.113249-1-jolsa@kernel.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7DF14192CC40;
+        Wed,  5 Jan 2022 15:25:08 +0000 (UTC)
+Received: from queeg.tpb.lab.eng.brq.redhat.com (unknown [10.43.135.229])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 831D27A3FE;
+        Wed,  5 Jan 2022 15:25:07 +0000 (UTC)
+From:   Miroslav Lichvar <mlichvar@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next] testptp: set pin function before other requests
+Date:   Wed,  5 Jan 2022 16:25:06 +0100
+Message-Id: <20220105152506.3256026-1-mlichvar@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  4 Jan 2022 09:09:30 +0100
-Jiri Olsa <jolsa@redhat.com> wrote:
+When the -L option of the testptp utility is specified with other
+options (e.g. -p to enable PPS output), the user probably wants to
+apply it to the pin configured by the -L option.
 
-> hi,
-> adding support to attach multiple kprobes within single syscall
-> and speed up attachment of many kprobes.
-> 
-> The previous attempt [1] wasn't fast enough, so coming with new
-> approach that adds new kprobe interface.
+Reorder the code to set the pin function before other function requests
+to avoid confusing users.
 
-Yes, since register_kprobes() just registers multiple kprobes on
-array. This is designed for dozens of kprobes.
+Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
+Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: Vladimir Oltean <olteanv@gmail.com>
+---
+ tools/testing/selftests/ptp/testptp.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-> The attachment speed of of this approach (tested in bpftrace)
-> is now comparable to ftrace tracer attachment speed.. fast ;-)
-
-Yes, because that if ftrace, not kprobes.
-
-> The limit of this approach is forced by using ftrace as attach
-> layer, so it allows only kprobes on function's entry (plus
-> return probes).
-
-Note that you also need to multiply the number of instances.
-
-> 
-> This patchset contains:
->   - kprobes support to register multiple kprobes with current
->     kprobe API (patches 1 - 8)
->   - bpf support ot create new kprobe link allowing to attach
->     multiple addresses (patches 9 - 14)
-> 
-> We don't need to care about multiple probes on same functions
-> because it's taken care on the ftrace_ops layer.
-
-Hmm, I think there may be a time to split the "kprobe as an 
-interface for the software breakpoint" and "kprobe as a wrapper
-interface for the callbacks of various instrumentations", like
-'raw_kprobe'(or kswbp) and 'kprobes'.
-And this may be called as 'fprobe' as ftrace_ops wrapper.
-(But if the bpf is enough flexible, this kind of intermediate layer
- may not be needed, it can use ftrace_ops directly, eventually)
-
-Jiri, have you already considered to use ftrace_ops from the
-bpf directly? Are there any issues?
-(bpf depends on 'kprobe' widely?)
-
-Thank you,
-
+diff --git a/tools/testing/selftests/ptp/testptp.c b/tools/testing/selftests/ptp/testptp.c
+index f7911aaeb007..c0f6a062364d 100644
+--- a/tools/testing/selftests/ptp/testptp.c
++++ b/tools/testing/selftests/ptp/testptp.c
+@@ -354,6 +354,18 @@ int main(int argc, char *argv[])
+ 		}
+ 	}
+ 
++	if (pin_index >= 0) {
++		memset(&desc, 0, sizeof(desc));
++		desc.index = pin_index;
++		desc.func = pin_func;
++		desc.chan = index;
++		if (ioctl(fd, PTP_PIN_SETFUNC, &desc)) {
++			perror("PTP_PIN_SETFUNC");
++		} else {
++			puts("set pin function okay");
++		}
++	}
++
+ 	if (extts) {
+ 		memset(&extts_request, 0, sizeof(extts_request));
+ 		extts_request.index = index;
+@@ -444,18 +456,6 @@ int main(int argc, char *argv[])
+ 		}
+ 	}
+ 
+-	if (pin_index >= 0) {
+-		memset(&desc, 0, sizeof(desc));
+-		desc.index = pin_index;
+-		desc.func = pin_func;
+-		desc.chan = index;
+-		if (ioctl(fd, PTP_PIN_SETFUNC, &desc)) {
+-			perror("PTP_PIN_SETFUNC");
+-		} else {
+-			puts("set pin function okay");
+-		}
+-	}
+-
+ 	if (pps != -1) {
+ 		int enable = pps ? 1 : 0;
+ 		if (ioctl(fd, PTP_ENABLE_PPS, enable)) {
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+2.33.1
+
