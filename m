@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 081D64854DC
+	by mail.lfdr.de (Postfix) with ESMTP id 51D684854DD
 	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:44:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241020AbiAEOoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 09:44:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45560 "EHLO
+        id S241021AbiAEOoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 09:44:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241001AbiAEOoP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 09:44:15 -0500
+        with ESMTP id S241014AbiAEOoR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 09:44:17 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4DFC061761
-        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 06:44:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B6BC061785
+        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 06:44:16 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1n57WP-00043Y-PP
-        for netdev@vger.kernel.org; Wed, 05 Jan 2022 15:44:13 +0100
+        id 1n57WR-00047F-B0
+        for netdev@vger.kernel.org; Wed, 05 Jan 2022 15:44:15 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 1EEE66D1AF2
+        by bjornoya.blackshift.org (Postfix) with SMTP id B6BDD6D1AFF
         for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 14:44:08 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id F18136D1ABE;
-        Wed,  5 Jan 2022 14:44:04 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 0EB266D1ABF;
+        Wed,  5 Jan 2022 14:44:05 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id e01e4862;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 77da45af;
         Wed, 5 Jan 2022 14:44:04 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
@@ -38,9 +38,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 04/15] can: ti_hecc: ti_hecc_probe(): use platform_get_irq() to get the interrupt
-Date:   Wed,  5 Jan 2022 15:43:51 +0100
-Message-Id: <20220105144402.1174191-5-mkl@pengutronix.de>
+Subject: [PATCH net-next 05/15] can: sja1000: sp_probe(): use platform_get_irq() to get the interrupt
+Date:   Wed,  5 Jan 2022 15:43:52 +0100
+Message-Id: <20220105144402.1174191-6-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220105144402.1174191-1-mkl@pengutronix.de>
 References: <20220105144402.1174191-1-mkl@pengutronix.de>
@@ -56,55 +56,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
-allocation of IRQ resources in DT core code, this causes an issue when
-using hierarchical interrupt domains using "interrupts" property in
-the node as this bypasses the hierarchical setup and messes up the irq
-chaining.
+It is preferred that drivers use platform_get_irq() instead of
+irq_of_parse_and_map(), so replace.
 
-In preparation for removal of static setup of IRQ resource from DT
-core code use platform_get_irq().
-
-Link: https://lore.kernel.org/all/20211221194508.11737-1-prabhakar.mahadev-lad.rj@bp.renesas.com
+Link: https://lore.kernel.org/all/20211221200016.13459-1-prabhakar.mahadev-lad.rj@bp.renesas.com
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/ti_hecc.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/net/can/sja1000/sja1000_platform.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/can/ti_hecc.c b/drivers/net/can/ti_hecc.c
-index 353062ead98f..ff31b993ab17 100644
---- a/drivers/net/can/ti_hecc.c
-+++ b/drivers/net/can/ti_hecc.c
-@@ -859,7 +859,6 @@ static int ti_hecc_probe(struct platform_device *pdev)
- 	struct net_device *ndev = (struct net_device *)0;
- 	struct ti_hecc_priv *priv;
- 	struct device_node *np = pdev->dev.of_node;
--	struct resource *irq;
- 	struct regulator *reg_xceiver;
- 	int err = -ENODEV;
+diff --git a/drivers/net/can/sja1000/sja1000_platform.c b/drivers/net/can/sja1000/sja1000_platform.c
+index d7c2ec529b8f..f9ec7bd8dfac 100644
+--- a/drivers/net/can/sja1000/sja1000_platform.c
++++ b/drivers/net/can/sja1000/sja1000_platform.c
+@@ -17,7 +17,6 @@
+ #include <linux/io.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+-#include <linux/of_irq.h>
  
-@@ -904,9 +903,9 @@ static int ti_hecc_probe(struct platform_device *pdev)
- 		goto probe_exit_candev;
- 	}
+ #include "sja1000.h"
  
--	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
--	if (!irq) {
--		dev_err(&pdev->dev, "No irq resource\n");
-+	ndev->irq = platform_get_irq(pdev, 0);
-+	if (ndev->irq < 0) {
-+		err = ndev->irq;
- 		goto probe_exit_candev;
- 	}
+@@ -234,13 +233,15 @@ static int sp_probe(struct platform_device *pdev)
+ 	if (!addr)
+ 		return -ENOMEM;
  
-@@ -920,7 +919,6 @@ static int ti_hecc_probe(struct platform_device *pdev)
- 	priv->can.ctrlmode_supported = CAN_CTRLMODE_3_SAMPLES;
+-	if (of)
+-		irq = irq_of_parse_and_map(of, 0);
+-	else
++	if (of) {
++		irq = platform_get_irq(pdev, 0);
++		if (irq < 0)
++			return irq;
++	} else {
+ 		res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-
+-	if (!irq && !res_irq)
+-		return -ENODEV;
++		if (!res_irq)
++			return -ENODEV;
++	}
  
- 	spin_lock_init(&priv->mbx_lock);
--	ndev->irq = irq->start;
- 	ndev->flags |= IFF_ECHO;
- 	platform_set_drvdata(pdev, ndev);
- 	SET_NETDEV_DEV(ndev, &pdev->dev);
+ 	of_id = of_match_device(sp_of_table, &pdev->dev);
+ 	if (of_id && of_id->data) {
 -- 
 2.34.1
 
