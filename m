@@ -2,78 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1533848597F
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 20:51:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65A96485984
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 20:51:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243713AbiAETu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 14:50:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59318 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243711AbiAETuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 14:50:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3F9C034002;
-        Wed,  5 Jan 2022 11:50:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EDE5618F1;
-        Wed,  5 Jan 2022 19:50:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E69D1C36AEB;
-        Wed,  5 Jan 2022 19:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641412210;
-        bh=asPxWn8xmtKixECs/KOe7TBXxXopnRiSa0bMO9usZFg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WEE+lJMpJF/Ytf8iwiCs1tEiVGd4+1SbYm71Wcq/EQWl2RcZn9MF/Fu3uYYYrzdHT
-         UCKk+eCyWsCi9t5ln40+v4dQBaZ/WkLueB9tpsecUdaDoSMl3F/DnsYFS55Wwqq3yf
-         PZoThX3yZ7jm1xmJw6TMgoPm/i+SjIjGBi09BqP2w6/JhGU6KQzLQSDKuTLSxYAK4l
-         BaiUl1XE3D1uU0Q2LEgqL8TbEpMP4OXt9Kqnrdpvuy3DVR+BVUnEhDe4l2en1LXUsU
-         Ypbi0uyOTl7Q93h+m5wNPyxUKbD9OCK/HDahsaeSlnigi+BYnH2ZKV4S6V4zyTzi8k
-         5xhlfHvKHV+pw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C3B46F7940C;
-        Wed,  5 Jan 2022 19:50:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S243717AbiAETvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 14:51:51 -0500
+Received: from smtp02.smtpout.orange.fr ([80.12.242.124]:56874 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243693AbiAETvq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 14:51:46 -0500
+Received: from [192.168.1.18] ([90.11.185.88])
+        by smtp.orange.fr with ESMTPA
+        id 5CJynyfKuBazo5CJyn0El3; Wed, 05 Jan 2022 20:51:45 +0100
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Wed, 05 Jan 2022 20:51:45 +0100
+X-ME-IP: 90.11.185.88
+Message-ID: <86bf852e-4220-52d4-259d-3455bc24def1@wanadoo.fr>
+Date:   Wed, 5 Jan 2022 20:51:42 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH] enic: Use dma_set_mask_and_coherent()
+Content-Language: en-US
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     benve@cisco.com, govind@gmx.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <f926eab883a3e5c4dbfd3eb5108b3e1828e6513b.1641045708.git.christophe.jaillet@wanadoo.fr>
+ <YdK4IIFvi5O5eXHC@infradead.org>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <YdK4IIFvi5O5eXHC@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] bpf, arm64: use emit_addr_mov_i64() for BPF_PSEUDO_FUNC
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164141220979.28548.10398527104221522201.git-patchwork-notify@kernel.org>
-Date:   Wed, 05 Jan 2022 19:50:09 +0000
-References: <20211231151018.3781550-1-houtao1@huawei.com>
-In-Reply-To: <20211231151018.3781550-1-houtao1@huawei.com>
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     ast@kernel.org, kafai@fb.com, yhs@fb.com, daniel@iogearbox.net,
-        andrii@kernel.org, zlim.lnx@gmail.com, will@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Fri, 31 Dec 2021 23:10:18 +0800 you wrote:
-> The following error is reported when running "./test_progs -t for_each"
-> under arm64:
+Le 03/01/2022 à 09:47, Christoph Hellwig a écrit :
+> On Sat, Jan 01, 2022 at 03:02:45PM +0100, Christophe JAILLET wrote:
+>> -	err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(47));
+>> +	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(47));
+>>   	if (err) {
+>> +		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+>>   		if (err) {
+>>   			dev_err(dev, "No usable DMA configuration, aborting\n");
+>>   			goto err_out_release_regions;
+>>   		}
+>>   	} else {
+>>   		using_dac = 1;
 > 
->     bpf_jit: multi-func JIT bug 58 != 56
->     ......
->     JIT doesn't support bpf-to-bpf calls
+> There is no need for the callback.  All the routines to set a DMA mask
+> will only fail if the passed in mask is too small, but never if it is
+> larger than what is supported.  Also the using_dac variable is not
+> needed, NETIF_F_HIGHDMA can and should be set unconditionally.
 > 
-> [...]
 
-Here is the summary with links:
-  - bpf, arm64: use emit_addr_mov_i64() for BPF_PSEUDO_FUNC
-    https://git.kernel.org/bpf/bpf-next/c/e4a41c2c1fa9
+Ok, thanks.
+I was only aware of the 64 bits case.
+The patch has already reached -next.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I'll send another patch on to of it to go one step further.
 
-
+CJ
