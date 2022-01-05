@@ -2,73 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97D49485B98
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 23:27:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA370485BA6
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 23:30:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244927AbiAEW14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 17:27:56 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:53702 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244900AbiAEW1z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jan 2022 17:27:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=if/pAO/fr1I+S7a6wrzYbvKUCVdTodjuKQ1vJ7pgDks=; b=kwfd2JeoGnWngB89+ebl9ZaPmS
-        GI6c0vy5NZQLbsMUPiCyXX2JJ0hlklBQ5LIoYld1m5dRu0Pt0fXlu7Ox3mSseedDu8RZUnBtovCkp
-        Ew3XDnVYxflpOk+pKuKryfBIw30ZDYvvjpIUUnZP8upwef9MS8AIooD4BP22/gb2p1iU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n5El4-000bJJ-Dg; Wed, 05 Jan 2022 23:27:50 +0100
-Date:   Wed, 5 Jan 2022 23:27:50 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     Aaron Ma <aaron.ma@canonical.com>, kuba@kernel.org,
-        henning.schild@siemens.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
-Subject: Re: [PATCH 1/3 v3] net: usb: r8152: Check used MAC passthrough
- address
-Message-ID: <YdYbZne6pBZzxSxA@lunn.ch>
-References: <20220105151427.8373-1-aaron.ma@canonical.com>
- <YdXVoNFB/Asq6bc/@lunn.ch>
- <bb6d8bc4-abee-8536-ca5b-bac11d1ecd53@suse.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bb6d8bc4-abee-8536-ca5b-bac11d1ecd53@suse.com>
+        id S245010AbiAEWap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 17:30:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245033AbiAEWao (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 17:30:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD69C061245;
+        Wed,  5 Jan 2022 14:30:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18215617D5;
+        Wed,  5 Jan 2022 22:30:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 76ADCC36AEB;
+        Wed,  5 Jan 2022 22:30:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641421843;
+        bh=D7rVRzR3AZVuq8Efw7EK9Vp3uTwYZIroaM5HSOP7Nwk=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=fDAainFfxLx/qvY9J/hCo8egOEt/rFu496RqUSQkt2mvCuA/jYDGaZtxLXReaZGwJ
+         YPkS7rEeiitSAwkbkzMR0TAOr7wUwBx/9sXs3O4MYFPCCcQ9KGFqA/TeERe94jdf2a
+         /5X/iAo5xn/0XldHz6UVQqfSx/aZrXofuaLqteL8D25+gCBfjgTsAdBG5/L9+KnfkV
+         7mPJrNr+PWtBxAcrHlS1wFiKtnJYn/LUpEiWMHcdSmDQrGojZ+GfAUThZEbxpnFDIC
+         4DGO3qWx37+3Q9H7UitQSBBZk7afozQ5+rcVEdZGTRwjDKyOQNbiyDhpwm58+SvVHL
+         fhQzUkn51S23Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 64D77F79401;
+        Wed,  5 Jan 2022 22:30:43 +0000 (UTC)
+Subject: Re: [GIT PULL] Networking for 5.16-final
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220105204530.3706167-1-kuba@kernel.org>
+References: <20220105204530.3706167-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220105204530.3706167-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.16-final
+X-PR-Tracked-Commit-Id: db54c12a3d7e3eedd37aa08efc9362e905f07716
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 75acfdb6fd922598a408a0d864486aeb167c1a97
+Message-Id: <164142184340.21549.7995944481937372488.pr-tracker-bot@kernel.org>
+Date:   Wed, 05 Jan 2022 22:30:43 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 10:49:56PM +0100, Oliver Neukum wrote:
-> 
-> On 05.01.22 18:30, Andrew Lunn wrote:
-> > On Wed, Jan 05, 2022 at 11:14:25PM +0800, Aaron Ma wrote:
-> >> When plugin multiple r8152 ethernet dongles to Lenovo Docks
-> >> or USB hub, MAC passthrough address from BIOS should be
-> >> checked if it had been used to avoid using on other dongles.
-> >>
-> >> Currently builtin r8152 on Dock still can't be identified.
-> >> First detected r8152 will use the MAC passthrough address.
-> > I do have to wonder why you are doing this in the kernel, and not
-> > using a udev rule? This seems to be policy, and policy does not belong
-> > in the kernel.
-> Debatable. An ethernet NIC has to have a MAC. The kernel must
-> provide one. That we should always take the one found in the
-> device's ROM rather than the host's ROM is already a policy decision.
+The pull request you sent on Wed,  5 Jan 2022 12:45:30 -0800:
 
-In general, it is a much longer list of places to find the MAC address
-from. It could be in three different places in device tree, it could
-be in ACPI in a similar number of places, it could be in NVMEM,
-pointed to by device tree, the bootloader might of already programmed
-the controller with its MAC address, etc, or if everything else fails,
-it could be random.
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.16-final
 
-So yes, the kernel will give it one. But if you want the interface to
-have a specific MAC address, you probably should not be trusting the
-kernel, given it has so many options.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/75acfdb6fd922598a408a0d864486aeb167c1a97
 
-	Andrew
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
