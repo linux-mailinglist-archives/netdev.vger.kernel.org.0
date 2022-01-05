@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EAD948536D
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:21:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9995F485373
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:21:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233150AbiAENVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 08:21:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54860 "EHLO
+        id S240281AbiAENVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 08:21:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240158AbiAENU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 08:20:58 -0500
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C8FC061761;
-        Wed,  5 Jan 2022 05:20:58 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id x15so29312501plg.1;
-        Wed, 05 Jan 2022 05:20:58 -0800 (PST)
+        with ESMTP id S240256AbiAENVG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 08:21:06 -0500
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA7CC061785;
+        Wed,  5 Jan 2022 05:21:05 -0800 (PST)
+Received: by mail-pj1-x1042.google.com with SMTP id o63-20020a17090a0a4500b001b1c2db8145so3897386pjo.5;
+        Wed, 05 Jan 2022 05:21:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=E2ecUMplQVNC6A29lLi9+Ao3qvZ6ZTpS/L9NYSl/HFs=;
-        b=gXp7y1SUFRjKk40Aju1cnY1ZFzkEXo3JDEbGjXR9+3QXBnD/elCayClb74JuLOYHBp
-         nmA7afYZ68oVCKv2UqQiBXjpToCD8ghyJPoiQQ+D+PWY5Ru+ZJcI8HNotqG0QLqqm/3W
-         Ijxjwi1KDUGjQZ3ifVD6WrVsFpZUXYncs+Bf7juEaPJpcIIUxxeybJknfh7ILdQfnQMz
-         aZ4FIvt2S1YZIOc9XX2jCx1HDqJaY4ZNEmmV13jTFmYR5Z9nf+6QviYTMl4NKEkPh3kk
-         VWmhd3NFCbxqDjXr1rQ3sUvY6NF6B/cx6WhAckDJ78UUPh5yPP1gfexBriTVB9longxC
-         Yl6Q==
+        bh=tjEyxmzWv+vv0x7VIz02gdNHRKgdP8+rFV7YB5P7KbE=;
+        b=mYk+y+w4AIW+78UWSIucnzC0QUFLIoQVQJtglOo4dUvbyn7WGpNXu4AYbLpKdeKB/r
+         GyUeFIRJCeQu5WNC2Sip5GyQoxJ9LZj1IWJVss0jakFQPOlEsCxwKHiORqyTSSWTCoOa
+         9wVL6m4rhdGozZGLjmy+/36zyvQUzruwKEE5NICffhEOareoB6KQfPc6sSw8+3/C6YYN
+         6/eSKH/X+7YXYcX6f1NqvYPplZ2LkdOrqZDjvQzxTCpXR1GJoY2SNt2dALSJOsWzyu4i
+         TdkzOB/FrmQ0bbna2/0IJ/MOAxRuDl37aSs2H1yQHVbTRxNINddT1SVhWDbfEMTqLCIX
+         DghA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=E2ecUMplQVNC6A29lLi9+Ao3qvZ6ZTpS/L9NYSl/HFs=;
-        b=Zv+tApnj9zXJUkyZ/cURbcu1gVoJuGJjc1ylBAchFLI1Oy3RgWpYNxGOtVVKPEiLqD
-         pNqxoW1BaAadcw+x7wzUSmcPUtHMlAzPOXdB5hTazTMRIWv/3zIsp9pGe1MfXjyC58bq
-         9yZOEdNmAcce/rMy04If+KQhW4uB33Aa9Vmdgr4IoIcfPzpWQ78pGxGnugswO4BE0a/y
-         VMfkGME6mRGv7CngoaTXz33Q0K8pK3qPui/pYFkaNCn01hlmWsZsGUnKG/GrHEbDTsV8
-         m6Dn1vEdJ8ZFn4mZ/edK/eiESHeJMcX1aQONYK3IOEhTQJC/yUR39FA5AucNA0Ydsupu
-         +kpw==
-X-Gm-Message-State: AOAM533634cfLpaMaRjlS36q7xdUSIe89Cz5S4QU3tCEwibz1ihSAQLp
-        lXl9rP5YdPYndN8YOmYUuqo=
-X-Google-Smtp-Source: ABdhPJwtoPBJeP24Kmnv/qQpt8hOFgwv+81/+PVtP5ABlEzeKYVG76uvWA9JCS0o1sNPUtVhr+6cQA==
-X-Received: by 2002:a17:90b:350b:: with SMTP id ls11mr4015871pjb.134.1641388857784;
-        Wed, 05 Jan 2022 05:20:57 -0800 (PST)
+        bh=tjEyxmzWv+vv0x7VIz02gdNHRKgdP8+rFV7YB5P7KbE=;
+        b=pk0LHfoRfePWcSYdIg9lVUNO75N3ftHb1JAN+o/GwiHm+32qFWjMJB7KW2ROC339K9
+         rWdlF/IUOKxebvATTFe7lVyXFyZ2bOHHKBVuHMKPubnaGHpv3Evrtr+DS3VmkTTXxR31
+         Ze5sZqJTOlriAyH7tQ8dQqgxySM+Es4Ups2qgAi5aZ/8YsX38/DIwtlIU/YyBJaWKjf/
+         Psm356aH2qjUrVLIfJYDZvORm7097h+vB00pTkPxmdfnTbs6RopqliK33xjxSuC2C/k7
+         6t4+n9j+Iu5pnIQh7rF78bJooPnSIsoqmrdJvUnuNyMJcLpiA1ALacgt+YSrrFGtb0CR
+         QJJg==
+X-Gm-Message-State: AOAM532a5Or7HHygROjGOgheQMoJ8uNp/B148Z6SRFWjbIWcCLzRFR8S
+        blpVzXkTcUodUhlWr6h8MAs=
+X-Google-Smtp-Source: ABdhPJyR/iNoetr6xBbPlII+t3j2e5I/ciGMz1YraVh53zGGVh+Zs9aZWa5Ect+Cb+5ukiLEevOZwQ==
+X-Received: by 2002:a17:902:bd86:b0:149:5e5e:3857 with SMTP id q6-20020a170902bd8600b001495e5e3857mr49979581pls.36.1641388865442;
+        Wed, 05 Jan 2022 05:21:05 -0800 (PST)
 Received: from localhost.localdomain ([43.132.141.9])
-        by smtp.gmail.com with ESMTPSA id q17sm16227771pfj.119.2022.01.05.05.20.54
+        by smtp.gmail.com with ESMTPSA id q17sm16227771pfj.119.2022.01.05.05.21.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 05:20:57 -0800 (PST)
+        Wed, 05 Jan 2022 05:21:05 -0800 (PST)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     kuba@kernel.org, daniel@iogearbox.net
@@ -57,9 +57,9 @@ Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org, bpf@vger.kernel.org,
         Menglong Dong <imagedong@tencent.com>
-Subject: [PATCH v3 net-next 1/2] net: bpf: handle return value of BPF_CGROUP_RUN_PROG_INET{4,6}_POST_BIND()
-Date:   Wed,  5 Jan 2022 21:18:48 +0800
-Message-Id: <20220105131849.2559506-2-imagedong@tencent.com>
+Subject: [PATCH v3 net-next 2/2] bpf: selftests: add bind retry for post_bind{4, 6}
+Date:   Wed,  5 Jan 2022 21:18:49 +0800
+Message-Id: <20220105131849.2559506-3-imagedong@tencent.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220105131849.2559506-1-imagedong@tencent.com>
 References: <20220105131849.2559506-1-imagedong@tencent.com>
@@ -71,165 +71,352 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-The return value of BPF_CGROUP_RUN_PROG_INET{4,6}_POST_BIND() in
-__inet_bind() is not handled properly. While the return value
-is non-zero, it will set inet_saddr and inet_rcv_saddr to 0 and
-exit:
-
-	err = BPF_CGROUP_RUN_PROG_INET4_POST_BIND(sk);
-	if (err) {
-		inet->inet_saddr = inet->inet_rcv_saddr = 0;
-		goto out_release_sock;
-	}
-
-Let's take UDP for example and see what will happen. For UDP
-socket, it will be added to 'udp_prot.h.udp_table->hash' and
-'udp_prot.h.udp_table->hash2' after the sk->sk_prot->get_port()
-called success. If 'inet->inet_rcv_saddr' is specified here,
-then 'sk' will be in the 'hslot2' of 'hash2' that it don't belong
-to (because inet_saddr is changed to 0), and UDP packet received
-will not be passed to this sock. If 'inet->inet_rcv_saddr' is not
-specified here, the sock will work fine, as it can receive packet
-properly, which is wired, as the 'bind()' is already failed.
-
-To undo the get_port() operation, introduce the 'put_port' field
-for 'struct proto'. For TCP proto, it is inet_put_port(); For UDP
-proto, it is udp_lib_unhash(); For icmp proto, it is
-ping_unhash().
-
-Therefore, after sys_bind() fail caused by
-BPF_CGROUP_RUN_PROG_INET4_POST_BIND(), it will be unbinded, which
-means that it can try to be binded to another port.
+With previous patch, kernel is able to 'put_port' after sys_bind()
+fails. Add the test for that case: rebind another port after
+sys_bind() fails. If the bind success, it means previous bind
+operation is already undoed.
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
-v3:
-- NULL check for sk->sk_prot->put_port
+ tools/testing/selftests/bpf/test_sock.c | 166 +++++++++++++++++++++---
+ 1 file changed, 146 insertions(+), 20 deletions(-)
 
-v2:
-- introduce 'put_port' field for 'struct proto'
----
- include/net/sock.h  | 1 +
- net/ipv4/af_inet.c  | 2 ++
- net/ipv4/ping.c     | 1 +
- net/ipv4/tcp_ipv4.c | 1 +
- net/ipv4/udp.c      | 1 +
- net/ipv6/af_inet6.c | 2 ++
- net/ipv6/ping.c     | 1 +
- net/ipv6/tcp_ipv6.c | 1 +
- net/ipv6/udp.c      | 1 +
- 9 files changed, 11 insertions(+)
-
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 7b4b4237e6e0..ff9b508d9c5f 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1209,6 +1209,7 @@ struct proto {
- 	void			(*unhash)(struct sock *sk);
- 	void			(*rehash)(struct sock *sk);
- 	int			(*get_port)(struct sock *sk, unsigned short snum);
-+	void			(*put_port)(struct sock *sk);
- #ifdef CONFIG_BPF_SYSCALL
- 	int			(*psock_update_sk_prot)(struct sock *sk,
- 							struct sk_psock *psock,
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index f53184767ee7..9c465bac1eb0 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -531,6 +531,8 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 			err = BPF_CGROUP_RUN_PROG_INET4_POST_BIND(sk);
- 			if (err) {
- 				inet->inet_saddr = inet->inet_rcv_saddr = 0;
-+				if (sk->sk_prot->put_port)
-+					sk->sk_prot->put_port(sk);
- 				goto out_release_sock;
- 			}
- 		}
-diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
-index e540b0dcf085..0e56df3a45e2 100644
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -994,6 +994,7 @@ struct proto ping_prot = {
- 	.hash =		ping_hash,
- 	.unhash =	ping_unhash,
- 	.get_port =	ping_get_port,
-+	.put_port =	ping_unhash,
- 	.obj_size =	sizeof(struct inet_sock),
+diff --git a/tools/testing/selftests/bpf/test_sock.c b/tools/testing/selftests/bpf/test_sock.c
+index e8edd3dd3ec2..68525d68d4e5 100644
+--- a/tools/testing/selftests/bpf/test_sock.c
++++ b/tools/testing/selftests/bpf/test_sock.c
+@@ -35,12 +35,15 @@ struct sock_test {
+ 	/* Endpoint to bind() to */
+ 	const char *ip;
+ 	unsigned short port;
++	unsigned short port_retry;
+ 	/* Expected test result */
+ 	enum {
+ 		LOAD_REJECT,
+ 		ATTACH_REJECT,
+ 		BIND_REJECT,
+ 		SUCCESS,
++		RETRY_SUCCESS,
++		RETRY_REJECT
+ 	} result;
  };
- EXPORT_SYMBOL(ping_prot);
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index ac10e4cdd8d0..9861786b8336 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -3076,6 +3076,7 @@ struct proto tcp_prot = {
- 	.hash			= inet_hash,
- 	.unhash			= inet_unhash,
- 	.get_port		= inet_csk_get_port,
-+	.put_port		= inet_put_port,
- #ifdef CONFIG_BPF_SYSCALL
- 	.psock_update_sk_prot	= tcp_bpf_update_proto,
- #endif
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 7b18a6f42f18..c2a4411d2b04 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2927,6 +2927,7 @@ struct proto udp_prot = {
- 	.unhash			= udp_lib_unhash,
- 	.rehash			= udp_v4_rehash,
- 	.get_port		= udp_v4_get_port,
-+	.put_port		= udp_lib_unhash,
- #ifdef CONFIG_BPF_SYSCALL
- 	.psock_update_sk_prot	= udp_bpf_update_proto,
- #endif
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index d1636425654e..8fe7900f1949 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -413,6 +413,8 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 			if (err) {
- 				sk->sk_ipv6only = saved_ipv6only;
- 				inet_reset_saddr(sk);
-+				if (sk->sk_prot->put_port)
-+					sk->sk_prot->put_port(sk);
- 				goto out;
- 			}
- 		}
-diff --git a/net/ipv6/ping.c b/net/ipv6/ping.c
-index 6ac88fe24a8e..9256f6ba87ef 100644
---- a/net/ipv6/ping.c
-+++ b/net/ipv6/ping.c
-@@ -177,6 +177,7 @@ struct proto pingv6_prot = {
- 	.hash =		ping_hash,
- 	.unhash =	ping_unhash,
- 	.get_port =	ping_get_port,
-+	.put_port =	ping_unhash,
- 	.obj_size =	sizeof(struct raw6_sock),
+ 
+@@ -60,6 +63,7 @@ static struct sock_test tests[] = {
+ 		0,
+ 		NULL,
+ 		0,
++		0,
+ 		LOAD_REJECT,
+ 	},
+ 	{
+@@ -77,6 +81,7 @@ static struct sock_test tests[] = {
+ 		0,
+ 		NULL,
+ 		0,
++		0,
+ 		LOAD_REJECT,
+ 	},
+ 	{
+@@ -94,6 +99,7 @@ static struct sock_test tests[] = {
+ 		0,
+ 		NULL,
+ 		0,
++		0,
+ 		LOAD_REJECT,
+ 	},
+ 	{
+@@ -111,6 +117,7 @@ static struct sock_test tests[] = {
+ 		0,
+ 		NULL,
+ 		0,
++		0,
+ 		LOAD_REJECT,
+ 	},
+ 	{
+@@ -125,6 +132,7 @@ static struct sock_test tests[] = {
+ 		SOCK_STREAM,
+ 		"127.0.0.1",
+ 		8097,
++		0,
+ 		SUCCESS,
+ 	},
+ 	{
+@@ -139,6 +147,7 @@ static struct sock_test tests[] = {
+ 		SOCK_STREAM,
+ 		"127.0.0.1",
+ 		8097,
++		0,
+ 		SUCCESS,
+ 	},
+ 	{
+@@ -153,6 +162,7 @@ static struct sock_test tests[] = {
+ 		0,
+ 		NULL,
+ 		0,
++		0,
+ 		ATTACH_REJECT,
+ 	},
+ 	{
+@@ -167,6 +177,7 @@ static struct sock_test tests[] = {
+ 		0,
+ 		NULL,
+ 		0,
++		0,
+ 		ATTACH_REJECT,
+ 	},
+ 	{
+@@ -181,6 +192,7 @@ static struct sock_test tests[] = {
+ 		0,
+ 		NULL,
+ 		0,
++		0,
+ 		ATTACH_REJECT,
+ 	},
+ 	{
+@@ -195,6 +207,7 @@ static struct sock_test tests[] = {
+ 		0,
+ 		NULL,
+ 		0,
++		0,
+ 		ATTACH_REJECT,
+ 	},
+ 	{
+@@ -209,6 +222,7 @@ static struct sock_test tests[] = {
+ 		SOCK_STREAM,
+ 		"0.0.0.0",
+ 		0,
++		0,
+ 		BIND_REJECT,
+ 	},
+ 	{
+@@ -223,6 +237,7 @@ static struct sock_test tests[] = {
+ 		SOCK_STREAM,
+ 		"::",
+ 		0,
++		0,
+ 		BIND_REJECT,
+ 	},
+ 	{
+@@ -253,6 +268,7 @@ static struct sock_test tests[] = {
+ 		SOCK_STREAM,
+ 		"::1",
+ 		8193,
++		0,
+ 		BIND_REJECT,
+ 	},
+ 	{
+@@ -283,8 +299,102 @@ static struct sock_test tests[] = {
+ 		SOCK_STREAM,
+ 		"127.0.0.1",
+ 		4098,
++		0,
+ 		SUCCESS,
+ 	},
++	{
++		"bind4 deny specific IP & port of TCP, and retry",
++		.insns = {
++			BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
++
++			/* if (ip == expected && port == expected) */
++			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
++				    offsetof(struct bpf_sock, src_ip4)),
++			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
++				    __bpf_constant_ntohl(0x7F000001), 4),
++			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
++				    offsetof(struct bpf_sock, src_port)),
++			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x1002, 2),
++
++			/* return DENY; */
++			BPF_MOV64_IMM(BPF_REG_0, 0),
++			BPF_JMP_A(1),
++
++			/* else return ALLOW; */
++			BPF_MOV64_IMM(BPF_REG_0, 1),
++			BPF_EXIT_INSN(),
++		},
++		BPF_CGROUP_INET4_POST_BIND,
++		BPF_CGROUP_INET4_POST_BIND,
++		AF_INET,
++		SOCK_STREAM,
++		"127.0.0.1",
++		4098,
++		5000,
++		RETRY_SUCCESS,
++	},
++	{
++		"bind4 deny specific IP & port of UDP, and retry",
++		.insns = {
++			BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
++
++			/* if (ip == expected && port == expected) */
++			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
++				    offsetof(struct bpf_sock, src_ip4)),
++			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
++				    __bpf_constant_ntohl(0x7F000001), 4),
++			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
++				    offsetof(struct bpf_sock, src_port)),
++			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x1002, 2),
++
++			/* return DENY; */
++			BPF_MOV64_IMM(BPF_REG_0, 0),
++			BPF_JMP_A(1),
++
++			/* else return ALLOW; */
++			BPF_MOV64_IMM(BPF_REG_0, 1),
++			BPF_EXIT_INSN(),
++		},
++		BPF_CGROUP_INET4_POST_BIND,
++		BPF_CGROUP_INET4_POST_BIND,
++		AF_INET,
++		SOCK_DGRAM,
++		"127.0.0.1",
++		4098,
++		5000,
++		RETRY_SUCCESS,
++	},
++	{
++		"bind6 deny specific IP & port, and retry",
++		.insns = {
++			BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
++
++			/* if (ip == expected && port == expected) */
++			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
++				    offsetof(struct bpf_sock, src_ip6[3])),
++			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
++				    __bpf_constant_ntohl(0x00000001), 4),
++			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
++				    offsetof(struct bpf_sock, src_port)),
++			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x2001, 2),
++
++			/* return DENY; */
++			BPF_MOV64_IMM(BPF_REG_0, 0),
++			BPF_JMP_A(1),
++
++			/* else return ALLOW; */
++			BPF_MOV64_IMM(BPF_REG_0, 1),
++			BPF_EXIT_INSN(),
++		},
++		BPF_CGROUP_INET6_POST_BIND,
++		BPF_CGROUP_INET6_POST_BIND,
++		AF_INET6,
++		SOCK_STREAM,
++		"::1",
++		8193,
++		9000,
++		RETRY_SUCCESS,
++	},
+ 	{
+ 		"bind4 allow all",
+ 		.insns = {
+@@ -297,6 +407,7 @@ static struct sock_test tests[] = {
+ 		SOCK_STREAM,
+ 		"0.0.0.0",
+ 		0,
++		0,
+ 		SUCCESS,
+ 	},
+ 	{
+@@ -311,6 +422,7 @@ static struct sock_test tests[] = {
+ 		SOCK_STREAM,
+ 		"::",
+ 		0,
++		0,
+ 		SUCCESS,
+ 	},
  };
- EXPORT_SYMBOL_GPL(pingv6_prot);
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 1ac243d18c2b..075ee8a2df3b 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -2181,6 +2181,7 @@ struct proto tcpv6_prot = {
- 	.hash			= inet6_hash,
- 	.unhash			= inet_unhash,
- 	.get_port		= inet_csk_get_port,
-+	.put_port		= inet_put_port,
- #ifdef CONFIG_BPF_SYSCALL
- 	.psock_update_sk_prot	= tcp_bpf_update_proto,
- #endif
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 1accc06abc54..90718a924ca8 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1732,6 +1732,7 @@ struct proto udpv6_prot = {
- 	.unhash			= udp_lib_unhash,
- 	.rehash			= udp_v6_rehash,
- 	.get_port		= udp_v6_get_port,
-+	.put_port		= udp_lib_unhash,
- #ifdef CONFIG_BPF_SYSCALL
- 	.psock_update_sk_prot	= udp_bpf_update_proto,
- #endif
+@@ -351,14 +463,15 @@ static int attach_sock_prog(int cgfd, int progfd,
+ 	return bpf_prog_attach(progfd, cgfd, attach_type, BPF_F_ALLOW_OVERRIDE);
+ }
+ 
+-static int bind_sock(int domain, int type, const char *ip, unsigned short port)
++static int bind_sock(int domain, int type, const char *ip,
++		     unsigned short port, unsigned short port_retry)
+ {
+ 	struct sockaddr_storage addr;
+ 	struct sockaddr_in6 *addr6;
+ 	struct sockaddr_in *addr4;
+ 	int sockfd = -1;
+ 	socklen_t len;
+-	int err = 0;
++	int res = SUCCESS;
+ 
+ 	sockfd = socket(domain, type, 0);
+ 	if (sockfd < 0)
+@@ -384,21 +497,44 @@ static int bind_sock(int domain, int type, const char *ip, unsigned short port)
+ 		goto err;
+ 	}
+ 
+-	if (bind(sockfd, (const struct sockaddr *)&addr, len) == -1)
+-		goto err;
++	if (bind(sockfd, (const struct sockaddr *)&addr, len) == -1) {
++		/* sys_bind() may fail for different reasons, errno has to be
++		 * checked to confirm that BPF program rejected it.
++		 */
++		if (errno != EPERM)
++			goto err;
++		if (port_retry)
++			goto retry;
++		res = BIND_REJECT;
++		goto out;
++	}
+ 
++	goto out;
++retry:
++	if (domain == AF_INET)
++		addr4->sin_port = htons(port_retry);
++	else
++		addr6->sin6_port = htons(port_retry);
++	if (bind(sockfd, (const struct sockaddr *)&addr, len) == -1) {
++		if (errno != EPERM)
++			goto err;
++		res = RETRY_REJECT;
++	} else {
++		res = RETRY_SUCCESS;
++	}
+ 	goto out;
+ err:
+-	err = -1;
++	res = -1;
+ out:
+ 	close(sockfd);
+-	return err;
++	return res;
+ }
+ 
+ static int run_test_case(int cgfd, const struct sock_test *test)
+ {
+ 	int progfd = -1;
+ 	int err = 0;
++	int res;
+ 
+ 	printf("Test case: %s .. ", test->descr);
+ 	progfd = load_sock_prog(test->insns, test->expected_attach_type);
+@@ -416,21 +552,11 @@ static int run_test_case(int cgfd, const struct sock_test *test)
+ 			goto err;
+ 	}
+ 
+-	if (bind_sock(test->domain, test->type, test->ip, test->port) == -1) {
+-		/* sys_bind() may fail for different reasons, errno has to be
+-		 * checked to confirm that BPF program rejected it.
+-		 */
+-		if (test->result == BIND_REJECT && errno == EPERM)
+-			goto out;
+-		else
+-			goto err;
+-	}
+-
++	res = bind_sock(test->domain, test->type, test->ip, test->port,
++			test->port_retry);
++	if (res > 0 && test->result == res)
++		goto out;
+ 
+-	if (test->result != SUCCESS)
+-		goto err;
+-
+-	goto out;
+ err:
+ 	err = -1;
+ out:
 -- 
 2.30.2
 
