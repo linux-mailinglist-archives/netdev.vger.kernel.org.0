@@ -2,49 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67239485C32
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 00:19:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03791485C5B
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 00:40:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245346AbiAEXTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 18:19:22 -0500
-Received: from slot0.cofercan.com ([194.99.46.247]:55387 "EHLO
-        slot0.cofercan.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245342AbiAEXTS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 18:19:18 -0500
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=cofercan.com;
- h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=khi.hod@cofercan.com;
- bh=4IdbPnwTD1vdSOhIUgti/1HTi08=;
- b=Z5a57dblxR2yF3n8hCnQfJasQk9sR3dTPfrZOhJp0j1DOxrvm7A8UaJu2fOz8uptvvtGKE7FzSPh
-   hu4/Yp3o+I/adDlX5qYp5neU0eMTvIvLNLRljvDyxkuogdR7iVbP6FPMJWcINDdRzf0DnYSSxvOp
-   NbgeGpZZ7JZpHJeXFHIpo1joh9ocsp2PLxp83f24L64wid8CyS7cou7FJFuvW46JYY9Rr4Dvx4/9
-   wWiWy/db2c72XHr/se8JDQHA9NwwjrPsl3IPqeoyJjiqSbKELN+3avE3kgcWyTwH9pzfXCvkbY81
-   uAF8bpqYeotYm4bJ6d7DKb4ZYVnzzrJyNv8TpA==
-DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=cofercan.com;
- b=luXP63cuyKh+TifdYhrvaJNlpRdEML4YzjdBIfmL8e16yKQYW7WPq+dHH56veD+KsKXxreDeXX8m
-   DqZ8AL/AiKvHrZi8sWsa7oqNeEgTW+J2OYHGQM9Y6oeTMSym8slbMKm1EhgUj8262kS7kulURWuf
-   kNeBSKjQPm5xoFuzjLjEm9OJFNoa1IYWbMjHefQ7Hy7Rhxpun76G3UnkM9ijpX6UBxQD2uSDkTQR
-   NSwG++oEJq5+P4pMbJgTOQE7Epkv0uUFmWRZa8hVkh5rPpVM/brU6QGbN4GQqFMp+nqf94/tL0/3
-   MTgEwcAFHNM3N3SA56fxQ1dFVv/X23X5VkQK6w==;
-Reply-To: inbox.mustafaa@gmail.com
-From:   "Mustafa Ayvaz" <khi.hod@cofercan.com>
-To:     netdev@vger.kernel.org
-Subject: MES: 
-Date:   5 Jan 2022 23:19:17 +0000
-Message-ID: <20220105231917.EF2E0CFC555D6933@cofercan.com>
+        id S245484AbiAEXkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 18:40:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245520AbiAEXkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 18:40:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9042C034006;
+        Wed,  5 Jan 2022 15:40:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 907AE619AC;
+        Wed,  5 Jan 2022 23:40:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F04A7C36AE9;
+        Wed,  5 Jan 2022 23:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641426009;
+        bh=VnB5aRMVZsf+LgbhdEnb7mc/q8PKnT6mmWDJVnaNZD8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=swg6DYRmuYMN0i0hL2QE56Wal/cPnFkpgaHPmRc7KwisrgNHtJ9ABQgodaPc4jCAj
+         /nH4r3XE/WWEabu6MXtygU792V+dpj1HwvQdffMVtWP680XP6YwSWGxFn2fqbZpbm+
+         rc71sG2Z6P4zNpkymCishoPtRjHsYm39jWKYTb90HsgAahAMXnwB28AMLZkiBBFyiK
+         jFUyZImxdb22UovIKvHr4+tkSrklqnNnWi0UHS24Q2+mGAtKwxae1JXFsAdq085BS0
+         A2Ts0gTftwRMKABNpXpDLcBkzKgk061ALCMiWoWvyliuyEuUKgy82Q7h7PaFlBaWcA
+         z7lPM+tT+pgpQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D4EACF7940B;
+        Wed,  5 Jan 2022 23:40:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 1/2] libbpf: Use probe_name for legacy kprobe
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164142600886.21166.4094526896575840947.git-patchwork-notify@kernel.org>
+Date:   Wed, 05 Jan 2022 23:40:08 +0000
+References: <20211227130713.66933-1-wangqiang.wq.frank@bytedance.com>
+In-Reply-To: <20211227130713.66933-1-wangqiang.wq.frank@bytedance.com>
+To:     Qiang Wang <wangqiang.wq.frank@bytedance.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        hengqi.chen@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, zhouchengming@bytedance.com,
+        songmuchun@bytedance.com, duanxiongchun@bytedance.com,
+        shekairui@bytedance.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello netdev,
+Hello:
 
-I was only wondering if you got my previous email? I have been=20
-trying to reach you on your email netdev@vger.kernel.org , kindly=20
-get back to me swiftly, it is very important.
+This series was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
 
-Thanks
-Mustafa Ayvaz
-mustafa@ayvazburosu.com
+On Mon, 27 Dec 2021 21:07:12 +0800 you wrote:
+> Fix a bug in commit 46ed5fc33db9, which wrongly used the
+> func_name instead of probe_name to register legacy kprobe.
+> 
+> Fixes: 46ed5fc33db9 ("libbpf: Refactor and simplify legacy kprobe code")
+> Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
+> Tested-by: Hengqi Chen <hengqi.chen@gmail.com>
+> Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
+> Signed-off-by: Qiang Wang <wangqiang.wq.frank@bytedance.com>
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,1/2] libbpf: Use probe_name for legacy kprobe
+    https://git.kernel.org/bpf/bpf-next/c/71cff670baff
+  - [v2,2/2] libbpf: Support repeated legacy kprobes on same function
+    https://git.kernel.org/bpf/bpf-next/c/51a33c60f1c2
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
