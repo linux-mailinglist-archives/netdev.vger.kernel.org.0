@@ -2,153 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A85E248537F
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:22:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41792485385
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:24:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240275AbiAENWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 08:22:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235186AbiAENWd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 08:22:33 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139DBC061784;
-        Wed,  5 Jan 2022 05:22:31 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 6DA8541F4A;
-        Wed,  5 Jan 2022 13:22:22 +0000 (UTC)
-To:     Dmitry Osipenko <digetx@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20220104072658.69756-1-marcan@marcan.st>
- <20220104072658.69756-5-marcan@marcan.st>
- <5ddde705-f3fa-ff78-4d43-7a02d6efaaa6@gmail.com>
- <7c8d5655-a041-e291-95c1-be200233f87f@marcan.st>
- <8394dbcd-f500-b1ae-fcd8-15485d8c0888@gmail.com>
-From:   Hector Martin <marcan@marcan.st>
-Subject: Re: [PATCH v2 04/35] brcmfmac: firmware: Support having multiple alt
- paths
-Message-ID: <6a936aea-ada4-fe2d-7ce6-7a42788e4d63@marcan.st>
-Date:   Wed, 5 Jan 2022 22:22:19 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S240298AbiAENYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 08:24:23 -0500
+Received: from www62.your-server.de ([213.133.104.62]:49864 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236846AbiAENYV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 08:24:21 -0500
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1n56H3-0004es-5s; Wed, 05 Jan 2022 14:24:17 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1n56H2-0003jA-RB; Wed, 05 Jan 2022 14:24:16 +0100
+Subject: Re: [PATCH] bpf: allow setting mount device for bpffs
+To:     Yafang Shao <laoar.shao@gmail.com>, ast@kernel.org,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        David Howells <dhowells@redhat.com>, viro@zeniv.linux.org.uk
+References: <20211226165649.7178-1-laoar.shao@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <616eab60-0f56-7309-4f0f-c0f96719b688@iogearbox.net>
+Date:   Wed, 5 Jan 2022 14:24:16 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <8394dbcd-f500-b1ae-fcd8-15485d8c0888@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: es-ES
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211226165649.7178-1-laoar.shao@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26413/Wed Jan  5 10:23:50 2022)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/01/2022 07.09, Dmitry Osipenko wrote:
-> 04.01.2022 11:43, Hector Martin пишет:
->>>> +static int brcm_alt_fw_paths(const char *path, const char *board_type,
->>>> +			     const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS])>  {
->>>>  	char alt_path[BRCMF_FW_NAME_LEN];
->>>>  	const char *suffix;
->>>>  
->>>> +	memset(alt_paths, 0, array_size(sizeof(*alt_paths),
->>>> +					BRCMF_FW_MAX_ALT_PATHS));
->>> You don't need to use array_size() since size of a fixed array is
->>> already known.
->>>
->>> memset(alt_paths, 0, sizeof(alt_paths));
->> It's a function argument, so that doesn't work and actually throws a
->> warning. Array function argument notation is informative only; they
->> behave strictly equivalent to pointers. Try it:
->>
->> $ cat test.c
->> #include <stdio.h>
->>
->> void foo(char x[42])
->> {
->> 	printf("%ld\n", sizeof(x));
->> }
->>
->> int main() {
->> 	char x[42];
->>
->> 	foo(x);
->> }
->> $ gcc test.c
->> test.c: In function ‘foo’:
->> test.c:5:31: warning: ‘sizeof’ on array function parameter ‘x’ will
->> return size of ‘char *’ [-Wsizeof-array-argument]
->>     5 |         printf("%ld\n", sizeof(x));
->>       |                               ^
->> test.c:3:15: note: declared here
->>     3 | void foo(char x[42])
->>       |          ~~~~~^~~~~
->> $ ./a.out
->> 8
+On 12/26/21 5:56 PM, Yafang Shao wrote:
+> We noticed our tc ebpf tools can't start after we upgrade our in-house
+> kernel version from 4.19 to 5.10. That is because of the behaviour change
+> in bpffs caused by commit
+> d2935de7e4fd ("vfs: Convert bpf to use the new mount API").
 > 
-> Then please use "const char **alt_paths" for the function argument to
-> make code cleaner and add another argument to pass the number of array
-> elements.
+> In our tc ebpf tools, we do strict environment check. If the enrioment is
+> not match, we won't allow to start the ebpf progs. One of the check is
+> whether bpffs is properly mounted. The mount information of bpffs in
+> kernel-4.19 and kernel-5.10 are as follows,
+> 
+> - kenrel 4.19
+> $ mount -t bpf bpffs /sys/fs/bpf
+> $ mount -t bpf
+> bpffs on /sys/fs/bpf type bpf (rw,relatime)
+> 
+> - kernel 5.10
+> $ mount -t bpf bpffs /sys/fs/bpf
+> $ mount -t bpf
+> none on /sys/fs/bpf type bpf (rw,relatime)
+> 
+> The device name in kernel-5.10 is displayed as none instead of bpffs,
+> then our environment check fails. Currently we modify the tools to adopt to
+> the kernel behaviour change, but I think we'd better change the kernel code
+> to keep the behavior consistent.
+> 
+> After this change, the mount information will be displayed the same with
+> the behavior in kernel-4.19, for example,
+> 
+> $ mount -t bpf bpffs /sys/fs/bpf
+> $ mount -t bpf
+> bpffs on /sys/fs/bpf type bpf (rw,relatime)
+> 
+> Fixes: d2935de7e4fd ("vfs: Convert bpf to use the new mount API")
+> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> Cc: David Howells <dhowells@redhat.com>
+> ---
+>   kernel/bpf/inode.c | 18 ++++++++++++++++--
+>   1 file changed, 16 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
+> index 80da1db47c68..5a8b729afa91 100644
+> --- a/kernel/bpf/inode.c
+> +++ b/kernel/bpf/inode.c
+> @@ -648,12 +648,26 @@ static int bpf_parse_param(struct fs_context *fc, struct fs_parameter *param)
+>   	int opt;
+>   
+>   	opt = fs_parse(fc, bpf_fs_parameters, param, &result);
+> -	if (opt < 0)
+> +	if (opt < 0) {
+>   		/* We might like to report bad mount options here, but
+>   		 * traditionally we've ignored all mount options, so we'd
+>   		 * better continue to ignore non-existing options for bpf.
+>   		 */
+> -		return opt == -ENOPARAM ? 0 : opt;
+> +		if (opt == -ENOPARAM) {
+> +			if (strcmp(param->key, "source") == 0) {
+> +				if (param->type != fs_value_is_string)
+> +					return 0;
+> +				if (fc->source)
+> +					return 0;
+> +				fc->source = param->string;
+> +				param->string = NULL;
+> +			}
+> +
+> +			return 0;
+> +		}
+> +
+> +		return opt;
+> +	}
 
-So you want me to do the ARRAY_SIZE at the caller side then?
+I don't think we need to open code this? Couldn't we just do something like:
 
-> 
-> static int brcm_alt_fw_paths(const char *path, const char *board_type,
-> 			     const char **alt_paths, unsigned int num_paths)
-> {
-> 	size_t alt_paths_size = array_size(sizeof(*alt_paths), num_paths);
-> 	
-> 	memset(alt_paths, 0, alt_paths_size);
-> }
-> 
-> ...
-> 
-> Maybe even better create a dedicated struct for the alt_paths:
-> 
-> struct brcmf_fw_alt_paths {
-> 	const char *alt_paths[BRCMF_FW_MAX_ALT_PATHS];
-> 	unsigned int index;
-> };
-> 
-> and then use the ".index" in the brcm_free_alt_fw_paths(). I suppose
-> this will make code a bit nicer and easier to follow.
-> 
+         [...]
 
-I'm confused; the array size is constant. What would index contain and
-why would would brcm_free_alt_fw_paths use it? Just as an iterator
-variable instead of using a local variable? Or do you mean count?
+         opt = fs_parse(fc, bpf_fs_parameters, param, &result);
+         if (opt == -ENOPARAM) {
+                 opt = vfs_parse_fs_param_source(fc, param);
+                 if (opt != -ENOPARAM)
+                         return opt;
+                 return 0;
+         }
+         if (opt < 0)
+                 return opt;
 
-Though, to be honest, at this point I'm considering rethinking the whole
-patch for this mechanism because I'm not terribly happy with the current
-approach and clearly you aren't either :-) Maybe it makes more sense to
-stop trying to compute all the alt_paths ahead of time, and just have
-the function compute a single one to be used just-in-time at firmware
-request time, and just iterate over board_types.
+         [...]
 
--- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+See also 0858d7da8a09 ("ramfs: fix mount source show for ramfs") where they
+had a similar issue.
+
+Thanks,
+Daniel
