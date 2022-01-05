@@ -2,83 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 745DC4855C2
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 16:22:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 808214855CA
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 16:24:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241416AbiAEPWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 10:22:50 -0500
-Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:54895 "EHLO
-        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241413AbiAEPWt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 10:22:49 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0V11dpZL_1641396160;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0V11dpZL_1641396160)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 05 Jan 2022 23:22:45 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     ecree.xilinx@gmail.com
-Cc:     habetsm.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] sfc: Use swap() instead of open coding it
-Date:   Wed,  5 Jan 2022 23:22:37 +0800
-Message-Id: <20220105152237.45991-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S241438AbiAEPYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 10:24:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241491AbiAEPYo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 10:24:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10004C061245;
+        Wed,  5 Jan 2022 07:24:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C145EB81C24;
+        Wed,  5 Jan 2022 15:24:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12DBAC36AE0;
+        Wed,  5 Jan 2022 15:24:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641396281;
+        bh=uvTf2jfh+MIhZI5PPr+ElM4TeMYS68HmJo8Y431Rbb8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XLLsY6/rbs/SuZzN5aITI0C9UZVuzQzHpif9Moqjc5iDwu95kw4Hm73Dxa0xDHa6S
+         6KuYbA9QF6sCcoolwsAMdFB+RyRMc2TsK7jtJlTkNGpivyufe1kL05FUd9zkL+aVTk
+         PadlCRQm1Lmn0xuvTzkux81vSoTMK86po9OpncyY+lci+XYxQn2x/dcyFtACygXDUu
+         LwBWA4k536qgB8sTP3kpE4zG3qwo/0jPOPcTS0Gxsihzhk3Cw06qrqMXlrNw68whhh
+         Dd9bjgwF9cz5vuDgMs/a8YW357Wi4qvt9BDbrfyzJZeCi70hf0fVgg741RpQI9/ICW
+         Bna8M10ILkbMg==
+Date:   Thu, 6 Jan 2022 00:24:35 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [RFC 00/13] kprobe/bpf: Add support to attach multiple kprobes
+Message-Id: <20220106002435.d73e4010c93462fbee9ef074@kernel.org>
+In-Reply-To: <20220104080943.113249-1-jolsa@kernel.org>
+References: <20220104080943.113249-1-jolsa@kernel.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clean the following coccicheck warning:
+On Tue,  4 Jan 2022 09:09:30 +0100
+Jiri Olsa <jolsa@redhat.com> wrote:
 
-./drivers/net/ethernet/sfc/efx_channels.c:870:36-37: WARNING opportunity
-for swap().
+> hi,
+> adding support to attach multiple kprobes within single syscall
+> and speed up attachment of many kprobes.
+> 
+> The previous attempt [1] wasn't fast enough, so coming with new
+> approach that adds new kprobe interface.
 
-./drivers/net/ethernet/sfc/efx_channels.c:824:36-37: WARNING opportunity
-for swap().
+Yes, since register_kprobes() just registers multiple kprobes on
+array. This is designed for dozens of kprobes.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- drivers/net/ethernet/sfc/efx_channels.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+> The attachment speed of of this approach (tested in bpftrace)
+> is now comparable to ftrace tracer attachment speed.. fast ;-)
 
-diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-index b015d1f2e204..ead550ae2709 100644
---- a/drivers/net/ethernet/sfc/efx_channels.c
-+++ b/drivers/net/ethernet/sfc/efx_channels.c
-@@ -819,11 +819,8 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
- 	old_txq_entries = efx->txq_entries;
- 	efx->rxq_entries = rxq_entries;
- 	efx->txq_entries = txq_entries;
--	for (i = 0; i < efx->n_channels; i++) {
--		channel = efx->channel[i];
--		efx->channel[i] = other_channel[i];
--		other_channel[i] = channel;
--	}
-+	for (i = 0; i < efx->n_channels; i++)
-+		swap(efx->channel[i], other_channel[i]);
- 
- 	/* Restart buffer table allocation */
- 	efx->next_buffer_table = next_buffer_table;
-@@ -865,11 +862,8 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
- 	/* Swap back */
- 	efx->rxq_entries = old_rxq_entries;
- 	efx->txq_entries = old_txq_entries;
--	for (i = 0; i < efx->n_channels; i++) {
--		channel = efx->channel[i];
--		efx->channel[i] = other_channel[i];
--		other_channel[i] = channel;
--	}
-+	for (i = 0; i < efx->n_channels; i++)
-+		swap(efx->channel[i], other_channel[i]);
- 	goto out;
- }
- 
+Yes, because that if ftrace, not kprobes.
+
+> The limit of this approach is forced by using ftrace as attach
+> layer, so it allows only kprobes on function's entry (plus
+> return probes).
+
+Note that you also need to multiply the number of instances.
+
+> 
+> This patchset contains:
+>   - kprobes support to register multiple kprobes with current
+>     kprobe API (patches 1 - 8)
+>   - bpf support ot create new kprobe link allowing to attach
+>     multiple addresses (patches 9 - 14)
+> 
+> We don't need to care about multiple probes on same functions
+> because it's taken care on the ftrace_ops layer.
+
+Hmm, I think there may be a time to split the "kprobe as an 
+interface for the software breakpoint" and "kprobe as a wrapper
+interface for the callbacks of various instrumentations", like
+'raw_kprobe'(or kswbp) and 'kprobes'.
+And this may be called as 'fprobe' as ftrace_ops wrapper.
+(But if the bpf is enough flexible, this kind of intermediate layer
+ may not be needed, it can use ftrace_ops directly, eventually)
+
+Jiri, have you already considered to use ftrace_ops from the
+bpf directly? Are there any issues?
+(bpf depends on 'kprobe' widely?)
+
+Thank you,
+
 -- 
-2.20.1.7.g153144c
-
+Masami Hiramatsu <mhiramat@kernel.org>
