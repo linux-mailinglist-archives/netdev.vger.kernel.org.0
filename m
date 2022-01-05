@@ -2,86 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 540F7484E47
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 07:19:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE046484E4A
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 07:19:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231817AbiAEGTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 01:19:00 -0500
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:33450
-        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232071AbiAEGSM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 01:18:12 -0500
-Received: from localhost.localdomain (unknown [222.129.35.96])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id B7C9F3F118;
-        Wed,  5 Jan 2022 06:18:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641363491;
-        bh=susPpOXdW3sPmuZ++MaBrHyoO48nzh+p35//AkrGgmY=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=E0BvXRLluxfjiI6ndBfdyeDrkCq3Wd6BMNhIsYCWWdklGWqxObhgIVrRHNAoPolpP
-         inuF3kUOT18W7QkmJKQBZLGdIrOg+qL5FIAqHJo7V9lQka7g5RrUWLARATnM2zxqPR
-         fQ1tgrM7KkHHeMYeHIvhJ/IQGWcm+xPhQd1CRJRSFhdkaH05WYve8Ey5JaG/4lEgjG
-         AgAL/2yaO/iI4li/jm7BLQ1r11Ban1qlIEwsViXf8LEjDAeqd9pgTVL/cpK6ISrzOp
-         EJu6YBzqIH7ajnVcqgp0zsRxyIu/qaoUKHUM7NuYq1lRd3d5PgudihNdUXC7pYDNa7
-         j5DoJoIzNiotw==
-From:   Aaron Ma <aaron.ma@canonical.com>
-To:     aaron.ma@canonical.com, kuba@kernel.org,
-        henning.schild@siemens.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
-Subject: [PATCH] net: usb: r8152: Check used MAC passthrough address
-Date:   Wed,  5 Jan 2022 14:17:47 +0800
-Message-Id: <20220105061747.7104-1-aaron.ma@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        id S234914AbiAEGTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 01:19:06 -0500
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:40416 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232752AbiAEGSg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 01:18:36 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V1.itqv_1641363513;
+Received: from 30.225.24.14(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1.itqv_1641363513)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 05 Jan 2022 14:18:34 +0800
+Message-ID: <8242aa42-4356-0333-4e59-3d6a6f20d737@linux.alibaba.com>
+Date:   Wed, 5 Jan 2022 14:18:33 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+Subject: Re: [PATCH net v2] net/smc: Reset conn->lgr when link group
+ registration fails
+To:     Karsten Graul <kgraul@linux.ibm.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dust.li@linux.alibaba.com,
+        tonylu@linux.alibaba.com
+References: <1641265187-108970-1-git-send-email-guwen@linux.alibaba.com>
+ <a4b54142-e324-8c08-738b-b89046ccc794@linux.ibm.com>
+From:   Wen Gu <guwen@linux.alibaba.com>
+In-Reply-To: <a4b54142-e324-8c08-738b-b89046ccc794@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When plugin multiple r8152 ethernet dongles to Lenovo Docks
-or USB hub, MAC passthrough address from BIOS should be
-checked if it had been used to avoid using on other dongles.
+Thanks for your reply.
 
-Currently builtin r8152 on Dock still can't be identified.
-First detected r8152 will use the MAC passthrough address.
+On 2022/1/4 5:58 pm, Karsten Graul wrote:
+> On 04/01/2022 03:59, Wen Gu wrote:
+>> SMC connections might fail to be registered to a link group due to
+>> things like unable to find a link to assign to in its creation. As
+>> a result, connection creation will return a failure and most
+>> resources related to the connection won't be applied or initialized,
+>> such as conn->abort_work or conn->lnk.
+> 
+> Patch looks good to me, but one more thing to think about:
+> 
+> Would it be better to invoke __smc_lgr_terminate() instead of smc_lgr_schedule_free_work()
+> when a link group was created but cannot be used now? This would immediately free up all
+> allocated resources for this unusable link group instead of starting the default 10-minute
+> timer until the link group is freed.
+> __smc_lgr_terminate() takes care of completely removing the link group in the context of
+> its caller. It is also used from within smc_lgr_cleanup_early() that is used when the very
+> first connection of a link group is aborted.
 
-Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
----
- drivers/net/usb/r8152.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Thanks for your suggestion.
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index f9877a3e83ac..77f11b3f847b 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -1605,6 +1605,7 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
- 	char *mac_obj_name;
- 	acpi_object_type mac_obj_type;
- 	int mac_strlen;
-+	struct net_device *ndev;
- 
- 	if (tp->lenovo_macpassthru) {
- 		mac_obj_name = "\\MACA";
-@@ -1662,6 +1663,15 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
- 		ret = -EINVAL;
- 		goto amacout;
- 	}
-+	rcu_read_lock();
-+	for_each_netdev_rcu(&init_net, ndev) {
-+		if (strncmp(buf, ndev->dev_addr, 6) == 0) {
-+			rcu_read_unlock();
-+			goto amacout;
-+		}
-+	}
-+	rcu_read_unlock();
-+
- 	memcpy(sa->sa_data, buf, 6);
- 	netif_info(tp, probe, tp->netdev,
- 		   "Using pass-thru MAC addr %pM\n", sa->sa_data);
--- 
-2.30.2
+I also agree with using link group termination function for a immediate free.
 
+I will improve it and send a v3 patch.
+
+Thanks,
+Wen Gu
