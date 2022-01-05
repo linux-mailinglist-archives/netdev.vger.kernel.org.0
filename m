@@ -2,82 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B22C7485498
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:32:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9A7F485442
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 15:22:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240908AbiAEOcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 09:32:07 -0500
-Received: from mga05.intel.com ([192.55.52.43]:47560 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240924AbiAEOb6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jan 2022 09:31:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641393118; x=1672929118;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=x6pVlsWPdSUlw8ph9IrfWMeatITLHCUX/k2+8AmnbS8=;
-  b=GCJ7zhX+mHotgj9qai/7HZY0LtV8YrgYNclLyPaNB5Xinf8UZ1EFWPEA
-   B5hmxoZokomjFM6FSdr1YyGX4uzg5+4l9Pm8SLbCfv2c5fTigih9qtpdL
-   469Oem6Qv7hIyV4ljjWzYsdBSu/mOmDHb9j5KzJAlIAVucCPfzqa4AbkV
-   K5DlemNqldoZfwqCfCE2XMrb3vbdBkN/aMoFOaAf2hCcJ+H0t0u/8Fbt+
-   VzsdBHgD6n6KHjIKZ04Z+HbtZRj4VpoYQpqRKJC5dMofawCcnE2CYIKtv
-   CgNENnycO4B1m/vemugW+a40SS/RAg25tDD+iBz1Wc460H/UfaN4DQ1zA
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="328798816"
-X-IronPort-AV: E=Sophos;i="5.88,264,1635231600"; 
-   d="scan'208";a="328798816"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 06:22:33 -0800
-X-IronPort-AV: E=Sophos;i="5.88,264,1635231600"; 
-   d="scan'208";a="689014926"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 06:22:31 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n57A9-006jDx-U6;
-        Wed, 05 Jan 2022 16:21:13 +0200
-Date:   Wed, 5 Jan 2022 16:21:13 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v1 1/1] can: mcp251x: Get rid of duplicate of_node
- assignment
-Message-ID: <YdWpWSMhzmElnIJH@smile.fi.intel.com>
-References: <20211202205855.76946-1-andriy.shevchenko@linux.intel.com>
- <YbHvcDhtZFTyfThT@smile.fi.intel.com>
- <20211210130607.rajkkzr7lf6l4tok@pengutronix.de>
- <YbNT4iOj+jfMiIDu@smile.fi.intel.com>
+        id S240647AbiAEOWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 09:22:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40276 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237081AbiAEOWC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 09:22:02 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8186C061761
+        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 06:22:02 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id x6so48315202iol.13
+        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 06:22:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=l4J9Z+m4hmgZbWtQHlC70w1zjUmiI7wjClCwm6dHAnY=;
+        b=aCtGNF0VfS1r3qm6JG4+EsYWwNf7ZX40Nujdgj+BayQNPCqU9unqoMsmp8D4ZEXNYm
+         7kC86oRTvVhTSn/u8Gct44BZc5D2162oGpoMd39cHjb5RKHo48gImHmBHrLPUXLg97rO
+         3KFwmTxzwIsg4rQtrf+x3P1RF0riHtCCRfFSc4LvFB6P8tWvupM3RiAzCPE+rOLnAE/S
+         47G3o384AgC1H+EVfNWu/TXpGIFnFcmc+tpYHgabEacXuxGf/0a6inSjnGeq9pC/guvP
+         OB+AXyGe1Je7zg2IJdUaOHaljenU0ltpTL99v11p8qEM08+U2VP1r8UqJrl0G+koq8zN
+         exmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=l4J9Z+m4hmgZbWtQHlC70w1zjUmiI7wjClCwm6dHAnY=;
+        b=PD5IGAOWCB0qCoJLUHogXZTt0Roto51gL0JbO7KGXKe08eRYgiifV3Riu+aR5v0OkP
+         TT65AsvrGQC4wGqyOHUgI3kCNOUgXaFSgo5iuWB3e9FbFOaX0q9GK8DxPg/X/k/SznCJ
+         7poBfsdwpc31GwiJEzsv0EIHUkGO7io1Q/vJbCX+gW26HcofMZbN1z+YJAbzyL/gm3NE
+         c5avNqHY0TvE7dGamAWwbM0wV88hGeufOdg519Ym45T0G0eswxaBUupKc/RRtBxk049Z
+         IDXKYGACXjX1N7SXo4MeGbaA6LLt3SK7bQChngpb6WsmA2ZoONka3eco1HVCoUHFE6gZ
+         Xpfw==
+X-Gm-Message-State: AOAM530Lrq6/zqDlZf8VOKIILX5AwodwIA8ZvKVsUUpWH4OW13uk2iXx
+        dFgMo/FCkcQc5nv/fW2gC6d1g8FCuEXhij7N/t4=
+X-Google-Smtp-Source: ABdhPJw5kLy92R8NjASXuvhE2CzBhm4RGnVROPBLde180N/MQswk3ftkPr5v59rCqy704+CvNQ5vensDXABXN0YydGs=
+X-Received: by 2002:a02:920a:: with SMTP id x10mr22944298jag.12.1641392521957;
+ Wed, 05 Jan 2022 06:22:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YbNT4iOj+jfMiIDu@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Sender: asaswillson@gmail.com
+Received: by 2002:a05:6622:e03:0:0:0:0 with HTTP; Wed, 5 Jan 2022 06:22:01
+ -0800 (PST)
+From:   "Mrs. Orgil Baatar" <mrs.orgilbaatar21@gmail.com>
+Date:   Wed, 5 Jan 2022 06:22:01 -0800
+X-Google-Sender-Auth: odEXrgy5bjvUB2jNDP2eAncfWg0
+Message-ID: <CAB+YWqcr4j5Aj_S_cMiHB1W3skjbTVaB_Ov3e_jYPu9BqBtwzw@mail.gmail.com>
+Subject: Your long awaited part payment of $2.5.000.00Usd
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 03:19:31PM +0200, Andy Shevchenko wrote:
-> On Fri, Dec 10, 2021 at 02:06:07PM +0100, Marc Kleine-Budde wrote:
-> > On 09.12.2021 13:58:40, Andy Shevchenko wrote:
-> > > On Thu, Dec 02, 2021 at 10:58:55PM +0200, Andy Shevchenko wrote:
-> 
-> ...
-> 
-> > > Marc, what do you think about this change?
-> > 
-> > LGTM, added to linux-can-next/testing.
-> 
-> Thanks for applying this and hi311x patches!
+Attention: Beneficiary, Your long awaited part payment of
+$2.5.000.00Usd (TWO MILLION FIVE Hundred Thousand United State
+Dollars) is ready for immediate release to you, and it was
+electronically credited into an ATM Visa Card for easy delivery.
 
-Can we have a chance to see it in the v5.17-rc1?
+Your new Payment Reference No.- 6363836,
+Pin Code No: 1787
+Your Certificate of Merit Payment No: 05872,
 
--- 
-With Best Regards,
-Andy Shevchenko
+Your Names: |
+Address: |
 
+Person to Contact:MR KELLY HALL the Director of the International
+Audit unit ATM Payment Center,
 
+Email: uba-bf@e-ubabf.com
+TELEPHONE: +226 64865611 You can whatsApp the bank
+
+Regards.
+Mrs ORGIL BAATAR
