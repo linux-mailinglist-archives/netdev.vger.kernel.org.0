@@ -2,86 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03791485C5B
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 00:40:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 108D0485C75
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 00:51:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245484AbiAEXkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 18:40:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
+        id S245542AbiAEXvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 18:51:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245520AbiAEXkT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 18:40:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9042C034006;
-        Wed,  5 Jan 2022 15:40:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 907AE619AC;
-        Wed,  5 Jan 2022 23:40:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F04A7C36AE9;
-        Wed,  5 Jan 2022 23:40:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641426009;
-        bh=VnB5aRMVZsf+LgbhdEnb7mc/q8PKnT6mmWDJVnaNZD8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=swg6DYRmuYMN0i0hL2QE56Wal/cPnFkpgaHPmRc7KwisrgNHtJ9ABQgodaPc4jCAj
-         /nH4r3XE/WWEabu6MXtygU792V+dpj1HwvQdffMVtWP680XP6YwSWGxFn2fqbZpbm+
-         rc71sG2Z6P4zNpkymCishoPtRjHsYm39jWKYTb90HsgAahAMXnwB28AMLZkiBBFyiK
-         jFUyZImxdb22UovIKvHr4+tkSrklqnNnWi0UHS24Q2+mGAtKwxae1JXFsAdq085BS0
-         A2Ts0gTftwRMKABNpXpDLcBkzKgk061ALCMiWoWvyliuyEuUKgy82Q7h7PaFlBaWcA
-         z7lPM+tT+pgpQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D4EACF7940B;
-        Wed,  5 Jan 2022 23:40:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S245543AbiAEXut (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 18:50:49 -0500
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE7CC061201;
+        Wed,  5 Jan 2022 15:50:47 -0800 (PST)
+Received: by mail-il1-x129.google.com with SMTP id m4so826436ilf.0;
+        Wed, 05 Jan 2022 15:50:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b40oZck9H7qomq3L3iW45P12leZXCNdZnJUoXWTUtDI=;
+        b=D0Nph9f3ON/oS6OyrzyNnXUXJMYwB1fb6bEMgaI0UeStzQZZGs5tqXh71srdOhccKu
+         eNQRl11cAqwWXJ6kY7XOVRNv7AkJ5L2MOKzAoLLD1KltH1lVFqAJf6WCGK903lSCdcSR
+         Ip8Bb8li010TLxYRf4rmqf7vIg2fDOkv/X+JcNLoykZDLlKZEbQnEpMfjo8Vaxe5UX+/
+         2BmlFhid5IvX0kp+/0KimoYgN+peQhOEtIej2b43dgzdKJSyjVKfSakKkbrPNUOpatRM
+         D+x5JqIeZcZH2hHSAwEGts3I1zBPjH1LDy1EBVzuMShPncbVEOyVu1ORoh/UeVbdGBow
+         Vz5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b40oZck9H7qomq3L3iW45P12leZXCNdZnJUoXWTUtDI=;
+        b=g0GdLnlS3Z4Tu/OTZhKwj0tALZhvaL69PL4qesko2eWH9IaYBhCVUAZZ9yRZaKfi4b
+         Nidn33Tz3aDFTFGSS4g2gvYmLqnLSpb9oZ5GVaoXGDTpgFmIO41+cL4mMGExOTAZoUo0
+         pVySx+Ydf5uIUCeEtqsNM9m6AcPrmjrIaGoZbooRCVQfIMPcydGkj10au7C5jg4tYX56
+         hEvKbsBsnO/zITWOxRVKQPpPnFePsXEGnxrnfBvVPKp5GU17iiQ/9dKSmrutAZvdwGTz
+         m2cc4eWtwF8BKwK33DcY6lgXuTsmHxXCCLTk752cZKb3r9ORbCBAs80zVuWyTETXvWMv
+         yJgQ==
+X-Gm-Message-State: AOAM530Vib34Bcyk2Vlpdo5PB4o9Pw0AFcIUTLrNMO4/ksFVkCyKAW++
+        nWQ+gj8WDEGQCRx9QpxeKefDE2kKlZMW0knAVrA=
+X-Google-Smtp-Source: ABdhPJwX7uFKLRClqZ9DEZpjMBZHaihfKSdlLd8O8g+VR4Mrr4vMlrxuDdanS1CocbpM+sgd7sUFFIL+jVx2b3aUzAY=
+X-Received: by 2002:a05:6e02:1c01:: with SMTP id l1mr27427925ilh.239.1641426647383;
+ Wed, 05 Jan 2022 15:50:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 1/2] libbpf: Use probe_name for legacy kprobe
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164142600886.21166.4094526896575840947.git-patchwork-notify@kernel.org>
-Date:   Wed, 05 Jan 2022 23:40:08 +0000
-References: <20211227130713.66933-1-wangqiang.wq.frank@bytedance.com>
-In-Reply-To: <20211227130713.66933-1-wangqiang.wq.frank@bytedance.com>
-To:     Qiang Wang <wangqiang.wq.frank@bytedance.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        hengqi.chen@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zhouchengming@bytedance.com,
-        songmuchun@bytedance.com, duanxiongchun@bytedance.com,
-        shekairui@bytedance.com
+References: <ADAFDE41-E3FC-4D96-A8D8-1DAEC56211E9@gmail.com>
+In-Reply-To: <ADAFDE41-E3FC-4D96-A8D8-1DAEC56211E9@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 5 Jan 2022 15:50:36 -0800
+Message-ID: <CAEf4BzY9=Eqs7QnSj0s9uf0_DySO=7ySYXsFzPg2uHKXTbScjg@mail.gmail.com>
+Subject: Re: [Resource Leak] Missing closing files in tools/bpf/bpf_asm.c
+To:     Ryan Cai <ycaibb@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Dec 29, 2021 at 7:40 PM Ryan Cai <ycaibb@gmail.com> wrote:
+>
+> Dear Kernel maintainers,
+>               1. In tools/bpf/bpf_asm.c, the file opened at Line 40 may not closed within the function?
+>               Location: https://github.com/torvalds/linux/blob/5bfc75d92efd494db37f5c4c173d3639d4772966/tools/bpf/bpf_asm.c#L40-L49
+>
+>               Should it be a bug? I can send patches for these.
 
-This series was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
+file will be closed by the kernel on exit, but it would be better to
+close it explicitly, so please feel free to send a fix
 
-On Mon, 27 Dec 2021 21:07:12 +0800 you wrote:
-> Fix a bug in commit 46ed5fc33db9, which wrongly used the
-> func_name instead of probe_name to register legacy kprobe.
-> 
-> Fixes: 46ed5fc33db9 ("libbpf: Refactor and simplify legacy kprobe code")
-> Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
-> Tested-by: Hengqi Chen <hengqi.chen@gmail.com>
-> Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
-> Signed-off-by: Qiang Wang <wangqiang.wq.frank@bytedance.com>
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2,1/2] libbpf: Use probe_name for legacy kprobe
-    https://git.kernel.org/bpf/bpf-next/c/71cff670baff
-  - [v2,2/2] libbpf: Support repeated legacy kprobes on same function
-    https://git.kernel.org/bpf/bpf-next/c/51a33c60f1c2
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+>
+> Best,
+> Ryan
+>
+>
