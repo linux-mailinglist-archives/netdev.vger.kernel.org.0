@@ -2,131 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67BDC484CC2
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 04:15:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D419484CC3
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 04:15:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234515AbiAEDPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 22:15:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59556 "EHLO
+        id S234537AbiAEDPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 22:15:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234307AbiAEDPl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 22:15:41 -0500
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 959FEC061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 19:15:41 -0800 (PST)
-Received: by mail-qv1-xf2c.google.com with SMTP id p12so12160897qvj.6
-        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 19:15:41 -0800 (PST)
+        with ESMTP id S235819AbiAEDPo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 22:15:44 -0500
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2688C061784
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 19:15:44 -0800 (PST)
+Received: by mail-qv1-xf30.google.com with SMTP id p12so12161000qvj.6
+        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 19:15:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jA7RqPfrfFk70WdkcYCoiesx2P7kCHKW6HifwOFPGLo=;
-        b=d7UDB+4b5epaaM89S9MXJH+R5jzz+OfuQsormcHTTEEpj4N1xlXnh/GiXlLw9rvpa6
-         JK2frWEKjvR5ONw5eQdB6slW3RESu1bhs8dYRxW27zvTVv7gP/LCHTRIyv05dOBv+DYs
-         eYxPk7rsQTAXxSds7zbmpE0/tQmAiIMeahyenPlmEN/uDMKrcPl6+pEOyfgdlg/Iu282
-         SDV/Da9F0hiX5DlSgLD5q2SlYH/mUhpsi2l0djN1KkWaMfacZ9DqoUjuKl7nI9y+DQRy
-         Ni2vfQJJzueF4QohmuzR+zRKv1xJHaltf/ax+AGMD3NfxaKt+nnbxe72ug2hmHVgmngz
-         1Y9A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=O/dsKuO43cK9cNbV3OYotS75x4p4oMy+vmubtnF0vUE=;
+        b=GpbmEwoheqRvuUwVH4HcfDjgo36HMMMFYXPgyUfrjxLC8JdD9aceDZmNAWQQ4Y3p07
+         NFWhk67If1HQdfJTaTf7T+ARAWe+KujWEP8jQ6lt0NFTLkm7dxN8URHHsVGGR7sfd4Zj
+         X0HkcoUFwTbJfBwNxZF5lxKN+SUVQt1JQtLVcjJli4bKoqBXUSe++IR0WUt+3/JaNCYD
+         rGEcZfzVq4Kn56gdfv4nYh8UDSlMiEabEVt/XRHCHLkS86L61PpOFqdsXpWi/BeZasX6
+         WwSNvNGSaCyV/OY0dYqcY5FSW1zNcu8cyyy2yfjJsF1Clcij4cXzplZnOGV/RHt8wdWH
+         y9jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jA7RqPfrfFk70WdkcYCoiesx2P7kCHKW6HifwOFPGLo=;
-        b=Kq+Gk3FgJxuGSMipM6uhHiL82s8qp2x6UMMUduYGV7ySO19ymUW0Pqz8qWocCTSbIR
-         1clAaUlnKwtApULvDbgSME5LwAw5xdLLaMyZIPyvF4jhOr8Xko7KC/3tlCyapkEaHy6D
-         30xFc9Cdg6tAG71R6PXyQsPZ07GfZg752YkON6GUYDpUrHoNwnlzf/45vfAr2SaWUHBm
-         7M8JDJGKHZI4CIhlXuBe8MdLe32Bh6ztaD5EMMX6dAKHu7B5LzfPtnWw556P9pvfJDLL
-         DiOWiq0OsAQn3N8CL1zntdttxkyfoDAAOJPd2GokgOii9GvQqaYfPvTPam0rBC+/wwj7
-         vcMQ==
-X-Gm-Message-State: AOAM531le5RIeGEIZ2CwnjTgw3NtjztF7KYhU7LHqtSgiZ8Zw6TfpMge
-        DANLfrChmnZ5geTK+hVnMEc7p6IO77s3cwpe
-X-Google-Smtp-Source: ABdhPJys3N4NcGHV5U+UbM+iw+AACdFhe/87E54qBnJ9ITsaQE1byHf6lvo2mVaYP851Au+7shHPEQ==
-X-Received: by 2002:a05:6214:29cb:: with SMTP id gh11mr35151615qvb.34.1641352540490;
-        Tue, 04 Jan 2022 19:15:40 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=O/dsKuO43cK9cNbV3OYotS75x4p4oMy+vmubtnF0vUE=;
+        b=T6EWRh0hC+gpvynoYdVWmyRCyYv2v/0fHfWeBz3g465tFOhzuvPiDtWVFIvHHxXp57
+         gUT8lIm+TwhhmWxM2jLFNHC/Lge5XhQo7QsrAazeB3OUUGqqQxjdfO0O+M5tDydkLQRv
+         RTTT+gzW8DiNwz469T3dOqDcJnEo+PuN7XdNi94CgXI2PLp8MVPpgdJbTwh3t9UaSK/s
+         N0ge43QpUDcrpuYJAV65OOBT3LMIiGm9CaGLS8CQK/5xsphhxvPnTJSxtGYE35Ca2dmc
+         OX6aSpcxXcWn8FYNGwGTXp7DoX6uTKi+dGD64y8l3iOr0ezu5RUMuhhSNMAxONRCG09l
+         EmDA==
+X-Gm-Message-State: AOAM532Lk0EkIVX6U7ZtW1Msuxp8oYP0m3NCD8xUiPdej673mVNn+hjd
+        /AKH4/LDd8NaTkCWXoRxNS5y8EvLIktfwTCD
+X-Google-Smtp-Source: ABdhPJyNsrMq+E8TXbZnYP7VBQHBar5GNugI5BLo+EyV9xm+yBQhyn98vAAW5uj/jJYlj84hUwA7qg==
+X-Received: by 2002:a05:6214:da1:: with SMTP id h1mr49180090qvh.23.1641352543618;
+        Tue, 04 Jan 2022 19:15:43 -0800 (PST)
 Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
-        by smtp.gmail.com with ESMTPSA id t11sm32607629qkp.56.2022.01.04.19.15.37
+        by smtp.gmail.com with ESMTPSA id t11sm32607629qkp.56.2022.01.04.19.15.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Jan 2022 19:15:39 -0800 (PST)
+        Tue, 04 Jan 2022 19:15:43 -0800 (PST)
 From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, olteanv@gmail.com, alsi@bang-olufsen.dk,
-        arinc.unal@arinc9.com, frank-w@public-files.de
-Subject: [PATCH net-next v4 00/11] net: dsa: realtek: MDIO interface and RTL8367S
-Date:   Wed,  5 Jan 2022 00:15:04 -0300
-Message-Id: <20220105031515.29276-1-luizluca@gmail.com>
+        arinc.unal@arinc9.com, frank-w@public-files.de,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Subject: [PATCH net-next v4 01/11] net: dsa: realtek-smi: move to subdirectory
+Date:   Wed,  5 Jan 2022 00:15:05 -0300
+Message-Id: <20220105031515.29276-2-luizluca@gmail.com>
 X-Mailer: git-send-email 2.34.0
+In-Reply-To: <20220105031515.29276-1-luizluca@gmail.com>
+References: <20220105031515.29276-1-luizluca@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The old realtek-smi driver was linking subdrivers into a single
-realtek-smi.ko After this series, each subdriver will be an independent
-module required by either realtek-smi (platform driver) or the new
-realtek-mdio (mdio driver). Both interface drivers (SMI or MDIO) are
-independent, and they might even work side-by-side, although it will be
-difficult to find such device. The subdriver can be individually
-selected but only at buildtime, saving some storage space for custom
-embedded systems.
+Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ MAINTAINERS                                   |  3 +--
+ drivers/net/dsa/Kconfig                       | 12 +----------
+ drivers/net/dsa/Makefile                      |  3 +--
+ drivers/net/dsa/realtek/Kconfig               | 20 +++++++++++++++++++
+ drivers/net/dsa/realtek/Makefile              |  3 +++
+ .../net/dsa/{ => realtek}/realtek-smi-core.c  |  0
+ .../net/dsa/{ => realtek}/realtek-smi-core.h  |  0
+ drivers/net/dsa/{ => realtek}/rtl8365mb.c     |  0
+ drivers/net/dsa/{ => realtek}/rtl8366.c       |  0
+ drivers/net/dsa/{ => realtek}/rtl8366rb.c     |  0
+ 10 files changed, 26 insertions(+), 15 deletions(-)
+ create mode 100644 drivers/net/dsa/realtek/Kconfig
+ create mode 100644 drivers/net/dsa/realtek/Makefile
+ rename drivers/net/dsa/{ => realtek}/realtek-smi-core.c (100%)
+ rename drivers/net/dsa/{ => realtek}/realtek-smi-core.h (100%)
+ rename drivers/net/dsa/{ => realtek}/rtl8365mb.c (100%)
+ rename drivers/net/dsa/{ => realtek}/rtl8366.c (100%)
+ rename drivers/net/dsa/{ => realtek}/rtl8366rb.c (100%)
 
-Existing realtek-smi devices continue to work untouched during the
-tests. The realtek-smi was moved into a realtek subdirectory, but it
-normally does not break things.
-
-I couldn't identify a fixed relation between port numbers (0..9) and
-external interfaces (0..2), and I'm not sure if it is fixed for each
-chip version or a device configuration. Until there is more info about
-it, there is a new port property "realtek,ext-int" that can inform the
-external interface.
-
-The rtl8365mb might now handle multiple CPU ports and extint ports not
-used as CPU ports. RTL8367S has an SGMII external interface, but my test
-device (TP-Link Archer C5v4) uses only the second RGMII interface. We
-need a test device with more external ports to test these features.
-The driver still cannot handle SGMII ports.
-
-The rtl8365mb was tested with a MDIO-connected RTL8367S (TP-Link Acher
-C5v4) and a SMI-connected RTL8365MB-VC switch (Asus RT-AC88U)
-
-The rtl8366rb subdriver was not tested with this patch series, but it
-was only slightly touched. It would be nice to test it, especially in an
-MDIO-connected switch.
-
-Best,
-
-Luiz
-
-Changelog:
-
-v1-v2)
-- formatting fixes
-- dropped the rtl8365mb->rtl8367c rename
-- other suggestions
-	
-v2-v3)
-* realtek-mdio.c:
-  - cleanup realtek-mdio.c (BUG_ON, comments and includes)   
-  - check devm_regmap_init return code
-  - removed realtek,rtl8366s string from realtek-mdio
-* realtek-smi.c:
-  - removed void* type cast
-* rtl8365mb.c:
-  - using macros to identify EXT interfaces
-  - rename some extra extport->extint cases
-  - allow extint as non cpu (not tested)
-  - allow multple cpu ports (not tested)
-  - dropped cpu info from struct rtl8365mb
-* dropped dt-bindings changes (dealing outside this series)
-* formatting issues fixed
-
-v3-v4)
-* fix cover message numbering 0/13 -> 0/11
-* use static for realtek_mdio_read_reg
-  - Reported-by: kernel test robot <lkp@intel.com>
-* use dsa_switch_for_each_cpu_port
-* mention realtek_smi_{variant,ops} to realtek_{variant,ops}
-  in commit message
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0b5fdb517c76..fc63d1e46798 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16161,8 +16161,7 @@ REALTEK RTL83xx SMI DSA ROUTER CHIPS
+ M:	Linus Walleij <linus.walleij@linaro.org>
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/net/dsa/realtek-smi.txt
+-F:	drivers/net/dsa/realtek-smi*
+-F:	drivers/net/dsa/rtl83*
++F:	drivers/net/dsa/realtek/*
+ 
+ REALTEK WIRELESS DRIVER (rtlwifi family)
+ M:	Ping-Ke Shih <pkshih@realtek.com>
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index 7b1457a6e327..1251caf0f638 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -67,17 +67,7 @@ config NET_DSA_QCA8K
+ 	  This enables support for the Qualcomm Atheros QCA8K Ethernet
+ 	  switch chips.
+ 
+-config NET_DSA_REALTEK_SMI
+-	tristate "Realtek SMI Ethernet switch family support"
+-	select NET_DSA_TAG_RTL4_A
+-	select NET_DSA_TAG_RTL8_4
+-	select FIXED_PHY
+-	select IRQ_DOMAIN
+-	select REALTEK_PHY
+-	select REGMAP
+-	help
+-	  This enables support for the Realtek SMI-based switch
+-	  chips, currently only RTL8366RB.
++source "drivers/net/dsa/realtek/Kconfig"
+ 
+ config NET_DSA_SMSC_LAN9303
+ 	tristate
+diff --git a/drivers/net/dsa/Makefile b/drivers/net/dsa/Makefile
+index 8da1569a34e6..e73838c12256 100644
+--- a/drivers/net/dsa/Makefile
++++ b/drivers/net/dsa/Makefile
+@@ -9,8 +9,6 @@ obj-$(CONFIG_NET_DSA_LANTIQ_GSWIP) += lantiq_gswip.o
+ obj-$(CONFIG_NET_DSA_MT7530)	+= mt7530.o
+ obj-$(CONFIG_NET_DSA_MV88E6060) += mv88e6060.o
+ obj-$(CONFIG_NET_DSA_QCA8K)	+= qca8k.o
+-obj-$(CONFIG_NET_DSA_REALTEK_SMI) += realtek-smi.o
+-realtek-smi-objs		:= realtek-smi-core.o rtl8366.o rtl8366rb.o rtl8365mb.o
+ obj-$(CONFIG_NET_DSA_SMSC_LAN9303) += lan9303-core.o
+ obj-$(CONFIG_NET_DSA_SMSC_LAN9303_I2C) += lan9303_i2c.o
+ obj-$(CONFIG_NET_DSA_SMSC_LAN9303_MDIO) += lan9303_mdio.o
+@@ -23,5 +21,6 @@ obj-y				+= microchip/
+ obj-y				+= mv88e6xxx/
+ obj-y				+= ocelot/
+ obj-y				+= qca/
++obj-y				+= realtek/
+ obj-y				+= sja1105/
+ obj-y				+= xrs700x/
+diff --git a/drivers/net/dsa/realtek/Kconfig b/drivers/net/dsa/realtek/Kconfig
+new file mode 100644
+index 000000000000..1c62212fb0ec
+--- /dev/null
++++ b/drivers/net/dsa/realtek/Kconfig
+@@ -0,0 +1,20 @@
++# SPDX-License-Identifier: GPL-2.0-only
++menuconfig NET_DSA_REALTEK
++	tristate "Realtek Ethernet switch family support"
++	depends on NET_DSA
++	select NET_DSA_TAG_RTL4_A
++	select NET_DSA_TAG_RTL8_4
++	select FIXED_PHY
++	select IRQ_DOMAIN
++	select REALTEK_PHY
++	select REGMAP
++	help
++	  Select to enable support for Realtek Ethernet switch chips.
++
++config NET_DSA_REALTEK_SMI
++	tristate "Realtek SMI connected switch driver"
++	depends on NET_DSA_REALTEK
++	default y
++	help
++	  Select to enable support for registering switches connected
++	  through SMI.
+diff --git a/drivers/net/dsa/realtek/Makefile b/drivers/net/dsa/realtek/Makefile
+new file mode 100644
+index 000000000000..323b921bfce0
+--- /dev/null
++++ b/drivers/net/dsa/realtek/Makefile
+@@ -0,0 +1,3 @@
++# SPDX-License-Identifier: GPL-2.0
++obj-$(CONFIG_NET_DSA_REALTEK_SMI) 	+= realtek-smi.o
++realtek-smi-objs			:= realtek-smi-core.o rtl8366.o rtl8366rb.o rtl8365mb.o
+diff --git a/drivers/net/dsa/realtek-smi-core.c b/drivers/net/dsa/realtek/realtek-smi-core.c
+similarity index 100%
+rename from drivers/net/dsa/realtek-smi-core.c
+rename to drivers/net/dsa/realtek/realtek-smi-core.c
+diff --git a/drivers/net/dsa/realtek-smi-core.h b/drivers/net/dsa/realtek/realtek-smi-core.h
+similarity index 100%
+rename from drivers/net/dsa/realtek-smi-core.h
+rename to drivers/net/dsa/realtek/realtek-smi-core.h
+diff --git a/drivers/net/dsa/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+similarity index 100%
+rename from drivers/net/dsa/rtl8365mb.c
+rename to drivers/net/dsa/realtek/rtl8365mb.c
+diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/realtek/rtl8366.c
+similarity index 100%
+rename from drivers/net/dsa/rtl8366.c
+rename to drivers/net/dsa/realtek/rtl8366.c
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/realtek/rtl8366rb.c
+similarity index 100%
+rename from drivers/net/dsa/rtl8366rb.c
+rename to drivers/net/dsa/realtek/rtl8366rb.c
+-- 
+2.34.0
 
