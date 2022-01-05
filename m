@@ -2,136 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4670C485391
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:27:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9C104853AA
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:38:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240351AbiAEN07 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 08:26:59 -0500
-Received: from marcansoft.com ([212.63.210.85]:43092 "EHLO mail.marcansoft.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236846AbiAEN04 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jan 2022 08:26:56 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id CAEB441F4A;
-        Wed,  5 Jan 2022 13:26:46 +0000 (UTC)
-Subject: Re: [PATCH v2 10/35] brcmfmac: firmware: Allow platform to override
- macaddr
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20220104072658.69756-1-marcan@marcan.st>
- <20220104072658.69756-11-marcan@marcan.st>
- <CAHp75VcU1vVSucvegmSiMLoKBoPoGW5XLmqVUG0vXGdeafm2Jw@mail.gmail.com>
-From:   Hector Martin <marcan@marcan.st>
-Message-ID: <b4f50489-fa4b-2c40-31ad-1b74e916cdb4@marcan.st>
-Date:   Wed, 5 Jan 2022 22:26:44 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S240396AbiAENic (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 08:38:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58810 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233322AbiAENib (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 08:38:31 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE54C061761
+        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 05:38:31 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id p15so67675580ybk.10
+        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 05:38:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QXXKQxSnrfnzNLT26Z/C+YfqOKyEAuA8Hi3rJKTlPjI=;
+        b=n0Nt+0luPXL1MVhPcfeKZtQl2OHqrTSzNwQ6Fp8NlYhbENRTW/J2VmOZ1voZPTzd4P
+         mLy4HiKbaqWiPMT8XLxyrptYAiib+ZuhHj18Nx+H4gG8LwriTCpKwlsdwi28CvWNtXfc
+         E9B3Zn83LrWQAkucn2xWcAf82Lf5iSn3z6f+tKtnAw9OyWOat/tLJfLzEwgsepAo3EfF
+         8uMxKWtBUulqQeWWB9gBeH1EfC+0UAncJfQcsa24Ok632+9LGzdAQxfAs3ahzJpLG8dd
+         DcsF9Lj1WWjKXcre48Dscy4NT3OLVd/AcwjVrckurwXGfuGq2MseXAXXRpVwUZaJDwRP
+         WpCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QXXKQxSnrfnzNLT26Z/C+YfqOKyEAuA8Hi3rJKTlPjI=;
+        b=nHRAnIzqKsFXN/GPBLNG50Nnr4tUFnfVIzyekrnSnDUIwrRjKTSlAjkVuBIp2rH5Fb
+         5JiJJ4Xocn/ubM3RT7v7z7v/zuD7aPzpBhAZk49W6kHZJOmIb7AkpWgk5UqrchzFG/5y
+         gcUb2R3ijy9PN1hE6VG4vMK4nyRIXmFfE1xshAdpPwnnszAVY5qqe3lOXsiutywLZiM5
+         IhXY3+owYWn5jQywezmNPuFQAE6VtR2tCnl5X8yO8FpK5WGXQ79bv7P03mHKcdU9E3vQ
+         SVNSSke4oDPxIL4VKi42YC5rPfzXJY2PaySRlCenGFQEl1FRbLJFdbAYjWb5SGNK9/z0
+         CNDA==
+X-Gm-Message-State: AOAM532RkUySrqcAK465ZGn6C13YeVCFRvda3AA5oAxz8r1pXYr1j7kx
+        z5l6b5P7CNemr7CkATMRJ/sSP7/U3n3/jxJGSvZIOBzLuF//5Q==
+X-Google-Smtp-Source: ABdhPJzRc91OKsGekcgrViJCWSaA1uPTMvy5zZaoEZfkMs7vfIxyCJ7aKDPsTrb2ZKxClZdf5nfQLceQvT+R5xudyA4=
+X-Received: by 2002:a25:824c:: with SMTP id d12mr53909701ybn.5.1641389909879;
+ Wed, 05 Jan 2022 05:38:29 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAHp75VcU1vVSucvegmSiMLoKBoPoGW5XLmqVUG0vXGdeafm2Jw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: es-ES
-Content-Transfer-Encoding: 7bit
+References: <CA+wXwBRbLq6SW39qCD8GNG98YD5BJR2MFXmJV2zU1xwFjC-V0A@mail.gmail.com>
+In-Reply-To: <CA+wXwBRbLq6SW39qCD8GNG98YD5BJR2MFXmJV2zU1xwFjC-V0A@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 5 Jan 2022 05:38:18 -0800
+Message-ID: <CANn89iLbKNkB9bzkA2nk+d2c6rq40-6-h9LXAVFCkub=T4BGsQ@mail.gmail.com>
+Subject: Re: Expensive tcp_collapse with high tcp_rmem limit
+To:     Daniel Dao <dqminh@cloudflare.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Marek Majkowski <marek@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/01/2022 23.23, Andy Shevchenko wrote:
-> On Tue, Jan 4, 2022 at 9:29 AM Hector Martin <marcan@marcan.st> wrote:
->>
->> On Device Tree platforms, it is customary to be able to set the MAC
->> address via the Device Tree, as it is often stored in system firmware.
->> This is particularly relevant for Apple ARM64 platforms, where this
->> information comes from system configuration and passed through by the
->> bootloader into the DT.
->>
->> Implement support for this by fetching the platform MAC address and
->> adding or replacing the macaddr= property in nvram. This becomes the
->> dongle's default MAC address.
->>
->> On platforms with an SROM MAC address, this overrides it. On platforms
->> without one, such as Apple ARM64 devices, this is required for the
->> firmware to boot (it will fail if it does not have a valid MAC at all).
-> 
-> ...
-> 
->> +#define BRCMF_FW_MACADDR_FMT                   "macaddr=%pM"
->> +#define BRCMF_FW_MACADDR_LEN                   (7 + ETH_ALEN * 3)
-> 
-> ...
-> 
->>                 if (strncmp(&nvp->data[nvp->entry], "boardrev", 8) == 0)
->>                         nvp->boardrev_found = true;
->> +               /* strip macaddr if platform MAC overrides */
->> +               if (nvp->strip_mac &&
->> +                   strncmp(&nvp->data[nvp->entry], "macaddr", 7) == 0)
-> 
-> If it has no side effects, I would rather swap the operands of && so
-> you match string first (it will be in align with above code at least,
-> although I haven't checked bigger context).
+On Wed, Jan 5, 2022 at 4:15 AM Daniel Dao <dqminh@cloudflare.com> wrote:
+>
+> Hello,
+>
+> We are looking at increasing the maximum value of TCP receive buffer in order
+> to take better advantage of high BDP links. For historical reasons (
+> https://blog.cloudflare.com/the-story-of-one-latency-spike/), this was set to
+> a lower than default value.
+>
+> We are still occasionally seeing long time spent in tcp_collapse, and the time
+> seems to be proportional with max rmem. For example, with net.ipv4.tcp_rmem = 8192 2097152 16777216,
+> we observe tcp_collapse latency with the following bpftrace command:
+>
 
-I usually check for trivial flags before calling more expensive
-functions because it's more efficient in the common case. Obviously here
-performance doesn't matter though.
+I suggest you add more traces, like the payload/truesize ratio when
+these events happen.
+and tp->rcv_ssthresh, sk->sk_rcvbuf
 
-> 
-> ....
-> 
->> +static void brcmf_fw_add_macaddr(struct nvram_parser *nvp, u8 *mac)
->> +{
->> +       snprintf(&nvp->nvram[nvp->nvram_len], BRCMF_FW_MACADDR_LEN + 1,
->> +                BRCMF_FW_MACADDR_FMT, mac);
-> 
-> Please, avoid using implict format string, it's dangerous from security p.o.v.
+TCP stack by default assumes a conservative [1] payload/truesize ratio of 50%
 
-What do you mean by implicit format string? The format string is at the
-top of the file and its length is right next to it, which makes it
-harder for them to accidentally fall out of sync.
+Meaning that a 16MB sk->rcvbuf would translate to a TCP RWIN of 8MB.
 
-+#define BRCMF_FW_MACADDR_FMT			"macaddr=%pM"
-+#define BRCMF_FW_MACADDR_LEN			(7 + ETH_ALEN * 3)
+I suspect that you use XDP, and standard MTU=1500.
+Drivers in XDP mode use one page (4096 bytes on x86) per incoming frame.
+In this case, the ratio is ~1428/4096 = 35%
 
-> 
->> +       nvp->nvram_len += BRCMF_FW_MACADDR_LEN + 1;
-> 
-> Also, with temporary variable the code can be better to read
-> 
-> size_t mac_len = ...;
-> 
+This is one of the reason we switched to a 4K MTU at Google, because we
+have an effective ratio close to 100% (even if XDP was used)
 
-Sure.
+[1] The 50% ratio of TCP is defeated with small MSS, and malicious traffic.
 
--- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+
+>   bpftrace -e 'kprobe:tcp_collapse { @start[tid] = nsecs; } kretprobe:tcp_collapse /@start[tid] != 0/ { $us = (nsecs - @start[tid])/1000; @us = hist($us); delete(@start[tid]); printf("%ld us\n", $us);} interval:s:6000 { exit(); }'
+>   Attaching 3 probes...
+>   15496 us
+>   14301 us
+>   12248 us
+>   @us:
+>   [8K, 16K)              3 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+>
+> Spending up to 16ms with 16MiB maximum receive buffer seems high.  Are there any
+> recommendations on possible approaches to reduce the tcp_collapse latency ?
+> Would clamping the duration of a tcp_collapse call be reasonable, since we only
+> need to spend enough time to free space to queue the required skb ?
+
+It depends if the incoming skb is queued in in-order queue or
+out-of-order queue.
+For out-of-orders, we have a strategy in tcp_prune_ofo_queue() which
+should work reasonably well after commit
+72cd43ba64fc17 tcp: free batches of packets in tcp_prune_ofo_queue()
+
+Given the nature of tcp_collapse(), limiting it to even 1ms of processing time
+would still allow for malicious traffic to hurt you quite a lot.
