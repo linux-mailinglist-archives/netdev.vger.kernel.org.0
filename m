@@ -2,80 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B67A4855E0
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 16:31:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 548F84855E2
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 16:31:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241491AbiAEPbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 10:31:01 -0500
-Received: from www62.your-server.de ([213.133.104.62]:55196 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230238AbiAEPa4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 10:30:56 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1n58FW-0004R0-ES; Wed, 05 Jan 2022 16:30:50 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1n58FW-000NQQ-2K; Wed, 05 Jan 2022 16:30:50 +0100
-Subject: Re: [PATCH net 1/1] net: openvswitch: Fix ct_state nat flags for
- conns arriving from tc
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Paul Blakey <paulb@nvidia.com>, dev@openvswitch.org,
-        netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-        Pravin B Shelar <pshelar@ovn.org>, davem@davemloft.net,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        john.fastabend@gmail.com
-References: <20220104082821.22487-1-paulb@nvidia.com>
- <776c2688-72db-4ad6-45e5-73bc08b78615@mojatatu.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <72368c25-83c5-565f-0512-ca5d58315685@iogearbox.net>
-Date:   Wed, 5 Jan 2022 16:30:49 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S241497AbiAEPb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 10:31:56 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59312 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230238AbiAEPbz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 10:31:55 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24E5B617B4;
+        Wed,  5 Jan 2022 15:31:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31E8FC36AE0;
+        Wed,  5 Jan 2022 15:31:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1641396714;
+        bh=nuJNBS2qVoVTLoQDvBf7yMXT+ENwHke+Ux4z4wI3J7A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rQ0518WdRkB8jaK0VpGJuCODnbkaf0Vh/kXOJkH89ptXvW+3CEXEkROzt1PChgizg
+         45h6CPGUUmX/F8ACFiFqvy2tgSRzPDnnYp0PKYnHifp1QccbjX8Ie7iy835Pg+B435
+         fkGFF3mBtrmF4K7xfChMnerC6BegxwhMg6RRqwdU=
+Date:   Wed, 5 Jan 2022 16:31:51 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Aaron Ma <aaron.ma@canonical.com>
+Cc:     kuba@kernel.org, henning.schild@siemens.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        hayeswang@realtek.com, tiwai@suse.de
+Subject: Re: [PATCH 1/3 v3] net: usb: r8152: Check used MAC passthrough
+ address
+Message-ID: <YdW55+x9oVqgNMn7@kroah.com>
+References: <20220105151427.8373-1-aaron.ma@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <776c2688-72db-4ad6-45e5-73bc08b78615@mojatatu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26413/Wed Jan  5 10:23:50 2022)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220105151427.8373-1-aaron.ma@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/5/22 3:57 PM, Jamal Hadi Salim wrote:
-> On 2022-01-04 03:28, Paul Blakey wrote:
-> [..]
->> --- a/include/linux/skbuff.h
->> +++ b/include/linux/skbuff.h
->> @@ -287,7 +287,9 @@ struct tc_skb_ext {
->>       __u32 chain;
->>       __u16 mru;
->>       __u16 zone;
->> -    bool post_ct;
->> +    bool post_ct:1;
->> +    bool post_ct_snat:1;
->> +    bool post_ct_dnat:1;
->>   };
+On Wed, Jan 05, 2022 at 11:14:25PM +0800, Aaron Ma wrote:
+> When plugin multiple r8152 ethernet dongles to Lenovo Docks
+> or USB hub, MAC passthrough address from BIOS should be
+> checked if it had been used to avoid using on other dongles.
 > 
-> is skb_ext intended only for ovs? If yes, why does it belong
-> in the core code? Ex: Looking at tcf_classify() which is such
-> a core function in the fast path any packet going via tc, it
-> is now encumbered with with checking presence of skb_ext.
-> I know passing around metadata is a paramount requirement
-> for programmability but this is getting messier with speacial
-> use cases for ovs and/or offload...
+> Currently builtin r8152 on Dock still can't be identified.
+> First detected r8152 will use the MAC passthrough address.
+> 
+> v2:
+> Skip builtin PCI MAC address which is share MAC address with
+> passthrough MAC.
+> Check thunderbolt based ethernet.
+> 
+> v3:
+> Add return value.
 
-Full ack on the bloat for corner cases like ovs offload, especially
-given distros just enable most stuff anyway and therefore no light
-fast path as with !CONFIG_NET_TC_SKB_EXT. :(
+All of this goes below the --- line.
 
-Could this somehow be hidden behind static key or such if offloads
-are not used, so we can shrink it back to just calling into plain
-__tcf_classify() for sw-only use cases (like BPF)?
+You have read the kernel documentation for how to do all of this, right?
+If not, please re-read it.
+
+> 
+> Fixes: f77b83b5bbab ("net: usb: r8152: Add MAC passthrough support for
+> more Lenovo Docks")
+
+This line should not be wrapped.
+
+
+
+> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+> ---
+>  drivers/net/usb/r8152.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+> 
+> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+> index f9877a3e83ac..2483dc421dff 100644
+> --- a/drivers/net/usb/r8152.c
+> +++ b/drivers/net/usb/r8152.c
+> @@ -25,6 +25,7 @@
+>  #include <linux/atomic.h>
+>  #include <linux/acpi.h>
+>  #include <linux/firmware.h>
+> +#include <linux/pci.h>
+
+Why does a USB driver care about PCI stuff?
+
+>  #include <crypto/hash.h>
+>  #include <linux/usb/r8152.h>
+>  
+> @@ -1605,6 +1606,7 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
+>  	char *mac_obj_name;
+>  	acpi_object_type mac_obj_type;
+>  	int mac_strlen;
+> +	struct net_device *ndev;
+>  
+>  	if (tp->lenovo_macpassthru) {
+>  		mac_obj_name = "\\MACA";
+> @@ -1662,6 +1664,19 @@ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
+>  		ret = -EINVAL;
+>  		goto amacout;
+>  	}
+> +	rcu_read_lock();
+> +	for_each_netdev_rcu(&init_net, ndev) {
+> +		if (ndev->dev.parent && dev_is_pci(ndev->dev.parent) &&
+
+Ick ick ick.
+
+No, don't go poking around in random parent devices of a USB device,
+that is a sure way to break things.
+
+> +				!pci_is_thunderbolt_attached(to_pci_dev(ndev->dev.parent)))
+
+So thunderbolt USB hubs are a problem here?
+
+No, this is not the correct way to handle this at all.  There should be
+some sort of identifier on the USB device itself to say that it is in a
+docking station and needs to have special handling.  If not, then the
+docking station is broken and needs to be returned.
+
+Can you please revert the offending patch first so that people's systems
+go back to working properly first?  Then worry about trying to uniquely
+identify these crazy devices.
+
+Again, this is not a way to do it, sorry.
+
+greg k-h
