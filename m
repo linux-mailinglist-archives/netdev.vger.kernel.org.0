@@ -2,471 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7B58485049
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 10:43:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A576485086
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 11:00:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239010AbiAEJnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 04:43:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239006AbiAEJnT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 04:43:19 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9FCC061761;
-        Wed,  5 Jan 2022 01:43:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ZaE1nZoIRZ8RsL/zqQhiX34X1YHI1WzxoWwTLAVoaXs=; b=RHwwnnVQTc2A8yyMkR/W97VLaM
-        lA8T5tNII7hwH17NG5euI/p71k8E5Yhr4XlF8FbCMPz5t4ROw8TOlIeD9xImnsKPDgozRDBE83Sxm
-        NWdnbiqTq8gLI3z/DSSPSR4iQ8s7w6XkcF2nL+WW8LIRdqnkJohsAiMCXVN3ZZ5sJBwxrQ/7lS5go
-        O/mWkgSHd+9xUV9zXKeT0FdhspBX3yAqBIOs6Z9c+envfmY3VQqaipAN09p5R/hrqFNLyaS7FwHPv
-        PH8tVnSWNsStJ5owGXTRGiH08Mz4smB99JBhXRmZWwILy1dIcMtb7GlQW1E7M3MLpww2qG3wEwpkk
-        51shjz0g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56586)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1n52or-0007uC-Hm; Wed, 05 Jan 2022 09:42:57 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1n52om-0008KD-9Y; Wed, 05 Jan 2022 09:42:52 +0000
-Date:   Wed, 5 Jan 2022 09:42:52 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     zhuyinbo <zhuyinbo@loongson.cn>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
-        masahiroy@kernel.org, michal.lkml@markovi.net,
-        ndesaulniers@google.com, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] modpost: file2alias: fixup mdio alias garbled
- code in modules.alias
-Message-ID: <YdVoHMZIAsv2rAu8@shell.armlinux.org.uk>
-References: <1637919957-21635-1-git-send-email-zhuyinbo@loongson.cn>
- <c6d37ae0-9ccb-a527-4f55-e96972813a53@gmail.com>
- <YaYPMOJ/+OXIWcnj@shell.armlinux.org.uk>
- <YabEHd+Z5SPAhAT5@lunn.ch>
- <f91f4fff-8bdf-663b-68f5-b8ccbd0c187a@loongson.cn>
- <257a0fbf-941e-2d9e-50b4-6e34d7061405@loongson.cn>
- <ba055ee6-9d81-3088-f395-8e4e1d9ba136@loongson.cn>
+        id S239147AbiAEJ75 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 04:59:57 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:15404 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239133AbiAEJ7z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 04:59:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1641376795; x=1672912795;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=R0gYk0fmYoG3XTMQFDch/j+AW6D6z74sgXAgSuH8zJ0=;
+  b=UwVz45baG9V+V29rQgf/vgb2KfLz0DKqfn+FuQyDM6McC+73nzy+FI92
+   4FObvlVeCb3picRempV6SNa0PRQTY2eoXBvd7yp13HREL0IkhKsmBVAIY
+   +YohZAgCM8CLhx3izUIREPltfReYStowze+D9JDhqEHKqqAgJ6hNepVUA
+   x+u7PKf4NGsosea5q/Dhir+ONnmc4G+lt4QRNhDuCDEOYhlNT4gA1bpyo
+   zHGrmAG14NgZVoerSYfWMoOB+0rwzxkCdDvrn4gmzdqdyTm9SQGy5pQ8g
+   NcM3IzUHt0fkPn0UnQfOxb4X/QA7Z9um/AwM7R3P38pkCScaO7GgIP6cH
+   Q==;
+IronPort-SDR: K2c3jFQjdaqD+tsdI/Zo7H/El4PmX2WlICaFHzWcgjCR+OiGXAZlMNLspD8ZJSUSgvgKW99lZX
+ th/TVsviYOqfuO2ydXFqireBLcTsb1MPqXQiRa50cCiB8CHjg9PwFbHT6fbDIVPO70EiBGEnay
+ YCWTbKLGcD9FYrEug3IwG2sxkS7G39kxHMFUCMAAPWcy/KJF3IIP79/P0lx3k9na4JbInOzS9f
+ 2W3JCV3WzfuPgIW3yByTwBmF7g7wAFMfuUU3O16IRB1D99/WNU47Pdx574/1p+mCQczSRP70Z8
+ 7Z3ELwLcOyZCUyXa/RqaP+Dd
+X-IronPort-AV: E=Sophos;i="5.88,263,1635231600"; 
+   d="scan'208";a="144400832"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Jan 2022 02:59:42 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 5 Jan 2022 02:59:37 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Wed, 5 Jan 2022 02:59:37 -0700
+Date:   Wed, 5 Jan 2022 11:01:52 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH net-next 07/15] net: dsa: remove cross-chip support for
+ MRP
+Message-ID: <20220105100152.cnu3zcjmqp6vizer@soft-dev3-1.localhost>
+References: <20220104171413.2293847-1-vladimir.oltean@nxp.com>
+ <20220104171413.2293847-8-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ba055ee6-9d81-3088-f395-8e4e1d9ba136@loongson.cn>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <20220104171413.2293847-8-vladimir.oltean@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 11:33:52AM +0800, zhuyinbo wrote:
-> 在 2022/1/4 下午9:11, zhuyinbo 写道:
-> > 在 2021/12/7 下午5:41, zhuyinbo 写道:
-> > > 在 2021/12/1 上午8:38, Andrew Lunn 写道:
-> > > > > However, this won't work for PHY devices created _before_ the kernel
-> > > > > has mounted the rootfs, whether or not they end up being used. So,
-> > > > > every PHY mentioned in DT will be created before the rootfs is mounted,
-> > > > > and none of these PHYs will have their modules loaded.
-> > > > 
-> > > > Hi Russell
-> > > > 
-> > > > I think what you are saying here is, if the MAC or MDIO bus driver is
-> > > > built in, the PHY driver also needs to be built in?
-> > > > 
-> > > > If the MAC or MDIO bus driver is a module, it means the rootfs has
-> > > > already been mounted in order to get these modules. And so the PHY
-> > > > driver as a module will also work.
-> > > > 
-> > > > > I believe this is the root cause of Yinbo Zhu's issue.
-> > > 
-> > > I think you should be right and I had did lots of test but use
-> > > rquest_module it doesn't load marvell module, and dts does't include
-> > > any phy node. even though I was use "marvell" as input's args of
-> > > request_module.
-> > > > 
-> > > > You are speculating that in Yinbo Zhu case, the MAC driver is built
-> > > > in, the PHY is a module. The initial request for the firmware fails.
-> > > > Yinbo Zhu would like udev to try again later when the modules are
-> > > > available.
-> > > > 
-> > > > > What we _could_ do is review all device trees and PHY drivers to see
-> > > > > whether DT modaliases are ever used for module loading. If they aren't,
-> > > > > then we _could_ make the modalias published by the kernel conditional
-> > > > > on the type of mdio device - continue with the DT approach for non-PHY
-> > > > > devices, and switch to the mdio: scheme for PHY devices. I repeat, this
-> > > > > can only happen if no PHY drivers match using the DT scheme, otherwise
-> > > > > making this change _will_ cause a regression.
-> > > > 
-> > > 
-> > > > Take a look at
-> > > > drivers/net/mdio/of_mdio.c:whitelist_phys[] and the comment above it.
-> > > > 
-> > > > So there are some DT blobs out there with compatible strings for
-> > > > PHYs. I've no idea if they actually load that way, or the standard PHY
-> > > > mechanism is used.
-> > > > 
-> > > >     Andrew
-> > > > 
-> > > 
-> > > 
-> > >  > That is not true universally for all MDIO though - as
-> > >  > xilinx_gmii2rgmii.c clearly shows. That is a MDIO driver which uses DT
-> > >  > the compatible string to do the module load. So, we have proof there
-> > >  > that Yinbo Zhu's change will definitely cause a regression which we
-> > >  > can not allow.
-> > > 
-> > > I don't understand that what you said about regression.  My patch
-> > > doesn't cause  xilinx_gmii2rgmii.c driver load fail, in this time
-> > > that do_of_table and platform_uevent will be responsible "of" type
-> > > driver auto load and my patch was responsible for "mdio" type driver
-> > > auto load,
-> > > In default code. There are request_module to load phy driver, but as
-> > > Russell King said that request_module doesn't garantee auto load
-> > > will always work well, but udev mechanism can garantee it. and udev
-> > > mechaism is more mainstream, otherwise mdio_uevent is useless. if
-> > > use udev mechanism that my patch was needed. and if apply my patch
-> > > it doesn't cause request_module mechaism work bad because I will add
-> > > following change:
-> > > 
-> > > 
-> > > 
-> > > -       ret = request_module(MDIO_MODULE_PREFIX MDIO_ID_FMT,
-> > > -                            MDIO_ID_ARGS(phy_id));
-> > > +       ret = request_module(MDIO_MODULE_PREFIX MDIO_ID_FMT, phy_id);
-> > >          /* We only check for failures in executing the usermode binary,
-> > >           * not whether a PHY driver module exists for the PHY ID.
-> > >           * Accept -ENOENT because this may occur in case no
-> > > initramfs exists,
-> > > diff --git a/include/linux/mod_devicetable.h
-> > > b/include/linux/mod_devicetable.h
-> > > index 7bd23bf..bc6ea0d 100644
-> > > --- a/include/linux/mod_devicetable.h
-> > > +++ b/include/linux/mod_devicetable.h
-> > > @@ -600,16 +600,7 @@ struct platform_device_id {
-> > >   #define MDIO_NAME_SIZE         32
-> > >   #define MDIO_MODULE_PREFIX     "mdio:"
-> > > 
-> > > -#define MDIO_ID_FMT
-> > > "%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u%u"
-> > > -#define MDIO_ID_ARGS(_id) \
-> > > -       ((_id)>>31) & 1, ((_id)>>30) & 1, ((_id)>>29) & 1,
-> > > ((_id)>>28) & 1, \
-> > > -       ((_id)>>27) & 1, ((_id)>>26) & 1, ((_id)>>25) & 1,
-> > > ((_id)>>24) & 1, \
-> > > -       ((_id)>>23) & 1, ((_id)>>22) & 1, ((_id)>>21) & 1,
-> > > ((_id)>>20) & 1, \
-> > > -       ((_id)>>19) & 1, ((_id)>>18) & 1, ((_id)>>17) & 1,
-> > > ((_id)>>16) & 1, \
-> > > -       ((_id)>>15) & 1, ((_id)>>14) & 1, ((_id)>>13) & 1,
-> > > ((_id)>>12) & 1, \
-> > > -       ((_id)>>11) & 1, ((_id)>>10) & 1, ((_id)>>9) & 1, ((_id)>>8)
-> > > & 1, \
-> > > -       ((_id)>>7) & 1, ((_id)>>6) & 1, ((_id)>>5) & 1, ((_id)>>4) & 1, \
-> > > -       ((_id)>>3) & 1, ((_id)>>2) & 1, ((_id)>>1) & 1, (_id) & 1
-> > > +#define MDIO_ID_FMT "p%08x"
-> > > 
-> > > 
-> > > 
-> > 
-> >  > > > > However, this won't work for PHY devices created _before_ the
-> > kernel
-> >  > > > > has mounted the rootfs, whether or not they end up being used. So,
-> >  > > > > every PHY mentioned in DT will be created before the rootfs is
-> > mounted,
-> >  > > > > and none of these PHYs will have their modules loaded.
-> >  > > >
-> >  > > > Hi Russell
-> >  > > >
-> >  > > > I think what you are saying here is, if the MAC or MDIO bus
-> > driver is
-> >  > > > built in, the PHY driver also needs to be built in?
-> >  > > >
-> >  > > > If the MAC or MDIO bus driver is a module, it means the rootfs has
-> >  > > > already been mounted in order to get these modules. And so the PHY
-> >  > > > driver as a module will also work.
-> >  > > >
-> >  > > > > I believe this is the root cause of Yinbo Zhu's issue.
-> >  > >
-> >  > > I think you should be right and I had did lots of test but use
-> > rquest_module
-> >  > > it doesn't load marvell module, and dts does't include any phy
-> > node. even
-> >  > > though I was use "marvell" as input's args of request_module.
-> > 
-> >  > Please can you report the contents of /proc/sys/kernel/modprobe, and
-> >  > the kernel configuration of CONFIG_MODPROBE_PATH. I wonder if your
-> >  > userspace has that module loading mechanism disabled, or your kernel
-> >  > has CONFIG_MODPROBE_PATH as an empty string.
-> > 
-> >  > If the module is not present by the time this call is made, then
-> >  > even if you load the appropriate driver module later, that module
-> >  > will not be used - the PHY will end up being driven by the generic
-> >  > clause 22 driver.
-> > 
-> >  > > > That is not true universally for all MDIO though - as
-> >  > > > xilinx_gmii2rgmii.c clearly shows. That is a MDIO driver which
-> > uses DT
-> >  > > > the compatible string to do the module load. So, we have proof there
-> >  > > > that Yinbo Zhu's change will definitely cause a regression which we
-> >  > > > can not allow.
-> >  > >
-> >  > > I don't understand that what you said about regression.  My patch
-> > doesn't
-> >  > > cause  xilinx_gmii2rgmii.c driver load fail, in this time that
-> > do_of_table
-> >  > >and platform_uevent will be responsible "of" type driver auto load
-> > and my
-> >  > > patch was responsible for "mdio" type driver auto load,
-> > 
-> >  > xilinx_gmii2rgmii is not a platform driver. It is a mdio driver:
-> > 
-> >  > static struct mdio_driver xgmiitorgmii_driver = {
-> >                ^^^^^^^^^^^
-> > 
-> >  > Therefore, platform_uevent() is irrelevant since this will never match
-> >  > a platform device. It will only match mdio devices, and the uevent
-> >  > generation for that is via mdio_uevent() which is the function you
-> >  > are changing.
-> > 
-> > 
-> > static const struct of_device_id xgmiitorgmii_of_match[] = {
-> >          { .compatible = "xlnx,gmii-to-rgmii-1.0" },
-> >          {},
-> > };
-> > MODULE_DEVICE_TABLE(of, xgmiitorgmii_of_match);
-> > 
-> > static struct mdio_driver xgmiitorgmii_driver = {
-> >          .probe  = xgmiitorgmii_probe,
-> >          .mdiodrv.driver = {
-> >                  .name = "xgmiitorgmii",
-> >                  .of_match_table = xgmiitorgmii_of_match,
-> >          },
-> > };
-> >  From the present point of view, no matter what the situation, my
-> > supplement can cover udev or request_module for auto load module.
-> > 
-> > if that phy driver isn't platform driver my patch cover it I think there
-> > is no doubt, if phy driver is platform driver and platform driver udev
-> > will cover it. My only requestion is the request_module not work well.
-> > 
-> > about xgmiitorgmii_of_match that it belongs to platform driver load,
-> > please you note. and about your doubt usepace whether disable module
-> > load that module load function is okay becuase other device driver auto
-> > load is okay.
-> > 
-> >  > > In default code. There are request_module to load phy driver, but
-> > as > Russell
-> >  > > King said that request_module doesn't garantee auto load will
-> > always work
-> >  > > well, but udev mechanism can garantee it. and udev mechaism is more
-> >  > > mainstream, otherwise mdio_uevent is useless. if use udev mechanism
-> > that my
-> >  > > patch was needed. and if apply my patch it doesn't cause
-> > request_module
-> >  > > mechaism work bad because I will add following change:
-> > 
-> >  > Please report back what the following command produces on your
-> >  > problem system:
-> > 
-> >  > /sbin/modprobe -vn mdio:00000001010000010000110111010001
-> > 
-> >  > Thanks.
-> > 
-> > [root@localhost ~]# lsmod | grep marvell
-> > [root@localhost ~]# ls
-> > /lib/modules/4.19.190+/kernel/drivers/net/phy/marvell.ko
-> > /lib/modules/4.19.190+/kernel/drivers/net/phy/marvell.ko
-> > [root@localhost ~]# /sbin/modprobe -vn
-> > mdio:00000001010000010000110111010001
-> > insmod /lib/modules/4.19.190+/kernel/drivers/net/phy/marvell.ko
-> > insmod /lib/modules/4.19.190+/kernel/drivers/net/phy/marvell.ko
-> > [root@localhost ~]#
-> > [root@localhost ~]# cat /proc/sys/kernel/modprobe
-> > /sbin/modprobe
-> > 
-> > BRs,
-> > Yinbo
+The 01/04/2022 19:14, Vladimir Oltean wrote:
 > 
-> > On Tue, Jan 04, 2022 at 09:11:56PM +0800, zhuyinbo wrote:
-> > > From the present point of view, no matter what the situation, my
-> supplement
-> > > can cover udev or request_module for auto load module.
-> > >
-> > > if that phy driver isn't platform driver my patch cover it I think there
-> is
-> > > no doubt, if phy driver is platform driver and platform driver udev will
-> > > cover it. My only requestion is the request_module not work well.
-> > >
-> > > about xgmiitorgmii_of_match that it belongs to platform driver load,
-> please
-> > > you note. and about your doubt usepace whether disable module load that
-> > > module load function is okay becuase other device driver auto load is
-> okay.
+> The cross-chip notifiers for MRP are bypass operations, meaning that
+> even though all switches in a tree are notified, only the switch
+> specified in the info structure is targeted.
 > 
-> > xgmiitorgmii is *not* a platform driver.
-> 
-> For the module loading function, you need to focus on the first args "of" in
-> function MODULE_ DEVICE_TABLE, not the definition type of this driver.  for
-> "of" type that must platform covert it !
+> We can eliminate the unnecessary complexity by deleting the cross-chip
+> notifier logic and calling the ds->ops straight from port.c.
 
-Total garbage. You have no idea.
+It looks like structs dsa_notifier_mrp_info and
+dsa_notifier_mrp_ring_role_info are not used anywhere anymore. So they
+should also be deleted.
 
-> > > [root@localhost ~]# lsmod | grep marvell
-> > > [root@localhost ~]# ls
-> > > /lib/modules/4.19.190+/kernel/drivers/net/phy/marvell.ko
-> > > /lib/modules/4.19.190+/kernel/drivers/net/phy/marvell.ko
-> > > [root@localhost ~]# /sbin/modprobe -vn
-> >mdio:00000001010000010000110111010001
-> > > insmod /lib/modules/4.19.190+/kernel/drivers/net/phy/marvell.ko
-> > > insmod /lib/modules/4.19.190+/kernel/drivers/net/phy/marvell.ko
-> > > [root@localhost ~]#
-> > > [root@localhost ~]# cat /proc/sys/kernel/modprobe
-> > > /sbin/modprobe
 > 
-> > Great, so the current scheme using "mdio:<binary digits>" works
-> > perfectly for you. What is missing is having that modalias in the
-> > uevent file.
-> No, "lsmod | grep marvel" is NULL, so "mdio:<binary digits>" doesn't work
-> well.
-
-[removed the rest of the irrelevant claptrap]
-
-Wrong. Your test proved that module loading using the current scheme
-_works_ _for_ _you_.
-
-What doesn't work for you is udev based loading, which is an entirely
-different issue. There is NOTHING WRONG WITH THE CURRENT SCHEME OF
-USING BINARY DIGITS. THERE IS NO NEED TO CHANGE THIS.
-
-So you can stop posting your stupid patches.
-
-> > So, my patch on the 4th December should cause the marvell module to
-> > be loaded at boot time. Please test that patch ASAP, which I have
-> > already asked you to do. I'll include it again in this email so you
-> > don't have to hunt for it.
+> Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  net/dsa/dsa_priv.h |  4 ---
+>  net/dsa/port.c     | 44 +++++++++++++++----------------
+>  net/dsa/switch.c   | 64 ----------------------------------------------
+>  3 files changed, 20 insertions(+), 92 deletions(-)
 > 
-> > 8<===
-> > From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-> > Subject: [PATCH] net: phy: generate PHY mdio modalias
+> diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+> index b5ae21f172a8..54c23479b9ba 100644
+> --- a/net/dsa/dsa_priv.h
+> +++ b/net/dsa/dsa_priv.h
+> @@ -40,10 +40,6 @@ enum {
+>         DSA_NOTIFIER_TAG_PROTO,
+>         DSA_NOTIFIER_TAG_PROTO_CONNECT,
+>         DSA_NOTIFIER_TAG_PROTO_DISCONNECT,
+> -       DSA_NOTIFIER_MRP_ADD,
+> -       DSA_NOTIFIER_MRP_DEL,
+> -       DSA_NOTIFIER_MRP_ADD_RING_ROLE,
+> -       DSA_NOTIFIER_MRP_DEL_RING_ROLE,
+>         DSA_NOTIFIER_TAG_8021Q_VLAN_ADD,
+>         DSA_NOTIFIER_TAG_8021Q_VLAN_DEL,
+>  };
+> diff --git a/net/dsa/port.c b/net/dsa/port.c
+> index 05677e016982..5c72f890c6a2 100644
+> --- a/net/dsa/port.c
+> +++ b/net/dsa/port.c
+> @@ -907,49 +907,45 @@ int dsa_port_vlan_del(struct dsa_port *dp,
+>  int dsa_port_mrp_add(const struct dsa_port *dp,
+>                      const struct switchdev_obj_mrp *mrp)
+>  {
+> -       struct dsa_notifier_mrp_info info = {
+> -               .sw_index = dp->ds->index,
+> -               .port = dp->index,
+> -               .mrp = mrp,
+> -       };
+> +       struct dsa_switch *ds = dp->ds;
+> +
+> +       if (!ds->ops->port_mrp_add)
+> +               return -EOPNOTSUPP;
 > 
-> > The modalias string provided in the uevent sysfs file does not conform
-> > to the format used in PHY driver modules. One of the reasons is that
-> > udev loading of PHY driver modules has not been an expected use case.
+> -       return dsa_port_notify(dp, DSA_NOTIFIER_MRP_ADD, &info);
+> +       return ds->ops->port_mrp_add(ds, dp->index, mrp);
+>  }
 > 
-> > This patch changes the MODALIAS entry for only PHY devices from:
-> >         MODALIAS=of:Nethernet-phyT(null)
-> > to:
-> >         MODALIAS=mdio:00000000001000100001010100010011
+>  int dsa_port_mrp_del(const struct dsa_port *dp,
+>                      const struct switchdev_obj_mrp *mrp)
+>  {
+> -       struct dsa_notifier_mrp_info info = {
+> -               .sw_index = dp->ds->index,
+> -               .port = dp->index,
+> -               .mrp = mrp,
+> -       };
+> +       struct dsa_switch *ds = dp->ds;
+> +
+> +       if (!ds->ops->port_mrp_del)
+> +               return -EOPNOTSUPP;
 > 
-> > Other MDIO devices (such as DSA) remain as before.
+> -       return dsa_port_notify(dp, DSA_NOTIFIER_MRP_DEL, &info);
+> +       return ds->ops->port_mrp_del(ds, dp->index, mrp);
+>  }
 > 
-> > However, having udev automatically load the module has the advantage
-> > of making use of existing functionality to have the module loaded
-> > before the device is bound to the driver, thus taking advantage of
-> > multithreaded boot systems, potentially decreasing the boot time.
+>  int dsa_port_mrp_add_ring_role(const struct dsa_port *dp,
+>                                const struct switchdev_obj_ring_role_mrp *mrp)
+>  {
+> -       struct dsa_notifier_mrp_ring_role_info info = {
+> -               .sw_index = dp->ds->index,
+> -               .port = dp->index,
+> -               .mrp = mrp,
+> -       };
+> +       struct dsa_switch *ds = dp->ds;
+> +
+> +       if (!ds->ops->port_mrp_add)
+> +               return -EOPNOTSUPP;
 > 
-> > However, this patch will not solve any issues with the driver module
-> > not being loaded prior to the network device needing to use the PHY.
-> > This is something that is completely out of control of any patch to
-> > change the uevent mechanism.
+> -       return dsa_port_notify(dp, DSA_NOTIFIER_MRP_ADD_RING_ROLE, &info);
+> +       return ds->ops->port_mrp_add_ring_role(ds, dp->index, mrp);
+>  }
 > 
-> > Reported-by: Yinbo Zhu <zhuyinbo@loongson.cn>
-> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > ---
-> > drivers/net/phy/mdio_bus.c   |  8 ++++++++
-> > drivers/net/phy/phy_device.c | 14 ++++++++++++++
-> > include/linux/mdio.h         |  2 ++
-> > 3 files changed, 24 insertions(+)
+>  int dsa_port_mrp_del_ring_role(const struct dsa_port *dp,
+>                                const struct switchdev_obj_ring_role_mrp *mrp)
+>  {
+> -       struct dsa_notifier_mrp_ring_role_info info = {
+> -               .sw_index = dp->ds->index,
+> -               .port = dp->index,
+> -               .mrp = mrp,
+> -       };
+> +       struct dsa_switch *ds = dp->ds;
+> +
+> +       if (!ds->ops->port_mrp_del)
+> +               return -EOPNOTSUPP;
 > 
-> > diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-> > index 4638d7375943..663bd98760fb 100644
-> > --- a/drivers/net/phy/mdio_bus.c
-> > +++ b/drivers/net/phy/mdio_bus.c
-> > @@ -1010,8 +1010,16 @@ static int mdio_bus_match(struct device *dev, > >
-> struct device_driver *drv)
+> -       return dsa_port_notify(dp, DSA_NOTIFIER_MRP_DEL_RING_ROLE, &info);
+> +       return ds->ops->port_mrp_del_ring_role(ds, dp->index, mrp);
+>  }
 > 
-> >  static int mdio_uevent(struct device *dev, struct kobj_uevent_env *env)
->  > {
-> > +	struct mdio_device *mdio = to_mdio_device(dev);
-> > 	int rc;
-> >
-> > +	/* Use the device-specific uevent if specified */
-> > +	if (mdio->bus_uevent) {
-> > +		rc = mdio->bus_uevent(mdio, env);
-> > +		if (rc != -ENODEV)
-> > +			return rc;
-> > +	}
-> > +
-> > 	/* Some devices have extra OF data and an OF-style MODALIAS */
-> >  	rc = of_device_uevent_modalias(dev, env);
-> > 	if (rc != -ENODEV)
-> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> > index 23667658b9c6..f4c2057f0202 100644
-> > --- a/drivers/net/phy/phy_device.c
-> > +++ b/drivers/net/phy/phy_device.c
-> > @@ -563,6 +563,19 @@ static int phy_request_driver_module(struct
-> phy_device *dev, u32 phy_id)
-> >  	return 0;
-> >  }
+>  void dsa_port_set_tag_protocol(struct dsa_port *cpu_dp,
+> diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+> index 393f2d8a860a..a164ec02b4e9 100644
+> --- a/net/dsa/switch.c
+> +++ b/net/dsa/switch.c
+> @@ -701,58 +701,6 @@ dsa_switch_disconnect_tag_proto(struct dsa_switch *ds,
+>         return 0;
+>  }
 > 
-> > +static int phy_bus_uevent(struct mdio_device *mdiodev,
-> > +			  struct kobj_uevent_env *env)
-> > +{
-> > +	struct phy_device *phydev;
-> > +
-> > +	phydev = container_of(mdiodev, struct phy_device, mdio);
-> > +
-> > +	add_uevent_var(env, "MODALIAS=" MDIO_MODULE_PREFIX MDIO_ID_FMT,
-> > +		       MDIO_ID_ARGS(phydev->phy_id));
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >  struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32
-> phy_id,
-> >  				     bool is_c45,
-> >  				     struct phy_c45_device_ids *c45_ids)
-> > @@ -582,6 +595,7 @@ struct phy_device *phy_device_create(struct mii_bus
-> *bus, int addr, u32 phy_id,
-> >  	mdiodev->dev.type = &mdio_bus_phy_type;
-> >  	mdiodev->bus = bus;
-> > 	mdiodev->bus_match = phy_bus_match;
-> > +	mdiodev->bus_uevent = phy_bus_uevent;
-> > 	mdiodev->addr = addr;
-> > 	mdiodev->flags = MDIO_DEVICE_FLAG_PHY;
-> > 	mdiodev->device_free = phy_mdio_device_free;
-> > diff --git a/include/linux/mdio.h b/include/linux/mdio.h
-> > index df9c96e56907..5c6676d3de23 100644
-> > --- a/include/linux/mdio.h
-> > +++ b/include/linux/mdio.h
-> > @@ -38,6 +38,8 @@ struct mdio_device {
-> >  	char modalias[MDIO_NAME_SIZE];
+> -static int dsa_switch_mrp_add(struct dsa_switch *ds,
+> -                             struct dsa_notifier_mrp_info *info)
+> -{
+> -       if (!ds->ops->port_mrp_add)
+> -               return -EOPNOTSUPP;
+> -
+> -       if (ds->index == info->sw_index)
+> -               return ds->ops->port_mrp_add(ds, info->port, info->mrp);
+> -
+> -       return 0;
+> -}
+> -
+> -static int dsa_switch_mrp_del(struct dsa_switch *ds,
+> -                             struct dsa_notifier_mrp_info *info)
+> -{
+> -       if (!ds->ops->port_mrp_del)
+> -               return -EOPNOTSUPP;
+> -
+> -       if (ds->index == info->sw_index)
+> -               return ds->ops->port_mrp_del(ds, info->port, info->mrp);
+> -
+> -       return 0;
+> -}
+> -
+> -static int
+> -dsa_switch_mrp_add_ring_role(struct dsa_switch *ds,
+> -                            struct dsa_notifier_mrp_ring_role_info *info)
+> -{
+> -       if (!ds->ops->port_mrp_add)
+> -               return -EOPNOTSUPP;
+> -
+> -       if (ds->index == info->sw_index)
+> -               return ds->ops->port_mrp_add_ring_role(ds, info->port,
+> -                                                      info->mrp);
+> -
+> -       return 0;
+> -}
+> -
+> -static int
+> -dsa_switch_mrp_del_ring_role(struct dsa_switch *ds,
+> -                            struct dsa_notifier_mrp_ring_role_info *info)
+> -{
+> -       if (!ds->ops->port_mrp_del)
+> -               return -EOPNOTSUPP;
+> -
+> -       if (ds->index == info->sw_index)
+> -               return ds->ops->port_mrp_del_ring_role(ds, info->port,
+> -                                                      info->mrp);
+> -
+> -       return 0;
+> -}
+> -
+>  static int dsa_switch_event(struct notifier_block *nb,
+>                             unsigned long event, void *info)
+>  {
+> @@ -826,18 +774,6 @@ static int dsa_switch_event(struct notifier_block *nb,
+>         case DSA_NOTIFIER_TAG_PROTO_DISCONNECT:
+>                 err = dsa_switch_disconnect_tag_proto(ds, info);
+>                 break;
+> -       case DSA_NOTIFIER_MRP_ADD:
+> -               err = dsa_switch_mrp_add(ds, info);
+> -               break;
+> -       case DSA_NOTIFIER_MRP_DEL:
+> -               err = dsa_switch_mrp_del(ds, info);
+> -               break;
+> -       case DSA_NOTIFIER_MRP_ADD_RING_ROLE:
+> -               err = dsa_switch_mrp_add_ring_role(ds, info);
+> -               break;
+> -       case DSA_NOTIFIER_MRP_DEL_RING_ROLE:
+> -               err = dsa_switch_mrp_del_ring_role(ds, info);
+> -               break;
+>         case DSA_NOTIFIER_TAG_8021Q_VLAN_ADD:
+>                 err = dsa_switch_tag_8021q_vlan_add(ds, info);
+>                 break;
+> --
+> 2.25.1
 > 
-> >  	int (*bus_match)(struct device *dev, struct device_driver *drv);
-> > +	int (*bus_uevent)(struct mdio_device *mdiodev,
-> > +			  struct kobj_uevent_env *env);
-> > 	void (*device_free)(struct mdio_device *mdiodev);
-> > 	void (*device_remove)(struct mdio_device *mdiodev);
-> your patch I have a try and it can make marvel driver auto-load. However,
-> you need to evaluate the above compatibility issues !
-> in addition, if phy id register work bad or other case, you dont' read phy
-> id from phy.  your patch will not work well. so you shoud definition a
-> any_phy_id, of course, The most critical issue is the above driver
-> compatibility, please you note.
-
-You don't make sense, sorry.
-
-> in additon, I have never received your email before. I have to check
-> patchwork every time, so if you have a advice that could you send a mail to
-> zhuyinbo@loongson.cn .
-
-It was sent to you. Lore has it.
-
-https://lore.kernel.org/all/YavYM2cs0RuY0JdM@shell.armlinux.org.uk/
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+/Horatiu
