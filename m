@@ -2,130 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D96485C09
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 00:06:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6667C485C23
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 00:11:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245275AbiAEXGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 18:06:32 -0500
-Received: from smtp-fw-80006.amazon.com ([99.78.197.217]:11236 "EHLO
-        smtp-fw-80006.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245258AbiAEXGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 18:06:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1641423992; x=1672959992;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=B0eTEfSTWCod+D6PqFwyOUCIH18Ves727UdNg73fEls=;
-  b=TinVhU1EU7snumlRDKgeKnL/gfxI1CLJRf9JkkweLWu5xck8gptqgXW/
-   oCtAh5LWgiL3W7/3AknsTHu6MIO7qyn44M4C7aBpkeKsUlOhb5OpsUNTS
-   c3L4n6lxwC/JtSgxUTzfEEmC48smPliALBjxqPcldXJod/cjvNKoW1B3i
-   4=;
-X-IronPort-AV: E=Sophos;i="5.88,265,1635206400"; 
-   d="scan'208";a="53006765"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-b168f70e.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 05 Jan 2022 23:06:32 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2a-b168f70e.us-west-2.amazon.com (Postfix) with ESMTPS id 07AB5430F6;
-        Wed,  5 Jan 2022 23:06:31 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Wed, 5 Jan 2022 23:06:30 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.87) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Wed, 5 Jan 2022 23:06:25 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <alexei.starovoitov@gmail.com>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <benh@amazon.com>,
-        <bpf@vger.kernel.org>, <daniel@iogearbox.net>, <kafai@fb.com>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 3/6] bpf: af_unix: Use batching algorithm in bpf unix iter.
-Date:   Thu, 6 Jan 2022 08:06:22 +0900
-Message-ID: <20220105230622.69436-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CAADnVQLFSQk4TJAs3wz2uzyJYVzcprOF4sRV=j3-BQKzEMoz1w@mail.gmail.com>
-References: <CAADnVQLFSQk4TJAs3wz2uzyJYVzcprOF4sRV=j3-BQKzEMoz1w@mail.gmail.com>
-MIME-Version: 1.0
+        id S245317AbiAEXLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 18:11:34 -0500
+Received: from mail-eopbgr60076.outbound.protection.outlook.com ([40.107.6.76]:32794
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S245310AbiAEXLc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jan 2022 18:11:32 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fY7jqNUAfm1D2iz74LwlxeCLpCtCY+PKkeKHdmgzr4Q1vU0crk5LhSbfO7m8+gwGe4IRtMtKmLPsEH75gTSHQBF/hRPmqXtm6G9HfrDFsPbB0mSDZp+hrhuX6EAs283TZH2HurTTuEABc8CgoWw25R2MO2J7NaKDSXQ8Hxz+ucMpXSi5/pf+pMeNeEQp0IGYyNqL7vgsahVxDL8H8MS7EiB6TKzddfUqj96yBukyUOgsqe7LNXh0s6UhbcXyY2mJHTKhkoeHvxIu7WQOX+UkAPtkXUxIeMEPlppCKNz+fLSlWmUvyhIdm+3mvpsRc/BjQmPl9dnnSo4aQp7+yEQK5Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KfzWkBPuJrJdZcx5BpTWPfHkYp79SJT1P7X193LG8bE=;
+ b=e63AE5uFVZuP+STna0PZUfo+xGHNZZt3de+fdGmMat/FpMNDSbvSN+H/j0fFQxdGOa4LGTgWtDofengHCJhntWgSAz4UNcKwBIOxDqPw5iehMtCKtHGHhk9OywdH2dt7tMyXRBZxgZdGmJ2xuz1jroL7hGoeQWe3dD/k/BA3MT+Dr9q4LQDFG9ubBkxmZQ6WfxbN8X87xmD6L8elekTER7VOhQd8c1b6QoUC2s74TXQUEXShMK0v9+0ZtG/BCJYp1nHoMn6asWwXUetNzIixchC5D5Rs4jIbgoEDcxbVAezTYUFerBgzud/37lEaz8nAKP+evcYqTv9r2BmDTUP1HQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KfzWkBPuJrJdZcx5BpTWPfHkYp79SJT1P7X193LG8bE=;
+ b=PR15uDFGa/mn0+H1KJYXJ/c+v9jh5gK/YRe2ITjf5GWPoLSMtf1cnfKsUpo0U9IpNdTkPhQ30xj0x8qDwxoKKphtoR9DstkF8iu/l5/hSb3pNsAzlKa979blyf9fC0xC7RDUFuKGzrDmAY42Se8/C55Q1pTNbDwFjfRNJtygjnQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB3069.eurprd04.prod.outlook.com (2603:10a6:802:9::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.15; Wed, 5 Jan
+ 2022 23:11:30 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4844.016; Wed, 5 Jan 2022
+ 23:11:30 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH v2 net-next 0/6] DSA initialization cleanups
+Date:   Thu,  6 Jan 2022 01:11:11 +0200
+Message-Id: <20220105231117.3219039-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.160.87]
-X-ClientProxiedBy: EX13D20UWC001.ant.amazon.com (10.43.162.244) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+X-ClientProxiedBy: AM6P191CA0081.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:209:8a::22) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 48cb28a4-3df7-4f6f-2a6e-08d9d0a0b4c3
+X-MS-TrafficTypeDiagnostic: VI1PR04MB3069:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB30692DF87F59F8E451003B91E04B9@VI1PR04MB3069.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: B5C3pVxq788OHoiJxKz6k13IVsabG2ihJnncX0vSig7xcTuK6RHrFd9BWNyl4/hMCtW2ivXiSSoQG1Lk/OskmkgcaBdWyG5Q7LNmTSOzMMLupnjI8RpqJweF6Lcs5puHljM4C+HDrsSi9eBzrDqepVEvAHkJnzJsRa6rWfAyBdjGrzkLNl9bPSu7gL26ERarYT8Ve9+WGBaHH0qW9zhC0XoEYLQhZY4btnpiT7l97QbMTW/wpcV7nMSuYVeQ7p6DVljSOvLc1WdDgB8PzlianOW+71xNRrmP4sTKdLsorNnTXdM/67P6SU3pbul2r0N7S8G2SeEP9tEa95ewGsV1dOua/RkTVDImgQSCZcazOovj1JkwPQ6q2XNmIfqYzIlMGuRS6P5l3Famkzafxs53LUI4K9mhRj9nlubfUqTAs7wRjKYvQfz65F9ZoYYAvb107Xk4Yl+HXpr0f6Wq+h//XTYc0hZ0ALn7seg85NdR4sNhdedg6UfS/ZQiMxnZEgcU1NtLb3/1RmGgl/u9sspKNbnzJPlspJkSPG2JMv+lS4HrfSwu43PwuPB542NCK1AwBorBpCa4FpBlvBcP7EytaFDz8foW1/RhbjyRzqEOI+9NTb4FB5FNi+Q36AMawdGgZ/NTsc01B58dIAeLzfGhKZWgDkx/5vHxRfROIZeSgwIZ4Hx9v+jNR8kxXq5YS6Vfxh542siLlL3dJWnbSEk9JziSJUc7Fjreen+cPPfuRUx8Y4qBIfn4kzKiS7ZU3+Nmac9Q94SMMzV2K2fEsxHoQBNJp8/Vl+n4Ixd4R6GJOOs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(5660300002)(66476007)(66556008)(66946007)(36756003)(4744005)(1076003)(38350700002)(38100700002)(966005)(54906003)(508600001)(6486002)(6916009)(8676002)(4326008)(6512007)(316002)(2616005)(2906002)(6666004)(44832011)(6506007)(52116002)(8936002)(26005)(186003)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pJUL6nBch84MCqc5d8D2G7JG03y5Kby+DsC9dJ+kPnhdLZwmUvv/UcsoIw7C?=
+ =?us-ascii?Q?AuTBftNQbcfelJbic65/BxK4cjn0WcKq6rtAZ5tncgauy3sbcD19XTguk8qR?=
+ =?us-ascii?Q?bc8vcoeZw4L1P/JbwO1HPPh1I4PeEOWIsV7gNIeZOLvfgVIjEOkqkzM5ovw5?=
+ =?us-ascii?Q?6yvnBJptuhI4PQ/yI767QfNnq2TMKoqzi5Ouhi0nefjCNd8Q5OzvQRrjvaUn?=
+ =?us-ascii?Q?dxql1OWEVvRDWKl4JvLYKHNFoM0kE7U7Ju2s3bzh0EgHrYt8NT0SNGg4uPF2?=
+ =?us-ascii?Q?6Dq7drHZELPKAUJ9RUGlB4IyUIYqM3Njs1pkmzsxtdGeIKP95EtLv4hEkHR4?=
+ =?us-ascii?Q?lK5aGU7M2inLroJs1i2QDB0I0UGxijiHEjBgnYVllx03Lghz6ky7rYhdOsMj?=
+ =?us-ascii?Q?GP+q/eGHsudX/h3d8X6N8xLs4h/M74p0TzrHhqoy3fx+FF4qkZ50YzcPt0mx?=
+ =?us-ascii?Q?H7YfOSODXQ4JspHg6vZG2hc7CjusFE3Y6H/UtGPBGD+PAsKhEi8/hKOKGgYo?=
+ =?us-ascii?Q?ny7yusEYG31JxQRDNtK23N8qi2qL7up2hDu3eH51+UFP7146LKJm+/MPtkFP?=
+ =?us-ascii?Q?ISOKyBz6P/1C+IOKToTxhLl2rbHZmZ8FQrcmG0nMRSHDuPG3VtuR25ImoA+o?=
+ =?us-ascii?Q?8wRXbVy580s8TGlqHOW2nYeL/j/QelGIH0Xlzh0FbmJ8yH1FOR0mU13bx/HB?=
+ =?us-ascii?Q?PffnynTz34QxLwyWybwNpPxL2G9mcczew8nF1FpWlKmIvHKRjbGQzUemb3Zd?=
+ =?us-ascii?Q?yvgalY8huDkO6enbKlQ799uo0DuBNtzaTDpq4pHXtB0c91WnH+7Vx/JIubOu?=
+ =?us-ascii?Q?3J5bwMscKbtvs+oXB5K7okk1v1WnARVsW5/THLWLgQzuTahJR4ux0GS5MASN?=
+ =?us-ascii?Q?Uf832e0hZFhisa3kVYRX0ONgEPBUWRJ8Rb694HYabmyoxGZK/UJSOas25vr2?=
+ =?us-ascii?Q?IPCZInfkyySzlbBnUDj90Ea892nxGQFmjDYKmnWg6rW2YBAKA1UGubeDIQn6?=
+ =?us-ascii?Q?WnttOphWoBW8n/wPlJl9we18UVCf6n6ccXMN4IaeXvmVgmeBlY4OgibJBU0v?=
+ =?us-ascii?Q?l43oD8xbahiAhsXHfe6vXUoJDUs55N/Tm9fri2UD+0I+F/Kp4OWebFY+Pcv9?=
+ =?us-ascii?Q?E55QPdhRnNq+sXsBdqopyDEoDYTsqe9ljI63+Qoe6ibldfEc0xl5JGrKfNoU?=
+ =?us-ascii?Q?FgY0NjFeXaurtLkK1tgoLU72XJ/JcFeZbJXJ80+w/woCeAynhakGZG9lAU58?=
+ =?us-ascii?Q?aVwCKqMaD3MmSrpxCqrvzG+qX2j4ZG+Z5eCnfH5y7+XLfaBMti7HJ5iUOSLG?=
+ =?us-ascii?Q?EqldziR8zAgSvPR/SqZhVz/dFw7ZaWc0rhEUquTVz3kBkM0ZModoUxWXDdg1?=
+ =?us-ascii?Q?x7ce8nAuUBY6mfvVvjy3zFiY8LIh/IlNVetBPmvBFAY2dW8CPQHUoZlbe9y1?=
+ =?us-ascii?Q?RcX0ap9zayhrXmx8L5ZPWXuu2cyLK/W1j3SPbmprE6NV/ONkgnWZEm0odKIZ?=
+ =?us-ascii?Q?XppzN/ohJsw5c3pJCVN+pdqmoCZIZU5rJ8HLiNV0jRZd2AxF5fBBSTnoZFHr?=
+ =?us-ascii?Q?MjJGeKer2OrcatBHmlKNfOHGjYPvMnyODEsZiWVWv7ixv2glprBivrxMpa/C?=
+ =?us-ascii?Q?eickQEMz0SLwP73WfyNpRSY=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48cb28a4-3df7-4f6f-2a6e-08d9d0a0b4c3
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 23:11:29.8013
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uyxFpZlmYAeC4pUjIJZBzgtdXMoJK3vaz1/pZp3ByXozttAF3yPtTaZtkKw6VE4B99qflWWOf2UM27ucAV1fwg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3069
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 5 Jan 2022 14:22:38 -0800
-> On Mon, Jan 3, 2022 at 5:33 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
-> >
-> > The commit 04c7820b776f ("bpf: tcp: Bpf iter batching and lock_sock")
-> > introduces the batching algorithm to iterate TCP sockets with more
-> > consistency.
-> >
-> > This patch uses the same algorithm to iterate AF_UNIX sockets.
-> >
-> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> 
-> There is something wrong in this patch:
-> 
-> ./test_progs -t bpf_iter_setsockopt_unix
-> [   14.993474] bpf_testmod: loading out-of-tree module taints kernel.
-> [   15.068986]
-> [   15.069203] =====================================
-> [   15.069698] WARNING: bad unlock balance detected!
-> [   15.070187] 5.16.0-rc7-01992-g15d8ab86952d #3780 Tainted: G           O
-> [   15.070937] -------------------------------------
-> [   15.071441] test_progs/1438 is trying to release lock
-> (&unix_table_locks[i]) at:
-> [   15.072209] [<ffffffff831b7ae9>] unix_next_socket+0x169/0x460
-> [   15.072825] but there are no more locks to release!
-> [   15.073329]
-> [   15.073329] other info that might help us debug this:
-> [   15.074004] 1 lock held by test_progs/1438:
-> [   15.074441]  #0: ffff8881072c81c8 (&p->lock){+.+.}-{3:3}, at:
-> bpf_seq_read+0x61/0xfa0
-> [   15.075279]
-> [   15.075279] stack backtrace:
-> [   15.075744] CPU: 0 PID: 1438 Comm: test_progs Tainted: G
-> O      5.16.0-rc7-01992-g15d8ab86952d #3780
-> [   15.076792] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-> BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-> [   15.077986] Call Trace:
-> [   15.078250]  <TASK>
-> [   15.078476]  dump_stack_lvl+0x44/0x57
-> [   15.078873]  lock_release+0x48e/0x650
-> [   15.079262]  ? unix_next_socket+0x169/0x460
-> [   15.079712]  ? lock_downgrade+0x690/0x690
-> [   15.080131]  ? lock_downgrade+0x690/0x690
-> [   15.080559]  _raw_spin_unlock+0x17/0x40
-> [   15.080979]  unix_next_socket+0x169/0x460
-> [   15.081402]  ? bpf_iter_unix_seq_show+0x20b/0x270
-> [   15.081898]  bpf_iter_unix_batch+0xf7/0x580
-> [   15.082337]  ? trace_kmalloc_node+0x29/0xd0
-> [   15.082786]  bpf_seq_read+0x4a1/0xfa0
-> [   15.083176]  ? up_read+0x1a1/0x720
-> [   15.083538]  vfs_read+0x128/0x4e0
-> [   15.083902]  ksys_read+0xe7/0x1b0
-> [   15.084253]  ? vfs_write+0x8b0/0x8b0
-> [   15.084638]  do_syscall_64+0x34/0x80
-> [   15.085016]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [   15.085545] RIP: 0033:0x7f2c4a5ad8b2
-> [   15.085931] Code: 97 20 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb
-> b6 0f 1f 80 00 00 00 00 f3 0f 1e fa 8b 05 96 db 20 00 85 c0 75 12 31
-> c0 0f 05 <48> 3d 00 f0 ff ff 77 56 c3 0f 1f 44 00 00 41 54 49 89 d4 55
-> 48 89
-> [   15.087875] RSP: 002b:00007fff4c8c24b8 EFLAGS: 00000246 ORIG_RAX:
-> 0000000000000000
-> [   15.088658] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f2c4a5ad8b2
-> [   15.089396] RDX: 0000000000000001 RSI: 00007fff4c8c24cb RDI: 000000000000000a
-> [   15.090132] RBP: 00007fff4c8c2550 R08: 0000000000000000 R09: 00007fff4c8c2397
-> [   15.090870] R10: 0000000000000000 R11: 0000000000000246 R12: 000000000040d910
-> [   15.091618] R13: 00007fff4c8c2750 R14: 0000000000000000 R15: 0000000000000000
-> [   15.092403]  </TASK>
-> 
-> 
-> I've applied patches 1 and 2 to bpf-next.
+These patches contain miscellaneous work that makes the DSA init code
+path symmetric with the teardown path, and some additional patches
+carried by Ansuel Smith for his register access over Ethernet work, but
+those patches can be applied as-is too.
+https://patchwork.kernel.org/project/netdevbpf/patch/20211214224409.5770-3-ansuelsmth@gmail.com/
 
-Thanks, I will take a look with lockdep enabled.
+Vladimir Oltean (6):
+  net: dsa: reorder PHY initialization with MTU setup in slave.c
+  net: dsa: merge rtnl_lock sections in dsa_slave_create
+  net: dsa: stop updating master MTU from master.c
+  net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
+  net: dsa: first set up shared ports, then non-shared ports
+  net: dsa: setup master before ports
+
+ net/dsa/dsa2.c   | 69 ++++++++++++++++++++++++++++++++++++------------
+ net/dsa/master.c | 29 +++-----------------
+ net/dsa/slave.c  | 12 ++++-----
+ 3 files changed, 60 insertions(+), 50 deletions(-)
+
+-- 
+2.25.1
+
