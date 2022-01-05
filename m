@@ -2,193 +2,787 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 476D2485117
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 11:22:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D18A48511D
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 11:27:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239431AbiAEKWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 05:22:50 -0500
-Received: from mail-dm6nam11on2072.outbound.protection.outlook.com ([40.107.223.72]:42560
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235519AbiAEKWr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 5 Jan 2022 05:22:47 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YDm1wQJq1WgSWSsO2HlY9xo8e+ed4Mm/2pFPGc0MgY2fmQs2dCT4k6TkrI9pBJfCNnQogev5k17ifMf7fCTSLZ0/KdU2SzL9MmqI9TxHo9Nffb6dbQ3nuUZYK0MP2AVj0dSjgAIk7zBIeofNwixLJvyYvp4kQXgQIWfjKb9mG4osqmewNnDNc1AxbLiyvMBhgJg4aAGHtFaTeNPUTcoteIdomuBY5v+SnQr5Lx4R5I8fZFakrtpiQud0K2ycPIiZwLjhGvJxA4Q8ByDcDBqjIg9M5iz/0Hj+iCVZXUwHuWm3fMTNGa1a3KatSbVumgY+RK7xuPMGhbiUb9g4sLzvfA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WjUtja1JJ0fS3NUAhodpI0g8yG+UzhN+qcenOMHfQyQ=;
- b=Uo/KJFv1BcBiNX6RopyGqAWfPmXwx3REtlYMyfSRmxbf6uykV8ZaMXRZsw0l4YED2mJLsNFXypIc2v2kektJgcQLTUurowCZbnLf7t47TVX4W4oI4Iv+NC9wG7JttOZvw/3qiIiWt4l0xdikTTctOKQZ4RS8VrJ0cjA6LUk825tBEjsMv+qbzmx+36TZewt9XlfWT1Lx5M302Eyc3yTs9GlPxXc9bXjXPS5q5i7coh69Wy8qB3VBZzmojHkFF6iY1KaWmOjY56rzKehmSNH7KsbAeiiC4F+5k1aC/0ERB2DCHuYHuZNPW4ORqbvVkR5Ww/+gk2gEiJCxJRjPfS78Bw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WjUtja1JJ0fS3NUAhodpI0g8yG+UzhN+qcenOMHfQyQ=;
- b=ajPAy6XCRthRatbyahCH0cGFhl+gvlQpxOSGSRILakmJ4qbeKs54lYrISTGqEyhF7Kx/rFqjbEWrFO5e7/QMQ7WhwBAOtuR30WmKWFxaCzJNhA+yHVqrRP0tODIN5WC0ylqHOMx+URp8C/K4yx5P6qUryDCz7Qa3rqHGJaUS1z8HTQ6P7bOep+t46LkbBiJfqRnP6VJQcQ395yht510jctn2FII2OW89yTfPZZax21x2BMRoT84Uzns7XcICyQsF0Y9Tdhl5RUf8YZ4ltih6x3VqP4g9iXIqQw9CEODIEu3Nn8QNMQO/QYNx7Aiapxc/w4iguTbr71rcD+KclszxzA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM5PR12MB1641.namprd12.prod.outlook.com (2603:10b6:4:10::23) by
- DM5PR12MB2470.namprd12.prod.outlook.com (2603:10b6:4:b4::39) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4844.14; Wed, 5 Jan 2022 10:22:44 +0000
-Received: from DM5PR12MB1641.namprd12.prod.outlook.com
- ([fe80::41f2:c3c7:f19:7dfa]) by DM5PR12MB1641.namprd12.prod.outlook.com
- ([fe80::41f2:c3c7:f19:7dfa%11]) with mapi id 15.20.4844.016; Wed, 5 Jan 2022
- 10:22:43 +0000
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
-        danieller@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next] mlxsw: pci: Avoid flow control for EMAD packets
-Date:   Wed,  5 Jan 2022 12:22:27 +0200
-Message-Id: <20220105102227.733612-1-idosch@nvidia.com>
-X-Mailer: git-send-email 2.33.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MR1P264CA0022.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:501:2f::9) To DM5PR12MB1641.namprd12.prod.outlook.com
- (2603:10b6:4:10::23)
+        id S239436AbiAEK1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 05:27:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235437AbiAEK1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 05:27:48 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4FEC061761
+        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 02:27:48 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id s15so34832121pfk.6
+        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 02:27:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+TKQ8UcDqR1lWxIxQn1jg25Nk+8EFBMVMphgbg/X9bk=;
+        b=ZSUpd1pfx1U7mijxdNtBM/Qs62bCybMhX9TsiBoFnHp6bfV9OU4eDdBuFegPtvInXd
+         rJcFr3GEDpYIN5R2L9Cn7GQateSkfF+d9d2DGT301yzqA6fyW2Ehi/JhlYuKS/7rtEfd
+         bkaojhCisPIcsdOtWflzPo/ixSlmrbyB/Y6PbgMVwHRtn69pKxO9a7AFo9lx4FC6Dvmp
+         7VWX9hQqnBh0Gdijzlkp+GtcKWPtKzz/eKXp2ofnMkiXmiDK/grcaat8uOx6faqq/k59
+         7EsM9+pGVot8gR29QGJCYlcToahC4wb5Rm2rNTIUAOOxGtI82cKT9yWv1ynXmQH+TrnT
+         LMMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+TKQ8UcDqR1lWxIxQn1jg25Nk+8EFBMVMphgbg/X9bk=;
+        b=31wMSZ+Vcf2NXPYllT9ZRqQG9oTGyvir01Ob4qzMHoaKI6p3PCVMsknTl7rMllRNW7
+         wGumo+Q8CKs61w899C8s952yYGzsFAWBotniQbe0+lZwBKISVgovzGXYc2Nw3FsyuUCl
+         J/6MUFDZNNdhi1L/XLviMcFg+WNeSOS8T9c8C1OCtaFoSx5l3PIcENEUetxAh7vl3TaG
+         5wDs5/0kOo8is8ItQ5S/dcsvxSvDELAPlISChWj5R5teVs18uaHiqDg5VYuOap27O47R
+         35JEdNuFm9YS6tP0R8AjAjZq51GCmqni/T+xxB/RLr4fORm6N1c2vlQJJt1GAIQHZKap
+         z+NQ==
+X-Gm-Message-State: AOAM533QqH8x/RI2nrF/ijGngA9z2A0EI/kwPP7Wk1Ud6vay+ZzSFrkV
+        jKz8i9tcYb5NF1jaBs+hBOA=
+X-Google-Smtp-Source: ABdhPJyED3QWt9QhRSFBmdHfcyGKYqkbNZiawXHen7oTfT/WVlano0NGF/p/uSrfsIKKCcxfgehNPA==
+X-Received: by 2002:a63:4864:: with SMTP id x36mr48654456pgk.96.1641378468048;
+        Wed, 05 Jan 2022 02:27:48 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:af04:a4cf:7c72:9c40])
+        by smtp.gmail.com with ESMTPSA id t27sm46716926pfg.41.2022.01.05.02.27.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Jan 2022 02:27:47 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: [BUG HTB offload] syzbot: C repro for b/213075475
+Date:   Wed,  5 Jan 2022 02:27:37 -0800
+Message-Id: <20220105102737.2072844-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 65ccfa1d-325d-4cf5-c55f-08d9d0354f72
-X-MS-TrafficTypeDiagnostic: DM5PR12MB2470:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB2470674F86E3A594049FB923B24B9@DM5PR12MB2470.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qn73B/8pNBulRDElhOnSDQn+V+++GsQvrQjYLa4ojQuXI6TVMNWwINj4PvsRIgX9SyZ7yVobbq73zpQp0n852HTrq+212lEOadGuf+FYSecB508hBgJJ3SX8ZJ2qGmkA0rIZWTy0dFHOAbcVbn+1armYWLN18Pax/tCd2XguNwrnrerK0twinPKjJ87bwd+/vRCQcRx79aDL6T6Bd/Kkn+j9gOfr1/CC+LNni+hPBqpg2OKFrP6WRT6Mags8vn/eMFC/CZ4KAO8Xz0APE3XE1od3mGv/wCC3746T+Ue6phoAP0tG8uRaFbpSpRG5CHUQzOGz4Bhrt6uyxkc8YpxLpi3nrEsigH/bIzP0yEgaIBw/rUwsSAx9D3Ei+llQBhknajfr3/ZpLBp8wi0DXeQbkg5D995ufTtD5eST1qo98gN0xmvpMrypSBazF9CdCSRcT0aS029N5jzKUEXNEx2EiRfX5WsSgJe2T7MhpMMrt95HCEJ4CvaOFBv3FWFiEw9ia11M2QOk4I4SAZcJWWzcf8Vx1Bj4q3d5PkM/yfmbeDj9bcFbYE7wxGmF5yiezsfv6/atvxrCDfFBqz8Wfb5uNv0fWfUwjrWBfWhr+a6LJiRIt17CEe+EiM/4phhYUZSaeQR2PkjRwAJm/MqBhA+dx1Le3Hm3oFKZTatwgefAstCagzVfk42DOkm46+dtbTg/FBmqzzWJ2oxmrymfSjTyUg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1641.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(5660300002)(38100700002)(36756003)(6486002)(26005)(83380400001)(2616005)(2906002)(66946007)(107886003)(508600001)(316002)(186003)(8676002)(6666004)(6506007)(4326008)(1076003)(6916009)(66476007)(66556008)(86362001)(8936002)(6512007)(309714004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JEDhN3Z4WLe/hww2DOv2+KNUoArFaZJKnut8OYsCEEFYLz7IgB+f1K9Wrv0v?=
- =?us-ascii?Q?7JxN6HygbLqJakhflizQPZEyZq8nxEBg5Z19OUmp3tyY1N7jJmMGGEJL42Wa?=
- =?us-ascii?Q?kOwfZeR+AFoxaJIwKZqJ83mLGPDApLiIl1mUSWkSjMrufMCPmyjo4wH/3q4i?=
- =?us-ascii?Q?kwSpN+DPJF/LxWqBNbz1u7yWfVl9cNzlgqqT1xnYDKbPBxwMWiI+CTJmuybn?=
- =?us-ascii?Q?qJb48XNEq/pBM4lWStfYoQ/qLhpjJ2il4LinkXtKXSsBaCI+I9hs/CnISve7?=
- =?us-ascii?Q?qebSwufAHLACw3NWq+7pg1YSiWaVB4xuHMg3za+TcCdCYStomzGiqfWzr4+B?=
- =?us-ascii?Q?OrLXi3F6zdXQMkNDZpIq2NANUwexc2A1f+E/2p1+mSvOJMXD5JPBG3qYXPVp?=
- =?us-ascii?Q?J1kChQr7y/Y9TmrlkZRjp6dE5KaU2+bFbw71ehOS3SKcgepSbS4+2LMNRvjl?=
- =?us-ascii?Q?ElE37LfxbknsWT8mgdK/tc3PvIkTgviNkxd1YAkRNEPQGovcN+k+7bvVBZyK?=
- =?us-ascii?Q?xqwUbef4Bhbzte/3RNrgiR9qZO45LoxWL3b1XOSYG3lG/kobDHkGmex7YLk0?=
- =?us-ascii?Q?m63sA0AdY5rl50M6T6ub1Saq4af5k56vAHrI4+YqjoJpMaNXcyrf1bcJ8NIo?=
- =?us-ascii?Q?D+3vS6tJCpNVsROIsqOsjJAijW9S3Qzw2So/G39fAwB+rf5QjHeGIugecTtq?=
- =?us-ascii?Q?ib2y/DWpMfu3/jtJzSO0BlYIsNAQzmEokH+mJIvDKyrlA6hAOPMPcHU1KnVu?=
- =?us-ascii?Q?XjXsdQqnQ4NsYp9mPh14LZ2LDPC9nYzWZa2Lvz9PUlh4M290h6M1rAQgqOPr?=
- =?us-ascii?Q?zMATveOvwGnShyy5tLzDYwjdGi8c0o8oTPHsSGUslrwbLoEm3zEbZ5CNbV3Z?=
- =?us-ascii?Q?P0M4qN+f2c1zL7MoAehq2lClPE8n0izobOpmJGb5uQgAYIAasnenTkvvbsoY?=
- =?us-ascii?Q?Fir/KQLtuGhPmNoeaXxssD/9x15pGs18ZAqV9TUxK7McTpj4kW2HRDgtDEVl?=
- =?us-ascii?Q?WcJgvD+uml0fUBPSF2MXroazrmxm2k8XUODpPM/rj4N3BfQdX1xJIj8ZM96T?=
- =?us-ascii?Q?mPkLOdEs+hyY0x/1Qho19xZaFIZvsffp4T3vs1shnF9NEOmLUs62ypt+4z9c?=
- =?us-ascii?Q?/tVYX87kPZ/8ddh4J6EnL5HkCH0L8cYhnojvLt2ih/iJbvIPj/aSJLx6pyD0?=
- =?us-ascii?Q?tLa76oRku7SJ6t5Vylgf8zNZUu8KGFoBi1cpV+fhQVpN5mZ12X1klgKmUsdj?=
- =?us-ascii?Q?x3PZE/4MJZlc4iCplovuq5/uO2VzWk9ubB181ztZq7KOvsDqqKwAcRV43fhz?=
- =?us-ascii?Q?fqFYHgz49IvfK9iYTIUxK3nwWTOvJwgqtdaZeuML1REsUCy8BAGZfYyr1+/c?=
- =?us-ascii?Q?uND68BQctOPtXPsRDMBYFdWFZxakEFEMY0bRcO8P+rvznL3N+e7RzMixJJj2?=
- =?us-ascii?Q?6NRb5KRdwvDrL2O2ssJfM6d8CgbwhHmk37j5vJx4Du+in8QA64QmckaZgiAD?=
- =?us-ascii?Q?X3WONC8IF5fDo1M7Qa3aOTllgbw61FrfbPtF0KDNqcFvOgsqUDhIDuZqrkWY?=
- =?us-ascii?Q?pW9/aTP+wDSLP5d7YVl7yWWLZnMtMhYsMk+Gz4pf6y8ujEZspS4IdxzH1rdT?=
- =?us-ascii?Q?Zg3ymjck1//pWYNLopASNjI=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65ccfa1d-325d-4cf5-c55f-08d9d0354f72
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1641.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 10:22:43.7526
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QOuWzoJmUs70ZKoAuxgwJhV7vONerNg2aSgaBWc4c5mJdkZKZNGwYhp7vXe/h6ORxiT+/qvW10rCwO5U33Y8qg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2470
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Danielle Ratson <danieller@nvidia.com>
+From: Eric Dumazet <edumazet@google.com>
 
-Locally generated packets ingress the device through its CPU port. When
-the CPU port is congested and there are not enough credits in its
-headroom buffer, packets can be dropped.
+I had an internal syzbot report with a repro, leading to the infamous:
 
-While this might be acceptable for data packets that traverse the
-network, configuration packets exchanged between the host and the device
-(EMADs) should not be subjected to this flow control.
+unregister_netdevice: waiting for DEV to become free
 
-The "sdq_lp" bit in the SDQ (Send Descriptor Queue) context allows the
-host to instruct the device to treat packets sent on this queue as
-"local processing" and always process them, regardless of the state of
-the CPU port's headroom.
+This repro was also working on upstream kernels, so I started
+a bisection leading to this ~one year old commit
 
-Add the definition of this bit and set it for the dedicated SDQ reserved
-for the transmission of EMAD packets. This makes the "local processing"
-bit in the WQE (Work Queue Element) redundant, so clear it.
+commit d03b195b5aa015f6c11988b86a3625f8d5dbac52 (HEAD, refs/bisect/bad)
+Author: Maxim Mikityanskiy <maximmi@mellanox.com>
+Date:   Tue Jan 19 14:08:13 2021 +0200
 
-Signed-off-by: Danielle Ratson <danieller@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+    sch_htb: Hierarchical QoS hardware offload
+
+The repro seems to install a HTB qdisc on lo device, on TC_H_INGRESS
+It appears your patches were focused on egress, so there is probably
+a missing check to avoid bad things.
+
+I spent already too much time to bisect the issue
+I am thus giving a copy of the C repro.
+
+gcc -static -o b213075475 b213075475.c -lpthread
+
+Run the program, observe the unregister_netdevice messages in
+dmesg/console in less than 20 seconds.
+
+Reported-by: Eric Dumazet <edumazet@google.com>
+Cc: Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc: Tariq Toukan <tariqt@nvidia.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
 ---
- drivers/net/ethernet/mellanox/mlxsw/cmd.h | 12 ++++++++++++
- drivers/net/ethernet/mellanox/mlxsw/pci.c |  6 +++++-
- 2 files changed, 17 insertions(+), 1 deletion(-)
+ b213075475.c | 669 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 669 insertions(+)
+ create mode 100644 b213075475.c
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/cmd.h b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-index 392ce3cb27f7..51b260d54237 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-@@ -935,6 +935,18 @@ static inline int mlxsw_cmd_sw2hw_rdq(struct mlxsw_core *mlxsw_core,
-  */
- MLXSW_ITEM32(cmd_mbox, sw2hw_dq, cq, 0x00, 24, 8);
- 
-+enum mlxsw_cmd_mbox_sw2hw_dq_sdq_lp {
-+	MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_WQE,
-+	MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_IGNORE_WQE,
+diff --git a/b213075475.c b/b213075475.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..a6bf5462d15f05ff66c66883ac5df3edd18df0bc
+--- /dev/null
++++ b/b213075475.c
+@@ -0,0 +1,669 @@
++// autogenerated by syzkaller (https://github.com/google/syzkaller)
++
++#define _GNU_SOURCE
++
++#include <dirent.h>
++#include <endian.h>
++#include <errno.h>
++#include <fcntl.h>
++#include <pthread.h>
++#include <sched.h>
++#include <signal.h>
++#include <stdarg.h>
++#include <stdbool.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/ioctl.h>
++#include <sys/mount.h>
++#include <sys/prctl.h>
++#include <sys/resource.h>
++#include <sys/stat.h>
++#include <sys/syscall.h>
++#include <sys/time.h>
++#include <sys/types.h>
++#include <sys/wait.h>
++#include <time.h>
++#include <unistd.h>
++
++#include <linux/capability.h>
++#include <linux/futex.h>
++
++static unsigned long long procid;
++
++static void sleep_ms(uint64_t ms)
++{
++  usleep(ms * 1000);
++}
++
++static uint64_t current_time_ms(void)
++{
++  struct timespec ts;
++  if (clock_gettime(CLOCK_MONOTONIC, &ts))
++    exit(1);
++  return (uint64_t)ts.tv_sec * 1000 + (uint64_t)ts.tv_nsec / 1000000;
++}
++
++static void use_temporary_dir(void)
++{
++  char tmpdir_template[] = "./syzkaller.XXXXXX";
++  char* tmpdir = mkdtemp(tmpdir_template);
++  if (!tmpdir)
++    exit(1);
++  if (chmod(tmpdir, 0777))
++    exit(1);
++  if (chdir(tmpdir))
++    exit(1);
++}
++
++static void thread_start(void* (*fn)(void*), void* arg)
++{
++  pthread_t th;
++  pthread_attr_t attr;
++  pthread_attr_init(&attr);
++  pthread_attr_setstacksize(&attr, 128 << 10);
++  int i = 0;
++  for (; i < 100; i++) {
++    if (pthread_create(&th, &attr, fn, arg) == 0) {
++      pthread_attr_destroy(&attr);
++      return;
++    }
++    if (errno == EAGAIN) {
++      usleep(50);
++      continue;
++    }
++    break;
++  }
++  exit(1);
++}
++
++typedef struct {
++  int state;
++} event_t;
++
++static void event_init(event_t* ev)
++{
++  ev->state = 0;
++}
++
++static void event_reset(event_t* ev)
++{
++  ev->state = 0;
++}
++
++static void event_set(event_t* ev)
++{
++  if (ev->state)
++    exit(1);
++  __atomic_store_n(&ev->state, 1, __ATOMIC_RELEASE);
++  syscall(SYS_futex, &ev->state, FUTEX_WAKE | FUTEX_PRIVATE_FLAG, 1000000);
++}
++
++static void event_wait(event_t* ev)
++{
++  while (!__atomic_load_n(&ev->state, __ATOMIC_ACQUIRE))
++    syscall(SYS_futex, &ev->state, FUTEX_WAIT | FUTEX_PRIVATE_FLAG, 0, 0);
++}
++
++static int event_isset(event_t* ev)
++{
++  return __atomic_load_n(&ev->state, __ATOMIC_ACQUIRE);
++}
++
++static int event_timedwait(event_t* ev, uint64_t timeout)
++{
++  uint64_t start = current_time_ms();
++  uint64_t now = start;
++  for (;;) {
++    uint64_t remain = timeout - (now - start);
++    struct timespec ts;
++    ts.tv_sec = remain / 1000;
++    ts.tv_nsec = (remain % 1000) * 1000 * 1000;
++    syscall(SYS_futex, &ev->state, FUTEX_WAIT | FUTEX_PRIVATE_FLAG, 0, &ts);
++    if (__atomic_load_n(&ev->state, __ATOMIC_ACQUIRE))
++      return 1;
++    now = current_time_ms();
++    if (now - start > timeout)
++      return 0;
++  }
++}
++
++static bool write_file(const char* file, const char* what, ...)
++{
++  char buf[1024];
++  va_list args;
++  va_start(args, what);
++  vsnprintf(buf, sizeof(buf), what, args);
++  va_end(args);
++  buf[sizeof(buf) - 1] = 0;
++  int len = strlen(buf);
++  int fd = open(file, O_WRONLY | O_CLOEXEC);
++  if (fd == -1)
++    return false;
++  if (write(fd, buf, len) != len) {
++    int err = errno;
++    close(fd);
++    errno = err;
++    return false;
++  }
++  close(fd);
++  return true;
++}
++
++#define MAX_FDS 30
++
++static void mount_cgroups(const char* dir, const char** controllers, int count)
++{
++  if (mkdir(dir, 0777)) {
++  }
++  char enabled[128] = {0};
++  int i = 0;
++  for (; i < count; i++) {
++    if (mount("none", dir, "cgroup", 0, controllers[i])) {
++      continue;
++    }
++    umount(dir);
++    strcat(enabled, ",");
++    strcat(enabled, controllers[i]);
++  }
++  if (enabled[0] == 0)
++    return;
++  if (mount("none", dir, "cgroup", 0, enabled + 1)) {
++  }
++  if (chmod(dir, 0777)) {
++  }
++}
++
++static void setup_cgroups()
++{
++  const char* unified_controllers[] = {"+cpu", "+memory", "+io", "+pids"};
++  const char* net_controllers[] = {"net", "net_prio", "devices", "blkio",
++                                   "freezer"};
++  const char* cpu_controllers[] = {"cpuset", "cpuacct", "hugetlb", "rlimit"};
++  if (mkdir("/syzcgroup", 0777)) {
++  }
++  if (mkdir("/syzcgroup/unified", 0777)) {
++  }
++  if (mount("none", "/syzcgroup/unified", "cgroup2", 0, NULL)) {
++  }
++  if (chmod("/syzcgroup/unified", 0777)) {
++  }
++  int unified_control =
++      open("/syzcgroup/unified/cgroup.subtree_control", O_WRONLY);
++  if (unified_control != -1) {
++    unsigned i;
++    for (i = 0;
++         i < sizeof(unified_controllers) / sizeof(unified_controllers[0]); i++)
++      if (write(unified_control, unified_controllers[i],
++                strlen(unified_controllers[i])) < 0) {
++      }
++    close(unified_control);
++  }
++  mount_cgroups("/syzcgroup/net", net_controllers,
++                sizeof(net_controllers) / sizeof(net_controllers[0]));
++  mount_cgroups("/syzcgroup/cpu", cpu_controllers,
++                sizeof(cpu_controllers) / sizeof(cpu_controllers[0]));
++  write_file("/syzcgroup/cpu/cgroup.clone_children", "1");
++  write_file("/syzcgroup/cpu/cpuset.memory_pressure_enabled", "1");
++}
++
++static void setup_cgroups_loop()
++{
++  int pid = getpid();
++  char file[128];
++  char cgroupdir[64];
++  snprintf(cgroupdir, sizeof(cgroupdir), "/syzcgroup/unified/syz%llu", procid);
++  if (mkdir(cgroupdir, 0777)) {
++  }
++  snprintf(file, sizeof(file), "%s/pids.max", cgroupdir);
++  write_file(file, "32");
++  snprintf(file, sizeof(file), "%s/memory.low", cgroupdir);
++  write_file(file, "%d", 298 << 20);
++  snprintf(file, sizeof(file), "%s/memory.high", cgroupdir);
++  write_file(file, "%d", 299 << 20);
++  snprintf(file, sizeof(file), "%s/memory.max", cgroupdir);
++  write_file(file, "%d", 300 << 20);
++  snprintf(file, sizeof(file), "%s/cgroup.procs", cgroupdir);
++  write_file(file, "%d", pid);
++  snprintf(cgroupdir, sizeof(cgroupdir), "/syzcgroup/cpu/syz%llu", procid);
++  if (mkdir(cgroupdir, 0777)) {
++  }
++  snprintf(file, sizeof(file), "%s/cgroup.procs", cgroupdir);
++  write_file(file, "%d", pid);
++  snprintf(cgroupdir, sizeof(cgroupdir), "/syzcgroup/net/syz%llu", procid);
++  if (mkdir(cgroupdir, 0777)) {
++  }
++  snprintf(file, sizeof(file), "%s/cgroup.procs", cgroupdir);
++  write_file(file, "%d", pid);
++}
++
++static void setup_cgroups_test()
++{
++  char cgroupdir[64];
++  snprintf(cgroupdir, sizeof(cgroupdir), "/syzcgroup/unified/syz%llu", procid);
++  if (symlink(cgroupdir, "./cgroup")) {
++  }
++  snprintf(cgroupdir, sizeof(cgroupdir), "/syzcgroup/cpu/syz%llu", procid);
++  if (symlink(cgroupdir, "./cgroup.cpu")) {
++  }
++  snprintf(cgroupdir, sizeof(cgroupdir), "/syzcgroup/net/syz%llu", procid);
++  if (symlink(cgroupdir, "./cgroup.net")) {
++  }
++}
++
++static void setup_common()
++{
++  if (mount(0, "/sys/fs/fuse/connections", "fusectl", 0, 0)) {
++  }
++}
++
++static void setup_binderfs()
++{
++  if (mkdir("/dev/binderfs", 0777)) {
++  }
++  if (mount("binder", "/dev/binderfs", "binder", 0, NULL)) {
++  }
++}
++
++static void loop();
++
++static void sandbox_common()
++{
++  prctl(PR_SET_PDEATHSIG, SIGKILL, 0, 0, 0);
++  setsid();
++  struct rlimit rlim;
++  rlim.rlim_cur = rlim.rlim_max = (200 << 20);
++  setrlimit(RLIMIT_AS, &rlim);
++  rlim.rlim_cur = rlim.rlim_max = 32 << 20;
++  setrlimit(RLIMIT_MEMLOCK, &rlim);
++  rlim.rlim_cur = rlim.rlim_max = 136 << 20;
++  setrlimit(RLIMIT_FSIZE, &rlim);
++  rlim.rlim_cur = rlim.rlim_max = 1 << 20;
++  setrlimit(RLIMIT_STACK, &rlim);
++  rlim.rlim_cur = rlim.rlim_max = 0;
++  setrlimit(RLIMIT_CORE, &rlim);
++  rlim.rlim_cur = rlim.rlim_max = 256;
++  setrlimit(RLIMIT_NOFILE, &rlim);
++  if (unshare(CLONE_NEWNS)) {
++  }
++  if (mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL)) {
++  }
++  if (unshare(CLONE_NEWIPC)) {
++  }
++  if (unshare(0x02000000)) {
++  }
++  if (unshare(CLONE_NEWUTS)) {
++  }
++  if (unshare(CLONE_SYSVSEM)) {
++  }
++  typedef struct {
++    const char* name;
++    const char* value;
++  } sysctl_t;
++  static const sysctl_t sysctls[] = {
++      {"/proc/sys/kernel/shmmax", "16777216"},
++      {"/proc/sys/kernel/shmall", "536870912"},
++      {"/proc/sys/kernel/shmmni", "1024"},
++      {"/proc/sys/kernel/msgmax", "8192"},
++      {"/proc/sys/kernel/msgmni", "1024"},
++      {"/proc/sys/kernel/msgmnb", "1024"},
++      {"/proc/sys/kernel/sem", "1024 1048576 500 1024"},
++  };
++  unsigned i;
++  for (i = 0; i < sizeof(sysctls) / sizeof(sysctls[0]); i++)
++    write_file(sysctls[i].name, sysctls[i].value);
++}
++
++static int wait_for_loop(int pid)
++{
++  if (pid < 0)
++    exit(1);
++  int status = 0;
++  while (waitpid(-1, &status, __WALL) != pid) {
++  }
++  return WEXITSTATUS(status);
++}
++
++static void drop_caps(void)
++{
++  struct __user_cap_header_struct cap_hdr = {};
++  struct __user_cap_data_struct cap_data[2] = {};
++  cap_hdr.version = _LINUX_CAPABILITY_VERSION_3;
++  cap_hdr.pid = getpid();
++  if (syscall(SYS_capget, &cap_hdr, &cap_data))
++    exit(1);
++  const int drop = (1 << CAP_SYS_PTRACE) | (1 << CAP_SYS_NICE);
++  cap_data[0].effective &= ~drop;
++  cap_data[0].permitted &= ~drop;
++  cap_data[0].inheritable &= ~drop;
++  if (syscall(SYS_capset, &cap_hdr, &cap_data))
++    exit(1);
++}
++
++static int do_sandbox_none(void)
++{
++  if (unshare(CLONE_NEWPID)) {
++  }
++  int pid = fork();
++  if (pid != 0)
++    return wait_for_loop(pid);
++  setup_common();
++  sandbox_common();
++  drop_caps();
++  if (unshare(CLONE_NEWNET)) {
++  }
++  setup_binderfs();
++  loop();
++  exit(1);
++}
++
++#define FS_IOC_SETFLAGS _IOW('f', 2, long)
++static void remove_dir(const char* dir)
++{
++  int iter = 0;
++  DIR* dp = 0;
++retry:
++  while (umount2(dir, MNT_DETACH | UMOUNT_NOFOLLOW) == 0) {
++  }
++  dp = opendir(dir);
++  if (dp == NULL) {
++    if (errno == EMFILE) {
++      exit(1);
++    }
++    exit(1);
++  }
++  struct dirent* ep = 0;
++  while ((ep = readdir(dp))) {
++    if (strcmp(ep->d_name, ".") == 0 || strcmp(ep->d_name, "..") == 0)
++      continue;
++    char filename[FILENAME_MAX];
++    snprintf(filename, sizeof(filename), "%s/%s", dir, ep->d_name);
++    while (umount2(filename, MNT_DETACH | UMOUNT_NOFOLLOW) == 0) {
++    }
++    struct stat st;
++    if (lstat(filename, &st))
++      exit(1);
++    if (S_ISDIR(st.st_mode)) {
++      remove_dir(filename);
++      continue;
++    }
++    int i;
++    for (i = 0;; i++) {
++      if (unlink(filename) == 0)
++        break;
++      if (errno == EPERM) {
++        int fd = open(filename, O_RDONLY);
++        if (fd != -1) {
++          long flags = 0;
++          if (ioctl(fd, FS_IOC_SETFLAGS, &flags) == 0) {
++          }
++          close(fd);
++          continue;
++        }
++      }
++      if (errno == EROFS) {
++        break;
++      }
++      if (errno != EBUSY || i > 100)
++        exit(1);
++      if (umount2(filename, MNT_DETACH | UMOUNT_NOFOLLOW))
++        exit(1);
++    }
++  }
++  closedir(dp);
++  for (int i = 0;; i++) {
++    if (rmdir(dir) == 0)
++      break;
++    if (i < 100) {
++      if (errno == EPERM) {
++        int fd = open(dir, O_RDONLY);
++        if (fd != -1) {
++          long flags = 0;
++          if (ioctl(fd, FS_IOC_SETFLAGS, &flags) == 0) {
++          }
++          close(fd);
++          continue;
++        }
++      }
++      if (errno == EROFS) {
++        break;
++      }
++      if (errno == EBUSY) {
++        if (umount2(dir, MNT_DETACH | UMOUNT_NOFOLLOW))
++          exit(1);
++        continue;
++      }
++      if (errno == ENOTEMPTY) {
++        if (iter < 100) {
++          iter++;
++          goto retry;
++        }
++      }
++    }
++    exit(1);
++  }
++}
++
++static void kill_and_wait(int pid, int* status)
++{
++  kill(-pid, SIGKILL);
++  kill(pid, SIGKILL);
++  for (int i = 0; i < 100; i++) {
++    if (waitpid(-1, status, WNOHANG | __WALL) == pid)
++      return;
++    usleep(1000);
++  }
++  DIR* dir = opendir("/sys/fs/fuse/connections");
++  if (dir) {
++    for (;;) {
++      struct dirent* ent = readdir(dir);
++      if (!ent)
++        break;
++      if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
++        continue;
++      char abort[300];
++      snprintf(abort, sizeof(abort), "/sys/fs/fuse/connections/%s/abort",
++               ent->d_name);
++      int fd = open(abort, O_WRONLY);
++      if (fd == -1) {
++        continue;
++      }
++      if (write(fd, abort, 1) < 0) {
++      }
++      close(fd);
++    }
++    closedir(dir);
++  } else {
++  }
++  while (waitpid(-1, status, __WALL) != pid) {
++  }
++}
++
++static void setup_loop()
++{
++  setup_cgroups_loop();
++}
++
++static void setup_test()
++{
++  prctl(PR_SET_PDEATHSIG, SIGKILL, 0, 0, 0);
++  setpgrp();
++  setup_cgroups_test();
++  write_file("/proc/self/oom_score_adj", "1000");
++  if (symlink("/dev/binderfs", "./binderfs")) {
++  }
++}
++
++static void close_fds()
++{
++  for (int fd = 3; fd < MAX_FDS; fd++)
++    close(fd);
++}
++
++struct thread_t {
++  int created, call;
++  event_t ready, done;
 +};
 +
-+/* cmd_mbox_sw2hw_dq_sdq_lp
-+ * SDQ local Processing
-+ * 0: local processing by wqe.lp
-+ * 1: local processing (ignoring wqe.lp)
-+ */
-+MLXSW_ITEM32(cmd_mbox, sw2hw_dq, sdq_lp, 0x00, 23, 1);
++static struct thread_t threads[16];
++static void execute_call(int call);
++static int running;
 +
- /* cmd_mbox_sw2hw_dq_sdq_tclass
-  * SDQ: CPU Egress TClass
-  * RDQ: Reserved
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index cd3331a077bb..f91dde4df152 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -285,6 +285,7 @@ static int mlxsw_pci_sdq_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
- 			      struct mlxsw_pci_queue *q)
- {
- 	int tclass;
-+	int lp;
- 	int i;
- 	int err;
- 
-@@ -292,9 +293,12 @@ static int mlxsw_pci_sdq_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
- 	q->consumer_counter = 0;
- 	tclass = q->num == MLXSW_PCI_SDQ_EMAD_INDEX ? MLXSW_PCI_SDQ_EMAD_TC :
- 						      MLXSW_PCI_SDQ_CTL_TC;
-+	lp = q->num == MLXSW_PCI_SDQ_EMAD_INDEX ? MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_IGNORE_WQE :
-+						  MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_WQE;
- 
- 	/* Set CQ of same number of this SDQ. */
- 	mlxsw_cmd_mbox_sw2hw_dq_cq_set(mbox, q->num);
-+	mlxsw_cmd_mbox_sw2hw_dq_sdq_lp_set(mbox, lp);
- 	mlxsw_cmd_mbox_sw2hw_dq_sdq_tclass_set(mbox, tclass);
- 	mlxsw_cmd_mbox_sw2hw_dq_log2_dq_sz_set(mbox, 3); /* 8 pages */
- 	for (i = 0; i < MLXSW_PCI_AQ_PAGES; i++) {
-@@ -1678,7 +1682,7 @@ static int mlxsw_pci_skb_transmit(void *bus_priv, struct sk_buff *skb,
- 
- 	wqe = elem_info->elem;
- 	mlxsw_pci_wqe_c_set(wqe, 1); /* always report completion */
--	mlxsw_pci_wqe_lp_set(wqe, !!tx_info->is_emad);
-+	mlxsw_pci_wqe_lp_set(wqe, 0);
- 	mlxsw_pci_wqe_type_set(wqe, MLXSW_PCI_WQE_TYPE_ETHERNET);
- 
- 	err = mlxsw_pci_wqe_frag_map(mlxsw_pci, wqe, 0, skb->data,
++static void* thr(void* arg)
++{
++  struct thread_t* th = (struct thread_t*)arg;
++  for (;;) {
++    event_wait(&th->ready);
++    event_reset(&th->ready);
++    execute_call(th->call);
++    __atomic_fetch_sub(&running, 1, __ATOMIC_RELAXED);
++    event_set(&th->done);
++  }
++  return 0;
++}
++
++static void execute_one(void)
++{
++  int i, call, thread;
++  for (call = 0; call < 6; call++) {
++    for (thread = 0; thread < (int)(sizeof(threads) / sizeof(threads[0]));
++         thread++) {
++      struct thread_t* th = &threads[thread];
++      if (!th->created) {
++        th->created = 1;
++        event_init(&th->ready);
++        event_init(&th->done);
++        event_set(&th->done);
++        thread_start(thr, th);
++      }
++      if (!event_isset(&th->done))
++        continue;
++      event_reset(&th->done);
++      th->call = call;
++      __atomic_fetch_add(&running, 1, __ATOMIC_RELAXED);
++      event_set(&th->ready);
++      event_timedwait(&th->done, 50);
++      break;
++    }
++  }
++  for (i = 0; i < 100 && __atomic_load_n(&running, __ATOMIC_RELAXED); i++)
++    sleep_ms(1);
++  close_fds();
++}
++
++static void execute_one(void);
++
++#define WAIT_FLAGS __WALL
++
++static void loop(void)
++{
++  setup_loop();
++  int iter = 0;
++  for (;; iter++) {
++    char cwdbuf[32];
++    sprintf(cwdbuf, "./%d", iter);
++    if (mkdir(cwdbuf, 0777))
++      exit(1);
++    int pid = fork();
++    if (pid < 0)
++      exit(1);
++    if (pid == 0) {
++      if (chdir(cwdbuf))
++        exit(1);
++      setup_test();
++      execute_one();
++      exit(0);
++    }
++    int status = 0;
++    uint64_t start = current_time_ms();
++    for (;;) {
++      if (waitpid(-1, &status, WNOHANG | WAIT_FLAGS) == pid)
++        break;
++      sleep_ms(1);
++      if (current_time_ms() - start < 5000)
++        continue;
++      kill_and_wait(pid, &status);
++      break;
++    }
++    remove_dir(cwdbuf);
++  }
++}
++
++uint64_t r[3] = {0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff};
++
++void execute_call(int call)
++{
++  intptr_t res = 0;
++  switch (call) {
++  case 0:
++    res = syscall(__NR_socket, 0x10ul, 3ul, 0);
++    if (res != -1)
++      r[0] = res;
++    break;
++  case 1:
++    res = syscall(__NR_socket, 0x11ul, 2ul, 0);
++    if (res != -1)
++      r[1] = res;
++    break;
++  case 2:
++    *(uint16_t*)0x20000080 = 0x11;
++    memcpy((void*)0x20000082,
++           "\x00\x00\x01\x00\x00\x00\x00\x00\x08\xfc\x9d\x71\xfc\x00\x00\x00"
++           "\x00\x00\x00\x00\xf8\xff\xff\x00\x2e\x0b\x38\x36\x00\x54\x04\xb0"
++           "\xd6\x30\x1a\x4c\xe8\x75\xf2\xe3\xff\x5f\x16\x3e\xe3\x40\xb7\x67"
++           "\x95\x00\x80\x00\xf8\x00\x00\x00\x00\x01\x04\x00\x3c\x58\x11\x03"
++           "\x9e\x15\x77\x50\x27\xec\xce\x66\xfd\x79\x2b\xbf\x0e\x5b\xf5\xff"
++           "\x9b\x08\x16\xf3\xf6\xdb\x1c\x00\x01\x00\x00\x00\x00\x00\x00\x00"
++           "\x49\x74\x00\x00\x00\x00\x00\x00\x00\x06\xad\x8e\x5e\xcc\x32\x6d"
++           "\x3a\x09\xff\x42\xc6\x54\x00\x00\x00\x00\x00\x00\x00\x00",
++           126);
++    syscall(__NR_bind, r[1], 0x20000080ul, 0x80ul);
++    break;
++  case 3:
++    *(uint32_t*)0x200003c0 = 0x14;
++    res = syscall(__NR_getsockname, r[1], 0x200004c0ul, 0x200003c0ul);
++    if (res != -1)
++      r[2] = *(uint32_t*)0x200004c4;
++    break;
++  case 4:
++    *(uint64_t*)0x20000240 = 0;
++    *(uint32_t*)0x20000248 = 0;
++    *(uint64_t*)0x20000250 = 0x20000080;
++    *(uint64_t*)0x20000080 = 0x20000380;
++    memcpy((void*)0x20000380,
++           "\x48\x00\x00\x00\x24\x00\x07\x05\x00\x00\x00\x00\x00\x00\x10\x00"
++           "\x00\x00\x1f\x00",
++           20);
++    *(uint32_t*)0x20000394 = r[2];
++    memcpy((void*)0x20000398,
++           "\x00\x00\x04\x00\xf1\xff\xff\xff\x00\x00\x00\x00\x08\x00\x01\x00"
++           "\x68\x74\x62\x00\x1c\x00\x02\x00\x18\x00\x02\x00\x03",
++           29);
++    *(uint64_t*)0x20000088 = 0x48;
++    *(uint64_t*)0x20000258 = 1;
++    *(uint64_t*)0x20000260 = 0;
++    *(uint64_t*)0x20000268 = 0;
++    *(uint32_t*)0x20000270 = 0;
++    syscall(__NR_sendmsg, r[0], 0x20000240ul, 0ul);
++    break;
++  case 5:
++    syscall(__NR_clone, 0xbb002100ul, 0ul, 0x9999999999999999ul, 0ul, -1ul);
++    break;
++  }
++}
++int main(void)
++{
++  syscall(__NR_mmap, 0x1ffff000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
++  syscall(__NR_mmap, 0x20000000ul, 0x1000000ul, 7ul, 0x32ul, -1, 0ul);
++  syscall(__NR_mmap, 0x21000000ul, 0x1000ul, 0ul, 0x32ul, -1, 0ul);
++  setup_cgroups();
++  for (procid = 0; procid < 6; procid++) {
++    if (fork() == 0) {
++      use_temporary_dir();
++      do_sandbox_none();
++    }
++  }
++  sleep(1000000);
++  return 0;
++}
 -- 
-2.33.1
+2.34.1.448.ga2b2bfdf31-goog
 
