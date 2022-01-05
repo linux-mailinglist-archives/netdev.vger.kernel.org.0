@@ -2,137 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41792485385
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:24:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E98048538A
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:25:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240298AbiAENYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 08:24:23 -0500
-Received: from www62.your-server.de ([213.133.104.62]:49864 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236846AbiAENYV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 08:24:21 -0500
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1n56H3-0004es-5s; Wed, 05 Jan 2022 14:24:17 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1n56H2-0003jA-RB; Wed, 05 Jan 2022 14:24:16 +0100
-Subject: Re: [PATCH] bpf: allow setting mount device for bpffs
-To:     Yafang Shao <laoar.shao@gmail.com>, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        David Howells <dhowells@redhat.com>, viro@zeniv.linux.org.uk
-References: <20211226165649.7178-1-laoar.shao@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <616eab60-0f56-7309-4f0f-c0f96719b688@iogearbox.net>
-Date:   Wed, 5 Jan 2022 14:24:16 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S240329AbiAENZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 08:25:53 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:10326 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236846AbiAENZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 08:25:50 -0500
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 205B6fpb007978;
+        Wed, 5 Jan 2022 13:25:48 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=G9b+9OF489U5MH//jS/S312fTKT1KDWwCDo6g7vxKEo=;
+ b=Gd+DqsOZ0Ob3agnV+YqGGGa5vq9245wAkg3r8ZAw0anMrDo2NhQr28b5dOmJL4kqoc6Q
+ ww9HPzDSFOLI8BDaXmInTno0/o0bNkOIAPaumYh6WXvEG8pMl75nSYKPnVWkyyvk6uH0
+ fYcO7WgdRyOFS2T86Ipax8x21RtLEdJTXz/VuLQJ1HnDThfuprBi2jXt2qrHNr6dyNVx
+ 9nYv1oJyrqFsXX4auvHrgcEIh95MdDcbMyhRCJd2q2M4gxiMX51DGQXUdIEA9IYoPxqP
+ IH3C78YcduqOMZURw3fv1w/pxo1nJFz5I9psZCuVH4CvzjBH4kFtfqJqnwaODMCUDDq/ 6Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dckxt1wum-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 05 Jan 2022 13:25:48 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 205DKfX0030902;
+        Wed, 5 Jan 2022 13:25:47 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dckxt1wtv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 05 Jan 2022 13:25:47 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 205DNF9S010855;
+        Wed, 5 Jan 2022 13:25:45 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma04fra.de.ibm.com with ESMTP id 3daeka8jbm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 05 Jan 2022 13:25:45 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 205DPgR937814774
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 5 Jan 2022 13:25:42 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 77D384203F;
+        Wed,  5 Jan 2022 13:25:42 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 18E8742045;
+        Wed,  5 Jan 2022 13:25:42 +0000 (GMT)
+Received: from [9.145.181.244] (unknown [9.145.181.244])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  5 Jan 2022 13:25:42 +0000 (GMT)
+Message-ID: <6e2ae46c-5407-ca6a-3353-69e76f10d913@linux.ibm.com>
+Date:   Wed, 5 Jan 2022 14:25:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <20211226165649.7178-1-laoar.shao@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH net v3] net/smc: Reset conn->lgr when link group
+ registration fails
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26413/Wed Jan  5 10:23:50 2022)
+To:     Wen Gu <guwen@linux.alibaba.com>, dust.li@linux.alibaba.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1641364133-61284-1-git-send-email-guwen@linux.alibaba.com>
+ <20220105075408.GC31579@linux.alibaba.com>
+ <23b607fe-95da-ea8a-8dda-900a51572b90@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <23b607fe-95da-ea8a-8dda-900a51572b90@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: TF_de3s6NgVmhyoeC4dPJkURgvoxSiAn
+X-Proofpoint-ORIG-GUID: UcQwaypFEWN-viMeWUHJaiJKpi3DSYVe
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-05_03,2022-01-04_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 mlxlogscore=999 priorityscore=1501 spamscore=0
+ mlxscore=0 bulkscore=0 clxscore=1015 suspectscore=0 malwarescore=0
+ adultscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201050088
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/26/21 5:56 PM, Yafang Shao wrote:
-> We noticed our tc ebpf tools can't start after we upgrade our in-house
-> kernel version from 4.19 to 5.10. That is because of the behaviour change
-> in bpffs caused by commit
-> d2935de7e4fd ("vfs: Convert bpf to use the new mount API").
+On 05/01/2022 09:55, Wen Gu wrote:
+> On 2022/1/5 3:54 pm, dust.li wrote:
 > 
-> In our tc ebpf tools, we do strict environment check. If the enrioment is
-> not match, we won't allow to start the ebpf progs. One of the check is
-> whether bpffs is properly mounted. The mount information of bpffs in
-> kernel-4.19 and kernel-5.10 are as follows,
+>>> -        if (rc)
+>>> +        if (rc) {
+>>> +            spin_lock_bh(lgr_lock);
+>>> +            if (!list_empty(&lgr->list))
+>>> +                list_del_init(&lgr->list);
+>>> +            spin_unlock_bh(lgr_lock);
+>>> +            __smc_lgr_terminate(lgr, true);
+>>
+>> What about adding a smc_lgr_terminate() wrapper and put list_del_init()
+>> and __smc_lgr_terminate() into it ?
 > 
-> - kenrel 4.19
-> $ mount -t bpf bpffs /sys/fs/bpf
-> $ mount -t bpf
-> bpffs on /sys/fs/bpf type bpf (rw,relatime)
-> 
-> - kernel 5.10
-> $ mount -t bpf bpffs /sys/fs/bpf
-> $ mount -t bpf
-> none on /sys/fs/bpf type bpf (rw,relatime)
-> 
-> The device name in kernel-5.10 is displayed as none instead of bpffs,
-> then our environment check fails. Currently we modify the tools to adopt to
-> the kernel behaviour change, but I think we'd better change the kernel code
-> to keep the behavior consistent.
-> 
-> After this change, the mount information will be displayed the same with
-> the behavior in kernel-4.19, for example,
-> 
-> $ mount -t bpf bpffs /sys/fs/bpf
-> $ mount -t bpf
-> bpffs on /sys/fs/bpf type bpf (rw,relatime)
-> 
-> Fixes: d2935de7e4fd ("vfs: Convert bpf to use the new mount API")
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> Cc: David Howells <dhowells@redhat.com>
-> ---
->   kernel/bpf/inode.c | 18 ++++++++++++++++--
->   1 file changed, 16 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
-> index 80da1db47c68..5a8b729afa91 100644
-> --- a/kernel/bpf/inode.c
-> +++ b/kernel/bpf/inode.c
-> @@ -648,12 +648,26 @@ static int bpf_parse_param(struct fs_context *fc, struct fs_parameter *param)
->   	int opt;
->   
->   	opt = fs_parse(fc, bpf_fs_parameters, param, &result);
-> -	if (opt < 0)
-> +	if (opt < 0) {
->   		/* We might like to report bad mount options here, but
->   		 * traditionally we've ignored all mount options, so we'd
->   		 * better continue to ignore non-existing options for bpf.
->   		 */
-> -		return opt == -ENOPARAM ? 0 : opt;
-> +		if (opt == -ENOPARAM) {
-> +			if (strcmp(param->key, "source") == 0) {
-> +				if (param->type != fs_value_is_string)
-> +					return 0;
-> +				if (fc->source)
-> +					return 0;
-> +				fc->source = param->string;
-> +				param->string = NULL;
-> +			}
-> +
-> +			return 0;
-> +		}
-> +
-> +		return opt;
-> +	}
+> Adding a new wrapper is a good idea. But I think the logic here is relatively simple.
+> So instead of wrapping them, I coded them like what smc_lgr_cleanup_early() does.
 
-I don't think we need to open code this? Couldn't we just do something like:
+It might look cleaner with the following changes:
+- adopt smc_lgr_cleanup_early() to take only an lgr as parameter and remove the call to smc_conn_free()
+- change smc_conn_abort() (which is the only caller of smc_lgr_cleanup_early() right now), always
+  call smc_conn_free() and if (local_first) additionally call smc_lgr_cleanup_early() 
+  (hold a local copy of the lgr for this call)
+- finally call smc_lgr_cleanup_early(lgr) from smc_conn_create()
 
-         [...]
+This should be the same processing, but the smc_conn_free() is moved to smc_conn_abort() where
+it looks to be a better place for this call. And smc_lgr_cleanup_early() takes only care of an lgr.
 
-         opt = fs_parse(fc, bpf_fs_parameters, param, &result);
-         if (opt == -ENOPARAM) {
-                 opt = vfs_parse_fs_param_source(fc, param);
-                 if (opt != -ENOPARAM)
-                         return opt;
-                 return 0;
-         }
-         if (opt < 0)
-                 return opt;
-
-         [...]
-
-See also 0858d7da8a09 ("ramfs: fix mount source show for ramfs") where they
-had a similar issue.
-
-Thanks,
-Daniel
+What do you think? Did I miss something?
