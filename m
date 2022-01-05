@@ -2,169 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB465484BB2
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 01:27:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13DC9484C02
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 02:16:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236742AbiAEA1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 19:27:45 -0500
-Received: from esa.hc3962-90.iphmx.com ([216.71.140.77]:27673 "EHLO
-        esa.hc3962-90.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231168AbiAEA1o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 19:27:44 -0500
+        id S236849AbiAEBQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 20:16:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235660AbiAEBQn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 20:16:43 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4416C061761;
+        Tue,  4 Jan 2022 17:16:42 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id w20so70586800wra.9;
+        Tue, 04 Jan 2022 17:16:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qccesdkim1;
-  t=1641342464; x=1641947264;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=t76Uz+DNFUK0Ay0BPig3EbRU2pnbmK9Knd0Am9zTqMs=;
-  b=YJhrkinUcgukmGAUGv1hafuNFMjPvOCAGBnm4yr5e8PSdWYixcrpRkgm
-   J3XjOTrKLrHuNaSXID0Zei7lXbV0MtOHaplCqTizQ36sePqetaUKwsg8a
-   /4/27h49gCDGLjVNGW62jZSzmGzis1LoAWE+xMJ+19pfWWi+M059qdTb6
-   o=;
-Received: from mail-bn8nam08lp2041.outbound.protection.outlook.com (HELO NAM04-BN8-obe.outbound.protection.outlook.com) ([104.47.74.41])
-  by ob1.hc3962-90.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 00:27:43 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Sy/wl6NoY8Kz/hF3qSFgACpdOVutgtaOmG1EPV86CcgYf7S2OI01jBzIvqwlgfPNKkKmauvJVB/uA++VyqT/awZU+njgWgdA8qpJNT5/KiQPyzSZJPQNV8GATD4jz8IHwtCg0DszVexG+nfITr7BqIzPHdqga25o7sRX4ZAUQfCvXgO9GAQX+xw6zQ9kzBNyrNkO0ARd/o3xn6gBrC9IL3dhEiHuZ787/AY1WBaC/J7ciNcI1pXCkRgsFJh+4nO2ds7376WkV1KTn864Kx6RrteO5Zy5oBWpRmrHapew4l41dGXvi4oGt8wvgNkTFf+DMloEIRiIWQrTVnwCOuJN3g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t76Uz+DNFUK0Ay0BPig3EbRU2pnbmK9Knd0Am9zTqMs=;
- b=NcdvqQhMaurCjIsWgCkyxGNf/QCMOooYOnk/j/+XhlTc226ckMOC2ChdMAMMbrGaDUmByXELAcd5solUvtRok6UJpU73kLXedtpGdOJBSUqFkbI8x6rLVpvNXN7RikyJHppbht/mLXUKWbDoamibDGCRHFfWy9a4YgGv4EwvBut7bC8FzpjBRNq9JEZOnICkOsggOfDhmNuxWeNRFgJehI2v6RI1q1o2c8RdDIDHETLEjMR0+tgKK0lNZoq0tLeS/JW9KubLWIM6ncUgGP/ZS0MiXGPJW+tT7D+TlDjimk//1ttSem48vR2mnulP5SYfGW9NeOAaBYzFNtJBpUMkHg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=quicinc.com; dmarc=pass action=none header.from=quicinc.com;
- dkim=pass header.d=quicinc.com; arc=none
-Received: from BYAPR02MB5238.namprd02.prod.outlook.com (2603:10b6:a03:71::17)
- by BYAPR02MB4213.namprd02.prod.outlook.com (2603:10b6:a02:f3::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Wed, 5 Jan
- 2022 00:27:40 +0000
-Received: from BYAPR02MB5238.namprd02.prod.outlook.com
- ([fe80::8802:ab1b:7465:4b07]) by BYAPR02MB5238.namprd02.prod.outlook.com
- ([fe80::8802:ab1b:7465:4b07%6]) with mapi id 15.20.4844.016; Wed, 5 Jan 2022
- 00:27:40 +0000
-From:   "Tyler Wear (QUIC)" <quic_twear@quicinc.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-CC:     Yonghong Song <yhs@fb.com>,
-        "Tyler Wear (QUIC)" <quic_twear@quicinc.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "maze@google.com" <maze@google.com>
-Subject: RE: [PATCH] Add skb_store_bytes() for BPF_PROG_TYPE_CGROUP_SKB
-Thread-Topic: [PATCH] Add skb_store_bytes() for BPF_PROG_TYPE_CGROUP_SKB
-Thread-Index: AQHX9tuyjzikyJjagEKGz1loPsx8d6w93owAgAE+o3CAABKSgIAKpfOwgAAsSoCACaSBEA==
-Date:   Wed, 5 Jan 2022 00:27:40 +0000
-Message-ID: <BYAPR02MB52388A3420C7FBC0B79894CFAA4B9@BYAPR02MB5238.namprd02.prod.outlook.com>
-References: <20211222022737.7369-1-quic_twear@quicinc.com>
- <1bb2ac91-d47c-82c2-41bd-cad0cc96e505@fb.com>
- <BYAPR02MB52384D4B920EE2DB7C6D0F89AA7D9@BYAPR02MB5238.namprd02.prod.outlook.com>
- <20211222235045.j2o5szilxtl3yqzx@kafai-mbp.dhcp.thefacebook.com>
- <BYAPR02MB52388E60A9E9BA148CBA9299AA449@BYAPR02MB5238.namprd02.prod.outlook.com>
- <20211229210549.ocscvmftojxcqq3x@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20211229210549.ocscvmftojxcqq3x@kafai-mbp.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=quicinc.com;
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4f906421-a68a-473c-3287-08d9cfe22ef3
-x-ms-traffictypediagnostic: BYAPR02MB4213:EE_
-x-ld-processed: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d,ExtAddr
-x-microsoft-antispam-prvs: <BYAPR02MB421330E7361D89862F427A7AFB4B9@BYAPR02MB4213.namprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mQtlMK5NbKqV85usbUL12g6TWkXr//bSHxwv7e7K88Iy5RoovZEuLnudSR8k37lFEmVXeOEXKSdNocaKeBmLNJOkLcEl9bCRjfHRPwdb2zWBrf6MhxeKB9ylwgQIHYFgq+IUE9OHhqyEA5kGsFedgog4n4DznhrQdSUAUbw/PKgERyrF1ewCNmjXtYlpc177Iz+TJutOx4l2zYePL3mtV/ZiYFnk4GcAYTTECVSSbE1DVmqagEn2rJUUgEaVMBsQbspsDYW4WlnxLA3QRsuQGQXv6PP13r7sv9h8poz1TwW9DMA7xVPKEAEmKgN8aVPAgWXFifRO+Jr1LrUwtTCiQATnAXu/lCw//GLyLvz1iUV8qo21v/HhhWPC30uY///ahZ2OqT+gY+gzfomKzfzGvoKRxaslJlc66qoTfwwD/kApslw+AwcukFvAZInEcJjZEHg9D6ReP0GC7Sk/4CgXxj1+1xFZZyyR8oskLbwn1jguHplk6B5Jizxg1FHeNmpLftW8ryk0WCNE/klEOM6g7iRwuhlbpNR9831/xqnQ3wDMxVdwyYmVhTLdR89LgzNm9W1FpfY2dg/8vyyzslW1rHttrg/gJ3JnbO5ZgMwjUTIABDdZ7zBwc6Jof/Zcm1S2JamvUo1xqB7wVvg1Q97ByP1K+XEEUnEVVWGs8wPcGtNbiqPOnBkpGSxdchdqarAh+gViI7f7dXRSueCBcIZh3g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR02MB5238.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(186003)(9686003)(6916009)(8936002)(54906003)(316002)(508600001)(83380400001)(122000001)(2906002)(38100700002)(26005)(66946007)(8676002)(33656002)(38070700005)(86362001)(7696005)(66446008)(66476007)(64756008)(6506007)(55016003)(4326008)(76116006)(53546011)(71200400001)(5660300002)(52536014)(66556008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?PbrHoN8vpkk9HsOFTFEkD5UKoYuQzJcE15+iF7FGa9zVTCIToolnM3+VlePr?=
- =?us-ascii?Q?a/qteq9LcIdJpXSltEtMhfhsLy+dNiClONV4ehSRIbJ4f5y7fiOUNQsiS1kf?=
- =?us-ascii?Q?9oqaIoIGkTgoELre8+1At+uTzjTSsuCNnlB+DCpIS3svxCxuZBDKsaueL2OE?=
- =?us-ascii?Q?U2e/E2XCf3thbjt1tYLu4+LZNFAC/lZ8NgXw65F2LFUY5GMrYLi/eUZI3REv?=
- =?us-ascii?Q?urRvUYmoJAsUhoRM+yNYoV9mzCCdADQ58OD+kfxoik8fHkUlzLzvkBBEHss7?=
- =?us-ascii?Q?TgSeqsA7bOvl2UgSnxgZQ57AkZQLtBB/xg9b5URIt0yZgHicIxHMGm+tg9s2?=
- =?us-ascii?Q?JqdvawlhXXCIBlsjx1g0SgZSW9tuelXmg2+1rBglJ0pBV9/qPpHUVHjTdbQi?=
- =?us-ascii?Q?i3UQuUp/3kXcpZVfgnR7RhnExA8IOdqWiK6aBcbtY9lQu+SMdkYuLLbwQyoQ?=
- =?us-ascii?Q?CZ3m8OnXWgquTgbiav9qbyZIPu3z+LD9mTrigKhjnzV3/SHlitK/RSUBrZNS?=
- =?us-ascii?Q?9t7zZqbUchsVaEJTQs+KR7gB0GkWpP1fVLSgaxfSdPXa4mq/+BKafgrsMHgD?=
- =?us-ascii?Q?JI4x71WCdNlBSvBwfDTT8n/dJbIsKZBh8rLv+VVZbrv7z0mwO5nEv02rZGx1?=
- =?us-ascii?Q?rYCM8+c5zEpgMmIyNbqJG0n85Z4KiFlG+j8cHqRLEWf30m1/VdV08UAbv5ZH?=
- =?us-ascii?Q?BJ2Hnm/IrymewgU6uzgZinvE0TOBF4sO8ToGZ4usMrz2yUl+9bQ4Nldi499y?=
- =?us-ascii?Q?bdY5SFMJ0khE8NK/W66IDQQiniADM3F5xu4Rq+0suUfzSDY7ju1puuFC7r2q?=
- =?us-ascii?Q?JtsaI1LG9TFJFa+7Lkddbw3aOkwQQ2ONqH7t+NcCvLTlObGweWcI6XFCB5MA?=
- =?us-ascii?Q?5hAD0dHsdK0I/0/1N4zOk4H8brNqgMrkSKzzKfBaCgrF+q7LJhBXiex6teAt?=
- =?us-ascii?Q?gtGMqdbOS0vJRwP60jIN8XM1mPds+Epf0dGm/m3/pS804eGDOX3GPUZ/ZPKa?=
- =?us-ascii?Q?SjeSgLgXxEbzbR0LFygKMjeNtIh1vkK1MHklGtKtU6A+ekAki/WntJN6xevl?=
- =?us-ascii?Q?5poMYG8WiSYmzfbIn18uwXa+mTmCBhu67u7IGd3YcUslHMOpX7RODhlNew9J?=
- =?us-ascii?Q?ijAYgWzQo2cINP5E3Sn0gyqGHK6o/CjSUcD3kZnz5DAvN1ZbxyFOF00tv4ae?=
- =?us-ascii?Q?Hd3Ie5asEVLGelMRm2k6hwByeXAY4g7og4RBvCWT29Et+y59A8q+IJTjbMyW?=
- =?us-ascii?Q?EShP2ziilDRCGutNR9wUpTi6woZuDK3SwcPfsNn8yT4N8OMWK1xJOB8449BY?=
- =?us-ascii?Q?09VnWT6nVsy8my4FNI0dGvn7dR3LQSOHbhs/Qx3TAbnt9uxHnIkP6a6NKBbg?=
- =?us-ascii?Q?0ukw9+ifElgyPudCf9yuiZGtv3lpHAUltuGw+0CSam+zYeMIvPkk0TTUCAUk?=
- =?us-ascii?Q?MzVWfvANHnX1jS3fvNLATOzEkMln1LHoNICXsGXvZV39aPD4zCwmU/3nQCbM?=
- =?us-ascii?Q?ONBZwlW4/RYgVFrQ1sCTRPYc4OBUk9coTZsjz9+Gbo82PiyBYBoZxgA4CsWi?=
- =?us-ascii?Q?c/b2b9paBDyvUBZoaKg9VXkhxZDTrWFtNXB6Vs6Vm8YG+gfU08zfsT/I+ryQ?=
- =?us-ascii?Q?Gw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E+guEoPafkUbErZ17N8q8rCXywG45j8Yuz7sIO8/TE4=;
+        b=XhiS7BmkUZFx2KfgeaSMHI/wY+mxrq1ySFLY0ENGolNnmaf3M4bQkxsIAfcsIc+HDR
+         pJlwHz7zXpiVNb1K9oO1QSXZsJhBv1qPV0iynWYVHcZqgLJA7ovujYZIT7kt5s3ZUekw
+         jBOK+O34Q3etwRL6oMivF8CHJnlp+Nu6CRIZaQBU+z2dbEUwwvCo6W04cwbUNqcbluEw
+         /WTKZ4DckybfdLMhtD8z9yjTm9JuOJCCzpkQfBMdM/l8O7nH/zu17fJImmTkJFA/K4gA
+         Sq2g+Z1uaDYwvkjGAmjO6DvG2P+1Ev/2CybtEAe3OkEKIy65MHjd9f931ZDcDy94RHAI
+         X3ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E+guEoPafkUbErZ17N8q8rCXywG45j8Yuz7sIO8/TE4=;
+        b=CXWrh/Jo90kukSOEgqCLX8n+8IBt43jVVhFYknClX8zR44HGBPUW831YF8uYPj0FHA
+         lwZpCbE0UkFq3Pxyq/k3rMrORkvBpRUdqlhRU7lr1mI6fD9W7zdB04QfV9ti6v02Ngat
+         ypTHjz2EEYoD29ChFSHpzKBTuWRj1C+EIdLj+Nry72OtxNCv7BUIHwxiKFOiN6G4uLar
+         McaBDm//7zwvUvp4bkG4UoLb/cDmXcu0CbiYQPSuot7lPDDYkz/2wcZhD5PfHaBVX7lg
+         vpj4865SK/FrRIgfjQ8V0vwHxchjS8vLmaJPlNbt32nYG3CTy8Q79B4ldHogTXVqhPkg
+         Lvqg==
+X-Gm-Message-State: AOAM533YaWkAL9aswTl6ZRwtRNIxGUfvKrX28iksLIhKic8Bbv3C7xtc
+        gHAi4Mg8CIU9o2Qy+TShOD06DG8l0IvSpVND8YE=
+X-Google-Smtp-Source: ABdhPJzUsgss4V3sU+zUmGws2K3JI44IUVjw54V+CZHz3iYuXs4bUgJs0qmt/eNY8uWUcz+hDFz5OOeMGhbrrAASNqg=
+X-Received: by 2002:adf:d1c2:: with SMTP id b2mr45097940wrd.81.1641345401204;
+ Tue, 04 Jan 2022 17:16:41 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: quicinc.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR02MB5238.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f906421-a68a-473c-3287-08d9cfe22ef3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Jan 2022 00:27:40.5790
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qE2wIKXsuFxxi1zOxQHVSeg7Es25n8xWIBq6fKz4CxX5MXqZSV2+30E8OtAoNF92bzUmqwXMSofibkMnioA1GA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB4213
+References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
+ <20211222155743.256280-13-miquel.raynal@bootlin.com> <CAB_54W6AZ+LGTcFsQjNx7uq=+R5v_kdF0Xm5kwWQ8ONtfOrmAw@mail.gmail.com>
+ <Ycx0mwQcFsmVqWVH@ni.fr.eu.org> <CAB_54W41ZEoXzoD2_wadfMTY8anv9D9e2T5wRckdXjs7jKTTCA@mail.gmail.com>
+ <CAB_54W6gHE1S9Q+-SVbrnAWPxBxnvf54XVTCmddtj8g-bZzMRA@mail.gmail.com> <20220104191802.2323e44a@xps13>
+In-Reply-To: <20220104191802.2323e44a@xps13>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Tue, 4 Jan 2022 20:16:30 -0500
+Message-ID: <CAB_54W5quZz8rVrbdx+cotTRZZpJ4ouRDZkxeW6S1L775Si=cw@mail.gmail.com>
+Subject: Re: [net-next 12/18] net: mac802154: Handle scan requests
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Nicolas Schodet <nico@ni.fr.eu.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi.
 
-
-> -----Original Message-----
-> From: Martin KaFai Lau <kafai@fb.com>
-> Sent: Wednesday, December 29, 2021 1:06 PM
-> To: Tyler Wear <twear@quicinc.com>
-> Cc: Yonghong Song <yhs@fb.com>; Tyler Wear (QUIC) <quic_twear@quicinc.com=
->; netdev@vger.kernel.org; bpf@vger.kernel.org;
-> maze@google.com
-> Subject: Re: [PATCH] Add skb_store_bytes() for BPF_PROG_TYPE_CGROUP_SKB
->=20
-> WARNING: This email originated from outside of Qualcomm. Please be wary o=
-f any links or attachments, and do not enable macros.
->=20
-> On Wed, Dec 29, 2021 at 06:29:05PM +0000, Tyler Wear wrote:
-> > Unable to run any bpf tests do to errors below. These occur with and wi=
-thout the new patch. Is this a known issue?
-> > Is the new test case required since bpf_skb_store_bytes() is already a =
-tested function for other prog types?
+On Tue, 4 Jan 2022 at 13:18, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+...
 > >
-> > libbpf: failed to find BTF for extern 'bpf_testmod_invalid_mod_kfunc'
-> > [18] section: -2
-> > Error: failed to open BPF object file: No such file or directory
-> > libbpf: failed to find BTF info for global/extern symbol 'my_tid'
-> > Error: failed to link
-> > '/local/mnt/workspace/linux-stable/tools/testing/selftests/bpf/linked_
-> > funcs1.o': Unknown error -2 (-2)
-> > libbpf: failed to find BTF for extern 'bpf_kfunc_call_test1' [27]
-> > section: -2
-> tools/testing/selftests/bpf/README.rst has details on these.
->=20
-> Ensure the llvm and pahole are up to date.
-> Also take a look at the "Testing patches" and "LLVM" section in Documenta=
-tion/bpf/bpf_devel_QA.rst.
+> > I see now why promiscuous mode is necessary here. The actual
+> > promiscuous mode setting for the driver is not the same as promiscuous
+> > mode in 802.15.4 spec. For until now it was there for running a
+> > sniffer device only.
+> > As the 802.15.4 spec defines some "filtering levels" I came up with a
+> > draft so we can define which filtering level should be done on the
+> > hardware.
+>
+> I like the idea but I'm not sure on what side you want to tackle the
+> problem first. Is it the phy drivers which should advertise the mac
+> about the promiscuous mode they support (which matches the description
+> below but does not fit the purpose of an enum very well)? Or is it the
+> MAC that requests a particular filtering mode? In this case what a phy
+> driver should do if:
+> - the requested mode is more constrained than its usual promiscuous
+>   capabilities?
 
-This will also require adding the l3/l4_ csum_replace() api's then. Adding =
-the csum_replace() to a cgroup test case results in the below error during =
-bpf program validation:
-"BPF_LD_[ABS|IND] instructions not allowed for this program type"
+Then, the driver needs to go one level lower and tell mac802154 to
+filter more out.
 
-Is there something else that needs to be added? Or would it be better to cr=
-eate the function just for ds_field?
+> - the requested mode is less constrained than its usual promiscuous
+>   capabilities?
+>
+
+Then mac802154 needs to filter more out.
+
+I am more worried at the point the transceiver will shut off automatic
+acknowledge handling which we probably can't do in software in cases
+where it's required. Some transceivers will shut that off if they turn
+off address filtering and if they don't have a detailed setting for
+that they will ack every frame what they see, which is... not so good.
+
+Future work would be to warn about mismatch of seeing frames, what the
+hardware would filter out vs what mac802154 sees. More further work
+could be to use a monitor interface and raw sockets and verify
+transceivers how they act to frames.
+
+> >
+> > diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+> > index 72978fb72a3a..3839ed3f8f0d 100644
+> > --- a/include/net/mac802154.h
+> > +++ b/include/net/mac802154.h
+> > @@ -130,6 +130,48 @@ enum ieee802154_hw_flags {
+> >  #define IEEE802154_HW_OMIT_CKSUM       (IEEE802154_HW_TX_OMIT_CKSUM | \
+> >                                          IEEE802154_HW_RX_OMIT_CKSUM)
+> >
+> > +/**
+> > + * enum ieee802154_filter_mode - hardware filter mode that a driver
+> > will pass to
+> > + *                              pass to mac802154.
+>
+> Isn't it the opposite: The filtering level the mac is requesting? Here
+> it looks like we are describing driver capabilities (ie what drivers
+> advertise supporting).
+>
+
+I am sorry. I meant what the transceiver "should" deliver or "level
+less" to mac802154.
+
+I think the filtering when not much resources are required can also be
+done in a hardirq context. There exists a tasklet which is there to
+switch to a softirq context [0], currently we do all parsing there.
+
+> > + *
+> > + * @IEEE802154_FILTER_MODE_0: No MFR filtering at all.
+>
+> I suppose this would be for a sniffer accepting all frames, including
+> the bad ones.
+>
+
+yes.
+
+> > + *
+> > + * @IEEE802154_FILTER_MODE_1: IEEE802154_FILTER_MODE_1 with a bad FCS filter.
+>
+> This means that the driver should only discard bad frames and propagate
+> all the remaining frames, right? So this typically is a regular sniffer
+> mode.
+>
+
+I think this depends on what you want to filter out, so far I know in
+wireless this is configurable. Wireshark always expects the FCS in
+their payload for a linux 802.15.4 monitor interface and I think this
+is because of some historical reason to support the first 802.15.4
+sniffers in wireshark.
+There is a difference between filter bad FCS and cutoff FCS. I need to
+look it up but I think wireless would cut off the checksum if FCS is
+filtered on hardware (may even some transceivers will not deliver FCS
+to you if you enable filtering).
+
+> > + *
+> > + * @IEEE802154_FILTER_MODE_2: Same as IEEE802154_FILTER_MODE_1, known as
+> > + *                           802.15.4 promiscuous mode, sets
+> > + *                           mib.PromiscuousMode.
+>
+> I believe what you call mib.PromiscuousMode is the mode that is
+> referred in the spec, ie. being in the official promiscuous mode? So
+> that is the mode that should be used "by default" when really asking
+> for a 802154 promiscuous mode.
+>
+
+then we don't call it in driver level promiscuous mode, we call it
+"filtering level". And this is the filtering for cases when the
+standard says set "mib.PromiscuousMode".
+
+> Is there really a need for a different mode than mode_1 ?
+>
+
+I think so, I am not sure what they or will define if PromiscuousMode
+is set or not and might the transceiver need to get notice about it?
+It's not needed now, but we might keep it in mind then.
+
+> > + *
+> > + * @IEEE802154_FILTER_MODE_3_SCAN: Same as IEEE802154_FILTER_MODE_2 without
+> > + *                                set mib.PromiscuousMode.
+>
+> And here what is the difference between MODE_1 and MODE_3 ?
+>
+> I suppose here we should as well drop all non-beacon frames?
+
+Yes, additionally there could be a transceiver doing this filtering on
+hardware and tell that it's in scan and this is the difference.
+
+>
+> > + *
+> > + * @IEEE802154_FILTER_MODE_3_NO_SCAN:
+> > + *     IEEE802154_FILTER_MODE_3_SCAN with MFR additional filter on:
+> > + *
+
+should be IEEE802154_FILTER_MODE_2. Maybe we can also get some better
+names for that but the standard describes it with numbers as well.
+
+> > + *     - No reserved value in frame type
+> > + *     - No reserved value in frame version
+> > + *     - Match mib.PanId or broadcast
+> > + *     - Destination address field:
+> > + *       - Match mib.ShortAddress or broadcast
+> > + *       - Match mib.ExtendedAddress or GroupRxMode is true
+> > + *       - ImplicitBroadcast is true and destination address field/destination
+> > + *         panid is not included.
+> > + *       - Device is coordinator only source address present in data
+> > + *         frame/command frame and source panid matches mib.PanId
+> > + *       - Device is coordinator only source address present in multipurpose
+> > + *         frame and destination panid matches macPanId
+> > + *     - Beacon frames source panid matches mib.PanId. If mib.PanId is
+> > + *       broadcast it should always be accepted.
+>
+> This is a bit counter intuitive, but do we agree on the fact that the
+> higher level of filtering should refer to promiscuous = false?
+>
+
+Yes, it's a lot of filter rules at this level.
+Yes, promiscuous is false in this case. That is what currently what
+wpan "node" interface should filter at mac802154 [1] (for cases device
+coordinator is false).
+
+I might mention a lot of future work here. I think we can live for now
+to make a difference between those levels and be sure that we drop
+everything else in the scan operation (inclusive check fcs in
+software). Moving stuff that we can do in hardware to hardware and the
+rest in software is a bigger task here...
+
+- Alex
+
+[0] https://elixir.bootlin.com/linux/v5.16-rc8/source/net/mac802154/rx.c#L294
+[1] https://elixir.bootlin.com/linux/v5.16-rc8/source/net/mac802154/rx.c#L132
