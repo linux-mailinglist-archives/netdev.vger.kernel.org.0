@@ -2,129 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D7E248575E
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 18:37:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2252485767
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 18:39:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242371AbiAERhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 12:37:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:40219 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242370AbiAERhM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 12:37:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641404230;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JquRRMpmPNBUfRVv/kO5rqtHDVD1T4H1+hvFjq+MPQk=;
-        b=A9zGLM0YJhO6SDmPAS+9tj6LE+Bz1M52zXbAgV/3LfZCUs2OWYBlOZtLHpiQ53FCWMu0KK
-        46ptQbpiviRtIfmydF/Nf619g8J51a3vNKqHAUpo/L7vNRd7VyeMAnuXVhZn2MY8P5pbyH
-        n3djpcP361CfHwTJ/AMpMtEKLjtESXA=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-9-B0ZddlwjMTyJPdr8eQOrAg-1; Wed, 05 Jan 2022 12:37:09 -0500
-X-MC-Unique: B0ZddlwjMTyJPdr8eQOrAg-1
-Received: by mail-wr1-f70.google.com with SMTP id s23-20020adf9797000000b001a485bd8e8dso44803wrb.11
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 09:37:08 -0800 (PST)
+        id S242388AbiAERjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 12:39:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242352AbiAERjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 12:39:24 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD69C061245;
+        Wed,  5 Jan 2022 09:39:23 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id bm14so165025565edb.5;
+        Wed, 05 Jan 2022 09:39:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=dai/EtuC0U5fXbve0pJv7WC+HEVKC2J4wDtbrdgR9Ok=;
+        b=dhFGi4aFGebYnc4nheSut1HsyM2au3pxRW9PquUm49HDormtIYw6WfkdpslQ4pdZYG
+         cDSqhkpFObiX6MjH1U5EcqZ57oBf6VtEGrXvqCxWC/Z+YNnZfv+5CdSjI/dUnKOsRj/H
+         bTJSXKgviComSchPnxsv6mhkiCI2Tm8ZyST7z1tVpvoxEoVnJYwWNPCj4LItOD27/Avr
+         ZQJyCngfNYWg7t3mN90JjWkLuT2ScZCsoIGwidOzUFdY6NRooQvG3eaxNz+zpGhEmJ/e
+         t/yGK1Xh9jclT3Wgu8WCC+youIBdkSEgM9rlQ+lKeCtX1gkMCAV7P45Htumqw4uDxGzo
+         tGUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JquRRMpmPNBUfRVv/kO5rqtHDVD1T4H1+hvFjq+MPQk=;
-        b=r23ZWOpfWqKZFsHNKG8Xvb/d9xTw0NJZVdVrW1fEZ4KOpZ0oL3bSwcOoRM/BAZjpEr
-         BVUPzKs0XOkPlFme+UbSCXJ7Fu306R+iDRZKP1gJljXDA3JZ6ieF910oF5WUPkJcyOSZ
-         7UbTtoDv45/akwM3Ho6PF9p86gByjLkKCvpWtgC0nlRgDqnu48vzdOHX6EWr7kfo8mmL
-         VExr8crQ4m6/OJn0uL79d54lITeFk79xqTshSf7MaPz8sNmHHXksD5C/NUviFMFjxfn6
-         RvmeRoZvyyhYmbIbxdsBCxXRhR0etVDoLntEo0KZLfRO9EFHK4HOEkaldrpjpP4q1SB5
-         Z+fw==
-X-Gm-Message-State: AOAM531ZASHh7NUgmSaDiK7XWT5BhbbivlvVuPyVYAkq85TIsd/pMjtc
-        O3nRRa2xNxoM8Ua/dCWeZbJzBZX8v+jOZ9BS1ywZX8+y+7DhEsikz3iZE6IKKUouxm8MyR2KtE1
-        DFWaKIdU/wd0n6Leh
-X-Received: by 2002:a05:6000:23a:: with SMTP id l26mr45974057wrz.666.1641404227879;
-        Wed, 05 Jan 2022 09:37:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxUPCe5++dVtfLUu9svVLg4wpor9PvBkTQTFAzxfrW00+u7H+DOAc0Mtv0jCVozOYczIXjhBw==
-X-Received: by 2002:a05:6000:23a:: with SMTP id l26mr45974036wrz.666.1641404227705;
-        Wed, 05 Jan 2022 09:37:07 -0800 (PST)
-Received: from pc-1.home (2a01cb058d24940001d1c23ad2b4ba61.ipv6.abo.wanadoo.fr. [2a01:cb05:8d24:9400:1d1:c23a:d2b4:ba61])
-        by smtp.gmail.com with ESMTPSA id d5sm2888861wms.28.2022.01.05.09.37.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 09:37:07 -0800 (PST)
-Date:   Wed, 5 Jan 2022 18:37:05 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     James Carlson <carlsonj@workingcode.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org,
-        syzbot <syzkaller@googlegroups.com>
-Subject: Re: [PATCH net] ppp: ensure minimum packet size in ppp_write()
-Message-ID: <20220105173705.GC17823@pc-1.home>
-References: <20220105114842.2380951-1-eric.dumazet@gmail.com>
- <20220105131929.GA17823@pc-1.home>
- <dbde2a45-a7dd-0e8a-d04c-233f69631885@workingcode.com>
- <20220105162954.GB17823@pc-1.home>
- <f78e2051-714d-ff74-7e36-bea3b4edc682@workingcode.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dai/EtuC0U5fXbve0pJv7WC+HEVKC2J4wDtbrdgR9Ok=;
+        b=LlPk45L/6V3FvA+4y6TxUlMzqgdAElSIUDXdJ1Fyqzibo1x26Z3F9f3U9+a2BtaR9A
+         xCzRjrwlijgrjjt5no6fmdzwPoqnw7R9tYfard/urbg5a3PqvKMZArWX/G+ofZ6wSB2H
+         4q/XPzRmurVvoNuEYhOmSdhSXzqfeMrVTsgUKX2DDUusTVBISWxpQ3pQopj76LmEFJ6Q
+         EkSCyrs7jycikvHC9UTREnAd/lWUhY5TYp/S19fk5OMm/wEsUwzZL4JAxW2VYhGXSMnm
+         MjhfnW5ymLRGx3xej2WIJoAWC2BJY9qCM/kqOt5r8UN3Gt0nSq0vRM8stchUnd44GlgL
+         GVSg==
+X-Gm-Message-State: AOAM533Y2wRov/CYiceO+gEw2g8CiCFCQYvpHcilwYI242F6CW89Mtba
+        Px/HaIWmEuK7x9LAHetkryQ=
+X-Google-Smtp-Source: ABdhPJz8/5M9GnaXaoZvZN4Yna5VIYG2nE/b1BoYspdCsOEvd2Y+nTGHGE97AXt8IZuhWFzXislh7Q==
+X-Received: by 2002:a05:6402:d05:: with SMTP id eb5mr54328127edb.345.1641404362318;
+        Wed, 05 Jan 2022 09:39:22 -0800 (PST)
+Received: from [192.168.8.198] ([148.252.128.63])
+        by smtp.gmail.com with ESMTPSA id dt13sm12336020ejc.157.2022.01.05.09.39.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Jan 2022 09:39:21 -0800 (PST)
+Message-ID: <6a692d3e-2b8d-bef6-d54d-9880980b245c@gmail.com>
+Date:   Wed, 5 Jan 2022 17:37:47 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f78e2051-714d-ff74-7e36-bea3b4edc682@workingcode.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [syzbot] WARNING in signalfd_cleanup
+Content-Language: en-US
+To:     Eric Biggers <ebiggers@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        io-uring@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        syzbot <syzbot+5426c7ed6868c705ca14@syzkaller.appspotmail.com>,
+        changbin.du@intel.com, Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Yajun Deng <yajun.deng@linux.dev>
+References: <000000000000c9a3fb05d4d787a3@google.com>
+ <CANn89iK3tP3rANSWM7_=imMeMcUknT0U2GyfA9W4v12ad6_PkQ@mail.gmail.com>
+ <YdW+trV0x25fhTqV@sol.localdomain>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <YdW+trV0x25fhTqV@sol.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 11:35:52AM -0500, James Carlson wrote:
-> On 1/5/22 11:29, Guillaume Nault wrote:
-> > On Wed, Jan 05, 2022 at 10:30:09AM -0500, James Carlson wrote:
-> >> On 1/5/22 08:19, Guillaume Nault wrote:
-> >>> On Wed, Jan 05, 2022 at 03:48:42AM -0800, Eric Dumazet wrote:
-> >>>> From: Eric Dumazet <edumazet@google.com>
-> >>>>
-> >>>> It seems pretty clear ppp layer assumed user space
-> >>>> would always be kind to provide enough data
-> >>>> in their write() to a ppp device.
-> >>>>
-> >>>> This patch makes sure user provides at least
-> >>>> 2 bytes.
-> >>>>
-> >>>> It adds PPP_PROTO_LEN macro that could replace
-> >>>> in net-next many occurrences of hard-coded 2 value.
-> >>>
-> >>> The PPP header can be compressed to only 1 byte, but since 2 bytes is
-> >>> assumed in several parts of the code, rejecting such packets in
-> >>> ppp_xmit() is probably the best we can do.
-> >>
-> >> The only ones that can be compressed are those less than 0x0100, which
-> >> are (intentionally) all network layer protocols.  We should be getting
-> >> only control protocol messages though the user-space interface, not
-> >> network layer, so I'd say it's not just the best we can do, but indeed
-> >> the right thing to do by design.
-> > 
-> > Well, I know of at least one implementation that used to transmit data
-> > by writing on ppp unit file descriptors. That was a hack to work around
-> > some other problems. Not a beautiful one, but it worked.
-> > 
+On 1/5/22 15:52, Eric Biggers wrote:
+> [+io_uring list and maintainers]
 > 
-> So, if you do that sort of hack, then you're constrained to send
-> uncompressed protocol numbers regardless of what's negotiated. That
-> seems like a tiny concession. (And receivers are required to handle
-> uncompressed no matter what LCP negotiation says, per 1661 6.5.)
+> This appears to be the known bug in io_uring where it doesn't POLLFREE
+> notifications.  See previous discussion:
+> https://lore.kernel.org/all/4a472e72-d527-db79-d46e-efa9d4cad5bb@kernel.dk/
 
-In the case I was refering to, the program was just retransmitting PPP
-frames and wasn't supposed to modify the headers. We now have kernel
-support for that, but it landed only one year ago. Before that, the only
-option was to write on the ppp fd (btw, that was the channel fd, not the
-unit, sorry).
+We've got some fixing and groundwork done, but not POLLFREE yet.
+Great to have a repro, thanks
 
-> And I'd still maintain that the intended design is that control
-> protocols are handled by the user portion, while network layer protocols
-> are connected in the kernel.
 
-Absolutely, I was just pointing out that the kernel doesn't enforce
-this design and therefore implementations sometimes ignore it.
+> On Wed, Jan 05, 2022 at 07:42:10AM -0800, 'Eric Dumazet' via syzkaller-bugs wrote:
+>> On Wed, Jan 5, 2022 at 7:37 AM syzbot
+>> <syzbot+5426c7ed6868c705ca14@syzkaller.appspotmail.com> wrote:
+>>>
+>>> Hello,
+>>>
+>>> syzbot found the following issue on:
+>>>
+>>> HEAD commit:    6b8d4927540e Add linux-next specific files for 20220104
+>>> git tree:       linux-next
+>>> console output: https://syzkaller.appspot.com/x/log.txt?x=159d88e3b00000
+>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=45c9bbbf2ae8e3d3
+>>> dashboard link: https://syzkaller.appspot.com/bug?extid=5426c7ed6868c705ca14
+>>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+>>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=117be65db00000
+>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15a75c8db00000
+>>>
+>>
+>> C repro looks legit, point to an io_uring issue.
+>>
+>>> The issue was bisected to:
+>>
+>> Please ignore the bisection.
+>>
+>>>
+>>> commit e4b8954074f6d0db01c8c97d338a67f9389c042f
+>>> Author: Eric Dumazet <edumazet@google.com>
+>>> Date:   Tue Dec 7 01:30:37 2021 +0000
+>>>
+>>>      netlink: add net device refcount tracker to struct ethnl_req_info
+>>>
+>>> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12bca4e3b00000
+>>> final oops:     https://syzkaller.appspot.com/x/report.txt?x=11bca4e3b00000
+>>> console output: https://syzkaller.appspot.com/x/log.txt?x=16bca4e3b00000
+>>>
+>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>>> Reported-by: syzbot+5426c7ed6868c705ca14@syzkaller.appspotmail.com
+>>> Fixes: e4b8954074f6 ("netlink: add net device refcount tracker to struct ethnl_req_info")
+>>>
+>>> ------------[ cut here ]------------
+>>> WARNING: CPU: 0 PID: 3604 at kernel/sched/wait.c:245 __wake_up_pollfree+0x40/0x50 kernel/sched/wait.c:246
+>>> Modules linked in:
+>>> CPU: 0 PID: 3604 Comm: syz-executor714 Not tainted 5.16.0-rc8-next-20220104-syzkaller #0
+>>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>>> RIP: 0010:__wake_up_pollfree+0x40/0x50 kernel/sched/wait.c:245
+>>> Code: f3 ff ff 48 8d 6b 40 48 b8 00 00 00 00 00 fc ff df 48 89 ea 48 c1 ea 03 80 3c 02 00 75 11 48 8b 43 40 48 39 c5 75 03 5b 5d c3 <0f> 0b 5b 5d c3 48 89 ef e8 13 d8 69 00 eb e5 cc 48 c1 e7 06 48 63
+>>> RSP: 0018:ffffc90001aaf9f8 EFLAGS: 00010083
+>>> RAX: ffff88801cd623f0 RBX: ffff88801bec8048 RCX: 0000000000000000
+>>> RDX: 1ffff110037d9011 RSI: 0000000000000004 RDI: 0000000000000001
+>>> RBP: ffff88801bec8088 R08: 0000000000000000 R09: ffff88801bec804b
+>>> R10: ffffed10037d9009 R11: 0000000000000000 R12: ffff88801bec8040
+>>> R13: ffff88801e029d40 R14: dffffc0000000000 R15: ffff88807eb50000
+>>> FS:  00005555573ad300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+>>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> CR2: 00000000200000c0 CR3: 000000001e5e4000 CR4: 00000000003506f0
+>>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>>> Call Trace:
+>>>   <TASK>
+>>>   wake_up_pollfree include/linux/wait.h:271 [inline]
+>>>   signalfd_cleanup+0x42/0x60 fs/signalfd.c:38
+>>>   __cleanup_sighand kernel/fork.c:1596 [inline]
+>>>   __cleanup_sighand+0x72/0xb0 kernel/fork.c:1593
+>>>   __exit_signal kernel/exit.c:159 [inline]
+>>>   release_task+0xc02/0x17e0 kernel/exit.c:200
+>>>   wait_task_zombie kernel/exit.c:1117 [inline]
+>>>   wait_consider_task+0x2fa6/0x3b80 kernel/exit.c:1344
+>>>   do_wait_thread kernel/exit.c:1407 [inline]
+>>>   do_wait+0x6ca/0xce0 kernel/exit.c:1524
+>>>   kernel_wait4+0x14c/0x260 kernel/exit.c:1687
+>>>   __do_sys_wait4+0x13f/0x150 kernel/exit.c:1715
+>>>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>>>   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>>>   entry_SYSCALL_64_after_hwframe+0x44/0xae
+>>> RIP: 0033:0x7facd6682386
+>>> Code: 0f 1f 40 00 31 c9 e9 09 00 00 00 66 0f 1f 84 00 00 00 00 00 49 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 11 b8 3d 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 5a c3 90 48 83 ec 28 89 54 24 14 48 89 74 24
+>>> RSP: 002b:00007ffdb91adef8 EFLAGS: 00000246 ORIG_RAX: 000000000000003d
+>>> RAX: ffffffffffffffda RBX: 000000000000c646 RCX: 00007facd6682386
+>>> RDX: 0000000040000001 RSI: 00007ffdb91adf14 RDI: 00000000ffffffff
+>>> RBP: 0000000000000f17 R08: 0000000000000032 R09: 00007ffdb91ec080
+>>> R10: 0000000000000000 R11: 0000000000000246 R12: 431bde82d7b634db
+>>> R13: 00007ffdb91adf14 R14: 0000000000000000 R15: 0000000000000000
+>>>   </TASK>
+>>>
+>>>
+>>> ---
+>>> This report is generated by a bot. It may contain errors.
+>>> See https://goo.gl/tpsmEJ for more information about syzbot.
+>>> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>>>
+>>> syzbot will keep track of this issue. See:
+>>> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>>> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+>>> syzbot can test patches for this issue, for details see:
+>>> https://goo.gl/tpsmEJ#testing-patches
+>>
+>> -- 
+>> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+>> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+>> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/CANn89iK3tP3rANSWM7_%3DimMeMcUknT0U2GyfA9W4v12ad6_PkQ%40mail.gmail.com.
 
-Anyway, I don't see any problem with refusing to send packets smaller
-than 2 bytes. Hence my acked-by.
-
+-- 
+Pavel Begunkov
