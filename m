@@ -2,90 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 813D348535F
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:19:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50564485363
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:20:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237115AbiAENTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 08:19:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49104 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240105AbiAENTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 08:19:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641388773;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7mMRb17QN6XzgQlrzxtDXtE5EDZ+dGN19op16rmPahE=;
-        b=RMaSahzGIMuObIbLltF1Xl0myVumFN+FlTexaZRtozjGnaiX/uCbijc6dziMswE8DFTIFC
-        m3bw/Tzs1ISsO705oAePQo2LA69wRmmmbvUajg9mZgs832omhtoV9WjFx1eUR2hr31cCnH
-        76kQGK9mYzWtXHysDiTMNvQ8JRu300I=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-194-NKCg2HE0OziFMiVdMVd3Kw-1; Wed, 05 Jan 2022 08:19:32 -0500
-X-MC-Unique: NKCg2HE0OziFMiVdMVd3Kw-1
-Received: by mail-wm1-f69.google.com with SMTP id r2-20020a05600c35c200b00345c3b82b22so1752066wmq.0
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 05:19:32 -0800 (PST)
+        id S240099AbiAENUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 08:20:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240097AbiAENUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 08:20:08 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 643D8C061784;
+        Wed,  5 Jan 2022 05:20:08 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id p13so52785455lfh.13;
+        Wed, 05 Jan 2022 05:20:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w7R+Hai4NceFGrOmjDpaXS0exsOExibtRqyXsTiYyoI=;
+        b=DKXm5PRaTr+n7fVvlNKsJ18wfkMl/9N/bh49BxjTWE/UMLGZmU5DhmU8RMe+2xOvFh
+         xgiizrXNmr0NDZH7FWg/Fw04JrliZehIoipYm3dUyuPX4U5UCjAalunB6mBsFwKG3kxP
+         tOPDJCJsJ9UWDgBKEH+q1xFn8NUVApPws0GKyTG12+TZ2ZpaCyH9Om9cuhb9BK7NkgJY
+         2V81hepedgbQwdunS1QZlOQLTQEvWXt6N0LN77Eok/WN9Ypt92vVY/2Mv7rdYjnIeXdN
+         +X4z+MWRfu21l7skjqxWo4+12iMK7JJTK5susdjKUJfLnb4GBq+FH6phTnYNdGzmQBN/
+         Cjog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7mMRb17QN6XzgQlrzxtDXtE5EDZ+dGN19op16rmPahE=;
-        b=4ljlNnJDbY/3CyZQ8C2giWWKNh6VDik7TBertMKXnhJ/dctoqLSycfOTzFwImhAF76
-         5n9mi1JhEc7nLPxR0JRKe2LVaD9fx/DXB2zH19ZKGzRIY5QtfhQYzSuj1s86DxxVvD9q
-         vQzFWxbaIP4je9Uz0z9K9KF5ZzA1+0gRaRGZs9G4IMbcTXt21m4OzS+L6QusPRR5Bm0l
-         RnA6wl3t1+/2/p8AFSzmjVmn9qr3zuaAFApkF+JXnLAQEX1UGaYIKVc+wjqzNxBNovKO
-         GZd0mOYVd2S/ALyKQNQxDX5RjpUnbEVVgTauuZam2c99R6Et7+qbD3KPaBoSVlkxHh1X
-         LMMg==
-X-Gm-Message-State: AOAM531HWicUsrOweoGHim+ZWiTo4cdVowYZN8W7jBpxc3Zz3t40NtVm
-        +dSxJK+76t/RCZjBtH7B//bIy+lnmr0yNs3jKfyjBfyluI21XtSE2aFIXCaHKB+j4z/LYD5QETo
-        Hhq+RmBvGatY1cLe7
-X-Received: by 2002:a5d:6d8a:: with SMTP id l10mr46890004wrs.527.1641388771551;
-        Wed, 05 Jan 2022 05:19:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxQScj6hdnqqFA+e8E8PLZfTEJbd+OlNtelJwRlLiyuB+9CZ+3oM6u8DVU0ok36Nic/ew5TmQ==
-X-Received: by 2002:a5d:6d8a:: with SMTP id l10mr46889990wrs.527.1641388771377;
-        Wed, 05 Jan 2022 05:19:31 -0800 (PST)
-Received: from pc-1.home (2a01cb058d24940001d1c23ad2b4ba61.ipv6.abo.wanadoo.fr. [2a01:cb05:8d24:9400:1d1:c23a:d2b4:ba61])
-        by smtp.gmail.com with ESMTPSA id h204sm2670787wmh.33.2022.01.05.05.19.30
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w7R+Hai4NceFGrOmjDpaXS0exsOExibtRqyXsTiYyoI=;
+        b=FNwnyUeKYg4huW1Lov4IYjmY6CHzch+uFOlbbR9OyObYFtLj5wHstAKxcdvzOj8OCP
+         PyZGEuEtgcQAX5Dxhyv6RgOs+i67FzNZHBI+wVNSRruf7+438iNe/jQ/0RftPmm3BsuR
+         8qoCkCtwpTEebMfdrb5Snm7BqsLTxHGhDxohH4cPfA+mbUgcNaiY5cLIzgduZrfAqfCc
+         2JSvm/VLmZrcnbDNLhJX7pQUjbNx7DhzpGyy9QP4QEaiBfvePaNJE9uW6oUOK0sL8Fj9
+         UK0Vc3bRI6WoW/1+aYFqiqYH9ADEswSqWri13rR5ZNg1UD06E4/4FYdv8zkApTm1sd7i
+         S2XQ==
+X-Gm-Message-State: AOAM531uPHV78oezZNvZl7AQP2j9X9CHClDqiG4G051sHzw5MrZsnpKz
+        Ybh/wWivvv9mV3h2mAfJ9Ac=
+X-Google-Smtp-Source: ABdhPJxx3fEGps51NJujSWYQRLTv+DCrhaPmQDX+aXdSCzwtQQXN1ujKB3Z0+2h8i9JFEiuXDe85FA==
+X-Received: by 2002:a05:6512:3486:: with SMTP id v6mr46974393lfr.483.1641388806620;
+        Wed, 05 Jan 2022 05:20:06 -0800 (PST)
+Received: from localhost.localdomain ([94.103.235.38])
+        by smtp.gmail.com with ESMTPSA id r11sm2188238ljp.18.2022.01.05.05.20.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 05:19:30 -0800 (PST)
-Date:   Wed, 5 Jan 2022 14:19:29 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org,
-        syzbot <syzkaller@googlegroups.com>
-Subject: Re: [PATCH net] ppp: ensure minimum packet size in ppp_write()
-Message-ID: <20220105131929.GA17823@pc-1.home>
-References: <20220105114842.2380951-1-eric.dumazet@gmail.com>
+        Wed, 05 Jan 2022 05:20:06 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux@rempel-privat.de,
+        andrew@lunn.ch, oneukum@suse.com, robert.foss@collabora.com,
+        freddy@asix.com.tw
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+6ca9f7867b77c2d316ac@syzkaller.appspotmail.com
+Subject: [PATCH RFT] net: asix: add proper error handling of usb read errors
+Date:   Wed,  5 Jan 2022 16:19:52 +0300
+Message-Id: <20220105131952.15693-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220105114842.2380951-1-eric.dumazet@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 03:48:42AM -0800, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> It seems pretty clear ppp layer assumed user space
-> would always be kind to provide enough data
-> in their write() to a ppp device.
-> 
-> This patch makes sure user provides at least
-> 2 bytes.
-> 
-> It adds PPP_PROTO_LEN macro that could replace
-> in net-next many occurrences of hard-coded 2 value.
+Syzbot once again hit uninit value in asix driver. The problem still the
+same -- asix_read_cmd() reads less bytes, than was requested by caller.
 
-The PPP header can be compressed to only 1 byte, but since 2 bytes is
-assumed in several parts of the code, rejecting such packets in
-ppp_xmit() is probably the best we can do.
+Since all read requests are performed via asix_read_cmd() let's catch
+usb related error there and add __must_check notation to be sure all
+callers actually check return value.
 
-Acked-by: Guillaume Nault <gnault@redhat.com>
+So, this patch adds sanity check inside asix_read_cmd(), that simply
+checks if bytes read are not less, than was requested and adds missing
+error handling of asix_read_cmd() all across the driver code.
+
+Fixes: d9fe64e51114 ("net: asix: Add in_pm parameter")
+Reported-and-tested-by: syzbot+6ca9f7867b77c2d316ac@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ drivers/net/usb/asix.h         |  4 ++--
+ drivers/net/usb/asix_common.c  | 19 +++++++++++++------
+ drivers/net/usb/asix_devices.c | 21 ++++++++++++++++++---
+ 3 files changed, 33 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
+index 2a1e31defe71..4334aafab59a 100644
+--- a/drivers/net/usb/asix.h
++++ b/drivers/net/usb/asix.h
+@@ -192,8 +192,8 @@ extern const struct driver_info ax88172a_info;
+ /* ASIX specific flags */
+ #define FLAG_EEPROM_MAC		(1UL << 0)  /* init device MAC from eeprom */
+ 
+-int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+-		  u16 size, void *data, int in_pm);
++int __must_check asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
++			       u16 size, void *data, int in_pm);
+ 
+ int asix_write_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+ 		   u16 size, void *data, int in_pm);
+diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+index 71682970be58..524805285019 100644
+--- a/drivers/net/usb/asix_common.c
++++ b/drivers/net/usb/asix_common.c
+@@ -11,8 +11,8 @@
+ 
+ #define AX_HOST_EN_RETRIES	30
+ 
+-int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+-		  u16 size, void *data, int in_pm)
++int __must_check asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
++			       u16 size, void *data, int in_pm)
+ {
+ 	int ret;
+ 	int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
+@@ -27,9 +27,12 @@ int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+ 	ret = fn(dev, cmd, USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+ 		 value, index, data, size);
+ 
+-	if (unlikely(ret < 0))
++	if (unlikely(ret < size)) {
++		ret = ret < 0 ? ret : -ENODATA;
++
+ 		netdev_warn(dev->net, "Failed to read reg index 0x%04x: %d\n",
+ 			    index, ret);
++	}
+ 
+ 	return ret;
+ }
+@@ -79,7 +82,7 @@ static int asix_check_host_enable(struct usbnet *dev, int in_pm)
+ 				    0, 0, 1, &smsr, in_pm);
+ 		if (ret == -ENODEV)
+ 			break;
+-		else if (ret < sizeof(smsr))
++		else if (ret < 0)
+ 			continue;
+ 		else if (smsr & AX_HOST_EN)
+ 			break;
+@@ -579,8 +582,12 @@ int asix_mdio_read_nopm(struct net_device *netdev, int phy_id, int loc)
+ 		return ret;
+ 	}
+ 
+-	asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
+-		      (__u16)loc, 2, &res, 1);
++	ret = asix_read_cmd(dev, AX_CMD_READ_MII_REG, phy_id,
++			    (__u16)loc, 2, &res, 1);
++	if (ret < 0) {
++		mutex_unlock(&dev->phy_mutex);
++		return ret;
++	}
+ 	asix_set_hw_mii(dev, 1);
+ 	mutex_unlock(&dev->phy_mutex);
+ 
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index 4514d35ef4c4..6b2fbdf4e0fd 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -755,7 +755,12 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	priv->phy_addr = ret;
+ 	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10);
+ 
+-	asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
++	ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1, &chipcode, 0);
++	if (ret < 0) {
++		netdev_dbg(dev->net, "Failed to read STATMNGSTS_REG: %d\n", ret);
++		return ret;
++	}
++
+ 	chipcode &= AX_CHIPCODE_MASK;
+ 
+ 	ret = (chipcode == AX_AX88772_CHIPCODE) ? ax88772_hw_reset(dev, 0) :
+@@ -920,11 +925,21 @@ static int ax88178_reset(struct usbnet *dev)
+ 	int gpio0 = 0;
+ 	u32 phyid;
+ 
+-	asix_read_cmd(dev, AX_CMD_READ_GPIOS, 0, 0, 1, &status, 0);
++	ret = asix_read_cmd(dev, AX_CMD_READ_GPIOS, 0, 0, 1, &status, 0);
++	if (ret < 0) {
++		netdev_dbg(dev->net, "Failed to read GPIOS: %d\n", ret);
++		return ret;
++	}
++
+ 	netdev_dbg(dev->net, "GPIO Status: 0x%04x\n", status);
+ 
+ 	asix_write_cmd(dev, AX_CMD_WRITE_ENABLE, 0, 0, 0, NULL, 0);
+-	asix_read_cmd(dev, AX_CMD_READ_EEPROM, 0x0017, 0, 2, &eeprom, 0);
++	ret = asix_read_cmd(dev, AX_CMD_READ_EEPROM, 0x0017, 0, 2, &eeprom, 0);
++	if (ret < 0) {
++		netdev_dbg(dev->net, "Failed to read EEPROM: %d\n", ret);
++		return ret;
++	}
++
+ 	asix_write_cmd(dev, AX_CMD_WRITE_DISABLE, 0, 0, 0, NULL, 0);
+ 
+ 	netdev_dbg(dev->net, "EEPROM index 0x17 is 0x%04x\n", eeprom);
+-- 
+2.34.1
 
