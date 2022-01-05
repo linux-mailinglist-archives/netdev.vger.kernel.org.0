@@ -2,102 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FCE0485355
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:17:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 463D4485358
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 14:18:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237050AbiAENRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 08:17:51 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:61778 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236649AbiAENRs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 08:17:48 -0500
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 205D11pW019768;
-        Wed, 5 Jan 2022 13:17:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=u7glOY0ToYHSLYnAbKYG9m4dFze5avT9cZpp+RSe43A=;
- b=euWVFDQ9bYWjdczY286fYV1fEw+vlhxFNmSv42ivGA/y0c6dSBbL1NVwVuxtjyz0l6R8
- jqstN8Zu9rGBhB8xzgWmJVprvlqtFq7PPRP9dU7yzaW1Lg3IW7JzB7dN16DoluFZT62z
- Ccob1omO5Ik2v/xuSgeK6Xr1SK4nJD7GMbebdWL4qn9RQcVCxWCYGd/cV5DXS2rDjXeD
- 8BV3fTi7ueosgAD6ED04CU0gpWsbrI1oIh+fMB1z1y+RctbyvZS8BSubG4jkVZ9zws2v
- YcQHiXf/PREZv7dcHD2RWG7DWYa1BqCQJ0Wf176HQ5WdWzKgZW2HOpbhyc18O6p+Ev47 uA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dck05juvg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 05 Jan 2022 13:17:45 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 205CmDlb008855;
-        Wed, 5 Jan 2022 13:17:45 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dck05juum-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 05 Jan 2022 13:17:45 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 205DEmEr009319;
-        Wed, 5 Jan 2022 13:17:43 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma02fra.de.ibm.com with ESMTP id 3daek9gg3x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 05 Jan 2022 13:17:43 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 205DHeQ229950426
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 5 Jan 2022 13:17:40 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3D7C442045;
-        Wed,  5 Jan 2022 13:17:40 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D0C4142041;
-        Wed,  5 Jan 2022 13:17:39 +0000 (GMT)
-Received: from [9.145.181.244] (unknown [9.145.181.244])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  5 Jan 2022 13:17:39 +0000 (GMT)
-Message-ID: <b98aefce-e425-9501-aacc-8e5a4a12953e@linux.ibm.com>
-Date:   Wed, 5 Jan 2022 14:17:41 +0100
+        id S237073AbiAENS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 08:18:27 -0500
+Received: from mail-eopbgr40062.outbound.protection.outlook.com ([40.107.4.62]:24383
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236649AbiAENSY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jan 2022 08:18:24 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oL5X5Juofas3kP1ztD9swL3syk2nxF/mlwqbaP/zWbP+4x9+KgpK9FArbPVhImsDQj4D0d0sxbYyIFcPqIt1qAcJj+7cJJaCK9ZoF1ua7TRSz9a6cJ4Q+acm8F1JvzTEWnX70ewChcYOWzZaI5pEypbcqSohtJTbWnO590QJQOXo9nsC301+c0qkKCVbMb4WbHGYeOnDzap2CBNACNfa3ALiDLhUkOmqP+uAsysopfr0xj6ymxZXV5kSy0qu7OOAmNpJ4DXIzmT6DR4GzbmZmeI8nldftt9iLqd9fGbGGQDNhfAbzE9KxzGls3QWi+eM3H/V6kPpdDMFrs1HPIaMXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/SvYTyaMx06Ige6807lV20kKrSHZqdx66WAPEkao57o=;
+ b=fM6LdP1SbnkESapR0J8JurX8qDE2T/Eb4r+YAIcrlxA3sE6BswZ3Cz76tab/S77UIj5UZzae5jC/O0UyRgfc9Daj20PpkFhhWJyG/98PEHAPchNs5jaD1OMuoWBcpx+BigMZThM7Zr+Yipm6P5i3BHclu7Vn7E+qu3vakJf42kidD6BB2Ssrmex/IQNxjxQWqEoSFXvYv7YNE2bCMWwp7ZkIMKRHp7DpdmbcYSTaiMb6I9jIQSjt5Inmh97g1iqRp4r+2zC+uVxHuFiNAMm3gpOm1YCsKW1rcGnMK6ujl94YziCebE9Zv+BIyfjEk74fYqjlUjz/3adE0QW1rK65ww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/SvYTyaMx06Ige6807lV20kKrSHZqdx66WAPEkao57o=;
+ b=aN7BuZjqc6IDQrTLQFR59tluEhocfU70hKe83GPY46D9I1of17prydROK57GZMPLBHQQBS8WyRKFKPuWpn5qlysGhRfRp8/OvOUTSGqoOenHdBMeIOy+BhRihcAzbJb1W+NcNG6l9vjhzkerxN+l1psBbLHeRlkLgBNHWpulNCM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB6942.eurprd04.prod.outlook.com (2603:10a6:803:136::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Wed, 5 Jan
+ 2022 13:18:23 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4844.016; Wed, 5 Jan 2022
+ 13:18:23 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        George McCollister <george.mccollister@gmail.com>
+Subject: [PATCH v2 net-next 0/3] DSA cross-chip notifier cleanup
+Date:   Wed,  5 Jan 2022 15:18:10 +0200
+Message-Id: <20220105131813.2647558-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AS8PR04CA0106.eurprd04.prod.outlook.com
+ (2603:10a6:20b:31e::21) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH net-next v2] net/smc: Reduce overflow of smc clcsock
- listen queue
-Content-Language: en-US
-To:     dust.li@linux.alibaba.com, "D. Wythe" <alibuda@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com>
- <8a60dabb-1799-316c-80b5-14c920fe98ab@linux.ibm.com>
- <20220105044049.GA107642@e02h04389.eu6sqa>
- <20220105085748.GD31579@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20220105085748.GD31579@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: FLQB7EdiG4mYcuDQxIaeDWeypL36VmXQ
-X-Proofpoint-GUID: Qo6dK0PV52P9q8oAXfnKrm03Nj9L3UzX
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-05_03,2022-01-04_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- spamscore=0 mlxscore=0 phishscore=0 adultscore=0 clxscore=1015
- malwarescore=0 bulkscore=0 mlxlogscore=999 impostorscore=0 suspectscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201050088
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cc6985bc-7e51-4ee0-1e7c-08d9d04dd951
+X-MS-TrafficTypeDiagnostic: VI1PR04MB6942:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB694268AF8336DF8A3C61FA28E04B9@VI1PR04MB6942.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dOLBiTgDZkQsbQ5zxTYV3dvgsOVo3PN4lnD/CI+xf51hcMGCs8AlcAG7UbYRtjtmbwlBd5PNBCIu/AAOX6aO69F1N48zsaTi+ZBckxqrXqgs6atQw9erBgJrbfjDn2fOlSGmQaJjFCZbBRewNrU2/ksOfbsSkKwikRnJaxCta++QFBkTFIG1J/CIOaHV68IslK/ubQ1o5J8JbDYbl9SN0NUi6xdMqZzHzEM8gjxdjteza6qG+1DmSffvb+vZM6E6iO5gLjxyqa+HJFm2A2cRpDvR32y8DmAZ9nGxHjltqyqEUxJ63TFkxvp/E/pbw+Ahv7nhC3ed8cvSNnhJXFjYbNzXrMPyd6BrAOzE1edOJIxKhO1nLc6A/mNyxV8ySZOqybV+qZJ3ExbE3FY98GHZn1eGjQyryqro5G00CDo0Q6ShRezLb6BPKS69uqFmIuS5UYhWndzgpIARNl7YU9ITXpPmH+q2bYMDzy/Yef52qTBmQDp0QkFIZGzFfjAkK6l6j8JS0j9+WD3l7XFLjVxVhv3GYR0qtdWW226V9tS+QgDTsMFr8a2msKEk0fSYZHr0lLJWwhq0yGPVIZKC2BfhBzWxYBVqcF98oiB7UG0lgQN84gGFxaiMsRymskL98J1Rqt0tPJ0RtaqkhM98XM474Ulitta79HJqE3PShX/QYiXqHIpE0OoOLXwfrC3nqgqXyxKeFQdfiIW/pP/NzHH3oQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(52116002)(8936002)(6512007)(83380400001)(508600001)(2616005)(6506007)(36756003)(5660300002)(38100700002)(38350700002)(1076003)(6666004)(4326008)(44832011)(316002)(66476007)(66556008)(66946007)(86362001)(186003)(26005)(8676002)(6916009)(2906002)(54906003)(6486002)(4744005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?u2Qu8sZHdb1jAAgGs1VB33cjf75r7UEd/tg3otAfE1GywIj/bURr9VMrecaK?=
+ =?us-ascii?Q?CcIHS5DuaYnlZAwqI8aO3qHBxlrA8ne6yukEizU5crsldNJ1ABWGT38Qv/r6?=
+ =?us-ascii?Q?hxBUHfgZ0LlkBeCk4+vcwhT4gWIaW1rRkKSTqcEJZbIsRmdWdB9NKwkzy0UP?=
+ =?us-ascii?Q?wSXkNigUxPWjKacoUT+nV09vVBPQnR263iam/EUAaDmKXDlasADd4ExMn4Af?=
+ =?us-ascii?Q?g+l/giGick2DX5vwuNmlYep8nyCYRh0wNrA0wm2PWmu5z+S6KS5QQudi1xC2?=
+ =?us-ascii?Q?hMtWSiyRiWVp+xERxRFeHMkZevR7FD8zwTK33izGoJ9vjb6Ag90K6O4EEa0C?=
+ =?us-ascii?Q?L03S7aQ1g3ph3/OKfnYUu4PSFfEYnM1Q6gDOX/j2bSbIi2GspyrbsjoAxYgD?=
+ =?us-ascii?Q?5+xGwEezZvRCedsJ14kK/L89innGrUA6dnAh00WnI6mFDkaOZnFc0r5t12AT?=
+ =?us-ascii?Q?18BHuGk6WMWVDk9Yw5N0JaBGDID6rV3xC8Ybjll+jkuoevTkcxrCJy4tcf8E?=
+ =?us-ascii?Q?rESNcKWn7YNgoiM7r2bhSyvhisHrD8j9T8/NvXDRGU5adE3NtaOkA7zj9pXQ?=
+ =?us-ascii?Q?T0z/PHOHR7th61j0w5xasiwWUpOCHJDToj9G2refIZsNqRGBpMYJgQN3l1WA?=
+ =?us-ascii?Q?n1KLl9NkQ111hKoOhB+6/9ovAA3d7m8ciCnPvrBcKOYMKeyfk2g0/x4X/jtT?=
+ =?us-ascii?Q?1VxMIURcSxSrclJqrmecPNJjfX/7W329bF8FlhxfSp3ORTBzNfn3Q0xxvUcy?=
+ =?us-ascii?Q?fZDAaB2S1CWcY9GijU7oiLSeB2LGNsa19Fho0cs1d6tr+Dus6Se99Ho798Dy?=
+ =?us-ascii?Q?jQaRM5SMieSXNokz1WTsfu8evKQAlqc9bfx8Y8YPWVYK29MTI7b9rEPJhu9m?=
+ =?us-ascii?Q?5PXs/8ZZ4p9kmzwONvXRSQP7LjplKA+UPP3IT28SfhxsfeCpiYm0W3Yr/3Jh?=
+ =?us-ascii?Q?O7Q2o2hB2PwSwQkwXDg+bWwMBh1In/47J61vLRI24e5NcE8LIjD/tEIYK58X?=
+ =?us-ascii?Q?L1UqyXrz+2AxpDDAX6nC6rrO6ed/qz+KDi6ldPpTrDyAy9KwBXcucDx2L99g?=
+ =?us-ascii?Q?cwoBMWKwtRk773OC709D7PEbXZxtxIFBvkqANoLYHrebF1lNonWMhTqE9ayT?=
+ =?us-ascii?Q?roqf7QEV7Aq0XKJofDGZEEAx1/umMm4FlaQmNbB4xWcPNqwhLY3lQQyXilXm?=
+ =?us-ascii?Q?wWRojyeBQJNhKxUdLeVJlCreFpQf/oah1+vPEkxZgFmOb1yIdYpvLY94DtR1?=
+ =?us-ascii?Q?MrhE7HcRv+5TKQqabxtCHxycBaqk8MWYq9G4Ssj4WhG0urBXOcFURyf7iTxx?=
+ =?us-ascii?Q?ECbapYfF3Z6JbPKnTS/JqR3ypy6x+bq0PlNkmYUwM3AW5530FCmBuAYoBFKO?=
+ =?us-ascii?Q?2IKcQ+6Xjju6u3iYK3WLso+fKWix+bo8S8dGd+fW/yoh92V0NUcBvKB8h6+z?=
+ =?us-ascii?Q?amp80+CTdTF3F2GfC4vIlpudJ5lfjd5tM/PTgr+C8BmYIkMGRwbKNY4H44ba?=
+ =?us-ascii?Q?hddCFgtOshl/87FohJ+U5+BXhXenk05Ds9vo76qbZhQfaHhAWXMvS47UrV9T?=
+ =?us-ascii?Q?81qjD9XBecgfJLhPJI9/RzpiylxQrAU0wK7KLm7NGPUfRGYSujMd5meBj7MI?=
+ =?us-ascii?Q?5g8OM5bPogZ3Mowg2diT4QE=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc6985bc-7e51-4ee0-1e7c-08d9d04dd951
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 13:18:22.9166
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dXCZOlNn0gC8Yb8XeoPddRRKW8e+eCJqdb4llSypz4ePlrbuRQccBtTYy88S5cBjtce0oMJXufOY0c0xSjeYYQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6942
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/01/2022 09:57, dust.li wrote:
-> On Wed, Jan 05, 2022 at 12:40:49PM +0800, D. Wythe wrote:
-> I'm thinking maybe we can actively fall back to TCP in this case ? Not
-> sure if this is a good idea.
+This series deletes the no-op cross-chip notifier support for MRP and
+HSR, features which were introduced relatively recently and did not get
+full review at the time. The new code is functionally equivalent, but
+simpler.
 
-I think its a good decision to switch new connections to use the TCP fallback when the
-current queue of connections waiting for a SMC handshake is too large.
-With this the application is able to accept all incoming connections and they are not
-dropped. The only thing that is be different compared to TCP is that the order of the
-accepted connections is changed, connections that came in later might reach the user space 
-application earlier than connections that still run the SMC hand shake processing. 
-But I think that is semantically okay.
+Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc: George McCollister <george.mccollister@gmail.com>
+
+Vladimir Oltean (3):
+  net: dsa: fix incorrect function pointer check for MRP ring roles
+  net: dsa: remove cross-chip support for MRP
+  net: dsa: remove cross-chip support for HSR
+
+ net/dsa/dsa_priv.h | 27 --------------
+ net/dsa/port.c     | 73 +++++++++++++++++---------------------
+ net/dsa/switch.c   | 88 ----------------------------------------------
+ 3 files changed, 33 insertions(+), 155 deletions(-)
+
+-- 
+2.25.1
+
