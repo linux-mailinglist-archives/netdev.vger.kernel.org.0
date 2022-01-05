@@ -2,79 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D494855B0
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 16:20:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D0D74855B2
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 16:20:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237135AbiAEPUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 10:20:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34644 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241324AbiAEPUN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 10:20:13 -0500
+        id S241258AbiAEPUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 10:20:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53906 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241264AbiAEPUO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 10:20:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D17C061245
+        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 07:20:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 177FAB81C14
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EEC1B81C10
         for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 15:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AB466C36AE9;
-        Wed,  5 Jan 2022 15:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 658DDC36AEF;
+        Wed,  5 Jan 2022 15:20:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641396010;
-        bh=Fj3pWyby23D8Jg2EV8Xh7S5qtpFqzTcVCvynUesrE1w=;
+        s=k20201202; t=1641396011;
+        bh=KHtelWBWZY6nUL5AbvDV9gyJ3mLxt6pF89m9qBU6xy4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mF1WXTPQ5aXy7j0zX3Sln6/X9bl24PE600Vt1Gc7vsKOKFJs6xqz7SgPaNYNFM9DH
-         fe3W4+ginunkirtu6Lkg1wJvf9dNVRejIxghks1qPu7eblcPzz9ySEojmojRfo5RJV
-         wHM2DwjufWb7PJSw6AIlzjubm5V+uSm7c2psh74QrhWJh+aW/XdKHQDs4Pz0Xbo1Yw
-         2C4iyzrRPCLdv6e+CQbRiM1kqTUnYYQihAf5TqLwn7973apVhgoqtq6hfkUDh+CZmg
-         3tUJf8ZhkcvbaN+M0xWRBOdcoDS8iJjxgS9G5teoBQOHg2HtvuQoEYaDaRQWuh7WMT
-         kdGHFn7WT8EfA==
+        b=YEvo/osd79CQD4GyUkGgWLQZEvEaRfDS35O0eL+/5r8x4Gv/Ym47ABUOoZD7p96vc
+         lE6/A2Dvcnau0DWWNbGQhVWJeZ0FLPa7EUcS1tQVZvdGMhASPspJpxngf0aXJgttjq
+         VD0dFJqpgW0MO3nwjIhG5KLfuiF8xKOP1pxpG2z87+hWn0qeXamf+/kcN6zNQRFENK
+         tP+7gb6Skq8IJqZTNo7oFnKEz3Lm9prmW8svnU/HZhcm1UxZYN5M79GrN/stiSh8AB
+         hwDYKWsPv/vN0gDRckI91AhQckth1Lh7vATQk1YDIAZEYVOrxtA6le1ABAe0Bx3ljd
+         tBrm/p5SQXv6Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8D9B5F7940B;
-        Wed,  5 Jan 2022 15:20:10 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 549B2F79401;
+        Wed,  5 Jan 2022 15:20:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/5][pull request] Intel Wired LAN Driver Updates
- 2022-01-04
+Subject: Re: [PATCH v2 net-next 0/3] DSA cross-chip notifier cleanup
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164139601057.20548.10950305760112978069.git-patchwork-notify@kernel.org>
-Date:   Wed, 05 Jan 2022 15:20:10 +0000
-References: <20220104223842.2325297-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220104223842.2325297-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com
+Message-Id: <164139601134.20548.12148564741177992692.git-patchwork-notify@kernel.org>
+Date:   Wed, 05 Jan 2022 15:20:11 +0000
+References: <20220105131813.2647558-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220105131813.2647558-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        horatiu.vultur@microchip.com, george.mccollister@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On Tue,  4 Jan 2022 14:38:37 -0800 you wrote:
-> This series contains updates to i40e and iavf drivers.
+On Wed,  5 Jan 2022 15:18:10 +0200 you wrote:
+> This series deletes the no-op cross-chip notifier support for MRP and
+> HSR, features which were introduced relatively recently and did not get
+> full review at the time. The new code is functionally equivalent, but
+> simpler.
 > 
-> Mateusz adjusts displaying of failed VF MAC message when the failure is
-> expected as well as modifying an NVM info message to not confuse the user
-> for i40e.
-> 
-> Di Zhu fixes a use-after-free issue MAC filters for i40e.
+> Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
+> Cc: George McCollister <george.mccollister@gmail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/5] i40e: Fix to not show opcode msg on unsuccessful VF MAC change
-    https://git.kernel.org/netdev/net/c/01cbf50877e6
-  - [net,2/5] i40e: fix use-after-free in i40e_sync_filters_subtask()
-    https://git.kernel.org/netdev/net/c/3116f59c12bd
-  - [net,3/5] i40e: Fix for displaying message regarding NVM version
-    https://git.kernel.org/netdev/net/c/40feded8a247
-  - [net,4/5] i40e: Fix incorrect netdev's real number of RX/TX queues
-    https://git.kernel.org/netdev/net/c/e738451d78b2
-  - [net,5/5] iavf: Fix limit of total number of queues to active queues of VF
-    https://git.kernel.org/netdev/net/c/b712941c8085
+  - [v2,net-next,1/3] net: dsa: fix incorrect function pointer check for MRP ring roles
+    https://git.kernel.org/netdev/net-next/c/ff91e1b68490
+  - [v2,net-next,2/3] net: dsa: remove cross-chip support for MRP
+    https://git.kernel.org/netdev/net-next/c/cad69019f2f8
+  - [v2,net-next,3/3] net: dsa: remove cross-chip support for HSR
+    https://git.kernel.org/netdev/net-next/c/a68dc7b938fb
 
 You are awesome, thank you!
 -- 
