@@ -2,138 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11EE1484B8F
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 01:14:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 288A9484B98
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 01:18:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234363AbiAEAO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 4 Jan 2022 19:14:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47936 "EHLO
+        id S236697AbiAEASP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 4 Jan 2022 19:18:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234119AbiAEAO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 19:14:57 -0500
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E485FC061761
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 16:14:56 -0800 (PST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1641341693; bh=62pljZmRd6NMnpHMPwgl99yyovGJnGDhsktjlFBjqOo=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=bL2V2p5xSb2BkXNp2vGERr9Zmb2mYnlK3t0vX17WrhVubBgdZgzsrbuaUs3b2D0Kq
-         G0ZHJaorPz892dwOGzESeUD6A6Tjy6PSPZv5Phv/9D8sHuLBUntn8zzZkRMkXR4huy
-         QheUsbayMK4kimQSf+hPOp2bMnKdA3zXGxfQhYBEQoGvApWxt2NMswJMf9ehhRrzSA
-         YzkORZe8Yply5PxzgLJfzWgMjfm48/GSHlbpbj8UzZzxmjZ0yGwDHI2yIoZ5ncgXSI
-         FmoKiwxe0atd3rylu+z4TEpg2papMaojEtrplctom4w4GHKOXwiEHrqW2Lo/ZyTkA1
-         w6GmNY43wVapw==
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [RFC] wiregard RX packet processing.
-In-Reply-To: <CAHmME9rzEjKg41eq5jBtsLXF+vZSEnvdomZJ-rTzx8Q=ac1ayg@mail.gmail.com>
-References: <20211208173205.zajfvg6zvi4g5kln@linutronix.de>
- <CAHmME9rzEjKg41eq5jBtsLXF+vZSEnvdomZJ-rTzx8Q=ac1ayg@mail.gmail.com>
-Date:   Wed, 05 Jan 2022 01:14:47 +0100
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87mtkbavig.fsf@toke.dk>
+        with ESMTP id S235499AbiAEASP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 19:18:15 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3380C061761
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 16:18:14 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id l3so44020250iol.10
+        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 16:18:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=NfB/MtJA0Kzm/Ln6KSwbz5y3JZ4mIJIUADCjE7z4mMs=;
+        b=ZSDKsmPxI7vA+zJAtVZjQMY3r/gkRs3QmI4CRKV57eLMb5WAPQzllN/ElAcKOM8bg9
+         bI8LL8D/gHdwpvSi04wAsW1Nqww/o7MiwpLDm9wmln9ms1uPFbqwOt2xHgEyHioaTU1C
+         Fm75Uklpv0n4Pp4DNzDRldFGJUN3/JT9HwNetJPutuDxjkjx1BECLNcBoUVlfMqTlFKB
+         UqHq+HrXb8q9tf4Xrsvg/P4L/DX3XbJRwlwJizKGWoDY7+DRRmckTr0f/RxjLKbqS0qI
+         DahgkfT/UbiJw3tEnuEN/phU1tQ2OaCYYB2OKx6gPOAU/7QJN6BTJXBduMATkFDZJpCx
+         Duvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=NfB/MtJA0Kzm/Ln6KSwbz5y3JZ4mIJIUADCjE7z4mMs=;
+        b=RI5up8lYSI4vP871y1e6XuwAqDNNbG9X05M3MD1E/Pr9uGzjB3fUEXOETiz8rXqFdB
+         Q+K59R3g+2JysPiigf3ZXPZLctUQoPV5sCvCPXGbMORjKWtq/CaH0QfMbAZWJIyZlm7T
+         BKRYRwgZUOCin9QzQOGbZ4S1MIfVc9XaKNJcpNI7KXW1Q3cBkheIT+ByN1LrpVXH+SrT
+         fIo+74G3oVhx0NMwRIPPEO/0NALsPr+JM9HU39c6jH8uydfnvJHLt8gt8I+2QzeCR3Np
+         dnJjqQauE+rZLPPOpDAHg7JUnBMi/i+99TN3cLsSn21iAnpJkyyPJQKZg1+ihgdGWzDe
+         FgFA==
+X-Gm-Message-State: AOAM531DsHyF5fjOPk/EsxAEh5pLFYO8ibUDlEUuWlJAF+TJ+vVvpePe
+        meQaQflPd1pfmIuPwwR0xMQ=
+X-Google-Smtp-Source: ABdhPJy/Y9u+mjQXUvKrlAezuPUhw64shTnEPKW4sA7N/MnLc/TbIqoCuf86uG9JWrLzP0snMTfZ2g==
+X-Received: by 2002:a5d:8d89:: with SMTP id b9mr23374722ioj.205.1641341894232;
+        Tue, 04 Jan 2022 16:18:14 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id g8sm23805086ilf.17.2022.01.04.16.18.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Jan 2022 16:18:13 -0800 (PST)
+Message-ID: <df31afed-13a2-a02b-a5f8-4b76c57631d3@gmail.com>
+Date:   Tue, 4 Jan 2022 17:18:12 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH net-next v6] rtnetlink: Support fine-grained netdevice
+ bulk deletion
+Content-Language: en-US
+To:     Lahav Schlesinger <lschlesinger@drivenets.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, idosch@idosch.org,
+        nicolas.dichtel@6wind.com, nikolay@nvidia.com
+References: <20220104081053.33416-1-lschlesinger@drivenets.com>
+ <66d3e40c-4889-9eed-e5af-8aed296498e5@gmail.com>
+ <20220104204033.rq4467r3kaaowczj@kgollan-pc>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220104204033.rq4467r3kaaowczj@kgollan-pc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+On 1/4/22 1:40 PM, Lahav Schlesinger wrote:
+> I tried using dev->unreg_list but it doesn't work e.g. for veth pairs
+> where ->dellink() of a veth automatically adds the peer. Therefore if
+> @ifindices contains both peers then the first ->dellink() will remove
+> the next device from @list_kill. This caused a page fault when
+> @list_kill was further iterated on.
 
-> Hi Sebastian,
->
-> Seems like you've identified two things, the use of need_resched, and
-> potentially surrounding napi_schedule in local_bh_{disable,enable}.
->
-> Regarding need_resched, I pulled that out of other code that seemed to
-> have the "same requirements", as vaguely conceived. It indeed might
-> not be right. The intent is to have that worker running at maximum
-> throughput for extended periods of time, but not preventing other
-> threads from running elsewhere, so that, e.g., a user's machine
-> doesn't have a jenky mouse when downloading a file.
->
-> What are the effects of unconditionally calling cond_resched() without
-> checking for if (need_resched())? Sounds like you're saying none at
-> all?
+make sure you add a selftest for the bulk delete and cover cases with
+veth, vlan, vrf, dummy, bridge, ...
 
-I believe so: AFAIU, you use need_resched() if you need to do some kind
-of teardown before the schedule point, like this example I was recently
-looking at:
+> 
+> I opted to add a flag to struct net_device as David suggested in order
+> to avoid increasing sizeof(struct net_device), but perhaps it's not that
+> big of an issue.
+> If it's fine then I'll update it.
 
-https://elixir.bootlin.com/linux/latest/source/net/bpf/test_run.c#L73
+I was hoping to avoid bloating net_device with 16B that has such a
+limited need. In one config I use, net_device is 2048B - a nice size and
+an additional 16B makes netdevs much more expensive. A ubuntu config
+comes in at 2368, so not really an issue there.
 
-If you just need to maybe reschedule, you can just call cond_resched()
-and it'll do what it says on the tin: do a schedule if needed, and
-return immediately otherwise.
-
-> Regarding napi_schedule, I actually wasn't aware that it's requirement
-> to _only_ ever run from softirq was a strict one. When I switched to
-> using napi_schedule in this way, throughput really jumped up
-> significantly. Part of this indeed is from the batching, so that the
-> napi callback can then handle more packets in one go later. But I
-> assumed it was something inside of NAPI that was batching and
-> scheduling it, rather than a mistake on my part to call this from a wq
-> and not from a softirq.
->
-> What, then, are the effects of surrounding that in
-> local_bh_{disable,enable} as you've done in the patch? You mentioned
-> one aspect is that it will "invoke wg_packet_rx_poll() where you see
-> only one skb." It sounds like that'd be bad for performance, though,
-> given that the design of napi is really geared toward batching.
-
-Heh, I wrote a whole long explanation he about variable batch sizes
-because you don't control when the NAPI is scheduled, etc... And then I
-noticed the while loop is calling ptr_ring_consume_bh(), which means
-that there's already a local_bh_disable/enable pair on every loop
-invocation. So you already have this :)
-
-Which of course raises the question of whether there's anything to gain
-from *adding* batching to the worker? Something like:
-
-#define BATCH_SIZE 8
-void wg_packet_decrypt_worker(struct work_struct *work)
-{
-	struct crypt_queue *queue = container_of(work, struct multicore_worker,
-						 work)->ptr;
-	void *skbs[BATCH_SIZE];
-	bool again;
-	int i;
-
-restart:
-	local_bh_disable();
-	ptr_ring_consume_batched(&queue->ring, skbs, BATCH_SIZE);
-
-	for (i = 0; i < BATCH_SIZE; i++) {
-		struct sk_buff *skb = skbs[i];
-		enum packet_state state;
-
-		if (!skb)
-			break;
-
-		state = likely(decrypt_packet(skb, PACKET_CB(skb)->keypair)) ?
-				PACKET_STATE_CRYPTED : PACKET_STATE_DEAD;
-		wg_queue_enqueue_per_peer_rx(skb, state);
-	}
-        
-	again = !ptr_ring_empty(&queue->ring);
-	local_bh_enable();
-
-	if (again) {
-		cond_resched();
-		goto restart;
-	}
-}
-
-
-Another thing that might be worth looking into is whether it makes sense
-to enable threaded NAPI for Wireguard. See:
-https://lore.kernel.org/r/20210208193410.3859094-1-weiwan@google.com
-
--Toke
+Staring at the existing list_head options close_list seems like a
+candidate for a union with bulk_kill_list. If that does not work we can
+add a new one.
