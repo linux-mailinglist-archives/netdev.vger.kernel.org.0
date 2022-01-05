@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1805F484CC6
+	by mail.lfdr.de (Postfix) with ESMTP id 60C5F484CC7
 	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 04:16:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236121AbiAEDQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S236129AbiAEDQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 4 Jan 2022 22:16:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236129AbiAEDP4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 22:15:56 -0500
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855F6C061785
-        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 19:15:56 -0800 (PST)
-Received: by mail-qv1-xf30.google.com with SMTP id o10so36299451qvc.5
-        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 19:15:56 -0800 (PST)
+        with ESMTP id S235819AbiAEDQA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 4 Jan 2022 22:16:00 -0500
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BDEC061761
+        for <netdev@vger.kernel.org>; Tue,  4 Jan 2022 19:16:00 -0800 (PST)
+Received: by mail-qk1-x72a.google.com with SMTP id e25so31253134qkl.12
+        for <netdev@vger.kernel.org>; Tue, 04 Jan 2022 19:16:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pR7r8dV78CQTYytcKAtyOT1MsapRKIkYz5yuNsx4fEs=;
-        b=EvjMNG7G88s+sdkarpXi4J6Hy3D3niPzLmSHg0wDykohzWiew++X1uL1/7YFZGk93g
-         ELMsqeK//fsxBVEnnivjJTCGCdkRgDf4rlZBfKdgdym5C6P/zSxNPn29h56IYpRjIAxq
-         9uL5LfzRlr+g93iV41dMCt/qnHIasQBJYrxzz7P0h0xoMn7wSPMGj2cGfvD4jxFAYuhR
-         Vo3uJNFE/vqDw6BaPt5v1850JF6hOdaCVDn5CjXwp5kbW5ybOckVCTB1yy6vpm6LilVp
-         vwVIVdP6n1PIxYuHt4c8FMqyWavfjLX3tJNtHkG7x55TDJ51JP/AUhv2pu0R0YKY/UHj
-         euZQ==
+        bh=N7/xcV+q2pIHBurUaT+7rAoEx7uFiSsrmfW9Jumb19U=;
+        b=mKMn23hd1FT4VZZM0CI8gKKfhEPueJ9IcKFG39U13hSXVasEj+njMo8z8iwd9i77Yl
+         /SMDSiu949OCB3TIn0QFnWyc6g2Wdbih80jO5+gv5cI/Z3EUx31lE7cenrdaVUqs8gq7
+         ZpSDROrobBEv6hCF9ZYO5Txkj55dbsr4VFSneEjEHFsCRLzUNSkLeIQtSlzmprUhYZld
+         rrw57i/s0I+pj87KwGFNxq2/Hci5b8fv+0IHl4cHbBuGAM7+Sg9eNuzt+z54OqMYppgQ
+         wHsJfC16BA1kJCX2Vnzx+jr1MlJicfXhVwiuhlc21+V/cgmDVq7H2tyUWEjEG7IF90s6
+         3mcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pR7r8dV78CQTYytcKAtyOT1MsapRKIkYz5yuNsx4fEs=;
-        b=zJ8GXagOH2PIceZAth4BjPMG4qAOhvcCZsE2zTZUDxUorvKLTYnsYiS0ge4Ys/25B+
-         +f7IAT6uRajtTz6kkPAClZNAR6EDW95aU8GWqaQsIUZzcS78Bq97Z5XyzR4yr2UE04Nc
-         5SFym6LyQ0D7K0CtFGQNnMA8yAZjLJtzbs8nbn+VvX7ihCcwXuWMdDfBChluMjBepO68
-         8zM+Q+IGxkmT+x1037GRP+d+9luJNTjsMPbge954kxAscoWzKRUqhYR63ZRyNLpmwkMp
-         Cf+rpIYt7TDk+l+clzvxcKUCM1cQWaxvnnc+EragPf64A0y0ISez3SIKSwY24x9TOWtm
-         24vA==
-X-Gm-Message-State: AOAM530GeZsExYl2HghOMC5UYvFueiuGar291syZr8GgzzmozKeZ8yI9
-        g1Lztw+hyfCKg2g7lQRMTW2xlixbqVceprP2
-X-Google-Smtp-Source: ABdhPJw8B5fCFVZMM+jBoqre88/uoI6NEJViJ29bYJhDowXI38lgOEAVeE+LacuGEKrD6CiCNjDYJw==
-X-Received: by 2002:a05:6214:21a1:: with SMTP id t1mr49126741qvc.47.1641352555527;
-        Tue, 04 Jan 2022 19:15:55 -0800 (PST)
+        bh=N7/xcV+q2pIHBurUaT+7rAoEx7uFiSsrmfW9Jumb19U=;
+        b=8HkgAODkwX0XNi06aSzYdMmvEtD3UO82eONToaZ8VVdarT1R7T2j0iJFYjw3yZcS1f
+         BVcbQNX7ftAarnx9oC/lkYc4s4HOOt0hb/nxT1Lr5MNLimDwL5fnrC08aPli2jWb86kw
+         lS2xUPvEGrENRtm6g8/2o9QUVoRyAIwyw2mwKwN5vuBQ7GF72oPs5GEBTNIlNe/D8goy
+         q373vY3dsdN5AI0Pr3y+BmNwOLTU8T9f0ZlMB46hut5WjEtNWFUve2qDwU6Slsd6rivD
+         N5jHnoGMm1PZfMQaF7bbJjMlb9qJlUS0zDMvwrRE8jpH1tfgOM3giEuBP54amjvl+iAJ
+         FSQg==
+X-Gm-Message-State: AOAM531f8buzYCiBNxvqIFyre5E8dn+6QNQMpHv68zHOQOrqOdN1hzW+
+        hn/5QjexdWvRmAaxsZr3Uo5pbMBq+B616dWd
+X-Google-Smtp-Source: ABdhPJwYIsGka63bK4pJr+qsSpQ2Sebb9SxMb4mUp+QsbN+/VVQbSn5mb2pW2cXwvV2QXx3hc5HdiQ==
+X-Received: by 2002:a05:620a:458b:: with SMTP id bp11mr35796082qkb.51.1641352559524;
+        Tue, 04 Jan 2022 19:15:59 -0800 (PST)
 Received: from tresc043793.tre-sc.gov.br ([187.94.103.218])
-        by smtp.gmail.com with ESMTPSA id t11sm32607629qkp.56.2022.01.04.19.15.52
+        by smtp.gmail.com with ESMTPSA id t11sm32607629qkp.56.2022.01.04.19.15.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Jan 2022 19:15:55 -0800 (PST)
+        Tue, 04 Jan 2022 19:15:59 -0800 (PST)
 From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, olteanv@gmail.com, alsi@bang-olufsen.dk,
         arinc.unal@arinc9.com, frank-w@public-files.de,
         Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [PATCH net-next v4 04/11] net: dsa: realtek: convert subdrivers into modules
-Date:   Wed,  5 Jan 2022 00:15:08 -0300
-Message-Id: <20220105031515.29276-5-luizluca@gmail.com>
+Subject: [PATCH net-next v4 05/11] net: dsa: realtek: use phy_read in ds->ops
+Date:   Wed,  5 Jan 2022 00:15:09 -0300
+Message-Id: <20220105031515.29276-6-luizluca@gmail.com>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20220105031515.29276-1-luizluca@gmail.com>
 References: <20220105031515.29276-1-luizluca@gmail.com>
@@ -66,135 +66,153 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Preparing for multiple interfaces support, the drivers
-must be independent of realtek-smi.
+The ds->ops->phy_read will only be used if the ds->slave_mii_bus
+was not initialized. Calling realtek_smi_setup_mdio will create a
+ds->slave_mii_bus, making ds->ops->phy_read dormant.
+
+Using ds->ops->phy_read will allow switches connected through non-SMI
+interfaces (like mdio) to let ds allocate slave_mii_bus and reuse the
+same code.
 
 Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/net/dsa/realtek/Kconfig               | 20 +++++++++++++++++--
- drivers/net/dsa/realtek/Makefile              |  4 +++-
- .../{realtek-smi-core.c => realtek-smi.c}     |  6 ++++++
- drivers/net/dsa/realtek/rtl8365mb.c           |  4 ++++
- .../dsa/realtek/{rtl8366.c => rtl8366-core.c} |  0
- drivers/net/dsa/realtek/rtl8366rb.c           |  4 ++++
- 6 files changed, 35 insertions(+), 3 deletions(-)
- rename drivers/net/dsa/realtek/{realtek-smi-core.c => realtek-smi.c} (97%)
- rename drivers/net/dsa/realtek/{rtl8366.c => rtl8366-core.c} (100%)
+ drivers/net/dsa/realtek/realtek-smi.c |  6 ++++--
+ drivers/net/dsa/realtek/realtek.h     |  3 ---
+ drivers/net/dsa/realtek/rtl8365mb.c   | 10 ++++++----
+ drivers/net/dsa/realtek/rtl8366rb.c   | 10 ++++++----
+ 4 files changed, 16 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/dsa/realtek/Kconfig b/drivers/net/dsa/realtek/Kconfig
-index 1c62212fb0ec..cd1aa95b7bf0 100644
---- a/drivers/net/dsa/realtek/Kconfig
-+++ b/drivers/net/dsa/realtek/Kconfig
-@@ -2,8 +2,6 @@
- menuconfig NET_DSA_REALTEK
- 	tristate "Realtek Ethernet switch family support"
- 	depends on NET_DSA
--	select NET_DSA_TAG_RTL4_A
--	select NET_DSA_TAG_RTL8_4
- 	select FIXED_PHY
- 	select IRQ_DOMAIN
- 	select REALTEK_PHY
-@@ -18,3 +16,21 @@ config NET_DSA_REALTEK_SMI
- 	help
- 	  Select to enable support for registering switches connected
- 	  through SMI.
-+
-+config NET_DSA_REALTEK_RTL8365MB
-+	tristate "Realtek RTL8365MB switch subdriver"
-+	default y
-+	depends on NET_DSA_REALTEK
-+	depends on NET_DSA_REALTEK_SMI
-+	select NET_DSA_TAG_RTL8_4
-+	help
-+	  Select to enable support for Realtek RTL8365MB
-+
-+config NET_DSA_REALTEK_RTL8366RB
-+	tristate "Realtek RTL8366RB switch subdriver"
-+	default y
-+	depends on NET_DSA_REALTEK
-+	depends on NET_DSA_REALTEK_SMI
-+	select NET_DSA_TAG_RTL4_A
-+	help
-+	  Select to enable support for Realtek RTL8366RB
-diff --git a/drivers/net/dsa/realtek/Makefile b/drivers/net/dsa/realtek/Makefile
-index 323b921bfce0..8b5a4abcedd3 100644
---- a/drivers/net/dsa/realtek/Makefile
-+++ b/drivers/net/dsa/realtek/Makefile
-@@ -1,3 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_NET_DSA_REALTEK_SMI) 	+= realtek-smi.o
--realtek-smi-objs			:= realtek-smi-core.o rtl8366.o rtl8366rb.o rtl8365mb.o
-+obj-$(CONFIG_NET_DSA_REALTEK_RTL8366RB) += rtl8366.o
-+rtl8366-objs 				:= rtl8366-core.o rtl8366rb.o
-+obj-$(CONFIG_NET_DSA_REALTEK_RTL8365MB) += rtl8365mb.o
-diff --git a/drivers/net/dsa/realtek/realtek-smi-core.c b/drivers/net/dsa/realtek/realtek-smi.c
-similarity index 97%
-rename from drivers/net/dsa/realtek/realtek-smi-core.c
-rename to drivers/net/dsa/realtek/realtek-smi.c
-index a917801385c9..5514fe81d64f 100644
---- a/drivers/net/dsa/realtek/realtek-smi-core.c
+diff --git a/drivers/net/dsa/realtek/realtek-smi.c b/drivers/net/dsa/realtek/realtek-smi.c
+index 5514fe81d64f..1f024e2520a6 100644
+--- a/drivers/net/dsa/realtek/realtek-smi.c
 +++ b/drivers/net/dsa/realtek/realtek-smi.c
-@@ -495,19 +495,23 @@ static void realtek_smi_shutdown(struct platform_device *pdev)
+@@ -329,16 +329,18 @@ static const struct regmap_config realtek_smi_mdio_regmap_config = {
+ static int realtek_smi_mdio_read(struct mii_bus *bus, int addr, int regnum)
+ {
+ 	struct realtek_priv *priv = bus->priv;
++	struct dsa_switch *ds = priv->ds;
+ 
+-	return priv->ops->phy_read(priv, addr, regnum);
++	return ds->ops->phy_read(ds, addr, regnum);
  }
  
- static const struct of_device_id realtek_smi_of_match[] = {
-+#if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8366RB)
- 	{
- 		.compatible = "realtek,rtl8366rb",
- 		.data = &rtl8366rb_variant,
- 	},
-+#endif
- 	{
- 		/* FIXME: add support for RTL8366S and more */
- 		.compatible = "realtek,rtl8366s",
- 		.data = NULL,
- 	},
-+#if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8365MB)
- 	{
- 		.compatible = "realtek,rtl8365mb",
- 		.data = &rtl8365mb_variant,
- 	},
-+#endif
- 	{ /* sentinel */ },
- };
- MODULE_DEVICE_TABLE(of, realtek_smi_of_match);
-@@ -523,4 +527,6 @@ static struct platform_driver realtek_smi_driver = {
- };
- module_platform_driver(realtek_smi_driver);
+ static int realtek_smi_mdio_write(struct mii_bus *bus, int addr, int regnum,
+ 				  u16 val)
+ {
+ 	struct realtek_priv *priv = bus->priv;
++	struct dsa_switch *ds = priv->ds;
  
-+MODULE_AUTHOR("Linus Walleij <linus.walleij@linaro.org>");
-+MODULE_DESCRIPTION("Driver for Realtek ethernet switch connected via SMI interface");
- MODULE_LICENSE("GPL");
+-	return priv->ops->phy_write(priv, addr, regnum, val);
++	return ds->ops->phy_write(ds, addr, regnum, val);
+ }
+ 
+ static int realtek_smi_setup_mdio(struct dsa_switch *ds)
+diff --git a/drivers/net/dsa/realtek/realtek.h b/drivers/net/dsa/realtek/realtek.h
+index 58814de563a2..a03de15c4a94 100644
+--- a/drivers/net/dsa/realtek/realtek.h
++++ b/drivers/net/dsa/realtek/realtek.h
+@@ -103,9 +103,6 @@ struct realtek_ops {
+ 	int	(*enable_vlan)(struct realtek_priv *priv, bool enable);
+ 	int	(*enable_vlan4k)(struct realtek_priv *priv, bool enable);
+ 	int	(*enable_port)(struct realtek_priv *priv, int port, bool enable);
+-	int	(*phy_read)(struct realtek_priv *priv, int phy, int regnum);
+-	int	(*phy_write)(struct realtek_priv *priv, int phy, int regnum,
+-			     u16 val);
+ };
+ 
+ struct realtek_variant {
 diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index 5fb453b5f650..b52bb987027c 100644
+index b52bb987027c..11a985900c57 100644
 --- a/drivers/net/dsa/realtek/rtl8365mb.c
 +++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -1987,3 +1987,7 @@ const struct realtek_variant rtl8365mb_variant = {
- 	.chip_data_sz = sizeof(struct rtl8365mb),
+@@ -674,8 +674,9 @@ static int rtl8365mb_phy_ocp_write(struct realtek_priv *priv, int phy,
+ 	return 0;
+ }
+ 
+-static int rtl8365mb_phy_read(struct realtek_priv *priv, int phy, int regnum)
++static int rtl8365mb_phy_read(struct dsa_switch *ds, int phy, int regnum)
+ {
++	struct realtek_priv *priv = ds->priv;
+ 	u32 ocp_addr;
+ 	u16 val;
+ 	int ret;
+@@ -702,9 +703,10 @@ static int rtl8365mb_phy_read(struct realtek_priv *priv, int phy, int regnum)
+ 	return val;
+ }
+ 
+-static int rtl8365mb_phy_write(struct realtek_priv *priv, int phy, int regnum,
++static int rtl8365mb_phy_write(struct dsa_switch *ds, int phy, int regnum,
+ 			       u16 val)
+ {
++	struct realtek_priv *priv = (struct realtek_priv *)ds->priv;
+ 	u32 ocp_addr;
+ 	int ret;
+ 
+@@ -1958,6 +1960,8 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops = {
+ 	.get_tag_protocol = rtl8365mb_get_tag_protocol,
+ 	.setup = rtl8365mb_setup,
+ 	.teardown = rtl8365mb_teardown,
++	.phy_read = rtl8365mb_phy_read,
++	.phy_write = rtl8365mb_phy_write,
+ 	.phylink_validate = rtl8365mb_phylink_validate,
+ 	.phylink_mac_config = rtl8365mb_phylink_mac_config,
+ 	.phylink_mac_link_down = rtl8365mb_phylink_mac_link_down,
+@@ -1974,8 +1978,6 @@ static const struct dsa_switch_ops rtl8365mb_switch_ops = {
+ 
+ static const struct realtek_ops rtl8365mb_ops = {
+ 	.detect = rtl8365mb_detect,
+-	.phy_read = rtl8365mb_phy_read,
+-	.phy_write = rtl8365mb_phy_write,
  };
- EXPORT_SYMBOL_GPL(rtl8365mb_variant);
-+
-+MODULE_AUTHOR("Alvin Šipraga <alsi@bang-olufsen.dk>");
-+MODULE_DESCRIPTION("Driver for RTL8365MB-VC ethernet switch");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/dsa/realtek/rtl8366.c b/drivers/net/dsa/realtek/rtl8366-core.c
-similarity index 100%
-rename from drivers/net/dsa/realtek/rtl8366.c
-rename to drivers/net/dsa/realtek/rtl8366-core.c
+ 
+ const struct realtek_variant rtl8365mb_variant = {
 diff --git a/drivers/net/dsa/realtek/rtl8366rb.c b/drivers/net/dsa/realtek/rtl8366rb.c
-index 34e371084d6d..ff607608dead 100644
+index ff607608dead..4576f9b797c5 100644
 --- a/drivers/net/dsa/realtek/rtl8366rb.c
 +++ b/drivers/net/dsa/realtek/rtl8366rb.c
-@@ -1814,3 +1814,7 @@ const struct realtek_variant rtl8366rb_variant = {
- 	.chip_data_sz = sizeof(struct rtl8366rb),
+@@ -1641,8 +1641,9 @@ static int rtl8366rb_enable_vlan4k(struct realtek_priv *priv, bool enable)
+ 				  enable ? RTL8366RB_SGCR_EN_VLAN_4KTB : 0);
+ }
+ 
+-static int rtl8366rb_phy_read(struct realtek_priv *priv, int phy, int regnum)
++static int rtl8366rb_phy_read(struct dsa_switch *ds, int phy, int regnum)
+ {
++	struct realtek_priv *priv = ds->priv;
+ 	u32 val;
+ 	u32 reg;
+ 	int ret;
+@@ -1675,9 +1676,10 @@ static int rtl8366rb_phy_read(struct realtek_priv *priv, int phy, int regnum)
+ 	return val;
+ }
+ 
+-static int rtl8366rb_phy_write(struct realtek_priv *priv, int phy, int regnum,
++static int rtl8366rb_phy_write(struct dsa_switch *ds, int phy, int regnum,
+ 			       u16 val)
+ {
++	struct realtek_priv *priv = ds->priv;
+ 	u32 reg;
+ 	int ret;
+ 
+@@ -1769,6 +1771,8 @@ static int rtl8366rb_detect(struct realtek_priv *priv)
+ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
+ 	.get_tag_protocol = rtl8366_get_tag_protocol,
+ 	.setup = rtl8366rb_setup,
++	.phy_read = rtl8366rb_phy_read,
++	.phy_write = rtl8366rb_phy_write,
+ 	.phylink_mac_link_up = rtl8366rb_mac_link_up,
+ 	.phylink_mac_link_down = rtl8366rb_mac_link_down,
+ 	.get_strings = rtl8366_get_strings,
+@@ -1801,8 +1805,6 @@ static const struct realtek_ops rtl8366rb_ops = {
+ 	.is_vlan_valid	= rtl8366rb_is_vlan_valid,
+ 	.enable_vlan	= rtl8366rb_enable_vlan,
+ 	.enable_vlan4k	= rtl8366rb_enable_vlan4k,
+-	.phy_read	= rtl8366rb_phy_read,
+-	.phy_write	= rtl8366rb_phy_write,
  };
- EXPORT_SYMBOL_GPL(rtl8366rb_variant);
-+
-+MODULE_AUTHOR("Linus Walleij <linus.walleij@linaro.org>");
-+MODULE_DESCRIPTION("Driver for RTL8366RB ethernet switch");
-+MODULE_LICENSE("GPL");
+ 
+ const struct realtek_variant rtl8366rb_variant = {
 -- 
 2.34.0
 
