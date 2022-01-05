@@ -2,151 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C521B484EC5
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 08:39:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5656484EDA
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 08:49:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238115AbiAEHjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 02:39:00 -0500
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:50218
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238107AbiAEHjA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 02:39:00 -0500
-Received: from [192.168.1.7] (unknown [222.129.35.96])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id EB31141938;
-        Wed,  5 Jan 2022 07:38:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641368338;
-        bh=NbIFRfKPWrUgxfzZKVNP1NFFBCXYHqsMxgSyTOCcZOw=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=HcHtKSNsYIDkxlFR6FiVyLkn7rqNnCUE4KXTtyOMa6/suoZ9LI2GnYaul3IyLV6cc
-         TVzbTDqef8OmI/ou6OyJOEGrDxrLLJkO3pZTJnqdMnoZ809nSNxFUFcfWTP8yvK79/
-         kIvheWOhps8KfKJGY9npdnWXv8sNvuB6c9KUfvclpB+ViLrzU1vYWNKvrW0n+J3Mxk
-         h2ExM9S5RXR9mwZ0ks21jhG10eKf1WhQdWWTeJqIeyiM+h3b721cY29nE3+NKkK4Fe
-         Hbvadv1jTOCBOxPJ569vuj+/RT/LliZe4U7rGohXFqaxvAUhUM/VNT3xJsGL9LrBO4
-         lL/a8yS0N7nSQ==
-Message-ID: <e71f3dfd-5f17-6cdc-8f1b-9b5ad15ca793@canonical.com>
-Date:   Wed, 5 Jan 2022 15:38:51 +0800
+        id S229547AbiAEHtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 02:49:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238215AbiAEHtf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 02:49:35 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74078C061761;
+        Tue,  4 Jan 2022 23:49:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=2szDbwiVK5KeG4XhY1ZLp/nsWXXU2FYHOQjt1VACpXA=;
+        t=1641368974; x=1642578574; b=nPNEOhQZAhOaTuDcCtnoWCTKHDrxygYf2jF8TiuIg/nP7qJ
+        K7pRoDllpdWdL2usU2cQWVrVyWgUIf+p5uIRu+/WPiSQIwTdc9/sZ9LuXsZlIxZPXVuQzUthVNp9n
+        FjdsFZMHeauxJzrw2w+m5Wm8KeWfRMPhN2LTsqjWJ7+6vj9kQ6cUBWLwY62dC/ea9deoTYK3D0Noi
+        8gAra6D5mDkbdNdyLB0OubhyEdu0dzOl7MDZOYFOXlRTTE46veYtgbGGt78eNz+SYkKYuVxtY0f6E
+        NzPX0k6LkZdE3G92vZS1/EOdPPkRAbLVmDZhdIu0wVRd/yTnr5mcsKjh3DgP4h9A==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1n512x-0025QK-Uv;
+        Wed, 05 Jan 2022 08:49:24 +0100
+Message-ID: <c6e52470551dc7802a36c5080c6c61a2ad625e7f.camel@sipsolutions.net>
+Subject: Re: [PATCH v2] mac80211: mlme: check for null after calling kmemdup
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 05 Jan 2022 08:49:22 +0100
+In-Reply-To: <20220105013308.2011586-1-jiasheng@iscas.ac.cn>
+References: <20220105013308.2011586-1-jiasheng@iscas.ac.cn>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] net: usb: r8152: Check used MAC passthrough address
-Content-Language: en-US
-To:     Henning Schild <henning.schild@siemens.com>
-Cc:     kuba@kernel.org, linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        hayeswang@realtek.com, tiwai@suse.de
-References: <20220105061747.7104-1-aaron.ma@canonical.com>
- <20220105082355.79d44349@md1za8fc.ad001.siemens.net>
- <20220105083238.4278d331@md1za8fc.ad001.siemens.net>
-From:   Aaron Ma <aaron.ma@canonical.com>
-In-Reply-To: <20220105083238.4278d331@md1za8fc.ad001.siemens.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/5/22 15:32, Henning Schild wrote:
-> Am Wed, 5 Jan 2022 08:23:55 +0100
-> schrieb Henning Schild <henning.schild@siemens.com>:
+On Wed, 2022-01-05 at 09:33 +0800, Jiasheng Jiang wrote:
+> As the possible failure of the alloc, the ifmgd->assoc_req_ies might be
+> NULL pointer returned from kmemdup().
+> Therefore it might be better to free the skb and return in order to fail
+> the association, like ieee80211_assoc_success().
 > 
->> Hi Aaron,
->>
->> if this or something similar goes in, please add another patch to
->> remove the left-over defines.
->>
-
-Sure, I will do it.
-
->> Am Wed,  5 Jan 2022 14:17:47 +0800
->> schrieb Aaron Ma <aaron.ma@canonical.com>:
->>
->>> When plugin multiple r8152 ethernet dongles to Lenovo Docks
->>> or USB hub, MAC passthrough address from BIOS should be
->>> checked if it had been used to avoid using on other dongles.
->>>
->>> Currently builtin r8152 on Dock still can't be identified.
->>> First detected r8152 will use the MAC passthrough address.
->>>
->>> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
->>> ---
->>>   drivers/net/usb/r8152.c | 10 ++++++++++
->>>   1 file changed, 10 insertions(+)
->>>
->>> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
->>> index f9877a3e83ac..77f11b3f847b 100644
->>> --- a/drivers/net/usb/r8152.c
->>> +++ b/drivers/net/usb/r8152.c
->>> @@ -1605,6 +1605,7 @@ static int
->>> vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr
->>> *sa) char *mac_obj_name; acpi_object_type mac_obj_type;
->>>   	int mac_strlen;
->>> +	struct net_device *ndev;
->>>   
->>>   	if (tp->lenovo_macpassthru) {
->>>   		mac_obj_name = "\\MACA";
->>> @@ -1662,6 +1663,15 @@ static int
->>> vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
->>> ret = -EINVAL; goto amacout;
->>>   	}
->>> +	rcu_read_lock();
->>> +	for_each_netdev_rcu(&init_net, ndev) {
->>> +		if (strncmp(buf, ndev->dev_addr, 6) == 0) {
->>> +			rcu_read_unlock();
->>> +			goto amacout;
->>
->> Since the original PCI netdev will always be there, that would disable
->> inheritance would it not?
->> I guess a strncmp(MODULE_NAME, info->driver, strlen(MODULE_NAME)) is
->> needed as well.
->>
-
-PCI ethernet could be a builtin one on dock since there will be TBT4 dock.
-
->> Maybe leave here with
->> netif_info()
->>
-
-Not good to print in rcu lock.
-
->> And move the whole block up, we can skip the whole ACPI story if we
->> find the MAC busy.
+> Fixes: 4d9ec73d2b78 ("cfg80211: Report Association Request frame IEs in association events")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> ---
+> v2: Change to fail the association if kmemdup returns NULL.
+> ---
+>  net/mac80211/mlme.c | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
-> That is wrong, need to know that MAC so can not move up too much. But
-> maybe above the is_valid_ether_addr
-
-The MAC passthough address is read from ACPI.
-ACPI read only happens once during r8152 driver probe.
-To keep the lock less time, do it after is_valid_ether_addr.
-
+> diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+> index 9bed6464c5bd..b5dfdf953286 100644
+> --- a/net/mac80211/mlme.c
+> +++ b/net/mac80211/mlme.c
+> @@ -1058,6 +1058,11 @@ static void ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata)
+>  	pos = skb_tail_pointer(skb);
+>  	kfree(ifmgd->assoc_req_ies);
+>  	ifmgd->assoc_req_ies = kmemdup(ie_start, pos - ie_start, GFP_ATOMIC);
+> +	if (!ifmgd->assoc_req_ies) {
+> +		dev_kfree_skb(skb);
+> +		return;
+> +	}
 > 
-> Henning
-> 
->>> +		}
->>> +	}
->>> +	rcu_read_unlock();
->>
->> Not sure if this function is guaranteed to only run once at a time,
->> otherwise i think that is a race. Multiple instances could make it to
->> this very point at the same time.
->>
 
-Run once for one device.
-So add a safe lock.
+That doesn't fail, that just doesn't send the frame and will then time
+out later, not very useful?
 
-Aaron
-
->> Henning
->>
->>>   	memcpy(sa->sa_data, buf, 6);
->>>   	netif_info(tp, probe, tp->netdev,
->>>   		   "Using pass-thru MAC addr %pM\n", sa->sa_data);
->>>   
->>
-> 
+johannes
