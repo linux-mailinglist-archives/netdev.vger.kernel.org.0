@@ -2,231 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BFE8484EA9
-	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 08:19:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B88B5484EB0
+	for <lists+netdev@lfdr.de>; Wed,  5 Jan 2022 08:24:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238020AbiAEHTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 02:19:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234872AbiAEHTL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 02:19:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1059AC061761;
-        Tue,  4 Jan 2022 23:19:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B758961671;
-        Wed,  5 Jan 2022 07:19:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 571A1C36AE3;
-        Wed,  5 Jan 2022 07:19:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641367149;
-        bh=VYnahk5EgZvYfCNM9v+X0rxi6o7/fOUowHA8VDmAD5k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oXMPNjg3XfHn1hbCHOVjA4BgZkISV6LajhQc1jbYr8tjkjiTeM0P36TZ4QOOcGoHM
-         lxYJKAghnXBrN7iolpSqeXgOlbFX0d1YSWxU5yWqQVCSodJvK1gG4KppqEtZaicmTG
-         L73t1jygT7J1XgEi+e7CM6NFD92Z5mX8WWgXO3ki2Zzysavz+cXSf/zd43LqRwvgVj
-         NcGzjdFoO24Wj6z1BmjkWpWji+WkjED+qTjLmcMW1usOBQLBUQRXuYb+i8uwHW06dA
-         zBhnjsu7/4+akjE7Gh7VGaeg/HNxHcUexrH4crd4FtNq/Uae5UGvzIwGe11lSEWnUX
-         MYO7uglO/gdoQ==
-Date:   Wed, 5 Jan 2022 09:19:04 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, shiraz.saleem@intel.com,
-        mustafa.ismail@intel.com,
-        Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>
-Subject: Re: [PATCH net-next 1/1] ice: Simplify tracking status of RDMA
- support
-Message-ID: <YdVGaK1uMUv7frZ1@unreal>
-References: <20220105000456.2510590-1-anthony.l.nguyen@intel.com>
+        id S233550AbiAEHYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 02:24:00 -0500
+Received: from mail-eopbgr150048.outbound.protection.outlook.com ([40.107.15.48]:53377
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231343AbiAEHYA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 5 Jan 2022 02:24:00 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IkisdptsalBFx/z3pCO3Frs4hUPcTIb+aH5IhYxSdf1u6phP9fjhl0kUS8p6lSSTP8RaDQhvDnzz9r0m+lawK3QTw8OxcLTeArv2T79XjCJ13NL6cul0iZCXBYvqw+g65Alztan4GKThBMU7jKQrLCljlqAzevYgOgHuujgrIFDw9eZf29etaIxEZ6O0D465rNy/siARge228Fold8vNXTp/4id3VrWFU2Mm3nojH12bBlHteAIDzQekqkC8biooF+5m7L3d3d2CVVous6P1mX+6KvY8V60VzJVZALUNUVemzda/SVV3dM4hSYWm+ADxI9ch87Mkfabx1eQ44CXhlA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=x2LJO0USAmyU16zDTnalXq6gMPPNPfBgbfeF8dDSb3M=;
+ b=PDhuOWh+3yLYsOlFuJ6TQFY5CmqdBWAUSdATbtkHSv1O4iJpQHqcNz5DDbIb8d8aj6765eZd7hXwdSkqodWO/4LSs+70n/QJFWdN5F/vWxVbquPdhAE9MYDsfqLyx3l4rdQzlYzWEDnsAYB+MpSVZazw5OXWHhbxCPhv2tfZ4Knr4EWHmKuiB2kvjEGa7dEQEVdMA2MJiODBNrfNBz9E6Z0s0HiRlC2TXZQtoLzQRg+7ru4nHVAXnMYgnB3NKaWu/Yr+QWxZlrlKx6H9Olok7G0SKF0riwqBZRlqVYo+rEnEVvrc3WjHuHpZRi0nQ0N2a1D4J50gAUGla5enGvm5Eg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 194.138.21.72) smtp.rcpttodomain=canonical.com smtp.mailfrom=siemens.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=x2LJO0USAmyU16zDTnalXq6gMPPNPfBgbfeF8dDSb3M=;
+ b=oeKSX3uJ8AIYhhpEaj3QpeofYvXIueFeOAF1IKjUItBf+nX14fDoZqBPNtHEmpY41BOnCpD1tElcjVyOGoUQ1tzkkatqnn2/X/9UhtiGap/v3T8rb/NIcJsHB8hvVta2sX/jmCbui253CI4aAumwl8egQ6oggnptxRDH07nERUzkPjkdVnMWuH3IJ7ygFCmWGi3xTvtsQnGMyDCnH5wxGmQHRB6aoxhXkRhGh2yevclOvhaQJMQPpuSDVJXUYWO1/5ruyRbAdfSWk5qYDEin/MfD++/8yoGPgGdG4e2XH1/KCd9oaDVtj9IHiOZy1FYWJGLHhnYQ3sqJUDm6eVsNTw==
+Received: from AS8PR04CA0099.eurprd04.prod.outlook.com (2603:10a6:20b:31e::14)
+ by AS4PR10MB5370.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:4ba::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Wed, 5 Jan
+ 2022 07:23:58 +0000
+Received: from VE1EUR01FT031.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:20b:31e:cafe::e7) by AS8PR04CA0099.outlook.office365.com
+ (2603:10a6:20b:31e::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7 via Frontend
+ Transport; Wed, 5 Jan 2022 07:23:58 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.72)
+ smtp.mailfrom=siemens.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=siemens.com;
+Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
+ 194.138.21.72 as permitted sender) receiver=protection.outlook.com;
+ client-ip=194.138.21.72; helo=hybrid.siemens.com;
+Received: from hybrid.siemens.com (194.138.21.72) by
+ VE1EUR01FT031.mail.protection.outlook.com (10.152.2.225) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4867.9 via Frontend Transport; Wed, 5 Jan 2022 07:23:57 +0000
+Received: from DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) by
+ DEMCHDC9SMA.ad011.siemens.net (194.138.21.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 5 Jan 2022 08:23:57 +0100
+Received: from md1za8fc.ad001.siemens.net (158.92.8.107) by
+ DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 5 Jan 2022 08:23:56 +0100
+Date:   Wed, 5 Jan 2022 08:23:55 +0100
+From:   Henning Schild <henning.schild@siemens.com>
+To:     Aaron Ma <aaron.ma@canonical.com>
+CC:     <kuba@kernel.org>, <linux-usb@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <hayeswang@realtek.com>, <tiwai@suse.de>
+Subject: Re: [PATCH] net: usb: r8152: Check used MAC passthrough address
+Message-ID: <20220105082355.79d44349@md1za8fc.ad001.siemens.net>
+In-Reply-To: <20220105061747.7104-1-aaron.ma@canonical.com>
+References: <20220105061747.7104-1-aaron.ma@canonical.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220105000456.2510590-1-anthony.l.nguyen@intel.com>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [158.92.8.107]
+X-ClientProxiedBy: DEMCHDC8A1A.ad011.siemens.net (139.25.226.107) To
+ DEMCHDC8A0A.ad011.siemens.net (139.25.226.106)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3d7ebaba-bf0e-476c-fde9-08d9d01c5680
+X-MS-TrafficTypeDiagnostic: AS4PR10MB5370:EE_
+X-Microsoft-Antispam-PRVS: <AS4PR10MB5370BE8F23CD26A3730857AE854B9@AS4PR10MB5370.EURPRD10.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VtPbFeJOxfLofvT++0wlEWADryh0tbKlHc4KmR7GwqWfNLY9olplccac1nwyf/CbfYwcMRnS/zi5Gk77dqbmBoi4wFWZR65mIHpYlBCw6Gztv1z3T7+myP5kyXIpuS5mFiy94rhZ6oRNUz286inXWZKv01uD/1OHVukD1+W6G2zH1vUghtSey2Nh4ty7Tc/qfx/OSZ7iJwYlY8c0JSQ9YBTZEXuVvOdoYAjHcqSLXc8G/UP89KTAaE4yLGSZs0ayu1w8Ry+FRoi6GIdcl1OobTzt6NsXTp4T6GdmuB6gy6yHS2Ap6qIyDRXRHvcnDB93nO24fkz1tUaG9v70xUI/XnDiFzS6pf9WrgwHtpjeVscaj8CVSAQiJpCuMlaeLiNwMxVHaWY7/mIz7BkD/+DKUL+0LQfc0sJ2crlxM1e2d+v47zwBO7XCf/hGnflRsGqVV4m1PcaLqcjCanPvt0HOrKlwVenhMgczOmBHHhQXTO9OlMy07VshXq/6WFMgMiR/gXqwJBU6G/K80NaN0O90NtjtDQm5Y72FgMSMDtAPf649dbdNBvckhQyig67taQ+UHzHi/ouqIqmaoP8rPVlhAarJkFypA5tknQqvxbeVFBbzD9kHNUfyOxzFcsJ6hd1GabJf5zEQq4S7TAqhhgOGSavmxi6f1D4RkCVg3Y+FlOJgUB/0vKAuhxyUuV+PNNNWy1VwrO1sj53CAEFlKeBHcLnPVCFYAPc5J7bEIMF7A1laaifqI/osLMwXjV/xEiIuncGUtmtUrPeEYgOOsKJd/gth/p/jPlyh/4Hcu1FQWdE=
+X-Forefront-Antispam-Report: CIP:194.138.21.72;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(4636009)(40470700002)(46966006)(36840700001)(316002)(44832011)(4326008)(70206006)(70586007)(5660300002)(1076003)(2906002)(6916009)(8676002)(54906003)(86362001)(26005)(186003)(16526019)(956004)(7696005)(508600001)(8936002)(83380400001)(9686003)(356005)(36860700001)(55016003)(82960400001)(47076005)(82310400004)(81166007)(40460700001)(336012)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 07:23:57.7966
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d7ebaba-bf0e-476c-fde9-08d9d01c5680
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.72];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-AuthSource: VE1EUR01FT031.eop-EUR01.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR10MB5370
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 04, 2022 at 04:04:56PM -0800, Tony Nguyen wrote:
-> From: Dave Ertman <david.m.ertman@intel.com>
+Hi Aaron,
+
+if this or something similar goes in, please add another patch to
+remove the left-over defines.
+
+Am Wed,  5 Jan 2022 14:17:47 +0800
+schrieb Aaron Ma <aaron.ma@canonical.com>:
+
+> When plugin multiple r8152 ethernet dongles to Lenovo Docks
+> or USB hub, MAC passthrough address from BIOS should be
+> checked if it had been used to avoid using on other dongles.
 > 
-> The status of support for RDMA is currently being tracked with two
-> separate status flags.  This is unnecessary with the current state of
-> the driver.
+> Currently builtin r8152 on Dock still can't be identified.
+> First detected r8152 will use the MAC passthrough address.
 > 
-> Simplify status tracking down to a single flag.
-> 
-> Rename the helper function to denote the RDMA specific status and
-> universally use the helper function to test the status bit.
-> 
-> Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-> Tested-by: Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
 > ---
->  drivers/net/ethernet/intel/ice/ice.h      |  3 ---
->  drivers/net/ethernet/intel/ice/ice_idc.c  |  6 +++---
->  drivers/net/ethernet/intel/ice/ice_lib.c  |  8 ++++----
->  drivers/net/ethernet/intel/ice/ice_lib.h  |  2 +-
->  drivers/net/ethernet/intel/ice/ice_main.c | 13 +++++--------
->  5 files changed, 13 insertions(+), 19 deletions(-)
+>  drivers/net/usb/r8152.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
-> diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-> index 4e16d185077d..6f445cc3390f 100644
-> --- a/drivers/net/ethernet/intel/ice/ice.h
-> +++ b/drivers/net/ethernet/intel/ice/ice.h
-> @@ -468,7 +468,6 @@ enum ice_pf_flags {
->  	ICE_FLAG_FD_ENA,
->  	ICE_FLAG_PTP_SUPPORTED,		/* PTP is supported by NVM */
->  	ICE_FLAG_PTP,			/* PTP is enabled by software */
-> -	ICE_FLAG_AUX_ENA,
->  	ICE_FLAG_ADV_FEATURES,
->  	ICE_FLAG_TC_MQPRIO,		/* support for Multi queue TC */
->  	ICE_FLAG_CLS_FLOWER,
-> @@ -886,7 +885,6 @@ static inline void ice_set_rdma_cap(struct ice_pf *pf)
->  {
->  	if (pf->hw.func_caps.common_cap.rdma && pf->num_rdma_msix) {
->  		set_bit(ICE_FLAG_RDMA_ENA, pf->flags);
-> -		set_bit(ICE_FLAG_AUX_ENA, pf->flags);
->  		ice_plug_aux_dev(pf);
+> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+> index f9877a3e83ac..77f11b3f847b 100644
+> --- a/drivers/net/usb/r8152.c
+> +++ b/drivers/net/usb/r8152.c
+> @@ -1605,6 +1605,7 @@ static int vendor_mac_passthru_addr_read(struct
+> r8152 *tp, struct sockaddr *sa) char *mac_obj_name;
+>  	acpi_object_type mac_obj_type;
+>  	int mac_strlen;
+> +	struct net_device *ndev;
+>  
+>  	if (tp->lenovo_macpassthru) {
+>  		mac_obj_name = "\\MACA";
+> @@ -1662,6 +1663,15 @@ static int
+> vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr *sa)
+> ret = -EINVAL; goto amacout;
 >  	}
->  }
-> @@ -899,6 +897,5 @@ static inline void ice_clear_rdma_cap(struct ice_pf *pf)
->  {
->  	ice_unplug_aux_dev(pf);
->  	clear_bit(ICE_FLAG_RDMA_ENA, pf->flags);
-> -	clear_bit(ICE_FLAG_AUX_ENA, pf->flags);
->  }
->  #endif /* _ICE_H_ */
-> diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-> index fc3580167e7b..9493a38182f5 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_idc.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-> @@ -79,7 +79,7 @@ int ice_add_rdma_qset(struct ice_pf *pf, struct iidc_rdma_qset_params *qset)
->  
->  	dev = ice_pf_to_dev(pf);
->  
-> -	if (!test_bit(ICE_FLAG_RDMA_ENA, pf->flags))
-> +	if (!ice_is_rdma_ena(pf))
->  		return -EINVAL;
->  
->  	vsi = ice_get_main_vsi(pf);
-> @@ -236,7 +236,7 @@ EXPORT_SYMBOL_GPL(ice_get_qos_params);
->   */
->  static int ice_reserve_rdma_qvector(struct ice_pf *pf)
->  {
-> -	if (test_bit(ICE_FLAG_RDMA_ENA, pf->flags)) {
-> +	if (ice_is_rdma_ena(pf)) {
->  		int index;
->  
->  		index = ice_get_res(pf, pf->irq_tracker, pf->num_rdma_msix,
-> @@ -274,7 +274,7 @@ int ice_plug_aux_dev(struct ice_pf *pf)
->  	/* if this PF doesn't support a technology that requires auxiliary
->  	 * devices, then gracefully exit
->  	 */
-> -	if (!ice_is_aux_ena(pf))
-> +	if (!ice_is_rdma_ena(pf))
->  		return 0;
+> +	rcu_read_lock();
+> +	for_each_netdev_rcu(&init_net, ndev) {
+> +		if (strncmp(buf, ndev->dev_addr, 6) == 0) {
+> +			rcu_read_unlock();
+> +			goto amacout;
 
-This check is redundant, you already checked it in ice_probe.
+Since the original PCI netdev will always be there, that would disable
+inheritance would it not?
+I guess a strncmp(MODULE_NAME, info->driver, strlen(MODULE_NAME)) is
+needed as well.
 
->  
->  	iadev = kzalloc(sizeof(*iadev), GFP_KERNEL);
-> diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-> index 0c187cf04fcf..b1c164b8066c 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_lib.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-> @@ -732,14 +732,14 @@ bool ice_is_safe_mode(struct ice_pf *pf)
->  }
->  
->  /**
-> - * ice_is_aux_ena
-> + * ice_is_rdma_ena
->   * @pf: pointer to the PF struct
->   *
-> - * returns true if AUX devices/drivers are supported, false otherwise
-> + * returns true if RDMA is currently supported, false otherwise
->   */
-> -bool ice_is_aux_ena(struct ice_pf *pf)
-> +bool ice_is_rdma_ena(struct ice_pf *pf)
->  {
-> -	return test_bit(ICE_FLAG_AUX_ENA, pf->flags);
-> +	return test_bit(ICE_FLAG_RDMA_ENA, pf->flags);
->  }
->  
->  /**
-> diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
-> index b2ed189527d6..a2f54fbdc170 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_lib.h
-> +++ b/drivers/net/ethernet/intel/ice/ice_lib.h
-> @@ -110,7 +110,7 @@ void ice_set_q_vector_intrl(struct ice_q_vector *q_vector);
->  int ice_vsi_cfg_mac_fltr(struct ice_vsi *vsi, const u8 *macaddr, bool set);
->  
->  bool ice_is_safe_mode(struct ice_pf *pf);
-> -bool ice_is_aux_ena(struct ice_pf *pf);
-> +bool ice_is_rdma_ena(struct ice_pf *pf);
->  bool ice_is_dflt_vsi_in_use(struct ice_sw *sw);
->  
->  bool ice_is_vsi_dflt_vsi(struct ice_sw *sw, struct ice_vsi *vsi);
-> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-> index e29176889c23..078eb588f41e 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> @@ -3653,11 +3653,8 @@ static void ice_set_pf_caps(struct ice_pf *pf)
->  	struct ice_hw_func_caps *func_caps = &pf->hw.func_caps;
->  
->  	clear_bit(ICE_FLAG_RDMA_ENA, pf->flags);
-> -	clear_bit(ICE_FLAG_AUX_ENA, pf->flags);
-> -	if (func_caps->common_cap.rdma) {
-> +	if (func_caps->common_cap.rdma)
->  		set_bit(ICE_FLAG_RDMA_ENA, pf->flags);
-> -		set_bit(ICE_FLAG_AUX_ENA, pf->flags);
-> -	}
->  	clear_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
->  	if (func_caps->common_cap.dcb)
->  		set_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
-> @@ -3785,7 +3782,7 @@ static int ice_ena_msix_range(struct ice_pf *pf)
->  	v_left -= needed;
->  
->  	/* reserve vectors for RDMA auxiliary driver */
-> -	if (test_bit(ICE_FLAG_RDMA_ENA, pf->flags)) {
-> +	if (ice_is_rdma_ena(pf)) {
->  		needed = num_cpus + ICE_RDMA_NUM_AEQ_MSIX;
->  		if (v_left < needed)
->  			goto no_hw_vecs_left_err;
-> @@ -3826,7 +3823,7 @@ static int ice_ena_msix_range(struct ice_pf *pf)
->  			int v_remain = v_actual - v_other;
->  			int v_rdma = 0, v_min_rdma = 0;
->  
-> -			if (test_bit(ICE_FLAG_RDMA_ENA, pf->flags)) {
-> +			if (ice_is_rdma_ena(pf)) {
->  				/* Need at least 1 interrupt in addition to
->  				 * AEQ MSIX
->  				 */
-> @@ -3860,7 +3857,7 @@ static int ice_ena_msix_range(struct ice_pf *pf)
->  			dev_notice(dev, "Enabled %d MSI-X vectors for LAN traffic.\n",
->  				   pf->num_lan_msix);
->  
-> -			if (test_bit(ICE_FLAG_RDMA_ENA, pf->flags))
-> +			if (ice_is_rdma_ena(pf))
->  				dev_notice(dev, "Enabled %d MSI-X vectors for RDMA.\n",
->  					   pf->num_rdma_msix);
->  		}
-> @@ -4688,7 +4685,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
->  
->  	/* ready to go, so clear down state bit */
->  	clear_bit(ICE_DOWN, pf->state);
+Maybe leave here with
+netif_info()
 
-Why don't you clear this bit after RDMA initialization?
+And move the whole block up, we can skip the whole ACPI story if we
+find the MAC busy.
 
-> -	if (ice_is_aux_ena(pf)) {
-> +	if (ice_is_rdma_ena(pf)) {
->  		pf->aux_idx = ida_alloc(&ice_aux_ida, GFP_KERNEL);
->  		if (pf->aux_idx < 0) {
->  			dev_err(dev, "Failed to allocate device ID for AUX driver\n");
-> -- 
-> 2.31.1
-> 
+> +		}
+> +	}
+> +	rcu_read_unlock();
+
+Not sure if this function is guaranteed to only run once at a time,
+otherwise i think that is a race. Multiple instances could make it to
+this very point at the same time.
+
+Henning
+
+>  	memcpy(sa->sa_data, buf, 6);
+>  	netif_info(tp, probe, tp->netdev,
+>  		   "Using pass-thru MAC addr %pM\n", sa->sa_data);
+
