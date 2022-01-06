@@ -2,128 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1776A485F52
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 04:46:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71327485F5E
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 04:51:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231165AbiAFDqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 22:46:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230214AbiAFDqF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 22:46:05 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70387C061245;
-        Wed,  5 Jan 2022 19:46:05 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id x15so1119079ilc.5;
-        Wed, 05 Jan 2022 19:46:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3gV3xZ2h/EE4U6Pp/2sO2sTK0mMF/xknIRpxJ9B4orY=;
-        b=N75pw4f2fQeOV6BaLGZbQ/QG90Egzu/xYD3Nas9/uNy5gURoGxtFY/hrBLR1sahETe
-         jbv/jZwMEYAKQv2kMvHSQZLbaV9ILEnhTp1N2+eDG+LsZacGlPslL/PLtzb8ktaiBBT/
-         XrKkaSYBDr0+hCme4c+pn5YsA8QvmNSDO/NmW9yWpwsshzCrwGa5rfOlKQ6ymP0N0DFU
-         Aw3HHw0uNysmT9VsHByYXe/pmsUDGUYcDE/dMFxB8+drQEzAiN4/Dlgg82F9kTORQsAP
-         cZgP2kebSxrecHJh3+Cd2S7TfUM/P7FqnQ82OvW6a/VIOWgf5lr0teBVIHeAJNDqRxOP
-         Oa1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3gV3xZ2h/EE4U6Pp/2sO2sTK0mMF/xknIRpxJ9B4orY=;
-        b=nQXgCmdZnfRva38gGzXwTidhx9UfTAHJPPZEelImffKcfbqe3FV73RXBmkPyDiP2mj
-         HcrH7MLP9Lxs8Kzk9/ixnzkpXmTuElPAub5L/0yteQlPh2RjawmaVvUXh6CxC/5tduIv
-         HPHeGLvzgZtS2GCEip7D9/7bI/PRk6b2cCwk0Dqru0y5ob3I3ridxIaK5iK+cRKLXC1V
-         HH4V27mu9XCBS5NyWFFfiq2R7l4ZlvABWQudF/BjprsnVV9x5nTOHTd7Jqssdo1o7TA9
-         DYcgYHRQIPNtcII7z428FdXe7fDVNNpkZJumYx4qq8UQ7x7uRuC30A9X9rQkHswDZOIi
-         FRlg==
-X-Gm-Message-State: AOAM530Li+dEC7twuopTB4M6bKmr+DW/o3a69mqStVza9mhqvCM/jd1T
-        dHb9Iem3FozpRN7+VMq9rbeecq9XmD0f55jSF6X2uLAA
-X-Google-Smtp-Source: ABdhPJynxqvMBai3T5C2S21CJWj6eleJmvpAtHMF2HeCRtIBcT8QGMI7jgK2GV1djEpPYNpn2GXDjOgoxtXQOF92QR8=
-X-Received: by 2002:a05:6e02:1c01:: with SMTP id l1mr27742076ilh.239.1641440764892;
- Wed, 05 Jan 2022 19:46:04 -0800 (PST)
+        id S231573AbiAFDvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 22:51:09 -0500
+Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:51288 "EHLO
+        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229485AbiAFDvI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 22:51:08 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V13wdal_1641441065;
+Received: from 30.225.28.86(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0V13wdal_1641441065)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 06 Jan 2022 11:51:06 +0800
+Message-ID: <cdbb6235-34dd-bc65-304d-0f09accad6a3@linux.alibaba.com>
+Date:   Thu, 6 Jan 2022 11:51:04 +0800
 MIME-Version: 1.0
-References: <20211231075607.94752-1-saeed@kernel.org> <8cf93086-4990-f14a-3271-92bc2ee0519e@iogearbox.net>
- <20220105221419.tlp4lp2h5ttvssuh@sx1>
-In-Reply-To: <20220105221419.tlp4lp2h5ttvssuh@sx1>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 5 Jan 2022 19:45:53 -0800
-Message-ID: <CAEf4BzaYf5SMYrcj=uTrAW0PN6npGLwio79Mi+MAY8FX=QaaYA@mail.gmail.com>
-Subject: Re: [PATCH net] scripts/pahole-flags.sh: Make sure pahole --version works
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH net-next v2] net/smc: Reduce overflow of smc clcsock
+ listen queue
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     dust.li@linux.alibaba.com, kuba@kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Reply-To: "D. Wythe" <alibuda@linux.alibaba.com>
+References: <1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com>
+ <8a60dabb-1799-316c-80b5-14c920fe98ab@linux.ibm.com>
+ <20220105044049.GA107642@e02h04389.eu6sqa>
+ <20220105085748.GD31579@linux.alibaba.com>
+ <b98aefce-e425-9501-aacc-8e5a4a12953e@linux.ibm.com>
+ <20220105150612.GA75522@e02h04389.eu6sqa>
+In-Reply-To: <20220105150612.GA75522@e02h04389.eu6sqa>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 5, 2022 at 2:14 PM Saeed Mahameed <saeed@kernel.org> wrote:
->
-> On Wed, Jan 05, 2022 at 02:42:01PM +0100, Daniel Borkmann wrote:
-> >On 12/31/21 8:56 AM, Saeed Mahameed wrote:
-> >>From: Saeed Mahameed <saeedm@nvidia.com>
-> >>
-> >>I had a broken pahole and it's been driving me crazy to see tons of the
-> >>following error messages on every build.
-> >>
-> >>pahole: symbol lookup error: pahole: undefined symbol: btf_gen_floats
-> >>scripts/pahole-flags.sh: line 12: [: : integer expression expected
-> >>scripts/pahole-flags.sh: line 16: [: : integer expression expected
-> >>
-> >>Address this by redirecting pahole --version stderr to devnull,
-> >>and validate stdout has a non empty string, otherwise exit silently.
-> >
-> >I'll leave this up to Andrii, but broken pahole version sounds like it would
-> >have been better to fix the local pahole installation instead [rather than the
-> >kernel having to guard against it, especially if it's driving you crazy]?
-> >
->
-> Already did :)
->
-> >I could image that silent exit on empty version string due to broken pahole
-> >deployment might rather waste developer's time to then go and debug why btf
-> >wasn't generated..
-> >
->
-> Good point, I was mainly thinking about developers who are not familiar with btf
-> and who have no time debugging irrelevant build issues, but up to you, I
-> personally like silent build scripts.
->
 
-Sorry, trying to understand. If you didn't use BTF (and thus
-CONFIG_DEBUG_INFO_BTF is not set), is pahole still being called? If
-yes, we might want to address that, I suppose.
+One problem for the fallback scenario is that server must actively send 
+decline message to client and wait for the clc proposal message that 
+client may already sent, otherwise the message of SMC handshake may be 
+read by user space application, which will also lead to OOM conditions 
+caused by infinite amount of dangling sockets.
 
-But if you have a broken pahole that emits something to stderr
-(undefined symbol in shared library), then I agree with Daniel that we
-shouldn't be working around that in Linux build script.
+In that case, we have to make restrictions on 'SMC fallback ing', which 
+makes things more complicated.
 
-> >>Fixes: 9741e07ece7c ("kbuild: Unify options for BTF generation for vmlinux and modules")
-> >>CC: Andrii Nakryiko <andrii@kernel.org>
-> >>CC: Jiri Olsa <jolsa@redhat.com>
-> >>Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> >>---
-> >>  scripts/pahole-flags.sh | 3 ++-
-> >>  1 file changed, 2 insertions(+), 1 deletion(-)
-> >>
-> >>diff --git a/scripts/pahole-flags.sh b/scripts/pahole-flags.sh
-> >>index e6093adf4c06..b3b53f890d40 100755
-> >>--- a/scripts/pahole-flags.sh
-> >>+++ b/scripts/pahole-flags.sh
-> >>@@ -7,7 +7,8 @@ if ! [ -x "$(command -v ${PAHOLE})" ]; then
-> >>      exit 0
-> >>  fi
-> >>-pahole_ver=$(${PAHOLE} --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/')
-> >>+pahole_ver=$(${PAHOLE} --version 2>/dev/null | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/')
-> >>+[ -z "${pahole_ver}" ] && exit 0
-> >>  if [ "${pahole_ver}" -ge "118" ] && [ "${pahole_ver}" -le "121" ]; then
-> >>      # pahole 1.18 through 1.21 can't handle zero-sized per-CPU vars
-> >>
-> >
+Any advise will be highly appreciated.
+
+Thanks.
+
+
+在 2022/1/5 下午11:06, D. Wythe 写道:
+> LGTM. Fallback makes the restrictions on SMC dangling
+> connections more meaningful to me, compared to dropping them.
+> 
+> Overall, i see there are two scenario.
+> 
+> 1. Drop the overflow connections limited by userspace application
+> accept.
+> 
+> 2. Fallback the overflow connections limited by the heavy process of
+> current SMC handshake. ( We can also control its behavior through
+> sysctl.)
+> 
+> I'll follow those advise to improve my patch, more advise will be highly
+> appreciated.
+> 
+> Thanks all.
+> 
+> 
+> On Wed, Jan 05, 2022 at 02:17:41PM +0100, Karsten Graul wrote:
+>> On 05/01/2022 09:57, dust.li wrote:
+>>> On Wed, Jan 05, 2022 at 12:40:49PM +0800, D. Wythe wrote:
+>>> I'm thinking maybe we can actively fall back to TCP in this case ? Not
+>>> sure if this is a good idea.
+>>
+>> I think its a good decision to switch new connections to use the TCP fallback when the
+>> current queue of connections waiting for a SMC handshake is too large.
+>> With this the application is able to accept all incoming connections and they are not
+>> dropped. The only thing that is be different compared to TCP is that the order of the
+>> accepted connections is changed, connections that came in later might reach the user space
+>> application earlier than connections that still run the SMC hand shake processing.
+>> But I think that is semantically okay.
