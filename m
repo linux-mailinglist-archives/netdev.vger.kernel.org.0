@@ -2,97 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F03A4866A8
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 16:22:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E5924866BB
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 16:30:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240435AbiAFPWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 10:22:05 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:46735 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240422AbiAFPWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 10:22:05 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-132-q9hJDqqMPxmmiZ5MKZZQew-1; Thu, 06 Jan 2022 15:21:52 +0000
-X-MC-Unique: q9hJDqqMPxmmiZ5MKZZQew-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Thu, 6 Jan 2022 15:21:51 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Thu, 6 Jan 2022 15:21:51 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Eric Dumazet' <edumazet@google.com>,
-        'Peter Zijlstra' <peterz@infradead.org>
-CC:     "'tglx@linutronix.de'" <tglx@linutronix.de>,
-        "'mingo@redhat.com'" <mingo@redhat.com>,
-        'Borislav Petkov' <bp@alien8.de>,
-        "'dave.hansen@linux.intel.com'" <dave.hansen@linux.intel.com>,
-        'X86 ML' <x86@kernel.org>, "'hpa@zytor.com'" <hpa@zytor.com>,
-        "'alexanderduyck@fb.com'" <alexanderduyck@fb.com>,
-        'open list' <linux-kernel@vger.kernel.org>,
-        'netdev' <netdev@vger.kernel.org>,
-        "'Noah Goldstein'" <goldstein.w.n@gmail.com>
-Subject: [PATCH ] x86/lib: Simplify code for !CONFIG_DCACHE_WORD_ACCESS in
- csum-partial_64.c
-Thread-Topic: [PATCH ] x86/lib: Simplify code for !CONFIG_DCACHE_WORD_ACCESS
- in csum-partial_64.c
-Thread-Index: AdgDEH+mtMhrZ9ynRvybrK9s3y5Pbw==
-Date:   Thu, 6 Jan 2022 15:21:51 +0000
-Message-ID: <5f848b1cd6f844f6bc66fbec44237e08@AcuMS.aculab.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S240480AbiAFPa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 10:30:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240432AbiAFPa2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 10:30:28 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9C0C061245
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 07:30:28 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id l10-20020a17090a384a00b001b22190e075so8936242pjf.3
+        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 07:30:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=poy9jWlKe3PqPzH/ksjlva2ASke2fGxYCMHz3+mLehk=;
+        b=KvfhUKHIsYpe2WPQRWjRSWXS/Hp2w5VbAYByXPN3Uzqtfipk7Gjz9BjhIDVJw24brl
+         FM6daMno40Qzr2UA8VFavZA9tz22zP+nXcEB+9/vZapdrmTHNrXGG40JFcKosPqE07KP
+         FbKWR6wQmgswy2T2Gr4KmsFIjnf1mnlu4bJwNzR1mJjMq3qZEZHBpD9Q3b6I2TQJ28lh
+         4Gv1iozr3/sNMYpaS4+any/PYkfcmCHBDBQWwkSQanWhz7UAUFGdIorR37KjOeqLHLcB
+         84UEmORvNTYqRs6B8YMgZW6JtQAR/uG0dRoYFJE9zkchBRnn2NgvXTys/tUIL6ZEE7Vc
+         TNkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=poy9jWlKe3PqPzH/ksjlva2ASke2fGxYCMHz3+mLehk=;
+        b=69QiX89nj/0jj5lu5liI+c8GPixhrbNfJUE/Sidg3vUVoBeDUeKwUfAzy0xiscEKDm
+         cKaOimnt/xa0HEMXVg1FTGR8L699O+9Q8PIFjw7yRiTH65fH8OGPQ/eNWtlZVOZ75/NM
+         wSN/QA7BBj9P/3OOLHsmBLJ+QQGjK0lw16avf3n1Jzt9DP6b8R0/PTEfOd0/lrBTAZk9
+         L8K4ju3RyYnbGee9NM22HH6n+PJDO+jfYNcHZSSyp79deie1t7DOjnwNb/gnQ95GHKGV
+         Z4Oszlau2wHQX+kDtvSG0XfeuVnHyoy0XM0wVPSEbVqJT3DR3G1EbWDJk8I/C+oVZR8W
+         0aqg==
+X-Gm-Message-State: AOAM533w8v7eKXgeb8p3PrAPeKD3h0GmfjzDCskDc5l1ZXd8dkYIbXJL
+        +GCFuBXAlcyAn9Ix8YtnDi8fhG8BBHSYXwZ7oDA=
+X-Google-Smtp-Source: ABdhPJzDriJQqFj5GEQudeaL+0mrc8m4757IAi75MhNB5WyDh5FxmqrDL1J9hjh/RnKeDzzxWRvZsIZH8tW6u5vkiqE=
+X-Received: by 2002:a17:902:8e84:b0:149:a2cb:4dac with SMTP id
+ bg4-20020a1709028e8400b00149a2cb4dacmr34293217plb.22.1641483027981; Thu, 06
+ Jan 2022 07:30:27 -0800 (PST)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Reply-To: elizabethedw0@gmail.com
+Sender: adamssaad14@gmail.com
+Received: by 2002:a05:6a11:d11:0:0:0:0 with HTTP; Thu, 6 Jan 2022 07:30:26
+ -0800 (PST)
+From:   "Via Recognition Award:" <ee7358936@gmail.com>
+Date:   Thu, 6 Jan 2022 07:30:26 -0800
+X-Google-Sender-Auth: vzn3KUJJtGrWvYArxfrpm0sIVoU
+Message-ID: <CALfnPCJfKjxiSMtQMC0qNzh24eJ-egkSN8aLnnLomPHeQcQ8xA@mail.gmail.com>
+Subject: You Won Us$2,800,000.00 Via Foundation Recognition's Award.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SWYgbG9hZF91bmFsaWduZWRfemVyb3BhZCgpIGNhbid0IGJlIHVzZWQgKHVtIGJ1aWxkcykNCnRo
-ZW4ganVzdCBhZGQgdG9nZXRoZXIgdGhlIGZpbmFsIGJ5dGVzIGFuZCBkbyBhIHNpbmdsZSAnYWRj
-Jw0KdG8gYWRkIHRvIHRoZSA2NGJpdCBzdW0uDQoNClNpZ25lZC1vZmYtYnk6IERhdmlkIExhaWdo
-dCA8ZGF2aWQubGFpZ2h0QGFjdWxhYi5jb20+DQotLS0NCg0KSXQgaXMgYSBzaGFtZSB0aGF0IHRo
-aXMgY29kZSBpcyBuZWVkZWQgYXQgYWxsLg0KSSBkb3VidCB1bSB3b3VsZCBldmVyIGZhdWx0IGp1
-c3QgcmVhZGluZyB0aGUgMzJiaXQgdmFsdWUuDQoNCiBhcmNoL3g4Ni9saWIvY3N1bS1wYXJ0aWFs
-XzY0LmMgfCAzMyArKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCiAxIGZpbGUgY2hh
-bmdlZCwgMTAgaW5zZXJ0aW9ucygrKSwgMjMgZGVsZXRpb25zKC0pDQoNCmRpZmYgLS1naXQgYS9h
-cmNoL3g4Ni9saWIvY3N1bS1wYXJ0aWFsXzY0LmMgYi9hcmNoL3g4Ni9saWIvY3N1bS1wYXJ0aWFs
-XzY0LmMNCmluZGV4IDA2MWIxZWQ3NGQ2YS4uZWRkM2U1NzljMmE3IDEwMDY0NA0KLS0tIGEvYXJj
-aC94ODYvbGliL2NzdW0tcGFydGlhbF82NC5jDQorKysgYi9hcmNoL3g4Ni9saWIvY3N1bS1wYXJ0
-aWFsXzY0LmMNCkBAIC03Myw0MSArNzMsMjggQEAgX193c3VtIGNzdW1fcGFydGlhbChjb25zdCB2
-b2lkICpidWZmLCBpbnQgbGVuLCBfX3dzdW0gc3VtKQ0KIAkJYnVmZiArPSA4Ow0KIAl9DQogCWlm
-IChsZW4gJiA3KSB7DQorCQl1bnNpZ25lZCBsb25nIHRyYWlsOw0KICNpZmRlZiBDT05GSUdfRENB
-Q0hFX1dPUkRfQUNDRVNTDQogCQl1bnNpZ25lZCBpbnQgc2hpZnQgPSAoOCAtIChsZW4gJiA3KSkg
-KiA4Ow0KLQkJdW5zaWduZWQgbG9uZyB0cmFpbDsNCiANCiAJCXRyYWlsID0gKGxvYWRfdW5hbGln
-bmVkX3plcm9wYWQoYnVmZikgPDwgc2hpZnQpID4+IHNoaWZ0Ow0KLQ0KLQkJYXNtKCJhZGRxICVb
-dHJhaWxdLCVbcmVzXVxuXHQiDQotCQkgICAgImFkY3EgJDAsJVtyZXNdIg0KLQkJCTogW3Jlc10g
-IityIiAodGVtcDY0KQ0KLQkJCTogW3RyYWlsXSAiciIgKHRyYWlsKSk7DQogI2Vsc2UNCisJCXRy
-YWlsID0gMDsNCiAJCWlmIChsZW4gJiA0KSB7DQotCQkJYXNtKCJhZGRxICVbdmFsXSwlW3Jlc11c
-blx0Ig0KLQkJCSAgICAiYWRjcSAkMCwlW3Jlc10iDQotCQkJCTogW3Jlc10gIityIiAodGVtcDY0
-KQ0KLQkJCQk6IFt2YWxdICJyIiAoKHU2NCkqKHUzMiAqKWJ1ZmYpDQotCQkJCTogIm1lbW9yeSIp
-Ow0KKwkJCXRyYWlsICs9ICoodTMyICopYnVmZjsNCiAJCQlidWZmICs9IDQ7DQogCQl9DQogCQlp
-ZiAobGVuICYgMikgew0KLQkJCWFzbSgiYWRkcSAlW3ZhbF0sJVtyZXNdXG5cdCINCi0JCQkgICAg
-ImFkY3EgJDAsJVtyZXNdIg0KLQkJCQk6IFtyZXNdICIrciIgKHRlbXA2NCkNCi0JCQkJOiBbdmFs
-XSAiciIgKCh1NjQpKih1MTYgKilidWZmKQ0KLQkJCQk6ICJtZW1vcnkiKTsNCisJCQl0cmFpbCAr
-PSAqKHUxNiAqKWJ1ZmY7DQogCQkJYnVmZiArPSAyOw0KIAkJfQ0KLQkJaWYgKGxlbiAmIDEpIHsN
-Ci0JCQlhc20oImFkZHEgJVt2YWxdLCVbcmVzXVxuXHQiDQotCQkJICAgICJhZGNxICQwLCVbcmVz
-XSINCi0JCQkJOiBbcmVzXSAiK3IiICh0ZW1wNjQpDQotCQkJCTogW3ZhbF0gInIiICgodTY0KSoo
-dTggKilidWZmKQ0KLQkJCQk6ICJtZW1vcnkiKTsNCi0JCX0NCisJCWlmIChsZW4gJiAxKQ0KKwkJ
-CXRyYWlsICs9ICoodTggKilidWZmOw0KICNlbmRpZg0KKwkJYXNtKCJhZGRxICVbdHJhaWxdLCVb
-cmVzXVxuXHQiDQorCQkgICAgImFkY3EgJDAsJVtyZXNdIg0KKwkJCTogW3Jlc10gIityIiAodGVt
-cDY0KQ0KKwkJCTogW3RyYWlsXSAiciIgKHRyYWlsKSk7DQogCX0NCiAJcmVzdWx0ID0gYWRkMzJf
-d2l0aF9jYXJyeSh0ZW1wNjQgPj4gMzIsIHRlbXA2NCAmIDB4ZmZmZmZmZmYpOw0KIAlyZXR1cm4g
-KF9fZm9yY2UgX193c3VtKXJlc3VsdDsNCi0tIA0KMi4xNy4xDQoNCi0NClJlZ2lzdGVyZWQgQWRk
-cmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBN
-SzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+Hello
 
+
+A notification for the owner of this email address, we are glad to
+announce to you that a sum of US$2,800,000.00 was generated and
+awarded to you by the Qatar Rowad Awards and United Arab Emirates,
+West commission and the Western Union Foundation under (CBI) and
+Superintendence of Industry and Commerce foundation. Achievements and
+results of this are to assist financial problems and charity in the
+nation.
+
+This award was selected through the internet, where your e-mail
+address was indicated and notified. The award foundation collects all
+the email addresses of the people that are active online, among the
+billions of people that are active online, only four people are
+selected to benefit from this Award and you are one of the Selected
+Winners.
+
+To facilitate your claims get back to us, with your processing code
+(22EX1) number for every correspondence and more details of the claim.
+Through my privet E-mail: (elizabethedw0@gmail.com) for fast response.
+But if you are not interested delete it from your mail box.
+
+P.S: You might receive this message in your inbox; spam or junk
+folders depending on your web host or server network. I will be
+waiting for your reply.
+
+Awards Coordinator United Arab Emirate Commission
+De-facto Chief Award Officer
+United Emirate Award Committee.
