@@ -2,119 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 990AA486450
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:24:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 317E148645A
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:26:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238766AbiAFMYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 07:24:54 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:45686 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238475AbiAFMYx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:24:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641471893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0uPOPPljcCRT5JnCSjBYTsAZ9QvLUTF6yXLYqezm/jk=;
-        b=TRiXqEUxE7KuA99lKmqzrqDNxkNScZCWtrXHJ5qdEN3IgQU2/Z+45eaRWHxwO0FRXamXEj
-        PJEDiNefTlhZ8x5WRkGSg6x0K8iZEBj287/POrc1Rp1+pnD8MO8YSiVLUgkGH2eNeoMF0F
-        dBeTdhs5r+ovRH6e3Pg47cESHf7UNKU=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-675-v2pzn08sNQqGuq2MZL-NFw-1; Thu, 06 Jan 2022 07:24:52 -0500
-X-MC-Unique: v2pzn08sNQqGuq2MZL-NFw-1
-Received: by mail-wr1-f72.google.com with SMTP id h12-20020adfa4cc000000b001a22dceda69so1177851wrb.16
-        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 04:24:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0uPOPPljcCRT5JnCSjBYTsAZ9QvLUTF6yXLYqezm/jk=;
-        b=KrXSyspAWryQI9E7HN99KKbS88kDp5bDZ7J9YcjvmscRbgnCQG2Gho5iaxOxLRNAgJ
-         3OWCZiUoZsNj/HtMVok1VyRfOzJpMSbwzokB0y+BlI8bNTFrSMconKocjFtyLVYDblkn
-         mzW0mptGNotTm0qVh23cku70CZnrm0jJMdipETToJx5PEjK9O/ruPmAyI7OtWBvoURYl
-         IzC/fhFNhc8dPJiePLBWeu8zc1cOV+ZgOFgNM96j2J2mnWkFeJ0/3gkdu4uyeM4oFp+8
-         54KK8+AsW8PAeQbHvr0vGcTIT2ORXVrhUgA4uPKtZrUP8sfpevByju/8hYXkhIANrz3/
-         f2Ww==
-X-Gm-Message-State: AOAM532eJHSSg66z+812s1WCB16E4OAnztbjTwT5Tm9t+xmm3Ey2yG46
-        L6drgxN0Pg7DlCXEWq/JepAuTIyjfqEODk3l9DxyDXoAI2zXP9w/WFtpN3YKmqhyLnKpQonFLCZ
-        C7ynGrG9kCEMUD5VT
-X-Received: by 2002:adf:f904:: with SMTP id b4mr31756835wrr.457.1641471890970;
-        Thu, 06 Jan 2022 04:24:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxcnYl5f7mjbdHhw5BDaaDbej/KBrzommpeO6kEVNqKU1TlflODCHM/SPqrxpiLKr97ZxWBog==
-X-Received: by 2002:adf:f904:: with SMTP id b4mr31756826wrr.457.1641471890799;
-        Thu, 06 Jan 2022 04:24:50 -0800 (PST)
-Received: from redhat.com ([2a03:c5c0:207e:991b:6857:5652:b903:a63b])
-        by smtp.gmail.com with ESMTPSA id l8sm1945393wrv.25.2022.01.06.04.24.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 04:24:49 -0800 (PST)
-Date:   Thu, 6 Jan 2022 07:24:47 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Cai Huoqing <caihuoqing@baidu.com>
-Cc:     jasowang@redhat.com, leon@kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2] vhost: add vhost_test to Kconfig & Makefile
-Message-ID: <20220106072352-mutt-send-email-mst@kernel.org>
-References: <20210617033844.1107-1-caihuoqing@baidu.com>
+        id S238798AbiAFM0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 07:26:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238754AbiAFM0e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:26:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8019C061245;
+        Thu,  6 Jan 2022 04:26:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D3EEB81FBB;
+        Thu,  6 Jan 2022 12:26:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A52C5C36AE3;
+        Thu,  6 Jan 2022 12:26:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1641471992;
+        bh=F+VRetsdQhDk6RTHaHN8OZEU4IjmNt0fu6rA5nIO7a4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=L4i9FukbcjQ8Ru8J0XU9nV2k/NPxE63fFvocJtu1H/UlWa7/rt/WArU7Sk/mrxIio
+         KRC5V3u2O+v0x75+J7m0U8e5kv94ylqTcYiTQ+n3mqfQRx93ER3vmjbsd2jjDcdcIk
+         SYNnsBhTC7y1YhprLKgVSQMUxakRMU9sKSPGo5z8=
+Date:   Thu, 6 Jan 2022 13:26:29 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     linux-stable <stable@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jian Yang <jianyang@google.com>
+Subject: Re: txtimestamp.c:164:29: warning: format '0' expects argument of
+ type 'long unsigned int', but argument 3 has type 'int64_t' {aka 'long long
+ int'} [-Wformat=]
+Message-ID: <Ydbf9UV1ga2aytJX@kroah.com>
+References: <CA+G9fYtaoxVF-bL40kt=FKcjjaLUnS+h8hNf=wQv_dKKWn_MNQ@mail.gmail.com>
+ <YdbGZiKKdVgh8A4i@kroah.com>
+ <CA+G9fYtNQh8KygC7ufvkMuB_d7PX-meknhOpDcuQiPx8oBcrCA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210617033844.1107-1-caihuoqing@baidu.com>
+In-Reply-To: <CA+G9fYtNQh8KygC7ufvkMuB_d7PX-meknhOpDcuQiPx8oBcrCA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 17, 2021 at 11:38:44AM +0800, Cai Huoqing wrote:
-> When running vhost test, make it easier to config
+On Thu, Jan 06, 2022 at 05:38:16PM +0530, Naresh Kamboju wrote:
+> On Thu, 6 Jan 2022 at 16:07, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Thu, Jan 06, 2022 at 03:39:09PM +0530, Naresh Kamboju wrote:
+> > > While building selftests the following warnings were noticed for arm
+> > > architecture on Linux stable v5.15.13 kernel and also on Linus's tree.
+> > >
+> > > arm-linux-gnueabihf-gcc -Wall -Wl,--no-as-needed -O2 -g
+> > > -I../../../../usr/include/    txtimestamp.c  -o
+> > > /home/tuxbuild/.cache/tuxmake/builds/current/kselftest/net/txtimestamp
+> > > txtimestamp.c: In function 'validate_timestamp':
+> > > txtimestamp.c:164:29: warning: format '0' expects argument of type
+> > > 'long unsigned int', but argument 3 has type 'int64_t' {aka 'long long
+> > > int'} [-Wformat=]
+> > >   164 |   fprintf(stderr, "ERROR: 0 us expected between 0 and 0\n",
 > 
-> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
-
-I'd stick this under Kernel Testing and Coverage or something like this.
-The point being we don't want this in release kernels by mistake.
-
-> ---
->  drivers/vhost/Kconfig  | 11 +++++++++++
->  drivers/vhost/Makefile |  3 +++
->  2 files changed, 14 insertions(+)
+> <trim>
 > 
-> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
-> index 587fbae06182..ac2bffd6a501 100644
-> --- a/drivers/vhost/Kconfig
-> +++ b/drivers/vhost/Kconfig
-> @@ -61,6 +61,17 @@ config VHOST_VSOCK
->         To compile this driver as a module, choose M here: the module will be called
->         vhost_vsock.
->  
-> +config VHOST_TEST
-> +       tristate "vhost virtio-test driver"
-> +       depends on EVENTFD
-> +       select VHOST
-> +       help
-> +       This kernel module can be loaded in the host kernel to test vhost function
-> +       with tools/virtio-test.
-> +
-> +       To compile this driver as a module, choose M here: the module will be called
-> +       vhost_test.
-> +
->  config VHOST_VDPA
->         tristate "Vhost driver for vDPA-based backend"
->         depends on EVENTFD
-> diff --git a/drivers/vhost/Makefile b/drivers/vhost/Makefile
-> index f3e1897cce85..cf31c1f2652d 100644
-> --- a/drivers/vhost/Makefile
-> +++ b/drivers/vhost/Makefile
-> @@ -8,6 +8,9 @@ vhost_scsi-y := scsi.o
->  obj-$(CONFIG_VHOST_VSOCK) += vhost_vsock.o
->  vhost_vsock-y := vsock.o
->  
-> +obj-$(CONFIG_VHOST_TEST) += vhost_test.o
-> +vhost_test-y := test.o
-> +
->  obj-$(CONFIG_VHOST_RING) += vringh.o
->  
->  obj-$(CONFIG_VHOST_VDPA) += vhost_vdpa.o
-> -- 
-> 2.22.0
+> > Same question as before, is this a regression, and if so, any pointers
+> > to a fix?
+> 
+> This is a known warning on Linus's tree.
 
+Great, please report the issue there, as there's nothing I can do about
+it in the 5.15.y tree until it is resolved there as you know.
+
+thanks,
+
+greg k-h
