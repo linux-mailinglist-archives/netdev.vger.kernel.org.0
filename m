@@ -2,73 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27ADB486785
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 17:19:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9639D48678C
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 17:21:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241052AbiAFQTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 11:19:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241118AbiAFQTs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 11:19:48 -0500
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0084C061201
-        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 08:19:47 -0800 (PST)
-Received: by mail-wm1-x342.google.com with SMTP id l4so2164284wmq.3
-        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 08:19:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:from:mime-version:content-transfer-encoding
-         :content-description:subject:to:date:reply-to;
-        bh=VFAYdUcoAa/RBUsWThLomBm2E0VJ5Yt60qDK5YTAZfk=;
-        b=B4luoDAoCeN/d7ENShuXlkDh9Za/KJX7/+YXZBfAltBXO7E7UAtwD1C9O/V5FIh3rQ
-         zBs8wpfwqg/IeC6UgZG6OKtO8cEvjSdkovSaIGzW/tbdPcsNqNvNl1spaxx8r+BKY5O1
-         eg+QAM/up9m21Qkn9ZpJY+0hl2sEX7yWQyWoJIr7sresZtZOYBj1N3U82OgbNJ+dZGDn
-         U3RBbwZAqqxnb+ngqnDyyQ+XulXGRAoJvde3dFj75Ab04q+K5iIUP86wdEH3zzc+Eidi
-         GeXpjwO1NIqAjl1r8Zz/+IujnQawyxuSqe6X48vsP6vxvfT+pIYRZd2/8uFol1HugGG2
-         WGUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:from:mime-version
-         :content-transfer-encoding:content-description:subject:to:date
-         :reply-to;
-        bh=VFAYdUcoAa/RBUsWThLomBm2E0VJ5Yt60qDK5YTAZfk=;
-        b=0it72g2FgJctlD3f6r9pJMskP5Ko353VEtNu/moh79tyl9H5KCemIap9VoYqAu0FdV
-         GATDPIn0V3k9bDvGkNl696goVJXzvB1oLk/A9Ik0ozkXDHFJIg2WNC0ELZ1OIt5XxAN1
-         zgVA84CWnk3w/wYFMY597na1SXKr42P+EIhtaQyDm4C40wLdvahX79NiA3ezbqmC/r7e
-         2Y6UYxUB3JZKuK3q5NwVGc79K/sB1V10QJZK+H1H5ClcaWj8VV/5U2oiZ77u1MtMCSFM
-         8b+QfZFKWrURgdjUDPtvp4inSSvCyD4cjh968jXZ0kmsvW9gsgnfcDxxc50TKLzoaYZs
-         90TA==
-X-Gm-Message-State: AOAM530pQy/XPgahvWPInJ+Hp+VYW2TLXJs9dwMRr1ZUxWwAa3AaLlT/
-        jDJki4+bLrLsTvSVlYr1ZrVgVlrTM8xsstnPXNo=
-X-Google-Smtp-Source: ABdhPJw7EKJm6pomMVgPYBMEFqZOom6iAghrayxCh1BkXsrNndZ2VXj+hmxzIczhCOmnGixu6N+jFQ==
-X-Received: by 2002:a1c:a9c2:: with SMTP id s185mr1698549wme.164.1641485986364;
-        Thu, 06 Jan 2022 08:19:46 -0800 (PST)
-Received: from [192.168.1.79] ([154.72.124.102])
-        by smtp.gmail.com with ESMTPSA id p13sm2690441wrr.37.2022.01.06.08.19.42
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Thu, 06 Jan 2022 08:19:46 -0800 (PST)
-Message-ID: <61d716a2.1c69fb81.c8d9e.9784@mx.google.com>
-From:   Rebecca Lawrence <ilyassoukoanda30@gmail.com>
-X-Google-Original-From: Rebecca Lawrence
-Content-Type: text/plain; charset="iso-8859-1"
+        id S241194AbiAFQVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 11:21:12 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:44412 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241162AbiAFQVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 11:21:05 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-46-2FcQvvipNPu80R9wmBi3Mg-2; Thu, 06 Jan 2022 16:20:05 +0000
+X-MC-Unique: 2FcQvvipNPu80R9wmBi3Mg-2
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.26; Thu, 6 Jan 2022 16:19:54 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.026; Thu, 6 Jan 2022 16:19:54 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Eric Dumazet' <edumazet@google.com>,
+        'Peter Zijlstra' <peterz@infradead.org>
+CC:     "'tglx@linutronix.de'" <tglx@linutronix.de>,
+        "'mingo@redhat.com'" <mingo@redhat.com>,
+        'Borislav Petkov' <bp@alien8.de>,
+        "'dave.hansen@linux.intel.com'" <dave.hansen@linux.intel.com>,
+        'X86 ML' <x86@kernel.org>, "'hpa@zytor.com'" <hpa@zytor.com>,
+        "'alexanderduyck@fb.com'" <alexanderduyck@fb.com>,
+        'open list' <linux-kernel@vger.kernel.org>,
+        'netdev' <netdev@vger.kernel.org>,
+        "'Noah Goldstein'" <goldstein.w.n@gmail.com>
+Subject: [PATCH ] x86/lib: Optimise copy loop for long buffers in
+ csum-partial_64.c
+Thread-Topic: [PATCH ] x86/lib: Optimise copy loop for long buffers in
+ csum-partial_64.c
+Thread-Index: AdgDF7MJrv4d4sxmRYSm5doCrHN7tQ==
+Date:   Thu, 6 Jan 2022 16:19:54 +0000
+Message-ID: <04c41a96f4eb4fe782d10ae2691ad93e@AcuMS.aculab.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Hello
-To:     Recipients <Rebecca@vger.kernel.org>
-Date:   Thu, 06 Jan 2022 16:19:36 +0000
-Reply-To: ribeccalawrence@gmail.com
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dear,
-My name is Rebecca, I am a United States and a military woman who has never=
- married with no kids yet. I came across your profile, and I personally too=
-k interest in being your friend. For confidential matters, please contact m=
-e back through my private email ribeccalawrence@gmail.com to enable me to s=
-end you my pictures and give you more details about me. I Hope to hear from=
- you soon.
-Regards
-Rebecca.
+Z2NjIGNvbnZlcnRzIHRoZSBsb29wIGludG8gb25lIHRoYXQgb25seSBpbmNyZW1lbnRzIHRoZSBw
+b2ludGVyDQpidXQgbWFrZXMgYSBtZXNzIG9mIGNhbGN1bGF0aW5nIHRoZSBsaW1pdCBhbmQgZ2Nj
+IDkuMSsgY29tcGxldGVseQ0KcmVmdXNlcyB0byB1c2UgdGhlIGZpbmFsIHZhbHVlIG9mICdidWZm
+JyBmcm9tIHRoZSBsYXN0IGl0ZXJhdGlvbi4NCg0KRXhwbGljaXRseSBjb2RlIGEgcG9pbnRlciBj
+b21wYXJpc29uIGFuZCBkb24ndCBib3RoZXIgY2hhbmdpbmcgbGVuLg0KDQpTaWduZWQtb2ZmLWJ5
+OiBEYXZpZCBMYWlnaHQgPGRhdmlkLmxhaWdodEBhY3VsYWIuY29tPg0KLS0tDQoNClRoZSBhc20o
+IiIgOiAiK3IiIChidWZmKSk7IGZvcmNlcyBnY2MgdG8gdXNlIHRoZSBsb29wLXVwZGF0ZWQNCnZh
+bHVlIG9mICdidWZmJyBhbmQgcmVtb3ZlcyBhdCBsZWFzdCA2IGluc3RydWN0aW9ucy4NCg0KVGhl
+IGdjYyBmb2xrIHJlYWxseSBvdWdodCB0byBsb29rIGF0IHdoeSBnY2MgOS4xIG9ud2FyZHMgaXMg
+c28NCm11Y2ggd29yc2UgdGhhdCBnY2MgOC4NClNlZSBodHRwczovL2dvZGJvbHQub3JnL3ovVDM5
+UGNudmZFDQoNCg0KIGFyY2gveDg2L2xpYi9jc3VtLXBhcnRpYWxfNjQuYyB8IDMzICsrKysrKysr
+KysrKysrKysrKy0tLS0tLS0tLS0tLS0tLQ0KIDEgZmlsZSBjaGFuZ2VkLCAxOCBpbnNlcnRpb25z
+KCspLCAxNSBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL2FyY2gveDg2L2xpYi9jc3VtLXBh
+cnRpYWxfNjQuYyBiL2FyY2gveDg2L2xpYi9jc3VtLXBhcnRpYWxfNjQuYw0KaW5kZXggZWRkM2U1
+NzljMmE3Li4zNDJkZTVmMjRmY2IgMTAwNjQ0DQotLS0gYS9hcmNoL3g4Ni9saWIvY3N1bS1wYXJ0
+aWFsXzY0LmMNCisrKyBiL2FyY2gveDg2L2xpYi9jc3VtLXBhcnRpYWxfNjQuYw0KQEAgLTI3LDIx
+ICsyNywyNCBAQCBfX3dzdW0gY3N1bV9wYXJ0aWFsKGNvbnN0IHZvaWQgKmJ1ZmYsIGludCBsZW4s
+IF9fd3N1bSBzdW0pDQogCXU2NCB0ZW1wNjQgPSAoX19mb3JjZSB1NjQpc3VtOw0KIAl1bnNpZ25l
+ZCByZXN1bHQ7DQogDQotCXdoaWxlICh1bmxpa2VseShsZW4gPj0gNjQpKSB7DQotCQlhc20oImFk
+ZHEgMCo4KCVbc3JjXSksJVtyZXNdXG5cdCINCi0JCSAgICAiYWRjcSAxKjgoJVtzcmNdKSwlW3Jl
+c11cblx0Ig0KLQkJICAgICJhZGNxIDIqOCglW3NyY10pLCVbcmVzXVxuXHQiDQotCQkgICAgImFk
+Y3EgMyo4KCVbc3JjXSksJVtyZXNdXG5cdCINCi0JCSAgICAiYWRjcSA0KjgoJVtzcmNdKSwlW3Jl
+c11cblx0Ig0KLQkJICAgICJhZGNxIDUqOCglW3NyY10pLCVbcmVzXVxuXHQiDQotCQkgICAgImFk
+Y3EgNio4KCVbc3JjXSksJVtyZXNdXG5cdCINCi0JCSAgICAiYWRjcSA3KjgoJVtzcmNdKSwlW3Jl
+c11cblx0Ig0KLQkJICAgICJhZGNxICQwLCVbcmVzXSINCi0JCSAgICA6IFtyZXNdICIrciIgKHRl
+bXA2NCkNCi0JCSAgICA6IFtzcmNdICJyIiAoYnVmZikNCi0JCSAgICA6ICJtZW1vcnkiKTsNCi0J
+CWJ1ZmYgKz0gNjQ7DQotCQlsZW4gLT0gNjQ7DQorCWlmICh1bmxpa2VseShsZW4gPj0gNjQpKSB7
+DQorCQljb25zdCB2b2lkICpsaW0gPSBidWZmICsgKGxlbiAmIH42M3UpOw0KKwkJZG8gew0KKwkJ
+CWFzbSgiYWRkcSAwKjgoJVtzcmNdKSwlW3Jlc11cblx0Ig0KKwkJCSAgICAiYWRjcSAxKjgoJVtz
+cmNdKSwlW3Jlc11cblx0Ig0KKwkJCSAgICAiYWRjcSAyKjgoJVtzcmNdKSwlW3Jlc11cblx0Ig0K
+KwkJCSAgICAiYWRjcSAzKjgoJVtzcmNdKSwlW3Jlc11cblx0Ig0KKwkJCSAgICAiYWRjcSA0Kjgo
+JVtzcmNdKSwlW3Jlc11cblx0Ig0KKwkJCSAgICAiYWRjcSA1KjgoJVtzcmNdKSwlW3Jlc11cblx0
+Ig0KKwkJCSAgICAiYWRjcSA2KjgoJVtzcmNdKSwlW3Jlc11cblx0Ig0KKwkJCSAgICAiYWRjcSA3
+KjgoJVtzcmNdKSwlW3Jlc11cblx0Ig0KKwkJCSAgICAiYWRjcSAkMCwlW3Jlc10iDQorCQkJICAg
+IDogW3Jlc10gIityIiAodGVtcDY0KQ0KKwkJCSAgICA6IFtzcmNdICJyIiAoYnVmZikNCisJCQkg
+ICAgOiAibWVtb3J5Iik7DQorCQkJYXNtKCIiIDogIityIiAoYnVmZikpOw0KKwkJCWJ1ZmYgKz0g
+NjQ7DQorCQl9IHdoaWxlIChidWZmIDwgbGltKTsNCiAJfQ0KIA0KIAlpZiAobGVuICYgMzIpIHsN
+Ci0tIA0KMi4xNy4xDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBS
+b2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9u
+IE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+
