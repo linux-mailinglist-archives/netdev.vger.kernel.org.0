@@ -2,146 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83C2F486AB4
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 20:55:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18436486AB7
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 20:57:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243492AbiAFTzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 14:55:03 -0500
-Received: from dispatch1-eu1.ppe-hosted.com ([185.132.181.6]:52240 "EHLO
-        dispatch1-eu1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233979AbiAFTzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 14:55:02 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04lp2052.outbound.protection.outlook.com [104.47.14.52])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 1E6FE74007C;
-        Thu,  6 Jan 2022 19:54:43 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fK1RXofn40TLqV4HcOnrlT1pVPaZVl6iSugge755ilAIY3pXeJJ7cHvG1rjJMh+MWh7F1BtwCU4ZdFJhkSD9VZ44zd4k2xhJLCiNULVMc8Yau05e02t43+5s7egQPbAsE6Qpb+BzD9Xpa9G56AtB8smJ802cvFpS7t4oSUtUFGvztjNT7QpClZeXl84HWX2Tu6O8/bW+u2P9znRsdhyvKsu2G+6YgZpljWCD9TSaZ1L1XRPlW5YjYd6jjX7FYnGfa89Vo5uSjdVStui6pgGweWz2N9MsKYipLmciFnYndDcOKZ1dSYNHaMW3dq4EkoMsIpwU+xanykJ6mwJ1K3/3mA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=G09Bj3DffpxZi2xMXOGIx1V1njZOJNxg8pk5bkawBQ8=;
- b=DS7n8TkcrTc8sRuzaCFSmA5MfI/tKVsace3zGy4ox85J0xFh6K1tZtRoc89pLlATr2bijScnvbfE7JgpWOz2221b8P+aapq1TD2tOh1rLrQBy62/EPJG2Dx6gC1tWMtE8L1l2JgXx2pUSOdsInnB8u47mLRcveprXfRHZK7R1ySr9epPLcuwPfJIP3Mrn4T6LXEkm6bpI7pPy4qgx1jnwIB8JFV7BQXrUJ3kFTh1E+7ffo7K/iiL6UebpbTGq5RZoX6oA45yWh0ZM0PjNRebLqX33yGDj3dIdHdKbC7CGCR6HtwjVsNDN8S0wft6QNDU55cLPbSASMCxCYIYJO2ehQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=drivenets.com; dmarc=pass action=none
- header.from=drivenets.com; dkim=pass header.d=drivenets.com; arc=none
+        id S243486AbiAFT5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 14:57:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243460AbiAFT5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 14:57:08 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BE65C061245;
+        Thu,  6 Jan 2022 11:57:08 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id r14-20020a17090b050e00b001b3548a4250so1370285pjz.2;
+        Thu, 06 Jan 2022 11:57:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=drivenets.onmicrosoft.com; s=selector2-drivenets-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G09Bj3DffpxZi2xMXOGIx1V1njZOJNxg8pk5bkawBQ8=;
- b=iu8UaDQSTUF9TFtLTKGMfCJ4DRuVufAYUdelp0yjXCTL/9B1/N/8gjZ1CuawITHHuBVm80YRj93v+anWoLwOE11LcIBI85ijwEPNYe2a7rdUGQIdz0d4t7QS9Ni7nS2i2KAWwHE6waE/7pzTSix6+I7HAv7mo08swai2X3+raYg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=drivenets.com;
-Received: from VI1PR08MB3518.eurprd08.prod.outlook.com (20.177.58.151) by
- VI1PR08MB3248.eurprd08.prod.outlook.com (10.171.183.13) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4867.7; Thu, 6 Jan 2022 19:54:42 +0000
-Received: from VI1PR08MB3518.eurprd08.prod.outlook.com
- ([fe80::28b3:9174:b581:3037]) by VI1PR08MB3518.eurprd08.prod.outlook.com
- ([fe80::28b3:9174:b581:3037%6]) with mapi id 15.20.4867.009; Thu, 6 Jan 2022
- 19:54:42 +0000
-Date:   Thu, 6 Jan 2022 21:54:36 +0200
-From:   Lahav Schlesinger <lschlesinger@drivenets.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
-        kuba@kernel.org, idosch@idosch.org, nicolas.dichtel@6wind.com,
-        nikolay@nvidia.com
-Subject: Re: [PATCH net-next v6] rtnetlink: Support fine-grained netdevice
- bulk deletion
-Message-ID: <20220106195435.odlagzlkikgasmwd@kgollan-pc>
-References: <20220104081053.33416-1-lschlesinger@drivenets.com>
- <66d3e40c-4889-9eed-e5af-8aed296498e5@gmail.com>
- <20220104204033.rq4467r3kaaowczj@kgollan-pc>
- <df31afed-13a2-a02b-a5f8-4b76c57631d3@gmail.com>
- <269e52cd-2d84-3bca-2045-b49806ba6501@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <269e52cd-2d84-3bca-2045-b49806ba6501@gmail.com>
-User-Agent: NeoMutt/20171215
-X-ClientProxiedBy: AM6P195CA0016.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:209:81::29) To VI1PR08MB3518.eurprd08.prod.outlook.com
- (2603:10a6:803:7a::23)
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=wr+OYqxxLoTjP5us1mUsue+uQ072K41NX1xN3XRdfiM=;
+        b=K9pYQZepTHuMeXTDcu9gHnz9AG0FDPGdfZSRa+Lb2H+qvtfuGXkVpyPtD9DP1NVC1l
+         kk1XsmdkV6EraXZoMHUEsbZQO6Wt9WT6Ob1rY6HyniXfUKeiGfg777FZTkzQHV9PSafy
+         L+liz/1PRovAscQaExzpUQPmSuSkpKVwPevip4uliuqT9IMmpSiOktvISi7gW/16VxUG
+         g5pry2fwxGl4jukhAwiUmaaXzXpCm6BGNqLsj6yPfJ2Hag4UxxgLAKST1cbTcIruer0y
+         Mc5L/pm9rTbOvor1BFCOES4OSM36an4pFvKKVCGhlV7OzzWBM1jfU22yOHjR8fsx9tec
+         PvmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=wr+OYqxxLoTjP5us1mUsue+uQ072K41NX1xN3XRdfiM=;
+        b=NVyFnIUL18qjLE97u4EqORNr4AEVdZI/qT6BAyq0PtFmFxfqHVpsf2XRBW+yivjrOu
+         gVXek9wmOM1ErKdFaeL/mxmRwudZkq74Gu25DDu5+FQnpkIincZ+wjfeZBjlNycc4GKm
+         5ZdE9G7qGXiq7yLs382DDvtbn9iQ9nYQ3cWzTXVtS/nCD6X4VLq34pDhcQfWmnM/2Doq
+         xLeKRqpn1lXtb1ix//qdlPLPTN5BA+zMeKW/al31nPVGT2yQrytw9y2Cjk0CrXhStX3l
+         RoCa9E8aEFm7wm9ZCrLXk73ZXP5AKj1l4934ty2EpVlQzDSrVWXRWQvciZNoMuBABlW1
+         3/GA==
+X-Gm-Message-State: AOAM530EB33IWR7/Zrhgc+Y1z8aXo8YT6x+c9CF/HeviqyujZig+zpe6
+        jlNL0QjpaZwxhT/sNGuYT5+yxSh+vM2f72xr6ik=
+X-Google-Smtp-Source: ABdhPJxVqnB7pan7givu+7QsB6VcITZVTNEL2BgTE6vg5MObAE3waOATAewjmSkkwIEHLEmx9tVu7WIetv30WuXVPn0=
+X-Received: by 2002:a17:902:860c:b0:149:1017:25f0 with SMTP id
+ f12-20020a170902860c00b00149101725f0mr59632442plo.116.1641499027827; Thu, 06
+ Jan 2022 11:57:07 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d785328f-a65e-45ad-16f8-08d9d14e6139
-X-MS-TrafficTypeDiagnostic: VI1PR08MB3248:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR08MB32484C9041085A146D1279B4CC4C9@VI1PR08MB3248.eurprd08.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AQWFqYMJelzKk96NXLogL85UFBzd5q9SiVsf0v+0t91GqKUfNnyqEFoUBHl3GyFovJMqVlJsrKbdfCkW/XbZ3XpAExbxHR9KN08LoEDjKCEltzVtH36wOf6nQO/t8RMIVmpIjTfgXv3pFWPCPLPlyKdBSlRI9JM4XRA7qkdfCuFPxBQpu3MtDNvKxXK02S7+N4b97TNLew1DQgaJQ/BnckfuZ/umjDQ5qHePLb0Thc+1XJd1klMADsXT9eV1d7mLj+IUXMrzoaGJSlVsaAJnvA2azy0HUedAp+N2YErbZbEX44RiVkm8mbOQ77R0aqHq+nIHGHqB+eiwwz0X5YU28kZMWKEhsnKPUIMHLcOloP1/+m41x0Ob0S0nFwfY5QWUnLK6GxoNpRiiswQbEkbjP2Gs3pkfkrjL3PJ7I25ltNr3fbXfCWz69FyR7zk7VZlGbEZ7eASSuTC601HcmbTa7ipkv9vlaBViFhqSYopeFOM77ML0MgYODrIWuxtPnGElyvaCFh6KhQCJloDVvhzYI0Eg8ZTp6PRBj2OwHTk/SfmLEFt2RP1SPe+JwHBTrSqzLFRnhpRaGnxJ32yorwhy5AzSlLHmxzeJWTf3GjaDnUo4OQCIRSSF8XHeFcWpXdKwEXF7GZZyJ49dNrZfCLzmUj51uxmHqkbdlQUNKO0Ey2YVqLypO+SUfEz1BP6iNoy4YeDxwuO015lXOnF8J1zzLQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR08MB3518.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(316002)(66476007)(4326008)(66556008)(66946007)(1076003)(2906002)(38100700002)(5660300002)(6666004)(38350700002)(8676002)(6486002)(86362001)(3716004)(26005)(186003)(33716001)(53546011)(6916009)(52116002)(6506007)(9686003)(8936002)(83380400001)(6512007)(508600001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TBt9qjGzFu1RTb7YJEcRyfKlIjQKXUCfkqLRnX/LlAy7fjz4EyFyJNiF/nhO?=
- =?us-ascii?Q?7pHV8KPLCSBI1FiQSa9Y+WBZMOVeHxlZqCWIlmGciGpUiMttpCoBDMqxHtAt?=
- =?us-ascii?Q?m8yVY5a/U4ypktCfF9YhLxM0u/y10NKpt8+LG+isDWsXN0w803Qlc5c1wgkF?=
- =?us-ascii?Q?kUUYIkJk1b66hWaYaU8pMvpqM2gcuFrdqe4kC2WMH1PZVQnONTtvh7y/bRpz?=
- =?us-ascii?Q?apMKu3lE/N46rVlHTHTo+1KUYMqKwJzV7647SAWdAN+Yk4v525thHQnE9kmc?=
- =?us-ascii?Q?LMK13RsFEg5nDJw+UPtZI5m1lYrZ5MMyKXhKi+dBOAxgDzd6YRBS0D1lIvJS?=
- =?us-ascii?Q?oiCWXDV3VxHnh8hL+xCTVeGsZywVYV8xzczLLe9T6gSg2Kf4f9noMEamxSjE?=
- =?us-ascii?Q?ztP4x39N5MAeaVY1VcIlkCLTYF8RMZuzmBCigUqVPlnp1uqcv5rTtvHSWIEP?=
- =?us-ascii?Q?z7WOAtafYktjt51l/OKBDiQhYN3TOekR7P4rdkV5dG6d7U8cD3QXf+91aBpU?=
- =?us-ascii?Q?PmScAryxNZ2czw/d6D33kFPQFQsHJQ4lUXkSw0Ht83I3ydbG9c9rCZOPzewj?=
- =?us-ascii?Q?MMHDXEeRBtDIdqJahvufptuf32LkHCDCTmrJCB8aWcv1eBmN/2uHCwLajSBW?=
- =?us-ascii?Q?MM50TICa9oYqLGqcWB4AjtAen13o7wVdhUGcxqwFBw3SjqQzMd2jXYpuNPLT?=
- =?us-ascii?Q?N2eCLbe7ZTQ2AmuW34q9u4b/J7wJcJU/LhdvMRLxeme8LqZ8nhK34QST+odq?=
- =?us-ascii?Q?VI063wKpeFD+tAWzxIk/A/JkoK7f38yB20VGt8cKejWwmqUlSwb7KISqve+7?=
- =?us-ascii?Q?Mai9qYySrKjko32AC/XIHx+dPifYSLPcDdmh3pGrSC5uYca7cCJb5CHkJ417?=
- =?us-ascii?Q?2SALeDtDvRqdfH49gUHLd6d8Muaih7UbPcO8bB3QVn9sDR4Ic+PTpUFER6pa?=
- =?us-ascii?Q?+0GMbys19jlPz1CMy8G7qphMIvRB1AU0ul8r1nAnDInrC6TyECsgoAjAPUuc?=
- =?us-ascii?Q?8JLpVnuVuCgX8DE4yp3koLbpxaa+3tDnjgPwY3/rh1IbjyBUG5Xcz84wdy26?=
- =?us-ascii?Q?kaE7GSe3WTKQoU/SGNM6tFY8egp1WhRGtorpw6eVox+GgYUeqRYYygRdDYnK?=
- =?us-ascii?Q?I9VpHrFPP96mXFmK7cYgL+tufYmlVQJlfU9YS+9lYlVDSWhU7bwaNxvg+yha?=
- =?us-ascii?Q?pc0zNPKp/rk0vdXdEHoF+aek3lGcQO9c1sgbUdKbWN7jIpSDhn/IyfrPJLnx?=
- =?us-ascii?Q?Y2tWj45ZZXOHSfsbRDhoHBFY298NFvaZmN+mKP8eqHc4kMovYSNTJfzL+wYM?=
- =?us-ascii?Q?cyzocz9Fi2SBLJpsbUjd88otw0cyA/piupxPaWLDzWLCgVDq75/k7q5O3ebf?=
- =?us-ascii?Q?ihGHWa7HDx9F9noRM0BEacwhE+yU4r0OifCPZwKDI0TyNo/B3mCsTHuawQcr?=
- =?us-ascii?Q?xyTR6fTX+UL4W6n/H1hSxU2199eJ8UGZqwcRuKVNru8eBvveF+7PgrH/uQ4H?=
- =?us-ascii?Q?prla08IhYli6wy2okCp2L2J4trIUIJCTCDy6b/gmno7MwJ87tkbzmS0hBLYb?=
- =?us-ascii?Q?huLbDUXfjUxicdSUbCljVkPcdrIVWF71whSJS5jaosgsoDeCbY9kaLJ4RBp/?=
- =?us-ascii?Q?0INLz9T0xMKC0+1wnQEtUxro/ZRbku2ExInm+qsDG1/dZTfxi6ySli6DlgXp?=
- =?us-ascii?Q?mrIMy7laZTLkRURxfvCUyFpQAgY=3D?=
-X-OriginatorOrg: drivenets.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d785328f-a65e-45ad-16f8-08d9d14e6139
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR08MB3518.eurprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2022 19:54:41.9620
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 662f82da-cf45-4bdf-b295-33b083f5d229
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sZukNG/5sHKJAXoJ9aM9cs1Kis+Dax6CkmoEXeFedGP81qii+MZW/7FpT39mXOLW6XTbq/Fxk3Tuv8Z0/pZ5n7qinekkbQ0DS+Y/64KzeQ8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB3248
-X-MDID: 1641498900-BYU-x5CW2j7T
+References: <20220103150812.87914-1-toke@redhat.com> <20220103150812.87914-8-toke@redhat.com>
+ <20220106042027.zy6j4a72nxaqmocw@ast-mbp.dhcp.thefacebook.com>
+ <87y23t9blc.fsf@toke.dk> <CAADnVQ+j=DO8fMCcpoHmAjrW5sTbhHp_OA4eVpcKcwwRzsvKTA@mail.gmail.com>
+ <87tuegafnw.fsf@toke.dk>
+In-Reply-To: <87tuegafnw.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 6 Jan 2022 11:56:56 -0800
+Message-ID: <CAADnVQ+6-Q6N1t0UsmF=Rn1yP=KPo7Xc2Fiy1rzJ+Hb0oAr4Hw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 7/7] selftests/bpf: Add selftest for
+ XDP_REDIRECT in bpf_prog_run()
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 09:09:34AM -0700, David Ahern wrote:
-> CAUTION: External E-Mail - Use caution with links and attachments
+On Thu, Jan 6, 2022 at 10:21 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 >
-> On 1/4/22 5:18 PM, David Ahern wrote:
-> > On 1/4/22 1:40 PM, Lahav Schlesinger wrote:
-> >> I tried using dev->unreg_list but it doesn't work e.g. for veth pairs
-> >> where ->dellink() of a veth automatically adds the peer. Therefore if
-> >> @ifindices contains both peers then the first ->dellink() will remove
-> >> the next device from @list_kill. This caused a page fault when
-> >> @list_kill was further iterated on.
+> > On Thu, Jan 6, 2022 at 6:34 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com> wrote:
+> >>
+> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> >>
+> >> > On Mon, Jan 03, 2022 at 04:08:12PM +0100, Toke H=C3=B8iland-J=C3=B8r=
+gensen wrote:
+> >> >> +
+> >> >> +#define NUM_PKTS 3
+> >> >
+> >> > May be send a bit more than 3 packets?
+> >> > Just to test skb_list logic for XDP_PASS.
+> >>
+> >> OK, can do.
+> >>
+> >> >> +
+> >> >> +    /* We setup a veth pair that we can not only XDP_REDIRECT pack=
+ets
+> >> >> +     * between, but also route them. The test packet (defined abov=
+e) has
+> >> >> +     * address information so it will be routed back out the same =
+interface
+> >> >> +     * after it has been received, which will allow it to be picke=
+d up by
+> >> >> +     * the XDP program on the destination interface.
+> >> >> +     *
+> >> >> +     * The XDP program we run with bpf_prog_run() will cycle throu=
+gh all
+> >> >> +     * four return codes (DROP/PASS/TX/REDIRECT), so we should end=
+ up with
+> >> >> +     * NUM_PKTS - 1 packets seen on the dst iface. We match the pa=
+ckets on
+> >> >> +     * the UDP payload.
+> >> >> +     */
+> >> >> +    SYS("ip link add veth_src type veth peer name veth_dst");
+> >> >> +    SYS("ip link set dev veth_src address 00:11:22:33:44:55");
+> >> >> +    SYS("ip link set dev veth_dst address 66:77:88:99:aa:bb");
+> >> >> +    SYS("ip link set dev veth_src up");
+> >> >> +    SYS("ip link set dev veth_dst up");
+> >> >> +    SYS("ip addr add dev veth_src fc00::1/64");
+> >> >> +    SYS("ip addr add dev veth_dst fc00::2/64");
+> >> >> +    SYS("ip neigh add fc00::2 dev veth_src lladdr 66:77:88:99:aa:b=
+b");
+> >> >> +    SYS("sysctl -w net.ipv6.conf.all.forwarding=3D1");
+> >> >
+> >> > These commands pollute current netns. The test has to create its own=
+ netns
+> >> > like other tests do.
+> >>
+> >> Right, will fix.
+> >>
+> >> > The forwarding=3D1 is odd. Nothing in the comments or commit logs
+> >> > talks about it.
+> >>
+> >> Hmm, yeah, should probably have added an explanation, sorry about that=
+ :)
+> >>
+> >> > I'm guessing it's due to patch 6 limitation of picking loopback
+> >> > for XDP_PASS and XDP_TX, right?
+> >> > There is ingress_ifindex field in struct xdp_md.
+> >> > May be use that to setup dev and rxq in test_run in patch 6?
+> >> > Then there will be no need to hack through forwarding=3D1 ?
+> >>
+> >> No, as you note there's already ingress_ifindex to set the device, and
+> >> the test does use that:
+> >>
+> >> +       memcpy(skel->rodata->expect_dst, &pkt_udp.eth.h_dest, ETH_ALEN=
+);
+> >> +       skel->rodata->ifindex_out =3D ifindex_src;
+> >> +       ctx_in.ingress_ifindex =3D ifindex_src;
 > >
-> > make sure you add a selftest for the bulk delete and cover cases with
-> > veth, vlan, vrf, dummy, bridge, ...
-> >
+> > My point is that this ingress_ifindex should be used instead of loopbac=
+k.
+> > Otherwise the test_run infra is lying to the xdp program.
 >
-> BTW, delete of a netdev clears out neighbor entries, network addresses,
-> routes, hardware updates, etc. with lots of notifications to userspace.
-> Bulk delete of 1000s of netdevs is going to end up holding the rtnl for
-> a "long" time. It would be good for the selftests to include a cases
-> with lots of neighbor entries, routes, addresses.
+> But it is already using that! There is just no explicit code in patch 6
+> to do that because that was already part of the XDP prog_run
+> functionality.
+>
+> Specifically, the existing bpf_prog_test_run_xdp() will pass the context
+> through xdp_convert_md_to_buff() which will resolve the ifindex and get
+> a dev reference. So the xdp_buff object being passed to the new
+> bpf_test_run_xdp_live() function already has the right device in
+> ctx->rxq.
 
-Ack. I'll add such tests to v7. What numbers you have in mind for the
-number of routes/neighbours etc? I suppose we don't want the tests to
-run for extremely long times.
+Got it. Please make it clear in the commit log.
+
+> No the problem of XDP_PASS going in the opposite direction of XDP_TX and
+> XDP_REDIRECT remains. This is just like on a physical interface: if you
+> XDP_TX a packet it goes back out, if you XDP_PASS it, it goes up the
+> stack. To intercept both after the fact, you need to look in two
+> different places.
+>
+> Anyhow, just using a TC hook for XDP_PASS works fine and gets rid of the
+> forwarding hack; I'll send a v6 with that just as soon as I verify that
+> I didn't break anything when running the traffic generator on bare metal =
+:)
+
+Got it. You mean a tc ingress prog attached to veth_src ? That should work.
