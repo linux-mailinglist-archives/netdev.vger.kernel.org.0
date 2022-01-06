@@ -2,48 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92095486449
+	by mail.lfdr.de (Postfix) with ESMTP id 49396486448
 	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:20:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238770AbiAFMUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 07:20:19 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54414 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238772AbiAFMUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:20:16 -0500
+        id S238769AbiAFMUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 07:20:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238778AbiAFMUR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:20:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4167DC0611FD
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 04:20:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3134B820D1
+        by ams.source.kernel.org (Postfix) with ESMTPS id F099EB820D4
         for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 12:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B9709C36AED;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AD062C36AE5;
         Thu,  6 Jan 2022 12:20:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1641471614;
-        bh=Epg8W+meOnkQxOiBvsXpviVwCxEBuOV10kmt2zGa0ik=;
+        bh=X5IwBfEHtRNLG1mOK8wiC6QDJhFq3Ime29vv/RhyuhY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qircOMDhUNuTSwJoaaqz7I91VPL+i7NzO8aO9TSD7mePSC15cKMudP2MbAfIiZ5gN
-         zYPERoPym1r0rYbZ8JqkcYZzcq9C84i1HkAlxSMYPgxB9dIMyXrLduPHZ6gNd9lJ3a
-         aqr1ZefXeR4wwtZpv9h3wb2nSXybzY6KnLUJJVAeyEuaPUs6KRK450k4Vx1Ko9PAPx
-         C+4LYtTg6C++kKTh2OAHSgRoJSh6zjOaeSoLbWs6KxVsEeupqs/m4LFtjqHJLOfLOu
-         w7W+oV9RWgvOVMBvRJkbVFriweUJ9t7i/hAZz7g6ZRr9Zs/XUZw44RE+xAQgLAwNHR
-         bsmeN/WMFtanA==
+        b=GOWY51mlzK5whxoLVYmccoxYG7KrS5cMeyBhmtWf9ZvN3hChzWETIxM+krJamGjg+
+         Ww2r5j3t0BLwn7EXRwxL+UITpzxAEsOZ7Y7qfbyNJZDjrnU9+MzVPVJ3hRmON10Ned
+         /i3TGKgW+TyLH+rvBYS6Zi/G6aysUkRuTj1JXgsO7VBK2abW8LRUS8zHyX41/M9Mg7
+         Hoi8BNUK+Qvi/NA/PvcG2lTbsLpn5ld0ZjYNtNXltcMHMYXuaam9KbKRWykYDi3lR0
+         pmSK0j4X5o/2b1eAwQrecqHk9v4FlHHbOXDP5NYcGYrd90DcwCA4rHTv5sYdIUFyWK
+         twhQzp8LLsAHA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A48ADF7940C;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9B479F79403;
         Thu,  6 Jan 2022 12:20:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 1/7] ipv6/esp6: Remove structure variables and alignment
- statements
+Subject: Re: [PATCH v2 net-next 0/6] DSA initialization cleanups
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164147161467.27983.6972604539862625960.git-patchwork-notify@kernel.org>
+Message-Id: <164147161463.27983.13271917543011470048.git-patchwork-notify@kernel.org>
 Date:   Thu, 06 Jan 2022 12:20:14 +0000
-References: <20220106091350.3038869-2-steffen.klassert@secunet.com>
-In-Reply-To: <20220106091350.3038869-2-steffen.klassert@secunet.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, herbert@gondor.apana.org.au,
-        netdev@vger.kernel.org
+References: <20220105231117.3219039-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220105231117.3219039-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -51,37 +53,38 @@ X-Mailing-List: netdev@vger.kernel.org
 Hello:
 
 This series was applied to netdev/net-next.git (master)
-by Steffen Klassert <steffen.klassert@secunet.com>:
+by David S. Miller <davem@davemloft.net>:
 
-On Thu, 6 Jan 2022 10:13:44 +0100 you wrote:
-> From: luo penghao <luo.penghao@zte.com.cn>
+On Thu,  6 Jan 2022 01:11:11 +0200 you wrote:
+> These patches contain miscellaneous work that makes the DSA init code
+> path symmetric with the teardown path, and some additional patches
+> carried by Ansuel Smith for his register access over Ethernet work, but
+> those patches can be applied as-is too.
+> https://patchwork.kernel.org/project/netdevbpf/patch/20211214224409.5770-3-ansuelsmth@gmail.com/
 > 
-> The definition of this variable is just to find the length of the
-> structure after aligning the structure. The PTR alignment function
-> is to optimize the size of the structure. In fact, it doesn't seem
-> to be of much use, because both members of the structure are of
-> type u32.
-> So I think that the definition of the variable and the
-> corresponding alignment can be deleted, the value of extralen can
-> be directly passed in the size of the structure.
+> Vladimir Oltean (6):
+>   net: dsa: reorder PHY initialization with MTU setup in slave.c
+>   net: dsa: merge rtnl_lock sections in dsa_slave_create
+>   net: dsa: stop updating master MTU from master.c
+>   net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
+>   net: dsa: first set up shared ports, then non-shared ports
+>   net: dsa: setup master before ports
 > 
 > [...]
 
 Here is the summary with links:
-  - [1/7] ipv6/esp6: Remove structure variables and alignment statements
-    https://git.kernel.org/netdev/net-next/c/c6e7871894a3
-  - [2/7] xfrm: Remove duplicate assignment
-    https://git.kernel.org/netdev/net-next/c/2e1809208a4a
-  - [3/7] net: xfrm: drop check of pols[0] for the second time
-    https://git.kernel.org/netdev/net-next/c/ac1077e92825
-  - [4/7] xfrm: update SA curlft.use_time
-    https://git.kernel.org/netdev/net-next/c/af734a26a1a9
-  - [5/7] xfrm: Add support for SM3 secure hash
-    https://git.kernel.org/netdev/net-next/c/e6911affa416
-  - [6/7] xfrm: Add support for SM4 symmetric cipher algorithm
-    https://git.kernel.org/netdev/net-next/c/23b6a6df94c6
-  - [7/7] xfrm: rate limit SA mapping change message to user space
-    https://git.kernel.org/netdev/net-next/c/4e484b3e969b
+  - [v2,net-next,1/6] net: dsa: reorder PHY initialization with MTU setup in slave.c
+    https://git.kernel.org/netdev/net-next/c/904e112ad431
+  - [v2,net-next,2/6] net: dsa: merge rtnl_lock sections in dsa_slave_create
+    https://git.kernel.org/netdev/net-next/c/e31dbd3b6aba
+  - [v2,net-next,3/6] net: dsa: stop updating master MTU from master.c
+    https://git.kernel.org/netdev/net-next/c/a1ff94c2973c
+  - [v2,net-next,4/6] net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
+    https://git.kernel.org/netdev/net-next/c/c146f9bc195a
+  - [v2,net-next,5/6] net: dsa: first set up shared ports, then non-shared ports
+    https://git.kernel.org/netdev/net-next/c/1e3f407f3cac
+  - [v2,net-next,6/6] net: dsa: setup master before ports
+    https://git.kernel.org/netdev/net-next/c/11fd667dac31
 
 You are awesome, thank you!
 -- 
