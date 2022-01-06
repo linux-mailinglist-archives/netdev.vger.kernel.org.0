@@ -2,106 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CA2348675B
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 17:07:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CE4048675C
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 17:08:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240974AbiAFQHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 11:07:49 -0500
-Received: from mail-bn8nam11on2058.outbound.protection.outlook.com ([40.107.236.58]:31232
+        id S240977AbiAFQH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 11:07:56 -0500
+Received: from mail-bn8nam11on2044.outbound.protection.outlook.com ([40.107.236.44]:38124
         "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240914AbiAFQHs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jan 2022 11:07:48 -0500
+        id S240998AbiAFQHz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jan 2022 11:07:55 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BeWJKTaxgAIKN6SOFsLNFJ4TuXbxHMs4yczMAzOqoT64ZD7tdTJh1cUGWcdMWImlmN6kDJGLKjAab+ACKvlLSSdx8+WdUREoMtEj+CBideus9SvgMbSvGn64tfxSzDBL/DaWren5XTFn6TK4gZlvzNUke1tbK6FpnkwZILyifcJesAo43XlcWE85wAscIhQ/AC+6kMbBBWQ4A0Idw5Ue/c5zmnCYQQRNgXqvd17Mqd7gAk9k6qHnmhmpPwyaS9HHrQB5JCJbfsZ6JEaodNe+5V2SiQNQx6uHd1Nj3PQ/qv9QSiTwRrsuWyYK+KRlt06wn4/QRpXwJygsrK8+BcJd8g==
+ b=RwY3aB2jp3HX6pj667/SqPpUXM9qTLNfdLNzZJjgf4fe8HHFcaUlgG10i26IBb4042rxasAOPGPXTiapnKbmHoVnUzuvPUenVMKTemSVQVkTvrB7jH93v8ffqUzcYTJngU4YaJ6YUr0mttTt1qhFW28OBDnp5t0beMmvGkTisz1wHNhjdJXOn427rduNZxaPk25SkratKyUvdy7JI4RmFfCt1kfR1SbMda1ZVEnkW0LAyYpN15ak45199cy4F/kWGZ7D0sYZBLMqehZEEwUzGvXpeDB1fOuyjjvUXp3t7t373cNmS/OvBwr63B10bYsSD/tZJztz0tQZ/vNbNO18nA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qSMKX0JAqZN8er7iphqSvq58JTv9+OzAotKphdplC0s=;
- b=dA+UkDEBfrKL4Hga/1h5knSH+StA2/t19sC2x0ylyNET8c2BSck9bwkvTKVhJrcLz8e/Q8z6MDxBJJwyTkf+omQt2nSSPlDKGJr55CADSiLR5AvaZz+P64kWaignfZVY3csl0EJ5bwfR8b3s94+GZIm3PGxipnwrmWXO2XJd3UJ64u1gkqMdepERHj+TZE0oVMx1to799pO+/U22QExfnLk12WHlxnKACVSddTEjalr7HkVXTqhO1RQzFLdHw2YFYc/ykz2tozA3SCsmjSBLH1DyrCJmdu2DqsNyYzV0b+1OMvwFKfenRDVDjb7lu9wlJleiTduW2MXPL4txbBChVw==
+ bh=+QYjBjKBXpMWl+arQPoimfSzKNJ9SSVOHPouO7XqUpg=;
+ b=V/nxhdCCOSaNSZImGXHjAYuGovShmfuaop6JuDrohpMufkSD/yzcI1WArDdJ/XJYK0JIJcVI1sD5HLTyShjdig0Wl5ByLkkovbz6G930SHMOnoNS/zlOajf/Z8UL7BSc7i/loDyqVHXyJUgsI4RKC8ZoTlNqrBUpb9oL4Ad6S23H5xrVrChMiIhW8tPQWHra3hBExrCCXPIAY8a1+yDQid0JH4mC4S8UBFy9kJ6yl5QI+7uxQFHs/Kx1SC8lJOfS9aO7UH5bpSgTshplGqOh0dwbK8fBkJP5/c9mTyLdhEYM/PSTolUSiUlyaR0ujBoZVoZW5Y/JgmXrh5MmzrrJRg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qSMKX0JAqZN8er7iphqSvq58JTv9+OzAotKphdplC0s=;
- b=M6hjXhH09hnR782axdMzYqK7dqhSbItgc1P1i3V/O74GafdvuCuaDSVeZoPlNxGeqZohvgOYvc55FlkeiL62MFe9pqbdV2cmyOhnyX3V4tX1WVMGo591SIylXVgqcbksreSCj0TtvkYzqwmexn5BUkhJX3GeFuDqD71u0LdZGqvhFn7qSSGRL7DHwkKDUsdgDy5u52gu/FV+Kqj+IY+VxNeP2ySfKgI4FxH9kF8ydXhdsQ8L3QPthIzUmpWdkM/hh6ztuBaPYKMvpPZ9AlPUojDlmA+V618Eh1hFN2durRYT21O89oV+3TTF1DiDND5TPmhE6IL7vM1A6bVN1M9g9A==
+ bh=+QYjBjKBXpMWl+arQPoimfSzKNJ9SSVOHPouO7XqUpg=;
+ b=BBPHg+U1D0doig1kSYS0bhnHT9sz/XNpxlRzmvabLuBb33G5M+IIDL9mEa9XHSTIpKmRRlGCWGUjZJs6vW/dL9tfax8XnNEw9iwDXR4EEGLpxpYwctns+IIO/ID5GAjrLd2daKxXKqJbqqG+snUZsKn+zCBVNgHenAU2wWzu7mzqwc9zI4gk+hC1W3JRgyvIyThgnq19xWPvHhmbr91ctgxC9GFAD0BreAdchmEzak7GTfjmSXPcLGRdqM2gGgMFaeZxOtbio3zumXyEgb9Xek3fCmyp92axP8QK+bt6SUwSUc1KD+PT5+X4TSYVyoCJEhF8wgI4kU4Or0xVyM7eCw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM5PR12MB1641.namprd12.prod.outlook.com (2603:10b6:4:10::23) by
  DM6PR12MB4058.namprd12.prod.outlook.com (2603:10b6:5:21d::16) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4867.7; Thu, 6 Jan 2022 16:07:47 +0000
+ 15.20.4867.7; Thu, 6 Jan 2022 16:07:53 +0000
 Received: from DM5PR12MB1641.namprd12.prod.outlook.com
  ([fe80::41f2:c3c7:f19:7dfa]) by DM5PR12MB1641.namprd12.prod.outlook.com
  ([fe80::41f2:c3c7:f19:7dfa%11]) with mapi id 15.20.4844.016; Thu, 6 Jan 2022
- 16:07:47 +0000
+ 16:07:53 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
         amcohen@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 6/8] mlxsw: Add operations structure for bloom filter calculation
-Date:   Thu,  6 Jan 2022 18:06:50 +0200
-Message-Id: <20220106160652.821176-7-idosch@nvidia.com>
+Subject: [PATCH net-next 7/8] mlxsw: spectrum_acl_bloom_filter: Add support for Spectrum-4 calculation
+Date:   Thu,  6 Jan 2022 18:06:51 +0200
+Message-Id: <20220106160652.821176-8-idosch@nvidia.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220106160652.821176-1-idosch@nvidia.com>
 References: <20220106160652.821176-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MR2P264CA0033.FRAP264.PROD.OUTLOOK.COM (2603:10a6:500::21)
- To DM5PR12MB1641.namprd12.prod.outlook.com (2603:10b6:4:10::23)
+X-ClientProxiedBy: MR2P264CA0097.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:33::13) To DM5PR12MB1641.namprd12.prod.outlook.com
+ (2603:10b6:4:10::23)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bc172523-bad1-4839-7cc8-08d9d12eae0c
+X-MS-Office365-Filtering-Correlation-Id: bededd2b-c7c0-435c-16d2-08d9d12eb1c6
 X-MS-TrafficTypeDiagnostic: DM6PR12MB4058:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB40584A1432E08FD1EB556C6EB24C9@DM6PR12MB4058.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1923;
+X-Microsoft-Antispam-PRVS: <DM6PR12MB405875FBDCD250F442A140ECB24C9@DM6PR12MB4058.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: j7amcUMm0T4IQDk5/ObqjQTMqWWpf5K37hntrv3GSLEnJvYsyM7P44pdVLMEdyJYK2ftp9xNhbInFAeT52u26tx3Vc/zWxzGlLyS0tvWzAFe5jj3c5i/6uP7FkDk5sZ405TvB1xKOE2MgQ7IYAJcomvmddD4x2u8Oickz61dN+gkluxg2TUcUJBFGVPSOMdFdwd6JjxZ95JGYDuw4UoCaAyqR+sHMV0+Ui3JtDsPoKCGopdKFwBAFhx2/o/JjOQEVNa+fZ+6BzsoBQFyzN1y22BexeTRXh43M/HuysxhlJtY6dlg1m7NcjlYSBdXUAhzvjnJ7B/y4Z3zGgaJiohZYhGkM59y8sEM489rvpLrpqzr5jrOl8DCrALfjCJvVHDmOF0aQUhgTujYBe9dojQ/6wdOICkk2jF05xVp5Bs/UNWyIqdQRqbZCBxEFaovGthSq6EEEYaPcMRT47F3XrzgH5bs0JTfp/WwkPUciiSJz1Dxh/gI9IOHaIbmw+ULuugwwDhgQW+aWh+MmXUSiyze5cwkkpgIOPQInQBzQnisA7JJoG98gQsDjO7I82E3zIg7KTTFy+3Lf4GgQu6QF9yCZOxxCon0TkRssttQjv4kD5L+YduvdiYLQs2wiU9w51kMBQRl8wtLcT83oWI4k/LNLw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1641.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(186003)(6666004)(508600001)(66946007)(66476007)(5660300002)(36756003)(66556008)(6916009)(316002)(86362001)(4326008)(26005)(38100700002)(8676002)(2616005)(83380400001)(6512007)(6486002)(2906002)(1076003)(107886003)(8936002)(6506007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: cKqSF4uylkW2CHoC2I6Yy04qrRDSiFQAyQpvjGZ40g6snwVOcdjU4YhcYUVcIT2LmdWX5Uh7ynMml2xE4JYDsJuaaHRUVAfztOLFNktH2LedJC6YcvV7GkImSf+Y/tJZUPV/tzGEdZQseoHIUY2OypMyj8GLHejQyr3QnbFZUyjX1crmWXxLac4cjl8/gsitTTjck/zyUGider9mm6wyk8g8aRYQ16JXaXgW76wUJ3vcv8DLdPgbrNjwdLYttvO/A57Nnbs1uxCBu8fr35L2C+q2miaF49Abfxln/qmPGaAuODHjSxAcm/R0RbcRkjnCiOGLhbjFBvcLUwFz9Slyx7KIoucD3gCoXxNYic5tXmMVC+RY278RStqBacKgxq7Fnktud9IsMnWlDd4A8kfECIag+AadK6dGkfGchkeO/mQwMIaLMKDEE8My/aQr+15kcs25YcNYUmDwIO7wcAS+G2ibKoycw7t9CLVKJL6gYZe5JCeZzWuBZxZBQ+czlBMnIyQ2dkMnM/y9GEgEG+fN34gxmZ39e3Uq5PazTX50xs68NurA3vXfE0JqA8JyoRsUlOt47O0q5xVRxNwRftsNismM43CNlywKv1KXIyZnnUW2tvB2y6QBZRzf4YAwjuuYLWZhLo4/KOos/Xj8AdnjDA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1641.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(186003)(508600001)(66946007)(66476007)(5660300002)(36756003)(66556008)(6916009)(316002)(86362001)(4326008)(26005)(38100700002)(8676002)(2616005)(83380400001)(6512007)(6486002)(2906002)(1076003)(107886003)(30864003)(8936002)(6506007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OxqhsifK/liWd4sop74ntXSDP0sN90tpJRkgNLnyywHwHhObxeYhYn3F8fgF?=
- =?us-ascii?Q?RqoQzeg/LUUbPCzUMIfEH3yolmB/VRkor/f44L1Bf4c150bEWL6SLthzKFVN?=
- =?us-ascii?Q?+k2IaYy9ZFhIkoa0T6Bee4rLZyID+KiONidV5gDoICC+F1b8Q34ChFM3F1Db?=
- =?us-ascii?Q?Yc7MkQRPsnyQzqQNbB+4W+z7jo8TJQzKeZT/acYCd26JQYlkE5FdWCeuvE6j?=
- =?us-ascii?Q?a5U4o97KY/xnuOEr6haErTirFjwPQUvNVjXB/i0wouFDoRsru26xjRM3a81F?=
- =?us-ascii?Q?V5Ectw175OtvXPgAARavzuJN4niyYk6GGBP+891uvdRZiKUHwSJSCF6p7KGe?=
- =?us-ascii?Q?7A8+E7O9r6hb26VAqaMB0C868u8VxS2BYJauxjZww+KQ6y8Bg3XdYiPOdJhz?=
- =?us-ascii?Q?FNt/jbLG95cXHsiU/Lls2v1oOmR69FazEr7ayppTf5yntiS4n50bNcC7z95H?=
- =?us-ascii?Q?imcrWL+X7OLFP6fA2rQ6Kg8oa1D1Xa9DnNi/A20fl5ZxPasA/JyLWMD9hltr?=
- =?us-ascii?Q?p6jOlzxw23iJUyqsvdfdAeEKqRwMGO422ify/QdX3AICrxMBFTLhBLlf5Jic?=
- =?us-ascii?Q?aTsddr09jhDGpLsz4Mc20cJXXZFvXf5W8kPxdLElHYte7fyjWGxG0sNkLTQ3?=
- =?us-ascii?Q?fbSPt2BAwUcDcLJGwlcu1wPo3TlFhIko+IXvGeuFyOiP9Lr4KhkQp9fRwapI?=
- =?us-ascii?Q?Uvurx+OEzr8QtiJ2kM9BnTkBlnsuGPgKH+pgaKbt4SO1WK639aRDCizKEb05?=
- =?us-ascii?Q?QaTwkzAUjdczMtc/cDavd0lUFfVSZhSk1iQDZJKhm/XIQIljwXyi5xAIFn0N?=
- =?us-ascii?Q?LR+kGfv2Snmjyvz7v8nNp0LIpfyG4z552z8Ob1ZEwih62mOjEIYvjINULtjj?=
- =?us-ascii?Q?5CF1p6S0lSnUmIm/PUMIKA5oUqD+lxn//ZrY99LUWZXQR0aNcz5Gmscyz7Uw?=
- =?us-ascii?Q?4m+x4XVtH+VwulbRBkYuv+djge8Y/QQTdrePGqV6HSfbqslJzyxSk/YDv5VR?=
- =?us-ascii?Q?/Q8e+nbOIIghaoq80L2QNuL1Lzam2tW0j2S5nr2obE42Lbf8FuJ/s7nDvMNJ?=
- =?us-ascii?Q?N0Qec2cs0Uw6MCXR84256X0Q1Oc79Z+dnPe6jL+Md65IkWs9BeC5Hw7He9Vk?=
- =?us-ascii?Q?tlMPZDE838RyaOsRtiFoNcmVOuOGU8uEVJufc2nDxmR7uGDPXx4hQ8hEovGw?=
- =?us-ascii?Q?0MoflXRZNt7ZJoadc6i5YjE7kD0El1CFuEyw54eRJ7jRD6xunsXchBrFAaLH?=
- =?us-ascii?Q?3S3dgfcVfpMQgZEJprUcu5mk4310eVQCcVZoM8avg/4J/9ccweTB+8mpRIB3?=
- =?us-ascii?Q?b1uLbaw0rxTyINJ9uS8xMAadGgM0mSLXOGzgDySDMclQCsdjfKvVpEo4GlU7?=
- =?us-ascii?Q?r1DiCOt+wsfrDZa9j7aVivZdOzY3ljK+nISg6hChuHAm0wUJ4X6iP23ZB0EF?=
- =?us-ascii?Q?35n83rPIUtw/rxdVrSG8b+tcb9yiLJbNz2bDSJ96upgTdzvJu328EF/L93wA?=
- =?us-ascii?Q?E9TyL98fPnFWl9BmAFeB/POjmzFPYkolLv2mFrB/0wvl/7aV8MrTFEe7IAGc?=
- =?us-ascii?Q?f4V1Jf5HQsDpO+yxaFn8VWJPy0HHTXjdqbhe+41dahPyx0RS6TSsojlcWM/m?=
- =?us-ascii?Q?lwtGvGufVK4/P9TE6kENwIg=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HGRgkDDaxGVnpwT0PjqeVhgTVCrskIoqCZFX04nUaHU/f8zSeJeKPP3u2YqU?=
+ =?us-ascii?Q?uNjvYXbyF7VJf1oQ7uerrqMBNW91AgktGjnAMGNXBhKafXu6cyU0YYFNNWd6?=
+ =?us-ascii?Q?p90zDhSbUDXZ9ufsW6EXEMElN5zMvS6YBEseBvV3EkbmhQPC6//l++gmMl5w?=
+ =?us-ascii?Q?OSbADGEInWKX+LWi102FzHA1SgFy50/WehL0FFoPQz2JWxNp+idGOn+1Y9Gc?=
+ =?us-ascii?Q?mMil76UqxkpWFb8i2DuHg471c/4XEh7vY3ks+JfB6nHSo0GMdQ3uiTwh1IGR?=
+ =?us-ascii?Q?ep8WhDNMNwiGi+DNXD87j7jeZ0wiMZ8LySfga3sWVXKfFj2BetLzRkQ47yYd?=
+ =?us-ascii?Q?ad4Mj7Zabg3Bp70vbTaXmjELkGtNrV8514+1ExKjCq2Z4PfjcP2Kn3DAic5p?=
+ =?us-ascii?Q?e42/zKaOY99kM2UvdcrEcXC1flsC3mI9m4k02/1qlIMLoq03LvgSgAYepKaX?=
+ =?us-ascii?Q?6JCZmRCbIchJJ7tKy8cz1P2dY7RZFe9x1uDN2hq+Ik5bBL9f6pp4orCYSHVH?=
+ =?us-ascii?Q?aYu+rl0ews93jRWBAF+P7fP28HROZiz9kjO7++huva71BEuHdoQj8dL4Q8wE?=
+ =?us-ascii?Q?YPsYWX/3D2itNM1fsGaGO6rsgS0Lc2RJsSn0J+CNLmW7PhqpV7CeQYLcpH4j?=
+ =?us-ascii?Q?B+n7FsFL2V3ct6Eh6EkFWJJXXNv5f/fNRFzh2az49IaCgcbcjhKOkJr+Wzq9?=
+ =?us-ascii?Q?lseYHHRJ7VJWjYGs/bXUEEwkVh/azjIJghTw1VIeC4pdObAm8RNY23hJDAuu?=
+ =?us-ascii?Q?v9DfWxEbqxN+D/KUGT0L2NXBs0TIlurWsyi/hXgs5oKyMOXs1rmZ8FszaSDG?=
+ =?us-ascii?Q?1EaHHjdZh75eLMzcDe5SGkCE7JW0Z8ffZci7vNYNRBmnoSTpZhppVXcNCK+P?=
+ =?us-ascii?Q?ktjpAOdZaBQRpnmvFYzCXtnIUBMZSyy0Zitf2qoKrR0I98EydsVa2iukYgVg?=
+ =?us-ascii?Q?x2medolo37Qcgb6AP7c5K53GtAMcTOfc8CCFK0MYp6tpXlD5DFsVBPFe3oMm?=
+ =?us-ascii?Q?mAXFWfyFc+tb46NWDsr+04RUdAR4wppXJhj88JUuYrLDotoOpzxiBh4PLOvz?=
+ =?us-ascii?Q?PXvICIFAQkPLQ4xkgPieZGrYqhFb+az/dhHo8EPx+zpKWdBp3pkU72t4NcF0?=
+ =?us-ascii?Q?7dfwl7MyWVIuDm5Zmzc41sTtj3K9fZozS9pvfXfO04OrVOeOZcaOFp6aYXtu?=
+ =?us-ascii?Q?O6tBEcQKa91DpPCPPF3xKNKx9RkdtU0cTvmtPpr15jj8iLXB00hDQ38ZXC/U?=
+ =?us-ascii?Q?bGMaVmcpUECjsvXIqhpm8uv0S4iWQqrPmfjg7QXhY8Z5nNait+qOFA5D6zyg?=
+ =?us-ascii?Q?lQq+MBUywZZl3fN2EnFUYDqoxVrGxHTEBWYwSGEqGxhiuwWKM4RPuRv1dQIs?=
+ =?us-ascii?Q?0YpxsMtvqxf5GYcg3CE5pbjYz8i0D49ilbvJsCqFkl81UA4jNtBuDP3fCLwO?=
+ =?us-ascii?Q?Pzz6Gmd9/XxKtLh9WJ65cMKm3pf+9+sK60cKTLlpvWy44rELEJueIcJ0mSop?=
+ =?us-ascii?Q?z2WwYyzt52U/tJbl38z6i9/Kq/1IaTijgmkFKx/bkGWGM407ihj4V9n3NxfV?=
+ =?us-ascii?Q?Vhx65Jk4sQa65zmHWE/8pKCPMouqoZJvHY0kEsKmFPoKsp5o9IF3Yn5WtQlx?=
+ =?us-ascii?Q?Orz6nhHgkJNS+Y5JVpzXTM0=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc172523-bad1-4839-7cc8-08d9d12eae0c
+X-MS-Exchange-CrossTenant-Network-Message-Id: bededd2b-c7c0-435c-16d2-08d9d12eb1c6
 X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1641.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2022 16:07:47.0265
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2022 16:07:53.2916
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kkbhE+yGoX6I02FTahQS5eNPTxNk9DTByUBJNcCjORyCPFiIyLTQL2/KTr3nVaMeS1yjs6nPW/fo7Ian4m3dFA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: QQz7tyzFj/JNVOQyfvIUzLwjf/bO2iLHSIDNKk5fwfayxw1n3WqBnDN2HgRzJojoO+j5rIATVNzefbtXMdl1Bw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4058
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -109,116 +110,354 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-Spectrum-4 will calculate hash function for bloom filter differently from
-the existing ASICs.
+Spectrum-4 will calculate hash function for bloom filter differently
+from the existing ASICs.
 
-There are two changes:
-1. Instead of using one hash function to calculate 16 bits output (CRC-16),
-   two functions will be used.
-2. The chunks will be built differently, without padding.
+First, two hash functions will be used to calculate 16 bits result.
+The final result will be combination of the two results - 6 bits which
+are result of CRC-6 will be used as MSB and 10 bits which are result of
+CRC-10 will be used as LSB.
 
-As preparation for support of Spectrum-4 bloom filter, add 'ops'
-structure to allow handling different calculation for different ASICs.
+Second, while in Spectrum{2,3}, there is a padding in each chunk, so the
+chunks use a sequence of whole bytes, in Spectrum-4 there is no padding,
+so each chunk use 20 bytes minus 2 bits, so it is necessary to align the
+chunks to be without holes.
+
+Add dedicated 'mlxsw_sp_acl_bf_ops' for Spectrum-4 and add the required
+tables for CRC calculations.
+
+All the details are documented as part of the code for future use.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c            | 2 ++
- drivers/net/ethernet/mellanox/mlxsw/spectrum.h            | 4 ++++
- .../ethernet/mellanox/mlxsw/spectrum_acl_bloom_filter.c   | 8 ++++++--
- drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.h   | 6 ++++++
- 4 files changed, 18 insertions(+), 2 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |   1 +
+ .../mlxsw/spectrum_acl_bloom_filter.c         | 267 ++++++++++++++++--
+ 2 files changed, 252 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 5251f33af0fb..6e4265c86eb8 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -3155,6 +3155,7 @@ static int mlxsw_sp2_init(struct mlxsw_core *mlxsw_core,
- 	mlxsw_sp->mr_tcam_ops = &mlxsw_sp2_mr_tcam_ops;
- 	mlxsw_sp->acl_rulei_ops = &mlxsw_sp2_acl_rulei_ops;
- 	mlxsw_sp->acl_tcam_ops = &mlxsw_sp2_acl_tcam_ops;
-+	mlxsw_sp->acl_bf_ops = &mlxsw_sp2_acl_bf_ops;
- 	mlxsw_sp->nve_ops_arr = mlxsw_sp2_nve_ops_arr;
- 	mlxsw_sp->mac_mask = mlxsw_sp2_mac_mask;
- 	mlxsw_sp->sb_vals = &mlxsw_sp2_sb_vals;
-@@ -3184,6 +3185,7 @@ static int mlxsw_sp3_init(struct mlxsw_core *mlxsw_core,
- 	mlxsw_sp->mr_tcam_ops = &mlxsw_sp2_mr_tcam_ops;
- 	mlxsw_sp->acl_rulei_ops = &mlxsw_sp2_acl_rulei_ops;
- 	mlxsw_sp->acl_tcam_ops = &mlxsw_sp2_acl_tcam_ops;
-+	mlxsw_sp->acl_bf_ops = &mlxsw_sp2_acl_bf_ops;
- 	mlxsw_sp->nve_ops_arr = mlxsw_sp2_nve_ops_arr;
- 	mlxsw_sp->mac_mask = mlxsw_sp2_mac_mask;
- 	mlxsw_sp->sb_vals = &mlxsw_sp2_sb_vals;
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index a49316d0bd37..e7da6c83c442 100644
+index e7da6c83c442..bb2442e1f705 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -190,6 +190,7 @@ struct mlxsw_sp {
- 	const struct mlxsw_sp_mr_tcam_ops *mr_tcam_ops;
- 	const struct mlxsw_sp_acl_rulei_ops *acl_rulei_ops;
- 	const struct mlxsw_sp_acl_tcam_ops *acl_tcam_ops;
-+	const struct mlxsw_sp_acl_bf_ops *acl_bf_ops;
- 	const struct mlxsw_sp_nve_ops **nve_ops_arr;
- 	const struct mlxsw_sp_sb_vals *sb_vals;
- 	const struct mlxsw_sp_sb_ops *sb_ops;
-@@ -1108,6 +1109,9 @@ extern const struct mlxsw_afk_ops mlxsw_sp1_afk_ops;
- extern const struct mlxsw_afk_ops mlxsw_sp2_afk_ops;
- extern const struct mlxsw_afk_ops mlxsw_sp4_afk_ops;
+@@ -1111,6 +1111,7 @@ extern const struct mlxsw_afk_ops mlxsw_sp4_afk_ops;
  
-+/* spectrum_acl_bloom_filter.c */
-+extern const struct mlxsw_sp_acl_bf_ops mlxsw_sp2_acl_bf_ops;
-+
+ /* spectrum_acl_bloom_filter.c */
+ extern const struct mlxsw_sp_acl_bf_ops mlxsw_sp2_acl_bf_ops;
++extern const struct mlxsw_sp_acl_bf_ops mlxsw_sp4_acl_bf_ops;
+ 
  /* spectrum_matchall.c */
  struct mlxsw_sp_mall_ops {
- 	int (*sample_add)(struct mlxsw_sp *mlxsw_sp,
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_bloom_filter.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_bloom_filter.c
-index 3a3c7683b725..c6dab9615a0a 100644
+index c6dab9615a0a..e2aced7ab454 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_bloom_filter.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_bloom_filter.c
-@@ -190,7 +190,7 @@ mlxsw_sp_acl_bf_entry_add(struct mlxsw_sp *mlxsw_sp,
+@@ -17,9 +17,9 @@ struct mlxsw_sp_acl_bf {
+ };
  
- 	mutex_lock(&bf->lock);
+ /* Bloom filter uses a crc-16 hash over chunks of data which contain 4 key
+- * blocks, eRP ID and region ID. In Spectrum-2, region key is combined of up to
+- * 12 key blocks, so there can be up to 3 chunks in the Bloom filter key,
+- * depending on the actual number of key blocks used in the region.
++ * blocks, eRP ID and region ID. In Spectrum-2 and above, region key is combined
++ * of up to 12 key blocks, so there can be up to 3 chunks in the Bloom filter
++ * key, depending on the actual number of key blocks used in the region.
+  * The layout of the Bloom filter key is as follows:
+  *
+  * +-------------------------+------------------------+------------------------+
+@@ -27,6 +27,8 @@ struct mlxsw_sp_acl_bf {
+  * +-------------------------+------------------------+------------------------+
+  */
+ #define MLXSW_BLOOM_KEY_CHUNKS 3
++
++/* Spectrum-2 and Spectrum-3 chunks */
+ #define MLXSW_SP2_BLOOM_KEY_LEN 69
  
--	bf_index = mlxsw_sp2_acl_bf_index_get(bf, aregion, aentry);
-+	bf_index = mlxsw_sp->acl_bf_ops->index_get(bf, aregion, aentry);
- 	rule_index = mlxsw_sp_acl_bf_rule_count_index_get(bf, erp_bank,
- 							  bf_index);
+ /* Each chunk size is 23 bytes. 18 bytes of it contain 4 key blocks, each is
+@@ -51,19 +53,9 @@ struct mlxsw_sp_acl_bf {
+  */
+ #define MLXSW_SP2_BLOOM_CHUNK_KEY_OFFSET 5
  
-@@ -233,7 +233,7 @@ mlxsw_sp_acl_bf_entry_del(struct mlxsw_sp *mlxsw_sp,
+-/* Each chunk contains 4 key blocks. Chunk 2 uses key blocks 11-8,
+- * and we need to populate it with 4 key blocks copied from the entry encoded
+- * key. Since the encoded key contains a padding, key block 11 starts at offset
+- * 2. block 7 that is used in chunk 1 starts at offset 20 as 4 key blocks take
+- * 18 bytes.
+- * This array defines key offsets for easy access when copying key blocks from
+- * entry key to Bloom filter chunk.
+- */
+-static const u8 chunk_key_offsets[MLXSW_BLOOM_KEY_CHUNKS] = {2, 20, 38};
+-
+-/* This table is just the CRC of each possible byte. It is
+- * computed, Msbit first, for the Bloom filter polynomial
+- * which is 0x8529 (1 + x^3 + x^5 + x^8 + x^10 + x^15 and
++/* This table is just the CRC of each possible byte which is used for
++ * Spectrum-{2-3}. It is computed, Msbit first, for the Bloom filter
++ * polynomial which is 0x8529 (1 + x^3 + x^5 + x^8 + x^10 + x^15 and
+  * the implicit x^16).
+  */
+ static const u16 mlxsw_sp2_acl_bf_crc16_tab[256] = {
+@@ -101,6 +93,127 @@ static const u16 mlxsw_sp2_acl_bf_crc16_tab[256] = {
+ 0x0c4c, 0x8965, 0x8337, 0x061e, 0x9793, 0x12ba, 0x18e8, 0x9dc1,
+ };
  
- 	mutex_lock(&bf->lock);
- 
--	bf_index = mlxsw_sp2_acl_bf_index_get(bf, aregion, aentry);
-+	bf_index = mlxsw_sp->acl_bf_ops->index_get(bf, aregion, aentry);
- 	rule_index = mlxsw_sp_acl_bf_rule_count_index_get(bf, erp_bank,
- 							  bf_index);
- 
-@@ -281,3 +281,7 @@ void mlxsw_sp_acl_bf_fini(struct mlxsw_sp_acl_bf *bf)
- 	mutex_destroy(&bf->lock);
- 	kfree(bf);
++/* Spectrum-4 chunks */
++#define MLXSW_SP4_BLOOM_KEY_LEN 60
++
++/* In Spectrum-4, there is no padding. Each chunk size is 20 bytes.
++ * 18 bytes of it contain 4 key blocks, each is 36 bits, and 2 bytes which hold
++ * eRP ID and region ID.
++ * The layout of each chunk is as follows:
++ *
++ * +----------------------+-----------------------------------+
++ * |        2 bytes       |              18 bytes             |
++ * +-----------+----------+-----------------------------------+
++ * |  157:148  | 147:144  |               143:0               |
++ * +---------+-----------+----------+-------------------------+
++ * | region ID |  eRP ID  |      4 Key blocks (18 Bytes)      |
++ * +-----------+----------+-----------------------------------+
++ */
++
++#define MLXSW_SP4_BLOOM_CHUNK_PAD_BYTES 0
++#define MLXSW_SP4_BLOOM_CHUNK_KEY_BYTES 18
++#define MLXSW_SP4_BLOOM_KEY_CHUNK_BYTES 20
++
++/* The offset of the key block within a chunk is 2 bytes as it comes after
++ * 16 bits of region ID and eRP ID.
++ */
++#define MLXSW_SP4_BLOOM_CHUNK_KEY_OFFSET 2
++
++/* For Spectrum-4, two hash functions are used, CRC-10 and CRC-6 based.
++ * The result is combination of the two calculations -
++ * 6 bit column are MSB (result of CRC-6),
++ * 10 bit row are LSB (result of CRC-10).
++ */
++
++/* This table is just the CRC of each possible byte which is used for
++ * Spectrum-4. It is computed, Msbit first, for the Bloom filter
++ * polynomial which is 0x1b (1 + x^1 + x^3 + x^4 and the implicit x^10).
++ */
++static const u16 mlxsw_sp4_acl_bf_crc10_tab[256] = {
++0x0000, 0x001b, 0x0036, 0x002d, 0x006c, 0x0077, 0x005a, 0x0041,
++0x00d8, 0x00c3, 0x00ee, 0x00f5, 0x00b4, 0x00af, 0x0082, 0x0099,
++0x01b0, 0x01ab, 0x0186, 0x019d, 0x01dc, 0x01c7, 0x01ea, 0x01f1,
++0x0168, 0x0173, 0x015e, 0x0145, 0x0104, 0x011f, 0x0132, 0x0129,
++0x0360, 0x037b, 0x0356, 0x034d, 0x030c, 0x0317, 0x033a, 0x0321,
++0x03b8, 0x03a3, 0x038e, 0x0395, 0x03d4, 0x03cf, 0x03e2, 0x03f9,
++0x02d0, 0x02cb, 0x02e6, 0x02fd, 0x02bc, 0x02a7, 0x028a, 0x0291,
++0x0208, 0x0213, 0x023e, 0x0225, 0x0264, 0x027f, 0x0252, 0x0249,
++0x02db, 0x02c0, 0x02ed, 0x02f6, 0x02b7, 0x02ac, 0x0281, 0x029a,
++0x0203, 0x0218, 0x0235, 0x022e, 0x026f, 0x0274, 0x0259, 0x0242,
++0x036b, 0x0370, 0x035d, 0x0346, 0x0307, 0x031c, 0x0331, 0x032a,
++0x03b3, 0x03a8, 0x0385, 0x039e, 0x03df, 0x03c4, 0x03e9, 0x03f2,
++0x01bb, 0x01a0, 0x018d, 0x0196, 0x01d7, 0x01cc, 0x01e1, 0x01fa,
++0x0163, 0x0178, 0x0155, 0x014e, 0x010f, 0x0114, 0x0139, 0x0122,
++0x000b, 0x0010, 0x003d, 0x0026, 0x0067, 0x007c, 0x0051, 0x004a,
++0x00d3, 0x00c8, 0x00e5, 0x00fe, 0x00bf, 0x00a4, 0x0089, 0x0092,
++0x01ad, 0x01b6, 0x019b, 0x0180, 0x01c1, 0x01da, 0x01f7, 0x01ec,
++0x0175, 0x016e, 0x0143, 0x0158, 0x0119, 0x0102, 0x012f, 0x0134,
++0x001d, 0x0006, 0x002b, 0x0030, 0x0071, 0x006a, 0x0047, 0x005c,
++0x00c5, 0x00de, 0x00f3, 0x00e8, 0x00a9, 0x00b2, 0x009f, 0x0084,
++0x02cd, 0x02d6, 0x02fb, 0x02e0, 0x02a1, 0x02ba, 0x0297, 0x028c,
++0x0215, 0x020e, 0x0223, 0x0238, 0x0279, 0x0262, 0x024f, 0x0254,
++0x037d, 0x0366, 0x034b, 0x0350, 0x0311, 0x030a, 0x0327, 0x033c,
++0x03a5, 0x03be, 0x0393, 0x0388, 0x03c9, 0x03d2, 0x03ff, 0x03e4,
++0x0376, 0x036d, 0x0340, 0x035b, 0x031a, 0x0301, 0x032c, 0x0337,
++0x03ae, 0x03b5, 0x0398, 0x0383, 0x03c2, 0x03d9, 0x03f4, 0x03ef,
++0x02c6, 0x02dd, 0x02f0, 0x02eb, 0x02aa, 0x02b1, 0x029c, 0x0287,
++0x021e, 0x0205, 0x0228, 0x0233, 0x0272, 0x0269, 0x0244, 0x025f,
++0x0016, 0x000d, 0x0020, 0x003b, 0x007a, 0x0061, 0x004c, 0x0057,
++0x00ce, 0x00d5, 0x00f8, 0x00e3, 0x00a2, 0x00b9, 0x0094, 0x008f,
++0x01a6, 0x01bd, 0x0190, 0x018b, 0x01ca, 0x01d1, 0x01fc, 0x01e7,
++0x017e, 0x0165, 0x0148, 0x0153, 0x0112, 0x0109, 0x0124, 0x013f,
++};
++
++/* This table is just the CRC of each possible byte which is used for
++ * Spectrum-4. It is computed, Msbit first, for the Bloom filter
++ * polynomial which is 0x2d (1 + x^2+ x^3 + x^5 and the implicit x^6).
++ */
++static const u8 mlxsw_sp4_acl_bf_crc6_tab[256] = {
++0x00, 0x2d, 0x37, 0x1a, 0x03, 0x2e, 0x34, 0x19,
++0x06, 0x2b, 0x31, 0x1c, 0x05, 0x28, 0x32, 0x1f,
++0x0c, 0x21, 0x3b, 0x16, 0x0f, 0x22, 0x38, 0x15,
++0x0a, 0x27, 0x3d, 0x10, 0x09, 0x24, 0x3e, 0x13,
++0x18, 0x35, 0x2f, 0x02, 0x1b, 0x36, 0x2c, 0x01,
++0x1e, 0x33, 0x29, 0x04, 0x1d, 0x30, 0x2a, 0x07,
++0x14, 0x39, 0x23, 0x0e, 0x17, 0x3a, 0x20, 0x0d,
++0x12, 0x3f, 0x25, 0x08, 0x11, 0x3c, 0x26, 0x0b,
++0x30, 0x1d, 0x07, 0x2a, 0x33, 0x1e, 0x04, 0x29,
++0x36, 0x1b, 0x01, 0x2c, 0x35, 0x18, 0x02, 0x2f,
++0x3c, 0x11, 0x0b, 0x26, 0x3f, 0x12, 0x08, 0x25,
++0x3a, 0x17, 0x0d, 0x20, 0x39, 0x14, 0x0e, 0x23,
++0x28, 0x05, 0x1f, 0x32, 0x2b, 0x06, 0x1c, 0x31,
++0x2e, 0x03, 0x19, 0x34, 0x2d, 0x00, 0x1a, 0x37,
++0x24, 0x09, 0x13, 0x3e, 0x27, 0x0a, 0x10, 0x3d,
++0x22, 0x0f, 0x15, 0x38, 0x21, 0x0c, 0x16, 0x3b,
++0x0d, 0x20, 0x3a, 0x17, 0x0e, 0x23, 0x39, 0x14,
++0x0b, 0x26, 0x3c, 0x11, 0x08, 0x25, 0x3f, 0x12,
++0x01, 0x2c, 0x36, 0x1b, 0x02, 0x2f, 0x35, 0x18,
++0x07, 0x2a, 0x30, 0x1d, 0x04, 0x29, 0x33, 0x1e,
++0x15, 0x38, 0x22, 0x0f, 0x16, 0x3b, 0x21, 0x0c,
++0x13, 0x3e, 0x24, 0x09, 0x10, 0x3d, 0x27, 0x0a,
++0x19, 0x34, 0x2e, 0x03, 0x1a, 0x37, 0x2d, 0x00,
++0x1f, 0x32, 0x28, 0x05, 0x1c, 0x31, 0x2b, 0x06,
++0x3d, 0x10, 0x0a, 0x27, 0x3e, 0x13, 0x09, 0x24,
++0x3b, 0x16, 0x0c, 0x21, 0x38, 0x15, 0x0f, 0x22,
++0x31, 0x1c, 0x06, 0x2b, 0x32, 0x1f, 0x05, 0x28,
++0x37, 0x1a, 0x00, 0x2d, 0x34, 0x19, 0x03, 0x2e,
++0x25, 0x08, 0x12, 0x3f, 0x26, 0x0b, 0x11, 0x3c,
++0x23, 0x0e, 0x14, 0x39, 0x20, 0x0d, 0x17, 0x3a,
++0x29, 0x04, 0x1e, 0x33, 0x2a, 0x07, 0x1d, 0x30,
++0x2f, 0x02, 0x18, 0x35, 0x2c, 0x01, 0x1b, 0x36,
++};
++
++/* Each chunk contains 4 key blocks. Chunk 2 uses key blocks 11-8,
++ * and we need to populate it with 4 key blocks copied from the entry encoded
++ * key. The original keys layout is same for Spectrum-{2,3,4}.
++ * Since the encoded key contains a 2 bytes padding, key block 11 starts at
++ * offset 2. block 7 that is used in chunk 1 starts at offset 20 as 4 key blocks
++ * take 18 bytes. See 'MLXSW_SP2_AFK_BLOCK_LAYOUT' for more details.
++ * This array defines key offsets for easy access when copying key blocks from
++ * entry key to Bloom filter chunk.
++ */
++static const u8 chunk_key_offsets[MLXSW_BLOOM_KEY_CHUNKS] = {2, 20, 38};
++
+ static u16 mlxsw_sp2_acl_bf_crc16_byte(u16 crc, u8 c)
+ {
+ 	return (crc << 8) ^ mlxsw_sp2_acl_bf_crc16_tab[(crc >> 8) ^ c];
+@@ -168,6 +281,124 @@ mlxsw_sp2_acl_bf_index_get(struct mlxsw_sp_acl_bf *bf,
+ 	return mlxsw_sp2_acl_bf_crc(bf_key, bf_size);
  }
-+
-+const struct mlxsw_sp_acl_bf_ops mlxsw_sp2_acl_bf_ops = {
-+	.index_get = mlxsw_sp2_acl_bf_index_get,
-+};
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.h
-index a41df10ade9b..edbbc89e7a71 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.h
-@@ -287,6 +287,12 @@ void mlxsw_sp_acl_erps_fini(struct mlxsw_sp *mlxsw_sp,
  
- struct mlxsw_sp_acl_bf;
- 
-+struct mlxsw_sp_acl_bf_ops {
-+	unsigned int (*index_get)(struct mlxsw_sp_acl_bf *bf,
-+				  struct mlxsw_sp_acl_atcam_region *aregion,
-+				  struct mlxsw_sp_acl_atcam_entry *aentry);
-+};
++static u16 mlxsw_sp4_acl_bf_crc10_byte(u16 crc, u8 c)
++{
++	u8 index = ((crc >> 2) ^ c) & 0xff;
 +
- int
- mlxsw_sp_acl_bf_entry_add(struct mlxsw_sp *mlxsw_sp,
- 			  struct mlxsw_sp_acl_bf *bf,
++	return ((crc << 8) ^ mlxsw_sp4_acl_bf_crc10_tab[index]) & 0x3ff;
++}
++
++static u16 mlxsw_sp4_acl_bf_crc6_byte(u16 crc, u8 c)
++{
++	u8 index = (crc ^ c) & 0xff;
++
++	return ((crc << 6) ^ (mlxsw_sp4_acl_bf_crc6_tab[index] << 2)) & 0xfc;
++}
++
++static u16 mlxsw_sp4_acl_bf_crc(const u8 *buffer, size_t len)
++{
++	u16 crc_row = 0, crc_col = 0;
++
++	while (len--) {
++		crc_row = mlxsw_sp4_acl_bf_crc10_byte(crc_row, *buffer);
++		crc_col = mlxsw_sp4_acl_bf_crc6_byte(crc_col, *buffer);
++		buffer++;
++	}
++
++	crc_col >>= 2;
++
++	/* 6 bit column are MSB, 10 bit row are LSB */
++	return (crc_col << 10) | crc_row;
++}
++
++static void right_shift_array(char *arr, u8 len, u8 shift_bits)
++{
++	u8 byte_mask = 0xff >> shift_bits;
++	int i;
++
++	if (WARN_ON(!shift_bits || shift_bits >= 8))
++		return;
++
++	for (i = len - 1; i >= 0; i--) {
++		/* The first iteration looks like out-of-bounds access,
++		 * but actually references a buffer that the array is shifted
++		 * into. This move is legal as we never send the last chunk to
++		 * this function.
++		 */
++		arr[i + 1] &= byte_mask;
++		arr[i + 1] |= arr[i] << (8 - shift_bits);
++		arr[i] = arr[i] >> shift_bits;
++	}
++}
++
++static void mlxsw_sp4_bf_key_shift_chunks(u8 chunk_count, char *output)
++{
++	/* The chunks are suppoosed to be continuous, with no padding.
++	 * Since region ID and eRP ID use 14 bits, and not fully 2 bytes,
++	 * and in Spectrum-4 there is no padding, it is necessary to shift some
++	 * chunks 2 bits right.
++	 */
++	switch (chunk_count) {
++	case 2:
++		/* The chunks are copied as follow:
++		 * +-------------+-----------------+
++		 * | Chunk 0     |   Chunk 1       |
++		 * | IDs  | keys |(**) IDs  | keys |
++		 * +-------------+-----------------+
++		 * In (**), there are two unused bits, therefore, chunk 0 needs
++		 * to be shifted two bits right.
++		 */
++		right_shift_array(output, MLXSW_SP4_BLOOM_KEY_CHUNK_BYTES, 2);
++		break;
++	case 3:
++		/* The chunks are copied as follow:
++		 * +-------------+-----------------+-----------------+
++		 * | Chunk 0     |   Chunk 1       |   Chunk 2       |
++		 * | IDs  | keys |(**) IDs  | keys |(**) IDs  | keys |
++		 * +-------------+-----------------+-----------------+
++		 * In (**), there are two unused bits, therefore, chunk 1 needs
++		 * to be shifted two bits right and chunk 0 needs to be shifted
++		 * four bits right.
++		 */
++		right_shift_array(output + MLXSW_SP4_BLOOM_KEY_CHUNK_BYTES,
++				  MLXSW_SP4_BLOOM_KEY_CHUNK_BYTES, 2);
++		right_shift_array(output, MLXSW_SP4_BLOOM_KEY_CHUNK_BYTES, 4);
++		break;
++	default:
++		WARN_ON(chunk_count > MLXSW_BLOOM_KEY_CHUNKS);
++	}
++}
++
++static void
++mlxsw_sp4_acl_bf_key_encode(struct mlxsw_sp_acl_atcam_region *aregion,
++			    struct mlxsw_sp_acl_atcam_entry *aentry,
++			    char *output, u8 *len)
++{
++	struct mlxsw_afk_key_info *key_info = aregion->region->key_info;
++	u8 block_count = mlxsw_afk_key_info_blocks_count_get(key_info);
++	u8 chunk_count = 1 + ((block_count - 1) >> 2);
++
++	__mlxsw_sp_acl_bf_key_encode(aregion, aentry, output, len,
++				     MLXSW_BLOOM_KEY_CHUNKS,
++				     MLXSW_SP4_BLOOM_CHUNK_PAD_BYTES,
++				     MLXSW_SP4_BLOOM_CHUNK_KEY_OFFSET,
++				     MLXSW_SP4_BLOOM_CHUNK_KEY_BYTES,
++				     MLXSW_SP4_BLOOM_KEY_CHUNK_BYTES);
++	mlxsw_sp4_bf_key_shift_chunks(chunk_count, output);
++}
++
++static unsigned int
++mlxsw_sp4_acl_bf_index_get(struct mlxsw_sp_acl_bf *bf,
++			   struct mlxsw_sp_acl_atcam_region *aregion,
++			   struct mlxsw_sp_acl_atcam_entry *aentry)
++{
++	char bf_key[MLXSW_SP4_BLOOM_KEY_LEN] = {};
++	u8 bf_size;
++
++	mlxsw_sp4_acl_bf_key_encode(aregion, aentry, bf_key, &bf_size);
++	return mlxsw_sp4_acl_bf_crc(bf_key, bf_size);
++}
++
+ static unsigned int
+ mlxsw_sp_acl_bf_rule_count_index_get(struct mlxsw_sp_acl_bf *bf,
+ 				     unsigned int erp_bank,
+@@ -285,3 +516,7 @@ void mlxsw_sp_acl_bf_fini(struct mlxsw_sp_acl_bf *bf)
+ const struct mlxsw_sp_acl_bf_ops mlxsw_sp2_acl_bf_ops = {
+ 	.index_get = mlxsw_sp2_acl_bf_index_get,
+ };
++
++const struct mlxsw_sp_acl_bf_ops mlxsw_sp4_acl_bf_ops = {
++	.index_get = mlxsw_sp4_acl_bf_index_get,
++};
 -- 
 2.33.1
 
