@@ -2,296 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F199F486D2A
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 23:25:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA6E3486D2D
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 23:26:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245040AbiAFWZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 17:25:23 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:49190 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S244638AbiAFWZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 17:25:22 -0500
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 206KbmbC008728;
-        Thu, 6 Jan 2022 22:25:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- content-transfer-encoding : in-reply-to; s=pp1;
- bh=HQCuZ4dUomIErA9nvcbt2gQysvho0T2Y1gYkmLHPLdU=;
- b=nEUbAZSO/p1B+zSpbnYLo1S6ikJYX32JOxalc7e/lxW7cMTNPVSd89At4Bv0ln7dG4QG
- 1qkzoUbyI6ARq75fPJdwlVsB+gfeHYYxUaM6OF/2GXCejQ9nSIlb9fen8aMif+fBOILw
- 0cRMsFgOa9oeZdI8sV0DGUwKOTm6pfIt1B1gSRMNd31qobl2S9n/IiFp42Peohl3vUgS
- e86rLXHgx10Kt8HrS75lwC2NwOPw23ZVBUZoYY+ctFYuldttH8M04isjC2gLfdlQp+mY
- C84MFpcdghVp4q75cC3JvdsTWPyc68jB4TKvqtnJP0WkG/U9mUQQ72hkLPfuK47g5FEg YA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3de4y7m8y4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 06 Jan 2022 22:25:03 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 206M0mvG000731;
-        Thu, 6 Jan 2022 22:25:02 GMT
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3de4y7m8xu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 06 Jan 2022 22:25:02 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 206MNskm028676;
-        Thu, 6 Jan 2022 22:25:01 GMT
-Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
-        by ppma03wdc.us.ibm.com with ESMTP id 3de5k8v0am-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 06 Jan 2022 22:25:01 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 206MP1kw23789998
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 6 Jan 2022 22:25:01 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E8F226E05B;
-        Thu,  6 Jan 2022 22:25:00 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5ED5E6E054;
-        Thu,  6 Jan 2022 22:24:59 +0000 (GMT)
-Received: from suka-w540.localdomain (unknown [9.160.73.209])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with SMTP;
-        Thu,  6 Jan 2022 22:24:59 +0000 (GMT)
-Received: by suka-w540.localdomain (Postfix, from userid 1000)
-        id 33CFA2E128C; Thu,  6 Jan 2022 14:24:56 -0800 (PST)
-Date:   Thu, 6 Jan 2022 14:24:56 -0800
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Abdul Haleem <abdhalee@linux.vnet.ibm.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        alexandr.lobakin@intel.com, dumazet@google.com,
-        brian King <brking@linux.vnet.ibm.com>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        netdev <netdev@vger.kernel.org>, Dany Madden <drt@linux.ibm.com>
-Subject: Re: [5.16.0-rc5][ppc][net] kernel oops when hotplug remove of vNIC
- interface
-Message-ID: <YddsOKc9DaRg5HTf@us.ibm.com>
-References: <63380c22-a163-2664-62be-2cf401065e73@linux.vnet.ibm.com>
- <20220105102625.2738186e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <87lezt3398.fsf@mpe.ellerman.id.au>
+        id S245028AbiAFW0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 17:26:35 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.183]:57700 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244638AbiAFW0e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 17:26:34 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.51.24])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 0F5A61A0065;
+        Thu,  6 Jan 2022 22:26:33 +0000 (UTC)
+Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B5DF93C006D;
+        Thu,  6 Jan 2022 22:26:32 +0000 (UTC)
+Received: from [192.168.1.115] (unknown [98.97.67.209])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id C3C9E13C2B0;
+        Thu,  6 Jan 2022 14:26:31 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com C3C9E13C2B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1641507992;
+        bh=j+9NajDB9MJ8ANhoVYNIlkSHYBpYH8wgwULwNGa8gnw=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=DPSQ9J0jYjZpADfjaAFE9s7xlGWgK5uBBTnhfOd0QXVLub37cnYqPnzquQQUcbaYc
+         dqkCBoNxCVaOwpq2agJPfNTiuGbTbvx1csw59X1OwNCz/n2QsnhGZX8N41Fy/u7vac
+         TgFWCGnSNONESME+RWmyQDNZ58PRBS6Jm7e1Eg/0=
+Subject: Re: Debugging stuck tcp connection across localhost
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     netdev <netdev@vger.kernel.org>
+References: <38e55776-857d-1b51-3558-d788cf3c1524@candelatech.com>
+ <CADVnQyn97m5ybVZ3FdWAw85gOMLAvPSHiR8_NC_nGFyBdRySqQ@mail.gmail.com>
+ <b3e53863-e80e-704f-81a2-905f80f3171d@candelatech.com>
+ <CADVnQymJaF3HoxoWhTb=D2wuVTpe_fp45tL8g7kaA2jgDe+xcQ@mail.gmail.com>
+ <a6ec30f5-9978-f55f-f34f-34485a09db97@candelatech.com>
+ <CADVnQym9LTupiVCTWh95qLQWYTkiFAEESv9Htzrgij8UVqSHBQ@mail.gmail.com>
+From:   Ben Greear <greearb@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <b60aab98-a95f-d392-4391-c0d5e2afb2cd@candelatech.com>
+Date:   Thu, 6 Jan 2022 14:26:31 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <87lezt3398.fsf@mpe.ellerman.id.au>
-X-Operating-System: Linux 2.0.32 on an i486
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Cxz1C8dGMaytgdrdpEDv4lvbHGNoRt7q
-X-Proofpoint-ORIG-GUID: sbIAicQaLACxR57qRAvw2tUc02ctvY0e
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-06_10,2022-01-06_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- lowpriorityscore=0 adultscore=0 phishscore=0 suspectscore=0 mlxscore=0
- bulkscore=0 impostorscore=0 malwarescore=0 clxscore=1011
- priorityscore=1501 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2110150000 definitions=main-2201060136
+In-Reply-To: <CADVnQym9LTupiVCTWh95qLQWYTkiFAEESv9Htzrgij8UVqSHBQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
+X-MDID: 1641507993-t89Og907QsaH
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Michael Ellerman [mpe@ellerman.id.au] wrote:
-> Jakub Kicinski <kuba@kernel.org> writes:
-> > On Wed, 5 Jan 2022 13:56:53 +0530 Abdul Haleem wrote:
-> >> Greeting's
-> >>=20
-> >> Mainline kernel 5.16.0-rc5 panics when DLPAR ADD of vNIC device on my=
-=20
-> >> Powerpc LPAR
-> >>=20
-> >> Perform below dlpar commands in a loop from linux OS
-> >>=20
-> >> drmgr -r -c slot -s U9080.HEX.134C488-V1-C3 -w 5 -d 1
-> >> drmgr -a -c slot -s U9080.HEX.134C488-V1-C3 -w 5 -d 1
-> >>=20
-> >> after 7th iteration, the kernel panics with below messages
-> >>=20
-> >> console messages:
-> >> [102056] ibmvnic 30000003 env3: Sending CRQ: 801e000864000000=20
-> >> 0060000000000000
-> >> <intr> ibmvnic 30000003 env3: Handling CRQ: 809e000800000000=20
-> >> 0000000000000000
-> >> [102056] ibmvnic 30000003 env3: Disabling tx_scrq[0] irq
-> >> [102056] ibmvnic 30000003 env3: Disabling tx_scrq[1] irq
-> >> [102056] ibmvnic 30000003 env3: Disabling rx_scrq[0] irq
-> >> [102056] ibmvnic 30000003 env3: Disabling rx_scrq[1] irq
-> >> [102056] ibmvnic 30000003 env3: Disabling rx_scrq[2] irq
-> >> [102056] ibmvnic 30000003 env3: Disabling rx_scrq[3] irq
-> >> [102056] ibmvnic 30000003 env3: Disabling rx_scrq[4] irq
-> >> [102056] ibmvnic 30000003 env3: Disabling rx_scrq[5] irq
-> >> [102056] ibmvnic 30000003 env3: Disabling rx_scrq[6] irq
-> >> [102056] ibmvnic 30000003 env3: Disabling rx_scrq[7] irq
-> >> [102056] ibmvnic 30000003 env3: Replenished 8 pools
-> >> Kernel attempted to read user page (10) - exploit attempt? (uid: 0)
-> >> BUG: Kernel NULL pointer dereference on read at 0x00000010
-> >> Faulting instruction address: 0xc000000000a3c840
-> >> Oops: Kernel access of bad area, sig: 11 [#1]
-> >> LE PAGE_SIZE=3D64K MMU=3DRadix SMP NR_CPUS=3D2048 NUMA pSeries
-> >> Modules linked in: bridge stp llc ib_core rpadlpar_io rpaphp nfnetlink=
-=20
-> >> tcp_diag udp_diag inet_diag unix_diag af_packet_diag netlink_diag=20
-> >> bonding rfkill ibmvnic sunrpc pseries_rng xts vmx_crypto gf128mul=20
-> >> sch_fq_codel binfmt_misc ip_tables ext4 mbcache jbd2 dm_service_time=
-=20
-> >> sd_mod t10_pi sg ibmvfc scsi_transport_fc ibmveth dm_multipath dm_mirr=
-or=20
-> >> dm_region_hash dm_log dm_mod fuse
-> >> CPU: 9 PID: 102056 Comm: kworker/9:2 Kdump: loaded Not tainted=20
-> >> 5.16.0-rc5-autotest-g6441998e2e37 #1
-> >> Workqueue: events_long __ibmvnic_reset [ibmvnic]
-> >> NIP:=A0 c000000000a3c840 LR: c0080000029b5378 CTR: c000000000a3c820
-> >> REGS: c0000000548e37e0 TRAP: 0300=A0=A0 Not tainted=20
-> >> (5.16.0-rc5-autotest-g6441998e2e37)
-> >> MSR:=A0 8000000000009033 <SF,EE,ME,IR,DR,RI,LE>=A0 CR: 28248484=A0 XER=
-: 00000004
-> >> CFAR: c0080000029bdd24 DAR: 0000000000000010 DSISR: 40000000 IRQMASK: 0
-> >> GPR00: c0080000029b55d0 c0000000548e3a80 c0000000028f0200 000000000000=
-0000
-> >> GPR04: c000000c7d1a7e00 fffffffffffffff6 0000000000000027 c000000c7d1a=
-7e08
-> >> GPR08: 0000000000000023 0000000000000000 0000000000000010 c0080000029b=
-dd10
-> >> GPR12: c000000000a3c820 c000000c7fca6680 0000000000000000 c00000013301=
-6bf8
-> >> GPR16: 00000000000003fe 0000000000001000 0000000000000002 000000000000=
-0008
-> >> GPR20: c000000133016eb0 0000000000000000 0000000000000000 000000000000=
-0003
-> >> GPR24: c000000133016000 c000000133017168 0000000020000000 c00000013301=
-6a00
-> >> GPR28: 0000000000000006 c000000133016a00 0000000000000001 c00000013301=
-6000
-> >> NIP [c000000000a3c840] napi_enable+0x20/0xc0
-> >> LR [c0080000029b5378] __ibmvnic_open+0xf0/0x430 [ibmvnic]
-> >> Call Trace:
-> >> [c0000000548e3a80] [0000000000000006] 0x6 (unreliable)
-> >> [c0000000548e3ab0] [c0080000029b55d0] __ibmvnic_open+0x348/0x430 [ibmv=
-nic]
-> >> [c0000000548e3b40] [c0080000029bcc28] __ibmvnic_reset+0x500/0xdf0 [ibm=
-vnic]
-> >> [c0000000548e3c60] [c000000000176228] process_one_work+0x288/0x570
-> >> [c0000000548e3d00] [c000000000176588] worker_thread+0x78/0x660
-> >> [c0000000548e3da0] [c0000000001822f0] kthread+0x1c0/0x1d0
-> >> [c0000000548e3e10] [c00000000000cf64] ret_from_kernel_thread+0x5c/0x64
-> >> Instruction dump:
-> >> 7d2948f8 792307e0 4e800020 60000000 3c4c01eb 384239e0 f821ffd1 39430010
-> >> 38a0fff6 e92d1100 f9210028 39200000 <e9030010> f9010020 60420000 e9210=
-020
-> >> ---[ end trace 5f8033b08fd27706 ]---
-> >> radix-mmu: Page sizes from device-tree:
-> >>=20
-> >> the fault instruction points to
-> >>=20
-> >> [root@ltcden11-lp1 boot]# gdb -batch=20
-> >> vmlinuz-5.16.0-rc5-autotest-g6441998e2e37 -ex 'list *(0xc000000000a3c8=
-40)'
-> >> 0xc000000000a3c840 is in napi_enable (net/core/dev.c:6966).
-> >> 6961=A0=A0=A0 void napi_enable(struct napi_struct *n)
-> >> 6962=A0=A0=A0 {
-> >> 6963=A0=A0=A0 =A0=A0=A0 unsigned long val, new;
-> >> 6964
-> >> 6965=A0=A0=A0 =A0=A0=A0 do {
-> >> 6966=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 val =3D READ_ONCE(n->state);
-> >
-> > If n is NULL here that's gotta be a driver problem.
->=20
-> Definitely looks like it, the disassembly is:
->=20
->   not     r9,r9
->   clrldi  r3,r9,63
->   blr				# end of previous function
->   nop
->   addis   r2,r12,491		# function entry
->   addi    r2,r2,14816
->   stdu    r1,-48(r1)		# stack frame creation
->   li      r5,-10
->   ld      r9,4352(r13)
->   std     r9,40(r1)
->   li      r9,0
->   ld      r8,16(r3)		# load from r3 (n) + 16
->=20
->=20
-> The register dump shows that r3 is NULL, and it comes directly from the
-> caller. So we've been called with n =3D NULL.
+On 1/6/22 12:04 PM, Neal Cardwell wrote:
+> On Thu, Jan 6, 2022 at 2:05 PM Ben Greear <greearb@candelatech.com> wrote:
+>>
+>> On 1/6/22 8:16 AM, Neal Cardwell wrote:
+>>> On Thu, Jan 6, 2022 at 10:39 AM Ben Greear <greearb@candelatech.com> wrote:
+>>>>
+>>>> On 1/6/22 7:20 AM, Neal Cardwell wrote:
+>>>>> On Thu, Jan 6, 2022 at 10:06 AM Ben Greear <greearb@candelatech.com> wrote:
+>>>>>>
+>>>>>> Hello,
+>>>>>>
+>>>>>> I'm working on a strange problem, and could use some help if anyone has ideas.
+>>>>>>
+>>>>>> On a heavily loaded system (500+ wifi station devices, VRF device per 'real' netdev,
+>>>>>> traffic generation on the netdevs, etc), I see cases where two processes trying
+>>>>>> to communicate across localhost with TCP seem to get a stuck network
+>>>>>> connection:
+>>>>>>
+>>>>>> [greearb@bendt7 ben_debug]$ grep 4004 netstat.txt |grep 127.0.0.1
+>>>>>> tcp        0 7988926 127.0.0.1:4004          127.0.0.1:23184         ESTABLISHED
+>>>>>> tcp        0  59805 127.0.0.1:23184         127.0.0.1:4004          ESTABLISHED
+>>>>>>
+>>>>>> Both processes in question continue to execute, and as far as I can tell, they are properly
+>>>>>> attempting to read/write the socket, but they are reading/writing 0 bytes (these sockets
+>>>>>> are non blocking).  If one was stuck not reading, I would expect netstat
+>>>>>> to show bytes in the rcv buffer, but it is zero as you can see above.
+>>>>>>
+>>>>>> Kernel is 5.15.7+ local hacks.  I can only reproduce this in a big messy complicated
+>>>>>> test case, with my local ath10k-ct and other patches that enable virtual wifi stations,
+>>>>>> but my code can grab logs at time it sees the problem.  Is there anything
+>>>>>> more I can do to figure out why the TCP connection appears to be stuck?
+>>>>>
+>>>>> It could be very useful to get more information about the state of all
+>>>>> the stuck connections (sender and receiver side) with something like:
+>>>>>
+>>>>>      ss -tinmo 'sport = :4004 or sport = :4004'
+>>>>>
+>>>>> I would recommend downloading and building a recent version of the
+>>>>> 'ss' tool to maximize the information. Here is a recipe for doing
+>>>>> that:
+>>>>>
+>>>>>     https://github.com/google/bbr/blob/master/Documentation/bbr-faq.md#how-can-i-monitor-linux-tcp-bbr-connections
+>>
+>> Hello Neal,
+>>
+>> Here is the ss output from when the problem was happening.  I think you can ignore the non-127.0.0.1
+>> connections, but I left them in just in case it is somehow helpful.
+>>
+>> In addition, the pcap capture file is uploaded here:
+>>
+>> http://www.candelatech.com/downloads/trace-lo-4004.pcap
+>>
+>> The problem was happening in this time frame:
+>>
+>> [root@ct523c-0bdd ~]# date
+>> Thu 06 Jan 2022 10:14:49 AM PST
+>> [root@ct523c-0bdd ~]# ss -tinmo 'dport = :4004 or sport = :4004'
+>> State       Recv-Q       Send-Q               Local Address:Port                Peer Address:Port
+>>
+>> ESTAB       0            222024                   127.0.0.1:57224                  127.0.0.1:4004         timer:(persist,1min23sec,9)
+>>           skmem:(r0,rb2000000,t0,tb2000000,f2232,w227144,o0,bl0,d0) ts sack reno wscale:10,4 rto:201 backoff:9 rtt:0.866/0.944 ato:40 mss:65483 pmtu:65535 rcvmss:65483
+>> advmss:65483 cwnd:10 bytes_sent:36810035 bytes_retrans:22025 bytes_acked:31729223 bytes_received:228063971 segs_out:20134 segs_in:17497 data_segs_out:11969
+>> data_segs_in:16642 send 6049237875bps lastsnd:3266 lastrcv:125252 lastack:125263 pacing_rate 12093239064bps delivery_rate 130966000000bps delivered:11863
+>> app_limited busy:275880ms rwnd_limited:21ms(0.0%) retrans:0/2 dsack_dups:2 rcv_rtt:0.671 rcv_space:1793073 rcv_ssthresh:934517 notsent:222024 minrtt:0.013
+>> ESTAB       0            0                   192.168.200.34:4004              192.168.200.34:16906
+>>           skmem:(r0,rb19521831,t0,tb2626560,f0,w0,o0,bl0,d0) ts sack reno wscale:10,10 rto:201 rtt:0.483/0.64 ato:40 mss:22016 pmtu:65535 rcvmss:65483 advmss:65483
+>> cwnd:5 ssthresh:5 bytes_sent:8175956 bytes_retrans:460 bytes_acked:8174668 bytes_received:20820708 segs_out:3635 segs_in:2491 data_segs_out:2377
+>> data_segs_in:2330 send 1823271222bps lastsnd:125253 lastrcv:125250 lastack:125251 pacing_rate 2185097952bps delivery_rate 70451200000bps delivered:2372
+>> busy:14988ms rwnd_limited:1ms(0.0%) retrans:0/5 rcv_rtt:1.216 rcv_space:779351 rcv_ssthresh:9759798 minrtt:0.003
+>> ESTAB       0            139656              192.168.200.34:16908             192.168.200.34:4004         timer:(persist,1min52sec,2)
+>>           skmem:(r0,rb2000000,t0,tb2000000,f3960,w143496,o0,bl0,d0) ts sack reno wscale:10,10 rto:37397 backoff:2 rtt:4182.62/8303.35 ato:40 mss:65483 pmtu:65535
+>> rcvmss:22016 advmss:65483 cwnd:10 bytes_sent:22351275 bytes_retrans:397320 bytes_acked:20703982 bytes_received:7815946 segs_out:2585 segs_in:3642
+>> data_segs_out:2437 data_segs_in:2355 send 1252479bps lastsnd:7465 lastrcv:125250 lastack:125253 pacing_rate 2504952bps delivery_rate 15992bps delivered:2357
+>> busy:271236ms retrans:0/19 rcv_rtt:0.004 rcv_space:288293 rcv_ssthresh:43690 notsent:139656 minrtt:0.004
+>> ESTAB       0            460                 192.168.200.34:4004              192.168.200.34:16908        timer:(on,1min23sec,9)
+>>           skmem:(r0,rb9433368,t0,tb2626560,f2356,w1740,o0,bl0,d0) ts sack reno wscale:10,10 rto:102912 backoff:9 rtt:0.741/1.167 ato:40 mss:22016 pmtu:65535
+>> rcvmss:65483 advmss:65483 cwnd:1 ssthresh:2 bytes_sent:7850211 bytes_retrans:33437 bytes_acked:7815486 bytes_received:20703981 segs_out:3672 segs_in:2504
+>> data_segs_out:2380 data_segs_in:2356 send 237689609bps lastsnd:19753 lastrcv:158000 lastack:125250 pacing_rate 854817384bps delivery_rate 115645432bps
+>> delivered:2355 busy:200993ms unacked:1 retrans:0/24 lost:1 rcv_rtt:1.439 rcv_space:385874 rcv_ssthresh:4715943 minrtt:0.003
+>> ESTAB       0            147205              192.168.200.34:16906             192.168.200.34:4004         timer:(persist,1min46sec,9)
+>>           skmem:(r0,rb2000000,t0,tb2000000,f507,w151045,o0,bl0,d0) ts sack reno wscale:10,10 rto:223 backoff:9 rtt:11.4/18.962 ato:40 mss:65483 pmtu:65535 rcvmss:22016
+>> advmss:65483 cwnd:10 bytes_sent:23635760 bytes_retrans:220124 bytes_acked:20820709 bytes_received:8174668 segs_out:2570 segs_in:3625 data_segs_out:2409
+>> data_segs_in:2371 send 459529825bps lastsnd:7465 lastrcv:125253 lastack:125250 pacing_rate 918999184bps delivery_rate 43655333328bps delivered:2331 app_limited
+>> busy:185315ms retrans:0/14 rcv_rtt:0.005 rcv_space:220160 rcv_ssthresh:43690 notsent:147205 minrtt:0.003
+>> ESTAB       0            3928980                  127.0.0.1:4004                   127.0.0.1:57224        timer:(persist,7.639ms,8)
+>>           skmem:(r0,rb50000000,t0,tb3939840,f108,w4005780,o0,bl0,d3) ts sack reno wscale:4,10 rto:251 backoff:8 rtt:13.281/25.84 ato:40 mss:65483 pmtu:65535
+>> rcvmss:65483 advmss:65483 cwnd:10 ssthresh:10 bytes_sent:312422779 bytes_retrans:245567 bytes_acked:228063971 bytes_received:31729222 segs_out:18944
+>> segs_in:20021 data_segs_out:18090 data_segs_in:11862 send 394446201bps lastsnd:56617 lastrcv:125271 lastack:125252 pacing_rate 709983112bps delivery_rate
+>> 104772800000bps delivered:16643 app_limited busy:370468ms rwnd_limited:127ms(0.0%) retrans:0/26 rcv_rtt:7666.22 rcv_space:2279928 rcv_ssthresh:24999268
+>> notsent:3928980 minrtt:0.003
+>> [root@ct523c-0bdd ~]# date
+>> Thu 06 Jan 2022 10:14:57 AM PST
+>> [root@ct523c-0bdd ~]# ss -tinmo 'dport = :4004 or sport = :4004'
+>> State       Recv-Q       Send-Q               Local Address:Port                Peer Address:Port
+>>
+>> ESTAB       0            222208                   127.0.0.1:57224                  127.0.0.1:4004         timer:(persist,1min11sec,9)
+>>           skmem:(r0,rb2000000,t0,tb2000000,f2048,w227328,o0,bl0,d0) ts sack reno wscale:10,4 rto:201 backoff:9 rtt:0.866/0.944 ato:40 mss:65483 pmtu:65535 rcvmss:65483
+>> advmss:65483 cwnd:10 bytes_sent:36941001 bytes_retrans:22025 bytes_acked:31729223 bytes_received:228063971 segs_out:20136 segs_in:17497 data_segs_out:11971
+>> data_segs_in:16642 send 6049237875bps lastsnd:2663 lastrcv:136933 lastack:136944 pacing_rate 12093239064bps delivery_rate 130966000000bps delivered:11863
+>> app_limited busy:287561ms rwnd_limited:21ms(0.0%) retrans:0/2 dsack_dups:2 rcv_rtt:0.671 rcv_space:1793073 rcv_ssthresh:934517 notsent:222208 minrtt:0.013
+>> ESTAB       0            0                   192.168.200.34:4004              192.168.200.34:16906
+>>           skmem:(r0,rb19521831,t0,tb2626560,f0,w0,o0,bl0,d0) ts sack reno wscale:10,10 rto:201 rtt:0.483/0.64 ato:40 mss:22016 pmtu:65535 rcvmss:65483 advmss:65483
+>> cwnd:5 ssthresh:5 bytes_sent:8175956 bytes_retrans:460 bytes_acked:8174668 bytes_received:20820708 segs_out:3635 segs_in:2491 data_segs_out:2377
+>> data_segs_in:2330 send 1823271222bps lastsnd:136934 lastrcv:136931 lastack:136932 pacing_rate 2185097952bps delivery_rate 70451200000bps delivered:2372
+>> busy:14988ms rwnd_limited:1ms(0.0%) retrans:0/5 rcv_rtt:1.216 rcv_space:779351 rcv_ssthresh:9759798 minrtt:0.003
+>> ESTAB       0            139656              192.168.200.34:16908             192.168.200.34:4004         timer:(persist,1min40sec,2)
+>>           skmem:(r0,rb2000000,t0,tb2000000,f3960,w143496,o0,bl0,d0) ts sack reno wscale:10,10 rto:37397 backoff:2 rtt:4182.62/8303.35 ato:40 mss:65483 pmtu:65535
+>> rcvmss:22016 advmss:65483 cwnd:10 bytes_sent:22351275 bytes_retrans:397320 bytes_acked:20703982 bytes_received:7815946 segs_out:2585 segs_in:3642
+>> data_segs_out:2437 data_segs_in:2355 send 1252479bps lastsnd:19146 lastrcv:136931 lastack:136934 pacing_rate 2504952bps delivery_rate 15992bps delivered:2357
+>> busy:282917ms retrans:0/19 rcv_rtt:0.004 rcv_space:288293 rcv_ssthresh:43690 notsent:139656 minrtt:0.004
+>> ESTAB       0            460                 192.168.200.34:4004              192.168.200.34:16908        timer:(on,1min11sec,9)
+>>           skmem:(r0,rb9433368,t0,tb2626560,f2356,w1740,o0,bl0,d0) ts sack reno wscale:10,10 rto:102912 backoff:9 rtt:0.741/1.167 ato:40 mss:22016 pmtu:65535
+>> rcvmss:65483 advmss:65483 cwnd:1 ssthresh:2 bytes_sent:7850211 bytes_retrans:33437 bytes_acked:7815486 bytes_received:20703981 segs_out:3672 segs_in:2504
+>> data_segs_out:2380 data_segs_in:2356 send 237689609bps lastsnd:31434 lastrcv:169681 lastack:136931 pacing_rate 854817384bps delivery_rate 115645432bps
+>> delivered:2355 busy:212674ms unacked:1 retrans:0/24 lost:1 rcv_rtt:1.439 rcv_space:385874 rcv_ssthresh:4715943 minrtt:0.003
+>> ESTAB       0            147205              192.168.200.34:16906             192.168.200.34:4004         timer:(persist,1min35sec,9)
+>>           skmem:(r0,rb2000000,t0,tb2000000,f507,w151045,o0,bl0,d0) ts sack reno wscale:10,10 rto:223 backoff:9 rtt:11.4/18.962 ato:40 mss:65483 pmtu:65535 rcvmss:22016
+>> advmss:65483 cwnd:10 bytes_sent:23635760 bytes_retrans:220124 bytes_acked:20820709 bytes_received:8174668 segs_out:2570 segs_in:3625 data_segs_out:2409
+>> data_segs_in:2371 send 459529825bps lastsnd:19146 lastrcv:136934 lastack:136931 pacing_rate 918999184bps delivery_rate 43655333328bps delivered:2331 app_limited
+>> busy:196996ms retrans:0/14 rcv_rtt:0.005 rcv_space:220160 rcv_ssthresh:43690 notsent:147205 minrtt:0.003
+>> ESTAB       0            3928980                  127.0.0.1:4004                   127.0.0.1:57224        timer:(persist,1min57sec,9)
+>>           skmem:(r0,rb50000000,t0,tb3939840,f108,w4005780,o0,bl0,d3) ts sack reno wscale:4,10 rto:251 backoff:9 rtt:13.281/25.84 ato:40 mss:65483 pmtu:65535
+>> rcvmss:65483 advmss:65483 cwnd:10 ssthresh:10 bytes_sent:312488262 bytes_retrans:245567 bytes_acked:228063971 bytes_received:31729222 segs_out:18945
+>> segs_in:20021 data_segs_out:18091 data_segs_in:11862 send 394446201bps lastsnd:2762 lastrcv:136952 lastack:136933 pacing_rate 709983112bps delivery_rate
+>> 104772800000bps delivered:16643 app_limited busy:382149ms rwnd_limited:127ms(0.0%) retrans:0/26 rcv_rtt:7666.22 rcv_space:2279928 rcv_ssthresh:24999268
+>> notsent:3928980 minrtt:0.003
+>> [root@ct523c-0bdd ~]#
+>>
+>>
+>> We can reproduce this readily at current, and I'm happy to try patches and/or do more debugging.  We also tried with a 5.12 kernel,
+>> and saw same problems, but in all cases, we have local patches applied, and there is no way for us to do this test without
+>> at least a fair bit of local patches applied.
+> 
+> Thanks for the ss traces and tcpdump output! The tcpdump traces are
+> nice, in that they start before the connection starts, so capture the
+> SYN and its critical options like wscale.
+> 
+>  From the "timer:(persist" in the ss output, it seems the stalls (that
+> are preventing the send buffers from being transmitted) are caused by
+> a 0-byte receive window causing the senders to stop sending, and
+> periodically fire the ICSK_TIME_PROBE0 timer to check for an open
+> receive window. From "backoff:9" it seems this condition has lasted
+> for a very long exponential backoff process.
+> 
+> I don't see 0-byte receive window problems in the trace, but this is
+> probably because the tcpdump traces only last through 10:12:47 PST,
+> and the problem is showing up in ss at 10:14:49 AM PST and later.
+> 
+> Is it possible to reproduce the problem again, and this time let the
+> tcpdump traces run all the way through the period where the
+> connections freeze and you grab the "ss" output?
+> 
+> You may also have to explicitly kill the tcpdump. Perhaps the tail of
+> the trace was buffered in tcpdump's output buffer and not flushed to
+> disk. A "killall tcpdump" should do the trick to force it to cleanly
+> flush everything.
 
-Yeah, Good catch Abdul.
+Here is another set of debugging, I made sure tcpdump ran the entire time,
+as well as the ss monitoring script.
 
-I suspect its due to the release_resources() in __ibmvnic_open(). The
-problem is hard to reproduce but we are testing following patch with
-error injection. Will formally submit after testing/review.
+http://www.candelatech.com/downloads/ss_log.txt
+http://www.candelatech.com/downloads/trace-lo-4004-b.pcap
 
----
-=46rom 8a78083e5ec6914be197352f391bfa17420a147c Mon Sep 17 00:00:00 2001
-=46rom: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Date: Wed, 5 Jan 2022 16:22:58 -0500
-Subject: [PATCH 1/1] ibmvnic: don't release napi in __ibmvnic_open()
+In addition, here are logs from my tool with msec timestamps.  It is detecting
+communication failure and logging about it.  Interestingly, I think it recovered
+after one long timeout, but in the end, it went past the 2-minute cutoff mark
+where my program will close the TCP connection and restart things.
 
-If __ibmvnic_open() encounters an error such as when setting link state,
-it calls release_resources() which frees the napi structures needlessly.
-Instead, have __ibmvnic_open() only clean up the work it did so far (i.e.
-disable napi and irqs) and leave the rest to the callers.
+1641506767983:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 34458ms, sending req for update, read-isset: 0
+1641506773839:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 40314ms, sending req for update, read-isset: 0
+1641506780563:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 47038ms, sending req for update, read-isset: 0
+1641506786567:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 53041ms, sending req for update, read-isset: 0
+1641506823537:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 34949ms, sending req for update, read-isset: 0
+1641506829280:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 40692ms, sending req for update, read-isset: 0
+1641506834878:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 46289ms, sending req for update, read-isset: 0
+1641506840778:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 52189ms, sending req for update, read-isset: 0
+1641506846786:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 58198ms, sending req for update, read-isset: 0
+1641506852746:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 64158ms, sending req for update, read-isset: 0
+1641506858280:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 69692ms, sending req for update, read-isset: 0
+1641506864200:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 75612ms, sending req for update, read-isset: 0
+1641506870556:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 81968ms, sending req for update, read-isset: 0
+1641506876564:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 87976ms, sending req for update, read-isset: 0
+1641506882774:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 94185ms, sending req for update, read-isset: 0
 
-If caller of __ibmvnic_open() is ibmvnic_open(), it should release the
-resources immediately. If the caller is do_reset() or do_hard_reset(),
-they will release the resources on the next reset.
+# Recovered between here and above it seems.
 
-Reported-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+1641507005029:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 35840ms, sending req for update, read-isset: 0
+1641507035759:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 30164ms, sending req for update, read-isset: 0
+1641507042161:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 36565ms, sending req for update, read-isset: 0
+1641507048397:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 42802ms, sending req for update, read-isset: 0
+1641507054491:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 48896ms, sending req for update, read-isset: 0
+1641507060748:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 55153ms, sending req for update, read-isset: 0
+1641507067083:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 61488ms, sending req for update, read-isset: 0
+1641507073438:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 67842ms, sending req for update, read-isset: 0
+1641507079638:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 74042ms, sending req for update, read-isset: 0
+1641507085926:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 80330ms, sending req for update, read-isset: 0
+1641507091788:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 86192ms, sending req for update, read-isset: 0
+1641507098042:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 92447ms, sending req for update, read-isset: 0
+1641507104283:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 98687ms, sending req for update, read-isset: 0
+1641507110466:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 104871ms, sending req for update, read-isset: 0
+1641507116381:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 110786ms, sending req for update, read-isset: 0
+1641507123034:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 117439ms, sending req for update, read-isset: 0
+1641507128975:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has not received communication in: 123379ms, sending req for update, read-isset: 0
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/=
-ibmvnic.c
-index 0bb3911dd014..34efba6c117b 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -110,6 +110,7 @@ static void ibmvnic_tx_scrq_clean_buffer(struct ibmvnic=
-_adapter *adapter,
- 					 struct ibmvnic_sub_crq_queue *tx_scrq);
- static void free_long_term_buff(struct ibmvnic_adapter *adapter,
- 				struct ibmvnic_long_term_buff *ltb);
-+static void ibmvnic_disable_irqs(struct ibmvnic_adapter *adapter);
-=20
- struct ibmvnic_stat {
- 	char name[ETH_GSTRING_LEN];
-@@ -1418,7 +1419,7 @@ static int __ibmvnic_open(struct net_device *netdev)
- 	rc =3D set_link_state(adapter, IBMVNIC_LOGICAL_LNK_UP);
- 	if (rc) {
- 		ibmvnic_napi_disable(adapter);
--		release_resources(adapter);
-+		ibmvnic_disable_irqs(adapter);
- 		return rc;
- 	}
-=20
-@@ -1468,9 +1469,6 @@ static int ibmvnic_open(struct net_device *netdev)
- 		rc =3D init_resources(adapter);
- 		if (rc) {
- 			netdev_err(netdev, "failed to initialize resources\n");
--			release_resources(adapter);
--			release_rx_pools(adapter);
--			release_tx_pools(adapter);
- 			goto out;
- 		}
- 	}
-@@ -1487,6 +1485,12 @@ static int ibmvnic_open(struct net_device *netdev)
- 		adapter->state =3D VNIC_OPEN;
- 		rc =3D 0;
- 	}
-+	if (rc) {
-+		release_resources(adapter);
-+		release_rx_pools(adapter);
-+		release_tx_pools(adapter);
-+	}
-+
- 	return rc;
- }
-=20
---=20
-2.27.0
+Thanks,
+Ben
 
->=20
-> cheers
+
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
