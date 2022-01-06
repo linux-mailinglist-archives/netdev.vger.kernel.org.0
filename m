@@ -2,95 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98B8D485D71
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 01:47:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFEAF485DB9
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 01:55:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232636AbiAFAq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 19:46:59 -0500
-Received: from www62.your-server.de ([213.133.104.62]:34958 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiAFAqz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 19:46:55 -0500
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1n5GvU-000CmX-QD; Thu, 06 Jan 2022 01:46:44 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, laurent.bernaille@datadoghq.com,
-        maciej.fijalkowski@intel.com, toshiaki.makita1@gmail.com,
-        eric.dumazet@gmail.com, pabeni@redhat.com,
-        john.fastabend@gmail.com, willemb@google.com,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH net-next] veth: Do not record rx queue hint in veth_xmit
-Date:   Thu,  6 Jan 2022 01:46:06 +0100
-Message-Id: <ef4cf3168907944502c81d8bf45e24eea1061e47.1641427152.git.daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26413/Wed Jan  5 10:23:50 2022)
+        id S1344178AbiAFAzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 19:55:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344417AbiAFAzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 19:55:04 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876F1C033241
+        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 16:52:57 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id e137-20020a25378f000000b0060c1f2f4939so2154315yba.3
+        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 16:52:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=goq0IvPEqlGG56UWBvUgmc8+zpWIy2x3JolpCp+LIgo=;
+        b=jD4o4FMRxHYvTfeTFZd1hn+xdGKqjMascNgSyUgADODXZ1O67NoObbVgl6/8vFPrbz
+         AaNAGryS7Bf5rxHk1vC3n8fpd6Dk93+N6HYxZ9p65w8Wkray/auWkU1yeSNVi6//07DP
+         EMZt9nZGMo1z/fCpGSO4RMEGtj1t931JSPerzUXLwhwpKgSAXFt2wwWfXIfToFsw6X7m
+         j7FostjyhJOQ0XvJgRc5x5RVtWZBg+tyaaKZGWRz5TISDFM2DS2JTPttLZxhGSS82Yxk
+         XJ6+pi56SvSxtXc/DlIuovmYfb6wyFDsuw4GknXSOFYtEMl9UshIsm2myLTRiRK8Q9Zl
+         xcLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=goq0IvPEqlGG56UWBvUgmc8+zpWIy2x3JolpCp+LIgo=;
+        b=A+u39yt1RRzHA5wjaweoj3ohZfHY4zHTWVBadS7g6uWTRo6852jy77xmLiZ6C/TlB1
+         Sf6ObvOTp+Svoa1v3pZIx609RMZ/FNBBKZZOHGOtTQJ/sdmA2hddiU2u056z/zH49nfn
+         0305h8YmHuimTkkjtzYsPStsZ/RYHog+31/+XsBN8+Q4vMLGVdikaKx7wxo5pTwc+wvA
+         krpBlov6y35XcxYYMzXHW8yqPuWZRi+y51grZCKnmLX06OsV37VrkFkiaZ/WEo+QyYQj
+         IHWd0Q/CepjTdXO+aR0U+CCm2utQt/AKypyWMymm+VuriiuSN8OMI78FOJvLactGSSMp
+         g7xg==
+X-Gm-Message-State: AOAM531ct7cdVbzrNohjmojwOuyR4arFz2oc0J44DkZZ9bu423BPeEx5
+        3bS4jJcKQhCWKfHa0XsKN8+rSkrAXlS+UA==
+X-Google-Smtp-Source: ABdhPJyLpU5VVh/hqpKRY7do4/rnatvsGEHD8/c4IXCd7U6cb8pdZBCxVuwi6NspPTHGqs4bKKJA+e+1D47ZXA==
+X-Received: from evitayan.mtv.corp.google.com ([2620:0:1000:5711:bcd2:c148:e081:25e6])
+ (user=evitayan job=sendgmr) by 2002:a25:a224:: with SMTP id
+ b33mr4429341ybi.507.1641430376779; Wed, 05 Jan 2022 16:52:56 -0800 (PST)
+Date:   Wed,  5 Jan 2022 16:52:49 -0800
+Message-Id: <20220106005251.2833941-1-evitayan@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
+Subject: [PATCH v1 0/2] Fix issues in xfrm_migrate
+From:   Yan Yan <evitayan@google.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     netdev@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, lorenzo@google.com,
+        maze@google.com, nharold@googlel.com, benedictwong@googlel.com,
+        Yan Yan <evitayan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Laurent reported that they have seen a significant amount of TCP retransmissions
-at high throughput from applications residing in network namespaces talking to
-the outside world via veths. The drops were seen on the qdisc layer (fq_codel,
-as per systemd default) of the phys device such as ena or virtio_net due to all
-traffic hitting a _single_ TX queue _despite_ multi-queue device. (Note that the
-setup was _not_ using XDP on veths as the issue is generic.)
+This patch series include two patches to fix two issues in xfrm_migrate.
 
-More specifically, after edbea9220251 ("veth: Store queue_mapping independently
-of XDP prog presence") which made it all the way back to v4.19.184+,
-skb_record_rx_queue() would set skb->queue_mapping to 1 (given 1 RX and 1 TX
-queue by default for veths) instead of leaving at 0.
+PATCH 1/2 enables distinguishing SAs and SPs based on if_id during the
+xfrm_migrate flow. It fixes the problem that when there are multiple
+existing SPs with the same direction, the same xfrm_selector and
+different endpoint addresses, xfrm_migrate might fail.
 
-This is eventually retained and callbacks like ena_select_queue() will also pick
-single queue via netdev_core_pick_tx()'s ndo_select_queue() once all the traffic
-is forwarded to that device via upper stack or other means. Similarly, for others
-not implementing ndo_select_queue() if XPS is disabled, netdev_pick_tx() might
-call into the skb_tx_hash() and check for prior skb_rx_queue_recorded() as well.
+PATCH 2/2 enables xfrm_migrate to handle address family change by
+breaking the original xfrm_state_clone method into two steps so as to
+update the props.family before running xfrm_init_state.
 
-In general, it is a _bad_ idea for virtual devices like veth to mess around with
-queue selection [by default]. Given dev->real_num_tx_queues is by default 1,
-the skb->queue_mapping was left untouched, and so prior to edbea9220251 the
-netdev_core_pick_tx() could do its job upon __dev_queue_xmit() on the phys device.
+Yan Yan (2):
+  xfrm: Check if_id in xfrm_migrate
+  xfrm: Fix xfrm migrate issues when address family changes
 
-Unbreak this and restore prior behavior by removing the skb_record_rx_queue()
-from veth_xmit() altogether.
+ include/net/xfrm.h     |  5 +++--
+ net/key/af_key.c       |  2 +-
+ net/xfrm/xfrm_policy.c | 14 ++++++++------
+ net/xfrm/xfrm_state.c  | 40 ++++++++++++++++++++++++++++------------
+ net/xfrm/xfrm_user.c   |  6 +++++-
+ 5 files changed, 45 insertions(+), 22 deletions(-)
 
-If the veth peer has an XDP program attached, then it would return the first RX
-queue index in xdp_md->rx_queue_index (unless configured in non-default manner).
-However, this is still better than breaking the generic case.
 
-Fixes: edbea9220251 ("veth: Store queue_mapping independently of XDP prog presence")
-Fixes: 638264dc9022 ("veth: Support per queue XDP ring")
-Reported-by: Laurent Bernaille <laurent.bernaille@datadoghq.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc: Toshiaki Makita <toshiaki.makita1@gmail.com>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Willem de Bruijn <willemb@google.com>
----
- drivers/net/veth.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index d21dd25f429e..354a963075c5 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -335,7 +335,6 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
- 		 */
- 		use_napi = rcu_access_pointer(rq->napi) &&
- 			   veth_skb_is_eligible_for_gro(dev, rcv, skb);
--		skb_record_rx_queue(skb, rxq);
- 	}
- 
- 	skb_tx_timestamp(skb);
+base-commit: 18343b80691560f41c3339119a2e9314d4672c77
 -- 
-2.21.0
+2.34.1.448.ga2b2bfdf31-goog
 
