@@ -2,126 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10CD6486A64
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 20:15:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC2D1486A7C
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 20:29:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243254AbiAFTPc convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 6 Jan 2022 14:15:32 -0500
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:34181 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243146AbiAFTPb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 14:15:31 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 71CA0E0008;
-        Thu,  6 Jan 2022 19:15:28 +0000 (UTC)
-Date:   Thu, 6 Jan 2022 20:15:26 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     David Girault <David.Girault@qorvo.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        Romuald Despres <Romuald.Despres@qorvo.com>,
-        Frederic Blain <Frederic.Blain@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel list <linux-kernel@vger.kernel.org>
-Subject: Re: [net-next 17/18] net: mac802154: Let drivers provide their own
- beacons implementation
-Message-ID: <20220106201526.7e513f2f@xps13>
-In-Reply-To: <CAB_54W4Z1KgT+Cx0SXptvkwYK76wDOFTueFUFF4e7G_ABP7kkA@mail.gmail.com>
-References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
-        <20211222155743.256280-18-miquel.raynal@bootlin.com>
-        <CAB_54W7o5b7a-2Gg5ZnzPj3o4Yw9FOAxJfykrA=LtpVf9naAng@mail.gmail.com>
-        <SN6PR08MB4464D7124FCB5D0801D26B94E0459@SN6PR08MB4464.namprd08.prod.outlook.com>
-        <CAB_54W6ikdGe=ZYqOsMgBdb9KBtfAphkBeu4LLp6S4R47ZDHgA@mail.gmail.com>
-        <20220105094849.0c7e9b65@xps13>
-        <CAB_54W4Z1KgT+Cx0SXptvkwYK76wDOFTueFUFF4e7G_ABP7kkA@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S243325AbiAFT3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 14:29:36 -0500
+Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:33093 "EHLO
+        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243311AbiAFT3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 14:29:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1641497375; x=1673033375;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=GdZcw3+JrUQ4X9rIgCUpu3fmJVXpnc1HaLbOsnws5fQ=;
+  b=CkpK4UEjwB2Nk2J/hGFZAEeQw9dq0aEu97IraooOioWrCm2w+qhQ1zly
+   FJlHKkHtZa1M9Par9+7JUtWkNl3spaa49fSz1FaMhUyQw/zsytR1XMr/R
+   D3o62fD9Yt7f7M0qVq8Y6WGqRP+TZ6Pjuhh2u4b29IXEXiSw2/5QlMfRi
+   0=;
+X-IronPort-AV: E=Sophos;i="5.88,267,1635206400"; 
+   d="scan'208";a="53260780"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-1cb212d9.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 06 Jan 2022 19:29:22 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2c-1cb212d9.us-west-2.amazon.com (Postfix) with ESMTPS id A8171C09B1;
+        Thu,  6 Jan 2022 19:29:21 +0000 (UTC)
+Received: from EX13D10UWA004.ant.amazon.com (10.43.160.64) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Thu, 6 Jan 2022 19:29:20 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
+ EX13D10UWA004.ant.amazon.com (10.43.160.64) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Thu, 6 Jan 2022 19:29:19 +0000
+Received: from dev-dsk-akiyano-1c-2138b29d.eu-west-1.amazon.com (172.19.83.6)
+ by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP Server id
+ 15.0.1497.26 via Frontend Transport; Thu, 6 Jan 2022 19:29:17 +0000
+From:   Arthur Kiyanovski <akiyano@amazon.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     Arthur Kiyanovski <akiyano@amazon.com>,
+        "Woodhouse, David" <dwmw@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        Saeed Bshara <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Agroskin, Shay" <shayagr@amazon.com>,
+        "Arinzon, David" <darinzon@amazon.com>
+Subject: [PATCH V1 net-next 00/10] ENA: capabilities field and cosmetic
+Date:   Thu, 6 Jan 2022 19:29:05 +0000
+Message-ID: <20220106192915.22616-1-akiyano@amazon.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+Add a new capabilities bitmask field to get indication of
+capabilities supported by the device. Use the capabilities
+field to query the device for ENI stats support.
 
-alex.aring@gmail.com wrote on Wed, 5 Jan 2022 19:23:04 -0500:
+Other patches are cosmetic changes like fixing readme
+mistakes, removing unused variables etc...
 
-> Hi,
-> 
-> On Wed, 5 Jan 2022 at 03:48, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> >
-> > Hi Alexander,
-> >
-> > alex.aring@gmail.com wrote on Thu, 30 Dec 2021 14:48:41 -0500:
-> >  
-> > > Hi,
-> > >
-> > > On Thu, 30 Dec 2021 at 12:00, David Girault <David.Girault@qorvo.com> wrote:  
-> > > >
-> > > > Hi Alexander,
-> > > >
-> > > > At Qorvo, we have developped a SoftMAC driver for our DW3000 chip that will benefit such API.
-> > > >  
-> > > Do you want to bring this driver upstream as well? Currently those
-> > > callbacks will be introduced but no user is there.  
-> >
-> > I think so far the upstream fate of the DW3000 driver has not been ruled
-> > out so let's assume it won't be upstreamed (at least not fully), that's
-> > also why we decided to begin with the hwsim driver.
-> >  
-> 
-> ok.
-> 
-> > However, when designing this series, it appeared quite clear that any
-> > hardMAC driver would need this type of interface. The content of the
-> > interface, I agree, could be further discussed and even edited, but the
-> > main idea of giving the information to the phy driver about what is
-> > happening regarding eg. scan operations or beacon frames, might make
-> > sense regardless of the current users, no?
-> >  
-> 
-> A HardMAC driver does not use this driver interface... but there
-> exists a SoftMAC driver for a HardMAC transceiver. This driver
-> currently works because we use dataframes only... It will not support
-> scanning currently and somehow we should make iit not available for
-> drivers like that and for drivers which don't set symbol duration.
-> They need to be fixed.
+Arthur Kiyanovski (10):
+  net: ena: Change return value of ena_calc_io_queue_size() to void
+  net: ena: Add capabilities field with support for ENI stats capability
+  net: ena: Change ENI stats support check to use capabilities field
+  net: ena: Update LLQ header length in ena documentation
+  net: ena: Remove redundant return code check
+  net: ena: Move reset completion print to the reset function
+  net: ena: Remove ena_calc_queue_size_ctx struct
+  net: ena: Add debug prints for invalid req_id resets
+  net: ena: Change the name of bad_csum variable
+  net: ena: Extract recurring driver reset code into a function
 
-My bad. I did not look at it correctly. I made a mistake when talking
-about a hardMAC.
+ .../device_drivers/ethernet/amazon/ena.rst    |   2 +-
+ .../net/ethernet/amazon/ena/ena_admin_defs.h  |  10 +-
+ drivers/net/ethernet/amazon/ena/ena_com.c     |   8 ++
+ drivers/net/ethernet/amazon/ena/ena_com.h     |  13 ++
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c |  15 ++-
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 125 +++++++-----------
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |  23 ++--
+ 7 files changed, 94 insertions(+), 102 deletions(-)
 
-Instead, it is a "custom" low level MAC layer. I believe we can compare
-the current mac802154 layer mostly to the MLME that is mentioned in the
-spec. Well here the additional layer that needs these hooks would be
-the MCPS. I don't know if this will be upstreamed or not, but the need
-for these hooks is real if such an intermediate low level MAC layer
-gets introduced.
+-- 
+2.32.0
 
-In v2 I will get rid of the two patches adding "driver access" to scans
-and beacons in order to facilitate the merge of the big part. Then we
-will have plenty of time to discuss how we can create such an interface.
-Perhaps I'll be able to propose more code as well to make use of these
-hooks, we will see.
-
-> > This being said, if other people decide to upstream a hardMAC driver
-> > and need these hooks to behave a little bit differently, it's their
-> > right to tweak them and that would also be part of the game.
-> >
-> > Although we might not need these hooks in a near future at all if we
-> > move to the filtering modes, because the promiscuous call with the
-> > specific level might indicate to the device how it should configure
-> > itself already.
-> >  
-> 
-> My concern is that somebody else might want to remove those callbacks
-> because they are not used.
-
-Yes, this is likely to happen quickly because of robots :)
-
-Thanks,
-Miquèl
