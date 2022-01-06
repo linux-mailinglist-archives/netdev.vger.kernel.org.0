@@ -2,146 +2,327 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A0B5486877
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 18:29:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CB9448689E
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 18:32:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241807AbiAFR3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 12:29:33 -0500
-Received: from mail-dm6nam08on2079.outbound.protection.outlook.com ([40.107.102.79]:27461
-        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241817AbiAFR31 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jan 2022 12:29:27 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QYxHrOEg5hjLQiUZk/QvpYTZjEPEVAnDyULjIlhWGliiEqhql8QJTaeANGWpEiIMMjRrfcY+j+DkZF3Q+/eZ89SoPfov4FnuL1meyxPMkNaJkV8mAqQ6pNkZBGocWov5Dxs11b21+aeK1fcprNqQ0G09mh9BmI/zLgqKPX6kGZ6o+bqZgLSBxVPUffJJAgnhQsv0XNkQye/uCOQvD0qPMnf1mjbZoWzxftMh4q4t05o1JcDgytn0DZZHUw/gKxDCUCVEXWmBuksWlSNKeYOy+UwT0+9Q+C2nqhi34EOW5Bju1sg6EIbQLBWW+Va6mZqjqMIs4yT97E1dEUM+OFkstw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XPWNjKmm99leCMJUBv2rDkecipxAy1NVk+HjotCvuKA=;
- b=lW0zEPLyJBEj6LZ5B5T6WS/Da7GzmlIoCHNpg3IfxK5WyWfHA6TWhK36LwT9je2qDuT2wA2HmyNTgLF1ekr4RhZGbs/bfwTi2/Cnc7vvCJZiRrUXs6NAYKrf3PGkz+rgPaQckgLs7d2iRZXS/J36pwmstgdFzMkWIG9/wGWsNjjanam5J7Gcjee2cX73h5pyPl8eZTutqy+ahroWg0BnOR2T5TVZ0sCUMavTp5OztyX1+YVRWaiv2WfmBoYCzqpp0KtyE5iHHr9g8Q74dY1HXrFn9XihLnOnRM1M0wxkm0RdyBskmBtUTPhv7JbHAc6/GajceAxMtv2T4zUuJKf5PA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XPWNjKmm99leCMJUBv2rDkecipxAy1NVk+HjotCvuKA=;
- b=s81lGG2mRvnxqoxWIkKBuEalVLPbYW5bjMHcyjOSqHQizsw48PeVpMCE7tNKOHUkEAiwgCn7mw8SN4YloyD7OyZtFs1ujOxCy3DNSakReXt5sbTc+AGQiSIWJadMZ9uexr4oQVBv8FC+3JrAmvdejfqu3VcrHtcnqfZdD4MR8xU3Qa8U5jm1utIfNJhlgcVqpThn+WZKvvdU5HQeavv7MnAe7bif87v9tvt8BE1+4Y8LosvrTWRIkImOw0FG/QmTf1y9VeQaQv+CAICvbVkLq7z0NOHEI7eW0AyMv8ufmdlDC68+vsfC1QhHRLIxmqATPvJqy27AnmcjC0To0Nss0w==
-Received: from BN9PR03CA0102.namprd03.prod.outlook.com (2603:10b6:408:fd::17)
- by CH0PR12MB5187.namprd12.prod.outlook.com (2603:10b6:610:ba::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Thu, 6 Jan
- 2022 17:29:25 +0000
-Received: from BN8NAM11FT050.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fd:cafe::90) by BN9PR03CA0102.outlook.office365.com
- (2603:10b6:408:fd::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7 via Frontend
- Transport; Thu, 6 Jan 2022 17:29:25 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT050.mail.protection.outlook.com (10.13.177.5) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4867.7 via Frontend Transport; Thu, 6 Jan 2022 17:29:24 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 6 Jan
- 2022 17:29:24 +0000
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 6 Jan
- 2022 17:29:23 +0000
-Received: from vdi.nvidia.com (172.20.187.6) by mail.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 6 Jan 2022 17:29:22 +0000
-From:   David Thompson <davthompson@nvidia.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <chenhao288@hisilicon.com>,
-        David Thompson <davthompson@nvidia.com>,
-        Asmaa Mnebhi <asmaa@nvidia.com>
-Subject: [PATCH net-next v1] mlxbf_gige: add interrupt counts to "ethtool -S"
-Date:   Thu, 6 Jan 2022 12:29:10 -0500
-Message-ID: <20220106172910.26431-1-davthompson@nvidia.com>
-X-Mailer: git-send-email 2.30.1
+        id S242074AbiAFRcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 12:32:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41766 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242096AbiAFRcE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 12:32:04 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8CA2C034000;
+        Thu,  6 Jan 2022 09:32:03 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id n30-20020a17090a5aa100b001b2b6509685so3896033pji.3;
+        Thu, 06 Jan 2022 09:32:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=F6BvddQSghSUpi/aUMLF/la8hm42Cnpo4XIe+FyB6vw=;
+        b=JQcvWNT5+7ufzcU8rBnRYw/j7jOGmf5VbXNL7fhEorWyg+yssPSE48I85lZd0Hot1l
+         wUe3imRBJAgGkW8cbvIwZAsZgGPtUvIWmjKVGc3QIF1W+dyuEaeMTf1hVpyDhn0ZF4vT
+         vei1n5LHZdbEGyiW3EKWaAXicfrtoLVK/PvuRgl8P+nCdT2QT0ICYoBzFq7t8xjF364u
+         stVZcCjz27SDtztEkM20Xi0eLq5EHqHSW+16jDG1DGGlaCT6KF+quh8CufBAhiP2520b
+         bOI/60vGkrKUrh0Pu78oOzBmS9Oq78tCXekWB9OJEqrk4OgCIwJEzVaMOqOyPhIgN7JH
+         jXiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=F6BvddQSghSUpi/aUMLF/la8hm42Cnpo4XIe+FyB6vw=;
+        b=sz+03cHPsZOkOOvwhhWj95xGErThc0j2FO7dbbFLr9N99kFvgH5VmHXTYLZoM8wRp3
+         3jhEHQcoNUqmnyjXwrbFANgPWV7y7VGRqsilPdqavNxn209ZROt3+cu2iQu+dsf/VnhR
+         o1voWoxgiIQ1ajEhXZWRZsMR9JFQ4BeEZxppeGIwxBECiThhbi5iYES5gHD+pm/9LAxX
+         Pp+6s0v8LXVOOOm/NTDvnTNd2Ya/8Qi+6Zubf/nuH3tLkvzzDNQPtVsVZV2vnnUucFPb
+         oJ9G12MdLJVwOBfX4/E5DPG+SbM4JOFec/3zEUYV85CSG+ghvV9tocGQf35XJLvJ7BPR
+         cZdQ==
+X-Gm-Message-State: AOAM530SMNKoDVjvZoHqZj8TqDNsKeS3J1z7WXk9cDRSJOGesmPGwgs/
+        QIs1zHg1Gi9iriv5wDoeKwplZQ/PHLM=
+X-Google-Smtp-Source: ABdhPJyCQs+I8O+y7HMBQUgUXeBjmEgs9ULVUwVMvYLKsWOGT+/jlb2BLG/2gfIISPXZO/xmb0kE9A==
+X-Received: by 2002:a17:902:c008:b0:149:346b:cb85 with SMTP id v8-20020a170902c00800b00149346bcb85mr59811515plx.122.1641490323396;
+        Thu, 06 Jan 2022 09:32:03 -0800 (PST)
+Received: from [192.168.1.122] ([122.172.37.80])
+        by smtp.gmail.com with ESMTPSA id t5sm2487888pgj.85.2022.01.06.09.32.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Jan 2022 09:32:03 -0800 (PST)
+Message-ID: <597c1bfc-f8ab-d513-4916-dbd93b05e66a@gmail.com>
+Date:   Thu, 6 Jan 2022 23:01:59 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0eb88c53-6e9d-4af3-ca4a-08d9d13a1577
-X-MS-TrafficTypeDiagnostic: CH0PR12MB5187:EE_
-X-Microsoft-Antispam-PRVS: <CH0PR12MB518741E7243E6ECE69921422C74C9@CH0PR12MB5187.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BpyDsWjIF8lGSuvspHl1lYFEr/U6yTynuJiV2OWYk2bWlPeIVyzMR3J2vhXhQgnAgkNBmkfGNqjLrGn4tEo7aCHNhWYSiOUNM4oofx5UKmAB0Gsd67irvj+MvIkO+V08pfp93WlZ2azPVRqChFZ4kRE66YfVhfSS96hUAmnqTfvRU6rIC+dxPDnMKbRDd+et1D1MVeOUkqkR2mL+0RnbQyYbRs/UDFTEq1tCoYuBzFZkrQ1VSMu7W5yW8npsdxv7bJZQB0mCg6UPzg4TTETSRXDqzTwtZkJ7l40eocMcDDxJj/S9FwLrMZ0pwN76oCiQaepSbKzHkr94arP9/tdvE3HBH6kKYO3tjAqs07xm4SmAAVJb/1tdE8QejOFZgTw5yXbtsxDyHL+RA86ohZzJ6zi21MGEq76a+LJVg3735UNp9jIBqi23gpfFgmcBXpblzsVrk+xtIMe9FuGYgg9Goptuz8k0Gz1r1Zv5tzkV8IVdthOUup4f+EqZnYWpd66kVh7RnLmtZqVJZ6giBj4iRK7zCiLf9rqxEmfuQZcAFedOp+MzskOCuPPCi3HjeVagFlql216NgFNVhNp/rn1748Ta0v8t4P5dEQlux6SHeC3ghJ2njKfc3VJ2BEY16x08rP0foMxn3QZ/mQZmzb2X8+r2QRYCgel8cLP2g6okDk45FDSoZkN/iPpIRkBiQuwfstIMKEzD2qL78ubINWS4bZOfQI3WGktBgk5Dh2syMDuL6leWeWBnQtnWMYLv1eOZenKNn/ru4X2iv7b6yEU6WyJxkOPEZAZ56klWJRfC2Zw=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(40470700002)(8936002)(47076005)(8676002)(316002)(86362001)(4326008)(1076003)(36756003)(110136005)(508600001)(6666004)(36860700001)(5660300002)(7696005)(2906002)(81166007)(70586007)(40460700001)(54906003)(186003)(70206006)(83380400001)(26005)(107886003)(82310400004)(336012)(426003)(356005)(2616005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2022 17:29:24.6397
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0eb88c53-6e9d-4af3-ca4a-08d9d13a1577
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT050.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5187
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH v3 3/3] io_uring: Add `sendto(2)` and `recvfrom(2)`
+ support
+Content-Language: en-US
+To:     Ammar Faizi <ammarfaizi2@gmail.com>, Jens Axboe <axboe@kernel.dk>
+Cc:     io-uring Mailing List <io-uring@vger.kernel.org>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Nugra <richiisei@gmail.com>
+References: <20211230115057.139187-3-ammar.faizi@intel.com>
+ <20211230173126.174350-1-ammar.faizi@intel.com>
+ <20211230173126.174350-4-ammar.faizi@intel.com>
+From:   Praveen Kumar <kpraveen.lkml@gmail.com>
+In-Reply-To: <20211230173126.174350-4-ammar.faizi@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch extends the output of "ethtool -S", adding
-interrupt counts for the three mlxbf_gige interrupt types.
+On 30-12-2021 23:22, Ammar Faizi wrote:
+> This adds sendto(2) and recvfrom(2) support for io_uring.
+> 
+> New opcodes:
+>   IORING_OP_SENDTO
+>   IORING_OP_RECVFROM
+> 
+> Cc: Nugra <richiisei@gmail.com>
+> Tested-by: Nugra <richiisei@gmail.com>
+> Link: https://github.com/axboe/liburing/issues/397
+> Signed-off-by: Ammar Faizi <ammarfaizi2@gmail.com>
+> ---
+> 
+> v3:
+>   - Fix build error when CONFIG_NET is undefined should be done in
+>     the first patch, not this patch.
+> 
+>   - Add Tested-by tag from Nugra.
+> 
+> v2:
+>   - In `io_recvfrom()`, mark the error check of `move_addr_to_user()`
+>     call as unlikely.
+> 
+>   - Fix build error when CONFIG_NET is undefined.
+> 
+>   - Added Nugra to CC list (tester).
+> ---
+>  fs/io_uring.c                 | 80 +++++++++++++++++++++++++++++++++--
+>  include/uapi/linux/io_uring.h |  2 +
+>  2 files changed, 78 insertions(+), 4 deletions(-)
+> 
+> diff --git a/fs/io_uring.c b/fs/io_uring.c
+> index 7adcb591398f..3726958f8f58 100644
+> --- a/fs/io_uring.c
+> +++ b/fs/io_uring.c
+> @@ -575,7 +575,15 @@ struct io_sr_msg {
+>  	union {
+>  		struct compat_msghdr __user	*umsg_compat;
+>  		struct user_msghdr __user	*umsg;
+> -		void __user			*buf;
+> +
+> +		struct {
+> +			void __user		*buf;
+> +			struct sockaddr __user	*addr;
+> +			union {
+> +				int		sendto_addr_len;
+> +				int __user	*recvfrom_addr_len;
+> +			};
+> +		};
+>  	};
+>  	int				msg_flags;
+>  	int				bgid;
+> @@ -1133,6 +1141,19 @@ static const struct io_op_def io_op_defs[] = {
+>  		.needs_file = 1
+>  	},
+>  	[IORING_OP_GETXATTR] = {},
+> +	[IORING_OP_SENDTO] = {
+> +		.needs_file		= 1,
+> +		.unbound_nonreg_file	= 1,
+> +		.pollout		= 1,
+> +		.audit_skip		= 1,
+> +	},
+> +	[IORING_OP_RECVFROM] = {
+> +		.needs_file		= 1,
+> +		.unbound_nonreg_file	= 1,
+> +		.pollin			= 1,
+> +		.buffer_select		= 1,
+> +		.audit_skip		= 1,
+> +	},
+>  };
+>  
+>  /* requests with any of those set should undergo io_disarm_next() */
+> @@ -5216,12 +5237,24 @@ static int io_sendmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+>  	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
+>  		return -EINVAL;
+>  
+> +	/*
+> +	 * For IORING_OP_SEND{,TO}, the assignment to @sr->umsg
+> +	 * is equivalent to an assignment to @sr->buf.
+> +	 */
+>  	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
+> +
+>  	sr->len = READ_ONCE(sqe->len);
+>  	sr->msg_flags = READ_ONCE(sqe->msg_flags) | MSG_NOSIGNAL;
+>  	if (sr->msg_flags & MSG_DONTWAIT)
+>  		req->flags |= REQ_F_NOWAIT;
+>  
+> +	if (req->opcode == IORING_OP_SENDTO) {
+> +		sr->addr = u64_to_user_ptr(READ_ONCE(sqe->addr2));
+> +		sr->sendto_addr_len = READ_ONCE(sqe->addr3);
+> +	} else {
+> +		sr->addr = (struct sockaddr __user *) NULL;
 
-Signed-off-by: David Thompson <davthompson@nvidia.com>
-Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
----
- .../mellanox/mlxbf_gige/mlxbf_gige_ethtool.c       | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+Let's have sendto_addr_len  = 0  
 
-diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c
-index ceeb7f4c3f6c..e421e7fa9d7a 100644
---- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_ethtool.c
-@@ -24,11 +24,9 @@ static void mlxbf_gige_get_regs(struct net_device *netdev,
- 	regs->version = MLXBF_GIGE_REGS_VERSION;
- 
- 	/* Read entire MMIO register space and store results
--	 * into the provided buffer. Each 64-bit word is converted
--	 * to big-endian to make the output more readable.
--	 *
--	 * NOTE: by design, a read to an offset without an existing
--	 *       register will be acknowledged and return zero.
-+	 * into the provided buffer. By design, a read to an
-+	 * offset without an existing register will be
-+	 * acknowledged and return zero.
- 	 */
- 	memcpy_fromio(p, priv->base, MLXBF_GIGE_MMIO_REG_SZ);
- }
-@@ -62,6 +60,9 @@ static const struct {
- 	{ "tx_fifo_full" },
- 	{ "rx_filter_passed_pkts" },
- 	{ "rx_filter_discard_pkts" },
-+	{ "mac_intr_count" },
-+	{ "rx_intr_count" },
-+	{ "llu_plu_intr_count" },
- };
- 
- static int mlxbf_gige_get_sset_count(struct net_device *netdev, int stringset)
-@@ -116,6 +117,9 @@ static void mlxbf_gige_get_ethtool_stats(struct net_device *netdev,
- 		   readq(priv->base + MLXBF_GIGE_RX_PASS_COUNTER_ALL));
- 	*data++ = (priv->stats.rx_filter_discard_pkts +
- 		   readq(priv->base + MLXBF_GIGE_RX_DISC_COUNTER_ALL));
-+	*data++ = priv->error_intr_count;
-+	*data++ = priv->rx_intr_count;
-+	*data++ = priv->llu_plu_intr_count;
- }
- 
- static void mlxbf_gige_get_pauseparam(struct net_device *netdev,
--- 
-2.30.1
+> +	}
+> +
+>  #ifdef CONFIG_COMPAT
+>  	if (req->ctx->compat)
+>  		sr->msg_flags |= MSG_CMSG_COMPAT;
+> @@ -5275,6 +5308,7 @@ static int io_sendmsg(struct io_kiocb *req, unsigned int issue_flags)
+>  
+>  static int io_sendto(struct io_kiocb *req, unsigned int issue_flags)
+>  {
+> +	struct sockaddr_storage address;
+>  	struct io_sr_msg *sr = &req->sr_msg;
+>  	struct msghdr msg;
+>  	struct iovec iov;
+> @@ -5291,10 +5325,20 @@ static int io_sendto(struct io_kiocb *req, unsigned int issue_flags)
+>  	if (unlikely(ret))
+>  		return ret;
+>  
+> -	msg.msg_name = NULL;
+> +
+>  	msg.msg_control = NULL;
+>  	msg.msg_controllen = 0;
+> -	msg.msg_namelen = 0;
+> +	if (sr->addr) {
+> +		ret = move_addr_to_kernel(sr->addr, sr->sendto_addr_len,
+> +					  &address);
+> +		if (unlikely(ret < 0))
+> +			goto fail;
+> +		msg.msg_name = (struct sockaddr *) &address;
+> +		msg.msg_namelen = sr->sendto_addr_len;
+> +	} else {
+> +		msg.msg_name = NULL;
+> +		msg.msg_namelen = 0;
+> +	}
+>  
+>  	flags = req->sr_msg.msg_flags;
+>  	if (issue_flags & IO_URING_F_NONBLOCK)
+> @@ -5309,6 +5353,7 @@ static int io_sendto(struct io_kiocb *req, unsigned int issue_flags)
+>  			return -EAGAIN;
+>  		if (ret == -ERESTARTSYS)
+>  			ret = -EINTR;
+> +	fail:
+>  		req_set_fail(req);
 
+I think there is a problem with "fail" goto statement. Not getting full clarity on this change. With latest kernel, I see req_set_fail(req) inside if check, which I don't see here. Can you please resend the patch on latest kernel version. Thanks.
+
+>  	}
+>  	__io_req_complete(req, issue_flags, ret, 0);
+> @@ -5427,13 +5472,25 @@ static int io_recvmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+>  	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
+>  		return -EINVAL;
+>  
+> +	/*
+> +	 * For IORING_OP_RECV{,FROM}, the assignment to @sr->umsg
+> +	 * is equivalent to an assignment to @sr->buf.
+> +	 */
+>  	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
+> +
+>  	sr->len = READ_ONCE(sqe->len);
+>  	sr->bgid = READ_ONCE(sqe->buf_group);
+>  	sr->msg_flags = READ_ONCE(sqe->msg_flags) | MSG_NOSIGNAL;
+>  	if (sr->msg_flags & MSG_DONTWAIT)
+>  		req->flags |= REQ_F_NOWAIT;
+>  
+> +	if (req->opcode == IORING_OP_RECVFROM) {
+> +		sr->addr = u64_to_user_ptr(READ_ONCE(sqe->addr2));
+> +		sr->recvfrom_addr_len = u64_to_user_ptr(READ_ONCE(sqe->addr3));
+> +	} else {
+> +		sr->addr = (struct sockaddr __user *) NULL;
+
+I think recvfrom_addr_len should also be pointed to NULL, instead of garbage for this case.
+
+> +	}
+> +
+>  #ifdef CONFIG_COMPAT
+>  	if (req->ctx->compat)
+>  		sr->msg_flags |= MSG_CMSG_COMPAT;
+> @@ -5509,6 +5566,7 @@ static int io_recvfrom(struct io_kiocb *req, unsigned int issue_flags)
+>  	struct iovec iov;
+>  	unsigned flags;
+>  	int ret, min_ret = 0;
+> +	struct sockaddr_storage address;
+>  	bool force_nonblock = issue_flags & IO_URING_F_NONBLOCK;
+>  
+>  	sock = sock_from_file(req->file);
+> @@ -5526,7 +5584,7 @@ static int io_recvfrom(struct io_kiocb *req, unsigned int issue_flags)
+>  	if (unlikely(ret))
+>  		goto out_free;
+>  
+> -	msg.msg_name = NULL;
+> +	msg.msg_name = sr->addr ? (struct sockaddr *) &address : NULL;
+>  	msg.msg_control = NULL;
+>  	msg.msg_controllen = 0;
+>  	msg.msg_namelen = 0;
+
+I think namelen should also be updated ?
+
+> @@ -5540,6 +5598,16 @@ static int io_recvfrom(struct io_kiocb *req, unsigned int issue_flags)
+>  		min_ret = iov_iter_count(&msg.msg_iter);
+>  
+>  	ret = sock_recvmsg(sock, &msg, flags);
+> +
+> +	if (ret >= 0 && sr->addr != NULL) {
+> +		int tmp;
+> +
+> +		tmp = move_addr_to_user(&address, msg.msg_namelen, sr->addr,
+> +					sr->recvfrom_addr_len);
+> +		if (unlikely(tmp < 0))
+> +			ret = tmp;
+> +	}
+> +
+>  out_free:
+>  	if (ret < min_ret) {
+>  		if (ret == -EAGAIN && force_nonblock)
+> @@ -6778,9 +6846,11 @@ static int io_req_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+>  	case IORING_OP_SYNC_FILE_RANGE:
+>  		return io_sfr_prep(req, sqe);
+>  	case IORING_OP_SENDMSG:
+> +	case IORING_OP_SENDTO:
+>  	case IORING_OP_SEND:
+>  		return io_sendmsg_prep(req, sqe);
+>  	case IORING_OP_RECVMSG:
+> +	case IORING_OP_RECVFROM:
+>  	case IORING_OP_RECV:
+>  		return io_recvmsg_prep(req, sqe);
+>  	case IORING_OP_CONNECT:
+> @@ -7060,12 +7130,14 @@ static int io_issue_sqe(struct io_kiocb *req, unsigned int issue_flags)
+>  	case IORING_OP_SENDMSG:
+>  		ret = io_sendmsg(req, issue_flags);
+>  		break;
+> +	case IORING_OP_SENDTO:
+>  	case IORING_OP_SEND:
+>  		ret = io_sendto(req, issue_flags);
+>  		break;
+>  	case IORING_OP_RECVMSG:
+>  		ret = io_recvmsg(req, issue_flags);
+>  		break;
+> +	case IORING_OP_RECVFROM:
+>  	case IORING_OP_RECV:
+>  		ret = io_recvfrom(req, issue_flags);
+>  		break;
+> diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
+> index efc7ac9b3a6b..a360069d1e8e 100644
+> --- a/include/uapi/linux/io_uring.h
+> +++ b/include/uapi/linux/io_uring.h
+> @@ -150,6 +150,8 @@ enum {
+>  	IORING_OP_SETXATTR,
+>  	IORING_OP_FGETXATTR,
+>  	IORING_OP_GETXATTR,
+> +	IORING_OP_SENDTO,
+> +	IORING_OP_RECVFROM,
+>  
+>  	/* this goes last, obviously */
+>  	IORING_OP_LAST,
+
+
+Regards,
+
+~Praveen.
