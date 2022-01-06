@@ -2,197 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76155486323
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 11:48:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58EF9486326
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 11:48:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238080AbiAFKsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 05:48:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35690 "EHLO
+        id S238077AbiAFKsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 05:48:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238068AbiAFKsf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 05:48:35 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25ACC061201
-        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 02:48:31 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id l12-20020a7bc34c000000b003467c58cbdfso2999705wmj.2
-        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 02:48:31 -0800 (PST)
+        with ESMTP id S238073AbiAFKsk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 05:48:40 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C2EC061245
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 02:48:40 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id o6so7881598edc.4
+        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 02:48:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to;
-        bh=46XuPDs7YjRS2E3F6Eg0Rlh6rhKerHqJZ2GhLHNP8CM=;
-        b=gmaKO7C31V4DQAjEbkyY2n3mrX7lo66oiN+aYjkv6ew42N0BNUPBiB8DMnYep9ovaW
-         A5UkKMWvaIiEIWgKhoTZo0jLuSKXX1teZrFPSWAy0dR3aDbbTERygYwNQQ/SitygPo2A
-         N1JmU1w4ck0GEbefCmtAYxdOWZkzYxpMf5GnQ=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MJANHNS+8aI/78fac1sUNs7UOadPi7MEsH1ZtuTV31A=;
+        b=b/q6az6wTE2VKN54Lbkvi7KR7zAmB1K3LcQEEX/U7I/DMIr5qSrB6piuBNsTPD4ibV
+         E2OrAejJl5ZLDCSbgMqaVzXPWH1cvy0M5LBypecl3/9Gf/3wTu/Pkz+09xSFg8OZJzbG
+         zOhsJ+7I3yYWrmi306YlCvUAYLZQj2W0M+vI+UcXy+FWqH7to9okhDgyD3KVjlBTD1QO
+         /FWZ78GT4R5mvisTF7v2hrrpsL9f60nKMLZw6BzMBB0WNCxXEJP5nVNNtl9y37qwusix
+         OX+Sj6Y9HUh+hwd9U+vARgItg7X37oA5oMG+Zi0fv42i8dsErDniJW2C4Ae/gzx2l+z7
+         xI9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to;
-        bh=46XuPDs7YjRS2E3F6Eg0Rlh6rhKerHqJZ2GhLHNP8CM=;
-        b=kVLVAy30OQ5uxSFc+EYfmGEcNKwVVKkl4TdEecqlsdny0wbVc2hzJzesxDTcPKptcb
-         um+FQ3nr4qUBWykc8T36adh53LZ8iC5+l7ic8Wj+lbRqJ29QExVZ6kB34RPk4qI328PJ
-         AMLfhCZhAkg2P5Qw3zMDry1Dv+ARidxzDGSKYumTJvOVgPulvV2jBbZJ1qqHAYYVhBxg
-         9WLfLpgvOQzFaGjuPQrAvTnfkitCD+wR3ne5+vLaH11kUaq3NaPJQQfqZX1RgWYHFC1+
-         PPHtS8edPxhzgZOFqvyJyDUdVwrIkVBNCcBresXBvvPyYaW5EOa80WmLKSoLY66wFQ17
-         nfpg==
-X-Gm-Message-State: AOAM530IYcKSeQZ2WbaWYNvwDJ3UGcDpeJ9lmmwI9IbaAAbfVgVOqqDd
-        9Mbxij2IEIeqyRsk1yITz+guog==
-X-Google-Smtp-Source: ABdhPJx4iXyWl5uVFrCQNY7mnjVYc7cOkI45rJLon5SlbhrVUd28hYm7J6FkSKcmhLhtS42kxN7b6Q==
-X-Received: by 2002:a1c:a701:: with SMTP id q1mr4540419wme.107.1641466110128;
-        Thu, 06 Jan 2022 02:48:30 -0800 (PST)
-Received: from [192.168.178.136] (f140230.upc-f.chello.nl. [80.56.140.230])
-        by smtp.gmail.com with ESMTPSA id a3sm1869435wri.89.2022.01.06.02.48.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Jan 2022 02:48:29 -0800 (PST)
-Message-ID: <a555e647-26b7-682a-c9f1-f7d224b33949@broadcom.com>
-Date:   Thu, 6 Jan 2022 11:48:27 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MJANHNS+8aI/78fac1sUNs7UOadPi7MEsH1ZtuTV31A=;
+        b=D3oI1DlqzrOffYRzaK4Nz5WcGHvhHDAhKRbulN0pH8RKQxWH1y11S2FL11L4aTGAPY
+         rhDOa6uLmm2VecHLn3oiibriZzMUfnGpe2gkBHuEzy7ljTHha21F3hIme71BYkKKn9/1
+         pqQ8o57oxqR/Glc59bXxG6+e2PSpnVm58O9nzTREAGPz6f2ugVWl8OaiDzd6CVO6AC5Y
+         QGUt+r9pEmOK3eMkEs6A5bN5I1DCe0kcl8LSCip26PiqLZNWKyttJ66beTKhBafOrgTr
+         ey0s8gbYBQ/nMRezoXYYiilLPKb3DGlq+ZfRJQmhTFkBTXEkL4iwn5qYN+w/vAdfW0d7
+         mgZA==
+X-Gm-Message-State: AOAM533Pq8QIFD0IVOx/RYCATr/iOyFTLlVdpIsJv5elRPwqOxHXjy2u
+        qbsdfxZ2jvYCoQh3LE2B5dq0NCl1U/c=
+X-Google-Smtp-Source: ABdhPJx2C6GaeCVdst6DjNRiXu7O98kCHiNqtXcUKtcwcuVu2/xkOYJI56ThifcwONqH/pgtgCrc9A==
+X-Received: by 2002:aa7:d2da:: with SMTP id k26mr57690616edr.137.1641466118840;
+        Thu, 06 Jan 2022 02:48:38 -0800 (PST)
+Received: from skbuf ([188.25.255.2])
+        by smtp.gmail.com with ESMTPSA id ky5sm398299ejc.204.2022.01.06.02.48.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 02:48:38 -0800 (PST)
+Date:   Thu, 6 Jan 2022 12:48:37 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     netdev@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        katie.morris@in-advantage.com, UNGLinuxDriver@microchip.com
+Subject: Re: ocelot-pcs - qsgmii planning
+Message-ID: <20220106104837.clp2t6wxus7o72ny@skbuf>
+References: <20220106095003.GA253016@euler>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH v2 05/35] brcmfmac: pcie/sdio/usb: Get CLM blob via
- standard firmware mechanism
-To:     Hector Martin <marcan@marcan.st>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20220104072658.69756-1-marcan@marcan.st>
- <20220104072658.69756-6-marcan@marcan.st>
-From:   Arend van Spriel <arend.vanspriel@broadcom.com>
-In-Reply-To: <20220104072658.69756-6-marcan@marcan.st>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000006c219705d4e79c6e"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220106095003.GA253016@euler>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000006c219705d4e79c6e
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Hi Colin,
 
-On 1/4/2022 8:26 AM, Hector Martin wrote:
-> Now that the firmware fetcher can handle per-board CLM files, load the
-> CLM blob alongside the other firmware files and change the bus API to
-> just return the existing blob, instead of fetching the filename.
+I'm sorry, but I have no direct experience with the SERDES and PCS of
+the Ocelot switches, since those blocks were completely replaced from
+the NXP instantiations I'm playing with.
+
+On Thu, Jan 06, 2022 at 01:50:03AM -0800, Colin Foster wrote:
+> Hi Alexandre, Vladimir, and those with interest of Ocelot chips,
 > 
-> This enables per-board CLM blobs, which are required on Apple platforms.
+> I'm starting this thread to just touch base before I dive into any PCS
+> changes for Ocelot. I've appreciated all your guidance, and the only
+> time I felt I've been led astray is when Alexandre told me it should be
+> easy :-)
+> 
+> I'm at the point where I'm starting to integrate the additional 4 copper
+> ports of the VSC7512 reference board. They are 4 ports connected through
+> a QSGMII bus, to a VSC8514 phy.
+> 
+> The 8514 driver seems to be getting invoked, and running just fine.
+> Also, I was able to slightly modify (hack*)
+> drivers/phy/mscc/phy-ocelot-serdes.c to work with my in-development
+> ocelot-mfd. I believe that is what I need to configure the HSIO
+> registers.
 
-Looks good to me.
+And are you also getting a reference to it and calling it, like the
+ocelot driver does here?
 
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Acked-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
->   .../broadcom/brcm80211/brcmfmac/bus.h         | 19 ++++++---
->   .../broadcom/brcm80211/brcmfmac/common.c      | 12 +-----
->   .../broadcom/brcm80211/brcmfmac/pcie.c        | 39 ++++++++++++-------
->   .../broadcom/brcm80211/brcmfmac/sdio.c        | 36 ++++++++++-------
->   .../broadcom/brcm80211/brcmfmac/sdio.h        |  2 +
->   .../broadcom/brcm80211/brcmfmac/usb.c         | 23 +++--------
->   6 files changed, 69 insertions(+), 62 deletions(-)
+	err = phy_set_mode_ext(serdes, PHY_MODE_ETHERNET, phy_mode);
 
---0000000000006c219705d4e79c6e
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+Could we see that portion of the code in the felix driver?
 
-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
-XSlOP9s1dqWlRRnnNxV7BVC87lkKKy0+1M2DOF6qRYQlnW4EfOyCToYLAG5zeV+AjepMoX6J9bUz
-yj4BlDtwH4HFjaRIlPPbdLshUA54/tV84x8woATuLGBq+hTZEpkZAgMBAAGjggHdMIIB2TAOBgNV
-HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
-Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
-KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
-Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
-dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
-OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
-MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
-BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKb+3b9pz8zo
-0QsCHGb/p0UrBlU+MA0GCSqGSIb3DQEBCwUAA4IBAQCHisuRNqP0NfYfG3U3XF+bocf//aGLOCGj
-NvbnSbaUDT/ZkRFb9dQfDRVnZUJ7eDZWHfC+kukEzFwiSK1irDPZQAG9diwy4p9dM0xw5RXSAC1w
-FzQ0ClJvhK8PsjXF2yzITFmZsEhYEToTn2owD613HvBNijAnDDLV8D0K5gtDnVqkVB9TUAGjHsmo
-aAwIDFKdqL0O19Kui0WI1qNsu1tE2wAZk0XE9FG0OKyY2a2oFwJ85c5IO0q53U7+YePIwv4/J5aP
-OGM6lFPJCVnfKc3H76g/FyPyaE4AL/hfdNP8ObvCB6N/BVCccjNdglRsL2ewttAG3GM06LkvrLhv
-UCvjMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
-YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMMSnY
-h9J/RI6gsHbuMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCB0VcXpqKFsRhaiKPQi
-/AZRsjLHCKPum5fydqD6fZss6zAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
-BTEPFw0yMjAxMDYxMDQ4MzBaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
-AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
-BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAE9xxbjRNfq+QytUZlOWYpesiHf/cuTbFk0cd
-LMVLw09EEctSmS8EHJKN2M92qKO8qnGWLcOLFaFcKodrhnM3xdNks/jRCWk86kiv87KAMEP2AHZk
-Skbyy/TsmW59HtF5fsbogXYbNu6EvaEopJBOkuiHYxwoioIGj2d8K+EvGGs7dUS7DqarKV97ADkZ
-gk8FWzXDyJM+iZ7Gg/bJ2ZVdb/iw37GtUNBvtTGqcgb2tfrtaOemApipCCn94kpXB25kuBXwtsDN
-BDOc8e0ZcvdP1e4lr2mWYtHQzLivP6O2ayOEgEOlw5wbNeKcj2dE+Gt8sQOuf8NH/wgo3fjspLn7
-8g==
---0000000000006c219705d4e79c6e--
+> 
+> (*the device_is_mfd info I was using falls apart with the
+> HSIO/syscon/mfd implementation here, sadly. A new probe function would
+> easily clean that up, but it is more for me to think about... I digress)
+> 
+> I'm using these device tree settings:
+> 
+>     port@4 {
+>         reg = <4>;
+>         label = "swp4";
+>         status = "okay";
+>         phy-handle = <&sw_phy4>;
+>         phy-mode = "qsgmii";
+>         phys = <&serdes 4 SERDES6G(0)>;
+>     };
+>     port@5 {
+>         reg = <5>;
+>         label = "swp5";
+>         status = "okay";
+>         phy-handle = <&sw_phy5>;
+>         phy-mode = "qsgmii";
+>         phys = <&serdes 5 SERDES6G(0)>;
+>     };
+> ...
+>     serdes: serdes {
+>         compatible = "mscc,vsc7514-serdes";
+>         #phy-cells = <2>;
+>     };
+>     mdio1: mdio1 {
+>         compatible = "mscc,ocelot-miim",
+>         pinctrl-names = "default";
+>         pinctrl-0 = <&miim1>;
+>         #address-cells = <1>;
+>         #size-cells = <0>;
+> 
+>         sw_phy4: ethernet-phy@4 {
+>             reg = <0x4>;
+>         };
+>     };
+> 
+> [    3.886787] libphy: ocelot_ext MDIO bus: probed
+> [    5.345891] ocelot-ext-switch ocelot-ext-switch: PHY [ocelot-ext-switch-mii:00] driver [Generic PHY] (irq=POLL)
+> [    5.357341] ocelot-ext-switch ocelot-ext-switch: configuring for phy/internal link mode
+> [    5.372525] ocelot-ext-switch ocelot-ext-switch swp1 (uninitialized): PHY [ocelot-ext-switch-mii:01] driver [Generic PHY] (irq=POLL)
+> [    5.388865] ocelot-ext-switch ocelot-ext-switch swp2 (uninitialized): PHY [ocelot-ext-switch-mii:02] driver [Generic PHY] (irq=POLL)
+> [    5.405086] ocelot-ext-switch ocelot-ext-switch swp3 (uninitialized): PHY [ocelot-ext-switch-mii:03] driver [Generic PHY] (irq=POLL)
+> [    6.291876] ocelot-ext-switch ocelot-ext-switch swp4 (uninitialized): PHY [ocelot-miim1-mii:04] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+> [    6.471891] ocelot-ext-switch ocelot-ext-switch swp5 (uninitialized): PHY [ocelot-miim1-mii:05] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+> [    6.651895] ocelot-ext-switch ocelot-ext-switch swp6 (uninitialized): PHY [ocelot-miim1-mii:06] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+> [    6.831879] ocelot-ext-switch ocelot-ext-switch swp7 (uninitialized): PHY [ocelot-miim1-mii:07] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+> 
+> 
+> It seems like that, along with everything in vsc7514_phylink_mac_config,
+> should be everything I need for operation of the four ports through the
+> 8512. I've added OCELOT_QUIRK_SGMII_PORTS_MUST_BE_UP - but I'm not sure
+> that's a quirk I need. Plus the only behavior it currently adds is once
+> the port is up, it never comes back down.
+
+Correct. I noticed that the code was structured to do this when I
+converted it to phylink, but I don't know if it's needed either. I just
+named that behavior as OCELOT_QUIRK_QSGMII_PORTS_MUST_BE_UP and made it
+optional.
+
+> The current behavior I'm seeing is links and rates get detected, packets
+> appear to be getting transmitted (ethtool stats) but they aren't, and
+> nothing is received on either end.
+
+could you also check ethtool --phy-statistics swp4 on both ends?
+
+> Is there something I'm missing with the device tree? Or is this the
+> purpose of the PCS driver I'm looking into? I'm getting a feeling that
+> my configuration is correct, and that I need to add SerDes support for
+> these ports in phylink_mac_config... I noticed that there's the "SGMII
+> only for now" comment, and when I look at the reference application for
+> the 7512 there's a comment "external phy uses QSGMII interface" that
+> appears to set the SGMII_MODE_ENA bit to 0.
+
+SGMII_MODE_ENA in PCS1G_MODE_CFG refers to the selection between Cisco
+SGMII/QSGMII vs IEEE 802.3 fiber modes. Different autonegotiation code
+words being transmitted. It's correct to leave it the way it is. It's
+curious that the reference application suggests to set it to 0 for QSGMII.
+I suppose that if in-band autoneg isn't enabled in PCS1G_ANEG_CFG, it
+doesn't really matter what kind of autoneg is used.
+
+For SGMII vs QSGMII, the serdes_set_mode() function in
+phy-ocelot-serdes.c should set HSIO_HW_CFG_QSGMII_ENA where appropriate.
+
+> Thank you as always for your time,
+> 
+> Colin Foster.
+
+What bootloader do you use? Do you have VSC8514 PHY initialization of
+any sort in the bootloader?
