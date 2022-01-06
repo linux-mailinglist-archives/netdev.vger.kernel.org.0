@@ -2,106 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 803B14866A5
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 16:20:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F03A4866A8
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 16:22:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240425AbiAFPUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 10:20:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40280 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240393AbiAFPUt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 10:20:49 -0500
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9CDC061245
-        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 07:20:49 -0800 (PST)
-Received: by mail-qv1-xf33.google.com with SMTP id kk22so2672201qvb.0
-        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 07:20:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v6XKL9w8DDqW134NFR0ZZiPgEt29wTgihCla/HbohNU=;
-        b=ZLIC3rAXHUI6n4HrfIxZXszA/UViSub9Rhzec7ElgByhi+k2s0CeAhVqARpLk6Nd5a
-         dJlfZyIJCqK+zv71c4hqBKfucuD32EPfoloN2CM+cdRIgNzizGhXO0auaRscRWhvRigR
-         P5uU4dlH9zKS9EccT9V7bsCaPjkFWAvE2fFwzzYxLZXO1FuN1xkBPXJT2HcKanEfQ5UT
-         EJo4PFiFOF4B8PPyLza2egDyzaXXTaMGAgVLzO7U52gCGQJnowKW0+gZ3tRB2Wojes2G
-         9MgeTy/h8fdRqvLroNQYOSvaFTZ05CCTnCsVgJyLqNBUhTDQgS2gc/P07n7tPoLCLqE8
-         556A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v6XKL9w8DDqW134NFR0ZZiPgEt29wTgihCla/HbohNU=;
-        b=VaB4vOoPmltaSKeFs0xDtsonF/HaQ654Y/5N7ZBLjnHZtqbj4f+nAiJrnOgmjvRX98
-         OYjmwTH2ntW4NKDKrFQ+6J13R0KZubAGwhGoRvNtVv132758snVKQMfNeTx3UDqfGNQN
-         kHyC0fQETZ2SWZ0OCigeIb6H/Vt1NlwW3YGWYKEvYDYL4tSKi1G9I4RkGLVjUvzgApwN
-         j5YoeiJWKG+H6XmxE8r+sjzubjWNvi5ykPCu9AxGS9s1KqUDtwjTZzzdTPMbuGVT9o0M
-         a0jbbU1sh/LChWgLoCp/0yrOo8yfZuMYC0k8MpCHJvxyqlD/zpWPRoR6i9CDCe8MuuZw
-         7+YA==
-X-Gm-Message-State: AOAM533EhS15sq6YEpkZ11oWE+B+TyrX/WLkYUDxXusvVSl2DOpAH0EL
-        MXQzKBEjvgz2sPam2EEeAEwQpopOhhzjlfIAorzNibc1hSzI6Q==
-X-Google-Smtp-Source: ABdhPJzJzR/J5D5/3JOI8BFL1KvYXv47BWzwDXql8Tobsq32WYXRvb3gxvEIh9B2c+p+abes7an+lncEWMY1xQMEjdU=
-X-Received: by 2002:a0c:f70d:: with SMTP id w13mr54399185qvn.99.1641482448446;
- Thu, 06 Jan 2022 07:20:48 -0800 (PST)
+        id S240435AbiAFPWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 10:22:05 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:46735 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240422AbiAFPWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 10:22:05 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-132-q9hJDqqMPxmmiZ5MKZZQew-1; Thu, 06 Jan 2022 15:21:52 +0000
+X-MC-Unique: q9hJDqqMPxmmiZ5MKZZQew-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.26; Thu, 6 Jan 2022 15:21:51 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.026; Thu, 6 Jan 2022 15:21:51 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Eric Dumazet' <edumazet@google.com>,
+        'Peter Zijlstra' <peterz@infradead.org>
+CC:     "'tglx@linutronix.de'" <tglx@linutronix.de>,
+        "'mingo@redhat.com'" <mingo@redhat.com>,
+        'Borislav Petkov' <bp@alien8.de>,
+        "'dave.hansen@linux.intel.com'" <dave.hansen@linux.intel.com>,
+        'X86 ML' <x86@kernel.org>, "'hpa@zytor.com'" <hpa@zytor.com>,
+        "'alexanderduyck@fb.com'" <alexanderduyck@fb.com>,
+        'open list' <linux-kernel@vger.kernel.org>,
+        'netdev' <netdev@vger.kernel.org>,
+        "'Noah Goldstein'" <goldstein.w.n@gmail.com>
+Subject: [PATCH ] x86/lib: Simplify code for !CONFIG_DCACHE_WORD_ACCESS in
+ csum-partial_64.c
+Thread-Topic: [PATCH ] x86/lib: Simplify code for !CONFIG_DCACHE_WORD_ACCESS
+ in csum-partial_64.c
+Thread-Index: AdgDEH+mtMhrZ9ynRvybrK9s3y5Pbw==
+Date:   Thu, 6 Jan 2022 15:21:51 +0000
+Message-ID: <5f848b1cd6f844f6bc66fbec44237e08@AcuMS.aculab.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-References: <38e55776-857d-1b51-3558-d788cf3c1524@candelatech.com>
-In-Reply-To: <38e55776-857d-1b51-3558-d788cf3c1524@candelatech.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Thu, 6 Jan 2022 10:20:32 -0500
-Message-ID: <CADVnQyn97m5ybVZ3FdWAw85gOMLAvPSHiR8_NC_nGFyBdRySqQ@mail.gmail.com>
-Subject: Re: Debugging stuck tcp connection across localhost
-To:     Ben Greear <greearb@candelatech.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 6, 2022 at 10:06 AM Ben Greear <greearb@candelatech.com> wrote:
->
-> Hello,
->
-> I'm working on a strange problem, and could use some help if anyone has ideas.
->
-> On a heavily loaded system (500+ wifi station devices, VRF device per 'real' netdev,
-> traffic generation on the netdevs, etc), I see cases where two processes trying
-> to communicate across localhost with TCP seem to get a stuck network
-> connection:
->
-> [greearb@bendt7 ben_debug]$ grep 4004 netstat.txt |grep 127.0.0.1
-> tcp        0 7988926 127.0.0.1:4004          127.0.0.1:23184         ESTABLISHED
-> tcp        0  59805 127.0.0.1:23184         127.0.0.1:4004          ESTABLISHED
->
-> Both processes in question continue to execute, and as far as I can tell, they are properly
-> attempting to read/write the socket, but they are reading/writing 0 bytes (these sockets
-> are non blocking).  If one was stuck not reading, I would expect netstat
-> to show bytes in the rcv buffer, but it is zero as you can see above.
->
-> Kernel is 5.15.7+ local hacks.  I can only reproduce this in a big messy complicated
-> test case, with my local ath10k-ct and other patches that enable virtual wifi stations,
-> but my code can grab logs at time it sees the problem.  Is there anything
-> more I can do to figure out why the TCP connection appears to be stuck?
+SWYgbG9hZF91bmFsaWduZWRfemVyb3BhZCgpIGNhbid0IGJlIHVzZWQgKHVtIGJ1aWxkcykNCnRo
+ZW4ganVzdCBhZGQgdG9nZXRoZXIgdGhlIGZpbmFsIGJ5dGVzIGFuZCBkbyBhIHNpbmdsZSAnYWRj
+Jw0KdG8gYWRkIHRvIHRoZSA2NGJpdCBzdW0uDQoNClNpZ25lZC1vZmYtYnk6IERhdmlkIExhaWdo
+dCA8ZGF2aWQubGFpZ2h0QGFjdWxhYi5jb20+DQotLS0NCg0KSXQgaXMgYSBzaGFtZSB0aGF0IHRo
+aXMgY29kZSBpcyBuZWVkZWQgYXQgYWxsLg0KSSBkb3VidCB1bSB3b3VsZCBldmVyIGZhdWx0IGp1
+c3QgcmVhZGluZyB0aGUgMzJiaXQgdmFsdWUuDQoNCiBhcmNoL3g4Ni9saWIvY3N1bS1wYXJ0aWFs
+XzY0LmMgfCAzMyArKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCiAxIGZpbGUgY2hh
+bmdlZCwgMTAgaW5zZXJ0aW9ucygrKSwgMjMgZGVsZXRpb25zKC0pDQoNCmRpZmYgLS1naXQgYS9h
+cmNoL3g4Ni9saWIvY3N1bS1wYXJ0aWFsXzY0LmMgYi9hcmNoL3g4Ni9saWIvY3N1bS1wYXJ0aWFs
+XzY0LmMNCmluZGV4IDA2MWIxZWQ3NGQ2YS4uZWRkM2U1NzljMmE3IDEwMDY0NA0KLS0tIGEvYXJj
+aC94ODYvbGliL2NzdW0tcGFydGlhbF82NC5jDQorKysgYi9hcmNoL3g4Ni9saWIvY3N1bS1wYXJ0
+aWFsXzY0LmMNCkBAIC03Myw0MSArNzMsMjggQEAgX193c3VtIGNzdW1fcGFydGlhbChjb25zdCB2
+b2lkICpidWZmLCBpbnQgbGVuLCBfX3dzdW0gc3VtKQ0KIAkJYnVmZiArPSA4Ow0KIAl9DQogCWlm
+IChsZW4gJiA3KSB7DQorCQl1bnNpZ25lZCBsb25nIHRyYWlsOw0KICNpZmRlZiBDT05GSUdfRENB
+Q0hFX1dPUkRfQUNDRVNTDQogCQl1bnNpZ25lZCBpbnQgc2hpZnQgPSAoOCAtIChsZW4gJiA3KSkg
+KiA4Ow0KLQkJdW5zaWduZWQgbG9uZyB0cmFpbDsNCiANCiAJCXRyYWlsID0gKGxvYWRfdW5hbGln
+bmVkX3plcm9wYWQoYnVmZikgPDwgc2hpZnQpID4+IHNoaWZ0Ow0KLQ0KLQkJYXNtKCJhZGRxICVb
+dHJhaWxdLCVbcmVzXVxuXHQiDQotCQkgICAgImFkY3EgJDAsJVtyZXNdIg0KLQkJCTogW3Jlc10g
+IityIiAodGVtcDY0KQ0KLQkJCTogW3RyYWlsXSAiciIgKHRyYWlsKSk7DQogI2Vsc2UNCisJCXRy
+YWlsID0gMDsNCiAJCWlmIChsZW4gJiA0KSB7DQotCQkJYXNtKCJhZGRxICVbdmFsXSwlW3Jlc11c
+blx0Ig0KLQkJCSAgICAiYWRjcSAkMCwlW3Jlc10iDQotCQkJCTogW3Jlc10gIityIiAodGVtcDY0
+KQ0KLQkJCQk6IFt2YWxdICJyIiAoKHU2NCkqKHUzMiAqKWJ1ZmYpDQotCQkJCTogIm1lbW9yeSIp
+Ow0KKwkJCXRyYWlsICs9ICoodTMyICopYnVmZjsNCiAJCQlidWZmICs9IDQ7DQogCQl9DQogCQlp
+ZiAobGVuICYgMikgew0KLQkJCWFzbSgiYWRkcSAlW3ZhbF0sJVtyZXNdXG5cdCINCi0JCQkgICAg
+ImFkY3EgJDAsJVtyZXNdIg0KLQkJCQk6IFtyZXNdICIrciIgKHRlbXA2NCkNCi0JCQkJOiBbdmFs
+XSAiciIgKCh1NjQpKih1MTYgKilidWZmKQ0KLQkJCQk6ICJtZW1vcnkiKTsNCisJCQl0cmFpbCAr
+PSAqKHUxNiAqKWJ1ZmY7DQogCQkJYnVmZiArPSAyOw0KIAkJfQ0KLQkJaWYgKGxlbiAmIDEpIHsN
+Ci0JCQlhc20oImFkZHEgJVt2YWxdLCVbcmVzXVxuXHQiDQotCQkJICAgICJhZGNxICQwLCVbcmVz
+XSINCi0JCQkJOiBbcmVzXSAiK3IiICh0ZW1wNjQpDQotCQkJCTogW3ZhbF0gInIiICgodTY0KSoo
+dTggKilidWZmKQ0KLQkJCQk6ICJtZW1vcnkiKTsNCi0JCX0NCisJCWlmIChsZW4gJiAxKQ0KKwkJ
+CXRyYWlsICs9ICoodTggKilidWZmOw0KICNlbmRpZg0KKwkJYXNtKCJhZGRxICVbdHJhaWxdLCVb
+cmVzXVxuXHQiDQorCQkgICAgImFkY3EgJDAsJVtyZXNdIg0KKwkJCTogW3Jlc10gIityIiAodGVt
+cDY0KQ0KKwkJCTogW3RyYWlsXSAiciIgKHRyYWlsKSk7DQogCX0NCiAJcmVzdWx0ID0gYWRkMzJf
+d2l0aF9jYXJyeSh0ZW1wNjQgPj4gMzIsIHRlbXA2NCAmIDB4ZmZmZmZmZmYpOw0KIAlyZXR1cm4g
+KF9fZm9yY2UgX193c3VtKXJlc3VsdDsNCi0tIA0KMi4xNy4xDQoNCi0NClJlZ2lzdGVyZWQgQWRk
+cmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBN
+SzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
-It could be very useful to get more information about the state of all
-the stuck connections (sender and receiver side) with something like:
-
-  ss -tinmo 'sport = :4004 or sport = :4004'
-
-I would recommend downloading and building a recent version of the
-'ss' tool to maximize the information. Here is a recipe for doing
-that:
-
- https://github.com/google/bbr/blob/master/Documentation/bbr-faq.md#how-can-i-monitor-linux-tcp-bbr-connections
-
-It could also be very useful to collect and share packet traces, as
-long as taking traces does not consume an infeasible amount of space,
-or perturb timing in a way that makes the buggy behavior disappear.
-For example, as root:
-
-  tcpdump -w /tmp/trace.pcap -s 120 -c 100000000 -i any port 4004 &
-
-If space is an issue, you might start taking traces once things get
-stuck to see what the retry behavior, if any, looks like.
-
-thanks,
-neal
