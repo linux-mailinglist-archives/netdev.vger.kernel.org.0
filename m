@@ -2,46 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88C00486D92
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 00:11:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6B8C486DD1
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 00:34:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245400AbiAFXLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 18:11:21 -0500
-Received: from www62.your-server.de ([213.133.104.62]:47918 "EHLO
+        id S245535AbiAFXeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 18:34:46 -0500
+Received: from www62.your-server.de ([213.133.104.62]:52640 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234795AbiAFXLU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 18:11:20 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
+        with ESMTP id S245495AbiAFXep (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 18:34:45 -0500
+Received: from [78.46.152.42] (helo=sslproxy04.your-server.de)
         by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <daniel@iogearbox.net>)
-        id 1n5bue-000436-GF; Fri, 07 Jan 2022 00:11:16 +0100
+        id 1n5cHI-00070o-1a; Fri, 07 Jan 2022 00:34:40 +0100
 Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1n5bue-000LZU-3b; Fri, 07 Jan 2022 00:11:16 +0100
-Subject: Re: [PATCH bpf-next v4 1/3] bpf: Add map tracing functions and call
- sites
-To:     Joe Burton <jevburton.kernel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, ppenkov@google.com,
-        sdf@google.com, haoluo@google.com
-Cc:     Joe Burton <jevburton@google.com>
-References: <20220105030345.3255846-1-jevburton.kernel@gmail.com>
- <20220105030345.3255846-2-jevburton.kernel@gmail.com>
+        id 1n5cHH-000W5q-PD; Fri, 07 Jan 2022 00:34:39 +0100
+Subject: Re: [PATCH bpf-next v3] Add skb_store_bytes() for
+ BPF_PROG_TYPE_CGROUP_SKB
+To:     Tyler Wear <quic_twear@quicinc.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     maze@google.com, yhs@fb.com, kafai@fb.com, toke@redhat.com,
+        Tyler Wear <quic_twear@quicinc.org>
+References: <20220106004340.2317542-1-quic_twear@quicinc.com>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <52eb82c3-2272-1707-9de7-8347b57b933c@iogearbox.net>
-Date:   Fri, 7 Jan 2022 00:11:15 +0100
+Message-ID: <a827c4a8-44bd-54d0-2a39-f2552ae9d30f@iogearbox.net>
+Date:   Fri, 7 Jan 2022 00:34:39 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20220105030345.3255846-2-jevburton.kernel@gmail.com>
+In-Reply-To: <20220106004340.2317542-1-quic_twear@quicinc.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -51,98 +44,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/5/22 4:03 AM, Joe Burton wrote:
-> From: Joe Burton <jevburton@google.com>
+On 1/6/22 1:43 AM, Tyler Wear wrote:
+> From: Tyler Wear <quic_twear@quicinc.org>
 > 
-> Add two functions that fentry/fexit/fmod_ret programs can attach to:
-> 	bpf_map_trace_update_elem
-> 	bpf_map_trace_delete_elem
-> These functions have the same arguments as bpf_map_{update,delete}_elem.
+> Need to modify the ds field to support upcoming Wifi QoS Alliance spec.
+> Instead of adding generic function for just modifying the ds field,
+> add skb_store_bytes for BPF_PROG_TYPE_CGROUP_SKB.
+> This allows other fields in the network and transport header to be
+> modified in the future.
 > 
-> Invoke these functions from the following map types:
-> 	BPF_MAP_TYPE_ARRAY
-> 	BPF_MAP_TYPE_PERCPU_ARRAY
-> 	BPF_MAP_TYPE_HASH
-> 	BPF_MAP_TYPE_PERCPU_HASH
-> 	BPF_MAP_TYPE_LRU_HASH
-> 	BPF_MAP_TYPE_LRU_PERCPU_HASH
+> Checksum API's also need to be added for completeness.
 > 
-> The only guarantee about these functions is that they are invoked before
-> the corresponding action occurs. Other conditions may prevent the
-> corresponding action from occurring after the function is invoked.
+> It is not possible to use CGROUP_(SET|GET)SOCKOPT since
+> the policy may change during runtime and would result
+> in a large number of entries with wildcards.
 > 
-> Signed-off-by: Joe Burton <jevburton@google.com>
+> Signed-off-by: Tyler Wear <quic_twear@quicinc.com>
 > ---
->   kernel/bpf/Makefile    |  2 +-
->   kernel/bpf/arraymap.c  |  4 +++-
->   kernel/bpf/hashtab.c   | 20 +++++++++++++++++++-
->   kernel/bpf/map_trace.c | 17 +++++++++++++++++
->   kernel/bpf/map_trace.h | 19 +++++++++++++++++++
->   5 files changed, 59 insertions(+), 3 deletions(-)
->   create mode 100644 kernel/bpf/map_trace.c
->   create mode 100644 kernel/bpf/map_trace.h
+>   net/core/filter.c                             | 10 ++
+>   .../bpf/prog_tests/cgroup_store_bytes.c       | 97 +++++++++++++++++++
+>   .../selftests/bpf/progs/cgroup_store_bytes.c  | 64 ++++++++++++
+>   3 files changed, 171 insertions(+)
+>   create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
 > 
-> diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-> index c1a9be6a4b9f..0cf38dab339a 100644
-> --- a/kernel/bpf/Makefile
-> +++ b/kernel/bpf/Makefile
-> @@ -9,7 +9,7 @@ CFLAGS_core.o += $(call cc-disable-warning, override-init) $(cflags-nogcse-yy)
->   obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o task_iter.o prog_iter.o
->   obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o bloom_filter.o
->   obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o ringbuf.o
-> -obj-$(CONFIG_BPF_SYSCALL) += bpf_local_storage.o bpf_task_storage.o
-> +obj-$(CONFIG_BPF_SYSCALL) += bpf_local_storage.o bpf_task_storage.o map_trace.o
->   obj-${CONFIG_BPF_LSM}	  += bpf_inode_storage.o
->   obj-$(CONFIG_BPF_SYSCALL) += disasm.o
->   obj-$(CONFIG_BPF_JIT) += trampoline.o
-> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-> index c7a5be3bf8be..e9e7bd27ffad 100644
-> --- a/kernel/bpf/arraymap.c
-> +++ b/kernel/bpf/arraymap.c
-> @@ -13,6 +13,7 @@
->   #include <linux/rcupdate_trace.h>
->   
->   #include "map_in_map.h"
-> +#include "map_trace.h"
->   
->   #define ARRAY_CREATE_FLAG_MASK \
->   	(BPF_F_NUMA_NODE | BPF_F_MMAPABLE | BPF_F_ACCESS_MASK | \
-> @@ -329,7 +330,8 @@ static int array_map_update_elem(struct bpf_map *map, void *key, void *value,
->   			copy_map_value(map, val, value);
->   		check_and_free_timer_in_array(array, val);
->   	}
-> -	return 0;
-> +
-> +	return bpf_map_trace_update_elem(map, key, value, map_flags);
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 6102f093d59a..ce01a8036361 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -7299,6 +7299,16 @@ cg_skb_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>   		return &bpf_sk_storage_delete_proto;
+>   	case BPF_FUNC_perf_event_output:
+>   		return &bpf_skb_event_output_proto;
+> +	case BPF_FUNC_skb_store_bytes:
+> +		return &bpf_skb_store_bytes_proto;
+> +	case BPF_FUNC_csum_update:
+> +		return &bpf_csum_update_proto;
+> +	case BPF_FUNC_csum_level:
+> +		return &bpf_csum_level_proto;
+> +	case BPF_FUNC_l3_csum_replace:
+> +		return &bpf_l3_csum_replace_proto;
+> +	case BPF_FUNC_l4_csum_replace:
+> +		return &bpf_l4_csum_replace_proto;
+>   #ifdef CONFIG_SOCK_CGROUP_DATA
+>   	case BPF_FUNC_skb_cgroup_id:
+>   		return &bpf_skb_cgroup_id_proto;
 
-Given post-update, do you have a use case where you make use of the fmod_ret for
-propagating non-zero ret codes?
-
-Could you also extend commit description on rationale to not add these dummy
-funcs more higher level, e.g. into map_update_elem() upon success?
-
-[...]
-> @@ -1133,6 +1137,10 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
->   		/* unknown flags */
->   		return -EINVAL;
->   
-> +	ret = bpf_map_trace_update_elem(map, key, value, map_flags);
-> +	if (unlikely(ret))
-> +		return ret;
-> +
->   	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
->   		     !rcu_read_lock_bh_held());
->   
-> @@ -1182,6 +1190,8 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
->   	else if (l_old)
->   		htab_lru_push_free(htab, l_old);
->   
-> +	if (!ret)
-> +		ret = bpf_map_trace_update_elem(map, key, value, map_flags);
->   	return ret;
->   }
-
-Here, it's pre and post update, is that intentional?
+Do we need skb_share_check in the write helpers at these hook points when this
+goes beyond just reading?
 
 Thanks,
 Daniel
