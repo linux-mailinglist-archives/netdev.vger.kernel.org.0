@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5568485ECA
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 03:29:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EDAC485EB9
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 03:26:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344829AbiAFC3Z convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 5 Jan 2022 21:29:25 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:40784 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344845AbiAFC2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 21:28:52 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 205N7YwM008949
-        for <netdev@vger.kernel.org>; Wed, 5 Jan 2022 18:28:52 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ddmqmru26-2
+        id S1344822AbiAFC0C convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 5 Jan 2022 21:26:02 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:6182 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344762AbiAFCZz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 21:25:55 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 205N640p030398
+        for <netdev@vger.kernel.org>; Wed, 5 Jan 2022 18:25:54 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ddmq3gtea-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 18:28:51 -0800
-Received: from twshared7572.23.frc3.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 18:25:54 -0800
+Received: from twshared7500.02.ash7.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 5 Jan 2022 18:28:50 -0800
+ 15.1.2308.20; Wed, 5 Jan 2022 18:25:53 -0800
 Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
         id 94DDA273E5410; Wed,  5 Jan 2022 18:25:48 -0800 (PST)
 From:   Song Liu <song@kernel.org>
@@ -40,15 +40,15 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-GUID: L2nBUVhqfRrXEsFB7zudvr35WcknAgPo
-X-Proofpoint-ORIG-GUID: L2nBUVhqfRrXEsFB7zudvr35WcknAgPo
+X-Proofpoint-GUID: i4BuqJTngpbeJQJ2WnK5Xl-J9ZQdfsco
+X-Proofpoint-ORIG-GUID: i4BuqJTngpbeJQJ2WnK5Xl-J9ZQdfsco
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-01-05_08,2022-01-04_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 spamscore=0
- impostorscore=0 adultscore=0 clxscore=1034 phishscore=0 lowpriorityscore=0
- priorityscore=1501 malwarescore=0 mlxlogscore=433 suspectscore=0
- mlxscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 suspectscore=0
+ phishscore=0 impostorscore=0 adultscore=0 lowpriorityscore=0
+ mlxlogscore=435 bulkscore=0 clxscore=1015 spamscore=0 priorityscore=1501
+ mlxscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2112160000 definitions=main-2201060011
 X-FB-Internal: deliver
 Precedence: bulk
