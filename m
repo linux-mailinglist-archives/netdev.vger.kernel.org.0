@@ -2,102 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55BBA48620A
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 10:23:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA634486224
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 10:32:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237360AbiAFJX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 04:23:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237327AbiAFJX2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 04:23:28 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA97C061245;
-        Thu,  6 Jan 2022 01:23:28 -0800 (PST)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        id S237320AbiAFJca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 04:32:30 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:38530 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236552AbiAFJc3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jan 2022 04:32:29 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id C82DE2063E;
+        Thu,  6 Jan 2022 10:32:27 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id QDyzLm0kPEq1; Thu,  6 Jan 2022 10:32:27 +0100 (CET)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C769122236;
-        Thu,  6 Jan 2022 10:23:22 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1641461005;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H5FnMDn1LTfHXy/mkIpjundiwjDbx0D7XiU772NlIxs=;
-        b=r5YTQ6wZBG7ALB9aK9XdT2tKxJ+4T18RQ9V2jQzs5uOPyyQWE16qyueLEiAXOsNbj6sSnI
-        G/yDajHfKdAiAzDzmE6N5j1AEC1wv3Co5ZZPGi09BPopA40n6B56Jhl6purANqyKkwSbRq
-        o11aEGcMQOQW8SUYGdP1DGE4dRhGohQ=
+        by a.mx.secunet.com (Postfix) with ESMTPS id 594E920627;
+        Thu,  6 Jan 2022 10:32:27 +0100 (CET)
+Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
+        by mailout2.secunet.com (Postfix) with ESMTP id 5388B80004A;
+        Thu,  6 Jan 2022 10:32:27 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 6 Jan 2022 10:32:27 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Thu, 6 Jan
+ 2022 10:32:26 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id E7FAB3182F75; Thu,  6 Jan 2022 10:32:23 +0100 (CET)
+Date:   Thu, 6 Jan 2022 10:32:23 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Raed Salem <raeds@nvidia.com>
+CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <huyn@nvidia.com>, <saeedm@nvidia.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 net] net/xfrm: IPsec tunnel mode fix inner_ipproto
+ setting in sec_path
+Message-ID: <20220106093223.GA2638190@gauss3.secunet.de>
+References: <20220103111929.11563-1-raeds@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Thu, 06 Jan 2022 10:23:22 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     zajec5@gmail.com
-Cc:     andrew@lunn.ch, davem@davemloft.net, devicetree@vger.kernel.org,
-        hkallweit1@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, rafal@milecki.pl, robh+dt@kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: Re: [PATCH] of: net: support NVMEM cells with MAC in text format
-In-Reply-To: <20211229124047.1286965-1-michael@walle.cc>
-References: <20211223122747.30448-1-zajec5@gmail.com>
- <20211229124047.1286965-1-michael@walle.cc>
-User-Agent: Roundcube Webmail/1.4.12
-Message-ID: <4ce6539e8b7f2486b4c63a45e464da50@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220103111929.11563-1-raeds@nvidia.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2021-12-29 13:40, schrieb Michael Walle:
->> Some NVMEM devices have text based cells. In such cases MAC is stored 
->> in
->> a XX:XX:XX:XX:XX:XX format. Use mac_pton() to parse such data and
->> support those NVMEM cells. This is required to support e.g. a very
->> popular U-Boot and its environment variables.
->> 
->> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
->> ---
->> Please let me know if checking NVMEM cell length (6 B vs. 17 B) can be
->> considered a good enough solution. Alternatively we could use some DT
->> property to make it explicity, e.g. something like:
->> 
->> ethernet@18024000 {
->> 	compatible = "brcm,amac";
->> 	reg = <0x18024000 0x800>;
->> 
->> 	nvmem-cells = <&mac_addr>;
->> 	nvmem-cell-names = "mac-address";
->> 	nvmem-mac-format = "text";
->> };
+On Mon, Jan 03, 2022 at 01:19:29PM +0200, Raed Salem wrote:
+> The inner_ipproto saves the inner IP protocol of the plain
+> text packet. This allows vendor's IPsec feature making offload
+> decision at skb's features_check and configuring hardware at
+> ndo_start_xmit, current code implenetation did not handle the
+> case where IPsec is used in tunnel mode.
 > 
-> Please note, that there is also this proposal, which had such a 
-> conversion
-> in mind:
-> https://lore.kernel.org/linux-devicetree/20211228142549.1275412-1-michael@walle.cc/
+> Fix by handling the case when IPsec is used in tunnel mode by
+> reading the protocol of the plain text packet IP protocol.
 > 
-> With this patch, there are now two different places where a mac address
-> format is converted. In of_get_mac_addr_nvmem() and in the imx otp 
-> driver.
-> And both have their shortcomings and aren't really flexible. Eg. this 
-> one
-> magically detects the format by comparing the length, but can't be used 
-> for
-> to swap bytes (because the length is also ETH_ALEN), which apparently 
-> is a
-> use case in the imx otp driver. And having the conversion in an nvmem
-> provider device driver is still a bad thing IMHO.
-> 
-> I'd really like to see all these kind of transformations in one place.
+> Fixes: fa4535238fb5 ("net/xfrm: Add inner_ipproto into sec_path")
+> Signed-off-by: Raed Salem <raeds@nvidia.com>
 
-Unfortunately, there were no replies yet. Can we revert this patch
-until there was a discussion and before there are any users of it.
-Esp. the latter is hard to track and then it might be impossible
-to change them to a better solution.
-
-Any optionions?
-
--michael
+Applied, thanks Raed!
