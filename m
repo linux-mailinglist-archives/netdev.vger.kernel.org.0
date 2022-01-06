@@ -2,136 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63DA3485F2D
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 04:23:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F476485F33
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 04:28:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbiAFDXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 22:23:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49280 "EHLO
+        id S230073AbiAFD2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 22:28:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiAFDW7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 22:22:59 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45355C061245
-        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 19:22:59 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id p65so1564967iof.3
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 19:22:59 -0800 (PST)
+        with ESMTP id S229694AbiAFD2E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 22:28:04 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AB3C061245
+        for <netdev@vger.kernel.org>; Wed,  5 Jan 2022 19:28:04 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id u20so1373766pfi.12
+        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 19:28:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=sHi57HV++5xv/ykq/23Y/LNrIk8wzH2AVC1hz3SfaOM=;
-        b=ivDozmdpG2xf/ey/A89FRGkA3CNSYDgWe25cn/MyliTxx6EAk99aa2tDdnTMtDN/N9
-         XcVi6PUi+yyGExCwP6Ycd0SWltmrXTtkcrOCVG4VEguBwO0G3S554Yf7KP7bPvjtG+ME
-         DpTVtRG9v/2uv5B2SuBxBVDMISocUxw5ZNL45QCA7FJvCdhgTlHjNCHRa5zsLkobZtlh
-         fANmaAw5n3lCotrHIf87+z4BAxhAa56vhizuGn8+MHzVuD/soluDeTo4Z34XJESQlfsm
-         +u8yL28j5Qq+AMBQHInBWJ+ueXrNGsRLENrcwyVZBIiHXEU425WVoX8HoGIsuss81/aY
-         5Vnw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2cFMqoeTw+2LNGWbw4OEvH28MN1hqxzwmuu4PTpBt5w=;
+        b=RTZqExoh789Hx9AIbWjh7dKaSUR5LXsb0jZoJrj4BijjORxr0alR93zIp+y0wRDT5h
+         +PPxb5VwPOLUJBe6bLpjJTIyDsPQaGUV8HPQwj8drj5D0rjhJdgu1Er1cB8iYaR8n/BA
+         rVcZbi9kILUDuIY989woAwcSqc4mHfEL8kPC0w/rP7elE8uK85ksgx0MzeRrKn8+GmHj
+         Ka7jf3t0hr7iALfKLu2iunMaKY8HBajboeQi//5mrqZO/7Bc+m3NMxwQT2TJ8rwNwjDZ
+         mgB+dTwRWDus2ycOohDrRd/x3fNZQpGnaTfxE7YyFS8OJvn3JSTtnoZ8tl0YVC2+xtOo
+         kEPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=sHi57HV++5xv/ykq/23Y/LNrIk8wzH2AVC1hz3SfaOM=;
-        b=QanE41L/VZ23tYbos7+owyenXCVXclBCpFg/T2kaRNo/g+jpeFyqO9QiJL/zwxkU9z
-         SQQslIdVU7Ju3jfW3LYJlsatgonfByHQ3PX2h7lbc5YiGNQZ1mtZOz9Acx/kUlRFyp+A
-         uCybf8LkeHfukelzaFWx5L74gmDikgtrRzSYJW2QIK+ppNQahx1xmQ3ekkpINGoLhNLm
-         jFslY9qbUqc1BZrFBo5UIFmt3DsApY9sUJRhTUosCjzvWplN7uO6k/YIpIzwz4wJogMM
-         Pa3WW64EcD/ltyIn0GZX7At4vjqguxFQ046qa9MVtdjxDNg+O0y9NnOWB4StygRkCU9K
-         13uQ==
-X-Gm-Message-State: AOAM533dZdCuEijsnQJnyP8VkBIzq4V11Y7+wbWIzINo1vlBlw6mhLwo
-        r6rhIg5Crk9GDv9duTZS7MvTZvJoQlU=
-X-Google-Smtp-Source: ABdhPJxg2xukV36VTVa9Z2T50c7y6nQUSt8QYDztFoRGdYEmLI1qUfi1UQCe84BRFhghyONxmmWVpw==
-X-Received: by 2002:a05:6638:11c5:: with SMTP id g5mr26867710jas.47.1641439378595;
-        Wed, 05 Jan 2022 19:22:58 -0800 (PST)
-Received: from localhost ([99.197.200.79])
-        by smtp.gmail.com with ESMTPSA id k7sm493291iom.34.2022.01.05.19.22.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 19:22:58 -0800 (PST)
-Date:   Wed, 05 Jan 2022 19:22:49 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, laurent.bernaille@datadoghq.com,
-        maciej.fijalkowski@intel.com, toshiaki.makita1@gmail.com,
-        eric.dumazet@gmail.com, pabeni@redhat.com,
-        john.fastabend@gmail.com, willemb@google.com,
-        Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <61d660891a4ed_6ee92085e@john.notmuch>
-In-Reply-To: <ef4cf3168907944502c81d8bf45e24eea1061e47.1641427152.git.daniel@iogearbox.net>
-References: <ef4cf3168907944502c81d8bf45e24eea1061e47.1641427152.git.daniel@iogearbox.net>
-Subject: RE: [PATCH net-next] veth: Do not record rx queue hint in veth_xmit
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2cFMqoeTw+2LNGWbw4OEvH28MN1hqxzwmuu4PTpBt5w=;
+        b=z59l5T9iqR+r36m7RPDoPTE08XlOUbLXEv0VCvgQhpqbV+zdktpIxcBQQewKNEeP2w
+         96sJEhqbPm6ImjNinqR2ASv5chqlQ+n+I/MDJYm6dqsXOtz7CgvrFjwjTP1eLzbUVGOr
+         dXlrCFN1TRDoFmjvrTr2XCJbEDsMEUvLFMnbUZ5VBq642IXk9Tik5vW5oXdp0ok0fxDj
+         5lceXO+HZfPjnSjJwUzRGQ/0SVSu3JliqzvV40+v8S6ZgdJYgMKAIFGS8ftI/v1kM1CI
+         2+XQe1Vesr54IomqgQWIYHraGTou7AiCEMW0Kp5U2Z3NLIp/PigASOn/+yYjYwMaVNZm
+         SwvQ==
+X-Gm-Message-State: AOAM531cuK7WXQVDahGxOLM0DvHgKR+Emt/VYNcuSLLJlXfqsYICx+K4
+        6JRdo/eL5FXWzIdWcDTpvW8=
+X-Google-Smtp-Source: ABdhPJzkfIvdOintzieeBh09NJcZCjvodSe1Tg3fYrJUJ/8XXYgiG5abnc2AKlR3R4cVuDb+jCrxrA==
+X-Received: by 2002:aa7:8c05:0:b0:4bc:a73a:dc9f with SMTP id c5-20020aa78c05000000b004bca73adc9fmr16560953pfd.75.1641439683616;
+        Wed, 05 Jan 2022 19:28:03 -0800 (PST)
+Received: from ?IPV6:2600:8802:b00:4a48:bd65:1cb5:9ad8:4f58? ([2600:8802:b00:4a48:bd65:1cb5:9ad8:4f58])
+        by smtp.gmail.com with ESMTPSA id q16sm477039pfu.31.2022.01.05.19.28.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Jan 2022 19:28:03 -0800 (PST)
+Message-ID: <4a8f5b90-2fb6-ea40-c04e-25d5436f5036@gmail.com>
+Date:   Wed, 5 Jan 2022 19:28:01 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v2 net-next 1/6] net: dsa: reorder PHY initialization with
+ MTU setup in slave.c
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+References: <20220105231117.3219039-1-vladimir.oltean@nxp.com>
+ <20220105231117.3219039-2-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220105231117.3219039-2-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann wrote:
-> Laurent reported that they have seen a significant amount of TCP retransmissions
-> at high throughput from applications residing in network namespaces talking to
-> the outside world via veths. The drops were seen on the qdisc layer (fq_codel,
-> as per systemd default) of the phys device such as ena or virtio_net due to all
-> traffic hitting a _single_ TX queue _despite_ multi-queue device. (Note that the
-> setup was _not_ using XDP on veths as the issue is generic.)
-> 
-> More specifically, after edbea9220251 ("veth: Store queue_mapping independently
-> of XDP prog presence") which made it all the way back to v4.19.184+,
-> skb_record_rx_queue() would set skb->queue_mapping to 1 (given 1 RX and 1 TX
-> queue by default for veths) instead of leaving at 0.
-> 
-> This is eventually retained and callbacks like ena_select_queue() will also pick
-> single queue via netdev_core_pick_tx()'s ndo_select_queue() once all the traffic
-> is forwarded to that device via upper stack or other means. Similarly, for others
-> not implementing ndo_select_queue() if XPS is disabled, netdev_pick_tx() might
-> call into the skb_tx_hash() and check for prior skb_rx_queue_recorded() as well.
-> 
-> In general, it is a _bad_ idea for virtual devices like veth to mess around with
-> queue selection [by default]. Given dev->real_num_tx_queues is by default 1,
-> the skb->queue_mapping was left untouched, and so prior to edbea9220251 the
-> netdev_core_pick_tx() could do its job upon __dev_queue_xmit() on the phys device.
-> 
-> Unbreak this and restore prior behavior by removing the skb_record_rx_queue()
-> from veth_xmit() altogether.
-> 
-> If the veth peer has an XDP program attached, then it would return the first RX
-> queue index in xdp_md->rx_queue_index (unless configured in non-default manner).
-> However, this is still better than breaking the generic case.
-
-Agree on all the above. Fix LGTM thanks!
-
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-
-> 
-> Fixes: edbea9220251 ("veth: Store queue_mapping independently of XDP prog presence")
-> Fixes: 638264dc9022 ("veth: Support per queue XDP ring")
-> Reported-by: Laurent Bernaille <laurent.bernaille@datadoghq.com>
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Cc: Toshiaki Makita <toshiaki.makita1@gmail.com>
-> Cc: Eric Dumazet <eric.dumazet@gmail.com>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Willem de Bruijn <willemb@google.com>
-> ---
->  drivers/net/veth.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index d21dd25f429e..354a963075c5 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -335,7 +335,6 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
->  		 */
->  		use_napi = rcu_access_pointer(rq->napi) &&
->  			   veth_skb_is_eligible_for_gro(dev, rcv, skb);
-> -		skb_record_rx_queue(skb, rxq);
->  	}
->  
->  	skb_tx_timestamp(skb);
-> -- 
-> 2.21.0
-> 
 
 
+On 1/5/2022 3:11 PM, Vladimir Oltean wrote:
+> In dsa_slave_create() there are 2 sections that take rtnl_lock():
+> MTU change and netdev registration. They are separated by PHY
+> initialization.
+> 
+> There isn't any strict ordering requirement except for the fact that
+> netdev registration should be last. Therefore, we can perform the MTU
+> change a bit later, after the PHY setup. A future change will then be
+> able to merge the two rtnl_lock sections into one.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
