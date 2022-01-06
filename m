@@ -2,122 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 643604861A0
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 09:46:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEAFF4861A3
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 09:47:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237005AbiAFIqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 03:46:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
+        id S236900AbiAFIrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 03:47:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231734AbiAFIqO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 03:46:14 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D54FC061245;
-        Thu,  6 Jan 2022 00:46:14 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id l10-20020a17090a384a00b001b22190e075so7664144pjf.3;
-        Thu, 06 Jan 2022 00:46:14 -0800 (PST)
+        with ESMTP id S231734AbiAFIrq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 03:47:46 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5168AC061245
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 00:47:45 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id p13so3492499lfh.13
+        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 00:47:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1g5znKzwVQyr8JGP5wcK15N7YAYxTOvtUNrF3FkqxRY=;
-        b=JH/D/kUpLjMHVnIfOml1ThcJW6vnsVYO6KpdEkaMwA8vmt0UA6B5l0VRLCHp2HdbLU
-         YFyXYYfVm+uPcIcPAK5k/qzr03bvOLcq4ZCCxwXmbqOdb8IZWFwhjgsngABwc2NfhUhs
-         Oqp7w09d5h6bXzsLg9v1k7AxpMgQoWQI6AHk9/sflpU43TMonN5sFE2Tt/rTRm8h4VwZ
-         Jf4feFkYymFirSFQhZqkIt1nl7zFTK/q05hxM52UyNOXuOdX6SWt5l4lVT9mxAPbTAsL
-         cYwOomWWJBoVI0b9es4cvr5UANj+uo5iseXIyT4CYzORvm8p7ktSngIO8BDSiylk/1FC
-         eEqw==
+        d=fungible.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=V7n2eemXtq8ujYgQD3jlljljhcZpN4mKArMfua7O29w=;
+        b=hpRNe3RMy7A1C+QeiTa1QqYujMSXENVJgZztHXKp9H+Rk6a+UiG9gK9dl1V163f0uu
+         zytO87Mxz4OLkJQizcqZ0+e/UoEWO33Hzha5m4Uh6URJTMjwkDh0mI6dRmkmwYehx7+n
+         muKSuXRHSYKO5F/cLvyNMOkp4SN9FAVSWpUJo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1g5znKzwVQyr8JGP5wcK15N7YAYxTOvtUNrF3FkqxRY=;
-        b=JSzxZ6lKFR6AbnAWSmprioQTCLd1Sn8U+1x1FKLrmzSQvDfBf6jXALPMfofBZ7XmcI
-         Cns7frgErj//TsAG83+aCfOsh7iLXNXV/P2y6kg1QQKd6HnAG6mOJt+r3E8wAGr02rWS
-         bIuPxcdE3UcMNG0INIk5LyV4pNe72C39vw2aKvZR+TMk8eaL7pHTEPlS2lH1NNJj7D4B
-         Pef1LaLG5xypIrlAip9cEPz7pEswG84GYL4ZRoFkMVqZOTgtr6MpuNFDf9g6HRMdqcji
-         iSX1r+QH3WCTPRgeOo/eCGvssPSfEdzeAleK9wHswkuNNFyKHHg7m1qSyMiV/hpGcm2q
-         ZjZw==
-X-Gm-Message-State: AOAM532jWubzod2fgjXfz0oUX1WAeK1Hj4OWFrHkvv3Vyk5hWdi0sUnP
-        Xt/a7nKIhkIjJdc46sL726k=
-X-Google-Smtp-Source: ABdhPJxpyep5VpI9kuAAse0CHM21bIuGT22lH6M4En5sJ46+Rc2z/NIwgQTLE/FGKb7PnP34L5UZvw==
-X-Received: by 2002:a17:90b:4a51:: with SMTP id lb17mr8892950pjb.101.1641458773528;
-        Thu, 06 Jan 2022 00:46:13 -0800 (PST)
-Received: from localhost ([103.4.221.252])
-        by smtp.gmail.com with ESMTPSA id c24sm1485243pgj.57.2022.01.06.00.46.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 00:46:13 -0800 (PST)
-Date:   Thu, 6 Jan 2022 14:16:03 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH bpf-next v6 02/11] bpf: Fix UAF due to race between
- btf_try_get_module and load_module
-Message-ID: <20220106084603.pgyziuv7wdts4yt7@apollo.legion>
-References: <20220102162115.1506833-1-memxor@gmail.com>
- <20220102162115.1506833-3-memxor@gmail.com>
- <20220105061040.snl7hqsogeqxxruo@ast-mbp.dhcp.thefacebook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V7n2eemXtq8ujYgQD3jlljljhcZpN4mKArMfua7O29w=;
+        b=jnCBBkAy4JccvB7a/u82NRZZhs/qq+W3jRnliZToKBzhwsCdIZvlp/QNFDiOSV1wTZ
+         HUBUkiZ8o+WlDAS3tGwrsmzXdfIIsBx5rx2Rrk1nb6Sc0muJMeMtgk7Hy5f8MVO+zsLR
+         EKvQGf+2A1FUBMndt90Hwsyk7zN0+OVybTt+emA8EU0c/4O3HmcYoYU7LOIaCXUJ6m7x
+         37LbRjFifGol6QlXsTw9Kl8h+Izno2Ww6EOf1cdmAn2qTeHLRvR1SjwIWcd72/hH/trY
+         KyDScg2Y7LRel9lHDWJggVrzy6H1fxvaoyel+UiWrluXFhZ4hs/Y94LZvPOjGkEb7nS6
+         e1yA==
+X-Gm-Message-State: AOAM530DhtRn/eBdTrlz7D3YwMFqSCHu2mELIDBpbjlx38iba+gRzykU
+        nrpNZN2B5v8jfKkfNx/Kp0Kv6JgDG/xAO4CnjQRAUCOLU14=
+X-Google-Smtp-Source: ABdhPJzY7JFjjhvkSWt+wDmD08Yeg/2Uz2cQ9qNyz+dcvacJvCJD9oXjI3BNBqZwEkKrxo69j54E2EJGHfvVBOwZHRc=
+X-Received: by 2002:a05:6512:2292:: with SMTP id f18mr48391316lfu.51.1641458863560;
+ Thu, 06 Jan 2022 00:47:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220105061040.snl7hqsogeqxxruo@ast-mbp.dhcp.thefacebook.com>
+References: <20220104064657.2095041-1-dmichail@fungible.com>
+ <20220104064657.2095041-4-dmichail@fungible.com> <20220104180739.572a80ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAOkoqZmxHZ6KTZQPe+w23E_UPYWLNRiU8gVX32EFsNXgyzkucg@mail.gmail.com> <20220105094648.4ff74c9e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220105094648.4ff74c9e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Dimitris Michailidis <d.michailidis@fungible.com>
+Date:   Thu, 6 Jan 2022 00:47:29 -0800
+Message-ID: <CAOkoqZmSKHD97dbyVhKw3pPNJqKS2x8PXhsPJb9dRTjoGNn31g@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 3/8] net/funeth: probing and netdev ops
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 11:40:40AM IST, Alexei Starovoitov wrote:
-> On Sun, Jan 02, 2022 at 09:51:06PM +0530, Kumar Kartikeya Dwivedi wrote:
+On Wed, Jan 5, 2022 at 9:46 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 5 Jan 2022 07:52:21 -0800 Dimitris Michailidis wrote:
+> > On Tue, Jan 4, 2022 at 6:07 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > On Mon,  3 Jan 2022 22:46:52 -0800 Dimitris Michailidis wrote:
+> > > > This is the first part of the Fungible ethernet driver. It deals with
+> > > > device probing, net_device creation, and netdev ops.
+> > >
+> > > > +static int fun_xdp_setup(struct net_device *dev, struct netdev_bpf *xdp)
+> > > > +{
+> > > > +     struct bpf_prog *old_prog, *prog = xdp->prog;
+> > > > +     struct funeth_priv *fp = netdev_priv(dev);
+> > > > +     bool reconfig;
+> > > > +     int rc, i;
+> > > > +
+> > > > +     /* XDP uses at most one buffer */
+> > > > +     if (prog && dev->mtu > XDP_MAX_MTU) {
+> > > > +             netdev_err(dev, "device MTU %u too large for XDP\n", dev->mtu);
+> > > > +             NL_SET_ERR_MSG_MOD(xdp->extack,
+> > > > +                                "Device MTU too large for XDP");
+> > > > +             return -EINVAL;
+> > > > +     }
+> > > > +
+> > > > +     reconfig = netif_running(dev) && (!!fp->xdp_prog ^ !!prog);
+> > > > +     if (reconfig) {
+> > > > +             rc = funeth_close(dev);
+> > >
+> > > Please rework runtime reconfig to not do the close and then open thing.
+> > > This will prevent users from reconfiguring their NICs at runtime.
+> > > You should allocate the resources first, then take the datapath down,
+> > > reconfigure, swap and free the old resources.
 > >
-> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > index 33bb8ae4a804..b5b423de53ab 100644
-> > --- a/kernel/bpf/btf.c
-> > +++ b/kernel/bpf/btf.c
-> > @@ -6338,7 +6338,10 @@ struct module *btf_try_get_module(const struct btf *btf)
-> >  		if (btf_mod->btf != btf)
-> >  			continue;
+> > I imagine you have in mind something like nfp_net_ring_reconfig() but that
+> > doesn't work as well here. We have the linux part of the data path (ring memory,
+> > interrupts, etc) and the device part, handled by FW. I can't clone the device
+> > portion for a quick swap during downtime. Since it involves messages to FW
+> > updating the device portion is by far the bulk of the work and it needs to be
+> > during the downtime. Doing Linux allocations before downtime offers little
+> > improvement I think.
+>
+> It does - real machines running real workloads will often be under
+> memory pressure. I've even seen XDP enable / disable fail just due
+> to memory fragmentation, with plenty free memory when device rings
+> are large.
+
+I am in the process of changing this code.
+
+> > There is ongoing work for FW to be able to modify live queues. When that
+> > is available I expect this function will be able to move in and out of XDP with
+> > no downtime.
+>
+> > > > +static void fun_destroy_netdev(struct net_device *netdev)
+> > > > +{
+> > > > +     if (likely(netdev)) {
+> > >
+> > > defensive programming?
 > >
-> > -		if (try_module_get(btf_mod->module))
-> > +		/* We must only consider module whose __init routine has
-> > +		 * finished, hence use try_module_get_live.
-> > +		 */
-> > +		if (try_module_get_live(btf_mod->module))
+> > Looks that way but I'd rather have this function work with any input.
 >
-> Instead of patch 1 refactoring for this very specific case can we do:
-> 1.
-> if (try_module_get(btf_mod->module)) {
->      if (btf_mod->module->state != MODULE_STATE_LIVE)
->         module_put(btf_mod->module);
->      else
->         res = btf_mod->module;
->
-> 2.
-> preempt_disable();
-> if (btf_mod->module->state == MODULE_STATE_LIVE &&
->     try_module_get(btf_mod->module)) ...
-> preempt_enable();
->
-> 3. add
-> case MODULE_STATE_LIVE:
-> to btf_module_notify()
-> and have an extra flag in struct btf_module to say that it's ready?
->
-> I'm mainly concerned about:
-> -EXPORT_SYMBOL(try_module_get);
-> +EXPORT_SYMBOL(__try_module_get);
-> in the patch 1. Not that I care about out of tree modules,
-> but we shouldn't be breaking them without a reason.
+> There's way too much defensive programming in this driver. Unless there
+> is a legit code path which can pass netdev == NULL you should remove
+> the check.
 
-Alright, we could also export try_module_get, but let's go with option 3.
-
---
-Kartikeya
+OK
