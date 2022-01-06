@@ -2,298 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85DF1486530
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 14:21:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D984A486546
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 14:28:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231453AbiAFNV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 08:21:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41754 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239490AbiAFNVD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 08:21:03 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303EAC061201;
-        Thu,  6 Jan 2022 05:21:03 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id i8so2509066pgt.13;
-        Thu, 06 Jan 2022 05:21:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wBc8X4yxTJj0yg0BtDL82zLPBsVK51ncdk64BgH5coI=;
-        b=QiLGxWOqHYifHEFc0SNUYeMbxRB9GWQ5GtNsL64uNUb5YuS6lIUGiAcKkoJxR8Znhc
-         d1nvRAit0UuRtdmKcu71a0jTeMS5ZaeJi7GyMNVj0iBd31KTpiUXQbVfJTVkE5iQ5kbu
-         CWWzddq6Q2KjEZb5ov8r2b5sp+VePdut2MRVHcuYUwHmC4D5TEfkpHuCDRvWkVIsa1//
-         TJImByXTSCpdqaO9zNr77nNyvhfFN10EH16bjikwmmzhuxn/DUvFg2rIYuEAOVLiFeDa
-         VZ/B8rdbEzHtZzu9sAiim33R7yIH2RXPUNW/eUfkassFIh1k3yleRdOl8rzkn45c3cqs
-         wtVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wBc8X4yxTJj0yg0BtDL82zLPBsVK51ncdk64BgH5coI=;
-        b=q6iaxXYbVXnWpLr1bm7QzsdE75iPJ2JQwo9UohJK2exzjZ0D+jrLckMRckpZZ3cmTv
-         hrErJtsq1ZeHb0rE5zkk5M8+eM0h4slyaW+WmvmbLEtN67ASUp8H6+1QUlFOrezH8AC8
-         2bLnIEsZiSU0CCVs5DqCrPSypTqj6o31HhexyZsScVV4jPIKJtq061Y4cwNe+8rA5xbx
-         WUt99Vhgah8mqriMzi68x9S/8Sq4XtHcppAbFM1FKhxciXGxz4NvTKg2AVJpO46l14WJ
-         pZ3UwdE7GxI1Kseg/8LhHeXPAg/fObzG4ATXqbFIiwVUtf15ocHY0CZrgtcx9FDpTVCj
-         /Gfw==
-X-Gm-Message-State: AOAM530dsnFVaPGds7n5jNeILrHIQb8lbxnd3y0z17oZIBcncg+l4cAD
-        qxlR0iE11FHuTxKrvZ/0tig=
-X-Google-Smtp-Source: ABdhPJxg9B/5ySTOsaJtZeU3RQPx6A0yzmrw5bP8wMQrYxm4CX3lv6F4kmOuJ7/AwOg/w5c0Vg7d1A==
-X-Received: by 2002:a63:354f:: with SMTP id c76mr48132493pga.193.1641475262761;
-        Thu, 06 Jan 2022 05:21:02 -0800 (PST)
-Received: from localhost.localdomain ([43.132.141.9])
-        by smtp.gmail.com with ESMTPSA id c11sm2777998pfv.85.2022.01.06.05.20.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 05:21:02 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org, edumazet@google.com
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
+        id S239562AbiAFN2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 08:28:03 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:54438 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230323AbiAFN2D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jan 2022 08:28:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Dc13GhzV7GMpFHXLCvgCedftWg7T/tGeHO9kPVdise8=; b=naWyluOJhBleVVZMCq3CJ3uvEk
+        GkFmtvQdmb2RyZPhH1q4YsoRZbcasi2b1ojlATohPQHSvnYRALJGJpS79zr6FuD15LJGB7ElQTz1M
+        PXanW1Pbc0zm0RDnzRV1+b0VUL4LbiI3El0+2C2O6LsU30KDWQElrZWgUJLy0o/O58GU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n5So9-000eji-G1; Thu, 06 Jan 2022 14:27:57 +0100
+Date:   Thu, 6 Jan 2022 14:27:57 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Aaron Ma <aaron.ma@canonical.com>, kuba@kernel.org,
+        henning.schild@siemens.com, linux-usb@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, bpf@vger.kernel.org,
-        Menglong Dong <imagedong@tencent.com>
-Subject: [PATCH v5 net-next 3/3] bpf: selftests: add bind retry for post_bind{4, 6}
-Date:   Thu,  6 Jan 2022 21:20:22 +0800
-Message-Id: <20220106132022.3470772-4-imagedong@tencent.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220106132022.3470772-1-imagedong@tencent.com>
-References: <20220106132022.3470772-1-imagedong@tencent.com>
+        davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
+Subject: Re: [PATCH 1/3 v3] net: usb: r8152: Check used MAC passthrough
+ address
+Message-ID: <YdbuXbtc64+Knbhm@lunn.ch>
+References: <20220105151427.8373-1-aaron.ma@canonical.com>
+ <YdXVoNFB/Asq6bc/@lunn.ch>
+ <bb6d8bc4-abee-8536-ca5b-bac11d1ecd53@suse.com>
+ <YdYbZne6pBZzxSxA@lunn.ch>
+ <CAAd53p52uGFjbiuOWAA-1dN7mTqQ0KFe9PxWvPL+fjfQb9K5vQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAd53p52uGFjbiuOWAA-1dN7mTqQ0KFe9PxWvPL+fjfQb9K5vQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+> Can udev in current form really handle the MAC race? Unless there's a
+> new uevent right before ndo_open() so udev can decide which MAC to
+> assign? Even with that, the race can still happen...
 
-With previous patch, kernel is able to 'put_port' after sys_bind()
-fails. Add the test for that case: rebind another port after
-sys_bind() fails. If the bind success, it means previous bind
-operation is already undoed.
+There will always be a race, since the kernel can start using the
+interface before register_netdev() has even finished, before user
+space is running. Take a look at how NFS root works.
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- tools/testing/selftests/bpf/test_sock.c | 150 ++++++++++++++++++++----
- 1 file changed, 130 insertions(+), 20 deletions(-)
+But in general, you can change the MAC address at any time. Some MAC
+drivers will return -EBUSY if the interface is up, but that is
+generally artificial. After a change of MAC address ARP will time out
+after a while and the link peers will get the new MAC address.
 
-diff --git a/tools/testing/selftests/bpf/test_sock.c b/tools/testing/selftests/bpf/test_sock.c
-index 94f9b126f5ed..fe10f8134278 100644
---- a/tools/testing/selftests/bpf/test_sock.c
-+++ b/tools/testing/selftests/bpf/test_sock.c
-@@ -35,12 +35,15 @@ struct sock_test {
- 	/* Endpoint to bind() to */
- 	const char *ip;
- 	unsigned short port;
-+	unsigned short port_retry;
- 	/* Expected test result */
- 	enum {
- 		LOAD_REJECT,
- 		ATTACH_REJECT,
- 		BIND_REJECT,
- 		SUCCESS,
-+		RETRY_SUCCESS,
-+		RETRY_REJECT
- 	} result;
- };
- 
-@@ -251,6 +254,99 @@ static struct sock_test tests[] = {
- 		.port = 4098,
- 		.result = SUCCESS,
- 	},
-+	{
-+		.descr = "bind4 deny specific IP & port of TCP, and retry",
-+		.insns = {
-+			BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+
-+			/* if (ip == expected && port == expected) */
-+			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
-+				    offsetof(struct bpf_sock, src_ip4)),
-+			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
-+				    __bpf_constant_ntohl(0x7F000001), 4),
-+			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
-+				    offsetof(struct bpf_sock, src_port)),
-+			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x1002, 2),
-+
-+			/* return DENY; */
-+			BPF_MOV64_IMM(BPF_REG_0, 0),
-+			BPF_JMP_A(1),
-+
-+			/* else return ALLOW; */
-+			BPF_MOV64_IMM(BPF_REG_0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		.expected_attach_type = BPF_CGROUP_INET4_POST_BIND,
-+		.attach_type = BPF_CGROUP_INET4_POST_BIND,
-+		.domain = AF_INET,
-+		.type = SOCK_STREAM,
-+		.ip = "127.0.0.1",
-+		.port = 4098,
-+		.port_retry = 5000,
-+		.result = RETRY_SUCCESS,
-+	},
-+	{
-+		.descr = "bind4 deny specific IP & port of UDP, and retry",
-+		.insns = {
-+			BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+
-+			/* if (ip == expected && port == expected) */
-+			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
-+				    offsetof(struct bpf_sock, src_ip4)),
-+			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
-+				    __bpf_constant_ntohl(0x7F000001), 4),
-+			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
-+				    offsetof(struct bpf_sock, src_port)),
-+			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x1002, 2),
-+
-+			/* return DENY; */
-+			BPF_MOV64_IMM(BPF_REG_0, 0),
-+			BPF_JMP_A(1),
-+
-+			/* else return ALLOW; */
-+			BPF_MOV64_IMM(BPF_REG_0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		.expected_attach_type = BPF_CGROUP_INET4_POST_BIND,
-+		.attach_type = BPF_CGROUP_INET4_POST_BIND,
-+		.domain = AF_INET,
-+		.type = SOCK_DGRAM,
-+		.ip = "127.0.0.1",
-+		.port = 4098,
-+		.port_retry = 5000,
-+		.result = RETRY_SUCCESS,
-+	},
-+	{
-+		.descr = "bind6 deny specific IP & port, and retry",
-+		.insns = {
-+			BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+
-+			/* if (ip == expected && port == expected) */
-+			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
-+				    offsetof(struct bpf_sock, src_ip6[3])),
-+			BPF_JMP_IMM(BPF_JNE, BPF_REG_7,
-+				    __bpf_constant_ntohl(0x00000001), 4),
-+			BPF_LDX_MEM(BPF_W, BPF_REG_7, BPF_REG_6,
-+				    offsetof(struct bpf_sock, src_port)),
-+			BPF_JMP_IMM(BPF_JNE, BPF_REG_7, 0x2001, 2),
-+
-+			/* return DENY; */
-+			BPF_MOV64_IMM(BPF_REG_0, 0),
-+			BPF_JMP_A(1),
-+
-+			/* else return ALLOW; */
-+			BPF_MOV64_IMM(BPF_REG_0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		.expected_attach_type = BPF_CGROUP_INET6_POST_BIND,
-+		.attach_type = BPF_CGROUP_INET6_POST_BIND,
-+		.domain = AF_INET6,
-+		.type = SOCK_STREAM,
-+		.ip = "::1",
-+		.port = 8193,
-+		.port_retry = 9000,
-+		.result = RETRY_SUCCESS,
-+	},
- 	{
- 		.descr = "bind4 allow all",
- 		.insns = {
-@@ -315,14 +411,15 @@ static int attach_sock_prog(int cgfd, int progfd,
- 	return bpf_prog_attach(progfd, cgfd, attach_type, BPF_F_ALLOW_OVERRIDE);
- }
- 
--static int bind_sock(int domain, int type, const char *ip, unsigned short port)
-+static int bind_sock(int domain, int type, const char *ip,
-+		     unsigned short port, unsigned short port_retry)
- {
- 	struct sockaddr_storage addr;
- 	struct sockaddr_in6 *addr6;
- 	struct sockaddr_in *addr4;
- 	int sockfd = -1;
- 	socklen_t len;
--	int err = 0;
-+	int res = SUCCESS;
- 
- 	sockfd = socket(domain, type, 0);
- 	if (sockfd < 0)
-@@ -348,21 +445,44 @@ static int bind_sock(int domain, int type, const char *ip, unsigned short port)
- 		goto err;
- 	}
- 
--	if (bind(sockfd, (const struct sockaddr *)&addr, len) == -1)
--		goto err;
-+	if (bind(sockfd, (const struct sockaddr *)&addr, len) == -1) {
-+		/* sys_bind() may fail for different reasons, errno has to be
-+		 * checked to confirm that BPF program rejected it.
-+		 */
-+		if (errno != EPERM)
-+			goto err;
-+		if (port_retry)
-+			goto retry;
-+		res = BIND_REJECT;
-+		goto out;
-+	}
- 
-+	goto out;
-+retry:
-+	if (domain == AF_INET)
-+		addr4->sin_port = htons(port_retry);
-+	else
-+		addr6->sin6_port = htons(port_retry);
-+	if (bind(sockfd, (const struct sockaddr *)&addr, len) == -1) {
-+		if (errno != EPERM)
-+			goto err;
-+		res = RETRY_REJECT;
-+	} else {
-+		res = RETRY_SUCCESS;
-+	}
- 	goto out;
- err:
--	err = -1;
-+	res = -1;
- out:
- 	close(sockfd);
--	return err;
-+	return res;
- }
- 
- static int run_test_case(int cgfd, const struct sock_test *test)
- {
- 	int progfd = -1;
- 	int err = 0;
-+	int res;
- 
- 	printf("Test case: %s .. ", test->descr);
- 	progfd = load_sock_prog(test->insns, test->expected_attach_type);
-@@ -380,21 +500,11 @@ static int run_test_case(int cgfd, const struct sock_test *test)
- 			goto err;
- 	}
- 
--	if (bind_sock(test->domain, test->type, test->ip, test->port) == -1) {
--		/* sys_bind() may fail for different reasons, errno has to be
--		 * checked to confirm that BPF program rejected it.
--		 */
--		if (test->result == BIND_REJECT && errno == EPERM)
--			goto out;
--		else
--			goto err;
--	}
--
-+	res = bind_sock(test->domain, test->type, test->ip, test->port,
-+			test->port_retry);
-+	if (res > 0 && test->result == res)
-+		goto out;
- 
--	if (test->result != SUCCESS)
--		goto err;
--
--	goto out;
- err:
- 	err = -1;
- out:
--- 
-2.30.2
+> 
+> So what if we keep the existing behavior (i.e. copy MAC from ACPI),
+> and let userspace daemon like NetworkManager to give the second NIC
+> (r8152 in this case) a random MAC if the main NIC (I219 in this case)
+> is already in use? Considering the userspace daemon has the all the
+> information required and it's the policy maker here.
 
+You should be thinking of this in more general terms. You want to
+design a system that will work for any vendors laptop and dock.
+
+You need to describe the two interfaces using some sort of bus
+address, be it PCIe, USB, or a platform device address as used by
+device tree etc.
+
+Let the kernel do whatever it wants with MAC addresses for these two
+interfaces. The only requirement you have is that the laptop internal
+interface gets the vendor allocated MAC address, and that the dock get
+some sort of MAC address, even if it is random.
+
+On device creation, udev can check if it now has both interfaces? If
+the internal interface is up, it is probably in use. Otherwise, take
+its MAC address and assign it to the dock interface, and give the
+internal interface a random MAC address, just in case.
+
+You probably need to delay NetworkManager, systemd-networkkd,
+/etc/network/interfaces etc, so that they don't do anything until
+after udevd has settled, indicating all devices have probably been
+found.
+
+I suspect you will never get a 100% robust design, but you can
+probably get it working enough for the cleaning staff and the CEO, who
+have very simple setups. Power users are going to find all the corner
+cases and will want to disable the udev rule.
+
+     Andrew
