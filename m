@@ -2,127 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 384C74861C3
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 10:02:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C64814861CB
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 10:04:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237169AbiAFJC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 04:02:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40088 "EHLO
+        id S237145AbiAFJEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 04:04:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236715AbiAFJC0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 04:02:26 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA66C061245;
-        Thu,  6 Jan 2022 01:02:26 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id h23so3488376wrc.1;
-        Thu, 06 Jan 2022 01:02:26 -0800 (PST)
+        with ESMTP id S236715AbiAFJEL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 04:04:11 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FFAC061245;
+        Thu,  6 Jan 2022 01:04:11 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id c2so2009019pfc.1;
+        Thu, 06 Jan 2022 01:04:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=1U4NWLNw6loRYINOoYaOJrgBMNRCXi8c1uaneowkkyM=;
-        b=DVNC7xy3HgBwZub9F0uqPgsOH4Bl+fd4+Up3YuzSdLzxT2+/j2hC3PUQjBvJ6KU9ec
-         rK8oWDVrHQ58N3sa6NzXVCQWPhutHW9xjheUzScoB83CeconuROWMiMh3MsTg6rO909V
-         zOxLHyzhERuaB5u/0eooUAwJKNRvdQeT2URemmG/W4NjI6zAlgEkR2M6p2UBKEMavLoJ
-         SbCliWPHCnFygbeNlplYOwvl3BFQl7OuQUH5xEo7WY7iuG4OQBvCUfzmK1Rn+m8vITQR
-         6VxMsU0qjpLgniWTOb1BXGtZWAlRgTwo3XeUfU+6W2KNQWPkh8UyvwxYixyStDx4iDvx
-         +TQA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xSSoYa3Oh5uJWtwI1Z8ymCv2YQrKvjhDxgIsNPINZuE=;
+        b=oO7ezoyhjSV72us8z/bLxc1YLcDYAIyMpQqn6lC4mSQkqfJFDDFg7SopCSCWAHcW0z
+         m9DS0HZ38CsiHLP5vXaZrBpCpdTdU3l1qYkJFIxXHIMDAA453jB3HL3brHJGHdJ+suiT
+         Wv+uOQC9oBIclXDSXiDAOvAMQAPKSlOYyTRrHofEXkoqTT63EPRinBnY6NPLNYDWhTau
+         DQiA0vepc214e1BnzbfNPdeTTfhLvWsd9mxv/8smhX+Zl3axUFlMr47p3TR1UH+rfBIL
+         fkOC9HdcxoxaAixj8TSIe/OCYxg9sZ2RyDbYdBzwMNJ0c1XdPBJuUM8ZZcZ5b3Fnnof9
+         iitQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=1U4NWLNw6loRYINOoYaOJrgBMNRCXi8c1uaneowkkyM=;
-        b=t3FwtaekywieKZUk6SplJ5vUVClv3AT7/ySZLVNqalKo8dm7547wo/8wjq+MXxf8kj
-         tVKti7JqqUYmRalRl2Z9HP++1kGGMHAi/9nPc0kCKz17tQLswPTqdwRqxWYMeNMB1frE
-         1eKYEATvy/yUr/+3eQ9oIbyfUEjXCxoQHI/x0DX5DWVJhfUV6r55PJQ/+ekp6lS4wwgl
-         LSuvyXg9AiF7cOmeiQ86NFLMJFLaa0vxHl+jata7tdq8o2bhDT0mX++C6XvL4NtSpPXE
-         DYXGSdoFZQgbogRAQAMU84Attfb1E+/x1u9h7jbIN7QK/sYrn94fp04NMTqePkWZm+VH
-         gCSA==
-X-Gm-Message-State: AOAM533LyhDWapKFQP9D/hdA1WywX//VhOnG2228ZLuUPNL3WYcRdJBW
-        0nFxS3/pk6D/QT8IzAHLvgV968a8D4I=
-X-Google-Smtp-Source: ABdhPJxAt03KsiKP5A5YtrODkSW/XT6NqwjWsSsFj86xX714IoiLZQtZsYxlh0h9rtDZO208KTaWEw==
-X-Received: by 2002:a5d:48c2:: with SMTP id p2mr43326425wrs.543.1641459744879;
-        Thu, 06 Jan 2022 01:02:24 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id o3sm1188505wmr.15.2022.01.06.01.02.23
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 06 Jan 2022 01:02:24 -0800 (PST)
-Date:   Thu, 6 Jan 2022 09:02:21 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     ecree.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] sfc: Use swap() instead of open coding it
-Message-ID: <20220106090221.4gj6cevh2sb7hrfb@gmail.com>
-Mail-Followup-To: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        ecree.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-References: <20220105152237.45991-1-jiapeng.chong@linux.alibaba.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xSSoYa3Oh5uJWtwI1Z8ymCv2YQrKvjhDxgIsNPINZuE=;
+        b=BmTEqXE5mkTAoJPq6c4VP3LT8hUweM+03wzA9hbovbp8kx5KtWTdBbGSrhHUyZ+wav
+         05/5+260K2Sh813Mq2BdG8tmenPt5CkFQtsB7+n4WgeQk9lxreN9DDVLh1YQF1pe2zl1
+         4VD4566QmDIydNXszpYLSCR1ahPZFVYzcxwnpBOZ/cjJmbvZ3ppOFihmCV+OBxmKvIH2
+         i2a/458G7Zep23aSpDu3Ghehu22NhmUfNolVYIQFy6UEjA/qmBKn3fltZzILucvwMz2U
+         wpj4pXKmJ28xRC0+2EoJJybuqD7/w0cM335+1yhNKnbyP33jWUsmYiY/lQDiCRSCXoGs
+         WAbg==
+X-Gm-Message-State: AOAM532u8y+6TZ6dawmJ6ffLgipD+0nozGQKYRBuzFQcIsa58e1b3vVX
+        moH45dMXOnfXbqnk3cCsovZPmqnd7LQ=
+X-Google-Smtp-Source: ABdhPJyP2x8XCIgRK0rHBg0d8z1S+0k0lUMQfGBmrTLq3LZnKv8ER61R9/iHsXj6WOO3sKqoJsU5FA==
+X-Received: by 2002:a63:381d:: with SMTP id f29mr52599558pga.162.1641459850913;
+        Thu, 06 Jan 2022 01:04:10 -0800 (PST)
+Received: from localhost ([103.4.221.252])
+        by smtp.gmail.com with ESMTPSA id j1sm1759183pfc.49.2022.01.06.01.04.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 01:04:10 -0800 (PST)
+Date:   Thu, 6 Jan 2022 14:34:00 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH bpf-next v6 11/11] selftests/bpf: Add test for race in
+ btf_try_get_module
+Message-ID: <20220106090400.6p34bempgv2wzocj@apollo.legion>
+References: <20220102162115.1506833-1-memxor@gmail.com>
+ <20220102162115.1506833-12-memxor@gmail.com>
+ <20220105062033.lufu57xhpyou3sie@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220105152237.45991-1-jiapeng.chong@linux.alibaba.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20220105062033.lufu57xhpyou3sie@ast-mbp.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 11:22:37PM +0800, Jiapeng Chong wrote:
-> Clean the following coccicheck warning:
-> 
-> ./drivers/net/ethernet/sfc/efx_channels.c:870:36-37: WARNING opportunity
-> for swap().
-> 
-> ./drivers/net/ethernet/sfc/efx_channels.c:824:36-37: WARNING opportunity
-> for swap().
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+On Wed, Jan 05, 2022 at 11:50:33AM IST, Alexei Starovoitov wrote:
+> On Sun, Jan 02, 2022 at 09:51:15PM +0530, Kumar Kartikeya Dwivedi wrote:
+> > This adds a complete test case to ensure we never take references to
+> > modules not in MODULE_STATE_LIVE, which can lead to UAF, and it also
+> > ensures we never access btf->kfunc_set_tab in an inconsistent state.
+> >
+> > The test uses userfaultfd to artifically widen the race.
+>
+> Fancy!
+> Does it have to use a different module?
+> Can it be part of bpf_testmod somehow?
 
-Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+I was thinking of doing it with bpf_testmod, but then I realised it would be a
+problem with parallel mode of test_progs, where another selftest in parallel may
+rely on bpf_testmod (which this test would unload, load and make it fault, and
+then fail the load before restoring it by loading again), so I went with
+bpf_testmod.
 
-> ---
->  drivers/net/ethernet/sfc/efx_channels.c | 14 ++++----------
->  1 file changed, 4 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-> index b015d1f2e204..ead550ae2709 100644
-> --- a/drivers/net/ethernet/sfc/efx_channels.c
-> +++ b/drivers/net/ethernet/sfc/efx_channels.c
-> @@ -819,11 +819,8 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
->  	old_txq_entries = efx->txq_entries;
->  	efx->rxq_entries = rxq_entries;
->  	efx->txq_entries = txq_entries;
-> -	for (i = 0; i < efx->n_channels; i++) {
-> -		channel = efx->channel[i];
-> -		efx->channel[i] = other_channel[i];
-> -		other_channel[i] = channel;
-> -	}
-> +	for (i = 0; i < efx->n_channels; i++)
-> +		swap(efx->channel[i], other_channel[i]);
->  
->  	/* Restart buffer table allocation */
->  	efx->next_buffer_table = next_buffer_table;
-> @@ -865,11 +862,8 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
->  	/* Swap back */
->  	efx->rxq_entries = old_rxq_entries;
->  	efx->txq_entries = old_txq_entries;
-> -	for (i = 0; i < efx->n_channels; i++) {
-> -		channel = efx->channel[i];
-> -		efx->channel[i] = other_channel[i];
-> -		other_channel[i] = channel;
-> -	}
-> +	for (i = 0; i < efx->n_channels; i++)
-> +		swap(efx->channel[i], other_channel[i]);
->  	goto out;
->  }
->  
-> -- 
-> 2.20.1.7.g153144c
+Maybe we can hardcode a list of tests to be executed serially in --workers=n > 1
+mode? All serial tests are then executed in the beginning (or end), and then it
+starts invoking others in parallel as usual.
+
+--
+Kartikeya
