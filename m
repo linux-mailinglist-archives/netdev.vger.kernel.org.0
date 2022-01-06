@@ -2,179 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A06A4861B7
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 09:59:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 364164861BE
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 10:00:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236769AbiAFI7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 03:59:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
+        id S236946AbiAFJAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 04:00:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236715AbiAFI7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 03:59:17 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BBF8C061245;
-        Thu,  6 Jan 2022 00:59:17 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id 196so1967133pfw.10;
-        Thu, 06 Jan 2022 00:59:17 -0800 (PST)
+        with ESMTP id S236715AbiAFJAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 04:00:12 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A2EC061245
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 01:00:12 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id c126-20020a1c9a84000000b00346f9ebee43so746085wme.4
+        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 01:00:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/x1jBnUoh/TQJus9KFQbr1QInsqNrjuVnzXHgZXexQQ=;
-        b=WBMPPCw7FMZXg71SU2ZuGLYSgqOWbtYRK5JrNyGL6vTpvq1bzEGr4WtwjgjUoy66OV
-         Lyhotv+7FvjKDyOIv4v1z9l7oIzEpWM5twQRGCa5U2v06CFoNFoCQc5I7mTA6I1o5WNt
-         Zw6YnU1QuMy5s43BpKypXxd4scQAR/5nMoqfl8672NDDCFGEtuZ3N//03bm6YMHDT8xn
-         ACW4zRUjUGnHABDhYx8VVvH0aDlGHB3Xr89eGlhuqQswrpm5k8kI4SXrY9Yb7CETzBa8
-         Uj8PHFFCzgwOe733uDMFFp9suLvW4e70rGd+omztlQnKNXzVZKEgbUeaBkzO1q/nK/3D
-         7dtg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PgHNbaRqas1l3wMBwr+/AZncsBNs3yigaIJCQ1mjUt4=;
+        b=C5NfgAA3j2HX6sHvkgogflJHKY9cekhexhzduBoU2wvdooLAhPXO2TSvMwsy8MU6Fo
+         qxhWcJqOvf2cxMj23nVahQBbR7NqKO035IT3mhsBtRufhhTLWeiid6E/jwWLKgcGWYLb
+         wcbr1IO+6r0+P5rqZ4f5WTrwfm6+2rXwtxYcD4H1Fb3Ed5DIE9n2JNWldY8sOezNuFMz
+         Lsgz+h6dmLA0V6ezXFPqci9UOS+5F9tj/gnC54GD9g/GJoVuwe8i2FyhRk8kePu7xFqC
+         2bAuuQYggRbAAPy+ZFKRghuZYyf5/wPrf5rRo8Hx1hyX/92nRbl1bwSm8TSyO1Uu/QBr
+         dgiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/x1jBnUoh/TQJus9KFQbr1QInsqNrjuVnzXHgZXexQQ=;
-        b=QKWbgzcdjf3azqz7GHzAcnli9s1+uuldsJvjWe+N/wsgfNudwVDx/HiLCzcfbj5r3a
-         th8ZvI54aUPqqGHRSzd2IACO+ufOLTZ/bc4URKGpnAHdKB0/+5ICHb/98ZBOjAwBs3TP
-         0mKlJPz6Bi3qnO3MYEmBTHj8WTnGp90Uj0lPQ3ErysXAZvUJHmu1x0HbqgT8p+Bivel1
-         hwQ9hTTUnUfc/8KazR2uRfco49EKJaINCBAngnX3FwRX7e/FunBFUoI9alqpwCuM22R9
-         qX5fwU0/YStB5/qc8/C8mZPRErKtkuXgvCWfUSu8lfJQ2TIDnZXnfvhGt0hdYOMEr9js
-         Mi/w==
-X-Gm-Message-State: AOAM530SMGjOQEuiU0eyfF2Gh6kF8u9dSRr+B1YG7HCt9Hw/ZafsWVIt
-        mtMZRPWEAyuF6UBDW0/onkk=
-X-Google-Smtp-Source: ABdhPJy+Gfb3PBidkaUhwqIYYG+WyvDhYzxs1Ma8qGvnFN1PdyR8lsHwdBZvcQR8hNuXBU2f3F+YVA==
-X-Received: by 2002:aa7:84cc:0:b0:4bc:54ec:d5e4 with SMTP id x12-20020aa784cc000000b004bc54ecd5e4mr32465024pfn.66.1641459556404;
-        Thu, 06 Jan 2022 00:59:16 -0800 (PST)
-Received: from localhost ([103.4.221.252])
-        by smtp.gmail.com with ESMTPSA id rj1sm1674673pjb.36.2022.01.06.00.59.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 00:59:16 -0800 (PST)
-Date:   Thu, 6 Jan 2022 14:29:06 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH bpf-next v6 03/11] bpf: Populate kfunc BTF ID sets in
- struct btf
-Message-ID: <20220106085906.3zeugweq3twnkwzh@apollo.legion>
-References: <20220102162115.1506833-1-memxor@gmail.com>
- <20220102162115.1506833-4-memxor@gmail.com>
- <20220105061911.nzgzzvt2rpftcavi@ast-mbp.dhcp.thefacebook.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PgHNbaRqas1l3wMBwr+/AZncsBNs3yigaIJCQ1mjUt4=;
+        b=q0jrq5IjuwrNW71L0WO/mxUIBcpcgUNj7wmry67JZwXXKeu4eCCwMU49X1vDvWh/eb
+         ev2Xq8mjeBeNWjql68k4IJTZfmCDXZQlaRI71amiOkbCNQDv4GM0z1PQ9wnFlbEdS0Q6
+         RTKM5fv288bcN+3F4640C0mKrccd0IJLaYdNv5d6ZeLaum0AU4EDZ25yBzNjWf6e0sha
+         YFo3jUVpYWQP6DcILrXp0GEiddSeSEXGVlik7R5GgIVrRnIjt04iOkfEBdB4BD15x0fQ
+         fZg4q7ralPz4qBJtAsP1mc46l0qSaHv8njYOfChMQnZuNz366yoLLOFveeL0FuvmUPr5
+         YMNA==
+X-Gm-Message-State: AOAM531uhTzu8QOmkr3Pi9FveKj1uGSfeCSmr2o9phUwu+6R+94ZtTLs
+        M4ugSfh5+KIKo/ivzpOdsy4=
+X-Google-Smtp-Source: ABdhPJxhjJGKkO52RcvzGPOtwd5VkJ+C+UfJrYL/8OuwOla3xYpOeeeQooiocvg9AshOu20NYn9ikQ==
+X-Received: by 2002:a05:600c:21cd:: with SMTP id x13mr6377635wmj.110.1641459611039;
+        Thu, 06 Jan 2022 01:00:11 -0800 (PST)
+Received: from [10.0.0.5] ([37.165.220.115])
+        by smtp.gmail.com with ESMTPSA id f10sm1221579wmq.16.2022.01.06.01.00.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Jan 2022 01:00:10 -0800 (PST)
+Message-ID: <c46e0a96-b027-903e-bc08-0daa9a54e1af@gmail.com>
+Date:   Thu, 6 Jan 2022 01:00:07 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220105061911.nzgzzvt2rpftcavi@ast-mbp.dhcp.thefacebook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH net-next] veth: Do not record rx queue hint in veth_xmit
+Content-Language: en-US
+To:     Daniel Borkmann <daniel@iogearbox.net>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, laurent.bernaille@datadoghq.com,
+        maciej.fijalkowski@intel.com, toshiaki.makita1@gmail.com,
+        pabeni@redhat.com, john.fastabend@gmail.com, willemb@google.com
+References: <ef4cf3168907944502c81d8bf45e24eea1061e47.1641427152.git.daniel@iogearbox.net>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <ef4cf3168907944502c81d8bf45e24eea1061e47.1641427152.git.daniel@iogearbox.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 11:49:11AM IST, Alexei Starovoitov wrote:
-> On Sun, Jan 02, 2022 at 09:51:07PM +0530, Kumar Kartikeya Dwivedi wrote:
-> >
-> > +enum btf_kfunc_hook {
-> > +	BTF_KFUNC_HOOK_XDP,
-> > +	BTF_KFUNC_HOOK_TC,
-> > +	BTF_KFUNC_HOOK_STRUCT_OPS,
-> > +	_BTF_KFUNC_HOOK_MAX,
+
+On 1/5/22 16:46, Daniel Borkmann wrote:
+> Laurent reported that they have seen a significant amount of TCP retransmissions
+> at high throughput from applications residing in network namespaces talking to
+> the outside world via veths. The drops were seen on the qdisc layer (fq_codel,
+> as per systemd default) of the phys device such as ena or virtio_net due to all
+> traffic hitting a _single_ TX queue _despite_ multi-queue device. (Note that the
+> setup was _not_ using XDP on veths as the issue is generic.)
 >
-> Why prefix with _ ?
+> More specifically, after edbea9220251 ("veth: Store queue_mapping independently
+> of XDP prog presence") which made it all the way back to v4.19.184+,
+> skb_record_rx_queue() would set skb->queue_mapping to 1 (given 1 RX and 1 TX
+> queue by default for veths) instead of leaving at 0.
 >
-
-Will fix.
-
-> > +enum {
-> > +	BTF_KFUNC_SET_MAX_CNT = 32,
-> > +};
-> ...
-> > +	if (set_cnt + add_set->cnt > BTF_KFUNC_SET_MAX_CNT) {
-> > +		ret = -E2BIG;
-> > +		goto end;
-> > +	}
+> This is eventually retained and callbacks like ena_select_queue() will also pick
+> single queue via netdev_core_pick_tx()'s ndo_select_queue() once all the traffic
+> is forwarded to that device via upper stack or other means. Similarly, for others
+> not implementing ndo_select_queue() if XPS is disabled, netdev_pick_tx() might
+> call into the skb_tx_hash() and check for prior skb_rx_queue_recorded() as well.
 >
-> This artificial limit wouldn't be needed if you didn't insist on sorting.
-> The later patches don't take advantage of this sorting feature and
-> I don't see a test for sorting either.
+> In general, it is a _bad_ idea for virtual devices like veth to mess around with
+> queue selection [by default]. Given dev->real_num_tx_queues is by default 1,
+> the skb->queue_mapping was left untouched, and so prior to edbea9220251 the
+> netdev_core_pick_tx() could do its job upon __dev_queue_xmit() on the phys device.
+
+
+Nice changelog and fix, thanks Daniel !
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+
+> Unbreak this and restore prior behavior by removing the skb_record_rx_queue()
+> from veth_xmit() altogether.
 >
-
-I'm not insisting, but for vmlinux we will have multiple
-register_btf_kfunc_id_set calls for same hook, so we have to concat multiple
-sets into one, which may result in an unsorted set. It's ok to not sort for
-modules where only one register call per hook is allowed.
-
-Unless we switch to linear search for now (which is ok by me), we have to
-re-sort for vmlinux BTF, to make btf_id_set_contains (in
-btf_kfunc_id_set_contains) work.
-
-> > +
-> > +	/* Grow set */
-> > +	set = krealloc(tab->sets[hook][type], offsetof(struct btf_id_set, ids[set_cnt + add_set->cnt]),
-> > +		       GFP_KERNEL | __GFP_NOWARN);
-> > +	if (!set) {
-> > +		ret = -ENOMEM;
-> > +		goto end;
-> > +	}
-> > +
-> > +	/* For newly allocated set, initialize set->cnt to 0 */
-> > +	if (!tab->sets[hook][type])
-> > +		set->cnt = 0;
-> > +	tab->sets[hook][type] = set;
-> > +
-> > +	/* Concatenate the two sets */
-> > +	memcpy(set->ids + set->cnt, add_set->ids, add_set->cnt * sizeof(set->ids[0]));
-> > +	set->cnt += add_set->cnt;
+> If the veth peer has an XDP program attached, then it would return the first RX
+> queue index in xdp_md->rx_queue_index (unless configured in non-default manner).
+> However, this is still better than breaking the generic case.
 >
-> Without sorting this function would just assign the pointer.
-> No need for krealloc and memcpy.
+> Fixes: edbea9220251 ("veth: Store queue_mapping independently of XDP prog presence")
+> Fixes: 638264dc9022 ("veth: Support per queue XDP ring")
+> Reported-by: Laurent Bernaille <laurent.bernaille@datadoghq.com>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> Cc: Toshiaki Makita <toshiaki.makita1@gmail.com>
+> Cc: Eric Dumazet <eric.dumazet@gmail.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Willem de Bruijn <willemb@google.com>
+> ---
+>   drivers/net/veth.c | 1 -
+>   1 file changed, 1 deletion(-)
 >
-
-Even if we didn't sort, we'd need to concat multiple sets for vmlinux case, so
-krealloc and memcpy would still be needed for the vmlinux BTF case, right? For
-modules I could certainly do a direct assignment, even if we keep sorting,
-because only one set per hook is permitted.
-
-> > +
-> > +	if (sort_set)
-> > +		sort(set->ids, set->cnt, sizeof(set->ids[0]), btf_id_cmp_func, NULL);
->
-> All that looks like extra code for a dubious feature.
->
-
-It's needed for the vmlinux case. I use WARN_ON_ONCE when modules try to
-register more than one set for a certain hook.
-
-> > +bool btf_kfunc_id_set_contains(const struct btf *btf,
-> > +			       enum bpf_prog_type prog_type,
-> > +			       enum btf_kfunc_type type, u32 kfunc_btf_id)
-> > +{
-> > +	enum btf_kfunc_hook hook;
-> > +
-> > +	switch (prog_type) {
-> > +	case BPF_PROG_TYPE_XDP:
-> > +		hook = BTF_KFUNC_HOOK_XDP;
-> > +		break;
-> > +	case BPF_PROG_TYPE_SCHED_CLS:
-> > +		hook = BTF_KFUNC_HOOK_TC;
-> > +		break;
-> > +	case BPF_PROG_TYPE_STRUCT_OPS:
-> > +		hook = BTF_KFUNC_HOOK_STRUCT_OPS;
-> > +		break;
-> > +	default:
-> > +		return false;
-> > +	}
->
-> So this switch() is necessary only to compress prog_types into smaller hooks
-> to save memory in the struct btf_kfunc_set_tab, right ?
-> If so both kfunc_id_set_contains() and register_btf_kfunc() should
-> probably use prog_type as an argument for symmetry.
-
-Ok, will fix.
-
---
-Kartikeya
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index d21dd25f429e..354a963075c5 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -335,7 +335,6 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
+>   		 */
+>   		use_napi = rcu_access_pointer(rq->napi) &&
+>   			   veth_skb_is_eligible_for_gro(dev, rcv, skb);
+> -		skb_record_rx_queue(skb, rxq);
+>   	}
+>   
+>   	skb_tx_timestamp(skb);
