@@ -2,95 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8EF3486077
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 07:02:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABF8A4860B0
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 07:44:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234324AbiAFGCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 01:02:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbiAFGCs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 01:02:48 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3268C061245;
-        Wed,  5 Jan 2022 22:02:47 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id g80so4680033ybf.0;
-        Wed, 05 Jan 2022 22:02:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nS2yMVkGz+ps+zT6am8AF/1mxQGXi0VAWBoJudmXHPc=;
-        b=HPhlvhwnoZsWjZ39b/M1Qkh2gF/e9cUKF7B/ThBVMIFie1XWAteoYg6OLDih9uZbWl
-         bq5ozFyoBIUS4xvLmhqVB43gNd56C9JME8hfNh/Y17bifPQ7W1zeisEKpI3BjzJIZrxC
-         TLAG5kbT13DU5uH5nJin6FGECvFm+AGSmR7i5uM/45J5LOKa6T9gnp2g7l2Knd89Gmij
-         2GA8FnsNd4/mKGqr1Jy5L1faMdNyE7QFZy8BdSWSVAcD3XLKJWV9+Hyx2K6QB7MJRTKp
-         CtQqKEWnVMVet0uSVgDyLmV+toll2PL26CKEwmUz4gRuzHSZP24g08WQorM5k12BA+Dw
-         odpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nS2yMVkGz+ps+zT6am8AF/1mxQGXi0VAWBoJudmXHPc=;
-        b=Wj9riMcA4oXAmK5vTLLkBiHd9sp76eHbTqGpsi7ImBJ7glYGM0JXwlPSPCQQji8z2n
-         F0+/KJ8llsJ3IrmA0n82zhExhzI2ETKjs4ivQI2YiAep/J4FoD8+rqTWPaVmCreP9pfT
-         Uy13A2X9CTShpFphAMe9oIxBfA2j8t4h3f+JlFIGPXHPX/ZdEs56hKQNK9FposcC4b80
-         MafqW0gOdLtaB69omhrLTngE8WzRdNC7mNWTHz8wC3m7HwW4Dt6T5a7E29tCAyntCHmk
-         grUFSCQlxFoLSFosHWRiTI7+mpkiUek7P4A2LymhvyZsMtELVzK48AMY+xHZ5xYAfOoR
-         9Dkw==
-X-Gm-Message-State: AOAM5318SzBxs1hV27PxAZuhUV6BU3qmVwVosmXhNuYk1wiMx15fzf4k
-        FUPcSER/3hZEIYbTeRx7eQsl/egDv/5j2YRpd7w5LtP5cAA=
-X-Google-Smtp-Source: ABdhPJy7iUitjcn5oppNAM26KLOKBXIs4/V+QaoDLcXzbV9JP4wn+ooEMLT/JRhoo9LdAuLJ9hjFRVfhWvvZWFHGdrk=
-X-Received: by 2002:a05:6902:120d:: with SMTP id s13mr201994ybu.498.1641448967089;
- Wed, 05 Jan 2022 22:02:47 -0800 (PST)
-MIME-Version: 1.0
-References: <CAFcO6XMpbL4OsWy1Pmsnvf8zut7wFXdvY_KofR-m0WK1Bgutpg@mail.gmail.com>
- <CAADnVQJK5mPOB7B4KBa6q1NRYVQx1Eya5mtNb6=L0p-BaCxX=w@mail.gmail.com>
- <CAFcO6XMxZqQo4_C7s0T2dv3JRn4Vq4RDFqJO6ZQFr6kZzsnx9g@mail.gmail.com> <CAADnVQ+HJnZOqGjXKXut51BUqi=+na4cj=PFaE35u9QwZDgeVQ@mail.gmail.com>
-In-Reply-To: <CAADnVQ+HJnZOqGjXKXut51BUqi=+na4cj=PFaE35u9QwZDgeVQ@mail.gmail.com>
-From:   butt3rflyh4ck <butterflyhuangxx@gmail.com>
-Date:   Thu, 6 Jan 2022 14:02:36 +0800
-Message-ID: <CAFcO6XP6+=S1C_m28JF_aA5az=WiswS-J3d8X2dBsYyQ4nwzkg@mail.gmail.com>
-Subject: Re: A slab-out-of-bounds Read bug in __htab_map_lookup_and_delete_batch
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S234210AbiAFGoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 01:44:25 -0500
+Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:42239 "EHLO
+        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229956AbiAFGoZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 01:44:25 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V15.ucH_1641451455;
+Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V15.ucH_1641451455)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 06 Jan 2022 14:44:22 +0800
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net v4] net/smc: Reset conn->lgr when link group registration fails
+Date:   Thu,  6 Jan 2022 14:44:15 +0800
+Message-Id: <1641451455-41647-1-git-send-email-guwen@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >
-> > Hi, the attachment is a reproducer. Enjoy it.
->
-> Please do not top-post.
-> Forwarding a syzbot reproducer with zero effort to analyze
-> what's going on is kinda lame.
+SMC connections might fail to be registered in a link group due to
+unable to find a link to assign to during its creation. As a result,
+connection creation will return a failure and most resources related
+to the connection won't be applied or initialized, such as
+conn->abort_work or conn->lnk.
 
-Hi, I am sorry for that.
+If smc_conn_free() is invoked later, it will try to access the
+resources related to the connection, which wasn't initialized, thus
+causing a warning or crash.
 
-> Maybe try harder and come up with a fix?
-> Or at least try git bisect and based on a commit find and
-> cc an author so it can be fixed (assuming issue still exists
-> in bpf-next) ?
->
+This patch tries to fix this by resetting conn->lgr to NULL if an
+abnormal exit occurs in smc_lgr_register_conn(), thus avoiding the
+access to uninitialized resources in smc_conn_free().
 
-Thank you for your suggestions.
-I spent a few days on git bisect and locked the bad commit, the commit
-is d635a69dd4981cc51f90293f5f64268620ed1565.
-The commit is a Merge tag 'net-next-5.11' and Contains multiple
-commits, currently not locked to a single commit.
+Meanwhile, the new created link group should be terminated if smc
+connections can't be registered in it. So smc_lgr_cleanup_early() is
+modified to take care of link group only and invoked to terminate
+unusable link group by smc_conn_create(). The call to smc_conn_free()
+is moved out from smc_lgr_cleanup_early() to smc_conn_abort().
 
+Fixes: 56bc3b2094b4 ("net/smc: assign link to a new connection")
+Suggested-by: Karsten Graul <kgraul@linux.ibm.com>
+Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+---
+v1->v2:
+- Reset conn->lgr to NULL in smc_lgr_register_conn().
+- Only free new created link group.
+v2->v3:
+- Using __smc_lgr_terminate() instead of smc_lgr_schedule_free_work()
+  for an immediate free.
+v3->v4:
+- Modify smc_lgr_cleanup_early() and invoke it from smc_conn_create().
+---
+ net/smc/af_smc.c   |  7 ++++---
+ net/smc/smc_core.c | 12 +++++++-----
+ net/smc/smc_core.h |  2 +-
+ 3 files changed, 12 insertions(+), 9 deletions(-)
 
-Regards,
- but3rflyh4ck.
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 230072f..f22f3ca 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -630,10 +630,11 @@ static int smc_connect_decline_fallback(struct smc_sock *smc, int reason_code,
+ 
+ static void smc_conn_abort(struct smc_sock *smc, int local_first)
+ {
++	struct smc_connection *conn = &smc->conn;
++
++	smc_conn_free(conn);
+ 	if (local_first)
+-		smc_lgr_cleanup_early(&smc->conn);
+-	else
+-		smc_conn_free(&smc->conn);
++		smc_lgr_cleanup_early(conn->lgr);
+ }
+ 
+ /* check if there is a rdma device available for this connection. */
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index 412bc85..cd3c3b8 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -171,8 +171,10 @@ static int smc_lgr_register_conn(struct smc_connection *conn, bool first)
+ 
+ 	if (!conn->lgr->is_smcd) {
+ 		rc = smcr_lgr_conn_assign_link(conn, first);
+-		if (rc)
++		if (rc) {
++			conn->lgr = NULL;
+ 			return rc;
++		}
+ 	}
+ 	/* find a new alert_token_local value not yet used by some connection
+ 	 * in this link group
+@@ -622,15 +624,13 @@ int smcd_nl_get_lgr(struct sk_buff *skb, struct netlink_callback *cb)
+ 	return skb->len;
+ }
+ 
+-void smc_lgr_cleanup_early(struct smc_connection *conn)
++void smc_lgr_cleanup_early(struct smc_link_group *lgr)
+ {
+-	struct smc_link_group *lgr = conn->lgr;
+ 	spinlock_t *lgr_lock;
+ 
+ 	if (!lgr)
+ 		return;
+ 
+-	smc_conn_free(conn);
+ 	smc_lgr_list_head(lgr, &lgr_lock);
+ 	spin_lock_bh(lgr_lock);
+ 	/* do not use this link group for new connections */
+@@ -1835,8 +1835,10 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
+ 		write_lock_bh(&lgr->conns_lock);
+ 		rc = smc_lgr_register_conn(conn, true);
+ 		write_unlock_bh(&lgr->conns_lock);
+-		if (rc)
++		if (rc) {
++			smc_lgr_cleanup_early(lgr);
+ 			goto out;
++		}
+ 	}
+ 	conn->local_tx_ctrl.common.type = SMC_CDC_MSG_TYPE;
+ 	conn->local_tx_ctrl.len = SMC_WR_TX_SIZE;
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index d63b082..73d0c35 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -468,7 +468,7 @@ static inline void smc_set_pci_values(struct pci_dev *pci_dev,
+ struct smc_sock;
+ struct smc_clc_msg_accept_confirm;
+ 
+-void smc_lgr_cleanup_early(struct smc_connection *conn);
++void smc_lgr_cleanup_early(struct smc_link_group *lgr);
+ void smc_lgr_terminate_sched(struct smc_link_group *lgr);
+ void smcr_port_add(struct smc_ib_device *smcibdev, u8 ibport);
+ void smcr_port_err(struct smc_ib_device *smcibdev, u8 ibport);
+-- 
+1.8.3.1
 
---
-Active Defense Lab of Venustech
