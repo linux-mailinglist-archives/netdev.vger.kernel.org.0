@@ -2,98 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A57174864DA
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 14:02:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3E754864E0
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 14:03:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239294AbiAFNCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 08:02:38 -0500
-Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:51512 "EHLO
-        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238944AbiAFNCh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 08:02:37 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V16OQG._1641474154;
-Received: from 30.225.24.14(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V16OQG._1641474154)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 06 Jan 2022 21:02:35 +0800
-Message-ID: <747c3399-4e6f-0353-95bf-6b6f3a0f5f60@linux.alibaba.com>
-Date:   Thu, 6 Jan 2022 21:02:34 +0800
+        id S239312AbiAFNDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 08:03:42 -0500
+Received: from mail-wm1-f47.google.com ([209.85.128.47]:52775 "EHLO
+        mail-wm1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239006AbiAFNDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 08:03:41 -0500
+Received: by mail-wm1-f47.google.com with SMTP id v123so1713435wme.2;
+        Thu, 06 Jan 2022 05:03:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vcYnekM26AwY1vgrHqt3niX4oXoouwaBi8z/zP8TK7s=;
+        b=KK1AhbTgHQntIEoZKmY7mqNYMpCGMojc2X8jImMj3fsLPy0VObLXJbPoSky5LXsB55
+         pkWPrF2QpkLlj81DfXgOMtzoyEDpPDJdIFHkN5fA/Opdi3tIw/Q5vnjcL2z6W1b6KdrP
+         nMqNkVzzQ33L+9/rzOez7I2fji+61AG4J1x2IvN/pugkswXecJbkPEyRD9gcmk8cYHAe
+         f/z+UYPG0Uu/fgG0sbcEB3nqh1mlzvIdcuXQh9rAJVaKHeYqeG31cETZSctu5hZCI4p7
+         zyCORkBHBWlCDBpvq6rV+hMFKcEt7oTDU89KMSOrpkSz7pv6Qb6Wygg6DR1B+4+Z0x8j
+         jU9g==
+X-Gm-Message-State: AOAM533lyrJtN4u/Crz/ODPbUAJsH7z+yLMQR8Bcrx6H+P4/J8AqbGRR
+        Qb3AofyHcL7S0v6Ai4aVYVk=
+X-Google-Smtp-Source: ABdhPJxjG8n0y9ZGjhfUAQ/lARqGtAcsKv1amFfIs3NrZLQDMXO0cFdv3+3SKS6rfToX8YU5cknK9Q==
+X-Received: by 2002:a05:600c:acf:: with SMTP id c15mr6826950wmr.7.1641474219848;
+        Thu, 06 Jan 2022 05:03:39 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id b6sm2089988wri.56.2022.01.06.05.03.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 05:03:39 -0800 (PST)
+Date:   Thu, 6 Jan 2022 13:03:37 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, shayagr@amazon.com, akiyano@amazon.com,
+        darinzon@amazon.com, ndagan@amazon.com, saeedb@amazon.com,
+        sgoutham@marvell.com, kys@microsoft.com, haiyangz@microsoft.com,
+        sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        grygorii.strashko@ti.com, sameehj@amazon.com,
+        chenhao288@hisilicon.com, moyufeng@huawei.com,
+        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-omap@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 1/2] net: add includes masked by netdevice.h
+ including uapi/bpf.h
+Message-ID: <20220106130337.qtvjgffwlyzy7j2y@liuwe-devbox-debian-v2>
+References: <20211230012742.770642-1-kuba@kernel.org>
+ <20211230012742.770642-2-kuba@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.0
-Subject: Re: [RFC PATCH net v2 1/2] net/smc: Resolve the race between link
- group access and termination
-To:     Karsten Graul <kgraul@linux.ibm.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dust.li@linux.alibaba.com,
-        tonylu@linux.alibaba.com
-References: <1640704432-76825-1-git-send-email-guwen@linux.alibaba.com>
- <1640704432-76825-2-git-send-email-guwen@linux.alibaba.com>
- <4ec6e460-96d1-fedc-96ff-79a98fd38de8@linux.ibm.com>
- <0a972bf8-1d7b-a211-2c11-50e86c87700e@linux.alibaba.com>
- <4df6c3c1-7d52-6bfa-9b0d-365de5332c06@linux.ibm.com>
- <095c6e45-dd9e-1809-ae51-224679783241@linux.alibaba.com>
- <1cf77005-1825-0d34-6d34-e1b513c28113@linux.ibm.com>
-From:   Wen Gu <guwen@linux.alibaba.com>
-In-Reply-To: <1cf77005-1825-0d34-6d34-e1b513c28113@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211230012742.770642-2-kuba@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for your reply.
-
-On 2022/1/5 8:03 pm, Karsten Graul wrote:
-> On 05/01/2022 09:27, Wen Gu wrote:
->> On 2022/1/3 6:36 pm, Karsten Graul wrote:
->>> On 31/12/2021 10:44, Wen Gu wrote:
->>>> On 2021/12/29 8:56 pm, Karsten Graul wrote:
->>>>> On 28/12/2021 16:13, Wen Gu wrote:
->>>>>> We encountered some crashes caused by the race between the access
->>>>>> and the termination of link groups.
->> So I think checking conn->alert_token_local has the same effect with checking conn->lgr to
->> identify whether the link group pointed by conn->lgr is still healthy and able to be used.
+On Wed, Dec 29, 2021 at 05:27:41PM -0800, Jakub Kicinski wrote:
+> Add missing includes unmasked by the subsequent change.
 > 
-> Yeah that sounds like a good solution for that! So is it now guaranteed that conn->lgr is always
-> set and this check can really be removed completely, or should there be a new helper that checks
-> conn->lgr and the alert_token, like smc_lgr_valid() ?
+> Mostly network drivers missing an include for XDP_PACKET_HEADROOM.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[...]
+>  drivers/net/ethernet/microsoft/mana/mana_en.c      | 2 ++
 
-In my humble opinion, the link group pointed by conn->lgr might have the following
-three stages if we remove 'conn->lgr = NULL' from smc_lgr_unregister_conn().
+This seems trivially correct, so in case an ack is needed:
 
-1. conn->lgr = NULL and conn->alert_token_local is zero
+Acked-by: Wei Liu <wei.liu@kernel.org>
 
-This means that the connection has never been registered in a link group. conn->lgr is clearly
-unable to use.
-
-2. conn->lgr != NULL and conn->alert_token_local is non-zero
-
-This means that the connection has been registered in a link group, and conn->lgr is valid to access.
-
-3. conn->lgr != NULL but conn->alert_token_local is zero
-
-This means that the connection was registered in a link group before, but is unregistered from
-it now. conn->lgr shouldn't be used anymore.
-
-
-So I am trying this way:
-
-1) Introduce a new helper smc_conn_lgr_state() to check the three stages mentioned above.
-
-   enum smc_conn_lgr_state {
-          SMC_CONN_LGR_ORPHAN,    /* conn was never registered in a link group */
-          SMC_CONN_LGR_VALID,     /* conn is registered in a link group now */
-          SMC_CONN_LGR_INVALID,   /* conn was registered in a link group, but now
-                                     is unregistered from it and conn->lgr should
-                                     not be used any more */
-   };
-
-2) replace the current conn->lgr check with the new helper.
-
-These new changes are under testing now.
-
-What do you think about it? :)
-
-Thanks,
-Wen Gu
+> diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
+> index c1d5a374b967..2ece9e90dc50 100644
+> --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
+> +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
+> @@ -1,6 +1,8 @@
+>  // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+>  /* Copyright (c) 2021, Microsoft Corporation. */
+>  
+> +#include <uapi/linux/bpf.h>
+> +
+>  #include <linux/inetdevice.h>
+>  #include <linux/etherdevice.h>
+>  #include <linux/ethtool.h>
