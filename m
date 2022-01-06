@@ -2,75 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA0BE48647D
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:40:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AB73486483
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:42:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238954AbiAFMkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 07:40:15 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33190 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238945AbiAFMkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:40:13 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B77AEB82105
-        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 12:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 88997C36AF5;
-        Thu,  6 Jan 2022 12:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641472811;
-        bh=fGZkHtJ83GB8EPl5rxdOhJHHJmCO9Ns+zt6c+u6BQaE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hn+hXEJk30xvkb2RFiL2BmK6J2qelaHV+hcxU06eVI3g0GjNcDlMyAzZIW2lxosVW
-         vVGxsNNHdkhHBDH8Z+vFAWzPBxfa7PkYIpL5grp30uLT/NrkX/3jWNU1d1i/QDMesw
-         4zlOQIkDDt1oMSOEC7JydubKfzXInYSACFQp/y+zjVteuBfn0fE2ReeoGb1k/Fho0s
-         9yDmiJf2EqZsvQ5yYiFFxWvt75xTqU+JYVupldPni0x/e1FHDMyVPQ9d9QPkZBlG9o
-         ZRshXMYEQMejufUfUBrFgcKdZmtFp+pWIBZLwgt2Z4FOQ97CYlehH3xPNjsIzmbeeZ
-         KNEqz2EnyY4ww==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7064DF79403;
-        Thu,  6 Jan 2022 12:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: macb: use .mac_select_pcs() interface
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164147281145.4515.7402776947538556318.git-patchwork-notify@kernel.org>
-Date:   Thu, 06 Jan 2022 12:40:11 +0000
-References: <E1n568J-002SZX-Gr@rmk-PC.armlinux.org.uk>
-In-Reply-To: <E1n568J-002SZX-Gr@rmk-PC.armlinux.org.uk>
-To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org, nicolas.ferre@microchip.com,
-        claudiu.beznea@microchip.com, kuba@kernel.org
+        id S238979AbiAFMmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 07:42:18 -0500
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:46055 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238945AbiAFMmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:42:18 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V16OO3w_1641472929;
+Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V16OO3w_1641472929)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 06 Jan 2022 20:42:16 +0800
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net v5] net/smc: Reset conn->lgr when link group registration fails
+Date:   Thu,  6 Jan 2022 20:42:08 +0800
+Message-Id: <1641472928-55944-1-git-send-email-guwen@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+SMC connections might fail to be registered in a link group due to
+unable to find a usable link during its creation. As a result,
+smc_conn_create() will return a failure and most resources related
+to the connection won't be applied or initialized, such as
+conn->abort_work or conn->lnk.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+If smc_conn_free() is invoked later, it will try to access the
+uninitialized resources related to the connection, thus causing
+a warning or crash.
 
-On Wed, 05 Jan 2022 13:15:15 +0000 you wrote:
-> Convert the PCS selection to use mac_select_pcs, which allows the PCS
-> to perform any validation it needs.
-> 
-> We must use separate phylink_pcs instances for the USX and SGMII PCS,
-> rather than just changing the "ops" pointer before re-setting it to
-> phylink as this interface queries the PCS, rather than requesting it
-> to be changed.
-> 
-> [...]
+This patch tries to fix this by resetting conn->lgr to NULL if an
+abnormal exit occurs in smc_lgr_register_conn(), thus avoiding the
+access to uninitialized resources in smc_conn_free().
 
-Here is the summary with links:
-  - [net-next] net: macb: use .mac_select_pcs() interface
-    https://git.kernel.org/netdev/net-next/c/8876769bf936
+Meanwhile, the new created link group should be terminated if smc
+connections can't be registered in it. So smc_lgr_cleanup_early() is
+modified to take care of link group only and invoked to terminate
+unusable link group by smc_conn_create(). The call to smc_conn_free()
+is moved out from smc_lgr_cleanup_early() to smc_conn_abort().
 
-You are awesome, thank you!
+Fixes: 56bc3b2094b4 ("net/smc: assign link to a new connection")
+Suggested-by: Karsten Graul <kgraul@linux.ibm.com>
+Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+---
+v1->v2:
+- Reset conn->lgr to NULL in smc_lgr_register_conn().
+- Only free new created link group.
+v2->v3:
+- Using __smc_lgr_terminate() instead of smc_lgr_schedule_free_work()
+  for an immediate free.
+v3->v4:
+- Modify smc_lgr_cleanup_early() and invoke it from smc_conn_create().
+v4->v5:
+- Hold a local copy of lgr in smc_conn_abort().
+---
+ net/smc/af_smc.c   |  8 +++++---
+ net/smc/smc_core.c | 12 +++++++-----
+ net/smc/smc_core.h |  2 +-
+ 3 files changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 230072f..e244b88 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -630,10 +630,12 @@ static int smc_connect_decline_fallback(struct smc_sock *smc, int reason_code,
+ 
+ static void smc_conn_abort(struct smc_sock *smc, int local_first)
+ {
++	struct smc_connection *conn = &smc->conn;
++	struct smc_link_group *lgr = conn->lgr;
++
++	smc_conn_free(conn);
+ 	if (local_first)
+-		smc_lgr_cleanup_early(&smc->conn);
+-	else
+-		smc_conn_free(&smc->conn);
++		smc_lgr_cleanup_early(lgr);
+ }
+ 
+ /* check if there is a rdma device available for this connection. */
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index a684936..c9a8092 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -171,8 +171,10 @@ static int smc_lgr_register_conn(struct smc_connection *conn, bool first)
+ 
+ 	if (!conn->lgr->is_smcd) {
+ 		rc = smcr_lgr_conn_assign_link(conn, first);
+-		if (rc)
++		if (rc) {
++			conn->lgr = NULL;
+ 			return rc;
++		}
+ 	}
+ 	/* find a new alert_token_local value not yet used by some connection
+ 	 * in this link group
+@@ -622,15 +624,13 @@ int smcd_nl_get_lgr(struct sk_buff *skb, struct netlink_callback *cb)
+ 	return skb->len;
+ }
+ 
+-void smc_lgr_cleanup_early(struct smc_connection *conn)
++void smc_lgr_cleanup_early(struct smc_link_group *lgr)
+ {
+-	struct smc_link_group *lgr = conn->lgr;
+ 	spinlock_t *lgr_lock;
+ 
+ 	if (!lgr)
+ 		return;
+ 
+-	smc_conn_free(conn);
+ 	smc_lgr_list_head(lgr, &lgr_lock);
+ 	spin_lock_bh(lgr_lock);
+ 	/* do not use this link group for new connections */
+@@ -1832,8 +1832,10 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
+ 		write_lock_bh(&lgr->conns_lock);
+ 		rc = smc_lgr_register_conn(conn, true);
+ 		write_unlock_bh(&lgr->conns_lock);
+-		if (rc)
++		if (rc) {
++			smc_lgr_cleanup_early(lgr);
+ 			goto out;
++		}
+ 	}
+ 	conn->local_tx_ctrl.common.type = SMC_CDC_MSG_TYPE;
+ 	conn->local_tx_ctrl.len = SMC_WR_TX_SIZE;
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index d63b082..73d0c35 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -468,7 +468,7 @@ static inline void smc_set_pci_values(struct pci_dev *pci_dev,
+ struct smc_sock;
+ struct smc_clc_msg_accept_confirm;
+ 
+-void smc_lgr_cleanup_early(struct smc_connection *conn);
++void smc_lgr_cleanup_early(struct smc_link_group *lgr);
+ void smc_lgr_terminate_sched(struct smc_link_group *lgr);
+ void smcr_port_add(struct smc_ib_device *smcibdev, u8 ibport);
+ void smcr_port_err(struct smc_ib_device *smcibdev, u8 ibport);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+1.8.3.1
 
