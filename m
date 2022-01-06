@@ -2,128 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E3F648645D
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:28:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 178AF486464
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:32:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238801AbiAFM2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 07:28:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:30209 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238780AbiAFM2i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:28:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641472117;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZoahO67h+dDkx8ghrnZtJZ57iC/SipETOINKMx5g1Rk=;
-        b=i01l46FXWm7hjIUqM7UAZ6ks1icelS32VW+WeCzaZ8tRtFJ85HzgUQ2vuR6cM2dlkYmM3L
-        DKk6BOJHlgKlNwjO2QyDtVxJUVHg5bpQCVghw1XK4hf+ats/vNVmy4ZAmrQ5V/RUsw/UmY
-        WVPR0t904peT4PUKfqZUCpe0PznYy80=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-471-gbsx_2zkMTG0Uak9TajgTw-1; Thu, 06 Jan 2022 07:28:36 -0500
-X-MC-Unique: gbsx_2zkMTG0Uak9TajgTw-1
-Received: by mail-wr1-f71.google.com with SMTP id v1-20020adfc5c1000000b001a37fd2fa2dso1184763wrg.22
-        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 04:28:36 -0800 (PST)
+        id S238836AbiAFMcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 07:32:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58770 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230195AbiAFMcR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:32:17 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EBCC061245
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 04:32:17 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id c14-20020a17090a674e00b001b31e16749cso6807329pjm.4
+        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 04:32:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LbbHJnfFJa635LNHtwNypapWioSFVlnQx2kyNjrWm4E=;
+        b=KYqP0kcBUcSvlLhrut8dRrSJSxD8FmuH7R45O2CUoeGPv2NiyDA0WaiIOCpAN7+wVL
+         VMe0E5jd2sZ8I9+hvCFk+c4r4iXK5hDPdy3J7kO5xODJSdROF2rBeTJMOUUsOYqHZa3a
+         8zK+IYr2XjfyO50kZiuVc3i2WwdkMMGsWZLJY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZoahO67h+dDkx8ghrnZtJZ57iC/SipETOINKMx5g1Rk=;
-        b=NKRcki13u+pDP8REDKejBWbahJ+6PZCHgDBzCJLKA2CYLmHgZ3QumqVb1Hc5QDRvJT
-         K4RdLRdib7k+pKHJBxq4dwVO99qHT2K4gbUwMc3c548G5ECru7epWAPAFR4OGVBGwOZB
-         nkJaWuBnzxh+tf98jyxnwVQCsGpx1nuqNYOI/NtLuOYsW6+X/4FDJY5k4S1pUV52lHgq
-         LaJlTqALxQF0SaKoqbdEpTmfBKj6Zp3Ae3sASzjbqJqlC3YNWtAGz0oYgyEXS+1htcJP
-         ifKSItQQUeAFK6+7dhwf6vwYH1ElF74m3rqLKQREcmNIsq3nEOC7GBXDFbcQWY7joL0X
-         u6lw==
-X-Gm-Message-State: AOAM533/poUtAHbPOp2aiFFuQitsV+AIqBx0JmBBBJuuTxvHFoR+rpej
-        PVaz+Kh45003xHuJucqbnLu/1Rpo8hfYCuKDogytQjwrHZHgXbIjNTRYDJITgFhSew6YtCOWaL7
-        79u4KVeQ7Kjys/kPj
-X-Received: by 2002:a05:600c:4998:: with SMTP id h24mr6839367wmp.188.1641472115476;
-        Thu, 06 Jan 2022 04:28:35 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxpM0L9YsF3jt+1ZREIQYnIBILYbA0VW3VR0LswXVJPRlFKmniMU7svrLUGNuKg8GJxP/n6/Q==
-X-Received: by 2002:a05:600c:4998:: with SMTP id h24mr6839351wmp.188.1641472115243;
-        Thu, 06 Jan 2022 04:28:35 -0800 (PST)
-Received: from redhat.com ([2a03:c5c0:207e:991b:6857:5652:b903:a63b])
-        by smtp.gmail.com with ESMTPSA id y11sm1890725wrp.86.2022.01.06.04.28.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 04:28:34 -0800 (PST)
-Date:   Thu, 6 Jan 2022 07:28:31 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v3 0/3] virtio support cache indirect desc
-Message-ID: <20220106072615-mutt-send-email-mst@kernel.org>
-References: <20211029062814.76594-1-xuanzhuo@linux.alibaba.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LbbHJnfFJa635LNHtwNypapWioSFVlnQx2kyNjrWm4E=;
+        b=PW0+87Jlbg4T19/R0xPq+FBRXEdaDmC9uCZUKwJ2CWAPx3l/w660uLfHqPfppcZD5C
+         t9ST6B4uxpCOcZdk4YVW0DhZAK+B3NU/gcF3NxhrxdRKQk13S0l9tSy7MYQZsMYW5Cld
+         PYUb2TXhOqLtygxvIJoriE15zPmuCjLQoEuvZLRz25L7dK3WSRiCLLZFEeMPbcvH/QbO
+         E+sDbNfoOVNLomAP1S/tnz+r6kvzZ8BRNYkTH2mfi84JvhJ6fUqC/R4S5W3kN0DCntPP
+         dq1963JYnXK5RAhxTNQKSNBye0QzO6DenIIO/h/z2vD+c5FplgWTcEqNOFAbRHQWFWtu
+         Qcjw==
+X-Gm-Message-State: AOAM533rtJvmUrsQJZmu+MvmZnnSO5j9W+tzVuIfTsHq8KRzPLWjvwp0
+        WOT1Y7M81Z/TB9rPHoE1PRFZIp5lJ5Nj4O3GacTmzw==
+X-Google-Smtp-Source: ABdhPJzpBs//uHxEy1Y6b9A1PBKSNp3traSjdndLPLblh1LSQ2ada4lXL+T31sAFhrndnbnvRzwLzHK/3C1CVCMiBcE=
+X-Received: by 2002:a17:90a:7e81:: with SMTP id j1mr6817950pjl.14.1641472336853;
+ Thu, 06 Jan 2022 04:32:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211029062814.76594-1-xuanzhuo@linux.alibaba.com>
+References: <CA+wXwBRbLq6SW39qCD8GNG98YD5BJR2MFXmJV2zU1xwFjC-V0A@mail.gmail.com>
+ <CANn89iLbKNkB9bzkA2nk+d2c6rq40-6-h9LXAVFCkub=T4BGsQ@mail.gmail.com>
+In-Reply-To: <CANn89iLbKNkB9bzkA2nk+d2c6rq40-6-h9LXAVFCkub=T4BGsQ@mail.gmail.com>
+From:   Daniel Dao <dqminh@cloudflare.com>
+Date:   Thu, 6 Jan 2022 12:32:06 +0000
+Message-ID: <CA+wXwBTQtzgsErFZZEUbEq=JMhdq-fF2OXJ7ztnnq6hPXs_L3Q@mail.gmail.com>
+Subject: Re: Expensive tcp_collapse with high tcp_rmem limit
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Marek Majkowski <marek@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 29, 2021 at 02:28:11PM +0800, Xuan Zhuo wrote:
-> If the VIRTIO_RING_F_INDIRECT_DESC negotiation succeeds, and the number
-> of sgs used for sending packets is greater than 1. We must constantly
-> call __kmalloc/kfree to allocate/release desc.
+On Wed, Jan 5, 2022 at 1:38 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Wed, Jan 5, 2022 at 4:15 AM Daniel Dao <dqminh@cloudflare.com> wrote:
+> >
+> > Hello,
+> >
+> > We are looking at increasing the maximum value of TCP receive buffer in order
+> > to take better advantage of high BDP links. For historical reasons (
+> > https://blog.cloudflare.com/the-story-of-one-latency-spike/), this was set to
+> > a lower than default value.
+> >
+> > We are still occasionally seeing long time spent in tcp_collapse, and the time
+> > seems to be proportional with max rmem. For example, with net.ipv4.tcp_rmem = 8192 2097152 16777216,
+> > we observe tcp_collapse latency with the following bpftrace command:
+> >
+>
+> I suggest you add more traces, like the payload/truesize ratio when
+> these events happen.
+> and tp->rcv_ssthresh, sk->sk_rcvbuf
+>
+> TCP stack by default assumes a conservative [1] payload/truesize ratio of 50%
 
+I forgot to add that for this experiment we also set tcp_adv_win_scale
+= -2 to see if it
+reduces the chance of triggering tcp_collapse
 
-So where is this going? I really like the performance boost. My concern
-is that if guest spans NUMA nodes and when handler switches from
-node to another this will keep reusing the cache from
-the old node. A bunch of ways were suggested to address this, but
-even just making the cache per numa node would help.
+>
+> Meaning that a 16MB sk->rcvbuf would translate to a TCP RWIN of 8MB.
+>
+> I suspect that you use XDP, and standard MTU=1500.
+> Drivers in XDP mode use one page (4096 bytes on x86) per incoming frame.
+> In this case, the ratio is ~1428/4096 = 35%
+>
+> This is one of the reason we switched to a 4K MTU at Google, because we
+> have an effective ratio close to 100% (even if XDP was used)
+>
+> [1] The 50% ratio of TCP is defeated with small MSS, and malicious traffic.
 
+I updated the bpftrace script to get data on len/truesize on collapsed skb
 
-> In the case of extremely fast package delivery, the overhead cannot be
-> ignored:
-> 
->   27.46%  [kernel]  [k] virtqueue_add
->   16.66%  [kernel]  [k] detach_buf_split
->   16.51%  [kernel]  [k] virtnet_xsk_xmit
->   14.04%  [kernel]  [k] virtqueue_add_outbuf
->    5.18%  [kernel]  [k] __kmalloc
->    4.08%  [kernel]  [k] kfree
->    2.80%  [kernel]  [k] virtqueue_get_buf_ctx
->    2.22%  [kernel]  [k] xsk_tx_peek_desc
->    2.08%  [kernel]  [k] memset_erms
->    0.83%  [kernel]  [k] virtqueue_kick_prepare
->    0.76%  [kernel]  [k] virtnet_xsk_run
->    0.62%  [kernel]  [k] __free_old_xmit_ptr
->    0.60%  [kernel]  [k] vring_map_one_sg
->    0.53%  [kernel]  [k] native_apic_mem_write
->    0.46%  [kernel]  [k] sg_next
->    0.43%  [kernel]  [k] sg_init_table
->    0.41%  [kernel]  [k] kmalloc_slab
-> 
-> This patch adds a cache function to virtio to cache these allocated indirect
-> desc instead of constantly allocating and releasing desc.
-> 
-> v3:
->   pre-allocate per buffer indirect descriptors array
-> 
-> v2:
->   use struct list_head to cache the desc
-> 
-> *** BLURB HERE ***
-> 
-> Xuan Zhuo (3):
->   virtio: cache indirect desc for split
->   virtio: cache indirect desc for packed
->   virtio-net: enable virtio desc cache
-> 
->  drivers/net/virtio_net.c     |  11 +++
->  drivers/virtio/virtio.c      |   6 ++
->  drivers/virtio/virtio_ring.c | 131 ++++++++++++++++++++++++++++++-----
->  include/linux/virtio.h       |  14 ++++
->  4 files changed, 145 insertions(+), 17 deletions(-)
-> 
-> --
-> 2.31.0
+  kprobe:tcp_collapse {
+    $sk = (struct sock *) arg0;
+    $tp = (struct tcp_sock *) arg0;
+    printf("tid %d: rmem_alloc=%ld sk_rcvbuf=%ld rcv_ssthresh=%ld\n", tid,
+        $sk->sk_backlog.rmem_alloc.counter, $sk->sk_rcvbuf, $tp->rcv_ssthresh);
+    printf("tid %d: advmss=%ld wclamp=%ld rcv_wnd=%ld\n", tid, $tp->advmss,
+        $tp->window_clamp, $tp->rcv_wnd);
+    @start[tid] = nsecs;
+  }
 
+  kretprobe:tcp_collapse /@start[tid] != 0/ {
+    $us = (nsecs - @start[tid])/1000;
+    @us = hist($us);
+    printf("tid %d: %ld us\n", tid, $us);
+    delete(@start[tid]);
+  }
+
+  kprobe:tcp_collapse_one {
+    $skb = (struct sk_buff *) arg1;
+    printf("tid %d: s=%ld len=%ld truesize=%ld\n", tid, sizeof(struct
+sk_buff), $skb->len, $skb->truesize);
+  }
+
+  interval:s:6000 { exit(); }
+
+Here is the output:
+
+  tid 0: rmem_alloc=16780416 sk_rcvbuf=16777216 rcv_ssthresh=2920
+  tid 0: advmss=1460 wclamp=4194304 rcv_wnd=450560
+  tid 0: len=3316 truesize=15808
+  tid 0: len=4106 truesize=16640
+  tid 0: len=3967 truesize=16512
+  tid 0: len=2988 truesize=15488
+  ...
+  tid 0: len=5279 truesize=17664
+  tid 0: len=425 truesize=2048
+  tid 0: 17176 us
+
+The skb looks indeed bloated (len=3316, truesize=15808), so collapsing
+definitely
+helps. It just took a long time to go through thousands of 16KB skb
+
+>
+>
+> >   bpftrace -e 'kprobe:tcp_collapse { @start[tid] = nsecs; } kretprobe:tcp_collapse /@start[tid] != 0/ { $us = (nsecs - @start[tid])/1000; @us = hist($us); delete(@start[tid]); printf("%ld us\n", $us);} interval:s:6000 { exit(); }'
+> >   Attaching 3 probes...
+> >   15496 us
+> >   14301 us
+> >   12248 us
+> >   @us:
+> >   [8K, 16K)              3 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
+> >
+> > Spending up to 16ms with 16MiB maximum receive buffer seems high.  Are there any
+> > recommendations on possible approaches to reduce the tcp_collapse latency ?
+> > Would clamping the duration of a tcp_collapse call be reasonable, since we only
+> > need to spend enough time to free space to queue the required skb ?
+>
+> It depends if the incoming skb is queued in in-order queue or
+> out-of-order queue.
+> For out-of-orders, we have a strategy in tcp_prune_ofo_queue() which
+> should work reasonably well after commit
+> 72cd43ba64fc17 tcp: free batches of packets in tcp_prune_ofo_queue()
+>
+> Given the nature of tcp_collapse(), limiting it to even 1ms of processing time
+> would still allow for malicious traffic to hurt you quite a lot.
+
+I don't yet understand why we have cases of bloated skbs. But it seems
+like adapting the
+batch prune strategy in tcp_prune_ofo_queue() to tcp_collapse makes sense to me.
+
+I think every collapsed skb saves us truesize - len (?), and we can
+set goal to free up 12.5% of sk_rcvbuf
+same as tcp_prune_ofo_queue()
