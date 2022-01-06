@@ -2,126 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EB064865F1
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 15:20:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C680B486606
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 15:28:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240028AbiAFOUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 09:20:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239990AbiAFOUo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 09:20:44 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F7CC061245;
-        Thu,  6 Jan 2022 06:20:44 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id bm14so9994016edb.5;
-        Thu, 06 Jan 2022 06:20:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RHiowUInnnx0H26/RXZyWD79AVSBptAd7GCtWrosRcw=;
-        b=i+Il7uIAwS57J/WQVwj8yPstgKlCF8siSQ98tZahJdpu7uZLeqKpL88rjqm7t3W/bi
-         xdrKOVzOMd2cv9o/N0ocdRwx9M2n5fBXHRA6hroezMSLI6XJuWBT+R9li4Lfv+zz43P2
-         s+2hfOSSNS8gyHEq5uOdFDUyR+7pwIl7l08KXtnVsqZBDK86QOyFMuTnbGCGov4k5OLP
-         RsG++K1CyzwJ9pG32qh4Sqpzx89LcC3u9Jum6SA19Jx5IAWBklGVc9FE0+bc8gpaE/KX
-         gjCJ/szBpXK6R6MOucwBIov62kaHe/4955JWIO0ybz6jJedJdvbVjRb+EwwgakUFII/Q
-         jZlA==
+        id S240088AbiAFO2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 09:28:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:57797 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239914AbiAFO2s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 09:28:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641479326;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wKJ1mPwObqH/MnKEsnkO0BZSurZ6kA0eO6sa4cHwvAc=;
+        b=boQs4DudgarEZ0dj4NBDiA7Dtk1PSXLPrHCIa4t9u1Vosd9AUyiubhKutg93s+LjVaGvYu
+        eHXDuan3Y7QdPhkoBePVfWpDXFEinRVSnlqIfzixQSLmPUMz8qJrZgVKdPiOz1DVnxb4aS
+        qe+OW6/1W25G4ExLnd+uXagBzsWMEJc=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-1-V2HJdASOPdOwz-tCVoibWg-1; Thu, 06 Jan 2022 09:28:45 -0500
+X-MC-Unique: V2HJdASOPdOwz-tCVoibWg-1
+Received: by mail-ed1-f69.google.com with SMTP id x19-20020a05640226d300b003f8b80f5729so2052503edd.13
+        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 06:28:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RHiowUInnnx0H26/RXZyWD79AVSBptAd7GCtWrosRcw=;
-        b=E8LhU49Thm1dyceAz3I8w49dAXTq/tvslXYTXII2Bo9Fit9xwzRFyFwlZA8CmJftBA
-         X7YBCVlfI7UVWYRtXxkqdz3Mrfamd3rOKxz0Bzy8vydQOuuUH4+/5cn6IWzeh9X1qLcW
-         BDDnupd5GoXvXuriCSN8dnGHxjR1KjYhk5GzFImYh0nOmFqDOXiNY5myMCfD+eESdbAk
-         M9kxuRcV7DPs9znMpopI5+enNfohtzG7D1Uq/4fua2w/Z1KgdbAGTIQfvaFAf3tlRjNt
-         QF2l5MuA+j0w1R0ZO/s3eMQ+uNqCtLwBBpk6575Mf0BDXc542fmpXvZ9obtns0lq50Hd
-         WDFw==
-X-Gm-Message-State: AOAM530QntUGxFU6QFcSyx57uuDptVa2gXE5hGa8o/eJfyoN62db8OIQ
-        khXg7Xc1veyLt/jSVFe14i8lBB9ulYwuZEbd7lc=
-X-Google-Smtp-Source: ABdhPJyySld/ws4jSU/lnZk1P1wL08Oiw3ChicoBJkwdGmMZdfL2+4XatgScRCEss7yjBh/BtqU4GL3uVxy2Q+kbnYE=
-X-Received: by 2002:a17:907:6d8d:: with SMTP id sb13mr47302126ejc.132.1641478842777;
- Thu, 06 Jan 2022 06:20:42 -0800 (PST)
-MIME-Version: 1.0
-References: <20220104072658.69756-1-marcan@marcan.st> <20220104072658.69756-11-marcan@marcan.st>
- <CAHp75VcU1vVSucvegmSiMLoKBoPoGW5XLmqVUG0vXGdeafm2Jw@mail.gmail.com> <b4f50489-fa4b-2c40-31ad-1b74e916cdb4@marcan.st>
-In-Reply-To: <b4f50489-fa4b-2c40-31ad-1b74e916cdb4@marcan.st>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 6 Jan 2022 16:20:05 +0200
-Message-ID: <CAHp75VdzQhkj3ovFSAG4g1tD1scBK7H0xFFot0rfz2u6i8a3FA@mail.gmail.com>
-Subject: Re: [PATCH v2 10/35] brcmfmac: firmware: Allow platform to override macaddr
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=wKJ1mPwObqH/MnKEsnkO0BZSurZ6kA0eO6sa4cHwvAc=;
+        b=EW9zzFnLVKoig4oEpKCBycSccB609P71ukq0iTI1mJXbG1YvAtS3cvq4xcTgiplExf
+         MCEwFty4R0N3xm5GHuKKAp7o9P5sfugwzgGacY6OhUuvjTHwUsFPlCeBIMj7qBg/jMEM
+         wtYo+r4pAIea76tOQbMkVWCGmwFOPpT827nYXpVE8GTYiMK8jydLIgreUabMOxPMeo2b
+         mbgrHx4TQpGBKBtWkqXXTpj4a3hSnFlTWK0CxMbm5eNFgpTe7SPA0EQ7g10tkYZKa/qz
+         9YJ7bPyjKPI4/S9bs1ok1yCHa6EmccQLtni2U3p9gcW/4ydi2wnaN4CUzcj4OnumDfmo
+         4YLQ==
+X-Gm-Message-State: AOAM531mLVzENhLiSiILIvKR1AG/DE+7iniSox6ye0Id3+eS4ZKiyuKX
+        nHMe0qT+wu/ve0GP38sEqvPMEOR/mROEbNDgwRgOHTX2Ejll1pvhW3h+kgGPnNpo/+hylLG09JA
+        TWuS6x3rdiupeVC9i
+X-Received: by 2002:a05:6402:2211:: with SMTP id cq17mr6668207edb.380.1641479324039;
+        Thu, 06 Jan 2022 06:28:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwyrK9obIO+dlnSMkar0Yt/gFfV8kj1kacu79HPEVklYuiNK8OzMZNtW3ES9rdxF3Rm9mS27w==
+X-Received: by 2002:a05:6402:2211:: with SMTP id cq17mr6668181edb.380.1641479323715;
+        Thu, 06 Jan 2022 06:28:43 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id sg39sm530674ejc.66.2022.01.06.06.28.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 06:28:42 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E004E181F2A; Thu,  6 Jan 2022 15:28:41 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
-Content-Type: text/plain; charset="UTF-8"
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next v5 6/7] bpf: Add "live packet" mode for XDP in
+ bpf_prog_run()
+In-Reply-To: <20220106042618.kperh3ovyuckxecl@ast-mbp.dhcp.thefacebook.com>
+References: <20220103150812.87914-1-toke@redhat.com>
+ <20220103150812.87914-7-toke@redhat.com>
+ <20220106042618.kperh3ovyuckxecl@ast-mbp.dhcp.thefacebook.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 06 Jan 2022 15:28:41 +0100
+Message-ID: <871r1laqg6.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 5, 2022 at 3:26 PM Hector Martin <marcan@marcan.st> wrote:
-> On 04/01/2022 23.23, Andy Shevchenko wrote:
-> > On Tue, Jan 4, 2022 at 9:29 AM Hector Martin <marcan@marcan.st> wrote:
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-...
-
-> >> +#define BRCMF_FW_MACADDR_FMT                   "macaddr=%pM"
-
-> >> +       snprintf(&nvp->nvram[nvp->nvram_len], BRCMF_FW_MACADDR_LEN + 1,
-> >> +                BRCMF_FW_MACADDR_FMT, mac);
-> >
-> > Please, avoid using implict format string, it's dangerous from security p.o.v.
+> On Mon, Jan 03, 2022 at 04:08:11PM +0100, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:
+>> +static void xdp_test_run_init_page(struct page *page, void *arg)
+>> +{
+>> +	struct xdp_page_head *head =3D phys_to_virt(page_to_phys(page));
+>> +	struct xdp_buff *new_ctx, *orig_ctx;
+>> +	u32 headroom =3D XDP_PACKET_HEADROOM;
+>> +	struct xdp_test_data *xdp =3D arg;
+>> +	size_t frm_len, meta_len;
+>> +	struct xdp_frame *frm;
+>> +	void *data;
+>> +
+>> +	orig_ctx =3D xdp->orig_ctx;
+>> +	frm_len =3D orig_ctx->data_end - orig_ctx->data_meta;
+>> +	meta_len =3D orig_ctx->data - orig_ctx->data_meta;
+>> +	headroom -=3D meta_len;
+>> +
+>> +	new_ctx =3D &head->ctx;
+>> +	frm =3D &head->frm;
+>> +	data =3D &head->data;
+>> +	memcpy(data + headroom, orig_ctx->data_meta, frm_len);
+>> +
+>> +	xdp_init_buff(new_ctx, TEST_XDP_FRAME_SIZE, &xdp->rxq);
+>> +	xdp_prepare_buff(new_ctx, data, headroom, frm_len, true);
+>> +	new_ctx->data_meta =3D new_ctx->data + meta_len;
 >
-> What do you mean by implicit format string?
+> data vs data_meta is the other way around, no?
+>
+> Probably needs a selftest to make sure.
 
-When I read the above code I feel uncomfortable because no-one can see
-(without additional action and more reading and checking) if it's
-correct or not. This is potential to be error prone.
+Yup, you're right; nice catch! Will fix and add a test for it.
 
-> The format string is at the
-> top of the file and its length is right next to it, which makes it
-> harder for them to accidentally fall out of sync.
+>> +static int xdp_recv_frames(struct xdp_frame **frames, int nframes,
+>> +			   struct net_device *dev)
+>> +{
+>> +	gfp_t gfp =3D __GFP_ZERO | GFP_ATOMIC;
+>> +	void *skbs[TEST_XDP_BATCH];
+>> +	int i, n;
+>> +	LIST_HEAD(list);
+>> +
+>> +	n =3D kmem_cache_alloc_bulk(skbuff_head_cache, gfp, nframes, skbs);
+>> +	if (unlikely(n =3D=3D 0)) {
+>> +		for (i =3D 0; i < nframes; i++)
+>> +			xdp_return_frame(frames[i]);
+>> +		return -ENOMEM;
+>> +	}
+>> +
+>> +	for (i =3D 0; i < nframes; i++) {
+>> +		struct xdp_frame *xdpf =3D frames[i];
+>> +		struct sk_buff *skb =3D skbs[i];
+>> +
+>> +		skb =3D __xdp_build_skb_from_frame(xdpf, skb, dev);
+>> +		if (!skb) {
+>> +			xdp_return_frame(xdpf);
+>> +			continue;
+>> +		}
+>> +
+>> +		list_add_tail(&skb->list, &list);
+>> +	}
+>> +	netif_receive_skb_list(&list);
+>
+> Does it need local_bh_disable() like cpumap does?
 
-It is not an argument. Just you may do the same in the code directly
-and more explicitly:
+Yes, I think it probably does, actually. Or at least having it can
+potentially improve performance since we're then sure that the whole
+batch will be processed at once. Will add!
 
-Also you don't check the return code of snprintf which means that you
-don't care about the result, which seems to me wrong approach. If you
-don't care about the result, so it means it's not very important,
-right?
+> I've applied patches 1 - 5.
 
-> +#define BRCMF_FW_MACADDR_FMT                   "macaddr=%pM"
-> +#define BRCMF_FW_MACADDR_LEN                   (7 + ETH_ALEN * 3)
+Thanks! Will respin this and the selftest :)
 
-
-
--- 
-With Best Regards,
-Andy Shevchenko
