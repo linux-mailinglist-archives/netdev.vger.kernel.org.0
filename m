@@ -2,90 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCA17486388
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 12:12:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 596EB486392
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 12:16:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238331AbiAFLMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 06:12:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40990 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231532AbiAFLMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 06:12:14 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC01C061245;
-        Thu,  6 Jan 2022 03:12:13 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 1BA1741F55;
-        Thu,  6 Jan 2022 11:12:02 +0000 (UTC)
-Message-ID: <562e7680-6a85-024e-e544-f585aad7d394@marcan.st>
-Date:   Thu, 6 Jan 2022 20:12:00 +0900
+        id S238349AbiAFLQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 06:16:10 -0500
+Received: from 1.mo552.mail-out.ovh.net ([178.32.96.117]:53983 "EHLO
+        1.mo552.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229624AbiAFLQK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 06:16:10 -0500
+Received: from mxplan1.mail.ovh.net (unknown [10.108.4.132])
+        by mo552.mail-out.ovh.net (Postfix) with ESMTPS id 5620521F9C;
+        Thu,  6 Jan 2022 11:16:08 +0000 (UTC)
+Received: from bracey.fi (37.59.142.105) by DAG4EX1.mxp1.local (172.16.2.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Thu, 6 Jan
+ 2022 12:16:07 +0100
+Authentication-Results: garm.ovh; auth=pass (GARM-105G00658623213-be34-4282-a5db-53221f20f083,
+                    983A4165C0DE8D18A60C99794E4AA4D91BE67B4B) smtp.auth=kevin@bracey.fi
+X-OVh-ClientIp: 82.181.225.135
+From:   Kevin Bracey <kevin@bracey.fi>
+To:     <netdev@vger.kernel.org>
+CC:     <toke@toke.dk>, Kevin Bracey <kevin@bracey.fi>
+Subject: [PATCH iproute2] q_cake: allow changing to diffserv3
+Date:   Thu, 6 Jan 2022 13:16:04 +0200
+Message-ID: <20220106111604.2919263-1-kevin@bracey.fi>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH v2 04/35] brcmfmac: firmware: Support having multiple alt
- paths
-Content-Language: en-US
-To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20220104072658.69756-1-marcan@marcan.st>
- <20220104072658.69756-5-marcan@marcan.st>
- <fd95636e-b879-0c82-a7ba-a5c239f4f611@broadcom.com>
-From:   Hector Martin <marcan@marcan.st>
-In-Reply-To: <fd95636e-b879-0c82-a7ba-a5c239f4f611@broadcom.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [37.59.142.105]
+X-ClientProxiedBy: DAG8EX1.mxp1.local (172.16.2.15) To DAG4EX1.mxp1.local
+ (172.16.2.7)
+X-Ovh-Tracer-GUID: 59780f10-d871-4cd7-8bc6-034d74b6747e
+X-Ovh-Tracer-Id: 14949698966201274589
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: 0
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvuddrudefledgvdehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucenucfjughrpefhvffufffkofgggfgtihesthekredtredttdenucfhrhhomhepmfgvvhhinhcuuehrrggtvgihuceokhgvvhhinhessghrrggtvgihrdhfiheqnecuggftrfgrthhtvghrnhepueektdeiuefhueevheejudetleehudffheekffdtteegheefueeggfetudejgedunecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrddutdehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhdurdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepkhgvvhhinhessghrrggtvgihrdhfihdprhgtphhtthhopehkvghvihhnsegsrhgrtggvhidrfhhi
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/01/06 19:43, Arend van Spriel wrote:
->> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
->> index e290dec9c53d..7f4e6e359c82 100644
->> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
->> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
->> @@ -11,6 +11,8 @@
->>   
->>   #define BRCMF_FW_DEFAULT_PATH		"brcm/"
->>   
->> +#define BRCMF_FW_MAX_ALT_PATHS	8
->> +
-> 
-> Any motivation to have 8 here today? In patch #9 I see a list of 6 paths 
-> in the commit message so you need 6 and rounded up here to power of 2?
-> 
+A diffserv3 option (enum value 0) was never sent to the kernel, so it
+was not possible to use "tc qdisc change" to select it.
 
-Heh, yeah, that's just my powers-of-two-are-nice-numbers habit. I can
-drop it down to 6 if you prefer.
+This also meant that were also relying on the kernel's default being
+diffserv3 when adding. If the default were to change, we wouldn't have
+been able to request diffserv3 explicitly.
 
+Signed-off-by: Kevin Bracey <kevin@bracey.fi>
+---
+ tc/q_cake.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tc/q_cake.c b/tc/q_cake.c
+index 4cfc1c00..c438b765 100644
+--- a/tc/q_cake.c
++++ b/tc/q_cake.c
+@@ -95,7 +95,7 @@ static int cake_parse_opt(struct qdisc_util *qu, int argc, char **argv,
+ 	bool overhead_override = false;
+ 	bool overhead_set = false;
+ 	unsigned int interval = 0;
+-	unsigned int diffserv = 0;
++	int diffserv = -1;
+ 	unsigned int memlimit = 0;
+ 	unsigned int fwmark = 0;
+ 	unsigned int target = 0;
+@@ -356,7 +356,7 @@ static int cake_parse_opt(struct qdisc_util *qu, int argc, char **argv,
+ 	if (bandwidth || unlimited)
+ 		addattr_l(n, 1024, TCA_CAKE_BASE_RATE64, &bandwidth,
+ 			  sizeof(bandwidth));
+-	if (diffserv)
++	if (diffserv != -1)
+ 		addattr_l(n, 1024, TCA_CAKE_DIFFSERV_MODE, &diffserv,
+ 			  sizeof(diffserv));
+ 	if (atm != -1)
 -- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+2.25.1
+
