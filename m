@@ -2,115 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBA87485E72
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 03:11:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDAB5485EB3
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 03:25:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344610AbiAFCLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 21:11:01 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:55512
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344611AbiAFCKz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 21:10:55 -0500
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com [209.85.210.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0E68D4002A
-        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 02:10:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641435049;
-        bh=kCp8BU9jFTwzHT3B2Mn0sWuhrSLvpFWxrZu1tCP3WDA=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=TTDo6YYTRzsThukuPQmAdSoT+i2emWdqgLst6PUcgM5HxbnBeG9b/8aWGDhscXP9x
-         pO3XhTIGTgyAY4eDyw3MYI1aRYjrR0bKg3BRTk3D5hMxzwsRMjzjfeCF73TNDAxit+
-         NjIt5BXi7BweEpH77xXZokvM+poaBNnZzHqlujkk9l+Zr72jqYL1kzA4AzgYBKi4ua
-         s1hkODm+H0nVu2SiUrXEub4PjYTkItEw740vVWH+vfbdZW+Ga2siGa/gyQ9l2+V5AM
-         yFZMg3zY2nFWHKlkXgLwd/UGK3/1clxndsdGXRuXWUakB/lyTqwOHx8dnEBgzOAAkP
-         fFfKPw64qdbpg==
-Received: by mail-ot1-f70.google.com with SMTP id e59-20020a9d2ac1000000b0058f1da0d3f1so471509otb.15
-        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 18:10:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kCp8BU9jFTwzHT3B2Mn0sWuhrSLvpFWxrZu1tCP3WDA=;
-        b=o2DgmIRitHCOAxJvzuPputf2YyNgjo6x5F3zmvqvb6iKAWcZjxCVuqNdS/QxDmNtdn
-         EctN7SmnnL7SqF5RtyQ6wXnQm9a2xq2RYx/eyvDOb+TrhcLE0MTq59+3ixaNVKvRtdAl
-         pnoy8w2aycR1YpkgcUrtTIMF37WAbi3FFe1OvSKL0GXw4J0x9lYUwfKs2WfUfFfnzJsj
-         m+LxNAyD6ZQEqcTODr8YBUQVMHQxwb+3JYDVnmJC+BDpK6YIOlmmWZgtmxtzuBooEQBd
-         M3v+iTgnWZg8nJSjg/a9gWgQpBoX+nxb2JX2ZMzbEAEQt0sQNTqcePOQSzxrR+oeRSP7
-         Y5bQ==
-X-Gm-Message-State: AOAM531DWjIDzF+HCITPkd4cguImXp0RZL6ws+o9aB0GNfJK/QFbUQXd
-        ZPcndLJqU2CMzIK3ZJ10lTVaeOqVNzk+UcEyi98BEb8t2UhXmKms73WpN24zKaVQlu+RjTxJ7ok
-        FTcMPTH8b9fMWqOB0/+p8+Eb562Mq6ky6UH9XH4lpzpt1cdUyiw==
-X-Received: by 2002:a9d:24e4:: with SMTP id z91mr40165442ota.11.1641435046793;
-        Wed, 05 Jan 2022 18:10:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxT8mA1RVuvMHANTIBtNwGuaoR73dzilRpdJyf0qMP2d/UoeS6lSFs6LwXWDZ0zwXeqNM4Dms4BFbsHVuK1d5U=
-X-Received: by 2002:a9d:24e4:: with SMTP id z91mr40165426ota.11.1641435046492;
- Wed, 05 Jan 2022 18:10:46 -0800 (PST)
+        id S1344749AbiAFCZx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 5 Jan 2022 21:25:53 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:38864 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1344706AbiAFCZw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 21:25:52 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 205NA58v026532
+        for <netdev@vger.kernel.org>; Wed, 5 Jan 2022 18:25:51 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net (PPS) with ESMTPS id 3ddmrsrsqv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 05 Jan 2022 18:25:51 -0800
+Received: from twshared7460.02.ash7.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 5 Jan 2022 18:25:51 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 9144A273E53FA; Wed,  5 Jan 2022 18:25:38 -0800 (PST)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH v3 bpf-next 0/7] bpf_prog_pack allocator
+Date:   Wed, 5 Jan 2022 18:25:26 -0800
+Message-ID: <20220106022533.2950016-1-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220105151427.8373-1-aaron.ma@canonical.com> <YdXVoNFB/Asq6bc/@lunn.ch>
- <bb6d8bc4-abee-8536-ca5b-bac11d1ecd53@suse.com> <YdYbZne6pBZzxSxA@lunn.ch>
-In-Reply-To: <YdYbZne6pBZzxSxA@lunn.ch>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Thu, 6 Jan 2022 10:10:34 +0800
-Message-ID: <CAAd53p52uGFjbiuOWAA-1dN7mTqQ0KFe9PxWvPL+fjfQb9K5vQ@mail.gmail.com>
-Subject: Re: [PATCH 1/3 v3] net: usb: r8152: Check used MAC passthrough address
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        Aaron Ma <aaron.ma@canonical.com>, kuba@kernel.org,
-        henning.schild@siemens.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: DonoqlW6YQlrSJvoUbDvFMsRXSzKlFh4
+X-Proofpoint-ORIG-GUID: DonoqlW6YQlrSJvoUbDvFMsRXSzKlFh4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-05_08,2022-01-04_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 lowpriorityscore=0
+ bulkscore=0 phishscore=0 impostorscore=0 malwarescore=0 suspectscore=0
+ adultscore=0 mlxlogscore=659 clxscore=1015 mlxscore=0 spamscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2112160000 definitions=main-2201060011
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 6, 2022 at 6:27 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Wed, Jan 05, 2022 at 10:49:56PM +0100, Oliver Neukum wrote:
-> >
-> > On 05.01.22 18:30, Andrew Lunn wrote:
-> > > On Wed, Jan 05, 2022 at 11:14:25PM +0800, Aaron Ma wrote:
-> > >> When plugin multiple r8152 ethernet dongles to Lenovo Docks
-> > >> or USB hub, MAC passthrough address from BIOS should be
-> > >> checked if it had been used to avoid using on other dongles.
-> > >>
-> > >> Currently builtin r8152 on Dock still can't be identified.
-> > >> First detected r8152 will use the MAC passthrough address.
-> > > I do have to wonder why you are doing this in the kernel, and not
-> > > using a udev rule? This seems to be policy, and policy does not belong
-> > > in the kernel.
-> > Debatable. An ethernet NIC has to have a MAC. The kernel must
-> > provide one. That we should always take the one found in the
-> > device's ROM rather than the host's ROM is already a policy decision.
->
-> In general, it is a much longer list of places to find the MAC address
-> from. It could be in three different places in device tree, it could
-> be in ACPI in a similar number of places, it could be in NVMEM,
-> pointed to by device tree, the bootloader might of already programmed
-> the controller with its MAC address, etc, or if everything else fails,
-> it could be random.
->
-> So yes, the kernel will give it one. But if you want the interface to
-> have a specific MAC address, you probably should not be trusting the
-> kernel, given it has so many options.
+Changes v2 => v3:
+1. Fix tailcall.
 
-Can udev in current form really handle the MAC race? Unless there's a
-new uevent right before ndo_open() so udev can decide which MAC to
-assign? Even with that, the race can still happen...
+Changes v1 => v2:
+1. Use text_poke instead of writing through linear mapping. (Peter)
+2. Avoid making changes to non-x86_64 code.
 
-So what if we keep the existing behavior (i.e. copy MAC from ACPI),
-and let userspace daemon like NetworkManager to give the second NIC
-(r8152 in this case) a random MAC if the main NIC (I219 in this case)
-is already in use? Considering the userspace daemon has the all the
-information required and it's the policy maker here.
+Most BPF programs are small, but they consume a page each. For systems
+with busy traffic and many BPF programs, this could also add significant
+pressure to instruction TLB.
 
-Kai-Heng
+This set tries to solve this problem with customized allocator that pack
+multiple programs into a huge page.
 
->
->         Andrew
->
->
+Patches 1-5 prepare the work. Patch 6 contains key logic of the allocator.
+Patch 7 uses this allocator in x86_64 jit compiler.
+
+Song Liu (7):
+  x86/Kconfig: select HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
+  bpf: use bytes instead of pages for bpf_jit_[charge|uncharge]_modmem
+  bpf: use size instead of pages in bpf_binary_header
+  bpf: add a pointer of bpf_binary_header to bpf_prog
+  x86/alternative: introduce text_poke_jit
+  bpf: introduce bpf_prog_pack allocator
+  bpf, x86_64: use bpf_prog_pack allocator
+
+ arch/x86/Kconfig                     |   1 +
+ arch/x86/include/asm/text-patching.h |   1 +
+ arch/x86/kernel/alternative.c        |  28 ++++
+ arch/x86/net/bpf_jit_comp.c          | 133 +++++++++++++----
+ include/linux/bpf.h                  |   4 +-
+ include/linux/filter.h               |  23 ++-
+ kernel/bpf/core.c                    | 213 ++++++++++++++++++++++++---
+ kernel/bpf/trampoline.c              |   6 +-
+ 8 files changed, 350 insertions(+), 59 deletions(-)
+
+--
+2.30.2
