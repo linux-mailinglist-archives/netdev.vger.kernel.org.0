@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A03C485FE0
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 05:31:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D09B485FE3
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 05:31:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233487AbiAFEbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 23:31:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36500 "EHLO
+        id S233441AbiAFEbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 23:31:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233057AbiAFEbE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 23:31:04 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 952D4C061212;
-        Wed,  5 Jan 2022 20:31:04 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id q5so1673396ioj.7;
-        Wed, 05 Jan 2022 20:31:04 -0800 (PST)
+        with ESMTP id S233436AbiAFEbI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 23:31:08 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B629C061212;
+        Wed,  5 Jan 2022 20:31:08 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id x6so1633696iol.13;
+        Wed, 05 Jan 2022 20:31:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=HZTxQYalIRmgO/xfk9dIV8yzOAYZyGHheqX/9sT3on8=;
-        b=CIo9La2GJvCAn5U5AAXD5QEUFfc9fMYLBvzdt+6HG+opbpIJYuutbvVlamNio0z6ZU
-         kNU3nOU3okuzw/btfkSe9Yx8wEXkzun2susJFTnXXzJY00HZw+m3sWUAufhn+gvZrzDF
-         uLz/Pcsu5Yt2d+zXLkZCF7+yNPv/VasN3BNnhtbIuw01PD7c5Z2c5TTnFwKTTOD6fSb9
-         uYeiEgiHkaz04X4IiZX4uj14AvmYlZUC9W5i9d2A/tnrHHowVjm2c0z64cTfbooNLkOS
-         CP5A16NHtcvyQ2z7UFhLhczwmE4NoHEtxVNvxp2LnQhfrefP4rqRHQWAWnPKWtlpS1dv
-         DiKA==
+        bh=bKngA3Lehfa/411JUCo6hGhkPh7NqoZY3CFgWceaWTo=;
+        b=oXBigZ1R+qXY2sEoLEWDLKwMPlI63XEMGHFESnXwsVhxV1prCQc+piIjx8WHJQh0B3
+         hpdLvegUOmn8VejX91EHGdjaK8q/fFriRmLf50Hr575JaI7UbRE6/hbYQkgYpB2UV7sJ
+         9vgIeUx6yfey1cijVPuAZncYVCW36u+AwJyv7CwO8PKqGAv4W47+CFet/TEX3kxQ3Ctl
+         s+IqnQtSaHJlru55tfYPJ5HA+nJgHVJmCUTtO6cpF+Q3cnjAlt64jgp0PEpW0qOxecPD
+         thUIO3U4gb+DdfRVnmVzCEZcJMA9n4KFJZkROuwwlkzWRrRCEzUe5d48YLsineMoYaFm
+         7PmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=HZTxQYalIRmgO/xfk9dIV8yzOAYZyGHheqX/9sT3on8=;
-        b=yCw8GBHvTTtfBGwqx/8sEH9BVyZ5Fas10qikU3MnyNoMY1/uPmZ8NILKArg+dhMC50
-         7ENqMnl8m+JH5a2ddWwu18V7Wnt/icaADyr04M/syQ9jcn2n1c3TZbcEXwJEY0hb9wHj
-         HidSRaI0uHcRKXHV6fs63ZwxIcEJrlmEOVl/GOuhWWWQSNX+Jfh8JhoL6RPNsWbC+SCA
-         kDCZa96Yjd4o3SjxPfGsayu04X3zFQMEVJ6pXDEKPS79ho8+fGFr42VsUJytsfPPCuM8
-         ku71ZdVR6P/u/SQHiv21IG8JIDztDDGiJaSJe5tfFjidBFQrIiS4z/Ok6Vvw4LxnqM9E
-         ul9A==
-X-Gm-Message-State: AOAM5308GQHxcsO4tVIfIyz59WXqd48Wi6UtwGu8fyjlmHLvIwQpCkL3
-        VgAUHb4qKV0h1INERhwPObrb/3N8Fdl7cn4iVHA=
-X-Google-Smtp-Source: ABdhPJzsDsZ9VPsO5hkxmjgaBDwtSJyZAZjQ2vJF6ptLmjNP2Ze4kxWV1dhL8oGXb3xqXrZ090pJhDpBO7h/ELLIDYo=
-X-Received: by 2002:a5d:9f01:: with SMTP id q1mr27186140iot.144.1641443464002;
- Wed, 05 Jan 2022 20:31:04 -0800 (PST)
+        bh=bKngA3Lehfa/411JUCo6hGhkPh7NqoZY3CFgWceaWTo=;
+        b=2xU2qs/Q/C+4JpUK6wDE0QTMTl05Bw78tyN8Iw6F2KDg+ScDkMs0ZY3ezl9A/1mSif
+         klXkD5O1ojr0YC4VteCeTYrBwcmXv5T2FmU9syqVjI+vz2ZygteympYW8HqGcpn4Sjvm
+         oYSf/HgaSmQeIheuKynQo70wX3fNPqlXsxzGDdoq6Qly46cUrnSAkDOvi6tZ1mbjZoRa
+         xDYpE0HZnlNdcG9aSdK7Cnxz/+lB4QkHxhHBewswmU7Mkfwo5SIbqaeEXi4X7DXUGjpD
+         zVMSje3yE+HI9HVJ53ZPBARXKb09s1AGgvq18LZEgldjUADWjPc11ktZpd8dfcSJKvZN
+         PSiA==
+X-Gm-Message-State: AOAM5309/k8SlPSv2jrPnlmGhjKha61yJ9FhM0ocRearDZQUe+xsRkr7
+        +vb7yQidVqSwp1BDtgH0GPB7OB/a2X7xcyuMIhQ=
+X-Google-Smtp-Source: ABdhPJw/Rn0aPHa6svW0WF+3UfAE6VMDyLPAyOJ4SK0m+Ay5wYhtXzCcP1fKiXNS6C5HYXxcIB07lqjVVivdNJtuJ64=
+X-Received: by 2002:a02:ce8f:: with SMTP id y15mr22063715jaq.234.1641443467890;
+ Wed, 05 Jan 2022 20:31:07 -0800 (PST)
 MIME-Version: 1.0
-References: <20220104080943.113249-1-jolsa@kernel.org> <20220104080943.113249-6-jolsa@kernel.org>
-In-Reply-To: <20220104080943.113249-6-jolsa@kernel.org>
+References: <20220104080943.113249-1-jolsa@kernel.org> <20220104080943.113249-9-jolsa@kernel.org>
+In-Reply-To: <20220104080943.113249-9-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 5 Jan 2022 20:30:52 -0800
-Message-ID: <CAEf4BzbvG00H5nbKGRLW+v0fC66DaZjHGD_AC7gwBRtbRoLmFA@mail.gmail.com>
-Subject: Re: [PATCH 05/13] kprobe: Allow to get traced function address for
- multi ftrace kprobes
+Date:   Wed, 5 Jan 2022 20:30:56 -0800
+Message-ID: <CAEf4BzZ7s=Pp+2xY3qKX9u6KrPdGW9NNfoiep7nGW+=_s=JJJA@mail.gmail.com>
+Subject: Re: [PATCH 08/13] bpf: Add kprobe link for attaching raw kprobes
 To:     Jiri Olsa <jolsa@redhat.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -73,61 +72,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, Jan 4, 2022 at 12:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
 >
-> The current bpf_get_func_ip_kprobe helper does not work properly,
-> when used in ebpf program triggered by the new multi kprobes.
+> Adding new link type BPF_LINK_TYPE_KPROBE to attach kprobes
+> directly through register_kprobe/kretprobe API.
 >
-> We can't use kprobe's func_addr in bpf_get_func_ip_kprobe helper,
-> because there are multiple functions registered for single kprobe
-> object.
+> Adding new attach type BPF_TRACE_RAW_KPROBE that enables
+> such link for kprobe program.
 >
-> Adding new per cpu variable current_ftrace_multi_addr and extra
-> address in kretprobe_instance object to keep current traced function
-> address for each cpu for both kprobe handler and kretprobe trampoline.
+> The new link allows to create multiple kprobes link by using
+> new link_create interface:
 >
-> The address value is set/passed as follows, for kprobe:
->
->   kprobe_ftrace_multi_handler
->   {
->     old = kprobe_ftrace_multi_addr_set(ip);
->     handler..
->     kprobe_ftrace_multi_addr_set(old);
->   }
->
-> For kretprobe:
->
->   kprobe_ftrace_multi_handler
->   {
->     old = kprobe_ftrace_multi_addr_set(ip);
->     ...
->       pre_handler_kretprobe
->       {
->         ri->ftrace_multi_addr = kprobe_ftrace_multi_addr
->       }
->     ...
->     kprobe_ftrace_multi_addr_set(old);
->   }
->
->   __kretprobe_trampoline_handler
->   {
->     prev_func_addr = kprobe_ftrace_multi_addr_set(ri->ftrace_multi_addr);
->     handler..
->     kprobe_ftrace_multi_addr_set(prev_func_addr);
->   }
->
+>   struct {
+>     __aligned_u64   addrs;
+>     __u32           cnt;
+>     __u64           bpf_cookie;
 
-Is it possible to record or calculate the multi-kprobe "instance
-index" (i.e., which position in addrs array did we get triggered for)?
-If yes, then storing that index would allow to fetch both IP and
-cookie value with just one per-cpu variable.
+I'm afraid bpf_cookie has to be different for each addr, otherwise
+it's severely limiting. So it would be an array of cookies alongside
+an array of addresses
 
-
+>   } kprobe;
+>
+> Plus new flag BPF_F_KPROBE_RETURN for link_create.flags to
+> create return probe.
+>
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  arch/x86/kernel/kprobes/ftrace.c |  3 +++
->  include/linux/kprobes.h          | 26 ++++++++++++++++++++++++++
->  kernel/kprobes.c                 |  6 ++++++
->  kernel/trace/bpf_trace.c         |  7 ++++++-
->  4 files changed, 41 insertions(+), 1 deletion(-)
+>  include/linux/bpf_types.h      |   1 +
+>  include/uapi/linux/bpf.h       |  12 +++
+>  kernel/bpf/syscall.c           | 191 ++++++++++++++++++++++++++++++++-
+>  tools/include/uapi/linux/bpf.h |  12 +++
+>  4 files changed, 211 insertions(+), 5 deletions(-)
+>
+
+[...]
+
+> @@ -1111,6 +1113,11 @@ enum bpf_link_type {
+>   */
+>  #define BPF_F_SLEEPABLE                (1U << 4)
+>
+> +/* link_create flags used in LINK_CREATE command for BPF_TRACE_RAW_KPROBE
+> + * attach type.
+> + */
+> +#define BPF_F_KPROBE_RETURN    (1U << 0)
+> +
+
+we have plenty of flexibility to have per-link type fields, so why not
+add `bool is_retprobe` next to addrs and cnt?
+
+>  /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
+>   * the following extensions:
+>   *
+> @@ -1465,6 +1472,11 @@ union bpf_attr {
+>                                  */
+>                                 __u64           bpf_cookie;
+>                         } perf_event;
+> +                       struct {
+> +                               __aligned_u64   addrs;
+> +                               __u32           cnt;
+> +                               __u64           bpf_cookie;
+> +                       } kprobe;
+>                 };
+>         } link_create;
 >
 
 [...]
