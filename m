@@ -2,118 +2,264 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E267485D49
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 01:38:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EC9D485D6E
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 01:45:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343871AbiAFAi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 5 Jan 2022 19:38:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40660 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343858AbiAFAiZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 19:38:25 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16757C061245;
-        Wed,  5 Jan 2022 16:38:25 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id h23so1584813wrc.1;
-        Wed, 05 Jan 2022 16:38:25 -0800 (PST)
+        id S229701AbiAFAo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 5 Jan 2022 19:44:58 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:51216 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343936AbiAFAoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 5 Jan 2022 19:44:22 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6oWGncUTdb/LGs3ySkcNJ1+7l0wPkYWMZXRxkONbwWM=;
-        b=WOcmcZQ91NLeY8r5Xhe7La5t9fA6IBVHUZjZjWnXFjUybWMbPDrXV5FkANWgkzc+xY
-         ErGRAcorpy3a4lkic8lw3HBIYltHiJbGGFTOzM9X8n2mDHW+DvurG6MVBJf4nhyQVEwn
-         W2VPWW7Kfp9Qc+9d75nkMhx0fwWVDo/dlzNbbNh2SOgwr4cmZzIhOr5IbFBVe9uQWKoZ
-         NXLr0QrU48jggfCxKuubg0aqNcQEIKjdNTvAPwIZn21lw+43aS8rJmqbRs0m1floyPfc
-         QRBvHnRMBj92FSD5Fm+xVNiq787IGqrJxZmbGdDHxeaLgn3LwHiT8rqPD5TKOxgR3aA6
-         Cbeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6oWGncUTdb/LGs3ySkcNJ1+7l0wPkYWMZXRxkONbwWM=;
-        b=xFD4G1Ej9nPVRZolAw7fN4zvWsuXR+8GiggheRmlrM7IO9h8ug6R+3t3+1AzPvFmdl
-         6150dDD1Lx/FTrb2j77pElkhKwlkJBvQuZ/f+hQX20atwfdCxmVwJ4gx4ReXEbgue0Nh
-         hpzZ0JmWGCFLyUmkje0E/xxjJObFgS7VU+cfZ+5TnD7NkoEF+VaQo4aeJa/skFJm7cpC
-         6w6ZKrIVhdkv8OIJ40LzIguHaK1suxyPEyBciMZkO5XTWGef8uqEQoEeQN2jLYtkl7FE
-         Wwcu+joqN7g+RsiJg4bv65juk5HCGhazP/KL+LtjZHPEiborUWTbcmV2SlaTBi2nixdG
-         PQqw==
-X-Gm-Message-State: AOAM5334RWcPaDrTDJzEFR4LgojUOIVKbh7U+9UsiJTI1M+PJ26eTbos
-        kzmwiZ0yVSXM5mF3+qO4JaJhJCC8DxPXYRofpZI=
-X-Google-Smtp-Source: ABdhPJzYbthJEutPB8xzcTHiFt+sX1/4exTSZodjSsLHUirlJq6K8CsOg/GZBpWxBgw4QPzFTX6wwo1Oq4+v0Pfx93w=
-X-Received: by 2002:adf:d1c2:: with SMTP id b2mr49224826wrd.81.1641429503747;
- Wed, 05 Jan 2022 16:38:23 -0800 (PST)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1641429862; x=1672965862;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Rz5PvVfZbv748AWmS2fFlrQBqLr5EJy3zvJ1hILAXbo=;
+  b=WiXRH16FntlU43N/ay4ijmoPJm0KhWmzTClhpwdvHndV0a3woJKQi4Ql
+   wZ9i6aDrcGNZvFUrNEIaiwSze/4OIRD85tUfZ9+RfMFt88JZ5V9KIMD+U
+   6hYMscK10UPJWXKsS25dsrhio6Pgv7gqOcn6OemxC+kwuO3mTqLNeBlH2
+   8=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 05 Jan 2022 16:44:20 -0800
+X-QCInternal: smtphost
+Received: from hu-twear-lv.qualcomm.com (HELO hu-devc-sd-u20-a-1.qualcomm.com) ([10.47.235.107])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 05 Jan 2022 16:44:20 -0800
+Received: by hu-devc-sd-u20-a-1.qualcomm.com (Postfix, from userid 202676)
+        id 51B5E5D9; Wed,  5 Jan 2022 16:44:00 -0800 (PST)
+From:   Tyler Wear <quic_twear@quicinc.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     maze@google.com, yhs@fb.com, kafai@fb.com, toke@redhat.com,
+        Tyler Wear <quic_twear@quicinc.org>,
+        Tyler Wear <quic_twear@quicinc.com>
+Subject: [PATCH bpf-next v3] Add skb_store_bytes() for BPF_PROG_TYPE_CGROUP_SKB
+Date:   Wed,  5 Jan 2022 16:43:40 -0800
+Message-Id: <20220106004340.2317542-1-quic_twear@quicinc.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
- <20211222155743.256280-13-miquel.raynal@bootlin.com> <CAB_54W6AZ+LGTcFsQjNx7uq=+R5v_kdF0Xm5kwWQ8ONtfOrmAw@mail.gmail.com>
- <Ycx0mwQcFsmVqWVH@ni.fr.eu.org> <CAB_54W41ZEoXzoD2_wadfMTY8anv9D9e2T5wRckdXjs7jKTTCA@mail.gmail.com>
- <CAB_54W6gHE1S9Q+-SVbrnAWPxBxnvf54XVTCmddtj8g-bZzMRA@mail.gmail.com>
- <20220104191802.2323e44a@xps13> <CAB_54W5quZz8rVrbdx+cotTRZZpJ4ouRDZkxeW6S1L775Si=cw@mail.gmail.com>
- <20220105215551.1693eba4@xps13>
-In-Reply-To: <20220105215551.1693eba4@xps13>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Wed, 5 Jan 2022 19:38:12 -0500
-Message-ID: <CAB_54W7zDXfybMZZo8QPwRCxX8-BbkQdznwEkLEWeW+E3k2dNg@mail.gmail.com>
-Subject: Re: [net-next 12/18] net: mac802154: Handle scan requests
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>
-Cc:     Nicolas Schodet <nico@ni.fr.eu.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Tyler Wear <quic_twear@quicinc.org>
 
+Need to modify the ds field to support upcoming Wifi QoS Alliance spec.
+Instead of adding generic function for just modifying the ds field,
+add skb_store_bytes for BPF_PROG_TYPE_CGROUP_SKB.
+This allows other fields in the network and transport header to be
+modified in the future.
 
-On Wed, 5 Jan 2022 at 15:55, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-...
-> > rest in software is a bigger task here...
->
-> On the symbol duration side I feel I'm close to a working PoC.
->
+Checksum API's also need to be added for completeness.
 
-oh, ok.
+It is not possible to use CGROUP_(SET|GET)SOCKOPT since
+the policy may change during runtime and would result
+in a large number of entries with wildcards.
 
-> So there is 'only' this item left in my mind. Could you please clarify
-> what you expect from me exactly in terms of support for the promiscuous
-> filters we discussed so far?
->
+Signed-off-by: Tyler Wear <quic_twear@quicinc.com>
+---
+ net/core/filter.c                             | 10 ++
+ .../bpf/prog_tests/cgroup_store_bytes.c       | 97 +++++++++++++++++++
+ .../selftests/bpf/progs/cgroup_store_bytes.c  | 64 ++++++++++++
+ 3 files changed, 171 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
+ create mode 100644 tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
 
-I think for now it's okay to set the device into promiscuous mode and
-enable the flag which checks for bad FCS... we can still implement the
-filter modes later (and I think it should work on all supported
-transceivers (except that SoftMAC/HardMAC thing)).
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 6102f093d59a..ce01a8036361 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -7299,6 +7299,16 @@ cg_skb_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_sk_storage_delete_proto;
+ 	case BPF_FUNC_perf_event_output:
+ 		return &bpf_skb_event_output_proto;
++	case BPF_FUNC_skb_store_bytes:
++		return &bpf_skb_store_bytes_proto;
++	case BPF_FUNC_csum_update:
++		return &bpf_csum_update_proto;
++	case BPF_FUNC_csum_level:
++		return &bpf_csum_level_proto;
++	case BPF_FUNC_l3_csum_replace:
++		return &bpf_l3_csum_replace_proto;
++	case BPF_FUNC_l4_csum_replace:
++		return &bpf_l4_csum_replace_proto;
+ #ifdef CONFIG_SOCK_CGROUP_DATA
+ 	case BPF_FUNC_skb_cgroup_id:
+ 		return &bpf_skb_cgroup_id_proto;
+diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c b/tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
+new file mode 100644
+index 000000000000..4bbc43775f45
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
+@@ -0,0 +1,97 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <test_progs.h>
++#include <network_helpers.h>
++
++void test_cgroup_store_bytes(void)
++{
++	int server_fd, cgroup_fd, prog_fd, map_fd, client_fd;
++	int err;
++	struct bpf_object *obj;
++	struct bpf_program *prog;
++	struct bpf_map *test_result;
++	__u32 duration = 0;
++
++	__u32 map_key = 0;
++	__u32 map_value = 0;
++
++	cgroup_fd = test__join_cgroup("/cgroup_store_bytes");
++	if (CHECK_FAIL(cgroup_fd < 0))
++		return;
++
++	server_fd = start_server(AF_INET, SOCK_DGRAM, NULL, 0, 0);
++	if (CHECK_FAIL(server_fd < 0))
++		goto close_cgroup_fd;
++
++	err = bpf_prog_load("./cgroup_store_bytes.o", BPF_PROG_TYPE_CGROUP_SKB,
++														&obj, &prog_fd);
++	if (CHECK_FAIL(err))
++		goto close_server_fd;
++
++	test_result = bpf_object__find_map_by_name(obj, "test_result");
++	if (CHECK_FAIL(!test_result))
++		goto close_bpf_object;
++
++	map_fd = bpf_map__fd(test_result);
++	if (map_fd < 0)
++		goto close_bpf_object;
++
++	prog = bpf_object__find_program_by_name(obj, "cgroup_store_bytes");
++	if (CHECK_FAIL(!prog))
++		goto close_bpf_object;
++
++	err = bpf_prog_attach(prog_fd, cgroup_fd, BPF_CGROUP_INET_EGRESS,
++														BPF_F_ALLOW_MULTI);
++	if (CHECK_FAIL(err))
++		goto close_bpf_object;
++
++	//client_fd = connect_to_fd(server_fd, 0);
++	client_fd = start_server(AF_INET, SOCK_DGRAM, NULL, 0, 0);
++	if (CHECK_FAIL(client_fd < 0))
++		goto close_bpf_object;
++
++	struct sockaddr server_addr;
++	socklen_t addrlen = sizeof(server_addr);
++	if (getsockname(server_fd, &server_addr, &addrlen)) {
++		perror("Failed to get server addr");
++		return -1;
++	}
++
++	char buf[] = "testing";
++	if (CHECK_FAIL(sendto(client_fd, buf, sizeof(buf), 0, &server_addr, sizeof(server_addr)) != sizeof(buf))) {
++		perror("Can't write on client");
++		goto close_client_fd;
++	}
++
++	struct sockaddr_storage ss;
++	char recv_buf[BUFSIZ];
++	socklen_t slen;
++	if (recvfrom(server_fd, &recv_buf, sizeof(recv_buf), 0, (struct sockaddr *)&ss, &slen) <= 0) {
++		perror("Recvfrom recieved no packets");
++		goto close_client_fd;
++	}
++
++	struct in_addr addr = ((struct sockaddr_in *)&ss)->sin_addr;
++	CHECK(addr.s_addr != 0xac100164, "bpf", "bpf program failed to change saddr");
++
++	unsigned short port = ((struct sockaddr_in *)&ss)->sin_port;
++	CHECK(port != htons(5556), "bpf", "bpf program failed to change port");
++	
++	err = bpf_map_lookup_elem(map_fd, &map_key, &map_value);
++	if (CHECK_FAIL(err))
++		goto close_client_fd;
++
++	CHECK(map_value != 1, "bpf", "bpf program returned failure");
++
++close_client_fd:
++	close(client_fd);
++
++close_bpf_object:
++	bpf_object__close(obj);
++
++close_server_fd:
++	close(server_fd);
++
++close_cgroup_fd:
++	close(cgroup_fd);
++}
+diff --git a/tools/testing/selftests/bpf/progs/cgroup_store_bytes.c b/tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
+new file mode 100644
+index 000000000000..7e5bf61fcfb7
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
+@@ -0,0 +1,64 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <errno.h>
++#include <linux/bpf.h>
++#include <linux/if_ether.h>
++#include <linux/ip.h>
++#include <netinet/in.h>
++#include <netinet/udp.h>
++#include <bpf/bpf_helpers.h>
++
++#define IP_SRC_OFF offsetof(struct iphdr, saddr)
++#define UDP_PORT_OFF (sizeof(struct iphdr) + offsetof(struct udphdr, source))
++
++#define IS_PSEUDO 0x10
++
++#define UDP_CSUM_OFF (sizeof(struct iphdr) + offsetof(struct udphdr, check))
++#define IP_CSUM_OFF offsetof(struct iphdr, check)
++#define TOS_OFF offsetof(struct iphdr, tos)
++
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(max_entries, 1);
++	__type(key, __u32);
++	__type(value, __u32);
++} test_result SEC(".maps");
++
++SEC("cgroup_skb/egress")
++int cgroup_store_bytes(struct __sk_buff *skb)
++{
++	struct ethhdr eth;
++	struct iphdr iph;
++	struct udphdr udph;
++
++	__u32 map_key = 0;
++	__u32 test_passed = 0;
++
++	if (bpf_skb_load_bytes_relative(skb, 0, &iph, sizeof(iph), //ETH_HLEN
++					BPF_HDR_START_NET))
++		goto fail;
++		
++	if (bpf_skb_load_bytes_relative(skb, sizeof(iph), &udph, sizeof(udph),
++					BPF_HDR_START_NET))
++		goto fail;
++
++	__u32 old_ip = htonl(iph.saddr);
++	__u32 new_ip = 0xac100164; //172.16.1.100
++	bpf_l4_csum_replace(skb, UDP_CSUM_OFF, old_ip, new_ip, IS_PSEUDO | sizeof(new_ip));
++	bpf_l3_csum_replace(skb, IP_CSUM_OFF, old_ip, new_ip, sizeof(new_ip));
++	if (bpf_skb_store_bytes(skb, IP_SRC_OFF, &new_ip, sizeof(new_ip), 0) < 0)
++		goto fail;
++	
++	__u16 old_port = udph.source;
++	__u16 new_port = 5555;
++	bpf_l4_csum_replace(skb, UDP_CSUM_OFF, old_port, new_port, IS_PSEUDO | sizeof(new_port));
++	if (bpf_skb_store_bytes(skb, UDP_PORT_OFF, &new_port, sizeof(new_port), 0) < 0)
++		goto fail;
++
++	test_passed = 1;
++
++fail:
++	bpf_map_update_elem(&test_result, &map_key, &test_passed, BPF_ANY);
++
++	return 1;
++}
+-- 
+2.25.1
 
-One point to promiscuous mode, currently we have a checking for if a
-phy is in promiscuous mode on ifup and it would forbid to ifup a node
-interface if the phy is in promiscuous mode (because of the missing
-automatic acknowledgement). I see there is a need to turn the phy into
-promiscuous mode during runtime... so we need somehow make sure the
-constraints are still valid here. Maybe we even forbid multiple devs
-on a phy if the transceiver/driver/firmware is poor and this is
-currently all transceivers (except hwsim? But that doesn't use any ack
-handling anyway).
-
-> Also, just for the record,
-> - should I keep copying the netdev list for v2?
-
-yes, why not.
-
-> - should I monitor if net-next is open before sending or do you have
->   your own set of rules?
->
-
-I need to admit, Stefan is the "Thanks, applied." hero here and he
-should answer this question.
-
-- Alex
