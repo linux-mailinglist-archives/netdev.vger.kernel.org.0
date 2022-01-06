@@ -2,45 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22D04486A61
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 20:15:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10CD6486A64
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 20:15:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243200AbiAFTPX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 6 Jan 2022 14:15:23 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:41817 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243146AbiAFTPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 14:15:23 -0500
+        id S243254AbiAFTPc convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 6 Jan 2022 14:15:32 -0500
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:34181 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243146AbiAFTPb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 14:15:31 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 096F260009;
-        Thu,  6 Jan 2022 19:15:17 +0000 (UTC)
-Date:   Thu, 6 Jan 2022 20:15:16 +0100
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 71CA0E0008;
+        Thu,  6 Jan 2022 19:15:28 +0000 (UTC)
+Date:   Thu, 6 Jan 2022 20:15:26 +0100
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
+Cc:     David Girault <David.Girault@qorvo.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
+        Romuald Despres <Romuald.Despres@qorvo.com>,
+        Frederic Blain <Frederic.Blain@qorvo.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         kernel list <linux-kernel@vger.kernel.org>
-Subject: Re: [net-next 12/18] net: mac802154: Handle scan requests
-Message-ID: <20220106201516.6a48154a@xps13>
-In-Reply-To: <CAB_54W7zDXfybMZZo8QPwRCxX8-BbkQdznwEkLEWeW+E3k2dNg@mail.gmail.com>
+Subject: Re: [net-next 17/18] net: mac802154: Let drivers provide their own
+ beacons implementation
+Message-ID: <20220106201526.7e513f2f@xps13>
+In-Reply-To: <CAB_54W4Z1KgT+Cx0SXptvkwYK76wDOFTueFUFF4e7G_ABP7kkA@mail.gmail.com>
 References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
-        <20211222155743.256280-13-miquel.raynal@bootlin.com>
-        <CAB_54W6AZ+LGTcFsQjNx7uq=+R5v_kdF0Xm5kwWQ8ONtfOrmAw@mail.gmail.com>
-        <Ycx0mwQcFsmVqWVH@ni.fr.eu.org>
-        <CAB_54W41ZEoXzoD2_wadfMTY8anv9D9e2T5wRckdXjs7jKTTCA@mail.gmail.com>
-        <CAB_54W6gHE1S9Q+-SVbrnAWPxBxnvf54XVTCmddtj8g-bZzMRA@mail.gmail.com>
-        <20220104191802.2323e44a@xps13>
-        <CAB_54W5quZz8rVrbdx+cotTRZZpJ4ouRDZkxeW6S1L775Si=cw@mail.gmail.com>
-        <20220105215551.1693eba4@xps13>
-        <CAB_54W7zDXfybMZZo8QPwRCxX8-BbkQdznwEkLEWeW+E3k2dNg@mail.gmail.com>
+        <20211222155743.256280-18-miquel.raynal@bootlin.com>
+        <CAB_54W7o5b7a-2Gg5ZnzPj3o4Yw9FOAxJfykrA=LtpVf9naAng@mail.gmail.com>
+        <SN6PR08MB4464D7124FCB5D0801D26B94E0459@SN6PR08MB4464.namprd08.prod.outlook.com>
+        <CAB_54W6ikdGe=ZYqOsMgBdb9KBtfAphkBeu4LLp6S4R47ZDHgA@mail.gmail.com>
+        <20220105094849.0c7e9b65@xps13>
+        <CAB_54W4Z1KgT+Cx0SXptvkwYK76wDOFTueFUFF4e7G_ABP7kkA@mail.gmail.com>
 Organization: Bootlin
 X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
@@ -52,73 +49,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Alexander,
 
-alex.aring@gmail.com wrote on Wed, 5 Jan 2022 19:38:12 -0500:
+alex.aring@gmail.com wrote on Wed, 5 Jan 2022 19:23:04 -0500:
 
 > Hi,
 > 
-> 
-> On Wed, 5 Jan 2022 at 15:55, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> ...
-> > > rest in software is a bigger task here...  
+> On Wed, 5 Jan 2022 at 03:48, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 > >
-> > On the symbol duration side I feel I'm close to a working PoC.
+> > Hi Alexander,
+> >
+> > alex.aring@gmail.com wrote on Thu, 30 Dec 2021 14:48:41 -0500:
+> >  
+> > > Hi,
+> > >
+> > > On Thu, 30 Dec 2021 at 12:00, David Girault <David.Girault@qorvo.com> wrote:  
+> > > >
+> > > > Hi Alexander,
+> > > >
+> > > > At Qorvo, we have developped a SoftMAC driver for our DW3000 chip that will benefit such API.
+> > > >  
+> > > Do you want to bring this driver upstream as well? Currently those
+> > > callbacks will be introduced but no user is there.  
+> >
+> > I think so far the upstream fate of the DW3000 driver has not been ruled
+> > out so let's assume it won't be upstreamed (at least not fully), that's
+> > also why we decided to begin with the hwsim driver.
 > >  
 > 
-> oh, ok.
-
-I think it's ready, I'll soon send two series:
-- the symbol duration update
-- v2 for this series, which will not apply without the symbol duration
-  update.
-
-> > So there is 'only' this item left in my mind. Could you please clarify
-> > what you expect from me exactly in terms of support for the promiscuous
-> > filters we discussed so far?
+> ok.
+> 
+> > However, when designing this series, it appeared quite clear that any
+> > hardMAC driver would need this type of interface. The content of the
+> > interface, I agree, could be further discussed and even edited, but the
+> > main idea of giving the information to the phy driver about what is
+> > happening regarding eg. scan operations or beacon frames, might make
+> > sense regardless of the current users, no?
 > >  
 > 
-> I think for now it's okay to set the device into promiscuous mode and
-> enable the flag which checks for bad FCS... we can still implement the
-> filter modes later (and I think it should work on all supported
-> transceivers (except that SoftMAC/HardMAC thing)).
+> A HardMAC driver does not use this driver interface... but there
+> exists a SoftMAC driver for a HardMAC transceiver. This driver
+> currently works because we use dataframes only... It will not support
+> scanning currently and somehow we should make iit not available for
+> drivers like that and for drivers which don't set symbol duration.
+> They need to be fixed.
 
-I considered the following options in order to do that:
-1- Hack all ->set_promiscuous() driver implementations to set
-   IEEE802154_HW_RX_DROP_BAD_CKSUM as long as it was not already set
-   initially.
-2- Set the above flag at scan level, ie. in
-   scan.c:mac802154_set_promiscuous_mode(). But this would be a bit
-   ugly and I'd need to add a persistent field somewhere in the
-   wpan_dev structure to remember how the flags settings where before
-   the scan code hacked it.
-3- Add more code in hwsim to handle checksum manually instead of
-   by default setting the above flag to request the core to do the
-   job. This way no driver would actually set this flag. We can then
-   consider it "volatile" and would not need to track its state.
-4- We know that we are in a scan thanks to a mac802154 internal
-   variable, we can just assume that all drivers are in promiscuous
-   mode and that none of them actually checks the FCS. This is
-   certainly the simplest yet effective solution. In the worst case, we
-   are just doing the check twice, which I believe does not hurt as
-   long as the checksum is not cut off. If the checksum is cut, then
-   the core is buggy because it always remove the two last bytes.
+My bad. I did not look at it correctly. I made a mistake when talking
+about a hardMAC.
 
-I picked 4 for now, but if you think this is unreliable, please
-tell me what do you prefer otherwise.
+Instead, it is a "custom" low level MAC layer. I believe we can compare
+the current mac802154 layer mostly to the MLME that is mentioned in the
+spec. Well here the additional layer that needs these hooks would be
+the MCPS. I don't know if this will be upstreamed or not, but the need
+for these hooks is real if such an intermediate low level MAC layer
+gets introduced.
 
-> One point to promiscuous mode, currently we have a checking for if a
-> phy is in promiscuous mode on ifup and it would forbid to ifup a node
-> interface if the phy is in promiscuous mode (because of the missing
-> automatic acknowledgement). I see there is a need to turn the phy into
-> promiscuous mode during runtime... so we need somehow make sure the
-> constraints are still valid here.
+In v2 I will get rid of the two patches adding "driver access" to scans
+and beacons in order to facilitate the merge of the big part. Then we
+will have plenty of time to discuss how we can create such an interface.
+Perhaps I'll be able to propose more code as well to make use of these
+hooks, we will see.
 
-Yes, the code (rx.c) currently drops everything that is not a beacon
-during a scan.
+> > This being said, if other people decide to upstream a hardMAC driver
+> > and need these hooks to behave a little bit differently, it's their
+> > right to tweak them and that would also be part of the game.
+> >
+> > Although we might not need these hooks in a near future at all if we
+> > move to the filtering modes, because the promiscuous call with the
+> > specific level might indicate to the device how it should configure
+> > itself already.
+> >  
+> 
+> My concern is that somebody else might want to remove those callbacks
+> because they are not used.
 
-> Maybe we even forbid multiple devs
-> on a phy if the transceiver/driver/firmware is poor and this is
-> currently all transceivers (except hwsim? But that doesn't use any ack
-> handling anyway).
+Yes, this is likely to happen quickly because of robots :)
 
 Thanks,
 Miquèl
