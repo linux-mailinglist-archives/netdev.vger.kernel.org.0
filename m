@@ -2,175 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 178AF486464
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:32:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69966486472
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:37:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238836AbiAFMcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 07:32:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58770 "EHLO
+        id S238831AbiAFMhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 07:37:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230195AbiAFMcR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:32:17 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EBCC061245
-        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 04:32:17 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id c14-20020a17090a674e00b001b31e16749cso6807329pjm.4
-        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 04:32:17 -0800 (PST)
+        with ESMTP id S238916AbiAFMhW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:37:22 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B10C0611FF
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 04:37:22 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id r16-20020a17090a0ad000b001b276aa3aabso8381158pje.0
+        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 04:37:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LbbHJnfFJa635LNHtwNypapWioSFVlnQx2kyNjrWm4E=;
-        b=KYqP0kcBUcSvlLhrut8dRrSJSxD8FmuH7R45O2CUoeGPv2NiyDA0WaiIOCpAN7+wVL
-         VMe0E5jd2sZ8I9+hvCFk+c4r4iXK5hDPdy3J7kO5xODJSdROF2rBeTJMOUUsOYqHZa3a
-         8zK+IYr2XjfyO50kZiuVc3i2WwdkMMGsWZLJY=
+        d=broadcom.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to;
+        bh=Nq6tqaHHupjGAtvgeOpHhJrCmHIFR7viousjxmTpJnw=;
+        b=UmtrCjy1CG4wuHu2nGDHeXxAxe3DNFHVn9rFgufPhWYseGFDs7qy24NQk4icHk59aY
+         JGHsQbwjyaEoyBRifZvZpUSLisXzddotooLX7kTnwbb9gg6/G7OexF3dMH2Gz0kP8NsP
+         79M2jQn9eQDLp59+lP/CmN0BZQmtyE7Jl+dm8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LbbHJnfFJa635LNHtwNypapWioSFVlnQx2kyNjrWm4E=;
-        b=PW0+87Jlbg4T19/R0xPq+FBRXEdaDmC9uCZUKwJ2CWAPx3l/w660uLfHqPfppcZD5C
-         t9ST6B4uxpCOcZdk4YVW0DhZAK+B3NU/gcF3NxhrxdRKQk13S0l9tSy7MYQZsMYW5Cld
-         PYUb2TXhOqLtygxvIJoriE15zPmuCjLQoEuvZLRz25L7dK3WSRiCLLZFEeMPbcvH/QbO
-         E+sDbNfoOVNLomAP1S/tnz+r6kvzZ8BRNYkTH2mfi84JvhJ6fUqC/R4S5W3kN0DCntPP
-         dq1963JYnXK5RAhxTNQKSNBye0QzO6DenIIO/h/z2vD+c5FplgWTcEqNOFAbRHQWFWtu
-         Qcjw==
-X-Gm-Message-State: AOAM533rtJvmUrsQJZmu+MvmZnnSO5j9W+tzVuIfTsHq8KRzPLWjvwp0
-        WOT1Y7M81Z/TB9rPHoE1PRFZIp5lJ5Nj4O3GacTmzw==
-X-Google-Smtp-Source: ABdhPJzpBs//uHxEy1Y6b9A1PBKSNp3traSjdndLPLblh1LSQ2ada4lXL+T31sAFhrndnbnvRzwLzHK/3C1CVCMiBcE=
-X-Received: by 2002:a17:90a:7e81:: with SMTP id j1mr6817950pjl.14.1641472336853;
- Thu, 06 Jan 2022 04:32:16 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to;
+        bh=Nq6tqaHHupjGAtvgeOpHhJrCmHIFR7viousjxmTpJnw=;
+        b=i3y33unADehERbWBjf8VnKWwaBvLd89kK23zcnhc77OcB3/gbnbEBFIoaAVyc6GcqV
+         1vrqWmN/eJHU+5+A3Yu7UWdI5poRQzIwOmCHymV4CCMArkNcURemqHawZxvVGOLuqo7S
+         jf2c47CBm/jYJ66o+6rcYqawh7n03MmwVsLPDPVcCotbIc7P4VDUyGOGmbilQE5tz6ZK
+         NBw4lKNE0AinhR88lMQMD4zHfck0jZG63dHNyFe0JyYOMSqyotU8iEErSY54xFc4ajDk
+         N3Xi3jbM7qsBlNZMlYNd3lcX72TOXNOKsexITORmk4UVdVPfVQ1gMFJL6dHimjrNLCjB
+         OOVA==
+X-Gm-Message-State: AOAM532fhEbTPJ5HXCwHN4gn2Aj8Kae5U4JqN4f+nHq287xTzJmdcLkV
+        NrTp41bx4xJ44K/J+bWWvTu8oQ==
+X-Google-Smtp-Source: ABdhPJwUvuDg/GlVO/nYV2qck27f6jzXfGtqzuc/w6pNYyNbCSjeqKhdYsDx6DNPcHglp9D/t+K+VA==
+X-Received: by 2002:a17:903:234a:b0:148:a94a:7e3c with SMTP id c10-20020a170903234a00b00148a94a7e3cmr59304992plh.121.1641472641672;
+        Thu, 06 Jan 2022 04:37:21 -0800 (PST)
+Received: from [192.168.178.136] (f140230.upc-f.chello.nl. [80.56.140.230])
+        by smtp.gmail.com with ESMTPSA id y11sm2395995pfn.7.2022.01.06.04.37.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Jan 2022 04:37:21 -0800 (PST)
+Message-ID: <3dfb1a06-4474-4614-08e5-b09f0977e03c@broadcom.com>
+Date:   Thu, 6 Jan 2022 13:37:12 +0100
 MIME-Version: 1.0
-References: <CA+wXwBRbLq6SW39qCD8GNG98YD5BJR2MFXmJV2zU1xwFjC-V0A@mail.gmail.com>
- <CANn89iLbKNkB9bzkA2nk+d2c6rq40-6-h9LXAVFCkub=T4BGsQ@mail.gmail.com>
-In-Reply-To: <CANn89iLbKNkB9bzkA2nk+d2c6rq40-6-h9LXAVFCkub=T4BGsQ@mail.gmail.com>
-From:   Daniel Dao <dqminh@cloudflare.com>
-Date:   Thu, 6 Jan 2022 12:32:06 +0000
-Message-ID: <CA+wXwBTQtzgsErFZZEUbEq=JMhdq-fF2OXJ7ztnnq6hPXs_L3Q@mail.gmail.com>
-Subject: Re: Expensive tcp_collapse with high tcp_rmem limit
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v2 07/35] brcmfmac: pcie: Read Apple OTP information
+To:     Hector Martin <marcan@marcan.st>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Marek Majkowski <marek@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20220104072658.69756-1-marcan@marcan.st>
+ <20220104072658.69756-8-marcan@marcan.st>
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+In-Reply-To: <20220104072658.69756-8-marcan@marcan.st>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000bb820e05d4e92178"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 5, 2022 at 1:38 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Wed, Jan 5, 2022 at 4:15 AM Daniel Dao <dqminh@cloudflare.com> wrote:
-> >
-> > Hello,
-> >
-> > We are looking at increasing the maximum value of TCP receive buffer in order
-> > to take better advantage of high BDP links. For historical reasons (
-> > https://blog.cloudflare.com/the-story-of-one-latency-spike/), this was set to
-> > a lower than default value.
-> >
-> > We are still occasionally seeing long time spent in tcp_collapse, and the time
-> > seems to be proportional with max rmem. For example, with net.ipv4.tcp_rmem = 8192 2097152 16777216,
-> > we observe tcp_collapse latency with the following bpftrace command:
-> >
->
-> I suggest you add more traces, like the payload/truesize ratio when
-> these events happen.
-> and tp->rcv_ssthresh, sk->sk_rcvbuf
->
-> TCP stack by default assumes a conservative [1] payload/truesize ratio of 50%
+--000000000000bb820e05d4e92178
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-I forgot to add that for this experiment we also set tcp_adv_win_scale
-= -2 to see if it
-reduces the chance of triggering tcp_collapse
+On 1/4/2022 8:26 AM, Hector Martin wrote:
+> On Apple platforms, the One Time Programmable ROM in the Broadcom chips
+> contains information about the specific board design (module, vendor,
+> version) that is required to select the correct NVRAM file. Parse this
+> OTP ROM and extract the required strings.
+> 
+> Note that the user OTP offset/size is per-chip. This patch does not add
+> any chips yet.
 
->
-> Meaning that a 16MB sk->rcvbuf would translate to a TCP RWIN of 8MB.
->
-> I suspect that you use XDP, and standard MTU=1500.
-> Drivers in XDP mode use one page (4096 bytes on x86) per incoming frame.
-> In this case, the ratio is ~1428/4096 = 35%
->
-> This is one of the reason we switched to a 4K MTU at Google, because we
-> have an effective ratio close to 100% (even if XDP was used)
->
-> [1] The 50% ratio of TCP is defeated with small MSS, and malicious traffic.
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+>   .../broadcom/brcm80211/brcmfmac/pcie.c        | 219 ++++++++++++++++++
+>   include/linux/bcma/bcma_driver_chipcommon.h   |   1 +
+>   2 files changed, 220 insertions(+)
+> 
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> index a52a6f8081eb..74c9a4f74813 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
 
-I updated the bpftrace script to get data on len/truesize on collapsed skb
+[...]
 
-  kprobe:tcp_collapse {
-    $sk = (struct sock *) arg0;
-    $tp = (struct tcp_sock *) arg0;
-    printf("tid %d: rmem_alloc=%ld sk_rcvbuf=%ld rcv_ssthresh=%ld\n", tid,
-        $sk->sk_backlog.rmem_alloc.counter, $sk->sk_rcvbuf, $tp->rcv_ssthresh);
-    printf("tid %d: advmss=%ld wclamp=%ld rcv_wnd=%ld\n", tid, $tp->advmss,
-        $tp->window_clamp, $tp->rcv_wnd);
-    @start[tid] = nsecs;
-  }
+> +static int brcmf_pcie_read_otp(struct brcmf_pciedev_info *devinfo)
+> +{
+> +	const struct pci_dev *pdev = devinfo->pdev;
+> +	struct brcmf_bus *bus = dev_get_drvdata(&pdev->dev);
+> +	u32 coreid, base, words, idx, sromctl;
+> +	u16 *otp;
+> +	struct brcmf_core *core;
+> +	int ret;
+> +
+> +	switch (devinfo->ci->chip) {
+> +	default:
+> +		/* OTP not supported on this chip */
+> +		return 0;
+> +	}
 
-  kretprobe:tcp_collapse /@start[tid] != 0/ {
-    $us = (nsecs - @start[tid])/1000;
-    @us = hist($us);
-    printf("tid %d: %ld us\n", tid, $us);
-    delete(@start[tid]);
-  }
+Does not seem this code is put to work yet. Will dive into it later on.
 
-  kprobe:tcp_collapse_one {
-    $skb = (struct sk_buff *) arg1;
-    printf("tid %d: s=%ld len=%ld truesize=%ld\n", tid, sizeof(struct
-sk_buff), $skb->len, $skb->truesize);
-  }
+> +	core = brcmf_chip_get_core(devinfo->ci, coreid);
+> +	if (!core) {
+> +		brcmf_err(bus, "No OTP core\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (coreid == BCMA_CORE_CHIPCOMMON) {
+> +		/* Chips with OTP accessed via ChipCommon need additional
+> +		 * handling to access the OTP
+> +		 */
+> +		brcmf_pcie_select_core(devinfo, coreid);
+> +		sromctl = READCC32(devinfo, sromcontrol);
+> +
+> +		if (!(sromctl & BCMA_CC_SROM_CONTROL_OTP_PRESENT)) {
+> +			/* Chip lacks OTP, try without it... */
+> +			brcmf_err(bus,
+> +				  "OTP unavailable, using default firmware\n");
+> +			return 0;
+> +		}
+> +
+> +		/* Map OTP to shadow area */
+> +		WRITECC32(devinfo, sromcontrol,
+> +			  sromctl | BCMA_CC_SROM_CONTROL_OTPSEL);
+> +	}
+> +
+> +	otp = kzalloc(sizeof(u16) * words, GFP_KERNEL);
+> +
+> +	/* Map bus window to SROM/OTP shadow area in core */
+> +	base = brcmf_pcie_buscore_prep_addr(devinfo->pdev, base + core->base);
 
-  interval:s:6000 { exit(); }
+I guess this changes the bar window...
 
-Here is the output:
+> +	brcmf_dbg(PCIE, "OTP data:\n");
+> +	for (idx = 0; idx < words; idx++) {
+> +		otp[idx] = brcmf_pcie_read_reg16(devinfo, base + 2 * idx);
+> +		brcmf_dbg(PCIE, "[%8x] 0x%04x\n", base + 2 * idx, otp[idx]);
+> +	}
+> +
+> +	if (coreid == BCMA_CORE_CHIPCOMMON) {
+> +		brcmf_pcie_select_core(devinfo, coreid);
 
-  tid 0: rmem_alloc=16780416 sk_rcvbuf=16777216 rcv_ssthresh=2920
-  tid 0: advmss=1460 wclamp=4194304 rcv_wnd=450560
-  tid 0: len=3316 truesize=15808
-  tid 0: len=4106 truesize=16640
-  tid 0: len=3967 truesize=16512
-  tid 0: len=2988 truesize=15488
-  ...
-  tid 0: len=5279 truesize=17664
-  tid 0: len=425 truesize=2048
-  tid 0: 17176 us
+... which is why you need to reselect the core. Otherwise it makes no 
+sense to me.
 
-The skb looks indeed bloated (len=3316, truesize=15808), so collapsing
-definitely
-helps. It just took a long time to go through thousands of 16KB skb
+> +		WRITECC32(devinfo, sromcontrol, sromctl);
+> +	}
+> +
+> +	ret = brcmf_pcie_parse_otp(devinfo, (u8 *)otp, 2 * words);
+> +	kfree(otp);
+> +
+> +	return ret;
+> +}
 
->
->
-> >   bpftrace -e 'kprobe:tcp_collapse { @start[tid] = nsecs; } kretprobe:tcp_collapse /@start[tid] != 0/ { $us = (nsecs - @start[tid])/1000; @us = hist($us); delete(@start[tid]); printf("%ld us\n", $us);} interval:s:6000 { exit(); }'
-> >   Attaching 3 probes...
-> >   15496 us
-> >   14301 us
-> >   12248 us
-> >   @us:
-> >   [8K, 16K)              3 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
-> >
-> > Spending up to 16ms with 16MiB maximum receive buffer seems high.  Are there any
-> > recommendations on possible approaches to reduce the tcp_collapse latency ?
-> > Would clamping the duration of a tcp_collapse call be reasonable, since we only
-> > need to spend enough time to free space to queue the required skb ?
->
-> It depends if the incoming skb is queued in in-order queue or
-> out-of-order queue.
-> For out-of-orders, we have a strategy in tcp_prune_ofo_queue() which
-> should work reasonably well after commit
-> 72cd43ba64fc17 tcp: free batches of packets in tcp_prune_ofo_queue()
->
-> Given the nature of tcp_collapse(), limiting it to even 1ms of processing time
-> would still allow for malicious traffic to hurt you quite a lot.
+--000000000000bb820e05d4e92178
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-I don't yet understand why we have cases of bloated skbs. But it seems
-like adapting the
-batch prune strategy in tcp_prune_ofo_queue() to tcp_collapse makes sense to me.
-
-I think every collapsed skb saves us truesize - len (?), and we can
-set goal to free up 12.5% of sk_rcvbuf
-same as tcp_prune_ofo_queue()
+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
+XSlOP9s1dqWlRRnnNxV7BVC87lkKKy0+1M2DOF6qRYQlnW4EfOyCToYLAG5zeV+AjepMoX6J9bUz
+yj4BlDtwH4HFjaRIlPPbdLshUA54/tV84x8woATuLGBq+hTZEpkZAgMBAAGjggHdMIIB2TAOBgNV
+HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
+Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
+KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
+Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
+dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
+OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
+MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
+BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKb+3b9pz8zo
+0QsCHGb/p0UrBlU+MA0GCSqGSIb3DQEBCwUAA4IBAQCHisuRNqP0NfYfG3U3XF+bocf//aGLOCGj
+NvbnSbaUDT/ZkRFb9dQfDRVnZUJ7eDZWHfC+kukEzFwiSK1irDPZQAG9diwy4p9dM0xw5RXSAC1w
+FzQ0ClJvhK8PsjXF2yzITFmZsEhYEToTn2owD613HvBNijAnDDLV8D0K5gtDnVqkVB9TUAGjHsmo
+aAwIDFKdqL0O19Kui0WI1qNsu1tE2wAZk0XE9FG0OKyY2a2oFwJ85c5IO0q53U7+YePIwv4/J5aP
+OGM6lFPJCVnfKc3H76g/FyPyaE4AL/hfdNP8ObvCB6N/BVCccjNdglRsL2ewttAG3GM06LkvrLhv
+UCvjMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
+YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMMSnY
+h9J/RI6gsHbuMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCAwCLuTWPDd6sJ1aedc
+3QzshqKorWL5BuFxaC4OsLLOHDAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0yMjAxMDYxMjM3MjFaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
+AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
+BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAAXVT2jdlmW5hTCUkLIwngMADNcY8TQ11Gw5f
+54RhV1LapqTigM4h+HZFZ8EDRyjUhIgMKnEQw8BH1m24dj3mGyhXZNHSIU//h3QBtbbyvAUFrq7m
+E7q9QsWH0iRYHwy3B6tp1c25uODSzM5vI/gm7I0ofhZFUV70UK4cyg4T9QgkVWYiD9cw4tNutUiB
+D1wcAwKsE4hb7dlxh4dcX1CY1LXqmXqTjkMqQ5m7Iov8vykJ2EXbE43OsVtnT/XA3ueCAthVrtsz
++s2Z+cFZcEJ0lWbvlltUBIBIlfCOffnC10UqFvFfmm7atHeEVTLIcQ3pzh5yI6YqRvTvCZvuitMb
+Vg==
+--000000000000bb820e05d4e92178--
