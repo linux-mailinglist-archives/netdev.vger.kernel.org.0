@@ -2,100 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C64814861CB
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 10:04:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 446404861E6
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 10:14:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237145AbiAFJEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 04:04:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236715AbiAFJEL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 04:04:11 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FFAC061245;
-        Thu,  6 Jan 2022 01:04:11 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id c2so2009019pfc.1;
-        Thu, 06 Jan 2022 01:04:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xSSoYa3Oh5uJWtwI1Z8ymCv2YQrKvjhDxgIsNPINZuE=;
-        b=oO7ezoyhjSV72us8z/bLxc1YLcDYAIyMpQqn6lC4mSQkqfJFDDFg7SopCSCWAHcW0z
-         m9DS0HZ38CsiHLP5vXaZrBpCpdTdU3l1qYkJFIxXHIMDAA453jB3HL3brHJGHdJ+suiT
-         Wv+uOQC9oBIclXDSXiDAOvAMQAPKSlOYyTRrHofEXkoqTT63EPRinBnY6NPLNYDWhTau
-         DQiA0vepc214e1BnzbfNPdeTTfhLvWsd9mxv/8smhX+Zl3axUFlMr47p3TR1UH+rfBIL
-         fkOC9HdcxoxaAixj8TSIe/OCYxg9sZ2RyDbYdBzwMNJ0c1XdPBJuUM8ZZcZ5b3Fnnof9
-         iitQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xSSoYa3Oh5uJWtwI1Z8ymCv2YQrKvjhDxgIsNPINZuE=;
-        b=BmTEqXE5mkTAoJPq6c4VP3LT8hUweM+03wzA9hbovbp8kx5KtWTdBbGSrhHUyZ+wav
-         05/5+260K2Sh813Mq2BdG8tmenPt5CkFQtsB7+n4WgeQk9lxreN9DDVLh1YQF1pe2zl1
-         4VD4566QmDIydNXszpYLSCR1ahPZFVYzcxwnpBOZ/cjJmbvZ3ppOFihmCV+OBxmKvIH2
-         i2a/458G7Zep23aSpDu3Ghehu22NhmUfNolVYIQFy6UEjA/qmBKn3fltZzILucvwMz2U
-         wpj4pXKmJ28xRC0+2EoJJybuqD7/w0cM335+1yhNKnbyP33jWUsmYiY/lQDiCRSCXoGs
-         WAbg==
-X-Gm-Message-State: AOAM532u8y+6TZ6dawmJ6ffLgipD+0nozGQKYRBuzFQcIsa58e1b3vVX
-        moH45dMXOnfXbqnk3cCsovZPmqnd7LQ=
-X-Google-Smtp-Source: ABdhPJyP2x8XCIgRK0rHBg0d8z1S+0k0lUMQfGBmrTLq3LZnKv8ER61R9/iHsXj6WOO3sKqoJsU5FA==
-X-Received: by 2002:a63:381d:: with SMTP id f29mr52599558pga.162.1641459850913;
-        Thu, 06 Jan 2022 01:04:10 -0800 (PST)
-Received: from localhost ([103.4.221.252])
-        by smtp.gmail.com with ESMTPSA id j1sm1759183pfc.49.2022.01.06.01.04.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 01:04:10 -0800 (PST)
-Date:   Thu, 6 Jan 2022 14:34:00 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH bpf-next v6 11/11] selftests/bpf: Add test for race in
- btf_try_get_module
-Message-ID: <20220106090400.6p34bempgv2wzocj@apollo.legion>
-References: <20220102162115.1506833-1-memxor@gmail.com>
- <20220102162115.1506833-12-memxor@gmail.com>
- <20220105062033.lufu57xhpyou3sie@ast-mbp.dhcp.thefacebook.com>
+        id S237277AbiAFJOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 04:14:05 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:37782 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237223AbiAFJOA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jan 2022 04:14:00 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id EBD0F20656;
+        Thu,  6 Jan 2022 10:13:58 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id QdJ3NZVAt1pv; Thu,  6 Jan 2022 10:13:58 +0100 (CET)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id DEB972065A;
+        Thu,  6 Jan 2022 10:13:57 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id D041480004A;
+        Thu,  6 Jan 2022 10:13:57 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 6 Jan 2022 10:13:57 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Thu, 6 Jan
+ 2022 10:13:57 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 5D4333182F75; Thu,  6 Jan 2022 10:13:54 +0100 (CET)
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        <netdev@vger.kernel.org>
+Subject: pull request (net-next): ipsec-next 2022-01-06
+Date:   Thu, 6 Jan 2022 10:13:43 +0100
+Message-ID: <20220106091350.3038869-1-steffen.klassert@secunet.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220105062033.lufu57xhpyou3sie@ast-mbp.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 11:50:33AM IST, Alexei Starovoitov wrote:
-> On Sun, Jan 02, 2022 at 09:51:15PM +0530, Kumar Kartikeya Dwivedi wrote:
-> > This adds a complete test case to ensure we never take references to
-> > modules not in MODULE_STATE_LIVE, which can lead to UAF, and it also
-> > ensures we never access btf->kfunc_set_tab in an inconsistent state.
-> >
-> > The test uses userfaultfd to artifically widen the race.
->
-> Fancy!
-> Does it have to use a different module?
-> Can it be part of bpf_testmod somehow?
+1) Fix some clang_analyzer warnings about never read variables.
+   From luo penghao.
 
-I was thinking of doing it with bpf_testmod, but then I realised it would be a
-problem with parallel mode of test_progs, where another selftest in parallel may
-rely on bpf_testmod (which this test would unload, load and make it fault, and
-then fail the load before restoring it by loading again), so I went with
-bpf_testmod.
+2) Check for pols[0] only once in xfrm_expand_policies().
+   From Jean Sacren.
 
-Maybe we can hardcode a list of tests to be executed serially in --workers=n > 1
-mode? All serial tests are then executed in the beginning (or end), and then it
-starts invoking others in parallel as usual.
+3) The SA curlft.use_time was updated only on SA cration time.
+   Update whenever the SA is used. From Antony Antony
 
---
-Kartikeya
+4) Add support for SM3 secure hash.
+   From Xu Jia.
+
+5) Add support for SM4 symmetric cipher algorithm.
+   From Xu Jia.
+
+6) Add a rate limit for SA mapping change messages.
+   From Antony Antony.
+
+Please pull or let me know if there are problems.
+
+Thanks!
+
+The following changes since commit bb8cecf8ba127abca8ccd102207a59c55fdae515:
+
+  Merge branch 'lan78xx-napi' (2021-11-18 12:11:51 +0000)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git master
+
+for you to fetch changes up to 4e484b3e969b52effd95c17f7a86f39208b2ccf4:
+
+  xfrm: rate limit SA mapping change message to user space (2021-12-23 09:32:51 +0100)
+
+----------------------------------------------------------------
+Antony Antony (2):
+      xfrm: update SA curlft.use_time
+      xfrm: rate limit SA mapping change message to user space
+
+Jean Sacren (1):
+      net: xfrm: drop check of pols[0] for the second time
+
+Xu Jia (2):
+      xfrm: Add support for SM3 secure hash
+      xfrm: Add support for SM4 symmetric cipher algorithm
+
+luo penghao (2):
+      ipv6/esp6: Remove structure variables and alignment statements
+      xfrm: Remove duplicate assignment
+
+ include/net/xfrm.h           |  5 +++++
+ include/uapi/linux/pfkeyv2.h |  2 ++
+ include/uapi/linux/xfrm.h    |  1 +
+ net/ipv6/esp6.c              |  3 +--
+ net/xfrm/xfrm_algo.c         | 41 +++++++++++++++++++++++++++++++++++++++++
+ net/xfrm/xfrm_compat.c       |  6 ++++--
+ net/xfrm/xfrm_input.c        |  1 +
+ net/xfrm/xfrm_output.c       |  1 +
+ net/xfrm/xfrm_policy.c       |  3 +--
+ net/xfrm/xfrm_state.c        | 23 ++++++++++++++++++++++-
+ net/xfrm/xfrm_user.c         | 18 +++++++++++++++++-
+ 11 files changed, 96 insertions(+), 8 deletions(-)
