@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A4ED486179
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 09:31:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6942B486189
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 09:41:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236719AbiAFIbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 03:31:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53304 "EHLO
+        id S236809AbiAFIlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 03:41:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33723 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236650AbiAFIbp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 03:31:45 -0500
+        by vger.kernel.org with ESMTP id S236797AbiAFIlw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 03:41:52 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641457905;
+        s=mimecast20190719; t=1641458512;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=iD73kWNijA1U4uWtuCWW0P+JxmH4hSDMGlp1iBsoK5c=;
-        b=eSjxYFkUVWVjwqzsAmnBuVW8yG1e0f75R70ckuGbXSfMlnHt7z8DszRN5ODwEksrpKzScS
-        BBeweHsQnZtxnbNFkqQSePEClTHGT03IyCxJC72vLk04M7QEIjwrTWoroXXad3/a7Ah+0U
-        gaZUQyCK3gZuagAq2quGcZ8eowU/cpM=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=B6cO0By3xfU7a9n6TEUm5Q0O0rT0zqzS45h4TsZ5dLM=;
+        b=eGh3+HazMdTZzfvpaiaqNp/lTOF4rlFQqkLabXopJdMAEiSqtnTat68UL0Yhl6RtpTX0qJ
+        QQcxOLM16rfjcd0xc8+NE76OIK9KJ4oUtYx5kOeg+7zjck+19Pm1Tdzw5JXxGBRcF8DVYI
+        tJzgS/ggf42mWu+8lNyXklQUN97WLis=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-218-jMwWhDbZPMKtwJgIojRVGw-1; Thu, 06 Jan 2022 03:31:44 -0500
-X-MC-Unique: jMwWhDbZPMKtwJgIojRVGw-1
-Received: by mail-wm1-f71.google.com with SMTP id a68-20020a1c9847000000b00346939a2d7cso680736wme.1
-        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 00:31:43 -0800 (PST)
+ us-mta-111-RQIB2AH1N3OkXK1UF-SQWA-1; Thu, 06 Jan 2022 03:41:50 -0500
+X-MC-Unique: RQIB2AH1N3OkXK1UF-SQWA-1
+Received: by mail-ed1-f72.google.com with SMTP id b8-20020a056402350800b003f8f42a883dso1406723edd.16
+        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 00:41:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=iD73kWNijA1U4uWtuCWW0P+JxmH4hSDMGlp1iBsoK5c=;
-        b=n8i4+/GLKzYnIqi3qtMVt02lfr+k2K+4RXCpoDBvgr0inpPha7GiJhi/IfIucfS0AX
-         ucefmLEGzYuVEcZoAoGXOKnDbIzYJ497WqfjwfZnW2syg9W4dsXW9hEyB+RR/yHZ6h2S
-         7iW6iyIIUJwIg7GAUehJCPkoG79kdgzR/BMe1uaWrrQZdX0Mc9zck/YBeCEed8KqmCZA
-         CE+xYY4fbqUmbxoHz9VZ8I4aQIUChIg6KUtS6/JYVO75kwUNPhsKW/FdbcZ13ABPjWI9
-         dehWlStcl5bCqAP106vJRotWPuDKCys3q/L2rn+f0ylScMiXYf7FrLe61moMHqHU6pnq
-         aN5Q==
-X-Gm-Message-State: AOAM5328gdkqttfluc0y7QHvtjYDNxp9/ebSrASR7nxErBDxRoyFPtXc
-        vHUX8rsvNlA4uVKheOTZSJyN0qmMsQkzwjWFv0b4+q++LNZwLx1Eve2/x6FgCq/5DA0x4TetWNa
-        vr5zmpm1d3bFawSBU
-X-Received: by 2002:adf:f24e:: with SMTP id b14mr49092642wrp.612.1641457902852;
-        Thu, 06 Jan 2022 00:31:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyenm8i9TvSQ1ak4sztO2YCOXtuNWaef/xxLjvTDwVneO0lGa1kAWmVlbRDNshxtQOXDKlWKg==
-X-Received: by 2002:adf:f24e:: with SMTP id b14mr49092617wrp.612.1641457902678;
-        Thu, 06 Jan 2022 00:31:42 -0800 (PST)
+        bh=B6cO0By3xfU7a9n6TEUm5Q0O0rT0zqzS45h4TsZ5dLM=;
+        b=QEFyFlXfd8R7PNUCBmAIQws2XqrpSVgyLfIM5Q4/9qelsub2ly2NzERHOKJDRPGwT2
+         FuheeaIXGFz1eYvz9MyEM0/u7mczdsqkKi1h0O6YgVTMwxODwJOVSBClFL9Oh87dDD1Z
+         F4SaFqRaPMxqLug+03z4IAEKffnHgMOyTGqPRCo1nSIpczxb0U6RdVlrLCDhw0QbilNh
+         hgzWU+skJwxJamTfgigYvaaINusd0ZOT+Fvnb0tbyoCsCys3Nf4DshJF6viPJnfRftAy
+         nitS90iJD04j16mZMq1wBOTrlhH+/nmlESXG0r6ZtjjJX6g9jZv1lKO5lgR5jtUdzo5o
+         DmzA==
+X-Gm-Message-State: AOAM532t8JgSsK19fKWmMqbpS3ZlQyAPAYcTR7GnYzynINVeB7WYX1or
+        wdhwwV+qPDwkJj0xqHLu/mu0jmYTJ43EcL455txKxJI9d04GOEVXyFkBfZU9RBR9O2l1IoQZihd
+        PD7xhg5q3mO0+dgIb
+X-Received: by 2002:a05:6402:b41:: with SMTP id bx1mr55483122edb.292.1641458509066;
+        Thu, 06 Jan 2022 00:41:49 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyQIYkJhAAbOd6J0hHVNMxZpM46ATJPB6IQAd2TD7n+qeYiIloSdNHNaqNQIwh69l8u33Z77A==
+X-Received: by 2002:a05:6402:b41:: with SMTP id bx1mr55483112edb.292.1641458508882;
+        Thu, 06 Jan 2022 00:41:48 -0800 (PST)
 Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id l6sm1843686wry.18.2022.01.06.00.31.41
+        by smtp.gmail.com with ESMTPSA id q20sm479615edt.13.2022.01.06.00.41.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 00:31:42 -0800 (PST)
-Date:   Thu, 6 Jan 2022 09:31:40 +0100
+        Thu, 06 Jan 2022 00:41:47 -0800 (PST)
+Date:   Thu, 6 Jan 2022 09:41:46 +0100
 From:   Jiri Olsa <jolsa@redhat.com>
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -67,98 +67,97 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
         Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 02/13] kprobe: Keep traced function address
-Message-ID: <Ydao7Cj6EyNtOys6@krava>
+Subject: Re: [PATCH 08/13] bpf: Add kprobe link for attaching raw kprobes
+Message-ID: <YdarSovbcmoY9lI6@krava>
 References: <20220104080943.113249-1-jolsa@kernel.org>
- <20220104080943.113249-3-jolsa@kernel.org>
- <CAEf4BzYMF=zNNF-T3fmpXWx3ozek2nb3ektteBwVE=sjw8BE4g@mail.gmail.com>
+ <20220104080943.113249-9-jolsa@kernel.org>
+ <CAEf4BzZ7s=Pp+2xY3qKX9u6KrPdGW9NNfoiep7nGW+=_s=JJJA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzYMF=zNNF-T3fmpXWx3ozek2nb3ektteBwVE=sjw8BE4g@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ7s=Pp+2xY3qKX9u6KrPdGW9NNfoiep7nGW+=_s=JJJA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 08:30:48PM -0800, Andrii Nakryiko wrote:
+On Wed, Jan 05, 2022 at 08:30:56PM -0800, Andrii Nakryiko wrote:
 > On Tue, Jan 4, 2022 at 12:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
 > >
-> > The bpf_get_func_ip_kprobe helper should return traced function
-> > address, but it's doing so only for kprobes that are placed on
-> > the function entry.
+> > Adding new link type BPF_LINK_TYPE_KPROBE to attach kprobes
+> > directly through register_kprobe/kretprobe API.
 > >
-> > If kprobe is placed within the function, bpf_get_func_ip_kprobe
-> > returns that address instead of function entry.
+> > Adding new attach type BPF_TRACE_RAW_KPROBE that enables
+> > such link for kprobe program.
 > >
-> > Storing the function entry directly in kprobe object, so it could
-> > be used in bpf_get_func_ip_kprobe helper.
+> > The new link allows to create multiple kprobes link by using
+> > new link_create interface:
 > >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  include/linux/kprobes.h                              |  3 +++
-> >  kernel/kprobes.c                                     | 12 ++++++++++++
-> >  kernel/trace/bpf_trace.c                             |  2 +-
-> >  tools/testing/selftests/bpf/progs/get_func_ip_test.c |  4 ++--
-> >  4 files changed, 18 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/include/linux/kprobes.h b/include/linux/kprobes.h
-> > index 8c8f7a4d93af..a204df4fef96 100644
-> > --- a/include/linux/kprobes.h
-> > +++ b/include/linux/kprobes.h
-> > @@ -74,6 +74,9 @@ struct kprobe {
-> >         /* Offset into the symbol */
-> >         unsigned int offset;
-> >
-> > +       /* traced function address */
-> > +       unsigned long func_addr;
-> > +
+> >   struct {
+> >     __aligned_u64   addrs;
+> >     __u32           cnt;
+> >     __u64           bpf_cookie;
 > 
-> keep in mind that we'll also need (maybe in a follow up series) to
-> store bpf_cookie somewhere close to this func_addr as well. Just
-> mentioning to keep in mind as you decide with Masami where to put it.
+> I'm afraid bpf_cookie has to be different for each addr, otherwise
+> it's severely limiting. So it would be an array of cookies alongside
+> an array of addresses
 
 ok
 
-SNIP
-
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index 21aa30644219..25631253084a 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -1026,7 +1026,7 @@ BPF_CALL_1(bpf_get_func_ip_kprobe, struct pt_regs *, regs)
-> >  {
-> >         struct kprobe *kp = kprobe_running();
-> >
-> > -       return kp ? (uintptr_t)kp->addr : 0;
-> > +       return kp ? (uintptr_t)kp->func_addr : 0;
-> >  }
-> >
-> >  static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
-> > diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-> > index a587aeca5ae0..e988aefa567e 100644
-> > --- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-> > +++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-> > @@ -69,7 +69,7 @@ int test6(struct pt_regs *ctx)
-> >  {
-> >         __u64 addr = bpf_get_func_ip(ctx);
-> >
-> > -       test6_result = (const void *) addr == &bpf_fentry_test6 + 5;
-> > +       test6_result = (const void *) addr == &bpf_fentry_test6;
-> >         return 0;
-> >  }
-> >
-> > @@ -79,6 +79,6 @@ int test7(struct pt_regs *ctx)
-> >  {
-> >         __u64 addr = bpf_get_func_ip(ctx);
-> >
-> > -       test7_result = (const void *) addr == &bpf_fentry_test7 + 5;
-> > +       test7_result = (const void *) addr == &bpf_fentry_test7;
 > 
-> we can treat this as a bug fix for bpf_get_func_ip() for kprobes,
-> right? I think "Fixes: " tag is in order then.
+> >   } kprobe;
+> >
+> > Plus new flag BPF_F_KPROBE_RETURN for link_create.flags to
+> > create return probe.
+> >
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  include/linux/bpf_types.h      |   1 +
+> >  include/uapi/linux/bpf.h       |  12 +++
+> >  kernel/bpf/syscall.c           | 191 ++++++++++++++++++++++++++++++++-
+> >  tools/include/uapi/linux/bpf.h |  12 +++
+> >  4 files changed, 211 insertions(+), 5 deletions(-)
+> >
+> 
+> [...]
+> 
+> > @@ -1111,6 +1113,11 @@ enum bpf_link_type {
+> >   */
+> >  #define BPF_F_SLEEPABLE                (1U << 4)
+> >
+> > +/* link_create flags used in LINK_CREATE command for BPF_TRACE_RAW_KPROBE
+> > + * attach type.
+> > + */
+> > +#define BPF_F_KPROBE_RETURN    (1U << 0)
+> > +
+> 
+> we have plenty of flexibility to have per-link type fields, so why not
+> add `bool is_retprobe` next to addrs and cnt?
 
-true, will add that in next version
+well I thought if I do that, people would suggest to use the empty
+flags field instead ;-) 
 
-thanks,
+we can move it there as you suggest, but I wonder it's good idea to
+use bool in uapi headers, because the bool size definition is vague
+
 jirka
+
+> 
+> >  /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
+> >   * the following extensions:
+> >   *
+> > @@ -1465,6 +1472,11 @@ union bpf_attr {
+> >                                  */
+> >                                 __u64           bpf_cookie;
+> >                         } perf_event;
+> > +                       struct {
+> > +                               __aligned_u64   addrs;
+> > +                               __u32           cnt;
+> > +                               __u64           bpf_cookie;
+> > +                       } kprobe;
+> >                 };
+> >         } link_create;
+> >
+> 
+> [...]
+> 
 
