@@ -2,93 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49396486448
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 990AA486450
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:24:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238769AbiAFMUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 07:20:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238778AbiAFMUR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:20:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4167DC0611FD
-        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 04:20:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F099EB820D4
-        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 12:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AD062C36AE5;
-        Thu,  6 Jan 2022 12:20:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641471614;
-        bh=X5IwBfEHtRNLG1mOK8wiC6QDJhFq3Ime29vv/RhyuhY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GOWY51mlzK5whxoLVYmccoxYG7KrS5cMeyBhmtWf9ZvN3hChzWETIxM+krJamGjg+
-         Ww2r5j3t0BLwn7EXRwxL+UITpzxAEsOZ7Y7qfbyNJZDjrnU9+MzVPVJ3hRmON10Ned
-         /i3TGKgW+TyLH+rvBYS6Zi/G6aysUkRuTj1JXgsO7VBK2abW8LRUS8zHyX41/M9Mg7
-         Hoi8BNUK+Qvi/NA/PvcG2lTbsLpn5ld0ZjYNtNXltcMHMYXuaam9KbKRWykYDi3lR0
-         pmSK0j4X5o/2b1eAwQrecqHk9v4FlHHbOXDP5NYcGYrd90DcwCA4rHTv5sYdIUFyWK
-         twhQzp8LLsAHA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9B479F79403;
-        Thu,  6 Jan 2022 12:20:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S238766AbiAFMYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 07:24:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:45686 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238475AbiAFMYx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:24:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641471893;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0uPOPPljcCRT5JnCSjBYTsAZ9QvLUTF6yXLYqezm/jk=;
+        b=TRiXqEUxE7KuA99lKmqzrqDNxkNScZCWtrXHJ5qdEN3IgQU2/Z+45eaRWHxwO0FRXamXEj
+        PJEDiNefTlhZ8x5WRkGSg6x0K8iZEBj287/POrc1Rp1+pnD8MO8YSiVLUgkGH2eNeoMF0F
+        dBeTdhs5r+ovRH6e3Pg47cESHf7UNKU=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-675-v2pzn08sNQqGuq2MZL-NFw-1; Thu, 06 Jan 2022 07:24:52 -0500
+X-MC-Unique: v2pzn08sNQqGuq2MZL-NFw-1
+Received: by mail-wr1-f72.google.com with SMTP id h12-20020adfa4cc000000b001a22dceda69so1177851wrb.16
+        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 04:24:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0uPOPPljcCRT5JnCSjBYTsAZ9QvLUTF6yXLYqezm/jk=;
+        b=KrXSyspAWryQI9E7HN99KKbS88kDp5bDZ7J9YcjvmscRbgnCQG2Gho5iaxOxLRNAgJ
+         3OWCZiUoZsNj/HtMVok1VyRfOzJpMSbwzokB0y+BlI8bNTFrSMconKocjFtyLVYDblkn
+         mzW0mptGNotTm0qVh23cku70CZnrm0jJMdipETToJx5PEjK9O/ruPmAyI7OtWBvoURYl
+         IzC/fhFNhc8dPJiePLBWeu8zc1cOV+ZgOFgNM96j2J2mnWkFeJ0/3gkdu4uyeM4oFp+8
+         54KK8+AsW8PAeQbHvr0vGcTIT2ORXVrhUgA4uPKtZrUP8sfpevByju/8hYXkhIANrz3/
+         f2Ww==
+X-Gm-Message-State: AOAM532eJHSSg66z+812s1WCB16E4OAnztbjTwT5Tm9t+xmm3Ey2yG46
+        L6drgxN0Pg7DlCXEWq/JepAuTIyjfqEODk3l9DxyDXoAI2zXP9w/WFtpN3YKmqhyLnKpQonFLCZ
+        C7ynGrG9kCEMUD5VT
+X-Received: by 2002:adf:f904:: with SMTP id b4mr31756835wrr.457.1641471890970;
+        Thu, 06 Jan 2022 04:24:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxcnYl5f7mjbdHhw5BDaaDbej/KBrzommpeO6kEVNqKU1TlflODCHM/SPqrxpiLKr97ZxWBog==
+X-Received: by 2002:adf:f904:: with SMTP id b4mr31756826wrr.457.1641471890799;
+        Thu, 06 Jan 2022 04:24:50 -0800 (PST)
+Received: from redhat.com ([2a03:c5c0:207e:991b:6857:5652:b903:a63b])
+        by smtp.gmail.com with ESMTPSA id l8sm1945393wrv.25.2022.01.06.04.24.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 04:24:49 -0800 (PST)
+Date:   Thu, 6 Jan 2022 07:24:47 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Cai Huoqing <caihuoqing@baidu.com>
+Cc:     jasowang@redhat.com, leon@kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2] vhost: add vhost_test to Kconfig & Makefile
+Message-ID: <20220106072352-mutt-send-email-mst@kernel.org>
+References: <20210617033844.1107-1-caihuoqing@baidu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next 0/6] DSA initialization cleanups
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164147161463.27983.13271917543011470048.git-patchwork-notify@kernel.org>
-Date:   Thu, 06 Jan 2022 12:20:14 +0000
-References: <20220105231117.3219039-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220105231117.3219039-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210617033844.1107-1-caihuoqing@baidu.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu,  6 Jan 2022 01:11:11 +0200 you wrote:
-> These patches contain miscellaneous work that makes the DSA init code
-> path symmetric with the teardown path, and some additional patches
-> carried by Ansuel Smith for his register access over Ethernet work, but
-> those patches can be applied as-is too.
-> https://patchwork.kernel.org/project/netdevbpf/patch/20211214224409.5770-3-ansuelsmth@gmail.com/
+On Thu, Jun 17, 2021 at 11:38:44AM +0800, Cai Huoqing wrote:
+> When running vhost test, make it easier to config
 > 
-> Vladimir Oltean (6):
->   net: dsa: reorder PHY initialization with MTU setup in slave.c
->   net: dsa: merge rtnl_lock sections in dsa_slave_create
->   net: dsa: stop updating master MTU from master.c
->   net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
->   net: dsa: first set up shared ports, then non-shared ports
->   net: dsa: setup master before ports
+> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+
+I'd stick this under Kernel Testing and Coverage or something like this.
+The point being we don't want this in release kernels by mistake.
+
+> ---
+>  drivers/vhost/Kconfig  | 11 +++++++++++
+>  drivers/vhost/Makefile |  3 +++
+>  2 files changed, 14 insertions(+)
 > 
-> [...]
-
-Here is the summary with links:
-  - [v2,net-next,1/6] net: dsa: reorder PHY initialization with MTU setup in slave.c
-    https://git.kernel.org/netdev/net-next/c/904e112ad431
-  - [v2,net-next,2/6] net: dsa: merge rtnl_lock sections in dsa_slave_create
-    https://git.kernel.org/netdev/net-next/c/e31dbd3b6aba
-  - [v2,net-next,3/6] net: dsa: stop updating master MTU from master.c
-    https://git.kernel.org/netdev/net-next/c/a1ff94c2973c
-  - [v2,net-next,4/6] net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
-    https://git.kernel.org/netdev/net-next/c/c146f9bc195a
-  - [v2,net-next,5/6] net: dsa: first set up shared ports, then non-shared ports
-    https://git.kernel.org/netdev/net-next/c/1e3f407f3cac
-  - [v2,net-next,6/6] net: dsa: setup master before ports
-    https://git.kernel.org/netdev/net-next/c/11fd667dac31
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
+> index 587fbae06182..ac2bffd6a501 100644
+> --- a/drivers/vhost/Kconfig
+> +++ b/drivers/vhost/Kconfig
+> @@ -61,6 +61,17 @@ config VHOST_VSOCK
+>         To compile this driver as a module, choose M here: the module will be called
+>         vhost_vsock.
+>  
+> +config VHOST_TEST
+> +       tristate "vhost virtio-test driver"
+> +       depends on EVENTFD
+> +       select VHOST
+> +       help
+> +       This kernel module can be loaded in the host kernel to test vhost function
+> +       with tools/virtio-test.
+> +
+> +       To compile this driver as a module, choose M here: the module will be called
+> +       vhost_test.
+> +
+>  config VHOST_VDPA
+>         tristate "Vhost driver for vDPA-based backend"
+>         depends on EVENTFD
+> diff --git a/drivers/vhost/Makefile b/drivers/vhost/Makefile
+> index f3e1897cce85..cf31c1f2652d 100644
+> --- a/drivers/vhost/Makefile
+> +++ b/drivers/vhost/Makefile
+> @@ -8,6 +8,9 @@ vhost_scsi-y := scsi.o
+>  obj-$(CONFIG_VHOST_VSOCK) += vhost_vsock.o
+>  vhost_vsock-y := vsock.o
+>  
+> +obj-$(CONFIG_VHOST_TEST) += vhost_test.o
+> +vhost_test-y := test.o
+> +
+>  obj-$(CONFIG_VHOST_RING) += vringh.o
+>  
+>  obj-$(CONFIG_VHOST_VDPA) += vhost_vdpa.o
+> -- 
+> 2.22.0
 
