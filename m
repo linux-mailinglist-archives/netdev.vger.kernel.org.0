@@ -2,162 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6942B486189
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 09:41:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4346F486199
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 09:45:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236809AbiAFIlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 03:41:53 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33723 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236797AbiAFIlw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 03:41:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641458512;
+        id S236972AbiAFIo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 03:44:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36162 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236971AbiAFIoz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 03:44:55 -0500
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E089C061245;
+        Thu,  6 Jan 2022 00:44:55 -0800 (PST)
+Received: from [IPV6:2003:e9:d722:f53c:f580:a16d:51ed:dc62] (p200300e9d722f53cf580a16d51eddc62.dip0.t-ipconnect.de [IPv6:2003:e9:d722:f53c:f580:a16d:51ed:dc62])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id C8315C027C;
+        Thu,  6 Jan 2022 09:44:51 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1641458692;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=B6cO0By3xfU7a9n6TEUm5Q0O0rT0zqzS45h4TsZ5dLM=;
-        b=eGh3+HazMdTZzfvpaiaqNp/lTOF4rlFQqkLabXopJdMAEiSqtnTat68UL0Yhl6RtpTX0qJ
-        QQcxOLM16rfjcd0xc8+NE76OIK9KJ4oUtYx5kOeg+7zjck+19Pm1Tdzw5JXxGBRcF8DVYI
-        tJzgS/ggf42mWu+8lNyXklQUN97WLis=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-111-RQIB2AH1N3OkXK1UF-SQWA-1; Thu, 06 Jan 2022 03:41:50 -0500
-X-MC-Unique: RQIB2AH1N3OkXK1UF-SQWA-1
-Received: by mail-ed1-f72.google.com with SMTP id b8-20020a056402350800b003f8f42a883dso1406723edd.16
-        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 00:41:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=B6cO0By3xfU7a9n6TEUm5Q0O0rT0zqzS45h4TsZ5dLM=;
-        b=QEFyFlXfd8R7PNUCBmAIQws2XqrpSVgyLfIM5Q4/9qelsub2ly2NzERHOKJDRPGwT2
-         FuheeaIXGFz1eYvz9MyEM0/u7mczdsqkKi1h0O6YgVTMwxODwJOVSBClFL9Oh87dDD1Z
-         F4SaFqRaPMxqLug+03z4IAEKffnHgMOyTGqPRCo1nSIpczxb0U6RdVlrLCDhw0QbilNh
-         hgzWU+skJwxJamTfgigYvaaINusd0ZOT+Fvnb0tbyoCsCys3Nf4DshJF6viPJnfRftAy
-         nitS90iJD04j16mZMq1wBOTrlhH+/nmlESXG0r6ZtjjJX6g9jZv1lKO5lgR5jtUdzo5o
-         DmzA==
-X-Gm-Message-State: AOAM532t8JgSsK19fKWmMqbpS3ZlQyAPAYcTR7GnYzynINVeB7WYX1or
-        wdhwwV+qPDwkJj0xqHLu/mu0jmYTJ43EcL455txKxJI9d04GOEVXyFkBfZU9RBR9O2l1IoQZihd
-        PD7xhg5q3mO0+dgIb
-X-Received: by 2002:a05:6402:b41:: with SMTP id bx1mr55483122edb.292.1641458509066;
-        Thu, 06 Jan 2022 00:41:49 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyQIYkJhAAbOd6J0hHVNMxZpM46ATJPB6IQAd2TD7n+qeYiIloSdNHNaqNQIwh69l8u33Z77A==
-X-Received: by 2002:a05:6402:b41:: with SMTP id bx1mr55483112edb.292.1641458508882;
-        Thu, 06 Jan 2022 00:41:48 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id q20sm479615edt.13.2022.01.06.00.41.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 00:41:47 -0800 (PST)
-Date:   Thu, 6 Jan 2022 09:41:46 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 08/13] bpf: Add kprobe link for attaching raw kprobes
-Message-ID: <YdarSovbcmoY9lI6@krava>
-References: <20220104080943.113249-1-jolsa@kernel.org>
- <20220104080943.113249-9-jolsa@kernel.org>
- <CAEf4BzZ7s=Pp+2xY3qKX9u6KrPdGW9NNfoiep7nGW+=_s=JJJA@mail.gmail.com>
+        bh=dtAOofmNB1Y9PmgLPQC/2A+pt6Ehh+W5o51Vearo0Ag=;
+        b=bR6ffJvzaWFaP2zfwXOpfTUNQUKrhopuxiSdawya1k4UJjzEZcJrnyhQo0K2FMNzEeWgOR
+        gOwjezjDtaNT5Snz1oxM99gug/htxWtmkVZAUL6Gya1S6xqLKB9Gjg0oXvvVgij+0dCk5C
+        05k0tpKws51knHkhYFywe3kUBstQBy/C547cgNOpyI8VFhCjzsLAeWnTPOG3wKypik93bU
+        iNHZgnF0KnN2pjNqU1hZmYbYITyDf6fTAG/R2RpcNl5p0beaLyMA66IdjTu/mQeBRyM7l2
+        0eri/NfYvsZe/32CyEzG0oqCcYk4Z7Ygc2slgmd1u++TRlebUhprio8Afy0XeA==
+Message-ID: <57f0e761-db5a-86f6-ab27-c0943d3e7805@datenfreihafen.org>
+Date:   Thu, 6 Jan 2022 09:44:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZ7s=Pp+2xY3qKX9u6KrPdGW9NNfoiep7nGW+=_s=JJJA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.0
+Subject: Re: [net-next 12/18] net: mac802154: Handle scan requests
+Content-Language: en-US
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Nicolas Schodet <nico@ni.fr.eu.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel list <linux-kernel@vger.kernel.org>
+References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
+ <20211222155743.256280-13-miquel.raynal@bootlin.com>
+ <CAB_54W6AZ+LGTcFsQjNx7uq=+R5v_kdF0Xm5kwWQ8ONtfOrmAw@mail.gmail.com>
+ <Ycx0mwQcFsmVqWVH@ni.fr.eu.org>
+ <CAB_54W41ZEoXzoD2_wadfMTY8anv9D9e2T5wRckdXjs7jKTTCA@mail.gmail.com>
+ <CAB_54W6gHE1S9Q+-SVbrnAWPxBxnvf54XVTCmddtj8g-bZzMRA@mail.gmail.com>
+ <20220104191802.2323e44a@xps13>
+ <CAB_54W5quZz8rVrbdx+cotTRZZpJ4ouRDZkxeW6S1L775Si=cw@mail.gmail.com>
+ <20220105215551.1693eba4@xps13>
+ <CAB_54W7zDXfybMZZo8QPwRCxX8-BbkQdznwEkLEWeW+E3k2dNg@mail.gmail.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <CAB_54W7zDXfybMZZo8QPwRCxX8-BbkQdznwEkLEWeW+E3k2dNg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 08:30:56PM -0800, Andrii Nakryiko wrote:
-> On Tue, Jan 4, 2022 at 12:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > Adding new link type BPF_LINK_TYPE_KPROBE to attach kprobes
-> > directly through register_kprobe/kretprobe API.
-> >
-> > Adding new attach type BPF_TRACE_RAW_KPROBE that enables
-> > such link for kprobe program.
-> >
-> > The new link allows to create multiple kprobes link by using
-> > new link_create interface:
-> >
-> >   struct {
-> >     __aligned_u64   addrs;
-> >     __u32           cnt;
-> >     __u64           bpf_cookie;
-> 
-> I'm afraid bpf_cookie has to be different for each addr, otherwise
-> it's severely limiting. So it would be an array of cookies alongside
-> an array of addresses
+Hello.
 
-ok
+On 06.01.22 01:38, Alexander Aring wrote:
+> Hi,
+> 
+> 
+> On Wed, 5 Jan 2022 at 15:55, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> ...
 
+>> Also, just for the record,
+>> - should I keep copying the netdev list for v2?
 > 
-> >   } kprobe;
-> >
-> > Plus new flag BPF_F_KPROBE_RETURN for link_create.flags to
-> > create return probe.
-> >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  include/linux/bpf_types.h      |   1 +
-> >  include/uapi/linux/bpf.h       |  12 +++
-> >  kernel/bpf/syscall.c           | 191 ++++++++++++++++++++++++++++++++-
-> >  tools/include/uapi/linux/bpf.h |  12 +++
-> >  4 files changed, 211 insertions(+), 5 deletions(-)
-> >
-> 
-> [...]
-> 
-> > @@ -1111,6 +1113,11 @@ enum bpf_link_type {
-> >   */
-> >  #define BPF_F_SLEEPABLE                (1U << 4)
-> >
-> > +/* link_create flags used in LINK_CREATE command for BPF_TRACE_RAW_KPROBE
-> > + * attach type.
-> > + */
-> > +#define BPF_F_KPROBE_RETURN    (1U << 0)
-> > +
-> 
-> we have plenty of flexibility to have per-link type fields, so why not
-> add `bool is_retprobe` next to addrs and cnt?
+> yes, why not.
 
-well I thought if I do that, people would suggest to use the empty
-flags field instead ;-) 
-
-we can move it there as you suggest, but I wonder it's good idea to
-use bool in uapi headers, because the bool size definition is vague
-
-jirka
-
+>> - should I monitor if net-next is open before sending or do you have
+>>    your own set of rules?
+>>
 > 
-> >  /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
-> >   * the following extensions:
-> >   *
-> > @@ -1465,6 +1472,11 @@ union bpf_attr {
-> >                                  */
-> >                                 __u64           bpf_cookie;
-> >                         } perf_event;
-> > +                       struct {
-> > +                               __aligned_u64   addrs;
-> > +                               __u32           cnt;
-> > +                               __u64           bpf_cookie;
-> > +                       } kprobe;
-> >                 };
-> >         } link_create;
-> >
-> 
-> [...]
-> 
+> I need to admit, Stefan is the "Thanks, applied." hero here and he
+> should answer this question.
 
+No need to monitor if net-next is open for these patches (just don't add 
+a net-next patch subject prefix as this would confuse Jakub and Dave. 
+wpan-next would be more appropriate).
+
+I am following this patchset and the review from Alex. I have not done a 
+full in depth review myself yet, its on my list.
+
+Basically keep working with Alex and use the wpan-next prefix and I will 
+pick up the patches to my wpan-next tree and sent a pull to net-next 
+when we are happy with it. Does that sound good to you?
+
+regards
+Stefan Schmidt
