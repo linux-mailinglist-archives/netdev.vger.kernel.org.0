@@ -2,145 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBDD3486700
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 16:46:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D3648672D
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 16:57:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240687AbiAFPqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 10:46:17 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:39042 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240699AbiAFPqJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 10:46:09 -0500
-X-Greylist: delayed 423 seconds by postgrey-1.27 at vger.kernel.org; Thu, 06 Jan 2022 10:46:08 EST
-Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id CB4122454EA
-        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 15:39:05 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.51.28])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 90E9420074;
-        Thu,  6 Jan 2022 15:39:04 +0000 (UTC)
-Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 43FB03800A0;
-        Thu,  6 Jan 2022 15:39:04 +0000 (UTC)
-Received: from [192.168.1.115] (unknown [98.97.67.209])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S240810AbiAFP5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 10:57:52 -0500
+Received: from gandalf.ozlabs.org ([150.107.74.76]:47589 "EHLO
+        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240549AbiAFP5w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 10:57:52 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 65A9113C2B0;
-        Thu,  6 Jan 2022 07:39:03 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 65A9113C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1641483543;
-        bh=dPYWdrWh3HrHP0PFktguMeHByWr/9i1b+JUMiuF79tc=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=amKNGgcokCmCVg+SevGq46onKeOFZhAdg+S4TuYce0csdPP/3fzsIDP3qIGE1URC4
-         Kv1ayXJPFT3zL3PXHkjD7DEkfQjsEMJYqt5iuo7/82VZ2fVM2JkMRLNMREZOF6ip0V
-         5rIMKewlQQUJ+mZ2oH0UegfbNRjIwVin34BlO7MY=
-Subject: Re: Debugging stuck tcp connection across localhost
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     netdev <netdev@vger.kernel.org>
-References: <38e55776-857d-1b51-3558-d788cf3c1524@candelatech.com>
- <CADVnQyn97m5ybVZ3FdWAw85gOMLAvPSHiR8_NC_nGFyBdRySqQ@mail.gmail.com>
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <b3e53863-e80e-704f-81a2-905f80f3171d@candelatech.com>
-Date:   Thu, 6 Jan 2022 07:39:02 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JV9wt44GWz4xnF;
+        Fri,  7 Jan 2022 02:57:49 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1641484670;
+        bh=ktbP9DuifnC33YkqPBnXVa42B/rSlHhfo8tfS+ObafU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=harcKIMh6F1bS2oj6TBVdexo7cZRYLIskCagb7g6+gRVNfZ9e5B425OuPGaZO6Cu9
+         vyQ9beOAUhWVkw6vhqW2lojGzrFketVgVTbmvphY/HTFFjkDLZeim8sr1KawzNhk2k
+         gD1fGKMKKUJ9Nk+jrFJRSDezcGRlnCQXuF1T7R+0GaRp1DrdWhv/MFhxQOFCymI6a5
+         tH6jUOdK1MkgGp3cT8FAo3/4PCufA0PL7C800JrwSVRa+eHUclN3Soy4T/NfxaUnGS
+         NIwIIu7Wg21N3JIoLpDTsqh0iW1REwjnzel5MF/H5miIGGhUCOmnV5o5wA6MSitENI
+         MNGKZvIzeKz6w==
+Date:   Fri, 7 Jan 2022 02:57:49 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, Shay Drory <shayd@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warning after merge of the net-next tree
+Message-ID: <20220107025749.35eaa2c2@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <CADVnQyn97m5ybVZ3FdWAw85gOMLAvPSHiR8_NC_nGFyBdRySqQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
-X-MDID: 1641483545-HLDTg-RtUUW2
+Content-Type: multipart/signed; boundary="Sig_/ZcDLKJ85=hXNyzMW=iApaUP";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/6/22 7:20 AM, Neal Cardwell wrote:
-> On Thu, Jan 6, 2022 at 10:06 AM Ben Greear <greearb@candelatech.com> wrote:
->>
->> Hello,
->>
->> I'm working on a strange problem, and could use some help if anyone has ideas.
->>
->> On a heavily loaded system (500+ wifi station devices, VRF device per 'real' netdev,
->> traffic generation on the netdevs, etc), I see cases where two processes trying
->> to communicate across localhost with TCP seem to get a stuck network
->> connection:
->>
->> [greearb@bendt7 ben_debug]$ grep 4004 netstat.txt |grep 127.0.0.1
->> tcp        0 7988926 127.0.0.1:4004          127.0.0.1:23184         ESTABLISHED
->> tcp        0  59805 127.0.0.1:23184         127.0.0.1:4004          ESTABLISHED
->>
->> Both processes in question continue to execute, and as far as I can tell, they are properly
->> attempting to read/write the socket, but they are reading/writing 0 bytes (these sockets
->> are non blocking).  If one was stuck not reading, I would expect netstat
->> to show bytes in the rcv buffer, but it is zero as you can see above.
->>
->> Kernel is 5.15.7+ local hacks.  I can only reproduce this in a big messy complicated
->> test case, with my local ath10k-ct and other patches that enable virtual wifi stations,
->> but my code can grab logs at time it sees the problem.  Is there anything
->> more I can do to figure out why the TCP connection appears to be stuck?
-> 
-> It could be very useful to get more information about the state of all
-> the stuck connections (sender and receiver side) with something like:
-> 
->    ss -tinmo 'sport = :4004 or sport = :4004'
-> 
-> I would recommend downloading and building a recent version of the
-> 'ss' tool to maximize the information. Here is a recipe for doing
-> that:
-> 
->   https://github.com/google/bbr/blob/master/Documentation/bbr-faq.md#how-can-i-monitor-linux-tcp-bbr-connections
+--Sig_/ZcDLKJ85=hXNyzMW=iApaUP
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for the suggestions!
+Hi all,
 
-Here is output from a working system of same OS, the hand-compiled ss seems to give similar output,
-do you think it is still worth building ss manually on my system that shows the bugs?
+After merging the net-next tree, today's linux-next build (htmldocs)
+produced this warning:
 
-[root@ct523c-3b29 iproute2]# ss -tinmo 'sport = :4004 or sport = :4004'
-State             Recv-Q             Send-Q                         Local Address:Port                         Peer Address:Port
-ESTAB             0                  0                                  127.0.0.1:4004                            127.0.0.1:40902
-	 skmem:(r0,rb87380,t0,tb2626560,f12288,w0,o0,bl0,d0) ts sack reno wscale:4,10 rto:201 rtt:0.009/0.004 ato:40 mss:65483 pmtu:65535 rcvmss:1196 advmss:65483 
-cwnd:10 bytes_sent:654589126 bytes_acked:654589126 bytes_received:1687846 segs_out:61416 segs_in:72611 data_segs_out:61406 data_segs_in:11890 send 
-582071111111bps lastsnd:163 lastrcv:62910122 lastack:163 pacing_rate 1088548571424bps delivery_rate 261932000000bps delivered:61407 app_limited busy:42494ms 
-rcv_rtt:1 rcv_space:43690 rcv_ssthresh:43690 minrtt:0.002
-[root@ct523c-3b29 iproute2]# ./misc/ss -tinmo 'sport = :4004 or sport = :4004'
-State          Recv-Q          Send-Q                    Local Address:Port                     Peer Address:Port           Process
-ESTAB          0               0                             127.0.0.1:4004                        127.0.0.1:40902
-	 skmem:(r0,rb87380,t0,tb2626560,f0,w0,o0,bl0,d0) ts sack reno wscale:4,10 rto:201 rtt:0.009/0.003 ato:40 mss:65483 pmtu:65535 rcvmss:1196 advmss:65483 cwnd:10 
-bytes_sent:654597556 bytes_acked:654597556 bytes_received:1687846 segs_out:61418 segs_in:72613 data_segs_out:61408 data_segs_in:11890 send 582071111111bps 
-lastsnd:219 lastrcv:62916882 lastack:218 pacing_rate 1088548571424bps delivery_rate 261932000000bps delivered:61409 app_limited busy:42495ms rcv_rtt:1 
-rcv_space:43690 rcv_ssthresh:43690 minrtt:0.002
+Documentation/networking/devlink/mlx5.rst:13: WARNING: Error parsing conten=
+t block for the "list-table" directive: uniform two-level bullet list expec=
+ted, but row 2 does not contain the same number of items as row 1 (2 vs 3).
 
-> 
-> It could also be very useful to collect and share packet traces, as
-> long as taking traces does not consume an infeasible amount of space,
-> or perturb timing in a way that makes the buggy behavior disappear.
-> For example, as root:
-> 
->    tcpdump -w /tmp/trace.pcap -s 120 -c 100000000 -i any port 4004 &
+.. list-table:: Generic parameters implemented
 
-I guess this could be  -i lo ?
+   * - Name
+     - Mode
+     - Validation
+   * - ``enable_roce``
+     - driverinit
+   * - ``io_eq_size``
+     - driverinit
+     - The range is between 64 and 4096.
+   * - ``event_eq_size``
+     - driverinit
+     - The range is between 64 and 4096.
+   * - ``max_macs``
+     - driverinit
+     - The range is between 1 and 2^31. Only power of 2 values are supporte=
+d.
 
-I sometimes see what is likely a similar problem to an external process, but easiest thing to
-reproduce is the localhost stuck connection, and my assumption is that it would be easiest
-to debug.
+Introduced by commit
 
-I should have enough space for captures, I'll give that a try.
+  0844fa5f7b89 ("net/mlx5: Let user configure io_eq_size param")
 
-Thanks,
-Ben
+--=20
+Cheers,
+Stephen Rothwell
 
-> 
-> If space is an issue, you might start taking traces once things get
-> stuck to see what the retry behavior, if any, looks like.
-> 
-> thanks,
-> neal
-> 
+--Sig_/ZcDLKJ85=hXNyzMW=iApaUP
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
 
--- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHXEX0ACgkQAVBC80lX
+0GwTKggAl9FepAt2fg7HzYFpkSOru751SyXVjSr7e3Ztrqa/hw61waw9Hz6Abp41
+i7q9Lkw8997yzGIi4D1q74svTrj5KCHAs3U4XN6+hgctnyGgT6SytQv7trFecYX4
+CsOaVDvfD1IQgogf+811+5BGOGFa/E0UUkugQfYTQEtoEY/nZvzut/PEEf9T/Eks
+1vTaDFZrbOTElhXIJT/SSnZM3fat9YCcGf7j/nfv+4UgLe493AJJhLEpGbd9aCsx
+/9jVGqoW2StO6kq00wflPVsEaCnLNvMBr1QRCju0PZH8017vW5R78ajqpvvpXMT3
+U2EmFyqOpgBghHmaLBiVKuEzYc0vCA==
+=pvtx
+-----END PGP SIGNATURE-----
+
+--Sig_/ZcDLKJ85=hXNyzMW=iApaUP--
