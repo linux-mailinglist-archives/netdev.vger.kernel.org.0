@@ -2,149 +2,445 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AED064865AE
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 14:59:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5061F4865B0
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 14:59:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239519AbiAFN7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 08:59:34 -0500
-Received: from mail-eopbgr40059.outbound.protection.outlook.com ([40.107.4.59]:44357
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S239827AbiAFN73 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jan 2022 08:59:29 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ANVQkb2lloBE6520Nqi/pINV7sEXHT9zxZGAV9bJk7p4sgIYe+4wd8UkKy6Q4dkRumNv1EBeAXbpL7Qk3673jOX90YZe6SNFtqown8EZ6QYJMRrrLkKRyr1DrKuQYhTF/XP7VlD2vi7RDo6+QRGRfSthPMaDC/oCAie14HQBG8q98fBwMuC2z7NZYR6szBZh182l2iuAno9j17v2TyWneNuTBqXZ6RukuDJCz241DWfn2rrUWomMd1Yr4IRj9kzHgE/DQ7IgWRHSvGC60EHg+F1yzS9DCvnwBWEtys9OSXctX/BtEJ0uzCvK0bXNwQUMliyPc5e3qUJcGfpvodFVkA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EiGiVAW69/Ikcw/8llB56jFvShqszmx432n3VhQFM6g=;
- b=Bx/CIXM73qKSlt23t9BmcSn0uAGcduPKNEiCAw9cNrmG/ebp1qjWhrpO38OUjVr996d98UmHISTcgxTV1OevID0vdP5ZDv6kEOk4yStSkJ/JWhiXTdvVG2eRALVZGAUUvWDnc5IbHExq2AkqsfIW0sAhmyIoBTLAdWke7moD4GloyIKd7et9QeYQX4Ud3DVsv/Yb4qE+/j0DTZrtzBEd6yE5WXueUgofK3/bAoRBIozrtHV3BKCFKVy63c2deJdZggapN3cA3yYrXrkqvCTWV8LpwxHtwXdwTn1iScJVIg3lt+DSl7zgJ7v7l+q+xQO6zvZLKop2TIjiYAynh+fgLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EiGiVAW69/Ikcw/8llB56jFvShqszmx432n3VhQFM6g=;
- b=FnI+vt0QBps9AeuZFbB7/bM02awGR5ky0cnjrduSzS0ehzqqiwN5633ijpmg6HUq3rnpE6OrWQPPRB+cVEM3GMpBVTcbRbyQ+xyVsTYYYY0goawMc1N22/ki5pAzTzoDxRUHs7yzAmfkrfVYTtpe26YCTo2uVoLiUOUyfFkYt80=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM9PR04MB8555.eurprd04.prod.outlook.com (2603:10a6:20b:436::16)
- by AS4PR04MB9267.eurprd04.prod.outlook.com (2603:10a6:20b:4e2::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Thu, 6 Jan
- 2022 13:59:26 +0000
-Received: from AM9PR04MB8555.eurprd04.prod.outlook.com
- ([fe80::b5b4:c0ab:e6a:9ed9]) by AM9PR04MB8555.eurprd04.prod.outlook.com
- ([fe80::b5b4:c0ab:e6a:9ed9%3]) with mapi id 15.20.4867.009; Thu, 6 Jan 2022
- 13:59:26 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, robert-ionut.alexa@nxp.com,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 3/3] dpaa2-switch: check if the port priv is valid
-Date:   Thu,  6 Jan 2022 15:59:05 +0200
-Message-Id: <20220106135905.81923-4-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220106135905.81923-1-ioana.ciornei@nxp.com>
-References: <20220106135905.81923-1-ioana.ciornei@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR04CA0114.eurprd04.prod.outlook.com
- (2603:10a6:208:55::19) To AM9PR04MB8555.eurprd04.prod.outlook.com
- (2603:10a6:20b:436::16)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 49ede3a9-eec6-46a7-fdaa-08d9d11cbfc4
-X-MS-TrafficTypeDiagnostic: AS4PR04MB9267:EE_
-X-Microsoft-Antispam-PRVS: <AS4PR04MB926781C59B3BAEC5C0AAB5AFE04C9@AS4PR04MB9267.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: K41rrlEO+jdufIYc6Y988gOvQYwqKcvL9D4qwvKvXRNN8ypseEeNUKnc0y7NlbGrWQBgj4GtW7lOOc8BhDx36vxuIGTxT/ZVaXeRxcu43nBmekXvEnvumjJkKIOGhgdpL2ZwaeasNZhpdF6uVFSj11/cnTU4x57WHzsiOJHM7HQGDIg407x+1MevNO8bCjA/zQvTsgcM4AgyFhAUR/nMtXkAbERI1LNUjjsitDm0o1s6bs8lp6BLjeAR8y3igywIJvMqmJPtuY4pAMDst+nUBSdFzZT2+s8i4xi4zYlEjy174zr4ONahhlXUhmaHaYRcH2y9zf1wGcFg9oIXuGxJuTm7HCd3jkB2Gi0OhgbEjGivN0w5g9NQ8vjagaF281B0kBoFSGy1Pn7V34obkjWtP6YAGCzm80kQ+k1hEd6fvK+qCDR83Z8KDR/+HcHTzjxQcfV9q0byNX3S2Ck17toeuWLyuS3uI9RSLbYrBQzyh8WDkKfqf8lJi+hEb8uvSST2nH+aQoScMJvnmwWrhs2A4mitfNxdg+mXAB/aEqNcxTPMtv0pu0s8BWqP/4Gsq7453ki6iZkVJ68EbipQ6VC2aF9T8blBIW7NTCtvTq8UfYzD4r4a99lsb0YcfgE7zbnq8qXLhD6ElfAZKgUMxVunLpP93tAJfczJXRUspTKbPwIeqa6HKOZKkJIrUXJI5e3RWVsRdEmBORwSOJM8buQ31Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8555.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(1076003)(6506007)(6512007)(66556008)(6486002)(66946007)(66476007)(6666004)(2616005)(4326008)(44832011)(186003)(508600001)(26005)(38350700002)(38100700002)(83380400001)(52116002)(316002)(36756003)(8676002)(2906002)(8936002)(86362001)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?w88tGP3Y2MruuFKajhXooPK3+QyBTIQ0u0IG2ILJlJPpmK0Z1qVtoHZ3NCFm?=
- =?us-ascii?Q?fsQjXWIqjxPWxEGLzMQ5wCTGcDSBBSG4qjJc8KOg57Zq3Mt8HYNfqQU2f97f?=
- =?us-ascii?Q?scml/raRcbwL4YYYsM1ZhCVTJYRwG4A5NTS53GJiHIcY5ssxrsaBzThX/F4/?=
- =?us-ascii?Q?QbIuVyrXPWqTkDfEfNS4Z9e6IcK/eP6tfJbYhIKm9rez3J5PZu+Uqj13tbpy?=
- =?us-ascii?Q?vuzQKeMgX2YLcKiODCuiPXAzxKYe3oaT9CCksDidPjGK3+g7OsoaXMwmlend?=
- =?us-ascii?Q?j+iUBB3KI6Mwlq9bUtP/rJ8C1ENQIpkqlGaVU/pNxsfzCPkmHfNPgaO0hc6P?=
- =?us-ascii?Q?oJlMcnoTScPvB921q2rTx9bnKydJga8Jyqs9UJJcOmY5UZqPdtZ7CkAAJqtL?=
- =?us-ascii?Q?pKNf3PVOq1Qob5xLJ67bd3tc2Uk2nfKwG/t3y4EBiwWVCFugIul2b1YpTNk9?=
- =?us-ascii?Q?nX1YDwHjk/jWX68I3GMzyOrzlKmGd80tIUJnXXxHbnlyFzYTZ6tyyC0Xvvly?=
- =?us-ascii?Q?UxYeEAYcaLmUi8KooGNARRiI7Caa+Slyxv1D1zI9XPSOCJmd41fogUCNe7FY?=
- =?us-ascii?Q?+dmwjvMoFfCk2A6vuxkTLy+j9DlPs2wLdfGng0aOMvbOjk6q/ibyLkPPFMTC?=
- =?us-ascii?Q?0uNi128F4JGzUGLLMfrENjqn3b4OllQ6aoFfA0dLNca3zuE5ow70a4kLtWWy?=
- =?us-ascii?Q?mfYLl36HOUwm37T0+cGnUzVnULylf7IOkfGeyXDWrrOob/eXtO+CgphECAyL?=
- =?us-ascii?Q?iSN6uOVM6U5axMyMtV8nw3nziZsMGLKFpV2vdJ5OE2CX5LgShhBFBEsz88OG?=
- =?us-ascii?Q?zUyZFH9uF/zuxtUJX6LJP+lyLrdfvch46x+cj64fkSLmkibw37o7L4GEeXSA?=
- =?us-ascii?Q?0SiGuqDhz8OxvW4jJmdWRl8FBf7N7Hr1hvwBwFGZtQIgcQJ414LWMeDEBZ8x?=
- =?us-ascii?Q?ofu4UTEDMtNukFjahia+gf5zIRSkJoqJaELyHLyxI8RU/Nf+SaE5lGN9ghH8?=
- =?us-ascii?Q?BPiWErZshJJnYxCAoI65R9mWswTW75gCPMadOYoGdsFisNAAnGhcrBX/e1V5?=
- =?us-ascii?Q?m3rJKSzc3h3Rp0Jsf1ZNTJA+qaiieOPWHoj2YZ0oel3rLR5c6JG7FbPWdRq6?=
- =?us-ascii?Q?L5l2oHn6Cl4H/8IMw05DI0luUxq3MFOIzIAK+bL+397MHiz0TN/BBynXL/GC?=
- =?us-ascii?Q?EEBj1M8hvmiJfP8HLeKY2dA7d7qR08Fa9e05nRBYn8zs7+CzfuRPevgawYmv?=
- =?us-ascii?Q?NvtwPEgU8ksCPZg2tvI/24/WzeQ2p/mXEVeH+FMKctbBftNa7pTgY8ESgNc1?=
- =?us-ascii?Q?i4wPvhy1MJpCxLgk3ylzb8GTsWGmg1hZ+H5QZ2Ajq8d1tNE5/sQ0KJC56FHf?=
- =?us-ascii?Q?PAvUnLdGIH+lChq0c7sTu7hp1FfcoZfjWWlkhYYR9XmhlUEjML5PI0ozxy/Y?=
- =?us-ascii?Q?A7dZkoHCJJOh18kBtd4dE8w/0R2Y/jLmYtZ55AgAxHRo2bLAc6rxD9g+vQWE?=
- =?us-ascii?Q?Ix1GU3XGk+WiWhAGOB9t1ugFEsn2/Iaj1Phfo0iIXZi1pUXk+TQkCBzaSktJ?=
- =?us-ascii?Q?IUIuPRMNiQ3bttdmszeaT4Dk/NAj/lfkwESP+IRUFdXpnbcub0RJr3qT/kXQ?=
- =?us-ascii?Q?ooqFdbAOl4B7qAojc0HhWCc=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 49ede3a9-eec6-46a7-fdaa-08d9d11cbfc4
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8555.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2022 13:59:25.8832
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CwZ2x/VumeM3JLuw2LidVtVtm/ePreJovVRxjVyL71A/GXCgqyvVzb51iuatirSJWLrj8i+AdQ+YwlRvskIx5A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR04MB9267
+        id S239836AbiAFN7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 08:59:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50414 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239827AbiAFN7w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 08:59:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9E1C061245;
+        Thu,  6 Jan 2022 05:59:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0C3DB82187;
+        Thu,  6 Jan 2022 13:59:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B013C36AE3;
+        Thu,  6 Jan 2022 13:59:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641477589;
+        bh=fgSR1LFi3kuUftxv03WEvsxMpqnrcirA/Nh4Dp9V+U0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DDZfG4D8o37J/ebD5pINOeQ2s7juuqHVETVLOLAbCR1B1Xe++wXRdHpBVgFG2Cm9F
+         3/2ksbE4iCxK4/AqfRUOOZzz4zaYwzPweBuD0XHpDE5p7SnI9MGIFEXWI5G6KSGkBx
+         +CiTsAHnPoqqq3FRTRrQtUE4DpIWYRHGs5SbLxuLl3hgqs9FNbZ9PeTptOkNb34fu1
+         n/ndBhvfkgrtZy7ZhNvOshsmULgM01NFXopq1LumqzAPSPQb5JCW0MBA1BVS1CPweZ
+         vqomihJCjyEPNK5w6R+QDjdj0kcQorkWoxOBxISuZGt5KDmRkq0RFJCooQr8bAWHfT
+         MP+lmCmFCfPuA==
+Date:   Thu, 6 Jan 2022 22:59:43 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [RFC 00/13] kprobe/bpf: Add support to attach multiple kprobes
+Message-Id: <20220106225943.87701fcc674202dc3e172289@kernel.org>
+In-Reply-To: <YdaoTuWjEeT33Zzm@krava>
+References: <20220104080943.113249-1-jolsa@kernel.org>
+        <20220106002435.d73e4010c93462fbee9ef074@kernel.org>
+        <YdaoTuWjEeT33Zzm@krava>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="Multipart=_Thu__6_Jan_2022_22_59_43_+0900_xoXUXmLlhl=d1Yqq"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before accessing the port private structure make sure that there is
-still a non-NULL pointer there. A NULL pointer access can happen when we
-are on the remove path, some switch ports are unregistered and some are
-in the process of unregistering.
+This is a multi-part message in MIME format.
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+--Multipart=_Thu__6_Jan_2022_22_59_43_+0900_xoXUXmLlhl=d1Yqq
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-index d039457928b0..9b5512b4f15d 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-@@ -394,7 +394,8 @@ static int dpaa2_switch_dellink(struct ethsw_core *ethsw, u16 vid)
- 
- 	for (i = 0; i < ethsw->sw_attr.num_ifs; i++) {
- 		ppriv_local = ethsw->ports[i];
--		ppriv_local->vlans[vid] = 0;
-+		if (ppriv_local)
-+			ppriv_local->vlans[vid] = 0;
- 	}
- 
- 	return 0;
-@@ -1896,9 +1897,11 @@ static int dpaa2_switch_port_del_vlan(struct ethsw_port_priv *port_priv, u16 vid
- 		/* Delete VLAN from switch if it is no longer configured on
- 		 * any port
- 		 */
--		for (i = 0; i < ethsw->sw_attr.num_ifs; i++)
--			if (ethsw->ports[i]->vlans[vid] & ETHSW_VLAN_MEMBER)
-+		for (i = 0; i < ethsw->sw_attr.num_ifs; i++) {
-+			if (ethsw->ports[i] &&
-+			    ethsw->ports[i]->vlans[vid] & ETHSW_VLAN_MEMBER)
- 				return 0; /* Found a port member in VID */
-+		}
- 
- 		ethsw->vlans[vid] &= ~ETHSW_VLAN_GLOBAL;
- 
+On Thu, 6 Jan 2022 09:29:02 +0100
+Jiri Olsa <jolsa@redhat.com> wrote:
+
+> On Thu, Jan 06, 2022 at 12:24:35AM +0900, Masami Hiramatsu wrote:
+> > On Tue,  4 Jan 2022 09:09:30 +0100
+> > Jiri Olsa <jolsa@redhat.com> wrote:
+> > 
+> > > hi,
+> > > adding support to attach multiple kprobes within single syscall
+> > > and speed up attachment of many kprobes.
+> > > 
+> > > The previous attempt [1] wasn't fast enough, so coming with new
+> > > approach that adds new kprobe interface.
+> > 
+> > Yes, since register_kprobes() just registers multiple kprobes on
+> > array. This is designed for dozens of kprobes.
+> > 
+> > > The attachment speed of of this approach (tested in bpftrace)
+> > > is now comparable to ftrace tracer attachment speed.. fast ;-)
+> > 
+> > Yes, because that if ftrace, not kprobes.
+> > 
+> > > The limit of this approach is forced by using ftrace as attach
+> > > layer, so it allows only kprobes on function's entry (plus
+> > > return probes).
+> > 
+> > Note that you also need to multiply the number of instances.
+> > 
+> > > 
+> > > This patchset contains:
+> > >   - kprobes support to register multiple kprobes with current
+> > >     kprobe API (patches 1 - 8)
+> > >   - bpf support ot create new kprobe link allowing to attach
+> > >     multiple addresses (patches 9 - 14)
+> > > 
+> > > We don't need to care about multiple probes on same functions
+> > > because it's taken care on the ftrace_ops layer.
+> > 
+> > Hmm, I think there may be a time to split the "kprobe as an 
+> > interface for the software breakpoint" and "kprobe as a wrapper
+> > interface for the callbacks of various instrumentations", like
+> > 'raw_kprobe'(or kswbp) and 'kprobes'.
+> > And this may be called as 'fprobe' as ftrace_ops wrapper.
+> > (But if the bpf is enough flexible, this kind of intermediate layer
+> >  may not be needed, it can use ftrace_ops directly, eventually)
+> > 
+> > Jiri, have you already considered to use ftrace_ops from the
+> > bpf directly? Are there any issues?
+> > (bpf depends on 'kprobe' widely?)
+> 
+> at the moment there's not ftrace public interface for the return
+> probe merged in, so to get the kretprobe working I had to use
+> kprobe interface
+
+Yeah, I found that too. We have to ask Steve to salvage it ;)
+
+> but.. there are patches Steven shared some time ago, that do that
+> and make graph_ops available as kernel interface
+> 
+> I recall we considered graph_ops interface before as common attach
+> layer for trampolines, which was bad, but it might actually make
+> sense for kprobes
+
+I started working on making 'fprobe' which will provide multiple
+function probe with similar interface of kprobes. See attached
+patch. Then you can use it in bpf, maybe with an union like
+
+union {
+	struct kprobe kp;	// for function body
+	struct fprobe fp;	// for function entry and return
+};
+
+At this moment, fprobe only support entry_handler, but when we
+re-start the generic graph_ops interface, it is easy to expand
+to support exit_handler.
+If this works, I think kretprobe can be phased out, since at that
+moment, kprobe_event can replace it with the fprobe exit_handler.
+(This is a benefit of decoupling the instrumentation layer from
+the event layer. It can choose the best way without changing
+user interface.)
+
+> I'll need to check it in more details but I think both graph_ops and
+> kprobe do about similar thing wrt hooking return probe, so it should
+> be comparable.. and they are already doing the same for the entry hook,
+> because kprobe is mostly using ftrace for that
+> 
+> we would not need to introduce new program type - kprobe programs
+> should be able to run from ftrace callbacks just fine
+
+That seems to bind your mind. The program type is just a programing
+'model' of the bpf. You can choose the best implementation to provide
+equal functionality. 'kprobe' in bpf is just a name that you call some
+instrumentations which can probe kernel code.
+
+Thank you,
+
+> 
+> so we would have:
+>   - kprobe type programs attaching to:
+>   - new BPF_LINK_TYPE_FPROBE link using the graph_ops as attachment layer
+> 
+> jirka
+> 
+
+
 -- 
-2.33.1
+Masami Hiramatsu <mhiramat@kernel.org>
 
+--Multipart=_Thu__6_Jan_2022_22_59_43_+0900_xoXUXmLlhl=d1Yqq
+Content-Type: text/x-diff;
+ name="0001-fprobe-Add-ftrace-based-probe-APIs.patch"
+Content-Disposition: attachment;
+ filename="0001-fprobe-Add-ftrace-based-probe-APIs.patch"
+Content-Transfer-Encoding: 7bit
+
+From 269b86597c166d6d4c5dd564168237603533165a Mon Sep 17 00:00:00 2001
+From: Masami Hiramatsu <mhiramat@kernel.org>
+Date: Thu, 6 Jan 2022 15:40:36 +0900
+Subject: [PATCH] fprobe: Add ftrace based probe APIs
+
+The fprobe is a wrapper API for ftrace function tracer.
+Unlike kprobes, this probes only supports the function entry, but
+it can probe multiple functions by one fprobe. The usage is almost
+same as the kprobe, user will specify the function names by
+fprobe::syms, the number of syms by fprobe::nsyms, and the user
+handler by fprobe::handler.
+
+struct fprobe = { 0 };
+const char *targets[] = {"func1", "func2", "func3"};
+
+fprobe.handler = user_handler;
+fprobe.nsyms = ARRAY_SIZE(targets);
+fprobe.syms = targets;
+
+ret = register_fprobe(&fprobe);
+...
+
+
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+---
+ include/linux/fprobes.h |  52 ++++++++++++++++
+ kernel/trace/Kconfig    |  10 ++++
+ kernel/trace/Makefile   |   1 +
+ kernel/trace/fprobes.c  | 128 ++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 191 insertions(+)
+ create mode 100644 include/linux/fprobes.h
+ create mode 100644 kernel/trace/fprobes.c
+
+diff --git a/include/linux/fprobes.h b/include/linux/fprobes.h
+new file mode 100644
+index 000000000000..22db748bf491
+--- /dev/null
++++ b/include/linux/fprobes.h
+@@ -0,0 +1,52 @@
++#ifndef _LINUX_FPROBES_H
++#define _LINUX_FPROBES_H
++/* Simple ftrace probe wrapper */
++
++#include <linux/compiler.h>
++#include <linux/ftrace.h>
++
++struct fprobe {
++	const char		**syms;
++	unsigned long		*addrs;
++	unsigned int		nsyms;
++
++	struct ftrace_ops	ftrace;
++	unsigned long		nmissed;
++	unsigned int		flags;
++	void (*handler) (struct fprobe *, struct pt_regs *);
++};
++
++#define FPROBE_FL_DISABLED	1
++
++static inline bool fprobe_disabled(struct fprobe *fp)
++{
++	return (fp) ? fp->flags & FPROBE_FL_DISABLED : false;
++}
++
++#ifdef CONFIG_FPROBES
++int register_fprobe(struct fprobe *fp);
++int unregister_fprobe(struct fprobe *fp);
++#else
++static inline int register_fprobe(struct fprobe *fp)
++{
++	return -ENOTSUPP;
++}
++static inline int unregister_fprobe(struct fprobe *fp)
++{
++	return -ENOTSUPP;
++}
++#endif
++
++static inline void disable_fprobe(struct fprobe *fp)
++{
++	if (fp)
++		fp->flags |= FPROBE_FL_DISABLED;
++}
++
++static inline void enable_fprobe(struct fprobe *fp)
++{
++	if (fp)
++		fp->flags &= ~FPROBE_FL_DISABLED;
++}
++
++#endif
+diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
+index 420ff4bc67fd..45a3618a20a7 100644
+--- a/kernel/trace/Kconfig
++++ b/kernel/trace/Kconfig
+@@ -223,6 +223,16 @@ config DYNAMIC_FTRACE_WITH_ARGS
+ 	depends on DYNAMIC_FTRACE
+ 	depends on HAVE_DYNAMIC_FTRACE_WITH_ARGS
+ 
++config FPROBES
++	bool "Kernel Function Probe (fprobe)"
++	depends on FUNCTION_TRACER
++	depends on DYNAMIC_FTRACE_WITH_REGS
++	default n
++	help
++	  This option enables kernel function probe feature, which is
++	  similar to kprobes, but probes only for kernel function entries
++	  and it can probe multiple functions by one fprobe.
++
+ config FUNCTION_PROFILER
+ 	bool "Kernel function profiler"
+ 	depends on FUNCTION_TRACER
+diff --git a/kernel/trace/Makefile b/kernel/trace/Makefile
+index bedc5caceec7..47a37a3bb974 100644
+--- a/kernel/trace/Makefile
++++ b/kernel/trace/Makefile
+@@ -97,6 +97,7 @@ obj-$(CONFIG_PROBE_EVENTS) += trace_probe.o
+ obj-$(CONFIG_UPROBE_EVENTS) += trace_uprobe.o
+ obj-$(CONFIG_BOOTTIME_TRACING) += trace_boot.o
+ obj-$(CONFIG_FTRACE_RECORD_RECURSION) += trace_recursion_record.o
++obj-$(CONFIG_FPROBES) += fprobes.o
+ 
+ obj-$(CONFIG_TRACEPOINT_BENCHMARK) += trace_benchmark.o
+ 
+diff --git a/kernel/trace/fprobes.c b/kernel/trace/fprobes.c
+new file mode 100644
+index 000000000000..2ea118462afb
+--- /dev/null
++++ b/kernel/trace/fprobes.c
+@@ -0,0 +1,128 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#define pr_fmt(fmt) "fprobes: " fmt
++
++#include <linux/fprobes.h>
++#include <linux/kallsyms.h>
++#include <linux/kprobes.h>
++#include <linux/slab.h>
++
++static void fprobe_handler(unsigned long ip, unsigned long parent_ip,
++			struct ftrace_ops *ops, struct ftrace_regs *fregs)
++{
++	struct fprobe *fp;
++	int bit;
++
++	fp = container_of(ops, struct fprobe, ftrace);
++	if (fprobe_disabled(fp))
++		return;
++
++	bit = ftrace_test_recursion_trylock(ip, parent_ip);
++	if (bit < 0) {
++		fp->nmissed++;
++		return;
++	}
++
++	if (fp->handler)
++		fp->handler(fp, ftrace_get_regs(fregs));
++
++	ftrace_test_recursion_unlock(bit);
++}
++NOKPROBE_SYMBOL(fprobe_handler);
++
++/*
++ * Populate fp::addrs array from fp::syms. Whether the functions are
++ * ftrace-able or not will be checked afterwards by ftrace_set_filter_ip().
++ */
++static int populate_func_addresses(struct fprobe *fp)
++{
++	unsigned int i;
++
++	fp->addrs = kmalloc(sizeof(void *) * fp->nsyms, GFP_KERNEL);
++	if (!fp->addrs)
++		return -ENOMEM;
++
++	for (i = 0; i < fp->nsyms; i++) {
++		fp->addrs[i] = kallsyms_lookup_name(fp->syms[i]);
++		if (!fp->addrs[i]) {
++			kfree(fp->addrs);
++			fp->addrs = NULL;
++			return -ENOENT;
++		}
++	}
++
++	return 0;
++}
++
++/**
++ * register_fprobe - Register fprobe to ftrace
++ * @fp: A fprobe data structure to be registered.
++ *
++ * This expects the user set @fp::syms or @fp::addrs (not both),
++ * @fp::nsyms (number of entries of @fp::syms or @fp::addrs) and
++ * @fp::handler. Other fields are initialized by this function.
++ */
++int register_fprobe(struct fprobe *fp)
++{
++	unsigned int i;
++	int ret;
++
++	if (!fp)
++		return -EINVAL;
++
++	if (!fp->nsyms || (!fp->syms && !fp->addrs) || (fp->syms && fp->addrs))
++		return -EINVAL;
++
++	if (fp->syms) {
++		ret = populate_func_addresses(fp);
++		if (ret < 0)
++			return ret;
++	}
++
++	fp->ftrace.func = fprobe_handler;
++	fp->ftrace.flags = FTRACE_OPS_FL_SAVE_REGS;
++
++	for (i = 0; i < fp->nsyms; i++) {
++		ret = ftrace_set_filter_ip(&fp->ftrace, fp->addrs[i], 0, 0);
++		if (ret < 0)
++			goto error;
++	}
++
++	fp->nmissed = 0;
++	ret = register_ftrace_function(&fp->ftrace);
++	if (!ret)
++		return ret;
++
++error:
++	if (fp->syms) {
++		kfree(fp->addrs);
++		fp->addrs = NULL;
++	}
++
++	return ret;
++}
++
++/**
++ * unregister_fprobe - Unregister fprobe from ftrace
++ * @fp: A fprobe data structure to be unregistered.
++ */
++int unregister_fprobe(struct fprobe *fp)
++{
++	int ret;
++
++	if (!fp)
++		return -EINVAL;
++
++	if (!fp->nsyms || !fp->addrs)
++		return -EINVAL;
++
++	ret = unregister_ftrace_function(&fp->ftrace);
++
++	if (fp->syms) {
++		/* fp->addrs is allocated by register_fprobe() */
++		kfree(fp->addrs);
++		fp->addrs = NULL;
++	}
++
++	return ret;
++}
+-- 
+2.25.1
+
+
+--Multipart=_Thu__6_Jan_2022_22_59_43_+0900_xoXUXmLlhl=d1Yqq--
