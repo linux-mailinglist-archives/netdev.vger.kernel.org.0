@@ -2,44 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 144EF486447
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:20:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 468C2486446
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 13:20:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238745AbiAFMUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 07:20:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54386 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238058AbiAFMUN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:20:13 -0500
+        id S238315AbiAFMUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 07:20:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56032 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237905AbiAFMUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 07:20:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CBCCC061245
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 04:20:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45203B81E8B
-        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 12:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 13CA2C36AED;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B91AB61B8E
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 12:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 206D9C36AE5;
         Thu,  6 Jan 2022 12:20:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1641471611;
-        bh=GiSJLFXFZTM9zlU6M+SBwrtc5Zf4Jr48UHoJ3qbv6Wg=;
+        bh=12OotoVsJaeI6f2cZK5P3rMC7BRm3oc20PdjjfBYHhE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=S+Jg1NVhUB24Ebl3an0UU5bGwo38Y7mhswxigfdjCG0uZHZeOFChWxvV6qs6zjq/y
-         EHCxHZ4/o4y6eDAb6D4wyJdNxWIIQ1tW7Ps9fZJV/ee4YNqveZahHQGaCW+dsL/L7S
-         MYKBsrn8jE6rg3GwOdfHw35deohnWC5Kiuyho3IC/TNhsgZ4gQJ4EBky8p5At8tz6O
-         5q6zlbOrLeU8hIQSbFioqPZwnH0zsvIuuOl+2biWRgCaY8y0MdiIokxrd0eDSz50OS
-         NRLVcmU5wFc2MMYsE/1tN1WKthTVcF7nC99C7eSLMuBNTslv6ZhBb4c2t62RnVJq2x
-         bdr4+gxMaTmBw==
+        b=AzcE9aiW0Uz9Mrdqv+pEwl4wSBWr/ovDqDqBhabakcqR8DAnl80it6b4ZipqY7wJR
+         rIEfCoeRrBQTrwpprfB++PZWwg1DkV5rdmz+RIhkBtG/jzwVGNvRkXBZCO/pUFShj0
+         cqe0Ao8zr/KYUQC9aE63EmXBtrqpyu7sT4bu95oL80zv8tnnGN4fUuWNlqc8Ey/h69
+         5kf+Z/fudE3cHxNaBW4OJnrnEPnHbd99Tp5B9K2EOYPWJiGSvglQkx6GHxz/ihwxCY
+         dkNp9kwS4v0Z82Ocw51l3Es76xaF9fF/L3Vkwgw17SIq+w8+az1g8HusTQO0ccUCNP
+         3au+mg2C8O+sw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E9D5FF7940B;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F38E2F7940C;
         Thu,  6 Jan 2022 12:20:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 1/6] xfrm: fix policy lookup for ipv6 gre packets
+Subject: Re: pull request (net-next): ipsec-next 2022-01-06
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164147161095.27983.2505174339598036867.git-patchwork-notify@kernel.org>
+Message-Id: <164147161099.27983.16789363428870680293.git-patchwork-notify@kernel.org>
 Date:   Thu, 06 Jan 2022 12:20:10 +0000
-References: <20220106093606.3046771-2-steffen.klassert@secunet.com>
-In-Reply-To: <20220106093606.3046771-2-steffen.klassert@secunet.com>
+References: <20220106091350.3038869-1-steffen.klassert@secunet.com>
+In-Reply-To: <20220106091350.3038869-1-steffen.klassert@secunet.com>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, herbert@gondor.apana.org.au,
         netdev@vger.kernel.org
@@ -49,35 +52,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
-by Steffen Klassert <steffen.klassert@secunet.com>:
+This pull request was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On Thu, 6 Jan 2022 10:36:01 +0100 you wrote:
-> From: Ghalem Boudour <ghalem.boudour@6wind.com>
+On Thu, 6 Jan 2022 10:13:43 +0100 you wrote:
+> 1) Fix some clang_analyzer warnings about never read variables.
+>    From luo penghao.
 > 
-> On egress side, xfrm lookup is called from __gre6_xmit() with the
-> fl6_gre_key field not initialized leading to policies selectors check
-> failure. Consequently, gre packets are sent without encryption.
+> 2) Check for pols[0] only once in xfrm_expand_policies().
+>    From Jean Sacren.
 > 
-> On ingress side, INET6_PROTO_NOPOLICY was set, thus packets were not
-> checked against xfrm policies. Like for egress side, fl6_gre_key should be
-> correctly set, this is now done in decode_session6().
+> 3) The SA curlft.use_time was updated only on SA cration time.
+>    Update whenever the SA is used. From Antony Antony
 > 
 > [...]
 
 Here is the summary with links:
-  - [1/6] xfrm: fix policy lookup for ipv6 gre packets
-    https://git.kernel.org/netdev/net/c/bcf141b2eb55
-  - [2/6] xfrm: fix dflt policy check when there is no policy configured
-    https://git.kernel.org/netdev/net/c/ec3bb890817e
-  - [3/6] xfrm: fix a small bug in xfrm_sa_len()
-    https://git.kernel.org/netdev/net/c/7770a39d7c63
-  - [4/6] xfrm: interface with if_id 0 should return error
-    https://git.kernel.org/netdev/net/c/8dce43919566
-  - [5/6] xfrm: state and policy should fail if XFRMA_IF_ID 0
-    https://git.kernel.org/netdev/net/c/68ac0f3810e7
-  - [6/6] net/xfrm: IPsec tunnel mode fix inner_ipproto setting in sec_path
-    https://git.kernel.org/netdev/net/c/45a98ef4922d
+  - pull request (net-next): ipsec-next 2022-01-06
+    https://git.kernel.org/netdev/net/c/c4251db3b9d2
 
 You are awesome, thank you!
 -- 
