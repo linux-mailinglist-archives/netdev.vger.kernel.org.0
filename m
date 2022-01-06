@@ -2,88 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3E754864E0
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 14:03:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2A004864EF
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 14:08:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239312AbiAFNDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 08:03:42 -0500
-Received: from mail-wm1-f47.google.com ([209.85.128.47]:52775 "EHLO
-        mail-wm1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239006AbiAFNDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 08:03:41 -0500
-Received: by mail-wm1-f47.google.com with SMTP id v123so1713435wme.2;
-        Thu, 06 Jan 2022 05:03:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vcYnekM26AwY1vgrHqt3niX4oXoouwaBi8z/zP8TK7s=;
-        b=KK1AhbTgHQntIEoZKmY7mqNYMpCGMojc2X8jImMj3fsLPy0VObLXJbPoSky5LXsB55
-         pkWPrF2QpkLlj81DfXgOMtzoyEDpPDJdIFHkN5fA/Opdi3tIw/Q5vnjcL2z6W1b6KdrP
-         nMqNkVzzQ33L+9/rzOez7I2fji+61AG4J1x2IvN/pugkswXecJbkPEyRD9gcmk8cYHAe
-         f/z+UYPG0Uu/fgG0sbcEB3nqh1mlzvIdcuXQh9rAJVaKHeYqeG31cETZSctu5hZCI4p7
-         zyCORkBHBWlCDBpvq6rV+hMFKcEt7oTDU89KMSOrpkSz7pv6Qb6Wygg6DR1B+4+Z0x8j
-         jU9g==
-X-Gm-Message-State: AOAM533lyrJtN4u/Crz/ODPbUAJsH7z+yLMQR8Bcrx6H+P4/J8AqbGRR
-        Qb3AofyHcL7S0v6Ai4aVYVk=
-X-Google-Smtp-Source: ABdhPJxjG8n0y9ZGjhfUAQ/lARqGtAcsKv1amFfIs3NrZLQDMXO0cFdv3+3SKS6rfToX8YU5cknK9Q==
-X-Received: by 2002:a05:600c:acf:: with SMTP id c15mr6826950wmr.7.1641474219848;
-        Thu, 06 Jan 2022 05:03:39 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id b6sm2089988wri.56.2022.01.06.05.03.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 05:03:39 -0800 (PST)
-Date:   Thu, 6 Jan 2022 13:03:37 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, shayagr@amazon.com, akiyano@amazon.com,
-        darinzon@amazon.com, ndagan@amazon.com, saeedb@amazon.com,
-        sgoutham@marvell.com, kys@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
-        grygorii.strashko@ti.com, sameehj@amazon.com,
-        chenhao288@hisilicon.com, moyufeng@huawei.com,
-        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-omap@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 1/2] net: add includes masked by netdevice.h
- including uapi/bpf.h
-Message-ID: <20220106130337.qtvjgffwlyzy7j2y@liuwe-devbox-debian-v2>
-References: <20211230012742.770642-1-kuba@kernel.org>
- <20211230012742.770642-2-kuba@kernel.org>
+        id S239349AbiAFNIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 08:08:24 -0500
+Received: from marcansoft.com ([212.63.210.85]:58358 "EHLO mail.marcansoft.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238990AbiAFNIX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 6 Jan 2022 08:08:23 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id DDDF442165;
+        Thu,  6 Jan 2022 13:08:13 +0000 (UTC)
+To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20220104072658.69756-1-marcan@marcan.st>
+ <20220104072658.69756-8-marcan@marcan.st>
+ <3dfb1a06-4474-4614-08e5-b09f0977e03c@broadcom.com>
+From:   Hector Martin <marcan@marcan.st>
+Subject: Re: [PATCH v2 07/35] brcmfmac: pcie: Read Apple OTP information
+Message-ID: <7b3e7ae0-5791-f4ad-619a-a3cc3f913a44@marcan.st>
+Date:   Thu, 6 Jan 2022 22:08:11 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211230012742.770642-2-kuba@kernel.org>
+In-Reply-To: <3dfb1a06-4474-4614-08e5-b09f0977e03c@broadcom.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: es-ES
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 29, 2021 at 05:27:41PM -0800, Jakub Kicinski wrote:
-> Add missing includes unmasked by the subsequent change.
+On 06/01/2022 21.37, Arend van Spriel wrote:
+> On 1/4/2022 8:26 AM, Hector Martin wrote:
+>> +static int brcmf_pcie_read_otp(struct brcmf_pciedev_info *devinfo)
+>> +{
+>> +	const struct pci_dev *pdev = devinfo->pdev;
+>> +	struct brcmf_bus *bus = dev_get_drvdata(&pdev->dev);
+>> +	u32 coreid, base, words, idx, sromctl;
+>> +	u16 *otp;
+>> +	struct brcmf_core *core;
+>> +	int ret;
+>> +
+>> +	switch (devinfo->ci->chip) {
+>> +	default:
+>> +		/* OTP not supported on this chip */
+>> +		return 0;
+>> +	}
 > 
-> Mostly network drivers missing an include for XDP_PACKET_HEADROOM.
+> Does not seem this code is put to work yet. Will dive into it later on.
+
+The specific OTP ranges and cores are added by the subsequent patches
+that add support for individual chips, once all the scaffolding is in place.
+
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-[...]
->  drivers/net/ethernet/microsoft/mana/mana_en.c      | 2 ++
+>> +	core = brcmf_chip_get_core(devinfo->ci, coreid);
+>> +	if (!core) {
+>> +		brcmf_err(bus, "No OTP core\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	if (coreid == BCMA_CORE_CHIPCOMMON) {
+>> +		/* Chips with OTP accessed via ChipCommon need additional
+>> +		 * handling to access the OTP
+>> +		 */
+>> +		brcmf_pcie_select_core(devinfo, coreid);
+>> +		sromctl = READCC32(devinfo, sromcontrol);
+>> +
+>> +		if (!(sromctl & BCMA_CC_SROM_CONTROL_OTP_PRESENT)) {
+>> +			/* Chip lacks OTP, try without it... */
+>> +			brcmf_err(bus,
+>> +				  "OTP unavailable, using default firmware\n");
+>> +			return 0;
+>> +		}
+>> +
+>> +		/* Map OTP to shadow area */
+>> +		WRITECC32(devinfo, sromcontrol,
+>> +			  sromctl | BCMA_CC_SROM_CONTROL_OTPSEL);
+>> +	}
+>> +
+>> +	otp = kzalloc(sizeof(u16) * words, GFP_KERNEL);
+>> +
+>> +	/* Map bus window to SROM/OTP shadow area in core */
+>> +	base = brcmf_pcie_buscore_prep_addr(devinfo->pdev, base + core->base);
+> 
+> I guess this changes the bar window...
+> 
+>> +	brcmf_dbg(PCIE, "OTP data:\n");
+>> +	for (idx = 0; idx < words; idx++) {
+>> +		otp[idx] = brcmf_pcie_read_reg16(devinfo, base + 2 * idx);
+>> +		brcmf_dbg(PCIE, "[%8x] 0x%04x\n", base + 2 * idx, otp[idx]);
+>> +	}
+>> +
+>> +	if (coreid == BCMA_CORE_CHIPCOMMON) {
+>> +		brcmf_pcie_select_core(devinfo, coreid);
+> 
+> ... which is why you need to reselect the core. Otherwise it makes no 
+> sense to me.
 
-This seems trivially correct, so in case an ack is needed:
+Yes; *technically* with the BCMA_CORE_CHIPCOMMON core the OTP is always
+within the first 0x1000 and so I wouldn't have to reselect it, since
+it'd end up with the same window, but that is not the case with
+BCMA_CORE_GCI used on other chips (where the OTP offset is >0x1000),
+although those don't hit this code path. So while this line could be
+removed without causing any issues, I find it more orthogonal and safer
+to keep the pattern where I select the core before accessing
+core-relative fixed registers, and treat brcmf_pcie_buscore_prep_addr as
+invalidating the BAR window for all intents and purposes.
 
-Acked-by: Wei Liu <wei.liu@kernel.org>
-
-> diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-> index c1d5a374b967..2ece9e90dc50 100644
-> --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-> +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-> @@ -1,6 +1,8 @@
->  // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
->  /* Copyright (c) 2021, Microsoft Corporation. */
->  
-> +#include <uapi/linux/bpf.h>
-> +
->  #include <linux/inetdevice.h>
->  #include <linux/etherdevice.h>
->  #include <linux/ethtool.h>
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
