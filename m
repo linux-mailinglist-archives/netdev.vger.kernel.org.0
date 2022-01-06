@@ -2,133 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 021CC4862A3
-	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 11:04:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 293DA4862B5
+	for <lists+netdev@lfdr.de>; Thu,  6 Jan 2022 11:09:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237543AbiAFKEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 05:04:37 -0500
-Received: from smtp25.cstnet.cn ([159.226.251.25]:50014 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236677AbiAFKEg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jan 2022 05:04:36 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowADHpxScvtZhVC62BQ--.57808S2;
-        Thu, 06 Jan 2022 18:04:12 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     madalin.bucur@nxp.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] fsl/fman: Check for null pointer after calling devm_ioremap
-Date:   Thu,  6 Jan 2022 18:04:10 +0800
-Message-Id: <20220106100410.2761573-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S237750AbiAFKJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 05:09:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55140 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237616AbiAFKJW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 05:09:22 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE8EC0611FD
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 02:09:21 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id g80so6126585ybf.0
+        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 02:09:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=xVn1wMxF612KR4qd3v/+ZpMRoNnQHSmut43e76ryAy0=;
+        b=ITSjOINvJbz26cSYFmAJMgjh4BRfFhbRo6wnwy0w0oE9bLf+0Y2t4VJqDY8S3TZxNS
+         b8sJa7FA2RctFBONM7abZ6GuQ1ycd8lspdoyzuqWJplZYmksStuzrrUslLTN5S25KFtr
+         nq1ZBnDqaKYx8p48IzPaRC7vqJfa3wYXIRUpl2VppdcvoEuG94LeC+TdL4G5OzFCAiYC
+         nTtuwmfVXH3+c1fy2EvQtpoPX60Lwa6nHOcbUkYcQ6+0le90Wfn/gebH7m37gR98THSl
+         0wc77C2e+aWYYvIT2gtJt7Yh1T+Zh3bJJupjfdasvUi/GJESiR6Uh45x1dVnymDr6+ck
+         S7Jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=xVn1wMxF612KR4qd3v/+ZpMRoNnQHSmut43e76ryAy0=;
+        b=a2uS3hSZrQmbiJm+Z0bNLYPgyJU3NrrOnkKky9CGEMf5kHyJ33bKtJ6GF9Ssz8jWbP
+         juIDidpK1zM1bj12ir25q/Zn66kRLll3tl3gdLbL8MgdSefQ7d/p1PJA2X0wfiHr5WRM
+         r++qFHV2kYlW3yr8+zUGzw28K1YPyUGSgpj5yIE8ls+bS+No4e+FQD4hgzbOZ0sRxW/F
+         PfAMHSQrVYchAibmsE6q9g0JGpgk8JsvctHNugLgrtVMISbVmVT4zOOH1PDpIBOkZpzC
+         j3DHujFKj6NFG18eF5sXqkdG1c13hvBMFZ5WkUM7JL2XHf3ow9rMSdBYpFKDuLeXfeH3
+         yvKg==
+X-Gm-Message-State: AOAM531ZV+BE5AI+l3d4DjNF9Lyr90CG6i9TqJ2P2MpSRu2preGJnS6/
+        T/uycVij4ZaoRoqDiEJiJn3u5ysluzcy08Ah8vmzeg==
+X-Google-Smtp-Source: ABdhPJyafnvQkHJQjBbud1GeweU7pR4nWug53MC0s3SnkvN9veseeb871oyKcvVs1bCnP7grujMZwj/vGB9np4QEeN0=
+X-Received: by 2002:a25:73c7:: with SMTP id o190mr23466905ybc.108.1641463760658;
+ Thu, 06 Jan 2022 02:09:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowADHpxScvtZhVC62BQ--.57808S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxXFWfur43CF13urWrZr4kXrb_yoW5Ar1xpa
-        1F9ayUta4DJrn8uF4DX3ykAr45Aw48t3y8KFW8tw4Fq3W7twn3XFW8GFW8AryYqFZ5Jr15
-        JrZ8Aa1UCF1ak37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkl14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Gw1l
-        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
-        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
-        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
-        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVW8JVWxJwCI
-        42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7VUjhL0UUUUU
-        U==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 6 Jan 2022 15:39:09 +0530
+Message-ID: <CA+G9fYtaoxVF-bL40kt=FKcjjaLUnS+h8hNf=wQv_dKKWn_MNQ@mail.gmail.com>
+Subject: txtimestamp.c:164:29: warning: format '0' expects argument of type
+ 'long unsigned int', but argument 3 has type 'int64_t' {aka 'long long int'} [-Wformat=]
+To:     linux-stable <stable@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        lkft-triage@lists.linaro.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jian Yang <jianyang@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the possible failure of the allocation, the devm_ioremap() may return
-NULL pointer.
-Take tgec_initialization() as an example.
-If allocation fails, the params->base_addr will be NULL pointer and will
-be assigned to tgec->regs in tgec_config().
-Then it will cause the dereference of NULL pointer in set_mac_address(),
-which is called by tgec_init().
-Therefore, it should be better to add the sanity check after the calling
-of the devm_ioremap().
+While building selftests the following warnings were noticed for arm
+architecture on Linux stable v5.15.13 kernel and also on Linus's tree.
 
-Fixes: 3933961682a3 ("fsl/fman: Add FMan MAC driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/net/ethernet/freescale/fman/mac.c | 21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+arm-linux-gnueabihf-gcc -Wall -Wl,--no-as-needed -O2 -g
+-I../../../../usr/include/    txtimestamp.c  -o
+/home/tuxbuild/.cache/tuxmake/builds/current/kselftest/net/txtimestamp
+txtimestamp.c: In function 'validate_timestamp':
+txtimestamp.c:164:29: warning: format '0' expects argument of type
+'long unsigned int', but argument 3 has type 'int64_t' {aka 'long long
+int'} [-Wformat=]
+  164 |   fprintf(stderr, "ERROR: 0 us expected between 0 and 0\n",
+      |                           ~~^
+      |                             |
+      |                             long unsigned int
+      |                           0
+  165 |     cur64 - start64, min_delay, max_delay);
+      |     ~~~~~~~~~~~~~~~
+      |           |
+      |           int64_t {aka long long int}
+txtimestamp.c: In function '__print_ts_delta_formatted':
+txtimestamp.c:173:22: warning: format '0' expects argument of type
+'long unsigned int', but argument 3 has type 'int64_t' {aka 'long long
+int'} [-Wformat=]
+  173 |   fprintf(stderr, "0 ns", ts_delta);
+      |                    ~~^      ~~~~~~~~
+      |                      |      |
+      |                      |      int64_t {aka long long int}
+      |                      long unsigned int
+      |                    0
+txtimestamp.c:175:22: warning: format '0' expects argument of type
+'long unsigned int', but argument 3 has type 'int64_t' {aka 'long long
+int'} [-Wformat=]
+  175 |   fprintf(stderr, "0 us", ts_delta / NSEC_PER_USEC);
+      |                    ~~^
+      |                      |
+      |                      long unsigned int
+      |                    0
 
-diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
-index 46ecb42f2ef8..6cf00569bd20 100644
---- a/drivers/net/ethernet/freescale/fman/mac.c
-+++ b/drivers/net/ethernet/freescale/fman/mac.c
-@@ -94,14 +94,17 @@ static void mac_exception(void *handle, enum fman_mac_exceptions ex)
- 		__func__, ex);
- }
- 
--static void set_fman_mac_params(struct mac_device *mac_dev,
--				struct fman_mac_params *params)
-+static int set_fman_mac_params(struct mac_device *mac_dev,
-+			       struct fman_mac_params *params)
- {
- 	struct mac_priv_s *priv = mac_dev->priv;
- 
- 	params->base_addr = (typeof(params->base_addr))
- 		devm_ioremap(priv->dev, mac_dev->res->start,
- 			     resource_size(mac_dev->res));
-+	if (!params->base_addr)
-+		return -ENOMEM;
-+
- 	memcpy(&params->addr, mac_dev->addr, sizeof(mac_dev->addr));
- 	params->max_speed	= priv->max_speed;
- 	params->phy_if		= mac_dev->phy_if;
-@@ -112,6 +115,8 @@ static void set_fman_mac_params(struct mac_device *mac_dev,
- 	params->event_cb	= mac_exception;
- 	params->dev_id		= mac_dev;
- 	params->internal_phy_node = priv->internal_phy_node;
-+
-+	return 0;
- }
- 
- static int tgec_initialization(struct mac_device *mac_dev)
-@@ -123,7 +128,9 @@ static int tgec_initialization(struct mac_device *mac_dev)
- 
- 	priv = mac_dev->priv;
- 
--	set_fman_mac_params(mac_dev, &params);
-+	err = set_fman_mac_params(mac_dev, &params);
-+	if (err)
-+		goto _return;
- 
- 	mac_dev->fman_mac = tgec_config(&params);
- 	if (!mac_dev->fman_mac) {
-@@ -169,7 +176,9 @@ static int dtsec_initialization(struct mac_device *mac_dev)
- 
- 	priv = mac_dev->priv;
- 
--	set_fman_mac_params(mac_dev, &params);
-+	err = set_fman_mac_params(mac_dev, &params);
-+	if (err)
-+		goto _return;
- 
- 	mac_dev->fman_mac = dtsec_config(&params);
- 	if (!mac_dev->fman_mac) {
-@@ -218,7 +227,9 @@ static int memac_initialization(struct mac_device *mac_dev)
- 
- 	priv = mac_dev->priv;
- 
--	set_fman_mac_params(mac_dev, &params);
-+	err = set_fman_mac_params(mac_dev, &params);
-+	if (err)
-+		goto _return;
- 
- 	if (priv->max_speed == SPEED_10000)
- 		params.phy_if = PHY_INTERFACE_MODE_XGMII;
--- 
-2.25.1
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+build link:
+https://builds.tuxbuild.com/23HFntxpqyCx0RbiuadfGZ36Kym/
+
+metadata:
+  git repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+  git commit: 734eb1fd2073f503f5c6b44f1c0d453ca6986b84
+  git describe: v5.15.13
+  toolchain: gcc-11
+  kernel-config: https://builds.tuxbuild.com/23HFntxpqyCx0RbiuadfGZ36Kym/config
+
+
+# To install tuxmake on your system globally:
+# sudo pip3 install -U tuxmake
+
+tuxmake --runtime podman --target-arch arm --toolchain gcc-10 \
+ --kconfig https://builds.tuxbuild.com/23HFntxpqyCx0RbiuadfGZ36Kym/config \
+  dtbs dtbs-legacy headers kernel kselftest kselftest-merge modules
+
+--
+Linaro LKFT
+https://lkft.linaro.org
