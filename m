@@ -2,266 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 170FF4878CF
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 15:20:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E8BE4878C5
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 15:19:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347769AbiAGOUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 09:20:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231689AbiAGOUd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 09:20:33 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9A2C061574
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 06:20:33 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id i31so15969043lfv.10
-        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 06:20:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rkq8agh4tjk67sRDRuaodjlD6tuUMbjIOtNg8F/N2S4=;
-        b=It1rSC75DwetGxqV7YrHd9jSbdquwu4U6N2S+g2AUHOOl31/6vLWKGCo7ws6WHaHtM
-         MslgjaOOUiLta+kcjNdrJ+R68yzNTfj5sJZq1z7Yyt8JODnBFpGEL252aI8x6H8z6al1
-         HbHYf4mCbgyq6CSLlk743ryf1n6iX9CiQiRlqeEjoVKZmTLT21mSDSe0edv/9BAph4Fv
-         R63Hmea58szlIcxywK2L99vgXzk3XGgNPN0SDEkWIs3GwXRx75RTP9zsdFtJSN7ylvAR
-         aCMIAh9udNEfCBEA2oZt4HtUBWs1QgLjcR3L318jh9LdZmrQiWcbdgfDMPym8HZBELUe
-         8sRg==
+        id S1347612AbiAGOT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 09:19:28 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:48884 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232295AbiAGOT1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 09:19:27 -0500
+Received: by mail-il1-f197.google.com with SMTP id g2-20020a92cda2000000b002b630a0ebe2so3796403ild.15
+        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 06:19:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rkq8agh4tjk67sRDRuaodjlD6tuUMbjIOtNg8F/N2S4=;
-        b=yc7qd8Lqkfu99aSYcHOF07pdQBZD9KLyVHQ9PI9K63TxgQFNGcLeLMGU8TJw1S0g2o
-         Ib8pyAkkBhekNj+8wtX+IT07WySB/U9JRSdTd/dEvUj3r7r33EkSfcGKTQ9KWaz+xG7k
-         MnPgf2mnX8RELo6vV+6kIOCIUxHgVT2/X+JaUWLjNyWHfimpmfuqu1xtDughdn2IoG5B
-         0FOnJrotzM5Yk1iHSfJkvDoilwZ0MUWTNGHHZ/rzCeMrbnXt461IMMezTkDqhuGQ2QtS
-         mGVZr6+XbmgObUNMoZDkyXCxJts2kQeT3A0kgjHf+XIXh8/dytoizwoF6PrlK68M1VYG
-         HODg==
-X-Gm-Message-State: AOAM530gGeaCYkd0JFqfe/BVMeMrKbDM6Ml95Qz7FQDJH0z8sj2Q7P4J
-        vzmZGAvy/WaBC+ezYkYV5qJx3Z90sl4=
-X-Google-Smtp-Source: ABdhPJypfKWS9v3k8eazYtDHRxp77Rm+Gtm/+qE/0GzfwEYvt5C8ok27AYzqpffdDLn4GjYxw1YxKA==
-X-Received: by 2002:a05:6512:2825:: with SMTP id cf37mr55570583lfb.145.1641565231794;
-        Fri, 07 Jan 2022 06:20:31 -0800 (PST)
-Received: from dau-work-pc.corp.zonatelecom.ru ([185.17.67.197])
-        by smtp.googlemail.com with ESMTPSA id v22sm628008ljh.129.2022.01.07.06.20.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 06:20:31 -0800 (PST)
-From:   Anton Danilov <littlesmilingcloud@gmail.com>
-To:     stephen@networkplumber.org
-Cc:     Anton Danilov <littlesmilingcloud@gmail.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH iproute2] ip: Extend filter links/addresses
-Date:   Fri,  7 Jan 2022 17:17:38 +0300
-Message-Id: <20220107141736.11147-1-littlesmilingcloud@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=lehBmzV4hibWTovQUK/+HgjGU/Xf4O0K8LFaKhVjZuM=;
+        b=R/7qEyjyA2WVLrNaARtdBAO1RtbJOPtUJ4FbJPJCopfghG9PYdFnmqnAssMl6s54BE
+         BvjE6OiyFQgwq+l2pW0P0tlUUblABeU5Dou4FYimtAVoN5cBLzSUml5jabiyL2kK0w7k
+         7VnB22xqhI1Wq+tuMWXyczPnaR10JcaqWNsLlBn1outxyWUsEGc7Ibb0ub+DVmS95TuR
+         jU9b5ccZ9u4+jKdnb0G8trJ7itvejUigbKdyzKaNVidek8xju+gPJdiSyZ5DunUdyfhM
+         RCXp7F3se8u29IwE7memqg3SBaBr5C6to+u29OC8SCCb8icZmlUha5AYtyKHttdkCHBD
+         NDfQ==
+X-Gm-Message-State: AOAM531r+798qOpX2nE9IoFMKMw5rdbPiDPFB4EjK9uU2q/OJeBSF0wo
+        /Riu6iQs8+iMztHs0Vr8Uz2TFeuvVhiEnexn1XU9u7gIQG4T
+X-Google-Smtp-Source: ABdhPJxJ3jTJpnlFIqwAaflUOuGygF7KcB41XrEhhY33jUaoNRz0n5Qy87AeiE/jncORNfK9Z7DQKT2+iufwBGPdcJSc+xxdVUlq
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a6b:6609:: with SMTP id a9mr29184620ioc.138.1641565167261;
+ Fri, 07 Jan 2022 06:19:27 -0800 (PST)
+Date:   Fri, 07 Jan 2022 06:19:27 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ab9b3e05d4feacd6@google.com>
+Subject: [syzbot] general protection fault in dev_get_by_index_rcu (2)
+From:   syzbot <syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch improves the filtering of links/addresses with the next features:
-1. Additional types: ether, loopback, ppp
-2. Exclude of specific interface types with 'exclude_type' option
+Hello,
 
-Examples:
-ip link show type ether
-ip address show exclude_type ppp
+syzbot found the following issue on:
 
-Signed-off-by: Anton Danilov <littlesmilingcloud@gmail.com>
+HEAD commit:    819d11507f66 bpf, selftests: Fix spelling mistake "tained"..
+git tree:       bpf
+console output: https://syzkaller.appspot.com/x/log.txt?x=12500db3b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=22b66456935ee10
+dashboard link: https://syzkaller.appspot.com/bug?extid=983941aa85af6ded1fd9
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=153a6cb3b00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=121c690bb00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xdffffc000000003e: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x00000000000001f0-0x00000000000001f7]
+CPU: 1 PID: 19 Comm: ksoftirqd/1 Not tainted 5.16.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:dev_index_hash net/core/dev.c:222 [inline]
+RIP: 0010:dev_get_by_index_rcu+0x28/0x140 net/core/dev.c:885
+Code: 00 00 41 55 41 54 55 89 f5 53 48 89 fb e8 00 9d 4d fa 48 8d bb f0 01 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 fc 00 00 00 48 8b 93 f0 01 00 00 40 0f b6 c5 48
+RSP: 0018:ffffc90000d97608 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000100
+RDX: 000000000000003e RSI: ffffffff872a14d0 RDI: 00000000000001f0
+RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff873745ad R11: 000000000008808a R12: ffff88806a062100
+R13: 0000000000000003 R14: ffff88806a062100 R15: ffffc90001116000
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055555733a848 CR3: 000000001479e000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ ____bpf_clone_redirect net/core/filter.c:2410 [inline]
+ bpf_clone_redirect+0x91/0x420 net/core/filter.c:2401
+ bpf_prog_bebbfe2050753572+0x56/0xcc0
+ __bpf_prog_run include/linux/filter.h:626 [inline]
+ bpf_prog_run_xdp include/linux/filter.h:801 [inline]
+ veth_xdp_rcv_skb+0x64b/0x1b20 drivers/net/veth.c:775
+ veth_xdp_rcv+0x3ac/0x810 drivers/net/veth.c:881
+ veth_poll+0x134/0x850 drivers/net/veth.c:913
+ __napi_poll+0xaf/0x440 net/core/dev.c:7023
+ napi_poll net/core/dev.c:7090 [inline]
+ net_rx_action+0x801/0xb40 net/core/dev.c:7177
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ run_ksoftirqd kernel/softirq.c:921 [inline]
+ run_ksoftirqd+0x2d/0x60 kernel/softirq.c:913
+ smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
+ kthread+0x405/0x4f0 kernel/kthread.c:327
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+Modules linked in:
+---[ end trace 86b7d5782a67ad32 ]---
+RIP: 0010:dev_index_hash net/core/dev.c:222 [inline]
+RIP: 0010:dev_get_by_index_rcu+0x28/0x140 net/core/dev.c:885
+Code: 00 00 41 55 41 54 55 89 f5 53 48 89 fb e8 00 9d 4d fa 48 8d bb f0 01 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 fc 00 00 00 48 8b 93 f0 01 00 00 40 0f b6 c5 48
+RSP: 0018:ffffc90000d97608 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000100
+RDX: 000000000000003e RSI: ffffffff872a14d0 RDI: 00000000000001f0
+RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff873745ad R11: 000000000008808a R12: ffff88806a062100
+R13: 0000000000000003 R14: ffff88806a062100 R15: ffffc90001116000
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055555733a848 CR3: 000000001479e000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	00 00                	add    %al,(%rax)
+   2:	41 55                	push   %r13
+   4:	41 54                	push   %r12
+   6:	55                   	push   %rbp
+   7:	89 f5                	mov    %esi,%ebp
+   9:	53                   	push   %rbx
+   a:	48 89 fb             	mov    %rdi,%rbx
+   d:	e8 00 9d 4d fa       	callq  0xfa4d9d12
+  12:	48 8d bb f0 01 00 00 	lea    0x1f0(%rbx),%rdi
+  19:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  20:	fc ff df
+  23:	48 89 fa             	mov    %rdi,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
+  2e:	0f 85 fc 00 00 00    	jne    0x130
+  34:	48 8b 93 f0 01 00 00 	mov    0x1f0(%rbx),%rdx
+  3b:	40 0f b6 c5          	movzbl %bpl,%eax
+  3f:	48                   	rex.W
+
+
 ---
- ip/ip_common.h           |  1 +
- ip/ipaddress.c           | 39 ++++++++++++++++++++++++++++++++++++---
- ip/iplink.c              |  2 +-
- man/man8/ip-address.8.in | 16 +++++++++++++++-
- man/man8/ip-link.8.in    | 13 ++++++++++---
- 5 files changed, 63 insertions(+), 8 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/ip/ip_common.h b/ip/ip_common.h
-index ea04c8ff..38377be4 100644
---- a/ip/ip_common.h
-+++ b/ip/ip_common.h
-@@ -26,6 +26,7 @@ struct link_filter {
- 	int master;
- 	char *kind;
- 	char *slave_kind;
-+	char *exclude_kind;
- 	int target_nsid;
- };
- 
-diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index 4109d8bd..4db27c92 100644
---- a/ip/ipaddress.c
-+++ b/ip/ipaddress.c
-@@ -60,7 +60,7 @@ static void usage(void)
- 		"       ip address {save|flush} [ dev IFNAME ] [ scope SCOPE-ID ]\n"
- 		"                            [ to PREFIX ] [ FLAG-LIST ] [ label LABEL ] [up]\n"
- 		"       ip address [ show [ dev IFNAME ] [ scope SCOPE-ID ] [ master DEVICE ]\n"
--		"                         [ nomaster ]\n"
-+		"                         [ nomaster ] [ exclude_type TYPE ]\n"
- 		"                         [ type TYPE ] [ to PREFIX ] [ FLAG-LIST ]\n"
- 		"                         [ label LABEL ] [up] [ vrf NAME ] ]\n"
- 		"       ip address {showdump|restore}\n"
-@@ -1023,7 +1023,28 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
- 	} else if (filter.master > 0)
- 		return -1;
- 
--	if (filter.kind && match_link_kind(tb, filter.kind, 0))
-+	if (filter.exclude_kind && match_link_kind(tb, filter.exclude_kind, 0) == -1 &&
-+	    !strcmp(filter.exclude_kind, "ether") && ifi->ifi_type == ARPHRD_ETHER)
-+		return -1;
-+	if (filter.exclude_kind && match_link_kind(tb, filter.exclude_kind, 0) == -1 &&
-+	    !strcmp(filter.exclude_kind, "loopback") && ifi->ifi_type == ARPHRD_LOOPBACK)
-+		return -1;
-+	if (filter.exclude_kind && match_link_kind(tb, filter.exclude_kind, 0) == -1 &&
-+	    !strcmp(filter.exclude_kind, "ppp") && ifi->ifi_type == ARPHRD_PPP)
-+		return -1;
-+	if (filter.exclude_kind && !match_link_kind(tb, filter.exclude_kind, 0))
-+		return -1;
-+
-+	if (filter.kind && match_link_kind(tb, filter.kind, 0) == -1 &&
-+	    !strcmp(filter.kind, "ether") && ifi->ifi_type == ARPHRD_ETHER)
-+		;
-+	else if (filter.kind && match_link_kind(tb, filter.kind, 0) == -1 &&
-+		 !strcmp(filter.kind, "loopback") && ifi->ifi_type == ARPHRD_LOOPBACK)
-+		;
-+	else if (filter.kind && match_link_kind(tb, filter.kind, 0) == -1 &&
-+		 !strcmp(filter.kind, "ppp") && ifi->ifi_type == ARPHRD_PPP)
-+		;
-+	else if (filter.kind && match_link_kind(tb, filter.kind, 0))
- 		return -1;
- 
- 	if (filter.slave_kind && match_link_kind(tb, filter.slave_kind, 1))
-@@ -1971,7 +1992,9 @@ static int iplink_filter_req(struct nlmsghdr *nlh, int reqlen)
- 			return err;
- 	}
- 
--	if (filter.kind) {
-+	if (filter.kind && !strcmp(filter.kind, "ether") &&
-+	    !strcmp(filter.kind, "loopback") && !strcmp(filter.kind, "ppp")) {
-+
- 		struct rtattr *linkinfo;
- 
- 		linkinfo = addattr_nest(nlh, reqlen, IFLA_LINKINFO);
-@@ -2137,6 +2160,16 @@ static int ipaddr_list_flush_or_save(int argc, char **argv, int action)
- 			} else {
- 				filter.kind = *argv;
- 			}
-+		} else if (strcmp(*argv, "exclude_type") == 0) {
-+			int soff;
-+
-+			NEXT_ARG();
-+			soff = strlen(*argv) - strlen("_slave");
-+			if (!strcmp(*argv + soff, "_slave")) {
-+				invarg("Not a valid type for exclude\n", *argv);
-+			} else {
-+				filter.exclude_kind = *argv;
-+			}
- 		} else {
- 			if (strcmp(*argv, "dev") == 0)
- 				NEXT_ARG();
-diff --git a/ip/iplink.c b/ip/iplink.c
-index a3ea775d..e0d49cab 100644
---- a/ip/iplink.c
-+++ b/ip/iplink.c
-@@ -120,7 +120,7 @@ void iplink_usage(void)
- 		"		[ gso_max_size BYTES ] | [ gso_max_segs PACKETS ]\n"
- 		"\n"
- 		"	ip link show [ DEVICE | group GROUP ] [up] [master DEV] [vrf NAME] [type TYPE]\n"
--		"		[nomaster]\n"
-+		"		[exclude_type TYPE] [nomaster]\n"
- 		"\n"
- 		"	ip link xstats type TYPE [ ARGS ]\n"
- 		"\n"
-diff --git a/man/man8/ip-address.8.in b/man/man8/ip-address.8.in
-index 65f67e06..21de3d77 100644
---- a/man/man8/ip-address.8.in
-+++ b/man/man8/ip-address.8.in
-@@ -45,6 +45,8 @@ ip-address \- protocol address management
- .IR PATTERN " ] [ "
- .B  master
- .IR DEVICE " ] [ "
-+.B  exclude_type
-+.IR TYPE " ] [ "
- .B  type
- .IR TYPE " ] [ "
- .B vrf
-@@ -138,7 +140,10 @@ ip-address \- protocol address management
- .BR ipvlan " |"
- .BR lowpan " |"
- .BR geneve " |"
--.BR macsec " ]"
-+.BR macsec " |"
-+.BR ether " |"
-+.BR loopback " |"
-+.BR ppp " ]"
- 
- .SH "DESCRIPTION"
- The
-@@ -337,6 +342,10 @@ interface list by comparing it with the relevant attribute in case the kernel
- didn't filter already. Therefore any string is accepted, but may lead to empty
- output.
- 
-+.TP
-+.BI exclude_type " TYPE"
-+don't list linterfaces of the given type.
-+
- .TP
- .B up
- only list running interfaces.
-@@ -441,6 +450,11 @@ Same as above except that only addresses assigned to active network interfaces
- are shown.
- .RE
- .PP
-+ip address show type ether
-+.RS 4
-+Shows IPv4 and IPv6 addresses assigned to all physical ethernetl interfaces
-+.RE
-+.PP
- ip address show dev eth0
- .RS 4
- Shows IPv4 and IPv6 addresses assigned to network interface eth0.
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index 1d67c9a4..dc8a1abf 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -176,10 +176,12 @@ ip-link \- network device configuration
- .BR up " ] ["
- .B master
- .IR DEVICE " ] ["
--.B type
--.IR ETYPE " ] ["
- .B vrf
- .IR NAME " ] ["
-+.B type
-+.IR ETYPE " ] ["
-+.B exclude_type
-+.IR ETYPE " ] ["
- .BR nomaster " ]"
- 
- .ti -8
-@@ -237,7 +239,7 @@ ip-link \- network device configuration
- 
- .ti -8
- .IR ETYPE " := [ " TYPE " |"
--.BR bridge_slave " | " bond_slave " ]"
-+.BR ether " | " loopback " | " ppp " | " bridge_slave " | " bond_slave " ]"
- 
- .ti -8
- .IR VFVLAN-LIST " := [ "  VFVLAN-LIST " ] " VFVLAN
-@@ -2630,6 +2632,11 @@ ip link show type vlan
- Shows the vlan devices.
- .RE
- .PP
-+ip link show exclude_type ppp
-+.RS 4
-+List the network interfaces except PPP devices.
-+.RE
-+.PP
- ip link show master br0
- .RS 4
- Shows devices enslaved by br0
--- 
-2.20.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
