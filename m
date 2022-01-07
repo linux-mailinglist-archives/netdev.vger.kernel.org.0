@@ -2,130 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F504487510
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 10:54:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B60548751C
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 10:55:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237081AbiAGJyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 04:54:33 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:25662 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S236845AbiAGJyc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 04:54:32 -0500
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20788OXF030221;
-        Fri, 7 Jan 2022 09:54:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=yn+LZK13t96NQ70dE3DDtgrpMgvTlTKwsCocVjhcrlM=;
- b=kCpJgZ6XWEOg7iDo3ScCRRv1jB3J2D5ZkBfHViPNz/o4l3Sg1Eh6JX7DJGw4hZcntbsn
- YEmCuvM7DPRg5Id0wYr+GbqDkL1qxjIwjqQwMVUvYrOi9tb/JgMrbdoZ6iPybFqM/a6v
- q63FGVWRdWWWvzhe9RwHhSmuUqfFkA19MFj4pWbENmzVa+aOOc8pm6gsFuPwX/2Ci4mn
- 9tYxwfZub019ppL/eQEfTdB8cHJP5Hoqo3sSKGBx3CBlLw+fUehQtiMI1ueq/y5Nyd/7
- +s2mYRlS9j/SpLLng5QcmEj6AO4MIb4FpZWknkuC5BS4cOa76Uof/thlIkKGr5smz6t9 9w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3de4wkpgm6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 07 Jan 2022 09:54:29 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2079lLxe009385;
-        Fri, 7 Jan 2022 09:54:28 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3de4wkpgkv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 07 Jan 2022 09:54:28 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2079rgH3016632;
-        Fri, 7 Jan 2022 09:54:27 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04fra.de.ibm.com with ESMTP id 3de4xgct3f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 07 Jan 2022 09:54:26 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2079sOmP44368218
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 7 Jan 2022 09:54:24 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9265B11C04C;
-        Fri,  7 Jan 2022 09:54:24 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 255A111C050;
-        Fri,  7 Jan 2022 09:54:24 +0000 (GMT)
-Received: from [9.145.27.136] (unknown [9.145.27.136])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  7 Jan 2022 09:54:24 +0000 (GMT)
-Message-ID: <ed37164f-74b1-de58-8308-4a11ea352faa@linux.ibm.com>
-Date:   Fri, 7 Jan 2022 10:54:29 +0100
+        id S1346622AbiAGJzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 04:55:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38598 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237113AbiAGJzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 04:55:47 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A3D0C061245;
+        Fri,  7 Jan 2022 01:55:47 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id w16so19963928edc.11;
+        Fri, 07 Jan 2022 01:55:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ooscPa9TOlryt6N2qyAjoWJG3ETCPGiTW3k86Hswt4s=;
+        b=cks1zYcs1Xgs5V1uOxCxOR/Qf1h3YplePHLQt8PrFB2csgVE4qG07afD/fyjCaGyzl
+         1WD7t+TBP31vbykr5v82qNPkwItSkh5TD7OkW8rLgrqDrBW4vt9LwZfppqrYmXtcZoGR
+         pi8XMTOHozBg7Am5I9HMsNAGfqbe68i3T8Ytvx47Ueot+iht4SELH1YhT6VKYZulNBAY
+         0sZRwJJi/r5pYjrZ0j6jeUPMzPzGpVWt/HPZYGiKVfWnI4BA3JCMo1lLG2XPwKpipJ+5
+         Dtwto3PdHvkXi3e6bsp1hoM4ZSRZvkbqCcyuKtAgcEtQhD4zTpYOv6A/lHpE61aa+Kgx
+         +RPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ooscPa9TOlryt6N2qyAjoWJG3ETCPGiTW3k86Hswt4s=;
+        b=wcPi0OkYHbvoxpPydP1k/PEoB/2jK+h0BP9Gdi/o6Yj0bu0oPteK8az95QCAeqAYI1
+         GXKI0r+br6J7AuKhHn95aenr5u6nTc+8bqEyg9USQNJnF6V0sugOwpHi58FBBBc1XLsP
+         8cIPwwrrou9X1mSpDW2ibNeFUxqRbdWxASPQMLaUWQA+Yl5EbCXcnWIQu0KPcpB9rp3x
+         +zmHeKVBr30tX5SHtl+GnvZRBVIq9c0sRzseO61PSRq0MV0XHgrunO9W+K0l8IPIUoLL
+         +Y8CRuuBxYh7rsgNNUZs4xImNIBewsKu84ZL1ECEIgP2YjqbY0MGDG6OT4Mu8cTTCSBG
+         uCSA==
+X-Gm-Message-State: AOAM533YLE9H6ztzuDzj1wQee/7OskkMAnrPepGEi7XCc4HKI3WANd16
+        XWbjJ6cZAkE697TwtZrTnPcpRsulYDLquCY/MLY=
+X-Google-Smtp-Source: ABdhPJyB4zmiPw+DT/UfLBkSbY7FHKdVrFhtBv4VRloJ0St9kcs4gSdd/nWXaQV+hqqHdpMvkryUkooa/wovLjUVVQQ=
+X-Received: by 2002:a17:907:6d8d:: with SMTP id sb13mr50102935ejc.132.1641549345664;
+ Fri, 07 Jan 2022 01:55:45 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH net v2 1/2] net/smc: Resolve the race between link
- group access and termination
-Content-Language: en-US
-To:     Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dust.li@linux.alibaba.com,
-        tonylu@linux.alibaba.com
-References: <1640704432-76825-1-git-send-email-guwen@linux.alibaba.com>
- <1640704432-76825-2-git-send-email-guwen@linux.alibaba.com>
- <4ec6e460-96d1-fedc-96ff-79a98fd38de8@linux.ibm.com>
- <0a972bf8-1d7b-a211-2c11-50e86c87700e@linux.alibaba.com>
- <4df6c3c1-7d52-6bfa-9b0d-365de5332c06@linux.ibm.com>
- <095c6e45-dd9e-1809-ae51-224679783241@linux.alibaba.com>
- <1cf77005-1825-0d34-6d34-e1b513c28113@linux.ibm.com>
- <747c3399-4e6f-0353-95bf-6b6f3a0f5f60@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <747c3399-4e6f-0353-95bf-6b6f3a0f5f60@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: HGC5T7kzdwfc6PxtRwMDCpgBrMvzg27r
-X-Proofpoint-ORIG-GUID: ldC3e0SUjeuOkS4n9fU1amkxicM9Yumk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-07_03,2022-01-06_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 impostorscore=0 suspectscore=0 mlxlogscore=999 mlxscore=0
- clxscore=1015 phishscore=0 priorityscore=1501 bulkscore=0 malwarescore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201070068
+References: <20220104072658.69756-1-marcan@marcan.st> <20220104072658.69756-5-marcan@marcan.st>
+ <5ddde705-f3fa-ff78-4d43-7a02d6efaaa6@gmail.com> <7c8d5655-a041-e291-95c1-be200233f87f@marcan.st>
+ <8394dbcd-f500-b1ae-fcd8-15485d8c0888@gmail.com> <6a936aea-ada4-fe2d-7ce6-7a42788e4d63@marcan.st>
+ <57716712-024d-af7e-394b-72ca9cb008d0@gmail.com> <CAHp75VdXk87x7oDT1O5Q32ZsL4n0HYt-fijeiXw8n9fgypkOgg@mail.gmail.com>
+ <d608ab82-cffe-0d66-99d2-d0abd214dd0d@gmail.com>
+In-Reply-To: <d608ab82-cffe-0d66-99d2-d0abd214dd0d@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 7 Jan 2022 11:55:09 +0200
+Message-ID: <CAHp75VfCJhMi35OnnE+hxp43PjpGYN1vteuMqX0J+1xZ+=az5w@mail.gmail.com>
+Subject: Re: [PATCH v2 04/35] brcmfmac: firmware: Support having multiple alt paths
+To:     Dmitry Osipenko <digetx@gmail.com>
+Cc:     Hector Martin <marcan@marcan.st>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        SHA-cyfmac-dev-list@infineon.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/01/2022 14:02, Wen Gu wrote:
-> Thanks for your reply.
-> 
-> On 2022/1/5 8:03 pm, Karsten Graul wrote:
->> On 05/01/2022 09:27, Wen Gu wrote:
->>> On 2022/1/3 6:36 pm, Karsten Graul wrote:
->>>> On 31/12/2021 10:44, Wen Gu wrote:
->>>>> On 2021/12/29 8:56 pm, Karsten Graul wrote:
->>>>>> On 28/12/2021 16:13, Wen Gu wrote:
->>>>>>> We encountered some crashes caused by the race between the access
->>>>>>> and the termination of link groups.
-> So I am trying this way:
-> 
-> 1) Introduce a new helper smc_conn_lgr_state() to check the three stages mentioned above.
-> 
->   enum smc_conn_lgr_state {
->          SMC_CONN_LGR_ORPHAN,    /* conn was never registered in a link group */
->          SMC_CONN_LGR_VALID,     /* conn is registered in a link group now */
->          SMC_CONN_LGR_INVALID,   /* conn was registered in a link group, but now
->                                     is unregistered from it and conn->lgr should
->                                     not be used any more */
->   };
-> 
-> 2) replace the current conn->lgr check with the new helper.
-> 
-> These new changes are under testing now.
-> 
-> What do you think about it? :)
+On Fri, Jan 7, 2022 at 5:12 AM Dmitry Osipenko <digetx@gmail.com> wrote:
+> 06.01.2022 20:58, Andy Shevchenko =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+> > On Thu, Jan 6, 2022 at 7:40 PM Dmitry Osipenko <digetx@gmail.com> wrote=
+:
+> >> 05.01.2022 16:22, Hector Martin =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
 
-Sounds good, but is it really needed to separate 3 cases, i.e. who is really using them 3?
-Doesn't it come down to a more simple smc_conn_lgr_valid() which is easier to implement in
-the various places in the code? (i.e.: if (smc_conn_lgr_valid()) ....)
-Valid would mean conn->lgr != NULL and conn->alert_token_local != 0. The more special cases
-would check what they want by there own.
+...
+
+> >> while (alt_paths.index)
+> >>         kfree(alt_paths.path[--alt_paths.index]);
+> >
+> > Usual pattern is
+> >
+> >   while (x--)
+> >     kfree(x);
+
+I have to elaborate that my point is to have postdecrement in the
+while() instead of doing predecrement in its body. So the above
+example will look
+
+  while (alt_paths.index--)
+    kfree(alt_paths.path[alt_paths.index]);
+
+> > easier to read, extend (if needed).
+>
+> That is indeed a usual patter for the driver removal code paths. I
+> didn't like to have index of struct brcmf_fw underflowed, but I see now
+> that fwctx is dynamically created and freed during driver probe, so it
+> should be fine to use that usual pattern here too.
+
+
+
+--=20
+With Best Regards,
+Andy Shevchenko
