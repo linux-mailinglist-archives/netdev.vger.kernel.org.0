@@ -2,185 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F6AE487A51
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 17:27:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3780487A5C
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 17:30:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348250AbiAGQ1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 11:27:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42830 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348240AbiAGQ1t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 11:27:49 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E27BCC06173E;
-        Fri,  7 Jan 2022 08:27:48 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id c2so5583037pfc.1;
-        Fri, 07 Jan 2022 08:27:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OrXHzwsQEzApYAb08/vgr/iOHUJBZcv9FRHsGwpb498=;
-        b=i3fTnUvhY06ZcPs+HMvpfS5zHX7agZRWvHdsTwTl1TkL2GOuFKrYHRjsqymJdUFwdC
-         4zMNL1r/l5EsQMPrzHYEK4HCmNjWiRdEiM8b0vPCXdH2zFTHBzsBXRi6zzPOcCjGj6u9
-         ghz6mT4vlXaNrerpTP5/Vm/E6EbTJTG9EVeZFxSaeBwdnHIe7T3Xy7yEdPdFRHBoVwrd
-         A7a/LbGJqm8Geg6hldftvJjXnalsXkts9v6HJrYZ4GSnuwxCEXIzIiUIolFYVNtyQKqy
-         m/FJ9kYbtYjTfG1lOsAW7ajVu2XduaCgmbLM9XpEjJwDgtSGLyhBtTeq0DG8LMPayJGk
-         QxjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OrXHzwsQEzApYAb08/vgr/iOHUJBZcv9FRHsGwpb498=;
-        b=ZN91GUcUyCxTKEd4gWyhN9lLMuJrpHGh2AzugVp2cK9J1zqi/I0g4fWRYYzeheWSzn
-         kSHCrTcFTVs1urJsSIF87WkONRWGrwb23XgULHEaRh8Jvczde4ZGkdPYSvPCpiQIYN4V
-         cma1h0U7kOo9tC16DJ40QmBKZeip3FNWwn4S//lnncbeFEpg7GQfPVFLKnsU7EnkpMXm
-         RWvHGWaeQk8FtzsB81bunlFsE3eHtUrZwnFUa2Gd/bW755f0IezB4i4d1nXGSLE6Qlxj
-         exPJRySH6oFf7/MQUK3PBigDpfhRbTr3fJS8FEzrZXzIzP3YFBEsqIoxnAWnvxCEAhYN
-         cj4g==
-X-Gm-Message-State: AOAM530jABsEf85cfhQB3WYjZ3rygrfxBMQ9WAJ9wRqZugXGBcEctwxw
-        XZqJ57Lg7hwdPOynO7JD93Z2F2ZILKo/2gxZMpA=
-X-Google-Smtp-Source: ABdhPJzNM8P/vPaXr4QbCREfthoANHoIqq5NUUR5uPMjknD9QyIBJ46ngS7OoP8j6eGWJNPaUCkH33Zlse0Yz5loNAA=
-X-Received: by 2002:aa7:8c59:0:b0:4bc:9dd2:6c12 with SMTP id
- e25-20020aa78c59000000b004bc9dd26c12mr25922525pfd.59.1641572868290; Fri, 07
- Jan 2022 08:27:48 -0800 (PST)
-MIME-Version: 1.0
-References: <000000000000ab9b3e05d4feacd6@google.com>
-In-Reply-To: <000000000000ab9b3e05d4feacd6@google.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 7 Jan 2022 08:27:37 -0800
-Message-ID: <CAADnVQLH5r-OLfGwduMqvTuz952Y+D7X29bW-f8QGpE9G6dF6g@mail.gmail.com>
-Subject: Re: [syzbot] general protection fault in dev_get_by_index_rcu (2)
-To:     syzbot <syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        id S240059AbiAGQaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 11:30:04 -0500
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:33218 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239599AbiAGQaE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 11:30:04 -0500
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 207GTWdY126346;
+        Fri, 7 Jan 2022 10:29:32 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1641572972;
+        bh=gSPa2SrN3YqB2RHUn1JNHASwQpxAuZUnLG52GBxt0Yg=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=MQOUv676jgbtfoWqniRW7KLxTX7A9n1bLd9Z69Xp6udLs91KhMVg1QG+avjqYHped
+         0Ja1d7ORgD9PT6zqJiEEUMcDTCYDjP0WrPJBNR0eknL4hdQUPwdnCarQ63770u3c9K
+         tUWddqEeuiK82jmgg4MTVDeLLjtXsmesyaqcWE4c=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 207GTVuI030190
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 7 Jan 2022 10:29:31 -0600
+Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 7
+ Jan 2022 10:29:31 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 7 Jan 2022 10:29:30 -0600
+Received: from [10.249.36.164] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 207GTU8O054945;
+        Fri, 7 Jan 2022 10:29:30 -0600
+Subject: Re: [PATCH] dt-bindings: Drop required 'interrupt-parent'
+To:     Rob Herring <robh@kernel.org>
+CC:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Lee Jones <lee.jones@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        - <patches@opensource.cirrus.com>,
+        John Crispin <john@phrozen.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Linux-ALSA <alsa-devel@alsa-project.org>,
+        netdev <netdev@vger.kernel.org>, PCI <linux-pci@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "Nagalla, Hari" <hnagalla@ti.com>, "Menon, Nishanth" <nm@ti.com>,
+        Vignesh R <vigneshr@ti.com>
+References: <20220107031905.2406176-1-robh@kernel.org>
+ <cf75f1ee-8424-b6b2-f873-beea4676a29f@ti.com>
+ <CAL_JsqL3PGqmzA0wW37G7TXhbRVgByznk==Q8GhA0_OFBKAycQ@mail.gmail.com>
+From:   Suman Anna <s-anna@ti.com>
+Message-ID: <8902cefa-e2d7-1bcc-aae2-f272be53d675@ti.com>
+Date:   Fri, 7 Jan 2022 10:29:30 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <CAL_JsqL3PGqmzA0wW37G7TXhbRVgByznk==Q8GhA0_OFBKAycQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke, Jesper,
+Hi Rob,
 
-please take a look.
-Seems to be in your area of expertise.
+On 1/7/22 9:20 AM, Rob Herring wrote:
+> On Fri, Jan 7, 2022 at 8:27 AM Suman Anna <s-anna@ti.com> wrote:
+>>
+>> Hi Rob,
+>>
+>> On 1/6/22 9:19 PM, Rob Herring wrote:
+>>> 'interrupt-parent' is never required as it can be in a parent node or a
+>>> parent node itself can be an interrupt provider. Where exactly it lives is
+>>> outside the scope of a binding schema.
+>>>
+>>> Signed-off-by: Rob Herring <robh@kernel.org>
+>>> ---
+>>>  .../devicetree/bindings/gpio/toshiba,gpio-visconti.yaml  | 1 -
+>>>  .../devicetree/bindings/mailbox/ti,omap-mailbox.yaml     | 9 ---------
+>>>  Documentation/devicetree/bindings/mfd/cirrus,madera.yaml | 1 -
+>>>  .../devicetree/bindings/net/lantiq,etop-xway.yaml        | 1 -
+>>>  .../devicetree/bindings/net/lantiq,xrx200-net.yaml       | 1 -
+>>>  .../devicetree/bindings/pci/sifive,fu740-pcie.yaml       | 1 -
+>>>  .../devicetree/bindings/pci/xilinx-versal-cpm.yaml       | 1 -
+>>>  7 files changed, 15 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml b/Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
+>>> index 9ad470e01953..b085450b527f 100644
+>>> --- a/Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
+>>> +++ b/Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
+>>> @@ -43,7 +43,6 @@ required:
+>>>    - gpio-controller
+>>>    - interrupt-controller
+>>>    - "#interrupt-cells"
+>>> -  - interrupt-parent
+>>>
+>>>  additionalProperties: false
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/mailbox/ti,omap-mailbox.yaml b/Documentation/devicetree/bindings/mailbox/ti,omap-mailbox.yaml
+>>> index e864d798168d..d433e496ec6e 100644
+>>> --- a/Documentation/devicetree/bindings/mailbox/ti,omap-mailbox.yaml
+>>> +++ b/Documentation/devicetree/bindings/mailbox/ti,omap-mailbox.yaml
+>>> @@ -175,15 +175,6 @@ required:
+>>>    - ti,mbox-num-fifos
+>>>
+>>>  allOf:
+>>> -  - if:
+>>> -      properties:
+>>> -        compatible:
+>>> -          enum:
+>>> -            - ti,am654-mailbox
+>>> -    then:
+>>> -      required:
+>>> -        - interrupt-parent
+>>> -
+>>
+>> There are multiple interrupt controllers on TI K3 devices, and we need this
+>> property to be defined _specifically_ to point to the relevant interrupt router
+>> parent node.
+>>
+>> While what you state in general is true, I cannot have a node not define this on
+>> K3 devices, and end up using the wrong interrupt parent (GIC
+>> interrupt-controller). That's why the conditional compatible check.
+> 
+> But you could.
+> 
+> The parent node can have a default interrupt-parent and child nodes
+> can override that. It doesn't matter which one is the default though
+> typically you would want the one used the most to be the default.
+> Looking at your dts files, it looks like you all did the opposite. 
 
-Thanks
+Hmm, I am not sure I understood your last comment. Can you point out the
+specific usage?
 
-On Fri, Jan 7, 2022 at 6:19 AM syzbot
-<syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    819d11507f66 bpf, selftests: Fix spelling mistake "tained"..
-> git tree:       bpf
-> console output: https://syzkaller.appspot.com/x/log.txt?x=12500db3b00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=22b66456935ee10
-> dashboard link: https://syzkaller.appspot.com/bug?extid=983941aa85af6ded1fd9
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=153a6cb3b00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=121c690bb00000
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com
->
-> general protection fault, probably for non-canonical address 0xdffffc000000003e: 0000 [#1] PREEMPT SMP KASAN
-> KASAN: null-ptr-deref in range [0x00000000000001f0-0x00000000000001f7]
-> CPU: 1 PID: 19 Comm: ksoftirqd/1 Not tainted 5.16.0-rc5-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:dev_index_hash net/core/dev.c:222 [inline]
-> RIP: 0010:dev_get_by_index_rcu+0x28/0x140 net/core/dev.c:885
-> Code: 00 00 41 55 41 54 55 89 f5 53 48 89 fb e8 00 9d 4d fa 48 8d bb f0 01 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 fc 00 00 00 48 8b 93 f0 01 00 00 40 0f b6 c5 48
-> RSP: 0018:ffffc90000d97608 EFLAGS: 00010202
-> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000100
-> RDX: 000000000000003e RSI: ffffffff872a14d0 RDI: 00000000000001f0
-> RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000001
-> R10: ffffffff873745ad R11: 000000000008808a R12: ffff88806a062100
-> R13: 0000000000000003 R14: ffff88806a062100 R15: ffffc90001116000
-> FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 000055555733a848 CR3: 000000001479e000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  ____bpf_clone_redirect net/core/filter.c:2410 [inline]
->  bpf_clone_redirect+0x91/0x420 net/core/filter.c:2401
->  bpf_prog_bebbfe2050753572+0x56/0xcc0
->  __bpf_prog_run include/linux/filter.h:626 [inline]
->  bpf_prog_run_xdp include/linux/filter.h:801 [inline]
->  veth_xdp_rcv_skb+0x64b/0x1b20 drivers/net/veth.c:775
->  veth_xdp_rcv+0x3ac/0x810 drivers/net/veth.c:881
->  veth_poll+0x134/0x850 drivers/net/veth.c:913
->  __napi_poll+0xaf/0x440 net/core/dev.c:7023
->  napi_poll net/core/dev.c:7090 [inline]
->  net_rx_action+0x801/0xb40 net/core/dev.c:7177
->  __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
->  run_ksoftirqd kernel/softirq.c:921 [inline]
->  run_ksoftirqd+0x2d/0x60 kernel/softirq.c:913
->  smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
->  kthread+0x405/0x4f0 kernel/kthread.c:327
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
->  </TASK>
-> Modules linked in:
-> ---[ end trace 86b7d5782a67ad32 ]---
-> RIP: 0010:dev_index_hash net/core/dev.c:222 [inline]
-> RIP: 0010:dev_get_by_index_rcu+0x28/0x140 net/core/dev.c:885
-> Code: 00 00 41 55 41 54 55 89 f5 53 48 89 fb e8 00 9d 4d fa 48 8d bb f0 01 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 fc 00 00 00 48 8b 93 f0 01 00 00 40 0f b6 c5 48
-> RSP: 0018:ffffc90000d97608 EFLAGS: 00010202
-> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000100
-> RDX: 000000000000003e RSI: ffffffff872a14d0 RDI: 00000000000001f0
-> RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000001
-> R10: ffffffff873745ad R11: 000000000008808a R12: ffff88806a062100
-> R13: 0000000000000003 R14: ffff88806a062100 R15: ffffc90001116000
-> FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 000055555733a848 CR3: 000000001479e000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> ----------------
-> Code disassembly (best guess):
->    0:   00 00                   add    %al,(%rax)
->    2:   41 55                   push   %r13
->    4:   41 54                   push   %r12
->    6:   55                      push   %rbp
->    7:   89 f5                   mov    %esi,%ebp
->    9:   53                      push   %rbx
->    a:   48 89 fb                mov    %rdi,%rbx
->    d:   e8 00 9d 4d fa          callq  0xfa4d9d12
->   12:   48 8d bb f0 01 00 00    lea    0x1f0(%rbx),%rdi
->   19:   48 b8 00 00 00 00 00    movabs $0xdffffc0000000000,%rax
->   20:   fc ff df
->   23:   48 89 fa                mov    %rdi,%rdx
->   26:   48 c1 ea 03             shr    $0x3,%rdx
-> * 2a:   80 3c 02 00             cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
->   2e:   0f 85 fc 00 00 00       jne    0x130
->   34:   48 8b 93 f0 01 00 00    mov    0x1f0(%rbx),%rdx
->   3b:   40 0f b6 c5             movzbl %bpl,%eax
->   3f:   48                      rex.W
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> syzbot can test patches for this issue, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
+All our K3 dts files have the interrupt-parent = <&gic500> defined at the
+root-node, which is the default ARM GIC.
+
+Let us know if we need to fix something in our dts files.
+
+The
+> only way that wouldn't work is if the parent node is if the parent
+> node has its own 'interrupts' or you are just abusing
+> 'interrupt-parent' where the standard parsing doesn't work.
+
+All our K3 gic500 nodes does have an 'interrupts' property.
+
+> 
+> You are also free to use 'interrupts-extended' anywhere 'interrupts'
+> is used and then interrupt-parent being present is an error. 
+
+Yes, this is understood. The OMAP Mailbox binding is reused between multiple SoC
+families, some of which do not use an Interrupt Router in between.
+
+So, whats the best way to enforce this in the specific schema? I have used the
+common 'interrupts' property that applies to all SoCs, and enforced the
+conditional 'interrupt-parent' only on relevant compatibles.
+
+regards
+Suman
+
+How you
+> structure all this is outside the scope of binding schemas which only
+> need to define how many interrupts and what are they. Ensuring parents
+> and cell sizes are correct is mostly done by dtc.
+> 
+> Rob
+> 
+
