@@ -2,122 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8B854871BF
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 05:22:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7C1F4871C4
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 05:33:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232056AbiAGEV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 23:21:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49498 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbiAGEV6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 23:21:58 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C619C061245;
-        Thu,  6 Jan 2022 20:21:58 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id e9so7161341wra.2;
-        Thu, 06 Jan 2022 20:21:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=C9u+7b7Y8JEzmUJuxanRH3UmSulxRrobTg+ag4bjnWQ=;
-        b=S9AjBDtiMJBKSy2Uy9lo85nOPo3XxXmZt2xcCGAChsLMVsFaimDH0GfJuNFi2e8eH3
-         pt8yGgEh2hyj+hFaBCEoM/R80/vxdpPANc/ijkVzxHj+7vrDIhZo5rLnP9SP0g4i7m0c
-         EuhNOqoWR000tvcbGnTAEaIgT2VpyKqtix3iYvbSM8emBl1MzEW8HBpihosUfHmeenaz
-         Rcx2OtVSWMXv98BJQ0R7vJiUN47GeTKSXRZl301u2CN8qsBiFu/cwKH4LCAVoYCON6b7
-         5M8mkeG1SwlxVkksma+I/wzfndohUJuql/Mt3fOF0o4iEOkvXI13pZER8J6TETJsox7n
-         0wjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C9u+7b7Y8JEzmUJuxanRH3UmSulxRrobTg+ag4bjnWQ=;
-        b=o2EKxFiWUveu613Ej/F1a+6Ziat87jZPABLAHlXJTiN5u8ukNsd/nl1OyJHqk3HpQX
-         jbIKUbjYv9ORQ58iW6vTqrspQqRE+K++FZ+5vC3YuWnafZtURMgR72UcNgfKdjToysXF
-         sc78UXCMXDLb96adislGl7BM88TulPh2GL2cEfubFUY2GXrK+AR1fHMSVmWMJKLNDGC3
-         KdCR1msjHQ8d20EbfhDs+Fvgid8H8MDYvssQ9L/wrN/K1MjiKXMDSlx1t21GXQMmCoyT
-         9eVNW0i984FWu+TZHyCMudkuChR3YPlncTWSp+gel0QYp9tCAUhWhnG23x6EnvNxonFY
-         ZxPA==
-X-Gm-Message-State: AOAM533bwOQ72vXlxIgDKnA9ZIfBUMrFtVPEnUwWPIUOk9GOAbE9iYqW
-        G6aAJWQp8hQaCBKOhMWXEK76f8MdvRIsQfs5n4g31bTkePk=
-X-Google-Smtp-Source: ABdhPJyGlN9KZOIWTPTJEUZW91PfVhVCpomk78Rt4q5CkxF4y461hk30Lh6K5Sd64jeb7CbHuqA2WsqfXFIjC8+Vkh8=
-X-Received: by 2002:adf:e190:: with SMTP id az16mr7884177wrb.207.1641529317043;
- Thu, 06 Jan 2022 20:21:57 -0800 (PST)
+        id S1345471AbiAGEc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 23:32:58 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51672 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229716AbiAGEc6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 23:32:58 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1975EB824D9
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 04:32:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 889B5C36AE5;
+        Fri,  7 Jan 2022 04:32:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641529975;
+        bh=P8ycnvOVDoXgnQPNsr6j2Gc9mXqzPoVJhtYKAK7nwp4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OQlSYbYVFPtu7VvsOVI2CKyfI0EnDQfjEa67U+mnRpfcx05pJga7qqceH8J+KlY9w
+         TkgL8AQ2khPc2IIhvjDwhQFhPfwlf70hI8wTnEzD17+SJ6xFC5BlWrjA5pdmhyeT9X
+         aLdt5y5ZA2eCxCunKKDrnbbxzC75hbI4J8dVJGyozROJxZtriKYf8P1Lz+fWtiNKAc
+         A6CNoAQPxi3vaI55vami5KUoM9e+2oAoUfmXqd6+mNvqimPBzgE5gZBtCa0gwZUtqD
+         hM74AuVg9v8kTjnebSbarBmwvmlmSAA70W6vN2XCb2hlQiQWWRdGCeppp2+6ewwhE1
+         zb63vH2nUMlUA==
+Date:   Thu, 6 Jan 2022 20:32:54 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, Karen Sornek <karen.sornek@intel.com>,
+        netdev@vger.kernel.org, sassmann@redhat.com,
+        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: Re: [PATCH net-next 2/7] i40e: Add placeholder for ndo set VLANs
+Message-ID: <20220106203254.1c6159fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220106213301.11392-3-anthony.l.nguyen@intel.com>
+References: <20220106213301.11392-1-anthony.l.nguyen@intel.com>
+        <20220106213301.11392-3-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
- <20211222155743.256280-18-miquel.raynal@bootlin.com> <CAB_54W7o5b7a-2Gg5ZnzPj3o4Yw9FOAxJfykrA=LtpVf9naAng@mail.gmail.com>
- <SN6PR08MB4464D7124FCB5D0801D26B94E0459@SN6PR08MB4464.namprd08.prod.outlook.com>
- <CAB_54W6ikdGe=ZYqOsMgBdb9KBtfAphkBeu4LLp6S4R47ZDHgA@mail.gmail.com>
- <20220105094849.0c7e9b65@xps13> <CAB_54W4Z1KgT+Cx0SXptvkwYK76wDOFTueFUFF4e7G_ABP7kkA@mail.gmail.com>
- <20220106201526.7e513f2f@xps13>
-In-Reply-To: <20220106201526.7e513f2f@xps13>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Thu, 6 Jan 2022 23:21:45 -0500
-Message-ID: <CAB_54W7=YJu7qJPcGX0O6nkBhmg7EmX2iTy+Q+EgffqE5+0NCQ@mail.gmail.com>
-Subject: Re: [net-next 17/18] net: mac802154: Let drivers provide their own
- beacons implementation
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     David Girault <David.Girault@qorvo.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        Romuald Despres <Romuald.Despres@qorvo.com>,
-        Frederic Blain <Frederic.Blain@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu,  6 Jan 2022 13:32:56 -0800 Tony Nguyen wrote:
+> From: Karen Sornek <karen.sornek@intel.com>
+> 
+> VLANs set by ndo, were not accounted.
+> Implement placeholder, by which driver can account VLANs set by
+> ndo. Ensure that once PF changes trunk, every guest filter
+> is removed from the list 'vm_vlan_list'.
+> Implement logic for deletion/addition of guest(from VM) filters.
 
-On Thu, 6 Jan 2022 at 14:15, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> Hi Alexander,
->
-> alex.aring@gmail.com wrote on Wed, 5 Jan 2022 19:23:04 -0500:
->
-...
-> >
-> > A HardMAC driver does not use this driver interface... but there
-> > exists a SoftMAC driver for a HardMAC transceiver. This driver
-> > currently works because we use dataframes only... It will not support
-> > scanning currently and somehow we should make iit not available for
-> > drivers like that and for drivers which don't set symbol duration.
-> > They need to be fixed.
->
-> My bad. I did not look at it correctly. I made a mistake when talking
-> about a hardMAC.
->
-> Instead, it is a "custom" low level MAC layer. I believe we can compare
-> the current mac802154 layer mostly to the MLME that is mentioned in the
-> spec. Well here the additional layer that needs these hooks would be
-> the MCPS. I don't know if this will be upstreamed or not, but the need
-> for these hooks is real if such an intermediate low level MAC layer
-> gets introduced.
->
-> In v2 I will get rid of the two patches adding "driver access" to scans
-> and beacons in order to facilitate the merge of the big part. Then we
-> will have plenty of time to discuss how we can create such an interface.
-> Perhaps I'll be able to propose more code as well to make use of these
-> hooks, we will see.
->
+I could not understand what this change is achieving from reading this.
 
-That the we have a standardised interface between Ieee802154 and
-(HardMAC or SoftMAC(mac802154)) (see cfg802154_ops) which is defined
-according the spec would make it more "stable" that it will work with
-different HardMAC transceivers (which follows that interface) and
-mac802154 stack (which also follows that interface). If I understood
-you correctly.
-I think this is one reason why we are not having any HardMAC
-transceivers driver supported in a proper way yet.
+> +/**
+> + * i40e_add_vmvlan_to_list
+> + * @vf: pointer to the VF info
+> + * @vfl:  pointer to the VF VLAN tag filters list
+> + * @vlan_idx: vlan_id index in VLAN tag filters list
+> + *
+> + * add VLAN tag into the VLAN list for VM
+> + **/
+> +static i40e_status
+> +i40e_add_vmvlan_to_list(struct i40e_vf *vf,
+> +			struct virtchnl_vlan_filter_list *vfl,
+> +			u16 vlan_idx)
+> +{
+> +	struct i40e_vm_vlan *vlan_elem;
+> +
+> +	vlan_elem = kzalloc(sizeof(*vlan_elem), GFP_KERNEL);
+> +	if (!vlan_elem)
+> +		return I40E_ERR_NO_MEMORY;
+> +	vlan_elem->vlan = vfl->vlan_id[vlan_idx];
+> +	vlan_elem->vsi_id = vfl->vsi_id;
+> +	INIT_LIST_HEAD(&vlan_elem->list);
+> +	vf->num_vlan++;
+> +	list_add(&vlan_elem->list, &vf->vm_vlan_list);
+> +	return 0;
 
-I can also imagine about a hwsim HardMAC transceiver which redirects
-cfg802154 to mac802154 SoftMAC instance again (something like that),
-to have a virtual HardMAC transceiver for testing purpose, etc. In
-theory that should work...
+Why not call i40e_vsi_add_vlan() here?
 
-- Alex
+i40e_del_vmvlan_from_list() calls i40e_vsi_kill_vlan(), the functions
+are not symmetric.
+
+> +}
+> +
+> +/**
+> + * i40e_del_vmvlan_from_list
+> + * @vsi: pointer to the VSI structure
+> + * @vf: pointer to the VF info
+> + * @vlan: VLAN tag to be removed from the list
+> + *
+> + * delete VLAN tag from the VLAN list for VM
+> + **/
+> +static void i40e_del_vmvlan_from_list(struct i40e_vsi *vsi,
+> +				      struct i40e_vf *vf, u16 vlan)
+> +{
+> +	struct i40e_vm_vlan *entry, *tmp;
+> +
+> +	list_for_each_entry_safe(entry, tmp, &vf->vm_vlan_list, list) {
+> +		if (vlan == entry->vlan) {
+> +			i40e_vsi_kill_vlan(vsi, vlan);
+> +			vf->num_vlan--;
+> +			list_del(&entry->list);
+> +			kfree(entry);
+> +			break;
+> +		}
+> +	}
+> +}
+> +
+> +/**
+> + * i40e_free_vmvlan_list
+> + * @vsi: pointer to the VSI structure
+> + * @vf: pointer to the VF info
+> + *
+> + * remove whole list of VLAN tags for VM
+> + **/
+> +static void i40e_free_vmvlan_list(struct i40e_vsi *vsi, struct i40e_vf *vf)
+> +{
+> +	struct i40e_vm_vlan *entry, *tmp;
+> +
+> +	if (list_empty(&vf->vm_vlan_list))
+> +		return;
+> +
+> +	list_for_each_entry_safe(entry, tmp, &vf->vm_vlan_list, list) {
+> +		if (vsi)
+
+This function is only called with vsi = NULL AFAICT.
+
+Please remove all dead code.
+
+> +			i40e_vsi_kill_vlan(vsi, entry->vlan);
+> +		list_del(&entry->list);
+> +		kfree(entry);
+> +	}
+> +	vf->num_vlan = 0;
+> +}
+> +
+>  /**
+>   * i40e_free_vf_res
+>   * @vf: pointer to the VF info
+
+
+> @@ -2969,12 +3046,13 @@ static int i40e_vc_add_vlan_msg(struct i40e_vf *vf, u8 *msg)
+>  	struct i40e_pf *pf = vf->pf;
+>  	struct i40e_vsi *vsi = NULL;
+>  	i40e_status aq_ret = 0;
+> -	int i;
+> +	u16 i;
+>  
+> -	if ((vf->num_vlan >= I40E_VC_MAX_VLAN_PER_VF) &&
+> +	if ((vf->num_vlan + vfl->num_elements > I40E_VC_MAX_VLAN_PER_VF) &&
+>  	    !test_bit(I40E_VIRTCHNL_VF_CAP_PRIVILEGE, &vf->vf_caps)) {
+>  		dev_err(&pf->pdev->dev,
+>  			"VF is not trusted, switch the VF to trusted to add more VLAN addresses\n");
+> +		aq_ret = I40E_ERR_CONFIG;
+
+seems unrelated
+
+>  		goto error_param;
+>  	}
+>  	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states) ||
