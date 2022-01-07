@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C08A487BAA
+	by mail.lfdr.de (Postfix) with ESMTP id 0DB92487BA9
 	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 18:57:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348654AbiAGR5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 12:57:43 -0500
+        id S1348658AbiAGR5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 12:57:44 -0500
 Received: from mga18.intel.com ([134.134.136.126]:47970 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348642AbiAGR5n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1348653AbiAGR5n (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 7 Jan 2022 12:57:43 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1641578263; x=1673114263;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=KzaBHtXbhhvDr3iKvrl2p87HtFyT/52W69B1JLQxIjs=;
-  b=M9G3TceWzgjaMGMxfykuwEMul6bB7s7nt8luff1ZakOF/gEFLkFFYSLk
-   LuV6I0kmOm8yIYoI7gWtdJ7t1otlnXsXzlsBkAQp7G/0D+Zy2T28fxkoe
-   rlih+F2tDZBNzV6QlVyw6/g0c4M9cYwR1KYgoCXVvdzmm3KBB5hz9zifX
-   Rj9mCEqogdWgV2SyCDRKdtxIlcUXCNioaLoaboFNhvehkgXHqniC0MINS
-   L6lj/sYOmO1H+tlISq+ZbjEVOslDRFOzoz0T/3agADOheyetRRXGVeME4
-   S9eP7cSqwRLaEuqCwyPx+l5M1+1eAoaMlaqS/0sL32EOwYQX32ymrAFQY
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10219"; a="229716403"
+  bh=/lZ9R4oI1H4lnzrqLGu8bbLIBQb29c6RtQw3KU5BjNA=;
+  b=H10SMC8XCPHEkH5bmxL6b0IVOc+9piKKvOpaDhS9F83gwYqfKVmp7tfm
+   OEhTBXmHT1GAU84//HeR7OQ368QS1/WULqT8CwNg/uLaKquj/GCImo29P
+   9SeWyq+kopjTCZl6MxLm9xpOMnd9II4MFtXK0yV/kDDpq6YGjBcHQaqat
+   URUOKoEpRLCFn2siAdvWqJPFX4wXvlZSVnqYgA9VwZHVZmLOR27BeF63C
+   Xhpdd5u1T9K94L+LY1a0FPsrnEcxb54+pRQBDvquzQ/KKrPYB1V7OhqHb
+   mOA+9RYjv8OETgxtlwixH67AfW80Y8m1Q5rdn/XlrwfZGhNCmoErusiju
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10219"; a="229716405"
 X-IronPort-AV: E=Sophos;i="5.88,270,1635231600"; 
-   d="scan'208";a="229716403"
+   d="scan'208";a="229716405"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 09:57:42 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,270,1635231600"; 
-   d="scan'208";a="668831900"
+   d="scan'208";a="668831904"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga001.fm.intel.com with ESMTP; 07 Jan 2022 09:57:41 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 07 Jan 2022 09:57:42 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Karen Sornek <karen.sornek@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, sassmann@redhat.com,
-        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+Cc:     Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        sassmann@redhat.com, Dawid Lukwinski <dawid.lukwinski@intel.com>,
         Tony Brelinski <tony.brelinski@intel.com>
-Subject: [PATCH net-next v2 1/6] i40e: Add ensurance of MacVlan resources for every trusted VF
-Date:   Fri,  7 Jan 2022 09:56:59 -0800
-Message-Id: <20220107175704.438387-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next v2 2/6] i40e: Minimize amount of busy-waiting during AQ send
+Date:   Fri,  7 Jan 2022 09:57:00 -0800
+Message-Id: <20220107175704.438387-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220107175704.438387-1-anthony.l.nguyen@intel.com>
 References: <20220107175704.438387-1-anthony.l.nguyen@intel.com>
@@ -52,88 +52,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Karen Sornek <karen.sornek@intel.com>
+From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
 
-Trusted VF can use up every resource available, leaving nothing
-to other trusted VFs.
-Introduce define, which calculates MacVlan resources available based
-on maximum available MacVlan resources, bare minimum for each VF and
-number of currently allocated VFs.
+The i40e_asq_send_command will now use a non blocking usleep_range if
+possible (non-atomic context), instead of busy-waiting udelay. The
+usleep_range function uses hrtimers to provide better performance and
+removes the negative impact of busy-waiting in time-critical
+environments.
 
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Karen Sornek <karen.sornek@intel.com>
+1. Rename i40e_asq_send_command to i40e_asq_send_command_atomic
+   and add 5th parameter to inform if called from an atomic context.
+   Call inside usleep_range (if non-atomic) or udelay (if atomic).
+
+2. Change i40e_asq_send_command to invoke
+   i40e_asq_send_command_atomic(..., false).
+
+3. Change two functions:
+    - i40e_aq_set_vsi_uc_promisc_on_vlan
+    - i40e_aq_set_vsi_mc_promisc_on_vlan
+   to explicitly use i40e_asq_send_command_atomic(..., true)
+   instead of i40e_asq_send_command, as they use spinlocks and do some
+   work in an atomic context.
+   All other calls to i40e_asq_send_command remain unchanged.
+
+Signed-off-by: Dawid Lukwinski <dawid.lukwinski@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
 Tested-by: Tony Brelinski <tony.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 34 ++++++++++++++++---
- 1 file changed, 29 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_adminq.c | 29 ++++++++++++++-----
+ drivers/net/ethernet/intel/i40e/i40e_common.c |  6 ++--
+ .../net/ethernet/intel/i40e/i40e_prototype.h  | 14 +++++----
+ 3 files changed, 35 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-index 048f1678ab8a..b785d09c19f8 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -2704,12 +2704,21 @@ static int i40e_vc_get_stats_msg(struct i40e_vf *vf, u8 *msg)
- 				      (u8 *)&stats, sizeof(stats));
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_adminq.c b/drivers/net/ethernet/intel/i40e/i40e_adminq.c
+index 593912b17609..7abef88801fb 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_adminq.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_adminq.c
+@@ -769,21 +769,22 @@ static bool i40e_asq_done(struct i40e_hw *hw)
  }
  
-+#define I40E_MAX_MACVLAN_PER_HW 3072
-+#define I40E_MAX_MACVLAN_PER_PF(num_ports) (I40E_MAX_MACVLAN_PER_HW /	\
-+	(num_ports))
- /* If the VF is not trusted restrict the number of MAC/VLAN it can program
-  * MAC filters: 16 for multicast, 1 for MAC, 1 for broadcast
-  */
- #define I40E_VC_MAX_MAC_ADDR_PER_VF (16 + 1 + 1)
- #define I40E_VC_MAX_VLAN_PER_VF 16
- 
-+#define I40E_VC_MAX_MACVLAN_PER_TRUSTED_VF(vf_num, num_ports)		\
-+({	typeof(vf_num) vf_num_ = (vf_num);				\
-+	typeof(num_ports) num_ports_ = (num_ports);			\
-+	((I40E_MAX_MACVLAN_PER_PF(num_ports_) - vf_num_ *		\
-+	I40E_VC_MAX_MAC_ADDR_PER_VF) / vf_num_) +			\
-+	I40E_VC_MAX_MAC_ADDR_PER_VF; })
  /**
-  * i40e_check_vf_permission
-  * @vf: pointer to the VF info
-@@ -2734,6 +2743,7 @@ static inline int i40e_check_vf_permission(struct i40e_vf *vf,
+- *  i40e_asq_send_command - send command to Admin Queue
++ *  i40e_asq_send_command_atomic - send command to Admin Queue
+  *  @hw: pointer to the hw struct
+  *  @desc: prefilled descriptor describing the command (non DMA mem)
+  *  @buff: buffer to use for indirect commands
+  *  @buff_size: size of buffer for indirect commands
+  *  @cmd_details: pointer to command details structure
++ *  @is_atomic_context: is the function called in an atomic context?
+  *
+  *  This is the main send command driver routine for the Admin Queue send
+  *  queue.  It runs the queue, cleans the queue, etc
+  **/
+-i40e_status i40e_asq_send_command(struct i40e_hw *hw,
+-				struct i40e_aq_desc *desc,
+-				void *buff, /* can be NULL */
+-				u16  buff_size,
+-				struct i40e_asq_cmd_details *cmd_details)
++i40e_status
++i40e_asq_send_command_atomic(struct i40e_hw *hw, struct i40e_aq_desc *desc,
++			     void *buff, /* can be NULL */ u16  buff_size,
++			     struct i40e_asq_cmd_details *cmd_details,
++			     bool is_atomic_context)
  {
- 	struct i40e_pf *pf = vf->pf;
- 	struct i40e_vsi *vsi = pf->vsi[vf->lan_vsi_idx];
-+	struct i40e_hw *hw = &pf->hw;
- 	int mac2add_cnt = 0;
- 	int i;
- 
-@@ -2775,12 +2785,26 @@ static inline int i40e_check_vf_permission(struct i40e_vf *vf,
- 	 * number of addresses. Check to make sure that the additions do not
- 	 * push us over the limit.
- 	 */
--	if (!test_bit(I40E_VIRTCHNL_VF_CAP_PRIVILEGE, &vf->vf_caps) &&
--	    (i40e_count_filters(vsi) + mac2add_cnt) >
-+	if (!test_bit(I40E_VIRTCHNL_VF_CAP_PRIVILEGE, &vf->vf_caps)) {
-+		if ((i40e_count_filters(vsi) + mac2add_cnt) >
- 		    I40E_VC_MAX_MAC_ADDR_PER_VF) {
--		dev_err(&pf->pdev->dev,
--			"Cannot add more MAC addresses, VF is not trusted, switch the VF to trusted to add more functionality\n");
--		return -EPERM;
-+			dev_err(&pf->pdev->dev,
-+				"Cannot add more MAC addresses, VF is not trusted, switch the VF to trusted to add more functionality\n");
-+			return -EPERM;
-+		}
-+	/* If this VF is trusted, it can use more resources than untrusted.
-+	 * However to ensure that every trusted VF has appropriate number of
-+	 * resources, divide whole pool of resources per port and then across
-+	 * all VFs.
-+	 */
-+	} else {
-+		if ((i40e_count_filters(vsi) + mac2add_cnt) >
-+		    I40E_VC_MAX_MACVLAN_PER_TRUSTED_VF(pf->num_alloc_vfs,
-+						       hw->num_ports)) {
-+			dev_err(&pf->pdev->dev,
-+				"Cannot add more MAC addresses, trusted VF exhausted it's resources\n");
-+			return -EPERM;
-+		}
+ 	i40e_status status = 0;
+ 	struct i40e_dma_mem *dma_buff = NULL;
+@@ -910,7 +911,12 @@ i40e_status i40e_asq_send_command(struct i40e_hw *hw,
+ 			 */
+ 			if (i40e_asq_done(hw))
+ 				break;
+-			udelay(50);
++
++			if (is_atomic_context)
++				udelay(50);
++			else
++				usleep_range(40, 60);
++
+ 			total_delay += 50;
+ 		} while (total_delay < hw->aq.asq_cmd_timeout);
  	}
- 	return 0;
+@@ -967,6 +973,15 @@ i40e_status i40e_asq_send_command(struct i40e_hw *hw,
+ 	return status;
  }
+ 
++i40e_status
++i40e_asq_send_command(struct i40e_hw *hw, struct i40e_aq_desc *desc,
++		      void *buff, /* can be NULL */ u16  buff_size,
++		      struct i40e_asq_cmd_details *cmd_details)
++{
++	return i40e_asq_send_command_atomic(hw, desc, buff, buff_size,
++					    cmd_details, false);
++}
++
+ /**
+  *  i40e_fill_default_direct_cmd_desc - AQ descriptor helper function
+  *  @desc:     pointer to the temp descriptor (non DMA mem)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_common.c b/drivers/net/ethernet/intel/i40e/i40e_common.c
+index b4d3fed0d2f2..f81a674c8d40 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_common.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_common.c
+@@ -2073,7 +2073,8 @@ enum i40e_status_code i40e_aq_set_vsi_mc_promisc_on_vlan(struct i40e_hw *hw,
+ 	cmd->seid = cpu_to_le16(seid);
+ 	cmd->vlan_tag = cpu_to_le16(vid | I40E_AQC_SET_VSI_VLAN_VALID);
+ 
+-	status = i40e_asq_send_command(hw, &desc, NULL, 0, cmd_details);
++	status = i40e_asq_send_command_atomic(hw, &desc, NULL, 0,
++					      cmd_details, true);
+ 
+ 	return status;
+ }
+@@ -2114,7 +2115,8 @@ enum i40e_status_code i40e_aq_set_vsi_uc_promisc_on_vlan(struct i40e_hw *hw,
+ 	cmd->seid = cpu_to_le16(seid);
+ 	cmd->vlan_tag = cpu_to_le16(vid | I40E_AQC_SET_VSI_VLAN_VALID);
+ 
+-	status = i40e_asq_send_command(hw, &desc, NULL, 0, cmd_details);
++	status = i40e_asq_send_command_atomic(hw, &desc, NULL, 0,
++					      cmd_details, true);
+ 
+ 	return status;
+ }
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_prototype.h b/drivers/net/ethernet/intel/i40e/i40e_prototype.h
+index aaea297640e0..9241b6005ad3 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_prototype.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_prototype.h
+@@ -22,11 +22,15 @@ void i40e_adminq_init_ring_data(struct i40e_hw *hw);
+ i40e_status i40e_clean_arq_element(struct i40e_hw *hw,
+ 					     struct i40e_arq_event_info *e,
+ 					     u16 *events_pending);
+-i40e_status i40e_asq_send_command(struct i40e_hw *hw,
+-				struct i40e_aq_desc *desc,
+-				void *buff, /* can be NULL */
+-				u16  buff_size,
+-				struct i40e_asq_cmd_details *cmd_details);
++i40e_status
++i40e_asq_send_command(struct i40e_hw *hw, struct i40e_aq_desc *desc,
++		      void *buff, /* can be NULL */ u16  buff_size,
++		      struct i40e_asq_cmd_details *cmd_details);
++i40e_status
++i40e_asq_send_command_atomic(struct i40e_hw *hw, struct i40e_aq_desc *desc,
++			     void *buff, /* can be NULL */ u16  buff_size,
++			     struct i40e_asq_cmd_details *cmd_details,
++			     bool is_atomic_context);
+ 
+ /* debug function for adminq */
+ void i40e_debug_aq(struct i40e_hw *hw, enum i40e_debug_mask mask,
 -- 
 2.31.1
 
