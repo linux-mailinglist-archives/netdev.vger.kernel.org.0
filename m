@@ -2,125 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3CA5487858
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 14:40:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04FEC487859
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 14:40:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238849AbiAGNko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 08:40:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33486 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238835AbiAGNkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 08:40:43 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB71C061574
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 05:40:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=roykdlR5flEhZ6dRP2lKS2E2FMz0xnDr1kND8pmlxs8=; b=SA0dUA/xwGm9nAtScJUYjToRNo
-        NMR4bFnQ1Z/eF4oYZ4shzg1y3vdHlWFRS9G3WDnhIIr+1WYcwGid3tgGXB3y9ExsMkkMtwKfcAuG7
-        5YAD2BI6mlj2ZB2sJT5FAMWPjUihBEioZf1EXm3LIQrRPC/rfTFXR3Cq/MVBQ9gG6PkcnspvND1id
-        bnLG/E6vc3FlO6LT6Tua/RKW+PS6S3uh3XcOTeC6/A92CZt0OJSqdgR5BWs6wQpaoQPWU6UPKRR1+
-        dTvg7tirAnw6u+aJGyJ2twhP4t5mTECFpEFheIzAqqn+EWUSRpO+AWdMz/h6On2Pq1yb4V1sTs6z0
-        ZmiUk+hQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56612)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1n5pTh-0001Sz-EV; Fri, 07 Jan 2022 13:40:21 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1n5pTS-0001y8-QO; Fri, 07 Jan 2022 13:40:06 +0000
-Date:   Fri, 7 Jan 2022 13:40:06 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jose Abreu <joabreu@synopsys.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org
-Subject: Re: [PATCH CFT net-next 0/6] net: stmmac/xpcs: modernise PCS support
-Message-ID: <YdhCts9ZPMyzO8oX@shell.armlinux.org.uk>
-References: <Ybs7DNDkBrf73jDi@shell.armlinux.org.uk>
- <20211217055729.GA14835@linux.intel.com>
+        id S238884AbiAGNky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 08:40:54 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55924 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238835AbiAGNky (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jan 2022 08:40:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=HrULBV9j/S4+9VTe0HZSPuRavA5DY7yGoZL9/04SsdA=; b=gXG/GTEefaLShPh8EYZwVMRhzS
+        ivq2HZMjPCcG2DDZRahXST0a9SNyDXYn7uf6jwx3fmTJjsu//8xiVsqA5whcldyGFyW8AQ3E97u5a
+        TZDM1ruvjR1azGZ4XYJbodDD6eTj2fIT7CcBUoArh1S614D1RjWzt1lOgFm/DcW73S+s=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n5pUA-000lFA-4f; Fri, 07 Jan 2022 14:40:50 +0100
+Date:   Fri, 7 Jan 2022 14:40:50 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dimitris Michailidis <d.michailidis@fungible.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4 3/8] net/funeth: probing and netdev ops
+Message-ID: <YdhC4nykryjP+xLp@lunn.ch>
+References: <20220104064657.2095041-1-dmichail@fungible.com>
+ <20220104064657.2095041-4-dmichail@fungible.com>
+ <20220104180739.572a80ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAOkoqZmxHZ6KTZQPe+w23E_UPYWLNRiU8gVX32EFsNXgyzkucg@mail.gmail.com>
+ <YdXDVakWSkQyvlqe@lunn.ch>
+ <CAOkoqZkCkyiGbUx--zY67GF05Y_XxuW6APKaqYu8F_nR9Qu7Kg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211217055729.GA14835@linux.intel.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <CAOkoqZkCkyiGbUx--zY67GF05Y_XxuW6APKaqYu8F_nR9Qu7Kg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 17, 2021 at 01:57:29PM +0800, Wong Vee Khee wrote:
-> On Thu, Dec 16, 2021 at 01:11:40PM +0000, Russell King (Oracle) wrote:
-> > Hi,
-> > 
-> > This series updates xpcs and stmmac for the recent changes to phylink
-> > to better support split PCS and to get rid of private MAC validation
-> > functions.
-> > 
-> > This series is slightly more involved than other conversions as stmmac
-> > has already had optional proper split PCS support.
-> > 
-> > The patches:
-> > 
-> > 1) Provide a function to query the xpcs for the interface modes that
-> >    are supported.
-> > 
-> > 2) Populates the MAC capabilities and switches stmmac_validate() to use
-> >    phylink_get_linkmodes(). We do not use phylink_generic_validate() yet
-> >    as (a) we do not always have the supported interfaces populated, and
-> >    (b) the existing code does not restrict based on interface. There
-> >    should be no functional effect from this patch.
-> > 
-> > 3) Populates phylink's supported interfaces from the xpcs when the xpcs
-> >    is configured by firmware and also the firmware configured interface
-> >    mode. Note: this will restrict stmmac to only supporting these
-> >    interfaces modes - stmmac maintainers need to verify that this
-> >    behaviour is acceptable.
-> > 
-> > 4) stmmac_validate() tail-calls xpcs_validate(), but we don't need it to
-> >    now that PCS have their own validation method. Convert stmmac and
-> >    xpcs to use this method instead.
-> > 
-> > 5) xpcs sets the poll field of phylink_pcs to true, meaning xpcs
-> >    requires its status to be polled. There is no need to also set the
-> >    phylink_config.pcs_poll. Remove this.
-> > 
-> > 6) Switch to phylink_generic_validate(). This is probably the most
-> >    contravertial change in this patch set as this will cause the MAC to
-> >    restrict link modes based on the interface mode. From an inspection
-> >    of the xpcs driver, this should be safe, as XPCS only further
-> >    restricts the link modes to a subset of these (whether that is
-> >    correct or not is not an issue I am addressing here.) For
-> >    implementations that do not use xpcs, this is a more open question
-> >    and needs feedback from stmmac maintainers.
-> > 
-> > Please review and test this series. Thanks!
-> > 
+> > I can see this being valid if your FW is doing 802.1X. But i'm not
+> > sure it is valid for other use cases. What exactly is your firmware
+> > doing which stops it from handling frames?
 > 
-> Tested this patch series on my Intel Elkhart Lake setup with Marvell
-> 88E1510 PHY. 
-> 
-> Everything works perfectly!
+> The downtime happens occasionally after link up while the internal
+> control processor is configuring the network units. So internal setup
+> delays.
 
-Can I take that as a tested-by please?
+So it sounds like you should not be reporting carrier up until it is
+actually ready to go. Carrier up means everything in the pipeline
+between the MAC and the peer MAC is ready and transporting frames at
+L1.
 
-It would be good to get some feedback from other stmmac users, since I
-believe stmmac is used in multiple different configurations.
+> I am told that "in the near future" the need for this will be
+> removed. Trusting that near will be reasonable I'll remove this now.
 
-Thanks!
+O.K.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+	Andrew
