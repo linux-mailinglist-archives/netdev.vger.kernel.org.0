@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AFFF487DA6
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 21:24:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CE90487DA9
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 21:24:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229483AbiAGUYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 15:24:15 -0500
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:34248 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231593AbiAGUYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 15:24:12 -0500
+        id S231941AbiAGUYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 15:24:19 -0500
+Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:64474 "EHLO
+        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231768AbiAGUYQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 15:24:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1641587053; x=1673123053;
+  t=1641587056; x=1673123056;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=sAyHvla/aXjJhTtL+MMGA2aWsmcLF6uz73KMCxr+xcw=;
-  b=op+5j4FQHn0kd+iUVstK/kFGeXTNzZdCWj2e0sEtzyOz/8wW+V1gabbI
-   pZVyOyGxGtHtLiQrMYUgWZhzBu7iIgVtt1FFYq2bzQ4AqsCq3Op9y18bJ
-   bhVCyMuIfSjXt8gwXg1tZTrXbfbkG+PtZB1UIfkia2PUUh/3KJd7gXchL
-   c=;
+  bh=JmaQ4scJHwdz6+kr1DL3wasatFQCLRfv7ESwyTdrz1k=;
+  b=H3gFQ6wGcSTlEni6Hg2w4fK5hvC4HSjML9yHNoY6mBgh0Cb4QBVXrzZi
+   ZVCr4FiOCrz8Ap9Zu9LZpi309z1OF+Lw/1WdkiNBoEuR7ojgGTQgp8AyH
+   6X0KgZUc9jWWWFAsAUPviUHau3Z4F4mndi1YYTNS0Hj/bEAQWS/rf0hk+
+   k=;
 X-IronPort-AV: E=Sophos;i="5.88,270,1635206400"; 
-   d="scan'208";a="185624904"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-0168675e.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 07 Jan 2022 20:24:12 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-0168675e.us-east-1.amazon.com (Postfix) with ESMTPS id 1B04BA2727;
-        Fri,  7 Jan 2022 20:24:10 +0000 (UTC)
-Received: from EX13D08UEE001.ant.amazon.com (10.43.62.126) by
+   d="scan'208";a="53547304"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-1c3c2014.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 07 Jan 2022 20:24:15 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1d-1c3c2014.us-east-1.amazon.com (Postfix) with ESMTPS id EAE02CB2FF;
+        Fri,  7 Jan 2022 20:24:14 +0000 (UTC)
+Received: from EX13D08UEE003.ant.amazon.com (10.43.62.118) by
  EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Fri, 7 Jan 2022 20:23:59 +0000
+ id 15.0.1497.26; Fri, 7 Jan 2022 20:24:02 +0000
 Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
- EX13D08UEE001.ant.amazon.com (10.43.62.126) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Fri, 7 Jan 2022 20:23:59 +0000
+ EX13D08UEE003.ant.amazon.com (10.43.62.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Fri, 7 Jan 2022 20:24:02 +0000
 Received: from dev-dsk-akiyano-1c-2138b29d.eu-west-1.amazon.com (172.19.83.6)
  by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP Server id
- 15.0.1497.26 via Frontend Transport; Fri, 7 Jan 2022 20:23:57 +0000
+ 15.0.1497.26 via Frontend Transport; Fri, 7 Jan 2022 20:24:01 +0000
 From:   Arthur Kiyanovski <akiyano@amazon.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
@@ -54,9 +54,9 @@ CC:     Arthur Kiyanovski <akiyano@amazon.com>,
         "Dagan, Noam" <ndagan@amazon.com>,
         "Agroskin, Shay" <shayagr@amazon.com>,
         "Arinzon, David" <darinzon@amazon.com>
-Subject: [PATCH V2 net-next 03/10] net: ena: Change ENI stats support check to use capabilities field
-Date:   Fri, 7 Jan 2022 20:23:39 +0000
-Message-ID: <20220107202346.3522-4-akiyano@amazon.com>
+Subject: [PATCH V2 net-next 04/10] net: ena: Update LLQ header length in ena documentation
+Date:   Fri, 7 Jan 2022 20:23:40 +0000
+Message-ID: <20220107202346.3522-5-akiyano@amazon.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220107202346.3522-1-akiyano@amazon.com>
 References: <20220107202346.3522-1-akiyano@amazon.com>
@@ -67,123 +67,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the capabilities field to query the device for ENI stats
-support.
+LLQ entry length is 128 bytes. Therefore the maximum header in
+the entry is calculated by:
+tx_max_header_size =
+LLQ_ENTRY_SIZE - DESCRIPTORS_NUM_BEFORE_HEADER * 16 =
+128 - 2 * 16 = 96
 
-This replaces the previous method that tried to get the ENI stats
-during ena_probe() and used the success or failure as an indication
-for support by the device.
-
-Remove eni_stats_supported field from struct ena_adapter. This field
-was used for the previous method of queriying for ENI stats support.
-
-Change the severity level of the print in case of
-ena_com_get_eni_stats() failure from info to error.
-With the previous method of querying form ENI stats support, failure
-to get ENI stats was normal for devices that don't support it.
-With the use of the capabilities field such a failure is unexpected,
-as it is called only if the device reported that it supports ENI
-stats.
+This patch updates the documentation so that it states the correct
+max header length.
 
 Signed-off-by: Shay Agroskin <shayagr@amazon.com>
 Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 13 ++++++++-----
- drivers/net/ethernet/amazon/ena/ena_netdev.c  |  9 ++-------
- drivers/net/ethernet/amazon/ena/ena_netdev.h  |  1 -
- 3 files changed, 10 insertions(+), 13 deletions(-)
+ Documentation/networking/device_drivers/ethernet/amazon/ena.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index 6b9b43e422c1..c09e1b37048e 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -110,8 +110,7 @@ static const struct ena_stats ena_stats_ena_com_strings[] = {
- #define ENA_STATS_ARRAY_TX		ARRAY_SIZE(ena_stats_tx_strings)
- #define ENA_STATS_ARRAY_RX		ARRAY_SIZE(ena_stats_rx_strings)
- #define ENA_STATS_ARRAY_ENA_COM		ARRAY_SIZE(ena_stats_ena_com_strings)
--#define ENA_STATS_ARRAY_ENI(adapter)	\
--	(ARRAY_SIZE(ena_stats_eni_strings) * (adapter)->eni_stats_supported)
-+#define ENA_STATS_ARRAY_ENI(adapter)	ARRAY_SIZE(ena_stats_eni_strings)
+diff --git a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+index 01b2a69b0cb0..8bcb173e0353 100644
+--- a/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
++++ b/Documentation/networking/device_drivers/ethernet/amazon/ena.rst
+@@ -135,7 +135,7 @@ The ENA driver supports two Queue Operation modes for Tx SQs:
  
- static void ena_safe_update_stat(u64 *src, u64 *dst,
- 				 struct u64_stats_sync *syncp)
-@@ -213,8 +212,9 @@ static void ena_get_ethtool_stats(struct net_device *netdev,
- 				  u64 *data)
- {
- 	struct ena_adapter *adapter = netdev_priv(netdev);
-+	struct ena_com_dev *dev = adapter->ena_dev;
- 
--	ena_get_stats(adapter, data, adapter->eni_stats_supported);
-+	ena_get_stats(adapter, data, ena_com_get_cap(dev, ENA_ADMIN_ENI_STATS));
- }
- 
- static int ena_get_sw_stats_count(struct ena_adapter *adapter)
-@@ -226,7 +226,9 @@ static int ena_get_sw_stats_count(struct ena_adapter *adapter)
- 
- static int ena_get_hw_stats_count(struct ena_adapter *adapter)
- {
--	return ENA_STATS_ARRAY_ENI(adapter);
-+	bool supported = ena_com_get_cap(adapter->ena_dev, ENA_ADMIN_ENI_STATS);
-+
-+	return ENA_STATS_ARRAY_ENI(adapter) * supported;
- }
- 
- int ena_get_sset_count(struct net_device *netdev, int sset)
-@@ -316,10 +318,11 @@ static void ena_get_ethtool_strings(struct net_device *netdev,
- 				    u8 *data)
- {
- 	struct ena_adapter *adapter = netdev_priv(netdev);
-+	struct ena_com_dev *dev = adapter->ena_dev;
- 
- 	switch (sset) {
- 	case ETH_SS_STATS:
--		ena_get_strings(adapter, data, adapter->eni_stats_supported);
-+		ena_get_strings(adapter, data, ena_com_get_cap(dev, ENA_ADMIN_ENI_STATS));
- 		break;
- 	}
- }
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 78770984ec95..f0fbecb8019f 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3253,11 +3253,11 @@ static void ena_config_debug_area(struct ena_adapter *adapter)
- 
- int ena_update_hw_stats(struct ena_adapter *adapter)
- {
--	int rc = 0;
-+	int rc;
- 
- 	rc = ena_com_get_eni_stats(adapter->ena_dev, &adapter->eni_stats);
- 	if (rc) {
--		dev_info_once(&adapter->pdev->dev, "Failed to get ENI stats\n");
-+		netdev_err(adapter->netdev, "Failed to get ENI stats\n");
- 		return rc;
- 	}
- 
-@@ -4385,11 +4385,6 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	ena_config_debug_area(adapter);
- 
--	if (!ena_update_hw_stats(adapter))
--		adapter->eni_stats_supported = true;
--	else
--		adapter->eni_stats_supported = false;
--
- 	memcpy(adapter->netdev->perm_addr, adapter->mac_addr, netdev->addr_len);
- 
- 	netif_carrier_off(netdev);
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index 9391c7101fba..f70f1242e5b5 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -379,7 +379,6 @@ struct ena_adapter {
- 	struct u64_stats_sync syncp;
- 	struct ena_stats_dev dev_stats;
- 	struct ena_admin_eni_stats eni_stats;
--	bool eni_stats_supported;
- 
- 	/* last queue index that was checked for uncompleted tx packets */
- 	u32 last_monitored_tx_qid;
+ - **Low Latency Queue (LLQ) mode or "push-mode":**
+   In this mode the driver pushes the transmit descriptors and the
+-  first 128 bytes of the packet directly to the ENA device memory
++  first 96 bytes of the packet directly to the ENA device memory
+   space. The rest of the packet payload is fetched by the
+   device. For this operation mode, the driver uses a dedicated PCI
+   device memory BAR, which is mapped with write-combine capability.
 -- 
 2.32.0
 
