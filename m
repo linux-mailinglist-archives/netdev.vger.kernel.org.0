@@ -2,108 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3120F487BD5
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 19:10:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A7A3487BB9
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 19:04:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240682AbiAGSKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 13:10:12 -0500
-Received: from mout.perfora.net ([74.208.4.196]:43929 "EHLO mout.perfora.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240523AbiAGSKL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:10:11 -0500
-X-Greylist: delayed 336 seconds by postgrey-1.27 at vger.kernel.org; Fri, 07 Jan 2022 13:10:10 EST
-Received: from localhost.localdomain ([194.191.235.54]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MnqT8-1mZN8Y43S6-00pHqr;
- Fri, 07 Jan 2022 19:03:57 +0100
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marek Vasut <marek.vasut@gmail.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Olof Johansson <olof@lixom.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Will Deacon <will@kernel.org>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v1 04/14] arm64: defconfig: enable bpf/cgroup firewalling
-Date:   Fri,  7 Jan 2022 19:03:04 +0100
-Message-Id: <20220107180314.1816515-5-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220107180314.1816515-1-marcel@ziswiler.com>
-References: <20220107180314.1816515-1-marcel@ziswiler.com>
+        id S240439AbiAGSEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 13:04:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55302 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240374AbiAGSEA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 13:04:00 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FE3361F68
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 18:04:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B1EEC36AE0;
+        Fri,  7 Jan 2022 18:03:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641578639;
+        bh=qjja5Xsmo3f2j7pLiwF0rbZ3KJ0KMnNV4nJifdgKb04=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pP+hiSKj+ME0j58iq8zUeeY+AoVfob1su3xjpv+6904nXQvT7AMi9SehmO3ynqvjt
+         nZXHdUheIleh3RyPBpHVB0FMTy8IXGZYia/ZIhe5djDKz/HuP2FpLduNZFDnz9kw20
+         b2utwpYfLowvlBYR0HJ0kNB0FpQAT3oQMhp/tw7GfARK6gkht3Y8gx8MXn6hTY1jkO
+         L+tGKQALfGRlPSN3X7drcrxReo0ilhSmUeHk65RmkBe8b4Xq8+r141rd4xxRtRB8S9
+         kNjnqcDAXR7QTVRIZDFqLdCsIwnW+ilDwJk33ziIcuiLV/nN+IccZvA1/DrOcL1jBk
+         Cs+KMtMa1ehhw==
+Date:   Fri, 7 Jan 2022 10:03:57 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        vladimir.oltean@nxp.com
+Subject: Re: [PATCH net-next] ptp: don't include ptp_clock_kernel.h in spi.h
+Message-ID: <20220107100357.19749708@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <Ydh842WVE/QeNwtg@sirena.org.uk>
+References: <20220107155645.806985-1-kuba@kernel.org>
+        <Ydhj3QP2VxXIWfZq@sirena.org.uk>
+        <20220107085127.6cfaed55@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <Ydh842WVE/QeNwtg@sirena.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:hnmCG4gNJe/WfYxTTdBLiKuTD21o0vH1c0vKJTADHuWy4MsGR2l
- YQBGK1mg00A33MLbiZvQGzNRlncHl83cidX1ZhNCWOlI1n6ZzYPzrsEyYqYWg9VCEBJ+rwE
- xvdW2v+w8JUdUJwFRvQxPDIfCWLEaYrguHyD1QOOOkjYPocsRRZfOyd8wW8sGTzwR8U+H5Z
- PCcpvlARSo+Em6Nh31yGw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Z+ZN9Ufiu3I=:OR4f2kn+F0UtsLQqOAitgN
- xnQwyjJAFVker0iSnORT2KGtyT/z7yWKItxB4j3/B4FEx3hTRdACBletV5haLoD9ba/CzWyyD
- hENNrDOSfc6TXLtZ1dVTXEBW8PqhfXeHWXrnDbfheMauK9AzeEUuq+pu5RfGRHSpb3MMuuES2
- AT21Eu/qQVPrLRZBXzFOx2dthNXYoRfCSFVIs26YN6K96bBW7BEYk3NuCwmiJlkmfDFlGewk+
- ONkJNXD61crDGJX+wO93FXipTlG2d5IsMiwt8eb6IsjZc6wF/sHDPRU50xuRW/ueJReuD0g+c
- CjtHnqd+4of7H2QeYq2h+xGXKOy10VtyhUL64RF1DsNe1Qm53og+Yo7Q8RkMucLG0F0DIZJwt
- Hgscd1/PFjSwm6LG6It4RLkwuVagcT97ZWpUuw1CrRnIJgVCmzM6MHHijwyXs9brWWv93T8wY
- RL6QQCL2IKf7VjsRKu+xaOQlh84Om+Bg+e5T0E8KcfLeW2NIsDMNQ6PU12btXFg8B101gILL3
- R4ndXUSYwU3z/aDyY8Ptue8ItbZPi05aY8zWf8o5TOZvX4+4AAdg50VVPEnckia/ZRkFvwWfa
- Abq6wAyDnOpidPp60v8iadWmrrkMRjCBH6QgIXZZe+0gIJCcYhqDw36mMwvOn4tNxziFdg+eo
- iRX0AbV3MoQlHxECt1XCXsPUKdvueq8yc/wN08uzxFCYTk26jBvMy5xjGA6tNkP8M0DhbxuOq
- FLMWhSrYpvfnJWuLlH5qG8bl4512cJ6YkD27QkZmJJNw8B82mAGSp5OjywXERaevpFvqFB1bY
- Aln4kOGl8W+5ojxVvs+FPlqKLxXSg==
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On Fri, 7 Jan 2022 17:48:19 +0000 Mark Brown wrote:
+> > Will this patch make 5.17?  
+> 
+> If there's no problem with testing it should do.
 
-This avoids the following systemd warning:
+Thanks!
 
-[    2.618538] systemd[1]: system-getty.slice: unit configures an IP
- firewall, but the local system does not support BPF/cgroup firewalling.
-[    2.630916] systemd[1]: (This warning is only shown for the first
- unit using IP firewalling.)
+> I'm not sure what the rush is though?  It's just a cleanup and this
+> is the Friday before the merge window.
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
----
-
- arch/arm64/configs/defconfig | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 79e4bf9f4c2c..3c8106c5776a 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -3,6 +3,7 @@ CONFIG_POSIX_MQUEUE=y
- CONFIG_AUDIT=y
- CONFIG_NO_HZ_IDLE=y
- CONFIG_HIGH_RES_TIMERS=y
-+CONFIG_BPF_SYSCALL=y
- CONFIG_BPF_JIT=y
- CONFIG_IRQ_TIME_ACCOUNTING=y
- CONFIG_BSD_PROCESS_ACCT=y
-@@ -18,6 +19,7 @@ CONFIG_CPUSETS=y
- CONFIG_CGROUP_DEVICE=y
- CONFIG_CGROUP_CPUACCT=y
- CONFIG_CGROUP_PERF=y
-+CONFIG_CGROUP_BPF=y
- CONFIG_USER_NS=y
- CONFIG_SCHED_AUTOGROUP=y
- CONFIG_BLK_DEV_INITRD=y
--- 
-2.33.1
-
+Not rush, but PTP pulls in a lot of networking headers, would be great
+if we didn't have to rebuild spi code over and over in the next cycle.
