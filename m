@@ -2,103 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 870F4487C42
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 19:37:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49564487C4A
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 19:40:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229543AbiAGShG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 13:37:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:60567 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229500AbiAGShF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 13:37:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641580625;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uPSTezG0qBUzZU5b+ipwh4/mE7DoJRL0xcY71ufegho=;
-        b=FmtCrAOsC+oCIKBQR0PZZnDO1MoLUIIcrQybrfdorUQTqJxvUV9lpcDwA14RhmjLhUAPIY
-        4kYyOcZW4+d4nfFtAQivAtx2DcYtz+dwObvSaYSVIpc8v1OMvKyfniui7Ct4gIztVR95AD
-        2dFAKpF1lSXBfVvmkaPFfuE9aVeE5ns=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-245-9oZpHjT5ORamLlXkGaneEg-1; Fri, 07 Jan 2022 13:37:04 -0500
-X-MC-Unique: 9oZpHjT5ORamLlXkGaneEg-1
-Received: by mail-ed1-f69.google.com with SMTP id h6-20020a056402280600b003f9967993aeso5365147ede.10
-        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 10:37:04 -0800 (PST)
+        id S229767AbiAGSj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 13:39:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229653AbiAGSj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 13:39:58 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BEDC061574
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 10:39:58 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id v25so6157750pge.2
+        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 10:39:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wwbW+yFwmJjhAUCbo9w6iK2w0XKPcwtYSPoV2dB3vqE=;
+        b=flZoqKbUh9GkK0fcn7nH4vHCXikJMsAA5bNn8/vtLyWtFjwZrgfcQYXoJAbTl10zB2
+         xMaFxpb99ppWHWV5Q4P5iWFV6b8tqKYLDRmqSNTYjRV/wkwE4n0n1v9V0WjcaB6MN0hW
+         ENw+NLpOQ61FfUjWrtNAzDO4EmEKAbY5IGqXA7NUPjAXM1Yn/L59xwCWLHviaYvNcBaK
+         ITwjSMNMS14JvYKTbH+yaR0T8G7huSb1iNIWW8crpURUQn4jXJ85vRna8WOq6OZUXXaq
+         zHzuHinhlo4s9OwyLN6VhtpWTLprsX5nOa0wrvFOK8TcUd1AzpRU22PWyEgoHTZew3A7
+         rnPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=uPSTezG0qBUzZU5b+ipwh4/mE7DoJRL0xcY71ufegho=;
-        b=nBGoZ8qXHlPAVTN4SXc89qB39rDWHpomeNvlaefiwL7Vi45UwrJCsMvIk96BmZFCfx
-         L7Pm5Nn55fjIXwJ+j15qpcIVi/oUHl1sBBNmYVc6QBtkRfJ0T2vhFqR+SDfLuRRTYPfK
-         R1e+5kNH3+AQy2phrrkpoSniak7mITtD1Wkp7gu3ckqfi5e9vz4n2ZJ2jnNFxLbBZB8A
-         gq7jKZf+2kjD4zUvdQ451bLfC3uI7Qlyjp8lstzdQe6yrxDu6WBxR7aWCpNHE9Uer+wk
-         kTA4jTOUBcbBXnWPq/DHW/YEpleAEXHvYq85g7xP8ANKtt397wKyNjzmyLzduXXFOOm/
-         XvEA==
-X-Gm-Message-State: AOAM530W0Kz19g2Uo1lS2cL+sr6aR7txL+fyO2hfJ46GzyYSi3E4wzwb
-        ujdazn/2dfHSVx1TNGn7vtr3nYFfHWLfCZZyOs9Xd8TQcrY82sT1/sDaZm46L7eqT/Q76J/iu2G
-        O5f4fpOLkr+2KEGMA
-X-Received: by 2002:a17:906:619:: with SMTP id s25mr51826639ejb.237.1641580622752;
-        Fri, 07 Jan 2022 10:37:02 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy4odmwqaxtbqXcUV1sdIzK4rqzuTlxtGZIrWvniq6UiCUTgxjK1RQu6mI3MUUsoObGxHRq4Q==
-X-Received: by 2002:a17:906:619:: with SMTP id s25mr51826624ejb.237.1641580622442;
-        Fri, 07 Jan 2022 10:37:02 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id ne39sm1630080ejc.142.2022.01.07.10.37.01
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wwbW+yFwmJjhAUCbo9w6iK2w0XKPcwtYSPoV2dB3vqE=;
+        b=AL+w/Rm02pCZnMI9DPgi1QuXt2L0GAGQ4Woq9hFCWQYsg3lYi5HR+3JvMdHU+YAUo5
+         JIUjPVZYMssKpmZmXjfH05fmXHqons/A2Cpd7Bx3C3trWnvzIQf+fAHduDLc6gIcIGUf
+         Gm33S/7x8bwR6M/K7gw0fBHWzH/JdYePQEb84+Vhk2qEp6m/6jLXkxKm3TmsMVYTHFOu
+         V3ehQvPNioWcRuTW/ezq96R3SmRReMK8GbihmiqCMJOtjAVQVrBy7dv2ek0iwpciEPas
+         9/9uRnWLl+jB+E/rRYZh47Y3rs0VFg7T7GXFkr5a2kM6/jItWY5vLJRJlrhIM0RiU6g6
+         YAaQ==
+X-Gm-Message-State: AOAM532dsa0M5qF1/oBMtH+8Vy78/zYhnl3R4L9Qim0jk8kho52midbZ
+        Sn7pGH3VSLrRw/gBrL0UJ2g=
+X-Google-Smtp-Source: ABdhPJybzyj3h15+qisba7406+VEYEz03Zj1D2bkCfNcDa1OPk1/qyqBICovGypGushLbMF5MG3Hmg==
+X-Received: by 2002:a05:6a00:21c2:b0:4bc:fb2d:4b6f with SMTP id t2-20020a056a0021c200b004bcfb2d4b6fmr6605105pfj.62.1641580797933;
+        Fri, 07 Jan 2022 10:39:57 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:391a:d6f:6a77:ec68])
+        by smtp.gmail.com with ESMTPSA id lb12sm6769746pjb.27.2022.01.07.10.39.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 10:37:01 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 5FF33181F2A; Fri,  7 Jan 2022 19:37:01 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        syzbot <syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [syzbot] general protection fault in dev_get_by_index_rcu (2)
-In-Reply-To: <874k6fa1zc.fsf@toke.dk>
-References: <000000000000ab9b3e05d4feacd6@google.com>
- <CAADnVQLH5r-OLfGwduMqvTuz952Y+D7X29bW-f8QGpE9G6dF6g@mail.gmail.com>
- <874k6fa1zc.fsf@toke.dk>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 07 Jan 2022 19:37:01 +0100
-Message-ID: <87y23r8kaa.fsf@toke.dk>
+        Fri, 07 Jan 2022 10:39:57 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net-next] af_packet: fix tracking issues in packet_do_bind()
+Date:   Fri,  7 Jan 2022 10:39:53 -0800
+Message-Id: <20220107183953.3886647-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.1.575.g55b058a8bb-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> writes:
+From: Eric Dumazet <edumazet@google.com>
 
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->
->> Toke, Jesper,
->>
->> please take a look.
->> Seems to be in your area of expertise.
->
-> Yikes, I think I see the problem. Let me just confirm and I'll send a
-> fix :)
+It appears that my changes in packet_do_bind() were
+slightly wrong.
 
-Fix here: https://lore.kernel.org/r/20220107183049.311134-1-toke@redhat.com
+syzbot found that calling bind() twice would trigger
+a false positive.
 
--Toke
+Remove proto_curr/dev_curr variables and rewrite things
+to be less confusing (like not having to use netdev_tracker_alloc(),
+and instead use the standard dev_hold_track())
+
+Fixes: f1d9268e0618 ("net: add net device refcount tracker to struct packet_type")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/packet/af_packet.c | 27 ++++++++-------------------
+ 1 file changed, 8 insertions(+), 19 deletions(-)
+
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index 9bbe7282efb65fa72278267266f0e55632ee79e2..5bd409ab4cc2001f2ac2d045e77f96c8bbba956a 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -3162,12 +3162,10 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
+ 			  __be16 proto)
+ {
+ 	struct packet_sock *po = pkt_sk(sk);
+-	struct net_device *dev_curr;
+-	__be16 proto_curr;
+-	bool need_rehook;
+ 	struct net_device *dev = NULL;
+-	int ret = 0;
+ 	bool unlisted = false;
++	bool need_rehook;
++	int ret = 0;
+ 
+ 	lock_sock(sk);
+ 	spin_lock(&po->bind_lock);
+@@ -3192,14 +3190,10 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
+ 		}
+ 	}
+ 
+-	dev_hold(dev);
+-
+-	proto_curr = po->prot_hook.type;
+-	dev_curr = po->prot_hook.dev;
+-
+-	need_rehook = proto_curr != proto || dev_curr != dev;
++	need_rehook = po->prot_hook.type != proto || po->prot_hook.dev != dev;
+ 
+ 	if (need_rehook) {
++		dev_hold(dev);
+ 		if (po->running) {
+ 			rcu_read_unlock();
+ 			/* prevents packet_notifier() from calling
+@@ -3208,7 +3202,6 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
+ 			WRITE_ONCE(po->num, 0);
+ 			__unregister_prot_hook(sk, true);
+ 			rcu_read_lock();
+-			dev_curr = po->prot_hook.dev;
+ 			if (dev)
+ 				unlisted = !dev_get_by_index_rcu(sock_net(sk),
+ 								 dev->ifindex);
+@@ -3218,25 +3211,21 @@ static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
+ 		WRITE_ONCE(po->num, proto);
+ 		po->prot_hook.type = proto;
+ 
+-		dev_put_track(dev_curr, &po->prot_hook.dev_tracker);
+-		dev_curr = NULL;
++		dev_put_track(po->prot_hook.dev, &po->prot_hook.dev_tracker);
+ 
+ 		if (unlikely(unlisted)) {
+-			dev_put(dev);
+ 			po->prot_hook.dev = NULL;
+ 			WRITE_ONCE(po->ifindex, -1);
+ 			packet_cached_dev_reset(po);
+ 		} else {
+-			if (dev)
+-				netdev_tracker_alloc(dev,
+-						     &po->prot_hook.dev_tracker,
+-						     GFP_ATOMIC);
++			dev_hold_track(dev, &po->prot_hook.dev_tracker,
++				       GFP_ATOMIC);
+ 			po->prot_hook.dev = dev;
+ 			WRITE_ONCE(po->ifindex, dev ? dev->ifindex : 0);
+ 			packet_cached_dev_assign(po, dev);
+ 		}
++		dev_put(dev);
+ 	}
+-	dev_put_track(dev_curr, &po->prot_hook.dev_tracker);
+ 
+ 	if (proto == 0 || !need_rehook)
+ 		goto out_unlock;
+-- 
+2.34.1.575.g55b058a8bb-goog
 
