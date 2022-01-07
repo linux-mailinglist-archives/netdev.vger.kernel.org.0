@@ -2,81 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09546487A57
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 17:29:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ADC3487A8D
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 17:40:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239898AbiAGQ3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 11:29:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239628AbiAGQ3k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 11:29:40 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12FAC061574;
-        Fri,  7 Jan 2022 08:29:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=GcFqA5Nnb1zJRXY+qvcog6WAKwd2jF9I/R9PGMCiTkU=; b=Y0CgoumE3veAWuJnfOlez+3TgA
-        ivc+AlotRu7VZKVJNLTkjyA82XGfh3gy6albDzXNSxtlNqIlWIMWWCDFHy6io1x05SWnnl45y5/OE
-        hOXx2KZyEYjCDl5wkWDlEiqF65jaHiieRGsRxeix3G4m3lRlcYBcYLlJpbkUDCzNuSP3Q7PZS7wU/
-        Pkwbmjd8KYoyIOEBpFpQxJyA6tN+sJGvQ91nl5EgMJ8CIFUxZNdjYdmpEZsfVWuUYlseRZ45l1pYj
-        zQ+rF5kRM8XiT2gXRvQ2yWgBMyP12v871beu7CO2n7UtozWubUXQZxa+dT5MQE2Klgq6A3wmWGRMM
-        wy3Nka8g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56616)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1n5s7Q-0001ca-Fo; Fri, 07 Jan 2022 16:29:32 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1n5s7P-00023E-Al; Fri, 07 Jan 2022 16:29:31 +0000
-Date:   Fri, 7 Jan 2022 16:29:31 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] of: net: Add helper function of_get_ethdev_label()
-Message-ID: <Ydhqa+9ya6nHsvLq@shell.armlinux.org.uk>
-References: <20220107161222.14043-1-pali@kernel.org>
+        id S240148AbiAGQkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 11:40:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58928 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239952AbiAGQky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 11:40:54 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4791061F4D
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 16:40:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 580E1C36AE0;
+        Fri,  7 Jan 2022 16:40:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641573653;
+        bh=Z4EjiGDl+FWry+Og4Es7u/EtFzY4/HUJHpQU6FI/TrY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ihMYCBrWQtRNhwXOxINiXRLhGKwV7wrsoRplK9LE7KyIwFKsGMaiP5gUo5mipqRfJ
+         /B4u1Okmza2KXY63aLC24xSMpOzRUoWQQL4ZYgkULJ6MkcoPAQLPac3h/zQi9w7VbI
+         kn8wIjgXreP421Nk6RBOBPKlXUmfpS3TFlu4pkS6ZTEPfzYB3/jB7+NTz4LYPmquzZ
+         i/WWnY2GuWg5KHLiqVK/h82T9Zvq054C4BDF2rscpnwWo1sl+lIwm/m8mLoDGWjaql
+         mU7I2znejjLsBt7ooPZF2YfFlkIe1qPl0FMk6P3wAjXMAR3Wvp9UHSfuDI/EzSz/+K
+         92XPbjYbg+nOQ==
+Date:   Fri, 7 Jan 2022 08:40:52 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net] net: mscc: ocelot: fix incorrect balancing with
+ down LAG ports
+Message-ID: <20220107084052.737c91bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220107135839.237534-1-vladimir.oltean@nxp.com>
+References: <20220107135839.237534-1-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220107161222.14043-1-pali@kernel.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 05:12:21PM +0100, Pali Rohár wrote:
-> Adds a new helper function of_get_ethdev_label() which sets initial name of
-> specified netdev interface based on DT "label" property. It is same what is
-> doing DSA function dsa_port_parse_of() for DSA ports.
+On Fri,  7 Jan 2022 15:58:39 +0200 Vladimir Oltean wrote:
+> Assuming the test setup described here:
+> https://patchwork.kernel.org/project/netdevbpf/cover/20210205130240.4072854-1-vladimir.oltean@nxp.com/
+> (swp1 and swp2 are in bond0, and bond0 is in a bridge with swp0)
 > 
-> This helper function can be useful for drivers to make consistency between
-> DSA and netdev interface names.
-> 
-> Signed-off-by: Pali Rohár <pali@kernel.org>
+> it can be seen that when swp1 goes down (on either board A or B), then
+> traffic that should go through that port isn't forwarded anywhere.
 
-Doesn't this also need a patch to update the DT binding document
-Documentation/devicetree/bindings/net/ethernet-controller.yaml ?
-
-Also it needs a covering message for the series, and a well thought
-out argument why this is required. Consistency with DSA probably
-isn't a good enough reason.
-
-From what I remember, there have been a number of network interface
-naming proposals over the years, and as you can see, none of them have
-been successful... but who knows what will happen this time.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+This only applies to net-next. Could you resend with the subject
+tag changed? The tree probably doesn't matter at this point and 
+would be nice to get it properly build-tested.
