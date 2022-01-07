@@ -2,133 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DADD5487036
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 03:15:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD91D487067
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 03:31:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345320AbiAGCPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 21:15:54 -0500
-Received: from mail-db8eur05on2132.outbound.protection.outlook.com ([40.107.20.132]:15457
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1345312AbiAGCPx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jan 2022 21:15:53 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f1Hrs5apWYe6TiUCl42a6JQgkOHq+f9Qg8jZbIH4Osens7D/H86mzoYCsb2XAczwEN5o6ITdL3RFBAuNRPprfS4PXzH+5LggyFcaBgvsGNBDezvkjYCSx9tPD+k8Y3d9b19FtNwzijaHousS5rcUu4xjP2aDHzDk8gP3+kP0F8/PeISiddJGQHFXaxpW1yhoRTrJ25yeKL4aTF0BVqfsikOhylzRBe1Md4+7X+0DaS88b1DRsu7ImixnCOeG1O6VlPtbfnn/IHK/0sry2gPuzrNmHM1DaSBAlNZRi96eZ6tJoCQ/WAW+AdYREtKtx5Muva0xsfME736pEWi5sa65NQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Wx6jXPGwkLZbaLF92DzGv0pKR9WLhXgVCSKVBBXqhYQ=;
- b=PeaRwlHXAiTmm4ZiVR3DV4VPf1G/Omh64e4Ka+E8s3AxsK2PqVWza1m9mCij4LCDTeAB7AiwQmcCCXTLGDnAvivaDzhy4IXaqE8m1fyCYbfJCAKVZ1K2os6uVUQGbiwG5Y8EAsV9xKlC5N9vM+hGtWfCNMQkHYQ6HEl69wwvhzrmKj4SwHdn+olfUF1QvmZCDquQHnDZptjVrp7HQsESIQZa/dACd1NnNEMoW8XLIVQCBxTL/fCiZSb0POmhTEP1PeKIeKZb02i+HtoH7nqJi5Dl0F578OQkuHSqz5fSe7F4D4vtdfiLsOpXH5bjDPun2/T2yewfLPOG3dUhBzHgfQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Wx6jXPGwkLZbaLF92DzGv0pKR9WLhXgVCSKVBBXqhYQ=;
- b=fTakXyYndqH1ve8H4r05uCwF4B6H6da3vTccqWa5KoB3N/tagyIVUzKSHHvSBWhjwomwAIo+K/bEKgIEXaQOr8YVnlSU8iieDBkacSSgZjP+vSMpCHFLfuC+KOD33cifh5e7QclU8LXVURiC/nwIRM9OGLczZSDPUC7hwg7ULyI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from PA4P190MB1136.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:10b::20)
- by PA4P190MB1117.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:105::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Fri, 7 Jan
- 2022 02:15:49 +0000
-Received: from PA4P190MB1136.EURP190.PROD.OUTLOOK.COM
- ([fe80::dc32:681:7104:d4ad]) by PA4P190MB1136.EURP190.PROD.OUTLOOK.COM
- ([fe80::dc32:681:7104:d4ad%3]) with mapi id 15.20.4867.010; Fri, 7 Jan 2022
- 02:15:49 +0000
-Date:   Fri, 7 Jan 2022 04:15:45 +0200
-From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org, andrew@lunn.ch,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/6] net: marvell: prestera: Add router
- interface ABI
-Message-ID: <YdeiUcL476kdanpP@yorlov.ow.s>
-References: <20211227215233.31220-1-yevhen.orlov@plvision.eu>
- <20211227215233.31220-3-yevhen.orlov@plvision.eu>
- <Yc230kOuj+tHOkjQ@shredder>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yc230kOuj+tHOkjQ@shredder>
-X-ClientProxiedBy: FR0P281CA0052.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:48::20) To PA4P190MB1136.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:102:10b::20)
+        id S1345413AbiAGCbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 21:31:21 -0500
+Received: from mout.kundenserver.de ([217.72.192.73]:47483 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345392AbiAGCbU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 21:31:20 -0500
+Received: from mail-wm1-f51.google.com ([209.85.128.51]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1Md6ZB-1mVV8X2suh-00aALI; Fri, 07 Jan 2022 03:31:18 +0100
+Received: by mail-wm1-f51.google.com with SMTP id a83-20020a1c9856000000b00344731e044bso2175544wme.1;
+        Thu, 06 Jan 2022 18:31:18 -0800 (PST)
+X-Gm-Message-State: AOAM532YdSewgeC5zVPrxViB+szycqARFioOuqPwKzF7DOfngCSxl9qr
+        ux5u6i7e/9Y1tCKBxc/uR9AN+G1ViZPMoFpRC+M=
+X-Google-Smtp-Source: ABdhPJzPjYESERWywY2r/vy27PoJsyUe/sO9mYrCqlCb0tB5N5fglYx3siWs052mww9CA4oxRJdgYwk0eCv1ZWNvEtA=
+X-Received: by 2002:a7b:c190:: with SMTP id y16mr8685720wmi.35.1641522678363;
+ Thu, 06 Jan 2022 18:31:18 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 373fcd3d-efbd-49af-ab68-08d9d1839f39
-X-MS-TrafficTypeDiagnostic: PA4P190MB1117:EE_
-X-Microsoft-Antispam-PRVS: <PA4P190MB111782F62BAFC4A7F5C2BF08934D9@PA4P190MB1117.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kXKMcOE7HQJgQjiYlsQSR/hnU53b2qXdOyZdv3xqTUQWG0vjB78rb9KbWv4UXUBmy6ztDbepH/BhG2xX3JFZAPwupxH6xP2ozrF8MUZTntPokxwf03/i10H+bLGS4I23PXbVzDLeW6IeCgY2OQ+Na/aPar8oNJ+236CYgiGz6E0If3Uk1T9WpZgql1f1ee4lxz0B4SOXKA2zyGpR9F8LLYY3hVP429yA9gWjJbC6cGOP0FQ2qlauCs4QUp/+uxe3WItc7WCaI2kRJAqcg3FZPKMWSbMDUKBanHDw1SwHtICDKPiFXIAWnhBJtArVS7ZN5BRy9DGuscn1mNv914mpHZPiRSClsPjrFK2cxlF5xcSUD8qA3AhhyxRbYOzJ8oqYv5ImjdBphDtYVXbeBexN2GllWclvzlQiPHg4lEBEKp3FSulhCGOO/5MEQKjhDOZNF5YfraFaNMKGyOcqld0koVcIBjjDwr+x9tS1j0GBfxpzTDQh7HD4lpYCshLFqlkH/lo2p1ckvkpxSnWMQawBhSWGlUg91+BppgR2ADVRl96ZOvGMOvOy8s1CUJzWnhJPiFwl/02b7dVSDjJXlmdhYCpvseUfCHAmjvV/46fY57VCKkXZBBcKP/SOuqBoVNcyI40kv7hdUzGCn/9K8tp4FO+MYkgFB4LmqO/SME317YInclzMQUKVuzlwCD2S4EQeJceJoxa4BKi6d2QClWdm3w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4P190MB1136.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(396003)(366004)(136003)(39830400003)(346002)(376002)(8676002)(26005)(52116002)(9686003)(5660300002)(6666004)(8936002)(54906003)(2906002)(44832011)(4326008)(316002)(6512007)(38100700002)(508600001)(38350700002)(6486002)(6916009)(6506007)(4744005)(186003)(86362001)(66556008)(66574015)(66476007)(66946007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WGjltiKtfs6PHLFYo7oaxRLLQXGz9zWQSdeUJE2wUAB1bR4wPhgKgnwzrZpI?=
- =?us-ascii?Q?zZBqksrAyG0BnLOnlpIjn6IvfAXz5d8KW1FUIn9dMCmzPBLgrksCbDBikbHY?=
- =?us-ascii?Q?rceuHaQv2Uf1My+zVmm9rvQbFC2DVaQ1vn16J1lHeXCMAAOpxStLbQ50CBDT?=
- =?us-ascii?Q?+qZKb9Q66l3/m07ZNSB1C1D2ow4zhlm7DCxFg6jyXjdfhdulx4o57O0D2uoM?=
- =?us-ascii?Q?n+2Ceu+bZ3tpDO6lNmunAT+MBBN/5dOrozDpg9k+8J8Es8/rzt/muYBghQBR?=
- =?us-ascii?Q?zd8wvCfGOSNQlgWO0vypb+qAR1IqDIvToYbUOCLvnyTL7OH280NpNyV81FNa?=
- =?us-ascii?Q?UrCgeFGPpbqST76O792h/bNoLe/0F75tUnxGNnlVUFCRlRXqBDoSyQKfW7VA?=
- =?us-ascii?Q?8o/9exI5EP5ky79hAS81Iu6eTvQjWae1SwtVo3tq1j9PGLaoRZ1zjT03yris?=
- =?us-ascii?Q?lKwalTIRmRVy6Izpl0UaJbdhGNtZFbQRvy3P1pewrAuvBI2F1jx+//AwR/jt?=
- =?us-ascii?Q?Pgvc5jktqXH+VHAMx+Q8x8u6bFoqrvzuEkY2VfUn4hNzmCp/eJNjeTxdDct8?=
- =?us-ascii?Q?bPn5a+pRwF2ys+qgTKkM6Hp8A+hFfgDwJgf2xsOTcpTfqBT2rveJIvb7ZRUi?=
- =?us-ascii?Q?w3njBwHIegLXJHxBrYuY/y6ivClyXTGf0hy/xKv8zWrjtHiHMvnwClnAXbWx?=
- =?us-ascii?Q?83OkuwLo6Tctnn8s6Qxoe0VPHXDYCbjRQ6WKo+HMS/+SGTgsWqHNewhubcQE?=
- =?us-ascii?Q?CJscuZ8W1DX0ZVBdtFG4zkKXIPWyDq/awkGACz0KBlBZdoeBJZhEH35mEEH3?=
- =?us-ascii?Q?ZEFV+gAPuao4TvyPJwKk7Ah+bYNdJo1P8M+IxBt3OKTXJXS1YX8RJuzoBZWz?=
- =?us-ascii?Q?sypGMdpN/yF1Nb/578xFUim6ZINko064Gr0qySaWGD3RuDEvrOYP7zrJqTlm?=
- =?us-ascii?Q?HXA+ZoNyxtnSXJtbVUqvXCuy/7OeSAeiWxmL01xI/01cYsFATgzwI/v+Vhvr?=
- =?us-ascii?Q?T+Y35lGx6+v9Tk0Nyzizc2G0MK7zgL85gVO0gjS960SGeLVzJNpY5WRQ1+Cx?=
- =?us-ascii?Q?LzVFIOBm1VmfXP+96F4B6CMR0uxbI8GDZKVpgqHZrn0ComuPG4vqOglNYPPY?=
- =?us-ascii?Q?ajc4wPRIdzjX9KEgIatE9As/JXJaHy1DrHTwbbMasvGAbDnuCiCcl+vSukl+?=
- =?us-ascii?Q?+85516lmEiR6HP7ocfbkESNlvJagX4jgLkP36EfHGdvF0Wj2dMQ0D5migdcF?=
- =?us-ascii?Q?p3b/C4uo05T8vn6vBw08zxBO2uZabArugfMqnr6sK/8cgxTUaqEMW6gS09CZ?=
- =?us-ascii?Q?opkU2uqCZikCSxhwdJTDJdmncahIX+ol0UfZIIbF5i0pqwyaLwZRMSakRJug?=
- =?us-ascii?Q?x7nqgvsZd122ibMqza6jpY1rlJaMIicWqOxrBEQ8K95lY4/jNIvEVdyv5m04?=
- =?us-ascii?Q?XYX+MLSqLNOXWU9AKcOviLGfOVxNdHWX26JEfHC6uqq0WnnVB2OU9XDcHjvg?=
- =?us-ascii?Q?ahaQYjdi+g5Qh0PLOL7PD7AuWTPNPtRgRVS1ehbYQgEtHrIICgeXGxKNjWZh?=
- =?us-ascii?Q?AkQdbVn6aZITbgMIl6Ha9tTLwRU7IGsCofVN1C01KQjQyXHj+M77Vp1rME6b?=
- =?us-ascii?Q?TW9fTsZNsH2hNBtrh0Cl0aWqF5Z0rimv4n/llVBoxPu4rMampeVBeApPIClZ?=
- =?us-ascii?Q?I2QMRA=3D=3D?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 373fcd3d-efbd-49af-ab68-08d9d1839f39
-X-MS-Exchange-CrossTenant-AuthSource: PA4P190MB1136.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jan 2022 02:15:49.6444
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xMTfW6at9PbKYSqQ+xYL+iMUXSTIaE99oiOu/Q67x8XiT/eHDNY1sGkKOIqaqJVsreuLAhi3sZtWHxECRWj4q78t58+SiTfEWMIC05M1dE4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4P190MB1117
+References: <20220106225716.7425-1-paskripkin@gmail.com>
+In-Reply-To: <20220106225716.7425-1-paskripkin@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 6 Jan 2022 21:31:15 -0500
+X-Gmail-Original-Message-ID: <CAK8P3a1tJTcFKfSSXzXRM1NLYacjf=-RYbz54HATxv0WSfu+qw@mail.gmail.com>
+Message-ID: <CAK8P3a1tJTcFKfSSXzXRM1NLYacjf=-RYbz54HATxv0WSfu+qw@mail.gmail.com>
+Subject: Re: [PATCH] net: mcs7830: handle usb read errors properly
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, tanghui20@huawei.com,
+        Andrew Lunn <andrew@lunn.ch>, Oliver Neukum <oneukum@suse.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        USB list <linux-usb@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:SIguIQGIepHyKd+m+UmjqM0lRVpbV/pQlunQrt5W39xZwXGZejK
+ +pdbkrelzYFXvkwxnV+7keszsCKDfb8zBZ73QcFlEJq35pqY5bBpXX3rNrYWyYlTjwvWQQB
+ BpwLhDpbmw+AuxgzABPWSHKb8rstA19x/hLDG0VjrAQ0pX8IDNfw4hqDPA0CLudaPG6alDA
+ 1x0izyfMDFGCPJQZgmOIw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ZtxTtvMqY9U=:tIA7LuSFE3AIcuJ877bcvW
+ g27NHZ1Xb22IAaSdHlqo8g9lgxrsRlRv5uvd+AjlWjJLQTDIj9DzYIMK4NNNXyEdiWPAhEFnm
+ ixlGlP+d1HUeWeBzZufLPtJUe0vc8rQGVtCbyDKzxc85GUY9RwGcskLi8onNGVJXYU1ZcM4MN
+ PPAUEXHjIDhLLUGbTqLcY0yRWlF7azUJEGjyAxRz9G2YDq6sIIIqrzPiZZz/lJFDBe9U9Hsi3
+ 58erfT9fCQG7XvbBFxCGMneqedJERFMcrfLcDcmF0KM4DX0Okaie3zIUT8MvEukfIX/TdonZO
+ 3OPeY/L1M36fKxD/ViykKhw1BDM1MDQPK2tlQV66+OQnMGas33G0fKsazCyGS+nqOrsAl7pyr
+ 8yr6fM3YUZ/6+MiWxYlSfWomCVHvdKjzzZjT/a8rLs3uw9zqBWZXYE/8SM4hyeeYXtO7yUREa
+ kUMyugLDGl+kl2+hOVzWMIzpBCwe6ONi90xWNo4wiHoayd1XIBOjTJgsiACvpeVe5krO5WNQk
+ hNeVSG2OvceUMQK/IhmCE4O0N/ORUMp1xeW3KV9zgm5dV99IM7wMt+wd8RDoL8uyj8GGImMeM
+ RjZIuzhzSc3cbzZaEXaImeeN33QNor03IVbiWPxPpNulyDi6JbDCGZBiZ7iqJmtXgDsy/z/Rz
+ hZN6sR5T+CPq9tDmQNADLtFzH+2/tZ3rHdcP+cGD0LsmcwzxtamtsMGDzLfsFIgSmj7kKr/El
+ ttiwKbEdoIMDxO5qPnkDxZDyB2BNu1JHJl61omPCdQorkLfYjr/qyKYVFtDKWDAedW72cIGzd
+ c0iXHeTZiqzLPScJWWTudMYk0ib3dmCvP+EIsHSYBurfSwMWHs=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 30, 2021 at 03:44:50PM +0200, Ido Schimmel wrote:
-> On Mon, Dec 27, 2021 at 11:52:27PM +0200, Yevhen Orlov wrote:
-> > Add functions to enable routing on port, which is not in vlan.
-> > Also we can enable routing on vlan.
+On Thu, Jan 6, 2022 at 5:57 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
 >
-> I don't understand these two lines. Can you explain for which netdev
-> types you can create a router interface?
+> Syzbot reported uninit value in mcs7830_bind(). The problem was in
+> missing validation check for bytes read via usbnet_read_cmd().
 >
+> usbnet_read_cmd() internally calls usb_control_msg(), that returns
+> number of bytes read. Code should validate that requested number of bytes
+> was actually read.
+>
+> So, this patch adds missing size validation check inside
+> mcs7830_get_reg() to prevent uninit value bugs
+>
+> CC: Arnd Bergmann <arnd@arndb.de>
+> Reported-and-tested-by: syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
+> Fixes: 2a36d7083438 ("USB: driver for mcs7830 (aka DeLOCK) USB ethernet adapter")
 
-Sure.
-For now we support only regular port (has no upper or lower dev).
+Looks good to me.
 
-But ABI potentially support RIF on bridge/vlan (see prestera_if_type).
-This feature will be implemented soon.
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
+>
+> @Arnd, I am not sure about mcs7830_get_rev() function.
+>
+> Is get_reg(22, 2) == 1 valid read? If so, I think, we should call
+> usbnet_read_cmd() directly here, since other callers care only about
+> negative error values.
+
+I have no idea, I never had a datasheet for this device, only
+the hardware I bought cheaply and vendor source code I
+found somewhere on the net, and that was 16 years ago.
+
+I would not expect the hardware to ever return less data than
+was asked for, so any length checking would only have to
+account for attackers that fake this device.
+
+         Arnd
