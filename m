@@ -2,128 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B85674877DA
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 13:55:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C67648783C
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 14:32:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347244AbiAGMzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 07:55:15 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38304 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231207AbiAGMzP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 07:55:15 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEAAA60AAF;
-        Fri,  7 Jan 2022 12:55:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91584C36AE5;
-        Fri,  7 Jan 2022 12:55:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641560114;
-        bh=JsU2qs9kcOP11xgLqJB4Eq2GZtGGt42uQoq8yv8fZVM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QEVI3shOr9SR1meDkjYxcklM/V/6xbAbo5TK3ThOsPiZV/MHKPGfXtOQZnos0jlre
-         XcwqQapC6J9BH3/rq0zh9cC5YEGqtHBcdIEFa42P4mXdCpwis16rwYrFZfEl8o1uFJ
-         Ip2fEa1p0dcK99KBgG4rsKwoem0H17SS17/VA6KnsVpoQnThC6YmuWWbJWb04Xsc8f
-         ZsRCgCoy7akLsCEhiUuV6TR0XbY+P4HrWVLlC7p3nyIUb0AOLNV9QwWPOmEB1kMylm
-         VxRMVbKN+eF/nqxBtfgLsNKlRnI/XqKzKxlasvbBEZ7Najunn2/bbk1/ndfhSPxfz1
-         15dkwWmvgfdZw==
-Date:   Fri, 7 Jan 2022 21:55:08 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [RFC 00/13] kprobe/bpf: Add support to attach multiple kprobes
-Message-Id: <20220107215508.eaac4e225add48b0705f5f14@kernel.org>
-In-Reply-To: <CAADnVQ+mZxxm=96pQ4ekV3rbjV=svPOKg3TG+K0396g+iMjTbA@mail.gmail.com>
-References: <20220104080943.113249-1-jolsa@kernel.org>
-        <20220106002435.d73e4010c93462fbee9ef074@kernel.org>
-        <YdaoTuWjEeT33Zzm@krava>
-        <20220106225943.87701fcc674202dc3e172289@kernel.org>
-        <CAADnVQLjjcsckQVqaSB8ODB4FKdVUt-PB9xyJ3FAa2GWGLbHgA@mail.gmail.com>
-        <20220107085203.14f9c06e0537ea6b00779842@kernel.org>
-        <CAADnVQ+mZxxm=96pQ4ekV3rbjV=svPOKg3TG+K0396g+iMjTbA@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1347581AbiAGNcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 08:32:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52325 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238674AbiAGNcQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 08:32:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641562334;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cFxA12PHF5x2snjaqknP/Xo7sJEChO7mQ3FWdzGbJfc=;
+        b=DDCvjtqesCpmD/xsK+pRYPg0q/vAxYf/rN2/uDmtCvxphptsUMGoUcbp6vTnIDVY+nhGUB
+        MnRUBCBxg3WSOj2qKTBQu7dTSvZHOZBeWYfxPEWAU+NyFu6mfhmH0QeoUqqnM/6VjFLUeu
+        T50PxqKYTxSQM6ObkgvQvQsjjDlUmfU=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-628-FD8i99vlN2qzebZcpqrmyg-1; Fri, 07 Jan 2022 08:32:13 -0500
+X-MC-Unique: FD8i99vlN2qzebZcpqrmyg-1
+Received: by mail-wm1-f71.google.com with SMTP id v190-20020a1cacc7000000b0034657bb6a66so833392wme.6
+        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 05:32:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
+         :subject:content-language:to:references:in-reply-to
+         :content-transfer-encoding;
+        bh=cFxA12PHF5x2snjaqknP/Xo7sJEChO7mQ3FWdzGbJfc=;
+        b=DKNehISUMLeoMVKH8Nlr583q1NckSYLE+Z/ygu1mw5spx5GtFHAzfKuGVdoyOLJMt9
+         h1U0XZzqFVn8JfS5kQ7TSYIUY12B+OvkmZh57BYZuInYm47wgtxYEv5+EIBglwNwZC0L
+         ziHt2qEXf1WZSRtXRJuSMDysANXtZeubZuBSJ5Y5t8//WN1Rz86odXfJlNehMezuQWT+
+         smbIndAP8na4iX4VWXhgBp4bkuEODun6h+snrlHCxw9fF0U3OE8pMvVEDIVXO/RbWN58
+         DFr/baNP5ZoFNYdbN52XGHmDT6MzpMA6OeLxhCQflKxU7Q3dmRrv7y0vLioBB7DKyd+7
+         7TVg==
+X-Gm-Message-State: AOAM5316GlDl39dPpdRf1/KYL7Ux6sfA+n871R3IQ0jmMJ9SVGqpi7mR
+        k7oDljfiZrm6VuzDQNRI9pWVFNQove6RYPywU6N2fDZrIGIygPEN3h+kjf8J7jscka9CrCPS/Ah
+        aW9ekr+VSeiMNlg51
+X-Received: by 2002:a1c:6a13:: with SMTP id f19mr10216391wmc.13.1641562332707;
+        Fri, 07 Jan 2022 05:32:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyftZXAOc3XjSdwFOB0wtyxXs5TYDRf8z1gme7WWUEWB4FfE05bcdM3IruZ8l9IzQVuhX/J9A==
+X-Received: by 2002:a1c:6a13:: with SMTP id f19mr10216376wmc.13.1641562332491;
+        Fri, 07 Jan 2022 05:32:12 -0800 (PST)
+Received: from [192.168.2.20] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
+        by smtp.gmail.com with ESMTPSA id o11sm8663447wmq.15.2022.01.07.05.32.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Jan 2022 05:32:11 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <3b7780d5-8f0b-0388-37e2-51ee8b282ab0@redhat.com>
+Date:   Fri, 7 Jan 2022 14:32:10 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Cc:     brouer@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hawk@kernel.org,
+        ilias.apalodimas@linaro.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Linux-MM <linux-mm@kvack.org>
+Subject: Re: [PATCH net-next] page_pool: remove spinlock in
+ page_pool_refill_alloc_cache()
+Content-Language: en-US
+To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org
+References: <20220107090042.13605-1-linyunsheng@huawei.com>
+In-Reply-To: <20220107090042.13605-1-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 6 Jan 2022 16:20:05 -0800
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-> On Thu, Jan 6, 2022 at 3:52 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> >
-> > On Thu, 6 Jan 2022 09:40:17 -0800
-> > Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> >
-> > > On Thu, Jan 6, 2022 at 5:59 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> > > >
-> > > > That seems to bind your mind. The program type is just a programing
-> > > > 'model' of the bpf. You can choose the best implementation to provide
-> > > > equal functionality. 'kprobe' in bpf is just a name that you call some
-> > > > instrumentations which can probe kernel code.
-> > >
-> > > No. We're not going to call it "fprobe" or any other name.
-> > > From bpf user's pov it's going to be "multi attach kprobe",
-> > > because this is how everyone got to know kprobes.
-> > > The 99% usage is at the beginning of the funcs.
-> > > When users say "kprobe" they don't care how kernel attaches it.
-> > > The func entry limitation for "multi attach kprobe" is a no-brainer.
-> >
-> > Agreed. I think I might mislead you. From the bpf user pov, it always be
-> > shown as 'multi attached kprobes (but only for the function entry)'
-> > the 'fprobe' is kernel internal API name.
-> >
-> > > And we need both "multi attach kprobe" and "multi attach kretprobe"
-> > > at the same time. It's no go to implement one first and the other
-> > > some time later.
-> >
-> > You can provide the interface to user space, but the kernel implementation
-> > is optimized step by step. We can start it with using real multiple
-> > kretprobes, and then, switch to 'fprobe' after integrating fgraph
-> > callback. :)
+
+On 07/01/2022 10.00, Yunsheng Lin wrote:
+> As page_pool_refill_alloc_cache() is only called by
+> __page_pool_get_cached(), which assumes non-concurrent access
+> as suggested by the comment in __page_pool_get_cached(), and
+> ptr_ring allows concurrent access between consumer and producer,
+> so remove the spinlock in page_pool_refill_alloc_cache().
+
+This should be okay as __ptr_ring_consume() have a memory barrier via 
+READ_ONCE in __ptr_ring_peek(). The code page_pool_empty_ring() also 
+does ptr_ring consume, but drivers should already take care that this 
+will not be called concurrently, as it is part of the teardown code path 
+(which can only run concurrently with ptr_ring producer side).
+
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+The original reason behind this lock was that I was planning to allow 
+the memory subsystem to reclaim pages sitting in page_pool's cache.
+Unfortunately I never got around to implement this.
+
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
+>   net/core/page_pool.c | 4 ----
+>   1 file changed, 4 deletions(-)
 > 
-> Sounds good to me.
-> My point was that users often want to say:
-> "profile speed of all foo* functions".
-> To perform such a command a tracer would need to
-> attach kprobes and kretprobes to all such functions.
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 1a6978427d6c..6efad8b29e9c 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -130,9 +130,6 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
+>   	pref_nid = numa_mem_id(); /* will be zero like page_to_nid() */
+>   #endif
+>   
+> -	/* Slower-path: Get pages from locked ring queue */
+> -	spin_lock(&r->consumer_lock);
+> -
+>   	/* Refill alloc array, but only if NUMA match */
+>   	do {
+>   		page = __ptr_ring_consume(r);
+> @@ -157,7 +154,6 @@ static struct page *page_pool_refill_alloc_cache(struct page_pool *pool)
+>   	if (likely(pool->alloc.count > 0))
+>   		page = pool->alloc.cache[--pool->alloc.count];
+>   
+> -	spin_unlock(&r->consumer_lock);
+>   	return page;
+>   }
+>   
+> 
 
-Yeah, I know. That is more than 10 years issue since
-systemtap. :)
-
-> The speed of attach/detach has to be fast.
-
-Yes, that's why I provided register/unregister_kprobes()
-but it sounds not enough (and maybe not optimized enough
-because all handlers are same)
-
-> Currently tracers artificially limit the regex just because
-> attach/detach is so slow that the user will likely Ctrl-C
-> instead of waiting for many seconds.
-
-Ah, OK.
-Anyway I also would like to fix that issue. If user wants
-only function entry/exit, it should be done by ftrace. But
-since the syntax (and user's mind model) it should be done via
-'kprobe', so transparently converting such request to ftrace
-is needed.
-
-Thank you,
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
