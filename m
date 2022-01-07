@@ -2,90 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BA61486F70
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 02:09:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBD81486F82
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 02:13:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345062AbiAGBJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 20:09:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34314 "EHLO
+        id S1344120AbiAGBNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 20:13:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345068AbiAGBJk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 20:09:40 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6F6C061245;
-        Thu,  6 Jan 2022 17:09:39 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id t28so1300339wrb.4;
-        Thu, 06 Jan 2022 17:09:39 -0800 (PST)
+        with ESMTP id S239981AbiAGBNO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 20:13:14 -0500
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A47C5C061245
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 17:13:13 -0800 (PST)
+Received: by mail-qv1-xf41.google.com with SMTP id fo11so4075447qvb.4
+        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 17:13:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8LHh10+xJEwQQJ1HEF7ipZJtQ43xHxuWPeAK1P7zvbk=;
-        b=JN1SD8KccynWq4OVrbYAy+R3lCUUI/juBe+hFVtkqWrmpI5vKsSNZabvdiYscWZCF1
-         vAGkkFI2vQ6fit6S8Gnaimll1ZFqGANhhGYdNUnll7YgW4mHX0OHNmTtnebQeKdN9bIb
-         C6O5fjNVpKOMVULJNeYauUc9INnAoF9jRW5PHiln3smJXTYuAaL16E0yWW0IDXaXvGjJ
-         dhWYZMrZUmB+8qbLOnviUaBa71PHF2uU26JZ8uUl1uVbjWneAULd1SfRrXB/CizUfT4z
-         +hCNh5S5MCwuGr0RZ2wH8oPJn6OopwEwawjMNOt4uCOEn8gBnNO9UFakeZQZap/4+Lnc
-         muug==
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=QAEdVKVuvHVd9j7iecOaSeXb2zUVUgiL+u5lq+ovFH8=;
+        b=CRPuUbTggXNa5VjeLyMJy2rKTss5XA3TETo3YAk3JOolEqaS3nJFAu4GGIfgZeK8jZ
+         uZXfReZH0tzy54D/nnReJmAiMwduC0VvwvfuoF4Ot0tmnvaaB3YT8U1L/A5jqGZszKdY
+         Ia4ISxl8H//Kgd5AkTi62rO+NNpWf0TfhvGihQpNsVkZDemKQW6t/ms/VSRYlp9sUmqK
+         VVfnYxLE/lkR7J4qYurQ7oUV9s0oAAD+PTDVvqz2qUobKQT9Zgdv1sMjhNO6iftcFyNa
+         BtoBHy0TksRclHiFvMa30Qly/ugyGwEBzyCXrqA9Isz8PudhShwtviVC9aDudjMR/g20
+         4hMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8LHh10+xJEwQQJ1HEF7ipZJtQ43xHxuWPeAK1P7zvbk=;
-        b=fGvSZ2IYKg0FR2SmDvBH05tCEjyN1La80I5FI6X6CTBBqvjV7Y5NMONhCMeta/MN9U
-         HUho+vPztdL+4065IjaeG089ZNp9ofutuOXBrDQBlih+UiiDgZd+BZqE+GBNcG7Owr/J
-         3HSFfjgFQ+pY6rraT3/nB+96zQF+2WyZB5Dwjm1ZrrK1PlacEvZjPFn6ARQct/igAsy0
-         NO5r+pz6aWIOLvHeXN0Y6mbjiAXae/c4D3E1WnEmfWW0P+/fVU4CiXi0kXAkoWeX0tqG
-         yVuDtB22Fg33bNGPV6Zy8ITHdGY3kgk70FXdHHL2dufcLGoKHMjobAQzGWM1QzhDnnbX
-         UF2Q==
-X-Gm-Message-State: AOAM531sCvZUvjOvy/0zVOlaUwm5kukYiH4HHyx0QPXW36aBapgaJRl9
-        ciDo1q93iHwvB6eesHrWJiyNWub07j7/jtYt2Ps=
-X-Google-Smtp-Source: ABdhPJx4PVmGgpPehu0uD1OCS9wBsXyBQzRPXWGgG1zXN+7yaEwK36YYSylNoOnca5o02K8Zg354zCS6ESvwZ5zo/EY=
-X-Received: by 2002:a05:6000:186e:: with SMTP id d14mr54460304wri.205.1641517778464;
- Thu, 06 Jan 2022 17:09:38 -0800 (PST)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=QAEdVKVuvHVd9j7iecOaSeXb2zUVUgiL+u5lq+ovFH8=;
+        b=oGJkC5pH7s+sbAw4pBb+uzlGamG1ELxWlc3VFC8BIC57ZvdMVFeHfeKeYN8tsgnTnG
+         PErTrVGCDwif8RhsXK4zdAgQEBWa107wD/ze1pa/t1pupg5avHiYRknrjIo8ZrvgDYH8
+         h0QEpss2q55SeUPCuEFbMH7fphlQQ+tv5IOBctch1I1YjOrMuNoytC69JR7pQuY9ACez
+         oSQCsLZ+w4mQFrdLoTzSsS3xuxV8NR2QyNLpg5omUD2VhbE48QxPyJi+JzPjicuv/tpS
+         j6syS1+xfaW8zIV0X+ARsx4Et4cyOA0xwU41ZuZEY9wfM9gaVqE5sJ0eQY2nUk6XSm8w
+         7SVQ==
+X-Gm-Message-State: AOAM530rHg6y6H2pymLjDdzZltX44dTKBAon2SttaQxAltHkRvLRBlpO
+        Xzh3Pd+X2oB3zsbEkrA0Dke+OEkNiTbAxMSdOT4=
+X-Google-Smtp-Source: ABdhPJw7JXY8ljQtFMHQ9XVRsMe2tNNK7gUOcNVcJ1rAdSKU/xqPXgPSSJOrNfEKFO0XgVH+wmSICVb2xSLSgtJa4yQ=
+X-Received: by 2002:a05:6214:76a:: with SMTP id f10mr58066131qvz.4.1641517992641;
+ Thu, 06 Jan 2022 17:13:12 -0800 (PST)
 MIME-Version: 1.0
-References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
- <20211222155743.256280-13-miquel.raynal@bootlin.com> <CAB_54W6AZ+LGTcFsQjNx7uq=+R5v_kdF0Xm5kwWQ8ONtfOrmAw@mail.gmail.com>
- <Ycx0mwQcFsmVqWVH@ni.fr.eu.org> <CAB_54W41ZEoXzoD2_wadfMTY8anv9D9e2T5wRckdXjs7jKTTCA@mail.gmail.com>
- <CAB_54W6gHE1S9Q+-SVbrnAWPxBxnvf54XVTCmddtj8g-bZzMRA@mail.gmail.com>
- <20220104191802.2323e44a@xps13> <CAB_54W5quZz8rVrbdx+cotTRZZpJ4ouRDZkxeW6S1L775Si=cw@mail.gmail.com>
- <20220105215551.1693eba4@xps13> <CAB_54W7zDXfybMZZo8QPwRCxX8-BbkQdznwEkLEWeW+E3k2dNg@mail.gmail.com>
- <20220106170019.730f45e8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220106170019.730f45e8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Thu, 6 Jan 2022 20:09:27 -0500
-Message-ID: <CAB_54W5B5QYu=5PSO=_NVndgnXsE_hHyVKf1Y69n_oZpoEP48A@mail.gmail.com>
-Subject: Re: [net-next 12/18] net: mac802154: Handle scan requests
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel list <linux-kernel@vger.kernel.org>
+Received: by 2002:ad4:5bc7:0:0:0:0:0 with HTTP; Thu, 6 Jan 2022 17:13:11 -0800 (PST)
+Reply-To: mr.luisfernando5050@gmail.com
+From:   "Mr. Luis Fernando" <mrahmedmo04@gmail.com>
+Date:   Thu, 6 Jan 2022 17:13:11 -0800
+Message-ID: <CAC+b6+W+iJtuY9kgkHgy9=iXt75sXAQ0QjsgJgjkFVjisinSdg@mail.gmail.com>
+Subject: GOOD DAY
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Thu, 6 Jan 2022 at 20:00, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 5 Jan 2022 19:38:12 -0500 Alexander Aring wrote:
-> > > Also, just for the record,
-> > > - should I keep copying the netdev list for v2?
-> >
-> > yes, why not.
->
-> On the question of lists copied it may make sense to CC linux-wireless@
-> in case they have some precedent to share, and drop linux-kernel@.
-
-Yes, that makes sense.
-
-- Alex
+LS0gDQpJIGFtIE1yLmx1aXMgZmVybmFuZG8NCg0KSGkgRnJpZW5kIEkgd29yayBpbiBhIEJhbmsg
+Zm9yIEFmcmljYSAoQk9BKSBoZXJlIGluIEJVUktJTkEgRkFTTw0KDQpJIHdhbnRzIHRvIHRyYW5z
+ZmVyIGFuIGFiYW5kb25lZCBzdW0gb2YgMjcuNSBtaWxsaW9ucyBVU0QgdG8geW91DQp0aHJvdWdo
+IEFUTSBWSVNBIENBUkQgLjUwJSB3aWxsIGJlIGZvciB5b3UuIE5vIHJpc2sgaW52b2x2ZWQuDQoN
+Cg0KVGhlIChCT0EpIGJhbmsgd2FzIGJlaW5nIHVzZWQgYnkgbWFueSBBZnJpY2FuIFBvbGl0aWNp
+YW5zIHRvIGRpdmVydA0KZnVuZHMgKHRoZSBQb2xpdGljaWFucyBsb290ZWQgb3ZlcjViaWxsaW9u
+IFVuaXRlZCBTdGF0ZXMgZG9sbGFycykgdG8NCnRoZWlyIGZvcmVpZ24gYWNjb3VudHMgYW5kIHRo
+ZXkgZGlkIE5vdCBib3RoZXIgdG8ga25vdyBob3cgbXVjaCB3YXMNCnRyYW5zZmVycmVkIGJlY2F1
+c2UgdGhlIGZ1bmRzIGJlbG9uZ2VkIHRvIHRoZSAnU3RhdGUnIHRoYXQgaXMgd2h5IEkNCmFsc28g
+ZGVjaWRlZCB0byBwdXQgYXBhcnQgdGhlIHN1bSBvZiAgJDI3LjVtaWxsaW9uIERvbGxhcnMgd2hp
+Y2ggaXMNCnN0aWxsIGluIG91ciBiYW5rIHVuZGVyIG15IGN1c3RvZHkgZm9yIGEgbG9uZyBwZXJp
+b2Qgbm93IQ0KDQpJIGhhdmUgdG8gZ2l2ZSB5b3UgYWxsIHRoZSByZXF1aXJlZCBndWlkZWxpbmVz
+IHNvIHRoYXQgeW91IGRvIG5vdA0KbWFrZSBhbnkgbWlzdGFrZS4gSWYgeW91IGFyZSBjYXBhYmxl
+IHRvIGhhbmRsZSB0aGUgdHJhbnNhY3Rpb24gQ29udGFjdA0KbWUgZm9yIG1vcmUgZGV0YWlscy4g
+S2luZGx5IHJlcGx5IG1lIGJhY2sgdG8gbXkgYWx0ZXJuYXRpdmUgZW1haWwNCmFkZHJlc3MgKG1y
+Lmx1aXNmZXJuYW5kbzUwNTBAZ21haWwuY29tKSBNci5sdWlzIEZlcm5hbmRvDQoNCg0KDQoNCuaI
+keaYr+i3r+aYk+aWr8K36LS55bCU5Y2X5aSa5YWI55SfDQoNCuWXqO+8jOaci+WPi++8jOaIkeWc
+qOW4g+Wfuue6s+azlee0oueahOS4gOWutumdnua0sumTtuihjCAoQk9BKSDlt6XkvZwNCg0K5oiR
+5oOz6YCa6L+HIEFUTSBWSVNBIENBUkQg5bCG5LiA56yU5bqf5byD55qEIDI3NTAg5LiH576O5YWD
+6L2s57uZ5oKo77yMMC41MCUg5bCG5piv57uZ5oKo55qE44CCIOS4jea2ieWPiumjjumZqeOAgg0K
+DQoNCuiuuOWkmumdnua0suaUv+WuouWIqeeUqCAoQk9BKSDpk7booYzlsIbotYTph5HvvIjmlL/l
+rqLmjqDlpLrkuobotoXov4cgNTANCuS6v+e+juWFg++8iei9rOenu+WIsOS7luS7rOeahOWkluWb
+vei0puaIt++8jOS7luS7rOS5n+aHkuW+l+efpemBk+i9rOenu+S6huWkmuWwke+8jOWboOS4uui/
+meS6m+i1hOmHkeWxnuS6juKAnOWbveWutuKAnQ0K5Li65LuA5LmI5oiR6L+Y5Yaz5a6a5oqK546w
+5Zyo6ZW/5pyf5L+d566h5Zyo5oiR5Lus6ZO26KGM55qEMjc1MOS4h+e+juWFg+WIhuW8gO+8gQ0K
+DQogIOaIkeW/hemhu+e7meS9oOaJgOacieW/heimgeeahOaMh+WvvOaWuemSiO+8jOi/meagt+S9
+oOWwseS4jeS8mueKr+S7u+S9lemUmeivr+OAgiDlpoLmnpzmgqjmnInog73lipvlpITnkIbkuqTm
+mJPvvIzor7fogZTns7vmiJHkuobop6Pmm7TlpJror6bmg4XjgIIg6K+35Zue5aSN5oiR55qE5aSH
+55So55S15a2Q6YKu5Lu25Zyw5Z2ADQoobXIubHVpc2Zlcm5hbmRvNTA1MEBnbWFpbC5jb20pIE1y
+Lmx1aXMgRmVybmFuZG8NCg==
