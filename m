@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF0F7486F00
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 01:42:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDB9B486F08
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 01:47:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343968AbiAGAmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 19:42:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58554 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343865AbiAGAmB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 19:42:01 -0500
+        id S1344143AbiAGAr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 19:47:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40460 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343865AbiAGAr3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 19:47:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0768BB8240F;
-        Fri,  7 Jan 2022 00:42:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FE93C36AE0;
-        Fri,  7 Jan 2022 00:41:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD29E61E99;
+        Fri,  7 Jan 2022 00:47:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADD01C36AE0;
+        Fri,  7 Jan 2022 00:47:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641516118;
-        bh=Pd98R3goIk+E5okVr1q0OLtQzqo9FH4v6pbDvQnNilA=;
+        s=k20201202; t=1641516448;
+        bh=8p9BpQCyT+mTWl/nJuQq7NeCOFByrwMQgbTqOh8G2QY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=g5oheXA8hsFKxI2ZF2pVFv4yVXCt+dapX25W2D82mnCgc0n+wYrWhiQ4b+tBUpKCL
-         uBFd7F4nM+C6gypfGz0Dd/QtZfmjx5nAesuWOQuLb/n9C0UqA6zpRUBWMYKE8Pns9c
-         OZf8eXAcLQzhR4W9izNeZnbR2XZVp0VRksTj2fnH8o/tdO9kOvOnDkmBuprJWHjEns
-         nBgRIXm0qUrOXedcQv56rAE3aKDLooWBc3JF2FHNJhaF4BJ42QyB2AhMdFxj4l5lRT
-         1h3WKr8wtyhze1RmLAH4HHPIg+SufYrgu5d2Hy5QAS1hLhbQWgUGp1IlgJ4UAdzRL+
-         D36Ow49DdLeYQ==
-Date:   Thu, 6 Jan 2022 16:41:56 -0800
+        b=pb8ILdnPmZqBloMWXDnBasqpgafZM9dks1NC1zEUs369NDrPfFApjRxeXrTfvtTp2
+         93j/T8r1lL25IKxHSOAPSpB0hb2uNh6J9flCgmiuObyQKbxsqAqaSgt9GqwYR+Ffgf
+         Lc1DjrPE4U8LmEUc5WJr7CjaC/UB4NaAd+go9NKPSgmnNRuEXzezkfybvBmVGBV3zl
+         5Loi5UqCnev+Pt1xaH8DOuIsrY6PsjWGFAx79hxEz3RIm2RsAjO9cvpC44WWmDTI1y
+         +lGycDs3MMfIS7lgvAhx7Qvt9LNYZHrEpLbiLp6ASGgrW15GSBQWy+8R/+3NBvj2Zc
+         b3S2k/wxwabmg==
+Date:   Thu, 6 Jan 2022 16:47:26 -0800
 From:   Saeed Mahameed <saeed@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the net-next tree
-Message-ID: <20220107004156.ycgrmqesgtnvxzrp@sx1>
-References: <20220107025749.35eaa2c2@canb.auug.org.au>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     Raed Salem <raeds@nvidia.com>, herbert@gondor.apana.org.au,
+        davem@davemloft.net, kuba@kernel.org, huyn@nvidia.com,
+        saeedm@nvidia.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net] net/xfrm: IPsec tunnel mode fix inner_ipproto
+ setting in sec_path
+Message-ID: <20220107004726.unyuuu2qki4gskxv@sx1>
+References: <20220103111929.11563-1-raeds@nvidia.com>
+ <20220106093223.GA2638190@gauss3.secunet.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220107025749.35eaa2c2@canb.auug.org.au>
+In-Reply-To: <20220106093223.GA2638190@gauss3.secunet.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 02:57:49AM +1100, Stephen Rothwell wrote:
->Hi all,
+On Thu, Jan 06, 2022 at 10:32:23AM +0100, Steffen Klassert wrote:
+>On Mon, Jan 03, 2022 at 01:19:29PM +0200, Raed Salem wrote:
+>> The inner_ipproto saves the inner IP protocol of the plain
+>> text packet. This allows vendor's IPsec feature making offload
+>> decision at skb's features_check and configuring hardware at
+>> ndo_start_xmit, current code implenetation did not handle the
+>> case where IPsec is used in tunnel mode.
+>>
+>> Fix by handling the case when IPsec is used in tunnel mode by
+>> reading the protocol of the plain text packet IP protocol.
+>>
+>> Fixes: fa4535238fb5 ("net/xfrm: Add inner_ipproto into sec_path")
+>> Signed-off-by: Raed Salem <raeds@nvidia.com>
 >
->After merging the net-next tree, today's linux-next build (htmldocs)
->produced this warning:
->
->Documentation/networking/devlink/mlx5.rst:13: WARNING: Error parsing content block for the "list-table" directive: uniform two-level bullet list expected, but row 2 does not contain the same number of items as row 1 (2 vs 3).
->
+>Applied, thanks Raed!
 
-...
+hmm, there are two mlx5 patches that depend on this patch, I thought Raed
+was planning to send them along with this.
 
->Introduced by commit
->
->  0844fa5f7b89 ("net/mlx5: Let user configure io_eq_size param")
->
+Steffen, is it ok if I submit those two patches to you and so you would
+send them all at once in your next net PR ?
 
-Thanks for the report, I just submitted a fix to net-next.
-
+Thanks,
+Saeed.
 
