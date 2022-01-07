@@ -2,73 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89CD54870F9
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 04:05:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89EB14870F4
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 04:05:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345738AbiAGDFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 22:05:30 -0500
-Received: from mail-oo1-f54.google.com ([209.85.161.54]:34370 "EHLO
-        mail-oo1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345713AbiAGDF0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 22:05:26 -0500
-Received: by mail-oo1-f54.google.com with SMTP id b1-20020a4a8101000000b002c659ab1342so1159645oog.1;
-        Thu, 06 Jan 2022 19:05:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7y1aev8ChqP4pe7ktMQgFqy1ntirv5Tlf2ft2rIJbck=;
-        b=MusDl/WGoul5zHJKdEfPnkRrOXHKbg0AS3tS1XXCxLsxn2fkj8W74nknIbawwzydu1
-         AN4/LUBJuqoVA33HE1UyDkathjEZ1UJfXMZhEYypbo4PGQKVxJs4P+mQEXs+00B1T7Nd
-         aDOb3KavF3l5f7uwUpmfmes5rv3QWAx0y4+cf/+mfTPoNu+STId72f/Fmp42rEWnEciN
-         kSly4tUV1dqwuf6Ovn3y36yAJ5dr1B3U1RvgzXSEQFKGdF0S2YGJvWJXpBDnjFxGt17V
-         OyzY/z8C0L3lmkH5SbMSeZSktltHUwIXM9d0UZpvHGx8RCXbGHqA3Twh4Z+Kxf8DSG18
-         OSJg==
-X-Gm-Message-State: AOAM530IjuEhFHN1P7jVPwsz080AzsOf+Ud9VcJqyQBgmPRwmu5Md6B8
-        Gl5nkEmBj6LFdSGKbVusxA==
-X-Google-Smtp-Source: ABdhPJwnMnAFs9Dek+rpN+JRDwEvUu10LYoPrDQwH8kVpzfSUG/b5w+Rtmp16fVhpGoTsPR6PGd01g==
-X-Received: by 2002:a4a:d756:: with SMTP id h22mr36181533oot.11.1641524725346;
-        Thu, 06 Jan 2022 19:05:25 -0800 (PST)
-Received: from xps15.herring.priv (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.googlemail.com with ESMTPSA id r5sm666227ote.53.2022.01.06.19.05.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 19:05:24 -0800 (PST)
-From:   Rob Herring <robh@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Dan Murphy <dmurphy@ti.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: net: ti,dp83869: Drop value on boolean 'ti,max-output-impedance'
-Date:   Thu,  6 Jan 2022 21:05:13 -0600
-Message-Id: <20220107030513.2385482-1-robh@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        id S1345026AbiAGDFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 22:05:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60578 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344999AbiAGDFT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 22:05:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12492C061245
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 19:05:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9520C61EE0
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 03:05:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDA42C36AE3;
+        Fri,  7 Jan 2022 03:05:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641524718;
+        bh=39qBzthUmdDg+1l2wMyEZa+QuR68D2AGN1FKSX8o7x0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=njHCaT9X4+DZt2CA1GgTo0r6Fgl5Ci8HsklynOQmzaFVwuMzFnRw+dw8CE22hkq75
+         zrt6u7s+R6xRwyD6/m1olEzLrhcqF0bq+JGAmN6i524Gqwzwo6suPX/CulwGaSia9o
+         BDikVxNlruPlN6JQefEEYF4qLzie5tz0vFXvjujzrD6gVnfmfgY/p+hBQMwLdDOeSg
+         OQSsCy1bqgMBg63wu7V2WuxOUZ56Q1QbOwQ/8y9PIvtNtE2ERHvl7mEnF9/KUHxPRb
+         5tkrRlnD6wmuggf0ym3oL03DOUbWQ2tiXwkfIrCeY/ps3kHqmpFGjYJ4LySqpahqF2
+         XIv4oHBoAUFKA==
+Date:   Thu, 6 Jan 2022 19:05:16 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Thompson <davthompson@nvidia.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <chenhao288@hisilicon.com>, Asmaa Mnebhi <asmaa@nvidia.com>
+Subject: Re: [PATCH net-next v1] mlxbf_gige: add interrupt counts to
+ "ethtool -S"
+Message-ID: <20220106190516.147e9e32@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220106172910.26431-1-davthompson@nvidia.com>
+References: <20220106172910.26431-1-davthompson@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DT booleans don't have a value and 'ti,max-output-impedance' is defined and
-used as a boolean. So drop the bogus value in the example.
+On Thu, 6 Jan 2022 12:29:10 -0500 David Thompson wrote:
+> This patch extends the output of "ethtool -S", adding
+> interrupt counts for the three mlxbf_gige interrupt types.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/net/ti,dp83869.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Why? These count separate, non-shared interrupts. You get the same
+stats from /proc/interrupts with per-cpu break down.
 
-diff --git a/Documentation/devicetree/bindings/net/ti,dp83869.yaml b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-index 70a1209cb13b..1b780dce61ab 100644
---- a/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
-@@ -92,7 +92,7 @@ examples:
-         tx-fifo-depth = <DP83869_PHYCR_FIFO_DEPTH_4_B_NIB>;
-         rx-fifo-depth = <DP83869_PHYCR_FIFO_DEPTH_4_B_NIB>;
-         ti,op-mode = <DP83869_RGMII_COPPER_ETHERNET>;
--        ti,max-output-impedance = "true";
-+        ti,max-output-impedance;
-         ti,clk-output-sel = <DP83869_CLK_O_SEL_CHN_A_RCLK>;
-         rx-internal-delay-ps = <2000>;
-         tx-internal-delay-ps = <2000>;
--- 
-2.32.0
-
+Since core already has this information rather than reporting those
+via ethtool you should remove the counters from the driver.
