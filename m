@@ -2,71 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E52F24871BC
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 05:20:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8B854871BF
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 05:22:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231799AbiAGET7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 23:19:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49050 "EHLO
+        id S232056AbiAGEV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 23:21:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbiAGET6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 23:19:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D84DC061245;
-        Thu,  6 Jan 2022 20:19:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2961CB8217F;
-        Fri,  7 Jan 2022 04:19:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 597C7C36AE9;
-        Fri,  7 Jan 2022 04:19:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641529195;
-        bh=VRFAxdq0ynqOO4uHrge8LZv9Vv2zlAKRCorK7REJKCQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jp2EFHELYDQdjcEKejOPpq3sfjndz73Fb08do+1tZpK3F0objcjF732wSRvWFx4qf
-         LiDcL4VwuLWa/mCMY7PRU/VbwxMczkaF73S3n9Iz/fcsr2XA6h90QLaw6xRZqLc26S
-         V1c4siXya1Q9I9eT+8lkTmnusfMQ1PYFwx6N3bWNC+lIYNzYyKoldI4w/DuFO8T3A3
-         WhgWkJVAfH5sCTrKmad2j6DydbVe/oug+uPJID7hlqtqIFYPeVWXGj8ll1Wx67U1sH
-         sTp7zxCZR3aWsR1pHJz5LzJE7lfuqA8kagbNq/+ZBpD+jpUHh+ReyrVLvukSfxwkS2
-         x7SpX0lREg5pQ==
-Date:   Thu, 6 Jan 2022 20:19:54 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yevhen Orlov <yevhen.orlov@plvision.eu>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org, andrew@lunn.ch,
-        idosch@idosch.org, Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 0/6] prestera: add basic router driver
- support
-Message-ID: <20220106201954.3b707080@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220107030139.8486-1-yevhen.orlov@plvision.eu>
-References: <20220107030139.8486-1-yevhen.orlov@plvision.eu>
+        with ESMTP id S229716AbiAGEV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 23:21:58 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C619C061245;
+        Thu,  6 Jan 2022 20:21:58 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id e9so7161341wra.2;
+        Thu, 06 Jan 2022 20:21:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=C9u+7b7Y8JEzmUJuxanRH3UmSulxRrobTg+ag4bjnWQ=;
+        b=S9AjBDtiMJBKSy2Uy9lo85nOPo3XxXmZt2xcCGAChsLMVsFaimDH0GfJuNFi2e8eH3
+         pt8yGgEh2hyj+hFaBCEoM/R80/vxdpPANc/ijkVzxHj+7vrDIhZo5rLnP9SP0g4i7m0c
+         EuhNOqoWR000tvcbGnTAEaIgT2VpyKqtix3iYvbSM8emBl1MzEW8HBpihosUfHmeenaz
+         Rcx2OtVSWMXv98BJQ0R7vJiUN47GeTKSXRZl301u2CN8qsBiFu/cwKH4LCAVoYCON6b7
+         5M8mkeG1SwlxVkksma+I/wzfndohUJuql/Mt3fOF0o4iEOkvXI13pZER8J6TETJsox7n
+         0wjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=C9u+7b7Y8JEzmUJuxanRH3UmSulxRrobTg+ag4bjnWQ=;
+        b=o2EKxFiWUveu613Ej/F1a+6Ziat87jZPABLAHlXJTiN5u8ukNsd/nl1OyJHqk3HpQX
+         jbIKUbjYv9ORQ58iW6vTqrspQqRE+K++FZ+5vC3YuWnafZtURMgR72UcNgfKdjToysXF
+         sc78UXCMXDLb96adislGl7BM88TulPh2GL2cEfubFUY2GXrK+AR1fHMSVmWMJKLNDGC3
+         KdCR1msjHQ8d20EbfhDs+Fvgid8H8MDYvssQ9L/wrN/K1MjiKXMDSlx1t21GXQMmCoyT
+         9eVNW0i984FWu+TZHyCMudkuChR3YPlncTWSp+gel0QYp9tCAUhWhnG23x6EnvNxonFY
+         ZxPA==
+X-Gm-Message-State: AOAM533bwOQ72vXlxIgDKnA9ZIfBUMrFtVPEnUwWPIUOk9GOAbE9iYqW
+        G6aAJWQp8hQaCBKOhMWXEK76f8MdvRIsQfs5n4g31bTkePk=
+X-Google-Smtp-Source: ABdhPJyGlN9KZOIWTPTJEUZW91PfVhVCpomk78Rt4q5CkxF4y461hk30Lh6K5Sd64jeb7CbHuqA2WsqfXFIjC8+Vkh8=
+X-Received: by 2002:adf:e190:: with SMTP id az16mr7884177wrb.207.1641529317043;
+ Thu, 06 Jan 2022 20:21:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
+ <20211222155743.256280-18-miquel.raynal@bootlin.com> <CAB_54W7o5b7a-2Gg5ZnzPj3o4Yw9FOAxJfykrA=LtpVf9naAng@mail.gmail.com>
+ <SN6PR08MB4464D7124FCB5D0801D26B94E0459@SN6PR08MB4464.namprd08.prod.outlook.com>
+ <CAB_54W6ikdGe=ZYqOsMgBdb9KBtfAphkBeu4LLp6S4R47ZDHgA@mail.gmail.com>
+ <20220105094849.0c7e9b65@xps13> <CAB_54W4Z1KgT+Cx0SXptvkwYK76wDOFTueFUFF4e7G_ABP7kkA@mail.gmail.com>
+ <20220106201526.7e513f2f@xps13>
+In-Reply-To: <20220106201526.7e513f2f@xps13>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Thu, 6 Jan 2022 23:21:45 -0500
+Message-ID: <CAB_54W7=YJu7qJPcGX0O6nkBhmg7EmX2iTy+Q+EgffqE5+0NCQ@mail.gmail.com>
+Subject: Re: [net-next 17/18] net: mac802154: Let drivers provide their own
+ beacons implementation
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     David Girault <David.Girault@qorvo.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        Romuald Despres <Romuald.Despres@qorvo.com>,
+        Frederic Blain <Frederic.Blain@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  7 Jan 2022 05:01:30 +0200 Yevhen Orlov wrote:
-> Changes for v3:
-> * Reverse xmas tree variables refactor
-> * Make friendly NL_SET_ERR_MSG_MOD messages
-> * Refactor __prestera_inetaddr_event to use early return
-> * Add prestera_router_hw_fini, which verify lists are empty
-> * Fix error path in __prestera_vr_create. Remove unnecessary kfree.
-> * Make __prestera_vr_destroy symmetric to "create"
-> * prestera_vr_put/get now using refcount_t
-> * Add WARN for sanity check path in __prestera_rif_entry_key_copy
-> * Make prestera_rif_entry_create followed by prestera_rif_entry_destroy
-> * Add missed call prestera_router_fini in prestera_switch_fini
+Hi,
 
-Thanks for the update, could you send this set as incremental changes
-as the previous version appears to have been applied?
+On Thu, 6 Jan 2022 at 14:15, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+> alex.aring@gmail.com wrote on Wed, 5 Jan 2022 19:23:04 -0500:
+>
+...
+> >
+> > A HardMAC driver does not use this driver interface... but there
+> > exists a SoftMAC driver for a HardMAC transceiver. This driver
+> > currently works because we use dataframes only... It will not support
+> > scanning currently and somehow we should make iit not available for
+> > drivers like that and for drivers which don't set symbol duration.
+> > They need to be fixed.
+>
+> My bad. I did not look at it correctly. I made a mistake when talking
+> about a hardMAC.
+>
+> Instead, it is a "custom" low level MAC layer. I believe we can compare
+> the current mac802154 layer mostly to the MLME that is mentioned in the
+> spec. Well here the additional layer that needs these hooks would be
+> the MCPS. I don't know if this will be upstreamed or not, but the need
+> for these hooks is real if such an intermediate low level MAC layer
+> gets introduced.
+>
+> In v2 I will get rid of the two patches adding "driver access" to scans
+> and beacons in order to facilitate the merge of the big part. Then we
+> will have plenty of time to discuss how we can create such an interface.
+> Perhaps I'll be able to propose more code as well to make use of these
+> hooks, we will see.
+>
+
+That the we have a standardised interface between Ieee802154 and
+(HardMAC or SoftMAC(mac802154)) (see cfg802154_ops) which is defined
+according the spec would make it more "stable" that it will work with
+different HardMAC transceivers (which follows that interface) and
+mac802154 stack (which also follows that interface). If I understood
+you correctly.
+I think this is one reason why we are not having any HardMAC
+transceivers driver supported in a proper way yet.
+
+I can also imagine about a hwsim HardMAC transceiver which redirects
+cfg802154 to mac802154 SoftMAC instance again (something like that),
+to have a virtual HardMAC transceiver for testing purpose, etc. In
+theory that should work...
+
+- Alex
