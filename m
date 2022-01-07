@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2BCC487C6D
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 19:48:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AD9D487C6E
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 19:49:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230259AbiAGSs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 13:48:58 -0500
-Received: from mail-eopbgr150075.outbound.protection.outlook.com ([40.107.15.75]:58571
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        id S230284AbiAGSs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 13:48:59 -0500
+Received: from mail-eopbgr70049.outbound.protection.outlook.com ([40.107.7.49]:30854
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230051AbiAGSs5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230257AbiAGSs5 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 7 Jan 2022 13:48:57 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PmdIq7Fu83MzwcJQSGb0B7mO0r9gOPG9/SOnVZucgCeUy2PX2yGq7o/4PxWbD1ro/162j0SJKb3wyWaF/8bBzqIaSR7sudWdYOhqvTlLawF4KiB555cs1Ty96aluBA/g/e6uMqLpjYRvCzg+tG6xogJTWQwQxDjL6XRxcwZ0l5quz+deSGltTUORNiVc1fur82wOGFSv1YNW/NjvHw77uUgHXVXb4NTduMIg33GCUEdZ9qi1r+pJqMiRErXD5f0ViuKxgilo6p3VzMPpzmCxHywy00v5yv4+LWQ8Do/tbVD+qSZFh1lSZ9XLCaqIlhvdwxxlfpz6ZkyCHQRhkbti9w==
+ b=BPpnv26WAXQNZB0qIhKjIKwN+YPtmLPAQCmLgRX/YmAPrzvJ+LvC1EqnVSTWGQGr0fbkNBUC3dUArZN8aJ4QR4xlneI94JEwxdQ73vpQ4TFmshCwEMVJeOGZ/qEZhgMZQ7z+KlgfgTbSSwD+ay8qHmPRoqXX4u/J+kMKVRIx3SV9j8bSyFLnIlzQMbgvisQAslxiEBNumxNOC2l5Rr7ac4cdinRIhMmfJqVGdEo5+9hE8JHfC9ZPd/XRcqfHspleRKg6QSLoB+37HHLmhNBuYVRylzmMqmg/9GUgVpE6oshxzlQdTvp+3aaZL1FXPx2HtXIH8XJXlPPTKGIbQDy1hg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=snBsrWoallY8g2Rl3qCZWTeskEFBz0dOfCLajBxNV1c=;
- b=do0wY0P2+fHbm1JhOpjXZUDvKdvmx3LX8aZ5vCuaXwSAPuTwVDQwxmdQoiDYM5sB8ks01itw/V+411AIbqoj9UfUn+EZu+8XLBn/CHLy10jXqfeRWGYZmSHZ+QxKJL3B9zWhxarPMoXbQfQoIzWDn3zWQFB+nVhTGpcFnDf8S5TiDe4G9ijcczBk1R6/iNVUgw1NSvuGvSwS5KTNSl64cWql71ndhIIwPxwWbHXBZHuPscdcgGjF/NG9XaMrTZ6Z5KTWzfqC+WpMp3DK3bQOXfWHaWO7IaH978bgUumegVgFJqG4hk80UkuogiDsMz8w3wJ5LX7jstjv2BHzKUAIaw==
+ bh=0UqLaHfGIXmAW5zhwdpEUn79n00QcOW4o6tNnbi45/8=;
+ b=duEhrvZadCiYClLlRLiWtkCBy9AdPE0AFBiUqJssqQ45chEZu5yNln8+JNGPCKbhTOOK/CQSEfETzqHUFEMnN7FvbLcbivrZagtw+YPErh3M0CLwhX7bv3Xl7FsndG79Rtb8248TfYFUowPcEaL+iwIrAMChs/l2fmAJg39BZh2i84L+C2x6LsdNExOqAErvWPn67VJ5s4y8B6+BustCcgTqyZt5lKEDkHO5/eXtuVxEpNFzv74LGzQtJTta0Cw+KxEdRiA9gFDzD/cgesK572aAPkcfgncJclQHMj2ehA/XHaxrmal8hwV7Pd7MflzygAMXW572v4jE+gFgTboVDw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=snBsrWoallY8g2Rl3qCZWTeskEFBz0dOfCLajBxNV1c=;
- b=n1/bDNmNstfbfatb5f2EpTshe9RywpAt++D0Ls02xDOebHRSdmZ4VmplSHdsHTPCGeLY8AxWmZMD3lBaqTK0HWK9ql6UR27dGtC0dGylWaXcQNEoY49vzkpKk+mxaY6C1+z8Ufl7O63QDzo+sRJjoEiNUXp9FkJcuQuHK1u850I=
+ bh=0UqLaHfGIXmAW5zhwdpEUn79n00QcOW4o6tNnbi45/8=;
+ b=cjqanFPLuoVN8GF/S3TZPBd+Sgq13U9YLuARKcfQ+Jc2QU87mQoPYgj9CcM1ZYoImyFhOtWK17U8QL6JKR5vflJ3rn1OUZzu0R5U8j/LKzEK2FtYpuFZR207NAHQenMkeEopmLld+f5fWSlh+MmoSdLcJWVBEOAwdKSQ29uL3uk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB7470.eurprd04.prod.outlook.com (2603:10a6:800:1a3::15) with
+ by VI1PR04MB3070.eurprd04.prod.outlook.com (2603:10a6:802:4::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.11; Fri, 7 Jan
- 2022 18:48:54 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Fri, 7 Jan
+ 2022 18:48:55 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4844.017; Fri, 7 Jan 2022
- 18:48:52 +0000
+ 18:48:53 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [RFC PATCH net-next 1/2] net: dsa: remove ndo_get_phys_port_name and ndo_get_port_parent_id
-Date:   Fri,  7 Jan 2022 20:48:41 +0200
-Message-Id: <20220107184842.550334-2-vladimir.oltean@nxp.com>
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: [RFC PATCH net-next 2/2] net: dsa: remove lockdep class for DSA master address list
+Date:   Fri,  7 Jan 2022 20:48:42 +0200
+Message-Id: <20220107184842.550334-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220107184842.550334-1-vladimir.oltean@nxp.com>
 References: <20220107184842.550334-1-vladimir.oltean@nxp.com>
@@ -55,144 +56,95 @@ X-ClientProxiedBy: AM6PR0202CA0058.eurprd02.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1a3c4911-599f-492b-997a-08d9d20e59c2
-X-MS-TrafficTypeDiagnostic: VE1PR04MB7470:EE_
-X-Microsoft-Antispam-PRVS: <VE1PR04MB7470BFB092049FDB0077E8D1E04D9@VE1PR04MB7470.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-MS-Office365-Filtering-Correlation-Id: 17cfe841-e797-4bea-8e8f-08d9d20e5a3e
+X-MS-TrafficTypeDiagnostic: VI1PR04MB3070:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB3070D9EF8893E1F4961BEBB5E04D9@VI1PR04MB3070.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:176;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cGQByQZNsi5tYzScIx9CtEyTqZiKSNl+dGv7B7WvzEq2VTRGgluo5RhknirbzJo3Ct3KdKWXLcTIpn7EaNlLKMSXdJuALutFMbrYr+5n9oNOPlHfRvy8GWedjae3hhERIz+8tO+OEJ6GLDahH0uIBH7zHUytF/yzZueYqoOcgTfdzDDM/HqO1Xg3havRglupueRapsq7xseT7YKkgqzwl8CaCO+WHkgHF07OuoT6+u2pA4hfvxbhKqszvf8KZsnyizNi3nbpg8e5CQitMBYuvbPC4fzRM8P6j4uV+kwVG6q8tiMqPhtldAK+WU5nv62nB16oda7aPIPdAY17Pz66+toe2npixNjfuMevQm5vpBDB5O8AYIHkaxFWx/CZKQTOC9rkCzMkcu83d/EB45tiIk/BPnAxBEOt/hsz4FK1SHBQY+qYiQe3EMtKLTqd9cdVGDR446SksF5fUP9kJbtEGOGGnW46IgZvlWbrgRzFHcR4yWCMLCovet/pENORzDH+N46yP3GZkpApUBQ3R3PUugsUT8h0WUHIsP2TFs1uhAjP9F6BPefRrrCHLeoq3AnQ43vDXRyAzWxC4iGCdRzoHNewOpUy46KYKJTuFoVdOebY8z4jzMsuQvyuqFH0db2qmcMkkqhHOqHPID8smMyT8XSxP3G+jrcW4bGdVEDIeO6pe2BFcAZkK8LXoOTOANbW2Vna/vpj2BqSkUaOuMLFkA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2906002)(2616005)(83380400001)(86362001)(6916009)(4326008)(52116002)(316002)(38350700002)(54906003)(8936002)(38100700002)(8676002)(6486002)(6666004)(66946007)(1076003)(66476007)(66556008)(44832011)(508600001)(36756003)(186003)(6506007)(26005)(5660300002)(6512007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: ohGDqaOEWc+A2nlXqB7Ga8OAkSfoc2iTnfbDqdsr9hcjFn6rq++d9Tr9dLuvIzvPoCZiAAv/wLW2l4ST2em2JNBaShR9+3jOC1JyCIBmxKWlf+0eQvucVP5qOaUZ89Wy1ZAkYkble9+qXFmcXRmquYZy2hxcO8FpsnCwf9dQscMBHh6oANaEMMNRzVATVLifDtWxNl4KuJZJ9t/Jg8N4fm0JJc3w0dd6X3JULuweb59VmjaP0wHkltgTt5KfW8gOq/F3nDvGxKrbXTSP3XD/c/6wLvlX+0O8KhXn6GjP/Myt63JlGW9FvwlLljty0OZazdqjyOVFzMgAa9/KrfGeCgbW4Egyoh02M+d9Noxm4UhZsRLI7HVsrykowYYuPsb/OOfZRrX04S6GTclvu2jk5uouHpQ9r0ms4HFrRHjk1gKxh7PAgqHfsDviISlrFE0yvZqywA0LlKDs2PdDRY0+BJwersKWBM//MS/0lZML4PpxkAZK4Hg7BNru66KBIIjwjCc0GUsHjTHmZ3E7AvOuiAKkEq3FmT3QdvHFQ7xnFcg5p9Ee+ZhxwLJgM0MzZzwApnF0XqR8/J/45Yx+WCdl1RqfQxO+EMSiI/HMx+JDvGCmguES0N/LE0L8t76PCH3SenThJ+Qr6S5PYaUO11DG8t/h6b9eEajR2yteIm1r1RuF2h6w7lzjw7AqujH/3rSDABggI/HN+3mUM2Mde/KBfw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38100700002)(6486002)(66476007)(5660300002)(86362001)(316002)(66946007)(2616005)(36756003)(52116002)(1076003)(4326008)(38350700002)(66556008)(44832011)(8676002)(6666004)(8936002)(508600001)(26005)(2906002)(6512007)(6506007)(186003)(6916009)(83380400001)(54906003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D6XAMT3J829Eaawye+B68Of5NOGhLR22ihegZ2hFUogrtwlxUu+ju5r4wWdY?=
- =?us-ascii?Q?3B/54FU5aBMXld2ZPkUo6kbP8wtf+dR+zhUXsN2ovfru9172UYVrgMw9sMpM?=
- =?us-ascii?Q?HVw09rwdJvmog4eT/NFoTrktvTEmT0yjA/Fvg8sK0cqtuCA8tsabA/7oJUXP?=
- =?us-ascii?Q?8svM1AY7ItTq/zfRKzZwZ7ywJq3Z8Jj4BSeemwrN1USbhIZHGg6Vk8o06bw7?=
- =?us-ascii?Q?3vAmnHNypuy8dhb6SwXH7E3ZXOIMoAN1nKxo5XX8wxcEnOUdrwcaCYlaj5/m?=
- =?us-ascii?Q?x1ZWTdUi0tqHZmVe8ibxcTi+266kHUlJD4vHvdkwt9EmoXT4NRgipapEIt7J?=
- =?us-ascii?Q?qHzXotHzjOwFpgADRc6+UiW/qVaWTPD2nUyIUH0WNNXclsgHvPHFVbca7cvP?=
- =?us-ascii?Q?rYvfN4XcMQaxo6/ADpD3LBVfm89H4NyG1MUXKcemtfvvsrbShHLxbaBGqQLj?=
- =?us-ascii?Q?Ybd+cZxodo8rlhS+QxkwYe7ZkuM/Ho6VxGcUCHNdbLIS6ya/3Nr3Y6JoxbCd?=
- =?us-ascii?Q?ne8Y5Gv+zBw45cyCF+uV07ZrNTpSF88Nawl4ar7Sxeqm3Wbnf+tOrelJ2V9u?=
- =?us-ascii?Q?UWmD9rPMHraFdRYENWJrXO1PSB5StoauLsw7V1Mshu4dCcwLImQVOQhKgiEM?=
- =?us-ascii?Q?10W3CybGNkHbe2PGGwO6cM+/b0TBuZVrY0JDtatUjl8fUywOHzdXYiDwWq2a?=
- =?us-ascii?Q?+Z59IvKnPxx3anW9TQRakhB5rqsvcbBs4t/DZ37LjGEtBvE/5Ec0F6GN0799?=
- =?us-ascii?Q?yqsWz2rn6yY5pF5hToruPIdbcFriOf9ex+XnfmcXsyvV4B/WQ3A/zfI+bDD6?=
- =?us-ascii?Q?6cxoji4umcFWKOGs8VqexfSUXR4YV3D5uo7eGG83AFwi2E/7ScAOCaUihfHM?=
- =?us-ascii?Q?14xJg3VMWpNsWRrw0f+xbo99LyMm0D3eom8beFT6ZSIDyDzACGdobfFuhgA9?=
- =?us-ascii?Q?DPEzNGfFOSl+Kq/KP2qwtOqY6YRK//ex6tuO8C8MIw6xLGuRybbxcuo5sXak?=
- =?us-ascii?Q?SXKfDAiGnq2FbXBXFKYkK4hKRcbIQhrm5XFEmklcJTMgA/DQ2jkLrLEbX/3v?=
- =?us-ascii?Q?8CJAWaFNGV60wYb/u3rowbdS/gV2yiU41+keLZYU1T0FS/J08mcZFbs1FIPR?=
- =?us-ascii?Q?HqJwmxNRcDFqItScVMX9/G11xXJygu7mmPuOfNxcyomGAZrriZ9ath2yg0I7?=
- =?us-ascii?Q?hcxxQaVsZk92HuolM2CqToNCKJ7qvbmechxzmXG0subiiD9PXkr4arXsoNbF?=
- =?us-ascii?Q?ozqOg5bYX3DYHaPHRuJ0/vlkAcj4pB9p3ZTiPRUa4v4AdyaPVtyUxNcOEgMO?=
- =?us-ascii?Q?dUFrny2qj58/bdssQbQWq2iwqx7qWWKtA/w+uJASLcWMCxq6vm+ap10aWxx1?=
- =?us-ascii?Q?AZV9RvRgVq+d8drBtYWNaOn/1KRtpS2i48Gqo4baUGtrQdIDc/4UDIvIgcpm?=
- =?us-ascii?Q?SxpvzyBo58sKmCR115D6FnHCtVRMuQ6HnFeHeYnx5Lq72O3K1vM+kx2gGr30?=
- =?us-ascii?Q?/OzDdpodIN4e+NPApvkpRoGw/+ZMOFDYUcNTPvFS1tueUYnmBjUO5wChAyqX?=
- =?us-ascii?Q?UBR9u07zCY7djGL1SwJAHAh1my4aP/nkwStDut9c72l/lVfbghByD+cRnIZG?=
- =?us-ascii?Q?NGhwOfEYHr0OCfoFc90Z80s=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rWpLCdPKvLqWcH9HmWoC55jxLo4HtWmNqdZueKZS5jHnd2vXPj0qhP1sRnzU?=
+ =?us-ascii?Q?AI6gpHqf4Uvow3sn2yWHIy3Z5KzhBIU1zvygD/7GuOkrZPdESzaRL78YfHuT?=
+ =?us-ascii?Q?2jDXxbWEVlqEdaP8GZ0Iq+0AmQi7+pUGXFxFDiFQjwZ9ePUqdWI4WyfPkAyH?=
+ =?us-ascii?Q?BiHuef3REQ278Vmwo9MyDo+7ez4Fv4fh6mf/0xi+gghOvtJ23nlGCZIXIyyL?=
+ =?us-ascii?Q?h9jCfrRxczbuguY7GmajgsRLryeznMRUkSn7LprT5biAF0/yfRzquxYNAq3K?=
+ =?us-ascii?Q?EcGKP9XYfSI3kEFxi5ec0Ge41gpr3+V+t1g9lEI2K4WiBkiqjlOeD9fT4Uk8?=
+ =?us-ascii?Q?khsbHdWRfTpIk5wLPYG8OsZizTy5zIPvqwfXUz0Qq6hg27MWlmbgwMM45S4U?=
+ =?us-ascii?Q?HceRjA/rXz1oyAznz8J+inIBuoRs47V/rOnk03VD23AGKc0oV9O969Rwy7Mn?=
+ =?us-ascii?Q?IyVq70pxfPH9eHy6kHWWCrvq7VKZP3+N6g52CTJb6RQNvDbZ1Znx6TUMGIBY?=
+ =?us-ascii?Q?Sr2ROJ792VOBNsvq0UhwGWLYd/UUdwh+OABJLFusNwP+JRugNfYgwhg2qVjH?=
+ =?us-ascii?Q?9pWPj4cT/Hu2RbbRV0n1y6ojARK36eExRTIzcWp4z413XkK9DgcSfRkQ5HKw?=
+ =?us-ascii?Q?Hh0gD2LcumIPrczX3Wtuh85fZeuot9OOvulfpGfcf/dr7W1ah4QtKtppmPy5?=
+ =?us-ascii?Q?L39gtkj5qziAggQtHju3XDlIEEy2NVMWAw1miSxeE3v3JjsmPxfBqtrrG+oF?=
+ =?us-ascii?Q?9wu9RqquoA5taC78L/kIKCquZjIGGV++R4rThDiVgk40KDrADzRM4mgHt8Le?=
+ =?us-ascii?Q?+bgyanDAGHjQtdXPxICtfbVUCZ70t0oxDNVvLqv99Znvg/KI0wMvNBMFgLt6?=
+ =?us-ascii?Q?hUnzItpg6e/pqf0nRLF5Nn6NGhbhG37AVJtJBJq3nDTx/jz661xnOZKg/ezV?=
+ =?us-ascii?Q?HdfjX8uvbQLueT2ucucOI+kTpA5MSJnHPuvmZfiPsS1pkIRdF6lAA5JaWjg2?=
+ =?us-ascii?Q?rP1BduNddlYM35kTlLcg8KwU3E4eGtaEWKUHY8qO2HEhaBTpWGxbo1CEN4Ti?=
+ =?us-ascii?Q?ogK+QfK04kLFjswpRpBa/aTbeIEYViYJjk+WpL0yTQ98YlmDLaGT/dUUwjgi?=
+ =?us-ascii?Q?L0mi6S+nB4855bADtNh/25JBIENEuEh+PERMv7W1hWjO/vS+ZIMEsXcPZ8uD?=
+ =?us-ascii?Q?AOd4XQLDX0kp4rcGLMK1t+onj1WcsTK/dvzNW3X8fj7OWLy5j2kSAt80ePRT?=
+ =?us-ascii?Q?Rfw84iJ+9ZS1d0BZH6jB3oGYX0czxmL2lXoq3Essagrr2YFKY/Qtevruh43g?=
+ =?us-ascii?Q?qCFUXziqD/CmXcy6qiJuKAz+RcScz8OSEex83l7tkKHf/wDHrD7fDLXcPbwA?=
+ =?us-ascii?Q?AR44CfHFTKFfpF+kUdZ7oHdFuYSR9anO3ZGYt1qAb2g+3QWn6w+1+SK9pfaw?=
+ =?us-ascii?Q?lWXsjZ6nrU8iJ/KYSPGFAQUUPlnTWBduoZIatWbNr0eZ37BbS4jnSYFZzLkY?=
+ =?us-ascii?Q?dHtGpfZhccGW1foZBDQFaQJKtw/a8LOq0XapAHnC267U83CyDJyUD/pZs0Ay?=
+ =?us-ascii?Q?g7F4+Kr2v0miK3GxUcVKoDpUu9H8SEVm33AVVpkHk8WSRV3RV8mHM8cK+lM8?=
+ =?us-ascii?Q?1iLpAfsyB9CMkoAUBvolywE=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1a3c4911-599f-492b-997a-08d9d20e59c2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 17cfe841-e797-4bea-8e8f-08d9d20e5a3e
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jan 2022 18:48:52.8654
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jan 2022 18:48:53.7091
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fWVLxQAE40FEnYCdQAANshrmJGFA7FqcSF9xCOAairZydjtzZVfu5R9UCWrAABIvzJ+HbS5Ge3+mCmx5k14dNA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7470
+X-MS-Exchange-CrossTenant-UserPrincipalName: dV4gvvvb/zlT+c9ATgdO/SRpxQxxl0MoTatyJM+OdIWZIZWxkxnUtXXZaBNUsPn97HZ1HwCL68c63PvZxqXgqw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3070
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are no legacy ports, DSA registers a devlink instance with ports
-unconditionally for all switch drivers. Therefore, delete the old-style
-ndo operations used for determining bridge forwarding domains.
+Since commit 2f1e8ea726e9 ("net: dsa: link interfaces with the DSA
+master to get rid of lockdep warnings"), suggested by Cong Wang, the
+DSA interfaces and their master have different dev->nested_level, which
+makes netif_addr_lock() stop complaining about potentially recursive
+locking on the same lock class.
 
+So we no longer need DSA masters to have their own lockdep class.
+
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/slave.c | 42 +-----------------------------------------
- 1 file changed, 1 insertion(+), 41 deletions(-)
+ net/dsa/master.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index eccd0288e572..3acb2a2db473 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -515,26 +515,6 @@ static int dsa_slave_port_obj_del(struct net_device *dev, const void *ctx,
- 	return err;
- }
+diff --git a/net/dsa/master.c b/net/dsa/master.c
+index 2199104ca7df..6ac393cc6ea7 100644
+--- a/net/dsa/master.c
++++ b/net/dsa/master.c
+@@ -330,8 +330,6 @@ static const struct attribute_group dsa_group = {
+ 	.attrs	= dsa_slave_attrs,
+ };
  
--static int dsa_slave_get_port_parent_id(struct net_device *dev,
--					struct netdev_phys_item_id *ppid)
--{
--	struct dsa_port *dp = dsa_slave_to_port(dev);
--	struct dsa_switch *ds = dp->ds;
--	struct dsa_switch_tree *dst = ds->dst;
+-static struct lock_class_key dsa_master_addr_list_lock_key;
 -
--	/* For non-legacy ports, devlink is used and it takes
--	 * care of the name generation. This ndo implementation
--	 * should be removed with legacy support.
--	 */
--	if (dp->ds->devlink)
--		return -EOPNOTSUPP;
--
--	ppid->id_len = sizeof(dst->index);
--	memcpy(&ppid->id, &dst->index, ppid->id_len);
--
--	return 0;
--}
--
- static inline netdev_tx_t dsa_slave_netpoll_send_skb(struct net_device *dev,
- 						     struct sk_buff *skb)
+ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
  {
-@@ -973,24 +953,6 @@ static void dsa_slave_poll_controller(struct net_device *dev)
- }
- #endif
+ 	struct dsa_switch *ds = cpu_dp->ds;
+@@ -353,8 +351,6 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
+ 	wmb();
  
--static int dsa_slave_get_phys_port_name(struct net_device *dev,
--					char *name, size_t len)
--{
--	struct dsa_port *dp = dsa_slave_to_port(dev);
--
--	/* For non-legacy ports, devlink is used and it takes
--	 * care of the name generation. This ndo implementation
--	 * should be removed with legacy support.
--	 */
--	if (dp->ds->devlink)
--		return -EOPNOTSUPP;
--
--	if (snprintf(name, len, "p%d", dp->index) >= len)
--		return -EINVAL;
--
--	return 0;
--}
--
- static struct dsa_mall_tc_entry *
- dsa_slave_mall_tc_entry_find(struct net_device *dev, unsigned long cookie)
- {
-@@ -1747,7 +1709,7 @@ static struct devlink_port *dsa_slave_get_devlink_port(struct net_device *dev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	dev->dsa_ptr = cpu_dp;
+-	lockdep_set_class(&dev->addr_list_lock,
+-			  &dsa_master_addr_list_lock_key);
  
--	return dp->ds->devlink ? &dp->devlink_port : NULL;
-+	return &dp->devlink_port;
- }
+ 	dsa_master_set_promiscuity(dev, 1);
  
- static void dsa_slave_get_stats64(struct net_device *dev,
-@@ -1792,10 +1754,8 @@ static const struct net_device_ops dsa_slave_netdev_ops = {
- 	.ndo_netpoll_cleanup	= dsa_slave_netpoll_cleanup,
- 	.ndo_poll_controller	= dsa_slave_poll_controller,
- #endif
--	.ndo_get_phys_port_name	= dsa_slave_get_phys_port_name,
- 	.ndo_setup_tc		= dsa_slave_setup_tc,
- 	.ndo_get_stats64	= dsa_slave_get_stats64,
--	.ndo_get_port_parent_id	= dsa_slave_get_port_parent_id,
- 	.ndo_vlan_rx_add_vid	= dsa_slave_vlan_rx_add_vid,
- 	.ndo_vlan_rx_kill_vid	= dsa_slave_vlan_rx_kill_vid,
- 	.ndo_get_devlink_port	= dsa_slave_get_devlink_port,
 -- 
 2.25.1
 
