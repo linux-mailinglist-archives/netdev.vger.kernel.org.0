@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6668A486ECB
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 01:30:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22129486ECC
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 01:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344180AbiAGAaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1344181AbiAGAaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 6 Jan 2022 19:30:12 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59142 "EHLO
+Received: from dfw.source.kernel.org ([139.178.84.217]:59148 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343753AbiAGAaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 19:30:11 -0500
+        with ESMTP id S231588AbiAGAaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 19:30:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51CF861E70
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C47F661DE7
         for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 00:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F14DC36AEF;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E26B6C36AF2;
         Fri,  7 Jan 2022 00:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641515410;
-        bh=D4/ttu4F58nAXwBOlwUce9MQ9z4OM3GySTvl8zbd9pc=;
+        s=k20201202; t=1641515411;
+        bh=p3+imzC0eEb8C5zgAzuLWs0OF/RRX4VIzSSsfcG9t3s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BqkadLIGlI1Tl8EbPGtq1RlxRRxD73NOQBjpmk2NytGrPMappGufMjhdGh2O+ib6c
-         aHlnRAcmrrTnZyhlFJxnzcOePxAPpcAUKIfvN4mDI580F7K9NEAybNxt17OUkX7fdl
-         Qu8GGPf6H2OPkcy7ouhk47mNpCqyrS/yJTLTEc81vqzTjpqJBXro+UqE+A50LkdrF/
-         UCM5zlVT0uPCJJdOY3ScoqwjBCN2AJBsAiOpc1pA6FkfvbXVffpkOgOWcJVyfAqySl
-         zcRkK3fTJCm64wNwqFOffYMAwAkiEEjRVUbgh+sA6EKiyeA2VcC1N96rSz1h0f4mfM
-         5dCwMl//RJoKQ==
+        b=P8wUjYZNNw27uqL33Dn8ENApXkpJQkQXJmGf6qzNvlGGaKsb5QoUIga+sG2BbSVX9
+         QfltlUVCAIFPHOreipXoZklNm17zpZd8BYcsCXYRXiq3FZGXnah6xH2ZktWAnq8jVH
+         8ZSOJFsMauUkOjpJX53UqwokFbJdE8ETq7MkUtB8i70iVHCMFwsx6kFI+AHBIB/0iB
+         NbFsuPN8UG0NgNjv+vg0NdUXCyfvONtnzqu0kw2bK82g3YsDsqCq4En6lFd65f1hn2
+         vOtbnFIa22aQoLc8QNHNFX6cE+tqzD2/BATeses9rIdfMer2uBYzbUfIPflAi8G+6p
+         WGrzZV9O2DJ3Q==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Wang Qing <wangqing@vivo.com>
-Subject: [PATCH net-next 01/15] net/mlx5: mlx5e_hv_vhca_stats_create return type to void
-Date:   Thu,  6 Jan 2022 16:29:42 -0800
-Message-Id: <20220107002956.74849-2-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH net-next 02/15] net/mlx5: Introduce control IRQ request API
+Date:   Thu,  6 Jan 2022 16:29:43 -0800
+Message-Id: <20220107002956.74849-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220107002956.74849-1-saeed@kernel.org>
 References: <20220107002956.74849-1-saeed@kernel.org>
@@ -45,84 +46,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Shay Drory <shayd@nvidia.com>
 
-Callers of this functions ignore its return value, as reported by
-Wang Qing, in one of the return paths, it returns positive values.
+Currently, IRQ layer have a separate flow for ctrl and comp IRQs, and
+the distinction between ctrl and comp IRQs is done in the IRQ layer.
 
-Since return value is ignored anyways, void out the return type of the
-function.
+In order to ease the coding and maintenance of the IRQ layer,
+introduce a new API for requesting control IRQs -
+mlx5_ctrl_irq_request(struct mlx5_core_dev *dev).
 
-Reported-by: Wang Qing <wangqing@vivo.com>
+Signed-off-by: Shay Drory <shayd@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c  |  8 +++-----
- .../ethernet/mellanox/mlx5/core/en/hv_vhca_stats.h  | 13 +++----------
- 2 files changed, 6 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  5 +-
+ .../ethernet/mellanox/mlx5/core/mlx5_irq.h    |  1 +
+ .../net/ethernet/mellanox/mlx5/core/pci_irq.c | 62 ++++++++++++++++---
+ 3 files changed, 58 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c
-index 074ffa4fa5af..b4f3bd7d346e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c
-@@ -120,14 +120,14 @@ static void mlx5e_hv_vhca_stats_cleanup(struct mlx5_hv_vhca_agent *agent)
- 	cancel_delayed_work_sync(&priv->stats_agent.work);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index b695aad71ee1..1eb0326a489b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -289,7 +289,10 @@ create_map_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
+ 	mlx5_init_fbc(eq->frag_buf.frags, log_eq_stride, log_eq_size, &eq->fbc);
+ 	init_eq_buf(eq);
+ 
+-	eq->irq = mlx5_irq_request(dev, vecidx, param->affinity);
++	if (vecidx == MLX5_IRQ_EQ_CTRL)
++		eq->irq = mlx5_ctrl_irq_request(dev);
++	else
++		eq->irq = mlx5_irq_request(dev, vecidx, param->affinity);
+ 	if (IS_ERR(eq->irq)) {
+ 		err = PTR_ERR(eq->irq);
+ 		goto err_buf;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
+index 8116815663a7..7028e4b43837 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
+@@ -22,6 +22,7 @@ int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int devfn,
+ 			    int msix_vec_count);
+ int mlx5_get_default_msix_vec_count(struct mlx5_core_dev *dev, int num_vfs);
+ 
++struct mlx5_irq *mlx5_ctrl_irq_request(struct mlx5_core_dev *dev);
+ struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, u16 vecidx,
+ 				  struct cpumask *affinity);
+ void mlx5_irq_release(struct mlx5_irq *irq);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+index 163e01fe500e..510a9b91ff9a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+@@ -396,23 +396,36 @@ irq_pool_request_vector(struct mlx5_irq_pool *pool, int vecidx,
+ 	if (IS_ERR(irq) || !affinity)
+ 		goto unlock;
+ 	cpumask_copy(irq->mask, affinity);
+-	if (!irq_pool_is_sf_pool(pool) && !pool->xa_num_irqs.max &&
+-	    cpumask_empty(irq->mask))
+-		cpumask_set_cpu(cpumask_first(cpu_online_mask), irq->mask);
+ 	irq_set_affinity_hint(irq->irqn, irq->mask);
+ unlock:
+ 	mutex_unlock(&pool->lock);
+ 	return irq;
  }
  
--int mlx5e_hv_vhca_stats_create(struct mlx5e_priv *priv)
-+void mlx5e_hv_vhca_stats_create(struct mlx5e_priv *priv)
+-static struct mlx5_irq_pool *find_sf_irq_pool(struct mlx5_irq_table *irq_table,
+-					      int i, struct cpumask *affinity)
++static struct mlx5_irq_pool *sf_ctrl_irq_pool_get(struct mlx5_irq_table *irq_table)
++{
++	return irq_table->sf_ctrl_pool;
++}
++
++static struct mlx5_irq_pool *sf_irq_pool_get(struct mlx5_irq_table *irq_table)
  {
- 	int buf_len = mlx5e_hv_vhca_stats_buf_size(priv);
- 	struct mlx5_hv_vhca_agent *agent;
- 
- 	priv->stats_agent.buf = kvzalloc(buf_len, GFP_KERNEL);
- 	if (!priv->stats_agent.buf)
--		return -ENOMEM;
-+		return;
- 
- 	agent = mlx5_hv_vhca_agent_create(priv->mdev->hv_vhca,
- 					  MLX5_HV_VHCA_AGENT_STATS,
-@@ -142,13 +142,11 @@ int mlx5e_hv_vhca_stats_create(struct mlx5e_priv *priv)
- 				    PTR_ERR(agent));
- 
- 		kvfree(priv->stats_agent.buf);
--		return IS_ERR_OR_NULL(agent);
-+		return;
- 	}
- 
- 	priv->stats_agent.agent = agent;
- 	INIT_DELAYED_WORK(&priv->stats_agent.work, mlx5e_hv_vhca_stats_work);
--
--	return 0;
+-	if (cpumask_empty(affinity) && i == MLX5_IRQ_EQ_CTRL)
+-		return irq_table->sf_ctrl_pool;
+ 	return irq_table->sf_comp_pool;
  }
  
- void mlx5e_hv_vhca_stats_destroy(struct mlx5e_priv *priv)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.h
-index 664463faf77b..29c8c6d3260f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stats.h
-@@ -7,19 +7,12 @@
++static struct mlx5_irq_pool *ctrl_irq_pool_get(struct mlx5_core_dev *dev)
++{
++	struct mlx5_irq_table *irq_table = mlx5_irq_table_get(dev);
++	struct mlx5_irq_pool *pool = NULL;
++
++	if (mlx5_core_is_sf(dev))
++		pool = sf_ctrl_irq_pool_get(irq_table);
++
++	/* In some configs, there won't be a pool of SFs IRQs. Hence, returning
++	 * the PF IRQs pool in case the SF pool doesn't exist.
++	 */
++	return pool ? pool : irq_table->pf_pool;
++}
++
+ /**
+  * mlx5_irq_release - release an IRQ back to the system.
+  * @irq: irq to be released.
+@@ -423,6 +436,38 @@ void mlx5_irq_release(struct mlx5_irq *irq)
+ 	irq_put(irq);
+ }
  
- #if IS_ENABLED(CONFIG_PCI_HYPERV_INTERFACE)
++/**
++ * mlx5_ctrl_irq_request - request a ctrl IRQ for mlx5 device.
++ * @dev: mlx5 device that requesting the IRQ.
++ *
++ * This function returns a pointer to IRQ, or ERR_PTR in case of error.
++ */
++struct mlx5_irq *mlx5_ctrl_irq_request(struct mlx5_core_dev *dev)
++{
++	struct mlx5_irq_pool *pool = ctrl_irq_pool_get(dev);
++	cpumask_var_t req_mask;
++	struct mlx5_irq *irq;
++
++	if (!zalloc_cpumask_var(&req_mask, GFP_KERNEL))
++		return ERR_PTR(-ENOMEM);
++	cpumask_copy(req_mask, cpu_online_mask);
++	if (!irq_pool_is_sf_pool(pool)) {
++		/* In case we are allocating a control IRQ for PF/VF */
++		if (!pool->xa_num_irqs.max) {
++			cpumask_clear(req_mask);
++			/* In case we only have a single IRQ for PF/VF */
++			cpumask_set_cpu(cpumask_first(cpu_online_mask), req_mask);
++		}
++		/* Allocate the IRQ in the last index of the pool */
++		irq = irq_pool_request_vector(pool, pool->xa_num_irqs.max, req_mask);
++	} else {
++		irq = irq_pool_request_affinity(pool, req_mask);
++	}
++
++	free_cpumask_var(req_mask);
++	return irq;
++}
++
+ /**
+  * mlx5_irq_request - request an IRQ for mlx5 device.
+  * @dev: mlx5 device that requesting the IRQ.
+@@ -440,7 +485,7 @@ struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, u16 vecidx,
+ 	struct mlx5_irq *irq;
  
--int mlx5e_hv_vhca_stats_create(struct mlx5e_priv *priv);
-+void mlx5e_hv_vhca_stats_create(struct mlx5e_priv *priv);
- void mlx5e_hv_vhca_stats_destroy(struct mlx5e_priv *priv);
- 
- #else
--
--static inline int mlx5e_hv_vhca_stats_create(struct mlx5e_priv *priv)
--{
--	return 0;
--}
--
--static inline void mlx5e_hv_vhca_stats_destroy(struct mlx5e_priv *priv)
--{
--}
-+static inline void mlx5e_hv_vhca_stats_create(struct mlx5e_priv *priv) {}
-+static inline void mlx5e_hv_vhca_stats_destroy(struct mlx5e_priv *priv) {}
- #endif
- 
- #endif /* __MLX5_EN_STATS_VHCA_H__ */
+ 	if (mlx5_core_is_sf(dev)) {
+-		pool = find_sf_irq_pool(irq_table, vecidx, affinity);
++		pool = sf_irq_pool_get(irq_table);
+ 		if (!pool)
+ 			/* we don't have IRQs for SFs, using the PF IRQs */
+ 			goto pf_irq;
+@@ -453,7 +498,6 @@ struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, u16 vecidx,
+ 	}
+ pf_irq:
+ 	pool = irq_table->pf_pool;
+-	vecidx = (vecidx == MLX5_IRQ_EQ_CTRL) ? pool->xa_num_irqs.max : vecidx;
+ 	irq = irq_pool_request_vector(pool, vecidx, affinity);
+ out:
+ 	if (IS_ERR(irq))
 -- 
 2.33.1
 
