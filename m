@@ -2,90 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3BE6487BB5
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 19:02:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3604B487BDC
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 19:10:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348673AbiAGSCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 13:02:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240405AbiAGSCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 13:02:41 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289CFC06173F
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 10:02:41 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id w20so12522509wra.9
-        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 10:02:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/pTbOp8Y/z+v5/7bezto5SDe31jZoxxusR5iYShFUA4=;
-        b=3PkoKFiuZihHQ2sGvrPkw3nS0qxfAL/43DrDNUtcTgNYshIwuuiS6Hc52pUGzDN09q
-         m14mF4puzed849ncLWgBBKYXMZ+w2DGnj6Y+C+1xsxhmMeHe+IHZGo4uKqqrPMJA1iz4
-         mLLfVQ7HqrkHyAt2qTUen0I9VGvturCpIhPUUHJm9O4dTwoxeeYa6xmLw2IU+Ka5WgG/
-         V0dbDSClUqBws9f+LXSAK7uLyWbcHD3eij3N7LW4X8BsMwJoq+R9G6jYEt0EpKSqIS2a
-         CHSeEyTHEhLNYKbAhARKYQ+oW1HpYod7zb5HqvseMlmLfNINJ2xj5TazRa6rJwFQnxSR
-         /rZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/pTbOp8Y/z+v5/7bezto5SDe31jZoxxusR5iYShFUA4=;
-        b=WWefwsIqVsxn+MpaYBcow5fMisl467rtId8hDVH9nayU5SBLTdLppBLyiESDLXrEuW
-         XVhUKt+cKjazjSHA0xes6+qR0Sp+FZlv4/i1heWuHN2i+UoDky+2qUo8wVvGYDDPVLfE
-         mF6oWqDL6Gp++oBwmKOy/7NhT3dyoV8pefOAX1SW7cIPouxlE8Xn8HP0AHuGJTgq7O0B
-         16Qnj+A7qAKyqMFo03dS3shVkICMxTKx8wLtDNFs9RfBEA782hZunbt20RfSWGeP7aVu
-         p+WfhS0Ob0kxQjTsxHi1zuZt4n7eMYNo1LYp7Kuubmbvn+MjD6QAuSz6/XjgL+032K2s
-         lb3Q==
-X-Gm-Message-State: AOAM5337knz1rQpLfD6it6ii7fMwOINAtmyrZSKG/TdBNS0XtdZ/dEJW
-        6hBCzg3bNUlohH1rWibq2qArbg==
-X-Google-Smtp-Source: ABdhPJzNg/lS5tlMrOGHfOhNEkjJU3JZRrb0vKv3byxYC8QpYMARr9ll3OseabayiRorLXu7wdifCQ==
-X-Received: by 2002:a5d:4533:: with SMTP id j19mr874540wra.568.1641578559698;
-        Fri, 07 Jan 2022 10:02:39 -0800 (PST)
-Received: from [192.168.1.8] ([149.86.69.49])
-        by smtp.gmail.com with ESMTPSA id m35sm17116833wms.1.2022.01.07.10.02.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Jan 2022 10:02:39 -0800 (PST)
-Message-ID: <3e97ea0d-7966-1440-b5e3-94a254772c2c@isovalent.com>
-Date:   Fri, 7 Jan 2022 18:02:38 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH bpf-next 2/2] bpftool: Fix error check when calling
- hashmap__new()
-Content-Language: en-GB
-To:     =?UTF-8?Q?Mauricio_V=c3=a1squez?= <mauricio@kinvolk.io>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        id S240614AbiAGSKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 13:10:41 -0500
+Received: from mout.perfora.net ([74.208.4.197]:56811 "EHLO mout.perfora.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240523AbiAGSKk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jan 2022 13:10:40 -0500
+Received: from localhost.localdomain ([194.191.235.54]) by mrelay.perfora.net
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MY6bJ-1ms0S53enN-00YRgs;
+ Fri, 07 Jan 2022 19:03:45 +0100
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-References: <20220107152620.192327-1-mauricio@kinvolk.io>
- <20220107152620.192327-2-mauricio@kinvolk.io>
-From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <20220107152620.192327-2-mauricio@kinvolk.io>
-Content-Type: text/plain; charset=UTF-8
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lucas Stach <dev@lynxeye.de>, Martin KaFai Lau <kafai@fb.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        =?UTF-8?q?Oliver=20St=C3=A4bler?= <oliver.staebler@bytesatwork.ch>,
+        Olof Johansson <olof@lixom.net>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Will Deacon <will@kernel.org>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v1 00/14] arm64: prepare and add verdin imx8m mini support
+Date:   Fri,  7 Jan 2022 19:03:00 +0100
+Message-Id: <20220107180314.1816515-1-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.33.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:lQAYnaUngUYQ76uILRN84VPgMhmWpzCUfkc68N9mfHP4fOWz9oG
+ srl/W09VoexdO/nFLY0mzed7FqBOJPadFZqt/OIN3041PKAPxqnCQJNEY1DKDFtHBKL2YwP
+ kp+6wSJMkeNyKxfobFhY3qke5JUzQ16a2+qm2po2aK/ANj/EBn5SwC4WCCXIrCAj/8BFK10
+ 5fNu6Iv0Vj8xvzCnz0Kyg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:0IwuyNRbEsc=:Jy2tkBEW4PLk6bjhWL7qhS
+ 9wUDXKFgD5OpK5Imkis0alQcUy5nOdvowQiQSnPUtnxHZYF1uo2ZquuDUZ2XIaVXxX2AxpiTc
+ 0Qb+Jw/TXqGEeCMbKH+pLnq+YdwZAWn9EzeO9SzuNjSaPeg8KvJX2UjyUmy0oURVm6eVrb3rq
+ UH32x9+M7FlI8/EnWk3uDYhd6Ks/xwluh2OCu287JTF79/eyTucKwc9tDZHabWnO5OKliC+/+
+ QZP8TkxFYoIOvW7jBHXdHqDybsFoVYjz9RKt+qj++FoJLsQ6LDK6eAgUFzA4CDbwqw44NzwiP
+ HWbmtyLBmOca0s/GAWGpLVi6KUxh26A3cNhpgw7rPdkdYvTaP/hj3rjHhCvhX3YJqwT/BYFlj
+ ECyqiEpq8CZuBTW99AVBpc/i4xfChyoxWCECBwhRqL+LaiAZ2a9/PJ+AIqv5372JtfIH703za
+ dj5QsgSVQnbmMcV3X3wXIMbyE5ZPBHlVfWM+JjAiau0qYFsCsU+DgNGeX2wAd5yIAEtSWwfrB
+ uYT5ut4kcg0GBEhfLdPy1yyDJK1/yUSWzUt20nPVWVwlYFtc+hYlXSrrANCpsk+hGnbGX2Ma9
+ iTsiNkqis9Ixm3orId5eQSDMDpCmxv1c9tpy0ks7qf+OYR4uPtHO7rPB5Y0lQmu81ga6p4Ayf
+ uEVuh2ovTteBvQONK/CBzpp9CQTD/ajZS9m6emAXOEK3BqEJsVpsHftu4Mf71T4aBQoE=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2022-01-07 10:26 UTC-0500 ~ Mauricio Vásquez <mauricio@kinvolk.io>
-> hashmap__new() encodes errors with ERR_PTR(), hence it's not valid to
-> check the returned pointer against NULL and IS_ERR() has to be used
-> instead.
-> 
-> libbpf_get_error() can't be used in this case as hashmap__new() is not
-> part of the public libbpf API and it'll continue using ERR_PTR() after
-> libbpf 1.0.
-> 
-> Fixes: 8f184732b60b ("bpftool: Switch to libbpf's hashmap for pinned paths of BPF objects")
-> Fixes: 2828d0d75b73 ("bpftool: Switch to libbpf's hashmap for programs/maps in BTF listing")
-> Fixes: d6699f8e0f83 ("bpftool: Switch to libbpf's hashmap for PIDs/names references")
-> 
-> Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-This looks good to me, thank you for the fix!
 
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+Fix strange hex notation and gpio-hog example, rebuild default
+configuration, enable various relevant configuration options mainly to
+be built as modules, add toradex,verdin-imx8mm et al. to dt-bindings and
+finally add initial support for verdin imx8m mini.
+
+
+Marcel Ziswiler (14):
+  arm64: dts: imx8mm: fix strange hex notation
+  dt-bindings: gpio: fix gpio-hog example
+  arm64: defconfig: rebuild default configuration
+  arm64: defconfig: enable bpf/cgroup firewalling
+  arm64: defconfig: build imx-sdma as a module
+  arm64: defconfig: build r8169 as a module
+  arm64: defconfig: build ads1015 adc driver as a module
+  arm64: defconfig: build lm75 temperature sensor driver as a module
+  arm64: defconfig: build mcp251xfd can as a module
+  arm64: defconfig: build sdio mwifiex as a module
+  arm64: defconfig: build nxp bluetooth as modules
+  arm64: defconfig: build nuvoton nau8822 as module
+  dt-bindings: arm: fsl: add toradex,verdin-imx8mm et al.
+  arm64: dts: freescale: add initial support for verdin imx8m mini
+
+ .../devicetree/bindings/arm/fsl.yaml          |   21 +
+ .../devicetree/bindings/gpio/gpio.txt         |    2 +-
+ arch/arm64/boot/dts/freescale/Makefile        |    4 +
+ .../arm64/boot/dts/freescale/imx8mm-pinfunc.h |    6 +-
+ .../dts/freescale/imx8mm-verdin-dahlia.dtsi   |  143 ++
+ .../boot/dts/freescale/imx8mm-verdin-dev.dtsi |   67 +
+ .../imx8mm-verdin-nonwifi-dahlia.dts          |   18 +
+ .../freescale/imx8mm-verdin-nonwifi-dev.dts   |   18 +
+ .../dts/freescale/imx8mm-verdin-nonwifi.dtsi  |   75 +
+ .../freescale/imx8mm-verdin-wifi-dahlia.dts   |   18 +
+ .../dts/freescale/imx8mm-verdin-wifi-dev.dts  |   18 +
+ .../dts/freescale/imx8mm-verdin-wifi.dtsi     |   95 ++
+ .../boot/dts/freescale/imx8mm-verdin.dtsi     | 1277 +++++++++++++++++
+ arch/arm64/configs/defconfig                  |  148 +-
+ 14 files changed, 1820 insertions(+), 90 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-dahlia.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-dev.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi-dahlia.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi-dev.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi-dahlia.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi-dev.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
+
+-- 
+2.33.1
+
