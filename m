@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2C5C486ED4
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 01:30:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09D06486ED7
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 01:30:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344225AbiAGAae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 19:30:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53530 "EHLO
+        id S1344298AbiAGAag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 19:30:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344231AbiAGAaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 19:30:16 -0500
+        with ESMTP id S1344195AbiAGAaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 19:30:22 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF574C06118C
-        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 16:30:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9E8C034000
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 16:30:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 773FBB8249F
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 00:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9882C36AF2;
-        Fri,  7 Jan 2022 00:30:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0DB66B822D8
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 00:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79755C36AF4;
+        Fri,  7 Jan 2022 00:30:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1641515413;
-        bh=a/+cr2Ym3v6qQlhZVh63bVsN0Q7i0nju3mRlmqyLqAA=;
+        bh=FTn/Uqly8ewd3vwG6azIb2OIjNO0m4VvFWO26mneOjE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gTJsMAR3ZHW63IftfaJ4EoUy6A/w9z8zWXXsackAZLtSU70NOQIo9jYwc38fNo+nQ
-         QqHndGE7yahwoYqZBMJFZMxCTcaozn1J1nX4ueEOuc/z8yiDPEcg2APyUc7C4b/maz
-         La6BqW8L2kDJGrMXJ6z17TpMRBhj3VyWmhK7j/EflFQ8P1j6m0jbzSOcFuUMSm7rFi
-         0o3W2y3kw46ZBo3iXEO3sijZ+v8j0G3pbs+1IrfGLZVgqJxgO8mlhnhPUgbt4y7C/X
-         KAVdk1MpQbFb0KK8rC0hWrImQKOtw/sM7i4JmXGMIQVh1S1xh7w0nIwJxWTcC6hAiv
-         tP7ezrzqXCsxA==
+        b=hBD7RRVSZwEDrX8+XeTzae3ymVNkKnTP7MT2K9i5ndcEMs1mY+1Ig5hUIswpBQAyl
+         awB2yfwMI3mPTMAd1HSHhmH+4CKjOd4jUS1Xiq14B6XPwzmwVagsNLedDXw5/YhR2H
+         J16wlN7HwDLD/sR467UlINeSyixtnvMzQi3Pq9HRaJuNDFcyMLZOa8Y2cNNZhWyS+z
+         VLYSI3Uz0Fa9Zt/MYv0zQQ1SdfSmqu6AcyD9ebY1SS0YfyaxTDIQ2njEWMfzuRFxT4
+         TyAiH4TqyomM1Rx6E5Y/C+o8S8L66ZxJ3q78DR80dqTKFBlngYmFu7ku46Jf2kPsnX
+         PgLWzpM44xiew==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Maher Sanalla <msanalla@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH net-next 06/15] net/mlx5: SF, Use all available cpu for setting cpu affinity
-Date:   Thu,  6 Jan 2022 16:29:47 -0800
-Message-Id: <20220107002956.74849-7-saeed@kernel.org>
+Subject: [PATCH net-next 07/15] net/mlx5: Update log_max_qp value to FW max capability
+Date:   Thu,  6 Jan 2022 16:29:48 -0800
+Message-Id: <20220107002956.74849-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220107002956.74849-1-saeed@kernel.org>
 References: <20220107002956.74849-1-saeed@kernel.org>
@@ -50,443 +49,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shay Drory <shayd@nvidia.com>
+From: Maher Sanalla <msanalla@nvidia.com>
 
-Currently all SFs are using the same CPUs. Spreading SF over CPUs, in
-round-robin manner, in order to achieve better distribution of the SFs
-over available CPUs.
+log_max_qp in driver's default profile #2 was set to 18, but FW actually
+supports 17 at the most - a situation that led to the concerning print
+when the driver is loaded:
+"log_max_qp value in current profile is 18, changing to HCA capabaility
+limit (17)"
 
-Signed-off-by: Shay Drory <shayd@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
+The expected behavior from mlx5_profile #2 is to match the maximum FW
+capability in regards to log_max_qp. Thus, log_max_qp in profile #2 is
+initialized to a defined static value (0xff) - which basically means that
+when loading this profile, log_max_qp value  will be what the currently
+installed FW supports at most.
+
+Signed-off-by: Maher Sanalla <msanalla@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  11 +-
- .../mellanox/mlx5/core/irq_affinity.c         | 139 +++++++++++++++++-
- .../ethernet/mellanox/mlx5/core/mlx5_irq.h    |  13 ++
- .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  64 ++++----
- .../net/ethernet/mellanox/mlx5/core/pci_irq.h |   8 +
- 5 files changed, 201 insertions(+), 34 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index 14547b6f2894..48a45aa54a3c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -798,7 +798,10 @@ static void comp_irqs_release(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_eq_table *table = dev->priv.eq_table;
- 
--	mlx5_irqs_release_vectors(table->comp_irqs, table->num_comp_eqs);
-+	if (mlx5_core_is_sf(dev))
-+		mlx5_irq_affinity_irqs_release(dev, table->comp_irqs, table->num_comp_eqs);
-+	else
-+		mlx5_irqs_release_vectors(table->comp_irqs, table->num_comp_eqs);
- 	kfree(table->comp_irqs);
- }
- 
-@@ -814,6 +817,12 @@ static int comp_irqs_request(struct mlx5_core_dev *dev)
- 	table->comp_irqs = kcalloc(ncomp_eqs, sizeof(*table->comp_irqs), GFP_KERNEL);
- 	if (!table->comp_irqs)
- 		return -ENOMEM;
-+	if (mlx5_core_is_sf(dev)) {
-+		ret = mlx5_irq_affinity_irqs_request_auto(dev, ncomp_eqs, table->comp_irqs);
-+		if (ret < 0)
-+			goto free_irqs;
-+		return ret;
-+	}
- 
- 	cpus = kcalloc(ncomp_eqs, sizeof(*cpus), GFP_KERNEL);
- 	if (!cpus) {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c b/drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c
-index 4ff0af0fc58a..380a208ab137 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c
-@@ -5,21 +5,81 @@
- #include "mlx5_irq.h"
- #include "pci_irq.h"
- 
-+static void cpu_put(struct mlx5_irq_pool *pool, int cpu)
-+{
-+	pool->irqs_per_cpu[cpu]--;
-+}
-+
-+static void cpu_get(struct mlx5_irq_pool *pool, int cpu)
-+{
-+	pool->irqs_per_cpu[cpu]++;
-+}
-+
-+/* Gets the least loaded CPU. e.g.: the CPU with least IRQs bound to it */
-+static int cpu_get_least_loaded(struct mlx5_irq_pool *pool,
-+				const struct cpumask *req_mask)
-+{
-+	int best_cpu = -1;
-+	int cpu;
-+
-+	for_each_cpu_and(cpu, req_mask, cpu_online_mask) {
-+		/* CPU has zero IRQs on it. No need to search any more CPUs. */
-+		if (!pool->irqs_per_cpu[cpu]) {
-+			best_cpu = cpu;
-+			break;
-+		}
-+		if (best_cpu < 0)
-+			best_cpu = cpu;
-+		if (pool->irqs_per_cpu[cpu] < pool->irqs_per_cpu[best_cpu])
-+			best_cpu = cpu;
-+	}
-+	if (best_cpu == -1) {
-+		/* There isn't online CPUs in req_mask */
-+		mlx5_core_err(pool->dev, "NO online CPUs in req_mask (%*pbl)\n",
-+			      cpumask_pr_args(req_mask));
-+		best_cpu = cpumask_first(cpu_online_mask);
-+	}
-+	pool->irqs_per_cpu[best_cpu]++;
-+	return best_cpu;
-+}
-+
- /* Creating an IRQ from irq_pool */
- static struct mlx5_irq *
- irq_pool_request_irq(struct mlx5_irq_pool *pool, const struct cpumask *req_mask)
- {
-+	cpumask_var_t auto_mask;
-+	struct mlx5_irq *irq;
- 	u32 irq_index;
- 	int err;
- 
--	err = xa_alloc(&pool->irqs, &irq_index, NULL, pool->xa_num_irqs,
--		       GFP_KERNEL);
-+	if (!zalloc_cpumask_var(&auto_mask, GFP_KERNEL))
-+		return ERR_PTR(-ENOMEM);
-+	err = xa_alloc(&pool->irqs, &irq_index, NULL, pool->xa_num_irqs, GFP_KERNEL);
- 	if (err)
- 		return ERR_PTR(err);
--	return mlx5_irq_alloc(pool, irq_index, req_mask);
-+	if (pool->irqs_per_cpu) {
-+		if (cpumask_weight(req_mask) > 1)
-+			/* if req_mask contain more then one CPU, set the least loadad CPU
-+			 * of req_mask
-+			 */
-+			cpumask_set_cpu(cpu_get_least_loaded(pool, req_mask), auto_mask);
-+		else
-+			cpu_get(pool, cpumask_first(req_mask));
-+	}
-+	irq = mlx5_irq_alloc(pool, irq_index, cpumask_empty(auto_mask) ? req_mask : auto_mask);
-+	free_cpumask_var(auto_mask);
-+	return irq;
- }
- 
--/* Looking for the IRQ with the smallest refcount and the same mask */
-+/* Looking for the IRQ with the smallest refcount that fits req_mask.
-+ * If pool is sf_comp_pool, then we are looking for an IRQ with any of the
-+ * requested CPUs in req_mask.
-+ * for example: req_mask = 0xf, irq0_mask = 0x10, irq1_mask = 0x1. irq0_mask
-+ * isn't subset of req_mask, so we will skip it. irq1_mask is subset of req_mask,
-+ * we don't skip it.
-+ * If pool is sf_ctrl_pool, then all IRQs have the same mask, so any IRQ will
-+ * fit. And since mask is subset of itself, we will pass the first if bellow.
-+ */
- static struct mlx5_irq *
- irq_pool_find_least_loaded(struct mlx5_irq_pool *pool, const struct cpumask *req_mask)
- {
-@@ -35,8 +95,8 @@ irq_pool_find_least_loaded(struct mlx5_irq_pool *pool, const struct cpumask *req
- 		struct cpumask *iter_mask = mlx5_irq_get_affinity_mask(iter);
- 		int iter_refcount = mlx5_irq_read_locked(iter);
- 
--		if (!cpumask_equal(iter_mask, req_mask))
--			/* If a user request a mask, skip IRQs that's aren't a match */
-+		if (!cpumask_subset(iter_mask, req_mask))
-+			/* skip IRQs with a mask which is not subset of req_mask */
- 			continue;
- 		if (iter_refcount < pool->min_threshold)
- 			/* If we found an IRQ with less than min_thres, return it */
-@@ -97,3 +157,70 @@ mlx5_irq_affinity_request(struct mlx5_irq_pool *pool, const struct cpumask *req_
- 	mutex_unlock(&pool->lock);
- 	return least_loaded_irq;
- }
-+
-+void mlx5_irq_affinity_irqs_release(struct mlx5_core_dev *dev, struct mlx5_irq **irqs,
-+				    int num_irqs)
-+{
-+	struct mlx5_irq_pool *pool = mlx5_irq_pool_get(dev);
-+	int i;
-+
-+	for (i = 0; i < num_irqs; i++) {
-+		int cpu = cpumask_first(mlx5_irq_get_affinity_mask(irqs[i]));
-+
-+		synchronize_irq(pci_irq_vector(pool->dev->pdev,
-+					       mlx5_irq_get_index(irqs[i])));
-+		if (mlx5_irq_put(irqs[i]))
-+			if (pool->irqs_per_cpu)
-+				cpu_put(pool, cpu);
-+	}
-+}
-+
-+/**
-+ * mlx5_irq_affinity_irqs_request_auto - request one or more IRQs for mlx5 device.
-+ * @dev: mlx5 device that is requesting the IRQs.
-+ * @nirqs: number of IRQs to request.
-+ * @irqs: an output array of IRQs pointers.
-+ *
-+ * Each IRQ is bounded to at most 1 CPU.
-+ * This function is requesting IRQs according to the default assignment.
-+ * The default assignment policy is:
-+ * - in each iteration, request the least loaded IRQ which is not bound to any
-+ *   CPU of the previous IRQs requested.
-+ *
-+ * This function returns the number of IRQs requested, (which might be smaller than
-+ * @nirqs), if successful, or a negative error code in case of an error.
-+ */
-+int mlx5_irq_affinity_irqs_request_auto(struct mlx5_core_dev *dev, int nirqs,
-+					struct mlx5_irq **irqs)
-+{
-+	struct mlx5_irq_pool *pool = mlx5_irq_pool_get(dev);
-+	cpumask_var_t req_mask;
-+	struct mlx5_irq *irq;
-+	int i = 0;
-+
-+	if (!zalloc_cpumask_var(&req_mask, GFP_KERNEL))
-+		return -ENOMEM;
-+	cpumask_copy(req_mask, cpu_online_mask);
-+	for (i = 0; i < nirqs; i++) {
-+		if (mlx5_irq_pool_is_sf_pool(pool))
-+			irq = mlx5_irq_affinity_request(pool, req_mask);
-+		else
-+			/* In case SF pool doesn't exists, fallback to the PF IRQs.
-+			 * The PF IRQs are already allocated and binded to CPU
-+			 * at this point. Hence, only an index is needed.
-+			 */
-+			irq = mlx5_irq_request(dev, i, NULL);
-+		if (IS_ERR(irq))
-+			break;
-+		irqs[i] = irq;
-+		cpumask_clear_cpu(cpumask_first(mlx5_irq_get_affinity_mask(irq)), req_mask);
-+		mlx5_core_dbg(pool->dev, "IRQ %u mapped to cpu %*pbl, %u EQs on this irq\n",
-+			      pci_irq_vector(dev->pdev, mlx5_irq_get_index(irq)),
-+			      cpumask_pr_args(mlx5_irq_get_affinity_mask(irq)),
-+			      mlx5_irq_read_locked(irq) / MLX5_EQ_REFS_PER_IRQ);
-+	}
-+	free_cpumask_var(req_mask);
-+	if (!i)
-+		return PTR_ERR(irq);
-+	return i;
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
-index f2ad3c21802f..23cb63fa4588 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
-@@ -36,13 +36,26 @@ int mlx5_irq_get_index(struct mlx5_irq *irq);
- 
- struct mlx5_irq_pool;
- #ifdef CONFIG_MLX5_SF
-+int mlx5_irq_affinity_irqs_request_auto(struct mlx5_core_dev *dev, int nirqs,
-+					struct mlx5_irq **irqs);
- struct mlx5_irq *mlx5_irq_affinity_request(struct mlx5_irq_pool *pool,
- 					   const struct cpumask *req_mask);
-+void mlx5_irq_affinity_irqs_release(struct mlx5_core_dev *dev, struct mlx5_irq **irqs,
-+				    int num_irqs);
- #else
-+static inline int mlx5_irq_affinity_irqs_request_auto(struct mlx5_core_dev *dev, int nirqs,
-+						      struct mlx5_irq **irqs)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
- static inline struct mlx5_irq *
- mlx5_irq_affinity_request(struct mlx5_irq_pool *pool, const struct cpumask *req_mask)
- {
- 	return ERR_PTR(-EOPNOTSUPP);
- }
-+
-+static inline void mlx5_irq_affinity_irqs_release(struct mlx5_core_dev *dev,
-+						  struct mlx5_irq **irqs, int num_irqs) {}
- #endif
- #endif /* __MLX5_IRQ_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-index 2e19c3c222fe..90fec0649ef5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-@@ -139,15 +139,19 @@ static void irq_release(struct mlx5_irq *irq)
- 	kfree(irq);
- }
- 
--static void irq_put(struct mlx5_irq *irq)
-+int mlx5_irq_put(struct mlx5_irq *irq)
- {
- 	struct mlx5_irq_pool *pool = irq->pool;
-+	int ret = 0;
- 
- 	mutex_lock(&pool->lock);
- 	irq->refcount--;
--	if (!irq->refcount)
-+	if (!irq->refcount) {
- 		irq_release(irq);
-+		ret = 1;
-+	}
- 	mutex_unlock(&pool->lock);
-+	return ret;
- }
- 
- int mlx5_irq_read_locked(struct mlx5_irq *irq)
-@@ -202,11 +206,6 @@ static void irq_set_name(struct mlx5_irq_pool *pool, char *name, int vecidx)
- 	snprintf(name, MLX5_MAX_IRQ_NAME, "mlx5_comp%d", vecidx);
- }
- 
--static bool irq_pool_is_sf_pool(struct mlx5_irq_pool *pool)
--{
--	return !strncmp("mlx5_sf", pool->name, strlen("mlx5_sf"));
--}
--
- struct mlx5_irq *mlx5_irq_alloc(struct mlx5_irq_pool *pool, int i,
- 				const struct cpumask *affinity)
- {
-@@ -219,7 +218,7 @@ struct mlx5_irq *mlx5_irq_alloc(struct mlx5_irq_pool *pool, int i,
- 	if (!irq)
- 		return ERR_PTR(-ENOMEM);
- 	irq->irqn = pci_irq_vector(dev->pdev, i);
--	if (!irq_pool_is_sf_pool(pool))
-+	if (!mlx5_irq_pool_is_sf_pool(pool))
- 		irq_set_name(pool, name, i);
- 	else
- 		irq_sf_set_name(pool, name, i);
-@@ -273,7 +272,7 @@ int mlx5_irq_attach_nb(struct mlx5_irq *irq, struct notifier_block *nb)
- 		return -ENOENT;
- 	ret = atomic_notifier_chain_register(&irq->nh, nb);
- 	if (ret)
--		irq_put(irq);
-+		mlx5_irq_put(irq);
- 	return ret;
- }
- 
-@@ -282,7 +281,7 @@ int mlx5_irq_detach_nb(struct mlx5_irq *irq, struct notifier_block *nb)
- 	int err = 0;
- 
- 	err = atomic_notifier_chain_unregister(&irq->nh, nb);
--	irq_put(irq);
-+	mlx5_irq_put(irq);
- 	return err;
- }
- 
-@@ -327,6 +326,20 @@ static struct mlx5_irq_pool *sf_irq_pool_get(struct mlx5_irq_table *irq_table)
- 	return irq_table->sf_comp_pool;
- }
- 
-+struct mlx5_irq_pool *mlx5_irq_pool_get(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_irq_table *irq_table = mlx5_irq_table_get(dev);
-+	struct mlx5_irq_pool *pool = NULL;
-+
-+	if (mlx5_core_is_sf(dev))
-+		pool = sf_irq_pool_get(irq_table);
-+
-+	/* In some configs, there won't be a pool of SFs IRQs. Hence, returning
-+	 * the PF IRQs pool in case the SF pool doesn't exist.
-+	 */
-+	return pool ? pool : irq_table->pf_pool;
-+}
-+
- static struct mlx5_irq_pool *ctrl_irq_pool_get(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_irq_table *irq_table = mlx5_irq_table_get(dev);
-@@ -352,7 +365,7 @@ static void mlx5_irqs_release(struct mlx5_irq **irqs, int nirqs)
- 
- 	for (i = 0; i < nirqs; i++) {
- 		synchronize_irq(irqs[i]->irqn);
--		irq_put(irqs[i]);
-+		mlx5_irq_put(irqs[i]);
- 	}
- }
- 
-@@ -380,7 +393,7 @@ struct mlx5_irq *mlx5_ctrl_irq_request(struct mlx5_core_dev *dev)
- 	if (!zalloc_cpumask_var(&req_mask, GFP_KERNEL))
- 		return ERR_PTR(-ENOMEM);
- 	cpumask_copy(req_mask, cpu_online_mask);
--	if (!irq_pool_is_sf_pool(pool)) {
-+	if (!mlx5_irq_pool_is_sf_pool(pool)) {
- 		/* In case we are allocating a control IRQ for PF/VF */
- 		if (!pool->xa_num_irqs.max) {
- 			cpumask_clear(req_mask);
-@@ -398,7 +411,7 @@ struct mlx5_irq *mlx5_ctrl_irq_request(struct mlx5_core_dev *dev)
- }
- 
- /**
-- * mlx5_irq_request - request an IRQ for mlx5 device.
-+ * mlx5_irq_request - request an IRQ for mlx5 PF/VF device.
-  * @dev: mlx5 device that requesting the IRQ.
-  * @vecidx: vector index of the IRQ. This argument is ignore if affinity is
-  * provided.
-@@ -413,22 +426,8 @@ struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, u16 vecidx,
- 	struct mlx5_irq_pool *pool;
- 	struct mlx5_irq *irq;
- 
--	if (mlx5_core_is_sf(dev)) {
--		pool = sf_irq_pool_get(irq_table);
--		if (!pool)
--			/* we don't have IRQs for SFs, using the PF IRQs */
--			goto pf_irq;
--		if (cpumask_empty(affinity) && !strcmp(pool->name, "mlx5_sf_comp"))
--			/* In case an SF user request IRQ with vecidx */
--			irq = irq_pool_request_vector(pool, vecidx, NULL);
--		else
--			irq = mlx5_irq_affinity_request(pool, affinity);
--		goto out;
--	}
--pf_irq:
- 	pool = irq_table->pf_pool;
- 	irq = irq_pool_request_vector(pool, vecidx, affinity);
--out:
- 	if (IS_ERR(irq))
- 		return irq;
- 	mlx5_core_dbg(dev, "irq %u mapped to cpu %*pbl, %u EQs on this irq\n",
-@@ -518,6 +517,7 @@ static void irq_pool_free(struct mlx5_irq_pool *pool)
- 		irq_release(irq);
- 	xa_destroy(&pool->irqs);
- 	mutex_destroy(&pool->lock);
-+	kfree(pool->irqs_per_cpu);
- 	kvfree(pool);
- }
- 
-@@ -565,7 +565,17 @@ static int irq_pools_init(struct mlx5_core_dev *dev, int sf_vec, int pf_vec)
- 		err = PTR_ERR(table->sf_comp_pool);
- 		goto err_sf_ctrl;
- 	}
-+
-+	table->sf_comp_pool->irqs_per_cpu = kcalloc(nr_cpu_ids, sizeof(u16), GFP_KERNEL);
-+	if (!table->sf_comp_pool->irqs_per_cpu) {
-+		err = -ENOMEM;
-+		goto err_irqs_per_cpu;
-+	}
-+
- 	return 0;
-+
-+err_irqs_per_cpu:
-+	irq_pool_free(table->sf_comp_pool);
- err_sf_ctrl:
- 	irq_pool_free(table->sf_ctrl_pool);
- err_pf:
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.h b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.h
-index 5fee4ce57d6c..5c7e68bee43a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.h
-@@ -20,12 +20,20 @@ struct mlx5_irq_pool {
- 	struct xarray irqs;
- 	u32 max_threshold;
- 	u32 min_threshold;
-+	u16 *irqs_per_cpu;
- 	struct mlx5_core_dev *dev;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 6b225bb5751a..2c774f367199 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -98,6 +98,8 @@ enum {
+ 	MLX5_ATOMIC_REQ_MODE_HOST_ENDIANNESS = 0x1,
  };
  
-+struct mlx5_irq_pool *mlx5_irq_pool_get(struct mlx5_core_dev *dev);
-+static inline bool mlx5_irq_pool_is_sf_pool(struct mlx5_irq_pool *pool)
-+{
-+	return !strncmp("mlx5_sf", pool->name, strlen("mlx5_sf"));
-+}
++#define LOG_MAX_SUPPORTED_QPS 0xff
 +
- struct mlx5_irq *mlx5_irq_alloc(struct mlx5_irq_pool *pool, int i,
- 				const struct cpumask *affinity);
- int mlx5_irq_get_locked(struct mlx5_irq *irq);
- int mlx5_irq_read_locked(struct mlx5_irq *irq);
-+int mlx5_irq_put(struct mlx5_irq *irq);
+ static struct mlx5_profile profile[] = {
+ 	[0] = {
+ 		.mask           = 0,
+@@ -109,7 +111,7 @@ static struct mlx5_profile profile[] = {
+ 	[2] = {
+ 		.mask		= MLX5_PROF_MASK_QP_SIZE |
+ 				  MLX5_PROF_MASK_MR_CACHE,
+-		.log_max_qp	= 18,
++		.log_max_qp	= LOG_MAX_SUPPORTED_QPS,
+ 		.mr_cache[0]	= {
+ 			.size	= 500,
+ 			.limit	= 250
+@@ -523,7 +525,9 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
+ 		 to_fw_pkey_sz(dev, 128));
  
- #endif /* __PCI_IRQ_H__ */
+ 	/* Check log_max_qp from HCA caps to set in current profile */
+-	if (MLX5_CAP_GEN_MAX(dev, log_max_qp) < prof->log_max_qp) {
++	if (prof->log_max_qp == LOG_MAX_SUPPORTED_QPS) {
++		prof->log_max_qp = MLX5_CAP_GEN_MAX(dev, log_max_qp);
++	} else if (MLX5_CAP_GEN_MAX(dev, log_max_qp) < prof->log_max_qp) {
+ 		mlx5_core_warn(dev, "log_max_qp value in current profile is %d, changing it to HCA capability limit (%d)\n",
+ 			       prof->log_max_qp,
+ 			       MLX5_CAP_GEN_MAX(dev, log_max_qp));
 -- 
 2.33.1
 
