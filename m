@@ -2,127 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AC7A486FC3
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 02:43:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51501487014
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 03:01:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345219AbiAGBnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 20:43:04 -0500
-Received: from mail-db8eur05on2138.outbound.protection.outlook.com ([40.107.20.138]:26561
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229538AbiAGBnD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 6 Jan 2022 20:43:03 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oR3PyYB8UYxXWkVzSEAUikmrkKjxI4eiXDIyGYUYpXJh/PiSWINtf9OPjn6udQrAm9cYx2a+2MbE1uaQbvETlfp7e1Eb4T9sTdGv8zKG/3E14Ugz/j1oBs0EOpC6NZAqT5+0F2M3JnyzSapERM4qzj/klvywqUhVfH8LmG0nGpmwpVS77Vi91dOILsUi2MEqj9YqVFpiLQjax5l30qP8qeSN5wR3yzc/rEm1d2GnVE69IbpFjUGU7ataaiYUpHN5DOakI9TQdR292k+r8qqVmiC3mkcug9H2ZNTOomoIkoJ0bwyzsD8b8BKCgC7I+g7o5j+2KGaGWa6biFy1CYFn/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fxRRxnlqEVIcZXgu2AqNKWIjt1MtOloLuT3cb2U+mkA=;
- b=Jx5Y7w1pbdjI98iiKBCWJK8z51Bxlw3zUcOor/W0ZnSeJYkpPfO+wvMp/mEHZqi7kXCw3IiT+1/pWBqYvpmBL/oTk9nLH9GS1AIwEnbT9Jk8v4CHk8CKtomRcFEJV0KVzakW3fXS1tSW3bwXySeDgDxzuX2k5qJX/90mXy0+4BxeY3DUssZsJdP+LFljW+DZF+2uEA2+s1Eo7h959Xy1057PgZa9OhIdfvTpYdGs8xIQA/rSQamV/ZZqK+TI2lPJdDGs+076iUKZvWb+WWTrpz0C6v5QyHSawCxVKyLZKJLAMx/MmqMT+UFzwDfsD0OtgqcyNWXY0rczZQMX00qxsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fxRRxnlqEVIcZXgu2AqNKWIjt1MtOloLuT3cb2U+mkA=;
- b=bA72+jEj6eGV2r1ptPcwuw5hq7gvIGdfeRHyttkVqzelVQtzXAwhwFLGQOrnEPQ2hS++ht8Z82SknrxpduI3wZ26d4P8oU4sJzgiKrH8KkuVuV73Jg4KQPrLNTLbStFpXWBReLEZtdDIxBRoh1ReNkGuOaAnxewW/gp44ysFGw4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from AM9P190MB1122.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:262::24)
- by AM4P190MB0018.EURP190.PROD.OUTLOOK.COM (2603:10a6:200:63::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.15; Fri, 7 Jan
- 2022 01:43:00 +0000
-Received: from AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
- ([fe80::b93b:8d91:d56a:8256]) by AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
- ([fe80::b93b:8d91:d56a:8256%8]) with mapi id 15.20.4867.010; Fri, 7 Jan 2022
- 01:43:00 +0000
-Date:   Fri, 7 Jan 2022 03:42:56 +0200
-From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org, andrew@lunn.ch,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 5/6] net: marvell: prestera: Register
- inetaddr stub notifiers
-Message-ID: <YdeaoJpSuIzPB/EP@yorlov.ow.s>
-References: <20211227215233.31220-1-yevhen.orlov@plvision.eu>
- <20211227215233.31220-6-yevhen.orlov@plvision.eu>
- <Yc3DgqvTqHANUQcp@shredder>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yc3DgqvTqHANUQcp@shredder>
-X-ClientProxiedBy: FR3P281CA0027.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:1c::14) To AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:262::24)
+        id S1345331AbiAGCBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 21:01:52 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:58424
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1345302AbiAGCBv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 21:01:51 -0500
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 9782C40A58
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 02:01:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1641520908;
+        bh=0tdUHwIEzjjxhEbEu8d5q0v4EG4pEmNrosqWtdLydn0=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=joF05Z+hAbKjDlqm7xS/PGZzEKyWTcCEcT21m77WkBNr1atoE82sYUuwBw7Q7uEv6
+         7txQ972roOIG8jpiiM4TgNiW6cuG0r431GlDW3jU1GflyQj5ZshHsfce/KblTnTBOs
+         ujc/F7If43WyNfUgVH6KDIoeiY42Fy1cRluVfNCzJGkYpHlHUfFL3szCbnHPexq0Yn
+         Onv2la2Hh82MEVaRc7wtPzu88ljT7b1O8hviy+ND1Yt2ha787+VaHySg6+JC8EX7E2
+         ZQbL9qKdsVdGVWPuDzeHBKJGARyhjY6pxkCwzS7mpaYqNLYdhitNj7DzbHxMmk01gP
+         MBpywL86QMuvA==
+Received: by mail-oo1-f71.google.com with SMTP id j11-20020a056820022b00b002c6b134233fso2594331oob.6
+        for <netdev@vger.kernel.org>; Thu, 06 Jan 2022 18:01:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0tdUHwIEzjjxhEbEu8d5q0v4EG4pEmNrosqWtdLydn0=;
+        b=Ti0olPtCeXaw9mVcMjjMfxFodCLhyXPnBLjfHGDxwh12ip47u+jFZBKMbjUdRZNQBr
+         GRi8T7UMLr//TqLJo1oWe/geQZQ15AGpWlvahNKoq7JR8Vo8jIDUu7/EINy15BnUQHp8
+         JB0DRtAUj6IPPBAZaKUZ3szrJZQjlF0TYhFxcguoa5XhIs1+K3gC21HmSPzSgmDGWihx
+         eRqgQ5Ze4EFLkpvla133Umi+YrVRMvlJF48sKc/4VUPIQtSKGfL+E5Y/f7d2OsKqO269
+         TlSe6rgcqfXzinQjtdebzjNNt8GTCY4+d6Yi81ZZ2yW9OG0B3b1AKAVmW6QibJqVL6Tr
+         VEjw==
+X-Gm-Message-State: AOAM5316joFhMvzrAo7qyhYiKDg+HxYUWL19bKkssKkeo1JnElkLuYpv
+        GUTfvcYVhsiadRJa7QWP0R89Y5bc0SFCem5UpGIPikvl0AFEZd3Hm3K6pEB65MLSxDSEH5WP5ea
+        b5LD47gYDGQy9S8djGc4WtvKh9ttdI1jmrLusEapOhwj5Auw33Q==
+X-Received: by 2002:a9d:24e4:: with SMTP id z91mr43366797ota.11.1641520905168;
+        Thu, 06 Jan 2022 18:01:45 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyoKMxqiLZ16B7TmuA/u0QDSkvGiouo9eb0MmzCO53RHn9T1YuaYZSR6xhNxGX/Cs4A4Yrfu/s+WjLnEzx1+Jw=
+X-Received: by 2002:a9d:24e4:: with SMTP id z91mr43366777ota.11.1641520904892;
+ Thu, 06 Jan 2022 18:01:44 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a7126c9c-3fc8-4d6e-538f-08d9d17f0941
-X-MS-TrafficTypeDiagnostic: AM4P190MB0018:EE_
-X-Microsoft-Antispam-PRVS: <AM4P190MB001872EA80C5E367B77A4F6B934D9@AM4P190MB0018.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xhkNK96AcUaQ6852tWF3+IXDYpSS/kTaK8IiW237lS4byweap85vciyjudQ4escfkt4SzsjOgYwBwaG35TvOKnwbQLYXM9MwcD5ZcwDmMTUkH6t8n8NV0hs/w2LhIy32vVKMpfWKvCPlRv4Zzcgkp8JmjcyOggRwRRYD2ug+zciXEgvDpLmTNSJljIzAXbMMGNGHMLI3nDoFGcBrpHi5CJbAnC16GsyHCPaOx78+ZmM+Tq4NfYr0o8vD/WEiryLMxEssx9R5RYdJRDjqpYs2xwvVIAi7bqHIa1impQAXRX4WJaF2XgTnpZpncUtw1i+6hfqrmVm4VUDC8TN5KS70fkG0j1x7IOlWQHO3WVcz+JfSnGJCoN1WrwFqAe/HRqBlUWlPaysqquTXDJvNCC+nEGv5xduonCYJ+cd6FylV4UglrrzbV2h6LYgiZLvvBzMJKc53BXQz30wwu/W8HD1klwNpngMYeLzXKlOn1OssTLdk9hwJbm3EbARhTM1IKgSmzxdqp/OCE23Ix84w97BtDl7DP8wh6bFuV2leOpVL8DDmhK7t0XhlQXOI4BF9ulg9JzpTYjPemUgFOQQReQK3cQ7Q9ohfn7sMYGXMG1CmHQCAaVnJl68tUISQBZgL8QssY9gWH49c6M5GMZsTiiIEj6WAs4m1H5A9xoG64pu/aENRVy28ZO2GSvb/MQZUyCAVtJL6Mevftg3aD95t02FPCg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9P190MB1122.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(39830400003)(376002)(346002)(366004)(136003)(396003)(8676002)(2906002)(5660300002)(54906003)(6486002)(66556008)(38350700002)(558084003)(186003)(66476007)(6666004)(66946007)(6506007)(6512007)(9686003)(26005)(4326008)(52116002)(44832011)(316002)(8936002)(6916009)(86362001)(508600001)(38100700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SlxJK59yYNd0L86HlmvTRq2DtsTJiw01l4TQpjKmdjzqqWE5VkeUqDXGLMhS?=
- =?us-ascii?Q?N9RYbnnIuBu4zGvo6QvyuW3pnGaCZ8LDgi4xFo+MfwQrJNXNmYfC3TMU9CKU?=
- =?us-ascii?Q?OzAmgxkelJ5AXlvT2tSnnL+3T6aNstdh9ORZqmnTXbIWgCsmjFwcYX0HRG9f?=
- =?us-ascii?Q?JUpNkL7WL2LaWSFAKsNLN8Tn3xdVwFigeYkqjagqwKoc2x/A+bT+5jHr+S/9?=
- =?us-ascii?Q?SuZHGRbUTbIsgRySQkyjhO7xQjEMDPaf4BJnyXK7Sfypt+rTehw5YoJZSzsY?=
- =?us-ascii?Q?F0wzujebIsRyQqZQeJZu6Kp9cRzYZBzaisi6QDVSjT1ycKRrgzvztdNsAHLZ?=
- =?us-ascii?Q?QmZeZRbI27BMW5EsVvZMzJSn++8VFygm53UovZlQIhUohn8VJrUrCCss7NNE?=
- =?us-ascii?Q?u71Vaim0ObK6OZcJ2gtzFcmgFlBrsXvLu0WE59jw3LnSZDlSNp/WX89V47J5?=
- =?us-ascii?Q?yXxXCTLg6+SBPsxpuTUMaznJ5aYbRxKEcUsNfyDZoTqGq1Xvo0PlzdL9Nhi4?=
- =?us-ascii?Q?s+ra4fEn+KvFc70sbEQe1HgvJK69rfURJVUc15OLtcXWwmaJ5p+f9ieL2ChQ?=
- =?us-ascii?Q?Df4XZrfm3WnJ77ngKOJEi442kLipyA2qsh5TJQEzVqKVB0388qLcTsflmnKL?=
- =?us-ascii?Q?jf1w3zOy0JimXWuPBmDijzAN5iJYveLbr4jd4HA4Iu1e+aRT1OXWI8vm6YAL?=
- =?us-ascii?Q?/iEUXhf0v9VtbdCI5B5W+so1XpZtI7uU0C2LNBHqj5VDyLoP3rfSQF0ZCRYF?=
- =?us-ascii?Q?VIZnHO01H27R+Im7GNr1WUUmul4Co53U/zyLRB4yMiUN0xV0vqnDv36xzd46?=
- =?us-ascii?Q?MhJfqejgOKgn5NGOq+2DAE9C25H3oouLMF48QHq5n1sII2w/oPaZiedavtNH?=
- =?us-ascii?Q?A9YvGPrpaaNwXlOxMvhyk57PXjqau/AokQoTyYkJKLGhUJDV+pzSnrZgsrtS?=
- =?us-ascii?Q?qxVGODY1cgu6KEOR1tRfDydGKqNKrgBNS3F/Z1c3NyyJkmlrP+a96DMMNAHe?=
- =?us-ascii?Q?5VS5za1Sk+ZNKVzIz88tWzkpFZEEuhWFq8E6UGp6oItWC+EchjEv/jsE40r3?=
- =?us-ascii?Q?+93GqQ44q7BMprZM27664kCkdtvqyTnlpIqOmW4FPCwRUuHAX5GAZqfFy9IX?=
- =?us-ascii?Q?9+hDUWh3aQ3+3i38OBxr+6/5UIQUgMfBT/O1Dy1GKK9jjIvavklhHeEgq99B?=
- =?us-ascii?Q?BmJ6oI2Tf/fZd10yIixJ7DTHS8LD5FknEGeuqVSozAC15Eg3NkJxLCGBI9Ac?=
- =?us-ascii?Q?CGbLh3DlMX3B6XfekwzZ86ldnQXTozJmiNIeLb1JlhxoxIiR9QCgmoeBTOqY?=
- =?us-ascii?Q?WR0I+HPjLwZ++8yl7SB9t0pvWFUiPjyd3t8qs7g/8DmviB6qhma9IKcvRKTI?=
- =?us-ascii?Q?D2ATc12QiKz/hf73y3srpVtj7SjkJwuCy/p1oUl5Aws+iZNcQzlDSxTq8lWV?=
- =?us-ascii?Q?gvVksGqSEVD6sRpV0mHqsxfdmFJF/hDPOz9zBWGr9zWQl3FIgBW8uaoqcX/T?=
- =?us-ascii?Q?pZNzBgs0FJPq6d5V1yALfMgcGGZapj9f8DgvbR+pS7w2uxA80ofaZgoy0bwR?=
- =?us-ascii?Q?lLffEM/cmV5fDNARO/kRfVRe9ze7EsfR+JROr2/JnSuErWEhf6Qxh/Ho0JhU?=
- =?us-ascii?Q?Ns75NL4rMPqhQ638uIfpGimsqt6XdmpFD+giU3gZSLHQEPgCC+rUyUCnQfRa?=
- =?us-ascii?Q?JT6lYQ=3D=3D?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7126c9c-3fc8-4d6e-538f-08d9d17f0941
-X-MS-Exchange-CrossTenant-AuthSource: AM9P190MB1122.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jan 2022 01:42:59.8307
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PpKk29Po4craE3QTiDEMTAXY8rvVS+eBOLd49LKF67IslXOIY4hwOmEkafwwbNQ/GepVtBVufW3Mp2ZncbKlntj+jzR4SqOpPxbi8OKjVTE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4P190MB0018
+References: <20220105151427.8373-1-aaron.ma@canonical.com> <YdXVoNFB/Asq6bc/@lunn.ch>
+ <bb6d8bc4-abee-8536-ca5b-bac11d1ecd53@suse.com> <YdYbZne6pBZzxSxA@lunn.ch>
+ <CAAd53p52uGFjbiuOWAA-1dN7mTqQ0KFe9PxWvPL+fjfQb9K5vQ@mail.gmail.com> <YdbuXbtc64+Knbhm@lunn.ch>
+In-Reply-To: <YdbuXbtc64+Knbhm@lunn.ch>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Fri, 7 Jan 2022 10:01:33 +0800
+Message-ID: <CAAd53p5YnQZ0fDiwwo-q3bNMVFTJSMLcdkUuH-7=OSaRrW954Q@mail.gmail.com>
+Subject: Re: [PATCH 1/3 v3] net: usb: r8152: Check used MAC passthrough address
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Aaron Ma <aaron.ma@canonical.com>, kuba@kernel.org,
+        henning.schild@siemens.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 30, 2021 at 04:34:42PM +0200, Ido Schimmel wrote:
+On Thu, Jan 6, 2022 at 9:28 PM Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> What happens to that RIF when the port is linked to a bridge or unlinked
-> from one?
+> > Can udev in current form really handle the MAC race? Unless there's a
+> > new uevent right before ndo_open() so udev can decide which MAC to
+> > assign? Even with that, the race can still happen...
 >
+> There will always be a race, since the kernel can start using the
+> interface before register_netdev() has even finished, before user
+> space is running. Take a look at how NFS root works.
 
-We doesn't support any "RIF with bridge" scenario for now.
-This restriction mentioned in cover latter.
+Didn't know that, thanks for the insight.
+
+>
+> But in general, you can change the MAC address at any time. Some MAC
+> drivers will return -EBUSY if the interface is up, but that is
+> generally artificial. After a change of MAC address ARP will time out
+> after a while and the link peers will get the new MAC address.
+
+I think this makes the whole situation even more complex.
+
+>
+> >
+> > So what if we keep the existing behavior (i.e. copy MAC from ACPI),
+> > and let userspace daemon like NetworkManager to give the second NIC
+> > (r8152 in this case) a random MAC if the main NIC (I219 in this case)
+> > is already in use? Considering the userspace daemon has the all the
+> > information required and it's the policy maker here.
+>
+> You should be thinking of this in more general terms. You want to
+> design a system that will work for any vendors laptop and dock.
+>
+> You need to describe the two interfaces using some sort of bus
+> address, be it PCIe, USB, or a platform device address as used by
+> device tree etc.
+>
+> Let the kernel do whatever it wants with MAC addresses for these two
+> interfaces. The only requirement you have is that the laptop internal
+> interface gets the vendor allocated MAC address, and that the dock get
+> some sort of MAC address, even if it is random.
+
+Those laptops and docks are designed to have duplicated MACs. I don't
+understand why but that's why Dell/HP/Lenovo did.
+What if the kernel just abstract the hardware/firmware as intended, no
+matter how stupid it is, and let userspace to make the right policy?
+
+>
+> On device creation, udev can check if it now has both interfaces? If
+> the internal interface is up, it is probably in use. Otherwise, take
+> its MAC address and assign it to the dock interface, and give the
+> internal interface a random MAC address, just in case.
+>
+> You probably need to delay NetworkManager, systemd-networkkd,
+> /etc/network/interfaces etc, so that they don't do anything until
+> after udevd has settled, indicating all devices have probably been
+> found.
+
+I don't think it's a good idea. On my laptop,
+systemd-udev-settle.service can add extra 5~10 seconds boot time
+delay.
+Furthermore, the external NIC in question is in a USB/Thunderbolt
+dock, it can present pre-boot, or it can be hotplugged at any time.
+
+>
+> I suspect you will never get a 100% robust design, but you can
+> probably get it working enough for the cleaning staff and the CEO, who
+> have very simple setups. Power users are going to find all the corner
+> cases and will want to disable the udev rule.
+
+But power users may also need to use corporate network to work as
+Aaron mentioned.
+Packets from unregistered MAC can be filtered under corporate network,
+and that's why MAC pass-through is a useful feature that many business
+laptops have.
+
+>
+>      Andrew
