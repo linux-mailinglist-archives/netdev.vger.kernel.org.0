@@ -2,312 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D25D3486E3B
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 01:00:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64F58486E99
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 01:20:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343695AbiAGAA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 19:00:29 -0500
-Received: from ip59.38.31.103.in-addr.arpa.unknwn.cloudhost.asia ([103.31.38.59]:44554
-        "EHLO gnuweeb.org" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1343548AbiAGAA1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 19:00:27 -0500
-Received: from integral2.. (unknown [36.68.70.227])
-        by gnuweeb.org (Postfix) with ESMTPSA id 4D5EDC17CA;
-        Fri,  7 Jan 2022 00:00:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=gnuweeb.org;
-        s=default; t=1641513624;
-        bh=bRprzljkPdXWkVklApgZ3wCc6hsKMQVhUVm66yb3UGk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IRxBEifU7kf4wNbMoU141NsmXy3CgcTRmH+QDd2MtAIcParZhn9wUExL1K8eWFsJy
-         mkYpwROow3dkvJqD5zWq0fJRQsiGZq3JZj7EWgGaNUrvgXU9v/2mOzJopKYXvHdwp3
-         JNnALREg38kNiOqNBUK431jxvpcto8r/LkjOSD+nCB3vQBFK8HCjLOxswKpca1uqWO
-         SDZWaw3MhHz7iwvV3fhMw21rLwGnaTCjfVkuIJm7OjMbbC2W8ySgXPRqNMKKxr3SGZ
-         rvdiVRsVrezKnRz+xPElYd4zL4w554wS3rN6I4yuNcsuQBqjz1b5TF2lsQNuaUJpQg
-         4o4HfWGLHvgxQ==
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        io-uring Mailing List <io-uring@vger.kernel.org>,
-        netdev Mailing List <netdev@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Nugra <richiisei@gmail.com>,
-        Praveen Kumar <kpraveen.lkml@gmail.com>,
-        Ammar Faizi <ammarfaizi2@gmail.com>
-Subject: [RFC PATCH v4 3/3] io_uring: Add `sendto(2)` and `recvfrom(2)` support
-Date:   Fri,  7 Jan 2022 07:00:05 +0700
-Message-Id: <20220107000006.1194026-4-ammarfaizi2@gnuweeb.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220107000006.1194026-1-ammarfaizi2@gnuweeb.org>
-References: <20220107000006.1194026-1-ammarfaizi2@gnuweeb.org>
+        id S1343949AbiAGAUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 19:20:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51178 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343531AbiAGAUR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 19:20:17 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965EBC061245;
+        Thu,  6 Jan 2022 16:20:17 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id p14so3636625plf.3;
+        Thu, 06 Jan 2022 16:20:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Fj9kX4cP4lXIzAUcHvTSQq+2gUiSFponYUkO/x8lnjw=;
+        b=UnE0aozBfaeQomCHtjaN7v7Yx2D4xqEwHcCYiqp4MT44aEusmUxKsmm9iPLyEKJJmW
+         6/jp4Kzvmu7ZiijqFGhrPSeNU4KlsgPp0MOpEDe3r7U9QJ7XfMZGJ4AbR3Au0VNqTWs/
+         IchQHJY5m8vFvavDJ/9PNNyiSxxUmb/aJJWeHUO/SpKjCTadpF+Lt1hMUqLcbgGSOj1R
+         jhx6U5mFE+8gis4mWuTTRFZltykwD0bB5ZuTELqW2w3vNNlOzaOYMCUzX8lyjAQpFC02
+         OCQOhF56cplnkWp+9G+ZvWdBNPknYCdDOGQRjSi9jAxwAG+IIpu5VHR19GHNJImJXm6k
+         5Xsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Fj9kX4cP4lXIzAUcHvTSQq+2gUiSFponYUkO/x8lnjw=;
+        b=dUeOW8yxPZb1MuyI0uQ7V5YEIdbujs7/dQoj8oeFKX0bt7PTZnSDc34Z8YJoYXPH02
+         Pww/bBhGziJl4IqWGseX66JDh38EVDzenDrzLze0yMF+kIpVSavT5wEm5Xt+HtIorDbo
+         QIRsGlUWMnsb0whvThkR3Vtkd074B6b2WE//F9pP96cHGJvLPpmezMdvqbumLXVsvKMz
+         VUh99wzBA0jWZkM2O1Cfbc4uEYdUO2Ut+Jrt27R8f8l+NphHAtJQPd3C56P+Kg43Y4eU
+         TRyLgcVo5t6lifG14gBMBtehk4c+TfrhEiHZq7Y8UU5EIt6rEgZqmCNysoI97pn3Sray
+         4DtQ==
+X-Gm-Message-State: AOAM531lzG6AzQ5j9Ohp7PcRtCY9Hc4ELU5puEHUrqHYlujz/baTX/ZK
+        4WAx/Y13dRspITxsTqectpr/sR50ZB4OgN7w5qU=
+X-Google-Smtp-Source: ABdhPJxbzLuwc2Ntd3uq6VipTXN3kSaA9q1s0yI8P2Jbc2VnoX2P1Ts//npiixSjvow9S7wGphrDiFUAdRbn7qz4Z0w=
+X-Received: by 2002:a17:90b:798:: with SMTP id l24mr12797709pjz.122.1641514817074;
+ Thu, 06 Jan 2022 16:20:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220104080943.113249-1-jolsa@kernel.org> <20220106002435.d73e4010c93462fbee9ef074@kernel.org>
+ <YdaoTuWjEeT33Zzm@krava> <20220106225943.87701fcc674202dc3e172289@kernel.org>
+ <CAADnVQLjjcsckQVqaSB8ODB4FKdVUt-PB9xyJ3FAa2GWGLbHgA@mail.gmail.com> <20220107085203.14f9c06e0537ea6b00779842@kernel.org>
+In-Reply-To: <20220107085203.14f9c06e0537ea6b00779842@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 6 Jan 2022 16:20:05 -0800
+Message-ID: <CAADnVQ+mZxxm=96pQ4ekV3rbjV=svPOKg3TG+K0396g+iMjTbA@mail.gmail.com>
+Subject: Re: [RFC 00/13] kprobe/bpf: Add support to attach multiple kprobes
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds sendto(2) and recvfrom(2) support for io_uring.
+On Thu, Jan 6, 2022 at 3:52 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+>
+> On Thu, 6 Jan 2022 09:40:17 -0800
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+>
+> > On Thu, Jan 6, 2022 at 5:59 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> > >
+> > > That seems to bind your mind. The program type is just a programing
+> > > 'model' of the bpf. You can choose the best implementation to provide
+> > > equal functionality. 'kprobe' in bpf is just a name that you call some
+> > > instrumentations which can probe kernel code.
+> >
+> > No. We're not going to call it "fprobe" or any other name.
+> > From bpf user's pov it's going to be "multi attach kprobe",
+> > because this is how everyone got to know kprobes.
+> > The 99% usage is at the beginning of the funcs.
+> > When users say "kprobe" they don't care how kernel attaches it.
+> > The func entry limitation for "multi attach kprobe" is a no-brainer.
+>
+> Agreed. I think I might mislead you. From the bpf user pov, it always be
+> shown as 'multi attached kprobes (but only for the function entry)'
+> the 'fprobe' is kernel internal API name.
+>
+> > And we need both "multi attach kprobe" and "multi attach kretprobe"
+> > at the same time. It's no go to implement one first and the other
+> > some time later.
+>
+> You can provide the interface to user space, but the kernel implementation
+> is optimized step by step. We can start it with using real multiple
+> kretprobes, and then, switch to 'fprobe' after integrating fgraph
+> callback. :)
 
-New opcodes:
-  IORING_OP_SENDTO
-  IORING_OP_RECVFROM
-
-Cc: Nugra <richiisei@gmail.com>
-Cc: Praveen Kumar <kpraveen.lkml@gmail.com>
-Link: https://github.com/axboe/liburing/issues/397
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
----
-
-v4:
-  - Rebase the work (sync with "for-next" branch in Jens' tree).
-
-  - Remove Tested-by tag from Nugra as this patch changes.
-
-  - (Address Praveen's comment) Zero `sendto_addr_len` and
-    `recvfrom_addr_len` on prep when the `req->opcode` is not
-    `IORING_OP_{SENDTO,RECVFROM}`.
-
-v3:
-  - Fix build error when CONFIG_NET is undefined should be done in
-    the first patch, not this patch.
-
-  - Add Tested-by tag from Nugra.
-
-v2:
-  - In `io_recvfrom()`, mark the error check of `move_addr_to_user()`
-    call as unlikely.
-
-  - Fix build error when CONFIG_NET is undefined.
-
-  - Added Nugra to CC list (tester).
-
----
----
- fs/io_uring.c                 | 82 +++++++++++++++++++++++++++++++++--
- include/uapi/linux/io_uring.h |  5 ++-
- 2 files changed, 82 insertions(+), 5 deletions(-)
-
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 5e45e4d6969c..3c85dd0d50b4 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -574,7 +574,15 @@ struct io_sr_msg {
- 	union {
- 		struct compat_msghdr __user	*umsg_compat;
- 		struct user_msghdr __user	*umsg;
--		void __user			*buf;
-+
-+		struct {
-+			void __user		*buf;
-+			struct sockaddr __user	*addr;
-+			union {
-+				int		sendto_addr_len;
-+				int __user	*recvfrom_addr_len;
-+			};
-+		};
- 	};
- 	int				msg_flags;
- 	int				bgid;
-@@ -1105,6 +1113,19 @@ static const struct io_op_def io_op_defs[] = {
- 	[IORING_OP_MKDIRAT] = {},
- 	[IORING_OP_SYMLINKAT] = {},
- 	[IORING_OP_LINKAT] = {},
-+	[IORING_OP_SENDTO] = {
-+		.needs_file		= 1,
-+		.unbound_nonreg_file	= 1,
-+		.pollout		= 1,
-+		.audit_skip		= 1,
-+	},
-+	[IORING_OP_RECVFROM] = {
-+		.needs_file		= 1,
-+		.unbound_nonreg_file	= 1,
-+		.pollin			= 1,
-+		.buffer_select		= 1,
-+		.audit_skip		= 1,
-+	},
- };
- 
- /* requests with any of those set should undergo io_disarm_next() */
-@@ -4890,12 +4911,25 @@ static int io_sendmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
- 		return -EINVAL;
- 
-+	/*
-+	 * For IORING_OP_SEND{,TO}, the assignment to @sr->umsg
-+	 * is equivalent to an assignment to @sr->buf.
-+	 */
- 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
-+
- 	sr->len = READ_ONCE(sqe->len);
- 	sr->msg_flags = READ_ONCE(sqe->msg_flags) | MSG_NOSIGNAL;
- 	if (sr->msg_flags & MSG_DONTWAIT)
- 		req->flags |= REQ_F_NOWAIT;
- 
-+	if (req->opcode == IORING_OP_SENDTO) {
-+		sr->addr = u64_to_user_ptr(READ_ONCE(sqe->addr2));
-+		sr->sendto_addr_len = READ_ONCE(sqe->addr3);
-+	} else {
-+		sr->addr = (struct sockaddr __user *) NULL;
-+		sr->sendto_addr_len = 0;
-+	}
-+
- #ifdef CONFIG_COMPAT
- 	if (req->ctx->compat)
- 		sr->msg_flags |= MSG_CMSG_COMPAT;
-@@ -4949,6 +4983,7 @@ static int io_sendmsg(struct io_kiocb *req, unsigned int issue_flags)
- 
- static int io_sendto(struct io_kiocb *req, unsigned int issue_flags)
- {
-+	struct sockaddr_storage address;
- 	struct io_sr_msg *sr = &req->sr_msg;
- 	struct msghdr msg;
- 	struct iovec iov;
-@@ -4965,10 +5000,20 @@ static int io_sendto(struct io_kiocb *req, unsigned int issue_flags)
- 	if (unlikely(ret))
- 		return ret;
- 
--	msg.msg_name = NULL;
-+
- 	msg.msg_control = NULL;
- 	msg.msg_controllen = 0;
--	msg.msg_namelen = 0;
-+	if (sr->addr) {
-+		ret = move_addr_to_kernel(sr->addr, sr->sendto_addr_len,
-+					  &address);
-+		if (unlikely(ret < 0))
-+			goto fail;
-+		msg.msg_name = (struct sockaddr *) &address;
-+		msg.msg_namelen = sr->sendto_addr_len;
-+	} else {
-+		msg.msg_name = NULL;
-+		msg.msg_namelen = 0;
-+	}
- 
- 	flags = req->sr_msg.msg_flags;
- 	if (issue_flags & IO_URING_F_NONBLOCK)
-@@ -4983,6 +5028,7 @@ static int io_sendto(struct io_kiocb *req, unsigned int issue_flags)
- 			return -EAGAIN;
- 		if (ret == -ERESTARTSYS)
- 			ret = -EINTR;
-+fail:
- 		req_set_fail(req);
- 	}
- 	__io_req_complete(req, issue_flags, ret, 0);
-@@ -5101,13 +5147,26 @@ static int io_recvmsg_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
- 		return -EINVAL;
- 
-+	/*
-+	 * For IORING_OP_RECV{,FROM}, the assignment to @sr->umsg
-+	 * is equivalent to an assignment to @sr->buf.
-+	 */
- 	sr->umsg = u64_to_user_ptr(READ_ONCE(sqe->addr));
-+
- 	sr->len = READ_ONCE(sqe->len);
- 	sr->bgid = READ_ONCE(sqe->buf_group);
- 	sr->msg_flags = READ_ONCE(sqe->msg_flags) | MSG_NOSIGNAL;
- 	if (sr->msg_flags & MSG_DONTWAIT)
- 		req->flags |= REQ_F_NOWAIT;
- 
-+	if (req->opcode == IORING_OP_RECVFROM) {
-+		sr->addr = u64_to_user_ptr(READ_ONCE(sqe->addr2));
-+		sr->recvfrom_addr_len = u64_to_user_ptr(READ_ONCE(sqe->addr3));
-+	} else {
-+		sr->addr = (struct sockaddr __user *) NULL;
-+		sr->recvfrom_addr_len = (int __user *) NULL;
-+	}
-+
- #ifdef CONFIG_COMPAT
- 	if (req->ctx->compat)
- 		sr->msg_flags |= MSG_CMSG_COMPAT;
-@@ -5183,6 +5242,7 @@ static int io_recvfrom(struct io_kiocb *req, unsigned int issue_flags)
- 	struct iovec iov;
- 	unsigned flags;
- 	int ret, min_ret = 0;
-+	struct sockaddr_storage address;
- 	bool force_nonblock = issue_flags & IO_URING_F_NONBLOCK;
- 
- 	sock = sock_from_file(req->file);
-@@ -5200,9 +5260,10 @@ static int io_recvfrom(struct io_kiocb *req, unsigned int issue_flags)
- 	if (unlikely(ret))
- 		goto out_free;
- 
--	msg.msg_name = NULL;
-+	msg.msg_name = sr->addr ? (struct sockaddr *) &address : NULL;
- 	msg.msg_control = NULL;
- 	msg.msg_controllen = 0;
-+	/* We assume all kernel code knows the size of sockaddr_storage */
- 	msg.msg_namelen = 0;
- 	msg.msg_iocb = NULL;
- 	msg.msg_flags = 0;
-@@ -5214,6 +5275,15 @@ static int io_recvfrom(struct io_kiocb *req, unsigned int issue_flags)
- 		min_ret = iov_iter_count(&msg.msg_iter);
- 
- 	ret = sock_recvmsg(sock, &msg, flags);
-+	if (ret >= 0 && sr->addr != NULL) {
-+		int tmp;
-+
-+		tmp = move_addr_to_user(&address, msg.msg_namelen, sr->addr,
-+					sr->recvfrom_addr_len);
-+		if (unlikely(tmp < 0))
-+			ret = tmp;
-+	}
-+
- out_free:
- 	if (ret < min_ret) {
- 		if (ret == -EAGAIN && force_nonblock)
-@@ -6452,9 +6522,11 @@ static int io_req_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 	case IORING_OP_SYNC_FILE_RANGE:
- 		return io_sfr_prep(req, sqe);
- 	case IORING_OP_SENDMSG:
-+	case IORING_OP_SENDTO:
- 	case IORING_OP_SEND:
- 		return io_sendmsg_prep(req, sqe);
- 	case IORING_OP_RECVMSG:
-+	case IORING_OP_RECVFROM:
- 	case IORING_OP_RECV:
- 		return io_recvmsg_prep(req, sqe);
- 	case IORING_OP_CONNECT:
-@@ -6709,12 +6781,14 @@ static int io_issue_sqe(struct io_kiocb *req, unsigned int issue_flags)
- 	case IORING_OP_SENDMSG:
- 		ret = io_sendmsg(req, issue_flags);
- 		break;
-+	case IORING_OP_SENDTO:
- 	case IORING_OP_SEND:
- 		ret = io_sendto(req, issue_flags);
- 		break;
- 	case IORING_OP_RECVMSG:
- 		ret = io_recvmsg(req, issue_flags);
- 		break;
-+	case IORING_OP_RECVFROM:
- 	case IORING_OP_RECV:
- 		ret = io_recvfrom(req, issue_flags);
- 		break;
-diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
-index 787f491f0d2a..a58cde19b4d0 100644
---- a/include/uapi/linux/io_uring.h
-+++ b/include/uapi/linux/io_uring.h
-@@ -60,7 +60,8 @@ struct io_uring_sqe {
- 		__s32	splice_fd_in;
- 		__u32	file_index;
- 	};
--	__u64	__pad2[2];
-+	__u64	addr3;
-+	__u64	__pad2[1];
- };
- 
- enum {
-@@ -143,6 +144,8 @@ enum {
- 	IORING_OP_MKDIRAT,
- 	IORING_OP_SYMLINKAT,
- 	IORING_OP_LINKAT,
-+	IORING_OP_SENDTO,
-+	IORING_OP_RECVFROM,
- 
- 	/* this goes last, obviously */
- 	IORING_OP_LAST,
--- 
-2.32.0
-
+Sounds good to me.
+My point was that users often want to say:
+"profile speed of all foo* functions".
+To perform such a command a tracer would need to
+attach kprobes and kretprobes to all such functions.
+The speed of attach/detach has to be fast.
+Currently tracers artificially limit the regex just because
+attach/detach is so slow that the user will likely Ctrl-C
+instead of waiting for many seconds.
