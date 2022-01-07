@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 945BC487DA7
+	by mail.lfdr.de (Postfix) with ESMTP id 8AFFF487DA6
 	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 21:24:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232004AbiAGUYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S229483AbiAGUYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 7 Jan 2022 15:24:15 -0500
-Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:64474 "EHLO
-        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231768AbiAGUYM (ORCPT
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:34248 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231593AbiAGUYM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 15:24:12 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1641587052; x=1673123052;
+  t=1641587053; x=1673123053;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=e8Yfpadsq7cE43YxN+B35wGf6KwogATbBFfM1BD0lC0=;
-  b=oPllqHjVfnk3Zp4CLwYn59+GwN6VSHi3MMeCqHsAEIKuEAv9JpfktkaT
-   NigU4+L64gF4rVXe1RmFoRZew8Ou2NawCrlIobBT4wx3HOKGQcK/scTa2
-   zNRGWCHVmLjk0OQP6wBnmnXep04+PuQLHPbDFcqbdCxInLYj6ac4om4OC
-   8=;
+  bh=sAyHvla/aXjJhTtL+MMGA2aWsmcLF6uz73KMCxr+xcw=;
+  b=op+5j4FQHn0kd+iUVstK/kFGeXTNzZdCWj2e0sEtzyOz/8wW+V1gabbI
+   pZVyOyGxGtHtLiQrMYUgWZhzBu7iIgVtt1FFYq2bzQ4AqsCq3Op9y18bJ
+   bhVCyMuIfSjXt8gwXg1tZTrXbfbkG+PtZB1UIfkia2PUUh/3KJd7gXchL
+   c=;
 X-IronPort-AV: E=Sophos;i="5.88,270,1635206400"; 
-   d="scan'208";a="53547270"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-5a6d5c37.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 07 Jan 2022 20:24:05 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1d-5a6d5c37.us-east-1.amazon.com (Postfix) with ESMTPS id 6B6FFC090C;
-        Fri,  7 Jan 2022 20:24:04 +0000 (UTC)
-Received: from EX13D08UEE003.ant.amazon.com (10.43.62.118) by
+   d="scan'208";a="185624904"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-0168675e.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 07 Jan 2022 20:24:12 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1e-0168675e.us-east-1.amazon.com (Postfix) with ESMTPS id 1B04BA2727;
+        Fri,  7 Jan 2022 20:24:10 +0000 (UTC)
+Received: from EX13D08UEE001.ant.amazon.com (10.43.62.126) by
  EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Fri, 7 Jan 2022 20:23:56 +0000
+ id 15.0.1497.26; Fri, 7 Jan 2022 20:23:59 +0000
 Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
- EX13D08UEE003.ant.amazon.com (10.43.62.118) with Microsoft SMTP Server (TLS)
- id 15.0.1497.26; Fri, 7 Jan 2022 20:23:56 +0000
+ EX13D08UEE001.ant.amazon.com (10.43.62.126) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.26; Fri, 7 Jan 2022 20:23:59 +0000
 Received: from dev-dsk-akiyano-1c-2138b29d.eu-west-1.amazon.com (172.19.83.6)
  by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP Server id
- 15.0.1497.26 via Frontend Transport; Fri, 7 Jan 2022 20:23:54 +0000
+ 15.0.1497.26 via Frontend Transport; Fri, 7 Jan 2022 20:23:57 +0000
 From:   Arthur Kiyanovski <akiyano@amazon.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
@@ -54,9 +54,9 @@ CC:     Arthur Kiyanovski <akiyano@amazon.com>,
         "Dagan, Noam" <ndagan@amazon.com>,
         "Agroskin, Shay" <shayagr@amazon.com>,
         "Arinzon, David" <darinzon@amazon.com>
-Subject: [PATCH V2 net-next 02/10] net: ena: Add capabilities field with support for ENI stats capability
-Date:   Fri, 7 Jan 2022 20:23:38 +0000
-Message-ID: <20220107202346.3522-3-akiyano@amazon.com>
+Subject: [PATCH V2 net-next 03/10] net: ena: Change ENI stats support check to use capabilities field
+Date:   Fri, 7 Jan 2022 20:23:39 +0000
+Message-ID: <20220107202346.3522-4-akiyano@amazon.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220107202346.3522-1-akiyano@amazon.com>
 References: <20220107202346.3522-1-akiyano@amazon.com>
@@ -67,124 +67,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This bitmask field indicates what capabilities are supported by the
-device.
+Use the capabilities field to query the device for ENI stats
+support.
 
-The capabilities field differs from the 'supported_features' field which
-indicates what sub-commands for the set/get feature commands are
-supported. The sub-commands are specified in the 'feature_id' field of
-the 'ena_admin_set_feat_cmd' struct in the following way:
+This replaces the previous method that tried to get the ENI stats
+during ena_probe() and used the success or failure as an indication
+for support by the device.
 
-        struct ena_admin_set_feat_cmd cmd;
+Remove eni_stats_supported field from struct ena_adapter. This field
+was used for the previous method of queriying for ENI stats support.
 
-        cmd.aq_common_descriptor.opcode = ENA_ADMIN_SET_FEATURE;
-        cmd.feat_common.feature_
-
-The 'capabilities' field, on the other hand, specifies different
-capabilities of the device. For example, whether the device supports
-querying of ENI stats.
-
-Also add an enumerator which contains all the capabilities. The
-first added capability macro is for ENI stats feature.
-
-Capabilities are queried along with the other device attributes (in
-ena_com_get_dev_attr_feat()) during device initialization and are stored
-in the ena_com_dev struct. They can be later queried using the
-ena_com_get_cap() helper function.
+Change the severity level of the print in case of
+ena_com_get_eni_stats() failure from info to error.
+With the previous method of querying form ENI stats support, failure
+to get ENI stats was normal for devices that don't support it.
+With the use of the capabilities field such a failure is unexpected,
+as it is called only if the device reported that it supports ENI
+stats.
 
 Signed-off-by: Shay Agroskin <shayagr@amazon.com>
 Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_admin_defs.h | 10 +++++++++-
- drivers/net/ethernet/amazon/ena/ena_com.c        |  8 ++++++++
- drivers/net/ethernet/amazon/ena/ena_com.h        | 13 +++++++++++++
- 3 files changed, 30 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c | 13 ++++++++-----
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |  9 ++-------
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |  1 -
+ 3 files changed, 10 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-index f5ec35fa4c63..466ad9470d1f 100644
---- a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-@@ -48,6 +48,11 @@ enum ena_admin_aq_feature_id {
- 	ENA_ADMIN_FEATURES_OPCODE_NUM               = 32,
- };
+diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+index 6b9b43e422c1..c09e1b37048e 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
++++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+@@ -110,8 +110,7 @@ static const struct ena_stats ena_stats_ena_com_strings[] = {
+ #define ENA_STATS_ARRAY_TX		ARRAY_SIZE(ena_stats_tx_strings)
+ #define ENA_STATS_ARRAY_RX		ARRAY_SIZE(ena_stats_rx_strings)
+ #define ENA_STATS_ARRAY_ENA_COM		ARRAY_SIZE(ena_stats_ena_com_strings)
+-#define ENA_STATS_ARRAY_ENI(adapter)	\
+-	(ARRAY_SIZE(ena_stats_eni_strings) * (adapter)->eni_stats_supported)
++#define ENA_STATS_ARRAY_ENI(adapter)	ARRAY_SIZE(ena_stats_eni_strings)
  
-+/* device capabilities */
-+enum ena_admin_aq_caps_id {
-+	ENA_ADMIN_ENI_STATS                         = 0,
-+};
-+
- enum ena_admin_placement_policy_type {
- 	/* descriptors and headers are in host memory */
- 	ENA_ADMIN_PLACEMENT_POLICY_HOST             = 1,
-@@ -455,7 +460,10 @@ struct ena_admin_device_attr_feature_desc {
- 	 */
- 	u32 supported_features;
+ static void ena_safe_update_stat(u64 *src, u64 *dst,
+ 				 struct u64_stats_sync *syncp)
+@@ -213,8 +212,9 @@ static void ena_get_ethtool_stats(struct net_device *netdev,
+ 				  u64 *data)
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
++	struct ena_com_dev *dev = adapter->ena_dev;
  
--	u32 reserved3;
-+	/* bitmap of ena_admin_aq_caps_id, which represents device
-+	 * capabilities.
-+	 */
-+	u32 capabilities;
- 
- 	/* Indicates how many bits are used physical address access. */
- 	u32 phys_addr_width;
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index ab413fc1f68e..8c8b4c88c7de 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -1971,6 +1971,7 @@ int ena_com_get_dev_attr_feat(struct ena_com_dev *ena_dev,
- 	       sizeof(get_resp.u.dev_attr));
- 
- 	ena_dev->supported_features = get_resp.u.dev_attr.supported_features;
-+	ena_dev->capabilities = get_resp.u.dev_attr.capabilities;
- 
- 	if (ena_dev->supported_features & BIT(ENA_ADMIN_MAX_QUEUES_EXT)) {
- 		rc = ena_com_get_feature(ena_dev, &get_resp,
-@@ -2223,6 +2224,13 @@ int ena_com_get_eni_stats(struct ena_com_dev *ena_dev,
- 	struct ena_com_stats_ctx ctx;
- 	int ret;
- 
-+	if (!ena_com_get_cap(ena_dev, ENA_ADMIN_ENI_STATS)) {
-+		netdev_err(ena_dev->net_device,
-+			   "Capability %d isn't supported\n",
-+			   ENA_ADMIN_ENI_STATS);
-+		return -EOPNOTSUPP;
-+	}
-+
- 	memset(&ctx, 0x0, sizeof(ctx));
- 	ret = ena_get_dev_stats(ena_dev, &ctx, ENA_ADMIN_GET_STATS_TYPE_ENI);
- 	if (likely(ret == 0))
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.h b/drivers/net/ethernet/amazon/ena/ena_com.h
-index 73b03ce59412..3c5081d9d25d 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.h
-@@ -314,6 +314,7 @@ struct ena_com_dev {
- 
- 	struct ena_rss rss;
- 	u32 supported_features;
-+	u32 capabilities;
- 	u32 dma_addr_bits;
- 
- 	struct ena_host_attribute host_attr;
-@@ -967,6 +968,18 @@ static inline void ena_com_disable_adaptive_moderation(struct ena_com_dev *ena_d
- 	ena_dev->adaptive_coalescing = false;
+-	ena_get_stats(adapter, data, adapter->eni_stats_supported);
++	ena_get_stats(adapter, data, ena_com_get_cap(dev, ENA_ADMIN_ENI_STATS));
  }
  
-+/* ena_com_get_cap - query whether device supports a capability.
-+ * @ena_dev: ENA communication layer struct
-+ * @cap_id: enum value representing the capability
-+ *
-+ * @return - true if capability is supported or false otherwise
-+ */
-+static inline bool ena_com_get_cap(struct ena_com_dev *ena_dev,
-+				   enum ena_admin_aq_caps_id cap_id)
-+{
-+	return !!(ena_dev->capabilities & BIT(cap_id));
-+}
+ static int ena_get_sw_stats_count(struct ena_adapter *adapter)
+@@ -226,7 +226,9 @@ static int ena_get_sw_stats_count(struct ena_adapter *adapter)
+ 
+ static int ena_get_hw_stats_count(struct ena_adapter *adapter)
+ {
+-	return ENA_STATS_ARRAY_ENI(adapter);
++	bool supported = ena_com_get_cap(adapter->ena_dev, ENA_ADMIN_ENI_STATS);
 +
- /* ena_com_update_intr_reg - Prepare interrupt register
-  * @intr_reg: interrupt register to update.
-  * @rx_delay_interval: Rx interval in usecs
++	return ENA_STATS_ARRAY_ENI(adapter) * supported;
+ }
+ 
+ int ena_get_sset_count(struct net_device *netdev, int sset)
+@@ -316,10 +318,11 @@ static void ena_get_ethtool_strings(struct net_device *netdev,
+ 				    u8 *data)
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
++	struct ena_com_dev *dev = adapter->ena_dev;
+ 
+ 	switch (sset) {
+ 	case ETH_SS_STATS:
+-		ena_get_strings(adapter, data, adapter->eni_stats_supported);
++		ena_get_strings(adapter, data, ena_com_get_cap(dev, ENA_ADMIN_ENI_STATS));
+ 		break;
+ 	}
+ }
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 78770984ec95..f0fbecb8019f 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -3253,11 +3253,11 @@ static void ena_config_debug_area(struct ena_adapter *adapter)
+ 
+ int ena_update_hw_stats(struct ena_adapter *adapter)
+ {
+-	int rc = 0;
++	int rc;
+ 
+ 	rc = ena_com_get_eni_stats(adapter->ena_dev, &adapter->eni_stats);
+ 	if (rc) {
+-		dev_info_once(&adapter->pdev->dev, "Failed to get ENI stats\n");
++		netdev_err(adapter->netdev, "Failed to get ENI stats\n");
+ 		return rc;
+ 	}
+ 
+@@ -4385,11 +4385,6 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	ena_config_debug_area(adapter);
+ 
+-	if (!ena_update_hw_stats(adapter))
+-		adapter->eni_stats_supported = true;
+-	else
+-		adapter->eni_stats_supported = false;
+-
+ 	memcpy(adapter->netdev->perm_addr, adapter->mac_addr, netdev->addr_len);
+ 
+ 	netif_carrier_off(netdev);
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+index 9391c7101fba..f70f1242e5b5 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+@@ -379,7 +379,6 @@ struct ena_adapter {
+ 	struct u64_stats_sync syncp;
+ 	struct ena_stats_dev dev_stats;
+ 	struct ena_admin_eni_stats eni_stats;
+-	bool eni_stats_supported;
+ 
+ 	/* last queue index that was checked for uncompleted tx packets */
+ 	u32 last_monitored_tx_qid;
 -- 
 2.32.0
 
