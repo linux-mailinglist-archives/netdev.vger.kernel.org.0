@@ -2,66 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EB2D487D48
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 20:48:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43294487D5F
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 20:57:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233343AbiAGTsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 14:48:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
+        id S233622AbiAGT5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 14:57:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232248AbiAGTsc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 14:48:32 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3FD2C061574
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 11:48:32 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id r14-20020a17090b050e00b001b3548a4250so4417683pjz.2
-        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 11:48:32 -0800 (PST)
+        with ESMTP id S231377AbiAGT5W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 14:57:22 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFCDC061574
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 11:57:22 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id s15so5991296pfk.6
+        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 11:57:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6eHOFenkayzoQogd1jCo62afpEjlKLE5y+yEBwP2OTg=;
-        b=QDpgcA66qlRc2QAYGsBAJbYGb7qvLbql24noQEvl/cv8d8Inb9BkXWK4mukiQ2hJOm
-         wrh3RQj8KiF7sAW3fngB72RrlQp6N7Q1T9bjpgo4nw1rVWsSzisCs5lZldXqAQ8OwEdX
-         2+CCU4FOlOtlix6S/MrsPiLH6zRv8atPbeSHqM1PMJLxCdft2fgC982RjxsVLCti5TkN
-         xwyEuBy4o7651BDTaYs5I2zhaNgPFEeVubvB7ix6N3yNBBhy3AJushzFCNXY3lu+l0q+
-         uaTc3kgiJjcTGXesNnBtdDKcaI+k8NxzmJ9pePCwXkQpnzv7rXYeoPcAbakakia1O8x+
-         XM3A==
+        bh=sf34ZwHCQIjrCE06P9c8pyJ/yb4QzwMo6kkRSe6E0zk=;
+        b=XrdRZamG2PGefz1mv7LfwY+9Zv3KZctx+/CtLcfMzSjGZFE73T0sYu4XQCObOptfsk
+         gZjuzprQleVCrb9rwuMKGSSyu0il/tVjGXkTRe165Qq8c4Xb4wogHjVCPrc+fAkB4ZeE
+         YofsyqYTi6IBUnic3SKpa4peKLvUpTKAzvbnA6H5KTBT7QQbkF1Rxy1BaALobTRcgCaE
+         fZ+Ba9UimF3c0M4k8jU91pPm9Fc7ZhGFeGVY/fTXU5hl1R5SODimJsQgQYYxnZM2C/if
+         JaYcdkStEBtuaZeNcErKZUIP7mjiR2hlKiwdAq9EMSKOnDVpJ8HBd8mRoXfT9azAH+xC
+         Lr9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=6eHOFenkayzoQogd1jCo62afpEjlKLE5y+yEBwP2OTg=;
-        b=FmLAw3auJHjELVt/6zsLyufWM+4R4nHA3jRO4xpBXib6EQUFCELkEEgtZIYcvbodrf
-         jWdIWdJuo4VYj6dmZR3FpeSboX4p0tiZWMNJDscm7BQu2Y88vaSF1YsEgqX1tUb4M7Oh
-         W+i6meJyst7NP2xVu7WOWAnBNtZ+eVqmKqPDb8uMUxq2A7RS2PneCgWOW2CIzk5S+w0r
-         tWLGY4BpRS6crlGUlbEEO2TbZpYfxTGHfiS6Xs852oUa9DZOLduu2PL0dVW+lqqAvKgY
-         LpVoDlnXhHyTmrHiczUjeI2cHe/xZqHWlIDGldM9DUwHDtiJHOjp0kKKq1yEGvDUVtS9
-         O0dg==
-X-Gm-Message-State: AOAM53314hjl11hjzFxTE9rOQnEuHX2leniJfZdXMRcoc8zD36Y8uQO6
-        5ZPljWtN9tn3EbzQUbztyok=
-X-Google-Smtp-Source: ABdhPJxEnsO3v8xnN/w6SdC4g+UYsseDoi5pklzJaqJu+naverlHeYixOgBOzGdqo9W+M1jro7EvBg==
-X-Received: by 2002:a17:90b:3ece:: with SMTP id rm14mr17404209pjb.6.1641584912222;
-        Fri, 07 Jan 2022 11:48:32 -0800 (PST)
+        bh=sf34ZwHCQIjrCE06P9c8pyJ/yb4QzwMo6kkRSe6E0zk=;
+        b=JD5SLzo9P7Tt3HUOYiZPhAzqroZ6PEUrHTIDplAUiOdg7sILdjbsChBU3SKYLyIqa3
+         FdRK+1nkdvYXtMClEpBR2f56LD6E2ZxK/6/lNK9hxV938z6QEPsHfUAandWeAbbh/GSn
+         cnGgwvkhQxrmuGngkzMfMyPUSgtynGKWPOqYwBNFoTHpvlKMNLTBDcDvULOK5uKmdy7H
+         tPS/weuagFHB2UEZOHje294bORhUXEnqSuT+ZNMPpHVYmXTCmZS5K1/lbMJEpy7ya4EA
+         hEpEO9Ud+ZTI6xCXDAOL+aKRjSEb+lIGm0eW2TsSJotXJkd8J44jcvu1r3QqteMHZYrW
+         Zjrg==
+X-Gm-Message-State: AOAM531NJzvpOd6OcIahKxxPdAuCHXApONaWJZjGCWt58/vZ+Xoyn2tn
+        iuOpcOzW3XyWZhDOf9+H6Ug=
+X-Google-Smtp-Source: ABdhPJyLA78OG0g8sRYkCjayE0YwiSQ+U5KKhKc7EK8XLfI7Bh7lJnAaCX2KDzSZ5yaaB/rKmrsKmw==
+X-Received: by 2002:a63:87c6:: with SMTP id i189mr58885509pge.172.1641585442303;
+        Fri, 07 Jan 2022 11:57:22 -0800 (PST)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id d13sm6940818pfl.18.2022.01.07.11.48.31
+        by smtp.googlemail.com with ESMTPSA id j14sm6955555pfu.15.2022.01.07.11.57.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Jan 2022 11:48:31 -0800 (PST)
-Subject: Re: [RFC PATCH net-next 1/2] net: dsa: remove ndo_get_phys_port_name
- and ndo_get_port_parent_id
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>
+        Fri, 07 Jan 2022 11:57:21 -0800 (PST)
+Subject: Re: [RFC PATCH net-next 2/2] net: dsa: remove lockdep class for DSA
+ master address list
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
 References: <20220107184842.550334-1-vladimir.oltean@nxp.com>
- <20220107184842.550334-2-vladimir.oltean@nxp.com> <YdiWYydfY8flreN4@lunn.ch>
+ <20220107184842.550334-3-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <abc74eaa-dd76-a022-d09d-3845e7e9c7d2@gmail.com>
-Date:   Fri, 7 Jan 2022 11:48:30 -0800
+Message-ID: <acf49d7b-c502-5b78-dcca-82878e1c4f15@gmail.com>
+Date:   Fri, 7 Jan 2022 11:57:19 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <YdiWYydfY8flreN4@lunn.ch>
+In-Reply-To: <20220107184842.550334-3-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -69,23 +70,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/22 11:37 AM, Andrew Lunn wrote:
-> On Fri, Jan 07, 2022 at 08:48:41PM +0200, Vladimir Oltean wrote:
->> There are no legacy ports, DSA registers a devlink instance with ports
->> unconditionally for all switch drivers. Therefore, delete the old-style
->> ndo operations used for determining bridge forwarding domains.
->>
->> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 1/7/22 10:48 AM, Vladimir Oltean wrote:
+> Since commit 2f1e8ea726e9 ("net: dsa: link interfaces with the DSA
+> master to get rid of lockdep warnings"), suggested by Cong Wang, the
+> DSA interfaces and their master have different dev->nested_level, which
+> makes netif_addr_lock() stop complaining about potentially recursive
+> locking on the same lock class.
 > 
-> Hi Vladimir
+> So we no longer need DSA masters to have their own lockdep class.
 > 
-> Maybe ask Ido or Jiri to review this? But none of the Mellanox drivers
-> use use these ndo's, suggesting it is correct.
-
-I confirmed that /sys/class/net/*/phys_port_name continues to work
-before and after this patch, so:
+> Cc: Cong Wang <xiyou.wangcong@gmail.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
