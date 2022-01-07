@@ -2,109 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E4A7487C72
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 19:51:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F596487C75
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 19:52:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230343AbiAGSvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 13:51:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47480 "EHLO
+        id S230369AbiAGSv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 13:51:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230029AbiAGSvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 13:51:08 -0500
+        with ESMTP id S230029AbiAGSv7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 13:51:59 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2896C061574
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 10:51:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2128BC061574;
+        Fri,  7 Jan 2022 10:51:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C85861F60
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 18:51:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F45EC36AED;
-        Fri,  7 Jan 2022 18:51:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4F1B61F60;
+        Fri,  7 Jan 2022 18:51:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A78EC36AEF;
+        Fri,  7 Jan 2022 18:51:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641581467;
-        bh=uMg4ob9eDBa3FX/wyPGEJDMssaanifdwmWZn7+oXhp8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CmzgHKVEJn4lCr2PvxtNBNlAA9Rz0tU50LVVfg/nCf6bc0T1q5mtTFMJwuT3toBvx
-         7TkxFPYPZf50mXdDO+OENwKguX4SeCri5N0QEQvkTUJDhrQHDu4IIGPIZ1upTxLPZe
-         xWhFpiCFovIT90twyy5S200IelebZWvqdlaeGveXAsOoSgwE5biyZdqZ2lLNz6V4Bg
-         1JgpsGX1vvNmGKdhpmaFJucanJnuSRB/W89U4Abp2kYVT/4a4rNd2bVXWQF4i01PSH
-         Ayhcz0Vvn45OT7mZIta0FvUjaF0YNKkLAEiS7s/sc8075FfJ9FkxO/Peerx/RaLAzk
-         64DO0jteZtaaQ==
-Date:   Fri, 7 Jan 2022 10:51:06 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Gal Pressman <gal@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [RFC PATCH] net/tls: Fix skb memory leak when running kTLS
- traffic
-Message-ID: <20220107105106.680cd28f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220102081253.9123-1-gal@nvidia.com>
-References: <20220102081253.9123-1-gal@nvidia.com>
+        s=k20201202; t=1641581518;
+        bh=VC42HmZeAm565z2JaDi81GUTXInUDnQH6O8dfuXC23M=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=GyTAHfCapdDkce4Cm4/fM1otNHhtKFegAjYpegu3hp9YKi7xS6LZ7J6f9NLUcMYYZ
+         /j6MkEcRtBgf19flOEotXxzjRN8VySn7KhaEfGTQgIw9bhm7eVxvk2nrx0ztblN9sd
+         LsHieHPVei3mvf4MOQ4GFQvkYC8O0sdDmOlxEP+7a0OKM2SHrie3XyzOKl+IozIfhX
+         jiobwzzE8HklEFzbGUlMltsc2tQNqAVyl+77DwwuAf88vNxv+6wwBRmwlGYnQv4Gjp
+         f24IErHplDPq8QwZw5B/g4eCMlLm/qPVv1V70nzLNZycmjfm6dJvzLcK6TkvLvBCVH
+         zbFFMptYZR+Eg==
+Received: by mail-yb1-f169.google.com with SMTP id c6so17257627ybk.3;
+        Fri, 07 Jan 2022 10:51:58 -0800 (PST)
+X-Gm-Message-State: AOAM530JRIroK52LzzpWrWijPpLC8lkmNyUK/q+MbTjf2x6JmzLdXeve
+        n+2Eiy0wfkUnxG4ZmOvF6MdnI7Qp6b5EBigRogM=
+X-Google-Smtp-Source: ABdhPJzxOhjqBFaCxuGyDDeN84E+5W6O4yaUYFeDhsxidy0v5B+nspI4jqOvF4gUGU2UUThlfu/kphBWMg1fQMBZvVI=
+X-Received: by 2002:a25:8b85:: with SMTP id j5mr74750303ybl.558.1641581517327;
+ Fri, 07 Jan 2022 10:51:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220107152620.192327-1-mauricio@kinvolk.io> <20220107152620.192327-2-mauricio@kinvolk.io>
+In-Reply-To: <20220107152620.192327-2-mauricio@kinvolk.io>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 7 Jan 2022 10:51:46 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5rmuGqN5LYzjQ6fTv0nsyGeMLqv8-4RsSZU-x62Vr-UQ@mail.gmail.com>
+Message-ID: <CAPhsuW5rmuGqN5LYzjQ6fTv0nsyGeMLqv8-4RsSZU-x62Vr-UQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] bpftool: Fix error check when calling hashmap__new()
+To:     =?UTF-8?Q?Mauricio_V=C3=A1squez?= <mauricio@kinvolk.io>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2 Jan 2022 10:12:53 +0200 Gal Pressman wrote:
-> The cited Fixes commit introduced a memory leak when running kTLS
-> traffic (with/without hardware offloads).
-> I'm running nginx on the server side and wrk on the client side and get
-> the following:
-> 
->   unreferenced object 0xffff8881935e9b80 (size 224):
->   comm "softirq", pid 0, jiffies 4294903611 (age 43.204s)
->   hex dump (first 32 bytes):
->     80 9b d0 36 81 88 ff ff 00 00 00 00 00 00 00 00  ...6............
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<00000000efe2a999>] build_skb+0x1f/0x170
->     [<00000000ef521785>] mlx5e_skb_from_cqe_mpwrq_linear+0x2bc/0x610 [mlx5_core]
->     [<00000000945d0ffe>] mlx5e_handle_rx_cqe_mpwrq+0x264/0x9e0 [mlx5_core]
->     [<00000000cb675b06>] mlx5e_poll_rx_cq+0x3ad/0x17a0 [mlx5_core]
->     [<0000000018aac6a9>] mlx5e_napi_poll+0x28c/0x1b60 [mlx5_core]
->     [<000000001f3369d1>] __napi_poll+0x9f/0x560
->     [<00000000cfa11f72>] net_rx_action+0x357/0xa60
->     [<000000008653b8d7>] __do_softirq+0x282/0x94e
->     [<00000000644923c6>] __irq_exit_rcu+0x11f/0x170
->     [<00000000d4085f8f>] irq_exit_rcu+0xa/0x20
->     [<00000000d412fef4>] common_interrupt+0x7d/0xa0
->     [<00000000bfb0cebc>] asm_common_interrupt+0x1e/0x40
->     [<00000000d80d0890>] default_idle+0x53/0x70
->     [<00000000f2b9780e>] default_idle_call+0x8c/0xd0
->     [<00000000c7659e15>] do_idle+0x394/0x450
-> 
-> I'm not familiar with these areas of the code, but I've added this
-> sk_defer_free_flush() to tls_sw_recvmsg() based on a hunch and it
-> resolved the issue.
-> 
-> Eric, do you think this is the correct fix? Maybe we're missing a call
-> to sk_defer_free_flush() in other places as well?
+On Fri, Jan 7, 2022 at 7:26 AM Mauricio V=C3=A1squez <mauricio@kinvolk.io> =
+wrote:
+>
+> hashmap__new() encodes errors with ERR_PTR(), hence it's not valid to
+> check the returned pointer against NULL and IS_ERR() has to be used
+> instead.
+>
+> libbpf_get_error() can't be used in this case as hashmap__new() is not
+> part of the public libbpf API and it'll continue using ERR_PTR() after
+> libbpf 1.0.
+>
+> Fixes: 8f184732b60b ("bpftool: Switch to libbpf's hashmap for pinned path=
+s of BPF objects")
+> Fixes: 2828d0d75b73 ("bpftool: Switch to libbpf's hashmap for programs/ma=
+ps in BTF listing")
+> Fixes: d6699f8e0f83 ("bpftool: Switch to libbpf's hashmap for PIDs/names =
+references")
+>
+> Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
 
-Any thoughts, Eric? Since the merge window is coming soon should 
-we purge the defer free queue when socket is destroyed at least?
-All the .read_sock callers will otherwise risk the leaks, it seems.
-
-> Fixes: f35f821935d8 ("tcp: defer skb freeing after socket lock is released")
-> Signed-off-by: Gal Pressman <gal@nvidia.com>
-> ---
->  net/tls/tls_sw.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-> index 3f271e29812f..95e774f1b91f 100644
-> --- a/net/tls/tls_sw.c
-> +++ b/net/tls/tls_sw.c
-> @@ -1990,6 +1990,7 @@ int tls_sw_recvmsg(struct sock *sk,
->  
->  end:
->  	release_sock(sk);
-> +	sk_defer_free_flush(sk);
->  	if (psock)
->  		sk_psock_put(sk, psock);
->  	return copied ? : err;
-
+Acked-by: Song Liu <songliubraving@fb.com>
