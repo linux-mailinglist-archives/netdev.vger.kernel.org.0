@@ -2,154 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA0BC4879A2
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 16:20:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB7944879AA
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 16:26:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348062AbiAGPUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 10:20:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56114 "EHLO
+        id S232822AbiAGP03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 10:26:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239633AbiAGPUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 10:20:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2954EC06173F;
-        Fri,  7 Jan 2022 07:20:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E322EB8265E;
-        Fri,  7 Jan 2022 15:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 696EBC36AF5;
-        Fri,  7 Jan 2022 15:20:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641568819;
-        bh=JZSDTXn831jsHLaeMlhV91a2NBUCYRKTYU4k2JJ3SEY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=aiW2Oo9rqnSvZMty9UZIT7Su6WRlpFZC4qB33eV+4HwGl+1IEQ29rltyVDfSbQmYo
-         4e+xjseIQ4gjpJnncgYW0+GQl2lY/7Pc42gGUb0HiGc/0qpispy2oluvsAY69ZD+o/
-         408clmpmDydeZ97b3Dy1O1mPHnlKDiJt28KxuXWVqXU8bN1D7Dnjh7+Li9+ax4mQwn
-         gccb1AzgDKTqPVeTjGMCgkxl1J6N7g4Dn8aJG38k94S3wa9itzjU4IrMFrp6JrHwhB
-         p5qTIQsCbQ19nz6d2GayyCfJucnwGsufy68qYS1iPodeLHrJ/P5hRUyh1a7woIqFWF
-         MsuEB755uJd1w==
-Received: by mail-ed1-f48.google.com with SMTP id q25so14714149edb.2;
-        Fri, 07 Jan 2022 07:20:19 -0800 (PST)
-X-Gm-Message-State: AOAM530nXhAQM++g7cqQKjyWOX0rHuAG7jLaR7WhDQxEgSMXBgK5evGh
-        I+OM54GHhjymdPQD8WCrtFdbar0PsAREhQ4WuQ==
-X-Google-Smtp-Source: ABdhPJz1jllAhtHnE/GCaPMpieaWkmlnAW2CajB4Bv3UzewhAkigmenmu4JVTDvGexXd518wf1HJZMvSArTFrZXD/Rw=
-X-Received: by 2002:a05:6402:1e88:: with SMTP id f8mr57554194edf.2.1641568817622;
- Fri, 07 Jan 2022 07:20:17 -0800 (PST)
+        with ESMTP id S239726AbiAGP03 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 10:26:29 -0500
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB7AC06173E
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 07:26:28 -0800 (PST)
+Received: by mail-qv1-xf34.google.com with SMTP id hu2so5745495qvb.8
+        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 07:26:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kinvolk.io; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vGt+owIlTcGsf36iCyr2fuZ50uj0j7pktyV5lENxl60=;
+        b=BsSs3Sf0PUcYCsfnc2cET0b7KSTLKjqELvqmmkYXLRIU7I0n0/CBH2fMqbYPc6y3ut
+         Qf5aXIX0x7U/CuVi0682ceKeM85KIzxTGH5Zx4AxhpQjpseKLqVBC6LllOzwdVpYfkcX
+         etxOGMz7MpDURFO3WXYXvKFtAnYkHFFPa6u4c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vGt+owIlTcGsf36iCyr2fuZ50uj0j7pktyV5lENxl60=;
+        b=6Z81YBIKF3GHEtFxsgx9F2HhYOA/Xw01y8rkPyfAfgAsYYPJRdU2zuwDSuuV7DCfig
+         Tl35Yzi6ELq7uaXStIdBU8Wb/V1pFBwf0GejBLYpyv1AhEKvLHVnKnA7V+go+z5AwhW3
+         nvP0qgpotIzZZ6PgP86BOHlBCk11/6BOXjkPOfNUA5hmqSPVdhW/7Ga9RpXvkL/2qDuE
+         fK3R0ASfOrhCxPWxE9LyRiYo/UW5Tycyw/GnJ7wOn9ZWhElmhYP69VrPurgxJ3INB6qm
+         nCGUJwpzxRTbXvx8+YshyhKQlOZHx/YAGt90Fqr6KOzMJeAuxiEL2C5MsxLg37W1Q/PL
+         U6sA==
+X-Gm-Message-State: AOAM531fLH5j/AxXh/gR2kNBgWGyM28O2akG6vT002EQnZyt3bKPTVhf
+        UVOET9OJkEfC3f3kR16ffL3lUC5pbj2OHs+ZL3tfvdZbtYyJ7Hs2MPRQamzBfkKZ0kb7uF/8oYe
+        5j67OJPB+TqrtjVI01OpMvsGEyF+JWfzuws0WGqkDhIzwlhlNjw/3SqfwQjOfPhbux4CuDQ==
+X-Google-Smtp-Source: ABdhPJwVk7agXiz7QnVNq9n1H0hekc/TGGK4YAap4uIyx26BeWy/IoJ1LN2f3uQ1HovNcFME09MT1Q==
+X-Received: by 2002:ad4:5b8f:: with SMTP id 15mr32201544qvp.112.1641569186094;
+        Fri, 07 Jan 2022 07:26:26 -0800 (PST)
+Received: from localhost.localdomain ([181.136.110.101])
+        by smtp.gmail.com with ESMTPSA id h9sm3441494qkp.106.2022.01.07.07.26.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Jan 2022 07:26:25 -0800 (PST)
+From:   =?UTF-8?q?Mauricio=20V=C3=A1squez?= <mauricio@kinvolk.io>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next 1/2] libbpf: Use IS_ERR_OR_NULL() in hashmap__free()
+Date:   Fri,  7 Jan 2022 10:26:19 -0500
+Message-Id: <20220107152620.192327-1-mauricio@kinvolk.io>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220107031905.2406176-1-robh@kernel.org> <cf75f1ee-8424-b6b2-f873-beea4676a29f@ti.com>
-In-Reply-To: <cf75f1ee-8424-b6b2-f873-beea4676a29f@ti.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 7 Jan 2022 09:20:05 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqL3PGqmzA0wW37G7TXhbRVgByznk==Q8GhA0_OFBKAycQ@mail.gmail.com>
-Message-ID: <CAL_JsqL3PGqmzA0wW37G7TXhbRVgByznk==Q8GhA0_OFBKAycQ@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: Drop required 'interrupt-parent'
-To:     Suman Anna <s-anna@ti.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        - <patches@opensource.cirrus.com>,
-        John Crispin <john@phrozen.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Linux-ALSA <alsa-devel@alsa-project.org>,
-        netdev <netdev@vger.kernel.org>, PCI <linux-pci@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "Nagalla, Hari" <hnagalla@ti.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 7, 2022 at 8:27 AM Suman Anna <s-anna@ti.com> wrote:
->
-> Hi Rob,
->
-> On 1/6/22 9:19 PM, Rob Herring wrote:
-> > 'interrupt-parent' is never required as it can be in a parent node or a
-> > parent node itself can be an interrupt provider. Where exactly it lives is
-> > outside the scope of a binding schema.
-> >
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > ---
-> >  .../devicetree/bindings/gpio/toshiba,gpio-visconti.yaml  | 1 -
-> >  .../devicetree/bindings/mailbox/ti,omap-mailbox.yaml     | 9 ---------
-> >  Documentation/devicetree/bindings/mfd/cirrus,madera.yaml | 1 -
-> >  .../devicetree/bindings/net/lantiq,etop-xway.yaml        | 1 -
-> >  .../devicetree/bindings/net/lantiq,xrx200-net.yaml       | 1 -
-> >  .../devicetree/bindings/pci/sifive,fu740-pcie.yaml       | 1 -
-> >  .../devicetree/bindings/pci/xilinx-versal-cpm.yaml       | 1 -
-> >  7 files changed, 15 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml b/Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
-> > index 9ad470e01953..b085450b527f 100644
-> > --- a/Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
-> > +++ b/Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
-> > @@ -43,7 +43,6 @@ required:
-> >    - gpio-controller
-> >    - interrupt-controller
-> >    - "#interrupt-cells"
-> > -  - interrupt-parent
-> >
-> >  additionalProperties: false
-> >
-> > diff --git a/Documentation/devicetree/bindings/mailbox/ti,omap-mailbox.yaml b/Documentation/devicetree/bindings/mailbox/ti,omap-mailbox.yaml
-> > index e864d798168d..d433e496ec6e 100644
-> > --- a/Documentation/devicetree/bindings/mailbox/ti,omap-mailbox.yaml
-> > +++ b/Documentation/devicetree/bindings/mailbox/ti,omap-mailbox.yaml
-> > @@ -175,15 +175,6 @@ required:
-> >    - ti,mbox-num-fifos
-> >
-> >  allOf:
-> > -  - if:
-> > -      properties:
-> > -        compatible:
-> > -          enum:
-> > -            - ti,am654-mailbox
-> > -    then:
-> > -      required:
-> > -        - interrupt-parent
-> > -
->
-> There are multiple interrupt controllers on TI K3 devices, and we need this
-> property to be defined _specifically_ to point to the relevant interrupt router
-> parent node.
->
-> While what you state in general is true, I cannot have a node not define this on
-> K3 devices, and end up using the wrong interrupt parent (GIC
-> interrupt-controller). That's why the conditional compatible check.
+hashmap__new() uses ERR_PTR() to return an error so it's better to
+use IS_ERR_OR_NULL() in order to check the pointer before calling
+free(). This will prevent freeing an invalid pointer if somebody calls
+hashmap__free() with the result of a failed hashmap__new() call.
 
-But you could.
+Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
+---
+ tools/lib/bpf/hashmap.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-The parent node can have a default interrupt-parent and child nodes
-can override that. It doesn't matter which one is the default though
-typically you would want the one used the most to be the default.
-Looking at your dts files, it looks like you all did the opposite. The
-only way that wouldn't work is if the parent node is if the parent
-node has its own 'interrupts' or you are just abusing
-'interrupt-parent' where the standard parsing doesn't work.
+diff --git a/tools/lib/bpf/hashmap.c b/tools/lib/bpf/hashmap.c
+index 3c20b126d60d..aeb09c288716 100644
+--- a/tools/lib/bpf/hashmap.c
++++ b/tools/lib/bpf/hashmap.c
+@@ -75,7 +75,7 @@ void hashmap__clear(struct hashmap *map)
+ 
+ void hashmap__free(struct hashmap *map)
+ {
+-	if (!map)
++	if (IS_ERR_OR_NULL(map))
+ 		return;
+ 
+ 	hashmap__clear(map);
+@@ -238,4 +238,3 @@ bool hashmap__delete(struct hashmap *map, const void *key,
+ 
+ 	return true;
+ }
+-
+-- 
+2.25.1
 
-You are also free to use 'interrupts-extended' anywhere 'interrupts'
-is used and then interrupt-parent being present is an error. How you
-structure all this is outside the scope of binding schemas which only
-need to define how many interrupts and what are they. Ensuring parents
-and cell sizes are correct is mostly done by dtc.
-
-Rob
