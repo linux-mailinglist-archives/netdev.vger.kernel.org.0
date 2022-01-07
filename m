@@ -2,41 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22129486ECC
+	by mail.lfdr.de (Postfix) with ESMTP id 6E40C486ECD
 	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 01:30:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344181AbiAGAaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 19:30:12 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59148 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231588AbiAGAaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 19:30:12 -0500
+        id S1344244AbiAGAaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 19:30:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231588AbiAGAaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 19:30:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7194C061245
+        for <netdev@vger.kernel.org>; Thu,  6 Jan 2022 16:30:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C47F661DE7
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 00:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E26B6C36AF2;
-        Fri,  7 Jan 2022 00:30:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47ED961DE7
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 00:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66B86C36AE5;
+        Fri,  7 Jan 2022 00:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1641515411;
-        bh=p3+imzC0eEb8C5zgAzuLWs0OF/RRX4VIzSSsfcG9t3s=;
+        bh=c30UAgK4ZkN2dw4774tcf2FpVaaUlRgHgxMM/sQHsOE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P8wUjYZNNw27uqL33Dn8ENApXkpJQkQXJmGf6qzNvlGGaKsb5QoUIga+sG2BbSVX9
-         QfltlUVCAIFPHOreipXoZklNm17zpZd8BYcsCXYRXiq3FZGXnah6xH2ZktWAnq8jVH
-         8ZSOJFsMauUkOjpJX53UqwokFbJdE8ETq7MkUtB8i70iVHCMFwsx6kFI+AHBIB/0iB
-         NbFsuPN8UG0NgNjv+vg0NdUXCyfvONtnzqu0kw2bK82g3YsDsqCq4En6lFd65f1hn2
-         vOtbnFIa22aQoLc8QNHNFX6cE+tqzD2/BATeses9rIdfMer2uBYzbUfIPflAi8G+6p
-         WGrzZV9O2DJ3Q==
+        b=t14Q4P4exh0nJRK7vMavPTiwZDDX4GXDZIYoQTOwPKx+Vb79vWlt3EJstt2zj2Fk1
+         bL26L017tNIA2dKhdWsaKqEUxmp/6HRHYhK+s5Q1YJt9C37t/VkFCrHKa9E/29zPC0
+         bTWLV0MLQ0riujblcjBZU+5vYSDfSdOidmX8xEWXpCPLMPiAa9bYuBWdAo5AT11FM8
+         DTpQ5kISWnahYFdrimaEKvApp9vJNvzbKZi06xDXgpYUgmSofK0FpkyFLFIQdXspSC
+         1fs0h/exeIxpqVvSioNt7g+Bad3BaOUr3RQ3ZVhfpFzg9SrJ6Vjsqlw+YmDvhkY1qM
+         UsPrNqpvd/xbQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH net-next 02/15] net/mlx5: Introduce control IRQ request API
-Date:   Thu,  6 Jan 2022 16:29:43 -0800
-Message-Id: <20220107002956.74849-3-saeed@kernel.org>
+Subject: [PATCH net-next 03/15] net/mlx5: Move affinity assignment into irq_request
+Date:   Thu,  6 Jan 2022 16:29:44 -0800
+Message-Id: <20220107002956.74849-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220107002956.74849-1-saeed@kernel.org>
 References: <20220107002956.74849-1-saeed@kernel.org>
@@ -48,154 +51,86 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Shay Drory <shayd@nvidia.com>
 
-Currently, IRQ layer have a separate flow for ctrl and comp IRQs, and
-the distinction between ctrl and comp IRQs is done in the IRQ layer.
+Move affinity binding of the IRQ to irq_request function in order to
+bind the IRQ before inserting it to the xarray.
 
-In order to ease the coding and maintenance of the IRQ layer,
-introduce a new API for requesting control IRQs -
-mlx5_ctrl_irq_request(struct mlx5_core_dev *dev).
+After this change, the IRQ is ready for use when inserted to the xarray.
 
 Signed-off-by: Shay Drory <shayd@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  5 +-
- .../ethernet/mellanox/mlx5/core/mlx5_irq.h    |  1 +
- .../net/ethernet/mellanox/mlx5/core/pci_irq.c | 62 ++++++++++++++++---
- 3 files changed, 58 insertions(+), 10 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/pci_irq.c | 22 ++++++++-----------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index b695aad71ee1..1eb0326a489b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -289,7 +289,10 @@ create_map_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
- 	mlx5_init_fbc(eq->frag_buf.frags, log_eq_stride, log_eq_size, &eq->fbc);
- 	init_eq_buf(eq);
- 
--	eq->irq = mlx5_irq_request(dev, vecidx, param->affinity);
-+	if (vecidx == MLX5_IRQ_EQ_CTRL)
-+		eq->irq = mlx5_ctrl_irq_request(dev);
-+	else
-+		eq->irq = mlx5_irq_request(dev, vecidx, param->affinity);
- 	if (IS_ERR(eq->irq)) {
- 		err = PTR_ERR(eq->irq);
- 		goto err_buf;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
-index 8116815663a7..7028e4b43837 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_irq.h
-@@ -22,6 +22,7 @@ int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int devfn,
- 			    int msix_vec_count);
- int mlx5_get_default_msix_vec_count(struct mlx5_core_dev *dev, int num_vfs);
- 
-+struct mlx5_irq *mlx5_ctrl_irq_request(struct mlx5_core_dev *dev);
- struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, u16 vecidx,
- 				  struct cpumask *affinity);
- void mlx5_irq_release(struct mlx5_irq *irq);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-index 163e01fe500e..510a9b91ff9a 100644
+index 510a9b91ff9a..656a55114600 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-@@ -396,23 +396,36 @@ irq_pool_request_vector(struct mlx5_irq_pool *pool, int vecidx,
- 	if (IS_ERR(irq) || !affinity)
+@@ -215,7 +215,8 @@ static bool irq_pool_is_sf_pool(struct mlx5_irq_pool *pool)
+ 	return !strncmp("mlx5_sf", pool->name, strlen("mlx5_sf"));
+ }
+ 
+-static struct mlx5_irq *irq_request(struct mlx5_irq_pool *pool, int i)
++static struct mlx5_irq *irq_request(struct mlx5_irq_pool *pool, int i,
++				    struct cpumask *affinity)
+ {
+ 	struct mlx5_core_dev *dev = pool->dev;
+ 	char name[MLX5_MAX_IRQ_NAME];
+@@ -244,6 +245,10 @@ static struct mlx5_irq *irq_request(struct mlx5_irq_pool *pool, int i)
+ 		err = -ENOMEM;
+ 		goto err_cpumask;
+ 	}
++	if (affinity) {
++		cpumask_copy(irq->mask, affinity);
++		irq_set_affinity_hint(irq->irqn, irq->mask);
++	}
+ 	irq->pool = pool;
+ 	irq->refcount = 1;
+ 	irq->index = i;
+@@ -255,6 +260,7 @@ static struct mlx5_irq *irq_request(struct mlx5_irq_pool *pool, int i)
+ 	}
+ 	return irq;
+ err_xa:
++	irq_set_affinity_hint(irq->irqn, NULL);
+ 	free_cpumask_var(irq->mask);
+ err_cpumask:
+ 	free_irq(irq->irqn, &irq->nh);
+@@ -304,7 +310,6 @@ int mlx5_irq_get_index(struct mlx5_irq *irq)
+ static struct mlx5_irq *irq_pool_create_irq(struct mlx5_irq_pool *pool,
+ 					    struct cpumask *affinity)
+ {
+-	struct mlx5_irq *irq;
+ 	u32 irq_index;
+ 	int err;
+ 
+@@ -312,12 +317,7 @@ static struct mlx5_irq *irq_pool_create_irq(struct mlx5_irq_pool *pool,
+ 		       GFP_KERNEL);
+ 	if (err)
+ 		return ERR_PTR(err);
+-	irq = irq_request(pool, irq_index);
+-	if (IS_ERR(irq))
+-		return irq;
+-	cpumask_copy(irq->mask, affinity);
+-	irq_set_affinity_hint(irq->irqn, irq->mask);
+-	return irq;
++	return irq_request(pool, irq_index, affinity);
+ }
+ 
+ /* looking for the irq with the smallest refcount and the same affinity */
+@@ -392,11 +392,7 @@ irq_pool_request_vector(struct mlx5_irq_pool *pool, int vecidx,
+ 		irq_get_locked(irq);
  		goto unlock;
- 	cpumask_copy(irq->mask, affinity);
--	if (!irq_pool_is_sf_pool(pool) && !pool->xa_num_irqs.max &&
--	    cpumask_empty(irq->mask))
--		cpumask_set_cpu(cpumask_first(cpu_online_mask), irq->mask);
- 	irq_set_affinity_hint(irq->irqn, irq->mask);
+ 	}
+-	irq = irq_request(pool, vecidx);
+-	if (IS_ERR(irq) || !affinity)
+-		goto unlock;
+-	cpumask_copy(irq->mask, affinity);
+-	irq_set_affinity_hint(irq->irqn, irq->mask);
++	irq = irq_request(pool, vecidx, affinity);
  unlock:
  	mutex_unlock(&pool->lock);
  	return irq;
- }
- 
--static struct mlx5_irq_pool *find_sf_irq_pool(struct mlx5_irq_table *irq_table,
--					      int i, struct cpumask *affinity)
-+static struct mlx5_irq_pool *sf_ctrl_irq_pool_get(struct mlx5_irq_table *irq_table)
-+{
-+	return irq_table->sf_ctrl_pool;
-+}
-+
-+static struct mlx5_irq_pool *sf_irq_pool_get(struct mlx5_irq_table *irq_table)
- {
--	if (cpumask_empty(affinity) && i == MLX5_IRQ_EQ_CTRL)
--		return irq_table->sf_ctrl_pool;
- 	return irq_table->sf_comp_pool;
- }
- 
-+static struct mlx5_irq_pool *ctrl_irq_pool_get(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_irq_table *irq_table = mlx5_irq_table_get(dev);
-+	struct mlx5_irq_pool *pool = NULL;
-+
-+	if (mlx5_core_is_sf(dev))
-+		pool = sf_ctrl_irq_pool_get(irq_table);
-+
-+	/* In some configs, there won't be a pool of SFs IRQs. Hence, returning
-+	 * the PF IRQs pool in case the SF pool doesn't exist.
-+	 */
-+	return pool ? pool : irq_table->pf_pool;
-+}
-+
- /**
-  * mlx5_irq_release - release an IRQ back to the system.
-  * @irq: irq to be released.
-@@ -423,6 +436,38 @@ void mlx5_irq_release(struct mlx5_irq *irq)
- 	irq_put(irq);
- }
- 
-+/**
-+ * mlx5_ctrl_irq_request - request a ctrl IRQ for mlx5 device.
-+ * @dev: mlx5 device that requesting the IRQ.
-+ *
-+ * This function returns a pointer to IRQ, or ERR_PTR in case of error.
-+ */
-+struct mlx5_irq *mlx5_ctrl_irq_request(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_irq_pool *pool = ctrl_irq_pool_get(dev);
-+	cpumask_var_t req_mask;
-+	struct mlx5_irq *irq;
-+
-+	if (!zalloc_cpumask_var(&req_mask, GFP_KERNEL))
-+		return ERR_PTR(-ENOMEM);
-+	cpumask_copy(req_mask, cpu_online_mask);
-+	if (!irq_pool_is_sf_pool(pool)) {
-+		/* In case we are allocating a control IRQ for PF/VF */
-+		if (!pool->xa_num_irqs.max) {
-+			cpumask_clear(req_mask);
-+			/* In case we only have a single IRQ for PF/VF */
-+			cpumask_set_cpu(cpumask_first(cpu_online_mask), req_mask);
-+		}
-+		/* Allocate the IRQ in the last index of the pool */
-+		irq = irq_pool_request_vector(pool, pool->xa_num_irqs.max, req_mask);
-+	} else {
-+		irq = irq_pool_request_affinity(pool, req_mask);
-+	}
-+
-+	free_cpumask_var(req_mask);
-+	return irq;
-+}
-+
- /**
-  * mlx5_irq_request - request an IRQ for mlx5 device.
-  * @dev: mlx5 device that requesting the IRQ.
-@@ -440,7 +485,7 @@ struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, u16 vecidx,
- 	struct mlx5_irq *irq;
- 
- 	if (mlx5_core_is_sf(dev)) {
--		pool = find_sf_irq_pool(irq_table, vecidx, affinity);
-+		pool = sf_irq_pool_get(irq_table);
- 		if (!pool)
- 			/* we don't have IRQs for SFs, using the PF IRQs */
- 			goto pf_irq;
-@@ -453,7 +498,6 @@ struct mlx5_irq *mlx5_irq_request(struct mlx5_core_dev *dev, u16 vecidx,
- 	}
- pf_irq:
- 	pool = irq_table->pf_pool;
--	vecidx = (vecidx == MLX5_IRQ_EQ_CTRL) ? pool->xa_num_irqs.max : vecidx;
- 	irq = irq_pool_request_vector(pool, vecidx, affinity);
- out:
- 	if (IS_ERR(irq))
 -- 
 2.33.1
 
