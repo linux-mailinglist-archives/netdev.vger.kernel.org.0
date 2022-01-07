@@ -2,104 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19C79487533
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 11:06:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 766D848754F
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 11:15:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346644AbiAGKGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 05:06:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41096 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346613AbiAGKGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 05:06:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AB9C061245;
-        Fri,  7 Jan 2022 02:06:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7AB27B81F80;
-        Fri,  7 Jan 2022 10:06:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9557DC36AE0;
-        Fri,  7 Jan 2022 10:06:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641550012;
-        bh=dbXWvgtCasKfVtJH5uVkp9Vf74ZRziPbM2Ato3R4ZzQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Rdb7rAYA19kw0YA20UnHia29Qi3HST9LHf/be6joqDkXIGYziDOqKqjyUjqLB5znR
-         eITl3R3+EP8sc7+u70BvNetujaFUCGTk5DUkh9zpRDFBs2tK/AuYpqykAEGVXb0jkx
-         j4ptn29mCvzkTr6fbZ3S+r/em4CL5JqCoZSRIWW8=
-Date:   Fri, 7 Jan 2022 11:06:49 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, tanghui20@huawei.com,
-        andrew@lunn.ch, oneukum@suse.com, arnd@arndb.de,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
-Subject: Re: [PATCH] net: mcs7830: handle usb read errors properly
-Message-ID: <YdgQuavHA/T8tlHi@kroah.com>
-References: <20220106225716.7425-1-paskripkin@gmail.com>
+        id S1346594AbiAGKPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 05:15:00 -0500
+Received: from www62.your-server.de ([213.133.104.62]:40170 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236825AbiAGKO7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 05:14:59 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1n5mGq-000BB7-92; Fri, 07 Jan 2022 11:14:52 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1n5mGp-000Fdg-UZ; Fri, 07 Jan 2022 11:14:51 +0100
+Subject: Re: [PATCH] bpf: allow setting mount device for bpffs
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, David Howells <dhowells@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>, christian.brauner@ubuntu.com
+References: <20211226165649.7178-1-laoar.shao@gmail.com>
+ <616eab60-0f56-7309-4f0f-c0f96719b688@iogearbox.net>
+ <CALOAHbBi4HYUd+AD+F8DrCUPrh8-E3HJC=RPMTw3dNLKHAHczg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e3598aba-490f-95a9-f92d-52cf83175d42@iogearbox.net>
+Date:   Fri, 7 Jan 2022 11:14:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220106225716.7425-1-paskripkin@gmail.com>
+In-Reply-To: <CALOAHbBi4HYUd+AD+F8DrCUPrh8-E3HJC=RPMTw3dNLKHAHczg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26415/Fri Jan  7 10:26:59 2022)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 01:57:16AM +0300, Pavel Skripkin wrote:
-> Syzbot reported uninit value in mcs7830_bind(). The problem was in
-> missing validation check for bytes read via usbnet_read_cmd().
+On 1/7/22 6:48 AM, Yafang Shao wrote:
+> On Wed, Jan 5, 2022 at 9:24 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>> On 12/26/21 5:56 PM, Yafang Shao wrote:
+>>> We noticed our tc ebpf tools can't start after we upgrade our in-house
+>>> kernel version from 4.19 to 5.10. That is because of the behaviour change
+>>> in bpffs caused by commit
+>>> d2935de7e4fd ("vfs: Convert bpf to use the new mount API").
+>>>
+>>> In our tc ebpf tools, we do strict environment check. If the enrioment is
+>>> not match, we won't allow to start the ebpf progs. One of the check is
+>>> whether bpffs is properly mounted. The mount information of bpffs in
+>>> kernel-4.19 and kernel-5.10 are as follows,
+>>>
+>>> - kenrel 4.19
+>>> $ mount -t bpf bpffs /sys/fs/bpf
+>>> $ mount -t bpf
+>>> bpffs on /sys/fs/bpf type bpf (rw,relatime)
+>>>
+>>> - kernel 5.10
+>>> $ mount -t bpf bpffs /sys/fs/bpf
+>>> $ mount -t bpf
+>>> none on /sys/fs/bpf type bpf (rw,relatime)
+>>>
+>>> The device name in kernel-5.10 is displayed as none instead of bpffs,
+>>> then our environment check fails. Currently we modify the tools to adopt to
+>>> the kernel behaviour change, but I think we'd better change the kernel code
+>>> to keep the behavior consistent.
+>>>
+>>> After this change, the mount information will be displayed the same with
+>>> the behavior in kernel-4.19, for example,
+>>>
+>>> $ mount -t bpf bpffs /sys/fs/bpf
+>>> $ mount -t bpf
+>>> bpffs on /sys/fs/bpf type bpf (rw,relatime)
+>>>
+>>> Fixes: d2935de7e4fd ("vfs: Convert bpf to use the new mount API")
+>>> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+>>> Cc: David Howells <dhowells@redhat.com>
+>>> ---
+>>>    kernel/bpf/inode.c | 18 ++++++++++++++++--
+>>>    1 file changed, 16 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
+>>> index 80da1db47c68..5a8b729afa91 100644
+>>> --- a/kernel/bpf/inode.c
+>>> +++ b/kernel/bpf/inode.c
+>>> @@ -648,12 +648,26 @@ static int bpf_parse_param(struct fs_context *fc, struct fs_parameter *param)
+>>>        int opt;
+>>>
+>>>        opt = fs_parse(fc, bpf_fs_parameters, param, &result);
+>>> -     if (opt < 0)
+>>> +     if (opt < 0) {
+>>>                /* We might like to report bad mount options here, but
+>>>                 * traditionally we've ignored all mount options, so we'd
+>>>                 * better continue to ignore non-existing options for bpf.
+>>>                 */
+>>> -             return opt == -ENOPARAM ? 0 : opt;
+>>> +             if (opt == -ENOPARAM) {
+>>> +                     if (strcmp(param->key, "source") == 0) {
+>>> +                             if (param->type != fs_value_is_string)
+>>> +                                     return 0;
+>>> +                             if (fc->source)
+>>> +                                     return 0;
+>>> +                             fc->source = param->string;
+>>> +                             param->string = NULL;
+>>> +                     }
+>>> +
+>>> +                     return 0;
+>>> +             }
+>>> +
+>>> +             return opt;
+>>> +     }
+>>
+>> I don't think we need to open code this? Couldn't we just do something like:
+>>
+>>           [...]
+>>
+>>           opt = fs_parse(fc, bpf_fs_parameters, param, &result);
+>>           if (opt == -ENOPARAM) {
+>>                   opt = vfs_parse_fs_param_source(fc, param);
+>>                   if (opt != -ENOPARAM)
+>>                           return opt;
+>>                   return 0;
+>>           }
+>>           if (opt < 0)
+>>                   return opt;
+>>
+>>           [...]
+>>
+>> See also 0858d7da8a09 ("ramfs: fix mount source show for ramfs") where they
+>> had a similar issue.
 > 
-> usbnet_read_cmd() internally calls usb_control_msg(), that returns
-> number of bytes read. Code should validate that requested number of bytes
-> was actually read.
-> 
-> So, this patch adds missing size validation check inside
-> mcs7830_get_reg() to prevent uninit value bugs
-> 
-> CC: Arnd Bergmann <arnd@arndb.de>
-> Reported-and-tested-by: syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
-> Fixes: 2a36d7083438 ("USB: driver for mcs7830 (aka DeLOCK) USB ethernet adapter")
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> ---
-> 
-> @Arnd, I am not sure about mcs7830_get_rev() function. 
-> 
-> Is get_reg(22, 2) == 1 valid read? If so, I think, we should call
-> usbnet_read_cmd() directly here, since other callers care only about
-> negative error values.  
-> 
-> Thanks
-> 
-> 
-> ---
->  drivers/net/usb/mcs7830.c | 12 ++++++++++--
->  1 file changed, 10 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/usb/mcs7830.c b/drivers/net/usb/mcs7830.c
-> index 326cc4e749d8..fdda0616704e 100644
-> --- a/drivers/net/usb/mcs7830.c
-> +++ b/drivers/net/usb/mcs7830.c
-> @@ -108,8 +108,16 @@ static const char driver_name[] = "MOSCHIP usb-ethernet driver";
->  
->  static int mcs7830_get_reg(struct usbnet *dev, u16 index, u16 size, void *data)
->  {
-> -	return usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
-> -				0x0000, index, data, size);
-> +	int ret;
-> +
-> +	ret = usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
-> +			      0x0000, index, data, size);
-> +	if (ret < 0)
-> +		return ret;
-> +	else if (ret < size)
-> +		return -ENODATA;
+> Thanks for the suggestion. I will update it.
 
-We have a usb core function that handles these "short reads are an
-error" issue.  Perhaps usbnet_read_cmd() should be converted to use it
-instead?
+Sounds good, thanks!
 
-thanks,
+> nit:  vfs_parse_fs_param_source() is introduced in commit d1d488d81370
+> ("fs: add vfs_parse_fs_param_source() helper"), so the updated one
+> can't be directly backported to 5.10.
 
-greg k-h
+Right, so for stable trees that don't have this commit, you could use your
+patch here if needed. But for upstream, lets not open code it given we have
+the helper for it.
+
+Thanks,
+Daniel
