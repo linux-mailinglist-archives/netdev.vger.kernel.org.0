@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D22D3486F44
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 01:58:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70219486F46
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 01:58:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344846AbiAGA6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 19:58:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46216 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbiAGA6p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 19:58:45 -0500
+        id S1344871AbiAGA6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 19:58:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36516 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344870AbiAGA6r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 19:58:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0974E61EA6
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 00:58:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A187C36AF2;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A869B82491
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 00:58:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3247C36AF3;
         Fri,  7 Jan 2022 00:58:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641517124;
-        bh=+6Vpf+SnhE6CRZnSFi3YGeeWOIrErzGS1ce1YDy/WGg=;
+        s=k20201202; t=1641517125;
+        bh=sCplI/EfGmYfpX1L4l5gK+3+jy2czuQlHTGkUEUTuls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zhvs1pt/2mtLJ8crTqIcGGL6MMb1MoE9Z06U1yUX1b7O0a+rQCdO3SNQQkMoX2W/Z
-         eg46iWe6G7knJvABcpPgy3RBCyiIMWPY3J5IlBCmOlzAAPO1H4z8FmXc6sjTGOUXqo
-         sBXyAE2eVH633gfd03qQxC4VcxTQT42tFcTrBnrJgCrZKGp1nbwldsir6oD4vmLzaR
-         1CTKjs4i13JrKdWK3kqHFhI0QHgEK7tHMkltkiOCZV/HFHpKQY+t5OHOjJTsCwaxPt
-         GipmKNv0L20GC7G/8691ZloTrRWigOBZ0Dk1IYlg9eLOVATc5vOBgqxTbP+2frQKYQ
-         wpMpw+e8qHH9g==
+        b=ckhmTNfU4AfJKfTIwvj+ahEFyIAJszLgmsMimdTh0iSkLQ6BCFhEbn62co0ueW5NV
+         AQVf418XpYFPKBF4V5Zvs5SWcY/4g3646w38fAMjODYHPae8W7RFwi3/ipKtewYLfz
+         XhmRAmNrhyjurobcEkXc5kWPMaCwtQSpk2yI3DWYlnWT9IDigexteJIZebVMtXkq9x
+         cKH0cb9EyB8GX4bkCzd4piD0ckIL9iTtTWMpO6EiTzPx1vArzK8B9JvwCKuRKqFqJs
+         zJG0Cto0diD59t3095609g4Pf2iPzFZ9Q2pje/tPcTeg2vpDjDZCFOqD1B6UYLpoLx
+         bkBAafl/UQ0cA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Dima Chumak <dchumak@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 02/11] net/mlx5e: Fix nullptr on deleting mirroring rule
-Date:   Thu,  6 Jan 2022 16:58:22 -0800
-Message-Id: <20220107005831.78909-3-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 03/11] net/mlx5e: Fix wrong usage of fib_info_nh when routes with nexthop objects are used
+Date:   Thu,  6 Jan 2022 16:58:23 -0800
+Message-Id: <20220107005831.78909-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220107005831.78909-1-saeed@kernel.org>
 References: <20220107005831.78909-1-saeed@kernel.org>
@@ -45,110 +46,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dima Chumak <dchumak@nvidia.com>
+From: Maor Dickman <maord@nvidia.com>
 
-Deleting a Tc rule with multiple outputs, one of which is internal port,
-like this one:
+Creating routes with nexthop objects while in switchdev mode leads to access to
+un-allocated memory and trigger bellow call trace due to hitting WARN_ON.
+This is caused due to illegal usage of fib_info_nh in TC tunnel FIB event handling to
+resolve the FIB device while fib_info built in with nexthop.
 
-  tc filter del dev enp8s0f0_0 ingress protocol ip pref 5 flower \
-      dst_mac 0c:42:a1:d1:d0:88 \
-      src_mac e4:ea:09:08:00:02 \
-      action tunnel_key  set \
-          src_ip 0.0.0.0 \
-          dst_ip 7.7.7.8 \
-          id 8 \
-          dst_port 4789 \
-      action mirred egress mirror dev vxlan_sys_4789 pipe \
-      action mirred egress redirect dev enp8s0f0_1
+Fixed by ignoring attempts to use nexthop objects with routes until support can be
+properly added.
 
-Triggers a call trace:
+WARNING: CPU: 1 PID: 1724 at include/net/nexthop.h:468 mlx5e_tc_tun_fib_event+0x448/0x570 [mlx5_core]
+CPU: 1 PID: 1724 Comm: ip Not tainted 5.15.0_for_upstream_min_debug_2021_11_09_02_04 #1
+RIP: 0010:mlx5e_tc_tun_fib_event+0x448/0x570 [mlx5_core]
+RSP: 0018:ffff8881349f7910 EFLAGS: 00010202
+RAX: ffff8881492f1980 RBX: ffff8881349f79e8 RCX: 0000000000000000
+RDX: ffff8881349f79e8 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: ffff8881349f7950 R08: 00000000000000fe R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff88811e9d0000
+R13: ffff88810eb62000 R14: ffff888106710268 R15: 0000000000000018
+FS:  00007f1d5ca6e800(0000) GS:ffff88852c880000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffedba44ff8 CR3: 0000000129808004 CR4: 0000000000370ea0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ atomic_notifier_call_chain+0x42/0x60
+ call_fib_notifiers+0x21/0x40
+ fib_table_insert+0x479/0x6d0
+ ? try_charge_memcg+0x480/0x6d0
+ inet_rtm_newroute+0x65/0xb0
+ rtnetlink_rcv_msg+0x2af/0x360
+ ? page_add_file_rmap+0x13/0x130
+ ? do_set_pte+0xcd/0x120
+ ? rtnl_calcit.isra.0+0x120/0x120
+ netlink_rcv_skb+0x4e/0xf0
+ netlink_unicast+0x1ee/0x2b0
+ netlink_sendmsg+0x22e/0x460
+ sock_sendmsg+0x33/0x40
+ ____sys_sendmsg+0x1d1/0x1f0
+ ___sys_sendmsg+0xab/0xf0
+ ? __mod_memcg_lruvec_state+0x40/0x60
+ ? __mod_lruvec_page_state+0x95/0xd0
+ ? page_add_new_anon_rmap+0x4e/0xf0
+ ? __handle_mm_fault+0xec6/0x1470
+ __sys_sendmsg+0x51/0x90
+ ? internal_get_user_pages_fast+0x480/0xa10
+ do_syscall_64+0x3d/0x90
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-  BUG: kernel NULL pointer dereference, address: 0000000000000230
-  RIP: 0010:del_sw_hw_rule+0x2b/0x1f0 [mlx5_core]
-  Call Trace:
-   tree_remove_node+0x16/0x30 [mlx5_core]
-   mlx5_del_flow_rules+0x51/0x160 [mlx5_core]
-   __mlx5_eswitch_del_rule+0x4b/0x170 [mlx5_core]
-   mlx5e_tc_del_fdb_flow+0x295/0x550 [mlx5_core]
-   mlx5e_flow_put+0x1f/0x70 [mlx5_core]
-   mlx5e_delete_flower+0x286/0x390 [mlx5_core]
-   tc_setup_cb_destroy+0xac/0x170
-   fl_hw_destroy_filter+0x94/0xc0 [cls_flower]
-   __fl_delete+0x15e/0x170 [cls_flower]
-   fl_delete+0x36/0x80 [cls_flower]
-   tc_del_tfilter+0x3a6/0x6e0
-   rtnetlink_rcv_msg+0xe5/0x360
-   ? rtnl_calcit.isra.0+0x110/0x110
-   netlink_rcv_skb+0x46/0x110
-   netlink_unicast+0x16b/0x200
-   netlink_sendmsg+0x202/0x3d0
-   sock_sendmsg+0x33/0x40
-   ____sys_sendmsg+0x1c3/0x200
-   ? copy_msghdr_from_user+0xd6/0x150
-   ___sys_sendmsg+0x88/0xd0
-   ? ___sys_recvmsg+0x88/0xc0
-   ? do_futex+0x10c/0x460
-   __sys_sendmsg+0x59/0xa0
-   do_syscall_64+0x48/0x140
-   entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Fix by disabling offloading for flows matching
-esw_is_chain_src_port_rewrite() which have more than one output.
-
-Fixes: 10742efc20a4 ("net/mlx5e: VF tunnel TX traffic offloading")
-Signed-off-by: Dima Chumak <dchumak@nvidia.com>
+Fixes: 8914add2c9e5 ("net/mlx5e: Handle FIB events to update tunnel endpoint device")
+Signed-off-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Vlad Buslov <vladbu@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/eswitch_offloads.c     | 28 ++++++++++---------
- 1 file changed, 15 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 32bc08a39925..ccb66428aeb5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -295,26 +295,28 @@ esw_setup_chain_src_port_rewrite(struct mlx5_flow_destination *dest,
- 				 int *i)
- {
- 	struct mlx5_esw_flow_attr *esw_attr = attr->esw_attr;
--	int j, err;
-+	int err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+index 042b1abe1437..62cbd15ffc34 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+@@ -1579,6 +1579,8 @@ mlx5e_init_fib_work_ipv4(struct mlx5e_priv *priv,
+ 	struct net_device *fib_dev;
  
- 	if (!(attr->flags & MLX5_ESW_ATTR_FLAG_SRC_REWRITE))
- 		return -EOPNOTSUPP;
- 
--	for (j = esw_attr->split_count; j < esw_attr->out_count; j++, (*i)++) {
--		err = esw_setup_chain_dest(dest, flow_act, chains, attr->dest_chain, 1, 0, *i);
--		if (err)
--			goto err_setup_chain;
-+	/* flow steering cannot handle more than one dest with the same ft
-+	 * in a single flow
-+	 */
-+	if (esw_attr->out_count - esw_attr->split_count > 1)
-+		return -EOPNOTSUPP;
- 
--		if (esw_attr->dests[j].pkt_reformat) {
--			flow_act->action |= MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
--			flow_act->pkt_reformat = esw_attr->dests[j].pkt_reformat;
--		}
-+	err = esw_setup_chain_dest(dest, flow_act, chains, attr->dest_chain, 1, 0, *i);
-+	if (err)
-+		return err;
-+
-+	if (esw_attr->dests[esw_attr->split_count].pkt_reformat) {
-+		flow_act->action |= MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
-+		flow_act->pkt_reformat = esw_attr->dests[esw_attr->split_count].pkt_reformat;
- 	}
--	return 0;
-+	(*i)++;
- 
--err_setup_chain:
--	esw_put_dest_tables_loop(esw, attr, esw_attr->split_count, j);
--	return err;
-+	return 0;
- }
- 
- static void esw_cleanup_chain_src_port_rewrite(struct mlx5_eswitch *esw,
+ 	fen_info = container_of(info, struct fib_entry_notifier_info, info);
++	if (fen_info->fi->nh)
++		return NULL;
+ 	fib_dev = fib_info_nh(fen_info->fi, 0)->fib_nh_dev;
+ 	if (!fib_dev || fib_dev->netdev_ops != &mlx5e_netdev_ops ||
+ 	    fen_info->dst_len != 32)
 -- 
 2.33.1
 
