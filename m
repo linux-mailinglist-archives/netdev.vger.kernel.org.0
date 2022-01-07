@@ -2,99 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92272487D75
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 21:06:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F807487D7B
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 21:07:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233942AbiAGUGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 15:06:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36492 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233916AbiAGUGD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 15:06:03 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289A5C061401
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 12:06:03 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id m1so5988215pfk.8
-        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 12:06:03 -0800 (PST)
+        id S233989AbiAGUHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 15:07:52 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:45670 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232029AbiAGUHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 15:07:51 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9aQGqZRmHVofJdgbyQpqYP9ZVw8rgMp4fyAd54UvKjI=;
-        b=oKB02UKX2GpWx89gjvdWfZ0z7iFyz6jXVLhUcI83TOu0Dm2uqbBoVD9trbzfsQO5bt
-         C9hzF5hu33iB+xe3NVipbIwJ5YLYNGsbtTHg+bzfI9LOPj10iuYdglFU1gmrLqOrSqOC
-         6iEb4Atd6HINbMwKeExRhl9iT9grnwCGhzDBY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9aQGqZRmHVofJdgbyQpqYP9ZVw8rgMp4fyAd54UvKjI=;
-        b=MLTYfDYI6MkZHR4iXLQ6Zav8mH4MrtCTlTUnWwSogXt5hiVwNMWWpyS/391dOaIwNv
-         I9TjIDeoJdR+AO5YTUYxC69MyGvaAspPZVcbCcPHGbjYhL/3JqD4h5ZKD8oPGTghw782
-         +QkTqZIquKToif4Dd+H9BDls+TQ6y2QdoFbh7M3uuBLorUn7UQaqEDi+TSlXCMUjzjP1
-         OVyEzR1CNc0YS7Ob7QvatYBMEyipXJxZBivjeQuRug+zmJlU4Y6gjPXyH2yp1OU4KPM7
-         VWRGCXL0oyf7Rgxd7YeYXeN/Rh1jnSpPNKdMRIeRjAxRBRBLPReb5fPY6GjJkRfEqmgb
-         Ow1Q==
-X-Gm-Message-State: AOAM531nxmPbZKhM+3s9HhQKYdZcoliNrLaPI/k1F/bFT3XrAqoPAelk
-        Q8bUC54By+DgEHhf0wzilqwXpA==
-X-Google-Smtp-Source: ABdhPJxRLSIDf45pCKTTtVhB5TKIpwBXdiQ5iVWYe9E4TZ3n2ODOwkimZzHR1vjLIHQzP8qdcUQ82g==
-X-Received: by 2002:a63:f254:: with SMTP id d20mr57812751pgk.127.1641585962552;
-        Fri, 07 Jan 2022 12:06:02 -0800 (PST)
-Received: from kuabhs-cdev.c.googlers.com.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
-        by smtp.gmail.com with ESMTPSA id y18sm5929492pfn.202.2022.01.07.12.06.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 12:06:02 -0800 (PST)
-From:   Abhishek Kumar <kuabhs@chromium.org>
-To:     kvalo@codeaurora.org, dianders@chromium.org
-Cc:     pillair@codeaurora.org, kuabhs@chromium.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH 2/2] dt: bindings: add dt entry for ath10k default BDF name
-Date:   Fri,  7 Jan 2022 20:04:31 +0000
-Message-Id: <20220107200417.2.Ia0365467994f8f9085c86b5674b57ff507c669f8@changeid>
-X-Mailer: git-send-email 2.34.1.575.g55b058a8bb-goog
-In-Reply-To: <20220107200417.1.Ie4dcc45b0bf365077303c596891d460d716bb4c5@changeid>
-References: <20220107200417.1.Ie4dcc45b0bf365077303c596891d460d716bb4c5@changeid>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1641586071; x=1673122071;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=pXmzwivMEFxYti8txjU8dlwtQKd5WAOBCgIXAdySCKg=;
+  b=APXVBjF5EOJYPSEL1fY74QQXNFVOJLnFpLd9wDTbjW8dM8WJ35pZbnQf
+   7z495xuEyimUZlxxGWUOPIJqBadOeP7aYMwC7PJAuFr0wWGyyqkVlTGmK
+   Uvh/qROoM1E8FYED7fL6/kynOjWdFgcZje2ViJeisETrysU8/yMB1C01q
+   4=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 07 Jan 2022 12:07:51 -0800
+X-QCInternal: smtphost
+Received: from hu-twear-lv.qualcomm.com (HELO hu-devc-sd-u20-a-1.qualcomm.com) ([10.47.235.107])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 07 Jan 2022 12:07:51 -0800
+Received: by hu-devc-sd-u20-a-1.qualcomm.com (Postfix, from userid 202676)
+        id B0AC65D8; Fri,  7 Jan 2022 12:06:50 -0800 (PST)
+From:   Tyler Wear <quic_twear@quicinc.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     maze@google.com, yhs@fb.com, kafai@fb.com, toke@redhat.com,
+        daniel@iogearbox.net, Tyler Wear <quic_twear@quicinc.com>
+Subject: [PATCH bpf-next v4] Add skb_store_bytes() for BPF_PROG_TYPE_CGROUP_SKB
+Date:   Fri,  7 Jan 2022 12:06:00 -0800
+Message-Id: <20220107200600.1688870-1-quic_twear@quicinc.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is possible that BDF name with board-id+chip-id+variant
-combination is not found in the board-2.bin. Such cases can
-cause wlan probe to fail and completely break wifi. In such
-case there can be an optional property to define a default
-BDF name to search for in the board-2.bin file when none of
-the combinations (board-id,chip-id,variant) match.
-To address the above concern provide an optional proptery:
-qcom,ath10k-default-bdf
+Need to modify the ds field to support upcoming Wifi QoS Alliance spec.
+Instead of adding generic function for just modifying the ds field,
+add skb_store_bytes for BPF_PROG_TYPE_CGROUP_SKB.
+This allows other fields in the network and transport header to be
+modified in the future.
 
-Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
+Checksum API's also need to be added for completeness.
+
+It is not possible to use CGROUP_(SET|GET)SOCKOPT since
+the policy may change during runtime and would result
+in a large number of entries with wildcards.
+
+V4 patch fixes warnings and errors from checkpatch.
+
+The existing check for bpf_try_make_writable() should mean that
+skb_share_check() is not needed.
+
+Signed-off-by: Tyler Wear <quic_twear@quicinc.com>
 ---
+ net/core/filter.c                             |  10 ++
+ .../bpf/prog_tests/cgroup_store_bytes.c       | 104 ++++++++++++++++++
+ .../selftests/bpf/progs/cgroup_store_bytes.c  |  69 ++++++++++++
+ 3 files changed, 183 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
+ create mode 100644 tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
 
- .../devicetree/bindings/net/wireless/qcom,ath10k.txt          | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt b/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt
-index b61c2d5a0ff7..d76d1392863d 100644
---- a/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt
-+++ b/Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt
-@@ -63,6 +63,10 @@ Optional properties:
- 				 hw versions.
- - qcom,ath10k-pre-calibration-data : pre calibration data as an array,
- 				     the length can vary between hw versions.
-+- qcom,ath10k-default-bdf : default board data file name to be searched in
-+			    board-2.bin. This is searched if no BDF is found
-+			    in board-2.bin that matches, chip-id, board-id and
-+			    variant combination
- - <supply-name>-supply: handle to the regulator device tree node
- 			   optional "supply-name" are "vdd-0.8-cx-mx",
- 			   "vdd-1.8-xo", "vdd-1.3-rfa", "vdd-3.3-ch0",
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 6102f093d59a..ce01a8036361 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -7299,6 +7299,16 @@ cg_skb_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_sk_storage_delete_proto;
+ 	case BPF_FUNC_perf_event_output:
+ 		return &bpf_skb_event_output_proto;
++	case BPF_FUNC_skb_store_bytes:
++		return &bpf_skb_store_bytes_proto;
++	case BPF_FUNC_csum_update:
++		return &bpf_csum_update_proto;
++	case BPF_FUNC_csum_level:
++		return &bpf_csum_level_proto;
++	case BPF_FUNC_l3_csum_replace:
++		return &bpf_l3_csum_replace_proto;
++	case BPF_FUNC_l4_csum_replace:
++		return &bpf_l4_csum_replace_proto;
+ #ifdef CONFIG_SOCK_CGROUP_DATA
+ 	case BPF_FUNC_skb_cgroup_id:
+ 		return &bpf_skb_cgroup_id_proto;
+diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c b/tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
+new file mode 100644
+index 000000000000..4b87ff003008
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
+@@ -0,0 +1,104 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <test_progs.h>
++#include <network_helpers.h>
++
++void test_cgroup_store_bytes(void)
++{
++	int server_fd, cgroup_fd, prog_fd, map_fd, client_fd;
++	int err;
++	struct bpf_object *obj;
++	struct bpf_program *prog;
++	struct bpf_map *test_result;
++	__u32 duration = 0;
++
++	__u32 map_key = 0;
++	__u32 map_value = 0;
++
++	cgroup_fd = test__join_cgroup("/cgroup_store_bytes");
++	if (CHECK_FAIL(cgroup_fd < 0))
++		return;
++
++	server_fd = start_server(AF_INET, SOCK_DGRAM, NULL, 0, 0);
++	if (CHECK_FAIL(server_fd < 0))
++		goto close_cgroup_fd;
++
++	err = bpf_prog_load("./cgroup_store_bytes.o", BPF_PROG_TYPE_CGROUP_SKB,
++						&obj, &prog_fd);
++
++	if (CHECK_FAIL(err))
++		goto close_server_fd;
++
++	test_result = bpf_object__find_map_by_name(obj, "test_result");
++	if (CHECK_FAIL(!test_result))
++		goto close_bpf_object;
++
++	map_fd = bpf_map__fd(test_result);
++	if (map_fd < 0)
++		goto close_bpf_object;
++
++	prog = bpf_object__find_program_by_name(obj, "cgroup_store_bytes");
++	if (CHECK_FAIL(!prog))
++		goto close_bpf_object;
++
++	err = bpf_prog_attach(prog_fd, cgroup_fd, BPF_CGROUP_INET_EGRESS,
++							BPF_F_ALLOW_MULTI);
++	if (CHECK_FAIL(err))
++		goto close_bpf_object;
++
++	client_fd = start_server(AF_INET, SOCK_DGRAM, NULL, 0, 0);
++	if (CHECK_FAIL(client_fd < 0))
++		goto close_bpf_object;
++
++	struct sockaddr server_addr;
++	socklen_t addrlen = sizeof(server_addr);
++
++	if (getsockname(server_fd, &server_addr, &addrlen)) {
++		perror("Failed to get server addr");
++		return -1;
++	}
++
++	char buf[] = "testing";
++
++	if (CHECK_FAIL(sendto(client_fd, buf, sizeof(buf), 0, &server_addr,
++			sizeof(server_addr)) != sizeof(buf))) {
++		perror("Can't write on client");
++		goto close_client_fd;
++	}
++
++	struct sockaddr_storage ss;
++	char recv_buf[BUFSIZ];
++	socklen_t slen;
++
++	if (recvfrom(server_fd, &recv_buf, sizeof(recv_buf), 0,
++			(struct sockaddr *)&ss, &slen) <= 0) {
++		perror("Recvfrom received no packets");
++		goto close_client_fd;
++	}
++
++	struct in_addr addr = ((struct sockaddr_in *)&ss)->sin_addr;
++
++	CHECK(addr.s_addr != 0xac100164, "bpf", "bpf program failed to change saddr");
++
++	unsigned short port = ((struct sockaddr_in *)&ss)->sin_port;
++
++	CHECK(port != htons(5555), "bpf", "bpf program failed to change port");
++
++	err = bpf_map_lookup_elem(map_fd, &map_key, &map_value);
++	if (CHECK_FAIL(err))
++		goto close_client_fd;
++
++	CHECK(map_value != 1, "bpf", "bpf program returned failure");
++
++close_client_fd:
++	close(client_fd);
++
++close_bpf_object:
++	bpf_object__close(obj);
++
++close_server_fd:
++	close(server_fd);
++
++close_cgroup_fd:
++	close(cgroup_fd);
++}
+diff --git a/tools/testing/selftests/bpf/progs/cgroup_store_bytes.c b/tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
+new file mode 100644
+index 000000000000..dc28e46c5069
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
+@@ -0,0 +1,69 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <errno.h>
++#include <linux/bpf.h>
++#include <linux/if_ether.h>
++#include <linux/ip.h>
++#include <netinet/in.h>
++#include <netinet/udp.h>
++#include <bpf/bpf_helpers.h>
++
++#define IP_SRC_OFF offsetof(struct iphdr, saddr)
++#define UDP_SPORT_OFF (sizeof(struct iphdr) + offsetof(struct udphdr, source))
++
++#define IS_PSEUDO 0x10
++
++#define UDP_CSUM_OFF (sizeof(struct iphdr) + offsetof(struct udphdr, check))
++#define IP_CSUM_OFF offsetof(struct iphdr, check)
++#define TOS_OFF offsetof(struct iphdr, tos)
++
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(max_entries, 1);
++	__type(key, __u32);
++	__type(value, __u32);
++} test_result SEC(".maps");
++
++SEC("cgroup_skb/egress")
++int cgroup_store_bytes(struct __sk_buff *skb)
++{
++	struct ethhdr eth;
++	struct iphdr iph;
++	struct udphdr udph;
++
++	__u32 map_key = 0;
++	__u32 test_passed = 0;
++
++	if (bpf_skb_load_bytes_relative(skb, 0, &iph, sizeof(iph),
++									BPF_HDR_START_NET))
++		goto fail;
++
++	if (bpf_skb_load_bytes_relative(skb, sizeof(iph), &udph, sizeof(udph),
++									BPF_HDR_START_NET))
++		goto fail;
++
++	__u32 old_ip = htonl(iph.saddr);
++	__u32 new_ip = 0xac100164; //172.16.1.100
++
++	bpf_l4_csum_replace(skb, UDP_CSUM_OFF, old_ip, new_ip,
++						IS_PSEUDO | sizeof(new_ip));
++	bpf_l3_csum_replace(skb, IP_CSUM_OFF, old_ip, new_ip, sizeof(new_ip));
++	if (bpf_skb_store_bytes(skb, IP_SRC_OFF, &new_ip, sizeof(new_ip), 0) < 0)
++		goto fail;
++
++	__u16 old_port = udph.source;
++	__u16 new_port = 5555;
++
++	bpf_l4_csum_replace(skb, UDP_CSUM_OFF, old_port, new_port,
++						IS_PSEUDO | sizeof(new_port));
++	if (bpf_skb_store_bytes(skb, UDP_SPORT_OFF, &new_port, sizeof(new_port),
++							0) < 0)
++		goto fail;
++
++	test_passed = 1;
++
++fail:
++	bpf_map_update_elem(&test_result, &map_key, &test_passed, BPF_ANY);
++
++	return 1;
++}
 -- 
-2.34.1.575.g55b058a8bb-goog
+2.25.1
 
