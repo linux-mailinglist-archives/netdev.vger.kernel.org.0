@@ -2,97 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A387487556
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 11:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07BEA4875EC
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 11:53:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346668AbiAGKSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 05:18:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43618 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236825AbiAGKSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 05:18:30 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EC7C061245;
-        Fri,  7 Jan 2022 02:18:30 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id u13so13778504lff.12;
-        Fri, 07 Jan 2022 02:18:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ZD7YhhDKTDEuWPGK6mctDTK0jWtVv9tGPVcti2ncc5k=;
-        b=J9hM2S2W//7Renbd6GkL5qPXmt079elMM0GXqfrQB8bkHfwRlLhzkhO33KtQAwdKmv
-         tQpd2Pg4yD4DDRJwYQY+SHXw59VYRK+hXqt2CIcnVnghmK5YRpKHm9Z/Xk70UCZLHnFG
-         2im7UDTxZAvArod99nAiyiWYuO0Lfey/HvFyeBjX5Ma1QmJQXnoGU2AmlPD6ULLnmCEr
-         HLyWwM7ag0F/dC6wmcq+UKl1Hna/W/vZ8hT3rzIOhbKq/5kLDx4Joaps4etoJcR3JhOo
-         4lSC7mBnVnuuiyQjkggLJrZmrgB33XFQYj/AjE0Zfc6DPcqDDVdXufjr8ubyIs7mL/cg
-         8eZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZD7YhhDKTDEuWPGK6mctDTK0jWtVv9tGPVcti2ncc5k=;
-        b=v9niW2LguHB9rXmKO42cibvFBZEE3EXKBBT7P2tD/6ZYAXAfuGeC5ac1j8RHPNmnKk
-         le88eDGEZ/FdOymhZbvAJqaRxG5LbV4tIWtLCM3Cw1avSRy7FutBjm71X/AvIEeEXR9U
-         mVR7m1O8YDzyp2ybpaJ6kNxknp0JfmIoi2Qy/6ky5RyU5FK0AmWGJEoplPkODFvg/KNQ
-         GK9w6rJ37LlOHEqCNUCHAJSLOk/q6cDjTTAjqOF+Ul9ZPiyL6bPuQFNyNSZLtzdTwQHG
-         69JCb+WKLJeg7ksLNyyPfyDOP54WhSnqCa+QZBKZwvgi3Iqfh7kANPdoH/Z9qWooSEaX
-         zH8g==
-X-Gm-Message-State: AOAM533Abrb7Lo20H26Tg5ob3KlOpWOooASkdeDQDmtJtoPyzAjDXFe2
-        ICSI9v0VjmjTALQtD6o4VOM=
-X-Google-Smtp-Source: ABdhPJyuWvpSKaSsRhcrqKuWxrCcZuzzF3OOvIJNaqgof+I90OpfyqhaN3mQRxgBjjEhpik+HnjtTA==
-X-Received: by 2002:ac2:4c51:: with SMTP id o17mr50588944lfk.558.1641550708531;
-        Fri, 07 Jan 2022 02:18:28 -0800 (PST)
-Received: from [192.168.1.11] ([217.117.245.67])
-        by smtp.gmail.com with ESMTPSA id by6sm551536ljb.78.2022.01.07.02.18.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Jan 2022 02:18:28 -0800 (PST)
-Message-ID: <d36007da-58a3-da8d-dcad-e41b1c5cffa8@gmail.com>
-Date:   Fri, 7 Jan 2022 13:18:27 +0300
+        id S237751AbiAGKxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 05:53:53 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:53544 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232217AbiAGKxx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 05:53:53 -0500
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 207A0kPj014394;
+        Fri, 7 Jan 2022 10:53:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2021-07-09; bh=jMR9O+FM9qEWJpGAyuSKDdDsmxJsR9AVCqr0pHidOwo=;
+ b=NhRSszZexyZmoHbLxUWBaCRi/zXrjPkJDCzF9xzokULus7+PwdbAizZnv7GdXWYjK9Zb
+ XPZd94WpmNxRQFgHNI/uQQv4xIV1kdHHlwncerqWuyxpONHViKhZVnQ3O991pALkIiEg
+ 30DNatthZKdNqJx+/DC8pYaVU0FxPvYcV4Gwz+bQ8cO8xAV01Hm7LNn7FLMB/XJB9q9c
+ JpTGZvuG84+5oqdzTHnwxYDUNFgCJMaGaIUk0IefGRQt1m9r7mX6izWdqb8c2vcObHrG
+ UzsNS1EJ1RliiNM5YVtsivkw0NPg0ERM2+DKr3/BDNeLImc4y8szGAPmER2uPnV8kxde Kw== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3de4v8hrav-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 07 Jan 2022 10:53:49 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 207AVeaS127051;
+        Fri, 7 Jan 2022 10:53:48 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 3de4vngpdw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 07 Jan 2022 10:53:48 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 207AnTKY192863;
+        Fri, 7 Jan 2022 10:53:47 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
+        by userp3020.oracle.com with ESMTP id 3de4vngpdk-1;
+        Fri, 07 Jan 2022 10:53:47 +0000
+From:   Aayush Agarwal <aayush.a.agarwal@oracle.com>
+Cc:     aayush.a.agarwal@oracle.com, stable@vger.kernel.org,
+        Hangyu Hua <hbh25y@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Remi Denis-Courmont <courmisch@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 4.14] phonet: refcount leak in pep_sock_accep
+Date:   Fri,  7 Jan 2022 02:53:32 -0800
+Message-Id: <20220107105332.61347-1-aayush.a.agarwal@oracle.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH] net: mcs7830: handle usb read errors properly
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, tanghui20@huawei.com,
-        andrew@lunn.ch, oneukum@suse.com, arnd@arndb.de,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
-References: <20220106225716.7425-1-paskripkin@gmail.com>
- <YdgQuavHA/T8tlHi@kroah.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <YdgQuavHA/T8tlHi@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: 32QdoMVOwQVHfzppnChfzo1Q79XUlUxF
+X-Proofpoint-GUID: 32QdoMVOwQVHfzppnChfzo1Q79XUlUxF
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Greg,
+From: Hangyu Hua <hbh25y@gmail.com>
 
-On 1/7/22 13:06, Greg KH wrote:
-> 
-> We have a usb core function that handles these "short reads are an
-> error" issue.  Perhaps usbnet_read_cmd() should be converted to use it
-> instead?
-> 
+commit bcd0f9335332 ("phonet: refcount leak in pep_sock_accep")
+upstream.
 
-I thought about it. I am not sure, that there are no callers, that 
-expect various length data. I remember, that I met such problem in atusb 
-driver, but it uses plain usb API.
+sock_hold(sk) is invoked in pep_sock_accept(), but __sock_put(sk) is not
+invoked in subsequent failure branches(pep_accept_conn() != 0).
 
-I believe, we can provide new usbnet API, that will use 
-usb_control_msg_{recv,send} and сarefully convert drivers to use it. 
-When there won't be any callers of the old one we can just rename it.
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20211209082839.33985-1-hbh25y@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Aayush Agarwal <aayush.a.agarwal@oracle.com>
+---
+ net/phonet/pep.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-I might be missing something about usbnet, so, please, correct me if I 
-am wrong here :)
+diff --git a/net/phonet/pep.c b/net/phonet/pep.c
+index b0d958cd1823..4c4a8a42ee88 100644
+--- a/net/phonet/pep.c
++++ b/net/phonet/pep.c
+@@ -881,6 +881,7 @@ static struct sock *pep_sock_accept(struct sock *sk, int flags, int *errp,
+ 
+ 	err = pep_accept_conn(newsk, skb);
+ 	if (err) {
++		__sock_put(sk);
+ 		sock_put(newsk);
+ 		newsk = NULL;
+ 		goto drop;
+-- 
+2.27.0
 
-
-
-
-With regards,
-Pavel Skripkin
