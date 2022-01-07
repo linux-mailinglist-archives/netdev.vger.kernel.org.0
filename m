@@ -2,124 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 413E3487095
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 03:39:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB76148709B
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 03:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345495AbiAGCjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 6 Jan 2022 21:39:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345477AbiAGCjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 21:39:23 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB556C061245;
-        Thu,  6 Jan 2022 18:39:22 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        id S1345477AbiAGCkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 6 Jan 2022 21:40:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40914 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345510AbiAGCkO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 6 Jan 2022 21:40:14 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 0F82943320;
-        Fri,  7 Jan 2022 02:39:11 +0000 (UTC)
-Message-ID: <8febb957-9653-dac4-ea20-f2750d400d01@marcan.st>
-Date:   Fri, 7 Jan 2022 11:39:09 +0900
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C754161EC0;
+        Fri,  7 Jan 2022 02:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 36306C36AE3;
+        Fri,  7 Jan 2022 02:40:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641523213;
+        bh=OCjOuulB7Vk7zMdgiPKl0MK+CpBj52TytPnoRbBc+00=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=k4lCnnBuzQZUxfjRPWMgA8PpsFoGNunyumf2wBNiapbj/0PTGs7HEqvvKHojrIe5L
+         +7ZEEBLcLuCHubIaz1Sepaj6NE/h9otGjY8RSy346DjhY9SDtNmn5+n/BImLWo76kr
+         +f4n/dwvlXBKpQrZ1y8lcZwUKyUmaeUBTZWaPhVKGHqCp5mLEPSCdQaaza6H4mpgNR
+         JTUnpEBQcFtlDchtplRWbJPFGt2idxffF4I5ta+eyj0T05tPNAyHipsA+7EgYXIFXB
+         OrD8J2PB/ZkzhS9C1hxTviI/LyOr5eLdGjqelhkZO/hm3sfiUvfxqWRY6T2u6Ptmnf
+         OauNSS+d3Mdjw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1C43BF79408;
+        Fri,  7 Jan 2022 02:40:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH v2 10/35] brcmfmac: firmware: Allow platform to override
- macaddr
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20220104072658.69756-1-marcan@marcan.st>
- <20220104072658.69756-11-marcan@marcan.st>
- <CAHp75VcU1vVSucvegmSiMLoKBoPoGW5XLmqVUG0vXGdeafm2Jw@mail.gmail.com>
- <b4f50489-fa4b-2c40-31ad-1b74e916cdb4@marcan.st>
- <CAHp75VdzQhkj3ovFSAG4g1tD1scBK7H0xFFot0rfz2u6i8a3FA@mail.gmail.com>
-From:   Hector Martin <marcan@marcan.st>
-In-Reply-To: <CAHp75VdzQhkj3ovFSAG4g1tD1scBK7H0xFFot0rfz2u6i8a3FA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: bpf-next 2022-01-06
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164152321311.5032.9355955440972993212.git-patchwork-notify@kernel.org>
+Date:   Fri, 07 Jan 2022 02:40:13 +0000
+References: <20220107013626.53943-1-alexei.starovoitov@gmail.com>
+In-Reply-To: <20220107013626.53943-1-alexei.starovoitov@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, kuba@kernel.org,
+        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/01/06 23:20, Andy Shevchenko wrote:
-> On Wed, Jan 5, 2022 at 3:26 PM Hector Martin <marcan@marcan.st> wrote:
->> On 04/01/2022 23.23, Andy Shevchenko wrote:
->>> On Tue, Jan 4, 2022 at 9:29 AM Hector Martin <marcan@marcan.st> wrote:
-> 
-> ...
-> 
->>>> +#define BRCMF_FW_MACADDR_FMT                   "macaddr=%pM"
-> 
->>>> +       snprintf(&nvp->nvram[nvp->nvram_len], BRCMF_FW_MACADDR_LEN + 1,
->>>> +                BRCMF_FW_MACADDR_FMT, mac);
->>>
->>> Please, avoid using implict format string, it's dangerous from security p.o.v.
->>
->> What do you mean by implicit format string?
-> 
-> When I read the above code I feel uncomfortable because no-one can see
-> (without additional action and more reading and checking) if it's
-> correct or not. This is potential to be error prone.
-> 
->> The format string is at the
->> top of the file and its length is right next to it, which makes it
->> harder for them to accidentally fall out of sync.
-> 
-> It is not an argument. Just you may do the same in the code directly
-> and more explicitly:
+Hello:
 
-The point is that BRCMF_FW_MACADDR_LEN and BRCMF_FW_MACADDR_FMT need to
-be in sync, and BRCMF_FW_MACADDR_LEN is used in two different places. If
-I inline the format string into the code, someone could change it
-without changing the length, or changing the length inline only next to
-the format string. Then we overflow the NVRAM buffer because the
-allocation is not sized properly.
+This pull request was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-By having them as defines, it is obvious that they go together, and if
-one changes the other one has to change too, and the nvram allocation
-can't end up improperly sized as long as they are kept in sync.
-
-> Also you don't check the return code of snprintf which means that you
-> don't care about the result, which seems to me wrong approach. If you
-> don't care about the result, so it means it's not very important,
-> right?
+On Thu,  6 Jan 2022 17:36:26 -0800 you wrote:
+> Hi David, hi Jakub,
 > 
+> The following pull-request contains BPF updates for your *net-next* tree.
+> 
+> We've added 41 non-merge commits during the last 2 day(s) which contain
+> a total of 36 files changed, 1214 insertions(+), 368 deletions(-).
+> 
+> [...]
 
-That snprintf can never fail as long as the format string/length are in
-sync. I'll make it BUG_ON(... != size), so it complains loudly if
-someone screws up the format string in the future.
+Here is the summary with links:
+  - pull-request: bpf-next 2022-01-06
+    https://git.kernel.org/netdev/net-next/c/257367c0c9d8
 
+You are awesome, thank you!
 -- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
