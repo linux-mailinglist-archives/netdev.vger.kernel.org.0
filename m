@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 766D848754F
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 11:15:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91239487554
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 11:18:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346594AbiAGKPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 05:15:00 -0500
-Received: from www62.your-server.de ([213.133.104.62]:40170 "EHLO
+        id S1346655AbiAGKSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 05:18:12 -0500
+Received: from www62.your-server.de ([213.133.104.62]:41464 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236825AbiAGKO7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 05:14:59 -0500
+        with ESMTP id S236825AbiAGKSL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 05:18:11 -0500
 Received: from sslproxy02.your-server.de ([78.47.166.47])
         by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <daniel@iogearbox.net>)
-        id 1n5mGq-000BB7-92; Fri, 07 Jan 2022 11:14:52 +0100
+        id 1n5mJs-000CBa-0V; Fri, 07 Jan 2022 11:18:00 +0100
 Received: from [85.1.206.226] (helo=linux.home)
         by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1n5mGp-000Fdg-UZ; Fri, 07 Jan 2022 11:14:51 +0100
-Subject: Re: [PATCH] bpf: allow setting mount device for bpffs
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, David Howells <dhowells@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>, christian.brauner@ubuntu.com
-References: <20211226165649.7178-1-laoar.shao@gmail.com>
- <616eab60-0f56-7309-4f0f-c0f96719b688@iogearbox.net>
- <CALOAHbBi4HYUd+AD+F8DrCUPrh8-E3HJC=RPMTw3dNLKHAHczg@mail.gmail.com>
+        id 1n5mJr-0003PV-If; Fri, 07 Jan 2022 11:17:59 +0100
+Subject: Re: [PATCH 5/7] mips: bpf: Add JIT workarounds for CPU errata
+To:     Huang Pei <huangpei@loongson.cn>,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Cc:     ast@kernel.org, andrii@kernel.org, paulburton@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        tsbogend@alpha.franken.de, chenhuacai@kernel.org,
+        jiaxun.yang@flygoat.com, yangtiezhu@loongson.cn,
+        tony.ambardar@gmail.com, bpf@vger.kernel.org,
+        linux-mips@vger.kernel.org, netdev@vger.kernel.org
+References: <20211005165408.2305108-1-johan.almbladh@anyfinetworks.com>
+ <20211005165408.2305108-6-johan.almbladh@anyfinetworks.com>
+ <20220107092456.kq6t2fdaf2bq36db@loongson-pc>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <e3598aba-490f-95a9-f92d-52cf83175d42@iogearbox.net>
-Date:   Fri, 7 Jan 2022 11:14:51 +0100
+Message-ID: <f7e6800b-c9e5-4e4b-291c-f19338471fd0@iogearbox.net>
+Date:   Fri, 7 Jan 2022 11:17:59 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <CALOAHbBi4HYUd+AD+F8DrCUPrh8-E3HJC=RPMTw3dNLKHAHczg@mail.gmail.com>
+In-Reply-To: <20220107092456.kq6t2fdaf2bq36db@loongson-pc>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -49,109 +50,179 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/22 6:48 AM, Yafang Shao wrote:
-> On Wed, Jan 5, 2022 at 9:24 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 12/26/21 5:56 PM, Yafang Shao wrote:
->>> We noticed our tc ebpf tools can't start after we upgrade our in-house
->>> kernel version from 4.19 to 5.10. That is because of the behaviour change
->>> in bpffs caused by commit
->>> d2935de7e4fd ("vfs: Convert bpf to use the new mount API").
->>>
->>> In our tc ebpf tools, we do strict environment check. If the enrioment is
->>> not match, we won't allow to start the ebpf progs. One of the check is
->>> whether bpffs is properly mounted. The mount information of bpffs in
->>> kernel-4.19 and kernel-5.10 are as follows,
->>>
->>> - kenrel 4.19
->>> $ mount -t bpf bpffs /sys/fs/bpf
->>> $ mount -t bpf
->>> bpffs on /sys/fs/bpf type bpf (rw,relatime)
->>>
->>> - kernel 5.10
->>> $ mount -t bpf bpffs /sys/fs/bpf
->>> $ mount -t bpf
->>> none on /sys/fs/bpf type bpf (rw,relatime)
->>>
->>> The device name in kernel-5.10 is displayed as none instead of bpffs,
->>> then our environment check fails. Currently we modify the tools to adopt to
->>> the kernel behaviour change, but I think we'd better change the kernel code
->>> to keep the behavior consistent.
->>>
->>> After this change, the mount information will be displayed the same with
->>> the behavior in kernel-4.19, for example,
->>>
->>> $ mount -t bpf bpffs /sys/fs/bpf
->>> $ mount -t bpf
->>> bpffs on /sys/fs/bpf type bpf (rw,relatime)
->>>
->>> Fixes: d2935de7e4fd ("vfs: Convert bpf to use the new mount API")
->>> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
->>> Cc: David Howells <dhowells@redhat.com>
->>> ---
->>>    kernel/bpf/inode.c | 18 ++++++++++++++++--
->>>    1 file changed, 16 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
->>> index 80da1db47c68..5a8b729afa91 100644
->>> --- a/kernel/bpf/inode.c
->>> +++ b/kernel/bpf/inode.c
->>> @@ -648,12 +648,26 @@ static int bpf_parse_param(struct fs_context *fc, struct fs_parameter *param)
->>>        int opt;
->>>
->>>        opt = fs_parse(fc, bpf_fs_parameters, param, &result);
->>> -     if (opt < 0)
->>> +     if (opt < 0) {
->>>                /* We might like to report bad mount options here, but
->>>                 * traditionally we've ignored all mount options, so we'd
->>>                 * better continue to ignore non-existing options for bpf.
->>>                 */
->>> -             return opt == -ENOPARAM ? 0 : opt;
->>> +             if (opt == -ENOPARAM) {
->>> +                     if (strcmp(param->key, "source") == 0) {
->>> +                             if (param->type != fs_value_is_string)
->>> +                                     return 0;
->>> +                             if (fc->source)
->>> +                                     return 0;
->>> +                             fc->source = param->string;
->>> +                             param->string = NULL;
->>> +                     }
->>> +
->>> +                     return 0;
->>> +             }
->>> +
->>> +             return opt;
->>> +     }
->>
->> I don't think we need to open code this? Couldn't we just do something like:
->>
->>           [...]
->>
->>           opt = fs_parse(fc, bpf_fs_parameters, param, &result);
->>           if (opt == -ENOPARAM) {
->>                   opt = vfs_parse_fs_param_source(fc, param);
->>                   if (opt != -ENOPARAM)
->>                           return opt;
->>                   return 0;
->>           }
->>           if (opt < 0)
->>                   return opt;
->>
->>           [...]
->>
->> See also 0858d7da8a09 ("ramfs: fix mount source show for ramfs") where they
->> had a similar issue.
+Hi Huang,
+
+On 1/7/22 10:25 AM, Huang Pei wrote:
+> Hi, for Loongson3 errata, we need another sycn for cmpxchg
 > 
-> Thanks for the suggestion. I will update it.
+>   @@ -414,12 +415,13 @@ static void emit_cmpxchg_r64(struct jit_context *ctx, u8 dst, u8 src, s16 off)
+>    	u8 t1 = MIPS_R_T6;
+>    	u8 t2 = MIPS_R_T7;
+>    
+>   +	LLSC_sync(ctx);
+>    	emit(ctx, lld, t1, off, dst);
+>    	emit(ctx, bne, t1, r0, 12);
+>    	emit(ctx, move, t2, src);      /* Delay slot */
+>    	emit(ctx, scd, t2, off, dst);
+>   -	emit(ctx, beqz, t2, -20);
+>   -	emit(ctx, move, r0, t1);      /* Delay slot */
+>   +	emit(ctx, LLSC_beqz, t2, -20 - LLSC_offset);
+>   +	emit(ctx, move, r0, t1);       /* Delay slot */
+>   +	LLSC_sync(ctx);	
 
-Sounds good, thanks!
+Please craft an official fix for bpf tree and have Johan Almbladh in Cc
+for review / ack.
 
-> nit:  vfs_parse_fs_param_source() is introduced in commit d1d488d81370
-> ("fs: add vfs_parse_fs_param_source() helper"), so the updated one
-> can't be directly backported to 5.10.
+(Please also make sure that this passes the lib/test_bpf.ko suite.)
 
-Right, so for stable trees that don't have this commit, you could use your
-patch here if needed. But for upstream, lets not open code it given we have
-the helper for it.
-
-Thanks,
+Thanks a lot,
 Daniel
+
+> On Tue, Oct 05, 2021 at 06:54:06PM +0200, Johan Almbladh wrote:
+>> This patch adds workarounds for the following CPU errata to the MIPS
+>> eBPF JIT, if enabled in the kernel configuration.
+>>
+>>    - R10000 ll/sc weak ordering
+>>    - Loongson-3 ll/sc weak ordering
+>>    - Loongson-2F jump hang
+>>
+>> The Loongson-2F nop errata is implemented in uasm, which the JIT uses,
+>> so no additional mitigations are needed for that.
+>>
+>> Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+>> ---
+>>   arch/mips/net/bpf_jit_comp.c   |  6 ++++--
+>>   arch/mips/net/bpf_jit_comp.h   | 26 +++++++++++++++++++++++++-
+>>   arch/mips/net/bpf_jit_comp64.c | 10 ++++++----
+>>   3 files changed, 35 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/arch/mips/net/bpf_jit_comp.c b/arch/mips/net/bpf_jit_comp.c
+>> index 7eb95fc57710..b17130d510d4 100644
+>> --- a/arch/mips/net/bpf_jit_comp.c
+>> +++ b/arch/mips/net/bpf_jit_comp.c
+>> @@ -404,6 +404,7 @@ void emit_alu_r(struct jit_context *ctx, u8 dst, u8 src, u8 op)
+>>   /* Atomic read-modify-write (32-bit) */
+>>   void emit_atomic_r(struct jit_context *ctx, u8 dst, u8 src, s16 off, u8 code)
+>>   {
+>> +	LLSC_sync(ctx);
+>>   	emit(ctx, ll, MIPS_R_T9, off, dst);
+>>   	switch (code) {
+>>   	case BPF_ADD:
+>> @@ -427,7 +428,7 @@ void emit_atomic_r(struct jit_context *ctx, u8 dst, u8 src, s16 off, u8 code)
+>>   		break;
+>>   	}
+>>   	emit(ctx, sc, MIPS_R_T8, off, dst);
+>> -	emit(ctx, beqz, MIPS_R_T8, -16);
+>> +	emit(ctx, LLSC_beqz, MIPS_R_T8, -16 - LLSC_offset);
+>>   	emit(ctx, nop); /* Delay slot */
+>>   
+>>   	if (code & BPF_FETCH) {
+>> @@ -439,11 +440,12 @@ void emit_atomic_r(struct jit_context *ctx, u8 dst, u8 src, s16 off, u8 code)
+>>   /* Atomic compare-and-exchange (32-bit) */
+>>   void emit_cmpxchg_r(struct jit_context *ctx, u8 dst, u8 src, u8 res, s16 off)
+>>   {
+>> +	LLSC_sync(ctx);
+>>   	emit(ctx, ll, MIPS_R_T9, off, dst);
+>>   	emit(ctx, bne, MIPS_R_T9, res, 12);
+>>   	emit(ctx, move, MIPS_R_T8, src);     /* Delay slot */
+>>   	emit(ctx, sc, MIPS_R_T8, off, dst);
+>> -	emit(ctx, beqz, MIPS_R_T8, -20);
+>> +	emit(ctx, LLSC_beqz, MIPS_R_T8, -20 - LLSC_offset);
+>>   	emit(ctx, move, res, MIPS_R_T9);     /* Delay slot */
+>>   	clobber_reg(ctx, res);
+>>   }
+>> diff --git a/arch/mips/net/bpf_jit_comp.h b/arch/mips/net/bpf_jit_comp.h
+>> index 44787cf377dd..6f3a7b07294b 100644
+>> --- a/arch/mips/net/bpf_jit_comp.h
+>> +++ b/arch/mips/net/bpf_jit_comp.h
+>> @@ -87,7 +87,7 @@ struct jit_context {
+>>   };
+>>   
+>>   /* Emit the instruction if the JIT memory space has been allocated */
+>> -#define emit(ctx, func, ...)					\
+>> +#define __emit(ctx, func, ...)					\
+>>   do {								\
+>>   	if ((ctx)->target != NULL) {				\
+>>   		u32 *p = &(ctx)->target[ctx->jit_index];	\
+>> @@ -95,6 +95,30 @@ do {								\
+>>   	}							\
+>>   	(ctx)->jit_index++;					\
+>>   } while (0)
+>> +#define emit(...) __emit(__VA_ARGS__)
+>> +
+>> +/* Workaround for R10000 ll/sc errata */
+>> +#ifdef CONFIG_WAR_R10000
+>> +#define LLSC_beqz	beqzl
+>> +#else
+>> +#define LLSC_beqz	beqz
+>> +#endif
+>> +
+>> +/* Workaround for Loongson-3 ll/sc errata */
+>> +#ifdef CONFIG_CPU_LOONGSON3_WORKAROUNDS
+>> +#define LLSC_sync(ctx)	emit(ctx, sync, 0)
+>> +#define LLSC_offset	4
+>> +#else
+>> +#define LLSC_sync(ctx)
+>> +#define LLSC_offset	0
+>> +#endif
+>> +
+>> +/* Workaround for Loongson-2F jump errata */
+>> +#ifdef CONFIG_CPU_JUMP_WORKAROUNDS
+>> +#define JALR_MASK	0xffffffffcfffffffULL
+>> +#else
+>> +#define JALR_MASK	(~0ULL)
+>> +#endif
+>>   
+>>   /*
+>>    * Mark a BPF register as accessed, it needs to be
+>> diff --git a/arch/mips/net/bpf_jit_comp64.c b/arch/mips/net/bpf_jit_comp64.c
+>> index ca49d3ef7ff4..1f1f7b87f213 100644
+>> --- a/arch/mips/net/bpf_jit_comp64.c
+>> +++ b/arch/mips/net/bpf_jit_comp64.c
+>> @@ -375,6 +375,7 @@ static void emit_atomic_r64(struct jit_context *ctx,
+>>   	u8 t1 = MIPS_R_T6;
+>>   	u8 t2 = MIPS_R_T7;
+>>   
+>> +	LLSC_sync(ctx);
+>>   	emit(ctx, lld, t1, off, dst);
+>>   	switch (code) {
+>>   	case BPF_ADD:
+>> @@ -398,7 +399,7 @@ static void emit_atomic_r64(struct jit_context *ctx,
+>>   		break;
+>>   	}
+>>   	emit(ctx, scd, t2, off, dst);
+>> -	emit(ctx, beqz, t2, -16);
+>> +	emit(ctx, LLSC_beqz, t2, -16 - LLSC_offset);
+>>   	emit(ctx, nop); /* Delay slot */
+>>   
+>>   	if (code & BPF_FETCH) {
+>> @@ -414,12 +415,13 @@ static void emit_cmpxchg_r64(struct jit_context *ctx, u8 dst, u8 src, s16 off)
+>>   	u8 t1 = MIPS_R_T6;
+>>   	u8 t2 = MIPS_R_T7;
+>>   
+>> +	LLSC_sync(ctx);
+>>   	emit(ctx, lld, t1, off, dst);
+>>   	emit(ctx, bne, t1, r0, 12);
+>>   	emit(ctx, move, t2, src);      /* Delay slot */
+>>   	emit(ctx, scd, t2, off, dst);
+>> -	emit(ctx, beqz, t2, -20);
+>> -	emit(ctx, move, r0, t1);      /* Delay slot */
+>> +	emit(ctx, LLSC_beqz, t2, -20 - LLSC_offset);
+>> +	emit(ctx, move, r0, t1);       /* Delay slot */
+>>   
+>>   	clobber_reg(ctx, r0);
+>>   }
+>> @@ -443,7 +445,7 @@ static int emit_call(struct jit_context *ctx, const struct bpf_insn *insn)
+>>   	push_regs(ctx, ctx->clobbered & JIT_CALLER_REGS, 0, 0);
+>>   
+>>   	/* Emit function call */
+>> -	emit_mov_i64(ctx, tmp, addr);
+>> +	emit_mov_i64(ctx, tmp, addr & JALR_MASK);
+>>   	emit(ctx, jalr, MIPS_R_RA, tmp);
+>>   	emit(ctx, nop); /* Delay slot */
+>>   
+>> -- 
+>> 2.30.2
+>>
+> 
+
