@@ -2,278 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F807487D7B
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 21:07:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B77C9487D84
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 21:10:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233989AbiAGUHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 15:07:52 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:45670 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232029AbiAGUHv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 15:07:51 -0500
+        id S234050AbiAGUKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 15:10:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37450 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231355AbiAGUKO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 15:10:14 -0500
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F73C061574;
+        Fri,  7 Jan 2022 12:10:13 -0800 (PST)
+Received: by mail-il1-x131.google.com with SMTP id x15so5476522ilc.5;
+        Fri, 07 Jan 2022 12:10:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1641586071; x=1673122071;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=pXmzwivMEFxYti8txjU8dlwtQKd5WAOBCgIXAdySCKg=;
-  b=APXVBjF5EOJYPSEL1fY74QQXNFVOJLnFpLd9wDTbjW8dM8WJ35pZbnQf
-   7z495xuEyimUZlxxGWUOPIJqBadOeP7aYMwC7PJAuFr0wWGyyqkVlTGmK
-   Uvh/qROoM1E8FYED7fL6/kynOjWdFgcZje2ViJeisETrysU8/yMB1C01q
-   4=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 07 Jan 2022 12:07:51 -0800
-X-QCInternal: smtphost
-Received: from hu-twear-lv.qualcomm.com (HELO hu-devc-sd-u20-a-1.qualcomm.com) ([10.47.235.107])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 07 Jan 2022 12:07:51 -0800
-Received: by hu-devc-sd-u20-a-1.qualcomm.com (Postfix, from userid 202676)
-        id B0AC65D8; Fri,  7 Jan 2022 12:06:50 -0800 (PST)
-From:   Tyler Wear <quic_twear@quicinc.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     maze@google.com, yhs@fb.com, kafai@fb.com, toke@redhat.com,
-        daniel@iogearbox.net, Tyler Wear <quic_twear@quicinc.com>
-Subject: [PATCH bpf-next v4] Add skb_store_bytes() for BPF_PROG_TYPE_CGROUP_SKB
-Date:   Fri,  7 Jan 2022 12:06:00 -0800
-Message-Id: <20220107200600.1688870-1-quic_twear@quicinc.com>
-X-Mailer: git-send-email 2.25.1
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8QIhxmCvKbO3DvUUrpQLaxUs1aKpnKSDTCEltov4H8E=;
+        b=oIsFPBc8TxQ0oM8DDQASnSeiIuLK4jIvkaJQsKoksSpfN2tsTRlhiXkGQiOxKeRPLn
+         vUo3Osz6AfkEQQny+2Fyv6AvjaB/+4/Ow5ean+ccb9aTnVoXhvx1/dZNWVORsR2TDron
+         pKHMxdMtrzy3C5d2EXTFWPHonf4Olgd7qadmYcIiYZQHyByKii9VXENUnodDR/jTwG6T
+         7Y4oro/V52hRghIoY5A1gfczdaQQRjyQlBwPI/IgmZdjre6AFeXoj/DLggVV/bufg9fF
+         FuU79R34wkgd7vtxrzP1MJSSgKPO1n0yj5GlT7BCLBPEileRmxdsS/uHVeSByY84Rxw1
+         FvTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8QIhxmCvKbO3DvUUrpQLaxUs1aKpnKSDTCEltov4H8E=;
+        b=HsNOyq1m7mC/z3RzvFevffAp5KCRB1n1N7v2O+tn72NUdsWSejP/CKDN6i29nnVjKB
+         1wKh5fiKORV9th+yIuwoOCZCrNE5hTOpjuHUVUatINIGpqOhGKVyIRnRqLWKXA1w801r
+         37PMKPKG+f+gTad0AF4E0+HgMy3nsqvtCkBR38N39g/P02Jze/L2Nz32cHeXX9x5LUkY
+         mENB5k11M/UxT5e6XHpNm9q/iCxqZBNtO1UTMaly6r7eTW2dcxnNxTCYwQiZVx2Nowck
+         5KplK9GOUiqxskwHQXK/HFeNFuLwdKAPU8l07cMY4sATBxgLPYRhN4/Q0jBgqbckjaGs
+         UVVw==
+X-Gm-Message-State: AOAM5306MYvlAgzOCiaTCCOzE/x661/PqL93Fg7bLYso+O9S75KdSDFa
+        hsioMsJEIOzsFC8RwnTcckSbv0c72nfP6M2Iics=
+X-Google-Smtp-Source: ABdhPJxQnUpG1KGsv7lcJfa3f7MIEXog7VRSgWmQns70TznlOAeX+NWfwxsGwmZ3PXWmfelhkTOpit07Z8RmPTfECTM=
+X-Received: by 2002:a05:6e02:b4c:: with SMTP id f12mr29109993ilu.252.1641586213274;
+ Fri, 07 Jan 2022 12:10:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220102162115.1506833-1-memxor@gmail.com> <20220102162115.1506833-12-memxor@gmail.com>
+ <20220105062033.lufu57xhpyou3sie@ast-mbp.dhcp.thefacebook.com>
+ <20220106090400.6p34bempgv2wzocj@apollo.legion> <CAEf4BzYsVC0cOuxVB2A-WWv+zW7zEFNQGrD0WKWhhOWDbYw3PQ@mail.gmail.com>
+ <20220107072236.ayhibs3bllcl4d6c@apollo.legion>
+In-Reply-To: <20220107072236.ayhibs3bllcl4d6c@apollo.legion>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 7 Jan 2022 12:10:02 -0800
+Message-ID: <CAEf4Bzatpi7dWR3mo4gAXGtmYwWLQqyh3xkLdJO_wAOVhU1XNA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 11/11] selftests/bpf: Add test for race in btf_try_get_module
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Need to modify the ds field to support upcoming Wifi QoS Alliance spec.
-Instead of adding generic function for just modifying the ds field,
-add skb_store_bytes for BPF_PROG_TYPE_CGROUP_SKB.
-This allows other fields in the network and transport header to be
-modified in the future.
+On Thu, Jan 6, 2022 at 11:22 PM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> On Fri, Jan 07, 2022 at 01:09:04AM IST, Andrii Nakryiko wrote:
+> > On Thu, Jan 6, 2022 at 1:04 AM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+> > >
+> > > On Wed, Jan 05, 2022 at 11:50:33AM IST, Alexei Starovoitov wrote:
+> > > > On Sun, Jan 02, 2022 at 09:51:15PM +0530, Kumar Kartikeya Dwivedi wrote:
+> > > > > This adds a complete test case to ensure we never take references to
+> > > > > modules not in MODULE_STATE_LIVE, which can lead to UAF, and it also
+> > > > > ensures we never access btf->kfunc_set_tab in an inconsistent state.
+> > > > >
+> > > > > The test uses userfaultfd to artifically widen the race.
+> > > >
+> > > > Fancy!
+> > > > Does it have to use a different module?
+> > > > Can it be part of bpf_testmod somehow?
+> > >
+> > > I was thinking of doing it with bpf_testmod, but then I realised it would be a
+> > > problem with parallel mode of test_progs, where another selftest in parallel may
+> > > rely on bpf_testmod (which this test would unload, load and make it fault, and
+> > > then fail the load before restoring it by loading again), so I went with
+> > > bpf_testmod.
+> > >
+> > > Maybe we can hardcode a list of tests to be executed serially in --workers=n > 1
+> > > mode? All serial tests are then executed in the beginning (or end), and then it
+> > > starts invoking others in parallel as usual.
+> >
+> > you can mark test as serial with "serial_" prefix, grep for that, we
+>
+> Thanks for pointing that out!
+>
+> > have a bunch of tests like this. But if you are going to unload and
+> > reload bpf_testmod, you will be forcing any bpf_testmod-using test to
+> > be serial, which I'm not sure is such a great idea.
+> >
+>
+> Didn't get the last part, based on my reading it will execute serial tests one
+> by one (after finishing parallel tests), so if my serial test restores the
+> loaded bpf_testmod after completing, it shouldn't really impact other tests,
+> right? Did I miss something?
 
-Checksum API's also need to be added for completeness.
+No, sorry, my bad. You are right, we'll run all serial tests after (or
+maybe before, don't remember) all the parallel tests completed. So
+yeah, just mark this one serial.
 
-It is not possible to use CGROUP_(SET|GET)SOCKOPT since
-the policy may change during runtime and would result
-in a large number of entries with wildcards.
-
-V4 patch fixes warnings and errors from checkpatch.
-
-The existing check for bpf_try_make_writable() should mean that
-skb_share_check() is not needed.
-
-Signed-off-by: Tyler Wear <quic_twear@quicinc.com>
----
- net/core/filter.c                             |  10 ++
- .../bpf/prog_tests/cgroup_store_bytes.c       | 104 ++++++++++++++++++
- .../selftests/bpf/progs/cgroup_store_bytes.c  |  69 ++++++++++++
- 3 files changed, 183 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
- create mode 100644 tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
-
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 6102f093d59a..ce01a8036361 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7299,6 +7299,16 @@ cg_skb_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_sk_storage_delete_proto;
- 	case BPF_FUNC_perf_event_output:
- 		return &bpf_skb_event_output_proto;
-+	case BPF_FUNC_skb_store_bytes:
-+		return &bpf_skb_store_bytes_proto;
-+	case BPF_FUNC_csum_update:
-+		return &bpf_csum_update_proto;
-+	case BPF_FUNC_csum_level:
-+		return &bpf_csum_level_proto;
-+	case BPF_FUNC_l3_csum_replace:
-+		return &bpf_l3_csum_replace_proto;
-+	case BPF_FUNC_l4_csum_replace:
-+		return &bpf_l4_csum_replace_proto;
- #ifdef CONFIG_SOCK_CGROUP_DATA
- 	case BPF_FUNC_skb_cgroup_id:
- 		return &bpf_skb_cgroup_id_proto;
-diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c b/tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
-new file mode 100644
-index 000000000000..4b87ff003008
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
-@@ -0,0 +1,104 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <test_progs.h>
-+#include <network_helpers.h>
-+
-+void test_cgroup_store_bytes(void)
-+{
-+	int server_fd, cgroup_fd, prog_fd, map_fd, client_fd;
-+	int err;
-+	struct bpf_object *obj;
-+	struct bpf_program *prog;
-+	struct bpf_map *test_result;
-+	__u32 duration = 0;
-+
-+	__u32 map_key = 0;
-+	__u32 map_value = 0;
-+
-+	cgroup_fd = test__join_cgroup("/cgroup_store_bytes");
-+	if (CHECK_FAIL(cgroup_fd < 0))
-+		return;
-+
-+	server_fd = start_server(AF_INET, SOCK_DGRAM, NULL, 0, 0);
-+	if (CHECK_FAIL(server_fd < 0))
-+		goto close_cgroup_fd;
-+
-+	err = bpf_prog_load("./cgroup_store_bytes.o", BPF_PROG_TYPE_CGROUP_SKB,
-+						&obj, &prog_fd);
-+
-+	if (CHECK_FAIL(err))
-+		goto close_server_fd;
-+
-+	test_result = bpf_object__find_map_by_name(obj, "test_result");
-+	if (CHECK_FAIL(!test_result))
-+		goto close_bpf_object;
-+
-+	map_fd = bpf_map__fd(test_result);
-+	if (map_fd < 0)
-+		goto close_bpf_object;
-+
-+	prog = bpf_object__find_program_by_name(obj, "cgroup_store_bytes");
-+	if (CHECK_FAIL(!prog))
-+		goto close_bpf_object;
-+
-+	err = bpf_prog_attach(prog_fd, cgroup_fd, BPF_CGROUP_INET_EGRESS,
-+							BPF_F_ALLOW_MULTI);
-+	if (CHECK_FAIL(err))
-+		goto close_bpf_object;
-+
-+	client_fd = start_server(AF_INET, SOCK_DGRAM, NULL, 0, 0);
-+	if (CHECK_FAIL(client_fd < 0))
-+		goto close_bpf_object;
-+
-+	struct sockaddr server_addr;
-+	socklen_t addrlen = sizeof(server_addr);
-+
-+	if (getsockname(server_fd, &server_addr, &addrlen)) {
-+		perror("Failed to get server addr");
-+		return -1;
-+	}
-+
-+	char buf[] = "testing";
-+
-+	if (CHECK_FAIL(sendto(client_fd, buf, sizeof(buf), 0, &server_addr,
-+			sizeof(server_addr)) != sizeof(buf))) {
-+		perror("Can't write on client");
-+		goto close_client_fd;
-+	}
-+
-+	struct sockaddr_storage ss;
-+	char recv_buf[BUFSIZ];
-+	socklen_t slen;
-+
-+	if (recvfrom(server_fd, &recv_buf, sizeof(recv_buf), 0,
-+			(struct sockaddr *)&ss, &slen) <= 0) {
-+		perror("Recvfrom received no packets");
-+		goto close_client_fd;
-+	}
-+
-+	struct in_addr addr = ((struct sockaddr_in *)&ss)->sin_addr;
-+
-+	CHECK(addr.s_addr != 0xac100164, "bpf", "bpf program failed to change saddr");
-+
-+	unsigned short port = ((struct sockaddr_in *)&ss)->sin_port;
-+
-+	CHECK(port != htons(5555), "bpf", "bpf program failed to change port");
-+
-+	err = bpf_map_lookup_elem(map_fd, &map_key, &map_value);
-+	if (CHECK_FAIL(err))
-+		goto close_client_fd;
-+
-+	CHECK(map_value != 1, "bpf", "bpf program returned failure");
-+
-+close_client_fd:
-+	close(client_fd);
-+
-+close_bpf_object:
-+	bpf_object__close(obj);
-+
-+close_server_fd:
-+	close(server_fd);
-+
-+close_cgroup_fd:
-+	close(cgroup_fd);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/cgroup_store_bytes.c b/tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
-new file mode 100644
-index 000000000000..dc28e46c5069
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
-@@ -0,0 +1,69 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <errno.h>
-+#include <linux/bpf.h>
-+#include <linux/if_ether.h>
-+#include <linux/ip.h>
-+#include <netinet/in.h>
-+#include <netinet/udp.h>
-+#include <bpf/bpf_helpers.h>
-+
-+#define IP_SRC_OFF offsetof(struct iphdr, saddr)
-+#define UDP_SPORT_OFF (sizeof(struct iphdr) + offsetof(struct udphdr, source))
-+
-+#define IS_PSEUDO 0x10
-+
-+#define UDP_CSUM_OFF (sizeof(struct iphdr) + offsetof(struct udphdr, check))
-+#define IP_CSUM_OFF offsetof(struct iphdr, check)
-+#define TOS_OFF offsetof(struct iphdr, tos)
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u32);
-+} test_result SEC(".maps");
-+
-+SEC("cgroup_skb/egress")
-+int cgroup_store_bytes(struct __sk_buff *skb)
-+{
-+	struct ethhdr eth;
-+	struct iphdr iph;
-+	struct udphdr udph;
-+
-+	__u32 map_key = 0;
-+	__u32 test_passed = 0;
-+
-+	if (bpf_skb_load_bytes_relative(skb, 0, &iph, sizeof(iph),
-+									BPF_HDR_START_NET))
-+		goto fail;
-+
-+	if (bpf_skb_load_bytes_relative(skb, sizeof(iph), &udph, sizeof(udph),
-+									BPF_HDR_START_NET))
-+		goto fail;
-+
-+	__u32 old_ip = htonl(iph.saddr);
-+	__u32 new_ip = 0xac100164; //172.16.1.100
-+
-+	bpf_l4_csum_replace(skb, UDP_CSUM_OFF, old_ip, new_ip,
-+						IS_PSEUDO | sizeof(new_ip));
-+	bpf_l3_csum_replace(skb, IP_CSUM_OFF, old_ip, new_ip, sizeof(new_ip));
-+	if (bpf_skb_store_bytes(skb, IP_SRC_OFF, &new_ip, sizeof(new_ip), 0) < 0)
-+		goto fail;
-+
-+	__u16 old_port = udph.source;
-+	__u16 new_port = 5555;
-+
-+	bpf_l4_csum_replace(skb, UDP_CSUM_OFF, old_port, new_port,
-+						IS_PSEUDO | sizeof(new_port));
-+	if (bpf_skb_store_bytes(skb, UDP_SPORT_OFF, &new_port, sizeof(new_port),
-+							0) < 0)
-+		goto fail;
-+
-+	test_passed = 1;
-+
-+fail:
-+	bpf_map_update_elem(&test_result, &map_key, &test_passed, BPF_ANY);
-+
-+	return 1;
-+}
--- 
-2.25.1
-
+>
+> --
+> Kartikeya
