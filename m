@@ -2,82 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6D63487875
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 14:46:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA42148787C
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 14:47:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347658AbiAGNqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 08:46:45 -0500
-Received: from proxima.lasnet.de ([78.47.171.185]:52756 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233066AbiAGNqp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 08:46:45 -0500
-Received: from [IPV6:2003:e9:d724:9af0:641c:922:9a06:5c2c] (p200300e9d7249af0641c09229a065c2c.dip0.t-ipconnect.de [IPv6:2003:e9:d724:9af0:641c:922:9a06:5c2c])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        id S238955AbiAGNra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 08:47:30 -0500
+Received: from mga09.intel.com ([134.134.136.24]:41869 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238943AbiAGNrZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 7 Jan 2022 08:47:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641563245; x=1673099245;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=S6EB7K/mWQGJ4edWsfLqzaPrJ4f9R1H4mn7kwvidIW0=;
+  b=YRzwauuXxfhE4s/PeIHjLRCdqvRhZPGpNTPtRQV2gqJS4ddVcNRNHyTL
+   yOkGiM9lhOVdd8uzaE9ppf/W07Ba5b3HjYEDyNYEth6BDTS3E6XBN40uC
+   xioOiRXqFjz/nuARWme4TSo8RPtASY4AtO6JozIgCfZUwqXZSYMm4PnDJ
+   T53fdBTuEhD9vHgOvqEgVvTH0p/ezw6D7zAzcRa8N9uBN3kdfsRBkxZ23
+   qzL0pWcyfiqk6sKp77cMAsg2jCto9I4JWsY17EqufxcknqktYIaw+2ylZ
+   BJO2JBue73pZKS3LQA04BBDbfFibgNEE/LWQ5MXDtUNMk1w5uEuz2NR7O
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10219"; a="242665027"
+X-IronPort-AV: E=Sophos;i="5.88,270,1635231600"; 
+   d="scan'208";a="242665027"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 05:47:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,270,1635231600"; 
+   d="scan'208";a="513800161"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga007.jf.intel.com with ESMTP; 07 Jan 2022 05:47:23 -0800
+Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 5A894C005A;
-        Fri,  7 Jan 2022 14:46:43 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1641563203;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9ta7MOcivJtNYj5c/HQIfAoE0zlPdJosOBmR89DAXB8=;
-        b=jP5tLhBwcj7/nUdpKppFv9+9bSM986kOXpBVgu0qRTYHr99NNpNQScwVwOHOPvbnWdR53x
-        SMWeniQS9VoqhH7l7NRu6wGnwDbLaz+wxg/wz456Gk+TRO9kfUt+geOoOm4oH/3ZeQRZlr
-        cI0Xaywxu4aWBdcx9OYxJ0v8niAj/m8myM66/xy8bZG/QWgZQdRJlOT1a3LQMQEd7rysv1
-        kM8rfnm6k9KFbnzqd+ssl59BD9tyTgFuRMhuOoPvlto4hz61MdKTRoX52/jSkjOkwbiVtk
-        aKRJa0i2x66L8x4UQOSPX9b1GSdybR6kS8ncMOfvvsPgcri4yf2PZaTJrTfeEA==
-Message-ID: <2439d9ab-133f-0338-24f9-a9a5cd2065a3@datenfreihafen.org>
-Date:   Fri, 7 Jan 2022 14:46:43 +0100
+        by linux.intel.com (Postfix) with ESMTPS id D5238580806;
+        Fri,  7 Jan 2022 05:47:20 -0800 (PST)
+Date:   Fri, 7 Jan 2022 21:47:17 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jose Abreu <joabreu@synopsys.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, netdev@vger.kernel.org
+Subject: Re: [PATCH CFT net-next 0/6] net: stmmac/xpcs: modernise PCS support
+Message-ID: <20220107134717.GA10144@linux.intel.com>
+References: <Ybs7DNDkBrf73jDi@shell.armlinux.org.uk>
+ <20211217055729.GA14835@linux.intel.com>
+ <YdhCts9ZPMyzO8oX@shell.armlinux.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH -next] ieee802154: atusb: move to new USB API
-Content-Language: en-US
-To:     Pavel Skripkin <paskripkin@gmail.com>, alex.aring@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220105144947.12540-1-paskripkin@gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220105144947.12540-1-paskripkin@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdhCts9ZPMyzO8oX@shell.armlinux.org.uk>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jan 07, 2022 at 01:40:06PM +0000, Russell King (Oracle) wrote:
+> On Fri, Dec 17, 2021 at 01:57:29PM +0800, Wong Vee Khee wrote:
+> > On Thu, Dec 16, 2021 at 01:11:40PM +0000, Russell King (Oracle) wrote:
+> > > Hi,
+> > > 
+> > > This series updates xpcs and stmmac for the recent changes to phylink
+> > > to better support split PCS and to get rid of private MAC validation
+> > > functions.
+> > > 
+> > > This series is slightly more involved than other conversions as stmmac
+> > > has already had optional proper split PCS support.
+> > > 
+> > > The patches:
+> > > 
+> > > 1) Provide a function to query the xpcs for the interface modes that
+> > >    are supported.
+> > > 
+> > > 2) Populates the MAC capabilities and switches stmmac_validate() to use
+> > >    phylink_get_linkmodes(). We do not use phylink_generic_validate() yet
+> > >    as (a) we do not always have the supported interfaces populated, and
+> > >    (b) the existing code does not restrict based on interface. There
+> > >    should be no functional effect from this patch.
+> > > 
+> > > 3) Populates phylink's supported interfaces from the xpcs when the xpcs
+> > >    is configured by firmware and also the firmware configured interface
+> > >    mode. Note: this will restrict stmmac to only supporting these
+> > >    interfaces modes - stmmac maintainers need to verify that this
+> > >    behaviour is acceptable.
+> > > 
+> > > 4) stmmac_validate() tail-calls xpcs_validate(), but we don't need it to
+> > >    now that PCS have their own validation method. Convert stmmac and
+> > >    xpcs to use this method instead.
+> > > 
+> > > 5) xpcs sets the poll field of phylink_pcs to true, meaning xpcs
+> > >    requires its status to be polled. There is no need to also set the
+> > >    phylink_config.pcs_poll. Remove this.
+> > > 
+> > > 6) Switch to phylink_generic_validate(). This is probably the most
+> > >    contravertial change in this patch set as this will cause the MAC to
+> > >    restrict link modes based on the interface mode. From an inspection
+> > >    of the xpcs driver, this should be safe, as XPCS only further
+> > >    restricts the link modes to a subset of these (whether that is
+> > >    correct or not is not an issue I am addressing here.) For
+> > >    implementations that do not use xpcs, this is a more open question
+> > >    and needs feedback from stmmac maintainers.
+> > > 
+> > > Please review and test this series. Thanks!
+> > > 
+> > 
+> > Tested this patch series on my Intel Elkhart Lake setup with Marvell
+> > 88E1510 PHY. 
+> > 
+> > Everything works perfectly!
+> 
+> Can I take that as a tested-by please?
+> 
 
-Hello.
+Sure.
 
-On 05.01.22 15:49, Pavel Skripkin wrote:
-> @@ -176,9 +105,13 @@ static int atusb_read_subreg(struct atusb *lp,
->   			     unsigned int addr, unsigned int mask,
->   			     unsigned int shift)
->   {
-> -	int rc;
-> +	int rc, ret;
-> +
-> +	ret = usb_control_msg_recv(lp->usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
+Tested-by: Wong Vee Khee <vee.khee.wong@linux.intel.com> # Intel EHL
 
-You are changing the meaning of the rc variable away from a return code. 
-Its the register value now. I would prefer if we change the name to 
-something like reg to reflect this new meaning.
-
-> +				   0, addr, &rc, 1, 1000, GFP_KERNEL);
-> +	if (ret < 0)
-> +		return ret;
->   
-> -	rc = atusb_read_reg(lp, addr);
->   	rc = (rc & mask) >> shift;
->   
->   	return rc;
-
-The change above and the bug fix I reported the other day is all that is 
-missing for this to be applied. You want to send a v2 with this changes 
-or do you prefer me doing them here locally and apply?
-
-regards
-Stefan Schmidt
+> It would be good to get some feedback from other stmmac users, since I
+> believe stmmac is used in multiple different configurations.
+> 
+> Thanks!
+> 
+> -- 
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
