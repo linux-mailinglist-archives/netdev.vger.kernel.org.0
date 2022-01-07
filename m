@@ -2,73 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F5BD487466
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 10:01:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D6F2487498
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 10:19:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346310AbiAGJBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 04:01:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346308AbiAGJA7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 04:00:59 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51B2C061245
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 01:00:58 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id bm14so19556432edb.5
-        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 01:00:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=YqsVwEO+jjWJj3VTuBJekJMS2/bsatxl1m52PqZiI+s=;
-        b=Q/fTyNqRfSLt5ng4i2FIE7JHY86KNr+GFwNwoXa7FDcZRSyN1tJExtaMdjR6xBpB+u
-         +aNHbVhDXSOL4OkO2OOum6kdOahlTaBYLhbsgfG3moi52zkkBmx8XUicq2tnXlxADIxr
-         Wmr5uXkHBHQS75IwDSzUWc2p7lgwyPjleL3IZPdhPTFATGn0qjWxCSi2MEPXu8UvDW1e
-         aQmgNecx68F9lrdCULBR4fvMJd4pmBadxDT1ZW5lvc+sjloa7E0cfenyh8cWJx6XMkr8
-         RjuYw2z1q4UGnLDir54WCWyYNt7FMyuiEXLA/sHydBeB02l/sqfK8s4MtPb3880E1uUa
-         A0Lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=YqsVwEO+jjWJj3VTuBJekJMS2/bsatxl1m52PqZiI+s=;
-        b=kCFbjNrTm+QH7cwRbHy0yun8OFeKU/lty8DIuiGKIXpFidv7sgvoXfZtZRhIRtIqdb
-         fsESjgNNy301bvElAjwHN32INQpEgz2DGc0VTM/rq/+Cu7beibVSv7NnzLtZzjg3BkkQ
-         Jgx5kW1yzdvCRBoZybsr0xRRri4dmsQzgpdwq4WCGx8+Hp47A5oD7H2XiwsB7rxrJXOX
-         y0wI7RLwKuKo/dtlaKiX+kPXd1WTWC0inZxsJS8zMCwBE0jJJZXbyZyZMkAJEFLk/guF
-         XKP+uJir27GFJcUYXhW+QmPjK63JIKzuOKkjRsAfNAGithwwnnRgpM0cas7uRlrH3oR+
-         NsdQ==
-X-Gm-Message-State: AOAM5307P/HVq8OH5q1Y7R0een6goKRBG/ExhWhWgJ9WYX6iiPIsJoyg
-        wa1q0aOJ0/D6jhNbKcYpfDwEeNfifIvQ1eFLvCg=
-X-Google-Smtp-Source: ABdhPJwAQ+UpUmG8dVCAlBkhA2rGMVUz1VtQGNPewmy+MyNJGlR+lOWwBbUU/f2JX8UfLmUJSQZLJ3KBelk3XOfEKw4=
-X-Received: by 2002:a17:906:4e0a:: with SMTP id z10mr4134042eju.203.1641546057561;
- Fri, 07 Jan 2022 01:00:57 -0800 (PST)
+        id S236569AbiAGJTm convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 7 Jan 2022 04:19:42 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:36423 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236298AbiAGJTl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 04:19:41 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 2079JQf14008073, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 2079JQf14008073
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 7 Jan 2022 17:19:26 +0800
+Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 7 Jan 2022 17:19:25 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 7 Jan 2022 17:19:25 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
+ RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
+ 15.01.2308.020; Fri, 7 Jan 2022 17:19:25 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: RE: [PATCH 0/9] rtw88: prepare locking for SDIO support
+Thread-Topic: [PATCH 0/9] rtw88: prepare locking for SDIO support
+Thread-Index: AQHX/DAWPbJm+q1QhEWX1RQxGTv+PKxXT6ng
+Date:   Fri, 7 Jan 2022 09:19:25 +0000
+Message-ID: <daba93973e5945f8bf611ce4c33c82e7@realtek.com>
+References: <20211228211501.468981-1-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20211228211501.468981-1-martin.blumenstingl@googlemail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/1/7_=3F=3F_07:17:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Received: by 2002:ab4:98c8:0:0:0:0:0 with HTTP; Fri, 7 Jan 2022 01:00:56 -0800 (PST)
-Reply-To: xiauchanyu@gmail.com
-From:   Mrs Xiau Chan Yu <rw9251392@gmail.com>
-Date:   Fri, 7 Jan 2022 01:00:56 -0800
-Message-ID: <CAHL0NOL+moxKdM4061g_=b-4f_zUPveJSsYZUKU2U6T__R9_vA@mail.gmail.com>
-Subject: =?UTF-8?Q?Sch=C3=B6nen_Tag=2E?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
-Sch=C3=B6ner Tag,
 
-Ich bin Xiu Chan Yu, Kredit- und Marketingdirektor von Chong Hin
-Bank, Hongkong, Chong Hing Bank Center, 24 Des Voeux Road Central,
-Hongkong. Ich habe einen Gesch=C3=A4ftsvorschlag f=C3=BCr 13.991.674 $
+> -----Original Message-----
+> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Sent: Wednesday, December 29, 2021 5:15 AM
+> To: linux-wireless@vger.kernel.org
+> Cc: tony0620emma@gmail.com; kvalo@codeaurora.org; johannes@sipsolutions.net; netdev@vger.kernel.org;
+> linux-kernel@vger.kernel.org; Neo Jou <neojou@gmail.com>; Jernej Skrabec <jernej.skrabec@gmail.com>;
+> Pkshih <pkshih@realtek.com>; Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Subject: [PATCH 0/9] rtw88: prepare locking for SDIO support
+> 
+> Hello rtw88 and mac80211 maintainers/contributors,
+> 
+> there is an ongoing effort where Jernej and I are working on adding
+> SDIO support to the rtw88 driver [0].
+> The hardware we use at the moment is RTL8822BS and RTL8822CS.
+> We are at a point where scanning, assoc etc. works (though it's not
+> fast yet, in my tests I got ~6Mbit/s in either direction).
 
-Alle best=C3=A4tigbaren Dokumente zur Sicherung der Anspr=C3=BCche werden I=
-hnen
-ausgeh=C3=A4ndigt
-vor Ihrer Annahme und sobald ich Ihre R=C3=BCcksendung erhalten habe
-Bereitgestellt.
+Could I know if you have improvement of this throughput issue?
 
-Gr=C3=BC=C3=9Fe
-Xiau Chan Yu
+I have done simple test of this patchset on RTL8822CE, and it works
+well. But, I think I don't test all flows yet, so I will do more
+test that will take a while. After that, I can give a Tested-by tag.
+
+Thank you
+Ping-Ke
+
+
