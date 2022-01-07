@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D9BB4876D1
-	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 12:51:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 356C94876EA
+	for <lists+netdev@lfdr.de>; Fri,  7 Jan 2022 12:54:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347247AbiAGLv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 06:51:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36874 "EHLO
+        id S1347280AbiAGLyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 06:54:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347204AbiAGLv4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 06:51:56 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2680C061245
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 03:51:55 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id 8so5241014pgc.10
-        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 03:51:55 -0800 (PST)
+        with ESMTP id S1347256AbiAGLyf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 06:54:35 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A356C061245
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 03:54:35 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id c9-20020a17090a1d0900b001b2b54bd6c5so11771435pjd.1
+        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 03:54:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5GBH8VsPkdgGnzzw1li1azuB0PrKfXH2MyZR/EdansI=;
-        b=cjgn6FtvaNUvfFqsP4UGwAyjaWKWbTXQBYXMkKOpb3diKF5cO2po/zKBWHoQRYaaSf
-         REb3gtpHN7yYAOjzkcE92giqDppD2X0aoHfFtif8pSPztLUo+nkbQ1k2pGGxjdpbsa4V
-         gYyt6OjbzzjLXpExrs1MgPAZNbtW1k+n+QiaY4lGo1XMM5/F2jAyVIJZYJZuoKXqHQKk
-         PBhF04jr1EmcA0JbsqSpo1L+EWgaRwq7WbBBW77/L2a0K2ewmNzRcQVe8vboGbcLsmci
-         0fbGPewV560TbaCohe4wvPEgGFuzYu8URP1e8odCDT6A1RaiLtRPA29IvluqvtAyJxUQ
-         jvJg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e50/ZIMQaxDCbsjkCHIbFxxG7HiJC0StWx+ig1pfA54=;
+        b=hap+8iYRtb7Xa0SHsl1aWRYa8vqWIvO4TWOgFk2w7w4cm3ZjHMqaI8ZLItRtTNd4Zn
+         2I5r4ZUeh9kYoUi29kE2/Msm5C7QT9qj+uK2ocHYKgruZwugR/63X2cF50zPvdmzCJNO
+         XzkootN8rDfYqmLHfFe7hzQdq3D2uTt2Y1tN6n57ldhXMrUyL0jgSqeUBFA7phApVYsH
+         6hKrd1/k6qZwp4SgkE/w+GiNcYwVNFg0LaGW/+VkE8PAldTUGC7ldZp8WIVGx1d+qcV+
+         j5YTTWEXSb6qgciE48iBBkzsRtJQPHyzF5OD8zWkN0xyATbe9cTEyfx3fkd/CHwkyMDP
+         0MMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5GBH8VsPkdgGnzzw1li1azuB0PrKfXH2MyZR/EdansI=;
-        b=DIYfg45/Qojuv8kidQl7AtZLpm2wpmPKZHL6M7W+TYH5NtT/QunPjsj+PglxsD4v6T
-         OIPaICY2T1hDwYczsIa7cliPK3OP0e7sbQMeusyr5qWWeiBfYAXkhWjsg3ybNHpJiFzn
-         on2JTc5ygzdiWoDq0Xeogwv10PJSQ9fCbuDQjeWOCuuxCla5Uhagp9tlHUx/R3Fhd6/R
-         w3ybwrSiV1gVo7NNJpbP4wCFgcy8raa47Z/Q5kY2FPJoNRT4xfxyssxGrjS0wxS2yVlB
-         iZCPoHS0hdYCcwcDo1swAkk9czXk5EmHDivOaIJcpyylYXSu0TjOCBAlQn0jL/fnfeCc
-         GpZQ==
-X-Gm-Message-State: AOAM533+EfJtJXbr/tZiGIcInMcFim4jO7wy6E+90XwlbEteKMukKTW4
-        hDbau2R4l/LNzrO7bskNNesmTk0r9KCh2zac
-X-Google-Smtp-Source: ABdhPJw40e1Z7B7Pej7kZay16B0h/TSVMC4KsXR+WYyeJOfb19sCJienJQNh+CF/1ifSW0HX25nGEA==
-X-Received: by 2002:a63:450c:: with SMTP id s12mr55563984pga.84.1641556314933;
-        Fri, 07 Jan 2022 03:51:54 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e50/ZIMQaxDCbsjkCHIbFxxG7HiJC0StWx+ig1pfA54=;
+        b=PU6BaveP5ZWGcu8el7OPcTcXDrY/4dibaDjg2DaN1cjStqonKofu20jO5BRB8VzAIP
+         j2T2W8YOGmYFNoSJigik3NZ8OjEXZplO7asnDLhT0thQ9DbY10dWEoCXpxo8Czn1j06h
+         H4jSTd4Xzie1wIwNI2yTqxrjx8NZeaDBk5AEhtCJSfy8OaO5uTZHoEkRKhWFnDUAbmd2
+         ZbFFePa3lE91q2VILAGTw36weZ9m4kA06sjxKHsYUj8qh5xU59KUo74gRWwKjElFCa9X
+         EjkuolvOmyT0aeVT7n4zoSXXn+shU+YicftX88k9xENBvOLxtMJjHsLTJKSMO01pfFYU
+         HjYw==
+X-Gm-Message-State: AOAM531qwqeWVUIRVzyqisX9yJChRJBXLxkKy77MImJvqXhBO+160Otx
+        f3/zk3KAebmC75vi6HhdvE1nOSo335JN9Q==
+X-Google-Smtp-Source: ABdhPJwusbm9lXtM7sNrgKVOJeLHwa67eE7JnhTIYZ4tI7Ex0ko22yurbLPtvDJOggArX2pw6shrmg==
+X-Received: by 2002:a17:902:be0e:b0:149:c124:6027 with SMTP id r14-20020a170902be0e00b00149c1246027mr19003604pls.20.1641556474260;
+        Fri, 07 Jan 2022 03:54:34 -0800 (PST)
 Received: from localhost.localdomain ([111.204.182.106])
-        by smtp.gmail.com with ESMTPSA id e20sm5744824pfv.219.2022.01.07.03.51.48
+        by smtp.gmail.com with ESMTPSA id h2sm6172234pfh.55.2022.01.07.03.54.28
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 07 Jan 2022 03:51:54 -0800 (PST)
+        Fri, 07 Jan 2022 03:54:33 -0800 (PST)
 From:   xiangxia.m.yue@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
@@ -65,14 +65,11 @@ Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
         Kees Cook <keescook@chromium.org>,
         Kumar Kartikeya Dwivedi <memxor@gmail.com>,
         Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>,
-        Tonghao Zhang <xxmy@openvirtualnetworks.org>
+        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
 Subject: [net-next RESEND v7 2/2] net: sched: support hash/classid/cpuid selecting tx queue
-Date:   Fri,  7 Jan 2022 19:51:30 +0800
-Message-Id: <20220107115130.51073-3-xiangxia.m.yue@gmail.com>
+Date:   Fri,  7 Jan 2022 19:54:24 +0800
+Message-Id: <20220107115424.51201-1-xiangxia.m.yue@gmail.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20220107115130.51073-1-xiangxia.m.yue@gmail.com>
-References: <20220107115130.51073-1-xiangxia.m.yue@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -122,7 +119,6 @@ Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 Cc: Antoine Tenart <atenart@kernel.org>
 Cc: Wei Wang <weiwan@google.com>
 Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Tonghao Zhang <xxmy@openvirtualnetworks.org>
 Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 ---
  include/net/tc_act/tc_skbedit.h        |  1 +
