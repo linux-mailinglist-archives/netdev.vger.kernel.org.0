@@ -2,68 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D1CD4885B9
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 20:56:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FDD24885BC
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 20:59:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232517AbiAHT4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 14:56:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38326 "EHLO
+        id S232557AbiAHT70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 14:59:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230057AbiAHT4D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 14:56:03 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AFB6C06173F
-        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 11:56:03 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id d3so2466306lfv.13
-        for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 11:56:02 -0800 (PST)
+        with ESMTP id S230057AbiAHT70 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 14:59:26 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09DE5C06173F
+        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 11:59:26 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id k21so28948077lfu.0
+        for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 11:59:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=NcHd0JeANSgfzrVCyHKH4t4A6RfnBK6w68s14ddhXG0=;
-        b=P3vDz4FGJB80MHcaKKkVUcxNiExfcs1QiaPF+YsDPQySJ+1nFcs+eRVKWZeexj73NC
-         lJfyDRvnDAEcJ1JTgrt/nQ9Tos/SSpS1igbWBvzAGw7zXLqKB604sR64eM1AVXgmOvbe
-         4C3nWbzSe776iIzr6ei861Bpw9M7P6S7qwHAXG5LzhtoCootLVZc43KahYZCiBSUNMfU
-         WtcAXrvwhkHlmu+Ji3ppveVAehSZHKt5B9OAb9LEIadBP+ITicBTRwocI8jmvI+duQhh
-         dyZ6fYQ4YPpovMZqaEdtB3JyOabbykOGsYbkN7ff0DBIQgjZ3P/HfqBGYguGgDJj7AvY
-         gyfg==
+        bh=TmQQjCZvXJaBDJ7E/zeJKuRlqhgtFaus2U/9SW2d+aY=;
+        b=I6rgdKgWV00ylEKR3abh9nnc/98CfuSmKKo02kNSSBjsB2N5Apa3BBV/mFv5aCupp2
+         WHdX5xWLXi7+vxXwF70CdkaRpoCenRgnHo38Kuu4QyZA0djeY0lnkwFm/ayebHng9PkL
+         o6ObGayRf2hejZ12B6xLCTHFjmc2hiY5/jwBO9yXCTcPjPRWdkhlEZ6YDtOvTCe/AxfM
+         7Rt0UZ63OoF59+P4VH8aAeaPPbiyi78eTrgMWhI0Zn1JHihLvS+OzcrQz8zJ31tPmKXu
+         /BSaeeAJu1+IgUF1h8LCwB7tXy8Gqz37Sh3MXlZG54NsG9fxaxPSBZjb/tkUY4lgaESD
+         AnFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=NcHd0JeANSgfzrVCyHKH4t4A6RfnBK6w68s14ddhXG0=;
-        b=G3pZkCDEac9xYKjLQu2HLJjKzZK/WgSO5LGLQBzPHl0PLZdBLmsBAv1rW8WzgHMN8S
-         lgrt2IDd2psi7LFEM+44OkjA7fdrRuNE1XM1xg2W5DFwLeh6hLyIMHq5z+S1q63G5GEy
-         DNeUsto3YDKMgHR0oqiJeyPPXMKTlZDvDvW0CJ0jEkQD5bZ5pAhbvz/tD91ezUAOjsMV
-         GtTp+bv/8CABBWMc3gbR5G5cVIE7ZhAhJkqSuf7b9CyerJCz7Yom1VwiZJAarA/C79wM
-         Tb9hdlvmg6y62itiEYY/jSu5kDw0/A/XVzgrVDiB3VsyT7RxWTnJczPSzCF6PiKWaNvB
-         qPrQ==
-X-Gm-Message-State: AOAM531oYks+MV/7lAWqBCUAUg8Yq05PAyTzzkOUhwpr8daokGkc/VrT
-        LH2YrI+gvwE+j9pdb/jeTNY=
-X-Google-Smtp-Source: ABdhPJwRaZsX0WX6QSjnQ4XRaB8fnZs6F+cEzeBJM/R77vrpW61xZmctlYYAM+6lsRWM3iYUCewcng==
-X-Received: by 2002:a2e:a7ce:: with SMTP id x14mr45033707ljp.421.1641671761271;
-        Sat, 08 Jan 2022 11:56:01 -0800 (PST)
+        bh=TmQQjCZvXJaBDJ7E/zeJKuRlqhgtFaus2U/9SW2d+aY=;
+        b=SLUu2UMvbkodz1xL8v/Ne+ZznnC+t6ezghHzAv3DGS9Wxo8V/V3nnd1opytw4h+NXX
+         dZCh319mnOmswfSQI6oDd8CrFOuQnWTqejd1DT1u24p32bq3F0FSqWbw2kyB2n8HCE5N
+         VHyPfQ7bqoB7aAqzKxVGMkIH1cC05vbAq9sTbtYqsEL2G3Tt/FVE842Z9xYLnLOySHa3
+         j6a9sqVgVIX2Q3JQeecs81xjcoIYIdOpdQySuDtkbnjU6pY8DE6DINrfpagHgBRadlNW
+         SQmdAJiG66Gqr/LM8AwFtwB0Rw2VXX/gW72HD8CXvbo6cKrMUr6rw6X7xIyatDa35/58
+         tXhA==
+X-Gm-Message-State: AOAM532U9JIKhIvKUDPv2Cn2BU3PqPQbG9Cm+AW2Iky3yJO1UAdBEp2I
+        eORjzrC2XBp8OI9T7qSvNfryoWiqIcI=
+X-Google-Smtp-Source: ABdhPJxvtnkcO418wsi/lH56z59Q9XCdAP90CIszaPwOaoswkZvnIilhkifcdK3p3tPISXsb8SXLuA==
+X-Received: by 2002:a19:674b:: with SMTP id e11mr29154210lfj.83.1641671964187;
+        Sat, 08 Jan 2022 11:59:24 -0800 (PST)
 Received: from dau-work-pc.corp.zonatelecom.ru ([185.17.67.197])
-        by smtp.googlemail.com with ESMTPSA id q24sm342447lfr.223.2022.01.08.11.56.00
+        by smtp.googlemail.com with ESMTPSA id b21sm344740lfv.47.2022.01.08.11.59.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Jan 2022 11:56:00 -0800 (PST)
-From:   "=?UTF-8?q?=D0=90=D0=BD=D1=82=D0=BE=D0=BD=20=D0=94=D0=B0=D0=BD=D0=B8=D0=BB=D0=BE=D0=B2?=" 
-        <littlesmilingcloud@gmail.com>
-X-Google-Original-From: =?UTF-8?q?=D0=90=D0=BD=D1=82=D0=BE=D0=BD=20=D0=94=D0=B0=D0=BD=D0=B8=D0=BB=D0=BE=D0=B2?= <a.danilov@zonatelecom.ru>
-To:     Stephen Hamminger <stephen@networkplumber.org>
-Cc:     Anton Danilov <littlesmilingcloud@gmail.com>,
-        netdev@vger.kernel.org
+        Sat, 08 Jan 2022 11:59:23 -0800 (PST)
+From:   Anton Danilov <littlesmilingcloud@gmail.com>
+To:     littlesmilingcloud@gmail.com,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
 Subject: [PATCH iproute2 v2] ip: Extend filter links/addresses
-Date:   Sat,  8 Jan 2022 22:47:05 +0300
-Message-Id: <20220108194703.23466-1-a.danilov@zonatelecom.ru>
+Date:   Sat,  8 Jan 2022 22:58:25 +0300
+Message-Id: <20220108195824.23840-1-littlesmilingcloud@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
-
-From: Anton Danilov <littlesmilingcloud@gmail.com>
 
 This patch improves the filtering of links/addresses with the next
 features:
