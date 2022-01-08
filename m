@@ -2,439 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC5384883B7
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 14:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC3BC4883BA
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 14:19:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234302AbiAHNSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 08:18:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231812AbiAHNSx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 08:18:53 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19C4FC061574;
-        Sat,  8 Jan 2022 05:18:53 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id h2so25998835lfv.9;
-        Sat, 08 Jan 2022 05:18:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AoLcCY+bcBwoKuOVJv+j6QyLQHr7j6jcxqXruUyJEvs=;
-        b=FtKAEzJCxp7h1Z0vxHFpPM7/+oM0hZG5K88H+eezP9pFa0gJ/Rw/LClI+E4zNypUOn
-         p6qRsgMq5mDLiXn3ErlqCmh34D8lg2YN6gogFmGtt+hqN2S2RmX1UXNhKYPB9dQt141j
-         Zs3CSEZ7Y+vAv3XmGpUcqxi4NiPESGDS/Or6mVf5glvMAdhQ7CK59KbUnIQHVoTFUxRD
-         AW3DQ9D3avw3QAc8gSY8qdaRAcsq9niR6lqYOMbjctNrz8LhhznukdAVlYSaG8ikt8jM
-         IcsSuvq0XwzKd7VMCMLFKqsNVaIPKO+jU3OShLYrFLkI3WZnDLmXPRqfhwsqXYyg1YbH
-         f+7Q==
+        id S232580AbiAHNTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 08:19:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:60399 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230363AbiAHNTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 08:19:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641647961;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1GOVNA9SuwYQsFtw+yXScNi6YMB3yWtPDjX6RhO9knY=;
+        b=Vx0sZlKTfd1JYbTGbKkhqy6r3JpeCHCKU6r5419o8t+NnH/ZXswkR6OHjWXNR+MH0s/34P
+        ddatpsUsr3kmrykSz1xSw3HYfd8cYq3/PSl9nETLmTYlC6t3dldY+bGp4wm79pcJf+GEFH
+        HXnSXwVOiB5y91tvm+DUX7Z8syhnPyo=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-608-YNioh5vnPmWOZ-vmH83ShA-1; Sat, 08 Jan 2022 08:19:20 -0500
+X-MC-Unique: YNioh5vnPmWOZ-vmH83ShA-1
+Received: by mail-ed1-f72.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso6754540edt.20
+        for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 05:19:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AoLcCY+bcBwoKuOVJv+j6QyLQHr7j6jcxqXruUyJEvs=;
-        b=Jin3isWJWYKlWD7Dr6x/Z27aVv49VqEuWvWqec3F30evUpIRfo9r16jgJN+SD8AXJB
-         dPdNmW2naE70Cf4nLbHGYuScke197nl1b1d8rzpfiVNy9WjhrZcjKJazLiwcaBScatTo
-         k1snWYDzNvCLSisJ0lb9EZIdP+7ugf78b8mt3ku9sm4TL2e19O2Imfq5tsQ+kFYrf0oT
-         w4+312LiVwdU30H5QTbzoHrEUWlKHTkEDUonm8bAIPu7LyOtP+vriddVQ66isw9hIiFI
-         xGzTxHwkDWTml5dhfe2/JqeicHR3ihbG8LZ5QwNJD65hAisMPF72a+gKfA4btMdbDusX
-         5EtA==
-X-Gm-Message-State: AOAM531S5Lsb+zm016r8I3Kwotcu+geBvLBNdezzXpLuF1Ns9PfH11OQ
-        4CKsymkQu+AvgnNTn/yw6Z9U8XDgO95tPQ==
-X-Google-Smtp-Source: ABdhPJwr3vKwc/4beX3EhRFgBJSaiTf/7unsMhPI0J29HvB/q4WArSfRp7hyj4qgTW2BJNm4Z559xg==
-X-Received: by 2002:a05:651c:1508:: with SMTP id e8mr50476718ljf.313.1641647931302;
-        Sat, 08 Jan 2022 05:18:51 -0800 (PST)
-Received: from localhost.localdomain ([217.117.245.67])
-        by smtp.gmail.com with ESMTPSA id k7sm228185lfu.141.2022.01.08.05.18.50
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=1GOVNA9SuwYQsFtw+yXScNi6YMB3yWtPDjX6RhO9knY=;
+        b=OdP5QzPmwPJW4AA2w7l97n8mogUVJ8oxjpyqc5EUuuLdoF234B8Y4zMZ9Dc308pRJm
+         kIgz51+4sx26ZNz7EWHuVQf4+7sf37Tpm4GzYTBBgHy/Q9zk4OmPsnn9HLQlv3dLyNK3
+         zOCANocFmmmlKSg1Qc+EBiSYKb/sofSPOgrP1Pqvh1CZuikF2DeR2iRlGPRd7PWREtnS
+         7cTh2jwNZnDnOkwa6/oMlZAW8aKNC1Mm2vfajwmI8WMiwi9VF+7YzGlzWNxcyJ2Igdh2
+         XUs8Z17meSbu6TMdvegmslKee4b9EG0RLJd8BEh0N18K6evXDdGuc2G8qVQmzG6nMs1Q
+         5awg==
+X-Gm-Message-State: AOAM530OBr8Km4as5bEDLTiqxrXnw/6zHJuro7PykLHPE6x0dlBDgrSJ
+        /jccu1hy7XLOOBfA29+0q3r8Z9j9NaiyHqBxOa1c9jkQ8Rh7F6WRPQf8heKW86oUrDkTVuJj6NT
+        lYv+HTshhlq9j4OiU
+X-Received: by 2002:a17:906:4c95:: with SMTP id q21mr9271188eju.173.1641647956911;
+        Sat, 08 Jan 2022 05:19:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwl8frPs5iWMSCXg8M9iFS0R5FB7NHA5s0p2gjFK1kPqlohOkpklN3IvLKGdSHqYphYYzObrw==
+X-Received: by 2002:a17:906:4c95:: with SMTP id q21mr9271106eju.173.1641647955243;
+        Sat, 08 Jan 2022 05:19:15 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id i23sm694664edt.93.2022.01.08.05.19.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Jan 2022 05:18:50 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     stefan@datenfreihafen.org, alex.aring@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH -next v2] ieee802154: atusb: move to new USB API
-Date:   Sat,  8 Jan 2022 16:18:38 +0300
-Message-Id: <20220108131838.12321-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <2439d9ab-133f-0338-24f9-a9a5cd2065a3@datenfreihafen.org>
-References: <2439d9ab-133f-0338-24f9-a9a5cd2065a3@datenfreihafen.org>
+        Sat, 08 Jan 2022 05:19:14 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id CAC4A181F2A; Sat,  8 Jan 2022 14:19:13 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v7 1/3] bpf: Add "live packet" mode for XDP in
+ bpf_prog_run()
+In-Reply-To: <CAADnVQ+uftgnRQa5nvG4FTJga_=_FMAGxuiPB3O=AFKfEdOg=A@mail.gmail.com>
+References: <20220107215438.321922-1-toke@redhat.com>
+ <20220107215438.321922-2-toke@redhat.com>
+ <CAADnVQ+uftgnRQa5nvG4FTJga_=_FMAGxuiPB3O=AFKfEdOg=A@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Sat, 08 Jan 2022 14:19:13 +0100
+Message-ID: <87pmp28iwe.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Old USB API is prone to uninit value bugs if error handling is not
-correct. Let's move atusb to use new USB API to
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-	1) Make code more simple, since new API does not require memory
-	   to be allocates via kmalloc()
+> On Fri, Jan 7, 2022 at 1:54 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+>>
+>> Because the data pages are recycled by the page pool, and the test runner
+>> doesn't re-initialise them for each run, subsequent invocations of the X=
+DP
+>> program will see the packet data in the state it was after the last time=
+ it
+>> ran on that particular page. This means that an XDP program that modifies
+>> the packet before redirecting it has to be careful about which assumptio=
+ns
+>> it makes about the packet content, but that is only an issue for the most
+>> naively written programs.
+>
+> This is too vague and partially incorrect.
+> The bpf program can do bpf_xdp_adjust_meta() and otherwise change
+> packet boundaries. These effects will be seen by subsequent
+> XDP_PASS/TX/REDIRECT, but on the next iteration the boundaries
+> will get reset to the original values.
+> So the test runner actually re-initializes some parts of the data,
+> but not the contents of the packet.
+> At least that's my understanding of the patch.
 
-	2) Defend driver from usb-related uninit value bugs.
+Yes, that's correct. Boundaries will be reset, data won't. The boundary
+reset was added later, though, so guess I neglected to update the commit
+message. Will fix.
 
-	3) Make code more modern and simple
+> The users shouldn't need to dig into implementation to discover this.
+> Please document it.
+> The more I think about it the more I believe that it warrants
+> a little blurb in Documentation/bpf/ that describes what one can
+> do with this "xdp live mode".
 
-This patch removes atusb usb wrappers as Greg suggested [0], this will make
-code more obvious and easier to understand over time, and replaces old
-API calls with new ones.
+Sure, can do. Doesn't look like BPF_PROG_RUN is documented in there at
+all, so guess I can start such a document :)
 
-Also this patch adds and updates usb related error handling to prevent
-possible uninit value bugs in future
+> Another question comes to mind:
+> What happens when a program modifies the packet?
+> Does it mean that the 2nd frame will see the modified data?
+> It will not, right?
+> It's the page pool size of packets that will be inited the same way
+> at the beginning. Which is NAPI_POLL_WEIGHT * 2 =3D=3D 128 packets.
+> Why this number?
 
-Link: https://lore.kernel.org/all/YdL0GPxy4TdGDzOO@kroah.com/ [0]
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
+Yes, you're right: the next run won't see the modified packet data. The
+128 pages is because we run the program loop in batches of 64 (like NAPI
+does, the fact that TEST_XDP_BATCH and NAPI_POLL_WEIGHT are the same is
+not a coincidence).
 
-Changes in v2:
-	- Fixed logic bug in atusb_get_and_conf_chip()
-	- Renamed rc variable to reg in atusb_read_subreg()
+We need 2x because we want enough pages so we can keep running without
+allocating more, and the first batch can still be in flight on a
+different CPU while we're processing batch 2.
 
----
- drivers/net/ieee802154/atusb.c | 186 ++++++++++++---------------------
- 1 file changed, 67 insertions(+), 119 deletions(-)
+I experimented with different values, and 128 was the minimum size that
+didn't have a significant negative impact on performance, and above that
+saw diminishing returns.
 
-diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
-index 2f5e7b31032a..07bafbf94680 100644
---- a/drivers/net/ieee802154/atusb.c
-+++ b/drivers/net/ieee802154/atusb.c
-@@ -74,81 +74,6 @@ struct atusb_chip_data {
- 	int (*set_txpower)(struct ieee802154_hw*, s32);
- };
- 
--/* ----- USB commands without data ----------------------------------------- */
--
--/* To reduce the number of error checks in the code, we record the first error
-- * in atusb->err and reject all subsequent requests until the error is cleared.
-- */
--
--static int atusb_control_msg(struct atusb *atusb, unsigned int pipe,
--			     __u8 request, __u8 requesttype,
--			     __u16 value, __u16 index,
--			     void *data, __u16 size, int timeout)
--{
--	struct usb_device *usb_dev = atusb->usb_dev;
--	int ret;
--
--	if (atusb->err)
--		return atusb->err;
--
--	ret = usb_control_msg(usb_dev, pipe, request, requesttype,
--			      value, index, data, size, timeout);
--	if (ret < size) {
--		ret = ret < 0 ? ret : -ENODATA;
--
--		atusb->err = ret;
--		dev_err(&usb_dev->dev,
--			"%s: req 0x%02x val 0x%x idx 0x%x, error %d\n",
--			__func__, request, value, index, ret);
--	}
--	return ret;
--}
--
--static int atusb_command(struct atusb *atusb, u8 cmd, u8 arg)
--{
--	struct usb_device *usb_dev = atusb->usb_dev;
--
--	dev_dbg(&usb_dev->dev, "%s: cmd = 0x%x\n", __func__, cmd);
--	return atusb_control_msg(atusb, usb_sndctrlpipe(usb_dev, 0),
--				 cmd, ATUSB_REQ_TO_DEV, arg, 0, NULL, 0, 1000);
--}
--
--static int atusb_write_reg(struct atusb *atusb, u8 reg, u8 value)
--{
--	struct usb_device *usb_dev = atusb->usb_dev;
--
--	dev_dbg(&usb_dev->dev, "%s: 0x%02x <- 0x%02x\n", __func__, reg, value);
--	return atusb_control_msg(atusb, usb_sndctrlpipe(usb_dev, 0),
--				 ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
--				 value, reg, NULL, 0, 1000);
--}
--
--static int atusb_read_reg(struct atusb *atusb, u8 reg)
--{
--	struct usb_device *usb_dev = atusb->usb_dev;
--	int ret;
--	u8 *buffer;
--	u8 value;
--
--	buffer = kmalloc(1, GFP_KERNEL);
--	if (!buffer)
--		return -ENOMEM;
--
--	dev_dbg(&usb_dev->dev, "%s: reg = 0x%x\n", __func__, reg);
--	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
--				ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
--				0, reg, buffer, 1, 1000);
--
--	if (ret >= 0) {
--		value = buffer[0];
--		kfree(buffer);
--		return value;
--	} else {
--		kfree(buffer);
--		return ret;
--	}
--}
--
- static int atusb_write_subreg(struct atusb *atusb, u8 reg, u8 mask,
- 			      u8 shift, u8 value)
- {
-@@ -158,7 +83,10 @@ static int atusb_write_subreg(struct atusb *atusb, u8 reg, u8 mask,
- 
- 	dev_dbg(&usb_dev->dev, "%s: 0x%02x <- 0x%02x\n", __func__, reg, value);
- 
--	orig = atusb_read_reg(atusb, reg);
-+	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
-+				   0, reg, &orig, 1, 1000, GFP_KERNEL);
-+	if (ret < 0)
-+		return ret;
- 
- 	/* Write the value only into that part of the register which is allowed
- 	 * by the mask. All other bits stay as before.
-@@ -167,7 +95,8 @@ static int atusb_write_subreg(struct atusb *atusb, u8 reg, u8 mask,
- 	tmp |= (value << shift) & mask;
- 
- 	if (tmp != orig)
--		ret = atusb_write_reg(atusb, reg, tmp);
-+		ret = usb_control_msg_send(usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
-+					   tmp, reg, NULL, 0, 1000, GFP_KERNEL);
- 
- 	return ret;
- }
-@@ -176,12 +105,16 @@ static int atusb_read_subreg(struct atusb *lp,
- 			     unsigned int addr, unsigned int mask,
- 			     unsigned int shift)
- {
--	int rc;
-+	int reg, ret;
-+
-+	ret = usb_control_msg_recv(lp->usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
-+				   0, addr, &reg, 1, 1000, GFP_KERNEL);
-+	if (ret < 0)
-+		return ret;
- 
--	rc = atusb_read_reg(lp, addr);
--	rc = (rc & mask) >> shift;
-+	reg = (reg & mask) >> shift;
- 
--	return rc;
-+	return reg;
- }
- 
- static int atusb_get_and_clear_error(struct atusb *atusb)
-@@ -419,16 +352,22 @@ static int atusb_set_hw_addr_filt(struct ieee802154_hw *hw,
- 		u16 addr = le16_to_cpu(filt->short_addr);
- 
- 		dev_vdbg(dev, "%s called for saddr\n", __func__);
--		atusb_write_reg(atusb, RG_SHORT_ADDR_0, addr);
--		atusb_write_reg(atusb, RG_SHORT_ADDR_1, addr >> 8);
-+		usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
-+				     addr, RG_SHORT_ADDR_0, NULL, 0, 1000, GFP_KERNEL);
-+
-+		usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
-+				     addr >> 8, RG_SHORT_ADDR_1, NULL, 0, 1000, GFP_KERNEL);
- 	}
- 
- 	if (changed & IEEE802154_AFILT_PANID_CHANGED) {
- 		u16 pan = le16_to_cpu(filt->pan_id);
- 
- 		dev_vdbg(dev, "%s called for pan id\n", __func__);
--		atusb_write_reg(atusb, RG_PAN_ID_0, pan);
--		atusb_write_reg(atusb, RG_PAN_ID_1, pan >> 8);
-+		usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
-+				     pan, RG_PAN_ID_0, NULL, 0, 1000, GFP_KERNEL);
-+
-+		usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
-+				     pan >> 8, RG_PAN_ID_1, NULL, 0, 1000, GFP_KERNEL);
- 	}
- 
- 	if (changed & IEEE802154_AFILT_IEEEADDR_CHANGED) {
-@@ -437,7 +376,9 @@ static int atusb_set_hw_addr_filt(struct ieee802154_hw *hw,
- 		memcpy(addr, &filt->ieee_addr, IEEE802154_EXTENDED_ADDR_LEN);
- 		dev_vdbg(dev, "%s called for IEEE addr\n", __func__);
- 		for (i = 0; i < 8; i++)
--			atusb_write_reg(atusb, RG_IEEE_ADDR_0 + i, addr[i]);
-+			usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
-+					     addr[i], RG_IEEE_ADDR_0 + i, NULL, 0,
-+					     1000, GFP_KERNEL);
- 	}
- 
- 	if (changed & IEEE802154_AFILT_PANC_CHANGED) {
-@@ -459,7 +400,8 @@ static int atusb_start(struct ieee802154_hw *hw)
- 
- 	dev_dbg(&usb_dev->dev, "%s\n", __func__);
- 	schedule_delayed_work(&atusb->work, 0);
--	atusb_command(atusb, ATUSB_RX_MODE, 1);
-+	usb_control_msg_send(atusb->usb_dev, 0, ATUSB_RX_MODE, ATUSB_REQ_TO_DEV, 1, 0,
-+			     NULL, 0, 1000, GFP_KERNEL);
- 	ret = atusb_get_and_clear_error(atusb);
- 	if (ret < 0)
- 		usb_kill_anchored_urbs(&atusb->idle_urbs);
-@@ -473,7 +415,8 @@ static void atusb_stop(struct ieee802154_hw *hw)
- 
- 	dev_dbg(&usb_dev->dev, "%s\n", __func__);
- 	usb_kill_anchored_urbs(&atusb->idle_urbs);
--	atusb_command(atusb, ATUSB_RX_MODE, 0);
-+	usb_control_msg_send(atusb->usb_dev, 0, ATUSB_RX_MODE, ATUSB_REQ_TO_DEV, 0, 0,
-+			     NULL, 0, 1000, GFP_KERNEL);
- 	atusb_get_and_clear_error(atusb);
- }
- 
-@@ -580,9 +523,11 @@ atusb_set_cca_mode(struct ieee802154_hw *hw, const struct wpan_phy_cca *cca)
- 
- static int hulusb_set_cca_ed_level(struct atusb *lp, int rssi_base_val)
- {
--	unsigned int cca_ed_thres;
-+	int cca_ed_thres;
- 
- 	cca_ed_thres = atusb_read_subreg(lp, SR_CCA_ED_THRES);
-+	if (cca_ed_thres < 0)
-+		return cca_ed_thres;
- 
- 	switch (rssi_base_val) {
- 	case -98:
-@@ -799,18 +744,13 @@ static int atusb_get_and_show_revision(struct atusb *atusb)
- {
- 	struct usb_device *usb_dev = atusb->usb_dev;
- 	char *hw_name;
--	unsigned char *buffer;
-+	unsigned char buffer[3];
- 	int ret;
- 
--	buffer = kmalloc(3, GFP_KERNEL);
--	if (!buffer)
--		return -ENOMEM;
--
- 	/* Get a couple of the ATMega Firmware values */
--	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
--				ATUSB_ID, ATUSB_REQ_FROM_DEV, 0, 0,
--				buffer, 3, 1000);
--	if (ret >= 0) {
-+	ret = usb_control_msg_recv(atusb->usb_dev, 0, ATUSB_ID, ATUSB_REQ_FROM_DEV, 0, 0,
-+				   buffer, 3, 1000, GFP_KERNEL);
-+	if (!ret) {
- 		atusb->fw_ver_maj = buffer[0];
- 		atusb->fw_ver_min = buffer[1];
- 		atusb->fw_hw_type = buffer[2];
-@@ -849,7 +789,6 @@ static int atusb_get_and_show_revision(struct atusb *atusb)
- 		dev_info(&usb_dev->dev, "Please update to version 0.2 or newer");
- 	}
- 
--	kfree(buffer);
- 	return ret;
- }
- 
-@@ -863,7 +802,6 @@ static int atusb_get_and_show_build(struct atusb *atusb)
- 	if (!build)
- 		return -ENOMEM;
- 
--	/* We cannot call atusb_control_msg() here, since this request may read various length data */
- 	ret = usb_control_msg(atusb->usb_dev, usb_rcvctrlpipe(usb_dev, 0), ATUSB_BUILD,
- 			      ATUSB_REQ_FROM_DEV, 0, 0, build, ATUSB_BUILD_SIZE, 1000);
- 	if (ret >= 0) {
-@@ -881,14 +819,27 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
- 	u8 man_id_0, man_id_1, part_num, version_num;
- 	const char *chip;
- 	struct ieee802154_hw *hw = atusb->hw;
-+	int ret;
- 
--	man_id_0 = atusb_read_reg(atusb, RG_MAN_ID_0);
--	man_id_1 = atusb_read_reg(atusb, RG_MAN_ID_1);
--	part_num = atusb_read_reg(atusb, RG_PART_NUM);
--	version_num = atusb_read_reg(atusb, RG_VERSION_NUM);
-+	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
-+				   0, RG_MAN_ID_0, &man_id_0, 1, 1000, GFP_KERNEL);
-+	if (ret < 0)
-+		return ret;
- 
--	if (atusb->err)
--		return atusb->err;
-+	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
-+				   0, RG_MAN_ID_1, &man_id_1, 1, 1000, GFP_KERNEL);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
-+				   0, RG_PART_NUM, &part_num, 1, 1000, GFP_KERNEL);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = usb_control_msg_recv(usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
-+				   0, RG_VERSION_NUM, &version_num, 1, 1000, GFP_KERNEL);
-+	if (ret < 0)
-+		return ret;
- 
- 	hw->flags = IEEE802154_HW_TX_OMIT_CKSUM | IEEE802154_HW_AFILT |
- 		    IEEE802154_HW_PROMISCUOUS | IEEE802154_HW_CSMA_PARAMS;
-@@ -969,7 +920,7 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
- static int atusb_set_extended_addr(struct atusb *atusb)
- {
- 	struct usb_device *usb_dev = atusb->usb_dev;
--	unsigned char *buffer;
-+	unsigned char buffer[IEEE802154_EXTENDED_ADDR_LEN];
- 	__le64 extended_addr;
- 	u64 addr;
- 	int ret;
-@@ -982,18 +933,12 @@ static int atusb_set_extended_addr(struct atusb *atusb)
- 		return 0;
- 	}
- 
--	buffer = kmalloc(IEEE802154_EXTENDED_ADDR_LEN, GFP_KERNEL);
--	if (!buffer)
--		return -ENOMEM;
--
- 	/* Firmware is new enough so we fetch the address from EEPROM */
--	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
--				ATUSB_EUI64_READ, ATUSB_REQ_FROM_DEV, 0, 0,
--				buffer, IEEE802154_EXTENDED_ADDR_LEN, 1000);
-+	ret = usb_control_msg_recv(atusb->usb_dev, 0, ATUSB_EUI64_READ, ATUSB_REQ_FROM_DEV, 0, 0,
-+				   buffer, IEEE802154_EXTENDED_ADDR_LEN, 1000, GFP_KERNEL);
- 	if (ret < 0) {
- 		dev_err(&usb_dev->dev, "failed to fetch extended address, random address set\n");
- 		ieee802154_random_extended_addr(&atusb->hw->phy->perm_extended_addr);
--		kfree(buffer);
- 		return ret;
- 	}
- 
-@@ -1009,7 +954,6 @@ static int atusb_set_extended_addr(struct atusb *atusb)
- 			 &addr);
- 	}
- 
--	kfree(buffer);
- 	return ret;
- }
- 
-@@ -1051,7 +995,8 @@ static int atusb_probe(struct usb_interface *interface,
- 
- 	hw->parent = &usb_dev->dev;
- 
--	atusb_command(atusb, ATUSB_RF_RESET, 0);
-+	usb_control_msg_send(atusb->usb_dev, 0, ATUSB_RF_RESET, ATUSB_REQ_TO_DEV, 0, 0,
-+			     NULL, 0, 1000, GFP_KERNEL);
- 	atusb_get_and_conf_chip(atusb);
- 	atusb_get_and_show_revision(atusb);
- 	atusb_get_and_show_build(atusb);
-@@ -1076,7 +1021,9 @@ static int atusb_probe(struct usb_interface *interface,
- 	 * explicitly. Any resets after that will send us straight to TRX_OFF,
- 	 * making the command below redundant.
- 	 */
--	atusb_write_reg(atusb, RG_TRX_STATE, STATE_FORCE_TRX_OFF);
-+	usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
-+			     STATE_FORCE_TRX_OFF, RG_TRX_STATE, NULL, 0, 1000, GFP_KERNEL);
-+
- 	msleep(1);	/* reset => TRX_OFF, tTR13 = 37 us */
- 
- #if 0
-@@ -1104,7 +1051,8 @@ static int atusb_probe(struct usb_interface *interface,
- 
- 	atusb_write_subreg(atusb, SR_RX_SAFE_MODE, 1);
- #endif
--	atusb_write_reg(atusb, RG_IRQ_MASK, 0xff);
-+	usb_control_msg_send(atusb->usb_dev, 0, ATUSB_REG_WRITE, ATUSB_REQ_TO_DEV,
-+			     0xff, RG_IRQ_MASK, NULL, 0, 1000, GFP_KERNEL);
- 
- 	ret = atusb_get_and_clear_error(atusb);
- 	if (!ret)
--- 
-2.34.1
+> Should it be configurable?
+> Then the user can say: init N packets with this one pattern
+> and the program will know that exactly N invocation will be
+> with the same data, but N+1 it will see the 1st packet again
+> that potentially was modified by the program.
+> Is it accurate?
+
+I thought about making it configurable, but the trouble is that it's not
+quite as straight-forward as the first N packets being "pristine": it
+depends on what happens to the packet afterwards:
+
+On XDP_DROP, the page will be recycled immediately, whereas on
+XDP_{TX,REDIRECT} it will go through the egress driver after sitting in
+the bulk queue for a little while, so you can get reordering compared to
+the original execution order.
+
+On XDP_PASS the kernel will release the page entirely from the pool when
+building an skb, so you'll never see that particular page again (and
+eventually page_pool will allocate a new batch that will be
+re-initialised to the original value).
+
+If we do want to support a "pristine data" mode, I think the least
+cumbersome way would be to add a flag that would make the kernel
+re-initialise the packet data before every program invocation. The
+reason I didn't do this was because I didn't have a use case for it. The
+traffic generator use case only rewrites a tiny bit of the packet
+header, and it's just as easy to just keep rewriting it without assuming
+a particular previous value. And there's also the possibility of just
+calling bpf_prog_run() multiple times from userspace with a lower number
+of repetitions...
+
+I'm not opposed to adding such a flag if you think it would be useful,
+though. WDYT?
+
+-Toke
 
