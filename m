@@ -2,104 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CEB8488645
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 22:30:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10BCB48864A
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 22:43:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230120AbiAHV36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 16:29:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:44264 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229812AbiAHV35 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 16:29:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641677396;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TeSsd+eGYxY9ET76GpMaGOKTHlyy8/aZTUAhONjSzxE=;
-        b=RHsywMOw1vkxU8UVv9PiJO1f6LKmAC/aMfTVGBxPF3xJBSU+zMSBe41YiSxeS3zYJNTF7n
-        x297qW76XNjc9asBaj2TBQVAZf8qT92NkOziYqPHQVe0jkCeWsFwPWX0V/a5EcoxSz54yD
-        9UYU9JPUp2vw8qb+8jdt1SfbpMo7rFU=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-497-iEim6jvPPiW_CWquB0VEtw-1; Sat, 08 Jan 2022 16:29:55 -0500
-X-MC-Unique: iEim6jvPPiW_CWquB0VEtw-1
-Received: by mail-wr1-f71.google.com with SMTP id k4-20020adfc704000000b001a32d86a772so2705312wrg.5
-        for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 13:29:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TeSsd+eGYxY9ET76GpMaGOKTHlyy8/aZTUAhONjSzxE=;
-        b=Rg4Kp9J60AR2tpKHM4JZ48mkfsU21d8UeodqqffYgYVr5k1I44zYc/UMkIhMd5JRXJ
-         JQxBwiRdtKeLP5kqa1Jm9AmUi1U/cB8NFC+yoUUZUl/EpN0g4jZkEUCZdXDxRKbuH3Zl
-         Yw5WAhQyf2TBD6gravCCXPjQkaUCBlg5vM+pnJZbBTKfKkNdLE5UzoMIBWTib2Mdqjmu
-         3LJAFJb4H9txu9OiJMlENmBSvJkNywMX8m4/Ltv9iYJYc6Gm6kKp+JxMhXbiMWqe/Uoh
-         16zTwF45N2SLDUTwhld1CdXcNTMMl0SjZpqQMWywFJLaEH2xHTIL4p5SUoHLqRo2P/0r
-         412Q==
-X-Gm-Message-State: AOAM533d4svUTuwsTFg1xrtBOdgt+g+LYNcFplFfPiMdLYhiCvhSshb2
-        UJ+q2WO3op4YXRi4XrF0A9+nNpPEwJC+darXA4WhcuEStZkkFwkG8IILJAjQP2uw5vpBC1KMRSh
-        IVIJtEnxAUlV7GofY
-X-Received: by 2002:a05:600c:600c:: with SMTP id az12mr15834732wmb.86.1641677394157;
-        Sat, 08 Jan 2022 13:29:54 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxTg0/JYO8QF2XPhQiIisq/9tOBFl5jBcqd7Np7+z37VIZsvK+r/q2v9cr2aDbu8lc/wvJs0w==
-X-Received: by 2002:a05:600c:600c:: with SMTP id az12mr15834729wmb.86.1641677394008;
-        Sat, 08 Jan 2022 13:29:54 -0800 (PST)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id p18sm2621997wmq.23.2022.01.08.13.29.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Jan 2022 13:29:53 -0800 (PST)
-Date:   Sat, 8 Jan 2022 22:29:51 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, Stephen Hemminger <sthemmin@microsoft.com>
-Subject: Re: [PATCH iproute2-next 04/11] m_vlan: fix formatting of push
- ethernet src mac
-Message-ID: <20220108212951.GA22261@pc-4.home>
-References: <20220108204650.36185-1-sthemmin@microsoft.com>
- <20220108204650.36185-5-sthemmin@microsoft.com>
+        id S231158AbiAHVnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 16:43:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33526 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231148AbiAHVnz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 16:43:55 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C196BC061401
+        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 13:43:54 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1n6JVB-0004AL-5B
+        for netdev@vger.kernel.org; Sat, 08 Jan 2022 22:43:53 +0100
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id E3B4B6D3A28
+        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 21:43:48 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 1AEFE6D3A06;
+        Sat,  8 Jan 2022 21:43:47 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 2cacaeb4;
+        Sat, 8 Jan 2022 21:43:46 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH net-next 0/22] pull-request: can-next 2022-01-08
+Date:   Sat,  8 Jan 2022 22:43:23 +0100
+Message-Id: <20220108214345.1848470-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220108204650.36185-5-sthemmin@microsoft.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 08, 2022 at 12:46:43PM -0800, Stephen Hemminger wrote:
-> This was reported as a clang warning:
->     CC       m_vlan.o
-> m_vlan.c:282:32: warning: converting the enum constant to a boolean [-Wint-in-bool-context]
->                 if (tb[TCA_VLAN_PUSH_ETH_SRC &&
->                                              ^
-> 
-> But it is really a bug in the code for displaying the pushed
-> source mac.
-> 
-> Fixes: d61167dd88b4 ("m_vlan: add pop_eth and push_eth actions")
-> Cc: gnault@redhat.com
-> Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
-> ---
->  tc/m_vlan.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tc/m_vlan.c b/tc/m_vlan.c
-> index 221083dfc0da..1b2b1d51ed2d 100644
-> --- a/tc/m_vlan.c
-> +++ b/tc/m_vlan.c
-> @@ -279,8 +279,8 @@ static int print_vlan(struct action_util *au, FILE *f, struct rtattr *arg)
->  				    ETH_ALEN, 0, b1, sizeof(b1));
->  			print_string(PRINT_ANY, "dst_mac", " dst_mac %s", b1);
->  		}
-> -		if (tb[TCA_VLAN_PUSH_ETH_SRC &&
-> -		       RTA_PAYLOAD(tb[TCA_VLAN_PUSH_ETH_SRC]) == ETH_ALEN]) {
-> +		if (tb[TCA_VLAN_PUSH_ETH_SRC] &&
-> +		       RTA_PAYLOAD(tb[TCA_VLAN_PUSH_ETH_SRC]) == ETH_ALEN) {
->  			ll_addr_n2a(RTA_DATA(tb[TCA_VLAN_PUSH_ETH_SRC]),
->  				    ETH_ALEN, 0, b1, sizeof(b1));
->  			print_string(PRINT_ANY, "src_mac", " src_mac %s", b1);
+Hello Jakub, hello David,
 
-This is already fixed in iproute2 with commit 0e949725908b ("tc/m_vlan:
-fix print_vlan() conditional on TCA_VLAN_ACT_PUSH_ETH").
+this is a pull request of 22 patches for net-next/master.
+
+The first patch is by Tom Rix and fixes an uninitialized variable in
+the janz-ican3 driver (introduced in linux-can-next-for-5.17-20220105).
+
+The next 13 patches are by my and target the mcp251xfd driver. First
+several cleanup patches, then the driver is prepared for the upcoming
+ethtool ring parameter and IRQ coalescing support, which is added in a
+later pull request.
+
+The remaining 8 patches are by Dario Binacchi and me and enhance the
+flexcan driver. The driver is moved into a sub directory. An ethtool
+private flag is added to optionally disable CAN RTR frame reception,
+to make use of more RX buffers. The resulting RX buffer configuration
+can be read by ethtool ring parameter support. Finally documentation
+for the ethtool private flag is added to the
+Documentation/networking/device_drivers/can directory.
+
+regards,
+Marc
+
+---
+
+The following changes since commit 82192cb497f9eca6c0d44dbc173e68d59ea2f3c9:
+
+  Merge branch 'ena-capabilities-field-and-cosmetic-changes' (2022-01-07 19:25:58 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.17-20220108
+
+for you to fetch changes up to bc3897f79f7901902bb44d62dd1ad1b2b48e9378:
+
+  docs: networking: device drivers: can: add flexcan (2022-01-08 21:22:58 +0100)
+
+----------------------------------------------------------------
+linux-can-next-for-5.17-20220108
+
+----------------------------------------------------------------
+Dario Binacchi (4):
+      can: flexcan: allow to change quirks at runtime
+      can: flexcan: add ethtool support to get rx/tx ring parameters
+      docs: networking: device drivers: add can sub-folder
+      docs: networking: device drivers: can: add flexcan
+
+Marc Kleine-Budde (17):
+      can: mcp251xfd: remove double blank lines
+      can: mcp251xfd: mcp251xfd_tef_obj_read(): fix typo in error message
+      can: mcp251xfd: add missing newline to printed strings
+      can: mcp251xfd: mcp251xfd_open(): open_candev() first
+      can: mcp251xfd: mcp251xfd_open(): make use of pm_runtime_resume_and_get()
+      can: mcp251xfd: mcp251xfd_handle_rxovif(): denote RX overflow message to debug + add rate limiting
+      can: mcp251xfd: mcp251xfd.h: sort function prototypes
+      can: mcp251xfd: move RX handling into separate file
+      can: mcp251xfd: move TX handling into separate file
+      can: mcp251xfd: move TEF handling into separate file
+      can: mcp251xfd: move chip FIFO init into separate file
+      can: mcp251xfd: move ring init into separate function
+      can: mcp251xfd: introduce and make use of mcp251xfd_is_fd_mode()
+      can: flexcan: move driver into separate sub directory
+      can: flexcan: rename RX modes
+      can: flexcan: add more quirks to describe RX path capabilities
+      can: flexcan: add ethtool support to change rx-rtr setting during runtime
+
+Tom Rix (1):
+      can: janz-ican3: initialize dlc variable
+
+ .../device_drivers/can/freescale/flexcan.rst       |   54 +
+ .../networking/device_drivers/can/index.rst        |   20 +
+ Documentation/networking/device_drivers/index.rst  |    1 +
+ drivers/net/can/Makefile                           |    2 +-
+ drivers/net/can/flexcan/Makefile                   |    7 +
+ .../net/can/{flexcan.c => flexcan/flexcan-core.c}  |  234 ++---
+ drivers/net/can/flexcan/flexcan-ethtool.c          |  114 +++
+ drivers/net/can/flexcan/flexcan.h                  |  163 +++
+ drivers/net/can/janz-ican3.c                       |    2 +-
+ drivers/net/can/spi/mcp251xfd/Makefile             |    5 +
+ .../net/can/spi/mcp251xfd/mcp251xfd-chip-fifo.c    |  119 +++
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c     | 1083 +-------------------
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c   |    1 -
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-ring.c     |  269 +++++
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-rx.c       |  260 +++++
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-tef.c      |  260 +++++
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-tx.c       |  205 ++++
+ drivers/net/can/spi/mcp251xfd/mcp251xfd.h          |   36 +-
+ 18 files changed, 1621 insertions(+), 1214 deletions(-)
+ create mode 100644 Documentation/networking/device_drivers/can/freescale/flexcan.rst
+ create mode 100644 Documentation/networking/device_drivers/can/index.rst
+ create mode 100644 drivers/net/can/flexcan/Makefile
+ rename drivers/net/can/{flexcan.c => flexcan/flexcan-core.c} (90%)
+ create mode 100644 drivers/net/can/flexcan/flexcan-ethtool.c
+ create mode 100644 drivers/net/can/flexcan/flexcan.h
+ create mode 100644 drivers/net/can/spi/mcp251xfd/mcp251xfd-chip-fifo.c
+ create mode 100644 drivers/net/can/spi/mcp251xfd/mcp251xfd-ring.c
+ create mode 100644 drivers/net/can/spi/mcp251xfd/mcp251xfd-rx.c
+ create mode 100644 drivers/net/can/spi/mcp251xfd/mcp251xfd-tef.c
+ create mode 100644 drivers/net/can/spi/mcp251xfd/mcp251xfd-tx.c
+
 
