@@ -2,119 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AF25488582
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 20:05:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9812488598
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 20:28:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230311AbiAHTFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 14:05:08 -0500
-Received: from mga06.intel.com ([134.134.136.31]:8918 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229538AbiAHTFI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jan 2022 14:05:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641668708; x=1673204708;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0yAsn9u9bUQy8Qo3IM2yDVZWyJ9L/2if2l87CMMGs2w=;
-  b=Z1i5TFxAPZuWGFioF3AzkGrdT6sAt2T/cZXHAWFrgaM1xmjT3VEP/xgd
-   1VRW88J52VCegQPxqmb2n3xHlSG7tAAM4tMuAycWZHyBAoyUfffEBxghq
-   acnq2AUreGunAwGEzt3xphLGeIIwJ7XI8VNZYLTXX+/y0LONocgpOXn9E
-   OzSbKVAbG25oGuX2RRAJ4AsQ6ILnAwNpWmKFKMbkZrcGIrNZtcBG6FVV0
-   KqNdZ5AsPO94uYRFj38CIhXFpCoo2T7LRhKsKKqRfNrqwu5tQOJ4SX5TT
-   uiSWUtZSOrzvEF8O7Fkj9Wey+L3arz9XQbWols2+sVo2lrmVW4aX4kUFw
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10221"; a="303776691"
-X-IronPort-AV: E=Sophos;i="5.88,273,1635231600"; 
-   d="scan'208";a="303776691"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2022 11:05:08 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,273,1635231600"; 
-   d="scan'208";a="514210926"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 08 Jan 2022 11:05:06 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n6H1V-0000wa-PU; Sat, 08 Jan 2022 19:05:05 +0000
-Date:   Sun, 9 Jan 2022 03:04:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Lama Kayal <lkayal@nvidia.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>
-Subject: [net-next:master 59/127]
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c:1235:48: error: 'outl'
- undeclared; did you mean 'out'?
-Message-ID: <202201090211.3kpW0hGj-lkp@intel.com>
+        id S232435AbiAHT2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 14:28:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60568 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232135AbiAHT2e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 14:28:34 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B12C06173F;
+        Sat,  8 Jan 2022 11:28:34 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id i6so8572300pla.0;
+        Sat, 08 Jan 2022 11:28:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=l1N6J2q16R2Dgwnkwx/AFiEvAxs8xocbwNzeRHsXtEI=;
+        b=RvYoS4RRd5JXK53ixPWtDqURqAoxN5TAHKNoNodQcceAaYs5gO9KGjOvQDJrxQWc0g
+         9IQYxxy+IE5ilOV43lY502sda2orsAjEAuUqqUxD3HS6K8wlQ6V5GIfZunrkM7DZst3s
+         IeNOhbZtxhfn+x60I/Xlz4liEszEXkrBs9mkFEggPU8vk4HqM0G4BCyl6RMxs3wUhhiz
+         GG3OFniA3yLuKOrmQGmf+aH1+9m1THzPyQokWCdA5u/ZchmHvNQRnfLSO0GyWi+zufc8
+         BppEUfH2YfoQ4Wl6sG+p/NBHkb53TkiR9dK+uLVY4kyhAuRLoIPI7nFn9BsNjaGwYDko
+         IIvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=l1N6J2q16R2Dgwnkwx/AFiEvAxs8xocbwNzeRHsXtEI=;
+        b=NjU5di9ruoUjJchz3t/nA0PcR1g/Wa8N51C+U7B+0OcASUcTxUpP6NYy6oCBRGRha5
+         RkjztebrCBDNQj36CKFFxutHcEcdh9/KRxrBLnZYKFzRRDOxsboLwWJMxXNvcYMgQ/EY
+         7cYMOPDGWU+CDIhC0UyiOC+JbCz8RQXFeE2sIQnv/70HL0TQ9CF71iJo5CZ4FK2kbd91
+         Il44IxksJwu55sgpyrK2wQi6UR3cBxxpQVli+zgivqqutuWwonPgP4EZJ59sl7AutBLN
+         BFNeo/V4EAGu/z+34Rx6wTyFkhPVwelx8ldc42DWad+wHMZgOLoMHQPYck5p3ZEXRjif
+         OV2w==
+X-Gm-Message-State: AOAM533ZJPOpPTHkXnYtOOKerOFYf1bT2sBq2lhpvP1TuLcWmQE+ioYK
+        HsSxAg0mzOV2AhUSMxxzD1eUbbiXpn6TTJoETBs=
+X-Google-Smtp-Source: ABdhPJxamgqOBvVoOMotUlXFK/7JDHs1GNv/Os7k/ncI5o2oJMpoLyCKNVWQXhD3DAzrNsaBGbyEn2r94QFlRyx77ik=
+X-Received: by 2002:a17:90a:b003:: with SMTP id x3mr5383100pjq.122.1641670113876;
+ Sat, 08 Jan 2022 11:28:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220107215438.321922-1-toke@redhat.com> <20220107215438.321922-2-toke@redhat.com>
+ <CAADnVQ+uftgnRQa5nvG4FTJga_=_FMAGxuiPB3O=AFKfEdOg=A@mail.gmail.com> <87pmp28iwe.fsf@toke.dk>
+In-Reply-To: <87pmp28iwe.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 8 Jan 2022 11:28:22 -0800
+Message-ID: <CAADnVQLWjbm03-3NHYyEx98tWRN68LSaOd3R9fjJoHY5cYoEJg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 1/3] bpf: Add "live packet" mode for XDP in bpf_prog_run()
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-head:   82192cb497f9eca6c0d44dbc173e68d59ea2f3c9
-commit: 0a1498ebfa55b860e8ec929d73585bcd3fd81a4e [59/127] net/mlx5e: Expose FEC counters via ethtool
-config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220109/202201090211.3kpW0hGj-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=0a1498ebfa55b860e8ec929d73585bcd3fd81a4e
-        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-        git fetch --no-tags net-next master
-        git checkout 0a1498ebfa55b860e8ec929d73585bcd3fd81a4e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
+On Sat, Jan 8, 2022 at 5:19 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
+>
+> Sure, can do. Doesn't look like BPF_PROG_RUN is documented in there at
+> all, so guess I can start such a document :)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+prog_run was simple enough.
+This live packet mode is a different level of complexity.
+Just look at the length of this thread.
+We keep finding implementation details that will be relevant
+to anyone trying to use this interface.
+They all will become part of uapi.
 
-All errors (new ones prefixed by >>):
+> > Another question comes to mind:
+> > What happens when a program modifies the packet?
+> > Does it mean that the 2nd frame will see the modified data?
+> > It will not, right?
+> > It's the page pool size of packets that will be inited the same way
+> > at the beginning. Which is NAPI_POLL_WEIGHT * 2 =3D=3D 128 packets.
+> > Why this number?
+>
+> Yes, you're right: the next run won't see the modified packet data. The
+> 128 pages is because we run the program loop in batches of 64 (like NAPI
+> does, the fact that TEST_XDP_BATCH and NAPI_POLL_WEIGHT are the same is
+> not a coincidence).
+>
+> We need 2x because we want enough pages so we can keep running without
+> allocating more, and the first batch can still be in flight on a
+> different CPU while we're processing batch 2.
+>
+> I experimented with different values, and 128 was the minimum size that
+> didn't have a significant negative impact on performance, and above that
+> saw diminishing returns.
 
-   drivers/net/ethernet/mellanox/mlx5/core/en_stats.c: In function 'fec_set_block_stats':
->> drivers/net/ethernet/mellanox/mlx5/core/en_stats.c:1235:48: error: 'outl' undeclared (first use in this function); did you mean 'out'?
-    1235 |         if (mlx5_core_access_reg(mdev, in, sz, outl, sz, MLX5_REG_PPCNT, 0, 0))
-         |                                                ^~~~
-         |                                                out
-   drivers/net/ethernet/mellanox/mlx5/core/en_stats.c:1235:48: note: each undeclared identifier is reported only once for each function it appears in
+I guess it's ok-ish to get stuck with 128.
+It will be uapi that we cannot change though.
+Are you comfortable with that?
 
+> > Should it be configurable?
+> > Then the user can say: init N packets with this one pattern
+> > and the program will know that exactly N invocation will be
+> > with the same data, but N+1 it will see the 1st packet again
+> > that potentially was modified by the program.
+> > Is it accurate?
+>
+> I thought about making it configurable, but the trouble is that it's not
+> quite as straight-forward as the first N packets being "pristine": it
+> depends on what happens to the packet afterwards:
+>
+> On XDP_DROP, the page will be recycled immediately, whereas on
+> XDP_{TX,REDIRECT} it will go through the egress driver after sitting in
+> the bulk queue for a little while, so you can get reordering compared to
+> the original execution order.
+>
+> On XDP_PASS the kernel will release the page entirely from the pool when
+> building an skb, so you'll never see that particular page again (and
+> eventually page_pool will allocate a new batch that will be
+> re-initialised to the original value).
 
-vim +1235 drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+That all makes sense. Thanks for explaining.
+Please document it and update the selftest.
+Looks like XDP_DROP is not tested.
+Single packet TX and REDIRECT is imo too weak to give
+confidence that the mechanism will not explode with millions of packets.
 
-  1220	
-  1221	static void fec_set_block_stats(struct mlx5e_priv *priv,
-  1222					struct ethtool_fec_stats *fec_stats)
-  1223	{
-  1224		struct mlx5_core_dev *mdev = priv->mdev;
-  1225		u32 out[MLX5_ST_SZ_DW(ppcnt_reg)] = {};
-  1226		u32 in[MLX5_ST_SZ_DW(ppcnt_reg)] = {};
-  1227		int sz = MLX5_ST_SZ_BYTES(ppcnt_reg);
-  1228		int mode = fec_active_mode(mdev);
-  1229	
-  1230		if (mode == MLX5E_FEC_NOFEC)
-  1231			return;
-  1232	
-  1233		MLX5_SET(ppcnt_reg, in, local_port, 1);
-  1234		MLX5_SET(ppcnt_reg, in, grp, MLX5_PHYSICAL_LAYER_COUNTERS_GROUP);
-> 1235		if (mlx5_core_access_reg(mdev, in, sz, outl, sz, MLX5_REG_PPCNT, 0, 0))
-  1236			return;
-  1237	
-  1238		switch (mode) {
-  1239		case MLX5E_FEC_RS_528_514:
-  1240		case MLX5E_FEC_RS_544_514:
-  1241		case MLX5E_FEC_LLRS_272_257_1:
-  1242			fec_set_rs_stats(fec_stats, out);
-  1243			return;
-  1244		case MLX5E_FEC_FIRECODE:
-  1245			fec_set_fc_stats(fec_stats, out, fec_num_lanes(mdev));
-  1246		}
-  1247	}
-  1248	
+> If we do want to support a "pristine data" mode, I think the least
+> cumbersome way would be to add a flag that would make the kernel
+> re-initialise the packet data before every program invocation. The
+> reason I didn't do this was because I didn't have a use case for it. The
+> traffic generator use case only rewrites a tiny bit of the packet
+> header, and it's just as easy to just keep rewriting it without assuming
+> a particular previous value. And there's also the possibility of just
+> calling bpf_prog_run() multiple times from userspace with a lower number
+> of repetitions...
+>
+> I'm not opposed to adding such a flag if you think it would be useful,
+> though. WDYT?
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+reinit doesn't feel necessary.
+How one would use this interface to send N different packets?
+The api provides an interface for only one.
+It will be copied 128 times, but the prog_run call with repeat=3D1
+will invoke bpf prog only once, right?
+So technically doing N prog_run commands with different data
+and repeat=3D1 will achieve the result, right?
+But it's not efficient, since 128 pages and 128 copies will be
+performed each time.
+May be there is a use case for configurable page_pool size?
