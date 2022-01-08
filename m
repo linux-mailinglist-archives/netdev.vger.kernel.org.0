@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE3E14885F0
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 21:47:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59E254885F1
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 21:47:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232825AbiAHUqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 15:46:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49312 "EHLO
+        id S232833AbiAHUq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 15:46:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232764AbiAHUqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 15:46:54 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1807CC06173F
+        with ESMTP id S232828AbiAHUqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 15:46:55 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE767C06173F
         for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 12:46:54 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id z3so8655760plg.8
+Received: by mail-pj1-x1033.google.com with SMTP id c14-20020a17090a674e00b001b31e16749cso15511002pjm.4
         for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 12:46:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Dcd0/g4UbnpmQf2lYWpQMozVkbYSJ8CoZkn58HCH4Ik=;
-        b=mfpBL//YSgiacw4Dg7ggdjtgaZC9nKSLowcdk+KvtraqZBNp/YYVn5wvwqysC6VGb5
-         LqOliCousG0m2GuknH8Lx6sa4p3OwjQVpptuzuCEYLgUo7xrIUibU1smBJxSvUpDcdFT
-         ZkuDmjVGUJqafmg26km99YhnrBc1/CFtxmnN+ZM6ESdA8CZqItx/vO/VXbsrz9UiBDdT
-         BZclPOUgjcWvNI0i28gTo0fRwWpe5Fk/UI8gPERDJLJQoArnavefrbWs23Rm1xbweIuN
-         PE4kWHcDXyw1+nLz6ivYynWn3Va2AUk0Y6tCFzqetHdYRWepPzxFhRMJdboN6IHwdzh4
-         uP4w==
+        bh=XNRt6/aITGiiV0hFDQpp/ZDiBu3MId5tidREj5NDK10=;
+        b=u+M7onowdXG0STrbSbB8ysKzsH67HxEGDkBe5jXLr3U0oI81B6aEE5Dl46zA8Q7r6v
+         Y3pY8KjjA4KWV1avYrXR+tLbo6gJv3zN+q2NaJGBwtfx7JenfOrAQswxZW8b2GAmmu+F
+         bVgFNeUeXuakKrUnsnVlxmIkCfFhRd4jCOF6GSQTsSpkcoFvkVBsgdGH9I1FXvTX2MmM
+         3HDUqViGzuk59W1+tgiBIJAZ+bnzk76SpSZd2tEhcnxXbruKz3qViwgxiJFB+dDQ4i08
+         p9PkUiJMcWh4EYblm6JsPfBD3YQ60/2J0xWq53rBXf0MIqhh4E46Xrp4/knl89vLmfEP
+         OepA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Dcd0/g4UbnpmQf2lYWpQMozVkbYSJ8CoZkn58HCH4Ik=;
-        b=bfmq1aS40Iz49z64fnfWlQaShpXZrTlI5bIv1KF87xfSMNAiJlE11RxiTGP+TkI8yC
-         otwwVEaM9/okLGti/AYKUQOwYEtenAbwOJYTRL6ODsiV1tQjzgGn06BgCMd8irRpslPK
-         ARyasjHhYwSZ8KkyOXjQsXZxTnEuV7Z2qS29/kkYyxf3Qb7UJjeZcBNkG6cbzakU8P/0
-         j8w3grgQfX8LIvc7zSl2TfxOmmwRjHq+Qt8F10IJNuw1qyHfK3HnkoWiMcMykszuGc/x
-         ZYW3I7zsU9ASH5QWfXlnzICJQmJUjJwEp1y7NVnqVYGPuAEqW1EGdrvHfJbLoa81o/6Y
-         gLjw==
-X-Gm-Message-State: AOAM530O5661g7KhAkSUB1moEaDAioat08YSfphMaBr/smSmlXH1cPS3
-        o4RH0Bth5zfNNN4Xs119A8CbNWboh0G3/A==
-X-Google-Smtp-Source: ABdhPJzjPxy6FknhEPngXVP9FEFBGPA+74tCQZkjxsGUoDd3sPSLCtbxr+srU6ecPR7m4xLUH6wV3g==
-X-Received: by 2002:a17:90a:4fa5:: with SMTP id q34mr3157890pjh.101.1641674813368;
-        Sat, 08 Jan 2022 12:46:53 -0800 (PST)
+        bh=XNRt6/aITGiiV0hFDQpp/ZDiBu3MId5tidREj5NDK10=;
+        b=k3/HDldizhkHz+NlDeVCz4A2tfghmXm92iMBtPxHUHp65QcMBzIhgNXW5DtzOGEEXS
+         eUOEKta+jd0lzz/L7iY3t02w8LhobwvBRLJ6sShPyUptQ/OKsu5ZDTBf/Qd5EDWskbru
+         DbeHtk5T/Z8IIk9W/cuV/pKGg+if/srMRz19cPHPNTS/d0qAerwDAxeeoy46hWQKv6q1
+         NUWcb+0gYJ2nXWwH6nQ1U7RHXtPLo08/s4DsE3bVtwGOnii2stf7KaO1oSm1trN6gwoe
+         ZFzmhaUKDeZQkLWRTSXAQswjYvpO6ifK6r/RNTiy8GJN+wslfsCv5yuH6hepCdHPRRyk
+         yEng==
+X-Gm-Message-State: AOAM532nb9uAVB/DZCyo5evef7eFGO3lMeEQUkASw2ZYu6W3DulCZYPu
+        3z2fBmhNXpbttCnsEigk4AUjk6gT5ImF5Q==
+X-Google-Smtp-Source: ABdhPJzGT6M6ESUmn3e9MvM4R7yDXn5QkJevozGVV6KEF+oMpEsQ5NPgKorQqP39rT6dXSfUOZZI2A==
+X-Received: by 2002:a17:90a:1108:: with SMTP id d8mr21567035pja.175.1641674814245;
+        Sat, 08 Jan 2022 12:46:54 -0800 (PST)
 Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id u71sm2129393pgd.68.2022.01.08.12.46.52
+        by smtp.gmail.com with ESMTPSA id u71sm2129393pgd.68.2022.01.08.12.46.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Jan 2022 12:46:52 -0800 (PST)
+        Sat, 08 Jan 2022 12:46:53 -0800 (PST)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 X-Google-Original-From: Stephen Hemminger <sthemmin@microsoft.com>
 To:     netdev@vger.kernel.org
 Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2-next 01/11] tc: add format attribute to tc_print_rate
-Date:   Sat,  8 Jan 2022 12:46:40 -0800
-Message-Id: <20220108204650.36185-2-sthemmin@microsoft.com>
+Subject: [PATCH iproute2-next 02/11] utils: add format attribute
+Date:   Sat,  8 Jan 2022 12:46:41 -0800
+Message-Id: <20220108204650.36185-3-sthemmin@microsoft.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220108204650.36185-1-sthemmin@microsoft.com>
 References: <20220108204650.36185-1-sthemmin@microsoft.com>
@@ -65,27 +65,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stephen Hemminger <stephen@networkplumber.org>
 
-This catches future errors and silences warning from Clang.
+One more format attribute needed to resolve clang warnings.
 
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- tc/tc_util.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/utils.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tc/tc_util.c b/tc/tc_util.c
-index 48065897cee7..6d5eb754831a 100644
---- a/tc/tc_util.c
-+++ b/tc/tc_util.c
-@@ -247,7 +247,8 @@ int get_percent_rate64(__u64 *rate, const char *str, const char *dev)
- 	return get_rate64(rate, r_str);
- }
+diff --git a/include/utils.h b/include/utils.h
+index b6c468e9cc86..d644202cc529 100644
+--- a/include/utils.h
++++ b/include/utils.h
+@@ -261,7 +261,9 @@ int print_timestamp(FILE *fp);
+ void print_nlmsg_timestamp(FILE *fp, const struct nlmsghdr *n);
  
--void tc_print_rate(enum output_type t, const char *key, const char *fmt,
-+void __attribute__((format(printf, 3, 0)))
-+tc_print_rate(enum output_type t, const char *key, const char *fmt,
- 		   unsigned long long rate)
- {
- 	print_rate(use_iec, t, key, fmt, rate);
+ unsigned int print_name_and_link(const char *fmt,
+-				 const char *name, struct rtattr *tb[]);
++				 const char *name, struct rtattr *tb[])
++	__attribute__((format(printf, 1, 0)));
++
+ 
+ #define BIT(nr)                 (UINT64_C(1) << (nr))
+ 
 -- 
 2.30.2
 
