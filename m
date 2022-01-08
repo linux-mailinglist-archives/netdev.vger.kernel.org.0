@@ -2,84 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CCF2488123
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 04:46:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6647F488165
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 06:11:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233490AbiAHDon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 22:44:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37640 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230398AbiAHDom (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 22:44:42 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69D8B61F30
-        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 03:44:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D4C0C36AEB;
-        Sat,  8 Jan 2022 03:44:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641613481;
-        bh=+r9AziOMry8y2oB2gLHWb4Q0Lo6tCbuybTqJi7RTSCQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Cl0X2OJxqxg2Z3COLvMSXKlBz6LlTX77iUhj+BKKh/tNHL+scGjsU8g3wRFXzFReb
-         SXxIRVm15EWWgGHqJTJ+IC/P9qayICVnFi9BBvZA3CUy09D4IBtH6QT041q1HCA8zy
-         HrqCPdJTEHMOX/E71k/Wy6WY12RUwCZI/ThAGZeenE+h2mD8qWRA4uE4UfhCM51eXy
-         SXP0hORuPAmSMNdIj3RajLJdFe8nhXIYtRsvX0Y1b4nlO/aVADSW/BaHQRpu0HDJ93
-         38Lj10f3horC3e+6UeD6Ke/j/1F/78UnUC0gsJFfPyHZVplF/FuVr1yaI7roGPPyUv
-         TaJkvzwUP1e/w==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH net-next] net: allwinner: Fix print format
-Date:   Fri,  7 Jan 2022 19:44:38 -0800
-Message-Id: <20220108034438.2227343-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S229852AbiAHFLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 00:11:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229692AbiAHFLa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 00:11:30 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E093FC061574
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 21:11:29 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id c14-20020a17090a674e00b001b31e16749cso12879102pjm.4
+        for <netdev@vger.kernel.org>; Fri, 07 Jan 2022 21:11:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=openresty-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=y9WGOS+NmTpwsfWAaNLR4kcuvqh/6mnBxgOTqljYllg=;
+        b=mn2CR4XIf7DQVYu0fqTfWTYBxNu65IiPfwv1HlAf/ALTTJ3+P5rVhrRHdYxevNiaEg
+         eWlsdKRIF5v0DxpsZMlAIEpHb0S/agb+1TdIR9v0sQ8oqq5LsWggYlFx+Y6NuqxSxSil
+         6aHqXsfbOBznPGcdmOkoo9ZjdtpLRAdUfasPQUBIutE0s7VoSHZ6ZJFP6HFj1jBP4Q+H
+         8cS6VvNs64y+ERwLuQ8uCSZn+0CjY9EBR5c4CjGjELaeGf+ZnVnMRijop4DNpXUvUyD5
+         iEWxkQeQvZ1i6aW/7eGjVrpqJVYX2m9ttGiovsLfxWH+b5lEYilpvnRalcdBEJ8I5QHd
+         CiYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=y9WGOS+NmTpwsfWAaNLR4kcuvqh/6mnBxgOTqljYllg=;
+        b=bSIE9vYPinRsoP/DGle+B7opS/lDj0AnSISSeV5t8p8w6DjwtmSekPF8NfeX8cyH/t
+         /udYFpqMchjaH9Xsu+kZkk+mfg3bBTK+kMDwpew5IbXEzKP1+opDggu433QtUCrsSHo/
+         lvK4gr2qO35s3zNmJKHmUP0pAmNF/FOxTzv84ffApREB6rufAET8HZ71Amcx+u0sRW3W
+         71u2FWGamR+PPFPRjw5eyMpH8l9j2QmNxSFUwKnVqtOWQzPNhkpXkcAUxg9fLxyKdtNR
+         q+apmALibQSEWHg5ejyLg0fJdEZiernVLKcj2o+lfr3LtZ1MC9EG/NzvRtiPhTPa5Vxl
+         XFQw==
+X-Gm-Message-State: AOAM531wOKeqKn3vHGVSRKTu2YUHEeSq1svJsekFey+YTWiorb2LacNm
+        KiPRNe+ckcjegxVy75e0NCkgqA==
+X-Google-Smtp-Source: ABdhPJyXnncodsFk1sYhJ9INkN1BNwdN6A1mtZXDP0lfXNH1P2YDSCXWdLhFwc1/n3/1bKwdV6/4ZQ==
+X-Received: by 2002:a17:90b:30cc:: with SMTP id hi12mr19315174pjb.50.1641618689293;
+        Fri, 07 Jan 2022 21:11:29 -0800 (PST)
+Received: from localhost.localdomain (c-98-35-249-89.hsd1.ca.comcast.net. [98.35.249.89])
+        by smtp.gmail.com with ESMTPSA id q16sm552808pfu.31.2022.01.07.21.11.28
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 07 Jan 2022 21:11:28 -0800 (PST)
+From:   "Yichun Zhang (agentzh)" <yichun@openresty.com>
+To:     yichun@openresty.com
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] bpf: core: Fix the call ins's offset s32 -> s16 truncation
+Date:   Fri,  7 Jan 2022 21:11:21 -0800
+Message-Id: <20220108051121.28632-1-yichun@openresty.com>
+X-Mailer: git-send-email 2.17.2
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees reports quoted commit introduced the following warning on arm64:
+The BPF interpreter always truncates the BPF CALL instruction's 32-bit
+jump offset to 16-bit. Large BPF programs run by the interpreter often
+hit this issue and result in weird behaviors when jumping to the wrong
+destination instructions.
 
-drivers/net/ethernet/allwinner/sun4i-emac.c:922:60: error: format '%x' expects argument of type 'unsigned int', but argument 3 has type 'resource_size_t' {aka 'long long unsigned int'} [-Werror=format=]
-  922 |         netdev_info(ndev, "get io resource from device: 0x%x, size = %u\n",
-      |                                                           ~^
-      |                                                            |                                      |                                                            unsigned int
-      |                                                           %llx
-  923 |                     regs->start, resource_size(regs));
-      |                     ~~~~~~~~~~~
-      |                         |
-      |                         resource_size_t {aka long long unsigned int}
+The BPF JIT compiler does not have this bug.
 
-.. and another one like that for resource_size().
-
-Switch to %pa and a cast.
-
-Reported-by: Kees Cook <keescook@chromium.org>
-Fixes: 47869e82c8b8 ("sun4i-emac.c: add dma support")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 1ea47e01ad6ea ("bpf: add support for bpf_call to interpreter")
+Signed-off-by: Yichun Zhang (agentzh) <yichun@openresty.com>
 ---
- drivers/net/ethernet/allwinner/sun4i-emac.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/bpf/core.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.c b/drivers/net/ethernet/allwinner/sun4i-emac.c
-index 964227e342ee..849de4564709 100644
---- a/drivers/net/ethernet/allwinner/sun4i-emac.c
-+++ b/drivers/net/ethernet/allwinner/sun4i-emac.c
-@@ -919,8 +919,8 @@ static int emac_configure_dma(struct emac_board_info *db)
- 		goto out_clear_chan;
- 	}
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 2405e39d800f..dc3c90992f33 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -59,6 +59,9 @@
+ #define CTX	regs[BPF_REG_CTX]
+ #define IMM	insn->imm
  
--	netdev_info(ndev, "get io resource from device: 0x%x, size = %u\n",
--		    regs->start, resource_size(regs));
-+	netdev_info(ndev, "get io resource from device: %pa, size = %u\n",
-+		    &regs->start, (unsigned int)resource_size(regs));
- 	db->emac_rx_fifo = regs->start + EMAC_RX_IO_DATA_REG;
++static u64 (*interpreters_args[])(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5,
++				  const struct bpf_insn *insn);
++
+ /* No hurry in this branch
+  *
+  * Exported for the bpf jit load helper.
+@@ -1560,10 +1563,10 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
+ 		CONT;
  
- 	db->rx_chan = dma_request_chan(&pdev->dev, "rx");
+ 	JMP_CALL_ARGS:
+-		BPF_R0 = (__bpf_call_base_args + insn->imm)(BPF_R1, BPF_R2,
+-							    BPF_R3, BPF_R4,
+-							    BPF_R5,
+-							    insn + insn->off + 1);
++		BPF_R0 = (interpreters_args[insn->off])(BPF_R1, BPF_R2,
++							BPF_R3, BPF_R4,
++							BPF_R5,
++							insn + insn->imm + 1);
+ 		CONT;
+ 
+ 	JMP_TAIL_CALL: {
+@@ -1810,9 +1813,7 @@ EVAL4(PROG_NAME_LIST, 416, 448, 480, 512)
+ void bpf_patch_call_args(struct bpf_insn *insn, u32 stack_depth)
+ {
+ 	stack_depth = max_t(u32, stack_depth, 1);
+-	insn->off = (s16) insn->imm;
+-	insn->imm = interpreters_args[(round_up(stack_depth, 32) / 32) - 1] -
+-		__bpf_call_base_args;
++	insn->off = (round_up(stack_depth, 32) / 32) - 1;
+ 	insn->code = BPF_JMP | BPF_CALL_ARGS;
+ }
+ 
 -- 
-2.31.1
+2.17.2
 
