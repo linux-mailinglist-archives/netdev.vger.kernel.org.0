@@ -2,100 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82D274880E8
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 03:27:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D137B4880ED
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 03:34:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233335AbiAHC1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 21:27:17 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44808 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230187AbiAHC1R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 21:27:17 -0500
+        id S233186AbiAHCer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 21:34:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230174AbiAHCeq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 21:34:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE09C061574;
+        Fri,  7 Jan 2022 18:34:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A440B8272D;
-        Sat,  8 Jan 2022 02:27:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6612C36AEB;
-        Sat,  8 Jan 2022 02:27:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE4B7B82760;
+        Sat,  8 Jan 2022 02:34:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 280E8C36AE5;
+        Sat,  8 Jan 2022 02:34:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641608835;
-        bh=TX3kCm6RVF/7MEzog9mzXfC2zzgkvFjbe2el+5vmbCU=;
+        s=k20201202; t=1641609282;
+        bh=DNoFnlc+g6I3Shbp/QTo9YTbp0+UgI4aMPPMxfkn6iE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=X3fM9io6M4QhzEtBKzHiKv1B1xv/TlAGOwneGNbM7yjEYF5ASNd17ERsI79KSuBjn
-         xXcyo7+BF431U1S7t4hQHKiZPycwi+xesilX4qxgpvTGwMO7nUcM88i0x4kGCKFdzO
-         H5wXQFbGOoord+ycVyU3r286MRqVnA2lHMDcudwgQn1kd0UplRMdHAuaGGkBgCR16h
-         VYbV1aq5ijpoWd9CF7DTOe0mX+R2NT8+1bup9RH59b3xvbpzO3Pf6pIhrYvHh7S81Z
-         x13kFNqdNVeHzaBRemME7SLF6uGBpFxLceMNi9j2LGtHewbxWL7aEU1VFOicfYYpJ2
-         mxVYHhUrHfo2g==
-Date:   Fri, 7 Jan 2022 18:27:12 -0800
+        b=n3O8pQ2+q2yPGJRyqHXei84T3NkRrGVTuS+zCpURdv7xpHn9v+8FhREcgRI+uXaWX
+         c01kmFE60/7X/beMKjTDVCPxpGK5/CV7lSMw6T1IEAqcbYt+X/XNVDerwwwJmaKoDs
+         nL4KLhDgLjKpJNk37+gY3YvnlHHz3UQVt7Q7t5K97NcTsBymK9P8OJcCH5tOOVgz5e
+         4kHRK9nLx3BIwYSlUAJwhDJNgFcFoZfpRKX6aGTwKKJyS9GQK+W7agRius8IpBGTu9
+         QUQqkECzgMDa8gcy9f9OeaRWPPivdg2glFsSMB5bPSlCi4N9tY9vu/JHK2Kuli8IEA
+         zzgeSgSKxk43w==
+Date:   Fri, 7 Jan 2022 18:34:41 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     davem@davemloft.net, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: pull request: bluetooth 2022-01-07
-Message-ID: <20220107182712.7549a8eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220107210942.3750887-1-luiz.dentz@gmail.com>
-References: <20220107210942.3750887-1-luiz.dentz@gmail.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     conleylee@foxmail.com, davem@davemloft.net, mripard@kernel.org,
+        wens@csie.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
+Message-ID: <20220107183441.484b0de5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <202201071532.57A08030@keescook>
+References: <20211228164817.1297c1c9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <tencent_DE05ADA53D5B084D4605BE6CB11E49EF7408@qq.com>
+        <202201071532.57A08030@keescook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  7 Jan 2022 13:09:42 -0800 Luiz Augusto von Dentz wrote:
-> The following changes since commit 710ad98c363a66a0cd8526465426c5c5f8377e=
-e0:
->=20
->   veth: Do not record rx queue hint in veth_xmit (2022-01-06 13:49:54 +00=
-00)
->=20
-> are available in the Git repository at:
->=20
->   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.=
-git tags/for-net-next-2022-01-07
->=20
-> for you to fetch changes up to b9f9dbad0bd1c302d357fdd327c398f51f5fc2b1:
->=20
->   Bluetooth: hci_sock: fix endian bug in hci_sock_setsockopt() (2022-01-0=
-7 08:41:38 +0100)
->=20
-> ----------------------------------------------------------------
-> bluetooth-next pull request for net-next:
->=20
->  - Add support for Foxconn QCA 0xe0d0
->  - Fix HCI init sequence on MacBook Air 8,1 and 8,2
->  - Fix Intel firmware loading on legacy ROM devices
+On Fri, 7 Jan 2022 15:34:18 -0800 Kees Cook wrote:
+> On Wed, Dec 29, 2021 at 09:43:51AM +0800, conleylee@foxmail.com wrote:
+> > From: Conley Lee <conleylee@foxmail.com>
+> >
+> > Thanks for your review. Here is the new version for this patch.
+> >
+> > This patch adds support for the emac rx dma present on sun4i. The emac
+> > is able to move packets from rx fifo to RAM by using dma.
+> >
+> > Change since v4.
+> >   - rename sbk field to skb
+> >   - rename alloc_emac_dma_req to emac_alloc_dma_req
+> >   - using kzalloc(..., GPF_ATOMIC) in interrupt context to avoid
+> >     sleeping
+> >   - retry by using emac_inblk_32bit when emac_dma_inblk_32bit fails
+> >   - fix some code style issues
+> >
+> > Change since v5.
+> >   - fix some code style issue
+> >
+> > Signed-off-by: Conley Lee <conleylee@foxmail.com>
+>
+> This is causing build failures:
+> 
+> $ make CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 allmodconfig
+> $ make CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 -j... -k -s
+> drivers/net/ethernet/allwinner/sun4i-emac.c: In function 'emac_configure_dma':
+> drivers/net/ethernet/allwinner/sun4i-emac.c:922:60: error: format '%x' expects argument of type 'unsigned int', but argument 3 has type 'resource_size_t' {aka 'long long unsigned int'} [-Werror=format=]
+>   922 |         netdev_info(ndev, "get io resource from device: 0x%x, size = %u\n",
+>       |                                                           ~^
+>       |                                                            |                                      |                                                            unsigned int
+>       |                                                           %llx
+>   923 |                     regs->start, resource_size(regs));
+>       |                     ~~~~~~~~~~~
+>       |                         |
+>       |                         resource_size_t {aka long long unsigned int}
+> drivers/net/ethernet/allwinner/sun4i-emac.c:922:71: error: format '%u' expects argument of type 'unsigned int', but argument 4 has type 'resource_size_t' {aka 'long long unsigned int'} [-Werror=format=]
+>   922 |         netdev_info(ndev, "get io resource from device: 0x%x, size = %u\n",
+>       |                                                                      ~^
+>       |                                                                       |
+>       |                                                                       unsigned int
+>       |                                                                      %llu
+>   923 |                     regs->start, resource_size(regs));
+>       |                                  ~~~~~~~~~~~~~~~~~~~
+>       |                                  |
+>       |                                  resource_size_t {aka long long unsigned int}
+> 
 
-A few warnings here that may be worth addressing - in particular this
-one makes me feel that kbuild bot hasn't looked at the patches:
-
-net/bluetooth/hci_sync.c:5143:5: warning: no previous prototype for =E2=80=
-=98hci_le_ext_create_conn_sync=E2=80=99 [-Wmissing-prototypes]
- 5143 | int hci_le_ext_create_conn_sync(struct hci_dev *hdev, struct hci_co=
-nn *conn,
-      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Also this Fixes tag could be mended:
-
-Commit: 6845667146a2 ("Bluetooth: hci_qca: Fix NULL vs IS_ERR_OR_NULL check=
- in qca_serdev_probe")
-	Fixes tag: Fixes: 77131dfe ("Bluetooth: hci_qca: Replace devm_gpiod_get() =
-with devm_gpiod_get_optional()")
-	Has these problem(s):
-		- SHA1 should be at least 12 digits long
-		  Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-		  or later) just making sure it is not set (or set to "auto").
-
-
-Would you be able to fix the new warnings and resend the PR or are you
-confident that there isn't much serious breakage here and follow ups
-will be enough?
-
-FWIW to see the new warnings check out net-next, do a allmodconfig build
-with W=3D1 C=3D1, pull in your code, reset back to net-next (this will
-"touch" all the files that need rebuilding), do a single threaded build
-and save (2>file) the warnings, pull in your code, do another build
-(2>file2), diff the warnings from the build of just net-next and after
-pull.
+Ugh, I saw this and somehow it didn't enter my brain that it's new.
+%pa right? Let me test that and send a fix before we close net-next..
