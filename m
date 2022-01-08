@@ -2,265 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 691504883E0
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 14:58:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05FDA4883ED
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 15:10:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234384AbiAHN6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 08:58:50 -0500
-Received: from smtp02.smtpout.orange.fr ([80.12.242.124]:59408 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234377AbiAHN6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 08:58:50 -0500
-Received: from pop-os.home ([90.11.185.88])
-        by smtp.orange.fr with ESMTPA
-        id 6CF6nLUf4Bazo6CF6n7NRu; Sat, 08 Jan 2022 14:58:49 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 08 Jan 2022 14:58:49 +0100
-X-ME-IP: 90.11.185.88
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] qlcnic: Simplify DMA setting
-Date:   Sat,  8 Jan 2022 14:58:47 +0100
-Message-Id: <4996ab0337d62ec6a54b2edf234cd5ced4b4d7ad.1641649611.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        id S234430AbiAHOKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 09:10:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47810 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229667AbiAHOKH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 09:10:07 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C80C06173E
+        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 06:10:06 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id l12-20020a7bc34c000000b003467c58cbdfso6548302wmj.2
+        for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 06:10:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=Wvr9B5Og2idB5f4e8kL+4mc9ZlXpKCsICKibs4hTE6U=;
+        b=HNPCe7KrRLoYAhuKcXaBwu3uQVsuefqIavkpBVgi20r855XuhUIUKodE5uplvoIgNn
+         bdo0c0Kz7FUkdZ59y8SbcSGG7YMN3crNHrLEkMJsmCCdGJoqYinG2WgRIZ/IeaNaaGZg
+         xBqfCv/aLCTn5N7bb2vGTtyg8H0NgmT7xHpds=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=Wvr9B5Og2idB5f4e8kL+4mc9ZlXpKCsICKibs4hTE6U=;
+        b=qP7ZYrv27PEQPpSu5gzuntmb8mMc5m18CY50m+WzRwdsgIWvXDn6XI3c8o56gDipHH
+         0/4UuryOB8xp494Q/sM4F1MFF8iffnh1WIbkodUViVygjMv6xdGfnS8PJYuu2I1EnpYI
+         KpBmeueS9X5hZUWklFdMpIgnmlkbXgSGRA9EX7ts5Gg4WEOejwEdkYmCEIEQhMuoNXJT
+         3QWmSqVG3Y26D+ifx4rVYILBel7g6XOwNzatKgjlb8DUcpeVP7fkCG1Aa9shzKuE/4HR
+         NsXxAXQ9vRxou14N9QQdjNj7oRbJtb0/Po9BXsz4EEmycDggq8AC1tO06AIRYhiPX0BO
+         4Jpg==
+X-Gm-Message-State: AOAM5312kIlfw8/tP3BiH7sCWT1ZjW8OC8Or//Jjm2dLTZMhcGCxXjbD
+        x2KBXKlM5DGzfudsAOjkYm4iBA==
+X-Google-Smtp-Source: ABdhPJxVHH4OnlGxc7mRvX1WqD4jFqxAfvGCz4ewLcCwoU3VfZlQPCOWpUu1qp1IfNnkqU8vjlNPgg==
+X-Received: by 2002:a05:600c:190c:: with SMTP id j12mr14754929wmq.166.1641651005070;
+        Sat, 08 Jan 2022 06:10:05 -0800 (PST)
+Received: from cloudflare.com ([2a01:110f:4809:d800::e00])
+        by smtp.gmail.com with ESMTPSA id o1sm1701644wmc.38.2022.01.08.06.10.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Jan 2022 06:10:04 -0800 (PST)
+References: <20220104214645.290900-1-john.fastabend@gmail.com>
+User-agent: mu4e 1.1.0; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, joamaki@gmail.com
+Subject: Re: [PATCH bpf-next] bpf, sockmap: fix double bpf_prog_put on error
+ case in map_link
+In-reply-to: <20220104214645.290900-1-john.fastabend@gmail.com>
+Date:   Sat, 08 Jan 2022 15:10:03 +0100
+Message-ID: <874k6epbd0.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As stated in [1], dma_set_mask() with a 64-bit mask will never fail if
-dev->dma_mask is non-NULL.
-So, if it fails, the 32 bits case will also fail for the same reason.
+On Tue, Jan 04, 2022 at 10:46 PM CET, John Fastabend wrote:
+> sock_map_link() is called to update a sockmap entry with a sk. But, if the
+> sock_map_init_proto() call fails then we return an error to the map_update
+> op against the sockmap. In the error path though we need to cleanup psock
+> and dec the refcnt on any programs associated with the map, because we
+> refcnt them early in the update process to ensure they are pinned for the
+> psock. (This avoids a race where user deletes programs while also updating
+> the map with new socks.)
+>
+> In current code we do the prog refcnt dec explicitely by calling
+> bpf_prog_put() when the program was found in the map. But, after commit
+> '38207a5e81230' in this error path we've already done the prog to psock
+> assignment so the programs have a reference from the psock as well. This
+> then causes the psock tear down logic, invoked by sk_psock_put() in the
+> error path, to similarly call bpf_prog_put on the programs there.
+>
+> To be explicit this logic does the prog->psock assignemnt
+>
+>   if (msg_*)
+>     psock_set_prog(...)
+>
+> Then the error path under the out_progs label does a similar check and dec
+> with,
+>
+>   if (msg_*)
+>      bpf_prog_put(...)
+>
+> And the teardown logic sk_psock_put() does,
+>
+>   psock_set_prog(msg_*, NULL)
+>
+> triggering another bpf_prog_put(...). Then KASAN gives us this splat, found
+> by syzbot because we've created an inbalance between bpf_prog_inc and
+> bpf_prog_put calling put twice on the program.
+>
+> BUG: KASAN: vmalloc-out-of-bounds in __bpf_prog_put kernel/bpf/syscall.c:1812 [inline]
+> BUG: KASAN: vmalloc-out-of-bounds in __bpf_prog_put kernel/bpf/syscall.c:1812 [inline] kernel/bpf/syscall.c:1829
+> BUG: KASAN: vmalloc-out-of-bounds in bpf_prog_put+0x8c/0x4f0 kernel/bpf/syscall.c:1829 kernel/bpf/syscall.c:1829
+> Read of size 8 at addr ffffc90000e76038 by task syz-executor020/3641
+>
+> To fix clean up error path so it doesn't try to do the bpf_prog_put in the
+> error path once progs are assigned then it relies on the normal psock
+> tear down logic to do complete cleanup.
+>
+> For completness we also cover the case whereh sk_psock_init_strp() fails,
+> but this is not expected because it indicates an incorrect socket type
+> and should be caught earlier.
+>
+> Reported-by: syzbot+bb73e71cf4b8fd376a4f@syzkaller.appspotmail.com
+> Fixes: 38207a5e8123 ("bpf, sockmap: Attach map progs to psock early for feature probes")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
 
-So qlcnic_set_dma_mask(), (in qlcnic_main.c) can be simplified a lot and
-inlined directly in its only caller.
+FWIW, late :thumbup:
 
-
-If dma_set_mask_and_coherent() succeeds, 'pci_using_dac' is known to be 1.
-So it can be removed from all the calling chain.
-
-qlcnic_setup_netdev() can finally be simplified as-well.
-
-
-[1]: https://lkml.org/lkml/2021/6/7/398
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/ethernet/qlogic/qlcnic/qlcnic.h   |  2 +-
- .../ethernet/qlogic/qlcnic/qlcnic_83xx_hw.h   |  2 +-
- .../ethernet/qlogic/qlcnic/qlcnic_83xx_init.c |  4 +-
- .../net/ethernet/qlogic/qlcnic/qlcnic_main.c  | 38 +++++--------------
- .../net/ethernet/qlogic/qlcnic/qlcnic_sriov.h |  2 +-
- .../qlogic/qlcnic/qlcnic_sriov_common.c       |  9 ++---
- 6 files changed, 19 insertions(+), 38 deletions(-)
-
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic.h
-index be7abee160e7..b25102fded7b 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic.h
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic.h
-@@ -1698,7 +1698,7 @@ int qlcnic_set_vxlan_port(struct qlcnic_adapter *adapter, u16 port);
- int qlcnic_set_vxlan_parsing(struct qlcnic_adapter *adapter, u16 port);
- int qlcnic_83xx_configure_opmode(struct qlcnic_adapter *adapter);
- int qlcnic_read_mac_addr(struct qlcnic_adapter *);
--int qlcnic_setup_netdev(struct qlcnic_adapter *, struct net_device *, int);
-+int qlcnic_setup_netdev(struct qlcnic_adapter *, struct net_device *);
- void qlcnic_set_netdev_features(struct qlcnic_adapter *,
- 				struct qlcnic_esw_func_cfg *);
- void qlcnic_sriov_vf_set_multi(struct net_device *);
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.h
-index 6f1d9c1fd1b0..23cd47d588e5 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.h
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.h
-@@ -609,7 +609,7 @@ int qlcnic_83xx_read_flash_descriptor_table(struct qlcnic_adapter *);
- int qlcnic_83xx_flash_read32(struct qlcnic_adapter *, u32, u8 *, int);
- int qlcnic_83xx_lockless_flash_read32(struct qlcnic_adapter *,
- 				      u32, u8 *, int);
--int qlcnic_83xx_init(struct qlcnic_adapter *, int);
-+int qlcnic_83xx_init(struct qlcnic_adapter *);
- int qlcnic_83xx_idc_ready_state_entry(struct qlcnic_adapter *);
- void qlcnic_83xx_idc_poll_dev_state(struct work_struct *);
- void qlcnic_83xx_idc_exit(struct qlcnic_adapter *);
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
-index 27dffa299ca6..dbb800769cb6 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
-@@ -2432,7 +2432,7 @@ static void qlcnic_83xx_init_rings(struct qlcnic_adapter *adapter)
- 	qlcnic_set_sds_ring_count(adapter, rx_cnt);
- }
- 
--int qlcnic_83xx_init(struct qlcnic_adapter *adapter, int pci_using_dac)
-+int qlcnic_83xx_init(struct qlcnic_adapter *adapter)
- {
- 	struct qlcnic_hardware_context *ahw = adapter->ahw;
- 	int err = 0;
-@@ -2466,7 +2466,7 @@ int qlcnic_83xx_init(struct qlcnic_adapter *adapter, int pci_using_dac)
- 		goto exit;
- 
- 	if (qlcnic_sriov_vf_check(adapter)) {
--		err = qlcnic_sriov_vf_init(adapter, pci_using_dac);
-+		err = qlcnic_sriov_vf_init(adapter);
- 		if (err)
- 			goto detach_mbx;
- 		else
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
-index ed84f0f97623..d320567b2cca 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_main.c
-@@ -2258,8 +2258,7 @@ static int qlcnic_set_real_num_queues(struct qlcnic_adapter *adapter,
- }
- 
- int
--qlcnic_setup_netdev(struct qlcnic_adapter *adapter, struct net_device *netdev,
--		    int pci_using_dac)
-+qlcnic_setup_netdev(struct qlcnic_adapter *adapter, struct net_device *netdev)
- {
- 	int err;
- 	struct pci_dev *pdev = adapter->pdev;
-@@ -2278,20 +2277,15 @@ qlcnic_setup_netdev(struct qlcnic_adapter *adapter, struct net_device *netdev,
- 
- 	netdev->features |= (NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_RXCSUM |
- 			     NETIF_F_IPV6_CSUM | NETIF_F_GRO |
--			     NETIF_F_HW_VLAN_CTAG_RX);
-+			     NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HIGHDMA);
- 	netdev->vlan_features |= (NETIF_F_SG | NETIF_F_IP_CSUM |
--				  NETIF_F_IPV6_CSUM);
-+				  NETIF_F_IPV6_CSUM | NETIF_F_HIGHDMA);
- 
- 	if (QLCNIC_IS_TSO_CAPABLE(adapter)) {
- 		netdev->features |= (NETIF_F_TSO | NETIF_F_TSO6);
- 		netdev->vlan_features |= (NETIF_F_TSO | NETIF_F_TSO6);
- 	}
- 
--	if (pci_using_dac) {
--		netdev->features |= NETIF_F_HIGHDMA;
--		netdev->vlan_features |= NETIF_F_HIGHDMA;
--	}
--
- 	if (qlcnic_vlan_tx_check(adapter))
- 		netdev->features |= (NETIF_F_HW_VLAN_CTAG_TX);
- 
-@@ -2341,20 +2335,6 @@ qlcnic_setup_netdev(struct qlcnic_adapter *adapter, struct net_device *netdev,
- 	return 0;
- }
- 
--static int qlcnic_set_dma_mask(struct pci_dev *pdev, int *pci_using_dac)
--{
--	if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64)))
--		*pci_using_dac = 1;
--	else if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32)))
--		*pci_using_dac = 0;
--	else {
--		dev_err(&pdev->dev, "Unable to set DMA mask, aborting\n");
--		return -EIO;
--	}
--
--	return 0;
--}
--
- void qlcnic_free_tx_rings(struct qlcnic_adapter *adapter)
- {
- 	int ring;
-@@ -2441,8 +2421,8 @@ qlcnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	struct net_device *netdev = NULL;
- 	struct qlcnic_adapter *adapter = NULL;
- 	struct qlcnic_hardware_context *ahw;
--	int err, pci_using_dac = -1;
- 	char board_name[QLCNIC_MAX_BOARD_NAME_LEN + 19]; /* MAC + ": " + name */
-+	int err;
- 
- 	err = pci_enable_device(pdev);
- 	if (err)
-@@ -2453,9 +2433,11 @@ qlcnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto err_out_disable_pdev;
- 	}
- 
--	err = qlcnic_set_dma_mask(pdev, &pci_using_dac);
--	if (err)
-+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-+	if (err) {
-+		dev_err(&pdev->dev, "Unable to set DMA mask, aborting\n");
- 		goto err_out_disable_pdev;
-+	}
- 
- 	err = pci_request_regions(pdev, qlcnic_driver_name);
- 	if (err)
-@@ -2569,7 +2551,7 @@ qlcnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	} else if (qlcnic_83xx_check(adapter)) {
- 		qlcnic_83xx_check_vf(adapter, ent);
- 		adapter->portnum = adapter->ahw->pci_func;
--		err = qlcnic_83xx_init(adapter, pci_using_dac);
-+		err = qlcnic_83xx_init(adapter);
- 		if (err) {
- 			switch (err) {
- 			case -ENOTRECOVERABLE:
-@@ -2633,7 +2615,7 @@ qlcnic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (adapter->portnum == 0)
- 		qlcnic_set_drv_version(adapter);
- 
--	err = qlcnic_setup_netdev(adapter, netdev, pci_using_dac);
-+	err = qlcnic_setup_netdev(adapter, netdev);
- 	if (err)
- 		goto err_out_disable_mbx_intr;
- 
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov.h
-index d0111cb3b40e..c42b99cd58bd 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov.h
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov.h
-@@ -188,7 +188,7 @@ int qlcnic_sriov_init(struct qlcnic_adapter *, int);
- void qlcnic_sriov_cleanup(struct qlcnic_adapter *);
- void __qlcnic_sriov_cleanup(struct qlcnic_adapter *);
- void qlcnic_sriov_vf_register_map(struct qlcnic_hardware_context *);
--int qlcnic_sriov_vf_init(struct qlcnic_adapter *, int);
-+int qlcnic_sriov_vf_init(struct qlcnic_adapter *);
- void qlcnic_sriov_vf_set_ops(struct qlcnic_adapter *);
- int qlcnic_sriov_func_to_index(struct qlcnic_adapter *, u8);
- void qlcnic_sriov_handle_bc_event(struct qlcnic_adapter *, u32);
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
-index 42a44c97572a..9282321c2e7f 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
-@@ -525,8 +525,7 @@ static int qlcnic_sriov_vf_init_driver(struct qlcnic_adapter *adapter)
- 	return 0;
- }
- 
--static int qlcnic_sriov_setup_vf(struct qlcnic_adapter *adapter,
--				 int pci_using_dac)
-+static int qlcnic_sriov_setup_vf(struct qlcnic_adapter *adapter)
- {
- 	int err;
- 
-@@ -571,7 +570,7 @@ static int qlcnic_sriov_setup_vf(struct qlcnic_adapter *adapter,
- 	if (err)
- 		goto err_out_send_channel_term;
- 
--	err = qlcnic_setup_netdev(adapter, adapter->netdev, pci_using_dac);
-+	err = qlcnic_setup_netdev(adapter, adapter->netdev);
- 	if (err)
- 		goto err_out_send_channel_term;
- 
-@@ -614,7 +613,7 @@ static int qlcnic_sriov_check_dev_ready(struct qlcnic_adapter *adapter)
- 	return 0;
- }
- 
--int qlcnic_sriov_vf_init(struct qlcnic_adapter *adapter, int pci_using_dac)
-+int qlcnic_sriov_vf_init(struct qlcnic_adapter *adapter)
- {
- 	struct qlcnic_hardware_context *ahw = adapter->ahw;
- 	int err;
-@@ -631,7 +630,7 @@ int qlcnic_sriov_vf_init(struct qlcnic_adapter *adapter, int pci_using_dac)
- 	if (err)
- 		return err;
- 
--	err = qlcnic_sriov_setup_vf(adapter, pci_using_dac);
-+	err = qlcnic_sriov_setup_vf(adapter);
- 	if (err)
- 		return err;
- 
--- 
-2.32.0
-
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
