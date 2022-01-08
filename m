@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AEC14883B3
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 14:18:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC5384883B7
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 14:18:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234279AbiAHNSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 08:18:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36496 "EHLO
+        id S234302AbiAHNSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 08:18:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231812AbiAHNSO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 08:18:14 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA0BC061574;
-        Sat,  8 Jan 2022 05:18:13 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id x7so25964985lfu.8;
-        Sat, 08 Jan 2022 05:18:13 -0800 (PST)
+        with ESMTP id S231812AbiAHNSx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 08:18:53 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19C4FC061574;
+        Sat,  8 Jan 2022 05:18:53 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id h2so25998835lfv.9;
+        Sat, 08 Jan 2022 05:18:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
         bh=AoLcCY+bcBwoKuOVJv+j6QyLQHr7j6jcxqXruUyJEvs=;
-        b=lu9LQ29v+xeKnftAVjUVvE4OfFuumbS+RqujcD8vyAVXZDY+7DKzmbHsFT3yhaapZP
-         wT4ptW2SolTnT7LUQq4VsuPFJAIC4GfCUFDJXm6oDmuwxHd7vuWHjYhZjGlb2bC2KVMu
-         MMxuXB/KbjsZhA1ZyDpKkMa2lBW8pSZfGFo8qzUZMJaIZIp9Ya+1rurF6Osxn0FwmKPK
-         5PMsm5ZW4wjwkCSwLWuAfp5j+tqtMG17GMCg4JjQhovUHvHFOdNuS3AwlUZ+v9aaOMAe
-         CcTiQzsVl+TZ//jTRfzMMUCOJRU0D94lBx6k8MOql8NugObqDp/iKPZn3L7K2f13FX4B
-         vjFA==
+        b=FtKAEzJCxp7h1Z0vxHFpPM7/+oM0hZG5K88H+eezP9pFa0gJ/Rw/LClI+E4zNypUOn
+         p6qRsgMq5mDLiXn3ErlqCmh34D8lg2YN6gogFmGtt+hqN2S2RmX1UXNhKYPB9dQt141j
+         Zs3CSEZ7Y+vAv3XmGpUcqxi4NiPESGDS/Or6mVf5glvMAdhQ7CK59KbUnIQHVoTFUxRD
+         AW3DQ9D3avw3QAc8gSY8qdaRAcsq9niR6lqYOMbjctNrz8LhhznukdAVlYSaG8ikt8jM
+         IcsSuvq0XwzKd7VMCMLFKqsNVaIPKO+jU3OShLYrFLkI3WZnDLmXPRqfhwsqXYyg1YbH
+         f+7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
         bh=AoLcCY+bcBwoKuOVJv+j6QyLQHr7j6jcxqXruUyJEvs=;
-        b=SUmclAEgR3ADgCXOLYzazIl7YABKcGOVJZjZMMt6vBAaFnp8I2FxabzfHs8MTRqNTl
-         HujOcXZqs0dzcbJLynrRCIeHzp6yJz0e4aDCfN+RUlgJU0MgN/CVSB3rnmE7cpWrGHi/
-         OiVpucyUoT85O4GDKyy0qEFtI1jmZqzaTCTzhW5uLnogWAv+O456cqKt0HVVROkvShLr
-         Iaz22z1FH3wPrMkTelyR5m0NCvrQgXD3NmIN/1ryKTCNjcFMyp9BtJWFhmrymtLohd+Q
-         r1O7/o1FrHmynhfo+aMxZ7LOrhCfjCgOmNBylbbNkfWjud+dgXx8ltAL1cvZMdAbu1g3
-         cOAQ==
-X-Gm-Message-State: AOAM532O9LeGVq8mxs1/+CHi0IN9iwnR2iRLBSRLtG03Je5h1Q2Q4rJx
-        ca3ZyaKEnJvDIF2cZMO4+VRwmZ0G5u+uAA==
-X-Google-Smtp-Source: ABdhPJxA62CqW2YIdsQqRrE8zKftv67ToGubQ/RI/MCfKLu0ajhC/JAke9WbiT4dh7WAQWgWBthRpA==
-X-Received: by 2002:a05:6512:e9a:: with SMTP id bi26mr56693813lfb.371.1641647891975;
-        Sat, 08 Jan 2022 05:18:11 -0800 (PST)
+        b=Jin3isWJWYKlWD7Dr6x/Z27aVv49VqEuWvWqec3F30evUpIRfo9r16jgJN+SD8AXJB
+         dPdNmW2naE70Cf4nLbHGYuScke197nl1b1d8rzpfiVNy9WjhrZcjKJazLiwcaBScatTo
+         k1snWYDzNvCLSisJ0lb9EZIdP+7ugf78b8mt3ku9sm4TL2e19O2Imfq5tsQ+kFYrf0oT
+         w4+312LiVwdU30H5QTbzoHrEUWlKHTkEDUonm8bAIPu7LyOtP+vriddVQ66isw9hIiFI
+         xGzTxHwkDWTml5dhfe2/JqeicHR3ihbG8LZ5QwNJD65hAisMPF72a+gKfA4btMdbDusX
+         5EtA==
+X-Gm-Message-State: AOAM531S5Lsb+zm016r8I3Kwotcu+geBvLBNdezzXpLuF1Ns9PfH11OQ
+        4CKsymkQu+AvgnNTn/yw6Z9U8XDgO95tPQ==
+X-Google-Smtp-Source: ABdhPJwr3vKwc/4beX3EhRFgBJSaiTf/7unsMhPI0J29HvB/q4WArSfRp7hyj4qgTW2BJNm4Z559xg==
+X-Received: by 2002:a05:651c:1508:: with SMTP id e8mr50476718ljf.313.1641647931302;
+        Sat, 08 Jan 2022 05:18:51 -0800 (PST)
 Received: from localhost.localdomain ([217.117.245.67])
-        by smtp.gmail.com with ESMTPSA id i12sm228131lfr.119.2022.01.08.05.18.10
+        by smtp.gmail.com with ESMTPSA id k7sm228185lfu.141.2022.01.08.05.18.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Jan 2022 05:18:11 -0800 (PST)
+        Sat, 08 Jan 2022 05:18:50 -0800 (PST)
 From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org
+To:     stefan@datenfreihafen.org, alex.aring@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
 Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
 Subject: [PATCH -next v2] ieee802154: atusb: move to new USB API
-Date:   Sat,  8 Jan 2022 16:18:08 +0300
-Message-Id: <20220108131808.12225-1-paskripkin@gmail.com>
+Date:   Sat,  8 Jan 2022 16:18:38 +0300
+Message-Id: <20220108131838.12321-1-paskripkin@gmail.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <2439d9ab-133f-0338-24f9-a9a5cd2065a3@datenfreihafen.org--to=stefan@datenfreihafen.org>
-References: <2439d9ab-133f-0338-24f9-a9a5cd2065a3@datenfreihafen.org--to=stefan@datenfreihafen.org>
+In-Reply-To: <2439d9ab-133f-0338-24f9-a9a5cd2065a3@datenfreihafen.org>
+References: <2439d9ab-133f-0338-24f9-a9a5cd2065a3@datenfreihafen.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
