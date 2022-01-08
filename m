@@ -2,111 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFF694880F6
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 03:44:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 044104880F8
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 03:44:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233368AbiAHCoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 21:44:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40750 "EHLO
+        id S233379AbiAHCol (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 21:44:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230174AbiAHCoR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 21:44:17 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E271C061574;
-        Fri,  7 Jan 2022 18:44:17 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id p14so6433642plf.3;
-        Fri, 07 Jan 2022 18:44:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=LEduNzt4QRezuIgDbts+SGsDapK99Fx3fqZO8S2DoZg=;
-        b=qcJ3nHXDwouNfJLB4t3A5R1xUKX6xRYMajK/+5LY1+4W0r9l4xrvdzoHav27iU3XQ2
-         wgr+vuQ6LIIhUz+Ul77RkSUhmXMw1Bf+8Lglyky/VPBMhtmOUy3xY90kVQDLSP7S9J7O
-         7hlg3if8D9KX3JTK+/YqH6vhcXawiUe6kVFT28tQA8tL+fOd2ttiXSaosCyYXlWLTxlE
-         S+K7d6cNut41WXk0wTzPXM7juXJ1V36NSxuT9s0FzX0MMNM9AJYwKQU+aheM2ymITfg4
-         fUBGvhDvAmc1eeCg90SWSEmICDP2L54tDE03/rUiM2qC3ZEemaPDUnSrXLtYBEoIbCT6
-         H0bQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LEduNzt4QRezuIgDbts+SGsDapK99Fx3fqZO8S2DoZg=;
-        b=PoHDBoPRVCa9hn1uyxLgc41G6Oz8tUavLu9CWHCL3PS5BmgvgDOZ61/hSNkqdUJLkX
-         +0sOdsnraZCuOrckgacaSts3c8nvFnJ1KADGMBZqygDr3CssN5Lgadrgzf+/qr7O4xDN
-         +TZyOSE/yCZT2jwDL/0h1PqKHwxCPzPNe8AeR9l/HQqsZoZL0pfw84tFk0kWKASVdE9v
-         nQv9VqClCWBE3Hh4UzcFGOMEh9ZD2jiUTike53BJAZNB/fNQofZtnEVufq5oeCYJfsQf
-         9S5D6Vuo++MGvng6nB53YRdgeyN6Zfk+XOgyZIdZfdppQlWvwRrsII0Hw44CAsREzqjg
-         JruQ==
-X-Gm-Message-State: AOAM533wf42HiGajsqLf/hnHkx4XQeUnWYFAoR61Ed7bNjZIdVd20N/d
-        KyoOITum//KDE8Hx318wjSxEeS3DpIBoclynhpw=
-X-Google-Smtp-Source: ABdhPJxW2FawKx8fQcRN/Py1Yl4CSqiDRDsIzKirYPd+ZS25dljjwGB6zQ6wVIeqMMxHygvPzFtIeYJJuKJF34BMQBI=
-X-Received: by 2002:a17:90a:ba11:: with SMTP id s17mr18844012pjr.138.1641609856615;
- Fri, 07 Jan 2022 18:44:16 -0800 (PST)
+        with ESMTP id S233403AbiAHCoi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 21:44:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0881C061574
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 18:44:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 518E961FF0
+        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 02:44:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B03AC36AE5;
+        Sat,  8 Jan 2022 02:44:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641609877;
+        bh=MFtK35e2nCWrmM4Pu0ugzMOvXzjSkJ2t+OkUpQ1ez1E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VFscG0hpXHLQbfEtZp1vzgvfk8KEzowatvY1bP0waMTXT37B98f3Tx370mtMqhe+G
+         OehLjwjHZwkpFG+xOP3VBos6OpYpENd59cLmZBY6BrRMsM+VH1cWt+GHPQjZT1jhN3
+         Mzj2+op1L9A/agmJ901XbIFCNkD2MFTkn45mP0VwW00E2TUwG9dmDNZ3b7imoiTkwf
+         isXC5YYEGc2ihcVld0dVMtLpHRsKc4hyY04rhlqWfgEeXKtBzxJTFuIca0PSuN0xTq
+         VEAQSt0heBcyyxoKgUf+zKtZs7qVKFT+wWkOvujfk920OwaiwXOcLbDDRHqRtWcB2I
+         pwGQRYQxW9lqg==
+Date:   Fri, 7 Jan 2022 18:44:36 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Gal Pressman <gal@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [RFC PATCH] net/tls: Fix skb memory leak when running kTLS
+ traffic
+Message-ID: <20220107184436.758e15c4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CANn89iJqgJjpFEaYPLuVAAzwwC_y3O6se2pChj40=zTAyWN=6w@mail.gmail.com>
+References: <20220102081253.9123-1-gal@nvidia.com>
+        <20220107105106.680cd28f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CANn89iJqgJjpFEaYPLuVAAzwwC_y3O6se2pChj40=zTAyWN=6w@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220107215438.321922-1-toke@redhat.com> <20220107215438.321922-2-toke@redhat.com>
-In-Reply-To: <20220107215438.321922-2-toke@redhat.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 7 Jan 2022 18:44:05 -0800
-Message-ID: <CAADnVQ+uftgnRQa5nvG4FTJga_=_FMAGxuiPB3O=AFKfEdOg=A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v7 1/3] bpf: Add "live packet" mode for XDP in bpf_prog_run()
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 7, 2022 at 1:54 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
->
-> Because the data pages are recycled by the page pool, and the test runner
-> doesn't re-initialise them for each run, subsequent invocations of the XD=
-P
-> program will see the packet data in the state it was after the last time =
-it
-> ran on that particular page. This means that an XDP program that modifies
-> the packet before redirecting it has to be careful about which assumption=
-s
-> it makes about the packet content, but that is only an issue for the most
-> naively written programs.
+On Fri, 7 Jan 2022 11:12:28 -0800 Eric Dumazet wrote:
+> On Fri, Jan 7, 2022 at 10:51 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Sun, 2 Jan 2022 10:12:53 +0200 Gal Pressman wrote:  
+> > > The cited Fixes commit introduced a memory leak when running kTLS
+> > > traffic (with/without hardware offloads).
+> > > I'm running nginx on the server side and wrk on the client side and get
+> > > the following:
+> > >
+> > >   unreferenced object 0xffff8881935e9b80 (size 224):
+> > >   comm "softirq", pid 0, jiffies 4294903611 (age 43.204s)
+> > >   hex dump (first 32 bytes):
+> > >     80 9b d0 36 81 88 ff ff 00 00 00 00 00 00 00 00  ...6............
+> > >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> > >   backtrace:
+> > >     [<00000000efe2a999>] build_skb+0x1f/0x170
+> > >     [<00000000ef521785>] mlx5e_skb_from_cqe_mpwrq_linear+0x2bc/0x610 [mlx5_core]
+> > >     [<00000000945d0ffe>] mlx5e_handle_rx_cqe_mpwrq+0x264/0x9e0 [mlx5_core]
+> > >     [<00000000cb675b06>] mlx5e_poll_rx_cq+0x3ad/0x17a0 [mlx5_core]
+> > >     [<0000000018aac6a9>] mlx5e_napi_poll+0x28c/0x1b60 [mlx5_core]
+> > >     [<000000001f3369d1>] __napi_poll+0x9f/0x560
+> > >     [<00000000cfa11f72>] net_rx_action+0x357/0xa60
+> > >     [<000000008653b8d7>] __do_softirq+0x282/0x94e
+> > >     [<00000000644923c6>] __irq_exit_rcu+0x11f/0x170
+> > >     [<00000000d4085f8f>] irq_exit_rcu+0xa/0x20
+> > >     [<00000000d412fef4>] common_interrupt+0x7d/0xa0
+> > >     [<00000000bfb0cebc>] asm_common_interrupt+0x1e/0x40
+> > >     [<00000000d80d0890>] default_idle+0x53/0x70
+> > >     [<00000000f2b9780e>] default_idle_call+0x8c/0xd0
+> > >     [<00000000c7659e15>] do_idle+0x394/0x450
+> > >
+> > > I'm not familiar with these areas of the code, but I've added this
+> > > sk_defer_free_flush() to tls_sw_recvmsg() based on a hunch and it
+> > > resolved the issue.
+> > >
+> > > Eric, do you think this is the correct fix? Maybe we're missing a call
+> > > to sk_defer_free_flush() in other places as well?  
+> >
+> > Any thoughts, Eric? Since the merge window is coming soon should
+> > we purge the defer free queue when socket is destroyed at least?
+> > All the .read_sock callers will otherwise risk the leaks, it seems.  
+> 
+> It seems I missed this patch.
+> 
+> We might merge it, and eventually add another
+> 
+> WARN_ON_ONCE(!llist_empty(sk->defer_list))
+> sk_defer_free_flush(sk);
+> 
+> at socket destroy as you suggested ?
+> 
+> Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-This is too vague and partially incorrect.
-The bpf program can do bpf_xdp_adjust_meta() and otherwise change
-packet boundaries. These effects will be seen by subsequent
-XDP_PASS/TX/REDIRECT, but on the next iteration the boundaries
-will get reset to the original values.
-So the test runner actually re-initializes some parts of the data,
-but not the contents of the packet.
-At least that's my understanding of the patch.
-The users shouldn't need to dig into implementation to discover this.
-Please document it.
-The more I think about it the more I believe that it warrants
-a little blurb in Documentation/bpf/ that describes what one can
-do with this "xdp live mode".
+Thanks, applied!
 
-Another question comes to mind:
-What happens when a program modifies the packet?
-Does it mean that the 2nd frame will see the modified data?
-It will not, right?
-It's the page pool size of packets that will be inited the same way
-at the beginning. Which is NAPI_POLL_WEIGHT * 2 =3D=3D 128 packets.
-Why this number?
-Should it be configurable?
-Then the user can say: init N packets with this one pattern
-and the program will know that exactly N invocation will be
-with the same data, but N+1 it will see the 1st packet again
-that potentially was modified by the program.
-Is it accurate?
+Gal please follow up as suggested, for TLS similar treatment to what
+you have done here will be necessary in the splice_read handler.
