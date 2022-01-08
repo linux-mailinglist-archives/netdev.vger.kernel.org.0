@@ -2,99 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 388A14883C3
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 14:21:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8861B4883C5
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 14:24:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234347AbiAHNVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 08:21:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37172 "EHLO
+        id S229534AbiAHNYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 08:24:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232663AbiAHNVG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 08:21:06 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9386C061574;
-        Sat,  8 Jan 2022 05:21:05 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id x6so26008720lfa.5;
-        Sat, 08 Jan 2022 05:21:05 -0800 (PST)
+        with ESMTP id S229478AbiAHNYC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 08:24:02 -0500
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DF1C061574
+        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 05:24:02 -0800 (PST)
+Received: by mail-qv1-xf33.google.com with SMTP id q4so8418798qvh.9
+        for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 05:24:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rEEQvk5Uck5nCpY81jxsRsod1zvCRX8Cy7vuSwuU20w=;
-        b=nvoIU95jfD0X5rzdTYqID+b+uRLzjpP8BoezE4XHaRZZ9Al1zMLBamHUotVxV6R33S
-         vxoqQqVnI156zdGsy4VZJeROx293CXzs2/3QvErcZvkzrBSSK4B/Iid/YiwjJ11FCOPu
-         Fh5B044qXfSQXdkHa0FnjvpBK10ga91QeM/GobLb5HPQ6ht3ql/8Si5E0cIhkXLEzME/
-         46nEWM65tOuKzWPnUbNlcMB/pqem/GjFg+cG8hZjtNKJ2jQol/+iG5K7pGhWjUaHAotG
-         zAASZAfIzBIrwwdndvDe0Pif80PysNDCiAAPUHd/GqWedryEvKuoGKy0K8QA+TdT9z5/
-         0p7g==
+        bh=Ao+mYao5PN9UDC3Mw8Dk9dSI/gBeXX2VlN8vR9x5IVA=;
+        b=359/EXwYgFwIPUk+4uQlP9KOHKuL72vKsIj9SK37whNIaeqpVj0cVyn8Afk0i9dsGx
+         tpqvaxS+3dEWecu9wx32gl76wFNiED9kqNWtz8n25pqR26pZx2s3COVJT2N0IDdnWV95
+         yH+uPw5OBp49IVb210By2T74Aqlweg/zj3iQPA+6HDQ+k5vmEiOPWRMOuT5fir/s8YfI
+         FSXiYIvynDvRPIhVQqE76pHyA+KONfCT4VZJXUWLy9MKrDxzfCZ0JpU/K/YeXrFAS0mp
+         DdIOaHYfEHTo1GWh1bJLIb86xB1xidTQLMCmokOXgPgcH5JYCzFEQ3EovVXoJtYBe7U5
+         bzkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=rEEQvk5Uck5nCpY81jxsRsod1zvCRX8Cy7vuSwuU20w=;
-        b=f/x4RwO390LZkXZIfYs4jLv5DwMCnl0VNhXxt2ASP5QydWUEKZJ3i33RXYdsCqdoeH
-         28Op2T5EOaLF3VVxSEQ7iCsSmrAaadurulqNJ+kkHgmRFt4RZMbUBB5lUVxMkL4zrf1L
-         siotCNJvDXGoMOVtYcd98xuegH2/e5h5/LW3uDbyANoZBOncjqu+xfdv8S8jjhvEsZQi
-         HpZv1cH4cXXkE1tehkxW3Zkx5J+bX4eEmW5exf+6O2A0hnr08Xl6M0I2q6+8ntVwtN3J
-         gXNV/D545/BC8o9fHFXq9i1uSPEvK8BO3Ab1P49MXBxyvKJpp3pryRkdMBLAJdFyxq3M
-         DTVw==
-X-Gm-Message-State: AOAM533t7IEvBmhVf0T9nxKOZoTnNrntBRaa2EtVxyWznsJM5VUfURXZ
-        ocZKah2mMQC7J1XdPHbVmxA=
-X-Google-Smtp-Source: ABdhPJxE1+p7uSaAQ1gOWG571UTgSZCt/5TZLMGoJLFBT8yu2EYsfO9aU8EnVDTlB+yU3tOsbc0q0w==
-X-Received: by 2002:a2e:9dcb:: with SMTP id x11mr49877694ljj.296.1641648064177;
-        Sat, 08 Jan 2022 05:21:04 -0800 (PST)
-Received: from [192.168.1.11] ([217.117.245.67])
-        by smtp.gmail.com with ESMTPSA id q5sm223025lji.57.2022.01.08.05.21.03
+        bh=Ao+mYao5PN9UDC3Mw8Dk9dSI/gBeXX2VlN8vR9x5IVA=;
+        b=tpv5GUI1+o3IIfpPzzDYXLKsIhQb4k72VfBj1HB0YEhRsg9Sh2jsfCnh7da8/GH7Dl
+         kEPfAdjjU6G1q1MpsAE7b1CNyAvOdfrwx7eaL8haK0vdsrZxYoUQLqNEbx4gfUcO69bD
+         7TVCdFoQ9Qu4yRoNM0j8sGcBlgXPFg8DdjPsy/hh/0S0cbMQNemig9X2MqM/Ypzoa1Uz
+         1pEJ4IgmhX8wiQrd+xlbEOUHsgRETO6J1/Ee+jBWRQbhQYza2BnCoVnvV9ZGfuCUWueD
+         bnKMXPUUP7pUpS8FDDOUBCCRiIrKTXoelMYcIQCUBQXk44WIJgxWKOO2gEGxUa/CzvxZ
+         T1jw==
+X-Gm-Message-State: AOAM531OqvoVfWR4SjCr+Np8eBy8FILxRngQK/v8Wj8lRHfjN8qr/A7T
+        brcg08/alIJ9/dPQTike4pyt5A==
+X-Google-Smtp-Source: ABdhPJyJuTovlLC7iwVO8GDGJGKxLHbuReVdjf2Qz/ZmFMKj1fGz2A59W3t7LBHNH5ZcxSE4VCAgBw==
+X-Received: by 2002:a05:6214:e46:: with SMTP id o6mr10991489qvc.110.1641648241378;
+        Sat, 08 Jan 2022 05:24:01 -0800 (PST)
+Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
+        by smtp.googlemail.com with ESMTPSA id g5sm1017493qtb.97.2022.01.08.05.24.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 08 Jan 2022 05:21:03 -0800 (PST)
-Message-ID: <9f7b9736-e67e-19fb-0f7b-6ee6735d5d13@gmail.com>
-Date:   Sat, 8 Jan 2022 16:21:01 +0300
+        Sat, 08 Jan 2022 05:24:00 -0800 (PST)
+Message-ID: <0f503669-ffbb-5844-7ef5-27b87aa4c38f@mojatatu.com>
+Date:   Sat, 8 Jan 2022 08:23:59 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.1
-Subject: Re: [PATCH -next v2] ieee802154: atusb: move to new USB API
+Subject: Re: [PATCH net v2 1/1] net: openvswitch: Fix ct_state nat flags for
+ conns arriving from tc
 Content-Language: en-US
-To:     alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <2439d9ab-133f-0338-24f9-a9a5cd2065a3@datenfreihafen.org--to=stefan@datenfreihafen.org>
- <20220108131808.12225-1-paskripkin@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220108131808.12225-1-paskripkin@gmail.com>
+To:     Paul Blakey <paulb@nvidia.com>, dev@openvswitch.org,
+        netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
+        Pravin B Shelar <pshelar@ovn.org>, davem@davemloft.net,
+        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
+        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>
+References: <20220106153804.26451-1-paulb@nvidia.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+In-Reply-To: <20220106153804.26451-1-paulb@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/8/22 16:18, Pavel Skripkin wrote:
-> Old USB API is prone to uninit value bugs if error handling is not
-> correct. Let's move atusb to use new USB API to
+On 2022-01-06 10:38, Paul Blakey wrote:
+> Netfilter conntrack maintains NAT flags per connection indicating
+> whether NAT was configured for the connection. Openvswitch maintains
+> NAT flags on the per packet flow key ct_state field, indicating
+> whether NAT was actually executed on the packet.
 > 
-> 	1) Make code more simple, since new API does not require memory
-> 	   to be allocates via kmalloc()
+> When a packet misses from tc to ovs the conntrack NAT flags are set.
+> However, NAT was not necessarily executed on the packet because the
+> connection's state might still be in NEW state. As such, openvswitch
+> wrongly assumes that NAT was executed and sets an incorrect flow key
+> NAT flags.
 > 
-> 	2) Defend driver from usb-related uninit value bugs.
+> Fix this, by flagging to openvswitch which NAT was actually done in
+> act_ct via tc_skb_ext and tc_skb_cb to the openvswitch module, so
+> the packet flow key NAT flags will be correctly set.
 > 
-> 	3) Make code more modern and simple
-> 
-> This patch removes atusb usb wrappers as Greg suggested [0], this will make
-> code more obvious and easier to understand over time, and replaces old
-> API calls with new ones.
-> 
-> Also this patch adds and updates usb related error handling to prevent
-> possible uninit value bugs in future
-> 
-> Link: https://lore.kernel.org/all/YdL0GPxy4TdGDzOO@kroah.com/ [0]
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
+> Signed-off-by: Paul Blakey <paulb@nvidia.com>
 
-Please, ignore this one.
-
-Typo in git send-email args caused this email to be send in wrong thread 
-and missed Stefan in CC list.
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
 
-
-With regards,
-Pavel Skripkin
+cheers,
+jamal
