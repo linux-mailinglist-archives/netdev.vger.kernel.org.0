@@ -2,131 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4371488415
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 15:49:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D668D488440
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 16:39:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229849AbiAHOs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 09:48:59 -0500
-Received: from mga05.intel.com ([192.55.52.43]:8129 "EHLO mga05.intel.com"
+        id S234566AbiAHPjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 10:39:03 -0500
+Received: from mx3.wp.pl ([212.77.101.9]:36817 "EHLO mx3.wp.pl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229633AbiAHOs6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jan 2022 09:48:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641653338; x=1673189338;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=TFVWrDgtMq+YeURetbGEuSRZEx7yY4E++7ehJueAejg=;
-  b=PmJtcy1D6NonBw3eLUlk6DQkvckK2L/jOTacqH9DYnz/9+lfHhSE/d1k
-   SbglnUj4MC7SsXfeqfGUjpf/0/WeZMkLs7VJu5I6TYE8MYNEWa5VrSBYW
-   Lm0KRb51g5kJM3x3kS5lR5UqzytcAFv5OJBi7GlunGyH+D//DZglnfjSk
-   PtU8W1pab1om4qVqzahI61gswwB0odVgA8CDRGABM4DlbSKiYfVG16Opl
-   SZ3hLRhgYO1Iw5fShiaEqdgLCeS0pX+Cma2UYfX0okEYtOaDZnNQ4MNcs
-   NrDsD2LUnZHKCZrMYGZ/D32/Qzbg5Pg1YMy7E/nUBWL8jzv7SEYuI5Qlo
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10220"; a="329359967"
-X-IronPort-AV: E=Sophos;i="5.88,272,1635231600"; 
-   d="scan'208";a="329359967"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2022 06:48:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,272,1635231600"; 
-   d="scan'208";a="575394266"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 08 Jan 2022 06:48:56 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n6D1c-0000hl-8j; Sat, 08 Jan 2022 14:48:56 +0000
-Date:   Sat, 8 Jan 2022 22:48:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     kbuild-all@lists.01.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [mst-vhost:vhost 30/44] drivers/vdpa/mlx5/net/mlx5_vnet.c:1247:23:
- sparse: sparse: cast to restricted __le16
-Message-ID: <202201082258.aKRHnaJX-lkp@intel.com>
+        id S229582AbiAHPjC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Jan 2022 10:39:02 -0500
+Received: (wp-smtpd smtp.wp.pl 21519 invoked from network); 8 Jan 2022 16:38:59 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1641656339; bh=JDyJZijKbzW/bA7FC6rgs8PEPxMktxgfUDwI1yY3boY=;
+          h=Subject:To:Cc:From;
+          b=kSp9n64uVvCLz0YOxw2Sj5/YIi5HOysIrl+2Ccm5aScRw7NLM+v72Ky5OEgdWwNXq
+           cu3WkkmZKSr0IGtmuW2O9vjLCimOZ0wnLGXFw//aTd/ziJGkOnPA8X/92iPEI5j9p/
+           pTiafA3kAp87ZLOU69hh0xTo9miTDqxBwuu48BQc=
+Received: from riviera.nat.ds.pw.edu.pl (HELO [192.168.3.133]) (olek2@wp.pl@[194.29.137.1])
+          (envelope-sender <olek2@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <joe@perches.com>; 8 Jan 2022 16:38:59 +0100
+Message-ID: <dd6bc95f-ee94-b9b4-35ba-1a4284d96049@wp.pl>
+Date:   Sat, 8 Jan 2022 16:38:59 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH net-next] net: lantiq_etop: add blank line after
+ declaration
+Content-Language: en-US
+To:     Joe Perches <joe@perches.com>, davem@davemloft.net,
+        kuba@kernel.org, rdunlap@infradead.org, jgg@ziepe.ca,
+        arnd@arndb.de, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     John Crispin <john@phrozen.org>
+References: <20211228220031.71576-1-olek2@wp.pl>
+ <fc1bf93d92bb5b2f99c6c62745507cc22f3a7b2d.camel@perches.com>
+From:   Aleksander Bajkowski <olek2@wp.pl>
+In-Reply-To: <fc1bf93d92bb5b2f99c6c62745507cc22f3a7b2d.camel@perches.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-WP-MailID: d31c9a37df5b2af05e9d7f5ec7fba301
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 000000B [IRMk]                               
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost
-head:   008842b2060c14544ff452483ffd2241d145c7b2
-commit: 7620d51af29aa1c5d32150db2ac4b6187ef8af3a [30/44] vdpa/mlx5: Support configuring max data virtqueue
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220108/202201082258.aKRHnaJX-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git/commit/?id=7620d51af29aa1c5d32150db2ac4b6187ef8af3a
-        git remote add mst-vhost https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
-        git fetch --no-tags mst-vhost vhost
-        git checkout 7620d51af29aa1c5d32150db2ac4b6187ef8af3a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/vdpa/mlx5/
+Hi Joe,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On 1/8/22 09:04, Joe Perches wrote:
+> (adding John Crispin, the original submitter of this driver)
+> 
+> On Tue, 2021-12-28 at 23:00 +0100, Aleksander Jan Bajkowski wrote:
+>> This patch adds a missing line after the declaration and
+>> fixes the checkpatch warning:
+>>
+>> WARNING: Missing a blank line after declarations
+>> +		int desc;
+>> +		for (desc = 0; desc < LTQ_DESC_NUM; desc++)
+>>
+>> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+> []
+>> diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
+> []
+>> @@ -218,6 +218,7 @@ ltq_etop_free_channel(struct net_device *dev, struct ltq_etop_chan *ch)
+>>  		free_irq(ch->dma.irq, priv);
+>>  	if (IS_RX(ch->idx)) {
+>>  		int desc;
+>> +
+>>  		for (desc = 0; desc < LTQ_DESC_NUM; desc++)
+>>  			dev_kfree_skb_any(ch->skb[ch->dma.desc]);
+>>  	}
+> 
+> The change is innocuous and has already been applied but the code
+> doesn't seem to make sense.
+> 
+> Why is dev_kfree_skb_any called multiple times with the same argument?
+> 
+> Is there some missing logic here?  Maybe a missing ++?
+> 
+> Something like:
+> 
+> 		for (desc = 0; desc < LTQ_DESC_NUM; desc++)
+>  			dev_kfree_skb_any(ch->skb[ch->dma.desc++]);
+> 
+> Dunno, but the current code seems wrong.
+> 
+> 
 
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/vdpa/mlx5/net/mlx5_vnet.c:1247:23: sparse: sparse: cast to restricted __le16
->> drivers/vdpa/mlx5/net/mlx5_vnet.c:1247:23: sparse: sparse: cast from restricted __virtio16
+FYI: This driver is mainly used by OpenWRT. OpenWRT has two
+patches that were never upstreamed. One of them is called
+"various etop fixes" and I would expect more bugs in this driver.
+The part that adds support for ar9 must be rewritten before
+upstreaming. This SoC has a built-in 2 port switch and needs
+a DSA driver. The rest of the fixes in this patch can probably
+be sent upstream.
 
-vim +1247 drivers/vdpa/mlx5/net/mlx5_vnet.c
 
-  1232	
-  1233	static int create_rqt(struct mlx5_vdpa_net *ndev)
-  1234	{
-  1235		__be32 *list;
-  1236		int max_rqt;
-  1237		void *rqtc;
-  1238		int inlen;
-  1239		void *in;
-  1240		int i, j;
-  1241		int err;
-  1242		int num;
-  1243	
-  1244		if (!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_MQ)))
-  1245			num = 1;
-  1246		else
-> 1247			num = le16_to_cpu(ndev->config.max_virtqueue_pairs);
-  1248	
-  1249		max_rqt = min_t(int, roundup_pow_of_two(num),
-  1250				1 << MLX5_CAP_GEN(ndev->mvdev.mdev, log_max_rqt_size));
-  1251		if (max_rqt < 1)
-  1252			return -EOPNOTSUPP;
-  1253	
-  1254		inlen = MLX5_ST_SZ_BYTES(create_rqt_in) + max_rqt * MLX5_ST_SZ_BYTES(rq_num);
-  1255		in = kzalloc(inlen, GFP_KERNEL);
-  1256		if (!in)
-  1257			return -ENOMEM;
-  1258	
-  1259		MLX5_SET(create_rqt_in, in, uid, ndev->mvdev.res.uid);
-  1260		rqtc = MLX5_ADDR_OF(create_rqt_in, in, rqt_context);
-  1261	
-  1262		MLX5_SET(rqtc, rqtc, list_q_type, MLX5_RQTC_LIST_Q_TYPE_VIRTIO_NET_Q);
-  1263		MLX5_SET(rqtc, rqtc, rqt_max_size, max_rqt);
-  1264		list = MLX5_ADDR_OF(rqtc, rqtc, rq_num[0]);
-  1265		for (i = 0, j = 0; i < max_rqt; i++, j += 2)
-  1266			list[i] = cpu_to_be32(ndev->vqs[j % (2 * num)].virtq_id);
-  1267	
-  1268		MLX5_SET(rqtc, rqtc, rqt_actual_size, max_rqt);
-  1269		err = mlx5_vdpa_create_rqt(&ndev->mvdev, in, inlen, &ndev->res.rqtn);
-  1270		kfree(in);
-  1271		if (err)
-  1272			return err;
-  1273	
-  1274		return 0;
-  1275	}
-  1276	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+1. https://github.com/abajk/openwrt/blob/master/target/linux/lantiq/patches-5.10/0028-NET-lantiq-various-etop-fixes.patch
+2. https://github.com/abajk/openwrt/blob/master/target/linux/lantiq/patches-5.10/0701-NET-lantiq-etop-of-mido.patch
