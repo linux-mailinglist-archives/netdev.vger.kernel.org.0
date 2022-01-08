@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 630514885F7
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 21:47:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 047324885F9
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 21:47:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232866AbiAHUrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 15:47:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
+        id S232836AbiAHUrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 15:47:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232836AbiAHUrA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 15:47:00 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F25C061747
-        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 12:47:00 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so17019231pjj.2
-        for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 12:47:00 -0800 (PST)
+        with ESMTP id S232855AbiAHUrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 15:47:01 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C7A1C06173F
+        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 12:47:01 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id rj2-20020a17090b3e8200b001b1944bad25so11350116pjb.5
+        for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 12:47:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/oE5+nHZ47hf0eq1B8VOPvwAM1+8jomIksNPwOnPNNA=;
-        b=i11ZZY/jvBM9E7qTgrqPQruU15VuLtpSdJ5hq8q/Hj+OsjwHNCTUdGKRO7WLEuTdKA
-         phZjJVdre07Pre94MQOKo5NMADOnLBJmlHKr/fDEbriizIXlRiulpXuD7GeZJvbzeP6v
-         uXlwUeoGtdx2R+0RnYEw9CpwGmeBpmXytR/l+eCLDnGmmZrpm8gavTRlItaVm4au8fiC
-         E8mrf0qgYajGZI0ITynWcAVIaZ2vss2hja/A++1LRCKCz/hoOdiE5rbRuZEvaoFHK9Op
-         6vbAQH6aI4m59oJ6kmJFppE5II2QExoATnEEefBvMQ9DZW16DUI7asFiE0Y7LY4XjD0E
-         sjIw==
+        bh=74kcV1kq3XqBCswjyh0NmJxjkLOaCkow0LnYZQJp7Ng=;
+        b=aOmJyD2h62/vzqTFTZ9dSI81mhPGV87FukXYQ0Qhzlv4P+TbUnZQBDbXyJUxPw5hiq
+         1GBXjojr+FaOaJ89zvgmQsNptzMm/JvwFvANCld2U5MiluYbgt95PTcKo8SqI1i3jYBD
+         KBOHOqnOVQoKtGOzdwHvZV++4Z8LTILrP470qbq/m4L5eLAhSIkJD+i4rEqrsTczU97I
+         X/60YXDlgqPhACcTYJfKz4hlSd68aU+1qumjDzI+xa53t+Py3ZUF/YgyC+D7paxALJAJ
+         sfNhFohuI8bUCOHz6EfHAKy/J7JHA50ASsSiQ+NlYUjuWxkDG+/rNWL2+3cF3v9GjCjA
+         hb1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/oE5+nHZ47hf0eq1B8VOPvwAM1+8jomIksNPwOnPNNA=;
-        b=6IQEZjZ1XGdD9x7AUvGVnF6XmGLMp4zQtx7o3f+7XSYwc20D8G5ukRtyJZ4gyTXm5w
-         D3c4CXtVge6uIp7cZwNmgU7zbmy3UehVmDqXu6VrPb1OOJj9oChknqpVMLVJ2G6DIHhS
-         c4BOrOAoUDlZ1bEpF24mCG5OQsS+DRr2lUyBL/+lsJnlEaGTWNDEmAhve2K/jDWGj0ln
-         k6nTELJyPw9zlmnQwgUIVI5uTOQJESF2FunRfsqlrBUuTgE/o1g7vibHHI4CAuEcE++s
-         oJ+qP+DN1X/ACaBcwpfBr59+eVM9WOdIvPWXUp+/9LZ+HJTYLigtZbOac6XT+sNqeWc6
-         Klng==
-X-Gm-Message-State: AOAM533CQrSSLVrSg0MCTjX6tejYhJKXhDOrRakQIkY3NRoy/4RGMhrx
-        2oLDGtaP6sz2n9sGEs8I/RBCqh0UuEdAKQ==
-X-Google-Smtp-Source: ABdhPJxeGH+MSTcxG6DNMDcWG1+wJVy0wYmrNRUk10yMvwJgZS85MxEm0WEBbGdK5hdcowdobptZcQ==
-X-Received: by 2002:aa7:8c57:0:b0:4bc:1474:16f with SMTP id e23-20020aa78c57000000b004bc1474016fmr53211354pfd.37.1641674819784;
-        Sat, 08 Jan 2022 12:46:59 -0800 (PST)
+        bh=74kcV1kq3XqBCswjyh0NmJxjkLOaCkow0LnYZQJp7Ng=;
+        b=hr3BsCyIFe6ilOOvk7GvOSi1CiKRIEPuyomcyk+P2jzoj47iHiJtRPFGaQbVlYvdy9
+         fLVyPe85dgcJRoh67AQnbqTasixEVApo5XLjTk2MjwEFZ/wXkar3VGjPqbx5EW3NCYPT
+         3xTJBK771c4E4BerfV0QFFxnY2xZLDO4HERxs0M1UF5iKqFhDVl9394TskAHRUaw8CLE
+         gr4PrIPVIask7xvoAWgwxhHsXkzNYRFIOMNiDwyVREJfhrE2X2Ckp14HPMAR7KB2CFfG
+         O7npMeQoj8XOmSljWswB/MVpnGjF4z8N1RAHKRZKqKrm1feF6j47S6FxU3k+Q9sm7A5D
+         8ahA==
+X-Gm-Message-State: AOAM532KyTKhwjFpzWYyJL42EmrgxUE0bkTqqSAAiE2HTk46oXt8g9DD
+        NwsZH0aqhxdxh1sunPowaq5OSeWLCmLioQ==
+X-Google-Smtp-Source: ABdhPJytdgbyUTyzPcq/1+ye3UML6a0vhHIfPz/6F+heaQBpdhMqlLH3vynWOxI028o1P9LMA4tm1A==
+X-Received: by 2002:a05:6a00:ad1:b0:4bb:b74b:a494 with SMTP id c17-20020a056a000ad100b004bbb74ba494mr63238385pfl.28.1641674820775;
+        Sat, 08 Jan 2022 12:47:00 -0800 (PST)
 Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
         by smtp.gmail.com with ESMTPSA id u71sm2129393pgd.68.2022.01.08.12.46.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Jan 2022 12:46:59 -0800 (PST)
+        Sat, 08 Jan 2022 12:47:00 -0800 (PST)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 X-Google-Original-From: Stephen Hemminger <sthemmin@microsoft.com>
 To:     netdev@vger.kernel.org
 Cc:     Stephen Hemminger <sthemmin@microsoft.com>,
         Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2-next 09/11] can: fix clang warning
-Date:   Sat,  8 Jan 2022 12:46:48 -0800
-Message-Id: <20220108204650.36185-10-sthemmin@microsoft.com>
+Subject: [PATCH iproute2-next 10/11] tipc: fix clang warning about empty format string
+Date:   Sat,  8 Jan 2022 12:46:49 -0800
+Message-Id: <20220108204650.36185-11-sthemmin@microsoft.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220108204650.36185-1-sthemmin@microsoft.com>
 References: <20220108204650.36185-1-sthemmin@microsoft.com>
@@ -64,29 +64,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix warning about passing non-format string.
+When calling json_print with json only use a NULL instead of
+empty string.
 
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- ip/iplink_can.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ tipc/link.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/ip/iplink_can.c b/ip/iplink_can.c
-index f4b375280cd7..67c913808083 100644
---- a/ip/iplink_can.c
-+++ b/ip/iplink_can.c
-@@ -330,8 +330,9 @@ static void can_print_nl_indent(void)
- 	print_string(PRINT_FP, NULL, "%s", "\t ");
- }
+diff --git a/tipc/link.c b/tipc/link.c
+index 9994ada2a367..53f49c8937db 100644
+--- a/tipc/link.c
++++ b/tipc/link.c
+@@ -332,7 +332,7 @@ static int _show_link_stat(const char *name, struct nlattr *attrs[],
+ 	open_json_object(NULL);
  
--static void can_print_timing_min_max(const char *json_attr, const char *fp_attr,
--				     int min, int max)
-+static void __attribute__((format(printf, 2, 0)))
-+can_print_timing_min_max(const char *json_attr, const char *fp_attr,
-+			 int min, int max)
- {
- 	print_null(PRINT_FP, NULL, fp_attr, NULL);
- 	open_json_object(json_attr);
+ 	print_string(PRINT_ANY, "link", "Link <%s>\n", name);
+-	print_string(PRINT_JSON, "state", "", NULL);
++	print_string(PRINT_JSON, "state", NULL, NULL);
+ 	open_json_array(PRINT_JSON, NULL);
+ 	if (attrs[TIPC_NLA_LINK_ACTIVE])
+ 		print_string(PRINT_ANY, NULL, "  %s", "ACTIVE");
 -- 
 2.30.2
 
