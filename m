@@ -2,110 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 044104880F8
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 03:44:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC9B7488103
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 04:00:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233379AbiAHCol (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Jan 2022 21:44:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40844 "EHLO
+        id S233403AbiAHDAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Jan 2022 22:00:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233403AbiAHCoi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 21:44:38 -0500
+        with ESMTP id S233287AbiAHDAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 7 Jan 2022 22:00:19 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0881C061574
-        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 18:44:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7229C061574
+        for <netdev@vger.kernel.org>; Fri,  7 Jan 2022 19:00:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 518E961FF0
-        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 02:44:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B03AC36AE5;
-        Sat,  8 Jan 2022 02:44:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 813AD6200F
+        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 03:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D7AD8C36AED;
+        Sat,  8 Jan 2022 03:00:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641609877;
-        bh=MFtK35e2nCWrmM4Pu0ugzMOvXzjSkJ2t+OkUpQ1ez1E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VFscG0hpXHLQbfEtZp1vzgvfk8KEzowatvY1bP0waMTXT37B98f3Tx370mtMqhe+G
-         OehLjwjHZwkpFG+xOP3VBos6OpYpENd59cLmZBY6BrRMsM+VH1cWt+GHPQjZT1jhN3
-         Mzj2+op1L9A/agmJ901XbIFCNkD2MFTkn45mP0VwW00E2TUwG9dmDNZ3b7imoiTkwf
-         isXC5YYEGc2ihcVld0dVMtLpHRsKc4hyY04rhlqWfgEeXKtBzxJTFuIca0PSuN0xTq
-         VEAQSt0heBcyyxoKgUf+zKtZs7qVKFT+wWkOvujfk920OwaiwXOcLbDDRHqRtWcB2I
-         pwGQRYQxW9lqg==
-Date:   Fri, 7 Jan 2022 18:44:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Gal Pressman <gal@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [RFC PATCH] net/tls: Fix skb memory leak when running kTLS
- traffic
-Message-ID: <20220107184436.758e15c4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CANn89iJqgJjpFEaYPLuVAAzwwC_y3O6se2pChj40=zTAyWN=6w@mail.gmail.com>
-References: <20220102081253.9123-1-gal@nvidia.com>
-        <20220107105106.680cd28f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89iJqgJjpFEaYPLuVAAzwwC_y3O6se2pChj40=zTAyWN=6w@mail.gmail.com>
+        s=k20201202; t=1641610817;
+        bh=pcUTVzfOm5adlij8IAWzeS3FWJPIZwcG0KDD2MBEbOI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=PacvqLjHmgOGQMGkYqAL+NGJrTJCRN4Hb6P95rSHGDoJGhckyUlJzFhP6X2KH19Sr
+         hFJVxPlNBJjxhr6DLx6J0ZvBsbeGzd5/ffNI+wglx7TtB3Wp4eEcf4NuBdpkTu4Gqx
+         vZ6VVxFqJ0EV51msNP66q6qrRE9wYTke32OJ7GjItr5h31kUktwinWIj295uKx9TXi
+         oTO5gDji5SGXkqOvaLJ8Cphv0kN0E5Utvdtu6sxK5TK+TUka1ro9L8wOuixk3tEDDP
+         OtYMN2lmFqdRmSN/SXjWOT6xxG7KixDYeevg/0U5AYQVxRTlnCzLi968yd5rTTBC25
+         Lr35sW0ZGP3Rw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B2F8BF79404;
+        Sat,  8 Jan 2022 03:00:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2 0/6][pull request] 40GbE Intel Wired LAN Driver
+ Updates 2022-01-07
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164161081772.25151.10259821848143113985.git-patchwork-notify@kernel.org>
+Date:   Sat, 08 Jan 2022 03:00:17 +0000
+References: <20220107175704.438387-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220107175704.438387-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sassmann@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 7 Jan 2022 11:12:28 -0800 Eric Dumazet wrote:
-> On Fri, Jan 7, 2022 at 10:51 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Sun, 2 Jan 2022 10:12:53 +0200 Gal Pressman wrote:  
-> > > The cited Fixes commit introduced a memory leak when running kTLS
-> > > traffic (with/without hardware offloads).
-> > > I'm running nginx on the server side and wrk on the client side and get
-> > > the following:
-> > >
-> > >   unreferenced object 0xffff8881935e9b80 (size 224):
-> > >   comm "softirq", pid 0, jiffies 4294903611 (age 43.204s)
-> > >   hex dump (first 32 bytes):
-> > >     80 9b d0 36 81 88 ff ff 00 00 00 00 00 00 00 00  ...6............
-> > >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-> > >   backtrace:
-> > >     [<00000000efe2a999>] build_skb+0x1f/0x170
-> > >     [<00000000ef521785>] mlx5e_skb_from_cqe_mpwrq_linear+0x2bc/0x610 [mlx5_core]
-> > >     [<00000000945d0ffe>] mlx5e_handle_rx_cqe_mpwrq+0x264/0x9e0 [mlx5_core]
-> > >     [<00000000cb675b06>] mlx5e_poll_rx_cq+0x3ad/0x17a0 [mlx5_core]
-> > >     [<0000000018aac6a9>] mlx5e_napi_poll+0x28c/0x1b60 [mlx5_core]
-> > >     [<000000001f3369d1>] __napi_poll+0x9f/0x560
-> > >     [<00000000cfa11f72>] net_rx_action+0x357/0xa60
-> > >     [<000000008653b8d7>] __do_softirq+0x282/0x94e
-> > >     [<00000000644923c6>] __irq_exit_rcu+0x11f/0x170
-> > >     [<00000000d4085f8f>] irq_exit_rcu+0xa/0x20
-> > >     [<00000000d412fef4>] common_interrupt+0x7d/0xa0
-> > >     [<00000000bfb0cebc>] asm_common_interrupt+0x1e/0x40
-> > >     [<00000000d80d0890>] default_idle+0x53/0x70
-> > >     [<00000000f2b9780e>] default_idle_call+0x8c/0xd0
-> > >     [<00000000c7659e15>] do_idle+0x394/0x450
-> > >
-> > > I'm not familiar with these areas of the code, but I've added this
-> > > sk_defer_free_flush() to tls_sw_recvmsg() based on a hunch and it
-> > > resolved the issue.
-> > >
-> > > Eric, do you think this is the correct fix? Maybe we're missing a call
-> > > to sk_defer_free_flush() in other places as well?  
-> >
-> > Any thoughts, Eric? Since the merge window is coming soon should
-> > we purge the defer free queue when socket is destroyed at least?
-> > All the .read_sock callers will otherwise risk the leaks, it seems.  
-> 
-> It seems I missed this patch.
-> 
-> We might merge it, and eventually add another
-> 
-> WARN_ON_ONCE(!llist_empty(sk->defer_list))
-> sk_defer_free_flush(sk);
-> 
-> at socket destroy as you suggested ?
-> 
-> Reviewed-by: Eric Dumazet <edumazet@google.com>
+Hello:
 
-Thanks, applied!
+This series was applied to netdev/net-next.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-Gal please follow up as suggested, for TLS similar treatment to what
-you have done here will be necessary in the splice_read handler.
+On Fri,  7 Jan 2022 09:56:58 -0800 you wrote:
+> This series contains updates to i40e and iavf drivers.
+> 
+> Karen limits per VF MAC filters so that one VF does not consume all
+> filters for i40e.
+> 
+> Jedrzej reduces busy wait time for admin queue calls for i40e.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v2,1/6] i40e: Add ensurance of MacVlan resources for every trusted VF
+    https://git.kernel.org/netdev/net-next/c/cfb1d572c986
+  - [net-next,v2,2/6] i40e: Minimize amount of busy-waiting during AQ send
+    https://git.kernel.org/netdev/net-next/c/ef39584ddb15
+  - [net-next,v2,3/6] i40e: Update FW API version
+    https://git.kernel.org/netdev/net-next/c/9c83ca8a638d
+  - [net-next,v2,4/6] i40e: Remove non-inclusive language
+    https://git.kernel.org/netdev/net-next/c/17b33d431960
+  - [net-next,v2,5/6] i40e: remove variables set but not used
+    https://git.kernel.org/netdev/net-next/c/a127adf2fc83
+  - [net-next,v2,6/6] iavf: remove an unneeded variable
+    https://git.kernel.org/netdev/net-next/c/5322c68e588d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
