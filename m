@@ -2,96 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5206488468
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 17:11:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93E0D488479
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 17:16:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232891AbiAHQLZ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 8 Jan 2022 11:11:25 -0500
-Received: from mail-yb1-f179.google.com ([209.85.219.179]:37756 "EHLO
-        mail-yb1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229883AbiAHQLY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 11:11:24 -0500
-Received: by mail-yb1-f179.google.com with SMTP id 127so9591728ybb.4;
-        Sat, 08 Jan 2022 08:11:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=4Ba5ev7Mc37f12MPn8Bo9MNz+S3JxhJYNwMKImyhXUw=;
-        b=kBUxGq50S7kKqYppmTZr61IPp8c5JGEltU/h3g6fLoIdKZPNFejnXj2HDLS+LDR556
-         1asDilxX2ARX03ubZo+7UMcqJXD1/jZBb3f/X62hm8wyvH4ZqMSuIUdLl5qI8Hz8o0fK
-         jSZuTV1Olaxh3OqR/q/FKV5+pxOb/ggmGM8RURXF8csNDkTHy6LtIcPa//RJDixvmJ0q
-         yFjxQSxDj+kbe/2V5qgQ+3LpuOrKvZhYg4QpZq9fplEo6ZwnhNlB2zAIs6KrYs3PAuqf
-         0wBxsTOpHqTW2aBqiEFjMBHIsVdXV0HW2SE+akv3x72A+I3YbekBT8ii5ATOXGBf+eXo
-         duYw==
-X-Gm-Message-State: AOAM530L8f/5N0+AIQwniwvKbwu3gL9gMEWslHGOETBj+3iHdjgQtY3e
-        sIigmUkBTHrdUawoEs0KQrqD6RqEyne/HjrC2ig=
-X-Google-Smtp-Source: ABdhPJwTT7jGLzi6Jaj1sdjbAD+HtmppUtGTcOIYx+ZJx6FdVXaBSRn3vcKzO1bYL/hFb9m1SolpNiXQX+pqMlhQwaQ=
-X-Received: by 2002:a25:abe3:: with SMTP id v90mr32406661ybi.25.1641658283543;
- Sat, 08 Jan 2022 08:11:23 -0800 (PST)
+        id S229697AbiAHQQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 11:16:22 -0500
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:53576 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229510AbiAHQQV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 11:16:21 -0500
+Received: from pop-os.home ([90.11.185.88])
+        by smtp.orange.fr with ESMTPA
+        id 6EOAnCR2IWUfj6EOAnE8Wo; Sat, 08 Jan 2022 17:16:20 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 08 Jan 2022 17:16:20 +0100
+X-ME-IP: 90.11.185.88
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     rmody@marvell.com, skalluru@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] bna: Simplify DMA setting
+Date:   Sat,  8 Jan 2022 17:16:16 +0100
+Message-Id: <1d5a7b3f4fa735f1233c3eb3fa07e71df95fad75.1641658516.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220108143319.3986923-1-trix@redhat.com>
-In-Reply-To: <20220108143319.3986923-1-trix@redhat.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Sun, 9 Jan 2022 01:11:12 +0900
-Message-ID: <CAMZ6RqL4iznd+Hz_J02hheFF1xGRHo9nUzTNXGD=ey=GPA1WmA@mail.gmail.com>
-Subject: Re: [PATCH] can: janz-ican3: initialize dlc variable
-To:     trix@redhat.com
-Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        kuba@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
-        Stefan.Maetje@esd.eu, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat. 8 Jan 2022 à 23:33, <trix@redhat.com> wrote:
-> From: Tom Rix <trix@redhat.com>
->
-> Clang static analysis reports this problem
-> janz-ican3.c:1311:2: warning: Undefined or garbage value returned to caller
->         return dlc;
->         ^~~~~~~~~~
->
-> dlc is only set with this conditional
->         if (!(cf->can_id & CAN_RTR_FLAG))
->                 dlc = cf->len;
->
-> But is always returned.  So initialize dlc to 0.
+As stated in [1], dma_set_mask() with a 64-bit mask will never fail if
+dev->dma_mask is non-NULL.
+So, if it fails, the 32 bits case will also fail for the same reason.
 
-Yes. The actual intent is to return a length of 0 for RTR frames.
+So, if dma_set_mask_and_coherent() succeeds, 'using_dac' is known to be
+'true'. This variable can be removed.
 
-> Fixes: cc4b08c31b5c ("can: do not increase tx_bytes statistics for RTR frames")
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  drivers/net/can/janz-ican3.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/can/janz-ican3.c b/drivers/net/can/janz-ican3.c
-> index 5b677af5f2a41..808c105cf8f7e 100644
-> --- a/drivers/net/can/janz-ican3.c
-> +++ b/drivers/net/can/janz-ican3.c
-> @@ -1285,7 +1285,7 @@ static unsigned int ican3_get_echo_skb(struct ican3_dev *mod)
->  {
->         struct sk_buff *skb = skb_dequeue(&mod->echoq);
->         struct can_frame *cf;
-> -       u8 dlc;
-> +       u8 dlc = 0;
->
->         /* this should never trigger unless there is a driver bug */
->         if (!skb) {
-> --
-> 2.26.3
+Simplify code and remove some dead code accordingly.
 
-I missed that when writing the patch.
+[1]: https://lkml.org/lkml/2021/6/7/398
 
-I thought that I did my due diligence by running a "make W=1"
-with GCC but I did not catch the error. I should have been more
-precocious and run a "make W=2".
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/ethernet/brocade/bna/bnad.c | 34 ++++++++-----------------
+ 1 file changed, 10 insertions(+), 24 deletions(-)
 
-Thank you.
+diff --git a/drivers/net/ethernet/brocade/bna/bnad.c b/drivers/net/ethernet/brocade/bna/bnad.c
+index bbdc829c3524..f1d2c4cd5da2 100644
+--- a/drivers/net/ethernet/brocade/bna/bnad.c
++++ b/drivers/net/ethernet/brocade/bna/bnad.c
+@@ -3421,7 +3421,7 @@ static const struct net_device_ops bnad_netdev_ops = {
+ };
+ 
+ static void
+-bnad_netdev_init(struct bnad *bnad, bool using_dac)
++bnad_netdev_init(struct bnad *bnad)
+ {
+ 	struct net_device *netdev = bnad->netdev;
+ 
+@@ -3434,10 +3434,8 @@ bnad_netdev_init(struct bnad *bnad, bool using_dac)
+ 		NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+ 		NETIF_F_TSO | NETIF_F_TSO6;
+ 
+-	netdev->features |= netdev->hw_features | NETIF_F_HW_VLAN_CTAG_FILTER;
+-
+-	if (using_dac)
+-		netdev->features |= NETIF_F_HIGHDMA;
++	netdev->features |= netdev->hw_features | NETIF_F_HW_VLAN_CTAG_FILTER |
++			    NETIF_F_HIGHDMA;
+ 
+ 	netdev->mem_start = bnad->mmio_start;
+ 	netdev->mem_end = bnad->mmio_start + bnad->mmio_len - 1;
+@@ -3544,8 +3542,7 @@ bnad_lock_uninit(struct bnad *bnad)
+ 
+ /* PCI Initialization */
+ static int
+-bnad_pci_init(struct bnad *bnad,
+-	      struct pci_dev *pdev, bool *using_dac)
++bnad_pci_init(struct bnad *bnad, struct pci_dev *pdev)
+ {
+ 	int err;
+ 
+@@ -3555,14 +3552,9 @@ bnad_pci_init(struct bnad *bnad,
+ 	err = pci_request_regions(pdev, BNAD_NAME);
+ 	if (err)
+ 		goto disable_device;
+-	if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
+-		*using_dac = true;
+-	} else {
+-		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+-		if (err)
+-			goto release_regions;
+-		*using_dac = false;
+-	}
++	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
++	if (err)
++		goto release_regions;
+ 	pci_set_master(pdev);
+ 	return 0;
+ 
+@@ -3585,7 +3577,6 @@ static int
+ bnad_pci_probe(struct pci_dev *pdev,
+ 		const struct pci_device_id *pcidev_id)
+ {
+-	bool	using_dac;
+ 	int	err;
+ 	struct bnad *bnad;
+ 	struct bna *bna;
+@@ -3615,13 +3606,8 @@ bnad_pci_probe(struct pci_dev *pdev,
+ 	bnad->id = atomic_inc_return(&bna_id) - 1;
+ 
+ 	mutex_lock(&bnad->conf_mutex);
+-	/*
+-	 * PCI initialization
+-	 *	Output : using_dac = 1 for 64 bit DMA
+-	 *			   = 0 for 32 bit DMA
+-	 */
+-	using_dac = false;
+-	err = bnad_pci_init(bnad, pdev, &using_dac);
++	/* PCI initialization */
++	err = bnad_pci_init(bnad, pdev);
+ 	if (err)
+ 		goto unlock_mutex;
+ 
+@@ -3634,7 +3620,7 @@ bnad_pci_probe(struct pci_dev *pdev,
+ 		goto pci_uninit;
+ 
+ 	/* Initialize netdev structure, set up ethtool ops */
+-	bnad_netdev_init(bnad, using_dac);
++	bnad_netdev_init(bnad);
+ 
+ 	/* Set link to down state */
+ 	netif_carrier_off(netdev);
+-- 
+2.32.0
 
-Acked-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
