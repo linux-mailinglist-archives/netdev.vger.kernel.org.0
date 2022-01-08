@@ -2,96 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8861B4883C5
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 14:24:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D8704883C6
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 14:27:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229534AbiAHNYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 08:24:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37820 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiAHNYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 08:24:02 -0500
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DF1C061574
-        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 05:24:02 -0800 (PST)
-Received: by mail-qv1-xf33.google.com with SMTP id q4so8418798qvh.9
-        for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 05:24:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Ao+mYao5PN9UDC3Mw8Dk9dSI/gBeXX2VlN8vR9x5IVA=;
-        b=359/EXwYgFwIPUk+4uQlP9KOHKuL72vKsIj9SK37whNIaeqpVj0cVyn8Afk0i9dsGx
-         tpqvaxS+3dEWecu9wx32gl76wFNiED9kqNWtz8n25pqR26pZx2s3COVJT2N0IDdnWV95
-         yH+uPw5OBp49IVb210By2T74Aqlweg/zj3iQPA+6HDQ+k5vmEiOPWRMOuT5fir/s8YfI
-         FSXiYIvynDvRPIhVQqE76pHyA+KONfCT4VZJXUWLy9MKrDxzfCZ0JpU/K/YeXrFAS0mp
-         DdIOaHYfEHTo1GWh1bJLIb86xB1xidTQLMCmokOXgPgcH5JYCzFEQ3EovVXoJtYBe7U5
-         bzkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Ao+mYao5PN9UDC3Mw8Dk9dSI/gBeXX2VlN8vR9x5IVA=;
-        b=tpv5GUI1+o3IIfpPzzDYXLKsIhQb4k72VfBj1HB0YEhRsg9Sh2jsfCnh7da8/GH7Dl
-         kEPfAdjjU6G1q1MpsAE7b1CNyAvOdfrwx7eaL8haK0vdsrZxYoUQLqNEbx4gfUcO69bD
-         7TVCdFoQ9Qu4yRoNM0j8sGcBlgXPFg8DdjPsy/hh/0S0cbMQNemig9X2MqM/Ypzoa1Uz
-         1pEJ4IgmhX8wiQrd+xlbEOUHsgRETO6J1/Ee+jBWRQbhQYza2BnCoVnvV9ZGfuCUWueD
-         bnKMXPUUP7pUpS8FDDOUBCCRiIrKTXoelMYcIQCUBQXk44WIJgxWKOO2gEGxUa/CzvxZ
-         T1jw==
-X-Gm-Message-State: AOAM531OqvoVfWR4SjCr+Np8eBy8FILxRngQK/v8Wj8lRHfjN8qr/A7T
-        brcg08/alIJ9/dPQTike4pyt5A==
-X-Google-Smtp-Source: ABdhPJyJuTovlLC7iwVO8GDGJGKxLHbuReVdjf2Qz/ZmFMKj1fGz2A59W3t7LBHNH5ZcxSE4VCAgBw==
-X-Received: by 2002:a05:6214:e46:: with SMTP id o6mr10991489qvc.110.1641648241378;
-        Sat, 08 Jan 2022 05:24:01 -0800 (PST)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
-        by smtp.googlemail.com with ESMTPSA id g5sm1017493qtb.97.2022.01.08.05.24.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 08 Jan 2022 05:24:00 -0800 (PST)
-Message-ID: <0f503669-ffbb-5844-7ef5-27b87aa4c38f@mojatatu.com>
-Date:   Sat, 8 Jan 2022 08:23:59 -0500
+        id S232034AbiAHN1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 08:27:19 -0500
+Received: from mx3.wp.pl ([212.77.101.10]:36411 "EHLO mx3.wp.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229542AbiAHN1S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 8 Jan 2022 08:27:18 -0500
+Received: (wp-smtpd smtp.wp.pl 32852 invoked from network); 8 Jan 2022 14:27:14 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1641648434; bh=bekp1Qt50V5BwOs8/LkFBvx1MFKWNaNfsRC8YTk1aKw=;
+          h=Subject:To:From;
+          b=rBrmGHMWSQfVKsRjCKwyRdjEsD67tqQgaHptiCaTLRUaFBG7FbaDLrXzEsE12eKAP
+           Wc3fAIz3+9dF/g6jXkeuUvGrUoMDy1HK5zK+y6WBnP2EkwxpJt22CfbkZloY5zaaOu
+           YUHTWpU6cZUv2tGNmASDKgD4yvVyljzDqDghFT4g=
+Received: from riviera.nat.ds.pw.edu.pl (HELO [192.168.3.133]) (olek2@wp.pl@[194.29.137.1])
+          (envelope-sender <olek2@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <eric.dumazet@gmail.com>; 8 Jan 2022 14:27:14 +0100
+Message-ID: <98bed219-5fb4-8376-e300-c77daf4549eb@wp.pl>
+Date:   Sat, 8 Jan 2022 14:27:13 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.1
-Subject: Re: [PATCH net v2 1/1] net: openvswitch: Fix ct_state nat flags for
- conns arriving from tc
+Subject: Re: [PATCH net-next] net: lantiq_xrx200: add ingress SG DMA support
 Content-Language: en-US
-To:     Paul Blakey <paulb@nvidia.com>, dev@openvswitch.org,
-        netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-        Pravin B Shelar <pshelar@ovn.org>, davem@davemloft.net,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
-        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>
-References: <20220106153804.26451-1-paulb@nvidia.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <20220106153804.26451-1-paulb@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     Eric Dumazet <eric.dumazet@gmail.com>, hauke@hauke-m.de,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220103194316.1116630-1-olek2@wp.pl>
+ <0215980e-a258-5322-13e9-42fe868817b3@gmail.com>
+From:   Aleksander Bajkowski <olek2@wp.pl>
+In-Reply-To: <0215980e-a258-5322-13e9-42fe868817b3@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: de796539d1e4a2922f773213bc572bae
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 000000B [4fMk]                               
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-01-06 10:38, Paul Blakey wrote:
-> Netfilter conntrack maintains NAT flags per connection indicating
-> whether NAT was configured for the connection. Openvswitch maintains
-> NAT flags on the per packet flow key ct_state field, indicating
-> whether NAT was actually executed on the packet.
-> 
-> When a packet misses from tc to ovs the conntrack NAT flags are set.
-> However, NAT was not necessarily executed on the packet because the
-> connection's state might still be in NEW state. As such, openvswitch
-> wrongly assumes that NAT was executed and sets an incorrect flow key
-> NAT flags.
-> 
-> Fix this, by flagging to openvswitch which NAT was actually done in
-> act_ct via tc_skb_ext and tc_skb_cb to the openvswitch module, so
-> the packet flow key NAT flags will be correctly set.
-> 
-> Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
-> Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Hi Eric,
 
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+On 1/4/22 18:41, Eric Dumazet wrote:
+> 
+> On 1/3/22 11:43, Aleksander Jan Bajkowski wrote:
+>> This patch adds support for scatter gather DMA. DMA in PMAC splits
+>> the packet into several buffers when the MTU on the CPU port is
+>> less than the MTU of the switch. The first buffer starts at an
+>> offset of NET_IP_ALIGN. In subsequent buffers, dma ignores the
+>> offset. Thanks to this patch, the user can still connect to the
+>> device in such a situation. For normal configurations, the patch
+>> has no effect on performance.
+>>
+>> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+>> ---
+>>   drivers/net/ethernet/lantiq_xrx200.c | 47 +++++++++++++++++++++++-----
+>>   1 file changed, 40 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+>> index 80bfaf2fec92..503fb99c5b90 100644
+>> --- a/drivers/net/ethernet/lantiq_xrx200.c
+>> +++ b/drivers/net/ethernet/lantiq_xrx200.c
+>> @@ -27,6 +27,9 @@
+>>   #define XRX200_DMA_TX        1
+>>   #define XRX200_DMA_BURST_LEN    8
+>>   +#define XRX200_DMA_PACKET_COMPLETE    0
+>> +#define XRX200_DMA_PACKET_IN_PROGRESS    1
+>> +
+>>   /* cpu port mac */
+>>   #define PMAC_RX_IPG        0x0024
+>>   #define PMAC_RX_IPG_MASK    0xf
+>> @@ -62,6 +65,9 @@ struct xrx200_chan {
+>>       struct ltq_dma_channel dma;
+>>       struct sk_buff *skb[LTQ_DESC_NUM];
+>>   +    struct sk_buff *skb_head;
+>> +    struct sk_buff *skb_tail;
+>> +
+>>       struct xrx200_priv *priv;
+>>   };
+>>   @@ -205,7 +211,8 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
+>>       struct xrx200_priv *priv = ch->priv;
+>>       struct ltq_dma_desc *desc = &ch->dma.desc_base[ch->dma.desc];
+>>       struct sk_buff *skb = ch->skb[ch->dma.desc];
+>> -    int len = (desc->ctl & LTQ_DMA_SIZE_MASK);
+>> +    u32 ctl = desc->ctl;
+>> +    int len = (ctl & LTQ_DMA_SIZE_MASK);
+>>       struct net_device *net_dev = priv->net_dev;
+>>       int ret;
+>>   @@ -221,12 +228,36 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
+>>       }
+>>         skb_put(skb, len);
+>> -    skb->protocol = eth_type_trans(skb, net_dev);
+>> -    netif_receive_skb(skb);
+>> -    net_dev->stats.rx_packets++;
+>> -    net_dev->stats.rx_bytes += len;
+>>   -    return 0;
+>> +    /* add buffers to skb via skb->frag_list */
+>> +    if (ctl & LTQ_DMA_SOP) {
+>> +        ch->skb_head = skb;
+>> +        ch->skb_tail = skb;
+>> +    } else if (ch->skb_head) {
+>> +        if (ch->skb_head == ch->skb_tail)
+>> +            skb_shinfo(ch->skb_tail)->frag_list = skb;
+>> +        else
+>> +            ch->skb_tail->next = skb;
+>> +        ch->skb_tail = skb;
+>> +        skb_reserve(ch->skb_tail, -NET_IP_ALIGN);
+>> +        ch->skb_head->len += skb->len;
+>> +        ch->skb_head->data_len += skb->len;
+>> +        ch->skb_head->truesize += skb->truesize;
+>> +    }
+>> +
+>> +    if (ctl & LTQ_DMA_EOP) {
+>> +        ch->skb_head->protocol = eth_type_trans(ch->skb_head, net_dev);
+>> +        netif_receive_skb(ch->skb_head);
+>> +        net_dev->stats.rx_packets++;
+>> +        net_dev->stats.rx_bytes += ch->skb_head->len;
+> 
+> 
+> Use after free alert.
+> 
+> Please add/test the following fix.
+> 
+> (It is illegal to deref skb after netif_receive_skb())
+> 
+> 
+> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+> index 503fb99c5b90..bf7e3c7910d1 100644
+> --- a/drivers/net/ethernet/lantiq_xrx200.c
+> +++ b/drivers/net/ethernet/lantiq_xrx200.c
+> @@ -247,9 +247,9 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
+> 
+>         if (ctl & LTQ_DMA_EOP) {
+>                 ch->skb_head->protocol = eth_type_trans(ch->skb_head, net_dev);
+> -               netif_receive_skb(ch->skb_head);
+>                 net_dev->stats.rx_packets++;
+>                 net_dev->stats.rx_bytes += ch->skb_head->len;
+> +               netif_receive_skb(ch->skb_head);
+>                 ch->skb_head = NULL;
+>                 ch->skb_tail = NULL;
+>                 ret = XRX200_DMA_PACKET_COMPLETE;
+> 
+> 
+>
 
 
-cheers,
-jamal
+Thanks for spot this bug. I tested this patch and it works
+ok. I will sent this patch it soon. 
+
+
+>> +        ch->skb_head = NULL;
+>> +        ch->skb_tail = NULL;
+>> +        ret = XRX200_DMA_PACKET_COMPLETE;
+>> +    } else {
+>> +        ret = XRX200_DMA_PACKET_IN_PROGRESS;
+>> +    }
+>> +
+>> +    return ret;
+>>   }
+>>     static int xrx200_poll_rx(struct napi_struct *napi, int budget)
+>> @@ -241,7 +272,9 @@ static int xrx200_poll_rx(struct napi_struct *napi, int budget)
+>>             if ((desc->ctl & (LTQ_DMA_OWN | LTQ_DMA_C)) == LTQ_DMA_C) {
+>>               ret = xrx200_hw_receive(ch);
+>> -            if (ret)
+>> +            if (ret == XRX200_DMA_PACKET_IN_PROGRESS)
+>> +                continue;
+>> +            if (ret != XRX200_DMA_PACKET_COMPLETE)
+>>                   return ret;
+>>               rx++;
+>>           } else {
