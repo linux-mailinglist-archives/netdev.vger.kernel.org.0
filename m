@@ -2,176 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D8704883C6
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 14:27:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 264F64883CE
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 14:46:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232034AbiAHN1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 08:27:19 -0500
-Received: from mx3.wp.pl ([212.77.101.10]:36411 "EHLO mx3.wp.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229542AbiAHN1S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 8 Jan 2022 08:27:18 -0500
-Received: (wp-smtpd smtp.wp.pl 32852 invoked from network); 8 Jan 2022 14:27:14 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1641648434; bh=bekp1Qt50V5BwOs8/LkFBvx1MFKWNaNfsRC8YTk1aKw=;
-          h=Subject:To:From;
-          b=rBrmGHMWSQfVKsRjCKwyRdjEsD67tqQgaHptiCaTLRUaFBG7FbaDLrXzEsE12eKAP
-           Wc3fAIz3+9dF/g6jXkeuUvGrUoMDy1HK5zK+y6WBnP2EkwxpJt22CfbkZloY5zaaOu
-           YUHTWpU6cZUv2tGNmASDKgD4yvVyljzDqDghFT4g=
-Received: from riviera.nat.ds.pw.edu.pl (HELO [192.168.3.133]) (olek2@wp.pl@[194.29.137.1])
-          (envelope-sender <olek2@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <eric.dumazet@gmail.com>; 8 Jan 2022 14:27:14 +0100
-Message-ID: <98bed219-5fb4-8376-e300-c77daf4549eb@wp.pl>
-Date:   Sat, 8 Jan 2022 14:27:13 +0100
+        id S234338AbiAHNqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 08:46:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42628 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229472AbiAHNqg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 08:46:36 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4DFC061574;
+        Sat,  8 Jan 2022 05:46:36 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id f5so8249772pgk.12;
+        Sat, 08 Jan 2022 05:46:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LdhsOz/TVy+7sBqNrF7zmiF6jDZHeuAcusWoEon0Rs0=;
+        b=mGEH1h/el6gtMlL+pAu6ho3wsXocQd5URdEvK6ZK7SzyVX+lOgnru1bR/aFzToROcx
+         //RQ4kKGwIkKRmlgsuTHQ9mhtLFB+4WAWoTHIDFsi5DB4mcuqoRfBlxSRYYwvil+ubdE
+         Zjuf2KecH1Miyd6CKEMwZnlNFqmM8qzHmVjqAjiq+6+qa5MwG9CIn0XPScupHqe0eDtl
+         pLSHFxlwTv0fDQnQLYGyJyc1n22c9X6EvDhZLsZHvtbQP/S7tb24lrp1vinBvh8djfC/
+         +z6O7qfEA39rwnLn7lKrGsiugIzoPArcGOLrQcQSH/bT6kijf2CU6isseijXv7OJLdtF
+         HHVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LdhsOz/TVy+7sBqNrF7zmiF6jDZHeuAcusWoEon0Rs0=;
+        b=brwYTeuqxc+W49qWsl0CcloX/giFG+QjZczIPpa/fT0ahPyjbKFg5F9IL8ETCeMYvo
+         DI7WB/HILaB6nFwkHSsmsDKzMSmzQ4AuMDS8Xbr+NNBgAXq5utIGIeaSPqyVDDgf2wvB
+         I4ikhUHsskA8vrA7xcY34C0OaiOIkZAdFpfR5g0VIIjNmrvRy7UsFTZswIXlWFqjVoKv
+         f8mW/CU2hlgVxcF+xU005i/6QdFgVP6wdUxGoWUK28179www31sCT12JGetT/3/b/Kzg
+         KTDp3DXRnXSX5V+dmHLsFpH1UaHdPq/4ZFs2zJHA9ZoCGdC4Cs0e0ANOg9vjv9ObfcVd
+         jNRg==
+X-Gm-Message-State: AOAM531jOfPNtvBnJkl5NRrOo5z9BceCtZwiiNB0PYuoMK5S3so92AFk
+        kxWv1LC3XJjd42iHFUbxr0A=
+X-Google-Smtp-Source: ABdhPJxba9noFkWmHICtZIkCB9bc26Uanx9kz8adLbnv9++B80KA5v8B+nVOcNDR65cF1wEBqkcz1g==
+X-Received: by 2002:a63:b245:: with SMTP id t5mr14602666pgo.231.1641649595919;
+        Sat, 08 Jan 2022 05:46:35 -0800 (PST)
+Received: from vultr.guest ([45.76.74.237])
+        by smtp.gmail.com with ESMTPSA id 190sm1366633pgh.23.2022.01.08.05.46.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Jan 2022 05:46:35 -0800 (PST)
+From:   Yafang Shao <laoar.shao@gmail.com>
+To:     daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        christian.brauner@ubuntu.com, Yafang Shao <laoar.shao@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: [PATCH v2] bpf: fix mount source show for bpffs
+Date:   Sat,  8 Jan 2022 13:46:23 +0000
+Message-Id: <20220108134623.32467-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH net-next] net: lantiq_xrx200: add ingress SG DMA support
-Content-Language: en-US
-To:     Eric Dumazet <eric.dumazet@gmail.com>, hauke@hauke-m.de,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220103194316.1116630-1-olek2@wp.pl>
- <0215980e-a258-5322-13e9-42fe868817b3@gmail.com>
-From:   Aleksander Bajkowski <olek2@wp.pl>
-In-Reply-To: <0215980e-a258-5322-13e9-42fe868817b3@gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-WP-MailID: de796539d1e4a2922f773213bc572bae
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 000000B [4fMk]                               
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+We noticed our tc ebpf tools can't start after we upgrade our in-house
+kernel version from 4.19 to 5.10. That is because of the behaviour change
+in bpffs caused by commit
+d2935de7e4fd ("vfs: Convert bpf to use the new mount API").
 
-On 1/4/22 18:41, Eric Dumazet wrote:
-> 
-> On 1/3/22 11:43, Aleksander Jan Bajkowski wrote:
->> This patch adds support for scatter gather DMA. DMA in PMAC splits
->> the packet into several buffers when the MTU on the CPU port is
->> less than the MTU of the switch. The first buffer starts at an
->> offset of NET_IP_ALIGN. In subsequent buffers, dma ignores the
->> offset. Thanks to this patch, the user can still connect to the
->> device in such a situation. For normal configurations, the patch
->> has no effect on performance.
->>
->> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
->> ---
->>   drivers/net/ethernet/lantiq_xrx200.c | 47 +++++++++++++++++++++++-----
->>   1 file changed, 40 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
->> index 80bfaf2fec92..503fb99c5b90 100644
->> --- a/drivers/net/ethernet/lantiq_xrx200.c
->> +++ b/drivers/net/ethernet/lantiq_xrx200.c
->> @@ -27,6 +27,9 @@
->>   #define XRX200_DMA_TX        1
->>   #define XRX200_DMA_BURST_LEN    8
->>   +#define XRX200_DMA_PACKET_COMPLETE    0
->> +#define XRX200_DMA_PACKET_IN_PROGRESS    1
->> +
->>   /* cpu port mac */
->>   #define PMAC_RX_IPG        0x0024
->>   #define PMAC_RX_IPG_MASK    0xf
->> @@ -62,6 +65,9 @@ struct xrx200_chan {
->>       struct ltq_dma_channel dma;
->>       struct sk_buff *skb[LTQ_DESC_NUM];
->>   +    struct sk_buff *skb_head;
->> +    struct sk_buff *skb_tail;
->> +
->>       struct xrx200_priv *priv;
->>   };
->>   @@ -205,7 +211,8 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
->>       struct xrx200_priv *priv = ch->priv;
->>       struct ltq_dma_desc *desc = &ch->dma.desc_base[ch->dma.desc];
->>       struct sk_buff *skb = ch->skb[ch->dma.desc];
->> -    int len = (desc->ctl & LTQ_DMA_SIZE_MASK);
->> +    u32 ctl = desc->ctl;
->> +    int len = (ctl & LTQ_DMA_SIZE_MASK);
->>       struct net_device *net_dev = priv->net_dev;
->>       int ret;
->>   @@ -221,12 +228,36 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
->>       }
->>         skb_put(skb, len);
->> -    skb->protocol = eth_type_trans(skb, net_dev);
->> -    netif_receive_skb(skb);
->> -    net_dev->stats.rx_packets++;
->> -    net_dev->stats.rx_bytes += len;
->>   -    return 0;
->> +    /* add buffers to skb via skb->frag_list */
->> +    if (ctl & LTQ_DMA_SOP) {
->> +        ch->skb_head = skb;
->> +        ch->skb_tail = skb;
->> +    } else if (ch->skb_head) {
->> +        if (ch->skb_head == ch->skb_tail)
->> +            skb_shinfo(ch->skb_tail)->frag_list = skb;
->> +        else
->> +            ch->skb_tail->next = skb;
->> +        ch->skb_tail = skb;
->> +        skb_reserve(ch->skb_tail, -NET_IP_ALIGN);
->> +        ch->skb_head->len += skb->len;
->> +        ch->skb_head->data_len += skb->len;
->> +        ch->skb_head->truesize += skb->truesize;
->> +    }
->> +
->> +    if (ctl & LTQ_DMA_EOP) {
->> +        ch->skb_head->protocol = eth_type_trans(ch->skb_head, net_dev);
->> +        netif_receive_skb(ch->skb_head);
->> +        net_dev->stats.rx_packets++;
->> +        net_dev->stats.rx_bytes += ch->skb_head->len;
-> 
-> 
-> Use after free alert.
-> 
-> Please add/test the following fix.
-> 
-> (It is illegal to deref skb after netif_receive_skb())
-> 
-> 
-> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
-> index 503fb99c5b90..bf7e3c7910d1 100644
-> --- a/drivers/net/ethernet/lantiq_xrx200.c
-> +++ b/drivers/net/ethernet/lantiq_xrx200.c
-> @@ -247,9 +247,9 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
-> 
->         if (ctl & LTQ_DMA_EOP) {
->                 ch->skb_head->protocol = eth_type_trans(ch->skb_head, net_dev);
-> -               netif_receive_skb(ch->skb_head);
->                 net_dev->stats.rx_packets++;
->                 net_dev->stats.rx_bytes += ch->skb_head->len;
-> +               netif_receive_skb(ch->skb_head);
->                 ch->skb_head = NULL;
->                 ch->skb_tail = NULL;
->                 ret = XRX200_DMA_PACKET_COMPLETE;
-> 
-> 
->
+In our tc ebpf tools, we do strict environment check. If the enrioment is
+not match, we won't allow to start the ebpf progs. One of the check is
+whether bpffs is properly mounted. The mount information of bpffs in
+kernel-4.19 and kernel-5.10 are as follows,
 
+- kenrel 4.19
+$ mount -t bpf bpffs /sys/fs/bpf
+$ mount -t bpf
+bpffs on /sys/fs/bpf type bpf (rw,relatime)
 
-Thanks for spot this bug. I tested this patch and it works
-ok. I will sent this patch it soon. 
+- kernel 5.10
+$ mount -t bpf bpffs /sys/fs/bpf
+$ mount -t bpf
+none on /sys/fs/bpf type bpf (rw,relatime)
 
+The device name in kernel-5.10 is displayed as none instead of bpffs,
+then our environment check fails. Currently we modify the tools to adopt to
+the kernel behaviour change, but I think we'd better change the kernel code
+to keep the behavior consistent.
 
->> +        ch->skb_head = NULL;
->> +        ch->skb_tail = NULL;
->> +        ret = XRX200_DMA_PACKET_COMPLETE;
->> +    } else {
->> +        ret = XRX200_DMA_PACKET_IN_PROGRESS;
->> +    }
->> +
->> +    return ret;
->>   }
->>     static int xrx200_poll_rx(struct napi_struct *napi, int budget)
->> @@ -241,7 +272,9 @@ static int xrx200_poll_rx(struct napi_struct *napi, int budget)
->>             if ((desc->ctl & (LTQ_DMA_OWN | LTQ_DMA_C)) == LTQ_DMA_C) {
->>               ret = xrx200_hw_receive(ch);
->> -            if (ret)
->> +            if (ret == XRX200_DMA_PACKET_IN_PROGRESS)
->> +                continue;
->> +            if (ret != XRX200_DMA_PACKET_COMPLETE)
->>                   return ret;
->>               rx++;
->>           } else {
+After this change, the mount information will be displayed the same with
+the behavior in kernel-4.19, for example,
+
+$ mount -t bpf bpffs /sys/fs/bpf
+$ mount -t bpf
+bpffs on /sys/fs/bpf type bpf (rw,relatime)
+
+Fixes: d2935de7e4fd ("vfs: Convert bpf to use the new mount API")
+Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+
+---
+v1->v2:
+use the helper vfs_parse_fs_param_source() instead of open-coded (Daniel)
+---
+ kernel/bpf/inode.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
+index 80da1db47c68..5a8d9f7467bf 100644
+--- a/kernel/bpf/inode.c
++++ b/kernel/bpf/inode.c
+@@ -648,12 +648,22 @@ static int bpf_parse_param(struct fs_context *fc, struct fs_parameter *param)
+ 	int opt;
+ 
+ 	opt = fs_parse(fc, bpf_fs_parameters, param, &result);
+-	if (opt < 0)
++	if (opt < 0) {
+ 		/* We might like to report bad mount options here, but
+ 		 * traditionally we've ignored all mount options, so we'd
+ 		 * better continue to ignore non-existing options for bpf.
+ 		 */
+-		return opt == -ENOPARAM ? 0 : opt;
++		if (opt == -ENOPARAM) {
++			opt = vfs_parse_fs_param_source(fc, param);
++			if (opt != -ENOPARAM)
++				return opt;
++
++			return 0;
++		}
++
++		if (opt < 0)
++			return opt;
++	}
+ 
+ 	switch (opt) {
+ 	case OPT_MODE:
+-- 
+2.17.1
+
