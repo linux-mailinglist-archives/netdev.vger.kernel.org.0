@@ -2,103 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98CAA4883FA
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 15:33:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D7FA488400
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 15:41:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234454AbiAHOd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 09:33:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25166 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229700AbiAHOd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 09:33:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641652406;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=OTEoDAXesUBrrz0y7VX933AG7BpNKcC+21DOjfav4eQ=;
-        b=N8zW4mVxz9x85I2DTig0IFp+9D5JB7bbiXl86u1vWUY1oN9e53DGCRn1ZvjmbCHBCS3QY3
-        T86ENFsag5dSAYFydtWmWngPtrmi/plN8ehPnv5+gFt4lt/vDREbrKUbpd/hEq3Jo/7Dxe
-        MLsojwuUDHbPIkePTvRMFXkCW68k4gg=
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
- [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-314-j_632LYXMqSDYPJf-d7cjA-1; Sat, 08 Jan 2022 09:33:25 -0500
-X-MC-Unique: j_632LYXMqSDYPJf-d7cjA-1
-Received: by mail-oo1-f72.google.com with SMTP id w25-20020a4a6d59000000b002daaed72624so5987380oof.23
-        for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 06:33:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OTEoDAXesUBrrz0y7VX933AG7BpNKcC+21DOjfav4eQ=;
-        b=KQAGkKFD2XgDVDCEhPaC1mP5EkjWHInflrQ8f3ZT+lkluyZzblarzaPY0gwMqt82Cp
-         /0wVc30sBVUSaUN/JlhO6Vc1qfYvUL8I+AAZl8LJXpzvO0+MDgxLmuDV8sT+c0IpfPd6
-         XyvvDbpBOZeNKjKFDf7IilPlGugAwsXazCKchuFf2g24fDOP7LTpJG+RE2OfFlfWXtYM
-         q3/bDCWHvswb7M3RLEYN9p9ytscBeBFNXR/UJU6ajIRJFHxcusOafJmZsYck/7fVCbj9
-         /BkA4b6DYyy9xTPHTo26qprrm+799neDUXpb15rXckB+idzBMbAV+PdlEXsqL+/p4R5w
-         +Y0A==
-X-Gm-Message-State: AOAM531HO/ICxVcf+Hv4U//YhHwCe7xpADc+o9xQ99svNIheDtzSvl1J
-        8Iq/b5dCv72QwfTvNd4dpSR3QJq5QJX0YSo4yjhL3gKfPD2oz+IqyOhSRGhQWWlKWiORRQ5+5Td
-        O3/8pxEaJ6ssgQLB/
-X-Received: by 2002:a9d:d68:: with SMTP id 95mr46520895oti.188.1641652404334;
-        Sat, 08 Jan 2022 06:33:24 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyrzTGEeaVMK49HTR2/2D3npJiXwy7xQHcIPlSumyPxfb0SUfpPiLi4GiaG2GrUwzY6o8mW7Q==
-X-Received: by 2002:a9d:d68:: with SMTP id 95mr46520883oti.188.1641652404104;
-        Sat, 08 Jan 2022 06:33:24 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id r37sm353568otv.54.2022.01.08.06.33.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Jan 2022 06:33:23 -0800 (PST)
-From:   trix@redhat.com
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        kuba@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
-        mailhol.vincent@wanadoo.fr, stefan.maetje@esd.eu
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] can: janz-ican3: initialize dlc variable
-Date:   Sat,  8 Jan 2022 06:33:19 -0800
-Message-Id: <20220108143319.3986923-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S234408AbiAHOlB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 8 Jan 2022 09:41:01 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:59260 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229712AbiAHOlB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 09:41:01 -0500
+Received: from smtpclient.apple (p4fefca45.dip0.t-ipconnect.de [79.239.202.69])
+        by mail.holtmann.org (Postfix) with ESMTPSA id F228BCED09;
+        Sat,  8 Jan 2022 15:40:59 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
+Subject: Re: pull request: bluetooth 2022-01-07
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220107182712.7549a8eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Sat, 8 Jan 2022 15:40:59 +0100
+Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Tedd Ho-Jeong An <hj.tedd.an@gmail.com>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <6FFD2498-E81C-49DA-9B3E-4833241382EE@holtmann.org>
+References: <20220107210942.3750887-1-luiz.dentz@gmail.com>
+ <20220107182712.7549a8eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+X-Mailer: Apple Mail (2.3693.40.0.1.81)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Hi Jakub,
 
-Clang static analysis reports this problem
-janz-ican3.c:1311:2: warning: Undefined or garbage value returned to caller
-        return dlc;
-        ^~~~~~~~~~
+>> The following changes since commit 710ad98c363a66a0cd8526465426c5c5f8377ee0:
+>> 
+>>  veth: Do not record rx queue hint in veth_xmit (2022-01-06 13:49:54 +0000)
+>> 
+>> are available in the Git repository at:
+>> 
+>>  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2022-01-07
+>> 
+>> for you to fetch changes up to b9f9dbad0bd1c302d357fdd327c398f51f5fc2b1:
+>> 
+>>  Bluetooth: hci_sock: fix endian bug in hci_sock_setsockopt() (2022-01-07 08:41:38 +0100)
+>> 
+>> ----------------------------------------------------------------
+>> bluetooth-next pull request for net-next:
+>> 
+>> - Add support for Foxconn QCA 0xe0d0
+>> - Fix HCI init sequence on MacBook Air 8,1 and 8,2
+>> - Fix Intel firmware loading on legacy ROM devices
+> 
+> A few warnings here that may be worth addressing - in particular this
+> one makes me feel that kbuild bot hasn't looked at the patches:
+> 
+> net/bluetooth/hci_sync.c:5143:5: warning: no previous prototype for ‘hci_le_ext_create_conn_sync’ [-Wmissing-prototypes]
+> 5143 | int hci_le_ext_create_conn_sync(struct hci_dev *hdev, struct hci_conn *conn,
+>      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-dlc is only set with this conditional
-	if (!(cf->can_id & CAN_RTR_FLAG))
-		dlc = cf->len;
+this we have to fix with a patch since none of the commits were touching this. It really must have slipped through earlier.
 
-But is always returned.  So initialize dlc to 0.
+> Also this Fixes tag could be mended:
+> 
+> Commit: 6845667146a2 ("Bluetooth: hci_qca: Fix NULL vs IS_ERR_OR_NULL check in qca_serdev_probe")
+> 	Fixes tag: Fixes: 77131dfe ("Bluetooth: hci_qca: Replace devm_gpiod_get() with devm_gpiod_get_optional()")
+> 	Has these problem(s):
+> 		- SHA1 should be at least 12 digits long
+> 		  Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
+> 		  or later) just making sure it is not set (or set to "auto").
 
-Fixes: cc4b08c31b5c ("can: do not increase tx_bytes statistics for RTR frames")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/can/janz-ican3.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I fixed that now and re-pushed the tree. Funny part is that I always check that the Fixes SHA1 is actually valid, but I never thought about checking that it is at least 12 digits long. I totally missed that and keep it in mind going forward.
 
-diff --git a/drivers/net/can/janz-ican3.c b/drivers/net/can/janz-ican3.c
-index 5b677af5f2a41..808c105cf8f7e 100644
---- a/drivers/net/can/janz-ican3.c
-+++ b/drivers/net/can/janz-ican3.c
-@@ -1285,7 +1285,7 @@ static unsigned int ican3_get_echo_skb(struct ican3_dev *mod)
- {
- 	struct sk_buff *skb = skb_dequeue(&mod->echoq);
- 	struct can_frame *cf;
--	u8 dlc;
-+	u8 dlc = 0;
- 
- 	/* this should never trigger unless there is a driver bug */
- 	if (!skb) {
--- 
-2.26.3
+Regards
+
+Marcel
 
