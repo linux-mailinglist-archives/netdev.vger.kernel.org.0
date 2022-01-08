@@ -2,103 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FF4548826F
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 09:40:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83CB84882CA
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 10:26:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231315AbiAHIkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 03:40:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
+        id S234005AbiAHJ0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 04:26:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbiAHIkT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 03:40:19 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E403AC061574;
-        Sat,  8 Jan 2022 00:40:18 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id lr15-20020a17090b4b8f00b001b19671cbebso9100396pjb.1;
-        Sat, 08 Jan 2022 00:40:18 -0800 (PST)
+        with ESMTP id S231347AbiAHJ0D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 04:26:03 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570B0C061574;
+        Sat,  8 Jan 2022 01:26:03 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id c14-20020a17090a674e00b001b31e16749cso13311126pjm.4;
+        Sat, 08 Jan 2022 01:26:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9zEwDmNMe5JERLrwlCRlU/+ORPGYL9TSSP35Lx3dN30=;
-        b=CuClFgSfhd2sHttE34W8oabBRGxMtRezBYjAnGdE1RsZ83TYi8ViK3Xmg1auClddbx
-         GwH8+CYdXARMc5nifS/9sklBitiGXcSlRdnrqDF2MuITggX4gShDw9xqSds5Vpz7jCdI
-         obMtp+Es1uBXHuSFLk6cpS/sZ6r/fkDEt9tU/Jefu5BOy6FA9Xpo/UoGwAe8GN9aT+jK
-         1ajH/DIXh2JtuFylbH9pgGuAyChKpvsSDU5ZJ/l+mvjagsxC1W4UekWKCzX8MoJQ7FJT
-         8KTmDJSHASgXEZU6rzCV9rFAKcCM0kdexhEdPXqjC5bBR6WVtnaOtp1Qbp+chGejhIkn
-         EijQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=6nGZ0pLNYlQTPH0NXXUjZUHfFeHpc7NAdMEEoI+ow0I=;
+        b=qALKBex/Q9MtAlITgQZES39/tDZjItlQEq8MT1Cwqb8quQa4PJWzUIkPrl74PuVJTY
+         5FAvyGCnnWrOy03Mx2trbLiJ63Tr7uoczKLpXS62CYqkBfh8tVY5rDz3/KLG7wwSVOzP
+         ahg//JToDxDLVOCljakxTTCiRXojJiwqrfUGhl0cj1Don9qK12lVgCrlDaAKkmGmjFTL
+         hUyAHUSIePk/eCkTXld9jlnwN3ANOQkkOPiUwEDDclW685nOJPeFj5zbftZwMh5Ac7Bj
+         iGY2OfnUQYL1MGL7uoOQqsyyc4h2uDpTMSZ67emfIPmUM739iYT7e/P6OV+pexKBuxIS
+         Q2bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9zEwDmNMe5JERLrwlCRlU/+ORPGYL9TSSP35Lx3dN30=;
-        b=pG9tYXAsTSdT3aTmov757Z+rM75NpqEyN+m5LNXgJKDA/18KMOpgnMDVNtdEaqSLPG
-         6XYrWqWQDxDTl7FDZyDT590iELjSA5w0gYRtes2jo9BCyy7HqgWdDyBlH5rr7gQvxa/G
-         +a5ysUFDTFs30cgKvJ3O3qOWOBoYMWAt/u/Jytnvkgu2Fy8JDvgUrZPZHVLKSnNxPfoH
-         7ZhbLlIRbCq9wGGogcAVz94Od2mn3P4sOgcihb3WXQ4gLfkDpTwgCKk3ANRbJWavvcx2
-         H5TY8uKiv91chEqtwGwqz4XiAMo5D2qp6rYCX/RU531dmc99ppnfnsWzFvUnHVylTXpO
-         zXtw==
-X-Gm-Message-State: AOAM532mmWuZtz4BylICiWVfPfppiAdja/Y7cD7Hb59NxRIUUrC7uFPK
-        br/F7XuaQQF5DfAKS+n5mR0=
-X-Google-Smtp-Source: ABdhPJxgT+hITarZ5kOie4lgQKjGUCs4kcAxUmDsHXGRU8Ggif6Uqhy6zZ/xF3aIzhOlokShIaQfEQ==
-X-Received: by 2002:a17:902:a3c4:b0:149:6639:4b86 with SMTP id q4-20020a170902a3c400b0014966394b86mr62292275plb.60.1641631218474;
-        Sat, 08 Jan 2022 00:40:18 -0800 (PST)
-Received: from localhost.localdomain ([111.199.185.103])
-        by smtp.gmail.com with ESMTPSA id mq12sm1333897pjb.48.2022.01.08.00.40.13
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=6nGZ0pLNYlQTPH0NXXUjZUHfFeHpc7NAdMEEoI+ow0I=;
+        b=eR/KCzje9/fJNAuOns6aX7/ofBHQvwViS/ChjVWmJys3CDSIqk6qPFIPIrg3n9dGJ0
+         Z8St5hTI5uTQVmXlPiMyapetmOtpfablt9LuhN0JwCk58Uc7ALv1WV0/Rtqyw2KKXozb
+         HC8exEXtz88/VptkIXeqtAGQX+Zyarc2iGjOzfqHXR0C1swuf94HWS9ZjbUPXE99uV8w
+         1tT3CUwg80dywXjbwAJ9V1o36Rwy23IA0Dy3J0MUmE9uxMTOlbOjgTdUUKAjJAfOgkby
+         AQT/KhOu1c3HuHg46cGiyPA59LMjkaO34ZMJv93nNemy1Az6jrI0Iq+WjmlzUek7LdER
+         gd4g==
+X-Gm-Message-State: AOAM533MIR42NJK6y4E8a1t6Bd6N8ZS+OTVGKKZUwo8hkgD9T0oAk108
+        4422/KsVFRNFq/IS/mAkWnM=
+X-Google-Smtp-Source: ABdhPJxmGkqDH4BJnA1p8TC/7pgW/pY93/igX/cglBZh/2xksuflnPGBanHcy7ZEK47eTl6rYvK+IQ==
+X-Received: by 2002:a17:902:ea83:b0:148:95f3:4f4d with SMTP id x3-20020a170902ea8300b0014895f34f4dmr66801614plb.54.1641633962850;
+        Sat, 08 Jan 2022 01:26:02 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id h4sm1139666pjk.2.2022.01.08.01.26.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Jan 2022 00:40:18 -0800 (PST)
-From:   Wei Fu <fuweid89@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Wei Fu <fuweid89@gmail.com>
-Subject: [PATCH bpf] tools/bpf: only set obj->skeleton without err
-Date:   Sat,  8 Jan 2022 16:40:08 +0800
-Message-Id: <20220108084008.1053111-1-fuweid89@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sat, 08 Jan 2022 01:26:02 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+Cc:     linmq006@gmail.com, Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] softingcs: Fix memleak on registration failure in softingcs_probe
+Date:   Sat,  8 Jan 2022 09:25:51 +0000
+Message-Id: <20220108092555.17648-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After `bpftool gen skeleton`, the ${bpf_app}.skel.h will provide that
-${bpf_app_name}__open helper to load bpf. If there is some error
-like ENOMEM, the ${bpf_app_name}__open will rollback(free) the allocated
-object, including `bpf_object_skeleton`.
+In case device registration fails during module initialisation, the
+platform device structure needs to be freed using platform_device_put()
+to properly free all resources (e.g. the device name).
 
-Since the ${bpf_app_name}__create_skeleton set the obj->skeleton first
-and not rollback it when error, it will cause double-free in
-${bpf_app_name}__destory at ${bpf_app_name}__open. Therefore, we should
-set the obj->skeleton before return 0;
-
-Signed-off-by: Wei Fu <fuweid89@gmail.com>
+Fixes: 0a0b7a5f7a04 ("can: add driver for Softing card")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- tools/bpf/bpftool/gen.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/can/softing/softing_cs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-index 5c18351290f0..e61e08f524da 100644
---- a/tools/bpf/bpftool/gen.c
-+++ b/tools/bpf/bpftool/gen.c
-@@ -928,7 +928,6 @@ static int do_skeleton(int argc, char **argv)
- 			s = (struct bpf_object_skeleton *)calloc(1, sizeof(*s));\n\
- 			if (!s)						    \n\
- 				goto err;				    \n\
--			obj->skeleton = s;				    \n\
- 									    \n\
- 			s->sz = sizeof(*s);				    \n\
- 			s->name = \"%1$s\";				    \n\
-@@ -1001,6 +1000,8 @@ static int do_skeleton(int argc, char **argv)
- 									    \n\
- 			s->data = (void *)%2$s__elf_bytes(&s->data_sz);	    \n\
- 									    \n\
-+			obj->skeleton = s;				    \n\
-+									    \n\
- 			return 0;					    \n\
- 		err:							    \n\
- 			bpf_object__destroy_skeleton(s);		    \n\
+diff --git a/drivers/net/can/softing/softing_cs.c b/drivers/net/can/softing/softing_cs.c
+index 2e93ee792373..e5c939b63fa6 100644
+--- a/drivers/net/can/softing/softing_cs.c
++++ b/drivers/net/can/softing/softing_cs.c
+@@ -293,7 +293,7 @@ static int softingcs_probe(struct pcmcia_device *pcmcia)
+ 	return 0;
+ 
+ platform_failed:
+-	kfree(dev);
++	platform_device_put(pdev);
+ mem_failed:
+ pcmcia_bad:
+ pcmcia_failed:
 -- 
-2.25.1
+2.17.1
 
