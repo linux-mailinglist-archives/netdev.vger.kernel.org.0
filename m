@@ -2,156 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E62C1488236
-	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 09:01:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5877348823F
+	for <lists+netdev@lfdr.de>; Sat,  8 Jan 2022 09:04:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233773AbiAHIA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 03:00:28 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:39685 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233770AbiAHIAZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 03:00:25 -0500
-Received: by mail-io1-f69.google.com with SMTP id m6-20020a0566022e8600b005ec18906edaso5969785iow.6
-        for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 00:00:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=zoA6QDxz3PS7MAyLWApYsQnm2pFkixHDdjsPGCEpEk0=;
-        b=C82v/uLFPkYltSS0Ne5ySZK0rMsgiQjYF2d1nBrxX4DTs3bX+yIaN+fzKrcnbdmES3
-         lZxbV0VRFI7jvst0P4f4yXt45YM9sSTn/Cja1Wr6oDiCvR1/mR2hk15+ZYPcgzyapbga
-         wR6UvyeLPBCxvk3DEHel60uSGzo2DS0rWVs7W6c5eGeNs0aCX4fqwLU1pTs7Wfj4ypYl
-         gyLS7Fk4C2jc4AEImKqyuaEjnlKnvaPLCG771OHu/Zb9Pq/Lrq5JGQT1vk1YCxudZWOE
-         IcW8IorrsG+VE6hEPIt0ViEZ32aTpzs2Q6TTMdjnDZs1NBRp7Z4sDpO+NYvsqqFuGzRj
-         3k/Q==
-X-Gm-Message-State: AOAM533eBC7YAhLzt6SWbmucSOGukU2DX3RAruADrufwi/9tMIqrFz8k
-        /8sH4Y6rRDWnqgPIgwMFjA9hb5BgsEqvS/YeNEqiKDm6JnBn
-X-Google-Smtp-Source: ABdhPJxxpIIw13W+L4C0NlnaAdtY0cniTk8F77x4I1lVeU+b4ButZnGQ6oEy6MS0PSxZFLkoX7rS/l+itUJumD6f0ADmOF3fZEVX
+        id S233783AbiAHIES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 03:04:18 -0500
+Received: from relay030.a.hostedemail.com ([64.99.140.30]:57053 "EHLO
+        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230219AbiAHIER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 03:04:17 -0500
+Received: from omf02.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay06.hostedemail.com (Postfix) with ESMTP id 493D823181;
+        Sat,  8 Jan 2022 08:04:16 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf02.hostedemail.com (Postfix) with ESMTPA id 99E388000D;
+        Sat,  8 Jan 2022 08:03:59 +0000 (UTC)
+Message-ID: <fc1bf93d92bb5b2f99c6c62745507cc22f3a7b2d.camel@perches.com>
+Subject: Re: [PATCH net-next] net: lantiq_etop: add blank line after
+ declaration
+From:   Joe Perches <joe@perches.com>
+To:     Aleksander Jan Bajkowski <olek2@wp.pl>, davem@davemloft.net,
+        kuba@kernel.org, rdunlap@infradead.org, jgg@ziepe.ca,
+        arnd@arndb.de, netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     John Crispin <john@phrozen.org>
+Date:   Sat, 08 Jan 2022 00:04:08 -0800
+In-Reply-To: <20211228220031.71576-1-olek2@wp.pl>
+References: <20211228220031.71576-1-olek2@wp.pl>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-X-Received: by 2002:a92:dc8c:: with SMTP id c12mr29429570iln.43.1641628825031;
- Sat, 08 Jan 2022 00:00:25 -0800 (PST)
-Date:   Sat, 08 Jan 2022 00:00:25 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f81aa305d50d7e4c@google.com>
-Subject: [syzbot] KMSAN: uninit-value in sctp_inq_pop (2)
-From:   syzbot <syzbot+70a42f45e76bede082be@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
-        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
-        nhorman@tuxdriver.com, syzkaller-bugs@googlegroups.com,
-        vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-0.60
+X-Stat-Signature: jbmtwnzfrtn1yhcpqs5gfknehu8nhf8x
+X-Rspamd-Server: rspamout01
+X-Rspamd-Queue-Id: 99E388000D
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX18x/hM6NRUFwWh5VLK7ICvHa/RluF2ZJgU=
+X-HE-Tag: 1641629039-985905
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+(adding John Crispin, the original submitter of this driver)
 
-syzbot found the following issue on:
+On Tue, 2021-12-28 at 23:00 +0100, Aleksander Jan Bajkowski wrote:
+> This patch adds a missing line after the declaration and
+> fixes the checkpatch warning:
+> 
+> WARNING: Missing a blank line after declarations
+> +		int desc;
+> +		for (desc = 0; desc < LTQ_DESC_NUM; desc++)
+> 
+> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+[]
+> diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
+[]
+> @@ -218,6 +218,7 @@ ltq_etop_free_channel(struct net_device *dev, struct ltq_etop_chan *ch)
+>  		free_irq(ch->dma.irq, priv);
+>  	if (IS_RX(ch->idx)) {
+>  		int desc;
+> +
+>  		for (desc = 0; desc < LTQ_DESC_NUM; desc++)
+>  			dev_kfree_skb_any(ch->skb[ch->dma.desc]);
+>  	}
 
-HEAD commit:    81c325bbf94e kmsan: hooks: do not check memory in kmsan_in..
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=15dad2c3b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2d8b9a11641dc9aa
-dashboard link: https://syzkaller.appspot.com/bug?extid=70a42f45e76bede082be
-compiler:       clang version 14.0.0 (/usr/local/google/src/llvm-git-monorepo 2b554920f11c8b763cd9ed9003f4e19b919b8e1f), GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=173a7b0db00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14de2ffdb00000
+The change is innocuous and has already been applied but the code
+doesn't seem to make sense.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+70a42f45e76bede082be@syzkaller.appspotmail.com
+Why is dev_kfree_skb_any called multiple times with the same argument?
 
-netlink: 244 bytes leftover after parsing attributes in process `syz-executor678'.
-=====================================================
-BUG: KMSAN: uninit-value in sctp_inq_pop+0x15c8/0x18f0 net/sctp/inqueue.c:205
- sctp_inq_pop+0x15c8/0x18f0 net/sctp/inqueue.c:205
- sctp_assoc_bh_rcv+0x1fa/0xdd0 net/sctp/associola.c:1000
- sctp_inq_push+0x31c/0x440 net/sctp/inqueue.c:80
- sctp_backlog_rcv+0x30f/0x10b0 net/sctp/input.c:344
- sk_backlog_rcv include/net/sock.h:1030 [inline]
- __release_sock+0x256/0x640 net/core/sock.c:2768
- release_sock+0x98/0x2e0 net/core/sock.c:3300
- sctp_wait_for_connect+0x52a/0x9e0 net/sctp/socket.c:9306
- sctp_sendmsg_to_asoc+0x1c47/0x1f90 net/sctp/socket.c:1881
- sctp_sendmsg+0x3eaa/0x5460 net/sctp/socket.c:2027
- inet_sendmsg+0x15b/0x1d0 net/ipv4/af_inet.c:819
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg net/socket.c:724 [inline]
- __sys_sendto+0x9ef/0xc70 net/socket.c:2036
- __do_sys_sendto net/socket.c:2048 [inline]
- __se_sys_sendto net/socket.c:2044 [inline]
- __x64_sys_sendto+0x19c/0x210 net/socket.c:2044
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Is there some missing logic here?  Maybe a missing ++?
 
-Uninit was stored to memory at:
- sctp_inq_pop+0x155c/0x18f0 net/sctp/inqueue.c:201
- sctp_assoc_bh_rcv+0x1fa/0xdd0 net/sctp/associola.c:1000
- sctp_inq_push+0x31c/0x440 net/sctp/inqueue.c:80
- sctp_backlog_rcv+0x30f/0x10b0 net/sctp/input.c:344
- sk_backlog_rcv include/net/sock.h:1030 [inline]
- __release_sock+0x256/0x640 net/core/sock.c:2768
- release_sock+0x98/0x2e0 net/core/sock.c:3300
- sctp_wait_for_connect+0x52a/0x9e0 net/sctp/socket.c:9306
- sctp_sendmsg_to_asoc+0x1c47/0x1f90 net/sctp/socket.c:1881
- sctp_sendmsg+0x3eaa/0x5460 net/sctp/socket.c:2027
- inet_sendmsg+0x15b/0x1d0 net/ipv4/af_inet.c:819
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg net/socket.c:724 [inline]
- __sys_sendto+0x9ef/0xc70 net/socket.c:2036
- __do_sys_sendto net/socket.c:2048 [inline]
- __se_sys_sendto net/socket.c:2044 [inline]
- __x64_sys_sendto+0x19c/0x210 net/socket.c:2044
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Something like:
 
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3251 [inline]
- __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1126 [inline]
- sctp_packet_pack net/sctp/output.c:471 [inline]
- sctp_packet_transmit+0x194c/0x45a0 net/sctp/output.c:620
- sctp_outq_flush_transports net/sctp/outqueue.c:1163 [inline]
- sctp_outq_flush+0x17d9/0x5eb0 net/sctp/outqueue.c:1211
- sctp_outq_uncork+0x105/0x120 net/sctp/outqueue.c:758
- sctp_side_effects net/sctp/sm_sideeffect.c:1195 [inline]
- sctp_do_sm+0x946f/0x9b50 net/sctp/sm_sideeffect.c:1166
- sctp_assoc_bh_rcv+0xa15/0xdd0 net/sctp/associola.c:1054
- sctp_inq_push+0x31c/0x440 net/sctp/inqueue.c:80
- sctp_backlog_rcv+0x30f/0x10b0 net/sctp/input.c:344
- sk_backlog_rcv include/net/sock.h:1030 [inline]
- __release_sock+0x256/0x640 net/core/sock.c:2768
- release_sock+0x98/0x2e0 net/core/sock.c:3300
- sctp_wait_for_connect+0x52a/0x9e0 net/sctp/socket.c:9306
- sctp_sendmsg_to_asoc+0x1c47/0x1f90 net/sctp/socket.c:1881
- sctp_sendmsg+0x3eaa/0x5460 net/sctp/socket.c:2027
- inet_sendmsg+0x15b/0x1d0 net/ipv4/af_inet.c:819
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg net/socket.c:724 [inline]
- __sys_sendto+0x9ef/0xc70 net/socket.c:2036
- __do_sys_sendto net/socket.c:2048 [inline]
- __se_sys_sendto net/socket.c:2044 [inline]
- __x64_sys_sendto+0x19c/0x210 net/socket.c:2044
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+		for (desc = 0; desc < LTQ_DESC_NUM; desc++)
+ 			dev_kfree_skb_any(ch->skb[ch->dma.desc++]);
 
-CPU: 0 PID: 3479 Comm: syz-executor678 Not tainted 5.16.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-=====================================================
+Dunno, but the current code seems wrong.
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
