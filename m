@@ -2,157 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77FB748875B
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 03:24:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CF77488799
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 05:11:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235069AbiAICYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 21:24:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37420 "EHLO
+        id S232569AbiAIELA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 8 Jan 2022 23:11:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231214AbiAICYw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 21:24:52 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B5CC06173F;
-        Sat,  8 Jan 2022 18:24:52 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id 59-20020a17090a09c100b001b34a13745eso10627610pjo.5;
-        Sat, 08 Jan 2022 18:24:52 -0800 (PST)
+        with ESMTP id S231218AbiAIELA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 23:11:00 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3332C06173F;
+        Sat,  8 Jan 2022 20:10:59 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id d1so28878544ybh.6;
+        Sat, 08 Jan 2022 20:10:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=XTPe+ZTg13rRAodjoKXWvvU0kZo4zErR94BHGnRJizA=;
-        b=SUHvyciban7PhjrJedEf6ESoB3BuXOjDDRpKImGcu1X+kdOL3BjkZkMRAd7Fra/SKp
-         SBuV5jmQ1pX8QDAXLEUNCxYEonp6HC/Gv/05QGFzPdyyLqK2HkSOCrbAZFtaPHXi8KAR
-         PBYZrv0iqAC5JozPwdUrY0fObU16It2QyCvyz9BtjF0n8rbGkAyZofb5eOK7ti3iZiwm
-         iBka8EcDQ8JJaag0zz32M5uJEmR20HjqhxCmDhAR/tG8PeSAlh/NywJKvCmyprqD4VAl
-         qeHyFwrDuUuKUdYrjXe1iqkqbg4Bmqivhs+38m8mV8+LfuWoJTaCecul/0Xh7cuXpH2V
-         Csow==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kHWv8vCmQocf8j1ncOVYaNumvu4dAkTmLmQDF+t6hvw=;
+        b=fD0jHymcSp6lveuK1mk4zEK8mW+PVfq/FLlMF6dVhdDen99sh3Z13dyrn+FnUE5zZ8
+         /d9D2KfdX6To+qF1DsMVg1Z8Dp38H0NQXDVYk9W+cddI3lhiPbgeiYOWPrlI+wlZc4SR
+         wVQaNDyV/nh0AqhDSXsoWWgHI1zC98WeNGwZo7RlVFcmeZgFWInKYog9OUH1d++5pB9X
+         yOE+IGWJT3vaPLCAo1Nx1pmghUp8y5ji4Q9wtQoSKrMvcKMMK+sfwXLs2cBkxQBfrLpE
+         ohE/EKeregrhuU/UOd7/o40nxiSeW+Rvf5g6o22yryl43USzBXoX/cpAnsA0xW6T9rSb
+         fkpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=XTPe+ZTg13rRAodjoKXWvvU0kZo4zErR94BHGnRJizA=;
-        b=kIo1QcfCdacq2nRHwTxpZqa5thFhes3AX8LH180l7+OXFBYFHu+D66H8+6vG6onx3F
-         iCzaMj0KiIidSXv5H0wRzKMrB7ZdmGM2UMtGc1j1BkZrxQN//FRbBYr+Kwpqn75e3E4J
-         78IOxPixfHtiL6AAuy6foFBCxx8TgMAIvcAa6Pv7uHZNL/wGKEMiDu2DMSDtBeUicUa5
-         kEXQFZy1qFA75ecWf/LC93fyG70lM1Lon9U6lvQLxYuFg/TeJopDdFU1r+SMZRV4WquJ
-         g6lLCOSLiEpBvD/FgXYhsAZHyhTPBfoqGwhi8Aaj/T0dGoBPb0XF+KvhMNR+Y4a2JNVQ
-         gUcw==
-X-Gm-Message-State: AOAM531a8pOHQ8LSlgJHyoQZ3aDr/B7CdrkdA3Eg7Hv8ndY8qwXe12HF
-        B43YA7Im5AHCGP5J53sb8e8=
-X-Google-Smtp-Source: ABdhPJyYiO3EHNsIKP1lSCoH4P/BgdR+7U9o6h0XAqI847WXY1XBq+o+6v7PL1yoYzeEBu9l0tySAA==
-X-Received: by 2002:a17:90a:db87:: with SMTP id h7mr3319450pjv.97.1641695091462;
-        Sat, 08 Jan 2022 18:24:51 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:33b1])
-        by smtp.gmail.com with ESMTPSA id lk10sm3424546pjb.20.2022.01.08.18.24.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Jan 2022 18:24:51 -0800 (PST)
-Date:   Sat, 8 Jan 2022 18:24:48 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v7 1/3] bpf: Add "live packet" mode for XDP in
- bpf_prog_run()
-Message-ID: <20220109022448.bxgatdsx3obvipbu@ast-mbp.dhcp.thefacebook.com>
-References: <20220107215438.321922-1-toke@redhat.com>
- <20220107215438.321922-2-toke@redhat.com>
- <CAADnVQ+uftgnRQa5nvG4FTJga_=_FMAGxuiPB3O=AFKfEdOg=A@mail.gmail.com>
- <87pmp28iwe.fsf@toke.dk>
- <CAADnVQLWjbm03-3NHYyEx98tWRN68LSaOd3R9fjJoHY5cYoEJg@mail.gmail.com>
- <87mtk67zfm.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kHWv8vCmQocf8j1ncOVYaNumvu4dAkTmLmQDF+t6hvw=;
+        b=HZH0YC1jpbuNsmGA/RngUnwOKVy1LPJuNNRc5yyBYAzOSByxKueAITzA2hUr2aymYV
+         VvnZSzILc7mjsMftJzag4v0hrX3SuZ3ZKZxZrDM7TgxEHqFP/hSB0oBsFeZoXTBX0wMp
+         7yMG4dxxHkKSO8PLQfRHEs3ylFlxA+Q7zfsDCJVHrNGdZ102ya58Gi6wSVq33UKKMDnT
+         6/GwgHOVI3/wHY1CGEGtMma15cgV0yofiwvierIfXnhHXL/0gvlH2nt2dLFlFr3v+U4O
+         U9lXQW0w3+IKdbV+grtvV98SnwJ+1VS8RoDXStAMaxIv5cOiWAdkSAM29cISIt+DdQzG
+         q4kA==
+X-Gm-Message-State: AOAM531zYtWOftJgiNA+PKgejaVlGkX2BSLvxQAD9pIBbjhEkxYCXhUo
+        qiK9Mexy1dHC+c6dEEQ4OFAgvwxPipxKZPXO3SHXjqe0ftU=
+X-Google-Smtp-Source: ABdhPJzPWCq3pnVvWBRCL9v7fe6zdCxN8v63iDGAaqF3AeVneP6THpvAsobSRDdoFEIU0fGzxgvaeYgM/BJc3tFv+gQ=
+X-Received: by 2002:a25:500f:: with SMTP id e15mr86479940ybb.312.1641701458923;
+ Sat, 08 Jan 2022 20:10:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87mtk67zfm.fsf@toke.dk>
+References: <CAKXUXMzZkQvHJ35nwVhcJe+DrtEXGw+eKGVD04=xRJkVUC2sPA@mail.gmail.com>
+ <35cebb4b-3a1d-fa47-4d49-1a516f36af4f@oracle.com>
+In-Reply-To: <35cebb4b-3a1d-fa47-4d49-1a516f36af4f@oracle.com>
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Date:   Sun, 9 Jan 2022 05:10:48 +0100
+Message-ID: <CAKXUXMwQE6Z1EFYOtixwA+8nLZySxdHH9xHiOkGhcy5p0sr9xQ@mail.gmail.com>
+Subject: Re: Observation of a memory leak with commit 314001f0bf92 ("af_unix:
+ Add OOB support")
+To:     Shoaib Rao <rao.shoaib@oracle.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 08, 2022 at 09:19:41PM +0100, Toke Høiland-Jørgensen wrote:
-> 
-> Sure, totally fine with documenting it. Just seems to me the most
-> obvious place to put this is in a new
-> Documentation/bpf/prog_test_run.rst file with a short introduction about
-> the general BPF_PROG_RUN mechanism, and then a subsection dedicated to
-> this facility.
+On Fri, Jan 7, 2022 at 6:55 PM Shoaib Rao <rao.shoaib@oracle.com> wrote:
+>
+> Hi Lukas,
+>
+> I took a look at the patch and I fail to see how prepare_creds() could
+> be impacted by the patch. The only reference to a cred in the patch is
+> via maybe_add_creds().
+>
+> prepare_creds() is called to make a copy of the current creds which will
+> be later modified. If there is any leak it would be in the caller not
+> releasing the memory. The patch does not do anything with creds.
+>
+> If there is any more information that can help identify the issue, I
+> will be happy to look into it.
+>
 
-sgtm
+Here is more information:
 
-> > I guess it's ok-ish to get stuck with 128.
-> > It will be uapi that we cannot change though.
-> > Are you comfortable with that?
-> 
-> UAPI in what sense? I'm thinking of documenting it like:
-> 
-> "The packet data being supplied as data_in to BPF_PROG_RUN will be used
->  for the initial run of the XDP program. However, when running the
->  program multiple times (with repeat > 1), only the packet *bounds*
->  (i.e., the data, data_end and data_meta pointers) will be reset on each
->  invocation, the packet data itself won't be rewritten. The pages
->  backing the packets are recycled, but the order depends on the path the
->  packet takes through the kernel, making it hard to predict when a
->  particular modified page makes it back to the XDP program. In practice,
->  this means that if the XDP program modifies the packet payload before
->  sending out the packet, it has to be prepared to deal with subsequent
->  invocations seeing either the initial data or the already-modified
->  packet, in arbitrary order."
-> 
-> I don't think this makes any promises about any particular size of the
-> page pool, so how does it constitute UAPI?
+Here are all crash reports:
 
-Could you explain out-of-order scanario again?
-It's possible only if xdp_redirect is done into different netdevs.
-Then they can xmit at different times and cycle pages back into
-the loop in different order. But TX or REDIRECT into the same netdev
-will keep the pages in the same order. So the program can rely on that.
+https://elisa-builder-00.iol.unh.edu/syzkaller-next/crash?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3
 
+and here at the bottom of the page is a C program that shows the
+memory leak with the typical memory leak detections switched on:
+
+https://elisa-builder-00.iol.unh.edu/syzkaller-next/report?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3
+
+Please try to reproduce this on your machine. If you need more
+instructions on how to set up the kernel to get this program to
+reproduce the issue, please let us know.
+
+> Note that a lot of bugs are timing related, so while it might seem that
+> a change is causing the problem, it may not be the cause, it may just be
+> changing the environment for the bug to show up.
+>
+
+Well, we are pretty sure that this commit makes it show up and
+disappear depending on where it is included or reverted, respectively,
+tested now on multiple kernel versions. So, to resolve the issue, we
+just need to revert the commit.
+
+Lukas
+
+> Shoaib
+>
+> On 1/6/22 22:48, Lukas Bulwahn wrote:
+> > Dear Rao and David,
 > >
-> > reinit doesn't feel necessary.
-> > How one would use this interface to send N different packets?
-> > The api provides an interface for only one.
-> 
-> By having the XDP program react appropriately. E.g., here is the XDP
-> program used by the trafficgen tool to cycle through UDP ports when
-> sending out the packets - it just reads the current value and updates
-> based on that, so it doesn't matter if it sees the initial page or one
-> it already modified:
-
-Sure. I think there is an untapped potential here.
-With this live packet prog_run anyone can buy 10G or 100G nic equipped
-server and for free transform it into $300k+ IXIA beating machine.
-It could be a game changer. pktgen doesn't come close.
-I'm thinking about generating and consuming test TCP traffic.
-TCP blaster would xmit 1M TCP connections through this live prog_run
-into eth0 and consume the traffic returning from "server under test"
-via a different XDP program attached to eth0.
-The prog_run's xdp prog would need to send SYN, increment sequence number,
-and keep sane data in the packets. It could be HTTP request, for example.
-
-To achive this IXIA beating setup the TCP blaster would need a full
-understanding of what page pool is doing with the packets.
-Just saying "in arbitrary order" is a non starter. It diminishes
-this live prog_run into pktgen equivalent which is still useful,
-but lots of potential is lost.
-
-> Another question seeing as the merge window is imminent: How do you feel
-> about merging this before the merge window? I can resubmit before it
-> opens with the updated selftest and documentation, and we can deal with
-> any tweaks during the -rcs; or would you rather postpone the whole
-> thing until the next cycle?
-
-It's already too late for this merge window, but bpf-next is always open.
-Just like it was open for the last year. So please resubmit as soon as
-the tests are green and this discussion is over.
+> >
+> > In our syzkaller instance running on linux-next,
+> > https://urldefense.com/v3/__https://elisa-builder-00.iol.unh.edu/syzkaller-next/__;!!ACWV5N9M2RV99hQ!YR_lD5j1kvA5QfrbPcM5nMVZZkWNcF-UEE4vKA20TPkslzzGDVPqpL-6heEhBZ_e$ , we have been
+> > observing a memory leak in prepare_creds,
+> > https://urldefense.com/v3/__https://elisa-builder-00.iol.unh.edu/syzkaller-next/report?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3__;!!ACWV5N9M2RV99hQ!YR_lD5j1kvA5QfrbPcM5nMVZZkWNcF-UEE4vKA20TPkslzzGDVPqpL-6hS1luOMv$ ,
+> > for quite some time.
+> >
+> > It is reproducible on v5.15-rc1, v5.15, v5.16-rc8 and next-20220104.
+> > So, it is in mainline, was released and has not been fixed in
+> > linux-next yet.
+> >
+> > As syzkaller also provides a reproducer, we bisected this memory leak
+> > to be introduced with  commit 314001f0bf92 ("af_unix: Add OOB
+> > support").
+> >
+> > We also tested that reverting this commit on torvalds' current tree
+> > made the memory leak with the reproducer go away.
+> >
+> > Could you please have a look how your commit introduces this memory
+> > leak? We will gladly support testing your fix in case help is needed.
+> >
+> >
+> > Best regards,
+> >
+> > Lukas
