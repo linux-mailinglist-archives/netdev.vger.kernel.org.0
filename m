@@ -2,81 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE14D488973
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 14:00:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D624548897E
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 14:09:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235554AbiAINAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 08:00:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42178 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231394AbiAINAm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 08:00:42 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 816D6B80C0A;
-        Sun,  9 Jan 2022 13:00:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF5BFC36AEB;
-        Sun,  9 Jan 2022 13:00:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641733240;
-        bh=WtX0uHMrTl6GQCiIyE80DYzIRiuSy/mJPnIzH5+0T7g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2a03L2/+ZxRA+eL8HRnqm9eJPyfYoyV3/rU6rjiaB28Z6ZIKqynBXUlggwgudWMIJ
-         UxR4jDtERguJiV7KcO16Xmn0A8Qr7J+oSezdcBilH+9n8FOK4FLgEHpkCStPEwmch5
-         KB464ZLrUOxxV1c4QrkF6NsXN1fju8RfU6RJIOqo=
-Date:   Sun, 9 Jan 2022 14:00:37 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     aayush.a.agarwal@oracle.com
-Cc:     stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Remi Denis-Courmont <courmisch@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [External] : Re: [PATCH 4.14] phonet: refcount leak in
- pep_sock_accep
-Message-ID: <Ydrcdfc/ZUn2jCay@kroah.com>
-References: <20220107105332.61347-1-aayush.a.agarwal@oracle.com>
- <Ydgi0qF/7GwoCh96@kroah.com>
- <baa2a339-2917-fc6b-6cc5-c4174c20f533@oracle.com>
+        id S235591AbiAINJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 08:09:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234067AbiAINJC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 08:09:02 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D140C06173F;
+        Sun,  9 Jan 2022 05:09:02 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id i30so8970302pgl.0;
+        Sun, 09 Jan 2022 05:09:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=arpw+ljAljq5NB0O7Qtm3OVFeIt6QFUH4U9kJ3gcQts=;
+        b=cLqToY/ebl6ZpwjWFuu1/yKSspKy6/p+fsr5CU2YMQV2/FMU+3Lx/FXV16Y89jXLNy
+         LUqXghbIXQLP7ZOH7K5yWivB7ZfS069TY5RiTordnZ9vLVNAJolXUjeNyhl5X2gWmLFN
+         kwYKsQOncpXzp4YKPcCv8cJcTPOiq4H9PYMLj8HVqMZpnKAxccJBvrlVVR5d3J2SFPK2
+         +IMbTDJSpJSq9l5AL5FVsbV9COsfinCJdixjtMT8bS0jJV3uTCK9HF+KbewPey7bwTAa
+         Iyby5AOlsaA08lU28GydpnfboK0+bMruWOEz9FQj8oMECRK3lerBMYgLhWIMSKHj649b
+         X43w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=arpw+ljAljq5NB0O7Qtm3OVFeIt6QFUH4U9kJ3gcQts=;
+        b=8HnCBKGfKOp06ug471/olUAPp+CT/aMogMiEGTh3PUcQoMwdTSQ1W6ekcCgrj5WIFc
+         b8UEjALn8oxVQyBAsA5bIwWQjYFTQdo3XqqwFKF10X27w/+leMe3J2JV+TyKD2N93eP2
+         /U5o/1XlbR7ne0Y7C0zMejZWnalSqd9gTjMOvu9AX2LzkYzYfGQw8gV665qYvtXVU/Nu
+         WjbdoTHAd4eswtHW+jtZC5flWPAN+Iui1v2SCceIHZhRRi1HrD7wQsepAZggyxQ64qZh
+         h7qZswpq27sBJIkoqayc65I3jm/MiPB2RZG//NDo4HWIUMmYd+jaUXV48b0UPFC+Ba9/
+         HJAQ==
+X-Gm-Message-State: AOAM531lg2vw+OoNKOkpsYKzlD/51MhViAJUoBQQnFz78Eo77VDFMqoI
+        zx3nHcL43rtmYa+J5McLtEI=
+X-Google-Smtp-Source: ABdhPJw90YE57koiEht2HXw4VLhAqSoeHWpus+R0aMIn9BFDmU+7vYicDfVziCgfUteaK2KnKKNRAg==
+X-Received: by 2002:a63:b905:: with SMTP id z5mr46556966pge.245.1641733741931;
+        Sun, 09 Jan 2022 05:09:01 -0800 (PST)
+Received: from fedora.. ([101.229.48.173])
+        by smtp.gmail.com with ESMTPSA id r26sm1157020pgu.65.2022.01.09.05.09.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 09 Jan 2022 05:09:01 -0800 (PST)
+From:   Benjamin Yim <yan2228598786@gmail.com>
+To:     kuba@kernel.org
+Cc:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Benjamin Yim <yan2228598786@gmail.com>
+Subject: [PATCH] tcp: tcp_send_challenge_ack delete useless param `skb`
+Date:   Sun,  9 Jan 2022 21:08:24 +0800
+Message-Id: <20220109130824.2776-1-yan2228598786@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <baa2a339-2917-fc6b-6cc5-c4174c20f533@oracle.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 10:24:53PM +0530, aayush.a.agarwal@oracle.com wrote:
-> 
-> On 07/01/22 4:54 pm, Greg KH wrote:
-> > On Fri, Jan 07, 2022 at 02:53:32AM -0800, Aayush Agarwal wrote:
-> > > From: Hangyu Hua <hbh25y@gmail.com>
-> > > 
-> > > commit bcd0f9335332 ("phonet: refcount leak in pep_sock_accep")
-> > > upstream.
-> > > 
-> > > sock_hold(sk) is invoked in pep_sock_accept(), but __sock_put(sk) is not
-> > > invoked in subsequent failure branches(pep_accept_conn() != 0).
-> > > 
-> > > Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> > > Link: https://urldefense.com/v3/__https://lore.kernel.org/r/20211209082839.33985-1-hbh25y@gmail.com__;!!ACWV5N9M2RV99hQ!Znc0Oy9gtZZ18UDMwcZiYrfjj4GUibhEq5WJZ44m6azDWCC1hrZpkFh9AmGOqqS94cqz-A$
-> > > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> > > Signed-off-by: Aayush Agarwal <aayush.a.agarwal@oracle.com>
-> > > ---
-> > >   net/phonet/pep.c | 1 +
-> > >   1 file changed, 1 insertion(+)
-> > What about releases 5.15.y, 5.10.y, 5.4.y, and 4.19.y?  Is this also
-> > relevant for those trees?
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> 
-> It's relevant for all currently supported stable releases: 4.4.y, 4.9.y,
-> 4.14.y, 4.19.y, 5.4.y, 5.10.y, 5.15.y . I missed adding the tag "Cc:
-> stable@viger.kernel.org #4.4+". Should I send the patch again?
+After this parameter is passed in, there is no usage, and deleting it will
+ not bring any impact.
 
-No need, I've queued it up everywhere now, thanks!
+Signed-off-by: Benjamin Yim <yan2228598786@gmail.com>
+---
+ net/ipv4/tcp_input.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-greg k-h
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 8010583f868b..dc49a3d551eb 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3601,7 +3601,7 @@ bool tcp_oow_rate_limited(struct net *net, const struct sk_buff *skb,
+ }
+ 
+ /* RFC 5961 7 [ACK Throttling] */
+-static void tcp_send_challenge_ack(struct sock *sk, const struct sk_buff *skb)
++static void tcp_send_challenge_ack(struct sock *sk)
+ {
+ 	/* unprotected vars, we dont care of overwrites */
+ 	static u32 challenge_timestamp;
+@@ -3763,7 +3763,7 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
+ 		/* RFC 5961 5.2 [Blind Data Injection Attack].[Mitigation] */
+ 		if (before(ack, prior_snd_una - tp->max_window)) {
+ 			if (!(flag & FLAG_NO_CHALLENGE_ACK))
+-				tcp_send_challenge_ack(sk, skb);
++				tcp_send_challenge_ack(sk);
+ 			return -1;
+ 		}
+ 		goto old_ack;
+@@ -5726,7 +5726,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ 			if (tp->syn_fastopen && !tp->data_segs_in &&
+ 			    sk->sk_state == TCP_ESTABLISHED)
+ 				tcp_fastopen_active_disable(sk);
+-			tcp_send_challenge_ack(sk, skb);
++			tcp_send_challenge_ack(sk);
+ 		}
+ 		goto discard;
+ 	}
+@@ -5741,7 +5741,7 @@ static bool tcp_validate_incoming(struct sock *sk, struct sk_buff *skb,
+ 		if (syn_inerr)
+ 			TCP_INC_STATS(sock_net(sk), TCP_MIB_INERRS);
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNCHALLENGE);
+-		tcp_send_challenge_ack(sk, skb);
++		tcp_send_challenge_ack(sk);
+ 		goto discard;
+ 	}
+ 
+@@ -6456,7 +6456,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 	if (!acceptable) {
+ 		if (sk->sk_state == TCP_SYN_RECV)
+ 			return 1;	/* send one RST */
+-		tcp_send_challenge_ack(sk, skb);
++		tcp_send_challenge_ack(sk);
+ 		goto discard;
+ 	}
+ 	switch (sk->sk_state) {
+-- 
+2.33.1
+
