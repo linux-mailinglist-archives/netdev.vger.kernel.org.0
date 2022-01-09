@@ -2,135 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 480AE4887B6
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 06:23:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99329488834
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 07:18:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230081AbiAIFXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 00:23:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
+        id S235198AbiAIGSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 01:18:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiAIFXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 00:23:05 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B472C06173F;
-        Sat,  8 Jan 2022 21:23:05 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id i3so29146947ybh.11;
-        Sat, 08 Jan 2022 21:23:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Varh2KpZisFfNCnQZj7woasFSawJlKM5czdAIPJ3JMU=;
-        b=RG311M8bNP8LTvcyUZwF3n+dPVi5M/7hQYqwVtKTVHywMjI9sqS0O86DATBGEcEhyi
-         31dnf1BSYZPw/J3m7VAz00z8Px1TsMtbX4FUP7DsY6M0KNpYL2/bzU2jdzr1E1EPjR1h
-         wdIENIyxWSbExKosjxYj9kuIJ3iPZWTB9rlqJO/xcwJYvDjLu3zeNlHug/2HWi5FI8eH
-         4qCh0FCW7O/V8w/9cRq/ifJ7FuiGYeKbwFzGg5k4ax3ychMxMU1FF6ChfKhEPsjRIHA8
-         35Vioo1wqX87a43Ww/mceSqmODFfsNwGmaP/5Mq4kTA/RFT7VHQzliHpAMV3ou0YDfXr
-         Xu1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Varh2KpZisFfNCnQZj7woasFSawJlKM5czdAIPJ3JMU=;
-        b=CGrOyDxFUJO1FSDa9xD1YqQi7BLpX5jmMT/H9mufYa3bA6DxB2n0eenLm0t7E5meG6
-         L2cfZgfjnmhJxlePXVLH2WjEsHxweTwPOTrBIoEMYg9UUnOfusRzuNQlsvyxaowk0BKR
-         9u352gv0iG+JDn30FHGx6T0CmamC7EUyZcYsGk8VUVcGi+XRKwegzI2xsq7K3M0pWCsH
-         WbT72y9KYjFvSxzC90EUxvp0uY2Ss1TkT10pE343IfCCvt+Z9fyRKbloQZEvvdjF3V2F
-         OscC3eIdRQCtYJUf4ocNMmgLo4ElldWjBfZHu/g7r+ZCa5xaxuY6nSqgjvYtgGULpIoW
-         SYkw==
-X-Gm-Message-State: AOAM530YA2QpdKyZP3aiy4pxvN9o73mj1BUq6pQvhBCHrmHhteYhGw8+
-        DM2WJiqbcBImVljQQlH80H2ZHjCuUeDyoskojiRRrLGU
-X-Google-Smtp-Source: ABdhPJwkl+ZGA9QLf8joJPqJxBdwtm/iajJcKnYRXgtXZ8Ga33b+IvHl61GAmEey5tCgt3S972P015IcjWeTJk4ZIws=
-X-Received: by 2002:a05:6902:1149:: with SMTP id p9mr62756822ybu.398.1641705783012;
- Sat, 08 Jan 2022 21:23:03 -0800 (PST)
-MIME-Version: 1.0
-References: <20220107210942.3750887-1-luiz.dentz@gmail.com>
- <20220107182712.7549a8eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <6FFD2498-E81C-49DA-9B3E-4833241382EE@holtmann.org>
-In-Reply-To: <6FFD2498-E81C-49DA-9B3E-4833241382EE@holtmann.org>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Sat, 8 Jan 2022 21:22:51 -0800
-Message-ID: <CABBYNZLaOgPFRvv_h=pyXChnP=y205yrm_cnP=F3TVBrXv-qVQ@mail.gmail.com>
-Subject: Re: pull request: bluetooth 2022-01-07
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S229960AbiAIGSr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 01:18:47 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E986C06173F
+        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 22:18:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=i70fOHPbeIhP1HNPcBZfJBxHrf/GSIkxpuyaSy3wgwg=; b=q9SDgz+UHWKHkepp1R4D8GgQWA
+        cm55B59ECVpoT+Wlj/Ct5C9G6N1YBaiW8DwxdfzYxkdie0MdjNLvhtGhNbyj0aEr6iLkOFPbrV1D9
+        ovRExX/WDLTzLYSTf8fbU6LK4tCT5N2kVYr44fUtlu6BhCcRMHQr940o2kiCSrFb7UZzWcjAkDBMJ
+        14riQtqG5VgE8p0p5mODW+FTe/VnwnDH5/unWUdF2aXOEbItPKAQGM3CFXte5ogVrX5qUnO3lVQz8
+        u/XSEjhu/BVhrBlqFw14XYKmTfjoCEI2kTAXTmPxJLEnMysFvp0UEcrvjaO3UxAeEXfxMe5f2tNRL
+        ql2h0Zeg==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n6RXS-007Q3e-0n; Sun, 09 Jan 2022 06:18:46 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     netdev@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Shay Drory <shayd@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Tedd Ho-Jeong An <hj.tedd.an@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH] net/mlx5: fix devlink documentation table warning
+Date:   Sat,  8 Jan 2022 22:18:45 -0800
+Message-Id: <20220109061845.11635-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel,
+Fix a table format warning in networking/devlink/mlx5 by adding
+another column data entry:
 
-On Sat, Jan 8, 2022 at 6:41 AM Marcel Holtmann <marcel@holtmann.org> wrote:
->
-> Hi Jakub,
->
-> >> The following changes since commit 710ad98c363a66a0cd8526465426c5c5f83=
-77ee0:
-> >>
-> >>  veth: Do not record rx queue hint in veth_xmit (2022-01-06 13:49:54 +=
-0000)
-> >>
-> >> are available in the Git repository at:
-> >>
-> >>  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-nex=
-t.git tags/for-net-next-2022-01-07
-> >>
-> >> for you to fetch changes up to b9f9dbad0bd1c302d357fdd327c398f51f5fc2b=
-1:
-> >>
-> >>  Bluetooth: hci_sock: fix endian bug in hci_sock_setsockopt() (2022-01=
--07 08:41:38 +0100)
-> >>
-> >> ----------------------------------------------------------------
-> >> bluetooth-next pull request for net-next:
-> >>
-> >> - Add support for Foxconn QCA 0xe0d0
-> >> - Fix HCI init sequence on MacBook Air 8,1 and 8,2
-> >> - Fix Intel firmware loading on legacy ROM devices
-> >
-> > A few warnings here that may be worth addressing - in particular this
-> > one makes me feel that kbuild bot hasn't looked at the patches:
-> >
-> > net/bluetooth/hci_sync.c:5143:5: warning: no previous prototype for =E2=
-=80=98hci_le_ext_create_conn_sync=E2=80=99 [-Wmissing-prototypes]
-> > 5143 | int hci_le_ext_create_conn_sync(struct hci_dev *hdev, struct hci=
-_conn *conn,
-> >      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
->
-> this we have to fix with a patch since none of the commits were touching =
-this. It really must have slipped through earlier.
+Documentation/networking/devlink/mlx5.rst:13: WARNING: Error parsing content block for the "list-table" directive: uniform two-level bullet list expected, but row 2 does not contain the same number of items as row 1 (2 vs 3).
 
-Just sent a patch fixing the warning, once that is applied I will
-create a new tag and send the pull request.
+Fixes: 0844fa5f7b89 ("net/mlx5: Let user configure io_eq_size param")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Shay Drory <shayd@nvidia.com>
+Cc: Saeed Mahameed <saeedm@nvidia.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+---
+ Documentation/networking/devlink/mlx5.rst |    1 +
+ 1 file changed, 1 insertion(+)
 
-> > Also this Fixes tag could be mended:
-> >
-> > Commit: 6845667146a2 ("Bluetooth: hci_qca: Fix NULL vs IS_ERR_OR_NULL c=
-heck in qca_serdev_probe")
-> >       Fixes tag: Fixes: 77131dfe ("Bluetooth: hci_qca: Replace devm_gpi=
-od_get() with devm_gpiod_get_optional()")
-> >       Has these problem(s):
-> >               - SHA1 should be at least 12 digits long
-> >                 Can be fixed by setting core.abbrev to 12 (or more) or =
-(for git v2.11
-> >                 or later) just making sure it is not set (or set to "au=
-to").
->
-> I fixed that now and re-pushed the tree. Funny part is that I always chec=
-k that the Fixes SHA1 is actually valid, but I never thought about checking=
- that it is at least 12 digits long. I totally missed that and keep it in m=
-ind going forward.
->
-> Regards
->
-> Marcel
->
-
-
---=20
-Luiz Augusto von Dentz
+--- linux-next-20220107.orig/Documentation/networking/devlink/mlx5.rst
++++ linux-next-20220107/Documentation/networking/devlink/mlx5.rst
+@@ -17,6 +17,7 @@ Parameters
+      - Validation
+    * - ``enable_roce``
+      - driverinit
++     - This is a boolean value (0 or 1, false or true).
+    * - ``io_eq_size``
+      - driverinit
+      - The range is between 64 and 4096.
