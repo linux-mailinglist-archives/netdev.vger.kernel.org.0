@@ -2,238 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A62488D66
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:55:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 715C9488D68
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:55:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235838AbiAIXzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 18:55:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33974 "EHLO
+        id S236476AbiAIXzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 18:55:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235783AbiAIXzG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:55:06 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5612CC061748
-        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 15:55:06 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id t18so1015069plg.9
-        for <netdev@vger.kernel.org>; Sun, 09 Jan 2022 15:55:06 -0800 (PST)
+        with ESMTP id S234835AbiAIXzH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:55:07 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D301C06173F
+        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 15:55:07 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id f8so9713784pgf.8
+        for <netdev@vger.kernel.org>; Sun, 09 Jan 2022 15:55:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=z54LVtJfnfER+Ao1qWQPEyz+M3URq4xmCOBuZ/F6LtQ=;
-        b=btStm0kVG90dmS84LFHa+DgEBk1DwnJUgAiudRzbFTZ+oIgo4Q8YypuL+WSXY6pu0R
-         9sTIV9uv1iMRzPW3pWDmeqj0YVsrStbJMcAia8Ar1rKRAA7LWi3AxrjM0wX0NBGgFne1
-         vJOHzZ9O7033vrq42IYfNXinpSIsBNCaCgkO0=
+        bh=mqPXIEzXEkMXNHKulNZ5f6q36U+GNeGKdUyNd77TVrc=;
+        b=Ipse4nh1ZAOYYnlxS874hgJImE05CuHDU75zksfSUmaEVvDhGATOIoGzIzX4dhGdEh
+         nzP04poN2agGsFMxS8sAlrsxmo1VMcCJMf5WIRLz0fkthLh2ypMBsSsOTpZBvKgegEr+
+         rrnwxqVt9r6x7Tvdm7x1vFKWb3n/bhD9fnDmU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=z54LVtJfnfER+Ao1qWQPEyz+M3URq4xmCOBuZ/F6LtQ=;
-        b=qOTVGoFpvH7sKWy9DVw2/L0Oc5GDh2WCLYUqCUJrTZtdJL7FD88GKXks4q3C/EPgm4
-         8FrCJKpYo131TOJ7/rjol+7ssZQzzAiWxn5G2hPV96vcHQgNLBa45G4g8TAgrjai+Ds8
-         6licMoN00fEubrgNAUmG0Y4W/MGnmEUfYy4n0oeEpiDWbH/Xo01F4dFFjj9i/EklJVfP
-         nLwGD+Q1PJTWJfe/dgcskXL41Y0W9sCpKi6d7kB4g+PuIyBbEsqu7+peuCoS77MOeeS0
-         97rpnlRdkY6XzV+i1ZmcCEYmfF3cbaScMolo0mNyr6p8fCZU7hpceWR87Q3o7Eka8lDc
-         Xp/g==
-X-Gm-Message-State: AOAM532Lc3GDGoJWLfv+1EWLRegSmVDFx558RPZ/TplgU7kIQgpppbl9
-        ORp4myFcMi+DMids3vAxQAL+vg==
-X-Google-Smtp-Source: ABdhPJwnzARI/Q9U2iXzxpxdGZZZNYknjBscbDO0DaznmQkFtpJaYPvd2MSEwrhuycrKeyQ7bc5LXQ==
-X-Received: by 2002:a17:902:8345:b0:14a:1a98:4288 with SMTP id z5-20020a170902834500b0014a1a984288mr7349884pln.79.1641772505668;
-        Sun, 09 Jan 2022 15:55:05 -0800 (PST)
+        bh=mqPXIEzXEkMXNHKulNZ5f6q36U+GNeGKdUyNd77TVrc=;
+        b=BFLPqU9UlP7DhZlINtD3V//Ucn+7aQpCEE2eJcF/aOPFMSrxKgOBsvxO2yTg8VbbPU
+         xZh19ohSN4Wt3WYdzKCV3iesq1Gae5zgYnoOEEHr4A4SvslrpgQ9FAcwN4kOTujiiMO9
+         HS2ORr4VWty9ec/+OzQt5Ya8qW9MM4CwjgwplnCLkmEATMqkafdoJpq31zLIC2/XNtEq
+         HgbidDQ5/TENjsynDpvi5XrTWLd6BtGL4lnlTdhyr7fL7T8r5lCd5/LprAlUNpohJ3L2
+         lfDY6niJ2rYr4wpb8tl8FKb21dnRGQYIkAn8LHWB/mfHdCsnRr3pjJnKvhPfSNGRXTXo
+         TSAg==
+X-Gm-Message-State: AOAM531hjm9lf0FT8UTR6bF7+OtyMyx3UWr+Zc7n6IeVjId+O4MsQzDV
+        l2tzJ+VZlhiLT5HuDK3TAhNxbw==
+X-Google-Smtp-Source: ABdhPJxvBCPX6KnGlFt8H0Pz+j+hNh5HKsZz2lMYbyUySmPCW4zGEuLhbEWu1G8fF9J5+mSyd9ciaQ==
+X-Received: by 2002:a63:ac54:: with SMTP id z20mr2140627pgn.302.1641772506705;
+        Sun, 09 Jan 2022 15:55:06 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id ls6sm6948611pjb.33.2022.01.09.15.55.04
+        by smtp.gmail.com with ESMTPSA id ls6sm6948611pjb.33.2022.01.09.15.55.05
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 09 Jan 2022 15:55:05 -0800 (PST)
+        Sun, 09 Jan 2022 15:55:06 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next v2 2/4] bnxt_en: improve VF error messages when PF is unavailable
-Date:   Sun,  9 Jan 2022 18:54:43 -0500
-Message-Id: <1641772485-10421-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 3/4] bnxt_en: use firmware provided max timeout for messages
+Date:   Sun,  9 Jan 2022 18:54:44 -0500
+Message-Id: <1641772485-10421-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1641772485-10421-1-git-send-email-michael.chan@broadcom.com>
 References: <1641772485-10421-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000007553b05d52ef363"
+        boundary="0000000000001b0c9305d52ef36e"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000007553b05d52ef363
+--0000000000001b0c9305d52ef36e
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-The current driver design relies on the PF netdev being open in order
-to intercept the following HWRM commands from a VF:
-    - HWRM_FUNC_VF_CFG
-    - HWRM_CFA_L2_FILTER_ALLOC
-    - HWRM_PORT_PHY_QCFG (only if FW_CAP_LINK_ADMIN is not supported)
+Some older devices cannot accommodate the 40 seconds timeout
+cap for long running commands (such as NVRAM commands) due to
+hardware limitations. Allow these devices to request more time for
+these long running commands, but print a warning, since the longer
+timeout may cause the hung task watchdog to trigger. In the case of a
+firmware update operation, this is preferable to failing outright.
 
-If the PF is closed, then VFs are subjected to rather inscrutable error
-messages in response to any configuration requests involving the above
-command types. Recent firmware distinguishes this problem case from
-other errors by returning HWRM_ERR_CODE_PF_UNAVAILABLE. In most cases,
-the appropriate course of action is still to fail, but this can now be
-accomplished with the aid of more user informative log messages. For L2
-filter allocations that are already asynchronous, an automatic retry
-seems more appropriate.
+v2: Use bp->hwrm_cmd_max_timeout directly without the constants.
 
-v2: Delete extra newline.
-
+Fixes: 881d8353b05e ("bnxt_en: Add an upper bound for all firmware command timeouts.")
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 44 +++++++++++++++----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  1 +
- .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    |  4 +-
- 3 files changed, 40 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c          | 6 ++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h          | 3 ++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c | 4 ++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c  | 9 +++------
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c     | 2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h     | 3 +--
+ 6 files changed, 15 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 203d2ddb5504..46f28ee4d05d 100644
+index 46f28ee4d05d..2a000d5ae3bf 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8637,7 +8637,10 @@ static int bnxt_init_chip(struct bnxt *bp, bool irq_re_init)
- 	/* Filter for default vnic 0 */
- 	rc = bnxt_hwrm_set_vnic_filter(bp, 0, 0, bp->dev->dev_addr);
- 	if (rc) {
--		netdev_err(bp->dev, "HWRM vnic filter failure rc: %x\n", rc);
-+		if (BNXT_VF(bp) && rc == -ENODEV)
-+			netdev_err(bp->dev, "Cannot configure L2 filter while PF is unavailable\n");
-+		else
-+			netdev_err(bp->dev, "HWRM vnic filter failure rc: %x\n", rc);
- 		goto err_out;
+@@ -8034,6 +8034,12 @@ static int bnxt_hwrm_ver_get(struct bnxt *bp)
+ 	bp->hwrm_cmd_timeout = le16_to_cpu(resp->def_req_timeout);
+ 	if (!bp->hwrm_cmd_timeout)
+ 		bp->hwrm_cmd_timeout = DFLT_HWRM_CMD_TIMEOUT;
++	bp->hwrm_cmd_max_timeout = le16_to_cpu(resp->max_req_timeout) * 1000;
++	if (!bp->hwrm_cmd_max_timeout)
++		bp->hwrm_cmd_max_timeout = HWRM_CMD_MAX_TIMEOUT;
++	else if (bp->hwrm_cmd_max_timeout > HWRM_CMD_MAX_TIMEOUT)
++		netdev_warn(bp->dev, "Device requests max timeout of %d seconds, may trigger hung task watchdog\n",
++			    bp->hwrm_cmd_max_timeout / 1000);
+ 
+ 	if (resp->hwrm_intf_maj_8b >= 1) {
+ 		bp->hwrm_max_req_len = le16_to_cpu(resp->max_req_win_len);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 5ec251a1100f..0da68dc35c69 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1987,7 +1987,8 @@ struct bnxt {
+ 
+ 	u16			hwrm_max_req_len;
+ 	u16			hwrm_max_ext_req_len;
+-	int			hwrm_cmd_timeout;
++	unsigned int		hwrm_cmd_timeout;
++	unsigned int		hwrm_cmd_max_timeout;
+ 	struct mutex		hwrm_cmd_lock;	/* serialize hwrm messages */
+ 	struct hwrm_ver_get_output	ver_resp;
+ #define FW_VER_STR_LEN		32
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
+index d3cb2f21946d..c06789882036 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
+@@ -32,7 +32,7 @@ static int bnxt_hwrm_dbg_dma_data(struct bnxt *bp, void *msg,
+ 		return -ENOMEM;
  	}
- 	vnic->uc_filter_count = 1;
-@@ -9430,6 +9433,10 @@ int bnxt_update_link(struct bnxt *bp, bool chng_link_state)
- 	rc = hwrm_req_send(bp, req);
- 	if (rc) {
- 		hwrm_req_drop(bp, req);
-+		if (BNXT_VF(bp) && rc == -ENODEV) {
-+			netdev_warn(bp->dev, "Cannot obtain link state while PF unavailable.\n");
-+			rc = 0;
-+		}
+ 
+-	hwrm_req_timeout(bp, msg, HWRM_COREDUMP_TIMEOUT);
++	hwrm_req_timeout(bp, msg, bp->hwrm_cmd_max_timeout);
+ 	cmn_resp = hwrm_req_hold(bp, msg);
+ 	resp = cmn_resp;
+ 
+@@ -125,7 +125,7 @@ static int bnxt_hwrm_dbg_coredump_initiate(struct bnxt *bp, u16 component_id,
+ 	if (rc)
+ 		return rc;
+ 
+-	hwrm_req_timeout(bp, req, HWRM_COREDUMP_TIMEOUT);
++	hwrm_req_timeout(bp, req, bp->hwrm_cmd_max_timeout);
+ 	req->component_id = cpu_to_le16(component_id);
+ 	req->segment_id = cpu_to_le16(segment_id);
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 46859d9a01eb..003330e8cd58 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -31,9 +31,6 @@
+ #include "bnxt_nvm_defs.h"	/* NVRAM content constant and structure defs */
+ #include "bnxt_fw_hdr.h"	/* Firmware hdr constant and structure defs */
+ #include "bnxt_coredump.h"
+-#define FLASH_NVRAM_TIMEOUT	((HWRM_CMD_TIMEOUT) * 100)
+-#define FLASH_PACKAGE_TIMEOUT	((HWRM_CMD_TIMEOUT) * 200)
+-#define INSTALL_PACKAGE_TIMEOUT	((HWRM_CMD_TIMEOUT) * 200)
+ 
+ static u32 bnxt_get_msglevel(struct net_device *dev)
+ {
+@@ -2194,7 +2191,7 @@ static int bnxt_flash_nvram(struct net_device *dev, u16 dir_type,
+ 		req->host_src_addr = cpu_to_le64(dma_handle);
+ 	}
+ 
+-	hwrm_req_timeout(bp, req, FLASH_NVRAM_TIMEOUT);
++	hwrm_req_timeout(bp, req, bp->hwrm_cmd_max_timeout);
+ 	req->dir_type = cpu_to_le16(dir_type);
+ 	req->dir_ordinal = cpu_to_le16(dir_ordinal);
+ 	req->dir_ext = cpu_to_le16(dir_ext);
+@@ -2540,8 +2537,8 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
  		return rc;
  	}
  
-@@ -10828,12 +10835,21 @@ static int bnxt_cfg_rx_mode(struct bnxt *bp)
- 	for (i = 1, off = 0; i < vnic->uc_filter_count; i++, off += ETH_ALEN) {
- 		rc = bnxt_hwrm_set_vnic_filter(bp, 0, i, vnic->uc_list + off);
- 		if (rc) {
--			netdev_err(bp->dev, "HWRM vnic filter failure rc: %x\n",
--				   rc);
-+			if (BNXT_VF(bp) && rc == -ENODEV) {
-+				if (!test_and_set_bit(BNXT_STATE_L2_FILTER_RETRY, &bp->state))
-+					netdev_warn(bp->dev, "Cannot configure L2 filters while PF is unavailable, will retry\n");
-+				else
-+					netdev_dbg(bp->dev, "PF still unavailable while configuring L2 filters.\n");
-+				rc = 0;
-+			} else {
-+				netdev_err(bp->dev, "HWRM vnic filter failure rc: %x\n", rc);
-+			}
- 			vnic->uc_filter_count = i;
- 			return rc;
- 		}
- 	}
-+	if (test_and_clear_bit(BNXT_STATE_L2_FILTER_RETRY, &bp->state))
-+		netdev_notice(bp->dev, "Retry of L2 filter configuration successful.\n");
+-	hwrm_req_timeout(bp, modify, FLASH_PACKAGE_TIMEOUT);
+-	hwrm_req_timeout(bp, install, INSTALL_PACKAGE_TIMEOUT);
++	hwrm_req_timeout(bp, modify, bp->hwrm_cmd_max_timeout);
++	hwrm_req_timeout(bp, install, bp->hwrm_cmd_max_timeout);
  
- skip_uc:
- 	if ((vnic->rx_mask & CFA_L2_SET_RX_MASK_REQ_MASK_PROMISCUOUS) &&
-@@ -11398,6 +11414,11 @@ static void bnxt_timer(struct timer_list *t)
- 		}
- 	}
- 
-+	if (test_bit(BNXT_STATE_L2_FILTER_RETRY, &bp->state)) {
-+		set_bit(BNXT_RX_MASK_SP_EVENT, &bp->sp_event);
-+		bnxt_queue_sp_work(bp);
-+	}
-+
- 	if ((bp->flags & BNXT_FLAG_CHIP_P5) && !bp->chip_rev &&
- 	    netif_carrier_ok(dev)) {
- 		set_bit(BNXT_RING_COAL_NOW_SP_EVENT, &bp->sp_event);
-@@ -13104,7 +13125,7 @@ static int bnxt_set_dflt_rings(struct bnxt *bp, bool sh)
- 	bp->tx_nr_rings = bp->tx_nr_rings_per_tc;
- 
- 	rc = __bnxt_reserve_rings(bp);
--	if (rc)
-+	if (rc && rc != -ENODEV)
- 		netdev_warn(bp->dev, "Unable to reserve tx rings\n");
- 	bp->tx_nr_rings_per_tc = bp->tx_nr_rings;
- 	if (sh)
-@@ -13113,7 +13134,7 @@ static int bnxt_set_dflt_rings(struct bnxt *bp, bool sh)
- 	/* Rings may have been trimmed, re-reserve the trimmed rings. */
- 	if (bnxt_need_reserve_rings(bp)) {
- 		rc = __bnxt_reserve_rings(bp);
--		if (rc)
-+		if (rc && rc != -ENODEV)
- 			netdev_warn(bp->dev, "2nd rings reservation failed.\n");
- 		bp->tx_nr_rings_per_tc = bp->tx_nr_rings;
- 	}
-@@ -13139,7 +13160,10 @@ static int bnxt_init_dflt_ring_mode(struct bnxt *bp)
- 	bnxt_clear_int_mode(bp);
- 	rc = bnxt_set_dflt_rings(bp, true);
- 	if (rc) {
--		netdev_err(bp->dev, "Not enough rings available.\n");
-+		if (BNXT_VF(bp) && rc == -ENODEV)
-+			netdev_err(bp->dev, "Cannot configure VF rings while PF is unavailable.\n");
-+		else
-+			netdev_err(bp->dev, "Not enough rings available.\n");
- 		goto init_dflt_ring_err;
- 	}
- 	rc = bnxt_init_int_mode(bp);
-@@ -13427,8 +13451,12 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	bnxt_set_ring_params(bp);
- 	rc = bnxt_set_dflt_rings(bp, true);
- 	if (rc) {
--		netdev_err(bp->dev, "Not enough rings available.\n");
--		rc = -ENOMEM;
-+		if (BNXT_VF(bp) && rc == -ENODEV) {
-+			netdev_err(bp->dev, "Cannot configure VF rings while PF is unavailable.\n");
-+		} else {
-+			netdev_err(bp->dev, "Not enough rings available.\n");
-+			rc = -ENOMEM;
-+		}
- 		goto init_err_pci_clean;
- 	}
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 7bd9c5d237d9..5ec251a1100f 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1916,6 +1916,7 @@ struct bnxt {
- #define BNXT_STATE_DRV_REGISTERED	7
- #define BNXT_STATE_PCI_CHANNEL_IO_FROZEN	8
- #define BNXT_STATE_NAPI_DISABLED	9
-+#define BNXT_STATE_L2_FILTER_RETRY	10
- #define BNXT_STATE_FW_ACTIVATE		11
- #define BNXT_STATE_RECOVER		12
- #define BNXT_STATE_FW_NON_FATAL_COND	13
+ 	hwrm_req_hold(bp, modify);
+ 	modify->host_src_addr = cpu_to_le64(dma_handle);
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-index a16d1ff6359c..f75b2de8a14b 100644
+index f75b2de8a14b..4c4027cfb322 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-@@ -359,6 +359,8 @@ static int __hwrm_to_stderr(u32 hwrm_err)
- 		return -EAGAIN;
- 	case HWRM_ERR_CODE_CMD_NOT_SUPPORTED:
- 		return -EOPNOTSUPP;
-+	case HWRM_ERR_CODE_PF_UNAVAILABLE:
-+		return -ENODEV;
- 	default:
- 		return -EIO;
+@@ -529,7 +529,7 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
  	}
-@@ -648,7 +650,7 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
- 	if (rc == HWRM_ERR_CODE_BUSY && !(ctx->flags & BNXT_HWRM_CTX_SILENT))
- 		netdev_warn(bp->dev, "FW returned busy, hwrm req_type 0x%x\n",
- 			    req_type);
--	else if (rc)
-+	else if (rc && rc != HWRM_ERR_CODE_PF_UNAVAILABLE)
- 		hwrm_err(bp, ctx, "hwrm req_type 0x%x seq id 0x%x error 0x%x\n",
- 			 req_type, token->seq_id, rc);
- 	rc = __hwrm_to_stderr(rc);
+ 
+ 	/* Limit timeout to an upper limit */
+-	timeout = min_t(uint, ctx->timeout, HWRM_CMD_MAX_TIMEOUT);
++	timeout = min(ctx->timeout, bp->hwrm_cmd_max_timeout ?: HWRM_CMD_MAX_TIMEOUT);
+ 	/* convert timeout to usec */
+ 	timeout *= 1000;
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
+index 4d17f0d5363b..9a9fc4e8041b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
+@@ -58,11 +58,10 @@ void hwrm_update_token(struct bnxt *bp, u16 seq, enum bnxt_hwrm_wait_state s);
+ 
+ #define BNXT_HWRM_MAX_REQ_LEN		(bp->hwrm_max_req_len)
+ #define BNXT_HWRM_SHORT_REQ_LEN		sizeof(struct hwrm_short_input)
+-#define HWRM_CMD_MAX_TIMEOUT		40000
++#define HWRM_CMD_MAX_TIMEOUT		40000U
+ #define SHORT_HWRM_CMD_TIMEOUT		20
+ #define HWRM_CMD_TIMEOUT		(bp->hwrm_cmd_timeout)
+ #define HWRM_RESET_TIMEOUT		((HWRM_CMD_TIMEOUT) * 4)
+-#define HWRM_COREDUMP_TIMEOUT		((HWRM_CMD_TIMEOUT) * 12)
+ #define BNXT_HWRM_TARGET		0xffff
+ #define BNXT_HWRM_NO_CMPL_RING		-1
+ #define BNXT_HWRM_REQ_MAX_SIZE		128
 -- 
 2.18.1
 
 
---00000000000007553b05d52ef363
+--0000000000001b0c9305d52ef36e
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -304,13 +275,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJcsWq6plJr5SN/orOfytE6oYL4yiv2p
-AH98U6Lq22cYMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDEw
-OTIzNTUwNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOGzbxIleCrr5Mp7izaTLcFrmjAtAUPU
+XPnMaqOHPvsvMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDEw
+OTIzNTUwN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBQSIt42ME88//ufpE9jr66h1DcSAgrNQn4/hmWG/RVw0kbQSB3
-3AyxnTTo1GK4Kcw5uP5ev5QMLtgdjoZ/27KG6865WWnRHulwl1cNWpNh0i/vi0KYWPSEhOsGnT34
-INoByKdxMrN5pqtlRg7iqH5EweH1Ki0CgiKIwWxeGrOxpmFHliBexIgaJSrpdT3nuayTWfELTvZU
-YcueLVoUO5/UyyUtBKPdW4PI4nTYWmlFNGn4IFaPwUwJ+IVrGcFbygMYORY2AyBMcrZOib0dj+bZ
-JHkS6/OnBzfoC+bcQ3DzI5eiQLDNOuKAeisGAj47fkAUx2fW2pv7cyKpGGBWZxsZ
---00000000000007553b05d52ef363--
+ATANBgkqhkiG9w0BAQEFAASCAQC1YMc9OWAXDVG2GBq6uify2xuXDJBbsV0hMHMHdYoxLicl5mbB
+D7uMahQ3y1NLAZo0Q1+Ec+/O33s2tZY7ACe98X8gV3pnpMBmjK4LoYyQudexX/qHrdg9as/9Sg46
+JZQxJWGrEj5jCVGXOpRD9yyGFgL2wh+iiV1Lv+hZEniPD7oMHIIIbuYl+7P+2INxA4kvwSn7qO8y
+bNa6hCM4QgK0mmjRW1j+NpnfdAxoAok5hbRB6rntkFE0b/lSwLiZhzLzn5sYc62l6HIY4LNl3Sfw
+SCdn+ObwUnM0HyaGpxWx0O8YjM/3mKYza64VHI9UaPDErZwGYLogdDcEIlQ7/brt
+--0000000000001b0c9305d52ef36e--
