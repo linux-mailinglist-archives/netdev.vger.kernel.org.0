@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CF82488B99
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 19:24:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28E09488B9D
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 19:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236181AbiAISYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 13:24:12 -0500
-Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:53482 "EHLO
+        id S236456AbiAISZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 13:25:09 -0500
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:55820 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236427AbiAISYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 13:24:10 -0500
+        with ESMTP id S236439AbiAISZI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 13:25:08 -0500
 Received: from pop-os.home ([90.11.185.88])
         by smtp.orange.fr with ESMTPA
-        id 6crRnvsaysoWh6crRnw2vo; Sun, 09 Jan 2022 19:24:09 +0100
+        id 6csNnvsrpsoWh6csNnw30x; Sun, 09 Jan 2022 19:25:07 +0100
 X-ME-Helo: pop-os.home
 X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 09 Jan 2022 19:24:09 +0100
+X-ME-Date: Sun, 09 Jan 2022 19:25:07 +0100
 X-ME-IP: 90.11.185.88
 From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
@@ -28,9 +28,9 @@ Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         Christoph Hellwig <hch@lst.de>,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
         intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH] iavf: Remove useless DMA-32 fallback configuration
-Date:   Sun,  9 Jan 2022 19:24:08 +0100
-Message-Id: <afb3317bc87677096e55fc96f317df29f2ff3408.1641752631.git.christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] ice: Remove useless DMA-32 fallback configuration
+Date:   Sun,  9 Jan 2022 19:25:05 +0100
+Message-Id: <6a4df3e0a0849f179f9747f47b9c8cae53b29b59.1641752692.git.christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -50,29 +50,22 @@ Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 8125b9120615..b0bd95c85480 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -4368,12 +4368,9 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index e29176889c23..785d98889cb4 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4435,8 +4435,6 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
  
- 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+ 	/* set up for high or low DMA */
+ 	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64));
+-	if (err)
+-		err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
  	if (err) {
--		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
--		if (err) {
--			dev_err(&pdev->dev,
--				"DMA configuration failed: 0x%x\n", err);
--			goto err_dma;
--		}
-+		dev_err(&pdev->dev,
-+			"DMA configuration failed: 0x%x\n", err);
-+		goto err_dma;
- 	}
- 
- 	err = pci_request_regions(pdev, iavf_driver_name);
+ 		dev_err(dev, "DMA configuration failed: 0x%x\n", err);
+ 		return err;
 -- 
 2.32.0
 
