@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23965488D14
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:17:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9179488D1F
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:17:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237411AbiAIXQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 18:16:59 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:42108 "EHLO
+        id S237423AbiAIXRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 18:17:03 -0500
+Received: from mail.netfilter.org ([217.70.188.207]:42112 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237389AbiAIXQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:16:56 -0500
+        with ESMTP id S237404AbiAIXQ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:16:58 -0500
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 0BC3D64690;
+        by mail.netfilter.org (Postfix) with ESMTPSA id AA342607C1;
         Mon, 10 Jan 2022 00:14:06 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 11/32] netfilter: nft_set_pipapo_avx2: remove redundant pointer lt
-Date:   Mon, 10 Jan 2022 00:16:19 +0100
-Message-Id: <20220109231640.104123-12-pablo@netfilter.org>
+Subject: [PATCH net-next 12/32] netfilter: conntrack: Use max() instead of doing it manually
+Date:   Mon, 10 Jan 2022 00:16:20 +0100
+Message-Id: <20220109231640.104123-13-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220109231640.104123-1-pablo@netfilter.org>
 References: <20220109231640.104123-1-pablo@netfilter.org>
@@ -29,35 +29,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.i.king@gmail.com>
+From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-The pointer lt is being assigned a value and then later
-updated but that value is never read. The pointer is
-redundant and can be removed.
+Fix following coccicheck warning:
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+./include/net/netfilter/nf_conntrack.h:282:16-17: WARNING opportunity
+for max().
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nft_set_pipapo_avx2.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ include/net/netfilter/nf_conntrack.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nft_set_pipapo_avx2.c b/net/netfilter/nft_set_pipapo_avx2.c
-index 6f4116e72958..52e0d026d30a 100644
---- a/net/netfilter/nft_set_pipapo_avx2.c
-+++ b/net/netfilter/nft_set_pipapo_avx2.c
-@@ -1048,11 +1048,9 @@ static int nft_pipapo_avx2_lookup_slow(unsigned long *map, unsigned long *fill,
- 					struct nft_pipapo_field *f, int offset,
- 					const u8 *pkt, bool first, bool last)
+diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
+index 871489df63c6..a4a14f3a5e38 100644
+--- a/include/net/netfilter/nf_conntrack.h
++++ b/include/net/netfilter/nf_conntrack.h
+@@ -279,7 +279,7 @@ static inline unsigned long nf_ct_expires(const struct nf_conn *ct)
  {
--	unsigned long *lt = f->lt, bsize = f->bsize;
-+	unsigned long bsize = f->bsize;
- 	int i, ret = -1, b;
+ 	s32 timeout = READ_ONCE(ct->timeout) - nfct_time_stamp;
  
--	lt += offset * NFT_PIPAPO_LONGS_PER_M256;
--
- 	if (first)
- 		memset(map, 0xff, bsize * sizeof(*map));
+-	return timeout > 0 ? timeout : 0;
++	return max(timeout, 0);
+ }
  
+ static inline bool nf_ct_is_expired(const struct nf_conn *ct)
 -- 
 2.30.2
 
