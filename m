@@ -2,94 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FE70488BBE
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 19:49:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC34E488C42
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 21:24:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236573AbiAIStS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 13:49:18 -0500
-Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:50760 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236555AbiAIStR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 13:49:17 -0500
-Received: from pop-os.home ([90.11.185.88])
-        by smtp.orange.fr with ESMTPA
-        id 6dFjnw05LsoWh6dFjnw55C; Sun, 09 Jan 2022 19:49:15 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 09 Jan 2022 19:49:15 +0100
-X-ME-IP: 90.11.185.88
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     GR-Linux-NIC-Dev@marvell.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org
-Subject: [PATCH] net/qla3xxx: Remove useless DMA-32 fallback configuration
-Date:   Sun,  9 Jan 2022 19:49:09 +0100
-Message-Id: <3011689e8c77d49d7e44509d5a8241320ec408c5.1641754134.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        id S236914AbiAIUYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 15:24:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236912AbiAIUYW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 15:24:22 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F9FC06173F;
+        Sun,  9 Jan 2022 12:24:21 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id x18-20020a7bc212000000b00347cc83ec07so3763930wmi.4;
+        Sun, 09 Jan 2022 12:24:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3g9xJZUKTdObdxenWeNH8Dlatjv9+QI3Rg198Ffa9ic=;
+        b=YaRFtncdj1ROshARCNA9kzbe3I+VsIZ4ciKRGoSzHZZtBKG1DVfOoDwFghnZU3B37w
+         6GGYOEDpWilBUD0rFo2qv3ozAIB3x8FAQF6gwwpnqEwhIL3GSaLgbZ4Gdv7ribh6R5h7
+         QuzBsROFxqRO0a8gSVKX/wLDHTKAEmvfukIrOjCeMqip0wp2V1H7TCBrxsDiNfVKKPT+
+         Sa2TiLxib6EBHCX7/GNUdq2yrPXcHagCwXQ14hFCXIRE9r8NRSVEEeamJkWq1x7kVKdp
+         eSw+Y4RIh6bcuCl4AN301/bZkbtSDQVmEsdJ1BQK/IjvMdnuIOuKRuZPYIQUKudLa5TU
+         JFsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3g9xJZUKTdObdxenWeNH8Dlatjv9+QI3Rg198Ffa9ic=;
+        b=3ykDPGuXgwjebvLvmjEuIGMxW/rQ4FYJQD1xChuegcs+NXY/89PHBCFGBG9oF4xGkx
+         Itewo5CbX/Gfdrzz/8E0YfrA9a9pp5b5rR4ZZQB+iO4GBuxCy9RtFr6OQpOBUBfPl+4z
+         IdQh/b2I2L5RWL2rZ+IMWiWERmCQ0uzbaLZAbqWk7SuM53s9x83iygxUYtyCgEejamZ3
+         zr21Yq/kAylJRPHJa7tHrl1GZrIKGh7tLjFCQ01e2nYEdV+j8JZHQ6zIz1RHzHMyTrOa
+         2EzV126TVamnuRGPAYhk+B+VDqCQ7r8lzgIPTUju1GMeJ0wanefHuJ7zyweJchFbc4Kc
+         996w==
+X-Gm-Message-State: AOAM532jO3qBzrUY+ySltnMYoSZh2iTq91Wq2EH0QVj15sBeZQ6kCGuz
+        VRlXfa7cY58ShiePwcuzOBk=
+X-Google-Smtp-Source: ABdhPJzRufDB91BfN4hRrQjwHhuExdQzU5ripFMbBfk93hKD1KaWEwMv54woD7BaBc4boJbc86KUOA==
+X-Received: by 2002:a7b:c745:: with SMTP id w5mr19538596wmk.96.1641759860152;
+        Sun, 09 Jan 2022 12:24:20 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id b13sm4999052wrf.64.2022.01.09.12.24.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 09 Jan 2022 12:24:19 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] nfc: pn544: make array rset_cmd static const
+Date:   Sun,  9 Jan 2022 20:24:18 +0000
+Message-Id: <20220109202418.50641-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As stated in [1], dma_set_mask() with a 64-bit mask never fails if
-dev->dma_mask is non-NULL.
-So, if it fails, the 32 bits case will also fail for the same reason.
+Don't populate the read-only array rset_cmd on the stack but
+instead it static const. Also makes the object code a little smaller.
 
-So, if dma_set_mask_and_coherent() succeeds, 'pci_using_dac' is known to be
-1.
-
-Simplify code and remove some dead code accordingly.
-
-[1]: https://lkml.org/lkml/2021/6/7/398
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
-This patch was not part of the 1st serie I've sent. So there is no
-Reviewed-by tag.
----
- drivers/net/ethernet/qlogic/qla3xxx.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/nfc/pn544/i2c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/qlogic/qla3xxx.c
-index 71523d747e93..b30589a135c2 100644
---- a/drivers/net/ethernet/qlogic/qla3xxx.c
-+++ b/drivers/net/ethernet/qlogic/qla3xxx.c
-@@ -3750,7 +3750,7 @@ static int ql3xxx_probe(struct pci_dev *pdev,
- 	struct net_device *ndev = NULL;
- 	struct ql3_adapter *qdev = NULL;
- 	static int cards_found;
--	int pci_using_dac, err;
-+	int err;
+diff --git a/drivers/nfc/pn544/i2c.c b/drivers/nfc/pn544/i2c.c
+index 37d26f01986b..62a0f1a010cb 100644
+--- a/drivers/nfc/pn544/i2c.c
++++ b/drivers/nfc/pn544/i2c.c
+@@ -188,7 +188,7 @@ do {								\
+ static void pn544_hci_i2c_platform_init(struct pn544_i2c_phy *phy)
+ {
+ 	int polarity, retry, ret;
+-	char rset_cmd[] = { 0x05, 0xF9, 0x04, 0x00, 0xC3, 0xE5 };
++	static const char rset_cmd[] = { 0x05, 0xF9, 0x04, 0x00, 0xC3, 0xE5 };
+ 	int count = sizeof(rset_cmd);
  
- 	err = pci_enable_device(pdev);
- 	if (err) {
-@@ -3766,11 +3766,7 @@ static int ql3xxx_probe(struct pci_dev *pdev,
- 
- 	pci_set_master(pdev);
- 
--	if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64)))
--		pci_using_dac = 1;
--	else if (!(err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32))))
--		pci_using_dac = 0;
--
-+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
- 	if (err) {
- 		pr_err("%s no usable DMA configuration\n", pci_name(pdev));
- 		goto err_out_free_regions;
-@@ -3797,8 +3793,7 @@ static int ql3xxx_probe(struct pci_dev *pdev,
- 
- 	qdev->msg_enable = netif_msg_init(debug, default_msg);
- 
--	if (pci_using_dac)
--		ndev->features |= NETIF_F_HIGHDMA;
-+	ndev->features |= NETIF_F_HIGHDMA;
- 	if (qdev->device_id == QL3032_DEVICE_ID)
- 		ndev->features |= NETIF_F_IP_CSUM | NETIF_F_SG;
- 
+ 	nfc_info(&phy->i2c_dev->dev, "Detecting nfc_en polarity\n");
 -- 
 2.32.0
 
