@@ -2,77 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C02FE488C85
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 22:20:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BED95488C8D
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 22:34:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233936AbiAIVUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 16:20:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59782 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231936AbiAIVUl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 16:20:41 -0500
+        id S232051AbiAIVdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 16:33:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232013AbiAIVdY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 16:33:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1DD9C06173F
+        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 13:33:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F79560C2C;
-        Sun,  9 Jan 2022 21:20:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98CE9C36AE5;
-        Sun,  9 Jan 2022 21:20:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AA9660C98
+        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 21:33:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A1D0C36AE5;
+        Sun,  9 Jan 2022 21:33:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641763239;
-        bh=Fw2ZSnJI+rXcbS3/Wr8CkxNQc+pIPx3R0OoQAJv5CKs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vMDxasgGDQX9VRoEWtBcWot2wz6pn1WUdGACygWjueohayCZgI+l/VqAXsgJtpWqc
-         4uGtj1bRE353ezc1F2Vf1AuuVcEN4hZD7Zw0m8oeJ8Hm5RvN+nmwqkUfzj2qas2UK/
-         xmjjf7nl2T82f486Au7vHM495NzUbCdqE6zN4ZwqHSRm7ZzB5xbl0g0uhwAzT31Wck
-         Aixk5ebxOBPAbHgNPgUaesJBUoPoG4/180ymssz8yUn2xgY02JjC8ct7vZE1kGCA8F
-         fbzu3/d8Ed9pYDTCNsC8SZgGd5+NmYo8EblTJnL/23XcwjIHstXRMD2Qyoooq8Im2y
-         +IZC9bdCSsIFA==
-Date:   Sun, 9 Jan 2022 13:20:38 -0800
+        s=k20201202; t=1641764003;
+        bh=bK68YMgo5nFAakTan/u9ASzwgD0PCP2vsJaQuRN5P6g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HVCYYypz+a0KqqBnFIf534+c9+ajdl/piUZGID5zThOtAM8/is+D1fU9pkuEALn1e
+         kh8ewm7WL8gXd4B2I9LtAlmrUQW4c/TXrzVdnU/sZmyDzgNYywgsLX6ZgFvhTPArUJ
+         6tt0auxNNGfw999syuZjxZwoYzs4FnjGNE+5xW1fG5N0w4B72JuTIT8A4GlxOAAcOY
+         0LG6gfSxq7v1tEEYmcAYsbIx6Kw1lo8/j+M+pfXfyyR9C+xT12dgHD8Dhp7alUYw1z
+         T0jq8lR2o+0hoO4RIDX7B0PByDjdtEwsonPPUGwfO2r4yYRGU4bgpq+2NKtq0ASPgs
+         /VJaia+k0c2og==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Rao Shoaib <rao.shoaib@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>,
-        regressions@lists.linux.dev
-Subject: Re: Observation of a memory leak with commit 314001f0bf92
- ("af_unix: Add OOB support")
-Message-ID: <20220109132038.38f8ae4f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <CAKXUXMzZkQvHJ35nwVhcJe+DrtEXGw+eKGVD04=xRJkVUC2sPA@mail.gmail.com>
-References: <CAKXUXMzZkQvHJ35nwVhcJe+DrtEXGw+eKGVD04=xRJkVUC2sPA@mail.gmail.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, saeedm@nvidia.com, leonro@nvidia.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Leon Romanovsky <leon@kernel.org>
+Subject: [PATCH net-next] net/mlx5e: Fix build error in fec_set_block_stats()
+Date:   Sun,  9 Jan 2022 13:33:21 -0800
+Message-Id: <20220109213321.2292830-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <YdqsUj3UNmESqvOw@unreal>
+References: <YdqsUj3UNmESqvOw@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 7 Jan 2022 07:48:46 +0100 Lukas Bulwahn wrote:
-> Dear Rao and David,
-> 
-> 
-> In our syzkaller instance running on linux-next,
-> https://elisa-builder-00.iol.unh.edu/syzkaller-next/, we have been
-> observing a memory leak in prepare_creds,
-> https://elisa-builder-00.iol.unh.edu/syzkaller-next/report?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3,
-> for quite some time.
-> 
-> It is reproducible on v5.15-rc1, v5.15, v5.16-rc8 and next-20220104.
-> So, it is in mainline, was released and has not been fixed in
-> linux-next yet.
-> 
-> As syzkaller also provides a reproducer, we bisected this memory leak
-> to be introduced with  commit 314001f0bf92 ("af_unix: Add OOB
-> support").
-> 
-> We also tested that reverting this commit on torvalds' current tree
-> made the memory leak with the reproducer go away.
-> 
-> Could you please have a look how your commit introduces this memory
-> leak? We will gladly support testing your fix in case help is needed.
+Build bot reports:
 
-Let's test the regression/bug report tracking bot :)
+drivers/net/ethernet/mellanox/mlx5/core/en_stats.c: In function 'fec_set_block_stats':
+drivers/net/ethernet/mellanox/mlx5/core/en_stats.c:1235:48: error: 'outl' undeclared (first use in this function); did you mean 'out'?
+    1235 |         if (mlx5_core_access_reg(mdev, in, sz, outl, sz, MLX5_REG_PPCNT, 0, 0))
+         |                                                ^~~~
+         |                                                out
 
-#regzbot introduced: 314001f0bf92
+Reported-by: kernel test robot <lkp@intel.com>
+Suggested-by: Leon Romanovsky <leon@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index 7e7c0c1019f6..26e326fe503c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -1232,7 +1232,7 @@ static void fec_set_block_stats(struct mlx5e_priv *priv,
+ 
+ 	MLX5_SET(ppcnt_reg, in, local_port, 1);
+ 	MLX5_SET(ppcnt_reg, in, grp, MLX5_PHYSICAL_LAYER_COUNTERS_GROUP);
+-	if (mlx5_core_access_reg(mdev, in, sz, outl, sz, MLX5_REG_PPCNT, 0, 0))
++	if (mlx5_core_access_reg(mdev, in, sz, out, sz, MLX5_REG_PPCNT, 0, 0))
+ 		return;
+ 
+ 	switch (mode) {
+-- 
+2.31.1
+
