@@ -2,91 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E16E0488BB4
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 19:41:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33184488BB8
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 19:43:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236548AbiAISl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 13:41:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbiAISl5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 13:41:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB5F0C06173F
-        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 10:41:56 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85A73B80972
-        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 18:41:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB456C36AE3;
-        Sun,  9 Jan 2022 18:41:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641753714;
-        bh=1EuyKRHEdzaJhuoMNSPeeWtgWcDybm1uJfxGcCWntgQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HyPQ6s/0TI2CJsHvZmh1klFysE9kI/q9bKRLIOFstcL0BhJSeFg8UC3F4fQw1Ckxg
-         OpIFwEvaZCpWWktNjwj40y2ZYnrAt1XKCV9uoT5a1wjKYDt6aU5vgX1ayJ7rPmYRse
-         CTxyAxTtGpIIGwsjd1O0PKR/tFna2VmLrQEVuxLx9+ZYFT6dO82em5ChX8Zk504D6J
-         zIitJ1A3vk+rZwA+d6KSH5c6iJBFrBYV1SxRa80KOqjenTExBrruB8JcDpDbWZkl55
-         xyiyiry0JfVfxmxqRhY6Rf3kN5Y/ed35EaMcooiVwxrYvgEmhdlBRKxzHyiSH05XPg
-         0jYjE/Un1PJRQ==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2-next 2/2] rdma: Don't allocate sparse array
-Date:   Sun,  9 Jan 2022 20:41:39 +0200
-Message-Id: <563d48b520713634b633bc859a8f87b73181a043.1641753491.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <cover.1641753491.git.leonro@nvidia.com>
-References: <cover.1641753491.git.leonro@nvidia.com>
+        id S236559AbiAISns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 13:43:48 -0500
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:64432 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229585AbiAISnr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 13:43:47 -0500
+Received: from pop-os.home ([90.11.185.88])
+        by smtp.orange.fr with ESMTPA
+        id 6dAPnvyS6soWh6dAQnw4cz; Sun, 09 Jan 2022 19:43:46 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 09 Jan 2022 19:43:46 +0100
+X-ME-IP: 90.11.185.88
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH] igbvf: Remove useless DMA-32 fallback configuration
+Date:   Sun,  9 Jan 2022 19:43:40 +0100
+Message-Id: <dc75b24883381a060eaad21cb0deffb5a027b05f.1641753812.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+As stated in [1], dma_set_mask() with a 64-bit mask never fails if
+dev->dma_mask is non-NULL.
+So, if it fails, the 32 bits case will also fail for the same reason.
 
-The addition of driver QP type with index 0xFF caused to the following
-clang compilation error:
+So, if dma_set_mask_and_coherent() succeeds, 'pci_using_dac' is known to be
+1.
 
-res.c:152:10: warning: result of comparison of constant 256 with expression of type 'uint8_t' (aka 'unsigned char') is always true [-Wtautological-constant-out-of-range-compare]
-        if (idx < ARRAY_SIZE(qp_types_str) && qp_types_str[idx])
-            ~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~
+Simplify code and remove some dead code accordingly.
 
-Instead of allocating very sparse array, simply create separate check
-for the driver QP type.
+[1]: https://lkml.org/lkml/2021/6/7/398
 
-Fixes: 39307384cea7 ("rdma: Add driver QP type string")
-Reported-by: Stephen Hemminger <stephen@networkplumber.org>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- rdma/res.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+This patch was not part of the 1st serie I've sent. So there is no
+Reviewed-by tag.
+---
+ drivers/net/ethernet/intel/igbvf/netdev.c | 22 ++++++----------------
+ 1 file changed, 6 insertions(+), 16 deletions(-)
 
-diff --git a/rdma/res.c b/rdma/res.c
-index 9aae5d4b..21fef9bd 100644
---- a/rdma/res.c
-+++ b/rdma/res.c
-@@ -146,12 +146,12 @@ const char *qp_types_to_str(uint8_t idx)
- 						     "RAW_ETHERTYPE",
- 						     "UNKNOWN", "RAW_PACKET",
- 						     "XRC_INI", "XRC_TGT",
--						     [0xFF] = "DRIVER",
- 	};
+diff --git a/drivers/net/ethernet/intel/igbvf/netdev.c b/drivers/net/ethernet/intel/igbvf/netdev.c
+index b78407289741..43ced78c3a2e 100644
+--- a/drivers/net/ethernet/intel/igbvf/netdev.c
++++ b/drivers/net/ethernet/intel/igbvf/netdev.c
+@@ -2684,25 +2684,18 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	struct igbvf_adapter *adapter;
+ 	struct e1000_hw *hw;
+ 	const struct igbvf_info *ei = igbvf_info_tbl[ent->driver_data];
+-
+ 	static int cards_found;
+-	int err, pci_using_dac;
++	int err;
  
--	if (idx < ARRAY_SIZE(qp_types_str) && qp_types_str[idx])
-+	if (idx < ARRAY_SIZE(qp_types_str))
- 		return qp_types_str[idx];
--	return "UNKNOWN";
-+
-+	return (idx == 0xFF) ? "DRIVER" : "UNKNOWN";
- }
+ 	err = pci_enable_device_mem(pdev);
+ 	if (err)
+ 		return err;
  
- void print_comm(struct rd *rd, const char *str, struct nlattr **nla_line)
+-	pci_using_dac = 0;
+ 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+-	if (!err) {
+-		pci_using_dac = 1;
+-	} else {
+-		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+-		if (err) {
+-			dev_err(&pdev->dev,
+-				"No usable DMA configuration, aborting\n");
+-			goto err_dma;
+-		}
++	if (err) {
++		dev_err(&pdev->dev,
++			"No usable DMA configuration, aborting\n");
++		goto err_dma;
+ 	}
+ 
+ 	err = pci_request_regions(pdev, igbvf_driver_name);
+@@ -2783,10 +2776,7 @@ static int igbvf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	netdev->hw_features |= NETIF_F_GSO_PARTIAL |
+ 			       IGBVF_GSO_PARTIAL_FEATURES;
+ 
+-	netdev->features = netdev->hw_features;
+-
+-	if (pci_using_dac)
+-		netdev->features |= NETIF_F_HIGHDMA;
++	netdev->features = netdev->hw_features | NETIF_F_HIGHDMA;
+ 
+ 	netdev->vlan_features |= netdev->features | NETIF_F_TSO_MANGLEID;
+ 	netdev->mpls_features |= NETIF_F_HW_CSUM;
 -- 
-2.33.1
+2.32.0
 
