@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D97E488D2D
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:17:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3EE7488D2C
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:17:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237413AbiAIXRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 18:17:17 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:42124 "EHLO
+        id S237453AbiAIXRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 18:17:14 -0500
+Received: from mail.netfilter.org ([217.70.188.207]:42220 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237389AbiAIXRD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:17:03 -0500
+        with ESMTP id S237413AbiAIXRE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:17:04 -0500
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id E448064291;
-        Mon, 10 Jan 2022 00:14:11 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 8CA3964690;
+        Mon, 10 Jan 2022 00:14:12 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 20/32] netfilter: nft_last: move stateful fields out of expression data
-Date:   Mon, 10 Jan 2022 00:16:28 +0100
-Message-Id: <20220109231640.104123-21-pablo@netfilter.org>
+Subject: [PATCH net-next 21/32] netfilter: nft_quota: move stateful fields out of expression data
+Date:   Mon, 10 Jan 2022 00:16:29 +0100
+Message-Id: <20220109231640.104123-22-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220109231640.104123-1-pablo@netfilter.org>
 References: <20220109231640.104123-1-pablo@netfilter.org>
@@ -33,132 +33,127 @@ In preparation for the rule blob representation.
 
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nft_last.c | 69 +++++++++++++++++++++++++++++-----------
- 1 file changed, 51 insertions(+), 18 deletions(-)
+ net/netfilter/nft_quota.c | 52 +++++++++++++++++++++++++++++++++++----
+ 1 file changed, 47 insertions(+), 5 deletions(-)
 
-diff --git a/net/netfilter/nft_last.c b/net/netfilter/nft_last.c
-index 304e33cbed9b..5ee33d0ccd4e 100644
---- a/net/netfilter/nft_last.c
-+++ b/net/netfilter/nft_last.c
-@@ -8,9 +8,13 @@
- #include <net/netfilter/nf_tables_core.h>
- #include <net/netfilter/nf_tables.h>
- 
-+struct nft_last {
-+	unsigned long	jiffies;
-+	unsigned int	set;
-+};
-+
- struct nft_last_priv {
--	unsigned long	last_jiffies;
--	unsigned int	last_set;
-+	struct nft_last	*last;
+diff --git a/net/netfilter/nft_quota.c b/net/netfilter/nft_quota.c
+index c4d1389f7185..0484aef74273 100644
+--- a/net/netfilter/nft_quota.c
++++ b/net/netfilter/nft_quota.c
+@@ -15,13 +15,13 @@
+ struct nft_quota {
+ 	atomic64_t	quota;
+ 	unsigned long	flags;
+-	atomic64_t	consumed;
++	atomic64_t	*consumed;
  };
  
- static const struct nla_policy nft_last_policy[NFTA_LAST_MAX + 1] = {
-@@ -22,47 +26,55 @@ static int nft_last_init(const struct nft_ctx *ctx, const struct nft_expr *expr,
- 			 const struct nlattr * const tb[])
+ static inline bool nft_overquota(struct nft_quota *priv,
+ 				 const struct sk_buff *skb)
  {
- 	struct nft_last_priv *priv = nft_expr_priv(expr);
-+	struct nft_last *last;
- 	u64 last_jiffies;
--	u32 last_set = 0;
- 	int err;
+-	return atomic64_add_return(skb->len, &priv->consumed) >=
++	return atomic64_add_return(skb->len, priv->consumed) >=
+ 	       atomic64_read(&priv->quota);
+ }
  
--	if (tb[NFTA_LAST_SET]) {
--		last_set = ntohl(nla_get_be32(tb[NFTA_LAST_SET]));
--		if (last_set == 1)
--			priv->last_set = 1;
--	}
-+	last = kzalloc(sizeof(*last), GFP_KERNEL);
-+	if (!last)
+@@ -90,13 +90,23 @@ static int nft_quota_do_init(const struct nlattr * const tb[],
+ 			return -EOPNOTSUPP;
+ 	}
+ 
++	priv->consumed = kmalloc(sizeof(*priv->consumed), GFP_KERNEL);
++	if (!priv->consumed)
 +		return -ENOMEM;
 +
-+	if (tb[NFTA_LAST_SET])
-+		last->set = ntohl(nla_get_be32(tb[NFTA_LAST_SET]));
- 
--	if (last_set && tb[NFTA_LAST_MSECS]) {
-+	if (last->set && tb[NFTA_LAST_MSECS]) {
- 		err = nf_msecs_to_jiffies64(tb[NFTA_LAST_MSECS], &last_jiffies);
- 		if (err < 0)
--			return err;
-+			goto err;
- 
--		priv->last_jiffies = jiffies - (unsigned long)last_jiffies;
-+		last->jiffies = jiffies - (unsigned long)last_jiffies;
- 	}
-+	priv->last = last;
+ 	atomic64_set(&priv->quota, quota);
+ 	priv->flags = flags;
+-	atomic64_set(&priv->consumed, consumed);
++	atomic64_set(priv->consumed, consumed);
  
  	return 0;
-+err:
-+	kfree(last);
-+
-+	return err;
  }
  
- static void nft_last_eval(const struct nft_expr *expr,
- 			  struct nft_regs *regs, const struct nft_pktinfo *pkt)
- {
- 	struct nft_last_priv *priv = nft_expr_priv(expr);
-+	struct nft_last *last = priv->last;
- 
--	if (READ_ONCE(priv->last_jiffies) != jiffies)
--		WRITE_ONCE(priv->last_jiffies, jiffies);
--	if (READ_ONCE(priv->last_set) == 0)
--		WRITE_ONCE(priv->last_set, 1);
-+	if (READ_ONCE(last->jiffies) != jiffies)
-+		WRITE_ONCE(last->jiffies, jiffies);
-+	if (READ_ONCE(last->set) == 0)
-+		WRITE_ONCE(last->set, 1);
- }
- 
- static int nft_last_dump(struct sk_buff *skb, const struct nft_expr *expr)
- {
- 	struct nft_last_priv *priv = nft_expr_priv(expr);
--	unsigned long last_jiffies = READ_ONCE(priv->last_jiffies);
--	u32 last_set = READ_ONCE(priv->last_set);
-+	struct nft_last *last = priv->last;
-+	unsigned long last_jiffies = READ_ONCE(last->jiffies);
-+	u32 last_set = READ_ONCE(last->set);
- 	__be64 msecs;
- 
- 	if (time_before(jiffies, last_jiffies)) {
--		WRITE_ONCE(priv->last_set, 0);
-+		WRITE_ONCE(last->set, 0);
- 		last_set = 0;
- 	}
- 
-@@ -81,11 +93,32 @@ static int nft_last_dump(struct sk_buff *skb, const struct nft_expr *expr)
- 	return -1;
- }
- 
-+static void nft_last_destroy(const struct nft_ctx *ctx,
-+			     const struct nft_expr *expr)
++static void nft_quota_do_destroy(const struct nft_ctx *ctx,
++				 struct nft_quota *priv)
 +{
-+	struct nft_last_priv *priv = nft_expr_priv(expr);
-+
-+	kfree(priv->last);
++	kfree(priv->consumed);
 +}
 +
-+static int nft_last_clone(struct nft_expr *dst, const struct nft_expr *src)
+ static int nft_quota_obj_init(const struct nft_ctx *ctx,
+ 			      const struct nlattr * const tb[],
+ 			      struct nft_object *obj)
+@@ -128,7 +138,7 @@ static int nft_quota_do_dump(struct sk_buff *skb, struct nft_quota *priv,
+ 	 * that we see, don't go over the quota boundary in what we send to
+ 	 * userspace.
+ 	 */
+-	consumed = atomic64_read(&priv->consumed);
++	consumed = atomic64_read(priv->consumed);
+ 	quota = atomic64_read(&priv->quota);
+ 	if (consumed >= quota) {
+ 		consumed_cap = quota;
+@@ -145,7 +155,7 @@ static int nft_quota_do_dump(struct sk_buff *skb, struct nft_quota *priv,
+ 		goto nla_put_failure;
+ 
+ 	if (reset) {
+-		atomic64_sub(consumed, &priv->consumed);
++		atomic64_sub(consumed, priv->consumed);
+ 		clear_bit(NFT_QUOTA_DEPLETED_BIT, &priv->flags);
+ 	}
+ 	return 0;
+@@ -162,11 +172,20 @@ static int nft_quota_obj_dump(struct sk_buff *skb, struct nft_object *obj,
+ 	return nft_quota_do_dump(skb, priv, reset);
+ }
+ 
++static void nft_quota_obj_destroy(const struct nft_ctx *ctx,
++				  struct nft_object *obj)
 +{
-+	struct nft_last_priv *priv_dst = nft_expr_priv(dst);
++	struct nft_quota *priv = nft_obj_data(obj);
 +
-+	priv_dst->last = kzalloc(sizeof(*priv_dst->last), GFP_ATOMIC);
-+	if (priv_dst->last)
++	return nft_quota_do_destroy(ctx, priv);
++}
++
+ static struct nft_object_type nft_quota_obj_type;
+ static const struct nft_object_ops nft_quota_obj_ops = {
+ 	.type		= &nft_quota_obj_type,
+ 	.size		= sizeof(struct nft_quota),
+ 	.init		= nft_quota_obj_init,
++	.destroy	= nft_quota_obj_destroy,
+ 	.eval		= nft_quota_obj_eval,
+ 	.dump		= nft_quota_obj_dump,
+ 	.update		= nft_quota_obj_update,
+@@ -205,12 +224,35 @@ static int nft_quota_dump(struct sk_buff *skb, const struct nft_expr *expr)
+ 	return nft_quota_do_dump(skb, priv, false);
+ }
+ 
++static void nft_quota_destroy(const struct nft_ctx *ctx,
++			      const struct nft_expr *expr)
++{
++	struct nft_quota *priv = nft_expr_priv(expr);
++
++	return nft_quota_do_destroy(ctx, priv);
++}
++
++static int nft_quota_clone(struct nft_expr *dst, const struct nft_expr *src)
++{
++	struct nft_quota *priv_dst = nft_expr_priv(dst);
++
++	priv_dst->consumed = kmalloc(sizeof(*priv_dst->consumed), GFP_ATOMIC);
++	if (priv_dst->consumed)
 +		return -ENOMEM;
++
++	atomic64_set(priv_dst->consumed, 0);
 +
 +	return 0;
 +}
 +
- static const struct nft_expr_ops nft_last_ops = {
- 	.type		= &nft_last_type,
- 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_last_priv)),
- 	.eval		= nft_last_eval,
- 	.init		= nft_last_init,
-+	.destroy	= nft_last_destroy,
-+	.clone		= nft_last_clone,
- 	.dump		= nft_last_dump,
+ static struct nft_expr_type nft_quota_type;
+ static const struct nft_expr_ops nft_quota_ops = {
+ 	.type		= &nft_quota_type,
+ 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_quota)),
+ 	.eval		= nft_quota_eval,
+ 	.init		= nft_quota_init,
++	.destroy	= nft_quota_destroy,
++	.clone		= nft_quota_clone,
+ 	.dump		= nft_quota_dump,
  };
  
 -- 
