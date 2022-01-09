@@ -2,51 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BCFE488C7F
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 22:16:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C02FE488C85
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 22:20:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232768AbiAIVQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 16:16:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231980AbiAIVQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 16:16:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B20C06173F
-        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 13:16:23 -0800 (PST)
+        id S233936AbiAIVUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 16:20:41 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59782 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231936AbiAIVUl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 16:20:41 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1073B80E37
-        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 21:16:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E423C36AE3;
-        Sun,  9 Jan 2022 21:16:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F79560C2C;
+        Sun,  9 Jan 2022 21:20:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98CE9C36AE5;
+        Sun,  9 Jan 2022 21:20:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641762981;
-        bh=2j4rj7riGgcvkkGY1Q8v9z1ZwTypDT77aGYr/844Y0w=;
+        s=k20201202; t=1641763239;
+        bh=Fw2ZSnJI+rXcbS3/Wr8CkxNQc+pIPx3R0OoQAJv5CKs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gI1LoLIVlHlsFlC/0+SyuoEjhE1kD6oUbXJ3yLYD0G6pyoXTxdk1Kw1GY61j7x9Ze
-         albPKom2MCfJog753bpTZLygRh42kohltf+q16gzolhVlrtuusdoLeOCUtSRsShHNr
-         8sRcAcrBlrnQKThXfYPoRlNj7+nLySlPXlY+VgCU4VJ6i1fpjqW9WqDziFdR5PG5Hq
-         5O6cuOKJh/3pwlw2B/5jv4d17NQn3gtc5ZX6KcVSruTjXjorKzEETzCYZeQJ4AUJBi
-         EbjRHjmNEIujBOX9aHwuHz3jbJe18E8rAFg1C0mSQHluEkJlSczGbQSpWEDFSrBPxI
-         Cp3I+G9/KqqXg==
-Date:   Sun, 9 Jan 2022 13:16:20 -0800
+        b=vMDxasgGDQX9VRoEWtBcWot2wz6pn1WUdGACygWjueohayCZgI+l/VqAXsgJtpWqc
+         4uGtj1bRE353ezc1F2Vf1AuuVcEN4hZD7Zw0m8oeJ8Hm5RvN+nmwqkUfzj2qas2UK/
+         xmjjf7nl2T82f486Au7vHM495NzUbCdqE6zN4ZwqHSRm7ZzB5xbl0g0uhwAzT31Wck
+         Aixk5ebxOBPAbHgNPgUaesJBUoPoG4/180ymssz8yUn2xgY02JjC8ct7vZE1kGCA8F
+         fbzu3/d8Ed9pYDTCNsC8SZgGd5+NmYo8EblTJnL/23XcwjIHstXRMD2Qyoooq8Im2y
+         +IZC9bdCSsIFA==
+Date:   Sun, 9 Jan 2022 13:20:38 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Gal Pressman <gal@nvidia.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [RFC PATCH] net/tls: Fix skb memory leak when running kTLS
- traffic
-Message-ID: <20220109131620.66901e7a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <e632a338-e4f1-cc27-7c18-b3642a27b57b@nvidia.com>
-References: <20220102081253.9123-1-gal@nvidia.com>
-        <20220107105106.680cd28f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89iJqgJjpFEaYPLuVAAzwwC_y3O6se2pChj40=zTAyWN=6w@mail.gmail.com>
-        <20220107184436.758e15c4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <e632a338-e4f1-cc27-7c18-b3642a27b57b@nvidia.com>
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     Rao Shoaib <rao.shoaib@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>,
+        regressions@lists.linux.dev
+Subject: Re: Observation of a memory leak with commit 314001f0bf92
+ ("af_unix: Add OOB support")
+Message-ID: <20220109132038.38f8ae4f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CAKXUXMzZkQvHJ35nwVhcJe+DrtEXGw+eKGVD04=xRJkVUC2sPA@mail.gmail.com>
+References: <CAKXUXMzZkQvHJ35nwVhcJe+DrtEXGw+eKGVD04=xRJkVUC2sPA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,9 +49,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 9 Jan 2022 13:49:42 +0200 Gal Pressman wrote:
-> So you want one patch that adds a sk_defer_free_flush() call in
-> tls_sw_splice_read(), and a second one that adds the WARN_ON_ONCE to
-> sk_free()?
+On Fri, 7 Jan 2022 07:48:46 +0100 Lukas Bulwahn wrote:
+> Dear Rao and David,
+> 
+> 
+> In our syzkaller instance running on linux-next,
+> https://elisa-builder-00.iol.unh.edu/syzkaller-next/, we have been
+> observing a memory leak in prepare_creds,
+> https://elisa-builder-00.iol.unh.edu/syzkaller-next/report?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3,
+> for quite some time.
+> 
+> It is reproducible on v5.15-rc1, v5.15, v5.16-rc8 and next-20220104.
+> So, it is in mainline, was released and has not been fixed in
+> linux-next yet.
+> 
+> As syzkaller also provides a reproducer, we bisected this memory leak
+> to be introduced with  commit 314001f0bf92 ("af_unix: Add OOB
+> support").
+> 
+> We also tested that reverting this commit on torvalds' current tree
+> made the memory leak with the reproducer go away.
+> 
+> Could you please have a look how your commit introduces this memory
+> leak? We will gladly support testing your fix in case help is needed.
 
-Two separate patches is probably the best way to go.
+Let's test the regression/bug report tracking bot :)
+
+#regzbot introduced: 314001f0bf92
