@@ -2,32 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B3C1488A4B
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 16:42:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E12D488A51
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 16:50:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235921AbiAIPl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 10:41:58 -0500
-Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:64102 "EHLO
+        id S235936AbiAIPua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 10:50:30 -0500
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:65149 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235914AbiAIPl6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 10:41:58 -0500
+        with ESMTP id S230135AbiAIPu3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 10:50:29 -0500
 Received: from pop-os.home ([90.11.185.88])
         by smtp.orange.fr with ESMTPA
-        id 6aKQniyrAIEdl6aKQnROA1; Sun, 09 Jan 2022 16:41:56 +0100
+        id 6aShnj1ubIEdl6aShnROx1; Sun, 09 Jan 2022 16:50:28 +0100
 X-ME-Helo: pop-os.home
 X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 09 Jan 2022 16:41:56 +0100
+X-ME-Date: Sun, 09 Jan 2022 16:50:28 +0100
 X-ME-IP: 90.11.185.88
 From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        UNGLinuxDriver@microchip.com,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Yangbo Lu <yangbo.lu@nxp.com>
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         netdev@vger.kernel.org
-Subject: [PATCH] net: enetc: Remove useless DMA-32 fallback configuration
-Date:   Sun,  9 Jan 2022 16:41:43 +0100
-Message-Id: <dbecd4eb49a9586ee343b5473dda4b84c42112e9.1641742884.git.christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] lan743x: Remove useless DMA-32 fallback configuration
+Date:   Sun,  9 Jan 2022 16:50:19 +0100
+Message-Id: <ef548716606f257939df9738a801f15b6edf2568.1641743405.git.christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -45,51 +46,49 @@ Simplify code and remove some dead code accordingly.
 
 Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/net/ethernet/freescale/enetc/enetc.c     | 8 ++------
- drivers/net/ethernet/freescale/enetc/enetc_ptp.c | 9 ++-------
- 2 files changed, 4 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/microchip/lan743x_main.c | 22 +++++++------------
+ 1 file changed, 8 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index eacb41f86bdb..d6930a797c6c 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -2897,12 +2897,8 @@ int enetc_pci_probe(struct pci_dev *pdev, const char *name, int sizeof_priv)
- 	/* set up for high or low dma */
- 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
- 	if (err) {
--		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
--		if (err) {
--			dev_err(&pdev->dev,
--				"DMA configuration failed: 0x%x\n", err);
--			goto err_dma;
--		}
-+		dev_err(&pdev->dev, "DMA configuration failed: 0x%x\n", err);
-+		goto err_dma;
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index 7d7647481f70..8c6390d95158 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -1739,13 +1739,10 @@ static int lan743x_tx_ring_init(struct lan743x_tx *tx)
  	}
- 
- 	err = pci_request_mem_regions(pdev, name);
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ptp.c b/drivers/net/ethernet/freescale/enetc/enetc_ptp.c
-index 36b4f51dd297..17c097cef7d4 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_ptp.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_ptp.c
-@@ -42,15 +42,10 @@ static int enetc_ptp_probe(struct pci_dev *pdev,
- 	if (err)
- 		return dev_err_probe(&pdev->dev, err, "device enable failed\n");
- 
--	/* set up for high or low dma */
- 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
- 	if (err) {
--		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
--		if (err) {
--			dev_err(&pdev->dev,
--				"DMA configuration failed: 0x%x\n", err);
--			goto err_dma;
+ 	if (dma_set_mask_and_coherent(&tx->adapter->pdev->dev,
+ 				      DMA_BIT_MASK(64))) {
+-		if (dma_set_mask_and_coherent(&tx->adapter->pdev->dev,
+-					      DMA_BIT_MASK(32))) {
+-			dev_warn(&tx->adapter->pdev->dev,
+-				 "lan743x_: No suitable DMA available\n");
+-			ret = -ENOMEM;
+-			goto cleanup;
 -		}
-+		dev_err(&pdev->dev, "DMA configuration failed: 0x%x\n", err);
-+		goto err_dma;
++		dev_warn(&tx->adapter->pdev->dev,
++			 "lan743x_: No suitable DMA available\n");
++		ret = -ENOMEM;
++		goto cleanup;
  	}
- 
- 	err = pci_request_mem_regions(pdev, KBUILD_MODNAME);
+ 	ring_allocation_size = ALIGN(tx->ring_size *
+ 				     sizeof(struct lan743x_tx_descriptor),
+@@ -2284,13 +2281,10 @@ static int lan743x_rx_ring_init(struct lan743x_rx *rx)
+ 	}
+ 	if (dma_set_mask_and_coherent(&rx->adapter->pdev->dev,
+ 				      DMA_BIT_MASK(64))) {
+-		if (dma_set_mask_and_coherent(&rx->adapter->pdev->dev,
+-					      DMA_BIT_MASK(32))) {
+-			dev_warn(&rx->adapter->pdev->dev,
+-				 "lan743x_: No suitable DMA available\n");
+-			ret = -ENOMEM;
+-			goto cleanup;
+-		}
++		dev_warn(&rx->adapter->pdev->dev,
++			 "lan743x_: No suitable DMA available\n");
++		ret = -ENOMEM;
++		goto cleanup;
+ 	}
+ 	ring_allocation_size = ALIGN(rx->ring_size *
+ 				     sizeof(struct lan743x_rx_descriptor),
 -- 
 2.32.0
 
