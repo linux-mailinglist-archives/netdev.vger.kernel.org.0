@@ -2,107 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2566948883A
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 07:30:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E6FB48883B
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 07:38:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235210AbiAIGak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 01:30:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33386 "EHLO
+        id S235213AbiAIGhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 01:37:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229960AbiAIGaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 01:30:39 -0500
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41642C06173F
-        for <netdev@vger.kernel.org>; Sat,  8 Jan 2022 22:30:39 -0800 (PST)
-Received: by mail-il1-x135.google.com with SMTP id f4so99674ilr.9
-        for <netdev@vger.kernel.org>; Sat, 08 Jan 2022 22:30:39 -0800 (PST)
+        with ESMTP id S229960AbiAIGhT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 01:37:19 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30361C06173F;
+        Sat,  8 Jan 2022 22:37:18 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id i8-20020a17090a138800b001b3936fb375so3217964pja.1;
+        Sat, 08 Jan 2022 22:37:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=KHcWV4zSsq2PqN20f8EeHPXMVayTO8KS5bdiyuIRLEE=;
-        b=dImYGJXpvwcaQaWKGKc3KQg24cab9IUCrkU4pOOz4kmKEKHQfAinV59hoxqPUM5N+T
-         qPCPUVkv612bw+nPHNHVcbs/IH1oqh62n1guCpVdntkvnwKszxJFNezlKwRb81t51HZk
-         fD6D33f9hP6w0QPdkrtl+ErCUtngggV4juKPHGoEcf+6P7/ntrQvOJhrVXQ6H/OvpMvY
-         5L6RYzgepSgP42INIMj7/EM1RmL1+GJ0VjUhImAvKUxYaVGPd51RiTIP10soxzV298Ud
-         sCbFF4eUTAdARoc7eMw8lJWHzLbiiYcKOmqVTfjv1g5yf/SDjL+hh/5a7mT+arBIKw2w
-         i0jA==
+        bh=Iti5sESAOcClmZrnJzGTRKx0DfFMS6RUHfyIcg2sm0M=;
+        b=H4XTKWn52DkOQY8RTNT6sXH0wIUZ/6UDKNShUgPNfMk4ctOGUs6YLnD7KM7hcnkHQH
+         bqTj/uwHiuStZKbQ5olShYHgBc1FNfSTPokagR/HXCBldtoBwmiYHPIpaxFhwlqPA3fg
+         iYFzVF1I3rsQv0vzBmz2pbgWhU+CF2Bzc4u4ylaHdg28OJxiUsy1V7ucGhdkEjHtqoJn
+         5MazbhsLaGLzErJgAemrBgr46C61GhVGvixK5z5vHAy5mdSAGRUWVlrDSpQ23OrYA4GJ
+         T3H9aNqb2WWo/YjN9F7FEtlP5z6ErD3c2DR70W5cXtlFgp2cjbiHnqv3y+dANXHmyYki
+         lgJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=KHcWV4zSsq2PqN20f8EeHPXMVayTO8KS5bdiyuIRLEE=;
-        b=rfJI2W02pRWZfvxOd/QXzA1icLgD6JJ32l3sr0UVj2kPgVZQzG+3W/JrLVXtkSXe/t
-         dAVEPneya6BOYL779QJntuy+I5K1Ca8qfLkxGUS9gvi2DAIpJ0hklWSB/BN04X3GAN4u
-         pTnc9Uix8i7beNJTUzZNOugVoZTRc9afwhLdDzcjaM+1AT/an+3CGJ9Uan4vvFwNkjnh
-         oT99I5kV7Ctsu9X5I3FV8i3XHiRkJLjdhmXZ7eWNJ6bI5WkoTgj6XxHruikXjw1J38TZ
-         2mQUpep9Vt8yNQG3y9hbzo6Y++DolnTlXKSWznMjv4NZ/VghfPxq/hRkWPYHW5SiZorS
-         Bd2Q==
-X-Gm-Message-State: AOAM532TEYAxqBnD77UM+l+Xfbti1c+q/mq0+7F16/VSoSygxnUU5qn+
-        RyZPAxJyL7uS+LtWG4uIcOrgoIYooLv+iSfn4bc=
-X-Google-Smtp-Source: ABdhPJweKLzFaV+VLGDjxZHHVgw3SA/3v2LU/29aou1CD5O+WXb6UAVTlNp4V+ViDOIE600u7BazuOowGyWg0H/O0Cc=
-X-Received: by 2002:a05:6e02:1c21:: with SMTP id m1mr10414107ilh.150.1641709838001;
- Sat, 08 Jan 2022 22:30:38 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Iti5sESAOcClmZrnJzGTRKx0DfFMS6RUHfyIcg2sm0M=;
+        b=GbFNj45BxEdeJtFq55gwcqog22h/9Nd8nu/9kSSSM5a7atTFFor/8LkcfOYI5FHXsK
+         HfrwwwTx2UWEOHcesMLxg6ORg5jvpbnEuHjb1fOi1E89aDiY0daOeK/kZ34P9Egnvt3p
+         Ch7OCtJFtB0tH/JYIOpg1OmXiron+BAqNTm1OM6EgwL6FNk+ln8VK6SUmWoje8BNEszH
+         LO0Ky5eTInH/a+4kYQPPLgzM0hBbnpKsvxOi7SO0yBitOv/8Xstgn758cWFxR7D5jf7F
+         AgBGiGlr+mz37NnJV3keJNPqcvXbD97ylUS0w2D/UF7IAJL6OHiRMzqWRflDoIEiaErq
+         Dxuw==
+X-Gm-Message-State: AOAM531zs26d6XpvC0GjYIn4GfnXHs20jrZ2jBVny5DXX3WubllwSYrI
+        Br6mi4CA09hDAe2vsl6WxbQ=
+X-Google-Smtp-Source: ABdhPJzQgBuulClcFSDrkGK/2LXG4hJ8BQ7KJjCr8JwaT/Ewm6qwRI55gdNIbeaGEMeYausDb5ZXUQ==
+X-Received: by 2002:a17:902:8347:b0:149:b26a:b9bc with SMTP id z7-20020a170902834700b00149b26ab9bcmr34789001pln.141.1641710238047;
+        Sat, 08 Jan 2022 22:37:18 -0800 (PST)
+Received: from localhost.localdomain ([43.132.141.4])
+        by smtp.gmail.com with ESMTPSA id my5sm5892042pjb.5.2022.01.08.22.37.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Jan 2022 22:37:17 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     rostedt@goodmis.org, dsahern@kernel.org
+Cc:     mingo@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        nhorman@tuxdriver.com, edumazet@google.com,
+        yoshfuji@linux-ipv6.org, alobakin@pm.me, willemb@google.com,
+        cong.wang@bytedance.com, keescook@chromium.org, pabeni@redhat.com,
+        talalahmad@google.com, haokexin@gmail.com,
+        ilias.apalodimas@linaro.org, memxor@gmail.com, atenart@kernel.org,
+        bigeasy@linutronix.de, weiwan@google.com, arnd@arndb.de,
+        vvs@virtuozzo.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, jonathan.lemon@gmail.com,
+        imagedong@tencent.com
+Subject: [PATCH v4 net-next 0/3] net: skb: introduce kfree_skb_with_reason()
+Date:   Sun,  9 Jan 2022 14:36:25 +0800
+Message-Id: <20220109063628.526990-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Sender: helenkalu21@gmail.com
-Received: by 2002:a05:6e02:673:0:0:0:0 with HTTP; Sat, 8 Jan 2022 22:30:37
- -0800 (PST)
-From:   Jackie Fowler <jackiefowler597@gmail.com>
-Date:   Sun, 9 Jan 2022 06:30:37 +0000
-X-Google-Sender-Auth: XNbmDbiEGwPRCmPvO-YBScPOh48
-Message-ID: <CAJ+e47zJgUkxFv34Qshkhva99L2rpb2N7+So=Y6y2tO7uL9fjw@mail.gmail.com>
-Subject: HELLO
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gooday,
+From: Menglong Dong <imagedong@tencent.com>
+
+In this series patch, the interface kfree_skb_with_reason() is
+introduced(), which is used to collect skb drop reason, and pass
+it to 'kfree_skb' tracepoint. Therefor, 'drop_monitor' or eBPF is
+able to monitor abnormal skb with detail reason.
+
+In fact, this series patches are out of the intelligence of David
+and Steve, I'm just a truck man :/
+
+Previous discussion is here:
+
+https://lore.kernel.org/netdev/20211118105752.1d46e990@gandalf.local.home/
+https://lore.kernel.org/netdev/67b36bd8-2477-88ac-83a0-35a1eeaf40c9@gmail.com/
+
+In the first patch, kfree_skb_with_reason() is introduced and
+the 'reason' field is added to 'kfree_skb' tracepoint. In the
+second patch, 'kfree_skb()' in replaced with 'kfree_skb_with_reason()'
+in tcp_v4_rcv(). In the third patch, 'kfree_skb_with_reason()' is
+used in __udp4_lib_rcv().
+
+Changes since v3:
+- fix some code style problems in skb.h
+
+Changes since v2:
+- rename kfree_skb_with_reason() to kfree_skb_reason()
+- make kfree_skb() static inline, as Jakub suggested
+
+Changes since v1:
+- rename some drop reason, as David suggested
+- add the third patch
 
 
- I sent this mail praying it will get to you in a good condition of
-health, since I myself are in a very critical health condition in
-which I sleep every night without knowing if I may be alive to see the
-next day. I bring peace and love to you. It is by the grace of God, I
-had no choice than to do what is lawful and right in the sight of God
-for eternal life and in the sight of man, for witness of God=E2=80=99s merc=
-y
-and glory upon my life. I am Mrs.Fowler Jackie.a widow and citizen of
-Canada. I am suffering from a long time brain tumor, It has defiled
-all forms of medical treatment, and right now I have about a few
-months to leave, according to medical experts.
+Menglong Dong (3):
+  net: bpf: handle return value of 
+    BPF_CGROUP_RUN_PROG_INET{4,6}_POST_BIND()
+  bpf: selftests: use C99 initializers in test_sock.c
+  bpf: selftests: add bind retry for post_bind{4, 6}
 
- The situation has gotten complicated recently with my inability to
-hear proper, am communicating with you with the help of the chief
-nurse herein the hospital, from all indication my conditions is really
-deteriorating and it is quite obvious that, according to my doctors
-they have advised me that I may not live too long, Because this
-illness has gotten to a very bad stage. I plead that you will not
-expose or betray this trust and confidence that I am about to repose
-on you for the mutual benefit of the orphans and the less privilege. I
-have some funds I inherited from my late husband, the sum of ($
-12,500,000.00 Dollars).Having known my condition, I decided to donate
-this fund to you believing that you will utilize it the way i am going
-to instruct herein.
- I need you to assist me and reclaim this money and use it for Charity
-works, for orphanages and gives justice and help to the poor, needy
-and widows says The Lord." Jeremiah 22:15-16.=E2=80=9C and also build schoo=
-ls
-for less privilege that will be named after my late husband if
-possible and to promote the word of God and the effort that the house
-of God is maintained. I do not want a situation where this money will
-be used in an ungodly manner. That's why I'm taking this decision. I'm
-not afraid of death, so I know where I'm going.
- I accept this decision because I do not have any child who will
-inherit this money after I die. Please I want your sincerely and
-urgent answer to know if you will be able to execute this project for
-the glory of God, and I will give you more information on how the fund
-will be transferred to your bank account. May the grace, peace, love
-and the truth in the Word of God be with you and all those that you
-love and care for.
-I'm waiting for your immediate reply.
-May God Bless you,
-Best Regards.
-Mrs.Jackie Fowler
+ include/net/sock.h                      |   1 +
+ net/ipv4/af_inet.c                      |   2 +
+ net/ipv4/ping.c                         |   1 +
+ net/ipv4/tcp_ipv4.c                     |   1 +
+ net/ipv4/udp.c                          |   1 +
+ net/ipv6/af_inet6.c                     |   2 +
+ net/ipv6/ping.c                         |   1 +
+ net/ipv6/tcp_ipv6.c                     |   1 +
+ net/ipv6/udp.c                          |   1 +
+ tools/testing/selftests/bpf/test_sock.c | 370 ++++++++++++++----------
+ 10 files changed, 233 insertions(+), 148 deletions(-)
+
+-- 
+2.27.0
+
