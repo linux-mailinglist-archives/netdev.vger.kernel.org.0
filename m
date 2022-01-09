@@ -2,239 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE828488A37
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 16:31:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B3C1488A4B
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 16:42:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234217AbiAIPbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 10:31:03 -0500
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:59565 "EHLO
+        id S235921AbiAIPl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 10:41:58 -0500
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:64102 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234184AbiAIPbC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 10:31:02 -0500
-Received: from localhost.localdomain ([124.33.176.97])
+        with ESMTP id S235914AbiAIPl6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 10:41:58 -0500
+Received: from pop-os.home ([90.11.185.88])
         by smtp.orange.fr with ESMTPA
-        id 6a9inm5uWE8xT6a9pnoRe2; Sun, 09 Jan 2022 16:31:01 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
-X-ME-Date: Sun, 09 Jan 2022 16:31:01 +0100
-X-ME-IP: 124.33.176.97
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-can@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH iproute2-next v4] iplink_can: add ctrlmode_{supported,_static} to the "--details --json" output
-Date:   Mon, 10 Jan 2022 00:30:40 +0900
-Message-Id: <20220109153040.521632-1-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        id 6aKQniyrAIEdl6aKQnROA1; Sun, 09 Jan 2022 16:41:56 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 09 Jan 2022 16:41:56 +0100
+X-ME-IP: 90.11.185.88
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Yangbo Lu <yangbo.lu@nxp.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org
+Subject: [PATCH] net: enetc: Remove useless DMA-32 fallback configuration
+Date:   Sun,  9 Jan 2022 16:41:43 +0100
+Message-Id: <dbecd4eb49a9586ee343b5473dda4b84c42112e9.1641742884.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is the userland counterpart of [1]. Indeed, [1] enables the
-can netlink interface to report the CAN controller capabilities.
+As stated in [1], dma_set_mask() with a 64-bit mask never fails if
+dev->dma_mask is non-NULL.
+So, if it fails, the 32 bits case will also fail for the same reason.
 
-Previously, only the options which were switched on were reported
-(i.e. can_priv::ctrlmode). Here, we add two additional pieces of
-information to the json report:
+Simplify code and remove some dead code accordingly.
 
-  - ctrlmode_supported: the options that can be modified by netlink
+[1]: https://lkml.org/lkml/2021/6/7/398
 
-  - ctrlmode_static: option which are statically enabled by the driver
-    (i.e. can not be turned off)
-
-For your information, we borrowed the naming convention from struct
-can_priv [2].
-
-Contrary to the ctrlmode, the ctrlmode_{supported,_static} are only
-reported in the json context. The reason is that this newly added
-information can quickly become very verbose and we do not want to
-overload the default output. You can think of the "ip --details link
-show canX" output as the verbose mode and the "ip --details --json
-link show canX" output as the *very* verbose mode.
-
-
-*Example:*
-
-This is how the output would look like for a dummy driver which would
-have:
-
-  - CAN_CTRLMODE_LOOPBACK, CAN_CTRLMODE_LISTENONLY,
-    CAN_CTRLMODE_3_SAMPLES, CAN_CTRLMODE_FD, CAN_CTRLMODE_CC_LEN8_DLC
-    and TDC-AUTO supported by the driver
-
-  - CAN_CTRLMODE_CC_LEN8_DLC turned on by the user
-
-  - CAN_CTRLMODE_FD_NON_ISO statically enabled by the driver
-
-| $ ip link set can0 type can cc-len8-dlc on
-| $ ip --details --json --pretty link show can0
-| [ {
-|         "ifindex": 1,
-|         "ifname": "can0",
-|         "flags": [ "NOARP","ECHO" ],
-|         "mtu": 16,
-|         "qdisc": "noop",
-|         "operstate": "DOWN",
-|         "linkmode": "DEFAULT",
-|         "group": "default",
-|         "txqlen": 10,
-|         "link_type": "can",
-|         "promiscuity": 0,
-|         "min_mtu": 0,
-|         "max_mtu": 0,
-|         "linkinfo": {
-|             "info_kind": "can",
-|             "info_data": {
-|                 "ctrlmode": [ "FD-NON-ISO","CC-LEN8-DLC" ],
-|                 "ctrlmode_supported": [ "LOOPBACK","LISTEN-ONLY","TRIPLE-SAMPLING","FD","CC-LEN8-DLC","TDC-AUTO" ],
-|                 "ctrlmode_static": [ "FD-NON-ISO" ],
-|                 "state": "STOPPED",
-|                 "restart_ms": 0,
-|                 "bittiming_const": {
-|                     "name": "DUMMY_CAN_DEV",
-|                     "tseg1": {
-|                         "min": 2,
-|                         "max": 256
-|                     },
-|                     "tseg2": {
-|                         "min": 2,
-|                         "max": 128
-|                     },
-|                     "sjw": {
-|                         "min": 1,
-|                         "max": 128
-|                     },
-|                     "brp": {
-|                         "min": 1,
-|                         "max": 512
-|                     },
-|                     "brp_inc": 1
-|                 },
-|                 "data_bittiming_const": {
-|                     "name": "DUMMY_CAN_DEV",
-|                     "tseg1": {
-|                         "min": 2,
-|                         "max": 32
-|                     },
-|                     "tseg2": {
-|                         "min": 1,
-|                         "max": 16
-|                     },
-|                     "sjw": {
-|                         "min": 1,
-|                         "max": 8
-|                     },
-|                     "brp": {
-|                         "min": 1,
-|                         "max": 32
-|                     },
-|                     "brp_inc": 1,
-|                     "tdc": {
-|                         "tdco": {
-|                             "min": 0,
-|                             "max": 127
-|                         },
-|                         "tdcf": {
-|                             "min": 0,
-|                             "max": 127
-|                         }
-|                     }
-|                 },
-|                 "clock": 80000000
-|             }
-|         },
-|         "num_tx_queues": 1,
-|         "num_rx_queues": 1,
-|         "gso_max_size": 65536,
-|         "gso_max_segs": 65535,
-|         "parentbus": "usb",
-|         "parentdev": "1-10:1.1"
-|     } ]
-
-As mentioned above, the default output remains unchanged:
-
-| $ ip --details link show can0
-| 1: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group default qlen 10
-|     link/can  promiscuity 0 minmtu 0 maxmtu 0
-|     can <FD-NON-ISO,CC-LEN8-DLC> state STOPPED restart-ms 0
-| 	  DUMMY_CAN_DEV: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp_inc 1
-| 	  DUMMY_CAN_DEV: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 dbrp_inc 1
-| 	  tdco 0..127 tdcf 0..127
-| 	  clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 parentbus usb parentdev 1-10:1.1
-
-
-[1] commit 383f0993fc77 ("can: netlink: report the CAN controller mode
-    supported flags")
-    https://lore.kernel.org/linux-can/20220105144402.1174191-16-mkl@pengutronix.de/T/#u
-
-[2] https://elixir.bootlin.com/linux/v5.14/source/include/linux/can/dev.h#61
-
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
+ drivers/net/ethernet/freescale/enetc/enetc.c     | 8 ++------
+ drivers/net/ethernet/freescale/enetc/enetc_ptp.c | 9 ++-------
+ 2 files changed, 4 insertions(+), 13 deletions(-)
 
-* Changelog *
-
-v3 -> v4
-
-  - Drop the RFC tag after receiving no comments on v3:
-  https://lore.kernel.org/linux-can/CAMZ6Rq+hrAu=mDPHw1yXhw9UKhQiSe3E9p6agudOzqbgo9sDtA@mail.gmail.com/T/#t
-
-v2 -> v3
-
-  - Rebased on the latest version of iproute2-next.
-  - Minor changes in the commit description.
-
-v1 -> v2
-
-  - The kernel uapi was modified to use a new NLA_NESTED entry instead
-    of reusing struct can_ctrlmode. The second and third patch of the
-    series were updated accordingly.
-
----
- ip/iplink_can.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
-
-diff --git a/ip/iplink_can.c b/ip/iplink_can.c
-index f4b37528..854ccc31 100644
---- a/ip/iplink_can.c
-+++ b/ip/iplink_can.c
-@@ -396,6 +396,20 @@ static void can_print_tdc_const_opt(FILE *f, struct rtattr *tdc_attr)
- 	close_json_object();
- }
- 
-+static void can_print_ctrlmode_ext(FILE *f, struct rtattr *ctrlmode_ext_attr,
-+				   __u32 cm_flags)
-+{
-+	struct rtattr *tb[IFLA_CAN_CTRLMODE_MAX + 1];
-+
-+	parse_rtattr_nested(tb, IFLA_CAN_CTRLMODE_MAX, ctrlmode_ext_attr);
-+	if (tb[IFLA_CAN_CTRLMODE_SUPPORTED]) {
-+		__u32 *supported = RTA_DATA(tb[IFLA_CAN_CTRLMODE_SUPPORTED]);
-+
-+		print_ctrlmode(PRINT_JSON, *supported, "ctrlmode_supported");
-+		print_ctrlmode(PRINT_JSON, cm_flags & ~*supported, "ctrlmode_static");
-+	}
-+}
-+
- static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- {
- 	if (!tb)
-@@ -405,6 +419,9 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 		struct can_ctrlmode *cm = RTA_DATA(tb[IFLA_CAN_CTRLMODE]);
- 
- 		print_ctrlmode(PRINT_ANY, cm->flags, "ctrlmode");
-+		if (tb[IFLA_CAN_CTRLMODE_EXT])
-+			can_print_ctrlmode_ext(f, tb[IFLA_CAN_CTRLMODE_EXT],
-+					       cm->flags);
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+index eacb41f86bdb..d6930a797c6c 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -2897,12 +2897,8 @@ int enetc_pci_probe(struct pci_dev *pdev, const char *name, int sizeof_priv)
+ 	/* set up for high or low dma */
+ 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+ 	if (err) {
+-		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+-		if (err) {
+-			dev_err(&pdev->dev,
+-				"DMA configuration failed: 0x%x\n", err);
+-			goto err_dma;
+-		}
++		dev_err(&pdev->dev, "DMA configuration failed: 0x%x\n", err);
++		goto err_dma;
  	}
  
- 	if (tb[IFLA_CAN_STATE]) {
+ 	err = pci_request_mem_regions(pdev, name);
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ptp.c b/drivers/net/ethernet/freescale/enetc/enetc_ptp.c
+index 36b4f51dd297..17c097cef7d4 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_ptp.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_ptp.c
+@@ -42,15 +42,10 @@ static int enetc_ptp_probe(struct pci_dev *pdev,
+ 	if (err)
+ 		return dev_err_probe(&pdev->dev, err, "device enable failed\n");
+ 
+-	/* set up for high or low dma */
+ 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+ 	if (err) {
+-		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+-		if (err) {
+-			dev_err(&pdev->dev,
+-				"DMA configuration failed: 0x%x\n", err);
+-			goto err_dma;
+-		}
++		dev_err(&pdev->dev, "DMA configuration failed: 0x%x\n", err);
++		goto err_dma;
+ 	}
+ 
+ 	err = pci_request_mem_regions(pdev, KBUILD_MODNAME);
 -- 
-2.34.1
+2.32.0
 
