@@ -2,86 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94EBD488932
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 13:02:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BD02488951
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 13:19:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235437AbiAIMCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 07:02:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47884 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235423AbiAIMCE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 07:02:04 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05AFC06173F
-        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 04:02:04 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id d3so8921174ilr.10
-        for <netdev@vger.kernel.org>; Sun, 09 Jan 2022 04:02:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=lf7F5/HzjUNCXKNWZrqy4W3mj4/sAM0zNnj9VV2PGiw=;
-        b=MMD7cUJ82E0B+o0fYfONy6XmmUTZaH4obPOvjlxMvXGnZnvOqQa0SioIzZhWqzm/xW
-         hyU7keQ8DyU5DQh9lbS0cgEl6lRwQ2NAa3ipuOXh0Z5TiCB3SEwePQgzbhqssAG9rjfh
-         raYRN091IFHbvj1+D0JHqJzJH0hAlG8qmDhnVDC8uDFMhsuAS3wBcaYlenHaBJWbAlbl
-         IQo7LMhfZqfB+tr1RYgLXOc2OLb6fyBa7NCzNpaKwiBTOQiHIzThiJGoCRkR++4xcRW8
-         MemaIPm6CPNSpkHcE2v+Tpdq7dJMgINoVM6PfcTcolROdETtH9FiZVX81o9e6dTXfw66
-         YdYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=lf7F5/HzjUNCXKNWZrqy4W3mj4/sAM0zNnj9VV2PGiw=;
-        b=6w9c7QrUV1k3aX1dzMh8V3oJYpu/Hvty1hL4w1g+bCBrobFNVXpSHIqVww/WgtiIXy
-         APp4vd5d4N1k2u6sC3DO1mHrHJg68eDUYI0x9FiQ1yAq3M4InZ0b4h023CgiI7ioejBy
-         y0HliwIDuUxz4UfrfkWKUDXpR+OzzUQKJvt4GdjXyeSmhD8vvQ6/ln6DIktesPnQQLEa
-         nv4DS3MB7vz7iKAAsvJ4V/9CRR4Ku1Kdx3UzBN1+2NIk0xAKV6ju23nFJVbVVb/ERfVB
-         Z/jwxgZ/eGGvasNEWjoe+3D1ZnZKXwY2tlOQxhiViGv86Ycy2oNuA3U1BDc/+hsXo8FZ
-         XvvQ==
-X-Gm-Message-State: AOAM532agzKIqkx8nM9Y6c/LjdVdzJeMDIcWMsxs3Gv2ELPbdsuN3LPj
-        cajRUt9RIN8cH0i+gKfP8e/gGfKVxCESqEok+LU=
-X-Google-Smtp-Source: ABdhPJz8bnqhHOd6gChswslFvoGgphZ+FQAQC8sAuAXHk/H9gUT1v6ukdKt8dgtoC6k6umlHohXn2/8xZgIYj/EcP5M=
-X-Received: by 2002:a92:cc92:: with SMTP id x18mr8516170ilo.196.1641729723881;
- Sun, 09 Jan 2022 04:02:03 -0800 (PST)
+        id S235487AbiAIMT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 07:19:56 -0500
+Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:57515 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233254AbiAIMT4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 07:19:56 -0500
+Received: from pop-os.home ([90.11.185.88])
+        by smtp.orange.fr with ESMTPA
+        id 6XAunC92uUujj6XAvnIOjd; Sun, 09 Jan 2022 13:19:54 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 09 Jan 2022 13:19:54 +0100
+X-ME-IP: 90.11.185.88
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org
+Subject: [PATCH] bnx2x: Remove useless DMA-32 fallback configuration
+Date:   Sun,  9 Jan 2022 13:19:28 +0100
+Message-Id: <29608a525876afddceabf8f11b2ba606da8748fc.1641730747.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Received: by 2002:a05:6638:150c:0:0:0:0 with HTTP; Sun, 9 Jan 2022 04:02:03
- -0800 (PST)
-Reply-To: fisherjoe@seznam.cz
-From:   "Mr. Fisher Joe" <usavisadepart1@gmail.com>
-Date:   Sun, 9 Jan 2022 04:02:03 -0800
-Message-ID: <CAM+Qbf_iKj4MXbAwaj9rproLRGkZXfw0AAY9=HjYGjZUnEexnw@mail.gmail.com>
-Subject: I have registered your ATM CARD
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attention: ATM Card Beneficiary,
+As stated in [1], dma_set_mask() with a 64-bit mask never fails if
+dev->dma_mask is non-NULL.
+So, if it fails, the 32 bits case will also fail for the same reason.
 
-I have registered your ATM CARD of (USD $2,500,000) Two Million
-Five-Hundred Thousand United State Dollars  with Easy Global Courier
-Company with registration code (Shipment Code WB77XXXZD) please
-Contact them with your delivery information such as,
+Moreover, dma_set_mask_and_coherent() returns 0 or -EIO, so the return
+code of the function can be used directly.
 
-Your Name:........
-Your Address:......
-Your Telephone Number:.........
-WhatsApp Telephone Number:.........
+Finally, inline bnx2x_set_coherency_mask() because it is now only a wrapper
+for a single dma_set_mask_and_coherent() call.
 
-I have paid for the Insurance & Delivery fee. The only fee you have to
-pay to the Easy Global Courier Company is their Security fee USD $95,
-Note the required fee USD $95 should send Via Bitcoin Wallet or Apple
-Gift Card so please contact the Courier Manager and make the payment
-immediately.
 
-Purchase Bitcoin or Apple Gift Card of $95 when you contact the courier office.
+Simplify code and remove some dead code accordingly.
 
-Bitcoin Wallet Address: your will use pay your service fees USD $95
+[1]: https://lkml.org/lkml/2021/6/7/398
 
-Easy Global Company Office:
-Name: Mr. Fisher Joe
-Email: fisherjoe@seznam.cz
-Phone: +1 (321) 724-99
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  | 19 ++++---------------
+ 1 file changed, 4 insertions(+), 15 deletions(-)
 
-Best Regards,
-Mr. Fisher Joe.
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index 4953f5e1e390..774c1f1a57c3 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -13044,19 +13044,6 @@ static const struct net_device_ops bnx2x_netdev_ops = {
+ 	.ndo_features_check	= bnx2x_features_check,
+ };
+ 
+-static int bnx2x_set_coherency_mask(struct bnx2x *bp)
+-{
+-	struct device *dev = &bp->pdev->dev;
+-
+-	if (dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64)) != 0 &&
+-	    dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32)) != 0) {
+-		dev_err(dev, "System does not support DMA, aborting\n");
+-		return -EIO;
+-	}
+-
+-	return 0;
+-}
+-
+ static void bnx2x_disable_pcie_error_reporting(struct bnx2x *bp)
+ {
+ 	if (bp->flags & AER_ENABLED) {
+@@ -13134,9 +13121,11 @@ static int bnx2x_init_dev(struct bnx2x *bp, struct pci_dev *pdev,
+ 		goto err_out_release;
+ 	}
+ 
+-	rc = bnx2x_set_coherency_mask(bp);
+-	if (rc)
++	rc = dma_set_mask_and_coherent(&bp->pdev->dev, DMA_BIT_MASK(64));
++	if (rc) {
++		dev_err(&bp->pdev->dev, "System does not support DMA, aborting\n");
+ 		goto err_out_release;
++	}
+ 
+ 	dev->mem_start = pci_resource_start(pdev, 0);
+ 	dev->base_addr = dev->mem_start;
+-- 
+2.32.0
+
