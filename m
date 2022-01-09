@@ -2,209 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 715C9488D68
+	by mail.lfdr.de (Postfix) with ESMTP id BC0BD488D69
 	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:55:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236476AbiAIXzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 18:55:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33984 "EHLO
+        id S237476AbiAIXzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 18:55:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234835AbiAIXzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:55:07 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D301C06173F
-        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 15:55:07 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id f8so9713784pgf.8
-        for <netdev@vger.kernel.org>; Sun, 09 Jan 2022 15:55:07 -0800 (PST)
+        with ESMTP id S235810AbiAIXzI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:55:08 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710A0C06173F
+        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 15:55:08 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id pj2so10636876pjb.2
+        for <netdev@vger.kernel.org>; Sun, 09 Jan 2022 15:55:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=mqPXIEzXEkMXNHKulNZ5f6q36U+GNeGKdUyNd77TVrc=;
-        b=Ipse4nh1ZAOYYnlxS874hgJImE05CuHDU75zksfSUmaEVvDhGATOIoGzIzX4dhGdEh
-         nzP04poN2agGsFMxS8sAlrsxmo1VMcCJMf5WIRLz0fkthLh2ypMBsSsOTpZBvKgegEr+
-         rrnwxqVt9r6x7Tvdm7x1vFKWb3n/bhD9fnDmU=
+        bh=z2HJW4BhCjKyvE6F5pBywzLmRxIImQViFOcqCzo54j8=;
+        b=dvPFOpglwhf3VqctNki8ibECqRSxp1t4HlwZA/lUDGRcmzscsUI8qqInIDmUAmtaqc
+         ClkQgXo6unJ/wEDjuzJIPmxp/KdGt6IxDRY1ox2Ma91y7KUixnCQ7SL7Z9Q6ZdoMB/tl
+         Su9y36X5kyXvH1uR5pNU824DkR9kUrH7Ri1+c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=mqPXIEzXEkMXNHKulNZ5f6q36U+GNeGKdUyNd77TVrc=;
-        b=BFLPqU9UlP7DhZlINtD3V//Ucn+7aQpCEE2eJcF/aOPFMSrxKgOBsvxO2yTg8VbbPU
-         xZh19ohSN4Wt3WYdzKCV3iesq1Gae5zgYnoOEEHr4A4SvslrpgQ9FAcwN4kOTujiiMO9
-         HS2ORr4VWty9ec/+OzQt5Ya8qW9MM4CwjgwplnCLkmEATMqkafdoJpq31zLIC2/XNtEq
-         HgbidDQ5/TENjsynDpvi5XrTWLd6BtGL4lnlTdhyr7fL7T8r5lCd5/LprAlUNpohJ3L2
-         lfDY6niJ2rYr4wpb8tl8FKb21dnRGQYIkAn8LHWB/mfHdCsnRr3pjJnKvhPfSNGRXTXo
-         TSAg==
-X-Gm-Message-State: AOAM531hjm9lf0FT8UTR6bF7+OtyMyx3UWr+Zc7n6IeVjId+O4MsQzDV
-        l2tzJ+VZlhiLT5HuDK3TAhNxbw==
-X-Google-Smtp-Source: ABdhPJxvBCPX6KnGlFt8H0Pz+j+hNh5HKsZz2lMYbyUySmPCW4zGEuLhbEWu1G8fF9J5+mSyd9ciaQ==
-X-Received: by 2002:a63:ac54:: with SMTP id z20mr2140627pgn.302.1641772506705;
-        Sun, 09 Jan 2022 15:55:06 -0800 (PST)
+        bh=z2HJW4BhCjKyvE6F5pBywzLmRxIImQViFOcqCzo54j8=;
+        b=E/CL/4obh6rSBsjtJdM5C3lliFrsiC7CTayukLst1aUb9U+gwsz+syZ6LgEcdoANT5
+         n9Fyv2RoQ5EvXmzdOkjGfDIPD/lJih007HYZ8SHHe766cN+W5tnqPed5v5Jj53mz67Y8
+         Hb0gAFh4+TWfXP1NNiS5FvrsPSVrmZE34O2COwFqP4Gm2t+/fClhq9wlBqqBM77oX0Rd
+         1LENOMo/pK5kLTuTtXKMWh1FwOx5jTejEtVDbs9n4PlUS2KkpSxhI3ep1h0tuYCpPojT
+         kiMmKxZAdLh0EbAyD0yCs7ONY8v/KwDer+CwiYXibmeXlrHxtQuC5ezcqsUp1Qun4e8p
+         8zAw==
+X-Gm-Message-State: AOAM531m5aL+tKi5SlH0XfkJ2F6cx+z6E+ac7mvipsWiYDZzcUnQHYYi
+        4FtITtY2YApUZqh/JxUp3zYZag==
+X-Google-Smtp-Source: ABdhPJzbVtg+14IS3JylM2VCYSiYlqetlG7kieni5tkj05D8p63rrZonZbTcpDv3kHfcwaGPuGHnQQ==
+X-Received: by 2002:a17:902:8546:b0:149:d79a:1f2a with SMTP id d6-20020a170902854600b00149d79a1f2amr21283994plo.86.1641772507715;
+        Sun, 09 Jan 2022 15:55:07 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id ls6sm6948611pjb.33.2022.01.09.15.55.05
+        by smtp.gmail.com with ESMTPSA id ls6sm6948611pjb.33.2022.01.09.15.55.06
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 09 Jan 2022 15:55:06 -0800 (PST)
+        Sun, 09 Jan 2022 15:55:07 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next v2 3/4] bnxt_en: use firmware provided max timeout for messages
-Date:   Sun,  9 Jan 2022 18:54:44 -0500
-Message-Id: <1641772485-10421-4-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 4/4] bnxt_en: improve firmware timeout messaging
+Date:   Sun,  9 Jan 2022 18:54:45 -0500
+Message-Id: <1641772485-10421-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1641772485-10421-1-git-send-email-michael.chan@broadcom.com>
 References: <1641772485-10421-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000001b0c9305d52ef36e"
+        boundary="00000000000026e6ed05d52ef351"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000001b0c9305d52ef36e
+--00000000000026e6ed05d52ef351
 
 From: Edwin Peer <edwin.peer@broadcom.com>
 
-Some older devices cannot accommodate the 40 seconds timeout
-cap for long running commands (such as NVRAM commands) due to
-hardware limitations. Allow these devices to request more time for
-these long running commands, but print a warning, since the longer
-timeout may cause the hung task watchdog to trigger. In the case of a
-firmware update operation, this is preferable to failing outright.
+While it has always been possible to infer that an HWRM command was
+abandoned due to an unhealthy firmware status by the shortened timeout
+reported, this change improves the log messaging to account for this
+case explicitly. In the interests of further clarity, the firmware
+status is now also reported in these new messages.
 
-v2: Use bp->hwrm_cmd_max_timeout directly without the constants.
+v2: Remove inline keyword for hwrm_wait_must_abort() in .c file.
 
-Fixes: 881d8353b05e ("bnxt_en: Add an upper bound for all firmware command timeouts.")
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c          | 6 ++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h          | 3 ++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c | 4 ++--
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c  | 9 +++------
- drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c     | 2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h     | 3 +--
- 6 files changed, 15 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 13 --------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  1 -
+ .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    | 31 +++++++++++++++----
+ .../net/ethernet/broadcom/bnxt/bnxt_hwrm.h    |  4 ---
+ 4 files changed, 25 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 46f28ee4d05d..2a000d5ae3bf 100644
+index 2a000d5ae3bf..4f94136a011a 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8034,6 +8034,12 @@ static int bnxt_hwrm_ver_get(struct bnxt *bp)
- 	bp->hwrm_cmd_timeout = le16_to_cpu(resp->def_req_timeout);
- 	if (!bp->hwrm_cmd_timeout)
- 		bp->hwrm_cmd_timeout = DFLT_HWRM_CMD_TIMEOUT;
-+	bp->hwrm_cmd_max_timeout = le16_to_cpu(resp->max_req_timeout) * 1000;
-+	if (!bp->hwrm_cmd_max_timeout)
-+		bp->hwrm_cmd_max_timeout = HWRM_CMD_MAX_TIMEOUT;
-+	else if (bp->hwrm_cmd_max_timeout > HWRM_CMD_MAX_TIMEOUT)
-+		netdev_warn(bp->dev, "Device requests max timeout of %d seconds, may trigger hung task watchdog\n",
-+			    bp->hwrm_cmd_max_timeout / 1000);
+@@ -7694,19 +7694,6 @@ static void __bnxt_map_fw_health_reg(struct bnxt *bp, u32 reg)
+ 					 BNXT_FW_HEALTH_WIN_MAP_OFF);
+ }
  
- 	if (resp->hwrm_intf_maj_8b >= 1) {
- 		bp->hwrm_max_req_len = le16_to_cpu(resp->max_req_win_len);
+-bool bnxt_is_fw_healthy(struct bnxt *bp)
+-{
+-	if (bp->fw_health && bp->fw_health->status_reliable) {
+-		u32 fw_status;
+-
+-		fw_status = bnxt_fw_health_readl(bp, BNXT_FW_HEALTH_REG);
+-		if (fw_status && !BNXT_FW_IS_HEALTHY(fw_status))
+-			return false;
+-	}
+-
+-	return true;
+-}
+-
+ static void bnxt_inv_fw_health_reg(struct bnxt *bp)
+ {
+ 	struct bnxt_fw_health *fw_health = bp->fw_health;
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 5ec251a1100f..0da68dc35c69 100644
+index 0da68dc35c69..440dfeb4948b 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1987,7 +1987,8 @@ struct bnxt {
- 
- 	u16			hwrm_max_req_len;
- 	u16			hwrm_max_ext_req_len;
--	int			hwrm_cmd_timeout;
-+	unsigned int		hwrm_cmd_timeout;
-+	unsigned int		hwrm_cmd_max_timeout;
- 	struct mutex		hwrm_cmd_lock;	/* serialize hwrm messages */
- 	struct hwrm_ver_get_output	ver_resp;
- #define FW_VER_STR_LEN		32
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
-index d3cb2f21946d..c06789882036 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
-@@ -32,7 +32,7 @@ static int bnxt_hwrm_dbg_dma_data(struct bnxt *bp, void *msg,
- 		return -ENOMEM;
- 	}
- 
--	hwrm_req_timeout(bp, msg, HWRM_COREDUMP_TIMEOUT);
-+	hwrm_req_timeout(bp, msg, bp->hwrm_cmd_max_timeout);
- 	cmn_resp = hwrm_req_hold(bp, msg);
- 	resp = cmn_resp;
- 
-@@ -125,7 +125,7 @@ static int bnxt_hwrm_dbg_coredump_initiate(struct bnxt *bp, u16 component_id,
- 	if (rc)
- 		return rc;
- 
--	hwrm_req_timeout(bp, req, HWRM_COREDUMP_TIMEOUT);
-+	hwrm_req_timeout(bp, req, bp->hwrm_cmd_max_timeout);
- 	req->component_id = cpu_to_le16(component_id);
- 	req->segment_id = cpu_to_le16(segment_id);
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 46859d9a01eb..003330e8cd58 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -31,9 +31,6 @@
- #include "bnxt_nvm_defs.h"	/* NVRAM content constant and structure defs */
- #include "bnxt_fw_hdr.h"	/* Firmware hdr constant and structure defs */
- #include "bnxt_coredump.h"
--#define FLASH_NVRAM_TIMEOUT	((HWRM_CMD_TIMEOUT) * 100)
--#define FLASH_PACKAGE_TIMEOUT	((HWRM_CMD_TIMEOUT) * 200)
--#define INSTALL_PACKAGE_TIMEOUT	((HWRM_CMD_TIMEOUT) * 200)
- 
- static u32 bnxt_get_msglevel(struct net_device *dev)
- {
-@@ -2194,7 +2191,7 @@ static int bnxt_flash_nvram(struct net_device *dev, u16 dir_type,
- 		req->host_src_addr = cpu_to_le64(dma_handle);
- 	}
- 
--	hwrm_req_timeout(bp, req, FLASH_NVRAM_TIMEOUT);
-+	hwrm_req_timeout(bp, req, bp->hwrm_cmd_max_timeout);
- 	req->dir_type = cpu_to_le16(dir_type);
- 	req->dir_ordinal = cpu_to_le16(dir_ordinal);
- 	req->dir_ext = cpu_to_le16(dir_ext);
-@@ -2540,8 +2537,8 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
- 		return rc;
- 	}
- 
--	hwrm_req_timeout(bp, modify, FLASH_PACKAGE_TIMEOUT);
--	hwrm_req_timeout(bp, install, INSTALL_PACKAGE_TIMEOUT);
-+	hwrm_req_timeout(bp, modify, bp->hwrm_cmd_max_timeout);
-+	hwrm_req_timeout(bp, install, bp->hwrm_cmd_max_timeout);
- 
- 	hwrm_req_hold(bp, modify);
- 	modify->host_src_addr = cpu_to_le64(dma_handle);
+@@ -2305,7 +2305,6 @@ int bnxt_cancel_reservations(struct bnxt *bp, bool fw_reset);
+ int bnxt_hwrm_alloc_wol_fltr(struct bnxt *bp);
+ int bnxt_hwrm_free_wol_fltr(struct bnxt *bp);
+ int bnxt_hwrm_func_resc_qcaps(struct bnxt *bp, bool all);
+-bool bnxt_is_fw_healthy(struct bnxt *bp);
+ int bnxt_hwrm_fw_set_time(struct bnxt *);
+ int bnxt_open_nic(struct bnxt *, bool, bool);
+ int bnxt_half_open_nic(struct bnxt *bp);
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-index f75b2de8a14b..4c4027cfb322 100644
+index 4c4027cfb322..566c9487ef55 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-@@ -529,7 +529,7 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
- 	}
+@@ -444,6 +444,18 @@ static void hwrm_req_dbg(struct bnxt *bp, struct input *req)
+ 			netdev_err((bp)->dev, fmt, __VA_ARGS__);       \
+ 	} while (0)
  
- 	/* Limit timeout to an upper limit */
--	timeout = min_t(uint, ctx->timeout, HWRM_CMD_MAX_TIMEOUT);
-+	timeout = min(ctx->timeout, bp->hwrm_cmd_max_timeout ?: HWRM_CMD_MAX_TIMEOUT);
- 	/* convert timeout to usec */
- 	timeout *= 1000;
++static bool hwrm_wait_must_abort(struct bnxt *bp, u32 req_type, u32 *fw_status)
++{
++	if (req_type == HWRM_VER_GET)
++		return false;
++
++	if (!bp->fw_health || !bp->fw_health->status_reliable)
++		return false;
++
++	*fw_status = bnxt_fw_health_readl(bp, BNXT_FW_HEALTH_REG);
++	return *fw_status && !BNXT_FW_IS_HEALTHY(*fw_status);
++}
++
+ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ {
+ 	u32 doorbell_offset = BNXT_GRCPF_REG_CHIMP_COMM_TRIGGER;
+@@ -455,8 +467,8 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 	unsigned int i, timeout, tmo_count;
+ 	u32 *data = (u32 *)ctx->req;
+ 	u32 msg_len = ctx->req_len;
++	u32 req_type, sts;
+ 	int rc = -EBUSY;
+-	u32 req_type;
+ 	u16 len = 0;
+ 	u8 *valid;
  
+@@ -556,8 +568,11 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 				usleep_range(HWRM_SHORT_MIN_TIMEOUT,
+ 					     HWRM_SHORT_MAX_TIMEOUT);
+ 			} else {
+-				if (HWRM_WAIT_MUST_ABORT(bp, ctx))
+-					break;
++				if (hwrm_wait_must_abort(bp, req_type, &sts)) {
++					hwrm_err(bp, ctx, "Resp cmpl intr abandoning msg: 0x%x due to firmware status: 0x%x\n",
++						 req_type, sts);
++					goto exit;
++				}
+ 				usleep_range(HWRM_MIN_TIMEOUT,
+ 					     HWRM_MAX_TIMEOUT);
+ 			}
+@@ -608,15 +623,19 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 				usleep_range(HWRM_SHORT_MIN_TIMEOUT,
+ 					     HWRM_SHORT_MAX_TIMEOUT);
+ 			} else {
+-				if (HWRM_WAIT_MUST_ABORT(bp, ctx))
+-					goto timeout_abort;
++				if (hwrm_wait_must_abort(bp, req_type, &sts)) {
++					hwrm_err(bp, ctx, "Abandoning msg {0x%x 0x%x} len: %d due to firmware status: 0x%x\n",
++						 req_type,
++						 le16_to_cpu(ctx->req->seq_id),
++						 len, sts);
++					goto exit;
++				}
+ 				usleep_range(HWRM_MIN_TIMEOUT,
+ 					     HWRM_MAX_TIMEOUT);
+ 			}
+ 		}
+ 
+ 		if (i >= tmo_count) {
+-timeout_abort:
+ 			hwrm_err(bp, ctx, "Error (timeout: %u) msg {0x%x 0x%x} len:%d\n",
+ 				 hwrm_total_timeout(i), req_type,
+ 				 le16_to_cpu(ctx->req->seq_id), len);
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-index 4d17f0d5363b..9a9fc4e8041b 100644
+index 9a9fc4e8041b..d52bd2d63aec 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-@@ -58,11 +58,10 @@ void hwrm_update_token(struct bnxt *bp, u16 seq, enum bnxt_hwrm_wait_state s);
+@@ -82,10 +82,6 @@ void hwrm_update_token(struct bnxt *bp, u16 seq, enum bnxt_hwrm_wait_state s);
+ #define HWRM_MIN_TIMEOUT		25
+ #define HWRM_MAX_TIMEOUT		40
  
- #define BNXT_HWRM_MAX_REQ_LEN		(bp->hwrm_max_req_len)
- #define BNXT_HWRM_SHORT_REQ_LEN		sizeof(struct hwrm_short_input)
--#define HWRM_CMD_MAX_TIMEOUT		40000
-+#define HWRM_CMD_MAX_TIMEOUT		40000U
- #define SHORT_HWRM_CMD_TIMEOUT		20
- #define HWRM_CMD_TIMEOUT		(bp->hwrm_cmd_timeout)
- #define HWRM_RESET_TIMEOUT		((HWRM_CMD_TIMEOUT) * 4)
--#define HWRM_COREDUMP_TIMEOUT		((HWRM_CMD_TIMEOUT) * 12)
- #define BNXT_HWRM_TARGET		0xffff
- #define BNXT_HWRM_NO_CMPL_RING		-1
- #define BNXT_HWRM_REQ_MAX_SIZE		128
+-#define HWRM_WAIT_MUST_ABORT(bp, ctx)					\
+-	(le16_to_cpu((ctx)->req->req_type) != HWRM_VER_GET &&		\
+-	 !bnxt_is_fw_healthy(bp))
+-
+ static inline unsigned int hwrm_total_timeout(unsigned int n)
+ {
+ 	return n <= HWRM_SHORT_TIMEOUT_COUNTER ? n * HWRM_SHORT_MIN_TIMEOUT :
 -- 
 2.18.1
 
 
---0000000000001b0c9305d52ef36e
+--00000000000026e6ed05d52ef351
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -275,13 +276,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOGzbxIleCrr5Mp7izaTLcFrmjAtAUPU
-XPnMaqOHPvsvMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDEw
-OTIzNTUwN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIKYV7Cd9Seq6KTkFp1PMN8U/0fA2CCqr
+NVtZSBxMBMJVMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDEw
+OTIzNTUwOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQC1YMc9OWAXDVG2GBq6uify2xuXDJBbsV0hMHMHdYoxLicl5mbB
-D7uMahQ3y1NLAZo0Q1+Ec+/O33s2tZY7ACe98X8gV3pnpMBmjK4LoYyQudexX/qHrdg9as/9Sg46
-JZQxJWGrEj5jCVGXOpRD9yyGFgL2wh+iiV1Lv+hZEniPD7oMHIIIbuYl+7P+2INxA4kvwSn7qO8y
-bNa6hCM4QgK0mmjRW1j+NpnfdAxoAok5hbRB6rntkFE0b/lSwLiZhzLzn5sYc62l6HIY4LNl3Sfw
-SCdn+ObwUnM0HyaGpxWx0O8YjM/3mKYza64VHI9UaPDErZwGYLogdDcEIlQ7/brt
---0000000000001b0c9305d52ef36e--
+ATANBgkqhkiG9w0BAQEFAASCAQCEcw7Qe9ek/ZWq2KJwDwMm8Wc4M2t/9HcWd0mPxKn4/Qrc11p9
+/ditQzkzXCE7CZ/KSIHV0qzb2AksTMD6270aTfE70HGybq54zXnpnjmwKabLVAA9jTpgYIQUkMM8
+23Hh+rld+0TITtHj8MyvUqOprk1pPZAwTKQK6wIpB6vSWVviT4vXLeLm5wywUoaWYRXGLyRryoQI
+0ULiD5dj4uqNdsAPpau1Rv0fAFH3Vu1g3LA/d2K9ciIh5EhZK193kZbepTZZRdPR66eC2pINqQQ7
+K/kxFB6Y3wsWpEriVskJ4YYfDKPWVjaXSly4Z9ymIYFMUT8jKospiYpflxM4b9mo
+--00000000000026e6ed05d52ef351--
