@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3EE7488D2C
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:17:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D951488D30
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:17:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237453AbiAIXRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 18:17:14 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:42220 "EHLO
+        id S237512AbiAIXRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 18:17:18 -0500
+Received: from mail.netfilter.org ([217.70.188.207]:42126 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237413AbiAIXRE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:17:04 -0500
+        with ESMTP id S237393AbiAIXRD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:17:03 -0500
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 8CA3964690;
-        Mon, 10 Jan 2022 00:14:12 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 2715664692;
+        Mon, 10 Jan 2022 00:14:13 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 21/32] netfilter: nft_quota: move stateful fields out of expression data
-Date:   Mon, 10 Jan 2022 00:16:29 +0100
-Message-Id: <20220109231640.104123-22-pablo@netfilter.org>
+Subject: [PATCH net-next 22/32] netfilter: nft_numgen: move stateful fields out of expression data
+Date:   Mon, 10 Jan 2022 00:16:30 +0100
+Message-Id: <20220109231640.104123-23-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220109231640.104123-1-pablo@netfilter.org>
 References: <20220109231640.104123-1-pablo@netfilter.org>
@@ -33,127 +33,89 @@ In preparation for the rule blob representation.
 
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nft_quota.c | 52 +++++++++++++++++++++++++++++++++++----
- 1 file changed, 47 insertions(+), 5 deletions(-)
+ net/netfilter/nft_numgen.c | 34 ++++++++++++++++++++++++++++------
+ 1 file changed, 28 insertions(+), 6 deletions(-)
 
-diff --git a/net/netfilter/nft_quota.c b/net/netfilter/nft_quota.c
-index c4d1389f7185..0484aef74273 100644
---- a/net/netfilter/nft_quota.c
-+++ b/net/netfilter/nft_quota.c
-@@ -15,13 +15,13 @@
- struct nft_quota {
- 	atomic64_t	quota;
- 	unsigned long	flags;
--	atomic64_t	consumed;
-+	atomic64_t	*consumed;
+diff --git a/net/netfilter/nft_numgen.c b/net/netfilter/nft_numgen.c
+index 722cac1e90e0..1d378efd8823 100644
+--- a/net/netfilter/nft_numgen.c
++++ b/net/netfilter/nft_numgen.c
+@@ -18,7 +18,7 @@ static DEFINE_PER_CPU(struct rnd_state, nft_numgen_prandom_state);
+ struct nft_ng_inc {
+ 	u8			dreg;
+ 	u32			modulus;
+-	atomic_t		counter;
++	atomic_t		*counter;
+ 	u32			offset;
  };
  
- static inline bool nft_overquota(struct nft_quota *priv,
- 				 const struct sk_buff *skb)
+@@ -27,9 +27,9 @@ static u32 nft_ng_inc_gen(struct nft_ng_inc *priv)
+ 	u32 nval, oval;
+ 
+ 	do {
+-		oval = atomic_read(&priv->counter);
++		oval = atomic_read(priv->counter);
+ 		nval = (oval + 1 < priv->modulus) ? oval + 1 : 0;
+-	} while (atomic_cmpxchg(&priv->counter, oval, nval) != oval);
++	} while (atomic_cmpxchg(priv->counter, oval, nval) != oval);
+ 
+ 	return nval + priv->offset;
+ }
+@@ -55,6 +55,7 @@ static int nft_ng_inc_init(const struct nft_ctx *ctx,
+ 			   const struct nlattr * const tb[])
  {
--	return atomic64_add_return(skb->len, &priv->consumed) >=
-+	return atomic64_add_return(skb->len, priv->consumed) >=
- 	       atomic64_read(&priv->quota);
- }
+ 	struct nft_ng_inc *priv = nft_expr_priv(expr);
++	int err;
  
-@@ -90,13 +90,23 @@ static int nft_quota_do_init(const struct nlattr * const tb[],
- 			return -EOPNOTSUPP;
- 	}
+ 	if (tb[NFTA_NG_OFFSET])
+ 		priv->offset = ntohl(nla_get_be32(tb[NFTA_NG_OFFSET]));
+@@ -66,10 +67,22 @@ static int nft_ng_inc_init(const struct nft_ctx *ctx,
+ 	if (priv->offset + priv->modulus - 1 < priv->offset)
+ 		return -EOVERFLOW;
  
-+	priv->consumed = kmalloc(sizeof(*priv->consumed), GFP_KERNEL);
-+	if (!priv->consumed)
+-	atomic_set(&priv->counter, priv->modulus - 1);
++	priv->counter = kmalloc(sizeof(*priv->counter), GFP_KERNEL);
++	if (!priv->counter)
 +		return -ENOMEM;
-+
- 	atomic64_set(&priv->quota, quota);
- 	priv->flags = flags;
--	atomic64_set(&priv->consumed, consumed);
-+	atomic64_set(priv->consumed, consumed);
  
- 	return 0;
- }
- 
-+static void nft_quota_do_destroy(const struct nft_ctx *ctx,
-+				 struct nft_quota *priv)
-+{
-+	kfree(priv->consumed);
-+}
+-	return nft_parse_register_store(ctx, tb[NFTA_NG_DREG], &priv->dreg,
+-					NULL, NFT_DATA_VALUE, sizeof(u32));
++	atomic_set(priv->counter, priv->modulus - 1);
 +
- static int nft_quota_obj_init(const struct nft_ctx *ctx,
- 			      const struct nlattr * const tb[],
- 			      struct nft_object *obj)
-@@ -128,7 +138,7 @@ static int nft_quota_do_dump(struct sk_buff *skb, struct nft_quota *priv,
- 	 * that we see, don't go over the quota boundary in what we send to
- 	 * userspace.
- 	 */
--	consumed = atomic64_read(&priv->consumed);
-+	consumed = atomic64_read(priv->consumed);
- 	quota = atomic64_read(&priv->quota);
- 	if (consumed >= quota) {
- 		consumed_cap = quota;
-@@ -145,7 +155,7 @@ static int nft_quota_do_dump(struct sk_buff *skb, struct nft_quota *priv,
- 		goto nla_put_failure;
- 
- 	if (reset) {
--		atomic64_sub(consumed, &priv->consumed);
-+		atomic64_sub(consumed, priv->consumed);
- 		clear_bit(NFT_QUOTA_DEPLETED_BIT, &priv->flags);
- 	}
- 	return 0;
-@@ -162,11 +172,20 @@ static int nft_quota_obj_dump(struct sk_buff *skb, struct nft_object *obj,
- 	return nft_quota_do_dump(skb, priv, reset);
- }
- 
-+static void nft_quota_obj_destroy(const struct nft_ctx *ctx,
-+				  struct nft_object *obj)
-+{
-+	struct nft_quota *priv = nft_obj_data(obj);
-+
-+	return nft_quota_do_destroy(ctx, priv);
-+}
-+
- static struct nft_object_type nft_quota_obj_type;
- static const struct nft_object_ops nft_quota_obj_ops = {
- 	.type		= &nft_quota_obj_type,
- 	.size		= sizeof(struct nft_quota),
- 	.init		= nft_quota_obj_init,
-+	.destroy	= nft_quota_obj_destroy,
- 	.eval		= nft_quota_obj_eval,
- 	.dump		= nft_quota_obj_dump,
- 	.update		= nft_quota_obj_update,
-@@ -205,12 +224,35 @@ static int nft_quota_dump(struct sk_buff *skb, const struct nft_expr *expr)
- 	return nft_quota_do_dump(skb, priv, false);
- }
- 
-+static void nft_quota_destroy(const struct nft_ctx *ctx,
-+			      const struct nft_expr *expr)
-+{
-+	struct nft_quota *priv = nft_expr_priv(expr);
-+
-+	return nft_quota_do_destroy(ctx, priv);
-+}
-+
-+static int nft_quota_clone(struct nft_expr *dst, const struct nft_expr *src)
-+{
-+	struct nft_quota *priv_dst = nft_expr_priv(dst);
-+
-+	priv_dst->consumed = kmalloc(sizeof(*priv_dst->consumed), GFP_ATOMIC);
-+	if (priv_dst->consumed)
-+		return -ENOMEM;
-+
-+	atomic64_set(priv_dst->consumed, 0);
++	err = nft_parse_register_store(ctx, tb[NFTA_NG_DREG], &priv->dreg,
++				       NULL, NFT_DATA_VALUE, sizeof(u32));
++	if (err < 0)
++		goto err;
 +
 +	return 0;
++err:
++	kfree(priv->counter);
++
++	return err;
+ }
+ 
+ static int nft_ng_dump(struct sk_buff *skb, enum nft_registers dreg,
+@@ -98,6 +111,14 @@ static int nft_ng_inc_dump(struct sk_buff *skb, const struct nft_expr *expr)
+ 			   priv->offset);
+ }
+ 
++static void nft_ng_inc_destroy(const struct nft_ctx *ctx,
++			       const struct nft_expr *expr)
++{
++	const struct nft_ng_inc *priv = nft_expr_priv(expr);
++
++	kfree(priv->counter);
 +}
 +
- static struct nft_expr_type nft_quota_type;
- static const struct nft_expr_ops nft_quota_ops = {
- 	.type		= &nft_quota_type,
- 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_quota)),
- 	.eval		= nft_quota_eval,
- 	.init		= nft_quota_init,
-+	.destroy	= nft_quota_destroy,
-+	.clone		= nft_quota_clone,
- 	.dump		= nft_quota_dump,
+ struct nft_ng_random {
+ 	u8			dreg;
+ 	u32			modulus;
+@@ -157,6 +178,7 @@ static const struct nft_expr_ops nft_ng_inc_ops = {
+ 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_ng_inc)),
+ 	.eval		= nft_ng_inc_eval,
+ 	.init		= nft_ng_inc_init,
++	.destroy	= nft_ng_inc_destroy,
+ 	.dump		= nft_ng_inc_dump,
  };
  
 -- 
