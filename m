@@ -2,136 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CF77488799
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 05:11:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 480AE4887B6
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 06:23:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232569AbiAIELA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 8 Jan 2022 23:11:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
+        id S230081AbiAIFXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 00:23:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231218AbiAIELA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 8 Jan 2022 23:11:00 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3332C06173F;
-        Sat,  8 Jan 2022 20:10:59 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id d1so28878544ybh.6;
-        Sat, 08 Jan 2022 20:10:59 -0800 (PST)
+        with ESMTP id S229447AbiAIFXF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 00:23:05 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B472C06173F;
+        Sat,  8 Jan 2022 21:23:05 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id i3so29146947ybh.11;
+        Sat, 08 Jan 2022 21:23:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kHWv8vCmQocf8j1ncOVYaNumvu4dAkTmLmQDF+t6hvw=;
-        b=fD0jHymcSp6lveuK1mk4zEK8mW+PVfq/FLlMF6dVhdDen99sh3Z13dyrn+FnUE5zZ8
-         /d9D2KfdX6To+qF1DsMVg1Z8Dp38H0NQXDVYk9W+cddI3lhiPbgeiYOWPrlI+wlZc4SR
-         wVQaNDyV/nh0AqhDSXsoWWgHI1zC98WeNGwZo7RlVFcmeZgFWInKYog9OUH1d++5pB9X
-         yOE+IGWJT3vaPLCAo1Nx1pmghUp8y5ji4Q9wtQoSKrMvcKMMK+sfwXLs2cBkxQBfrLpE
-         ohE/EKeregrhuU/UOd7/o40nxiSeW+Rvf5g6o22yryl43USzBXoX/cpAnsA0xW6T9rSb
-         fkpw==
+         :cc:content-transfer-encoding;
+        bh=Varh2KpZisFfNCnQZj7woasFSawJlKM5czdAIPJ3JMU=;
+        b=RG311M8bNP8LTvcyUZwF3n+dPVi5M/7hQYqwVtKTVHywMjI9sqS0O86DATBGEcEhyi
+         31dnf1BSYZPw/J3m7VAz00z8Px1TsMtbX4FUP7DsY6M0KNpYL2/bzU2jdzr1E1EPjR1h
+         wdIENIyxWSbExKosjxYj9kuIJ3iPZWTB9rlqJO/xcwJYvDjLu3zeNlHug/2HWi5FI8eH
+         4qCh0FCW7O/V8w/9cRq/ifJ7FuiGYeKbwFzGg5k4ax3ychMxMU1FF6ChfKhEPsjRIHA8
+         35Vioo1wqX87a43Ww/mceSqmODFfsNwGmaP/5Mq4kTA/RFT7VHQzliHpAMV3ou0YDfXr
+         Xu1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kHWv8vCmQocf8j1ncOVYaNumvu4dAkTmLmQDF+t6hvw=;
-        b=HZH0YC1jpbuNsmGA/RngUnwOKVy1LPJuNNRc5yyBYAzOSByxKueAITzA2hUr2aymYV
-         VvnZSzILc7mjsMftJzag4v0hrX3SuZ3ZKZxZrDM7TgxEHqFP/hSB0oBsFeZoXTBX0wMp
-         7yMG4dxxHkKSO8PLQfRHEs3ylFlxA+Q7zfsDCJVHrNGdZ102ya58Gi6wSVq33UKKMDnT
-         6/GwgHOVI3/wHY1CGEGtMma15cgV0yofiwvierIfXnhHXL/0gvlH2nt2dLFlFr3v+U4O
-         U9lXQW0w3+IKdbV+grtvV98SnwJ+1VS8RoDXStAMaxIv5cOiWAdkSAM29cISIt+DdQzG
-         q4kA==
-X-Gm-Message-State: AOAM531zYtWOftJgiNA+PKgejaVlGkX2BSLvxQAD9pIBbjhEkxYCXhUo
-        qiK9Mexy1dHC+c6dEEQ4OFAgvwxPipxKZPXO3SHXjqe0ftU=
-X-Google-Smtp-Source: ABdhPJzPWCq3pnVvWBRCL9v7fe6zdCxN8v63iDGAaqF3AeVneP6THpvAsobSRDdoFEIU0fGzxgvaeYgM/BJc3tFv+gQ=
-X-Received: by 2002:a25:500f:: with SMTP id e15mr86479940ybb.312.1641701458923;
- Sat, 08 Jan 2022 20:10:58 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Varh2KpZisFfNCnQZj7woasFSawJlKM5czdAIPJ3JMU=;
+        b=CGrOyDxFUJO1FSDa9xD1YqQi7BLpX5jmMT/H9mufYa3bA6DxB2n0eenLm0t7E5meG6
+         L2cfZgfjnmhJxlePXVLH2WjEsHxweTwPOTrBIoEMYg9UUnOfusRzuNQlsvyxaowk0BKR
+         9u352gv0iG+JDn30FHGx6T0CmamC7EUyZcYsGk8VUVcGi+XRKwegzI2xsq7K3M0pWCsH
+         WbT72y9KYjFvSxzC90EUxvp0uY2Ss1TkT10pE343IfCCvt+Z9fyRKbloQZEvvdjF3V2F
+         OscC3eIdRQCtYJUf4ocNMmgLo4ElldWjBfZHu/g7r+ZCa5xaxuY6nSqgjvYtgGULpIoW
+         SYkw==
+X-Gm-Message-State: AOAM530YA2QpdKyZP3aiy4pxvN9o73mj1BUq6pQvhBCHrmHhteYhGw8+
+        DM2WJiqbcBImVljQQlH80H2ZHjCuUeDyoskojiRRrLGU
+X-Google-Smtp-Source: ABdhPJwkl+ZGA9QLf8joJPqJxBdwtm/iajJcKnYRXgtXZ8Ga33b+IvHl61GAmEey5tCgt3S972P015IcjWeTJk4ZIws=
+X-Received: by 2002:a05:6902:1149:: with SMTP id p9mr62756822ybu.398.1641705783012;
+ Sat, 08 Jan 2022 21:23:03 -0800 (PST)
 MIME-Version: 1.0
-References: <CAKXUXMzZkQvHJ35nwVhcJe+DrtEXGw+eKGVD04=xRJkVUC2sPA@mail.gmail.com>
- <35cebb4b-3a1d-fa47-4d49-1a516f36af4f@oracle.com>
-In-Reply-To: <35cebb4b-3a1d-fa47-4d49-1a516f36af4f@oracle.com>
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Date:   Sun, 9 Jan 2022 05:10:48 +0100
-Message-ID: <CAKXUXMwQE6Z1EFYOtixwA+8nLZySxdHH9xHiOkGhcy5p0sr9xQ@mail.gmail.com>
-Subject: Re: Observation of a memory leak with commit 314001f0bf92 ("af_unix:
- Add OOB support")
-To:     Shoaib Rao <rao.shoaib@oracle.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+References: <20220107210942.3750887-1-luiz.dentz@gmail.com>
+ <20220107182712.7549a8eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <6FFD2498-E81C-49DA-9B3E-4833241382EE@holtmann.org>
+In-Reply-To: <6FFD2498-E81C-49DA-9B3E-4833241382EE@holtmann.org>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Sat, 8 Jan 2022 21:22:51 -0800
+Message-ID: <CABBYNZLaOgPFRvv_h=pyXChnP=y205yrm_cnP=F3TVBrXv-qVQ@mail.gmail.com>
+Subject: Re: pull request: bluetooth 2022-01-07
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Tedd Ho-Jeong An <hj.tedd.an@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 7, 2022 at 6:55 PM Shoaib Rao <rao.shoaib@oracle.com> wrote:
+Hi Marcel,
+
+On Sat, Jan 8, 2022 at 6:41 AM Marcel Holtmann <marcel@holtmann.org> wrote:
 >
-> Hi Lukas,
+> Hi Jakub,
 >
-> I took a look at the patch and I fail to see how prepare_creds() could
-> be impacted by the patch. The only reference to a cred in the patch is
-> via maybe_add_creds().
+> >> The following changes since commit 710ad98c363a66a0cd8526465426c5c5f83=
+77ee0:
+> >>
+> >>  veth: Do not record rx queue hint in veth_xmit (2022-01-06 13:49:54 +=
+0000)
+> >>
+> >> are available in the Git repository at:
+> >>
+> >>  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-nex=
+t.git tags/for-net-next-2022-01-07
+> >>
+> >> for you to fetch changes up to b9f9dbad0bd1c302d357fdd327c398f51f5fc2b=
+1:
+> >>
+> >>  Bluetooth: hci_sock: fix endian bug in hci_sock_setsockopt() (2022-01=
+-07 08:41:38 +0100)
+> >>
+> >> ----------------------------------------------------------------
+> >> bluetooth-next pull request for net-next:
+> >>
+> >> - Add support for Foxconn QCA 0xe0d0
+> >> - Fix HCI init sequence on MacBook Air 8,1 and 8,2
+> >> - Fix Intel firmware loading on legacy ROM devices
+> >
+> > A few warnings here that may be worth addressing - in particular this
+> > one makes me feel that kbuild bot hasn't looked at the patches:
+> >
+> > net/bluetooth/hci_sync.c:5143:5: warning: no previous prototype for =E2=
+=80=98hci_le_ext_create_conn_sync=E2=80=99 [-Wmissing-prototypes]
+> > 5143 | int hci_le_ext_create_conn_sync(struct hci_dev *hdev, struct hci=
+_conn *conn,
+> >      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 >
-> prepare_creds() is called to make a copy of the current creds which will
-> be later modified. If there is any leak it would be in the caller not
-> releasing the memory. The patch does not do anything with creds.
+> this we have to fix with a patch since none of the commits were touching =
+this. It really must have slipped through earlier.
+
+Just sent a patch fixing the warning, once that is applied I will
+create a new tag and send the pull request.
+
+> > Also this Fixes tag could be mended:
+> >
+> > Commit: 6845667146a2 ("Bluetooth: hci_qca: Fix NULL vs IS_ERR_OR_NULL c=
+heck in qca_serdev_probe")
+> >       Fixes tag: Fixes: 77131dfe ("Bluetooth: hci_qca: Replace devm_gpi=
+od_get() with devm_gpiod_get_optional()")
+> >       Has these problem(s):
+> >               - SHA1 should be at least 12 digits long
+> >                 Can be fixed by setting core.abbrev to 12 (or more) or =
+(for git v2.11
+> >                 or later) just making sure it is not set (or set to "au=
+to").
 >
-> If there is any more information that can help identify the issue, I
-> will be happy to look into it.
+> I fixed that now and re-pushed the tree. Funny part is that I always chec=
+k that the Fixes SHA1 is actually valid, but I never thought about checking=
+ that it is at least 12 digits long. I totally missed that and keep it in m=
+ind going forward.
+>
+> Regards
+>
+> Marcel
 >
 
-Here is more information:
 
-Here are all crash reports:
-
-https://elisa-builder-00.iol.unh.edu/syzkaller-next/crash?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3
-
-and here at the bottom of the page is a C program that shows the
-memory leak with the typical memory leak detections switched on:
-
-https://elisa-builder-00.iol.unh.edu/syzkaller-next/report?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3
-
-Please try to reproduce this on your machine. If you need more
-instructions on how to set up the kernel to get this program to
-reproduce the issue, please let us know.
-
-> Note that a lot of bugs are timing related, so while it might seem that
-> a change is causing the problem, it may not be the cause, it may just be
-> changing the environment for the bug to show up.
->
-
-Well, we are pretty sure that this commit makes it show up and
-disappear depending on where it is included or reverted, respectively,
-tested now on multiple kernel versions. So, to resolve the issue, we
-just need to revert the commit.
-
-Lukas
-
-> Shoaib
->
-> On 1/6/22 22:48, Lukas Bulwahn wrote:
-> > Dear Rao and David,
-> >
-> >
-> > In our syzkaller instance running on linux-next,
-> > https://urldefense.com/v3/__https://elisa-builder-00.iol.unh.edu/syzkaller-next/__;!!ACWV5N9M2RV99hQ!YR_lD5j1kvA5QfrbPcM5nMVZZkWNcF-UEE4vKA20TPkslzzGDVPqpL-6heEhBZ_e$ , we have been
-> > observing a memory leak in prepare_creds,
-> > https://urldefense.com/v3/__https://elisa-builder-00.iol.unh.edu/syzkaller-next/report?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3__;!!ACWV5N9M2RV99hQ!YR_lD5j1kvA5QfrbPcM5nMVZZkWNcF-UEE4vKA20TPkslzzGDVPqpL-6hS1luOMv$ ,
-> > for quite some time.
-> >
-> > It is reproducible on v5.15-rc1, v5.15, v5.16-rc8 and next-20220104.
-> > So, it is in mainline, was released and has not been fixed in
-> > linux-next yet.
-> >
-> > As syzkaller also provides a reproducer, we bisected this memory leak
-> > to be introduced with  commit 314001f0bf92 ("af_unix: Add OOB
-> > support").
-> >
-> > We also tested that reverting this commit on torvalds' current tree
-> > made the memory leak with the reproducer go away.
-> >
-> > Could you please have a look how your commit introduces this memory
-> > leak? We will gladly support testing your fix in case help is needed.
-> >
-> >
-> > Best regards,
-> >
-> > Lukas
+--=20
+Luiz Augusto von Dentz
