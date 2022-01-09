@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9DD488D21
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:17:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3854A488D25
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:17:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237439AbiAIXRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 18:17:04 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:42174 "EHLO
+        id S237467AbiAIXRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 18:17:07 -0500
+Received: from mail.netfilter.org ([217.70.188.207]:42124 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237409AbiAIXQ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:16:59 -0500
+        with ESMTP id S237416AbiAIXRB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:17:01 -0500
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 61C9C64690;
-        Mon, 10 Jan 2022 00:14:09 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 0BC29607C1;
+        Mon, 10 Jan 2022 00:14:10 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 16/32] netfilter: conntrack: avoid useless indirection during conntrack destruction
-Date:   Mon, 10 Jan 2022 00:16:24 +0100
-Message-Id: <20220109231640.104123-17-pablo@netfilter.org>
+Subject: [PATCH net-next 17/32] net: prefer nf_ct_put instead of nf_conntrack_put
+Date:   Mon, 10 Jan 2022 00:16:25 +0100
+Message-Id: <20220109231640.104123-18-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220109231640.104123-1-pablo@netfilter.org>
 References: <20220109231640.104123-1-pablo@netfilter.org>
@@ -31,121 +31,119 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-nf_ct_put() results in a usesless indirection:
+Its the same as nf_conntrack_put(), but without the
+need for an indirect call.  The downside is a module dependency on
+nf_conntrack, but all of these already depend on conntrack anyway.
 
-nf_ct_put -> nf_conntrack_put -> nf_conntrack_destroy -> rcu readlock +
-indirect call of ct_hooks->destroy().
-
-There are two _put helpers:
-nf_ct_put and nf_conntrack_put.  The latter is what should be used in
-code that MUST NOT cause a linker dependency on the conntrack module
-(e.g. calls from core network stack).
-
-Everyone else should call nf_ct_put() instead.
-
-A followup patch will convert a few nf_conntrack_put() calls to
-nf_ct_put(), in particular from modules that already have a conntrack
-dependency such as act_ct or even nf_conntrack itself.
-
+Cc: Paul Blakey <paulb@mellanox.com>
+Cc: dev@openvswitch.org
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/linux/netfilter/nf_conntrack_common.h |  2 ++
- include/net/netfilter/nf_conntrack.h          |  8 ++++++--
- net/netfilter/nf_conntrack_core.c             | 12 ++++++------
- 3 files changed, 14 insertions(+), 8 deletions(-)
+ net/netfilter/nf_conntrack_core.c |  4 ++--
+ net/openvswitch/conntrack.c       | 14 ++++++++++----
+ net/sched/act_ct.c                |  6 +++---
+ 3 files changed, 15 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/netfilter/nf_conntrack_common.h b/include/linux/netfilter/nf_conntrack_common.h
-index a03f7a80b9ab..2770db2fa080 100644
---- a/include/linux/netfilter/nf_conntrack_common.h
-+++ b/include/linux/netfilter/nf_conntrack_common.h
-@@ -29,6 +29,8 @@ struct nf_conntrack {
- };
- 
- void nf_conntrack_destroy(struct nf_conntrack *nfct);
-+
-+/* like nf_ct_put, but without module dependency on nf_conntrack */
- static inline void nf_conntrack_put(struct nf_conntrack *nfct)
- {
- 	if (nfct && refcount_dec_and_test(&nfct->use))
-diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
-index a4a14f3a5e38..8731d5bcb47d 100644
---- a/include/net/netfilter/nf_conntrack.h
-+++ b/include/net/netfilter/nf_conntrack.h
-@@ -76,6 +76,8 @@ struct nf_conn {
- 	 * Hint, SKB address this struct and refcnt via skb->_nfct and
- 	 * helpers nf_conntrack_get() and nf_conntrack_put().
- 	 * Helper nf_ct_put() equals nf_conntrack_put() by dec refcnt,
-+	 * except that the latter uses internal indirection and does not
-+	 * result in a conntrack module dependency.
- 	 * beware nf_ct_get() is different and don't inc refcnt.
- 	 */
- 	struct nf_conntrack ct_general;
-@@ -170,11 +172,13 @@ nf_ct_get(const struct sk_buff *skb, enum ip_conntrack_info *ctinfo)
- 	return (struct nf_conn *)(nfct & NFCT_PTRMASK);
- }
- 
-+void nf_ct_destroy(struct nf_conntrack *nfct);
-+
- /* decrement reference count on a conntrack */
- static inline void nf_ct_put(struct nf_conn *ct)
- {
--	WARN_ON(!ct);
--	nf_conntrack_put(&ct->ct_general);
-+	if (ct && refcount_dec_and_test(&ct->ct_general.use))
-+		nf_ct_destroy(&ct->ct_general);
- }
- 
- /* Protocol module loading */
 diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index cd3d07e418b5..7a2063abae04 100644
+index 7a2063abae04..c74933a6039f 100644
 --- a/net/netfilter/nf_conntrack_core.c
 +++ b/net/netfilter/nf_conntrack_core.c
-@@ -558,7 +558,7 @@ static void nf_ct_del_from_dying_or_unconfirmed_list(struct nf_conn *ct)
+@@ -989,7 +989,7 @@ static int __nf_ct_resolve_clash(struct sk_buff *skb,
  
- #define NFCT_ALIGN(len)	(((len) + NFCT_INFOMASK) & ~NFCT_INFOMASK)
+ 		nf_ct_acct_merge(ct, ctinfo, loser_ct);
+ 		nf_ct_add_to_dying_list(loser_ct);
+-		nf_conntrack_put(&loser_ct->ct_general);
++		nf_ct_put(loser_ct);
+ 		nf_ct_set(skb, ct, ctinfo);
  
--/* Released via destroy_conntrack() */
-+/* Released via nf_ct_destroy() */
- struct nf_conn *nf_ct_tmpl_alloc(struct net *net,
- 				 const struct nf_conntrack_zone *zone,
- 				 gfp_t flags)
-@@ -612,12 +612,11 @@ static void destroy_gre_conntrack(struct nf_conn *ct)
- #endif
+ 		NF_CT_STAT_INC(net, clash_resolve);
+@@ -1921,7 +1921,7 @@ nf_conntrack_in(struct sk_buff *skb, const struct nf_hook_state *state)
+ 		/* Invalid: inverse of the return code tells
+ 		 * the netfilter core what to do */
+ 		pr_debug("nf_conntrack_in: Can't track with proto module\n");
+-		nf_conntrack_put(&ct->ct_general);
++		nf_ct_put(ct);
+ 		skb->_nfct = 0;
+ 		NF_CT_STAT_INC_ATOMIC(state->net, invalid);
+ 		if (ret == -NF_DROP)
+diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+index 121664e52271..a921c5c00a1b 100644
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -574,7 +574,7 @@ ovs_ct_expect_find(struct net *net, const struct nf_conntrack_zone *zone,
+ 			struct nf_conn *ct = nf_ct_tuplehash_to_ctrack(h);
+ 
+ 			nf_ct_delete(ct, 0, 0);
+-			nf_conntrack_put(&ct->ct_general);
++			nf_ct_put(ct);
+ 		}
+ 	}
+ 
+@@ -723,7 +723,7 @@ static bool skb_nfct_cached(struct net *net,
+ 		if (nf_ct_is_confirmed(ct))
+ 			nf_ct_delete(ct, 0, 0);
+ 
+-		nf_conntrack_put(&ct->ct_general);
++		nf_ct_put(ct);
+ 		nf_ct_set(skb, NULL, 0);
+ 		return false;
+ 	}
+@@ -967,7 +967,8 @@ static int __ovs_ct_lookup(struct net *net, struct sw_flow_key *key,
+ 
+ 		/* Associate skb with specified zone. */
+ 		if (tmpl) {
+-			nf_conntrack_put(skb_nfct(skb));
++			ct = nf_ct_get(skb, &ctinfo);
++			nf_ct_put(ct);
+ 			nf_conntrack_get(&tmpl->ct_general);
+ 			nf_ct_set(skb, tmpl, IP_CT_NEW);
+ 		}
+@@ -1328,7 +1329,12 @@ int ovs_ct_execute(struct net *net, struct sk_buff *skb,
+ 
+ int ovs_ct_clear(struct sk_buff *skb, struct sw_flow_key *key)
+ {
+-	nf_conntrack_put(skb_nfct(skb));
++	enum ip_conntrack_info ctinfo;
++	struct nf_conn *ct;
++
++	ct = nf_ct_get(skb, &ctinfo);
++
++	nf_ct_put(ct);
+ 	nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
+ 	ovs_ct_fill_key(skb, key, false);
+ 
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index 3fa904cf8f27..9db291b45878 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -598,7 +598,7 @@ static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
+ 		if (nf_ct_is_confirmed(ct))
+ 			nf_ct_kill(ct);
+ 
+-		nf_conntrack_put(&ct->ct_general);
++		nf_ct_put(ct);
+ 		nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
+ 
+ 		return false;
+@@ -763,7 +763,7 @@ static void tcf_ct_params_free(struct rcu_head *head)
+ 	tcf_ct_flow_table_put(params);
+ 
+ 	if (params->tmpl)
+-		nf_conntrack_put(&params->tmpl->ct_general);
++		nf_ct_put(params->tmpl);
+ 	kfree(params);
  }
  
--static void
--destroy_conntrack(struct nf_conntrack *nfct)
-+void nf_ct_destroy(struct nf_conntrack *nfct)
- {
- 	struct nf_conn *ct = (struct nf_conn *)nfct;
+@@ -967,7 +967,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ 		qdisc_skb_cb(skb)->post_ct = false;
+ 		ct = nf_ct_get(skb, &ctinfo);
+ 		if (ct) {
+-			nf_conntrack_put(&ct->ct_general);
++			nf_ct_put(ct);
+ 			nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
+ 		}
  
--	pr_debug("destroy_conntrack(%p)\n", ct);
-+	pr_debug("%s(%p)\n", __func__, ct);
- 	WARN_ON(refcount_read(&nfct->use) != 0);
- 
- 	if (unlikely(nf_ct_is_template(ct))) {
-@@ -643,9 +642,10 @@ destroy_conntrack(struct nf_conntrack *nfct)
- 	if (ct->master)
- 		nf_ct_put(ct->master);
- 
--	pr_debug("destroy_conntrack: returning ct=%p to slab\n", ct);
-+	pr_debug("%s: returning ct=%p to slab\n", __func__, ct);
- 	nf_conntrack_free(ct);
- }
-+EXPORT_SYMBOL(nf_ct_destroy);
- 
- static void nf_ct_delete_from_lists(struct nf_conn *ct)
- {
-@@ -2771,7 +2771,7 @@ int nf_conntrack_init_start(void)
- 
- static const struct nf_ct_hook nf_conntrack_hook = {
- 	.update		= nf_conntrack_update,
--	.destroy	= destroy_conntrack,
-+	.destroy	= nf_ct_destroy,
- 	.get_tuple_skb  = nf_conntrack_get_tuple_skb,
- 	.attach		= nf_conntrack_attach,
- };
 -- 
 2.30.2
 
