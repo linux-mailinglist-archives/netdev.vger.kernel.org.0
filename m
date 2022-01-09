@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F266488D17
+	by mail.lfdr.de (Postfix) with ESMTP id 8AA00488D18
 	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:17:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237415AbiAIXRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S237418AbiAIXRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sun, 9 Jan 2022 18:17:00 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:42126 "EHLO
+Received: from mail.netfilter.org ([217.70.188.207]:42124 "EHLO
         mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237393AbiAIXQz (ORCPT
+        with ESMTP id S237390AbiAIXQz (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:16:55 -0500
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id B702664290;
-        Mon, 10 Jan 2022 00:14:04 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 563C16468F;
+        Mon, 10 Jan 2022 00:14:05 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 09/32] netfilter: nat: force port remap to prevent shadowing well-known ports
-Date:   Mon, 10 Jan 2022 00:16:17 +0100
-Message-Id: <20220109231640.104123-10-pablo@netfilter.org>
+Subject: [PATCH net-next 10/32] netfilter: flowtable: remove ipv4/ipv6 modules
+Date:   Mon, 10 Jan 2022 00:16:18 +0100
+Message-Id: <20220109231640.104123-11-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220109231640.104123-1-pablo@netfilter.org>
 References: <20220109231640.104123-1-pablo@netfilter.org>
@@ -31,128 +31,219 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-If destination port is above 32k and source port below 16k
-assume this might cause 'port shadowing' where a 'new' inbound
-connection matches an existing one, e.g.
+Just place the structs and registration in the inet module.
+nf_flow_table_ipv6, nf_flow_table_ipv4 and nf_flow_table_inet share
+same module dependencies: nf_flow_table, nf_tables.
 
-inbound X:41234 -> Y:53 matches existing conntrack entry
-        Z:53 -> X:4123, where Z got natted to X.
+before:
+   text	   data	    bss	    dec	    hex	filename
+   2278	   1480	      0	   3758	    eae	nf_flow_table_inet.ko
+   1159	   1352	      0	   2511	    9cf	nf_flow_table_ipv6.ko
+   1154	   1352	      0	   2506	    9ca	nf_flow_table_ipv4.ko
 
-In this case, new packet is natted to Z:53 which is likely
-unwanted.
-
-We avoid the rewrite for connections that originate from local host:
-port-shadowing is only possible with forwarded connections.
-
-Also adjust test case.
-
-v3: no need to call tuple_force_port_remap if already in random mode (Phil)
+after:
+   2369	   1672	      0	   4041	    fc9	nf_flow_table_inet.ko
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
-Acked-by: Phil Sutter <phil@nwl.cc>
-Acked-by: Eric Garver <eric@garver.life>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_nat_core.c                  | 43 ++++++++++++++++++--
- tools/testing/selftests/netfilter/nft_nat.sh |  5 ++-
- 2 files changed, 43 insertions(+), 5 deletions(-)
+ net/ipv4/netfilter/Kconfig              |  8 ++----
+ net/ipv4/netfilter/Makefile             |  3 --
+ net/ipv4/netfilter/nf_flow_table_ipv4.c | 37 ------------------------
+ net/ipv6/netfilter/Kconfig              |  8 ++----
+ net/ipv6/netfilter/nf_flow_table_ipv6.c | 38 -------------------------
+ net/netfilter/nf_flow_table_inet.c      | 26 +++++++++++++++++
+ 6 files changed, 30 insertions(+), 90 deletions(-)
 
-diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
-index ab9f6c75524d..3dd130487b5b 100644
---- a/net/netfilter/nf_nat_core.c
-+++ b/net/netfilter/nf_nat_core.c
-@@ -494,6 +494,38 @@ static void nf_nat_l4proto_unique_tuple(struct nf_conntrack_tuple *tuple,
- 	goto another_round;
+diff --git a/net/ipv4/netfilter/Kconfig b/net/ipv4/netfilter/Kconfig
+index 63cb953bd019..67087f95579f 100644
+--- a/net/ipv4/netfilter/Kconfig
++++ b/net/ipv4/netfilter/Kconfig
+@@ -59,12 +59,8 @@ config NF_TABLES_ARP
+ endif # NF_TABLES
+ 
+ config NF_FLOW_TABLE_IPV4
+-	tristate "Netfilter flow table IPv4 module"
+-	depends on NF_FLOW_TABLE
+-	help
+-	  This option adds the flow table IPv4 support.
+-
+-	  To compile it as a module, choose M here.
++	tristate
++	select NF_FLOW_TABLE_INET
+ 
+ config NF_DUP_IPV4
+ 	tristate "Netfilter IPv4 packet duplication to alternate destination"
+diff --git a/net/ipv4/netfilter/Makefile b/net/ipv4/netfilter/Makefile
+index f38fb1368ddb..93bad1184251 100644
+--- a/net/ipv4/netfilter/Makefile
++++ b/net/ipv4/netfilter/Makefile
+@@ -24,9 +24,6 @@ obj-$(CONFIG_NFT_REJECT_IPV4) += nft_reject_ipv4.o
+ obj-$(CONFIG_NFT_FIB_IPV4) += nft_fib_ipv4.o
+ obj-$(CONFIG_NFT_DUP_IPV4) += nft_dup_ipv4.o
+ 
+-# flow table support
+-obj-$(CONFIG_NF_FLOW_TABLE_IPV4) += nf_flow_table_ipv4.o
+-
+ # generic IP tables
+ obj-$(CONFIG_IP_NF_IPTABLES) += ip_tables.o
+ 
+diff --git a/net/ipv4/netfilter/nf_flow_table_ipv4.c b/net/ipv4/netfilter/nf_flow_table_ipv4.c
+index aba65fe90345..e69de29bb2d1 100644
+--- a/net/ipv4/netfilter/nf_flow_table_ipv4.c
++++ b/net/ipv4/netfilter/nf_flow_table_ipv4.c
+@@ -1,37 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
+-#include <linux/kernel.h>
+-#include <linux/init.h>
+-#include <linux/module.h>
+-#include <linux/netfilter.h>
+-#include <net/netfilter/nf_flow_table.h>
+-#include <net/netfilter/nf_tables.h>
+-
+-static struct nf_flowtable_type flowtable_ipv4 = {
+-	.family		= NFPROTO_IPV4,
+-	.init		= nf_flow_table_init,
+-	.setup		= nf_flow_table_offload_setup,
+-	.action		= nf_flow_rule_route_ipv4,
+-	.free		= nf_flow_table_free,
+-	.hook		= nf_flow_offload_ip_hook,
+-	.owner		= THIS_MODULE,
+-};
+-
+-static int __init nf_flow_ipv4_module_init(void)
+-{
+-	nft_register_flowtable_type(&flowtable_ipv4);
+-
+-	return 0;
+-}
+-
+-static void __exit nf_flow_ipv4_module_exit(void)
+-{
+-	nft_unregister_flowtable_type(&flowtable_ipv4);
+-}
+-
+-module_init(nf_flow_ipv4_module_init);
+-module_exit(nf_flow_ipv4_module_exit);
+-
+-MODULE_LICENSE("GPL");
+-MODULE_AUTHOR("Pablo Neira Ayuso <pablo@netfilter.org>");
+-MODULE_ALIAS_NF_FLOWTABLE(AF_INET);
+-MODULE_DESCRIPTION("Netfilter flow table support");
+diff --git a/net/ipv6/netfilter/Kconfig b/net/ipv6/netfilter/Kconfig
+index f22233e44ee9..97d3d1b36dbc 100644
+--- a/net/ipv6/netfilter/Kconfig
++++ b/net/ipv6/netfilter/Kconfig
+@@ -48,12 +48,8 @@ endif # NF_TABLES_IPV6
+ endif # NF_TABLES
+ 
+ config NF_FLOW_TABLE_IPV6
+-	tristate "Netfilter flow table IPv6 module"
+-	depends on NF_FLOW_TABLE
+-	help
+-	  This option adds the flow table IPv6 support.
+-
+-	  To compile it as a module, choose M here.
++	tristate
++	select NF_FLOW_TABLE_INET
+ 
+ config NF_DUP_IPV6
+ 	tristate "Netfilter IPv6 packet duplication to alternate destination"
+diff --git a/net/ipv6/netfilter/nf_flow_table_ipv6.c b/net/ipv6/netfilter/nf_flow_table_ipv6.c
+index 667b8af2546a..e69de29bb2d1 100644
+--- a/net/ipv6/netfilter/nf_flow_table_ipv6.c
++++ b/net/ipv6/netfilter/nf_flow_table_ipv6.c
+@@ -1,38 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0-only
+-#include <linux/kernel.h>
+-#include <linux/init.h>
+-#include <linux/module.h>
+-#include <linux/netfilter.h>
+-#include <linux/rhashtable.h>
+-#include <net/netfilter/nf_flow_table.h>
+-#include <net/netfilter/nf_tables.h>
+-
+-static struct nf_flowtable_type flowtable_ipv6 = {
+-	.family		= NFPROTO_IPV6,
+-	.init		= nf_flow_table_init,
+-	.setup		= nf_flow_table_offload_setup,
+-	.action		= nf_flow_rule_route_ipv6,
+-	.free		= nf_flow_table_free,
+-	.hook		= nf_flow_offload_ipv6_hook,
+-	.owner		= THIS_MODULE,
+-};
+-
+-static int __init nf_flow_ipv6_module_init(void)
+-{
+-	nft_register_flowtable_type(&flowtable_ipv6);
+-
+-	return 0;
+-}
+-
+-static void __exit nf_flow_ipv6_module_exit(void)
+-{
+-	nft_unregister_flowtable_type(&flowtable_ipv6);
+-}
+-
+-module_init(nf_flow_ipv6_module_init);
+-module_exit(nf_flow_ipv6_module_exit);
+-
+-MODULE_LICENSE("GPL");
+-MODULE_AUTHOR("Pablo Neira Ayuso <pablo@netfilter.org>");
+-MODULE_ALIAS_NF_FLOWTABLE(AF_INET6);
+-MODULE_DESCRIPTION("Netfilter flow table IPv6 module");
+diff --git a/net/netfilter/nf_flow_table_inet.c b/net/netfilter/nf_flow_table_inet.c
+index bc4126d8ef65..5c57ade6bd05 100644
+--- a/net/netfilter/nf_flow_table_inet.c
++++ b/net/netfilter/nf_flow_table_inet.c
+@@ -54,8 +54,30 @@ static struct nf_flowtable_type flowtable_inet = {
+ 	.owner		= THIS_MODULE,
+ };
+ 
++static struct nf_flowtable_type flowtable_ipv4 = {
++	.family		= NFPROTO_IPV4,
++	.init		= nf_flow_table_init,
++	.setup		= nf_flow_table_offload_setup,
++	.action		= nf_flow_rule_route_ipv4,
++	.free		= nf_flow_table_free,
++	.hook		= nf_flow_offload_ip_hook,
++	.owner		= THIS_MODULE,
++};
++
++static struct nf_flowtable_type flowtable_ipv6 = {
++	.family		= NFPROTO_IPV6,
++	.init		= nf_flow_table_init,
++	.setup		= nf_flow_table_offload_setup,
++	.action		= nf_flow_rule_route_ipv6,
++	.free		= nf_flow_table_free,
++	.hook		= nf_flow_offload_ipv6_hook,
++	.owner		= THIS_MODULE,
++};
++
+ static int __init nf_flow_inet_module_init(void)
+ {
++	nft_register_flowtable_type(&flowtable_ipv4);
++	nft_register_flowtable_type(&flowtable_ipv6);
+ 	nft_register_flowtable_type(&flowtable_inet);
+ 
+ 	return 0;
+@@ -64,6 +86,8 @@ static int __init nf_flow_inet_module_init(void)
+ static void __exit nf_flow_inet_module_exit(void)
+ {
+ 	nft_unregister_flowtable_type(&flowtable_inet);
++	nft_unregister_flowtable_type(&flowtable_ipv6);
++	nft_unregister_flowtable_type(&flowtable_ipv4);
  }
  
-+static bool tuple_force_port_remap(const struct nf_conntrack_tuple *tuple)
-+{
-+	u16 sp, dp;
-+
-+	switch (tuple->dst.protonum) {
-+	case IPPROTO_TCP:
-+		sp = ntohs(tuple->src.u.tcp.port);
-+		dp = ntohs(tuple->dst.u.tcp.port);
-+		break;
-+	case IPPROTO_UDP:
-+	case IPPROTO_UDPLITE:
-+		sp = ntohs(tuple->src.u.udp.port);
-+		dp = ntohs(tuple->dst.u.udp.port);
-+		break;
-+	default:
-+		return false;
-+	}
-+
-+	/* IANA: System port range: 1-1023,
-+	 *         user port range: 1024-49151,
-+	 *      private port range: 49152-65535.
-+	 *
-+	 * Linux default ephemeral port range is 32768-60999.
-+	 *
-+	 * Enforce port remapping if sport is significantly lower
-+	 * than dport to prevent NAT port shadowing, i.e.
-+	 * accidental match of 'new' inbound connection vs.
-+	 * existing outbound one.
-+	 */
-+	return sp < 16384 && dp >= 32768;
-+}
-+
- /* Manipulate the tuple into the range given. For NF_INET_POST_ROUTING,
-  * we change the source to map into the range. For NF_INET_PRE_ROUTING
-  * and NF_INET_LOCAL_OUT, we change the destination to map into the
-@@ -507,11 +539,17 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
- 		 struct nf_conn *ct,
- 		 enum nf_nat_manip_type maniptype)
- {
-+	bool random_port = range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL;
- 	const struct nf_conntrack_zone *zone;
- 	struct net *net = nf_ct_net(ct);
+ module_init(nf_flow_inet_module_init);
+@@ -71,5 +95,7 @@ module_exit(nf_flow_inet_module_exit);
  
- 	zone = nf_ct_zone(ct);
- 
-+	if (maniptype == NF_NAT_MANIP_SRC &&
-+	    !random_port &&
-+	    !ct->local_origin)
-+		random_port = tuple_force_port_remap(orig_tuple);
-+
- 	/* 1) If this srcip/proto/src-proto-part is currently mapped,
- 	 * and that same mapping gives a unique tuple within the given
- 	 * range, use that.
-@@ -520,8 +558,7 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
- 	 * So far, we don't do local source mappings, so multiple
- 	 * manips not an issue.
- 	 */
--	if (maniptype == NF_NAT_MANIP_SRC &&
--	    !(range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL)) {
-+	if (maniptype == NF_NAT_MANIP_SRC && !random_port) {
- 		/* try the original tuple first */
- 		if (in_range(orig_tuple, range)) {
- 			if (!nf_nat_used_tuple(orig_tuple, ct)) {
-@@ -545,7 +582,7 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
- 	 */
- 
- 	/* Only bother mapping if it's not already in range and unique */
--	if (!(range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL)) {
-+	if (!random_port) {
- 		if (range->flags & NF_NAT_RANGE_PROTO_SPECIFIED) {
- 			if (!(range->flags & NF_NAT_RANGE_PROTO_OFFSET) &&
- 			    l4proto_in_range(tuple, maniptype,
-diff --git a/tools/testing/selftests/netfilter/nft_nat.sh b/tools/testing/selftests/netfilter/nft_nat.sh
-index d88867d2fed7..349a319a9e51 100755
---- a/tools/testing/selftests/netfilter/nft_nat.sh
-+++ b/tools/testing/selftests/netfilter/nft_nat.sh
-@@ -880,8 +880,9 @@ EOF
- 		return $ksft_skip
- 	fi
- 
--	# test default behaviour. Packet from ns1 to ns0 is redirected to ns2.
--	test_port_shadow "default" "CLIENT"
-+	# test default behaviour. Packet from ns1 to ns0 is not redirected
-+	# due to automatic port translation.
-+	test_port_shadow "default" "ROUTER"
- 
- 	# test packet filter based mitigation: prevent forwarding of
- 	# packets claiming to come from the service port.
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Pablo Neira Ayuso <pablo@netfilter.org>");
++MODULE_ALIAS_NF_FLOWTABLE(AF_INET);
++MODULE_ALIAS_NF_FLOWTABLE(AF_INET6);
+ MODULE_ALIAS_NF_FLOWTABLE(1); /* NFPROTO_INET */
+ MODULE_DESCRIPTION("Netfilter flow table mixed IPv4/IPv6 module");
 -- 
 2.30.2
 
