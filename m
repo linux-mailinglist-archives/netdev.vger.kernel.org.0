@@ -2,92 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFFF84889A6
-	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 14:40:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5755A4889AE
+	for <lists+netdev@lfdr.de>; Sun,  9 Jan 2022 14:45:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235685AbiAINkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 08:40:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41084 "EHLO
+        id S235698AbiAINph (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 08:45:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235673AbiAINku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 08:40:50 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D9AC061748
-        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 05:40:49 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1n6YRE-00047F-Cs
-        for netdev@vger.kernel.org; Sun, 09 Jan 2022 14:40:48 +0100
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id E6F836D3F05
-        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 13:40:44 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 50B776D3ED9;
-        Sun,  9 Jan 2022 13:40:42 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id cf116496;
-        Sun, 9 Jan 2022 13:40:41 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Brian Silverman <brian.silverman@bluerivertech.com>,
-        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net 5/5] can: gs_usb: gs_can_start_xmit(): zero-initialize hf->{flags,reserved}
-Date:   Sun,  9 Jan 2022 14:40:40 +0100
-Message-Id: <20220109134040.1945428-6-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220109134040.1945428-1-mkl@pengutronix.de>
-References: <20220109134040.1945428-1-mkl@pengutronix.de>
+        with ESMTP id S231659AbiAINpg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 08:45:36 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D30C06173F
+        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 05:45:36 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id m4so1341231edb.10
+        for <netdev@vger.kernel.org>; Sun, 09 Jan 2022 05:45:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=NdonzBmQ8GAPbs/WLTboFJCrlKbR6tI6Y2UMvojR29M=;
+        b=hE2uuUTNH2XMiyaLQQa4yh4PuPDUCzUGzbYwwoQCn0dwObTAn+i4o7Qp083yrvVur+
+         fpAITLs4EO9DKNfJqMBFI1Sf5pGMZbUUYfLKfPrt0GkNFu89DmeF8a35t9PuMt/Cn1U8
+         8wRrJrGdo5/0NzRMQvzCBMaizZOdFGmJx9h2a+xXOa0WzM85gzgfqqXzUs8x/Voj0FKn
+         GTDLCs0vvaWhmHA4F16zBsQlwlI7mToCjw5X2fSvrEdgrweRL+InT/MqTLpbqfG2ot6z
+         +sTRdUyaeGhVRGMAN32zDn0PC3GBUyGy8tzS9DA/STlb7lGZ40Pgzu9k4qpwmxh28cnR
+         jVzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=NdonzBmQ8GAPbs/WLTboFJCrlKbR6tI6Y2UMvojR29M=;
+        b=ew8bjZQWbBW1xRNaW45yvXCCZr722cwsrkI5MZzCIOGQMk445EmWJblzZz2DxyVkUO
+         3AlvZAg+L7ijEKT+WVYEu5PmovF8KlVzs+iiNtv2/Tsc3hFiPrgidYCMmWzElQUyLh7n
+         RsYxPbimXzhRmnEsHHLvYZ8Wqpuq90wV8IQ4WRjaDFQftuEqkxKQnpvbiZmI6IQGs4Kt
+         2CnSrdZI0HCX00u/A9THUk6bxHANxEJRP81PkfI2RYuRFrQ6XDnWavQzrrbrCnNLwUzZ
+         WNq4OrIDippIiSHKXJ6MI6E/GufW0J/Pn2BD/2nKm/Z0UA67C0PRSvxR1OVsm7QfiTTN
+         rRIw==
+X-Gm-Message-State: AOAM533Ae6GjPLmKTgym/QokCJlWPAt9GIgxBf0M/jHE59IxCWDbswpJ
+        jcJzd3U6iYRFcqk4J3+AK4ZnrrrLuliWMaqGiOM=
+X-Google-Smtp-Source: ABdhPJzPABu2xiYt0ny6KVvs3Up7G9dFg0I9c2R8sDKNFNgsC8j94Tl9+EjDD6ZeaXU9blLDTIgnsl5swfMPcMD2IUI=
+X-Received: by 2002:a05:6402:1750:: with SMTP id v16mr14811331edx.310.1641735934819;
+ Sun, 09 Jan 2022 05:45:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Reply-To: jennybezoss14@gmail.com
+Sender: mrsnicolemarois94@gmail.com
+Received: by 2002:a17:906:9c83:0:0:0:0 with HTTP; Sun, 9 Jan 2022 05:45:34
+ -0800 (PST)
+From:   Mrs Jenny Bezos <jennybezos1@gmail.com>
+Date:   Sun, 9 Jan 2022 13:45:34 +0000
+X-Google-Sender-Auth: _XXZwofBJCt3K5_AI96J-6BRmxk
+Message-ID: <CALas=ibrs1Be-kJgCy96Bzs6jGHWZpCgFpS5tdCHL038e-1wZQ@mail.gmail.com>
+Subject: Dearest Friend,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brian Silverman <brian.silverman@bluerivertech.com>
-
-No information is deliberately sent in hf->flags in host -> device
-communications, but the open-source candleLight firmware echoes it
-back, which can result in the GS_CAN_FLAG_OVERFLOW flag being set and
-generating spurious ERRORFRAMEs.
-
-While there also initialize the reserved member with 0.
-
-Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
-Link: https://lore.kernel.org/all/20220106002952.25883-1-brian.silverman@bluerivertech.com
-Link: https://github.com/candle-usb/candleLight_fw/issues/87
-Cc: stable@vger.kernel.org
-Signed-off-by: Brian Silverman <brian.silverman@bluerivertech.com>
-[mkl: initialize the reserved member, too]
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/usb/gs_usb.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/can/usb/gs_usb.c b/drivers/net/can/usb/gs_usb.c
-index d7ce2c5956f4..4d43aca2ff56 100644
---- a/drivers/net/can/usb/gs_usb.c
-+++ b/drivers/net/can/usb/gs_usb.c
-@@ -508,6 +508,8 @@ static netdev_tx_t gs_can_start_xmit(struct sk_buff *skb,
- 
- 	hf->echo_id = idx;
- 	hf->channel = dev->channel;
-+	hf->flags = 0;
-+	hf->reserved = 0;
- 
- 	cf = (struct can_frame *)skb->data;
- 
 -- 
-2.34.1
 
+Dearest Friend,
 
+I am Mrs. Jenny Bezos from America  USA, I decided to donate what I
+have to you  for investment towards the good work of charity
+organizations, and also  to help the motherless and the less
+privileged ones and to carry out charitable works in your Country and
+around the World on my Behalf.
+
+I am diagnosing of throat Cancer, hospitalize for good 2 years and
+some months now and quite obvious that I have few days to live, and I
+am a Widow no child; I decided to will/donate the sum of $7.8 million
+to you for the good work of God, and also to help the motherless and
+less privilege and also forth assistance of the widows. At the moment
+I cannot take any telephone calls right now due to the fact that my
+relatives (who have squandered the funds for this purpose before) are
+around me and my health also. I have adjusted my will and my Bank  is
+aware.
+
+ I have willed those properties to you by quoting my Personal File
+Routing and Account Information. And I have also notified the bank
+that I am willing to give that property to you for good, effective and
+prudent work. It is right to say that I have been directed to do this
+by God. I will be going in for a surgery soon and I want to make sure
+that I make this donation before undergoing this surgery.  I will need
+your support to make this dream come through, could you let me know
+your interest to enable me to give you further information. And I
+hereby advise you to contact me by this email address.
+
+Thanks
+Mrs. Jenny Bezos.
