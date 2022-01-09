@@ -2,84 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5733F488D65
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:55:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26D9E488D67
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 00:55:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235736AbiAIXzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 18:55:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33964 "EHLO
+        id S236242AbiAIXzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 18:55:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234845AbiAIXzE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:55:04 -0500
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4F6C06173F
-        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 15:55:04 -0800 (PST)
-Received: by mail-pg1-x536.google.com with SMTP id v25so9727981pge.2
-        for <netdev@vger.kernel.org>; Sun, 09 Jan 2022 15:55:04 -0800 (PST)
+        with ESMTP id S234835AbiAIXzG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 18:55:06 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2283C06173F
+        for <netdev@vger.kernel.org>; Sun,  9 Jan 2022 15:55:05 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id q14so10545275plx.4
+        for <netdev@vger.kernel.org>; Sun, 09 Jan 2022 15:55:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=2OCRFCCvAhamOZAX1Nr5aUdD04Cw/Lk/qEAL8RkVvUw=;
-        b=IzG8gr/sKLVRVlKP0tFKPdwTqsvNp3tznmVwRC770XLRWb+ETOgIIzTPRgETvbCKin
-         nS3df/WkrEz7TaA2Lz/ZuOmwfUxe79PbzyvFtGI8SwkasDABEjtRc06CrXAGk7GqRJAG
-         CGH3s56JUp60k2KG/NVQKYnEni8aHO95OtwxM=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=mI2KRfliyGHH8+8ebvAcJ5DRn71GDH31oEAUkVY36MU=;
+        b=HKEDJj047ZEfKK7WmXT4QO6kChgKWBe0oOeUdyAgdaBdUie+tnGug7igBcLHpoffZC
+         bYT1FTdZG4A4PHeql8XRMrueJMWIFTxi4SBoEniGC1VCEESBTtW+4pmjOZW2nhNpD6Uu
+         dz1FkyvIqYYAUpfCIVNSBfWOPoEYyX/fryysw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=2OCRFCCvAhamOZAX1Nr5aUdD04Cw/Lk/qEAL8RkVvUw=;
-        b=x/dapqBkSEl6r2TEn5gMpbRy142NaI+7DJ4halXitKp0a4YFBs6iI9ArOJIKz/Rv2v
-         i37JEj4VuHV9sK0H2T9KoTsSRca1JZlEJeic0UVqYBULAmAggNMsdlra3yXa8k707JKQ
-         IDgSGl8ieOAUk6lWy1wTEdqY7BQVzHPxYHcGSaQ9NeSuH3uH3xELCGqQuy5uNLIaO0sR
-         vhgIAoGsh5Jw3DlecuZmF0whN9jrFpBmyLXVyBV/+CC8gwGF+R824y46PnDygqgm5r/H
-         IDjuo9UmcuEkoxv3AcrSxomJvy3y+bA8YnmWSGpTXdOiynyAE2ZGLpRIo2Mou0ztlp9g
-         Deyg==
-X-Gm-Message-State: AOAM533IgRtlQhFJkFVa2JfXMn+4NI/hw68bD6QdlQHTRasZLHeRulGl
-        gilrQBAqZJXmvTtCrq7KyhS0kHldAIcQeFCY
-X-Google-Smtp-Source: ABdhPJzI5FOymTcqBNRj+EuMOto7gMkX9JTBid7+ouQHPY5f2x4AGeaomJz76JzVwFHM9YExBb1iJQ==
-X-Received: by 2002:a63:3c5e:: with SMTP id i30mr17935829pgn.397.1641772503759;
-        Sun, 09 Jan 2022 15:55:03 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=mI2KRfliyGHH8+8ebvAcJ5DRn71GDH31oEAUkVY36MU=;
+        b=wj7OWcYH0QBkdPdatlq+W1uq3cmp7VCapP+BEmeybMPtLgUflFud8PVv605hNd9fyi
+         8MVZr7H1yZqz3Yv38wwOmV53xwUyzAiYzBjPRa8ZhcyyFL+q982Jnw02Cqil/N424sW0
+         Gb0QZAd0bFPB13ateXIPo1qEnNQx4QiLYVnRlUrFJCtSGQOY7uLXonqfLxla8Qf/qehX
+         7AaQTIIAaOcnbs28SXVYlKf+9diOk9P5iAcPdFGaMU2pzBSFyYDbEXUaSgjVcJhKHJiD
+         QTCmkBc616ppfSJZwYLB3bso236zqo+0F5TnXRwMCCQNHmDjP8L1J0IlMvGFQMgeRAkJ
+         6qsw==
+X-Gm-Message-State: AOAM530iBwHTbFzwGKieNq4q++nJ61llw3DT/xqky7F6y67AE2WL6WiR
+        Ksj9GWXb21FSagT0RZj4n/ArIA==
+X-Google-Smtp-Source: ABdhPJzIJhvTFN90rMpd8glYx3p5BSny+NT7kDcVXg8/zp3G0CNCBq4Ptt85gpc5W0ZcD76fi+bF+A==
+X-Received: by 2002:a17:903:2344:b0:14a:37c4:721c with SMTP id c4-20020a170903234400b0014a37c4721cmr2438066plh.158.1641772504742;
+        Sun, 09 Jan 2022 15:55:04 -0800 (PST)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id ls6sm6948611pjb.33.2022.01.09.15.55.02
+        by smtp.gmail.com with ESMTPSA id ls6sm6948611pjb.33.2022.01.09.15.55.03
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 09 Jan 2022 15:55:03 -0800 (PST)
+        Sun, 09 Jan 2022 15:55:04 -0800 (PST)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next v2 0/4] bnxt_en: Update for net-next
-Date:   Sun,  9 Jan 2022 18:54:41 -0500
-Message-Id: <1641772485-10421-1-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 1/4] bnxt_en: add dynamic debug support for HWRM messages
+Date:   Sun,  9 Jan 2022 18:54:42 -0500
+Message-Id: <1641772485-10421-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1641772485-10421-1-git-send-email-michael.chan@broadcom.com>
+References: <1641772485-10421-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000ea089005d52ef293"
+        boundary="000000000000fd69d005d52ef23b"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000ea089005d52ef293
+--000000000000fd69d005d52ef23b
 
-This series adds better error and debug logging for firmware messages.
-We now also use the firmware provided timeout value for long running
-commands instead of capping it to 40 seconds.
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-Edwin Peer (4):
-  bnxt_en: add dynamic debug support for HWRM messages
-  bnxt_en: improve VF error messages when PF is unavailable
-  bnxt_en: use firmware provided max timeout for messages
-  bnxt_en: improve firmware timeout messaging
+Add logging of firmware messages. These can be useful for diagnosing
+issues in the field, but due to their verbosity are only appropriate
+at a debug message level.
 
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  66 +++++++----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   5 +-
- .../ethernet/broadcom/bnxt/bnxt_coredump.c    |   4 +-
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |   9 +-
- .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    | 103 +++++++++++++-----
- .../net/ethernet/broadcom/bnxt/bnxt_hwrm.h    |   7 +-
- 6 files changed, 129 insertions(+), 65 deletions(-)
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  3 +
+ .../net/ethernet/broadcom/bnxt/bnxt_hwrm.c    | 68 +++++++++++++------
+ 2 files changed, 50 insertions(+), 21 deletions(-)
 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 4d7ea62e24fb..203d2ddb5504 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -2086,6 +2086,9 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 	u32 data1 = le32_to_cpu(cmpl->event_data1);
+ 	u32 data2 = le32_to_cpu(cmpl->event_data2);
+ 
++	netdev_dbg(bp->dev, "hwrm event 0x%x {0x%x, 0x%x}\n",
++		   event_id, data1, data2);
++
+ 	/* TODO CHIMP_FW: Define event id's for link change, error etc */
+ 	switch (event_id) {
+ 	case ASYNC_EVENT_CMPL_EVENT_ID_LINK_SPEED_CFG_CHANGE: {
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
+index bb7327b82d0b..a16d1ff6359c 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
+@@ -416,6 +416,32 @@ hwrm_update_token(struct bnxt *bp, u16 seq_id, enum bnxt_hwrm_wait_state state)
+ 	netdev_err(bp->dev, "Invalid hwrm seq id %d\n", seq_id);
+ }
+ 
++static void hwrm_req_dbg(struct bnxt *bp, struct input *req)
++{
++	u32 ring = le16_to_cpu(req->cmpl_ring);
++	u32 type = le16_to_cpu(req->req_type);
++	u32 tgt = le16_to_cpu(req->target_id);
++	u32 seq = le16_to_cpu(req->seq_id);
++	char opt[32] = "\n";
++
++	if (unlikely(ring != (u16)BNXT_HWRM_NO_CMPL_RING))
++		snprintf(opt, 16, " ring %d\n", ring);
++
++	if (unlikely(tgt != BNXT_HWRM_TARGET))
++		snprintf(opt + strlen(opt) - 1, 16, " tgt 0x%x\n", tgt);
++
++	netdev_dbg(bp->dev, "sent hwrm req_type 0x%x seq id 0x%x%s",
++		   type, seq, opt);
++}
++
++#define hwrm_err(bp, ctx, fmt, ...)				       \
++	do {							       \
++		if ((ctx)->flags & BNXT_HWRM_CTX_SILENT)	       \
++			netdev_dbg((bp)->dev, fmt, __VA_ARGS__);       \
++		else						       \
++			netdev_err((bp)->dev, fmt, __VA_ARGS__);       \
++	} while (0)
++
+ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ {
+ 	u32 doorbell_offset = BNXT_GRCPF_REG_CHIMP_COMM_TRIGGER;
+@@ -436,8 +462,11 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 		memset(ctx->resp, 0, PAGE_SIZE);
+ 
+ 	req_type = le16_to_cpu(ctx->req->req_type);
+-	if (BNXT_NO_FW_ACCESS(bp) && req_type != HWRM_FUNC_RESET)
++	if (BNXT_NO_FW_ACCESS(bp) && req_type != HWRM_FUNC_RESET) {
++		netdev_dbg(bp->dev, "hwrm req_type 0x%x skipped, FW channel down\n",
++			   req_type);
+ 		goto exit;
++	}
+ 
+ 	if (msg_len > BNXT_HWRM_MAX_REQ_LEN &&
+ 	    msg_len > bp->hwrm_max_ext_req_len) {
+@@ -490,6 +519,8 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 	/* Ring channel doorbell */
+ 	writel(1, bp->bar0 + doorbell_offset);
+ 
++	hwrm_req_dbg(bp, ctx->req);
++
+ 	if (!pci_is_enabled(bp->pdev)) {
+ 		rc = -ENODEV;
+ 		goto exit;
+@@ -531,9 +562,8 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 		}
+ 
+ 		if (READ_ONCE(token->state) != BNXT_HWRM_COMPLETE) {
+-			if (!(ctx->flags & BNXT_HWRM_CTX_SILENT))
+-				netdev_err(bp->dev, "Resp cmpl intr err msg: 0x%x\n",
+-					   le16_to_cpu(ctx->req->req_type));
++			hwrm_err(bp, ctx, "Resp cmpl intr err msg: 0x%x\n",
++				 req_type);
+ 			goto exit;
+ 		}
+ 		len = le16_to_cpu(READ_ONCE(ctx->resp->resp_len));
+@@ -565,7 +595,7 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 				if (resp_seq != seen_out_of_seq) {
+ 					netdev_warn(bp->dev, "Discarding out of seq response: 0x%x for msg {0x%x 0x%x}\n",
+ 						    le16_to_cpu(resp_seq),
+-						    le16_to_cpu(ctx->req->req_type),
++						    req_type,
+ 						    le16_to_cpu(ctx->req->seq_id));
+ 					seen_out_of_seq = resp_seq;
+ 				}
+@@ -585,11 +615,9 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 
+ 		if (i >= tmo_count) {
+ timeout_abort:
+-			if (!(ctx->flags & BNXT_HWRM_CTX_SILENT))
+-				netdev_err(bp->dev, "Error (timeout: %u) msg {0x%x 0x%x} len:%d\n",
+-					   hwrm_total_timeout(i),
+-					   le16_to_cpu(ctx->req->req_type),
+-					   le16_to_cpu(ctx->req->seq_id), len);
++			hwrm_err(bp, ctx, "Error (timeout: %u) msg {0x%x 0x%x} len:%d\n",
++				 hwrm_total_timeout(i), req_type,
++				 le16_to_cpu(ctx->req->seq_id), len);
+ 			goto exit;
+ 		}
+ 
+@@ -604,12 +632,9 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 		}
+ 
+ 		if (j >= HWRM_VALID_BIT_DELAY_USEC) {
+-			if (!(ctx->flags & BNXT_HWRM_CTX_SILENT))
+-				netdev_err(bp->dev, "Error (timeout: %u) msg {0x%x 0x%x} len:%d v:%d\n",
+-					   hwrm_total_timeout(i),
+-					   le16_to_cpu(ctx->req->req_type),
+-					   le16_to_cpu(ctx->req->seq_id), len,
+-					   *valid);
++			hwrm_err(bp, ctx, "Error (timeout: %u) msg {0x%x 0x%x} len:%d v:%d\n",
++				 hwrm_total_timeout(i), req_type,
++				 le16_to_cpu(ctx->req->seq_id), len, *valid);
+ 			goto exit;
+ 		}
+ 	}
+@@ -620,11 +645,12 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
+ 	 */
+ 	*valid = 0;
+ 	rc = le16_to_cpu(ctx->resp->error_code);
+-	if (rc && !(ctx->flags & BNXT_HWRM_CTX_SILENT)) {
+-		netdev_err(bp->dev, "hwrm req_type 0x%x seq id 0x%x error 0x%x\n",
+-			   le16_to_cpu(ctx->resp->req_type),
+-			   le16_to_cpu(ctx->resp->seq_id), rc);
+-	}
++	if (rc == HWRM_ERR_CODE_BUSY && !(ctx->flags & BNXT_HWRM_CTX_SILENT))
++		netdev_warn(bp->dev, "FW returned busy, hwrm req_type 0x%x\n",
++			    req_type);
++	else if (rc)
++		hwrm_err(bp, ctx, "hwrm req_type 0x%x seq id 0x%x error 0x%x\n",
++			 req_type, token->seq_id, rc);
+ 	rc = __hwrm_to_stderr(rc);
+ exit:
+ 	if (token)
 -- 
 2.18.1
 
 
---000000000000ea089005d52ef293
+--000000000000fd69d005d52ef23b
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -150,13 +291,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBvwU3mVrQeAkftcSgzQKcUs1xuxrL7D
-twcoKo0bXRynMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDEw
-OTIzNTUwNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIAHj25zCndi/D+TPy+MbejwZpfuu231u
+ZM7neI95O/jIMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDEw
+OTIzNTUwNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQDKAV6pOb3WFbgIbLxaUsmYzkJK+H1PxGm756Zn3qw5E3y+bZKi
-nx6GTDHMk/SBVs4yiMNTUXH56e9McTn5mN9psycT64zTRoc6wADD4ee/g2D+7Z/tWcYWry7mWdTU
-W1vep9lKO8LBvC6uoVA4P220gLJNy5ilP5jztH2oJPV5xy4FZfXOmBKDW+MphpiiQYakPbwEtt8r
-HWlbI0O8Teu2niuGoTsy4i9P50cPV+WWryG7YcHNOSTOEnfn7v2CHJ46stTxW54kmA70VwF56aXU
-8BI2xaz39G8KqoRMiMxluZ39Zit2D5HINZyCuBxHqpHrB1pOCxNiRUZ5NkKgMO8B
---000000000000ea089005d52ef293--
+ATANBgkqhkiG9w0BAQEFAASCAQBCtqpI9mykGlKXTjHMXD3w9clVYYQJUEGeqwgszI+WRBhQmzOy
+TPq7vFB6nR2N6rpXbYDpuMhRInZtBx9K5RzZnrZuerRqax5KwZI9D7oHG1Bf1vPxcpPSFS9otwSj
+8hlOCIHmsgLZPYoW9wNVwr2O81oJY2mc+QC3B+26kQOmSdstC0pbP+VQUR9JDca461FXEdpVHysw
+ffK7jEE0L9QKd5S17kqMKJsIk+2wNy5wFlzQIx9ykbA2iiG2gnAcG6VtirmyIdZt/ItSNB0vWQpa
+8gnka5r+Wekfn1187W2m0z6VOkdHOrqP5sDzHbqSZ4OLAS2iI9HwBiONCd16Xp6O
+--000000000000fd69d005d52ef23b--
