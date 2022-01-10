@@ -2,76 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C317E48A2AB
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 23:22:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E63B48A2C5
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 23:30:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345377AbiAJWWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 17:22:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345367AbiAJWWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 17:22:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE29C061751;
-        Mon, 10 Jan 2022 14:22:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01D77B8180E;
-        Mon, 10 Jan 2022 22:22:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 956F2C36AEF;
-        Mon, 10 Jan 2022 22:22:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641853327;
-        bh=nZkaYKHFOdV7Q8Fp1n6WNBX4Yk9/H6nzbskM4qlf/e0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NY7FymS14WUzj4avmFazuFYRl/oGGUdTlb8lyrAZnnR0NTHtakr7wULLh4+mu1rRc
-         E/Hxc5PfXx6YYMfO86+C9Y999/jjRQ1bBzDZSX2cZDkPaHe0zC2NlYce28rNldBEnM
-         HUjg6DXge6gYWK6A7o8aNRXUsi5cDyVB9ovT0uG/iLMGOHHEoEMtH3fcR/x5gBlkAE
-         3mVJsRxRMMXnEcrEesZkW5IagVomgfwZwbGuUmU89cV0m2XX7OsStiCM7kAeH/fjUV
-         U1SI2VwytyjVvR+wjz3c1XHo48sScyfi2sTPHx/7OCcIPDj627MxDsvOS0rUG4Xupw
-         Rbi2NRk7S4lSg==
-Received: by mail-yb1-f173.google.com with SMTP id d1so42100186ybh.6;
-        Mon, 10 Jan 2022 14:22:07 -0800 (PST)
-X-Gm-Message-State: AOAM532xPMX9mSXg4VuLCRml4STKeNzcyMWskuKkxysvdY/EkLG5Zpp8
-        gwSoCovumv6DTA2NQanftJLnE5PYQGg+wVcq5rM=
-X-Google-Smtp-Source: ABdhPJwZH/DyO8E3u0XvP1BAo0vaLRN2AtOZrD/fa3LqP03NFGEPKRurGXJDM2jxiq3cLt7HnKX4H6nKCFqomMgn5wU=
-X-Received: by 2002:a25:8b85:: with SMTP id j5mr2297231ybl.558.1641853326749;
- Mon, 10 Jan 2022 14:22:06 -0800 (PST)
+        id S1345432AbiAJWah (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 17:30:37 -0500
+Received: from mout.gmx.net ([212.227.17.20]:39123 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1345433AbiAJWad (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jan 2022 17:30:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1641853823;
+        bh=pq3G8YNOhj4t7nDtwp3ftybIIxEtEenASnHUGrCP1U8=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=IGZqpnN+CladoaCkxLf2HpZrldlIuveOyqE0zAtDlJQldI7ygcJBNewmaz/rx4OLU
+         PvVAofhYcixo9Xs1X8rD5bOTzugb+szJrvzCN2m0jrDuX58YD/piMBIG1fQqiepYeC
+         hlhUi/TxOLCGQRb7OOqzWxj8IEvef3UjAWQ9bSbg=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost.fritz.box ([62.216.209.151]) by mail.gmx.net
+ (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
+ 1N8obG-1mJz9V1rPS-015nmM; Mon, 10 Jan 2022 23:30:23 +0100
+From:   Peter Seiderer <ps.report@gmx.net>
+To:     linux-wireless@vger.kernel.org
+Cc:     Jiri Slaby <jirislaby@kernel.org>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1 1/5] ath5k: remove unused ah_txq_isr_qtrig member from struct ath5k_hw
+Date:   Mon, 10 Jan 2022 23:30:17 +0100
+Message-Id: <20220110223021.17655-1-ps.report@gmx.net>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220108051121.28632-1-yichun@openresty.com>
-In-Reply-To: <20220108051121.28632-1-yichun@openresty.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 10 Jan 2022 14:21:55 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW5+zCh2ZE6zUq2T=83Z6Ce93z_ojxrqGN9iYN9Qvyq_YQ@mail.gmail.com>
-Message-ID: <CAPhsuW5+zCh2ZE6zUq2T=83Z6Ce93z_ojxrqGN9iYN9Qvyq_YQ@mail.gmail.com>
-Subject: Re: [PATCH] bpf: core: Fix the call ins's offset s32 -> s16 truncation
-To:     "Yichun Zhang (agentzh)" <yichun@openresty.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:d5g9VGq2YYCdJZbuUoG8tfgp837QNFH7tHCixBv85xAi5Ge94DM
+ PiKn7g8qPMv2zD0wvM8jRW0/cofi4jqQU0TUm9d8Dv0PWoyCk9YY/jf3QC9vlcgo5DqRTqu
+ ys0lOqSXroVQdvNqBXhQClpcB1iDUvljHb7EoTFiMwE6+/hvVCNfTri9h95NYHWNdWaamwC
+ 90dcwdtKLLE5JMhCVLQxA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Eo/s0/EISKw=:m6zrDnwVio5PNQiVTZNzvg
+ 39OQXget1cXi7qp/NqgoQrqpSKOPD2FBkmfWAOqKD0l3IRLiqowk6GrCfXPUVF6i1tHKOKcHn
+ tzSL5AEbXuLytt6NIfbCdb/+DSZeHfH6uRiNWTW3QBrCRGxtPMshpmdnGwcZa40omxuQtJGaB
+ 87xqgyncBwjx6zxySnDKU7gGzwRx5dEZaYf0W4XyOedcK+5fBVR84oPKZyU8hHwXeeWfDr8iN
+ r4EiemufDj9hQ4+AnmnoqAiKFgB/QHX0p3mcjnlLUED21dx9Zp3vjTYufk/MS9wItoC7ElOmr
+ hHwqFXkOIZJtFx0R/BP4+OC1MSZVG1RXZRFlG+LaAlDuWpb5iFx0vj31K+YPtqS9OP5CbRyGh
+ ZDCZxrvwKxm7fV2DyT0W8bQ9S5qC6MI5Lempa5HOhjCiGhvehEGDFx5y4B+vbeVNtKv65aTpi
+ ElvRenR47BJnyQL86mDk0VBUVDXtLWGLme+bjt1ZKbFq1XmodGlpoxbmN9bWap9GBuDV/+C0H
+ cg0ZRBH3Qhr72hwcaFAXODt7a1AZr82mg07JeMpLv9zHy/Wrl6sdlwGfULOk6arvlb+w9+cNR
+ nzduFs0n7gYRPzRNbHFFIOQxnLzA3+DNoR2XWw6EOScrsjeLb6X5hq7P8rEBD0wehH4wweKW+
+ BO/673coT+yKxzxWO65yDykbjH3URt2cUWfcIsLB1keOaXTFqx9RB29lob3aYX6KEqPv7NDo2
+ bRtJlVuB2I3bbylvudhXJ2jerm6cclT1b+wPkp1CRZ6Wo8NOsREBVOjO1dE7+ZfTAvHcJ1dPm
+ bTVI9gR5rJIA3+DaF7o7efd2AK5tldtZkFxo6ZzoXMHoF4bGd8P/p9q/I/CpiJYPGw3cYOo1Z
+ VD9G2nIpMJ9z2CwHX7hGPrSS3IKqASyAxQD0+QbJDwysRxT/48QZLGyKWvzsb/TuxukwTNXN8
+ E33IzcCBAdGtrDXAr+rQGCGa8G5E2EiTf9RyjpoAVjMGEvUDfSJ5mnWomdNrdIF2IgMOD1Xy/
+ 38B7O8u/JoqS9cq7fteEf6uQoqLESHFr24ZD09yheQfpBxDC/URfim7/o6/GiIMXBGZswaoxJ
+ fYuy259Q9KIBe4=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 7, 2022 at 9:11 PM Yichun Zhang (agentzh)
-<yichun@openresty.com> wrote:
->
-> The BPF interpreter always truncates the BPF CALL instruction's 32-bit
-> jump offset to 16-bit. Large BPF programs run by the interpreter often
-> hit this issue and result in weird behaviors when jumping to the wrong
-> destination instructions.
->
-> The BPF JIT compiler does not have this bug.
->
-> Fixes: 1ea47e01ad6ea ("bpf: add support for bpf_call to interpreter")
-> Signed-off-by: Yichun Zhang (agentzh) <yichun@openresty.com>
-
-Acked-by: Song Liu <songliubraving@fb.com>
+UmVtb3ZlIHVudXNlZCBhaF90eHFfaXNyX3F0cmlnIG1lbWJlciBmcm9tIHN0cnVjdCBhdGg1a19o
+dyAoc2V0IGluCmF0aDVrX2h3X2dldF9pc3IoKSBidXQgbmV2ZXIgdXNlZCBhbnl3aGVyZSkuCgpT
+aWduZWQtb2ZmLWJ5OiBQZXRlciBTZWlkZXJlciA8cHMucmVwb3J0QGdteC5uZXQ+Ci0tLQogZHJp
+dmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDVrL2F0aDVrLmggfCAxIC0KIGRyaXZlcnMvbmV0L3dp
+cmVsZXNzL2F0aC9hdGg1ay9kbWEuYyAgIHwgNSArLS0tLQogMiBmaWxlcyBjaGFuZ2VkLCAxIGlu
+c2VydGlvbigrKSwgNSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC93aXJl
+bGVzcy9hdGgvYXRoNWsvYXRoNWsuaCBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg1ay9h
+dGg1ay5oCmluZGV4IDIzNGVhOTM5ZDMxNi4uZGI2YmE0MzNjMDVkIDEwMDY0NAotLS0gYS9kcml2
+ZXJzL25ldC93aXJlbGVzcy9hdGgvYXRoNWsvYXRoNWsuaAorKysgYi9kcml2ZXJzL25ldC93aXJl
+bGVzcy9hdGgvYXRoNWsvYXRoNWsuaApAQCAtMTM5OCw3ICsxMzk4LDYgQEAgc3RydWN0IGF0aDVr
+X2h3IHsKIAl1MzIJCQlhaF90eHFfaXNyX3R4dXJuOwogCXUzMgkJCWFoX3R4cV9pc3JfcWNib3Ju
+OwogCXUzMgkJCWFoX3R4cV9pc3JfcWNidXJuOwotCXUzMgkJCWFoX3R4cV9pc3JfcXRyaWc7CiAK
+IAl1MzIJCQkqYWhfcmZfYmFua3M7CiAJc2l6ZV90CQkJYWhfcmZfYmFua3Nfc2l6ZTsKZGlmZiAt
+LWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg1ay9kbWEuYyBiL2RyaXZlcnMvbmV0
+L3dpcmVsZXNzL2F0aC9hdGg1ay9kbWEuYwppbmRleCBlNmM1MmY3YzI2ZTcuLjc4Yjg3MzcyZGE5
+NSAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDVrL2RtYS5jCisrKyBi
+L2RyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg1ay9kbWEuYwpAQCAtNzIzLDExICs3MjMsOCBA
+QCBhdGg1a19od19nZXRfaXNyKHN0cnVjdCBhdGg1a19odyAqYWgsIGVudW0gYXRoNWtfaW50ICpp
+bnRlcnJ1cHRfbWFzaykKIAkJfQogCiAJCS8qIEEgcXVldWUgZ290IHRyaWdnZXJlZCAqLwotCQlp
+ZiAodW5saWtlbHkocGlzciAmIChBUjVLX0lTUl9RVFJJRykpKSB7CisJCWlmICh1bmxpa2VseShw
+aXNyICYgKEFSNUtfSVNSX1FUUklHKSkpCiAJCQkqaW50ZXJydXB0X21hc2sgfD0gQVI1S19JTlRf
+UVRSSUc7Ci0JCQlhaC0+YWhfdHhxX2lzcl9xdHJpZyB8PSBBUjVLX1JFR19NUyhzaXNyNCwKLQkJ
+CQkJCUFSNUtfU0lTUjRfUVRSSUcpOwotCQl9CiAKIAkJZGF0YSA9IHBpc3I7CiAJfQotLSAKMi4z
+NC4xCgo=
