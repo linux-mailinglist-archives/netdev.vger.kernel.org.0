@@ -2,90 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A6DA489356
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 09:30:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A26F748936C
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 09:34:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240708AbiAJIaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 03:30:03 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:48792
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240822AbiAJI2u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 03:28:50 -0500
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id B32053F1A2
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 08:28:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641803318;
-        bh=KSGYgxbJHtzmF1VVpegyRa64dLhxDiMx11JnqwEBzqQ=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=D+48NLkUTk/Zik539i6ZCdG6/twYX0WWOYJCIYYi5sRGY+nAfWvHxqN+Luxc2C+9d
-         BMq2p5dFFS/xS0ZC4NJxQESZIzVN9EFtcnbZR3Q62sp7YyoWgBsZpqvKJOJITN0CjN
-         fKdQcqdqD2H/ghnE26x+LMgG9CSSiZDqx9Iyl5wg2aSF/efbiGzFsLpulmDmxRvw4D
-         xvLoT5lknyI3sUi5Ev9tcgi1oRDKxVFa5+9/ad9kvn8hPn70WcvdIts+W0h5ts+1XJ
-         +uv9O0f/qL0biTMp/I/VStwJtGkTfep6BUwHeznkM+BrylF5VxM8qG30eyZ3JN6ALx
-         ffC+ofbZ+BvIg==
-Received: by mail-ed1-f72.google.com with SMTP id y18-20020a056402271200b003fa16a5debcso9482733edd.14
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 00:28:38 -0800 (PST)
+        id S240961AbiAJIdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 03:33:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240779AbiAJIc3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 03:32:29 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7762C06175A;
+        Mon, 10 Jan 2022 00:32:28 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id q8so25122994wra.12;
+        Mon, 10 Jan 2022 00:32:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=yFitxr4LUHEFQN8u7AKlHp0fvIKgsL3O7SmilxAJ8Oc=;
+        b=CXOEf99IK1mY3GLkw9GNvYdr52AtX0sZMVWOs/Eiq9CczPEXduaMo0vlZ2qoyix+ph
+         0HwVXJdikHrXDcBaY1MKHpxOOxeLw09kQyeVsbCcZt43PJ1XSK5Pet1Z8ozgKmVpm7sk
+         jimUATnPEcup3fkeXwB2FdnZne6nKMCJUTp4OufurHBJwmziB0TTFfY3NDFByIepaT3V
+         RdrCOpAGT00LFFkJYvKdIpevYNUxJtZgGBAWnWyolq7+p1gfZL6jXrlj4MaNtWnKrOXr
+         eO41HoxSseMHTJBHd+r2UFovE99zVb3HOKjTpYYaNYcj8FO6+mTmGYs+6TXCVzJ5rkmY
+         UH6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KSGYgxbJHtzmF1VVpegyRa64dLhxDiMx11JnqwEBzqQ=;
-        b=D/JtCM/GWd0/rywsIHohF/iOV32MLbBKyXZnXcNtjoLNKPPYfp7E70FNMm73REpmKT
-         EnjHFPYwlNy+rG5aFWY12UAFrPbLtzvnLPM4WGFNYXNhWEhCL8b9JCcU10Zvv4s5Wd+X
-         YdcbcxYek+vu/zJ70jHLiCOV9VqeZl9SDJBuySyfoYuc7QHqCQYOB2gmNws0k0h6nFMy
-         xmQ9boXl6BNehsCSSLUvwECc2qg/jd8Rhs3m/TAFlddxXQW7dh+IwFkD3hWyN1C8Sj/m
-         KHg6l0no93PJm39+qV8otOaSipbF1KOYC/c/5MIVTf9gRN8Kq8lOG+nIp/Aq3xVLAY3D
-         ScbA==
-X-Gm-Message-State: AOAM531lA4Ba0C2hH4ZcPDrPwlCBlJ3ae0pzd0ILgTAAO5IKNgrI4+nq
-        94kTJqbQZU1bKIAiXz3ZMcUFtxp68nNr+e1g8yJNr0gO1lccDbxIQFRTq7LcB6Uen6x0XmyQbsc
-        UF2WWY1lBm/3o+++KM0RgC7ngMqKBfaYcGg==
-X-Received: by 2002:a17:906:4e84:: with SMTP id v4mr15335915eju.285.1641803318498;
-        Mon, 10 Jan 2022 00:28:38 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJweIKj/IIvkfFyENUkaRCL3MEVzaMQZPMIjQjMvG12GhlNEHGgCw4u64A90ZXuQJlPEXjQPNA==
-X-Received: by 2002:a17:906:4e84:: with SMTP id v4mr15335906eju.285.1641803318366;
-        Mon, 10 Jan 2022 00:28:38 -0800 (PST)
-Received: from [192.168.1.126] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id c19sm3193637ede.62.2022.01.10.00.28.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 00:28:38 -0800 (PST)
-Message-ID: <8b5cfdc8-e714-422f-6e3f-2e8daeeed81e@canonical.com>
-Date:   Mon, 10 Jan 2022 09:28:37 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=yFitxr4LUHEFQN8u7AKlHp0fvIKgsL3O7SmilxAJ8Oc=;
+        b=gPButolWsR64gs1xodEXX/Oqnxk8NxxvvQnJ+95DpspyLZEdcWuihfXKF2pOLK20bd
+         xAcP1gHg25P7UhA9VouS6jCF45YELvBjlfbaNC8sN1RWorkjFF9WXDbGc7+qZ0FCF1p6
+         FJ6MPHQprx0HISR1PpqBOxNCmBEEVeJ6LQ+AxcrZjhtkI9ym0weWVCCVEyhCIP22fjOc
+         31Z74FlbxVKzJgz5WzrvyyIJGwNk7jtGLleiieCfiHAzyE8sGTNZteOgsvOkaLiTGm+b
+         W2+0ihCRN3Z2uUWBzKaAf2e4lHJUbrvcufLZTtIiuIQRkM2Od/MuxF/5esuE+pOIDTI2
+         kSRQ==
+X-Gm-Message-State: AOAM530oJHIvlthgETE8Ls1Vp6ORp3r3b6+Jf2AR79WtxZteELfm9EH1
+        KfcJCj2yOMSXvEaIDEOxNMyoLNm/LRQ=
+X-Google-Smtp-Source: ABdhPJxH9vwRdImfYpgveDGSsQDl1xCE7+/AHH07mUQMvxC03h6+c+jz8nziUVPvFgWhNlvookMM2A==
+X-Received: by 2002:a5d:650f:: with SMTP id x15mr62949067wru.57.1641803547569;
+        Mon, 10 Jan 2022 00:32:27 -0800 (PST)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id y4sm6192515wrd.50.2022.01.10.00.32.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 00:32:27 -0800 (PST)
+Date:   Mon, 10 Jan 2022 09:32:24 +0100
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     conleylee@foxmail.com
+Cc:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+        wens@csie.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] sun4i-emac: replace magic number with marcos
+Message-ID: <YdvvGAzD7KQlxBZo@Red>
+References: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH] nfc: pn544: make array rset_cmd static const
-Content-Language: en-US
-To:     Colin Ian King <colin.i.king@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220109202418.50641-1-colin.i.king@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220109202418.50641-1-colin.i.king@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/01/2022 21:24, Colin Ian King wrote:
-> Don't populate the read-only array rset_cmd on the stack but
-> instead it static const. Also makes the object code a little smaller.
+Le Mon, Jan 10, 2022 at 03:23:07PM +0800, conleylee@foxmail.com a écrit :
+> From: conley <conleylee@foxmail.com>
 > 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
->  drivers/nfc/pn544/i2c.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> - sun4i-emac.h: add register related marcos
+> - sun4i-emac.c: replace magic number with marco
+> 
+> *** BLURB HERE ***
+> 
+> conley (2):
+>   sun4i-emac.h: add register related marcos
+>   sun4i-emac.c: replace magic number with macro
+> 
+>  drivers/net/ethernet/allwinner/sun4i-emac.c | 26 ++++++++++-----------
+>  drivers/net/ethernet/allwinner/sun4i-emac.h | 18 ++++++++++++++
+>  2 files changed, 31 insertions(+), 13 deletions(-)
 > 
 
+Hello
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+The from should be your real name.
+You miss commit message.
+The subject should be "net: allwinner: xxxx" or "net: ethernet: sun4i-emac: xxxx"
+You did a typo marcos/macros
+If you add a changelog, either put it in cover letter or below "---" in patch along git stats (changelog should not be part of commit message).
 
+I think both patch should be merged.
 
-Best regards,
-Krzysztof
+Regards
