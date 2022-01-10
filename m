@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 468BD488FC6
+	by mail.lfdr.de (Postfix) with ESMTP id B43FD488FC7
 	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 06:27:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238743AbiAJF1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 00:27:05 -0500
-Received: from mga01.intel.com ([192.55.52.88]:9532 "EHLO mga01.intel.com"
+        id S233367AbiAJF1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 00:27:09 -0500
+Received: from mga01.intel.com ([192.55.52.88]:9535 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238715AbiAJF0z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jan 2022 00:26:55 -0500
+        id S238719AbiAJF05 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jan 2022 00:26:57 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641792415; x=1673328415;
+  t=1641792417; x=1673328417;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=SkK3KJA5kuRSaw0A/VhI97frWfNhCA3kJuBS59qfbO8=;
-  b=nertf6DbHtSoFadCrFfaGCzoPd8dgZwe67Jf9M0jOeREXBzPMQHIrrw/
-   dt5zyPArL3cy0U6v9J7nI06C0zDjTvkcMkQ00hTxoSj8yy/nG9k+gdXZW
-   bBYeSwz0ZYnh/Aq7SsEgoRp3MzlpZcMcFoepyQnB7mgsragcowV3pSJWC
-   6t7LVwZUWml+hwP8i/4oE49BONuNdXM3UZLcg0CHuYbAWKrTrjKHsNBkR
-   8UgDCwKn5Bzu8qLF8CgKVe+5TW6txwnG/W9tE1BpgE3FGZqXJUpvX6PFE
-   50lZhpLt8c7vgtee1n5Q/UcFsNa+xu5InSbwyc65gsyBw9JQ7D0lKjafQ
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="267479497"
+  bh=ioRk7cwXbBNQJIQEP8s7EVvCPiqFelLbAYEXA+lwOtU=;
+  b=HxcrfeQNEvh5Rot0B4VkbW5Wo1HPx9YTVMj4pSjDo8WZU86cX8PILWZJ
+   JoDHkYt4l/vR0tppgzFGbCLLF9UvVDvObEmbn+Fj2u6tn9CL9zWwsSkBr
+   Mnwberf9W1LnsZUjURTiIhq6aSkOvFfhd4kgc2ZCP16HMAsJ/CSf7Bbyq
+   uDvzPDbZzwk11k2x4wsNXFi6nNQP7T6kdbph/x9UVH0PbVGTn0LQOTUxz
+   9F7ZK6/55bDSlI0GZYEZQLYVKpas0Yv8p++nmcM0YiplYOKxBbNSB5Ohg
+   VHYAb1RwYjs2BPcUPRkU6XungpCoxM79jFAbf5n1FiLF+sRMoD1KI9F4H
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="267479510"
 X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
-   d="scan'208";a="267479497"
+   d="scan'208";a="267479510"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2022 21:26:55 -0800
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2022 21:26:57 -0800
 X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
-   d="scan'208";a="489892276"
+   d="scan'208";a="489892284"
 Received: from unknown (HELO cra01infra01.deacluster.intel.com) ([10.240.193.73])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2022 21:26:53 -0800
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2022 21:26:55 -0800
 From:   Zhu Lingshan <lingshan.zhu@intel.com>
 To:     jasowang@redhat.com, mst@redhat.com
 Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
         Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH 2/7] vDPA/ifcvf: introduce new helpers to set config vector and vq vectors
-Date:   Mon, 10 Jan 2022 13:19:42 +0800
-Message-Id: <20220110051947.84901-3-lingshan.zhu@intel.com>
+Subject: [PATCH 3/7] vDPA/ifcvf: implement device MSIX vector allocation helper
+Date:   Mon, 10 Jan 2022 13:19:43 +0800
+Message-Id: <20220110051947.84901-4-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220110051947.84901-1-lingshan.zhu@intel.com>
 References: <20220110051947.84901-1-lingshan.zhu@intel.com>
@@ -49,67 +49,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit introduces new helpers to set config vector
-and vq vectors in virtio common config space.
+This commit implements a MSIX vector allocation helper
 
 Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 ---
- drivers/vdpa/ifcvf/ifcvf_base.c | 30 ++++++++++++++++++++++++++++++
- drivers/vdpa/ifcvf/ifcvf_base.h |  2 ++
- 2 files changed, 32 insertions(+)
+ drivers/vdpa/ifcvf/ifcvf_main.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
-index 0b5df4cfaf06..696a41560eaa 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.c
-@@ -15,6 +15,36 @@ struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw)
- 	return container_of(hw, struct ifcvf_adapter, vf);
+diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+index 6dc75ca70b37..64fc78eaa1a9 100644
+--- a/drivers/vdpa/ifcvf/ifcvf_main.c
++++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+@@ -58,6 +58,30 @@ static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
+ 	ifcvf_free_irq_vectors(pdev);
  }
  
-+int ifcvf_set_vq_vector(struct ifcvf_hw *hw, u16 qid, int vector)
++static int ifcvf_alloc_vectors(struct ifcvf_adapter *adapter)
 +{
-+	struct virtio_pci_common_cfg __iomem *cfg = hw->common_cfg;
-+	struct ifcvf_adapter *ifcvf = vf_to_adapter(hw);
++	struct pci_dev *pdev = adapter->pdev;
++	struct ifcvf_hw *vf = &adapter->vf;
++	u16 max_intr = 0;
++	u16 ret = 0;
 +
-+	ifc_iowrite16(qid, &cfg->queue_select);
-+	ifc_iowrite16(vector, &cfg->queue_msix_vector);
-+	if (ifc_ioread16(&cfg->queue_msix_vector) == VIRTIO_MSI_NO_VECTOR) {
-+		IFCVF_ERR(ifcvf->pdev, "No msix vector for queue %u\n", qid);
-+			return -EINVAL;
++	/* all queues and config interrupt  */
++	max_intr = vf->nr_vring + 1;
++	ret = pci_alloc_irq_vectors(pdev, 1, max_intr, PCI_IRQ_MSIX|PCI_IRQ_AFFINITY);
++
++	if (ret < 0) {
++		IFCVF_ERR(pdev, "Failed to alloc IRQ vectors\n");
++		return ret;
 +	}
 +
-+	return 0;
++	if (ret < max_intr)
++		IFCVF_INFO(pdev,
++			   "Requested %u vectors, however only %u allocated, lower performance\n",
++			   max_intr, ret);
++
++	return ret;
 +}
 +
-+int ifcvf_set_config_vector(struct ifcvf_hw *hw, int vector)
-+{
-+	struct virtio_pci_common_cfg __iomem *cfg = hw->common_cfg;
-+	struct ifcvf_adapter *ifcvf = vf_to_adapter(hw);
-+
-+	cfg = hw->common_cfg;
-+	ifc_iowrite16(vector,  &cfg->msix_config);
-+	if (ifc_ioread16(&cfg->msix_config) == VIRTIO_MSI_NO_VECTOR) {
-+		IFCVF_ERR(ifcvf->pdev, "No msix vector for device config\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- static void __iomem *get_cap_addr(struct ifcvf_hw *hw,
- 				  struct virtio_pci_cap *cap)
+ static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
  {
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-index c924a7673afb..1d5431040d7d 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.h
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-@@ -157,4 +157,6 @@ u16 ifcvf_get_vq_state(struct ifcvf_hw *hw, u16 qid);
- int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 qid, u16 num);
- struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw);
- int ifcvf_probed_virtio_net(struct ifcvf_hw *hw);
-+int ifcvf_set_vq_vector(struct ifcvf_hw *hw, u16 qid, int vector);
-+int ifcvf_set_config_vector(struct ifcvf_hw *hw, int vector);
- #endif /* _IFCVF_H_ */
+ 	struct pci_dev *pdev = adapter->pdev;
 -- 
 2.27.0
 
