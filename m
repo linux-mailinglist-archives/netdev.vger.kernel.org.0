@@ -2,114 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2038F489D4D
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 17:16:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B15F489D60
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 17:20:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237183AbiAJQQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 11:16:24 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:39727 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237138AbiAJQQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 11:16:24 -0500
-Received: by mail-io1-f70.google.com with SMTP id p65-20020a6bbf44000000b00604c0757591so2962816iof.6
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 08:16:24 -0800 (PST)
+        id S237137AbiAJQUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 11:20:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237046AbiAJQUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 11:20:08 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03253C06173F;
+        Mon, 10 Jan 2022 08:20:08 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id v186so30050301ybg.1;
+        Mon, 10 Jan 2022 08:20:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=B5R6HhUQzD32a3BA4W6jykulsKBq5b9LpAGVLbzAe70=;
+        b=pQ9UciFn6DTD1mNsc45kgzbGK+rYKS2DQmFnxtj3oufX1YM6lpvmEMOEebEFO/MYlM
+         pa9HLRTYLi2OVfwixj084xLZco/yqjqbS6a7QvwGfb3c7rpvcKKKzTWkK11MjhB18N3m
+         bAboOF7lLIbHHK4RJrybvVYJLwQ/D8KKSA69/W+zlmpvSpBXEEq2M4L/iGAGrEIa9Mi5
+         stf7wD1H7hraEgl4eyJD1vqT1DUp9UXVsJHlDlDTHW34Hi0jqJZRXg9h27PPQqljWnzl
+         t+U55g3Ommsl5pELAsMIS/q5w9kHTsCOikIzYX9RAwf1O6tB6lPE7/Kg+zSPp9OZtVZD
+         QjIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=+IuiwBmD1/QY3GSRuTwaawG8oRAV143g489IiDGe0jo=;
-        b=2KiIyYawsFi1NewMx6G9e+KktF3CvvXhXXRWT4kXWMqxE2eB74m2JvyiMwEVeg5bRk
-         MM1D0E6zHbcLizQJOupXvsTI97/1veOp9D13rOwvbvSnkh40UAaJC91oeNBK0jo5G4aX
-         Kha7KLxTTsM2jWkraLPfV9QVob0DS29GrEbJEM/C7n9UjHbp54w6CCPJGmzol+2nMk8f
-         6VY7wvXqnVRpF4P1Yo687wZu/XwJGJdKr7Sl22tlVwlGzA4moXBBCaDsbmjhQYZY4oGN
-         7eOMwhvVAhx7xPDpzY1QLpoVi0KkBSwr1QL3OqCnvUAdOxTa5YxAk1Fbu93FugGyckl0
-         ZaNw==
-X-Gm-Message-State: AOAM531jqc5gKKNfA4x9kGufFEA3ybrnAYrYaQY/1UZZw3CfTE0eQ5Xp
-        7yKhcR7oidDQueQxmpJekDFI6nL2rlmKZUMlDvHJ97gIcuCk
-X-Google-Smtp-Source: ABdhPJya6Aex3XB8Zmgqnu+l176k2/B5jS08DGhSr8A9/AG1c1V4rtY7OfzXyZvbSFkNfAdRV9eMhrVDUi8ifFOfstq6VWxhmPpp
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=B5R6HhUQzD32a3BA4W6jykulsKBq5b9LpAGVLbzAe70=;
+        b=Coh2UPLQuI059yqM6vaf2m/XqHP+2YVJh2Ulzrb45gO4ZLIERRa3Sv4Acfg/NuF9bf
+         Dmnn3qwpAflEjSylFjw9g4wj5gpOW31Pls5x2cilL14NhsadjKgGp311lFxtc9I2dcF6
+         6GgH5DzKo4Tk1zdA3kU14rWsrZ8bnZb8TVWt7TcpkPO18FjBHbb5FDxhBwA5v5iWnI7L
+         mnQlhrNQtasAV7sLVsNo97YipkGD+VSdu8vA+qfFCNiW+uihbJIy4r9VxVl7mdBHpefj
+         InuJObjLc4O6GHuGj+lPqEZLQG2ZWRQykajrsKvC4q2llPBxkAJJGiJ5qkLbe8NmxcMY
+         dDqQ==
+X-Gm-Message-State: AOAM533K+T17oNhXJOocot538JG7c25EzA5Fdfl8H5l0E4Z0Ewr3BJib
+        VFbu3iCOgLNj4gYlMhXk4vF6i4nYs0tefe2waIY=
+X-Google-Smtp-Source: ABdhPJxRONNLotc8u11ADfFqdChcCGbT9iexoQ2cJyU5sRbkjjaLtYE8fg2B6+WdvkF2A8jgtWKHt4xB+RzH2VGKISs=
+X-Received: by 2002:a25:4002:: with SMTP id n2mr378234yba.547.1641831607021;
+ Mon, 10 Jan 2022 08:20:07 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:bb0b:: with SMTP id y11mr209283jan.286.1641831383889;
- Mon, 10 Jan 2022 08:16:23 -0800 (PST)
-Date:   Mon, 10 Jan 2022 08:16:23 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006afc5805d53ca868@google.com>
-Subject: [syzbot] BUG: "hc->tx_t_ipi == NUM" holds (exception!) at net/dccp/ccids/ccid3.c:LINE/ccid3_update_send_interval()
-From:   syzbot <syzbot+94641ba6c1d768b1e35e@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dccp@vger.kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+References: <CAKXUXMzZkQvHJ35nwVhcJe+DrtEXGw+eKGVD04=xRJkVUC2sPA@mail.gmail.com>
+ <20220109132038.38f8ae4f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net> <a754b7d0-8a20-9730-c439-1660994005d0@leemhuis.info>
+In-Reply-To: <a754b7d0-8a20-9730-c439-1660994005d0@leemhuis.info>
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Date:   Mon, 10 Jan 2022 17:19:56 +0100
+Message-ID: <CAKXUXMygcVJ2v5enu-KY9_2reC6+aAk8F9q5RiwwNp4wO-prug@mail.gmail.com>
+Subject: Re: Observation of a memory leak with commit 314001f0bf92 ("af_unix:
+ Add OOB support")
+To:     Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Rao Shoaib <rao.shoaib@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>,
+        regressions@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Jan 10, 2022 at 3:02 PM Thorsten Leemhuis
+<regressions@leemhuis.info> wrote:
+>
+>
+> On 09.01.22 22:20, Jakub Kicinski wrote:
+> > On Fri, 7 Jan 2022 07:48:46 +0100 Lukas Bulwahn wrote:
+> >> Dear Rao and David,
+> >>
+> >>
+> >> In our syzkaller instance running on linux-next,
+> >> https://elisa-builder-00.iol.unh.edu/syzkaller-next/, we have been
+> >> observing a memory leak in prepare_creds,
+> >> https://elisa-builder-00.iol.unh.edu/syzkaller-next/report?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3,
+> >> for quite some time.
+> >>
+> >> It is reproducible on v5.15-rc1, v5.15, v5.16-rc8 and next-20220104.
+> >> So, it is in mainline, was released and has not been fixed in
+> >> linux-next yet.
+> >>
+> >> As syzkaller also provides a reproducer, we bisected this memory leak
+> >> to be introduced with  commit 314001f0bf92 ("af_unix: Add OOB
+> >> support").
+> >>
+> >> We also tested that reverting this commit on torvalds' current tree
+> >> made the memory leak with the reproducer go away.
+> >>
+> >> Could you please have a look how your commit introduces this memory
+> >> leak? We will gladly support testing your fix in case help is needed.
+> >
+> > Let's test the regression/bug report tracking bot :)
+> >
+> > #regzbot introduced: 314001f0bf92
+>
+> Great, thx for trying, you only did a small mistake: it lacked a caret
+> (^) before the "introduced", which would have told regzbot that the
+> parent mail (the one you quoted) is the one containing the report (which
+> later is linked in patch descriptions of fixes and allows rezgbot to
+> connect things). That's why regzbot now thinks you reported the issue
+> and looks out for patches and commits that link to your mail. :-/
+>
+> Don't worry, I just added it properly and now mark this as duplicate:
+>
+> #regzbot dup-of:
+> https://lore.kernel.org/lkml/CAKXUXMzZkQvHJ35nwVhcJe%2BDrtEXGw%2BeKGVD04=xRJkVUC2sPA@mail.gmail.com/
+>
+> Thx again for trying.
+>
 
-syzbot found the following issue on:
+Thorsten, Jakub, formally this may or may not be a "regression"---as
+Thorsten defines it:
 
-HEAD commit:    82192cb497f9 Merge branch 'ena-capabilities-field-and-cosm..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12ec95c7b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=322a0a6462d9ff7d
-dashboard link: https://syzkaller.appspot.com/bug?extid=94641ba6c1d768b1e35e
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=100ea4e3b00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13977b73b00000
+It's a regression if some application or practical use case running fine on one
+Linux kernel works worse or not at all with a newer version compiled using a
+similar configuration.
 
-Bisection is inconclusive: the issue happens on the oldest tested release.
+The af_unix functionality without oob support works before
+314001f0bf92 ("af_unix: Add OOB support").
+The af_unix functionality without oob support works after 314001f0bf92
+("af_unix: Add OOB support").
+The af_unix with oob support after the new feature with 314001f0bf92
+("af_unix: Add OOB support") makes a memory leak visible; we do not
+know if this feature even triggers it or just makes it visible.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13698c63b00000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=10e98c63b00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=17698c63b00000
+Now, if we disable oob support we get a kernel without an observable
+memory leak. However, oob support is added by default, and this makes
+this memory leak visible. So, if oob support is turned into a
+non-default option or nobody ever made use of the oob support before,
+it really does not count as regression at all. The oob support did not
+work before and now it works but just leaks a bit of memory---it is
+potentially a bug, but not a regression. Of course, maybe oob support
+is also just intended to make this memory leak observable, who knows?
+Then, it is not even a bug, but a feature.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+94641ba6c1d768b1e35e@syzkaller.appspotmail.com
+Thorsten's database is still quite empty, so let us keep tracking the
+progress with regzbot. I guess we cannot mark "issues" in regzbot as a
+true regression or as a bug (an issue that appears with a new
+feature).
 
-BUG: "hc->tx_t_ipi == 0" holds (exception!) at net/dccp/ccids/ccid3.c:90/ccid3_update_send_interval()
-CPU: 0 PID: 29976 Comm: syz-executor890 Not tainted 5.16.0-rc8-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- ccid3_update_send_interval net/dccp/ccids/ccid3.c:90 [inline]
- ccid3_update_send_interval.cold+0x87/0x93 net/dccp/ccids/ccid3.c:86
- ccid3_hc_tx_update_s net/dccp/ccids/ccid3.c:169 [inline]
- ccid3_hc_tx_packet_sent+0x12e/0x160 net/dccp/ccids/ccid3.c:353
- ccid_hc_tx_packet_sent net/dccp/ccid.h:175 [inline]
- dccp_xmit_packet+0x2f2/0x750 net/dccp/output.c:289
- dccp_write_xmit+0x16d/0x1d0 net/dccp/output.c:366
- dccp_sendmsg+0x922/0xc90 net/dccp/proto.c:783
- inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:819
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:725
- ____sys_sendmsg+0x331/0x810 net/socket.c:2413
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2467
- __sys_sendmmsg+0x195/0x470 net/socket.c:2553
- __do_sys_sendmmsg net/socket.c:2582 [inline]
- __se_sys_sendmmsg net/socket.c:2579 [inline]
- __x64_sys_sendmmsg+0x99/0x100 net/socket.c:2579
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f2cf5f36da9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 e1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f2cf5ee4308 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f2cf5f36da9
-RDX: 0000000000000001 RSI: 000000002000bf40 RDI: 0000000000000004
-RBP: 00007f2cf5fbf4c8 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f2cf5fbf4c0
-R13: 00007f2cf5f8c5dc R14: 00007f2cf5ee4400 R15: 0000000000022000
- </TASK>
+Also, this reproducer is automatically generated, so it barely
+qualifies as "some application or practical use case", but at best as
+some derived "stress test program" or "micro benchmark".
 
+The syzbot CI and kernel CI database are also planning to track such
+things (once all databases and all the interfaces all work smoothly),
+so in the long term, such issues as this one would not qualify for
+regzbot. For now, many things in these pipelines are still manual and
+hence, triggering and investigation is manual effort, as well as
+manually informing the involved developers, which also means that
+tracking remains manual effort, for which regzbot is probably the
+right new tool for now.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+We will learn what should go into regzbot's tracker and what should
+not---as we move on in the community: various information from other
+systems (syzbot, kernel CI, kernel test robot etc.) and their reports
+are also still difficult to add, find, track, bisect etc.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Lukas
