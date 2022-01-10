@@ -2,103 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7930E4892D3
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 08:58:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4793148930B
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 09:08:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243441AbiAJHwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 02:52:35 -0500
-Received: from out162-62-57-252.mail.qq.com ([162.62.57.252]:53329 "EHLO
-        out162-62-57-252.mail.qq.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243461AbiAJHub (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 02:50:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1641801027;
-        bh=4/D9bsQYTExfGj/Kw0XJPUykeRczvoxzNQdeTQGgfuU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=YtJ8CrACJqpV78bbfEXJsna9tuAQlgX/axMCKG2BPXwBRAvjAv9r1j5C4hg58eUdr
-         xM7TCBHXR4tLU5KckQPo3jGUDXx/0/yUyPi85f2ggHkv6kcdSMmDQQNXLvOjCFwFBJ
-         QtJvOkBUBI3kfzt5Sy4BVItbzyeKTNYdDE4BxH34=
-Received: from localhost ([119.32.47.91])
-        by newxmesmtplogicsvrszc11.qq.com (NewEsmtp) with SMTP
-        id BC28D21C; Mon, 10 Jan 2022 15:47:02 +0800
-X-QQ-mid: xmsmtpt1641800822tp8masu2j
-Message-ID: <tencent_15A7824636308FBA779482A8D296ADB0A607@qq.com>
-X-QQ-XMAILINFO: OfSYiviZO9YdmdcN850B6VCN5Oun1MpScidBKLKEp7n/KUBzvVWUy7r/3bu2W7
-         +6drgSgykPAuOjYqgg5zL+lFC9XKXiYNILxmjF6UYaFDITEVjM4RFT5CbZme/Ntb2O1+e/nLh5bS
-         OltW0hy1Q7GeBLvee725G75N6/AqIlWNXcP6H/WRcTpZRvcVukwJhBN+f96s/OvR2sAyOXPm5L3b
-         mXLpdbmUgIHNSMDluBc0RN4cSUrzj/YDlPW+GXBPChp5QUawTbA463xv/ltFXEKfWbpp8YAbihz9
-         YJnaAnwWmxPQFVCGvv1Ns8tcOEQIZIrX60OOg8g8w9xLTPg0nEXC6+im/vE1cYcZbU0/UdrYNK29
-         drzBGlNd+UwAsgaFOI34xhYNypwov/Kaw9Ri9OGkuERcIUypQV2mWmoX20mbmkuE7KVZgkoAkPP0
-         ku3I4v41RHbq44WEe8Fq+zdzi5sPaebxlayMqWk5JzfbUSChamgWc4IrOxqNiACWf1+FizIIu1nJ
-         48PxKoWzxjs4DjSsaNxo2gophzwmdhjy4G1Q9C4snwN8mNPqp/kBCd2/E8d0PDYAiX3qbqStwEDg
-         3cnPfZsYVWB2vZ/EK1QDOHrHQPyGqk5PatjgnZHxOw/0qgLq0FilBDCrL7hOKUTz0ZtFsffw/Gg7
-         m07cABaDstdZAz6wgieiGzrn9a2T2dePd9WiP2TxKW1P2sA/6MyWOJHp3N5u69okDU3RuX1GNmSQ
-         6EmoQHbU1H8CoykI4rraXuAE8Zbh9guwoQdYLDxqc1pRaGNpldgBfyT/U9bb9P+9HDfaR0yvMes8
-         lyiw4B98NOAm9NUDOhkVmuAnE1Mi8nGr3ONlNhi/3bSN6/pckAnihbmXueKCsD9N5PrCIyLH3baO
-         zzjXf6ATYN
-Date:   Mon, 10 Jan 2022 15:47:02 +0800
-From:   Conley Lee <conleylee@foxmail.com>
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>
-Cc:     davem@davemloft.net, mripard@kernel.org, wens@csie.org,
-        jernej.skrabec@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] sun4i-emac.c: enable emac tx dma
-X-OQ-MSGID: <Ydvkdjh+uL0wALF5@fedora>
-References: <YdLhQjUTobcLq73j@Red>
- <tencent_E4BA4D6105A46CCC1E8AEF48057EA5FE5B08@qq.com>
- <YdtJTQJJ4aEUcp/D@Red>
+        id S236425AbiAJIIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 03:08:17 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:53744 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230223AbiAJIIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 03:08:14 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0CECACE127D;
+        Mon, 10 Jan 2022 08:08:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7B72C36AED;
+        Mon, 10 Jan 2022 08:08:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641802091;
+        bh=PnoU2Zz1OK3gxh6Vjy12PzEUe4rZHQBJaKNe/vb3GSs=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=KdPFkR/3ZvDQlrr/md1l5hrX2u7l7pjgz0YHP4afAFrvdIW+zl/s0sHXHc39NQPEg
+         w+KE7IHSOiYA4uogkQaJxSDuk80k/ZVNdvfoGPQYVdCErJz5ngCTSHjH4LFQWBAnb+
+         afPxNm+y0plBZpHsmPMbOmXNRVVlvDrmiHc1JQEZXFN0owAGEDi++I5Hm2gLfJPMzo
+         8j8USbb9tqYBjKMy4CEQ9D+VCtkn0MhdClDysCMPgtppPnhIWveECDm2KT9DgT9yFc
+         X30pYzA7kxF3cDLgDSCrMrbEoAjR2gxRIqRKzaUk7F5O80mP1Hr389N2/L4deoX23t
+         XNV6vaUY5LjYQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     nathan@kernel.org, johannes.berg@intel.com,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        luciano.coelho@intel.com, netdev@vger.kernel.org
+Subject: Re: [PATCH] iwlwifi: mvm: Use div_s64 instead of do_div in iwl_mvm_ftm_rtt_smoothing()
+References: <20211227191757.2354329-1-nathan@kernel.org>
+        <20220110003326.2745615-1-kuba@kernel.org>
+Date:   Mon, 10 Jan 2022 10:08:06 +0200
+In-Reply-To: <20220110003326.2745615-1-kuba@kernel.org> (Jakub Kicinski's
+        message of "Sun, 9 Jan 2022 16:33:26 -0800")
+Message-ID: <875yqsvwrd.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YdtJTQJJ4aEUcp/D@Red>
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/09/22 at 09:45下午, Corentin Labbe wrote:
-> Date: Sun, 9 Jan 2022 21:45:01 +0100
-> From: Corentin Labbe <clabbe.montjoie@gmail.com>
-> To: conleylee@foxmail.com
-> Cc: davem@davemloft.net, mripard@kernel.org, wens@csie.org,
->  jernej.skrabec@gmail.com, netdev@vger.kernel.org,
->  linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
->  linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH v1] sun4i-emac.c: enable emac tx dma
-> 
-> Le Sun, Jan 09, 2022 at 05:17:55PM +0800, conleylee@foxmail.com a écrit :
-> > From: conley <conleylee@foxmail.com>
-> > 
-> > Hello
-> > I am reading the R40 user manual and trying to create a new path to enable
-> > emac tx dma channel. According to the figure 8-21(TX Operation Diagram),
-> > I try to enable emac tx dma channel by the follow steps:
-> > 1. enable tx dma mode
-> > 2. set packet lengths
-> > 2. move data from skb to tx fifo by using dma in xmit function.
-> > 3. start transfer from tx fifo to phy in dma tx done callback
-> > 
-> > But it doesn't work. emac tx interrupt and dma finished interrupt are
-> > raised, but no packets are transmitted (I test it by tcpdump).
-> > Do you know how to configure the emac tx dma correctly? Thanks ~
-> > 
-> 
-> Hello
-> 
-> Here are my thoughts to help you:
-> - Your email is not a real patch, but an ask for help, so you should not use [ PATCH ] in the subject.
-> - If it was a patch, "v1" is not necessary
-> - Your patch below is doing too many unrelated different things, it is hard to see the DMA TX enable part
-> - I think you could first send a preliminary patch which adds all EMAC_INT_CTL_TX_xxx which are already used by the driver (to reduce the diff)
-> - Without the DTB change, it is hard to see the whole picture, did you correctly use the right dma number for an easy example.
-> - Knowing also the board (and so PHY, modes etc...) could help
-> - I think your priority should not to add TX, but to fix reported problems to your initial patch (build warnings/error https://marc.info/?l=linux-arm-kernel&m=164159846213585&w=2) since your work on TX will need to be applied after this.
-> - For the previous point, always build test with at least 2 different 32/64 arch. And if possible a total different arch (like x86_64).
-> 
-> Anyway, I will try to test your patch on my a10 board
-> 
-> Regards
-Thanks a lot for your help ~ I will submit an patch which add all
-register related. By the way, the build warnings problems have been fixed
-by Jakub Kicinski <kuba@kernel.org>.
+Jakub Kicinski <kuba@kernel.org> writes:
+
+>> When building ARCH=3Darm allmodconfig:
+>>=20
+>> drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c: In function
+>> =E2=80=98iwl_mvm_ftm_rtt_smoothing=E2=80=99:
+>> ./include/asm-generic/div64.h:222:35: error: comparison of distinct
+>> pointer types lacks a cast [-Werror]
+>>   222 |         (void)(((typeof((n)) *)0) =3D=3D ((uint64_t *)0));  \
+>>       |                                   ^~
+>> drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c:1070:9: note:
+>> in expansion of macro =E2=80=98do_div=E2=80=99
+>>  1070 |         do_div(rtt_avg, 100);
+>>       |         ^~~~~~
+>
+> Let me take this one directly to net-next, hope that's okay.
+
+Thanks, please do, I was offline for a longer period and just came back.
+
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
