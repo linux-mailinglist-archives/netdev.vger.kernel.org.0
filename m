@@ -2,114 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDFE3488E8E
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 03:04:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83CCB488E93
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 03:07:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238141AbiAJCE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 21:04:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34530 "EHLO
+        id S238149AbiAJCHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 21:07:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238125AbiAJCE5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 21:04:57 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E22C06173F;
-        Sun,  9 Jan 2022 18:04:57 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id y70so15641344iof.2;
-        Sun, 09 Jan 2022 18:04:57 -0800 (PST)
+        with ESMTP id S232504AbiAJCHp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 21:07:45 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D9AC06173F;
+        Sun,  9 Jan 2022 18:07:45 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id w22so5100145iov.3;
+        Sun, 09 Jan 2022 18:07:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8l1Nw+9feNI9I+xJlgSlKIK03FhT3WbqUTtWCf+KU4M=;
-        b=HOix9AIWi8jjOngrlgdZ3U68ALIGoDnhP9YJAqHM+iv7BtmYDllTlm5M3QPfIwbaX6
-         Q8swj8e+C1eOPJ+PZ668u4TqG3p7pJeENl7nTRcZ5zc4mQKMroAC60pTzkZ3ZiC0HiZk
-         8VDnEwe5/dC0h8u8Uz8RGXkS4TPUP3wvYztqSged8D/Ohn6i7yFak22fA5JCLfxGnhQD
-         +Ai9kiVWaH1Q3mx3XH+ot7r1oe5oPu2iNlu0jzd70X3Jw/RUyzj4lIXgXL8JuFtSFICG
-         ilzz12BW1V/hkAOyEej51KI3vWA6OxBdpbXkNcbptXK8HtK1XefMF6N0i5RxyIwvXC7A
-         9u4g==
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=ILAgxz/MUsEIzatCyjcXIF+/3AVeoAEkSaEJYYkCIeQ=;
+        b=K+5j8XiU3kx3z+i6KILaiZcycze9cqXx2iRlsCftGCzIcOEcYgvYJuH3WZVjvJsuVU
+         OgEkWuXWVtWgSq4bCR86OsN43qztsv2XXAal1PLCt6WpafZ/yc4gNEaU+jgFI1awnQEv
+         Q+VbZzMlWoKFpeoCTTRAIKne68YSSWXRn5nJFu+mJSJ5doBhjqZaI78T1dkunyE4gwMd
+         dUl9LmIpmF6kXHA7kpzm3NuvAYyn2BePm0SPIzTt6vA5VzK0huBLhhhcOU1xvCUfgnHc
+         G4mImQtxZ52TEO4pZbbFrLbOD0PdYgINxTloqHUfIvbG0mwkqGxXx4CKNSwDjk5GgZKT
+         Galw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8l1Nw+9feNI9I+xJlgSlKIK03FhT3WbqUTtWCf+KU4M=;
-        b=s4Xbvyf+q/u4iDrBLYC+iaqYsveBcFl8taO+K6gBxAyMw5Lj/Pwy5brfuk/9lM9Nba
-         74zv3oClc/Rj78YI7RKY4SItnMl1qztvqvIqjPnHQjpDPIiRPqsbdfe/T26Jed/2gcTl
-         z7WZgBILshh4UI1HUU91qhRHqTpG7QE52uBXvmZopYMSoQFFNCTXcf0msbqHDtOvVTtD
-         w+EHBqNfP4Gs4AoDLYM/2mD2YKrm0waBeUPx3kzU7HheWUEgUFXLViX4QeCsmowtXHv5
-         jcWRFvTRuZDdu4bMLsIqKVoQSVQDtB3p4wKpwN1CaaGzmuOzEYmuw3J6uJZZ9fNL1M56
-         mIwg==
-X-Gm-Message-State: AOAM531NGsOqcVJGb20nbCI7qwtppICDY5Vv+Mhb6tQinEAqX8mnBT0B
-        iWsMDW8nrtgnoDj8Wr538B9gO5mmZ1qXUZ6xWSc=
-X-Google-Smtp-Source: ABdhPJwTugb7dC8k7QyTRBDp2qZlid1PnqdNY/KFNAbtHPKpliHovRCOoZJdvH2tbwbxBwNHuWJ8AjphI0vCD7Noc/k=
-X-Received: by 2002:a05:6638:1193:: with SMTP id f19mr34798572jas.237.1641780296933;
- Sun, 09 Jan 2022 18:04:56 -0800 (PST)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=ILAgxz/MUsEIzatCyjcXIF+/3AVeoAEkSaEJYYkCIeQ=;
+        b=r0EsRjjVuz+IYFaCfxcHeu4Omi8SZzJGWHwv2niI+WRm70zMEV/7lvSVJXZvUXV8f+
+         WGyoxTZux3ZBH92jFe8aTSJEhtlwE7LAj1nL/cDM3sn2aKfR3DnVRnRWosE0jHi7Oi/Q
+         P3jEEj5O50/6+lzytKanRTzcpnqKNAdAuI8T/4Jf8xG9iKgpfDx+b6fejQs0YT9Z6NL0
+         K8/WX5xIMiDVkG18yJHdSqXRYkydk56D8S9/6BMsOTsArF5g7hl8xG+vj5oMTXnUxR+0
+         WNkkqvy1aStTaF7M9UzRwJ8QI3mIetwOzHo7sj2C9GGH2Wcrjz2ql3+CEjLXVHz1jhcv
+         niFg==
+X-Gm-Message-State: AOAM5330qHh3I4NqtooZFkJqKrQY56Nt7JQcxyEAbcjHUTkF+5PFyIkw
+        aDva++TA1BldaBrczpJSGfgh18hYvp4fAMGvfYnC2dLK7kUbYg==
+X-Google-Smtp-Source: ABdhPJwP5oUkIzGVb0ceZahTRQrJW12Ap7UnW/q9mWjGAB6T2IceCFGBaTlQrRnSAUMslb1Ta2UmG8eaHKQmifF69jk=
+X-Received: by 2002:a6b:1452:: with SMTP id 79mr34429455iou.62.1641780464448;
+ Sun, 09 Jan 2022 18:07:44 -0800 (PST)
 MIME-Version: 1.0
-References: <20220108084008.1053111-1-fuweid89@gmail.com>
-In-Reply-To: <20220108084008.1053111-1-fuweid89@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 9 Jan 2022 18:04:45 -0800
-Message-ID: <CAEf4Bzag+qQOs86t2ESmYvTY8xCip+_GTKqXa0m7MQWjDMO5Mg@mail.gmail.com>
-Subject: Re: [PATCH bpf] tools/bpf: only set obj->skeleton without err
-To:     Wei Fu <fuweid89@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+From:   Benjamin Yim <yan2228598786@gmail.com>
+Date:   Mon, 10 Jan 2022 10:07:33 +0800
+Message-ID: <CALcyL7gK6xBLkuUAc6hJmiKwddjh8uhP1F1oCEdb+YTy-XTXiQ@mail.gmail.com>
+Subject: Re: [PATCH] net: skb: introduce kfree_skb_reason()
+To:     imagedong@tencent.com
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 8, 2022 at 12:40 AM Wei Fu <fuweid89@gmail.com> wrote:
->
-> After `bpftool gen skeleton`, the ${bpf_app}.skel.h will provide that
-> ${bpf_app_name}__open helper to load bpf. If there is some error
-> like ENOMEM, the ${bpf_app_name}__open will rollback(free) the allocated
-> object, including `bpf_object_skeleton`.
->
-> Since the ${bpf_app_name}__create_skeleton set the obj->skeleton first
-> and not rollback it when error, it will cause double-free in
-> ${bpf_app_name}__destory at ${bpf_app_name}__open. Therefore, we should
-> set the obj->skeleton before return 0;
->
-> Signed-off-by: Wei Fu <fuweid89@gmail.com>
-> ---
->  tools/bpf/bpftool/gen.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
+On Thu,  6 Jan 2022 14:36:26 +0800 Menglong Dong wrote:
 
-Great catch! Added (please add it yourself in the future):
+> Introduce the interface kfree_skb_reason(), which is able to pass
+> the reason why the skb is dropped to 'kfree_skb' tracepoint.
 
-Fixes: 5dc7a8b21144 ("bpftool, selftests/bpf: Embed object file inside
-skeleton")
+> Add the 'reason' field to 'trace_kfree_skb', therefor user can get
+> more detail information about abnormal skb with 'drop_monitor' or
+> eBPF.
 
-Also reworded the subject a bit. Pushed to bpf-next.
+> All drop reasons are defined in the enum 'skb_drop_reason', and
+> they will be print as string in 'kfree_skb' tracepoint in format
+> of 'reason: XXX'.
 
-> diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-> index 5c18351290f0..e61e08f524da 100644
-> --- a/tools/bpf/bpftool/gen.c
-> +++ b/tools/bpf/bpftool/gen.c
-> @@ -928,7 +928,6 @@ static int do_skeleton(int argc, char **argv)
->                         s = (struct bpf_object_skeleton *)calloc(1, sizeof(*s));\n\
->                         if (!s)                                             \n\
->                                 goto err;                                   \n\
-> -                       obj->skeleton = s;                                  \n\
->                                                                             \n\
->                         s->sz = sizeof(*s);                                 \n\
->                         s->name = \"%1$s\";                                 \n\
-> @@ -1001,6 +1000,8 @@ static int do_skeleton(int argc, char **argv)
->                                                                             \n\
->                         s->data = (void *)%2$s__elf_bytes(&s->data_sz);     \n\
->                                                                             \n\
-> +                       obj->skeleton = s;                                  \n\
-> +                                                                           \n\
->                         return 0;                                           \n\
->                 err:                                                        \n\
->                         bpf_object__destroy_skeleton(s);                    \n\
-> --
-> 2.25.1
->
+> ( Maybe the reasons should be defined in a uapi header file, so that
+> user space can use them? )
+
+Since these drops are hardly hot path, why not simply use a string ?
+An ENUM will not really help grep games.
+
+tcp_drop(sk, skb, "csum error");
+
+
+can refer to the previous discussion: https://lkml.org/lkml/2021/8/25/613
