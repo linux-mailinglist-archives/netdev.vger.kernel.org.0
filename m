@@ -2,59 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 638B1489E37
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 18:21:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0922489E3B
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 18:22:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238136AbiAJRVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 12:21:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45702 "EHLO
+        id S238180AbiAJRW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 12:22:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234124AbiAJRVC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 12:21:02 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7A0BC06173F
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 09:21:01 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id l16-20020a17090a409000b001b2e9628c9cso807633pjg.4
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 09:21:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GhwOf0YXkDcJbqf4xvCv/gKefslIywgQOKdpbeZMR54=;
-        b=XHA8jvmXjCu258OTcvoUGy15D+l8CcO2oIKLbA5wGWBNOZ9ejmBjvEAm9zZJVMHUJk
-         8Ojm0U3eA5cdcebVwBxSr+6mYO9UXhYZNsbU3B4mMdVHqvIQ/htsjiWbBUdqc+6noMRE
-         EkxeyDcDzzOO/bBHraq63jUhhRhcMpBb5WQRd9O0D0dgqLUHKDh38lFvxlLHxDceKSe8
-         H0vH3gEe1pnFj391U00upjXNLyxChH0x0hkGt+oeJKcif8jU7c/5RfMrArVaqcT0cqcW
-         PSQfKD+KmL2HalHMx5xWFf6fqfYaPgIDDtq0osu3uLYw9MnRKOlWD0isOOi89MTqBpch
-         TbKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GhwOf0YXkDcJbqf4xvCv/gKefslIywgQOKdpbeZMR54=;
-        b=2byaVfL6mFVAM2eW5Fu53JiEBoU9p6+ZkydJCwqM/riHOfqQamFqyLOQMid2n5/pNG
-         Rrpze9wSM2s4SvZ+ydlSXgZx+rJ2AjDRftJzr5E+F24DfbCCgWCJeAIyZu2/jrGZT8DE
-         1vUN0nRRpfdma5hMOXilxTCMimEOhWBxx9o/4giEl0HKp90GxnMeM6v5nhBI1PDAYgfr
-         n76b/apKOo/0krX0BbRRX8qPPARhLNiq5f2Nory5aVKsEXtSHdHsNNDzwgbrYPneIcr0
-         E9zKRrNuW1tKPwRp4HPWRWIC94fWizFaOKYGkcvUvZxoP2/xK+RogiIAzNvPRUfT9kiu
-         RaFg==
-X-Gm-Message-State: AOAM531H1Ytv81Pd+kusyfqL533c0ifx+rICKeoIc6Yngzpj5x0LbPoF
-        bHUgmgTrhkI1GOENhXPkZ0o5pvr7PKgWpg==
-X-Google-Smtp-Source: ABdhPJyJQIPEq9asDUUbMMhiMy4kjikZeyBfPMruib/h2UI0sClBUiJRK/gbvT9ojyN7nN8iSIjeSQ==
-X-Received: by 2002:a62:180d:0:b0:4bb:dafb:ff50 with SMTP id 13-20020a62180d000000b004bbdafbff50mr530396pfy.45.1641835261140;
-        Mon, 10 Jan 2022 09:21:01 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id h5sm9252519pjc.27.2022.01.10.09.21.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 09:21:00 -0800 (PST)
-Date:   Mon, 10 Jan 2022 09:20:58 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <sthemmin@microsoft.com>
-Subject: Re: [PATCH iproute2-next 00/11] Clang warning fixes
-Message-ID: <20220110092058.369bbff5@hermes.local>
-In-Reply-To: <20220108204650.36185-1-sthemmin@microsoft.com>
-References: <20220108204650.36185-1-sthemmin@microsoft.com>
+        with ESMTP id S238139AbiAJRW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 12:22:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4781C06173F
+        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 09:22:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D829B81722
+        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 17:22:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5026C36AE9;
+        Mon, 10 Jan 2022 17:22:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641835346;
+        bh=MFylPzwZ9SdvtDayeG73HIri2N4dRq2TUPUQ+I+U7Uo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ck7gc9LOfuP8kDyrNUTc3GuBHC1StOh+ixdCHDDm46CFv4S9qu15/gPPNAi71IkzA
+         IQIjqyUFIkN5ES6uxYcBE0H7VelRVm5FmKD1QJ5SZ1BSX5PEhZDhopsgLQmhq/WCZO
+         s5gpeqC1zM5Ar8zWtaf3JRgR/DknsDJz/BdLaQVi3rDbLL/rU8pfUq7iw1JmbOln3V
+         EA4JWCXcaiYrZbjgN7G4HS4P4sIWTlEiDaDMhxAvFq4M+rC6JvclQJwTuQxK7JCmIG
+         o+7rvbbbJP31aFYC5UoQi4EqNe1Oo/e7x2x8wE/4/PQQu+bYehDano84nDdUFwW3bl
+         e3sJpoE6ljhzw==
+Date:   Mon, 10 Jan 2022 09:22:24 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Martin Habets <habetsm.xilinx@gmail.com>
+Cc:     =?UTF-8?B?w43DsWlnbw==?= Huguet <ihuguet@redhat.com>,
+        davem@davemloft.net, ecree.xilinx@gmail.com,
+        netdev@vger.kernel.org, dinang@xilinx.com
+Subject: Re: [PATCH net-next] sfc: The size of the RX recycle ring should be
+ more flexible
+Message-ID: <20220110092224.5a8ecddf@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220110085820.zi73go4etyyrkixr@gmail.com>
+References: <CACT4oudChHDKecLfDdA7R8jpQv2Nmz5xBS3hH_jFWeS37CnQGg@mail.gmail.com>
+        <20211120083107.z2cm7tkl2rsri2v7@gmail.com>
+        <CACT4oufpvQ1Qzg3eC6wDu33_xBo5tVghr9G7Q=d-7F=bZbW4Vg@mail.gmail.com>
+        <CACT4ouc=LNnrTdz37YEOAkm3G+02vrmJ5Sxk0JwKSMoCGnLs-w@mail.gmail.com>
+        <20220102092207.rxz7kpjii4ermnfo@gmail.com>
+        <20220110085820.zi73go4etyyrkixr@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,37 +54,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  8 Jan 2022 12:46:39 -0800
-Stephen Hemminger <stephen@networkplumber.org> wrote:
+On Mon, 10 Jan 2022 08:58:21 +0000 Martin Habets wrote:
+> +static unsigned int efx_ef10_recycle_ring_size(const struct efx_nic *efx)
+> +{
+> +	unsigned int ret;
+> +
+> +	/* There is no difference between PFs and VFs. The side is based on
+> +	 * the maximum link speed of a given NIC.
+> +	 */
+> +	switch (efx->pci_dev->device & 0xfff) {
+> +	case 0x0903:	/* Farmingdale can do up to 10G */
+> +#ifdef CONFIG_PPC64
+> +		ret = 4 * EFX_RECYCLE_RING_SIZE_10G;
+> +#else
+> +		ret = EFX_RECYCLE_RING_SIZE_10G;
+> +#endif
+> +		break;
+> +	case 0x0923:	/* Greenport can do up to 40G */
+> +	case 0x0a03:	/* Medford can do up to 40G */
+> +#ifdef CONFIG_PPC64
+> +		ret = 16 * EFX_RECYCLE_RING_SIZE_10G;
+> +#else
+> +		ret = 4 * EFX_RECYCLE_RING_SIZE_10G;
+> +#endif
+> +		break;
+> +	default:	/* Medford2 can do up to 100G */
+> +		ret = 10 * EFX_RECYCLE_RING_SIZE_10G;
+> +	}
+> +	return ret;
+> +}
 
-> Building iproute2-next generates a lot of warnings and
-> finds a few bugs.  This patchset resolves many of these
-> warnings but some areas (BPF, RDMA, DCB) need more work.
-> 
-> Stephen Hemminger (11):
->   tc: add format attribute to tc_print_rate
->   utils: add format attribute
->   netem: fix clang warnings
->   m_vlan: fix formatting of push ethernet src mac
->   flower: fix clang warnings
->   nexthop: fix clang warning about timer check
->   tc_util: fix clang warning in print_masked_type
->   ipl2tp: fix clang warning
->   can: fix clang warning
->   tipc: fix clang warning about empty format string
->   tunnel: fix clang warning
-> 
->  include/utils.h |  4 +++-
->  ip/ipl2tp.c     |  5 ++--
->  ip/iplink_can.c |  5 ++--
->  ip/ipnexthop.c  | 10 ++++----
->  ip/tunnel.c     |  6 ++---
->  tc/f_flower.c   | 62 +++++++++++++++++++++++--------------------------
->  tc/m_vlan.c     |  4 ++--
->  tc/q_netem.c    | 33 +++++++++++++++-----------
->  tc/tc_util.c    | 21 +++++++----------
->  tipc/link.c     |  2 +-
->  10 files changed, 77 insertions(+), 75 deletions(-)
-> 
+Why not factor out the 4x scaling for powerpc outside of the switch?
 
-Will resend this after 5.16 merge. Some of these are already fixed
+The callback could return the scaling factor but failing that:
+
+static unsigned int efx_ef10_recycle_ring_size(const struct efx_nic *efx)
+{
+	unsigned int ret = EFX_RECYCLE_RING_SIZE_10G;;
+
+	/* There is no difference between PFs and VFs. The side is based on
+	 * the maximum link speed of a given NIC.
+	 */
+	switch (efx->pci_dev->device & 0xfff) {
+	case 0x0903:	/* Farmingdale can do up to 10G */
+		break;
+	case 0x0923:	/* Greenport can do up to 40G */
+	case 0x0a03:	/* Medford can do up to 40G */
+		ret *= 4;
+		break;
+	default:	/* Medford2 can do up to 100G */
+		ret *= 10;
+	}
+
+	if (IS_ENABLED(CONFIG_PPC64))
+		ret *= 4;
+
+	return ret;
+}
+
+Other than that - net-next is closed, please switch to RFC postings
+until it opens back up once 5.17-rc1 is cut. Thanks!
