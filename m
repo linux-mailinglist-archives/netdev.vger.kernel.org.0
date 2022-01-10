@@ -2,206 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80619489629
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 11:18:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1128448962C
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 11:18:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243792AbiAJKRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 05:17:10 -0500
-Received: from mga01.intel.com ([192.55.52.88]:27547 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243764AbiAJKRA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jan 2022 05:17:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641809820; x=1673345820;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=NfTAEftq87qz1jRB9jjx8zWqVSR8qDezsmW/T8kGkdA=;
-  b=gTN2kwZiPhtKFBEwzEQLDOI29QXUkPnJ2Ji59r/zp/L4VEDHj0tG+GD8
-   +lF8g1654KvVr0VdnPYP9gcbaD7TXKk0NA4MgqfQjVVnNSgOtO6P14cHW
-   qVG7VUr4QAXPJa851/GRQvAqWmfnnB6AuODGhoH6JaMOg5F5kfEoYrLM8
-   jqdGRZutWOcz7vensHXwAZ7loOFEAo43aNmKV9vxbFidrtHKvnRKnATZd
-   lwC2DdaJCA5NYMvOEZ2mtAtFL6W0iLkt9uiU/i2/es8S+93CqYFq6lftC
-   RPruYqIb/o2oNz9kcGQYYGSXmd2qQAPOaN9tO7esDa4zaZE9ECTBnVBIX
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="267523510"
-X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
-   d="scan'208";a="267523510"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 02:16:31 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
-   d="scan'208";a="612812098"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by FMSMGA003.fm.intel.com with ESMTP; 10 Jan 2022 02:16:28 -0800
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 10 Jan 2022 02:16:27 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Mon, 10 Jan 2022 02:16:27 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.177)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Mon, 10 Jan 2022 02:16:27 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AlZdynXcBcU6zC07GcLGQd1t8IzdjkkOrUmR4SQLlUYDhDc4c+1uL3S8Nf0sEg5gd4ISsDNcGNMiaI343VwxncHuIq+xEpcvLry4HYRu7LJhZtKyNlcowfo1TTPxWbHReQO9xVQtnswF9jlqmG4mqh/TGWWMb9+aWE7UA2G4C8sN/zErpFZB7dH/SU2nlRUKxMYsh/r/biFXcqbCW60D8p0ujqJuYLGUh8qTNdYtl5YxBE4ou+MxeMhTiXg49/05aL9YKByD06Tfz9cF3uyvgXrJcuujtuNmoixEJb7HTPygwHtzNM3zok2deeYfCvxv34+MOW7LyIbY+m2tYxu43g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=f7sb+/Dg+F/way/GyfqleZwHl1Ujpju07pBbAwV16as=;
- b=fKa9A3Kdkb/wUyeRfOG0urLzF+RoPEJ09gNO61Gi66tMOUMgx4Ah8X/n6Ceee1fsBK3xEIHaHb6iJXD54YrRoHm1HXXuND1M3LdxOMoeiEI1F4G/YR+HpbCYdTRyU7OFBDQC+xg9+3OJnqYOjp1c66xUlXGoBc3qqx6Dk9FZR0JKivHdnlH/Jf2o8Fp9N/ty/JGf2JeVCOvLu3naLi+919u2aZwRH/4PbMaDEuwAkSzoNvLh1qFYj2nZcRjf2AlY40/2VVCvxSMdYuI6C58ClyLEGmjNN+sgqE6F2+AAfIehqzUuY+4UTI4ZC7J52Uxa0mbLntiuD9UvrjX+aj11GA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB3292.namprd11.prod.outlook.com (2603:10b6:5:5a::21) by
- DM6PR11MB2713.namprd11.prod.outlook.com (2603:10b6:5:c4::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4867.9; Mon, 10 Jan 2022 10:16:25 +0000
-Received: from DM6PR11MB3292.namprd11.prod.outlook.com
- ([fe80::84b0:d849:dadf:e47f]) by DM6PR11MB3292.namprd11.prod.outlook.com
- ([fe80::84b0:d849:dadf:e47f%3]) with mapi id 15.20.4867.011; Mon, 10 Jan 2022
- 10:16:24 +0000
-From:   "Bhandare, KiranX" <kiranx.bhandare@intel.com>
-To:     "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC:     Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "Brouer, Jesper" <brouer@redhat.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        KP Singh <kpsingh@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Martin KaFai Lau" <kafai@fb.com>
-Subject: RE: [Intel-wired-lan] [PATCH v4 net-next 3/9] ice: respect metadata
- in legacy-rx/ice_construct_skb()
-Thread-Topic: [Intel-wired-lan] [PATCH v4 net-next 3/9] ice: respect metadata
- in legacy-rx/ice_construct_skb()
-Thread-Index: AQHX7D0Gy8Fb3GycJE2mAj1DNm0MGqxcPZ2Q
-Date:   Mon, 10 Jan 2022 10:16:24 +0000
-Message-ID: <DM6PR11MB32929E15779B9451D1CE5E98F1509@DM6PR11MB3292.namprd11.prod.outlook.com>
-References: <20211208140702.642741-1-alexandr.lobakin@intel.com>
- <20211208140702.642741-4-alexandr.lobakin@intel.com>
-In-Reply-To: <20211208140702.642741-4-alexandr.lobakin@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.200.16
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b7ecf88a-c6c4-4102-b224-08d9d42241dc
-x-ms-traffictypediagnostic: DM6PR11MB2713:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <DM6PR11MB2713F1EACF73443228E0E02DF1509@DM6PR11MB2713.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: oHTJ1OMuJ9TrpxY36VbXnoCWWCooCtVS+0IZORZtp08vdJU4ZdQtYuHamzkFszT2DUVKgdjjCx1Srp5LTU15RteL6+1ak3Ti6YAB9sbt2rY4o3E1MAHsu9S3h66pxTiiI4bj/EtHkWTi5IKu3p+TqsEUJaLC5CHjtgRVIUdq4vkIstaIklEOmEtZlrxYLKOCCYXSGS0WKWEUv0DqB0n3kuW4+04K6uPTDV3srwJeOFfFKAY/Ibh7Cwg92GrDc3Lzg1+t1Z8NXCgpnBbk7lRUUpxCDCtMHI4hyW+bkcN4/NYFdL4SMsvEi/TU+p+iwuq8Mmr0cyrEmUC1GtLiWY1lGjt801jFsohgYRBrD9qQ/joh6zJSfeVCRJ8AgkISC1viIGhMbJw8SrzgQJMNr97VjrK6uDWYQ8h0wWF9+yMj9hSa4UgNwgWwZzClyJcRS7uXmijGf1ulhtgUOIkjnrzQMv/UWYxijscEdKEITGPPB08bJBtRGp5+xA8Tz3gSe64/WUrY19LOcDSCllYg51aVaiLtlhStHkudkWXn36P2uoCqitZPSm31BDcClRVJkYYhRjKuiTGsq5keNWjCB89GRtptTm6765n2+y3Q19V2zcIdH8pkQj7GC57U0/GwL+1B206z6NtLwgS7D3wB3VfvdhBSTDyyWIZXnM2NOHrmR87uwjnQdMJD2xDzN0gkeUh9QCWQ6s7bcdvY1rxOYSWN2Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3292.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(110136005)(7416002)(6506007)(5660300002)(66946007)(7696005)(66446008)(66476007)(8676002)(55016003)(64756008)(66556008)(38100700002)(9686003)(508600001)(38070700005)(52536014)(82960400001)(122000001)(53546011)(71200400001)(33656002)(26005)(54906003)(66574015)(83380400001)(316002)(2906002)(4326008)(76116006)(8936002)(186003)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?7+kCUp7byhrC7avxDNm4QNfyYLxk8i4bMVRfqVegU9awdfvZajA1yvuXoM?=
- =?iso-8859-1?Q?jPFbNuVhpHjBQYMf9Vm5dV70VDrprN/lnoXa1DmulermgglGsEIvzqDxvc?=
- =?iso-8859-1?Q?+p236wy++Yvv+IAnBT0edihJ7xun4vlmiyVgjM864RQAnCyBfJrCFP0fkp?=
- =?iso-8859-1?Q?jI3lM/sTQ63l0ZkZXze/GqCxGNXbhLpjn9pMTIk6BUpgQCiPSbJG+nbHrc?=
- =?iso-8859-1?Q?4OQbJ7EHQkrdRxm8QZ2er/yJTd3uL4vcy3wMcfTy1kHPB4Di/GzJdoC5LX?=
- =?iso-8859-1?Q?Pyme/L4TXCh7JoWE6LPzDbGD6+lUyJJGhrfFZbLbvgMAtggXnHgzKWXqMz?=
- =?iso-8859-1?Q?GX/xU+WYUKPoQ45SAyUQYqsz/yTR7LgYuCldiKT5rcLbEfiGiHTpT5syVN?=
- =?iso-8859-1?Q?swsSMsirmaptxYeTTZMGEyhUgnyI99haEqamCVoXWXY5DBjYUnX0x+8K2I?=
- =?iso-8859-1?Q?KbjVjvJeiL7sMUdnR6m/k94cXY9cbJ0Sw4N9oyhEFpvjLqUSHh8ERIEP+t?=
- =?iso-8859-1?Q?fdNRgOscvS6JwhZPNtk446sKLqkUdd+e3xL5ryWB9Em1ADDnOK0VhL2unq?=
- =?iso-8859-1?Q?n41X+1rHBr/yhqPVIOehG+ji5CBDLYx6xXUXCQcA3kIHA0JnGcqwW6X3KT?=
- =?iso-8859-1?Q?iBlcdhkHE0mOl2oVZSx9cHHGzevVCLc0hTI6RDd+6A92/h1V4ouLyp2yO9?=
- =?iso-8859-1?Q?F8y+83rCwTzifjevwvV2TDfd1hqIf16M0pa0DG6u7v7AYKLJv7mvQrH86n?=
- =?iso-8859-1?Q?UX/JBsZNBpkRqIIiQ9LyYH0TG6GvauhvJDr4z0FjBDs+J+eKi1HHEm6AlX?=
- =?iso-8859-1?Q?5YQeU6jfU+08z0g5pHHMklw+2YV43Gd0JvWVsdfzTYoHZSdB959UrzQOhL?=
- =?iso-8859-1?Q?PbtTr5wWLc1mg/gi9XQbo8odw+n6iqJG1q9e4rhclOg06/eom+t2bySnGQ?=
- =?iso-8859-1?Q?QWkhowJKZMnujOIhMe0xTWd+wngOzA0ujmTUZZHRGp/qCQCx1AGUS4QKl2?=
- =?iso-8859-1?Q?g7gbCf1f8cmEXH5slKQf03QbiVNJvKEd3vVuK5H8EzKTLBJKpNGJfXyhHI?=
- =?iso-8859-1?Q?xZ7E/Ypygovbh5+e7i+j3nMUx4zYVT0adzYaymqD/T938hvNGDBGZe7WlQ?=
- =?iso-8859-1?Q?t5jPoH2ERDnVsrmDeVrZvTDk16q/PRfeldtMAQA3i3+Nz4lay8GffQgw+e?=
- =?iso-8859-1?Q?aoqyNMftnKzDOwk3401ZzW56J14mtkt7vw7iUPQzS/FEU7myLUZFrIQw7x?=
- =?iso-8859-1?Q?IU5g3u2OuW/bCz+Xqxskky6AYndpCy658LweRmEAVjSFQCxVTE34wEYpHK?=
- =?iso-8859-1?Q?zC6o6C/X67JiHtluTAnBoIPJND+m9y9bTEP6+rVG9CBKAKUQRJeIxhDiFx?=
- =?iso-8859-1?Q?morCnywsasyVWmMRroYiS3D9mFPWmrAoOhtpLBi4XZFXkEzh7PKjo4ezKk?=
- =?iso-8859-1?Q?CKp03H4M747juKgYLth6+6pE7Zl3X24hEZHAUBIYppbVB1goq16aHM/QVe?=
- =?iso-8859-1?Q?6D3iE/KIb7kuO5y9RRxeIPNgmRacwrpgd7S27viHvnj4pnpv0kzBaw9MJU?=
- =?iso-8859-1?Q?Ppug/l7q+Yqg9oS/GDTpjJtmLN4PwF3XNMWLbYz+XvljQJe1cShpINha0M?=
- =?iso-8859-1?Q?NbxtRCMAIHB7/lwRfaS6ArqY8XIS31VVm9nadW06SnZfNZIqSrcnXUGZ4f?=
- =?iso-8859-1?Q?FuS8yhFGN3ZAfOcOW5Jbp2ZTr9Gsp+ugSckjfX8dr+YQV2oqJ61j5cFG2X?=
- =?iso-8859-1?Q?RPTg=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S243772AbiAJKRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 05:17:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60438 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239060AbiAJKRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 05:17:15 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01FDC061756;
+        Mon, 10 Jan 2022 02:17:13 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id k30so8159713wrd.9;
+        Mon, 10 Jan 2022 02:17:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=3FcTtQ06S7T2cfEJwv9xMGw4WGam5JBDxtl5OgvfscM=;
+        b=C2P+0vfJV6BS/a5RxFYfTtpw6G0SwSFoysQUycHErToWSYRJZ3SLx3c8bUCjrrVjSR
+         A/0XrrkINRM1AUsZLrGJ3SWlAWbpYS0ofn+8QCdESfF/u48s2uC85epw3Liz8+nGHE5T
+         qRNKLRkovGeJdo1eAnIGfFNk2MYNUcBD43kvfGZ2egYCfhwyDwsMjcd9twlh4z1pBUMc
+         u1J/5U0+WqDtrHu2NSw1ZubZOyvzsXXqHRigMi0WFOhv7jzuLg3ie8c3aNf85L/Epytf
+         Jq32vml36gJ9sy46UW95fzrE2eca9wUOeBM51YeB9lF+xQwbsudXIBRjb5r2imAXePPH
+         kICA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=3FcTtQ06S7T2cfEJwv9xMGw4WGam5JBDxtl5OgvfscM=;
+        b=2wPTScfqWVMvw13imicxFk6onHM4zEdfhHmV4SWflSrI3R0TzaVSE9LvEGKxSXWK9n
+         KZNtW+r4MP1P95n7S+R1rtTuuZpayk+ABH4QG1tbm5YAQF4bFh0qo/hGAzrmCqWoWCC+
+         36GGhCA9W1SedR5pR2BHwFH74tOv7zuJ8fulSXLika6MRLyzuw7rtvNQBXeMflP4fzr3
+         6Iu3LE66DZUwIBACxvvx3fZV0pSzqXVTN+SUu0qOmNwUGcKefFPSiNhg+6Xkv+Y90qYX
+         iYfTOFdnorgCs7uaC/EAHBdZdzZpY5QnoOA8jla6OCujT/6xJhTRvcwCW5ImzO+bBCai
+         WgSQ==
+X-Gm-Message-State: AOAM533g7N/7WNvRcUGSZa8Z83Z0jMjdz3kA9462DbzAfc0jmXo86O5r
+        qWq+fbJPRrc1/gGOPrnwKhSE3cNqwng=
+X-Google-Smtp-Source: ABdhPJzOuq0rkKvcKTBLBqC+Z9YQIA7RzNEFCcEIMB7xkAcBePZ3V1AGshE0dPoWnBiyiYSZi1EHmg==
+X-Received: by 2002:a5d:47ad:: with SMTP id 13mr43313054wrb.268.1641809832395;
+        Mon, 10 Jan 2022 02:17:12 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f2f:5b00:6811:dbe0:fa81:6cef? (p200300ea8f2f5b006811dbe0fa816cef.dip0.t-ipconnect.de. [2003:ea:8f2f:5b00:6811:dbe0:fa81:6cef])
+        by smtp.googlemail.com with ESMTPSA id l10sm6369589wmq.7.2022.01.10.02.17.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 02:17:11 -0800 (PST)
+Message-ID: <95b539d2-f72a-f967-c670-2aa37cb5039b@gmail.com>
+Date:   Mon, 10 Jan 2022 11:17:04 +0100
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3292.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7ecf88a-c6c4-4102-b224-08d9d42241dc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jan 2022 10:16:24.7657
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: A131+tSg5/SG7Gx0xl7MMC2DjaqqYk9vRNzs6xGU3KYG/OACABEUWypYOy/LVuowuy771rUoI9RCWVzyBGfaI/5U86ayneMdleGJZrgUxwI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB2713
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Content-Language: en-US
+To:     "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+References: <20220110062117.17540-1-mohammad.athari.ismail@intel.com>
+ <20220110062117.17540-2-mohammad.athari.ismail@intel.com>
+ <1be1444c-b1f7-b7d6-adaa-78960c381161@gmail.com>
+ <CO1PR11MB4771E08DD8C8CAE63E7A9A54D5509@CO1PR11MB4771.namprd11.prod.outlook.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net 1/1] net: phy: marvell: add Marvell specific PHY
+ loopback
+In-Reply-To: <CO1PR11MB4771E08DD8C8CAE63E7A9A54D5509@CO1PR11MB4771.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 10.01.2022 10:36, Ismail, Mohammad Athari wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Heiner Kallweit <hkallweit1@gmail.com>
+>> Sent: Monday, January 10, 2022 4:34 PM
+>> To: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>;
+>> Andrew Lunn <andrew@lunn.ch>; David S . Miller <davem@davemloft.net>;
+>> Jakub Kicinski <kuba@kernel.org>; Oleksij Rempel <linux@rempel-
+>> privat.de>; Russell King <linux@armlinux.org.uk>
+>> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
+>> stable@vger.kernel.org
+>> Subject: Re: [PATCH net 1/1] net: phy: marvell: add Marvell specific PHY
+>> loopback
+>>
+>> On 10.01.2022 07:21, Mohammad Athari Bin Ismail wrote:
+>>> Existing genphy_loopback() is not applicable for Marvell PHY. So,
+>>> adding Marvell specific PHY loopback operation by only setting(enable)
+>>> or
+>>> clearing(disable) BMCR_LOOPBACK bit.
+>>>
+>>> Tested working on Marvell 88E1510.
+>>>
+>> With this change you'd basically revert the original change and loose its
+>> functionality. Did you check the Marvell datasheets?
+>> At least for few versions I found that you may have to configure bits 0..2 in
+>> MAC Specific Control Register 2 (page 2, register 21) instead of BMCR.
+> 
+> May I know what datasheet version that has the bits 2:0's detail explanation? The version that I have, bits 2:0 in MAC Specific Control Register 2 shows as Reserved.
+> The datasheet I have is "Marvell Alaska 88E1510/88E1518/88E1512/88E1514 Integrated 10/100/1000 Mbps Energy Efficient Ethernet Transceiver Rev. G December 17, 2021"
+> 
+I checked the 88E6352 switch chip datasheet. The part covering the integrated PHY's lists the mentioned bits
+in MAC Specific Control Register 2.
 
-> -----Original Message-----
-> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
-> Alexander Lobakin
-> Sent: Wednesday, December 8, 2021 7:37 PM
-> To: intel-wired-lan@lists.osuosl.org
-> Cc: Song Liu <songliubraving@fb.com>; Alexei Starovoitov <ast@kernel.org>=
-;
-> Andrii Nakryiko <andrii@kernel.org>; Daniel Borkmann
-> <daniel@iogearbox.net>; John Fastabend <john.fastabend@gmail.com>;
-> Jesper Dangaard Brouer <brouer@redhat.com>; Yonghong Song
-> <yhs@fb.com>; Jesper Dangaard Brouer <hawk@kernel.org>; KP Singh
-> <kpsingh@kernel.org>; Jakub Kicinski <kuba@kernel.org>;
-> netdev@vger.kernel.org; linux-kernel@vger.kernel.org; David S. Miller
-> <davem@davemloft.net>; Bj=F6rn T=F6pel <bjorn@kernel.org>;
-> bpf@vger.kernel.org; Martin KaFai Lau <kafai@fb.com>
-> Subject: [Intel-wired-lan] [PATCH v4 net-next 3/9] ice: respect metadata =
-in
-> legacy-rx/ice_construct_skb()
->=20
-> In "legacy-rx" mode represented by ice_construct_skb(), we can still use =
-XDP
-> (and XDP metadata), but after XDP_PASS the metadata will be lost as it
-> doesn't get copied to the skb.
-> Copy it along with the frame headers. Account its size on skb allocation,=
- and
-> when copying just treat it as a part of the frame and do a pull after to =
-"move"
-> it to the "reserved" zone.
-> Point net_prefetch() to xdp->data_meta instead of data. This won't change
-> anything when the meta is not here, but will save some cache misses
-> otherwise.
->=20
-> Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_txrx.c | 15 +++++++++++----
->  1 file changed, 11 insertions(+), 4 deletions(-)
->=20
+Table 75 in the 88E1510 datasheet says: Loopback speed is determined by Registers 21_2.6,13.
+So Marvell PHY's seem to use different bits (although same register) for loopback speed configuration.
 
-Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>  A Contingent Worker =
-at Intel
+> Really appreciate if you could advice on PHY loopback enabling for Marvell 88E1510 because the existing genphy_loopback() function doesn't work for the PHY.
+> 
+> Thank you.
+> 
+> -Athari-
+> 
+>>
+>>
+>>> Fixes: 014068dcb5b1 ("net: phy: genphy_loopback: add link speed
+>>> configuration")
+>>> Cc: <stable@vger.kernel.org> # 5.15.x
+>>> Signed-off-by: Mohammad Athari Bin Ismail
+>>> <mohammad.athari.ismail@intel.com>
+>>> ---
+>>>  drivers/net/phy/marvell.c | 8 +++++++-
+>>>  1 file changed, 7 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+>>> index 4fcfca4e1702..2a73a959b48b 100644
+>>> --- a/drivers/net/phy/marvell.c
+>>> +++ b/drivers/net/phy/marvell.c
+>>> @@ -1932,6 +1932,12 @@ static void marvell_get_stats(struct phy_device
+>> *phydev,
+>>>  		data[i] = marvell_get_stat(phydev, i);  }
+>>>
+>>> +static int marvell_loopback(struct phy_device *phydev, bool enable) {
+>>> +	return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
+>>> +			  enable ? BMCR_LOOPBACK : 0);
+>>> +}
+>>> +
+>>>  static int marvell_vct5_wait_complete(struct phy_device *phydev)  {
+>>>  	int i;
+>>> @@ -3078,7 +3084,7 @@ static struct phy_driver marvell_drivers[] = {
+>>>  		.get_sset_count = marvell_get_sset_count,
+>>>  		.get_strings = marvell_get_strings,
+>>>  		.get_stats = marvell_get_stats,
+>>> -		.set_loopback = genphy_loopback,
+>>> +		.set_loopback = marvell_loopback,
+>>>  		.get_tunable = m88e1011_get_tunable,
+>>>  		.set_tunable = m88e1011_set_tunable,
+>>>  		.cable_test_start = marvell_vct7_cable_test_start,
+> 
+
