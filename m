@@ -2,249 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3A88489BA1
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 15:54:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F11C489BD9
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 16:09:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235761AbiAJOye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 09:54:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230426AbiAJOyd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 09:54:33 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7806CC06173F;
-        Mon, 10 Jan 2022 06:54:33 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id g14so10144154ybs.8;
-        Mon, 10 Jan 2022 06:54:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qal2CCc/ypCVLgFanrL2Ijt2N1JQDQJXt0zzH2smX8U=;
-        b=bfys7VfoZ2kYE4HvWhWS5QBhMLldlaZEkUrkA3joxoR7BZ7uDdFoe9balYP72kzA2g
-         JREYMKhr8s9s3SV9WJZ3YS5regvuJTHo0wNbedfMo0rNE8HEQQDaNCrtZMtjGaEZD+Px
-         e7kdPZPsAEOJCIidXDccN6RH98emPdC8ayeWMbIoYYqZeJYIX53IX8J7VzlOaMNeZQEj
-         VLPAGv8isDbK/EX8AKKgdOUVCmnMOdfKRT4wBI1FHDwAUPmmVhqBQuj15lAkdc3vMNYj
-         vWK0l4beovTjUmIWCBsNKgDsqSpTh6rsqYL9mzfDfwmEjIx4QukhNi6YoLF6ywx/BpPD
-         QXsA==
+        id S235925AbiAJPJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 10:09:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40043 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235917AbiAJPJr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 10:09:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641827387;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pqCR8DvhBxiCC4TzGlm/t/7v2g7znFq4gFV1cmWoEXc=;
+        b=FCKL11GeK8lPcrJxi1b6tEdLWm46ya5nKM7YFb8Z9sWP3uxjCqZ/mNgbCnPlkDJgcTKVWb
+        Nuto2Wr73jlMPi8sZjr0u5SIjjpAomCwya82EPufuvKsRJVXeeNI7cK44TPp6ZY7zPUFZ2
+        +oW1ZO1Vr+a9A68346t8gyfFPjz5yUw=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-638-xARG3aqJPhumozfdfrWVFA-1; Mon, 10 Jan 2022 10:09:45 -0500
+X-MC-Unique: xARG3aqJPhumozfdfrWVFA-1
+Received: by mail-wm1-f70.google.com with SMTP id i81-20020a1c3b54000000b003467c58cbddso8676829wma.5
+        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 07:09:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qal2CCc/ypCVLgFanrL2Ijt2N1JQDQJXt0zzH2smX8U=;
-        b=DsoZMR+CZ9mAx8kvVPc5RUEJfmHDNcgInbUmY2E60JtiSMFKE1T1DssRKqdUCKXjoZ
-         ER8wYBh3e4jrkbi6QzK6JiofULwlpxtXHY7+SCMPlAxnluQX6PpMpniCZpYIAtq7sqRo
-         esBnfJ5BJ4DaUA/+NUwCxT/YOivN+EGxuX9wXM5LHDf9+rmOgl8abBWX7+QCzvrtl42n
-         A8BL3az1C+d7UHPm/+Q29kXhy+YzHJOuhM3QIPT8RDAkqTThMAyFyRGji63fW4UxAk4q
-         ihlJhEzxYAlhnR4ZXl7Yq1o0i7DKDBl/M7UebPBR17DKHXejE28x6pPf9zzJyySCBbkk
-         8Ykw==
-X-Gm-Message-State: AOAM5332S1W5G/WGhaqI3G600mtdvM8DTJbE0XA13jMyQCt3UWuXA9nh
-        ab7rkaQCjdZ//85Gk+4qv6jgj5IgSfGLQ7vJ/oM=
-X-Google-Smtp-Source: ABdhPJwHL6r/hZbeRNWAhqgiNbgrT6Rb29y0thLUuqwEUUzfci0xWdErJIywfhnM0twqWyGEifwLuyUkDjCri07QK08=
-X-Received: by 2002:a25:77ca:: with SMTP id s193mr1268164ybc.510.1641826472447;
- Mon, 10 Jan 2022 06:54:32 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pqCR8DvhBxiCC4TzGlm/t/7v2g7znFq4gFV1cmWoEXc=;
+        b=UnYUJHjPcsH5Cq4ru4iGW7/TzcGYGQqx8hUBkelwLBd4JNz+hyjKI/KvvHC6yHTe/D
+         KEeagHNIn2KzkEB0w5nlKEyNO9bpMygV5v1XDTNT7cTMMCcq05w1+8MVpW0+8f+9nrVa
+         7Sk0GHbmPZZ66PdIzvX0ZyzTP2/s1yrwm2AZaJ/8U/hTIXj8I9SeDdDAkbWN8NhXhA4R
+         YFKatqdEAXp3YC2kPoYnq9cqKb9y2/CXnf2DhXTwFg5HUWef6mFCujrMoyCj0O42av5K
+         NQfT/bRvaDsHtfCaVkIZiaoknCfyBvMqov481D3tL0oTsg5Z61cq/L//5OfmNuJIoaiX
+         7FlQ==
+X-Gm-Message-State: AOAM532VE4KV9rwbR/rREiOs9Sd8jMsYORN9Qwk0ai3e/nI8pgyL+wxy
+        qq5SdpLR0TvTgT8i43UV0vDoUPolMSM30r2a67tH2flA5YwUqr9t58gAJFh2WsFudTSOBDAF84C
+        s50IwgkR8qcuObme7
+X-Received: by 2002:a05:6000:1687:: with SMTP id y7mr92670wrd.234.1641827384660;
+        Mon, 10 Jan 2022 07:09:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx+Wi7ut3xNdrf+rI6tR7FUH1Wzlso2Na/Gkg81RELF3PPjhams/SaDbGDnPVE94lb71Siqrw==
+X-Received: by 2002:a05:6000:1687:: with SMTP id y7mr92655wrd.234.1641827384391;
+        Mon, 10 Jan 2022 07:09:44 -0800 (PST)
+Received: from redhat.com ([2.55.148.228])
+        by smtp.gmail.com with ESMTPSA id m6sm7888102wrx.36.2022.01.10.07.09.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 07:09:43 -0800 (PST)
+Date:   Mon, 10 Jan 2022 10:09:38 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        He Zhe <zhe.he@windriver.com>,
+        Liu Xiaodong <xiaodong.liu@intel.com>,
+        Joe Perches <joe@perches.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Will Deacon <will@kernel.org>,
+        John Garry <john.garry@huawei.com>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Netdev <netdev@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v12 00/13] Introduce VDUSE - vDPA Device in Userspace
+Message-ID: <20220110100911-mutt-send-email-mst@kernel.org>
+References: <20210830141737.181-1-xieyongji@bytedance.com>
+ <20220110075546-mutt-send-email-mst@kernel.org>
+ <CACycT3v1aEViw7vV4x5qeGVPrSrO-BTDvQshEX35rx_X0Au2vw@mail.gmail.com>
 MIME-Version: 1.0
-References: <CAKXUXMzZkQvHJ35nwVhcJe+DrtEXGw+eKGVD04=xRJkVUC2sPA@mail.gmail.com>
- <20220109132038.38f8ae4f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220109132038.38f8ae4f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Date:   Mon, 10 Jan 2022 15:54:21 +0100
-Message-ID: <CAKXUXMwr9NaJ4eN+eNWrD-Pkq4WLPzfVRPBJPCdwWE8C3-eMbg@mail.gmail.com>
-Subject: Re: Observation of a memory leak with commit 314001f0bf92 ("af_unix:
- Add OOB support")
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Rao Shoaib <rao.shoaib@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>,
-        regressions@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACycT3v1aEViw7vV4x5qeGVPrSrO-BTDvQshEX35rx_X0Au2vw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 9, 2022 at 10:20 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 7 Jan 2022 07:48:46 +0100 Lukas Bulwahn wrote:
-> > Dear Rao and David,
+On Mon, Jan 10, 2022 at 09:54:08PM +0800, Yongji Xie wrote:
+> On Mon, Jan 10, 2022 at 8:57 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 > >
+> > On Mon, Aug 30, 2021 at 10:17:24PM +0800, Xie Yongji wrote:
+> > > This series introduces a framework that makes it possible to implement
+> > > software-emulated vDPA devices in userspace. And to make the device
+> > > emulation more secure, the emulated vDPA device's control path is handled
+> > > in the kernel and only the data path is implemented in the userspace.
+> > >
+> > > Since the emuldated vDPA device's control path is handled in the kernel,
+> > > a message mechnism is introduced to make userspace be aware of the data
+> > > path related changes. Userspace can use read()/write() to receive/reply
+> > > the control messages.
+> > >
+> > > In the data path, the core is mapping dma buffer into VDUSE daemon's
+> > > address space, which can be implemented in different ways depending on
+> > > the vdpa bus to which the vDPA device is attached.
+> > >
+> > > In virtio-vdpa case, we implements a MMU-based software IOTLB with
+> > > bounce-buffering mechanism to achieve that. And in vhost-vdpa case, the dma
+> > > buffer is reside in a userspace memory region which can be shared to the
+> > > VDUSE userspace processs via transferring the shmfd.
+> > >
+> > > The details and our user case is shown below:
+> > >
+> > > ------------------------    -------------------------   ----------------------------------------------
+> > > |            Container |    |              QEMU(VM) |   |                               VDUSE daemon |
+> > > |       ---------      |    |  -------------------  |   | ------------------------- ---------------- |
+> > > |       |dev/vdx|      |    |  |/dev/vhost-vdpa-x|  |   | | vDPA device emulation | | block driver | |
+> > > ------------+-----------     -----------+------------   -------------+----------------------+---------
+> > >             |                           |                            |                      |
+> > >             |                           |                            |                      |
+> > > ------------+---------------------------+----------------------------+----------------------+---------
+> > > |    | block device |           |  vhost device |            | vduse driver |          | TCP/IP |    |
+> > > |    -------+--------           --------+--------            -------+--------          -----+----    |
+> > > |           |                           |                           |                       |        |
+> > > | ----------+----------       ----------+-----------         -------+-------                |        |
+> > > | | virtio-blk driver |       |  vhost-vdpa driver |         | vdpa device |                |        |
+> > > | ----------+----------       ----------+-----------         -------+-------                |        |
+> > > |           |      virtio bus           |                           |                       |        |
+> > > |   --------+----+-----------           |                           |                       |        |
+> > > |                |                      |                           |                       |        |
+> > > |      ----------+----------            |                           |                       |        |
+> > > |      | virtio-blk device |            |                           |                       |        |
+> > > |      ----------+----------            |                           |                       |        |
+> > > |                |                      |                           |                       |        |
+> > > |     -----------+-----------           |                           |                       |        |
+> > > |     |  virtio-vdpa driver |           |                           |                       |        |
+> > > |     -----------+-----------           |                           |                       |        |
+> > > |                |                      |                           |    vdpa bus           |        |
+> > > |     -----------+----------------------+---------------------------+------------           |        |
+> > > |                                                                                        ---+---     |
+> > > -----------------------------------------------------------------------------------------| NIC |------
+> > >                                                                                          ---+---
+> > >                                                                                             |
+> > >                                                                                    ---------+---------
+> > >                                                                                    | Remote Storages |
+> > >                                                                                    -------------------
+> > >
+> > > We make use of it to implement a block device connecting to
+> > > our distributed storage, which can be used both in containers and
+> > > VMs. Thus, we can have an unified technology stack in this two cases.
+> > >
+> > > To test it with null-blk:
+> > >
+> > >   $ qemu-storage-daemon \
+> > >       --chardev socket,id=charmonitor,path=/tmp/qmp.sock,server,nowait \
+> > >       --monitor chardev=charmonitor \
+> > >       --blockdev driver=host_device,cache.direct=on,aio=native,filename=/dev/nullb0,node-name=disk0 \
+> > >       --export type=vduse-blk,id=test,node-name=disk0,writable=on,name=vduse-null,num-queues=16,queue-size=128
+> > >
+> > > The qemu-storage-daemon can be found at https://github.com/bytedance/qemu/tree/vduse
 > >
-> > In our syzkaller instance running on linux-next,
-> > https://elisa-builder-00.iol.unh.edu/syzkaller-next/, we have been
-> > observing a memory leak in prepare_creds,
-> > https://elisa-builder-00.iol.unh.edu/syzkaller-next/report?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3,
-> > for quite some time.
-> >
-> > It is reproducible on v5.15-rc1, v5.15, v5.16-rc8 and next-20220104.
-> > So, it is in mainline, was released and has not been fixed in
-> > linux-next yet.
-> >
-> > As syzkaller also provides a reproducer, we bisected this memory leak
-> > to be introduced with  commit 314001f0bf92 ("af_unix: Add OOB
-> > support").
-> >
-> > We also tested that reverting this commit on torvalds' current tree
-> > made the memory leak with the reproducer go away.
-> >
-> > Could you please have a look how your commit introduces this memory
-> > leak? We will gladly support testing your fix in case help is needed.
->
-> Let's test the regression/bug report tracking bot :)
->
-> #regzbot introduced: 314001f0bf92
+> > It's been half a year - any plans to upstream this?
+> 
+> Yeah, this is on my to-do list this month.
+> 
+> Sorry for taking so long... I've been working on another project
+> enabling userspace RDMA with VDUSE for the past few months. So I
+> didn't have much time for this. Anyway, I will submit the first
+> version as soon as possible.
+> 
+> Thanks,
+> Yongji
 
-Here is all relevant information:
+Oh fun. You mean like virtio-rdma? Or RDMA as a backend for regular
+virtio?
 
-We have a reproducer program and this reproducer setup:
+-- 
+MST
 
-
-Kernel Build:
-
-make mrproper && make defconfig && make kvm_guest.config &&
-scripts/config -e KCOV -e KCOV_INSTRUMENT_ALL -e
-KCOV_ENABLE_COMPARISONS -e DEBUG_FS -e DEBUG_KMEMLEAK -e DEBUG_INFO -e
-KALLSYMS -e KALLSYMS_ALL -e NAMESPACES -e UTS_NS -e IPC_NS -e PID_NS
--e NET_NS -e CGROUP_PIDS -e MEMCG -e USER_NS -e CONFIGFS_FS -e
-SECURITYFS -e FAULT_INJECTION -e FAULT_INJECTION_DEBUG_FS -e
-FAULT_INJECTION_USERCOPY -e FAILSLAB -e FAIL_PAGE_ALLOC -e
-FAIL_MAKE_REQUEST -e FAIL_IO_TIMEOUT -e FAIL_FUTEX -e LOCKDEP -e
-PROVE_LOCKING -e DEBUG_ATOMIC_SLEEP -e PROVE_RCU -e DEBUG_VM -e
-REFCOUNT_FULL -e FORTIFY_SOURCE -e HARDENED_USERCOPY -e
-LOCKUP_DETECTOR -e SOFTLOCKUP_DETECTOR -e HARDLOCKUP_DETECTOR -e
-BOOTPARAM_HARDLOCKUP_PANIC -e DETECT_HUNG_TASK -e WQ_WATCHDOG -e
-USB_GADGET -e USB_RAW_GADGET -e TUN -e KCSAN -d RANDOMIZE_BASE -e
-MAC80211_HWSIM -e IEEE802154 -e MAC802154 -e IEEE802154_DRIVERS -e
-IEEE802154_HWSIM -e BT -e BT_HCIVHCI && make olddefconfig && make -j
-24
-
-(This is not a minimal config for the reproducer.)
-
-
-QEMU Command:
-
-qemu-system-x86_64 -m 2048 -smp 2 -chardev
-socket,id=SOCKSYZ,server,nowait,host=localhost,port=46514 -mon
-chardev=SOCKSYZ,mode=control -display none -serial stdio -no-reboot
--name VM-test -device virtio-rng-pci -enable-kvm -cpu
-host,migratable=off -device e1000,netdev=net0 -netdev
-user,id=net0,restrict=on,hostfwd=tcp:127.0.0.1:28993-:22 -hda
-bullseye.img -snapshot -kernel bzImage -append "root=/dev/sda
-console=ttyS0"
-
-Reproducer: see C program at the bottom of
-https://elisa-builder-00.iol.unh.edu/syzkaller-next/report?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3
-
-Trigger in QEMU: compile reproducer with gcc and run it
-
-We observe the memory leak output below on next-20220110 with the setup above.
-We do NOT observe the memory leak output below on next-20220110, when
-disabling AF_UNIX_OOB.
-
-So, no memory leak for a kernel build with this diff in the repository
-and everything else same as above. That is also why the bisection
-identified commit 314001f0bf92 to introduce this memory leak.
-
-diff --git a/net/unix/Kconfig b/net/unix/Kconfig
-index b7f811216820..e4175feb1809 100644
---- a/net/unix/Kconfig
-+++ b/net/unix/Kconfig
-@@ -28,7 +28,7 @@ config UNIX_SCM
- config AF_UNIX_OOB
-        bool
-        depends on UNIX
--       default y
-+       default n
-
- config UNIX_DIAG
-        tristate "UNIX: socket monitoring interface"
-
-
-
-memory leak output:
-
-BUG: memory leak
-unreferenced object 0xffff888012fd0240 (size 192):
-  comm "a.out", pid 250, jiffies 4294908743 (age 13.529s)
-  hex dump (first 32 bytes):
-    02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000a3bddd5a>] kmem_cache_alloc+0x133/0x2d0
-    [<00000000587efbf5>] prepare_creds+0x27/0x420
-    [<0000000095b9beb6>] copy_creds+0x3a/0x600
-    [<000000004e59ddd9>] copy_process+0x830/0x2b80
-    [<000000005840a46d>] kernel_clone+0x89/0xbf0
-    [<0000000070c730ab>] __do_sys_clone+0x88/0xb0
-    [<00000000f5b1c158>] do_syscall_64+0x3a/0x80
-    [<000000004a0e7245>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-BUG: memory leak
-unreferenced object 0xffff88800536dba0 (size 32):
-  comm "a.out", pid 250, jiffies 4294908743 (age 13.529s)
-  hex dump (first 32 bytes):
-    01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000e0ec3d82>] __kmalloc+0x161/0x270
-    [<000000006e2dab2d>] security_prepare_creds+0xa3/0xd0
-    [<0000000090cfc7fd>] prepare_creds+0x2d6/0x420
-    [<0000000095b9beb6>] copy_creds+0x3a/0x600
-    [<000000004e59ddd9>] copy_process+0x830/0x2b80
-    [<000000005840a46d>] kernel_clone+0x89/0xbf0
-    [<0000000070c730ab>] __do_sys_clone+0x88/0xb0
-    [<00000000f5b1c158>] do_syscall_64+0x3a/0x80
-    [<000000004a0e7245>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-BUG: memory leak
-unreferenced object 0xffff88800dba5c00 (size 232):
-  comm "a.out", pid 250, jiffies 4294908743 (age 13.529s)
-  hex dump (first 32 bytes):
-    02 00 00 00 00 00 00 00 00 00 00 00 ad 4e ad de  .............N..
-    ff ff ff ff 00 00 00 00 ff ff ff ff ff ff ff ff  ................
-  backtrace:
-    [<00000000a3bddd5a>] kmem_cache_alloc+0x133/0x2d0
-    [<0000000069a36692>] alloc_pid+0x6d/0x670
-    [<000000006f39f82c>] copy_process+0x1a95/0x2b80
-    [<000000005840a46d>] kernel_clone+0x89/0xbf0
-    [<0000000070c730ab>] __do_sys_clone+0x88/0xb0
-    [<00000000f5b1c158>] do_syscall_64+0x3a/0x80
-    [<000000004a0e7245>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-BUG: memory leak
-unreferenced object 0xffff888014438e80 (size 1856):
-  comm "a.out", pid 251, jiffies 4294908743 (age 13.529s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 58 01 00 00 00 00 00 00  ........X.......
-    01 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  ...@............
-  backtrace:
-    [<00000000a3bddd5a>] kmem_cache_alloc+0x133/0x2d0
-    [<000000004c97eff8>] sk_prot_alloc+0x3e/0x1b0
-    [<0000000034d397b2>] sk_alloc+0x34/0x320
-    [<0000000046549569>] unix_create1+0x84/0x260
-    [<00000000e72cbd15>] unix_create+0x90/0x120
-    [<000000000d82ff9e>] __sock_create+0x285/0x520
-    [<00000000087d9b40>] __sys_socketpair+0x142/0x380
-    [<00000000f7586b33>] __x64_sys_socketpair+0x1e/0x30
-    [<00000000f5b1c158>] do_syscall_64+0x3a/0x80
-    [<000000004a0e7245>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-BUG: memory leak
-unreferenced object 0xffff8880135311c0 (size 32):
-  comm "a.out", pid 251, jiffies 4294908743 (age 13.529s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    01 00 00 00 01 00 00 00 18 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000b535b6cd>] kmem_cache_alloc_trace+0x144/0x220
-    [<000000008c20c9fd>] selinux_sk_alloc_security+0x52/0xf0
-    [<00000000cdf964c1>] security_sk_alloc+0x39/0x70
-    [<0000000005d51b11>] sk_prot_alloc+0x89/0x1b0
-    [<0000000034d397b2>] sk_alloc+0x34/0x320
-    [<0000000046549569>] unix_create1+0x84/0x260
-    [<00000000e72cbd15>] unix_create+0x90/0x120
-    [<000000000d82ff9e>] __sock_create+0x285/0x520
-    [<00000000087d9b40>] __sys_socketpair+0x142/0x380
-    [<00000000f7586b33>] __x64_sys_socketpair+0x1e/0x30
-    [<00000000f5b1c158>] do_syscall_64+0x3a/0x80
-    [<000000004a0e7245>] entry_SYSCALL_64_after_hwframe+0x44/0xae
