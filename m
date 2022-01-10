@@ -2,193 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF266489006
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 07:09:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B50B3489007
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 07:10:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230502AbiAJGJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 01:09:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33912 "EHLO
+        id S232910AbiAJGKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 01:10:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25485 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230191AbiAJGJH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 01:09:07 -0500
+        by vger.kernel.org with ESMTP id S230191AbiAJGKM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 01:10:12 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641794946;
+        s=mimecast20190719; t=1641795011;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=iep9HQuqaNQXRlydkS2utctGhyeED8H8bAPdjLcBXSg=;
-        b=Yz/TDrBn4ss+lOmw6UN3L18U5X8MA1GoizLTvHVdn5atuKkp4/FTIOKBIXma7bch1QaA2j
-        KaPtrh7LSBtE6BWRQIpUNh2yRvsACRI6LmfbXJeFRlvyRbZDdMTk6i+WVmJC0UPHOon8W1
-        mXu3rmnHOkey8oMu6A/RqWvLkwiaCIs=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=TqtX8zSHRS0ZsJAZBKWh9ecrQ0m/m7ETNTVved23oRg=;
+        b=TohtNWydoSDW9mw9Fgf9H/qgUU4A1fToZecn9KCrp0C8i4Z0HRRpZdnhBZ/tnyAFjymbPT
+        LQuLHwtSl3ZAuRgM2dgm+6lfnCEciOXdtTaZhFYrXRBbOtanmxaWLvDOtH0rHoqdM2Bhsr
+        DGZDDjzbTQSMs9t/RttzHENgqXBqn5I=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-589-d5crQ0brNP6QVdDh77UbuQ-1; Mon, 10 Jan 2022 01:09:05 -0500
-X-MC-Unique: d5crQ0brNP6QVdDh77UbuQ-1
-Received: by mail-wr1-f70.google.com with SMTP id i23-20020adfaad7000000b001a6320b66b9so1909954wrc.15
-        for <netdev@vger.kernel.org>; Sun, 09 Jan 2022 22:09:05 -0800 (PST)
+ us-mta-540-3-sTGHgGMk6__3SYDouvKQ-1; Mon, 10 Jan 2022 01:10:09 -0500
+X-MC-Unique: 3-sTGHgGMk6__3SYDouvKQ-1
+Received: by mail-wm1-f69.google.com with SMTP id m15-20020a7bce0f000000b003473d477618so5817967wmc.8
+        for <netdev@vger.kernel.org>; Sun, 09 Jan 2022 22:10:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=iep9HQuqaNQXRlydkS2utctGhyeED8H8bAPdjLcBXSg=;
-        b=v8xObISPKt/38z3yKoFI6BNTn1HITs/cM8H8dO8+/5jF5RUG0nQbT0vuNsxnL4TXMa
-         PSAIPnF/hC3ndPytl0ZwiY9aBoPAmj2yphSteP4J3eog6guIQLCNmzTRclOSR5000EE1
-         4bh7g8isKT0xmeNV9GbWLZ1lt4nKpasSRyxGFb4g71+xNlO65MrjkPy5R7MzCysz6KWY
-         f3UKPUnHWcgARVvVeNEU1Nt2gPj7IX0pZeip56rCaurcKWIc+mPUU/9eLdYy5GERb02P
-         6E62GywK3pbv1t40XLSUQ67mKkaDn6KHBsejPK9Z987jhO9mAvDPYsJr9SlPfrfc+CM6
-         E1Yw==
-X-Gm-Message-State: AOAM530ByRiqJMWLzqu34s7/xfpM8sY8CAN7IcWmPxhnpy8MTAUbL4vW
-        49KCmULRjw8UFV1Pyjs6XKu2JvHC1wTP9O8ToIO1zDNACDNt+G1thbyj2AMOiIEf5aM9QEKOdN2
-        0xY/B47QChI8XMLsZ
-X-Received: by 2002:a05:600c:1f19:: with SMTP id bd25mr20699461wmb.42.1641794944395;
-        Sun, 09 Jan 2022 22:09:04 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyiOWhCgcDAGTXMDSdIifwjm+at5gyxrIAVj6jz/icPqhYlt5fRZ5FkRBC7jBZ52ZcNgeXjqw==
-X-Received: by 2002:a05:600c:1f19:: with SMTP id bd25mr20699451wmb.42.1641794944215;
-        Sun, 09 Jan 2022 22:09:04 -0800 (PST)
+        bh=TqtX8zSHRS0ZsJAZBKWh9ecrQ0m/m7ETNTVved23oRg=;
+        b=i0JdN+U9hq1ypWa+4yjnkSEK3ormKwunN86D2ruuWoOb807h5ZePX3aNCrBXo98pic
+         WjthFaRu+ZbJJRQEYdWq0e99Uykpf6lcfOjIihmGhmr4qf+Byugh1toUNmaJHtw5joId
+         FWq01ZpwFNaYjAkvRoxeddXtEvNa2LD1hAAd7CIdrskdFNvjmdFJ+BcSg6ThZvUFKwtu
+         FBLTi6ANUygQdJEgRdvTVyCZez2zklrZA2hi87Ov4bu4W0caFJeIuuOI0mT5H3ZeY+um
+         OB1rljW71oF5FkmzmEZU16kPAjcydhnWe9+/8g4q7Ynca+GYDKxZTMIM8xFxD4RKbW+q
+         gs/w==
+X-Gm-Message-State: AOAM531aID6gsXgNOUYBu15ew21849QYEY1ME9g6UkzmC7x2Afhcgq2d
+        hyVuoGySQd8Z0ag1+wYEmhAi8Bh+7tRaV+Tonj23xx72dz+Dc0HYEQRHW70wrXllTJOy/j11C8d
+        /uKUr+vCaQEuVlUyy
+X-Received: by 2002:a05:600c:4e88:: with SMTP id f8mr20759261wmq.45.1641795008258;
+        Sun, 09 Jan 2022 22:10:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxPQIWRB8qMXF1z8iwjQpv/gtu3SQ9cd0jQPzCIKxptsCL6M/iJGaOERGoiwBRxcDZf/G3IQA==
+X-Received: by 2002:a05:600c:4e88:: with SMTP id f8mr20759248wmq.45.1641795008069;
+        Sun, 09 Jan 2022 22:10:08 -0800 (PST)
 Received: from redhat.com ([2a03:c5c0:107d:b60c:c297:16fe:7528:e989])
-        by smtp.gmail.com with ESMTPSA id r1sm6314313wrz.30.2022.01.09.22.09.02
+        by smtp.gmail.com with ESMTPSA id j26sm6401374wms.46.2022.01.09.22.10.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Jan 2022 22:09:03 -0800 (PST)
-Date:   Mon, 10 Jan 2022 01:09:00 -0500
+        Sun, 09 Jan 2022 22:10:07 -0800 (PST)
+Date:   Mon, 10 Jan 2022 01:10:04 -0500
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     Zhu Lingshan <lingshan.zhu@intel.com>
 Cc:     jasowang@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH 5/7] vDPA/ifcvf: irq request helpers for both shared and
- per_vq irq
-Message-ID: <20220110010714-mutt-send-email-mst@kernel.org>
+Subject: Re: [PATCH 4/7] vDPA/ifcvf: implement shared irq handlers for vqs
+Message-ID: <20220110010911-mutt-send-email-mst@kernel.org>
 References: <20220110051851.84807-1-lingshan.zhu@intel.com>
- <20220110051851.84807-6-lingshan.zhu@intel.com>
+ <20220110051851.84807-5-lingshan.zhu@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220110051851.84807-6-lingshan.zhu@intel.com>
+In-Reply-To: <20220110051851.84807-5-lingshan.zhu@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 01:18:49PM +0800, Zhu Lingshan wrote:
-> This commit implements new irq request helpers:
-> ifcvf_request_shared_vq_irq() for a shared irq, in this case,
-> all virtqueues would share one irq/vector. This can help the
-> device work on some platforms that can not provide enough
-> MSIX vectors
+On Mon, Jan 10, 2022 at 01:18:48PM +0800, Zhu Lingshan wrote:
+> It has observed that a device may fail to alloc enough vectors on
+> some platforms, e.g., requires 16 vectors, but only 2 or 4 vector
+> slots allocated. The virt queues have to share a vector/irq under
+> such circumstances.
 > 
-> ifcvf_request_per_vq_irq() for per vq irqs, in this case,
-> every virtqueue has its own irq/vector
-> 
-> ifcvf_request_vq_irq() calls either of the above two, depends on
-> the number of allocated vectors.
+> This irq handlers has to kick every queue because it is not
+> possible to tell which queue triggers the interrupt.
 > 
 > Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 > ---
->  drivers/vdpa/ifcvf/ifcvf_base.c |  9 -----
->  drivers/vdpa/ifcvf/ifcvf_main.c | 66 +++++++++++++++++++++++++++++++++
->  2 files changed, 66 insertions(+), 9 deletions(-)
+>  drivers/vdpa/ifcvf/ifcvf_main.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
 > 
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
-> index 696a41560eaa..fc496d10cf8d 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
-> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
-> @@ -349,15 +349,6 @@ static int ifcvf_hw_enable(struct ifcvf_hw *hw)
->  		ifc_iowrite64_twopart(hw->vring[i].used, &cfg->queue_used_lo,
->  				     &cfg->queue_used_hi);
->  		ifc_iowrite16(hw->vring[i].size, &cfg->queue_size);
-> -		ifc_iowrite16(i + IFCVF_MSI_QUEUE_OFF, &cfg->queue_msix_vector);
-> -
-> -		if (ifc_ioread16(&cfg->queue_msix_vector) ==
-> -		    VIRTIO_MSI_NO_VECTOR) {
-> -			IFCVF_ERR(ifcvf->pdev,
-> -				  "No msix vector for queue %u\n", i);
-> -			return -EINVAL;
-> -		}
-> -
->  		ifcvf_set_vq_state(hw, i, hw->vring[i].last_avail_idx);
->  		ifc_iowrite16(1, &cfg->queue_enable);
->  	}
 > diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-> index 19e1d1cd71a3..ce2fbc429fbe 100644
+> index 64fc78eaa1a9..19e1d1cd71a3 100644
 > --- a/drivers/vdpa/ifcvf/ifcvf_main.c
 > +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-> @@ -97,6 +97,72 @@ static int ifcvf_alloc_vectors(struct ifcvf_adapter *adapter)
->  	return ret;
+> @@ -37,6 +37,21 @@ static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
+>  	return IRQ_HANDLED;
 >  }
 >  
-> +static int ifcvf_request_per_vq_irq(struct ifcvf_adapter *adapter)
+> +static irqreturn_t ifcvf_shared_intr_handler(int irq, void *arg)
 > +{
-> +	struct pci_dev *pdev = adapter->pdev;
-> +	struct ifcvf_hw *vf = &adapter->vf;
-> +	int i, vector, ret, irq;
+> +	struct ifcvf_hw *vf = arg;
+> +	struct vring_info *vring;
+> +	int i;
 > +
 > +	for (i = 0; i < vf->nr_vring; i++) {
-> +		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n", pci_name(pdev), i);
-> +		vector = i;
-> +		irq = pci_irq_vector(pdev, vector);
-> +		ret = devm_request_irq(&pdev->dev, irq,
-> +				       ifcvf_intr_handler, 0,
-> +				       vf->vring[i].msix_name,
-> +				       &vf->vring[i]);
-> +		if (ret) {
-> +			IFCVF_ERR(pdev, "Failed to request irq for vq %d\n", i);
-> +			ifcvf_free_irq(adapter, i);
-> +		} else {
-> +			vf->vring[i].irq = irq;
-> +			ifcvf_set_vq_vector(vf, i, vector);
-> +		}
+> +		vring = &vf->vring[i];
+> +		if (vring->cb.callback)
+> +			vf->vring->cb.callback(vring->cb.private);
 > +	}
 > +
-> +	return 0;
+> +	return IRQ_HANDLED;
 > +}
 > +
-> +static int ifcvf_request_shared_vq_irq(struct ifcvf_adapter *adapter)
-> +{
-> +	struct pci_dev *pdev = adapter->pdev;
-> +	struct ifcvf_hw *vf = &adapter->vf;
-> +	int i, vector, ret, irq;
-> +
-> +	vector = 0;
-> +	irq = pci_irq_vector(pdev, vector);
-> +	ret = devm_request_irq(&pdev->dev, irq,
-> +			       ifcvf_shared_intr_handler, 0,
-> +			       "ifcvf_shared_irq",
-> +			       vf);
-> +	if (ret) {
-> +		IFCVF_ERR(pdev, "Failed to request shared irq for vf\n");
-> +
-> +		return ret;
-> +	}
-> +
-> +	for (i = 0; i < vf->nr_vring; i++) {
-> +		vf->vring[i].irq = irq;
-> +		ifcvf_set_vq_vector(vf, i, vector);
-> +	}
-> +
-> +	return 0;
-> +
-> +}
-> +
-> +static int ifcvf_request_vq_irq(struct ifcvf_adapter *adapter, u8 vector_per_vq)
-> +{
-> +	int ret;
-> +
-> +	if (vector_per_vq)
-> +		ret = ifcvf_request_per_vq_irq(adapter);
-> +	else
-> +		ret = ifcvf_request_shared_vq_irq(adapter);
-> +
-> +	return ret;
-> +}
-> +
-> +
->  static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
+>  static void ifcvf_free_irq_vectors(void *data)
 >  {
->  	struct pci_dev *pdev = adapter->pdev;
+>  	pci_free_irq_vectors(data);
 
 
-this moves code from init function to static ones which
-are never called. I guess until patch 7? You can't
-split up patches like this, git bisect won't work if you do -
-code needs to work after each patch is applied.
+A static function with no caller. surprised gcc does not warn.
 
 > -- 
 > 2.27.0
