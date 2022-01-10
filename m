@@ -2,113 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDBD6488D95
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 01:58:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23C43488DA9
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 02:01:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234516AbiAJA6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 19:58:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47578 "EHLO
+        id S237666AbiAJBAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 20:00:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232114AbiAJA6M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 19:58:12 -0500
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7A7C06173F;
-        Sun,  9 Jan 2022 16:58:12 -0800 (PST)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 6CB9EC009; Mon, 10 Jan 2022 01:58:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1641776289; bh=uRt8DC7aSOODc1J8lbTlNqkqIzph89yqmPrsx4NeG4k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cHPqt7XNNOftLpstaYVnaGUIb9o7/kwYXWS5ral8oYtoOmfukwOYLGNPgTRGHK27B
-         GvUH0SCVElXLYs+qUldr6GmornA42UR5d8KJDzgwQNwmZR3Lr6+o7+Oe4JszwwxPdD
-         V2rBuGlcFoEZrD6l+1mazEDwNqoi9COXddfKzAsZDESvdCe7CWjwR5ooZCtBKHMXBn
-         4mfV1ihXWU3XmMNnRrR9uLh8zqBadN/eatHeSZyAvktzCKt0UmMm6XsF0xsRLe/tAb
-         BUJNYgELXsbQLVie6PcilCAO3Zbh3gnY0MoBLQHx/pG8vpioD96U5qs8+D5IE4b169
-         T0BoQynyYKmsA==
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=unavailable version=3.3.2
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 135C6C009;
-        Mon, 10 Jan 2022 01:58:05 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1641776288; bh=uRt8DC7aSOODc1J8lbTlNqkqIzph89yqmPrsx4NeG4k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FeIl0b+QkCy2RI29bvXVS2zWPjDKARpjnKg9dDuj1cMtAEtjmKFQRSYJ2k08Xe7CF
-         CISXm6pNP1CrVinaJOZP3HMUSXXA36a4OCtLrysofIiAzzvTUu+fErDx1ohl1j3wLM
-         sx+IspaAn7GpOJUpe5D3CaOw+XdiUe8pVWwU3bhlVwlEaOLWqDumPc0YDe5+esQLwX
-         OB2Q36B9N/IUNLLBJvCEwE+4AiayGR+ksgZ5Y75joOGEibIaEbVgq73dtxthfw9cHA
-         UVacMY3Uhb4yCLGQl5L9BwJZDc/IZLUQFMbTa4aPo0lVUWh/Hg+nE38XJx7FGy+hwR
-         b5YJ6FWXVsxsw==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id a5dcf08b;
-        Mon, 10 Jan 2022 00:58:01 +0000 (UTC)
-Date:   Mon, 10 Jan 2022 09:57:46 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefano Stabellini <stefano@aporeto.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] 9p/trans_fd: split into dedicated module
-Message-ID: <YduEira4sB0+ESYp@codewreck.org>
-References: <20211103193823.111007-1-linux@weissschuh.net>
- <20211103193823.111007-3-linux@weissschuh.net>
+        with ESMTP id S234855AbiAJBAK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 20:00:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526D0C06173F;
+        Sun,  9 Jan 2022 17:00:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E073061042;
+        Mon, 10 Jan 2022 01:00:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 20AFDC36AE3;
+        Mon, 10 Jan 2022 01:00:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641776409;
+        bh=iOIfAqVkgml1lX6oMXE7USc/dEvwwudMzPWrQjP7u3k=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=WNlMM9BctELe2LwCTPc67v2ZTWgT3XasjeaAZktTnzYqfL9hSI+zF16yVh+vYIgo8
+         FXiYUjW49GMYIZU6sF2PEDNb2DGDYyrIgIC0sOzNh4EZCztAueAkG81U5N6oUNCLPC
+         d5GSuF+E9F7z3Bi5fzWMdBGjnbOSoa9ro7QG5KTu22fJyibED06BRpU5FOQKLcz/7+
+         R6WAi/JuFrKjuUWMAab5GV7PTavFvZkU67kRIQoEqn0XIqxH3mvk2HN7Ug6T/LagQ9
+         vmGtSwWogsOkVRoiaS25MG3kvDieY+WKM00IY5khlEKWP8tgDFSVrPJxIy6ceUtyqn
+         6ce6Mq8+Gt/Vw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 07981F6078F;
+        Mon, 10 Jan 2022 01:00:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211103193823.111007-3-linux@weissschuh.net>
+Subject: Re: [PATCH] net: mcs7830: handle usb read errors properly
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164177640902.18208.15482694955918570197.git-patchwork-notify@kernel.org>
+Date:   Mon, 10 Jan 2022 01:00:09 +0000
+References: <20220106225716.7425-1-paskripkin@gmail.com>
+In-Reply-To: <20220106225716.7425-1-paskripkin@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, tanghui20@huawei.com,
+        andrew@lunn.ch, oneukum@suse.com, arnd@arndb.de,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Thomas,
+Hello:
 
-it's been a while but I had a second look as I intend on submitting this
-next week, just a small fixup on the Kconfig entry
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Thomas Weißschuh wrote on Wed, Nov 03, 2021 at 08:38:21PM +0100:
-> diff --git a/net/9p/Kconfig b/net/9p/Kconfig
-> index 64468c49791f..af601129f1bb 100644
-> --- a/net/9p/Kconfig
-> +++ b/net/9p/Kconfig
-> @@ -15,6 +15,13 @@ menuconfig NET_9P
->  
->  if NET_9P
->  
-> +config NET_9P_FD
-> +	depends on VIRTIO
+On Fri,  7 Jan 2022 01:57:16 +0300 you wrote:
+> Syzbot reported uninit value in mcs7830_bind(). The problem was in
+> missing validation check for bytes read via usbnet_read_cmd().
+> 
+> usbnet_read_cmd() internally calls usb_control_msg(), that returns
+> number of bytes read. Code should validate that requested number of bytes
+> was actually read.
+> 
+> [...]
 
-I think that's just a copypaste leftover from NET_9P_VIRTIO ?
-Since it used to be code within NET_9P and it's within a if NET_9P it
-shouldn't depend on anything.
+Here is the summary with links:
+  - net: mcs7830: handle usb read errors properly
+    https://git.kernel.org/netdev/net/c/d668769eb9c5
 
-Also for compatibility I'd suggest we keep it on by default at this
-point, e.g. add 'default NET_9P' to this block:
-
-
-diff --git a/net/9p/Kconfig b/net/9p/Kconfig
-index af601129f1bb..deabbd376cb1 100644
---- a/net/9p/Kconfig
-+++ b/net/9p/Kconfig
-@@ -16,7 +16,7 @@ menuconfig NET_9P
- if NET_9P
- 
- config NET_9P_FD
--       depends on VIRTIO
-+       default NET_9P
-        tristate "9P FD Transport"
-        help
-          This builds support for transports over TCP, Unix sockets and
-
-
-I'll just fixup the commit with a word in the message unless you have a
-problem with it, please let me know! :)
-
+You are awesome, thank you!
 -- 
-Dominique
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
