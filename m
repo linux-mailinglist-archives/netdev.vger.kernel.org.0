@@ -2,72 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A795148A124
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 21:52:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFF1948A158
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 22:02:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241718AbiAJUw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 15:52:56 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:45728 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241028AbiAJUw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 15:52:56 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4174BB8107D
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 20:52:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C84FCC36AE3;
-        Mon, 10 Jan 2022 20:52:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641847974;
-        bh=AP0oW9vYPEKlqZenYw6yVAfiAf/4xewHva0zxrHrFWo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=TJ0TYnqI+WbrkoPqqNq+uPbyndkAhOtcgzz1RTV59UjiYsKbzfMByo7HpFDTypMK4
-         WJj0KqcVsQGISF29QpZam3IN0cte3soBm+4NeV9O8yZqxHMHL7shzEH4PZ2jeR1QwN
-         3mTorYnr0c2ZQvA1Jyk6Ot961GZv4gQJT95FWjbhuRq90nGbZShHEuVmflmlMJJbTJ
-         MWtfper7vi0Q7pHeGBN+ijB+VWvrseb3fXhJsG7lxuXTKUK0mYaNqk5cUBaiVlAzjS
-         fuxvnlkRBxyYMGMXUod1au+rxEAfLzgcJppMDFFzhx2Vqez1t01ZpiK97HR7bwwcNg
-         +FARzPVE+7c+Q==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH net-next] Revert "net: vertexcom: default to disabled on kbuild"
-Date:   Mon, 10 Jan 2022 12:52:46 -0800
-Message-Id: <20220110205246.66298-1-saeed@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        id S1343705AbiAJVCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 16:02:18 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:50756 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239741AbiAJVCR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 16:02:17 -0500
+Received: from [192.168.4.54] (cpe-70-95-196-11.san.res.rr.com [70.95.196.11])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 81CF620B7179;
+        Mon, 10 Jan 2022 13:02:17 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 81CF620B7179
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1641848537;
+        bh=HAS3FJ65eHaVU80ZhbpqnKj+S/K9b7BggCz1pDIEDbk=;
+        h=Date:To:From:Subject:From;
+        b=ftFC7EftDCvZy/4pvp3oFjFv0ZcFJ8XSd5zvT2ib5RL+Vg0tVDAZoELHNoCTeu9GV
+         CBST5AuvDIEwFknMc8Uh6pDslm8GmH/EuCv9X9cSdxl/1uJ78wtM/kqI2Dyp3RD6Av
+         4guOy1cHpiy3VtyLAhxkBwcXGiwQsN6mn4YcmwWk=
+Message-ID: <f7bcc68d-289d-4c13-f73d-77e349f4674e@linux.microsoft.com>
+Date:   Mon, 10 Jan 2022 13:02:16 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     netdev@vger.kernel.org,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+From:   Vijay Balakrishna <vijayb@linux.microsoft.com>
+Subject: [bnxt] Error: Unable to read VPD
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
 
-This reverts commit 6bf950a8ff72920340dfdec93c18bd3f5f35de6a.
+Since moving to 5.10 from 5.4 we are seeing
 
-To align with other vendors, NET_VENDOR configs are supposed to be ON by
-default, while their drivers should default to OFF.
+> Jan 01 00:00:01 localhost kernel: bnxt_en 0008:01:00.0 (unnamed net_device) (uninitialized): Unable to read VPD
+> 
+> Jan 01 00:00:01 localhost kernel: bnxt_en 0008:01:00.1 (unnamed net_device) (uninitialized): Unable to read VPD
 
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/vertexcom/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+these appear to be harmless and introduced by
 
-diff --git a/drivers/net/ethernet/vertexcom/Kconfig b/drivers/net/ethernet/vertexcom/Kconfig
-index 6e2cf062ddba..4184a635fe01 100644
---- a/drivers/net/ethernet/vertexcom/Kconfig
-+++ b/drivers/net/ethernet/vertexcom/Kconfig
-@@ -5,7 +5,7 @@
- 
- config NET_VENDOR_VERTEXCOM
- 	bool "Vertexcom devices"
--	default n
-+	default y
- 	help
- 	  If you have a network (Ethernet) card belonging to this class, say Y.
- 
--- 
-2.34.1
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a0d0fd70fed5cc4f1e2dd98b801be63b07b4d6ac
+Does "Unable to read VPD" need to be an error or can it be a warning 
+(netdev_warn)?
 
+Thanks,
+Vijay
