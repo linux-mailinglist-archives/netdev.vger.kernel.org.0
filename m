@@ -2,91 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F45E48A01E
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 20:30:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB8E948A03A
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 20:35:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243222AbiAJTas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 14:30:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48536 "EHLO
+        id S240434AbiAJTfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 14:35:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241847AbiAJTar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 14:30:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32BCC06173F;
-        Mon, 10 Jan 2022 11:30:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97BEB61416;
-        Mon, 10 Jan 2022 19:30:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 009DEC36AF5;
-        Mon, 10 Jan 2022 19:30:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641843046;
-        bh=YmviK5RZSlP89MSfpfdgfDv26eVqjbSGZFEAexfUax0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=WQJdGeIw03IxhjkyOh/oHy0/xhGEqu6Yzf6vNo9uP74UezpnSgGWRZgeGnJHCNAJ1
-         a+gZU004fsbLe0PVty+dm+DCWa21lrdv1U6mZ7gvXR57Aolr+JFgWbTHPpyp3W9TSD
-         0a5lp9fYYLOhOr7Juj5uPePAYMHtQpcIqi59+v6WrrevdQOzJRhVXKzl9Z69k4o0R1
-         IPWG2yCUeTeMu4lKPkburPZWQtbEzLu8WCd+zbDG0yr06Jy+XkyFyAY9gC64hsxdfz
-         HYPVxqgvHJveZOwObNUU8xmh9sey1RsCfGXtW2kEXvXSmgCnSwvOr3WYU65STQjun3
-         D2/kGMcUEl7Mw==
-Received: by mail-yb1-f180.google.com with SMTP id j83so40987037ybg.2;
-        Mon, 10 Jan 2022 11:30:45 -0800 (PST)
-X-Gm-Message-State: AOAM530pdSqU1maeEwEXflyzhswb+rIFtZ3H7BmFI/PXlMYsbM1l+lGf
-        vg/YANdgSSUktLG5rmdJeuDavagzUicDdmvID34=
-X-Google-Smtp-Source: ABdhPJxi1+kIoliozeFn6h+zQk5GRTM/v/LZ+hjQz3ZA5kzu+flR3VAEV7Vvspv6IoLYEidim73AuXuTQCbYgYwvXts=
-X-Received: by 2002:a25:287:: with SMTP id 129mr1482739ybc.670.1641843044963;
- Mon, 10 Jan 2022 11:30:44 -0800 (PST)
+        with ESMTP id S231986AbiAJTe7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 14:34:59 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC9CC06173F;
+        Mon, 10 Jan 2022 11:34:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=ZFZ4QOFgcoyMCECZ3PkgL8BM+HFxPBx0EV0hU5cheCk=; b=kwTBNQ14Ajm4bb+p+yD8k57QkP
+        ag8IoWMx+ZceNrBHQIAX1qjPtJFmAq9bB3a4JnH2JpRIvuJYBtpHdys8Jq/5cenklNvLq/gPB+1Sg
+        2qgeP1b1J6H2Tv69ZZ1Dchmb2ZJjZjBKqVxc/SH3eNnBFhJ4iqYqyoAG6HKgY9R7CIH30swf1tj0Z
+        Gu8uqqBGWzCL6jiU7/viwFyhvJ/itxVSedkUZDGnUhNOWzn5QaeMXBfrtSKRCMeY14yLf8X1p6aFJ
+        T2ZJbBdfedchNNamYhhW0wNJ5GgzCiU5esGaF1uPdBB8x01ZyuwW4BYXYZcWtRvjnGo36PQEJY1Up
+        7sxipnQg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n70RN-002fyD-DM; Mon, 10 Jan 2022 19:34:49 +0000
+Date:   Mon, 10 Jan 2022 19:34:49 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Christoph Hellwig <hch@lst.de>, Jason Gunthorpe <jgg@nvidia.com>,
+        Joao Martins <joao.m.martins@oracle.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
+        netdev@vger.kernel.org, linux-mm@kvack.org,
+        linux-rdma@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        nvdimm@lists.linux.dev
+Subject: Phyr Starter
+Message-ID: <YdyKWeU0HTv8m7wD@casper.infradead.org>
 MIME-Version: 1.0
-References: <20220107180314.1816515-1-marcel@ziswiler.com> <20220107180314.1816515-5-marcel@ziswiler.com>
-In-Reply-To: <20220107180314.1816515-5-marcel@ziswiler.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 10 Jan 2022 11:30:34 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW6sewYKBbCh+EcY-6PcwQV_+4-Pm1bmgXcZepzoAH=Z6g@mail.gmail.com>
-Message-ID: <CAPhsuW6sewYKBbCh+EcY-6PcwQV_+4-Pm1bmgXcZepzoAH=Z6g@mail.gmail.com>
-Subject: Re: [PATCH v1 04/14] arm64: defconfig: enable bpf/cgroup firewalling
-To:     Marcel Ziswiler <marcel@ziswiler.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Marek Vasut <marek.vasut@gmail.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        =?UTF-8?Q?Guido_G=C3=BCnther?= <agx@sigxcpu.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Olof Johansson <olof@lixom.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Will Deacon <will@kernel.org>, Yonghong Song <yhs@fb.com>,
-        bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 7, 2022 at 10:06 AM Marcel Ziswiler <marcel@ziswiler.com> wrote:
->
-> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
->
-> This avoids the following systemd warning:
->
-> [    2.618538] systemd[1]: system-getty.slice: unit configures an IP
->  firewall, but the local system does not support BPF/cgroup firewalling.
-> [    2.630916] systemd[1]: (This warning is only shown for the first
->  unit using IP firewalling.)
->
-> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+TLDR: I want to introduce a new data type:
 
-Acked-by: Song Liu <songliubraving@fb.com>
+struct phyr {
+        phys_addr_t addr;
+        size_t len;
+};
+
+and use it to replace bio_vec as well as using it to replace the array
+of struct pages used by get_user_pages() and friends.
+
+---
+
+There are two distinct problems I want to address: doing I/O to memory
+which does not have a struct page and efficiently doing I/O to large
+blobs of physically contiguous memory, regardless of whether it has a
+struct page.  There are some other improvements which I regard as minor.
+
+There are many types of memory that one might want to do I/O to that do
+not have a struct page, some examples:
+ - Memory on a graphics card (or other PCI card, but gfx seems to be
+   the primary provider of DRAM on the PCI bus today)
+ - DAX, or other pmem (there are some fake pages today, but this is
+   mostly a workaround for the IO problem today)
+ - Guest memory being accessed from the hypervisor (KVM needs to
+   create structpages to make this happen.  Xen doesn't ...)
+All of these kinds of memories can be addressed by the CPU and so also
+by a bus master.  That is, there is a physical address that the CPU
+can use which will address this memory, and there is a way to convert
+that to a DMA address which can be programmed into another device.
+There's no intent here to support memory which can be accessed by a
+complex scheme like writing an address to a control register and then
+accessing the memory through a FIFO; this is for memory which can be
+accessed by DMA and CPU loads and stores.
+
+For get_user_pages() and friends, we currently fill an array of struct
+pages, each one representing PAGE_SIZE bytes.  For an application that
+is using 1GB hugepages, writing 2^18 entries is a significant overhead.
+It also makes drivers hard to write as they have to recoalesce the
+struct pages, even though the VM can tell it whether those 2^18 pages
+are contiguous.
+
+On the minor side, struct phyr can represent any mappable chunk of memory.
+A bio_vec is limited to 2^32 bytes, while on 64-bit machines a phyr
+can represent larger than 4GB.  A phyr is the same size as a bio_vec
+on 64 bit (16 bytes), and the same size for 32-bit with PAE (12 bytes).
+It is smaller for 32-bit machines without PAE (8 bytes instead of 12).
+
+Finally, it may be possible to stop using scatterlist to describe the
+input to the DMA-mapping operation.  We may be able to get struct
+scatterlist down to just dma_address and dma_length, with chaining
+handled through an enclosing struct.
+
+I would like to see phyr replace bio_vec everywhere it's currently used.
+I don't have time to do that work now because I'm busy with folios.
+If someone else wants to take that on, I shall cheer from the sidelines.
+What I do intend to do is:
+
+ - Add an interface to gup.c to pin/unpin N phyrs
+ - Add a sg_map_phyrs()
+   This will take an array of phyrs and allocate an sg for them
+ - Whatever else I need to do to make one RDMA driver happy with
+   this scheme
+
+At that point, I intend to stop and let others more familiar with this
+area of the kernel continue the conversion of drivers.
+
+P.S. If you've had the Prodigy song running through your head the whole
+time you've been reading this email ... I'm sorry / You're welcome.
+If people insist, we can rename this to phys_range or something boring,
+but I quite like the spelling of phyr with the pronunciation of "fire".
