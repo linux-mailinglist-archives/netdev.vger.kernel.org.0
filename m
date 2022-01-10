@@ -2,88 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 244BD48A297
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 23:17:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C317E48A2AB
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 23:22:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345306AbiAJWRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 17:17:00 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:45229 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241425AbiAJWRA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 17:17:00 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-15-1x9FGhdsPCquWqlIhiJdqw-1; Mon, 10 Jan 2022 22:16:58 +0000
-X-MC-Unique: 1x9FGhdsPCquWqlIhiJdqw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Mon, 10 Jan 2022 22:16:51 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Mon, 10 Jan 2022 22:16:51 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Ben Greear' <greearb@candelatech.com>,
-        Neal Cardwell <ncardwell@google.com>
-CC:     netdev <netdev@vger.kernel.org>
-Subject: RE: Debugging stuck tcp connection across localhost
-Thread-Topic: Debugging stuck tcp connection across localhost
-Thread-Index: AQHYBk1RL1C882pa6EyVUBRa3+FHQKxc0aYw
-Date:   Mon, 10 Jan 2022 22:16:50 +0000
-Message-ID: <e8e6693695c04bd6a679ddd43733703b@AcuMS.aculab.com>
-References: <38e55776-857d-1b51-3558-d788cf3c1524@candelatech.com>
- <CADVnQyn97m5ybVZ3FdWAw85gOMLAvPSHiR8_NC_nGFyBdRySqQ@mail.gmail.com>
- <b3e53863-e80e-704f-81a2-905f80f3171d@candelatech.com>
- <CADVnQymJaF3HoxoWhTb=D2wuVTpe_fp45tL8g7kaA2jgDe+xcQ@mail.gmail.com>
- <a6ec30f5-9978-f55f-f34f-34485a09db97@candelatech.com>
- <CADVnQym9LTupiVCTWh95qLQWYTkiFAEESv9Htzrgij8UVqSHBQ@mail.gmail.com>
- <b60aab98-a95f-d392-4391-c0d5e2afb2cd@candelatech.com>
- <9330e1c7-f7a2-0f1e-0ede-c9e5353060e3@candelatech.com>
-In-Reply-To: <9330e1c7-f7a2-0f1e-0ede-c9e5353060e3@candelatech.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1345377AbiAJWWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 17:22:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60260 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345367AbiAJWWK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 17:22:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE29C061751;
+        Mon, 10 Jan 2022 14:22:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01D77B8180E;
+        Mon, 10 Jan 2022 22:22:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 956F2C36AEF;
+        Mon, 10 Jan 2022 22:22:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641853327;
+        bh=nZkaYKHFOdV7Q8Fp1n6WNBX4Yk9/H6nzbskM4qlf/e0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=NY7FymS14WUzj4avmFazuFYRl/oGGUdTlb8lyrAZnnR0NTHtakr7wULLh4+mu1rRc
+         E/Hxc5PfXx6YYMfO86+C9Y999/jjRQ1bBzDZSX2cZDkPaHe0zC2NlYce28rNldBEnM
+         HUjg6DXge6gYWK6A7o8aNRXUsi5cDyVB9ovT0uG/iLMGOHHEoEMtH3fcR/x5gBlkAE
+         3mVJsRxRMMXnEcrEesZkW5IagVomgfwZwbGuUmU89cV0m2XX7OsStiCM7kAeH/fjUV
+         U1SI2VwytyjVvR+wjz3c1XHo48sScyfi2sTPHx/7OCcIPDj627MxDsvOS0rUG4Xupw
+         Rbi2NRk7S4lSg==
+Received: by mail-yb1-f173.google.com with SMTP id d1so42100186ybh.6;
+        Mon, 10 Jan 2022 14:22:07 -0800 (PST)
+X-Gm-Message-State: AOAM532xPMX9mSXg4VuLCRml4STKeNzcyMWskuKkxysvdY/EkLG5Zpp8
+        gwSoCovumv6DTA2NQanftJLnE5PYQGg+wVcq5rM=
+X-Google-Smtp-Source: ABdhPJwZH/DyO8E3u0XvP1BAo0vaLRN2AtOZrD/fa3LqP03NFGEPKRurGXJDM2jxiq3cLt7HnKX4H6nKCFqomMgn5wU=
+X-Received: by 2002:a25:8b85:: with SMTP id j5mr2297231ybl.558.1641853326749;
+ Mon, 10 Jan 2022 14:22:06 -0800 (PST)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+References: <20220108051121.28632-1-yichun@openresty.com>
+In-Reply-To: <20220108051121.28632-1-yichun@openresty.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 10 Jan 2022 14:21:55 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5+zCh2ZE6zUq2T=83Z6Ce93z_ojxrqGN9iYN9Qvyq_YQ@mail.gmail.com>
+Message-ID: <CAPhsuW5+zCh2ZE6zUq2T=83Z6Ce93z_ojxrqGN9iYN9Qvyq_YQ@mail.gmail.com>
+Subject: Re: [PATCH] bpf: core: Fix the call ins's offset s32 -> s16 truncation
+To:     "Yichun Zhang (agentzh)" <yichun@openresty.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQmVuIEdyZWVhciA8Z3JlZWFyYkBjYW5kZWxhdGVjaC5jb20+DQo+IFNlbnQ6IDEwIEph
-bnVhcnkgMjAyMiAxODoxMA0KLi4uDQo+ICBGcm9tIG15IG93biBsb29raW5nIGF0IHRoaW5ncywg
-aXQgc2VlbXMgdGhhdCB0aGUgc25pZmZlciBmYWlscyB0byBnZXQgZnJhbWVzIG5lYXIgd2hlbiB0
-aGUgcHJvYmxlbQ0KPiBzdGFydHMgaGFwcGVuaW5nLiAgSSBhbSBiYWZmbGVkIGFzIHRvIGhvdyB0
-aGF0IGNhbiBoYXBwZW4sIGVzcGVjaWFsbHkgc2luY2UgaXQgc2VlbXMgdG8gc3RvcCBnZXR0aW5n
-DQo+IHBhY2tldHMgZnJvbSBtdWx0aXBsZSBkaWZmZXJlbnQgVENQIGNvbm5lY3Rpb25zICh0aGUg
-c25pZmZlciBmaWx0ZXIgd291bGQgcGljayB1cCBzb21lIG90aGVyIGxvb3AtYmFjaw0KPiByZWxh
-dGVkIGNvbm5lY3Rpb25zIHRvIHRoZSBzYW1lIElQIHBvcnQpLg0KPiANCj4gQW5kLCBpZiBJIGlu
-dGVycHJldCB0aGUgc3Mgb3V0cHV0IHByb3Blcmx5LCBhZnRlciB0aGUgcHJvYmxlbSBoYXBwZW5z
-LCB0aGUgc29ja2V0cyBzdGlsbCB0aGluayB0aGV5DQo+IGFyZQ0KPiBzZW5kaW5nIGRhdGEuICBJ
-IGRpZG4ndCBjaGVjayBjbG9zZWx5IGVub3VnaCB0byBzZWUgaWYgdGhlIHBlZXIgc2lkZSB0aG91
-Z2h0IGl0IHJlY2VpdmVkIGl0Lg0KPiANCj4gV2UgYXJlIGdvaW5nIHRvIHRyeSB0byByZXByb2R1
-Y2Ugdy9vdXQgd2lmaSwgYnV0IG5vdCBzdXJlIHdlJ2xsIGhhdmUgYW55IGx1Y2sgd2l0aCB0aGF0
-Lg0KPiBXZSBkaWQgdGVzdCB3L291dCBWUkYgKHVzaW5nIGxvdHMgb2YgaXAgcnVsZXMgaW5zdGVh
-ZCksIGFuZCBzaW1pbGFyIHByb2JsZW0gd2FzIHNlZW4gYWNjb3JkaW5nIHRvIG15DQo+IHRlc3Qg
-dGVhbSAoSSBkaWQgbm90IGRlYnVnIGl0IGluIGRldGFpbCkuDQo+IA0KPiBEbyB5b3UgaGF2ZSBh
-bnkgc3VnZ2VzdGlvbnMgZm9yIGhvdyB0byBkZWJ1ZyB0aGlzIGZ1cnRoZXI/ICBJIGFtIGhhcHB5
-IHRvIGhhY2sgc3R1ZmYgaW50byB0aGUNCj4ga2VybmVsIGlmIHlvdSBoYXZlIHNvbWUgc3VnZ2Vz
-dGVkIHBsYWNlcyB0byBhZGQgZGVidWdnaW5nLi4uDQoNClNvdW5kcyBsaWtlIGFsbCB0cmFuc21p
-dCB0cmFmZmljIG9uIHRoZSBsb29wYmFjayBpbnRlcmZhY2UgaXMgYmVpbmcgZGlzY2FyZGVkDQpi
-ZWZvcmUgdGhlIHBvaW50IHdoZXJlIHRoZSBmcmFtZXMgZ2V0IGZlZCB0byB0c21kdW1wLg0KDQpQ
-b3NzaWJseSB5b3UgY291bGQgdXNlIGZ0cmFjZSB0byB0cmFjZSBmdW5jdGlvbiBlbnRyeStleGl0
-IG9mIGEgZmV3DQpmdW5jdGlvbnMgdGhhdCBoYXBwZW4gaW4gdGhlIHRyYW5zbWl0IHBhdGggYW5k
-IHRoZW4gaXNvbGF0ZSB0aGUgcG9pbnQNCndoZXJlIHRoZSBkaXNjYXJkIGlzIGhhcHBlbmluZy4N
-CllvdSBjYW4ndCBhZmZvcmQgdG8gdHJhY2UgZXZlcnl0aGluZyAtIHNsb3dzIHRoaW5ncyBkb3du
-IHRvbyBtdWNoLg0KQnV0IGEgZmV3IHRyYWNlcyBvbiBlYWNoIHNlbmQgcGF0aCBzaG91bGQgYmUg
-b2suDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkg
-Um9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlv
-biBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+On Fri, Jan 7, 2022 at 9:11 PM Yichun Zhang (agentzh)
+<yichun@openresty.com> wrote:
+>
+> The BPF interpreter always truncates the BPF CALL instruction's 32-bit
+> jump offset to 16-bit. Large BPF programs run by the interpreter often
+> hit this issue and result in weird behaviors when jumping to the wrong
+> destination instructions.
+>
+> The BPF JIT compiler does not have this bug.
+>
+> Fixes: 1ea47e01ad6ea ("bpf: add support for bpf_call to interpreter")
+> Signed-off-by: Yichun Zhang (agentzh) <yichun@openresty.com>
 
+Acked-by: Song Liu <songliubraving@fb.com>
