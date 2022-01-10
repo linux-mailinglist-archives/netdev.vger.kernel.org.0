@@ -2,92 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1355489AED
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 14:58:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44BE1489AF3
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 14:59:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234243AbiAJN6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 08:58:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233369AbiAJN6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 08:58:37 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDE58C06173F;
-        Mon, 10 Jan 2022 05:58:36 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id u21so31348368edd.5;
-        Mon, 10 Jan 2022 05:58:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=Zv6nNmjBL9mdUVHQrZVrPUfNP72rmPO0vaJqzRNwPm0=;
-        b=eNeyd7VkvL3EFVhOAN0t9KaX0VOIX2ef8PVYq8iwK/iiQHfUcrQ7kBBp8YGgLASla6
-         wYGS2qDGsUae3lqGVmJ9jNVxMcJ8EZN0rh8QT4XNXmmyw+at+USAhnOhk6+JLKcCa4TT
-         v2PFvXxxl/2aq/LvzEF6jINnyaITJ2Yw52+tqDnXHXAm5CRcVLi4eaWrfr6aB3eSOwfS
-         ypQqwuhXCDxtJWg/ceqt8zvdjVSR6N/2mnACejcwHjnfpNwUDBEWnuvZxOA/4I4OIv0Q
-         8D0cjXriSxo3bMZQ2B+aVIiISjPqqQltC5Gz4Q3TSFpSlMk9EE8YRa8r055sPqHgUT1z
-         ihgw==
+        id S234947AbiAJN7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 08:59:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:24571 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234923AbiAJN7n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 08:59:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641823183;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bKOg/EwHT2Xmlm8vOzkf7mihhsAOk5/RF4P4XaRODtI=;
+        b=DNvjl/5cFpw18tL6XXGnaltUfakcW49NicyOrqzEuuGFED46ZmRIWUG9eAdUXnOANZADGn
+        IpMvOF/uXKg6d157TFX3xXwmcT2OYc/7879mtkMiqmAIJPl9vtxxr741dbGjW8eWcQgc/1
+        J5SOD25n6q07w1EWJAuXR9evFz2B2a0=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-92-NEFt3Uh4OnegHQ4A6gJoRA-1; Mon, 10 Jan 2022 08:59:42 -0500
+X-MC-Unique: NEFt3Uh4OnegHQ4A6gJoRA-1
+Received: by mail-wr1-f72.google.com with SMTP id o28-20020adfa11c000000b001a60fd79c21so2488386wro.19
+        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 05:59:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=Zv6nNmjBL9mdUVHQrZVrPUfNP72rmPO0vaJqzRNwPm0=;
-        b=vNF6P2rp1vqghGbbbAYjT54dAdZvxto9lkYfZK6OsxBhB95RrAFY+iY2Si2Hxxc8el
-         mf38vnvBy8f/mU0C1oelq/wnBaceNEcdpmhRBjttvzlk5ys8gqqryR1YqCCSAOHV9KA7
-         BWu6XmxTtGi9xuVi9+vGEK7//fC1S0uhn0c8Fo44TKSqTmABR6GcvQb0dezsWT4uQb/+
-         GRSEzDAWkVhg0b5E+99Cpfcy3DicYNck6IYgvKkaPn0MHSjgqCBJIO55XamoUD6y3tnw
-         8tD9UnNcLZ9D5mU+J0TSPLOMEuPEj370i1OQ8IbjawRStBifdFNRSdrWfVgsJK8YBB6T
-         6PHA==
-X-Gm-Message-State: AOAM532DxylkHPOqO69v/LLlpiny3gMJnyRDpDBvGn0LWrzITN3RarVh
-        vm9M0cLFMR247vW0c013DfTQ5cvgIw7erNquapA=
-X-Google-Smtp-Source: ABdhPJxMw7YveTYZcnantzdiaeFOIgFcZQ+hv5t0lchCsDI6lmJTCX23ISvar7KrZUY53K5+zR1dF/hvNLCi0S9V2Mg=
-X-Received: by 2002:a17:907:1b21:: with SMTP id mp33mr57031688ejc.580.1641823115465;
- Mon, 10 Jan 2022 05:58:35 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bKOg/EwHT2Xmlm8vOzkf7mihhsAOk5/RF4P4XaRODtI=;
+        b=la7zML/U4WTHn5WrFuG9zXyTVpJZmRHTsuMCTG05LwHMSNRCOaB+RnB1PjuJrmfRLt
+         U+ZagVwI4qKUvgWVvGSIH7H1cjUeAVxzPPd+Y4jyPfyJRMz/AxfguqQ8XaANzrUXLhoI
+         AkEBqJhMPxhS/dqAO+kNjLK9Lumtll8QyPY9dit1/xAZDY/FJTEdXe49/x87lg7qZy1n
+         mWN5gF9Kyl6iabC11MeZUZWOEjqZ7EWsmLm3rAlqPn9swbSTU4F2UgQlLOHTB+fn0x2m
+         K40JyygixufkDLhMZrDa7Bv4r+IImPQhsUFdhnhYY1hN0n9G5KgeLt3RhfOEI/lHIsUx
+         BofA==
+X-Gm-Message-State: AOAM531tFtJ0WxL1B2LrQl/gDxRvwcIjcq1BY8ZjzTt2z324HMsiYfCp
+        12Th+nLYIhxgZoo+yDE6LipOO+yw0JBim2YmD5J/1GcaaiDiNNqSF0RynzXF0nkCxzbgKFiGvdX
+        P3m2Ga0DoAoObuBR3
+X-Received: by 2002:a7b:c194:: with SMTP id y20mr22153070wmi.79.1641823180924;
+        Mon, 10 Jan 2022 05:59:40 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyaomE/0xGJ2tL4n4Br2dlM1gDxW5rWIe9erV66WUk+0o9RbcBfLTBSngPd5co6esXOyrCXqw==
+X-Received: by 2002:a7b:c194:: with SMTP id y20mr22153058wmi.79.1641823180769;
+        Mon, 10 Jan 2022 05:59:40 -0800 (PST)
+Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id g15sm5896778wrm.2.2022.01.10.05.59.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 05:59:40 -0800 (PST)
+Date:   Mon, 10 Jan 2022 14:59:38 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, wenxu <wenxu@ucloud.cn>,
+        Varun Prakash <varun@chelsio.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>
+Subject: Re: [PATCH net 0/4] ipv4: Fix accidental RTO_ONLINK flags passed to
+ ip_route_output_key_hash()
+Message-ID: <20220110135938.GA3425@pc-4.home>
+References: <cover.1641407336.git.gnault@redhat.com>
+ <20220109162322.4fc665bc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-From:   cruise k <cruise4k@gmail.com>
-Date:   Mon, 10 Jan 2022 21:58:24 +0800
-Message-ID: <CAKcFiNC_=CecbLM6tzUajWt1AopWZciu53JTx_SufEqOR+X6LQ@mail.gmail.com>
-Subject: INFO: task hung in wg_noise_handshake_create_initiation
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, wireguard@lists.zx2c4.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     sunhao.th@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220109162322.4fc665bc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Sun, Jan 09, 2022 at 04:23:22PM -0800, Jakub Kicinski wrote:
+> On Wed, 5 Jan 2022 20:56:16 +0100 Guillaume Nault wrote:
+> > The IPv4 stack generally uses the last bit of ->flowi4_tos as a flag
+> > indicating link scope for route lookups (RTO_ONLINK). Therefore, we
+> > have to be careful when copying a TOS value to ->flowi4_tos. In
+> > particular, the ->tos field of IPv4 packets may have this bit set
+> > because of ECN. Also tunnel keys generally accept any user value for
+> > the tos.
+> > 
+> > This series fixes several places where ->flowi4_tos was set from
+> > non-sanitised values and the flowi4 structure was later used by
+> > ip_route_output_key_hash().
+> > 
+> > Note that the IPv4 stack usually clears the RTO_ONLINK bit using
+> > RT_TOS(). However this macro is based on an obsolete interpretation of
+> > the old IPv4 TOS field (RFC 1349) and clears the three high order bits.
+> > Since we don't need to clear these bits and since it doesn't make sense
+> > to clear only one of the ECN bits, this patch series uses INET_ECN_MASK
+> > instead.
+> > 
+> > All patches were compile tested only.
+> 
+> Does not apply cleanly to net any more, could you respin?
 
-Syzkaller found the following issue:
+Yes, done:
+  https://lore.kernel.org/netdev/cover.1641821242.git.gnault@redhat.com/
 
-HEAD commit: 75acfdb Linux 5.16-rc8
-git tree: upstream
-console output: https://pastebin.com/raw/4aZeyEi8
-kernel config: https://pastebin.com/raw/XsnKfdRt
-
-And hope the report log can help you.
-
-INFO: task kworker/u17:18:25859 blocked for more than 145 seconds.
-      Not tainted 5.16.0-rc8+ #10
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/u17:18  state:D stack:25232 pid:25859 ppid:     2 flags:0x00004000
-Workqueue: wg-kex-wg2 wg_packet_handshake_send_worker
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:4972 [inline]
- __schedule+0xcd9/0x2550 kernel/sched/core.c:6253
- schedule+0xd2/0x260 kernel/sched/core.c:6326
- rwsem_down_write_slowpath+0x664/0x1190 kernel/locking/rwsem.c:1151
- __down_write_common kernel/locking/rwsem.c:1268 [inline]
- __down_write_common kernel/locking/rwsem.c:1265 [inline]
- __down_write kernel/locking/rwsem.c:1277 [inline]
- down_write+0x135/0x150 kernel/locking/rwsem.c:1524
- wg_noise_handshake_create_initiation+0xb8/0x580
-drivers/net/wireguard/noise.c:497
- wg_packet_send_handshake_initiation+0x187/0x340 drivers/net/wireguard/send.c:34
- wg_packet_handshake_send_worker+0x18/0x30 drivers/net/wireguard/send.c:51
- process_one_work+0x9df/0x16a0 kernel/workqueue.c:2298
- worker_thread+0x90/0xe20 kernel/workqueue.c:2445
- kthread+0x405/0x4f0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
