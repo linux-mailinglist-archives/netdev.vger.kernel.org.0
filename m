@@ -2,105 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79386489AE5
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 14:55:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A053F489AE8
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 14:56:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234883AbiAJNzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 08:55:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41362 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234685AbiAJNzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 08:55:07 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFE8DB81654;
-        Mon, 10 Jan 2022 13:55:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BBDDC36AE5;
-        Mon, 10 Jan 2022 13:54:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641822904;
-        bh=rj4fKmBFoTHA0iE6ZmISK6tpcbjzpc6k3C0OppRQfXI=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=mLOFKpfG5t6VcVdIo8HnBo4TNSUN0tKjo69CxcZVSODX4E/wp4Qq2JAJ/RDV2iBbg
-         18oBED1NTpckFJA7zbUwmTe1QZE4Wrro1ocg82W3n7wpQftGoLJTQU3AGP/LJ9nGtl
-         Q1izKRVSRFl6rZoA9r+DPbZMSAWeVNeOvLI1TwuOkyOMR0Vxizmi4PdQpSPxz5GxbU
-         IUGNwPnsHWCL6bNde0DXS2J3fJM+zoTRiiZyZjjXvYXH9EbYJcQEeV9hygDLBG7CEx
-         yorgSW3rmF3Zs+Ti399XXtPitqyOhR30/IelIneFxcNpCUNwpdPhrkyTKHSXYqYfRA
-         etY7UfhX/G3nQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?utf-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list\:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list\:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
-Subject: Re: [PATCH v2 12/35] brcmfmac: pcie: Fix crashes due to early IRQs
-References: <20220104072658.69756-1-marcan@marcan.st>
-        <20220104072658.69756-13-marcan@marcan.st>
-        <CAHp75VdeNhmRUW1mFY-H5vyzTRHZ9Y2dv03eo+rfcTQKjn9tuQ@mail.gmail.com>
-        <759f46bd-bfc2-62c6-6257-a2a0d702e2b6@marcan.st>
-Date:   Mon, 10 Jan 2022 15:54:54 +0200
-In-Reply-To: <759f46bd-bfc2-62c6-6257-a2a0d702e2b6@marcan.st> (Hector Martin's
-        message of "Thu, 6 Jan 2022 22:10:45 +0900")
-Message-ID: <87bl0jlmq9.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S234605AbiAJN4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 08:56:09 -0500
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:49142 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233369AbiAJN4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 08:56:08 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R871e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V1T45S6_1641822965;
+Received: from 30.225.24.19(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1T45S6_1641822965)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 10 Jan 2022 21:56:06 +0800
+Message-ID: <2098bb01-1aad-cb38-8b0b-a43e4c40c013@linux.alibaba.com>
+Date:   Mon, 10 Jan 2022 21:56:05 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+Subject: Re: [PATCH net 1/3] net/smc: Resolve the race between link group
+ access and termination
+To:     Karsten Graul <kgraul@linux.ibm.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1641806784-93141-1-git-send-email-guwen@linux.alibaba.com>
+ <1641806784-93141-2-git-send-email-guwen@linux.alibaba.com>
+ <3525a4cd-1bc7-1008-910b-fb89597cc10a@linux.ibm.com>
+From:   Wen Gu <guwen@linux.alibaba.com>
+In-Reply-To: <3525a4cd-1bc7-1008-910b-fb89597cc10a@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hector Martin <marcan@marcan.st> writes:
 
-> On 04/01/2022 23.12, Andy Shevchenko wrote:
->> On Tue, Jan 4, 2022 at 9:29 AM Hector Martin <marcan@marcan.st> wrote:
->>>
->>> The driver was enabling IRQs before the message processing was
->>> initialized. This could cause IRQs to come in too early and crash the
->>> driver. Instead, move the IRQ enable and hostready to a bus preinit
->>> function, at which point everything is properly initialized.
->>>
->>> Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
->> 
->> You should gather fixes at the beginning of the series, and even
->> possible to send them as a separate series. In the current state it's
->> unclear if there are dependencies on your new feature (must not be for
->> fixes that meant to be backported).
->> 
->
-> Thanks, I wasn't sure what order you wanted those in. I'll put them at
-> the top for v3. I think none of those should have any dependencies on
-> the rest of the patches, modulo some trivial rebase wrangling.
 
-If there are no dependencies, please send the brcmfmac fixes separately
-so that I can apply them earlier.
+On 2022/1/10 8:25 pm, Karsten Graul wrote:
+> On 10/01/2022 10:26, Wen Gu wrote:
+>> We encountered some crashes caused by the race between the access
+>> and the termination of link groups.
+>>
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+>> @@ -1120,8 +1122,22 @@ void smc_conn_free(struct smc_connection *conn)
+>>   {
+>>   	struct smc_link_group *lgr = conn->lgr;
+>>   
+>> -	if (!lgr)
+>> +	if (!lgr || conn->freed)
+>> +		/* The connection has never been registered in a
+>> +		 * link group, or has already been freed.
+>> +		 *
+>> +		 * Check to ensure that the refcnt of link group
+>> +		 * won't be put incorrectly.
+> 
+> I would delete the second sentence here, its obvious enough.
+> 
+>> +		 */
+>>   		return;
+>> +
+>> +	conn->freed = 1;
+>> +	if (!conn->alert_token_local)
+>> +		/* The connection was registered in a link group
+>> +		 * defore, but now it is unregistered from it.
+> 
+> 'before' ... But would maybe the following be more exact:
+> 
+> 'Connection already unregistered from link group.'
+> 
+> 
+> We still review the patches...
+> 
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Thanks for your detailed and patient review. The comments will
+be improved as you suggested.
+
+Thanks,
+Wen Gu
