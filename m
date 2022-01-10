@@ -2,84 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 373D04899AE
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 14:16:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D00E4899B0
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 14:17:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231933AbiAJNQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 08:16:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35598 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231664AbiAJNQm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 08:16:42 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37D516118E;
-        Mon, 10 Jan 2022 13:16:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17A2BC36AE5;
-        Mon, 10 Jan 2022 13:16:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641820601;
-        bh=y6qHHVX40j4JNzuG880v2MSwzAY82M/t0XIpMUjE6o4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oWXqVBbQLSKbj+4VoM737udYizS/E/gawe9L/MhHDBJbE/KnzRzInaD++oOdL87p7
-         93/2dUrpkPWSRzyOFAxeuuhGWd/jOLWST+K+9MXAH2/l1aw2ZmQk8pSYASCJtLmQ1+
-         7UMOGgSCJxxuq9VOmy4v7FEEeZhXi14m6FMYm34E=
-Date:   Mon, 10 Jan 2022 14:16:38 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, socketcan@hartkopp.net,
-        mkl@pengutronix.de, netdev@vger.kernel.org, stable@vger.kernel.org,
-        linux-can@vger.kernel.org, tglx@linutronix.de,
-        anna-maria@linutronix.de
-Subject: Re: [PATCH net] can: bcm: switch timer to HRTIMER_MODE_SOFT and
- remove hrtimer_tasklet
-Message-ID: <YdwxtqexaE75uCZ8@kroah.com>
-References: <20220110132322.1726106-1-william.xuanziyang@huawei.com>
+        id S231935AbiAJNRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 08:17:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45766 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230248AbiAJNRe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 08:17:34 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48B4C06173F
+        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 05:17:33 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id i3so37813535ybh.11
+        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 05:17:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SdrkS9NcQFVMwIFPaCLEOK6aKVNbSMbn34Y9bgb4pag=;
+        b=lEvwlwByuUMD3uXJciHODu/iQ05Ku2pUMmwyRkUSQXcaickA+CVVxaph92hRPE0DAf
+         FNntAtnGeAuvwmOcyocQM3FhfFcU9r+ccmkQKJ8AUIXS9p6yl/3aRHO5lng2Vu/U25Xu
+         ckDLJZKmQTT0R2jYgSX7lfxlcUxzK+CzvipAiDNm624KtjHeSr7JzWNkrV/5AjgoMlbX
+         Vl5PA3TSZd5P1Xcdv9wkH46+HTmvOASwNmhtkMeYE8JeeUvwnXLV8PD42xbvyZIXtxdB
+         rG1tGbSH/VaaxPSPOR16TNFNwxda6naOGBXu3rKS8OkoMHOQMjh0g7aq2vWh/sqWCmXM
+         1LvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SdrkS9NcQFVMwIFPaCLEOK6aKVNbSMbn34Y9bgb4pag=;
+        b=uIlGFYFWVljYy/dozU+a5wCxUlMkdj4WiBQWft7vHkrktSOH3rOTVF/DNa0EQMp6uJ
+         RRAM5sl44xGlbWgDFA6xNwuDTkKQQyK0kYuei1uHTuva/IqKA3AfFofyKwUo85vWFEVn
+         EOJVO0mBNM9IiYRard+lw9gjMcIYrenML7CwYLK1wiHIpginctrnH4YmHyAnL/lIA5/R
+         k6r2T2odaXWoBYSQlDLzEpZ79MyVNpkhtgnnJZviXlK0ESKJlGo3TxkZ1EnZFIZULdPO
+         3BBtHVPBu1yMeVaD/eyFAnd4TCytscyyxYa+xybVsOJbosxMM+iIfQts9goZBDjTT8ki
+         FXxw==
+X-Gm-Message-State: AOAM530ZvdZ8bm+TmVOwQYkVCkmREPNQxFC+kWj+f71EXbhbQ8j60QYa
+        RJpIpBpPgqcOaQUhN/kkch2ejQa0r/TD5fQUi6q9Rw==
+X-Google-Smtp-Source: ABdhPJyRLPZZUYDQ2JD9orDf6hF92q/kHpCMOJ15g1vr4/fGhOramFSrYFHRrR6jU6x+e/jKQ37P7HDxFkeYEPi1smI=
+X-Received: by 2002:a25:ae4d:: with SMTP id g13mr7125851ybe.293.1641820652763;
+ Mon, 10 Jan 2022 05:17:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220110132322.1726106-1-william.xuanziyang@huawei.com>
+References: <20220105102737.2072844-1-eric.dumazet@gmail.com>
+ <35c5d575-2586-fc77-8c71-bd4cb945f62d@nvidia.com> <CANn89iJ=z6PKMTXZpFmCXD2yS=cynHFMPh24k7M4ajBe3pDBfQ@mail.gmail.com>
+In-Reply-To: <CANn89iJ=z6PKMTXZpFmCXD2yS=cynHFMPh24k7M4ajBe3pDBfQ@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 10 Jan 2022 05:17:21 -0800
+Message-ID: <CANn89i+djJT_o8kqzqRacNs6ma3m-_xG40uttzAn2EfZAqD8Jw@mail.gmail.com>
+Subject: Re: [BUG HTB offload] syzbot: C repro for b/213075475
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 09:23:22PM +0800, Ziyang Xuan wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
-> 
-> [ commit bf74aa86e111aa3b2fbb25db37e3a3fab71b5b68 upstream ]
-> 
-> Stop tx/rx cycle rely on the active state of tasklet and hrtimer
-> sequentially in bcm_remove_op(), the op object will be freed if they
-> are all unactive. Assume the hrtimer timeout is short, the hrtimer
-> cb has been excuted after tasklet conditional judgment which must be
-> false after last round tasklet_kill() and before condition
-> hrtimer_active(), it is false when execute to hrtimer_active(). Bug
-> is triggerd, because the stopping action is end and the op object
-> will be freed, but the tasklet is scheduled. The resources of the op
-> object will occur UAF bug.
+On Mon, Jan 10, 2022 at 5:14 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Mon, Jan 10, 2022 at 3:10 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
 
-That is not the changelog text of this commit.  Why modify it?
+> > Is this the right program, by the way?
+>
+> Yes it is.
+>
+> If you look at it, you find htb string embedded in
+>
+>     memcpy((void*)0x20000398,
+> +           "\x00\x00\x04\x00\xf1\xff\xff\xff\x00\x00\x00\x00\x08\x00\x01\x00"
+> +           "\x68\x74\x62\x00\x1c\x00\x02\x00\x18\x00\x02\x00\x03",
+> +           29);
+>
 
-> 
-> ----------------------------------------------------------------------
-> 
-> This patch switches the timer to HRTIMER_MODE_SOFT, which executed the
-> timer callback in softirq context and removes the hrtimer_tasklet.
-> 
-> Reported-by: syzbot+652023d5376450cc8516@syzkaller.appspotmail.com
-> Cc: stable@vger.kernel.org # 4.19
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: Anna-Maria Gleixner <anna-maria@linutronix.de>
-> Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> ---
->  net/can/bcm.c | 156 +++++++++++++++++---------------------------------
->  1 file changed, 52 insertions(+), 104 deletions(-)
+Also embedded in this memcpy. you can find 0xFFFFFFF1 which is TC_H_INGRESS
 
-What stable kernel tree(s) are you wanting this backported to?
-
-thanks,
-
-greg k-h
+#define TC_H_INGRESS  (0xFFFFFFF1U)
