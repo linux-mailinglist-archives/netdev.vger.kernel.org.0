@@ -2,132 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71AF7489E96
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 18:44:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DB20489ECE
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 19:09:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238523AbiAJRox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 12:44:53 -0500
-Received: from mail-oi1-f179.google.com ([209.85.167.179]:45859 "EHLO
-        mail-oi1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238224AbiAJRox (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 12:44:53 -0500
-Received: by mail-oi1-f179.google.com with SMTP id j124so19663909oih.12;
-        Mon, 10 Jan 2022 09:44:52 -0800 (PST)
+        id S238749AbiAJSJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 13:09:19 -0500
+Received: from mail-oi1-f182.google.com ([209.85.167.182]:43771 "EHLO
+        mail-oi1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238685AbiAJSJS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 13:09:18 -0500
+Received: by mail-oi1-f182.google.com with SMTP id u21so19723738oie.10;
+        Mon, 10 Jan 2022 10:09:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=RaD6+aAaTmRd5zEE9sReO0YiupSwot3U4AJVRAt9xhI=;
-        b=OCzcw//9rcBBEmf8PXTcQgG3zYCWDUzK/YcAeJj7xUgEZJujxkKsPg1oMu21AUXB3f
-         rU6k5qW5k9AlQAEtI21ohfm3kr7/cR3Yxn4XR9NRR/SrZ1QkHNMa0PsbQXQ2vkMBkgl9
-         u2mnVqeysY6RGpUf2CQeoaIVKjumccrUKFyXQQ/7/9pJWuzWVdW62Xt26Jx4G2Up6Cm0
-         lBe7sUn7aMRotkuWNgaNxAwZ4zTQmbv7rrvJY5Y5HIOzgxfR9d4tSYpx80FVyjfpWC7d
-         o276PlVMndIsaRLlMxuiYvlgH2D3XuP/wkirSU9b7eVNv+ogTPrgVuUO/3dUt3dNdRrh
-         PuCw==
-X-Gm-Message-State: AOAM530dLTUrqSgMvbSRaP+M4ykvjzBAoAWpOGJa/tD8gvC3OzKA3Dec
-        bND3dWLtAR8q3bT/qvZ0GbN/D0XYeA==
-X-Google-Smtp-Source: ABdhPJyMrqn3sPc9Dy+vhme0aEwAY9t9CKbv8wwAdGwl+gC94BwsS/f26n51+OEZZfyA3pjaxhXhNw==
-X-Received: by 2002:a05:6808:209a:: with SMTP id s26mr1074068oiw.152.1641836692526;
-        Mon, 10 Jan 2022 09:44:52 -0800 (PST)
+         :mime-version:content-disposition:in-reply-to;
+        bh=e+IJ/H3vHc96FCz349IEzD3v2PAh/04rXoK0wUxSNSk=;
+        b=iDeDJajNAQ4atO6WvPsTeBj3J3bj4dHL6BpHaVdETbozQJmE0QLTnCtzqbHPrK3qXj
+         Tbf4W9BsXDBaSar3mxK8O9IqOWEs3wMJ9K09SDTMGd8QhRcJH3M6vt4avEo73HJO4jCW
+         xlUkl1/ddVXI7Dxu6wwV0Z8e2WVKIAQkDJVReswtis1JWHVfZZ3ZGPCGiu/fNZonQyTV
+         E1MF67HcFf9JN6yAxOsQJsqVUr0qX8BZjjMrChykr8l2iMfG7jU/4zPmZY4pNXnMgD8M
+         CDxT+SaJ367rR77zWPYVwXrwlU7KBaFi7Voqqt3XiSSfkzd+lC68/INpTRzXMvMQJIvd
+         eYYw==
+X-Gm-Message-State: AOAM532R2N/Yl9zl1zoLjyHB0iFkSRIE7dnJCFYmn1FSGBdplDj6e3X1
+        FjCjMlmsnBaN/mOKJ5TY7Q==
+X-Google-Smtp-Source: ABdhPJxyEhB2UbZMI+FmtQ8XT80zneLJxQ6M4BfFQhDzJ7SM3kTcdKi15btwdNzVk+g+mfLVLAo/8w==
+X-Received: by 2002:a05:6808:b0e:: with SMTP id s14mr9892843oij.61.1641838157674;
+        Mon, 10 Jan 2022 10:09:17 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id o130sm1269203oig.26.2022.01.10.09.44.51
+        by smtp.gmail.com with ESMTPSA id 4sm1591108otl.26.2022.01.10.10.09.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 09:44:52 -0800 (PST)
-Received: (nullmailer pid 1165881 invoked by uid 1000);
-        Mon, 10 Jan 2022 17:44:51 -0000
-Date:   Mon, 10 Jan 2022 11:44:51 -0600
+        Mon, 10 Jan 2022 10:09:16 -0800 (PST)
+Received: (nullmailer pid 1208088 invoked by uid 1000);
+        Mon, 10 Jan 2022 18:09:15 -0000
+Date:   Mon, 10 Jan 2022 12:09:15 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Cc:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH 3/5] dt-bindings: nvmem: allow referencing device defined
- cells by names
-Message-ID: <Ydxwk7PCn4smJt5w@robh.at.kernel.org>
-References: <20211223110755.22722-1-zajec5@gmail.com>
- <20211223110755.22722-4-zajec5@gmail.com>
- <CAL_JsqK2TMu+h4MgQqjN0bvEzqdhsEviBwWiiR9hfNbC5eOCKg@mail.gmail.com>
- <f173d7a6-70e7-498f-8a04-b025c75f2b66@gmail.com>
- <YdSrG3EGDHMmhm1Y@robh.at.kernel.org>
- <49a2b78e-67a8-2e5c-f0c4-542851eabbf2@gmail.com>
- <0463d60e-b58e-84cc-df5e-d5030e8fdc1d@milecki.pl>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] dt-bindings: net: dsa: realtek-smi: convert to YAML
+ schema
+Message-ID: <Ydx2SwE6DiEd+OEY@robh.at.kernel.org>
+References: <20211228072645.32341-1-luizluca@gmail.com>
+ <CACRpkdbEGxWSyPd=-xM_1YFzke7O34jrHLdmBzWCFZXt-Nve8g@mail.gmail.com>
+ <CAJq09z5k396kc1VU0S_a_6gwpT5sO5LtXFcW_T8PPzKmkRpnQg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0463d60e-b58e-84cc-df5e-d5030e8fdc1d@milecki.pl>
+In-Reply-To: <CAJq09z5k396kc1VU0S_a_6gwpT5sO5LtXFcW_T8PPzKmkRpnQg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 04, 2022 at 09:56:01PM +0100, Rafał Miłecki wrote:
-> On 4.01.2022 21:50, Rafał Miłecki wrote:
-> > On 4.01.2022 21:16, Rob Herring wrote:
-> > > On Thu, Dec 23, 2021 at 10:58:56PM +0100, Rafał Miłecki wrote:
-> > > > On 23.12.2021 22:18, Rob Herring wrote:
-> > > > > On Thu, Dec 23, 2021 at 7:08 AM Rafał Miłecki <zajec5@gmail.com> wrote:
-> > > > > > 
-> > > > > > From: Rafał Miłecki <rafal@milecki.pl>
-> > > > > > 
-> > > > > > Not every NVMEM has predefined cells at hardcoded addresses. Some
-> > > > > > devices store cells in internal structs and custom formats. Referencing
-> > > > > > such cells is still required to let other bindings use them.
-> > > > > > 
-> > > > > > Modify binding to require "reg" xor "label". The later one can be used
-> > > > > > to match "dynamic" NVMEM cells by their names.
-> > > > > 
-> > > > > 'label' is supposed to correspond to a sticker on a port or something
-> > > > > human identifiable. It generally should be something optional to
-> > > > > making the OS functional. Yes, there are already some abuses of that,
-> > > > > but this case is too far for me.
-> > > > 
-> > > > Good to learn that!
-> > > > 
-> > > > "name" is special & not allowed I think.
-> > > 
-> > > It's the node name essentially. Why is using node names not sufficient?
-> > > Do you have some specific examples?
-> > 
-> > I tried to explain in
-> > [PATCH 1/5] dt-bindings: nvmem: add "label" property to allow more flexible cells names
-> > that some vendors come with fancy names that can't fit node names.
-
-I still don't see the issue. Why do you need 'more flexible cells 
-names'? What problem does that solve?
-
-> > Broadcom's NVRAM examples:
-> > 0:macaddr
-> > 1:macaddr
-> > 2:macaddr
-> > 0:ccode
-> > 1:ccode
-> > 2:ccode
-> > 0:regrev
->
-> In other words I'd like to have something like:
+On Tue, Jan 04, 2022 at 08:44:37PM -0300, Luiz Angelo Daros de Luca wrote:
+> Thanks Linus!
 > 
-> nvram@1eff0000 {
-> 	compatible = "brcm,nvram";
-> 	reg = <0x1eff0000 0x10000>;
+> > > +    description: |
+> > > +      realtek,rtl8365mb: 4+1 ports
+> > > +      realtek,rtl8366:
+> > > +      realtek,rtl8366rb:
 > 
-> 	mac: cell-0 {
-> 		label = "1:macaddr";
-> 	};
-> };
+
+Why have you removed Linus' comment?
+
+> There is some confusion with the n+m port description. Some 4+1 means
+> 4 lan + 1 wan while in other cases it means 4 user + 1 ext port, even
+> in Realtek documentation. The last digit in realtek product numbers is
+> the port number (0 means 10) and it is the sum of user ports and
+> external ports. From what I investigated, the last digit numbers
+> normally mean:
 > 
-> ethernet@1000 {
-> 	compatible = "brcm,ethernet";
-> 	reg = <0x1000 0x1000>;
-> 	nvmem-cells = <&mac>;
-> 	nvmem-cell-names = "mac-address";
-> };
+> 3: 2 user + 1 ext port
+> 4: 2 user + 2 ext port
+> 5: 4 user + 1 ext port
+> 6: 5 user + 1 ext port
+> 7: 5 user + 2 ext port
+> 0: 8 user + 2 ext port.
+> 
+> The description in YAML was from the TXT version but it is a good time
+> to improve it.
+> 
+> BTW, I couldn't find a datasheet for rtl8366rb. The commit message
+> says it is from a DIR-685 but wikidevi days that device has a
+> RTL8366SR, which is described as "SINGLE-CHIP 5+1-PORT 10/100/1000
+> MBPS SWITCH CONTROLLER WITH DUAL MAC INTERFACES".
+> 
+> Do you have any suggestions?
 
-How does 'label' help here?
-
-Note there's some other efforts around multiple mac addresses and how to 
-interpret the nvmem data. Maybe that helps solve your problem.
+I think Linus just meant to add spaces around the '+'.
 
 Rob
