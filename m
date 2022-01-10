@@ -2,205 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20C20489768
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 12:28:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4726E4898C6
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 13:41:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244713AbiAJL2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 06:28:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48610 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244695AbiAJL2R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 06:28:17 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD31BC06173F
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 03:28:16 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id g2so10844486pgo.9
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 03:28:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to;
-        bh=3IoSSWDO81pygsbRorvWqdTwNo+w5hnTuGz/xSCZyT4=;
-        b=f7+sDiLKG5xGQdUvwLkvRsVC9R8bwH7N8xYo2zZgRvBQSRObtvKKcJIlB5E2xmFh7F
-         fQKUo65tT9SHPmmqEy/XaCYck7mzGQUnEykpvR+CdNymbuW7q46CcyeysBbZgtx9PLb0
-         8Hal06Blfg9oDthO0YRX2VGcTaNG/2/axBnTg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to;
-        bh=3IoSSWDO81pygsbRorvWqdTwNo+w5hnTuGz/xSCZyT4=;
-        b=laxhtAyPTV7vpJTSg8zAPTkhnTtGg+SijEc+PMzSWpiKKf3CLf+Cjd7W6WbKiOCZ6I
-         NzwwuJhDRv16QxNErqqPdtVi3ulJfrYRS+/5zHR+hx2ozia/PbPDhwzs7i4eNxofB47B
-         nQDxbj7cRGabIxxZdy2YSjzR4VPVXgg/pyrDtc3jWFPBcuAaDNxwyocYBWslqkkIckda
-         JmkLT0mwl5WSQXw1Nq1+Lb9hPyk5mVrTIs4/G94tw/OLhfHZK5uGvrSwOH+JOP2LKOZF
-         IfO9OhkpcZPR+At02/mtlnPMfTtmx/rAWWgg+wLFHb8SyECbygQ+dRf+W09GqngsmbQw
-         tc1A==
-X-Gm-Message-State: AOAM532pbbKXRDoNC1Q4pODH/bNhdHOEtGieV3DjPVkOWcwvFWoGoInR
-        iXTJB05X20D4yD++iqxhG5l9Qg==
-X-Google-Smtp-Source: ABdhPJzoYoya0JSj5ipnincmbl8HOThk4gg0Tywzzy8HehjYJj+8YseXnmiR30r/+yK/uo0VPkiMBQ==
-X-Received: by 2002:a63:7c10:: with SMTP id x16mr24020734pgc.128.1641814096358;
-        Mon, 10 Jan 2022 03:28:16 -0800 (PST)
-Received: from [192.168.178.136] (f140230.upc-f.chello.nl. [80.56.140.230])
-        by smtp.gmail.com with ESMTPSA id h19sm6572579pfh.30.2022.01.10.03.28.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 03:28:15 -0800 (PST)
-Message-ID: <86f0c8a6-5c58-e59f-9198-934ed2f12a7f@broadcom.com>
-Date:   Mon, 10 Jan 2022 12:28:05 +0100
+        id S245620AbiAJMlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 07:41:23 -0500
+Received: from xmbgsz7.mail.foxmail.com ([61.241.55.243]:44885 "EHLO
+        xmbgsz7.mail.foxmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245599AbiAJMlX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 07:41:23 -0500
+X-Greylist: delayed 98139 seconds by postgrey-1.27 at vger.kernel.org; Mon, 10 Jan 2022 07:41:22 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1641818478;
+        bh=g317dTPTpgSCEdP8ZINM18u9N7xoe3pAeREzosvRh0o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Uksghk2XXq/IobLR2p+oIM8TMmpMkoA0Ttf29TEd643sh69satFwUbaw2uxvW2mE+
+         YMUvGgdFBlAsKGkTCewB6xvkHst+DD75DLPQKVWKxJElv58wuBGr1JQkgRtShj1BT+
+         tmMkXVn6Z/iEyXcSatPgnbSyRxUmXkA135umrEj8=
+Received: from fedora.. ([119.32.47.91])
+        by newxmesmtplogicsvrsza7.qq.com (NewEsmtp) with SMTP
+        id 8F2BB215; Mon, 10 Jan 2022 19:35:50 +0800
+X-QQ-mid: xmsmtpt1641814550tadfo0vjb
+Message-ID: <tencent_AEEE0573A5455BBE4D5C05226C6C1E3AEF08@qq.com>
+X-QQ-XMAILINFO: Nw6Y/HeEb1MZpHgDiS7/LJhp8IFwyZJ3C+va4g8+G8duTO4HNq19H40VxVRsmZ
+         hK4yG/pKkgw6U4ntv2yxX2xIZs+nhAsRN9iaxZBzjIoVeN/TTs+rbUATOmObZIjRkZwNCY0Hqi3J
+         uz57tU6NVoURjeAxSQQSMxCyD8xo+eVla/YN3OdawDbOBDp9y0OFCA2AJ+adkuucqLGnDG90w09z
+         xwP7UsZmBX80hOK9FFEHhGRJsvXxVGvYPLWJNZdwjDhXxXHZEziODe1OQmb+aXwcsxDIvtD1pRFU
+         knn5SEFNbi3LgkAHDSjDzb2GDwP9gB5+zkcHWa9KZQX5419LWq6ic+9qenRFa+zTvNr3AhDeLcoS
+         UAYDYgk+eQVBAlfBLU0qOWgEKCnOM8vQlQvn9mPCk6t73aYuXa3CXd3DqPUL/iDySwPZB28RP86s
+         shTtjwrRh/PJWN1gIgMV19JBii9MJZwiIyGOuX+q1UOvZ5vIN/1YE3aHfSScILZ1fKl9Dpbh7sTt
+         SWfSNUbAhwbdtKNb8WhBpW4i84k6Hrdg/psmFI9yUz6hbItyBLmY0yJmwU+23CwM5tj/0rzyA2C5
+         GAFFB2OOLmVd81lQ7XkW0fznTeS3IdZIliQFRg6CSKKMzcdaSApka9FOvOflTDaL4r01zXrbKI3e
+         OnxBV5ll3rUylf6uwgsR3ZfiG2T3RM0Wv2TspUY7WUogV/2cBg72y3HeiqjAkiOlLagk2s3RxvRk
+         xFUBuaQefiMhwy8cA1ifPSKM/GNMuxFjBkqHvIv5KXi/veSt3Z9ttJzjEWuXVd3RGq1wiXlMVgRT
+         9ZXdFtRuMIB36gMzSTMx9l601k/qabR3NI0LLY1OAzlstIT7jCKvNHXZjFQq2yfQaAUPKLxOO+fy
+         aRZT5yEyr+tjoVuD01wwk1C9hFP6X3DkDwHlEr6kDGY4pCWzR0h7k23QQUo6/1EA==
+From:   Conley Lee <conleylee@foxmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+        wens@csie.org, clabbe.montjoie@gmail.com
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Conley Lee <conleylee@foxmail.com>
+Subject: [PATCH v2] net: ethernet: sun4i-emac: replace magic number with macro
+Date:   Mon, 10 Jan 2022 19:35:49 +0800
+X-OQ-MSGID: <20220110113549.2297850-1-conleylee@foxmail.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
+References: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH v2 17/35] brcmfmac: pcie: Provide a buffer of random bytes
- to the device
-To:     Hector Martin <marcan@marcan.st>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20220104072658.69756-1-marcan@marcan.st>
- <20220104072658.69756-18-marcan@marcan.st>
- <3844c03f-627b-8bf6-f526-8fda3e7892e0@broadcom.com>
- <5785c77d-9746-4b3f-b1dc-63270a2b1e73@marcan.st>
-From:   Arend van Spriel <arend.vanspriel@broadcom.com>
-In-Reply-To: <5785c77d-9746-4b3f-b1dc-63270a2b1e73@marcan.st>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000043dba05d538a2d3"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000043dba05d538a2d3
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+This patch remove magic numbers in sun4i-emac.c and replace with macros
+defined in sun4i-emac.h
 
-On 1/10/2022 12:09 PM, Hector Martin wrote:
-> On 2022/01/10 18:11, Arend van Spriel wrote:
->> On 1/4/2022 8:26 AM, Hector Martin wrote:
->>> Newer Apple firmwares on chipsets without a hardware RNG require the
->>> host to provide a buffer of 256 random bytes to the device on
->>> initialization. This buffer is present immediately before NVRAM,
->>> suffixed by a footer containing a magic number and the buffer length.
->>>
->>> This won't affect chips/firmwares that do not use this feature, so do it
->>> unconditionally.
->>
->> Not sure what the general opinion is here, but pulling random bytes for
->> naught seems wasteful to me. So if there is a way of knowing it is
->> needed please make it conditional.
-> 
-> We could gate it on specific chips only, if you don't mind maintaining a
-> list of those. AIUI that would be all the T2 platform chips or so (the
-> newer two don't seem to need it).
-> 
-> Alternatively we could just do this only if an Apple OTP is detected.
-> That is already implicitly gated by the OTP offset chip list.
+Change since v1
+---------------
+- reformat
+- merge commits
+- add commit message
 
-That sounds like a good approach.
+Signed-off-by: Conley Lee <conleylee@foxmail.com>
+---
+ drivers/net/ethernet/allwinner/sun4i-emac.c | 30 ++++++++++++---------
+ drivers/net/ethernet/allwinner/sun4i-emac.h | 18 +++++++++++++
+ 2 files changed, 35 insertions(+), 13 deletions(-)
 
-Regards,
-Arend
+diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.c b/drivers/net/ethernet/allwinner/sun4i-emac.c
+index 849de4564709..98fd98feb439 100644
+--- a/drivers/net/ethernet/allwinner/sun4i-emac.c
++++ b/drivers/net/ethernet/allwinner/sun4i-emac.c
+@@ -106,9 +106,9 @@ static void emac_update_speed(struct net_device *dev)
+ 
+ 	/* set EMAC SPEED, depend on PHY  */
+ 	reg_val = readl(db->membase + EMAC_MAC_SUPP_REG);
+-	reg_val &= ~(0x1 << 8);
++	reg_val &= ~EMAC_MAC_SUPP_100M;
+ 	if (db->speed == SPEED_100)
+-		reg_val |= 1 << 8;
++		reg_val |= EMAC_MAC_SUPP_100M;
+ 	writel(reg_val, db->membase + EMAC_MAC_SUPP_REG);
+ }
+ 
+@@ -264,7 +264,7 @@ static void emac_dma_done_callback(void *arg)
+ 
+ 	/* re enable interrupt */
+ 	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+-	reg_val |= (0x01 << 8);
++	reg_val |= EMAC_INT_CTL_RX_EN;
+ 	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 
+ 	db->emacrx_completed_flag = 1;
+@@ -429,7 +429,7 @@ static unsigned int emac_powerup(struct net_device *ndev)
+ 	/* initial EMAC */
+ 	/* flush RX FIFO */
+ 	reg_val = readl(db->membase + EMAC_RX_CTL_REG);
+-	reg_val |= 0x8;
++	reg_val |= EMAC_RX_CTL_FLUSH_FIFO;
+ 	writel(reg_val, db->membase + EMAC_RX_CTL_REG);
+ 	udelay(1);
+ 
+@@ -441,8 +441,8 @@ static unsigned int emac_powerup(struct net_device *ndev)
+ 
+ 	/* set MII clock */
+ 	reg_val = readl(db->membase + EMAC_MAC_MCFG_REG);
+-	reg_val &= (~(0xf << 2));
+-	reg_val |= (0xD << 2);
++	reg_val &= ~EMAC_MAC_MCFG_MII_CLKD_MASK;
++	reg_val |= EMAC_MAC_MCFG_MII_CLKD_72;
+ 	writel(reg_val, db->membase + EMAC_MAC_MCFG_REG);
+ 
+ 	/* clear RX counter */
+@@ -506,7 +506,7 @@ static void emac_init_device(struct net_device *dev)
+ 
+ 	/* enable RX/TX0/RX Hlevel interrup */
+ 	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+-	reg_val |= (0xf << 0) | (0x01 << 8);
++	reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN | EMAC_INT_CTL_RX_EN);
+ 	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 
+ 	spin_unlock_irqrestore(&db->lock, flags);
+@@ -637,7 +637,9 @@ static void emac_rx(struct net_device *dev)
+ 		if (!rxcount) {
+ 			db->emacrx_completed_flag = 1;
+ 			reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+-			reg_val |= (0xf << 0) | (0x01 << 8);
++			reg_val |=
++				(EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN |
++				 EMAC_INT_CTL_RX_EN);
+ 			writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 
+ 			/* had one stuck? */
+@@ -669,7 +671,9 @@ static void emac_rx(struct net_device *dev)
+ 			writel(reg_val | EMAC_CTL_RX_EN,
+ 			       db->membase + EMAC_CTL_REG);
+ 			reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+-			reg_val |= (0xf << 0) | (0x01 << 8);
++			reg_val |=
++				(EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN |
++				 EMAC_INT_CTL_RX_EN);
+ 			writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 
+ 			db->emacrx_completed_flag = 1;
+@@ -783,20 +787,20 @@ static irqreturn_t emac_interrupt(int irq, void *dev_id)
+ 	}
+ 
+ 	/* Transmit Interrupt check */
+-	if (int_status & (0x01 | 0x02))
++	if (int_status & EMAC_INT_STA_TX_COMPLETE)
+ 		emac_tx_done(dev, db, int_status);
+ 
+-	if (int_status & (0x04 | 0x08))
++	if (int_status & EMAC_INT_STA_TX_ABRT)
+ 		netdev_info(dev, " ab : %x\n", int_status);
+ 
+ 	/* Re-enable interrupt mask */
+ 	if (db->emacrx_completed_flag == 1) {
+ 		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+-		reg_val |= (0xf << 0) | (0x01 << 8);
++		reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN | EMAC_INT_CTL_RX_EN);
+ 		writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 	} else {
+ 		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+-		reg_val |= (0xf << 0);
++		reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN);
+ 		writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 	}
+ 
+diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.h b/drivers/net/ethernet/allwinner/sun4i-emac.h
+index 38c72d9ec600..90bd9ad77607 100644
+--- a/drivers/net/ethernet/allwinner/sun4i-emac.h
++++ b/drivers/net/ethernet/allwinner/sun4i-emac.h
+@@ -38,6 +38,7 @@
+ #define EMAC_RX_CTL_REG		(0x3c)
+ #define EMAC_RX_CTL_AUTO_DRQ_EN		(1 << 1)
+ #define EMAC_RX_CTL_DMA_EN		(1 << 2)
++#define EMAC_RX_CTL_FLUSH_FIFO		(1 << 3)
+ #define EMAC_RX_CTL_PASS_ALL_EN		(1 << 4)
+ #define EMAC_RX_CTL_PASS_CTL_EN		(1 << 5)
+ #define EMAC_RX_CTL_PASS_CRC_ERR_EN	(1 << 6)
+@@ -61,7 +62,21 @@
+ #define EMAC_RX_IO_DATA_STATUS_OK	(1 << 7)
+ #define EMAC_RX_FBC_REG		(0x50)
+ #define EMAC_INT_CTL_REG	(0x54)
++#define EMAC_INT_CTL_RX_EN	(1 << 8)
++#define EMAC_INT_CTL_TX0_EN	(1)
++#define EMAC_INT_CTL_TX1_EN	(1 << 1)
++#define EMAC_INT_CTL_TX_EN	(EMAC_INT_CTL_TX0_EN | EMAC_INT_CTL_TX1_EN)
++#define EMAC_INT_CTL_TX0_ABRT_EN	(0x1 << 2)
++#define EMAC_INT_CTL_TX1_ABRT_EN	(0x1 << 3)
++#define EMAC_INT_CTL_TX_ABRT_EN	(EMAC_INT_CTL_TX0_ABRT_EN | EMAC_INT_CTL_TX1_ABRT_EN)
+ #define EMAC_INT_STA_REG	(0x58)
++#define EMAC_INT_STA_TX0_COMPLETE	(0x1)
++#define EMAC_INT_STA_TX1_COMPLETE	(0x1 << 1)
++#define EMAC_INT_STA_TX_COMPLETE	(EMAC_INT_STA_TX0_COMPLETE | EMAC_INT_STA_TX1_COMPLETE)
++#define EMAC_INT_STA_TX0_ABRT	(0x1 << 2)
++#define EMAC_INT_STA_TX1_ABRT	(0x1 << 3)
++#define EMAC_INT_STA_TX_ABRT	(EMAC_INT_STA_TX0_ABRT | EMAC_INT_STA_TX1_ABRT)
++#define EMAC_INT_STA_RX_COMPLETE	(0x1 << 8)
+ #define EMAC_MAC_CTL0_REG	(0x5c)
+ #define EMAC_MAC_CTL0_RX_FLOW_CTL_EN	(1 << 2)
+ #define EMAC_MAC_CTL0_TX_FLOW_CTL_EN	(1 << 3)
+@@ -87,8 +102,11 @@
+ #define EMAC_MAC_CLRT_RM		(0x0f)
+ #define EMAC_MAC_MAXF_REG	(0x70)
+ #define EMAC_MAC_SUPP_REG	(0x74)
++#define EMAC_MAC_SUPP_100M	(0x1 << 8)
+ #define EMAC_MAC_TEST_REG	(0x78)
+ #define EMAC_MAC_MCFG_REG	(0x7c)
++#define EMAC_MAC_MCFG_MII_CLKD_MASK	(0xff << 2)
++#define EMAC_MAC_MCFG_MII_CLKD_72	(0x0d << 2)
+ #define EMAC_MAC_A0_REG		(0x98)
+ #define EMAC_MAC_A1_REG		(0x9c)
+ #define EMAC_MAC_A2_REG		(0xa0)
+-- 
+2.31.1
 
---000000000000043dba05d538a2d3
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-XSlOP9s1dqWlRRnnNxV7BVC87lkKKy0+1M2DOF6qRYQlnW4EfOyCToYLAG5zeV+AjepMoX6J9bUz
-yj4BlDtwH4HFjaRIlPPbdLshUA54/tV84x8woATuLGBq+hTZEpkZAgMBAAGjggHdMIIB2TAOBgNV
-HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
-Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
-KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
-Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
-dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
-OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
-MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
-BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKb+3b9pz8zo
-0QsCHGb/p0UrBlU+MA0GCSqGSIb3DQEBCwUAA4IBAQCHisuRNqP0NfYfG3U3XF+bocf//aGLOCGj
-NvbnSbaUDT/ZkRFb9dQfDRVnZUJ7eDZWHfC+kukEzFwiSK1irDPZQAG9diwy4p9dM0xw5RXSAC1w
-FzQ0ClJvhK8PsjXF2yzITFmZsEhYEToTn2owD613HvBNijAnDDLV8D0K5gtDnVqkVB9TUAGjHsmo
-aAwIDFKdqL0O19Kui0WI1qNsu1tE2wAZk0XE9FG0OKyY2a2oFwJ85c5IO0q53U7+YePIwv4/J5aP
-OGM6lFPJCVnfKc3H76g/FyPyaE4AL/hfdNP8ObvCB6N/BVCccjNdglRsL2ewttAG3GM06LkvrLhv
-UCvjMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
-YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMMSnY
-h9J/RI6gsHbuMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCC4coLsW2rxE1YFy6ch
-hTw+pJgUec1mYHUHWBDcUbjVqzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
-BTEPFw0yMjAxMTAxMTI4MTZaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
-AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
-BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAIk8mzPq57bg3UL0tYS4E+MLUeMrikmyfKJva
-S24NHptyvfVP5zmLGzK6Wkdha39WQ5A933bxZA5/ODw+98GeLL/xJWiUWa/NLdxXWzr3li0nG8m0
-nmbu08MsfHB/8R0NKkXntNx/SZVXQ+mLCMrgshXeQ3CBdEHrCtgExCHbdvURy6gIPSalWLQFZtJF
-vDAJDwLYeReaMyKoR1rSlf1xWBQZFRlJuXaZL1psNN1jpMir/IQZwrZcKhCe50ybCvPBPUkKVDUm
-2TxX/Z8mWcSlZBj8frkgfoSoGEoy8knuqZKtdVCSAIkXNHAvzetyjECaEXGGPpu5DX5SI/S3VDcS
-Rg==
---000000000000043dba05d538a2d3--
