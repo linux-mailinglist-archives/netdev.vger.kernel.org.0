@@ -2,182 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F11C489BD9
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 16:09:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ED32489BF9
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 16:15:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235925AbiAJPJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 10:09:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40043 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235917AbiAJPJr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 10:09:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641827387;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pqCR8DvhBxiCC4TzGlm/t/7v2g7znFq4gFV1cmWoEXc=;
-        b=FCKL11GeK8lPcrJxi1b6tEdLWm46ya5nKM7YFb8Z9sWP3uxjCqZ/mNgbCnPlkDJgcTKVWb
-        Nuto2Wr73jlMPi8sZjr0u5SIjjpAomCwya82EPufuvKsRJVXeeNI7cK44TPp6ZY7zPUFZ2
-        +oW1ZO1Vr+a9A68346t8gyfFPjz5yUw=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-638-xARG3aqJPhumozfdfrWVFA-1; Mon, 10 Jan 2022 10:09:45 -0500
-X-MC-Unique: xARG3aqJPhumozfdfrWVFA-1
-Received: by mail-wm1-f70.google.com with SMTP id i81-20020a1c3b54000000b003467c58cbddso8676829wma.5
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 07:09:45 -0800 (PST)
+        id S236072AbiAJPPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 10:15:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44770 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236022AbiAJPPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 10:15:18 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93801C06173F;
+        Mon, 10 Jan 2022 07:15:18 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id d7so5928649ybo.5;
+        Mon, 10 Jan 2022 07:15:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dGF/nGHtbeVmxgDo34A0moRipaYpJVIiWNAE+daWzos=;
+        b=mBdUHa3P6bXUlUuslJZ/9rWCl1S0gWCnSRdFNwhtg6hVinsfVVB8pl5elniva3m/sB
+         KPalKL8louTtY2mvJHJSxKubW1KP6OTilhJK38vibgy5E/D0OR7c8KVs72B53zXJu1c5
+         GFd0JxvkDiXaiqt6oyFs1/bRICIXAQicbuI2Xuyrfx+F5L5QuiX2O91Xw7kf1VnhrzUi
+         lRPp37CMoihV+8HX2ekw0/p9mYpIs11KqI0VTvlvAKG9WctJG4aszgLCCUR7Hr3QD/DO
+         bzNKGUSpWyvunF+Jbf1Zzi4CfvbFeGQqZWQTGUUwWkWjmzsuKoE7fLo8Xcy+UTg9m5b1
+         LW/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pqCR8DvhBxiCC4TzGlm/t/7v2g7znFq4gFV1cmWoEXc=;
-        b=UnYUJHjPcsH5Cq4ru4iGW7/TzcGYGQqx8hUBkelwLBd4JNz+hyjKI/KvvHC6yHTe/D
-         KEeagHNIn2KzkEB0w5nlKEyNO9bpMygV5v1XDTNT7cTMMCcq05w1+8MVpW0+8f+9nrVa
-         7Sk0GHbmPZZ66PdIzvX0ZyzTP2/s1yrwm2AZaJ/8U/hTIXj8I9SeDdDAkbWN8NhXhA4R
-         YFKatqdEAXp3YC2kPoYnq9cqKb9y2/CXnf2DhXTwFg5HUWef6mFCujrMoyCj0O42av5K
-         NQfT/bRvaDsHtfCaVkIZiaoknCfyBvMqov481D3tL0oTsg5Z61cq/L//5OfmNuJIoaiX
-         7FlQ==
-X-Gm-Message-State: AOAM532VE4KV9rwbR/rREiOs9Sd8jMsYORN9Qwk0ai3e/nI8pgyL+wxy
-        qq5SdpLR0TvTgT8i43UV0vDoUPolMSM30r2a67tH2flA5YwUqr9t58gAJFh2WsFudTSOBDAF84C
-        s50IwgkR8qcuObme7
-X-Received: by 2002:a05:6000:1687:: with SMTP id y7mr92670wrd.234.1641827384660;
-        Mon, 10 Jan 2022 07:09:44 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx+Wi7ut3xNdrf+rI6tR7FUH1Wzlso2Na/Gkg81RELF3PPjhams/SaDbGDnPVE94lb71Siqrw==
-X-Received: by 2002:a05:6000:1687:: with SMTP id y7mr92655wrd.234.1641827384391;
-        Mon, 10 Jan 2022 07:09:44 -0800 (PST)
-Received: from redhat.com ([2.55.148.228])
-        by smtp.gmail.com with ESMTPSA id m6sm7888102wrx.36.2022.01.10.07.09.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 07:09:43 -0800 (PST)
-Date:   Mon, 10 Jan 2022 10:09:38 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        Greg KH <gregkh@linuxfoundation.org>,
-        He Zhe <zhe.he@windriver.com>,
-        Liu Xiaodong <xiaodong.liu@intel.com>,
-        Joe Perches <joe@perches.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Will Deacon <will@kernel.org>,
-        John Garry <john.garry@huawei.com>, songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Netdev <netdev@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v12 00/13] Introduce VDUSE - vDPA Device in Userspace
-Message-ID: <20220110100911-mutt-send-email-mst@kernel.org>
-References: <20210830141737.181-1-xieyongji@bytedance.com>
- <20220110075546-mutt-send-email-mst@kernel.org>
- <CACycT3v1aEViw7vV4x5qeGVPrSrO-BTDvQshEX35rx_X0Au2vw@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dGF/nGHtbeVmxgDo34A0moRipaYpJVIiWNAE+daWzos=;
+        b=4BRp0FJ5OjaEWD/v4JGv6QHA3tefwt9rpjRiCly3vgTy0wYuVyzdx5wKNArmDMvCSd
+         kR11gfrm/moPy/NRnSoTpFHuJiUe3ejNxSgt2UxG2rTCfKojdj5Uwlqp6vXQqWS1IAAi
+         kuufEBvJcNmp6enJory/ibeJEM0h3J3v21TTthMkvknDByej14WatX1/GUpmFIg5LTS5
+         wznArvoU3wKzAbtjRhLAxpxp6LxdBbSbFBDa82wVs+26HnWFDLsJocVf6GmmipHG5nBk
+         JbEh98kj7ywhFwJEt85N6UwNYCJssIf/WbRtJ+gDzKxgAUUECsPJw4yjNz1vizSfSJl0
+         +CoQ==
+X-Gm-Message-State: AOAM533N1u4/ztH7bbtKysGjSB6s+srsXPn9SdnjXVurUZK6l2HT5eV6
+        CyZt3ZRpcdbc+e36AZGVEpG6wV77CByB0wukBhU=
+X-Google-Smtp-Source: ABdhPJxCpRh0F7eIDaIwTnKPI4BeWNFWVCHaBaUoE4XzakjJVuUhdd34JyS826GBPz6NE89LGvrbs8TrooDLDD0dXOA=
+X-Received: by 2002:a25:4f44:: with SMTP id d65mr10476817ybb.723.1641827717754;
+ Mon, 10 Jan 2022 07:15:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACycT3v1aEViw7vV4x5qeGVPrSrO-BTDvQshEX35rx_X0Au2vw@mail.gmail.com>
+References: <CAKXUXMzZkQvHJ35nwVhcJe+DrtEXGw+eKGVD04=xRJkVUC2sPA@mail.gmail.com>
+ <35cebb4b-3a1d-fa47-4d49-1a516f36af4f@oracle.com> <CAKXUXMwQE6Z1EFYOtixwA+8nLZySxdHH9xHiOkGhcy5p0sr9xQ@mail.gmail.com>
+ <20220109064905.1594-1-hdanton@sina.com>
+In-Reply-To: <20220109064905.1594-1-hdanton@sina.com>
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Date:   Mon, 10 Jan 2022 16:15:06 +0100
+Message-ID: <CAKXUXMwL5ThVG-LtcUwiC3qTS6CMObSB7m=vpGENUzERYaGeaQ@mail.gmail.com>
+Subject: Re: Observation of a memory leak with commit 314001f0bf92 ("af_unix:
+ Add OOB support")
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Shoaib Rao <rao.shoaib@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 09:54:08PM +0800, Yongji Xie wrote:
-> On Mon, Jan 10, 2022 at 8:57 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+On Sun, Jan 9, 2022 at 7:49 AM Hillf Danton <hdanton@sina.com> wrote:
+>
+> On Sun, 9 Jan 2022 05:10:48 +0100 Lukas Bulwahn wrote:
+> > On Fri, Jan 7, 2022 at 6:55 PM Shoaib Rao <rao.shoaib@oracle.com> wrote:
+> > >
+> > > Hi Lukas,
+> > >
+> > > I took a look at the patch and I fail to see how prepare_creds() could
+> > > be impacted by the patch. The only reference to a cred in the patch is
+> > > via maybe_add_creds().
+> > >
+> > > prepare_creds() is called to make a copy of the current creds which will
+> > > be later modified. If there is any leak it would be in the caller not
+> > > releasing the memory. The patch does not do anything with creds.
+> > >
+> > > If there is any more information that can help identify the issue, I
+> > > will be happy to look into it.
+> > >
 > >
-> > On Mon, Aug 30, 2021 at 10:17:24PM +0800, Xie Yongji wrote:
-> > > This series introduces a framework that makes it possible to implement
-> > > software-emulated vDPA devices in userspace. And to make the device
-> > > emulation more secure, the emulated vDPA device's control path is handled
-> > > in the kernel and only the data path is implemented in the userspace.
-> > >
-> > > Since the emuldated vDPA device's control path is handled in the kernel,
-> > > a message mechnism is introduced to make userspace be aware of the data
-> > > path related changes. Userspace can use read()/write() to receive/reply
-> > > the control messages.
-> > >
-> > > In the data path, the core is mapping dma buffer into VDUSE daemon's
-> > > address space, which can be implemented in different ways depending on
-> > > the vdpa bus to which the vDPA device is attached.
-> > >
-> > > In virtio-vdpa case, we implements a MMU-based software IOTLB with
-> > > bounce-buffering mechanism to achieve that. And in vhost-vdpa case, the dma
-> > > buffer is reside in a userspace memory region which can be shared to the
-> > > VDUSE userspace processs via transferring the shmfd.
-> > >
-> > > The details and our user case is shown below:
-> > >
-> > > ------------------------    -------------------------   ----------------------------------------------
-> > > |            Container |    |              QEMU(VM) |   |                               VDUSE daemon |
-> > > |       ---------      |    |  -------------------  |   | ------------------------- ---------------- |
-> > > |       |dev/vdx|      |    |  |/dev/vhost-vdpa-x|  |   | | vDPA device emulation | | block driver | |
-> > > ------------+-----------     -----------+------------   -------------+----------------------+---------
-> > >             |                           |                            |                      |
-> > >             |                           |                            |                      |
-> > > ------------+---------------------------+----------------------------+----------------------+---------
-> > > |    | block device |           |  vhost device |            | vduse driver |          | TCP/IP |    |
-> > > |    -------+--------           --------+--------            -------+--------          -----+----    |
-> > > |           |                           |                           |                       |        |
-> > > | ----------+----------       ----------+-----------         -------+-------                |        |
-> > > | | virtio-blk driver |       |  vhost-vdpa driver |         | vdpa device |                |        |
-> > > | ----------+----------       ----------+-----------         -------+-------                |        |
-> > > |           |      virtio bus           |                           |                       |        |
-> > > |   --------+----+-----------           |                           |                       |        |
-> > > |                |                      |                           |                       |        |
-> > > |      ----------+----------            |                           |                       |        |
-> > > |      | virtio-blk device |            |                           |                       |        |
-> > > |      ----------+----------            |                           |                       |        |
-> > > |                |                      |                           |                       |        |
-> > > |     -----------+-----------           |                           |                       |        |
-> > > |     |  virtio-vdpa driver |           |                           |                       |        |
-> > > |     -----------+-----------           |                           |                       |        |
-> > > |                |                      |                           |    vdpa bus           |        |
-> > > |     -----------+----------------------+---------------------------+------------           |        |
-> > > |                                                                                        ---+---     |
-> > > -----------------------------------------------------------------------------------------| NIC |------
-> > >                                                                                          ---+---
-> > >                                                                                             |
-> > >                                                                                    ---------+---------
-> > >                                                                                    | Remote Storages |
-> > >                                                                                    -------------------
-> > >
-> > > We make use of it to implement a block device connecting to
-> > > our distributed storage, which can be used both in containers and
-> > > VMs. Thus, we can have an unified technology stack in this two cases.
-> > >
-> > > To test it with null-blk:
-> > >
-> > >   $ qemu-storage-daemon \
-> > >       --chardev socket,id=charmonitor,path=/tmp/qmp.sock,server,nowait \
-> > >       --monitor chardev=charmonitor \
-> > >       --blockdev driver=host_device,cache.direct=on,aio=native,filename=/dev/nullb0,node-name=disk0 \
-> > >       --export type=vduse-blk,id=test,node-name=disk0,writable=on,name=vduse-null,num-queues=16,queue-size=128
-> > >
-> > > The qemu-storage-daemon can be found at https://github.com/bytedance/qemu/tree/vduse
+> > Here is more information:
 > >
-> > It's been half a year - any plans to upstream this?
-> 
-> Yeah, this is on my to-do list this month.
-> 
-> Sorry for taking so long... I've been working on another project
-> enabling userspace RDMA with VDUSE for the past few months. So I
-> didn't have much time for this. Anyway, I will submit the first
-> version as soon as possible.
-> 
-> Thanks,
-> Yongji
+> > Here are all crash reports:
+> >
+> > https://elisa-builder-00.iol.unh.edu/syzkaller-next/crash?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3
+>
+> More weid is the failure of Ctrl-f "unix" at [1] except for a bunch of
+> clone. Can you specify why report at [1] has a direct link to af_unix?
+>
+>         Hillf
+>
+> [1] https://elisa-builder-00.iol.unh.edu/syzkaller-next/file?name=crashes%2f1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3%2freport15
+>
 
-Oh fun. You mean like virtio-rdma? Or RDMA as a backend for regular
-virtio?
+Hillf,
 
--- 
-MST
+I agree that is really weird. I fear we have some issue with our
+syzkaller instance, somehow the database is collecting error logs that
+seem to be different from the error logs I observe when manually
+running the reproducer. The heuristics of aggregating error messages
+is black magic.
 
+Importantly, we have a reproducer, which is clearly related to the
+af_unix functionality and we can manually trigger a reasonable error
+trace. Ignore all the rest.
+
+Lukas
