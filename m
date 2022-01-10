@@ -2,264 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCDE148988B
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 13:26:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD4ED4898AE
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 13:34:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245431AbiAJM0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 07:26:01 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:42242 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S235973AbiAJMZ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 07:25:57 -0500
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20AAclNv005407;
-        Mon, 10 Jan 2022 12:25:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=PkvwHo51xgja/KUsAWlUBaTVsqGisgEduBZgUc75HO4=;
- b=mcFe1Ga0Fl1tRrCEwuepYy7E509imE1nuWm6i377HPLLtZLtdbbPxcCaYxjsu5hc55B+
- IR+aUNQS/zEUHNBE99gfXIxyIOmKrCrbCuczLTvChqXzLDUxnibBxIpZBJnZtfrOa4i9
- TeZAvc5RGrj1B1IOrH4tRh3eKsE16u3aFFjtaJqAiP9EiBASbbDCA5vBMpwxEi0VQidW
- HQrybPXBn/VlTRXcHbiWNrmIc79ry2clYrBKE9330EAcBB7jZg7cySTcjAWTWiiifLxv
- Lrh0LemCmbZVnxX3jW1+NjSXFsSZJtP+HbwILqrqdtw6njgrGI8AozRH9tUz4RCxZmT4 Vw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dfm1hsgsk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Jan 2022 12:25:53 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20AAqELP018450;
-        Mon, 10 Jan 2022 12:25:53 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dfm1hsgs4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Jan 2022 12:25:53 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20ACC71M016309;
-        Mon, 10 Jan 2022 12:25:51 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04fra.de.ibm.com with ESMTP id 3df2893pcp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Jan 2022 12:25:51 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20ACPnSS44499208
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 10 Jan 2022 12:25:49 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 549C952059;
-        Mon, 10 Jan 2022 12:25:49 +0000 (GMT)
-Received: from [9.145.184.190] (unknown [9.145.184.190])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 02DFB5204F;
-        Mon, 10 Jan 2022 12:25:48 +0000 (GMT)
-Message-ID: <3525a4cd-1bc7-1008-910b-fb89597cc10a@linux.ibm.com>
-Date:   Mon, 10 Jan 2022 13:25:49 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH net 1/3] net/smc: Resolve the race between link group
- access and termination
+        id S245522AbiAJMes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 07:34:48 -0500
+Received: from mail-eopbgr130109.outbound.protection.outlook.com ([40.107.13.109]:17379
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S245596AbiAJMdu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jan 2022 07:33:50 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ATJt07QZPsVHjzkwWTRNy/sFOpzwU6ECxX+Jrzh+QdmSyop/PAJ3qEWeLSDVtRb0TpWHqR4uhH2jnQtZqfe3BqOCPhq7fYDe4C6ZOeTxJEqfVwOj4TSwyetk4gd1VvPi/eeGWQqp6lL+6wpbswhr5oDK4LKGpBQR9oJyA5jxpkX8yJ9jZliZSk3iQuR4eZ4vIwsNFx/NrpiUvL0PRGtXzQUyQoECOo8TmPVizjuR2iT2apaINjXz2KfYI/SuxZMp9x7iwIIVG59+vEWhZ7DY1v0b+RqseJrN6RNharEBE2orBG8DQzTbklCrJlfoKDc4jf4+xFH8veSyX4cXCwXMNw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=I7WuxmzhkwMkAcDnYTfMrRxBN/LwAf8SF/g3oYYHVTM=;
+ b=Uqe095YmBNC/5F9rAs4X9mjIS6KWrsHY/2uOTsBIynf8LnwgxXyWhCSSCH4FXIYhcc/2UJvkRfDKoAOk4/35QzUwnPcI1YcmBLQ/Y4v1WhOYRzP4op0w5e/Pw5FSnPO2p8he3vqrJ462SmWH/sUgG4FAqZpSXCynI3SPX1oYVobGPcNlSwFxoiM2Ld6g1QEDG/GHlrCuSF7UJdHbPIAnOINfEurZWE6w7Z8hq2RX8wr+qtpxZ9EGyrKCekFfEdJILohQfA3bOIDK2Zl1rbs8m6h5s0NWTGFMYqEE2d+/hVGG6qHB8towyCZcCIi+5RiCOI5z6eGY/+/bWecpQXWP3w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
+ header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=I7WuxmzhkwMkAcDnYTfMrRxBN/LwAf8SF/g3oYYHVTM=;
+ b=nUqOYBF5x/08sWWUnO7CXGcJNh8Id3lwK/92ppF+kOotErVtZHV+7Nc6xNmF09+xGk2i3ygSMDBwlxuOrB56EgGDrMCh2ah5JaRH+8J80LT4yi0gGIAK6EieVoOjNLwflCZuOcV5W1BaECshWn+0hW9iqiNB97DhcJICBeX8iZg=
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com (2603:10a6:20b:26::24)
+ by AM6PR03MB4918.eurprd03.prod.outlook.com (2603:10a6:20b:8a::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.11; Mon, 10 Jan
+ 2022 12:33:48 +0000
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::dd50:b902:a4d:312f]) by AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::dd50:b902:a4d:312f%5]) with mapi id 15.20.4867.011; Mon, 10 Jan 2022
+ 12:33:47 +0000
+From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>,
+        "frank-w@public-files.de" <frank-w@public-files.de>
+Subject: Re: [PATCH net-next v4 02/11] net: dsa: realtek: rename realtek_smi
+ to realtek_priv
+Thread-Topic: [PATCH net-next v4 02/11] net: dsa: realtek: rename realtek_smi
+ to realtek_priv
+Thread-Index: AQHYAeKNAJ5J+V2WfkCl0TnST7KHLg==
+Date:   Mon, 10 Jan 2022 12:33:47 +0000
+Message-ID: <87r19fepn9.fsf@bang-olufsen.dk>
+References: <20220105031515.29276-1-luizluca@gmail.com>
+        <20220105031515.29276-3-luizluca@gmail.com>
+In-Reply-To: <20220105031515.29276-3-luizluca@gmail.com> (Luiz Angelo Daros de
+        Luca's message of "Wed, 5 Jan 2022 00:15:06 -0300")
+Accept-Language: en-US
 Content-Language: en-US
-To:     Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1641806784-93141-1-git-send-email-guwen@linux.alibaba.com>
- <1641806784-93141-2-git-send-email-guwen@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <1641806784-93141-2-git-send-email-guwen@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Ipg6Qz8vft_IlIzO3S9Wu1lENxcquCCK
-X-Proofpoint-ORIG-GUID: ZEkORhwhtGooLgfkp1OZdAuxrfJPzVOI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-10_05,2022-01-10_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 bulkscore=0
- impostorscore=0 malwarescore=0 mlxlogscore=999 lowpriorityscore=0
- phishscore=0 adultscore=0 spamscore=0 clxscore=1015 mlxscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201100085
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a36c4664-d843-4ae2-1a99-08d9d435731a
+x-ms-traffictypediagnostic: AM6PR03MB4918:EE_
+x-microsoft-antispam-prvs: <AM6PR03MB4918565E26D8C1660889361383509@AM6PR03MB4918.eurprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1186;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TTRYPseMjaDggkTwweSPC25zgv/pnfjUN00ByTiGaVIICNs1yY0Uanj2tc+te/2H3OHBL4QM3CM++pI1/TL5PSYnYUTZc1qE6BZZ8YvA7STXxDpHKKv0I+3RE0EELapgI7umwH81m80MfElxDr/6drTypDOQPoEvOHoyVSDt6+mFKJVhs/RLIfI/fbsd+Meim+yBecGeaVa/bhNGgzR35NkxrLeOqOL4d8Qgy07IcWSHHlyFpG6GTr8OJRdm+K5WuWe4ZX3k1dbR1h/35EuzdxB7sqaXRwoOo77us8uE0shF2aOM8JM0iqL1OyETwEjcw770KQRP6XuS5Wxy9II0AZT6o4bnPWFe5dDeTKqvEXT23Fb8L4XTEYUt0r+5S/egGzQ/4RO0BnlIlijBVMSycbhYMKqXVAtPIRNE1ReSbW7AQPCuAJFmS+m5OYTcCOcNbEo4986JDOye0oD1jjk1p2aPP7ntoPD1bYOqBflWpcorHrr7CixKxkHLXNbXN0a1X6CUAwaYL94TQxACnF1JpQ8db0i+329rDenrmteaMg59hb4SOaV6/NKsIioHXDcr+unoAHDcNbojHbWFja1B0jLps43+Wn56zuTQSKjXgwgTfi2rpnw8qxLa4bkoF2FJCHfgnmskLzYHADSVU0+47wcK3S9JKoJY3wteCNDpVMYj9Yy11CrjG1OFCky3TRDM6MVYdSBt6Zo24v3M4hBuWg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR03MB3943.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8936002)(2616005)(4326008)(76116006)(86362001)(8676002)(5660300002)(6506007)(91956017)(6512007)(66446008)(6916009)(66476007)(66946007)(4744005)(64756008)(85182001)(85202003)(38100700002)(122000001)(66556008)(186003)(83380400001)(2906002)(26005)(36756003)(54906003)(6486002)(316002)(71200400001)(8976002)(508600001)(38070700005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?azB3S2FnL0VDVTJDaStMM1F0blZ5ZkVpbTFVcG1DdTViYS92OTNQd082Vit2?=
+ =?utf-8?B?SWVEQXlJRDlBWFEzei9rb3hadUN5VHY0cnBHTDhiNVJqcUpRRkJrUEVvdENU?=
+ =?utf-8?B?K3BtME5UalpVSElKOUc0bzExWHo0NVIzN0twRXhrZFdudWNSVDd3MjVzcnNa?=
+ =?utf-8?B?dU1hbnFYaXp1SmtCNGNHNldOUzlhejlya21SeC9scnE5U2FSQ0QxMVlBbzRv?=
+ =?utf-8?B?QnJFSjJKZklqMmxqZExrTW5mRmY3VjFnQWVheWdWRGJqTlFhS3NwTGFzZnBJ?=
+ =?utf-8?B?WXVjaElLNnpGdnFGeWZtYlpuR2RPVmJzMEEySWlwVG9WbTB4d1JNK25XSGRL?=
+ =?utf-8?B?dlhxMVVyalJCM25GZXg3S2x2QXZETWQ4TDdRYXRRZmVvcUE5VVpnK2JCcm1U?=
+ =?utf-8?B?VjBTZEJJcXBxMWtTdVUvYlJ6SFBnT0l4YkxEOFlERFdZRVFUSXVyaGV2enQ1?=
+ =?utf-8?B?NkpSVUZHeGUwRXlTZTR3Yzl1QmJOQ1NMK215eGFMRkVJamJpN09hNkVwbGox?=
+ =?utf-8?B?ZXpxdGZ6QTBVSEdJTFVDM1NjL0FEaURUWWZBVnNMbUQvcVo5RTRKNjFHZmRj?=
+ =?utf-8?B?NTRtQURDL2dHWUVmbnhkN3BvSGVReWJtOTU5cjdPNmU0R012eDBPMVBpWnNL?=
+ =?utf-8?B?cVkzS3Rick9pcnl2aEcvV0tyWnk3UGJka1hsVEYxaFB0eCtnNU9xbUJXUWpu?=
+ =?utf-8?B?VUpQSEFrck5rZ2NhWWZkOHBkQ2Fhd3AwK0hPdmN5MW9mOTdGU21SS3VIc05w?=
+ =?utf-8?B?ZjlpTFRTVFFGQ1ExVzNoVEw1cVppRGhaUTJCWkptZGdIa1BoVUdHamVldDY0?=
+ =?utf-8?B?MHE1SEM0UDkwWCt0akFrRVN2MDlrZDV2alBLVzRITEpVWnJZbXlsR1dCbWtn?=
+ =?utf-8?B?Y2JUamtVZHBOODRXNHY4TzZIczA3RjdZY0gvY0EwbWtmOHRmNzZ3SWNVNE9i?=
+ =?utf-8?B?eEptYU1tOThjWHJPSVZEejhVZzBYZmRvY3hET3o5T1orYmoxd1craC95LzZy?=
+ =?utf-8?B?UlhBT0VYMGNXaUVndm1JZW5OZkpxcERVekxxWXl0T2ovMG5qTFZvOG9HL1dm?=
+ =?utf-8?B?Q1hpdHo2THdnb3J4NnNpc29LOU53YzVOU2wxWXRITGVRMmZGZDRkMkdKcktY?=
+ =?utf-8?B?UGNXSmEvUHF5eFZtcDdVWEw2T1NDR2ZYNnBaWjhOVlRHY3M4QmRJU1p4Z2FN?=
+ =?utf-8?B?QjlPdXZZeTd6MndJMitzZUdrbzZHVUI3ZEREVFJaeG45TExma1d0eFp2Z2NG?=
+ =?utf-8?B?WjF1NS9JNDMvME1QR252RXI5czJUVVc5NUNjc2dUZm5iN3dpS2lCR1IxR0Mx?=
+ =?utf-8?B?WTNROElEUVJmbUIwTU5QV29oZEdPei9XUkFGTWkySnU0dlZTbWkxWVRGT0Za?=
+ =?utf-8?B?ZU5NdFBiMmdUdjZKMENHOG02MHhvT3RsUytlaE9hTS9FU0lNVmx5Y1pVS0hy?=
+ =?utf-8?B?NnM4eGh3dFZ4cEJ5dXk4c2J5Qyt5dmM2T3o5NDNYa3k5OGNNdzVXNUNJbURT?=
+ =?utf-8?B?bW5GeUpYZDdoY2FZMXRvQmRRNUIyR0dSTTBycjdKUGlIYyt6eFlHY2FReFhm?=
+ =?utf-8?B?MFJ5QUcwcXA5Rk9LcDcrZ3pnaHo5SWpmK0VnODZxYnJzZkYxQ3ptU01HQU91?=
+ =?utf-8?B?WjI5b1pwY1J1L2hpL1JVTVJZM2UxdFMzcks2bXdtVERpTzl3cE5nVW50WjU4?=
+ =?utf-8?B?RHBaaWN6aUtHcXl2WHFEYmlneEVSZHhWZW9waWl3a0tPYU05MHAyakhFNHgx?=
+ =?utf-8?B?UU5LR2l4djB1RGdtL3l6d21NbkQrZmppdEtxZjlUUHNDdEtSVEhrYVVZU3Zz?=
+ =?utf-8?B?Y2k2dno2OUxic0w3VHIvZFhYMStkcUFoeGJGYkNsSFpGNlN4d0QrYXgyc0xO?=
+ =?utf-8?B?VWpJcnExQnl2Vk5OYk9DZWExaklZYzFzK3A3djZZeEV2UXEzTyt0Y3ZCOVRz?=
+ =?utf-8?B?MFo3a284Q25Kc1hNbFppN2xoRWRKSzZ1ak0vZTd2QXJLSVk4d2NnWlQ1VXFP?=
+ =?utf-8?B?UnprZ2FmZm5uUmRlOGVwdGUvcllGY1ZhcWRtNzY3V1NURGUzdm4zeTMvOEE4?=
+ =?utf-8?B?a0lVU2JieFJqdlZxWVF5VjEwSjAyNUs0dkEydXNtbjFHeGs1RUc2dTdwbjFU?=
+ =?utf-8?B?Vzhmbm9uenVLZzFxTlQzK3ZtQzJBaGFyUGl4cG5sQ3dlNzVlTS9QM3pHTloz?=
+ =?utf-8?Q?jU4D7vUJWFxlqgXmbBO4tuM=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <85361A8253A67D409C1F68756DA7D6BA@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: bang-olufsen.dk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR03MB3943.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a36c4664-d843-4ae2-1a99-08d9d435731a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jan 2022 12:33:47.8456
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: g/QYsmBrGisd/GhzXzFqXqut8ktPi/N9G1nv8G5e3f30Bh5hpG6HH4K1B94CHK25OXWvWseZGsSIkC3r2Mf+yg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR03MB4918
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/01/2022 10:26, Wen Gu wrote:
-> We encountered some crashes caused by the race between the access
-> and the termination of link groups.
-> 
-<snip>
-> 
-> diff --git a/net/smc/smc.h b/net/smc/smc.h
-> index 1a4fc1c..3d0b8e3 100644
-> --- a/net/smc/smc.h
-> +++ b/net/smc/smc.h
-> @@ -221,6 +221,7 @@ struct smc_connection {
->  						 */
->  	u64			peer_token;	/* SMC-D token of peer */
->  	u8			killed : 1;	/* abnormal termination */
-> +	u8			freed : 1;	/* normal termiation */
->  	u8			out_of_sync : 1; /* out of sync with peer */
->  };
->  
-> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-> index cd3c3b8..26a113d 100644
-> --- a/net/smc/smc_core.c
-> +++ b/net/smc/smc_core.c
-> @@ -186,6 +186,7 @@ static int smc_lgr_register_conn(struct smc_connection *conn, bool first)
->  			conn->alert_token_local = 0;
->  	}
->  	smc_lgr_add_alert_token(conn);
-> +	smc_lgr_hold(conn->lgr); /* lgr_put in smc_conn_free() */
->  	conn->lgr->conns_num++;
->  	return 0;
->  }
-> @@ -218,7 +219,6 @@ static void smc_lgr_unregister_conn(struct smc_connection *conn)
->  		__smc_lgr_unregister_conn(conn);
->  	}
->  	write_unlock_bh(&lgr->conns_lock);
-> -	conn->lgr = NULL;
->  }
->  
->  int smc_nl_get_sys_info(struct sk_buff *skb, struct netlink_callback *cb)
-> @@ -749,6 +749,7 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
->  	lnk->path_mtu = lnk->smcibdev->pattr[lnk->ibport - 1].active_mtu;
->  	lnk->link_id = smcr_next_link_id(lgr);
->  	lnk->lgr = lgr;
-> +	smc_lgr_hold(lgr); /* lgr_put in smcr_link_clear() */
->  	lnk->link_idx = link_idx;
->  	smc_ibdev_cnt_inc(lnk);
->  	smcr_copy_dev_info_to_link(lnk);
-> @@ -841,6 +842,7 @@ static int smc_lgr_create(struct smc_sock *smc, struct smc_init_info *ini)
->  	lgr->terminating = 0;
->  	lgr->freeing = 0;
->  	lgr->vlan_id = ini->vlan_id;
-> +	refcount_set(&lgr->refcnt, 1); /* set lgr refcnt to 1 */
->  	mutex_init(&lgr->sndbufs_lock);
->  	mutex_init(&lgr->rmbs_lock);
->  	rwlock_init(&lgr->conns_lock);
-> @@ -1120,8 +1122,22 @@ void smc_conn_free(struct smc_connection *conn)
->  {
->  	struct smc_link_group *lgr = conn->lgr;
->  
-> -	if (!lgr)
-> +	if (!lgr || conn->freed)
-> +		/* The connection has never been registered in a
-> +		 * link group, or has already been freed.
-> +		 *
-> +		 * Check to ensure that the refcnt of link group
-> +		 * won't be put incorrectly.
-
-I would delete the second sentence here, its obvious enough.
-
-> +		 */
->  		return;
-> +
-> +	conn->freed = 1;
-> +	if (!conn->alert_token_local)
-> +		/* The connection was registered in a link group
-> +		 * defore, but now it is unregistered from it.
-
-'before' ... But would maybe the following be more exact:
-
-'Connection already unregistered from link group.'
-
-
-We still review the patches...
-
-> +		 */
-> +		goto lgr_put;
-> +
->  	if (lgr->is_smcd) {
->  		if (!list_empty(&lgr->list))
->  			smc_ism_unset_conn(conn);
-> @@ -1138,6 +1154,8 @@ void smc_conn_free(struct smc_connection *conn)
->  
->  	if (!lgr->conns_num)
->  		smc_lgr_schedule_free_work(lgr);
-> +lgr_put:
-> +	smc_lgr_put(lgr); /* lgr_hold in smc_lgr_register_conn() */
->  }
->  
->  /* unregister a link from a buf_desc */
-> @@ -1209,6 +1227,7 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
->  	smc_ib_destroy_queue_pair(lnk);
->  	smc_ib_dealloc_protection_domain(lnk);
->  	smc_wr_free_link_mem(lnk);
-> +	smc_lgr_put(lnk->lgr); /* lgr_hold in smcr_link_init() */
->  	smc_ibdev_cnt_dec(lnk);
->  	put_device(&lnk->smcibdev->ibdev->dev);
->  	smcibdev = lnk->smcibdev;
-> @@ -1283,6 +1302,15 @@ static void smc_lgr_free_bufs(struct smc_link_group *lgr)
->  	__smc_lgr_free_bufs(lgr, true);
->  }
->  
-> +/* won't be freed until no one accesses to lgr anymore */
-> +static void __smc_lgr_free(struct smc_link_group *lgr)
-> +{
-> +	smc_lgr_free_bufs(lgr);
-> +	if (!lgr->is_smcd)
-> +		smc_wr_free_lgr_mem(lgr);
-> +	kfree(lgr);
-> +}
-> +
->  /* remove a link group */
->  static void smc_lgr_free(struct smc_link_group *lgr)
->  {
-> @@ -1298,7 +1326,6 @@ static void smc_lgr_free(struct smc_link_group *lgr)
->  		smc_llc_lgr_clear(lgr);
->  	}
->  
-> -	smc_lgr_free_bufs(lgr);
->  	destroy_workqueue(lgr->tx_wq);
->  	if (lgr->is_smcd) {
->  		smc_ism_put_vlan(lgr->smcd, lgr->vlan_id);
-> @@ -1306,11 +1333,21 @@ static void smc_lgr_free(struct smc_link_group *lgr)
->  		if (!atomic_dec_return(&lgr->smcd->lgr_cnt))
->  			wake_up(&lgr->smcd->lgrs_deleted);
->  	} else {
-> -		smc_wr_free_lgr_mem(lgr);
->  		if (!atomic_dec_return(&lgr_cnt))
->  			wake_up(&lgrs_deleted);
->  	}
-> -	kfree(lgr);
-> +	smc_lgr_put(lgr); /* theoretically last lgr_put */
-> +}
-> +
-> +void smc_lgr_hold(struct smc_link_group *lgr)
-> +{
-> +	refcount_inc(&lgr->refcnt);
-> +}
-> +
-> +void smc_lgr_put(struct smc_link_group *lgr)
-> +{
-> +	if (refcount_dec_and_test(&lgr->refcnt))
-> +		__smc_lgr_free(lgr);
->  }
->  
->  static void smc_sk_wake_ups(struct smc_sock *smc)
-> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-> index 73d0c35..edbd401 100644
-> --- a/net/smc/smc_core.h
-> +++ b/net/smc/smc_core.h
-> @@ -249,6 +249,7 @@ struct smc_link_group {
->  	u8			terminating : 1;/* lgr is terminating */
->  	u8			freeing : 1;	/* lgr is being freed */
->  
-> +	refcount_t		refcnt;		/* lgr reference count */
->  	bool			is_smcd;	/* SMC-R or SMC-D */
->  	u8			smc_version;
->  	u8			negotiated_eid[SMC_MAX_EID_LEN];
-> @@ -470,6 +471,8 @@ static inline void smc_set_pci_values(struct pci_dev *pci_dev,
->  
->  void smc_lgr_cleanup_early(struct smc_link_group *lgr);
->  void smc_lgr_terminate_sched(struct smc_link_group *lgr);
-> +void smc_lgr_hold(struct smc_link_group *lgr);
-> +void smc_lgr_put(struct smc_link_group *lgr);
->  void smcr_port_add(struct smc_ib_device *smcibdev, u8 ibport);
->  void smcr_port_err(struct smc_ib_device *smcibdev, u8 ibport);
->  void smc_smcd_terminate(struct smcd_dev *dev, u64 peer_gid,
-
--- 
-Karsten
+THVpeiBBbmdlbG8gRGFyb3MgZGUgTHVjYSA8bHVpemx1Y2FAZ21haWwuY29tPiB3cml0ZXM6DQoN
+Cj4gSW4gcHJlcGFyYXRpb24gdG8gYWRkaW5nIG90aGVyIGludGVyZmFjZXMsIHRoZSBwcml2YXRl
+IGRhdGEgc3RydWN0dXJlDQo+IHdhcyByZW5hbWVkIHRvIHByaXYuIEFsc28sIHJlYWx0ZWtfc21p
+X3ZhcmlhbnQgYW5kIHJlYWx0ZWtfc21pX29wcw0KPiB3ZXJlIHJlbmFtZWQgdG8gcmVhbHRla192
+YXJpYW50IGFuZCByZWFsdGVrX29wcyBhcyB0aG9zZSBzdHJ1Y3RzIGFyZQ0KPiBub3QgU01JIHNw
+ZWNpZmljLg0KPg0KPiBTaWduZWQtb2ZmLWJ5OiBMdWl6IEFuZ2VsbyBEYXJvcyBkZSBMdWNhIDxs
+dWl6bHVjYUBnbWFpbC5jb20+DQo+IFRlc3RlZC1ieTogQXLEsW7DpyDDnE5BTCA8YXJpbmMudW5h
+bEBhcmluYzkuY29tPg0KPiBSZXZpZXdlZC1ieTogRmxvcmlhbiBGYWluZWxsaSA8Zi5mYWluZWxs
+aUBnbWFpbC5jb20+DQoNClJldmlld2VkLWJ5OiBBbHZpbiDFoGlwcmFnYSA8YWxzaUBiYW5nLW9s
+dWZzZW4uZGs+DQoNCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9kc2EvcmVhbHRlay9yZWFsdGVrLXNt
+aS1jb3JlLmMgICAgfCAzMTYgKysrKysrKy0tLS0tLS0NCj4gIC4uLi9yZWFsdGVrL3tyZWFsdGVr
+LXNtaS1jb3JlLmggPT4gcmVhbHRlay5ofSB8ICA2OCArLS0NCj4gIGRyaXZlcnMvbmV0L2RzYS9y
+ZWFsdGVrL3J0bDgzNjVtYi5jICAgICAgICAgICB8IDM5NCArKysrKysrKy0tLS0tLS0tLQ0KPiAg
+ZHJpdmVycy9uZXQvZHNhL3JlYWx0ZWsvcnRsODM2Ni5jICAgICAgICAgICAgIHwgMTY0ICsrKy0t
+LS0NCj4gIGRyaXZlcnMvbmV0L2RzYS9yZWFsdGVrL3J0bDgzNjZyYi5jICAgICAgICAgICB8IDQw
+MiArKysrKysrKystLS0tLS0tLS0NCj4gIDUgZmlsZXMgY2hhbmdlZCwgNjcyIGluc2VydGlvbnMo
+KyksIDY3MiBkZWxldGlvbnMoLSkNCj4gIHJlbmFtZSBkcml2ZXJzL25ldC9kc2EvcmVhbHRlay97
+cmVhbHRlay1zbWktY29yZS5oID0+IHJlYWx0ZWsuaH0gKDU3JSk=
