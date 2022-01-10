@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0922489E3B
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 18:22:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAD0A489E57
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 18:28:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238180AbiAJRW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 12:22:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46022 "EHLO
+        id S238266AbiAJR2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 12:28:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238139AbiAJRW2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 12:22:28 -0500
+        with ESMTP id S238230AbiAJR2l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 12:28:41 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4781C06173F
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 09:22:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75967C06173F;
+        Mon, 10 Jan 2022 09:28:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D829B81722
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 17:22:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5026C36AE9;
-        Mon, 10 Jan 2022 17:22:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44B27B815CC;
+        Mon, 10 Jan 2022 17:28:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D0AEC36AE9;
+        Mon, 10 Jan 2022 17:28:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641835346;
-        bh=MFylPzwZ9SdvtDayeG73HIri2N4dRq2TUPUQ+I+U7Uo=;
+        s=k20201202; t=1641835718;
+        bh=opzDGK+ViLVnOVOfbQYJqhicF7L9nKgZ+TiZTd6lJCw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ck7gc9LOfuP8kDyrNUTc3GuBHC1StOh+ixdCHDDm46CFv4S9qu15/gPPNAi71IkzA
-         IQIjqyUFIkN5ES6uxYcBE0H7VelRVm5FmKD1QJ5SZ1BSX5PEhZDhopsgLQmhq/WCZO
-         s5gpeqC1zM5Ar8zWtaf3JRgR/DknsDJz/BdLaQVi3rDbLL/rU8pfUq7iw1JmbOln3V
-         EA4JWCXcaiYrZbjgN7G4HS4P4sIWTlEiDaDMhxAvFq4M+rC6JvclQJwTuQxK7JCmIG
-         o+7rvbbbJP31aFYC5UoQi4EqNe1Oo/e7x2x8wE/4/PQQu+bYehDano84nDdUFwW3bl
-         e3sJpoE6ljhzw==
-Date:   Mon, 10 Jan 2022 09:22:24 -0800
+        b=AW+th6gMKIkDZX7FLvaFA/YTQu0akD35wnfT4YxOVYKtpQ+zS7txT5mMUpm+rmafA
+         YR3gmpasiNIaE3/7lHxbuXBQregMm6u0r/l1NALvOxpTtKZkwGee5GQ9onzZPVy0bV
+         KCjMV5s40lWFTYDbTnSwrtOejO9g78DINJwziJ1c0D1OhY1F1wVSZX5F1wFc691jjb
+         BU0mewb5pM8uUMGAJBbdyaV6ggSKHZw6c9n37Bg8blgpyOUZm66he7m8SSzLvtB3MN
+         qkgj8URNaAZJSkP/U+54SACWnQMkUzs2S+Eg5Ds16ciZsDqqwfCPXjFqOd3Eqsl5CU
+         k18B4czb32cvA==
+Date:   Mon, 10 Jan 2022 09:28:36 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Martin Habets <habetsm.xilinx@gmail.com>
-Cc:     =?UTF-8?B?w43DsWlnbw==?= Huguet <ihuguet@redhat.com>,
-        davem@davemloft.net, ecree.xilinx@gmail.com,
-        netdev@vger.kernel.org, dinang@xilinx.com
-Subject: Re: [PATCH net-next] sfc: The size of the RX recycle ring should be
- more flexible
-Message-ID: <20220110092224.5a8ecddf@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220110085820.zi73go4etyyrkixr@gmail.com>
-References: <CACT4oudChHDKecLfDdA7R8jpQv2Nmz5xBS3hH_jFWeS37CnQGg@mail.gmail.com>
-        <20211120083107.z2cm7tkl2rsri2v7@gmail.com>
-        <CACT4oufpvQ1Qzg3eC6wDu33_xBo5tVghr9G7Q=d-7F=bZbW4Vg@mail.gmail.com>
-        <CACT4ouc=LNnrTdz37YEOAkm3G+02vrmJ5Sxk0JwKSMoCGnLs-w@mail.gmail.com>
-        <20220102092207.rxz7kpjii4ermnfo@gmail.com>
-        <20220110085820.zi73go4etyyrkixr@gmail.com>
+To:     Corentin Labbe <clabbe.montjoie@gmail.com>
+Cc:     Conley Lee <conleylee@foxmail.com>, davem@davemloft.net,
+        mripard@kernel.org, wens@csie.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: ethernet: sun4i-emac: replace magic number with
+ macro
+Message-ID: <20220110092836.113dbae1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <Ydw7EzPvwArW/siQ@Red>
+References: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
+        <tencent_AEEE0573A5455BBE4D5C05226C6C1E3AEF08@qq.com>
+        <Ydw7EzPvwArW/siQ@Red>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -54,63 +51,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 10 Jan 2022 08:58:21 +0000 Martin Habets wrote:
-> +static unsigned int efx_ef10_recycle_ring_size(const struct efx_nic *efx)
-> +{
-> +	unsigned int ret;
-> +
-> +	/* There is no difference between PFs and VFs. The side is based on
-> +	 * the maximum link speed of a given NIC.
-> +	 */
-> +	switch (efx->pci_dev->device & 0xfff) {
-> +	case 0x0903:	/* Farmingdale can do up to 10G */
-> +#ifdef CONFIG_PPC64
-> +		ret = 4 * EFX_RECYCLE_RING_SIZE_10G;
-> +#else
-> +		ret = EFX_RECYCLE_RING_SIZE_10G;
-> +#endif
-> +		break;
-> +	case 0x0923:	/* Greenport can do up to 40G */
-> +	case 0x0a03:	/* Medford can do up to 40G */
-> +#ifdef CONFIG_PPC64
-> +		ret = 16 * EFX_RECYCLE_RING_SIZE_10G;
-> +#else
-> +		ret = 4 * EFX_RECYCLE_RING_SIZE_10G;
-> +#endif
-> +		break;
-> +	default:	/* Medford2 can do up to 100G */
-> +		ret = 10 * EFX_RECYCLE_RING_SIZE_10G;
-> +	}
-> +	return ret;
-> +}
+On Mon, 10 Jan 2022 14:56:35 +0100 Corentin Labbe wrote:
+> > @@ -61,7 +62,21 @@
+> >  #define EMAC_RX_IO_DATA_STATUS_OK	(1 << 7)
+> >  #define EMAC_RX_FBC_REG		(0x50)
+> >  #define EMAC_INT_CTL_REG	(0x54)
+> > +#define EMAC_INT_CTL_RX_EN	(1 << 8)
+> > +#define EMAC_INT_CTL_TX0_EN	(1)
+> > +#define EMAC_INT_CTL_TX1_EN	(1 << 1)
+> > +#define EMAC_INT_CTL_TX_EN	(EMAC_INT_CTL_TX0_EN | EMAC_INT_CTL_TX1_EN)
+> > +#define EMAC_INT_CTL_TX0_ABRT_EN	(0x1 << 2)
+> > +#define EMAC_INT_CTL_TX1_ABRT_EN	(0x1 << 3)
+> > +#define EMAC_INT_CTL_TX_ABRT_EN	(EMAC_INT_CTL_TX0_ABRT_EN | EMAC_INT_CTL_TX1_ABRT_EN)
+> >  #define EMAC_INT_STA_REG	(0x58)
+> > +#define EMAC_INT_STA_TX0_COMPLETE	(0x1)
+> > +#define EMAC_INT_STA_TX1_COMPLETE	(0x1 << 1)
+> > +#define EMAC_INT_STA_TX_COMPLETE	(EMAC_INT_STA_TX0_COMPLETE | EMAC_INT_STA_TX1_COMPLETE)
+> > +#define EMAC_INT_STA_TX0_ABRT	(0x1 << 2)
+> > +#define EMAC_INT_STA_TX1_ABRT	(0x1 << 3)
+> > +#define EMAC_INT_STA_TX_ABRT	(EMAC_INT_STA_TX0_ABRT | EMAC_INT_STA_TX1_ABRT)
+> > +#define EMAC_INT_STA_RX_COMPLETE	(0x1 << 8)  
+> 
+> As proposed by checkpatch, I thing there are several place (like all
+> EMAC_INT_STA) where you could use BIT(x) instead of (0xX << x)
 
-Why not factor out the 4x scaling for powerpc outside of the switch?
-
-The callback could return the scaling factor but failing that:
-
-static unsigned int efx_ef10_recycle_ring_size(const struct efx_nic *efx)
-{
-	unsigned int ret = EFX_RECYCLE_RING_SIZE_10G;;
-
-	/* There is no difference between PFs and VFs. The side is based on
-	 * the maximum link speed of a given NIC.
-	 */
-	switch (efx->pci_dev->device & 0xfff) {
-	case 0x0903:	/* Farmingdale can do up to 10G */
-		break;
-	case 0x0923:	/* Greenport can do up to 40G */
-	case 0x0a03:	/* Medford can do up to 40G */
-		ret *= 4;
-		break;
-	default:	/* Medford2 can do up to 100G */
-		ret *= 10;
-	}
-
-	if (IS_ENABLED(CONFIG_PPC64))
-		ret *= 4;
-
-	return ret;
-}
-
-Other than that - net-next is closed, please switch to RFC postings
-until it opens back up once 5.17-rc1 is cut. Thanks!
+That's not a hard requirement, if the driver already uses the shift you
+can leave your code as is, some upstream developers actually prefer to
+avoid the BIT() macro.
