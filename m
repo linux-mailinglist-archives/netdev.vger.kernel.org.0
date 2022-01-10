@@ -2,220 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4726E4898C6
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 13:41:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E0494897A0
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 12:38:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245620AbiAJMlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 07:41:23 -0500
-Received: from xmbgsz7.mail.foxmail.com ([61.241.55.243]:44885 "EHLO
-        xmbgsz7.mail.foxmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245599AbiAJMlX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 07:41:23 -0500
-X-Greylist: delayed 98139 seconds by postgrey-1.27 at vger.kernel.org; Mon, 10 Jan 2022 07:41:22 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1641818478;
-        bh=g317dTPTpgSCEdP8ZINM18u9N7xoe3pAeREzosvRh0o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Uksghk2XXq/IobLR2p+oIM8TMmpMkoA0Ttf29TEd643sh69satFwUbaw2uxvW2mE+
-         YMUvGgdFBlAsKGkTCewB6xvkHst+DD75DLPQKVWKxJElv58wuBGr1JQkgRtShj1BT+
-         tmMkXVn6Z/iEyXcSatPgnbSyRxUmXkA135umrEj8=
-Received: from fedora.. ([119.32.47.91])
-        by newxmesmtplogicsvrsza7.qq.com (NewEsmtp) with SMTP
-        id 8F2BB215; Mon, 10 Jan 2022 19:35:50 +0800
-X-QQ-mid: xmsmtpt1641814550tadfo0vjb
-Message-ID: <tencent_AEEE0573A5455BBE4D5C05226C6C1E3AEF08@qq.com>
-X-QQ-XMAILINFO: Nw6Y/HeEb1MZpHgDiS7/LJhp8IFwyZJ3C+va4g8+G8duTO4HNq19H40VxVRsmZ
-         hK4yG/pKkgw6U4ntv2yxX2xIZs+nhAsRN9iaxZBzjIoVeN/TTs+rbUATOmObZIjRkZwNCY0Hqi3J
-         uz57tU6NVoURjeAxSQQSMxCyD8xo+eVla/YN3OdawDbOBDp9y0OFCA2AJ+adkuucqLGnDG90w09z
-         xwP7UsZmBX80hOK9FFEHhGRJsvXxVGvYPLWJNZdwjDhXxXHZEziODe1OQmb+aXwcsxDIvtD1pRFU
-         knn5SEFNbi3LgkAHDSjDzb2GDwP9gB5+zkcHWa9KZQX5419LWq6ic+9qenRFa+zTvNr3AhDeLcoS
-         UAYDYgk+eQVBAlfBLU0qOWgEKCnOM8vQlQvn9mPCk6t73aYuXa3CXd3DqPUL/iDySwPZB28RP86s
-         shTtjwrRh/PJWN1gIgMV19JBii9MJZwiIyGOuX+q1UOvZ5vIN/1YE3aHfSScILZ1fKl9Dpbh7sTt
-         SWfSNUbAhwbdtKNb8WhBpW4i84k6Hrdg/psmFI9yUz6hbItyBLmY0yJmwU+23CwM5tj/0rzyA2C5
-         GAFFB2OOLmVd81lQ7XkW0fznTeS3IdZIliQFRg6CSKKMzcdaSApka9FOvOflTDaL4r01zXrbKI3e
-         OnxBV5ll3rUylf6uwgsR3ZfiG2T3RM0Wv2TspUY7WUogV/2cBg72y3HeiqjAkiOlLagk2s3RxvRk
-         xFUBuaQefiMhwy8cA1ifPSKM/GNMuxFjBkqHvIv5KXi/veSt3Z9ttJzjEWuXVd3RGq1wiXlMVgRT
-         9ZXdFtRuMIB36gMzSTMx9l601k/qabR3NI0LLY1OAzlstIT7jCKvNHXZjFQq2yfQaAUPKLxOO+fy
-         aRZT5yEyr+tjoVuD01wwk1C9hFP6X3DkDwHlEr6kDGY4pCWzR0h7k23QQUo6/1EA==
-From:   Conley Lee <conleylee@foxmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
-        wens@csie.org, clabbe.montjoie@gmail.com
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Conley Lee <conleylee@foxmail.com>
-Subject: [PATCH v2] net: ethernet: sun4i-emac: replace magic number with macro
-Date:   Mon, 10 Jan 2022 19:35:49 +0800
-X-OQ-MSGID: <20220110113549.2297850-1-conleylee@foxmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
-References: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
+        id S244895AbiAJLiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 06:38:14 -0500
+Received: from mga04.intel.com ([192.55.52.120]:43080 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244737AbiAJLh1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jan 2022 06:37:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641814646; x=1673350646;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=aRwm9BSr+/lyncfAhzyvTDibGltTZ40pcpJtbZFFmgA=;
+  b=a52YAXbZ1xvuYRsKBQ5cDuiKIyjkSBaKyQ78VEWKL4wWpiaD6X7jc96l
+   PAAii85Tf2u2iTKC0x+55S/WjwxvDy+EfuEx8w0M9hktWwP6n4MXyofPS
+   pSMuf4soP/wFlLoU+L2qPjaF8NBa/pmslTSCV0RiK0Mr9sBtmfgMdHxdk
+   PaOqvBcK94gpnVDyoU1BfiDANYTTwokUBxSYT83RIAePLRGXzxgAlf3/j
+   jAQgsh6UtaIVQwCfygF6m+YSGJhKkP2dwuYFlqZO7VaLBvsqpNMZUsGqI
+   x2lALLldbHoLRq7LLLPZdHvyV06v2mniMaV7bIZC8GAWWD1gWzrlkl8S0
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="242019043"
+X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
+   d="scan'208";a="242019043"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 03:37:25 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
+   d="scan'208";a="575790317"
+Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
+  by fmsmga008.fm.intel.com with ESMTP; 10 Jan 2022 03:37:24 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Mon, 10 Jan 2022 03:37:24 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Mon, 10 Jan 2022 03:37:24 -0800
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.46) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Mon, 10 Jan 2022 03:37:23 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ChPkxO3So2mpru1ruq4KPw5FF8NgGHlOZn5z7G7aQcCA4H3Wq8DDosyP997bOYlDWYY87+SOKPNGyNI2I/wEOhuGFqQKs1T82bhSv8DVEMl3w6ZP4Y1FzVXNmEIAhGWRrD01TJ28LXAHC/yvsU5RyQWo4ZtEvAGYwYlY1choznzYoh2CkcUpz/gzm2J6aqWcI2ZCNYHiJQLoljlsPgMoN2UYQV+DH6S80jB6UyzfvJYJiyl9/qxZGJaMRFaS79joViVIsU+CA+DLFVypt5BmcXx/876kXt9Ab4Qv7SgJnbaVWyyE5+dvVgsiiw9Ef2lK+Wa61E/b1Z0ETLO4euIUow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=J0qtqLWl1A7DKyhHwsnH4BuLoYHy3pm2TB8pARcxpz0=;
+ b=f4LTok9GjOw/rM7G+zLK4kcvbiSYmV03hjVdVI2lnbnd3C/P75owkJoXvXN0LuJokqv3oYF5c3mZVuMPCDwvja7qti+gku7WADHiTf29J+BwWngcarQDHOlGsBj1HU10c6pfvDA6nrlbt65u9/e0tGmrFyef3juHZEZcpVVnvGjzvBQX/AYTK8zGW8iZtcfI5jf+wOFdPm3E57g+VckcD/dVwFEZWiUP9EALRLl/VyP274kTpNfDKAs3ejVSn1xWw69KMgQ0YjPODCSWeef3uheZI7znOwobtGCsCDuYF+XEK7jqu3lwXjaT/b0wcax1vrPBJoVrNt9/reFYli/3HQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM6PR11MB3292.namprd11.prod.outlook.com (2603:10b6:5:5a::21) by
+ DM6PR11MB4756.namprd11.prod.outlook.com (2603:10b6:5:2a7::16) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4867.9; Mon, 10 Jan 2022 11:37:21 +0000
+Received: from DM6PR11MB3292.namprd11.prod.outlook.com
+ ([fe80::84b0:d849:dadf:e47f]) by DM6PR11MB3292.namprd11.prod.outlook.com
+ ([fe80::84b0:d849:dadf:e47f%3]) with mapi id 15.20.4867.011; Mon, 10 Jan 2022
+ 11:37:21 +0000
+From:   "Bhandare, KiranX" <kiranx.bhandare@intel.com>
+To:     "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC:     Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "Brouer, Jesper" <brouer@redhat.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "Martin KaFai Lau" <kafai@fb.com>
+Subject: RE: [Intel-wired-lan] [PATCH v4 net-next 5/9] ice: respect metadata
+ on XSK Rx to skb
+Thread-Topic: [Intel-wired-lan] [PATCH v4 net-next 5/9] ice: respect metadata
+ on XSK Rx to skb
+Thread-Index: AQHX7D0b2J0zbA5oYk25b00TVMSFGaxcVB8g
+Date:   Mon, 10 Jan 2022 11:37:21 +0000
+Message-ID: <DM6PR11MB3292226E5E815F1F335437F8F1509@DM6PR11MB3292.namprd11.prod.outlook.com>
+References: <20211208140702.642741-1-alexandr.lobakin@intel.com>
+ <20211208140702.642741-6-alexandr.lobakin@intel.com>
+In-Reply-To: <20211208140702.642741-6-alexandr.lobakin@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.200.16
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0af93922-5d8a-4173-44d5-08d9d42d90bb
+x-ms-traffictypediagnostic: DM6PR11MB4756:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <DM6PR11MB4756C2A8DB2C1363B6F20AE4F1509@DM6PR11MB4756.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 8QclybQfgKNZdlvcbLUzyVIvweADJQW8maJGWdkZU89RUxtX0WtYQp9vUPq3/q8tSZZHZB3TJ0YXUm8r2+RO2ad4W4ZtJTMnZcIGKpTrzeMhVJ30h81XWzXjjuGOoiEdX7G8ikYd4I3hxK1kg+wUcd9ky513G/lGyq1LZfUlySapnau44ZPNTwpEHBEuZ7Euv8CVNdqo9js2Ki3b4+msO+dAdZ9rYz5lLVowJpE3ofW1mrsly6FiljTMA9iZM9eMbFy/xz/WxJL+BOfJIbMnTLs63EDGHpTW6nkXGYhgUzp1kH83ZHfgUzmKq/62jiTmrhcrQDH4N0Qi4J0Zkh7C5ouC7oR1aZNfyRgnRjQd/ysZUq2NmPJO2W/rNXLqeUq0/3D5x87L5g19qqg9/R12GEoIgcgK2nOrIUiUuKBjCpzmmO8ZdDmispqUX26cWe0ViosRL800a/z3H8M8X8K75r+Rbgf42aMPKZ2jl/RRlHVTUA6MATdHhaorZIoUldfbchxQb21Wy9KHrKHj2SdCKnjxy6DAK7mMHT2Ms387jLfClE6K+Kcza1zNLlsBIBKFJOfC8dO01QtVN/fQDD7PhsYZkemCX0m7rXSeiSXJ8fYLeskHo5nPDz0dRROiptK/HVxz/aX+1CtGWsGQsRSMy9wCRbPt1d3MhKoFNOmcvld9C8x2xbwcuRpRgeLL1lQTM845yr2wiNpR90RQ4qwt4Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3292.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(66556008)(66476007)(64756008)(66446008)(8936002)(110136005)(82960400001)(4326008)(26005)(54906003)(86362001)(33656002)(2906002)(66946007)(76116006)(7696005)(71200400001)(7416002)(52536014)(38100700002)(53546011)(6506007)(66574015)(55016003)(508600001)(316002)(8676002)(5660300002)(186003)(122000001)(9686003)(83380400001)(38070700005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?n0HBeTU2NpWfLtATkCOT6Eodpm7tHCbB/8dxVlnOD/2P7yTijT5tFwTK3L?=
+ =?iso-8859-1?Q?hEWMd3cfP1bwBwPEBz5oL8tkq7DiDfp/97dhGAdVdWGNlbdypSwfu8nSPB?=
+ =?iso-8859-1?Q?L+xmWPG5Nx78igf68IDZX2HAIw+xX/SQc5zS2m8HPOrxi9q0RpBUD04PZG?=
+ =?iso-8859-1?Q?s9Q2a5K/Zv2QS+gifQTj/rhGdNHqplMGmiGB9w0yDKaOU6PvNgzB/M+v1A?=
+ =?iso-8859-1?Q?O0rKEKey6itCijxS3F894VLe515mqDIAN5z38R0EumqfgVSRw/h4ia/Gfn?=
+ =?iso-8859-1?Q?XbsvS7GHf7enQQeI6BoxrYRXf55QY5kPU99+ZdyfAzDysF0BSY6p1ob1If?=
+ =?iso-8859-1?Q?z/HST713x6d1qY0kr9h0mGijsCsTOxBI4vuB7ktkxBVCa7uH43VYKE8khB?=
+ =?iso-8859-1?Q?B2HPbYlC2DCpb8MG0iDbRglmLf9dJNWMISmwa2KhSuyLxscX9d+muD8uDe?=
+ =?iso-8859-1?Q?yGS3wTzWOtp+RkaUPoh2/Hp01dGqifxifsiLc1NqHqPdenjC4ZzQDPaBNU?=
+ =?iso-8859-1?Q?0lf9l0/yt8sUXDLLBNOoZ4KLL4yZoDQV5R1QKADwYjRy4E5bZHJxBa7dud?=
+ =?iso-8859-1?Q?BP474ieGtmMBO8uY+jCzF4gNxsSUa+//DmE4fMNd9uo/cHanjtqydtIN3X?=
+ =?iso-8859-1?Q?uP8g/XSSK31don7PtORea666RxZ49FrxmwJccOPVyFU9oMI1IRv9BuTLXS?=
+ =?iso-8859-1?Q?0x2FKz/wvSyE+BlR7dnL4IVuiPr3kqAohuX3VDb/eh2bIsf8AWhrZQkOg0?=
+ =?iso-8859-1?Q?fW4gffJcmGTXTKv5m5dPq799ulQKHJY9S17werpygDdfcSE/AmtW99u00O?=
+ =?iso-8859-1?Q?0SHEftnm1NxwzNGoK/ekW1s1JMgzaMGBpeIkVB+vjQx9WJCp9PRWCdKccI?=
+ =?iso-8859-1?Q?0/PmWAA0ChY7jrevuyWTwdY7nRGBo3zw5PthhhexFfZy93DQnFrldgcRTo?=
+ =?iso-8859-1?Q?XaWwcycnlhnVWH59ZbJsdGC0uiXvWFDg+3QImgKpyqyHZi/Rl+6xvwzQml?=
+ =?iso-8859-1?Q?vgSZ3EbIoauhrGHm6u81Z1QJsm9qcbSGHZQzDrCOjNPoNq08Cde4PImLDS?=
+ =?iso-8859-1?Q?tUttyyU9IM/oXdC9j4eUpPAPf6WoSxEjVveD0LLAx/z1kUyf1jJuLy36I6?=
+ =?iso-8859-1?Q?ci9UMK3RX24aTcm3LB704Og9NQxG+Lyp0FkI/D8okS9anu+SmClqcuXCQS?=
+ =?iso-8859-1?Q?NOQ85tm6IYaHVGV+A51PZfQPxtt3zaGr1u4GNTUI5TL/hS/NeOCGrhr6Zx?=
+ =?iso-8859-1?Q?AnrQ44fNYvZrgu3HN8HXeqByawWlxZC7vqiBFZjh/AHD56HakAKHg84Kvw?=
+ =?iso-8859-1?Q?nUuBzKqHfylrDzCnYfs5X/8kWLzEpzkAKAca9B/GD6rIDIH7kJZeWCmEqS?=
+ =?iso-8859-1?Q?Rf/de/ijL64fG3DnOS60Cqfahsqvlo/OT2yaxUcoWVpyzRDRh5Zg5r4/Cl?=
+ =?iso-8859-1?Q?WgrSfgPLVo2UIREQdvTbCuHLV+z+aEN6PGxe3NCHOXZh55F8cyRsl+3oln?=
+ =?iso-8859-1?Q?0ChtfZw1xZmPDUKOABDjwDBJKVMBdWbD4Z53btE85aTkwCiEw1XGb4bX3s?=
+ =?iso-8859-1?Q?/GQoVoqnq0wsREKuCfrBj1QPtDTsXg1u2noZ/DS7vnk3LuV2NcKhYspjS8?=
+ =?iso-8859-1?Q?+ZnnwHQgCH4/2cP8Ul/wGWvvXQLEuggN/cCTZ9thMwWmwvb0vudgTrIPRG?=
+ =?iso-8859-1?Q?wQoRkePGFNTxXuVbowk7ZJH2+s29unSK/I9hajG62ovzQ5tIauHwfsJRvF?=
+ =?iso-8859-1?Q?9V4g=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3292.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0af93922-5d8a-4173-44d5-08d9d42d90bb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jan 2022 11:37:21.2694
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: HG6Qph+mEOkif0oR1xLqCf3Jv4pUTfnbW/roWZ+OS/TvMBoE//eUvmPl9qJFUgNzcPMB8mBkaAk5KhIfH2QrTB37gDfWpKatPl5QqI0f7TY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4756
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch remove magic numbers in sun4i-emac.c and replace with macros
-defined in sun4i-emac.h
 
-Change since v1
----------------
-- reformat
-- merge commits
-- add commit message
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Alexander Lobakin
+> Sent: Wednesday, December 8, 2021 7:37 PM
+> To: intel-wired-lan@lists.osuosl.org
+> Cc: Song Liu <songliubraving@fb.com>; Alexei Starovoitov <ast@kernel.org>=
+;
+> Andrii Nakryiko <andrii@kernel.org>; Daniel Borkmann
+> <daniel@iogearbox.net>; John Fastabend <john.fastabend@gmail.com>;
+> Jesper Dangaard Brouer <brouer@redhat.com>; Yonghong Song
+> <yhs@fb.com>; Jesper Dangaard Brouer <hawk@kernel.org>; KP Singh
+> <kpsingh@kernel.org>; Jakub Kicinski <kuba@kernel.org>;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org; David S. Miller
+> <davem@davemloft.net>; Bj=F6rn T=F6pel <bjorn@kernel.org>;
+> bpf@vger.kernel.org; Martin KaFai Lau <kafai@fb.com>
+> Subject: [Intel-wired-lan] [PATCH v4 net-next 5/9] ice: respect metadata =
+on
+> XSK Rx to skb
+>=20
+> For now, if the XDP prog returns XDP_PASS on XSK, the metadata will be lo=
+st
+> as it doesn't get copied to the skb.
+> Copy it along with the frame headers. Account its size on skb allocation,=
+ and
+> when copying just treat it as a part of the frame and do a pull after to =
+"move"
+> it to the "reserved" zone.
+> net_prefetch() xdp->data_meta and align the copy size to speed-up
+> memcpy() a little and better match ice_costruct_skb().
+>=20
+> Fixes: 2d4238f55697 ("ice: Add support for AF_XDP")
+> Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_xsk.c | 14 ++++++++++----
+>  1 file changed, 10 insertions(+), 4 deletions(-)
+>=20
 
-Signed-off-by: Conley Lee <conleylee@foxmail.com>
----
- drivers/net/ethernet/allwinner/sun4i-emac.c | 30 ++++++++++++---------
- drivers/net/ethernet/allwinner/sun4i-emac.h | 18 +++++++++++++
- 2 files changed, 35 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.c b/drivers/net/ethernet/allwinner/sun4i-emac.c
-index 849de4564709..98fd98feb439 100644
---- a/drivers/net/ethernet/allwinner/sun4i-emac.c
-+++ b/drivers/net/ethernet/allwinner/sun4i-emac.c
-@@ -106,9 +106,9 @@ static void emac_update_speed(struct net_device *dev)
- 
- 	/* set EMAC SPEED, depend on PHY  */
- 	reg_val = readl(db->membase + EMAC_MAC_SUPP_REG);
--	reg_val &= ~(0x1 << 8);
-+	reg_val &= ~EMAC_MAC_SUPP_100M;
- 	if (db->speed == SPEED_100)
--		reg_val |= 1 << 8;
-+		reg_val |= EMAC_MAC_SUPP_100M;
- 	writel(reg_val, db->membase + EMAC_MAC_SUPP_REG);
- }
- 
-@@ -264,7 +264,7 @@ static void emac_dma_done_callback(void *arg)
- 
- 	/* re enable interrupt */
- 	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
--	reg_val |= (0x01 << 8);
-+	reg_val |= EMAC_INT_CTL_RX_EN;
- 	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 
- 	db->emacrx_completed_flag = 1;
-@@ -429,7 +429,7 @@ static unsigned int emac_powerup(struct net_device *ndev)
- 	/* initial EMAC */
- 	/* flush RX FIFO */
- 	reg_val = readl(db->membase + EMAC_RX_CTL_REG);
--	reg_val |= 0x8;
-+	reg_val |= EMAC_RX_CTL_FLUSH_FIFO;
- 	writel(reg_val, db->membase + EMAC_RX_CTL_REG);
- 	udelay(1);
- 
-@@ -441,8 +441,8 @@ static unsigned int emac_powerup(struct net_device *ndev)
- 
- 	/* set MII clock */
- 	reg_val = readl(db->membase + EMAC_MAC_MCFG_REG);
--	reg_val &= (~(0xf << 2));
--	reg_val |= (0xD << 2);
-+	reg_val &= ~EMAC_MAC_MCFG_MII_CLKD_MASK;
-+	reg_val |= EMAC_MAC_MCFG_MII_CLKD_72;
- 	writel(reg_val, db->membase + EMAC_MAC_MCFG_REG);
- 
- 	/* clear RX counter */
-@@ -506,7 +506,7 @@ static void emac_init_device(struct net_device *dev)
- 
- 	/* enable RX/TX0/RX Hlevel interrup */
- 	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
--	reg_val |= (0xf << 0) | (0x01 << 8);
-+	reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN | EMAC_INT_CTL_RX_EN);
- 	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 
- 	spin_unlock_irqrestore(&db->lock, flags);
-@@ -637,7 +637,9 @@ static void emac_rx(struct net_device *dev)
- 		if (!rxcount) {
- 			db->emacrx_completed_flag = 1;
- 			reg_val = readl(db->membase + EMAC_INT_CTL_REG);
--			reg_val |= (0xf << 0) | (0x01 << 8);
-+			reg_val |=
-+				(EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN |
-+				 EMAC_INT_CTL_RX_EN);
- 			writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 
- 			/* had one stuck? */
-@@ -669,7 +671,9 @@ static void emac_rx(struct net_device *dev)
- 			writel(reg_val | EMAC_CTL_RX_EN,
- 			       db->membase + EMAC_CTL_REG);
- 			reg_val = readl(db->membase + EMAC_INT_CTL_REG);
--			reg_val |= (0xf << 0) | (0x01 << 8);
-+			reg_val |=
-+				(EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN |
-+				 EMAC_INT_CTL_RX_EN);
- 			writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 
- 			db->emacrx_completed_flag = 1;
-@@ -783,20 +787,20 @@ static irqreturn_t emac_interrupt(int irq, void *dev_id)
- 	}
- 
- 	/* Transmit Interrupt check */
--	if (int_status & (0x01 | 0x02))
-+	if (int_status & EMAC_INT_STA_TX_COMPLETE)
- 		emac_tx_done(dev, db, int_status);
- 
--	if (int_status & (0x04 | 0x08))
-+	if (int_status & EMAC_INT_STA_TX_ABRT)
- 		netdev_info(dev, " ab : %x\n", int_status);
- 
- 	/* Re-enable interrupt mask */
- 	if (db->emacrx_completed_flag == 1) {
- 		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
--		reg_val |= (0xf << 0) | (0x01 << 8);
-+		reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN | EMAC_INT_CTL_RX_EN);
- 		writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 	} else {
- 		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
--		reg_val |= (0xf << 0);
-+		reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN);
- 		writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 	}
- 
-diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.h b/drivers/net/ethernet/allwinner/sun4i-emac.h
-index 38c72d9ec600..90bd9ad77607 100644
---- a/drivers/net/ethernet/allwinner/sun4i-emac.h
-+++ b/drivers/net/ethernet/allwinner/sun4i-emac.h
-@@ -38,6 +38,7 @@
- #define EMAC_RX_CTL_REG		(0x3c)
- #define EMAC_RX_CTL_AUTO_DRQ_EN		(1 << 1)
- #define EMAC_RX_CTL_DMA_EN		(1 << 2)
-+#define EMAC_RX_CTL_FLUSH_FIFO		(1 << 3)
- #define EMAC_RX_CTL_PASS_ALL_EN		(1 << 4)
- #define EMAC_RX_CTL_PASS_CTL_EN		(1 << 5)
- #define EMAC_RX_CTL_PASS_CRC_ERR_EN	(1 << 6)
-@@ -61,7 +62,21 @@
- #define EMAC_RX_IO_DATA_STATUS_OK	(1 << 7)
- #define EMAC_RX_FBC_REG		(0x50)
- #define EMAC_INT_CTL_REG	(0x54)
-+#define EMAC_INT_CTL_RX_EN	(1 << 8)
-+#define EMAC_INT_CTL_TX0_EN	(1)
-+#define EMAC_INT_CTL_TX1_EN	(1 << 1)
-+#define EMAC_INT_CTL_TX_EN	(EMAC_INT_CTL_TX0_EN | EMAC_INT_CTL_TX1_EN)
-+#define EMAC_INT_CTL_TX0_ABRT_EN	(0x1 << 2)
-+#define EMAC_INT_CTL_TX1_ABRT_EN	(0x1 << 3)
-+#define EMAC_INT_CTL_TX_ABRT_EN	(EMAC_INT_CTL_TX0_ABRT_EN | EMAC_INT_CTL_TX1_ABRT_EN)
- #define EMAC_INT_STA_REG	(0x58)
-+#define EMAC_INT_STA_TX0_COMPLETE	(0x1)
-+#define EMAC_INT_STA_TX1_COMPLETE	(0x1 << 1)
-+#define EMAC_INT_STA_TX_COMPLETE	(EMAC_INT_STA_TX0_COMPLETE | EMAC_INT_STA_TX1_COMPLETE)
-+#define EMAC_INT_STA_TX0_ABRT	(0x1 << 2)
-+#define EMAC_INT_STA_TX1_ABRT	(0x1 << 3)
-+#define EMAC_INT_STA_TX_ABRT	(EMAC_INT_STA_TX0_ABRT | EMAC_INT_STA_TX1_ABRT)
-+#define EMAC_INT_STA_RX_COMPLETE	(0x1 << 8)
- #define EMAC_MAC_CTL0_REG	(0x5c)
- #define EMAC_MAC_CTL0_RX_FLOW_CTL_EN	(1 << 2)
- #define EMAC_MAC_CTL0_TX_FLOW_CTL_EN	(1 << 3)
-@@ -87,8 +102,11 @@
- #define EMAC_MAC_CLRT_RM		(0x0f)
- #define EMAC_MAC_MAXF_REG	(0x70)
- #define EMAC_MAC_SUPP_REG	(0x74)
-+#define EMAC_MAC_SUPP_100M	(0x1 << 8)
- #define EMAC_MAC_TEST_REG	(0x78)
- #define EMAC_MAC_MCFG_REG	(0x7c)
-+#define EMAC_MAC_MCFG_MII_CLKD_MASK	(0xff << 2)
-+#define EMAC_MAC_MCFG_MII_CLKD_72	(0x0d << 2)
- #define EMAC_MAC_A0_REG		(0x98)
- #define EMAC_MAC_A1_REG		(0x9c)
- #define EMAC_MAC_A2_REG		(0xa0)
--- 
-2.31.1
-
+Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>  A Contingent Worker =
+at Intel
