@@ -2,132 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95ED3488EF3
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 04:40:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D00F488F1B
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 04:57:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238374AbiAJDjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 9 Jan 2022 22:39:35 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:53926
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238371AbiAJDjf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 22:39:35 -0500
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E14E540A58
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 03:39:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641785973;
-        bh=pQ19/9SUWFmu9QWaYJWAgIjttlL4E8YQab0OKaz5DsA=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=q2ptJYO0ewt7UUY7kt1GbShK1W0z0kKUwbRBZu6eR+mUYTm6U7TmxRrjFGRQ0p/oi
-         J1+kjTpKauoqglTasIXygBnMIg49eYRcpnyG96oDKrkmQnYewO3qHhjGxaGgjxlCPf
-         miUwWYzBAIbqYBm0pHPKeridO1fm1ub+Glm7RXv2OAIgbVfrgrZfwvGiGUimx16N2v
-         /lLSsBwvDqBdjglcD0qaurme8Miw9JPqhFb8N/8aJw5jfpmQ2XtkZHokm2xOiN9ZkE
-         OXeFDyfP0I67dh0ggxDheLnE7xSmSBWwuFf9fw9r8I0MorXhqPidL+P7Arz1PZkbC/
-         7DnHcK9eAfhcw==
-Received: by mail-oo1-f72.google.com with SMTP id n5-20020a4ab345000000b002dc79e4a2baso3639552ooo.15
-        for <netdev@vger.kernel.org>; Sun, 09 Jan 2022 19:39:33 -0800 (PST)
+        id S232995AbiAJD5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 9 Jan 2022 22:57:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232926AbiAJD5d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 9 Jan 2022 22:57:33 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 978D3C06173F;
+        Sun,  9 Jan 2022 19:57:33 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id e198so11919264ybf.7;
+        Sun, 09 Jan 2022 19:57:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gKx+R06dgFeuVR7iJXoCkBPxrF2Apl09qUxtv6PLYN0=;
+        b=JjDq71ibn5FynQdndgTl2I2VuEtzjI/3odcIwxX3kmKNI8EzqWvZQmlIx6vOqChYcu
+         22KtrGRjsozpl8SMvC9FEgbYMbhil5pBdVDac0DjNThmcaFdsgHFkexTJ1cNktw9LVdY
+         z4I1XhOFs7eCdpvqG1ouJD1Zo6vD0IDqCTWU1PFfgrA6n9g5w8A/XTNVmE7VeZTJPsAi
+         E7GbW+9ne5xQ4KW+8q9yhK5Fww+VyCW9Amjhw6lfsABQ/8/sjV793fJErtY048GHhZ2x
+         Of2aE0wcQk9rcLpa8X+k4ukofbxYiPl4bs8t5WRFuuGap6Y1Qrs+jbMR8uCGj5x0WhIY
+         zL5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=pQ19/9SUWFmu9QWaYJWAgIjttlL4E8YQab0OKaz5DsA=;
-        b=sPUsRF3JHjhxkKG7qFhOCuLQIjSy0J03rLFh8U88Mt+U8mVevlgxQjkxLMS3+AFTa6
-         TXuZn4F9r53mY6MjZ82aSB8C0BOnCWoJFJHkRfi8E56kr1ihpCV5bX+cpwH3hWeCkW8v
-         VgDDp8Ao9RDKf8pcbXkbQ32mOYhQXMV34CeSGiGm0yvKQj5zLGxfP0/hsGROszsDBN3i
-         U+4jx51evDg9le2VxkIvB6X/H4U14Fux4FXGbc1tj7VkK9Z6LvPpektxjn7x37LoiKCn
-         u5NEbrqDfuE+Ab/6rsU2DQn6XOfDKH/q0TJ9CoUlTx+/S6vu2ju3sMScejHX98rbSSp8
-         yY4A==
-X-Gm-Message-State: AOAM531CCjq3umEblxFY1902Ivzj8ARNPfxKuumaW9yXEJ0zjRqfxwYf
-        ZnQz41M8D6Az7ROaH+1m5SRHzyEXncpKIFXsOfqvbFECTZ7v2ql3yypWR5og4D7HQ/XOvQ6MrlD
-        ugL1PnaC9Qx5Dh+ev86KDUkHccLHkxBr2mgahCEexYXofLUhheQ==
-X-Received: by 2002:a05:6808:198c:: with SMTP id bj12mr3768731oib.146.1641785972689;
-        Sun, 09 Jan 2022 19:39:32 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz05xk4ZBJfcYO9IQwZKVBtMGSiPz0jY4s034Wxc925wwPuDP2ai5KfuJBp99zDtCJRoyXhOt6lcdvyHA9pNDU=
-X-Received: by 2002:a05:6808:198c:: with SMTP id bj12mr3768719oib.146.1641785972457;
- Sun, 09 Jan 2022 19:39:32 -0800 (PST)
+        bh=gKx+R06dgFeuVR7iJXoCkBPxrF2Apl09qUxtv6PLYN0=;
+        b=Gqc15IPKehPxqixCrQ+nw/Kee8Msfyql8p+NS+3aPn0MzJpLmXbw0ALV8RJ/LuozSB
+         /wk3BrhlI71TYvU+Uml4eZKQpil9Ps1VP7eFJdM6mc7H7uOd2WMAOdN5yvU4mXj88yA1
+         gyt8mEgFLJnei6O0YscmosVgBzt5phzvPNnJyuep5ncmjNZMA0ZOQFa8K68SLZ+frkb6
+         rjuWqS1YISxb6YZ9pApDQnyrfU8SjLNIlqfZDLLZD3X9QnyJEAwGm6IcfP/7GDMX2Pi2
+         DAWd2BQ15V/OIYGADDtJ3DLNaeco4Tj08PG70uh+lwFlkfsR7ptLw6iL7JNHKZ1eqsEM
+         ijYw==
+X-Gm-Message-State: AOAM531PC/LG3IVg+6DU5iCUnkENJejBKCnHUeuTxYFRYe+axdswPOWU
+        3wBnvi6YKQVwK7vzNNhJHIFcqXTCIxFemRPqwNMV+smT
+X-Google-Smtp-Source: ABdhPJzTrETyuDmbXvR9z7gKCTEi3XRBUYW5RWIvBDdJ1o1QYQdlEAhxaqVSAAgeeilDeW2FdqR525K64kZ3HQA7h4U=
+X-Received: by 2002:a25:c41:: with SMTP id 62mr22130417ybm.284.1641787052533;
+ Sun, 09 Jan 2022 19:57:32 -0800 (PST)
 MIME-Version: 1.0
-References: <20220105151427.8373-1-aaron.ma@canonical.com> <YdXVoNFB/Asq6bc/@lunn.ch>
- <bb6d8bc4-abee-8536-ca5b-bac11d1ecd53@suse.com> <YdYbZne6pBZzxSxA@lunn.ch>
- <CAAd53p52uGFjbiuOWAA-1dN7mTqQ0KFe9PxWvPL+fjfQb9K5vQ@mail.gmail.com>
- <YdbuXbtc64+Knbhm@lunn.ch> <CAAd53p5YnQZ0fDiwwo-q3bNMVFTJSMLcdkUuH-7=OSaRrW954Q@mail.gmail.com>
- <YdhA6QqOKQ19uKWG@lunn.ch>
-In-Reply-To: <YdhA6QqOKQ19uKWG@lunn.ch>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Mon, 10 Jan 2022 11:39:21 +0800
-Message-ID: <CAAd53p7C_j6FTfnRK9L-UDmMrbkm75-mYN50_NpPiE2Y=Zgj1g@mail.gmail.com>
-Subject: Re: [PATCH 1/3 v3] net: usb: r8152: Check used MAC passthrough address
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        Aaron Ma <aaron.ma@canonical.com>, kuba@kernel.org,
-        henning.schild@siemens.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
+References: <20220107210942.3750887-1-luiz.dentz@gmail.com>
+ <20220107182712.7549a8eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <6FFD2498-E81C-49DA-9B3E-4833241382EE@holtmann.org> <20220109141853.75c14667@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CABBYNZJ3LRwt=CmnR4U1Kqk5Ggr8snN_2X_uTex+YUX9GJCkuw@mail.gmail.com> <20220109185654.69cbca57@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220109185654.69cbca57@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Sun, 9 Jan 2022 19:57:20 -0800
+Message-ID: <CABBYNZKpYuW6+iZJomaykGLT6gF2NBjTxjw-27vBZRY89P3xgw@mail.gmail.com>
+Subject: Re: pull request: bluetooth 2022-01-07
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Tedd Ho-Jeong An <hj.tedd.an@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 7, 2022 at 9:32 PM Andrew Lunn <andrew@lunn.ch> wrote:
+Hi Jakub,
+
+On Sun, Jan 9, 2022 at 6:56 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> > > You should be thinking of this in more general terms. You want to
-> > > design a system that will work for any vendors laptop and dock.
-> > >
-> > > You need to describe the two interfaces using some sort of bus
-> > > address, be it PCIe, USB, or a platform device address as used by
-> > > device tree etc.
-> > >
-> > > Let the kernel do whatever it wants with MAC addresses for these two
-> > > interfaces. The only requirement you have is that the laptop internal
-> > > interface gets the vendor allocated MAC address, and that the dock get
-> > > some sort of MAC address, even if it is random.
+> On Sun, 9 Jan 2022 18:46:05 -0800 Luiz Augusto von Dentz wrote:
+> > > You're right. I think our patchwork build bot got confused about the
+> > > direction of the merge and displayed old warnings :S You know what..
+> > > let me just pull this as is and we can take the fixes in the next PR,
+> > > then. Apologies for the extra work!
 > >
-> > Those laptops and docks are designed to have duplicated MACs. I don't
-> > understand why but that's why Dell/HP/Lenovo did.
+> > Im planning to send a new pull request later today, that should
+> > address the warning and also takes cares of sort hash since that has
+> > been fixup in place.
 >
-> But it also sounds like the design is broken. So the question is, is
-> it possible to actually implement it correctly, without breaking
-> networking for others with sane laptop/docks/USB dongles.
+> But I already pulled..
 
-It's possible, just stick to whitelist and never over generalize the
-device matching rule.
+Nevermind then, shall I send the warning fix directly to net-next
+then? Or you actually pulled the head of bluetooth-next not tag?
 
->
-> > What if the kernel just abstract the hardware/firmware as intended, no
-> > matter how stupid it is, and let userspace to make the right policy?
->
-> Which is exactly what is being suggested here. The kernel gives the
-> laptop internal interface its MAC address from ACPI or where ever, and
-> the dock which has no MAC address gets a random MAC address. That is
-> the normal kernel abstract. Userspace, in the form of udev, can then
-> change the MAC addresses in whatever way it wants.
-
-That's not what I mean. I mean the kernel should do what
-firmware/hardware expects kernel should do - copy the MAC from ACPI to
-the external NIC in the dock.
-Then the userspace can assign a random MAC to external interface if
-internal interface is already up.
-
->
-> > But power users may also need to use corporate network to work as
-> > Aaron mentioned.
-> > Packets from unregistered MAC can be filtered under corporate network,
-> > and that's why MAC pass-through is a useful feature that many business
-> > laptops have.
->
-> Depends on the cooperate network, but power users generally know more
-> than the IT department, and will just make their machine work, copying
-> the 802.3x certificate where ever it needs to go, us ebtables to
-> mangle the MAC address, build their own little network with an RPi
-> acting as a gateway doing NAT and MAC address translation, etc.
-
-That's true, but as someone who work closely with other Distro folks,
-we really should make this feature works for (hopefully) everyone.
-
-Kai-Heng
-
->
->        Andrew
+-- 
+Luiz Augusto von Dentz
