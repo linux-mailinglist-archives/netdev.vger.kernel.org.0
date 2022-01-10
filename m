@@ -2,82 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5112489B35
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 15:23:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6271C489B6E
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 15:39:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235454AbiAJOW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 09:22:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32850 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234201AbiAJOW5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 09:22:57 -0500
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A9AC06173F
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 06:22:57 -0800 (PST)
-Received: by mail-pj1-x1042.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so22975275pjj.2
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 06:22:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=KalP7pqUldn0owlfQ20Q8VvgpD4qNB4+Il7bEQ6jfBE=;
-        b=PnbioMLX7np15X08kyu3rmwoJMWmaEiKbUMR5+IFUFkdlWOoaHrOK9EC69DPk7YGsx
-         BOGq8gMZKu8wblsI/T+4ImJ/sV96lgWUIYseNs/fmfW2sdB6EJDMq0AljcnG8QPqJbIQ
-         io4H+/7OVwmiAyrlI27SfJPJ1QPAf56xk60Ef+z/qtGXvC6cy+WsH12fcnNhL/BI6/GS
-         aS+Wkj+wwE5i/TCPjIBQLG8gXGfy8sB7uUoK3sYozkKQTwA7fXbOF9ATDpGwe1KTEris
-         O+oV6Aw9Ifqqfvru+mg0JyTNt6V41gVK66i3MOTsobnIf/gOgx7da/0FvK3zQuPcpsBp
-         E8cQ==
+        id S235644AbiAJOjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 09:39:02 -0500
+Received: from mail-qv1-f43.google.com ([209.85.219.43]:45844 "EHLO
+        mail-qv1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231196AbiAJOjB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 09:39:01 -0500
+Received: by mail-qv1-f43.google.com with SMTP id a9so14599906qvd.12;
+        Mon, 10 Jan 2022 06:39:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=KalP7pqUldn0owlfQ20Q8VvgpD4qNB4+Il7bEQ6jfBE=;
-        b=ejyf+qJtnZu0m1AEQ6SIwhBz/GWwu1IcuwhV13EUX74Ox66ojMgsfjY4ff2EIej/xw
-         k1/9iK7ixuNsXOFCN4O1aOPuVklq8qez1il796DGOc4mf2qDN8loSqGaKPCA59R4Fu+8
-         E63Au7RqM305q5owGSAu+2ejeScUZRXLlGLgSZ21lgOKvx/REgyqPqBUxtm6dOt8o0Sd
-         b49gz8NQpa/7GdlpT8J4zdQsPV+w4BOxhX8vKD0lDghhYkHucoiCwSvcGEL2fIZRvsQD
-         69VWKs4DsuVeZDHQzl6swHTEyI8qU+exWomLAb73CvuNUTL3g71RtMG69XDQhnLNoOJF
-         bh9g==
-X-Gm-Message-State: AOAM532nNWkFsYsZvsJqIKhaQhYCOZpzLD4rghIV2MNEOGSxrxuB3Mc5
-        G+CPZDpMuyUiNghLZsrl748UFvDlv70JVdlY4+U=
-X-Google-Smtp-Source: ABdhPJwOSnJznvebsloqUnYHz1CunDJPCLo48jBeuZkRJM42CXZCMZWv8IY49n9MR1wOcPZOjeA5c5E+fvsH+hcFeI4=
-X-Received: by 2002:a62:8603:0:b0:4be:19ea:effd with SMTP id
- x3-20020a628603000000b004be19eaeffdmr6943193pfd.47.1641824576972; Mon, 10 Jan
- 2022 06:22:56 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pO7pYeF0q/KOlSDXskK/am/odc2RYkvEzSsdTjA4sWM=;
+        b=gRTbjgJmxjdCUi7JMQk7WGmiyclPZeWwmgoeu2VyXeCHGgJ9Vz7o/Dk5ijtymrXntb
+         g3M65jKF9TnEdtGpgstLScFbD4OBJfzVwHaHynhg6OUOW2zpVqM+fKYFocDJyUuHeoDz
+         HPsQlsqJihg/rjA2LxB7MUL03k/IavUEby7njHPZa/Ve/31HezB6CLE2qMPxgZ7Z2SwP
+         2tSJtiFZ4XzqzojNTd78hDXNo6bCETKkNsOlyT9wcKu1Zh4EUITJrZjnJhkzUQaLtFTm
+         9JILxMwCgKBv4A89KFQtI1cE1QRvWGn6reomc2kuoOhD6l0QzYx/HFeZcy463gNcMCbF
+         g1Fw==
+X-Gm-Message-State: AOAM533vUXmtCoff9+QHKY+wIY/A0NkDKQMHKO7qVIqr9G7UD4S426mP
+        SwOybfGK2YepZxnpwxHmPsTtROvv6fmNxg==
+X-Google-Smtp-Source: ABdhPJym7QBoq8Zjc+aKSJ0iSTaFS10mpRbgvEa+KZAl3mkEJk7GZpOWuY2DnxGzvLYA1H/MIZou1A==
+X-Received: by 2002:a05:6214:2a88:: with SMTP id jr8mr69282684qvb.18.1641825540470;
+        Mon, 10 Jan 2022 06:39:00 -0800 (PST)
+Received: from dev0025.ash9.facebook.com (fwdproxy-ash-006.fbsv.net. [2a03:2880:20ff:6::face:b00c])
+        by smtp.gmail.com with ESMTPSA id k8sm4931234qtx.35.2022.01.10.06.38.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 06:39:00 -0800 (PST)
+Date:   Mon, 10 Jan 2022 06:38:58 -0800
+From:   David Vernet <void@manifault.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
+        joe.lawrence@redhat.com, linux-modules@vger.kernel.org,
+        mcgrof@kernel.org, jeyu@kernel.org, bpf@vger.kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, memxor@gmail.com, clm@fb.com
+Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
+Message-ID: <YdxFAshozmxfiLd/@dev0025.ash9.facebook.com>
+References: <Yc0yskk0m2bePLu6@dev0025.ash9.facebook.com>
+ <YdMej8L0bqe+XetW@alley>
 MIME-Version: 1.0
-Received: by 2002:a17:90b:4d0e:0:0:0:0 with HTTP; Mon, 10 Jan 2022 06:22:56
- -0800 (PST)
-Reply-To: mrsaishag45@gmail.com
-From:   Mrs Aisha Al-Qaddafi <mrsaishag89@gmail.com>
-Date:   Mon, 10 Jan 2022 06:22:56 -0800
-Message-ID: <CAF-3XQQ2_=thM9gOOrFWWxLpRkcBasuavHQZyyb3gxDOpF+7OA@mail.gmail.com>
-Subject: Dear Friend,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdMej8L0bqe+XetW@alley>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+Apologies all for the delayed response -- I was still on holiday last week.
 
-I came across your e-mail contact prior a private search while in need
-of your assistance. My name is Aisha Gaddafi a single
+Petr Mladek <pmladek@suse.com> wrote on Mon [2022-Jan-03 17:04:31 +0100]:
+> > > It turns out that symbol lookups often take up the most CPU time when
+> > > enabling and disabling a patch, and may hog the CPU and cause other tasks
+> > > on that CPU's runqueue to starve -- even in paths where interrupts are
+> > > enabled.  For example, under certain workloads, enabling a KLP patch with
+> > > many objects or functions may cause ksoftirqd to be starved, and thus for
+>     ^^^^^^^^^^^^^^^^^^^^^^^^^
+> This suggests that a single kallsyms_on_each_symbol() is not a big
+> problem. cond_resched() might be called non-necessarily often there.
+> I wonder if it would be enough to add cond_resched() into the two
+> loops calling klp_find_object_symbol().
 
-Mother and a Widow with three Children. I am the only biological
-Daughter of late Libyan President (Late Colonel Muammar
+In the initial version of the patch I was intending to send out, I actually
+had the cond_resched() in klp_find_object_symbol(). Having it there did
+appear to fix the ksoftirqd starvation issue, but I elected to put it in
+klp_find_object_symbol() after Chris (cc'd) suggested it because
+cond_resched() is so lightweight, and it didn't affect the runtime for
+livepatching in my experiments.
 
-Gaddafi).
+> That said, kallsyms_on_each_symbol() is a slow path and there might
+> be many symbols. So, it might be the right place.
 
-I have investment funds worth Twenty Seven Million Five Hundred
-Thousand United State Dollar ($27.500.000.00 ) and i need a
-
-trusted investment Manager/Partner because of my current refugee
-status, however, I am interested in you for investment
-
-project assistance in your country, may be from there, we can build
-business relationship in the nearest future.
-
-I am willing to negotiate investment/business profit sharing ratio
-with you base on the future investment earning profits.
-If you are willing to handle this project on my behalf kindly reply
-urgent to enable me provide you more information about
-Mrs Aisha Gaddafi
+Yes, my thinking was that because it didn't seem to affect throughput, and
+because it would could potentially cause the same ssue to occur if it were
+ever called elsewhere, that this was the correct place for it.
