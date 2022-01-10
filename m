@@ -2,54 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA86B4894BB
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 10:07:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47F724894B2
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 10:05:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241837AbiAJJHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 04:07:36 -0500
-Received: from mail.bonuswithsale.com ([80.211.43.88]:51012 "EHLO
-        mail.bonuswithsale.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238722AbiAJJHe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 04:07:34 -0500
-X-Greylist: delayed 307 seconds by postgrey-1.27 at vger.kernel.org; Mon, 10 Jan 2022 04:07:33 EST
-Received: by mail.bonuswithsale.com (Postfix, from userid 1001)
-        id 6A210A21F7; Mon, 10 Jan 2022 09:01:38 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=bonuswithsale.com;
-        s=mail; t=1641805343;
-        bh=tTbTDudhdSN1Psn95OrvXW8FfhuwvQZLBgzlps7X0vI=;
-        h=Date:From:To:Subject:From;
-        b=GLs07hRxRIERttRpNvBwy93KGYb5aBMi3pI2QulxLue+xBUu+/8RkKGFpwJSY4gkc
-         pO92vmi+Ndx8MlyY6LfsbQovFOqoGEbm+F3FExXyo688juyS3LIqVwXuAFdP9U1r/N
-         NjTgQiG2TumT5+2ihko/IXeaYJUZImkhScCHcuWES6YO498dHqhNKw+5iohIIM4ZQ0
-         AXtxuGv+IhrW2klectvJOxqUVw0Jka/v7GBNWmDifllCk5gY5hZapWfLCeT6Fdtfu0
-         gEx2l3zD2yAqa66DHGtqRawLrvCZo7jzc0jPAvunpIcqE/et0yQ/Sj4djGJGylacFt
-         oixnT6NIGEqbw==
-Received: by mail.bonuswithsale.com for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 09:01:16 GMT
-Message-ID: <20220110074500-0.1.1t.6q4d.0.j3c32swi5h@bonuswithsale.com>
-Date:   Mon, 10 Jan 2022 09:01:16 GMT
-From:   "Adrian Ostojski" <adrian.ostojski@bonuswithsale.com>
-To:     <netdev@vger.kernel.org>
-Subject: Wymiana faktury
-X-Mailer: mail.bonuswithsale.com
+        id S242569AbiAJJFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 04:05:25 -0500
+Received: from prt-mail.chinatelecom.cn ([42.123.76.222]:42260 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S242926AbiAJJEt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 04:04:49 -0500
+HMM_SOURCE_IP: 172.18.0.218:40496.657948967
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-202.80.192.38 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id 92D48280114;
+        Mon, 10 Jan 2022 17:04:31 +0800 (CST)
+X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id 8f2e6f7d82494e7baa53aeed8090a6a0 for j.vosburgh@gmail.com;
+        Mon, 10 Jan 2022 17:04:34 CST
+X-Transaction-ID: 8f2e6f7d82494e7baa53aeed8090a6a0
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
+To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huyd12@chinatelecom.cn
+Subject: [RESEND PATCH v5] net: bonding: Add support for IPV6 ns/na to balance-alb/balance-tlb mode
+Date:   Mon, 10 Jan 2022 04:04:10 -0500
+Message-Id: <20220110090410.70176-1-sunshouxin@chinatelecom.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dzie=C5=84 dobry,
+Since ipv6 neighbor solicitation and advertisement messages
+isn't handled gracefully in bonding6 driver, we can see packet
+drop due to inconsistency bewteen mac address in the option
+message and source MAC .
 
-czy interesuje Pa=C5=84stwa wymiana niezap=C5=82aconych przez Klient=C3=B3=
-w faktur na got=C3=B3wk=C4=99?
+Another examples is ipv6 neighbor solicitation and advertisement
+messages from VM via tap attached to host brighe, the src mac
+mighe be changed through balance-alb mode, but it is not synced
+with Link-layer address in the option message.
 
-Pomagamy wszystkim przedsi=C4=99biorcom, kt=C3=B3rzy szukaj=C4=85 gwaranc=
-ji bezpiecze=C5=84stwa i p=C5=82ynno=C5=9Bci finansowej.
+The patch implements bond6's tx handle for ipv6 neighbor
+solicitation and advertisement messages.
 
-Je=C5=9Bli s=C4=85 Pa=C5=84stwo otwarci na wst=C4=99pn=C4=85 rozmow=C4=99=
- w tym temacie prosz=C4=99 o odpowied=C5=BA.
+Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+---
+ drivers/net/bonding/bond_alb.c | 149 +++++++++++++++++++++++++++++++++
+ 1 file changed, 149 insertions(+)
 
+diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
+index 533e476988f2..485e4863a365 100644
+--- a/drivers/net/bonding/bond_alb.c
++++ b/drivers/net/bonding/bond_alb.c
+@@ -22,6 +22,8 @@
+ #include <asm/byteorder.h>
+ #include <net/bonding.h>
+ #include <net/bond_alb.h>
++#include <net/ndisc.h>
++#include <net/ip6_checksum.h>
+ 
+ static const u8 mac_v6_allmcast[ETH_ALEN + 2] __long_aligned = {
+ 	0x33, 0x33, 0x00, 0x00, 0x00, 0x01
+@@ -1269,6 +1271,137 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
+ 	return res;
+ }
+ 
++/*determine if the packet is NA or NS*/
++static bool __alb_determine_nd(struct icmp6hdr *hdr)
++{
++	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
++	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
++		return true;
++	}
++
++	return false;
++}
++
++static void alb_change_nd_option(struct sk_buff *skb, void *data)
++{
++	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
++	struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
++	struct net_device *dev = skb->dev;
++	struct icmp6hdr *icmp6h = icmp6_hdr(skb);
++	struct ipv6hdr *ip6hdr = ipv6_hdr(skb);
++	u8 *lladdr = NULL;
++	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
++				offsetof(struct nd_msg, opt));
++
++	while (ndoptlen) {
++		int l;
++
++		switch (nd_opt->nd_opt_type) {
++		case ND_OPT_SOURCE_LL_ADDR:
++		case ND_OPT_TARGET_LL_ADDR:
++			lladdr = ndisc_opt_addr_data(nd_opt, dev);
++			break;
++
++		default:
++			lladdr = NULL;
++			break;
++		}
++
++		l = nd_opt->nd_opt_len << 3;
++
++		if (ndoptlen < l || l == 0)
++			return;
++
++		if (lladdr) {
++			memcpy(lladdr, data, dev->addr_len);
++			icmp6h->icmp6_cksum = 0;
++
++			icmp6h->icmp6_cksum = csum_ipv6_magic(&ip6hdr->saddr,
++							      &ip6hdr->daddr,
++						ntohs(ip6hdr->payload_len),
++						IPPROTO_ICMPV6,
++						csum_partial(icmp6h,
++							     ntohs(ip6hdr->payload_len), 0));
++			return;
++		}
++		ndoptlen -= l;
++		nd_opt = ((void *)nd_opt) + l;
++	}
++}
++
++static u8 *alb_get_lladdr(struct sk_buff *skb)
++{
++	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
++	struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
++	struct net_device *dev = skb->dev;
++	u8 *lladdr = NULL;
++	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
++				offsetof(struct nd_msg, opt));
++
++	while (ndoptlen) {
++		int l;
++
++		switch (nd_opt->nd_opt_type) {
++		case ND_OPT_SOURCE_LL_ADDR:
++		case ND_OPT_TARGET_LL_ADDR:
++			lladdr = ndisc_opt_addr_data(nd_opt, dev);
++			break;
++
++		default:
++			break;
++		}
++
++		l = nd_opt->nd_opt_len << 3;
++
++		if (ndoptlen < l || l == 0)
++			return NULL;
++
++		if (lladdr)
++			return lladdr;
++
++		ndoptlen -= l;
++		nd_opt = ((void *)nd_opt) + l;
++	}
++
++	return lladdr;
++}
++
++static void alb_set_nd_option(struct sk_buff *skb, struct bonding *bond,
++			      struct slave *tx_slave)
++{
++	struct ipv6hdr *ip6hdr;
++	struct icmp6hdr *hdr;
++
++	if (skb->protocol == htons(ETH_P_IPV6)) {
++		if (tx_slave && tx_slave !=
++		    rcu_access_pointer(bond->curr_active_slave)) {
++			ip6hdr = ipv6_hdr(skb);
++			if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
++				hdr = icmp6_hdr(skb);
++				if (__alb_determine_nd(hdr))
++					alb_change_nd_option(skb, tx_slave->dev->dev_addr);
++			}
++		}
++	}
++}
++
++static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
++{
++	struct ipv6hdr *ip6hdr;
++	struct icmp6hdr *hdr;
++
++	if (skb->protocol == htons(ETH_P_IPV6)) {
++		ip6hdr = ipv6_hdr(skb);
++		if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
++			hdr = icmp6_hdr(skb);
++			if (__alb_determine_nd(hdr))
++				return true;
++		}
++	}
++
++	return false;
++}
++
+ /************************ exported alb functions ************************/
+ 
+ int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+@@ -1350,6 +1483,9 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
+ 		switch (skb->protocol) {
+ 		case htons(ETH_P_IP):
+ 		case htons(ETH_P_IPV6):
++			if (alb_determine_nd(skb, bond))
++				break;
++
+ 			hash_index = bond_xmit_hash(bond, skb);
+ 			if (bond->params.tlb_dynamic_lb) {
+ 				tx_slave = tlb_choose_channel(bond,
+@@ -1446,6 +1582,18 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
+ 			break;
+ 		}
+ 
++		if (alb_determine_nd(skb, bond)) {
++			u8 *lladdr;
++
++			lladdr = alb_get_lladdr(skb);
++			if (lladdr) {
++				if (!bond_slave_has_mac_rx(bond, lladdr)) {
++					do_tx_balance = false;
++					break;
++				}
++			}
++		}
++
+ 		hash_start = (char *)&ip6hdr->daddr;
+ 		hash_size = sizeof(ip6hdr->daddr);
+ 		break;
+@@ -1489,6 +1637,7 @@ netdev_tx_t bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev)
+ 	struct slave *tx_slave = NULL;
+ 
+ 	tx_slave = bond_xmit_alb_slave_get(bond, skb);
++	alb_set_nd_option(skb, bond, tx_slave);
+ 	return bond_do_alb_xmit(skb, bond, tx_slave);
+ }
+ 
 
-Pozdrawiam,
-Adrian Ostojski
-Dyrektor Finansowy
+base-commit: 7a29b11da9651ef6a970e2f6bfd276f053aeb06a
+-- 
+2.27.0
+
