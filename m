@@ -2,110 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ED15489F18
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 19:21:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50676489FD7
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 20:06:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239083AbiAJSU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 13:20:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59512 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239111AbiAJSU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 13:20:57 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A675C061759;
-        Mon, 10 Jan 2022 10:20:51 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id d3so21108714lfv.13;
-        Mon, 10 Jan 2022 10:20:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=VeKeCgQSENYHroPqzqm4kB6VsmqqTQVr5ftkF3/8tYk=;
-        b=QO4l1uyfq/4qP8Ty9JJqNNrNwdDqMtWPzo5j7jQzJQy1ZX2djOp0C6Gl3UcEG90p1z
-         qlMjQHIR7sWbl5lqGeOKTKq0RZbS3hq2iU3AdXjIjTtHIIid5dYHoLN5Ryh6tK+3FBYs
-         3k9AkUYsA0iJ1kvr3yrsukhWKIk1LqZfF/RmPpKidj/5HPT73W+j2YimWhugw2XX6yj3
-         Hb9XJcX9Q90RSDUCVqfDg39nklqnhBALiLuIYaJnA0Eb2IGR/ANIgGAbRtLlRjOXd3Ib
-         yUrUInmbDJt3sYp8qPtNovKQIGfeHUCj57QzVK1Vkg/PpEqylAaJzgYM4Jib8SAy8QcS
-         xszw==
+        id S243167AbiAJTGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 14:06:43 -0500
+Received: from mail-oi1-f171.google.com ([209.85.167.171]:33430 "EHLO
+        mail-oi1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243153AbiAJTGm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 14:06:42 -0500
+Received: by mail-oi1-f171.google.com with SMTP id v124so12724165oie.0;
+        Mon, 10 Jan 2022 11:06:42 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VeKeCgQSENYHroPqzqm4kB6VsmqqTQVr5ftkF3/8tYk=;
-        b=z8jKNLzFeQDMv2s09pRWkv2Ae2T//5uMBHje74CqEFdD2ehU/oomIPBchbUGlfHrYh
-         NBz6/3Xn9hAyKJnyKU99BGx9S4njKNpMui5ylodbUhOlZPoSYaBlBmsvD8+8uzVPtpEh
-         yM/WNUS4eQixt+IqNzIFzDYt4tBAKy1fEdign3jgGIePw1x0Y5KLWCv666cd7pArSBxx
-         MHwS5UFRB4KXxV9c6sGHnJAkQ36ZgMChUVhIYlq8lBDtZ7vLtFIv2ifAKIjA+AIZ3LqV
-         esxOcE2N73eV9b8d3GsnhYHfvwcb4URIrWiZTBZSgfReYWM7r7arbjQdwK2Ow8UgepNe
-         JYPg==
-X-Gm-Message-State: AOAM5315r/YJDqPHj9MNKKX2ktPvcpHzzQyWEBqduJO9GMutVThnmRjl
-        Oy1OIeIjOGT8uFKj6okChjk0pXsV7cdvfQ==
-X-Google-Smtp-Source: ABdhPJxoDHK7yCpUTNLVFz+Q81SpId9sEJYf/KHhl9Y8m/wjg5KOLY5QsXOPGy3R/atsEsKO/Orf6Q==
-X-Received: by 2002:a05:6512:3bc:: with SMTP id v28mr669104lfp.576.1641838849392;
-        Mon, 10 Jan 2022 10:20:49 -0800 (PST)
-Received: from [192.168.8.103] (m91-129-111-207.cust.tele2.ee. [91.129.111.207])
-        by smtp.gmail.com with ESMTPSA id v11sm517295lfg.57.2022.01.10.10.20.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 10:20:48 -0800 (PST)
-Message-ID: <077d6843-bf14-f528-d9cd-9c5245687be5@gmail.com>
-Date:   Mon, 10 Jan 2022 20:20:47 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Wwk6x/ZR37nweD32vHsQk5bV8DeKWS9G1MuQnQEcbQM=;
+        b=RID7hQsGjXfnY+jTqoMDjNXaEjOJ6j2cCZz3CEqJN3aGzIJdy6+evg9D6AKIK+U4NZ
+         3nkhdHXiK8i7VtLUi4dxMatdmDZvheVGwsmnoHRItNqQdRbdELBw3/ljOH25SgKFyhw3
+         e5rEQFLfEzcp/GPjGkWUsZ0FnQJh5lpxK4Z7m0HXzduk+InrGQAcet9uPsmR3FqQigaL
+         eLqFhar52sO1Cvh7ucex24CCgdTPtq6DmrL8M5CBB+Zv3o10BZTz47MHlgkmxwfHoC07
+         tdoKCIFqSY8rPlKqaCWW79pS1zP74crIlshD23LwhWGt8jwk/j8PNTYgcr0Ph9pJYTP1
+         Xvww==
+X-Gm-Message-State: AOAM532rfj+LO6AZpE5wcvInYIL+8hZT7erq38kZYc+Sw8Nad+gy4pjz
+        7OIfnyFgZJ3SdxV05xy24MU/Iznd8w==
+X-Google-Smtp-Source: ABdhPJx5ZBjyXM4U8hax5nPjSCYA9zsja6YzyYe4DefjUE4k0aeTDsQSOoG5Ymd24O+VmO0kjBJV3w==
+X-Received: by 2002:a05:6808:1a1e:: with SMTP id bk30mr663998oib.26.1641841601494;
+        Mon, 10 Jan 2022 11:06:41 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id q189sm656483oib.8.2022.01.10.11.06.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 11:06:40 -0800 (PST)
+Received: (nullmailer pid 1302633 invoked by uid 1000);
+        Mon, 10 Jan 2022 19:06:39 -0000
+Date:   Mon, 10 Jan 2022 13:06:39 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH 1/8] of: base: add of_parse_phandle_with_optional_args()
+Message-ID: <YdyDv1/WbNi3CMbu@robh.at.kernel.org>
+References: <20211228142549.1275412-1-michael@walle.cc>
+ <20211228142549.1275412-2-michael@walle.cc>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH net-next 19/32] netfilter: nft_connlimit: move stateful
- fields out of expression data
-Content-Language: en-US
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-References: <20220109231640.104123-1-pablo@netfilter.org>
- <20220109231640.104123-20-pablo@netfilter.org>
-From:   Julian Wiedmann <jwiedmann.dev@gmail.com>
-In-Reply-To: <20220109231640.104123-20-pablo@netfilter.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211228142549.1275412-2-michael@walle.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.01.22 01:16, Pablo Neira Ayuso wrote:
-> In preparation for the rule blob representation.
+On Tue, Dec 28, 2021 at 03:25:42PM +0100, Michael Walle wrote:
+> Add a new variant of the of_parse_phandle_with_args() which treats the
+> cells name as optional. If it's missing, it is assumed that the phandle
+> has no arguments.
 > 
-> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> Up until now, a nvmem node didn't have any arguments, so all the device
+> trees haven't any '#*-cells' property. But there is a need for an
+> additional argument for the phandle, for which we need a '#*-cells'
+> property. Therefore, we need to support nvmem nodes with and without
+> this property.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 > ---
->  net/netfilter/nft_connlimit.c | 26 ++++++++++++++++++--------
->  1 file changed, 18 insertions(+), 8 deletions(-)
+>  drivers/of/base.c  | 23 +++++++++++++++++++++++
+>  include/linux/of.h | 12 ++++++++++++
+>  2 files changed, 35 insertions(+)
 > 
-> diff --git a/net/netfilter/nft_connlimit.c b/net/netfilter/nft_connlimit.c
-> index 7d0761fad37e..58dcafe8bf79 100644
-> --- a/net/netfilter/nft_connlimit.c
-> +++ b/net/netfilter/nft_connlimit.c
-
-[...]
-
+> diff --git a/drivers/of/base.c b/drivers/of/base.c
+> index 5b907600f5b0..fb28bb26276e 100644
+> --- a/drivers/of/base.c
+> +++ b/drivers/of/base.c
+> @@ -1543,6 +1543,29 @@ int of_parse_phandle_with_args(const struct device_node *np, const char *list_na
+>  }
+>  EXPORT_SYMBOL(of_parse_phandle_with_args);
 >  
->  static int nft_connlimit_do_dump(struct sk_buff *skb,
-> @@ -200,7 +205,11 @@ static int nft_connlimit_clone(struct nft_expr *dst, const struct nft_expr *src)
->  	struct nft_connlimit *priv_dst = nft_expr_priv(dst);
->  	struct nft_connlimit *priv_src = nft_expr_priv(src);
->  
-> -	nf_conncount_list_init(&priv_dst->list);
-> +	priv_dst->list = kmalloc(sizeof(*priv_dst->list), GFP_ATOMIC);
-> +	if (priv_dst->list)
-> +		return -ENOMEM;
+> +/**
+> + * of_parse_phandle_with_optional_args() - Find a node pointed by phandle in a list
+> + *
+> + * Same as of_parse_phandle_args() except that if the cells_name property is
+> + * not found, cell_count of 0 is assumed.
+> + *
+> + * This is used to useful, if you have a phandle which didn't have arguments
+> + * before and thus doesn't have a '#*-cells' property but is now migrated to
+> + * having arguments while retaining backwards compatibility.
+> + */
+> +int of_parse_phandle_with_optional_args(const struct device_node *np,
+> +					const char *list_name,
+> +					const char *cells_name, int index,
+> +					struct of_phandle_args *out_args)
+> +{
+> +	if (index < 0)
+> +		return -EINVAL;
+
+I'm not sure why we didn't do this from the start, but just make index 
+unsigned and then this check is not needed.
+
 > +
-> +	nf_conncount_list_init(priv_dst->list);
->  	priv_dst->limit	 = priv_src->limit;
->  	priv_dst->invert = priv_src->invert;
->  
-
-Hi Pablo,
-
-Coverity (CID 1510697) spotted a typo in this NULL check, it should be
-
-	if (!priv_dst->list)
-		return -ENOMEM;
+> +	return __of_parse_phandle_with_args(np, list_name, cells_name,
+> +					    0, index, out_args);
+> +}
+> +EXPORT_SYMBOL(of_parse_phandle_with_optional_args);
 
 
-Looks like the following patches also have this bug.
+With the above, just make this static inline. Bonus points if you want 
+to do the same changes on the other variants.
+
+Rob
