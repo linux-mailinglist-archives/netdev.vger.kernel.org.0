@@ -2,190 +2,264 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 388E7489886
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 13:23:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCDE148988B
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 13:26:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245376AbiAJMXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 07:23:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33068 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245415AbiAJMXO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 07:23:14 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B49C06173F
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 04:23:13 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id x4so1236774wru.7
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 04:23:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=d5pQe12aMTp9K2Ar029wPLMoAM2l+tag/tJuNAihSfA=;
-        b=oJPzZWiJGiiJbT4/DpmWXxwLQYl6V3un3f2VMq9gR7xu1Vg0i7bZ927q0i6k6AQopH
-         EMyuitOKXW8UrzPrA8eOw7VIwHiup4VsiSBK70Fwh3ZHQOw8z80zEoQuv/4CO+GM9ivz
-         F5QUJ+ddCeY/O2IGHQoaAHfFjZBPVjvkv+z5R1r8GVyPWIRO/0eMm5lWFMJ9u0SODO/G
-         MdBs5h8FelfgOYX3f78MFfDQiSxzbfqga00uHApimjp9PagVhvMXJoFmnNYqNKov7brQ
-         vTMyqbYIDiV5KSYQLZHE20N7CHzkl+83RKoT9KdBiD7amP2upvF6OjdjXJB6L3Rolsqe
-         gmUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=d5pQe12aMTp9K2Ar029wPLMoAM2l+tag/tJuNAihSfA=;
-        b=C+t/hzd6MCbppUNX8VQnCUb1YGS+exWl5r8wApYTe6MHUPwKkIDbVafwK1Y5NqA3dP
-         LFhIgFmARi6E2tirRbMrzfnPT4DTC01LScNnpGx6E4WfADXQfvFnyLG4nzOtWZ7yKcQG
-         eli/i0R6Atoh9LyUyY4oauqKnHKiKNhbn6OVmf+y9mXjOmiFcfZFtKjynXeXnfbQlMeJ
-         iCCwFAr3uBZZOw5bqVNBpA9/m54Whd5LbMV4Bl78EE9djDa426B+QW2za4c3p5A2o60r
-         LDy3TOwnI7kaFPoxFICa/OFZzwm80XPYwMybeh4zRyol7NkNv5NPCc1yucOK8ub4OwSP
-         6wUA==
-X-Gm-Message-State: AOAM531gw68a5NGt42Ej4EmxWX2wzEBJnJDdijBGBfHPMVvQRwZQi3rJ
-        JypiroUy379iW4m9DtIRbPj5fg==
-X-Google-Smtp-Source: ABdhPJxJTGBqADrh2dO8M5zq/V0efObTWO7ybtVGTQGANdUuw72l8ka3sOvJLzv6aUoWNXVdmQ1BEQ==
-X-Received: by 2002:adf:e2cc:: with SMTP id d12mr17686855wrj.107.1641817392300;
-        Mon, 10 Jan 2022 04:23:12 -0800 (PST)
-Received: from google.com ([31.124.24.179])
-        by smtp.gmail.com with ESMTPSA id l4sm6533168wrm.62.2022.01.10.04.23.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 04:23:11 -0800 (PST)
-Date:   Mon, 10 Jan 2022 12:23:09 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC v5 net-next 08/13] mfd: add interface to check whether a
- device is mfd
-Message-ID: <YdwlLYFPU16roS8E@google.com>
-References: <20211218214954.109755-1-colin.foster@in-advantage.com>
- <20211218214954.109755-9-colin.foster@in-advantage.com>
- <Ycx+A4KNKiVmH2PJ@google.com>
- <20211230020443.GB1347882@euler>
- <Yc23mTo6g1tBiMjT@google.com>
- <20211230201253.GA1484230@euler>
+        id S245431AbiAJM0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 07:26:01 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:42242 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S235973AbiAJMZ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 07:25:57 -0500
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20AAclNv005407;
+        Mon, 10 Jan 2022 12:25:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=PkvwHo51xgja/KUsAWlUBaTVsqGisgEduBZgUc75HO4=;
+ b=mcFe1Ga0Fl1tRrCEwuepYy7E509imE1nuWm6i377HPLLtZLtdbbPxcCaYxjsu5hc55B+
+ IR+aUNQS/zEUHNBE99gfXIxyIOmKrCrbCuczLTvChqXzLDUxnibBxIpZBJnZtfrOa4i9
+ TeZAvc5RGrj1B1IOrH4tRh3eKsE16u3aFFjtaJqAiP9EiBASbbDCA5vBMpwxEi0VQidW
+ HQrybPXBn/VlTRXcHbiWNrmIc79ry2clYrBKE9330EAcBB7jZg7cySTcjAWTWiiifLxv
+ Lrh0LemCmbZVnxX3jW1+NjSXFsSZJtP+HbwILqrqdtw6njgrGI8AozRH9tUz4RCxZmT4 Vw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dfm1hsgsk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 10 Jan 2022 12:25:53 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20AAqELP018450;
+        Mon, 10 Jan 2022 12:25:53 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dfm1hsgs4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 10 Jan 2022 12:25:53 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20ACC71M016309;
+        Mon, 10 Jan 2022 12:25:51 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04fra.de.ibm.com with ESMTP id 3df2893pcp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 10 Jan 2022 12:25:51 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20ACPnSS44499208
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 10 Jan 2022 12:25:49 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 549C952059;
+        Mon, 10 Jan 2022 12:25:49 +0000 (GMT)
+Received: from [9.145.184.190] (unknown [9.145.184.190])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 02DFB5204F;
+        Mon, 10 Jan 2022 12:25:48 +0000 (GMT)
+Message-ID: <3525a4cd-1bc7-1008-910b-fb89597cc10a@linux.ibm.com>
+Date:   Mon, 10 Jan 2022 13:25:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211230201253.GA1484230@euler>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH net 1/3] net/smc: Resolve the race between link group
+ access and termination
+Content-Language: en-US
+To:     Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1641806784-93141-1-git-send-email-guwen@linux.alibaba.com>
+ <1641806784-93141-2-git-send-email-guwen@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <1641806784-93141-2-git-send-email-guwen@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Ipg6Qz8vft_IlIzO3S9Wu1lENxcquCCK
+X-Proofpoint-ORIG-GUID: ZEkORhwhtGooLgfkp1OZdAuxrfJPzVOI
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-10_05,2022-01-10_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 bulkscore=0
+ impostorscore=0 malwarescore=0 mlxlogscore=999 lowpriorityscore=0
+ phishscore=0 adultscore=0 spamscore=0 clxscore=1015 mlxscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201100085
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 30 Dec 2021, Colin Foster wrote:
+On 10/01/2022 10:26, Wen Gu wrote:
+> We encountered some crashes caused by the race between the access
+> and the termination of link groups.
+> 
+<snip>
+> 
+> diff --git a/net/smc/smc.h b/net/smc/smc.h
+> index 1a4fc1c..3d0b8e3 100644
+> --- a/net/smc/smc.h
+> +++ b/net/smc/smc.h
+> @@ -221,6 +221,7 @@ struct smc_connection {
+>  						 */
+>  	u64			peer_token;	/* SMC-D token of peer */
+>  	u8			killed : 1;	/* abnormal termination */
+> +	u8			freed : 1;	/* normal termiation */
+>  	u8			out_of_sync : 1; /* out of sync with peer */
+>  };
+>  
+> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+> index cd3c3b8..26a113d 100644
+> --- a/net/smc/smc_core.c
+> +++ b/net/smc/smc_core.c
+> @@ -186,6 +186,7 @@ static int smc_lgr_register_conn(struct smc_connection *conn, bool first)
+>  			conn->alert_token_local = 0;
+>  	}
+>  	smc_lgr_add_alert_token(conn);
+> +	smc_lgr_hold(conn->lgr); /* lgr_put in smc_conn_free() */
+>  	conn->lgr->conns_num++;
+>  	return 0;
+>  }
+> @@ -218,7 +219,6 @@ static void smc_lgr_unregister_conn(struct smc_connection *conn)
+>  		__smc_lgr_unregister_conn(conn);
+>  	}
+>  	write_unlock_bh(&lgr->conns_lock);
+> -	conn->lgr = NULL;
+>  }
+>  
+>  int smc_nl_get_sys_info(struct sk_buff *skb, struct netlink_callback *cb)
+> @@ -749,6 +749,7 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
+>  	lnk->path_mtu = lnk->smcibdev->pattr[lnk->ibport - 1].active_mtu;
+>  	lnk->link_id = smcr_next_link_id(lgr);
+>  	lnk->lgr = lgr;
+> +	smc_lgr_hold(lgr); /* lgr_put in smcr_link_clear() */
+>  	lnk->link_idx = link_idx;
+>  	smc_ibdev_cnt_inc(lnk);
+>  	smcr_copy_dev_info_to_link(lnk);
+> @@ -841,6 +842,7 @@ static int smc_lgr_create(struct smc_sock *smc, struct smc_init_info *ini)
+>  	lgr->terminating = 0;
+>  	lgr->freeing = 0;
+>  	lgr->vlan_id = ini->vlan_id;
+> +	refcount_set(&lgr->refcnt, 1); /* set lgr refcnt to 1 */
+>  	mutex_init(&lgr->sndbufs_lock);
+>  	mutex_init(&lgr->rmbs_lock);
+>  	rwlock_init(&lgr->conns_lock);
+> @@ -1120,8 +1122,22 @@ void smc_conn_free(struct smc_connection *conn)
+>  {
+>  	struct smc_link_group *lgr = conn->lgr;
+>  
+> -	if (!lgr)
+> +	if (!lgr || conn->freed)
+> +		/* The connection has never been registered in a
+> +		 * link group, or has already been freed.
+> +		 *
+> +		 * Check to ensure that the refcnt of link group
+> +		 * won't be put incorrectly.
 
-> On Thu, Dec 30, 2021 at 01:43:53PM +0000, Lee Jones wrote:
-> > On Wed, 29 Dec 2021, Colin Foster wrote:
-> > 
-> > > On Wed, Dec 29, 2021 at 03:25:55PM +0000, Lee Jones wrote:
-> > > > On Sat, 18 Dec 2021, Colin Foster wrote:
-> > > > 
-> > > > > Some drivers will need to create regmaps differently based on whether they
-> > > > > are a child of an MFD or a standalone device. An example of this would be
-> > > > > if a regmap were directly memory-mapped or an external bus. In the
-> > > > > memory-mapped case a call to devm_regmap_init_mmio would return the correct
-> > > > > regmap. In the case of an MFD, the regmap would need to be requested from
-> > > > > the parent device.
-> > > > > 
-> > > > > This addition allows the driver to correctly reason about these scenarios.
-> > > > > 
-> > > > > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > > > > ---
-> > > > >  drivers/mfd/mfd-core.c   |  5 +++++
-> > > > >  include/linux/mfd/core.h | 10 ++++++++++
-> > > > >  2 files changed, 15 insertions(+)
-> > > > > 
-> > > > > diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
-> > > > > index 684a011a6396..905f508a31b4 100644
-> > > > > --- a/drivers/mfd/mfd-core.c
-> > > > > +++ b/drivers/mfd/mfd-core.c
-> > > > > @@ -33,6 +33,11 @@ static struct device_type mfd_dev_type = {
-> > > > >  	.name	= "mfd_device",
-> > > > >  };
-> > > > >  
-> > > > > +int device_is_mfd(struct platform_device *pdev)
-> > > > > +{
-> > > > > +	return (!strcmp(pdev->dev.type->name, mfd_dev_type.name));
-> > > > > +}
-> > > > > +
-> > > > 
-> > > > Why is this device different to any other that has ever been
-> > > > mainlined?
-> > > 
-> > > Hi Lee,
-> > > 
-> > > First, let me apologize for not responding to your response from the
-> > > related RFC from earlier this month. It had been blocked by my spam
-> > > filter and I had not seen it until just now. I'll have to check that
-> > > more diligently now.
-> > > 
-> > > Moving on...
-> > > 
-> > > That's a question I keep asking myself. Either there's something I'm
-> > > missing, or there's something new I'm doing.
-> > > 
-> > > This is taking existing drivers that work via MMIO regmaps and making
-> > > them interface-independent. As Vladimir pointed out here:
-> > > https://lore.kernel.org/all/20211204022037.dkipkk42qet4u7go@skbuf/T/
-> > > device_is_mfd could be dropped in lieu of an mfd-specific probe
-> > > function.
-> > > 
-> > > If there's something I'm missing, please let me know. But it feels like
-> > > devm_get_regmap_from_resource at the end of the day would be the best
-> > > solution to the design, and that doesn't exist. And implementing
-> > > something like that is a task that I feel I'm not capable of tackling at
-> > > this time.
-> > 
-> > I'm really not a fan of leaking any MFD API outside of drivers/mfd.
-> > MFD isn't a tangible thing.  It's a Linuxiusm, something we made up, a
-> > figment of your imagination.
-> > 
-> > What happens if you were to all dev_get_regmap() in the non-MFD case
-> > or when you call devm_regmap_init_mmio() when the driver was
-> > registered via the MFD framework?
-> 
-> I'd imagine dev_get_regmap in a non-MFD case would be the same as
-> dev_get_and_ioremap_resource() followed by devm_regmap_init_mmio().
-> 
-> In the MFD case it would possibly request the regmap from the parent,
-> which could reason about how to create the regmap. As you understand,
-> this is exactly the behavior I created in this patch set. I did it by
-> way of ocelot_get_regmap_from_resource, and admit it isn't the best way.
-> But it certainly seems there isn't an existing method that I'm missing.
-> 
-> I'm coming from a pretty narrow field of view, but believe my use-case
-> is a valid one. If that is true, and there isn't another design I should
-> use... this is the opportunity to create it. Implementing
-> ocelot_get_regmap_from_resource is a way to achieve my needs without
-> affecting anyone else. 
-> 
-> Going one step further and implementing mfd_get_regmap_from_parent (or
-> similar) would creep into the design of MFD. I don't know enough about
-> MFD and the users to suggest this. I wouldn't want to start venturing
-> down that path without blessing from the community. And this would
-> indirectly affect every MFD driver.
-> 
-> Going all in and implementing device_get_regmap_from_resource... I don't
-> know that I'd be comfortable even starting down that path knowing that
-> it would affect every device. Perhaps it would have to utilize something
-> like IORESOURCE_REG that seems to only get utilized in a handful of 
-> files:
-> https://elixir.bootlin.com/linux/v5.16-rc7/C/ident/IORESOURCE_REG
+I would delete the second sentence here, its obvious enough.
 
-Let's speak to Mark and see if he can provide any insight.
+> +		 */
+>  		return;
+> +
+> +	conn->freed = 1;
+> +	if (!conn->alert_token_local)
+> +		/* The connection was registered in a link group
+> +		 * defore, but now it is unregistered from it.
+
+'before' ... But would maybe the following be more exact:
+
+'Connection already unregistered from link group.'
+
+
+We still review the patches...
+
+> +		 */
+> +		goto lgr_put;
+> +
+>  	if (lgr->is_smcd) {
+>  		if (!list_empty(&lgr->list))
+>  			smc_ism_unset_conn(conn);
+> @@ -1138,6 +1154,8 @@ void smc_conn_free(struct smc_connection *conn)
+>  
+>  	if (!lgr->conns_num)
+>  		smc_lgr_schedule_free_work(lgr);
+> +lgr_put:
+> +	smc_lgr_put(lgr); /* lgr_hold in smc_lgr_register_conn() */
+>  }
+>  
+>  /* unregister a link from a buf_desc */
+> @@ -1209,6 +1227,7 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
+>  	smc_ib_destroy_queue_pair(lnk);
+>  	smc_ib_dealloc_protection_domain(lnk);
+>  	smc_wr_free_link_mem(lnk);
+> +	smc_lgr_put(lnk->lgr); /* lgr_hold in smcr_link_init() */
+>  	smc_ibdev_cnt_dec(lnk);
+>  	put_device(&lnk->smcibdev->ibdev->dev);
+>  	smcibdev = lnk->smcibdev;
+> @@ -1283,6 +1302,15 @@ static void smc_lgr_free_bufs(struct smc_link_group *lgr)
+>  	__smc_lgr_free_bufs(lgr, true);
+>  }
+>  
+> +/* won't be freed until no one accesses to lgr anymore */
+> +static void __smc_lgr_free(struct smc_link_group *lgr)
+> +{
+> +	smc_lgr_free_bufs(lgr);
+> +	if (!lgr->is_smcd)
+> +		smc_wr_free_lgr_mem(lgr);
+> +	kfree(lgr);
+> +}
+> +
+>  /* remove a link group */
+>  static void smc_lgr_free(struct smc_link_group *lgr)
+>  {
+> @@ -1298,7 +1326,6 @@ static void smc_lgr_free(struct smc_link_group *lgr)
+>  		smc_llc_lgr_clear(lgr);
+>  	}
+>  
+> -	smc_lgr_free_bufs(lgr);
+>  	destroy_workqueue(lgr->tx_wq);
+>  	if (lgr->is_smcd) {
+>  		smc_ism_put_vlan(lgr->smcd, lgr->vlan_id);
+> @@ -1306,11 +1333,21 @@ static void smc_lgr_free(struct smc_link_group *lgr)
+>  		if (!atomic_dec_return(&lgr->smcd->lgr_cnt))
+>  			wake_up(&lgr->smcd->lgrs_deleted);
+>  	} else {
+> -		smc_wr_free_lgr_mem(lgr);
+>  		if (!atomic_dec_return(&lgr_cnt))
+>  			wake_up(&lgrs_deleted);
+>  	}
+> -	kfree(lgr);
+> +	smc_lgr_put(lgr); /* theoretically last lgr_put */
+> +}
+> +
+> +void smc_lgr_hold(struct smc_link_group *lgr)
+> +{
+> +	refcount_inc(&lgr->refcnt);
+> +}
+> +
+> +void smc_lgr_put(struct smc_link_group *lgr)
+> +{
+> +	if (refcount_dec_and_test(&lgr->refcnt))
+> +		__smc_lgr_free(lgr);
+>  }
+>  
+>  static void smc_sk_wake_ups(struct smc_sock *smc)
+> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+> index 73d0c35..edbd401 100644
+> --- a/net/smc/smc_core.h
+> +++ b/net/smc/smc_core.h
+> @@ -249,6 +249,7 @@ struct smc_link_group {
+>  	u8			terminating : 1;/* lgr is terminating */
+>  	u8			freeing : 1;	/* lgr is being freed */
+>  
+> +	refcount_t		refcnt;		/* lgr reference count */
+>  	bool			is_smcd;	/* SMC-R or SMC-D */
+>  	u8			smc_version;
+>  	u8			negotiated_eid[SMC_MAX_EID_LEN];
+> @@ -470,6 +471,8 @@ static inline void smc_set_pci_values(struct pci_dev *pci_dev,
+>  
+>  void smc_lgr_cleanup_early(struct smc_link_group *lgr);
+>  void smc_lgr_terminate_sched(struct smc_link_group *lgr);
+> +void smc_lgr_hold(struct smc_link_group *lgr);
+> +void smc_lgr_put(struct smc_link_group *lgr);
+>  void smcr_port_add(struct smc_ib_device *smcibdev, u8 ibport);
+>  void smcr_port_err(struct smc_ib_device *smcibdev, u8 ibport);
+>  void smc_smcd_terminate(struct smcd_dev *dev, u64 peer_gid,
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Karsten
