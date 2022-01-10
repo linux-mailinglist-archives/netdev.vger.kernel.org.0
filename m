@@ -2,84 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6271C489B6E
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 15:39:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FF56489B73
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 15:40:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235644AbiAJOjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 09:39:02 -0500
-Received: from mail-qv1-f43.google.com ([209.85.219.43]:45844 "EHLO
-        mail-qv1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231196AbiAJOjB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 09:39:01 -0500
-Received: by mail-qv1-f43.google.com with SMTP id a9so14599906qvd.12;
-        Mon, 10 Jan 2022 06:39:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pO7pYeF0q/KOlSDXskK/am/odc2RYkvEzSsdTjA4sWM=;
-        b=gRTbjgJmxjdCUi7JMQk7WGmiyclPZeWwmgoeu2VyXeCHGgJ9Vz7o/Dk5ijtymrXntb
-         g3M65jKF9TnEdtGpgstLScFbD4OBJfzVwHaHynhg6OUOW2zpVqM+fKYFocDJyUuHeoDz
-         HPsQlsqJihg/rjA2LxB7MUL03k/IavUEby7njHPZa/Ve/31HezB6CLE2qMPxgZ7Z2SwP
-         2tSJtiFZ4XzqzojNTd78hDXNo6bCETKkNsOlyT9wcKu1Zh4EUITJrZjnJhkzUQaLtFTm
-         9JILxMwCgKBv4A89KFQtI1cE1QRvWGn6reomc2kuoOhD6l0QzYx/HFeZcy463gNcMCbF
-         g1Fw==
-X-Gm-Message-State: AOAM533vUXmtCoff9+QHKY+wIY/A0NkDKQMHKO7qVIqr9G7UD4S426mP
-        SwOybfGK2YepZxnpwxHmPsTtROvv6fmNxg==
-X-Google-Smtp-Source: ABdhPJym7QBoq8Zjc+aKSJ0iSTaFS10mpRbgvEa+KZAl3mkEJk7GZpOWuY2DnxGzvLYA1H/MIZou1A==
-X-Received: by 2002:a05:6214:2a88:: with SMTP id jr8mr69282684qvb.18.1641825540470;
-        Mon, 10 Jan 2022 06:39:00 -0800 (PST)
-Received: from dev0025.ash9.facebook.com (fwdproxy-ash-006.fbsv.net. [2a03:2880:20ff:6::face:b00c])
-        by smtp.gmail.com with ESMTPSA id k8sm4931234qtx.35.2022.01.10.06.38.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 06:39:00 -0800 (PST)
-Date:   Mon, 10 Jan 2022 06:38:58 -0800
-From:   David Vernet <void@manifault.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        joe.lawrence@redhat.com, linux-modules@vger.kernel.org,
-        mcgrof@kernel.org, jeyu@kernel.org, bpf@vger.kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, memxor@gmail.com, clm@fb.com
-Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
-Message-ID: <YdxFAshozmxfiLd/@dev0025.ash9.facebook.com>
-References: <Yc0yskk0m2bePLu6@dev0025.ash9.facebook.com>
- <YdMej8L0bqe+XetW@alley>
+        id S235657AbiAJOko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 09:40:44 -0500
+Received: from out162-62-57-137.mail.qq.com ([162.62.57.137]:53301 "EHLO
+        out162-62-57-137.mail.qq.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231196AbiAJOko (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 09:40:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1641825640;
+        bh=XedwP+iNO0nilHdgO1plTP2iIBF+Vm/O4VtBN+afGmI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=MgsMPXESmcpqPI12C6aaMYc3Uoh4Vg/0FhuHnzeph76f7fwZ/YxK7lIhZ2QYaUnVi
+         pETN5g2KS4y1Ab7XgthLzfsZL0tNegkUoTTt+8oQckhYyrqFHkzOrkU9xoqGKkIRyv
+         SA/tp1Z8P9YmWRdsqFy5ABV4se1nvlmpXty7QTqo=
+Received: from localhost ([119.32.47.91])
+        by newxmesmtplogicsvrsza9.qq.com (NewEsmtp) with SMTP
+        id A26B40E0; Mon, 10 Jan 2022 22:40:38 +0800
+X-QQ-mid: xmsmtpt1641825638t6fz0uysb
+Message-ID: <tencent_0C9377D282B45298ADD426820211360E8F07@qq.com>
+X-QQ-XMAILINFO: MgAERLP4sJkUEQnYpOWuVgMj2GOpMqUigaUYhzPzTk9iNKTiN6uJ90QLX5xYoI
+         mA9PSt8Z2SpJPk/vSsS2IQKDECq/cogSlxDfgc+an/PjgWcsnMCr0D9dKOsK/fb1kIKM+OPJhTDS
+         cxK1LVT4Sr3qRxJLyTBIrm3XSUfApSO+gjLSQPlaE2sCa0bioDN182eXFbNeyTScqkLmthWaJ2j2
+         x3Ir/K4P3WD9n1jqhDzZO81ni59L464Vmb0Yms3LC1LcRt8vjF+rNz65+/5SQZv0xg2uUJz2ETOL
+         fxegnSd/FkDsc05QDM8H98cTD8+5GY+VEMLNADKCvQl3EUiM991K8ManNjPc+5oad+Ci8v/Uo++O
+         x9UEo5KIs02WHOGX8oArE8FotItNfr9VYtyMXG7wKeNUMGXT2s9qZ3SX5mQj2Q0BuUGew+lb8hSn
+         A6wAm5YRbNha7IK1HMMJVsVSx2+e470zy3lw6RXY3bAx4fOZeQGoWYSQQV1YZAWTH+39+60pAYKV
+         KmsN9NrJLXKp/ha2LYYd5bBe1uO3wanbWYZpkdQn0WNQh6D6IJwqt6bIG4NNDwlwX5paddTqP7Mm
+         AWU6Rng0PHsEg7T/m/5HFodnmPGp84wK0pkW5xC8FFY7L5CvjZlz/fCLRXprUHR8icuSiVuFgPBt
+         To2v24CJ+YQhktMYd/V1VUPNZaQ0z+KHq7OHvEewucbZlQktLjohdj0uW69bZO19ypwkJxpANgRB
+         q1jjNmP8rGRC6y92oVpS8PsR47qQSP7NM3EP7vNkjVQRNPZOtp96Qf+SG1AZEwbweTo/MiDUg8Wm
+         kvY94yOtgfCqXbLf/HOcEG6NmzSoFyK6RAMQixBDRe7OOVWvEIiQffS9rIZPUZ/I4o7FYgbTIBtQ
+         ==
+Date:   Mon, 10 Jan 2022 22:40:38 +0800
+From:   Conley Lee <conleylee@foxmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+        wens@csie.org, clabbe.montjoie@gmail.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: ethernet: sun4i-emac: replace magic number with
+ macro
+X-OQ-MSGID: <YdxFZpzzvX0jxtNi@fedora>
+References: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
+ <tencent_AEEE0573A5455BBE4D5C05226C6C1E3AEF08@qq.com>
+ <Ydw1MOcmS6fZ6J8d@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YdMej8L0bqe+XetW@alley>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Ydw1MOcmS6fZ6J8d@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Apologies all for the delayed response -- I was still on holiday last week.
-
-Petr Mladek <pmladek@suse.com> wrote on Mon [2022-Jan-03 17:04:31 +0100]:
-> > > It turns out that symbol lookups often take up the most CPU time when
-> > > enabling and disabling a patch, and may hog the CPU and cause other tasks
-> > > on that CPU's runqueue to starve -- even in paths where interrupts are
-> > > enabled.  For example, under certain workloads, enabling a KLP patch with
-> > > many objects or functions may cause ksoftirqd to be starved, and thus for
->     ^^^^^^^^^^^^^^^^^^^^^^^^^
-> This suggests that a single kallsyms_on_each_symbol() is not a big
-> problem. cond_resched() might be called non-necessarily often there.
-> I wonder if it would be enough to add cond_resched() into the two
-> loops calling klp_find_object_symbol().
-
-In the initial version of the patch I was intending to send out, I actually
-had the cond_resched() in klp_find_object_symbol(). Having it there did
-appear to fix the ksoftirqd starvation issue, but I elected to put it in
-klp_find_object_symbol() after Chris (cc'd) suggested it because
-cond_resched() is so lightweight, and it didn't affect the runtime for
-livepatching in my experiments.
-
-> That said, kallsyms_on_each_symbol() is a slow path and there might
-> be many symbols. So, it might be the right place.
-
-Yes, my thinking was that because it didn't seem to affect throughput, and
-because it would could potentially cause the same ssue to occur if it were
-ever called elsewhere, that this was the correct place for it.
+On 01/10/22 at 02:31下午, Andrew Lunn wrote:
+> Date: Mon, 10 Jan 2022 14:31:28 +0100
+> From: Andrew Lunn <andrew@lunn.ch>
+> To: Conley Lee <conleylee@foxmail.com>
+> Cc: davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+>  wens@csie.org, clabbe.montjoie@gmail.com, netdev@vger.kernel.org,
+>  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH v2] net: ethernet: sun4i-emac: replace magic number
+>  with macro
+> 
+> > @@ -637,7 +637,9 @@ static void emac_rx(struct net_device *dev)
+> >  		if (!rxcount) {
+> >  			db->emacrx_completed_flag = 1;
+> >  			reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+> > -			reg_val |= (0xf << 0) | (0x01 << 8);
+> > +			reg_val |=
+> > +				(EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN |
+> > +				 EMAC_INT_CTL_RX_EN);
+> 
+> Putting the first value on the next line is a bit odd. This would be
+> preferred:
+> 
+> +			reg_val |= (EMAC_INT_CTL_TX_EN |
+> +                                   EMAC_INT_CTL_TX_ABRT_EN |
+> +				    EMAC_INT_CTL_RX_EN);
+> 
+> I also have to wonder why two | have become three? (0x01 << 8) is
+> clearly a single value. (0xf << 0) should either be a single macro, or
+> 4 macros since 0xf is four bits. Without looking into the details, i
+> cannot say this is wrong, but it does look strange.
+> 
+>        Andrew
+> 
+Thanks for your suggestion. The (0xf << 0) mask enable tx finish and tx abort
+interrupts at hardware level. And the reason this mask has 4 bits is that
+sun4i emac has 2 tx channels. I reduce it into two macros EMAC_INT_CTL_TX_EN 
+and EMAC_INT_CTL_TX_ABRT_EN, this may be more readable, since we always
+enable both tx channels in the driver.
