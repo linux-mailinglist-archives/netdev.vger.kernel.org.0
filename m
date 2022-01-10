@@ -2,225 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 720D3488FC3
-	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 06:26:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7B8D488FC4
+	for <lists+netdev@lfdr.de>; Mon, 10 Jan 2022 06:27:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238727AbiAJF0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 00:26:18 -0500
-Received: from mga01.intel.com ([192.55.52.88]:9493 "EHLO mga01.intel.com"
+        id S238730AbiAJF05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 00:26:57 -0500
+Received: from mga01.intel.com ([192.55.52.88]:9532 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238702AbiAJF0N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 10 Jan 2022 00:26:13 -0500
+        id S230407AbiAJF0w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 10 Jan 2022 00:26:52 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641792373; x=1673328373;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=8Y43mCzCtOa4jeMuuqM5GMSSeh6Z308UfkfH52saLW0=;
-  b=UUCJTrArJofAZCKEz8Py5n+HErUHjMubVU4nTmk0nQsnZ+LWCOvpo1q4
-   aiKhs4+MBhhBSMGlOa0M7bvEEplXoRGc3oDktU1vO7JSTJxfwVwH81Ifr
-   hfghVWuHYBv/chxGaiPS8KNdGmo2yt5ZHF4EA8PLxB8zvEyCuTlxZ3EhT
-   D7JKxQ6i2I3iKy4i+rnb2+1YRgddOYv2N7+0zAyzUwwo1GMQTDydSbDbU
-   0fOliIMzXb2Nx7AywfXK2cYYCaTXfpCUdojeLjLPAjA3dFoWdp2kld+8A
-   rFXU+7tGpB8lkZjtPWR235bZzNShTWJtQ4BA30/rD6l13JWEd4Pv+NGyp
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="267479415"
+  t=1641792411; x=1673328411;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ET0qLnW3tyTFQCu5LQZAadcUBsipvdpyr3aWKBjPxVw=;
+  b=IObo59rFryycfYm3NxFYcC0zhKjqx+839L/6EbNz2wfmzmx+EZ8Z2LfE
+   cmKdCtlu9rXzLRX6y+0i4uLb3DOP0ILGeBm9Aibsg9poezLFsisiDrSQ4
+   1aEBd4xcz4OcdxEoRUybzb9lwiEB04g02TEE2DhfwxGZ0pvirwAcLqRk1
+   Xk0wHUvAqRl3gFg1mHQNDryzebVbv/y1Wc8abUyLXBtZC2wAOrB4rlYyQ
+   2TP6PMIImAZAfQa4YQMkjPduofbBrCcWh/tUt+CMEvL03pYs9K10fMVYv
+   rXwiXTLCnxKuaHh54NYdz51zVE8bLiVDHGcgh8DL6pLqBVVImFmQWjlrQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="267479482"
 X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
-   d="scan'208";a="267479415"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2022 21:26:07 -0800
+   d="scan'208";a="267479482"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2022 21:26:51 -0800
 X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
-   d="scan'208";a="622559841"
+   d="scan'208";a="489892262"
 Received: from unknown (HELO cra01infra01.deacluster.intel.com) ([10.240.193.73])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2022 21:26:06 -0800
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2022 21:26:49 -0800
 From:   Zhu Lingshan <lingshan.zhu@intel.com>
 To:     jasowang@redhat.com, mst@redhat.com
-Cc:     netdev@vger.kernel.org, Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH 7/7] vDPA/ifcvf: improve irq requester, to handle per_vq/shared/config irq
-Date:   Mon, 10 Jan 2022 13:18:51 +0800
-Message-Id: <20220110051851.84807-8-lingshan.zhu@intel.com>
+Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH 0/7] Supoort shared irq for virtqueues
+Date:   Mon, 10 Jan 2022 13:19:40 +0800
+Message-Id: <20220110051947.84901-1-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220110051851.84807-1-lingshan.zhu@intel.com>
-References: <20220110051851.84807-1-lingshan.zhu@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit expends irq requester abilities to handle per vq irq,
-shared irq and config irq.
+On some platforms, it has been observed that a device may fail to
+allocate enough MSI-X vectors, under such circumstances, the vqs have
+to share a irq/vector.
 
-On some platforms, the device can not get enough vectors for every
-virtqueue and config interrupt, the device needs to work under such
-circumstances.
+This series extends irq requester/handlers abilities to deal with:
+(granted nvectors, and max_intr = total vq number + 1(config interrupt) )
 
-Normally a device can get enough vectors, so every virtqueue and
-config interrupt can have its own vector/irq. If the total vector
-number is less than all virtqueues + 1(config interrupt), all
-virtqueues need to share a vector/irq and config interrupt is
-enabled. If the total vector number < 2, all vitequeues share
-a vector/irq, and config interrupt is disabled. Otherwise it will
-fail if allocation for vectors fails.
+1)nvectors = max_intr: each vq has its own vector/irq,
+config interrupt is enabled, normal case
+2)max_intr > nvectors >= 2: vqs share one irq/vector, config interrupt is
+enabled
+3)nvectors = 1, vqs share one irq/vector, config interrupt is disabled.
+Otherwise it fails.
 
-This commit also made necessary chages to the irq cleaner to
-free per vq irq/shared irq and config irq.
+This series also made necessary changes to irq cleaners and related
+helpers.
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vdpa/ifcvf/ifcvf_base.h |  6 +--
- drivers/vdpa/ifcvf/ifcvf_main.c | 78 +++++++++++++++------------------
- 2 files changed, 38 insertions(+), 46 deletions(-)
+Pleaase help reivew.
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-index 1d5431040d7d..1d0afb63f06c 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.h
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-@@ -27,8 +27,6 @@
- 
- #define IFCVF_QUEUE_ALIGNMENT	PAGE_SIZE
- #define IFCVF_QUEUE_MAX		32768
--#define IFCVF_MSI_CONFIG_OFF	0
--#define IFCVF_MSI_QUEUE_OFF	1
- #define IFCVF_PCI_MAX_RESOURCE	6
- 
- #define IFCVF_LM_CFG_SIZE		0x40
-@@ -102,11 +100,13 @@ struct ifcvf_hw {
- 	u8 notify_bar;
- 	/* Notificaiton bar address */
- 	void __iomem *notify_base;
-+	u8 vector_per_vq;
-+	u16 padding;
- 	phys_addr_t notify_base_pa;
- 	u32 notify_off_multiplier;
-+	u32 dev_type;
- 	u64 req_features;
- 	u64 hw_features;
--	u32 dev_type;
- 	struct virtio_pci_common_cfg __iomem *common_cfg;
- 	void __iomem *net_cfg;
- 	struct vring_info vring[IFCVF_MAX_QUEUES];
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index 414b5dfd04ca..ec76e342bd7e 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -17,6 +17,8 @@
- #define DRIVER_AUTHOR   "Intel Corporation"
- #define IFCVF_DRIVER_NAME       "ifcvf"
- 
-+static struct vdpa_config_ops ifc_vdpa_ops;
-+
- static irqreturn_t ifcvf_config_changed(int irq, void *arg)
- {
- 	struct ifcvf_hw *vf = arg;
-@@ -63,13 +65,20 @@ static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
- 	struct ifcvf_hw *vf = &adapter->vf;
- 	int i;
- 
-+	if (vf->vector_per_vq)
-+		for (i = 0; i < queues; i++) {
-+			devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
-+			vf->vring[i].irq = -EINVAL;
-+		}
-+	else
-+		devm_free_irq(&pdev->dev, vf->vring[0].irq, vf);
- 
--	for (i = 0; i < queues; i++) {
--		devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
--		vf->vring[i].irq = -EINVAL;
-+
-+	if (vf->config_irq != -EINVAL) {
-+		devm_free_irq(&pdev->dev, vf->config_irq, vf);
-+		vf->config_irq = -EINVAL;
- 	}
- 
--	devm_free_irq(&pdev->dev, vf->config_irq, vf);
- 	ifcvf_free_irq_vectors(pdev);
- }
- 
-@@ -191,52 +200,35 @@ static int ifcvf_request_config_irq(struct ifcvf_adapter *adapter, int config_ve
- 
- static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
- {
--	struct pci_dev *pdev = adapter->pdev;
- 	struct ifcvf_hw *vf = &adapter->vf;
--	int vector, i, ret, irq;
--	u16 max_intr;
-+	u16 nvectors, max_vectors;
-+	int config_vector, ret;
- 
--	/* all queues and config interrupt  */
--	max_intr = vf->nr_vring + 1;
-+	nvectors = ifcvf_alloc_vectors(adapter);
-+	if (nvectors < 0)
-+		return nvectors;
- 
--	ret = pci_alloc_irq_vectors(pdev, max_intr,
--				    max_intr, PCI_IRQ_MSIX);
--	if (ret < 0) {
--		IFCVF_ERR(pdev, "Failed to alloc IRQ vectors\n");
--		return ret;
--	}
-+	vf->vector_per_vq = true;
-+	max_vectors = vf->nr_vring + 1;
-+	config_vector = vf->nr_vring;
- 
--	snprintf(vf->config_msix_name, 256, "ifcvf[%s]-config\n",
--		 pci_name(pdev));
--	vector = 0;
--	vf->config_irq = pci_irq_vector(pdev, vector);
--	ret = devm_request_irq(&pdev->dev, vf->config_irq,
--			       ifcvf_config_changed, 0,
--			       vf->config_msix_name, vf);
--	if (ret) {
--		IFCVF_ERR(pdev, "Failed to request config irq\n");
--		return ret;
-+	if (nvectors < max_vectors) {
-+		vf->vector_per_vq = false;
-+		config_vector = 1;
-+		ifc_vdpa_ops.get_vq_irq = NULL;
- 	}
- 
--	for (i = 0; i < vf->nr_vring; i++) {
--		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
--			 pci_name(pdev), i);
--		vector = i + IFCVF_MSI_QUEUE_OFF;
--		irq = pci_irq_vector(pdev, vector);
--		ret = devm_request_irq(&pdev->dev, irq,
--				       ifcvf_intr_handler, 0,
--				       vf->vring[i].msix_name,
--				       &vf->vring[i]);
--		if (ret) {
--			IFCVF_ERR(pdev,
--				  "Failed to request irq for vq %d\n", i);
--			ifcvf_free_irq(adapter, i);
-+	if (nvectors < 2)
-+		config_vector = 0;
- 
--			return ret;
--		}
-+	ret = ifcvf_request_vq_irq(adapter, vf->vector_per_vq);
-+	if (ret)
-+		return ret;
- 
--		vf->vring[i].irq = irq;
--	}
-+	ret = ifcvf_request_config_irq(adapter, config_vector);
-+
-+	if (ret)
-+		return ret;
- 
- 	return 0;
- }
-@@ -573,7 +565,7 @@ static struct vdpa_notification_area ifcvf_get_vq_notification(struct vdpa_devic
-  * IFCVF currently does't have on-chip IOMMU, so not
-  * implemented set_map()/dma_map()/dma_unmap()
-  */
--static const struct vdpa_config_ops ifc_vdpa_ops = {
-+static struct vdpa_config_ops ifc_vdpa_ops = {
- 	.get_features	= ifcvf_vdpa_get_features,
- 	.set_features	= ifcvf_vdpa_set_features,
- 	.get_status	= ifcvf_vdpa_get_status,
+Thanks!
+Zhu Lingshan
+
+Zhu Lingshan (7):
+  vDPA/ifcvf: implement IO read/write helpers in the header file
+  vDPA/ifcvf: introduce new helpers to set config vector and vq vectors
+  vDPA/ifcvf: implement device MSIX vector allocation helper
+  vDPA/ifcvf: implement shared irq handlers for vqs
+  vDPA/ifcvf: irq request helpers for both shared and per_vq irq
+  vDPA/ifcvf: implement config interrupt request helper
+  vDPA/ifcvf: improve irq requester, to handle per_vq/shared/config irq
+
+ drivers/vdpa/ifcvf/ifcvf_base.c |  65 ++++--------
+ drivers/vdpa/ifcvf/ifcvf_base.h |  45 +++++++-
+ drivers/vdpa/ifcvf/ifcvf_main.c | 179 +++++++++++++++++++++++++++-----
+ 3 files changed, 215 insertions(+), 74 deletions(-)
+
 -- 
 2.27.0
 
