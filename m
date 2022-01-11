@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64DFC48A506
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 02:25:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F53648A504
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 02:25:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346242AbiAKBZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 20:25:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45074 "EHLO
+        id S1346385AbiAKBZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 20:25:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346276AbiAKBY6 (ORCPT
+        with ESMTP id S1346278AbiAKBY6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 20:24:58 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88191C061763;
-        Mon, 10 Jan 2022 17:24:53 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id v6so30028433wra.8;
-        Mon, 10 Jan 2022 17:24:53 -0800 (PST)
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3FFC061201;
+        Mon, 10 Jan 2022 17:24:54 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id e9so28605860wra.2;
+        Mon, 10 Jan 2022 17:24:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VF7qW9MiU4eh1yjhaJcwhWLAYV9D5NgZferfOVmnDng=;
-        b=RFL+flfdaUFyAwgadVffktUDcR9+oGaC9ycYXE+rrxdbPzduih04zFJ1l11pqd5CmO
-         LdUmNpjZhvV5J2lAYBzMmJVEU37vek2Rnb3mhWjTqWumlcKB+ZHc5dg4kKP9iC8zjZzP
-         SOCajB8b3g1AWJhWlNnpWtsKhAXZiOvSBCGkgnaVdsB0uIDBZAE71L/zALAQclsjz0hT
-         HIHIz4DdjgaPY34CiPd2s3+8G2usnMv+Orz6ZguhxHt/m6tEawEDIsjcjyfK9vY8eAzo
-         UaIKreWVEYOfoRE8UfKsRReQvvSXHvE64DzUF6337tcY1FfJfhJ9UMJRciLCBLw3jbqO
-         VbsA==
+        bh=WLXW72viCdTqGqSUN8B/wJ3y6rx1ShnvlX/6mgA/9Xo=;
+        b=MkjnzgdbarY2G24kMTnfTMWw6YO8KJWOBRn54o2VeMv0jtN+dexJXKD+8Z1DK919ru
+         q/3brEep39XVdvqSuZgYNScFXx9oaAL8rONzamI7ygfiE5Oo2W/UURrzZM14YVgg36LS
+         ZweIIOzK5IXbjmsgnJx3F9RP5hCysuEQmZkwB8lfamfkY5T7RykQ5jIUPdCA0q/vZzJT
+         tctGCY/6KEHzZcFUt8U1Qv5yIvVNbmeudk0JzRZMG45aDbiITS9ggJDRhQdg+4OgYga9
+         sHz/+n0SaqvT0xHInAcW0GyYS3Ip4tI6pVRrE7iopfmrx6mHouoowfYm0KvH3e2044fk
+         9zDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VF7qW9MiU4eh1yjhaJcwhWLAYV9D5NgZferfOVmnDng=;
-        b=6YJpVx/SgYy4Zct+Dyfc/7HCjg0OYf+/1vgi8qAERbYvMVfU1/mkGcDTFBhBA7O1F9
-         PaaJzyuPzoUsGvH5JZyhwHcGqeX4F3fM6W3X+WLgSjoU3arO5P+4gVMeg1yI4UXBL3cd
-         ExCIcQKSeh2N69uo48T5URbcrl7GHZRwwnK+2yHPwWWdktvTjyqhjp2S2MGaDTMQ7Eux
-         1rs5XciHuFMTQvBncm1dQZMMzp27TX9OUPPMZ3bv3arS4hUAnXUTGuoj5wFhzxziAXqd
-         3wavNSRZRM+NzbiZBT9isC3xsVDq17NztTiVKQ5QCwSjg1X4j1OSMvr4a4Y6Qomf9qMG
-         yung==
-X-Gm-Message-State: AOAM530KCbUlGn0T4k38DLy0pqt39QDIUxtdLtB8N3nrycOjDQb56CQW
-        FHT42gtFScxsHHuKdJWlIFQsaOdmZXg=
-X-Google-Smtp-Source: ABdhPJzKLWxf8INCA2QCG/MLWEti+p3d6k2tMR32Xj9bAoeRt/pw3Sb9JsMAvVBOOgR7vSbbK/bQWA==
-X-Received: by 2002:a5d:6dd1:: with SMTP id d17mr1813032wrz.520.1641864292033;
+        bh=WLXW72viCdTqGqSUN8B/wJ3y6rx1ShnvlX/6mgA/9Xo=;
+        b=Nuol8Ou7Ulw0L89tgPhL4wOzKG7n3/DT3WnliAHyX519eJ80O1uwqqx4g+GBuAEkV1
+         NabQ+8ALn5Bj/ICwQkQdtjDGu9ZRvV3jmd1PlOIC6ZfsHhKYlTfAMpXXmlBQZDQvormr
+         /EH9rvIOdpCkoHmVZbDxMwGgnY8W15PyJwh5576vAjJCp3CW4XO7UuOaiER/JA81RlfL
+         kg+sr0CoW7I/bPyVK3opX3Ab0PkF2G9dJUPZtoaIXdhmuN5B0z69iOL1NaeBl5miu4Xm
+         tLzMG5u2l+RL7IJpvOJnNpFg90plWPjzp59/qOsxL6TL606Olysm8+O36lg5CCTbtsge
+         Ygmg==
+X-Gm-Message-State: AOAM530JqpHggTfEPM9OBgUNQ3w7Xv3WxGWC7agb+L+A8gpXMc+MGvi7
+        8SrBq8dijHKKe1pKXlZjxloT3SRZUO8=
+X-Google-Smtp-Source: ABdhPJyEJu/8rM2j1jKQ83BmKsi1GeVilEWi6/P7o3ocKooP95U+H6dO2+/HMuP86/309RGcBqKr+A==
+X-Received: by 2002:a05:6000:c8:: with SMTP id q8mr1723397wrx.611.1641864292947;
         Mon, 10 Jan 2022 17:24:52 -0800 (PST)
 Received: from 127.0.0.1localhost ([148.252.129.73])
-        by smtp.gmail.com with ESMTPSA id i8sm709886wru.26.2022.01.10.17.24.51
+        by smtp.gmail.com with ESMTPSA id i8sm709886wru.26.2022.01.10.17.24.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 17:24:51 -0800 (PST)
+        Mon, 10 Jan 2022 17:24:52 -0800 (PST)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -56,22 +56,23 @@ Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH 09/14] ipv6: hand away dst refs to cork setup
-Date:   Tue, 11 Jan 2022 01:21:41 +0000
-Message-Id: <fd490bae030b05830d4a06577ef3a7bbd6ed1707.1641843758.git.asml.silence@gmail.com>
+Subject: [PATCH 09/14] ipv6: hand dst refs to cork setup
+Date:   Tue, 11 Jan 2022 01:21:42 +0000
+Message-Id: <07031c43d3e5c005fbfc76b60a58e30c66d7c620.1641863490.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1641843758.git.asml.silence@gmail.com>
-References: <cover.1641843758.git.asml.silence@gmail.com>
+In-Reply-To: <cover.1641863490.git.asml.silence@gmail.com>
+References: <cover.1641863490.git.asml.silence@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-udpv6_sendmsg() doesn't need dst after calling into ip6_make_skb(),
-however it still retains a ref and ip6_make_skb() has to do an addition
-get/put pair. Hand over dst with the reference from
-ip6_sk_dst_lookup_flow() to avoid two atomics.
+During cork->dst setup, ip6_make_skb() gets an additional reference to
+a passed in dst. However, udpv6_sendmsg() doesn't need dst after calling
+ip6_make_skb(), and so we can save two additional atomics by passing
+dst references to ip6_make_skb(). udpv6_sendmsg() is the only caller, so
+it's enough to make sure it doesn't use dst afterwards.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
