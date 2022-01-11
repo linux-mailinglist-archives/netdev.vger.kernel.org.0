@@ -2,156 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1394948AB2F
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 11:14:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A09848AB3F
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 11:20:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348943AbiAKKOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 05:14:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54250 "EHLO
+        id S237678AbiAKKUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 05:20:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349249AbiAKKOA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 05:14:00 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B6DC06175E
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 02:13:57 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id k30so14379776wrd.9
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 02:13:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=6PCA+vRYUe/AduahtIfH11YxAjqrR5aT6yWf1P1UjKM=;
-        b=xrnn7pfPtVk8GmZXH74suntUOfiJSbMkHTNai+3uNuBcbbzTXiKd42TVtluDU8+XvJ
-         eJguqBRQB3yNfFCspuEeUxuaG6YnNk1ykZ+ErK52kqvbSO2THosjeqXIyu7roja9Jt3y
-         MsDa3SCUlGcXd69wdtgbEgkZlmrL1rKbc/HyhQxseE8XYICgaXD/yt6QnZM+C/KPokj2
-         PohuiVjL8E5sb3VTAoeQwHQzWsRceX7zawKB65yMb5Ur5wvbTbjj5yCK9nGBVA/TVu+K
-         9sS3zrIT8iX5UtY2HUjey0tlfdUaQ3PfPub6AlX9ZaPMvLn4AzsfCh7pvQmGWEq+nCSQ
-         yFSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=6PCA+vRYUe/AduahtIfH11YxAjqrR5aT6yWf1P1UjKM=;
-        b=AlzH3wC1C1skRdjg7twGjiYZ4bPLI8v8qy9Qw0sr5Z6VloHi9Po+0EVtoC9SAGhccl
-         vftlC+MSEzZC5GWW8QqWCaLT3pZDWvWBbRKlllI5VvkRedKagaboKbKxEIN2342r5P/e
-         AFsphlOokYWtpS95QLE7ruwwUjvEg30EVHrtgyDYWDBfeqtuAh7U+poWChOMwnsij0cf
-         PXcWy2sp9AoAY/pBabXbbJs0mWxqMGLwJAJi34DTcBh5NIQHjfkAKekQpbE7eqC33kxB
-         PP+QXwS/kX2Te6XLlaj8/b7UFxnDjh31kPDPVeOpsqK3P8q8tVU4vLXfmatHMKFCj3yR
-         CLQw==
-X-Gm-Message-State: AOAM5308pymgATiDDX7iogYTcKXpDg2RyGPrLycEN9cNrbsriXRCo3lt
-        UyOyY6fO29zIbDPZg8es0z6Efg==
-X-Google-Smtp-Source: ABdhPJywTk9GhMWZxxqHvgfzFl2ehPAmWpoal5qpAaIBDxvx3IEGSmDLg3dQoXaJJEoI6VdA5mEzlQ==
-X-Received: by 2002:a5d:6b09:: with SMTP id v9mr3048585wrw.591.1641896036277;
-        Tue, 11 Jan 2022 02:13:56 -0800 (PST)
-Received: from google.com ([31.124.24.179])
-        by smtp.gmail.com with ESMTPSA id d22sm9158677wrb.83.2022.01.11.02.13.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 02:13:55 -0800 (PST)
-Date:   Tue, 11 Jan 2022 10:13:43 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     broonie@kernel.org, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC v5 net-next 01/13] mfd: ocelot: add support for external
- mfd control over SPI for the VSC7512
-Message-ID: <Yd1YV+eUIaCnttYd@google.com>
-References: <20211218214954.109755-1-colin.foster@in-advantage.com>
- <20211218214954.109755-2-colin.foster@in-advantage.com>
- <Ycx9MMc+2ZhgXzvb@google.com>
- <20211230014300.GA1347882@euler>
- <Ydwju35sN9QJqJ/P@google.com>
- <20220111003306.GA27854@COLIN-DESKTOP1.localdomain>
+        with ESMTP id S233911AbiAKKUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 05:20:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D96DC06173F;
+        Tue, 11 Jan 2022 02:20:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 271736156D;
+        Tue, 11 Jan 2022 10:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8EC8CC36AEF;
+        Tue, 11 Jan 2022 10:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641896409;
+        bh=ttET7FQ/V0zsUisydBM7LitOS1aOOXZYsT15k2wFPqk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=mkVfFVLLYmpq3GLa+t2/aoD/dJrMb+omiDR5IdiiHTsbkXEf55/YDGjZF/Zi8vON8
+         oWnvD2Q1hlp1Iac2IQZrKox00VtATI4DfmVOyBeubA05YmKwAyVt96phUJCQTQc062
+         hoA62dInwA7hG9TWuD5kIf63UNeLVs22u1xYuJcNxp+paQGbmj9QsLUjNJfG25XWfY
+         3o5dk42NmSphlyeH9tIXSP1k2dvU+LFjmOp+BtTtcd3cjwI2P4X+NEY/AJsaVip96H
+         wnp4f4B8UcjmJ0GY7BLWNmxg58WULHirMdyTkhy2cwo2JJlrCYDoXmWPYhM+lphnZq
+         R0VlSTjwd4P3w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73BB9F6078C;
+        Tue, 11 Jan 2022 10:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220111003306.GA27854@COLIN-DESKTOP1.localdomain>
+Subject: Re: [PATCH v2] bpf: fix mount source show for bpffs
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164189640946.3896.14596442788026744490.git-patchwork-notify@kernel.org>
+Date:   Tue, 11 Jan 2022 10:20:09 +0000
+References: <20220108134623.32467-1-laoar.shao@gmail.com>
+In-Reply-To: <20220108134623.32467-1-laoar.shao@gmail.com>
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        christian.brauner@ubuntu.com, dhowells@redhat.com,
+        viro@zeniv.linux.org.uk
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > > No magic numbers please.
-> > > 
-> > > I've gotten conflicting feedback on this. Several of the ocelot drivers
-> > > (drivers/net/dsa/ocelot/felix_vsc9959.c) have these ranges hard-coded.
-> > > Others (Documentation/devicetree/bindings/net/mscc-ocelot.txt) have them
-> > > all passed in through the device tree. 
-> > > 
-> > > https://lore.kernel.org/netdev/20211126213225.okrskqm26lgprxrk@skbuf/
-> > 
-> > Ref or quote?
-> > 
-> > I'm not brain grepping it searching for what you might be referring to.
-> > 
-> > I'm not sure what you're trying to say here.  I'm asking you to define
-> > this numbers please.
-> 
-> I'll define the numbers as you suggest.
-> 
-> The quote I was referring to is this:
-> 
-> > The last option I haven't put much consideration toward would be to
-> > move some of the decision making to the device tree. The main ocelot
-> > driver appears to leave a lot of these addresses out. For instance
-> > Documentation/devicetree/bindings/pinctrl/mscc,ocelot-pinctrl.txt.
-> > That added DT complexity could remove needs for lines like this:
-> > > > +              ocelot->map[GCB][GCB_MIIM_MII_STATUS & REG_MASK],
-> > But that would probably impose DT changes on Seville and Felix, which
-> > is the last thing I want to do.
-> 
-> The thing with putting the targets in the device tree is that you're
-> inflicting yourself unnecessary pain. Take a look at
-> Documentation/devicetree/bindings/net/mscc-ocelot.txt, and notice that
-> they mark the "ptp" target as optional because it wasn't needed when
-> they first published the device tree, and now they need to maintain
-> compatibility with those old blobs.
+Hello:
 
-I wasn't asking you to put it in DT, just to define the numbers.
+This patch was applied to bpf/bpf.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-> > > There's yet another complexity with these, and I'm not sure what the
-> > > answer is. Currently all regmaps are tied to the ocelot_spi device...
-> > > ocelot_spi calls devm_regmap_init. So those regmaps hang around if
-> > > they're created by a module that has been removed. At least until the
-> > > entire MFD module is removed. Maybe there's something I haven't seen yet
-> > > where the devres or similar has a reference count. I don't know the best
-> > > path forward on this one.
-> > 
-> > Why are you worrying about creating them 2 different ways?
-> > 
-> > If it's possible for them to all create and use their own regmaps,
-> > what's preventing you from just do that all the time?
+On Sat,  8 Jan 2022 13:46:23 +0000 you wrote:
+> We noticed our tc ebpf tools can't start after we upgrade our in-house
+> kernel version from 4.19 to 5.10. That is because of the behaviour change
+> in bpffs caused by commit
+> d2935de7e4fd ("vfs: Convert bpf to use the new mount API").
 > 
-> There isn't really any worry, there just might be efficiencies to be
-> had if two children share the same regmap. But so long as any regmap is
-> created with unique names, there's no reason multiple regmaps can't
-> overlap the same regions. In those cases, maybe syscon would be the best
-> thing to implement if it becomes needed.
+> In our tc ebpf tools, we do strict environment check. If the enrioment is
+> not match, we won't allow to start the ebpf progs. One of the check is
+> whether bpffs is properly mounted. The mount information of bpffs in
+> kernel-4.19 and kernel-5.10 are as follows,
 > 
-> I have nothing against making every child regmap be unique if that's the
-> desire.
+> [...]
 
-Unless something has changed or my understanding is not correct,
-regmap does not support over-lapping register ranges.
+Here is the summary with links:
+  - [v2] bpf: fix mount source show for bpffs
+    https://git.kernel.org/bpf/bpf/c/1e9d74660d4d
 
-However, even if that is required, I still think we can come up with
-something cleaner than creating a whole API based around creating
-and fetching different regmap configurations depending on how the
-system was initialised.
-
+You are awesome, thank you!
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
