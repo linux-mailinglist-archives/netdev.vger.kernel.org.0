@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD44F48BA41
+	by mail.lfdr.de (Postfix) with ESMTP id 9379748BA40
 	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 22:56:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232894AbiAKVz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 16:55:59 -0500
-Received: from mx0c-0054df01.pphosted.com ([67.231.159.91]:8216 "EHLO
+        id S231654AbiAKVz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 16:55:57 -0500
+Received: from mx0c-0054df01.pphosted.com ([67.231.159.91]:15928 "EHLO
         mx0c-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229533AbiAKVzx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 16:55:53 -0500
+        by vger.kernel.org with ESMTP id S231287AbiAKVzv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 16:55:51 -0500
 Received: from pps.filterd (m0208999.ppops.net [127.0.0.1])
-        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20BBn7jB012445;
-        Tue, 11 Jan 2022 16:55:32 -0500
-Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2056.outbound.protection.outlook.com [104.47.61.56])
-        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3dgjrs98t5-3
+        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20BCxNSl017415;
+        Tue, 11 Jan 2022 16:55:33 -0500
+Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2054.outbound.protection.outlook.com [104.47.61.54])
+        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3dgjrs98t6-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 11 Jan 2022 16:55:31 -0500
+        Tue, 11 Jan 2022 16:55:32 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UnytHqBIs+Ot+yv2qLkJXzNEFDlqcW86aZTi2pQx7HIKv49hhjIiandh9sL9z4hAKL+IsF4peDRTQzT4/j/sp/P8xeTftO8ngZNkZ/3zNmHr4zzmAdJRO59unzAX5nZsPyOGsDh09YgoMpIzHzslj/eKWP0YCsSom2jiBF/7P5U6lVuHgXtf+rjW5Cl3rAFYD7RnxWfln62TM7Hwei/pqEGkukZMmDavsPywYVOpqlATog4CkB09gL9tEkc1e3f2mETOmQoVAn4xzVAud1RR8Qp8xEu+Wn/zUhBIvx8wRVmDttweAdJ9Qr9sPUdfZ5aMvgwgdxgYk38lMD//2VDxYg==
+ b=EMMnp3rJfRdlg1Vw1W2qkWLok6hPWu1no4NowKLWhNCRJB9D0NSvM31VTE8DeERbsbrhVJBgsFV0CgOq8gAplBAeay4NtvrEMr0gSwM/uai8HiG7YDtqBAMk8lwEHYFdiKibtPNWX8doV/w0hc7hSxZGq/vMR93vcFfzwaHnxvcgZnxQhcBp/pKYolTAkgR+ZJCt6EpzakgqiJhPyErzYdjK+Q55JTFVQfsKRS7uqKRvqViIT0ZX3IN1nBG6fQFgJFRxE4xy3QLHtjLMAt4YtCG1581qcL5U2hZXn9LexNdbS/ccwgvmOhE6BInuE68NTPZ3WAHcBScuUQPWRy/9YQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EEZkAxnjK9MWxxhWI3Gz46BeOPRHgtv6cjjv1/qXUMI=;
- b=X6GKUt/IGkl7w8EtVZ/fXb2j5QaUAyvwftDqJbLcZ38Va6voc8egwwW73/P4NW/yw5HWjIFDlJeSehhYNatTbsdfQwOMkh6F6vThaGAFxSTqV0BB84EtPzUD87geo8bNAT3XhzYKeb9ATFW1wl9JNC4Dr2RlWFFqtLIErFi9uCZSTmK2F4FQyDlFV7wT6z2nlmCBNdLT3ec86DWh9e1H7KGLqrpzYJwqEMIVocW2Erqus6yQlKRAc2pftNEQwbadHAiJoZEkoFNqUHGDQbiYF222TTTZw8j7DQnRwuElqJgHEZbXVikAdutkwU2f8Va7PQryZ+8cBxyan/yxU8n0JA==
+ bh=ZpXWaBZB/QYS8THuKXaWQSKjFB8HiOgnMRklhzH7QlM=;
+ b=kBuYLjUDUCk8+JiMFFV6Q4Tp9SgMq6BTRse48ZpGO7uY2ZogqjIwNCGgUq+pq+NzsbJCFTBlQ6ZLD8Sxg9yfnGFsnVe+zybP5DlGxgmq1+1nZsSU3LUH4MygPm+6L9IOQVzuUY7wouMMWbsxWiSJzaRe9ViOUyCR7obrfjCIPTRIFlaoPZ9XtQX2uh6OEArRCHSG3W1v/7ZFUs52lf7GzrqhfNg0lwWtOcTBWTBzmhubrjzcHWIsZdZqmOPD1bfH9DuWmAH8B5oJL2SmWX9IulSXntSrjg5u4r+kdqH4g2qr0U/69sAub+UExuPJSNs8rxSj1gv6vWWB0gQ91x217g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
  dkim=pass header.d=calian.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EEZkAxnjK9MWxxhWI3Gz46BeOPRHgtv6cjjv1/qXUMI=;
- b=Y6sUzfWaeOol5xEs8i5XYwYQ9SQPFqyjb+2AjDK1iCp123tgQo8z8o9+lRgKUjl1Y2qh8VTCHKqlkYdD4VTREj2HFMAYhq4XfXxjTA1eBi7RHmEAfpn0tDCRIi/hbpDFYLBQchQHvzfxD4GV8WXUU9n43BeMPxY3Qbn8/7uQQZY=
+ bh=ZpXWaBZB/QYS8THuKXaWQSKjFB8HiOgnMRklhzH7QlM=;
+ b=tqvSheuFcctPXEsS0Y49oIH+7iy6m6tHNw1hkqQ+903JVOv4oZHS8hH/g4q1nvdTxO0WqcLpRzP1tUunvznwwwv8BXTHf3Jdyda9MJyuXuQwrph1t/ZZzDmYRMcSFS/np46ObumdpuoO81jSj8s7G0n2VnL0AWJSO3MmCXFDUfQ=
 Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:6a::19)
  by YTOPR0101MB0860.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b00:24::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.11; Tue, 11 Jan
- 2022 21:55:30 +0000
+ 2022 21:55:31 +0000
 Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::d1f6:d9e4:7cc7:af76]) by YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::d1f6:d9e4:7cc7:af76%5]) with mapi id 15.20.4867.012; Tue, 11 Jan 2022
- 21:55:30 +0000
+ 21:55:31 +0000
 From:   Robert Hancock <robert.hancock@calian.com>
 To:     netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         davem@davemloft.net, kuba@kernel.org,
         Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH net-next v2 2/3] net: phy: at803x: add fiber support
-Date:   Tue, 11 Jan 2022 15:55:03 -0600
-Message-Id: <20220111215504.2714643-3-robert.hancock@calian.com>
+Subject: [PATCH net-next v2 3/3] net: phy: at803x: Support downstream SFP cage
+Date:   Tue, 11 Jan 2022 15:55:04 -0600
+Message-Id: <20220111215504.2714643-4-robert.hancock@calian.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220111215504.2714643-1-robert.hancock@calian.com>
 References: <20220111215504.2714643-1-robert.hancock@calian.com>
@@ -60,58 +60,58 @@ X-ClientProxiedBy: CH0PR04CA0021.namprd04.prod.outlook.com
  (2603:10b6:b01:6a::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 76545d77-f122-4ac9-fe73-08d9d54d15b2
+X-MS-Office365-Filtering-Correlation-Id: f90ba91e-b918-4ca4-826e-08d9d54d1620
 X-MS-TrafficTypeDiagnostic: YTOPR0101MB0860:EE_
-X-Microsoft-Antispam-PRVS: <YTOPR0101MB0860E0F8FEE1D88427138B56EC519@YTOPR0101MB0860.CANPRD01.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <YTOPR0101MB0860326EA355EC047381193AEC519@YTOPR0101MB0860.CANPRD01.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: j/sJ98Rd/zqtg1PpyovtweIjxK6JGiHrnuG5xQh0rCQgy67vbGIhkrSNSImBSUT0x6XCfQYILEtfo86Lrpxoy1AzbV7nPx9ryZAIEmx6sIp60IrFN1l+eekdXo2yv007IIH9Xz2ehAQDfM/Q5ArqGSOjzWwtVEPZKtZqEBHgMut1WjDotvq14WFIyz/1eSeVN7ms6kzd4LzqRzSJoj0+GfW6IrxAm6iHUzEysYRwkcLZ8QzQuUMBwOmbkkyyAwvncjorQMi39qtak64okEZ2VyH6l4zcSVPjRr0rPKJ7ifZzJvwNWD2cAIphNHNeHDlYrPmQtb8HRFbj2bTIoOQEbRZYdpUtu71bflL2DQ0B759GSBPml/HusQtXdc80B7+1kNHYQdzJ95J2OUUo/GcCdKwt8WC6WkCUrm4OZXf6r5285Y5kg7G5DD0COUeCVZ0odJt5DhPzfMD5TmVRnwtEVY4EtcnN1w98SwHqb4RZvxrbiFfkTgcc2kUzwKrsQYnAEq61aMyMy18L9J9M9Yw2sc+kRK18izVdq2gSWCb0eAmdcV09KPjoTsYbeSq8sy/LzrK9anBTUfTzZkNAzvuYWtT0+8lThPvca5lJLey/1RqYCeQvVyLgxg/W79YlfKGxP22f65CRNsPdGYGOnKaCyExat9VYur05jlHu1cIjHXWXPGGAst7qKqw16a70lg9I+4oukrHZZe+OitjYXVospg==
+X-Microsoft-Antispam-Message-Info: Lf7SpS+Xrl6smfMx/TVm4SO54oWYrzd5jUfNPtrDudwREoGK6MYdjUTtXll8jHvPZoTRYKEBledROY3dYM2CfjjOb9UtYQQHTDk7GfUQE0oHo32UZEZp6PYGBlwZrF8O4+D59TcAKbVGOfQa1YOEYBZxln1iABdc4QbzjfaTu4Soa6zJ+ooRi+gTFMVvsdQjvIQmCI3k7bRKksmtQ7emOae8vzDj+IQBTe4VathXvJQQGhkMEWxUtYVyUTab0rdKyDFl3te6l92rhQWmjUrzm1ZKhQChzVgxsA1UxrPoq+L9QnqD48tNoUXVOu/urROWPC6UoW5BaqPCY+daRmNxlUsJKwsuvoWQ38OEplToRiUNMQ0bB9JjUZDEuXXKzu06cUm0OJXxBwIykB4xGDZuWdlPTE9RZKzYJX5B3mfHfpz4K/jDopek1uCBp6vU4K+CZbnVTStizdeeNxSw+XWsLWFYlDb0bvp9ZRu36lbSl4FaxE8wwryaoqCcqRf+m16aMGGt6o54IOqgqg3TTTC9iiSEIaP938KNjtCoQgIIe/NmqnnEUMlWMYuplJdhJxxiQyHA95JvLkaK4DhL4Ta7WG3SlqhvvUMA3111jy3FzcM0Exbye5P3oshzA3xWnNfcfIw11v7ADiTrGsOFEz9ndk1fF3mL3B7SodNKkU36cGTP2mIfBo5pl57W2MwxLvBwAJ3x/CBuTCy9ur/rBJ2DSw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(1076003)(52116002)(36756003)(186003)(6506007)(8936002)(38100700002)(6666004)(44832011)(38350700002)(6512007)(2616005)(316002)(66476007)(508600001)(83380400001)(107886003)(8676002)(86362001)(5660300002)(6916009)(66556008)(2906002)(66946007)(4326008)(26005)(6486002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wdQ6bRFiaYO7B1+tghaqYJA1q2EZpE5Lbq+bN961Jv5SxhmnMR4yqbvVakDC?=
- =?us-ascii?Q?nQCoVrX9+sbo4wI2rkKcG9s2mEDENIulP0cYP5KghMGIqhvBe5XPj6S618Yp?=
- =?us-ascii?Q?/ZH5zTyA2Dod3fmCgD4gGyyYX9FTS0bzCRtWUubLXU3t2ojIQHE5Fnc9HfjN?=
- =?us-ascii?Q?yCUAuQawo0uubl8cNeqlVpfBNmVXNp3Y7nnPXgIWQtcPThqIp8v9tRq6TeQc?=
- =?us-ascii?Q?Jiq0+X4gWW/Gbop/8+bt7x5iZfu6ori+LGus/fKvnE+j+7+vmAMrISuQKFXW?=
- =?us-ascii?Q?h0f4jHSDtFelcX9gdaePQ6+QRxO4qJ+EEMgi3ZpsAFc1bE/xmfu2F9LufWtL?=
- =?us-ascii?Q?c03pRV18eYILGpweIbsfaViUbu7Df+dhvG6hrEgek/FmKpVwF37rNzOPBDNs?=
- =?us-ascii?Q?kfwsj4VwKGhShn0RfGd7UncB6u1Of34BMsFM4+gt8qhEkL0wlXVvlt8BvoBb?=
- =?us-ascii?Q?mGZlSjAUoqH6KXJ7EvUEh20qdBC+Q6cu3E3UznAmaBCx/AO334ItWFGOGeoa?=
- =?us-ascii?Q?KDQimpx864RXs/YE1k+d+Xg1O1CAldDwf7P8sPTNRsmnaIMNy1USWYY9jGtu?=
- =?us-ascii?Q?Y6BGSuAfws098HKM9n+vT+ELiH+XNSnzyr9VWv8W2FxeFXIMy4djhjtCizCX?=
- =?us-ascii?Q?/e2cWEEGsh+k+yrzh1MzVIrgQA40WdjydpjXHUDJYA3So2/nNEtbpwhg5yb8?=
- =?us-ascii?Q?dJpaOW47CQv38mczNhotcl6SujAyMXdaGdLm0pz6AB1g5pcJ1w/mnV5SHOpR?=
- =?us-ascii?Q?ZLfxlpXBjB8+6MXMmWXFDcaqNBcLbCiRtlPMLPLFdCTK+r7W9bZt5OK02n1I?=
- =?us-ascii?Q?u8eB8pJsvg7CfsSmz8XH94chNtF/tV/ySJjT3f+SD4glblclH1NoPyIgO4Og?=
- =?us-ascii?Q?PKKXERxXWe/gGjsct2zOQHoPoStnGU5XSEGQ7H0S9I+m2tJb992xS7nMSDvL?=
- =?us-ascii?Q?qomcLZ8rQ2+KNtQA/24vj6TY+rNddNNZ1+2CRlE+CaLvK5paEDjtdKsPKKIt?=
- =?us-ascii?Q?G43ywdNBSASLAAKudNpWxjmjX9o3wDduzxm5F/aZ8cOlfsGIbLQOB8Qti9Pc?=
- =?us-ascii?Q?K1iEOn0FCv6ENQLCQSlfdEwJDfudMbXobH89jDdy9Nt6BDqbbeRg3AbHptpT?=
- =?us-ascii?Q?56g5wdn7RBPVF11ijW+kWOm9T8e0fyLkwMs/SIIUrfVpe020I9oPTZ0/XnDX?=
- =?us-ascii?Q?fVaodmU386Lo+EoBZBarNff9bYmBW/637e4IpYiZfUqYoXVV9kpbKzbxeJki?=
- =?us-ascii?Q?rU0pKiNNJNxSztKjpGX+Uu/mlOfZqosKLo11wIivWM60ExSKHn1xHQwgmt2F?=
- =?us-ascii?Q?dJoTamm2U90GGgLHEpPjTRkD2s7fxlxOXxl+zPtO2HjNiI7alHeDuDPfsLJ5?=
- =?us-ascii?Q?4wRwDuz3mL2GOLQeH6kRhtXsinDbMkutpGhCjLO0q7LTgCCNxFNweKxwxABj?=
- =?us-ascii?Q?eiacgwRcOEavjYiukDbCj3nwHHzloh8cGesZ97LIep/2dq31qW728MI4OP1n?=
- =?us-ascii?Q?zyNY+Ehtw6A5KfYAuhMzE1+vO72irWmf3L2WCzfGrmH2RxjO12ZNkP++azV2?=
- =?us-ascii?Q?yjhROHzz1+Y8xn4025SYLWjayTgpu89YqAaPG0PxDqESD+krYME0aqO9jn8f?=
- =?us-ascii?Q?0OE1Gqf6mSz4h4M7yQB3ttnuxl31YE+gLWveNNQ7vDG2AaFGh2FanIpkOLCH?=
- =?us-ascii?Q?iQjEpQewU912XzZAnWzXpt6PpwI=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OjvvW1MbJFJlpYnd7v6GtLFp5zTqcnYbLA66i+xOQ6aAeJ29TXyabb3qcGW7?=
+ =?us-ascii?Q?ztn2rB1KdLHug7vfi3TP9IuJaTmKeyxKmt5lzJ6jtcwPDXr54ErS2vGuVUrA?=
+ =?us-ascii?Q?b7v14H6WKfE/p9ebCf6kAsE8AHMExGgFhL7UE/YloiRadZlft6Mnf7Uwsr6X?=
+ =?us-ascii?Q?4ijjaAyfSyTZ3/c/1ThGmVcwVQQNxIQ63V4yGdG5wRkz/CTt/08sf6D7ItLV?=
+ =?us-ascii?Q?+BLkROyXpEKVsVzBmQZWlol1ZporT0E+TOEQttRKYiNkMvxFM697SNOVeBWi?=
+ =?us-ascii?Q?bAJu1wVK5QgPwTIgwbyD9rjvrtfCD/Vt4B3Zq/QO0ymrceQJDPJNUqc4cLWL?=
+ =?us-ascii?Q?SgioTwkiYt05WRK6OvXE4Vv+rkUcr7jJDes7qgurpCZzstPKN7WvOx9wMiYf?=
+ =?us-ascii?Q?Syh2TiEFgLP8NamFEykMe8N4mEM8LP7L0nBTksYtZr/95lPkeeZ3ro8UmWyh?=
+ =?us-ascii?Q?h5I8pRCIrZY5jMjHNXmsKFFM6QkvyleWl7kIIssCOPofPPoWOnyYyukATUmn?=
+ =?us-ascii?Q?rZWL0f47HcWmm9ZhuKYeKP5/opU/HEnD1FKhstbBXpPfGGUUA5ziMKAua0oG?=
+ =?us-ascii?Q?FU8c2u1d/njz6MVhM7Lf1apmPpqbPt9hyr3PkGyWpK2hoL8J93/EwZkkPReP?=
+ =?us-ascii?Q?OakInfPHpt54ZMobQecccyu7CUeIUjbUZQ5PmA1aF2MF5XpI37wECDBmqqWy?=
+ =?us-ascii?Q?iaFRp7q977t9cnnJGc17tp+0aAykstW0U7oIH8igamVuLK3XYNAAovm2fUui?=
+ =?us-ascii?Q?M9iSrpWxsS4vqTMgRYoIBD/X1OkiRwwl/lP0a56L2UGaeyOYaLWCQNUrE/1b?=
+ =?us-ascii?Q?3NGMYEs782xlcw+VUvolN+8LHNLjkrf/44qufrRV/iL3R+yb+xpKtNMRYfMS?=
+ =?us-ascii?Q?GowR7Wa3r+yixRkQzUx6VYuZ4JmrSq2kGGafL3zZZTL5bkO0f4IrA5Qb+dY2?=
+ =?us-ascii?Q?XvEg9boC36OgvTQ6BnXPof9X9RDkRGTjPq5Myh5xJ6l8PI3BfdGYbG8ItT5t?=
+ =?us-ascii?Q?24mGacfGyM0xdYe/vRpgkC7zAy+Z7QXVyHF6/DsGkr/ZzS+P24Z8NP+rh9j/?=
+ =?us-ascii?Q?l5zP4b0dEz66nrIWK805LkVqrz1oZmDvv1IJxFKWG4l0qbpYyutKaJdd7gXR?=
+ =?us-ascii?Q?hj4FepiYLa22cwq2bsUxLHL2+xtycrWLzNBzmc0dmHq3bkhFIqxaeBIQjT8H?=
+ =?us-ascii?Q?b2u5gaNLJJAWrXLzu0XyZ4Gd8exhFVRWKJOQRzkE37iiXKWIcAxa7qoiDG9L?=
+ =?us-ascii?Q?p9CrYDy+/xLwpgD9hgPcuNg/btZR2zDVocfrunyrvgbWl44/nb+JH6cNe2+f?=
+ =?us-ascii?Q?Aq913lAuLd3ZQiFbhrrZczV8YXmq9bT7alF2g53zgP5hdJG3uWFQ0zZTLOtC?=
+ =?us-ascii?Q?UPvskXA7bot8eJKrVY6MWNCIlrpisK9y0tWgoX973/00qwjaPdvU2nAZ/ojq?=
+ =?us-ascii?Q?eoOeqCay1eYa4LQ9KEGOksNDs6TN7QXyetqbD6oOv3SemkTCY2Dl9DhleXQr?=
+ =?us-ascii?Q?wc821c5wQ+KAWfSa2MQ4aThJebkpFkkRCzwhuSayWFInvuZqw6ufJpciGgTN?=
+ =?us-ascii?Q?x6V9tpH5b0/uN/4UBKjuyaAJOvq3cJj9wNV99AbRkR4b8FbB1HDJEVrd49CC?=
+ =?us-ascii?Q?HUOLUKpWwQKDTPbUHrvTeJLrw+EpoMtamcYygVfBPZus4cfWutBvGPm0quzl?=
+ =?us-ascii?Q?eVsi6+7hO359mnE930E0uQ+bvjg=3D?=
 X-OriginatorOrg: calian.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 76545d77-f122-4ac9-fe73-08d9d54d15b2
+X-MS-Exchange-CrossTenant-Network-Message-Id: f90ba91e-b918-4ca4-826e-08d9d54d1620
 X-MS-Exchange-CrossTenant-AuthSource: YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 21:55:30.4135
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 21:55:31.1325
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3lTl8VNTdcJPpPjVCu7Su7mhxaif3hRl7hjs3K04Hc6aFRdD1vfTaKUQNYzwQoe7gI8etM8DhjdwRxX0C7wz2WxPMMp+eBA7kvqTezlJasE=
+X-MS-Exchange-CrossTenant-UserPrincipalName: ucrubeCxWgK/4moWPyJsui3eZWl+AxBZGMkCyQmZBkIfqbboxjQhTDB57JdltA97eO4Zg2Z1uKj+nT4i1aaHsc49wGVkBsi8mw03nB54gaY=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: YTOPR0101MB0860
-X-Proofpoint-ORIG-GUID: MjbVefZXynYSXqmXsX6v7-Cz_BCqUSlD
-X-Proofpoint-GUID: MjbVefZXynYSXqmXsX6v7-Cz_BCqUSlD
+X-Proofpoint-ORIG-GUID: D8gp-DxLWdK2GQPApJ8Lfde3fYn8uRGw
+X-Proofpoint-GUID: D8gp-DxLWdK2GQPApJ8Lfde3fYn8uRGw
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-01-11_04,2022-01-11_01,2021-12-02_01
@@ -124,198 +124,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Previously this driver always forced the copper page to be selected,
-however for AR8031 in 100Base-FX or 1000Base-X modes, the fiber page
-needs to be selected. Set the appropriate mode based on the hardware
-mode_cfg strap selection.
-
-Enable the appropriate interrupt bits to detect fiber-side link up
-or down events.
-
-Update config_aneg and read_status methods to use the appropriate
-Clause 37 calls when fiber mode is in use.
+Add support for downstream SFP cages for AR8031 and AR8033. This is
+primarily intended for fiber modules or direct-attach cables, however
+copper modules which work in 1000Base-X mode may also function. Such
+modules are allowed with a warning.
 
 Signed-off-by: Robert Hancock <robert.hancock@calian.com>
 ---
- drivers/net/phy/at803x.c | 80 ++++++++++++++++++++++++++++++++++------
- 1 file changed, 69 insertions(+), 11 deletions(-)
+ drivers/net/phy/at803x.c | 56 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
 
 diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 23d6f2e5f48b..63d84eb2eddb 100644
+index 63d84eb2eddb..c4e87c76edcb 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
-@@ -51,6 +51,8 @@
- #define AT803X_INTR_ENABLE_PAGE_RECEIVED	BIT(12)
- #define AT803X_INTR_ENABLE_LINK_FAIL		BIT(11)
- #define AT803X_INTR_ENABLE_LINK_SUCCESS		BIT(10)
-+#define AT803X_INTR_ENABLE_LINK_FAIL_BX		BIT(8)
-+#define AT803X_INTR_ENABLE_LINK_SUCCESS_BX	BIT(7)
- #define AT803X_INTR_ENABLE_WIRESPEED_DOWNGRADE	BIT(5)
- #define AT803X_INTR_ENABLE_POLARITY_CHANGED	BIT(1)
- #define AT803X_INTR_ENABLE_WOL			BIT(0)
-@@ -85,7 +87,17 @@
- #define AT803X_DEBUG_DATA			0x1E
+@@ -19,6 +19,8 @@
+ #include <linux/regulator/of_regulator.h>
+ #include <linux/regulator/driver.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/phylink.h>
++#include <linux/sfp.h>
+ #include <dt-bindings/net/qca-ar803x.h>
  
- #define AT803X_MODE_CFG_MASK			0x0F
--#define AT803X_MODE_CFG_SGMII			0x01
-+#define AT803X_MODE_CFG_BASET_RGMII		0x00
-+#define AT803X_MODE_CFG_BASET_SGMII		0x01
-+#define AT803X_MODE_CFG_BX1000_RGMII_50		0x02
-+#define AT803X_MODE_CFG_BX1000_RGMII_75		0x03
-+#define AT803X_MODE_CFG_BX1000_CONV_50		0x04
-+#define AT803X_MODE_CFG_BX1000_CONV_75		0x05
-+#define AT803X_MODE_CFG_FX100_RGMII_50		0x06
-+#define AT803X_MODE_CFG_FX100_CONV_50		0x07
-+#define AT803X_MODE_CFG_RGMII_AUTO_MDET		0x0B
-+#define AT803X_MODE_CFG_FX100_RGMII_75		0x0E
-+#define AT803X_MODE_CFG_FX100_CONV_75		0x0F
+ #define AT803X_SPECIFIC_FUNCTION_CONTROL	0x10
+@@ -664,6 +666,55 @@ static int at8031_register_regulators(struct phy_device *phydev)
+ 	return 0;
+ }
  
- #define AT803X_PSSR				0x11	/*PHY-Specific Status Register*/
- #define AT803X_PSSR_MR_AN_COMPLETE		0x0200
-@@ -283,6 +295,8 @@ struct at803x_priv {
- 	u16 clk_25m_mask;
- 	u8 smarteee_lpi_tw_1g;
- 	u8 smarteee_lpi_tw_100m;
-+	bool is_fiber;
-+	bool is_1000basex;
- 	struct regulator_dev *vddio_rdev;
- 	struct regulator_dev *vddh_rdev;
- 	struct regulator *vddio;
-@@ -784,7 +798,33 @@ static int at803x_probe(struct phy_device *phydev)
- 			return ret;
- 	}
- 
-+	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
-+		int ccr = phy_read(phydev, AT803X_REG_CHIP_CONFIG);
-+		int mode_cfg;
++static int at803x_sfp_insert(void *upstream, const struct sfp_eeprom_id *id)
++{
++	struct phy_device *phydev = upstream;
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(phy_support);
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(sfp_support);
++	phy_interface_t iface;
 +
-+		if (ccr < 0)
-+			goto err;
-+		mode_cfg = ccr & AT803X_MODE_CFG_MASK;
++	linkmode_zero(phy_support);
++	phylink_set(phy_support, 1000baseX_Full);
++	phylink_set(phy_support, 1000baseT_Full);
++	phylink_set(phy_support, Autoneg);
++	phylink_set(phy_support, Pause);
++	phylink_set(phy_support, Asym_Pause);
 +
-+		switch (mode_cfg) {
-+		case AT803X_MODE_CFG_BX1000_RGMII_50:
-+		case AT803X_MODE_CFG_BX1000_RGMII_75:
-+			priv->is_1000basex = true;
-+			fallthrough;
-+		case AT803X_MODE_CFG_FX100_RGMII_50:
-+		case AT803X_MODE_CFG_FX100_RGMII_75:
-+			priv->is_fiber = true;
-+			break;
-+		}
++	linkmode_zero(sfp_support);
++	sfp_parse_support(phydev->sfp_bus, id, sfp_support);
++	/* Some modules support 10G modes as well as others we support.
++	 * Mask out non-supported modes so the correct interface is picked.
++	 */
++	linkmode_and(sfp_support, phy_support, sfp_support);
++
++	if (linkmode_empty(sfp_support)) {
++		dev_err(&phydev->mdio.dev, "incompatible SFP module inserted\n");
++		return -EINVAL;
 +	}
 +
- 	return 0;
++	iface = sfp_select_interface(phydev->sfp_bus, sfp_support);
 +
-+err:
-+	if (priv->vddio)
-+		regulator_disable(priv->vddio);
++	/* Only 1000Base-X is supported by AR8031/8033 as the downstream SerDes
++	 * interface for use with SFP modules.
++	 * However, some copper modules detected as having a preferred SGMII
++	 * interface do default to and function in 1000Base-X mode, so just
++	 * print a warning and allow such modules, as they may have some chance
++	 * of working.
++	 */
++	if (iface == PHY_INTERFACE_MODE_SGMII)
++		dev_warn(&phydev->mdio.dev, "module may not function if 1000Base-X not supported\n");
++	else if (iface != PHY_INTERFACE_MODE_1000BASEX)
++		return -EINVAL;
 +
-+	return ret;
- }
- 
- static void at803x_remove(struct phy_device *phydev)
-@@ -797,6 +837,7 @@ static void at803x_remove(struct phy_device *phydev)
- 
- static int at803x_get_features(struct phy_device *phydev)
- {
-+	struct at803x_priv *priv = phydev->priv;
- 	int err;
- 
- 	err = genphy_read_abilities(phydev);
-@@ -823,12 +864,13 @@ static int at803x_get_features(struct phy_device *phydev)
- 	 * As a result of that, ESTATUS_1000_XFULL is set
- 	 * to 1 even when operating in copper TP mode.
- 	 *
--	 * Remove this mode from the supported link modes,
--	 * as this driver currently only supports copper
--	 * operation.
-+	 * Remove this mode from the supported link modes
-+	 * when not operating in 1000BaseX mode.
- 	 */
--	linkmode_clear_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
--			   phydev->supported);
-+	if (!priv->is_1000basex)
-+		linkmode_clear_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
-+				   phydev->supported);
++	return 0;
++}
 +
- 	return 0;
- }
- 
-@@ -892,15 +934,18 @@ static int at8031_pll_config(struct phy_device *phydev)
- 
- static int at803x_config_init(struct phy_device *phydev)
- {
-+	struct at803x_priv *priv = phydev->priv;
- 	int ret;
- 
- 	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
--	       /* Some bootloaders leave the fiber page selected.
--		* Switch to the copper page, as otherwise we read
--		* the PHY capabilities from the fiber side.
--		*/
-+		/* Some bootloaders leave the fiber page selected.
-+		 * Switch to the appropriate page (fiber or copper), as otherwise we
-+		 * read the PHY capabilities from the wrong page.
-+		 */
- 		phy_lock_mdio_bus(phydev);
--		ret = at803x_write_page(phydev, AT803X_PAGE_COPPER);
-+		ret = at803x_write_page(phydev,
-+					priv->is_fiber ? AT803X_PAGE_FIBER :
-+							 AT803X_PAGE_COPPER);
- 		phy_unlock_mdio_bus(phydev);
- 		if (ret)
- 			return ret;
-@@ -959,6 +1004,7 @@ static int at803x_ack_interrupt(struct phy_device *phydev)
- 
- static int at803x_config_intr(struct phy_device *phydev)
- {
-+	struct at803x_priv *priv = phydev->priv;
- 	int err;
- 	int value;
- 
-@@ -975,6 +1021,10 @@ static int at803x_config_intr(struct phy_device *phydev)
- 		value |= AT803X_INTR_ENABLE_DUPLEX_CHANGED;
- 		value |= AT803X_INTR_ENABLE_LINK_FAIL;
- 		value |= AT803X_INTR_ENABLE_LINK_SUCCESS;
-+		if (priv->is_fiber) {
-+			value |= AT803X_INTR_ENABLE_LINK_FAIL_BX;
-+			value |= AT803X_INTR_ENABLE_LINK_SUCCESS_BX;
-+		}
- 
- 		err = phy_write(phydev, AT803X_INTR_ENABLE, value);
- 	} else {
-@@ -1107,8 +1157,12 @@ static int at803x_read_specific_status(struct phy_device *phydev)
- 
- static int at803x_read_status(struct phy_device *phydev)
- {
-+	struct at803x_priv *priv = phydev->priv;
- 	int err, old_link = phydev->link;
- 
-+	if (priv->is_1000basex)
-+		return genphy_c37_read_status(phydev);
++static const struct sfp_upstream_ops at803x_sfp_ops = {
++	.attach = phy_sfp_attach,
++	.detach = phy_sfp_detach,
++	.module_insert = at803x_sfp_insert,
++};
 +
- 	/* Update the link, but return if there was an error */
- 	err = genphy_update_link(phydev);
- 	if (err)
-@@ -1162,6 +1216,7 @@ static int at803x_config_mdix(struct phy_device *phydev, u8 ctrl)
- 
- static int at803x_config_aneg(struct phy_device *phydev)
+ static int at803x_parse_dt(struct phy_device *phydev)
  {
-+	struct at803x_priv *priv = phydev->priv;
- 	int ret;
- 
- 	ret = at803x_config_mdix(phydev, phydev->mdix_ctrl);
-@@ -1178,6 +1233,9 @@ static int at803x_config_aneg(struct phy_device *phydev)
- 			return ret;
+ 	struct device_node *node = phydev->mdio.dev.of_node;
+@@ -771,6 +822,11 @@ static int at803x_parse_dt(struct phy_device *phydev)
+ 			phydev_err(phydev, "failed to get VDDIO regulator\n");
+ 			return PTR_ERR(priv->vddio);
+ 		}
++
++		/* Only AR8031/8033 support 1000Base-X for SFP modules */
++		ret = phy_sfp_probe(phydev, &at803x_sfp_ops);
++		if (ret < 0)
++			return ret;
  	}
  
-+	if (priv->is_1000basex)
-+		return genphy_c37_config_aneg(phydev);
-+
- 	/* Do not restart auto-negotiation by setting ret to 0 defautly,
- 	 * when calling __genphy_config_aneg later.
- 	 */
+ 	return 0;
 -- 
 2.31.1
 
