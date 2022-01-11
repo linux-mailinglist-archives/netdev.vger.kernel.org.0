@@ -2,189 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A140F48AE28
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 14:05:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34D5348AE60
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 14:24:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240242AbiAKNFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 08:05:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:28359 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240093AbiAKNFh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 08:05:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641906336;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Wpzje35ZQJ++DpfcFSJcktDk/9fVWR9cmKQ44GgvnmQ=;
-        b=JlgrQPIIIw+E2BjdG32+908WF5JZfGtLCsNqlihfW3/N/+NrxqbbWonKnqqRIbO891T8iw
-        nDH8h+LlFu4fIQk8hHO/Zv16DRV1BxeMLqsXpvp4vjNxLrQF2Iirg0kpHSvxqhvSlHCFng
-        E0/Q4VhOp34XY24D5owFs5Bimml7C4E=
-Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com
- [209.85.219.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-671-w8QAexhlNiS7GozJHevOWA-1; Tue, 11 Jan 2022 08:05:35 -0500
-X-MC-Unique: w8QAexhlNiS7GozJHevOWA-1
-Received: by mail-yb1-f197.google.com with SMTP id 2-20020a251302000000b006118f867dadso220918ybt.12
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 05:05:35 -0800 (PST)
+        id S240482AbiAKNYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 08:24:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41334 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231453AbiAKNYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 08:24:11 -0500
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49A9FC06173F
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 05:24:11 -0800 (PST)
+Received: by mail-qv1-xf30.google.com with SMTP id q3so18358790qvc.7
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 05:24:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2GKUo16gzL70lehCJgEozfgnVN4eUcr8glNuGmsTl6E=;
+        b=lluWOk7HjiUa+G+N5motvbXrlJ8ma3s4f7m7CLJuzLz7xBwOu7KsUQ2fnmAR3sx4Ma
+         EmnX/+9Pj4/Ylfu+bxGVY43Cpk+Yugavc/GErMfploP6peofZw2LK4I9rbZIWKN2jBm0
+         HMhKiYqJx1mAPrqHxdIYSs5Du0wBUE/WFDTYQvRyTqPRzYQVL19MtFOBgFMEbze714N+
+         OPiIl0Gx0md07b/FfpGV67l2PhU6mWDPJ0hTcqnCZR7HHRl47bg5ta/7o8pexR7Xgfxg
+         ZUk6UH7oUqP8wChQuBGIDr0DOMw3HQdJs8QBYWQGCXPwu3Hrm44DHGR6xWWDOFP5vOAS
+         PBRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Wpzje35ZQJ++DpfcFSJcktDk/9fVWR9cmKQ44GgvnmQ=;
-        b=GUc5NGR+froKJdwQ1LP30Tif+cN4dHrC3Xtn8LLcPI48fP52SRk8binHaNVBVY5o5i
-         5jEJm0q4Af/LODd7c73DadSBg94d/uA6NQEF8tHuvlWP+51fPjMTZskaxNPxVI2PE/tB
-         q+K5FWLoeQSODE44/nN+tL45Wz6euWmBTNiLR18kGf6cdXu1O7nCyFq+dasvRWAm4iTd
-         gSW0OZKliOhocQpWytd00YEuxLKWw181wqaFWx/nuIl1Yy1AjQLmes73wMbFameRVlq2
-         0IAqKPjJ3z7+ob1SCEmLXAD4CC/doKQLCVefXGjELoHTPeMGoiLtbVM7+MM8GgsoME/V
-         /P8A==
-X-Gm-Message-State: AOAM532qyBXCK6gXuZhPX+w/x9ywIJ0a+AZPEJzu/eUMNwnCm/Uojmq+
-        lzStDE3tAYSwzn3yMzOO4sHI9kwB9yWbaFQmmLQ8yCWtSqGKVSJX1O7SrMwKzPMnUhDiCnzvNkF
-        n3Tk6cFnwUrHtFK3bMWRVIHYu0De/JsoX
-X-Received: by 2002:a05:6902:110d:: with SMTP id o13mr6658660ybu.715.1641906335047;
-        Tue, 11 Jan 2022 05:05:35 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyJsAYYRDSZYX6e6gogiyOC4FEsDkRLDsOR3cKi9/31EBqC9/2HpkReIPbJz5Y5IOzS526Z85G8eg2mMdWVzTY=
-X-Received: by 2002:a05:6902:110d:: with SMTP id o13mr6658623ybu.715.1641906334739;
- Tue, 11 Jan 2022 05:05:34 -0800 (PST)
+        bh=2GKUo16gzL70lehCJgEozfgnVN4eUcr8glNuGmsTl6E=;
+        b=IlKQHxqidd7ufef9xXA33Y7yQkAC7qZPKn35fz0AxBxWNF0wMPsA8x6XeKljzLoHI7
+         h4o2mx8EF0914E6eXqdl5fyqnISSq2qVhqVv9+L5p2ZcFqH4fqqgloAAtl9dd92NcTV+
+         PZ71aFiHZzNcchscPpMVL5Bmc/iHN/xcSSHu57jrQ7jj5CO7Aug1V0rOD+ru8Z39bhAd
+         yZuj5LIQZ2gzctGEuubIssIC7gpwdwgHs46eGSmqC+uMQVT81OA5FqvkExROYfwe+UHi
+         P7OLm3IqTJ0B/cq8fmyVeVdzqsiwYRaeYQN5kLqaTceCQb9Uhn5SAbddWXfEFG2nErLS
+         EWIg==
+X-Gm-Message-State: AOAM531RxWEsx3l8lqvwadYRSI30H27bU555DxWdbQxzoEO2ETz2JYJJ
+        EJT+asXyOy5keTZLOhMKMeHzdPeHKa1nbSumWQ==
+X-Google-Smtp-Source: ABdhPJxqD92IVZ7qjRuhC7KaM1BhJCy9NBcyEeqrh00cgfZ68MHV3AQonkpSYHLYH5FnxmmN9Ho/rN8tZTx0PTeYao8=
+X-Received: by 2002:a05:6214:c89:: with SMTP id r9mr3797141qvr.116.1641907450228;
+ Tue, 11 Jan 2022 05:24:10 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1641641663.git.lorenzo@kernel.org> <a346f27e55a9117f43f89aceb7e47c5f0743d50a.1641641663.git.lorenzo@kernel.org>
- <YdxgrP1YDMyWXmqL@C02YVCJELVCG>
-In-Reply-To: <YdxgrP1YDMyWXmqL@C02YVCJELVCG>
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Date:   Tue, 11 Jan 2022 14:05:23 +0100
-Message-ID: <CAJ0CqmXaeJkJ8SDjTA1u_JNsqpxS8GA4J29S9wGPH0qOmqjp0w@mail.gmail.com>
-Subject: Re: [PATCH v21 bpf-next 06/23] net: marvell: rely on
- xdp_update_skb_shared_info utility routine
-To:     Andy Gospodarek <andrew.gospodarek@broadcom.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+References: <20220110081537.82477-1-moshet@nvidia.com>
+In-Reply-To: <20220110081537.82477-1-moshet@nvidia.com>
+From:   Jussi Maki <joamaki@gmail.com>
+Date:   Tue, 11 Jan 2022 14:23:34 +0100
+Message-ID: <CAHn8xckHR-1n5jW8dL6AHS3DSX0TOZK87yZ-L13jo79_LjfvVg@mail.gmail.com>
+Subject: Re: [PATCH RESEND net] bonding: Fix extraction of ports from the
+ packet headers
+To:     Moshe Tal <moshet@nvidia.com>
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        "Agroskin, Shay" <shayagr@amazon.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Sarkar, Tirthendu" <tirthendu.sarkar@intel.com>,
-        Toke Hoiland Jorgensen <toke@redhat.com>, andy@greyhouse.net
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->
-> On Sat, Jan 08, 2022 at 12:53:09PM +0100, Lorenzo Bianconi wrote:
-> > Rely on xdp_update_skb_shared_info routine in order to avoid
-> > resetting frags array in skb_shared_info structure building
-> > the skb in mvneta_swbm_build_skb(). Frags array is expected to
-> > be initialized by the receiving driver building the xdp_buff
-> > and here we just need to update memory metadata.
-> >
-> > Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
-> > Acked-by: John Fastabend <john.fastabend@gmail.com>
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >  drivers/net/ethernet/marvell/mvneta.c | 23 ++++++++++-------------
-> >  1 file changed, 10 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> > index 775ffd91b741..267a306d9c75 100644
-> > --- a/drivers/net/ethernet/marvell/mvneta.c
-> > +++ b/drivers/net/ethernet/marvell/mvneta.c
-> > @@ -2332,8 +2332,12 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
-> >               skb_frag_size_set(frag, data_len);
-> >               __skb_frag_set_page(frag, page);
-> >
-> > -             if (!xdp_buff_is_mb(xdp))
-> > +             if (!xdp_buff_is_mb(xdp)) {
-> > +                     sinfo->xdp_frags_size = *size;
-> >                       xdp_buff_set_mb(xdp);
-> > +             }
-> > +             if (page_is_pfmemalloc(page))
-> > +                     xdp_buff_set_frag_pfmemalloc(xdp);
-> >       } else {
-> >               page_pool_put_full_page(rxq->page_pool, page, true);
-> >       }
-> > @@ -2347,7 +2351,6 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
-> >       struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-> >       struct sk_buff *skb;
-> >       u8 num_frags;
-> > -     int i;
-> >
-> >       if (unlikely(xdp_buff_is_mb(xdp)))
-> >               num_frags = sinfo->nr_frags;
-> > @@ -2362,18 +2365,12 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
-> >       skb_put(skb, xdp->data_end - xdp->data);
-> >       skb->ip_summed = mvneta_rx_csum(pp, desc_status);
-> >
-> > -     if (likely(!xdp_buff_is_mb(xdp)))
-> > -             goto out;
-> > -
-> > -     for (i = 0; i < num_frags; i++) {
-> > -             skb_frag_t *frag = &sinfo->frags[i];
-> > -
-> > -             skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
-> > -                             skb_frag_page(frag), skb_frag_off(frag),
-> > -                             skb_frag_size(frag), PAGE_SIZE);
->
-> Maybe I'm missing something but I'm not sure you have a suitable
-> replacement for the 3 lines above this in your proposed change.
->
+Resending my reply as I again forgot that Gmail's mobile app doesn't
+do plain text. Sorry about that.
 
-Hi Andy,
+On Mon, Jan 10, 2022 at 9:16 AM Moshe Tal <moshet@nvidia.com> wrote:
+>
+> Wrong hash sends single stream to multiple output interfaces.
+>
+> The nhoff parameter is relative to skb->head, so convert it to be
+> relative to skb->data for using in skb_flow_get_ports().
+...
+>         if (l34 && *ip_proto >= 0)
+> -               fk->ports.ports = __skb_flow_get_ports(skb, *nhoff, *ip_proto, data, hlen);
+> +               /* nhoff is relative to skb->head instead of the usual skb->data */
+> +               fk->ports.ports = skb_flow_get_ports(skb, *nhoff - skb_headroom(skb), *ip_proto);
 
-mvneta_swbm_add_rx_fragment() initializes frags array in
-skb_shared_info for xdp whenever we receive a multi-descriptors frame.
-Since frags array is at the same offset for the xdp_buff and for the
-new skb and build_skb() in mvneta_swbm_build_skb() does not overwrite
-it, we do not need to initialize it again allocating the skb, just
-account metadata info running xdp_update_skb_shared_info(). Agree?
+This will likely crash as skb can be NULL here when calculating the
+hash for a xdp_buff. You'll need to make sure this code also works for
+bond_xmit_hash_xdp, which passes a data pointer, but no skb to
+bond_flow_dissect.
 
-> > -     }
-> > +     if (unlikely(xdp_buff_is_mb(xdp)))
-> > +             xdp_update_skb_shared_info(skb, num_frags,
-> > +                                        sinfo->xdp_frags_size,
-> > +                                        num_frags * xdp->frame_sz,
-> > +                                        xdp_buff_is_frag_pfmemalloc(xdp));
-> >
->
-> When I did an implementation of this on a different driver I also needed
-> to add:
->
->         for (i = 0; i < num_frags; i++)
->                 skb_frag_set_page(skb, i, skb_frag_page(&sinfo->frags[i]));
->
-> to make sure that frames that were given XDP_PASS were formatted
-> correctly so they could be handled by the stack.  Don't you need
-> something similar to make sure frags are properly set?
->
-> Thanks,
->
-> -andy
->
-> P.S.  Sorry for noticing this so late in the process; I realize this version
-> was just a rebase of v20 and this would have been useful information
-> earlier if I'm correct.
->
+In what case was the original code broken? The flow dissector
+should've used the passed in "data" pointer, but I guess in some cases
+not enough data was in the linear region. The right fix is probably to
+make sure "nhoff" stays relative to skb->data. The optional skb
+pointer is rather unfortunate and bound to cause issues in the future.
+Perhaps might be worthwhile at some point to have a more abstract
+notion for a packet buffer, with xdp and skb implementations and a
+flow dissector for it?
 
-no worries :)
-
-Regards,
-Lorenzo
-
-> > -out:
-> >       return skb;
-> >  }
-> >
-> > --
-> > 2.33.1
-> >
-
+You can verify that this does not break the XDP bonding functionality
+by running the xdp_bonding bpf selftest ("vmtest.sh -t ./test_progs -t
+xdp_bonding" in tools/testing/selftests/bpf).
