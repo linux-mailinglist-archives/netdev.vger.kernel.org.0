@@ -2,101 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C3FB48AD9F
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 13:30:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD7EB48ADEA
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 13:51:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239959AbiAKMac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 07:30:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57262 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239924AbiAKMaa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 07:30:30 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93CB0C06173F
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 04:30:30 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id t24so18690701edi.8
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 04:30:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=rXarSKXjLvTr86CMHjdFWEkfCv6OvQ6EIg7MWpF4IVo=;
-        b=Ff2PRum2tJwdJWymQ/jOdTRuph+R7mpcEFNpZeaZXHJ9cuVqbJ9GhxpqTWzJbZwuN0
-         zpzfgRa9BijB5njubDAbaEkm2q+NEudSk9Py/tFo2ekZtRAgiVs6jm0vdli+mLPuPB+X
-         DA+Kw32DlFybup5SuN5FapQm0qJfdkErD+03L5X3D2pUplEaUJNKsvJNDSiAB7cJy4Z8
-         ftJgbc+v/7ByMj0xKvzPbS2r5nRodmgKNtaZHmBA3LYFnsRPR6WzJO5jDnI2GrAFeYXF
-         jMfpDGii8xIub0J5XiED4yIXXCkrkAQxQhmfinmfCuViYS2vEnV6pdw0QyoEOc35VAhO
-         M/gQ==
+        id S240019AbiAKMvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 07:51:50 -0500
+Received: from mail-vk1-f178.google.com ([209.85.221.178]:40449 "EHLO
+        mail-vk1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239653AbiAKMvt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 07:51:49 -0500
+Received: by mail-vk1-f178.google.com with SMTP id 78so10253519vkz.7;
+        Tue, 11 Jan 2022 04:51:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=rXarSKXjLvTr86CMHjdFWEkfCv6OvQ6EIg7MWpF4IVo=;
-        b=P9rRE/YlXhGxZiWVq4hR9VrdO+OA54wRJzzvC5mcXBy/Kg/nPQuy5o7bFjuz2UYTw/
-         deXNiMOg05eD61v/AxU/5vqy/LOsY4bk95squ3cTb50vFBurwKsERBYzgetHgpOvAhif
-         JPUTU+mPjDIxKOLCHqBXI4R9YjvUslXGSRjeYeJ+mDXDfdOKexoz4WRlhpY6p1IdnPMY
-         bAZ6zvyEZxTe0HlIb7XMSJnpdJw61xlwS2POmV6tt5v6/1JoycCPDoht+GndyWJ/OGgV
-         F0HJhImI7k18AAJhYNWDOYWU1FjpKif+uor8QenMb+78wBcgoaIbzLXIf1z3bUEUUYcA
-         6cOg==
-X-Gm-Message-State: AOAM533D9sM72Q6IqR2jgMP/HsiI2ii21yawkYlwn6VF4g7DpOT667a8
-        IgoYfbrN52j7plAkVJtmrunJY+FsgvELseMGOtg=
-X-Google-Smtp-Source: ABdhPJyj3AoFoCnWIgokQPPTlHgVRxEiT1SlFyZftM52l+a01OI996BFKiCkE+fCcXgv1LDuzagm3GOulVmSI2HtGKQ=
-X-Received: by 2002:a17:906:9a2:: with SMTP id q2mr3412462eje.466.1641904229113;
- Tue, 11 Jan 2022 04:30:29 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ooKGf7RGEfbJN/l+F17gfotu+sbZFbeMAX/JFJAo0EQ=;
+        b=Lxdh9w0vleGQs/U4UYbeubaM4+WE8Yn3kK+FyxmRFP6uO8w1GyyzKrujrdflEOIvX3
+         2ofEwSJiz0P4eiuezh/dUD58xm6m293MHzytmsDbCQcRfRMQaTYwpRhT8fAtV2cECbVM
+         KzuIwQftBvi7y6H+HPpNiyT7jFx2VKk8ipe0OwEZgwyS3V8MMmAQU9pJzURjyL2vHr3R
+         fe8rJFZg3L8ROmAh8vk6dIfawG1iTVqEQZiQyz6RiXiyyKoIXpIxs/kJtzoMooW1X3mk
+         9AHNxaduMEarlBwAZM2kdQvCGPETQwme4OT1fysFAivRDTVKp5+tMIswUH8Et89O2+WG
+         oUGA==
+X-Gm-Message-State: AOAM530xsxbr/0VzNGN72iuCDV8gMBNRVi/SGXuHbTXChDTe40Gvn8ZJ
+        e+mOj6nEeTwFc5/Vhedg5bJDFpq0r5FdCw==
+X-Google-Smtp-Source: ABdhPJyR8U904KSrfsEa9jdjW9fTngvw5YpkTC9y/+eMa4iL4va6bRxrbN1d1JDwAOE9UWyiCc68Kw==
+X-Received: by 2002:a1f:3213:: with SMTP id y19mr1940708vky.7.1641905508697;
+        Tue, 11 Jan 2022 04:51:48 -0800 (PST)
+Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
+        by smtp.gmail.com with ESMTPSA id q11sm5823031uaj.4.2022.01.11.04.51.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jan 2022 04:51:48 -0800 (PST)
+Received: by mail-ua1-f52.google.com with SMTP id v12so29447222uar.7;
+        Tue, 11 Jan 2022 04:51:48 -0800 (PST)
+X-Received: by 2002:a05:6102:21dc:: with SMTP id r28mr1805314vsg.57.1641905507900;
+ Tue, 11 Jan 2022 04:51:47 -0800 (PST)
 MIME-Version: 1.0
-Sender: idewuibrahim421@gmail.com
-Received: by 2002:a17:906:7809:0:0:0:0 with HTTP; Tue, 11 Jan 2022 04:30:27
- -0800 (PST)
-From:   Ibrahim idewu <ibrahimidewu4@gmail.com>
-Date:   Tue, 11 Jan 2022 13:30:27 +0100
-X-Google-Sender-Auth: yT7l4TQmOLO2XFmKUGRcIXLSCfs
-Message-ID: <CAC8eW4tLoUzErLuQ0tthaVxJufS238sq+oBXg0AsHBNhjjsryw@mail.gmail.com>
-Subject: URGENT
-To:     undisclosed-recipients:;
+References: <20211223141113.1240679-1-Jason@zx2c4.com> <20211223141113.1240679-2-Jason@zx2c4.com>
+ <CAMuHMdU0spv9X_wErkBBWQ9kV9f1zE_YNcu5nPbTG_64Lh_h0w@mail.gmail.com> <CAHmME9pZu-UvCK=uP-sxXL127BmbjmrD2=M7cNd9vHdJEsverw@mail.gmail.com>
+In-Reply-To: <CAHmME9pZu-UvCK=uP-sxXL127BmbjmrD2=M7cNd9vHdJEsverw@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 11 Jan 2022 13:51:36 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdW+Od70XTNbnNxL3qXgetZ9QDLeett6u5vg9Wr6atxD=w@mail.gmail.com>
+Message-ID: <CAMuHMdW+Od70XTNbnNxL3qXgetZ9QDLeett6u5vg9Wr6atxD=w@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] random: use BLAKE2s instead of SHA1 in extraction
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Theodore Tso <tytso@mit.edu>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dear Friend,
+Hi Jason,
 
-My name is Mr.Ibrahim Idewu. I have decided to seek a confidential
-co-operation  with you in the execution of the deal described
-here-under for our both  mutual benefit and I hope you will keep it a
-top secret because of the nature  of the transaction, During the
-course of our bank year auditing, I discovered  an unclaimed/abandoned
-fund, sum total of {US$19.3 Million United State  Dollars} in the bank
-account that belongs to a Saudi Arabia businessman Who unfortunately
-lost his life and entire family in a Motor Accident.
+CC bpf, netdev
 
-Now our bank has been waiting for any of the relatives to come-up for
-the claim but nobody has done that. I personally has been unsuccessful
-in locating any of the relatives, now, I sincerely seek your consent
-to present you as the next of kin / Will Beneficiary to the deceased
-so that the proceeds of this account valued at {US$19.3 Million United
-State Dollars} can be paid to you, which we will share in these
-percentages ratio, 60% to me and 40% to you. All I request is your
-utmost sincere co-operation; trust and maximum confidentiality to
-achieve this project successfully. I have carefully mapped out the
-moralities for execution of this transaction under a legitimate
-arrangement to protect you from any breach of the law both in your
-country and here in Burkina Faso when the fund is being transferred to
-your bank account.
+On Tue, Jan 11, 2022 at 1:28 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> On Tue, Jan 11, 2022 at 12:38 PM Geert Uytterhoeven
+> <geert@linux-m68k.org> wrote:
+> > Unfortunately we cannot get rid of the sha1 code yet (lib/sha1.o is
+> > built-in unconditionally), as there are other users...
 
-I will have to provide all the relevant document that will be
-requested to indicate that you are the rightful beneficiary of this
-legacy and our bank will release the fund to you without any further
-delay, upon your consideration and acceptance of this offer, please
-send me the following information as stated below so we can proceed
-and get this fund transferred to your designated bank account
-immediately.
+kernel/bpf/core.c and net/ipv6/addrconf.c
+Could they be switched to blake2s, too?
 
--Your Full Name:
--Your Contact Address:
--Your direct Mobile telephone Number:
--Your Date of Birth:
--Your occupation:
+> I think that's just how things go and a price for progress. We're not
+> going to stick with sha1, and blake2s has some nice properties that we
+> certainly want. In the future hopefully this can decrease in other
+> ways based on other future improvements. But that's where we are now.
+>
+> If you're really quite concerned about m68k code size, I can probably
+> do some things to reduce that. For example, blake2s256_hmac is only
+> used by wireguard and it could probably be made local there. And with
+> some trivial loop re-rolling, I can shave off another 2300 bytes. And
+> I bet I can find a few other things too. The question is: how
+> important is this to you?
 
-I await your swift response and re-assurance.
+No problem, I just try to report all measurable impact on kernel size,
+so there is some record of it.
 
-Best regards,
-Mr.Ibrahim Idewu.
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
