@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BDC548A4F7
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 02:25:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD0C48A4F4
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 02:25:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346328AbiAKBZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 20:25:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45056 "EHLO
+        id S1346254AbiAKBZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 20:25:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346265AbiAKBY6 (ORCPT
+        with ESMTP id S1346266AbiAKBY6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 20:24:58 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6634C06175A;
-        Mon, 10 Jan 2022 17:24:51 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id w26so4104506wmi.0;
-        Mon, 10 Jan 2022 17:24:51 -0800 (PST)
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD29C06175B;
+        Mon, 10 Jan 2022 17:24:52 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id s1so30124289wra.6;
+        Mon, 10 Jan 2022 17:24:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZMPDzSjQOrUNWqC2VSg8brQGgBuhUXpA3LowQDg7QLw=;
-        b=dRBROPBBDXjlIatKXI1B/6UOMPn5j/DxUxs0wV1kKWQnhHArRMCPXW6LJRB3bD2/KS
-         4z3aWKZQ4e2KS3IqGQEqxXhjM5VG6leJ0p1arNRxy3bwT+FnzyW9gHGt7xScqIPfKCLP
-         4yzD1DaSu9UP1d97toJ5sBNbCC7lhSp02ch7PdR9+7koi/UA0zmyKa419XoXOVqEQhb6
-         wwy/vNOlCVHw/6TnvEujzSC5uzuhX28egYD+Sd1HA4tApHEwWt1wKPe6C55NjxMJG0dK
-         VndFaLpK0GHp1gHLjPlPgRpNaAO1oY+SZsTi8zw+KyJ0K7f3vvlgbx0Kj0ANLW/15vwG
-         PS8A==
+        bh=GjvOLRey0Y2EctehLACcoBC0HbQUE5JRzwrEobDyrp8=;
+        b=ZQtr0/tL2Htz+j4DEXszz4JyjiMKj5j38gnc3PX/AK1AUKbVqeH/m5rbEKDiB4ZLZ+
+         zGHNjhZMUzPApIm7vjINd3YNGGiOoGj1bBnniv1JIysWlgnIH/LsUVFmNnCgllb1HCxl
+         c3N/E2MOdSbA22/MdCm3EYcnORZXqcxiSGCMUVFpjWPflpAbpAAUK7t+qIe4sYIcxVlX
+         pTA+5lL60iXuxGUxM5IAM4W0rw9DzIJ8DK6GYy4CqRbp8PzR7GF+MW4PET8fHcXNrk/G
+         LtiVY66X46ti36+S8DTwO1M9msFPZtjasOUin8eqUn0mQL997SSeGkKDYyjGICwUpW2u
+         7tsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZMPDzSjQOrUNWqC2VSg8brQGgBuhUXpA3LowQDg7QLw=;
-        b=NegXgMZNikzkjf+2L7PeTO6Y/p04GJgc0t9ApzWwlvpli3h0/f+gQEUOtgkXw0yPLc
-         ugu5xG+BA1fUWgACGhZq3Bgz7pt5rsLh6lGIp95dWkFt4Kw8nV787yWt/PjNhf3zFTGu
-         xUNuOJkE8WED3iRweTAL11exfgRovIZtIh7KhsDmrVKY5nJ5wludvJR+ByFklD15ZSG0
-         1YXBErF71WDmiU8tw0FSGGqNekHZ5NJervWsDs0lbwhPzxI6AP3AKfExhviQDwO+ddb+
-         thGxgrmxkCaDEccpJ8a8j2yd+zLksK96bBtK9VSw0DcgJVcfC6SDMW3TX4dje0jbwelI
-         /j6g==
-X-Gm-Message-State: AOAM530h9RKgC8yh4R3RdiGDuI25N4dH7NyO0t0SSAlTKFQoEoGBNMXi
-        x92r5QMlAcFJsdvN8hOwO/WJssTS1Rc=
-X-Google-Smtp-Source: ABdhPJwZQMIAah5MNkGLIHGtWLlMBOSlkCIxtcWgoT3edWp8cvUpZyvRGSIrY4RDJjA8yh2Tv0RIcw==
-X-Received: by 2002:a1c:f20e:: with SMTP id s14mr326748wmc.186.1641864290249;
-        Mon, 10 Jan 2022 17:24:50 -0800 (PST)
+        bh=GjvOLRey0Y2EctehLACcoBC0HbQUE5JRzwrEobDyrp8=;
+        b=oPE/WcbMTWumBtew8ofZafPauJDQFTI9WgAY69wE+jXV0FIDVBo9arkb01Bw0Ueq7O
+         8sDSmgBohOeixNUZnRWeFdMwxLENB//EVWFeheoVC2vylRzE9tqDDH8Ld6otKwxCHGO3
+         InnoQw0h+xFJOLsER6ieQRfR3H6QsuGUmZ0ztSF0hx+g0LTAI/rMHfzJVlO8+fFhgpgM
+         dL/Mwd+8MMl2tdwz6JK4PqZSagaYmuJ7JoC1A5hBRnkLxpzY+t7k3xFztfTSci5/c5p2
+         20CyfKnoXs7rf746BBxrs94qMqKXkae3ESVLFYdmqjDMnT476TcBfnrsS5tlL0w5wdEH
+         z77A==
+X-Gm-Message-State: AOAM5332eGAMnLlikdyZAfvMU2t9tpI/xfanAbQEkhipp90uhmuo3irP
+        EDbehzd0zlH1K0YpQ97iuWpWMMPKF3o=
+X-Google-Smtp-Source: ABdhPJwGbRLtdO/NE1WoM31km4eQ75oFlxdFUWy0ZWjzYbuLFwKge2HxRNz3R+QYMIghHpSFK9bMsA==
+X-Received: by 2002:a5d:59a7:: with SMTP id p7mr1760446wrr.258.1641864291205;
+        Mon, 10 Jan 2022 17:24:51 -0800 (PST)
 Received: from 127.0.0.1localhost ([148.252.129.73])
-        by smtp.gmail.com with ESMTPSA id i8sm709886wru.26.2022.01.10.17.24.49
+        by smtp.gmail.com with ESMTPSA id i8sm709886wru.26.2022.01.10.17.24.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 17:24:49 -0800 (PST)
+        Mon, 10 Jan 2022 17:24:50 -0800 (PST)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -56,9 +56,9 @@ Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH 07/14] ipv6: pass flow in ip6_make_skb together with cork
-Date:   Tue, 11 Jan 2022 01:21:39 +0000
-Message-Id: <eae1be625797e0323e3e1e82b44cc0d716e2fcc9.1641863490.git.asml.silence@gmail.com>
+Subject: [PATCH 08/14] ipv6/udp: don't make extra copies of iflow
+Date:   Tue, 11 Jan 2022 01:21:40 +0000
+Message-Id: <c881d18e649cd8bb0a96499c1e2fbffa0035158c.1641863490.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1641863490.git.asml.silence@gmail.com>
 References: <cover.1641863490.git.asml.silence@gmail.com>
@@ -68,139 +68,227 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Another preparation patch. inet_cork_full already contains a field for
-iflow, so we can avoid passing a separate struct iflow6 into
-__ip6_append_data() and ip6_make_skb(), and use the flow stored in
-inet_cork_full. Make sure callers set cork->fl right, i.e. we init it in
-ip6_append_data() and right before the only ip6_make_skb() call.
+struct flowi takes 88 bytes and copying it is relatively expensive.
+Currenly, udpv6_sendmsg() first initialises an on-stack struct flowi6
+and then copies it into cork. Instead, directly initialise a flow in an
+on-stack cork, i.e. cork->fl, so corkless udp can avoid making an extra
+copy.
+
+Note: moving inet_cork_full instance shouldn't grow stack too much,
+it replaces 88 bytes for iflow with 160.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/net/ipv6.h    |  2 +-
- net/ipv6/ip6_output.c | 20 +++++++++-----------
- net/ipv6/udp.c        |  4 +++-
- 3 files changed, 13 insertions(+), 13 deletions(-)
+ net/ipv6/udp.c | 85 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 42 insertions(+), 43 deletions(-)
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index 3afcb128e064..5e0b56d66724 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -1020,7 +1020,7 @@ struct sk_buff *ip6_make_skb(struct sock *sk,
- 			     int getfrag(void *from, char *to, int offset,
- 					 int len, int odd, struct sk_buff *skb),
- 			     void *from, int length, int transhdrlen,
--			     struct ipcm6_cookie *ipc6, struct flowi6 *fl6,
-+			     struct ipcm6_cookie *ipc6,
- 			     struct rt6_info *rt, unsigned int flags,
- 			     struct inet_cork_full *cork);
- 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 62da09819750..0cc490f2cfbf 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1350,7 +1350,7 @@ static void ip6_append_data_mtu(unsigned int *mtu,
- 
- static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- 			  struct inet6_cork *v6_cork, struct ipcm6_cookie *ipc6,
--			  struct rt6_info *rt, struct flowi6 *fl6)
-+			  struct rt6_info *rt)
- {
- 	struct ipv6_pinfo *np = inet6_sk(sk);
- 	unsigned int mtu;
-@@ -1391,7 +1391,6 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- 	}
- 	dst_hold(&rt->dst);
- 	cork->base.dst = &rt->dst;
--	cork->fl.u.ip6 = *fl6;
- 	v6_cork->hop_limit = ipc6->hlimit;
- 	v6_cork->tclass = ipc6->tclass;
- 	if (rt->dst.flags & DST_XFRM_TUNNEL)
-@@ -1422,7 +1421,6 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- }
- 
- static int __ip6_append_data(struct sock *sk,
--			     struct flowi6 *fl6,
- 			     struct sk_buff_head *queue,
- 			     struct inet_cork_full *cork_full,
- 			     struct inet6_cork *v6_cork,
-@@ -1434,6 +1432,7 @@ static int __ip6_append_data(struct sock *sk,
- {
- 	struct sk_buff *skb, *skb_prev = NULL;
- 	struct inet_cork *cork = &cork_full->base;
-+	struct flowi6 *fl6 = &cork_full->fl.u.ip6;
- 	unsigned int maxfraglen, fragheaderlen, mtu, orig_mtu, pmtu;
- 	struct ubuf_info *uarg = NULL;
- 	int exthdrlen = 0;
-@@ -1786,19 +1785,19 @@ int ip6_append_data(struct sock *sk,
- 		 * setup for corking
- 		 */
- 		err = ip6_setup_cork(sk, &inet->cork, &np->cork,
--				     ipc6, rt, fl6);
-+				     ipc6, rt);
- 		if (err)
- 			return err;
- 
-+		inet->cork.fl.u.ip6 = *fl6;
- 		exthdrlen = (ipc6->opt ? ipc6->opt->opt_flen : 0);
- 		length += exthdrlen;
- 		transhdrlen += exthdrlen;
- 	} else {
--		fl6 = &inet->cork.fl.u.ip6;
- 		transhdrlen = 0;
- 	}
- 
--	return __ip6_append_data(sk, fl6, &sk->sk_write_queue, &inet->cork,
-+	return __ip6_append_data(sk, &sk->sk_write_queue, &inet->cork,
- 				 &np->cork, sk_page_frag(sk), getfrag,
- 				 from, length, transhdrlen, flags, ipc6);
- }
-@@ -1967,9 +1966,8 @@ struct sk_buff *ip6_make_skb(struct sock *sk,
- 			     int getfrag(void *from, char *to, int offset,
- 					 int len, int odd, struct sk_buff *skb),
- 			     void *from, int length, int transhdrlen,
--			     struct ipcm6_cookie *ipc6, struct flowi6 *fl6,
--			     struct rt6_info *rt, unsigned int flags,
--			     struct inet_cork_full *cork)
-+			     struct ipcm6_cookie *ipc6, struct rt6_info *rt,
-+			     unsigned int flags, struct inet_cork_full *cork)
- {
- 	struct inet6_cork v6_cork;
- 	struct sk_buff_head queue;
-@@ -1986,7 +1984,7 @@ struct sk_buff *ip6_make_skb(struct sock *sk,
- 	cork->base.opt = NULL;
- 	cork->base.dst = NULL;
- 	v6_cork.opt = NULL;
--	err = ip6_setup_cork(sk, cork, &v6_cork, ipc6, rt, fl6);
-+	err = ip6_setup_cork(sk, cork, &v6_cork, ipc6, rt);
- 	if (err) {
- 		ip6_cork_release(cork, &v6_cork);
- 		return ERR_PTR(err);
-@@ -1994,7 +1992,7 @@ struct sk_buff *ip6_make_skb(struct sock *sk,
- 	if (ipc6->dontfrag < 0)
- 		ipc6->dontfrag = inet6_sk(sk)->dontfrag;
- 
--	err = __ip6_append_data(sk, fl6, &queue, cork, &v6_cork,
-+	err = __ip6_append_data(sk, &queue, cork, &v6_cork,
- 				&current->task_frag, getfrag, from,
- 				length + exthdrlen, transhdrlen + exthdrlen,
- 				flags, ipc6);
 diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 9a91b51d8e3f..2580705431ea 100644
+index 2580705431ea..eec83e34ae27 100644
 --- a/net/ipv6/udp.c
 +++ b/net/ipv6/udp.c
-@@ -1533,9 +1533,11 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		struct inet_cork_full cork;
+@@ -1294,7 +1294,8 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	struct ipv6_txoptions *opt = NULL;
+ 	struct ipv6_txoptions *opt_to_free = NULL;
+ 	struct ip6_flowlabel *flowlabel = NULL;
+-	struct flowi6 fl6;
++	struct inet_cork_full cork;
++	struct flowi6 *fl6 = &cork.fl.u.ip6;
+ 	struct dst_entry *dst;
+ 	struct ipcm6_cookie ipc6;
+ 	int addr_len = msg->msg_namelen;
+@@ -1384,19 +1385,19 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	}
+ 	ulen += sizeof(struct udphdr);
+ 
+-	memset(&fl6, 0, sizeof(fl6));
++	memset(fl6, 0, sizeof(*fl6));
+ 
+ 	if (sin6) {
+ 		if (sin6->sin6_port == 0)
+ 			return -EINVAL;
+ 
+-		fl6.fl6_dport = sin6->sin6_port;
++		fl6->fl6_dport = sin6->sin6_port;
+ 		daddr = &sin6->sin6_addr;
+ 
+ 		if (np->sndflow) {
+-			fl6.flowlabel = sin6->sin6_flowinfo&IPV6_FLOWINFO_MASK;
+-			if (fl6.flowlabel&IPV6_FLOWLABEL_MASK) {
+-				flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
++			fl6->flowlabel = sin6->sin6_flowinfo&IPV6_FLOWINFO_MASK;
++			if (fl6->flowlabel & IPV6_FLOWLABEL_MASK) {
++				flowlabel = fl6_sock_lookup(sk, fl6->flowlabel);
+ 				if (IS_ERR(flowlabel))
+ 					return -EINVAL;
+ 			}
+@@ -1413,24 +1414,24 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		if (addr_len >= sizeof(struct sockaddr_in6) &&
+ 		    sin6->sin6_scope_id &&
+ 		    __ipv6_addr_needs_scope_id(__ipv6_addr_type(daddr)))
+-			fl6.flowi6_oif = sin6->sin6_scope_id;
++			fl6->flowi6_oif = sin6->sin6_scope_id;
+ 	} else {
+ 		if (sk->sk_state != TCP_ESTABLISHED)
+ 			return -EDESTADDRREQ;
+ 
+-		fl6.fl6_dport = inet->inet_dport;
++		fl6->fl6_dport = inet->inet_dport;
+ 		daddr = &sk->sk_v6_daddr;
+-		fl6.flowlabel = np->flow_label;
++		fl6->flowlabel = np->flow_label;
+ 		connected = true;
+ 	}
+ 
+-	if (!fl6.flowi6_oif)
+-		fl6.flowi6_oif = sk->sk_bound_dev_if;
++	if (!fl6->flowi6_oif)
++		fl6->flowi6_oif = sk->sk_bound_dev_if;
+ 
+-	if (!fl6.flowi6_oif)
+-		fl6.flowi6_oif = np->sticky_pktinfo.ipi6_ifindex;
++	if (!fl6->flowi6_oif)
++		fl6->flowi6_oif = np->sticky_pktinfo.ipi6_ifindex;
+ 
+-	fl6.flowi6_uid = sk->sk_uid;
++	fl6->flowi6_uid = sk->sk_uid;
+ 
+ 	if (msg->msg_controllen) {
+ 		opt = &opt_space;
+@@ -1440,14 +1441,14 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 
+ 		err = udp_cmsg_send(sk, msg, &ipc6.gso_size);
+ 		if (err > 0)
+-			err = ip6_datagram_send_ctl(sock_net(sk), sk, msg, &fl6,
++			err = ip6_datagram_send_ctl(sock_net(sk), sk, msg, fl6,
+ 						    &ipc6);
+ 		if (err < 0) {
+ 			fl6_sock_release(flowlabel);
+ 			return err;
+ 		}
+-		if ((fl6.flowlabel&IPV6_FLOWLABEL_MASK) && !flowlabel) {
+-			flowlabel = fl6_sock_lookup(sk, fl6.flowlabel);
++		if ((fl6->flowlabel&IPV6_FLOWLABEL_MASK) && !flowlabel) {
++			flowlabel = fl6_sock_lookup(sk, fl6->flowlabel);
+ 			if (IS_ERR(flowlabel))
+ 				return -EINVAL;
+ 		}
+@@ -1464,16 +1465,17 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	opt = ipv6_fixup_options(&opt_space, opt);
+ 	ipc6.opt = opt;
+ 
+-	fl6.flowi6_proto = sk->sk_protocol;
+-	fl6.flowi6_mark = ipc6.sockc.mark;
+-	fl6.daddr = *daddr;
+-	if (ipv6_addr_any(&fl6.saddr) && !ipv6_addr_any(&np->saddr))
+-		fl6.saddr = np->saddr;
+-	fl6.fl6_sport = inet->inet_sport;
++	fl6->flowi6_proto = sk->sk_protocol;
++	fl6->flowi6_mark = ipc6.sockc.mark;
++	fl6->daddr = *daddr;
++	if (ipv6_addr_any(&fl6->saddr) && !ipv6_addr_any(&np->saddr))
++		fl6->saddr = np->saddr;
++	fl6->fl6_sport = inet->inet_sport;
+ 
+ 	if (cgroup_bpf_enabled(CGROUP_UDP6_SENDMSG) && !connected) {
+ 		err = BPF_CGROUP_RUN_PROG_UDP6_SENDMSG_LOCK(sk,
+-					   (struct sockaddr *)sin6, &fl6.saddr);
++					   (struct sockaddr *)sin6,
++					   &fl6->saddr);
+ 		if (err)
+ 			goto out_no_dst;
+ 		if (sin6) {
+@@ -1489,32 +1491,32 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 				err = -EINVAL;
+ 				goto out_no_dst;
+ 			}
+-			fl6.fl6_dport = sin6->sin6_port;
+-			fl6.daddr = sin6->sin6_addr;
++			fl6->fl6_dport = sin6->sin6_port;
++			fl6->daddr = sin6->sin6_addr;
+ 		}
+ 	}
+ 
+-	if (ipv6_addr_any(&fl6.daddr))
+-		fl6.daddr.s6_addr[15] = 0x1; /* :: means loopback (BSD'ism) */
++	if (ipv6_addr_any(&fl6->daddr))
++		fl6->daddr.s6_addr[15] = 0x1; /* :: means loopback (BSD'ism) */
+ 
+-	final_p = fl6_update_dst(&fl6, opt, &final);
++	final_p = fl6_update_dst(fl6, opt, &final);
+ 	if (final_p)
+ 		connected = false;
+ 
+-	if (!fl6.flowi6_oif && ipv6_addr_is_multicast(&fl6.daddr)) {
+-		fl6.flowi6_oif = np->mcast_oif;
++	if (!fl6->flowi6_oif && ipv6_addr_is_multicast(&fl6->daddr)) {
++		fl6->flowi6_oif = np->mcast_oif;
+ 		connected = false;
+-	} else if (!fl6.flowi6_oif)
+-		fl6.flowi6_oif = np->ucast_oif;
++	} else if (!fl6->flowi6_oif)
++		fl6->flowi6_oif = np->ucast_oif;
+ 
+-	security_sk_classify_flow(sk, flowi6_to_flowi_common(&fl6));
++	security_sk_classify_flow(sk, flowi6_to_flowi_common(fl6));
+ 
+ 	if (ipc6.tclass < 0)
+ 		ipc6.tclass = np->tclass;
+ 
+-	fl6.flowlabel = ip6_make_flowinfo(ipc6.tclass, fl6.flowlabel);
++	fl6->flowlabel = ip6_make_flowinfo(ipc6.tclass, fl6->flowlabel);
+ 
+-	dst = ip6_sk_dst_lookup_flow(sk, &fl6, final_p, connected);
++	dst = ip6_sk_dst_lookup_flow(sk, fl6, final_p, connected);
+ 	if (IS_ERR(dst)) {
+ 		err = PTR_ERR(dst);
+ 		dst = NULL;
+@@ -1522,7 +1524,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	}
+ 
+ 	if (ipc6.hlimit < 0)
+-		ipc6.hlimit = ip6_sk_dst_hoplimit(np, &fl6, dst);
++		ipc6.hlimit = ip6_sk_dst_hoplimit(np, fl6, dst);
+ 
+ 	if (msg->msg_flags&MSG_CONFIRM)
+ 		goto do_confirm;
+@@ -1530,18 +1532,15 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 
+ 	/* Lockless fast path for the non-corking case */
+ 	if (!corkreq) {
+-		struct inet_cork_full cork;
  		struct sk_buff *skb;
  
-+		cork.fl.u.ip6 = fl6;
-+
+-		cork.fl.u.ip6 = fl6;
+-
  		skb = ip6_make_skb(sk, getfrag, msg, ulen,
  				   sizeof(struct udphdr), &ipc6,
--				   &fl6, (struct rt6_info *)dst,
-+				   (struct rt6_info *)dst,
+ 				   (struct rt6_info *)dst,
  				   msg->msg_flags, &cork);
  		err = PTR_ERR(skb);
  		if (!IS_ERR_OR_NULL(skb))
+-			err = udp_v6_send_skb(skb, &fl6, &cork.base);
++			err = udp_v6_send_skb(skb, fl6, &cork.base);
+ 		goto out;
+ 	}
+ 
+@@ -1563,7 +1562,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 		ipc6.dontfrag = np->dontfrag;
+ 	up->len += ulen;
+ 	err = ip6_append_data(sk, getfrag, msg, ulen, sizeof(struct udphdr),
+-			      &ipc6, &fl6, (struct rt6_info *)dst,
++			      &ipc6, fl6, (struct rt6_info *)dst,
+ 			      corkreq ? msg->msg_flags|MSG_MORE : msg->msg_flags);
+ 	if (err)
+ 		udp_v6_flush_pending_frames(sk);
+@@ -1598,7 +1597,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 
+ do_confirm:
+ 	if (msg->msg_flags & MSG_PROBE)
+-		dst_confirm_neigh(dst, &fl6.daddr);
++		dst_confirm_neigh(dst, &fl6->daddr);
+ 	if (!(msg->msg_flags&MSG_PROBE) || len)
+ 		goto back_from_confirm;
+ 	err = 0;
 -- 
 2.34.1
 
