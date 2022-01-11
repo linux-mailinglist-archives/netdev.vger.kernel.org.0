@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 237AE48B55A
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 19:07:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B12C48B557
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 19:07:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350256AbiAKSHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 13:07:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51782 "EHLO
+        id S1350235AbiAKSHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 13:07:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345133AbiAKSGb (ORCPT
+        with ESMTP id S1345273AbiAKSGb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 13:06:31 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30626C03400B;
-        Tue, 11 Jan 2022 10:05:24 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id 59-20020a17090a09c100b001b34a13745eso6712390pjo.5;
-        Tue, 11 Jan 2022 10:05:24 -0800 (PST)
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D52BC03325A;
+        Tue, 11 Jan 2022 10:05:27 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id t18so8907944plg.9;
+        Tue, 11 Jan 2022 10:05:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=H3yfHHm/dC6wV51xeH/AQZWfLUZAIsM4sDRbBI0TaOw=;
-        b=MoMIXxaF6FNiuu8t7bLdrExLb0aHuj9Qr1vgO+QgEvt3JL5zmLqZbvmb5wbY4RbmMr
-         P3V8iUFZOsp76Ng5KI7+7CBTwRVp6FHzzDBEflIy2pYwdzeXqvAifzTuhKmUzoVqedYo
-         v/iI2Uk9J5vH7gh7v2764t2yAg9bzaP8K/yVDlg0yPtfiwmQM1S+5JmueeHhVK5UqLCx
-         pSOqKrGDDW52VTsTrILNuKzlPaiQvyZgmDAN+ZL2re/mUDet74D6X8P740N8txQVLmVW
-         Lf+XnaVyZ8idW69nt+X1+mPUuBSHKQDH0JYxws/1ZY8iXUBWXiO/gxzVxigP2jV2k/bm
-         kxfg==
+        bh=dcb+0ImpXn2QBxgA9dEdyoEqHG0SXOELXRtYsq6KA8s=;
+        b=aC53ana5pE8sjWVVI0YzRPtDLFwop0pyARfv4JVn2a23ILiBtU1mH/HIWcRF29kVBk
+         TWh2I/IhGlyvlnRjLt7GZU/tiVc700sY7R2OwibuNtI/8hO4F7FUnjQpmffuIIhSawVV
+         Mwx6ghC7idY1R5gVGhnYVHXMGXXSvWB6hOJ8etp6QKKUyxmIbwQvkC/5NtS7qPlZdmoc
+         OtayXJarEyLnlvsWPUdY70Zl9w5yiQezLuFQaxYKfCALYhCLpaZRYNTM6ILuS5cRxMMO
+         xp0Z+fk9HKppiMQVNudQ5ULMcEXpjrS7pg4ft3RhT0TUdLM8WUIBSxOeMEjwuq7wuTAA
+         JRPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=H3yfHHm/dC6wV51xeH/AQZWfLUZAIsM4sDRbBI0TaOw=;
-        b=HnIZ+0eE0rzbqVQcZbBe7qzdWXuRl6JRyQhu4Xsi0mSCksSiSwJwzE2V1JCBHhvM2z
-         xVthVvV4E0OBgkDXjudqZhCXpYEBUi+Ps8vW91ng/vAcS4FcWXB6hguQfa5VH+XGHSin
-         AAUb5y6vZxurR08/tkNr+yIwg6jqbrWKi07gh1sVN53L1jOKRtdJCaxkAlPes25/mvsc
-         KBPtdH3GIfNF7IeMTxCeqYA9wgITEh9kMWdtDkZZ2Sljn488CvdL/wkdPBGhvT8aiXK+
-         dGpJXp2WWq9R6/XOzQh8Ad8ikgZeJhEBxdHv1x5qDjtvGhI7+4SNZqowl9YoLawnb2sM
-         XAuQ==
-X-Gm-Message-State: AOAM530z4b3MHZ5Ol9TUIXutDqMqPMWrurkDn8ZGmnZHTQKqez4e6jCR
-        dfbIgUcJTF9rH7CJEmp+/ttpQyLN3gV1Mw==
-X-Google-Smtp-Source: ABdhPJztjMKhLqpycWPAiiXfCQx7HLpUO3BrzSq6UelX+5vEeXysWyOshcgRakqPnsnHCyIatuHdZg==
-X-Received: by 2002:a17:902:bcc1:b0:149:a13f:af62 with SMTP id o1-20020a170902bcc100b00149a13faf62mr5434711pls.147.1641924323500;
-        Tue, 11 Jan 2022 10:05:23 -0800 (PST)
+        bh=dcb+0ImpXn2QBxgA9dEdyoEqHG0SXOELXRtYsq6KA8s=;
+        b=mCsVVA6G9a2veyQsEazhwQQf2Wu8rjHDYu/KwRxZqwf+s8WIcMtzgbN722qTntZeq5
+         7V3piYUaeN6kpZ2R4N0uLXDqa5Tc9V8517W4OJjQIKY7UNu1oikmZtZifsPG4Q7j/EPA
+         f4lZrgHv3F2qFjMs52yD9vxJOu5GlCapAcZl1x/9NSwIGBfHOjIPP9DXZHhDofyfhifX
+         D/MtSvF1as9pgfPE9/JMTPBkvSR0whBOtdwQaQWWI298Cd7UJYEE2B55KjsOMcJvV2O/
+         T+D6LRRgy5l7LPAXFIXiL/IkR/Rp/X5Y07S2QLCvvDngczJybw/47u25qebMjPjPnpd+
+         XxwQ==
+X-Gm-Message-State: AOAM530zYxKlrbBZtDDVzM5SFb1K5W3g+XEM+IBijf13UK0YrZBYfW9E
+        4bQ0J5Gd2X+Ta60vofRByrUqvpRRUkWCtA==
+X-Google-Smtp-Source: ABdhPJwLiJh9r4CKqkhKbumNXzYv8QqcWvZvC6vq9oSJhxg1BM/trknzW7jrn6Lehblq9wCSMadyKw==
+X-Received: by 2002:a63:450c:: with SMTP id s12mr5035169pga.84.1641924326514;
+        Tue, 11 Jan 2022 10:05:26 -0800 (PST)
 Received: from localhost ([2405:201:6014:d064:502e:73f4:8af1:9522])
-        by smtp.gmail.com with ESMTPSA id s9sm2960947pjn.2.2022.01.11.10.05.22
+        by smtp.gmail.com with ESMTPSA id p15sm11085858pfh.86.2022.01.11.10.05.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 10:05:23 -0800 (PST)
+        Tue, 11 Jan 2022 10:05:26 -0800 (PST)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -60,364 +60,520 @@ Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
         Florian Westphal <fw@strlen.de>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf-next v7 09/10] selftests/bpf: Extend kfunc selftests
-Date:   Tue, 11 Jan 2022 23:34:27 +0530
-Message-Id: <20220111180428.931466-10-memxor@gmail.com>
+Subject: [PATCH bpf-next v7 10/10] selftests/bpf: Add test for race in btf_try_get_module
+Date:   Tue, 11 Jan 2022 23:34:28 +0530
+Message-Id: <20220111180428.931466-11-memxor@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220111180428.931466-1-memxor@gmail.com>
 References: <20220111180428.931466-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=10297; h=from:subject; bh=V4N8OYIp0Q0iUeJaK6wmENfeM8WFrnU4WDanDAZzvaA=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBh3cakh6bm+JL41xBTqXMNQUd6UAiAlasaVmwEksmi LoNq+zKJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYd3GpAAKCRBM4MiGSL8RyvZsD/ 4otJzApFP7wpqoDXN2ssq4C9788NdshQ7kLPaLb3X598GmrSiyph43Dl/viAnaH1EBr2quI+eDrMrs jxQ9z5RjtWklcMxstk20OI+WmiuWuPAYe7Jz3yhafixCMsnTWLPapBp3f18F/GQvNa47tuv8vN0go+ MeGQoSc19uN/6o8bo7dutaYVOeEh82DghmwDRCzkkU9YV41AAPmiU+Anlk6OweadCmFMZ20k0244e8 GY6bES99sXPh2u5/Ltvdyb3uFWDS5i2LhwsOEWevRrrf1OboosARXayVXmRbjt5+siuD2fP2peq9nt SOk5mQ0RTnhssTc/b3UCXBwFtcatLC8yUyT+MaY2+IwXRGdTMbpraYkNvlwS7odl2Cc7WZnC/p0HJE wOrM77p+a5Uur8BslteEoHQgY05KoQTso/Jq0He9/YwfS8U+0J2ShHka2cgNYZT2gxeuGmGaGiTDXN 8ug7PejUebKMFqdAp/oBFgroctbxvm37V6Ni5x/T7XEbxMpdYQqtpLhX0XdEDETlvSLIPLWikddJ9A slgB9MPm2t0YqSRCUYTM1cG357vBnPsGsgrXLFsSp69B0ALwkRgk83KsNnR7VLS8rgh2PCk7k4X8wc XGxL559VTFigqE0R26ZThWDDkcFC4GK0mBEhn0RxO+mwOWGG7fr8Lk/fXwKg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=18149; h=from:subject; bh=zshjPp83912NeLg9Mv0IQBqeiGLYQxp30dm+Z8HQ+SY=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBh3cak6+fNtJ2b3929WUwzqvj3s5tVkFvZ3Fx3ASu4 UjHOokCJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYd3GpAAKCRBM4MiGSL8RygawEA CNexF7D2MArlWIPo/gnHbpTiyoEfi0N3HxLdoCZmlG8uW/oUQk0eREnfhn5LZjMORTNcJCvsXQkjGk OI5xpvLV9pABgm4ukaHojCiEVg983CepKV/ZbS9NCtOqO+ljPqWMzBXt+hUKWJAh3XGvFlt9YlTFQo s7lYcHA9GVBcOkrHG/xxB9JJ+W78S7l4oHE8JuFH1gJ68fQN9tAFFm/QjxDQjNlEsRT2AAEc0/0cbK t06Kg+vw5mkDLCwC2YtB4Pg7Tty7w+jkq2CZAEh5eTIsFo8DeqRRxrDODT7uOl9QV3Ipt85A8jAxrk 8fdvBdJONIIgmoApE2eN53yCmiFarkJUx4E6mtrwj27Yt0bFdkf4KRoN4432hk0SnZCT700zB42Wsq ji1/q56tOgQAY6fQJvjzubridixHL51LHY2iws/dxWzPb5vezk/OC8WRteTKR/e46wMYPz44NE9Ndt 3LV6nB1TZA7I4Zn6R6G40+IDi1DzJycsGN1wK76uOTqyombotxEcOv7H2sq7s8xVrQdM1FBogGvB8q hwmWC/a61Q8M/kU3bhpWbvycPMBaNXEskQEF12OcEhl53t82LeAwgAPJGcBY4+2jPu21+swT9gA2h5 Htt+hpf5s2YI6KMqLt9JWCH4OUeCrBwR0vF34LdfUspM+/OrwcErwPyQydAg==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the prog_test kfuncs to test the referenced PTR_TO_BTF_ID kfunc
-support, and PTR_TO_CTX, PTR_TO_MEM argument passing support. Also
-testing the various failure cases for invalid kfunc prototypes.
+This adds a complete test case to ensure we never take references to
+modules not in MODULE_STATE_LIVE, which can lead to UAF, and it also
+ensures we never access btf->kfunc_set_tab in an inconsistent state.
+
+The test uses userfaultfd to artificially widen the race.
+
+When run on an unpatched kernel, it leads to the following splat:
+
+[root@(none) bpf]# ./test_progs -t bpf_mod_race/ksym
+[   55.498171] BUG: unable to handle page fault for address: fffffbfff802548b                                                                      [   55.499206] #PF: supervisor read access in kernel mode
+[   55.499855] #PF: error_code(0x0000) - not-present page
+[   55.500555] PGD a4fa9067 P4D a4fa9067 PUD a4fa5067 PMD 1b44067 PTE 0
+[   55.501499] Oops: 0000 [#1] PREEMPT SMP KASAN NOPTI
+[   55.502195] CPU: 0 PID: 83 Comm: kworker/0:2 Tainted: G           OE     5.16.0-rc4+ #151                                                       [   55.503388] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ArchLinux 1.15.0-1 04/01/2014
+[   55.504777] Workqueue: events bpf_prog_free_deferred
+[   55.505563] RIP: 0010:kasan_check_range+0x184/0x1d0
+[   55.506363] Code: 12 83 e0 07 48 39 d0 7d 8a 41 bb 01 00 00 00 5b 5d 44 89 d8 41 5c c3 48 85 d2 74 ed 48 01 ea eb 09 48 83 c0 01 48 39 d0 74 df
+<80> 38 00 74 f2 e9 39 ff ff ff b8 01 00 00 00 c3 48 29 c3 48 89 da
+[   55.509140] RSP: 0018:ffff88800560fcf0 EFLAGS: 00010282
+[   55.509977] RAX: fffffbfff802548b RBX: fffffbfff802548c RCX: ffffffff9337b6ba
+[   55.511096] RDX: fffffbfff802548c RSI: 0000000000000004 RDI: ffffffffc012a458
+[   55.512143] RBP: fffffbfff802548b R08: 0000000000000001 R09: ffffffffc012a45b
+[   55.513228] R10: fffffbfff802548b R11: 0000000000000001 R12: ffff888001b5f598
+[   55.514332] R13: ffff888004f49ac8 R14: 0000000000000000 R15: ffff888092449400
+[   55.515418] FS:  0000000000000000(0000) GS:ffff888092400000(0000) knlGS:0000000000000000
+[   55.516705] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   55.517560] CR2: fffffbfff802548b CR3: 0000000007c10006 CR4: 0000000000770ef0
+
+[   55.518672] PKRU: 55555554
+[   55.519022] Call Trace:
+[   55.519483]  <TASK>
+[   55.519884]  module_put.part.0+0x2a/0x180
+[   55.520642]  bpf_prog_free_deferred+0x129/0x2e0
+[   55.521478]  process_one_work+0x4fa/0x9e0
+[   55.522122]  ? pwq_dec_nr_in_flight+0x100/0x100
+[   55.522878]  ? rwlock_bug.part.0+0x60/0x60
+[   55.523551]  worker_thread+0x2eb/0x700
+[   55.524176]  ? __kthread_parkme+0xd8/0xf0
+[   55.524853]  ? process_one_work+0x9e0/0x9e0
+[   55.525544]  kthread+0x23a/0x270
+[   55.526088]  ? set_kthread_struct+0x80/0x80
+[   55.526798]  ret_from_fork+0x1f/0x30
+[   55.527413]  </TASK>
+[   55.527813] Modules linked in: bpf_testmod(OE) crc32_pclmul(E) intel_rapl_msr(E) intel_rapl_common(E) rapl(E) ghash_clmulni_intel(E) crct10dif_pclmul(E) crc32c_intel(E) serio_raw(E) [last unloaded: bpf_testmod]
+[   55.530846] CR2: fffffbfff802548b
+[   55.531341] ---[ end trace 1af41803c054ad6d ]---
+[   55.532136] RIP: 0010:kasan_check_range+0x184/0x1d0
+[   55.532918] Code: 12 83 e0 07 48 39 d0 7d 8a 41 bb 01 00 00 00 5b 5d 44 89 d8 41 5c c3 48 85 d2 74 ed 48 01 ea eb 09 48 83 c0 01 48 39 d0 74 df <80> 38 00 74 f2 e9 39 ff ff ff b8 01 00 00 00 c3 48 29 c3 48 89 da
+[   55.535887] RSP: 0018:ffff88800560fcf0 EFLAGS: 00010282
+[   55.536711] RAX: fffffbfff802548b RBX: fffffbfff802548c RCX: ffffffff9337b6ba
+[   55.537821] RDX: fffffbfff802548c RSI: 0000000000000004 RDI: ffffffffc012a458
+[   55.538899] RBP: fffffbfff802548b R08: 0000000000000001 R09: ffffffffc012a45b
+[   55.539928] R10: fffffbfff802548b R11: 0000000000000001 R12: ffff888001b5f598
+[   55.541021] R13: ffff888004f49ac8 R14: 0000000000000000 R15: ffff888092449400
+[   55.542108] FS:  0000000000000000(0000) GS:ffff888092400000(0000) knlGS:0000000000000000
+[   55.543260]CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   55.544136] CR2: fffffbfff802548b CR3: 0000000007c10006 CR4: 0000000000770ef0
+[   55.545317] PKRU: 55555554
+[   55.545671] note: kworker/0:2[83] exited with preempt_count 1
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- net/bpf/test_run.c                            | 129 +++++++++++++++++-
- .../selftests/bpf/prog_tests/kfunc_call.c     |   6 +
- .../selftests/bpf/progs/kfunc_call_test.c     |  52 ++++++-
- tools/testing/selftests/bpf/verifier/calls.c  |  75 ++++++++++
- 4 files changed, 258 insertions(+), 4 deletions(-)
+ net/bpf/test_run.c                            |   2 +
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   |   4 +
+ tools/testing/selftests/bpf/config            |   1 +
+ .../selftests/bpf/prog_tests/bpf_mod_race.c   | 230 ++++++++++++++++++
+ .../selftests/bpf/progs/bpf_mod_race.c        | 100 ++++++++
+ .../selftests/bpf/progs/kfunc_call_race.c     |  14 ++
+ tools/testing/selftests/bpf/progs/ksym_race.c |  13 +
+ 7 files changed, 364 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_mod_race.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_mod_race.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_race.c
+ create mode 100644 tools/testing/selftests/bpf/progs/ksym_race.c
 
 diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 7796a8c747a0..93ba56507240 100644
+index 93ba56507240..3a5bf8ad834d 100644
 --- a/net/bpf/test_run.c
 +++ b/net/bpf/test_run.c
-@@ -233,6 +233,105 @@ struct sock * noinline bpf_kfunc_call_test3(struct sock *sk)
- 	return sk;
- }
- 
-+struct prog_test_ref_kfunc {
-+	int a;
-+	int b;
-+	struct prog_test_ref_kfunc *next;
-+};
-+
-+static struct prog_test_ref_kfunc prog_test_struct = {
-+	.a = 42,
-+	.b = 108,
-+	.next = &prog_test_struct,
-+};
-+
-+noinline struct prog_test_ref_kfunc *
-+bpf_kfunc_call_test_acquire(unsigned long *scalar_ptr)
-+{
-+	/* randomly return NULL */
-+	if (get_jiffies_64() % 2)
-+		return NULL;
-+	return &prog_test_struct;
-+}
-+
-+noinline void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p)
-+{
-+}
-+
-+struct prog_test_pass1 {
-+	int x0;
-+	struct {
-+		int x1;
-+		struct {
-+			int x2;
-+			struct {
-+				int x3;
-+			};
-+		};
-+	};
-+};
-+
-+struct prog_test_pass2 {
-+	int len;
-+	short arr1[4];
-+	struct {
-+		char arr2[4];
-+		unsigned long arr3[8];
-+	} x;
-+};
-+
-+struct prog_test_fail1 {
-+	void *p;
-+	int x;
-+};
-+
-+struct prog_test_fail2 {
-+	int x8;
-+	struct prog_test_pass1 x;
-+};
-+
-+struct prog_test_fail3 {
-+	int len;
-+	char arr1[2];
-+	char arr2[0];
-+};
-+
-+noinline void bpf_kfunc_call_test_pass_ctx(struct __sk_buff *skb)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_pass1(struct prog_test_pass1 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_pass2(struct prog_test_pass2 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_fail1(struct prog_test_fail1 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_fail2(struct prog_test_fail2 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_fail3(struct prog_test_fail3 *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_mem_len_pass1(void *mem, int mem__sz)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_mem_len_fail1(void *mem, int len)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_mem_len_fail2(u64 *mem, int len)
-+{
-+}
-+
- __diag_pop();
- 
- ALLOW_ERROR_INJECTION(bpf_modify_return_test, ERRNO);
-@@ -241,8 +340,31 @@ BTF_SET_START(test_sk_check_kfunc_ids)
- BTF_ID(func, bpf_kfunc_call_test1)
- BTF_ID(func, bpf_kfunc_call_test2)
- BTF_ID(func, bpf_kfunc_call_test3)
-+BTF_ID(func, bpf_kfunc_call_test_acquire)
-+BTF_ID(func, bpf_kfunc_call_test_release)
-+BTF_ID(func, bpf_kfunc_call_test_pass_ctx)
-+BTF_ID(func, bpf_kfunc_call_test_pass1)
-+BTF_ID(func, bpf_kfunc_call_test_pass2)
-+BTF_ID(func, bpf_kfunc_call_test_fail1)
-+BTF_ID(func, bpf_kfunc_call_test_fail2)
-+BTF_ID(func, bpf_kfunc_call_test_fail3)
-+BTF_ID(func, bpf_kfunc_call_test_mem_len_pass1)
-+BTF_ID(func, bpf_kfunc_call_test_mem_len_fail1)
-+BTF_ID(func, bpf_kfunc_call_test_mem_len_fail2)
- BTF_SET_END(test_sk_check_kfunc_ids)
- 
-+BTF_SET_START(test_sk_acquire_kfunc_ids)
-+BTF_ID(func, bpf_kfunc_call_test_acquire)
-+BTF_SET_END(test_sk_acquire_kfunc_ids)
-+
-+BTF_SET_START(test_sk_release_kfunc_ids)
-+BTF_ID(func, bpf_kfunc_call_test_release)
-+BTF_SET_END(test_sk_release_kfunc_ids)
-+
-+BTF_SET_START(test_sk_ret_null_kfunc_ids)
-+BTF_ID(func, bpf_kfunc_call_test_acquire)
-+BTF_SET_END(test_sk_ret_null_kfunc_ids)
-+
- static void *bpf_test_init(const union bpf_attr *kattr, u32 size,
- 			   u32 headroom, u32 tailroom)
+@@ -172,6 +172,8 @@ int noinline bpf_fentry_test1(int a)
  {
-@@ -1063,8 +1185,11 @@ int bpf_prog_test_run_syscall(struct bpf_prog *prog,
+ 	return a + 1;
  }
++EXPORT_SYMBOL_GPL(bpf_fentry_test1);
++ALLOW_ERROR_INJECTION(bpf_fentry_test1, ERRNO);
  
- static const struct btf_kfunc_id_set bpf_prog_test_kfunc_set = {
--	.owner     = THIS_MODULE,
--	.check_set = &test_sk_check_kfunc_ids,
-+	.owner        = THIS_MODULE,
-+	.check_set    = &test_sk_check_kfunc_ids,
-+	.acquire_set  = &test_sk_acquire_kfunc_ids,
-+	.release_set  = &test_sk_release_kfunc_ids,
-+	.ret_null_set = &test_sk_ret_null_kfunc_ids,
+ int noinline bpf_fentry_test2(int a, u64 b)
+ {
+diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+index c0805d0d753f..bdbacf5adcd2 100644
+--- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
++++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+@@ -118,6 +118,8 @@ static const struct btf_kfunc_id_set bpf_testmod_kfunc_set = {
+ 	.check_set = &bpf_testmod_check_kfunc_ids,
  };
  
- static int __init bpf_prog_test_run_init(void)
-diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-index 7d7445ccc141..b39a4f09aefd 100644
---- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-@@ -27,6 +27,12 @@ static void test_main(void)
- 	ASSERT_OK(err, "bpf_prog_test_run(test2)");
- 	ASSERT_EQ(retval, 3, "test2-retval");
- 
-+	prog_fd = skel->progs.kfunc_call_test_ref_btf_id.prog_fd;
-+	err = bpf_prog_test_run(prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
-+				NULL, NULL, (__u32 *)&retval, NULL);
-+	ASSERT_OK(err, "bpf_prog_test_run(test_ref_btf_id)");
-+	ASSERT_EQ(retval, 0, "test_ref_btf_id-retval");
++extern int bpf_fentry_test1(int a);
 +
- 	kfunc_call_test_lskel__destroy(skel);
- }
- 
-diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test.c b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-index 8a8cf59017aa..5aecbb9fdc68 100644
---- a/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-+++ b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-@@ -1,13 +1,20 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright (c) 2021 Facebook */
--#include <linux/bpf.h>
-+#include <vmlinux.h>
- #include <bpf/bpf_helpers.h>
--#include "bpf_tcp_helpers.h"
- 
- extern int bpf_kfunc_call_test2(struct sock *sk, __u32 a, __u32 b) __ksym;
- extern __u64 bpf_kfunc_call_test1(struct sock *sk, __u32 a, __u64 b,
- 				  __u32 c, __u64 d) __ksym;
- 
-+extern struct prog_test_ref_kfunc *bpf_kfunc_call_test_acquire(unsigned long *sp) __ksym;
-+extern void bpf_kfunc_call_test_release(struct prog_test_ref_kfunc *p) __ksym;
-+extern void bpf_kfunc_call_test_pass_ctx(struct __sk_buff *skb) __ksym;
-+extern void bpf_kfunc_call_test_pass1(struct prog_test_pass1 *p) __ksym;
-+extern void bpf_kfunc_call_test_pass2(struct prog_test_pass2 *p) __ksym;
-+extern void bpf_kfunc_call_test_mem_len_pass1(void *mem, int len) __ksym;
-+extern void bpf_kfunc_call_test_mem_len_fail2(__u64 *mem, int len) __ksym;
-+
- SEC("tc")
- int kfunc_call_test2(struct __sk_buff *skb)
+ static int bpf_testmod_init(void)
  {
-@@ -44,4 +51,45 @@ int kfunc_call_test1(struct __sk_buff *skb)
- 	return ret;
+ 	int ret;
+@@ -125,6 +127,8 @@ static int bpf_testmod_init(void)
+ 	ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS, &bpf_testmod_kfunc_set);
+ 	if (ret < 0)
+ 		return ret;
++	if (bpf_fentry_test1(0) < 0)
++		return -EINVAL;
+ 	return sysfs_create_bin_file(kernel_kobj, &bin_attr_bpf_testmod_file);
  }
  
-+SEC("tc")
-+int kfunc_call_test_ref_btf_id(struct __sk_buff *skb)
-+{
-+	struct prog_test_ref_kfunc *pt;
-+	unsigned long s = 0;
-+	int ret = 0;
+diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests/bpf/config
+index 32d80e77e910..763db63a3890 100644
+--- a/tools/testing/selftests/bpf/config
++++ b/tools/testing/selftests/bpf/config
+@@ -52,3 +52,4 @@ CONFIG_NETFILTER=y
+ CONFIG_NF_DEFRAG_IPV4=y
+ CONFIG_NF_DEFRAG_IPV6=y
+ CONFIG_NF_CONNTRACK=y
++CONFIG_USERFAULTFD=y
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_mod_race.c b/tools/testing/selftests/bpf/prog_tests/bpf_mod_race.c
+new file mode 100644
+index 000000000000..d43f548c572c
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_mod_race.c
+@@ -0,0 +1,230 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <unistd.h>
++#include <pthread.h>
++#include <sys/mman.h>
++#include <stdatomic.h>
++#include <test_progs.h>
++#include <sys/syscall.h>
++#include <linux/module.h>
++#include <linux/userfaultfd.h>
 +
-+	pt = bpf_kfunc_call_test_acquire(&s);
-+	if (pt) {
-+		if (pt->a != 42 || pt->b != 108)
-+			ret = -1;
-+		bpf_kfunc_call_test_release(pt);
-+	}
-+	return ret;
++#include "ksym_race.skel.h"
++#include "bpf_mod_race.skel.h"
++#include "kfunc_call_race.skel.h"
++
++/* This test crafts a race between btf_try_get_module and do_init_module, and
++ * checks whether btf_try_get_module handles the invocation for a well-formed
++ * but uninitialized module correctly. Unless the module has completed its
++ * initcalls, the verifier should fail the program load and return ENXIO.
++ *
++ * userfaultfd is used to trigger a fault in an fmod_ret program, and make it
++ * sleep, then the BPF program is loaded and the return value from verifier is
++ * inspected. After this, the userfaultfd is closed so that the module loading
++ * thread makes forward progress, and fmod_ret injects an error so that the
++ * module load fails and it is freed.
++ *
++ * If the verifier succeeded in loading the supplied program, it will end up
++ * taking reference to freed module, and trigger a crash when the program fd
++ * is closed later. This is true for both kfuncs and ksyms. In both cases,
++ * the crash is triggered inside bpf_prog_free_deferred, when module reference
++ * is finally released.
++ */
++
++struct test_config {
++	const char *str_open;
++	void *(*bpf_open_and_load)();
++	void (*bpf_destroy)(void *);
++};
++
++enum test_state {
++	_TS_INVALID,
++	TS_MODULE_LOAD,
++	TS_MODULE_LOAD_FAIL,
++};
++
++static _Atomic enum test_state state = _TS_INVALID;
++
++static int sys_finit_module(int fd, const char *param_values, int flags)
++{
++	return syscall(__NR_finit_module, fd, param_values, flags);
 +}
 +
-+SEC("tc")
-+int kfunc_call_test_pass(struct __sk_buff *skb)
++static int sys_delete_module(const char *name, unsigned int flags)
 +{
-+	struct prog_test_pass1 p1 = {};
-+	struct prog_test_pass2 p2 = {};
-+	short a = 0;
-+	__u64 b = 0;
-+	long c = 0;
-+	char d = 0;
-+	int e = 0;
++	return syscall(__NR_delete_module, name, flags);
++}
 +
-+	bpf_kfunc_call_test_pass_ctx(skb);
-+	bpf_kfunc_call_test_pass1(&p1);
-+	bpf_kfunc_call_test_pass2(&p2);
++static int load_module(const char *mod)
++{
++	int ret, fd;
 +
-+	bpf_kfunc_call_test_mem_len_pass1(&a, sizeof(a));
-+	bpf_kfunc_call_test_mem_len_pass1(&b, sizeof(b));
-+	bpf_kfunc_call_test_mem_len_pass1(&c, sizeof(c));
-+	bpf_kfunc_call_test_mem_len_pass1(&d, sizeof(d));
-+	bpf_kfunc_call_test_mem_len_pass1(&e, sizeof(e));
-+	bpf_kfunc_call_test_mem_len_fail2(&b, -1);
++	fd = open("bpf_testmod.ko", O_RDONLY);
++	if (fd < 0)
++		return fd;
 +
++	ret = sys_finit_module(fd, "", 0);
++	close(fd);
++	if (ret < 0)
++		return ret;
 +	return 0;
 +}
 +
- char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/verifier/calls.c b/tools/testing/selftests/bpf/verifier/calls.c
-index d7b74eb28333..829be2b9e08e 100644
---- a/tools/testing/selftests/bpf/verifier/calls.c
-+++ b/tools/testing/selftests/bpf/verifier/calls.c
-@@ -21,6 +21,81 @@
- 	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
- 	.result  = ACCEPT,
- },
++static void *load_module_thread(void *p)
 +{
-+	"calls: invalid kfunc call: ptr_to_mem to struct with non-scalar",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = REJECT,
-+	.errstr = "arg#0 pointer type STRUCT prog_test_fail1 must point to scalar",
-+	.fixup_kfunc_btf_id = {
-+		{ "bpf_kfunc_call_test_fail1", 2 },
-+	},
-+},
++
++	if (!ASSERT_NEQ(load_module("bpf_testmod.ko"), 0, "load_module_thread must fail"))
++		atomic_store(&state, TS_MODULE_LOAD);
++	else
++		atomic_store(&state, TS_MODULE_LOAD_FAIL);
++	return p;
++}
++
++static int sys_userfaultfd(int flags)
 +{
-+	"calls: invalid kfunc call: ptr_to_mem to struct with nesting depth > 4",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = REJECT,
-+	.errstr = "max struct nesting depth exceeded\narg#0 pointer type STRUCT prog_test_fail2",
-+	.fixup_kfunc_btf_id = {
-+		{ "bpf_kfunc_call_test_fail2", 2 },
-+	},
-+},
++	return syscall(__NR_userfaultfd, flags);
++}
++
++static int test_setup_uffd(void *fault_addr)
 +{
-+	"calls: invalid kfunc call: ptr_to_mem to struct with FAM",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = REJECT,
-+	.errstr = "arg#0 pointer type STRUCT prog_test_fail3 must point to scalar",
-+	.fixup_kfunc_btf_id = {
-+		{ "bpf_kfunc_call_test_fail3", 2 },
-+	},
-+},
++	struct uffdio_register uffd_register = {};
++	struct uffdio_api uffd_api = {};
++	int uffd;
++
++	uffd = sys_userfaultfd(O_CLOEXEC);
++	if (uffd < 0)
++		return -errno;
++
++	uffd_api.api = UFFD_API;
++	uffd_api.features = 0;
++	if (ioctl(uffd, UFFDIO_API, &uffd_api)) {
++		close(uffd);
++		return -1;
++	}
++
++	uffd_register.range.start = (unsigned long)fault_addr;
++	uffd_register.range.len = 4096;
++	uffd_register.mode = UFFDIO_REGISTER_MODE_MISSING;
++	if (ioctl(uffd, UFFDIO_REGISTER, &uffd_register)) {
++		close(uffd);
++		return -1;
++	}
++	return uffd;
++}
++
++static void test_bpf_mod_race_config(const struct test_config *config)
 +{
-+	"calls: invalid kfunc call: reg->type != PTR_TO_CTX",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = REJECT,
-+	.errstr = "arg#0 expected pointer to ctx, but got PTR",
-+	.fixup_kfunc_btf_id = {
-+		{ "bpf_kfunc_call_test_pass_ctx", 2 },
-+	},
-+},
++	void *fault_addr, *skel_fail;
++	struct bpf_mod_race *skel;
++	struct uffd_msg uffd_msg;
++	pthread_t load_mod_thrd;
++	_Atomic int *blockingp;
++	int uffd, ret;
++
++	fault_addr = mmap(0, 4096, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
++	if (!ASSERT_NEQ(fault_addr, MAP_FAILED, "mmap for uffd registration"))
++		return;
++
++	if (!ASSERT_OK(sys_delete_module("bpf_testmod", 0), "unload bpf_testmod"))
++		goto end_mmap;
++
++	skel = bpf_mod_race__open();
++	if (!ASSERT_OK_PTR(skel, "bpf_mod_kfunc_race__open"))
++		goto end_module;
++
++	skel->rodata->bpf_mod_race_config.tgid = getpid();
++	skel->rodata->bpf_mod_race_config.inject_error = -4242;
++	skel->rodata->bpf_mod_race_config.fault_addr = fault_addr;
++	if (!ASSERT_OK(bpf_mod_race__load(skel), "bpf_mod___load"))
++		goto end_destroy;
++	blockingp = (_Atomic int *)&skel->bss->bpf_blocking;
++
++	if (!ASSERT_OK(bpf_mod_race__attach(skel), "bpf_mod_kfunc_race__attach"))
++		goto end_destroy;
++
++	uffd = test_setup_uffd(fault_addr);
++	if (!ASSERT_GE(uffd, 0, "userfaultfd open + register address"))
++		goto end_destroy;
++
++	if (!ASSERT_OK(pthread_create(&load_mod_thrd, NULL, load_module_thread, NULL),
++		       "load module thread"))
++		goto end_uffd;
++
++	/* Now, we either fail loading module, or block in bpf prog, spin to find out */
++	while (!atomic_load(&state) && !atomic_load(blockingp))
++		;
++	if (!ASSERT_EQ(state, _TS_INVALID, "module load should block"))
++		goto end_join;
++	if (!ASSERT_EQ(*blockingp, 1, "module load blocked")) {
++		pthread_kill(load_mod_thrd, SIGKILL);
++		goto end_uffd;
++	}
++
++	/* We might have set bpf_blocking to 1, but may have not blocked in
++	 * bpf_copy_from_user. Read userfaultfd descriptor to verify that.
++	 */
++	if (!ASSERT_EQ(read(uffd, &uffd_msg, sizeof(uffd_msg)), sizeof(uffd_msg),
++		       "read uffd block event"))
++		goto end_join;
++	if (!ASSERT_EQ(uffd_msg.event, UFFD_EVENT_PAGEFAULT, "read uffd event is pagefault"))
++		goto end_join;
++
++	/* We know that load_mod_thrd is blocked in the fmod_ret program, the
++	 * module state is still MODULE_STATE_COMING because mod->init hasn't
++	 * returned. This is the time we try to load a program calling kfunc and
++	 * check if we get ENXIO from verifier.
++	 */
++	skel_fail = config->bpf_open_and_load();
++	ret = errno;
++	if (!ASSERT_EQ(skel_fail, NULL, config->str_open)) {
++		/* Close uffd to unblock load_mod_thrd */
++		close(uffd);
++		uffd = -1;
++		while (atomic_load(blockingp) != 2)
++			;
++		ASSERT_OK(kern_sync_rcu(), "kern_sync_rcu");
++		config->bpf_destroy(skel_fail);
++		goto end_join;
++
++	}
++	ASSERT_EQ(ret, ENXIO, "verifier returns ENXIO");
++	ASSERT_EQ(skel->data->res_try_get_module, false, "btf_try_get_module == false");
++
++	close(uffd);
++	uffd = -1;
++end_join:
++	pthread_join(load_mod_thrd, NULL);
++	if (uffd < 0)
++		ASSERT_EQ(atomic_load(&state), TS_MODULE_LOAD_FAIL, "load_mod_thrd success");
++end_uffd:
++	if (uffd >= 0)
++		close(uffd);
++end_destroy:
++	bpf_mod_race__destroy(skel);
++	ASSERT_OK(kern_sync_rcu(), "kern_sync_rcu");
++end_module:
++	sys_delete_module("bpf_testmod", 0);
++	ASSERT_OK(load_module("bpf_testmod.ko"), "restore bpf_testmod");
++end_mmap:
++	munmap(fault_addr, 4096);
++	atomic_store(&state, _TS_INVALID);
++}
++
++static const struct test_config ksym_config = {
++	.str_open = "ksym_race__open_and_load",
++	.bpf_open_and_load = (void *)ksym_race__open_and_load,
++	.bpf_destroy = (void *)ksym_race__destroy,
++};
++
++static const struct test_config kfunc_config = {
++	.str_open = "kfunc_call_race__open_and_load",
++	.bpf_open_and_load = (void *)kfunc_call_race__open_and_load,
++	.bpf_destroy = (void *)kfunc_call_race__destroy,
++};
++
++void serial_test_bpf_mod_race(void)
 +{
-+	"calls: invalid kfunc call: void * not allowed in func proto without mem size arg",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.result = REJECT,
-+	.errstr = "arg#0 pointer type UNKNOWN  must point to scalar",
-+	.fixup_kfunc_btf_id = {
-+		{ "bpf_kfunc_call_test_mem_len_fail1", 2 },
-+	},
-+},
- {
- 	"calls: basic sanity",
- 	.insns = {
++	if (test__start_subtest("ksym (used_btfs UAF)"))
++		test_bpf_mod_race_config(&ksym_config);
++	if (test__start_subtest("kfunc (kfunc_btf_tab UAF)"))
++		test_bpf_mod_race_config(&kfunc_config);
++}
+diff --git a/tools/testing/selftests/bpf/progs/bpf_mod_race.c b/tools/testing/selftests/bpf/progs/bpf_mod_race.c
+new file mode 100644
+index 000000000000..82a5c6c6ba83
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bpf_mod_race.c
+@@ -0,0 +1,100 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++const volatile struct {
++	/* thread to activate trace programs for */
++	pid_t tgid;
++	/* return error from __init function */
++	int inject_error;
++	/* uffd monitored range start address */
++	void *fault_addr;
++} bpf_mod_race_config = { -1 };
++
++int bpf_blocking = 0;
++int res_try_get_module = -1;
++
++static __always_inline bool check_thread_id(void)
++{
++	struct task_struct *task = bpf_get_current_task_btf();
++
++	return task->tgid == bpf_mod_race_config.tgid;
++}
++
++/* The trace of execution is something like this:
++ *
++ * finit_module()
++ *   load_module()
++ *     prepare_coming_module()
++ *       notifier_call(MODULE_STATE_COMING)
++ *         btf_parse_module()
++ *         btf_alloc_id()		// Visible to userspace at this point
++ *         list_add(btf_mod->list, &btf_modules)
++ *     do_init_module()
++ *       freeinit = kmalloc()
++ *       ret = mod->init()
++ *         bpf_prog_widen_race()
++ *           bpf_copy_from_user()
++ *             ...<sleep>...
++ *       if (ret < 0)
++ *         ...
++ *         free_module()
++ * return ret
++ *
++ * At this point, module loading thread is blocked, we now load the program:
++ *
++ * bpf_check
++ *   add_kfunc_call/check_pseudo_btf_id
++ *     btf_try_get_module
++ *       try_get_module_live == false
++ *     return -ENXIO
++ *
++ * Without the fix (try_get_module_live in btf_try_get_module):
++ *
++ * bpf_check
++ *   add_kfunc_call/check_pseudo_btf_id
++ *     btf_try_get_module
++ *       try_get_module == true
++ *     <store module reference in btf_kfunc_tab or used_btf array>
++ *   ...
++ * return fd
++ *
++ * Now, if we inject an error in the blocked program, our module will be freed
++ * (going straight from MODULE_STATE_COMING to MODULE_STATE_GOING).
++ * Later, when bpf program is freed, it will try to module_put already freed
++ * module. This is why try_get_module_live returns false if mod->state is not
++ * MODULE_STATE_LIVE.
++ */
++
++SEC("fmod_ret.s/bpf_fentry_test1")
++int BPF_PROG(widen_race, int a, int ret)
++{
++	char dst;
++
++	if (!check_thread_id())
++		return 0;
++	/* Indicate that we will attempt to block */
++	bpf_blocking = 1;
++	bpf_copy_from_user(&dst, 1, bpf_mod_race_config.fault_addr);
++	return bpf_mod_race_config.inject_error;
++}
++
++SEC("fexit/do_init_module")
++int BPF_PROG(fexit_init_module, struct module *mod, int ret)
++{
++	if (!check_thread_id())
++		return 0;
++	/* Indicate that we finished blocking */
++	bpf_blocking = 2;
++	return 0;
++}
++
++SEC("fexit/btf_try_get_module")
++int BPF_PROG(fexit_module_get, const struct btf *btf, struct module *mod)
++{
++	res_try_get_module = !!mod;
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_race.c b/tools/testing/selftests/bpf/progs/kfunc_call_race.c
+new file mode 100644
+index 000000000000..4e8fed75a4e0
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kfunc_call_race.c
+@@ -0,0 +1,14 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_helpers.h>
++
++extern void bpf_testmod_test_mod_kfunc(int i) __ksym;
++
++SEC("tc")
++int kfunc_call_fail(struct __sk_buff *ctx)
++{
++	bpf_testmod_test_mod_kfunc(0);
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/ksym_race.c b/tools/testing/selftests/bpf/progs/ksym_race.c
+new file mode 100644
+index 000000000000..def97f2fed90
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/ksym_race.c
+@@ -0,0 +1,13 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_helpers.h>
++
++extern int bpf_testmod_ksym_percpu __ksym;
++
++SEC("tc")
++int ksym_fail(struct __sk_buff *ctx)
++{
++	return *(int *)bpf_this_cpu_ptr(&bpf_testmod_ksym_percpu);
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
 2.34.1
 
