@@ -2,83 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3718048B17E
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 17:01:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A896C48B17F
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 17:01:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343584AbiAKQBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 11:01:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243724AbiAKQBb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 11:01:31 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D2AC06173F
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 08:01:31 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id u8so23108726iol.5
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 08:01:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=J7odcFsD2ffntsQnWJM8fH9hLEbhboasUVJE+DSGKPQ=;
-        b=cvD6UBnBZ7V/QnPGqmI+VyOzcWCKiZxLqTiU8AliS4fX+5fJNgFKX5HP5DeV/JWOIo
-         fd3rULH0K5jLuQAfQ/Vnwd+Eq5BfumGXeUlR8q30VFpf/UMAi0EeM8J5vy+K+kB1vVYC
-         dco6lOcn4ky+yWWkmvRq5+JL8x0y37iCUiAsBhyeLglk0goOs1n5TbSG+0ZhM3Rjr4Kp
-         KeDKInWS1+qBag8xq607l2yRE8k2bboUQdOTKT+/4K6t+4hzdTW1e6S+qxoMYJYfxJEq
-         TkfONkfQ/eF2ZXtBjbpFjn88/SsYzavqsr9oVRsVTQ6LMnLCXvg0LUAAc2WThvGvfmwq
-         AvBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=J7odcFsD2ffntsQnWJM8fH9hLEbhboasUVJE+DSGKPQ=;
-        b=TlRHsLjUpuaYN0AtAcgPqB7PlUeGadR4sUw0vm0K4V+Q41cJrbsVDIaG55A3mof+rc
-         zD+OMuPI58222m7jMudg88W0kZ3QeZcjugmEk1RS7iy4H0rRAdK8eMOPKjoznV8LDTPs
-         eV8PckdyHS06ZBYCOJQ1APvJHNH76rNtcumGYQn5JYLwS98dARp6V88ZhklmWKs1MSvn
-         kpbB2Rvix8v0HeGxVGVx0ZuNiUU08iv47RJmxhFNYHkAQ3MsRDMW2m4UkS7lA0CAHNgI
-         yqA6fTZbici1H9DKUC9NU0AsGPOwSGwdcU+qiK2Tz1Af0nMsX7+MDYCe1FwMwx4kPDXs
-         VL6Q==
-X-Gm-Message-State: AOAM532zVvRfF0JKBA8/oKgBz6m8hyhWXguCoxJ1HE/xyhh1iAaFYFkT
-        JOXnITASWzkxl4UuU8vkpdw=
-X-Google-Smtp-Source: ABdhPJwnvIY1cFDVo7QH+DkWexpJdnweYXPoztb5AuDAWftMbDGdguoDCXzSJhf8HRNUA0zYrXUl5Q==
-X-Received: by 2002:a02:7747:: with SMTP id g68mr2648926jac.3.1641916891263;
-        Tue, 11 Jan 2022 08:01:31 -0800 (PST)
-Received: from ?IPV6:2601:282:800:dc80:d826:3ad7:a899:d318? ([2601:282:800:dc80:d826:3ad7:a899:d318])
-        by smtp.googlemail.com with ESMTPSA id q6sm5994982ilv.65.2022.01.11.08.01.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 08:01:31 -0800 (PST)
-Message-ID: <3e8fc2bd-b470-8ead-34f2-a5ef9e3ababe@gmail.com>
-Date:   Tue, 11 Jan 2022 09:01:30 -0700
+        id S1349756AbiAKQBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 11:01:39 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36878 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243724AbiAKQBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 11:01:39 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF172B81BFC;
+        Tue, 11 Jan 2022 16:01:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3A45C36AEB;
+        Tue, 11 Jan 2022 16:01:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641916896;
+        bh=CQgqKlu92zeQ40myiuVq09uscHk3R4B09Rx0+uBbAzg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ETCc+O4Qmxi8D3a3vLU3TSJXSwVCppBfKIlxKlmz6/EZlSYtzXlYdG4jjwJM427TM
+         roqLX8d3nu+ccChPI2Eyj7aCrwIy1PFsnWKA3U3TaRYJ2Dw1C9JEmgZ7Gok4eisXLA
+         3aj6riSZjr12cPbv756kPB3iW1YdZOQM2BDqw0Wv5xzUBUpZdaC9fwtVe/Hjq1IWeP
+         ww7Bnj7enVtGeQRSNlilMJkXHhhvmq5rXltk9qwnxVOsRJEhJ6z949ox2Uy/vrRLKN
+         BlFKXSOGeJBmz+gjpVZaNyrYESEETpGWawAI45o8Pg9RpnehXCRGGq/zY2X1KuhJPc
+         rAPU4IYHHiHUg==
+Date:   Tue, 11 Jan 2022 09:01:32 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev
+Subject: Re: [GIT PULL] Networking for 5.17
+Message-ID: <Yd2p3IbHJdzNok+1@archlinux-ax161>
+References: <20220110025203.2545903-1-kuba@kernel.org>
+ <CAHk-=wg-pW=bRuRUvhGmm0DgqZ45A0KaH85V5KkVoxGKX170Xg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH iproute2-next 06/11] nexthop: fix clang warning about
- timer check
-Content-Language: en-US
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-Cc:     Stephen Hemminger <sthemmin@microsoft.com>, idosch@nvidia.com
-References: <20220108204650.36185-1-sthemmin@microsoft.com>
- <20220108204650.36185-7-sthemmin@microsoft.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220108204650.36185-7-sthemmin@microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wg-pW=bRuRUvhGmm0DgqZ45A0KaH85V5KkVoxGKX170Xg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/8/22 1:46 PM, Stephen Hemminger wrote:
-> diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
-> index 83a5540e771c..2c65df294587 100644
-> --- a/ip/ipnexthop.c
-> +++ b/ip/ipnexthop.c
-> @@ -31,6 +31,8 @@ enum {
->  	IPNH_FLUSH,
->  };
->  
-> +#define TIMER_MAX   (~(__u32)0 / 100)
+On Mon, Jan 10, 2022 at 07:31:30PM -0800, Linus Torvalds wrote:
+> I really wish we had more automation doing clang builds. Yes, some
+> parts of the kernel are still broken with clang, but a lot isn't, and
+> this isn't the first time my clang build setup has found issues.
 
-UINT_MAX instead of "~(__u32)0)"
+As far as I know, we have four major groups doing regular build testing
+with clang:
 
+* Intel's kernel test robot
+* KernelCI
+* RedHat's Continuous Kernel Integration (CKI)
+* Linaro's Linux Kernel Functional Testing (LKFT)
+
+I regularly check the daily -next report that we get from KernelCI to
+see what breakage there is and triage it as needed. The rest email us as
+things break. The Intel folks are the only ones building from the
+mailing list as far as I can tell, everyone else mainly targets your
+tree and/or -next.
+
+I don't think this particular issue was an automation fail, more of a
+timing one, as the warning was reported by the kernel test robot:
+
+https://lore.kernel.org/r/202201101850.vQyjtIwg-lkp@intel.com/
+
+However, it was reported a little under a day after the patch hit the
+mailing list according to the lore timestamps at the bottom, after it
+had already been merged into net-next (it looks like they were applied
+to the netfilter tree and merged into net-next within an hour or so).
+
+Pablo did sent a follow up fix rather quickly, which I noticed because
+my own local builds were broken.
+
+https://lore.kernel.org/r/20220110221419.60994-1-pablo@netfilter.org/
+
+Normally, I try to review patches like this so that the maintainers are
+aware that the warning will break a build with CONFIG_WERROR. In this
+case, I assumed that the netdev build tests would catch it and it would
+be applied before the pull request was sent, as they have started
+testing with clang and catching these warnings before accepting patches
+but as Jakub said, that did not happen.
+
+I'll try to keep an eye out for this stuff in the future, so that it is
+dealt with by the time you get it, especially now that passing -Werror
+is expected. Most standard arm64 and x86_64 configs should be completely
+warning free with clang now, arm and some of the more exotic
+architectures are still a WIP.
+
+Cheers,
+Nathan
