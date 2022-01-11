@@ -2,90 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08E4548A88C
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 08:39:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 624EE48A896
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 08:42:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348575AbiAKHjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 02:39:32 -0500
-Received: from dvalin.narfation.org ([213.160.73.56]:44360 "EHLO
-        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235663AbiAKHjc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 02:39:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1641886770;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z8lOJuChLkrImr96k+yUYUSCEVZG7RcUX2vJKDypjeg=;
-        b=RNpY+Ah2LqHJmwnuopPTKg0HIRLdwh2n+Ph/xXcyXJv4uX51HsKV0dkSlJg2dmmVY8lBmQ
-        KSH5mofF6aQlubIoa8aNR6ZCjP+8C6YwcfvepWsH6TShO8/TjbO5q6Jfoaj6OSYKkouERl
-        CX0A4cUpw1c51aowbfejvjflcQ3bIYU=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     Marek Lindner <mareklindner@neomailbox.ch>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] batman-adv: Remove redundant 'flush_workqueue()' calls
-Date:   Tue, 11 Jan 2022 08:39:28 +0100
-Message-ID: <2319423.e3pCTlsKIc@ripper>
-In-Reply-To: <2c2454cd728f427cada2c24cdb1ef2609dec5efc.1641850318.git.christophe.jaillet@wanadoo.fr>
-References: <2c2454cd728f427cada2c24cdb1ef2609dec5efc.1641850318.git.christophe.jaillet@wanadoo.fr>
+        id S1348600AbiAKHmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 02:42:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235766AbiAKHms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 02:42:48 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B99BC06173F;
+        Mon, 10 Jan 2022 23:42:48 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id p5so37548027ybd.13;
+        Mon, 10 Jan 2022 23:42:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=Wk/qGtz26hTAu2Z0ry2fUvvnKiyHU/sS4gV9WX8tBw4=;
+        b=jI39erstFBgNIGGl+tQmwBiWrUIc9bgBj2bYOdDXTCO9Pd8IbRWtD9TS2r5MHOCHG+
+         bPQlZGT7uj2aIkyb6hA3i11qstvrr0xHAd+mOW0cY6G9+T/e3OHnqOnGnS4ZKsqH7DPJ
+         ofxAqXjCIf/xFi8OzWqkvjrvZASqHZSCrfRB8yQPQ7WPFCgdN1jNIKWyM1dC9AM9bXE4
+         iiL5R0dwuy7J1t4mzrqIkGQZyqBiTURI07s+gq5Q74CgbzHSNcJPVqFHnPg1g1wULvN+
+         1mb+7A8KVG/MiNByEUVrtLRl1jYB+Pdc+hp+0K4ZSuaspxApTgzOAwTppyf1/UFT22CX
+         H18Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=Wk/qGtz26hTAu2Z0ry2fUvvnKiyHU/sS4gV9WX8tBw4=;
+        b=UQYATRr7wqk8NTEs4mXDoyM81VXzV7H97g+iaJ6iOC65R2cihl4MsLtY/KBw6NkQs1
+         iUgADbS98lyRN5hCbuAsgNbMKWgNf4OMY9VRJMOiEnGexlNw4VAQaI+8NNgHAHOk+hPz
+         JdTKI3V3FAs+loL8DozuyIUKfuSL2a6qOg72yrBa82J+zibluVwYJJcL6hwOpjulTi+R
+         jJYfX8oU3wbU4/dlNrrYNJQLJ7JRnYj/bAv7TZTTxqmNkjDX3bbAXNnbSmAyupBLOrCP
+         GdEoqdfi1ZU5Hkzcaywdz3KoBapSIEO0FafvT9DtPbjnlDNyUwyxgrmSdy7bbt6wxmhk
+         N7Aw==
+X-Gm-Message-State: AOAM532etIgmVzUqUTfW2oru42EUnOtJ98RRQ1Ht/vY0I9Tqv+cbdQB+
+        pzF4RTRjsUWRMNINS++mZiKEdFnCCeMmSs67FeA=
+X-Google-Smtp-Source: ABdhPJyMRjDffGb4p4uOnDBwu0Qf279Fkk2F9HdUxM/rBqwFZ2JxNZsc3ES+DqcDwIb3BowdrEqXErSucCWsR0TnKvQ=
+X-Received: by 2002:a25:4aca:: with SMTP id x193mr4438918yba.149.1641886967694;
+ Mon, 10 Jan 2022 23:42:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart9182710.2x64NcNEKf"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+From:   cruise k <cruise4k@gmail.com>
+Date:   Tue, 11 Jan 2022 15:42:37 +0800
+Message-ID: <CAKcFiNC1w87Of0ukV3oPHiAkKeVT7bbTqG3p1LgoUs0bGXk9CQ@mail.gmail.com>
+Subject: INFO: task hung in wg_noise_handshake_consume_initiation
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, wireguard@lists.zx2c4.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart9182710.2x64NcNEKf
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Sven Eckelmann <sven@narfation.org>
-To: Marek Lindner <mareklindner@neomailbox.ch>, Simon Wunderlich <sw@simonwunderlich.de>, Antonio Quartulli <a@unstable.cc>, "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, Christophe JAILLET <christophe.jaillet@wanadoo.fr>, b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] batman-adv: Remove redundant 'flush_workqueue()' calls
-Date: Tue, 11 Jan 2022 08:39:28 +0100
-Message-ID: <2319423.e3pCTlsKIc@ripper>
-In-Reply-To: <2c2454cd728f427cada2c24cdb1ef2609dec5efc.1641850318.git.christophe.jaillet@wanadoo.fr>
-References: <2c2454cd728f427cada2c24cdb1ef2609dec5efc.1641850318.git.christophe.jaillet@wanadoo.fr>
+Hi,
 
-On Monday, 10 January 2022 22:32:27 CET Christophe JAILLET wrote:
-> 'destroy_workqueue()' already drains the queue before destroying it, so
-> there is no need to flush it explicitly.
-> 
-> Remove the redundant 'flush_workqueue()' calls.
+Syzkaller found the following issue:
 
-Thanks, it was now applied.
+HEAD commit: 75acfdb Linux 5.16-rc8
+git tree: upstream
+console output: https://pastebin.com/raw/E1a5ZGSt
+kernel config: https://pastebin.com/raw/XsnKfdRt
 
-Kind regards,
-	Sven
---nextPart9182710.2x64NcNEKf
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+And hope the report log can help you.
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmHdNDAACgkQXYcKB8Em
-e0YCVw/9GGMIG69XboEwP5yhE4wjK+9i0YJpqwircVrS4cArq5CDTuh5P0d5iDg9
-kxify02fI9/cmH56Qo569usjYj9Q8bEzbfsncKjztQi3oS2fw0Axub47Z1CPuuTR
-BL80s02jBLLNj2ssznucgSmcE2P1RMJ+kc4Xj2SLMiDS3k/o5V3sNS3u/jkCbo9p
-z4Hf20BJdNeIpyxn9lXbNDJ9n0vMG74Bkowm+p+p03zxnOy9Xx2tZUyn+FKnewqe
-gEkJ9gPPkKsVxrMnXPJmQ6rrYyrAzW6e9v0H7udQ/r7hEt1OxhWQ4cGtb+Dpn3Bz
-vwbn3eECzo7gn+UX1vlFkuWTOzgPnekO99C4DC4eTg05TTzBkHlIBbsYpGyisLdL
-yVjppq883QNqcwShCiJoRQ9jcCfJoMh2+6PlXaa+i3P9LVqOUQqEB6BGz2+KL9wd
-Rei2i/48S8wH7ZPrHU7cifVV7aJkBPwEEKrfNwcQoSUguETnVu20blRqZaeBYfHA
-aEwkI6cLLUb7kgNgC+dBVSz/eveXM1xqyIM170CUZ6TxSL56ldTYSFMGyyJTeFm2
-b3Sxu+5Kia39DYYwW0nJipUD1eP9b64dfgy5gCEBTqLMVsTbbGf08CaOr+lmqZkz
-NZLMkWKfaOFCMhyAGOhGV0rxNbQcgCoOh4wXFrKWnXYhBoSjYbI=
-=94G+
------END PGP SIGNATURE-----
-
---nextPart9182710.2x64NcNEKf--
-
-
-
+INFO: task kworker/6:1:78 blocked for more than 143 seconds.
+      Not tainted 5.16.0-rc8+ #10
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:kworker/6:1     state:D stack:26416 pid:   78 ppid:     2 flags:0x00004000
+Workqueue: wg-kex-wg1 wg_packet_handshake_receive_worker
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:4972 [inline]
+ __schedule+0xcd9/0x2550 kernel/sched/core.c:6253
+ schedule+0xd2/0x260 kernel/sched/core.c:6326
+ rwsem_down_read_slowpath+0x59c/0xa90 kernel/locking/rwsem.c:1041
+ __down_read_common kernel/locking/rwsem.c:1223 [inline]
+ __down_read kernel/locking/rwsem.c:1232 [inline]
+ down_read+0xe2/0x440 kernel/locking/rwsem.c:1472
+ wg_noise_handshake_consume_initiation+0x271/0x5f0
+drivers/net/wireguard/noise.c:599
+ wg_receive_handshake_packet+0x589/0x9d0 drivers/net/wireguard/receive.c:151
+ wg_packet_handshake_receive_worker+0x18e/0x3d0
+drivers/net/wireguard/receive.c:220
+ process_one_work+0x9df/0x16a0 kernel/workqueue.c:2298
+ worker_thread+0x90/0xe20 kernel/workqueue.c:2445
+ kthread+0x405/0x4f0 kernel/kthread.c:327
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
