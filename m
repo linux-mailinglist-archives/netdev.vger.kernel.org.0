@@ -2,122 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B12EB48B7B1
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 20:57:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E42648B7D1
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 21:05:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239037AbiAKT5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 14:57:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
+        id S242190AbiAKUF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 15:05:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234556AbiAKT5I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 14:57:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40376C06173F
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 11:57:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0830EB81D1D
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 19:57:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8776DC36AE9;
-        Tue, 11 Jan 2022 19:57:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641931025;
-        bh=5TEPsU5TU2ZmUpqFeVDFVwU70QEe0awWx2oN7MV306c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tZjhCbLCo9XjvoSN3XhUMZ1XtPT2biX9K/OdJsk4wklAcfW//TchLZY0EQBLJXHDH
-         PimF9e0+yyMVrHsooWZfSCRlCjLqNILwEexTCT3pwqKvdW4KpsditOEq++lQXuh3rd
-         ol94HNAppJP5NXWytsLYGlrTVBgRi8PlxT9tWBFPB0yfgcl0ovp+zn9SGf2LkFjXcq
-         snVs1I6F816xnTCTq9kow8mVcOl1xpSp6vzmtKnWLy5vmbNQItI5YrKYzUje+bDyY6
-         IZn8viNpUl1mLFhilsogLqx1eZwt0d4brKtwMCTTuhZHUJRXTT+JW1CQthBznQ58+h
-         91XlOsJ47e4yQ==
-Date:   Tue, 11 Jan 2022 11:57:04 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Sunil Sudhakar Rani <sunrani@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Bodong Wang <bodong@nvidia.com>
-Subject: Re: [PATCH net-next 1/2] devlink: Add support to set port function
- as trusted
-Message-ID: <20220111115704.4312d280@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <PH0PR12MB5481E3E9D38D0F8DE175A915DC519@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20211122144307.218021-1-sunrani@nvidia.com>
-        <20211202093110.2a3e69e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <d0df87e28497a697cae6cd6f03c00d42bc24d764.camel@nvidia.com>
-        <20211215112204.4ec7cf1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <1da3385c7115c57fabd5c932033e893e5efc7e79.camel@nvidia.com>
-        <20211215150430.2dd8cd15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <SN1PR12MB2574E418C1C6E1A2C0096964D4779@SN1PR12MB2574.namprd12.prod.outlook.com>
-        <20211216082818.1fb2dff4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR12MB54817CE7826A6E924AE50B9BDC519@PH0PR12MB5481.namprd12.prod.outlook.com>
-        <20220111102005.4f0fa3a0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <PH0PR12MB548176ED1E1B5ED1EF2BB88EDC519@PH0PR12MB5481.namprd12.prod.outlook.com>
-        <20220111112418.2bbc0db4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <PH0PR12MB5481E3E9D38D0F8DE175A915DC519@PH0PR12MB5481.namprd12.prod.outlook.com>
+        with ESMTP id S242211AbiAKUF5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 15:05:57 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD8FC061751
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 12:05:56 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id e19so437408plc.10
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 12:05:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9hZaYVxetTOKFm3W8BmKSbpebS86cpVcjY/qinSjNKU=;
+        b=LSH9sboz/KXLu5AMLIEQKgu1QnoomBvnkVpsJVhg4editFU9j3pX5/ebzeZhq5yWjz
+         cej+rTdyt+yuUIahecbur36HMHOvyuQw+bcJQ/vaedro6WxuPltc7UYOhrirsFaVlz2j
+         RNq1rJyL0MDOCH8ovpK6WJJOzOctavHiP9VRk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9hZaYVxetTOKFm3W8BmKSbpebS86cpVcjY/qinSjNKU=;
+        b=yD5tKQIw2VUWLZfItgp7sYmdtDctKTNeI9uYni95QJefGQeLY0vY4Wzs2P/mfAtM8o
+         hQdNAAWuIXiTED/rbt5e7At7tLzJAiyZR9PgW+2x/bMj61T4XZR5Tqj+8MvHmbLRGKtG
+         ACluEHKobZaoSFf/eSQMk47siBdC1fJYDIVp+/cDTM7E21xkGhD0Zazi3ZUsXzkv56aY
+         WHLMIMg7nAg9/HJyYAc31dZbCWDxRwZ+eHII+zC33laaN+YapthoJkRh2vGwR96iZMZe
+         dF2i0Vvm6GCH47uR1ipzezAl+rIsYi/4m4GrKy7SsEng9IZSuVHrh79bPzNcWXBgVSYM
+         Ns/Q==
+X-Gm-Message-State: AOAM533h664/XZ+qAuk5JACVqc+T1Hsh7Q3E/cJBHMufEIzBW2FeYwsA
+        VxFrM9PB5uQHHxkauOeTo57Mpw==
+X-Google-Smtp-Source: ABdhPJxF3n9N29fXHARPSJTydOCw8/mBFf5dYlqq1iuCZj8RC1wxAANW8KVmU40KCKhEELx8tJp9/g==
+X-Received: by 2002:a63:a011:: with SMTP id r17mr2407440pge.300.1641931556311;
+        Tue, 11 Jan 2022 12:05:56 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:f0a7:d33a:2234:5687])
+        by smtp.gmail.com with UTF8SMTPSA id i13sm177211pgl.81.2022.01.11.12.05.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jan 2022 12:05:55 -0800 (PST)
+Date:   Tue, 11 Jan 2022 12:05:52 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, jponduru@codeaurora.org,
+        avuyyuru@codeaurora.org, bjorn.andersson@linaro.org,
+        agross@kernel.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 1/2] net: ipa: fix atomic update in
+ ipa_endpoint_replenish()
+Message-ID: <Yd3jICMLqZn94YsR@google.com>
+References: <20220111192150.379274-1-elder@linaro.org>
+ <20220111192150.379274-2-elder@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220111192150.379274-2-elder@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 11 Jan 2022 19:39:37 +0000 Parav Pandit wrote:
-> > From: Jakub Kicinski <kuba@kernel.org>
-> > Sent: Wednesday, January 12, 2022 12:54 AM
-> > 
-> > On Tue, 11 Jan 2022 18:26:16 +0000 Parav Pandit wrote:  
-> > > It isn't trusted feature. The scope in few weeks got expanded from
-> > > trusted to more granular at controlling capabilities. One that came up
-> > > was ipsec or other offloads that consumes more device resources.  
-> > 
-> > That's what I thought. Resource control is different than privileges, and
-> > requires a different API.
-> >  
-> It's the capability that is turned on/off.
-> A device is composed based on what is needed. ipsec offload is not always needed.
-> Its counter intuitive to expose some low level hardware resource to disable ipsec indirectly.
-> So it is better to do as capability/param rather than some resource.
-> It is capability is more than just resource.
-
-Wouldn't there be some limitation on the number of SAs or max
-throughput or such to limit on VF hogging the entire crypto path?
-
-I was expecting such a knob, and then turning it to 0 would effectively
-remove the capability (FW can completely hide it or driver ignore it).
-
-
-
-> > > A prometheous kind of monitoring software wants to monitor the
-> > > physical port counters, running in a container. Such container doesn't
-> > > have direct access to the PF or physical representor. Just for sake of
-> > > monitoring counters, user doesn't want to run the monitoring container
-> > > in root net ns.  
-> > 
-> > Containerizing monitors seems very counter-intuitive to me.
-> >  
-> May be. But it is in use at [1] for a long time now.
+On Tue, Jan 11, 2022 at 01:21:49PM -0600, Alex Elder wrote:
+> In ipa_endpoint_replenish(), if an error occurs when attempting to
+> replenish a receive buffer, we just quit and try again later.  In
+> that case we increment the backlog count to reflect that the attempt
+> was unsuccessful.  Then, if the add_one flag was true we increment
+> the backlog again.
 > 
-> [1] docker run -p 9090:9090 prom/prometheus
+> This second increment is not included in the backlog local variable
+> though, and its value determines whether delayed work should be
+> scheduled.  This is a bug.
+> 
+> Fix this by determining whether 1 or 2 should be added to the
+> backlog before adding it in a atomic_add_return() call.
+> 
+> Fixes: 84f9bd12d46db ("soc: qcom: ipa: IPA endpoints")
+> Signed-off-by: Alex Elder <elder@linaro.org>
 
-How is it "in use" if we haven't merged the patch to enable it? :)
-What does it monitor? PHYs port does not include east-west traffic,
-exposing just the PHYs stats seems like a half measure.
-
-> > > For sure we prefer the bona fide Linux uAPI for standard features.
-> > > But internal knobs of how to do steering etc, is something not generic
-> > > enough. May be only those quirks live in the port function params and
-> > > rest in standard uAPIs?  
-> > 
-> > Something talks to that steering API, and it's not netdev. So please don't push
-> > problems which are not ours onto us.  
-> Not sure I follow you.
-> Netdev of a mlx5 function talks to the driver internal steering API
-> in addition to other drivers operating this mlx5 function.
-
-But there is no such thing as "steering API" in netdev. We can expose
-the functionality we do have, if say PTP requires some steering then
-enabling PTP implies the required steering is enabled. "steering API"
-as an entity is meaningless to a netdev user.
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
