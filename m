@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0987A48B4A9
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 18:54:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 930ED48B4AA
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 18:55:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344903AbiAKRyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 12:54:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48716 "EHLO
+        id S1344900AbiAKRy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 12:54:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344893AbiAKRys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 12:54:48 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45816C061756
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 09:54:48 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id 59-20020a17090a09c100b001b34a13745eso6653673pjo.5
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 09:54:48 -0800 (PST)
+        with ESMTP id S1344769AbiAKRyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 12:54:49 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A2DC061748
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 09:54:49 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id h1so18368563pls.11
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 09:54:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2CmMkcLMupEBjGGLQZwEV/RJ8zBm1D0fwzw031sSOqU=;
-        b=WRBg2ZXGKa7DXYywQUYT3lQxRWcELX8oSpi8YeIwyL52CMvhoOxhoKcZOba0cf3vyl
-         fVM1AXm/OtrYo5SjMpV/RU6ik3MZrU59fHMEVihjZEOJq9UavoXlWXC/8VGN8g413zbO
-         TvTyvgXtb/0WLSQMXAnpwF/AdjYZGb1OME/ySzIuBLJPzP7eZAi++D7DItEG75tzfIDO
-         X/XG8y4M1wTWcvOtguc7oY1hUTechwM/FxvmkzAN447tpsDT9ZIZ1J2tPEXplO5WYOz3
-         TLSceFrBzwS/EKPkzGdz1XMC/Ob147XiDJKY9HW1W6v+iEpq//JCbG1e11uo5qaHqURO
-         R8pQ==
+        bh=/oE5+nHZ47hf0eq1B8VOPvwAM1+8jomIksNPwOnPNNA=;
+        b=NJOry5YTyGOUnXe/1/j2hK0F60ua7ZI98hiaH+DoxszNCVWEtfVwzTQIfTSVCENMf8
+         GVm5Bki15lVtaEE9/6U/rRObFvNGboDUYzLmebOZr9ybxJY8d30JQfGZiFI/4JOyXeYc
+         thGFtLbgCGilsUStjBPNjqF/64mtfjfOv/oIidcEmVcIDTF7Q7mIxX0o33oxeWI114NI
+         vvr82QthAGGKkOlQjNdJqDAlmp/F/fLgyGA3EsQ1JUE501wW6I4rucOsoXHmUot8QY7/
+         etISnWoDXAU04CpO3VQnyUlIOsv94Bp6SieF1mPVJX4Vi3BjVf4wPgNWroXg3Bn2oSDJ
+         KLJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2CmMkcLMupEBjGGLQZwEV/RJ8zBm1D0fwzw031sSOqU=;
-        b=ltnCpALmWfi6KpA3Bhb6KctNa/BvHawLgFWa2xSq9dFxnkaq2Cwl0mZAj3GHxiHsla
-         fCv7lRtGMRjO/j9xt7Ty1IpYd+2lCsFxfdOcOvIhHq7ZdIvaLJ+hqAMm7A/7eT7cZcXH
-         YTHo+CudDKQ0T4186xkFEYY2f69jeTJusQ1WMJuLgia6glV5eXgaHXmJ8p13cN2UqQIS
-         P7897psYghgDEVsnaaAEOn1iALMF7CYC13XVI/2uiaZLEPfMTEernQHAH6xRNTZL+OGS
-         A+pTOxsrjIpF1ydWoGHsrh40K4046TfGensPCvD4J+0HUmCFS9Ly03qwjqXYsA4Tycm+
-         p7wA==
-X-Gm-Message-State: AOAM533ZiBdZpiQqGZiEIHi84OZmYOeSFWtFd+fnZDZQnCrUuXqZ4OxQ
-        epbdJI9RMioPYAjVr9uS0ooeshvoptZc1g==
-X-Google-Smtp-Source: ABdhPJz4opmvdc2UJJ8QyPv3MSvcJTCaZjVSGpYsYgnkYw/fgpMHp0BcMScqTIQzC/DST6sJ+MpqIA==
-X-Received: by 2002:a17:90a:7786:: with SMTP id v6mr4397378pjk.11.1641923687440;
-        Tue, 11 Jan 2022 09:54:47 -0800 (PST)
+        bh=/oE5+nHZ47hf0eq1B8VOPvwAM1+8jomIksNPwOnPNNA=;
+        b=GMmaQ50kjR5u8qqJmKGWkAvhUuNFEij9QzqHN7ts3wEmD89UuWQd2MYB+Lg6mEpIjj
+         P8rRq0XRD8vV4nF7K3pArBtLTygcxj8r7ct4tmE5gUdoCQGds7T2Tx2OMHmDSfEpDrrO
+         qR+B1GA1YHE3zEEvuh/k7GgbTOvPqEYtaoVHQw1EzyY+3lN59RUiEJlkT15ZFb+Ki7wm
+         JBBBUOgIwnYVuRsM/m0+DrBqtqRSnHKmFbCdTY5EPNBCsFYq4m0DU1v+dSWa59FOkTWY
+         Ae4g9IGSpEUWMrhWqGRw6EUOEZVkIE4+fGfrLY8Pbl4f1QgD6+RnHsUSUhf7RP4BCUt4
+         o+aQ==
+X-Gm-Message-State: AOAM531ra9QkaCfmkKAmMDHqJNIcgNtMeUW7yLm+TNaifBQa81+iSc7q
+        Gb0xL/Ronz3wolHCgkbgOhd9p6EuZWRJdA==
+X-Google-Smtp-Source: ABdhPJyJPp21hIiScw+VsAH/v+SDTGq85u6XOpwJEyc4bh35QFfpQ+sp08O4aNyEDLYw9JLf3WoZuw==
+X-Received: by 2002:a63:3f04:: with SMTP id m4mr2772831pga.326.1641923688647;
+        Tue, 11 Jan 2022 09:54:48 -0800 (PST)
 Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id f8sm23925pga.69.2022.01.11.09.54.46
+        by smtp.gmail.com with ESMTPSA id f8sm23925pga.69.2022.01.11.09.54.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 09:54:46 -0800 (PST)
+        Tue, 11 Jan 2022 09:54:48 -0800 (PST)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 X-Google-Original-From: Stephen Hemminger <sthemmin@microsoft.com>
 To:     netdev@vger.kernel.org
 Cc:     Stephen Hemminger <sthemmin@microsoft.com>,
         Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH v2 iproute2-next 06/11] ipl2tp: fix clang warning
-Date:   Tue, 11 Jan 2022 09:54:33 -0800
-Message-Id: <20220111175438.21901-7-sthemmin@microsoft.com>
+Subject: [PATCH v2 iproute2-next 07/11] can: fix clang warning
+Date:   Tue, 11 Jan 2022 09:54:34 -0800
+Message-Id: <20220111175438.21901-8-sthemmin@microsoft.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220111175438.21901-1-sthemmin@microsoft.com>
 References: <20220111175438.21901-1-sthemmin@microsoft.com>
@@ -64,29 +64,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang complains about passing non-format string.
+Fix warning about passing non-format string.
 
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- ip/ipl2tp.c | 5 +++--
+ ip/iplink_can.c | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/ip/ipl2tp.c b/ip/ipl2tp.c
-index 77bc3249c7ec..569723581ec2 100644
---- a/ip/ipl2tp.c
-+++ b/ip/ipl2tp.c
-@@ -191,8 +191,9 @@ static int delete_session(struct l2tp_parm *p)
- 	return 0;
+diff --git a/ip/iplink_can.c b/ip/iplink_can.c
+index f4b375280cd7..67c913808083 100644
+--- a/ip/iplink_can.c
++++ b/ip/iplink_can.c
+@@ -330,8 +330,9 @@ static void can_print_nl_indent(void)
+ 	print_string(PRINT_FP, NULL, "%s", "\t ");
  }
  
--static void print_cookie(const char *name, const char *fmt,
--			 const uint8_t *cookie, int len)
+-static void can_print_timing_min_max(const char *json_attr, const char *fp_attr,
+-				     int min, int max)
 +static void __attribute__((format(printf, 2, 0)))
-+print_cookie(const char *name, const char *fmt,
-+	     const uint8_t *cookie, int len)
++can_print_timing_min_max(const char *json_attr, const char *fp_attr,
++			 int min, int max)
  {
- 	char abuf[32];
- 	size_t n;
+ 	print_null(PRINT_FP, NULL, fp_attr, NULL);
+ 	open_json_object(json_attr);
 -- 
 2.30.2
 
