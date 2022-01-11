@@ -2,150 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F074A48A90D
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 09:01:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB78E48A91D
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 09:12:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348801AbiAKIBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 03:01:11 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:36187 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348793AbiAKIBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 03:01:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1641887872;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=mYH9lkT+GwFnDOw9IKYwpC+Ah/WIwWlmTNiFmGgdIkA=;
-    b=GXR6V0q+Z3Xh+leOYC3SpC1EvyRJXrQI9LZtITL0tabILVvqacaKxfVlpV5B2k4kbf
-    F65oRGMqJSznYWyPINizUH2XF83ZMIHDhvHdb0G3TNHZ6DSTNnW8eD0lTjzSAkT4fB7G
-    guIuM7DOc8HJK/sMA29mrk7IvfgzEKj57WlGKyoEyzx3L3juW78xJshtbFqfidDZDKMC
-    Q69zk4tDPS03wjFOzCIaJgcnVCxoK7LXyw1ySJiZu+5HqNfRLn8T4Zf7vHEtoyNFwBTh
-    wpSmgku0xmCYFq/B+2FhKKtXQX668uFDvfGbOrXUQ5UTVhz+zB7/X160m+0mt0g8QE7p
-    jwcQ==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPv6:2a00:6020:1cfa:f900::b82]
-    by smtp.strato.de (RZmta 47.37.6 AUTH)
-    with ESMTPSA id Rb080by0B7vpB3s
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 11 Jan 2022 08:57:51 +0100 (CET)
-Subject: Re: [PATCH net] can: bcm: switch timer to HRTIMER_MODE_SOFT and
- remove hrtimer_tasklet
-To:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, mkl@pengutronix.de,
-        netdev@vger.kernel.org, stable@vger.kernel.org,
-        linux-can@vger.kernel.org, tglx@linutronix.de,
-        anna-maria@linutronix.de
-References: <20220110132322.1726106-1-william.xuanziyang@huawei.com>
- <YdwxtqexaE75uCZ8@kroah.com>
- <afcc8f0c-1aa7-9f43-bf50-b404c954db8b@huawei.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <ad8ed3db-b5aa-9c48-0bff-2c2623bd17fa@hartkopp.net>
-Date:   Tue, 11 Jan 2022 08:57:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S1348811AbiAKIMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 03:12:20 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:40555 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235115AbiAKIMS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 03:12:18 -0500
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 7FF712223E;
+        Tue, 11 Jan 2022 09:12:14 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1641888736;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=DCRA6S3WathlSGOsTrGujaxqrgIghgKZV9qdJ4CRuY8=;
+        b=Dt82kGkf9ZqxSe9AqxhJ/H/HMt8r8a3QkYOE2zaQz7SGxR99ym8XWKLiz+2A8iDfsBzrAM
+        k1QejW893jg7RRGwGVdBlTyFAl4lCrb47mKA8ut05Z1jD2M7bOVJEFM6WsjA69CaYMYQNh
+        BWi5TGuVqBLRrTGaDo9mICs9PePMEYQ=
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next] Revert "of: net: support NVMEM cells with MAC in text format"
+Date:   Tue, 11 Jan 2022 09:12:06 +0100
+Message-Id: <20220111081206.2393560-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <afcc8f0c-1aa7-9f43-bf50-b404c954db8b@huawei.com>
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This reverts commit 9ed319e411915e882bb4ed99be3ae78667a70022.
 
+We can already post process a nvmem cell value in a particular driver.
+Instead of having yet another place to convert the values, the post
+processing hook of the nvmem provider should be used in this case.
 
-On 11.01.22 03:02, Ziyang Xuan (William) wrote:
->> On Mon, Jan 10, 2022 at 09:23:22PM +0800, Ziyang Xuan wrote:
->>> From: Thomas Gleixner <tglx@linutronix.de>
->>>
->>> [ commit bf74aa86e111aa3b2fbb25db37e3a3fab71b5b68 upstream ]
->>>
->>> Stop tx/rx cycle rely on the active state of tasklet and hrtimer
->>> sequentially in bcm_remove_op(), the op object will be freed if they
->>> are all unactive. Assume the hrtimer timeout is short, the hrtimer
->>> cb has been excuted after tasklet conditional judgment which must be
->>> false after last round tasklet_kill() and before condition
->>> hrtimer_active(), it is false when execute to hrtimer_active(). Bug
->>> is triggerd, because the stopping action is end and the op object
->>> will be freed, but the tasklet is scheduled. The resources of the op
->>> object will occur UAF bug.
->>
->> That is not the changelog text of this commit.  Why modify it?
-> 
-> Above statement is the reason why I want to backport the patch to
-> stable tree. Maybe I could give an extra cover-letter to explain
-> the details of the problem, but modify the original changelog. Is it?
-> 
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
 
-If you backport the bcm HRTIMER_MODE_SOFT implementation to the 4.19 
-stable tree the problem is not fixed for 4.14, 4.4, etc.
+As mentioned in [1] I think we should discuss this a bit more and revert
+the patch for now before there are any users of it.
 
-HRTIMER_MODE_SOFT has been introduced in 4.16
+[1] https://lore.kernel.org/netdev/20211229124047.1286965-1-michael@walle.cc/
 
-The issue of a race condition at bcm op removal has already been 
-addressed before in commit a06393ed03167 ("can: bcm: fix hrtimer/tasklet 
-termination in bcm op removal").
+btw, now with net-next closed, should this patch have net-next or net as
+the queue in the subject?
 
--       hrtimer_cancel(&op->timer);
--       hrtimer_cancel(&op->thrtimer);
+ net/core/of_net.c | 33 +++++++++++----------------------
+ 1 file changed, 11 insertions(+), 22 deletions(-)
+
+diff --git a/net/core/of_net.c b/net/core/of_net.c
+index 95a64c813ae5..f1a9bf7578e7 100644
+--- a/net/core/of_net.c
++++ b/net/core/of_net.c
+@@ -61,7 +61,7 @@ static int of_get_mac_addr_nvmem(struct device_node *np, u8 *addr)
+ {
+ 	struct platform_device *pdev = of_find_device_by_node(np);
+ 	struct nvmem_cell *cell;
+-	const void *buf;
++	const void *mac;
+ 	size_t len;
+ 	int ret;
+ 
+@@ -78,32 +78,21 @@ static int of_get_mac_addr_nvmem(struct device_node *np, u8 *addr)
+ 	if (IS_ERR(cell))
+ 		return PTR_ERR(cell);
+ 
+-	buf = nvmem_cell_read(cell, &len);
++	mac = nvmem_cell_read(cell, &len);
+ 	nvmem_cell_put(cell);
+ 
+-	if (IS_ERR(buf))
+-		return PTR_ERR(buf);
 -
--       if (op->tsklet.func)
--               tasklet_kill(&op->tsklet);
-+       if (op->tsklet.func) {
-+               while (test_bit(TASKLET_STATE_SCHED, &op->tsklet.state) ||
-+                      test_bit(TASKLET_STATE_RUN, &op->tsklet.state) ||
-+                      hrtimer_active(&op->timer)) {
-+                       hrtimer_cancel(&op->timer);
-+                       tasklet_kill(&op->tsklet);
-+               }
-+       }
+-	ret = 0;
+-	if (len == ETH_ALEN) {
+-		if (is_valid_ether_addr(buf))
+-			memcpy(addr, buf, ETH_ALEN);
+-		else
+-			ret = -EINVAL;
+-	} else if (len == 3 * ETH_ALEN - 1) {
+-		u8 mac[ETH_ALEN];
+-
+-		if (mac_pton(buf, mac))
+-			memcpy(addr, mac, ETH_ALEN);
+-		else
+-			ret = -EINVAL;
+-	} else {
+-		ret = -EINVAL;
++	if (IS_ERR(mac))
++		return PTR_ERR(mac);
++
++	if (len != ETH_ALEN || !is_valid_ether_addr(mac)) {
++		kfree(mac);
++		return -EINVAL;
+ 	}
+ 
+-	kfree(buf);
++	memcpy(addr, mac, ETH_ALEN);
++	kfree(mac);
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ /**
+-- 
+2.30.2
 
-IMO we should better try to improve this fix and enable it for older 
-stable trees than fixing only the 4.19.
-
-Best regards,
-Oliver
-
-
-
->>
->>>
->>> ----------------------------------------------------------------------
->>>
->>> This patch switches the timer to HRTIMER_MODE_SOFT, which executed the
->>> timer callback in softirq context and removes the hrtimer_tasklet.
->>>
->>> Reported-by: syzbot+652023d5376450cc8516@syzkaller.appspotmail.com
-> 
-> This is the public problem reporter. Do I need to move it to cover-letter
-> but here?
-> 
->>> Cc: stable@vger.kernel.org # 4.19
-> 
-> I want to backport the patch to linux-4.19.y stable tree. How do I need to
-> modify?
-> 
->>> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
->>> Signed-off-by: Anna-Maria Gleixner <anna-maria@linutronix.de>
->>> Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
->>> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
->>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
->>> ---
->>>   net/can/bcm.c | 156 +++++++++++++++++---------------------------------
->>>   1 file changed, 52 insertions(+), 104 deletions(-)
->>
->> What stable kernel tree(s) are you wanting this backported to?
->>
->> thanks,
->>
->> greg k-h
->> .
->>
-> 
-> Thank you for your patient guidance.
-> 
