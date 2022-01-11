@@ -2,122 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 573B948B496
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 18:52:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8733248B492
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 18:52:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344864AbiAKRwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 12:52:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48158 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344872AbiAKRwd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 12:52:33 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBBD3C034001;
-        Tue, 11 Jan 2022 09:51:25 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id e19so11669223plc.10;
-        Tue, 11 Jan 2022 09:51:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dCLKPvyqwFiADeW+fUHpp9nGxWyERyIzo7SwvZQVl9s=;
-        b=ZNrTBDgtZqfO/0O53VItY+K50sRyRO/na+zTvONRWtyTbwdYbhkhi5Hu2gKFEe2D/g
-         Nnh8WsX5J7CCnTsCUSg9HtbUCPFWPTQ3k6mS69EuE2c8owF2ITCpxI7UJ6Jn2A4YuDCF
-         9JQ+WpvwRErEy5O4WtipqJ5RG8QIsx/TdLAa8cjQ9MHBabhdnLhi2EOz3oG3jWe27Qqm
-         OffY1/kCH69ThL34Jng8c4HijqodU/cJn9PApWrlSBTN7BFJNFb9fGjC1/a94h+O7lLE
-         twHAdDYbAwQY360CJXEQBaiJlbbej5CHyQJ0f05Tbn80scTpsq2iIAwGGS9ChvfSfVF5
-         /T3w==
+        id S1344868AbiAKRwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 12:52:32 -0500
+Received: from mail-oo1-f52.google.com ([209.85.161.52]:43932 "EHLO
+        mail-oo1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345100AbiAKRvs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 12:51:48 -0500
+Received: by mail-oo1-f52.google.com with SMTP id z20-20020a4a3054000000b002dbfaf0b568so4636593ooz.10;
+        Tue, 11 Jan 2022 09:51:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dCLKPvyqwFiADeW+fUHpp9nGxWyERyIzo7SwvZQVl9s=;
-        b=a33EPPn5yp5+VHkKFO4X9JlKQJdwa3Nk7fMPcv9PU1IB/iSBT2T6Pvm7UNUddEjaXL
-         IJJaFZLPTSMI8I7HI3dgaueiGafgzJruGRdsY2WyvRhPK45mTDJON919k5PmM+f4UvZL
-         nkb0sz8aniwT0zIQvaXmMQoQQMlLnA41mgsstd6G3qf9Pw12t6nrbfD+bwP4eHiOQRWv
-         cl7SDjtGExJo6XbM72LRMHoMRBpGL0VpWp2SOSn5p1A7E1OYMSsVnTLQK4oWWN0/0TO4
-         rKMbWW44gywALKd04R3uZs3GfQtQcGLKk8i4UD6tnmr982Z3P688f0mjBL4yc+CFEy8j
-         Tx+g==
-X-Gm-Message-State: AOAM530bb2hOI0sNCkxlExOZ0tz154vbkmKIxPNgOGNwwVBN/BO9xBmd
-        LKpWzh60BiAl8LKQFTzGr52TkS8N/uUH+qxGrws=
-X-Google-Smtp-Source: ABdhPJydex/pZa/4x+YHMH39gD/e+xj74BR+O6j9dxvaO25qdr9CmE/7L4+pz0l4wjJfYoyr/SRVhaeHRmPponx1o8s=
-X-Received: by 2002:a63:7c50:: with SMTP id l16mr4997656pgn.95.1641923485232;
- Tue, 11 Jan 2022 09:51:25 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UifqrbSv4P6oUwIS9VVpUp4MVpz/i09ZMQyiV9QJa6A=;
+        b=gO2slWkHUbjIJ7at6MJLKVJYBjA4lDb5+SJdJ34eK5M4FNOLqdYSUlDD7sS5umpTEi
+         Pn5cr/c8XFmzJGcKB5BmXzy55CYxIJo3d2yi8EF8GyDcjiX3BF8TD1YgMNjYEM+bLzlu
+         T5ZMfezjQvfdgX0ZZeC9+rNtRuWK1LsHattZf3nvJQCOi6Qz61mpF2H/5Lwo4HrXL8gF
+         uRMajAoGN/+CYbdZ/nNAUMickJr7jJNlJaPoi36fhl6+2yzn/LlxZ44RzRnf/DWgAHrH
+         WqJIFKDgHVeTFfwSvagBGvPs9hQrE8jE2uzw85m0U9eEZ2uSEEmh2JBuIczOAGdjVzMV
+         lY4A==
+X-Gm-Message-State: AOAM530IWrvsdlbqSJeRQsJT8xSA2syEd0MrEAIBMC6VTxXNXW6ku0tp
+        byF7EatPjXTbctzAWoQOCA==
+X-Google-Smtp-Source: ABdhPJznNaT1VvHIngLtpJFtz0iASueDANoXRX2e5SW6ZAucUfj28fstai6hZocWcmtpqr5MeaK/UA==
+X-Received: by 2002:a4a:3bd4:: with SMTP id s203mr3882712oos.18.1641923507894;
+        Tue, 11 Jan 2022 09:51:47 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id x13sm2018165oof.19.2022.01.11.09.51.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 09:51:47 -0800 (PST)
+Received: (nullmailer pid 3228864 invoked by uid 1000);
+        Tue, 11 Jan 2022 17:51:46 -0000
+Date:   Tue, 11 Jan 2022 11:51:46 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-gpio@vger.kernel.org, Jassi Brar <jassisinghbrar@gmail.com>,
+        - <patches@opensource.cirrus.com>, linux-kernel@vger.kernel.org,
+        Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        John Crispin <john@phrozen.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        devicetree@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-riscv@lists.infradead.org,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        linux-pci@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Suman Anna <s-anna@ti.com>, netdev@vger.kernel.org,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] dt-bindings: Drop required 'interrupt-parent'
+Message-ID: <Yd3DsoMYTylcOWDo@robh.at.kernel.org>
+References: <20220107031905.2406176-1-robh@kernel.org>
 MIME-Version: 1.0
-References: <20220108051121.28632-1-yichun@openresty.com>
-In-Reply-To: <20220108051121.28632-1-yichun@openresty.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 11 Jan 2022 09:51:13 -0800
-Message-ID: <CAADnVQLRtVtfw3GxiHskLRBV8BKgeEVOP8qbje-mRNKn9rMOFw@mail.gmail.com>
-Subject: Re: [PATCH] bpf: core: Fix the call ins's offset s32 -> s16 truncation
-To:     "Yichun Zhang (agentzh)" <yichun@openresty.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220107031905.2406176-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 7, 2022 at 9:11 PM Yichun Zhang (agentzh)
-<yichun@openresty.com> wrote:
->
-> The BPF interpreter always truncates the BPF CALL instruction's 32-bit
-> jump offset to 16-bit. Large BPF programs run by the interpreter often
-> hit this issue and result in weird behaviors when jumping to the wrong
-> destination instructions.
->
-> The BPF JIT compiler does not have this bug.
->
-> Fixes: 1ea47e01ad6ea ("bpf: add support for bpf_call to interpreter")
-> Signed-off-by: Yichun Zhang (agentzh) <yichun@openresty.com>
+On Thu, 06 Jan 2022 21:19:04 -0600, Rob Herring wrote:
+> 'interrupt-parent' is never required as it can be in a parent node or a
+> parent node itself can be an interrupt provider. Where exactly it lives is
+> outside the scope of a binding schema.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
->  kernel/bpf/core.c | 15 ++++++++-------
->  1 file changed, 8 insertions(+), 7 deletions(-)
->
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 2405e39d800f..dc3c90992f33 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -59,6 +59,9 @@
->  #define CTX    regs[BPF_REG_CTX]
->  #define IMM    insn->imm
->
-> +static u64 (*interpreters_args[])(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5,
-> +                                 const struct bpf_insn *insn);
-> +
->  /* No hurry in this branch
->   *
->   * Exported for the bpf jit load helper.
-> @@ -1560,10 +1563,10 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
->                 CONT;
->
->         JMP_CALL_ARGS:
-> -               BPF_R0 = (__bpf_call_base_args + insn->imm)(BPF_R1, BPF_R2,
-> -                                                           BPF_R3, BPF_R4,
-> -                                                           BPF_R5,
-> -                                                           insn + insn->off + 1);
-> +               BPF_R0 = (interpreters_args[insn->off])(BPF_R1, BPF_R2,
-> +                                                       BPF_R3, BPF_R4,
-> +                                                       BPF_R5,
-> +                                                       insn + insn->imm + 1);
->                 CONT;
->
->         JMP_TAIL_CALL: {
-> @@ -1810,9 +1813,7 @@ EVAL4(PROG_NAME_LIST, 416, 448, 480, 512)
->  void bpf_patch_call_args(struct bpf_insn *insn, u32 stack_depth)
->  {
->         stack_depth = max_t(u32, stack_depth, 1);
-> -       insn->off = (s16) insn->imm;
-> -       insn->imm = interpreters_args[(round_up(stack_depth, 32) / 32) - 1] -
-> -               __bpf_call_base_args;
-> +       insn->off = (round_up(stack_depth, 32) / 32) - 1;
->         insn->code = BPF_JMP | BPF_CALL_ARGS;
+>  .../devicetree/bindings/gpio/toshiba,gpio-visconti.yaml  | 1 -
+>  .../devicetree/bindings/mailbox/ti,omap-mailbox.yaml     | 9 ---------
+>  Documentation/devicetree/bindings/mfd/cirrus,madera.yaml | 1 -
+>  .../devicetree/bindings/net/lantiq,etop-xway.yaml        | 1 -
+>  .../devicetree/bindings/net/lantiq,xrx200-net.yaml       | 1 -
+>  .../devicetree/bindings/pci/sifive,fu740-pcie.yaml       | 1 -
+>  .../devicetree/bindings/pci/xilinx-versal-cpm.yaml       | 1 -
+>  7 files changed, 15 deletions(-)
+> 
 
-Neat. Please add a test case and resubmit.
+Applied, thanks!
