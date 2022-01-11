@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E31AE48A53C
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 02:44:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E018D48A539
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 02:43:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346273AbiAKBn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 20:43:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
+        id S1346177AbiAKBny (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 20:43:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346244AbiAKBnw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 20:43:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA10FC061757
+        with ESMTP id S1346230AbiAKBnv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 20:43:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1482DC061748
         for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 17:43:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5BA5B81863
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5961614AD
         for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 01:43:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28736C36AF3;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AED2CC36AF4;
         Tue, 11 Jan 2022 01:43:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641865429;
-        bh=AYbV5nbsbgYC3As/qvFCJ8yQkF2omZ+Sw7YNPnNq6fg=;
+        s=k20201202; t=1641865430;
+        bh=QnEtz5kDWxhIHeiZ+P6LdtPZD2K/54BywLZpn9WBfmo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E/8UcLeypMjg5ydA1n6T7f7SAYnjeRwcPdI9sBqXcE+9p1SYUdIb+vPcCjVqutR7q
-         T312sVY/W1eMyNFh78g4X5WtSn1nUaRZ+lr0xa0UTsKKPSw7mvySuXxfDqW9E4j5YH
-         hN2r+z//0xpj1wtZP3RlckUZuTclljfCH2a3v+o+yCtrbPwYbvJ7UlPE958KtAkPSw
-         PfE6grrcbaLRkLwHBhUtkJwcFbmjPyVem/rqf3aGVxlDODy68QquSTQx7eA5Vw/mlb
-         GwWw9YisZaHGs3EX6gXaJumPEXCTV2Z8byHWKcLiIYsOuen8VmkDLOnnghNHWVeS7T
-         HCdxqsk2G9C4Q==
+        b=NxCHwHxv/w/vNvjZvf5zc7/dlZNdB4lKQySj4vnLTbXQaRAj0rUeIeNcA0wz4eJe1
+         P7n0K9tuTNZiuDelcjOGpWjXr1Ec5qu6ZhKjRYWGUehWm1rlS2jB5+CtfhuRV1vykm
+         QT8fXypcbDzwVkd8hHHyKhU2sZ2bcOT36432VVSPMN0psa4dF499J782u/cTiODifd
+         LC3lslWK9KpMUFGH/jP2luvrs1zH7PuoNVUmrV7i3HerYlWDUCV6Id68YX5POJ7NhY
+         HbV3x0ASGlKTpwLVyjpPZg5rCojOp6MS0RvGmhLOlMwq/BlKY+HtEyQF9wq5LTG4nx
+         zMZuR3lLxJnHA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
         Oz Shlomo <ozsh@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 08/17] net/mlx5e: TC, Refactor mlx5e_tc_add_flow_mod_hdr() to get flow attr
-Date:   Mon, 10 Jan 2022 17:43:26 -0800
-Message-Id: <20220111014335.178121-9-saeed@kernel.org>
+Subject: [net-next 09/17] net/mlx5e: TC, Reject rules with multiple CT actions
+Date:   Mon, 10 Jan 2022 17:43:27 -0800
+Message-Id: <20220111014335.178121-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220111014335.178121-1-saeed@kernel.org>
 References: <20220111014335.178121-1-saeed@kernel.org>
@@ -50,85 +50,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roi Dayan <roid@nvidia.com>
 
-In later commit we are going to instantiate multiple attr instances
-for flow instead of single attr.
-Make sure mlx5e_tc_add_flow_mod_hdr() use the correct attr and not flow->attr.
+The driver doesn't support multiple CT actions.
+Multiple CT clear actions are ok as they are redundant also with
+another CT actions.
 
 Signed-off-by: Roi Dayan <roid@nvidia.com>
 Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc_tun_encap.c    |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c      | 12 ++++++------
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.h      |  4 ++--
- 3 files changed, 9 insertions(+), 9 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/tc/act/act.h    |  1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c | 10 ++++++++++
+ 2 files changed, 11 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-index c8cb173f1ffb..1f8d339ff0c3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
-@@ -1380,7 +1380,7 @@ static void mlx5e_reoffload_encap(struct mlx5e_priv *priv,
- 			continue;
- 		}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
+index 04734e59bbc4..bfbc91c116a5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
+@@ -16,6 +16,7 @@ struct mlx5e_tc_act_parse_state {
+ 	unsigned int num_actions;
+ 	struct mlx5e_tc_flow *flow;
+ 	struct netlink_ext_ack *extack;
++	bool ct;
+ 	bool encap;
+ 	bool decap;
+ 	bool mpls_push;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
+index 0d08cc35ea6f..4a04e0a7a52e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
+@@ -11,6 +11,7 @@ tc_act_can_offload_ct(struct mlx5e_tc_act_parse_state *parse_state,
+ 		      int act_index,
+ 		      struct mlx5_flow_attr *attr)
+ {
++	bool clear_action = act->ct.action & TCA_CT_ACT_CLEAR;
+ 	struct netlink_ext_ack *extack = parse_state->extack;
  
--		err = mlx5e_tc_add_flow_mod_hdr(priv, parse_attr, flow);
-+		err = mlx5e_tc_add_flow_mod_hdr(priv, flow, attr);
- 		if (err) {
- 			mlx5_core_warn(priv->mdev, "Failed to update flow mod_hdr err=%d",
- 				       err);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index de07ccd6ac7b..9201ba8fa509 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1360,10 +1360,10 @@ int mlx5e_tc_query_route_vport(struct net_device *out_dev, struct net_device *ro
+ 	if (flow_flag_test(parse_state->flow, SAMPLE)) {
+@@ -19,6 +20,11 @@ tc_act_can_offload_ct(struct mlx5e_tc_act_parse_state *parse_state,
+ 		return false;
+ 	}
+ 
++	if (parse_state->ct && !clear_action) {
++		NL_SET_ERR_MSG_MOD(extack, "Multiple CT actions are not supoported");
++		return false;
++	}
++
+ 	return true;
  }
  
- int mlx5e_tc_add_flow_mod_hdr(struct mlx5e_priv *priv,
--			      struct mlx5e_tc_flow_parse_attr *parse_attr,
--			      struct mlx5e_tc_flow *flow)
-+			      struct mlx5e_tc_flow *flow,
-+			      struct mlx5_flow_attr *attr)
+@@ -28,6 +34,7 @@ tc_act_parse_ct(struct mlx5e_tc_act_parse_state *parse_state,
+ 		struct mlx5e_priv *priv,
+ 		struct mlx5_flow_attr *attr)
  {
--	struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts = &parse_attr->mod_hdr_acts;
-+	struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts = &attr->parse_attr->mod_hdr_acts;
- 	struct mlx5_modify_hdr *mod_hdr;
++	bool clear_action = act->ct.action & TCA_CT_ACT_CLEAR;
+ 	int err;
  
- 	mod_hdr = mlx5_modify_header_alloc(priv->mdev,
-@@ -1373,8 +1373,8 @@ int mlx5e_tc_add_flow_mod_hdr(struct mlx5e_priv *priv,
- 	if (IS_ERR(mod_hdr))
- 		return PTR_ERR(mod_hdr);
+ 	err = mlx5_tc_ct_parse_action(parse_state->ct_priv, attr,
+@@ -41,6 +48,9 @@ tc_act_parse_ct(struct mlx5e_tc_act_parse_state *parse_state,
+ 	if (mlx5e_is_eswitch_flow(parse_state->flow))
+ 		attr->esw_attr->split_count = attr->esw_attr->out_count;
  
--	WARN_ON(flow->attr->modify_hdr);
--	flow->attr->modify_hdr = mod_hdr;
-+	WARN_ON(attr->modify_hdr);
-+	attr->modify_hdr = mod_hdr;
- 
++	if (!clear_action)
++		parse_state->ct = true;
++
  	return 0;
  }
-@@ -1577,7 +1577,7 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
- 	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
- 	    !(attr->ct_attr.ct_action & TCA_CT_ACT_CLEAR)) {
- 		if (vf_tun) {
--			err = mlx5e_tc_add_flow_mod_hdr(priv, parse_attr, flow);
-+			err = mlx5e_tc_add_flow_mod_hdr(priv, flow, attr);
- 			if (err)
- 				goto err_out;
- 		} else {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index 5ffae9b13066..0da5ea44f607 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -243,8 +243,8 @@ int mlx5e_tc_match_to_reg_set_and_get_id(struct mlx5_core_dev *mdev,
- 					 u32 data);
  
- int mlx5e_tc_add_flow_mod_hdr(struct mlx5e_priv *priv,
--			      struct mlx5e_tc_flow_parse_attr *parse_attr,
--			      struct mlx5e_tc_flow *flow);
-+			      struct mlx5e_tc_flow *flow,
-+			      struct mlx5_flow_attr *attr);
- 
- struct mlx5e_tc_flow;
- u32 mlx5e_tc_get_flow_tun_id(struct mlx5e_tc_flow *flow);
 -- 
 2.34.1
 
