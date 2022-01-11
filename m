@@ -2,180 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D4A348AAFE
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 11:04:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1394948AB2F
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 11:14:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237062AbiAKKED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 05:04:03 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:1672 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234586AbiAKKEC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 05:04:02 -0500
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20B7cKTm015944;
-        Tue, 11 Jan 2022 10:03:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=5EBX0iufaeuC20EJe3BZZ7yAWIAZFPQsNZo3cADR32c=;
- b=NnouLr/FKt3FvOZQidKTVYXvIDD9p9JfAfe4ghZFC9qHUoadfZ8OqD76OIwIExuRtilw
- iorsEO5A3vbtmYoFW/NwNOdFVEyFCPoWBlh7MGwyN3MfhE9q79BsGwzDKJ0klZCEtL96
- agnt2wJf1ImBSzl1LnPcv88Z3sdVYvBhOr91hzpjTJculWTVtIOyx/lAp16ZB0IpHsfp
- /8hlXWfMn09X8OmWC2bCBfy6Ohpr95NaMXk31UYOJEDlct/Dr1kl6FAqJShLeDKntHiZ
- lIsrAqx1lPtHtBb7Vfnw20rJrT7m610gDG0djo8pjbPA8mskjtk8pd1sPzDlt7zdKuij Hg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dh1b4r94g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 11 Jan 2022 10:03:59 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20B9m8CV024690;
-        Tue, 11 Jan 2022 10:03:58 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dh1b4r93e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 11 Jan 2022 10:03:58 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20B9xuUx028812;
-        Tue, 11 Jan 2022 10:03:56 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3df1vhw7n7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 11 Jan 2022 10:03:56 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20BA3sXj47644964
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 11 Jan 2022 10:03:54 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F03474C04E;
-        Tue, 11 Jan 2022 10:03:53 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A91304C05A;
-        Tue, 11 Jan 2022 10:03:53 +0000 (GMT)
-Received: from [9.145.30.70] (unknown [9.145.30.70])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 11 Jan 2022 10:03:53 +0000 (GMT)
-Message-ID: <ac977743-9696-9723-5682-97ebbcca6828@linux.ibm.com>
-Date:   Tue, 11 Jan 2022 11:03:55 +0100
+        id S1348943AbiAKKOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 05:14:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54250 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349249AbiAKKOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 05:14:00 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B6DC06175E
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 02:13:57 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id k30so14379776wrd.9
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 02:13:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=6PCA+vRYUe/AduahtIfH11YxAjqrR5aT6yWf1P1UjKM=;
+        b=xrnn7pfPtVk8GmZXH74suntUOfiJSbMkHTNai+3uNuBcbbzTXiKd42TVtluDU8+XvJ
+         eJguqBRQB3yNfFCspuEeUxuaG6YnNk1ykZ+ErK52kqvbSO2THosjeqXIyu7roja9Jt3y
+         MsDa3SCUlGcXd69wdtgbEgkZlmrL1rKbc/HyhQxseE8XYICgaXD/yt6QnZM+C/KPokj2
+         PohuiVjL8E5sb3VTAoeQwHQzWsRceX7zawKB65yMb5Ur5wvbTbjj5yCK9nGBVA/TVu+K
+         9sS3zrIT8iX5UtY2HUjey0tlfdUaQ3PfPub6AlX9ZaPMvLn4AzsfCh7pvQmGWEq+nCSQ
+         yFSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=6PCA+vRYUe/AduahtIfH11YxAjqrR5aT6yWf1P1UjKM=;
+        b=AlzH3wC1C1skRdjg7twGjiYZ4bPLI8v8qy9Qw0sr5Z6VloHi9Po+0EVtoC9SAGhccl
+         vftlC+MSEzZC5GWW8QqWCaLT3pZDWvWBbRKlllI5VvkRedKagaboKbKxEIN2342r5P/e
+         AFsphlOokYWtpS95QLE7ruwwUjvEg30EVHrtgyDYWDBfeqtuAh7U+poWChOMwnsij0cf
+         PXcWy2sp9AoAY/pBabXbbJs0mWxqMGLwJAJi34DTcBh5NIQHjfkAKekQpbE7eqC33kxB
+         PP+QXwS/kX2Te6XLlaj8/b7UFxnDjh31kPDPVeOpsqK3P8q8tVU4vLXfmatHMKFCj3yR
+         CLQw==
+X-Gm-Message-State: AOAM5308pymgATiDDX7iogYTcKXpDg2RyGPrLycEN9cNrbsriXRCo3lt
+        UyOyY6fO29zIbDPZg8es0z6Efg==
+X-Google-Smtp-Source: ABdhPJywTk9GhMWZxxqHvgfzFl2ehPAmWpoal5qpAaIBDxvx3IEGSmDLg3dQoXaJJEoI6VdA5mEzlQ==
+X-Received: by 2002:a5d:6b09:: with SMTP id v9mr3048585wrw.591.1641896036277;
+        Tue, 11 Jan 2022 02:13:56 -0800 (PST)
+Received: from google.com ([31.124.24.179])
+        by smtp.gmail.com with ESMTPSA id d22sm9158677wrb.83.2022.01.11.02.13.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 02:13:55 -0800 (PST)
+Date:   Tue, 11 Jan 2022 10:13:43 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     broonie@kernel.org, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC v5 net-next 01/13] mfd: ocelot: add support for external
+ mfd control over SPI for the VSC7512
+Message-ID: <Yd1YV+eUIaCnttYd@google.com>
+References: <20211218214954.109755-1-colin.foster@in-advantage.com>
+ <20211218214954.109755-2-colin.foster@in-advantage.com>
+ <Ycx9MMc+2ZhgXzvb@google.com>
+ <20211230014300.GA1347882@euler>
+ <Ydwju35sN9QJqJ/P@google.com>
+ <20220111003306.GA27854@COLIN-DESKTOP1.localdomain>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH net] net/smc: Avoid setting clcsock options after clcsock
- released
-Content-Language: en-US
-To:     Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1641807505-54454-1-git-send-email-guwen@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <1641807505-54454-1-git-send-email-guwen@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: o4NAAuT755QcREWKbu0Yr3z7sP43NDTm
-X-Proofpoint-ORIG-GUID: lIp-rD-vBVU1p0y6TsXscFJqGOD0SsPx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-11_03,2022-01-11_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- clxscore=1015 suspectscore=0 bulkscore=0 malwarescore=0 priorityscore=1501
- mlxscore=0 spamscore=0 phishscore=0 impostorscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201110059
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220111003306.GA27854@COLIN-DESKTOP1.localdomain>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/01/2022 10:38, Wen Gu wrote:
-> We encountered a crash in smc_setsockopt() and it is caused by
-> accessing smc->clcsock after clcsock was released.
+> > > > No magic numbers please.
+> > > 
+> > > I've gotten conflicting feedback on this. Several of the ocelot drivers
+> > > (drivers/net/dsa/ocelot/felix_vsc9959.c) have these ranges hard-coded.
+> > > Others (Documentation/devicetree/bindings/net/mscc-ocelot.txt) have them
+> > > all passed in through the device tree. 
+> > > 
+> > > https://lore.kernel.org/netdev/20211126213225.okrskqm26lgprxrk@skbuf/
+> > 
+> > Ref or quote?
+> > 
+> > I'm not brain grepping it searching for what you might be referring to.
+> > 
+> > I'm not sure what you're trying to say here.  I'm asking you to define
+> > this numbers please.
 > 
->  BUG: kernel NULL pointer dereference, address: 0000000000000020
->  #PF: supervisor read access in kernel mode
->  #PF: error_code(0x0000) - not-present page
->  PGD 0 P4D 0
->  Oops: 0000 [#1] PREEMPT SMP PTI
->  CPU: 1 PID: 50309 Comm: nginx Kdump: loaded Tainted: G E     5.16.0-rc4+ #53
->  RIP: 0010:smc_setsockopt+0x59/0x280 [smc]
->  Call Trace:
->   <TASK>
->   __sys_setsockopt+0xfc/0x190
->   __x64_sys_setsockopt+0x20/0x30
->   do_syscall_64+0x34/0x90
->   entry_SYSCALL_64_after_hwframe+0x44/0xae
->  RIP: 0033:0x7f16ba83918e
->   </TASK>
+> I'll define the numbers as you suggest.
 > 
-> This patch tries to fix it by holding clcsock_release_lock and
-> checking whether clcsock has already been released. In case that
-> a crash of the same reason happens in smc_getsockopt(), this patch
-> also checkes smc->clcsock in smc_getsockopt().
+> The quote I was referring to is this:
 > 
-> Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
-> ---
->  net/smc/af_smc.c | 16 +++++++++++++++-
->  1 file changed, 15 insertions(+), 1 deletion(-)
+> > The last option I haven't put much consideration toward would be to
+> > move some of the decision making to the device tree. The main ocelot
+> > driver appears to leave a lot of these addresses out. For instance
+> > Documentation/devicetree/bindings/pinctrl/mscc,ocelot-pinctrl.txt.
+> > That added DT complexity could remove needs for lines like this:
+> > > > +              ocelot->map[GCB][GCB_MIIM_MII_STATUS & REG_MASK],
+> > But that would probably impose DT changes on Seville and Felix, which
+> > is the last thing I want to do.
 > 
-> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> index 1c9289f..af423f4 100644
-> --- a/net/smc/af_smc.c
-> +++ b/net/smc/af_smc.c
-> @@ -2441,6 +2441,11 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
->  	/* generic setsockopts reaching us here always apply to the
->  	 * CLC socket
->  	 */
-> +	mutex_lock(&smc->clcsock_release_lock);
-> +	if (!smc->clcsock) {
-> +		mutex_unlock(&smc->clcsock_release_lock);
-> +		return -EBADF;
-> +	}
->  	if (unlikely(!smc->clcsock->ops->setsockopt))
->  		rc = -EOPNOTSUPP;
->  	else
-> @@ -2450,6 +2455,7 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
->  		sk->sk_err = smc->clcsock->sk->sk_err;
->  		sk_error_report(sk);
->  	}
-> +	mutex_unlock(&smc->clcsock_release_lock);
+> The thing with putting the targets in the device tree is that you're
+> inflicting yourself unnecessary pain. Take a look at
+> Documentation/devicetree/bindings/net/mscc-ocelot.txt, and notice that
+> they mark the "ptp" target as optional because it wasn't needed when
+> they first published the device tree, and now they need to maintain
+> compatibility with those old blobs.
 
-In the switch() the function smc_switch_to_fallback() might be called which also
-accesses smc->clcsock without further checking. This should also be protected then?
-Also from all callers of smc_switch_to_fallback() ?
+I wasn't asking you to put it in DT, just to define the numbers.
 
-There are more uses of smc->clcsock (e.g. smc_bind(), ...), so why does this problem 
-happen in setsockopt() for you only? I suspect it depends on the test case.
+> > > There's yet another complexity with these, and I'm not sure what the
+> > > answer is. Currently all regmaps are tied to the ocelot_spi device...
+> > > ocelot_spi calls devm_regmap_init. So those regmaps hang around if
+> > > they're created by a module that has been removed. At least until the
+> > > entire MFD module is removed. Maybe there's something I haven't seen yet
+> > > where the devres or similar has a reference count. I don't know the best
+> > > path forward on this one.
+> > 
+> > Why are you worrying about creating them 2 different ways?
+> > 
+> > If it's possible for them to all create and use their own regmaps,
+> > what's preventing you from just do that all the time?
+> 
+> There isn't really any worry, there just might be efficiencies to be
+> had if two children share the same regmap. But so long as any regmap is
+> created with unique names, there's no reason multiple regmaps can't
+> overlap the same regions. In those cases, maybe syscon would be the best
+> thing to implement if it becomes needed.
+> 
+> I have nothing against making every child regmap be unique if that's the
+> desire.
 
-I wonder if it makes sense to check and protect smc->clcsock at all places in the code where 
-it is used... as of now we had no such races like you encountered. But I see that in theory 
-this problem could also happen in other code areas.
+Unless something has changed or my understanding is not correct,
+regmap does not support over-lapping register ranges.
 
->  
->  	if (optlen < sizeof(int))
->  		return -EINVAL;
-> @@ -2509,13 +2515,21 @@ static int smc_getsockopt(struct socket *sock, int level, int optname,
->  			  char __user *optval, int __user *optlen)
->  {
->  	struct smc_sock *smc;
-> +	int rc;
->  
->  	smc = smc_sk(sock->sk);
-> +	mutex_lock(&smc->clcsock_release_lock);
-> +	if (!smc->clcsock) {
-> +		mutex_unlock(&smc->clcsock_release_lock);
-> +		return -EBADF;
-> +	}
->  	/* socket options apply to the CLC socket */
->  	if (unlikely(!smc->clcsock->ops->getsockopt))
->  		return -EOPNOTSUPP;
-> -	return smc->clcsock->ops->getsockopt(smc->clcsock, level, optname,
-> +	rc = smc->clcsock->ops->getsockopt(smc->clcsock, level, optname,
->  					     optval, optlen);
-> +	mutex_unlock(&smc->clcsock_release_lock);
-> +	return rc;
->  }
->  
->  static int smc_ioctl(struct socket *sock, unsigned int cmd,
+However, even if that is required, I still think we can come up with
+something cleaner than creating a whole API based around creating
+and fetching different regmap configurations depending on how the
+system was initialised.
 
 -- 
-Karsten
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
