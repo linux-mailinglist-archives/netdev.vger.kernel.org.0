@@ -2,83 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A09848AB3F
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 11:20:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4687448AB9F
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 11:43:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237678AbiAKKUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 05:20:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55662 "EHLO
+        id S1349263AbiAKKn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 05:43:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233911AbiAKKUK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 05:20:10 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D96DC06173F;
-        Tue, 11 Jan 2022 02:20:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 271736156D;
-        Tue, 11 Jan 2022 10:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8EC8CC36AEF;
-        Tue, 11 Jan 2022 10:20:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641896409;
-        bh=ttET7FQ/V0zsUisydBM7LitOS1aOOXZYsT15k2wFPqk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mkVfFVLLYmpq3GLa+t2/aoD/dJrMb+omiDR5IdiiHTsbkXEf55/YDGjZF/Zi8vON8
-         oWnvD2Q1hlp1Iac2IQZrKox00VtATI4DfmVOyBeubA05YmKwAyVt96phUJCQTQc062
-         hoA62dInwA7hG9TWuD5kIf63UNeLVs22u1xYuJcNxp+paQGbmj9QsLUjNJfG25XWfY
-         3o5dk42NmSphlyeH9tIXSP1k2dvU+LFjmOp+BtTtcd3cjwI2P4X+NEY/AJsaVip96H
-         wnp4f4B8UcjmJ0GY7BLWNmxg58WULHirMdyTkhy2cwo2JJlrCYDoXmWPYhM+lphnZq
-         R0VlSTjwd4P3w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73BB9F6078C;
-        Tue, 11 Jan 2022 10:20:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S237719AbiAKKn0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 05:43:26 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0BBC06173F
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 02:43:25 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id w16so65334059edc.11
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 02:43:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=LkUBvI5rZysrZNLHD36Jcg1vJdC0iFYnp+vv3/yHCXU=;
+        b=Se0Ej94GOGEXJ0445YwwGzgFDdp8aGY9b8Ij5mBUOrDCPLS4krFtNO9K8kUUusZpSE
+         yxgR/4Z+/+FLKlxg/vyYml278PfIY21/Gtai5IE9JB3gIGhnNhGtt4OFOsocbeTFnuC6
+         3kEc4IFx6UjuSQOSGmGY45SyRHyOfXFZa+UXsKko/ZJx0JlmdoLuHdrr9w0TUrFwn1JZ
+         a+1IcYKCIzMorM0mavHH9svVj3jH4FleCM7gTz6uprRApdqovCI5/wleVKGM0kCLaLWx
+         wlNEsC9h+5LXhoTFXcPPHkg1AwMk/G1nS5OzcFEK3oCpYhpC0sl+uTfCKhtyDN5ZYUUF
+         z76w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=LkUBvI5rZysrZNLHD36Jcg1vJdC0iFYnp+vv3/yHCXU=;
+        b=TVNQ1R8QIYlKNkS77UX5mdBkQn9MdFDB/rxcjMcO8lWguSodVU+ooSOsJhECeqtu3J
+         Zxg7MOxIKN2lk60WyVQCLMrAP7E0qDvOjxBP71uuGMEvrmrKNs+uL+4/R/DCQ22fxAJA
+         5UfvNVdvYe+8czcAMx47ypT/VF8Hv/dw0egQvpU28Sdh7nShLYTKpf+jHK+9NJ9Tuc91
+         M+znZF8Z8ZMadRiPgP+RJb3HOJW+u3FMTAtIGS/sq3JVkGJ0QCxZSERfn5DzmdOuREUW
+         nyLu6uoIclVgd6qWFaZ/ZlSei7OwrXyObFK54zmKn2ThEFOcDNsCBnCFdyFRZ+Nt+E/6
+         EOQw==
+X-Gm-Message-State: AOAM5324wy79pZv2/a0LOY6mIe7Ucpp+UQR0LcFKyCJxFVEQFzRdtWv2
+        ZQLVOgqhAnL1MXBfGpps4OUcaZQ0TRG8kyhrJzM=
+X-Google-Smtp-Source: ABdhPJxv7NXEEWxT+aN+ev5bqPJQTxHd/6ZBHHnqsOrjhms3l5u9/oMBBn40yAB1IdAPpuz6tNiKooU/GmHJzHNZj/Y=
+X-Received: by 2002:a17:906:715:: with SMTP id y21mr3041230ejb.51.1641897803932;
+ Tue, 11 Jan 2022 02:43:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] bpf: fix mount source show for bpffs
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164189640946.3896.14596442788026744490.git-patchwork-notify@kernel.org>
-Date:   Tue, 11 Jan 2022 10:20:09 +0000
-References: <20220108134623.32467-1-laoar.shao@gmail.com>
-In-Reply-To: <20220108134623.32467-1-laoar.shao@gmail.com>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        christian.brauner@ubuntu.com, dhowells@redhat.com,
-        viro@zeniv.linux.org.uk
+Sender: halimamusajammeh@gmail.com
+Received: by 2002:a17:906:380e:0:0:0:0 with HTTP; Tue, 11 Jan 2022 02:43:23
+ -0800 (PST)
+From:   "Mrs.Rhoda Mohammed" <rhodamohammed01@gmail.com>
+Date:   Tue, 11 Jan 2022 11:43:23 +0100
+X-Google-Sender-Auth: vm3_sVAJZkgDkvCWPs99ixmZBlc
+Message-ID: <CAHGBthJaMROa6vCpeHiG7j_nBXdqznmsUMxhsO41XQZ8_mwFCg@mail.gmail.com>
+Subject: From Mrs.Rhoda Ahmmed H.Mohammed/ READ AND ANSWER
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Sat,  8 Jan 2022 13:46:23 +0000 you wrote:
-> We noticed our tc ebpf tools can't start after we upgrade our in-house
-> kernel version from 4.19 to 5.10. That is because of the behaviour change
-> in bpffs caused by commit
-> d2935de7e4fd ("vfs: Convert bpf to use the new mount API").
-> 
-> In our tc ebpf tools, we do strict environment check. If the enrioment is
-> not match, we won't allow to start the ebpf progs. One of the check is
-> whether bpffs is properly mounted. The mount information of bpffs in
-> kernel-4.19 and kernel-5.10 are as follows,
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2] bpf: fix mount source show for bpffs
-    https://git.kernel.org/bpf/bpf/c/1e9d74660d4d
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Please reply me to my personal email address(
+rhodamohammed2022@gmail.com  ) for more details , Hello Dear,I am
+Mrs.Rhoda Ahmmed Mohammed, the Wife of late Chief Ahmmed  H. Mohammed,
+a native of Mende district in the northern province of Sierra L eone,
+before the death of my late Husband,He was appointed as the Director
+of Sierra Leone mining cooperation (S.L.M.C) Freetown, According to my
+husband, this huge money was accrued from mining cooperation, diamonds
+and Gold sales overdrafts and minor sales,I am looking for a Serious
+Investor that will help me because my late Family wanted to kill me
+and collect the Deposit Certificate and Agreement Certificate from me
+but I run away from my country with the Documents,I want a God
+fearing, honest and trustworthy person that will help me receive this
+money in your Bank Account and Invest the money in your country or any
+country of your it is ver urgent please.I will give you the full
+details as soon as you get back to me through my personal email addres
+rhodamohammed2022@gmail.com   )Mrs.Rhoda hmmed H.Mohammed
