@@ -2,110 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 139EA48A555
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 02:51:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E81EC48A568
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 03:02:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346427AbiAKBv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 20:51:26 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:46238
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1346331AbiAKBvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 20:51:25 -0500
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 48A653F1AA
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 01:51:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641865884;
-        bh=k+G5Qj8aSKUpp+MDhp0FFQZX3fUBv+M0sfrhlFCHfLc=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=LXmAzLvj4E91Ak4J1Kooc5Qj/zdK3uXICt7VrHy7zusd/l+WfwEC9QkTt8KA9mJYB
-         KGvDcqJEZHyxmSwatYfllEUSYa6X7FvYvHq2lSP4vf18cWlzNLcoUApif/f3rOolda
-         HuRhGrM+twbTJbEVDd2yqXFNIQVldSTdIxW8NNktdGonFvBsU3Xf50Sap0Ty00hORY
-         tP/TQvoi+4jQzFVkdo7GaTaNSFgr40B0ACGrXvI45qbqmKqWddyAvNVk19pCgYaKDf
-         z4N/QDWS/et7CI7/Q1ifMLkXas6jP0AfyhdnNzTLRmb5cEXhKS+fJIE4HDF0iSkWJ9
-         clY5/LQEEdfYA==
-Received: by mail-oo1-f72.google.com with SMTP id f5-20020a4ac485000000b002dcd4495120so1691077ooq.7
-        for <netdev@vger.kernel.org>; Mon, 10 Jan 2022 17:51:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=k+G5Qj8aSKUpp+MDhp0FFQZX3fUBv+M0sfrhlFCHfLc=;
-        b=7Iz57YWPlgLCsBt/ZgkxK+NUOQXo04DvHGZcCPoLm8QNNZ25hDqe+WLCjduy5CPI5l
-         QZqJ/fGP+C/ZVfN06ZP1AgdGqptCYBABPpq0G8AhyjbE+dGbMdqwnANkWz7PQOHXZRaF
-         SNJLeb//e3gRRiakIAgv+PyhW0CGLnJPij46CmvM0DtxljlhOSF+OSdaeY5QwcMsGwRg
-         oyonbInuyTyZiRoeUloYpKVtylAbZxiji+BafFYkBjrnE4GkBGM3mm2RbhQJ3cPpm3yC
-         Mf41eenEJy9bbRGOP9jSUudeRSyUPXjfcF0J40MLwQ4kuaB8bl5Fxa8XEOesQCcoZiZm
-         yoGA==
-X-Gm-Message-State: AOAM533CT/CQ+VAEGItgndEQBFVMYmUkI+mU8FRZnZ0DP2P/xgbQAUCR
-        UO7Te4pPI9TNxt2dbCbojjI9PU/X+KczqC49qCYjvhrzxMZJRErG2jMQcKr2kcVmvZlq/pH7faK
-        40SyurlGjmCbspcc5T2+3yGlXu7o2MleBRHfDgsSWgcS7/qXppQ==
-X-Received: by 2002:a05:6808:198c:: with SMTP id bj12mr384870oib.146.1641865883122;
-        Mon, 10 Jan 2022 17:51:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyHc1xwY5iJ/hJxcFnR3u0ACkHmc8Oa/YD+Wvsqu2yqojXq/BqwcBugI0SsGkF4PoxlFmVjnr2Ce7+ZFErrCmg=
-X-Received: by 2002:a05:6808:198c:: with SMTP id bj12mr384867oib.146.1641865882863;
- Mon, 10 Jan 2022 17:51:22 -0800 (PST)
+        id S1346469AbiAKCCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 21:02:13 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:34894 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344477AbiAKCCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 21:02:12 -0500
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JXv7c0j0dzccLY;
+        Tue, 11 Jan 2022 10:01:32 +0800 (CST)
+Received: from [10.174.179.200] (10.174.179.200) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 11 Jan 2022 10:02:09 +0800
+Subject: Re: [PATCH net] can: bcm: switch timer to HRTIMER_MODE_SOFT and
+ remove hrtimer_tasklet
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <socketcan@hartkopp.net>,
+        <mkl@pengutronix.de>, <netdev@vger.kernel.org>,
+        <stable@vger.kernel.org>, <linux-can@vger.kernel.org>,
+        <tglx@linutronix.de>, <anna-maria@linutronix.de>
+References: <20220110132322.1726106-1-william.xuanziyang@huawei.com>
+ <YdwxtqexaE75uCZ8@kroah.com>
+From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Message-ID: <afcc8f0c-1aa7-9f43-bf50-b404c954db8b@huawei.com>
+Date:   Tue, 11 Jan 2022 10:02:09 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20220105151427.8373-1-aaron.ma@canonical.com> <YdXVoNFB/Asq6bc/@lunn.ch>
- <bb6d8bc4-abee-8536-ca5b-bac11d1ecd53@suse.com> <YdYbZne6pBZzxSxA@lunn.ch>
- <CAAd53p52uGFjbiuOWAA-1dN7mTqQ0KFe9PxWvPL+fjfQb9K5vQ@mail.gmail.com>
- <YdbuXbtc64+Knbhm@lunn.ch> <CAAd53p5YnQZ0fDiwwo-q3bNMVFTJSMLcdkUuH-7=OSaRrW954Q@mail.gmail.com>
- <20220106183145.54b057c3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAAd53p7egh8G=fPMcua_FTHrA3HA6Dp85FqVhvcSbuO2y8Xz9A@mail.gmail.com> <20220110085110.3902b6d4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220110085110.3902b6d4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Tue, 11 Jan 2022 09:51:11 +0800
-Message-ID: <CAAd53p5mSq_bZdsZ=-RweiVLgAYU5+=Uje7TmYtAbBzZ7XCPUA@mail.gmail.com>
-Subject: Re: [PATCH 1/3 v3] net: usb: r8152: Check used MAC passthrough address
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Oliver Neukum <oneukum@suse.com>,
-        Aaron Ma <aaron.ma@canonical.com>, henning.schild@siemens.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de,
-        "Limonciello, Mario" <Mario.Limonciello@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YdwxtqexaE75uCZ8@kroah.com>
+Content-Type: text/plain; charset="gbk"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.200]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[+Cc Mario Limonciello, the original author on MAC pass-through]
+> On Mon, Jan 10, 2022 at 09:23:22PM +0800, Ziyang Xuan wrote:
+>> From: Thomas Gleixner <tglx@linutronix.de>
+>>
+>> [ commit bf74aa86e111aa3b2fbb25db37e3a3fab71b5b68 upstream ]
+>>
+>> Stop tx/rx cycle rely on the active state of tasklet and hrtimer
+>> sequentially in bcm_remove_op(), the op object will be freed if they
+>> are all unactive. Assume the hrtimer timeout is short, the hrtimer
+>> cb has been excuted after tasklet conditional judgment which must be
+>> false after last round tasklet_kill() and before condition
+>> hrtimer_active(), it is false when execute to hrtimer_active(). Bug
+>> is triggerd, because the stopping action is end and the op object
+>> will be freed, but the tasklet is scheduled. The resources of the op
+>> object will occur UAF bug.
+> 
+> That is not the changelog text of this commit.  Why modify it?
 
-On Tue, Jan 11, 2022 at 12:51 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 10 Jan 2022 11:32:16 +0800 Kai-Heng Feng wrote:
-> > > > I don't think it's a good idea. On my laptop,
-> > > > systemd-udev-settle.service can add extra 5~10 seconds boot time
-> > > > delay.
-> > > > Furthermore, the external NIC in question is in a USB/Thunderbolt
-> > > > dock, it can present pre-boot, or it can be hotplugged at any time.
-> > >
-> > > IIUC our guess is that this feature used for NAC and IEEE 802.1X.
-> > > In that case someone is already provisioning certificates to all
-> > > the machines, and must provide a config for all its interfaces.
-> > > It should be pretty simple to also put the right MAC address override
-> > > in the NetworkManager/systemd-networkd/whatever config, no?
-> >
-> > If that's really the case, why do major OEMs came up with MAC
-> > pass-through? Stupid may it be, I don't think it's a solution looking
-> > for problem.
->
-> I don't know. Maybe due to a limitation in Windows? Maybe it's hard to
-> do in network manager, too, and we're not seeing something. Or perhaps
-> simply because they want to convince corporations to buy their
-> unreasonably expensive docks.
->
-> What I do know is that we need to gain a good understanding of the
-> motivation before we push any more of such magic into the kernel.
+Above statement is the reason why I want to backport the patch to
+stable tree. Maybe I could give an extra cover-letter to explain
+the details of the problem, but modify the original changelog. Is it?
 
-Mario, do you know how corporate network and other OS handle MAC
-pass-through, so we can come up with a more robust design?
+> 
+>>
+>> ----------------------------------------------------------------------
+>>
+>> This patch switches the timer to HRTIMER_MODE_SOFT, which executed the
+>> timer callback in softirq context and removes the hrtimer_tasklet.
+>>
+>> Reported-by: syzbot+652023d5376450cc8516@syzkaller.appspotmail.com
 
-Kai-Heng
+This is the public problem reporter. Do I need to move it to cover-letter
+but here?
 
->
-> I may be able to do some testing myself after the Omicron surge is over
-> in the US.
+>> Cc: stable@vger.kernel.org # 4.19
+
+I want to backport the patch to linux-4.19.y stable tree. How do I need to
+modify?
+
+>> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+>> Signed-off-by: Anna-Maria Gleixner <anna-maria@linutronix.de>
+>> Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+>> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+>> ---
+>>  net/can/bcm.c | 156 +++++++++++++++++---------------------------------
+>>  1 file changed, 52 insertions(+), 104 deletions(-)
+> 
+> What stable kernel tree(s) are you wanting this backported to?
+> 
+> thanks,
+> 
+> greg k-h
+> .
+> 
+
+Thank you for your patient guidance.
