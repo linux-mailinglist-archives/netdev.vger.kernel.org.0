@@ -2,295 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3B2C48AF8F
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 15:30:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4969C48AFD1
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 15:44:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241930AbiAKOaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 09:30:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240845AbiAKOaA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 09:30:00 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A543C061748
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 06:30:00 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id 59-20020a17090a09c100b001b34a13745eso5510538pjo.5
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 06:30:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :in-reply-to;
-        bh=ooEgX5N3bKXAxkTd5Pf1qlmKT10lINMn+PhyXumHQqo=;
-        b=ZkctlAqmpzetpTirgfn95YdGr697nmXjiz5AI7e6xa4ZPkpUSy6zVHC6IKnX9W389f
-         ZLU/FsT2KHY9yxHGfW6ysc9e0Kxd5K65hPpy79uTLqLsvwZteFsrMdp8X16sPxqLljhi
-         L/iXFSLg20xHmX6dmpvpWrGWwBYx9JC8eVc1A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:in-reply-to;
-        bh=ooEgX5N3bKXAxkTd5Pf1qlmKT10lINMn+PhyXumHQqo=;
-        b=cp+w9aDZKyqr6G4b5YJZNEKiEOQD5ha/Jm0Fw7mjf7mRp4dmsTn8kDiDks8R8Skp4J
-         u8NZJo+Cu8K17hMLp2PYPFZlSuOrf9tKozeq52ZFaBiS64esDDEEywommC7H0d4Bxl8/
-         8uVpjhQe6gSRV8JPvwWAVVPRvmnzWAd3Ig+Tvf6LQL7JqHJLgJu2D1hvmOSQWk44HjUu
-         nG58pvOSnaa7AWDQevHYSg/5omKGLKfHHEu+O7sGK3Y8NM+mGbRgbw1DYoEK/tj6eSxr
-         FzTzzGxUN9Jex/xs7cley2+IgvUPu6RVuluq3c6l9oPojAjMK+RGzhDwyvxEZFTbiptp
-         TsXQ==
-X-Gm-Message-State: AOAM533ckeTIMpfvSfttFvBF8GbOT/8wMSS0lHtS9ecJL8dQZWCXjBqi
-        eeMZ5xMB0n30ntsgc9gusRdCAQ==
-X-Google-Smtp-Source: ABdhPJxW+IXd4/03qXJ0pyQOOKCnKB4XyIB66CT3hmTMuiuvbhDCpaE4AYVNEzA5juYlITb1tkD7/A==
-X-Received: by 2002:a17:902:ea07:b0:14a:45c0:78a7 with SMTP id s7-20020a170902ea0700b0014a45c078a7mr4626102plg.92.1641911399655;
-        Tue, 11 Jan 2022 06:29:59 -0800 (PST)
-Received: from C02YVCJELVCG (104-190-227-136.lightspeed.rlghnc.sbcglobal.net. [104.190.227.136])
-        by smtp.gmail.com with ESMTPSA id a23sm2561944pjo.57.2022.01.11.06.29.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 06:29:59 -0800 (PST)
-From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
-X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
-Date:   Tue, 11 Jan 2022 09:29:52 -0500
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Agroskin, Shay" <shayagr@amazon.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Sarkar, Tirthendu" <tirthendu.sarkar@intel.com>,
-        Toke Hoiland Jorgensen <toke@redhat.com>, andy@greyhouse.net
-Subject: Re: [PATCH v21 bpf-next 06/23] net: marvell: rely on
- xdp_update_skb_shared_info utility routine
-Message-ID: <Yd2UYHT2KGN7aY8H@C02YVCJELVCG>
-References: <cover.1641641663.git.lorenzo@kernel.org>
- <a346f27e55a9117f43f89aceb7e47c5f0743d50a.1641641663.git.lorenzo@kernel.org>
- <YdxgrP1YDMyWXmqL@C02YVCJELVCG>
- <CAJ0CqmXaeJkJ8SDjTA1u_JNsqpxS8GA4J29S9wGPH0qOmqjp0w@mail.gmail.com>
+        id S242514AbiAKOoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 09:44:07 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41596 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242201AbiAKOoG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 09:44:06 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FA8C616A3;
+        Tue, 11 Jan 2022 14:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEE9AC36AEB;
+        Tue, 11 Jan 2022 14:44:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641912245;
+        bh=9QtNgp4GexGBqtOwirvi47YwIzGmn/bXKQBw5RQx9qA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=PS/GyHe2IojWJ1YN8K5T2hpa2Af5LOomqMwD4LuKDc+DGtw/iGvD4R3ncsLJXIYRl
+         SS4ldPslXZc/e0b2PpOohkQsy07shAQNTq3zh39/F64JJyOExerHz5WdIUiheJsrTM
+         sqQ3/Wj965F5bgkVpNJKYo0MdXMj/nj9picVUTRZYElHBNTrb9EuAdhsW4tAZUWVr9
+         f7glDSpPaGqJh5bleVODz2QjWvzMiothj3La3PyL+fuMbO2obmvJxbaZL1w1FMLADu
+         dbczHv4gPJBmPVjCeh9rkbZA9DSr+1PNQtbLhsGpzC+98wKbE2RiLr78eWoYxlQDXC
+         TlTeVU/RQI6UA==
+Received: by mail-wr1-f47.google.com with SMTP id d19so2879099wrb.0;
+        Tue, 11 Jan 2022 06:44:05 -0800 (PST)
+X-Gm-Message-State: AOAM533HM9V+jpYsLp3o/DHhUgzIgmfehYP7EW0JzDDmZHDCOi3uWV4e
+        ohV2fTgNOr6ZNRIzLEhT9heGOw2QWacSYbncJvY=
+X-Google-Smtp-Source: ABdhPJz/w2V6Pid5D3w0qEs9I5COP+6n2xpVD080JqwBmLeVHA6oNfaUY4ZgnqPHsQ3vI53XZqOv8T2Gy6+VTAIQUzM=
+X-Received: by 2002:a5d:4087:: with SMTP id o7mr4115239wrp.189.1641912244034;
+ Tue, 11 Jan 2022 06:44:04 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAJ0CqmXaeJkJ8SDjTA1u_JNsqpxS8GA4J29S9wGPH0qOmqjp0w@mail.gmail.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000c5701505d54f4996"
+References: <CAHmME9qbnYmhvsuarButi6s=58=FPiti0Z-QnGMJ=OsMzy1eOg@mail.gmail.com>
+ <20220111134934.324663-1-Jason@zx2c4.com> <20220111134934.324663-3-Jason@zx2c4.com>
+In-Reply-To: <20220111134934.324663-3-Jason@zx2c4.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Tue, 11 Jan 2022 15:43:52 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXFynd4K7Zp6czgTWnDp9RHimizyMs4Yo2RsjCsEfa89fA@mail.gmail.com>
+Message-ID: <CAMj1kXFynd4K7Zp6czgTWnDp9RHimizyMs4Yo2RsjCsEfa89fA@mail.gmail.com>
+Subject: Re: [PATCH crypto 2/2] lib/crypto: blake2s: move hmac construction
+ into wireguard
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>, wireguard@lists.zx2c4.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <bpf@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>,
+        "Theodore Y. Ts'o" <tytso@mit.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000c5701505d54f4996
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On Tue, 11 Jan 2022 at 14:49, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> Basically nobody should use blake2s in an HMAC construction; it already
+> has a keyed variant. But for unfortunately historical reasons, Noise,
 
-On Tue, Jan 11, 2022 at 02:05:23PM +0100, Lorenzo Bianconi wrote:
-> >
-> > On Sat, Jan 08, 2022 at 12:53:09PM +0100, Lorenzo Bianconi wrote:
-> > > Rely on xdp_update_skb_shared_info routine in order to avoid
-> > > resetting frags array in skb_shared_info structure building
-> > > the skb in mvneta_swbm_build_skb(). Frags array is expected to
-> > > be initialized by the receiving driver building the xdp_buff
-> > > and here we just need to update memory metadata.
-> > >
-> > > Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
-> > > Acked-by: John Fastabend <john.fastabend@gmail.com>
-> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > ---
-> > >  drivers/net/ethernet/marvell/mvneta.c | 23 ++++++++++-------------
-> > >  1 file changed, 10 insertions(+), 13 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> > > index 775ffd91b741..267a306d9c75 100644
-> > > --- a/drivers/net/ethernet/marvell/mvneta.c
-> > > +++ b/drivers/net/ethernet/marvell/mvneta.c
-> > > @@ -2332,8 +2332,12 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
-> > >               skb_frag_size_set(frag, data_len);
-> > >               __skb_frag_set_page(frag, page);
-> > >
-> > > -             if (!xdp_buff_is_mb(xdp))
-> > > +             if (!xdp_buff_is_mb(xdp)) {
-> > > +                     sinfo->xdp_frags_size = *size;
-> > >                       xdp_buff_set_mb(xdp);
-> > > +             }
-> > > +             if (page_is_pfmemalloc(page))
-> > > +                     xdp_buff_set_frag_pfmemalloc(xdp);
-> > >       } else {
-> > >               page_pool_put_full_page(rxq->page_pool, page, true);
-> > >       }
-> > > @@ -2347,7 +2351,6 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
-> > >       struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-> > >       struct sk_buff *skb;
-> > >       u8 num_frags;
-> > > -     int i;
-> > >
-> > >       if (unlikely(xdp_buff_is_mb(xdp)))
-> > >               num_frags = sinfo->nr_frags;
-> > > @@ -2362,18 +2365,12 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
-> > >       skb_put(skb, xdp->data_end - xdp->data);
-> > >       skb->ip_summed = mvneta_rx_csum(pp, desc_status);
-> > >
-> > > -     if (likely(!xdp_buff_is_mb(xdp)))
-> > > -             goto out;
-> > > -
-> > > -     for (i = 0; i < num_frags; i++) {
-> > > -             skb_frag_t *frag = &sinfo->frags[i];
-> > > -
-> > > -             skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
-> > > -                             skb_frag_page(frag), skb_frag_off(frag),
-> > > -                             skb_frag_size(frag), PAGE_SIZE);
-> >
-> > Maybe I'm missing something but I'm not sure you have a suitable
-> > replacement for the 3 lines above this in your proposed change.
-> >
-> 
-> Hi Andy,
-> 
-> mvneta_swbm_add_rx_fragment() initializes frags array in
-> skb_shared_info for xdp whenever we receive a multi-descriptors frame.
-> Since frags array is at the same offset for the xdp_buff and for the
-> new skb and build_skb() in mvneta_swbm_build_skb() does not overwrite
-> it, we do not need to initialize it again allocating the skb, just
-> account metadata info running xdp_update_skb_shared_info(). Agree?
-> 
+-ly
 
-Lorenzo,
+> used by WireGuard, uses HKDF quite strictly, which means we have to use
+> this. Because this really shouldn't be used by others, this commit moves
+> it into wireguard's noise.c locally, so that kernels that aren't using
+> WireGuard don't get this superfluous code baked in. On m68k systems,
+> this shaves off ~314 bytes.
+>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> Cc: Ard Biesheuvel <ardb@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Cc: wireguard@lists.zx2c4.com
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-Thanks for the explanation; I do agree.  I was thinking about this last night
-and suspected this was the case.  My current implementation doesn't use
-build_skb to reuse the DMA buffer; it allocates a new skb->data area for
-passing up the stack.  This is why I needed the skb_frag_set_page calls and you
-did not.  That may change, but the first implementation will probably continue
-on that path.
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
 
-Overall this set looks pretty solid to me.  Thanks to you and other
-contributors for all the work on this!
-
--andy
-
-> > > -     }
-> > > +     if (unlikely(xdp_buff_is_mb(xdp)))
-> > > +             xdp_update_skb_shared_info(skb, num_frags,
-> > > +                                        sinfo->xdp_frags_size,
-> > > +                                        num_frags * xdp->frame_sz,
-> > > +                                        xdp_buff_is_frag_pfmemalloc(xdp));
-> > >
-> >
-> > When I did an implementation of this on a different driver I also needed
-> > to add:
-> >
-> >         for (i = 0; i < num_frags; i++)
-> >                 skb_frag_set_page(skb, i, skb_frag_page(&sinfo->frags[i]));
-> >
-> > to make sure that frames that were given XDP_PASS were formatted
-> > correctly so they could be handled by the stack.  Don't you need
-> > something similar to make sure frags are properly set?
-> >
-> > Thanks,
-> >
-> > -andy
-> >
-> > P.S.  Sorry for noticing this so late in the process; I realize this version
-> > was just a rebase of v20 and this would have been useful information
-> > earlier if I'm correct.
-> >
-> 
-> no worries :)
-> 
-> Regards,
-> Lorenzo
-> 
-> > > -out:
-> > >       return skb;
-> > >  }
-> > >
-> > > --
-> > > 2.33.1
-> > >
-> 
-
---000000000000c5701505d54f4996
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVkwggRBoAMCAQICDBPdG+g0KtOPKKsBCTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIxNDAyMzhaFw0yMjA5MjIxNDExNTVaMIGW
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGDAWBgNVBAMTD0FuZHkgR29zcG9kYXJlazEtMCsGCSqGSIb3
-DQEJARYeYW5kcmV3Lmdvc3BvZGFyZWtAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEAp9JFtMqwgpbnvA3lNVCpnR5ehv0kWK9zMpw2VWslbEZq4WxlXr1zZLZEFo9Y
-rdIZ0jlxwJ4QGYCvxE093p9easqc7NMemeMg7JpF63hhjCksrGnsxb6jCVUreXPSpBDD0cjaE409
-9yo/J5OQORNPelDd4Ihod6g0XlcxOLtlTk1F0SOODSjBZvaDm0zteqiVZb+7xgle3NOSZm3kiCby
-iRuyS0gMTdQN3gdgwal9iC3cSXHMZFBXyQz+JGSHomhPC66L6j4t6dUqSTdSP07wg38ZPV6ct/Sv
-/O2HcK+E/yYkdMXrDBgcOelO4t8AYHhmedCIvFVp4pFb2oit9tBuFQIDAQABo4IB3zCCAdswDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDApBgNVHREEIjAggR5hbmRyZXcuZ29zcG9kYXJla0Bicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYI
-KwYBBQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKARn7Ud
-RlGu+rBdUDirYE+Ee4TeMA0GCSqGSIb3DQEBCwUAA4IBAQAcWqh4fdwhDN0+MKyH7Mj0vS10E7xg
-mDetQhQ+twwKk5qPe3tJXrjD/NyZzrUgguNaE+X97jRsEbszO7BqdnM0j5vLDOmzb7d6qeNluJvk
-OYyzItlqZk9cJPoP9sD8w3lr2GRcajj5JCKV4pd2PX/i7r30Qco0VnloXpiesFmNTXQqD6lguUyn
-nb7IGM3v/Nb7NTFH8/KUVg33xw829ztuGrOvfrHfBbeVcUoOHEHObXoaofYOJjtmSOQdMeJIiBgP
-XEpJG8/HB8t4FF6A8W++4cHhv0+ayyEnznrbOCn6WUmIvV2WiJymRpvRG7Hhdlk0zA97MRpqK5yn
-ai3dQ6VvMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBu
-di1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIM
-E90b6DQq048oqwEJMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCCCu+7FFoCKWbQQ
-joAvtCW6RcHqrc81ptVZvXNcy1WXPDAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3
-DQEJBTEPFw0yMjAxMTExNDMwMDBaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCG
-SAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEB
-BzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAaoaOOCwq5yqrui+Sx8yETOVIm3dusqAe
-ytcFx8r/fV/fhhSOQ9kyQGyaWKk1FOm7+GuPOi+/Zs7fIMzcgJqt1eN5kaZQkzKxNi+5rnfyYxYh
-hGgVsVwzNLq4zdTSnI9mFZ969d6t6PHhWEwv52Ln7/EtVu5C7UzF4CeJJrnEFXNrg3uaTKA7+D3w
-SO84cFtBPeZZ6R4Gp5krNNDCqfcaPgmc8+xm1TZuD+hA0kSu4zhr6G2/9t99MjIzTvBdMJvOlGpV
-CUN6Qh9j8zfqVJko2zkfTTj0fbulu8ol55Qz9nr4tWIpdN2/Rlw8QI6NRVeslFb7sfCXtiYl+oYt
-9xMm1w==
---000000000000c5701505d54f4996--
+> ---
+>  drivers/net/wireguard/noise.c | 45 ++++++++++++++++++++++++++++++-----
+>  include/crypto/blake2s.h      |  3 ---
+>  lib/crypto/blake2s-selftest.c | 31 ------------------------
+>  lib/crypto/blake2s.c          | 37 ----------------------------
+>  4 files changed, 39 insertions(+), 77 deletions(-)
+>
+> diff --git a/drivers/net/wireguard/noise.c b/drivers/net/wireguard/noise.c
+> index c0cfd9b36c0b..720952b92e78 100644
+> --- a/drivers/net/wireguard/noise.c
+> +++ b/drivers/net/wireguard/noise.c
+> @@ -302,6 +302,41 @@ void wg_noise_set_static_identity_private_key(
+>                 static_identity->static_public, private_key);
+>  }
+>
+> +static void hmac(u8 *out, const u8 *in, const u8 *key, const size_t inlen, const size_t keylen)
+> +{
+> +       struct blake2s_state state;
+> +       u8 x_key[BLAKE2S_BLOCK_SIZE] __aligned(__alignof__(u32)) = { 0 };
+> +       u8 i_hash[BLAKE2S_HASH_SIZE] __aligned(__alignof__(u32));
+> +       int i;
+> +
+> +       if (keylen > BLAKE2S_BLOCK_SIZE) {
+> +               blake2s_init(&state, BLAKE2S_HASH_SIZE);
+> +               blake2s_update(&state, key, keylen);
+> +               blake2s_final(&state, x_key);
+> +       } else
+> +               memcpy(x_key, key, keylen);
+> +
+> +       for (i = 0; i < BLAKE2S_BLOCK_SIZE; ++i)
+> +               x_key[i] ^= 0x36;
+> +
+> +       blake2s_init(&state, BLAKE2S_HASH_SIZE);
+> +       blake2s_update(&state, x_key, BLAKE2S_BLOCK_SIZE);
+> +       blake2s_update(&state, in, inlen);
+> +       blake2s_final(&state, i_hash);
+> +
+> +       for (i = 0; i < BLAKE2S_BLOCK_SIZE; ++i)
+> +               x_key[i] ^= 0x5c ^ 0x36;
+> +
+> +       blake2s_init(&state, BLAKE2S_HASH_SIZE);
+> +       blake2s_update(&state, x_key, BLAKE2S_BLOCK_SIZE);
+> +       blake2s_update(&state, i_hash, BLAKE2S_HASH_SIZE);
+> +       blake2s_final(&state, i_hash);
+> +
+> +       memcpy(out, i_hash, BLAKE2S_HASH_SIZE);
+> +       memzero_explicit(x_key, BLAKE2S_BLOCK_SIZE);
+> +       memzero_explicit(i_hash, BLAKE2S_HASH_SIZE);
+> +}
+> +
+>  /* This is Hugo Krawczyk's HKDF:
+>   *  - https://eprint.iacr.org/2010/264.pdf
+>   *  - https://tools.ietf.org/html/rfc5869
+> @@ -322,14 +357,14 @@ static void kdf(u8 *first_dst, u8 *second_dst, u8 *third_dst, const u8 *data,
+>                  ((third_len || third_dst) && (!second_len || !second_dst))));
+>
+>         /* Extract entropy from data into secret */
+> -       blake2s256_hmac(secret, data, chaining_key, data_len, NOISE_HASH_LEN);
+> +       hmac(secret, data, chaining_key, data_len, NOISE_HASH_LEN);
+>
+>         if (!first_dst || !first_len)
+>                 goto out;
+>
+>         /* Expand first key: key = secret, data = 0x1 */
+>         output[0] = 1;
+> -       blake2s256_hmac(output, output, secret, 1, BLAKE2S_HASH_SIZE);
+> +       hmac(output, output, secret, 1, BLAKE2S_HASH_SIZE);
+>         memcpy(first_dst, output, first_len);
+>
+>         if (!second_dst || !second_len)
+> @@ -337,8 +372,7 @@ static void kdf(u8 *first_dst, u8 *second_dst, u8 *third_dst, const u8 *data,
+>
+>         /* Expand second key: key = secret, data = first-key || 0x2 */
+>         output[BLAKE2S_HASH_SIZE] = 2;
+> -       blake2s256_hmac(output, output, secret, BLAKE2S_HASH_SIZE + 1,
+> -                       BLAKE2S_HASH_SIZE);
+> +       hmac(output, output, secret, BLAKE2S_HASH_SIZE + 1, BLAKE2S_HASH_SIZE);
+>         memcpy(second_dst, output, second_len);
+>
+>         if (!third_dst || !third_len)
+> @@ -346,8 +380,7 @@ static void kdf(u8 *first_dst, u8 *second_dst, u8 *third_dst, const u8 *data,
+>
+>         /* Expand third key: key = secret, data = second-key || 0x3 */
+>         output[BLAKE2S_HASH_SIZE] = 3;
+> -       blake2s256_hmac(output, output, secret, BLAKE2S_HASH_SIZE + 1,
+> -                       BLAKE2S_HASH_SIZE);
+> +       hmac(output, output, secret, BLAKE2S_HASH_SIZE + 1, BLAKE2S_HASH_SIZE);
+>         memcpy(third_dst, output, third_len);
+>
+>  out:
+> diff --git a/include/crypto/blake2s.h b/include/crypto/blake2s.h
+> index bc3fb59442ce..4e30e1799e61 100644
+> --- a/include/crypto/blake2s.h
+> +++ b/include/crypto/blake2s.h
+> @@ -101,7 +101,4 @@ static inline void blake2s(u8 *out, const u8 *in, const u8 *key,
+>         blake2s_final(&state, out);
+>  }
+>
+> -void blake2s256_hmac(u8 *out, const u8 *in, const u8 *key, const size_t inlen,
+> -                    const size_t keylen);
+> -
+>  #endif /* _CRYPTO_BLAKE2S_H */
+> diff --git a/lib/crypto/blake2s-selftest.c b/lib/crypto/blake2s-selftest.c
+> index 5d9ea53be973..409e4b728770 100644
+> --- a/lib/crypto/blake2s-selftest.c
+> +++ b/lib/crypto/blake2s-selftest.c
+> @@ -15,7 +15,6 @@
+>   * #include <stdio.h>
+>   *
+>   * #include <openssl/evp.h>
+> - * #include <openssl/hmac.h>
+>   *
+>   * #define BLAKE2S_TESTVEC_COUNT       256
+>   *
+> @@ -58,16 +57,6 @@
+>   *     }
+>   *     printf("};\n\n");
+>   *
+> - *     printf("static const u8 blake2s_hmac_testvecs[][BLAKE2S_HASH_SIZE] __initconst = {\n");
+> - *
+> - *     HMAC(EVP_blake2s256(), key, sizeof(key), buf, sizeof(buf), hash, NULL);
+> - *     print_vec(hash, BLAKE2S_OUTBYTES);
+> - *
+> - *     HMAC(EVP_blake2s256(), buf, sizeof(buf), key, sizeof(key), hash, NULL);
+> - *     print_vec(hash, BLAKE2S_OUTBYTES);
+> - *
+> - *     printf("};\n");
+> - *
+>   *     return 0;
+>   *}
+>   */
+> @@ -554,15 +543,6 @@ static const u8 blake2s_testvecs[][BLAKE2S_HASH_SIZE] __initconst = {
+>      0xd6, 0x98, 0x6b, 0x07, 0x10, 0x65, 0x52, 0x65, },
+>  };
+>
+> -static const u8 blake2s_hmac_testvecs[][BLAKE2S_HASH_SIZE] __initconst = {
+> -  { 0xce, 0xe1, 0x57, 0x69, 0x82, 0xdc, 0xbf, 0x43, 0xad, 0x56, 0x4c, 0x70,
+> -    0xed, 0x68, 0x16, 0x96, 0xcf, 0xa4, 0x73, 0xe8, 0xe8, 0xfc, 0x32, 0x79,
+> -    0x08, 0x0a, 0x75, 0x82, 0xda, 0x3f, 0x05, 0x11, },
+> -  { 0x77, 0x2f, 0x0c, 0x71, 0x41, 0xf4, 0x4b, 0x2b, 0xb3, 0xc6, 0xb6, 0xf9,
+> -    0x60, 0xde, 0xe4, 0x52, 0x38, 0x66, 0xe8, 0xbf, 0x9b, 0x96, 0xc4, 0x9f,
+> -    0x60, 0xd9, 0x24, 0x37, 0x99, 0xd6, 0xec, 0x31, },
+> -};
+> -
+>  bool __init blake2s_selftest(void)
+>  {
+>         u8 key[BLAKE2S_KEY_SIZE];
+> @@ -607,16 +587,5 @@ bool __init blake2s_selftest(void)
+>                 }
+>         }
+>
+> -       if (success) {
+> -               blake2s256_hmac(hash, buf, key, sizeof(buf), sizeof(key));
+> -               success &= !memcmp(hash, blake2s_hmac_testvecs[0], BLAKE2S_HASH_SIZE);
+> -
+> -               blake2s256_hmac(hash, key, buf, sizeof(key), sizeof(buf));
+> -               success &= !memcmp(hash, blake2s_hmac_testvecs[1], BLAKE2S_HASH_SIZE);
+> -
+> -               if (!success)
+> -                       pr_err("blake2s256_hmac self-test: FAIL\n");
+> -       }
+> -
+>         return success;
+>  }
+> diff --git a/lib/crypto/blake2s.c b/lib/crypto/blake2s.c
+> index 93f2ae051370..9364f79937b8 100644
+> --- a/lib/crypto/blake2s.c
+> +++ b/lib/crypto/blake2s.c
+> @@ -30,43 +30,6 @@ void blake2s_final(struct blake2s_state *state, u8 *out)
+>  }
+>  EXPORT_SYMBOL(blake2s_final);
+>
+> -void blake2s256_hmac(u8 *out, const u8 *in, const u8 *key, const size_t inlen,
+> -                    const size_t keylen)
+> -{
+> -       struct blake2s_state state;
+> -       u8 x_key[BLAKE2S_BLOCK_SIZE] __aligned(__alignof__(u32)) = { 0 };
+> -       u8 i_hash[BLAKE2S_HASH_SIZE] __aligned(__alignof__(u32));
+> -       int i;
+> -
+> -       if (keylen > BLAKE2S_BLOCK_SIZE) {
+> -               blake2s_init(&state, BLAKE2S_HASH_SIZE);
+> -               blake2s_update(&state, key, keylen);
+> -               blake2s_final(&state, x_key);
+> -       } else
+> -               memcpy(x_key, key, keylen);
+> -
+> -       for (i = 0; i < BLAKE2S_BLOCK_SIZE; ++i)
+> -               x_key[i] ^= 0x36;
+> -
+> -       blake2s_init(&state, BLAKE2S_HASH_SIZE);
+> -       blake2s_update(&state, x_key, BLAKE2S_BLOCK_SIZE);
+> -       blake2s_update(&state, in, inlen);
+> -       blake2s_final(&state, i_hash);
+> -
+> -       for (i = 0; i < BLAKE2S_BLOCK_SIZE; ++i)
+> -               x_key[i] ^= 0x5c ^ 0x36;
+> -
+> -       blake2s_init(&state, BLAKE2S_HASH_SIZE);
+> -       blake2s_update(&state, x_key, BLAKE2S_BLOCK_SIZE);
+> -       blake2s_update(&state, i_hash, BLAKE2S_HASH_SIZE);
+> -       blake2s_final(&state, i_hash);
+> -
+> -       memcpy(out, i_hash, BLAKE2S_HASH_SIZE);
+> -       memzero_explicit(x_key, BLAKE2S_BLOCK_SIZE);
+> -       memzero_explicit(i_hash, BLAKE2S_HASH_SIZE);
+> -}
+> -EXPORT_SYMBOL(blake2s256_hmac);
+> -
+>  static int __init blake2s_mod_init(void)
+>  {
+>         if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&
+> --
+> 2.34.1
+>
