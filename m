@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C846348A4ED
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 02:24:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82A8D48A4F1
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 02:25:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346233AbiAKBYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 20:24:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45012 "EHLO
+        id S1346275AbiAKBY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 20:24:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346218AbiAKBYs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 20:24:48 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B3DC061748;
-        Mon, 10 Jan 2022 17:24:48 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id t28so23330835wrb.4;
+        with ESMTP id S1346223AbiAKBYt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 20:24:49 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A5AC06173F;
+        Mon, 10 Jan 2022 17:24:49 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id p18so3201350wmg.4;
         Mon, 10 Jan 2022 17:24:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BT3XL2h14/pezcVsoOCWrtTWDzvTfgkCTHxovQFgrLg=;
-        b=L7xwYZl32JRKpFu828tuty+GdXEMSomqvAPirfx/5RUwnJZr3a0LxXZLcTQkjvezE2
-         bMph9bVQmDgGWrC61bSUiQ92TE4geXhnPOmxdyOf9TutT3qdY+4SDbPRiJIUznhUFoSx
-         5VqmdLW33xwmnW1TfCBHYib8KY4OODYkevCLz54enC0+wg+rZuUsZHOItDMdBW3yvKc5
-         NecVZ2uzAljU6AylkKgPwMm2q5RlUUk0HcJUnDyHT9A0Mihx66BonVscJxeqt8onXQ8K
-         zAY1XvB6RSbZeIwQzkeApYrJhI78j0wHiwKhWbclk3e+BFS/IJV45UQFU0mOvvs/WgGy
-         qEzA==
+        bh=MVu4ZlnCBCVeXmBG2E3bbhj24V2QUrRwSLSKs/b5k4Y=;
+        b=RY2UaPlIu2ZLXtF5wq4iDrUcRhU/hq0s/Ut2Ah76TSHS7hzBq4dyrNXIsz5P7d6xtj
+         UIwrFaB68X9fJ9fNacw4DLof5TE5IVNjBf0R6Bur1sACvUdQUp6Y2KK/zqQH8pEoUn21
+         PQIVV+V2EQY+54AY//7QgXsOKGI9dbx7PU78BSYa7iexrsgcsNZmWGjmWYg/OJXsJ0EX
+         qUB4E1uefG61gGjCKktu+hdbpC4RYYGO2wEE6qVEZnvsTol12eRODAZNtbFmmhY/ohpV
+         +Uf6el5KQOjmmKl5ydaDrBjIs2BcRCw2jtcrY1YKneYzc3JkqXcp27i5rHgoIH6EKM7+
+         6lEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BT3XL2h14/pezcVsoOCWrtTWDzvTfgkCTHxovQFgrLg=;
-        b=DjetEe6sfapXFTZyF81xkWyAULm0bvD3QS9VKeedNkppe6/c/laUY6vhxn5XHB4wPj
-         B5IhNgwFdaEuwIkiSdeb99HkVOBkFY5Xsd7Z7UrWVk84H8gnt29VO0iCDtoGegSTlumm
-         RA3bLIxa/YnRL2Zyj8PxTiIFJSFG1+0qgMEUFEcgCoYLr9PICj57Ho15oarZL6Q+y6l9
-         0+pfLRkhSoE4N5MS4aSYPQeYsTKFDp8ziQGVpC6EjjgE2rbjoVhYaoPG6MTmpP7rONNh
-         c7hm/R/Bjd8Z62AI47VmvB0PNyHdUwOMIQV2pLgkYpohTcMvJfwmt/NHPfKn8ZlAQmAF
-         uNJw==
-X-Gm-Message-State: AOAM533OPyAPZ166sT071qOf2JPmzw/zx0S9t1bjCNoEhQqXWIYa9NvE
-        9kckx5z3OI9G9EobDmGeFSxJODWmgHw=
-X-Google-Smtp-Source: ABdhPJwTTNhB9HsNsiWQYR6v+29ko06w+rxlZvGfmmOzusUfJDh+IBgSas2xohKnmVVRxIYf2BKA0w==
-X-Received: by 2002:a5d:4588:: with SMTP id p8mr1709396wrq.649.1641864286635;
-        Mon, 10 Jan 2022 17:24:46 -0800 (PST)
+        bh=MVu4ZlnCBCVeXmBG2E3bbhj24V2QUrRwSLSKs/b5k4Y=;
+        b=HPl34G+IBNXjXbezFw3oTU78ocAlFvCB19iVVytugCQlBtlANkbOApVvo7p9o2DtGe
+         z9b9hae+eqvBCPvfvsHwj5xuQGLSXvsC9NRi4Iu3hfXny0tLtMYKklkLHtclh1fmPnfw
+         8sH+52wcR+VoM7HlqiH8L1veC1m2iek/iV1OcOKwOE1UbSVbuF5ZOuvxbUf9vzLoJHhj
+         ntFREoRPVM0i5Rsd5JjcG2rVoufg74KBlAPC88p4rDRl58FvaB14dW3/iB/ZRg+9mTek
+         scUwrzoBTRhM8puxp+IZ+xs5ag3lO8KktCKUZq7t77pXg3MVUwC2YTe4pbOWVGVeEzsj
+         8g4A==
+X-Gm-Message-State: AOAM530ZbLWMWMQpG4yZo07I27iDafIh0J4frWGS36BmQKf+4ySslpSM
+        GP43uc5X1+etBGgjgzYC+0DAK3hTl4A=
+X-Google-Smtp-Source: ABdhPJyhpv5Nw5z9W/M1+7t21+Cq0fH4GbgYhfe5w0dQXmV8XptfQErVxY/+FFHSJM1izV1V57lNxQ==
+X-Received: by 2002:a05:600c:a45:: with SMTP id c5mr318937wmq.127.1641864287529;
+        Mon, 10 Jan 2022 17:24:47 -0800 (PST)
 Received: from 127.0.0.1localhost ([148.252.129.73])
-        by smtp.gmail.com with ESMTPSA id i8sm709886wru.26.2022.01.10.17.24.45
+        by smtp.gmail.com with ESMTPSA id i8sm709886wru.26.2022.01.10.17.24.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 17:24:46 -0800 (PST)
+        Mon, 10 Jan 2022 17:24:47 -0800 (PST)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -56,9 +56,9 @@ Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH 03/14] ipv6: remove daddr temp buffer in __ip6_make_skb
-Date:   Tue, 11 Jan 2022 01:21:35 +0000
-Message-Id: <46d9179f641bd1349a68c6445378fad719aa0170.1641863490.git.asml.silence@gmail.com>
+Subject: [PATCH 04/14] ipv6: clean up cork setup/release
+Date:   Tue, 11 Jan 2022 01:21:36 +0000
+Message-Id: <1e6f9ddca160b1dc3d81ac32f10ddb302cb216a9.1641863490.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1641863490.git.asml.silence@gmail.com>
 References: <cover.1641863490.git.asml.silence@gmail.com>
@@ -68,49 +68,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__ip6_make_skb() doesn't actually need to keep an on-stack copy of
-fl6->daddr because even though ipv6_push_nfrag_opts() may return a
-different daddr it doesn't change the one that was passed in.
-Just set final_dst to fl6->daddr and get rid of the temp copy.
+A simple cleanup of ip6_setup_cork() and ip6_cork_release() adding a
+local variable for v6_cork->opt instead of retyping it many times. It
+serves as a preparation patch to make further work cleaner.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv6/ip6_output.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ net/ipv6/ip6_output.c | 44 +++++++++++++++++++++----------------------
+ 1 file changed, 21 insertions(+), 23 deletions(-)
 
 diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 14d607ccfeea..4acd577d5ec5 100644
+index 4acd577d5ec5..88349e49717a 100644
 --- a/net/ipv6/ip6_output.c
 +++ b/net/ipv6/ip6_output.c
-@@ -1843,7 +1843,7 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
+@@ -1354,7 +1354,7 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
  {
- 	struct sk_buff *skb, *tmp_skb;
- 	struct sk_buff **tail_skb;
--	struct in6_addr final_dst_buf, *final_dst = &final_dst_buf;
-+	struct in6_addr *final_dst;
  	struct ipv6_pinfo *np = inet6_sk(sk);
- 	struct net *net = sock_net(sk);
- 	struct ipv6hdr *hdr;
-@@ -1873,9 +1873,9 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
+ 	unsigned int mtu;
+-	struct ipv6_txoptions *opt = ipc6->opt;
++	struct ipv6_txoptions *nopt, *opt = ipc6->opt;
  
- 	/* Allow local fragmentation. */
- 	skb->ignore_df = ip6_sk_ignore_df(sk);
--
--	*final_dst = fl6->daddr;
- 	__skb_pull(skb, skb_network_header_len(skb));
+ 	/*
+ 	 * setup for corking
+@@ -1363,32 +1363,28 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
+ 		if (WARN_ON(v6_cork->opt))
+ 			return -EINVAL;
+ 
+-		v6_cork->opt = kzalloc(sizeof(*opt), sk->sk_allocation);
+-		if (unlikely(!v6_cork->opt))
++		nopt = v6_cork->opt = kzalloc(sizeof(*opt), sk->sk_allocation);
++		if (unlikely(!nopt))
+ 			return -ENOBUFS;
+ 
+-		v6_cork->opt->tot_len = sizeof(*opt);
+-		v6_cork->opt->opt_flen = opt->opt_flen;
+-		v6_cork->opt->opt_nflen = opt->opt_nflen;
++		nopt->tot_len = sizeof(*opt);
++		nopt->opt_flen = opt->opt_flen;
++		nopt->opt_nflen = opt->opt_nflen;
+ 
+-		v6_cork->opt->dst0opt = ip6_opt_dup(opt->dst0opt,
+-						    sk->sk_allocation);
+-		if (opt->dst0opt && !v6_cork->opt->dst0opt)
++		nopt->dst0opt = ip6_opt_dup(opt->dst0opt, sk->sk_allocation);
++		if (opt->dst0opt && !nopt->dst0opt)
+ 			return -ENOBUFS;
+ 
+-		v6_cork->opt->dst1opt = ip6_opt_dup(opt->dst1opt,
+-						    sk->sk_allocation);
+-		if (opt->dst1opt && !v6_cork->opt->dst1opt)
++		nopt->dst1opt = ip6_opt_dup(opt->dst1opt, sk->sk_allocation);
++		if (opt->dst1opt && !nopt->dst1opt)
+ 			return -ENOBUFS;
+ 
+-		v6_cork->opt->hopopt = ip6_opt_dup(opt->hopopt,
+-						   sk->sk_allocation);
+-		if (opt->hopopt && !v6_cork->opt->hopopt)
++		nopt->hopopt = ip6_opt_dup(opt->hopopt, sk->sk_allocation);
++		if (opt->hopopt && !nopt->hopopt)
+ 			return -ENOBUFS;
+ 
+-		v6_cork->opt->srcrt = ip6_rthdr_dup(opt->srcrt,
+-						    sk->sk_allocation);
+-		if (opt->srcrt && !v6_cork->opt->srcrt)
++		nopt->srcrt = ip6_rthdr_dup(opt->srcrt, sk->sk_allocation);
++		if (opt->srcrt && !nopt->srcrt)
+ 			return -ENOBUFS;
+ 
+ 		/* need source address above miyazawa*/
+@@ -1820,11 +1816,13 @@ static void ip6_cork_release(struct inet_cork_full *cork,
+ 			     struct inet6_cork *v6_cork)
+ {
+ 	if (v6_cork->opt) {
+-		kfree(v6_cork->opt->dst0opt);
+-		kfree(v6_cork->opt->dst1opt);
+-		kfree(v6_cork->opt->hopopt);
+-		kfree(v6_cork->opt->srcrt);
+-		kfree(v6_cork->opt);
++		struct ipv6_txoptions *opt = v6_cork->opt;
 +
-+	final_dst = &fl6->daddr;
- 	if (opt && opt->opt_flen)
- 		ipv6_push_frag_opts(skb, opt, &proto);
- 	if (opt && opt->opt_nflen)
-@@ -1895,7 +1895,6 @@ struct sk_buff *__ip6_make_skb(struct sock *sk,
++		kfree(opt->dst0opt);
++		kfree(opt->dst1opt);
++		kfree(opt->hopopt);
++		kfree(opt->srcrt);
++		kfree(opt);
+ 		v6_cork->opt = NULL;
+ 	}
  
- 	skb->priority = sk->sk_priority;
- 	skb->mark = cork->base.mark;
--
- 	skb->tstamp = cork->base.transmit_time;
- 
- 	ip6_cork_steal_dst(skb, cork);
 -- 
 2.34.1
 
