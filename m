@@ -2,77 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35FAD48BB3B
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 00:08:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C9348BB3D
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 00:08:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245146AbiAKXIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 18:08:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38002 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244879AbiAKXIf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 18:08:35 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F34E2C06173F
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 15:08:34 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id h2so1897633lfv.9
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 15:08:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=Pr8ekwj0YwFqDacwUhfFBVsLvPoqgjfz09v0lVI6ztw=;
-        b=S9IRFaGdh5hK5mjXrIAyClcXv90WNqNTtCrNLL5s7diGJy9N7AWkZOPVaNbu8Rs6p2
-         ZL226tigt6RwxEFvtZbSPnYlVhl3hDPy3yULWmFL26KTQrTi/54HfH/noVzsIBkQXDX/
-         OItXSR8Vxh727aIdd22RNAV4FrAHkWFfhiIlHihIbqXZbiEOSQjumNtISlOLW5vhqQ46
-         DmPDQy+HybtYelN3rCRuwUE5T3DTXeIs7By/wq6I/2r0gupiEDLrC/4xEXvZ+NE8lBWj
-         rkfo90/Co3GwCnMCMJsW1BQUNzG//igTI1e4P1E/En6DG3uTMN3xptknQ9oulldrRMwH
-         9pYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=Pr8ekwj0YwFqDacwUhfFBVsLvPoqgjfz09v0lVI6ztw=;
-        b=jSB6WITgDeGj1isFYygdYB7K7IA927nzG2DsNeNT8oLLAUkwek0LipmiRgld83vMA/
-         iudXmKwaWowYBBzGfeoREggyWnN+sa8poW7ZEejHo3VZ0Vhbg6PT+20LlU0uB2DlYkL2
-         SSaet2JJwyF6/QoBD7ThWwkr4TrGS7iLs2b2g2OmC89Nd3/j8D1+U4teBjdxf1WpWQc6
-         sn9DDgqSVhUw/vxQ1QCmxlYj0i/5x99Fj9WIDNW0Fml9yhyybiPwV0U0Wti0Le63IvQh
-         zGbPKthvmvGiOOc2VY/n12CYCqSS46+GKfSvO/gYCikdnvdqcPtVVvh8RCp7g+3Lp6wu
-         UZyw==
-X-Gm-Message-State: AOAM530Ac/Q5KSlpYMw158O+xJVXCt0keNExq1t7gQ/ftRvrY4OXCXPw
-        Mj7lirpG63+rr2k/fjmkWCvFE0ofqX5FAH/SZa4=
-X-Google-Smtp-Source: ABdhPJynROdv21WhoAhFwl94f2rQvrjf9Aet+cNlARg2AbHf0J1teyUPuaeQFw37cUv2KQUXZEr1KPdNSxFN5H5d5s8=
-X-Received: by 2002:ac2:5331:: with SMTP id f17mr5010710lfh.653.1641942513360;
- Tue, 11 Jan 2022 15:08:33 -0800 (PST)
+        id S1346732AbiAKXIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 18:08:43 -0500
+Received: from ale.deltatee.com ([204.191.154.188]:50574 "EHLO
+        ale.deltatee.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244879AbiAKXIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 18:08:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
+        Message-ID:From:References:Cc:To:content-disposition;
+        bh=TIGVeVRFFto9U8rrsZTboK3dXuBBSA/4ShVJmxcPczw=; b=afngLBoxuqvBzyZsmssqQ4P38X
+        mCM56+S28Ds9cs1MIIL9eX/nS4ypMjuVQq0SIolY3enG8whn4KmK8d1o5Z9ZiLel9JXrmvNVZ9FGE
+        Oxc0o8x++jBeY21fP2IHYVaSAr7LU+LYs6tiOM/+YBugMvcsjBcc5/PgRhP3zMMgpOtrojZpjpdUo
+        wpQOdhDtfYk5lOHhak8KS6SH5MGM/tbejrIZpgLr62nIHCe3KOvrhodPHLT50WnOGE5ZTURomJ8w4
+        Mz7VL2jqUKBSBKMyGmRBcoBnAB2dA4vNq2yjkPVIipPGH7BvqQgPRHLLReU9mBeOxiYq5I3UlOCQs
+        ClMyfHLg==;
+Received: from guinness.priv.deltatee.com ([172.16.1.162])
+        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <logang@deltatee.com>)
+        id 1n7QFo-009oCP-Cn; Tue, 11 Jan 2022 16:08:37 -0700
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Matthew Wilcox <willy@infradead.org>, linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>,
+        Joao Martins <joao.m.martins@oracle.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
+        netdev@vger.kernel.org, linux-mm@kvack.org,
+        linux-rdma@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        nvdimm@lists.linux.dev
+References: <YdyKWeU0HTv8m7wD@casper.infradead.org>
+ <20220111004126.GJ2328285@nvidia.com> <Yd0IeK5s/E0fuWqn@casper.infradead.org>
+ <20220111150142.GL2328285@nvidia.com> <Yd3Nle3YN063ZFVY@casper.infradead.org>
+ <20220111202159.GO2328285@nvidia.com> <Yd311C45gpQ3LqaW@casper.infradead.org>
+ <20220111225306.GR2328285@nvidia.com>
+ <9fe2ada2-f406-778a-a5cd-264842906a31@deltatee.com>
+ <20220111230224.GT2328285@nvidia.com>
+From:   Logan Gunthorpe <logang@deltatee.com>
+Message-ID: <5c3dd9bd-abda-6c9b-8257-182f84f8f842@deltatee.com>
+Date:   Tue, 11 Jan 2022 16:08:35 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Received: by 2002:ab3:1206:0:0:0:0:0 with HTTP; Tue, 11 Jan 2022 15:08:32
- -0800 (PST)
-Reply-To: awaou61@gmail.com
-From:   Awa ouadarago <modernrich222@gmail.com>
-Date:   Wed, 12 Jan 2022 00:08:32 +0100
-Message-ID: <CA+30x-E0Cki4Vb9c+cZ-QgAogVq83vMP02Yuu2n-tCptGv1cyQ@mail.gmail.com>
-Subject: Urgent Reply
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220111230224.GT2328285@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-CA
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 172.16.1.162
+X-SA-Exim-Rcpt-To: nvdimm@lists.linux.dev, dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org, linux-mm@kvack.org, netdev@vger.kernel.org, linux-block@vger.kernel.org, ming.lei@redhat.com, jhubbard@nvidia.com, joao.m.martins@oracle.com, hch@lst.de, linux-kernel@vger.kernel.org, willy@infradead.org, jgg@nvidia.com
+X-SA-Exim-Mail-From: logang@deltatee.com
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on ale.deltatee.com
+X-Spam-Level: 
+X-Spam-Status: No, score=-6.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: Phyr Starter
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-I am a relatives of a politically exposed person (PEP) that is in
-financial regulation. Due to my present health condition, I'd decided
-to write through this email for the security reason. Therefore, kindly
-treat this as top secret for the security reason. I'd after fasting
-and prayer choose to write not you particularly but I believing in
-probability of you being a confidant chosen by chance; luck to help
-and share in this noble cause. I need your assistant to conduct secret
-transfers of family's funds worth $18.5 millions Dollars. It was
-deposited in bank clandestinely.
 
-I am in grave condition and i expect death anytime because of  the
-political situation my families and me sickness, so i seek your help
-in transferring the fund for our mutual benefit and i want to donate
-some of  the fund to less privilege and you will be rewarded with
-reasonable percentage of the fund, if you can assist .Thanking you in
-advance.
 
-Yours truly,
-  Mrs Awa Ouadarago
+On 2022-01-11 4:02 p.m., Jason Gunthorpe wrote:
+> On Tue, Jan 11, 2022 at 03:57:07PM -0700, Logan Gunthorpe wrote:
+>>
+>>
+>> On 2022-01-11 3:53 p.m., Jason Gunthorpe wrote:
+>>> I just want to share the whole API that will have to exist to
+>>> reasonably support this flexible array of intervals data structure..
+>>
+>> Is that really worth it? I feel like type safety justifies replicating a
+>> bit of iteration and allocation infrastructure. Then there's no silly
+>> mistakes of thinking one array is one thing when it is not.
+> 
+> If it is a 'a bit' then sure, but I suspect doing a good job here will
+> be a lot of code here.
+> 
+> Look at how big scatterlist is, for instance.
+
+Yeah, but scatterlist has a ton of cruft; numerous ways to allocate,
+multiple iterators, developers using it in different ways, etc, etc.
+It's a big mess. bvec.h is much smaller (though includes stuff that
+wouldn't necessarily be appropriate here).
+
+Also some things apply to one but not the other. eg: a memcpy to/from
+function might make sense for a phy_range but makes no sense for a
+dma_range.
+
+> Maybe we could have a generic 64 bit interval arry and then two type
+> wrappers that do dma and physaddr casting? IDK.
+> 
+> Not sure type safety of DMA vs CPU address is critical?
+
+I would argue it is. A DMA address is not a CPU address and should not
+be treated the same.
+
+Logan
