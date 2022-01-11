@@ -2,158 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B2D448B10A
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 16:40:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06B1F48B10D
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 16:40:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343497AbiAKPkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 10:40:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241797AbiAKPkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 10:40:09 -0500
-Received: from mail-vk1-xa34.google.com (mail-vk1-xa34.google.com [IPv6:2607:f8b0:4864:20::a34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8752C06173F
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 07:40:08 -0800 (PST)
-Received: by mail-vk1-xa34.google.com with SMTP id m57so2528734vkf.9
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 07:40:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MNebTMoFC3mE7Sb+no0J2oxGNQv4XmAbLVXLd+UEUyw=;
-        b=pXwP/jcIuLM+IcI980XIV7p4VTv5FB5nJnvayqGHsBeSl4jdL7hIC913ZrBKn7IuF3
-         ra+kEajmLo6eflU1DXVD5iOzlOB8O88saVLahQoak/bdn49bOy5OF7+XYHD/8uEcfJEV
-         Lh1O/zBkIWL78ZA7stBZ0soH6IfZDD0c1WHsVHx47PQiURfvG6WfS+qbNb4f6zo8Zn4V
-         oRorzM2K/QmQVmnPOb00ZhKU8YSEAJ5+s84XBM71eAywAnJ+seOCNyng1t2Dnf7vJp+J
-         3QjnFkR0yIAm1P/LZV9gpGqpEnQSFtYXs2s6kWtK5dTSdNAzi6/hBqxfeKQLwBLi/uUM
-         l7zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MNebTMoFC3mE7Sb+no0J2oxGNQv4XmAbLVXLd+UEUyw=;
-        b=UsOGd2JJ63ovrUekG8OBk+hSWnkhwHwEFkyBqdOf1bH8Yzt3xNHZTw5DvyuWJgtFbO
-         nnHr2nOVUW34YP3j5csG4rpnhdVsGVxCXc7/YfFhH05/j1srIblbVzaYrrOVRI9I/Wvm
-         vE3MfU/igaxY9EvZzQsa3hO9vAM2007F/bFh+xV/p3jGDqWavP9hBsfnQyycxBebG2ky
-         y+MO3AMm3SC+EqA2C44H37TsHiVDCi4VBdZjMjl+H0nWkAKddZGhahRm2161mYVy/gsx
-         0tdW3BhjSLLKMojncN6PbcACAJbMvGs+Y+mPMGB73SiGpo6HD597X0jTgmcBusPgUfVI
-         +qmA==
-X-Gm-Message-State: AOAM531hm5s53Qi53T0NqVeZ5nvOq+R+X67FFpHe3Juy+D0o+a4kero5
-        v1+X6f6CgPSPYydmtzE0QcCk2bbb0Ds=
-X-Google-Smtp-Source: ABdhPJzeZGg69vzUxY6KFgxbUppH+sxX98PGGarkGpXnNGk+VOn5LGIp2+4avopMNct4T2bVq740/w==
-X-Received: by 2002:a05:6122:e76:: with SMTP id bj54mr2450023vkb.38.1641915607304;
-        Tue, 11 Jan 2022 07:40:07 -0800 (PST)
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
-        by smtp.gmail.com with ESMTPSA id f132sm5925696vkf.18.2022.01.11.07.40.06
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 07:40:06 -0800 (PST)
-Received: by mail-ua1-f44.google.com with SMTP id x33so29181664uad.12
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 07:40:06 -0800 (PST)
-X-Received: by 2002:a67:a409:: with SMTP id n9mr2204137vse.74.1641915606014;
- Tue, 11 Jan 2022 07:40:06 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1641863490.git.asml.silence@gmail.com> <07031c43d3e5c005fbfc76b60a58e30c66d7c620.1641863490.git.asml.silence@gmail.com>
-In-Reply-To: <07031c43d3e5c005fbfc76b60a58e30c66d7c620.1641863490.git.asml.silence@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 11 Jan 2022 10:39:30 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSdJYwN=vxpj4nkpSxdyJ5_47PZuPTjQkRphYvLt47KdjQ@mail.gmail.com>
-Message-ID: <CA+FuTSdJYwN=vxpj4nkpSxdyJ5_47PZuPTjQkRphYvLt47KdjQ@mail.gmail.com>
-Subject: Re: [PATCH 09/14] ipv6: hand dst refs to cork setup
-To:     Pavel Begunkov <asml.silence@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        id S238324AbiAKPke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 10:40:34 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:50986 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232584AbiAKPke (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 10:40:34 -0500
+Date:   Tue, 11 Jan 2022 16:40:31 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1641915632;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=X4ebBWdFE+8C08nd/CIkn3LPDWYDafN44xwshvth2ug=;
+        b=pFhf3vkZBl8xak2CU81OWunOoJ3n9/VStlFca8yvtRqN0+qACzO4/dVn5hQckoislgGSa8
+        QMZCiogKWqaohAoGIfDH8UPqXu3ROdOOWZM5XK1zwYOhSIw5bq0f9TsVrWtbVFeAhfTj8U
+        1XPoKitKqGsKXlOprbUVFEX5AYr/bcx07n+oZCPEd0U784ZzenqnUXkFEaRRuDpAYCN1JM
+        bFjrmyrZ3yTFJCNGpIh3V1kD/1da60NiANo3U5cjpRYPn9gyGXaRIz0drt69I81iOJ63Rw
+        y+LP2x2Yiuy7quHJHRqeu2o5GaaLZvOYqIljBefwdqWPTVw+np2ypR+eNp+RuA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1641915632;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=X4ebBWdFE+8C08nd/CIkn3LPDWYDafN44xwshvth2ug=;
+        b=CtAAAny1PpTBIrLssPLVTa7o7uc+pONqP0L4nJCkpIWaiiLl4ERmAI66ruxUUmQ36PGH8P
+        vzJBpRCLhozTofDw==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [RFC] wiregard RX packet processing.
+Message-ID: <Yd2k7yCGCQXfibk3@linutronix.de>
+References: <20211208173205.zajfvg6zvi4g5kln@linutronix.de>
+ <CAHmME9rzEjKg41eq5jBtsLXF+vZSEnvdomZJ-rTzx8Q=ac1ayg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAHmME9rzEjKg41eq5jBtsLXF+vZSEnvdomZJ-rTzx8Q=ac1ayg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 8:25 PM Pavel Begunkov <asml.silence@gmail.com> wrote:
+On 2021-12-20 18:29:49 [+0100], Jason A. Donenfeld wrote:
+> Hi Sebastian,
+>=20
+> Seems like you've identified two things, the use of need_resched, and
+> potentially surrounding napi_schedule in local_bh_{disable,enable}.
+>=20
+> Regarding need_resched, I pulled that out of other code that seemed to
+> have the "same requirements", as vaguely conceived. It indeed might
+> not be right. The intent is to have that worker running at maximum
+> throughput for extended periods of time, but not preventing other
+> threads from running elsewhere, so that, e.g., a user's machine
+> doesn't have a jenky mouse when downloading a file.
 >
-> During cork->dst setup, ip6_make_skb() gets an additional reference to
-> a passed in dst. However, udpv6_sendmsg() doesn't need dst after calling
-> ip6_make_skb(), and so we can save two additional atomics by passing
-> dst references to ip6_make_skb(). udpv6_sendmsg() is the only caller, so
-> it's enough to make sure it doesn't use dst afterwards.
->
-> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-> ---
+> What are the effects of unconditionally calling cond_resched() without
+> checking for if (need_resched())? Sounds like you're saying none at
+> all?
 
-There are two patches 9/14
+I stand to be corrected but "if need_resched() cond_resched())" is not
+something one should do. If you hold a lock and need to drop it first
+and und you don't want to drop the lock if there is no need for
+scheduling then there is cond_resched_lock() for instance. If you need
+to do something more complex (say set a marker if you drop the lock)
+then okay _but_ in this case you do more than just the "if =E2=80=A6" from
+above.
 
->  net/ipv6/ip6_output.c | 9 ++++++---
->  net/ipv6/udp.c        | 3 ++-
->  2 files changed, 8 insertions(+), 4 deletions(-)
->
-> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-> index 0cc490f2cfbf..6a7bba4dd04d 100644
-> --- a/net/ipv6/ip6_output.c
-> +++ b/net/ipv6/ip6_output.c
-> @@ -1356,6 +1356,8 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
->         unsigned int mtu;
->         struct ipv6_txoptions *nopt, *opt = ipc6->opt;
->
-> +       cork->base.dst = &rt->dst;
-> +
+cond_resched() gets optimized away on a preemptible kernel. The side
+effect is that you have always a branch (to cond_resched()) including a
+possible RCU section (urgently needed quiescent state).
 
-Is there a reason to move this up from its original location next to
-the other cork initialization assignments?
+> Regarding napi_schedule, I actually wasn't aware that it's requirement
+> to _only_ ever run from softirq was a strict one. When I switched to
+> using napi_schedule in this way, throughput really jumped up
+> significantly. Part of this indeed is from the batching, so that the
+> napi callback can then handle more packets in one go later. But I
+> assumed it was something inside of NAPI that was batching and
+> scheduling it, rather than a mistake on my part to call this from a wq
+> and not from a softirq.
 
-That the reference is taken in ip6_append_data for corked requests
-(once, in setup cork branch) and inherited from udpv6_send_skb
-otherwise is non-trivial. Worth a comment.
+There is no strict requirement to do napi_schedule() from hard-IRQ but
+it makes sense actually. So napi_schedule() invokes
+__raise_softirq_irqoff() which only ors a bit in the softirq state.
+Nothing else. The only reason that the softirq is invoked in a
+deterministic way is that irq_exit() has this "if
+(local_softirq_pending()) invoke_softirq()" check before returing (to
+interrupted user/ kernel code).
 
->         /*
->          * setup for corking
->          */
-> @@ -1389,8 +1391,6 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
->
->                 /* need source address above miyazawa*/
->         }
-> -       dst_hold(&rt->dst);
-> -       cork->base.dst = &rt->dst;
->         v6_cork->hop_limit = ipc6->hlimit;
->         v6_cork->tclass = ipc6->tclass;
->         if (rt->dst.flags & DST_XFRM_TUNNEL)
-> @@ -1784,6 +1784,7 @@ int ip6_append_data(struct sock *sk,
->                 /*
->                  * setup for corking
->                  */
-> +               dst_hold(&rt->dst);
->                 err = ip6_setup_cork(sk, &inet->cork, &np->cork,
->                                      ipc6, rt);
->                 if (err)
-> @@ -1974,8 +1975,10 @@ struct sk_buff *ip6_make_skb(struct sock *sk,
->         int exthdrlen = (ipc6->opt ? ipc6->opt->opt_flen : 0);
->         int err;
->
-> -       if (flags & MSG_PROBE)
-> +       if (flags & MSG_PROBE) {
-> +               dst_release(&rt->dst);
->                 return NULL;
-> +       }
->
->         __skb_queue_head_init(&queue);
->
-> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-> index eec83e34ae27..3039dff7fe64 100644
-> --- a/net/ipv6/udp.c
-> +++ b/net/ipv6/udp.c
-> @@ -1541,7 +1541,8 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
->                 err = PTR_ERR(skb);
->                 if (!IS_ERR_OR_NULL(skb))
->                         err = udp_v6_send_skb(skb, fl6, &cork.base);
-> -               goto out;
-> +               /* ip6_make_skb steals dst reference */
-> +               goto out_no_dst;
->         }
->
->         lock_sock(sk);
-> --
-> 2.34.1
->
+So if you use it in a worker (for instance) the NAPI call is delayed
+until the next IRQ (due to irq_exit() part) or a random
+local_bh_enable() user.
+
+> What, then, are the effects of surrounding that in
+> local_bh_{disable,enable} as you've done in the patch? You mentioned
+> one aspect is that it will "invoke wg_packet_rx_poll() where you see
+> only one skb." It sounds like that'd be bad for performance, though,
+> given that the design of napi is really geared toward batching.
+
+As Toke H=C3=B8iland-J=C3=B8rgensen wrote in the previous reply, I missed t=
+he BH
+disable/ enable in ptr_ring_consume_bh(). So what happens is that
+ptr_ring_consume_bh() gives you one skb, you do
+wg_queue_enqueue_per_peer_rx() which raises NAPI then the following
+ptr_ring_consume_bh() (that local_bh_enable() to be exact) invokes the
+NAPI callback (I guess wg_packet_rx_poll() but as I wrote earlier, I
+didn't figure out how the skbs move from here to the other queue for
+that callback).
+
+So there is probably no batching assuming that one skb is processed in
+the NAPI callback.
+
+> Jason
+
+Sebastian
