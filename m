@@ -2,244 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76F4948AE21
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 14:04:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A140F48AE28
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 14:05:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240268AbiAKNE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 08:04:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33010 "EHLO
+        id S240242AbiAKNFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 08:05:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:28359 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240265AbiAKNEW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 08:04:22 -0500
+        by vger.kernel.org with ESMTP id S240093AbiAKNFh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 08:05:37 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641906261;
+        s=mimecast20190719; t=1641906336;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CnoXRZzxHpYZJCWWJWjQzv34cSxRuBzuUNROP7tocqU=;
-        b=J7ie4awMUKp0X52WIJ4CV5Qxr2LakL28ytYOoKgQITNXvU9CNe3qs3IDReFf5unlz9AKQB
-        Tu1X/N+gH1psYAw3N6kdPipV0FuOAX21+FkZgvnO/OLQN6NpKwpiJDY2n6IejNhWeLpMro
-        oLdkfXa7LzoZEmEeIM8JQc6SBxRBv/A=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Wpzje35ZQJ++DpfcFSJcktDk/9fVWR9cmKQ44GgvnmQ=;
+        b=JlgrQPIIIw+E2BjdG32+908WF5JZfGtLCsNqlihfW3/N/+NrxqbbWonKnqqRIbO891T8iw
+        nDH8h+LlFu4fIQk8hHO/Zv16DRV1BxeMLqsXpvp4vjNxLrQF2Iirg0kpHSvxqhvSlHCFng
+        E0/Q4VhOp34XY24D5owFs5Bimml7C4E=
+Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com
+ [209.85.219.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-3p6GPw2YOu-E7cvQ0hTB4Q-1; Tue, 11 Jan 2022 08:04:20 -0500
-X-MC-Unique: 3p6GPw2YOu-E7cvQ0hTB4Q-1
-Received: by mail-ed1-f70.google.com with SMTP id c8-20020a05640227c800b003fdc1684cdeso5220744ede.12
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 05:04:20 -0800 (PST)
+ us-mta-671-w8QAexhlNiS7GozJHevOWA-1; Tue, 11 Jan 2022 08:05:35 -0500
+X-MC-Unique: w8QAexhlNiS7GozJHevOWA-1
+Received: by mail-yb1-f197.google.com with SMTP id 2-20020a251302000000b006118f867dadso220918ybt.12
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 05:05:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=CnoXRZzxHpYZJCWWJWjQzv34cSxRuBzuUNROP7tocqU=;
-        b=f2AmCAlqK/vZNZ1MgUp3goXnc5wTLfIYQyk8sc9HWpyBpy3fj3XiIbAZA/ZTrT7QOQ
-         +u+d6Kk/mxbsgloETZYgM8+bU41x3tyHL5TF/v0e60ZIYgPbNOHTIPCOuAMSryuNGvoh
-         0Q27Yllj8gIWcVVAvWK6Oca6hAVjhGuPTBGwxGG0X1SrsGL31nciqnqRVoX6WkkQJa1T
-         jN88Dsh7nKGw8DLEEgEY61yy3KedChNTGBN8uzBXhCL70WzQcNq6i/c4+M62yIwZ6dSi
-         hpDFSDcHLAOijUwq6/sWtQwjMltnNgBN2MCS2EV6EMJ0yaGKN8snU6GOR0mMonM7ckMJ
-         O9Pg==
-X-Gm-Message-State: AOAM531Slp1dv88OgseqouholMTZ1gE0pwu4AJP+NjJF4dI7w/P1E30c
-        s7n3sXpO7iaqE1L4CkCzimDooXO8WYpZXmP7IS8BQs690eDSuACP7tyOytNklBTXU/FS5+kfuLR
-        YZzlhj5IJw6JuHZgI
-X-Received: by 2002:a17:906:3707:: with SMTP id d7mr3673132ejc.688.1641906259336;
-        Tue, 11 Jan 2022 05:04:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyufWlr/Lw1gvdqS0EUpwg1gh0cWIzsXPiLkrC7aOl+Vt8tOWZrM6glrUNIyzIuktDWyNcriw==
-X-Received: by 2002:a17:906:3707:: with SMTP id d7mr3673099ejc.688.1641906259017;
-        Tue, 11 Jan 2022 05:04:19 -0800 (PST)
-Received: from redhat.com ([2.55.5.100])
-        by smtp.gmail.com with ESMTPSA id j5sm3591214ejo.171.2022.01.11.05.04.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 05:04:18 -0800 (PST)
-Date:   Tue, 11 Jan 2022 08:04:10 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        Greg KH <gregkh@linuxfoundation.org>,
-        He Zhe <zhe.he@windriver.com>,
-        Liu Xiaodong <xiaodong.liu@intel.com>,
-        Joe Perches <joe@perches.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Will Deacon <will@kernel.org>,
-        John Garry <john.garry@huawei.com>, songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Netdev <netdev@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v12 00/13] Introduce VDUSE - vDPA Device in Userspace
-Message-ID: <20220111080359-mutt-send-email-mst@kernel.org>
-References: <20210830141737.181-1-xieyongji@bytedance.com>
- <20220110075546-mutt-send-email-mst@kernel.org>
- <CACycT3v1aEViw7vV4x5qeGVPrSrO-BTDvQshEX35rx_X0Au2vw@mail.gmail.com>
- <20220110100911-mutt-send-email-mst@kernel.org>
- <CACycT3v6jo3-8ATWUzf659vV94a2oRrm-zQtGNDZd6OQr-MENA@mail.gmail.com>
- <20220110103938-mutt-send-email-mst@kernel.org>
- <CACycT3sbJC1Jn7NeWk_ccQ_2_YgKybjugfxmKpfgCP3Ayoju4w@mail.gmail.com>
- <20220111065301-mutt-send-email-mst@kernel.org>
- <CACycT3sdfAbdByKJwg8N-Jb2qVDdgfSqprp_aOp5fpYz4LxmgA@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Wpzje35ZQJ++DpfcFSJcktDk/9fVWR9cmKQ44GgvnmQ=;
+        b=GUc5NGR+froKJdwQ1LP30Tif+cN4dHrC3Xtn8LLcPI48fP52SRk8binHaNVBVY5o5i
+         5jEJm0q4Af/LODd7c73DadSBg94d/uA6NQEF8tHuvlWP+51fPjMTZskaxNPxVI2PE/tB
+         q+K5FWLoeQSODE44/nN+tL45Wz6euWmBTNiLR18kGf6cdXu1O7nCyFq+dasvRWAm4iTd
+         gSW0OZKliOhocQpWytd00YEuxLKWw181wqaFWx/nuIl1Yy1AjQLmes73wMbFameRVlq2
+         0IAqKPjJ3z7+ob1SCEmLXAD4CC/doKQLCVefXGjELoHTPeMGoiLtbVM7+MM8GgsoME/V
+         /P8A==
+X-Gm-Message-State: AOAM532qyBXCK6gXuZhPX+w/x9ywIJ0a+AZPEJzu/eUMNwnCm/Uojmq+
+        lzStDE3tAYSwzn3yMzOO4sHI9kwB9yWbaFQmmLQ8yCWtSqGKVSJX1O7SrMwKzPMnUhDiCnzvNkF
+        n3Tk6cFnwUrHtFK3bMWRVIHYu0De/JsoX
+X-Received: by 2002:a05:6902:110d:: with SMTP id o13mr6658660ybu.715.1641906335047;
+        Tue, 11 Jan 2022 05:05:35 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyJsAYYRDSZYX6e6gogiyOC4FEsDkRLDsOR3cKi9/31EBqC9/2HpkReIPbJz5Y5IOzS526Z85G8eg2mMdWVzTY=
+X-Received: by 2002:a05:6902:110d:: with SMTP id o13mr6658623ybu.715.1641906334739;
+ Tue, 11 Jan 2022 05:05:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACycT3sdfAbdByKJwg8N-Jb2qVDdgfSqprp_aOp5fpYz4LxmgA@mail.gmail.com>
+References: <cover.1641641663.git.lorenzo@kernel.org> <a346f27e55a9117f43f89aceb7e47c5f0743d50a.1641641663.git.lorenzo@kernel.org>
+ <YdxgrP1YDMyWXmqL@C02YVCJELVCG>
+In-Reply-To: <YdxgrP1YDMyWXmqL@C02YVCJELVCG>
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Date:   Tue, 11 Jan 2022 14:05:23 +0100
+Message-ID: <CAJ0CqmXaeJkJ8SDjTA1u_JNsqpxS8GA4J29S9wGPH0qOmqjp0w@mail.gmail.com>
+Subject: Re: [PATCH v21 bpf-next 06/23] net: marvell: rely on
+ xdp_update_skb_shared_info utility routine
+To:     Andy Gospodarek <andrew.gospodarek@broadcom.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        BPF-dev-list <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Agroskin, Shay" <shayagr@amazon.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Sarkar, Tirthendu" <tirthendu.sarkar@intel.com>,
+        Toke Hoiland Jorgensen <toke@redhat.com>, andy@greyhouse.net
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 08:57:49PM +0800, Yongji Xie wrote:
-> On Tue, Jan 11, 2022 at 7:54 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Sat, Jan 08, 2022 at 12:53:09PM +0100, Lorenzo Bianconi wrote:
+> > Rely on xdp_update_skb_shared_info routine in order to avoid
+> > resetting frags array in skb_shared_info structure building
+> > the skb in mvneta_swbm_build_skb(). Frags array is expected to
+> > be initialized by the receiving driver building the xdp_buff
+> > and here we just need to update memory metadata.
 > >
-> > On Tue, Jan 11, 2022 at 11:31:37AM +0800, Yongji Xie wrote:
-> > > On Mon, Jan 10, 2022 at 11:44 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > >
-> > > > On Mon, Jan 10, 2022 at 11:24:40PM +0800, Yongji Xie wrote:
-> > > > > On Mon, Jan 10, 2022 at 11:10 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > >
-> > > > > > On Mon, Jan 10, 2022 at 09:54:08PM +0800, Yongji Xie wrote:
-> > > > > > > On Mon, Jan 10, 2022 at 8:57 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > > >
-> > > > > > > > On Mon, Aug 30, 2021 at 10:17:24PM +0800, Xie Yongji wrote:
-> > > > > > > > > This series introduces a framework that makes it possible to implement
-> > > > > > > > > software-emulated vDPA devices in userspace. And to make the device
-> > > > > > > > > emulation more secure, the emulated vDPA device's control path is handled
-> > > > > > > > > in the kernel and only the data path is implemented in the userspace.
-> > > > > > > > >
-> > > > > > > > > Since the emuldated vDPA device's control path is handled in the kernel,
-> > > > > > > > > a message mechnism is introduced to make userspace be aware of the data
-> > > > > > > > > path related changes. Userspace can use read()/write() to receive/reply
-> > > > > > > > > the control messages.
-> > > > > > > > >
-> > > > > > > > > In the data path, the core is mapping dma buffer into VDUSE daemon's
-> > > > > > > > > address space, which can be implemented in different ways depending on
-> > > > > > > > > the vdpa bus to which the vDPA device is attached.
-> > > > > > > > >
-> > > > > > > > > In virtio-vdpa case, we implements a MMU-based software IOTLB with
-> > > > > > > > > bounce-buffering mechanism to achieve that. And in vhost-vdpa case, the dma
-> > > > > > > > > buffer is reside in a userspace memory region which can be shared to the
-> > > > > > > > > VDUSE userspace processs via transferring the shmfd.
-> > > > > > > > >
-> > > > > > > > > The details and our user case is shown below:
-> > > > > > > > >
-> > > > > > > > > ------------------------    -------------------------   ----------------------------------------------
-> > > > > > > > > |            Container |    |              QEMU(VM) |   |                               VDUSE daemon |
-> > > > > > > > > |       ---------      |    |  -------------------  |   | ------------------------- ---------------- |
-> > > > > > > > > |       |dev/vdx|      |    |  |/dev/vhost-vdpa-x|  |   | | vDPA device emulation | | block driver | |
-> > > > > > > > > ------------+-----------     -----------+------------   -------------+----------------------+---------
-> > > > > > > > >             |                           |                            |                      |
-> > > > > > > > >             |                           |                            |                      |
-> > > > > > > > > ------------+---------------------------+----------------------------+----------------------+---------
-> > > > > > > > > |    | block device |           |  vhost device |            | vduse driver |          | TCP/IP |    |
-> > > > > > > > > |    -------+--------           --------+--------            -------+--------          -----+----    |
-> > > > > > > > > |           |                           |                           |                       |        |
-> > > > > > > > > | ----------+----------       ----------+-----------         -------+-------                |        |
-> > > > > > > > > | | virtio-blk driver |       |  vhost-vdpa driver |         | vdpa device |                |        |
-> > > > > > > > > | ----------+----------       ----------+-----------         -------+-------                |        |
-> > > > > > > > > |           |      virtio bus           |                           |                       |        |
-> > > > > > > > > |   --------+----+-----------           |                           |                       |        |
-> > > > > > > > > |                |                      |                           |                       |        |
-> > > > > > > > > |      ----------+----------            |                           |                       |        |
-> > > > > > > > > |      | virtio-blk device |            |                           |                       |        |
-> > > > > > > > > |      ----------+----------            |                           |                       |        |
-> > > > > > > > > |                |                      |                           |                       |        |
-> > > > > > > > > |     -----------+-----------           |                           |                       |        |
-> > > > > > > > > |     |  virtio-vdpa driver |           |                           |                       |        |
-> > > > > > > > > |     -----------+-----------           |                           |                       |        |
-> > > > > > > > > |                |                      |                           |    vdpa bus           |        |
-> > > > > > > > > |     -----------+----------------------+---------------------------+------------           |        |
-> > > > > > > > > |                                                                                        ---+---     |
-> > > > > > > > > -----------------------------------------------------------------------------------------| NIC |------
-> > > > > > > > >                                                                                          ---+---
-> > > > > > > > >                                                                                             |
-> > > > > > > > >                                                                                    ---------+---------
-> > > > > > > > >                                                                                    | Remote Storages |
-> > > > > > > > >                                                                                    -------------------
-> > > > > > > > >
-> > > > > > > > > We make use of it to implement a block device connecting to
-> > > > > > > > > our distributed storage, which can be used both in containers and
-> > > > > > > > > VMs. Thus, we can have an unified technology stack in this two cases.
-> > > > > > > > >
-> > > > > > > > > To test it with null-blk:
-> > > > > > > > >
-> > > > > > > > >   $ qemu-storage-daemon \
-> > > > > > > > >       --chardev socket,id=charmonitor,path=/tmp/qmp.sock,server,nowait \
-> > > > > > > > >       --monitor chardev=charmonitor \
-> > > > > > > > >       --blockdev driver=host_device,cache.direct=on,aio=native,filename=/dev/nullb0,node-name=disk0 \
-> > > > > > > > >       --export type=vduse-blk,id=test,node-name=disk0,writable=on,name=vduse-null,num-queues=16,queue-size=128
-> > > > > > > > >
-> > > > > > > > > The qemu-storage-daemon can be found at https://github.com/bytedance/qemu/tree/vduse
-> > > > > > > >
-> > > > > > > > It's been half a year - any plans to upstream this?
-> > > > > > >
-> > > > > > > Yeah, this is on my to-do list this month.
-> > > > > > >
-> > > > > > > Sorry for taking so long... I've been working on another project
-> > > > > > > enabling userspace RDMA with VDUSE for the past few months. So I
-> > > > > > > didn't have much time for this. Anyway, I will submit the first
-> > > > > > > version as soon as possible.
-> > > > > > >
-> > > > > > > Thanks,
-> > > > > > > Yongji
-> > > > > >
-> > > > > > Oh fun. You mean like virtio-rdma? Or RDMA as a backend for regular
-> > > > > > virtio?
-> > > > > >
-> > > > >
-> > > > > Yes, like virtio-rdma. Then we can develop something like userspace
-> > > > > rxe、siw or custom protocol with VDUSE.
-> > > > >
-> > > > > Thanks,
-> > > > > Yongji
-> > > >
-> > > > Would be interesting to see the spec for that.
-> > >
-> > > Will send it ASAP.
-> > >
-> > > > The issues with RDMA revolved around the fact that current
-> > > > apps tend to either use non-standard propocols for connection
-> > > > establishment or use UD where there's IIRC no standard
-> > > > at all. So QP numbers are hard to virtualize.
-> > > > Similarly many use LIDs directly with the same effect.
-> > > > GUIDs might be virtualizeable but no one went to the effort.
-> > > >
-> > >
-> > > Actually we aimed at emulating a soft RDMA with normal NIC (not use
-> > > RDMA capability) rather than virtualizing a physical RDMA NIC into
-> > > several vRDMA devices. If so, I think we won't have those issues,
-> > > right?
+> > Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
+> > Acked-by: John Fastabend <john.fastabend@gmail.com>
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  drivers/net/ethernet/marvell/mvneta.c | 23 ++++++++++-------------
+> >  1 file changed, 10 insertions(+), 13 deletions(-)
 > >
-> > Right, maybe you won't.
+> > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> > index 775ffd91b741..267a306d9c75 100644
+> > --- a/drivers/net/ethernet/marvell/mvneta.c
+> > +++ b/drivers/net/ethernet/marvell/mvneta.c
+> > @@ -2332,8 +2332,12 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
+> >               skb_frag_size_set(frag, data_len);
+> >               __skb_frag_set_page(frag, page);
 > >
-> > > > To say nothing about the interaction with memory overcommit.
-> > > >
-> > >
-> > > I don't get you here. Could you give me more details?
-> > >
-> > > Thanks,
-> > > Yongji
+> > -             if (!xdp_buff_is_mb(xdp))
+> > +             if (!xdp_buff_is_mb(xdp)) {
+> > +                     sinfo->xdp_frags_size = *size;
+> >                       xdp_buff_set_mb(xdp);
+> > +             }
+> > +             if (page_is_pfmemalloc(page))
+> > +                     xdp_buff_set_frag_pfmemalloc(xdp);
+> >       } else {
+> >               page_pool_put_full_page(rxq->page_pool, page, true);
+> >       }
+> > @@ -2347,7 +2351,6 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+> >       struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+> >       struct sk_buff *skb;
+> >       u8 num_frags;
+> > -     int i;
 > >
-> > RDMA devices tend to want to pin the memory under DMA.
+> >       if (unlikely(xdp_buff_is_mb(xdp)))
+> >               num_frags = sinfo->nr_frags;
+> > @@ -2362,18 +2365,12 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+> >       skb_put(skb, xdp->data_end - xdp->data);
+> >       skb->ip_summed = mvneta_rx_csum(pp, desc_status);
 > >
-> 
-> I see. Maybe something like dm or odp could be helpful.
-> 
+> > -     if (likely(!xdp_buff_is_mb(xdp)))
+> > -             goto out;
+> > -
+> > -     for (i = 0; i < num_frags; i++) {
+> > -             skb_frag_t *frag = &sinfo->frags[i];
+> > -
+> > -             skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+> > -                             skb_frag_page(frag), skb_frag_off(frag),
+> > -                             skb_frag_size(frag), PAGE_SIZE);
+>
+> Maybe I'm missing something but I'm not sure you have a suitable
+> replacement for the 3 lines above this in your proposed change.
+>
+
+Hi Andy,
+
+mvneta_swbm_add_rx_fragment() initializes frags array in
+skb_shared_info for xdp whenever we receive a multi-descriptors frame.
+Since frags array is at the same offset for the xdp_buff and for the
+new skb and build_skb() in mvneta_swbm_build_skb() does not overwrite
+it, we do not need to initialize it again allocating the skb, just
+account metadata info running xdp_update_skb_shared_info(). Agree?
+
+> > -     }
+> > +     if (unlikely(xdp_buff_is_mb(xdp)))
+> > +             xdp_update_skb_shared_info(skb, num_frags,
+> > +                                        sinfo->xdp_frags_size,
+> > +                                        num_frags * xdp->frame_sz,
+> > +                                        xdp_buff_is_frag_pfmemalloc(xdp));
+> >
+>
+> When I did an implementation of this on a different driver I also needed
+> to add:
+>
+>         for (i = 0; i < num_frags; i++)
+>                 skb_frag_set_page(skb, i, skb_frag_page(&sinfo->frags[i]));
+>
+> to make sure that frames that were given XDP_PASS were formatted
+> correctly so they could be handled by the stack.  Don't you need
+> something similar to make sure frags are properly set?
+>
 > Thanks,
-> Yongji
+>
+> -andy
+>
+> P.S.  Sorry for noticing this so late in the process; I realize this version
+> was just a rebase of v20 and this would have been useful information
+> earlier if I'm correct.
+>
 
-Yes sure.
+no worries :)
 
--- 
-MST
+Regards,
+Lorenzo
+
+> > -out:
+> >       return skb;
+> >  }
+> >
+> > --
+> > 2.33.1
+> >
 
