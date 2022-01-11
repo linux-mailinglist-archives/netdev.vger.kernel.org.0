@@ -2,122 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D841F48B17A
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 17:00:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5336A48B179
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 17:00:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343568AbiAKQAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 11:00:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
+        id S245745AbiAKQAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 11:00:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243724AbiAKQAn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 11:00:43 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB57C06173F;
-        Tue, 11 Jan 2022 08:00:42 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id l25so22970927wrb.13;
-        Tue, 11 Jan 2022 08:00:42 -0800 (PST)
+        with ESMTP id S243724AbiAKQAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 11:00:31 -0500
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE7DC06173F
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 08:00:30 -0800 (PST)
+Received: by mail-il1-x132.google.com with SMTP id 2so10769112ilj.4
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 08:00:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=z1ex1ZxABsRXp/rPR+OVpQZtaHaI+kiKsq7GHCUqCKY=;
-        b=QS8x1RpHwLgdNOzNlAXTdd3wgN+Sr2biQcXw86WVibyEtMYIR5fiP11FkksEE3X9KH
-         Vy8g8mbmPpskChnlRvN6QR2QGO13LagrRxDgwrJvBKNicGMk2JWNamzzrsObkdZ8Q/11
-         rwER7fuYYdvj2GPOgVp4AKg6cu8OsRACp0Us2aKJ89qqKGKF6YQ3NRNm9l2lQwROOfsU
-         K3FE1YgR6YiIx8KkzbIigVCYszYhziZfu9kjEt3SPLV0Pqa3sEyb0/a4KTCiPzy106vj
-         f0K+Nvnr+M4+nfGK9FFd9KDXdx0K3wNGqjMCP1glG8waYYydHIp/tbu/mqUN12wfzrW/
-         R7Dg==
+        bh=Hy9t060FciVBY+fi9yd+UvqG/rTK89P2OSLI5hQnuoI=;
+        b=qY9iV5lYaD4sgM9pdMgyWSODhRzE+VjSSvTigzZFn4INYhP0kCcXqoXxOADFHB5DNq
+         9MXKn/oL0a/yuZ1djsbIm/iZvRof4vm9642kBWkaImlGqspniXel+0GvfGlOJG3fB9Nt
+         2iEDWKKNE83w7I3lz51S0foX+BCkCBAMA4CMciXWL477DDUQK4akoLgBBEWq+JahhsXq
+         Zm0Lx2V8z1mLdJlH4WaAWMw9uvXlmnTCUgUDNrexN2hgtdg8tE3Yo8RwmgcnMppZoD9A
+         vDEMy/0MnpvZ6P1+Avj3R/T5hGbqJ4r6DhGzNg+wFx8DjFLoAMIRi2CUf4XhHiAOeEIQ
+         UYLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=z1ex1ZxABsRXp/rPR+OVpQZtaHaI+kiKsq7GHCUqCKY=;
-        b=s1oPxr8DHPdlig6dIk9DzyxAcxw8Q/bHntbIN7sxy0mwhGehBpExvCMJn5hXoj2pxc
-         reOoech8hrGLeQ+z3DeNA176kDT4FzOBKZSjRRKqOFz5HywMIgM+hRXU92urMKr0ObIY
-         EutyFOfo+w1fRCu3XC67jc17jnoKP2f4aENjLmYPNhKDJuoXoFJZ5x3tXU56a3Rsxge0
-         zY9g8hk1tgQnZUz+HE0LinJbYNskMNbIWf4dQjKLnGr+A4CaEbvmL2RRTLiUtOBAwXgb
-         EGUZA90AnO0zwbxXM8baufcqlRSNddQMCWBQzIRb37cDjrc1G9oX49HvShLA3rUASjXw
-         ZM4Q==
-X-Gm-Message-State: AOAM531ECSbKMYLmXoPiZgX3VxSXc7BodKmgsx65L7JZhqfubY6tx8C/
-        HU+L/J/eX37ncx88+KWhP34=
-X-Google-Smtp-Source: ABdhPJxdXExuqi+hXs3I6AWGuNvzvZPLK4cCuOcyHY0iJstOqhzvSZc7j1zHr7ElMyBNOj2/SSBKtg==
-X-Received: by 2002:a05:6000:2aa:: with SMTP id l10mr4548402wry.518.1641916841256;
-        Tue, 11 Jan 2022 08:00:41 -0800 (PST)
-Received: from [192.168.8.198] ([148.252.129.73])
-        by smtp.gmail.com with ESMTPSA id u12sm9507394wrf.60.2022.01.11.08.00.40
+        bh=Hy9t060FciVBY+fi9yd+UvqG/rTK89P2OSLI5hQnuoI=;
+        b=yoCwcBVOZxotscc5sT8ElkV/+vf5vZOgYc1qIFsiPJ+2gqJoidoBKsMvbNyUW18aHD
+         srU33ovg7NcyBCzkVPreFBx11WZ/o/sbSTX40uQ3ynikpp7Kzui1johcbwY+NJ5as+/R
+         gw+aWZvARN2QhrBMcT/ie8Vzk0vDwSQoJd2RBwMvhCD6sDS5PXMIOegYr7IPjJccex09
+         nbWKG/0FSAbvUp7StdnJAPteepHT9YmnF6vcLgHwO4DtW8GDszmSDmcS+cOSfpmRIeXy
+         A85anQgaUOEbRV2Xaj0sQQn2bi5Nli2+sThghZwIoLZqM8hYAW9JaNwaKIoWSDNdQf1A
+         a5lA==
+X-Gm-Message-State: AOAM532PDpDqBOiqDIe5/UezJAcvrN1+pBtbgH0HivPlDqSusLFQslaS
+        ptQiZ6mcX0jTemYUzjsxQf0=
+X-Google-Smtp-Source: ABdhPJw7B6QHacel+3tvbk5x4Pwt/c3Zsso0q/e9WWml8gr6/7rlsUJjPJbQ/GE7XsmSpQIMjvw6ag==
+X-Received: by 2002:a05:6e02:20e6:: with SMTP id q6mr2687498ilv.301.1641916830214;
+        Tue, 11 Jan 2022 08:00:30 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:d826:3ad7:a899:d318? ([2601:282:800:dc80:d826:3ad7:a899:d318])
+        by smtp.googlemail.com with ESMTPSA id g6sm3759455iow.34.2022.01.11.08.00.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 08:00:40 -0800 (PST)
-Message-ID: <0b7d2c38-8c76-6e29-1dd0-c5eeee8e2377@gmail.com>
-Date:   Tue, 11 Jan 2022 15:57:34 +0000
+        Tue, 11 Jan 2022 08:00:29 -0800 (PST)
+Message-ID: <a0f12df2-c914-0840-fd68-86c7de7a08b4@gmail.com>
+Date:   Tue, 11 Jan 2022 09:00:29 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH 09/14] ipv6: hand dst refs to cork setup
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH iproute2-next 05/11] flower: fix clang warnings
 Content-Language: en-US
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org
-References: <cover.1641863490.git.asml.silence@gmail.com>
- <07031c43d3e5c005fbfc76b60a58e30c66d7c620.1641863490.git.asml.silence@gmail.com>
- <CA+FuTSdJYwN=vxpj4nkpSxdyJ5_47PZuPTjQkRphYvLt47KdjQ@mail.gmail.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <CA+FuTSdJYwN=vxpj4nkpSxdyJ5_47PZuPTjQkRphYvLt47KdjQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Cc:     Stephen Hemminger <sthemmin@microsoft.com>
+References: <20220108204650.36185-1-sthemmin@microsoft.com>
+ <20220108204650.36185-6-sthemmin@microsoft.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220108204650.36185-6-sthemmin@microsoft.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/11/22 15:39, Willem de Bruijn wrote:
-> On Mon, Jan 10, 2022 at 8:25 PM Pavel Begunkov <asml.silence@gmail.com> wrote:
->>
->> During cork->dst setup, ip6_make_skb() gets an additional reference to
->> a passed in dst. However, udpv6_sendmsg() doesn't need dst after calling
->> ip6_make_skb(), and so we can save two additional atomics by passing
->> dst references to ip6_make_skb(). udpv6_sendmsg() is the only caller, so
->> it's enough to make sure it doesn't use dst afterwards.
->>
->> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
->> ---
-> 
-> There are two patches 9/14
+On 1/8/22 1:46 PM, Stephen Hemminger wrote:
+> @@ -1925,10 +1925,17 @@ static int __mask_bits(char *addr, size_t len)
+>  	return bits;
+>  }
+>  
+> -static void flower_print_eth_addr(char *name, struct rtattr *addr_attr,
+> +static void flower_print_string(const char *name, const char *value)
+> +{
+> +	print_nl();
+> +	print_string(PRINT_JSON, name, NULL, value);
+> +	print_string(PRINT_FP, NULL, "  %s", name);
+> +	print_string(PRINT_FP, NULL, " %s", value);
+> +}
+> +
 
-Weird, thanks for letting know
-
-> 
->>   net/ipv6/ip6_output.c | 9 ++++++---
->>   net/ipv6/udp.c        | 3 ++-
->>   2 files changed, 8 insertions(+), 4 deletions(-)
->>
->> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
->> index 0cc490f2cfbf..6a7bba4dd04d 100644
->> --- a/net/ipv6/ip6_output.c
->> +++ b/net/ipv6/ip6_output.c
->> @@ -1356,6 +1356,8 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
->>          unsigned int mtu;
->>          struct ipv6_txoptions *nopt, *opt = ipc6->opt;
->>
->> +       cork->base.dst = &rt->dst;
->> +
-> 
-> Is there a reason to move this up from its original location next to
-> the other cork initialization assignments?
-
-ip6_setup_cork() consumes a dst ref now even in error cases, moved
-it to not patch up all error returns in there. On the other hand
-I can add dst_release() to callers when it failed.
+The last 3 lines could be a generic print_string_name_value function
+under lib.
 
 
-> That the reference is taken in ip6_append_data for corked requests
-> (once, in setup cork branch) and inherited from udpv6_send_skb
-> otherwise is non-trivial. Worth a comment.
+> @@ -2237,16 +2235,20 @@ static void flower_print_ct_mark(struct rtattr *attr,
+>  	print_masked_u32("ct_mark", attr, mask_attr, true);
+>  }
+>  
+> -static void flower_print_key_id(const char *name, struct rtattr *attr)
+> +static void flower_print_uint(const char *name, unsigned int val)
+>  {
+> -	SPRINT_BUF(namefrm);
+> +	print_nl();
+> +	print_uint(PRINT_JSON, name, NULL, val);
+> +	print_string(PRINT_FP, NULL, "  %s", name);
+> +	print_uint(PRINT_FP, NULL, " %%u", val);
 
-Will update in v2, thanks
+s/%%u/%u/ ?
 
--- 
-Pavel Begunkov
+Same here the last 3 lines could be a lib function.
+
