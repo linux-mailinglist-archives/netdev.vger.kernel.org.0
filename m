@@ -2,62 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C9C748AE45
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 14:16:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D7A48AE14
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 14:02:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240357AbiAKNQ2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 11 Jan 2022 08:16:28 -0500
-Received: from 200-35-77-146.static.telcel.net.ve ([200.35.77.146]:36126 "EHLO
-        svmailsar00.saren.gob.ve" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231301AbiAKNQ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 08:16:27 -0500
-X-Greylist: delayed 6786 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Jan 2022 08:16:27 EST
-Received: from localhost (localhost [127.0.0.1])
-        by svmailsar00.saren.gob.ve (Postfix) with ESMTP id F3B7819BB8D;
-        Tue, 11 Jan 2022 05:15:37 -0400 (-04)
-Received: from svmailsar00.saren.gob.ve ([127.0.0.1])
-        by localhost (svmailsar00.saren.gob.ve [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id w4C9D4OciHFS; Tue, 11 Jan 2022 05:15:37 -0400 (-04)
-Received: from localhost (localhost [127.0.0.1])
-        by svmailsar00.saren.gob.ve (Postfix) with ESMTP id 7F73519BAE7;
-        Tue, 11 Jan 2022 05:15:37 -0400 (-04)
-X-Virus-Scanned: amavisd-new at saren.gob.ve
-Received: from svmailsar00.saren.gob.ve ([127.0.0.1])
-        by localhost (svmailsar00.saren.gob.ve [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id qfNMpWtlG37k; Tue, 11 Jan 2022 05:15:37 -0400 (-04)
-Received: from [100.93.241.255] (unknown [106.210.124.99])
-        by svmailsar00.saren.gob.ve (Postfix) with ESMTPSA id 5C74619BB0F;
-        Tue, 11 Jan 2022 05:15:16 -0400 (-04)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S240213AbiAKNCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 08:02:41 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:17338 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239661AbiAKNCk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 08:02:40 -0500
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JY9n722f7z9s7R;
+        Tue, 11 Jan 2022 21:01:31 +0800 (CST)
+Received: from [10.174.179.200] (10.174.179.200) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 11 Jan 2022 21:02:38 +0800
+Subject: Re: [PATCH net] can: bcm: switch timer to HRTIMER_MODE_SOFT and
+ remove hrtimer_tasklet
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Greg KH <gregkh@linuxfoundation.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <mkl@pengutronix.de>,
+        <netdev@vger.kernel.org>, <stable@vger.kernel.org>,
+        <linux-can@vger.kernel.org>, <tglx@linutronix.de>,
+        <anna-maria@linutronix.de>
+References: <20220110132322.1726106-1-william.xuanziyang@huawei.com>
+ <YdwxtqexaE75uCZ8@kroah.com>
+ <afcc8f0c-1aa7-9f43-bf50-b404c954db8b@huawei.com>
+ <ad8ed3db-b5aa-9c48-0bff-2c2623bd17fa@hartkopp.net>
+From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Message-ID: <fc20454f-68ee-21f5-10a4-8100407aad53@huawei.com>
+Date:   Tue, 11 Jan 2022 21:02:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: =?utf-8?b?QVRFTkNJw5NO?=
-To:     Recipients <siglas@saren.gob.ve>
-From:   Sistemas administrador <siglas@saren.gob.ve>
-Date:   Tue, 11 Jan 2022 15:41:29 +0530
-Reply-To: sistemassadmins@mail2engineer.com
-Message-Id: <20220111091517.5C74619BB0F@svmailsar00.saren.gob.ve>
+In-Reply-To: <ad8ed3db-b5aa-9c48-0bff-2c2623bd17fa@hartkopp.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.200]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ATENCI�N;
+> On 11.01.22 03:02, Ziyang Xuan (William) wrote:
+>>> On Mon, Jan 10, 2022 at 09:23:22PM +0800, Ziyang Xuan wrote:
+>>>> From: Thomas Gleixner <tglx@linutronix.de>
+>>>>
+>>>> [ commit bf74aa86e111aa3b2fbb25db37e3a3fab71b5b68 upstream ]
+>>>>
+>>>> Stop tx/rx cycle rely on the active state of tasklet and hrtimer
+>>>> sequentially in bcm_remove_op(), the op object will be freed if they
+>>>> are all unactive. Assume the hrtimer timeout is short, the hrtimer
+>>>> cb has been excuted after tasklet conditional judgment which must be
+>>>> false after last round tasklet_kill() and before condition
+>>>> hrtimer_active(), it is false when execute to hrtimer_active(). Bug
+>>>> is triggerd, because the stopping action is end and the op object
+>>>> will be freed, but the tasklet is scheduled. The resources of the op
+>>>> object will occur UAF bug.
+>>>
+>>> That is not the changelog text of this commit.  Why modify it?
+>>
+>> Above statement is the reason why I want to backport the patch to
+>> stable tree. Maybe I could give an extra cover-letter to explain
+>> the details of the problem, but modify the original changelog. Is it?
+>>
+> 
+> If you backport the bcm HRTIMER_MODE_SOFT implementation to the 4.19 stable tree the problem is not fixed for 4.14, 4.4, etc.
 
-Su buz�n ha superado el l�mite de almacenamiento, que es de 5 GB definidos por el administrador, quien actualmente est� ejecutando en 10.9GB, no puede ser capaz de enviar o recibir correo nuevo hasta que vuelva a validar su buz�n de correo electr�nico. Para revalidar su buz�n de correo, env�e la siguiente informaci�n a continuaci�n:
+This backport patch does not fit lts 4.4 and 4.9. In addition,
+I backport patch to lts for the first time. So I am going to
+backport the patch one by one.
 
-nombre:
-Nombre de usuario:
-contrase�a:
-Confirmar contrase�a:
-E-mail:
-tel�fono:
+> 
+> HRTIMER_MODE_SOFT has been introduced in 4.16
+> 
+> The issue of a race condition at bcm op removal has already been addressed before in commit a06393ed03167 ("can: bcm: fix hrtimer/tasklet termination in bcm op removal").
+> 
+> -       hrtimer_cancel(&op->timer);
+> -       hrtimer_cancel(&op->thrtimer);
+> -
+> -       if (op->tsklet.func)
+> -               tasklet_kill(&op->tsklet);
+> +       if (op->tsklet.func) {
+> +               while (test_bit(TASKLET_STATE_SCHED, &op->tsklet.state) ||
+> +                      test_bit(TASKLET_STATE_RUN, &op->tsklet.state) ||
+> +                      hrtimer_active(&op->timer)) {
+> +                       hrtimer_cancel(&op->timer);
+> +                       tasklet_kill(&op->tsklet);
+> +               }
+> +       }
+> 
+> IMO we should better try to improve this fix and enable it for older stable trees than fixing only the 4.19.
 
-Si usted no puede revalidar su buz�n, el buz�n se deshabilitar�!
+The commit bf74aa86e111 can solve the op UAF nicely and enter mainline from v5.4.
+I prefer to backport the patch to lower lts, but other sewing and mending,
+for example move hrtimer_active() forward.
 
-Disculpa las molestias.
-C�digo de verificaci�n:666690opp4r56.es: 6654309.WEBMAIL.SE
-Correo Soporte T�cnico � 2022
-
-�gracias
-Sistemas administrador
+> 
+> Best regards,
+> Oliver
+> 
+> 
+> 
+>>>
+>>>>
+>>>> ----------------------------------------------------------------------
+>>>>
+>>>> This patch switches the timer to HRTIMER_MODE_SOFT, which executed the
+>>>> timer callback in softirq context and removes the hrtimer_tasklet.
+>>>>
+>>>> Reported-by: syzbot+652023d5376450cc8516@syzkaller.appspotmail.com
+>>
+>> This is the public problem reporter. Do I need to move it to cover-letter
+>> but here?
+>>
+>>>> Cc: stable@vger.kernel.org # 4.19
+>>
+>> I want to backport the patch to linux-4.19.y stable tree. How do I need to
+>> modify?
+>>
+>>>> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+>>>> Signed-off-by: Anna-Maria Gleixner <anna-maria@linutronix.de>
+>>>> Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+>>>> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+>>>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+>>>> ---
+>>>>   net/can/bcm.c | 156 +++++++++++++++++---------------------------------
+>>>>   1 file changed, 52 insertions(+), 104 deletions(-)
+>>>
+>>> What stable kernel tree(s) are you wanting this backported to?
+>>>
+>>> thanks,
+>>>
+>>> greg k-h
+>>> .
+>>>
+>>
+>> Thank you for your patient guidance.
+>>
+> .
