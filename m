@@ -2,93 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BCB548B77D
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 20:41:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B12EB48B7B1
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 20:57:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237400AbiAKTlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 14:41:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46130 "EHLO
+        id S239037AbiAKT5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 14:57:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237090AbiAKTlt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 14:41:49 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C4EC06173F
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 11:41:48 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id e9so210487wra.2
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 11:41:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=rL0uwXVH0wZKObRjJstx/qdINlP47rbHAnqHdJwRHE8=;
-        b=i6g+m+cxIazjaD6/iLQfI/Oq/Xaxv52l91IHOGb3TEFNqXeF1fZ0MTwN5cN6AY/DHq
-         6GmhFru9qqAHdQ7oUhyRoSabLpjsLtfUdlJWJfniQPBf3expK1VfpOpgvYTCxJqc6hgw
-         qMHeMF+TzriwLvav780fW2HtAnoq1YbCuglpICC/RqW7p8h7cUwSzqbZkza5KiKyNdjo
-         e0L1/VJSv4juJrh029sj9SHGRZnIgGuiOY+1AteDYSP2fprU06NqI15QQGloiTJ5yfUR
-         vR4uTKjv/I5pDRFDcZgc63C/9XqQ7OoUYqqoLSwhsRGoyd+dzqK7jqli4njd1xf9EmnO
-         M1Qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=rL0uwXVH0wZKObRjJstx/qdINlP47rbHAnqHdJwRHE8=;
-        b=DnoJIkWXRbsfzMo2flHHbYg1S528wHWZ8LAA6CGW7y+aPulc5AQcYMHXQPNy0vR9Td
-         wfdPNs9fpiNL9/V640AN/jBJVTTJpVNZnr8ma8BVeKf8OQlHMCGHntuLULqRamzZgpQc
-         J7zBIMqAlgoiZLnJdvgYwmNfo6DUAEFovz/sWtdXJi7+1vKuKRaCIi1uf8VLE0JmYIO+
-         6wwHTJ0RyNyDGY3BNc9MyFdinak1pdwcmYGaM3TDYnS/IzyjBXRdlVna3AFNuBMd+FFM
-         7yXx25Ve67VzJ9cofbUHQH5q6ypvZyC1MDeeJujaDBow9Ld+scZXXcl81jcJk4tK3dBO
-         89+A==
-X-Gm-Message-State: AOAM531W0ps23MsIATSDthg+chqJwROoVGoDZmZQg7RDhdxwkmnqoKRw
-        kp2kcFy0/zXF0PaWHcrRgEMBWBruETM=
-X-Google-Smtp-Source: ABdhPJzF/9L1q4Df3DE8YV/OrN8HOgdNuXVK/a2L/OmjY4TQX/ovD2r5HQlk5jIeD2WwzWZ7JZhshg==
-X-Received: by 2002:adf:eec9:: with SMTP id a9mr5036327wrp.178.1641930107299;
-        Tue, 11 Jan 2022 11:41:47 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f2f:5b00:946a:ebae:eb56:7988? (p200300ea8f2f5b00946aebaeeb567988.dip0.t-ipconnect.de. [2003:ea:8f2f:5b00:946a:ebae:eb56:7988])
-        by smtp.googlemail.com with ESMTPSA id q3sm10123344wrr.55.2022.01.11.11.41.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 11:41:46 -0800 (PST)
-Message-ID: <6d6ff22c-df69-36c2-4d42-03ed7f539761@gmail.com>
-Date:   Tue, 11 Jan 2022 20:41:18 +0100
+        with ESMTP id S234556AbiAKT5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 14:57:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40376C06173F
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 11:57:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0830EB81D1D
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 19:57:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8776DC36AE9;
+        Tue, 11 Jan 2022 19:57:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641931025;
+        bh=5TEPsU5TU2ZmUpqFeVDFVwU70QEe0awWx2oN7MV306c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tZjhCbLCo9XjvoSN3XhUMZ1XtPT2biX9K/OdJsk4wklAcfW//TchLZY0EQBLJXHDH
+         PimF9e0+yyMVrHsooWZfSCRlCjLqNILwEexTCT3pwqKvdW4KpsditOEq++lQXuh3rd
+         ol94HNAppJP5NXWytsLYGlrTVBgRi8PlxT9tWBFPB0yfgcl0ovp+zn9SGf2LkFjXcq
+         snVs1I6F816xnTCTq9kow8mVcOl1xpSp6vzmtKnWLy5vmbNQItI5YrKYzUje+bDyY6
+         IZn8viNpUl1mLFhilsogLqx1eZwt0d4brKtwMCTTuhZHUJRXTT+JW1CQthBznQ58+h
+         91XlOsJ47e4yQ==
+Date:   Tue, 11 Jan 2022 11:57:04 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Sunil Sudhakar Rani <sunrani@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Bodong Wang <bodong@nvidia.com>
+Subject: Re: [PATCH net-next 1/2] devlink: Add support to set port function
+ as trusted
+Message-ID: <20220111115704.4312d280@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <PH0PR12MB5481E3E9D38D0F8DE175A915DC519@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20211122144307.218021-1-sunrani@nvidia.com>
+        <20211202093110.2a3e69e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <d0df87e28497a697cae6cd6f03c00d42bc24d764.camel@nvidia.com>
+        <20211215112204.4ec7cf1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <1da3385c7115c57fabd5c932033e893e5efc7e79.camel@nvidia.com>
+        <20211215150430.2dd8cd15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <SN1PR12MB2574E418C1C6E1A2C0096964D4779@SN1PR12MB2574.namprd12.prod.outlook.com>
+        <20211216082818.1fb2dff4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <PH0PR12MB54817CE7826A6E924AE50B9BDC519@PH0PR12MB5481.namprd12.prod.outlook.com>
+        <20220111102005.4f0fa3a0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <PH0PR12MB548176ED1E1B5ED1EF2BB88EDC519@PH0PR12MB5481.namprd12.prod.outlook.com>
+        <20220111112418.2bbc0db4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <PH0PR12MB5481E3E9D38D0F8DE175A915DC519@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Content-Language: en-US
-To:     Michael Chan <michael.chan@broadcom.com>,
-        Vijay Balakrishna <vijayb@linux.microsoft.com>
-Cc:     Netdev <netdev@vger.kernel.org>
-References: <f7bcc68d-289d-4c13-f73d-77e349f4674e@linux.microsoft.com>
- <CACKFLim=ENcZMk+8UUwg87PPdu6zDC1Ld5b54Pp+_WSow9g_Og@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [bnxt] Error: Unable to read VPD
-In-Reply-To: <CACKFLim=ENcZMk+8UUwg87PPdu6zDC1Ld5b54Pp+_WSow9g_Og@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.01.2022 22:15, Michael Chan wrote:
-> On Mon, Jan 10, 2022 at 1:02 PM Vijay Balakrishna
-> <vijayb@linux.microsoft.com> wrote:
->>
->>
->> Since moving to 5.10 from 5.4 we are seeing
->>
->>> Jan 01 00:00:01 localhost kernel: bnxt_en 0008:01:00.0 (unnamed net_device) (uninitialized): Unable to read VPD
->>>
->>> Jan 01 00:00:01 localhost kernel: bnxt_en 0008:01:00.1 (unnamed net_device) (uninitialized): Unable to read VPD
->>
->> these appear to be harmless and introduced by
->>
->>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a0d0fd70fed5cc4f1e2dd98b801be63b07b4d6ac
->> Does "Unable to read VPD" need to be an error or can it be a warning
->> (netdev_warn)?
->>
-> 
-> We can change these to warnings.  Thanks.
+On Tue, 11 Jan 2022 19:39:37 +0000 Parav Pandit wrote:
+> > From: Jakub Kicinski <kuba@kernel.org>
+> > Sent: Wednesday, January 12, 2022 12:54 AM
+> > 
+> > On Tue, 11 Jan 2022 18:26:16 +0000 Parav Pandit wrote:  
+> > > It isn't trusted feature. The scope in few weeks got expanded from
+> > > trusted to more granular at controlling capabilities. One that came up
+> > > was ipsec or other offloads that consumes more device resources.  
+> > 
+> > That's what I thought. Resource control is different than privileges, and
+> > requires a different API.
+> >  
+> It's the capability that is turned on/off.
+> A device is composed based on what is needed. ipsec offload is not always needed.
+> Its counter intuitive to expose some low level hardware resource to disable ipsec indirectly.
+> So it is better to do as capability/param rather than some resource.
+> It is capability is more than just resource.
 
-Since 5.15 it is a pci_warn() already. Supposedly "Unable to read VPD" here simply means
-that the device has no (valid) VPD. Does "lspci -vv" list any VPD info?
-If VPD is an optional feature, then maybe the warning should be changed to info level
-and the text should be less alarming.
+Wouldn't there be some limitation on the number of SAs or max
+throughput or such to limit on VF hogging the entire crypto path?
+
+I was expecting such a knob, and then turning it to 0 would effectively
+remove the capability (FW can completely hide it or driver ignore it).
+
+
+
+> > > A prometheous kind of monitoring software wants to monitor the
+> > > physical port counters, running in a container. Such container doesn't
+> > > have direct access to the PF or physical representor. Just for sake of
+> > > monitoring counters, user doesn't want to run the monitoring container
+> > > in root net ns.  
+> > 
+> > Containerizing monitors seems very counter-intuitive to me.
+> >  
+> May be. But it is in use at [1] for a long time now.
+> 
+> [1] docker run -p 9090:9090 prom/prometheus
+
+How is it "in use" if we haven't merged the patch to enable it? :)
+What does it monitor? PHYs port does not include east-west traffic,
+exposing just the PHYs stats seems like a half measure.
+
+> > > For sure we prefer the bona fide Linux uAPI for standard features.
+> > > But internal knobs of how to do steering etc, is something not generic
+> > > enough. May be only those quirks live in the port function params and
+> > > rest in standard uAPIs?  
+> > 
+> > Something talks to that steering API, and it's not netdev. So please don't push
+> > problems which are not ours onto us.  
+> Not sure I follow you.
+> Netdev of a mlx5 function talks to the driver internal steering API
+> in addition to other drivers operating this mlx5 function.
+
+But there is no such thing as "steering API" in netdev. We can expose
+the functionality we do have, if say PTP requires some steering then
+enabling PTP implies the required steering is enabled. "steering API"
+as an entity is meaningless to a netdev user.
