@@ -2,299 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4969C48AFD1
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 15:44:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8439548AFFE
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 15:57:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242514AbiAKOoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 09:44:07 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41596 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242201AbiAKOoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 09:44:06 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FA8C616A3;
-        Tue, 11 Jan 2022 14:44:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEE9AC36AEB;
-        Tue, 11 Jan 2022 14:44:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641912245;
-        bh=9QtNgp4GexGBqtOwirvi47YwIzGmn/bXKQBw5RQx9qA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=PS/GyHe2IojWJ1YN8K5T2hpa2Af5LOomqMwD4LuKDc+DGtw/iGvD4R3ncsLJXIYRl
-         SS4ldPslXZc/e0b2PpOohkQsy07shAQNTq3zh39/F64JJyOExerHz5WdIUiheJsrTM
-         sqQ3/Wj965F5bgkVpNJKYo0MdXMj/nj9picVUTRZYElHBNTrb9EuAdhsW4tAZUWVr9
-         f7glDSpPaGqJh5bleVODz2QjWvzMiothj3La3PyL+fuMbO2obmvJxbaZL1w1FMLADu
-         dbczHv4gPJBmPVjCeh9rkbZA9DSr+1PNQtbLhsGpzC+98wKbE2RiLr78eWoYxlQDXC
-         TlTeVU/RQI6UA==
-Received: by mail-wr1-f47.google.com with SMTP id d19so2879099wrb.0;
-        Tue, 11 Jan 2022 06:44:05 -0800 (PST)
-X-Gm-Message-State: AOAM533HM9V+jpYsLp3o/DHhUgzIgmfehYP7EW0JzDDmZHDCOi3uWV4e
-        ohV2fTgNOr6ZNRIzLEhT9heGOw2QWacSYbncJvY=
-X-Google-Smtp-Source: ABdhPJz/w2V6Pid5D3w0qEs9I5COP+6n2xpVD080JqwBmLeVHA6oNfaUY4ZgnqPHsQ3vI53XZqOv8T2Gy6+VTAIQUzM=
-X-Received: by 2002:a5d:4087:: with SMTP id o7mr4115239wrp.189.1641912244034;
- Tue, 11 Jan 2022 06:44:04 -0800 (PST)
+        id S243153AbiAKO5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 09:57:48 -0500
+Received: from mail-mw2nam10on2054.outbound.protection.outlook.com ([40.107.94.54]:17089
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S243134AbiAKO5q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jan 2022 09:57:46 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QTxLc+lCRmU4nwZ0PzrhZvQCdEtES4/5ujLR39FRptLqDtyGaAjJ01kCQz8MjJ/J0fij4y+2ZshJtqSRH7GngMhv8jvY1rzEu4WnG80Q/LR1NRqF9xYar8B8oAkbfpcy1LqhY7AmWBit2CXK9UuhKM0kXOnfWOeJPaTUUSfpAEgYtM13OFsI2gUG5X9n6TK89NV1GHf87gulmivT+m+tyA5jZlfvi66WD3tpnMWp1NI5qK4nlDz54X8ZjvyGaSeBymzYndsIuehMDqqcJBI7iFYKHptHK8Yla1WSU1fj/6zHb/GKtMXN/Nd9KIO+eRnrcSjJVLQOQ6coO/CKKkCMug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=u8h8fwLuj2gAExVuZdTuh4D6+NIFxryXuo6nnF9q3Jg=;
+ b=hW6tojQbcZH/fQvxHZx8vpB+2eW4ooK8AIaGmgatmBn0ed1r8ZWEFNCaSvKsSbkP/cjKxz63WOoiME+YFqehiyVh1dmgh2ONJuvVyabpbArqDH+vHHijNWhbvxCiOxHkwoi1ZzowJXOmxnIrXsLQ9vXzkmfs23Ive7TpsdqOp3nkjfTbP9CgZy5wnt/uAqo6MpP9Xm+NQ1i10PsAXzzjQXcLHp9/w5aCuJwrVTeWcvt7WzgTf/0BV2nAtUiw0Ow7nt90q3Ed9c1DGhvAZ6+ieXOuGmhs5o7szp5aDKhRxhBY64mPqBlFZzrDCMj+XwZgaJ6bNX2FdTWXFyv8yzn/jQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=u8h8fwLuj2gAExVuZdTuh4D6+NIFxryXuo6nnF9q3Jg=;
+ b=Jz8IN9t1q45k0UVjlrWBnGMAOl6z4qXmYz8fH5LcODbo/Yf6G9+mzyeGsfCSUXCZlWyM+nQT6bk9pYGxX0zSWJbAlJEdIuift2X6Q5hsN2eayRwLIfOaOUM59bA3BKV8ISLwchn31RyPHEzezxLma58JKSBVhEecsvuyb9Ne3A0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL1PR12MB5157.namprd12.prod.outlook.com (2603:10b6:208:308::15)
+ by BL1PR12MB5303.namprd12.prod.outlook.com (2603:10b6:208:317::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Tue, 11 Jan
+ 2022 14:57:45 +0000
+Received: from BL1PR12MB5157.namprd12.prod.outlook.com
+ ([fe80::42f:534d:e82:b59f]) by BL1PR12MB5157.namprd12.prod.outlook.com
+ ([fe80::42f:534d:e82:b59f%4]) with mapi id 15.20.4888.009; Tue, 11 Jan 2022
+ 14:57:45 +0000
+Message-ID: <ec2aaeb0-995e-0259-7eca-892d0c878e19@amd.com>
+Date:   Tue, 11 Jan 2022 08:57:39 -0600
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 1/3 v3] net: usb: r8152: Check used MAC passthrough
+ address
+Content-Language: en-US
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Oliver Neukum <oneukum@suse.com>,
+        Aaron Ma <aaron.ma@canonical.com>, henning.schild@siemens.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, hayeswang@realtek.com, tiwai@suse.de
+References: <20220105151427.8373-1-aaron.ma@canonical.com>
+ <YdXVoNFB/Asq6bc/@lunn.ch> <bb6d8bc4-abee-8536-ca5b-bac11d1ecd53@suse.com>
+ <YdYbZne6pBZzxSxA@lunn.ch>
+ <CAAd53p52uGFjbiuOWAA-1dN7mTqQ0KFe9PxWvPL+fjfQb9K5vQ@mail.gmail.com>
+ <YdbuXbtc64+Knbhm@lunn.ch>
+ <CAAd53p5YnQZ0fDiwwo-q3bNMVFTJSMLcdkUuH-7=OSaRrW954Q@mail.gmail.com>
+ <20220106183145.54b057c3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAAd53p7egh8G=fPMcua_FTHrA3HA6Dp85FqVhvcSbuO2y8Xz9A@mail.gmail.com>
+ <20220110085110.3902b6d4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAAd53p5mSq_bZdsZ=-RweiVLgAYU5+=Uje7TmYtAbBzZ7XCPUA@mail.gmail.com>
+From:   "Limonciello, Mario" <mario.limonciello@amd.com>
+In-Reply-To: <CAAd53p5mSq_bZdsZ=-RweiVLgAYU5+=Uje7TmYtAbBzZ7XCPUA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SN4PR0201CA0055.namprd02.prod.outlook.com
+ (2603:10b6:803:20::17) To BL1PR12MB5157.namprd12.prod.outlook.com
+ (2603:10b6:208:308::15)
 MIME-Version: 1.0
-References: <CAHmME9qbnYmhvsuarButi6s=58=FPiti0Z-QnGMJ=OsMzy1eOg@mail.gmail.com>
- <20220111134934.324663-1-Jason@zx2c4.com> <20220111134934.324663-3-Jason@zx2c4.com>
-In-Reply-To: <20220111134934.324663-3-Jason@zx2c4.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 11 Jan 2022 15:43:52 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXFynd4K7Zp6czgTWnDp9RHimizyMs4Yo2RsjCsEfa89fA@mail.gmail.com>
-Message-ID: <CAMj1kXFynd4K7Zp6czgTWnDp9RHimizyMs4Yo2RsjCsEfa89fA@mail.gmail.com>
-Subject: Re: [PATCH crypto 2/2] lib/crypto: blake2s: move hmac construction
- into wireguard
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, wireguard@lists.zx2c4.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <bpf@vger.kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>,
-        "Theodore Y. Ts'o" <tytso@mit.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f11437be-e1de-4f1d-6d29-08d9d512b9a4
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5303:EE_
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5303BDB09A472072FDD91CA1E2519@BL1PR12MB5303.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:483;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Kq6jfzTh0i4FlYSU6YkvuLmruKmpkirqWx+rIO8lOvmJz/AXU5F7adTAQ0mooQysR8Lek7kzYo/TINURYJmNUHbUU6f5Ys6ApjkPGD5WNb3HIuUGPWKolTlzR9tjIX9AIf6fZEHT4DCVDpoz/Co55yd0+LPRTwmwXLLlAfh5sX0Sc2MZvoi4kt6nuN+TjKbKWy2V9GMaM1yFIGQH2t43FLDDpXGG/O7oVG6Qv0vOyPN1wMIE5rIgRMyd+Ko4A7d6R55hviSs6tNL4E+K6WUJ87HHBgXc31+Jk0edErcj279X9mOr+4+v7AbawoPMmfCSvIomSBvBGJ/pLeL6sZNHNmcVYLT1fc5pePlhmDwCxGC5MzM4kh8YkeASCIogQIVjGk55eGu1Nx4fBJxbvHcvyaoG+amOLjmf8x17/dCxrXLI8hs4HqFkJCG5ugUBAPaBl7MONPipF9PJyQxYny/g0acnJgwjFgQTD+hzCFvy3uA/MfnjyhWur8/NvT0e1f0U3jFeEuityIHXPDhN414U+9/iAhPTQT4yntFyibdooPCqowq2GByxz/RDqE3r+KcTuPLgYWwPPy3lXXERKEYJDFFfxPFITplxbn00BzWEDOympL4hOCrSAim1cW+l5CGIh6VQuEfn7bMWYrlB8PFB2XytJ/8vISaPdN1Pc7xUjlGBEL+OYqd7icVzj7n3f4iZjBQtpZ+AE9BuEYstC3MWgEv1MyL9b1dccH/Q26E9tbM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5157.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66476007)(36756003)(66556008)(8936002)(2906002)(4326008)(86362001)(6486002)(110136005)(54906003)(66946007)(38100700002)(6666004)(83380400001)(53546011)(6506007)(7416002)(508600001)(31696002)(2616005)(8676002)(5660300002)(186003)(6512007)(31686004)(316002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TjFkMDlOM3VEajNtcWw1bWpUSFFNNDBJSmZscjJxcmV2TU8wRWRtaFd4K2w0?=
+ =?utf-8?B?c0ZsV0djd3Ric2xvdS9GSElWenE3TUw1ZFRwaFlJRmlkckY1dVBYQzNrcytJ?=
+ =?utf-8?B?NWJaNUxsbWpMWThjbk5GWjBhdHoxbjFxTVo3Ui9ZWjc1bm9scy84bXpNcUxw?=
+ =?utf-8?B?ZXRLTjBaa3JWbGRrQ016a0xFNkpBKzdRdE1iOUFIZy9JM2JKOFBmSGpBWXlR?=
+ =?utf-8?B?UjhmOExXSEwxOEtGa09JajJmdllVc2RYZmxRMDRjUWJqRHhkTHRVb3MzbGZU?=
+ =?utf-8?B?eTR2dlRudW9oaVhVQ01nQ0w1T1NJNjdDN0F3QTErZmhwQXVucmgrWEdzTTFr?=
+ =?utf-8?B?b1dOQVA5NUdBUmdkVUsrZDRBNDBSakluVExpN1dFNFhBR1U4T1pTay91NzNX?=
+ =?utf-8?B?WWVqMDhUT2tlNGs5bEt2VnErL2VMRmpsMDJld2dXZ3B5YnVMU1B3VjNZaEhC?=
+ =?utf-8?B?L054QVRZVW5rVWw0dHZoY3BDeVViYWhDVWNzNE1tZ1RhRm1BN3BPcEVZRm1R?=
+ =?utf-8?B?bkhqT2c4K21sUFpSRFVZTjgzQTZNTkdUdmpnM0tMZGEvK29Zd1JEL01vTnFh?=
+ =?utf-8?B?S1VqSkRIK2huRVpJWXk4WVBOd3VWTEJSejBOY2crSEpDOG1BdGtLTWFRSmhJ?=
+ =?utf-8?B?bHM0Q1VTOG1RT2o2TDUvZG8zTjFJaTdyRTNQbjBmbDBTeTl5NXErQkhFQmVP?=
+ =?utf-8?B?L29wcUFhTUVvQmg3VlJmbkE3QXd0Tm1wR284SXlrcGdVTTZLWkdMQTdBL1pG?=
+ =?utf-8?B?SXpXRFhRQnF0OEJiL2xwVUhFd3AycFBGdUpOcmNYQVNIZzRVV1hBWHQyRER2?=
+ =?utf-8?B?Ymc0LytWYkJHK2ltajZoWTRrZUZlUkgzRDhCdjNGQllyczJhcUJyYTM3MldQ?=
+ =?utf-8?B?RDhtMHYvcnQzV3M3eTF3Z0U3Vk04NWJQdm9vMlFDVCtqdlJidHc4OTJ0SWtG?=
+ =?utf-8?B?YVFVYUNkZmJORkFGQm1wUHJ2SUdpRGpaVWxhdUhQZmQzOTZpRWk5TER4NEY2?=
+ =?utf-8?B?cXlBamU5VjhydDRlMWhLUTNJcXJZMnN1Um41dlVGOGhDWW02TnI5Vm9yWGhx?=
+ =?utf-8?B?VGdZMHc3MGNmbnpITklzMDNDWExvKzBvSHZueVVSUUJoSDdjMStHYVgwdzRz?=
+ =?utf-8?B?Qm9Zd0t6WFY2cDlITWNHeHZvdkVhNjZDcnJ4OURMUjIyR1c3MlVjaE84R1Yv?=
+ =?utf-8?B?YXpBdGpvRU81UnBMWUNXN2NNek95TkNBMmVUMW5oL212cE1QZGZkc2hpVVRt?=
+ =?utf-8?B?L1I3TldpSmRsUUVtNW5iNnZETUJqMUtqQzVMWllRU2pUc0dnSFlYL3N5dkpU?=
+ =?utf-8?B?L1Z1MlJYb1NXUGdpL2s1dEkralI2VjJMMUZCbDhhcncxMUM0a2N3anlCVGFq?=
+ =?utf-8?B?WTlHNFREOTZFWTl3UDhMMjNYaFkzV0NqWTU4SEF3QjF2Myt1RXMrVjJ6a0Fk?=
+ =?utf-8?B?L2ZReHdqMFMzdmNqeTR6WmJJckdhbHFYQVNVSmxiOTRXVHd2aFVuVDEreTVl?=
+ =?utf-8?B?eE9nRzBUUi9YTGZhR2txWGR5bzMxaGEyd1lramY1eEcybFc4bGFGQ1VwSnRw?=
+ =?utf-8?B?QkZNQ29Dd1dNbU1yYks2ZnA0NVpObWpJdU95T2JjblZpRlJ0VUpnYW1oNDJu?=
+ =?utf-8?B?dFNnekFjS1J6RDVXTXRkak5HbnJva1VFUkp5WUdTa0hLTGVzL1hnWFdabWVo?=
+ =?utf-8?B?M2o0VUVFY3lOTmh5a0dDc1FJZFk4NjgyU2pOY3p1MGlNSUoyeFJRNlJvZktl?=
+ =?utf-8?B?cE9rOVBhNnpZTmtxMzNXSUd6d0Y0VnlWWFNHc05DYlJpanVzWU1LdndodG9S?=
+ =?utf-8?B?N3ZjbkhQS2dXVzNvVGJjTDRiR0ZUUjJSS0tybjR0QnNRMk0wMmlIYjhvYXUy?=
+ =?utf-8?B?R1JXaWdUaGJ1Rll5YlIvamxnbklQK1lDbDhJNlo1WHZVeWh5OTFpZnVqSVJk?=
+ =?utf-8?B?T0xmMCttYkRlMFQ0a0lsYXd6dU9OaW0yUWQrcFREYXJYS1lFZ1NIN2RaRGVH?=
+ =?utf-8?B?VnVWeUVPcG4zRUIyWVBXWk1YSXN3LzlWSEJRUkpXdUR6UUlBZ0FkQzk4a1F0?=
+ =?utf-8?B?Y2M0MVI1MzJuTHFUZzVZWWZwWEVHZ2EzbXJBeTJQVlg5SzNFaXFoVUFoV2gz?=
+ =?utf-8?B?dDF5TGphSGFXa0NEMFNubmFjRmJXVUdzSWhxd1lmeVZINk9VT1p0b0cxZ05Y?=
+ =?utf-8?B?R0gxNkdaZzFFU0UzRGpEck5UU1Q5bWZRVDl3MWJpaTBuaTBJVzVEWCtMTmlU?=
+ =?utf-8?Q?u0cdUY5uKmzsC+Z3P+I9UHKjh0MFyQSGD7wvth/3sc=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f11437be-e1de-4f1d-6d29-08d9d512b9a4
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5157.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 14:57:45.2042
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SDJDNfIgVeI8fa5WYqFDdvvno/kPYtc0WpfifuX/8CtGV4SPOohrW9AQlJhuECcFSAgf3KjKaaAk6I/YOLrkuA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5303
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 11 Jan 2022 at 14:49, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> Basically nobody should use blake2s in an HMAC construction; it already
-> has a keyed variant. But for unfortunately historical reasons, Noise,
+On 1/10/2022 19:51, Kai-Heng Feng wrote:
+> [+Cc Mario Limonciello, the original author on MAC pass-through]
+> 
+> On Tue, Jan 11, 2022 at 12:51 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>>
+>> On Mon, 10 Jan 2022 11:32:16 +0800 Kai-Heng Feng wrote:
+>>>>> I don't think it's a good idea. On my laptop,
+>>>>> systemd-udev-settle.service can add extra 5~10 seconds boot time
+>>>>> delay.
+>>>>> Furthermore, the external NIC in question is in a USB/Thunderbolt
+>>>>> dock, it can present pre-boot, or it can be hotplugged at any time.
+>>>>
+>>>> IIUC our guess is that this feature used for NAC and IEEE 802.1X.
+>>>> In that case someone is already provisioning certificates to all
+>>>> the machines, and must provide a config for all its interfaces.
+>>>> It should be pretty simple to also put the right MAC address override
+>>>> in the NetworkManager/systemd-networkd/whatever config, no?
+>>>
+>>> If that's really the case, why do major OEMs came up with MAC
+>>> pass-through? Stupid may it be, I don't think it's a solution looking
+>>> for problem.
+>>
+>> I don't know. Maybe due to a limitation in Windows? Maybe it's hard to
+>> do in network manager, too, and we're not seeing something. Or perhaps
+>> simply because they want to convince corporations to buy their
+>> unreasonably expensive docks.
+>>
+>> What I do know is that we need to gain a good understanding of the
+>> motivation before we push any more of such magic into the kernel.
+> 
+> Mario, do you know how corporate network and other OS handle MAC
+> pass-through, so we can come up with a more robust design?
 
--ly
+The important thing to remember is that many of these machines *don't*
+have in-built network controller and rely upon a USB-c network adapter.
 
-> used by WireGuard, uses HKDF quite strictly, which means we have to use
-> this. Because this really shouldn't be used by others, this commit moves
-> it into wireguard's noise.c locally, so that kernels that aren't using
-> WireGuard don't get this superfluous code baked in. On m68k systems,
-> this shaves off ~314 bytes.
->
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Cc: Ard Biesheuvel <ardb@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Cc: wireguard@lists.zx2c4.com
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+I recall a few reasons.
 
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
+1) Consistency with the UEFI network stack and dual booting Windows when 
+using the machine.  IOW 1 DHCP lease to one network controller, not one OS.
 
-> ---
->  drivers/net/wireguard/noise.c | 45 ++++++++++++++++++++++++++++++-----
->  include/crypto/blake2s.h      |  3 ---
->  lib/crypto/blake2s-selftest.c | 31 ------------------------
->  lib/crypto/blake2s.c          | 37 ----------------------------
->  4 files changed, 39 insertions(+), 77 deletions(-)
->
-> diff --git a/drivers/net/wireguard/noise.c b/drivers/net/wireguard/noise.c
-> index c0cfd9b36c0b..720952b92e78 100644
-> --- a/drivers/net/wireguard/noise.c
-> +++ b/drivers/net/wireguard/noise.c
-> @@ -302,6 +302,41 @@ void wg_noise_set_static_identity_private_key(
->                 static_identity->static_public, private_key);
->  }
->
-> +static void hmac(u8 *out, const u8 *in, const u8 *key, const size_t inlen, const size_t keylen)
-> +{
-> +       struct blake2s_state state;
-> +       u8 x_key[BLAKE2S_BLOCK_SIZE] __aligned(__alignof__(u32)) = { 0 };
-> +       u8 i_hash[BLAKE2S_HASH_SIZE] __aligned(__alignof__(u32));
-> +       int i;
-> +
-> +       if (keylen > BLAKE2S_BLOCK_SIZE) {
-> +               blake2s_init(&state, BLAKE2S_HASH_SIZE);
-> +               blake2s_update(&state, key, keylen);
-> +               blake2s_final(&state, x_key);
-> +       } else
-> +               memcpy(x_key, key, keylen);
-> +
-> +       for (i = 0; i < BLAKE2S_BLOCK_SIZE; ++i)
-> +               x_key[i] ^= 0x36;
-> +
-> +       blake2s_init(&state, BLAKE2S_HASH_SIZE);
-> +       blake2s_update(&state, x_key, BLAKE2S_BLOCK_SIZE);
-> +       blake2s_update(&state, in, inlen);
-> +       blake2s_final(&state, i_hash);
-> +
-> +       for (i = 0; i < BLAKE2S_BLOCK_SIZE; ++i)
-> +               x_key[i] ^= 0x5c ^ 0x36;
-> +
-> +       blake2s_init(&state, BLAKE2S_HASH_SIZE);
-> +       blake2s_update(&state, x_key, BLAKE2S_BLOCK_SIZE);
-> +       blake2s_update(&state, i_hash, BLAKE2S_HASH_SIZE);
-> +       blake2s_final(&state, i_hash);
-> +
-> +       memcpy(out, i_hash, BLAKE2S_HASH_SIZE);
-> +       memzero_explicit(x_key, BLAKE2S_BLOCK_SIZE);
-> +       memzero_explicit(i_hash, BLAKE2S_HASH_SIZE);
-> +}
-> +
->  /* This is Hugo Krawczyk's HKDF:
->   *  - https://eprint.iacr.org/2010/264.pdf
->   *  - https://tools.ietf.org/html/rfc5869
-> @@ -322,14 +357,14 @@ static void kdf(u8 *first_dst, u8 *second_dst, u8 *third_dst, const u8 *data,
->                  ((third_len || third_dst) && (!second_len || !second_dst))));
->
->         /* Extract entropy from data into secret */
-> -       blake2s256_hmac(secret, data, chaining_key, data_len, NOISE_HASH_LEN);
-> +       hmac(secret, data, chaining_key, data_len, NOISE_HASH_LEN);
->
->         if (!first_dst || !first_len)
->                 goto out;
->
->         /* Expand first key: key = secret, data = 0x1 */
->         output[0] = 1;
-> -       blake2s256_hmac(output, output, secret, 1, BLAKE2S_HASH_SIZE);
-> +       hmac(output, output, secret, 1, BLAKE2S_HASH_SIZE);
->         memcpy(first_dst, output, first_len);
->
->         if (!second_dst || !second_len)
-> @@ -337,8 +372,7 @@ static void kdf(u8 *first_dst, u8 *second_dst, u8 *third_dst, const u8 *data,
->
->         /* Expand second key: key = secret, data = first-key || 0x2 */
->         output[BLAKE2S_HASH_SIZE] = 2;
-> -       blake2s256_hmac(output, output, secret, BLAKE2S_HASH_SIZE + 1,
-> -                       BLAKE2S_HASH_SIZE);
-> +       hmac(output, output, secret, BLAKE2S_HASH_SIZE + 1, BLAKE2S_HASH_SIZE);
->         memcpy(second_dst, output, second_len);
->
->         if (!third_dst || !third_len)
-> @@ -346,8 +380,7 @@ static void kdf(u8 *first_dst, u8 *second_dst, u8 *third_dst, const u8 *data,
->
->         /* Expand third key: key = secret, data = second-key || 0x3 */
->         output[BLAKE2S_HASH_SIZE] = 3;
-> -       blake2s256_hmac(output, output, secret, BLAKE2S_HASH_SIZE + 1,
-> -                       BLAKE2S_HASH_SIZE);
-> +       hmac(output, output, secret, BLAKE2S_HASH_SIZE + 1, BLAKE2S_HASH_SIZE);
->         memcpy(third_dst, output, third_len);
->
->  out:
-> diff --git a/include/crypto/blake2s.h b/include/crypto/blake2s.h
-> index bc3fb59442ce..4e30e1799e61 100644
-> --- a/include/crypto/blake2s.h
-> +++ b/include/crypto/blake2s.h
-> @@ -101,7 +101,4 @@ static inline void blake2s(u8 *out, const u8 *in, const u8 *key,
->         blake2s_final(&state, out);
->  }
->
-> -void blake2s256_hmac(u8 *out, const u8 *in, const u8 *key, const size_t inlen,
-> -                    const size_t keylen);
-> -
->  #endif /* _CRYPTO_BLAKE2S_H */
-> diff --git a/lib/crypto/blake2s-selftest.c b/lib/crypto/blake2s-selftest.c
-> index 5d9ea53be973..409e4b728770 100644
-> --- a/lib/crypto/blake2s-selftest.c
-> +++ b/lib/crypto/blake2s-selftest.c
-> @@ -15,7 +15,6 @@
->   * #include <stdio.h>
->   *
->   * #include <openssl/evp.h>
-> - * #include <openssl/hmac.h>
->   *
->   * #define BLAKE2S_TESTVEC_COUNT       256
->   *
-> @@ -58,16 +57,6 @@
->   *     }
->   *     printf("};\n\n");
->   *
-> - *     printf("static const u8 blake2s_hmac_testvecs[][BLAKE2S_HASH_SIZE] __initconst = {\n");
-> - *
-> - *     HMAC(EVP_blake2s256(), key, sizeof(key), buf, sizeof(buf), hash, NULL);
-> - *     print_vec(hash, BLAKE2S_OUTBYTES);
-> - *
-> - *     HMAC(EVP_blake2s256(), buf, sizeof(buf), key, sizeof(key), hash, NULL);
-> - *     print_vec(hash, BLAKE2S_OUTBYTES);
-> - *
-> - *     printf("};\n");
-> - *
->   *     return 0;
->   *}
->   */
-> @@ -554,15 +543,6 @@ static const u8 blake2s_testvecs[][BLAKE2S_HASH_SIZE] __initconst = {
->      0xd6, 0x98, 0x6b, 0x07, 0x10, 0x65, 0x52, 0x65, },
->  };
->
-> -static const u8 blake2s_hmac_testvecs[][BLAKE2S_HASH_SIZE] __initconst = {
-> -  { 0xce, 0xe1, 0x57, 0x69, 0x82, 0xdc, 0xbf, 0x43, 0xad, 0x56, 0x4c, 0x70,
-> -    0xed, 0x68, 0x16, 0x96, 0xcf, 0xa4, 0x73, 0xe8, 0xe8, 0xfc, 0x32, 0x79,
-> -    0x08, 0x0a, 0x75, 0x82, 0xda, 0x3f, 0x05, 0x11, },
-> -  { 0x77, 0x2f, 0x0c, 0x71, 0x41, 0xf4, 0x4b, 0x2b, 0xb3, 0xc6, 0xb6, 0xf9,
-> -    0x60, 0xde, 0xe4, 0x52, 0x38, 0x66, 0xe8, 0xbf, 0x9b, 0x96, 0xc4, 0x9f,
-> -    0x60, 0xd9, 0x24, 0x37, 0x99, 0xd6, 0xec, 0x31, },
-> -};
-> -
->  bool __init blake2s_selftest(void)
->  {
->         u8 key[BLAKE2S_KEY_SIZE];
-> @@ -607,16 +587,5 @@ bool __init blake2s_selftest(void)
->                 }
->         }
->
-> -       if (success) {
-> -               blake2s256_hmac(hash, buf, key, sizeof(buf), sizeof(key));
-> -               success &= !memcmp(hash, blake2s_hmac_testvecs[0], BLAKE2S_HASH_SIZE);
-> -
-> -               blake2s256_hmac(hash, key, buf, sizeof(key), sizeof(buf));
-> -               success &= !memcmp(hash, blake2s_hmac_testvecs[1], BLAKE2S_HASH_SIZE);
-> -
-> -               if (!success)
-> -                       pr_err("blake2s256_hmac self-test: FAIL\n");
-> -       }
-> -
->         return success;
->  }
-> diff --git a/lib/crypto/blake2s.c b/lib/crypto/blake2s.c
-> index 93f2ae051370..9364f79937b8 100644
-> --- a/lib/crypto/blake2s.c
-> +++ b/lib/crypto/blake2s.c
-> @@ -30,43 +30,6 @@ void blake2s_final(struct blake2s_state *state, u8 *out)
->  }
->  EXPORT_SYMBOL(blake2s_final);
->
-> -void blake2s256_hmac(u8 *out, const u8 *in, const u8 *key, const size_t inlen,
-> -                    const size_t keylen)
-> -{
-> -       struct blake2s_state state;
-> -       u8 x_key[BLAKE2S_BLOCK_SIZE] __aligned(__alignof__(u32)) = { 0 };
-> -       u8 i_hash[BLAKE2S_HASH_SIZE] __aligned(__alignof__(u32));
-> -       int i;
-> -
-> -       if (keylen > BLAKE2S_BLOCK_SIZE) {
-> -               blake2s_init(&state, BLAKE2S_HASH_SIZE);
-> -               blake2s_update(&state, key, keylen);
-> -               blake2s_final(&state, x_key);
-> -       } else
-> -               memcpy(x_key, key, keylen);
-> -
-> -       for (i = 0; i < BLAKE2S_BLOCK_SIZE; ++i)
-> -               x_key[i] ^= 0x36;
-> -
-> -       blake2s_init(&state, BLAKE2S_HASH_SIZE);
-> -       blake2s_update(&state, x_key, BLAKE2S_BLOCK_SIZE);
-> -       blake2s_update(&state, in, inlen);
-> -       blake2s_final(&state, i_hash);
-> -
-> -       for (i = 0; i < BLAKE2S_BLOCK_SIZE; ++i)
-> -               x_key[i] ^= 0x5c ^ 0x36;
-> -
-> -       blake2s_init(&state, BLAKE2S_HASH_SIZE);
-> -       blake2s_update(&state, x_key, BLAKE2S_BLOCK_SIZE);
-> -       blake2s_update(&state, i_hash, BLAKE2S_HASH_SIZE);
-> -       blake2s_final(&state, i_hash);
-> -
-> -       memcpy(out, i_hash, BLAKE2S_HASH_SIZE);
-> -       memzero_explicit(x_key, BLAKE2S_BLOCK_SIZE);
-> -       memzero_explicit(i_hash, BLAKE2S_HASH_SIZE);
-> -}
-> -EXPORT_SYMBOL(blake2s256_hmac);
-> -
->  static int __init blake2s_mod_init(void)
->  {
->         if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&
-> --
-> 2.34.1
->
+2) A (small) part of an onion that is network security.  It allows 
+administrators to allow-list or block-list controllers.
+
+The example I recall hearing is someone has their laptop stolen and 
+notifies I/T.  I/T removes the MAC address of the pass through address
+from the allow-list and now that laptop can't use any hotel cubes for 
+accessing network resources.
+
+3) Resource planning and management of hoteling resources.
+
+For example allow facilities to monitor whether users are reserving and 
+using the hoteling cubes they reserved.
+
+> 
+> Kai-Heng
+> 
+>>
+>> I may be able to do some testing myself after the Omicron surge is over
+>> in the US.
+
