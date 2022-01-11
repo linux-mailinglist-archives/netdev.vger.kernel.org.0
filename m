@@ -2,101 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1035048B461
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 18:50:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3EC948B464
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 18:50:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343982AbiAKRuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 12:50:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344718AbiAKRtk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 12:49:40 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21112C06173F;
-        Tue, 11 Jan 2022 09:49:40 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id lr15-20020a17090b4b8f00b001b19671cbebso191672pjb.1;
-        Tue, 11 Jan 2022 09:49:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=7d4f9OeHE1AUWS6VvZSAGVP+TjEkekjrAdEq9W1CT2E=;
-        b=LtkofzxD8TdZdP1aO140lbC8WPCnOpwojXcvO2mF652G/dUReimGiS1A8lxeLWYeuc
-         xreoO/umV7fcww04Au79l7Tgczx7oFMt9jbgxbJDOHoUUOk6TeiyJDcqzPPX15QnDJhG
-         Icarugm+ycoyN2G6XHMgkUclx4/BPA4qVJy4u/ICwz7tePpLVJLfXb0aZrZtz1MUoy9x
-         wxcoHtjVPAd6Bio8X0xK4kdbaSa92d4KHV+6OELn1y2pS0vHFHI8qac3Nlmyt99MwPVF
-         AzUp7RiblUYkcB6mB7m5mpOrxfTlwo56vTJ6Ck0eFaf3qTH2s6MrcW+G13KXZ+cmMw4Q
-         640g==
+        id S1344572AbiAKRuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 12:50:05 -0500
+Received: from mail-ot1-f47.google.com ([209.85.210.47]:35592 "EHLO
+        mail-ot1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242729AbiAKRuD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 12:50:03 -0500
+Received: by mail-ot1-f47.google.com with SMTP id 60-20020a9d0142000000b0059103eb18d4so2287075otu.2;
+        Tue, 11 Jan 2022 09:50:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7d4f9OeHE1AUWS6VvZSAGVP+TjEkekjrAdEq9W1CT2E=;
-        b=NItp4sSpjmcP5N687W2wGrVVhm3fWF4Xj/mVQjxGXiRCXadXnCwSvU+EhhMcZ9mY5Q
-         X6mn/jgAR43ZJIPntJC/Bxo1//giDRD8czXNAGJRuF+bfo/jyDrveIzKwpFfjbXQ+U3X
-         qhEfMv45goTWl2GLFnbQ+jAFc1uD/W0IGCxGG4za5D6Ruq75RddFiwnKiDpihMohUf4B
-         68Uz96NXD9VDqirBVWd/eI5PVNaGVOOjwvJaWf5rUV4yUzFfZxiG1caRdxYdyoRMdHYG
-         UcjrC5SBeHygaNfiHZl+uAVbztEt6tn4z80irOX8vRzEyf5By4H+cMNN/tkdk6P7BL0u
-         RQRw==
-X-Gm-Message-State: AOAM5331iVMkyHLgbPz3LC8dg8F/8B6BtEzojxTlEC43wyPq5U08X4uC
-        bz/by3w9pRC4FxqGIEKKFb+8gir5zqcer/JFTt0=
-X-Google-Smtp-Source: ABdhPJxFxc6D7uid0EDFruT8ggqzhgP0nSd8Gassl1xLfHh3m98dx/PYKvteYP8uz0sXDUXmDuWPMrGAmdt3mgJ+wak=
-X-Received: by 2002:a05:6a00:1582:b0:4bb:4bc8:7ecd with SMTP id
- u2-20020a056a00158200b004bb4bc87ecdmr5567919pfk.46.1641923379584; Tue, 11 Jan
- 2022 09:49:39 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SjRe+CkmRLZrog3sEydSnGtCTplRZpNfb1EM1oGQgQ4=;
+        b=VpDhPbtmTsDpSO8RJ/T769GIGq0qx9KiU8g2sfKVPyK3Fw8SIH6eaNPqxYq6ohbRW2
+         WR8ZknulM1wwDttDFiXuudfvPgM1URMfYh8UfwIViOQj5QMJzcGn59elrSyiOsZmn9hR
+         tolZrZFLllk3ycshjpKZv78XTKAPRt6242NfyOif+sPZzgTTWRE/nTYFI7WZrsvvN3Kz
+         PFerOIpdH+irJDNFzWIOpoRsymPV5zBu1USrlMNKCJznltsTRmt1Yogf64A6WQ8Wn5zf
+         0aj2/9NEnRzFlsFUkzEg+HMxirG7eA0KY7vMoAEFYffI1bkNhJk//PMAkidKaQt6XjfJ
+         2roQ==
+X-Gm-Message-State: AOAM532fCblmJ5jmwQPNkmBjqo1Yj2TwaChvePeJncolhKNs+HTN/s21
+        9cqqmcKQsZfCG2dVzv14r14U5MwoEA==
+X-Google-Smtp-Source: ABdhPJyvAbTpnK0keT5SZM33hy+udbBcmUmItmHAKcPEBi3qTSizv2gbfjVZO6wX/A1GeVzkHYMZJg==
+X-Received: by 2002:a05:6830:4127:: with SMTP id w39mr4058250ott.98.1641923402686;
+        Tue, 11 Jan 2022 09:50:02 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id z30sm2156546otj.1.2022.01.11.09.50.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 09:50:02 -0800 (PST)
+Received: (nullmailer pid 3225637 invoked by uid 1000);
+        Tue, 11 Jan 2022 17:50:01 -0000
+Date:   Tue, 11 Jan 2022 11:50:01 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Christophe Roullier <christophe.roullier@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net: stm32-dwmac: Make each example a
+ separate entry
+Message-ID: <Yd3DSb6gJLgIcjxG@robh.at.kernel.org>
+References: <20220106182518.1435497-8-robh@kernel.org>
 MIME-Version: 1.0
-References: <20220107221115.326171-1-toke@redhat.com> <CAADnVQLBDwUEcf63Jd2ohe0k5xKAcFaUmPL6tC-h937pSTzcCg@mail.gmail.com>
-In-Reply-To: <CAADnVQLBDwUEcf63Jd2ohe0k5xKAcFaUmPL6tC-h937pSTzcCg@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 11 Jan 2022 09:49:28 -0800
-Message-ID: <CAADnVQ+eK+cmOE7OcKjV1O9J-x0=Hb_5yM61KeBXeWWn2TWquw@mail.gmail.com>
-Subject: Re: [PATCH bpf v2 1/3] xdp: check prog type before updating BPF link
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        syzbot <syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220106182518.1435497-8-robh@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 8, 2022 at 11:37 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Fri, Jan 7, 2022 at 2:11 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
-hat.com> wrote:
-> >
-> > The bpf_xdp_link_update() function didn't check the program type before
-> > updating the program, which made it possible to install any program typ=
-e as
-> > an XDP program, which is obviously not good. Syzbot managed to trigger =
-this
-> > by swapping in an LWT program on the XDP hook which would crash in a he=
-lper
-> > call.
-> >
-> > Fix this by adding a check and bailing out if the types don't match.
-> >
-> > Fixes: 026a4c28e1db ("bpf, xdp: Implement LINK_UPDATE for BPF XDP link"=
-)
-> > Reported-by: syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com
-> > Acked-by: Andrii Nakryiko <andrii@kernel.org>
-> > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> Thanks a lot for the quick fix!
-> The merge window is about to begin.
-> We will land it as soon as possible when bpf tree will be ready
-> to accept fixes.
+On Thu, 06 Jan 2022 12:25:16 -0600, Rob Herring wrote:
+> Each independent example should be a separate entry. This allows for
+> 'interrupts' to have different cell sizes.
+> 
+> The first example also has a phandle in 'interrupts', so drop the phandle.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/net/stm32-dwmac.yaml | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
 
-Applied to bpf tree.
+Applied, thanks!
