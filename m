@@ -2,105 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 850A048B40C
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 18:33:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4115F48B42C
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 18:42:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345150AbiAKRc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 12:32:58 -0500
-Received: from ale.deltatee.com ([204.191.154.188]:43930 "EHLO
-        ale.deltatee.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344767AbiAKRcC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 12:32:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
-        Message-ID:From:References:Cc:To:content-disposition;
-        bh=oBrXEHfI6xABrUDZXcl3Ilv2Mnj53ZcLvhEcAszQLhw=; b=YeL6mnl38ypaS0PyULw3luqlUK
-        XeOI6Vhp947TOTlkyofoaX8wJ8Yg8h3TI1VDxJKcJ9GY5xcvig0mIQbG1QAzJj7OFJGoGht0Yb0/K
-        tCS0dg0IMDzl/EH2fKYSqUf/gOewi+o5KmBNzaa7MfqcqWht6q8GI3xD9GYemVOCBS6mmJTuSF8wp
-        PWzBOz3P0o1s2U3pEYwYMqlbrob3xzb0MD0zndcqZ4+3aWrBorD50RGouaf0fv20oDTgMxWvUpoMU
-        2sXHLWkZGVSk79v0DlRL8om4AbtqKRlS5Om4EuhSURfLs+YKil2RSAe8S2cXFLA5uF5y1ZXO38jnC
-        TupA0NOA==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
-        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <logang@deltatee.com>)
-        id 1n7Kzp-009ip7-HL; Tue, 11 Jan 2022 10:31:46 -0700
-To:     John Hubbard <jhubbard@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        linux-kernel@vger.kernel.org
-Cc:     Christoph Hellwig <hch@lst.de>, Jason Gunthorpe <jgg@nvidia.com>,
-        Joao Martins <joao.m.martins@oracle.com>,
-        Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-rdma@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        nvdimm@lists.linux.dev
-References: <YdyKWeU0HTv8m7wD@casper.infradead.org>
- <82989486-3780-f0aa-c13d-994e97d4ac89@nvidia.com>
-From:   Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <305b0b3b-e5d1-3dc2-a4a3-01c05dda6748@deltatee.com>
-Date:   Tue, 11 Jan 2022 10:31:42 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S1344071AbiAKRms (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 12:42:48 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:18938 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S242080AbiAKRmq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 12:42:46 -0500
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20BGSdPl017935;
+        Tue, 11 Jan 2022 17:42:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=U9DKN7yJOm6yWmgJE4uAJHZUxcEBhqMocB7Ph9SjtzY=;
+ b=og64v9yN27fgaLDxBvViJnOr1+559p2oy3W+hKFy5OrfwU/hgCOqWAvjmsxlVw84EF+W
+ Qlch2iv6WgZBSGO+ADBtYpP+reAO06M+BCbuTWgI8Wd2H+QADBgbLyOTbdbOtLZ1afmE
+ Kvt5DeT7OmsgavdyCuV9QZ5DpccZmTxHHbq01D5ubRlDHNJbhahnSDLVw7qtw7q4O6hQ
+ 5ro1BQaFcOmXNL7w4yYfNSbuZeWR4heZ01Ls/6eD9Fswmzwgluh5Pi+WLBAWlPnGtcmY
+ lrMVwKzcM2NsiunVM3dwaciMBppjDce2j7wm4SHY9gTovoTWXGz7kZ+xIdCMf3/EvCIG rQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dhdeut2dx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 11 Jan 2022 17:42:42 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20BHYoag031285;
+        Tue, 11 Jan 2022 17:42:42 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dhdeut2dk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 11 Jan 2022 17:42:42 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20BHfsth019424;
+        Tue, 11 Jan 2022 17:42:40 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3df289jepx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 11 Jan 2022 17:42:40 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20BHgcFb45154638
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 11 Jan 2022 17:42:38 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 07BAA4C062;
+        Tue, 11 Jan 2022 17:42:38 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 92BE34C04A;
+        Tue, 11 Jan 2022 17:42:37 +0000 (GMT)
+Received: from [9.145.30.70] (unknown [9.145.30.70])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 11 Jan 2022 17:42:37 +0000 (GMT)
+Message-ID: <e0282429-49b3-c22c-fa02-81d2e1aee8d8@linux.ibm.com>
+Date:   Tue, 11 Jan 2022 18:42:37 +0100
 MIME-Version: 1.0
-In-Reply-To: <82989486-3780-f0aa-c13d-994e97d4ac89@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-CA
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH net 3/3] net/smc: Resolve the race between SMC-R link
+ access and clear
+Content-Language: en-US
+To:     Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1641806784-93141-1-git-send-email-guwen@linux.alibaba.com>
+ <1641806784-93141-4-git-send-email-guwen@linux.alibaba.com>
+ <8f13aa62-6360-8038-3041-86fd51b40a3e@linux.ibm.com>
+ <fa057e34-7626-2b19-2c2e-acd4999e7fe5@linux.alibaba.com>
+ <b1882268-d8bb-eee9-8238-e30962928034@linux.ibm.com>
+ <eecadb47-92f3-c4cc-64d2-3954474e3c5f@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <eecadb47-92f3-c4cc-64d2-3954474e3c5f@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: nvdimm@lists.linux.dev, dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org, linux-mm@kvack.org, netdev@vger.kernel.org, linux-block@vger.kernel.org, ming.lei@redhat.com, joao.m.martins@oracle.com, jgg@nvidia.com, hch@lst.de, linux-kernel@vger.kernel.org, willy@infradead.org, jhubbard@nvidia.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on ale.deltatee.com
-X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A autolearn=ham autolearn_force=no version=3.4.6
-Subject: Re: Phyr Starter
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: G5WsMFeNbOUszKYjsl24twe_5-sbAiWZ
+X-Proofpoint-ORIG-GUID: mJVC8O5uzExzCsp5B8ZHb8w03Qkf2smh
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-11_04,2022-01-11_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
+ mlxlogscore=999 spamscore=0 clxscore=1015 bulkscore=0 mlxscore=0
+ impostorscore=0 lowpriorityscore=0 adultscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201110095
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2022-01-11 1:17 a.m., John Hubbard wrote:
-> On 1/10/22 11:34, Matthew Wilcox wrote:
->> TLDR: I want to introduce a new data type:
+On 11/01/2022 17:44, Wen Gu wrote:
+> 
+> 
+> On 2022/1/12 00:02, Karsten Graul wrote:
+>> On 11/01/2022 16:49, Wen Gu wrote:
+>>>
+>>> OK, I will correct this as well.
+>>>
+>>> And similarly I want to move smc_ibdev_cnt_dec() and put_device() to
+>>> __smcr_link_clear() as well to ensure that put link related resources
+>>> only when link is actually cleared. What do you think?
 >>
->> struct phyr {
->>          phys_addr_t addr;
->>          size_t len;
->> };
->>
->> and use it to replace bio_vec as well as using it to replace the array
->> of struct pages used by get_user_pages() and friends.
->>
->> ---
+>> I think that's a good idea, yes.
 > 
-> This would certainly solve quite a few problems at once. Very compelling.
-
-I agree.
-
-> Zooming in on the pinning aspect for a moment: last time I attempted to
-> convert O_DIRECT callers from gup to pup, I recall wanting very much to
-> record, in each bio_vec, whether these pages were acquired via FOLL_PIN,
-> or some non-FOLL_PIN method. Because at the end of the IO, it is not
-> easy to disentangle which pages require put_page() and which require
-> unpin_user_page*().
+> Thank you.
 > 
-> And changing the bio_vec for *that* purpose was not really acceptable.
+> Not in a hurry, just want to ask should I send a v2 with these changes
+> or continue to wait for subsequent review of v1?
 > 
-> But now that you're looking to change it in a big way (and with some
-> spare bits avaiable...oohh!), maybe I can go that direction after all.
-> 
-> Or, are you looking at a design in which any phyr is implicitly FOLL_PIN'd
-> if it exists at all?
 
-I'd also second being able to store a handful of flags in each phyr. My
-userspace P2PDMA patchset needs to add a flag to each sgl to indicate
-whether it was mapped as a bus address or not (which would be necessary
-for the DMA mapped side dma_map_phyr).
+Yeah I think its time for a v2, thank you!
 
-Though, it's not immediately obvious where to put the flags without
-increasing the size of the structure :(
-
-Logan
