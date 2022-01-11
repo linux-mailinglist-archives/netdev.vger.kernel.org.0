@@ -2,113 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2D3F48AA6F
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 10:24:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5357848AA95
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 10:32:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349267AbiAKJYx convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 11 Jan 2022 04:24:53 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:52619 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237029AbiAKJYw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 04:24:52 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-53-1xZ1mu4IMP-8jPHDydNz9Q-1; Tue, 11 Jan 2022 09:24:49 +0000
-X-MC-Unique: 1xZ1mu4IMP-8jPHDydNz9Q-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Tue, 11 Jan 2022 09:24:49 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Tue, 11 Jan 2022 09:24:49 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Pavel Begunkov' <asml.silence@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>
-CC:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 13/14] net: inline part of skb_csum_hwoffload_help
-Thread-Topic: [PATCH 13/14] net: inline part of skb_csum_hwoffload_help
-Thread-Index: AQHYBooc+zd0TLCwI0SMx+giCPDt3axdi3LQ
-Date:   Tue, 11 Jan 2022 09:24:49 +0000
-Message-ID: <918a937f6cef44e282353001a7fbba7a@AcuMS.aculab.com>
-References: <cover.1641863490.git.asml.silence@gmail.com>
- <0bc041d2d38a08064a642c05ca8cceb0ca165f88.1641863490.git.asml.silence@gmail.com>
-In-Reply-To: <0bc041d2d38a08064a642c05ca8cceb0ca165f88.1641863490.git.asml.silence@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1349268AbiAKJcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 04:32:52 -0500
+Received: from mail.netfilter.org ([217.70.188.207]:45730 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236995AbiAKJcw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 04:32:52 -0500
+Received: from netfilter.org (unknown [78.30.32.163])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 74FB9607C3;
+        Tue, 11 Jan 2022 10:29:59 +0100 (CET)
+Date:   Tue, 11 Jan 2022 10:32:43 +0100
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] netfilter: nf_tables: fix compile warnings
+Message-ID: <Yd1OuyV3ztYc+jAl@salvia>
+References: <20220110221419.60994-1-pablo@netfilter.org>
+ <20220110205755.5dd76c64@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220110205755.5dd76c64@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pavel Begunkov
-> Sent: 11 January 2022 01:22
+On Mon, Jan 10, 2022 at 08:57:55PM -0800, Jakub Kicinski wrote:
+> On Mon, 10 Jan 2022 23:14:19 +0100 Pablo Neira Ayuso wrote:
+> > Remove unused variable and fix missing initialization.
+> > 
+> > >> net/netfilter/nf_tables_api.c:8266:6: warning: variable 'i' set but not used [-Wunused-but-set-variable]  
+> >            int i;
+> >                ^
+> > >> net/netfilter/nf_tables_api.c:8277:4: warning: variable 'data_size' is uninitialized when used here [-Wuninitialized]  
+> >                            data_size += sizeof(*prule) + rule->dlen;
+> >                            ^~~~~~~~~
+> >    net/netfilter/nf_tables_api.c:8262:30: note: initialize the variable 'data_size' to silence this warning
+> >            unsigned int size, data_size;
+> > 
+> > Fixes: 2c865a8a28a1 ("netfilter: nf_tables: add rule blob layout")
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> > ---
+> > Please, directly apply to net-next, thanks. Otherwise let me know and
+> > I'll prepare a pull request with pending fixes once net-next gets merged
+> > into net.
 > 
-> Inline a HW csum'ed part of skb_csum_hwoffload_help().
+> As you have probably seen Linus fixed this up himself.
 > 
-> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-> ---
->  include/linux/netdevice.h | 16 ++++++++++++++--
->  net/core/dev.c            | 13 +++----------
->  2 files changed, 17 insertions(+), 12 deletions(-)
-> 
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 3213c7227b59..fbe6c764ce57 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -4596,8 +4596,20 @@ void netdev_rss_key_fill(void *buffer, size_t len);
-> 
->  int skb_checksum_help(struct sk_buff *skb);
->  int skb_crc32c_csum_help(struct sk_buff *skb);
-> -int skb_csum_hwoffload_help(struct sk_buff *skb,
-> -			    const netdev_features_t features);
-> +int __skb_csum_hwoffload_help(struct sk_buff *skb,
-> +			      const netdev_features_t features);
-> +
-> +static inline int skb_csum_hwoffload_help(struct sk_buff *skb,
-> +					  const netdev_features_t features)
-> +{
-> +	if (unlikely(skb_csum_is_sctp(skb)))
-> +		return !!(features & NETIF_F_SCTP_CRC) ? 0 :
+> You can take the fix for the other warning thru your tree.
 
-If that !! doing anything? - doesn't look like it.
-
-> +			skb_crc32c_csum_help(skb);
-> +
-> +	if (features & NETIF_F_HW_CSUM)
-> +		return 0;
-> +	return __skb_csum_hwoffload_help(skb, features);
-> +}
-
-Maybe you should remove some bloat by moving the sctp code
-into the called function.
-This probably needs something like?
-
-{
-	if (features & NETIF_F_HW_CSUM && !skb_csum_is_sctp(skb))
-		return 0;
-	return __skb_csum_hw_offload(skb, features);
-}
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+That's fine, thanks.
