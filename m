@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE09E48BA3F
+	by mail.lfdr.de (Postfix) with ESMTP id 643EF48BA3E
 	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 22:55:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231165AbiAKVzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 16:55:55 -0500
-Received: from mx0c-0054df01.pphosted.com ([67.231.159.91]:15924 "EHLO
+        id S230171AbiAKVzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 16:55:54 -0500
+Received: from mx0c-0054df01.pphosted.com ([67.231.159.91]:8212 "EHLO
         mx0c-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231146AbiAKVzx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 16:55:53 -0500
+        by vger.kernel.org with ESMTP id S231654AbiAKVzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 16:55:50 -0500
 Received: from pps.filterd (m0208999.ppops.net [127.0.0.1])
-        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20BBn7j9012445;
-        Tue, 11 Jan 2022 16:55:30 -0500
+        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20BBn7jA012445;
+        Tue, 11 Jan 2022 16:55:31 -0500
 Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2056.outbound.protection.outlook.com [104.47.61.56])
-        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3dgjrs98t5-1
+        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3dgjrs98t5-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 11 Jan 2022 16:55:30 -0500
+        Tue, 11 Jan 2022 16:55:31 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hOMFG/mvRju7qJa5+uFHdb+Qjm+SgdaGTCtz0f0PBYn3CYuhNdxtjddGOcCA8XQf0bfLdxm/wcQZBQWD/LgJw3yamH1q/tof0rICNMBLOvMEJkz+vQE0zgRqwy3MhOEoFpZWSDTWJUHH6OZRNpvot1ZBWc49YZXt8y6yuLu+SBzTOzGdqNJirws0U5eH5xqc//sPnDhQ0aS2aZ5QjJLXVir5kuVHL66uuICIzxVCSKaJ/Ij4jY1jjpB8T6/7KgPIwX0+W+igagt+fJfSO9HDB5X+u85m3jupHky1+bgxajn9WNbp5ltJLis3fA6fWpeKH0Wm0w5zsYeC/tkbMuJnJQ==
+ b=Akpavn2njX07btXSbsYuoRxdx/FZh0Dpf0Gb8Sn2/av+sNLmk9RsxfbUADAdHQecRF5uBkqLeFdSq9PZ6+3maI9JRdQCuTyc1qKB7kb0GiP63OxpqtLI6tMJoRanDBTEaqRm1gRp5sy5P4wwoUEumLc+2/6Fauw9lDxSlXRyosGFMVS3tpS/QbmYWH+z7AH6BwjwcDXJkOqkf5pZtgvWSwYtRhSF/8JhkjOLRzmCOR/8H85nFfAg/ZBpxGLS59LKA987vZn8tf5nsifCCu0E4ibtBexkPxSBAaO6+6xUrZmx8T4kesSJWDE7X9xk7zQPgTloAOcznz2kscK5R3WcQA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=u2IJ6rfTfH7jDMMo1tEtHkTLUpwfD4XpBQAeUPEJr1c=;
- b=CR/LEZneXC1621mbtbHD1O3yfX8TfrjCKRPc5Fg7GN3tVWNX31BAXps02d/ePVFIM20kyUwG/b8r/8+8Hk+hOjeZcs76dY7uXnZS+K9jVkPjMqymykrf2ZNy9SwFtgqWIXosSjSsme34E+jFfgwm+FRyB1qWv3qwSGRdC409CH/8P/o1PHhLwjXcnh1zqV91azZuFM1qikTv5ivuZd9yMBcyi+5gS2wac5ed+WnOWYhpMXdrh7jGVE48YZWCs23AfjMRQdEhyFzHQeUkc/Cb09wikOCdU3hhoPhZTBdweOuF72PQMv2RFufH0ZYvQcFNFzVPCi89WkxaSPFjLK7bBg==
+ bh=YuAOwskVohn1G0sROrtidgXl/Lw5cfa+Pv+sjvljH9k=;
+ b=VqbeerkiE97321RTOrM4KH1+5GlSHVvA+tb717L1EqCjvaP5qFhvtf+4HemZ+fxzemBfhZxzC3c6V3XBVZZRP730qe2iXWTDsAJ479mVaFrsrGW5GJ1pjxOJrSwUJJ38alTw9LAoqi7gEq/+lcO7/zqnHiwa+QTKODQ5j6LEDBv+oIUnUhAZemRWVEQjBtjYSzED+v59WwGSsVlxB8Z+5+yemm6ZffJ3wiOyeyD3IQILEharDxCbyCKd2bUpJF8njwXULs/xz8Jkjl/zLCl/RuPEhentcHNGemsHOBm8Z0MJqerFsXRcSxXYVOTGkShzLj2zP7A+1dbo1U7jxLOfbg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
  dkim=pass header.d=calian.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=u2IJ6rfTfH7jDMMo1tEtHkTLUpwfD4XpBQAeUPEJr1c=;
- b=ojtb7ZZn7PWzadVj2IvCE54nZy0BLPxpmbdq+LgRPRUnY4jDGnrf3kLoPv6vkYH16juieGfguJORzX4SeC0tVxUWUeA6Aq5/7T/LWts2ikCpIv0WO5Y4fdsaQ8LMCAlnR3vrlbuXlOBIgo1ody03/qudAUEarBR2Hi+g9PuFvCw=
+ bh=YuAOwskVohn1G0sROrtidgXl/Lw5cfa+Pv+sjvljH9k=;
+ b=MLsJ2d6Qg7K247y82Y6iwtecTx1gFbaTsZjMwqcQYmjfKv1pCLdf1iPOONtkZmDCslA7tsxdtTETA5WurKlBj/ThSPdcXRNTFjdLymqgkzK4ZArLShHLRPNnN6eJ8h+52pNkEJ8NlbKVPDQy8Jl6+IegdiXjuSvW3bwqqWQOHFA=
 Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:6a::19)
  by YTOPR0101MB0860.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b00:24::13) with
  Microsoft SMTP Server (version=TLS1_2,
@@ -47,10 +47,12 @@ To:     netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         davem@davemloft.net, kuba@kernel.org,
         Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH net-next v2 0/3] at803x fiber/SFP support
-Date:   Tue, 11 Jan 2022 15:55:01 -0600
-Message-Id: <20220111215504.2714643-1-robert.hancock@calian.com>
+Subject: [PATCH net-next v2 1/3] net: phy: at803x: move page selection fix to config_init
+Date:   Tue, 11 Jan 2022 15:55:02 -0600
+Message-Id: <20220111215504.2714643-2-robert.hancock@calian.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220111215504.2714643-1-robert.hancock@calian.com>
+References: <20220111215504.2714643-1-robert.hancock@calian.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: CH0PR04CA0021.namprd04.prod.outlook.com
@@ -58,86 +60,147 @@ X-ClientProxiedBy: CH0PR04CA0021.namprd04.prod.outlook.com
  (2603:10b6:b01:6a::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f4eb1a14-711d-407b-8a45-08d9d54d14d2
+X-MS-Office365-Filtering-Correlation-Id: e70970c9-82d5-4c63-424e-08d9d54d1551
 X-MS-TrafficTypeDiagnostic: YTOPR0101MB0860:EE_
-X-Microsoft-Antispam-PRVS: <YTOPR0101MB08602E0454935DD0F66F81B5EC519@YTOPR0101MB0860.CANPRD01.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-Microsoft-Antispam-PRVS: <YTOPR0101MB0860D2565D716AFD81348EDAEC519@YTOPR0101MB0860.CANPRD01.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yYkOxDRPMqxjdsRuJhqwRF9dfn4m1twkC9Nc7J7A8mMNhZqRsZPqx33qa035BJnjaNcw6UK5ApzTazK7YYLZKrywFTJdv9iRfQzXGf6Ky8X6SgnDMKjnVHMrLdLGZTZr8hZgf3+RZG1NELdPGV7kpHsN3rglbCDXNtV75GYLi560TVIpVyOnD0isbANtyV2ADgVFCbAj+QtQoCmv2IjH+oEE7wG3jBBuhoiCXvMcYWP3UsUX09eBdC54ghJpwXUUJIHxxyPKF+bV3hHv83Oq3eQfo+yQQgWlfX2bB3AlHYZh5d/aEOH1DMwgGTR80H4+5lwKT/VWjo3yi4ag9gEP0NK+wm7vkTVOV4ZiPsOIAW/r0V7U1dERiC22BpWMsjQk8X+s98Lg0Uh+KNSt4Ra4YiM6/M22AqjECli737g9bv3wmk0pHH+i1YDQvhP/O6k8keqD+t93klNWwbxzK+hRnu9O75MAaRjLkAFk85TF7phTU4hpdZowybGvHaoFRwxe97TKjp4rq07LDA2EaN+Dm3gBN6XG8f0tvPOPhMRHW+gskH5Oh0Nzio5q2ghHZRY4TjPc8eqcB9FrhPGpcmmTa+IV9SVS0vNjXkFZejt3bvhB4XTrrpn5X+PaNW0APeHjPJEQ5H76epCjDYdF9iTbzqY9BZ7rA0m663xNKvEHJQE2yPbdOvXLMDn7yLrr6TSSto156SUYMQC8560c8iUWBw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(1076003)(52116002)(36756003)(186003)(6506007)(8936002)(38100700002)(6666004)(44832011)(38350700002)(6512007)(2616005)(316002)(66476007)(508600001)(83380400001)(107886003)(8676002)(86362001)(5660300002)(6916009)(66556008)(2906002)(4744005)(66946007)(4326008)(26005)(6486002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 51tDPXiJwDe6pdTdRDzaQ1HRSE2tbhiTgtpToxb+Z1YIFVZsgwnJpiIRjAvcj4feO/qzGWHq/epNiyZ4sbzlcFIPb79y/jMzAbz28L+AM8/gnuG3OC84rZbMQ0kvUXe7J5Rnqt4bFRYcIWsZMmkKnC3MJxo8pDkzg7AEwk5ePFydHKo/NJVnZqiquTf9P3Y2mRncOfZbDTnvqEQSymkP5HW/37rYiAJw8wp8ZxCuZYLCpQzxxHIM2LeB7bGwiUEVsGaWQT9d5keGrV2vU3d+zZ1C5DksSttLFELM8cMcgCX2ORGEW+seBOLhW/GgPmXJWzM9aTQe90Uw1a40JDiRmS1gP7HBfENI3P+KTHKNHRecBfWTbOTMwBZS/y3UEXVctTBJZLw5RZUGhAKtLSh/BVS5OO119jZGdnHdIQ0weewcOzNVBjBxx8I0nT4qbnv7MdnJEClFFWzYzHMkZNbraQ8ZT4EH5tg62T9SDUdbD82sXnL26FJsiKqhSf6GztmO3rhp4Xc69a/PBPNobzJZVvo16jXtHut1Yw49T+zrrZV3nzow8nYguB1r5PBWM0cNy8XNUlGISDZFHIqMa+DGc52lRNKz3398zTk+9D9EIIOMlmAhhTSZ2oZEfcNny9TfApQG5/aF1fWIbHsrkTlkYsSOaUKG/6wjEMdHveep/xmzck6oipBA5rwdmXWKF2Z6T61QIz0SEHwCrCiE9hzUwg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(1076003)(52116002)(36756003)(186003)(6506007)(8936002)(38100700002)(6666004)(44832011)(38350700002)(6512007)(2616005)(316002)(66476007)(508600001)(83380400001)(107886003)(8676002)(86362001)(5660300002)(6916009)(66556008)(2906002)(66946007)(4326008)(26005)(6486002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YNgj89mNxIKkPRpHG8Axse7kR9htyqNUWzsmHGwWV5MLN19052DFG/FzGeiY?=
- =?us-ascii?Q?X0LCi5IHlSVNFj6Ov0c65IQtJ+yCP5XU3t1bWHsqStNVg3rVcI2qpwDSMa8R?=
- =?us-ascii?Q?Up2z2PyixU4mRj/GlTtVy2l0YmlHsFcJoABDDdZTRbq67++GSFDr3hvfv1Kd?=
- =?us-ascii?Q?qUJsPAfN7zyOjw219B0BdXp9sOcXxopTMPqxDMMgO6Nox9EiouDmS5pQpNAY?=
- =?us-ascii?Q?NRa7sY4FIr0rZYfMwPPOQkgcQnO1I7YoLo7RaxR/3DuPyv7H3k7pL6G5uGgG?=
- =?us-ascii?Q?Pp33GxlMlGqeri86Knr/vYiUb2TPKL/Q0p32BLxRNwAWxZ5IDJMfs3NMslDK?=
- =?us-ascii?Q?G2ZEtTFz+hf+4kA0p07GrRrM98MLrAieVMxS4NYZw8EbfwDmognrZ+hHA+p9?=
- =?us-ascii?Q?eWtsjNMXstP4QZ/PWrUOPekD0bFV5XCAYIzdDTQJAR0e5PzhBgBMEHD2QfdR?=
- =?us-ascii?Q?dkwJUkkL7600U+dnqpM+iEUHsPOZY9akKHhwUTbp0Z7QRmqjQILPnLajdhrr?=
- =?us-ascii?Q?3vlSkpm9JCVChdQ2vZmzN9/yflFVc+9WGY+AJ84P9JJctrO2F2sCLBpCITK3?=
- =?us-ascii?Q?/GQtt7lGToieHFyoMl9AwVfHtbgJPDjK4uhh6YhS2RRwlvh69PoTAmc3GCml?=
- =?us-ascii?Q?o5CWl2aLS9AJlCih2dLof0j0XR9hoS4Hf4KtsV/YjYzrW9t3rJu8iGTj7OYj?=
- =?us-ascii?Q?XO08B3j2MPhWKUIZfophrpcYwNz3NyhcbYfuqoqYK05KHHy2V+9xXcGiU+0M?=
- =?us-ascii?Q?aCe0n5BKzakiB9wJVx9iwle2FtHUNKe5m0Mxvynb3v5uYtVue4CXkSdWkB0b?=
- =?us-ascii?Q?VzUNnNws0KEgUUHEQFyMdls2rHb7L6/V9dkK8FxccoKKwFjlw/t9objNziPg?=
- =?us-ascii?Q?pwyaBmAwYddTXavqJd9rYTe9qcZP+xVusHqU2qJZvu58zX5uZIIxD5HuK+qD?=
- =?us-ascii?Q?v0Y7npViFcgoPbsExrt1QMV1k6aMBa7ZlVlhhxibQQZIYKuQgbZ8GSoaLz9i?=
- =?us-ascii?Q?KygAwL8YPKeTnb9yM4vAX6aq1vlCGeWhivEPQu+j6cwpArmyHhKTVCvUJCYX?=
- =?us-ascii?Q?oM5kCO9V8iI5JlX3gkRB+hNFwlZf4oKiIFDTh1Ixkgi3b2dKvB68kSEKX5VU?=
- =?us-ascii?Q?oAASozDFBjXljd0JKGRrDg5fwtq19z66DqFEGmvL7k5vb5OIm6XdrM+NXdJD?=
- =?us-ascii?Q?eGeSuxs6wBZ/51sEt/T6v4ont1zGaivKQ0zA3BISyeHmuYeWQA2F+dnqn0N2?=
- =?us-ascii?Q?Mt9oa1w+15K+eu0NgV6lvyHCwAJFBZV2Vzxvmqm+r6p49s1mLlByOZ2SH7Bq?=
- =?us-ascii?Q?pg/2G+Vq+FfIboNUmgyfmoNhY+sw95HyFAskJfAskpzMfiHxjh0eXxUKhee2?=
- =?us-ascii?Q?zaZYxu+rpjH+YiWIqv+AzdPyqQb9lEgjcwUfJhhkdTwDTLz4418Z0wIbt+q9?=
- =?us-ascii?Q?IV+CxcjyHz/X0wBl9H9N5gmUNQmFQpRiZCn4GqX2vN3DhrINbJBWAz0L6+Uv?=
- =?us-ascii?Q?D/6f2o0VpdPam7JncrZgc3Y5ZphjxceKbArc0hMu/oduGWQTN8AqCSOHn3JH?=
- =?us-ascii?Q?A6INsVpTsFB/CR+qG2m0moT6dDECeFi3Dl9T1h+rVw+tAIREkV2gdywzLefa?=
- =?us-ascii?Q?4Pc6weq3/PT2I0eAKjFgLZ60Ji6NVQ9zaE0xTV0j3hom8qNIN7Fh8wsspjBA?=
- =?us-ascii?Q?JuqaMtjJFEbmnYYIK7guntDPHd4=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?w522B4iVQDhU7G277qydwc6qDmid3BSdzVAzFu5yqTTg0zwRu1nROwSJr32N?=
+ =?us-ascii?Q?XpPIgm/D/vGxmTIg2D5akau/Yu3e5hOoE920SKWkW2XSkYeACwwnP1Nuljce?=
+ =?us-ascii?Q?Jx33KXx25FD34orVpstJCHefISYCtT8C43NyoO8QVEu6JwRUwfKoXYmIpo4D?=
+ =?us-ascii?Q?QAy9+hFsP0p50SWqh7V93kOKaRI0EL9rFir+9i2rfesPK1AmpuabqpUlnMV6?=
+ =?us-ascii?Q?lL2jvGvFutUnugJEFbTqTrwY0doce3ojIcuyGMiabA8muTT1U8J+5aZzXG0R?=
+ =?us-ascii?Q?1mCQOT+xxBwNE9clXLiVkb1EOpeZ5HaOMvcdZamrd5w/xvZKMv1FJO8l7NQD?=
+ =?us-ascii?Q?R6+TDryujxFoEbZVaL4ZMyfXGZCBZ7tAyLrzv6nAOvpJUpg/xtcOfsAxFWZ7?=
+ =?us-ascii?Q?VTL3LdNgBpNklmU/NWOGA8zGzLuZJ6v4L/A2EUviMEu3x3SuXPuPKqY/xWKr?=
+ =?us-ascii?Q?L7yuAPiotXvUGjv7TsNdZaezVl+abzoJ1cCpASlOd5ciRrlZHmPcLY36NQyF?=
+ =?us-ascii?Q?tEJ03xvQfmT1Vyb2ZQ2B/RJW7aniFSudXBlNIiOQvIuOC980NHwtpX/CNiJo?=
+ =?us-ascii?Q?ORnBRpmwvlH0gQ7+gnEUpQ6kUtqMkL8kUvAkFCT7TxfTHndf0uekXUCNP5YZ?=
+ =?us-ascii?Q?QtaydWR5egUga4RjUHACP8r20MPKTzPe7wHPGsSHybx1nYEnvfytifHwUofz?=
+ =?us-ascii?Q?dNbpiyYrSS4QEtqhC6o/icCqURfJtfzzOKd1xL9oBi2AyVfoRWhPMnOQF2LY?=
+ =?us-ascii?Q?QPzndrcyZ3HZ5RCNlZYPFx8q+8sM2AaK2xe96vPeVPau7RT/+TatoGqUjEa9?=
+ =?us-ascii?Q?9Sa1YdrlaTF3bMQ1VdgB8ungdHDpqZZsgR8PCF/RrsEzMkTYwbdWnWJaaXO4?=
+ =?us-ascii?Q?WbLUiWTDPeEwoyfQuW6kaTnmtJdVgjWCid7vGdEV2hoMLrUy0pXlkGjk92jR?=
+ =?us-ascii?Q?50vsHo0zz1HgBPBclBexkk5v9V+9ioHR2NckQTLQ6TOZoiq8HMZ/ZbbUDzpa?=
+ =?us-ascii?Q?khWD9hBT82P1EKynRaZ53BsvDlDzkqLleF9spPTVcb6wMGLxJxxEQXXMmr69?=
+ =?us-ascii?Q?ygO7WRP7YD+RvMVQilx6eP4xWQC26FQ7Ol8AO3/V5S2/iGjhA1HMgkfa1naa?=
+ =?us-ascii?Q?vugHUzuVbzHsBDrAP9ow1yOAAvgx97gzJNsP4xkLwo+YBp4pGVXDEprBCWTE?=
+ =?us-ascii?Q?TUug2DXTkEOaeyyBU2oa2yYIUBuxRA+kGzcWiL2LugJ0ZvBtBFJhHOVQ3d1n?=
+ =?us-ascii?Q?6kZzJzQyU5jIQ+LvmLpV982TvcjRmoYTp5lbjRX8rszc9woeaIZZzUy2Y8S6?=
+ =?us-ascii?Q?kK1jLrX2jF1PHPGjdlMYhySzmka4gqtvvKchamSQUaLHKbLrfBRfnRj7g5T8?=
+ =?us-ascii?Q?A3mg25TZYKrUxHe770mSZ9QQAAOZxNbqLkXHau0/ivkR1hmwhFfigirdI3XB?=
+ =?us-ascii?Q?gGsnUSzpfoIot5r+z/++foKjYKBuydO7yIJu4bNojl0bsw21XVmbAxeY1RAE?=
+ =?us-ascii?Q?4jtjI4GTWsGWG1lxMojvXBIBahvOUHv6TpmTClXzBpL2wNPHqXQKGLYmBCb0?=
+ =?us-ascii?Q?2TcEPWB0MyFrWTnyocE9bH8itbWZC3ai30JJc0IZJg3HGAWqTtGxc0DdNv3P?=
+ =?us-ascii?Q?gO0UqipBpUYkqDoC7UiMQ0wAkeh86OHTToRwlV2XTsPRfiwqpRvmFdZ5Rk4G?=
+ =?us-ascii?Q?BKCeI6h+wJnys5CQNcXjd6zEbok=3D?=
 X-OriginatorOrg: calian.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f4eb1a14-711d-407b-8a45-08d9d54d14d2
+X-MS-Exchange-CrossTenant-Network-Message-Id: e70970c9-82d5-4c63-424e-08d9d54d1551
 X-MS-Exchange-CrossTenant-AuthSource: YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 21:55:28.9581
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 21:55:29.7105
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: q6zs3fv5zNw6vAuULtgNdOHzhMHaJtva+BA7oRLq0xFdqi9VBGu6LlrDDDwx3rRKj6oUv6E+WXrfIMsR3YHZwYPKu3XyUqvOTI38fquB5yw=
+X-MS-Exchange-CrossTenant-UserPrincipalName: BmAZjv3qe5MFWYDKrFpmIOfCTsXAa1pSu3xujOrqkTQY3Q6fSKXY07EeBlovfiJw7pb9+LTV/71OsbAlZJJtHUGqGkslxSW71rO99z4/mMo=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: YTOPR0101MB0860
-X-Proofpoint-ORIG-GUID: CpdWpK8RSn-31imleHAsXkwv4bD_J9JT
-X-Proofpoint-GUID: CpdWpK8RSn-31imleHAsXkwv4bD_J9JT
+X-Proofpoint-ORIG-GUID: W12rnVayZDxDqPcNFENCWir8yh2vdKIh
+X-Proofpoint-GUID: W12rnVayZDxDqPcNFENCWir8yh2vdKIh
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-01-11_04,2022-01-11_01,2021-12-02_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- priorityscore=1501 suspectscore=0 adultscore=0 clxscore=1011 phishscore=0
- mlxlogscore=755 malwarescore=0 spamscore=0 mlxscore=0 bulkscore=0
+ priorityscore=1501 suspectscore=0 adultscore=0 clxscore=1015 phishscore=0
+ mlxlogscore=999 malwarescore=0 spamscore=0 mlxscore=0 bulkscore=0
  lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2110150000 definitions=main-2201110114
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for 1000Base-X fiber modes to the at803x PHY driver, as
-well as support for connecting a downstream SFP cage.
+The fix to select the copper page on AR8031 was being done in the probe
+function rather than config_init, so it would not be redone after resume
+from suspend. Move this to config_init so it is always redone when
+needed.
 
-Changes since v1:
--moved page selection to config_init so it is handled properly
-after suspend/resume
--added explicit check for empty sfp_support bitmask
+Fixes: c329e5afb42f ("net: phy: at803x: select correct page on config init")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+---
+ drivers/net/phy/at803x.c | 40 ++++++++++++++++------------------------
+ 1 file changed, 16 insertions(+), 24 deletions(-)
 
-Robert Hancock (3):
-  net: phy: at803x: move page selection fix to config_init
-  net: phy: at803x: add fiber support
-  net: phy: at803x: Support downstream SFP cage
-
- drivers/net/phy/at803x.c | 146 +++++++++++++++++++++++++++++++++------
- 1 file changed, 126 insertions(+), 20 deletions(-)
-
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index dae95d9a07e8..23d6f2e5f48b 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -784,25 +784,7 @@ static int at803x_probe(struct phy_device *phydev)
+ 			return ret;
+ 	}
+ 
+-	/* Some bootloaders leave the fiber page selected.
+-	 * Switch to the copper page, as otherwise we read
+-	 * the PHY capabilities from the fiber side.
+-	 */
+-	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
+-		phy_lock_mdio_bus(phydev);
+-		ret = at803x_write_page(phydev, AT803X_PAGE_COPPER);
+-		phy_unlock_mdio_bus(phydev);
+-		if (ret)
+-			goto err;
+-	}
+-
+ 	return 0;
+-
+-err:
+-	if (priv->vddio)
+-		regulator_disable(priv->vddio);
+-
+-	return ret;
+ }
+ 
+ static void at803x_remove(struct phy_device *phydev)
+@@ -912,6 +894,22 @@ static int at803x_config_init(struct phy_device *phydev)
+ {
+ 	int ret;
+ 
++	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
++	       /* Some bootloaders leave the fiber page selected.
++		* Switch to the copper page, as otherwise we read
++		* the PHY capabilities from the fiber side.
++		*/
++		phy_lock_mdio_bus(phydev);
++		ret = at803x_write_page(phydev, AT803X_PAGE_COPPER);
++		phy_unlock_mdio_bus(phydev);
++		if (ret)
++			return ret;
++
++		ret = at8031_pll_config(phydev);
++		if (ret < 0)
++			return ret;
++	}
++
+ 	/* The RX and TX delay default is:
+ 	 *   after HW reset: RX delay enabled and TX delay disabled
+ 	 *   after SW reset: RX delay enabled, while TX delay retains the
+@@ -941,12 +939,6 @@ static int at803x_config_init(struct phy_device *phydev)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
+-		ret = at8031_pll_config(phydev);
+-		if (ret < 0)
+-			return ret;
+-	}
+-
+ 	/* Ar803x extended next page bit is enabled by default. Cisco
+ 	 * multigig switches read this bit and attempt to negotiate 10Gbps
+ 	 * rates even if the next page bit is disabled. This is incorrect
 -- 
 2.31.1
 
