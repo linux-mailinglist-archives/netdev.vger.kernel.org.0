@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B84C148B21E
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 17:28:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AA2F48B229
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 17:28:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349966AbiAKQ2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 11:28:39 -0500
-Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.170]:41247 "EHLO
+        id S1349961AbiAKQ2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 11:28:44 -0500
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.82]:32911 "EHLO
         mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343701AbiAKQ2i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 11:28:38 -0500
-X-Greylist: delayed 331 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Jan 2022 11:28:37 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1641918155;
+        with ESMTP id S1349977AbiAKQ2n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 11:28:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1641918159;
     s=strato-dkim-0002; d=fpond.eu;
-    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
-    bh=PbqiuTr1T9ZHDxmjmX8wVg3i4weX4mGMaS9RhEoZqWM=;
-    b=JhvK5283qsrM7o/9WaJCKNQtaqUf12RzjGlvVd3aEOMCWdot9pMc3PZBGF7Y/XZDdd
-    GRJjfEKCkv+uDJqcUtRP854a/aIHDaox2cLoLERal1VgArsfLJ4trCHC20s9xVLmloAP
-    GeDl8xnQZCfoHBoUs2T8wGfX79icjmjUPrf4Yaw7U1QF+bzLKBguJbRcmFm8quflQEJf
-    ixnyvhsZkP+WN6KE26qD3NrM+Di/uvApauMhO9pC8LZW62s87gi7UM+k+CLOFjdd6kyd
-    cJXN+haRC7Qz/fuFQ6jRKxjIFMwc6ZwLM1KTXc3VgSYtre9l6+ro2Mf7MaOQfocJrJxA
-    jOBQ==
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=26V/zdrL+JyppG2XyT3B/o+gGDVMKccXxGHmJw1lG6g=;
+    b=nt4rw6dA3Ry4EsJwc0rgizf9tWJcdY0aru2wgSUReQBalCFRIBu21+VgKPmcsBWtrs
+    ueA5THOfwVhWEEjE2Hg7WSTKrXeOm112TFLxKepcbYo38gwlE4TVMI8M3rMkt5Z6jWvj
+    2qrwiYerkxVi+jdI80xQhX/3p9C+G6bc2RDvFcCSxvEI/UOE5idklKFzd2cDQ86Al4JO
+    YuJ8ueS2DDHL3A1TRxoNf/9dsEvy1cGeCbGRCioTwwOG5noAN+JKUycnFqi3+KwL1ul1
+    zyLmwNtR46wEgELFYiPizivYf8JC8Twcj9AS1WaKUi4HReygqKNhxXPyWNKpyteVycBs
+    s0UA==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73dmm4I5W0/AvA67Ot4fvR8nxYa0aI"
 X-RZG-CLASS-ID: mo00
 Received: from gummo.fritz.box
     by smtp.strato.de (RZmta 47.37.6 DYNA|AUTH)
-    with ESMTPSA id a48ca5y0BGMYHKq
+    with ESMTPSA id a48ca5y0BGMdHKr
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Tue, 11 Jan 2022 17:22:34 +0100 (CET)
+    Tue, 11 Jan 2022 17:22:39 +0100 (CET)
 From:   Ulrich Hecht <uli+renesas@fpond.eu>
 To:     linux-renesas-soc@vger.kernel.org
 Cc:     netdev@vger.kernel.org, davem@davemloft.net,
@@ -42,66 +42,37 @@ Cc:     netdev@vger.kernel.org, davem@davemloft.net,
         socketcan@hartkopp.net, geert@linux-m68k.org,
         kieran.bingham@ideasonboard.com,
         Ulrich Hecht <uli+renesas@fpond.eu>
-Subject: [PATCH v2 0/5] can: rcar_canfd: Add support for V3U flavor
-Date:   Tue, 11 Jan 2022 17:22:26 +0100
-Message-Id: <20220111162231.10390-1-uli+renesas@fpond.eu>
+Subject: [PATCH v2 1/5] clk: renesas: r8a779a0: add CANFD module clock
+Date:   Tue, 11 Jan 2022 17:22:27 +0100
+Message-Id: <20220111162231.10390-2-uli+renesas@fpond.eu>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220111162231.10390-1-uli+renesas@fpond.eu>
+References: <20220111162231.10390-1-uli+renesas@fpond.eu>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+Adds "canfd0" to mod clocks.
 
-This adds CANFD support for V3U (R8A779A0) SoCs. The V3U's IP supports up to
-eight channels and has some other minor differences to the Gen3 variety:
+Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+---
+ drivers/clk/renesas/r8a779a0-cpg-mssr.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-- changes to some register offsets and layouts
-- absence of "classic CAN" registers, both modes are handled through the
-  CANFD register set
-
-This patch set tries to accommodate these changes in a minimally intrusive
-way.
-
-This revision attempts to address issues raised by reviewers to the extent
-possible, adds board enablement, a missing clock and some minor fixes. See
-below for details.
-
-It has been sucessfully tested remotely on a V3U Falcon board, but only with
-channels 0 and 1. We were not able to get higher channels to work in both
-directions yet. It is not currently clear if this is an issue with the
-driver, the board or the silicon, but the BSP vendor driver only works with
-channels 0 and 1 as well, so my bet is on one of the latter. For this
-reason, this series only enables known-working channels 0 and 1 on Falcon.
-
-CU
-Uli
-
-
-Changes since v1:
-- clk: added missing CANFD module clock
-- driver: fixed tests for RZ/G2L so they won't break V3U
-- driver: simplified two macros
-- DT: enabled devices 0 and 1 on Falcon board
-- DT: changed assigned-clock-rates to 80000000
-- DT: added interrupt names
-
-
-Ulrich Hecht (5):
-  clk: renesas: r8a779a0: add CANFD module clock
-  can: rcar_canfd: Add support for r8a779a0 SoC
-  arm64: dts: renesas: r8a779a0: Add CANFD device node
-  arm64: dts: renesas: r8a779a0-falcon: enable CANFD 0 and 1
-  dt-bindings: can: renesas,rcar-canfd: Document r8a779a0 support
-
- .../bindings/net/can/renesas,rcar-canfd.yaml  |   2 +
- .../boot/dts/renesas/r8a779a0-falcon.dts      |  24 ++
- arch/arm64/boot/dts/renesas/r8a779a0.dtsi     |  56 +++++
- drivers/clk/renesas/r8a779a0-cpg-mssr.c       |   1 +
- drivers/net/can/rcar/rcar_canfd.c             | 231 ++++++++++++------
- 5 files changed, 236 insertions(+), 78 deletions(-)
-
+diff --git a/drivers/clk/renesas/r8a779a0-cpg-mssr.c b/drivers/clk/renesas/r8a779a0-cpg-mssr.c
+index 1c09d4ebe90f..fadd8a1718c6 100644
+--- a/drivers/clk/renesas/r8a779a0-cpg-mssr.c
++++ b/drivers/clk/renesas/r8a779a0-cpg-mssr.c
+@@ -136,6 +136,7 @@ static const struct mssr_mod_clk r8a779a0_mod_clks[] __initconst = {
+ 	DEF_MOD("avb3",		214,	R8A779A0_CLK_S3D2),
+ 	DEF_MOD("avb4",		215,	R8A779A0_CLK_S3D2),
+ 	DEF_MOD("avb5",		216,	R8A779A0_CLK_S3D2),
++	DEF_MOD("canfd0",	328,	R8A779A0_CLK_CANFD),
+ 	DEF_MOD("csi40",	331,	R8A779A0_CLK_CSI0),
+ 	DEF_MOD("csi41",	400,	R8A779A0_CLK_CSI0),
+ 	DEF_MOD("csi42",	401,	R8A779A0_CLK_CSI0),
 -- 
 2.20.1
 
