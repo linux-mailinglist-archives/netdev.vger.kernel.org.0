@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D070548B52B
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 19:06:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D884848B531
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 19:06:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345992AbiAKSF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 13:05:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51464 "EHLO
+        id S1345290AbiAKSGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 13:06:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350398AbiAKSFJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 13:05:09 -0500
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17D2C06175C;
-        Tue, 11 Jan 2022 10:04:56 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id g5so9262592plo.12;
-        Tue, 11 Jan 2022 10:04:56 -0800 (PST)
+        with ESMTP id S1350277AbiAKSFL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 13:05:11 -0500
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5486C06175D;
+        Tue, 11 Jan 2022 10:04:59 -0800 (PST)
+Received: by mail-pj1-x1042.google.com with SMTP id pf13so321121pjb.0;
+        Tue, 11 Jan 2022 10:04:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=djsNTpuyk+egjmhMtDXT1SCwXnpdzz5VxfkJIjUvmIs=;
-        b=DcJSX2muaO2OxNRfJLuM7VPOXC4gMpcBNEc8sb/+/AawZWbMpGPiiajC7mg3qvkS1S
-         JKNJ3yK0+JWbO74FPWBVs9jt87O83R0Vwpo90WW0H4sFsHaUwqMPvxSIh8Bb4Y0F28JV
-         MTxDw32es/a82gByQr2IvAiDCxmDrD8/c7OUKApv5wTFejcZRVhrKDRB4EE8Ab0w46NJ
-         rhRnM5NebJXvknGyUE6P4YbNVIVyKRi4oApE9SypNy+rNZnKnkCHmJ80OFyTnd5tDP49
-         4uNadLu7V7UQTmTvFbw//5m/XE9yDyGFHq3IMJhXo4rtwFEkZ+QZpUdCJf2MASUniJWS
-         ij5Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=mzvRZKPPi+O4Z5nNliFs9pnbJZxkwJwBOoO6asYIWtU=;
+        b=V0culqn/B2uQY2ol/WHitRf/cd6MGb8HMvxXrVzhTgiZTDMeEBMIImW/mtohLvu5Uz
+         cgA1Me87BbqgOxtq1CCcbrBchWlQqxVtZXTgqxbgOdlHIDwjjWSPUyeUyRovKMXZqkMW
+         j8Dlic2KCzYDJCvq+nVnLGRzoRo8+PdLY4nOkrRr1jlbjtGk8bamHLDqJmoE8y+UdOTs
+         Eye/c2rLMWrEacBPbY47j/aZHVMlwRvOFbxWFin4xQOTA2x7MGtJtKUSfgNSVl+C5qzA
+         CT4NR5qkxhc3YAXhvNWOcGs+YIq8ufw5uULI20Hh11EnjX9xYecajXPU4vbBjFcvAugw
+         NXFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=djsNTpuyk+egjmhMtDXT1SCwXnpdzz5VxfkJIjUvmIs=;
-        b=zKjHmXLuSPaUf4CRdEBRX6xvE1rpqIWpIU+QzQEAZ1Gn1gFexuSewwGI3EgO8RVGKb
-         ZgZukAiPywrHZvfVGE+hHCFXRuSGp75X6wwuZht8IIg7qQaK/HaZfsaUFjvqShyK2L/z
-         dPnR6p2OT+7iuHP11zIeUHsTW09RzHlyWsDHm5MKVoz3Lec1aP3tbYMajudMfHCgfr7I
-         2AXonLut99VmyhGMeFOIIvudssRxccQ/YUMFVNV5ec0JZ0MMzg6KXMrTccg39gUC0vUw
-         USSE0jGNx89QK/+VCcI/HJeX4Q49J+ph0OVM2gsvKzvmxKD12Pc9pBgS6a8EbI1NBi2I
-         tPEw==
-X-Gm-Message-State: AOAM5332wJY65AvgITHWhpzd3pqPZOd0WpEn+VgKzSDp03sXbGgKF146
-        ID5SlvaDhYBpfMF/FaPLUHATy6k4CsHAXw==
-X-Google-Smtp-Source: ABdhPJz6D4sQIOY1mZbjZZExYcGQynGW20i4/hFBZPUv9/CWYq5WbdWxV6P3dT24xhcDAslMNUM4Ew==
-X-Received: by 2002:a63:3fcd:: with SMTP id m196mr1285647pga.168.1641924295879;
-        Tue, 11 Jan 2022 10:04:55 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=mzvRZKPPi+O4Z5nNliFs9pnbJZxkwJwBOoO6asYIWtU=;
+        b=GFBTWOF/hdkE9zKy8h/opVIsd5RXZr53uBUjGsTGjdDSD+VPi/3X7CMrZU7CoDImPz
+         CCDHdxmksAgwzUa4qarbXFsVX+vtm4uXlybjegsOBeZxw8dABMS/b/iMqHHKFuhGi43N
+         gxfdDMDFm74Hx4XuqU7Thmsr/jUJGlqMahpRB+2OQkgDUH5ihAkRaG65RKBTFq8UzeAX
+         QNv7I3DpEanW4HhAp74t3G2dprKcZZm61S1hGBg3fRRj//TBJozuv8uYeyDh69mijfNb
+         qKpbQjJUO2Oedui6asUU1qyt2/Uqj2g1dF77X9pujaA6aOxjsB+LqLrPBW9deJcJHQ1u
+         RD5w==
+X-Gm-Message-State: AOAM533ek1V70lv4yTxqS6df/I0zRW9hZKM2IFTQoW28m/8W+t1CR6kT
+        FQc5qNHJXEZdUGrPsCH6XAqyVcQRSIar+A==
+X-Google-Smtp-Source: ABdhPJwvzXzIdxaeFGhrJX/kbfP0UE1Wj6/S19acS+KFtP4WlPA9ZMJGqW9Sd+fB4Qufr2hVcgtwTw==
+X-Received: by 2002:a17:902:a404:b0:148:c0e0:423f with SMTP id p4-20020a170902a40400b00148c0e0423fmr5778226plq.90.1641924299019;
+        Tue, 11 Jan 2022 10:04:59 -0800 (PST)
 Received: from localhost ([2405:201:6014:d064:502e:73f4:8af1:9522])
-        by smtp.gmail.com with ESMTPSA id m3sm5092706pfa.183.2022.01.11.10.04.55
+        by smtp.gmail.com with ESMTPSA id t21sm3081474pjs.37.2022.01.11.10.04.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 10:04:55 -0800 (PST)
+        Tue, 11 Jan 2022 10:04:58 -0800 (PST)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -60,151 +60,170 @@ Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
         Florian Westphal <fw@strlen.de>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf-next v7 00/10] Introduce unstable CT lookup helpers
-Date:   Tue, 11 Jan 2022 23:34:18 +0530
-Message-Id: <20220111180428.931466-1-memxor@gmail.com>
+Subject: [PATCH bpf-next v7 01/10] bpf: Fix UAF due to race between btf_try_get_module and load_module
+Date:   Tue, 11 Jan 2022 23:34:19 +0530
+Message-Id: <20220111180428.931466-2-memxor@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220111180428.931466-1-memxor@gmail.com>
+References: <20220111180428.931466-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6796; h=from:subject; bh=rIWND0XdTlB8jROZtBH2YOsY12pFU6pmftF856PeGpA=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBh3caiTFRYJ9KAK93mSgp51C6DIxhTNf/HsS/8NG04 AImSM9iJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYd3GogAKCRBM4MiGSL8RyqW7D/ 9evGLWRO6wOGw9aEHCIjxU2I+mNOEt+cqEQbZdiQVxPf5tzWhKeQJduT5Ukz1CiXr5UhhIkFQ/dJ0K mHL5L8XFuLOPSDsPFZYMo6RZPI7YCaDW6F87EQsoP1k7bX/z9wYFxaSR15531UrHlzUHeR6WBuHYZ2 EM+9i5mKI0/8SxvAQiKnDn4eoVHsOKbJ+mPxRU4OokaeFbByHLq2c/KQ0kY0O3f5JugUDixnA0bxyq U6PRZSwGPFOxXY5vDCtYg3czV3UiasNPi9IQBM42EVZuwBAsg0q5z8/Eu+kTZW30GHYX1xLHGBd2vs VS/hN016cK+cHFV1/rn2ojE0QByqyFeLfSIK4PBa0LdK1jFp7g1DGpu9AQjPA3/v40bnrRln4g6t75 ubJU6MXIPiwh1XNY0OpGflvvhSvKOcfspB1avnyKby95Emc5ot7b8EeHGWRgWINJsBglDxd7gX8oiW jUWQ/v4xhZyLYsyjIpPgI+DcqNQ9CxVclUJOcAsqtYwfaEQH77a6raNB6o37dLW4gz0bDdPaHDFGiw 7s4a22xCmcSUw++LCGXhm4Vltta2ArOdGqsNDKD70qXW66dBDuVOzBMcyyQXQjDTl16z8v5c3XAEly G7R6yOoOTNwwJaseY0CNZfHjRtEKYTraCI5tcVEHkdWfECLlxvLOgJIPHeaw==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5792; h=from:subject; bh=FAX5enVSiuTRv8dFs2JqHzzpMfEKAf8m/iCPJxEYOoQ=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBh3cajhSOO01rS7iHg4WP0GNEmBdSbx9T3OtXKWJ9u TKFYcIiJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYd3GowAKCRBM4MiGSL8RykdBD/ 9Fx8MINwyFirrx3B59Kuk4pCxHtJThth09kknw2CzW78gc+x98boBqPMSz5z9q9TgOmSk5xPyAu9gG AtzdShU0oQSIV6XHUvJ4wrXprxE0mQlKIPKTt/CWHNQQfgaytPMrEprptF4M/rWwxXK6ZeAIvCM6l0 0MgragZCFQxgkG/tUKbTB2LqWCcBuBAb2Gj80wAkhAcT0+Gvq+4GqdtCeMgjq03e0eLybdUNYOey7L edWsPalC1iEzz6xfciPpuCwcH32TJmhhE487VHxsWs3Hpp5q5SXBQVSCMi7a2/PLGQEMCJIhPYtny0 XOsNZxQ77c3+cdRzYFROzfvZKyIoMFQs4xD8sa/k0Isfm/I0eVAZKc+1/BQwBBx6EE/se6dSfevOLG mHUxgtsfufIeoGQ0k4PBuMz0upshWmqvoyaaZD6Gl1QiwBEGf3B2OcnFKIA3sqb3XMZ9qfTQQ/TBzq khhwZl5cbzFUGqoqDOLoXDTXzwh9dxzR4UCRGjvJ7oNM94jXHDFqpZ3aHvLwISWtG9hC0j01HF88B9 /O3aC+fBFquG/MbSAgVoD5lIwixzpRE9oBmYRHeXuaNx0Qj/5y8slv+Q8GUYLWUal5jNBL39AAaoFR 4ugIGTeUyxWMjzyWFbRv2QflA0TFiUz5bD63Ggjo6l7HTkmjyNGt72+/a4gA==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds unstable conntrack lookup helpers using BPF kfunc support.  The
-patch adding the lookup helper is based off of Maxim's recent patch to aid in
-rebasing their series on top of this, all adjusted to work with module kfuncs [0].
+While working on code to populate kfunc BTF ID sets for module BTF from
+its initcall, I noticed that by the time the initcall is invoked, the
+module BTF can already be seen by userspace (and the BPF verifier). The
+existing btf_try_get_module calls try_module_get which only fails if
+mod->state == MODULE_STATE_GOING, i.e. it can increment module reference
+when module initcall is happening in parallel.
 
-  [0]: https://lore.kernel.org/bpf/20211019144655.3483197-8-maximmi@nvidia.com
+Currently, BTF parsing happens from MODULE_STATE_COMING notifier
+callback. At this point, the module initcalls have not been invoked.
+The notifier callback parses and prepares the module BTF, allocates an
+ID, which publishes it to userspace, and then adds it to the btf_modules
+list allowing the kernel to invoke btf_try_get_module for the BTF.
 
-To enable returning a reference to struct nf_conn, the verifier is extended to
-support reference tracking for PTR_TO_BTF_ID, and kfunc is extended with support
-for working as acquire/release functions, similar to existing BPF helpers. kfunc
-returning pointer (limited to PTR_TO_BTF_ID in the kernel) can also return a
-PTR_TO_BTF_ID_OR_NULL now, typically needed when acquiring a resource can fail.
-kfunc can also receive PTR_TO_CTX and PTR_TO_MEM (with some limitations) as
-arguments now. There is also support for passing a mem, len pair as argument
-to kfunc now. In such cases, passing pointer to unsized type (void) is also
-permitted.
+However, at this point, the module has not been fully initialized (i.e.
+its initcalls have not finished). The code in module.c can still fail
+and free the module, without caring for other users. However, nothing
+stops btf_try_get_module from succeeding between the state transition
+from MODULE_STATE_COMING to MODULE_STATE_LIVE.
 
-Please see individual commits for details.
+This leads to a use-after-free issue when BPF program loads
+successfully in the state transition, load_module's do_init_module call
+fails and frees the module, and BPF program fd on close calls module_put
+for the freed module. Future patch has test case to verify we don't
+regress in this area in future.
 
-NOTE: [0] and [1] are needed to make BPF CI green for this series.
+There are multiple points after prepare_coming_module (in load_module)
+where failure can occur and module loading can return error. We
+illustrate and test for the race using the last point where it can
+practically occur (in module __init function).
 
- [0]: https://github.com/libbpf/libbpf/pull/437
- [1]: https://github.com/kernel-patches/vmtest/pull/59
+An illustration of the race:
 
-Changelog:
-----------
-v6 -> v7:
-v6: https://lore.kernel.org/bpf/20220102162115.1506833-1-memxor@gmail.com
+CPU 0                           CPU 1
+			  load_module
+			    notifier_call(MODULE_STATE_COMING)
+			      btf_parse_module
+			      btf_alloc_id	// Published to userspace
+			      list_add(&btf_mod->list, btf_modules)
+			    mod->init(...)
+...				^
+bpf_check		        |
+check_pseudo_btf_id             |
+  btf_try_get_module            |
+    returns true                |  ...
+...                             |  module __init in progress
+return prog_fd                  |  ...
+...                             V
+			    if (ret < 0)
+			      free_module(mod)
+			    ...
+close(prog_fd)
+ ...
+ bpf_prog_free_deferred
+  module_put(used_btf.mod) // use-after-free
 
- * Drop try_module_get_live patch, use flag in btf_module struct (Alexei)
- * Add comments and expand commit message detailing why we have to concatenate
-   and sort vmlinux kfunc BTF ID sets (Alexei)
- * Use bpf_testmod for testing btf_try_get_module race (Alexei)
- * Use bpf_prog_type for both btf_kfunc_id_set_contains and
-   register_btf_kfunc_id_set calls (Alexei)
- * In case of module set registration, directly assign set (Alexei)
- * Add CONFIG_USERFAULTFD=y to selftest config
- * Fix other nits
+We fix this issue by setting a flag BTF_MODULE_F_LIVE, from the notifier
+callback when MODULE_STATE_LIVE state is reached for the module, so that
+we return NULL from btf_try_get_module for modules that are not fully
+formed. Since try_module_get already checks that module is not in
+MODULE_STATE_GOING state, and that is the only transition a live module
+can make before being removed from btf_modules list, this is enough to
+close the race and prevent the bug.
 
-v5 -> v6:
-v5: https://lore.kernel.org/bpf/20211230023705.3860970-1-memxor@gmail.com
+A later selftest patch crafts the race condition artifically to verify
+that it has been fixed, and that verifier fails to load program (with
+ENXIO).
 
- * Fix for a bug in btf_try_get_module leading to use-after-free
- * Drop *kallsyms_on_each_symbol loop, reinstate register_btf_kfunc_id_set (Alexei)
- * btf_free_kfunc_set_tab now takes struct btf, and handles resetting tab to NULL
- * Check return value btf_name_by_offset for param_name
- * Instead of using tmp_set, use btf->kfunc_set_tab directly, and simplify cleanup
+Lastly, a couple of comments:
 
-v4 -> v5:
-v4: https://lore.kernel.org/bpf/20211217015031.1278167-1-memxor@gmail.com
+ 1. Even if this race didn't exist, it seems more appropriate to only
+    access resources (ksyms and kfuncs) of a fully formed module which
+    has been initialized completely.
 
- * Move nf_conntrack helpers code to its own separate file (Toke, Pablo)
- * Remove verifier callbacks, put btf_id_sets in struct btf (Alexei)
-  * Convert the in-kernel users away from the old API
- * Change len__ prefix convention to __sz suffix (Alexei)
- * Drop parent_ref_obj_id patch (Alexei)
+ 2. This patch was born out of need for synchronization against module
+    initcall for the next patch, so it is needed for correctness even
+    without the aforementioned race condition. The BTF resources
+    initialized by module initcall are set up once and then only looked
+    up, so just waiting until the initcall has finished ensures correct
+    behavior.
 
-v3 -> v4:
-v3: https://lore.kernel.org/bpf/20211210130230.4128676-1-memxor@gmail.com
+Fixes: 541c3bad8dc5 ("bpf: Support BPF ksym variables in kernel modules")
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+---
+ kernel/bpf/btf.c | 26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
- * Guard unstable CT helpers with CONFIG_DEBUG_INFO_BTF_MODULES
- * Move addition of prog_test test kfuncs to selftest commit
- * Move negative kfunc tests to test_verifier suite
- * Limit struct nesting depth to 4, which should be enough for now
-
-v2 -> v3:
-v2: https://lore.kernel.org/bpf/20211209170929.3485242-1-memxor@gmail.com
-
- * Fix build error for !CONFIG_BPF_SYSCALL (Patchwork)
-
-RFC v1 -> v2:
-v1: https://lore.kernel.org/bpf/20211030144609.263572-1-memxor@gmail.com
-
- * Limit PTR_TO_MEM support to pointer to scalar, or struct with scalars (Alexei)
- * Use btf_id_set for checking acquire, release, ret type null (Alexei)
- * Introduce opts struct for CT helpers, move int err parameter to it
- * Add l4proto as parameter to CT helper's opts, remove separate tcp/udp helpers
- * Add support for mem, len argument pair to kfunc
- * Allow void * as pointer type for mem, len argument pair
- * Extend selftests to cover new additions to kfuncs
- * Copy ref_obj_id to PTR_TO_BTF_ID dst_reg on btf_struct_access, test it
- * Fix other misc nits, bugs, and expand commit messages
-
-Kumar Kartikeya Dwivedi (10):
-  bpf: Fix UAF due to race between btf_try_get_module and load_module
-  bpf: Populate kfunc BTF ID sets in struct btf
-  bpf: Remove check_kfunc_call callback and old kfunc BTF ID API
-  bpf: Introduce mem, size argument pair support for kfunc
-  bpf: Add reference tracking support to kfunc
-  net/netfilter: Add unstable CT lookup helpers for XDP and TC-BPF
-  selftests/bpf: Add test for unstable CT lookup API
-  selftests/bpf: Add test_verifier support to fixup kfunc call insns
-  selftests/bpf: Extend kfunc selftests
-  selftests/bpf: Add test for race in btf_try_get_module
-
- include/linux/bpf.h                           |   8 -
- include/linux/bpf_verifier.h                  |   7 +
- include/linux/btf.h                           |  82 ++--
- include/linux/btf_ids.h                       |  13 +-
- include/net/netfilter/nf_conntrack_bpf.h      |  23 ++
- kernel/bpf/btf.c                              | 375 ++++++++++++++++--
- kernel/bpf/verifier.c                         | 197 +++++----
- net/bpf/test_run.c                            | 150 ++++++-
- net/core/filter.c                             |   1 -
- net/core/net_namespace.c                      |   1 +
- net/ipv4/bpf_tcp_ca.c                         |  22 +-
- net/ipv4/tcp_bbr.c                            |  18 +-
- net/ipv4/tcp_cubic.c                          |  17 +-
- net/ipv4/tcp_dctcp.c                          |  18 +-
- net/netfilter/Makefile                        |   5 +
- net/netfilter/nf_conntrack_bpf.c              | 257 ++++++++++++
- net/netfilter/nf_conntrack_core.c             |   8 +
- .../selftests/bpf/bpf_testmod/bpf_testmod.c   |  21 +-
- tools/testing/selftests/bpf/config            |   5 +
- .../selftests/bpf/prog_tests/bpf_mod_race.c   | 230 +++++++++++
- .../testing/selftests/bpf/prog_tests/bpf_nf.c |  48 +++
- .../selftests/bpf/prog_tests/kfunc_call.c     |   6 +
- .../selftests/bpf/progs/bpf_mod_race.c        | 100 +++++
- .../selftests/bpf/progs/kfunc_call_race.c     |  14 +
- .../selftests/bpf/progs/kfunc_call_test.c     |  52 ++-
- tools/testing/selftests/bpf/progs/ksym_race.c |  13 +
- .../testing/selftests/bpf/progs/test_bpf_nf.c | 105 +++++
- tools/testing/selftests/bpf/test_verifier.c   |  28 ++
- tools/testing/selftests/bpf/verifier/calls.c  |  75 ++++
- 29 files changed, 1685 insertions(+), 214 deletions(-)
- create mode 100644 include/net/netfilter/nf_conntrack_bpf.h
- create mode 100644 net/netfilter/nf_conntrack_bpf.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_mod_race.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_nf.c
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_mod_race.c
- create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_race.c
- create mode 100644 tools/testing/selftests/bpf/progs/ksym_race.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_bpf_nf.c
-
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 33bb8ae4a804..f25bca59909d 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6200,12 +6200,17 @@ bool btf_id_set_contains(const struct btf_id_set *set, u32 id)
+ 	return bsearch(&id, set->ids, set->cnt, sizeof(u32), btf_id_cmp_func) != NULL;
+ }
+ 
++enum {
++	BTF_MODULE_F_LIVE = (1 << 0),
++};
++
+ #ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+ struct btf_module {
+ 	struct list_head list;
+ 	struct module *module;
+ 	struct btf *btf;
+ 	struct bin_attribute *sysfs_attr;
++	int flags;
+ };
+ 
+ static LIST_HEAD(btf_modules);
+@@ -6233,7 +6238,8 @@ static int btf_module_notify(struct notifier_block *nb, unsigned long op,
+ 	int err = 0;
+ 
+ 	if (mod->btf_data_size == 0 ||
+-	    (op != MODULE_STATE_COMING && op != MODULE_STATE_GOING))
++	    (op != MODULE_STATE_COMING && op != MODULE_STATE_LIVE &&
++	     op != MODULE_STATE_GOING))
+ 		goto out;
+ 
+ 	switch (op) {
+@@ -6291,6 +6297,17 @@ static int btf_module_notify(struct notifier_block *nb, unsigned long op,
+ 			btf_mod->sysfs_attr = attr;
+ 		}
+ 
++		break;
++	case MODULE_STATE_LIVE:
++		mutex_lock(&btf_module_mutex);
++		list_for_each_entry_safe(btf_mod, tmp, &btf_modules, list) {
++			if (btf_mod->module != module)
++				continue;
++
++			btf_mod->flags |= BTF_MODULE_F_LIVE;
++			break;
++		}
++		mutex_unlock(&btf_module_mutex);
+ 		break;
+ 	case MODULE_STATE_GOING:
+ 		mutex_lock(&btf_module_mutex);
+@@ -6338,7 +6355,12 @@ struct module *btf_try_get_module(const struct btf *btf)
+ 		if (btf_mod->btf != btf)
+ 			continue;
+ 
+-		if (try_module_get(btf_mod->module))
++		/* We must only consider module whose __init routine has
++		 * finished, hence we must check for BTF_MODULE_F_LIVE flag,
++		 * which is set from the notifier callback for
++		 * MODULE_STATE_LIVE.
++		 */
++		if ((btf_mod->flags & BTF_MODULE_F_LIVE) && try_module_get(btf_mod->module))
+ 			res = btf_mod->module;
+ 
+ 		break;
 -- 
 2.34.1
 
