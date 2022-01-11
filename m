@@ -2,129 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6370D48A5FA
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 04:01:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8316148A609
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 04:06:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234362AbiAKDBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 10 Jan 2022 22:01:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231590AbiAKDBO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 22:01:14 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AAFC06173F;
-        Mon, 10 Jan 2022 19:01:14 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id h14so26102481ybe.12;
-        Mon, 10 Jan 2022 19:01:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=MWvcAvXFOF/Z8QQUHp2bmP40nPXieQHtuAf08iJH6U8=;
-        b=Ygv8h6i2/BRZHQOOUaST9LF3sjvhvBjSsxOidbDpbYYZ2qXItEwGd5CtwxfJP8M4pr
-         VV9y6cJNqdqChts0GCDEtHIo4Et2gOKpQ2IJ1hOVDWahZqXkt/Brt9ZXDqkupMTlQM17
-         D1tBfvuo410zCVwA4Q+cp0pGHsC3ACHpB1A1N0nNDeO+cUEjDwmJhNZCz+7N3k8ma8Zg
-         +RWw3e+K93kdje75UlnLEgN1n3F0z2xbPU1vQ0or+UZqdwyohmLaEgyHUf2AWsm//IfY
-         0J/NyWg4hwArqqdCJqvXqwpI9x/onQNTkR2quL6QaoCIGAQ6dPg0wE3oy2ChdSUi0z8T
-         vFSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=MWvcAvXFOF/Z8QQUHp2bmP40nPXieQHtuAf08iJH6U8=;
-        b=IiK+GHq8umJXAZoXXE0UPlAx7I5DQU0dCJJIOrlXJYSNf1Dw7bPpz6QrBRwqHmUQRY
-         1NqyNdRZZPTsKA2yzpOll3zHb0oQhCyRjB4OlMdFDV8kxnNnWfJdhI+MgZEF2mIOHgNw
-         k7WNmzZ0xQfUGV+UiZ3odoVMRG7KsDARref/LHVQXPFpKCj0wsqBuE/yE8ApxH64NEFt
-         dTvuiLs2TDNjWGZwJfV1GnM13odmslxpq1gRozFti4hedzDstbehOsbELiL8WpA1UYkq
-         nFwApKLdG4wZUSupZNQiJZMhif0yNy3HV9TqwgAevI/dOyAiSNag81qqpLM8Cp3GK041
-         isww==
-X-Gm-Message-State: AOAM530+ikpJtYfCnfDvVFQh1j2BgXfS17qB8B0p49NYwWX1kkYTRmcn
-        R/H34pAASjYKWG+OdYHslQIARdq6nZApH23kGwjbmUTDDTgqaGhE5Rw=
-X-Google-Smtp-Source: ABdhPJzb89UvH8xmUGtFFAYjnuqiogDNOsac6Hev3lNTOBkPEYuaxHU+CHegsrS+ixre/iUmjyFZmxqkVSRT/lBD8qY=
-X-Received: by 2002:a25:4aca:: with SMTP id x193mr3559114yba.149.1641870073630;
- Mon, 10 Jan 2022 19:01:13 -0800 (PST)
+        id S241957AbiAKDGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 10 Jan 2022 22:06:02 -0500
+Received: from out162-62-57-137.mail.qq.com ([162.62.57.137]:45733 "EHLO
+        out162-62-57-137.mail.qq.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237371AbiAKDGC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 10 Jan 2022 22:06:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1641870357;
+        bh=ecSMM6XuKcWiwqw9LfrFz5Ws23plBSvG+Rwa8GnJgJo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=ooOOn6XZBVKWBsgnvTc29ggGHvyyX+mSDon6X/oVQohtuElzn2DwnX+jqwTt8yyN5
+         1n0GPJF1DwiSxEMhoDYl7hq3xlbitrUXOA3nEC2aV4SxAGxpk2R6QAbLcesgnvkeYU
+         ruytJj1z3gGpQB5GHTFpu0OoYHjzkRFxvN1lZPNs=
+Received: from fedora.. ([119.32.47.91])
+        by newxmesmtplogicsvrsza7.qq.com (NewEsmtp) with SMTP
+        id 17780050; Tue, 11 Jan 2022 11:05:55 +0800
+X-QQ-mid: xmsmtpt1641870355tdzfw2s27
+Message-ID: <tencent_71466C2135CD1780B19D7844BE3F167C940A@qq.com>
+X-QQ-XMAILINFO: MjHH9lmJ+i2kqq5qQi1JMblBeaRRfHWHe4bBXNHU6Z2Th9No+vqtgPyfRcoJGO
+         xJDxsVzl3zc6WH0q0GGYac22B/V70FQWOCrDp3jqSD01yhpiCRDmc4083pRS1feWdjxqsxGkchVw
+         swg77FOuKbR+vCUBEMGOYl+xcr5n4An6sMLDwgngY2ULTg/sShfpLSZspaWDKufKr14uCvb+fuIM
+         7lO6q5ceeLmsB5YDbiGjWsHqBGTrCvG61p7QpKtYi7gcx/qwYnB4KXNX21TS0zhirQr2AGkYbMbv
+         eBxcp7N7fDJCOpaUSAffFzn5EYre0z+Ws4JeRRv2dG7IocE5JutQYwDPbIg1riU0ZfTGapsJ8OK0
+         FRqNNPP8W3L9koiCB+XXAGuhZh9YEfs56GPIdLwb/KICSNT1z/JrA93grNhj8kDc7a4t7O0cnGQw
+         0GfUzAWqIg3xRj5ugyDqLlt9+DpSNHcEdXNyGyDRkxg/q00Aj4DWmoBHMt0imTaV81CC29SSMgpw
+         O/qFs9JLO6e8Fk6KrxjTumFQJNnQBdgmCTIg+NaYPNb2PBCxPuFuW60nf4AYjfwQM2gWXdmOABLb
+         NBQyUV7q1PUfjw9VayhV7L+2aAxeD7y0S8w9ogHxyk7ju6hkX90ze5mX8sbQ7T49jNjYbl3JijVQ
+         Hod01tve+g/2B+CCA8W7FEJz3dmPZApo310Qzq//g0OJ2+8YPoTmVZYT3od5/8wlXOJ9z9KKQvvR
+         iZW1bt5sp7NAScQDZGrPp7SJyTHYPtBiSbS25puFxgJHo5lLIvmvYU8m6vHt+hXa+jdm721vBd8y
+         g4uyByP/4u6POHDhpcPhUYvK9mMq88SM+D7Enrq/nOYI61taAHHdYH
+From:   Conley Lee <conleylee@foxmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+        wens@csie.org, clabbe.montjoie@gmail.com
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Conley Lee <conleylee@foxmail.com>
+Subject: [PATCH v3] net: ethernet: sun4i-emac: replace magic number with macro
+Date:   Tue, 11 Jan 2022 11:05:53 +0800
+X-OQ-MSGID: <20220111030553.2369419-1-conleylee@foxmail.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
+References: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
 MIME-Version: 1.0
-From:   cruise k <cruise4k@gmail.com>
-Date:   Tue, 11 Jan 2022 11:01:03 +0800
-Message-ID: <CAKcFiNDyPSx_M9HJNhDJd0Omq4JFLXNjDR_9bxaSjvmPc2bXxQ@mail.gmail.com>
-Subject: INFO: task hung in nl802154_pre_doit
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     sunhao.th@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This patch remove magic numbers in sun4i-emac.c and replace with macros
+defined in sun4i-emac.h
 
-Syzkaller found the following issue:
+Signed-off-by: Conley Lee <conleylee@foxmail.com>
+---
+Change since v2.
+- fix some code style issues
 
-HEAD commit: 75acfdb Linux 5.16-rc8
-git tree: upstream
-console output: https://pastebin.com/raw/AzAMX5zz
-kernel config: https://pastebin.com/raw/XsnKfdRt
+Change since v1.
+- reformat
+- merge commits
+- add commit message
 
-And hope the report log can help you.
+---
+ drivers/net/ethernet/allwinner/sun4i-emac.c | 30 ++++++++++++---------
+ drivers/net/ethernet/allwinner/sun4i-emac.h | 18 +++++++++++++
+ 2 files changed, 35 insertions(+), 13 deletions(-)
 
-[ 1251.721354][   T59] INFO: task syz-executor.0:2134 blocked for more
-than 143 seconds.
-[ 1251.722724][   T59]       Not tainted 5.16.0-rc8+ #10
-[ 1251.723664][   T59] "echo 0 >
-/proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[ 1251.725148][   T59] task:syz-executor.0  state:D stack:27536 pid:
-2134 ppid: 13069 flags:0x00000004
-[ 1251.726742][   T59] Call Trace:
-[ 1251.727272][   T59]  <TASK>
-[ 1251.727788][   T59]  __schedule+0xcd9/0x2550
-[ 1251.728512][   T59]  ? io_schedule_timeout+0x150/0x150
-[ 1251.731002][   T59]  schedule+0xd2/0x260
-[ 1251.731762][   T59]  schedule_preempt_disabled+0xf/0x20
-[ 1251.732627][   T59]  __mutex_lock+0xc48/0x1610
-[ 1251.733367][   T59]  ? nl802154_pre_doit+0x645/0xd30
-[ 1251.734194][   T59]  ? mutex_lock_io_nested+0x1410/0x1410
-[ 1251.735387][   T59]  ? __nla_validate_parse+0x2df/0x2400
-[ 1251.736727][   T59]  ? nla_get_range_signed+0x520/0x520
-[ 1251.737977][   T59]  ? rcu_read_lock_sched_held+0x9c/0xd0
-[ 1254.756569][ T3364] lowmem_reserve[]: 0 0 852 852 852
-[ 1254.757520][ T3364] Node 1 Normal free:36116kB boost:0kB
-min:24292kB low:30364kB high:36436kB reserved_highatomic:12288KB
-active_anon:15552kB inactive_anon:191888kB active_file:0kB
-inactive_file:56kB unevictable:1536kB writepending:0kB
-present:1048576kB managed:872480kB mlocked:0kB bounce:0kB
-free_pcp:4952kB local_pcp:776kB free_cma:0kB
-[ 1254.852260][ T2256] Node 0 DMA free:6572kB boost:2048kB min:2472kB
-low:2576kB high:2680kB reserved_highatomic:0KB active_anon:12kB
-inactive_anon:4636kB active_file:0kB inactive_file:0kB unevictable:0kB
-writepending:0kB present:15992kB managed:15360kB mlocked:0kB
-bounce:0kB free_pcp:8kB local_pcp:8kB free_cma:0kB
-[ 1254.856691][ T2256] lowmem_reserve[]: 0 1333 1333 1333 1333
-[ 1254.857666][ T2256] Node 0 DMA32 free:98544kB boost:85540kB
-min:123560kB low:133064kB high:142568kB reserved_highatomic:16384KB
-active_anon:10888kB inactive_anon:467648kB active_file:4kB
-inactive_file:1424kB unevictable:1536kB writepending:0kB
-present:2080768kB managed:1372868kB mlocked:0kB bounce:0kB
-free_pcp:4416kB local_pcp:316kB free_cma:0kB
-[ 1255.151925][   T59]  ? nl802154_pre_doit+0x645/0xd30
-[ 1255.152819][   T59]  ? rtnl_lock+0x5/0x20
-[ 1255.153500][   T59]  nl802154_pre_doit+0x645/0xd30
-[ 1255.154329][   T59]  ? __nla_parse+0x3d/0x50
-[ 1255.155330][   T59]  ? nl802154_dump_llsec_dev+0xba0/0xba0
-[ 1255.156224][   T59]  ? write_comp_data+0x1c/0x70
-[ 1255.157031][   T59]  ? __sanitizer_cov_trace_pc+0x1a/0x40
-[ 1255.158010][   T59]  ? genl_family_rcv_msg_attrs_parse.isra.0+0x1ae/0x280
-[ 1255.159174][   T59]  ? nl802154_dump_llsec_dev+0xba0/0xba0
-[ 1258.792471][ T1340] ieee802154 phy1 wpan1: encryption failed: -22
-[ 1258.882579][ T3364] lowmem_reserve[]: 0 0 0 0 0
-[ 1260.285180][   T59]  genl_family_rcv_msg_doit.isra.0+0x1e4/0x330
-[ 1260.286249][   T59]  ? genl_start+0x670/0x670
-[ 1260.287076][   T59]  ? __sanitizer_cov_trace_pc+0x1a/0x40
-[ 1260.287968][   T59]  ? __radix_tree_lookup+0x21b/0x2b0
-[ 1260.288832][   T59]  ? __sanitizer_cov_trace_pc+0x1a/0x40
-[ 1260.997983][ T2256] lowmem_reserve[]: 0 0 0 0 0
-[ 1260.998899][ T2256] Node 1 DMA32 free:21864kB boost:0kB min:27368kB
-low:34208kB high:41048kB reserved_highatomic:0KB active_anon:0kB
-inactive_anon:66040kB active_file:80kB inactive_file:0kB
-unevictable:0kB writepending:0kB present:1048444kB managed:982908kB
-mlocked:0kB bounce:0kB free_pcp:4064kB local_pcp:1984kB free_cma:0kB
+diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.c b/drivers/net/ethernet/allwinner/sun4i-emac.c
+index 849de4564709..74635a6fa8ca 100644
+--- a/drivers/net/ethernet/allwinner/sun4i-emac.c
++++ b/drivers/net/ethernet/allwinner/sun4i-emac.c
+@@ -106,9 +106,9 @@ static void emac_update_speed(struct net_device *dev)
+ 
+ 	/* set EMAC SPEED, depend on PHY  */
+ 	reg_val = readl(db->membase + EMAC_MAC_SUPP_REG);
+-	reg_val &= ~(0x1 << 8);
++	reg_val &= ~EMAC_MAC_SUPP_100M;
+ 	if (db->speed == SPEED_100)
+-		reg_val |= 1 << 8;
++		reg_val |= EMAC_MAC_SUPP_100M;
+ 	writel(reg_val, db->membase + EMAC_MAC_SUPP_REG);
+ }
+ 
+@@ -264,7 +264,7 @@ static void emac_dma_done_callback(void *arg)
+ 
+ 	/* re enable interrupt */
+ 	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+-	reg_val |= (0x01 << 8);
++	reg_val |= EMAC_INT_CTL_RX_EN;
+ 	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 
+ 	db->emacrx_completed_flag = 1;
+@@ -429,7 +429,7 @@ static unsigned int emac_powerup(struct net_device *ndev)
+ 	/* initial EMAC */
+ 	/* flush RX FIFO */
+ 	reg_val = readl(db->membase + EMAC_RX_CTL_REG);
+-	reg_val |= 0x8;
++	reg_val |= EMAC_RX_CTL_FLUSH_FIFO;
+ 	writel(reg_val, db->membase + EMAC_RX_CTL_REG);
+ 	udelay(1);
+ 
+@@ -441,8 +441,8 @@ static unsigned int emac_powerup(struct net_device *ndev)
+ 
+ 	/* set MII clock */
+ 	reg_val = readl(db->membase + EMAC_MAC_MCFG_REG);
+-	reg_val &= (~(0xf << 2));
+-	reg_val |= (0xD << 2);
++	reg_val &= ~EMAC_MAC_MCFG_MII_CLKD_MASK;
++	reg_val |= EMAC_MAC_MCFG_MII_CLKD_72;
+ 	writel(reg_val, db->membase + EMAC_MAC_MCFG_REG);
+ 
+ 	/* clear RX counter */
+@@ -506,7 +506,7 @@ static void emac_init_device(struct net_device *dev)
+ 
+ 	/* enable RX/TX0/RX Hlevel interrup */
+ 	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+-	reg_val |= (0xf << 0) | (0x01 << 8);
++	reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN | EMAC_INT_CTL_RX_EN);
+ 	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 
+ 	spin_unlock_irqrestore(&db->lock, flags);
+@@ -637,7 +637,9 @@ static void emac_rx(struct net_device *dev)
+ 		if (!rxcount) {
+ 			db->emacrx_completed_flag = 1;
+ 			reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+-			reg_val |= (0xf << 0) | (0x01 << 8);
++			reg_val |= (EMAC_INT_CTL_TX_EN |
++					EMAC_INT_CTL_TX_ABRT_EN |
++					EMAC_INT_CTL_RX_EN);
+ 			writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 
+ 			/* had one stuck? */
+@@ -669,7 +671,9 @@ static void emac_rx(struct net_device *dev)
+ 			writel(reg_val | EMAC_CTL_RX_EN,
+ 			       db->membase + EMAC_CTL_REG);
+ 			reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+-			reg_val |= (0xf << 0) | (0x01 << 8);
++			reg_val |= (EMAC_INT_CTL_TX_EN |
++					EMAC_INT_CTL_TX_ABRT_EN |
++					EMAC_INT_CTL_RX_EN);
+ 			writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 
+ 			db->emacrx_completed_flag = 1;
+@@ -783,20 +787,20 @@ static irqreturn_t emac_interrupt(int irq, void *dev_id)
+ 	}
+ 
+ 	/* Transmit Interrupt check */
+-	if (int_status & (0x01 | 0x02))
++	if (int_status & EMAC_INT_STA_TX_COMPLETE)
+ 		emac_tx_done(dev, db, int_status);
+ 
+-	if (int_status & (0x04 | 0x08))
++	if (int_status & EMAC_INT_STA_TX_ABRT)
+ 		netdev_info(dev, " ab : %x\n", int_status);
+ 
+ 	/* Re-enable interrupt mask */
+ 	if (db->emacrx_completed_flag == 1) {
+ 		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+-		reg_val |= (0xf << 0) | (0x01 << 8);
++		reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN | EMAC_INT_CTL_RX_EN);
+ 		writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 	} else {
+ 		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
+-		reg_val |= (0xf << 0);
++		reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN);
+ 		writel(reg_val, db->membase + EMAC_INT_CTL_REG);
+ 	}
+ 
+diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.h b/drivers/net/ethernet/allwinner/sun4i-emac.h
+index 38c72d9ec600..90bd9ad77607 100644
+--- a/drivers/net/ethernet/allwinner/sun4i-emac.h
++++ b/drivers/net/ethernet/allwinner/sun4i-emac.h
+@@ -38,6 +38,7 @@
+ #define EMAC_RX_CTL_REG		(0x3c)
+ #define EMAC_RX_CTL_AUTO_DRQ_EN		(1 << 1)
+ #define EMAC_RX_CTL_DMA_EN		(1 << 2)
++#define EMAC_RX_CTL_FLUSH_FIFO		(1 << 3)
+ #define EMAC_RX_CTL_PASS_ALL_EN		(1 << 4)
+ #define EMAC_RX_CTL_PASS_CTL_EN		(1 << 5)
+ #define EMAC_RX_CTL_PASS_CRC_ERR_EN	(1 << 6)
+@@ -61,7 +62,21 @@
+ #define EMAC_RX_IO_DATA_STATUS_OK	(1 << 7)
+ #define EMAC_RX_FBC_REG		(0x50)
+ #define EMAC_INT_CTL_REG	(0x54)
++#define EMAC_INT_CTL_RX_EN	(1 << 8)
++#define EMAC_INT_CTL_TX0_EN	(1)
++#define EMAC_INT_CTL_TX1_EN	(1 << 1)
++#define EMAC_INT_CTL_TX_EN	(EMAC_INT_CTL_TX0_EN | EMAC_INT_CTL_TX1_EN)
++#define EMAC_INT_CTL_TX0_ABRT_EN	(0x1 << 2)
++#define EMAC_INT_CTL_TX1_ABRT_EN	(0x1 << 3)
++#define EMAC_INT_CTL_TX_ABRT_EN	(EMAC_INT_CTL_TX0_ABRT_EN | EMAC_INT_CTL_TX1_ABRT_EN)
+ #define EMAC_INT_STA_REG	(0x58)
++#define EMAC_INT_STA_TX0_COMPLETE	(0x1)
++#define EMAC_INT_STA_TX1_COMPLETE	(0x1 << 1)
++#define EMAC_INT_STA_TX_COMPLETE	(EMAC_INT_STA_TX0_COMPLETE | EMAC_INT_STA_TX1_COMPLETE)
++#define EMAC_INT_STA_TX0_ABRT	(0x1 << 2)
++#define EMAC_INT_STA_TX1_ABRT	(0x1 << 3)
++#define EMAC_INT_STA_TX_ABRT	(EMAC_INT_STA_TX0_ABRT | EMAC_INT_STA_TX1_ABRT)
++#define EMAC_INT_STA_RX_COMPLETE	(0x1 << 8)
+ #define EMAC_MAC_CTL0_REG	(0x5c)
+ #define EMAC_MAC_CTL0_RX_FLOW_CTL_EN	(1 << 2)
+ #define EMAC_MAC_CTL0_TX_FLOW_CTL_EN	(1 << 3)
+@@ -87,8 +102,11 @@
+ #define EMAC_MAC_CLRT_RM		(0x0f)
+ #define EMAC_MAC_MAXF_REG	(0x70)
+ #define EMAC_MAC_SUPP_REG	(0x74)
++#define EMAC_MAC_SUPP_100M	(0x1 << 8)
+ #define EMAC_MAC_TEST_REG	(0x78)
+ #define EMAC_MAC_MCFG_REG	(0x7c)
++#define EMAC_MAC_MCFG_MII_CLKD_MASK	(0xff << 2)
++#define EMAC_MAC_MCFG_MII_CLKD_72	(0x0d << 2)
+ #define EMAC_MAC_A0_REG		(0x98)
+ #define EMAC_MAC_A1_REG		(0x9c)
+ #define EMAC_MAC_A2_REG		(0xa0)
+-- 
+2.31.1
+
