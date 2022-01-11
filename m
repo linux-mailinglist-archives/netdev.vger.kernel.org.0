@@ -2,543 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5422448ABA8
-	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 11:46:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4E3348AC18
+	for <lists+netdev@lfdr.de>; Tue, 11 Jan 2022 12:03:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349339AbiAKKqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 05:46:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237719AbiAKKqb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 05:46:31 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA6FC06173F
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 02:46:30 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id f141-20020a1c1f93000000b003497aec3f86so1544014wmf.3
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 02:46:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=FV4u8jczmWPhrx8+solkpG9bnNmH9OoYb4ZY9qFU354=;
-        b=lCUj4JUm+qa/dSFPFri9biVa4HLRVbFmGnIXMqxOaf1WWwJNWOtRsBCFE2XdjP4OVw
-         SbThXrzN/hetWc0+Xbuh6PAgwOdKbIJtxcY3wCu5PZ0jkepRpJQi4GKUY24BNr8PUZ65
-         pWGqV0M+pW2AYIv3p00/vzpFI9qgqn1QoexZX9wZWAGXV/juOLRwOZPYmTHm6zJyab69
-         Jz8D8TWBrjYppj5Fgt7ZVr+Ft0Ue365EXmPnxQfIXqi9qr9Re258YLoc5vC13NsWuObw
-         dhY0xjbqovaJXN1Qj1aMwq457lPZD8mew0jJbsKttjo7JVW5xhiNfw7q3tihBa256jdQ
-         5mgg==
+        id S238211AbiAKLDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 06:03:18 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:51172 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238153AbiAKLDS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 06:03:18 -0500
+Received: by mail-io1-f71.google.com with SMTP id p129-20020a6b8d87000000b00601b30457cdso13296672iod.17
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 03:03:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=FV4u8jczmWPhrx8+solkpG9bnNmH9OoYb4ZY9qFU354=;
-        b=jyYS+mcwN8/LT6XpOxocJUBqfi5P7xcw0gjX65iKFZ8MlAPMKp1RdLNAWmsPDRQmNm
-         YdgJAhtk3RfskrxaL1UYIp7HlUehDldq1GP1//QolHwofMNg9P4vMYZwJvzsaJ7avg6S
-         ETit1rJ1lodeDcZo8ZtTp2diW+2oXFWhEZsPTfsJxy9YV5xxUXP5iLA3nt2pcrN0TGl5
-         eRCMDCER7RX2G23Pq1NRDE4BUh0SjtcJ2s4a3bdJhoVAxfJlfFblyWvn5dcuG0RKj1KS
-         YRgB24CQSNLhrOSn8waaN/dIF7SIMynHyQRs3kvsdrGR6FOMZRmlbwSeBCpw+0+OLjsn
-         /k8A==
-X-Gm-Message-State: AOAM532Z75RwV+OsPUztQCK+BIDKhiQTHKqtSMuyE8+vrEr+jRhJ7qKN
-        4U3OfGKoFHpTi1FAycHA1vo=
-X-Google-Smtp-Source: ABdhPJzZILbZ66yWn8y8MIWAqOxEjQ2S6MrRi5DqyKWqQWz5rC6Pj8k6dZnIYU2N04VqFBDm1t4QoQ==
-X-Received: by 2002:a05:600c:4ed2:: with SMTP id g18mr1925516wmq.41.1641897988859;
-        Tue, 11 Jan 2022 02:46:28 -0800 (PST)
-Received: from [10.0.0.5] ([37.165.158.36])
-        by smtp.gmail.com with ESMTPSA id bk17sm8625659wrb.105.2022.01.11.02.46.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 02:46:28 -0800 (PST)
-Message-ID: <0b2b06a8-4c59-2a00-1fbc-b4734a93ad95@gmail.com>
-Date:   Tue, 11 Jan 2022 02:46:26 -0800
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=SvKZTa68HXu7QD4i2AGs0+tntAMij4q7jyYjSzoxnBw=;
+        b=PP0yA1TgbhZWGmD5jpMAkidoomzjTx5Bj5ZA/r4u/jcoUj3F0PvB12Tb9Q19ecDdR2
+         SDhPqwFcY5LyHnNIcIXWDUzHOBsJZstCB0a+xG/4ClY/EbWFDdyxLDp/qbCQyD74kS9y
+         JvmDdX268DpsZ5FkNkc2Wrdl8Bpi0FOr7kuqPjbNFg2CElJyNnuxwOCNmZlgx8CKcUTo
+         Cb9f+qWrHqNlLo5H8QzKq9zk5zhG60nqlivMaIt+oOuLE5ZBc9LgKVZ3jql5LkszjNFG
+         d3JtNQpPnuCvySwkEqVBrVDaKOOAxN8LObCy2hGfB2drPgH5LIy2NQKkA33snRLMV7uN
+         Wjhg==
+X-Gm-Message-State: AOAM532Xfl20g8Ybc7t83SPOcb0rT2RE2jzmz5Z4pcYxq8cvpHmNBP2U
+        KxBlbbU4iTEU46j1DDiweSM5nWrIor/ZOBDF/gcAUqb1R3/j
+X-Google-Smtp-Source: ABdhPJxuCvuULKufbJcbdPC16proZAKGjsigW5n3Atjpy5M6rvajnc/51odPS1pvc5hso1aQu1y5ER1CFGINgJvGVU6J6Vo/a5KN
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: Debugging stuck tcp connection across localhost
-Content-Language: en-US
-To:     Ben Greear <greearb@candelatech.com>,
-        Neal Cardwell <ncardwell@google.com>, edumazet@google.com
-Cc:     netdev <netdev@vger.kernel.org>
-References: <38e55776-857d-1b51-3558-d788cf3c1524@candelatech.com>
- <CADVnQyn97m5ybVZ3FdWAw85gOMLAvPSHiR8_NC_nGFyBdRySqQ@mail.gmail.com>
- <b3e53863-e80e-704f-81a2-905f80f3171d@candelatech.com>
- <CADVnQymJaF3HoxoWhTb=D2wuVTpe_fp45tL8g7kaA2jgDe+xcQ@mail.gmail.com>
- <a6ec30f5-9978-f55f-f34f-34485a09db97@candelatech.com>
- <CADVnQym9LTupiVCTWh95qLQWYTkiFAEESv9Htzrgij8UVqSHBQ@mail.gmail.com>
- <b60aab98-a95f-d392-4391-c0d5e2afb2cd@candelatech.com>
- <9330e1c7-f7a2-0f1e-0ede-c9e5353060e3@candelatech.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <9330e1c7-f7a2-0f1e-0ede-c9e5353060e3@candelatech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:2615:: with SMTP id m21mr2019712jat.271.1641898997559;
+ Tue, 11 Jan 2022 03:03:17 -0800 (PST)
+Date:   Tue, 11 Jan 2022 03:03:17 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000081b56205d54c6667@google.com>
+Subject: [syzbot] KASAN: use-after-free Read in srcu_invoke_callbacks
+From:   syzbot <syzbot+4f789823c1abc5accf13@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, axboe@kernel.dk,
+        bpf@vger.kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 1/10/22 10:10, Ben Greear wrote:
-> On 1/6/22 2:26 PM, Ben Greear wrote:
->> On 1/6/22 12:04 PM, Neal Cardwell wrote:
->>> On Thu, Jan 6, 2022 at 2:05 PM Ben Greear <greearb@candelatech.com> 
->>> wrote:
->>>>
->>>> On 1/6/22 8:16 AM, Neal Cardwell wrote:
->>>>> On Thu, Jan 6, 2022 at 10:39 AM Ben Greear 
->>>>> <greearb@candelatech.com> wrote:
->>>>>>
->>>>>> On 1/6/22 7:20 AM, Neal Cardwell wrote:
->>>>>>> On Thu, Jan 6, 2022 at 10:06 AM Ben Greear 
->>>>>>> <greearb@candelatech.com> wrote:
->>>>>>>>
->>>>>>>> Hello,
->>>>>>>>
->>>>>>>> I'm working on a strange problem, and could use some help if 
->>>>>>>> anyone has ideas.
->>>>>>>>
->>>>>>>> On a heavily loaded system (500+ wifi station devices, VRF 
->>>>>>>> device per 'real' netdev,
->>>>>>>> traffic generation on the netdevs, etc), I see cases where two 
->>>>>>>> processes trying
->>>>>>>> to communicate across localhost with TCP seem to get a stuck 
->>>>>>>> network
->>>>>>>> connection:
->>>>>>>>
->>>>>>>> [greearb@bendt7 ben_debug]$ grep 4004 netstat.txt |grep 127.0.0.1
->>>>>>>> tcp        0 7988926 127.0.0.1:4004 127.0.0.1:23184         
->>>>>>>> ESTABLISHED
->>>>>>>> tcp        0  59805 127.0.0.1:23184 127.0.0.1:4004          
->>>>>>>> ESTABLISHED
->>>>>>>>
->>>>>>>> Both processes in question continue to execute, and as far as I 
->>>>>>>> can tell, they are properly
->>>>>>>> attempting to read/write the socket, but they are 
->>>>>>>> reading/writing 0 bytes (these sockets
->>>>>>>> are non blocking).  If one was stuck not reading, I would 
->>>>>>>> expect netstat
->>>>>>>> to show bytes in the rcv buffer, but it is zero as you can see 
->>>>>>>> above.
->>>>>>>>
->>>>>>>> Kernel is 5.15.7+ local hacks.  I can only reproduce this in a 
->>>>>>>> big messy complicated
->>>>>>>> test case, with my local ath10k-ct and other patches that 
->>>>>>>> enable virtual wifi stations,
->>>>>>>> but my code can grab logs at time it sees the problem.  Is 
->>>>>>>> there anything
->>>>>>>> more I can do to figure out why the TCP connection appears to 
->>>>>>>> be stuck?
->>>>>>>
->>>>>>> It could be very useful to get more information about the state 
->>>>>>> of all
->>>>>>> the stuck connections (sender and receiver side) with something 
->>>>>>> like:
->>>>>>>
->>>>>>>      ss -tinmo 'sport = :4004 or sport = :4004'
->>>>>>>
->>>>>>> I would recommend downloading and building a recent version of the
->>>>>>> 'ss' tool to maximize the information. Here is a recipe for doing
->>>>>>> that:
->>>>>>>
->>>>>>> https://github.com/google/bbr/blob/master/Documentation/bbr-faq.md#how-can-i-monitor-linux-tcp-bbr-connections
->>>>
->>>> Hello Neal,
->>>>
->>>> Here is the ss output from when the problem was happening. I think 
->>>> you can ignore the non-127.0.0.1
->>>> connections, but I left them in just in case it is somehow helpful.
->>>>
->>>> In addition, the pcap capture file is uploaded here:
->>>>
->>>> http://www.candelatech.com/downloads/trace-lo-4004.pcap
->>>>
->>>> The problem was happening in this time frame:
->>>>
->>>> [root@ct523c-0bdd ~]# date
->>>> Thu 06 Jan 2022 10:14:49 AM PST
->>>> [root@ct523c-0bdd ~]# ss -tinmo 'dport = :4004 or sport = :4004'
->>>> State       Recv-Q       Send-Q               Local 
->>>> Address:Port                Peer Address:Port
->>>>
->>>> ESTAB       0            222024 127.0.0.1:57224                  
->>>> 127.0.0.1:4004 timer:(persist,1min23sec,9)
->>>> skmem:(r0,rb2000000,t0,tb2000000,f2232,w227144,o0,bl0,d0) ts sack 
->>>> reno wscale:10,4 rto:201 backoff:9 rtt:0.866/0.944 ato:40 mss:65483 
->>>> pmtu:65535 rcvmss:65483
->>>> advmss:65483 cwnd:10 bytes_sent:36810035 bytes_retrans:22025 
->>>> bytes_acked:31729223 bytes_received:228063971 segs_out:20134 
->>>> segs_in:17497 data_segs_out:11969
->>>> data_segs_in:16642 send 6049237875bps lastsnd:3266 lastrcv:125252 
->>>> lastack:125263 pacing_rate 12093239064bps delivery_rate 
->>>> 130966000000bps delivered:11863
->>>> app_limited busy:275880ms rwnd_limited:21ms(0.0%) retrans:0/2 
->>>> dsack_dups:2 rcv_rtt:0.671 rcv_space:1793073 rcv_ssthresh:934517 
->>>> notsent:222024 minrtt:0.013
->>>> ESTAB       0            0 192.168.200.34:4004              
->>>> 192.168.200.34:16906
->>>>           skmem:(r0,rb19521831,t0,tb2626560,f0,w0,o0,bl0,d0) ts 
->>>> sack reno wscale:10,10 rto:201 rtt:0.483/0.64 ato:40 mss:22016 
->>>> pmtu:65535 rcvmss:65483 advmss:65483
->>>> cwnd:5 ssthresh:5 bytes_sent:8175956 bytes_retrans:460 
->>>> bytes_acked:8174668 bytes_received:20820708 segs_out:3635 
->>>> segs_in:2491 data_segs_out:2377
->>>> data_segs_in:2330 send 1823271222bps lastsnd:125253 lastrcv:125250 
->>>> lastack:125251 pacing_rate 2185097952bps delivery_rate 
->>>> 70451200000bps delivered:2372
->>>> busy:14988ms rwnd_limited:1ms(0.0%) retrans:0/5 rcv_rtt:1.216 
->>>> rcv_space:779351 rcv_ssthresh:9759798 minrtt:0.003
->>>> ESTAB       0            139656 192.168.200.34:16908             
->>>> 192.168.200.34:4004 timer:(persist,1min52sec,2)
->>>> skmem:(r0,rb2000000,t0,tb2000000,f3960,w143496,o0,bl0,d0) ts sack 
->>>> reno wscale:10,10 rto:37397 backoff:2 rtt:4182.62/8303.35 ato:40 
->>>> mss:65483 pmtu:65535
->>>> rcvmss:22016 advmss:65483 cwnd:10 bytes_sent:22351275 
->>>> bytes_retrans:397320 bytes_acked:20703982 bytes_received:7815946 
->>>> segs_out:2585 segs_in:3642
->>>> data_segs_out:2437 data_segs_in:2355 send 1252479bps lastsnd:7465 
->>>> lastrcv:125250 lastack:125253 pacing_rate 2504952bps delivery_rate 
->>>> 15992bps delivered:2357
->>>> busy:271236ms retrans:0/19 rcv_rtt:0.004 rcv_space:288293 
->>>> rcv_ssthresh:43690 notsent:139656 minrtt:0.004
->>>> ESTAB       0            460 192.168.200.34:4004              
->>>> 192.168.200.34:16908 timer:(on,1min23sec,9)
->>>> skmem:(r0,rb9433368,t0,tb2626560,f2356,w1740,o0,bl0,d0) ts sack 
->>>> reno wscale:10,10 rto:102912 backoff:9 rtt:0.741/1.167 ato:40 
->>>> mss:22016 pmtu:65535
->>>> rcvmss:65483 advmss:65483 cwnd:1 ssthresh:2 bytes_sent:7850211 
->>>> bytes_retrans:33437 bytes_acked:7815486 bytes_received:20703981 
->>>> segs_out:3672 segs_in:2504
->>>> data_segs_out:2380 data_segs_in:2356 send 237689609bps 
->>>> lastsnd:19753 lastrcv:158000 lastack:125250 pacing_rate 
->>>> 854817384bps delivery_rate 115645432bps
->>>> delivered:2355 busy:200993ms unacked:1 retrans:0/24 lost:1 
->>>> rcv_rtt:1.439 rcv_space:385874 rcv_ssthresh:4715943 minrtt:0.003
->>>> ESTAB       0            147205 192.168.200.34:16906             
->>>> 192.168.200.34:4004 timer:(persist,1min46sec,9)
->>>> skmem:(r0,rb2000000,t0,tb2000000,f507,w151045,o0,bl0,d0) ts sack 
->>>> reno wscale:10,10 rto:223 backoff:9 rtt:11.4/18.962 ato:40 
->>>> mss:65483 pmtu:65535 rcvmss:22016
->>>> advmss:65483 cwnd:10 bytes_sent:23635760 bytes_retrans:220124 
->>>> bytes_acked:20820709 bytes_received:8174668 segs_out:2570 
->>>> segs_in:3625 data_segs_out:2409
->>>> data_segs_in:2371 send 459529825bps lastsnd:7465 lastrcv:125253 
->>>> lastack:125250 pacing_rate 918999184bps delivery_rate 
->>>> 43655333328bps delivered:2331 app_limited
->>>> busy:185315ms retrans:0/14 rcv_rtt:0.005 rcv_space:220160 
->>>> rcv_ssthresh:43690 notsent:147205 minrtt:0.003
->>>> ESTAB       0            3928980 127.0.0.1:4004                   
->>>> 127.0.0.1:57224 timer:(persist,7.639ms,8)
->>>> skmem:(r0,rb50000000,t0,tb3939840,f108,w4005780,o0,bl0,d3) ts sack 
->>>> reno wscale:4,10 rto:251 backoff:8 rtt:13.281/25.84 ato:40 
->>>> mss:65483 pmtu:65535
->>>> rcvmss:65483 advmss:65483 cwnd:10 ssthresh:10 bytes_sent:312422779 
->>>> bytes_retrans:245567 bytes_acked:228063971 bytes_received:31729222 
->>>> segs_out:18944
->>>> segs_in:20021 data_segs_out:18090 data_segs_in:11862 send 
->>>> 394446201bps lastsnd:56617 lastrcv:125271 lastack:125252 
->>>> pacing_rate 709983112bps delivery_rate
->>>> 104772800000bps delivered:16643 app_limited busy:370468ms 
->>>> rwnd_limited:127ms(0.0%) retrans:0/26 rcv_rtt:7666.22 
->>>> rcv_space:2279928 rcv_ssthresh:24999268
->>>> notsent:3928980 minrtt:0.003
->>>> [root@ct523c-0bdd ~]# date
->>>> Thu 06 Jan 2022 10:14:57 AM PST
->>>> [root@ct523c-0bdd ~]# ss -tinmo 'dport = :4004 or sport = :4004'
->>>> State       Recv-Q       Send-Q               Local 
->>>> Address:Port                Peer Address:Port
->>>>
->>>> ESTAB       0            222208 127.0.0.1:57224                  
->>>> 127.0.0.1:4004 timer:(persist,1min11sec,9)
->>>> skmem:(r0,rb2000000,t0,tb2000000,f2048,w227328,o0,bl0,d0) ts sack 
->>>> reno wscale:10,4 rto:201 backoff:9 rtt:0.866/0.944 ato:40 mss:65483 
->>>> pmtu:65535 rcvmss:65483
->>>> advmss:65483 cwnd:10 bytes_sent:36941001 bytes_retrans:22025 
->>>> bytes_acked:31729223 bytes_received:228063971 segs_out:20136 
->>>> segs_in:17497 data_segs_out:11971
->>>> data_segs_in:16642 send 6049237875bps lastsnd:2663 lastrcv:136933 
->>>> lastack:136944 pacing_rate 12093239064bps delivery_rate 
->>>> 130966000000bps delivered:11863
->>>> app_limited busy:287561ms rwnd_limited:21ms(0.0%) retrans:0/2 
->>>> dsack_dups:2 rcv_rtt:0.671 rcv_space:1793073 rcv_ssthresh:934517 
->>>> notsent:222208 minrtt:0.013
->>>> ESTAB       0            0 192.168.200.34:4004              
->>>> 192.168.200.34:16906
->>>>           skmem:(r0,rb19521831,t0,tb2626560,f0,w0,o0,bl0,d0) ts 
->>>> sack reno wscale:10,10 rto:201 rtt:0.483/0.64 ato:40 mss:22016 
->>>> pmtu:65535 rcvmss:65483 advmss:65483
->>>> cwnd:5 ssthresh:5 bytes_sent:8175956 bytes_retrans:460 
->>>> bytes_acked:8174668 bytes_received:20820708 segs_out:3635 
->>>> segs_in:2491 data_segs_out:2377
->>>> data_segs_in:2330 send 1823271222bps lastsnd:136934 lastrcv:136931 
->>>> lastack:136932 pacing_rate 2185097952bps delivery_rate 
->>>> 70451200000bps delivered:2372
->>>> busy:14988ms rwnd_limited:1ms(0.0%) retrans:0/5 rcv_rtt:1.216 
->>>> rcv_space:779351 rcv_ssthresh:9759798 minrtt:0.003
->>>> ESTAB       0            139656 192.168.200.34:16908             
->>>> 192.168.200.34:4004 timer:(persist,1min40sec,2)
->>>> skmem:(r0,rb2000000,t0,tb2000000,f3960,w143496,o0,bl0,d0) ts sack 
->>>> reno wscale:10,10 rto:37397 backoff:2 rtt:4182.62/8303.35 ato:40 
->>>> mss:65483 pmtu:65535
->>>> rcvmss:22016 advmss:65483 cwnd:10 bytes_sent:22351275 
->>>> bytes_retrans:397320 bytes_acked:20703982 bytes_received:7815946 
->>>> segs_out:2585 segs_in:3642
->>>> data_segs_out:2437 data_segs_in:2355 send 1252479bps lastsnd:19146 
->>>> lastrcv:136931 lastack:136934 pacing_rate 2504952bps delivery_rate 
->>>> 15992bps delivered:2357
->>>> busy:282917ms retrans:0/19 rcv_rtt:0.004 rcv_space:288293 
->>>> rcv_ssthresh:43690 notsent:139656 minrtt:0.004
->>>> ESTAB       0            460 192.168.200.34:4004              
->>>> 192.168.200.34:16908 timer:(on,1min11sec,9)
->>>> skmem:(r0,rb9433368,t0,tb2626560,f2356,w1740,o0,bl0,d0) ts sack 
->>>> reno wscale:10,10 rto:102912 backoff:9 rtt:0.741/1.167 ato:40 
->>>> mss:22016 pmtu:65535
->>>> rcvmss:65483 advmss:65483 cwnd:1 ssthresh:2 bytes_sent:7850211 
->>>> bytes_retrans:33437 bytes_acked:7815486 bytes_received:20703981 
->>>> segs_out:3672 segs_in:2504
->>>> data_segs_out:2380 data_segs_in:2356 send 237689609bps 
->>>> lastsnd:31434 lastrcv:169681 lastack:136931 pacing_rate 
->>>> 854817384bps delivery_rate 115645432bps
->>>> delivered:2355 busy:212674ms unacked:1 retrans:0/24 lost:1 
->>>> rcv_rtt:1.439 rcv_space:385874 rcv_ssthresh:4715943 minrtt:0.003
->>>> ESTAB       0            147205 192.168.200.34:16906             
->>>> 192.168.200.34:4004 timer:(persist,1min35sec,9)
->>>> skmem:(r0,rb2000000,t0,tb2000000,f507,w151045,o0,bl0,d0) ts sack 
->>>> reno wscale:10,10 rto:223 backoff:9 rtt:11.4/18.962 ato:40 
->>>> mss:65483 pmtu:65535 rcvmss:22016
->>>> advmss:65483 cwnd:10 bytes_sent:23635760 bytes_retrans:220124 
->>>> bytes_acked:20820709 bytes_received:8174668 segs_out:2570 
->>>> segs_in:3625 data_segs_out:2409
->>>> data_segs_in:2371 send 459529825bps lastsnd:19146 lastrcv:136934 
->>>> lastack:136931 pacing_rate 918999184bps delivery_rate 
->>>> 43655333328bps delivered:2331 app_limited
->>>> busy:196996ms retrans:0/14 rcv_rtt:0.005 rcv_space:220160 
->>>> rcv_ssthresh:43690 notsent:147205 minrtt:0.003
->>>> ESTAB       0            3928980 127.0.0.1:4004                   
->>>> 127.0.0.1:57224 timer:(persist,1min57sec,9)
->>>> skmem:(r0,rb50000000,t0,tb3939840,f108,w4005780,o0,bl0,d3) ts sack 
->>>> reno wscale:4,10 rto:251 backoff:9 rtt:13.281/25.84 ato:40 
->>>> mss:65483 pmtu:65535
->>>> rcvmss:65483 advmss:65483 cwnd:10 ssthresh:10 bytes_sent:312488262 
->>>> bytes_retrans:245567 bytes_acked:228063971 bytes_received:31729222 
->>>> segs_out:18945
->>>> segs_in:20021 data_segs_out:18091 data_segs_in:11862 send 
->>>> 394446201bps lastsnd:2762 lastrcv:136952 lastack:136933 pacing_rate 
->>>> 709983112bps delivery_rate
->>>> 104772800000bps delivered:16643 app_limited busy:382149ms 
->>>> rwnd_limited:127ms(0.0%) retrans:0/26 rcv_rtt:7666.22 
->>>> rcv_space:2279928 rcv_ssthresh:24999268
->>>> notsent:3928980 minrtt:0.003
->>>> [root@ct523c-0bdd ~]#
->>>>
->>>>
->>>> We can reproduce this readily at current, and I'm happy to try 
->>>> patches and/or do more debugging.  We also tried with a 5.12 kernel,
->>>> and saw same problems, but in all cases, we have local patches 
->>>> applied, and there is no way for us to do this test without
->>>> at least a fair bit of local patches applied.
->>>
->>> Thanks for the ss traces and tcpdump output! The tcpdump traces are
->>> nice, in that they start before the connection starts, so capture the
->>> SYN and its critical options like wscale.
->>>
->>>  From the "timer:(persist" in the ss output, it seems the stalls (that
->>> are preventing the send buffers from being transmitted) are caused by
->>> a 0-byte receive window causing the senders to stop sending, and
->>> periodically fire the ICSK_TIME_PROBE0 timer to check for an open
->>> receive window. From "backoff:9" it seems this condition has lasted
->>> for a very long exponential backoff process.
->>>
->>> I don't see 0-byte receive window problems in the trace, but this is
->>> probably because the tcpdump traces only last through 10:12:47 PST,
->>> and the problem is showing up in ss at 10:14:49 AM PST and later.
->>>
->>> Is it possible to reproduce the problem again, and this time let the
->>> tcpdump traces run all the way through the period where the
->>> connections freeze and you grab the "ss" output?
->>>
->>> You may also have to explicitly kill the tcpdump. Perhaps the tail of
->>> the trace was buffered in tcpdump's output buffer and not flushed to
->>> disk. A "killall tcpdump" should do the trick to force it to cleanly
->>> flush everything.
->>
->> Here is another set of debugging, I made sure tcpdump ran the entire 
->> time,
->> as well as the ss monitoring script.
->>
->> http://www.candelatech.com/downloads/ss_log.txt
->> http://www.candelatech.com/downloads/trace-lo-4004-b.pcap
->>
->> In addition, here are logs from my tool with msec timestamps. It is 
->> detecting
->> communication failure and logging about it.  Interestingly, I think 
->> it recovered
->> after one long timeout, but in the end, it went past the 2-minute 
->> cutoff mark
->> where my program will close the TCP connection and restart things.
->>
->> 1641506767983:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 34458ms, sending req for update, 
->> read-isset: 0
->> 1641506773839:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 40314ms, sending req for update, 
->> read-isset: 0
->> 1641506780563:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 47038ms, sending req for update, 
->> read-isset: 0
->> 1641506786567:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 53041ms, sending req for update, 
->> read-isset: 0
->> 1641506823537:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 34949ms, sending req for update, 
->> read-isset: 0
->> 1641506829280:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 40692ms, sending req for update, 
->> read-isset: 0
->> 1641506834878:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 46289ms, sending req for update, 
->> read-isset: 0
->> 1641506840778:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 52189ms, sending req for update, 
->> read-isset: 0
->> 1641506846786:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 58198ms, sending req for update, 
->> read-isset: 0
->> 1641506852746:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 64158ms, sending req for update, 
->> read-isset: 0
->> 1641506858280:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 69692ms, sending req for update, 
->> read-isset: 0
->> 1641506864200:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 75612ms, sending req for update, 
->> read-isset: 0
->> 1641506870556:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 81968ms, sending req for update, 
->> read-isset: 0
->> 1641506876564:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 87976ms, sending req for update, 
->> read-isset: 0
->> 1641506882774:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 94185ms, sending req for update, 
->> read-isset: 0
->>
->> # Recovered between here and above it seems.
->>
->> 1641507005029:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 35840ms, sending req for update, 
->> read-isset: 0
->> 1641507035759:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 30164ms, sending req for update, 
->> read-isset: 0
->> 1641507042161:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 36565ms, sending req for update, 
->> read-isset: 0
->> 1641507048397:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 42802ms, sending req for update, 
->> read-isset: 0
->> 1641507054491:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 48896ms, sending req for update, 
->> read-isset: 0
->> 1641507060748:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 55153ms, sending req for update, 
->> read-isset: 0
->> 1641507067083:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 61488ms, sending req for update, 
->> read-isset: 0
->> 1641507073438:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 67842ms, sending req for update, 
->> read-isset: 0
->> 1641507079638:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 74042ms, sending req for update, 
->> read-isset: 0
->> 1641507085926:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 80330ms, sending req for update, 
->> read-isset: 0
->> 1641507091788:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 86192ms, sending req for update, 
->> read-isset: 0
->> 1641507098042:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 92447ms, sending req for update, 
->> read-isset: 0
->> 1641507104283:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 98687ms, sending req for update, 
->> read-isset: 0
->> 1641507110466:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 104871ms, sending req for update, 
->> read-isset: 0
->> 1641507116381:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 110786ms, sending req for update, 
->> read-isset: 0
->> 1641507123034:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 117439ms, sending req for update, 
->> read-isset: 0
->> 1641507128975:  Card.cc 801: WARNING:  Card: Shelf: 1, Card: 1 has 
->> not received communication in: 123379ms, sending req for update, 
->> read-isset: 0
->
-> Hello Neal,
->
-> Do the new captures help any?
->
-> From my own looking at things, it seems that the sniffer fails to get 
-> frames near when the problem
-> starts happening.  I am baffled as to how that can happen, especially 
-> since it seems to stop getting
-> packets from multiple different TCP connections (the sniffer filter 
-> would pick up some other loop-back
-> related connections to the same IP port).
->
-> And, if I interpret the ss output properly, after the problem happens, 
-> the sockets still think they are
-> sending data.  I didn't check closely enough to see if the peer side 
-> thought it received it.
->
-> We are going to try to reproduce w/out wifi, but not sure we'll have 
-> any luck with that.
-> We did test w/out VRF (using lots of ip rules instead), and similar 
-> problem was seen according to my
-> test team (I did not debug it in detail).
->
-> Do you have any suggestions for how to debug this further?  I am happy 
-> to hack stuff into the
-> kernel if you have some suggested places to add debugging...
->
-> Thanks,
-> Ben
->
-These 2 packets (or lack of packets between them) are suspicious.
+syzbot found the following issue on:
 
-14:06:28.294557 IP 127.0.0.1.4004 > 127.0.0.1.57234: Flags [.], seq 
-226598466:226663949, ack 31270804, win 24414, options [nop,nop,TS val 
-3325283657 ecr 3325283657], length 65483
+HEAD commit:    3770333b3f8c Add linux-next specific files for 20220106
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=171aa4e3b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f9eb40d9f910b474
+dashboard link: https://syzkaller.appspot.com/bug?extid=4f789823c1abc5accf13
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12b08f53b00000
 
-14:08:04.143548 IP 127.0.0.1.57234 > 127.0.0.1.4004: Flags [P.], seq 
-31270804:31336287, ack 226663949, win 58408, options [nop,nop,TS val 
-3325379506 ecr 3325283657], length 65483
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+4f789823c1abc5accf13@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: use-after-free in rcu_seq_snap kernel/rcu/rcu.h:91 [inline]
+BUG: KASAN: use-after-free in srcu_invoke_callbacks+0x391/0x3c0 kernel/rcu/srcutree.c:1283
+Read of size 8 at addr ffff8880189b6968 by task kworker/0:1/7
+
+CPU: 0 PID: 7 Comm: kworker/0:1 Not tainted 5.16.0-rc8-next-20220106-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: rcu_gp srcu_invoke_callbacks
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xa5/0x3ed mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ rcu_seq_snap kernel/rcu/rcu.h:91 [inline]
+ srcu_invoke_callbacks+0x391/0x3c0 kernel/rcu/srcutree.c:1283
+ process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
+ worker_thread+0x657/0x1110 kernel/workqueue.c:2454
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+
+Allocated by task 19830:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:469
+ kasan_slab_alloc include/linux/kasan.h:260 [inline]
+ slab_post_alloc_hook mm/slab.h:738 [inline]
+ slab_alloc_node mm/slub.c:3230 [inline]
+ kmem_cache_alloc_node+0x255/0x3e0 mm/slub.c:3266
+ blk_alloc_queue+0x5ad/0x870 block/blk-core.c:446
+ blk_mq_init_queue_data block/blk-mq.c:3878 [inline]
+ __blk_mq_alloc_disk+0x8c/0x1c0 block/blk-mq.c:3902
+ nbd_dev_add+0x3b2/0xcd0 drivers/block/nbd.c:1765
+ nbd_genl_connect+0x11f3/0x1930 drivers/block/nbd.c:1948
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
+ genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
+ netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1343
+ netlink_sendmsg+0x904/0xdf0 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:725
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2410
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2464
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2493
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Freed by task 13:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free+0x166/0x1a0 mm/kasan/common.c:328
+ kasan_slab_free include/linux/kasan.h:236 [inline]
+ slab_free_hook mm/slub.c:1728 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1754
+ slab_free mm/slub.c:3509 [inline]
+ kmem_cache_free+0xdb/0x3b0 mm/slub.c:3526
+ rcu_do_batch kernel/rcu/tree.c:2536 [inline]
+ rcu_core+0x7b8/0x1540 kernel/rcu/tree.c:2787
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+
+Last potentially related work creation:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
+ call_rcu+0x99/0x730 kernel/rcu/tree.c:3072
+ kobject_cleanup lib/kobject.c:705 [inline]
+ kobject_release lib/kobject.c:736 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ kobject_put+0x1c8/0x540 lib/kobject.c:753
+ disk_release+0x19a/0x260 block/genhd.c:1116
+ device_release+0x9f/0x240 drivers/base/core.c:2229
+ kobject_cleanup lib/kobject.c:705 [inline]
+ kobject_release lib/kobject.c:736 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ kobject_put+0x1c8/0x540 lib/kobject.c:753
+ put_device+0x1b/0x30 drivers/base/core.c:3512
+ put_disk block/genhd.c:1368 [inline]
+ blk_cleanup_disk+0x6b/0x80 block/genhd.c:1384
+ nbd_dev_remove+0x44/0xf0 drivers/block/nbd.c:253
+ process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
+ worker_thread+0x657/0x1110 kernel/workqueue.c:2454
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+Second to last potentially related work creation:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
+ insert_work+0x48/0x370 kernel/workqueue.c:1368
+ __queue_work+0x5ca/0xf30 kernel/workqueue.c:1534
+ __queue_delayed_work+0x1c8/0x270 kernel/workqueue.c:1682
+ queue_delayed_work_on+0x105/0x120 kernel/workqueue.c:1718
+ process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
+ worker_thread+0x657/0x1110 kernel/workqueue.c:2454
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+The buggy address belongs to the object at ffff8880189b5c70
+ which belongs to the cache request_queue_srcu of size 3816
+The buggy address is located 3320 bytes inside of
+ 3816-byte region [ffff8880189b5c70, ffff8880189b6b58)
+The buggy address belongs to the page:
+page:ffffea0000626c00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x189b0
+head:ffffea0000626c00 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000010200 0000000000000000 dead000000000001 ffff888012787140
+raw: 0000000000000000 0000000080080008 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0x1d20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC|__GFP_HARDWALL), pid 14963, ts 196854875504, free_ts 196839673140
+ prep_new_page mm/page_alloc.c:2434 [inline]
+ get_page_from_freelist+0xa72/0x2f40 mm/page_alloc.c:4165
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5381
+ alloc_pages+0x1aa/0x310 mm/mempolicy.c:2271
+ alloc_slab_page mm/slub.c:1799 [inline]
+ allocate_slab mm/slub.c:1944 [inline]
+ new_slab+0x28d/0x380 mm/slub.c:2004
+ ___slab_alloc+0x6be/0xd60 mm/slub.c:3018
+ __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3105
+ slab_alloc_node mm/slub.c:3196 [inline]
+ kmem_cache_alloc_node+0x122/0x3e0 mm/slub.c:3266
+ blk_alloc_queue+0x5ad/0x870 block/blk-core.c:446
+ blk_mq_init_queue_data block/blk-mq.c:3878 [inline]
+ __blk_mq_alloc_disk+0x8c/0x1c0 block/blk-mq.c:3902
+ nbd_dev_add+0x3b2/0xcd0 drivers/block/nbd.c:1765
+ nbd_genl_connect+0x11f3/0x1930 drivers/block/nbd.c:1948
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
+ genl_family_rcv_msg net/netlink/genetlink.c:775 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:792
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
+ netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1343
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1352 [inline]
+ free_pcp_prepare+0x414/0xb60 mm/page_alloc.c:1404
+ free_unref_page_prepare mm/page_alloc.c:3325 [inline]
+ free_unref_page+0x19/0x690 mm/page_alloc.c:3404
+ __unfreeze_partials+0x17c/0x1a0 mm/slub.c:2536
+ qlink_free mm/kasan/quarantine.c:157 [inline]
+ qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:176
+ kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:283
+ __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:446
+ kasan_slab_alloc include/linux/kasan.h:260 [inline]
+ slab_post_alloc_hook mm/slab.h:738 [inline]
+ slab_alloc_node mm/slub.c:3230 [inline]
+ slab_alloc mm/slub.c:3238 [inline]
+ __kmalloc+0x1e7/0x340 mm/slub.c:4420
+ kmalloc include/linux/slab.h:586 [inline]
+ tomoyo_realpath_from_path+0xc3/0x620 security/tomoyo/realpath.c:254
+ tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
+ tomoyo_path_perm+0x21b/0x400 security/tomoyo/file.c:822
+ security_inode_getattr+0xcf/0x140 security/security.c:1326
+ vfs_getattr fs/stat.c:157 [inline]
+ vfs_statx+0x164/0x390 fs/stat.c:225
+ vfs_fstatat fs/stat.c:243 [inline]
+ __do_sys_newfstatat+0x96/0x120 fs/stat.c:412
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Memory state around the buggy address:
+ ffff8880189b6800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8880189b6880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff8880189b6900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                          ^
+ ffff8880189b6980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8880189b6a00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
-It looks like ACK for first packet is not sent, and packet is not 
-retransmitted.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-This could be a bug in conntrack (dropping rtx packets over loopback so 
-pcap do not show the attempts),
-
-or persistent memory allocation errors in __tcp_send_ack()
-
-
-Or this could be that the missing ACK packet was dropped by tcpdump.
-
-Another suspicious sequence is:
-
-14:09:29.159816 IP 127.0.0.1.57234 > 127.0.0.1.4004: Flags [P.], seq 
-32608288:32609208, ack 265640849, win 58408, options [nop,nop,TS val 
-3325464522 ecr 3325464521], length 920
-
-14:10:05.487756 IP 127.0.0.1.57234 > 127.0.0.1.4004: Flags [.], seq 
-32609208:32674691, ack 265640849, win 58408, options [nop,nop,TS val 
-3325500850 ecr 3325464521], length 65483
-
-14:10:05.487762 IP 127.0.0.1.4004 > 127.0.0.1.57234: Flags [P.], seq 
-265640849:265706332, ack 32674691, win 24382, options [nop,nop,TS val 
-3325500850 ecr 3325500850], length 65483
-
-Same pattern here, missing ACK for 1st packet, and no retransmits.
-
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
