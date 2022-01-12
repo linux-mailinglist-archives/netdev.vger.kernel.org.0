@@ -2,203 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 124BD48C3FF
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 13:30:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6763B48C421
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 13:45:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353138AbiALM3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 07:29:44 -0500
-Received: from mga14.intel.com ([192.55.52.115]:52070 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240498AbiALM3e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Jan 2022 07:29:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641990574; x=1673526574;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=7u2c/+u/7900R51hbSn1pNSHHzU5y3Q///2YVkNposY=;
-  b=j3c7xL3T2Cx1Zsd+ppfFG6/CLjSSvIJEAw4QTVLA6tB2AraYJYhd2MhQ
-   ZzwteHKVxIL0j09G0CGrLjs+Yro29FNWzMSWriqRlEDzj0tuAV+6MAFce
-   FxTZzPfLKL4DYBDV/MG/fFU2d3uqphYsKxOsBZpYCZm676LIkOEOk1zA9
-   GHKd9J8xpYg0QAEoK5ZNSMQlG6vUCblq0FvaR7feDvp7FDMvq+JraGwJw
-   W9CyF2x/uvu0S31lIiDY42CwPpi3G+glyavjQR2Zi03QCWHNKWIQ/lEsp
-   eSrSqKHqfOgdBq6Q9asQ14gg6ZzaY/nwB0wugaZ2F5mzvSs3JUVVIJWL4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="243922983"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="243922983"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 04:29:32 -0800
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="691367097"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 04:29:15 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n7cjO-009gDi-VM;
-        Wed, 12 Jan 2022 14:27:58 +0200
-Date:   Wed, 12 Jan 2022 14:27:58 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Eric Auger <eric.auger@redhat.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        openipmi-developer@lists.sourceforge.net,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        id S1353237AbiALMpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 07:45:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240547AbiALMpV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 07:45:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B3AC06173F;
+        Wed, 12 Jan 2022 04:45:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BCBE618AC;
+        Wed, 12 Jan 2022 12:45:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11578C36AE9;
+        Wed, 12 Jan 2022 12:45:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641991520;
+        bh=izcITvnbn3eRk7EuxKjfXB5/A1HR1stA4bPdJSHT784=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=JdalBd1hee3fOcfK3y+gyjG7syal6TOpysOc+CCFa3gx8T5JX/ePUdW50xMAAXK2R
+         5f4imQYbL37jsl9NtNM0brHcj5P9was8N6j8PlaHQ+jtD0o3veE7MnG2+qJub6F/FM
+         rbO3uu6bWxf4IhAoA7JXU48fTl1rxDLqiVkTBGzObwuzudUX6T1UMyFCkAg2NormIs
+         5tE7n/WwYTYZ8T2q5kvgJHnAZojVGNO6auD6KJFLegPt7ntavoe3fvqZ4DP5EKXziN
+         UfN+eQ0Uv67I0uF/oKrApqVkYYsTZUVM11Yxuqjltt3l8vvKZoFQPc07bLMC2SwhCJ
+         kulZ834X1K+zQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     Jerome Pouiller <Jerome.Pouiller@silabs.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <Yd7JTvfblG0Ge4AN@smile.fi.intel.com>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
- <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
- <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org,
+        Pali =?utf-8?Q?Roh?= =?utf-8?Q?=C3=A1r?= <pali@kernel.org>
+Subject: Re: [PATCH v9 01/24] mmc: sdio: add SDIO IDs for Silabs WF200 chip
+References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com>
+        <20220111171424.862764-2-Jerome.Pouiller@silabs.com>
+        <CAPDyKFreu2S3Okc9pXckDjUQ2ieb-urSM0riysFnEHRhEqXBKg@mail.gmail.com>
+Date:   Wed, 12 Jan 2022 14:45:13 +0200
+In-Reply-To: <CAPDyKFreu2S3Okc9pXckDjUQ2ieb-urSM0riysFnEHRhEqXBKg@mail.gmail.com>
+        (Ulf Hansson's message of "Wed, 12 Jan 2022 11:58:27 +0100")
+Message-ID: <87k0f5t95y.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 11:27:02AM +0100, Geert Uytterhoeven wrote:
-> On Wed, Jan 12, 2022 at 9:51 AM Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Wed, Jan 12, 2022 at 09:33:48AM +0100, Geert Uytterhoeven wrote:
-> > > On Mon, Jan 10, 2022 at 10:20 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > > > On Mon, Jan 10, 2022 at 09:10:14PM +0100, Uwe Kleine-König wrote:
-> > > > > On Mon, Jan 10, 2022 at 10:54:48PM +0300, Sergey Shtylyov wrote:
-> > > > > > This patch is based on the former Andy Shevchenko's patch:
-> > > > > >
-> > > > > > https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko@linux.intel.com/
-> > > > > >
-> > > > > > Currently platform_get_irq_optional() returns an error code even if IRQ
-> > > > > > resource simply has not been found. It prevents the callers from being
-> > > > > > error code agnostic in their error handling:
-> > > > > >
-> > > > > >     ret = platform_get_irq_optional(...);
-> > > > > >     if (ret < 0 && ret != -ENXIO)
-> > > > > >             return ret; // respect deferred probe
-> > > > > >     if (ret > 0)
-> > > > > >             ...we get an IRQ...
-> > > > > >
-> > > > > > All other *_optional() APIs seem to return 0 or NULL in case an optional
-> > > > > > resource is not available. Let's follow this good example, so that the
-> > > > > > callers would look like:
-> > > > > >
-> > > > > >     ret = platform_get_irq_optional(...);
-> > > > > >     if (ret < 0)
-> > > > > >             return ret;
-> > > > > >     if (ret > 0)
-> > > > > >             ...we get an IRQ...
-> > > > >
-> > > > > The difference to gpiod_get_optional (and most other *_optional) is that
-> > > > > you can use the NULL value as if it were a valid GPIO.
-> > > > >
-> > > > > As this isn't given with for irqs, I don't think changing the return
-> > > > > value has much sense.
-> > > >
-> > > > We actually want platform_get_irq_optional() to look different to all
-> > > > the other _optional() methods because it is not equivalent. If it
-> > > > looks the same, developers will assume it is the same, and get
-> > > > themselves into trouble.
-> > >
-> > > Developers already assume it is the same, and thus forget they have
-> > > to check against -ENXIO instead of zero.
-> >
-> > Is this an ack for renaming platform_get_irq_optional() to
-> > platform_get_irq_silent()?
-> 
-> No it isn't ;-)
-> 
-> If an optional IRQ is not present, drivers either just ignore it (e.g.
-> for devices that can have multiple interrupts or a single muxed IRQ),
-> or they have to resort to polling. For the latter, fall-back handling
-> is needed elsewhere in the driver.
-> To me it sounds much more logical for the driver to check if an
-> optional irq is non-zero (available) or zero (not available), than to
-> sprinkle around checks for -ENXIO. In addition, you have to remember
-> that this one returns -ENXIO, while other APIs use -ENOENT or -ENOSYS
-> (or some other error code) to indicate absence. I thought not having
-> to care about the actual error code was the main reason behind the
-> introduction of the *_optional() APIs.
+Ulf Hansson <ulf.hansson@linaro.org> writes:
 
-For the record, I'm on the same page with Geert.
+> On Tue, 11 Jan 2022 at 18:14, Jerome Pouiller
+> <Jerome.Pouiller@silabs.com> wrote:
+>>
+>> From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+>>
+>> Note that the values used by Silabs are uncommon. A driver cannot fully
+>> rely on the SDIO PnP. It should also check if the device is declared in
+>> the DT.
+>>
+>> So, to apply the quirks necessary for the Silabs WF200, we rely on the
+>> DT rather than on the SDIO VID/PID.
+>>
+>> Signed-off-by: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
+>
+> I guess the series is getting close to getting queued up?
+>
+> As an option to make sure $subject patch doesn't cause a problem for
+> that, I can queue it up and send it for the 5.17-rcs or if Kalle
+> prefer to carry this in this tree with my ack?
+>
+> Kalle?
 
--- 
-With Best Regards,
-Andy Shevchenko
+The easiest is if you can take it to your tree, tack!
 
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
