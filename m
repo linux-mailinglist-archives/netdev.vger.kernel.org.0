@@ -2,139 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0768248CB0D
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:34:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C63FA48CAD0
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:18:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343795AbiALSeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 13:34:05 -0500
-Received: from mga01.intel.com ([192.55.52.88]:65227 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242378AbiALSdg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Jan 2022 13:33:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642012416; x=1673548416;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=kl6KE6fIlAJUOkzEpfMsk817zHBF9cKcozgZRyFfBLA=;
-  b=QTuEg4q38B/skIEZxMANTPtApQZ90+n58ZpEeEwtbZrM+f9CsZQ61vKF
-   uFoDZjLV8FVbVpOV/mdwnj3fnKi7d7OPUEqT3iGupyFbh4z3AQmLI/Xsn
-   K3HgYk99d5+PnEzK456N22IUYD1bVtPZD1sdgCZzW8J4WAb5ILFBBiq05
-   SIB/GsqHJjSABvcmHAq7SSxq+aSFawb5LKQQ7yINZMfiviwnSB2YbhoaS
-   Yx6eAA17Us5qEoMywb++AkZCOuo81cw6xe8DmgNLJ+PBKibpHjfrd0eIf
-   KxquxgH1nWMFEP8s3fAAHhLnW0GeZiz9VZ1dcGDUokIoHuS2IhV93R+kM
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="268160898"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="268160898"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 10:16:46 -0800
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="529301545"
-Received: from frpiroth-mobl2.ger.corp.intel.com ([10.251.217.139])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 10:16:39 -0800
-Date:   Wed, 12 Jan 2022 20:16:38 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc:     "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>,
-        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        mika.westerberg@linux.intel.com, moises.veleta@intel.com,
-        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
-        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com
-Subject: Re: [PATCH net-next v3 01/12] net: wwan: t7xx: Add control DMA
- interface
-In-Reply-To: <Yd7/se+LD1c1wiBA@smile.fi.intel.com>
-Message-ID: <b638aa4-5a1c-e6ad-5a85-d4c3298c4daf@linux.intel.com>
-References: <20211207024711.2765-1-ricardo.martinez@linux.intel.com> <20211207024711.2765-2-ricardo.martinez@linux.intel.com> <a6325ef-e06e-c236-9d23-42fdb8b62747@linux.intel.com> <2b21bfa5-4b18-d615-b6ab-09ad97d73fe4@linux.intel.com> <Yd6+GjPLP2qCCEfv@smile.fi.intel.com>
- <b0cb18b-dc7b-9241-b21a-850d055d86@linux.intel.com> <Yd7/se+LD1c1wiBA@smile.fi.intel.com>
+        id S1356132AbiALSSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 13:18:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58518 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349910AbiALSSB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:18:01 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 017D9619BF;
+        Wed, 12 Jan 2022 18:18:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE24AC36AE5;
+        Wed, 12 Jan 2022 18:17:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642011480;
+        bh=0H1CLt+VvEHrz668MInHgFSL7XgsFZ5ZGc1z5o89IT8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fejQXkxCbbVke3tZeXwEdGCkeKgldUhJjMSFyQ/DXyOR2XMAi9b5gGpNLGnkrv+1f
+         IFX2x8HCFRwgL7xmzVnlE0NsERisWbSjH+pGZBj74qv6IcK+B7KjefNVfBkASmONyk
+         IjG5reByBZqx2y4POlrC7D2sCGtsZeMRiW4PT7ZrXDEGMhB/1gbNAqK9Msw9d5gOu3
+         cTqZRvYrTPcnloPSX1yWPpQg4x3J2RUTIZO+6Z1VO3oY6lynlisUSapv5qaX8Vw+zX
+         4clONkLlt1LPN6tHbxkI1pwjYeUZ3WjydVUwtNAaY6D12Q4PW1BFn/zIO/FRXKjkCM
+         TpY+mFdFLuB7g==
+Date:   Wed, 12 Jan 2022 19:17:56 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Shay Agroskin <shayagr@amazon.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH v21 bpf-next 18/23] libbpf: Add SEC name for xdp_mb
+ programs
+Message-ID: <Yd8bVIcA18KIH6+I@lore-desk>
+References: <cover.1641641663.git.lorenzo@kernel.org>
+ <f9103d787144983524ba331273718e422a63a767.1641641663.git.lorenzo@kernel.org>
+ <CAEf4BzbfDvH5CYNsWg9Dx7JcFEp4jNmNRR6H-6sJEUxDSy1zZw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-909957258-1642011406=:1851"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="PE2xfSOW+rT6gZi6"
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbfDvH5CYNsWg9Dx7JcFEp4jNmNRR6H-6sJEUxDSy1zZw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-909957258-1642011406=:1851
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
+--PE2xfSOW+rT6gZi6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 12 Jan 2022, Andy Shevchenko wrote:
+> On Sun, Jan 9, 2022 at 7:05 AM Lorenzo Bianconi <lorenzo@kernel.org> wrot=
+e:
+> >
+> > Introduce support for the following SEC entries for XDP multi-buff
+> > property:
+> > - SEC("xdp_mb/")
+> > - SEC("xdp_devmap_mb/")
+> > - SEC("xdp_cpumap_mb/")
+>=20
+> Libbpf seemed to went with .<suffix> rule (e.g., fentry.s for
+> sleepable, seems like we'll have kprobe.multi or  something along
+> those lines as well), so let's stay consistent and call this "xdp_mb",
+> "xdp_devmap.mb", "xdp_cpumap.mb" (btw, is "mb" really all that
+> recognizable? would ".multibuf" be too verbose?). Also, why the "/"
+> part? Also it shouldn't be "sloppy" either. Neither expected attach
+> type should be optional.  Also not sure SEC_ATTACHABLE is needed. So
+> at most it should be SEC_XDP_MB, probably.
 
-> On Wed, Jan 12, 2022 at 04:24:52PM +0200, Ilpo Järvinen wrote:
-> > On Wed, 12 Jan 2022, Andy Shevchenko wrote:
-> > > On Tue, Jan 11, 2022 at 08:55:58PM -0800, Martinez, Ricardo wrote:
-> > > > On 12/16/2021 3:08 AM, Ilpo Järvinen wrote:
-> > > > > On Mon, 6 Dec 2021, Ricardo Martinez wrote:
-> > > 
-> > > > > > +	if (req->entry.next == &ring->gpd_ring)
-> > > > > > +		return list_first_entry(&ring->gpd_ring, struct cldma_request, entry);
-> > > > > > +
-> > > > > > +	return list_next_entry(req, entry);
-> > > 
-> > > ...
-> > > 
-> > > > > > +	if (req->entry.prev == &ring->gpd_ring)
-> > > > > > +		return list_last_entry(&ring->gpd_ring, struct cldma_request, entry);
-> > > > > > +
-> > > > > > +	return list_prev_entry(req, entry);
-> > > 
-> > > ...
-> > > 
-> > > > > Wouldn't these two seems generic enough to warrant adding something like
-> > > > > list_next/prev_entry_circular(...) to list.h?
-> > > > 
-> > > > Agree, in the upcoming version I'm planning to include something like this
-> > > > to list.h as suggested:
-> > > 
-> > > I think you mean for next and prev, i.o.w. two helpers, correct?
-> > > 
-> > > > #define list_next_entry_circular(pos, ptr, member) \
+ack, I fine with it. Something like:
 
-One thing I missed earlier, the sigrature should instead of ptr have head:
-#define list_next_entry_circular(pos, head, member)
+ 	SEC_DEF("lsm.s/",		LSM, BPF_LSM_MAC, SEC_ATTACH_BTF | SEC_SLEEPABLE, atta=
+ch_lsm),
+ 	SEC_DEF("iter/",		TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF, attach_iter),
+ 	SEC_DEF("syscall",		SYSCALL, 0, SEC_SLEEPABLE),
++	SEC_DEF("xdp_devmap.multibuf",	XDP, BPF_XDP_DEVMAP, 0),
+ 	SEC_DEF("xdp_devmap/",		XDP, BPF_XDP_DEVMAP, SEC_ATTACHABLE),
++	SEC_DEF("xdp_cpumap.multibuf",	XDP, BPF_XDP_CPUMAP, 0),
+ 	SEC_DEF("xdp_cpumap/",		XDP, BPF_XDP_CPUMAP, SEC_ATTACHABLE),
++	SEC_DEF("xdp.multibuf",		XDP, BPF_XDP, 0),
+ 	SEC_DEF("xdp",			XDP, BPF_XDP, SEC_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
+ 	SEC_DEF("perf_event",		PERF_EVENT, 0, SEC_NONE | SEC_SLOPPY_PFX),
+ 	SEC_DEF("lwt_in",		LWT_IN, 0, SEC_NONE | SEC_SLOPPY_PFX),
 
-> > > >     ((pos)->member.next == (ptr) ? \
-> > > 
-> > > I believe this is list_entry_is_head().
-> > 
-> > It takes .next so it's not the same as list_entry_is_head() and 
-> > list_entry_is_last() doesn't exist.
-> 
-> But we have list_last_entry(). So, what about
-> 
-> list_last_entry() == pos ? first : next;
-> 
-> and counterpart
-> 
-> list_first_entry() == pos ? last : prev;
-> 
-> ?
+>=20
+> >
+> > Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
+> > Acked-by: John Fastabend <john.fastabend@gmail.com>
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  tools/lib/bpf/libbpf.c | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index 7f10dd501a52..c93f6afef96c 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -235,6 +235,8 @@ enum sec_def_flags {
+> >         SEC_SLEEPABLE =3D 8,
+> >         /* allow non-strict prefix matching */
+> >         SEC_SLOPPY_PFX =3D 16,
+> > +       /* BPF program support XDP multi-buff */
+> > +       SEC_XDP_MB =3D 32,
+> >  };
+> >
+> >  struct bpf_sec_def {
+> > @@ -6562,6 +6564,9 @@ static int libbpf_preload_prog(struct bpf_program=
+ *prog,
+> >         if (def & SEC_SLEEPABLE)
+> >                 opts->prog_flags |=3D BPF_F_SLEEPABLE;
+> >
+> > +       if (prog->type =3D=3D BPF_PROG_TYPE_XDP && (def & SEC_XDP_MB))
+> > +               opts->prog_flags |=3D BPF_F_XDP_MB;
+>=20
+> I'd say you don't even need SEC_XDP_MB flag at all, you can just check
+> that prog->sec_name is one of "xdp.mb", "xdp_devmap.mb" or
+> "xdp_cpumap.mb" and add the flag. SEC_XDP_MB doesn't seem generic
+> enough to warrant a flag.
 
-Yes, although now that I think it more, using them implies the head 
-element has to be always accessed. It might be marginally cache friendlier 
-to use list_entry_is_head you originally suggested but get the next entry 
-first:
-({
-	typeof(pos) next__ = list_next_entry(pos, member); \
-	!list_entry_is_head(next__, head, member) ? next__ : list_next_entry(next__, member);
-})
-(This was written directly to email, entirely untested).
+ack, something like:
 
-Here, the head element would only get accessed when we really need to walk 
-through it.
++	if (prog->type =3D=3D BPF_PROG_TYPE_XDP &&
++	    (!strcmp(prog->sec_name, "xdp_devmap.multibuf") ||
++	     !strcmp(prog->sec_name, "xdp_cpumap.multibuf") ||
++	     !strcmp(prog->sec_name, "xdp.multibuf")))
++		opts->prog_flags |=3D BPF_F_XDP_MB;
 
-> > > >     list_first_entry(ptr, typeof(*(pos)), member) : \
-> > > >     list_next_entry(pos, member))
+Regards,
+Lorenzo
 
--- 
- i.
+>=20
+> > +
+> >         if ((prog->type =3D=3D BPF_PROG_TYPE_TRACING ||
+> >              prog->type =3D=3D BPF_PROG_TYPE_LSM ||
+> >              prog->type =3D=3D BPF_PROG_TYPE_EXT) && !prog->attach_btf_=
+id) {
+> > @@ -8600,8 +8605,11 @@ static const struct bpf_sec_def section_defs[] =
+=3D {
+> >         SEC_DEF("lsm.s/",               LSM, BPF_LSM_MAC, SEC_ATTACH_BT=
+F | SEC_SLEEPABLE, attach_lsm),
+> >         SEC_DEF("iter/",                TRACING, BPF_TRACE_ITER, SEC_AT=
+TACH_BTF, attach_iter),
+> >         SEC_DEF("syscall",              SYSCALL, 0, SEC_SLEEPABLE),
+> > +       SEC_DEF("xdp_devmap_mb/",       XDP, BPF_XDP_DEVMAP, SEC_ATTACH=
+ABLE | SEC_XDP_MB),
+> >         SEC_DEF("xdp_devmap/",          XDP, BPF_XDP_DEVMAP, SEC_ATTACH=
+ABLE),
+> > +       SEC_DEF("xdp_cpumap_mb/",       XDP, BPF_XDP_CPUMAP, SEC_ATTACH=
+ABLE | SEC_XDP_MB),
+> >         SEC_DEF("xdp_cpumap/",          XDP, BPF_XDP_CPUMAP, SEC_ATTACH=
+ABLE),
+> > +       SEC_DEF("xdp_mb/",              XDP, BPF_XDP, SEC_ATTACHABLE_OP=
+T | SEC_SLOPPY_PFX | SEC_XDP_MB),
+> >         SEC_DEF("xdp",                  XDP, BPF_XDP, SEC_ATTACHABLE_OP=
+T | SEC_SLOPPY_PFX),
+> >         SEC_DEF("perf_event",           PERF_EVENT, 0, SEC_NONE | SEC_S=
+LOPPY_PFX),
+> >         SEC_DEF("lwt_in",               LWT_IN, 0, SEC_NONE | SEC_SLOPP=
+Y_PFX),
+> > --
+> > 2.33.1
+> >
 
---8323329-909957258-1642011406=:1851--
+--PE2xfSOW+rT6gZi6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYd8bUwAKCRA6cBh0uS2t
+rHT7AQD3onYae8E3PhJBeBaGxkhzTBs22TBaYlJSvJ7dQALCIgD9HtStnzng+xiX
+Gp9RFPg8IKvaAicW9mpSlE9YIGOWZAE=
+=WAcO
+-----END PGP SIGNATURE-----
+
+--PE2xfSOW+rT6gZi6--
