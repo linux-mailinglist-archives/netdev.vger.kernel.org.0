@@ -2,143 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B945248C289
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 11:52:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68D8548C29A
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 11:58:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352617AbiALKvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 05:51:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53962 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352630AbiALKvz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 05:51:55 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A94C06173F
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 02:51:54 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id s30so6627579lfo.7
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 02:51:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ajadRxekfKlNZLmonMEGUdpiiUlJCpBU8D0nYRIxhqA=;
-        b=n7ouKiMIb/tYofVya2jhLWqIz4otlZtpCCE4aguIdHQS6dKoDs8RksAdkHVkfh6ck9
-         kLk0Qw8b9sD6WfOvMmBksUUT/hrgra1I5API4Y6De42JSRUZLf8BRJKHORRK20eAuH9Z
-         swLy1bap3RlWJDUOMzIPyTBWUX06YOkgPTcU1RN0vX5H25enAYzExMTYYSCp0FfsdTGY
-         lCUHBleRTxjJZ/zLOnra4Cugri59EkvL9QHtXp6yzeoBDHKWdRMa4IKepql+xYOfmE3V
-         +vq+5Z3GSTB+IFeoGbA8QKA7aUQmuOgEdues2+HRvY+0UaG7QLcRZBpvmP6TFxyAaliz
-         U2YA==
+        id S1352644AbiALK6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 05:58:04 -0500
+Received: from mail-ua1-f46.google.com ([209.85.222.46]:43648 "EHLO
+        mail-ua1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238370AbiALK6D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 05:58:03 -0500
+Received: by mail-ua1-f46.google.com with SMTP id i5so3902352uaq.10;
+        Wed, 12 Jan 2022 02:58:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ajadRxekfKlNZLmonMEGUdpiiUlJCpBU8D0nYRIxhqA=;
-        b=ELkg9CPa6+MY6ZhctpEDdJmtLDiVPgoP67ZtOMB+YJwgK3OGwtxN/gzkOkCF2UJqhh
-         AfdPYSYgPUdviLeVU+T1A1egk6KTYakmkRTsJR6aa0A4OreaGCFYj9cVzmrY+jM25gL9
-         Ii8t9xM0da+6j7NkE0qXyDTqzqDR1wZ/9nM8PEuErxIva/bu1fR/yp9aZar5P/w7UIIj
-         THYipgWeWXWKUbiAAIWspeoGCpq/CoNxq1dXtheESDlrozkHeQUKxpD5emD0/RUMXxaL
-         JAS8DFL/SLsZApy6tYaEIPgr5zMlHUXuMV4A7YqVtURQaovmJ+2HKWyXzqCa8MUG5bLt
-         919g==
-X-Gm-Message-State: AOAM533G4CWoJXYe34ZrF/BdNrdRFV6FXgdOZ9lg103HFADOknAs5YKb
-        rXAtX0cIYQVth1qt/em6rrdp3TZYKx3lofqaWj7izWW1xcfptQ==
-X-Google-Smtp-Source: ABdhPJwlG2ajFyVnViZREk3eK3GmcRqUFKwmypVgeholraY8xEQawKZtMDgFhgZE9kKw4JIyjTxnCJC3g5FMtOM/0kI=
-X-Received: by 2002:a05:651c:98f:: with SMTP id b15mr6038585ljq.367.1641984713037;
- Wed, 12 Jan 2022 02:51:53 -0800 (PST)
+        bh=sqfqmGnWErblTuhOUr48ULJ3GhOyu+Z25jTNW9S2YJk=;
+        b=FWLMI5bBOVpZdyV5XoLEQEPHbScoAd25NOJKXslUmwsdI4JNnqCd9wP6fkvS2OcQZA
+         ELMsurQDTPeHK7WlRYex4r9IgI5DaI+b9nTrjXfLTPvZfMhAy7B8dqhh6+4SPppi12nL
+         Ed7O+69O6cH12dEKDhgySBTyBKFgY9EszyqQfRQnT4ODp7/sSZuUsDRtEVHimt+aFDCC
+         Kdz15zUEqNsh9L9N1+LwlqcBW/anFAI6ozLg05Z3ezKbkEOIRdwwu2pYR2H2lXn8tJ//
+         h93VM+8i2m4qjacZGuddXZG71/Ph6hehZSXtknnmSLYxLv9gK7D84hJU0fCFqgoybMZF
+         Mxmw==
+X-Gm-Message-State: AOAM5313d++tqQe9KNk8uIjB1LP46j1Hh6Dhp6Jmm1xIISLOF3rhbEbY
+        qdtk2Ib3tJhH6yrlr2EHo5xf/GePrP91vry2
+X-Google-Smtp-Source: ABdhPJzhe4W765gRBfKwtHARcs2LhOTzVbGiBQJy2gdtCbMUqbGF2ufdHAQDivWCCDwVn/IeAUMjiw==
+X-Received: by 2002:ab0:25d7:: with SMTP id y23mr3719332uan.116.1641985082435;
+        Wed, 12 Jan 2022 02:58:02 -0800 (PST)
+Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com. [209.85.222.54])
+        by smtp.gmail.com with ESMTPSA id l27sm4892564vko.17.2022.01.12.02.58.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 02:58:01 -0800 (PST)
+Received: by mail-ua1-f54.google.com with SMTP id y4so3990872uad.1;
+        Wed, 12 Jan 2022 02:58:00 -0800 (PST)
+X-Received: by 2002:ab0:4d5a:: with SMTP id k26mr3942936uag.122.1641985080812;
+ Wed, 12 Jan 2022 02:58:00 -0800 (PST)
 MIME-Version: 1.0
-References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com> <20220111171424.862764-9-Jerome.Pouiller@silabs.com>
-In-Reply-To: <20220111171424.862764-9-Jerome.Pouiller@silabs.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 12 Jan 2022 11:51:16 +0100
-Message-ID: <CAPDyKFoMQG-GOfRsMk21Awk21cxVN6bMe9n8YCh8xHbg7j1Rgg@mail.gmail.com>
-Subject: Re: [PATCH v9 08/24] wfx: add bus_sdio.c
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-mmc@vger.kernel.org,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+References: <CAHmME9qbnYmhvsuarButi6s=58=FPiti0Z-QnGMJ=OsMzy1eOg@mail.gmail.com>
+ <20220111134934.324663-1-Jason@zx2c4.com> <20220111134934.324663-2-Jason@zx2c4.com>
+In-Reply-To: <20220111134934.324663-2-Jason@zx2c4.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 12 Jan 2022 11:57:49 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWOheM0WsHNTA2dS=wJA8kXEYx6G78bnZ51T1X8HWdzNg@mail.gmail.com>
+Message-ID: <CAMuHMdWOheM0WsHNTA2dS=wJA8kXEYx6G78bnZ51T1X8HWdzNg@mail.gmail.com>
+Subject: Re: [PATCH crypto 1/2] lib/crypto: blake2s-generic: reduce code size
+ on small systems
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, wireguard@lists.zx2c4.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Theodore Tso <tytso@mit.edu>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        jeanphilippe.aumasson@gmail.com, Ard Biesheuvel <ardb@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[...]
+Hi Jason,
 
-> +static const struct of_device_id wfx_sdio_of_match[] = {
-> +       { .compatible = "silabs,wf200",    .data = &pdata_wf200 },
-> +       { .compatible = "silabs,brd4001a", .data = &pdata_brd4001a },
-> +       { .compatible = "silabs,brd8022a", .data = &pdata_brd8022a },
-> +       { .compatible = "silabs,brd8023a", .data = &pdata_brd8023a },
-> +       { .compatible = "silabs,wfx-sdio", .data = &pdata_wfx_sdio },
-> +       { },
-> +};
-> +MODULE_DEVICE_TABLE(of, wfx_sdio_of_match);
-> +
-> +static int wfx_sdio_probe(struct sdio_func *func, const struct sdio_device_id *id)
-> +{
-> +       const struct wfx_platform_data *pdata = of_device_get_match_data(&func->dev);
-> +       struct device_node *np = func->dev.of_node;
-> +       struct wfx_sdio_priv *bus;
-> +       int ret;
-> +
-> +       if (func->num != 1) {
-> +               dev_err(&func->dev, "SDIO function number is %d while it should always be 1 (unsupported chip?)\n",
-> +                       func->num);
-> +               return -ENODEV;
-> +       }
-> +
-> +       if (!pdata) {
-> +               dev_warn(&func->dev, "no compatible device found in DT\n");
-> +               return -ENODEV;
-> +       }
-> +
-> +       bus = devm_kzalloc(&func->dev, sizeof(*bus), GFP_KERNEL);
-> +       if (!bus)
-> +               return -ENOMEM;
-> +
-> +       bus->func = func;
-> +       bus->of_irq = irq_of_parse_and_map(np, 0);
-> +       sdio_set_drvdata(func, bus);
-> +       func->card->quirks |= MMC_QUIRK_LENIENT_FN0 |
-> +                             MMC_QUIRK_BLKSZ_FOR_BYTE_MODE |
-> +                             MMC_QUIRK_BROKEN_BYTE_MODE_512;
+On Tue, Jan 11, 2022 at 2:49 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> Re-wind the loops entirely on kernels optimized for code size. This is
+> really not good at all performance-wise. But on m68k, it shaves off 4k
+> of code size, which is apparently important.
 
-This should not be needed any more, right?
+On arm32:
 
-> +
-> +       sdio_claim_host(func);
-> +       ret = sdio_enable_func(func);
-> +       /* Block of 64 bytes is more efficient than 512B for frame sizes < 4k */
-> +       sdio_set_block_size(func, 64);
-> +       sdio_release_host(func);
-> +       if (ret)
-> +               return ret;
-> +
-> +       bus->core = wfx_init_common(&func->dev, pdata, &wfx_sdio_hwbus_ops, bus);
-> +       if (!bus->core) {
-> +               ret = -EIO;
-> +               goto sdio_release;
-> +       }
-> +
-> +       ret = wfx_probe(bus->core);
-> +       if (ret)
-> +               goto sdio_release;
-> +
-> +       return 0;
-> +
-> +sdio_release:
-> +       sdio_claim_host(func);
-> +       sdio_disable_func(func);
-> +       sdio_release_host(func);
-> +       return ret;
-> +}
+add/remove: 1/0 grow/shrink: 0/1 up/down: 160/-4212 (-4052)
+Function                                     old     new   delta
+blake2s_sigma                                  -     160    +160
+blake2s_compress_generic                    4872     660   -4212
+Total: Before=9846148, After=9842096, chg -0.04%
 
-[...]
+On arm64:
 
-Other than the above, this looks good to me!
+add/remove: 1/2 grow/shrink: 0/1 up/down: 160/-4584 (-4424)
+Function                                     old     new   delta
+blake2s_sigma                                  -     160    +160
+e843419@0710_00007634_e8a0                     8       -      -8
+e843419@0441_0000423a_178c                     8       -      -8
+blake2s_compress_generic                    5088     520   -4568
+Total: Before=32800278, After=32795854, chg -0.01%
 
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-Kind regards
-Uffe
+For the size reduction:
+Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
