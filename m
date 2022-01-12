@@ -2,115 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39DB348C2E9
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 12:15:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 609B448C300
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 12:19:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352785AbiALLPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 06:15:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:43785 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1352761AbiALLPH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 06:15:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641986107;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/O6VUSuDrBCGXjIOjB+lCz/TDMc6L1BfrxoUSl2WMqg=;
-        b=BCx9sB2o8wFHGSI9SkpoW+iBg8BgGBXmK5SG9HhYwqTrCKs+OfN88vh6uUUQPdUa76w3CP
-        V5bUS119UG+G9uI0wovBu4PU/K3I2xM9wuVNPnHphc63mh6BvAMwAZLgOOVw5KNFV2KCDI
-        fC74RHpraiTIU4beH7VX/8oX/hNhGIM=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-657-8pe97uC9Pr-O7JjhIdFtLw-1; Wed, 12 Jan 2022 06:15:06 -0500
-X-MC-Unique: 8pe97uC9Pr-O7JjhIdFtLw-1
-Received: by mail-qk1-f197.google.com with SMTP id d64-20020a379b43000000b00478d75ea63cso1494172qke.12
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 03:15:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=/O6VUSuDrBCGXjIOjB+lCz/TDMc6L1BfrxoUSl2WMqg=;
-        b=I+Z4uUAG0eqpuv21c/EMkxs+JF4/Nvi/YtiO2Zs0Ub4Je1h4fSkGBx4xjs/Sz8TQon
-         h0s5C2DRzJkogihakBwYC0BMTnuMNBcH9cvSUa4s5GN/tAtOhrnj6KV+JSTQc5okR2bJ
-         HxI/+216HU+e/pjskV0D60jXXaJRmTQSigSUwahM3OpAE+OSuQI63ZZp1uOTWWYLoaR1
-         Cv+GBON6PN0pKYQbVlxaxXTOWdjXT78I2E9jlgZDomf6gVS5db5xGOsQtWWrcg/ARcg9
-         kK//tu33iQrG+/iQsXbld34YBB47JMoS199VyuxTvCxPAQWX7WaRXLq1n9waSaKjn2fE
-         rZRg==
-X-Gm-Message-State: AOAM532caSnkdjIszAvYecbBKZKBKxGtL9sd14ExcOPTuPvvHD1JqUpV
-        zfN4B5tr1ulP/8gGi9iqRQGzLXUWx2Fp66P2yvd5q4yXvC66ouGkgRPRaTNPimfK6tZ4mAGl+Jn
-        fCpUdIdB77MM0leaC
-X-Received: by 2002:a05:622a:1c5:: with SMTP id t5mr7159793qtw.311.1641986105465;
-        Wed, 12 Jan 2022 03:15:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJytfENyhCNljtiDCzXK7f0hQt2E1jJGbk4pwZSAZeomnRI3JR8zM0bsNr9/Do/Yp2K6SzERzg==
-X-Received: by 2002:a05:622a:1c5:: with SMTP id t5mr7159783qtw.311.1641986105264;
-        Wed, 12 Jan 2022 03:15:05 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-96-254.dyn.eolo.it. [146.241.96.254])
-        by smtp.gmail.com with ESMTPSA id y17sm1361497qkp.134.2022.01.12.03.15.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 03:15:04 -0800 (PST)
-Message-ID: <3520c1e1609d8bef103766ad03508d0060824b98.camel@redhat.com>
-Subject: Re: [PATCH 09/14] ipv6: hand dst refs to cork setup
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Pavel Begunkov <asml.silence@gmail.com>, netdev@vger.kernel.org,
+        id S1352812AbiALLTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 06:19:14 -0500
+Received: from mail-bn8nam11on2064.outbound.protection.outlook.com ([40.107.236.64]:47424
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239752AbiALLTK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Jan 2022 06:19:10 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=K4Vsgi9bLfvHuVZwe/jNJgM0Z0/ctF3AFOo5VtNXkJ+NrgTvs0tdwjA5wCXl7c/2qIhGLy3NcviB0IEcK4ssHJETTSJti8jkMxIy4DASWC+MI3Wd6mbGDal5ICTCeUDd2ewDU6Kv63sp0un6U2N9/ZDQMTKXuYvklIxW1EylbflxZ46yp8j9fDqq0sxRc6Uyb6T0KlTy3cy57pMFHEV0tu6rPdgj5KF5zWesieHgWo5HLdB9uvydoRAyCIE53rfbl81KKr/TBIN4rVm75MW+p2c00I7ESJk27DtQ3RvYbfb5pRRiMKYwH1x/SPowvz4g/CF5u4Qs+1OC/bFVrf3h2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2jifdYK1/h7Q2K4AxJkSjVwIGSjtseKBg7mOfTn8sf4=;
+ b=az4N9gzvO6A5gNqmikQkfAmTJ471gH5tq2UAPmO37sGjktVmqOrQ6CaEDnbacHUz/4+6BrLicpw4p3RaFU6vLTA35ylu1xRje9ulDAzYtTostxTmQ7ey6Mh+wk5hoVw6Hd8k+HGr+tV4tYeEM+R9cLIybGPStJYNf9bB/aWsIVUo9ngNvgblFFPCmQtCHK51mYAuZP8WiThleLxMP9I+hbPDwdKorMHboTOSbxh0wkSXGHFCrZSUggXL8AmWbMGlBBddmFUw1ZDeN0tfmlaY44/krS7iXmLJMwkIA//SkvEHHhYiFSXfuE8KrQNrBP5gSKO+S7y0UmID6LbbM+l+Xw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2jifdYK1/h7Q2K4AxJkSjVwIGSjtseKBg7mOfTn8sf4=;
+ b=gApMu4//nij1QBmFFLndCiiwUm1W0T4Kj9zIAM+OLFnbc+f+tyag7uv+0EoS8/37Zoni+bPQEjw5c5vi4kXfUmigYXDnQn15iuIPy3vKmx1JfMuGSDDWZFWfg6YHvVBGsyIWhDJHCUnpxE381z1Ft6BlgP8IKUq5AEiwbc7TB/I=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=silabs.com;
+Received: from CO6PR11MB5650.namprd11.prod.outlook.com (2603:10b6:5:35a::9) by
+ DM4PR11MB5278.namprd11.prod.outlook.com (2603:10b6:5:389::19) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4888.10; Wed, 12 Jan 2022 11:19:07 +0000
+Received: from CO6PR11MB5650.namprd11.prod.outlook.com
+ ([fe80::584b:bb3f:c96a:b0b]) by CO6PR11MB5650.namprd11.prod.outlook.com
+ ([fe80::584b:bb3f:c96a:b0b%6]) with mapi id 15.20.4888.010; Wed, 12 Jan 2022
+ 11:19:07 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 12 Jan 2022 12:15:01 +0100
-In-Reply-To: <9e3bb558-ecb1-a6aa-35e4-a2771136b3fe@gmail.com>
-References: <cover.1641863490.git.asml.silence@gmail.com>
-         <07031c43d3e5c005fbfc76b60a58e30c66d7c620.1641863490.git.asml.silence@gmail.com>
-         <48293134f179d643e9ec7bcbd7bca895df7611ac.camel@redhat.com>
-         <9e3bb558-ecb1-a6aa-35e4-a2771136b3fe@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v9 08/24] wfx: add bus_sdio.c
+Date:   Wed, 12 Jan 2022 12:18:58 +0100
+Message-ID: <42104281.b1Mx7tgHyx@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <20220112105859.u4j76o7cpsr4znmb@pali>
+References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com> <20220111171424.862764-9-Jerome.Pouiller@silabs.com> <20220112105859.u4j76o7cpsr4znmb@pali>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-ClientProxiedBy: PR3P251CA0012.EURP251.PROD.OUTLOOK.COM
+ (2603:10a6:102:b5::27) To CO6PR11MB5650.namprd11.prod.outlook.com
+ (2603:10b6:5:35a::9)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cf507a75-cb5d-45c9-0be6-08d9d5bd5919
+X-MS-TrafficTypeDiagnostic: DM4PR11MB5278:EE_
+X-Microsoft-Antispam-PRVS: <DM4PR11MB52786F51127D6D735B67342093529@DM4PR11MB5278.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kNa5+0lM5k7695qKHFCvObFHna4d7tQV0AmENkPJW8TtMoI8RRiK3924LxeLN30TKCaFvBcM1ZrFEvifq9LTHchVlYl2rlQYuOiLaBLaONnsYsKY6wzN8+axzyqLYMlf+KiYLwPKhCU0AQajUK9VfWiYJL6/D1yzpG4dEQFu9C44opGNU1j2K09UVnrOat700vpfk2np44ipzaDrOSvFnQRm2Sq89JPuNw+dYjaUnNa1buiao/nhVz0YbqOuMoxfftkO8bHzjZV1Ri/gOpTxC1HAZjs2LAaXUNudDF8uXdnvEu/4PyMpseiUVmxHraN0F2Cx0jKscIpUp0mixojTaYNgPWulEN76vXUQVIiY83ohZCxV2jbAi/PzA406zQ05HH9RbLxaUASBfoYTmR8oOqW3g5F2pXo/fxYXesx7O0JmrD/+xkb2PHKLtveJddch0BqBX+22y2oS3NMwthhr44h8RdP7ItkejaCmg5m1ZHf3ndBTCYnOSw1t4Sm/cpIf6dP+ubwOF6RVPPxBXNJ2EheV6fpbLlvOHPfNrdtXOcZD+5gkrPHMgEbwU4eMSVlxBbX1LXER61fGjimVUUywVeUKqk3pskLWcHIC8lJB6yQcTIQ3coJSdim92sVFfmKx6xsn7ZPmhoWHF4jYs0lF1xJimL+a3RsxJc1Y7fstmz3Gf4yMrpEE34hsjK5Q2zUsmKcfKY0YXvzIl6h/y953BA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5650.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(66946007)(7416002)(66556008)(66476007)(54906003)(5660300002)(38100700002)(86362001)(316002)(6666004)(2906002)(9686003)(6512007)(33716001)(6916009)(4744005)(6506007)(4326008)(508600001)(36916002)(52116002)(8936002)(6486002)(186003)(8676002)(39026012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?oXltm3vX/4bodzeI6Kq8Bwn+QTJmmWTfQveByhYCVY6QngWRj7w8uNGQS1?=
+ =?iso-8859-1?Q?e9hpC7s72OXKqEjFOXix+UaT9KsG37xVqSdcl9JFZJka4ZKgxXcscwxeYO?=
+ =?iso-8859-1?Q?Bj1EgUd4nADM92cUP4TZin3BjIRlMhLCyBauVZfWlo903Gqs+FJwCSKGw1?=
+ =?iso-8859-1?Q?ARe+DnClV3AsG2a1uaRR/L98qrZoyHu6hluCe+VtXLlLhJaEvNMeSvqSi1?=
+ =?iso-8859-1?Q?mxJe/aQrHzNOAekSJ/WpFmdDDGvZNfq4j09AkLiwG1VW7i1dkp26hNWTKG?=
+ =?iso-8859-1?Q?++zjIB7mCcRHHETvl5EJWh70AUid65bmz1U3so+AsfHyAH+RJoyDs/5uW7?=
+ =?iso-8859-1?Q?FW22pe4Yb9fRbpK1povqKzqF7GrAZG+A3Q8yYl0kF+DNWijTVZrLtO4eNZ?=
+ =?iso-8859-1?Q?BuHtE4hOPvVBIv6NT0GRtXUSFds8V9j0/NOoRAK1hufvmN93NhsTcVMrQm?=
+ =?iso-8859-1?Q?2B61TdFcpKZzAcrMTF9EaNVmBZcykUhNgvAl6+C4LU8zcsZ/6QnoRd6rk2?=
+ =?iso-8859-1?Q?pePnVKRSOOOEiSyHD/AopXkSWO0jvz4VEW7vGdJlF5XeoiDQG/9hEoQqv5?=
+ =?iso-8859-1?Q?E4A2FwVwTgqwni+ASAHtGPoPztI4i9YMWzCtxVAhYH7IL8yFANGJNjTavS?=
+ =?iso-8859-1?Q?WE1s6BzTDDo2sCGxBYaG9Za58XxVH4s+imJRAmnE2b4XEtcJx41VZt+T65?=
+ =?iso-8859-1?Q?Gxbjx0sfE6sXvxNVJfRhGcH+rOp44H4YmEBvbJ92pS+EoR5gDMZSFRODvF?=
+ =?iso-8859-1?Q?ecmDv/rPR8XlKCASHtXy30mRbnzO/rhiCwLW6ypIMl5CpXPgB+lD1prgO5?=
+ =?iso-8859-1?Q?lAOID2BfqkJYS6eBitg7LyaGKWg0A3tv9AhHRQM+pQ1SscBBoMasqqSAlv?=
+ =?iso-8859-1?Q?R6gOphlB+RQNfBefwG7m1ua+sFydxkALE0m/coxj+3b4za823EUfKdp2AQ?=
+ =?iso-8859-1?Q?otgEDnGUk/+tLvyhl+t7U9oGR0qpOu+MD4R7ydlKbLsVJ9wP2nlBbVG75U?=
+ =?iso-8859-1?Q?DNeIldozZxlFP1DaFe5LOI2fzFa9c05ixLuRvbqssDvRmexbtYogtXkG9l?=
+ =?iso-8859-1?Q?Nz8/xUF+a6AtKEcHbhRuih9hb/n+/oFmmQVFnJtRfnQpBE6Bm/9w0lkOgC?=
+ =?iso-8859-1?Q?XtVeMmvEMlpWEP9VuxOS6cKJICSmFKCYH+/lgnVd6YIAN/yVOaYOrBRdqr?=
+ =?iso-8859-1?Q?bvUi9c7R+/+wAaiteNXEhkbLmO2aWMlxQrkl/bRKVDDtRrFSiGP7+YbSEE?=
+ =?iso-8859-1?Q?u/K7c0y9ddJ6dsmIObNGCr0QHNNjRTXQbm2VMhpul8547KMxMH6sRd8Oua?=
+ =?iso-8859-1?Q?xorv2fBHQ6IDFGt7L+bfRhfOKK2k0/Zi47QIm94QGjx4mAwwJKvMU6cKV2?=
+ =?iso-8859-1?Q?sfY7ePcMMIKkTnpuV523x9X88nfghfEpvQI1SvmMF3p0mImSjfNo23xPRe?=
+ =?iso-8859-1?Q?BWH6n4Z/4JMp9tDZ7rebdXFnXVjeqL4+WdPzgZRfYJoTFqvuVvmORCHben?=
+ =?iso-8859-1?Q?m961L3ZshMUjDWPfVHdel4k0aHugee/jKs02bar7ref2KZnz8avK1gpDNu?=
+ =?iso-8859-1?Q?bRWw7vQ0IArbHW305WvJfbReux4TzIIRqOLU3yFWlJbm3vjnZvirG9w9h7?=
+ =?iso-8859-1?Q?4EwJtKcIYCkDcPs5pToSZRZHQ3fobMFM+ZYYzl2lsXu0ZD4JaLTy6dQNG9?=
+ =?iso-8859-1?Q?OKyl5Su+LCb+3nCSPY2bGkDRSvozH2teTMN0OuoL6ZV3zIYP/QIlTF0goL?=
+ =?iso-8859-1?Q?Rby3Ragvz0KEs43kh6mfpsV1E=3D?=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cf507a75-cb5d-45c9-0be6-08d9d5bd5919
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5650.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 11:19:07.3265
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1yL8J5cheTH/Wv7aAZk8NCxtrqJ/E5zKwEWHg7EirJ2OLWWHty3YCJnbQeDSo5yWEqZ9OB++UIK77Z410B815w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5278
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-01-11 at 20:39 +0000, Pavel Begunkov wrote:
-> On 1/11/22 17:11, Paolo Abeni wrote:
-> > On Tue, 2022-01-11 at 01:21 +0000, Pavel Begunkov wrote:
-> > > During cork->dst setup, ip6_make_skb() gets an additional reference to
-> > > a passed in dst. However, udpv6_sendmsg() doesn't need dst after calling
-> > > ip6_make_skb(), and so we can save two additional atomics by passing
-> > > dst references to ip6_make_skb(). udpv6_sendmsg() is the only caller, so
-> > > it's enough to make sure it doesn't use dst afterwards.
-> > 
-> > What about the corked path in udp6_sendmsg()? I mean:
-> 
-> It doesn't change it for callers, so the ref stays with udp6_sendmsg() when
-> corking. To compensate for ip6_setup_cork() there is an explicit dst_hold()
-> in ip6_append_data, should be fine.
+On Wednesday 12 January 2022 11:58:59 CET Pali Roh=E1r wrote:
+> On Tuesday 11 January 2022 18:14:08 Jerome Pouiller wrote:
+> > +static const struct sdio_device_id wfx_sdio_ids[] =3D {
+> > +     { SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILABS_WF200)=
+ },
+> > +     { },
+> > +};
+>=20
+> Hello! Is this table still required?
 
-Whoops, I underlooked that chunk, thanks for pointing it out!
+As far as I understand, if the driver does not provide an id_table, the
+probe function won't be never called (see sdio_match_device()).
 
-Yes, it looks fine.
+Since, we rely on the device tree, we could replace SDIO_VENDOR_ID_SILABS
+and SDIO_DEVICE_ID_SILABS_WF200 by SDIO_ANY_ID. However, it does not hurt
+to add an extra filter here.
 
-> @@ -1784,6 +1784,7 @@ int ip6_append_data(struct sock *sk,
->   		/*
->   		 * setup for corking
->   		 */
-> +		dst_hold(&rt->dst);
->   		err = ip6_setup_cork(sk, &inet->cork, &np->cork,
->   				     ipc6, rt);
-> 
-> 
-> I don't care much about corking perf, but might be better to implement
-> this "handing away" for ip6_append_data() as well to be more consistent
-> with ip6_make_skb().
+> > +MODULE_DEVICE_TABLE(sdio, wfx_sdio_ids);
+> > +
+> > +struct sdio_driver wfx_sdio_driver =3D {
+> > +     .name =3D "wfx-sdio",
+> > +     .id_table =3D wfx_sdio_ids,
+> > +     .probe =3D wfx_sdio_probe,
+> > +     .remove =3D wfx_sdio_remove,
+> > +     .drv =3D {
+> > +             .owner =3D THIS_MODULE,
+> > +             .of_match_table =3D wfx_sdio_of_match,
+> > +     }
+> > +};
+> > --
+> > 2.34.1
+> >
+>=20
 
-I'm personally fine with the the added dst_hold() in ip6_append_data()
 
-Thanks!
+--=20
+J=E9r=F4me Pouiller
 
-Paolo
+
 
