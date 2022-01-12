@@ -2,101 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDCF948C466
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 14:07:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE9D448C477
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 14:12:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353380AbiALNHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 08:07:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56296 "EHLO
+        id S1353406AbiALNM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 08:12:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353370AbiALNHB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 08:07:01 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4231FC06173F
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 05:07:01 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id m6so6141672ybc.9
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 05:07:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QoQdoesDidCN5z4K1TfE/oxDwd8GfagNFE2hl9gCHOY=;
-        b=YhqAIMI3bQS2DPsI1p3C/hZfHN6j8oHqaHz8ABgNnBi+A3CzOif+9IGVT3TavEHthK
-         0kcKHkXdx8mGzUXPCMH0dd7TS6Mm8bhJzmu8eyez+xjrokNS+ssqsKe7Vydkm6d+h5/s
-         sNmKgbQcjRaMPptDhSlaFwJ7PoP1M5+1V7VLLmW7RIBbhVw6XL8WHaARqJgQKYUYefNr
-         nx64uE5pN5zsLq9hay4bA0npqLsZojvrUSkUNAxLtqLhNmle3ORTw4XnbrjNBeYBJk0C
-         qM0RFZCodnxU1GCo4q6vazFBScmyiNIMUDKEC7KijculYg3imJMMxBh7RPWOMY1yrL32
-         vC6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QoQdoesDidCN5z4K1TfE/oxDwd8GfagNFE2hl9gCHOY=;
-        b=NJeoH29VpqeSeueqcSqIqytdi+mYulDfGfcCumtuHwE3GCthZg3ymwQBF+bIIOAqJp
-         izkBTo1sf0A0EaYsUIUY3WAcD4JcycDTs+0N3n8R5K5WFhu9WJXHdXvM6s/8ryngxgdV
-         u0JVBMfTlVzh6XSt9GyHujvjX8dmGrUdoqkGu6GPyuwKSWr9xYJsmIujB0yldGvAj2H1
-         oxfg8/rak4UrTUP8u02g8ABytBjgyR3YT3z1dCuJ4yZpUZ/OIOFg6+G3lNjaLlCBz1YJ
-         cxG/XY/IK/BUvq1QDMUJbgKLH23mM/dTSenDaRlLAtTaEZIwQfX/equQ6dwepPdNDvsg
-         OuRw==
-X-Gm-Message-State: AOAM530Y90hGc5J+FdjUAyN6WGPrrq6r06uVMQk/WWQSPeoWyLOLs20N
-        849olnGfC8/MdPOx7mqvIweZGaDaFSIsqKuH6ugtfA==
-X-Google-Smtp-Source: ABdhPJz+ScqSGCOyGak1a/45rr2pSio2pjaIRkXzqJnCCQuiDBdUAnQi+WLbTRrSaiUB1RPBEOT0S7itC0kxed0O2mI=
-X-Received: by 2002:a25:2d64:: with SMTP id s36mr12584693ybe.277.1641992820194;
- Wed, 12 Jan 2022 05:07:00 -0800 (PST)
+        with ESMTP id S1353385AbiALNMV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 08:12:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 627DFC06173F;
+        Wed, 12 Jan 2022 05:12:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20E36B81EC6;
+        Wed, 12 Jan 2022 13:12:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 024AEC36AEA;
+        Wed, 12 Jan 2022 13:12:17 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="duvHyM0s"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1641993135;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Mk0o4WEVS4MFMzcuEtCDSmeOAzPRDrri9N4SlRDKulo=;
+        b=duvHyM0s1YPHtopApK9fAZHiSE2uyvmgczs8AZjbiHOXijWEYYEP60x/Tn7Bs1SZhTMWHP
+        8hCHVu8oA7SW1FGODnSV1jaZbW2F2YTrvfplBmpKNDj4kRRJB+ssFnKNkkncg5o0SdjH1n
+        5UiWbH8BWx3sjjjl1jDpB+kgS/a437E=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 543ffb56 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 12 Jan 2022 13:12:15 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH RFC v1 0/3] remove remaining users of SHA-1
+Date:   Wed, 12 Jan 2022 14:12:01 +0100
+Message-Id: <20220112131204.800307-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-References: <20220112102805.488510-1-maximmi@nvidia.com>
-In-Reply-To: <20220112102805.488510-1-maximmi@nvidia.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 12 Jan 2022 05:06:49 -0800
-Message-ID: <CANn89iL4RLjcJH8s4HAUoSa4cxAztkhx-4rsUZ2xwY8tYbPcCg@mail.gmail.com>
-Subject: Re: [PATCH] sch_api: Don't skip qdisc attach on ingress
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 2:28 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
->
-> The attach callback of struct Qdisc_ops is used by only a few qdiscs:
-> mq, mqprio and htb. qdisc_graft() contains the following logic
-> (pseudocode):
->
->     if (!qdisc->ops->attach) {
->         if (ingress)
->             do ingress stuff;
->         else
->             do egress stuff;
->     }
->     if (!ingress) {
->         ...
->         if (qdisc->ops->attach)
->             qdisc->ops->attach(qdisc);
->     } else {
->         ...
->     }
->
-> unregister_netdevice: waiting for lo to become free. Usage count = 2
->
-> This commit addresses the issue by running "do ingress stuff" in the
-> ingress flow even in the attach callback is present, which is fine,
-> because attach isn't going to be called afterwards.
->
-> The bug was found by syzbot and reported by Eric.
->
-> Fixes: d03b195b5aa0 ("sch_htb: Hierarchical QoS hardware offload")
-> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-> Reported-by: Eric Dumazet <edumazet@google.com>
-> ---
+Hi,
 
-Thanks for fixing this issue.
+There are currently two remaining users of SHA-1 left in the kernel: bpf
+tag generation, and ipv6 address calculation. In an effort to reduce
+code size and rid ourselves of insecure primitives, this RFC patchset
+moves to using the more secure BLAKE2s function. I wanted to get your
+feedback on how feasible this patchset is, and if there is some
+remaining attachment to SHA-1, why exactly, and what could be done to
+mitigate it. Rather than sending a mailing list post just asking, "what
+do you think?" I figured it'd be easier to send this as an RFC patchset,
+so you see specifically what I mean.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Thoughts? Comments?
+
+Thanks,
+Jason
+
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
+Cc: linux-crypto@vger.kernel.org
+
+Jason A. Donenfeld (3):
+  bpf: move from sha1 to blake2s in tag calculation
+  ipv6: move from sha1 to blake2s in address calculation
+  crypto: sha1_generic - import lib/sha1.c locally
+
+ crypto/sha1_generic.c | 114 +++++++++++++++++++++++++++++++++++
+ include/crypto/sha1.h |  10 ---
+ kernel/bpf/core.c     |  39 ++----------
+ lib/Makefile          |   2 +-
+ lib/sha1.c            | 137 ------------------------------------------
+ net/ipv6/addrconf.c   |  31 +++-------
+ 6 files changed, 128 insertions(+), 205 deletions(-)
+ delete mode 100644 lib/sha1.c
+
+-- 
+2.34.1
+
