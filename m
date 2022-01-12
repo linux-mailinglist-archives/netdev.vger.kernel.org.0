@@ -2,135 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E6548C964
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:30:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E89B948C96C
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:32:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355652AbiALRaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 12:30:03 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33086 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355691AbiALR3I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:29:08 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D7096185C;
-        Wed, 12 Jan 2022 17:29:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBF96C36AEA;
-        Wed, 12 Jan 2022 17:29:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642008547;
-        bh=WmoSnDqhinKjkewcpUgnfaaSxspJGZbTKcK3e1khB2s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=A+XZRwxhONR1uKqXI/kXd3jARiYRIchjvhJYEHkEPmNndBoLznSDZ9a1oxAOt23hO
-         eiNe/F6cWhbWlL8bCV6AuVTd7ssunTf5FK0/DebMc1yb2QW+dML3RPhvN5OmQfl+56
-         ngo2YOH44yavegkW0q9DOVbydiDSV6PVP1vXziYBUaIwFEAqz8wdg2KMmK01bRxP8X
-         NNTsjuBIXPKIDWZ/YXsJwaGu1F9EwW8UaargoqI9CVzodeU01wkj9a0WPRf+SGBiLF
-         PtqDuKin/DWEKaygGcyCbFigLP82jb3kPoA3Wm+PnbC0sq46i142Fp5MsKbMWLWMiE
-         PX5FG7+iqYH2g==
-Date:   Wed, 12 Jan 2022 18:29:00 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>,
-        Holger Brunck <holger.brunck@hitachienergy.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        linux-phy@lists.infradead.org, Vinod Koul <vkoul@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-Subject: Re: [PATCH devicetree 2/2] dt-bindings: phy: Add
- `tx-amplitude-microvolt` property binding
-Message-ID: <20220112182900.7054c4d9@thinkpad>
-In-Reply-To: <YbplENKCcjCUdwke@robh.at.kernel.org>
-References: <20211214233432.22580-1-kabel@kernel.org>
-        <20211214233432.22580-3-kabel@kernel.org>
-        <YbplENKCcjCUdwke@robh.at.kernel.org>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S1348571AbiALRcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 12:32:12 -0500
+Received: from 5.mo548.mail-out.ovh.net ([188.165.49.213]:36415 "EHLO
+        5.mo548.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242291AbiALRcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:32:09 -0500
+Received: from mxplan1.mail.ovh.net (unknown [10.108.20.243])
+        by mo548.mail-out.ovh.net (Postfix) with ESMTPS id DAC4A216D4;
+        Wed, 12 Jan 2022 17:32:06 +0000 (UTC)
+Received: from bracey.fi (37.59.142.100) by DAG4EX1.mxp1.local (172.16.2.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 12 Jan
+ 2022 18:32:03 +0100
+Authentication-Results: garm.ovh; auth=pass (GARM-100R003e5bb13a0-636c-4e17-a0a4-b729bd790f18,
+                    9C4ECD095E6EB6DE56D124D498B9B7C748136B87) smtp.auth=kevin@bracey.fi
+X-OVh-ClientIp: 82.181.225.135
+Message-ID: <00960549-3a4a-abe3-0a28-ab866a7dbe97@bracey.fi>
+Date:   Wed, 12 Jan 2022 19:31:54 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH net-next v2] net_sched: restore "mpu xxx" handling
+To:     Eric Dumazet <edumazet@google.com>
+CC:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>, Vimalkumar <j.vimal@gmail.com>
+References: <20220112170210.1014351-1-kevin@bracey.fi>
+ <CANn89iJiAGD11qe9edmzsf0Sf9Wb7nc6o6zscO=4KOwkRv1gRQ@mail.gmail.com>
+From:   Kevin Bracey <kevin@bracey.fi>
+In-Reply-To: <CANn89iJiAGD11qe9edmzsf0Sf9Wb7nc6o6zscO=4KOwkRv1gRQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [37.59.142.100]
+X-ClientProxiedBy: DAG5EX2.mxp1.local (172.16.2.10) To DAG4EX1.mxp1.local
+ (172.16.2.7)
+X-Ovh-Tracer-GUID: a0b30db0-96fb-4589-9875-91e70ad7d84f
+X-Ovh-Tracer-Id: 1195142753781256355
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrtddugdejjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfhfhfgjtgfgihesthejredttdefjeenucfhrhhomhepmfgvvhhinhcuuehrrggtvgihuceokhgvvhhinhessghrrggtvgihrdhfiheqnecuggftrfgrthhtvghrnhepgfffuefgueetveeuuedtheeihffgiedvgeegueehgfffteeifeegtdejhfelhfeinecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrddutddtnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhdurdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepkhgvvhhinhessghrrggtvgihrdhfihdpnhgspghrtghpthhtohepuddprhgtphhtthhopehjrdhvihhmrghlsehgmhgrihhlrdgtohhm
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Rob,
+On 12/01/2022 19:08, Eric Dumazet wrote:
+> On Wed, Jan 12, 2022 at 9:02 AM Kevin Bracey <kevin@bracey.fi> wrote:
+>> commit 56b765b79e9a ("htb: improved accuracy at high rates") broke
+>> "overhead X", "linklayer atm" and "mpu X" attributes.
+> Thanks for the nice changelog.
+>
+> I do have a question related to HTB offload.
+>
+> Is this mpu attribute considered there ?
 
-On Wed, 15 Dec 2021 15:58:40 -0600
-Rob Herring <robh@kernel.org> wrote:
+I had not considered that. None of these 3 adjustment parameters are 
+passed to its setup - tc_htb_qopt_offload merely contains u64 rate and ceil.
 
-> On Wed, Dec 15, 2021 at 12:34:32AM +0100, Marek Beh=C3=BAn wrote:
-> > Common PHYs often have the possibility to specify peak-to-peak voltage
-> > on the differential pair - the default voltage sometimes needs to be
-> > changed for a particular board. =20
->=20
-> I can envision needing this, but I can't say that I've seen custom=20
-> properties being proposed for this purpose.
->=20
-> >=20
-> > Add properties `tx-amplitude-microvolt` and
-> > `tx-amplitude-microvolt-names` for this purpose. The second property is
-> > needed to specify =20
->=20
-> Is the amplitude peak to peak? You just said it was, but perhaps make=20
-> the property name more clearly defined: tx-p2p-microvolt
+Dealing with that looks like it might be a bit fiddly. htb_change_class 
+would need reordering. It appears the software case permits parameter 
+changing and it is ordered on that basis, but the offload locks in 
+parameters on creation.
 
-Yes, it is peak to peak.
+But in principle, tc_htb_qopt_offload could contain a pair of 
+psched_ratecfg rather than a pair of u64s, and then offload would have 
+all the adjustment information.
 
-> >=20
-> > Example usage with only one voltage (it will be used for all supported
-> > PHY modes, the `tx-amplitude-microvolt-names` property is not needed in
-> > this case):
-> >=20
-> >   tx-amplitude-microvolt =3D <915000>;
-> >=20
-> > Example usage with voltages for multiple modes:
-> >=20
-> >   tx-amplitude-microvolt =3D <915000>, <1100000>, <1200000>;
-> >   tx-amplitude-microvolt-names =3D "2500base-x", "usb", "pcie"; =20
->=20
-> I'm not wild about the -names, but I think outside of ethernet most=20
-> cases will only be 1 entry.
->=20
-> For a phy provider with multiple phys, what if each one needs a=20
-> different voltage (for the same mode)?
 
-For such a provider I think the best way would be to have the different
-PHYs each have a subnode:
-  phy-provider {
-    phy@0 {
-      tx-p2p-microvolt =3D ...;
-    };
-  }
->=20
-> >=20
-> > Signed-off-by: Marek Beh=C3=BAn <kabel@kernel.org>
-> > ---
-> >=20
-> > I wanted to constrain the values allowed in the
-> > `tx-amplitude-microvolt-names` property to:
-> > - ethernet SerDes modes (sgmii, qsgmii, 10gbase-r, 2500base-x, ...)
-> > - PCIe modes (pattern: ^pcie[1-6]?$)
-> > - USB modes (pattern: ^usb((-host|-device|-otg)?-(ls|fs|hs|ss|ss\+|4))?=
-$)
-> > - DisplayPort modes (pattern: ^dp(-rbr|-hbr[23]?|-uhbr-(10|13.5|20))?$)
-> > - Camera modes (mipi-dphy, mipi-dphy-univ, mipi-dphy-v2.5-univ)
-> > - Storage modes (sata, ufs-hs, ufs-hs-a, ufs-hs-b)
-> >=20
-> > But was unable to. The '-names' suffix implies string-array type, and
-> > string-array type does not allow to specify a type for all items in a
-> > simple way, i.e.:
-> >   items:
-> >     enum:
-> >       - sgmii
-> >       - sata
-> >       - usb
-> >       ... =20
->=20
-> Works here: Documentation/devicetree/bindings/arm/samsung/pmu.yaml:56
->=20
-> The requirement is you need to constrain the size with maxItems. It can=20
-> be a 'should be enough for anyone' value.
-
-Thx.
-
-Marek
