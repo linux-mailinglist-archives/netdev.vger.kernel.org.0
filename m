@@ -2,101 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 816ED48C26D
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 11:39:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B945248C289
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 11:52:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239860AbiALKj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 05:39:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51226 "EHLO
+        id S1352617AbiALKvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 05:51:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238736AbiALKj0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 05:39:26 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7C2C06173F;
-        Wed, 12 Jan 2022 02:39:26 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so11113063pjj.2;
-        Wed, 12 Jan 2022 02:39:26 -0800 (PST)
+        with ESMTP id S1352630AbiALKvz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 05:51:55 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A94C06173F
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 02:51:54 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id s30so6627579lfo.7
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 02:51:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=K0NIo8G/E2+/V1jL9Lj5TwJL8NcpWczVrZhrPFDYFZA=;
-        b=HkWSohSwSyaJD7xgaRXAJJE2pMxoDYXEB58fUFFN8Ek103V6Tx+BMKUMko5Vx7mF7T
-         rKCqsM349KcmQUit0eT/8/ME/kagr/ngTMZsPJqga7Pl5meFy+xyYPk7QBNCFC9NSY9t
-         vXeAdE6WW7tiMtHgz4vifeTelArgoXHD3FvoqyXeAxrCC4kmxgj7PxNyfrZy2vrzojsX
-         fCcJBvqBs3cw+A/7XZ4/HO0VdWtuKre6F6nLncCb9PbRBcga94/Am2ePcvXvi4ZeCTSd
-         DSCk8CF8CXD2fLbAY6iHQ2nrL9j8m8tauFNo0hD3cW497NO2jWMFD5w79Z9ZXaW5CK1C
-         ve7Q==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ajadRxekfKlNZLmonMEGUdpiiUlJCpBU8D0nYRIxhqA=;
+        b=n7ouKiMIb/tYofVya2jhLWqIz4otlZtpCCE4aguIdHQS6dKoDs8RksAdkHVkfh6ck9
+         kLk0Qw8b9sD6WfOvMmBksUUT/hrgra1I5API4Y6De42JSRUZLf8BRJKHORRK20eAuH9Z
+         swLy1bap3RlWJDUOMzIPyTBWUX06YOkgPTcU1RN0vX5H25enAYzExMTYYSCp0FfsdTGY
+         lCUHBleRTxjJZ/zLOnra4Cugri59EkvL9QHtXp6yzeoBDHKWdRMa4IKepql+xYOfmE3V
+         +vq+5Z3GSTB+IFeoGbA8QKA7aUQmuOgEdues2+HRvY+0UaG7QLcRZBpvmP6TFxyAaliz
+         U2YA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=K0NIo8G/E2+/V1jL9Lj5TwJL8NcpWczVrZhrPFDYFZA=;
-        b=g1llqE5VylPK8Z8PsO2YmJX9n9g79JjjgN1Hh8xKmBd2PcljlopAUnPFevnP+XWkk/
-         3S6qbRFczrJqql53n3UxzZ6ZKqYTw/VWIw+q4Vt331MEEwhy3PH/52p1nXR6YuoKLZPI
-         5gZW4nqeF5+FhDEPG6azL33rN6ecWKHa8OLCcigL2pbWLj3Cx9hHwnAYFoeUyvmcfcRt
-         utMcF8lwpmzl7gy+FDZf3mhhExgBN2g3IxBEQONCWiivEUY/PQGqUzQd6xvNnoawwOTY
-         OxYDjuMlFm4TazSCS8YP0HOfaOFv25fEAoqO3V0xN7qLicufW0PKMnBZibecHEo248t7
-         ByFw==
-X-Gm-Message-State: AOAM5317prR9lxsVkhqkO4QvLzbKv6Hf7nPxSbk1GRCUzlcZ0/TT22cI
-        R4Ps/fejQcS1stvLsSsOOqpk7HG4oc+IxdI50SQ=
-X-Google-Smtp-Source: ABdhPJyeujfw+oZxx87prKcw2MKmxB6OtZ0Gilakf5vZ9fMukxrpAWqqKJMIYF1ztwqLJb1uMo8OyQ==
-X-Received: by 2002:a17:90b:388d:: with SMTP id mu13mr8131343pjb.86.1641983965894;
-        Wed, 12 Jan 2022 02:39:25 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id q9sm4960097pjg.1.2022.01.12.02.39.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 02:39:25 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, linmq006@gmail.com,
-        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
-        liuyonglong@huawei.com, mbrugger@suse.com, netdev@vger.kernel.org,
-        salil.mehta@huawei.com, shenyang39@huawei.com,
-        yisen.zhuang@huawei.com
-Subject: [PATCH v2] net: hns: Fix missing put_device() call in hns_mac_register_phy
-Date:   Wed, 12 Jan 2022 10:39:19 +0000
-Message-Id: <20220112103919.28894-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220111203333.507ec4f5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <20220111203333.507ec4f5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ajadRxekfKlNZLmonMEGUdpiiUlJCpBU8D0nYRIxhqA=;
+        b=ELkg9CPa6+MY6ZhctpEDdJmtLDiVPgoP67ZtOMB+YJwgK3OGwtxN/gzkOkCF2UJqhh
+         AfdPYSYgPUdviLeVU+T1A1egk6KTYakmkRTsJR6aa0A4OreaGCFYj9cVzmrY+jM25gL9
+         Ii8t9xM0da+6j7NkE0qXyDTqzqDR1wZ/9nM8PEuErxIva/bu1fR/yp9aZar5P/w7UIIj
+         THYipgWeWXWKUbiAAIWspeoGCpq/CoNxq1dXtheESDlrozkHeQUKxpD5emD0/RUMXxaL
+         JAS8DFL/SLsZApy6tYaEIPgr5zMlHUXuMV4A7YqVtURQaovmJ+2HKWyXzqCa8MUG5bLt
+         919g==
+X-Gm-Message-State: AOAM533G4CWoJXYe34ZrF/BdNrdRFV6FXgdOZ9lg103HFADOknAs5YKb
+        rXAtX0cIYQVth1qt/em6rrdp3TZYKx3lofqaWj7izWW1xcfptQ==
+X-Google-Smtp-Source: ABdhPJwlG2ajFyVnViZREk3eK3GmcRqUFKwmypVgeholraY8xEQawKZtMDgFhgZE9kKw4JIyjTxnCJC3g5FMtOM/0kI=
+X-Received: by 2002:a05:651c:98f:: with SMTP id b15mr6038585ljq.367.1641984713037;
+ Wed, 12 Jan 2022 02:51:53 -0800 (PST)
+MIME-Version: 1.0
+References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com> <20220111171424.862764-9-Jerome.Pouiller@silabs.com>
+In-Reply-To: <20220111171424.862764-9-Jerome.Pouiller@silabs.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Wed, 12 Jan 2022 11:51:16 +0100
+Message-ID: <CAPDyKFoMQG-GOfRsMk21Awk21cxVN6bMe9n8YCh8xHbg7j1Rgg@mail.gmail.com>
+Subject: Re: [PATCH v9 08/24] wfx: add bus_sdio.c
+To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We need to drop the reference taken by hns_dsaf_find_platform_device
-Missing put_device() may cause refcount leak.
+[...]
 
-Fixes: 804ffe5c6197 ("net: hns: support deferred probe when no mdio")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
-Changes in v2:
-- add put_device when hns_mac_register_phydev fails.
----
- drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> +static const struct of_device_id wfx_sdio_of_match[] = {
+> +       { .compatible = "silabs,wf200",    .data = &pdata_wf200 },
+> +       { .compatible = "silabs,brd4001a", .data = &pdata_brd4001a },
+> +       { .compatible = "silabs,brd8022a", .data = &pdata_brd8022a },
+> +       { .compatible = "silabs,brd8023a", .data = &pdata_brd8023a },
+> +       { .compatible = "silabs,wfx-sdio", .data = &pdata_wfx_sdio },
+> +       { },
+> +};
+> +MODULE_DEVICE_TABLE(of, wfx_sdio_of_match);
+> +
+> +static int wfx_sdio_probe(struct sdio_func *func, const struct sdio_device_id *id)
+> +{
+> +       const struct wfx_platform_data *pdata = of_device_get_match_data(&func->dev);
+> +       struct device_node *np = func->dev.of_node;
+> +       struct wfx_sdio_priv *bus;
+> +       int ret;
+> +
+> +       if (func->num != 1) {
+> +               dev_err(&func->dev, "SDIO function number is %d while it should always be 1 (unsupported chip?)\n",
+> +                       func->num);
+> +               return -ENODEV;
+> +       }
+> +
+> +       if (!pdata) {
+> +               dev_warn(&func->dev, "no compatible device found in DT\n");
+> +               return -ENODEV;
+> +       }
+> +
+> +       bus = devm_kzalloc(&func->dev, sizeof(*bus), GFP_KERNEL);
+> +       if (!bus)
+> +               return -ENOMEM;
+> +
+> +       bus->func = func;
+> +       bus->of_irq = irq_of_parse_and_map(np, 0);
+> +       sdio_set_drvdata(func, bus);
+> +       func->card->quirks |= MMC_QUIRK_LENIENT_FN0 |
+> +                             MMC_QUIRK_BLKSZ_FOR_BYTE_MODE |
+> +                             MMC_QUIRK_BROKEN_BYTE_MODE_512;
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c
-index 7edf8569514c..cba9d92e057e 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c
-@@ -764,13 +764,16 @@ static int hns_mac_register_phy(struct hns_mac_cb *mac_cb)
- 		dev_err(mac_cb->dev,
- 			"mac%d mdio is NULL, dsaf will probe again later\n",
- 			mac_cb->mac_id);
-+		put_device(&pdev->dev);
- 		return -EPROBE_DEFER;
- 	}
- 
- 	rc = hns_mac_register_phydev(mii_bus, mac_cb, addr);
--	if (!rc)
-+	if (!rc) {
- 		dev_dbg(mac_cb->dev, "mac%d register phy addr:%d\n",
- 			mac_cb->mac_id, addr);
-+		put_device(&pdev->dev);
-+	}
- 
- 	return rc;
- }
--- 
-2.17.1
+This should not be needed any more, right?
 
+> +
+> +       sdio_claim_host(func);
+> +       ret = sdio_enable_func(func);
+> +       /* Block of 64 bytes is more efficient than 512B for frame sizes < 4k */
+> +       sdio_set_block_size(func, 64);
+> +       sdio_release_host(func);
+> +       if (ret)
+> +               return ret;
+> +
+> +       bus->core = wfx_init_common(&func->dev, pdata, &wfx_sdio_hwbus_ops, bus);
+> +       if (!bus->core) {
+> +               ret = -EIO;
+> +               goto sdio_release;
+> +       }
+> +
+> +       ret = wfx_probe(bus->core);
+> +       if (ret)
+> +               goto sdio_release;
+> +
+> +       return 0;
+> +
+> +sdio_release:
+> +       sdio_claim_host(func);
+> +       sdio_disable_func(func);
+> +       sdio_release_host(func);
+> +       return ret;
+> +}
+
+[...]
+
+Other than the above, this looks good to me!
+
+
+Kind regards
+Uffe
