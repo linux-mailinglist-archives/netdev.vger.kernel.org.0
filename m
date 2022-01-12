@@ -2,201 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B28CA48C243
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 11:27:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9712E48C24B
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 11:28:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352527AbiALK1W convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 12 Jan 2022 05:27:22 -0500
-Received: from mail-ua1-f44.google.com ([209.85.222.44]:41930 "EHLO
-        mail-ua1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239335AbiALK1S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 05:27:18 -0500
-Received: by mail-ua1-f44.google.com with SMTP id p37so3799118uae.8;
-        Wed, 12 Jan 2022 02:27:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=bq/EV5whRByTBzcA7NkMG0ZHqS/XeQEEEioGL5IxVZo=;
-        b=mxzSyfrU8iycdk9S9/jrAZvnR8hEGprGOwr/08lzaZlTw5/J6kavgPF9ZzrfVNLIzG
-         P7dQYHcWu0/vAGa45uyXC6a+sqtVLhhncsSCGE3RoSQOzvJ8HiHpqYnRSR/0nhV0JCT0
-         KEQbgFF0BeyPDG0P1um8J8jEzItzA5z/BGBH1euUb/HSQ0jHXH9deWkL2AESaPq4lDvF
-         URresB7v7p3/KXiI8hZnQdptFbaQizJ8erVysOLR+oR5KiVUkSHCZfLeAOk00w/oSwgn
-         BAcrPrqEuDr6t2V9mc6fsVTFXkeC4Og+r9Oznuy1xDD+wB5wpuXjsd7rMwdjGvrh9ww5
-         t5WA==
-X-Gm-Message-State: AOAM531/qcYDI+mLGOtzlm5qIEZZeWyhZJt168BJfrc2CCOSHuBS8DAM
-        cSX0j9l9h6AmYCmTklQdH9y78hf34Rv19Tay
-X-Google-Smtp-Source: ABdhPJzW97cz+iHtzbS3cGrOou77jysR40GtKoHkBfdaDUtOQfjGlRg+dPc9J8qUabKlvsh5wOvv/A==
-X-Received: by 2002:a05:6102:241b:: with SMTP id j27mr133180vsi.66.1641983236805;
-        Wed, 12 Jan 2022 02:27:16 -0800 (PST)
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
-        by smtp.gmail.com with ESMTPSA id b8sm7758709vsl.19.2022.01.12.02.27.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 02:27:15 -0800 (PST)
-Received: by mail-ua1-f44.google.com with SMTP id p37so3798919uae.8;
-        Wed, 12 Jan 2022 02:27:14 -0800 (PST)
-X-Received: by 2002:a05:6102:21dc:: with SMTP id r28mr3809205vsg.57.1641983234508;
- Wed, 12 Jan 2022 02:27:14 -0800 (PST)
-MIME-Version: 1.0
-References: <20220110195449.12448-1-s.shtylyov@omp.ru> <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220110201014.mtajyrfcfznfhyqm@pengutronix.de> <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com> <20220112085009.dbasceh3obfok5dc@pengutronix.de>
-In-Reply-To: <20220112085009.dbasceh3obfok5dc@pengutronix.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 12 Jan 2022 11:27:02 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
-Message-ID: <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
+        id S239599AbiALK2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 05:28:46 -0500
+Received: from mail-mw2nam12on2071.outbound.protection.outlook.com ([40.107.244.71]:28393
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1352556AbiALK23 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Jan 2022 05:28:29 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G0x7EZXJlPjKkErhc/sKOIebF57U9ejazlGFG3eQyeZ+cwarN1MtCeB/bNw+GA09QNyePqjZI+fi3+cR3cr+kE0IM7Gvx7TF+L5LyYKQxR/NtddkPjWTPBNyX8n/2MRTBLT6GqzlFzSOJPZzFvTYv+N90HzSrmSz/Li9HOFAOvTmMa3uDvCy5bS6Mrd3LHcGqw2x5XWQGITRBnIWJUoqJAiYRV/BwujPDjLbOsPmbkLOaS1Q/E2njOZFvajwFp1xonyxvwnoO3M2Ovde6v1MU7VO30MwRxDx5Pxi+Hr95MbZ5ld9FHPwOiEPwvC+ixsqNRGLgKZ/JtjUrZBx514SPA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LzDKMSFD2Qtwrkg9kG8uFXAmzmZ0TrijuITL3Vvre7E=;
+ b=OliG+Dmx8tEM7oQCnQvh7Jb59CqrpFQsduobUvgozNyjr41WbWiKiedhX4t8rQXMQp/O7ZyLU9sBIMeNQa8DgVY5OAmZKsTkSqcTWv+oL1AN3V9yNihnEQDrrSTdit/oJrGyOxJHYBjM/M8GyiANK1fxjxcURZu1W8lhnFvhWGHh8ySnrzjLoHMclrjwBCSFyNwLybvrxuHSSgJEALrUMvTJWwlI9l1aCcZ1soBDydXxsjvJMZDgi/rf4D4goHRF/4ftqgP+YQU2msSc09UbijE4rjTVU1oYEOveqitHHrNeBi0Ik6vxbYq4IepJOtyH5hEB/kou7V67+zCoY50eoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LzDKMSFD2Qtwrkg9kG8uFXAmzmZ0TrijuITL3Vvre7E=;
+ b=Vvuccn9Cz+5wbjGg4oDsP2WyhD43RC+EIxSdp5VyQ7o6DIwzxgEMsyfgnrMMFsL9gx59pOLRCbHKsTyv2dwH0CTgLUBR20Bs9t9SU8cFd1OR2XKYIr7h+tVyxpDV7ai1FINE9jbXDJ+2tacd64FsQzlT7p3aNZfhO4DRfVlhAQzjyZgRqF/St/P9Zudm9N7pwEal5hE2bymINCyzxO5m3ICNFPEeCqQCAaLxH2+WT/XOnAc2tW+cy8uy0599G0U41p5fqquW0+ORVy5BdE0L/Moy7ocKaGrcSMO3fXHIEQ5om495Zee4PvWmPbQAIP/KAbeAC4wm3SWCeLh/vloydg==
+Received: from DM6PR07CA0079.namprd07.prod.outlook.com (2603:10b6:5:337::12)
+ by BL0PR12MB2484.namprd12.prod.outlook.com (2603:10b6:207:4e::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.9; Wed, 12 Jan
+ 2022 10:28:27 +0000
+Received: from DM6NAM11FT022.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:337:cafe::a5) by DM6PR07CA0079.outlook.office365.com
+ (2603:10b6:5:337::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10 via Frontend
+ Transport; Wed, 12 Jan 2022 10:28:26 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT022.mail.protection.outlook.com (10.13.172.210) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4867.9 via Frontend Transport; Wed, 12 Jan 2022 10:28:26 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 12 Jan
+ 2022 10:28:24 +0000
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 12 Jan
+ 2022 10:28:24 +0000
+Received: from vdi.nvidia.com (10.127.8.12) by mail.nvidia.com (172.20.187.18)
+ with Microsoft SMTP Server id 15.0.1497.18 via Frontend Transport; Wed, 12
+ Jan 2022 10:28:21 +0000
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Eric Auger <eric.auger@redhat.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Tariq Toukan <tariqt@nvidia.com>, <netdev@vger.kernel.org>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
+Subject: [PATCH] sch_api: Don't skip qdisc attach on ingress
+Date:   Wed, 12 Jan 2022 12:28:05 +0200
+Message-ID: <20220112102805.488510-1-maximmi@nvidia.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 54a92702-977a-4ae2-b8c0-08d9d5b644dc
+X-MS-TrafficTypeDiagnostic: BL0PR12MB2484:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB2484506FC795270242AE0C50DC529@BL0PR12MB2484.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1775;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4SAneaFq+HThBvLggbYE9g6kyi27fM5ehBt0BWS2KeBorZH52fBd1ESwZ5pa0eutWqJDdrAAdRWkRHgySIo1rcJ0FedrPJ+Yn5SeNgqRvvvdzil2gl7noQhFN+D1mLllVQ/d+hMt99FhJxk79PdU3/zi3O8OubamfzUWNjcdaPeglUiiAsou5U109Uf0fpy6MI3VJ20jrdXYxjtI6iTxSsdVS8itDLUvX9Xwbt9ikPmvo6FqbO/niL5VAI3FR/2iCHfMBcF0kESRSSjyv4itRqtXgFv3G0FNnP+kzcK3U4imxYMhtShEHfnYf6Z3SE8322wKkdwd0Grxm6EdeOuxr8CEClqTR1raoIdwlzq0Up1areo0MZjiSDn2WL+eHeYongbBhYi+/TEhwlqxV3CBA3sr4TVb7IAL4nWNb3GpB+cBiBNSfNUnWmoUUhmCkxpsn5HdvvX3e9u0nW4rwbsvwOtUChBZCG2xmDNMPXIoYkiIHVeTaENztDsdYOQW82jHQgrMzD2yevMNRkTrH38frdQb+sIxHYlPeFHNVtsJnnibY72iVbyHQ9v3RbrCJTz/Gmc78mx9P30DNHvB7lUuLf5cKpWlCva7m3dn3tL8B/1GN3udCezIjsyrEFvb00VSoSHXENF9R3v3uqK39pkm+if+wweYBRgLovdIzvIE1Xw+E1DvbZ5RXim/0uZ0woeHsyBukjZIaIxYUQc7iei2D898RGhrtFf06PsT/PcV6d2EVhMs+cC/x4Lfe2bE73evsUQCqdi/gMneQtoFWAa5pmBLKO8MkDqGCubAMXuqdr4=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(40470700002)(36860700001)(47076005)(426003)(356005)(316002)(82310400004)(83380400001)(336012)(4326008)(107886003)(36756003)(6666004)(2616005)(81166007)(186003)(40460700001)(110136005)(2906002)(54906003)(70206006)(70586007)(8936002)(1076003)(7696005)(26005)(508600001)(8676002)(5660300002)(86362001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 10:28:26.4465
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54a92702-977a-4ae2-b8c0-08d9d5b644dc
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT022.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2484
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Uwe,
+The attach callback of struct Qdisc_ops is used by only a few qdiscs:
+mq, mqprio and htb. qdisc_graft() contains the following logic
+(pseudocode):
 
-On Wed, Jan 12, 2022 at 9:51 AM Uwe Kleine-König
-<u.kleine-koenig@pengutronix.de> wrote:
-> On Wed, Jan 12, 2022 at 09:33:48AM +0100, Geert Uytterhoeven wrote:
-> > On Mon, Jan 10, 2022 at 10:20 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > > On Mon, Jan 10, 2022 at 09:10:14PM +0100, Uwe Kleine-König wrote:
-> > > > On Mon, Jan 10, 2022 at 10:54:48PM +0300, Sergey Shtylyov wrote:
-> > > > > This patch is based on the former Andy Shevchenko's patch:
-> > > > >
-> > > > > https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko@linux.intel.com/
-> > > > >
-> > > > > Currently platform_get_irq_optional() returns an error code even if IRQ
-> > > > > resource simply has not been found. It prevents the callers from being
-> > > > > error code agnostic in their error handling:
-> > > > >
-> > > > >     ret = platform_get_irq_optional(...);
-> > > > >     if (ret < 0 && ret != -ENXIO)
-> > > > >             return ret; // respect deferred probe
-> > > > >     if (ret > 0)
-> > > > >             ...we get an IRQ...
-> > > > >
-> > > > > All other *_optional() APIs seem to return 0 or NULL in case an optional
-> > > > > resource is not available. Let's follow this good example, so that the
-> > > > > callers would look like:
-> > > > >
-> > > > >     ret = platform_get_irq_optional(...);
-> > > > >     if (ret < 0)
-> > > > >             return ret;
-> > > > >     if (ret > 0)
-> > > > >             ...we get an IRQ...
-> > > >
-> > > > The difference to gpiod_get_optional (and most other *_optional) is that
-> > > > you can use the NULL value as if it were a valid GPIO.
-> > > >
-> > > > As this isn't given with for irqs, I don't think changing the return
-> > > > value has much sense.
-> > >
-> > > We actually want platform_get_irq_optional() to look different to all
-> > > the other _optional() methods because it is not equivalent. If it
-> > > looks the same, developers will assume it is the same, and get
-> > > themselves into trouble.
-> >
-> > Developers already assume it is the same, and thus forget they have
-> > to check against -ENXIO instead of zero.
->
-> Is this an ack for renaming platform_get_irq_optional() to
-> platform_get_irq_silent()?
+    if (!qdisc->ops->attach) {
+        if (ingress)
+            do ingress stuff;
+        else
+            do egress stuff;
+    }
+    if (!ingress) {
+        ...
+        if (qdisc->ops->attach)
+            qdisc->ops->attach(qdisc);
+    } else {
+        ...
+    }
 
-No it isn't ;-)
+As we see, the attach callback is not called if the qdisc is being
+attached to ingress (TC_H_INGRESS). That wasn't a problem for mq and
+mqprio, since they contain a check that they are attached to TC_H_ROOT,
+and they can't be attached to TC_H_INGRESS anyway.
 
-If an optional IRQ is not present, drivers either just ignore it (e.g.
-for devices that can have multiple interrupts or a single muxed IRQ),
-or they have to resort to polling. For the latter, fall-back handling
-is needed elsewhere in the driver.
-To me it sounds much more logical for the driver to check if an
-optional irq is non-zero (available) or zero (not available), than to
-sprinkle around checks for -ENXIO. In addition, you have to remember
-that this one returns -ENXIO, while other APIs use -ENOENT or -ENOSYS
-(or some other error code) to indicate absence. I thought not having
-to care about the actual error code was the main reason behind the
-introduction of the *_optional() APIs.
+However, the commit cited below added the attach callback to htb. It is
+needed for the hardware offload, but in the non-offload mode it
+simulates the "do egress stuff" part of the pseudocode above. The
+problem is that when htb is attached to ingress, neither "do ingress
+stuff" nor attach() is called. It results in an inconsistency, and the
+following message is printed to dmesg:
 
-Gr{oetje,eeting}s,
+unregister_netdevice: waiting for lo to become free. Usage count = 2
 
-                        Geert
+This commit addresses the issue by running "do ingress stuff" in the
+ingress flow even in the attach callback is present, which is fine,
+because attach isn't going to be called afterwards.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+The bug was found by syzbot and reported by Eric.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Fixes: d03b195b5aa0 ("sch_htb: Hierarchical QoS hardware offload")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reported-by: Eric Dumazet <edumazet@google.com>
+---
+ net/sched/sch_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index c9c6f49f9c28..2cb496c84878 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1062,7 +1062,7 @@ static int qdisc_graft(struct net_device *dev, struct Qdisc *parent,
+ 
+ 		qdisc_offload_graft_root(dev, new, old, extack);
+ 
+-		if (new && new->ops->attach)
++		if (new && new->ops->attach && !ingress)
+ 			goto skip;
+ 
+ 		for (i = 0; i < num_q; i++) {
+-- 
+2.25.1
+
