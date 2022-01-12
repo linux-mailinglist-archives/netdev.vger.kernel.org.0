@@ -2,96 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6D5B48BEA5
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 07:43:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F09C48BEA3
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 07:40:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351024AbiALGnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 01:43:13 -0500
-Received: from 7.mo552.mail-out.ovh.net ([188.165.59.253]:38657 "EHLO
-        7.mo552.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237188AbiALGnN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 01:43:13 -0500
-X-Greylist: delayed 385 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Jan 2022 01:43:12 EST
-Received: from mxplan1.mail.ovh.net (unknown [10.109.156.148])
-        by mo552.mail-out.ovh.net (Postfix) with ESMTPS id 4555A22585;
-        Wed, 12 Jan 2022 06:36:46 +0000 (UTC)
-Received: from bracey.fi (37.59.142.99) by DAG4EX1.mxp1.local (172.16.2.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 12 Jan
- 2022 07:36:45 +0100
-Authentication-Results: garm.ovh; auth=pass (GARM-99G003d5a8f43c-66d3-4c4a-9991-a8ac86815c59,
-                    9C4ECD095E6EB6DE56D124D498B9B7C748136B87) smtp.auth=kevin@bracey.fi
-X-OVh-ClientIp: 82.181.225.135
-Message-ID: <03cc89aa-1837-dacc-29d7-fcf6a5e45284@bracey.fi>
-Date:   Wed, 12 Jan 2022 08:36:37 +0200
+        id S1351014AbiALGk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 01:40:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231468AbiALGkz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 01:40:55 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C640C06173F
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 22:40:55 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id k15so5650835edk.13
+        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 22:40:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=j6hbyKol68wFX5iiymhuEQsHgpNKkmkI3FMm7bj3TOM=;
+        b=DEtq4nScoRmZpHDPIBFDzULWTmc5oEnWu0HWl9mQoRoTBM/ad+z67adCChiy1HP+pi
+         Mjg76DatHzF73HgPRTkNFeVunycvIIrnPHK779ME6ig3sk4t9yTZcHn++pQulQo1u6Og
+         DbWzyLfYG5f49VrhQgdqFb/MuIFgl/WUeFAQTGJl/LFgzVifoBOEP2obm0yPedSGnpyp
+         Pq5ybK7XZ5Da8x4DaO5dOZmka175e9kebZLXISJdscKlODyPDME40gTkt+O3Uk4IFQx6
+         zVUXDFXfWJ0mE6jE2Jmx7lUJt1hQmAE/k2d9KoTKwEwgt8g5+h/xsBMjs4qSLFRHaPwu
+         IdGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=j6hbyKol68wFX5iiymhuEQsHgpNKkmkI3FMm7bj3TOM=;
+        b=xmy2wY7rcRocOjP4a7tcX3eX/rkZQx5Gu9bW/b8u+NQQlnF99PRULc/h56eyTcJSay
+         jDJifudiJWlx9xhvstaHXXM1Sb1ovW/vKnwj1X17Qa9mR9WeuC6sl1/c0t4lQOr2RW1+
+         1BjknvlOvVrWQERteUigb0dp6YKT8mwBrexOXe0h/zdhDYJz0UFTx3A6W0uu8vIefsC6
+         pVpeW+1S1twlRTgE0oAIYyF8DkjzKOFougogILBGBwLicMF8sLsITNtkfqBmYpmQ2xlP
+         qTu9Cuys+/HdClwinUEeY1SCQD6L1vxZeqmSbuTWT6Z9Fv7KJwnTmAhdQXYamCzSHhdn
+         hUBQ==
+X-Gm-Message-State: AOAM5308mRdhTsBa23dy3trLAR9iyKE1HBwVn8KX6vujIR+ezQmJ6m/Y
+        U2ETVNDSzpnHjFd6+ABLA/M3wg==
+X-Google-Smtp-Source: ABdhPJxFACxwQqohWAwzNyIFzdza3Go5zCu+23kAyqd4VttcVfMxPX4biC1GqarDCqok0lezkQ4qEQ==
+X-Received: by 2002:a50:d6d5:: with SMTP id l21mr7486410edj.69.1641969653736;
+        Tue, 11 Jan 2022 22:40:53 -0800 (PST)
+Received: from leoy-ThinkPad-X240s ([104.245.96.239])
+        by smtp.gmail.com with ESMTPSA id ck3sm1892109edb.36.2022.01.11.22.40.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 22:40:53 -0800 (PST)
+Date:   Wed, 12 Jan 2022 14:40:47 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jan Harkes <jaharkes@cs.cmu.edu>, coda@cs.cmu.edu,
+        Paul Moore <paul@paul-moore.com>,
+        Eric Paris <eparis@redhat.com>,
+        Balbir Singh <bsingharora@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, codalist@coda.cs.cmu.edu,
+        linux-audit@redhat.com
+Subject: Re: [PATCH v2 0/7] pid: Introduce helper task_is_in_root_ns()
+Message-ID: <20220112064046.GA3316542@leoy-ThinkPad-X240s>
+References: <20211208083320.472503-1-leo.yan@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH net-next] net_sched: restore "mpu xxx" handling
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
-        Jiri Pirko <jiri@resnulli.us>, Vimalkumar <j.vimal@gmail.com>
-References: <20220107202249.3812322-1-kevin@bracey.fi>
- <20220111210613.55467734@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Kevin Bracey <kevin@bracey.fi>
-In-Reply-To: <20220111210613.55467734@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [37.59.142.99]
-X-ClientProxiedBy: DAG5EX1.mxp1.local (172.16.2.9) To DAG4EX1.mxp1.local
- (172.16.2.7)
-X-Ovh-Tracer-GUID: d47f6d19-eda5-40b6-bd05-831b476f8246
-X-Ovh-Tracer-Id: 8574290742286389411
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvuddrudehgedgleelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvfhfhjggtgfhisehtjeertddtfeejnecuhfhrohhmpefmvghvihhnuceurhgrtggvhicuoehkvghvihhnsegsrhgrtggvhidrfhhiqeenucggtffrrghtthgvrhhnpefgffeugfeuteevueeutdehiefhgfeivdeggeeuhefgffetieefgedtjefhlefhieenucfkpheptddrtddrtddrtddpfeejrdehledrudegvddrleelnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhdurdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepkhgvvhhinhessghrrggtvgihrdhfihdprhgtphhtthhopehjrdhvihhmrghlsehgmhgrihhlrdgtohhm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211208083320.472503-1-leo.yan@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/01/2022 07:06, Jakub Kicinski wrote:
-> On Fri, 7 Jan 2022 22:22:50 +0200 Kevin Bracey wrote:
->> commit 56b765b79e9a ("htb: improved accuracy at high rates") broke
->> "overhead X", "linklayer atm" and "mpu X" attributes.
->>
->> "overhead X" and "linklayer atm" have already been fixed. This restores
->> the "mpu X" handling, as might be used by DOCSIS or Ethernet shaping:
->>
->>      tc class add ... htb rate X overhead 4 mpu 64
->>
->> The code being fixed is used by htb, tbf and act_police. Cake has its
->> own mpu handling. qdisc_calculate_pkt_len still uses the size table
->> containing values adjusted for mpu by user space.
->>
->> Fixes: 56b765b79e9a ("htb: improved accuracy at high rates")
-> Are you sure this worked and got broken? I can't seem to grep out any
-> uses of mpu in this code. commit 175f9c1bba9b ("net_sched: Add size
-> table for qdiscs") adds it as part of the struct but I can't find a
-> single use of it.
+Hi David,
 
-Indeed, There has never been any kernel handling of tc_ratespec::mpu - 
-the kernel merely stored the value.
+On Wed, Dec 08, 2021 at 04:33:13PM +0800, Leo Yan wrote:
+> The kernel uses open code to check if a process is in root PID namespace
+> or not in several places.
+> 
+> Suggested by Suzuki, this patch set is to create a helper function
+> task_is_in_init_pid_ns() to replace open code.
+> 
+> This patch set has been applied on the mainline kernel and built for
+> Arm64 kernel with enabling all relevant modules.
 
-But the system functionality worked because the length-to-time that tc 
-passed to TCA_HTB_RTAB was based on the mpu value.
+I'd like sync for how to merging this patch set.  Except patch 05/07,
+all of other patches in this patch set have been received the reviewed
+or acked tags.  So could you pick up this patch set?
 
-Since 56b765b79e9a ("htb: improved accuracy at high rates"), the table 
-has been ignored, and the kernel has done its own immediate calculations.
+Furthermore, we have another patch set "coresight: etm: Correct PID
+tracing for non-root namespace" [1], which is dependent on the current
+patch set and it has been Acked by Suzuki.
 
-So this would be the first time the kernel itself has acted on the 
-tc_ratespec::mpu value. But it echoes the changes made in 01cb71d2d47b 
-("net_sched: restore "overhead xxx" handling") and 8a8e3d84b171 
-("net_sched: restore "linklayer atm" handling")
+I'd like to get opinions from David and CoreSight maintainers Mathieu
+and Suzuki, should we merge the patch set [1] via David's tree as well
+to avoid dependency issue, or prefer to merge it via CoreSight tree?
+If David prefers the prior option, I can resend the patch set [1] with
+looping David.
 
-The overhead had been similarly passed to the kernel but not originally 
-acted on. Linklayer had to be added to tc_ratespec.
+Thanks,
+Leo
 
-I noticed this because I'd been messing with the htbs on a 2.6.26-based 
-router, and when I migrated to a 4.1-based one it was obvious the mpu 
-values set in tc weren't sticking. Inspection showed that not only was 
-the kernel not storing them, it wasn't any longer using the table based 
-on them, so they were ineffective.
-
-Kevin
-
-
+[1] https://lore.kernel.org/lkml/20211213121323.1887180-1-leo.yan@linaro.org/
