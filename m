@@ -2,97 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20B9948CB68
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:58:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A7BF48CB77
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 20:04:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356341AbiALS6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 13:58:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53544 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241317AbiALS57 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:57:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A63C06173F;
-        Wed, 12 Jan 2022 10:57:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D9BCB82061;
-        Wed, 12 Jan 2022 18:57:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B60C36AE5;
-        Wed, 12 Jan 2022 18:57:56 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LpIgVSvW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1642013873;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=z0nJw3qp+6ssaRAsQGf0Z8LxKHkMZcQjHMYTxWOuULA=;
-        b=LpIgVSvWy74mNyI6bUeyXhJwMku7ldAgzyUrx7wW4aEY9++YH0eOQBx3QnZoNRqfjblCKh
-        Bb2lzHp+gtos3MGpETNpDP8trNJfFOYbBCj3lPBt6jZ0FhGj+yRdlBw4RJNAZwhWZ+Uide
-        X3BGgUDsZx+fj/DKQvh7TCp4aPnnRbw=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c3e8b21a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 12 Jan 2022 18:57:52 +0000 (UTC)
-Received: by mail-yb1-f174.google.com with SMTP id p5so8199216ybd.13;
-        Wed, 12 Jan 2022 10:57:52 -0800 (PST)
-X-Gm-Message-State: AOAM530WRfZ7kkIsv2nINfejkSrSx649bLMtSHQd35lNAyGSR/Gr7nWz
-        hnTUwy/xDYgdvFh4ftA2t+aG7hL9IFkdGcyYMT8=
-X-Google-Smtp-Source: ABdhPJw8qYUs7e9KQe2N4L+rImERUn9kUTTZvgDksyPryzq/g72RYmNwS7QVnzejY1mgkrru1T5lLNiPN9ehAqKwuLk=
-X-Received: by 2002:a25:8c4:: with SMTP id 187mr1325248ybi.245.1642013871490;
- Wed, 12 Jan 2022 10:57:51 -0800 (PST)
+        id S1356377AbiALTEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 14:04:23 -0500
+Received: from mga05.intel.com ([192.55.52.43]:40349 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1356376AbiALTEQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Jan 2022 14:04:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642014256; x=1673550256;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=4UJ7xopN1K3IXaRFIey7BtjBtTlbyfPSxDlk+IOAAog=;
+  b=GFdUheSKwPF1qxyktWOFACALlf96ktVRBYsxJASo+Q2HyQ5qeAWvrBXw
+   6JUw4rvWSJoLqx5RY7elzFgbTjGEJSyur+tPRY8xTxwGIDzR2u4LlD0RL
+   s3PU4Ac32cnPtCxq9zMA1I1c7iBV04GN1bsQ+Az/NaWmUhL5JDRcCoSMO
+   JuG+HbkDsOhtXLlOPoewOEKbP6iiAr5miG6YMuNYJa/BEb3EpbaVZtDNF
+   YgvboqyUKhJ0sPCLwB2R+lBWFOndJed40XxwOEu94JRk/OY9Cf1VdfZgN
+   ZbtS3lruw/16300cXPmkVIZf6E5YU8h6IBAfNdA/k2TracFT8L8vC/oaR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="330175999"
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="330175999"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 11:03:08 -0800
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="515624819"
+Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.209.104.69]) ([10.209.104.69])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 11:03:06 -0800
+Message-ID: <2fd0756d-9ca1-b124-ed18-5ab0bda4c91f@linux.intel.com>
+Date:   Wed, 12 Jan 2022 11:03:06 -0800
 MIME-Version: 1.0
-References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112185004.GZ14046@twin.jikos.cz>
-In-Reply-To: <20220112185004.GZ14046@twin.jikos.cz>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 12 Jan 2022 19:57:40 +0100
-X-Gmail-Original-Message-ID: <CAHmME9qcW_cPq+ZvpBnYwJXURNs_3mqbzOKsqeoDNUDH4qDWEg@mail.gmail.com>
-Message-ID: <CAHmME9qcW_cPq+ZvpBnYwJXURNs_3mqbzOKsqeoDNUDH4qDWEg@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 0/3] remove remaining users of SHA-1
-To:     David Sterba <dsterba@suse.cz>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH net-next v3 01/12] net: wwan: t7xx: Add control DMA
+ interface
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, amir.hanania@intel.com,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        mika.westerberg@linux.intel.com, moises.veleta@intel.com,
+        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
+        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com
+References: <20211207024711.2765-1-ricardo.martinez@linux.intel.com>
+ <20211207024711.2765-2-ricardo.martinez@linux.intel.com>
+ <a6325ef-e06e-c236-9d23-42fdb8b62747@linux.intel.com>
+ <2b21bfa5-4b18-d615-b6ab-09ad97d73fe4@linux.intel.com>
+ <Yd6+GjPLP2qCCEfv@smile.fi.intel.com>
+ <b0cb18b-dc7b-9241-b21a-850d055d86@linux.intel.com>
+ <Yd7/se+LD1c1wiBA@smile.fi.intel.com>
+ <b638aa4-5a1c-e6ad-5a85-d4c3298c4daf@linux.intel.com>
+From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
+In-Reply-To: <b638aa4-5a1c-e6ad-5a85-d4c3298c4daf@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 7:50 PM David Sterba <dsterba@suse.cz> wrote:
->
-> On Wed, Jan 12, 2022 at 02:12:01PM +0100, Jason A. Donenfeld wrote:
-> > Hi,
-> >
-> > There are currently two remaining users of SHA-1 left in the kernel: bpf
-> > tag generation, and ipv6 address calculation. In an effort to reduce
-> > code size and rid ourselves of insecure primitives, this RFC patchset
-> > moves to using the more secure BLAKE2s function.
->
-> What's the rationale to use 2s and not 2b? Everywhere I can find the 2s
-> version is said to be for 8bit up to 32bit machines and it's worse than
-> 2b in benchmarks (reading https://bench.cr.yp.to/results-hash.html).
->
-> I'd understand you go with 2s because you also chose it for wireguard
-> but I'd like know why 2s again even if it's not made for 64bit
-> architectures that are preferred nowadays.
 
-Fast for small inputs on all architectures, small code size. And it
-performs well on Intel - there are avx512 and ssse3 implementations.
-Even blake3 went with the 32-bit choice and abandoned 2b's thing.
-Plus, this makes it even more similar to the well trusted chacha
-permutation. As far as a general purpose high security library (keyed)
-hash function for internal kernel usages, it seems pretty ideal.
+On 1/12/2022 10:16 AM, Ilpo Järvinen wrote:
+> On Wed, 12 Jan 2022, Andy Shevchenko wrote:
+>
+>> On Wed, Jan 12, 2022 at 04:24:52PM +0200, Ilpo Järvinen wrote:
+>>> On Wed, 12 Jan 2022, Andy Shevchenko wrote:
+>>>> On Tue, Jan 11, 2022 at 08:55:58PM -0800, Martinez, Ricardo wrote:
+>>>>> On 12/16/2021 3:08 AM, Ilpo Järvinen wrote:
+>>>>>> On Mon, 6 Dec 2021, Ricardo Martinez wrote:
+>>>>>>> +	if (req->entry.next == &ring->gpd_ring)
+>>>>>>> +		return list_first_entry(&ring->gpd_ring, struct cldma_request, entry);
+>>>>>>> +
+>>>>>>> +	return list_next_entry(req, entry);
+>>>> ...
+>>>>
+>>>>>>> +	if (req->entry.prev == &ring->gpd_ring)
+>>>>>>> +		return list_last_entry(&ring->gpd_ring, struct cldma_request, entry);
+>>>>>>> +
+>>>>>>> +	return list_prev_entry(req, entry);
+>>>> ...
+>>>>
+>>>>>> Wouldn't these two seems generic enough to warrant adding something like
+>>>>>> list_next/prev_entry_circular(...) to list.h?
+>>>>> Agree, in the upcoming version I'm planning to include something like this
+>>>>> to list.h as suggested:
+>>>> I think you mean for next and prev, i.o.w. two helpers, correct?
+>>>>
+>>>>> #define list_next_entry_circular(pos, ptr, member) \
+> One thing I missed earlier, the sigrature should instead of ptr have head:
+> #define list_next_entry_circular(pos, head, member)
+>
+>>>>>      ((pos)->member.next == (ptr) ? \
+>>>> I believe this is list_entry_is_head().
+>>> It takes .next so it's not the same as list_entry_is_head() and
+>>> list_entry_is_last() doesn't exist.
+>> But we have list_last_entry(). So, what about
+>>
+>> list_last_entry() == pos ? first : next;
+>>
+>> and counterpart
+>>
+>> list_first_entry() == pos ? last : prev;
+>>
+>> ?
+> Yes, although now that I think it more, using them implies the head
+> element has to be always accessed. It might be marginally cache friendlier
+> to use list_entry_is_head you originally suggested but get the next entry
+> first:
+> ({
+> 	typeof(pos) next__ = list_next_entry(pos, member); \
+> 	!list_entry_is_head(next__, head, member) ? next__ : list_next_entry(next__, member);
+> })
+> (This was written directly to email, entirely untested).
+>
+> Here, the head element would only get accessed when we really need to walk
+> through it.
 
-Your choice for btrfs though is fine; don't let this patchset change
-your thinking on that.
+I'm not sure if list_next_entry() will work for the last element, what 
+about using list_is_last()?
 
-Anyway, I hope that's interesting to you, but I'm not so much
-interested in bikeshedding about blake variants as I am in learning
-from the net people on the feasibility of getting rid of sha1 in those
-two places. So I'd appreciate it if we can keep the discussion focused
-on that and not let this veer off into a tangential thread on blakes.
+This way we avoid accessing head if not needed and does not to use 
+'container_of()' on (pos)->member.next.
+
+     (list_is_last(&(pos)->member, head) ? \
+     list_first_entry(head, typeof(*(pos)), member) : \
+     list_next_entry(pos, member))
+
+(untested)
+
+>>>>>      list_first_entry(ptr, typeof(*(pos)), member) : \
+>>>>>      list_next_entry(pos, member))
