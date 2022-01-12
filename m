@@ -2,72 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0848A48BDFA
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 05:50:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 830B948BDF9
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 05:50:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350779AbiALEuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 23:50:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58796 "EHLO
+        id S1350778AbiALEuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 23:50:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58792 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349155AbiALEuL (ORCPT
+        with ESMTP id S232412AbiALEuL (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 23:50:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A39DF6183C
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 939E76184A
         for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 04:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 01C0AC36AE5;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EB77CC36AEB;
         Wed, 12 Jan 2022 04:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1641963011;
-        bh=eaknNAuAJhybR3Xp3NhyC0vXVK64nC32zh32lacrQJ0=;
+        bh=9WUxbiPyuSrwhNhmRsCErtpkvcbIIwUlgVonuiO1xpg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Bk0Li0b8OtD22o175OjC/oV/21UMIZVgpBRyPQpvgpAoZlj0SGTrYK3sCuKq9czu8
-         Oaz7vRAULfqXomCs1BoLX291ODbPijMCy9g7Q69XMjj1ufRQT2uxp+caRThEb/QDkU
-         r4GzuvGTBpxfu2imhuJigyPr+BgC+6Hw1i10l1k5JFUyBbY202dII2wQ1LTCAcd1eg
-         go98ZlZ4YMSrzfi5PY0IdOEdJSREmLEQ7vVbp0vkwjWb8tZ7MyIjtAExGUihO7SlUk
-         em/5S8RZw/VwHqOr0Vvsws333l6smfzTRBhIWNP3qnTmBzvWpV9jFsK6xkYPxjXSeS
-         1J/BG70CmAFrw==
+        b=i9ZnFBhEBpGsnkeltsztMPw9sJAc228FGPxn0TsanFqwpZQD5pZYLXoI4FarE6cq0
+         nK7v1yvAszM/6lstLz76XGpHpX1g22F8cNx+fwAry4fHl+AXnN+wMQHkZW9z/tL8n4
+         A4U8ApztcgKnQP1D/zTNxk6moVajSrg3zTgjy0W9pVMKkyWm8AhI2WXOeng+xqiT8S
+         r0jOuMjv/r8E+9rcMfRkeW8//oD2idYenSGF1+6AiIvzrww6+ZV0etu7qffVgYCY3q
+         5YS/A496JJBGueksfYWNUQqksNUcTWkB/RGxovPo3oRR5D+lRaXNRTFRMKdYaoNGJw
+         W1d+bK/vApxFA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DD826F60796;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D0CA9F60795;
         Wed, 12 Jan 2022 04:50:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: sched: do not allocate a tracker in
- tcf_exts_init()
+Subject: Re: [PATCH v2 net 0/4] ipv4: Fix accidental RTO_ONLINK flags passed to
+ ip_route_output_key_hash()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164196301089.21433.5938069973239132647.git-patchwork-notify@kernel.org>
+Message-Id: <164196301084.21433.5520835462235159586.git-patchwork-notify@kernel.org>
 Date:   Wed, 12 Jan 2022 04:50:10 +0000
-References: <20220110094750.236478-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220110094750.236478-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
+References: <cover.1641821242.git.gnault@redhat.com>
+In-Reply-To: <cover.1641821242.git.gnault@redhat.com>
+To:     Guillaume Nault <gnault@redhat.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, syzkaller@googlegroups.com
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, wenxu@ucloud.cn,
+        varun@chelsio.com, saeedm@nvidia.com, leon@kernel.org,
+        vladbu@nvidia.com, ogerlitz@mellanox.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This series was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 10 Jan 2022 01:47:50 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> While struct tcf_exts has a net pointer, it is not refcounted
-> until tcf_exts_get_net() is called.
-> 
-> Fixes: dbdcda634ce3 ("net: sched: add netns refcount tracker to struct tcf_exts")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
+On Mon, 10 Jan 2022 14:43:04 +0100 you wrote:
+> The IPv4 stack generally uses the last bit of ->flowi4_tos as a flag
+> indicating link scope for route lookups (RTO_ONLINK). Therefore, we
+> have to be careful when copying a TOS value to ->flowi4_tos. In
+> particular, the ->tos field of IPv4 packets may have this bit set
+> because of ECN. Also tunnel keys generally accept any user value for
+> the tos.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: sched: do not allocate a tracker in tcf_exts_init()
-    https://git.kernel.org/netdev/net/c/cb963a19d99f
+  - [v2,net,1/4] xfrm: Don't accidentally set RTO_ONLINK in decode_session4()
+    https://git.kernel.org/netdev/net/c/23e7b1bfed61
+  - [v2,net,2/4] gre: Don't accidentally set RTO_ONLINK in gre_fill_metadata_dst()
+    https://git.kernel.org/netdev/net/c/f7716b318568
+  - [v2,net,3/4] libcxgb: Don't accidentally set RTO_ONLINK in cxgb_find_route()
+    https://git.kernel.org/netdev/net/c/a915deaa9abe
+  - [v2,net,4/4] mlx5: Don't accidentally set RTO_ONLINK before mlx5e_route_lookup_ipv4_get()
+    https://git.kernel.org/netdev/net/c/48d67543e01d
 
 You are awesome, thank you!
 -- 
