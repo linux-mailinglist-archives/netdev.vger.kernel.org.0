@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 636ED48CE57
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 23:26:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3684748CE5B
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 23:27:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230353AbiALWZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 17:25:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44802 "EHLO
+        id S232161AbiALW02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 17:26:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230087AbiALWZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 17:25:15 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B886AC06173F;
-        Wed, 12 Jan 2022 14:25:14 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id k30so6760036wrd.9;
-        Wed, 12 Jan 2022 14:25:14 -0800 (PST)
+        with ESMTP id S229602AbiALW01 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 17:26:27 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4983AC06173F;
+        Wed, 12 Jan 2022 14:26:27 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id 25-20020a05600c231900b003497473a9c4so4319718wmo.5;
+        Wed, 12 Jan 2022 14:26:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VFfo0SP0eYuiEoDo0F07MxHnumYuJPJyQNP8v/MaqJg=;
-        b=lywxs9slhut3KF4qmDOVf2RmCTGCFRnHA8dK0EN/kiRpTDeOh49TPN5ZWnSTEXmlGy
-         FXU9v02rvQRmcrqsCsMxrvDu5UmKtxVM0ENptyfgMR2j2iGKtaPVp11wUdPNMEtpohb8
-         ge3vh/0iwWTf/i1wZd1S5UEiT5cDUSc066MnahHvEZQUpvOqJSbjl7a2fiWUtB86ni6M
-         JivM6mFO5I69ykaX1QrA+2S0fsFbEbfvmFMgxjn1ybJI24CQcJD4zuQafLWTnwyoKGlb
-         tYB2mP4+tFN3d0vAir914X1LVuetLLafg2Z9TN5ceGW4r5rHaMrqtIUxmsHTHKB6l8Ej
-         mHHw==
+        bh=KizL2Q8qfZ1jJgGJ046/TGWPLyvOYwIs4pkgv9A+iK0=;
+        b=fWxSBmESv/1HYzdp1Z07Du4OXevSOiE84xmcOnsAmFaYKPqneS4d4QO+wNY16QGBcE
+         6t8wp3Dmj+IxoK7cTuAowlppD0iv6sS4R+hr5cadw34ClUWILFHqh5AM/UNG4BE1o6oJ
+         HHVKUAVI0O26sRXp0LE5J6ppnHClhL682ZjV418kHMI3i9uWBeEUbhk5Pk4mdN4leZLf
+         dFqTYrgXLqU52vxrE8GxAtyDV8EbzODgqoSjBKKhsS/M0hNIQlv/TTEIRolGwdQSEcv4
+         iOD4+UGK4rDMQX0Bug4AeH8BRiU6bHRifZyuTMIqTSjj7OC3mMhC7skZjcILSEFnjxQp
+         GGig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VFfo0SP0eYuiEoDo0F07MxHnumYuJPJyQNP8v/MaqJg=;
-        b=FxYWdBHJLZSs2/jvPXP4CUBPd3/QBkkd9vLeIdo4bBWZQdf9JUdIoaWV/Vg92RJISI
-         QFc8FEyp0ucAjJU3uJ3VZxudeHhWwQmesCpsCy9isEA0OUR3PL+Y0lGIBeS1HyH6lYPX
-         9S5IE7cB+doHoQt4mwYWamMB2aTp+umNx8zWMV0QXQU8NHcBUXyjQYUZWf6jHCGN8/X3
-         Ay/G7SUatc1OcU+egNl53L5ea2Nlv1PdTAIScdA3d2hS9xRTLImzzRHyMh0lQx4WP0Mh
-         Zm0rf2SySN9SdMuqw7c+Mqx5WHu+uFWk55KhWXrq5l87B2tPp5KRHct2QfpGMu7pP5sa
-         gMdw==
-X-Gm-Message-State: AOAM530K8wieXXlxGryffOWCTx0zMoIxDHN/IMnMlMvKQ4yxPvqxSCF2
-        e97apSog+eE61XrJeoKOZwrMeomaxk/jjxPGEgI=
-X-Google-Smtp-Source: ABdhPJyDon5z/3defDEYdf9XudXjSoUZ6JgkMTKg7cnrtgyNHI5U2DO7YfKH70Y0h/5pzxVNRKYk4xBpI2cIr3rVpCk=
-X-Received: by 2002:adf:e190:: with SMTP id az16mr1517104wrb.207.1642026313038;
- Wed, 12 Jan 2022 14:25:13 -0800 (PST)
+        bh=KizL2Q8qfZ1jJgGJ046/TGWPLyvOYwIs4pkgv9A+iK0=;
+        b=OuFeTk5fW1UcU+QUrd6/eNkourH73/D3lg/gtmCEsgZ//TDQFrUYhfiNxyCxeDz4sI
+         rDfd58ueLeD9Vpfo+yJHwepMSh6tlZoofKn85HDpaSieKhZuWZDHYS55cSvSAg41pWwd
+         Iu8CFNCqgDOCHBMR6fh5SfUb9NzgCumiraNhnMQicGN+r76hlowQrub5VFh+a3xi4jQb
+         ZZ+9TDitiEI4fddUENAryV9+Yd+9ZYPnyiMMYSdEU8PsSo1obG6yy2eze0+SRu/LcZrS
+         kZ22WbeHpnkIWDuumSPPWrh5DaUTAzQ3ezBlJQDABbuuvtvpJqbGVQSd70SvILoiIuTQ
+         eNlg==
+X-Gm-Message-State: AOAM531mWXhML2uaZRaO6DugjEXufNVBS7zWpOYHtzsF7gpSFPiaP3qV
+        B8YkSKhk5Dk4t4Mh8VtAo2yCqzJ+Ea1QcAmnSIw=
+X-Google-Smtp-Source: ABdhPJxjpIbrCnz/h87/HUI6mWdyobHKjBjY+N0p4JN/2fErMzMnFEzgpdVlIclqq/ZyiDDaJImIQyDBPzFHFFtxma8=
+X-Received: by 2002:a1c:545b:: with SMTP id p27mr8546817wmi.178.1642026385920;
+ Wed, 12 Jan 2022 14:26:25 -0800 (PST)
 MIME-Version: 1.0
-References: <20220112173312.764660-1-miquel.raynal@bootlin.com> <20220112173312.764660-7-miquel.raynal@bootlin.com>
-In-Reply-To: <20220112173312.764660-7-miquel.raynal@bootlin.com>
+References: <20220112173312.764660-1-miquel.raynal@bootlin.com> <20220112173312.764660-9-miquel.raynal@bootlin.com>
+In-Reply-To: <20220112173312.764660-9-miquel.raynal@bootlin.com>
 From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Wed, 12 Jan 2022 17:25:01 -0500
-Message-ID: <CAB_54W68GQmsV70w0uUWvz8-V_Yf+FHfc23k2es53REqWMBY8Q@mail.gmail.com>
-Subject: Re: [wpan-next v2 06/27] net: mac802154: Set the symbol duration automatically
+Date:   Wed, 12 Jan 2022 17:26:14 -0500
+Message-ID: <CAB_54W5QU5JCtQYwvTKREd6ZeQWmC19LF4mj853U0Gz-mCObVQ@mail.gmail.com>
+Subject: Re: [wpan-next v2 08/27] net: ieee802154: Drop symbol duration
+ settings when the core does it already
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
@@ -76,86 +77,50 @@ Hi,
 
 On Wed, 12 Jan 2022 at 12:33, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> Now that we have access to all the basic information to know which
-> symbol duration should be applied, let's set the symbol duration
-> automatically. The two locations that must call for the symbol duration
-> to be set are:
-> - when manually requesting a channel change though the netlink interface
-> - at PHY creation, ieee802154_alloc_hw() already calls
->   ieee802154_change_channel() which will now update the symbol duration
->   accordingly.
->
-> If an information is missing, the symbol duration is not touched, a
-> debug message is eventually printed. This keeps the compatibility with
-> the unconverted drivers for which it was too complicated for me to find
-> their precise information. If they initially provided a symbol duration,
-> it would be kept. If they don't, the symbol duration value is left
-> untouched.
+> The core now knows how to set the symbol duration in a few cases, when
+> drivers correctly advertise the protocols used on each channel. For
+> these drivers, there is no more need to bother with symbol duration, so
+> just drop the duplicated code.
 >
 > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->  include/net/cfg802154.h |  2 +
->  net/mac802154/cfg.c     |  1 +
->  net/mac802154/main.c    | 93 +++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 96 insertions(+)
+>  drivers/net/ieee802154/ca8210.c | 1 -
+>  drivers/net/ieee802154/mcr20a.c | 2 --
+>  2 files changed, 3 deletions(-)
 >
-> diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-> index 286709a9dd0b..52eefc4b5b4d 100644
-> --- a/include/net/cfg802154.h
-> +++ b/include/net/cfg802154.h
-> @@ -455,4 +455,6 @@ static inline const char *wpan_phy_name(struct wpan_phy *phy)
->         return dev_name(&phy->dev);
->  }
+> diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
+> index 82b2a173bdbd..d3a9e4fe05f4 100644
+> --- a/drivers/net/ieee802154/ca8210.c
+> +++ b/drivers/net/ieee802154/ca8210.c
+> @@ -2977,7 +2977,6 @@ static void ca8210_hw_setup(struct ieee802154_hw *ca8210_hw)
+>         ca8210_hw->phy->cca.mode = NL802154_CCA_ENERGY_CARRIER;
+>         ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
+>         ca8210_hw->phy->cca_ed_level = -9800;
+> -       ca8210_hw->phy->symbol_duration = 16 * 1000;
+>         ca8210_hw->phy->lifs_period = 40;
+>         ca8210_hw->phy->sifs_period = 12;
+>         ca8210_hw->flags =
+> diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
+> index 8aa87e9bf92e..da2ab19cb5ee 100644
+> --- a/drivers/net/ieee802154/mcr20a.c
+> +++ b/drivers/net/ieee802154/mcr20a.c
+> @@ -975,7 +975,6 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
 >
-> +void ieee802154_set_symbol_duration(struct wpan_phy *phy);
-> +
->  #endif /* __NET_CFG802154_H */
-> diff --git a/net/mac802154/cfg.c b/net/mac802154/cfg.c
-> index 6969f1330ccd..ba57da07c08e 100644
-> --- a/net/mac802154/cfg.c
-> +++ b/net/mac802154/cfg.c
-> @@ -113,6 +113,7 @@ int ieee802154_change_channel(struct wpan_phy *wpan_phy, u8 page, u8 channel)
->         if (!ret) {
->                 wpan_phy->current_page = page;
->                 wpan_phy->current_channel = channel;
-> +               ieee802154_set_symbol_duration(wpan_phy);
->         }
+>         dev_dbg(printdev(lp), "%s\n", __func__);
 >
->         return ret;
+> -       phy->symbol_duration = 16 * 1000;
+>         phy->lifs_period = 40;
+>         phy->sifs_period = 12;
+>
+> @@ -1010,7 +1009,6 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
+>         phy->current_page = 0;
+>         /* MCR20A default reset value */
+>         phy->current_channel = 20;
+> -       phy->symbol_duration = 16 * 1000;
+>         phy->supported.tx_powers = mcr20a_powers;
+>         phy->supported.tx_powers_size = ARRAY_SIZE(mcr20a_powers);
+>         phy->cca_ed_level = phy->supported.cca_ed_levels[75];
 
-We also need to do it in ieee802154_register_hw()?
-
-> diff --git a/net/mac802154/main.c b/net/mac802154/main.c
-> index 77a4943f345f..88826c5aa4ba 100644
-> --- a/net/mac802154/main.c
-> +++ b/net/mac802154/main.c
-> @@ -113,6 +113,99 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
->  }
->  EXPORT_SYMBOL(ieee802154_alloc_hw);
->
-> +void ieee802154_set_symbol_duration(struct wpan_phy *phy)
-> +{
-> +       struct phy_page *page = &phy->supported.page[phy->current_page];
-> +       struct phy_channels *chan;
-> +       unsigned int chunk;
-> +       u32 duration = 0;
-> +
-> +       for (chunk = 0; chunk < page->nchunks; chunk++) {
-> +               if (page->chunk[chunk].channels & phy->current_channel)
-> +                       break;
-> +       }
-> +
-> +       if (chunk == page->nchunks)
-> +               goto set_duration;
-> +
-> +       chan = &page->chunk[chunk];
-> +       switch (chan->protocol) {
-> +       case IEEE802154_BPSK_PHY:
-> +               switch (chan->band) {
-> +               case IEEE802154_868_MHZ_BAND:
-> +                       /* 868 MHz BPSK 802.15.4-2003: 20 ksym/s */
-> +                       duration = 50 * 1000;
-
-* NSEC_PER_USEC?
+What's about the atrf86230 driver?
 
 - Alex
