@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3684748CE5B
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 23:27:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2834148CE6C
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 23:30:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232161AbiALW02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 17:26:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
+        id S234298AbiALWat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 17:30:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiALW01 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 17:26:27 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4983AC06173F;
-        Wed, 12 Jan 2022 14:26:27 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id 25-20020a05600c231900b003497473a9c4so4319718wmo.5;
-        Wed, 12 Jan 2022 14:26:27 -0800 (PST)
+        with ESMTP id S234292AbiALWas (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 17:30:48 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1ADC06173F;
+        Wed, 12 Jan 2022 14:30:48 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id v6so6773226wra.8;
+        Wed, 12 Jan 2022 14:30:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=KizL2Q8qfZ1jJgGJ046/TGWPLyvOYwIs4pkgv9A+iK0=;
-        b=fWxSBmESv/1HYzdp1Z07Du4OXevSOiE84xmcOnsAmFaYKPqneS4d4QO+wNY16QGBcE
-         6t8wp3Dmj+IxoK7cTuAowlppD0iv6sS4R+hr5cadw34ClUWILFHqh5AM/UNG4BE1o6oJ
-         HHVKUAVI0O26sRXp0LE5J6ppnHClhL682ZjV418kHMI3i9uWBeEUbhk5Pk4mdN4leZLf
-         dFqTYrgXLqU52vxrE8GxAtyDV8EbzODgqoSjBKKhsS/M0hNIQlv/TTEIRolGwdQSEcv4
-         iOD4+UGK4rDMQX0Bug4AeH8BRiU6bHRifZyuTMIqTSjj7OC3mMhC7skZjcILSEFnjxQp
-         GGig==
+        bh=N/s4QKinYtExGYxFtnd9lWeVWELrcAaCnOnegDCRXnk=;
+        b=Fkc6+BrY7rwnvKAGdwDs9WVGmAPj5SHMpZgljeQ3vlQrQY+lmwlCWrI1GupQdXG1HV
+         2DjDSeBsR1XIoF44yWBjTaG7TgruHtx+0YMMO3wWAqiYnqc/sBUqMpZeljw92Sd87NWv
+         mQfu8OdJvCGCIDInNeGuKf0uhIsnb4DrXsACxPp7ExEDIru4/BxqozjeVLLBMb29aoYm
+         bB06DXPmOM5wYdbQjlYgptNKjySBmtVvDABDWsYRp4i9I8cbJjulCmvFXjUpS8sLIacP
+         34OE2MonPdLbNChqbNb17fVt43QnFzzRY81dtCoUc69zLQPahtl0J9sx3x89xLVdVuf8
+         HERw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KizL2Q8qfZ1jJgGJ046/TGWPLyvOYwIs4pkgv9A+iK0=;
-        b=OuFeTk5fW1UcU+QUrd6/eNkourH73/D3lg/gtmCEsgZ//TDQFrUYhfiNxyCxeDz4sI
-         rDfd58ueLeD9Vpfo+yJHwepMSh6tlZoofKn85HDpaSieKhZuWZDHYS55cSvSAg41pWwd
-         Iu8CFNCqgDOCHBMR6fh5SfUb9NzgCumiraNhnMQicGN+r76hlowQrub5VFh+a3xi4jQb
-         ZZ+9TDitiEI4fddUENAryV9+Yd+9ZYPnyiMMYSdEU8PsSo1obG6yy2eze0+SRu/LcZrS
-         kZ22WbeHpnkIWDuumSPPWrh5DaUTAzQ3ezBlJQDABbuuvtvpJqbGVQSd70SvILoiIuTQ
-         eNlg==
-X-Gm-Message-State: AOAM531mWXhML2uaZRaO6DugjEXufNVBS7zWpOYHtzsF7gpSFPiaP3qV
-        B8YkSKhk5Dk4t4Mh8VtAo2yCqzJ+Ea1QcAmnSIw=
-X-Google-Smtp-Source: ABdhPJxjpIbrCnz/h87/HUI6mWdyobHKjBjY+N0p4JN/2fErMzMnFEzgpdVlIclqq/ZyiDDaJImIQyDBPzFHFFtxma8=
-X-Received: by 2002:a1c:545b:: with SMTP id p27mr8546817wmi.178.1642026385920;
- Wed, 12 Jan 2022 14:26:25 -0800 (PST)
+        bh=N/s4QKinYtExGYxFtnd9lWeVWELrcAaCnOnegDCRXnk=;
+        b=zufNz2opjjVKt2Zr7WxddjwkqR3Pc4jLFxQZpu474vH9svnh/nGB6BO95JPvuiRQMo
+         BpV1NCVdbQklZvBthP/Oh5roLOf4pbQTw+SNm8gV+rqjAreVskK88Zz13TDlYdouW5kk
+         ih07YII8ChZ4OGMYwVpxE4uVeLY8f9GJT2b7c3eg0YrYG2mjoRPova30w07PqmVCkk6w
+         VGvlBQ0/9LCQj3vNPB3CJXxA7orrWYjW34DrDdqPlzXLSaqGaMFa7FuwuBnMfxHE3yRj
+         PCO0dTWwo/GsTn5Y9EApfwEOa6250t8cCJN+7IsIHJQVNIAbAJdAMRy34lp59/vSnEMU
+         vx6Q==
+X-Gm-Message-State: AOAM533VK0vFLbyeoYiC1QHXnGLw6yku00H9vg3E948GDc5dhO/99ZV+
+        o75TdX8c60QB56JaugaJHVkqP9RKBgtGBZc/eCE=
+X-Google-Smtp-Source: ABdhPJw42g0isBoHU177i38pV7cCL1ZHRMYn8ArPyFuq7CIvqxKj9MLPIQCmtyyNt75xZfYfEQIx3MxhuT3mnGLN2p4=
+X-Received: by 2002:adf:e190:: with SMTP id az16mr1530408wrb.207.1642026646731;
+ Wed, 12 Jan 2022 14:30:46 -0800 (PST)
 MIME-Version: 1.0
-References: <20220112173312.764660-1-miquel.raynal@bootlin.com> <20220112173312.764660-9-miquel.raynal@bootlin.com>
-In-Reply-To: <20220112173312.764660-9-miquel.raynal@bootlin.com>
+References: <20220112173312.764660-1-miquel.raynal@bootlin.com> <20220112173312.764660-2-miquel.raynal@bootlin.com>
+In-Reply-To: <20220112173312.764660-2-miquel.raynal@bootlin.com>
 From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Wed, 12 Jan 2022 17:26:14 -0500
-Message-ID: <CAB_54W5QU5JCtQYwvTKREd6ZeQWmC19LF4mj853U0Gz-mCObVQ@mail.gmail.com>
-Subject: Re: [wpan-next v2 08/27] net: ieee802154: Drop symbol duration
- settings when the core does it already
+Date:   Wed, 12 Jan 2022 17:30:35 -0500
+Message-ID: <CAB_54W7uEQ5RJZxKT2qimoT=pbu8NsUhbZWZRWg+QjXDoTPFuQ@mail.gmail.com>
+Subject: Re: [wpan-next v2 01/27] net: mac802154: Split the set channel hook implementation
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
@@ -77,50 +76,19 @@ Hi,
 
 On Wed, 12 Jan 2022 at 12:33, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> The core now knows how to set the symbol duration in a few cases, when
-> drivers correctly advertise the protocols used on each channel. For
-> these drivers, there is no more need to bother with symbol duration, so
-> just drop the duplicated code.
->
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> ---
->  drivers/net/ieee802154/ca8210.c | 1 -
->  drivers/net/ieee802154/mcr20a.c | 2 --
->  2 files changed, 3 deletions(-)
->
-> diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-> index 82b2a173bdbd..d3a9e4fe05f4 100644
-> --- a/drivers/net/ieee802154/ca8210.c
-> +++ b/drivers/net/ieee802154/ca8210.c
-> @@ -2977,7 +2977,6 @@ static void ca8210_hw_setup(struct ieee802154_hw *ca8210_hw)
->         ca8210_hw->phy->cca.mode = NL802154_CCA_ENERGY_CARRIER;
->         ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
->         ca8210_hw->phy->cca_ed_level = -9800;
-> -       ca8210_hw->phy->symbol_duration = 16 * 1000;
->         ca8210_hw->phy->lifs_period = 40;
->         ca8210_hw->phy->sifs_period = 12;
->         ca8210_hw->flags =
-> diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
-> index 8aa87e9bf92e..da2ab19cb5ee 100644
-> --- a/drivers/net/ieee802154/mcr20a.c
-> +++ b/drivers/net/ieee802154/mcr20a.c
-> @@ -975,7 +975,6 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
->
->         dev_dbg(printdev(lp), "%s\n", __func__);
->
-> -       phy->symbol_duration = 16 * 1000;
->         phy->lifs_period = 40;
->         phy->sifs_period = 12;
->
-> @@ -1010,7 +1009,6 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
->         phy->current_page = 0;
->         /* MCR20A default reset value */
->         phy->current_channel = 20;
-> -       phy->symbol_duration = 16 * 1000;
->         phy->supported.tx_powers = mcr20a_powers;
->         phy->supported.tx_powers_size = ARRAY_SIZE(mcr20a_powers);
->         phy->cca_ed_level = phy->supported.cca_ed_levels[75];
+> As it is currently designed, the set_channel() cfg802154 hook
+> implemented in the softMAC is doing a couple of checks before actually
+> performing the channel change. However, as we enhance the support for
+> automatically setting the symbol duration during channel changes, it
+> will also be needed to ensure that the corresponding channel as properly
+> be selected at probe time. In order to verify this, we will need to
 
-What's about the atrf86230 driver?
+no, we don't set channels at probe time. We set the
+current_page/channel whatever the default is according to the hardware
+datasheet. I think this channel should be dropped and all drivers set
+the defaults before registering hw as what we do at e.g. at86rf230,
+see [0].
 
 - Alex
+
+[0] https://elixir.bootlin.com/linux/v5.16/source/drivers/net/ieee802154/at86rf230.c#L1553
