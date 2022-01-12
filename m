@@ -2,66 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1165E48C48D
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 14:16:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 359D448C497
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 14:17:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240976AbiALNO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 08:14:28 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:33902 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353425AbiALNO0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Jan 2022 08:14:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=cHTgT2Tsu9i2gMXF7K0U4WJiSWBvuW3RSg4hgZPVSoA=; b=mBOJkwcfvFprApA/v2pXsEbx7n
-        MzHtGnG04I0ssWZycG4hGl9gGJVN/VlTrIiD1ExRmxa8OB5N5ZFYF5MWbZv8/N34Mbzd1JboPQPwA
-        VtVZsf1WWAG0ny4p0gSpKtjZwcybJRW4+1XJupxjCqPQY42/3OTxILaQVuzLNJV8oo0E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n7dS1-001C6T-Ba; Wed, 12 Jan 2022 14:14:05 +0100
-Date:   Wed, 12 Jan 2022 14:14:05 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Tim Harvey <tharvey@gateworks.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        martin.blumenstingl@googlemail.com,
-        Florian Fainelli <f.fainelli@gmail.com>, hkallweit1@gmail.com,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v6] net: phy: intel-xway: Add RGMII internal
- delay configuration
-Message-ID: <Yd7UHYeAl3wigMmr@lunn.ch>
-References: <20210719082756.15733-1-ms@dev.tdt.de>
- <CAJ+vNU3_8Gk8Mj_uCudMz0=MdN3B9T9pUOvYtP7H_B0fnTfZmg@mail.gmail.com>
- <94120968908a8ab073fa2fc0dd56b17d@dev.tdt.de>
- <CAJ+vNU2Bn_eks03g191KKLx5uuuekdqovx000aqcT5=f_6Zq=w@mail.gmail.com>
- <7fe5e3b3ff8fe9375fef409521b93102@dev.tdt.de>
+        id S1353429AbiALNQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 08:16:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58462 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353437AbiALNQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 08:16:19 -0500
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDEBBC06175C
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 05:16:15 -0800 (PST)
+Received: by mail-il1-x129.google.com with SMTP id d14so2313494ila.1
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 05:16:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zkoZ5MryXhebSZqM6IHkMPC6B3Uzbqu2YHVeALw+ZY8=;
+        b=bSv4N9wBD7O1xG7UR7RLPQc1rmgwwjnh33e1bTAHHIzJLoWgc1furTXL6U72ZCiVXF
+         dA8XLW69kOrY+DS2ljpSW2CoU2kolTI30jKjFEb+pgX8Rjl8I2DNO2bfvVo+0akJNAWO
+         WNXcakUC29BMQdkcSfFz8lyRnFo5/Np650dEC+1xWTMIAyI8SldzRReSYVxRho2rGIH9
+         bEGB/CDJq0iGVSDBZ+zU0mUXBWWKP3n74JRQ7qKAB8K8t/qo3mT2HYdydVtuiDNq2xq2
+         jBNLVPntykoU3VAj99MDhA4Pd0hKSvJvujvpMwzsZMP5UfYI3a5xmTtgf22Mc9TJDSWm
+         OtOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zkoZ5MryXhebSZqM6IHkMPC6B3Uzbqu2YHVeALw+ZY8=;
+        b=zRuoen8GC/9ilXWTjOrwXpyM8LDHKbFlCfY6AEWphaWijlxFJC57cFUw26UbRjVNxm
+         g8foiX/Hi9ZAYPCdyAHDhFzQvvHCkMDYrbYOyfD+JvH9NOGeFsK65+tGhnI2I3+4Jd6H
+         spf+vcbRpenhMYXPzIw9JnlmEDlyRD0kHcyx+35W0hiqyO9rGCmlyEvqk4zVhvfqCLJR
+         wNa4GJHnUGasSblWqUSLh0pGpz1/bI5r+1mBRCA9Q2EDG+VVv2ybWbPQAZfL1ZVnkaV6
+         jCBYLivtyTFRShy05tnx6g6TlX1XvqV4q4+kmQB8dw9zqnh0ADnl0AWHxJm66iFH9WoR
+         2BPw==
+X-Gm-Message-State: AOAM5331A139zKtnv7WrDHxN5cmLSPeeYXBOz51nB/1BBTgo0KcJEfnM
+        F1Nb+9dq5ZmBl0T0ABYBTU3cvg==
+X-Google-Smtp-Source: ABdhPJzoWjW0vEAx2LmHQfkuags0Yw5wQHhmf1tbbd9Y8n1vH54WKWDKVUkF7VNR5ZslNwl0n0iB6g==
+X-Received: by 2002:a05:6e02:b2b:: with SMTP id e11mr5003588ilu.48.1641993375027;
+        Wed, 12 Jan 2022 05:16:15 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id o21sm8169043iov.48.2022.01.12.05.16.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 05:16:13 -0800 (PST)
+Message-ID: <9cb552e5-7bae-c591-a0b7-14f25a41eaf9@linaro.org>
+Date:   Wed, 12 Jan 2022 07:16:12 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7fe5e3b3ff8fe9375fef409521b93102@dev.tdt.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH net 2/2] net: ipa: prevent concurrent replenish
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, jponduru@codeaurora.org,
+        avuyyuru@codeaurora.org, bjorn.andersson@linaro.org,
+        agross@kernel.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220111192150.379274-1-elder@linaro.org>
+ <20220111192150.379274-3-elder@linaro.org>
+ <20220111200426.37fd9f67@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Alex Elder <elder@linaro.org>
+In-Reply-To: <20220111200426.37fd9f67@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > If I add a 'genphy_soft_reset(phydev);' at the top of
-> > xway_gphy_rgmii_init before the write to XWAY_MDIO_MIICTRL the values
-> > do take effect so perhaps that's the proper fix.
+On 1/11/22 10:04 PM, Jakub Kicinski wrote:
+> On Tue, 11 Jan 2022 13:21:50 -0600 Alex Elder wrote:
+>> Use a new atomic variable to ensure only replenish instance for an
+>> endpoint executes at a time.
 > 
-> OK, I see that we have to change something here.
-> But I would like to avoid a complete reset (BMCR_RESET) if possible.
+> Why atomic_t? test_and_set_bit() + clear_bit() should do nicely here?
 
-What does the datasheet say about BMCR_RESET? Some PHYs, like Marvell,
-it only resets the internal state machines. Register values are not
-changed back to defaults or anything like that. Also for many register
-writes in Marvell PHYs the write does not take effect until the next
-reset.
+I think it foreshadows the replenish logic improvements
+I'm experimenting with.  The bit operations are probably
+best to represent Booleans, so I'll send version 2 that
+adds and uses a bitmask instead.
 
-So a BMCR_RESET can be the correct thing to do.
+Thanks.
 
-   Andrew
+					-Alex
