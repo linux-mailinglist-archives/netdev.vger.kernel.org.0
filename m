@@ -2,110 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A5F248CB09
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:32:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D2BC48CB15
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:35:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356274AbiALScm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 13:32:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356295AbiALScJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:32:09 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927C2C061759;
-        Wed, 12 Jan 2022 10:32:02 -0800 (PST)
+        id S1356304AbiALSfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 13:35:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40630 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356305AbiALSfa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:35:30 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8C12CCE1E21;
-        Wed, 12 Jan 2022 18:32:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC72AC36AE5;
-        Wed, 12 Jan 2022 18:31:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C313E619CC;
+        Wed, 12 Jan 2022 18:35:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A03FAC36AEA;
+        Wed, 12 Jan 2022 18:35:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642012319;
-        bh=SIOFpKrKnQowDOnmtxefi+bybl5zeZB6n3VbvATVFBY=;
+        s=k20201202; t=1642012529;
+        bh=HmRQnAXT4lWFBNnsRBtAgzm9nwINgaKqdSCXYPXFbTA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=V4aeHa5QLi8d5BOg6sv0gr+x+PgLEzDphY5W9nRxsHjh6z4a/6EMHng9D75BAM6Ct
-         zNP0R2wv/Frb46fN9k47C2rGg5Z4eRDU45dl2liVB9tycOqrsJLcjnR1ET4JSX14sV
-         ANVlYcpU4KpPTW8Ymr0tMG7NqGErK0wEyelLvM92Qj10ktOFFrm8RAOAbdIoplI3mk
-         5SdR7b+RMwmWXQwkKn7vvl7Qib4xy9W29MrbwtCBeWkkLk+v/Vn32DaMTggmUi7aAw
-         1B5awF8+2fvKHU7F8hodfx9vInNNVpOFRAyWQMfoK0NaB6tdknpS3MpGI4/vknMPsV
-         aIgS2bSCn6J+Q==
-Date:   Wed, 12 Jan 2022 10:31:57 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
-        wireguard@lists.zx2c4.com, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, geert@linux-m68k.org, tytso@mit.edu,
-        gregkh@linuxfoundation.org, jeanphilippe.aumasson@gmail.com,
-        ardb@kernel.org, Herbert Xu <herbert@gondor.apana.org.au>
-Subject: Re: [PATCH crypto 1/2] lib/crypto: blake2s-generic: reduce code size
- on small systems
-Message-ID: <Yd8enQTocuCSQVkT@gmail.com>
-References: <CAHmME9qbnYmhvsuarButi6s=58=FPiti0Z-QnGMJ=OsMzy1eOg@mail.gmail.com>
- <20220111134934.324663-1-Jason@zx2c4.com>
- <20220111134934.324663-2-Jason@zx2c4.com>
+        b=eFu0RivdJr9GxENhMgdd5N3ECs2qMhsgdZjWrfTzrC+ful7VV01i4fGFus5IZxd1o
+         U5ploRcJpQAVOL+h+2qPBbEUPY+EpPp+1U9LYT2GMOPaZd1Eo1scmXHcbY2tZb4/V8
+         GXRV1Chqn0EyJ1Uf8UFb26PR6Po/85glmLXdulPeoC9+E38g9IiVJaqxCac8+3Cymy
+         qooJe9N9G+RE88GSP0P0VYaCiHDQCBktPi66TFOl47G6qNh+EJLSF+PfJkHbk4Mq1x
+         AgNdlj7vyaXKd0vHYIzehSlQJ1W+s8ucsUKfy1wucCytVcANUXPD3Hs9hmY0o/fg0r
+         UCPiQlNB32dzg==
+Date:   Wed, 12 Jan 2022 19:35:25 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Shay Agroskin <shayagr@amazon.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH v21 bpf-next 18/23] libbpf: Add SEC name for xdp_mb
+ programs
+Message-ID: <Yd8fbUT0pDUu87J+@lore-desk>
+References: <cover.1641641663.git.lorenzo@kernel.org>
+ <f9103d787144983524ba331273718e422a63a767.1641641663.git.lorenzo@kernel.org>
+ <CAEf4BzbfDvH5CYNsWg9Dx7JcFEp4jNmNRR6H-6sJEUxDSy1zZw@mail.gmail.com>
+ <Yd8bVIcA18KIH6+I@lore-desk>
+ <CAEf4Bza+WO5U+Kw=S+GvQBgu5VHfPL29u7eLSQq34jvYzGnbBA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zsCcsW07E/CGmOVq"
 Content-Disposition: inline
-In-Reply-To: <20220111134934.324663-2-Jason@zx2c4.com>
+In-Reply-To: <CAEf4Bza+WO5U+Kw=S+GvQBgu5VHfPL29u7eLSQq34jvYzGnbBA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 02:49:33PM +0100, Jason A. Donenfeld wrote:
-> Re-wind the loops entirely on kernels optimized for code size. This is
-> really not good at all performance-wise. But on m68k, it shaves off 4k
-> of code size, which is apparently important.
-> 
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Cc: Ard Biesheuvel <ardb@kernel.org>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  lib/crypto/blake2s-generic.c | 30 ++++++++++++++++++------------
->  1 file changed, 18 insertions(+), 12 deletions(-)
-> 
-> diff --git a/lib/crypto/blake2s-generic.c b/lib/crypto/blake2s-generic.c
-> index 75ccb3e633e6..990f000e22ee 100644
-> --- a/lib/crypto/blake2s-generic.c
-> +++ b/lib/crypto/blake2s-generic.c
-> @@ -46,7 +46,7 @@ void blake2s_compress_generic(struct blake2s_state *state, const u8 *block,
->  {
->  	u32 m[16];
->  	u32 v[16];
-> -	int i;
-> +	int i, j;
->  
->  	WARN_ON(IS_ENABLED(DEBUG) &&
->  		(nblocks > 1 && inc != BLAKE2S_BLOCK_SIZE));
-> @@ -86,17 +86,23 @@ void blake2s_compress_generic(struct blake2s_state *state, const u8 *block,
->  	G(r, 6, v[2], v[ 7], v[ 8], v[13]); \
->  	G(r, 7, v[3], v[ 4], v[ 9], v[14]); \
->  } while (0)
-> -		ROUND(0);
-> -		ROUND(1);
-> -		ROUND(2);
-> -		ROUND(3);
-> -		ROUND(4);
-> -		ROUND(5);
-> -		ROUND(6);
-> -		ROUND(7);
-> -		ROUND(8);
-> -		ROUND(9);
-> -
-> +		if (IS_ENABLED(CONFIG_CC_OPTIMIZE_FOR_SIZE)) {
-> +			for (i = 0; i < 10; ++i) {
-> +				for (j = 0; j < 8; ++j)
-> +					G(i, j, v[j % 4], v[((j + (j / 4)) % 4) + 4], v[((j + 2 * (j / 4)) % 4) + 8], v[((j + 3 * (j / 4)) % 4) + 12]);
-> +			}
 
-How about unrolling the inner loop but not the outer one?  Wouldn't that give
-most of the benefit, without hurting performance as much?
+--zsCcsW07E/CGmOVq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-If you stay with this approach and don't unroll either loop, can you use 'r' and
-'i' instead of 'i' and 'j', to match the naming in G()?
+> On Wed, Jan 12, 2022 at 10:18 AM Lorenzo Bianconi <lorenzo@kernel.org> wr=
+ote:
+> >
+> > > On Sun, Jan 9, 2022 at 7:05 AM Lorenzo Bianconi <lorenzo@kernel.org> =
+wrote:
+> > > >
+> > > > Introduce support for the following SEC entries for XDP multi-buff
+> > > > property:
+> > > > - SEC("xdp_mb/")
+> > > > - SEC("xdp_devmap_mb/")
+> > > > - SEC("xdp_cpumap_mb/")
+> > >
+> > > Libbpf seemed to went with .<suffix> rule (e.g., fentry.s for
+> > > sleepable, seems like we'll have kprobe.multi or  something along
+> > > those lines as well), so let's stay consistent and call this "xdp_mb",
+> > > "xdp_devmap.mb", "xdp_cpumap.mb" (btw, is "mb" really all that
+> > > recognizable? would ".multibuf" be too verbose?). Also, why the "/"
+> > > part? Also it shouldn't be "sloppy" either. Neither expected attach
+> > > type should be optional.  Also not sure SEC_ATTACHABLE is needed. So
+> > > at most it should be SEC_XDP_MB, probably.
+> >
+> > ack, I fine with it. Something like:
+> >
+> >         SEC_DEF("lsm.s/",               LSM, BPF_LSM_MAC, SEC_ATTACH_BT=
+F | SEC_SLEEPABLE, attach_lsm),
+> >         SEC_DEF("iter/",                TRACING, BPF_TRACE_ITER, SEC_AT=
+TACH_BTF, attach_iter),
+> >         SEC_DEF("syscall",              SYSCALL, 0, SEC_SLEEPABLE),
+> > +       SEC_DEF("xdp_devmap.multibuf",  XDP, BPF_XDP_DEVMAP, 0),
+> >         SEC_DEF("xdp_devmap/",          XDP, BPF_XDP_DEVMAP, SEC_ATTACH=
+ABLE),
+> > +       SEC_DEF("xdp_cpumap.multibuf",  XDP, BPF_XDP_CPUMAP, 0),
+> >         SEC_DEF("xdp_cpumap/",          XDP, BPF_XDP_CPUMAP, SEC_ATTACH=
+ABLE),
+> > +       SEC_DEF("xdp.multibuf",         XDP, BPF_XDP, 0),
+>=20
+> yep, but please use SEC_NONE instead of zero
 
-Also, please wrap lines at 80 columns.
+ack, I will fix it.
 
-- Eric
+>=20
+> >         SEC_DEF("xdp",                  XDP, BPF_XDP, SEC_ATTACHABLE_OP=
+T | SEC_SLOPPY_PFX),
+> >         SEC_DEF("perf_event",           PERF_EVENT, 0, SEC_NONE | SEC_S=
+LOPPY_PFX),
+> >         SEC_DEF("lwt_in",               LWT_IN, 0, SEC_NONE | SEC_SLOPP=
+Y_PFX),
+> >
+> > >
+> > > >
+> > > > Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
+> > > > Acked-by: John Fastabend <john.fastabend@gmail.com>
+> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > > ---
+> > > >  tools/lib/bpf/libbpf.c | 8 ++++++++
+> > > >  1 file changed, 8 insertions(+)
+> > > >
+> > > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > > > index 7f10dd501a52..c93f6afef96c 100644
+> > > > --- a/tools/lib/bpf/libbpf.c
+> > > > +++ b/tools/lib/bpf/libbpf.c
+> > > > @@ -235,6 +235,8 @@ enum sec_def_flags {
+> > > >         SEC_SLEEPABLE =3D 8,
+> > > >         /* allow non-strict prefix matching */
+> > > >         SEC_SLOPPY_PFX =3D 16,
+> > > > +       /* BPF program support XDP multi-buff */
+> > > > +       SEC_XDP_MB =3D 32,
+> > > >  };
+> > > >
+> > > >  struct bpf_sec_def {
+> > > > @@ -6562,6 +6564,9 @@ static int libbpf_preload_prog(struct bpf_pro=
+gram *prog,
+> > > >         if (def & SEC_SLEEPABLE)
+> > > >                 opts->prog_flags |=3D BPF_F_SLEEPABLE;
+> > > >
+> > > > +       if (prog->type =3D=3D BPF_PROG_TYPE_XDP && (def & SEC_XDP_M=
+B))
+> > > > +               opts->prog_flags |=3D BPF_F_XDP_MB;
+> > >
+> > > I'd say you don't even need SEC_XDP_MB flag at all, you can just check
+> > > that prog->sec_name is one of "xdp.mb", "xdp_devmap.mb" or
+> > > "xdp_cpumap.mb" and add the flag. SEC_XDP_MB doesn't seem generic
+> > > enough to warrant a flag.
+> >
+> > ack, something like:
+> >
+> > +       if (prog->type =3D=3D BPF_PROG_TYPE_XDP &&
+> > +           (!strcmp(prog->sec_name, "xdp_devmap.multibuf") ||
+> > +            !strcmp(prog->sec_name, "xdp_cpumap.multibuf") ||
+> > +            !strcmp(prog->sec_name, "xdp.multibuf")))
+> > +               opts->prog_flags |=3D BPF_F_XDP_MB;
+>=20
+> yep, can also simplify it a bit with strstr(prog->sec_name,
+> ".multibuf") instead of three strcmp
+
+ack, I will fix it.
+
+Regards,
+Lorenzo
+
+>=20
+> >
+> > Regards,
+> > Lorenzo
+> >
+> > >
+> > > > +
+> > > >         if ((prog->type =3D=3D BPF_PROG_TYPE_TRACING ||
+> > > >              prog->type =3D=3D BPF_PROG_TYPE_LSM ||
+> > > >              prog->type =3D=3D BPF_PROG_TYPE_EXT) && !prog->attach_=
+btf_id) {
+> > > > @@ -8600,8 +8605,11 @@ static const struct bpf_sec_def section_defs=
+[] =3D {
+> > > >         SEC_DEF("lsm.s/",               LSM, BPF_LSM_MAC, SEC_ATTAC=
+H_BTF | SEC_SLEEPABLE, attach_lsm),
+> > > >         SEC_DEF("iter/",                TRACING, BPF_TRACE_ITER, SE=
+C_ATTACH_BTF, attach_iter),
+> > > >         SEC_DEF("syscall",              SYSCALL, 0, SEC_SLEEPABLE),
+> > > > +       SEC_DEF("xdp_devmap_mb/",       XDP, BPF_XDP_DEVMAP, SEC_AT=
+TACHABLE | SEC_XDP_MB),
+> > > >         SEC_DEF("xdp_devmap/",          XDP, BPF_XDP_DEVMAP, SEC_AT=
+TACHABLE),
+> > > > +       SEC_DEF("xdp_cpumap_mb/",       XDP, BPF_XDP_CPUMAP, SEC_AT=
+TACHABLE | SEC_XDP_MB),
+> > > >         SEC_DEF("xdp_cpumap/",          XDP, BPF_XDP_CPUMAP, SEC_AT=
+TACHABLE),
+> > > > +       SEC_DEF("xdp_mb/",              XDP, BPF_XDP, SEC_ATTACHABL=
+E_OPT | SEC_SLOPPY_PFX | SEC_XDP_MB),
+> > > >         SEC_DEF("xdp",                  XDP, BPF_XDP, SEC_ATTACHABL=
+E_OPT | SEC_SLOPPY_PFX),
+> > > >         SEC_DEF("perf_event",           PERF_EVENT, 0, SEC_NONE | S=
+EC_SLOPPY_PFX),
+> > > >         SEC_DEF("lwt_in",               LWT_IN, 0, SEC_NONE | SEC_S=
+LOPPY_PFX),
+> > > > --
+> > > > 2.33.1
+> > > >
+
+--zsCcsW07E/CGmOVq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYd8fbQAKCRA6cBh0uS2t
+rDCpAP9ZZ++hmwSd7MRWdj+Aa3wW0FQ/eytkJb8mlIKpycd64wD/ZFNQ3D8fT8if
+D8vGDbISLpr1dDnARwHMisN0eBf8zgY=
+=IauF
+-----END PGP SIGNATURE-----
+
+--zsCcsW07E/CGmOVq--
