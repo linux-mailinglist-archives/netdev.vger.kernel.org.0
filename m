@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA3A248C57A
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 15:03:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB4D448C57E
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 15:03:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242266AbiALODa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 09:03:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
+        id S1353915AbiALODd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 09:03:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353895AbiALODX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 09:03:23 -0500
+        with ESMTP id S1353909AbiALOD3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 09:03:29 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFF5BC061759;
-        Wed, 12 Jan 2022 06:03:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC67C06173F;
+        Wed, 12 Jan 2022 06:03:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4103560C03;
-        Wed, 12 Jan 2022 14:03:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B141FC36AE5;
-        Wed, 12 Jan 2022 14:03:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B374C60BA3;
+        Wed, 12 Jan 2022 14:03:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AB0DC36AEA;
+        Wed, 12 Jan 2022 14:03:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641996196;
-        bh=p7jQZb2SjvJICJ40fF0z8P2smX9k+bKbPIwO6eKJTos=;
+        s=k20201202; t=1641996208;
+        bh=sex2KOvLrdt+nZq7x40xcM7odTt2DYtNVU6WKvOCNO8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sz5diZg2YG+Qm7gIUBqEUa8I2Xv/wABYjKFsqxnamV8b9Psxi7wtodDTryuHA2COo
-         upKfSPDCP4RE9Ozbm2cfjjOt6EDrfKXqF3WB+P/dclCUV6PfDvfCQzv3KFhXw1qO8Q
-         OLWoHkUxgw9Z2mboHdG7UERtqCmb9iUDLZdLdVDRNpvgdpwveQ7+cE32BKegmcMv+a
-         FWzomW+0aSRh+LlVB9+LX5gFdAcxNEIQgOT6ntyAPMqBYqTOIXIWc3EuNlZ3ZIGtZc
-         KoSlj/QwO22CIs9e4WgW+MDD2SzzJLJtHbAiWohCw2VE/TkZtScpFNmyq6MbB0WKrJ
-         0gKGYAy2XpZIg==
+        b=k47ZN9pDl6PclIUnDbEyEmiYwTfJcWO2wExR/UxhBzqrT2GgPc9/u/IHwnb7uWe5R
+         a+L+MgyyjulwGHwFVCvFkxqamJ7p3eqDCPhr1uD+2N2uAEDXtL5dYt8PV8tEGP53VV
+         wVsgeDzfGxC5/JtQpzQ1sjGrhQDtOX2WhR/7vP26TUAxRGJ2DuLo3EO9tWJASuHSY7
+         mXvz8sIRtfcC6XQ8lLUEeWsPOmOskY1WmVb3gv/9Tc5VQnGhRUG473xNqMOlqvYvN4
+         nPOpF9oA6UX53OAZZ0c0YOjMIeUTeGo0jgkEspNdTV/GJda/m83jGNsH5Qg/0CN4OL
+         7oQUx3xkQs51w==
 From:   Masami Hiramatsu <mhiramat@kernel.org>
 To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
@@ -45,9 +45,9 @@ Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
         Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
         "David S . Miller" <davem@davemloft.net>
-Subject: [RFC PATCH v2 2/8] fprobe: Add ftrace based probe APIs
-Date:   Wed, 12 Jan 2022 23:03:10 +0900
-Message-Id: <164199619000.1247129.1034324609530250036.stgit@devnote2>
+Subject: [RFC PATCH v2 3/8] rethook: Add a generic return hook
+Date:   Wed, 12 Jan 2022 23:03:22 +0900
+Message-Id: <164199620208.1247129.13021391608719523669.stgit@devnote2>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <164199616622.1247129.783024987490980883.stgit@devnote2>
 References: <164199616622.1247129.783024987490980883.stgit@devnote2>
@@ -59,248 +59,420 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The fprobe is a wrapper API for ftrace function tracer.
-Unlike kprobes, this probes only supports the function entry, but
-it can probe multiple functions by one fprobe. The usage is almost
-same as the kprobe, user will specify the function names by
-fprobe::syms, the number of syms by fprobe::nentry,
-and the user handler by fprobe::entry_handler.
-
-struct fprobe fp = { 0 };
-const char *targets[] = { "func1", "func2", "func3"};
-
-fp.handler = user_handler;
-fp.nentry = ARRAY_SIZE(targets);
-fp.syms = targets;
-
-ret = register_fprobe(&fp);
+Add a return hook framework which hooks the function
+return. Most of the idea came from the kretprobe, but
+this is independent from kretprobe.
+Note that this is expected to be used with other
+function entry hooking feature, like ftrace, fprobe,
+adn kprobes. Eventually this will replace the
+kretprobe (e.g. kprobe + rethook = kretprobe), but
+at this moment, this is just a additional hook.
 
 Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
 ---
- Changes in v2:
-  - Remove fprobe_entry.
-  - Do not sort the address array since there is no user private data.
-  - Since there is only "fprobe", make filename and config name "fprobe".
-  - Use ftrace_set_filter_ips()
-  - Fix style warnings.
----
- include/linux/fprobe.h |   53 +++++++++++++++++++++++
- kernel/trace/Kconfig   |   10 ++++
- kernel/trace/Makefile  |    1 
- kernel/trace/fprobe.c  |  113 ++++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 177 insertions(+)
- create mode 100644 include/linux/fprobe.h
- create mode 100644 kernel/trace/fprobe.c
+ include/linux/rethook.h |   74 +++++++++++++++
+ include/linux/sched.h   |    3 +
+ kernel/exit.c           |    2 
+ kernel/fork.c           |    3 +
+ kernel/trace/Kconfig    |   11 ++
+ kernel/trace/Makefile   |    1 
+ kernel/trace/rethook.c  |  226 +++++++++++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 320 insertions(+)
+ create mode 100644 include/linux/rethook.h
+ create mode 100644 kernel/trace/rethook.c
 
-diff --git a/include/linux/fprobe.h b/include/linux/fprobe.h
+diff --git a/include/linux/rethook.h b/include/linux/rethook.h
 new file mode 100644
-index 000000000000..614d28d5828b
+index 000000000000..2622bcd5213a
 --- /dev/null
-+++ b/include/linux/fprobe.h
-@@ -0,0 +1,53 @@
++++ b/include/linux/rethook.h
+@@ -0,0 +1,74 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Simple ftrace probe wrapper */
-+#ifndef _LINUX_FPROBE_H
-+#define _LINUX_FPROBE_H
++/*
++ * Return hooking with list-based shadow stack.
++ */
++#ifndef _LINUX_RETHOOK_H
++#define _LINUX_RETHOOK_H
 +
 +#include <linux/compiler.h>
-+#include <linux/ftrace.h>
++#include <linux/freelist.h>
++#include <linux/llist.h>
++#include <linux/rcupdate.h>
++#include <linux/refcount.h>
 +
-+struct fprobe {
-+	const char		**syms;
-+	unsigned long		*addrs;
-+	unsigned int		nentry;
++struct rethook_node;
 +
-+	struct ftrace_ops	ftrace;
-+	unsigned long		nmissed;
-+	unsigned int		flags;
-+	void (*entry_handler)(struct fprobe *fp, unsigned long entry_ip, struct pt_regs *regs);
++typedef void (*rethook_handler_t) (struct rethook_node *, void *, struct pt_regs *);
++
++struct rethook {
++	void			*data;
++	rethook_handler_t	handler;
++	struct freelist_head	pool;
++	refcount_t		ref;
++	struct rcu_head		rcu;
 +};
 +
-+#define FPROBE_FL_DISABLED	1
++struct rethook_node {
++	union {
++		struct freelist_node freelist;
++		struct rcu_head      rcu;
++	};
++	struct llist_node	llist;
++	struct rethook		*rethook;
++	unsigned long		ret_addr;
++	unsigned long		frame;
++};
 +
-+static inline bool fprobe_disabled(struct fprobe *fp)
++int rethook_node_init(struct rethook_node *node);
++
++struct rethook *rethook_alloc(void *data, rethook_handler_t handler);
++void rethook_free(struct rethook *rh);
++void rethook_add_node(struct rethook *rh, struct rethook_node *node);
++
++struct rethook_node *rethook_try_get(struct rethook *rh);
++void rethook_node_recycle(struct rethook_node *node);
++void rethook_hook_current(struct rethook_node *node, struct pt_regs *regs);
++
++unsigned long rethook_find_ret_addr(struct task_struct *tsk, unsigned long frame,
++				    struct llist_node **cur);
++
++/* Arch dependent code must implement this and trampoline code */
++void arch_rethook_prepare(struct rethook_node *node, struct pt_regs *regs);
++void arch_rethook_trampoline(void);
++
++static inline bool is_rethook_trampoline(unsigned long addr)
 +{
-+	return (fp) ? fp->flags & FPROBE_FL_DISABLED : false;
++	return addr == (unsigned long)arch_rethook_trampoline;
 +}
 +
-+#ifdef CONFIG_FPROBE
-+int register_fprobe(struct fprobe *fp);
-+int unregister_fprobe(struct fprobe *fp);
++/* If the architecture needs a fixup the return address, implement it. */
++void arch_rethook_fixup_return(struct pt_regs *regs,
++			       unsigned long correct_ret_addr);
++
++/* Generic trampoline handler, arch code must prepare asm stub */
++unsigned long rethook_trampoline_handler(struct pt_regs *regs,
++					 unsigned long frame);
++
++#ifdef CONFIG_RETHOOK
++void rethook_flush_task(struct task_struct *tk);
 +#else
-+static inline int register_fprobe(struct fprobe *fp)
-+{
-+	return -EOPNOTSUPP;
-+}
-+static inline int unregister_fprobe(struct fprobe *fp)
-+{
-+	return -EOPNOTSUPP;
-+}
++#define rethook_flush_task(tsk)	do { } while (0)
 +#endif
 +
-+static inline void disable_fprobe(struct fprobe *fp)
-+{
-+	if (fp)
-+		fp->flags |= FPROBE_FL_DISABLED;
-+}
-+
-+static inline void enable_fprobe(struct fprobe *fp)
-+{
-+	if (fp)
-+		fp->flags &= ~FPROBE_FL_DISABLED;
-+}
-+
 +#endif
++
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 78c351e35fec..2bfabf5355b7 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1473,6 +1473,9 @@ struct task_struct {
+ #ifdef CONFIG_KRETPROBES
+ 	struct llist_head               kretprobe_instances;
+ #endif
++#ifdef CONFIG_RETHOOK
++	struct llist_head               rethooks;
++#endif
+ 
+ #ifdef CONFIG_ARCH_HAS_PARANOID_L1D_FLUSH
+ 	/*
+diff --git a/kernel/exit.c b/kernel/exit.c
+index f702a6a63686..a39a321c1f37 100644
+--- a/kernel/exit.c
++++ b/kernel/exit.c
+@@ -64,6 +64,7 @@
+ #include <linux/compat.h>
+ #include <linux/io_uring.h>
+ #include <linux/kprobes.h>
++#include <linux/rethook.h>
+ 
+ #include <linux/uaccess.h>
+ #include <asm/unistd.h>
+@@ -169,6 +170,7 @@ static void delayed_put_task_struct(struct rcu_head *rhp)
+ 	struct task_struct *tsk = container_of(rhp, struct task_struct, rcu);
+ 
+ 	kprobe_flush_task(tsk);
++	rethook_flush_task(tsk);
+ 	perf_event_delayed_put(tsk);
+ 	trace_sched_process_free(tsk);
+ 	put_task_struct(tsk);
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 3244cc56b697..ffae38be64c4 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -2282,6 +2282,9 @@ static __latent_entropy struct task_struct *copy_process(
+ #ifdef CONFIG_KRETPROBES
+ 	p->kretprobe_instances.first = NULL;
+ #endif
++#ifdef CONFIG_RETHOOK
++	p->rethooks.first = NULL;
++#endif
+ 
+ 	/*
+ 	 * Ensure that the cgroup subsystem policies allow the new process to be
 diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
-index 420ff4bc67fd..6834b0272798 100644
+index 6834b0272798..44c473ad9021 100644
 --- a/kernel/trace/Kconfig
 +++ b/kernel/trace/Kconfig
-@@ -223,6 +223,16 @@ config DYNAMIC_FTRACE_WITH_ARGS
- 	depends on DYNAMIC_FTRACE
- 	depends on HAVE_DYNAMIC_FTRACE_WITH_ARGS
+@@ -10,6 +10,17 @@ config USER_STACKTRACE_SUPPORT
+ config NOP_TRACER
+ 	bool
  
-+config FPROBE
-+	bool "Kernel Function Probe (fprobe)"
-+	depends on FUNCTION_TRACER
-+	depends on DYNAMIC_FTRACE_WITH_REGS
-+	default n
-+	help
-+	  This option enables kernel function probe feature, which is
-+	  similar to kprobes, but probes only for kernel function entries
-+	  and it can probe multiple functions by one fprobe.
++config HAVE_RETHOOK
++	bool
 +
- config FUNCTION_PROFILER
- 	bool "Kernel function profiler"
- 	depends on FUNCTION_TRACER
++config RETHOOK
++	bool
++	depends on HAVE_RETHOOK
++	help
++	  Enable generic return hooking feature. This is an internal
++	  API, which will be used by other function-entry hooking
++	  feature like fprobe and kprobes.
++
+ config HAVE_FUNCTION_TRACER
+ 	bool
+ 	help
 diff --git a/kernel/trace/Makefile b/kernel/trace/Makefile
-index bedc5caceec7..79255f9de9a4 100644
+index 79255f9de9a4..c6f11a139eac 100644
 --- a/kernel/trace/Makefile
 +++ b/kernel/trace/Makefile
-@@ -97,6 +97,7 @@ obj-$(CONFIG_PROBE_EVENTS) += trace_probe.o
- obj-$(CONFIG_UPROBE_EVENTS) += trace_uprobe.o
+@@ -98,6 +98,7 @@ obj-$(CONFIG_UPROBE_EVENTS) += trace_uprobe.o
  obj-$(CONFIG_BOOTTIME_TRACING) += trace_boot.o
  obj-$(CONFIG_FTRACE_RECORD_RECURSION) += trace_recursion_record.o
-+obj-$(CONFIG_FPROBE) += fprobe.o
+ obj-$(CONFIG_FPROBE) += fprobe.o
++obj-$(CONFIG_RETHOOK) += rethook.o
  
  obj-$(CONFIG_TRACEPOINT_BENCHMARK) += trace_benchmark.o
  
-diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
+diff --git a/kernel/trace/rethook.c b/kernel/trace/rethook.c
 new file mode 100644
-index 000000000000..0247fc7d75e2
+index 000000000000..80c0584e8497
 --- /dev/null
-+++ b/kernel/trace/fprobe.c
-@@ -0,0 +1,113 @@
++++ b/kernel/trace/rethook.c
+@@ -0,0 +1,226 @@
 +// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * fprobe - Simple ftrace probe wrapper for function entry.
-+ */
-+#define pr_fmt(fmt) "fprobe: " fmt
 +
-+#include <linux/fprobe.h>
++#define pr_fmt(fmt) "rethook: " fmt
++
++#include <linux/bug.h>
 +#include <linux/kallsyms.h>
 +#include <linux/kprobes.h>
++#include <linux/preempt.h>
++#include <linux/rethook.h>
 +#include <linux/slab.h>
 +#include <linux/sort.h>
 +
-+static void fprobe_handler(unsigned long ip, unsigned long parent_ip,
-+			   struct ftrace_ops *ops, struct ftrace_regs *fregs)
++/* Return hook list (shadow stack by list) */
++
++void rethook_flush_task(struct task_struct *tk)
 +{
-+	struct fprobe *fp;
-+	int bit;
++	struct rethook_node *rhn;
++	struct llist_node *node;
 +
-+	fp = container_of(ops, struct fprobe, ftrace);
-+	if (fprobe_disabled(fp))
-+		return;
++	preempt_disable();
 +
-+	bit = ftrace_test_recursion_trylock(ip, parent_ip);
-+	if (bit < 0) {
-+		fp->nmissed++;
-+		return;
++	node = __llist_del_all(&tk->rethooks);
++	while (node) {
++		rhn = container_of(node, struct rethook_node, llist);
++		node = node->next;
++		rethook_node_recycle(rhn);
 +	}
 +
-+	if (fp->entry_handler)
-+		fp->entry_handler(fp, ip, ftrace_get_regs(fregs));
-+
-+	ftrace_test_recursion_unlock(bit);
++	preempt_enable();
 +}
-+NOKPROBE_SYMBOL(fprobe_handler);
 +
-+static int convert_func_addresses(struct fprobe *fp)
++static void rethook_free_rcu(struct rcu_head *head)
 +{
-+	unsigned int i;
++	struct rethook *rh = container_of(head, struct rethook, rcu);
++	struct rethook_node *rhn;
++	struct freelist_node *node;
++	int count = 1;
 +
-+	if (!fp->syms)
-+		return 0;
-+
-+	fp->addrs = kcalloc(fp->nentry, sizeof(*fp->addrs), GFP_KERNEL);
-+	if (!fp->addrs)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < fp->nentry; i++) {
-+
-+		fp->addrs[i] = kallsyms_lookup_name(fp->syms[i]);
-+		if (!fp->addrs[i])
-+			return -ENOENT;
++	node = rh->pool.head;
++	while (node) {
++		rhn = container_of(node, struct rethook_node, freelist);
++		node = node->next;
++		kfree(rhn);
++		count++;
 +	}
 +
++	/* The rh->ref is the number of pooled node + 1 */
++	if (refcount_sub_and_test(count, &rh->ref))
++		kfree(rh);
++}
++
++void rethook_free(struct rethook *rh)
++{
++	rh->handler = NULL;
++	rh->data = NULL;
++
++	call_rcu(&rh->rcu, rethook_free_rcu);
++}
++
++/*
++ * @handler must not NULL. @handler == NULL means this rethook is
++ * going to be freed.
++ */
++struct rethook *rethook_alloc(void *data, rethook_handler_t handler)
++{
++	struct rethook *rh = kzalloc(sizeof(struct rethook), GFP_KERNEL);
++
++	if (!rh || !handler)
++		return NULL;
++
++	rh->data = data;
++	rh->handler = handler;
++	rh->pool.head = NULL;
++	refcount_set(&rh->ref, 1);
++
++	return rh;
++}
++
++void rethook_add_node(struct rethook *rh, struct rethook_node *node)
++{
++	node->rethook = rh;
++	freelist_add(&node->freelist, &rh->pool);
++	refcount_inc(&rh->ref);
++}
++
++static void free_rethook_node_rcu(struct rcu_head *head)
++{
++	struct rethook_node *node = container_of(head, struct rethook_node, rcu);
++
++	if (refcount_dec_and_test(&node->rethook->ref))
++		kfree(node->rethook);
++	kfree(node);
++}
++
++void rethook_node_recycle(struct rethook_node *node)
++{
++	if (likely(READ_ONCE(node->rethook->handler)))
++		freelist_add(&node->freelist, &node->rethook->pool);
++	else
++		call_rcu(&node->rcu, free_rethook_node_rcu);
++}
++
++struct rethook_node *rethook_try_get(struct rethook *rh)
++{
++	struct freelist_node *fn;
++
++	/* Check whether @rh is going to be freed. */
++	if (unlikely(!READ_ONCE(rh->handler)))
++		return NULL;
++
++	fn = freelist_try_get(&rh->pool);
++	if (!fn)
++		return NULL;
++
++	return container_of(fn, struct rethook_node, freelist);
++}
++
++void rethook_hook_current(struct rethook_node *node, struct pt_regs *regs)
++{
++	arch_rethook_prepare(node, regs);
++	__llist_add(&node->llist, &current->rethooks);
++}
++
++/* This assumes the 'tsk' is the current task or the is not running. */
++static unsigned long __rethook_find_ret_addr(struct task_struct *tsk,
++					     struct llist_node **cur)
++{
++	struct rethook_node *rh = NULL;
++	struct llist_node *node = *cur;
++
++	if (!node)
++		node = tsk->rethooks.first;
++	else
++		node = node->next;
++
++	while (node) {
++		rh = container_of(node, struct rethook_node, llist);
++		if (rh->ret_addr != (unsigned long)arch_rethook_trampoline) {
++			*cur = node;
++			return rh->ret_addr;
++		}
++		node = node->next;
++	}
 +	return 0;
 +}
++NOKPROBE_SYMBOL(__rethook_find_ret_addr);
 +
 +/**
-+ * register_fprobe - Register fprobe to ftrace
-+ * @fp: A fprobe data structure to be registered.
++ * rethook_find_ret_addr -- Find correct return address modified by rethook
++ * @tsk: Target task
++ * @frame: A frame pointer
++ * @cur: a storage of the loop cursor llist_node pointer for next call
 + *
-+ * This expects the user set @fp::entry_handler, @fp::syms or @fp:addrs,
-+ * and @fp::nentry.
-+ * Note that you do not set both of @fp::addrs and @fp::syms.
++ * Find the correct return address modified by a rethook on @tsk in unsigned
++ * long type. If it finds the return address, this returns that address value,
++ * or this returns 0.
++ * The @tsk must be 'current' or a task which is not running. @frame is a hint
++ * to get the currect return address - which is compared with the
++ * rethook::frame field. The @cur is a loop cursor for searching the
++ * kretprobe return addresses on the @tsk. The '*@cur' should be NULL at the
++ * first call, but '@cur' itself must NOT NULL.
 + */
-+int register_fprobe(struct fprobe *fp)
++unsigned long rethook_find_ret_addr(struct task_struct *tsk, unsigned long frame,
++				    struct llist_node **cur)
 +{
-+	int ret;
++	struct rethook_node *rhn = NULL;
++	unsigned long ret;
 +
-+	if (!fp || !fp->nentry || (!fp->syms && !fp->addrs) ||
-+	    (fp->syms && fp->addrs))
-+		return -EINVAL;
++	if (WARN_ON_ONCE(!cur))
++		return 0;
 +
-+	ret = convert_func_addresses(fp);
-+	if (ret < 0)
-+		return ret;
-+
-+	fp->nmissed = 0;
-+	fp->ftrace.func = fprobe_handler;
-+	fp->ftrace.flags = FTRACE_OPS_FL_SAVE_REGS;
-+
-+	ret = ftrace_set_filter_ips(&fp->ftrace, fp->addrs, fp->nentry, 0, 0);
-+	if (!ret)
-+		ret = register_ftrace_function(&fp->ftrace);
-+
-+	if (ret < 0 && fp->syms) {
-+		kfree(fp->addrs);
-+		fp->addrs = NULL;
-+	}
++	do {
++		ret = __rethook_find_ret_addr(tsk, cur);
++		if (!ret)
++			break;
++		rhn = container_of(*cur, struct rethook_node, llist);
++	} while (rhn->frame != frame);
 +
 +	return ret;
 +}
-+EXPORT_SYMBOL_GPL(register_fprobe);
++NOKPROBE_SYMBOL(rethook_find_ret_addr);
 +
-+/**
-+ * unregister_fprobe - Unregister fprobe from ftrace
-+ * @fp: A fprobe data structure to be unregistered.
-+ */
-+int unregister_fprobe(struct fprobe *fp)
++void __weak arch_rethook_fixup_return(struct pt_regs *regs,
++				      unsigned long correct_ret_addr)
 +{
-+	int ret;
-+
-+	if (!fp || !fp->nentry || !fp->addrs)
-+		return -EINVAL;
-+
-+	ret = unregister_ftrace_function(&fp->ftrace);
-+
-+	if (!ret && fp->syms) {
-+		kfree(fp->addrs);
-+		fp->addrs = NULL;
-+	}
-+	return ret;
++	/*
++	 * Do nothing by default. If the architecture which uses a
++	 * frame pointer to record real return address on the stack,
++	 * it should fill this function to fixup the return address
++	 * so that stacktrace works from the rethook handler.
++	 */
 +}
-+EXPORT_SYMBOL_GPL(unregister_fprobe);
++
++unsigned long rethook_trampoline_handler(struct pt_regs *regs,
++					 unsigned long frame)
++{
++	struct rethook_node *rhn;
++	struct llist_node *first, *node = NULL;
++	unsigned long correct_ret_addr = __rethook_find_ret_addr(current, &node);
++
++	if (!correct_ret_addr) {
++		pr_err("rethook: Return address not found! Maybe there is a bug in the kernel\n");
++		BUG_ON(1);
++	}
++
++	instruction_pointer_set(regs, correct_ret_addr);
++	arch_rethook_fixup_return(regs, correct_ret_addr);
++
++	first = current->rethooks.first;
++	current->rethooks.first = node->next;
++	node->next = NULL;
++
++	while (first) {
++		rhn = container_of(first, struct rethook_node, llist);
++		if (WARN_ON_ONCE(rhn->frame != frame))
++			break;
++		if (rhn->rethook->handler)
++			rhn->rethook->handler(rhn, rhn->rethook->data, regs);
++
++		first = first->next;
++		rethook_node_recycle(rhn);
++	}
++
++	return correct_ret_addr;
++}
++
 
