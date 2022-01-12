@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 122CD48C9B3
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:35:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F63148C9B0
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:35:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355823AbiALRef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 12:34:35 -0500
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:55579 "EHLO
+        id S1355814AbiALRed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 12:34:33 -0500
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:42287 "EHLO
         relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355763AbiALReK (ORCPT
+        with ESMTP id S1349894AbiALReK (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:34:10 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id BEAEF2000A;
-        Wed, 12 Jan 2022 17:34:04 +0000 (UTC)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 89A162000C;
+        Wed, 12 Jan 2022 17:34:07 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -31,9 +31,9 @@ Cc:     Michael Hennerich <michael.hennerich@analog.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         linux-wireless@vger.kernel.org,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-next v2 24/27] net: mac802154: Add support for processing beacon requests
-Date:   Wed, 12 Jan 2022 18:33:09 +0100
-Message-Id: <20220112173312.764660-25-miquel.raynal@bootlin.com>
+Subject: [wpan-next v2 25/27] net: mac802154: Inform device drivers about scans
+Date:   Wed, 12 Jan 2022 18:33:10 +0100
+Message-Id: <20220112173312.764660-26-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220112173312.764660-1-miquel.raynal@bootlin.com>
 References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
@@ -44,180 +44,155 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When performing an active scan, coordinators emit beacon requests which
-must be answered by other PANs receiving the request.
+Let's create a couple of driver hooks in order to tell the device
+drivers that a scan is ongoing, allowing them to eventually apply any
+needed configuration, or in the worst case to refuse the operation if it
+is not supported. These hooks are optional and not implementing them
+does not prevent the scan operation to happen. Returning an error from
+these implementations will however shut down the scan entirely.
 
-Answering a beacon request is considered a duty whenever the user
-performs a "send beacons" command with an interval of 15. As in the
-softMAC we save the interval in micro-seconds, we use a negative value
-to discriminate between a passive beacons command and the task to answer
-received beacon requests.
-
+Co-developed-by: David Girault <david.girault@qorvo.com>
+Signed-off-by: David Girault <david.girault@qorvo.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- include/net/ieee802154_netdev.h |  4 +++-
- net/ieee802154/header_ops.c     | 13 +++++++++++++
- net/mac802154/ieee802154_i.h    | 17 ++++++++++++++++-
- net/mac802154/rx.c              | 13 +++++++++++++
- net/mac802154/scan.c            | 17 +++++++++++++----
- 5 files changed, 58 insertions(+), 6 deletions(-)
+ include/net/mac802154.h    | 12 ++++++++++++
+ net/mac802154/driver-ops.h | 29 +++++++++++++++++++++++++++++
+ net/mac802154/scan.c       |  7 +++++++
+ net/mac802154/trace.h      | 28 ++++++++++++++++++++++++++++
+ 4 files changed, 76 insertions(+)
 
-diff --git a/include/net/ieee802154_netdev.h b/include/net/ieee802154_netdev.h
-index 1bf1a4e508a2..a2dba4442c57 100644
---- a/include/net/ieee802154_netdev.h
-+++ b/include/net/ieee802154_netdev.h
-@@ -179,9 +179,11 @@ int ieee802154_hdr_peek_addrs(const struct sk_buff *skb,
+diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+index 19bfbf591ea1..9b852c02db88 100644
+--- a/include/net/mac802154.h
++++ b/include/net/mac802154.h
+@@ -204,6 +204,15 @@ enum ieee802154_hw_flags {
+  *
+  * set_promiscuous_mode
+  *	  Enables or disable promiscuous mode.
++ *
++ * enter_scan_mode
++ *	  Enters the scan mode, may then refuse certain operations.
++ *	  Can be NULL, if the driver has no internal configuration to do.
++ *	  Returns either zero, or negative errno.
++ *
++ * exit_scan_mode
++ *	  Exits the scan mode and returns to a fully functioning state.
++ *	  Should only be provided if ->enter_scan_mode() is populated.
   */
- int ieee802154_hdr_peek(const struct sk_buff *skb, struct ieee802154_hdr *hdr);
+ struct ieee802154_ops {
+ 	struct module	*owner;
+@@ -230,6 +239,9 @@ struct ieee802154_ops {
+ 					     s8 retries);
+ 	int             (*set_promiscuous_mode)(struct ieee802154_hw *hw,
+ 						const bool on);
++	int		(*enter_scan_mode)(struct ieee802154_hw *hw,
++					   struct cfg802154_scan_request *request);
++	void		(*exit_scan_mode)(struct ieee802154_hw *hw);
+ };
  
--/* pushes a beacon_req or a beacon frame into an skb */
-+/* pushes/pulls a beacon_req or a beacon frame into/from an skb */
- int ieee802154_beacon_req_push(struct sk_buff *skb,
- 			       struct ieee802154_beacon_req_frame *breq);
-+int ieee802154_beacon_req_pl_pull(struct sk_buff *skb,
-+				  struct ieee802154_mac_cmd_pl *mac_pl);
- int ieee802154_beacon_push(struct sk_buff *skb,
- 			   struct ieee802154_beacon_frame *beacon);
- 
-diff --git a/net/ieee802154/header_ops.c b/net/ieee802154/header_ops.c
-index c31a9e429a14..771dbcf6e0b8 100644
---- a/net/ieee802154/header_ops.c
-+++ b/net/ieee802154/header_ops.c
-@@ -314,6 +314,19 @@ ieee802154_hdr_pull(struct sk_buff *skb, struct ieee802154_hdr *hdr)
- }
- EXPORT_SYMBOL_GPL(ieee802154_hdr_pull);
- 
-+int ieee802154_beacon_req_pl_pull(struct sk_buff *skb,
-+				  struct ieee802154_mac_cmd_pl *mac_pl)
-+{
-+	if (!pskb_may_pull(skb, sizeof(*mac_pl)))
-+		return -EINVAL;
-+
-+	memcpy(mac_pl, skb->data, sizeof(*mac_pl));
-+	skb_pull(skb, sizeof(*mac_pl));
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(ieee802154_beacon_req_pl_pull);
-+
- int
- ieee802154_hdr_peek_addrs(const struct sk_buff *skb, struct ieee802154_hdr *hdr)
- {
-diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
-index 19c840500bd8..3d79c6ecbdf1 100644
---- a/net/mac802154/ieee802154_i.h
-+++ b/net/mac802154/ieee802154_i.h
-@@ -61,7 +61,7 @@ struct ieee802154_local {
- 	/* Beacons handling */
- 	bool ongoing_beacons_request;
- 	struct mutex beacons_lock;
--	unsigned int beacons_interval;
-+	int beacons_interval;
- 	struct delayed_work beacons_work;
- 	struct ieee802154_sub_if_data __rcu *beacons_sdata;
- 	struct ieee802154_beacon_frame beacon;
-@@ -136,6 +136,21 @@ ieee802154_sdata_running(struct ieee802154_sub_if_data *sdata)
- 	return test_bit(SDATA_STATE_RUNNING, &sdata->state);
+ /**
+diff --git a/net/mac802154/driver-ops.h b/net/mac802154/driver-ops.h
+index d23f0db98015..9da2325d8346 100644
+--- a/net/mac802154/driver-ops.h
++++ b/net/mac802154/driver-ops.h
+@@ -282,4 +282,33 @@ drv_set_promiscuous_mode(struct ieee802154_local *local, bool on)
+ 	return ret;
  }
  
-+static inline bool ieee802154_frame_is_beacon_req(struct sk_buff *skb)
++static inline int drv_enter_scan_mode(struct ieee802154_local *local,
++				      struct cfg802154_scan_request *request)
 +{
-+	struct ieee802154_mac_cmd_pl mac_pl;
 +	int ret;
 +
-+	if (mac_cb(skb)->type != IEEE802154_FC_TYPE_MAC_CMD)
-+		return false;
++	might_sleep();
 +
-+	ret = ieee802154_beacon_req_pl_pull(skb, &mac_pl);
-+	if (ret)
-+		return false;
++	if (!local->ops->enter_scan_mode || !local->ops->exit_scan_mode)
++		return 0;
 +
-+	return mac_pl.cmd_id == IEEE802154_CMD_BEACON_REQ;
++	trace_802154_drv_enter_scan_mode(local, request);
++	ret = local->ops->enter_scan_mode(&local->hw, request);
++	trace_802154_drv_return_int(local, ret);
++
++	return ret;
 +}
 +
- extern struct ieee802154_mlme_ops mac802154_mlme_wpan;
- 
- void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb);
-diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
-index f2f3eca9bc20..1aba23d007cf 100644
---- a/net/mac802154/rx.c
-+++ b/net/mac802154/rx.c
-@@ -29,6 +29,11 @@ static int ieee802154_deliver_skb(struct sk_buff *skb)
- 	return netif_receive_skb(skb);
- }
- 
-+static bool mac802154_should_answer_beacon_req(struct ieee802154_local *local)
++static inline void drv_exit_scan_mode(struct ieee802154_local *local)
 +{
-+	return local->ongoing_beacons_request && local->beacons_interval < 0;
++	might_sleep();
++
++	if (!local->ops->enter_scan_mode || !local->ops->exit_scan_mode)
++		return;
++
++	trace_802154_drv_exit_scan_mode(local);
++	local->ops->exit_scan_mode(&local->hw);
++	trace_802154_drv_return_void(local);
 +}
 +
- static int
- ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
- 		       struct sk_buff *skb, const struct ieee802154_hdr *hdr)
-@@ -101,6 +106,14 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
- 		}
- 		goto fail;
- 	case IEEE802154_FC_TYPE_MAC_CMD:
-+		if (ieee802154_frame_is_beacon_req(skb) &&
-+		    mac802154_should_answer_beacon_req(sdata->local)) {
-+			ieee802154_queue_delayed_work(&sdata->local->hw,
-+						      &sdata->local->beacons_work,
-+						      0);
-+			goto success;
-+		}
-+		goto fail;
- 	case IEEE802154_FC_TYPE_ACK:
- 		goto fail;
- 	case IEEE802154_FC_TYPE_DATA:
+ #endif /* __MAC802154_DRIVER_OPS */
 diff --git a/net/mac802154/scan.c b/net/mac802154/scan.c
-index a3ff65d5bb7a..c9412dfaeb66 100644
+index c9412dfaeb66..a639c53fa3ba 100644
 --- a/net/mac802154/scan.c
 +++ b/net/mac802154/scan.c
-@@ -142,7 +142,8 @@ int mac802154_send_beacons_locked(struct ieee802154_sub_if_data *sdata,
- 	local->beacon.mhr.source.pan_id = cpu_to_le16(request->wpan_dev->pan_id);
- 	local->beacon.mhr.source.extended_addr = cpu_to_le64(request->wpan_dev->extended_addr);
- 	local->beacon.mac_pl.beacon_order = request->interval;
--	local->beacon.mac_pl.superframe_order = request->interval;
-+	if (request->interval <= IEEE802154_MAX_SCAN_DURATION)
-+		local->beacon.mac_pl.superframe_order = request->interval;
- 	local->beacon.mac_pl.final_cap_slot = 0xf;
- 	local->beacon.mac_pl.battery_life_ext = 0;
- 	local->beacon.mac_pl.pan_coordinator = 1;
-@@ -150,6 +151,11 @@ int mac802154_send_beacons_locked(struct ieee802154_sub_if_data *sdata,
+@@ -103,6 +103,8 @@ int mac802154_abort_scan_locked(struct ieee802154_local *local)
  
- 	rcu_assign_pointer(local->beacons_sdata, sdata);
+ 	cancel_delayed_work(&local->scan_work);
  
-+	if (request->interval == IEEE802154_ACTIVE_SCAN_DURATION) {
-+		local->beacons_interval = -1;
-+		return 0;
-+	}
++	drv_exit_scan_mode(local);
 +
- 	/* Start the beacon work */
- 	local->beacons_interval =
- 		mac802154_scan_get_channel_time(request->interval,
-@@ -167,7 +173,9 @@ int mac802154_stop_beacons_locked(struct ieee802154_local *local)
- 		return -ESRCH;
- 
- 	local->ongoing_beacons_request = false;
--	cancel_delayed_work(&local->beacons_work);
-+
-+	if (local->beacons_interval >= 0)
-+		cancel_delayed_work(&local->beacons_work);
- 
- 	return 0;
+ 	return mac802154_end_of_scan(local);
  }
-@@ -363,8 +371,9 @@ void mac802154_beacons_work(struct work_struct *work)
- 		pr_err("Error when transmitting beacon (%d)\n", ret);
  
- queue_work:
--	ieee802154_queue_delayed_work(&local->hw, &local->beacons_work,
--				      local->beacons_interval);
-+	if (local->beacons_interval >= 0)
-+		ieee802154_queue_delayed_work(&local->hw, &local->beacons_work,
-+					      local->beacons_interval);
+@@ -327,6 +329,11 @@ int mac802154_trigger_scan_locked(struct ieee802154_sub_if_data *sdata,
+ 	else
+ 		local->scan_addr = cpu_to_le64(get_unaligned_be64(sdata->dev->dev_addr));
  
- unlock_mutex:
- 	mutex_unlock(&local->beacons_lock);
++	/* Let the drivers know  about the starting scanning operation */
++	ret = drv_enter_scan_mode(local, request);
++	if (ret)
++		return ret;
++
+ 	if (request->type == NL802154_SCAN_ACTIVE)
+ 		mac802154_scan_prepare_beacon_req(local);
+ 
+diff --git a/net/mac802154/trace.h b/net/mac802154/trace.h
+index df855c33daf2..9c0a4f07ced1 100644
+--- a/net/mac802154/trace.h
++++ b/net/mac802154/trace.h
+@@ -264,6 +264,34 @@ TRACE_EVENT(802154_drv_set_promiscuous_mode,
+ 		  BOOL_TO_STR(__entry->on))
+ );
+ 
++TRACE_EVENT(802154_drv_enter_scan_mode,
++	TP_PROTO(struct ieee802154_local *local,
++		 struct cfg802154_scan_request *request),
++	TP_ARGS(local, request),
++	TP_STRUCT__entry(
++		LOCAL_ENTRY
++		__field(u8, page)
++		__field(u32, channels)
++		__field(u8, duration)
++		__field(u64, addr)
++	),
++	TP_fast_assign(
++		LOCAL_ASSIGN;
++		__entry->page = request->page;
++		__entry->channels = request->channels;
++		__entry->duration = request->duration;
++		__entry->addr = local->scan_addr;
++	),
++	TP_printk(LOCAL_PR_FMT ", scan, page: %d, channels: %x, duration %d, addr: 0x%llx",
++		  LOCAL_PR_ARG, __entry->page, __entry->channels,
++		  __entry->duration, __entry->addr)
++);
++
++DEFINE_EVENT(local_only_evt4, 802154_drv_exit_scan_mode,
++	TP_PROTO(struct ieee802154_local *local),
++	TP_ARGS(local)
++);
++
+ #endif /* !__MAC802154_DRIVER_TRACE || TRACE_HEADER_MULTI_READ */
+ 
+ #undef TRACE_INCLUDE_PATH
 -- 
 2.27.0
 
