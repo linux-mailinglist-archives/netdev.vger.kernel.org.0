@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 250B448C60F
+	by mail.lfdr.de (Postfix) with ESMTP id 6ED8448C610
 	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 15:29:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354155AbiALO1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 09:27:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47038 "EHLO
+        id S1354160AbiALO14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 09:27:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354135AbiALO1s (ORCPT
+        with ESMTP id S1354139AbiALO1s (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 09:27:48 -0500
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAA5C0611FD
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 06:27:32 -0800 (PST)
-Received: by mail-qk1-x735.google.com with SMTP id h16so2650732qkp.3
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 06:27:32 -0800 (PST)
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15730C06118A
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 06:27:34 -0800 (PST)
+Received: by mail-qv1-xf35.google.com with SMTP id hu2so3046542qvb.8
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 06:27:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kinvolk.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=i12A7/VbBg7lMR/lxijLLtckz7LE9xtr5wZuTDRzNwg=;
-        b=bVVcfDZZdA3JIhdSkZ+FlA3mISvwY6rnNUCmdt96wcd+zjWAdoKjCm2wfTAY1AbLGP
-         UJs1dpI/lAAl8aTGH2nfXXS2rTEMOur8Fnha/l1oe7+XuWmerjcWuA006xt5jqmXD0p3
-         K7mId2b+NiuS/UP094cZxWCVCan4pn1uI8Opg=
+        bh=8iu2kL50pjW94YY2na/PTUnaC2uMllXXb54sPcMunMU=;
+        b=mUvRYrlTOEwLcHIbuIqd7GmkFSoNuCbzAPLlz2Wr5U+QDh4Vcf6/9EKmyx4EzA1ZCW
+         iNB4I2lKftBGD3QUA+0lQ40Mj2KQDcOjvoJBxBQ1wRvgMhY3bQDWO09kgN0eEjefPYv4
+         Gn1NdJIWPh56goDMpWQStCz+ygNRMcdiqsutY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=i12A7/VbBg7lMR/lxijLLtckz7LE9xtr5wZuTDRzNwg=;
-        b=F+/WrVVkHcTNGM8f5ar8NSn0Kr+e11qR6gHNYGrSgpC6dNMP77xxNoonJh71ZQgOp1
-         uN4jgorGmWXuhSaPUfO6GU+dr4fSCLqqAx9s3J27g4tTnXx7MhS1JdoUMbtDVQe8vGln
-         4Nn/jEezXz7MG381bGEinNHsfUEJVPU/4KD4RAZONdVYEXoZG3RruH0bOoPuP9ebh2bY
-         6EeufWPzAuPYq4uXWVGCv9q6hYHhxqBNYpBSuhMvpAm2I6r182z4V8WC7d/JXiFL2PKj
-         YquRVvgx3ecRq6YHPHsl5YtxP644CKltZ4tQ83ik2sAztjAtFI7p5vRHPtqR6HzAIf5P
-         +yJg==
-X-Gm-Message-State: AOAM531o6dpIyfeLy/K0e5U8je0Ax4ASXPqCncbBxX7WgM938dC8AtLR
-        9wBFPz7whnK+bzLD1tuKlkoHsRnJVV0HEJiFu3yV3FrZUNilgeMrfeKfgwXt1mbptB1RAYyL47e
-        UebbCrH8Zdv1t2ota87zHPGlBfnsW2JUYzcBvyvKtygitUmV4E7RCdAv/YWh3VpgMQdO4V5Eg
-X-Google-Smtp-Source: ABdhPJw7dPVYO9USpIDdNiPRc5dXDyVat4tTmcEKyOHnMiAedDK5eRk5SohjdCiIXM5qB35vpb34bw==
-X-Received: by 2002:a05:620a:199b:: with SMTP id bm27mr6336274qkb.359.1641997649181;
-        Wed, 12 Jan 2022 06:27:29 -0800 (PST)
+        bh=8iu2kL50pjW94YY2na/PTUnaC2uMllXXb54sPcMunMU=;
+        b=VVEyvuO+y+3Y5T9Xo/THRR0UH7TGey623KZh1UcknRwG8obd+uXUTe3DBZBZ0DLdKI
+         j7yoa15+kYiTHwXv37qEfaqczFNof5gzs21oHgcAoe8vpn/mPuGCRtqaWJHVLULf7kPj
+         AwEasTDFNNx+Zwe5X1xiWTh1Br7O54Mlqz27G0pn6AC7hdepli7SswXT0S/VTKt1D2Kc
+         GbSN9SRyazuPHIl1lXWGx0hKLy0rgkRubHrkOCgS18Ew49DNf06OYGiVTYqmuYj3iGWR
+         0b1EdJYMoz1p/PnwK5UcOykQ94A5gkDyNFhcPbJColY/t0Mtr7hW/SWxxGKaWFgdth9n
+         jz/Q==
+X-Gm-Message-State: AOAM530NewUoYa6q+v2czIlvqxONcz5N7VLxu4/B2/POwTxIT6A2GJ/W
+        0QjUPh8klRv4j4foCSlpfXXGfVqrL+ndoCBgjP2SpKJWgp8ZpYHyqWrojU/7i48JZPsbo7Q4nHq
+        iBiJzCgkO3pzQg1K9L3vHXgRvb8Op08P1Hm2CF6S+cAME6o9QoWOiYPCXpEy2IBsB9EpMqyY4
+X-Google-Smtp-Source: ABdhPJyq72zGIynbmdUEzenH9kzVBEvzlLMu/g5dMJa/Io16bvy1FeitYnNtrl4stGPKlHSUUR2npA==
+X-Received: by 2002:ad4:5e8b:: with SMTP id jl11mr8118127qvb.128.1641997651627;
+        Wed, 12 Jan 2022 06:27:31 -0800 (PST)
 Received: from localhost.localdomain ([181.136.110.101])
-        by smtp.gmail.com with ESMTPSA id h11sm8776690qko.59.2022.01.12.06.27.27
+        by smtp.gmail.com with ESMTPSA id h11sm8776690qko.59.2022.01.12.06.27.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 06:27:28 -0800 (PST)
+        Wed, 12 Jan 2022 06:27:31 -0800 (PST)
 From:   =?UTF-8?q?Mauricio=20V=C3=A1squez?= <mauricio@kinvolk.io>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -54,9 +54,9 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Rafael David Tinoco <rafaeldtinoco@gmail.com>,
         Lorenzo Fontana <lorenzo.fontana@elastic.co>,
         Leonardo Di Donato <leonardo.didonato@elastic.co>
-Subject: [PATCH bpf-next v4 6/8] bpftool: Implement btfgen()
-Date:   Wed, 12 Jan 2022 09:27:07 -0500
-Message-Id: <20220112142709.102423-7-mauricio@kinvolk.io>
+Subject: [PATCH bpf-next v4 7/8] bpftool: Implement relocations recording for BTFGen
+Date:   Wed, 12 Jan 2022 09:27:08 -0500
+Message-Id: <20220112142709.102423-8-mauricio@kinvolk.io>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220112142709.102423-1-mauricio@kinvolk.io>
 References: <20220112142709.102423-1-mauricio@kinvolk.io>
@@ -67,274 +67,333 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-btfgen() receives the path of a source and destination BTF files and a
-list of BPF objects. This function records the relocations for all
-objects and then generates the BTF file by calling btfgen_get_btf()
-(implemented in the following commits).
+This commit implements the logic to record the relocation information
+for the different kind of relocations.
 
-btfgen_record_obj() loads the BTF and BTF.ext sections of the BPF
-objects and loops through all CO-RE relocations. It uses
-bpf_core_calc_relo_insn() from libbpf and passes the target spec to
-btfgen_record_reloc() that saves the types involved in such relocation.
+btfgen_record_field_relo() uses the target specification to save all the
+types that are involved in a field-based CO-RE relocation. In this case
+types resolved and added recursively (using btfgen_put_type()).
+Only the struct and union members and their types) involved in the
+relocation are added to optimize the size of the generated BTF file.
+
+On the other hand, btfgen_record_type_relo() saves the types involved in
+a type-based CO-RE relocation. In this case all the members for the
+struct and union types are added. This is not strictly required since
+libbpf doesn't use them while performing this kind of relocation,
+however that logic could change on the future. Additionally, we expect
+that the number of this kind of relocations in an BPF object to be very
+low, hence the impact on the size of the generated BTF should be
+negligible.
+
+Finally, btfgen_record_enumval_relo() saves the whole enum type for
+enum-based relocations.
 
 Signed-off-by: Mauricio Vásquez <mauricio@kinvolk.io>
 Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
 Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
 Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
 ---
- tools/bpf/bpftool/gen.c | 221 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 219 insertions(+), 2 deletions(-)
+ tools/bpf/bpftool/gen.c | 260 +++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 257 insertions(+), 3 deletions(-)
 
 diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-index 905ab0ee6542..cef0ea99d4d9 100644
+index cef0ea99d4d9..8c13dde0b74d 100644
 --- a/tools/bpf/bpftool/gen.c
 +++ b/tools/bpf/bpftool/gen.c
-@@ -15,6 +15,7 @@
- #include <unistd.h>
- #include <bpf/bpf.h>
- #include <bpf/libbpf.h>
-+#include <bpf/libbpf_internal.h>
- #include <sys/types.h>
- #include <sys/stat.h>
- #include <sys/mman.h>
-@@ -1151,6 +1152,11 @@ static void *uint_as_hash_key(int x)
- 	return (void *)(uintptr_t)x;
+@@ -1127,9 +1127,17 @@ static int btf_save_raw(const struct btf *btf, const char *path)
+ 	return err;
  }
  
-+static void *u32_as_hash_key(__u32 x)
-+{
-+	return (void *)(uintptr_t)x;
-+}
++struct btfgen_member {
++	struct btf_member *member;
++	int idx;
++};
 +
+ struct btfgen_type {
+ 	struct btf_type *type;
+ 	unsigned int id;
++	bool all_members;
++
++	struct hashmap *members;
+ };
+ 
+ struct btfgen_info {
+@@ -1159,6 +1167,19 @@ static void *u32_as_hash_key(__u32 x)
+ 
  static void btfgen_free_type(struct btfgen_type *type)
  {
++	struct hashmap_entry *entry;
++	size_t bkt;
++
++	if (!type)
++		return;
++
++	if (!IS_ERR_OR_NULL(type->members)) {
++		hashmap__for_each_entry(type->members, entry, bkt) {
++			free(entry->value);
++		}
++		hashmap__free(type->members);
++	}
++
  	free(type);
-@@ -1201,12 +1207,223 @@ btfgen_new_info(const char *targ_btf_path)
+ }
+ 
+@@ -1207,19 +1228,252 @@ btfgen_new_info(const char *targ_btf_path)
  	return info;
  }
  
--/* Create BTF file for a set of BPF objects */
--static int btfgen(const char *src_btf, const char *dst_btf, const char *objspaths[])
-+static int btfgen_record_field_relo(struct btfgen_info *info, struct bpf_core_spec *targ_spec)
++static int btfgen_add_member(struct btfgen_type *btfgen_type,
++			     struct btf_member *btf_member, int idx)
 +{
-+	return -EOPNOTSUPP;
-+}
-+
-+static int btfgen_record_type_relo(struct btfgen_info *info, struct bpf_core_spec *targ_spec)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static int btfgen_record_enumval_relo(struct btfgen_info *info, struct bpf_core_spec *targ_spec)
- {
- 	return -EOPNOTSUPP;
- }
- 
-+static int btfgen_record_reloc(struct btfgen_info *info, struct bpf_core_spec *res)
-+{
-+	switch (res->relo_kind) {
-+	case BPF_CORE_FIELD_BYTE_OFFSET:
-+	case BPF_CORE_FIELD_BYTE_SIZE:
-+	case BPF_CORE_FIELD_EXISTS:
-+	case BPF_CORE_FIELD_SIGNED:
-+	case BPF_CORE_FIELD_LSHIFT_U64:
-+	case BPF_CORE_FIELD_RSHIFT_U64:
-+		return btfgen_record_field_relo(info, res);
-+	case BPF_CORE_TYPE_ID_LOCAL:
-+	case BPF_CORE_TYPE_ID_TARGET:
-+	case BPF_CORE_TYPE_EXISTS:
-+	case BPF_CORE_TYPE_SIZE:
-+		return btfgen_record_type_relo(info, res);
-+	case BPF_CORE_ENUMVAL_EXISTS:
-+	case BPF_CORE_ENUMVAL_VALUE:
-+		return btfgen_record_enumval_relo(info, res);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static struct bpf_core_cand_list *
-+btfgen_find_cands(const struct btf *local_btf, const struct btf *targ_btf, __u32 local_id)
-+{
-+	const struct btf_type *local_type;
-+	struct bpf_core_cand_list *cands = NULL;
-+	struct bpf_core_cand local_cand = {};
-+	size_t local_essent_len;
-+	const char *local_name;
++	struct btfgen_member *btfgen_member;
 +	int err;
 +
-+	local_cand.btf = local_btf;
-+	local_cand.id = local_id;
-+
-+	local_type = btf__type_by_id(local_btf, local_id);
-+	if (!local_type) {
-+		err = -EINVAL;
-+		goto err_out;
++	/* create new members hashmap for this btfgen type if needed */
++	if (!btfgen_type->members) {
++		btfgen_type->members = hashmap__new(btfgen_hash_fn, btfgen_equal_fn, NULL);
++		if (IS_ERR(btfgen_type->members))
++			return PTR_ERR(btfgen_type->members);
 +	}
 +
-+	local_name = btf__name_by_offset(local_btf, local_type->name_off);
-+	if (!local_name) {
-+		err = -EINVAL;
-+		goto err_out;
-+	}
-+	local_essent_len = bpf_core_essential_name_len(local_name);
-+
-+	cands = calloc(1, sizeof(*cands));
-+	if (!cands)
-+		return NULL;
-+
-+	err = bpf_core_add_cands(&local_cand, local_essent_len, targ_btf, "vmlinux", 1, cands);
-+	if (err)
-+		goto err_out;
-+
-+	return cands;
-+
-+err_out:
-+	if (cands)
-+		bpf_core_free_cands(cands);
-+	errno = -err;
-+	return NULL;
-+}
-+
-+/* Record relocation information for a single BPF object*/
-+static int btfgen_record_obj(struct btfgen_info *info, const char *obj_path)
-+{
-+	const struct btf_ext_info_sec *sec;
-+	const struct bpf_core_relo *relo;
-+	const struct btf_ext_info *seg;
-+	struct hashmap *cand_cache;
-+	struct btf_ext *btf_ext;
-+	unsigned int relo_idx;
-+	struct btf *btf;
-+	int err;
-+
-+	btf = btf__parse(obj_path, &btf_ext);
-+	err = libbpf_get_error(btf);
++	btfgen_member = calloc(1, sizeof(*btfgen_member));
++	if (!btfgen_member)
++		return -ENOMEM;
++	btfgen_member->member = btf_member;
++	btfgen_member->idx = idx;
++	/* add btf_member as member to given btfgen_type */
++	err = hashmap__add(btfgen_type->members, uint_as_hash_key(btfgen_member->idx),
++			   btfgen_member);
 +	if (err) {
-+		p_err("failed to parse bpf object '%s': %s", obj_path, strerror(errno));
-+		return err;
++		free(btfgen_member);
++		if (err != -EEXIST)
++			return err;
 +	}
 +
-+	if (btf_ext->core_relo_info.len == 0)
-+		return 0;
++	return 0;
++}
 +
-+	cand_cache = bpf_core_create_cand_cache();
-+	if (IS_ERR(cand_cache))
-+		return PTR_ERR(cand_cache);
++static struct btfgen_type *btfgen_get_type(struct btfgen_info *info, int id)
++{
++	struct btfgen_type *type = NULL;
 +
-+	seg = &btf_ext->core_relo_info;
-+	for_each_btf_ext_sec(seg, sec) {
-+		for_each_btf_ext_rec(seg, sec, relo_idx, relo) {
-+			struct bpf_core_spec specs_scratch[3] = {};
-+			struct bpf_core_relo_res targ_res = {};
-+			struct bpf_core_cand_list *cands = NULL;
-+			const void *type_key = u32_as_hash_key(relo->type_id);
-+			const char *sec_name = btf__name_by_offset(btf, sec->sec_name_off);
++	hashmap__find(info->types, uint_as_hash_key(id), (void **)&type);
 +
-+			if (relo->kind != BPF_CORE_TYPE_ID_LOCAL &&
-+			    !hashmap__find(cand_cache, type_key, (void **)&cands)) {
-+				cands = btfgen_find_cands(btf, info->src_btf, relo->type_id);
-+				if (!cands) {
-+					err = -errno;
-+					goto out;
-+				}
++	return type;
++}
 +
-+				err = hashmap__set(cand_cache, type_key, cands, NULL, NULL);
-+				if (err)
-+					goto out;
-+			}
++static struct btfgen_type *
++_btfgen_put_type(struct btf *btf, struct btfgen_info *info, struct btf_type *btf_type,
++		 unsigned int id, bool all_members)
++{
++	struct btfgen_type *btfgen_type, *tmp;
++	struct btf_array *array;
++	unsigned int child_id;
++	struct btf_member *m;
++	int err, i, n;
 +
-+			err = bpf_core_calc_relo_insn(sec_name, relo, relo_idx, btf, cands,
-+						      specs_scratch, &targ_res);
-+			if (err)
-+				goto out;
++	/* check if we already have this type */
++	if (hashmap__find(info->types, uint_as_hash_key(id), (void **) &btfgen_type)) {
++		if (!all_members || btfgen_type->all_members)
++			return btfgen_type;
++	} else {
++		btfgen_type = calloc(1, sizeof(*btfgen_type));
++		if (!btfgen_type)
++			return NULL;
 +
-+			err = btfgen_record_reloc(info, &specs_scratch[2]);
-+			if (err)
-+				goto out;
++		btfgen_type->type = btf_type;
++		btfgen_type->id = id;
++
++		/* append this type to the types list before anything else */
++		err = hashmap__add(info->types, uint_as_hash_key(btfgen_type->id), btfgen_type);
++		if (err) {
++			free(btfgen_type);
++			return NULL;
 +		}
 +	}
 +
-+out:
-+	bpf_core_free_cand_cache(cand_cache);
++	/* avoid infinite recursion and yet be able to add all
++	 * fields/members for types also managed by this function
++	 */
++	btfgen_type->all_members = all_members;
 +
-+	return err;
++
++	/* recursively add other types needed by it */
++	switch (btf_kind(btfgen_type->type)) {
++	case BTF_KIND_UNKN:
++	case BTF_KIND_INT:
++	case BTF_KIND_FLOAT:
++	case BTF_KIND_ENUM:
++		break;
++	case BTF_KIND_STRUCT:
++	case BTF_KIND_UNION:
++		/* doesn't need resolution if not adding all members */
++		if (!all_members)
++			break;
++
++		n = btf_vlen(btf_type);
++		m = btf_members(btf_type);
++		for (i = 0; i < n; i++, m++) {
++			btf_type = (struct btf_type *) btf__type_by_id(btf, m->type);
++
++			/* add all member types */
++			tmp = _btfgen_put_type(btf, info, btf_type, m->type, all_members);
++			if (!tmp)
++				return NULL;
++
++			/* add all members */
++			err = btfgen_add_member(btfgen_type, m, i);
++			if (err)
++				return NULL;
++		}
++		break;
++	case BTF_KIND_PTR:
++		if (!all_members)
++			break;
++	/* fall through */
++	/* Also add the type it's pointing to when adding all members */
++	case BTF_KIND_CONST:
++	case BTF_KIND_VOLATILE:
++	case BTF_KIND_TYPEDEF:
++		child_id = btf_type->type;
++		btf_type = (struct btf_type *) btf__type_by_id(btf, child_id);
++
++		tmp = _btfgen_put_type(btf, info, btf_type, child_id, all_members);
++		if (!tmp)
++			return NULL;
++		break;
++	case BTF_KIND_ARRAY:
++		array = btf_array(btfgen_type->type);
++
++		/* add type for array type */
++		btf_type = (struct btf_type *) btf__type_by_id(btf, array->type);
++		tmp = _btfgen_put_type(btf, info, btf_type, array->type, all_members);
++		if (!tmp)
++			return NULL;
++
++		/* add type for array's index type */
++		btf_type = (struct btf_type *) btf__type_by_id(btf, array->index_type);
++		tmp = _btfgen_put_type(btf, info, btf_type, array->index_type, all_members);
++		if (!tmp)
++			return NULL;
++		break;
++	/* tells if some other type needs to be handled */
++	default:
++		p_err("unsupported kind: %s (%d)",
++		      btf_kind_str(btfgen_type->type), btfgen_type->id);
++		errno = EINVAL;
++		return NULL;
++	}
++
++	return btfgen_type;
 +}
 +
-+/* Generate BTF from relocation information previously recorded */
-+static struct btf *btfgen_get_btf(struct btfgen_info *info)
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
-+
-+/* Create BTF file for a set of BPF objects.
-+ *
-+ * The BTFGen algorithm is divided in two main parts: (1) collect the
-+ * BTF types that are involved in relocations and (2) generate the BTF
-+ * object using the collected types.
-+ *
-+ * In order to collect the types involved in the relocations, we parse
-+ * the BTF and BTF.ext sections of the BPF objects and use
-+ * bpf_core_calc_relo_insn() to get the target specification, this
-+ * indicates how the types and fields are used in a relocation.
-+ *
-+ * Types are recorded in different ways according to the kind of the
-+ * relocation. For field-based relocations only the members that are
-+ * actually used are saved in order to reduce the size of the generated
-+ * BTF file. For type-based and enum-based relocations the whole type is
-+ * saved.
-+ *
-+ * The second part of the algorithm generates the BTF object. It creates
-+ * an empty BTF object and fills it with the types recorded in the
-+ * previous step. This function takes care of only adding the structure
-+ * and union members that were marked as used and it also fixes up the
-+ * type IDs on the generated BTF object.
++/* Put type in the list. If the type already exists it's returned, otherwise a
++ * new one is created and added to the list. This is called recursively adding
++ * all the types that are needed for the current one.
 + */
-+static int btfgen(const char *src_btf, const char *dst_btf, const char *objspaths[])
++static struct btfgen_type *
++btfgen_put_type(struct btf *btf, struct btfgen_info *info, struct btf_type *btf_type,
++		unsigned int id)
 +{
-+	struct btfgen_info *info;
-+	struct btf *btf_new = NULL;
-+	int err;
-+
-+	info = btfgen_new_info(src_btf);
-+	if (!info) {
-+		p_err("failed to allocate info structure: %s", strerror(errno));
-+		err = -errno;
-+		goto out;
-+	}
-+
-+	for (int i = 0; objspaths[i] != NULL; i++) {
-+		printf("OBJ : %s\n", objspaths[i]);
-+
-+		err = btfgen_record_obj(info, objspaths[i]);
-+		if (err)
-+			goto out;
-+	}
-+
-+	btf_new = btfgen_get_btf(info);
-+	if (!btf_new) {
-+		err = -errno;
-+		p_err("error generating btf: %s", strerror(errno));
-+		goto out;
-+	}
-+
-+	printf("DBTF: %s\n", dst_btf);
-+	err = btf_save_raw(btf_new, dst_btf);
-+	if (err) {
-+		p_err("error saving btf file: %s", strerror(errno));
-+		goto out;
-+	}
-+
-+out:
-+	btf__free(btf_new);
-+	btfgen_free_info(info);
-+
-+	return err;
++	return _btfgen_put_type(btf, info, btf_type, id, false);
 +}
 +
- static int is_file(const char *path)
++/* Same as btfgen_put_type, but adding all members, from given complex type, recursively */
++static struct btfgen_type *
++btfgen_put_type_all(struct btf *btf, struct btfgen_info *info,
++		    struct btf_type *btf_type, unsigned int id)
++{
++	return _btfgen_put_type(btf, info, btf_type, id, true);
++}
++
+ static int btfgen_record_field_relo(struct btfgen_info *info, struct bpf_core_spec *targ_spec)
  {
- 	struct stat st;
+-	return -EOPNOTSUPP;
++	struct btf *btf = (struct btf *) info->src_btf;
++	struct btfgen_type *btfgen_type;
++	struct btf_member *btf_member;
++	struct btf_type *btf_type;
++	struct btf_array *array;
++	unsigned int id;
++	int idx, err;
++
++	btf_type = (struct btf_type *) btf__type_by_id(btf, targ_spec->root_type_id);
++
++	/* create btfgen_type for root type */
++	btfgen_type = btfgen_put_type(btf, info, btf_type, targ_spec->root_type_id);
++	if (!btfgen_type)
++		return -errno;
++
++	/* add types for complex types (arrays, unions, structures) */
++	for (int i = 1; i < targ_spec->raw_len; i++) {
++		/* skip typedefs and mods */
++		while (btf_is_mod(btf_type) || btf_is_typedef(btf_type)) {
++			id = btf_type->type;
++			btfgen_type = btfgen_get_type(info, id);
++			if (!btfgen_type)
++				return -ENOENT;
++			btf_type = (struct btf_type *) btf__type_by_id(btf, id);
++		}
++
++		switch (btf_kind(btf_type)) {
++		case BTF_KIND_STRUCT:
++		case BTF_KIND_UNION:
++			idx = targ_spec->raw_spec[i];
++			btf_member = btf_members(btf_type) + idx;
++			btf_type = (struct btf_type *) btf__type_by_id(btf, btf_member->type);
++
++			/* add member to relocation type */
++			err = btfgen_add_member(btfgen_type, btf_member, idx);
++			if (err)
++				return err;
++			/* put btfgen type */
++			btfgen_type = btfgen_put_type(btf, info, btf_type, btf_member->type);
++			if (!btfgen_type)
++				return -errno;
++			break;
++		case BTF_KIND_ARRAY:
++			array = btf_array(btf_type);
++			btfgen_type = btfgen_get_type(info, array->type);
++			if (!btfgen_type)
++				return -ENOENT;
++			btf_type = (struct btf_type *) btf__type_by_id(btf, array->type);
++			break;
++		default:
++			p_err("spec type wasn't handled");
++			return -EINVAL;
++		}
++	}
++
++	return 0;
+ }
+ 
+ static int btfgen_record_type_relo(struct btfgen_info *info, struct bpf_core_spec *targ_spec)
+ {
+-	return -EOPNOTSUPP;
++	struct btf *btf = (struct btf *) info->src_btf;
++	struct btfgen_type *btfgen_type;
++	struct btf_type *btf_type;
++
++	btf_type = (struct btf_type *) btf__type_by_id(btf, targ_spec->root_type_id);
++
++	btfgen_type = btfgen_put_type_all(btf, info, btf_type, targ_spec->root_type_id);
++	return btfgen_type ?  0 : -errno;
+ }
+ 
+ static int btfgen_record_enumval_relo(struct btfgen_info *info, struct bpf_core_spec *targ_spec)
+ {
+-	return -EOPNOTSUPP;
++	struct btf *btf = (struct btf *) info->src_btf;
++	struct btfgen_type *btfgen_type;
++	struct btf_type *btf_type;
++
++	btf_type = (struct btf_type *) btf__type_by_id(btf, targ_spec->root_type_id);
++
++	btfgen_type = btfgen_put_type_all(btf, info, btf_type, targ_spec->root_type_id);
++	return btfgen_type ?  0 : -errno;
+ }
+ 
+ static int btfgen_record_reloc(struct btfgen_info *info, struct bpf_core_spec *res)
 -- 
 2.25.1
 
