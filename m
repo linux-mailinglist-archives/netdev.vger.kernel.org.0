@@ -2,22 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1024748C9DB
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:36:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A82A48C9C5
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:36:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355715AbiALRga (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 12:36:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34280 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240789AbiALRfs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:35:48 -0500
-X-Greylist: delayed 136 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 12 Jan 2022 09:35:33 PST
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA08C0611FF;
-        Wed, 12 Jan 2022 09:35:33 -0800 (PST)
+        id S241457AbiALRft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 12:35:49 -0500
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:48013 "EHLO
+        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355696AbiALRff (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:35:35 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 6EDB3C000B;
-        Wed, 12 Jan 2022 17:35:30 +0000 (UTC)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id A48B9C0005;
+        Wed, 12 Jan 2022 17:35:32 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -30,11 +26,14 @@ Cc:     David Girault <david.girault@qorvo.com>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         linux-wireless@vger.kernel.org,
+        Romuald Despres <Romuald.Despres@qorvo.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-tools v2 0/7] IEEE 802.15.4 scan support
-Date:   Wed, 12 Jan 2022 18:35:22 +0100
-Message-Id: <20220112173529.765170-1-miquel.raynal@bootlin.com>
+Subject: [wpan-tools v2 1/7] iwpan: Fix the channels printing
+Date:   Wed, 12 Jan 2022 18:35:23 +0100
+Message-Id: <20220112173529.765170-2-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220112173529.765170-1-miquel.raynal@bootlin.com>
+References: <20220112173529.765170-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -42,82 +41,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Romuald Despres <Romuald.Despres@qorvo.com>
 
-This series follows the work done in the Linux kernel stack: now that
-the core knows about the different netlink commands and attributes in
-order to support passive scan requests from end-to-end, here are the
-userspace changes to be able to use it.
+The presence of a channel capability is checked against the tb_msg
+netlink attributes array which is the root one, while here we are
+looking for channel capabilities, themselves being nested and parsed
+into tb_caps. Use tb_caps instead of tb_msg here otherwise we are
+accessing a random index in the upper attributes list.
 
-Here is a list of the new available features.
+Signed-off-by: Romuald Despres <Romuald.Despres@qorvo.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+---
+ src/info.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-* Sending (or stopping) beacons. Intervals ranging from 0 to 14 are
-  valid for passively sending beacons at regular intervals. An interval
-  of 15 would request the core to answer to received BEACON_REQ.
-  # iwpan dev wpan0 beacons send interval 2 # send BEACON at a fixed rate
-  # iwpan dev wpan0 beacons send interval 15 # answer BEACON_REQ only
-  # iwpan dev wpan0 beacons stop # apply to both cases
-
-* Scanning all the channels or only a subset:
-  # iwpan dev wpan1 scan type passive duration 3 # will not trigger BEACON_REQ
-  # iwpan dev wpan1 scan type active duration 3 # will trigger BEACON_REQ
-
-* If a beacon is received during this operation the internal PAN list is
-  updated and can be dumped or flushed with:
-  # iwpan dev wpan1 pans dump
-  PAN 0xffff (on wpan1)
-	coordinator 0x2efefdd4cdbf9330
-	page 0
-	channel 13
-	superframe spec. 0xcf22
-	LQI 0
-	seen 7156ms ago
-  # iwpan dev wpan1 pans flush
-  # iwpan dev wpan1 set max_pan_entries 100
-  # iwpan dev wpan1 set pans_expiration 3600
-
-* It is also possible to monitor the events with:
-  # iwpan event
-
-* As well as triggering a non blocking scan:
-  # iwpan dev wpan1 scan trigger type passive duration 3
-  # iwpan dev wpan1 scan done
-  # iwpan dev wpan1 scan abort
-
-Cheers,
-Miquèl
-
-Changes in v2:
-* Dropped the binaries added by accident.
-* New sync of the headers with Linux.
-* Added two new commands to configure the stack regarding the number of
-  PANs listed and their delay before expiration.
-
-David Girault (4):
-  iwpan: Export iwpan_debug
-  iwpan: Remove duplicated SECTION
-  iwpan: Add full scan support
-  iwpan: Add events support
-
-Miquel Raynal (2):
-  iwpan: Fix a comment
-  iwpan: Synchronize nl802154 header with the Linux kernel
-
-Romuald Despres (1):
-  iwpan: Fix the channels printing
-
- src/Makefile.am |   2 +
- src/event.c     | 221 +++++++++++++++++++++++
- src/info.c      |   4 +-
- src/iwpan.c     |   2 +-
- src/iwpan.h     |  13 +-
- src/mac.c       |  56 ++++++
- src/nl802154.h  |  99 ++++++++++
- src/scan.c      | 471 ++++++++++++++++++++++++++++++++++++++++++++++++
- 8 files changed, 859 insertions(+), 9 deletions(-)
- create mode 100644 src/event.c
- create mode 100644 src/scan.c
-
+diff --git a/src/info.c b/src/info.c
+index f85690c..8ed5e4f 100644
+--- a/src/info.c
++++ b/src/info.c
+@@ -342,7 +342,7 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
+ 			printf("\b \n");
+ 		}
+ 
+-		if (tb_msg[NL802154_CAP_ATTR_CHANNELS]) {
++		if (tb_caps[NL802154_CAP_ATTR_CHANNELS]) {
+ 			int counter = 0;
+ 			int rem_pages;
+ 			struct nlattr *nl_pages;
 -- 
 2.27.0
 
