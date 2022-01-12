@@ -2,111 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02C4348C439
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 13:53:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93E6D48C449
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 13:59:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353282AbiALMxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 07:53:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232738AbiALMxF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 07:53:05 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC9EC06173F
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 04:53:05 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id a1-20020a17090a688100b001b3fd52338eso3443506pjd.1
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 04:53:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PMeiRfGJc0VLb0BUrd7j9PE/Kg2nFVodwzl9nDcM1jA=;
-        b=VRhmuOqyx732m3kr85Y2TlMYnJmiKmIjtZgJi+2BFrULWm9wUbIOmR9RhiOV9NexgT
-         nyS0znfVp7Dfw+BsG/8VD1tsb6TDdowcbMcQ/76RkxIaPIkOcHzySOVHr19G5ecw0bSC
-         GNBOGiWI7UVDFe/mNnyazF0lR9GT3aYFHeJ+epsK8L2H9G26ZQtIOOknZSnK4ZDHivJo
-         OzvQ7HWVmItsUWtU5dcnrdRbzKKP2WdVkLEyS9LAYBOmPgl/FR02A0XDM5OtwBhO1GUW
-         TYjvV2UGKWXDamVowPVKQWAzgBatA+RTDvgReMtm0ymKK4XRtMPCcXIwqpz8ZlhaeYxF
-         88Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PMeiRfGJc0VLb0BUrd7j9PE/Kg2nFVodwzl9nDcM1jA=;
-        b=3+ehOcmMM/Hb1gJganN/Zt+1KBl1fn/bAAVfwMXv2MfglVUHlh+5jWl/UjVBMII3Xu
-         CQ1ZlUmOiuG9xtDOh08QN2EhIj9I8iGlbOlUQI+ZbvpeOf961m1+ZumYIylsQwHokhj5
-         IJ+zK6ftD6gQO6FudlPqm8jQ6at4eIRBeKzoB6mPfEpz4ABA5/q6lKzG/Q1vqD2oPELP
-         +STFPys/0pnTp6NMaDnngILh7jGhshD1bIl+mk2/m4dSDC4CnrsXrmTAIX+6zYFpu8Bp
-         1D7snouJScmx1ZThRbvC2jD9u/EPSyuYTWaj/Yz3Q0HKx/xNO2ogTSxhKlVGQq72W/Yq
-         bIaw==
-X-Gm-Message-State: AOAM532Sv9ZgK2gn15d+PgRJgxfo0uL4709AfH6J20vRHl2SKOkLwKD7
-        KOhzTz4JqlOnc+PYu+CFc6bPqbSjeK0QBA==
-X-Google-Smtp-Source: ABdhPJwA/5mzn6a4lwVopneQkL6LOFJBeVbqtFfr/UjWR9SMl8V2RJMVLRmf7i1R2dtyyPouBRiqPQ==
-X-Received: by 2002:a63:8a41:: with SMTP id y62mr4189160pgd.428.1641991984794;
-        Wed, 12 Jan 2022 04:53:04 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:e0d4:f730:8e14:abc3])
-        by smtp.gmail.com with ESMTPSA id h2sm7867235pfv.35.2022.01.12.04.53.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 04:53:03 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] net: bridge: fix net device refcount tracking issue in error path
-Date:   Wed, 12 Jan 2022 04:53:00 -0800
-Message-Id: <20220112125300.506685-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.1.575.g55b058a8bb-goog
+        id S1353298AbiALM7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 07:59:23 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:34903 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240947AbiALM7W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 07:59:22 -0500
+Received: from kwepemi100005.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JYngN5w3MzccYq;
+        Wed, 12 Jan 2022 20:58:40 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi100005.china.huawei.com (7.221.188.155) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 12 Jan 2022 20:59:20 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 12 Jan 2022 20:59:19 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <wangjie125@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>
+Subject: [PATCH net] net: bonding: fix bond_xmit_broadcast return value error bug
+Date:   Wed, 12 Jan 2022 20:54:18 +0800
+Message-ID: <20220112125418.55118-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Jie Wang <wangjie125@huawei.com>
 
-I left one dev_put() in br_add_if() error path and sure enough
-syzbot found its way.
+In Linux bonding scenario, one packet is copied to several copies and sent
+by all slave device of bond0 in mode 3(broadcast mode). The mode 3 xmit
+function bond_xmit_broadcast() only ueses the last slave device's tx result
+as the final result. In this case, if the last slave device is down, then
+it always return NET_XMIT_DROP, even though the other slave devices xmit
+success. It may cause the tx statistics error, and cause the application
+(e.g. scp) consider the network is unreachable.
 
-As the tracker is allocated in new_nbp(), we must make sure
-to properly free it.
+For example, use the following command to configure server A.
 
-We have to call dev_put_track(dev, &p->dev_tracker) before
-@p object is freed, of course. This is not an issue because
-br_add_if() owns a reference on @dev.
+echo 3 > /sys/class/net/bond0/bonding/mode
+ifconfig bond0 up
+ifenslave bond0 eth0 eth1
+ifconfig bond0 192.168.1.125
+ifconfig eth0 up
+ifconfig eth1 down
+The slave device eth0 and eth1 are connected to server B(192.168.1.107).
+Run the ping 192.168.1.107 -c 3 -i 0.2 command, the following information
+is displayed.
 
-Fixes: b2dcdc7f731d ("net: bridge: add net device refcount tracker")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+PING 192.168.1.107 (192.168.1.107) 56(84) bytes of data.
+64 bytes from 192.168.1.107: icmp_seq=1 ttl=64 time=0.077 ms
+64 bytes from 192.168.1.107: icmp_seq=2 ttl=64 time=0.056 ms
+64 bytes from 192.168.1.107: icmp_seq=3 ttl=64 time=0.051 ms
+
+ 192.168.1.107 ping statistics
+0 packets transmitted, 3 received
+
+Actually, the slave device eth0 of the bond successfully sends three
+ICMP packets, but the result shows that 0 packets are transmitted.
+
+Also if we use scp command to get remote files, the command end with the
+following printings.
+
+ssh_exchange_identification: read: Connection timed out
+
+So this patch modifies the bond_xmit_broadcast to return NET_XMIT_SUCCESS
+if one slave device in the bond sends packets successfully. If all slave
+devices send packets fail, the discarded packets stats is increased. The
+skb is released when there is no slave device in the bond or the last slave
+device is down.
+
+Fixes: ae46f184bc1f ("bonding: propagate transmit status")
+Signed-off-by: Jie Wang <wangjie125@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- net/bridge/br_if.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/bonding/bond_main.c | 30 ++++++++++++++++++++++--------
+ 1 file changed, 22 insertions(+), 8 deletions(-)
 
-diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
-index a52ad81596b72dde8e9a0affccd38c91ab59315d..55f47cadb114038920c01bf43e43500e07a3539c 100644
---- a/net/bridge/br_if.c
-+++ b/net/bridge/br_if.c
-@@ -615,6 +615,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
- 	err = dev_set_allmulti(dev, 1);
- 	if (err) {
- 		br_multicast_del_port(p);
-+		dev_put_track(dev, &p->dev_tracker);
- 		kfree(p);	/* kobject not yet init'd, manually free */
- 		goto err1;
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 07fc603c2fa7..fce80b57f15b 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -4884,25 +4884,39 @@ static netdev_tx_t bond_xmit_broadcast(struct sk_buff *skb,
+ 	struct bonding *bond = netdev_priv(bond_dev);
+ 	struct slave *slave = NULL;
+ 	struct list_head *iter;
++	bool xmit_suc = false;
++	bool skb_used = false;
+ 
+ 	bond_for_each_slave_rcu(bond, slave, iter) {
+-		if (bond_is_last_slave(bond, slave))
+-			break;
+-		if (bond_slave_is_up(slave) && slave->link == BOND_LINK_UP) {
+-			struct sk_buff *skb2 = skb_clone(skb, GFP_ATOMIC);
++		struct sk_buff *skb2;
++
++		if (!(bond_slave_is_up(slave) && slave->link == BOND_LINK_UP))
++			continue;
+ 
++		if (bond_is_last_slave(bond, slave)) {
++			skb2 = skb;
++			skb_used = true;
++		} else {
++			skb2 = skb_clone(skb, GFP_ATOMIC);
+ 			if (!skb2) {
+ 				net_err_ratelimited("%s: Error: %s: skb_clone() failed\n",
+ 						    bond_dev->name, __func__);
+ 				continue;
+ 			}
+-			bond_dev_queue_xmit(bond, skb2, slave->dev);
+ 		}
++
++		if (bond_dev_queue_xmit(bond, skb2, slave->dev) == NETDEV_TX_OK)
++			xmit_suc = true;
  	}
-@@ -724,10 +725,10 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
- 	sysfs_remove_link(br->ifobj, p->dev->name);
- err2:
- 	br_multicast_del_port(p);
-+	dev_put_track(dev, &p->dev_tracker);
- 	kobject_put(&p->kobj);
- 	dev_set_allmulti(dev, -1);
- err1:
--	dev_put(dev);
- 	return err;
+-	if (slave && bond_slave_is_up(slave) && slave->link == BOND_LINK_UP)
+-		return bond_dev_queue_xmit(bond, skb, slave->dev);
+ 
+-	return bond_tx_drop(bond_dev, skb);
++	if (!skb_used)
++		dev_kfree_skb_any(skb);
++
++	if (xmit_suc)
++		return NETDEV_TX_OK;
++
++	atomic_long_inc(&bond_dev->tx_dropped);
++	return NET_XMIT_DROP;
  }
  
+ /*------------------------- Device initialization ---------------------------*/
 -- 
-2.34.1.575.g55b058a8bb-goog
+2.33.0
 
