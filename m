@@ -2,56 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D30848CAC1
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:13:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C927748CABF
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:13:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356116AbiALSN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 13:13:26 -0500
-Received: from mx0c-0054df01.pphosted.com ([67.231.159.91]:31249 "EHLO
-        mx0c-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1356099AbiALSNK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:13:10 -0500
-Received: from pps.filterd (m0208999.ppops.net [127.0.0.1])
-        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20CE6jBh020242;
-        Wed, 12 Jan 2022 13:12:56 -0500
-Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2050.outbound.protection.outlook.com [104.47.61.50])
-        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3dj0fcg5xu-1
+        id S1356112AbiALSNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 13:13:24 -0500
+Received: from mx0d-0054df01.pphosted.com ([67.231.150.19]:23755 "EHLO
+        mx0d-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1356096AbiALSNJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:13:09 -0500
+Received: from pps.filterd (m0209000.ppops.net [127.0.0.1])
+        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20CGTfGU011851;
+        Wed, 12 Jan 2022 13:12:57 -0500
+Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2059.outbound.protection.outlook.com [104.47.61.59])
+        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3dj2j2g20s-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Jan 2022 13:12:56 -0500
+        Wed, 12 Jan 2022 13:12:57 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IF/mGvVtAyWiEwwA2Ms/WaUgJWP1EZ3Cdz0j79PW68lZw+WjwZhjJXBXLo6NIsDeZUjwxr8m4f869S4Gu9ye3qnPYs96ZMDypteAlD3kDJUTLh91pMOxm6qOAwcniaLu00jXJjf9lXtO4z5yGYXDziz/U69GJFpUK4IV2vPig5q4iHz3e3jo66g6iKJBSO1T5PnXEFBWnSgME2mK2ALD5MVmSU2oX0sLrE0S0YA4Etvu2xrNdxtn3zUIs+wj7ehNx8AfkLPmRRpilvTUDyb5koGwHd89vGSHkg7MvPhBOFQEW/Kmtua4biU6Pk1nvToargY+rSEbHCtp/outUxJI2g==
+ b=PwtS2MBZajQHN/xyDMDoAWNYhwd5nZP1LWnjeinod9FcWI87LZMq5U+NvPPmNbxlXdvWDb9mGcL//FwnysQtj+oOoQHBIX/pBkSHwm9ntlo5cDfO642Jq3g1Zw1oGGh9yu1TDy9xGrp9VYSaG4QFALBnn2ho6iWZrp1h0zL2MXXJrXcV8mlEn0iLwXh78WPQsCJj3GRUYICAO37541Q6s9EUjEKGVap7tRoF7QNVpxiboBVC5zIoORf3aB5ZXv/+RTbDUXuyFvXb7x/P1k9qCOHnQ5eHpDHStUU99rLLugd++jH9xQeoSnr07p/9oS6yXtZj2t9unhbwr2e/D5JLeQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=h4Kb+saHsl5nhQCVWvLxud2oStYyT5M4MzU5rhR5KjA=;
- b=kEx9N4NQsiTPi/h6UZricGbKuHY82kb6LGMkBWRmvL2xZzHDfC7psxMA3hhvu1zejeLkBe5Ss/Xp4OvBxXeSaaq5u28vSRb1oMvVlxi7Pv2nZiTez7PFPDHMUt4VeyBoVRyDBToUuu+TeYfSaraoEs/3kOyBkH7jrAjcb+bMgXV6oGEIkmQT29djpsoegtRqFyyQnVz/Dd9SM2E0049yUOdKiQQMqraSVGWdBCn+78L7MvjmMA+5AmKgeAgTzDmQalVB6dHulXmYMRXlRrQHccxL2Ju/fDPjo1yY8I3L7bV7e1Kq9Gkz56Vt1OAsDEV/MtYeJjEUuRWPEmyS9UfTFQ==
+ bh=YuEthdUlRQIB9bEXTOR2G0wPnncECoBzlJhvByVWU5E=;
+ b=YCtwCc8sy+2ZDf1OqJksyv+pwp4jBnwyuRDajzv7GMJRuylUuDXHpGgzxDHzMZ8YtC+Tb4EWEIY3R7BIFNtjvzdCR1Lp9m6vWOLXT48KW/l2AAtm/bJkEKyLfNiThBn963+L+Zq5dY3eZ0NerqBHThHruQIQGYkwt0H3zYyuUDgtf5bR5ey6b6JdYu2lIJc70quJdzJV61lw8XZKCP/2pLjHQhFw6x9DBDBUYmbmVF0ASpCoSfMAfcYJr2ofXpR5uGC6l92y9pxLjC2SzoKVgBZqXZQAvk8mhZfUkNi/8NG+eZP4O3RYu5CI4E4nPGnQP+SS7CZBLsxye94qeLCBUA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
  dkim=pass header.d=calian.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h4Kb+saHsl5nhQCVWvLxud2oStYyT5M4MzU5rhR5KjA=;
- b=Y4LtUncne4IbDAiZqiJD7EcltJzq7XubdQwj3xEUpUWIdsNdG53jym8bSDbrSMk6sLV9gcZue2RY07pH1r/+jWQojYytTAJh5WSHH3J/mJa5v2t9mbPqBvvDq8yptzv+aom9C5XK7Z6KpP5UHo0arYEmuUIY0UapvWKwyFgQcp4=
+ bh=YuEthdUlRQIB9bEXTOR2G0wPnncECoBzlJhvByVWU5E=;
+ b=jj9Kf2KFkxUD8/GhozAQtc8vwuivNpl+EjJKGkJ3Exi6bUtk2kMwGH9E7NhkCeBJnfC3F2+q0w0/bGcvrCiAMzAyDhP3xTEwuACbUIlJHyQwSwR2qM9NY7CjzW1MUC9w5XekNNHb+LJaozo1ia5BPh9maQhlcX6Eit4kDT02EIY=
 Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:6a::19)
  by YT1PR01MB3516.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:b::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Wed, 12 Jan
- 2022 18:12:54 +0000
+ 2022 18:12:56 +0000
 Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::6929:c39f:d893:b6c8]) by YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::6929:c39f:d893:b6c8%2]) with mapi id 15.20.4888.010; Wed, 12 Jan 2022
- 18:12:54 +0000
+ 18:12:56 +0000
 From:   Robert Hancock <robert.hancock@calian.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
         michal.simek@xilinx.com, nicolas.ferre@microchip.com,
         claudiu.beznea@microchip.com, devicetree@vger.kernel.org,
         Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH net-next 0/3] Cadence MACB/GEM support for ZynqMP SGMII
-Date:   Wed, 12 Jan 2022 12:11:10 -0600
-Message-Id: <20220112181113.875567-1-robert.hancock@calian.com>
+Subject: [PATCH net-next 1/3] macb: bindings doc: added generic PHY and reset mappings for ZynqMP
+Date:   Wed, 12 Jan 2022 12:11:11 -0600
+Message-Id: <20220112181113.875567-2-robert.hancock@calian.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220112181113.875567-1-robert.hancock@calian.com>
+References: <20220112181113.875567-1-robert.hancock@calian.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: CO2PR05CA0092.namprd05.prod.outlook.com
@@ -59,83 +61,127 @@ X-ClientProxiedBy: CO2PR05CA0092.namprd05.prod.outlook.com
  (2603:10b6:b01:6a::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ebd646a7-d471-4bb1-feb0-08d9d5f7270d
+X-MS-Office365-Filtering-Correlation-Id: 7363a039-8fe2-40b8-f317-08d9d5f7283b
 X-MS-TrafficTypeDiagnostic: YT1PR01MB3516:EE_
-X-Microsoft-Antispam-PRVS: <YT1PR01MB35169781BABBBE2A232F31BAEC529@YT1PR01MB3516.CANPRD01.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Microsoft-Antispam-PRVS: <YT1PR01MB3516DB82A54201F4693FD36CEC529@YT1PR01MB3516.CANPRD01.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rouDoZD8Ct6ay5kmb4Y4PdSnixRiJgqOUF0310pxXuun7afpCLIwAI+f+N2sCoj3tgnnNCL+FrSBmHs79pNYeEdXzciwpUEgGXh7lA/HnczUPIy2W60R3xKVqeA00mpBB5T/PXMEfLsmv7R8n+6f8PQmc/M1fRjNAsXcUcJWS3Z/3idiQPkydSH8oclJp6e/K7PZdivIs0uqB6EzN9hNV/Y4UcRSm1oRLtFF+pMnoMW6u2jwCY2S/aIEt2gpA1QlowLqAR47Aoy0y+k9SIrJPXISq66QMcMq4Aovw4LTLc+syMHxGhUiuSmqgQD8uDlWK16IRPFigKxmNTMRedeoVMD8oQ47XRzbdumVwMPe89zvkleJooRGac/IOyVFyTMiuiehLhEfrznWdfd7t+2HubbvsBtkxm49P8T/oDdLBkKSCO4Ve7DrhxFSR9c4BdJoQQ4BX8iQKD9o/ly9PponbnhlHGOrcikU29W9GwxijmvQW+LJpKE3COpDqE948S/cENL9+ZFb0rN4yUNgVCZlrJSuVJcYdztH2TTvMNu67FnivyqTArOpprXyzIrj24TyEb9QcRUHfMeT6TqZ291UeiH0+65gp4Y1/XubWAmh+Q1eRHybw1Qr87Awk7XausTJeGRtsiIkQLkLAC3/A/hZINFewCn4H+oElYIUWeH3K+FSks/Dyc89GbzKVZdFlX651TtqFw4YfmdDdgdHwS63uw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(44832011)(186003)(8936002)(38350700002)(6512007)(38100700002)(8676002)(66946007)(4326008)(2906002)(2616005)(107886003)(26005)(6916009)(83380400001)(508600001)(1076003)(86362001)(4744005)(5660300002)(66556008)(66476007)(52116002)(36756003)(6506007)(6486002)(316002)(6666004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: rD6nd6SVF+bhcpvSb8G2wCKF0QpFaUHvEwOVs7FpjMkRsnrMBBdn0HDOGIYa9ye8zvSIhgXW0hhbL/5myFYScFiR3LhWIXo5ZQAoNC9lPwpMOOpsoWId0d8bevnMFHOA+fCfnaxP8Z9jwjjjejVNpEdVQxrbjHkKqt7dnx2lxP1mEOV8E/+BQj0N9TbRG2hQSXfRdJ4AB8xHe85AhjPUF2YTts3rr3n9K3m6zOtLM09ntmbVA6T5Jrr0PTlWammfPah522WZ11jqfLY5lTQ0YAaDoF8iz9E6WOQblk7acYDq56r7comLOMXQM+uSSYowmVoERQb22/eLRq/YlzfqQvNix7Fj5FidMdjitFJThwFQveTUZ5zQO5Qa2h7bF1x8IfJDE0X5CoFrhBxFFD4C95fSA1pRYns33Ip2MzBWFTbcOCxT4XEVx2RTMgrqGlXkhjZzZy3ZHeoA7q2L8KRx5RvhbBGgvLRt5R8ixR9Yrglvy6S8fVMdszkPEcHjyIb5jLaOkYIRGzZrLsxlOHutrmOkFP8ljIYUM6gQtgpRTVXu2DNNOq3PDaRqj6kq0TbGi3Wzv19WWCCKOPHnqTdazl6NXgp9Pjwo5LHS02HUBDeAg2Rr6+fqqgrkO/yU78CcNYFrkf6QWqgQpKHa4nY1FY335z/rORimvuK00bdJuCJz8SC130LLxEX7nhrshEpwWhVQCYOEYUq/zUBFhImfAhwTKt07bGsugw3E1Dh1gjI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(44832011)(186003)(8936002)(38350700002)(6512007)(38100700002)(8676002)(66946007)(4326008)(2906002)(2616005)(107886003)(26005)(6916009)(83380400001)(508600001)(1076003)(86362001)(5660300002)(66556008)(66476007)(52116002)(36756003)(6506007)(6486002)(316002)(6666004)(41533002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?lkKvzQO2OBeIBxmWvrjIJho+AJoMOBEboz1Ljx1kYk+DVP8hrmYOdpGfXCC+?=
- =?us-ascii?Q?lTWlfi42b/dmX/qLkYWBBpagjSJSwowrTS7N4uQmmHMh5ibG7z7YUmjCLelf?=
- =?us-ascii?Q?wj+ukRXTdOdNTYNGrYCva11v0NZ9EJCcu4QV7MkhVC+4VV8GQJ3+0YyCeZ6l?=
- =?us-ascii?Q?i97aXqy2Fc40umVtCvlUaZDdU6jLl7tbNXw1ZK96IXCXTlBXCETr9xlhg2SS?=
- =?us-ascii?Q?gePOcgfqPQozeUzKkCNVHTcQF/lWRhh1Z1Q2xw6hOkOUGllwVqMLmX7ff6tM?=
- =?us-ascii?Q?5RM8ABQBqk2TXulJRu7yLBska6yWKYNy1xOelKiVHSQ2R9j64MnpaDF39LoN?=
- =?us-ascii?Q?TuDF4d5FKJka8NKYjrI46U4tWO3i9Rmt2747y3ol5WGbok/6CeOJjGhEcoNv?=
- =?us-ascii?Q?SdbYj4HdZoFy7ndC068SXgSPFabOWPCT8nd+I4nNv3gsaB+2K+WRAMheE0sj?=
- =?us-ascii?Q?de+N1VYshxPN5hy9bpJAdG0dje//JyOy3H+XUSZschmq/MZ3nVwvM1/PUFHM?=
- =?us-ascii?Q?nLbONypUQKXcbeCcrp9fAU0dj74mRHxmwqY074ZK8We9RavVY0i/aKdVQlSK?=
- =?us-ascii?Q?xd3v6IDWMZExA0IOsrVkTdfgZqgsjG9d0Q960nuxT722kP4dpOnAFD8KZDnf?=
- =?us-ascii?Q?pABahdxcr+Y9DgzwsYwglI4NX4zszwvqG2IXTrtfJo98KTMCSGu15dtmJWR0?=
- =?us-ascii?Q?tt9HSyUr4Za9GQwBzi0fxsyR9iwGNiQQWGXgzsXqQZRkmqmx5t8Re1zn2LvP?=
- =?us-ascii?Q?J2Xoit9UKwWlVJwbt1+N3yUHsshcgbhRyJwVzYXtqYCrdl9UF8KRCGmVHsE3?=
- =?us-ascii?Q?BrdEJ/x6cZ24hgdUn3Z9Atd93eFzR4INE/81GFXykuHEEexcRA6zG53LpCV4?=
- =?us-ascii?Q?ZULOA4m9Pr5CX1Dh3VRUbzCS34q+aGMhJMzIsoE/64R4LHJ3hhlmFSBjL0n8?=
- =?us-ascii?Q?p7C0cIlnU86ci7uRZQWxodPUWyxmSl4VRxRfVT3wAYyeFFhBGJe1SXzltn0f?=
- =?us-ascii?Q?OmX1qXQ0+lV64JjFf3j0SnmChhzCp16Ko4bzTW0ntgzm/qKLl0ef9Dnj4tIv?=
- =?us-ascii?Q?tUGS5MTtlKyorvSZKzudJdaD89GzBxpcuqEWiHQzTetlWsPVPJ71ChQEBhWY?=
- =?us-ascii?Q?NrfMf/msPBmiI/13HA8xoap0Txp/uHyMhQiwpTjq62N1fjFISuWcM1X7RVzK?=
- =?us-ascii?Q?gi3DuVRjE+YEfexBEcwM1QTsJmUTL/TBnThcr2RDkT5TmUv7YwzyQFnu4PhQ?=
- =?us-ascii?Q?9//rX6EB2fY2tUqee98b+8oQEncGvG3l2A54fymEbMGsSYk+w9CgqEKRRzMH?=
- =?us-ascii?Q?oAELBlkrm8SeJXckZUeU2nBJ8QyAtNNrR53rSIaABc4HDxfNsTNX5K42Z0H4?=
- =?us-ascii?Q?rzGcuX51uLD39y4hQ5RI1tOL7pbymwCJW9Qxw+bp6Jzw6Mru+beq7dwGHa/7?=
- =?us-ascii?Q?uYB3/ZgjC4zraAJ0ialGmSkU9zSl+zzkzb8JsRn+IR0WwPpUqTSPoYHnNAX7?=
- =?us-ascii?Q?6RU905JK0i+m2unv4pGDe55n+ijoxIdF8rhk87Kj1GakU2IAgCp7HemBueEG?=
- =?us-ascii?Q?v5EhQxGDHyWpflpl/u/7tJg1cfBIxCWpVJzncR+CE2cJdBPAXi95JHDKEtje?=
- =?us-ascii?Q?eqYco0uQDN6ypTjBg2vQpmdTitehlQj7PtHjdZGDgZE+qAFOXKvfpvA9DAZA?=
- =?us-ascii?Q?HVxuXKY2XGfWaSrWOkWxUpyVtkI=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?P3S+rpRxqlYPbX8zrA4T7wAKpL6xRKoL8JDWPi1sU8OuyZ1O4VIaQ58lnFCF?=
+ =?us-ascii?Q?tUlDPU+skE3vQJSra5w9uY/67DcTdj2gqWt7vRKGGNFKrCpJNbOXWAvoNyO8?=
+ =?us-ascii?Q?iMJJ50Y7S8mCkN3X+IgJbckdcgD+0bTVJP8dK0GHOqn4PvXMIxsT9gO6Xs99?=
+ =?us-ascii?Q?tavL1aVAmVQ3zJq4RGbv1lo/61/tLWJTU3rpVqFAy3xyqoTelHb3OdHidA56?=
+ =?us-ascii?Q?pzQIWBVDSvXZ9f8LO6fxV/4pQ1rRY2tWBLtOncOhX7cKWAf2TVeR6FmhOvwD?=
+ =?us-ascii?Q?x7gygPBcIzRw/troX5JKY7Bi9wHKEy4MpRb+du8mjfpPoWLM+yWEKgDoCwqG?=
+ =?us-ascii?Q?VzpmMr+iorkVv0lEZVbntFYsbcwhgz/q64S1oTzPPo1M1WKyp2BWbI7cdJTf?=
+ =?us-ascii?Q?glPZjrxcTLTij2w/f8GgQWcC5LSztm7JNKd3JRbUPvylQlUDaVQMEIrLNWu4?=
+ =?us-ascii?Q?on+nviuFlZH8H04ixIMSyLSPhtwrW4LfDL0v4l6lSHYaf6bDGEBxu7PDg5G5?=
+ =?us-ascii?Q?OK/J0+R6TN2RXO/K1OG2HsmmB8vxO+GSMR3R8e4MhQoJNe7zI01lMMhXnDXo?=
+ =?us-ascii?Q?M8oSm/bcvk4l8lilXYkvQNgcuOkl8I/pwBx5q063QanAVBz7k4m1a12ugSeG?=
+ =?us-ascii?Q?9bMVD9E8wbBoJE7k4m4WByjUN6wPSZAY055wgNWLutNQYDXuf7sZyeIINkFE?=
+ =?us-ascii?Q?YyPaGmFKTDZ6B75Q/slf6Qf6ol6wnhE26QKdaebNv1ZTYyH/9gXsCdwmeOS2?=
+ =?us-ascii?Q?ZCKBSwHhNrsA0svhNju8HO5UvrkfkpxlFTaV6E0Ijlvui2ovQPsLrs5LRevb?=
+ =?us-ascii?Q?wJv9VlSsdhawQny4e+UHbLnylYCc4T+OvatzCopEQLrBqDgPhejVNYMUiOOn?=
+ =?us-ascii?Q?Tg/vjvqWF2PkIWxNfhpk08/GMnaIN+9S1ofGMP6hU8P/wU03GvzkyHzfV6l0?=
+ =?us-ascii?Q?Q8cU2ZkHoqGaIH326n5iNoiqxr3y9LLpjjfmDZwZU5rA8o++ZYFdeXb4eFac?=
+ =?us-ascii?Q?5IH/symnBO71obtQdGrJKAbwhPLSSIAADOBCwPmUrHRU08iKDBGDNLgXn5qI?=
+ =?us-ascii?Q?O2UFDZliFFgV/HwHUNnSo05ONXBSxqnFhSDrMDmfhci2wLPKrgF6NZ1cojQE?=
+ =?us-ascii?Q?OP2WZcKMfVnuMK7Jiig78xVtu9U2sZ4mjfD8cq9V0mw5ohC7kLNMe4YOAC4n?=
+ =?us-ascii?Q?5nNaMydGYFj7uYGi0xlt6ab++nRXthUJmnCWl1sv1CiFkPPww04KfOi8FpCM?=
+ =?us-ascii?Q?GZ1VLxGKimgzYU5bWVySOYMrh5EKVegklbtTT2AUZqns7mtDB2poLMK2Zk7v?=
+ =?us-ascii?Q?e1dSWwlj3/qh3Crd0DonsZDnwkhaRkcCn0KJ/Lz0tliD+tWdN2axfIOZy6ay?=
+ =?us-ascii?Q?IWLrh65p2E+isBjARd+4kA9YmthB1/70vbTQpkg2Nq9y2dQ9vZ6TaDTMxwRg?=
+ =?us-ascii?Q?fVBNvPouPqGTyZC62SBsUcIMEXLMKnRxg7rMrDyoXz/Pi59LBwMp97hZf9jU?=
+ =?us-ascii?Q?Ozo6Jtwy+2HQpI2dFm6XPKVDHOZlYK4sEw7BhNQC3EkEB9Qzi6x9bEnftWQj?=
+ =?us-ascii?Q?7Z9l7Xs37Ff9K8lOq5CtqbXGLCNKPWqu5DSPm1fI3TR0zLE35tgZttVYpRWn?=
+ =?us-ascii?Q?FvhaeBpWgy6+QLVufUkZew2Vqad/wCJKJekxBzz7CKOQ1oTRpCmqtMm+QCdd?=
+ =?us-ascii?Q?0rAAP0c1P9LHtAOzMxK32U3BVf4=3D?=
 X-OriginatorOrg: calian.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ebd646a7-d471-4bb1-feb0-08d9d5f7270d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7363a039-8fe2-40b8-f317-08d9d5f7283b
 X-MS-Exchange-CrossTenant-AuthSource: YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 18:12:54.3211
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 18:12:55.9853
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9iVadMxxiHuOiYNAzkwrATOgA2DdUaaSCmpsgRFEAbHp4Rroa8lUlMk/bhLZhU5kAPaHR/qtAXgMYmoeYtp3iSUN3C8kLnuZSbY7okqWtzU=
+X-MS-Exchange-CrossTenant-UserPrincipalName: MPy+o9/ApJgi+5HL2z0SB68qnv7kO36edwrZMDUaMi6NxFcJ1dE1zTtMjwiJzdHN5l8R1ad6v+9yMvx0y7WfxYKbF7JdwjMhb90mkgVeLsc=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: YT1PR01MB3516
-X-Proofpoint-GUID: 6iHnKYnFIOhE10MMJMa-aq0wNsXizSNU
-X-Proofpoint-ORIG-GUID: 6iHnKYnFIOhE10MMJMa-aq0wNsXizSNU
+X-Proofpoint-GUID: wwKaYt2rJhgk-bF3Iw9_TNKsiqrVuqOE
+X-Proofpoint-ORIG-GUID: wwKaYt2rJhgk-bF3Iw9_TNKsiqrVuqOE
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-01-12_05,2022-01-11_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=576 spamscore=0
- mlxscore=0 adultscore=0 malwarescore=0 bulkscore=0 lowpriorityscore=0
- suspectscore=0 impostorscore=0 priorityscore=1501 phishscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ malwarescore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
+ lowpriorityscore=0 spamscore=0 phishscore=0 adultscore=0 suspectscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2110150000 definitions=main-2201120110
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changes to allow SGMII mode to work properly in the GEM driver on the
-Xilinx ZynqMP platform.
+Updated macb DT binding documentation to reflect the phy-names, phys,
+resets, reset-names properties which are now used with ZynqMP GEM
+devices, and added a ZynqMP-specific DT example.
 
-Robert Hancock (3):
-  macb: bindings doc: added generic PHY and reset mappings for ZynqMP
-  net: macb: Added ZynqMP-specific initialization
-  arm64: dts: zynqmp: Added GEM reset definitions
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+---
+ .../devicetree/bindings/net/macb.txt          | 33 +++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
- .../devicetree/bindings/net/macb.txt          | 33 +++++++++++++
- arch/arm64/boot/dts/xilinx/zynqmp.dtsi        |  8 ++++
- drivers/net/ethernet/cadence/macb_main.c      | 47 ++++++++++++++++++-
- 3 files changed, 87 insertions(+), 1 deletion(-)
-
+diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
+index a1b06fd1962e..e526952145b8 100644
+--- a/Documentation/devicetree/bindings/net/macb.txt
++++ b/Documentation/devicetree/bindings/net/macb.txt
+@@ -29,6 +29,12 @@ Required properties:
+ 	Optional elements: 'rx_clk' applies to cdns,zynqmp-gem
+ 	Optional elements: 'tsu_clk'
+ - clocks: Phandles to input clocks.
++- phy_names, phys: Required with ZynqMP SoC when in SGMII mode.
++                   phy_names should be "sgmii-phy" and phys should
++                   reference PS-GTR generic PHY device for this controller
++                   instance. See ZynqMP example below.
++- resets, reset-names: Recommended with ZynqMP, specify reset control for this
++		       controller instance with zynqmp-reset driver.
+ 
+ Optional properties:
+ - mdio: node containing PHY children. If this node is not present, then PHYs
+@@ -58,3 +64,30 @@ Examples:
+ 			reset-gpios = <&pioE 6 1>;
+ 		};
+ 	};
++
++	gem1: ethernet@ff0c0000 {
++		compatible = "cdns,zynqmp-gem", "cdns,gem";
++		interrupt-parent = <&gic>;
++		interrupts = <0 59 4>, <0 59 4>;
++		reg = <0x0 0xff0c0000 0x0 0x1000>;
++		clocks = <&zynqmp_clk LPD_LSBUS>, <&zynqmp_clk GEM1_REF>,
++			 <&zynqmp_clk GEM1_TX>, <&zynqmp_clk GEM1_RX>,
++			 <&zynqmp_clk GEM_TSU>;
++		clock-names = "pclk", "hclk", "tx_clk", "rx_clk", "tsu_clk";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		#stream-id-cells = <1>;
++		iommus = <&smmu 0x875>;
++		power-domains = <&zynqmp_firmware PD_ETH_1>;
++		resets = <&zynqmp_reset ZYNQMP_RESET_GEM1>;
++		reset-names = "gem1_rst";
++		status = "okay";
++		phy-mode = "sgmii";
++		phy-names = "sgmii-phy";
++		phys = <&psgtr 1 PHY_TYPE_SGMII 1 1>;
++		fixed-link {
++			speed = <1000>;
++			full-duplex;
++			pause;
++		};
++	};
 -- 
 2.31.1
 
