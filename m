@@ -2,156 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6878548CB32
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:45:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EECE148CB37
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:46:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356417AbiALSpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 13:45:14 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.184]:33624 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1356430AbiALSom (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:44:42 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.51.18])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 15EC0A0068;
-        Wed, 12 Jan 2022 18:44:40 +0000 (UTC)
-Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 8C63334008C;
-        Wed, 12 Jan 2022 18:44:39 +0000 (UTC)
-Received: from [192.168.1.115] (unknown [98.97.67.209])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1356452AbiALSqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 13:46:20 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46164 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344055AbiALSqU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:46:20 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 9905C13C2B0;
-        Wed, 12 Jan 2022 10:44:38 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 9905C13C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1642013078;
-        bh=TCWbHXDy7xgP0H5OdchDD8kDzVJMxG0A4Aapu8S52EA=;
-        h=Subject:From:To:Cc:References:Date:In-Reply-To:From;
-        b=ITwfu4uhQYDD0ArrEA9lkvh7iQ6k+CpgN6Psr2LTVM4M511LVBJVZKSVS+leJqM0U
-         OvEFnn1YKnEaC2RfaMeZItWgqIQ1a0AydBVaNEd/YShr3h1sFOtfey6H4RVFuI6Uif
-         lAuhwsV5AijxuvP2IbXfBxCW94/Ao8xGE4rdCgRg=
-Subject: Re: Debugging stuck tcp connection across localhost [snip]
-From:   Ben Greear <greearb@candelatech.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        netdev <netdev@vger.kernel.org>
-References: <38e55776-857d-1b51-3558-d788cf3c1524@candelatech.com>
- <CADVnQyn97m5ybVZ3FdWAw85gOMLAvPSHiR8_NC_nGFyBdRySqQ@mail.gmail.com>
- <b3e53863-e80e-704f-81a2-905f80f3171d@candelatech.com>
- <CADVnQymJaF3HoxoWhTb=D2wuVTpe_fp45tL8g7kaA2jgDe+xcQ@mail.gmail.com>
- <a6ec30f5-9978-f55f-f34f-34485a09db97@candelatech.com>
- <CADVnQym9LTupiVCTWh95qLQWYTkiFAEESv9Htzrgij8UVqSHBQ@mail.gmail.com>
- <b60aab98-a95f-d392-4391-c0d5e2afb2cd@candelatech.com>
- <9330e1c7-f7a2-0f1e-0ede-c9e5353060e3@candelatech.com>
- <0b2b06a8-4c59-2a00-1fbc-b4734a93ad95@gmail.com>
- <c84d0877-43a1-9a52-0046-e26b614a5aa6@candelatech.com>
- <CANn89iL=690zdpCS7g1vpZdZCHsj0O1MrOjGkcg0GPLVhjr4RQ@mail.gmail.com>
- <a7056912-213d-abb9-420d-b7741ae5db8a@candelatech.com>
- <CANn89i+HnhfCKUVxtVhQ1vv74zO1tEwT2yXcCX_OoXf14WGAQg@mail.gmail.com>
- <a503d7b8-b015-289c-1a8a-eb4d5df7fb12@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <a31557d8-13da-07e2-7a64-ce07e786f25c@candelatech.com>
-Date:   Wed, 12 Jan 2022 10:44:37 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA59D619AB
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 18:46:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2604C36AEB;
+        Wed, 12 Jan 2022 18:46:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642013179;
+        bh=y7E/KHbXY9lpDr9BJopBY/ZaK8Sw/6qW+uDd883EaZw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=grA8tm3ZwKds1EIiKqtCf3TlNaPqLfG/uCrwsL6c6Oc0VUMD2ccdt/aCY6JOhVIgn
+         dgYH57FZ8um9HCr1r41b64B/yK0Lk38H5ojMyXinRBxno+uiFJjf9WOOn1ta1Z2fb8
+         vuJlr79zS4nYrv7ybXw0sr4M0iolZQBk5lzf5oMlg55FvISzB1oHF5RzS7gHMq8Ane
+         9OG7d8342r8n3DOkBzi8OvtFnmx8Ez8FQs5eWCUVn5AaJxc2qVq6IBXeZtiIGn2SIm
+         8DfrCEdacEm+O0j2+hwTPEbvCVN6AIt1tksAl/89Xa9LFmQbvuUM2uDiQPCZqrWfYj
+         xR9pvK4/u6x0Q==
+Date:   Wed, 12 Jan 2022 10:46:18 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     regressions@lists.linux.dev
+Cc:     ooppublic@163.com, davem@davemloft.net, dsahern@kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] net: fix fragments have the disallowed options
+Message-ID: <20220112104618.21ad3202@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220107080559.122713-1-ooppublic@163.com>
+References: <20220107080559.122713-1-ooppublic@163.com>
 MIME-Version: 1.0
-In-Reply-To: <a503d7b8-b015-289c-1a8a-eb4d5df7fb12@candelatech.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-MW
-Content-Transfer-Encoding: 8bit
-X-MDID: 1642013080-Yak7Afh7_Y53
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/12/22 10:01 AM, Ben Greear wrote:
-> On 1/12/22 9:12 AM, Eric Dumazet wrote:
->> On Wed, Jan 12, 2022 at 6:52 AM Ben Greear <greearb@candelatech.com> wrote:
->>>
->>> On 1/11/22 11:41 PM, Eric Dumazet wrote:
->>>> On Tue, Jan 11, 2022 at 1:35 PM Ben Greear <greearb@candelatech.com> wrote:
->>>>>
->>>>> On 1/11/22 2:46 AM, Eric Dumazet wrote:
->>>>>>
+On Fri,  7 Jan 2022 16:05:59 +0800 ooppublic@163.com wrote:
+> From: caixf <ooppublic@163.com>
 > 
->>>> Just to clarify:
->>>>
->>>> Have you any qdisc on lo interface ?
->>>>
->>>> Can you try:
->>>> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
->>>> index 5079832af5c1090917a8fd5dfb1a3025e2d85ae0..81a26ce4d79fd48f870b5c1d076a9082950e2a57
->>>> 100644
->>>> --- a/net/ipv4/tcp_output.c
->>>> +++ b/net/ipv4/tcp_output.c
->>>> @@ -2769,6 +2769,7 @@ bool tcp_schedule_loss_probe(struct sock *sk,
->>>> bool advancing_rto)
->>>>    static bool skb_still_in_host_queue(struct sock *sk,
->>>>                                       const struct sk_buff *skb)
->>>>    {
->>>> +#if 0
->>>>           if (unlikely(skb_fclone_busy(sk, skb))) {
->>>>                   set_bit(TSQ_THROTTLED, &sk->sk_tsq_flags);
->>>>                   smp_mb__after_atomic();
->>>> @@ -2778,6 +2779,7 @@ static bool skb_still_in_host_queue(struct sock *sk,
->>>>                           return true;
->>>>                   }
->>>>           }
->>>> +#endif
->>>>           return false;
->>>>    }
->>>>
->>>
->>> I will try that today.
->>>
->>> I don't think I have qdisc on lo:
->>>
->>> # tc qdisc show|grep 'dev lo'
->>> qdisc noqueue 0: dev lo root refcnt 2
->>
->> Great, I wanted to make sure you were not hitting some bug there
->> (pfifo_fast has been buggy for many kernel versions)
->>
->>>
->>> The eth ports are using fq_codel, and I guess they are using mq as well.
->>>
->>> We moved one of the processes off of the problematic machine so that it communicates over
->>> Ethernet instead of 'lo', and problem seems to have gone away.  But, that also
->>> changes system load, so it could be coincidence.
->>>
->>> Also, conntrack -L showed nothing on a machine with simpler config where the two problematic processes
->>> are talking over 'lo'.  The machine that shows problem does have a lot of conntrack entries because it
->>> is also doing some NAT for other data connections, but I don't think this should affect the 127.0.0.1 traffic.
->>> There is a decent chance I mis-understand your comment about conntrack though...
->>
->> This was a wild guess. Honestly, I do not have a smoking gun yet.
+> When in function ip_do_fragment() enter fsat path,
+> if skb have opthons, all fragments will have the same options.
 > 
-> I tried your patch above, it did not help.
-> 
-> Also, looks like maybe we reproduced same issue with processes on different
-> machines, but I was not able to verify it was the same root cause, and at
-> least, it was harder to reproduce.
-> 
-> I'm back to testing in the easily reproducible case now.
-> 
-> I have a few local patches in the general networking path, I'm going to
-> attempt to back those out just in case my patches are buggy.
+> Just guarantee the second fragment not have the disallowed options.
 
-Well, I think maybe I found the problem.
-
-I looked in the right place at the right time and saw that the kernel was spewing about
-neigh entries being full.  The defaults are too small for the number of interfaces
-we are using.  Our script that was supposed to set the thresholds higher had a typo
-in it that caused it to not actually set the values.
-
-When the neigh entries are fully consumed, then even communication across 127.0.0.1
-fails in somewhat mysterious ways, and I guess this can break existing connections
-too, not just new connections.
-
-We'll do some more testing with the thresh setting fix in...always a chance there is more than one
-problem in this area.
-
-Thanks,
-Ben
+#regzbot ^introduced: faf482ca196a5b16007190529b3b2dd32ab3f761
