@@ -2,127 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9673E48C2DD
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 12:08:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3597548C2E2
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 12:11:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352757AbiALLIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 06:08:49 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41442 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237651AbiALLIs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 06:08:48 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 416AF61744;
-        Wed, 12 Jan 2022 11:08:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2423C36AE9;
-        Wed, 12 Jan 2022 11:08:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641985727;
-        bh=g4TvSOUEifbHDFsfuXP1XTIJ9SHq2ApknF9J8gPzf1w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NT9pKrhc7d9PNADi6t1tdi/jU0XXRogTOhGVezq27DEkxXmBJQkYdIpb/CyVbpdRh
-         9DVNj8MIjdNkzb04r5CzjqArJBLq1WKRDVYnFWmD7zno52jR5sQIiBzR/dQJN1jjUX
-         F92BrQZwI0y7yaZDuS32qEjiULQ39YdL47xKTOOpYRKMgW9AAm11ZQ1grY7rrgmwF5
-         yxy50LD28I92l/TXa9KQTwwBhkbVr6BncE5SVt0408gFnjUhUELE6WBUFalbhBGyck
-         LEOzt0voGuBVRoerR5M4CXl8a3CUNewUUUP3XTg3tjLNP94D3zh1DmvzbBMCHUWDT0
-         P9AZxeuNiAgog==
-Date:   Wed, 12 Jan 2022 20:08:40 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH 0/6] fprobe: Introduce fprobe function entry/exit
- probe
-Message-Id: <20220112200840.a035b3b001d2e207e6a2d885@kernel.org>
-In-Reply-To: <20220112163353.4da6a6b9c6eef69dbda50324@kernel.org>
-References: <20220104080943.113249-1-jolsa@kernel.org>
-        <164191321766.806991.7930388561276940676.stgit@devnote2>
-        <20220111223944.jbi3mxedwifxwyz5@ast-mbp.lan>
-        <20220112163353.4da6a6b9c6eef69dbda50324@kernel.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1352769AbiALLLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 06:11:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58368 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352761AbiALLLK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 06:11:10 -0500
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD635C06173F;
+        Wed, 12 Jan 2022 03:11:10 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id pf13so4200602pjb.0;
+        Wed, 12 Jan 2022 03:11:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iVlCo1TFSBMrozoizl3ZBqKH7/OrLx149Kn2CvvnqdE=;
+        b=mTU+vUGIHWlm/17PwWxhC45VAIcBNSpihQhGtzP5UaoiGz8da4P5avJYxJkBU1GjIl
+         UXuvK7ddIsu6seAIBZlml0UmPuLLx4Dl9+Ibh/8wyC5dJjLcnzKguZHRh4/iV5IQOWYi
+         xALxGXzujDSy7Mt288cr426RK9lBjUV/Z1c0ANiuQt+Cv6rEUBgISXG8Dj1RhouxzpIB
+         370vGB8j+MaEbAl1q52QWaY8GZIVZOcOUAkztzafYwfvPQAnNCgUK3kj0dc8+m9v3MYl
+         npUMqFtvpvuC3tMjQ82Cub8uu/rLKXHnbNSqXMmXGVpkNTawVZ8wpyhPCCc+zNgSSfsp
+         YkJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iVlCo1TFSBMrozoizl3ZBqKH7/OrLx149Kn2CvvnqdE=;
+        b=SqH7tlSAllZHETl3XbGOX6c2dV5yxUOzUfzmu2L+JXjncSLCK1wY/Kp9/sHQDZ4FEV
+         MR1PCTIM1fgC4o/SiM5QyQX6uYEIrehU2JQpCXA5c0S3WEQaRuYBXEUF1KHnbwQYRHiQ
+         9552wdapH5t6Vn/ZlsDo1WybdCpn/kty9vTxgnfwx/r8T3P2vJp9HjeP1r/1+IOk7/BU
+         rN0DhdznKHyXSb2fAKMbmtlkTusFUEe0RcsLMW1HfmqjaqiNrjeYqMzJOBQn+5o9oZlS
+         Ig0pTAuG7u1safIDFI5e04kEKAXYMdW20ogCHbp3Ve7nb1jA/eUWdLkDxn+6STp+dmz7
+         Phug==
+X-Gm-Message-State: AOAM533EL+Pd7f6K3jrEe4UaxXLjZhlEGO6NST508XIMRjN9BvaWSLbQ
+        xDiBFV5VkXhA73mRQC9ZHFjLCOtODItdhMia
+X-Google-Smtp-Source: ABdhPJz6nLyHQ0+VX2XGrBaoC2n4a2WzeLuc0Qv4oKEdShF4rH4Xrax3gMHQTRt0oBgEI9tDniXEuw==
+X-Received: by 2002:a17:902:c086:b0:14a:6828:388d with SMTP id j6-20020a170902c08600b0014a6828388dmr2142149pld.17.1641985870124;
+        Wed, 12 Jan 2022 03:11:10 -0800 (PST)
+Received: from [0.0.0.0] ([20.187.112.145])
+        by smtp.gmail.com with ESMTPSA id z24sm5347743pjq.17.2022.01.12.03.11.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 03:11:09 -0800 (PST)
+Subject: Re: [PATCH net] ax25: use after free in ax25_connect
+To:     Eric Dumazet <eric.dumazet@gmail.com>, jreuter@yaina.de,
+        ralf@linux-mips.org, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220111042048.43532-1-hbh25y@gmail.com>
+ <f35292c0-621f-3f07-87ed-2533bfd1496e@gmail.com>
+ <f48850cb-8e26-afa0-576c-691bb4be5587@gmail.com>
+ <571c72e8-2111-6aa0-1bd7-e0af7fc50539@gmail.com>
+From:   Hangyu Hua <hbh25y@gmail.com>
+Message-ID: <80007b3e-eba8-1fbe-302d-4398830843dd@gmail.com>
+Date:   Wed, 12 Jan 2022 19:11:05 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <571c72e8-2111-6aa0-1bd7-e0af7fc50539@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Jan 2022 16:33:53 +0900
-Masami Hiramatsu <mhiramat@kernel.org> wrote:
+Yes.
 
-> Hi Alexei,
+And there are two ways to release ax25, ax25_release and time expiry. I 
+tested that ax25_release will not be invoked before ax25_connect is done 
+by closing fd from user space. I think the reason is that __sys_connect 
+use fdget() to protect fd. But i can't test if a function like 
+ax25_std_heartbeat_expiry will release ax25 between sk_to_ax25(sk) and 
+lock_sock(sk).
+
+So i think it's better to protect sk_to_ax25(sk) by a lock. Beacause 
+functions like ax25_release use sk_to_ax25 after a lock.
+
+
+On 2022/1/12 下午5:59, Eric Dumazet wrote:
 > 
-> On Tue, 11 Jan 2022 14:39:44 -0800
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> On 1/11/22 18:13, Hangyu Hua wrote:
+>> I try to use ax25_release to trigger this bug like this:
+>> ax25_release                 ax25_connect
+>> lock_sock(sk);
+>> -----------------------------sk = sock->sk;
+>> -----------------------------ax25 = sk_to_ax25(sk);
+>> ax25_destroy_socket(ax25);
+>> release_sock(sk);
+>> -----------------------------lock_sock(sk);
+>> -----------------------------use ax25 again
+>>
+>> But i failed beacause their have large speed difference. And i
+>> don't have a physical device to test other function in ax25.
+>> Anyway, i still think there will have a function to trigger this
+>> race condition like ax25_destroy_timer. Beacause Any ohter
+>> functions in ax25_proto_ops like ax25_bind protect ax25_sock by 
+>> lock_sock(sk).
 > 
-> > On Wed, Jan 12, 2022 at 12:00:17AM +0900, Masami Hiramatsu wrote:
-> > > Hi Jiri,
-> > > 
-> > > Here is a short series of patches, which shows what I replied
-> > > to your series.
-> > > 
-> > > This introduces the fprobe, the function entry/exit probe with
-> > > multiple probe point support. This also introduces the rethook
-> > > for hooking function return, which I cloned from kretprobe.
-> > > 
-> > > I also rewrite your [08/13] bpf patch to use this fprobe instead
-> > > of kprobes. I didn't tested that one, but the sample module seems
-> > > to work. Please test bpf part with your libbpf updates.
-> > > 
-> > > BTW, while implementing the fprobe, I introduced the per-probe
-> > > point private data, but I'm not sure why you need it. It seems
-> > > that data is not used from bpf...
-> > > 
-> > > If this is good for you, I would like to proceed this with
-> > > the rethook and rewrite the kretprobe to use the rethook to
-> > > hook the functions. That should be much cleaner (and easy to
-> > > prepare for the fgraph tracer integration)
-> > 
-> > What is the speed of attach/detach of thousands fprobes?
 > 
-> I've treaked my example module and it shows below result;
+> For a given sk pointer, sk_to_ax25(sk) is always returning the same value,
 > 
-> /lib/modules/5.16.0-rc4+/kernel/samples/fprobe # time insmod ./fprobe_example.ko
->  symbol='btrfs_*'
-> [  187.095925] fprobe_init: 1028 symbols found
-> [  188.521694] fprobe_init: Planted fprobe at btrfs_*
-> real	0m 1.47s
-> user	0m 0.00s
-> sys	0m 1.36s
+> regardless of sk lock being held or not.
 > 
-> I think using ftrace_set_filter_ips() can make it faster.
-> (maybe it needs to drop per-probe point private data, that
-> prevents fprobe to use that interface)
-
-OK, I've updated fprobes to use the ftrace_set_filter_ips()
-and got below result.
-
-/lib/modules/5.16.0-rc4+/kernel/samples/fprobe # time insmod fprobe_example.ko s
-ymbol='btrfs_*' 
-[   36.130947] fprobe_init: 1028 symbols found
-[   36.177901] fprobe_init: Planted fprobe at btrfs_*
-real	0m 0.08s
-user	0m 0.00s
-sys	0m 0.07s
-
-Let me update the series :)
-
-Thank you,
-
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+> ax25_sk(sk)->cb  is set only from ax25_create() or ax25_make_new()
+> 
+> ax25_connect can not be called until these operations have completed ?
+> 
+> 
+> 
+>>
+>> Thanks.
+>>
+>>
+>>
+>>
+>> On 2022/1/12 上午4:56, Eric Dumazet wrote:
+>>>
+>>> On 1/10/22 20:20, Hangyu Hua wrote:
+>>>> sk_to_ax25(sk) needs to be called after lock_sock(sk) to avoid UAF
+>>>> caused by a race condition.
+>>>
+>>> Can you describe what race condition you have found exactly ?
+>>>
+>>> sk pointer can not change.
+>>>
+>>>
+>>>> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+>>>> ---
+>>>>   net/ax25/af_ax25.c | 4 +++-
+>>>>   1 file changed, 3 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+>>>> index cfca99e295b8..c5d62420a2a8 100644
+>>>> --- a/net/ax25/af_ax25.c
+>>>> +++ b/net/ax25/af_ax25.c
+>>>> @@ -1127,7 +1127,7 @@ static int __must_check ax25_connect(struct 
+>>>> socket *sock,
+>>>>       struct sockaddr *uaddr, int addr_len, int flags)
+>>>>   {
+>>>>       struct sock *sk = sock->sk;
+>>>> -    ax25_cb *ax25 = sk_to_ax25(sk), *ax25t;
+>>>> +    ax25_cb *ax25, *ax25t;
+>>>>       struct full_sockaddr_ax25 *fsa = (struct full_sockaddr_ax25 
+>>>> *)uaddr;
+>>>>       ax25_digi *digi = NULL;
+>>>>       int ct = 0, err = 0;
+>>>> @@ -1155,6 +1155,8 @@ static int __must_check ax25_connect(struct 
+>>>> socket *sock,
+>>>>       lock_sock(sk);
+>>>> +    ax25 = sk_to_ax25(sk);
+>>>> +
+>>>>       /* deal with restarts */
+>>>>       if (sock->state == SS_CONNECTING) {
+>>>>           switch (sk->sk_state) {
