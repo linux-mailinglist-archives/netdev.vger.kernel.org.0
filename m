@@ -2,67 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF04548C799
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 16:50:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4E4A48C7A9
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 16:55:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354796AbiALPuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 10:50:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38094 "EHLO
+        id S1354836AbiALPzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 10:55:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354833AbiALPtw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 10:49:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D65C06173F;
-        Wed, 12 Jan 2022 07:49:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3CBAB81F71;
-        Wed, 12 Jan 2022 15:49:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24404C36AEC;
-        Wed, 12 Jan 2022 15:49:49 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="QpBtYbI9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1642002586;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pshnUO5xYpkkdXPtgf9tc4a2VXTQic0G5jxH023mrV0=;
-        b=QpBtYbI90gDkx694sKwf4xo7OSjyDeiyrChbl+ipUVkvWshdRDyxB1SB1U0KDpBIiIH0Y0
-        SFap77Q61vWVUHkea8rOWo5hqErKENXaqfcKhUROpCxPJAStailtvU1ypErepvgrmIyhnu
-        +8ZlOGzt1uOmdMFt1+fpoYGnUl4VrJs=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 223ff93e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 12 Jan 2022 15:49:46 +0000 (UTC)
-Received: by mail-yb1-f175.google.com with SMTP id p5so7474998ybd.13;
-        Wed, 12 Jan 2022 07:49:45 -0800 (PST)
-X-Gm-Message-State: AOAM533/Ei4BTlJlJw5Rj25MgUYFAya+pR0ooHQ5YJEHtkS1tltQZERP
-        wDDYz+n/ti37qwhYd2cXMlD959HPCNwZwV+IUtI=
-X-Google-Smtp-Source: ABdhPJwVyAaXipSkjfhiFQhM7/wC2UupGS2Wv7UVpd1PBvAYip0LDwtp6/NNMx557OIKy+4x0swc/ZlfSyvEsLyEQ1E=
-X-Received: by 2002:a25:f90d:: with SMTP id q13mr397640ybe.32.1642002584806;
- Wed, 12 Jan 2022 07:49:44 -0800 (PST)
+        with ESMTP id S1354847AbiALPyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 10:54:44 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FAD8C06173F;
+        Wed, 12 Jan 2022 07:54:44 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id v1so4215116ioj.10;
+        Wed, 12 Jan 2022 07:54:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=pFJ/5YX2hKQMWWd4jbVdAiQQ3E9iCyV59fKnRpe2rjE=;
+        b=AeyaDt32H7QGfKGP7f1XnQSjfL1GC1itGsgMnC3MtpGpnjCf/39HnH9CDDGZNfBErq
+         oBTl5kiT5CKBdLZK11Kt59aDugyecduZrgL+KDNGzah3NBqFJHDSjFZ9NhYjrKyXLoCt
+         O2KqPkAuqVO6sJTSxx4binn3lmJvDjBiVlsHfibT3hEeDoxDlYaaw9XhkV8KRkmTVQ/P
+         p6b2WscKVwHeDo+cWLguuuf5h2Cfcxwl7S1xreFqmil+tmYYWbPnfjj+aX8ja/OYFakh
+         +NGQxZ/O3Tz1hfpCAo44oRzqUZh8nXPQzf/gMlxaKd/qkmCb3WXf5bQQQu6HGD2KjUEy
+         mQZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pFJ/5YX2hKQMWWd4jbVdAiQQ3E9iCyV59fKnRpe2rjE=;
+        b=EJe9kzq7QAyk/aEfeI55a7sLkMhsmUgerFhAwaxnteoW43SOVdO4M+Xb5E0c3tiSgq
+         jiolCmHSCTywmBoVUGl3P/t3i/YSh313kXELYWVgI2INDysOw/FrxsanFRtrwziztiq5
+         wF1/7UcLce+joEX0JzcmxeSOEgtsD9SILZ+6L3bbeBuD2ipFDwHfXt2YuSxci9cQUXnL
+         0OuYdhCQoSNYXd2zlWHH0CLapkPeWZa49p7zNYelJF5pk++SepU72pf+8KA94lV13N1z
+         awWaCwkJpDjWUks/XrcsHOFw1FFtC+fjdcvDnL1Ljfcz3Mxs/QI37YRJSclrd0Mmz2mw
+         SCDg==
+X-Gm-Message-State: AOAM5328KLDr7fFkHxuXoigPD4GSjDam4JR3KUkFdDNf4carfztJH4Eh
+        x9nvyR+8FkgOwWFlYa0NaKk=
+X-Google-Smtp-Source: ABdhPJwI+dhtW0LgtXpTKLjpztLTIjus7FlvV/KgUFLadovNp27M9fbNP+IS0zeAzZ/HhsWpjnByrg==
+X-Received: by 2002:a02:6f13:: with SMTP id x19mr152979jab.35.1642002883650;
+        Wed, 12 Jan 2022 07:54:43 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.58])
+        by smtp.googlemail.com with ESMTPSA id a8sm74318ilt.42.2022.01.12.07.54.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 07:54:42 -0800 (PST)
+Message-ID: <33308db2-a583-165c-cae0-b055c7976f33@gmail.com>
+Date:   Wed, 12 Jan 2022 08:54:41 -0700
 MIME-Version: 1.0
-References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-3-Jason@zx2c4.com>
-In-Reply-To: <20220112131204.800307-3-Jason@zx2c4.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 12 Jan 2022 16:49:34 +0100
-X-Gmail-Original-Message-ID: <CAHmME9p1NXemJnpZ07fAzkMMa-nQ4cBoQYP_Y+FpNFao0S5t_A@mail.gmail.com>
-Message-ID: <CAHmME9p1NXemJnpZ07fAzkMMa-nQ4cBoQYP_Y+FpNFao0S5t_A@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 2/3] ipv6: move from sha1 to blake2s in address calculation
-To:     Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH] net/ipv6: remove redundant err variable
+Content-Language: en-US
+To:     cgel.zte@gmail.com, davem@davemloft.net
+Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220112082655.667680-1-chi.minghao@zte.com.cn>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220112082655.667680-1-chi.minghao@zte.com.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For the record, I've been able to simplify this even more in my
-remove-sha1 branch: https://git.zx2c4.com/linux-dev/log/?h=remove-sha1
-. We no longer need the packed struct and we handle that secret a bit
-better too. If this patchset moves onto a non-RFC v2, that'll be part
-of it.
+On 1/12/22 1:26 AM, cgel.zte@gmail.com wrote:
+> diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
+> index fe786df4f849..897194eb3b89 100644
+> --- a/net/ipv6/ip6_tunnel.c
+> +++ b/net/ipv6/ip6_tunnel.c
+> @@ -698,13 +698,12 @@ mplsip6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+>  	    u8 type, u8 code, int offset, __be32 info)
+>  {
+>  	__u32 rel_info = ntohl(info);
+> -	int err, rel_msg = 0;
+> +	int rel_msg = 0;
+
+this line needs to be moved down to maintain reverse xmas tree ordering.
+
+You need to make the subject
+'[PATCH net-next] net/ipv6: remove redundant err variable'
+
+and since net-next is closed you will need to resubmit when it is open.
+
+>  	u8 rel_type = type;
+>  	u8 rel_code = code;
+>  
+> -	err = ip6_tnl_err(skb, IPPROTO_MPLS, opt, &rel_type, &rel_code,
+> +	return ip6_tnl_err(skb, IPPROTO_MPLS, opt, &rel_type, &rel_code,
+>  			  &rel_msg, &rel_info, offset);
+> -	return err;
+>  }
+>  
+>  static int ip4ip6_dscp_ecn_decapsulate(const struct ip6_tnl *t,
+
