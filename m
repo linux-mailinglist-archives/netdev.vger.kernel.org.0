@@ -2,114 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 833D548CA7D
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:57:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81FE648CA8C
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:01:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348647AbiALR5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 12:57:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242192AbiALR5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:57:53 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2646EC06173F
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 09:57:53 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id u8so4845356iol.5
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 09:57:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=4m0dbrDG3kjTnMhuxOA+yVKrJ0fcR2XJeuaybltVmMM=;
-        b=FnZqYCa+Ock/kquuE8hGvCQdfM6LxwGk0/JpP7eclDUFbq4r1gTtkg/kUyFcLguVci
-         NtlpuokpyYo15sDowI03aNGcuK4S2QPMKiheRM9JomN4FWuxoB6qfQPycQ4MGQIIaSZp
-         lAM3YkT3I49Gkoi+rRjCDWAI/FgPG11oT8Opcmo32cAlOPfkMH+PmLUVOXHeES6YybCn
-         KP6pXijHIdC7WTpiKVnmY9Q+p2GLshsMREQh7Nz5k0GnJO1IQUJWkoQRY4GwyZS6Zh7n
-         rMbQuISnlhG3YguGQWRcFKMyNvfGxEXuVcFLml00Wvo48mwz8kGkREWwETBQ1fwDHL0k
-         BUNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4m0dbrDG3kjTnMhuxOA+yVKrJ0fcR2XJeuaybltVmMM=;
-        b=aSPxi7c5IiFvUTo9Slf3zOMAmvnaOAKXkliTRqkHTZDVbt/Xs/UysbaX1PlbByS+jE
-         oCK2NFFZg4wy6U1X/cEJptmwKkkjlkONuYmEIaKun45QuvM6nIw3kTN6qynqXdE6Kgjb
-         srSo4W9EqKcZKdb/ByaLDRV7G7H2vMg85S7EzCahBgu3irAyhgRKeQsO5HbYEzN8BnCo
-         EoVtKzErjP+YRROzyzxH61fP88Gcuws7Grvcj3scKcSVP11S3/S4ObYiFlXv+ZpaNxqq
-         GIApDWu5N4f71m2DAhjtFdPXonNqjpsjyLfDitDuM4RmskVmsLwe5RVOqIRJyT61pWir
-         ld3w==
-X-Gm-Message-State: AOAM532Zl/PEdQ4smj9VbY3GZ7LENEoxOJ0VH6CRr/rjP3HTgtNMOt/x
-        wckF6AwrcJhHozoMqCsgBMk=
-X-Google-Smtp-Source: ABdhPJwAGw+eBpCzJCQirv08wg/f+kKGwuEY/2GMppjDcUDmYVSExZXyB0KeQAoM4sYnp/SJxq4M1A==
-X-Received: by 2002:a02:9699:: with SMTP id w25mr432066jai.27.1642010272281;
-        Wed, 12 Jan 2022 09:57:52 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.58])
-        by smtp.googlemail.com with ESMTPSA id y8sm329923ilu.72.2022.01.12.09.57.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 09:57:51 -0800 (PST)
-Message-ID: <6421a75c-0341-4813-7c12-5836a440df76@gmail.com>
-Date:   Wed, 12 Jan 2022 10:57:49 -0700
+        id S1355862AbiALSBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 13:01:35 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.48]:43316 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1348660AbiALSBN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:01:13 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.202])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 49E2C2007E;
+        Wed, 12 Jan 2022 18:01:11 +0000 (UTC)
+Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 973F2800AF;
+        Wed, 12 Jan 2022 18:01:10 +0000 (UTC)
+Received: from [192.168.1.115] (unknown [98.97.67.209])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id DCCD713C2B0;
+        Wed, 12 Jan 2022 10:01:09 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com DCCD713C2B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1642010470;
+        bh=/2pmvodx4C94mfMl6LbkvNEeKhQmSTHTGSZHgKh09JI=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=G7XQElhpvfwgG/G4DT2IjPClGdgPa16wcsiOPnlac1AJj1K58RP4flp/x1P8nKFlk
+         oUJ1zJ9RdW5IQ/IVb7fudoSggDDU5zkQBTOneHBQyZI0aW4kyMV6EdkUoGYBiJKyVW
+         Rw9/PTbjmP84yZNO9nyBRiu1b8gky8pZLw0qC7E0=
+Subject: Re: Debugging stuck tcp connection across localhost [snip]
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        netdev <netdev@vger.kernel.org>
+References: <38e55776-857d-1b51-3558-d788cf3c1524@candelatech.com>
+ <CADVnQyn97m5ybVZ3FdWAw85gOMLAvPSHiR8_NC_nGFyBdRySqQ@mail.gmail.com>
+ <b3e53863-e80e-704f-81a2-905f80f3171d@candelatech.com>
+ <CADVnQymJaF3HoxoWhTb=D2wuVTpe_fp45tL8g7kaA2jgDe+xcQ@mail.gmail.com>
+ <a6ec30f5-9978-f55f-f34f-34485a09db97@candelatech.com>
+ <CADVnQym9LTupiVCTWh95qLQWYTkiFAEESv9Htzrgij8UVqSHBQ@mail.gmail.com>
+ <b60aab98-a95f-d392-4391-c0d5e2afb2cd@candelatech.com>
+ <9330e1c7-f7a2-0f1e-0ede-c9e5353060e3@candelatech.com>
+ <0b2b06a8-4c59-2a00-1fbc-b4734a93ad95@gmail.com>
+ <c84d0877-43a1-9a52-0046-e26b614a5aa6@candelatech.com>
+ <CANn89iL=690zdpCS7g1vpZdZCHsj0O1MrOjGkcg0GPLVhjr4RQ@mail.gmail.com>
+ <a7056912-213d-abb9-420d-b7741ae5db8a@candelatech.com>
+ <CANn89i+HnhfCKUVxtVhQ1vv74zO1tEwT2yXcCX_OoXf14WGAQg@mail.gmail.com>
+From:   Ben Greear <greearb@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <a503d7b8-b015-289c-1a8a-eb4d5df7fb12@candelatech.com>
+Date:   Wed, 12 Jan 2022 10:01:09 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH iproute2 v2] ip: Extend filter links/addresses
-Content-Language: en-US
-To:     Anton Danilov <littlesmilingcloud@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <20220108195824.23840-1-littlesmilingcloud@gmail.com>
- <acff5b79-2e5d-2877-0532-bb48608cc83b@gmail.com>
- <CAEzD07JA8+MnQCcRViUxY=TFgeiFn-ZNgkMzvYo06oDuFUMRVA@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <CAEzD07JA8+MnQCcRViUxY=TFgeiFn-ZNgkMzvYo06oDuFUMRVA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <CANn89i+HnhfCKUVxtVhQ1vv74zO1tEwT2yXcCX_OoXf14WGAQg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-MW
 Content-Transfer-Encoding: 7bit
+X-MDID: 1642010471-LgdMSmaCU-3p
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/11/22 12:09 PM, Anton Danilov wrote:
-> Hello, David.
-> 
->> current 'type' filtering is the 'kind' string in the rtnl_link_ops --
->> bridge, veth, vlan, vrf, etc. You are now wanting to add 'exclude_type'
->> and make it based on hardware type. That is a confusing user api.
-> 
-> The 'exclude_type' options first checks the 'kind' in the
-> rtnl_link_ops, then the hardware type.
+On 1/12/22 9:12 AM, Eric Dumazet wrote:
+> On Wed, Jan 12, 2022 at 6:52 AM Ben Greear <greearb@candelatech.com> wrote:
+>>
+>> On 1/11/22 11:41 PM, Eric Dumazet wrote:
+>>> On Tue, Jan 11, 2022 at 1:35 PM Ben Greear <greearb@candelatech.com> wrote:
+>>>>
+>>>> On 1/11/22 2:46 AM, Eric Dumazet wrote:
+>>>>>
 
-ok; missed that on the first pass.
-
-Update the commit message to say filtering by "hardware type"
-
->> On 1/8/22 12:58 PM, Anton Danilov wrote:
->>> @@ -227,6 +227,28 @@ static int match_link_kind(struct rtattr **tb, const char *kind, bool slave)
->>>       return strcmp(parse_link_kind(tb[IFLA_LINKINFO], slave), kind);
->>>  }
+>>> Just to clarify:
 >>>
->>> +static int match_if_type_name(unsigned short if_type, const char *type_name)
->>> +{
->>> +
->>> +     char *expected_type_name;
->>> +
->>> +     switch (if_type) {
->>> +     case ARPHRD_ETHER:
->>> +             expected_type_name = "ether";
->>> +             break;
->>> +     case ARPHRD_LOOPBACK:
->>> +             expected_type_name = "loopback";
->>> +             break;
->>> +     case ARPHRD_PPP:
->>> +             expected_type_name = "ppp";
+>>> Have you any qdisc on lo interface ?
+>>>
+>>> Can you try:
+>>> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+>>> index 5079832af5c1090917a8fd5dfb1a3025e2d85ae0..81a26ce4d79fd48f870b5c1d076a9082950e2a57
+>>> 100644
+>>> --- a/net/ipv4/tcp_output.c
+>>> +++ b/net/ipv4/tcp_output.c
+>>> @@ -2769,6 +2769,7 @@ bool tcp_schedule_loss_probe(struct sock *sk,
+>>> bool advancing_rto)
+>>>    static bool skb_still_in_host_queue(struct sock *sk,
+>>>                                       const struct sk_buff *skb)
+>>>    {
+>>> +#if 0
+>>>           if (unlikely(skb_fclone_busy(sk, skb))) {
+>>>                   set_bit(TSQ_THROTTLED, &sk->sk_tsq_flags);
+>>>                   smp_mb__after_atomic();
+>>> @@ -2778,6 +2779,7 @@ static bool skb_still_in_host_queue(struct sock *sk,
+>>>                           return true;
+>>>                   }
+>>>           }
+>>> +#endif
+>>>           return false;
+>>>    }
+>>>
+>>
+>> I will try that today.
+>>
+>> I don't think I have qdisc on lo:
+>>
+>> # tc qdisc show|grep 'dev lo'
+>> qdisc noqueue 0: dev lo root refcnt 2
+> 
+> Great, I wanted to make sure you were not hitting some bug there
+> (pfifo_fast has been buggy for many kernel versions)
+> 
+>>
+>> The eth ports are using fq_codel, and I guess they are using mq as well.
+>>
+>> We moved one of the processes off of the problematic machine so that it communicates over
+>> Ethernet instead of 'lo', and problem seems to have gone away.  But, that also
+>> changes system load, so it could be coincidence.
+>>
+>> Also, conntrack -L showed nothing on a machine with simpler config where the two problematic processes
+>> are talking over 'lo'.  The machine that shows problem does have a lot of conntrack entries because it
+>> is also doing some NAT for other data connections, but I don't think this should affect the 127.0.0.1 traffic.
+>> There is a decent chance I mis-understand your comment about conntrack though...
+> 
+> This was a wild guess. Honestly, I do not have a smoking gun yet.
 
-ppp devices have kind set, so ARPHRD_PPP should not be needed.
+I tried your patch above, it did not help.
 
+Also, looks like maybe we reproduced same issue with processes on different
+machines, but I was not able to verify it was the same root cause, and at
+least, it was harder to reproduce.
 
-Also, you have supported hardware types in multiple places - this match
-function and the filter.kind check. Make 1 table with supported types
-and use that table with helpers or both paths.
+I'm back to testing in the easily reproducible case now.
 
-Why not allow exclude by "_slave" type? e.g., should all devices but
-bridge ports?
+I have a few local patches in the general networking path, I'm going to
+attempt to back those out just in case my patches are buggy.
 
+Thanks,
+Ben
+
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
