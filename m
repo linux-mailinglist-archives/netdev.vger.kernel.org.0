@@ -2,148 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D17648C6B3
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 16:07:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8FF748C6C3
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 16:07:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354415AbiALPEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 10:04:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55550 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348043AbiALPEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 10:04:35 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EDBC061757
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 07:04:35 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id j11so9198965lfg.3
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 07:04:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=swEbmnyLSeN7aiIoLnsPgDG3gh2KSMSrPSEJTJTzFbQ=;
-        b=lvkw4cRKCOzBKAPvoz7fYi4Ww+7YlPfKoAgKVLsIgKF1EJ+8wEQe6UxECLKYwzDnLE
-         B6oDSef20ebGk9u85lnz7rEBAUMWRtwpyuCT7L5tzcrfQOz8wh7TZ2HKYlneuRS6vvZL
-         2mzMh6se/ObK3+x60YBQABVSeb3VrI4eHRc1v7BRB2NV0kOKjry5g7lgbvmVmJtVueJ9
-         KnDoZbh+45MmI7u5fj7DHOebV2iwZmI1uYwa1RpTgz0hD3M/CnW+fBXsXOOTtlYGu/16
-         A5HG6WxtCNk9V2MKJTFdEJHaI/4RRxI0j/0ly6jrKbitmexN4vjhY8socp2Bkpl/gWCl
-         FZYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=swEbmnyLSeN7aiIoLnsPgDG3gh2KSMSrPSEJTJTzFbQ=;
-        b=VvbgujLi8GF551pc+/i+3pUC/zsV7v5V0106Qhx4kS1iJvfFes/G//SisPc3XvAi43
-         AkpQKzIsZonStTYuHuuT6IXcsTg/Wcsy+UXXCgX9W8gGqsnOMj0EjYdGaEYawuhjYNSk
-         ZFqCrlAyg45uk6nGQCwrTgP1HyBC3V3iQDxI7MHtqxZVnc703+KbxF5UySiuT2YDPXGH
-         p/hTLe0t6MVkm1LFC6ju2687FPgwVLAMAcvYxGoeXaOBDzBLBJNjkL9b/OeshjnqiNKY
-         9RBgzM3dV+vFJUPGhjQQsRxIMYkyLbD9/gs7KgwU34WpbstedSMz4qwOlRy+vvX3omTX
-         8nXQ==
-X-Gm-Message-State: AOAM531ypHbl7CH+irDgj/RFsQrjbRxNKCnPjMWf6SWvrntFnknZwqh7
-        3Gxkeb2k+ciEl889yb8hAJSLIFCdTJ+BakQbmNz9Pg==
-X-Google-Smtp-Source: ABdhPJxWuTxHLQXjEWO9OANtBu36BWztuVV7d1EJLRw+gXvuvHBCzsnZLCgUQS4k1kJ8fOzX1Y3szncGvdkFuOkuwPI=
-X-Received: by 2002:a19:6748:: with SMTP id e8mr118080lfj.358.1641999873143;
- Wed, 12 Jan 2022 07:04:33 -0800 (PST)
+        id S1354449AbiALPFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 10:05:41 -0500
+Received: from mxout01.lancloud.ru ([45.84.86.81]:48906 "EHLO
+        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348019AbiALPFf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 10:05:35 -0500
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru ED05520DDDAB
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Amit Kucheria" <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        "Guenter Roeck" <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        "MTD Maling List" <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        <linux-phy@lists.infradead.org>, Jiri Slaby <jirislaby@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "Bartosz Golaszewski" <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "Tony Luck" <tony.luck@intel.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        "Saravanan Sekar" <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "John Garry" <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        "William Breathitt Gray" <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        "Borislav Petkov" <bp@alien8.de>,
+        Eric Auger <eric.auger@redhat.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        <openipmi-developer@lists.sourceforge.net>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:EDAC-CORE" <linux-edac@vger.kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        "Mun Yew Tham" <mun.yew.tham@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        "Linux MMC List" <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+References: <20220110195449.12448-1-s.shtylyov@omp.ru>
+ <20220110195449.12448-2-s.shtylyov@omp.ru>
+ <20220110201014.mtajyrfcfznfhyqm@pengutronix.de> <YdyilpjC6rtz6toJ@lunn.ch>
+ <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
+ <20220112085009.dbasceh3obfok5dc@pengutronix.de>
+ <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
+ <Yd7Z3Qwevb/lEwQZ@lunn.ch>
+ <CAMuHMdV2cGvqMppwt9xhpze=pcnHfTozDZMjwT1DkivLD+_nbQ@mail.gmail.com>
+ <CAJZ5v0iyAHtDe1kFObQorXOX0Xraxac0j29Dh+8sq7zxzbsmcQ@mail.gmail.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <78a17bae-435b-e35e-b2dc-1166777725a0@omp.ru>
+Date:   Wed, 12 Jan 2022 18:05:24 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com>
- <20220111171424.862764-9-Jerome.Pouiller@silabs.com> <20220112105859.u4j76o7cpsr4znmb@pali>
- <42104281.b1Mx7tgHyx@pc-42> <20220112114332.jadw527pe7r2j4vv@pali>
-In-Reply-To: <20220112114332.jadw527pe7r2j4vv@pali>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 12 Jan 2022 16:03:56 +0100
-Message-ID: <CAPDyKFoMj1r+bEh-MqOdTVzs0C=LCFPPbXj3jHwB4Yty=bA03Q@mail.gmail.com>
-Subject: Re: [PATCH v9 08/24] wfx: add bus_sdio.c
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <Jerome.Pouiller@silabs.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-mmc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAJZ5v0iyAHtDe1kFObQorXOX0Xraxac0j29Dh+8sq7zxzbsmcQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Jan 2022 at 12:43, Pali Roh=C3=A1r <pali@kernel.org> wrote:
->
-> On Wednesday 12 January 2022 12:18:58 J=C3=A9r=C3=B4me Pouiller wrote:
-> > On Wednesday 12 January 2022 11:58:59 CET Pali Roh=C3=A1r wrote:
-> > > On Tuesday 11 January 2022 18:14:08 Jerome Pouiller wrote:
-> > > > +static const struct sdio_device_id wfx_sdio_ids[] =3D {
-> > > > +     { SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILABS_WF=
-200) },
-> > > > +     { },
-> > > > +};
-> > >
-> > > Hello! Is this table still required?
-> >
-> > As far as I understand, if the driver does not provide an id_table, the
-> > probe function won't be never called (see sdio_match_device()).
-> >
-> > Since, we rely on the device tree, we could replace SDIO_VENDOR_ID_SILA=
-BS
-> > and SDIO_DEVICE_ID_SILABS_WF200 by SDIO_ANY_ID. However, it does not hu=
-rt
-> > to add an extra filter here.
->
-> Now when this particular id is not required, I'm thinking if it is still
-> required and it is a good idea to define these SDIO_VENDOR_ID_SILABS
-> macros into kernel include files. As it would mean that other broken
-> SDIO devices could define these bogus numbers too... And having them in
-> common kernel includes files can cause issues... e.g. other developers
-> could think that it is correct to use them as they are defined in common
-> header files. But as these numbers are not reliable (other broken cards
-> may have same ids as wf200) and their usage may cause issues in future.
->
-> Ulf, any opinion?
+On 1/12/22 5:41 PM, Rafael J. Wysocki wrote:
 
-The sdio_match_device() is what is being used to match the device to
-its sdio_driver, which is being called from the sdio_bus_type's
-->match() callback.
+[...]
+>>>> If an optional IRQ is not present, drivers either just ignore it (e.g.
+>>>> for devices that can have multiple interrupts or a single muxed IRQ),
+>>>> or they have to resort to polling. For the latter, fall-back handling
+>>>> is needed elsewhere in the driver.
+>>>> To me it sounds much more logical for the driver to check if an
+>>>> optional irq is non-zero (available) or zero (not available), than to
+>>>> sprinkle around checks for -ENXIO. In addition, you have to remember
+>>>> that this one returns -ENXIO, while other APIs use -ENOENT or -ENOSYS
+>>>> (or some other error code) to indicate absence. I thought not having
+>>>> to care about the actual error code was the main reason behind the
+>>>> introduction of the *_optional() APIs.
+>>>
+>>> The *_optional() functions return an error code if there has been a
+>>> real error which should be reported up the call stack. This excludes
+>>> whatever error code indicates the requested resource does not exist,
+>>> which can be -ENODEV etc. If the device does not exist, a magic cookie
+>>> is returned which appears to be a valid resources but in fact is
+>>> not. So the users of these functions just need to check for an error
+>>> code, and fail the probe if present.
+>>
+>> Agreed.
+>>
+>> Note that in most (all?) other cases, the return type is a pointer
+>> (e.g. to struct clk), and NULL is the magic cookie.
+>>
+>>> You seems to be suggesting in binary return value: non-zero
+>>> (available) or zero (not available)
+>>
+>> Only in case of success. In case of a real failure, an error code
+>> must be returned.
+>>
+>>> This discards the error code when something goes wrong. That is useful
+>>> information to have, so we should not be discarding it.
+>>
+>> No, the error code must be retained in case of failure.
+>>
+>>> IRQ don't currently have a magic cookie value. One option would be to
+>>> add such a magic cookie to the subsystem. Otherwise, since 0 is
+>>> invalid, return 0 to indicate the IRQ does not exist.
+>>
+>> Exactly. And using 0 means the similar code can be used as for other
+>> subsystems, where NULL would be returned.
+>>
+>> The only remaining difference is the "dummy cookie can be passed
+>> to other functions" behavior.  Which is IMHO a valid difference,
+>> as unlike with e.g. clk_prepare_enable(), you do pass extra data to
+>> request_irq(), and sometimes you do need to handle the absence of
+>> the interrupt using e.g. polling.
+>>
+>>> The request for a script checking this then makes sense. However, i
+>>> don't know how well coccinelle/sparse can track values across function
+>>> calls. They probably can check for:
+>>>
+>>>    ret = irq_get_optional()
+>>>    if (ret < 0)
+>>>       return ret;
+>>>
+>>> A missing if < 0 statement somewhere later is very likely to be an
+>>> error. A comparison of <= 0 is also likely to be an error. A check for
+>>>> 0 before calling any other IRQ functions would be good. I'm
+>>> surprised such a check does not already existing in the IRQ API, but
+>>> there are probably historical reasons for that.
+>>
+>> There are still a few platforms where IRQ 0 does exist.
+> 
+> Not just a few even.  This happens on a reasonably recent x86 PC:
+> 
+> rafael@gratch:~/work/linux-pm> head -2 /proc/interrupts
+>            CPU0       CPU1       CPU2       CPU3       CPU4       CPU5
+>   0:         10          0          0          0          0          0
+>  IR-IO-APIC    2-edge
+> timer
 
-In regards to the DT compatible strings from a drivers'
-.of_match_table, that is currently left to be matched by the sdio
-driver's ->probe() function internally, by calling
-of_driver_match_device().
+   IIRC Linus has proclaimed that IRQ0 was valid for the i8253 driver (living in
+arch/x86/); IRQ0 only was frowned upon when returned by platform_get_irq() and its
+ilk.
 
-In other words, I think what Jerome has suggested here seems
-reasonable to me. Matching on "SDIO_ANY_ID" would work too, but I
-think it's better with a poor filter like SDIO_VENDOR_ID_SILABS*,
-rather than none.
-
-An entirely different and new approach would be to extend
-sdio_match_device() to call of_driver_match_device() too. However, in
-that case we would also need to add a new corresponding ->probe()
-callback for the sdio_driver, as the current one takes a const struct
-sdio_device_id, which doesn't work when matching on DT compatibles.
-
->
-> Btw, is there any project which maintains SDIO ids, like there is
-> pci-ids.ucw.cz for PCI or www.linux-usb.org/usb-ids.html for USB?
->
-> > > > +MODULE_DEVICE_TABLE(sdio, wfx_sdio_ids);
-> > > > +
-> > > > +struct sdio_driver wfx_sdio_driver =3D {
-> > > > +     .name =3D "wfx-sdio",
-> > > > +     .id_table =3D wfx_sdio_ids,
-> > > > +     .probe =3D wfx_sdio_probe,
-> > > > +     .remove =3D wfx_sdio_remove,
-> > > > +     .drv =3D {
-> > > > +             .owner =3D THIS_MODULE,
-> > > > +             .of_match_table =3D wfx_sdio_of_match,
-> > > > +     }
-> > > > +};
-> > > > --
-> > > > 2.34.1
-> > > >
-> > >
-> >
-> >
-> > --
-> > J=C3=A9r=C3=B4me Pouiller
-
-Kind regards
-Uffe
+MBR, Sergey
