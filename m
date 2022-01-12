@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 369F948C5F8
+	by mail.lfdr.de (Postfix) with ESMTP id CB12E48C5FA
 	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 15:27:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354111AbiALO1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 09:27:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46858 "EHLO
+        id S239105AbiALO1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 09:27:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354104AbiALO1J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 09:27:09 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF73C061748
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 06:27:08 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id u13so8649711lff.12
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 06:27:08 -0800 (PST)
+        with ESMTP id S1354114AbiALO1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 09:27:13 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F23F5C061748
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 06:27:12 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id o15so8665147lfo.11
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 06:27:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kinvolk.io; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x3HJv/pEqARSKtBofANRE2qy4M28SMpjR4sz8P8/Ko4=;
-        b=PYgC/cV+Ih0E5U+0tXhCv4maehV+fYZQJV1GpEkp2dqnzAIxoeIL25Nyfg/N0XmTKg
-         IIRtuVonVbJe5yU11XLfOdlfyUqwkghFzIvTR/gevV7IPFbZMWMUh5enuLsXGRbAwmSZ
-         gor2wk9KY+h5zaUeyJYfrGOc8tlz+zaLwdNpc=
+         :cc:content-transfer-encoding;
+        bh=3OWlN+v0uCC1aPr6aV1D6OBPZhLTlZoHcpJjRRFzkk0=;
+        b=MPcP1D/QFt3EcB83KLypo8ayZjQheThVnle4nf4TRCOT4GkhaMmJ7f+6ThnU+FFhHv
+         iDx/XZaSh8k5LNLHrSQRdCBZuLeX8vjjiTuVr6U2ksgB7M+NUiaIkjDmzJyKQHneOTQs
+         p67haofOR0P+iwoUuOCFLGKh6O3Hk1d93K6nc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x3HJv/pEqARSKtBofANRE2qy4M28SMpjR4sz8P8/Ko4=;
-        b=LNj7byk+3ip57d4+5Ljbkr382b0KGKdBq2Q1wxQRljy8+A18mp9SK4nKu4KLBpvsre
-         LHnNg0CEUQ8W6z36h1ep6YAC4nHQTHqRa/DSxuHcNleQ/sLsdtn3TivTrj9EqGAXb/jK
-         ancqudTboBfRLUPTrLApNgcgKDtjxtGeQHFn/WPCkEt8Kc70XP4NOQ9xA+SyZcHLaW9K
-         VUyc7hEhMUDeSPnoOeORX/u7z4lespPpqD6jD67jbfGKcju654NldnX1qsyxvK3VWJb4
-         eE+yfz4O+fcCs+RuEgu6svgim/P9y85QmVnUSiNZKkm/eM3M0CQKfkEH2k4WwzK1gZuE
-         p6mw==
-X-Gm-Message-State: AOAM5324MUovBC7Ug0tuvWMK/DAwEXUap3R3t1N7cwsyhnK8AoAI8UtG
-        oY769+wF6e4x8ueTyxkHzY+KARkFSo2vrU1JON7Rjg==
-X-Google-Smtp-Source: ABdhPJxI84S9kRWywA1cD6UjRUbjy8gRW/wkEzOyr/WdY5PMA9NtZg0Y8iNd2oaO6aGV+Im5etyfQtzrLGk7lMEXD3A=
-X-Received: by 2002:a05:651c:4cc:: with SMTP id e12mr6370967lji.310.1641997626372;
- Wed, 12 Jan 2022 06:27:06 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=3OWlN+v0uCC1aPr6aV1D6OBPZhLTlZoHcpJjRRFzkk0=;
+        b=puFRgz0lfNhwZcCLzkR+POh1fh2N7/AEVgtPRUyZPq6WQbwoMBLO6JdbekTXzNbmU7
+         k+++4yes4nUd2YN58/NYFESj8LYENQFM/Nu9za86rqrCQNne80AG/Z5NrjE7idGpm2xj
+         ZJspvu2rUGcSBXkZiM3KxexrNcwdC6kmSaJTcqG1lQumI5op2eH8GtwWsnoUslxaF+/R
+         17fJeNfOj7et56C2KbWEGdGBvL647tga05LXEPLFor8MQ3zHM/9OvvGCpK7Iv0WfiIPq
+         bl6vWXAfH0oML7/kQOJm7/DO+m89YVzL6mu3h5zEWARbOWPqczAGinJJ9NOF0Ue7vtsW
+         WlEg==
+X-Gm-Message-State: AOAM530K0jkjsKD8Fhs3VPx/j83iXLK22nzLT9ccO32QnI+CN56ple6M
+        g+heHHv3Vy97Z2odxECUT/WoreIns6v/CzRVpHFs5Q==
+X-Google-Smtp-Source: ABdhPJw5CBYnz0RVpMECgsACQdL0N2XQGxt5g/5HzZf/4nFUxPnSLtm6qwF22UqKrIZkeLCaMVVtkHT+4hmCf8VyR4o=
+X-Received: by 2002:a2e:bba1:: with SMTP id y33mr674327lje.274.1641997629647;
+ Wed, 12 Jan 2022 06:27:09 -0800 (PST)
 MIME-Version: 1.0
-References: <20211217185654.311609-1-mauricio@kinvolk.io> <20211217185654.311609-3-mauricio@kinvolk.io>
- <CAEf4BzbtbxkPZKUEye9=CbOtR-e25cv_5_FyH_Qd8hk9TtsiJQ@mail.gmail.com>
-In-Reply-To: <CAEf4BzbtbxkPZKUEye9=CbOtR-e25cv_5_FyH_Qd8hk9TtsiJQ@mail.gmail.com>
+References: <20211217185654.311609-1-mauricio@kinvolk.io> <20211217185654.311609-4-mauricio@kinvolk.io>
+ <CAEf4BzZ6E_iRT-pBon5G6xA0kK=EYKSZQ3zDLVKQmTT8A12J_Q@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ6E_iRT-pBon5G6xA0kK=EYKSZQ3zDLVKQmTT8A12J_Q@mail.gmail.com>
 From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Date:   Wed, 12 Jan 2022 09:26:55 -0500
-Message-ID: <CAHap4zsy39sGWvW8-aXt3kZweDxXK6gmaFjy28W4qCp1fvywhw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/3] libbpf: Implement changes needed for
- BTFGen in bpftool
+Date:   Wed, 12 Jan 2022 09:26:58 -0500
+Message-ID: <CAHap4zs9yZFx-z2h=vsqgdzfNgVssNvoWZ3VWswtwREZ0DnHsw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 3/3] bpftool: Implement btfgen
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -59,224 +58,212 @@ Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Lorenzo Fontana <lorenzo.fontana@elastic.co>,
         Leonardo Di Donato <leonardo.didonato@elastic.co>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > @@ -5498,12 +5498,13 @@ static int record_relo_core(struct bpf_program *prog,
-> >         return 0;
-> >  }
-> >
-> > -static int bpf_core_calc_relo_res(struct bpf_program *prog,
-> > -                                 const struct bpf_core_relo *relo,
-> > -                                 int relo_idx,
-> > -                                 const struct btf *local_btf,
-> > -                                 struct hashmap *cand_cache,
-> > -                                 struct bpf_core_relo_res *targ_res)
-> > +int bpf_core_calc_relo_res(struct bpf_program *prog,
-> > +                          const struct bpf_core_relo *relo,
-> > +                          int relo_idx,
-> > +                          const struct btf *local_btf,
-> > +                          struct hashmap *cand_cache,
-> > +                          struct bpf_core_relo_res *targ_res,
-> > +                          struct bpf_core_spec *targ_spec)
+On Wed, Dec 22, 2021 at 7:33 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> maybe let's add targ_spec and local_spec into bpf_core_relo_res? that
-> way bpf_core_relo_res contains all the relevant information around
-> CO-RE relo resolution?
+> On Fri, Dec 17, 2021 at 10:57 AM Mauricio V=C3=A1squez <mauricio@kinvolk.=
+io> wrote:
+> >
+> > The BTFGen's goal is to produce a BTF file that contains **only** the
+> > information that is needed by an eBPF program. This algorithm does a
+> > first step collecting the types involved for each relocation present on
+> > the object and "marking" them as needed. Types are collected in
+> > different ways according to the type relocation, for field based
+> > relocations only the union and structures members involved are
+> > considered, for type based relocations the whole types are added, enum
+> > field relocations are not supported in this iteration yet.
+> >
+> > A second step generates a BTF file from the "marked" types. This step
+> > accesses the original BTF file extracting the types and their members
+> > that were "marked" as needed in the first step.
+> >
+> > This command is implemented under the "gen" command in bpftool and the
+> > syntax is the following:
+> >
+> > $ bpftool gen btf INPUT OUTPUT OBJECT(S)
+> >
+> > INPUT can be either a single BTF file or a folder containing BTF files,
+> > when it's a folder, a BTF file is generated for each BTF file contained
+> > in this folder. OUTPUT is the file (or folder) where generated files ar=
+e
+> > stored and OBJECT(S) is the list of bpf objects we want to generate the
+> > BTF file(s) for (each generated BTF file contains all the types needed
+> > by all the objects).
+> >
+> > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
+> > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
+> > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
+> > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
+> > ---
+> >  tools/bpf/bpftool/gen.c | 892 ++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 892 insertions(+)
+> >
+>
+> I haven't looked through details of stripping BTF itself, let's
+> finalize CO-RE relocation parts first. Maybe for the next revision you
+> could split bpftool changes in two in some reasonable way so that each
+> patch concentrates on different steps of the process a bit more? E.g.,
+> first patch might set up new command and BTF stripping parts but leave
+> the CO-RE relocation logic unimplemented, and the second path fills in
+> that part. Should make it easier to review this big patch.
+
+I totally agree. Will send v4 with more granular commits.
+
+> Please also cc Quentin Monnet to review bpftool parts as well.
+
+He's already there.
+
+> > +static int btf_reloc_info_gen_type(struct btf_reloc_info *info, struct=
+ bpf_core_spec *targ_spec)
+> > +{
+> > +       struct btf *btf =3D (struct btf *) info->src_btf;
+> > +       struct btf_type *btf_type;
+> > +       int err =3D 0;
+> > +
+> > +       btf_type =3D (struct btf_type *) btf__type_by_id(btf, targ_spec=
+->root_type_id);
+> > +
+> > +       return btf_reloc_put_type_all(btf, info, btf_type, targ_spec->r=
+oot_type_id);
+> > +}
+> > +
+> > +static int btf_reloc_info_gen_enumval(struct btf_reloc_info *info, str=
+uct bpf_core_spec *targ_spec)
+> > +{
+> > +       p_err("untreated enumval based relocation");
+>
+> why untreated? what's the problem supporting it?
 >
 
-It's not needed anymore now that we're using bpf_core_calc_relo_insn()
-directly in bpftool.
+Nothing, we haven't given it any priority. It'll be part of the next iterat=
+ion.
 
-> > @@ -8190,6 +8211,11 @@ struct btf *bpf_object__btf(const struct bpf_object *obj)
-> >         return obj ? obj->btf : NULL;
-> >  }
-> >
-> > +struct btf_ext *bpf_object__btf_ext(const struct bpf_object *obj)
+> > +static int btf_reloc_info_gen(struct btf_reloc_info *info, struct bpf_=
+core_spec *res)
 > > +{
-> > +       return obj ? obj->btf_ext : NULL;
+> > +       if (core_relo_is_type_based(res->relo_kind))
+> > +               return btf_reloc_info_gen_type(info, res);
+> > +
+> > +       if (core_relo_is_enumval_based(res->relo_kind))
+> > +               return btf_reloc_info_gen_enumval(info, res);
+> > +
+> > +       if (core_relo_is_field_based(res->relo_kind))
+> > +               return btf_reloc_info_gen_field(info, res);
 >
-> just return obj->btf_ext, no one should be passing NULL for those getters
+> you can have a simple switch here instead of exposing libbpf internal hel=
+pers
+>
 
-I dropped this function as we don't need it now.
+Will do.
 
->
-> > +}
-> > +
-> >  int bpf_object__btf_fd(const struct bpf_object *obj)
-> >  {
-> >         return obj->btf ? btf__fd(obj->btf) : -1;
-> > @@ -8281,6 +8307,20 @@ bpf_object__next_program(const struct bpf_object *obj, struct bpf_program *prev)
-> >         return prog;
-> >  }
-> >
-> > +size_t bpf_object__get_nr_programs(const struct bpf_object *obj)
+> > +static int btfgen_obj_reloc_info_gen(struct btf_reloc_info *reloc_info=
+, struct bpf_object *obj)
 > > +{
-> > +       return obj->nr_programs;
-> > +}
+> > +       const struct btf_ext_info_sec *sec;
+> > +       const struct bpf_core_relo *rec;
+> > +       const struct btf_ext_info *seg;
+> > +       struct hashmap *cand_cache;
+> > +       int err, insn_idx, sec_idx;
+> > +       struct bpf_program *prog;
+> > +       struct btf_ext *btf_ext;
+> > +       const char *sec_name;
+> > +       size_t nr_programs;
+> > +       struct btf *btf;
+> > +       unsigned int i;
 > > +
-> > +struct bpf_program *
-> > +bpf_object__get_program(const struct bpf_object *obj, unsigned int i)
-> > +{
-> > +       if (i >= obj->nr_programs)
-> > +               return NULL;
+> > +       btf =3D bpf_object__btf(obj);
+> > +       btf_ext =3D bpf_object__btf_ext(obj);
 > > +
-> > +       return &obj->programs[i];
-> > +}
+> > +       if (btf_ext->core_relo_info.len =3D=3D 0)
+> > +               return 0;
 > > +
-> >  struct bpf_program *
-> >  bpf_program__prev(struct bpf_program *next, const struct bpf_object *obj)
-> >  {
-> > @@ -8360,6 +8400,11 @@ int bpf_program__set_autoload(struct bpf_program *prog, bool autoload)
-> >         return 0;
-> >  }
-> >
-> > +int bpf_program__sec_idx(const struct bpf_program *prog)
-> > +{
-> > +       return prog->sec_idx;
-> > +}
+> > +       cand_cache =3D bpf_core_create_cand_cache();
+> > +       if (IS_ERR(cand_cache))
+> > +               return PTR_ERR(cand_cache);
 > > +
-> >  static int bpf_program_nth_fd(const struct bpf_program *prog, int n);
-> >
-> >  int bpf_program__fd(const struct bpf_program *prog)
-> > @@ -11779,3 +11824,8 @@ void bpf_object__destroy_skeleton(struct bpf_object_skeleton *s)
-> >         free(s->progs);
-> >         free(s);
-> >  }
+> > +       bpf_object_set_vmlinux_override(obj, reloc_info->src_btf);
 > > +
-> > +void bpf_object_set_vmlinux_override(struct bpf_object *obj, struct btf *btf)
-> > +{
-> > +       obj->btf_vmlinux_override = btf;
-> > +}
->
-> I don't think we need this, see comments in next patch
->
->
-> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> > index 42b2f36fd9f0..2b048ee5a9b2 100644
-> > --- a/tools/lib/bpf/libbpf.h
-> > +++ b/tools/lib/bpf/libbpf.h
-> > @@ -225,6 +225,8 @@ LIBBPF_API int bpf_object__set_kversion(struct bpf_object *obj, __u32 kern_versi
-> >
-> >  struct btf;
-> >  LIBBPF_API struct btf *bpf_object__btf(const struct bpf_object *obj);
-> > +struct btf_ext;
-> > +LIBBPF_API struct btf_ext *bpf_object__btf_ext(const struct bpf_object *obj);
-> >  LIBBPF_API int bpf_object__btf_fd(const struct bpf_object *obj);
-> >
-> >  LIBBPF_DEPRECATED_SINCE(0, 7, "use bpf_object__find_program_by_name() instead")
-> > @@ -290,6 +292,7 @@ LIBBPF_API LIBBPF_DEPRECATED("BPF program title is confusing term; please use bp
-> >  const char *bpf_program__title(const struct bpf_program *prog, bool needs_copy);
-> >  LIBBPF_API bool bpf_program__autoload(const struct bpf_program *prog);
-> >  LIBBPF_API int bpf_program__set_autoload(struct bpf_program *prog, bool autoload);
-> > +LIBBPF_API int bpf_program__sec_idx(const struct bpf_program *prog);
-> >
-> >  /* returns program size in bytes */
-> >  LIBBPF_DEPRECATED_SINCE(0, 7, "use bpf_program__insn_cnt() instead")
-> > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> > index b3938b3f8fc9..15da4075e0b5 100644
-> > --- a/tools/lib/bpf/libbpf.map
-> > +++ b/tools/lib/bpf/libbpf.map
-> > @@ -392,6 +392,7 @@ LIBBPF_0.6.0 {
-> >                 bpf_map__map_extra;
-> >                 bpf_map__set_map_extra;
-> >                 bpf_map_create;
-> > +               bpf_object__btf_ext;
-> >                 bpf_object__next_map;
-> >                 bpf_object__next_program;
-> >                 bpf_object__prev_map;
-> > @@ -401,6 +402,7 @@ LIBBPF_0.6.0 {
-> >                 bpf_program__flags;
-> >                 bpf_program__insn_cnt;
-> >                 bpf_program__insns;
-> > +               bpf_program__sec_idx;
-> >                 bpf_program__set_flags;
-> >                 btf__add_btf;
-> >                 btf__add_decl_tag;
-> > diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-> > index 5dbe4f463880..b1962adb110c 100644
-> > --- a/tools/lib/bpf/libbpf_internal.h
-> > +++ b/tools/lib/bpf/libbpf_internal.h
-> > @@ -524,4 +524,26 @@ static inline int ensure_good_fd(int fd)
-> >         return fd;
-> >  }
-> >
-> > +struct hashmap;
+> > +       seg =3D &btf_ext->core_relo_info;
+> > +       for_each_btf_ext_sec(seg, sec) {
+> > +               bool prog_found;
 > > +
-> > +int bpf_core_calc_relo_res(struct bpf_program *prog,
-> > +                          const struct bpf_core_relo *relo,
-> > +                          int relo_idx,
-> > +                          const struct btf *local_btf,
-> > +                          struct hashmap *cand_cache,
-> > +                          struct bpf_core_relo_res *targ_res,
-> > +                          struct bpf_core_spec *targ_spec);
-> > +void bpf_object_set_vmlinux_override(struct bpf_object *obj, struct btf *btf);
-> > +struct hashmap *bpf_core_create_cand_cache(void);
-> > +void bpf_core_free_cand_cache(struct hashmap *cand_cache);
+> > +               sec_name =3D btf__name_by_offset(btf, sec->sec_name_off=
+);
+> > +               if (str_is_empty(sec_name)) {
+> > +                       err =3D -EINVAL;
+> > +                       goto out;
+> > +               }
 > > +
-> > +struct bpf_program *find_prog_by_sec_insn(const struct bpf_object *obj,
-> > +                                         size_t sec_idx, size_t insn_idx);
+> > +               prog_found =3D false;
+> > +               nr_programs =3D bpf_object__get_nr_programs(obj);
+> > +               for (i =3D 0; i < nr_programs; i++)       {
+> > +                       prog =3D bpf_object__get_program(obj, i);
+> > +                       if (strcmp(bpf_program__section_name(prog), sec=
+_name) =3D=3D 0) {
+> > +                               prog_found =3D true;
+> > +                               break;
+> > +                       }
+> > +               }
 > > +
-> > +size_t bpf_object__get_nr_programs(const struct bpf_object *obj);
+> > +               if (!prog_found) {
+> > +                       pr_warn("sec '%s': failed to find a BPF program=
+\n", sec_name);
+> > +                       err =3D -EINVAL;
+> > +                       goto out;
+> > +               }
 > > +
-> > +struct bpf_program *
-> > +bpf_object__get_program(const struct bpf_object *obj, unsigned int n);
+> > +               sec_idx =3D bpf_program__sec_idx(prog);
 > > +
->
-> that's too much, I don't think you need bpf_program and all the things
-> around it (sec_idx, look up, etc). As for core_relo_is_field_based and
-> co, bpftool can do those simple checks on their own, no need to make
-> all the "internal API", don't overdo it with "let's expose internals
-> of libbpf to bpftool".
+> > +               for_each_btf_ext_rec(seg, sec, i, rec) {
+> > +                       struct bpf_core_relo_res targ_res;
+> > +                       struct bpf_core_spec targ_spec;
+> > +
+> > +                       insn_idx =3D rec->insn_off / BPF_INSN_SZ;
+> > +
+> > +                       prog =3D find_prog_by_sec_insn(obj, sec_idx, in=
+sn_idx);
+> > +                       if (!prog) {
+> > +                               pr_warn("sec '%s': failed to find progr=
+am at insn #%d for CO-RE offset relocation #%d\n",
+> > +                                       sec_name, insn_idx, i);
+> > +                               err =3D -EINVAL;
+> > +                               goto out;
+> > +                       }
+> > +
+> > +                       err =3D bpf_core_calc_relo_res(prog, rec, i, bt=
+f, cand_cache, &targ_res,
+> > +                                                    &targ_spec);
 >
 >
-> > +
-> >  #endif /* __LIBBPF_LIBBPF_INTERNAL_H */
-> > diff --git a/tools/lib/bpf/relo_core.c b/tools/lib/bpf/relo_core.c
-> > index 4f3552468624..66dfb7fa89a2 100644
-> > --- a/tools/lib/bpf/relo_core.c
-> > +++ b/tools/lib/bpf/relo_core.c
-> > @@ -102,7 +102,7 @@ static const char *core_relo_kind_str(enum bpf_core_relo_kind kind)
-> >         }
-> >  }
-> >
-> > -static bool core_relo_is_field_based(enum bpf_core_relo_kind kind)
-> > +bool core_relo_is_field_based(enum bpf_core_relo_kind kind)
-> >  {
-> >         switch (kind) {
-> >         case BPF_CORE_FIELD_BYTE_OFFSET:
-> > @@ -117,7 +117,7 @@ static bool core_relo_is_field_based(enum bpf_core_relo_kind kind)
-> >         }
-> >  }
-> >
-> > -static bool core_relo_is_type_based(enum bpf_core_relo_kind kind)
-> > +bool core_relo_is_type_based(enum bpf_core_relo_kind kind)
-> >  {
-> >         switch (kind) {
-> >         case BPF_CORE_TYPE_ID_LOCAL:
-> > @@ -130,7 +130,7 @@ static bool core_relo_is_type_based(enum bpf_core_relo_kind kind)
-> >         }
-> >  }
-> >
-> > -static bool core_relo_is_enumval_based(enum bpf_core_relo_kind kind)
-> > +bool core_relo_is_enumval_based(enum bpf_core_relo_kind kind)
-> >  {
-> >         switch (kind) {
-> >         case BPF_CORE_ENUMVAL_EXISTS:
-> > diff --git a/tools/lib/bpf/relo_core.h b/tools/lib/bpf/relo_core.h
-> > index a28bf3711ce2..e969dfb032f4 100644
-> > --- a/tools/lib/bpf/relo_core.h
-> > +++ b/tools/lib/bpf/relo_core.h
-> > @@ -84,4 +84,8 @@ int bpf_core_patch_insn(const char *prog_name, struct bpf_insn *insn,
-> >                         int insn_idx, const struct bpf_core_relo *relo,
-> >                         int relo_idx, const struct bpf_core_relo_res *res);
-> >
-> > +bool core_relo_is_field_based(enum bpf_core_relo_kind kind);
-> > +bool core_relo_is_type_based(enum bpf_core_relo_kind kind);
-> > +bool core_relo_is_enumval_based(enum bpf_core_relo_kind kind);
-> > +
-> >  #endif
-> > --
-> > 2.25.1
-> >
+> I don't think you need to do *exactly* what libbpf is doing.
+> bpf_core_calc_relo_res() doesn't add much on top of
+> bpf_core_calc_relo_insn(), if you use bpf_core_calc_relo_insn()
+> directly and expose bpf_core_add_cands/bpf_core_free_cands and use
+> them directly as well, bypassing bpf_object completely, you won't need
+> btf_vmlinux override and make everything less coupled, I think. In the
+> future, if you'd like to support BTF module BTFs, you'll have all the
+> necessary flexibility to do that, while if you try to reuse every
+> single line of bpf_object's code we'll be adding more hacks like your
+> bpf_object_set_vmlinux_override().
+>
+> Fundamentally, you don't care about bpf_object and bpf_programs. All
+> you need to do is parse .BTF.ext (you can do that just btf__parse, no
+> need to even construct bpf_object!). Construct candidate cache, then
+> iterate each CO-RE record, add find/add candidates, calculate
+> relocation result, use it for your algorithm.
+>
+> Yes, there will be a bit of duplication (candidate search), but that's
+> better than trying to turn bpf_object inside out with all the custom
+> getters/setters that you are exposing (even if it's libbpf internal
+> only, still makes it really hard to reasons what's going on and what
+> are consequences of manual control over a lot of bpf_object internal
+> implementation details).
+>
+
+Thanks a lot for this suggestion. We implemented it this way and the
+result is much better.
