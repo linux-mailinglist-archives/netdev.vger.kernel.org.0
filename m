@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 426B648C97C
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:33:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 509F548C97F
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:33:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355650AbiALRdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 12:33:31 -0500
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:41119 "EHLO
+        id S1355658AbiALRdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 12:33:33 -0500
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:33093 "EHLO
         relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355612AbiALRdZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:33:25 -0500
+        with ESMTP id S1355632AbiALRd3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:33:29 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id ED8D22000E;
-        Wed, 12 Jan 2022 17:33:21 +0000 (UTC)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id E985D2000B;
+        Wed, 12 Jan 2022 17:33:23 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -31,9 +31,9 @@ Cc:     Michael Hennerich <michael.hennerich@analog.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         linux-wireless@vger.kernel.org,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-next v2 04/27] net: ieee802154: Give more details to the core about the channel configurations
-Date:   Wed, 12 Jan 2022 18:32:49 +0100
-Message-Id: <20220112173312.764660-5-miquel.raynal@bootlin.com>
+Subject: [wpan-next v2 05/27] net: mac802154: Convert the symbol duration into nanoseconds
+Date:   Wed, 12 Jan 2022 18:32:50 +0100
+Message-Id: <20220112173312.764660-6-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220112173312.764660-1-miquel.raynal@bootlin.com>
 References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
@@ -44,195 +44,222 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to let the core derive eg. the symbol duration for a given
-channel, it needs to know which protocol is being used, on which band,
-and eventually more details such as the mean PRF in the case of UWB.
+Tdsym is often given in the spec as pretty small numbers in microseconds
+and hence was reflected in the code as symbol_duration and was stored as
+a u8. Actually, for UWB PHYs, the symbol duration is given in
+nanoseconds and are as precise as picoseconds. In order to handle better
+these PHYs, change the type of symbol_duration to u32 and store this
+value in nanoseconds.
 
-Create the necessary enumerations to declare all of that. Include them
-in the currently-almost-empty phy_channels structure which until now
-only declared the supported channels as bitfields.
-
-The PRF is declared in a union as this clearly is a parameter that does
-not apply to most of the protocols. It is very likely that other
-parameters will get added in the future to further define specific
-protocols and the union will likely be a good location for them.
+All the users of this variable are updated in a mechanical change.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/net/ieee802154/ca8210.c          |  3 ++
- drivers/net/ieee802154/mac802154_hwsim.c | 33 +++++++++++++++++++
- drivers/net/ieee802154/mcr20a.c          |  3 ++
- include/net/cfg802154.h                  | 41 ++++++++++++++++++++++++
- 4 files changed, 80 insertions(+)
+ drivers/net/ieee802154/at86rf230.c | 22 +++++++++++-----------
+ drivers/net/ieee802154/atusb.c     | 22 +++++++++++-----------
+ drivers/net/ieee802154/ca8210.c    |  2 +-
+ drivers/net/ieee802154/mcr20a.c    |  4 ++--
+ include/net/cfg802154.h            |  4 ++--
+ net/mac802154/main.c               |  8 ++++----
+ 6 files changed, 31 insertions(+), 31 deletions(-)
 
+diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+index cdf5d2a4f763..47dafefedf79 100644
+--- a/drivers/net/ieee802154/at86rf230.c
++++ b/drivers/net/ieee802154/at86rf230.c
+@@ -1066,24 +1066,24 @@ at86rf212_set_channel(struct at86rf230_local *lp, u8 page, u8 channel)
+ 	if (channel == 0) {
+ 		if (page == 0) {
+ 			/* SUB:0 and BPSK:0 -> BPSK-20 */
+-			lp->hw->phy->symbol_duration = 50;
++			lp->hw->phy->symbol_duration = 50 * 1000;
+ 		} else {
+ 			/* SUB:1 and BPSK:0 -> BPSK-40 */
+-			lp->hw->phy->symbol_duration = 25;
++			lp->hw->phy->symbol_duration = 25 * 1000;
+ 		}
+ 	} else {
+ 		if (page == 0)
+ 			/* SUB:0 and BPSK:1 -> OQPSK-100/200/400 */
+-			lp->hw->phy->symbol_duration = 40;
++			lp->hw->phy->symbol_duration = 40 * 1000;
+ 		else
+ 			/* SUB:1 and BPSK:1 -> OQPSK-250/500/1000 */
+-			lp->hw->phy->symbol_duration = 16;
++			lp->hw->phy->symbol_duration = 16 * 1000;
+ 	}
+ 
+-	lp->hw->phy->lifs_period = IEEE802154_LIFS_PERIOD *
+-				   lp->hw->phy->symbol_duration;
+-	lp->hw->phy->sifs_period = IEEE802154_SIFS_PERIOD *
+-				   lp->hw->phy->symbol_duration;
++	lp->hw->phy->lifs_period =
++		(IEEE802154_LIFS_PERIOD * lp->hw->phy->symbol_duration) / 1000;
++	lp->hw->phy->sifs_period =
++		(IEEE802154_SIFS_PERIOD * lp->hw->phy->symbol_duration) / 1000;
+ 
+ 	return at86rf230_write_subreg(lp, SR_CHANNEL, channel);
+ }
+@@ -1561,7 +1561,7 @@ at86rf230_detect_device(struct at86rf230_local *lp)
+ 		lp->hw->phy->supported.page[0].nchunks = 1;
+ 		lp->hw->phy->supported.page[0].chunk[0].channels = 0x7FFF800;
+ 		lp->hw->phy->current_channel = 11;
+-		lp->hw->phy->symbol_duration = 16;
++		lp->hw->phy->symbol_duration = 16 * 1000;
+ 		lp->hw->phy->supported.tx_powers = at86rf231_powers;
+ 		lp->hw->phy->supported.tx_powers_size = ARRAY_SIZE(at86rf231_powers);
+ 		lp->hw->phy->supported.cca_ed_levels = at86rf231_ed_levels;
+@@ -1576,7 +1576,7 @@ at86rf230_detect_device(struct at86rf230_local *lp)
+ 		lp->hw->phy->supported.page[2].nchunks = 1;
+ 		lp->hw->phy->supported.page[2].chunk[0].channels = 0x00007FF;
+ 		lp->hw->phy->current_channel = 5;
+-		lp->hw->phy->symbol_duration = 25;
++		lp->hw->phy->symbol_duration = 25 * 1000;
+ 		lp->hw->phy->supported.lbt = NL802154_SUPPORTED_BOOL_BOTH;
+ 		lp->hw->phy->supported.tx_powers = at86rf212_powers;
+ 		lp->hw->phy->supported.tx_powers_size = ARRAY_SIZE(at86rf212_powers);
+@@ -1589,7 +1589,7 @@ at86rf230_detect_device(struct at86rf230_local *lp)
+ 		lp->hw->phy->supported.page[0].nchunks = 1;
+ 		lp->hw->phy->supported.page[0].chunk[0].channels = 0x7FFF800;
+ 		lp->hw->phy->current_channel = 13;
+-		lp->hw->phy->symbol_duration = 16;
++		lp->hw->phy->symbol_duration = 16 * 1000;
+ 		lp->hw->phy->supported.tx_powers = at86rf233_powers;
+ 		lp->hw->phy->supported.tx_powers_size = ARRAY_SIZE(at86rf233_powers);
+ 		lp->hw->phy->supported.cca_ed_levels = at86rf233_ed_levels;
+diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
+index 38ebfacf2698..099113bd4a26 100644
+--- a/drivers/net/ieee802154/atusb.c
++++ b/drivers/net/ieee802154/atusb.c
+@@ -678,24 +678,24 @@ static int hulusb_set_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
+ 	if (channel == 0) {
+ 		if (page == 0) {
+ 			/* SUB:0 and BPSK:0 -> BPSK-20 */
+-			lp->hw->phy->symbol_duration = 50;
++			lp->hw->phy->symbol_duration = 50 * 1000;
+ 		} else {
+ 			/* SUB:1 and BPSK:0 -> BPSK-40 */
+-			lp->hw->phy->symbol_duration = 25;
++			lp->hw->phy->symbol_duration = 25 * 1000;
+ 		}
+ 	} else {
+ 		if (page == 0)
+ 			/* SUB:0 and BPSK:1 -> OQPSK-100/200/400 */
+-			lp->hw->phy->symbol_duration = 40;
++			lp->hw->phy->symbol_duration = 40 * 1000;
+ 		else
+ 			/* SUB:1 and BPSK:1 -> OQPSK-250/500/1000 */
+-			lp->hw->phy->symbol_duration = 16;
++			lp->hw->phy->symbol_duration = 16 * 1000;
+ 	}
+ 
+-	lp->hw->phy->lifs_period = IEEE802154_LIFS_PERIOD *
+-				   lp->hw->phy->symbol_duration;
+-	lp->hw->phy->sifs_period = IEEE802154_SIFS_PERIOD *
+-				   lp->hw->phy->symbol_duration;
++	lp->hw->phy->lifs_period =
++		(IEEE802154_LIFS_PERIOD * lp->hw->phy->symbol_duration) / 1000;
++	lp->hw->phy->sifs_period =
++		(IEEE802154_SIFS_PERIOD * lp->hw->phy->symbol_duration) / 1000;
+ 
+ 	return atusb_write_subreg(lp, SR_CHANNEL, channel);
+ }
+@@ -917,7 +917,7 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
+ 		atusb->hw->phy->supported.page[0].nchunks = 1;
+ 		atusb->hw->phy->supported.page[0].chunk[0].channels = 0x7FFF800;
+ 		atusb->hw->phy->current_channel = 11;	/* reset default */
+-		atusb->hw->phy->symbol_duration = 16;
++		atusb->hw->phy->symbol_duration = 16 * 1000;
+ 		atusb->hw->phy->supported.tx_powers = atusb_powers;
+ 		atusb->hw->phy->supported.tx_powers_size = ARRAY_SIZE(atusb_powers);
+ 		hw->phy->supported.cca_ed_levels = atusb_ed_levels;
+@@ -928,7 +928,7 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
+ 		atusb->hw->phy->supported.page[0].nchunks = 1;
+ 		atusb->hw->phy->supported.page[0].chunk[0].channels = 0x7FFF800;
+ 		atusb->hw->phy->current_channel = 11;	/* reset default */
+-		atusb->hw->phy->symbol_duration = 16;
++		atusb->hw->phy->symbol_duration = 16 * 1000;
+ 		atusb->hw->phy->supported.tx_powers = atusb_powers;
+ 		atusb->hw->phy->supported.tx_powers_size = ARRAY_SIZE(atusb_powers);
+ 		hw->phy->supported.cca_ed_levels = atusb_ed_levels;
+@@ -942,7 +942,7 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
+ 		atusb->hw->phy->supported.page[2].nchunks = 1;
+ 		atusb->hw->phy->supported.page[2].chunk[0].channels = 0x00007FF;
+ 		atusb->hw->phy->current_channel = 5;
+-		atusb->hw->phy->symbol_duration = 25;
++		atusb->hw->phy->symbol_duration = 25 * 1000;
+ 		atusb->hw->phy->supported.lbt = NL802154_SUPPORTED_BOOL_BOTH;
+ 		atusb->hw->phy->supported.tx_powers = at86rf212_powers;
+ 		atusb->hw->phy->supported.tx_powers_size = ARRAY_SIZE(at86rf212_powers);
 diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-index 1a667fceb8ba..f42a0b719a33 100644
+index f42a0b719a33..82b2a173bdbd 100644
 --- a/drivers/net/ieee802154/ca8210.c
 +++ b/drivers/net/ieee802154/ca8210.c
-@@ -2963,7 +2963,10 @@ static void ca8210_hw_setup(struct ieee802154_hw *ca8210_hw)
- {
- 	/* Support channels 11-26 */
- 	ca8210_hw->phy->supported.page[0].nchunks = 1;
-+	/* 2.4 GHz O-QPSK */
- 	ca8210_hw->phy->supported.page[0].chunk[0].channels = CA8210_VALID_CHANNELS;
-+	ca8210_hw->phy->supported.page[0].chunk[0].protocol = IEEE802154_OQPSK_PHY;
-+	ca8210_hw->phy->supported.page[0].chunk[0].band = IEEE802154_2400_MHZ_BAND;
- 	ca8210_hw->phy->supported.tx_powers_size = CA8210_MAX_TX_POWERS;
- 	ca8210_hw->phy->supported.tx_powers = ca8210_tx_powers;
- 	ca8210_hw->phy->supported.cca_ed_levels_size = CA8210_MAX_ED_LEVELS;
-diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
-index 3a491e755022..a2827c0acabe 100644
---- a/drivers/net/ieee802154/mac802154_hwsim.c
-+++ b/drivers/net/ieee802154/mac802154_hwsim.c
-@@ -748,46 +748,79 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
- 	hw->phy->supported.page[0].nchunks = 3;
- 	/* 868 MHz BPSK	802.15.4-2003 */
- 	hw->phy->supported.page[0].chunk[0].channels |= 1;
-+	hw->phy->supported.page[0].chunk[0].protocol = IEEE802154_BPSK_PHY;
-+	hw->phy->supported.page[0].chunk[0].band = IEEE802154_868_MHZ_BAND;
- 	/* 915 MHz BPSK	802.15.4-2003 */
- 	hw->phy->supported.page[0].chunk[1].channels |= 0x7fe;
-+	hw->phy->supported.page[0].chunk[1].protocol = IEEE802154_BPSK_PHY;
-+	hw->phy->supported.page[0].chunk[1].band = IEEE802154_915_MHZ_BAND;
- 	/* 2.4 GHz O-QPSK 802.15.4-2003 */
- 	hw->phy->supported.page[0].chunk[2].channels |= 0x7FFF800;
-+	hw->phy->supported.page[0].chunk[2].protocol = IEEE802154_OQPSK_PHY;
-+	hw->phy->supported.page[0].chunk[2].band = IEEE802154_2400_MHZ_BAND;
- 
- 	hw->phy->supported.page[1].nchunks = 2;
- 	/* 868 MHz ASK 802.15.4-2006 */
- 	hw->phy->supported.page[1].chunk[0].channels |= 1;
-+	hw->phy->supported.page[1].chunk[0].protocol = IEEE802154_ASK_PHY;
-+	hw->phy->supported.page[1].chunk[0].band = IEEE802154_868_MHZ_BAND;
- 	/* 915 MHz ASK 802.15.4-2006 */
- 	hw->phy->supported.page[1].chunk[1].channels |= 0x7fe;
-+	hw->phy->supported.page[1].chunk[1].protocol = IEEE802154_ASK_PHY;
-+	hw->phy->supported.page[1].chunk[1].band = IEEE802154_915_MHZ_BAND;
- 
- 	hw->phy->supported.page[2].nchunks = 2;
- 	/* 868 MHz O-QPSK 802.15.4-2006 */
- 	hw->phy->supported.page[2].chunk[0].channels |= 1;
-+	hw->phy->supported.page[2].chunk[0].protocol = IEEE802154_OQPSK_PHY;
-+	hw->phy->supported.page[2].chunk[0].band = IEEE802154_868_MHZ_BAND;
- 	/* 915 MHz O-QPSK 802.15.4-2006 */
- 	hw->phy->supported.page[2].chunk[1].channels |= 0x7fe;
-+	hw->phy->supported.page[2].chunk[1].protocol = IEEE802154_OQPSK_PHY;
-+	hw->phy->supported.page[2].chunk[1].band = IEEE802154_915_MHZ_BAND;
- 
- 	hw->phy->supported.page[3].nchunks = 1;
- 	/* 2.4 GHz CSS 802.15.4a-2007 */
- 	hw->phy->supported.page[3].chunk[0].channels |= 0x3fff;
-+	hw->phy->supported.page[3].chunk[0].protocol = IEEE802154_CSS_PHY;
-+	hw->phy->supported.page[3].chunk[0].band = IEEE802154_2400_MHZ_BAND;
- 
- 	hw->phy->supported.page[4].nchunks = 3;
- 	/* UWB Sub-gigahertz 802.15.4a-2007 */
- 	hw->phy->supported.page[4].chunk[0].channels |= 1;
-+	hw->phy->supported.page[4].chunk[0].protocol = IEEE802154_HRP_UWB_PHY;
-+	hw->phy->supported.page[4].chunk[0].band = IEEE802154_250_750_MHZ_BAND;
-+	hw->phy->supported.page[4].chunk[0].prf = IEEE802154_62890KHZ_MEAN_PRF;
- 	/* UWB Low band 802.15.4a-2007 */
- 	hw->phy->supported.page[4].chunk[1].channels |= 0x1e;
-+	hw->phy->supported.page[4].chunk[1].protocol = IEEE802154_HRP_UWB_PHY;
-+	hw->phy->supported.page[4].chunk[1].band = IEEE802154_3100_4800_MHZ_BAND;
-+	hw->phy->supported.page[4].chunk[1].prf = IEEE802154_62890KHZ_MEAN_PRF;
- 	/* UWB High band 802.15.4a-2007 */
- 	hw->phy->supported.page[4].chunk[2].channels |= 0xffe0;
-+	hw->phy->supported.page[4].chunk[2].protocol = IEEE802154_HRP_UWB_PHY;
-+	hw->phy->supported.page[4].chunk[2].band = IEEE802154_6000_10600_MHZ_BAND;
-+	hw->phy->supported.page[4].chunk[2].prf = IEEE802154_62890KHZ_MEAN_PRF;
- 
- 	hw->phy->supported.page[5].nchunks = 2;
- 	/* 750 MHz O-QPSK 802.15.4c-2009 */
- 	hw->phy->supported.page[5].chunk[0].channels |= 0xf;
-+	hw->phy->supported.page[5].chunk[0].protocol = IEEE802154_OQPSK_PHY;
-+	hw->phy->supported.page[5].chunk[0].band = IEEE802154_750_MHZ_BAND;
- 	/* 750 MHz MPSK 802.15.4c-2009 */
- 	hw->phy->supported.page[5].chunk[1].channels |= 0xf0;
-+	hw->phy->supported.page[5].chunk[1].protocol = IEEE802154_MQPSK_PHY;
-+	hw->phy->supported.page[5].chunk[1].band = IEEE802154_750_MHZ_BAND;
- 
- 	hw->phy->supported.page[6].nchunks = 2;
- 	/* 950 MHz BPSK 802.15.4d-2009 */
- 	hw->phy->supported.page[6].chunk[0].channels |= 0x3ff;
-+	hw->phy->supported.page[6].chunk[0].protocol = IEEE802154_BPSK_PHY;
-+	hw->phy->supported.page[6].chunk[0].band = IEEE802154_950_MHZ_BAND;
- 	/* 950 MHz GFSK 802.15.4d-2009 */
- 	hw->phy->supported.page[6].chunk[1].channels |= 0x3ffc00;
-+	hw->phy->supported.page[6].chunk[1].protocol = IEEE802154_GFSK_PHY;
-+	hw->phy->supported.page[6].chunk[1].band = IEEE802154_950_MHZ_BAND;
- 
- 	ieee802154_random_extended_addr(&hw->phy->perm_extended_addr);
- 
+@@ -2977,7 +2977,7 @@ static void ca8210_hw_setup(struct ieee802154_hw *ca8210_hw)
+ 	ca8210_hw->phy->cca.mode = NL802154_CCA_ENERGY_CARRIER;
+ 	ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
+ 	ca8210_hw->phy->cca_ed_level = -9800;
+-	ca8210_hw->phy->symbol_duration = 16;
++	ca8210_hw->phy->symbol_duration = 16 * 1000;
+ 	ca8210_hw->phy->lifs_period = 40;
+ 	ca8210_hw->phy->sifs_period = 12;
+ 	ca8210_hw->flags =
 diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
-index 5190c4d4f505..f0eb2d3b1c4e 100644
+index f0eb2d3b1c4e..8aa87e9bf92e 100644
 --- a/drivers/net/ieee802154/mcr20a.c
 +++ b/drivers/net/ieee802154/mcr20a.c
-@@ -1003,7 +1003,10 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
- 	phy->cca.mode = NL802154_CCA_ENERGY;
+@@ -975,7 +975,7 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
  
- 	phy->supported.page[0].nchunks = 1;
-+	/* 2.4 GHz O-QPSK */
- 	phy->supported.page[0].chunk[0].channels = MCR20A_VALID_CHANNELS;
-+	phy->supported.page[0].chunk[0].protocol = IEEE802154_OQPSK_PHY;
-+	phy->supported.page[0].chunk[0].band = IEEE802154_2400_MHZ_BAND;
+ 	dev_dbg(printdev(lp), "%s\n", __func__);
+ 
+-	phy->symbol_duration = 16;
++	phy->symbol_duration = 16 * 1000;
+ 	phy->lifs_period = 40;
+ 	phy->sifs_period = 12;
+ 
+@@ -1010,7 +1010,7 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
  	phy->current_page = 0;
  	/* MCR20A default reset value */
  	phy->current_channel = 20;
+-	phy->symbol_duration = 16;
++	phy->symbol_duration = 16 * 1000;
+ 	phy->supported.tx_powers = mcr20a_powers;
+ 	phy->supported.tx_powers_size = ARRAY_SIZE(mcr20a_powers);
+ 	phy->cca_ed_level = phy->supported.cca_ed_levels[75];
 diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-index ef49a23801c6..03c8008217fb 100644
+index 03c8008217fb..286709a9dd0b 100644
 --- a/include/net/cfg802154.h
 +++ b/include/net/cfg802154.h
-@@ -131,8 +131,49 @@ wpan_phy_supported_bool(bool b, enum nl802154_supported_bool_states st)
- 	return false;
+@@ -253,8 +253,8 @@ struct wpan_phy {
+ 
+ 	/* PHY depended MAC PIB values */
+ 
+-	/* 802.15.4 acronym: Tdsym in usec */
+-	u8 symbol_duration;
++	/* 802.15.4 acronym: Tdsym in nsec */
++	u32 symbol_duration;
+ 	/* lifs and sifs periods timing */
+ 	u16 lifs_period;
+ 	u16 sifs_period;
+diff --git a/net/mac802154/main.c b/net/mac802154/main.c
+index 12ab1545e871..77a4943f345f 100644
+--- a/net/mac802154/main.c
++++ b/net/mac802154/main.c
+@@ -131,10 +131,10 @@ static void ieee802154_setup_wpan_phy_pib(struct wpan_phy *wpan_phy)
+ 	 * Should be done when all drivers sets this value.
+ 	 */
+ 
+-	wpan_phy->lifs_period = IEEE802154_LIFS_PERIOD *
+-				wpan_phy->symbol_duration;
+-	wpan_phy->sifs_period = IEEE802154_SIFS_PERIOD *
+-				wpan_phy->symbol_duration;
++	wpan_phy->lifs_period =
++		(IEEE802154_LIFS_PERIOD * wpan_phy->symbol_duration) / 1000;
++	wpan_phy->sifs_period =
++		(IEEE802154_SIFS_PERIOD * wpan_phy->symbol_duration) / 1000;
  }
  
-+enum ieee802154_phy_protocols {
-+	IEEE802154_UNKNOWN_PHY,
-+	IEEE802154_BPSK_PHY,
-+	IEEE802154_OQPSK_PHY,
-+	IEEE802154_MQPSK_PHY,
-+	IEEE802154_GFSK_PHY,
-+	IEEE802154_ASK_PHY,
-+	IEEE802154_CSS_PHY,
-+	IEEE802154_HRP_UWB_PHY,
-+
-+	IEEE802154_MAX_PHY,
-+};
-+
-+enum ieee802154_phy_bands {
-+	IEEE802154_UNKNOWN_BAND,
-+	IEEE802154_750_MHZ_BAND,
-+	IEEE802154_868_MHZ_BAND,
-+	IEEE802154_915_MHZ_BAND,
-+	IEEE802154_950_MHZ_BAND,
-+	IEEE802154_2400_MHZ_BAND,
-+	IEEE802154_250_750_MHZ_BAND,
-+	IEEE802154_3100_4800_MHZ_BAND,
-+	IEEE802154_6000_10600_MHZ_BAND,
-+
-+	IEEE802154_MAX_BAND,
-+};
-+
-+enum ieee802154_phy_mean_prfs {
-+	IEEE802154_UNKNOWN_MEAN_PRF,
-+	IEEE802154_16100KHZ_MEAN_PRF,
-+	IEEE802154_4030KHZ_MEAN_PRF,
-+	IEEE802154_62890KHZ_MEAN_PRF,
-+
-+	IEEE802154_MAX_PRF,
-+};
-+
- struct phy_channels {
- 	u32 channels;
-+	enum ieee802154_phy_protocols protocol;
-+	enum ieee802154_phy_bands band;
-+	union {
-+		enum ieee802154_phy_mean_prfs prf;
-+	};
- };
- 
- struct phy_page {
+ int ieee802154_register_hw(struct ieee802154_hw *hw)
 -- 
 2.27.0
 
