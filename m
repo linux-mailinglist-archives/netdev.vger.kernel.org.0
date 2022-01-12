@@ -2,131 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F29B048BCF9
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 03:14:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1F6E48BD03
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 03:16:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348191AbiALCOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 21:14:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236375AbiALCN7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 21:13:59 -0500
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8798FC06173F;
-        Tue, 11 Jan 2022 18:13:59 -0800 (PST)
-Received: by mail-pj1-x1041.google.com with SMTP id ie23-20020a17090b401700b001b38a5318easo2073573pjb.2;
-        Tue, 11 Jan 2022 18:13:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UBRSCwl1h80JfOWUyCNKWUY0/nYFol6Uy1tcq62PMUg=;
-        b=W/ypUrhWNGGj6kS1x25nDafTlERA5Dr+GytZo6BWkb5HhZ/h5wrxitFrLjuPtUodFy
-         sX4y6LipH4UYN0XujN1baAvtbuOwqnBcjgkMFZ0H25O9EL1UOasbRs7C1+QlWWgGpJA0
-         ykYOZv40w9sCOqHnrc8UshSJ9XK0qYCBHWrs+KuH7W5J3DITS6cxIZwRm1rvvGfK6IVO
-         xTM9pkoMncJ1d9tVvrAzBFAKqn0KkJqhllpuwBAPs8rcvy+Cbbfy1rHeMaYxwOpqXLPp
-         4K6J98r2Nml4FwFpmXyQLQO59vPv/ueGlspyDS54KcUYFf14OSVAUdncUXrIyXl+ER1q
-         kBFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UBRSCwl1h80JfOWUyCNKWUY0/nYFol6Uy1tcq62PMUg=;
-        b=x7wWyBAZQmp4f2ITSDGuDtMJNUT/KxuUH4O46vmHxk9yK6wv6YU9fEpLoeAF5RS7l0
-         0F/Bo1Deus/PTuXUC7th9DhSjtvs01nqQL06lK/d+MFA8Xd16RTe1Htop2+UwdKozWki
-         JxWG9BXL9lGwurFiwa4//9mAK3ehdoVBK58CeMVE4g57jRY8zCNeaMhHCUSr4c7kZkRN
-         NODAGnH/1I+y7NKm8DgZvTxoVzqK6nMWLOs+2x9CVqbBABHQAIp5TAbrGiZ5qlvvqPzr
-         WciOUQbsyG2nkAkMCpyua2CGEj7BR9V0t2Sqru3wrythI2F8YiAu99RAtweV8oC1+ur5
-         MTMQ==
-X-Gm-Message-State: AOAM5304zL0ygLW2i53B9sUphPvuvdHjRrGNOHZ5AM0XfavEGW5iZfsn
-        oG3HnyZ6eiiZpPmhAwxKW8nPxMSU4hzcAg==
-X-Google-Smtp-Source: ABdhPJwcEUecB1z2jtYuD1HUeCMO8y23p3vLqbACbVgfAsy4DKieYQ8c603nk4GF65JxmZXnPe5M/A==
-X-Received: by 2002:a17:90a:7e81:: with SMTP id j1mr6318043pjl.14.1641953638984;
-        Tue, 11 Jan 2022 18:13:58 -0800 (PST)
-Received: from [0.0.0.0] ([20.187.112.107])
-        by smtp.gmail.com with ESMTPSA id hk13sm4064773pjb.35.2022.01.11.18.13.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 18:13:58 -0800 (PST)
-Subject: Re: [PATCH net] ax25: use after free in ax25_connect
-To:     Eric Dumazet <eric.dumazet@gmail.com>, jreuter@yaina.de,
-        ralf@linux-mips.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220111042048.43532-1-hbh25y@gmail.com>
- <f35292c0-621f-3f07-87ed-2533bfd1496e@gmail.com>
-From:   Hangyu Hua <hbh25y@gmail.com>
-Message-ID: <f48850cb-8e26-afa0-576c-691bb4be5587@gmail.com>
-Date:   Wed, 12 Jan 2022 10:13:53 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S236972AbiALCQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 21:16:30 -0500
+Received: from mailout.easymail.ca ([64.68.200.34]:36484 "EHLO
+        mailout.easymail.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236083AbiALCQ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 21:16:29 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mailout.easymail.ca (Postfix) with ESMTP id B311DC81BD;
+        Wed, 12 Jan 2022 02:16:28 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at emo01-pco.easydns.vpn
+Received: from mailout.easymail.ca ([127.0.0.1])
+        by localhost (emo01-pco.easydns.vpn [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id qn6YbSJUGugb; Wed, 12 Jan 2022 02:16:27 +0000 (UTC)
+Received: from mail.gonehiking.org (c-24-9-64-241.hsd1.co.comcast.net [24.9.64.241])
+        by mailout.easymail.ca (Postfix) with ESMTPA id 5EE66C8193;
+        Wed, 12 Jan 2022 02:16:27 +0000 (UTC)
+Received: from [192.168.1.4] (internal [192.168.1.4])
+        by mail.gonehiking.org (Postfix) with ESMTP id 755513EE4B;
+        Tue, 11 Jan 2022 19:16:26 -0700 (MST)
+Message-ID: <fed8a57f-8003-5759-a74a-3ddbf867152b@gonehiking.org>
+Date:   Tue, 11 Jan 2022 19:16:26 -0700
 MIME-Version: 1.0
-In-Reply-To: <f35292c0-621f-3f07-87ed-2533bfd1496e@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Reply-To: khalid@gonehiking.org
+Subject: Re: [Bug] mt7921e driver in 5.16 causes kernel panic
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+To:     sean.wang@mediatek.com
+Cc:     greearb@candelatech.com, nbd@nbd.name,
+        lorenzo.bianconi83@gmail.com, Ryder.Lee@mediatek.com,
+        Shayne.Chen@mediatek.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, matthias.bgg@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-mediatek@lists.infradead.org
+References: <c3a66426-e6a0-4fd2-dc09-85181c96b755@gonehiking.org--annotate>
+ <1641948556-23414-1-git-send-email-sean.wang@mediatek.com>
+From:   Khalid Aziz <khalid@gonehiking.org>
+In-Reply-To: <1641948556-23414-1-git-send-email-sean.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I try to use ax25_release to trigger this bug like this:
-ax25_release                 ax25_connect
-lock_sock(sk);
------------------------------sk = sock->sk;
------------------------------ax25 = sk_to_ax25(sk);
-ax25_destroy_socket(ax25);
-release_sock(sk);
------------------------------lock_sock(sk);
------------------------------use ax25 again
-
-But i failed beacause their have large speed difference. And i
-don't have a physical device to test other function in ax25.
-Anyway, i still think there will have a function to trigger this
-race condition like ax25_destroy_timer. Beacause Any ohter
-functions in ax25_proto_ops like ax25_bind protect ax25_sock by 
-lock_sock(sk).
-
-Thanks.
-
-
-
-
-On 2022/1/12 上午4:56, Eric Dumazet wrote:
+On 1/11/22 17:49, sean.wang@mediatek.com wrote:
+> From: Sean Wang <sean.wang@mediatek.com>
 > 
-> On 1/10/22 20:20, Hangyu Hua wrote:
->> sk_to_ax25(sk) needs to be called after lock_sock(sk) to avoid UAF
->> caused by a race condition.
-> 
-> Can you describe what race condition you have found exactly ?
-> 
-> sk pointer can not change.
-> 
-> 
->> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
->> ---
->>   net/ax25/af_ax25.c | 4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
+>> On 1/11/22 16:31, Ben Greear wrote:
+>>> On 1/11/22 3:17 PM, Khalid Aziz wrote:
+>>>> I am seeing an intermittent bug in mt7921e driver. When the driver
+>>>> module is loaded and is being initialized, almost every other time it
+>>>> seems to write to some wild memory location. This results in driver
+>>>> failing to initialize with message "Timeout for driver own" and at
+>>>> the same time I start to see "Bad page state" messages for random
+>>>> processes. Here is the relevant part of dmesg:
+>>>
+>>> Please see if this helps?
+>>>
+>>> From: Ben Greear <greearb@candelatech.com>
+>>>
+>>> If the nic fails to start, it is possible that the reset_work has
+>>> already been scheduled.  Ensure the work item is canceled so we do not
+>>> have use-after-free crash in case cleanup is called before the work
+>>> item is executed.
+>>>
+>>> This fixes crash on my x86_64 apu2 when mt7921k radio fails to work.
+>>> Radio still fails, but OS does not crash.
+>>>
+>>> Signed-off-by: Ben Greear <greearb@candelatech.com>
+>>> ---
+>>>    drivers/net/wireless/mediatek/mt76/mt7921/main.c | 1 +
+>>>    1 file changed, 1 insertion(+)
+>>>
+>>> diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+>>> b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+>>> index 6073bedaa1c08..9b33002dcba4a 100644
+>>> --- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+>>> +++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+>>> @@ -272,6 +272,7 @@ static void mt7921_stop(struct ieee80211_hw *hw)
+>>>
+>>>        cancel_delayed_work_sync(&dev->pm.ps_work);
+>>>        cancel_work_sync(&dev->pm.wake_work);
+>>> +    cancel_work_sync(&dev->reset_work);
+>>>        mt76_connac_free_pending_tx_skbs(&dev->pm, NULL);
+>>>
+>>>        mt7921_mutex_acquire(dev);
 >>
->> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
->> index cfca99e295b8..c5d62420a2a8 100644
->> --- a/net/ax25/af_ax25.c
->> +++ b/net/ax25/af_ax25.c
->> @@ -1127,7 +1127,7 @@ static int __must_check ax25_connect(struct 
->> socket *sock,
->>       struct sockaddr *uaddr, int addr_len, int flags)
->>   {
->>       struct sock *sk = sock->sk;
->> -    ax25_cb *ax25 = sk_to_ax25(sk), *ax25t;
->> +    ax25_cb *ax25, *ax25t;
->>       struct full_sockaddr_ax25 *fsa = (struct full_sockaddr_ax25 
->> *)uaddr;
->>       ax25_digi *digi = NULL;
->>       int ct = 0, err = 0;
->> @@ -1155,6 +1155,8 @@ static int __must_check ax25_connect(struct 
->> socket *sock,
->>       lock_sock(sk);
->> +    ax25 = sk_to_ax25(sk);
->> +
->>       /* deal with restarts */
->>       if (sock->state == SS_CONNECTING) {
->>           switch (sk->sk_state) {
+>> Hi Ben,
+>>
+>> Unfortunately that did not help. I still saw the same messages and a kernel panic. I do not see this bug if I power down the laptop before booting it up, so mt7921_stop() would make sense as the reasonable place to fix it.
+> 
+> Hi, Khalid
+> 
+> Could you try the patch below? It should be helpful to your issue
+> 
+> https://patchwork.kernel.org/project/linux-wireless/patch/70e27cbc652cbdb78277b9c691a3a5ba02653afb.1641540175.git.objelf@gmail.com/
+
+Hi Sean,
+
+That worked! I tried 5 reboots back-to-back after applying your patch 
+without powering down my laptop. There were no error messages, kernel 
+came up every time and wifi worked.
+
+Thanks,
+Khalid
+
