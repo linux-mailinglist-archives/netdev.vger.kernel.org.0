@@ -2,100 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCE2848C028
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 09:44:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FBB948C039
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 09:49:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351723AbiALIoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 03:44:46 -0500
-Received: from mail-vk1-f176.google.com ([209.85.221.176]:46658 "EHLO
-        mail-vk1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351576AbiALIoq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 03:44:46 -0500
-Received: by mail-vk1-f176.google.com with SMTP id bj47so1149924vkb.13;
-        Wed, 12 Jan 2022 00:44:45 -0800 (PST)
+        id S1351753AbiALIt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 03:49:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349568AbiALIt2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 03:49:28 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E33ABC06173F
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 00:49:27 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id i82so2603434ioa.8
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 00:49:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=buPjA70rUUBcKcVYNuV4JQC0M9u9GGPHZxVc8whoxw0=;
+        b=RTq6iNOUYgAYBTFTNKAxSJZOWj0TXteRZYmfwrhxdUPUpIukVk/p0BxXlnCgho5qhH
+         4XfV1e/H4YVsFgi/sotgO3tNyGLB/1mDEMokeceVv5qOqSTlZ8noaAFmtBrfrZ7IpfvL
+         lNkrUo+LO+MluLyYXo+n2c8iZr85LNIv1bDQaJhqxsZRC7+Bo7g5z0UgnrVX8N5xDouL
+         g3dA1uw4/+ueMMpwJzC6o1O21e2oFM84Wx3wM/bXjnOdvAXmpZZ4gro22NGdNS01tHzV
+         rTyE7R9YGXUFx7wx/nWHul0k42EVzsEv5/31Pk/0IhySr2tjEWbnnMzt3k/cV6hZKtiW
+         Ssbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LjeL6LehGBaC//OQBhfg2Gh/QedR10SATiGZ4ftla+8=;
-        b=L0mdX8iVw5XOohnCowVrl8W+ABq0oVo7CCtAQJso+xAcFlOsOJqM8O9ncx9l4jQ++S
-         9oj6EAG58lXhbZ6gYSqDN2W5WLCFlUNAOJmrIFzehnP8SsWdUcJLXAxkCovuWYRRgUXz
-         EiIoRz1+qTAwgBVnB2TmU1ubwOet/1HtFgGbF9gUoqthBZV/EJ7Up7Ba7wuf7xy0BK7n
-         FWEWjrfYR047xHukUAucH4yZpJbPQtBX5U3i35yvIL4cHWW/8EX1rVdaI9JkZ6OX3Net
-         dwGLy39wS5ngWGinekgVFVtt/Bs4GTgIm1gz/lEqK6pHSTMfn2RZ4Xepw8c6y9hwtYYx
-         cOow==
-X-Gm-Message-State: AOAM532l26YnCIesrautGA4C0M9+kl0voOLb5COPGKUy8nfN+JKOvFgz
-        TpxP1zVUhHqic2qEnXSE+Up+J3BnGSZoRYX9
-X-Google-Smtp-Source: ABdhPJwq0VAN6WUQ7EMEeUxeNu6OpL90ARgsmB+j0sGLhwa8UeLeF+59LjgHU+jFFbTUrqReBQLgEg==
-X-Received: by 2002:a05:6122:84c:: with SMTP id 12mr4150017vkk.4.1641977085230;
-        Wed, 12 Jan 2022 00:44:45 -0800 (PST)
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
-        by smtp.gmail.com with ESMTPSA id n9sm7233455uaj.11.2022.01.12.00.44.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 00:44:44 -0800 (PST)
-Received: by mail-ua1-f41.google.com with SMTP id i5so3331532uaq.10;
-        Wed, 12 Jan 2022 00:44:44 -0800 (PST)
-X-Received: by 2002:ab0:1861:: with SMTP id j33mr3953412uag.14.1641977084327;
- Wed, 12 Jan 2022 00:44:44 -0800 (PST)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=buPjA70rUUBcKcVYNuV4JQC0M9u9GGPHZxVc8whoxw0=;
+        b=oMvxQHRLkHStK+ZAPzdMvMxXKP3ZJ7IrgxaHOmAkJKAIJhBFihGCTC3MeYhhLvNtz3
+         I4Gmz+odjosAw2u6vbD7F1SNv8qpNjHkSg8OyKqFMVeOzv/3ksmGhs/kc6xtg2+DN5yh
+         ceT+wxGQxcC4+1uhRGvhtGG9xXKPOQz9gSF0YQ+M16GitWQK40ds5l2vAx9UBrxEfP5r
+         rqIcXu/UYcQSPnZwq2rICMZY9g0RIoLiZnhRmfYcpZwFvV9LnENRJEnkqqjN4R1XdU42
+         3WLA0bj9Bw/RO1UxYTc81nIScSAFeQ0ait58pBmrEF+nNjEEsz6tmzPwqGDFvX4ydeaK
+         SV0w==
+X-Gm-Message-State: AOAM532c/jZgxxN2QG8F+e5778PO5CRLXqV72l9ePHTQL9ajbAG4G6Vt
+        UUExlVkFUclq1Lc/OolmL3R0ypvTrtXDj5SWAG0=
+X-Google-Smtp-Source: ABdhPJwHYsXiQxyfDNV5XD3g8qDExgm0uF1n90Tbo6qtYztZFBuz7ZQbYfCx5PuZLL5GykDr4FsNALYwp1H1Cb4FNHI=
+X-Received: by 2002:a05:6602:2c4f:: with SMTP id x15mr4150628iov.208.1641977366834;
+ Wed, 12 Jan 2022 00:49:26 -0800 (PST)
 MIME-Version: 1.0
-References: <20220111162231.10390-1-uli+renesas@fpond.eu> <20220111162231.10390-2-uli+renesas@fpond.eu>
-In-Reply-To: <20220111162231.10390-2-uli+renesas@fpond.eu>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 12 Jan 2022 09:44:33 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVs=NWR1bRuTku09nWT+PyyVCM6Fp1GVu5brCj=VjZZ-g@mail.gmail.com>
-Message-ID: <CAMuHMdVs=NWR1bRuTku09nWT+PyyVCM6Fp1GVu5brCj=VjZZ-g@mail.gmail.com>
-Subject: Re: [PATCH v2 1/5] clk: renesas: r8a779a0: add CANFD module clock
-To:     Ulrich Hecht <uli+renesas@fpond.eu>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, linux-can@vger.kernel.org,
-        "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>, mailhol.vincent@wanadoo.fr,
-        socketcan@hartkopp.net,
-        Kieran Bingham <kieran.bingham@ideasonboard.com>
+Received: by 2002:a05:6622:3ad:0:0:0:0 with HTTP; Wed, 12 Jan 2022 00:49:25
+ -0800 (PST)
+Reply-To: zommaalissa@gmail.com
+From:   Alissa Zomma <sassitraore60@gmail.com>
+Date:   Wed, 12 Jan 2022 09:49:25 +0100
+Message-ID: <CA+4X0ZehBq686ea1N9qwX6-KFPNXYcAdV8cMP1F0b5qQyKGNUQ@mail.gmail.com>
+Subject: GOOD MORNING
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Uli,
+-- 
+Dear greetings,
+I sent you a letter but didn't receive any response from you? or Have
+you received my previous message? I hope to read your
+response soon.
 
-On Tue, Jan 11, 2022 at 5:22 PM Ulrich Hecht <uli+renesas@fpond.eu> wrote:
-> Adds "canfd0" to mod clocks.
->
-> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
-
-Thanks for your patch!
-
-> --- a/drivers/clk/renesas/r8a779a0-cpg-mssr.c
-> +++ b/drivers/clk/renesas/r8a779a0-cpg-mssr.c
-> @@ -136,6 +136,7 @@ static const struct mssr_mod_clk r8a779a0_mod_clks[] __initconst = {
->         DEF_MOD("avb3",         214,    R8A779A0_CLK_S3D2),
->         DEF_MOD("avb4",         215,    R8A779A0_CLK_S3D2),
->         DEF_MOD("avb5",         216,    R8A779A0_CLK_S3D2),
-> +       DEF_MOD("canfd0",       328,    R8A779A0_CLK_CANFD),
-
-The datasheet calls this "canfd".
-
->         DEF_MOD("csi40",        331,    R8A779A0_CLK_CSI0),
->         DEF_MOD("csi41",        400,    R8A779A0_CLK_CSI0),
->         DEF_MOD("csi42",        401,    R8A779A0_CLK_CSI0),
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-clk-for-v5.18 with the above fixed.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Alissa
