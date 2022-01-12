@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0668048BF82
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 09:07:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94A1748BF86
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 09:08:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351409AbiALIHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 03:07:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44596 "EHLO
+        id S1351423AbiALIIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 03:08:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348682AbiALIHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 03:07:22 -0500
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1A5C06173F;
-        Wed, 12 Jan 2022 00:07:22 -0800 (PST)
-Received: by mail-qk1-x735.google.com with SMTP id 69so1661077qkd.6;
-        Wed, 12 Jan 2022 00:07:22 -0800 (PST)
+        with ESMTP id S1351416AbiALIH7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 03:07:59 -0500
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3A9C06173F;
+        Wed, 12 Jan 2022 00:07:58 -0800 (PST)
+Received: by mail-qt1-x82a.google.com with SMTP id y10so2189243qtw.1;
+        Wed, 12 Jan 2022 00:07:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=IE25JwKoO2q8r95KJT5gBsSFBH3hqM0jC6hp4mWm8iI=;
-        b=JHtrXXpJbeP5IbdNrgjk2aRqXhEqJQigahDy3KWYBpc37DugNsgz0vwF+PUoS/jRkE
-         kTmT0XfLlTfKGOndOZsnj6+eVhGfOVzdDyYgHK/qqJQdmDY6DGXMyXMxcPKy4xVDA8P4
-         tfa2n5texubPoyjEoTTc3DEmrY0O3xghI+TVC57bdNmRH1wk/HHSKZt329nclrN3Mjhm
-         7hh2agsKnJGLMkv7TBiGoCkuHXYQXW6tqSKHjmZrFzKdiRI+ExWiVuQFhFbh0KnZFJZG
-         xGFIO9VBMmvXaLp/YQkShTqAE3/mXo5I+IhzPaRaAuZSXkhbEJoNMLbkYdT7DTHeH/Ve
-         Bntg==
+        bh=o7CnV6Plc3m49ljVBNe22o8ETLLt2AJm3GJl7I66i/s=;
+        b=O0yqbYatJJD8z/BiYzKVWgBzyr0pid5wIkdk1dyFYcP8ifFxYZR/XAeGt9UJFPJVG/
+         0Btvo2y946ODVnYhxa5/nYlFTwYtasRmEM/XUQWCC6m/H9Xz85fhuejprChRaOTVNmUR
+         ub7zZZHGN7J6azT4mDuBMRaAAimgoBXyOca4RvASW8mJKgtIkgX/Si3eH7AVVuZ+XJgU
+         OlQz+/MYTA452bFxlWh+gr89cUGQEG5jv9KxRPOC8f4L+W5kwFEFf9/x3zVmgF1SS2FF
+         qQsVnMtREDbuE0/TREWW+6qa78luB75F1kSjs4ETmUTELgv2ODLxviVu0lcdsvZyOcs/
+         1RTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=IE25JwKoO2q8r95KJT5gBsSFBH3hqM0jC6hp4mWm8iI=;
-        b=U8jM8mL8/LaIVdUrPGl9VwrIIkBq+kyqJydgSMbq5a+knBFPsYSRziN91RSKQl2yNY
-         H4JFkcOX9o/9sXpOhMi1YZdwZJDIUxwbPVn6ElQg30LCkPRfeWPNyVXhGYr6Yqmx13PP
-         67/A2VGoCC0A0oVH2Fop0F9g+HJPtihR7KToqVnZcLYZMsgEMUC7eM6bGGzQtfNttmvz
-         +JEB+CeXJzRn/t+MTJR0byz8leLa9+3mkgoYxXTn1gdwAy9sdy5MomPSMTF1E94WQpRP
-         PW/M63b6BuqXZhE32csQoPElWNr5qPJ/XPitQclTYdweVnLFsJhMNoxKEu+8CXkirl69
-         1AzA==
-X-Gm-Message-State: AOAM533VY4pNoqnc57st5gIsIPIv/qT0ZLqAd04ninLYz4e0hxvcBI2P
-        4iMT/D4O38xJ5lbTfY5KesQ=
-X-Google-Smtp-Source: ABdhPJyxuDEsBm+JSaMsCoS7OA/xuIIXyEE5InMCpN4kDB2XR3kYa+7uafF3NHnpkmvQBTZgI0p+1Q==
-X-Received: by 2002:a05:620a:a50:: with SMTP id j16mr4038851qka.337.1641974841468;
-        Wed, 12 Jan 2022 00:07:21 -0800 (PST)
+        bh=o7CnV6Plc3m49ljVBNe22o8ETLLt2AJm3GJl7I66i/s=;
+        b=LBeXJ1sAYjZzp4Kl4R+KRaFA/n3PDMv/PQ18nWTfnMCS3FS2+APeJ2n7ReB9sqseA/
+         Vl10O45WVKEZawJup5vFL2Zpv2Hqn60r+IP4Ubcq6gGqVcbiWgcgRlwzt9POVdqUDhEi
+         fR/zXvKzjysnsWgPlD+uHtwORy1OpazUXT6MtoupP+I4urB5cUlBvOqRlqTW+bwltJzT
+         cmn2VkAy1WS+pfoRj0p1udEfGEq9zTqKNArZP8s3gxfAJ8SkorezGrB/qqi0TGVRplz+
+         5bU1M3PGenH+ioFgxSganiq+uq2Wy/JoTyC5Vc1u4Bwg1ohpHHvsBsULjxZ0Fvth5EY0
+         RDMw==
+X-Gm-Message-State: AOAM532NCbKFkjRjNbD4eQst4y1OV3TU1Lcw19j04MHAWlNB+vOAYppq
+        bpFCB66gz7tF/9L0ULr6gdI=
+X-Google-Smtp-Source: ABdhPJxmhU3/AkiZvPhIrkQ3K6bpl665AMfd0sAPJivqMASvyC/sRCf6fmUVzCtxKyrhtrUtOrJHlg==
+X-Received: by 2002:a05:622a:1013:: with SMTP id d19mr6769175qte.151.1641974877992;
+        Wed, 12 Jan 2022 00:07:57 -0800 (PST)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id c3sm6005417qte.42.2022.01.12.00.07.18
+        by smtp.gmail.com with ESMTPSA id c17sm7736543qkl.90.2022.01.12.00.07.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 00:07:21 -0800 (PST)
+        Wed, 12 Jan 2022 00:07:57 -0800 (PST)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
 To:     kvalo@kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
+Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>, CGEL ZTE <cgel.zte@gmail.com>
-Subject: [PATCH] drivers/net/wireless: remove redundant ret variable
-Date:   Wed, 12 Jan 2022 08:07:15 +0000
-Message-Id: <20220112080715.667254-1-chi.minghao@zte.com.cn>
+Subject: [PATCH] wireless/ath/ath9k: remove redundant status variable
+Date:   Wed, 12 Jan 2022 08:07:51 +0000
+Message-Id: <20220112080751.667316-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -74,61 +73,31 @@ Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
 ---
- drivers/net/wireless/marvell/libertas/cfg.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ drivers/net/wireless/ath/ath9k/eeprom.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/libertas/cfg.c b/drivers/net/wireless/marvell/libertas/cfg.c
-index 4e3de684928b..f160c258805e 100644
---- a/drivers/net/wireless/marvell/libertas/cfg.c
-+++ b/drivers/net/wireless/marvell/libertas/cfg.c
-@@ -854,16 +854,13 @@ void lbs_send_mic_failureevent(struct lbs_private *priv, u32 event)
- static int lbs_remove_wep_keys(struct lbs_private *priv)
+diff --git a/drivers/net/wireless/ath/ath9k/eeprom.c b/drivers/net/wireless/ath/ath9k/eeprom.c
+index e6b3cd49ea18..efb7889142d4 100644
+--- a/drivers/net/wireless/ath/ath9k/eeprom.c
++++ b/drivers/net/wireless/ath/ath9k/eeprom.c
+@@ -670,8 +670,6 @@ void ath9k_hw_get_gain_boundaries_pdadcs(struct ath_hw *ah,
+ 
+ int ath9k_hw_eeprom_init(struct ath_hw *ah)
  {
- 	struct cmd_ds_802_11_set_wep cmd;
--	int ret;
- 
- 	memset(&cmd, 0, sizeof(cmd));
- 	cmd.hdr.size = cpu_to_le16(sizeof(cmd));
- 	cmd.keyindex = cpu_to_le16(priv->wep_tx_key);
- 	cmd.action = cpu_to_le16(CMD_ACT_REMOVE);
- 
--	ret = lbs_cmd_with_response(priv, CMD_802_11_SET_WEP, &cmd);
+-	int status;
 -
--	return ret;
-+	return lbs_cmd_with_response(priv, CMD_802_11_SET_WEP, &cmd);
- }
+ 	if (AR_SREV_9300_20_OR_LATER(ah))
+ 		ah->eep_ops = &eep_ar9300_ops;
+ 	else if (AR_SREV_9287(ah)) {
+@@ -685,7 +683,5 @@ int ath9k_hw_eeprom_init(struct ath_hw *ah)
+ 	if (!ah->eep_ops->fill_eeprom(ah))
+ 		return -EIO;
  
- /*
-@@ -949,9 +946,7 @@ static int lbs_enable_rsn(struct lbs_private *priv, int enable)
- 	cmd.action = cpu_to_le16(CMD_ACT_SET);
- 	cmd.enable = cpu_to_le16(enable);
- 
--	ret = lbs_cmd_with_response(priv, CMD_802_11_ENABLE_RSN, &cmd);
+-	status = ah->eep_ops->check_eeprom(ah);
 -
--	return ret;
-+	return lbs_cmd_with_response(priv, CMD_802_11_ENABLE_RSN, &cmd);
+-	return status;
++	return ah->eep_ops->check_eeprom(ah);
  }
- 
- 
-@@ -976,7 +971,6 @@ static int lbs_set_key_material(struct lbs_private *priv,
- 				const u8 *key, u16 key_len)
- {
- 	struct cmd_key_material cmd;
--	int ret;
- 
- 	/*
- 	 * Example for WPA (TKIP):
-@@ -1004,9 +998,7 @@ static int lbs_set_key_material(struct lbs_private *priv,
- 	if (key && key_len)
- 		memcpy(cmd.param.key, key, key_len);
- 
--	ret = lbs_cmd_with_response(priv, CMD_802_11_KEY_MATERIAL, &cmd);
--
--	return ret;
-+	return lbs_cmd_with_response(priv, CMD_802_11_KEY_MATERIAL, &cmd);
- }
- 
- 
 -- 
 2.25.1
 
