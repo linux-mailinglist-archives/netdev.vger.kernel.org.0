@@ -2,102 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA38B48C9E0
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:36:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDEC148C9BF
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:35:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355794AbiALRgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 12:36:37 -0500
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:42183 "EHLO
-        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355771AbiALReO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:34:14 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 766432000D;
-        Wed, 12 Jan 2022 17:34:11 +0000 (UTC)
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Michael Hennerich <michael.hennerich@analog.com>,
-        Harry Morris <h.morris@cascoda.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        linux-wireless@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-next v2 27/27] net: ieee802154: ca8210: Refuse most of the scan operations
-Date:   Wed, 12 Jan 2022 18:33:12 +0100
-Message-Id: <20220112173312.764660-28-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220112173312.764660-1-miquel.raynal@bootlin.com>
-References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
+        id S1343738AbiALRex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 12:34:53 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39236 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355762AbiALRed (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:34:33 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C035B82010;
+        Wed, 12 Jan 2022 17:34:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2EEEC36AE5;
+        Wed, 12 Jan 2022 17:34:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642008870;
+        bh=g+h2nhy7FCYinfQF3fyEFVqJj7Hzj5eS5dA6+TP8D7E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VFJHjUayAInkThh3PMj77cOAt9WWN/Qiy2m9lU/lPwfheROnHgOSsA5X9e88lVdAW
+         /dj1bv8CMIEPqtOJgQ4qq7/xI8hJUqRb1IywfNEwYlJmtVK1py1yWVz9j/OKX4duXO
+         nsmbTVB+XqnQzTt228ep0vaqDc3xRZCVI5FaAVcLuc8yF2DWkNVdlI16reUvuE46Rm
+         CNKK8lL1YxNy3LXdbavW1vxDu1Xs13vc7L+PCqbHhZbXRqVIpAV/h6siRW/PH+BZlY
+         gWuzsN9X1BKUGgjWDd0zVTib5HowlV7JUq4aQaLoNnNq3JPSAm5yfuU8F+8fSDbZXq
+         kVYijJXby02Ew==
+Date:   Wed, 12 Jan 2022 09:34:28 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jordy Zomer <jordy@pwning.systems>
+Cc:     davem@davemloft.net, krzysztof.kozlowski@canonical.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        wengjianfeng@yulong.com
+Subject: Re: [PATCH v3] nfc: st-nci: Fix potential buffer overflows in
+ EVT_TRANSACTION
+Message-ID: <20220112093428.58981696@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220111164543.3233040-1-jordy@pwning.systems>
+References: <20211117171554.2731340-1-jordy@pwning.systems>
+        <20220111164543.3233040-1-jordy@pwning.systems>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Cascada 8210 hardware transceiver is kind of a hardMAC which
-interfaces with the softMAC and in practice does not support sending
-anything else than dataframes. This means we cannot send any BEACON_REQ
-during active scans nor any BEACON in general. Refuse these operations
-officially so that the user is aware of the limitation.
+On Tue, 11 Jan 2022 17:45:43 +0100 Jordy Zomer wrote:
+> It appears that there are some buffer overflows in EVT_TRANSACTION.
+> This happens because the length parameters that are passed to memcpy
+> come directly from skb->data and are not guarded in any way.
+> 
+> Signed-off-by: Jordy Zomer <jordy@pwning.systems>
 
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- drivers/net/ieee802154/ca8210.c | 25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+This patch with more context:
 
-diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-index d3a9e4fe05f4..49c274280e3c 100644
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -2385,6 +2385,25 @@ static int ca8210_set_promiscuous_mode(struct ieee802154_hw *hw, const bool on)
- 	return link_to_linux_err(status);
- }
- 
-+static int ca8210_enter_scan_mode(struct ieee802154_hw *hw,
-+				  struct cfg802154_scan_request *request)
-+{
-+	/* This xceiver can only send dataframes */
-+	if (request->type != NL802154_SCAN_PASSIVE)
-+		return -EOPNOTSUPP;
-+
-+	return 0;
-+}
-+
-+static int ca8210_enter_beacons_mode(struct ieee802154_hw *hw,
-+				     struct cfg802154_beacons_request *request)
-+{
-+	/* This xceiver can only send dataframes */
-+	return -EOPNOTSUPP;
-+}
-+
-+static void ca8210_exit_scan_beacons_mode(struct ieee802154_hw *hw) { }
-+
- static const struct ieee802154_ops ca8210_phy_ops = {
- 	.start = ca8210_start,
- 	.stop = ca8210_stop,
-@@ -2397,7 +2416,11 @@ static const struct ieee802154_ops ca8210_phy_ops = {
- 	.set_cca_ed_level = ca8210_set_cca_ed_level,
- 	.set_csma_params = ca8210_set_csma_params,
- 	.set_frame_retries = ca8210_set_frame_retries,
--	.set_promiscuous_mode = ca8210_set_promiscuous_mode
-+	.set_promiscuous_mode = ca8210_set_promiscuous_mode,
-+	.enter_scan_mode = ca8210_enter_scan_mode,
-+	.exit_scan_mode = ca8210_exit_scan_beacons_mode,
-+	.enter_beacons_mode = ca8210_enter_beacons_mode,
-+	.exit_beacons_mode = ca8210_exit_scan_beacons_mode,
- };
- 
- /* Test/EVBME Interface */
--- 
-2.27.0
+> diff --git a/drivers/nfc/st-nci/se.c b/drivers/nfc/st-nci/se.c
+> index 7764b1a4c3cf..cdb59ddff4e8 100644
+> --- a/drivers/nfc/st-nci/se.c
+> +++ b/drivers/nfc/st-nci/se.c
+> @@ -333,18 +333,28 @@ static int st_nci_hci_connectivity_event_received(struct nci_dev *ndev,
+>                 transaction = devm_kzalloc(dev, skb->len - 2, GFP_KERNEL);
 
+What checks skb->len > 2 ?
+
+>                 if (!transaction)
+>                         return -ENOMEM;
+
+Leaks skb ?
+
+>                 transaction->aid_len = skb->data[1];
+> +
+> +               /* Checking if the length of the AID is valid */
+> +               if (transaction->aid_len > sizeof(transaction->aid))
+> +                       return -EINVAL;
+> 
+>                 memcpy(transaction->aid, &skb->data[2], transaction->aid_len);
+
+What checks skb->len > 2 + transaction->aid_len ?
+
+>                 /* Check next byte is PARAMETERS tag (82) */
+>                 if (skb->data[transaction->aid_len + 2] !=
+
+.. make that skb->len > 2 + transaction->aid_len + 1
+
+>                     NFC_EVT_TRANSACTION_PARAMS_TAG)
+>                         return -EPROTO;
+
+Leaks skb ? (btw devm_kmalloc() in message processing could probably as well be counted 
+as leak unless something guarantees attacker can't generate infinite messages of this type)
+
+>                 transaction->params_len = skb->data[transaction->aid_len + 3];
+
+.. skb->len > 2 + transaction->aid_len + 1 + 1
+
+> +               /* Total size is allocated (skb->len - 2) minus fixed array members */
+> +               if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
+
+So this check makes sure we don't overflow transaction->params, right?
+Again, does skb->len not have to be validated as well?
+
+> +                       return -EINVAL;
+> +
+>                 memcpy(transaction->params, skb->data +
+>                        transaction->aid_len + 4, transaction->params_len);
+>  
+>                 r = nfc_se_transaction(ndev->nfc_dev, host, transaction);
+>                 break;
