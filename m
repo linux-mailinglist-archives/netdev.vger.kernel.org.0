@@ -2,72 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1F7E48BDE2
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 05:30:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F421B48BDE5
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 05:33:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350698AbiALEaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 23:30:12 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45520 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231799AbiALEaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 23:30:11 -0500
+        id S1349281AbiALEdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 23:33:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231799AbiALEdh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 23:33:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56E3C06173F;
+        Tue, 11 Jan 2022 20:33:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5350B61842
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 04:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A9AC6C36AEA;
-        Wed, 12 Jan 2022 04:30:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A25BB81DCA;
+        Wed, 12 Jan 2022 04:33:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5DD5C36AE5;
+        Wed, 12 Jan 2022 04:33:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641961810;
-        bh=yOH4m9Adno7XB7APPGLVYTuEuI+XYzXiKKEf6t66Vig=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=egSb08ly7jZUWzMlb0aTvXypdkSyZGT0O7FJOq/aO9hmv8k/2dycYDM412wPtZWMJ
-         bX3VltsjfPjvaVO6Lfp+7nujh0aX1F0S+4zZ1XWhu6WFzwrf+TrgT+N9vcqPNuimWG
-         ZDwAu3cqJ4tjrTFRIOPBN+8bb5Snm/sqBJEQJ3+q2f69Vvs/nKWq66Rd4XYuRYz7jA
-         wNJ36x1K6TPHEOlEtPj8jTsgnmrU8Q33FsJGM0cJ7nX0fg1y0rZ3tDFoNi1aVyWoZP
-         u1caEMVEAOXDiFOJtIRInee7vNfXy3rpVUevxr1BEUcbMUsROw0q8V/G/A+SPzicmQ
-         7JAdXMwh9rDUw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 829DFF60793;
-        Wed, 12 Jan 2022 04:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1641962015;
+        bh=7NrSKZ8PtbnKJG51c0SYHsrsFfDrjACpv6k5pXnZx3M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JTFhIvstI57YbIol9tDSGX0d9S9d/XWtAhjl1QpcRlKHqSXvMeboUJvvBB9UK2PBr
+         U8Fy/MshQkyUnqOd/BwfJInhrsvK6NLQrdCjgRD+//eQ0iGHbgZL1yNT29Eu/A7ynf
+         aAdh6E28aYEXvQ2j4CC0s4u8P6JuqQS3hOXz6At5vwsWZe2rdK5qCv0mSJ0gGxoYZI
+         gWYQFSMRpIofe/2u6f/Ja5S7GSV/r4s9aOA8R3h6VH9aqqFfg8fj5znm5KqN+Deq4g
+         Sy8tZ1OU82TpWynTQYX3BEAfq5jBiTtaDOYEtrmKMob4xtfHyO9Pn0JLiSDvWkhY6b
+         8yLkwqKvHj2jA==
+Date:   Tue, 11 Jan 2022 20:33:33 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Yang Shen <shenyang39@huawei.com>,
+        Yonglong Liu <liuyonglong@huawei.com>,
+        Peng Li <lipeng321@huawei.com>,
+        Matthias Brugger <mbrugger@suse.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: hns: Fix missing put_device() call in
+ hns_mac_register_phy
+Message-ID: <20220111203333.507ec4f5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220110064031.3431-1-linmq006@gmail.com>
+References: <20220110064031.3431-1-linmq006@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] mctp: test: zero out sockaddr
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164196181053.12222.2965918438416421151.git-patchwork-notify@kernel.org>
-Date:   Wed, 12 Jan 2022 04:30:10 +0000
-References: <20220110021806.2343023-1-matt@codeconstruct.com.au>
-In-Reply-To: <20220110021806.2343023-1-matt@codeconstruct.com.au>
-To:     Matt Johnston <matt@codeconstruct.com.au>
-Cc:     kuba@kernel.org, davem@davemloft.net, jk@codeconstruct.com.au,
-        netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 10 Jan 2022 10:18:06 +0800 you wrote:
-> MCTP now requires that padding bytes are zero.
+On Mon, 10 Jan 2022 06:40:29 +0000 Miaoqian Lin wrote:
+> We need to drop the reference taken by hns_dsaf_find_platform_device
+> Missing put_device() may cause refcount leak.
 > 
-> Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
-> Fixes: 1e4b50f06d97 ("mctp: handle the struct sockaddr_mctp padding fields")
+> Fixes: 804ffe5c6197 ("net: hns: support deferred probe when no mdio")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 > ---
->  net/mctp/test/route-test.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c
+> index 7edf8569514c..7364e05487c7 100644
+> --- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c
+> +++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c
+> @@ -764,6 +764,7 @@ static int hns_mac_register_phy(struct hns_mac_cb *mac_cb)
+>  		dev_err(mac_cb->dev,
+>  			"mac%d mdio is NULL, dsaf will probe again later\n",
+>  			mac_cb->mac_id);
+> +		put_device(&pdev->dev);
+>  		return -EPROBE_DEFER;
+>  	}
+>  
 
-Here is the summary with links:
-  - [net] mctp: test: zero out sockaddr
-    https://git.kernel.org/netdev/net/c/284a4d94e8e7
+With more context:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+@@ -755,24 +755,25 @@ static int hns_mac_register_phy(struct hns_mac_cb *mac_cb)
+        pdev = hns_dsaf_find_platform_device(args.fwnode);
+        if (!pdev) {
+                dev_err(mac_cb->dev, "mac%d mdio pdev is NULL\n",
+                        mac_cb->mac_id);
+                return  -EINVAL;
+        }
+ 
+        mii_bus = platform_get_drvdata(pdev);
+        if (!mii_bus) {
+                dev_err(mac_cb->dev,
+                        "mac%d mdio is NULL, dsaf will probe again later\n",
+                        mac_cb->mac_id);
++               put_device(&pdev->dev);
+                return -EPROBE_DEFER;
+        }
+ 
+        rc = hns_mac_register_phydev(mii_bus, mac_cb, addr);
+        if (!rc)
+                dev_dbg(mac_cb->dev, "mac%d register phy addr:%d\n",
+                        mac_cb->mac_id, addr);
+ 
+        return rc;
+ }
 
-
+Looks like if put_device() is missing it will also be missing in case
+hns_mac_register_phydev() returns an error.
