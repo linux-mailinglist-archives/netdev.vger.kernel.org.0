@@ -2,97 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0716A48CF1F
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 00:32:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF10148CF24
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 00:33:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235456AbiALXcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 18:32:00 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38234 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235421AbiALXb6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 18:31:58 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C4165B82188;
-        Wed, 12 Jan 2022 23:31:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF377C36AF2;
-        Wed, 12 Jan 2022 23:31:54 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="TfsWPvgX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1642030311;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hstk73wuIKZWiikWlym2h0bIC3qGMXsXWymKJtQh5ys=;
-        b=TfsWPvgXekG/1IVjr0hbJSZ9+mLRmpbL5U4Eq5MjE6/kba79M6pIMbxIGKKGDgv+Fejvya
-        lfNJJqkjkmxJF2zUmC1gjt9u4ZNPb03bc2K4K3oMolN6Afn8kHPhERaS36Mo55OKhZaDbC
-        SVR4F0lYxwTH+iea5Wziem4LXnxE0Ag=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 98d0b2c9 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 12 Jan 2022 23:31:51 +0000 (UTC)
-Received: by mail-yb1-f171.google.com with SMTP id g81so10029968ybg.10;
-        Wed, 12 Jan 2022 15:31:50 -0800 (PST)
-X-Gm-Message-State: AOAM530uzYfmi2peL82YFOSG8xY1Xco12LXAEhmpO+RXbxM3c4TrVSVX
-        xcSzhkr9wCVapmmnvKnos4oLPlpMxmXAUdRG7So=
-X-Google-Smtp-Source: ABdhPJxqG3O8kUM3OYzd+VIHfE/yG6UzHPq2cANRI+RCJfa44HWXEDoNmTxlpM0TKv/14nigRVPki5q61d4r/6RbYj0=
-X-Received: by 2002:a25:a0c4:: with SMTP id i4mr2845644ybm.457.1642030309048;
- Wed, 12 Jan 2022 15:31:49 -0800 (PST)
+        id S235481AbiALXdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 18:33:09 -0500
+Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:7551 "EHLO
+        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235421AbiALXdI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 18:33:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1642030388; x=1673566388;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fc55L5MUZDiGbQZ8eZAKde645irQFkn06aL3kIXwU2k=;
+  b=D+jIjxjho6qc83Z0AbyKQimWrHH7sov8wmGEnbjmJ4+1vmsT5RotdfHV
+   DvC45EP0qMQZL6SqhA+Nz2DWQsWtX/Lw1jsA9pzFE35l9ezxIvoNL9wkV
+   sW29gPQeIBuUcXbA/rQgK+uwQ8z1iTcsPMQ7OAhX5i96T/4N1sjaF0fZi
+   g=;
+X-IronPort-AV: E=Sophos;i="5.88,284,1635206400"; 
+   d="scan'208,223";a="54973163"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 12 Jan 2022 23:33:07 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com (Postfix) with ESMTPS id A17DB811B2;
+        Wed, 12 Jan 2022 23:33:05 +0000 (UTC)
+Received: from EX13D01UWA002.ant.amazon.com (10.43.160.74) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Wed, 12 Jan 2022 23:33:04 +0000
+Received: from u46989501580c5c.ant.amazon.com (10.43.161.183) by
+ EX13d01UWA002.ant.amazon.com (10.43.160.74) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Wed, 12 Jan 2022 23:33:04 +0000
+From:   Samuel Mendoza-Jonas <samjonas@amazon.com>
+To:     <netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>
+CC:     Samuel Mendoza-Jonas <samjonas@amazon.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Tony Nguyen" <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] ixgbevf: Require large buffers for build_skb on 82599VF
+Date:   Wed, 12 Jan 2022 15:32:31 -0800
+Message-ID: <20220112233231.317259-1-samjonas@amazon.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: by 2002:a05:7110:209:b0:11c:1b85:d007 with HTTP; Wed, 12 Jan 2022
- 15:31:48 -0800 (PST)
-In-Reply-To: <87r19cftbr.fsf@toke.dk>
-References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-3-Jason@zx2c4.com>
- <87r19cftbr.fsf@toke.dk>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 13 Jan 2022 00:31:48 +0100
-X-Gmail-Original-Message-ID: <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
-Message-ID: <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 2/3] ipv6: move from sha1 to blake2s in address calculation
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        linux-crypto@vger.kernel.org, Erik Kline <ek@google.com>,
-        Fernando Gont <fgont@si6networks.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        hideaki.yoshifuji@miraclelinux.com,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.183]
+X-ClientProxiedBy: EX13D40UWA002.ant.amazon.com (10.43.160.149) To
+ EX13d01UWA002.ant.amazon.com (10.43.160.74)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Toke,
+From 4.17 onwards the ixgbevf driver uses build_skb() to build an skb
+around new data in the page buffer shared with the ixgbe PF.
+This uses either a 2K or 3K buffer, and offsets the DMA mapping by
+NET_SKB_PAD + NET_IP_ALIGN. When using a smaller buffer RXDCTL is set to
+ensure the PF does not write a full 2K bytes into the buffer, which is
+actually 2K minus the offset.
 
-On 1/13/22, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
-> However, if we make this change, systems setting a stable_secret and
-> using addr_gen_mode 2 or 3 will come up with a completely different
-> address after a kernel upgrade. Which would be bad for any operator
-> expecting to be able to find their machine again after a reboot,
-> especially if it is accessed remotely.
->
-> I haven't ever used this feature myself, though, or seen it in use. So I
-> don't know if this is purely a theoretical concern, or if the
-> stable_address feature is actually used in this way in practice. If it
-> is, I guess the switch would have to be opt-in, which kinda defeats the
-> purpose, no (i.e., we'd have to keep the SHA1 code around
+However on the 82599 virtual function, the RXDCTL mechanism is not
+available. The driver attempts to work around this by using the SET_LPE
+mailbox method to lower the maximm frame size, but the ixgbe PF driver
+ignores this in order to keep the PF and all VFs in sync[0].
 
-I'm not even so sure that's true. That was my worry at first, but
-actually, looking at this more closely, DAD means that the address can
-be changed anyway - a byte counter is hashed in - so there's no
-gurantee there.
+This means the PF will write up to the full 2K set in SRRCTL, causing it
+to write NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the buffer.
+With 4K pages split into two buffers, this means it either writes
+NET_SKB_PAD + NET_IP_ALIGN bytes past the first buffer (and into the
+second), or NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the DMA
+mapping.
 
-There's also the other aspect that open coding sha1_transform like
-this and prepending it with the secret (rather than a better
-construction) isn't so great... Take a look at the latest version of
-this in my branch to see a really nice simplification and security
-improvement:
+Avoid this by only enabling build_skb when using "large" buffers (3K).
+These are placed in each half of an order-1 page, preventing the PF from
+writing past the end of the mapping.
 
-https://git.zx2c4.com/linux-dev/log/?h=3Dremove-sha1
+[0]: Technically it only ever raises the max frame size, see
+ixgbe_set_vf_lpe() in ixgbe_sriov.c
 
-Jason
+Signed-off-by: Samuel Mendoza-Jonas <samjonas@amazon.com>
+---
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+index 0015fcf1df2b..0f293acd17e8 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -1984,14 +1984,15 @@ static void ixgbevf_set_rx_buffer_len(struct ixgbevf_adapter *adapter,
+ 	if (adapter->flags & IXGBEVF_FLAGS_LEGACY_RX)
+ 		return;
+ 
+-	set_ring_build_skb_enabled(rx_ring);
++	if (PAGE_SIZE < 8192)
++		if (max_frame > IXGBEVF_MAX_FRAME_BUILD_SKB)
++			set_ring_uses_large_buffer(rx_ring);
+ 
+-	if (PAGE_SIZE < 8192) {
+-		if (max_frame <= IXGBEVF_MAX_FRAME_BUILD_SKB)
+-			return;
++	/* 82599 can't rely on RXDCTL.RLPML to restrict the size of the frame */
++	if (adapter->hw.mac.type == ixgbe_mac_82599_vf && !ring_uses_large_buffer(rx_ring))
++		return;
+ 
+-		set_ring_uses_large_buffer(rx_ring);
+-	}
++	set_ring_build_skb_enabled(rx_ring);
+ }
+ 
+ /**
+-- 
+2.25.1
+
