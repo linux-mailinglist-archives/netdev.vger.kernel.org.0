@@ -2,80 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C60848BD13
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 03:21:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FDFA48BD44
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 03:28:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348398AbiALCVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 21:21:06 -0500
-Received: from mail-ot1-f48.google.com ([209.85.210.48]:35441 "EHLO
-        mail-ot1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236391AbiALCVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 21:21:05 -0500
-Received: by mail-ot1-f48.google.com with SMTP id 60-20020a9d0142000000b0059103eb18d4so985506otu.2;
-        Tue, 11 Jan 2022 18:21:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qSz9nqMvLNyS6aeY5fUaSL26SyAlQ9l55+SxfRywHfw=;
-        b=40fA9/TeVvFbsUjMfZcNmR/1giV9vDboxa9n3iwG4h5O89n9zrbafk2KnoKE4CwceQ
-         DnWC+PY4RNLPp3cOltskDvzesh6AldCwer5qldhxAoDiapadfkpwfcsWmjRajMGriHbx
-         87uwW9eTMYz9q3NRB84Zi5C6ZwdHkps0NXgm2mkwwCzo0SjmKOqxEae3g9HnFN9xP9zG
-         WY/Haq4pEuSofk47AIRoSQdoYeDHObYwtFkx9ECsSknguMmQgmgfFAVDbl54p7Op9xae
-         6G126hDZky4TnTsGx/LmYQ9ZEw39IoO+POPU49onkcYHlnM7s3T5yHcCY7B1C90q05EW
-         b7vw==
-X-Gm-Message-State: AOAM533RiyxMxNhjp7FrlX14Fd7h+dV0I11f1nvD/UtkllcI+ajwA5ZO
-        fu+Rjisi93bKi8ILyzGhjKe6b7cVrw==
-X-Google-Smtp-Source: ABdhPJxI82YkGfNmAqCIMJ/wSuUgCxzRZYE5VokdiLCTNQR4r9d1Ns1/A+MGaXe+wOOZUsTN0zDyfw==
-X-Received: by 2002:a9d:6452:: with SMTP id m18mr1492762otl.99.1641954064626;
-        Tue, 11 Jan 2022 18:21:04 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id d21sm668955oti.5.2022.01.11.18.21.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 18:21:04 -0800 (PST)
-Received: (nullmailer pid 3943654 invoked by uid 1000);
-        Wed, 12 Jan 2022 02:21:03 -0000
-Date:   Tue, 11 Jan 2022 20:21:03 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Abhishek Kumar <kuabhs@chromium.org>
-Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        pillair@codeaurora.org, Kalle Valo <kvalo@kernel.org>,
-        linux-wireless@vger.kernel.org, ath10k@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, dianders@chromium.org,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] dt: bindings: add dt entry for ath10k default BDF
- name
-Message-ID: <Yd47D9GjbAFaWXEo@robh.at.kernel.org>
-References: <20220110231255.v2.1.Ie4dcc45b0bf365077303c596891d460d716bb4c5@changeid>
- <20220110231255.v2.2.Ia0365467994f8f9085c86b5674b57ff507c669f8@changeid>
+        id S1348655AbiALC2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 21:28:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54884 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348651AbiALC2M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 21:28:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152CAC061748;
+        Tue, 11 Jan 2022 18:28:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD63A61732;
+        Wed, 12 Jan 2022 02:28:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9163C36AEB;
+        Wed, 12 Jan 2022 02:28:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641954491;
+        bh=LKQxuf+e03vISf279LcO6bjfXRhK01rdCmFOm7s3OHw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YP5uE2ZNosmrbqOcrcG37yrML9gIfFMfm1tVlORS7PeKOBFTaOK85/N7TwsqUE6DT
+         to6Xbd4ix46rAIDPM1nZcAmfpkliQd2xFLc4nVadbGkqDhp9QTNB6uKyRiyJnjc4vL
+         AR9Wgi1SsDyCY4OmDnIYwBw17DvuboJqxXF9PBctOQJOIDpwAHWBR5M0EsduE7zxxx
+         R9XgGPHMZWQVOYj3GoMQ2Yoj48INXrkzNMcLzTh306P2r4lcJm5wtxPnQGhcw6Wf+k
+         D9uXGB9yo1B3hAwQ/IMAgz5MYGCQyUqWmZScHw/qUXLGVPc05/wmO14lUhBEgYvYYd
+         yPtCb+ScUe53g==
+Date:   Tue, 11 Jan 2022 18:28:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?B?UmFm?= =?UTF-8?B?YcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next] Revert "of: net: support NVMEM cells with MAC
+ in text format"
+Message-ID: <20220111182809.23de1b21@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220111081206.2393560-1-michael@walle.cc>
+References: <20220111081206.2393560-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220110231255.v2.2.Ia0365467994f8f9085c86b5674b57ff507c669f8@changeid>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 10 Jan 2022 23:14:15 +0000, Abhishek Kumar wrote:
-> It is possible that BDF name with board-id+chip-id+variant
-> combination is not found in the board-2.bin. Such cases can
-> cause wlan probe to fail and completely break wifi. In such
-> case there can be an optional property to define a default
-> BDF name to search for in the board-2.bin file when none of
-> the combinations (board-id,chip-id,variant) match.
-> To address the above concern provide an optional proptery:
-> qcom,ath10k-default-bdf
+On Tue, 11 Jan 2022 09:12:06 +0100 Michael Walle wrote:
+> This reverts commit 9ed319e411915e882bb4ed99be3ae78667a70022.
 > 
-> Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
+> We can already post process a nvmem cell value in a particular driver.
+> Instead of having yet another place to convert the values, the post
+> processing hook of the nvmem provider should be used in this case.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 > ---
+> As mentioned in [1] I think we should discuss this a bit more and revert
+> the patch for now before there are any users of it.
 > 
-> Changes in v2:
->  - Changes in v2: none
-> 
->  .../devicetree/bindings/net/wireless/qcom,ath10k.txt          | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
+> [1] https://lore.kernel.org/netdev/20211229124047.1286965-1-michael@walle.cc/
 
-Acked-by: Rob Herring <robh@kernel.org>
+Revert seems reasonable since there are two different proposals, 
+but I won't pretend to understand the space so if anyone has opinions
+please share them.
+
+> btw, now with net-next closed, should this patch have net-next or net as
+> the queue in the subject?
+
+net, technically, although currently the trees are pretty much
+identical.
