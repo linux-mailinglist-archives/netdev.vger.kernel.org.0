@@ -2,115 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AC8648BBA3
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 01:10:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22BA448BBBC
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 01:16:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343695AbiALAKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 19:10:44 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:33138 "EHLO vps0.lunn.ch"
+        id S233846AbiALAQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 19:16:31 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:33148 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232804AbiALAKn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 11 Jan 2022 19:10:43 -0500
+        id S1347102AbiALAOd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 11 Jan 2022 19:14:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=au10UuWYFuuV3VuwANJ5piC5pvoNm1+3zCZdu/In/ao=; b=ZZmYbPDim7AO4RoKIA6lcRKwAY
-        AfwEAMcQs/R81ei0DbVxX2fScdAAnRLM4GBvz+EaKYUmeUX+JChKIo27VfwSXoVqnyWaSgJ91s7xz
-        HlRVK5E4MobVHmQw9UkGee/9LuqQBrczaBthkW+YxytWGyoJ0uQdmkz2afKCC+Kb8u98=;
+        bh=40C41H5/D4nIW5pxQqlG5KvbxLje3Y6E4nxt2LwlBp8=; b=ZroN7pJw9qDqitvvcnGCL4pYCt
+        UPrKoNO6MN2skX9k8HLer02wGeknK+C/+FHCnakmltNRI/hZg+x7Zqco5aToaFMEVl3bIItuFPN2f
+        9U3fOpyYAUjRbpi0/GGMpLJgcKLRp0wOdrbhO9oH+bYPmrOd8qynlhuVTaZ9aW2VCFzk=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1n7RDs-0019Cq-W8; Wed, 12 Jan 2022 01:10:41 +0100
-Date:   Wed, 12 Jan 2022 01:10:40 +0100
+        id 1n7RHa-0019Dt-P0; Wed, 12 Jan 2022 01:14:30 +0100
+Date:   Wed, 12 Jan 2022 01:14:30 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Robert Hancock <robert.hancock@calian.com>
 Cc:     netdev@vger.kernel.org, hkallweit1@gmail.com,
         linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
-Subject: Re: [PATCH net-next v2 2/3] net: phy: at803x: add fiber support
-Message-ID: <Yd4cgGZ2tHzjBLqS@lunn.ch>
+Subject: Re: [PATCH net-next v2 3/3] net: phy: at803x: Support downstream SFP
+ cage
+Message-ID: <Yd4dZiQVinhUSwkO@lunn.ch>
 References: <20220111215504.2714643-1-robert.hancock@calian.com>
- <20220111215504.2714643-3-robert.hancock@calian.com>
+ <20220111215504.2714643-4-robert.hancock@calian.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220111215504.2714643-3-robert.hancock@calian.com>
+In-Reply-To: <20220111215504.2714643-4-robert.hancock@calian.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->  #define AT803X_MODE_CFG_MASK			0x0F
-> -#define AT803X_MODE_CFG_SGMII			0x01
-> +#define AT803X_MODE_CFG_BASET_RGMII		0x00
-> +#define AT803X_MODE_CFG_BASET_SGMII		0x01
-> +#define AT803X_MODE_CFG_BX1000_RGMII_50		0x02
-> +#define AT803X_MODE_CFG_BX1000_RGMII_75		0x03
-> +#define AT803X_MODE_CFG_BX1000_CONV_50		0x04
-> +#define AT803X_MODE_CFG_BX1000_CONV_75		0x05
-> +#define AT803X_MODE_CFG_FX100_RGMII_50		0x06
-> +#define AT803X_MODE_CFG_FX100_CONV_50		0x07
-> +#define AT803X_MODE_CFG_RGMII_AUTO_MDET		0x0B
-> +#define AT803X_MODE_CFG_FX100_RGMII_75		0x0E
-> +#define AT803X_MODE_CFG_FX100_CONV_75		0x0F
+On Tue, Jan 11, 2022 at 03:55:04PM -0600, Robert Hancock wrote:
+> Add support for downstream SFP cages for AR8031 and AR8033. This is
+> primarily intended for fiber modules or direct-attach cables, however
+> copper modules which work in 1000Base-X mode may also function. Such
+> modules are allowed with a warning.
 
-Hi Robert
+The previous patch added:
 
-What do these _50, and _75 mean?
+AT803X_MODE_CFG_BASET_SGMII
 
- 
->  #define AT803X_PSSR				0x11	/*PHY-Specific Status Register*/
->  #define AT803X_PSSR_MR_AN_COMPLETE		0x0200
-> @@ -283,6 +295,8 @@ struct at803x_priv {
->  	u16 clk_25m_mask;
->  	u8 smarteee_lpi_tw_1g;
->  	u8 smarteee_lpi_tw_100m;
-> +	bool is_fiber;
+So it seems it has some support for SGMII? Cannot it be used?
 
-Is maybe is_100basefx a better name? It makes it clearer it represents
-a link mode?
-
-> +	bool is_1000basex;
->  	struct regulator_dev *vddio_rdev;
->  	struct regulator_dev *vddh_rdev;
->  	struct regulator *vddio;
-> @@ -784,7 +798,33 @@ static int at803x_probe(struct phy_device *phydev)
->  			return ret;
->  	}
->  
-> +	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
-> +		int ccr = phy_read(phydev, AT803X_REG_CHIP_CONFIG);
-> +		int mode_cfg;
-> +
-> +		if (ccr < 0)
-> +			goto err;
-> +		mode_cfg = ccr & AT803X_MODE_CFG_MASK;
-> +
-> +		switch (mode_cfg) {
-> +		case AT803X_MODE_CFG_BX1000_RGMII_50:
-> +		case AT803X_MODE_CFG_BX1000_RGMII_75:
-> +			priv->is_1000basex = true;
-> +			fallthrough;
-> +		case AT803X_MODE_CFG_FX100_RGMII_50:
-> +		case AT803X_MODE_CFG_FX100_RGMII_75:
-> +			priv->is_fiber = true;
-
-O.K, now i'm wondering what AT803X_MODE_CFG_FX100_* actually means. I
-was thinking it indicated 100BaseFX? But the fall through suggests
-otherwise.
-
->  static int at803x_config_init(struct phy_device *phydev)
->  {
-> +	struct at803x_priv *priv = phydev->priv;
->  	int ret;
->  
->  	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
-> -	       /* Some bootloaders leave the fiber page selected.
-> -		* Switch to the copper page, as otherwise we read
-> -		* the PHY capabilities from the fiber side.
-> -		*/
-> +		/* Some bootloaders leave the fiber page selected.
-
-Looks like you have a tab vs space problem with the previous patch?
-Otherwise this first line should not of changed.
-
-	  Andrew
+   Andrew
