@@ -2,141 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7BF48CB77
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 20:04:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E00E48CB71
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 20:03:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356377AbiALTEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 14:04:23 -0500
-Received: from mga05.intel.com ([192.55.52.43]:40349 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356376AbiALTEQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 12 Jan 2022 14:04:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642014256; x=1673550256;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4UJ7xopN1K3IXaRFIey7BtjBtTlbyfPSxDlk+IOAAog=;
-  b=GFdUheSKwPF1qxyktWOFACALlf96ktVRBYsxJASo+Q2HyQ5qeAWvrBXw
-   6JUw4rvWSJoLqx5RY7elzFgbTjGEJSyur+tPRY8xTxwGIDzR2u4LlD0RL
-   s3PU4Ac32cnPtCxq9zMA1I1c7iBV04GN1bsQ+Az/NaWmUhL5JDRcCoSMO
-   JuG+HbkDsOhtXLlOPoewOEKbP6iiAr5miG6YMuNYJa/BEb3EpbaVZtDNF
-   YgvboqyUKhJ0sPCLwB2R+lBWFOndJed40XxwOEu94JRk/OY9Cf1VdfZgN
-   ZbtS3lruw/16300cXPmkVIZf6E5YU8h6IBAfNdA/k2TracFT8L8vC/oaR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="330175999"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="330175999"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 11:03:08 -0800
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="515624819"
-Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.209.104.69]) ([10.209.104.69])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 11:03:06 -0800
-Message-ID: <2fd0756d-9ca1-b124-ed18-5ab0bda4c91f@linux.intel.com>
-Date:   Wed, 12 Jan 2022 11:03:06 -0800
+        id S1356367AbiALTDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 14:03:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54732 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231417AbiALTDS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 14:03:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C91C06173F
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 11:03:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA482B82089
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 19:03:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F2A5C36AEA;
+        Wed, 12 Jan 2022 19:03:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642014195;
+        bh=bciOmWzZXdQuAzNQiPi6MUn/ym4Dv/2COMQ4f55yJLs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RcytdQMtx4E1zWoRynzj0gSTjvfBHe40yoycqP89QAOps0HkQ574VprhYVHu4Ne0K
+         w/a7xWlfdLpPDPq76p3jMkjU5IlaJHQSnKnTrkqq/GO8ml5jzEPquxKtiyt9PwdeOD
+         zOGUl8ZsKc+NTjkQiwq5Z/Jaqx94Svf6QRvTBMJcn9mkg/ezi4Ae+AEDcpVcup/qLS
+         N+2RuYuX0ulMbVkRvSwMrlKXRH6iaryAzRdjW7cCx2nyuAf3nxmo4hTBqh++T10ynE
+         vdGG7xo9iUn6J1DVmea9Fgh/F3mkEa23cy426p37wUukAphIH9T9ziu7Xw004yBj/S
+         tMjmM0WcXcowA==
+Date:   Wed, 12 Jan 2022 11:03:14 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Subbaraya Sundeep <sbhatta@marvell.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <hkelam@marvell.com>, <gakula@marvell.com>, <sgoutham@marvell.com>
+Subject: Re: [net-next PATCH] octeontx2-pf: Change receive buffer size using
+ ethtool
+Message-ID: <20220112110314.358d5295@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <1642006975-17580-1-git-send-email-sbhatta@marvell.com>
+References: <1642006975-17580-1-git-send-email-sbhatta@marvell.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH net-next v3 01/12] net: wwan: t7xx: Add control DMA
- interface
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        mika.westerberg@linux.intel.com, moises.veleta@intel.com,
-        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
-        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com
-References: <20211207024711.2765-1-ricardo.martinez@linux.intel.com>
- <20211207024711.2765-2-ricardo.martinez@linux.intel.com>
- <a6325ef-e06e-c236-9d23-42fdb8b62747@linux.intel.com>
- <2b21bfa5-4b18-d615-b6ab-09ad97d73fe4@linux.intel.com>
- <Yd6+GjPLP2qCCEfv@smile.fi.intel.com>
- <b0cb18b-dc7b-9241-b21a-850d055d86@linux.intel.com>
- <Yd7/se+LD1c1wiBA@smile.fi.intel.com>
- <b638aa4-5a1c-e6ad-5a85-d4c3298c4daf@linux.intel.com>
-From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
-In-Reply-To: <b638aa4-5a1c-e6ad-5a85-d4c3298c4daf@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 12 Jan 2022 22:32:55 +0530 Subbaraya Sundeep wrote:
+> ethtool rx-buf-len is for setting receive buffer size,
+> support setting it via ethtool -G parameter and getting
+> it via ethtool -g parameter.
 
-On 1/12/2022 10:16 AM, Ilpo Järvinen wrote:
-> On Wed, 12 Jan 2022, Andy Shevchenko wrote:
->
->> On Wed, Jan 12, 2022 at 04:24:52PM +0200, Ilpo Järvinen wrote:
->>> On Wed, 12 Jan 2022, Andy Shevchenko wrote:
->>>> On Tue, Jan 11, 2022 at 08:55:58PM -0800, Martinez, Ricardo wrote:
->>>>> On 12/16/2021 3:08 AM, Ilpo Järvinen wrote:
->>>>>> On Mon, 6 Dec 2021, Ricardo Martinez wrote:
->>>>>>> +	if (req->entry.next == &ring->gpd_ring)
->>>>>>> +		return list_first_entry(&ring->gpd_ring, struct cldma_request, entry);
->>>>>>> +
->>>>>>> +	return list_next_entry(req, entry);
->>>> ...
->>>>
->>>>>>> +	if (req->entry.prev == &ring->gpd_ring)
->>>>>>> +		return list_last_entry(&ring->gpd_ring, struct cldma_request, entry);
->>>>>>> +
->>>>>>> +	return list_prev_entry(req, entry);
->>>> ...
->>>>
->>>>>> Wouldn't these two seems generic enough to warrant adding something like
->>>>>> list_next/prev_entry_circular(...) to list.h?
->>>>> Agree, in the upcoming version I'm planning to include something like this
->>>>> to list.h as suggested:
->>>> I think you mean for next and prev, i.o.w. two helpers, correct?
->>>>
->>>>> #define list_next_entry_circular(pos, ptr, member) \
-> One thing I missed earlier, the sigrature should instead of ptr have head:
-> #define list_next_entry_circular(pos, head, member)
->
->>>>>      ((pos)->member.next == (ptr) ? \
->>>> I believe this is list_entry_is_head().
->>> It takes .next so it's not the same as list_entry_is_head() and
->>> list_entry_is_last() doesn't exist.
->> But we have list_last_entry(). So, what about
->>
->> list_last_entry() == pos ? first : next;
->>
->> and counterpart
->>
->> list_first_entry() == pos ? last : prev;
->>
->> ?
-> Yes, although now that I think it more, using them implies the head
-> element has to be always accessed. It might be marginally cache friendlier
-> to use list_entry_is_head you originally suggested but get the next entry
-> first:
-> ({
-> 	typeof(pos) next__ = list_next_entry(pos, member); \
-> 	!list_entry_is_head(next__, head, member) ? next__ : list_next_entry(next__, member);
-> })
-> (This was written directly to email, entirely untested).
->
-> Here, the head element would only get accessed when we really need to walk
-> through it.
+I don't see a check against current MTU, in case MTU is larger than 
+the buffer length the device will scatter?
 
-I'm not sure if list_next_entry() will work for the last element, what 
-about using list_is_last()?
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> index 61e5281..6d11cb2 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> @@ -177,6 +177,7 @@ struct otx2_hw {
+>  	u16			pool_cnt;
+>  	u16			rqpool_cnt;
+>  	u16			sqpool_cnt;
+> +	u16			rbuf_len;
+>  
+>  	/* NPA */
+>  	u32			stack_pg_ptrs;  /* No of ptrs per stack page */
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+> index d85db90..a100296 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+> @@ -371,6 +371,7 @@ static void otx2_get_ringparam(struct net_device *netdev,
+>  	ring->rx_pending = qs->rqe_cnt ? qs->rqe_cnt : Q_COUNT(Q_SIZE_256);
+>  	ring->tx_max_pending = Q_COUNT(Q_SIZE_MAX);
+>  	ring->tx_pending = qs->sqe_cnt ? qs->sqe_cnt : Q_COUNT(Q_SIZE_4K);
+> +	kernel_ring->rx_buf_len = pfvf->hw.rbuf_len;
+>  }
+>  
+>  static int otx2_set_ringparam(struct net_device *netdev,
+> @@ -379,6 +380,7 @@ static int otx2_set_ringparam(struct net_device *netdev,
+>  			      struct netlink_ext_ack *extack)
+>  {
+>  	struct otx2_nic *pfvf = netdev_priv(netdev);
+> +	u32 rx_buf_len = kernel_ring->rx_buf_len;
+>  	bool if_up = netif_running(netdev);
+>  	struct otx2_qset *qs = &pfvf->qset;
+>  	u32 rx_count, tx_count;
+> @@ -386,6 +388,15 @@ static int otx2_set_ringparam(struct net_device *netdev,
+>  	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
+>  		return -EINVAL;
+>  
+> +	/* Hardware supports max size of 32k for a receive buffer
+> +	 * and 1536 is typical ethernet frame size.
+> +	 */
+> +	if (rx_buf_len && (rx_buf_len < 1536 || rx_buf_len > 32768)) {
+> +		netdev_err(netdev,
+> +			   "Receive buffer range is 1536 - 32768");
+> +		return -EINVAL;
+> +	}
+> +
+>  	/* Permitted lengths are 16 64 256 1K 4K 16K 64K 256K 1M  */
+>  	rx_count = ring->rx_pending;
+>  	/* On some silicon variants a skid or reserved CQEs are
+> @@ -403,7 +414,7 @@ static int otx2_set_ringparam(struct net_device *netdev,
+>  			   Q_COUNT(Q_SIZE_4K), Q_COUNT(Q_SIZE_MAX));
+>  	tx_count = Q_COUNT(Q_SIZE(tx_count, 3));
+>  
+> -	if (tx_count == qs->sqe_cnt && rx_count == qs->rqe_cnt)
+> +	if (tx_count == qs->sqe_cnt && rx_count == qs->rqe_cnt && !rx_buf_len)
 
-This way we avoid accessing head if not needed and does not to use 
-'container_of()' on (pos)->member.next.
+Should we use rx_buf_len = 0 as a way for users to reset the rxbuf len
+to the default value? I think that would be handy.
 
-     (list_is_last(&(pos)->member, head) ? \
-     list_first_entry(head, typeof(*(pos)), member) : \
-     list_next_entry(pos, member))
+>  	if (if_up)
+> @@ -413,6 +424,10 @@ static int otx2_set_ringparam(struct net_device *netdev,
+>  	qs->sqe_cnt = tx_count;
+>  	qs->rqe_cnt = rx_count;
+>  
+> +	if (rx_buf_len)
+> +		pfvf->hw.rbuf_len = ALIGN(rx_buf_len, OTX2_ALIGN) +
+> +				    OTX2_HEAD_ROOM;
+> +
+>  	if (if_up)
+>  		return netdev->netdev_ops->ndo_open(netdev);
+>  
+> @@ -1207,6 +1222,7 @@ static int otx2_set_link_ksettings(struct net_device *netdev,
+>  static const struct ethtool_ops otx2_ethtool_ops = {
+>  	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+>  				     ETHTOOL_COALESCE_MAX_FRAMES,
+> +	.supported_ring_params  = ETHTOOL_RING_USE_RX_BUF_LEN,
+>  	.get_link		= otx2_get_link,
+>  	.get_drvinfo		= otx2_get_drvinfo,
+>  	.get_strings		= otx2_get_strings,
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> index 6080ebd..37afffa 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> @@ -66,6 +66,8 @@ static int otx2_change_mtu(struct net_device *netdev, int new_mtu)
+>  		    netdev->mtu, new_mtu);
+>  	netdev->mtu = new_mtu;
+>  
+> +	pf->hw.rbuf_len = 0;
 
-(untested)
+Why reset the buf len on mtu change?
 
->>>>>      list_first_entry(ptr, typeof(*(pos)), member) : \
->>>>>      list_next_entry(pos, member))
+>  	if (if_up)
+>  		err = otx2_open(netdev);
+>  
+> @@ -1306,6 +1308,9 @@ static int otx2_get_rbuf_size(struct otx2_nic *pf, int mtu)
+>  	int total_size;
+>  	int rbuf_size;
+>  
+> +	if (pf->hw.rbuf_len)
+> +		return pf->hw.rbuf_len;
+> +
+>  	/* The data transferred by NIX to memory consists of actual packet
+>  	 * plus additional data which has timestamp and/or EDSA/HIGIG2
+>  	 * headers if interface is configured in corresponding modes.
+
