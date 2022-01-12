@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48B1E48BDC4
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 04:52:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1017348BDD0
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 05:04:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350519AbiALDv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 22:51:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44992 "EHLO
+        id S1350553AbiALEEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 23:04:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbiALDv5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 22:51:57 -0500
+        with ESMTP id S229770AbiALEEg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 23:04:36 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9187C06173F
-        for <netdev@vger.kernel.org>; Tue, 11 Jan 2022 19:51:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFC6C06173F;
+        Tue, 11 Jan 2022 20:04:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B017BB818AA
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 03:51:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37D43C36AE5;
-        Wed, 12 Jan 2022 03:51:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 311F6B81DC3;
+        Wed, 12 Jan 2022 04:04:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AB90C36AE5;
+        Wed, 12 Jan 2022 04:04:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641959514;
-        bh=fxfMcbofFmYEf5WvsjVXZuruFYe2u3Oadwm10rwWyiU=;
+        s=k20201202; t=1641960272;
+        bh=eGRlpg3VxAY5n3m2OpliJ4gtpt/6kROMKWXtYJ8Kqgo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=r54UDIsRQjSOrwKRKHcW3gPFfpkU/3AV8t/oVO87q4Fcm+wR2SKXsEqeSylaVOxTm
-         YH8GR3sGluNz3HpdaqGxg206nnvHRVkav4217fE7Q/8trn+vQj4X4NIanYq87s5mbb
-         C241BrxbEggF6VmFiA5g6S9dzsYt2S0iCobjGPbZ6c9hYH5OU+iU6NMHI+9DOFxuH1
-         YfHmrY+hYG6sTX+4y+5yP4HutCphzGZtxileFjb3j7Nre+hF6U3fjXVXFJiLsp6rMf
-         VpBiHCytEs9hPkKM9q/g0bUABhqLnm8bKSCABxitC9d0WLHCvvdm++2mI7rvsh8qhT
-         rXo6EfnG8hYhg==
-Date:   Tue, 11 Jan 2022 19:51:53 -0800
+        b=orETFnpTdbqZ95McoFABt5RqtThiZqm/TkCEOEitnJ9AAPdoMJyO7dz/HdaVX6IkU
+         Cd4UqH/QEZu+NfHXcT1Xzm8RXoFlZAL1LyDwv3l008Q2/gGOVGrXZ/PGGc8BsyWogN
+         x83fCMHFe2NPxX/3sV15OKdy2KbHt787jvR0ICWFlmE95gwxxgwDN2Gz0ynfvwG7Ff
+         GFdRzkUiz5aFcfrMPnpaRQDIPGfRTY5GamFatZbTBEYBNS6acUBD55NxopJoCKKvdw
+         4GNySUOb2sy8xhkb7k1V6q6aqUER/uKDO5ZDq6iJZsVVUIusBJDGftYBxRoA2J72fZ
+         WMGIT9k55V20w==
+Date:   Tue, 11 Jan 2022 20:04:26 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net
-Subject: Re: [PATCH net-next v2 1/3] net: phy: at803x: move page selection
- fix to config_init
-Message-ID: <20220111195153.4be7a16f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220111215504.2714643-2-robert.hancock@calian.com>
-References: <20220111215504.2714643-1-robert.hancock@calian.com>
-        <20220111215504.2714643-2-robert.hancock@calian.com>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, jponduru@codeaurora.org,
+        avuyyuru@codeaurora.org, bjorn.andersson@linaro.org,
+        agross@kernel.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 2/2] net: ipa: prevent concurrent replenish
+Message-ID: <20220111200426.37fd9f67@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220111192150.379274-3-elder@linaro.org>
+References: <20220111192150.379274-1-elder@linaro.org>
+        <20220111192150.379274-3-elder@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -49,13 +52,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 11 Jan 2022 15:55:02 -0600 Robert Hancock wrote:
-> The fix to select the copper page on AR8031 was being done in the probe
-> function rather than config_init, so it would not be redone after resume
-> from suspend. Move this to config_init so it is always redone when
-> needed.
-> 
-> Fixes: c329e5afb42f ("net: phy: at803x: select correct page on config init")
+On Tue, 11 Jan 2022 13:21:50 -0600 Alex Elder wrote:
+> Use a new atomic variable to ensure only replenish instance for an
+> endpoint executes at a time.
 
-Please make sure to CC authors of patches in the fixes tags, they are
-usually good reviewers.
+Why atomic_t? test_and_set_bit() + clear_bit() should do nicely here?
