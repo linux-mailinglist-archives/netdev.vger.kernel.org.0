@@ -2,71 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D57A248C824
+	by mail.lfdr.de (Postfix) with ESMTP id 4230E48C822
 	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 17:20:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355089AbiALQUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 11:20:16 -0500
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:5710 "EHLO
+        id S1355167AbiALQUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 11:20:14 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:5354 "EHLO
         mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1355112AbiALQTW (ORCPT
+        by vger.kernel.org with ESMTP id S1355064AbiALQTW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 11:19:22 -0500
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20CGGNpJ032143;
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20CGEQjM015186;
         Wed, 12 Jan 2022 16:19:06 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : content-type :
  mime-version; s=corp-2021-07-09;
- bh=kgwAE1HzLg25tBBXKQOdkt3l1uzTwkz8y2i+uqH/jao=;
- b=x63DPobPzn94FHzbFacq2OtKZ+764zaenrfYYfSEiYHd2LrHJ/6uzdSB2VZGbPEwJG7X
- ysJi8MOgwSru6rpYKVC7eaUhiiFKSlyP4zXYEfxAITP1y+CzSGFh3axL3ViCv0FGR6n/
- eLnVVbMeTAy2dO4LjhY+A4MEigW7KWAMSURlrQHzT5Ns9L5OPWZnEVhpC7WLlmCJw91J
- OdCkyW3CQAw2a8YtojR8PTCi3F1BsLYHpv8lPz7T46lxCaPqabHEF3ADxZ6BB/qLkDeM
- wDPSB6l4dU8WNeUnI5G8PkRi58yvGuiOpRH4zeY8A2+Ejh6WjSMZaMOFlHozrbyGohf3 ZQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dgmk9esu4-1
+ bh=QMZQyE0n1W2ZW+XIn7A0LzylfKOc5TG2wnSwt58nmfs=;
+ b=Nm9bgW0WiQ9CTCR4a03JysbarquS3UbTEq1aLiXy6duBUlUpSxphCgY44m+Q4syxBTJ1
+ QVezU4hO8a2sSlZcgFqQfanogmZEOmfmNG9jyTMeoxFZdU/J8cV5nDBca6S1g9wWLDxS
+ QOI+6pbKwZ8E3rRjQyes+YTKowOH6Ne/lopWi1lfSbgoljB3snSuK99DU8u1GC6do0/S
+ I1NAlpDQezK1VN+aLWlDMnbpFeBg4sF+IPn9P3cERfrExX7B/e8upxcp6HzKT9+hgbWA
+ p8psKR9GquZB2RqScFcxYzQIdbCsPp7tNS2TZn3LtkUIJ1FOOC6BX6dbGKlUt7kSQIf1 0g== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dgjtgf4bu-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 12 Jan 2022 16:19:04 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20CG8EKC073597;
-        Wed, 12 Jan 2022 16:19:01 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2177.outbound.protection.outlook.com [104.47.57.177])
-        by userp3030.oracle.com with ESMTP id 3deyr051cd-1
+        Wed, 12 Jan 2022 16:19:06 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20CFuAVJ018162;
+        Wed, 12 Jan 2022 16:19:03 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2106.outbound.protection.outlook.com [104.47.70.106])
+        by aserp3020.oracle.com with ESMTP id 3df2e6fut0-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 12 Jan 2022 16:19:01 +0000
+        Wed, 12 Jan 2022 16:19:03 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gpzqA/nTPXlF+9tlS72TaGRwT8m81wP5l/3ic3XuH5IutWnSJiZHfN6Exe/FnQ8J98pfKdG9gTMjmcEgGjtEM9tHFX0rUjF9T0hZDyUjwrXIjDzI07TJQKUiO3Q2kmTqUcV7x8iVrDZNc8PkQnnETXAIwgJcKcTRYJOhlFpUOCyBP6rh61E4PN821sqebQOh5Tktkw5R/Lbhp3APQ1Au6dCN//TX5T8/Jn7lFSkTaQfJVAHZYijjAHO9F617VP+sLQrSqyuwBk9bvgZ2Qnz0sM931koY/qESguhfpEM1H1zMq+2vgw9TAnZ0jz49wX5qUrE+QNHMdND0AFDULo7kCA==
+ b=jhS59WoZeOqfjFo5tDklSzWz3o4TsGb2DjQGNojVqNQ8wEa5KhfGDu8WjhMBm6Gf5vJiMbd/05wXo6rTnMEJFADBGKEtqFrWWdmsQs3uHIJSPXHHb3+HdXCfpIjw43w3cf64e5dUrACej+OhbSlvTJ0fSogIPE2R50nwwbale+pkXin2LdAYAUMUwLr6oyXwVIOBDTVsOOs6CQZtFZNv4mTq7k1pgnuLnGB1/xtaKLfFG95GKmNUPXxpCGssYGPTjqIP4Ko6j3qUeZMgoira6i8RHreUDRmEQk4rZYZeSTGO56Q3kJgsprjin0bSLOuSBu8ANtpsLFDLJTWddf4mUw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kgwAE1HzLg25tBBXKQOdkt3l1uzTwkz8y2i+uqH/jao=;
- b=D4F/VNRTZooccZCUh/CcysD441+Q/HxiZWyMfHYp+8VQ1iXVWe6i7FH21i3unNSphCjr+ZgtQrgmBRPpV8EKCsXdMeyOG6CP55tYboj7Wh9wA19xsKANVOwe3rl+OHgdd9ws3jxG6IIFOs+Z/WuJRXJcVUGAqgpwz4uNZVTiS9xYhCXecRCThlXKPYSdxyHL4ZE+nDxJIYHQEycmU278oJeiMpSCUVHDewajlClhdaB9zx7uj8yDavYh6g84OgWUISkQLntpKX4YqozCLOw+9BkIank7YQMRMI2Eaos5xsKsZk74YpT9bPXQdjB5C+rnucxo2tQmTuEE2pWgyzPPNw==
+ bh=QMZQyE0n1W2ZW+XIn7A0LzylfKOc5TG2wnSwt58nmfs=;
+ b=feRxDu3YZqhL4wGebnVJ7KS3iE7okyEe+J9sCaLNH4s9ECz1JhZVHSQq6nS1oM+L1fHTGCfF8Uic3yi69v7juLbRWAAMklS8meXnS6OVO2LVPEhaabk0fv9tc/+/ydHcJEtlMse4aeoUGM5dWEFOuDLXZ8qtDnmo3eBeLuu01lyvfdFF1qg9xgHgqSuYhwZUIgO3IkjZIvgjgC4hoMu0S9ebe/NEGOwhxBezyPCFAk12RwH9BEbQw41OAJuQEEM3aMfiS6b4xH/jGNkhOeuqDxOMorGF8J1PpfCg8aBr0szi/WcX9p20ws2jyyT8yBd9uYZAs2B0oVUPCxYLAKLquQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kgwAE1HzLg25tBBXKQOdkt3l1uzTwkz8y2i+uqH/jao=;
- b=QpCKxnxbiXdVuW+7LajfH1MOY7VUviciJItNmd5Y/JBubP2sGWk/ErWcagUiDlyBY4XGbXRy9iKMzxgPfsTqLtye53mZWZEfQ56OoH0tEh/a24wOhOx3OgIJUTZU+/iLZ33KWQkN9ZZraoOiaYVt19usJkZAmEUsEkZ/Lyiv9oc=
+ bh=QMZQyE0n1W2ZW+XIn7A0LzylfKOc5TG2wnSwt58nmfs=;
+ b=iP2BVMEKkWLpX8dHylTAf7jBwf+ZwwkECqAwWTNPy43aYf/YcTYZj9JqPbFwe94KMpeMFfUUyXBjvgnO3GPzfxIJT4Q4TiWwkTt2jZ+RUlnV5lcld6hA9jLu09qBI5nz9Q6p9jhl2U3pvgzUgiS6F8iTyLW5HWohipUPrC79NxI=
 Received: from BLAPR10MB5267.namprd10.prod.outlook.com (2603:10b6:208:30e::22)
- by MN2PR10MB3600.namprd10.prod.outlook.com (2603:10b6:208:114::29) with
+ by MN2PR10MB3103.namprd10.prod.outlook.com (2603:10b6:208:128::28) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Wed, 12 Jan
- 2022 16:18:59 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.9; Wed, 12 Jan
+ 2022 16:19:01 +0000
 Received: from BLAPR10MB5267.namprd10.prod.outlook.com
  ([fe80::31c1:e20b:33a1:ba8c]) by BLAPR10MB5267.namprd10.prod.outlook.com
  ([fe80::31c1:e20b:33a1:ba8c%5]) with mapi id 15.20.4888.009; Wed, 12 Jan 2022
- 16:18:59 +0000
+ 16:19:01 +0000
 From:   Alan Maguire <alan.maguire@oracle.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
 Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org, jolsa@kernel.org,
         sunyucong@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
         Alan Maguire <alan.maguire@oracle.com>
-Subject: [RFC bpf-next 2/4] libbpf: support usdt provider/probe name-based attach for uprobes
-Date:   Wed, 12 Jan 2022 16:18:47 +0000
-Message-Id: <1642004329-23514-3-git-send-email-alan.maguire@oracle.com>
+Subject: [RFC bpf-next 3/4] selftests/bpf: add tests for u[ret]probe attach by name
+Date:   Wed, 12 Jan 2022 16:18:48 +0000
+Message-Id: <1642004329-23514-4-git-send-email-alan.maguire@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1642004329-23514-1-git-send-email-alan.maguire@oracle.com>
 References: <1642004329-23514-1-git-send-email-alan.maguire@oracle.com>
@@ -76,229 +76,187 @@ X-ClientProxiedBy: LO2P123CA0080.GBRP123.PROD.OUTLOOK.COM
  (2603:10b6:208:30e::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 58505e61-abc5-470f-23ec-08d9d5e73d0b
-X-MS-TrafficTypeDiagnostic: MN2PR10MB3600:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR10MB3600AE28056FEFE17AA0AFB6EF529@MN2PR10MB3600.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:792;
+X-MS-Office365-Filtering-Correlation-Id: 4ca9fb68-3dbc-4f36-f180-08d9d5e73e32
+X-MS-TrafficTypeDiagnostic: MN2PR10MB3103:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR10MB310342F92B07538446EA1965EF529@MN2PR10MB3103.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:93;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: P3YXobPPftARA+lGH7pJ3jjz7I4BbpdiQbJoi8bwfi8KPY3gk0MAhYgdpVmiIaEZt80SD1vjZ01Kff1HKh43q8bOGrymkUDQxEs21DcAevHpRqXhblkGjNEhsxL5ep7AHOTEtbht/kvjsFbrP7RgYiJDVT3skAYKiXdb95dTyhPeuI1zwHfIx9Txl1yQKah++rlSvp+XGstParGf10WOBKpEWoMJeO3F9x1xblcAUhci1b43OKkqQ4HRwEutjp585RBbr8mZP+x4KJnYjH2n+z5cRBJUMNIfRlfivfNIvyPhY/ImB4fbk5dIq0AAWy2oi+BfKi0/abu+sXRmaJlb3oSrtMQVHFob0Vocmn+OWywuus6D6bo5Zw8b6vpcl/ZztxZQ1oCkzztdRl6UkI9z/9dK5Va9flI3crWut540oMBoxad+vUXa9drIo3XG3JkfVVgxLaSpnu87SElPLQNFGml0aQ4bzvYL+doU2cG9bBYYidDRNz+3g3V3jp25vzHspgA/xEfcyfG0ZskX754o0BrFlJkpN3aR+8BR/6SKBhkEla6tsUu145kO3PebgoKvaMVvfQjEKjLIHY9y+/Dpkpd4DqS65wyTgePOUOkxf2DGtnu/o1Z7Vg6mjzM+XgLCyiE6F9My+S2JPktiMJQqoi7bq8YX03Hj27U+aHaQi9D5CQjcVDbrPXesQyulPq0NqqqUnU7vg6E1rDMjgQeUbw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5267.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(38350700002)(8676002)(66476007)(8936002)(6486002)(36756003)(66946007)(2616005)(5660300002)(44832011)(107886003)(6512007)(66556008)(316002)(86362001)(7416002)(83380400001)(2906002)(4326008)(52116002)(26005)(38100700002)(6506007)(6666004)(186003)(508600001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: cmTBGrhwMi4i6yZgF9BzBtR8mo9V6i3NW9FiCq5ef/rrXM2P6Q9zEIdeY5B3WMYWnGwyaWfG8tsDbuN9SLvqeBYsWjZn2Vup47X18P72alovvubFedLEVvEujQvL1xvzKT/oTiIFdFRdg3+hOwyZEUZoRlPStAgxsm1HMBHmCeW0JXwF/3+7tbS4ML0v9HMUzdQLdoaaW8LPmJd80RK4YsXEejFhXp/31X7YYeS5DIxuVKPbfBDoOCdmNTfpthes+jYbvvicOQ+r9TDdVcdV7vy4vNV6An0v7DbJKFRljyQuuXYJwZ6TdVbJA6YXmfxkEN/TSeV6Ddq8HTcdUajDMvFyMJ82X+JfuwjZG659u7NE+W6xnKHrglI16Q7AVtvyxRPbHUVRyJOleBRZp6GDcej5rLtId5BX+8TbomFZ+GBppAGvOpQjau3DLwWBSmZZALEN2CSB8ZjfB7vBs9jKHIFZJxGg+E/fq0VgaJIvqJxRF6vT4uLOdT8MMzw7I1WyMWqwQ9lPSOtAA0IpD8k5ub0XFCWKa4sHsIZWFzY4jcDvJC+2OLGzwlIZHnkh/nsTMIp0Zp0WgboBG4VonnADd5GfeJt7jOYqiX7REtsE3JfHAgnL43XO6gaI0Vcp+jsvT5Io3S6/zGTf7/HqtvY+ocrEtdKIGtg/jCI5Ug+VwYptRK+FthzrmwyLyURUETjJfu5a5M1g64ETkqafqv1cZA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5267.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(6666004)(2906002)(86362001)(508600001)(6486002)(6512007)(66556008)(66476007)(66946007)(52116002)(5660300002)(7416002)(2616005)(38350700002)(38100700002)(8676002)(44832011)(83380400001)(36756003)(186003)(26005)(6506007)(4326008)(107886003)(316002)(8936002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZZS2mtFs6w9wFKgXyqrZedjMikA0xwjOgUXjf0sKLmCNojuUh/xUVfR3rDnd?=
- =?us-ascii?Q?uUAACGicgpjj0R/G+HElKCG2YEX/EtsSkSkYkdB66VWh9YFtVgVqDHna+EDp?=
- =?us-ascii?Q?3WxT4gk46ioZZHHGtZSwKfOX+1hpXtXyhxcteGccNFXrHGl8vUROw2m2/dec?=
- =?us-ascii?Q?8CNpFAein0ScPPOi04yhiF4uWZLzBs/eRjLRNRpuGK+/LrxT1njiCayhX+q1?=
- =?us-ascii?Q?PdBL9JgBYQdLxAcOl5CB1HYCp5ymsIZ4wHc7ECcHFzYJUF2QGbOZTBzWDOw+?=
- =?us-ascii?Q?kBLWq9kW6+/scCEfvc4u27+i1PIhNN8bsvgrjYdzSmdhGBf91ZY+fYbRPkOZ?=
- =?us-ascii?Q?E5dIg/6NcRwuaSnbpmZhlt+VSMuuahm0gaHKdW9DHgqxd6fv5Sxo3Zlkq9iV?=
- =?us-ascii?Q?PXeqeJnMs6CYNK3c3cX7jl/oE0II10qIrZNFOGXyMTEX3WoXlkEH22LSYRHu?=
- =?us-ascii?Q?D337EtgB2Q7woYIsiwqoftD4Yw/AAZH8FGEcgznVFLvd/tEXjxKKHrrSfbhu?=
- =?us-ascii?Q?D4uRqaY3J08eNoBf0VsiggOQoD8aadT6VxWVKxv3ICd+8Tvq1r1G33biyfRo?=
- =?us-ascii?Q?GBXPSmtZ7kZ9W/inZbHkzWDhIQKD5cm/f/qeQWs+EPSRP2LMgHKqPMkMSotN?=
- =?us-ascii?Q?huLv4iUOCTHafHksEUw7rG47AQZJG7wQMftb6au0w6zUvW8k2E4wiSaX6mA0?=
- =?us-ascii?Q?Y1febxBoTErXvF037YXciUsDoTDVc5KoVLEXI7VABRjsUMtB7UAcfplOP/Kg?=
- =?us-ascii?Q?Ji9FS8kq9PrYVeUYs7Hp+0VQMXV17mdU4S5eEedLs7fxoP+05rH3p4x3mVHE?=
- =?us-ascii?Q?Gbe/lyFw0gjXpOy/ZMbAfrVolBv8xijcQrh5ws2lfVE9o80BTocOT8jIo9eU?=
- =?us-ascii?Q?cLoB8GjN5VXk+/zNZ9+gKkKF5t4SifU5dzeDv5S0klhw45Rhrw3jM3wLvNAu?=
- =?us-ascii?Q?bjl0XI/sWpn9W2yYOrzr/BI8qb6Dejv7or3s+mpjjOFdR1MnstGNRZuOkgC0?=
- =?us-ascii?Q?DUxjoDQJyVXop5Gsbw5rXnexVB2ouLsJn1lG3+x3pKsH0XGU11wdpDUIy2oI?=
- =?us-ascii?Q?20eIwqh7Ixhhwag0zYyqVUi2w/DifxTYdlKiUkGns3lfxL5fp5quVi+Xm8wf?=
- =?us-ascii?Q?MYGKHOXV+0BcusJ/ma8HfFl9nfuY/2L62Uu2FGKdLcVlsgPLo1TvnV+NFbbS?=
- =?us-ascii?Q?S9eBjr+ZYRoBp4RS1E2FHGfPNwl+vobaj+RsNj1rgaFl3vQBBy57t7KxeSqI?=
- =?us-ascii?Q?ZWhODrVvtdBZ7kbaHj42JgQAWdPFoF1mN1fIh5eDZfGIKBPVimivnXCGvgm8?=
- =?us-ascii?Q?xQCkiLCknoKrIvrRApg63jI+P0Bdb4zXK8T95aWYuw6FiHrZou//TgOy/eBT?=
- =?us-ascii?Q?vsPbFXk+kPddY1LdF4TA3fEoqLzSDfKifERLmXWFSMP1L8Bv7YP+ZDlK3a+h?=
- =?us-ascii?Q?hTxEUpSXyi/rxJnGlKTyEIPRMw+RFaLHn5kg/9HvIT8PAs/mrluuM3kgFF5B?=
- =?us-ascii?Q?82H9Sa6W8mwjKmCAVVQAVSqlqs3p8RSNAIj6byucZfRe8BlH+sqjC3bhzXwe?=
- =?us-ascii?Q?rGkQx19fpTTzQeuf6yq0S92gzUO1bPFMciY0SJ2jwySUSqEdnODz00r+bUx9?=
- =?us-ascii?Q?oawYW5WiZLWaHvzsGR6Utd4=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KFrwUUQo/MIxoDhKVAxknpHpeWxiN8p4fvSh+yX4GOkrIs4SggKUL0/7mpvK?=
+ =?us-ascii?Q?qPzxmvvDvIHxW7xBDpnF6qyy/gJiw5yGuJ5qIq41Xc5lp7Uk57sRomjkrLdE?=
+ =?us-ascii?Q?tQBjouJM6oqALkV6yTAFJMDTIvk46ErWmYE4TfJydhFz/7mEc8tAwrO/Sok+?=
+ =?us-ascii?Q?d+ISxWgh6J82mT8CsoukbYlN4SYuXx770cy0h6jdBwdw+lD2UOBGGhJFX6Ld?=
+ =?us-ascii?Q?LxhdlfGHhDtQUkXRSL49VwvG2TlVDu/QjLqTlv25QU8Ue049Kz5UGQ70Komn?=
+ =?us-ascii?Q?uZXkF3+5hXj6+ZX/TsaXZYCFF5SMNXnGtGs366I+ujwN61W9wzJO0dL76zm/?=
+ =?us-ascii?Q?779EotyOPtjCAsnD04gZj0a72tvhuJ8t9IMh1TOj4BlBtlIeSrUQ8317bS8m?=
+ =?us-ascii?Q?9JyVRydfOZI8SfmNCHWyqWsHYbLrKUiWznzux+dt1y+mkrv20Cw66Hzn92i5?=
+ =?us-ascii?Q?SsP2RD2ZvZpMhp4FFerjKa3hqU59MivWBguvpYFECt3Ia0K8YasHDP47uF5K?=
+ =?us-ascii?Q?tC8Lo1D3drw1KrvRbYZefmG87X4olJzkKvRInTbm1IlYwVq+MFDPgqeXq2+A?=
+ =?us-ascii?Q?Rp9uMPJaWd9OSOYxh9gPwxPG/RyAh1l/ncbFiA8DeAVDdKJ2WAzgvhY6ZKIn?=
+ =?us-ascii?Q?gG7BpRZa1vLc4aBJsSRo1nuiHix5axGPBsEifOdug9WGP2pqCpGWhqtWV8PG?=
+ =?us-ascii?Q?OA9QRI6m7pZB3BKFIXjGfvf0CXTQ3xRL5w1r82bifaDHQK/6RO5hPXg+gJh2?=
+ =?us-ascii?Q?cB5ug8msmZCXZ9DFEFMAmIxhdeye+HNziRQ5zN1ckgp6PrmwJUnlUv9yFcWY?=
+ =?us-ascii?Q?aZQWtgMNcud1V4zVK5XFXTqTaWuqLBtqf6nvYHpndcx0RF5zr6s7yG1hFMbv?=
+ =?us-ascii?Q?tNUCj7E7zmWp87hotcf2cNOZ8t4AIY6KiS4Mppm0imEz3kA0L44vTq6LluHE?=
+ =?us-ascii?Q?lH+KhApJtHSebO/GoBSVVvhdOlyfuL6/00515CR5Dd4B7qwKuaQNy8wkgLgz?=
+ =?us-ascii?Q?z8xvBYrchTsHtciwS6qeulEEMYrTvMX/adpGpPD/WcsahfCJyDrs89KUixZ5?=
+ =?us-ascii?Q?0zv1+nhSNuS6DzXj9HvCTHUlLtk9+JFQRAgZoDYt6Qq1Z5NIlxb9Oam0uS7v?=
+ =?us-ascii?Q?tgaGHT/cNrpJRzByOzJA1AX84tShoJO8+CwJORp3dQrI6gDBfevQf8DXDqZ3?=
+ =?us-ascii?Q?8jyBvvWE7YU0uuzBsEEi+87chqCjeFRJMwlOJXosl8q6UHsout23+xkoUSN2?=
+ =?us-ascii?Q?8JKobjqePQ9zHSHX3EdnMHykeBTbwe8N1Le6hRAV6eH8Qzr+bM5diZDRD82c?=
+ =?us-ascii?Q?nygHpFlBlB7+L1ttvzfTuIAk7ZAXm1wYoKoLEnD5RszEZ16hymKrdNz/C5wS?=
+ =?us-ascii?Q?SV4yfMKDeWlIa4mQBQbuftP9tPs/hNEpuVNgRbfC3EAJmWWLYf03wiIS3+tz?=
+ =?us-ascii?Q?mhNicA/9LO7SSnPiVrYwizdXo/YoNzme3CSOu1e1FAzTPPDSMaau8d1pBvYz?=
+ =?us-ascii?Q?MtOUmpD5RGjkRoGQJvPtlLgAamLKmjFPh8NnNFua9CD1dDUHuVa0xB5Kv8Gr?=
+ =?us-ascii?Q?Oz+6woYVshliVbOa69us/Adv/3wVc6DToCzq9DcuPTmq0lGOazWmRzkfIyEG?=
+ =?us-ascii?Q?JItvcqj7I9cE112T/2zGm4E=3D?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 58505e61-abc5-470f-23ec-08d9d5e73d0b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4ca9fb68-3dbc-4f36-f180-08d9d5e73e32
 X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5267.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 16:18:59.0281
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 16:19:01.2010
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eu4has1jT0YL5s2lPlqfB7JH0PgJNI8you+nrxm3r8+H1Hl9J6vGU2zZLBZim4lOc/IsWGUkudSnnTQbZ70M/A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3600
+X-MS-Exchange-CrossTenant-UserPrincipalName: G5cCEri1qG/h+SyzfM++k6vDXJs3VnecKy+TUeQJzqYSKMRmfC0pOTfXu8x0WPptAVVaXe8j+A3sirbRgo/gAw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3103
 X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10225 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=0 spamscore=0
- mlxlogscore=999 adultscore=0 phishscore=0 malwarescore=0 bulkscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 adultscore=0
+ suspectscore=0 mlxlogscore=999 bulkscore=0 phishscore=0 malwarescore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2201120103
-X-Proofpoint-GUID: uRRvYqjRGXq7jxJQBmIdtAEv63Uy5YTy
-X-Proofpoint-ORIG-GUID: uRRvYqjRGXq7jxJQBmIdtAEv63Uy5YTy
+ definitions=main-2201120102
+X-Proofpoint-GUID: 2Y-4iVZeqFwsRTVwtjIGeso6YaPqtsGA
+X-Proofpoint-ORIG-GUID: 2Y-4iVZeqFwsRTVwtjIGeso6YaPqtsGA
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for name-based attach to Userland Static-Defined Tracing
-(USDT) probes via lookup of ELF notes associated with probe definition.
-ELF notes are consulted for probe offset, and - if "is-enabled" style
-of probing is in use - semaphore offset.
+add tests that verify attaching by name for a local and library
+function succeed for uprobe and uretprobe using new "func_name"
+option for bpf_program__attach_uprobe_opts().
 
 Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 ---
- tools/lib/bpf/libbpf.c | 84 ++++++++++++++++++++++++++++++++++++++++++++++----
- tools/lib/bpf/libbpf.h |  9 +++++-
- 2 files changed, 86 insertions(+), 7 deletions(-)
+ .../selftests/bpf/prog_tests/attach_probe.c        | 41 +++++++++++++++++++++-
+ .../selftests/bpf/progs/test_attach_probe.c        | 16 +++++++++
+ 2 files changed, 56 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index bccc26a..cdcd799 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10275,6 +10275,52 @@ static ssize_t find_elf_func_offset(Elf *elf, const char *name)
- 	return ret;
+diff --git a/tools/testing/selftests/bpf/prog_tests/attach_probe.c b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+index d0bd51e..521d7bd 100644
+--- a/tools/testing/selftests/bpf/prog_tests/attach_probe.c
++++ b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+@@ -10,12 +10,18 @@ static void method(void) {
+ 	return ;
  }
  
-+struct sdt_note {
-+	uint64_t	pc;
-+	uint64_t	base_addr;
-+	uint64_t	semaphore;
-+	const char	provider_probe[256];
-+};
-+
-+/* Find offset of USDT probe in object specified in ELF notes.
-+ * Note may also specify semaphore offset, record value in *semaphore_offp.
-+ */
-+static ssize_t find_elf_usdt_offset(Elf *elf, const char *provider,
-+				    const char *name, ssize_t *semaphore_offp)
-+{
-+	Elf_Data *data = NULL;
-+	Elf_Scn *scn = NULL;
-+
-+	while ((scn = find_elfscn(elf, SHT_NOTE, scn)) > 0) {
-+		while ((data = elf_getdata(scn, data)) != 0) {
-+			size_t name_off, desc_off, off;
-+			GElf_Nhdr nhdr;
-+
-+			while ((off = gelf_getnote(data, off, &nhdr,
-+						   &name_off, &desc_off)) != 0) {
-+				struct sdt_note *sdt_note;
-+				const char *probe;
-+
-+				if (nhdr.n_namesz != 8 ||
-+				    memcmp((char *)data->d_buf + name_off, "stapsdt", 8) != 0)
-+					continue;
-+				sdt_note = (struct sdt_note *)(data->d_buf + desc_off);
-+				if (strcmp(provider, sdt_note->provider_probe) != 0)
-+					continue;
-+				/* probe is after null-terminated provider */
-+				probe = sdt_note->provider_probe +
-+					strlen(sdt_note->provider_probe) + 1;
-+				if (strcmp(probe, name) != 0)
-+					continue;
-+
-+				*semaphore_offp = (ssize_t)sdt_note->semaphore;
-+				return (ssize_t)sdt_note->pc;
-+			}
-+		}
-+	}
-+	return -ENOENT;
++/* attach point for byname uprobe */
++static void method2(void) {
++	return;
 +}
 +
- LIBBPF_API struct bpf_link *
- bpf_program__attach_uprobe_opts(const struct bpf_program *prog, pid_t pid,
- 				const char *binary_path, size_t func_offset,
-@@ -10286,7 +10332,7 @@ static ssize_t find_elf_func_offset(Elf *elf, const char *name)
- 	size_t ref_ctr_off;
- 	int pfd, err;
- 	bool retprobe, legacy;
--	const char *func_name;
-+	const char *func_name, *usdt_name, *usdt_provider;
+ void test_attach_probe(void)
+ {
+ 	DECLARE_LIBBPF_OPTS(bpf_uprobe_opts, uprobe_opts);
+ 	int duration = 0;
+ 	struct bpf_link *kprobe_link, *kretprobe_link;
+ 	struct bpf_link *uprobe_link, *uretprobe_link;
++	struct bpf_link *uprobe_byname_link, *uretprobe_byname_link;
+ 	struct test_attach_probe* skel;
+ 	size_t uprobe_offset;
+ 	ssize_t base_addr, ref_ctr_offset;
+@@ -92,7 +98,30 @@ void test_attach_probe(void)
+ 		goto cleanup;
+ 	skel->links.handle_uretprobe = uretprobe_link;
  
- 	if (!OPTS_VALID(opts, bpf_uprobe_opts))
- 		return libbpf_err_ptr(-EINVAL);
-@@ -10296,11 +10342,25 @@ static ssize_t find_elf_func_offset(Elf *elf, const char *name)
- 	pe_opts.bpf_cookie = OPTS_GET(opts, bpf_cookie, 0);
+-	/* trigger & validate kprobe && kretprobe */
++	uprobe_opts.func_name = "method2";
++	uprobe_opts.retprobe = false;
++	uprobe_opts.ref_ctr_offset = 0;
++	uprobe_byname_link = bpf_program__attach_uprobe_opts(skel->progs.handle_uprobe_byname,
++							     0 /* this pid */,
++							     "/proc/self/exe",
++							     0, &uprobe_opts);
++	if (!ASSERT_OK_PTR(uprobe_byname_link, "attach_uprobe_byname"))
++		goto cleanup;
++	skel->links.handle_uprobe_byname = uprobe_byname_link;
++
++	/* test attach by name for a library function */
++	uprobe_opts.func_name = "usleep";
++	uprobe_opts.retprobe = true;
++	uprobe_opts.ref_ctr_offset = 0;
++	uretprobe_byname_link = bpf_program__attach_uprobe_opts(skel->progs.handle_uretprobe_byname,
++								0 /* this pid */,
++								"/proc/self/exe",
++								0, &uprobe_opts);
++	if (!ASSERT_OK_PTR(uretprobe_byname_link, "attach_uretprobe_byname"))
++		goto cleanup;
++	skel->links.handle_uretprobe_byname = uretprobe_byname_link;
++
++	/* trigger & validate kprobe && kretprobe && uretprobe by name */
+ 	usleep(1);
  
- 	func_name = OPTS_GET(opts, func_name, NULL);
--	if (func_name) {
--		ssize_t sym_off, rel_off;
-+	usdt_provider = OPTS_GET(opts, usdt_provider, NULL);
-+	usdt_name = OPTS_GET(opts, usdt_name, NULL);
-+	if (func_name || usdt_name) {
-+		ssize_t sym_off, rel_off, semaphore_off = 0;
- 		Elf *elf;
- 		int fd;
+ 	if (CHECK(skel->bss->kprobe_res != 1, "check_kprobe_res",
+@@ -105,6 +134,9 @@ void test_attach_probe(void)
+ 	/* trigger & validate uprobe & uretprobe */
+ 	method();
  
-+		if (func_name && usdt_name) {
-+			pr_warn("both func_name and usdt_name cannot be specified\n");
-+			return libbpf_err_ptr(-EINVAL);
-+		}
-+		if (usdt_name && (func_offset || ref_ctr_off)) {
-+			pr_warn("func_offset argument, ref_ctr_off option should be 0 when usdt_name is used\n");
-+			return libbpf_err_ptr(-EINVAL);
-+		}
-+		if (usdt_name && !usdt_provider) {
-+			pr_warn("usdt_provider and usdt_name must be supplied\n");
-+			return libbpf_err_ptr(-EINVAL);
-+		}
- 		if (pid == -1) {
- 			/* system-wide probing is not supported; we need
- 			 * a running process to determine offsets.
-@@ -10330,20 +10390,32 @@ static ssize_t find_elf_func_offset(Elf *elf, const char *name)
- 			close(fd);
- 			return libbpf_err_ptr(-LIBBPF_ERRNO__FORMAT);
- 		}
--		sym_off = find_elf_func_offset(elf, func_name);
-+		if (func_name)
-+			sym_off = find_elf_func_offset(elf, func_name);
-+		else
-+			sym_off = find_elf_usdt_offset(elf, usdt_provider, usdt_name,
-+						       &semaphore_off);
- 		close(fd);
- 		elf_end(elf);
- 		if (sym_off < 0) {
--			pr_debug("could not find sym offset for %s\n", func_name);
-+			pr_debug("could not find sym offset for %s\n", func_name ?: usdt_name);
- 			return libbpf_err_ptr(sym_off);
- 		}
- 		rel_off = get_rel_offset(pid, sym_off);
- 		if (rel_off < 0) {
- 			pr_debug("could not find relative offset for %s at 0x%lx\n",
--				 func_name, sym_off);
-+				 func_name ?: usdt_name, sym_off);
- 			return libbpf_err_ptr(rel_off);
- 		}
- 		func_offset += (size_t)rel_off;
-+		if (semaphore_off) {
-+			ref_ctr_off = get_rel_offset(pid, semaphore_off);
-+			if (ref_ctr_off < 0) {
-+				pr_debug("could not find relative offset for semaphore for %s at 0x%lx\n",
-+					 usdt_name, semaphore_off);
-+				return libbpf_err_ptr(ref_ctr_off);
-+			}
-+		}
- 	}
++	/* trigger & validate uprobe attached by name */
++	method2();
++
+ 	if (CHECK(skel->bss->uprobe_res != 3, "check_uprobe_res",
+ 		  "wrong uprobe res: %d\n", skel->bss->uprobe_res))
+ 		goto cleanup;
+@@ -112,6 +144,13 @@ void test_attach_probe(void)
+ 		  "wrong uretprobe res: %d\n", skel->bss->uretprobe_res))
+ 		goto cleanup;
  
- 	legacy = determine_uprobe_perf_type() < 0;
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 40cb5ae..fcad6b1 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -439,9 +439,16 @@ struct bpf_uprobe_opts {
- 	 * argument to specify argument _within_ the function.
- 	 */
- 	const char *func_name;
-+	/* name of USDT (Userland Static-Defined Tracing) provider/probe.
-+	 * Offsets of USDT probe and associated semaphore (if any) are found
-+	 * in ELF notes.  Note that if usdt_name is specified, func_offset
-+	 * argument and ref_ctr_offset values should be zero.
-+	 */
-+	const char *usdt_provider;
-+	const char *usdt_name;
- 	size_t :0;
- };
--#define bpf_uprobe_opts__last_field func_name
-+#define bpf_uprobe_opts__last_field usdt_name
++	if (CHECK(skel->bss->uprobe_byname_res != 5, "check_uprobe_byname_res",
++		  "wrong uprobe byname res: %d\n", skel->bss->uprobe_byname_res))
++		goto cleanup;
++	if (CHECK(skel->bss->uretprobe_byname_res != 6, "check_uretprobe_byname_res",
++		  "wrong uretprobe byname res: %d\n", skel->bss->uretprobe_byname_res))
++		goto cleanup;
++
+ cleanup:
+ 	test_attach_probe__destroy(skel);
+ 	ASSERT_EQ(uprobe_ref_ctr, 0, "uprobe_ref_ctr_cleanup");
+diff --git a/tools/testing/selftests/bpf/progs/test_attach_probe.c b/tools/testing/selftests/bpf/progs/test_attach_probe.c
+index 8056a4c..efa56bd 100644
+--- a/tools/testing/selftests/bpf/progs/test_attach_probe.c
++++ b/tools/testing/selftests/bpf/progs/test_attach_probe.c
+@@ -10,6 +10,8 @@
+ int kretprobe_res = 0;
+ int uprobe_res = 0;
+ int uretprobe_res = 0;
++int uprobe_byname_res = 0;
++int uretprobe_byname_res = 0;
  
- /**
-  * @brief **bpf_program__attach_uprobe()** attaches a BPF program
+ SEC("kprobe/sys_nanosleep")
+ int handle_kprobe(struct pt_regs *ctx)
+@@ -39,4 +41,18 @@ int handle_uretprobe(struct pt_regs *ctx)
+ 	return 0;
+ }
+ 
++SEC("uprobe/trigger_func_byname")
++int handle_uprobe_byname(struct pt_regs *ctx)
++{
++	uprobe_byname_res = 5;
++	return 0;
++}
++
++SEC("uretprobe/trigger_func_byname")
++int handle_uretprobe_byname(struct pt_regs *ctx)
++{
++	uretprobe_byname_res = 6;
++	return 0;
++}
++
+ char _license[] SEC("license") = "GPL";
 -- 
 1.8.3.1
 
