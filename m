@@ -2,106 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2524848CA5A
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:48:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 833D548CA7D
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:57:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343992AbiALRs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 12:48:56 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:45578 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240668AbiALRsx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:48:53 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E36BCB81EA6;
-        Wed, 12 Jan 2022 17:48:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ADA2C36AE5;
-        Wed, 12 Jan 2022 17:48:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642009730;
-        bh=v5HVJMOt7K5cfz9ChUmoP+h6WJ8BSd2gVzVjKi67/bs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=I5IBb8wMr1OFJJp1W4xiBKrGiLlzko0I4nZKxuwBG2kwloTU3de7Oz94htQwZBPr8
-         midFS13nAQX6Fs4UhOwPEDWTfK3m//xboWTelsPoUzvmjVnw9K46ZScJcMUUQytTur
-         7BunIoxoYHeHz3gAtPMyPmjMdrnivJ/PN5GYKIYXs6s6USAb1V/37faYc+sPS2afL5
-         CqFVDc8M5gI7eCI2dRDH7JnnKzHJTXdSGAokYiV0Zo58OAa8yhIaoDyWhDmGiNgESi
-         6OU0gIiFdHdDPRihZPjIdDbuzH9Rru5AYGe8XFWwDECAlPy1P1bWERHxc8HWk2dJEO
-         9TKEzmzEjOrAw==
-Received: by pali.im (Postfix)
-        id 2CEB5768; Wed, 12 Jan 2022 18:48:48 +0100 (CET)
-Date:   Wed, 12 Jan 2022 18:48:48 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-mmc@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v9 08/24] wfx: add bus_sdio.c
-Message-ID: <20220112174848.db5osolurllpc7du@pali>
-References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com>
- <42104281.b1Mx7tgHyx@pc-42>
- <20220112114332.jadw527pe7r2j4vv@pali>
- <2680707.qJCEgCfB62@pc-42>
+        id S1348647AbiALR5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 12:57:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242192AbiALR5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:57:53 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2646EC06173F
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 09:57:53 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id u8so4845356iol.5
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 09:57:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=4m0dbrDG3kjTnMhuxOA+yVKrJ0fcR2XJeuaybltVmMM=;
+        b=FnZqYCa+Ock/kquuE8hGvCQdfM6LxwGk0/JpP7eclDUFbq4r1gTtkg/kUyFcLguVci
+         NtlpuokpyYo15sDowI03aNGcuK4S2QPMKiheRM9JomN4FWuxoB6qfQPycQ4MGQIIaSZp
+         lAM3YkT3I49Gkoi+rRjCDWAI/FgPG11oT8Opcmo32cAlOPfkMH+PmLUVOXHeES6YybCn
+         KP6pXijHIdC7WTpiKVnmY9Q+p2GLshsMREQh7Nz5k0GnJO1IQUJWkoQRY4GwyZS6Zh7n
+         rMbQuISnlhG3YguGQWRcFKMyNvfGxEXuVcFLml00Wvo48mwz8kGkREWwETBQ1fwDHL0k
+         BUNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=4m0dbrDG3kjTnMhuxOA+yVKrJ0fcR2XJeuaybltVmMM=;
+        b=aSPxi7c5IiFvUTo9Slf3zOMAmvnaOAKXkliTRqkHTZDVbt/Xs/UysbaX1PlbByS+jE
+         oCK2NFFZg4wy6U1X/cEJptmwKkkjlkONuYmEIaKun45QuvM6nIw3kTN6qynqXdE6Kgjb
+         srSo4W9EqKcZKdb/ByaLDRV7G7H2vMg85S7EzCahBgu3irAyhgRKeQsO5HbYEzN8BnCo
+         EoVtKzErjP+YRROzyzxH61fP88Gcuws7Grvcj3scKcSVP11S3/S4ObYiFlXv+ZpaNxqq
+         GIApDWu5N4f71m2DAhjtFdPXonNqjpsjyLfDitDuM4RmskVmsLwe5RVOqIRJyT61pWir
+         ld3w==
+X-Gm-Message-State: AOAM532Zl/PEdQ4smj9VbY3GZ7LENEoxOJ0VH6CRr/rjP3HTgtNMOt/x
+        wckF6AwrcJhHozoMqCsgBMk=
+X-Google-Smtp-Source: ABdhPJwAGw+eBpCzJCQirv08wg/f+kKGwuEY/2GMppjDcUDmYVSExZXyB0KeQAoM4sYnp/SJxq4M1A==
+X-Received: by 2002:a02:9699:: with SMTP id w25mr432066jai.27.1642010272281;
+        Wed, 12 Jan 2022 09:57:52 -0800 (PST)
+Received: from [172.16.0.2] ([8.48.134.58])
+        by smtp.googlemail.com with ESMTPSA id y8sm329923ilu.72.2022.01.12.09.57.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 09:57:51 -0800 (PST)
+Message-ID: <6421a75c-0341-4813-7c12-5836a440df76@gmail.com>
+Date:   Wed, 12 Jan 2022 10:57:49 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2680707.qJCEgCfB62@pc-42>
-User-Agent: NeoMutt/20180716
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH iproute2 v2] ip: Extend filter links/addresses
+Content-Language: en-US
+To:     Anton Danilov <littlesmilingcloud@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <20220108195824.23840-1-littlesmilingcloud@gmail.com>
+ <acff5b79-2e5d-2877-0532-bb48608cc83b@gmail.com>
+ <CAEzD07JA8+MnQCcRViUxY=TFgeiFn-ZNgkMzvYo06oDuFUMRVA@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <CAEzD07JA8+MnQCcRViUxY=TFgeiFn-ZNgkMzvYo06oDuFUMRVA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday 12 January 2022 17:45:45 Jérôme Pouiller wrote:
-> On Wednesday 12 January 2022 12:43:32 CET Pali Rohár wrote:
-> > 
-> > On Wednesday 12 January 2022 12:18:58 Jérôme Pouiller wrote:
-> > > On Wednesday 12 January 2022 11:58:59 CET Pali Rohár wrote:
-> > > > On Tuesday 11 January 2022 18:14:08 Jerome Pouiller wrote:
-> > > > > +static const struct sdio_device_id wfx_sdio_ids[] = {
-> > > > > +     { SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILABS_WF200) },
-> > > > > +     { },
-> > > > > +};
-> > > >
-> > > > Hello! Is this table still required?
-> > >
-> > > As far as I understand, if the driver does not provide an id_table, the
-> > > probe function won't be never called (see sdio_match_device()).
-> > >
-> > > Since, we rely on the device tree, we could replace SDIO_VENDOR_ID_SILABS
-> > > and SDIO_DEVICE_ID_SILABS_WF200 by SDIO_ANY_ID. However, it does not hurt
-> > > to add an extra filter here.
-> > 
-> > Now when this particular id is not required, I'm thinking if it is still
-> > required and it is a good idea to define these SDIO_VENDOR_ID_SILABS
-> > macros into kernel include files. As it would mean that other broken
-> > SDIO devices could define these bogus numbers too... And having them in
-> > common kernel includes files can cause issues... e.g. other developers
-> > could think that it is correct to use them as they are defined in common
-> > header files. But as these numbers are not reliable (other broken cards
-> > may have same ids as wf200) and their usage may cause issues in future.
+On 1/11/22 12:09 PM, Anton Danilov wrote:
+> Hello, David.
 > 
-> In order to make SDIO_VENDOR_ID_SILABS less official, do you prefer to
-> define it in wfx/bus_sdio.c instead of mmc/sdio_ids.h?
+>> current 'type' filtering is the 'kind' string in the rtnl_link_ops --
+>> bridge, veth, vlan, vrf, etc. You are now wanting to add 'exclude_type'
+>> and make it based on hardware type. That is a confusing user api.
 > 
-> Or even not defined at all like:
-> 
->     static const struct sdio_device_id wfx_sdio_ids[] = {
->          /* WF200 does not have official VID/PID */
->          { SDIO_DEVICE(0x0000, 0x1000) },
->          { },
->     };
+> The 'exclude_type' options first checks the 'kind' in the
+> rtnl_link_ops, then the hardware type.
 
-This has advantage that it is explicitly visible that this device does
-not use any officially assigned ids.
+ok; missed that on the first pass.
 
-> 
-> 
-> -- 
-> Jérôme Pouiller
-> 
-> 
+Update the commit message to say filtering by "hardware type"
+
+>> On 1/8/22 12:58 PM, Anton Danilov wrote:
+>>> @@ -227,6 +227,28 @@ static int match_link_kind(struct rtattr **tb, const char *kind, bool slave)
+>>>       return strcmp(parse_link_kind(tb[IFLA_LINKINFO], slave), kind);
+>>>  }
+>>>
+>>> +static int match_if_type_name(unsigned short if_type, const char *type_name)
+>>> +{
+>>> +
+>>> +     char *expected_type_name;
+>>> +
+>>> +     switch (if_type) {
+>>> +     case ARPHRD_ETHER:
+>>> +             expected_type_name = "ether";
+>>> +             break;
+>>> +     case ARPHRD_LOOPBACK:
+>>> +             expected_type_name = "loopback";
+>>> +             break;
+>>> +     case ARPHRD_PPP:
+>>> +             expected_type_name = "ppp";
+
+ppp devices have kind set, so ARPHRD_PPP should not be needed.
+
+
+Also, you have supported hardware types in multiple places - this match
+function and the filter.kind check. Make 1 table with supported types
+and use that table with helpers or both paths.
+
+Why not allow exclude by "_slave" type? e.g., should all devices but
+bridge ports?
+
