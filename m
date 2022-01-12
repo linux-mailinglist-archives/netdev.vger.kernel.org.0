@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C927748CABF
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:13:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69CCB48CABB
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:13:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356112AbiALSNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 13:13:24 -0500
-Received: from mx0d-0054df01.pphosted.com ([67.231.150.19]:23755 "EHLO
-        mx0d-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1356096AbiALSNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:13:09 -0500
-Received: from pps.filterd (m0209000.ppops.net [127.0.0.1])
-        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20CGTfGU011851;
-        Wed, 12 Jan 2022 13:12:57 -0500
-Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2059.outbound.protection.outlook.com [104.47.61.59])
-        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3dj2j2g20s-1
+        id S1356073AbiALSNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 13:13:20 -0500
+Received: from mx0c-0054df01.pphosted.com ([67.231.159.91]:34132 "EHLO
+        mx0c-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1356091AbiALSNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:13:06 -0500
+Received: from pps.filterd (m0208999.ppops.net [127.0.0.1])
+        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20CE6jBi020242;
+        Wed, 12 Jan 2022 13:12:59 -0500
+Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2051.outbound.protection.outlook.com [104.47.61.51])
+        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3dj0fcg5xw-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Jan 2022 13:12:57 -0500
+        Wed, 12 Jan 2022 13:12:58 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PwtS2MBZajQHN/xyDMDoAWNYhwd5nZP1LWnjeinod9FcWI87LZMq5U+NvPPmNbxlXdvWDb9mGcL//FwnysQtj+oOoQHBIX/pBkSHwm9ntlo5cDfO642Jq3g1Zw1oGGh9yu1TDy9xGrp9VYSaG4QFALBnn2ho6iWZrp1h0zL2MXXJrXcV8mlEn0iLwXh78WPQsCJj3GRUYICAO37541Q6s9EUjEKGVap7tRoF7QNVpxiboBVC5zIoORf3aB5ZXv/+RTbDUXuyFvXb7x/P1k9qCOHnQ5eHpDHStUU99rLLugd++jH9xQeoSnr07p/9oS6yXtZj2t9unhbwr2e/D5JLeQ==
+ b=mkmqtsMH7BUAvXuaamnBxzRrNSvWhyGiWQA1U715SwEiky+erRQLR2YzqezEcw7mkCWlimA05uL3zQXXJCpq2ClnPV0McsUFl4s4qJA4nNUfpTzfNSoN7Uo5UVaADjet8B+NhRWJMj+uCE3mOKbifjyR2MJf9h4urcf3DaBWOPs1mihcOy5jGFq8BrAwc5MMDVbQzBYcAtC9Uny8psRhM4jRi5uGySdFQvaIq6dbYGPhkv3iPk00Px7a3BK3MtoMJr29s/rcb1+jKOuQ5Xbm04ZwV0owKBcrOE4nBVI5cQU3WEnI8yie8V8g+4hjUnDtEqpD0ch7CBvlGwgexJ3jPg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YuEthdUlRQIB9bEXTOR2G0wPnncECoBzlJhvByVWU5E=;
- b=YCtwCc8sy+2ZDf1OqJksyv+pwp4jBnwyuRDajzv7GMJRuylUuDXHpGgzxDHzMZ8YtC+Tb4EWEIY3R7BIFNtjvzdCR1Lp9m6vWOLXT48KW/l2AAtm/bJkEKyLfNiThBn963+L+Zq5dY3eZ0NerqBHThHruQIQGYkwt0H3zYyuUDgtf5bR5ey6b6JdYu2lIJc70quJdzJV61lw8XZKCP/2pLjHQhFw6x9DBDBUYmbmVF0ASpCoSfMAfcYJr2ofXpR5uGC6l92y9pxLjC2SzoKVgBZqXZQAvk8mhZfUkNi/8NG+eZP4O3RYu5CI4E4nPGnQP+SS7CZBLsxye94qeLCBUA==
+ bh=m97m9plP0SMWFGgtAwFGG3kjSAqZMgme5CBUazC9zW0=;
+ b=LlyZsEWRxbomfmrvJGwgFYanmLqTs3PDjRyQiTeZCLJX5aZC4tkprepMZSzgULOT9fYusqHkS5B8WFTZYafdgBpVIj1z+OsV+DZta1VOrPjVD12G7at+TTCeiguqa6nI8rC+dstvneeashb1hNw5iQIO3JnjzIr46y7OyDPZ+Gxk9rcXmKqBG9GlgTGbvvi3/7V+nNg97f/d7+nNfp2jNcD5td+xwrIdwGo4pssF9uaUrhwXq8TB5SIBAOZUiedtWbaF57FjaCRMMuVa8x3L8CrB0fmIP1XqO94D36sgOrS2iWqiy2kXfkJbo5PlcFaHwUGBR1cHx76+nIcx3KiFbg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
  dkim=pass header.d=calian.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YuEthdUlRQIB9bEXTOR2G0wPnncECoBzlJhvByVWU5E=;
- b=jj9Kf2KFkxUD8/GhozAQtc8vwuivNpl+EjJKGkJ3Exi6bUtk2kMwGH9E7NhkCeBJnfC3F2+q0w0/bGcvrCiAMzAyDhP3xTEwuACbUIlJHyQwSwR2qM9NY7CjzW1MUC9w5XekNNHb+LJaozo1ia5BPh9maQhlcX6Eit4kDT02EIY=
+ bh=m97m9plP0SMWFGgtAwFGG3kjSAqZMgme5CBUazC9zW0=;
+ b=3Y7uNMlWgbs18TZDCEkgl7ZFi2h1g0H116QAuxnulgi65eIYpF7jUbCvrhdOBKiB9IbwX4NObkRXw2RMRfXW88g2/7xjvZH5f+wCPgCcgRPYu9X+cKsGJx/XXTMIzoo1yEt1yibUk5ZVukBDxtZ54wenF06LTj5DWtGqNRV0U18=
 Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:6a::19)
  by YT1PR01MB3516.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:b::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Wed, 12 Jan
- 2022 18:12:56 +0000
+ 2022 18:12:57 +0000
 Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::6929:c39f:d893:b6c8]) by YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::6929:c39f:d893:b6c8%2]) with mapi id 15.20.4888.010; Wed, 12 Jan 2022
- 18:12:56 +0000
+ 18:12:57 +0000
 From:   Robert Hancock <robert.hancock@calian.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
         michal.simek@xilinx.com, nicolas.ferre@microchip.com,
         claudiu.beznea@microchip.com, devicetree@vger.kernel.org,
         Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH net-next 1/3] macb: bindings doc: added generic PHY and reset mappings for ZynqMP
-Date:   Wed, 12 Jan 2022 12:11:11 -0600
-Message-Id: <20220112181113.875567-2-robert.hancock@calian.com>
+Subject: [PATCH net-next 2/3] net: macb: Added ZynqMP-specific initialization
+Date:   Wed, 12 Jan 2022 12:11:12 -0600
+Message-Id: <20220112181113.875567-3-robert.hancock@calian.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220112181113.875567-1-robert.hancock@calian.com>
 References: <20220112181113.875567-1-robert.hancock@calian.com>
@@ -61,127 +61,160 @@ X-ClientProxiedBy: CO2PR05CA0092.namprd05.prod.outlook.com
  (2603:10b6:b01:6a::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7363a039-8fe2-40b8-f317-08d9d5f7283b
+X-MS-Office365-Filtering-Correlation-Id: c51ca951-5b9a-4a25-80b2-08d9d5f7293c
 X-MS-TrafficTypeDiagnostic: YT1PR01MB3516:EE_
-X-Microsoft-Antispam-PRVS: <YT1PR01MB3516DB82A54201F4693FD36CEC529@YT1PR01MB3516.CANPRD01.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-Microsoft-Antispam-PRVS: <YT1PR01MB3516773D0299CA8C0D99E20AEC529@YT1PR01MB3516.CANPRD01.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rD6nd6SVF+bhcpvSb8G2wCKF0QpFaUHvEwOVs7FpjMkRsnrMBBdn0HDOGIYa9ye8zvSIhgXW0hhbL/5myFYScFiR3LhWIXo5ZQAoNC9lPwpMOOpsoWId0d8bevnMFHOA+fCfnaxP8Z9jwjjjejVNpEdVQxrbjHkKqt7dnx2lxP1mEOV8E/+BQj0N9TbRG2hQSXfRdJ4AB8xHe85AhjPUF2YTts3rr3n9K3m6zOtLM09ntmbVA6T5Jrr0PTlWammfPah522WZ11jqfLY5lTQ0YAaDoF8iz9E6WOQblk7acYDq56r7comLOMXQM+uSSYowmVoERQb22/eLRq/YlzfqQvNix7Fj5FidMdjitFJThwFQveTUZ5zQO5Qa2h7bF1x8IfJDE0X5CoFrhBxFFD4C95fSA1pRYns33Ip2MzBWFTbcOCxT4XEVx2RTMgrqGlXkhjZzZy3ZHeoA7q2L8KRx5RvhbBGgvLRt5R8ixR9Yrglvy6S8fVMdszkPEcHjyIb5jLaOkYIRGzZrLsxlOHutrmOkFP8ljIYUM6gQtgpRTVXu2DNNOq3PDaRqj6kq0TbGi3Wzv19WWCCKOPHnqTdazl6NXgp9Pjwo5LHS02HUBDeAg2Rr6+fqqgrkO/yU78CcNYFrkf6QWqgQpKHa4nY1FY335z/rORimvuK00bdJuCJz8SC130LLxEX7nhrshEpwWhVQCYOEYUq/zUBFhImfAhwTKt07bGsugw3E1Dh1gjI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(44832011)(186003)(8936002)(38350700002)(6512007)(38100700002)(8676002)(66946007)(4326008)(2906002)(2616005)(107886003)(26005)(6916009)(83380400001)(508600001)(1076003)(86362001)(5660300002)(66556008)(66476007)(52116002)(36756003)(6506007)(6486002)(316002)(6666004)(41533002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: D69FWGS/8/cVnA5gf5iXvT96FLnUbhOLE4xty6le1wz5c/L7hdnJUnRzz8pZ+w+SORcFMFcSi+4UvvcihNEYpnPAYR8SzOUar9aHUwB32eIF5JkIpZhl9keRTo3PZjGEhXUbjAvMupwGGOiz3DAg5+RUvSKBb7YBXp/e96vZNCTkKfk7EjDrHGbYMX6XBgo7GFuiPSuEqwshpDv7I/Exw62g5ruD5Rzx8movcoZDz57wnfFn5OVKNpLbNoZI9aDzZYbnQcbDyDRAInbsDumCW0Zxm+BMAt7HJfB66bowTmnxd60RvajEVYpGGotO5jC5xkn6Oezb1CtuYHauqkEw32VZzrIWnQMKl07tXfcEYJC+7PaF9W3TQx32gAuaYu6LB3c9cx++ySlCAj2WXzomwK56zcZRV4gXZAEz3yWGm14OdQ8CNrItFkEZVTLCNL9z8Q6BSGIEf0mfZ+t1sMFEBx/yN2+Qvg8iPfvwciVHfRQjaPVC1kpd/+mRCzcWoNjQlGL6b/vZ2umyXFNwx6yKqCd7CQS8aj1rSZ2QAgB0xNM5LlZhPJHukowFw1w+4BXdDfnb+9S7vgBz5sOOzp40WHoguoLXwgnrUaVWZOwAtW22wI13kbBTfY1ddcy0JwWepLst09PbNnPsI3vznZWBrl2wL3v9MyK20N8QOW5pU8HHASEq4qgYdPzAX6WacC1n16SyhILRioBKzAmGhhR1VQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(44832011)(186003)(8936002)(38350700002)(6512007)(38100700002)(8676002)(66946007)(4326008)(2906002)(2616005)(107886003)(26005)(6916009)(83380400001)(508600001)(1076003)(86362001)(5660300002)(66556008)(66476007)(52116002)(36756003)(6506007)(6486002)(316002)(6666004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?P3S+rpRxqlYPbX8zrA4T7wAKpL6xRKoL8JDWPi1sU8OuyZ1O4VIaQ58lnFCF?=
- =?us-ascii?Q?tUlDPU+skE3vQJSra5w9uY/67DcTdj2gqWt7vRKGGNFKrCpJNbOXWAvoNyO8?=
- =?us-ascii?Q?iMJJ50Y7S8mCkN3X+IgJbckdcgD+0bTVJP8dK0GHOqn4PvXMIxsT9gO6Xs99?=
- =?us-ascii?Q?tavL1aVAmVQ3zJq4RGbv1lo/61/tLWJTU3rpVqFAy3xyqoTelHb3OdHidA56?=
- =?us-ascii?Q?pzQIWBVDSvXZ9f8LO6fxV/4pQ1rRY2tWBLtOncOhX7cKWAf2TVeR6FmhOvwD?=
- =?us-ascii?Q?x7gygPBcIzRw/troX5JKY7Bi9wHKEy4MpRb+du8mjfpPoWLM+yWEKgDoCwqG?=
- =?us-ascii?Q?VzpmMr+iorkVv0lEZVbntFYsbcwhgz/q64S1oTzPPo1M1WKyp2BWbI7cdJTf?=
- =?us-ascii?Q?glPZjrxcTLTij2w/f8GgQWcC5LSztm7JNKd3JRbUPvylQlUDaVQMEIrLNWu4?=
- =?us-ascii?Q?on+nviuFlZH8H04ixIMSyLSPhtwrW4LfDL0v4l6lSHYaf6bDGEBxu7PDg5G5?=
- =?us-ascii?Q?OK/J0+R6TN2RXO/K1OG2HsmmB8vxO+GSMR3R8e4MhQoJNe7zI01lMMhXnDXo?=
- =?us-ascii?Q?M8oSm/bcvk4l8lilXYkvQNgcuOkl8I/pwBx5q063QanAVBz7k4m1a12ugSeG?=
- =?us-ascii?Q?9bMVD9E8wbBoJE7k4m4WByjUN6wPSZAY055wgNWLutNQYDXuf7sZyeIINkFE?=
- =?us-ascii?Q?YyPaGmFKTDZ6B75Q/slf6Qf6ol6wnhE26QKdaebNv1ZTYyH/9gXsCdwmeOS2?=
- =?us-ascii?Q?ZCKBSwHhNrsA0svhNju8HO5UvrkfkpxlFTaV6E0Ijlvui2ovQPsLrs5LRevb?=
- =?us-ascii?Q?wJv9VlSsdhawQny4e+UHbLnylYCc4T+OvatzCopEQLrBqDgPhejVNYMUiOOn?=
- =?us-ascii?Q?Tg/vjvqWF2PkIWxNfhpk08/GMnaIN+9S1ofGMP6hU8P/wU03GvzkyHzfV6l0?=
- =?us-ascii?Q?Q8cU2ZkHoqGaIH326n5iNoiqxr3y9LLpjjfmDZwZU5rA8o++ZYFdeXb4eFac?=
- =?us-ascii?Q?5IH/symnBO71obtQdGrJKAbwhPLSSIAADOBCwPmUrHRU08iKDBGDNLgXn5qI?=
- =?us-ascii?Q?O2UFDZliFFgV/HwHUNnSo05ONXBSxqnFhSDrMDmfhci2wLPKrgF6NZ1cojQE?=
- =?us-ascii?Q?OP2WZcKMfVnuMK7Jiig78xVtu9U2sZ4mjfD8cq9V0mw5ohC7kLNMe4YOAC4n?=
- =?us-ascii?Q?5nNaMydGYFj7uYGi0xlt6ab++nRXthUJmnCWl1sv1CiFkPPww04KfOi8FpCM?=
- =?us-ascii?Q?GZ1VLxGKimgzYU5bWVySOYMrh5EKVegklbtTT2AUZqns7mtDB2poLMK2Zk7v?=
- =?us-ascii?Q?e1dSWwlj3/qh3Crd0DonsZDnwkhaRkcCn0KJ/Lz0tliD+tWdN2axfIOZy6ay?=
- =?us-ascii?Q?IWLrh65p2E+isBjARd+4kA9YmthB1/70vbTQpkg2Nq9y2dQ9vZ6TaDTMxwRg?=
- =?us-ascii?Q?fVBNvPouPqGTyZC62SBsUcIMEXLMKnRxg7rMrDyoXz/Pi59LBwMp97hZf9jU?=
- =?us-ascii?Q?Ozo6Jtwy+2HQpI2dFm6XPKVDHOZlYK4sEw7BhNQC3EkEB9Qzi6x9bEnftWQj?=
- =?us-ascii?Q?7Z9l7Xs37Ff9K8lOq5CtqbXGLCNKPWqu5DSPm1fI3TR0zLE35tgZttVYpRWn?=
- =?us-ascii?Q?FvhaeBpWgy6+QLVufUkZew2Vqad/wCJKJekxBzz7CKOQ1oTRpCmqtMm+QCdd?=
- =?us-ascii?Q?0rAAP0c1P9LHtAOzMxK32U3BVf4=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iRTf8msiuTHt63n9iYYMyiOrI8XkhGYqFcLjpCvymsJvYnozJsBnZL1h0qJV?=
+ =?us-ascii?Q?RKfmp4yESPoHkS8baLnDd9qjEzUjRFPNUe41aOURv8Rjqw4wzDjNqAsW1dJg?=
+ =?us-ascii?Q?ADgMyMsGnruw34tQj2127eq8HI5Bfz4podwl/zWIHc/MRo6gCa8XNlnpxHvm?=
+ =?us-ascii?Q?+C2NnKMvXhOjVYBdsOp5RSzGI/bn6slAjJwHHtuwVkoGQojKgur/7Dgc/TmX?=
+ =?us-ascii?Q?Szm1C8jCvOLnKaaG0geUY0P53C7I9RYzVuWwY0aCcXF//Get2yf/KdI5J/aF?=
+ =?us-ascii?Q?xEEEn4SIVpS4wg2RkpcpyebBZ/JU9mOEsEWCndsSMavYQHHsxDZH/QDR2I9E?=
+ =?us-ascii?Q?pc20qzy0MLvCun4lrilrB3I1pUyZ90WATDY5E+XNaehxOak84cOaCT1/2pRL?=
+ =?us-ascii?Q?BJ3G87kr9Kvt9RInsshh7P3czQM1zjhym4hTVWs4IhJwNajxXi0Afu2DNJRk?=
+ =?us-ascii?Q?5IEmZZDDETXoktTXDR69ciNV7r4RJDM13bQYlEeuKWagcqLtovHXEgYJdqya?=
+ =?us-ascii?Q?P2jk4Jo3KFY9SmCT/ZY6ys9OyTy2VQuQZK7paXTb9jZe9LJNX933mOBdZzuY?=
+ =?us-ascii?Q?nYsJK/w+okMGur5MGFJSK9i+76/meNbJkQZoSItc0XiY1gL5/u7xaEXPkRCJ?=
+ =?us-ascii?Q?8o1w7hzVHFHWMzcN/dfsTB279unoSvwSz+BKroLINewYeLdEZp1Nji9wDhzR?=
+ =?us-ascii?Q?//ARhv31IxpgzNQFcNMUDp/eParrU8Tj5PHAj4HZMhdlwVOAUL0B7bpQi/tF?=
+ =?us-ascii?Q?9BngJxVIUTYleSPa87FXI8rYbPyQbTCvkZC5Ut/tHPt8Sx3r1yOobuLjSc/Q?=
+ =?us-ascii?Q?QPy7PC6NTmgAq7S5Znb9mg4i4SD0eOnSOw+TapxNHpCAYhwD0wXEZ2iVgyBL?=
+ =?us-ascii?Q?X8J/55D4b7+bElx7TsLS3ZNySp0duVdHGAKla1nUXQbchxnaoNj6TbPC73dF?=
+ =?us-ascii?Q?mtj1SXvJvnOkJzc+pwIukEmiHkLpnWUifXVp8KDFpadqZk9SG6bwoqhsDldM?=
+ =?us-ascii?Q?0sSda0qH7a9BujCOMZpMYzdIjNXKdEdMdJBp/rCJtdKpwgRjwI/UWVNg2460?=
+ =?us-ascii?Q?D8mFcRPvUEMja21JFSeFHRtxL0CFfWOY6HrdsYsaKqQmE0aWH8JmtFytUTaU?=
+ =?us-ascii?Q?LxQCXXO6E7SUae1C0YBUxLsj0YPgweefUWgCVzZRp56z2AS9eDhS5W8hvwIT?=
+ =?us-ascii?Q?mHd28GGVXt91X/9RRmzBdDUyzlBDW0JiceOiw/BICIyi3PyWWe6BuMSNaoJ5?=
+ =?us-ascii?Q?ntR3vIr3GSm35RBlXRPow4TPdBdwv5zDLIYVu7p5VZqyvHVHkdnivdkFYWdS?=
+ =?us-ascii?Q?a7Ckl3Vw5ItKESFuaD/B7ADduMd4xiIuZpgJO1BCfQFpCE/K+fViJnxicZBb?=
+ =?us-ascii?Q?EZl6xbkZm2Cm941sqqV/3Jm39cIEbxOHg2xekrZ7WlGp5DT9l2Sy4wUMXH+x?=
+ =?us-ascii?Q?tB/hirM/bIeOZDSY4fG6yzZ5UdQfOCzIhJHbiTZVl9cET2qqPsb9b+VRTOqS?=
+ =?us-ascii?Q?/S19TbcdaEQGlXufD6cDgcvosZVuTAtR5nr6N/0tP7gZfuI/BBZoQudHgp45?=
+ =?us-ascii?Q?+WcBOd3PyeLUKggmTyLjD1+ggn1nmG5zvkUtQk7hhRt9MSNV1G1c1/VismPn?=
+ =?us-ascii?Q?b/XadeUNgtfvskaq8lR8OLfotenNfsER2mNHA7sP7mdR0K2G32o07EPEOpdI?=
+ =?us-ascii?Q?oiCl6C8yiyN3ULKYRe63Hsn5mKU=3D?=
 X-OriginatorOrg: calian.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7363a039-8fe2-40b8-f317-08d9d5f7283b
+X-MS-Exchange-CrossTenant-Network-Message-Id: c51ca951-5b9a-4a25-80b2-08d9d5f7293c
 X-MS-Exchange-CrossTenant-AuthSource: YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 18:12:55.9853
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 18:12:57.6667
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MPy+o9/ApJgi+5HL2z0SB68qnv7kO36edwrZMDUaMi6NxFcJ1dE1zTtMjwiJzdHN5l8R1ad6v+9yMvx0y7WfxYKbF7JdwjMhb90mkgVeLsc=
+X-MS-Exchange-CrossTenant-UserPrincipalName: dlGW2XkLPxjOzqEnMubRQuk4iaEh3mHPND8dnzm0p1h/5E5uM+JpYDduSU8YkubcwwvIlZATTK7At7Xuwk1F0ohkyRzsnFH4ZE6RfKooIWo=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: YT1PR01MB3516
-X-Proofpoint-GUID: wwKaYt2rJhgk-bF3Iw9_TNKsiqrVuqOE
-X-Proofpoint-ORIG-GUID: wwKaYt2rJhgk-bF3Iw9_TNKsiqrVuqOE
+X-Proofpoint-GUID: lv-U6aMQohG7c9mezpMHr0FNMsR5yWpu
+X-Proofpoint-ORIG-GUID: lv-U6aMQohG7c9mezpMHr0FNMsR5yWpu
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-01-12_05,2022-01-11_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- malwarescore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
- lowpriorityscore=0 spamscore=0 phishscore=0 adultscore=0 suspectscore=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
+ mlxscore=0 adultscore=0 malwarescore=0 bulkscore=0 lowpriorityscore=0
+ suspectscore=0 impostorscore=0 priorityscore=1501 phishscore=0
  clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2110150000 definitions=main-2201120110
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Updated macb DT binding documentation to reflect the phy-names, phys,
-resets, reset-names properties which are now used with ZynqMP GEM
-devices, and added a ZynqMP-specific DT example.
+The GEM controllers on ZynqMP were missing some initialization steps which
+are required in some cases when using SGMII mode, which uses the PS-GTR
+transceivers managed by the phy-zynqmp driver.
+
+The GEM core appears to need a hardware-level reset in order to work
+properly in SGMII mode in cases where the GT reference clock was not
+present at initial power-on. This can be done using a reset mapped to
+the zynqmp-reset driver in the device tree.
+
+Also, when in SGMII mode, the GEM driver needs to ensure the PHY is
+initialized and powered on when it is initializing.
 
 Signed-off-by: Robert Hancock <robert.hancock@calian.com>
 ---
- .../devicetree/bindings/net/macb.txt          | 33 +++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ drivers/net/ethernet/cadence/macb_main.c | 47 +++++++++++++++++++++++-
+ 1 file changed, 46 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
-index a1b06fd1962e..e526952145b8 100644
---- a/Documentation/devicetree/bindings/net/macb.txt
-+++ b/Documentation/devicetree/bindings/net/macb.txt
-@@ -29,6 +29,12 @@ Required properties:
- 	Optional elements: 'rx_clk' applies to cdns,zynqmp-gem
- 	Optional elements: 'tsu_clk'
- - clocks: Phandles to input clocks.
-+- phy_names, phys: Required with ZynqMP SoC when in SGMII mode.
-+                   phy_names should be "sgmii-phy" and phys should
-+                   reference PS-GTR generic PHY device for this controller
-+                   instance. See ZynqMP example below.
-+- resets, reset-names: Recommended with ZynqMP, specify reset control for this
-+		       controller instance with zynqmp-reset driver.
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index a363da928e8b..65b0360c487a 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -34,7 +34,9 @@
+ #include <linux/udp.h>
+ #include <linux/tcp.h>
+ #include <linux/iopoll.h>
++#include <linux/phy/phy.h>
+ #include <linux/pm_runtime.h>
++#include <linux/reset.h>
+ #include "macb.h"
  
- Optional properties:
- - mdio: node containing PHY children. If this node is not present, then PHYs
-@@ -58,3 +64,30 @@ Examples:
- 			reset-gpios = <&pioE 6 1>;
- 		};
- 	};
+ /* This structure is only used for MACB on SiFive FU540 devices */
+@@ -4455,6 +4457,49 @@ static int fu540_c000_init(struct platform_device *pdev)
+ 	return macb_init(pdev);
+ }
+ 
++static int zynqmp_init(struct platform_device *pdev)
++{
++	struct net_device *dev = platform_get_drvdata(pdev);
++	struct macb *bp = netdev_priv(dev);
++	int ret;
 +
-+	gem1: ethernet@ff0c0000 {
-+		compatible = "cdns,zynqmp-gem", "cdns,gem";
-+		interrupt-parent = <&gic>;
-+		interrupts = <0 59 4>, <0 59 4>;
-+		reg = <0x0 0xff0c0000 0x0 0x1000>;
-+		clocks = <&zynqmp_clk LPD_LSBUS>, <&zynqmp_clk GEM1_REF>,
-+			 <&zynqmp_clk GEM1_TX>, <&zynqmp_clk GEM1_RX>,
-+			 <&zynqmp_clk GEM_TSU>;
-+		clock-names = "pclk", "hclk", "tx_clk", "rx_clk", "tsu_clk";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		#stream-id-cells = <1>;
-+		iommus = <&smmu 0x875>;
-+		power-domains = <&zynqmp_firmware PD_ETH_1>;
-+		resets = <&zynqmp_reset ZYNQMP_RESET_GEM1>;
-+		reset-names = "gem1_rst";
-+		status = "okay";
-+		phy-mode = "sgmii";
-+		phy-names = "sgmii-phy";
-+		phys = <&psgtr 1 PHY_TYPE_SGMII 1 1>;
-+		fixed-link {
-+			speed = <1000>;
-+			full-duplex;
-+			pause;
-+		};
-+	};
++	/* Fully reset GEM controller at hardware level using zynqmp-reset driver,
++	 * if mapped in device tree.
++	 */
++	ret = device_reset(&pdev->dev);
++	if (ret) {
++		dev_err_probe(&pdev->dev, ret, "failed to reset controller");
++		return ret;
++	}
++
++	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII) {
++		/* Ensure PS-GTR PHY device used in SGMII mode is ready */
++		struct phy *sgmii_phy = devm_phy_get(&pdev->dev, "sgmii-phy");
++
++		if (IS_ERR(sgmii_phy)) {
++			ret = PTR_ERR(sgmii_phy);
++			dev_err_probe(&pdev->dev, ret,
++				      "failed to get PS-GTR PHY\n");
++			return ret;
++		}
++
++		ret = phy_init(sgmii_phy);
++		if (ret) {
++			dev_err(&pdev->dev, "failed to init PS-GTR PHY: %d\n",
++				ret);
++			return ret;
++		}
++
++		ret = phy_power_on(sgmii_phy);
++		if (ret) {
++			dev_err(&pdev->dev, "failed to power on PS-GTR PHY: %d\n",
++				ret);
++			return ret;
++		}
++	}
++	return macb_init(pdev);
++}
++
+ static const struct macb_usrio_config sama7g5_usrio = {
+ 	.mii = 0,
+ 	.rmii = 1,
+@@ -4550,7 +4595,7 @@ static const struct macb_config zynqmp_config = {
+ 			MACB_CAPS_GEM_HAS_PTP | MACB_CAPS_BD_RD_PREFETCH,
+ 	.dma_burst_length = 16,
+ 	.clk_init = macb_clk_init,
+-	.init = macb_init,
++	.init = zynqmp_init,
+ 	.jumbo_max_len = 10240,
+ 	.usrio = &macb_default_usrio,
+ };
 -- 
 2.31.1
 
