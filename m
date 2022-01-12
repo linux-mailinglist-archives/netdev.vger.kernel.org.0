@@ -2,102 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94A1748BF86
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 09:08:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7364948BFA1
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 09:14:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351423AbiALIIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 03:08:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44746 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351416AbiALIH7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 03:07:59 -0500
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3A9C06173F;
-        Wed, 12 Jan 2022 00:07:58 -0800 (PST)
-Received: by mail-qt1-x82a.google.com with SMTP id y10so2189243qtw.1;
-        Wed, 12 Jan 2022 00:07:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=o7CnV6Plc3m49ljVBNe22o8ETLLt2AJm3GJl7I66i/s=;
-        b=O0yqbYatJJD8z/BiYzKVWgBzyr0pid5wIkdk1dyFYcP8ifFxYZR/XAeGt9UJFPJVG/
-         0Btvo2y946ODVnYhxa5/nYlFTwYtasRmEM/XUQWCC6m/H9Xz85fhuejprChRaOTVNmUR
-         ub7zZZHGN7J6azT4mDuBMRaAAimgoBXyOca4RvASW8mJKgtIkgX/Si3eH7AVVuZ+XJgU
-         OlQz+/MYTA452bFxlWh+gr89cUGQEG5jv9KxRPOC8f4L+W5kwFEFf9/x3zVmgF1SS2FF
-         qQsVnMtREDbuE0/TREWW+6qa78luB75F1kSjs4ETmUTELgv2ODLxviVu0lcdsvZyOcs/
-         1RTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=o7CnV6Plc3m49ljVBNe22o8ETLLt2AJm3GJl7I66i/s=;
-        b=LBeXJ1sAYjZzp4Kl4R+KRaFA/n3PDMv/PQ18nWTfnMCS3FS2+APeJ2n7ReB9sqseA/
-         Vl10O45WVKEZawJup5vFL2Zpv2Hqn60r+IP4Ubcq6gGqVcbiWgcgRlwzt9POVdqUDhEi
-         fR/zXvKzjysnsWgPlD+uHtwORy1OpazUXT6MtoupP+I4urB5cUlBvOqRlqTW+bwltJzT
-         cmn2VkAy1WS+pfoRj0p1udEfGEq9zTqKNArZP8s3gxfAJ8SkorezGrB/qqi0TGVRplz+
-         5bU1M3PGenH+ioFgxSganiq+uq2Wy/JoTyC5Vc1u4Bwg1ohpHHvsBsULjxZ0Fvth5EY0
-         RDMw==
-X-Gm-Message-State: AOAM532NCbKFkjRjNbD4eQst4y1OV3TU1Lcw19j04MHAWlNB+vOAYppq
-        bpFCB66gz7tF/9L0ULr6gdI=
-X-Google-Smtp-Source: ABdhPJxmhU3/AkiZvPhIrkQ3K6bpl665AMfd0sAPJivqMASvyC/sRCf6fmUVzCtxKyrhtrUtOrJHlg==
-X-Received: by 2002:a05:622a:1013:: with SMTP id d19mr6769175qte.151.1641974877992;
-        Wed, 12 Jan 2022 00:07:57 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id c17sm7736543qkl.90.2022.01.12.00.07.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 00:07:57 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     kvalo@kernel.org
-Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>, CGEL ZTE <cgel.zte@gmail.com>
-Subject: [PATCH] wireless/ath/ath9k: remove redundant status variable
-Date:   Wed, 12 Jan 2022 08:07:51 +0000
-Message-Id: <20220112080751.667316-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        id S1351499AbiALIOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 03:14:02 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40782 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237613AbiALIOB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 03:14:01 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 269E161731;
+        Wed, 12 Jan 2022 08:14:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29354C36AEC;
+        Wed, 12 Jan 2022 08:13:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641975240;
+        bh=sVNfXg6usJJoEU9t5/A5dvhFxSpMOUHjwCWedxCuoVE=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=dCMCCg6Wotk2I1eqDR1vIv9p6OqOLo4eDqR87Hgz+Qd9zUGdf6Y9+TuFBQOLT4+gh
+         HhP/aLd3SI5j2Ma/BiJWRCz2qcV7kWqFKPDd6B0EdFoxJrGqaeTvpRir0j8INXKlCp
+         2IJdJnp1Sy3Dj/0cwZXYOcG8X5R2qZuT0aPBmCVnRpeJSeYP0H91J/f0OGmPLM7ZHn
+         Kv2ToO00Gn54GXj7XuePdBs7ozKIr9bPxqU1WRftiXI5duKtSqZ3sffsch08qOA1yl
+         aI20WJGnvmgUMhMbbMcRz/noWpUPwkj1mGHNkb4X03zu6+7UG6c7kXUQLfb37z5gek
+         u8mOpyu+eHS0w==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath5k: fix OOB in ath5k_eeprom_read_pcal_info_5111
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <YckvDdj3mtCkDRIt@a-10-27-26-18.dynapool.vpn.nyu.edu>
+References: <YckvDdj3mtCkDRIt@a-10-27-26-18.dynapool.vpn.nyu.edu>
+To:     Zekun Shen <bruceshenzk@gmail.com>
+Cc:     bruceshenzk@gmail.com, Jiri Slaby <jirislaby@kernel.org>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, brendandg@nyu.edu
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164197523645.14338.13517394288080922684.kvalo@kernel.org>
+Date:   Wed, 12 Jan 2022 08:13:57 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+Zekun Shen <bruceshenzk@gmail.com> wrote:
 
-Return value directly instead of taking this in another redundant
-variable.
+> The bug was found during fuzzing. Stacktrace locates it in
+> ath5k_eeprom_convert_pcal_info_5111.
+> When none of the curve is selected in the loop, idx can go
+> up to AR5K_EEPROM_N_PD_CURVES. The line makes pd out of bound.
+> pd = &chinfo[pier].pd_curves[idx];
+> 
+> There are many OOB writes using pd later in the code. So I
+> added a sanity check for idx. Checks for other loops involving
+> AR5K_EEPROM_N_PD_CURVES are not needed as the loop index is not
+> used outside the loops.
+> 
+> The patch is NOT tested with real device.
+> 
+> The following is the fuzzing report
+> 
+> BUG: KASAN: slab-out-of-bounds in ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+> Write of size 1 at addr ffff8880174a4d60 by task modprobe/214
+> 
+> CPU: 0 PID: 214 Comm: modprobe Not tainted 5.6.0 #1
+> Call Trace:
+>  dump_stack+0x76/0xa0
+>  print_address_description.constprop.0+0x16/0x200
+>  ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+>  ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+>  __kasan_report.cold+0x37/0x7c
+>  ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+>  kasan_report+0xe/0x20
+>  ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+>  ? apic_timer_interrupt+0xa/0x20
+>  ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
+>  ? ath5k_pci_eeprom_read+0x228/0x3c0 [ath5k]
+>  ath5k_eeprom_init+0x2513/0x6290 [ath5k]
+>  ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
+>  ? usleep_range+0xb8/0x100
+>  ? apic_timer_interrupt+0xa/0x20
+>  ? ath5k_eeprom_read_pcal_info_2413+0x2f20/0x2f20 [ath5k]
+>  ath5k_hw_init+0xb60/0x1970 [ath5k]
+>  ath5k_init_ah+0x6fe/0x2530 [ath5k]
+>  ? kasprintf+0xa6/0xe0
+>  ? ath5k_stop+0x140/0x140 [ath5k]
+>  ? _dev_notice+0xf6/0xf6
+>  ? apic_timer_interrupt+0xa/0x20
+>  ath5k_pci_probe.cold+0x29a/0x3d6 [ath5k]
+>  ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
+>  ? mutex_lock+0x89/0xd0
+>  ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
+>  local_pci_probe+0xd3/0x160
+>  pci_device_probe+0x23f/0x3e0
+>  ? pci_device_remove+0x280/0x280
+>  ? pci_device_remove+0x280/0x280
+>  really_probe+0x209/0x5d0
+> 
+> Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+> Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
----
- drivers/net/wireless/ath/ath9k/eeprom.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+Patch applied to ath-next branch of ath.git, thanks.
 
-diff --git a/drivers/net/wireless/ath/ath9k/eeprom.c b/drivers/net/wireless/ath/ath9k/eeprom.c
-index e6b3cd49ea18..efb7889142d4 100644
---- a/drivers/net/wireless/ath/ath9k/eeprom.c
-+++ b/drivers/net/wireless/ath/ath9k/eeprom.c
-@@ -670,8 +670,6 @@ void ath9k_hw_get_gain_boundaries_pdadcs(struct ath_hw *ah,
- 
- int ath9k_hw_eeprom_init(struct ath_hw *ah)
- {
--	int status;
--
- 	if (AR_SREV_9300_20_OR_LATER(ah))
- 		ah->eep_ops = &eep_ar9300_ops;
- 	else if (AR_SREV_9287(ah)) {
-@@ -685,7 +683,5 @@ int ath9k_hw_eeprom_init(struct ath_hw *ah)
- 	if (!ah->eep_ops->fill_eeprom(ah))
- 		return -EIO;
- 
--	status = ah->eep_ops->check_eeprom(ah);
--
--	return status;
-+	return ah->eep_ops->check_eeprom(ah);
- }
+564d4eceb97e ath5k: fix OOB in ath5k_eeprom_read_pcal_info_5111
+
 -- 
-2.25.1
+https://patchwork.kernel.org/project/linux-wireless/patch/YckvDdj3mtCkDRIt@a-10-27-26-18.dynapool.vpn.nyu.edu/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
