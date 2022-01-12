@@ -2,106 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09ADA48BDBA
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 04:39:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8251048BDC1
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 04:49:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349182AbiALDjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 11 Jan 2022 22:39:04 -0500
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:57742 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234465AbiALDjE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 22:39:04 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R811e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=haoxu@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V1ciBBb_1641958740;
-Received: from B-25KNML85-0107.local(mailfrom:haoxu@linux.alibaba.com fp:SMTPD_---0V1ciBBb_1641958740)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 12 Jan 2022 11:39:01 +0800
-Subject: Re: [RFC v2 02/19] skbuff: pass a struct ubuf_info in msghdr
-To:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>
-References: <cover.1640029579.git.asml.silence@gmail.com>
- <7dae2f61ee9a1ad38822870764fcafad43a3fe4e.1640029579.git.asml.silence@gmail.com>
- <fd376342-13e2-4ce9-074a-f6b3da69be3b@linux.alibaba.com>
- <4bc0e57b-ee3b-ae77-5d5d-213a48bdf4b0@gmail.com>
-From:   Hao Xu <haoxu@linux.alibaba.com>
-Message-ID: <cf5eb67e-05dc-3b8d-3e61-ddf9a9706265@linux.alibaba.com>
-Date:   Wed, 12 Jan 2022 11:39:00 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        id S1350494AbiALDtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 11 Jan 2022 22:49:51 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51156 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229770AbiALDtv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 11 Jan 2022 22:49:51 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B95B2617D6
+        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 03:49:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD3CFC36AE5;
+        Wed, 12 Jan 2022 03:49:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641959390;
+        bh=nbCyDX0TWvzzfSZfmovAPrvN3rYM2pdboW63svHrpl8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MmRKs8kFjvS4GIg1fsheO3HStUVze6iw2A73croYNE733wHxv7TMqPxX3sfcoUqFB
+         WOhEGmuAsG4XT3YwG53AIwmUAEO7qrXwvbPBHOZvTy2NVzsZAhZWMADksSb9VTStYZ
+         FYoVTDjqCiyjIoEhUq1Mjgz6jYVLrVhh4hOf/5ch3KGIcvozm/S9kZ+OVbaQ9akpmq
+         yfSdL8/0Ih6m9ZPpPt938Qji2LEbA3yQ9OCkZcYsPvYtWV0wm/ECK5Fnobxt5YEk4d
+         p1B2bkIH5YOqPv1aOp9giwf22JjfXU2LTLk8avWSnkBqoxfNS7oarg5aAL3FfD/tTv
+         cSzGvZOwH2GmA==
+Date:   Tue, 11 Jan 2022 19:49:48 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Robert Hancock <robert.hancock@calian.com>
+Cc:     netdev@vger.kernel.org, radhey.shyam.pandey@xilinx.com,
+        davem@davemloft.net
+Subject: Re: [PATCH net 6/7] net: axienet: fix for TX busy handling
+Message-ID: <20220111194948.056c7211@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220111211358.2699350-7-robert.hancock@calian.com>
+References: <20220111211358.2699350-1-robert.hancock@calian.com>
+        <20220111211358.2699350-7-robert.hancock@calian.com>
 MIME-Version: 1.0
-In-Reply-To: <4bc0e57b-ee3b-ae77-5d5d-213a48bdf4b0@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2022/1/11 下午11:50, Pavel Begunkov 写道:
-> On 1/11/22 13:51, Hao Xu wrote:
->> 在 2021/12/21 下午11:35, Pavel Begunkov 写道:
->>> Instead of the net stack managing ubuf_info, allow to pass it in from
->>> outside in a struct msghdr (in-kernel structure), so io_uring can make
->>> use of it.
->>>
->>> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
->>> ---
->> Hi Pavel,
->> I've some confusions here since I have a lack of
->> network knowledge.
->> The first one is why do we make ubuf_info visible
->> for io_uring. Why not just follow the old MSG_ZEROCOPY
->> logic?
+On Tue, 11 Jan 2022 15:13:57 -0600 Robert Hancock wrote:
+> We should be avoiding returning NETDEV_TX_BUSY from ndo_start_xmit in
+> normal cases. Move the main check for a full TX ring to the end of the
+> function so that we stop the queue after the last available space is used
+> up, and only wake up the queue if enough space is available for a full
+> maximally fragmented packet. Print a warning if there is insufficient
+> space at the start of start_xmit, since this should no longer happen.
 > 
-> I assume you mean leaving allocation up and so in socket awhile the
-> patchset let's io_uring to manage and control ubufs. In short,
-> performance and out convenience
-> 
-> TL;DR;
-> First, we want a nice and uniform API with io_uring, i.e. posting
-> an CQE instead of polling an err queue/etc., and for that the network
-> will need to know about io_uring ctx in some way. As an alternative it
-> may theoretically be registered in socket, but it'll quickly turn into
-> a huge mess, consider that it's a many to many relation b/w io_uring and
-> sockets. The fact that io_uring holds refs to files will only complicate
-> it.
-Make sense to me, thanks.
-> 
-> It will also limit API. For instance, we won't be able to use a single
-> ubuf with several different sockets.
-Is there any use cases for this multiple sockets with single
-notification?
-> 
-> Another problem is performance, registration or some other tricks
-> would some additional sync. It'd also need sync on use, say it's
-> just one rcu_read, but the problem that it only adds up to complexity
-> and prevents some other optimisations. E.g. we amortise to ~0 atomics
-> getting refs on skb setups based on guarantees io_uring provides, and
-> not only. SKBFL_MANAGED_FRAGS can only work with pages being controlled
-> by the issuer, and so it needs some context as currently provided by
-> ubuf. io_uring also caches ubufs, which relies on io_uring locking, so
-> it removes kmalloc/free for almost zero overhead.
-> 
-> 
->> The second one, my understanding about the buffer
->> lifecycle is that the kernel side informs
->> the userspace by a cqe generated by the ubuf_info
->> callback that all the buffers attaching to the
->> same notifier is now free to use when all the data
->> is sent, then why is the flush in 13/19 needed as
->> it is at the submission period?
-> 
-> Probably I wasn't clear enough. A user has to flush a notifier, only
-> then it's expected to post an CQE after all buffers attached to it
-> are freed. io_uring holds one ubuf ref, which will be release on flush.
-I see, I saw another ref inc in skb_zcopy_set() which I previously
-misunderstood and thus thought there was only one refcount. Thanks!
-> I also need to add a way to flush without send.
-> 
-> Will spend some time documenting for next iteration.
-> 
+> Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
+> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+
+Feels a little more like an optimization than strictly a fix.
+Can we apply this and the following patch to net-next in two
+week's time? It's not too much of a stretch to take it in now
+if it's a bit convenience but I don't think the Fixes tags should 
+stay.
+
+> -		netif_wake_queue(ndev);
+> +		netdev_warn(ndev, "TX ring unexpectedly full\n");
+
+Probably wise to make this netdev_warn_once() or at least rate limit it.
+
+> +		return NETDEV_TX_BUSY;
+>  	}
+>  
+>  	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 
