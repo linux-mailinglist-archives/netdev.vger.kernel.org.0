@@ -2,64 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9C9848BE04
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 06:06:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A51E048BE16
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 06:20:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbiALFGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 00:06:17 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58792 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231239AbiALFGR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 00:06:17 -0500
+        id S1349097AbiALFUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 00:20:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35824 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231225AbiALFUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 00:20:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D74AC06173F;
+        Tue, 11 Jan 2022 21:20:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA830B818BD
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 05:06:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4224FC36AEA;
-        Wed, 12 Jan 2022 05:06:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 265186181B;
+        Wed, 12 Jan 2022 05:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 772D8C36AEB;
+        Wed, 12 Jan 2022 05:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641963974;
-        bh=4oUXdxE9RuNCoaYDNpR7j9RgQXUCc/jantEL+h79eGA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=i2VeSk7bLcAcgWmaca9yL5cpTC7YZBmy2LbLBoI+tyuxXQQV9M3sGoIA6vchGptIR
-         VKP0a5sRtwJO5y1LfmVkQh+4QJo+w4zJFifcjy8T017tdicqzTGE78TDKpbHEOD0MB
-         G84v2Ks7szHPavi7xX7yA1PTH8d75zcW1AEdCr864kKuJUQDghfahiIpNdZmfzd7vz
-         KwwbafpJT23Gl8XLWoFfytdEBwkYJfJMIWDjfl/xvenzUuuT99VjBLI5roAquBeHIT
-         LMoPUHVcK6FuTRiXKuqzIGqYtkvOthoyuz/bC6sJFbU/hFRcf/hpyw0dpa4cwrI5wE
-         w9ElGtU64FKVA==
-Date:   Tue, 11 Jan 2022 21:06:13 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kevin Bracey <kevin@bracey.fi>
-Cc:     <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
-        Jiri Pirko <jiri@resnulli.us>, Vimalkumar <j.vimal@gmail.com>
-Subject: Re: [PATCH net-next] net_sched: restore "mpu xxx" handling
-Message-ID: <20220111210613.55467734@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220107202249.3812322-1-kevin@bracey.fi>
-References: <20220107202249.3812322-1-kevin@bracey.fi>
+        s=k20201202; t=1641964810;
+        bh=AzOdyxdNLcpXZj9rSQnl4af/zL3oy00xjDvN9zKnUGw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JZcEfcgOFueGdlUrv5DPGvdqpj2CTZHZQEUKA9mfl0aVmdSAiyxWujLzYLcFlN2ZB
+         Rqla+H9bgcKN9vEC507vFbUspM0SbpWCrq3F8ensUog9UobwUG7dnzKv3kkse5hyyX
+         Gx3EDUe2lAkxAw+SpfN+WE9IvrNZ/gF046BEKqRM3Xba+EsUxFoxmr8Y933kuF1uRm
+         haVDCDID7pEGqoNpv1TqwNjunvMQEYpXOtxsRzgO7p02fZQGeyh0hoXd67Ke1ucpC5
+         +UwNdEzqsVGd95bKwAaAqO/TKyzf++pBq9U/LsZvC8dVzdqscnvg1UdfeLihBh92AH
+         5HuV37kVk7QCw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5762DF60796;
+        Wed, 12 Jan 2022 05:20:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] nfc: pn544: make array rset_cmd static const
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164196481035.2105.15169178738336777997.git-patchwork-notify@kernel.org>
+Date:   Wed, 12 Jan 2022 05:20:10 +0000
+References: <20220109202418.50641-1-colin.i.king@gmail.com>
+In-Reply-To: <20220109202418.50641-1-colin.i.king@gmail.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     krzysztof.kozlowski@canonical.com, kuba@kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 7 Jan 2022 22:22:50 +0200 Kevin Bracey wrote:
-> commit 56b765b79e9a ("htb: improved accuracy at high rates") broke
-> "overhead X", "linklayer atm" and "mpu X" attributes.
-> 
-> "overhead X" and "linklayer atm" have already been fixed. This restores
-> the "mpu X" handling, as might be used by DOCSIS or Ethernet shaping:
-> 
->     tc class add ... htb rate X overhead 4 mpu 64
-> 
-> The code being fixed is used by htb, tbf and act_police. Cake has its
-> own mpu handling. qdisc_calculate_pkt_len still uses the size table
-> containing values adjusted for mpu by user space.
-> 
-> Fixes: 56b765b79e9a ("htb: improved accuracy at high rates")
+Hello:
 
-Are you sure this worked and got broken? I can't seem to grep out any
-uses of mpu in this code. commit 175f9c1bba9b ("net_sched: Add size
-table for qdiscs") adds it as part of the struct but I can't find a
-single use of it.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Sun,  9 Jan 2022 20:24:18 +0000 you wrote:
+> Don't populate the read-only array rset_cmd on the stack but
+> instead it static const. Also makes the object code a little smaller.
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  drivers/nfc/pn544/i2c.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Here is the summary with links:
+  - nfc: pn544: make array rset_cmd static const
+    https://git.kernel.org/netdev/net/c/e110978d6e06
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
