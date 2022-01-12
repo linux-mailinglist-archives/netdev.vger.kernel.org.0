@@ -2,232 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DBDD48C909
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:04:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 680AF48C90C
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:04:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348402AbiALRE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 12:04:27 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:2184 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1355460AbiALRDO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:03:14 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20CBSxEH021154;
-        Wed, 12 Jan 2022 09:03:03 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=gXQYsttVto3q2avSaIuX/Zbuj5P8ZtSBJxZBwJFW2B8=;
- b=XjFJgi9Cc6K2Pnlcb1r5SqnYHEmj6swxtASfwGOoh5+s984JdbiEHuvw7biaaeASfiVQ
- iAAwG8ehLiSKx6xZdu0j2RH6/xEPqim9oBwwGstkNSFQ+UjSAzVwDP5XAo6uyOHhkS2q
- 15KXYNDZV7RG83KFGqBjFqI3IJHfxNJE7V8eu4LNEAehEgkcXZUzZcDz4UO+ks4k4lO2
- HttFVyLY6LVKxVVU6II1hBXsoy33ygy6UOtxtbJ6W+UlYEfrbFBZ3aOVkcElKkKXaHh6
- 0fp1m4D7/Ws8NUREElF5bYgAgG4B9bst6EaxaqRNXVBh8YrxVLKyQggVv04HYNqZk7hm rQ== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3dh8nm5skp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 12 Jan 2022 09:03:03 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 12 Jan
- 2022 09:03:01 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Wed, 12 Jan 2022 09:03:01 -0800
-Received: from hyd1358.marvell.com (unknown [10.29.37.11])
-        by maili.marvell.com (Postfix) with ESMTP id 7ADD53F70A6;
-        Wed, 12 Jan 2022 09:02:58 -0800 (PST)
-From:   Subbaraya Sundeep <sbhatta@marvell.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     <hkelam@marvell.com>, <gakula@marvell.com>, <sgoutham@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [net-next PATCH] octeontx2-pf: Change receive buffer size using ethtool
-Date:   Wed, 12 Jan 2022 22:32:55 +0530
-Message-ID: <1642006975-17580-1-git-send-email-sbhatta@marvell.com>
-X-Mailer: git-send-email 2.7.4
+        id S1355419AbiALREr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 12:04:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55422 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355510AbiALREm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:04:42 -0500
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965EEC06173F;
+        Wed, 12 Jan 2022 09:04:42 -0800 (PST)
+Received: by mail-il1-x134.google.com with SMTP id z17so956067ilm.3;
+        Wed, 12 Jan 2022 09:04:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MM7tsNjQ1RjKdLjIHYsiqgwyzjhwJ0Sd2pi5INVTS3Q=;
+        b=OtK3i+2Ty+nFD/D/+RH0QLwdycQnaaQUlO6sUBfDW1msryhEvHE9oK7qD63hh59rVy
+         q7h+GJk3N542RZW0B3y7zdihtuigG9uZCaYbfCbS+bzHVDTd9tdmh+A7ucE06NfdudmI
+         1tuI+xKNe4PsXTSyFag7IFO+3gfRhb2AMvdPwOT6Yt8FC06b6yImDkf7B0tO0FJB8aP4
+         S7OcapXa4cmxUobw51i+1R3FxGMaIpYhT0OTueuybnHxJwnMIkkluxAqJvBuN/L6y/xX
+         9CnBjmPJVmW85hM5O2tybAPGguDJbsP1iB6Wiskp7pUsp4d9Um0uyc6w75xX30C4MQeF
+         KjAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MM7tsNjQ1RjKdLjIHYsiqgwyzjhwJ0Sd2pi5INVTS3Q=;
+        b=CFkx080P2OPakvqRy0C3FSnXmNdAWAbn8CbH8TvnL2JcZ3at3HMpms1o2CFgmc7wzM
+         eIJyxentXOanr/HRmG5hsjo08YCaENDS3wdybCFeMZLpHM1oa7GynSL+njHtDqunyvf1
+         efXoK8p4GsuS00BaEu20lI9m37Jal16prie7x5GNxaUyS5tPlsx543/Peegt3FiQT0/V
+         rZ3iICGsfTRvxSI16WRqb0ODVjJyFEipCkAXN9Cf3hkQpF552iuU+2SdrW0xg7eImu19
+         Kq50yZ7RzVAS5Zdaye238l1pghbrBxhYFLvC2YqMk8Iuk6iW0wT4xbau1Lml9I2hL1e+
+         T2aQ==
+X-Gm-Message-State: AOAM531neBKKzOpK2VokvJA9eS6av7/zPLOIthVxVPMjbFhLd96tlUVu
+        lcFDTObUdocbZC/BJGoyM39MqcyAWYvlysIn2HA=
+X-Google-Smtp-Source: ABdhPJw+3snJ3EljleHH4lNVkB2UC6LRoGYoai/9g0BNjhUahCdB0oAE8v5QNx53cihajRL9XmYDGptr6HOi+ZAasqY=
+X-Received: by 2002:a05:6e02:1a24:: with SMTP id g4mr399887ile.71.1642007081328;
+ Wed, 12 Jan 2022 09:04:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: gPHYHV7PC_KOqVhQHVwbtdcCNSsrTc7o
-X-Proofpoint-ORIG-GUID: gPHYHV7PC_KOqVhQHVwbtdcCNSsrTc7o
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-12_04,2022-01-11_01,2021-12-02_01
+References: <1642004329-23514-1-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1642004329-23514-1-git-send-email-alan.maguire@oracle.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 12 Jan 2022 09:04:30 -0800
+Message-ID: <CAEf4BzYRLxzVHw00DUphqqdv2m_AU7Mu=S0JF0PZYN40hBvHgA@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/4] libbpf: userspace attach by name
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        Yucong Sun <sunyucong@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ethtool rx-buf-len is for setting receive buffer size,
-support setting it via ethtool -G parameter and getting
-it via ethtool -g parameter.
+On Wed, Jan 12, 2022 at 8:19 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+>
+> This patch series is a rough attempt to support attach by name for
+> uprobes and USDT (Userland Static Defined Tracing) probes.
+> Currently attach for such probes is done by determining the offset
+> manually, so the aim is to try and mimic the simplicity of kprobe
+> attach, making use of uprobe opts.
+>
+> One restriction applies: uprobe attach supports system-wide probing
+> by specifying "-1" for the pid.  That functionality is not supported,
+> since we need a running process to determine the base address to
+> subtract to get the uprobe-friendly offset.  There may be a way
+> to do this without a running process, so any suggestions would
+> be greatly appreciated.
+>
+> There are probably a bunch of subtleties missing here; the aim
+> is to see if this is useful and if so hopefully we can refine
+> it to deal with more complex cases.  I tried to handle one case
+> that came to mind - weak library symbols - but there are probably
+> other issues when determining which address to use I haven't
+> thought of.
+>
+> Alan Maguire (4):
+>   libbpf: support function name-based attach for uprobes
+>   libbpf: support usdt provider/probe name-based attach for uprobes
+>   selftests/bpf: add tests for u[ret]probe attach by name
+>   selftests/bpf: add test for USDT uprobe attach by name
+>
 
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
+Hey Alan,
 
-Hi,
+I've been working on USDT support last year. It's considerably more
+code than in this RFC, but it handles not just finding a location of
+USDT probe(s), but also fetching its arguments based on argument
+location specification and more usability focused BPF-side APIs to
+work with USDTs.
 
-This patch is reworked to use ethtool instead
-of devlink paramter. Initial patch with devlink
-was rejected and Jakub suggested to use ethtool
-which was already work in progress by Huawei at
-that moment.
-https://lore.kernel.org/all/1633454136-14679-1-git-send-email-sbhatta@marvell.com/t/#me83fcb2ce41a2c054370b1ec75172c2f839f57e2
+I don't remember how up to date it is, but the last "open source"
+version of it can be found at [0]. I currently have the latest
+debugged and tested version internally in the process of being
+integrated into our profiling solution here at Meta. So far it seems
+to be working fine and covers our production use cases well.
 
-Thanks,
-Sundeep
+The plan is to open source it as a separate companion library to
+libbpf some time in the next few months. Hopefully that would work for
+you. Once it is available, I hope we can also utilize it to convert
+some more BCC-based tools (that rely on USDT) to libbpf ([1]).
 
- .../net/ethernet/marvell/octeontx2/nic/otx2_common.c   |  7 +++++++
- .../net/ethernet/marvell/octeontx2/nic/otx2_common.h   |  1 +
- .../net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 18 +++++++++++++++++-
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  5 +++++
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  3 +++
- 5 files changed, 33 insertions(+), 1 deletion(-)
+  [0] https://github.com/anakryiko/linux/commit/d473d042c8058da0a9e6c0353d97aeaf574925c6
+  [1] https://github.com/iovisor/bcc/tree/master/libbpf-tools
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index 66da31f..92c0ddb 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -222,8 +222,11 @@ EXPORT_SYMBOL(otx2_set_mac_address);
- int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
- {
- 	struct nix_frs_cfg *req;
-+	u16 maxlen;
- 	int err;
- 
-+	maxlen = otx2_get_max_mtu(pfvf) + OTX2_ETH_HLEN + OTX2_HW_TIMESTAMP_LEN;
-+
- 	mutex_lock(&pfvf->mbox.lock);
- 	req = otx2_mbox_alloc_msg_nix_set_hw_frs(&pfvf->mbox);
- 	if (!req) {
-@@ -233,6 +236,10 @@ int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
- 
- 	req->maxlen = pfvf->netdev->mtu + OTX2_ETH_HLEN + OTX2_HW_TIMESTAMP_LEN;
- 
-+	/* Use max receive length supported by hardware for loopback devices */
-+	if (is_otx2_lbkvf(pfvf->pdev))
-+		req->maxlen = maxlen;
-+
- 	err = otx2_sync_mbox_msg(&pfvf->mbox);
- 	mutex_unlock(&pfvf->mbox.lock);
- 	return err;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 61e5281..6d11cb2 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -177,6 +177,7 @@ struct otx2_hw {
- 	u16			pool_cnt;
- 	u16			rqpool_cnt;
- 	u16			sqpool_cnt;
-+	u16			rbuf_len;
- 
- 	/* NPA */
- 	u32			stack_pg_ptrs;  /* No of ptrs per stack page */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index d85db90..a100296 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -371,6 +371,7 @@ static void otx2_get_ringparam(struct net_device *netdev,
- 	ring->rx_pending = qs->rqe_cnt ? qs->rqe_cnt : Q_COUNT(Q_SIZE_256);
- 	ring->tx_max_pending = Q_COUNT(Q_SIZE_MAX);
- 	ring->tx_pending = qs->sqe_cnt ? qs->sqe_cnt : Q_COUNT(Q_SIZE_4K);
-+	kernel_ring->rx_buf_len = pfvf->hw.rbuf_len;
- }
- 
- static int otx2_set_ringparam(struct net_device *netdev,
-@@ -379,6 +380,7 @@ static int otx2_set_ringparam(struct net_device *netdev,
- 			      struct netlink_ext_ack *extack)
- {
- 	struct otx2_nic *pfvf = netdev_priv(netdev);
-+	u32 rx_buf_len = kernel_ring->rx_buf_len;
- 	bool if_up = netif_running(netdev);
- 	struct otx2_qset *qs = &pfvf->qset;
- 	u32 rx_count, tx_count;
-@@ -386,6 +388,15 @@ static int otx2_set_ringparam(struct net_device *netdev,
- 	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
- 		return -EINVAL;
- 
-+	/* Hardware supports max size of 32k for a receive buffer
-+	 * and 1536 is typical ethernet frame size.
-+	 */
-+	if (rx_buf_len && (rx_buf_len < 1536 || rx_buf_len > 32768)) {
-+		netdev_err(netdev,
-+			   "Receive buffer range is 1536 - 32768");
-+		return -EINVAL;
-+	}
-+
- 	/* Permitted lengths are 16 64 256 1K 4K 16K 64K 256K 1M  */
- 	rx_count = ring->rx_pending;
- 	/* On some silicon variants a skid or reserved CQEs are
-@@ -403,7 +414,7 @@ static int otx2_set_ringparam(struct net_device *netdev,
- 			   Q_COUNT(Q_SIZE_4K), Q_COUNT(Q_SIZE_MAX));
- 	tx_count = Q_COUNT(Q_SIZE(tx_count, 3));
- 
--	if (tx_count == qs->sqe_cnt && rx_count == qs->rqe_cnt)
-+	if (tx_count == qs->sqe_cnt && rx_count == qs->rqe_cnt && !rx_buf_len)
- 		return 0;
- 
- 	if (if_up)
-@@ -413,6 +424,10 @@ static int otx2_set_ringparam(struct net_device *netdev,
- 	qs->sqe_cnt = tx_count;
- 	qs->rqe_cnt = rx_count;
- 
-+	if (rx_buf_len)
-+		pfvf->hw.rbuf_len = ALIGN(rx_buf_len, OTX2_ALIGN) +
-+				    OTX2_HEAD_ROOM;
-+
- 	if (if_up)
- 		return netdev->netdev_ops->ndo_open(netdev);
- 
-@@ -1207,6 +1222,7 @@ static int otx2_set_link_ksettings(struct net_device *netdev,
- static const struct ethtool_ops otx2_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
- 				     ETHTOOL_COALESCE_MAX_FRAMES,
-+	.supported_ring_params  = ETHTOOL_RING_USE_RX_BUF_LEN,
- 	.get_link		= otx2_get_link,
- 	.get_drvinfo		= otx2_get_drvinfo,
- 	.get_strings		= otx2_get_strings,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 6080ebd..37afffa 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -66,6 +66,8 @@ static int otx2_change_mtu(struct net_device *netdev, int new_mtu)
- 		    netdev->mtu, new_mtu);
- 	netdev->mtu = new_mtu;
- 
-+	pf->hw.rbuf_len = 0;
-+
- 	if (if_up)
- 		err = otx2_open(netdev);
- 
-@@ -1306,6 +1308,9 @@ static int otx2_get_rbuf_size(struct otx2_nic *pf, int mtu)
- 	int total_size;
- 	int rbuf_size;
- 
-+	if (pf->hw.rbuf_len)
-+		return pf->hw.rbuf_len;
-+
- 	/* The data transferred by NIX to memory consists of actual packet
- 	 * plus additional data which has timestamp and/or EDSA/HIGIG2
- 	 * headers if interface is configured in corresponding modes.
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-index 925b74e..3fe4c0a 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-@@ -438,6 +438,7 @@ static void otx2vf_do_set_rx_mode(struct work_struct *work)
- 
- static int otx2vf_change_mtu(struct net_device *netdev, int new_mtu)
- {
-+	struct otx2_nic *vf = netdev_priv(netdev);
- 	bool if_up = netif_running(netdev);
- 	int err = 0;
- 
-@@ -448,6 +449,8 @@ static int otx2vf_change_mtu(struct net_device *netdev, int new_mtu)
- 		    netdev->mtu, new_mtu);
- 	netdev->mtu = new_mtu;
- 
-+	vf->hw.rbuf_len = 0;
-+
- 	if (if_up)
- 		err = otx2vf_open(netdev);
- 
--- 
-2.7.4
-
+>  tools/lib/bpf/libbpf.c                             | 244 +++++++++++++++++++++
+>  tools/lib/bpf/libbpf.h                             |  17 +-
+>  tools/testing/selftests/bpf/Makefile               |  34 +++
+>  .../selftests/bpf/prog_tests/attach_probe.c        |  74 ++++++-
+>  .../selftests/bpf/progs/test_attach_probe.c        |  24 ++
+>  5 files changed, 391 insertions(+), 2 deletions(-)
+>
+> --
+> 1.8.3.1
+>
