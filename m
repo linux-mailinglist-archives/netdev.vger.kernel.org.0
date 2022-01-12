@@ -2,137 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6834948C127
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 10:40:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C2548C19E
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 10:51:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352133AbiALJkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 04:40:09 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:46616 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1352136AbiALJjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 04:39:42 -0500
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20C8pLh8029510;
-        Wed, 12 Jan 2022 09:39:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=/9tK+VS/cnDyK47dSrtk7wEbYK8TmwqMeslMQZr03Gg=;
- b=LbmJfzedl1NZspCQM2pTJV4k1LnRDtjNcK62X+AMEq7Ohrcecak6JZivD3BYLG9jwvTj
- 9p32iQsd3jBAKFuI719iCeGoQ4n4khnHiFNGqYI+DApchtQPpO/DD/hhDzGgJVHGUjY0
- Nkug2ht8Xn0xOUyw7kVzDH47igUANuVLb3YOe/Xas//nnsL05OSCzagnPoK8NgO+ca1k
- F9Xzx+bZ7AB8/In2SG/m7a14aSssuNZexvKRXEZZAEF7ObcQoph4GWYHrn2+ww9TWjn7
- XW2PGp4BteWMosCNhMOuxyxTZBUuP2+HfiNXLgXshvNtppT2dTsEC6YmcS9mSfLkw4yx XA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dhuugruys-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Jan 2022 09:39:31 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20C9YF30022278;
-        Wed, 12 Jan 2022 09:39:31 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dhuugruya-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Jan 2022 09:39:31 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20C9c0q6019207;
-        Wed, 12 Jan 2022 09:39:29 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 3df289qnn2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Jan 2022 09:39:29 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20C9TO1d44696000
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 12 Jan 2022 09:29:24 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 273624C052;
-        Wed, 12 Jan 2022 09:38:27 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CADCA4C040;
-        Wed, 12 Jan 2022 09:38:26 +0000 (GMT)
-Received: from [9.145.42.178] (unknown [9.145.42.178])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 12 Jan 2022 09:38:26 +0000 (GMT)
-Message-ID: <5dd7ffd1-28e2-24cc-9442-1defec27375e@linux.ibm.com>
-Date:   Wed, 12 Jan 2022 10:38:27 +0100
+        id S1349570AbiALJvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 04:51:42 -0500
+Received: from mail-dm6nam12on2041.outbound.protection.outlook.com ([40.107.243.41]:41918
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S238931AbiALJvO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 12 Jan 2022 04:51:14 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y4tLZMosm7JsCM0jthqek01l+sisFK+ztFlo9lAvJ6YI0OjXPymPRcZV4U4I2HQjpIDOy+ycarRxs2M3O9F16LABzfagXeYjO3HvUsL2CkiBkoTQc159V1mznVAOHw30je2ArWA2Oym3zCiEc66KuyBB1/8YrS/mhFwGueI2NBpv4fDu2hlb99IGrjH3poZLT9dRWt0G21nCiMkcR23kYvemVvkndjsS2V6MH0/omGr2qx2dqgnQghl+KyVqXa83WYOHq5mJVIYDh4hMC9oEJEOwphJZN+DN1LcO/jA9BEkwUCeiulGtw4jUTbq1VLSXs2FZQg6If2Zv+ecl/Cp/GA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=p8/Rcj7qksWxc80QpPxaFJ/P3yLApCmbm0qMbv9mKiE=;
+ b=kmqoI7dDYLcSoIurAivwbFd/eZxWNXbZluQn1n/rYuLZuZPRnis2CtcDmjIi2arShNgxuhH5rxH+I1USSWxCwy2jg7E5HuDLoYZkLXIDQXRhcCTXHGdfLKddOYD19WR3oGDUPAvpDiuAswBQVanprQVSU766aURjS50bm/6pqyEj06lwkpbJN3YS7AEXRWwWwRzIHeWH/N5bDgcSEV+asPRPkWxhdlkmfiErFBu9KJbl/mJh6adyNvvjwL9AswBUYZJj7E9wq1+0Mh9CXaIS1QQ8oKe1ruJDaBhoaDFwA0TBMm/TzCFetlCTaYLU0KB1grYYGAjLgO6UJzH5iqfViw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p8/Rcj7qksWxc80QpPxaFJ/P3yLApCmbm0qMbv9mKiE=;
+ b=VWXSRwbeW2d9DOIIK4j+wASNSSlhxUI+vesBJkDOKNxxaizR28BWQv6NRBy6MMflADAul7b8ihzNvJ/cP69ZH6mnllQPoh7KBP+2UOn1S7sK6q3U537XqgpXTW5XB6UdtgWLBbLqUdb/sToTLzP9I8YAMHQLpGiviCQGT4PO9yU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=silabs.com;
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com (2603:10b6:510:ee::19)
+ by PH0PR11MB5594.namprd11.prod.outlook.com (2603:10b6:510:e4::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10; Wed, 12 Jan
+ 2022 09:51:12 +0000
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::d031:da9e:71a:73e4]) by PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::d031:da9e:71a:73e4%6]) with mapi id 15.20.4867.012; Wed, 12 Jan 2022
+ 09:51:12 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, linux-mmc@vger.kernel.org,
+        Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v9 02/24] dt-bindings: introduce silabs,wfx.yaml
+Date:   Wed, 12 Jan 2022 10:51:04 +0100
+Message-ID: <12255658.RqvdlaKrbL@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <Yd4CjAM+3/PmLSyY@robh.at.kernel.org>
+References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com> <20220111171424.862764-3-Jerome.Pouiller@silabs.com> <Yd4CjAM+3/PmLSyY@robh.at.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-ClientProxiedBy: PR3P192CA0017.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:102:56::22) To PH0PR11MB5657.namprd11.prod.outlook.com
+ (2603:10b6:510:ee::19)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH net] net/smc: Avoid setting clcsock options after clcsock
- released
-Content-Language: en-US
-To:     Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1641807505-54454-1-git-send-email-guwen@linux.alibaba.com>
- <ac977743-9696-9723-5682-97ebbcca6828@linux.ibm.com>
- <719f264e-a70d-7bed-0873-ffbba8381841@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <719f264e-a70d-7bed-0873-ffbba8381841@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: tPZaZ1IPn9yd5DD0-GpKOGqaSXfABRQh
-X-Proofpoint-GUID: GoDvYq22Le5GCgMA3oR7v9STTm0mUyB_
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-12_03,2022-01-11_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
- suspectscore=0 clxscore=1015 bulkscore=0 spamscore=0 priorityscore=1501
- mlxscore=0 mlxlogscore=868 malwarescore=0 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201120061
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d0b5add0-8b28-4bfc-b5c1-08d9d5b11104
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5594:EE_
+X-Microsoft-Antispam-PRVS: <PH0PR11MB5594C645C44A5121B208B66793529@PH0PR11MB5594.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5nR2V7HdTMc15dHBoj2O9L4q0+2PPwVKBgFrMoqkenKhaWhddJ079RwTtUgxWoKdSPZ7i50mGO58he3UAbRWsfiZrpkOgxFzcUBSXNys0wbivtatb5fbz0q7f7FNXOaC5RvN2UFNfYsOx+ORBPZPOhAKbKUxQcxOAZFeeIq+mEa/ouLcqUpqmzorAB8foBBTuwBwXioWKRn/JyZK1h0oxHN5P6gvQsI1AvoU8S8YUjQrIrYzQMVUIXmgbRdbl10HgVh3OCJEaRrIU9Sh3NGctYQxaWaimiW0Ol9lakMem1Uj7SyFtf44/w+udsXJfe6B3qLxACG5HHW8VYzhPSLbvtMCRRQ2QYnbw5Qu5zRE6BuGa7qO2P7hxmmCu9rFqfugRSEKowyzjBf+OKXSc//ZxbAi15XqNy/dT6FAmUlRALIg3aGS3kzqVOfkROWD1j8FIFNRSKjhG3JL5bi+s1natDtcyqcOxO9tTnx5AGHus2Zlp1h4Xn+npAPCboWiBY1spjpSNK/dV1IiMrzNWDV1kHlmUmLe8RN2SpZhe1CJH1r8pRr9Xi18z4tnb6JVx82hDedOZV8m3k4jgUDP1NzbJICnoO4cdTvaT9KUz3sMPd00wnAuYWCPMGeeuqItkzoDohEjd4YQAHBm/hhdtw9vFg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(508600001)(9686003)(6512007)(186003)(8936002)(66946007)(38100700002)(8676002)(6486002)(66556008)(4326008)(66476007)(36916002)(5660300002)(6666004)(52116002)(6506007)(33716001)(54906003)(66574015)(7416002)(2906002)(86362001)(6916009)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?1GZXGRrQLRCMPKJWhsHBXgIxf4NoDASfWEZiDvIe3dJG9dcoRKMxkqgUzH?=
+ =?iso-8859-1?Q?J6xpmYpj6oXx7RHYJNHqGGNKi879FfZ4ZGtfICnmIhgPuRSr61p3cePoN7?=
+ =?iso-8859-1?Q?MidA6jUTGiO+3NL8WKgv11kth3OLaF1qLVtJT3TM68hPcbwIPrxYdkKZzr?=
+ =?iso-8859-1?Q?rcuuZmZBypZj15BN7LvcZJ3EUblMeKVa14ZbZ9VgRfa1duOMZFtJPjB+CD?=
+ =?iso-8859-1?Q?BynV/vaAcCFkp41QXiKeShpwuU8+b3Uy6zoF+EVbYg0GYN2pbLAMvUTBDV?=
+ =?iso-8859-1?Q?o3ionqvt7/FPNvO8vepz1Ht3pLM6MrIQBXcv1H4ovF9Y6DU0P5JCQpmVUV?=
+ =?iso-8859-1?Q?+yCSIY01DY2ew2J1f5z4yDG3SBRCZ5hm+93jz9qDO+r2W2POeLW3SkhCmH?=
+ =?iso-8859-1?Q?BalFmzcmJc2o192kh758nVZGdKAjWWqhqRSpj0ys7q5B9yBoCeec+Zdcn0?=
+ =?iso-8859-1?Q?5xw2yohRHfvxNpwxyMO4+4lAOgwvBThYXwXMuQiYOXvesNTXN/xHjo6YoO?=
+ =?iso-8859-1?Q?vELiXf5hRfOPQLAznR/G8J5U5Nt2YCAm5DbyUW42/nbT3gbJnKKJpyNHSc?=
+ =?iso-8859-1?Q?TWKZdrUWi0UfwRUd96/6Mx44UQHuhX+ZU6xL2dwqxbQx6cW5/OUvw6pKsj?=
+ =?iso-8859-1?Q?cu8LdWW5QK7NkO58nd+YEWtzNxzk2srq+hUvfk4zzxuB656E4FirsiQLeG?=
+ =?iso-8859-1?Q?UyJhvuUMASHIN1RMs25gIRB8BRh2jsSbBx5y+KGoMU5e6mE1UfVAWytLmP?=
+ =?iso-8859-1?Q?LfeqVkbU/qXXVh+9kYC8fcQTR1BOZQ+h4yrbqlsrntA2/xUuCy15ywiQYr?=
+ =?iso-8859-1?Q?Zq9NgMKCrVoHF/+IF4AG4HYfaIvvgo9+7ORmQRha02+v3sEHsd81fDK7Mx?=
+ =?iso-8859-1?Q?nTVQKXsU1TGLeBokgfWY3+KTlRqtFpLCtp82B0e2lJxWfosw+ThHa2+8v+?=
+ =?iso-8859-1?Q?lvACBL0dWyvYpWlZkK3WcFCVZmwDvs43dre4ZCoZtQbXVRjlq1B4TvwDYZ?=
+ =?iso-8859-1?Q?5FqVGURBUGat0r/UN21yWDOwZF9PPiYHYqcNnOmQYatXdGVpK9uj8BYjFR?=
+ =?iso-8859-1?Q?OtWVfVpDqBH9kV+N8VA7xDyKOp5KlIpUVtpNb3pMEyvcloth+GdsFblUao?=
+ =?iso-8859-1?Q?UL2JSABUh/dLm5JJAf9Uc2bhNKUsKE1teeMk8nziO14cedAbuzQOasa7wT?=
+ =?iso-8859-1?Q?eomcNysWGdxKcf1GS6TTfrsdJdCVp/cNMDc/lG6/+tOJVaX+gQsrKGhFr/?=
+ =?iso-8859-1?Q?gNnF1aSD+R49I0xoWXDSKS91YItB9NErOEX3E1XgdkZIzoeCwqQQdOr1dz?=
+ =?iso-8859-1?Q?1fKURc7AQujWISlrePfPH9gWKjmqIcg76lzzq9WNc0xwABplDSHwO9f9Q3?=
+ =?iso-8859-1?Q?KbJR8Z8c67c6tm9SBvtMV5L9sbhFGClILKB3vMT9S2vyT+aJ1oW2sOK+Db?=
+ =?iso-8859-1?Q?0oc1bjbQIzm2ZD/h180aGUaIM/BFuzNlML4UnuKYRfdYwYqAmaXK0/K4K9?=
+ =?iso-8859-1?Q?zg7JavTD6yPTPyMvombEnBJ0TFCjzkaRtjhz8EKy78mbwgC9FiSDKcHRSR?=
+ =?iso-8859-1?Q?zTM+B3YsmZQcPeg4uWD8TZSIwWEHEf9Nwr2uL+Wkoxhq7Wi/j5La9/mFf+?=
+ =?iso-8859-1?Q?sPMVd4V/UMI4XgEJwKPgEI9s+pAkW1kXgjnpRlV0Nnj357ly6bNfJsDaBZ?=
+ =?iso-8859-1?Q?F1GIFie9giw7mlKk/90A1r3BIoFsfj2NXv8DepyEil6r+TpyXfM+oO/BoV?=
+ =?iso-8859-1?Q?qQAlT1CMwl5DoiL7b1/Ubiv2s=3D?=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d0b5add0-8b28-4bfc-b5c1-08d9d5b11104
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5657.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 09:51:12.6083
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8bT9vkrQEQZknBRhVJF8DrgUa4KQcuBBJ3/wqM2ZVHHa8Weytg7j+NOdUAcOxuFWnZtPBy1UB/yNZkopKDCjhQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5594
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/01/2022 17:34, Wen Gu wrote:
-> Thanks for your reply.
-> 
-> On 2022/1/11 6:03 pm, Karsten Graul wrote:
->> On 10/01/2022 10:38, Wen Gu wrote:
->>> We encountered a crash in smc_setsockopt() and it is caused by
->>> accessing smc->clcsock after clcsock was released.
->>>
->>
->> In the switch() the function smc_switch_to_fallback() might be called which also
->> accesses smc->clcsock without further checking. This should also be protected then?
->> Also from all callers of smc_switch_to_fallback() ?
->>
->> There are more uses of smc->clcsock (e.g. smc_bind(), ...), so why does this problem
->> happen in setsockopt() for you only? I suspect it depends on the test case.
->>
-> 
-> Yes, it depends on the test case. The crash described here only happens one time when
-> I run a stress test of nginx/wrk, accompanied with frequent RNIC up/down operations.
-> 
-> Considering accessing smc->clcsock after its release is an uncommon, low probability
-> issue and only happens in setsockopt() in my test, I choce an simple way to fix it, using
-> the existing clcsock_release_lock, and only check in smc_setsockopt() and smc_getsockopt().
-> 
->> I wonder if it makes sense to check and protect smc->clcsock at all places in the code where
->> it is used... as of now we had no such races like you encountered. But I see that in theory
->> this problem could also happen in other code areas.
->>
-> 
-> But inspired by your questions, I think maybe we should treat the race as a general problem?
-> Do you think it is necessary to find all the potential race related to the clcsock release and
-> fix them in a unified approach? like define smc->clcsock as RCU pointer, hold rcu read lock
-> before accessing smc->clcsock and call synchronize_rcu() before resetting smc->clcsock? just a rough idea :)
-> 
-> Or we should decide it later, do some more tests to see the probability of recurrence of this problem?
+On Tuesday 11 January 2022 23:19:56 CET Rob Herring wrote:
+> On Tue, Jan 11, 2022 at 06:14:02PM +0100, Jerome Pouiller wrote:
+> > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> >
+> > Prepare the inclusion of the wfx driver in the kernel.
+> >
+> > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> > ---
+> >  .../bindings/net/wireless/silabs,wfx.yaml     | 138 ++++++++++++++++++
+> >  1 file changed, 138 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/net/wireless/sila=
+bs,wfx.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/wireless/silabs,wfx.=
+yaml b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
+> > new file mode 100644
+> > index 000000000000..d12f262868cf
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
 
-I like the idea to use RCU with rcu_assign_pointer() to protect that pointer!
+[...]
 
-Lets go with your initial patch (improved to address the access in smc_switch_to_fallback())
-for now because it solves your current problem. 
+> > +properties:
+> > +  compatible:
+> > +    anyOf:
+> > +      - const: silabs,wf200    # Chip alone without antenna
+> > +      - const: silabs,brd4001a # WGM160P Evaluation Board
+> > +      - const: silabs,brd8022a # WF200 Evaluation Board
+> > +      - const: silabs,brd8023a # WFM200 Evaluation Board
+>=20
+> This still defines that compatible is a single entry. You need something
+> like:
+>=20
+> items:
+>   - enum:
+>       - silabs,brd4001a
+>       - silabs,brd8022a
+>       - silabs,brd8023a
+>   - const: silabs,wf200
+>=20
+> You need a separate 'items' list for different number of compatible
+> entries (e.g. if a single string is valid) and that is when you need to
+> use 'oneOf'. Plenty of examples in the tree.
 
-I put that RCU thing on our list, but if either of us here starts working on that please let the
-others know so we don't end up doing parallel work on this. But I doubt that we will be able to start working
-on that soon.
+Ok.
 
-Thanks for the good idea!
+[...]
+
+> > +  interrupts:
+> > +    description: The interrupt line. Triggers IRQ_TYPE_LEVEL_HIGH and
+> > +      IRQ_TYPE_EDGE_RISING are both supported by the chip and the driv=
+er. When
+>=20
+> Unless there is a mode you can configure, supporting both is wrong even
+> though edge will mostly work for a device that is really level.
+>=20
+> What a driver supports is not relevant to the binding.
+
+hmm... right.
+
+> > +      SPI is used, this property is required. When SDIO is used, the "=
+in-band"
+> > +      interrupt provided by the SDIO bus is used unless an interrupt i=
+s defined
+> > +      in the Device Tree.
+> > +    maxItems: 1
+> > +
+> > +  reset-gpios:
+> > +    description: (SPI only) Phandle of gpio that will be used to reset=
+ chip
+> > +      during probe. Without this property, you may encounter issues wi=
+th warm
+> > +      boot. (For legacy purpose, the gpio in inverted when compatible =
+=3D=3D
+> > +      "silabs,wfx-spi")
+>=20
+> What legacy? This is a new binding.
+
+This driver already exist in staging/. But, it is probably the right moment
+to drop this legacy binding.
+
+[...]
+
+--=20
+J=E9r=F4me Pouiller
+
 
