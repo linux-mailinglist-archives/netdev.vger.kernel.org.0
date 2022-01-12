@@ -2,132 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92D7548CB2D
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:44:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6878548CB32
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:45:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356413AbiALSoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 13:44:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50280 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356414AbiALSnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:43:53 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6526C061751
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 10:43:52 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1n7iau-0002qg-OU; Wed, 12 Jan 2022 19:43:36 +0100
-Received: from pengutronix.de (unknown [195.138.59.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 3FC4116C67;
-        Wed, 12 Jan 2022 18:43:31 +0000 (UTC)
-Date:   Wed, 12 Jan 2022 19:43:27 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Ulrich Hecht <uli+renesas@fpond.eu>
-Cc:     linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, linux-can@vger.kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, wsa@kernel.org,
-        yoshihiro.shimoda.uh@renesas.com, wg@grandegger.com,
-        kuba@kernel.org, mailhol.vincent@wanadoo.fr,
-        socketcan@hartkopp.net, geert@linux-m68k.org,
-        kieran.bingham@ideasonboard.com
-Subject: Re: [PATCH v2 2/5] can: rcar_canfd: Add support for r8a779a0 SoC
-Message-ID: <20220112184327.f7fwzgqvle23gfzv@pengutronix.de>
-References: <20220111162231.10390-1-uli+renesas@fpond.eu>
- <20220111162231.10390-3-uli+renesas@fpond.eu>
+        id S1356417AbiALSpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 13:45:14 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.184]:33624 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1356430AbiALSom (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:44:42 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.51.18])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 15EC0A0068;
+        Wed, 12 Jan 2022 18:44:40 +0000 (UTC)
+Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 8C63334008C;
+        Wed, 12 Jan 2022 18:44:39 +0000 (UTC)
+Received: from [192.168.1.115] (unknown [98.97.67.209])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 9905C13C2B0;
+        Wed, 12 Jan 2022 10:44:38 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 9905C13C2B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1642013078;
+        bh=TCWbHXDy7xgP0H5OdchDD8kDzVJMxG0A4Aapu8S52EA=;
+        h=Subject:From:To:Cc:References:Date:In-Reply-To:From;
+        b=ITwfu4uhQYDD0ArrEA9lkvh7iQ6k+CpgN6Psr2LTVM4M511LVBJVZKSVS+leJqM0U
+         OvEFnn1YKnEaC2RfaMeZItWgqIQ1a0AydBVaNEd/YShr3h1sFOtfey6H4RVFuI6Uif
+         lAuhwsV5AijxuvP2IbXfBxCW94/Ao8xGE4rdCgRg=
+Subject: Re: Debugging stuck tcp connection across localhost [snip]
+From:   Ben Greear <greearb@candelatech.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        netdev <netdev@vger.kernel.org>
+References: <38e55776-857d-1b51-3558-d788cf3c1524@candelatech.com>
+ <CADVnQyn97m5ybVZ3FdWAw85gOMLAvPSHiR8_NC_nGFyBdRySqQ@mail.gmail.com>
+ <b3e53863-e80e-704f-81a2-905f80f3171d@candelatech.com>
+ <CADVnQymJaF3HoxoWhTb=D2wuVTpe_fp45tL8g7kaA2jgDe+xcQ@mail.gmail.com>
+ <a6ec30f5-9978-f55f-f34f-34485a09db97@candelatech.com>
+ <CADVnQym9LTupiVCTWh95qLQWYTkiFAEESv9Htzrgij8UVqSHBQ@mail.gmail.com>
+ <b60aab98-a95f-d392-4391-c0d5e2afb2cd@candelatech.com>
+ <9330e1c7-f7a2-0f1e-0ede-c9e5353060e3@candelatech.com>
+ <0b2b06a8-4c59-2a00-1fbc-b4734a93ad95@gmail.com>
+ <c84d0877-43a1-9a52-0046-e26b614a5aa6@candelatech.com>
+ <CANn89iL=690zdpCS7g1vpZdZCHsj0O1MrOjGkcg0GPLVhjr4RQ@mail.gmail.com>
+ <a7056912-213d-abb9-420d-b7741ae5db8a@candelatech.com>
+ <CANn89i+HnhfCKUVxtVhQ1vv74zO1tEwT2yXcCX_OoXf14WGAQg@mail.gmail.com>
+ <a503d7b8-b015-289c-1a8a-eb4d5df7fb12@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <a31557d8-13da-07e2-7a64-ce07e786f25c@candelatech.com>
+Date:   Wed, 12 Jan 2022 10:44:37 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="245qoku3mnz6cen7"
-Content-Disposition: inline
-In-Reply-To: <20220111162231.10390-3-uli+renesas@fpond.eu>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <a503d7b8-b015-289c-1a8a-eb4d5df7fb12@candelatech.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-MW
+Content-Transfer-Encoding: 8bit
+X-MDID: 1642013080-Yak7Afh7_Y53
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 1/12/22 10:01 AM, Ben Greear wrote:
+> On 1/12/22 9:12 AM, Eric Dumazet wrote:
+>> On Wed, Jan 12, 2022 at 6:52 AM Ben Greear <greearb@candelatech.com> wrote:
+>>>
+>>> On 1/11/22 11:41 PM, Eric Dumazet wrote:
+>>>> On Tue, Jan 11, 2022 at 1:35 PM Ben Greear <greearb@candelatech.com> wrote:
+>>>>>
+>>>>> On 1/11/22 2:46 AM, Eric Dumazet wrote:
+>>>>>>
+> 
+>>>> Just to clarify:
+>>>>
+>>>> Have you any qdisc on lo interface ?
+>>>>
+>>>> Can you try:
+>>>> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+>>>> index 5079832af5c1090917a8fd5dfb1a3025e2d85ae0..81a26ce4d79fd48f870b5c1d076a9082950e2a57
+>>>> 100644
+>>>> --- a/net/ipv4/tcp_output.c
+>>>> +++ b/net/ipv4/tcp_output.c
+>>>> @@ -2769,6 +2769,7 @@ bool tcp_schedule_loss_probe(struct sock *sk,
+>>>> bool advancing_rto)
+>>>>    static bool skb_still_in_host_queue(struct sock *sk,
+>>>>                                       const struct sk_buff *skb)
+>>>>    {
+>>>> +#if 0
+>>>>           if (unlikely(skb_fclone_busy(sk, skb))) {
+>>>>                   set_bit(TSQ_THROTTLED, &sk->sk_tsq_flags);
+>>>>                   smp_mb__after_atomic();
+>>>> @@ -2778,6 +2779,7 @@ static bool skb_still_in_host_queue(struct sock *sk,
+>>>>                           return true;
+>>>>                   }
+>>>>           }
+>>>> +#endif
+>>>>           return false;
+>>>>    }
+>>>>
+>>>
+>>> I will try that today.
+>>>
+>>> I don't think I have qdisc on lo:
+>>>
+>>> # tc qdisc show|grep 'dev lo'
+>>> qdisc noqueue 0: dev lo root refcnt 2
+>>
+>> Great, I wanted to make sure you were not hitting some bug there
+>> (pfifo_fast has been buggy for many kernel versions)
+>>
+>>>
+>>> The eth ports are using fq_codel, and I guess they are using mq as well.
+>>>
+>>> We moved one of the processes off of the problematic machine so that it communicates over
+>>> Ethernet instead of 'lo', and problem seems to have gone away.  But, that also
+>>> changes system load, so it could be coincidence.
+>>>
+>>> Also, conntrack -L showed nothing on a machine with simpler config where the two problematic processes
+>>> are talking over 'lo'.  The machine that shows problem does have a lot of conntrack entries because it
+>>> is also doing some NAT for other data connections, but I don't think this should affect the 127.0.0.1 traffic.
+>>> There is a decent chance I mis-understand your comment about conntrack though...
+>>
+>> This was a wild guess. Honestly, I do not have a smoking gun yet.
+> 
+> I tried your patch above, it did not help.
+> 
+> Also, looks like maybe we reproduced same issue with processes on different
+> machines, but I was not able to verify it was the same root cause, and at
+> least, it was harder to reproduce.
+> 
+> I'm back to testing in the easily reproducible case now.
+> 
+> I have a few local patches in the general networking path, I'm going to
+> attempt to back those out just in case my patches are buggy.
 
---245qoku3mnz6cen7
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Well, I think maybe I found the problem.
 
-On 11.01.2022 17:22:28, Ulrich Hecht wrote:
-> Adds support for the CANFD IP variant in the V3U SoC.
->=20
-> Differences to controllers in other SoCs are limited to an increase in
-> the number of channels from two to eight, an absence of dedicated
-> registers for "classic" CAN mode, and a number of differences in magic
-> numbers (register offsets and layouts).
->=20
-> Inspired by BSP patch by Kazuya Mizuguchi.
->=20
-> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
-> ---
->  drivers/net/can/rcar/rcar_canfd.c | 231 ++++++++++++++++++++----------
->  1 file changed, 153 insertions(+), 78 deletions(-)
->=20
-> diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rca=
-r_canfd.c
-> index ff9d0f5ae0dd..b1c9870d2a82 100644
-> --- a/drivers/net/can/rcar/rcar_canfd.c
-> +++ b/drivers/net/can/rcar/rcar_canfd.c
-> @@ -44,10 +44,13 @@
->  enum rcanfd_chip_id {
->  	RENESAS_RCAR_GEN3 =3D 0,
->  	RENESAS_RZG2L,
-> +	RENESAS_R8A779A0,
->  };
-> =20
->  /* Global register bits */
-> =20
-> +#define IS_V3U (gpriv->chip_id =3D=3D RENESAS_R8A779A0)
+I looked in the right place at the right time and saw that the kernel was spewing about
+neigh entries being full.  The defaults are too small for the number of interfaces
+we are using.  Our script that was supposed to set the thresholds higher had a typo
+in it that caused it to not actually set the values.
 
-I really don't like this macro, as it silently relies on gpriv....and
-I really don't like this use of this macro in the other macros that lead
-to 2 or even 3 ternary operators hiding inside them. Is there any chance
-to change this?
+When the neigh entries are fully consumed, then even communication across 127.0.0.1
+fails in somewhat mysterious ways, and I guess this can break existing connections
+too, not just new connections.
 
-Please add at least the gpriv argument to IS_V3U().....
+We'll do some more testing with the thresh setting fix in...always a chance there is more than one
+problem in this area.
 
-[...]
-
-> -	of_child =3D of_get_child_by_name(pdev->dev.of_node, "channel1");
-> -	if (of_child && of_device_is_available(of_child))
-> -		channels_mask |=3D BIT(1);	/* Channel 1 */
-> +	strcpy(name, "channelX");
-
-please use strlcpy()
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---245qoku3mnz6cen7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmHfIU0ACgkQqclaivrt
-76m+ZAgAhsdBWGeR/pk4xB23D97lrg6gBfBhg50YD0P6uiwmr5F6LZTA3MrfxXQ2
-yRXaZ7zh7Bb0FWHlqCCjFWF1QCchtlVXkP2S4+Y1UpRF4Ppo4VduiQtEx/NvFHKN
-/chjFzn6lgQjvEymMzypjDo1BcfpdZUI1buvxTcuxapLcx9wAr3ZgBLgY8DnPm5x
-FhCyHBGTvpBWI2fvRwy7twrALoUhwDES3zA7aAd330F2TCi+BJGIp1uZdvEDk28v
-KWlA3huprGCKCtSse2KWOMrTPp85KlDYOPiTBRZIDvM+i5wt4hQTAub8xYDP4Wjz
-vo7NvdH6879oVvyJ1JnR37ZClFSahA==
-=QkLU
------END PGP SIGNATURE-----
-
---245qoku3mnz6cen7--
+Thanks,
+Ben
