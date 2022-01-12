@@ -2,89 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D539F48CB3B
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:47:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A4FF48CB48
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 19:51:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356488AbiALSrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 13:47:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356474AbiALSr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:47:29 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EAD1C06173F
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 10:47:29 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id n68so8219992ybg.6
-        for <netdev@vger.kernel.org>; Wed, 12 Jan 2022 10:47:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l8e6N4DmYcgGmLkLSMG1X37N0RSZtXSQUoXgm/VDy6g=;
-        b=hH8hsMu0AFPjoF11C79kFoa0tzELSu4lQfbkDnviq1lECt+ARe8QeJXSH/xEH0eNUe
-         7yqVoxRRwvml/XRCZLRqj0RnMJwl2Un01dyCC+dum8fxgOVfnRa13K8Pec7TVsQPkuDd
-         9sNK+PgH8lN1d8HIZN7n5DhABxSKlsUEUamEsd+kSVrl5+jH2NTHqEs2I/j01iB9AGBO
-         LEmXGBgeumbCIgHS27f+jWV0/Wa0wnnjL+JvcsGBD0uEpvBMXvGwageziUdrx64iMMqB
-         s23QxQ4tEC5dF7dUkJz4jY14C2YlDgbcxGst29h0fV+L6UlVvPMxZbsRyKXO/YLGhLGW
-         IiDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l8e6N4DmYcgGmLkLSMG1X37N0RSZtXSQUoXgm/VDy6g=;
-        b=AjX4eNf9KHL3usqwlgSNDIpX+alLjeNUGdn9Dq1L75/Qb3EQrGZLQwOMt2PvO9U96Y
-         M6+Gj692IKgm8aItdib1k8un0q0hz2ydAPzAK6Fwg0Vlb4VnvgsTmkPRu/0elU/6uqrg
-         dDpFGNNGvgf/ofr7u3PQp4eXJr0sZedGeEmH1JisXizIM1LMMpI0EFkLRFAgzJI5ncX3
-         bvDWoNJbUc0e8YXWWwxM4XOkIxh5UBY4eCjOCDll+S8AZnvAgLd0i4YL0PwhgKzY28fU
-         bLoT3mEnMrwMjfqFgH7UeUTeZVZHUYemblbLDM1VQIYKBUz7CLrm57pvm32d1EsW0fJF
-         R6HA==
-X-Gm-Message-State: AOAM532F8etptSg5wy3QnHiAXxhqcNkIhY+orasiInkkjJah+MFcOpuT
-        tCOGgodXoP4GQXHTlOQZki911GfAlcS47mRDNQ2x5Q==
-X-Google-Smtp-Source: ABdhPJyNQ7R1JSrILHsHXmFKh2x5BnmKcX4ryLTb1sTcVpqh9bfvXMO22wUrB4OprolUgVrDS1CQ5S31SaixtaHPSqM=
-X-Received: by 2002:a25:b29c:: with SMTP id k28mr1327342ybj.711.1642013248231;
- Wed, 12 Jan 2022 10:47:28 -0800 (PST)
+        id S1356553AbiALSvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 13:51:08 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:47228 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243240AbiALSum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 13:50:42 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 2DF391F3A5;
+        Wed, 12 Jan 2022 18:50:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1642013440;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9t4ykiev75tOG14agjjEElmq+NfQnoyJeSZiMYsCQ74=;
+        b=GA31Y6uj4RTWFy7ndujKKLV9PobXnA2n8kWf7kTlcAmzPRUztdbpshlGKpBa+n2cydTkOx
+        0dAIzM7Tbqs7BME7KNV+Yy0aU7EFerLGZDANOLYuYcWujWuOXxoySYekI8h2CYsB8iYy6m
+        D45fgjmKCNnez8Zk2QshZuffFBRdzxU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1642013440;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9t4ykiev75tOG14agjjEElmq+NfQnoyJeSZiMYsCQ74=;
+        b=CGg0jecFB56y0XEaaS0FixyfA/e3oLE8AuXg4Ao+GCZ4SPBjzxM3XX00hwinwA/AAOmJkh
+        kh2nH7cd0jwzF0Cw==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id B9DC1A3B87;
+        Wed, 12 Jan 2022 18:50:38 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 2B768DA799; Wed, 12 Jan 2022 19:50:05 +0100 (CET)
+Date:   Wed, 12 Jan 2022 19:50:05 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        linux-crypto@vger.kernel.org
+Subject: Re: [PATCH RFC v1 0/3] remove remaining users of SHA-1
+Message-ID: <20220112185004.GZ14046@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        linux-crypto@vger.kernel.org
+References: <20220112131204.800307-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-References: <38e55776-857d-1b51-3558-d788cf3c1524@candelatech.com>
- <CADVnQyn97m5ybVZ3FdWAw85gOMLAvPSHiR8_NC_nGFyBdRySqQ@mail.gmail.com>
- <b3e53863-e80e-704f-81a2-905f80f3171d@candelatech.com> <CADVnQymJaF3HoxoWhTb=D2wuVTpe_fp45tL8g7kaA2jgDe+xcQ@mail.gmail.com>
- <a6ec30f5-9978-f55f-f34f-34485a09db97@candelatech.com> <CADVnQym9LTupiVCTWh95qLQWYTkiFAEESv9Htzrgij8UVqSHBQ@mail.gmail.com>
- <b60aab98-a95f-d392-4391-c0d5e2afb2cd@candelatech.com> <9330e1c7-f7a2-0f1e-0ede-c9e5353060e3@candelatech.com>
- <0b2b06a8-4c59-2a00-1fbc-b4734a93ad95@gmail.com> <c84d0877-43a1-9a52-0046-e26b614a5aa6@candelatech.com>
- <CANn89iL=690zdpCS7g1vpZdZCHsj0O1MrOjGkcg0GPLVhjr4RQ@mail.gmail.com>
- <a7056912-213d-abb9-420d-b7741ae5db8a@candelatech.com> <CANn89i+HnhfCKUVxtVhQ1vv74zO1tEwT2yXcCX_OoXf14WGAQg@mail.gmail.com>
- <a503d7b8-b015-289c-1a8a-eb4d5df7fb12@candelatech.com> <a31557d8-13da-07e2-7a64-ce07e786f25c@candelatech.com>
-In-Reply-To: <a31557d8-13da-07e2-7a64-ce07e786f25c@candelatech.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 12 Jan 2022 10:47:16 -0800
-Message-ID: <CANn89iK2iM=fM=EN3v3jfOfHRS4HKzbShLcnHt78U+OjnmeVjg@mail.gmail.com>
-Subject: Re: Debugging stuck tcp connection across localhost [snip]
-To:     Ben Greear <greearb@candelatech.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220112131204.800307-1-Jason@zx2c4.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 10:44 AM Ben Greear <greearb@candelatech.com> wrote:
+On Wed, Jan 12, 2022 at 02:12:01PM +0100, Jason A. Donenfeld wrote:
+> Hi,
+> 
+> There are currently two remaining users of SHA-1 left in the kernel: bpf
+> tag generation, and ipv6 address calculation. In an effort to reduce
+> code size and rid ourselves of insecure primitives, this RFC patchset
+> moves to using the more secure BLAKE2s function.
 
-> Well, I think maybe I found the problem.
->
-> I looked in the right place at the right time and saw that the kernel was spewing about
-> neigh entries being full.  The defaults are too small for the number of interfaces
-> we are using.  Our script that was supposed to set the thresholds higher had a typo
-> in it that caused it to not actually set the values.
->
-> When the neigh entries are fully consumed, then even communication across 127.0.0.1
-> fails in somewhat mysterious ways, and I guess this can break existing connections
-> too, not just new connections.
+What's the rationale to use 2s and not 2b? Everywhere I can find the 2s
+version is said to be for 8bit up to 32bit machines and it's worse than
+2b in benchmarks (reading https://bench.cr.yp.to/results-hash.html).
 
-Nice to hear this is not a TCP bug ;)
-
->
-> We'll do some more testing with the thresh setting fix in...always a chance there is more than one
-> problem in this area.
->
-> Thanks,
-> Ben
+I'd understand you go with 2s because you also chose it for wireguard
+but I'd like know why 2s again even if it's not made for 64bit
+architectures that are preferred nowadays.
