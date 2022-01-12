@@ -2,18 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A82A48C9C5
-	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:36:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3E2348C9D8
+	for <lists+netdev@lfdr.de>; Wed, 12 Jan 2022 18:36:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241457AbiALRft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 12:35:49 -0500
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:48013 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355696AbiALRff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:35:35 -0500
+        id S1343769AbiALRg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 12:36:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34312 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355659AbiALRfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 12:35:48 -0500
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96A6C06118A;
+        Wed, 12 Jan 2022 09:35:36 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id A48B9C0005;
-        Wed, 12 Jan 2022 17:35:32 +0000 (UTC)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 47432C0002;
+        Wed, 12 Jan 2022 17:35:34 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -26,11 +29,10 @@ Cc:     David Girault <david.girault@qorvo.com>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         linux-wireless@vger.kernel.org,
-        Romuald Despres <Romuald.Despres@qorvo.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-tools v2 1/7] iwpan: Fix the channels printing
-Date:   Wed, 12 Jan 2022 18:35:23 +0100
-Message-Id: <20220112173529.765170-2-miquel.raynal@bootlin.com>
+Subject: [wpan-tools v2 2/7] iwpan: Export iwpan_debug
+Date:   Wed, 12 Jan 2022 18:35:24 +0100
+Message-Id: <20220112173529.765170-3-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220112173529.765170-1-miquel.raynal@bootlin.com>
 References: <20220112173529.765170-1-miquel.raynal@bootlin.com>
@@ -41,33 +43,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Romuald Despres <Romuald.Despres@qorvo.com>
+From: David Girault <david.girault@qorvo.com>
 
-The presence of a channel capability is checked against the tb_msg
-netlink attributes array which is the root one, while here we are
-looking for channel capabilities, themselves being nested and parsed
-into tb_caps. Use tb_caps instead of tb_msg here otherwise we are
-accessing a random index in the upper attributes list.
+This debug flag will be used later on in different files.
 
-Signed-off-by: Romuald Despres <Romuald.Despres@qorvo.com>
+Signed-off-by: David Girault <david.girault@qorvo.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- src/info.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ src/iwpan.c | 2 +-
+ src/iwpan.h | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/src/info.c b/src/info.c
-index f85690c..8ed5e4f 100644
---- a/src/info.c
-+++ b/src/info.c
-@@ -342,7 +342,7 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
- 			printf("\b \n");
- 		}
+diff --git a/src/iwpan.c b/src/iwpan.c
+index fb7bef1..3cf5fe2 100644
+--- a/src/iwpan.c
++++ b/src/iwpan.c
+@@ -21,7 +21,7 @@
  
--		if (tb_msg[NL802154_CAP_ATTR_CHANNELS]) {
-+		if (tb_caps[NL802154_CAP_ATTR_CHANNELS]) {
- 			int counter = 0;
- 			int rem_pages;
- 			struct nlattr *nl_pages;
+ /* TODO libnl 1.x compatibility code */
+ 
+-static int iwpan_debug = 0;
++int iwpan_debug = 0;
+ 
+ static int nl802154_init(struct nl802154_state *state)
+ {
+diff --git a/src/iwpan.h b/src/iwpan.h
+index 48c4f03..860dd37 100644
+--- a/src/iwpan.h
++++ b/src/iwpan.h
+@@ -120,4 +120,6 @@ DECLARE_SECTION(get);
+ 
+ const char *iftype_name(enum nl802154_iftype iftype);
+ 
++extern int iwpan_debug;
++
+ #endif /* __IWPAN_H */
 -- 
 2.27.0
 
