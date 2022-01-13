@@ -2,114 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28BFC48CFBE
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 01:35:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B269C48CFC3
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 01:44:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229701AbiAMAfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 19:35:45 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59398 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbiAMAfo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 19:35:44 -0500
+        id S229712AbiAMAn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 19:43:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56106 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229583AbiAMAn6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 19:43:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B40FDB82017
-        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 00:35:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FF88C36AE9;
-        Thu, 13 Jan 2022 00:35:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46CBC61BAA;
+        Thu, 13 Jan 2022 00:43:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3633C36AF2;
+        Thu, 13 Jan 2022 00:43:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642034141;
-        bh=kUjQg5yyVH1jd+aH/YTe7o1HV/ayZ93IsL45DI4Z6zM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JMFTNFhujyJuJVbKXWrk1oe+72cpKTNHafKI6DR92IW+AunSOBMz3RvJUB+JDuuzG
-         AcVoA8OuP7hl2YuztLA9f0T5RqxiYaV4U954QUFA7ylYCKpRJxNTv5CnhleVro4zy5
-         V5L4No2qjN51nTSit3TXwg3W83IdA/A3qTg8rNJ8tReCNSBmhdB/W8hrYAPFzUF8YA
-         i7fFVGuy6a4F+89Ee+XFBZdQXQRKRSxJh4CO5gPE2DJnmqTpwzUE3DOigxtcY2KUwr
-         HIqF/fbHmto/u5CVHdXQ/ZbBFP7ct2fa9LsqeSHypv7OHFxkSBhSJvcUGGVt3KvTBh
-         JxLIzksX0wr5w==
-Date:   Wed, 12 Jan 2022 16:35:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Sunil Sudhakar Rani <sunrani@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Bodong Wang <bodong@nvidia.com>
-Subject: Re: [PATCH net-next 1/2] devlink: Add support to set port function
- as trusted
-Message-ID: <20220112163539.304a534d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <PH0PR12MB5481E33C9A07F2C3DEB77F38DC529@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20211122144307.218021-1-sunrani@nvidia.com>
-        <20211215112204.4ec7cf1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <1da3385c7115c57fabd5c932033e893e5efc7e79.camel@nvidia.com>
-        <20211215150430.2dd8cd15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <SN1PR12MB2574E418C1C6E1A2C0096964D4779@SN1PR12MB2574.namprd12.prod.outlook.com>
-        <20211216082818.1fb2dff4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <PH0PR12MB54817CE7826A6E924AE50B9BDC519@PH0PR12MB5481.namprd12.prod.outlook.com>
-        <20220111102005.4f0fa3a0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <PH0PR12MB548176ED1E1B5ED1EF2BB88EDC519@PH0PR12MB5481.namprd12.prod.outlook.com>
-        <20220111112418.2bbc0db4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <PH0PR12MB5481E3E9D38D0F8DE175A915DC519@PH0PR12MB5481.namprd12.prod.outlook.com>
-        <20220111115704.4312d280@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <PH0PR12MB5481E33C9A07F2C3DEB77F38DC529@PH0PR12MB5481.namprd12.prod.outlook.com>
+        s=k20201202; t=1642034636;
+        bh=yAx1h+9noqod81ewSCFu8y3UVuCXM1L6HjeQ3KdgKUA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=OKt+oK0K9iJai6rJsDjNn0MInVgSlkp6ZXfLxS+BTsebPfds4WcHNlAth7/CgGx5W
+         +bYW0fMvtMSMLtAveq5orCuwNBQKy8RdOMzKGyFCzpE7qsIv36xXg1PVuhXb8hfcHo
+         kfT+ePjG3UyqxW4Z+UPipSEHz6qSUGiD6hTlHkueFdcc5Y01rDfRPPS8vYFvufICih
+         A3WbbOVixORPVKpfqZ3fteg7badtttzALhXLPc8VQ5afG6bS5Kiozh8MggJsFpJ+Jv
+         5Pa2BFKSaJ41DPDJGk4yIFyRpmW3kwr1+SZA9Ob9AqVIBSFjMKIUKnbDBkydNTyftz
+         ZDn3QnOlVtqpA==
+Received: by mail-yb1-f174.google.com with SMTP id p187so10603240ybc.0;
+        Wed, 12 Jan 2022 16:43:56 -0800 (PST)
+X-Gm-Message-State: AOAM531h7AgVhrVrxWuZgrXRB0zfaoZ+jUTl7havyPj93NzEd4lIAYRJ
+        bJAOtYaGCWNWk8UG+D576YFwTuk8FJ0oXLiId5Q=
+X-Google-Smtp-Source: ABdhPJz6E0fvuhYb1SPPeYq4QlOc8xxdiKC17UxOjPy9v7eMtzN8L1pW7dz+dL/cgsDEa/+fHCYYFONeKg+R4BgBUeA=
+X-Received: by 2002:a05:6902:1106:: with SMTP id o6mr3351822ybu.195.1642034635648;
+ Wed, 12 Jan 2022 16:43:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220113000650.514270-1-quic_twear@quicinc.com>
+In-Reply-To: <20220113000650.514270-1-quic_twear@quicinc.com>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 12 Jan 2022 16:43:44 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW7yCzyFy+onm2_bMHHh2Dq2xu+XRxQE+S7fLRCrVw0NFg@mail.gmail.com>
+Message-ID: <CAPhsuW7yCzyFy+onm2_bMHHh2Dq2xu+XRxQE+S7fLRCrVw0NFg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 1/2] Add skb_store_bytes() for BPF_PROG_TYPE_CGROUP_SKB
+To:     Tyler Wear <quic_twear@quicinc.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Jan 2022 04:40:01 +0000 Parav Pandit wrote:
-> > > It's the capability that is turned on/off.
-> > > A device is composed based on what is needed. ipsec offload is not always needed.  
-> > > Its counter intuitive to expose some low level hardware resource to disable ipsec indirectly.  
-> > > So it is better to do as capability/param rather than some resource.
-> > > It is capability is more than just resource.  
-> > 
-> > Wouldn't there be some limitation on the number of SAs or max throughput or
-> > such to limit on VF hogging the entire crypto path?
-> 
-> The fairness among VFs is present via the QoS knobs. Hence it doesn't hogg the entire crypto path.
-
-Why do you want to disable it, then?
-
-> > I was expecting such a knob, and then turning it to 0 would effectively remove
-> > the capability (FW can completely hide it or driver ignore it).
-> > 
-> > > May be. But it is in use at [1] for a long time now.
-> > >
-> > > [1] docker run -p 9090:9090 prom/prometheus  
-> > 
-> > How is it "in use" if we haven't merged the patch to enable it? :) What does it
-> > monitor? PHYs port does not include east-west traffic, exposing just the PHYs
-> > stats seems like a half measure.
+On Wed, Jan 12, 2022 at 4:07 PM Tyler Wear <quic_twear@quicinc.com> wrote:
 >
-> Containerized monitors are in use by running in monitor in same net ns of the PF having full access to the PF.
-> The monitor is interested in physical port counters related to link transitions, link errors, buffer overruns etc.
+> Need to modify the ds field to support upcoming Wifi QoS Alliance spec.
+> Instead of adding generic function for just modifying the ds field,
+> add skb_store_bytes for BPF_PROG_TYPE_CGROUP_SKB.
+> This allows other fields in the network and transport header to be
+> modified in the future.
+>
+> Checksum API's also need to be added for completeness.
+>
+> It is not possible to use CGROUP_(SET|GET)SOCKOPT since
+> the policy may change during runtime and would result
+> in a large number of entries with wildcards.
+>
+> V4 patch fixes warnings and errors from checkpatch.
 
-I don't think we should support this use case. VFs and PFs are not
-the same thing.
+I don't think we need "V4 patch ..." part in the commit log.
+To keep some history of patch, we can add these notes after
+an "---" line, like:
 
-> > > Not sure I follow you.
-> > > Netdev of a mlx5 function talks to the driver internal steering API in
-> > > addition to other drivers operating this mlx5 function.  
-> > 
-> > But there is no such thing as "steering API" in netdev. We can expose the
-> > functionality we do have, if say PTP requires some steering then enabling PTP
-> > implies the required steering is enabled. "steering API"
-> > as an entity is meaningless to a netdev user.  
-> It is the internal mlx5 implementation of how to do steering, triggered by netdev ndo's and other devices callback.
-> There are multiple options on how steering is done.
-> Such as sw_steering or dev managed steering.
-> There is already a control knob to choose sw vs dev steering as devlink param on the PF at [1].
-> This [1] device specific param is only limited to PF. For VFs, HV need to enable/disable this capability on selected VF.
-> API wise nothing drastic is getting added here, it's only on different object. (instead of device, it is port function).
-> 
-> [1] https://www.kernel.org/doc/html/v5.8/networking/device_drivers/mellanox/mlx5.html#devlink-parameters
+Signed-off-by:
+---
+v4 patch ...
+v3 patch ...
+---
+  net/core/filter.c | 12 ++++++++++++
+...
 
-Ah, that thing. IIRC this was added for TC offloads, VFs don't own 
-the eswitch so what rules are they inserting to require "high insertion
-rate"? My suspicion is that since it's not TC it'd be mostly for the
-"DR" feature you have hence my comment on it not being netdev.
+With this format, git-am will remove the content between the
+two "---" lines.
+
+>
+> The existing check for bpf_try_make_writable() should mean that
+> skb_share_check() is not needed.
+>
+> Signed-off-by: Tyler Wear <quic_twear@quicinc.com>
+> ---
+>  net/core/filter.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+>
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 6102f093d59a..f30d939cb4cf 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -7299,6 +7299,18 @@ cg_skb_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>                 return &bpf_sk_storage_delete_proto;
+>         case BPF_FUNC_perf_event_output:
+>                 return &bpf_skb_event_output_proto;
+> +       case BPF_FUNC_skb_store_bytes:
+> +               return &bpf_skb_store_bytes_proto;
+> +       case BPF_FUNC_csum_update:
+> +               return &bpf_csum_update_proto;
+> +       case BPF_FUNC_csum_level:
+> +               return &bpf_csum_level_proto;
+> +       case BPF_FUNC_l3_csum_replace:
+> +               return &bpf_l3_csum_replace_proto;
+> +       case BPF_FUNC_l4_csum_replace:
+> +               return &bpf_l4_csum_replace_proto;
+> +       case BPF_FUNC_csum_diff:
+> +               return &bpf_csum_diff_proto;
+>  #ifdef CONFIG_SOCK_CGROUP_DATA
+>         case BPF_FUNC_skb_cgroup_id:
+>                 return &bpf_skb_cgroup_id_proto;
+> --
+> 2.25.1
+>
