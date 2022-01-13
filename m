@@ -2,77 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E7AD48D866
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 14:00:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7710E48D869
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 14:00:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234927AbiAMNAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 08:00:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
+        id S234885AbiAMNAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 08:00:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234886AbiAMNAP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 08:00:15 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C916C061748;
-        Thu, 13 Jan 2022 05:00:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 982ECCE2023;
-        Thu, 13 Jan 2022 13:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CAE1AC36AED;
-        Thu, 13 Jan 2022 13:00:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642078811;
-        bh=Pcp2+IA9W2UqzZ3KCK/QZsr41sDDGaYv1iGIzsGnkLs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=s8ZP0yPIW7qxXczd2S0UYyU9alNOJpDj7xal5H32hGZOLikRbL6oSOjundaYXguca
-         6ECNw+vcRp5DZgPzNmIYJ63V8/K9ECuePte7DoUrzbcfoIrLbvBR102G0W+2CoII5O
-         dOOtAfXFPh2ewin57jcaRutJdz+2oOPChOUq5Zxn2skN5SeVTSbh30OiqNC/HyMu/a
-         J/fcLVP5n9O8AFm3UgHCKaO6GGUgiBs4tDWXotU1JzlT0rFYGuf7wrei7Ti0Pqp9GE
-         qUpw5l747cYcgJmd4pdsLHAWEmnW56HuUEuO0qDUJzw1FFoafGQtE0r/jlDDB5Ixbv
-         pSgRgE9hX1dNg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B627AF6078E;
-        Thu, 13 Jan 2022 13:00:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234886AbiAMNAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 08:00:54 -0500
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F01C06173F
+        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 05:00:54 -0800 (PST)
+Received: by mail-lf1-x141.google.com with SMTP id x6so19190187lfa.5
+        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 05:00:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=G/ND3tntpBgwv8HQkehUDejMVtobvIq7mZphn2wM5KU=;
+        b=Du1G+ThJ9pmInvEXZb3s0abnI3M7e78S1RiKj3hgM0OhtOSm2XVYVf+Fn5JrgZWbnN
+         VM6mwGObo0VBTcw9UZPYtbQe9VnDqOx9u2FTqjT0zaz/3Zxr188dpf6iB3ZYzIbYSNUl
+         ruRpp4jv4IYFDFwbH4zL4BVctR1rBuFC3uu+dQJwX8psd4bckrkvVuPSS+ESkAs2BlMs
+         iyOidqMKyGe0n2bPrN7T2Hgvg8LH3/AkhBpa7Ep1kjBMkMO0sq6LisHefKlt2pi9FbOr
+         VMwV+l9x6COt19KCCt0n7yt7c+6leSRGaHlOk3Net4VfUn5oaOnmcWvzNyv2/NFXtj1w
+         7PrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=G/ND3tntpBgwv8HQkehUDejMVtobvIq7mZphn2wM5KU=;
+        b=hikN4pdp1rvGDqu8xz/t91xvPtevuXZjgHM3S86C09XoIyUlyr3RMRfdlPhTMZf9vi
+         Z1hRBB/Hf1HdjPynj4IaKyyYpUwOrfPEySG6xsQodR4VOuCk6XKSPo4zmxJ4izf/eYih
+         +5dW5P6crIL2rBiUlQOrYKuRlwn7hwuQ2oBGgdHxxzkROg7Dr5ckk9azA25gClz2+/Eg
+         Bed1DI9XPzY9tWWcgL0xiAaO3ozo0TQtWSjxkgRf94XpCQzfDiBcYpfcAFGAcielo3wN
+         e9Hl+at0t9SSBOf8WXfRknvT7cdB9vgKk9ekcgmvKpqNJXqts0DZAQHFf3XGjo41v3jN
+         4+4w==
+X-Gm-Message-State: AOAM533Yk1JYGzHLWyQDs5nz+sv1KLz3sIXsfVX9TrR7gRVQ9B+eOk3K
+        u88I5ayhK6JV0VkAJXO67Sv+OcSshGkDC9DpaF0=
+X-Google-Smtp-Source: ABdhPJzCAuzxywr49tHseyf7tIpf1BGOtDSh2d6pWTCVdVXfJO567/vo2W1IjOOVRWhnKRcOIkhGIMWDZ1MBJ1fwMiw=
+X-Received: by 2002:a05:6512:2394:: with SMTP id c20mr3058139lfv.399.1642078852432;
+ Thu, 13 Jan 2022 05:00:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] atm: iphase: remove redundant pointer skb
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164207881173.26897.4543675322027026942.git-patchwork-notify@kernel.org>
-Date:   Thu, 13 Jan 2022 13:00:11 +0000
-References: <20220112235533.1281944-1-colin.i.king@gmail.com>
-In-Reply-To: <20220112235533.1281944-1-colin.i.king@gmail.com>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     3chas3@gmail.com, linux-atm-general@lists.sourceforge.net,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Received: by 2002:aa6:c781:0:b0:185:86e8:9da9 with HTTP; Thu, 13 Jan 2022
+ 05:00:51 -0800 (PST)
+Reply-To: egomihnyemihdavidegomih02@gmail.com
+From:   Davids Nyemih <curtisdonald95@gmail.com>
+Date:   Thu, 13 Jan 2022 14:00:51 +0100
+Message-ID: <CAFnUQ=m0X0hEzM9XPbO7YixWmKF9UvXzPj8Vbi=cv_zoqcYNyw@mail.gmail.com>
+Subject: Re: Happy new year
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Wed, 12 Jan 2022 23:55:33 +0000 you wrote:
-> The pointer skb is redundant, it is assigned a value that is never
-> read and hence can be removed. Cleans up clang scan warning:
-> 
-> drivers/atm/iphase.c:205:18: warning: Although the value stored
-> to 'skb' is used in the enclosing expression, the value is never
-> actually read from 'skb' [deadcode.DeadStores]
-> 
-> [...]
-
-Here is the summary with links:
-  - atm: iphase: remove redundant pointer skb
-    https://git.kernel.org/netdev/net/c/d7b430341102
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+SEksDQpHb29kIGRheS4NCktpbmRseSBjb25maXJtIHRvIG1lIGlmIHRoaXMgaXMgeW91ciBjb3Jy
+ZWN0IGVtYWlsIEFkZHJlc3MgYW5kIGdldA0KYmFjayB0byBtZSBmb3Igb3VyIGludGVyZXN0Lg0K
+U2luY2VyZWx5LA0KRGF2aWRzDQoNCg0K0J/QoNCY0JLQldCiLA0K0JTQvtCx0YDRi9C5INC00LXQ
+vdGMLg0K0J/QvtC20LDQu9GD0LnRgdGC0LAsINC/0L7QtNGC0LLQtdGA0LTQuNGC0LUg0LzQvdC1
+LCDQtdGB0LvQuCDRjdGC0L4g0LLQsNGIINC/0YDQsNCy0LjQu9GM0L3Ri9C5INCw0LTRgNC10YEg
+0Y3Qu9C10LrRgtGA0L7QvdC90L7QuQ0K0L/QvtGH0YLRiywg0Lgg0YHQstGP0LbQuNGC0LXRgdGM
+INGB0L4g0LzQvdC+0Lkg0LTQu9GPINC90LDRiNC10LPQviDQuNC90YLQtdGA0LXRgdCwLg0K0JjR
+gdC60YDQtdC90L3QtSwNCtCU0LDQstC40LTRgQ0K
