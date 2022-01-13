@@ -2,100 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6C2B48D2D2
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 08:30:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8C7648D324
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 08:52:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230499AbiAMH3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 02:29:06 -0500
-Received: from mail.cn.fujitsu.com ([183.91.158.132]:44522 "EHLO
-        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S230176AbiAMH3G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 02:29:06 -0500
-IronPort-Data: =?us-ascii?q?A9a23=3Auv5Ahq3c2ZxYqp1vjvbD5Vtzkn2cJEfYwER7XOP?=
- =?us-ascii?q?LsXnJ3D1z3jAEy2AaXGCEb/iOZ2Twc40nbo7n90IP68XUxtU2QQE+nZ1PZygU8?=
- =?us-ascii?q?JKaX7x1DatR0xu6d5SFFAQ+hyknQoGowPscEzmM9n9BDpC79SMmjfjRHeKlYAL?=
- =?us-ascii?q?5EnsZqTFMGX5JZS1Ly7ZRbr5A2bBVMivV0T/Ai5S31GyNh1aYBlkpB5er83uDi?=
- =?us-ascii?q?hhdVAQw5TTSbdgT1LPXeuJ84Jg3fcldJFOgKmVY83LTegrN8F251juxExYFAdX?=
- =?us-ascii?q?jnKv5c1ERX/jZOg3mZnh+AvDk20Yd4HdplPtT2Pk0MC+7jx2NnsJxyddMvJqYR?=
- =?us-ascii?q?xorP7HXhaIWVBww/yRWZPceo+eXfSTu2SCU5wicG5f2+N1iBV87OKUU8/h6BGV?=
- =?us-ascii?q?J++BeLj0RBjiAmui/6LG2UO9hgoIkNsaDFJgfp3hg5TLUF/ArRdbEWaqizdtZ2?=
- =?us-ascii?q?iogw8NDB/DTY+IHZjd1KhfNeRtCPhEQEp1WtOOpgGTvNj5DpVabuacs/0DNwwF?=
- =?us-ascii?q?rlrvgKtzYfpqNX8o9tkCVum7L4UznDRwAct+S0zyI9jSrnOCnoM9RcOr+D5Xhr?=
- =?us-ascii?q?rgz3gLVnTdVVXUruZKAiaHRoiaDtxh3cST4IhYTkJU=3D?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3Ac4adv68JfVls0fRZO1Juk+DkI+orL9Y04lQ7?=
- =?us-ascii?q?vn2ZKCYlFvBw8vrCoB1173HJYUkqMk3I9ergBEDiewK4yXcW2/hzAV7KZmCP11?=
- =?us-ascii?q?dAR7sSj7cKrQeBJwTOssZZ1YpFN5N1EcDMCzFB5vrS0U2VFMkBzbC8nJyVuQ?=
- =?us-ascii?q?=3D=3D?=
-X-IronPort-AV: E=Sophos;i="5.88,284,1635177600"; 
-   d="scan'208";a="120308449"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 13 Jan 2022 15:29:03 +0800
-Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
-        by cn.fujitsu.com (Postfix) with ESMTP id 13D9E4D15A4A;
-        Thu, 13 Jan 2022 15:29:02 +0800 (CST)
-Received: from G08CNEXJMPEKD02.g08.fujitsu.local (10.167.33.202) by
- G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Thu, 13 Jan 2022 15:29:03 +0800
-Received: from G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) by
- G08CNEXJMPEKD02.g08.fujitsu.local (10.167.33.202) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Thu, 13 Jan 2022 15:29:02 +0800
-Received: from FNSTPC.g08.fujitsu.local (10.167.226.45) by
- G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
- id 15.0.1497.23 via Frontend Transport; Thu, 13 Jan 2022 15:29:02 +0800
-From:   Li Zhijian <lizhijian@fujitsu.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <shuah@kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Li Zhijian" <lizhijian@fujitsu.com>,
-        Zhou Jie <zhoujie2011@fujitsu.com>
-Subject: [PATCH] kselftests/net: adapt the timeout to the largest runtime
-Date:   Thu, 13 Jan 2022 15:28:59 +0800
-Message-ID: <20220113072859.3431-1-lizhijian@fujitsu.com>
-X-Mailer: git-send-email 2.33.0
+        id S232704AbiAMHq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 02:46:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56254 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231946AbiAMHq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 02:46:26 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992E7C06173F;
+        Wed, 12 Jan 2022 23:46:26 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id p14so8459651plf.3;
+        Wed, 12 Jan 2022 23:46:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gsDpZO2eSBO5vB4C+Ee93IE1Uh37uNXx2ALiI/rHI7A=;
+        b=NpzumxFKlXJGOCmDcgYMEwdFZrUPaX20NGeuTinlv5AfWl0EdF8XREyNgUKRljJFd5
+         ekAoKGrAh5g2w93DdcACJzb0ttATY9PU/LWpUq09ucSXDVOLyJ8QahiAnH9+194ig8GW
+         fY/wt6tFc8Zd3rzxH1WRHm57hEtsNFA51KVUSgotfgmmN2zHStc3oIK6sS4iP+XyceRi
+         VGtExBJAB8m6OTMKN4JX8t0yGdIkqPrfwNppz8x69T9w+jtTmAxenm7S9d5uBVpovZN2
+         NEUPf9Ez+4lnWBRuZKo3aS1Xzl+WWcYc2USNoMY9LuNZznzxGZQ70vAtwL0StxqQpCza
+         xWMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gsDpZO2eSBO5vB4C+Ee93IE1Uh37uNXx2ALiI/rHI7A=;
+        b=DgeFVyqU8WBujYLhIUf2Hps6K+OX/rYe/hzy/sI96/ASMf1AAXhORAun/YRFfkWJWs
+         R+T3YfcK0P5zqnsUZaElmeVSVfNrsWzt6mYGEskBv7X7nSPD4buLsxZ3jXSM6aTRei5p
+         HWZXG8cC4+49Uzh+/HU7G3HQhcsY9nuLb5fLLvUWl9bf/c4Mnl21zjrbB8a4DKhUnMHr
+         /TKoPS4LvYIXpSlv9fpvl8wumQ2ohivToNdUay9SPUU2YyI/YF2tyUREyPO369eqFvsd
+         QdxOJ3xQ5tK76DO1DcA9Ekxc/whJLauVP9hEEb1UIvCHHbyB53tRM1ZE2SooN6NYOK8y
+         NS6Q==
+X-Gm-Message-State: AOAM533fH+ZkxTtRg4vjWtSpqoRJ3hKIFa/SpI42yRKoExVaqZoIes3i
+        deI5+lsHgHeRt6VorIohM0I=
+X-Google-Smtp-Source: ABdhPJx4RQVOqcJN2/8dckTvs3XQJPBPjvg77NsuhM69I0yfoLYSgXtIz3ZTnTHdPH5P/WXmSs0C1w==
+X-Received: by 2002:a17:90b:3906:: with SMTP id ob6mr13331953pjb.170.1642059985924;
+        Wed, 12 Jan 2022 23:46:25 -0800 (PST)
+Received: from localhost.localdomain (61-231-99-230.dynamic-ip.hinet.net. [61.231.99.230])
+        by smtp.gmail.com with ESMTPSA id d2sm1864602pfu.76.2022.01.12.23.46.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jan 2022 23:46:25 -0800 (PST)
+From:   Joseph CHAMG <josright123@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joseph CHANG <josright123@gmail.com>,
+        joseph_chang@davicom.com.tw
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v11, 0/2] ADD DM9051 ETHERNET DRIVER
+Date:   Thu, 13 Jan 2022 15:46:12 +0800
+Message-Id: <20220113074614.407-1-josright123@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-yoursite-MailScanner-ID: 13D9E4D15A4A.ADFC2
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: lizhijian@fujitsu.com
-X-Spam-Status: No
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-timeout in settings is used by each case under the same directory, so
-it should adapt to the maximum runtime.
+DM9051 is a spi interface chip,
+need cs/mosi/miso/clock with an interrupt gpio pin
 
-A normally running net/fib_nexthops.sh may be killed by this unsuitable
-timeout. Furthermore, since the defect[1] of kselftests framework,
-net/fib_nexthops.sh which might take at least (300 * 4) seconds would
-block the whole kselftests framework previously.
-$ git grep -w 'sleep 300' tools/testing/selftests/net
-tools/testing/selftests/net/fib_nexthops.sh:    sleep 300
-tools/testing/selftests/net/fib_nexthops.sh:    sleep 300
-tools/testing/selftests/net/fib_nexthops.sh:    sleep 300
-tools/testing/selftests/net/fib_nexthops.sh:    sleep 300
+Joseph CHAMG (1):
+  net: Add dm9051 driver
 
-Enlarge the timeout by plus 300 based on the obvious largest runtime
-to avoid the blocking.
+JosephCHANG (2):
+  yaml: Add dm9051 SPI network yaml file
+  net: Add dm9051 driver
 
-[1]: https://www.spinics.net/lists/kernel/msg4185370.html
+ .../bindings/net/davicom,dm9051.yaml          |   62 +
+ drivers/net/ethernet/davicom/Kconfig          |   29 +
+ drivers/net/ethernet/davicom/Makefile         |    1 +
+ drivers/net/ethernet/davicom/dm9051.c         | 1169 +++++++++++++++++
+ drivers/net/ethernet/davicom/dm9051.h         |  198 +++
+ 5 files changed, 1459 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.c
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.h
 
-Signed-off-by: Zhou Jie <zhoujie2011@fujitsu.com>
-Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
----
- tools/testing/selftests/net/settings | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/settings b/tools/testing/selftests/net/settings
-index 694d70710ff0..dfc27cdc6c05 100644
---- a/tools/testing/selftests/net/settings
-+++ b/tools/testing/selftests/net/settings
-@@ -1 +1 @@
--timeout=300
-+timeout=1500
+base-commit: 9d922f5df53844228b9f7c62f2593f4f06c0b69b
 -- 
-2.33.0
-
-
+2.20.1
 
