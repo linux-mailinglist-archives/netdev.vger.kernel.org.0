@@ -2,505 +2,286 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4372548D59D
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 11:24:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC80448D5A5
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 11:24:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230042AbiAMKS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 05:18:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiAMKS1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 05:18:27 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC491C06173F;
-        Thu, 13 Jan 2022 02:18:26 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id k15so21072599edk.13;
-        Thu, 13 Jan 2022 02:18:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kZFNHIj+SfcYq9AlTwFrsQEBDKDiEWumGsUTDrWMVPQ=;
-        b=TykAfoucB+qJ/XpLbvUXBKXm1gY+YXQab5faWFHhn2HAlqCcvhWGqk0iNoiCUwN28V
-         NEdleohDM/96AJjJiujjHI0Pfw8qR5C4GkRc9I4byqwukK6Oh9hiED6X1Wp2OUlIrFKb
-         CHga0fkmjeJ8APaHLVFsGejfXvznsV5KhSBmqFHCejOOALHAmE/LtURrS4gsjE3S8HBn
-         voU4vrEUyLb9UsDKIQHfru/vK5yM4pOAp3k2562E91i4aBi4Du692P1H88/ugWNPZttE
-         SzHHbuKjC5jFECp+l9nhBa7/OfhnbCh+ojkHjtCtWZMChxLHPJ7nqLwCjuRvOZ2EAkfs
-         Sz7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kZFNHIj+SfcYq9AlTwFrsQEBDKDiEWumGsUTDrWMVPQ=;
-        b=75/4vGLBxWCKvBQCs+QgJ7wfDL+VazfC7njHfueUabI8wS7zUnq7/OGCOUR6mnBrrx
-         7Xt+QfKPyuUYUmqj3aTWJH6ytRhPINSXaBKnUtGvyibEklKgdW0TtLwnQHYe298KZOeC
-         4+qZSQOLz1Brem7TQLzLwsfygi6szn4Reel81ytw6j3BJbSCO8HV4nluCtrRJlMHPDUg
-         OFviAIVtJUgDZTBWPpKoiF/wzjEXRapDC7nTqHYPwNzVQ8dFiNiGkTtbFVOL1sAALs8d
-         ymMr6W9dxB+D4fu4eAxfJ2Flx8EE2e7WIy0sjYVqF6nVdLKkEdbSjXAgZGhhFjmmZFE2
-         Zh5w==
-X-Gm-Message-State: AOAM531uMYEGEf9qry93drQ4sCyrx9Ug5MpS948vpqjd5lNX+cO4g5ZT
-        a88zb48wiczAmwlQlYM9we5VkNbfBn16LF06VOI=
-X-Google-Smtp-Source: ABdhPJypD8mioCxRbg8o4TMtkdBZ3ZD7kSoBZlW5obg2B6YAds6cIdNEdM2h3neLJ5paA765/NTmIRbBsu12LOlowvw=
-X-Received: by 2002:a05:6402:4c5:: with SMTP id n5mr3560532edw.122.1642069105299;
- Thu, 13 Jan 2022 02:18:25 -0800 (PST)
-MIME-Version: 1.0
-References: <20220113074614.407-1-josright123@gmail.com> <20220113074614.407-3-josright123@gmail.com>
-In-Reply-To: <20220113074614.407-3-josright123@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 13 Jan 2022 12:16:38 +0200
-Message-ID: <CAHp75VeRx8X+5i7SG4KMKADAUj=tkbjfmFDwup5dQ64SLq4yvw@mail.gmail.com>
-Subject: Re: [PATCH v11, 2/2] net: Add dm9051 driver
-To:     Joseph CHAMG <josright123@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        id S230490AbiAMKWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 05:22:06 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41716 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229812AbiAMKWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 05:22:05 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7FE561C01;
+        Thu, 13 Jan 2022 10:22:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4C80C36AEC;
+        Thu, 13 Jan 2022 10:22:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642069324;
+        bh=I7HlexZS8NRdpazkeMv6xpnWlkXR+p+1i06vB6vDCmE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lUCcNk3AdyH+eGcui2xZzXvzv8BdHmZPfojz9V4NhAC+DaoWXr/VW62BMIMClwNCY
+         4fMHOp1n1OorYjC25emGA3r5WIIKpt+u143T5i3IwK94ZaUZd0YR8z6OGFv434GCGA
+         6fU3tFjGB78q/GQ5G2BcDVgo8pmWXmS56O50A8DlA+fruDk6BRS1qrJgO2x7ZNXGYn
+         sfyojyuEUxyXthVRi8LQ4afoTM4yXYguI123+MBZOSpp+tFb2puciGgPXqOekMJOn8
+         L6wmNB7dh0F8eS3J9ynXZbCJUSZHq+APnPz2MueNQZEuP5VlEuIoriLyrD9yngDyxw
+         y9NCdwrouDibA==
+Date:   Thu, 13 Jan 2022 11:22:00 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Zvi Effron <zeffron@riotgames.com>, brouer@redhat.com,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Leon Romanovsky <leon@kernel.org>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Shay Agroskin <shayagr@amazon.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com
+Subject: Re: [PATCH v21 bpf-next 18/23] libbpf: Add SEC name for xdp_mb
+ programs
+Message-ID: <Yd/9SPHAPH3CpSnN@lore-desk>
+References: <CAEf4BzbfDvH5CYNsWg9Dx7JcFEp4jNmNRR6H-6sJEUxDSy1zZw@mail.gmail.com>
+ <Yd8bVIcA18KIH6+I@lore-desk>
+ <CAEf4Bza+WO5U+Kw=S+GvQBgu5VHfPL29u7eLSQq34jvYzGnbBA@mail.gmail.com>
+ <CAADnVQLGxjvOO3Ae3mGTWTyd0aHnACxYoF8daNi+z56NQyYQug@mail.gmail.com>
+ <CAEf4BzZ4c1VwPf9oBRRdN7jdBWrk4pg=mw_50LMjLr99Mb0yfw@mail.gmail.com>
+ <CAADnVQ+BiMy4TZNocfFSvazh-QTFwMD-3uQ9LLiku7ePLDn=MQ@mail.gmail.com>
+ <CAC1LvL0CeTw+YKjO6r0f68Ly3tK4qhDyjV0ak82e0PpHURVQOw@mail.gmail.com>
+ <Yd82J8vxSAR9tvQt@lore-desk>
+ <8735lshapk.fsf@toke.dk>
+ <47a3863b-080c-3ac2-ff2d-466b74d82c1c@redhat.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="/9SrXxM1u7AZoJOX"
+Content-Disposition: inline
+In-Reply-To: <47a3863b-080c-3ac2-ff2d-466b74d82c1c@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for update, my comments below.
 
-On Thu, Jan 13, 2022 at 9:46 AM Joseph CHAMG <josright123@gmail.com> wrote:
-
-Missed commit message.
-
-...
-
-> v1-v4
-> v5
-> v6
-> v7
-> v8
-> v9
-> v10
-
-Changelog should go after the cutter '--- ' line below, it's strange
-that you did it correctly only for v11 changelog and not for the rest.
-
-...
-
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Leon Romanovsky <leon@kernel.org>
-> Cc: andy Shevchenko <andy.shevchenko@gmail.com>
-
-Instead, utilize --cc parameter to `git send-email ...`
-
-...
-
-> Reported-by: kernel test robot <lkp@intel.com>
-
-New driver can't be reported.
-
-> Signed-off-by: Joseph CHAMG <josright123@gmail.com>
-> ---
-> v11
-
-...
-
-> +config DM9051
-> +       tristate "DM9051 SPI support"
-> +       select PHYLIB
-> +       depends on SPI
-> +       select CRC32
-
-Please group dependencies first followed by selections.
-Also, you missed to select corresponding regmap APIs (SPI and MDIO you
-mentioned).
-
-...
-
-> +static int dm9051_map_read(struct board_info *db, u8 reg, unsigned int *prb)
-> +{
-> +       struct net_device *ndev = db->ndev;
-> +       int ret = regmap_read(db->regmap, reg, prb);
-> +
-> +       if (unlikely(ret))
-> +               netif_err(db, drv, ndev, "%s: error %d reading reg %02x\n",
-> +                         __func__, ret, reg);
-> +       return ret;
-> +}
-> +
-> +static int dm9051_map_write(struct board_info *db, u8 reg, u16 val)
-> +{
-> +       struct net_device *ndev = db->ndev;
-> +       int ret = regmap_write(db->regmap, reg, val);
-> +
-> +       if (unlikely(ret))
-> +               netif_err(db, drv, ndev, "%s: error %d writing reg %02x=%04x\n",
-> +                         __func__, ret, reg, val);
-> +       return ret;
-> +}
-
-Redefining callbacks for the sake of printing messages? Hmm... dunno
-if it's a good idea here.
-
-...
-
-> +       ret = dm9051_map_write(db, DM9051_EPDRL, val & 0xff); /* write ctl must once 8-bit */
-> +       if (ret < 0)
-> +               return ret;
-> +       ret = dm9051_map_write(db, DM9051_EPDRH, val >> 8); /* write ctl must once 8-bit */
-> +       if (ret < 0)
-> +               return ret;
-
-Wouldn't be better to use bulk write for these?
-
-...
-
-> +       ret = dm9051_map_read(db, DM9051_EPDRH, &eph); /* read ctl must once 8-bit */
-> +       if (ret)
-> +               return ret;
-> +       ret = dm9051_map_read(db, DM9051_EPDRL, &epl); /* read ctl must once 8-bit */
-> +       if (ret)
-> +               return ret;
-> +       *val = (eph << 8) | epl;
-
-Wouldn't be better to use bulk read for these?
-
-...
-
-> +static bool dm9051_regmap_volatile(struct device *dev, unsigned int reg)
-> +{
-> +       return true; /* true, register can not be cached */
-> +}
-
-Do you need this wrapper?
-
-...
-
-> +       .lock = dm9051_reg_lock_mutex,
-> +       .unlock = dm9051_reg_unlock_mutex,
-
-But this doesn't protect against interleaved accesses. Is it fine?
-
-...
-
-> +static int dm9051_map_updbits(struct board_info *db, unsigned int reg,
-> +                             unsigned int mask, unsigned int val)
-> +{
-> +       unsigned int set_mask = val & mask;
-> +       unsigned int readd = 0; /* clear all insided bits */
-> +       int ret = 0;
-> +
-> +       ret = regmap_read(db->regmap, reg, &readd);
-> +       if (ret < 0)
-> +               return ret;
-> +
-> +       if ((readd & mask) != set_mask) {
-> +               readd &= ~mask;
-> +               readd |= set_mask;
-> +
-> +               ret = regmap_write(db->regmap, reg, readd);
-> +               if (ret < 0)
-> +                       return ret;
-> +       }
-> +       return ret;
-> +}
-
-NIH regmap_update_bits().
-
-
-...
-
-> +static bool dm9051_phymap_volatile(struct device *dev, unsigned int reg)
-> +{
-> +       return true; /* true, register can not be cached */
-> +}
-
-Do you really need this?
-
-...
-
-> +static int dm9051_map_phy_updbits(struct board_info *db, unsigned int reg,
-> +                                 unsigned int mask, unsigned int val)
-> +{
-> +       unsigned int set_mask = mask & val;
-> +       unsigned int readd = 0;
-> +       int ret;
-> +
-> +       ret = ctrl_dm9051_phyread(db, reg, &readd);
-> +       if (ret)
-> +               return ret;
-> +
-> +       if ((readd & mask) != set_mask) {
-> +               readd &= ~mask;
-> +               readd |= set_mask;
-> +               ret = ctrl_dm9051_phywrite(db, reg, readd);
-> +               if (ret)
-> +                       return ret;
-> +       }
-> +       return ret;
-> +}
-
-NIH regmap_update_bits().
-
-...
-
-> +       ret = dm9051_map_read(db, DM9051_EPDRL, &mval); /* must read once 8-bit */
-> +       if (ret < 0)
-> +               return ret;
-> +       to[0] = mval;
-> +       ret = dm9051_map_read(db, DM9051_EPDRH, &mval); /* must read once 8-bit */
-> +       if (ret < 0)
-> +               return ret;
-
-Why not _bulk operation?
-
-...
-
-> +       dm9051_map_write(db, DM9051_EPDRH, data[1]); /* must write once 8-bit */
-> +       dm9051_map_write(db, DM9051_EPDRL, data[0]); /* must write once 8-bit */
-
-Ditto.
-
-...
-
-> +       ret = dm9051_map_read(db, DM9051_PIDH, &wpidh);
-> +       if (ret < 0)
-> +               return ret;
-> +       ret = dm9051_map_read(db, DM9051_PIDL, &wpidl);
-> +       if (ret < 0)
-> +               return ret;
-
-> +       id = (wpidh << 8) | wpidl;
-
-Ditto.
-
-...
-
-> +       if (id == DM9051_ID) {
-> +               dev_info(dev, "chip %04x found\n", id);
-> +               return 0;
-> +       }
-> +
-> +       dev_info(dev, "chipid error as %04x !\n", id);
-
-Why not dev_err()?
-
-> +       return -ENODEV;
-
-Please, use standard pattern, i.e. check for errors first:
-
-  if (error condition) {
-    ...
-    return err;
-  }
-
-...
-
-> +       for (i = 0; i < ETH_ALEN; i++) {
-> +               ret = dm9051_map_read(db, DM9051_PAR + i, &mval);
-> +               if (unlikely(ret))
-> +                       return ret;
-> +               addr[i] = mval;
-> +       }
-
-_bulk?
-
-...
-
-> +       if (is_valid_ether_addr(addr)) {
-> +               eth_hw_addr_set(ndev, addr);
-> +               return 0;
-> +       }
-> +
-> +       eth_hw_addr_random(ndev);
-> +       dev_dbg(&db->spidev->dev, "Use random MAC address\n");
-> +       return 0;
-
-Check for (kinda) error first.
-
-...
-
-> +       snprintf(phy_id, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
-> +                db->mdiobus->id, DM9051_PHY_ID);
-
-(1)
-
-> +       db->phydev = phy_connect(db->ndev, phy_id, dm9051_handle_link_change,
-> +                                PHY_INTERFACE_MODE_MII);
-
-> +
-
-This blank line is misplaced. Should be in (1).
-
-> +       if (IS_ERR(db->phydev))
-> +               return PTR_ERR(db->phydev);
-> +       return 0;
-
-return PTR_ERR_OR_ZERO(...);
-
-> +}
-
-...
-
-> +               rdptr = (u8 *)skb_put(skb, rxlen - 4);
-
-Do you need this casting?
-
-...
-
-> +       ret = dm9051_map_write(db, DM9051_TXPLL, len);
-> +       if (ret < 0)
-> +               return ret;
-> +       ret = dm9051_map_write(db, DM9051_TXPLH, len >> 8);
-> +       if (ret < 0)
-> +               return ret;
-
-_bulk?
-
-...
-
-> +       /* these registers can't write by inblk, must write one by one
-> +        */
-
-Why? regmap bulk does exactly this (if properly configured).
-
-> +       for (i = 0; i < ETH_ALEN; i++) {
-> +               result = dm9051_map_write(db, DM9051_PAR + i, ndev->dev_addr[i]);
-> +               if (result < 0)
-> +                       goto spi_err;
-> +       }
-
-...
-
-> +       /* these registers can't write by inblk, must write one by one
-> +        */
-
-Ditto.
-
-> +       for (oft = DM9051_MAR, i = 0; i < 4; i++) {
-> +               result = dm9051_map_write(db, oft++, db->hash_table[i]);
-> +               if (result < 0)
-> +                       goto spi_err;
-> +               result = dm9051_map_write(db, oft++, db->hash_table[i] >> 8);
-> +               if (result < 0)
-> +                       goto spi_err;
-> +       }
-
-...
-
-> +               db->hash_table[hash_val / 16] |= (u16)1 << (hash_val % 16);
-
-Do you need casting? Can you use 1U or BIT()?
-
-...
-
-> +static int devm_regmap_init_dm9051(struct spi_device *spi, struct board_info *db)
-> +{
-> +       regconfig.lock_arg = db; /* regmap lock/unlock essential */
-> +
-> +       db->regmap = devm_regmap_init_spi(db->spidev, &regconfig);
-
-> +       if (IS_ERR(db->regmap))
-> +               return PTR_ERR(db->regmap);
-> +       return 0;
-
-return PTR_ERR_OR_ZERO(...);
-
-> +}
-
-...
-
-> +       db->mdiobus->phy_mask = (u32)~BIT(1);
-
-GENMASK()
-
-...
-
-> +       ret = devm_mdiobus_register(&spi->dev, db->mdiobus);
-> +       if (ret < 0) {
-
-What does > 0 mean?
-
-> +               dev_err(&spi->dev, "Could not register MDIO bus\n");
-
-> +               return ret;
-> +       }
-> +       return 0;
-
-Can it be
-
-   return ret;
-
-?
-
-...
-
-> +       if (IS_ERR(db->phymap))
-> +               return PTR_ERR(db->phymap);
-> +       return 0;
-
-As above.
-
-...
-
-> +       db->kwr_task_kw = kthread_run(kthread_worker_fn, &db->kw, "dm9051");
-> +       if (IS_ERR(db->kwr_task_kw))
-> +               return PTR_ERR(db->kwr_task_kw);
-> +
-> +       mutex_init(&db->spi_lock);
-> +       mutex_init(&db->reg_mutex);
-
-Are you sure it's good to have thread running without initializations
-of locks, etc?
-
-...
-
-> +static int dm9051_drv_remove(struct spi_device *spi)
-> +{
-> +       struct device *dev = &spi->dev;
-> +       struct net_device *ndev = dev_get_drvdata(dev);
-> +       struct board_info *db = to_dm9051_board(ndev);
-> +
-> +       phy_disconnect(db->phydev);
-> +       kthread_stop(db->kwr_task_kw);
-> +       return 0;
-> +}
-
-Seems like a wrong order of the resource freeing.
-
-...
-
-> +++ b/drivers/net/ethernet/davicom/dm9051.h
-
-Do oyu need it to be a separate header?
-
-...
-
-> +#include <linux/bitfield.h>
-
-Not sure I saw the user of this header below.
-
-> +#include <linux/mutex.h>
-
-> +#include <linux/netdevice.h>
-
-...
-
-> +struct rx_ctl_mach {
-> +       u16                             status_err_counter;  /* 'Status Err' counter */
-> +       u16                             large_err_counter;  /* 'Large Err' counter */
-> +       u16                             DO_FIFO_RST_counter; /* 'fifo_reset' counter */
-
-Can you rather have these comments in kernel doc?
-
-> +};
-
-...
-
-> +struct board_info
-
-Why do you need this definition in the header?
-
--- 
-With Best Regards,
-Andy Shevchenko
+--/9SrXxM1u7AZoJOX
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+>=20
+>=20
+> On 12/01/2022 23.04, Toke H=F8iland-J=F8rgensen wrote:
+> > Lorenzo Bianconi <lorenzo.bianconi@redhat.com> writes:
+> >=20
+> > > > On Wed, Jan 12, 2022 at 11:47 AM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > >=20
+> > > > > On Wed, Jan 12, 2022 at 11:21 AM Andrii Nakryiko
+> > > > > <andrii.nakryiko@gmail.com> wrote:
+> > > > > >=20
+> > > > > > On Wed, Jan 12, 2022 at 11:17 AM Alexei Starovoitov
+> > > > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > > > >=20
+> > > > > > > On Wed, Jan 12, 2022 at 10:24 AM Andrii Nakryiko
+> > > > > > > <andrii.nakryiko@gmail.com> wrote:
+> > > > > > > >=20
+> > > > > > > > On Wed, Jan 12, 2022 at 10:18 AM Lorenzo Bianconi <lorenzo@=
+kernel.org> wrote:
+> > > > > > > > >=20
+> > > > > > > > > > On Sun, Jan 9, 2022 at 7:05 AM Lorenzo Bianconi <lorenz=
+o@kernel.org> wrote:
+> > > > > > > > > > >=20
+> > > > > > > > > > > Introduce support for the following SEC entries for X=
+DP multi-buff
+> > > > > > > > > > > property:
+> > > > > > > > > > > - SEC("xdp_mb/")
+> > > > > > > > > > > - SEC("xdp_devmap_mb/")
+> > > > > > > > > > > - SEC("xdp_cpumap_mb/")
+> > > > > > > > > >=20
+> > > > > > > > > > Libbpf seemed to went with .<suffix> rule (e.g., fentry=
+=2Es for
+> > > > > > > > > > sleepable, seems like we'll have kprobe.multi or  somet=
+hing along
+> > > > > > > > > > those lines as well), so let's stay consistent and call=
+ this "xdp_mb",
+> > > > > > > > > > "xdp_devmap.mb", "xdp_cpumap.mb" (btw, is "mb" really a=
+ll that
+> > > > > > > > > > recognizable? would ".multibuf" be too verbose?). Also,=
+ why the "/"
+> > > > > > > > > > part? Also it shouldn't be "sloppy" either. Neither exp=
+ected attach
+> > > > > > > > > > type should be optional.  Also not sure SEC_ATTACHABLE =
+is needed. So
+> > > > > > > > > > at most it should be SEC_XDP_MB, probably.
+> > > > > > > > >=20
+> > > > > > > > > ack, I fine with it. Something like:
+> > > > > > > > >=20
+> > > > > > > > >          SEC_DEF("lsm.s/",               LSM, BPF_LSM_MAC=
+, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_lsm),
+> > > > > > > > >          SEC_DEF("iter/",                TRACING, BPF_TRA=
+CE_ITER, SEC_ATTACH_BTF, attach_iter),
+> > > > > > > > >          SEC_DEF("syscall",              SYSCALL, 0, SEC_=
+SLEEPABLE),
+> > > > > > > > > +       SEC_DEF("xdp_devmap.multibuf",  XDP, BPF_XDP_DEVM=
+AP, 0),
+> > > > > > > > >          SEC_DEF("xdp_devmap/",          XDP, BPF_XDP_DEV=
+MAP, SEC_ATTACHABLE),
+> > > > > > > > > +       SEC_DEF("xdp_cpumap.multibuf",  XDP, BPF_XDP_CPUM=
+AP, 0),
+> > > > > > > > >          SEC_DEF("xdp_cpumap/",          XDP, BPF_XDP_CPU=
+MAP, SEC_ATTACHABLE),
+> > > > > > > > > +       SEC_DEF("xdp.multibuf",         XDP, BPF_XDP, 0),
+> > > > > > > >=20
+> > > > > > > > yep, but please use SEC_NONE instead of zero
+> > > > > > > >=20
+> > > > > > > > >          SEC_DEF("xdp",                  XDP, BPF_XDP, SE=
+C_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
+> > > > > > > > >          SEC_DEF("perf_event",           PERF_EVENT, 0, S=
+EC_NONE | SEC_SLOPPY_PFX),
+> > > > > > > > >          SEC_DEF("lwt_in",               LWT_IN, 0, SEC_N=
+ONE | SEC_SLOPPY_PFX),
+> > > > > > > > >=20
+> > > > > > > > > >=20
+> > > > > > > > > > >=20
+> > > > > > > > > > > Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
+> > > > > > > > > > > Acked-by: John Fastabend <john.fastabend@gmail.com>
+> > > > > > > > > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > > > > > > > > > ---
+> > > > > > > > > > >   tools/lib/bpf/libbpf.c | 8 ++++++++
+> > > > > > > > > > >   1 file changed, 8 insertions(+)
+> > > > > > > > > > >=20
+> > > > > > > > > > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/l=
+ibbpf.c
+> > > > > > > > > > > index 7f10dd501a52..c93f6afef96c 100644
+> > > > > > > > > > > --- a/tools/lib/bpf/libbpf.c
+> > > > > > > > > > > +++ b/tools/lib/bpf/libbpf.c
+> > > > > > > > > > > @@ -235,6 +235,8 @@ enum sec_def_flags {
+> > > > > > > > > > >          SEC_SLEEPABLE =3D 8,
+> > > > > > > > > > >          /* allow non-strict prefix matching */
+> > > > > > > > > > >          SEC_SLOPPY_PFX =3D 16,
+> > > > > > > > > > > +       /* BPF program support XDP multi-buff */
+> > > > > > > > > > > +       SEC_XDP_MB =3D 32,
+> > > > > > > > > > >   };
+> > > > > > > > > > >=20
+> > > > > > > > > > >   struct bpf_sec_def {
+> > > > > > > > > > > @@ -6562,6 +6564,9 @@ static int libbpf_preload_prog(=
+struct bpf_program *prog,
+> > > > > > > > > > >          if (def & SEC_SLEEPABLE)
+> > > > > > > > > > >                  opts->prog_flags |=3D BPF_F_SLEEPABL=
+E;
+> > > > > > > > > > >=20
+> > > > > > > > > > > +       if (prog->type =3D=3D BPF_PROG_TYPE_XDP && (d=
+ef & SEC_XDP_MB))
+> > > > > > > > > > > +               opts->prog_flags |=3D BPF_F_XDP_MB;
+> > > > > > > > > >=20
+> > > > > > > > > > I'd say you don't even need SEC_XDP_MB flag at all, you=
+ can just check
+> > > > > > > > > > that prog->sec_name is one of "xdp.mb", "xdp_devmap.mb"=
+ or
+> > > > > > > > > > "xdp_cpumap.mb" and add the flag. SEC_XDP_MB doesn't se=
+em generic
+> > > > > > > > > > enough to warrant a flag.
+> > > > > > > > >=20
+> > > > > > > > > ack, something like:
+> > > > > > > > >=20
+> > > > > > > > > +       if (prog->type =3D=3D BPF_PROG_TYPE_XDP &&
+> > > > > > > > > +           (!strcmp(prog->sec_name, "xdp_devmap.multibuf=
+") ||
+> > > > > > > > > +            !strcmp(prog->sec_name, "xdp_cpumap.multibuf=
+") ||
+> > > > > > > > > +            !strcmp(prog->sec_name, "xdp.multibuf")))
+> > > > > > > > > +               opts->prog_flags |=3D BPF_F_XDP_MB;
+> > > > > > > >=20
+> > > > > > > > yep, can also simplify it a bit with strstr(prog->sec_name,
+> > > > > > > > ".multibuf") instead of three strcmp
+> > > > > > >=20
+> > > > > > > Maybe ".mb" ?
+> > > > > > > ".multibuf" is too verbose.
+> > > > > > > We're fine with ".s" for sleepable :)
+> > > > > >=20
+> > > > > >=20
+> > > > > > I had reservations about "mb" because the first and strong asso=
+ciation
+> > > > > > is "megabyte", not "multibuf". And it's not like anyone would h=
+ave
+> > > > > > tens of those programs in a single file so that ".multibuf" bec=
+omes
+> > > > > > way too verbose. But I don't feel too strongly about this, if t=
+he
+> > > > > > consensus is on ".mb".
+> > > > >=20
+> > > > > The rest of the patches are using _mb everywhere.
+> > > > > I would keep libbpf consistent.
+> > > >=20
+> > > > Should the rest of the patches maybe use "multibuf" instead of "mb"=
+? I've been
+> > > > following this patch series closely and excitedly, and I keep havin=
+g to remind
+> > > > myself that "mb" is "multibuff" and not "megabyte". If I'm having t=
+o correct
+> > > > myself while following the patch series, I'm wondering if future co=
+nfusion is
+> > > > inevitable?
+> > > >=20
+> > > > But, is it enough confusion to be worth updating many other patches=
+? I'm not
+> > > > sure.
+> > > >=20
+> > > > I agree consistency is more important than the specific term we're =
+consistent
+> > > > on.
+> > >=20
+> > > I would prefer to keep the "_mb" postfix, but naming is hard and I am
+> > > polarized :)
+> >=20
+> > I would lean towards keeping _mb as well, but if it does have to be
+> > changed why not _mbuf? At least that's not quite as verbose :)
+>=20
+> I dislike the "mb" abbreviation as I forget it stands for multi-buffer.
+> I like the "mbuf" suggestion, even-though it conflicts with (Free)BSD mbu=
+fs
+> (which is their SKB).
+
+If we all agree, I can go over the series and substitute mb postfix with mb=
+uf.
+Any objections?
+
+>=20
+> I prefer/support the .<suffix> idea from Andrii.
+> Which would then be ".mbuf" for my taste.
+
+ack, I have already implemented it, we need to define just the naming
+convention now.
+
+Regards,
+Lorenzo
+
+>=20
+> --Jesper
+> p.s. I like the bikeshed red, meaning I don't feel too strongly about thi=
+s.
+>=20
+
+--/9SrXxM1u7AZoJOX
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYd/9SAAKCRA6cBh0uS2t
+rL02AQCp9KeOu3lnbwwOyjMDOOBWCJLlwougl4pl1veqTEaR1wD+PoBKboPMi2uz
++x6q9fSX+kcXzvH4knjk4jiU+RqKYQA=
+=H6Op
+-----END PGP SIGNATURE-----
+
+--/9SrXxM1u7AZoJOX--
