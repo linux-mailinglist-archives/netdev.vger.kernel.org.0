@@ -2,175 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C128448D9EF
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 15:45:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 449C548DA29
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 15:52:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235762AbiAMOpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 09:45:53 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59708 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233723AbiAMOpu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 09:45:50 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 534FB61CFC;
-        Thu, 13 Jan 2022 14:45:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AA3CC36AEB;
-        Thu, 13 Jan 2022 14:45:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642085148;
-        bh=qGUpScSrM6PHOQ9896+ovOSrylwTkuQlIpt7KlyEp5s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rIF3lS/tm9sqFT+BginWJM2+mt1t0i+1rbRTwFGO/b5RO54FFqysidEmT2WSnXujo
-         cGDZLPUBbnFnBovZVRCzJE12OIxe0UaqPbmDiXkUfgTiIFTn2YGRAzH3LqjFaP+tZD
-         stowk5nOSDH2HzMR+0nMTCmGiZrfOpEXlbtFzEEyyHKSnxaKn6wp5i+0CBOwWaYud8
-         h6IHjIqf66cMB/zCEPF7AQwqZAp9MkoApoumfwu6VFfqqNiQcfv/H1IDJvKTA9xbou
-         r4uQpom3hKk5szByYDLACU4vgN5e9UWDsM5Igx38QRWaZyToUoz1pHBLnnGGGgQZOi
-         t54X3kfj11igw==
-Date:   Thu, 13 Jan 2022 14:45:30 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Borislav Petkov <bp@alien8.de>,
-        Eric Auger <eric.auger@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <YeA7CjOyJFkpuhz/@sirena.org.uk>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
- <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
- <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
+        id S233300AbiAMOwB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jan 2022 09:52:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41212 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230016AbiAMOwA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 09:52:00 -0500
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2B7C06161C;
+        Thu, 13 Jan 2022 06:51:59 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 696502000F;
+        Thu, 13 Jan 2022 14:51:56 +0000 (UTC)
+Date:   Thu, 13 Jan 2022 15:51:54 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Harry Morris <h.morris@cascoda.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>
+Subject: Re: [wpan-next v2 19/27] net: ieee802154: Full PAN management
+Message-ID: <20220113155154.243c36ad@xps13>
+In-Reply-To: <202201130436.44AM2OXA-lkp@intel.com>
+References: <20220112173312.764660-20-miquel.raynal@bootlin.com>
+        <202201130436.44AM2OXA-lkp@intel.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="W6TsDGUCC61npB/4"
-Content-Disposition: inline
-In-Reply-To: <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
-X-Cookie: Slow day.  Practice crawling.
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---W6TsDGUCC61npB/4
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+lkp@intel.com wrote on Thu, 13 Jan 2022 04:46:11 +0800:
 
-On Thu, Jan 13, 2022 at 12:08:31PM +0100, Uwe Kleine-K=F6nig wrote:
+> Hi Miquel,
+> 
+> I love your patch! Yet something to improve:
+> 
+> [auto build test ERROR on linus/master]
+> [also build test ERROR on v5.16 next-20220112]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Miquel-Raynal/IEEE-802-15-4-scan-support/20220113-013731
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git daadb3bd0e8d3e317e36bc2c1542e86c528665e5
+> config: riscv-randconfig-r042-20220112 (https://download.01.org/0day-ci/archive/20220113/202201130436.44AM2OXA-lkp@intel.com/config)
+> compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 244dd2913a43a200f5a6544d424cdc37b771028b)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install riscv cross compiling tool for clang build
+>         # apt-get install binutils-riscv64-linux-gnu
+>         # https://github.com/0day-ci/linux/commit/9c8fbd918a704432bbf6cdce1d111e9002c756b4
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review Miquel-Raynal/IEEE-802-15-4-scan-support/20220113-013731
+>         git checkout 9c8fbd918a704432bbf6cdce1d111e9002c756b4
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash net/ieee802154/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+> >> net/ieee802154/nl802154.c:1613:8: error: implicit declaration of function 'nl802154_prepare_wpan_dev_dump' [-Werror,-Wimplicit-function-declaration]  
+>            err = nl802154_prepare_wpan_dev_dump(skb, cb, &rdev, &wpan_dev);
+>                  ^
+> >> net/ieee802154/nl802154.c:1637:2: error: implicit declaration of function 'nl802154_finish_wpan_dev_dump' [-Werror,-Wimplicit-function-declaration]  
+>            nl802154_finish_wpan_dev_dump(rdev);
 
-> This is all very unfortunate. In my eyes b) is the most sensible
-> sense, but the past showed that we don't agree here. (The most annoying
-> part of regulator_get is the warning that is emitted that regularily
-> makes customers ask what happens here and if this is fixable.)
+These two helpers were defined within the experimental section. I will
+move them out of this section now that they have other users than
+experimental code.
 
-Fortunately it can be fixed, and it's safer to clearly specify things.
-The prints are there because when the description is wrong enough to
-cause things to blow up we can fail to boot or run messily and
-forgetting to describe some supplies (or typoing so they haven't done
-that) and people were having a hard time figuring out what might've
-happened.
+>            ^
+>    net/ieee802154/nl802154.c:1637:2: note: did you mean 'nl802154_prepare_wpan_dev_dump'?
+>    net/ieee802154/nl802154.c:1613:8: note: 'nl802154_prepare_wpan_dev_dump' declared here
+>            err = nl802154_prepare_wpan_dev_dump(skb, cb, &rdev, &wpan_dev);
+>                  ^
+>    2 errors generated.
+> 
+> 
+> vim +/nl802154_prepare_wpan_dev_dump +1613 net/ieee802154/nl802154.c
+> 
+>   1605	
+>   1606	static int nl802154_dump_pans(struct sk_buff *skb, struct netlink_callback *cb)
+>   1607	{
+>   1608		struct cfg802154_registered_device *rdev;
+>   1609		struct cfg802154_internal_pan *pan;
+>   1610		struct wpan_dev *wpan_dev;
+>   1611		int err;
+>   1612	
+> > 1613		err = nl802154_prepare_wpan_dev_dump(skb, cb, &rdev, &wpan_dev);  
+>   1614		if (err)
+>   1615			return err;
+>   1616	
+>   1617		spin_lock_bh(&rdev->pan_lock);
+>   1618	
+>   1619		if (cb->args[2])
+>   1620			goto out;
+>   1621	
+>   1622		cb->seq = rdev->pan_generation;
+>   1623	
+>   1624		ieee802154_for_each_pan(pan, rdev) {
+>   1625			err = nl802154_send_pan_info(skb, cb, cb->nlh->nlmsg_seq,
+>   1626						     NLM_F_MULTI, rdev, wpan_dev, pan);
+>   1627			if (err < 0)
+>   1628				goto out_err;
+>   1629		}
+>   1630	
+>   1631		cb->args[2] = 1;
+>   1632	out:
+>   1633		err = skb->len;
+>   1634	out_err:
+>   1635		spin_unlock_bh(&rdev->pan_lock);
+>   1636	
+> > 1637		nl802154_finish_wpan_dev_dump(rdev);  
+>   1638	
+>   1639		return err;
+>   1640	}
+>   1641	
+> 
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
-> I think at least c) is easy to resolve because
-> platform_get_irq_optional() isn't that old yet and mechanically
-> replacing it by platform_get_irq_silent() should be easy and safe.
-> And this is orthogonal to the discussion if -ENOXIO is a sensible return
-> value and if it's as easy as it could be to work with errors on irq
-> lookups.
 
-It'd certainly be good to name anything that doesn't correspond to one
-of the existing semantics for the API (!) something different rather
-than adding yet another potentially overloaded meaning.
-
---W6TsDGUCC61npB/4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHgOwoACgkQJNaLcl1U
-h9DB2wf+MsmuWAbFkx7w6dSqBFg+5BMfRX917lHiCsn2CYARHwyaPL5M5EVrbehK
-70/euCaJWItviAfkx+6AAOYCmbHs8mt+zpvgLriDTnZOumRiZfiGXMZHt85uxFOg
-+CON0NcPugM2d7SZyRdxLTQBcBJt3wzMoV71nZv43fG+BMfssZy/ADYB75p648wU
-r7n86P+i3Kh+8hkINY1UdrfNXf7GkWehj0fZhkQ6PO+sH6jH8JFft+mMsKvTkCfp
-th2g66aUCkHb8ML7wNc5DEOQZlW9A7QyBKZpFWcduJs7uD92dqsoRJ7ch05zM3z/
-HtLt6l6YJ3XD702pvFQA2C4cb/OGkA==
-=d1L9
------END PGP SIGNATURE-----
-
---W6TsDGUCC61npB/4--
+Thanks,
+Miquèl
