@@ -2,208 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49F5848D735
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 13:09:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DADDB48D74C
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 13:16:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234394AbiAMMJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 07:09:45 -0500
-Received: from mail-mw2nam12on2056.outbound.protection.outlook.com ([40.107.244.56]:33761
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        id S234414AbiAMMQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 07:16:16 -0500
+Received: from mail-bn8nam11on2049.outbound.protection.outlook.com ([40.107.236.49]:22848
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230310AbiAMMJn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jan 2022 07:09:43 -0500
+        id S230310AbiAMMQP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jan 2022 07:16:15 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=POfScaA5NQrWKCHFENOuDwYNNFQXoJGzGQ7HUnNExw7Rf7u/W/3uLQyXme0iIg3OkCWaN1hMtoVzMJu3i/4PROxWIf637Nt/+EEM2SjOsaje9YBQDYqSTdbkm8aZDMT9o+xfSx/3N4YWHkhPvuDGw16t6b1nQq1apMf1IEPDACZZJ33G5XmExruxlQ6Fq3lu+7rXic+gyHRBSK8TTcp5p8UbN/Wp5rTtPlbxfiijTX9Rtkok/iuA/wEIbHUQbAD5IVoXlqrIZjozlyqMha4OtkXwW8uhPqYY0+fDkwXzXzco/I78s64yFstA0BFFdfQoZV0RwLygnXSPIRiiEGVxFg==
+ b=dVvYnRLAyc/3ut2lhYaapr1yqQV7WiuaSG2OTxEOHWGSrq9SINuDb/yr0B9cgAKBh4Ryl21inWxEDLQa8E782PHR9V9d47Uowc6e5k2Try5z5ytlxTx5Txj5T/1JXl3u8wNR6nFBUNMFQmgbaEWUt/iysUeKObPtoIXmbcMPCUnKD/VKIJwACmzdvG7R2sYfr/vLwiWlf71oWS6EFXUKcZIHdfiZKTTR3ABPACuZB9UF9khGWgFCnu/dO58Ir2+1j4BlcW6Imm6ELdPBdTkEB/4MMvlTIKSiDBJ9GxYhxR5zHGgaInU1LcZiChfo7AS47KWYve9RiaMSki7yIQ/I6w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sTIpCoD8uFYyRAf0jA1+Or5KhV8vIzbII5hwppPARm0=;
- b=kHKjUFq8V+6fmZ8HYVAChGoUridnsF0tRMpWLsidkrCs37q6TufaGFcaomYdt2A7eJmJ55xFTo+uZKwCfQbLPHQCAIaNSUZt5CmLhlb3eg9hvren+0kuuYh8QSxA5N1q2xjFFcsm/ysSkz2DkyIRirpOS8kTabgOACA7At2bV60sPa2S6MH0dZh/N56UH4Ew8xllyK2SPYhXJjw4SpnpOjG51vXAzqLFzLFuEFzdC5M/QMqbHQEZ+t15RRPYU7h5yu3f3U6LL1beE4h0IxMwNhfrDPx2RAj2nyUgMWAI76RbGFMWRTFXevzWaYUNE8VFHt/CsH4xUQHFKu1lY052Wg==
+ bh=JFCfdEyoCkhanvQpcH9mHXafF46Os5R1ZjAHOXGMGoU=;
+ b=jWRs7Un6gPg9cx6c4Yv8hzZ+AJ+prPP4YTdT4/pNFLNlefGvuhQKnr3HWLneaOs76pk9G9WHDhSHlCYMPIKmSEhJXPSb0uGh7bhwCvEcY46s35U1keJfbR78COgf1cD3f5//3Z+vtj+TBhcZqyxHHI1VMMBtpsyD8bPjMSqSr4DtjYY6/k8AweBwp+PkiXQ4jT5jLCPUS/6u0W5fsHJqBRRI4tvVHRBAZ+0L+mTZ7eis9vMvMOstuBisXHkCBfLIUCJA/8hyKafmCJP/9mV5JLqPU/YUR5hUFNlegx5f/auu5tijQYMRPuwGJkpU3fkgjTpYTtSdLd6lhF119n8+fg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
- dkim=pass header.d=xilinx.com; arc=none
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sTIpCoD8uFYyRAf0jA1+Or5KhV8vIzbII5hwppPARm0=;
- b=d3FHN8O3Rv6hS2TCVz1Bs4x2lpLlE/LELlKzUAYQIcsSWC/Aq1znkOhCEIEd3AdMPia7qiLkFiG34ONeg0F2Nx642cjjtQNtPE1qSHjYexIMAeks2ZY8Xo+8OuDWY3aB+ouE8spepFUrXbXeqZAdp+B0VMMOsG6cXaB7samLif4=
-Received: from SA1PR02MB8560.namprd02.prod.outlook.com (2603:10b6:806:1fb::24)
- by SA1PR02MB8560.namprd02.prod.outlook.com (2603:10b6:806:1fb::24) with
+ bh=JFCfdEyoCkhanvQpcH9mHXafF46Os5R1ZjAHOXGMGoU=;
+ b=CAn6ilUHAFF0cfuU7NzQV8agfGuJg5ugfxs/RXz057Eb3VzNYwiw2I/zOsEegQLef/1zdiKtaQvbXn2iw8LZqRvzbkdRjCp5el/olyVTcqESQX1QzmMUAFR3Nthae1MmOME5hoV+NyoqMyBsirba6qZ4FzRCZeU6a7CNwQEJigc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=silabs.com;
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com (2603:10b6:510:ee::19)
+ by MN2PR11MB4664.namprd11.prod.outlook.com (2603:10b6:208:26e::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Thu, 13 Jan
- 2022 12:09:41 +0000
-Received: from SA1PR02MB8560.namprd02.prod.outlook.com
- ([fe80::7cc2:82b0:9409:7b05]) by SA1PR02MB8560.namprd02.prod.outlook.com
- ([fe80::7cc2:82b0:9409:7b05%5]) with mapi id 15.20.4888.011; Thu, 13 Jan 2022
- 12:09:41 +0000
-From:   Radhey Shyam Pandey <radheys@xilinx.com>
-To:     Robert Hancock <robert.hancock@calian.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Michal Simek <michals@xilinx.com>,
-        "ariane.keller@tik.ee.ethz.ch" <ariane.keller@tik.ee.ethz.ch>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>
-Subject: RE: [PATCH net v2 4/9] net: axienet: add missing memory barriers
-Thread-Topic: [PATCH net v2 4/9] net: axienet: add missing memory barriers
-Thread-Index: AQHYB9s1HGFEGbndkE6qA46b1PiAL6xg22yw
-Date:   Thu, 13 Jan 2022 12:09:41 +0000
-Message-ID: <SA1PR02MB85604DE700BA8511C604B632C7539@SA1PR02MB8560.namprd02.prod.outlook.com>
-References: <20220112173700.873002-1-robert.hancock@calian.com>
- <20220112173700.873002-5-robert.hancock@calian.com>
-In-Reply-To: <20220112173700.873002-5-robert.hancock@calian.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=xilinx.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 13b5a34b-f85e-49c7-05ef-08d9d68d9437
-x-ms-traffictypediagnostic: SA1PR02MB8560:EE_
-x-microsoft-antispam-prvs: <SA1PR02MB8560A6E014D907109B7A4F56C7539@SA1PR02MB8560.namprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: WUGgHOBU5hLR7j8W4s87bEvR/MDPubx48GlQ64AryBflGf2RlUz/+aKx+820m4xcJFW8RDeAKek0EG3ENqQ3enOPbHvJXCdpGdDek4fPDQzDb5xq6fAhehceH7MObn/bW1QIBKqNJjwKofGh8AlEHieDo6QBZYiipKC7GEmaITr0XhAznjMRI3hoyexumy666o7UcBLyWQyPamPV8h1V0p15vDqPCk8cb41NiP0RY+Gkhya0UjJS8qEdRdcOxPpWnyA57Ty3i3O+NZDTfTR8f6CWHBQj7Ijx0/CfBe6TU1ZnKcFsXgS3qv1r0SjcIVGhO5ZJcpQq8Oe9rtzK9SFWZfS99vq3Gs3kWGx61bpO+aKSrK4J46pq4iGqM72zKYotJyuEfcoM6jQiAsdKjBzhTeM1H2ztKKgH5UsNNiROnQNIyS04zWHq/chV6t2jzD/6b1p2Iozju8kVW6ekhS4rB6eTFC/xTm6XrD+rgawsCpPx2yUI9CJbLTT4TnqSPLm+tVFRJ+snLkWJE9dM1JQradPqsapVYvuqaKjk6odxBLR52DGGrVlszL4bJ+BmPqKNaT5aDY9NHMpH3ntYUPmkAYQd1FF4ksF6ngd3trkYOM3ohyPBSXa/nLg48jN91gnj02Y+3yVVUOkH4XbbLXkxW74MOIDXiwKQ/95zqtX11tEZRetUfVu2iTOsh98tGgM5bMZri5auYwcQt6gK9fYDLw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR02MB8560.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(86362001)(71200400001)(4326008)(55016003)(8936002)(7696005)(38070700005)(122000001)(38100700002)(508600001)(5660300002)(8676002)(83380400001)(66556008)(66946007)(66476007)(6506007)(53546011)(186003)(26005)(33656002)(110136005)(54906003)(64756008)(66446008)(52536014)(316002)(76116006)(2906002)(9686003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?WaTOeRemygWVPHEofxdZ5NwDYe613vdIqSeep5JB23Wr9D3ucOFxAzdVXC9v?=
- =?us-ascii?Q?oq1KDpyyEyoNK5aU//Splerxyh1ab0ypZrFbG05LI3bh3GC6a1uB2OoNySPQ?=
- =?us-ascii?Q?RSCIf3uRSZjzJlG28QyWKuYAgtZCq4upPPA4qx3OGV2K5PcTnN/yBHYux8wo?=
- =?us-ascii?Q?C30gdpMgzVEpq89lfZNu03QTXo7Bla+Nj2m7Q3DhvxRFpTBfskvX+Q1vtVJb?=
- =?us-ascii?Q?5V2yA9UvAzmPInm3IOlaDMIByaoScOC7nKFLgOV3tf1JAl2SMNCdRWnz3Ves?=
- =?us-ascii?Q?F1aospnc3Z7rPLVcikoy+KqBoZBTLElHZAQp66CGpT1c7/gI1ZMsmDDKQEBD?=
- =?us-ascii?Q?J0sU7fzl9o/umSdTWX+VJerDklucBYUXsf3K2BqiTYgDtEzQkQcSll50eeE1?=
- =?us-ascii?Q?AbbfV907/g+mtIsh5zcyFYJsd2LXir68EhOQDgMrO+eXjvu/4l0Abv7M4sn6?=
- =?us-ascii?Q?6Qzk6rocLRmL87YmnOzg+tkjr36zlJ/8GDFfxRh2w1ntKI334dRqfYklfHVG?=
- =?us-ascii?Q?h+jQ6nte/kyiuJ4I+PuZutKBSDxlQpXRXUeMMvgedqlSAhGE/sqwGlklt0ss?=
- =?us-ascii?Q?3gd3BTO/zbu/sDJILSZCu6jbLw2/u+eW/TlrSUsOXWjcy5oZiqDjMqHuFe27?=
- =?us-ascii?Q?iCTI6vtcdLIuVGHhjeP7svT14mSPx8LJR99VLI6dKyt52vuMp9xaK2BLSOPA?=
- =?us-ascii?Q?es0ut7NerAV/NXg2/6qWy3VFnIGVGFXluWzqagyez6YK8zfwPBeiAdUXTYKy?=
- =?us-ascii?Q?NnSgp4BDph1a9TqNSiNsYuJnuYKEqEdXdnZJ2tBxxhaYS0eL/AGctKjgjHIN?=
- =?us-ascii?Q?OnmZekmgF0C5QW58K96kCIRUQl3AGHS2tDjyNtKmZ9ocRrpyfjWjXZm2cgby?=
- =?us-ascii?Q?HLMQ9pnSpHFJuMG/EeIhgLkg25+4IFw+xR2/bjoOtZ3CnXbywIw6vfQItHQQ?=
- =?us-ascii?Q?rHOdzopq8JagOhgdQSIzujBnUk0JE7zxlb8Dsy/+iK7bpi16FhK+PlNEGeX0?=
- =?us-ascii?Q?/Fa/Snu/S3mNvDRW+sVo57pyJ0alGS0xv57O29otqLs9stKSHl5HUqXZD6et?=
- =?us-ascii?Q?Cos/V3SRBen8voRinohgYrmNpT/oJ1xCdsKmLLmqCc/mM9ywuRzWsBZQBs4k?=
- =?us-ascii?Q?PONzg3USIRohh2bpxLTlfGW+QSaPSmpfU1UAN0yLaB/kaoxHVOP7Oh21Di6/?=
- =?us-ascii?Q?CukQcQpOthmSDEh7Yyy7+Z92fGpgLSD3+KNChuqTe3hDtQNkLessZfxwKuLb?=
- =?us-ascii?Q?coUrLrANWTgUR2XVSDpxmf0ehU2+nyiUhj/2O7t0i3qUloHvIkzG9gVTAt9p?=
- =?us-ascii?Q?Plr3a8mnpi2UfAHSgrhw+b1g3YtEIGNhQqrvOq94V9D4m4xJ/4hW1SWQKYFM?=
- =?us-ascii?Q?TsrG2EOGHaccDarWT5b/K+P/em49CIhmsoey915r7623QyqimwFuAphzxaDU?=
- =?us-ascii?Q?vmMgzCyzO2WYCBOnzl7f59QZTQpZTRa/Sd0grcgHa2OxL0pKYASaksL0hBUq?=
- =?us-ascii?Q?Lq2KKuXRzmnNnmD9lnBXroOgx4Nv/cZl0Qla3Elv4kBlQCP73LR8YfFGUrAq?=
- =?us-ascii?Q?6SEdzoJ42ER0oqKDQ1RrbzQT2R0kyrtjVtuzUfaR6Os/vWQdYHoPDrqgcsk8?=
- =?us-ascii?Q?u8GJ9lxhE6EMH5xsZkSimD0=3D?=
-Content-Type: text/plain; charset="us-ascii"
+ 2022 12:16:13 +0000
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::d031:da9e:71a:73e4]) by PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::d031:da9e:71a:73e4%5]) with mapi id 15.20.4888.011; Thu, 13 Jan 2022
+ 12:16:13 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 02/31] staging: wfx: fix HIF API license
+Date:   Thu, 13 Jan 2022 13:16:07 +0100
+Message-ID: <2049544.RTtvoyPrBD@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <877db3ua68.fsf@kernel.org>
+References: <20220113085524.1110708-1-Jerome.Pouiller@silabs.com> <20220113085524.1110708-3-Jerome.Pouiller@silabs.com> <877db3ua68.fsf@kernel.org>
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-ClientProxiedBy: SN6PR16CA0047.namprd16.prod.outlook.com
+ (2603:10b6:805:ca::24) To PH0PR11MB5657.namprd11.prod.outlook.com
+ (2603:10b6:510:ee::19)
 MIME-Version: 1.0
-X-OriginatorOrg: xilinx.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7e6e690f-b695-409e-4e4c-08d9d68e7d87
+X-MS-TrafficTypeDiagnostic: MN2PR11MB4664:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR11MB46649EE03AD92884E7F60DA093539@MN2PR11MB4664.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: y7BA7L6T+MGlwhTwn5kU0j2gAVdgH8YcKPV6wROFPIbAERjwRqWt1cZx4y8SvjxvPbKi7CmZunoMXxdkmezdIH6/RaUmbxSQWC6oizN31Y5GpRT7s+Ds1XLGKRkulOG7X/Zl/eJNhR9/m95LWt76SPJ2P3E372VIDhh9ghKER9R3gWqlChC6N+293ytZhqmC+YvMG4KiNKba9yS6mv79UQrD9GmiQfaAey5AOENFyGs+WDVFMAR89hQQd20d1t3MQK1nkXqyoOFFJDDM1wNJCZGjIfdjnF88FsjoQ+LxMTkP+VQnn2s/Fm5w2xghWzRRgGbAIFV0okozhd5T9ZhVkdEGM7jRL6nVz+3Wk134rAAOFVqqkWTKjy/gf7lh8LrlFAVtj77/TIBL16SmuOu5msY/dktYwjpnXGjrYkbMZg6RjOBS60LUjPebiwqGrVCbSd9v50xkX8bexRpL8peRTdulPcG4I2zXKY0CRe/2Wfu9aE3AHLviHEqvMOfePQ2igmZwiTI6TfOIgbRkJyp5JYVsc61reqYaP/ecq01GBg8EqDVrh5DcWvs+MMGwUCLilzAijsjGiL6NoFIqJCC1fBfYdbIkvSODUBTjag3J4WiZV76TmVrF30av5X08qVxq6wFlssWXG036wYWyigXJtQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(54906003)(6512007)(38100700002)(5660300002)(36916002)(83380400001)(8676002)(9686003)(33716001)(508600001)(186003)(52116002)(6666004)(6916009)(6506007)(66946007)(316002)(86362001)(8936002)(2906002)(4326008)(6486002)(66556008)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?rKoJGfoGn9B9AJnqAj3VNiD3MOO/CibFRE80v8Dh3+/q7V+Wu6SAoMJELm?=
+ =?iso-8859-1?Q?JBioyZn7J5pkeaEYZ+8BPfJfbMUJ55HLhdElyNWq1Z/BtBlBtbRUz+rjOu?=
+ =?iso-8859-1?Q?q5H3UvJQiRlbvqkv01wqcogEi21L1fc1Uz72j7/WJXwEbfciZJFRWC60QN?=
+ =?iso-8859-1?Q?H4UTFRRKrMsKg81hlYrs9bg2Zwa3WeFB2oP+Q2i/E02aqMl60zcw8x4H5w?=
+ =?iso-8859-1?Q?BQzaOHYZIQU1PA96kcSFCXuQ1ELOUcPo3Gwl2LNqU5ycZGA3muWSniXhbI?=
+ =?iso-8859-1?Q?g64ag7rT2BCEj2e2A/BFyXk6nBiyqN44GAfcTlwSmq2wWJ63VLK2107c2m?=
+ =?iso-8859-1?Q?wwf2/SRVV9EA1s5/7MxcUqnUBrAyX4PFoQEyfOWUbR4FB1fhu01iwarNqI?=
+ =?iso-8859-1?Q?o3iHyIR08Y36lb/NG30wgLnwvVYw/eGWp9V2HEJVCosG9UbL6VDs5aRV3J?=
+ =?iso-8859-1?Q?c73O1OdZ5PeaAhJW0SpBGV2BfuwsIHnviIhs5tqbK40vKBDpaB2e27Nfbs?=
+ =?iso-8859-1?Q?FUNQ9Kx7oqPE2mQfYUyPB2njHGISlwISMnT+Es81oOsuVoZeyygPgmV9vo?=
+ =?iso-8859-1?Q?Yh5fimsolredOyHk0KmhRPGlBfkMLX77HIbqTKU/ku/Yc1VJb4FR4+cgj5?=
+ =?iso-8859-1?Q?/MJMIU10+R2YHZXzbXA1OXFb8BXcxEY0NuZsRSdBe/NGVnSpS3G/BeYoTl?=
+ =?iso-8859-1?Q?0VScYNzTNE9ssShPGOJ6zVfFJtTOLWUQPJWG8FUfkZMHdwv3Cimmv7NQG5?=
+ =?iso-8859-1?Q?o7+LX6AmLomZGkQt65sOd4R9cCfeGHeKQBAXqOXt2AJH52JpnGOvUvHd9E?=
+ =?iso-8859-1?Q?mMbypu3JNTz/W9cIZYtYfHM9ggXQIIgeEi2TM75DSmwHoSvPbyF+xwbAHL?=
+ =?iso-8859-1?Q?p/1V85C2mMJNIPftOTdZp3w7ec4KslAV5J1TfYAWvoAkpapAekNPZeSEH7?=
+ =?iso-8859-1?Q?bIrqx9gXX1JUUNcpJ2wgJgxizv08fX+97U/MhUmU382gNcfVI+ZQoHXhG7?=
+ =?iso-8859-1?Q?4RfUuo3uzYGKKconxOIY6kP4Rfl7vwxiGqQnDClwBuy6FIvlfX24MW/ZGJ?=
+ =?iso-8859-1?Q?C+zVEgRVAnFa64BUr8bX9CAelX2Ub3pzt8pI03n6jBjd2JRm6eNUKUBhKd?=
+ =?iso-8859-1?Q?SyaCUJeC1qRMk5FxWNY6dUG2/5+/2faKWTkWhCoTJ6mkEzce6hyHPBYJYQ?=
+ =?iso-8859-1?Q?2JKoWjZELlhTFPILTfll46S5M/ihbRJrIt6u5cZXRauk0MVN/dMmtjMJT4?=
+ =?iso-8859-1?Q?b+c8uM8xBZuo4/wxEIdHo9GmmWPsCdl1jyT22sIt/9dUQjU75slwml9JrW?=
+ =?iso-8859-1?Q?lbuaI2k0lSheBYqTxEH4tuAezEtkocTn/oRkRYm5hLzaetoz02fg3tVMM8?=
+ =?iso-8859-1?Q?NiC4xzdPkqmFriST+eNzBdqdtyQG+b+ctB72rG9lCREWpjEyu63Q6+9K8a?=
+ =?iso-8859-1?Q?tds2ofjAxXcjHadIWqT6Isigf0Fd42Hgj0WOkGDDC0SXsx1VStAEPy2X/Q?=
+ =?iso-8859-1?Q?0w5EMHCxCkktHlPChxugLq7yiQOw2uF+4xlokcIcXPT2qHBGuoAEdr19Qz?=
+ =?iso-8859-1?Q?MI22DjX8q6h8KwqsB5GoRglTb2l+Me7NNZRgL+B0v5JG1yKFb2HS5GSj+v?=
+ =?iso-8859-1?Q?siSbEJ4GEVnFBvdSbRmzYGgNk/dh9aMij/BpPR049jVvI95Sxrv/HQtaVP?=
+ =?iso-8859-1?Q?/03Oee1iz4vhtdKGkP4BntWYAlDPBn/C1G88QFe+shEaWHe6ixmtFUdgH0?=
+ =?iso-8859-1?Q?3T7MQWShX1pSwdB5PD14HHxp8=3D?=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e6e690f-b695-409e-4e4c-08d9d68e7d87
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5657.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR02MB8560.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 13b5a34b-f85e-49c7-05ef-08d9d68d9437
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jan 2022 12:09:41.3908
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2022 12:16:13.2167
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: t7sH2V3K6m8s8IMy6ZNl2wYknk3PSLdMl0pjl1uLnL7UWCnj1jV6577/z5EiwW8dyhAPmdPfehJsdAXmwrM/fw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR02MB8560
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nFYFHuXD56feoWsr3/mazwT2c3eDOtI67vdI33x/5cbqoaTxlAoal/+AtpYORB5lsjdWXKmBQlQrzFvawVSdOQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4664
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Robert Hancock <robert.hancock@calian.com>
-> Sent: Wednesday, January 12, 2022 11:07 PM
-> To: netdev@vger.kernel.org
-> Cc: Radhey Shyam Pandey <radheys@xilinx.com>; davem@davemloft.net;
-> kuba@kernel.org; linux-arm-kernel@lists.infradead.org; Michal Simek
-> <michals@xilinx.com>; ariane.keller@tik.ee.ethz.ch; daniel@iogearbox.net;
-> Robert Hancock <robert.hancock@calian.com>
-> Subject: [PATCH net v2 4/9] net: axienet: add missing memory barriers
+On Thursday 13 January 2022 12:50:23 CET Kalle Valo wrote:
+> Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
 >=20
-> This driver was missing some required memory barriers:
+> > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> >
+> > Apache-2.0 is not allowed in the kernel.
+> >
+> > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> > ---
+> >  drivers/staging/wfx/hif_api_cmd.h     | 2 +-
+> >  drivers/staging/wfx/hif_api_general.h | 2 +-
+> >  drivers/staging/wfx/hif_api_mib.h     | 2 +-
+> >  3 files changed, 3 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/staging/wfx/hif_api_cmd.h b/drivers/staging/wfx/hi=
+f_api_cmd.h
+> > index b0aa13b23a51..b1829d01a5d9 100644
+> > --- a/drivers/staging/wfx/hif_api_cmd.h
+> > +++ b/drivers/staging/wfx/hif_api_cmd.h
+> > @@ -1,4 +1,4 @@
+> > -/* SPDX-License-Identifier: Apache-2.0 */
+> > +/* SPDX-License-Identifier: GPL-2.0-only or Apache-2.0 */
 >=20
-> Use dma_rmb to ensure we see all updates to the descriptor after we see t=
-hat
-> an entry has been completed.
->=20
-> Use wmb and rmb to avoid stale descriptor status between the TX path and =
-TX
-> complete IRQ path.
->=20
-> Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethe=
-rnet
-> driver")
-> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-> ---
->  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> index f4ae035bed35..de8f85175a6c 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> @@ -632,6 +632,8 @@ static int axienet_free_tx_chain(struct net_device
-> *ndev, u32 first_bd,
->  		if (nr_bds =3D=3D -1 && !(status &
-> XAXIDMA_BD_STS_COMPLETE_MASK))
->  			break;
->=20
-> +		/* Ensure we see complete descriptor update */
-> +		dma_rmb();
->  		phys =3D desc_get_phys_addr(lp, cur_p);
->  		dma_unmap_single(ndev->dev.parent, phys,
->  				 (cur_p->cntrl &
-> XAXIDMA_BD_CTRL_LENGTH_MASK), @@ -645,8 +647,10 @@ static int
-> axienet_free_tx_chain(struct net_device *ndev, u32 first_bd,
->  		cur_p->app1 =3D 0;
->  		cur_p->app2 =3D 0;
->  		cur_p->app4 =3D 0;
-> -		cur_p->status =3D 0;
->  		cur_p->skb =3D NULL;
-> +		/* ensure our transmit path and device don't prematurely see
-> status cleared */
-> +		wmb();
-> +		cur_p->status =3D 0;
+> Is the Apache-2.0 license really mandatory? LICENSES/dual/Apache-2.0 is
+> not really supportive.
 
-Any reason for moving status initialization down?
+[usual "I am not a lawyer" preamble]
 
->=20
->  		if (sizep)
->  			*sizep +=3D status &
-> XAXIDMA_BD_STS_ACTUAL_LEN_MASK; @@ -704,6 +708,9 @@ static inline
-> int axienet_check_tx_bd_space(struct axienet_local *lp,
->  					    int num_frag)
->  {
->  	struct axidma_bd *cur_p;
-> +
-> +	/* Ensure we see all descriptor updates from device or TX IRQ path */
-> +	rmb();
->  	cur_p =3D &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
->  	if (cur_p->status & XAXIDMA_BD_STS_ALL_MASK)
->  		return NETDEV_TX_BUSY;
-> @@ -843,6 +850,8 @@ static void axienet_recv(struct net_device *ndev)
->=20
->  		tail_p =3D lp->rx_bd_p + sizeof(*lp->rx_bd_v) * lp->rx_bd_ci;
->=20
-> +		/* Ensure we see complete descriptor update */
-> +		dma_rmb();
->  		phys =3D desc_get_phys_addr(lp, cur_p);
->  		dma_unmap_single(ndev->dev.parent, phys, lp-
-> >max_frm_size,
->  				 DMA_FROM_DEVICE);
+hmm... I don't think it is really mandatory. However, I would more
+confident if we could keep the original license also (I think the idea
+behind is to not prevent someone to reuse this header in any other
+project).
 
-Ideally we would also need a write barrier in xmit function just before=20
-updating tail descriptor.
 
-> --
-> 2.31.1
+--=20
+J=E9r=F4me Pouiller
+
 
