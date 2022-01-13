@@ -2,122 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C965148D68D
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 12:16:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D794948D6C5
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 12:39:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234106AbiAMLQx convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jan 2022 06:16:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48278 "EHLO
+        id S234250AbiAMLjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 06:39:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229670AbiAMLQw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 06:16:52 -0500
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEBCC06173F;
-        Thu, 13 Jan 2022 03:16:51 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 4C16820004;
-        Thu, 13 Jan 2022 11:16:47 +0000 (UTC)
-Date:   Thu, 13 Jan 2022 12:16:45 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Harry Morris <h.morris@cascoda.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "linux-wireless@vger.kernel.org Wireless" 
-        <linux-wireless@vger.kernel.org>
-Subject: Re: [wpan-next v2 08/27] net: ieee802154: Drop symbol duration
- settings when the core does it already
-Message-ID: <20220113121645.434a6ef6@xps13>
-In-Reply-To: <CAB_54W5QU5JCtQYwvTKREd6ZeQWmC19LF4mj853U0Gz-mCObVQ@mail.gmail.com>
-References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
-        <20220112173312.764660-9-miquel.raynal@bootlin.com>
-        <CAB_54W5QU5JCtQYwvTKREd6ZeQWmC19LF4mj853U0Gz-mCObVQ@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        with ESMTP id S234262AbiAMLjj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 06:39:39 -0500
+Received: from mail-ua1-x944.google.com (mail-ua1-x944.google.com [IPv6:2607:f8b0:4864:20::944])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5203EC06173F
+        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 03:39:39 -0800 (PST)
+Received: by mail-ua1-x944.google.com with SMTP id h11so10433066uar.5
+        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 03:39:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=KalP7pqUldn0owlfQ20Q8VvgpD4qNB4+Il7bEQ6jfBE=;
+        b=PliCVjXCfFAdZ91MzaZ2vKB9kiEqEy2kjPw7+QpDLu/jsiwcZc33dwmdFrpXuWPwq6
+         MbbRTSht8EABZisUE/wAsgUa7o78rdZcdXrRTS/664oltj7X8eZVtHIdFCyOrOL6JNP4
+         ymv3liloSge7R9QXPAubRx+hizOV82qlmtkyfmMVfb6w4G38afx+xVzTsXpAFUzW7J80
+         4Vyt+tpIbl8ya8reZfg6tcPw2ORJBIELloMlqQN2QbXqRyJXrc1q6Qi4CuFzrr+IxOXc
+         ZysJLgH5ZFmUP96culLBKMofeRGwA7A20DGHEwWIsXrdhkyq9LhByMVXER1P64Zoa6mJ
+         vY8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=KalP7pqUldn0owlfQ20Q8VvgpD4qNB4+Il7bEQ6jfBE=;
+        b=vK5btYLJI7u4mtSSXvOioMAmX087fKS3MdYgpIbAwR6p9pq+KM56EeE1U0sL4Uc8lx
+         AqncTqGzd76BTTDkdhXefbmDzwXvB6ohPhQnSZwhAmGtsfYOt2vpIZucbr8DzhqaaD6u
+         Jh1dnEZIWSyOBZbVD+hQaQ35d5sNPXC3QWPYXtlJDZk3qVjHudstpvz3utttCsOtI+QH
+         N+P5CtEylj26C5Pt1G/Z1OBFbnt1dalrdMkC9RUXY7La4pZJlevXUOgash24EGb2/tXS
+         8uFbuBmVp/wsJQWsJmDoNXGliMAjWBjbjVasKi4CMShd1MFaOIRJ4abS1e1WUGlTLhN0
+         e52w==
+X-Gm-Message-State: AOAM533or3GKlQYwq5Hs/1Ve5VUFuzSmcyn6NZarOtmtxoKudrVKLYus
+        fnfwnJ4NJqGWF4ATJ6jhgCzMyAIAjluvpoai3js=
+X-Google-Smtp-Source: ABdhPJwngYgTbJCVeiOIgrE4DZ+LRvYCf8YHtjI9ENzvM7UubRx8W8iGjv/OEOZsGSqu7iBsteU/k8lnusat8HnIfh8=
+X-Received: by 2002:a67:19c7:: with SMTP id 190mr1911087vsz.16.1642073978081;
+ Thu, 13 Jan 2022 03:39:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Received: by 2002:a67:d21e:0:0:0:0:0 with HTTP; Thu, 13 Jan 2022 03:39:37
+ -0800 (PST)
+Reply-To: mrsaishag45@gmail.com
+From:   Mrs Aisha Al-Qaddafi <mrsaishag95@gmail.com>
+Date:   Thu, 13 Jan 2022 03:39:37 -0800
+Message-ID: <CANo=4_GQgb_Q9m3B0CDy5UwHaRwkMCuKezi=3V7ZHwFqvF-_Ug@mail.gmail.com>
+Subject: Dear Friend,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+Dear Friend,
 
-alex.aring@gmail.com wrote on Wed, 12 Jan 2022 17:26:14 -0500:
+I came across your e-mail contact prior a private search while in need
+of your assistance. My name is Aisha Gaddafi a single
 
-> Hi,
-> 
-> On Wed, 12 Jan 2022 at 12:33, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> >
-> > The core now knows how to set the symbol duration in a few cases, when
-> > drivers correctly advertise the protocols used on each channel. For
-> > these drivers, there is no more need to bother with symbol duration, so
-> > just drop the duplicated code.
-> >
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> >  drivers/net/ieee802154/ca8210.c | 1 -
-> >  drivers/net/ieee802154/mcr20a.c | 2 --
-> >  2 files changed, 3 deletions(-)
-> >
-> > diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-> > index 82b2a173bdbd..d3a9e4fe05f4 100644
-> > --- a/drivers/net/ieee802154/ca8210.c
-> > +++ b/drivers/net/ieee802154/ca8210.c
-> > @@ -2977,7 +2977,6 @@ static void ca8210_hw_setup(struct ieee802154_hw *ca8210_hw)
-> >         ca8210_hw->phy->cca.mode = NL802154_CCA_ENERGY_CARRIER;
-> >         ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
-> >         ca8210_hw->phy->cca_ed_level = -9800;
-> > -       ca8210_hw->phy->symbol_duration = 16 * 1000;
-> >         ca8210_hw->phy->lifs_period = 40;
-> >         ca8210_hw->phy->sifs_period = 12;
-> >         ca8210_hw->flags =
-> > diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
-> > index 8aa87e9bf92e..da2ab19cb5ee 100644
-> > --- a/drivers/net/ieee802154/mcr20a.c
-> > +++ b/drivers/net/ieee802154/mcr20a.c
-> > @@ -975,7 +975,6 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
-> >
-> >         dev_dbg(printdev(lp), "%s\n", __func__);
-> >
-> > -       phy->symbol_duration = 16 * 1000;
-> >         phy->lifs_period = 40;
-> >         phy->sifs_period = 12;
-> >
-> > @@ -1010,7 +1009,6 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
-> >         phy->current_page = 0;
-> >         /* MCR20A default reset value */
-> >         phy->current_channel = 20;
-> > -       phy->symbol_duration = 16 * 1000;
-> >         phy->supported.tx_powers = mcr20a_powers;
-> >         phy->supported.tx_powers_size = ARRAY_SIZE(mcr20a_powers);
-> >         phy->cca_ed_level = phy->supported.cca_ed_levels[75];  
-> 
-> What's about the atrf86230 driver?
+Mother and a Widow with three Children. I am the only biological
+Daughter of late Libyan President (Late Colonel Muammar
 
-I couldn't find reliable information about what this meant:
+Gaddafi).
 
-	/* SUB:0 and BPSK:0 -> BPSK-20 */
-	/* SUB:1 and BPSK:0 -> BPSK-40 */
-	/* SUB:0 and BPSK:1 -> OQPSK-100/200/400 */
-	/* SUB:1 and BPSK:1 -> OQPSK-250/500/1000 */
+I have investment funds worth Twenty Seven Million Five Hundred
+Thousand United State Dollar ($27.500.000.00 ) and i need a
 
-None of these comments match the spec so I don't know what to put
-there. If you know what these protocols are, I will immediately
-provide this information into the driver and ensure the core handles
-these durations properly before dropping the symbol_durations settings
-from the code.
+trusted investment Manager/Partner because of my current refugee
+status, however, I am interested in you for investment
 
-Thanks,
-Miquèl
+project assistance in your country, may be from there, we can build
+business relationship in the nearest future.
+
+I am willing to negotiate investment/business profit sharing ratio
+with you base on the future investment earning profits.
+If you are willing to handle this project on my behalf kindly reply
+urgent to enable me provide you more information about
+Mrs Aisha Gaddafi
