@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDE8F48D2C7
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 08:25:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A35F48D2CF
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 08:28:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230518AbiAMHZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 02:25:31 -0500
-Received: from mail-mw2nam10on2067.outbound.protection.outlook.com ([40.107.94.67]:25312
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        id S230417AbiAMH16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 02:27:58 -0500
+Received: from mail-dm6nam12on2044.outbound.protection.outlook.com ([40.107.243.44]:60800
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230504AbiAMHZb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jan 2022 02:25:31 -0500
+        id S230176AbiAMH15 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jan 2022 02:27:57 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RwA9/S2DkrOVOZ7Ggk9qeR1cl7YpU2R8ejW0ZACReyhmP8OwFxb8CxkMxw0h9QsUrW5+2wqo++FAB7SewoJEjphG35XTa6sGGsHrJHZAdvPmpS6yt8CBwvvZEFcaK5gpdXfxfUP+xrtLhR1SqVMklpC4FvG66nrN/SDN3YYKPB4RPaWeng/K0mDV1Q3UvTeHncZ+dskGnBHLma3AP6dIs+X1iI28A8A4MTGqadaxEn+eC1oNW2EJgxNOkPZYn0wNXgdaPwnG39uQ4dmM+izqBYDzHt06LidFBjHBthf+Q5PQbUmqR9vk7lUig4SlPTzBm/OoeuopfBOSglAeuN2G2g==
+ b=SwoX+QcfwsFVXHUJC051PUfqW72p3aUBRDMUS5LeH6ZimMiRH4caIoLUO9xc4wU2AVtq6slUFwJ9N/U2rFbg8LixUxobA9plv1JzU9uQyPz6P5JTI17Zv4tzwqtwkPHXnJWIySbrhkE4EHQelUlY70uOabDDTfDhqA97eLAvGqjp7t8N4UHaCVfxH02AL9oAPbKVaX5HJhocw0fLUDdQNF+gZrHAQY/EF623YJgCp+Wmf+isAAwPVAtLGx2OtsZlgilRQVrH+aGcIiRbRIvV5HWUCKdAwi926mESLckstMGK0Y//spNs8rmzIrcP9QjtC+CmNC1lPD0ibKsrXoPSsg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=a6+1Gno9NcLfAcTFAO+vmiRowFMem+rJ4xUcEcA8iXE=;
- b=NgLOKXN4Ij6XF4vfhWFVEANCYkMmjlOjSW0eReuWUGZFSQxmWQ21JgV0mh8CEgp2i1wLeAHd1XFFmG/MxBOtJ+KskFdZ8MrcYn9VwkKTJDbOBhjJzdCP/KqcPpes/ae+PHJ3LAoHMkDUjre+ryS0p6PWtSV11RFw01baMFc8HK7hUNd5fLVRrDKRmAZx3uEjX92chE41SmkNoqp7wNX0wgrdLWwEuNKNEhV5XBlKSfDLtn8ZvC8M2Q8wrR2qHI6oPd4qYs+T10zGzKGgTMEE3ras1rS6Ng2jq3Hf4zQ4ZHIVh3L+iatnJsTV8uM35LYrkHk2RO27LIJqcFHr4ZN+rA==
+ bh=vY5/iFX5JhKWu7N00fbBDLU4awD3rriGeFHR98EcHFw=;
+ b=botFmUpxqm/loLjYxzc0zQEOuCD3mBqVsrS8OxVMVbXbtFWUg1nVlWoAx/98Rhsb5RAT9Hvo1XpEx//RX2gnAf/WNCvB6XUfUb2c88nHHfDj3vY21nT/W5mxdbG3dWlmCslCt7/y50tX1Xv5SD4XVCVJDw1VrPMbJ7/0YXRibrFuVfwi0TO1VFKVrdmHru6ZbveYh7aBCE9aRYj7vl9JP2nOX0GWYcMmFTUHUfqtEETbRHyfQ/+a5yxBm03gZ2Lu0ggJonNVKVUF8w8tflmVWfjj5a/y2xJOt8SmAldCZ/3/1p3VScUCWCRqezfRDyoqDnTZK/ya+c/ANF4OaN481g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.62.198) smtp.rcpttodomain=calian.com smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -26,90 +26,89 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a6+1Gno9NcLfAcTFAO+vmiRowFMem+rJ4xUcEcA8iXE=;
- b=kiesfvCElvYjuhSAjWB5PCqZX1CtFJMngUd0tu879TujVZbKH4D0HSf9xT08fbz/BC+rn74iZFxPWF2xfL3G5Gxo1gzXU2IRDPKr6nxUT+oXGix32MHtJAL77B1oTqJYRAVgjADiloFuuOSA5Wx4Bxe/W7wJt1kNQq9AIfLa4ds=
-Received: from BN9PR03CA0581.namprd03.prod.outlook.com (2603:10b6:408:10d::16)
- by BYAPR02MB4839.namprd02.prod.outlook.com (2603:10b6:a03:51::18) with
+ bh=vY5/iFX5JhKWu7N00fbBDLU4awD3rriGeFHR98EcHFw=;
+ b=pA25lwvFTpasMvp1nu+quYJ4Ra9WxhX2vdROD8gwyiLNWJW6vs+06KxWKjyFEMgN1A9UavZCJOlX2swWj4JoMiQTGyKZapVolZeTWGE0lpCxQkyVss6uH+/2MHSBLPRo38yt3dqbOI9TGvxnCuij/XtoRN+5i99lL4UdAQxMtgA=
+Received: from SA9PR13CA0133.namprd13.prod.outlook.com (2603:10b6:806:27::18)
+ by SN6PR02MB5549.namprd02.prod.outlook.com (2603:10b6:805:e4::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10; Thu, 13 Jan
- 2022 07:25:27 +0000
-Received: from BN1NAM02FT030.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:10d:cafe::e1) by BN9PR03CA0581.outlook.office365.com
- (2603:10b6:408:10d::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.9 via Frontend
- Transport; Thu, 13 Jan 2022 07:25:27 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.11; Thu, 13 Jan
+ 2022 07:27:54 +0000
+Received: from SN1NAM02FT0036.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:806:27:cafe::ed) by SA9PR13CA0133.outlook.office365.com
+ (2603:10b6:806:27::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.7 via Frontend
+ Transport; Thu, 13 Jan 2022 07:27:54 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
 Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT030.mail.protection.outlook.com (10.13.2.144) with Microsoft SMTP
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0036.mail.protection.outlook.com (10.97.4.102) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4888.9 via Frontend Transport; Thu, 13 Jan 2022 07:25:26 +0000
+ 15.20.4888.9 via Frontend Transport; Thu, 13 Jan 2022 07:27:54 +0000
 Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 12 Jan 2022 23:25:25 -0800
-Received: from smtp.xilinx.com (172.19.127.95) by
+ 15.1.2176.14; Wed, 12 Jan 2022 23:27:53 -0800
+Received: from smtp.xilinx.com (172.19.127.96) by
  xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Wed, 12 Jan 2022 23:25:25 -0800
+ 15.1.2176.14 via Frontend Transport; Wed, 12 Jan 2022 23:27:53 -0800
 Envelope-to: robert.hancock@calian.com,
  netdev@vger.kernel.org,
- geert+renesas@glider.be,
  davem@davemloft.net,
  kuba@kernel.org,
  robh+dt@kernel.org,
  nicolas.ferre@microchip.com,
  claudiu.beznea@microchip.com,
  devicetree@vger.kernel.org
-Received: from [10.254.241.49] (port=57996)
+Received: from [10.254.241.49] (port=58198)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <michal.simek@xilinx.com>)
-        id 1n7uU9-000Cps-AD; Wed, 12 Jan 2022 23:25:25 -0800
-Message-ID: <d5952271-a90f-4794-0087-9781d2258e17@xilinx.com>
-Date:   Thu, 13 Jan 2022 08:25:22 +0100
+        id 1n7uWX-000Fbc-4F; Wed, 12 Jan 2022 23:27:53 -0800
+Message-ID: <3caae1db-b577-1e1f-3377-11272945054c@xilinx.com>
+Date:   Thu, 13 Jan 2022 08:27:50 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH net-next 1/3] macb: bindings doc: added generic PHY and
- reset mappings for ZynqMP
+Subject: Re: [PATCH net-next 2/3] net: macb: Added ZynqMP-specific
+ initialization
 Content-Language: en-US
 To:     Robert Hancock <robert.hancock@calian.com>,
-        <netdev@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
+        <netdev@vger.kernel.org>, Harini Katakam <harinik@xilinx.com>,
+        Piyush Mehta <piyush.mehta@xilinx.com>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
         <michal.simek@xilinx.com>, <nicolas.ferre@microchip.com>,
         <claudiu.beznea@microchip.com>, <devicetree@vger.kernel.org>
 References: <20220112181113.875567-1-robert.hancock@calian.com>
- <20220112181113.875567-2-robert.hancock@calian.com>
+ <20220112181113.875567-3-robert.hancock@calian.com>
 From:   Michal Simek <michal.simek@xilinx.com>
-In-Reply-To: <20220112181113.875567-2-robert.hancock@calian.com>
+In-Reply-To: <20220112181113.875567-3-robert.hancock@calian.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2e641342-7c8c-46cd-47cc-08d9d665df03
-X-MS-TrafficTypeDiagnostic: BYAPR02MB4839:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR02MB48396232C34D0D74E31B4904C6539@BYAPR02MB4839.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 27d6ed80-f3e3-4c9f-b96a-08d9d66636a9
+X-MS-TrafficTypeDiagnostic: SN6PR02MB5549:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR02MB554917DD1520CEF07F8A1EB3C6539@SN6PR02MB5549.namprd02.prod.outlook.com>
 X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KezliR01mIEm16OZPumu/MqDEVy1WH8XA0zd8Mz7l3f9CIy6KmZkYbahNNtdeK2dIVIA+c0VyQI36ZIQ/kx9AcId+EQff31m+eMD3brQ9156V6CNebHFOPup53DcXfxi5gprpQ0p0P16A9EEdaQHmjTuAU1uhhDzG4ebDCMWI77rLqOgLtIKOofOMhxEj8e9nnwXvCSHKuNnwerRnH14fQO88J1mKOuEjOffzW4djZvhWfbK/tmdZN0OATdsCZV1vUqoz01SrxxQIhQk2JSnWIy/xm+esSjx3mpq8BjkJfEaQfG9dGeBoFDOBzfUM/rJwPx8en/AXzuglOJzIJEZdx80xrCUjF8rP4MkeUJbVluvnKXrx7qD6mHODZLg21a/1KWNAOp9OjgUnXsWcci/Xd/tECyDjxGoRotFcGu8Qx4tyUTKyyK5iewvrWbd9KaudQvVPEHcWF6khw8UolGonHxrMuo5G3DxmWnOH1gj7+GuKVC/KJmXGtDLsnTc5qwuSs/870ZJvMIbafANVJ3o1hbjwgdhRyTtX/NS+zrDFqraMea/CWSOZS5L7uxnyssiYkekZyYV0Maelc2cnzizz5A4822dsEWW4nKqix3OvgvIhQ5gNJsnstZGgvoRm8YIM4u52ytnnYFwOeDnoOFrqv60RUKHip1o3l9Y982XgJcbxo2tWFdNfPuEEyPYtO+mi43usxmlF8mZVMSltSM7UNi9cwiFLIdwd24/QYxacqujtNKqGAdhCI4EPIVz7EL6ngf//vj8ODSdptkCN1WU8L04WIGyYRYoL2NsBzKctVc=
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(7636003)(36860700001)(26005)(36756003)(2906002)(8676002)(31696002)(186003)(82310400004)(4326008)(356005)(31686004)(110136005)(44832011)(54906003)(47076005)(426003)(9786002)(336012)(6666004)(53546011)(70206006)(70586007)(8936002)(316002)(83380400001)(508600001)(2616005)(5660300002)(41533002)(50156003)(43740500002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: gCheczRhxDY6elBCBn1DQ31MBkKtjjh0b4Kvyuylb7O5iNYAnQv/mTKMSoho8TlsD2C+YyWJcaEwLfx0L/oB7hsxgdRTqLBlDm1Jc1Rqhx6TjUM0xiwW1KZI6rSH+aCGRybKRXPLc071lss5hSTaQ4a2CWmtprChWDs6604R8s/Coxx8W7hLhhu6AFVx6cl3TODASMFcEcKbRlgmUhcMbv0giLLNOtNrhiRWUE1sqP++GuEIs31dYaLJpgC4CLeW4zFIxJybSXWodaxkG1MNcp9mrdVuih6WWmg0dmpDhbon6U8Xu0x8EYsqw/QTLjaS9YL2VPxQD2TxQ1gUUc98BoreSuhlCC8mM1ht3vAaMkVvPAb5cOAAm3tYJzukigDmZEWq3xzlEGrtzNXXU2JTPzv1EI/i4ZfxFaKDywiNYjAfA+dgyWCJFVADhtur+RAJxJ2Ml+1lecO0FMYHUThZaiQXIXBVEdgmfdiL0Uj2CH2TaoSPLlfM0cCTLoaxT+mIqm6tUGL9iLEBGA4+S9x0lsdP5PgrTi12XURjoIBusBWEbkSkoX431HuR/bSOr96NuSmERw2IDYL/VrsbdNCZEyaXg635htrmdqErPM79faM97CRqOP/COmm1S4BD2pTMySaVULyowHPjE+HO4LDOoLnsZIhlWujjrdYbqO/pJSyrrxacg/6yw81w8M48kOpnhEcKchwa55rSJAfTlk8H+7ErR44mANC0xMxSTJ5nqIdRyO35bCroQ108yJ1Y0l/BMvllJgCOcn3+1NskaPxY8w==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(31686004)(70586007)(110136005)(336012)(54906003)(82310400004)(2616005)(83380400001)(31696002)(426003)(508600001)(47076005)(5660300002)(36756003)(9786002)(2906002)(316002)(186003)(44832011)(70206006)(53546011)(6636002)(8676002)(8936002)(36860700001)(356005)(7636003)(26005)(4326008)(50156003)(43740500002);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2022 07:25:26.9648
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2022 07:27:54.0955
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2e641342-7c8c-46cd-47cc-08d9d665df03
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27d6ed80-f3e3-4c9f-b96a-08d9d66636a9
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT030.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0036.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB4839
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR02MB5549
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -117,66 +116,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 1/12/22 19:11, Robert Hancock wrote:
-> Updated macb DT binding documentation to reflect the phy-names, phys,
-> resets, reset-names properties which are now used with ZynqMP GEM
-> devices, and added a ZynqMP-specific DT example.
+> The GEM controllers on ZynqMP were missing some initialization steps which
+> are required in some cases when using SGMII mode, which uses the PS-GTR
+> transceivers managed by the phy-zynqmp driver.
+> 
+> The GEM core appears to need a hardware-level reset in order to work
+> properly in SGMII mode in cases where the GT reference clock was not
+> present at initial power-on. This can be done using a reset mapped to
+> the zynqmp-reset driver in the device tree.
+> 
+> Also, when in SGMII mode, the GEM driver needs to ensure the PHY is
+> initialized and powered on when it is initializing.
 > 
 > Signed-off-by: Robert Hancock <robert.hancock@calian.com>
 > ---
->   .../devicetree/bindings/net/macb.txt          | 33 +++++++++++++++++++
->   1 file changed, 33 insertions(+)
+>   drivers/net/ethernet/cadence/macb_main.c | 47 +++++++++++++++++++++++-
+>   1 file changed, 46 insertions(+), 1 deletion(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
-> index a1b06fd1962e..e526952145b8 100644
-> --- a/Documentation/devicetree/bindings/net/macb.txt
-> +++ b/Documentation/devicetree/bindings/net/macb.txt
-> @@ -29,6 +29,12 @@ Required properties:
->   	Optional elements: 'rx_clk' applies to cdns,zynqmp-gem
->   	Optional elements: 'tsu_clk'
->   - clocks: Phandles to input clocks.
-> +- phy_names, phys: Required with ZynqMP SoC when in SGMII mode.
-> +                   phy_names should be "sgmii-phy" and phys should
-> +                   reference PS-GTR generic PHY device for this controller
-> +                   instance. See ZynqMP example below.
-> +- resets, reset-names: Recommended with ZynqMP, specify reset control for this
-> +		       controller instance with zynqmp-reset driver.
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index a363da928e8b..65b0360c487a 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -34,7 +34,9 @@
+>   #include <linux/udp.h>
+>   #include <linux/tcp.h>
+>   #include <linux/iopoll.h>
+> +#include <linux/phy/phy.h>
+>   #include <linux/pm_runtime.h>
+> +#include <linux/reset.h>
+>   #include "macb.h"
 >   
->   Optional properties:
->   - mdio: node containing PHY children. If this node is not present, then PHYs
-> @@ -58,3 +64,30 @@ Examples:
->   			reset-gpios = <&pioE 6 1>;
->   		};
->   	};
+>   /* This structure is only used for MACB on SiFive FU540 devices */
+> @@ -4455,6 +4457,49 @@ static int fu540_c000_init(struct platform_device *pdev)
+>   	return macb_init(pdev);
+>   }
+>   
+> +static int zynqmp_init(struct platform_device *pdev)
+> +{
+> +	struct net_device *dev = platform_get_drvdata(pdev);
+> +	struct macb *bp = netdev_priv(dev);
+> +	int ret;
 > +
-> +	gem1: ethernet@ff0c0000 {
-> +		compatible = "cdns,zynqmp-gem", "cdns,gem";
-> +		interrupt-parent = <&gic>;
-> +		interrupts = <0 59 4>, <0 59 4>;
-> +		reg = <0x0 0xff0c0000 0x0 0x1000>;
-> +		clocks = <&zynqmp_clk LPD_LSBUS>, <&zynqmp_clk GEM1_REF>,
-> +			 <&zynqmp_clk GEM1_TX>, <&zynqmp_clk GEM1_RX>,
-> +			 <&zynqmp_clk GEM_TSU>;
-> +		clock-names = "pclk", "hclk", "tx_clk", "rx_clk", "tsu_clk";
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +		#stream-id-cells = <1>;
-> +		iommus = <&smmu 0x875>;
-> +		power-domains = <&zynqmp_firmware PD_ETH_1>;
-> +		resets = <&zynqmp_reset ZYNQMP_RESET_GEM1>;
-> +		reset-names = "gem1_rst";
-> +		status = "okay";
-> +		phy-mode = "sgmii";
-> +		phy-names = "sgmii-phy";
-> +		phys = <&psgtr 1 PHY_TYPE_SGMII 1 1>;
-> +		fixed-link {
-> +			speed = <1000>;
-> +			full-duplex;
-> +			pause;
-> +		};
-> +	};
+> +	/* Fully reset GEM controller at hardware level using zynqmp-reset driver,
+> +	 * if mapped in device tree.
+> +	 */
+> +	ret = device_reset(&pdev->dev);
+> +	if (ret) {
+> +		dev_err_probe(&pdev->dev, ret, "failed to reset controller");
+> +		return ret;
+> +	}
+> +
+> +	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII) {
+> +		/* Ensure PS-GTR PHY device used in SGMII mode is ready */
+> +		struct phy *sgmii_phy = devm_phy_get(&pdev->dev, "sgmii-phy");
+> +
+> +		if (IS_ERR(sgmii_phy)) {
+> +			ret = PTR_ERR(sgmii_phy);
+> +			dev_err_probe(&pdev->dev, ret,
+> +				      "failed to get PS-GTR PHY\n");
+> +			return ret;
+> +		}
+> +
+> +		ret = phy_init(sgmii_phy);
+> +		if (ret) {
+> +			dev_err(&pdev->dev, "failed to init PS-GTR PHY: %d\n",
+> +				ret);
+> +			return ret;
+> +		}
 
+I was playing with it recently on u-boot side and device reset should happen 
+between phy init and phy power on to finish calibration.
+At least that's I was told and that's I use in u-boot driver.
 
-Geert already converted this file to yaml that's why you should target this version.
+Harini/Piyush: Please correct me if I am wrong.
 
 Thanks,
 Michal
