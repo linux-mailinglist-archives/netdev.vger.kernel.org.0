@@ -2,187 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6509948D6F1
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 12:53:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C2BA48D71C
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 13:06:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232627AbiAMLxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 06:53:11 -0500
-Received: from mail-dm3nam07on2060.outbound.protection.outlook.com ([40.107.95.60]:33824
-        "EHLO NAM02-DM3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231868AbiAMLxK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jan 2022 06:53:10 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N5xyR7dvDMYZDZWkJcqJlDCUpnIiiTnFKjCrznENY+brrd/79hXdYNMXHhJ9eHc6VwXAGZNfdWzZRbNKqs2CJ+GDvvlVXHLKBUk8jjgGsrKrEAoShTx57we6WoYeKeVOJsJ2A+jPxqnu09+m32t2KaPxpqDnBYtLcPdr35cAfbcFvZk91S787lJHkvjZBKuyCGvVTa7xonxzM2NvufSxTRcrbJ3H2Fax3khQx+UsOXiwZ8J0BUbPo2cjs+nBO5qDJZajXY2izk4ZeWeTI5Ms2qK/7mEVgB8COPDndm51GKiAHY3N+4CuT/V8UQ2jN50wfdlzDKNEzh8qcF8E4t/F0Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+lElpldeFHIuGcl3qrOa4HBPMzVl3DtMO/gvc10kpI0=;
- b=j3FqMDOiqPOwrOP5a55La1UlFGPw92tU8HNTh+kmOXuxvmI/2em+CZihlY2c66qiCmGZVBHTXmb/Rad5cRGyhffdWCbIKP9S8/gMtrwCq6I+RJgYB6eiz/dvGKzU4PH1npep8zBlUuRHj7ELK0S0ybLoWanYOunKUPkVglc6/qs2LqmglkbEIf1ZHNNgpaXWarRdBqWFb1PvxhDFsyyupCMRH5i65ERfh+SDoaXfWgA2Wr/ZiJJhOTGJtHtOUUCOIBxZzm+fTi5/6DnyXCf/SBanKXr4HHWmdN2T/OtRJkCxgM+rGBNzjhMelwEMJAuBbiO/EA/PM75i7RyhYjuwDw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
- dkim=pass header.d=xilinx.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+lElpldeFHIuGcl3qrOa4HBPMzVl3DtMO/gvc10kpI0=;
- b=iBRfEeI2/lu+soJCUh8MQYj1ziII7F91VFhrRM3qBqBXAlij3dS088JT9vHKxqVYFYzAGlCsEULKZX+vSA+HZaD+k00/K1JKXNDszPes1L5v7WcEGeybn2xOsAwMyVpMT/iyj/Vq0IdNAX5mF70HUPCtjr2ay0NtTINuCZ8/g/Q=
-Received: from SA1PR02MB8560.namprd02.prod.outlook.com (2603:10b6:806:1fb::24)
- by BYAPR02MB4919.namprd02.prod.outlook.com (2603:10b6:a03:51::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Thu, 13 Jan
- 2022 11:53:06 +0000
-Received: from SA1PR02MB8560.namprd02.prod.outlook.com
- ([fe80::7cc2:82b0:9409:7b05]) by SA1PR02MB8560.namprd02.prod.outlook.com
- ([fe80::7cc2:82b0:9409:7b05%5]) with mapi id 15.20.4888.011; Thu, 13 Jan 2022
- 11:53:06 +0000
-From:   Radhey Shyam Pandey <radheys@xilinx.com>
-To:     Robert Hancock <robert.hancock@calian.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Michal Simek <michals@xilinx.com>,
-        "ariane.keller@tik.ee.ethz.ch" <ariane.keller@tik.ee.ethz.ch>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Harini Katakam <harinik@xilinx.com>
-Subject: RE: [PATCH net v2 2/9] net: axienet: Wait for PhyRstCmplt after core
- reset
-Thread-Topic: [PATCH net v2 2/9] net: axienet: Wait for PhyRstCmplt after core
- reset
-Thread-Index: AQHYB9s2rj4tGsjvk0qQz4QEeERkwKxg0wQg
-Date:   Thu, 13 Jan 2022 11:53:06 +0000
-Message-ID: <SA1PR02MB8560F3EF51828D9065763968C7539@SA1PR02MB8560.namprd02.prod.outlook.com>
-References: <20220112173700.873002-1-robert.hancock@calian.com>
- <20220112173700.873002-3-robert.hancock@calian.com>
-In-Reply-To: <20220112173700.873002-3-robert.hancock@calian.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=xilinx.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f9505ad4-77c1-49c2-88c7-08d9d68b4333
-x-ms-traffictypediagnostic: BYAPR02MB4919:EE_
-x-microsoft-antispam-prvs: <BYAPR02MB4919966888E95C58358BED9CC7539@BYAPR02MB4919.namprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: RxtpBObIgWCae8e+diZokcIoHyJrd2O8BX7Q+xw6s6mKmoz8yI1nStP+oAQEqeDYtU9jmeUJq11JesROwKaGGMwHBQsWlk69IJRdAX+WTzXzhAofB3mE5TNw6JKeANdPi1yNj6twnzZDfst2V33NDgRBElqTGztFYoiiLLmLPjWw6rdukhSHNzrS3qdnn9AZkLVHMqbXfd1ej4IjFr1qSJj0Cbsk+yCDdIY0oCERj3xY+fZUIV5mfldh9mTNXnINEAcC8Sy9+dC1cUnQOanZ7bh0fTMTPw+XrI99y5a2clRElioNfwtUq/i24l6pwY7UBu3tHDhDKwJEi7L7dz+cEvuacj4lRFM647DOffZ/navJYicqbqyJLFzju+xkU/hklpH73mv2HaTboSkIr3AL+pz0mJS5g0Ym75umTeL4bBubA+ppNue3a9JwgySVUwr98rQ6udUcPhfM0+YquhxmUAQetuWXpD2GNzOi8hbnBw3W0LmWEc6TpE3HGJV7lvb7njPL+DfBR4enkZhhiJZyK4Z2utdFp9QEO2U6DO21cKCcdwEcPDHMlQr7nOXtmeE6/yt62LM/vEYaTJGfgFnwZ7lxwqDghu8ZsKlabCXmdTH8rsbpjy9ggUFHnJjJxT2D8GnEBtzWtW19/gnU/V8rN8Wcasqktyxss6bsevrU9M0qLeSaGh9f1K8yoGMZKZc5xf+/6BJcox8Pr0SVjSJUaw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR02MB8560.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66476007)(66946007)(54906003)(76116006)(66446008)(66556008)(64756008)(83380400001)(8936002)(5660300002)(33656002)(110136005)(508600001)(2906002)(316002)(8676002)(26005)(186003)(6506007)(52536014)(4326008)(38070700005)(71200400001)(107886003)(86362001)(122000001)(55016003)(38100700002)(9686003)(7696005)(53546011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?rKW4cqDSyIKxxW71s1zDs3n7g7eKXVCdE19ZXa9xgKm56IIcObFQPWIUPmm0?=
- =?us-ascii?Q?8kGp6Z3hNhDX0nxBnIOgt0RhfReKDRk04xuFVdh0RTpwwh1s5N3zNkvwyN8c?=
- =?us-ascii?Q?uT44XnDFSKuzG6DQr0D7MMZ0lUCG+f99eTrgBjUH5NRrN2glxbkU6C9gCJG5?=
- =?us-ascii?Q?/hlpsSuL2guh9ghmsC0SigA1IHR539F26RX2jvkydYip0WSsxuhdpFxIcIts?=
- =?us-ascii?Q?SN8eQbSYwWktGXja2csjHlFL1eBIC+Km21NtFCmL/LwBKkno780CUjU6iffk?=
- =?us-ascii?Q?vot+0e27oLOEPiWhFuRPHvvWkw8+n8094V+OwCQ5xjInO4Ds4PAPv5w0Ms5h?=
- =?us-ascii?Q?lLl+QbytTUFAV0SgbhUdvZfhlLDI7H45MycJIfxOAhgkmCiUYOoVXonCQJ1r?=
- =?us-ascii?Q?pRQaAwVu/yhd1INSM/Elc9W7GDdVeFk2I+5loFly71d7dtOxCIyMPyiKJKNl?=
- =?us-ascii?Q?iDu4HdsQxILcVSYSfaRG/5YhQ9Ip3M+jq9D4lWxMJaoN/ypSy9x0qHUAHza8?=
- =?us-ascii?Q?eoowcDPBuTIdrs6WR5YOScbSvsjI+1+R7/GUZ+f9xkOgakUy0lIy5hL3l7H6?=
- =?us-ascii?Q?dM1n/aUDFeUfOSBunNxnUfVansPlpDIetLgprnZzCuS+qSg2b6gxw1H8t4Ct?=
- =?us-ascii?Q?9jFtX95ovSfX9giLAi6vKZmcsA5vcNTvERq8N2y/Oo+l1kU6NDYM7FP/mhOH?=
- =?us-ascii?Q?dxTiADPD76Argmmh8e318tom2QRtIfvzP8JRKdPg6YidKPZBf+5hvytmxv0Z?=
- =?us-ascii?Q?ZwOkcIt4bLDxwQilh+1FBkAeIK6R6dke+HULhxwWZcnHyeQC0EB4dhxtclq6?=
- =?us-ascii?Q?e59E1WZcsxdhgGs9IICeiaLKedwMCTStshRTGXsAclPfqOCWA1FmvwBJV3iF?=
- =?us-ascii?Q?8ybtP7MA0IKhxbOJEo7uywWPmM5gGCGOdS/uKV5xNUbq+ytJ587ulRbE95nX?=
- =?us-ascii?Q?ANZOzzubDWYeGkDo4svNTuYUuz58O+1OjloaAb2uYUhSx2mhHkmGuqnyPVGU?=
- =?us-ascii?Q?gRmAmVdkpV4wWrDmEz3LdtjM/HOgsc5yu9tse5PTS4gtxU1/vHk0xi5pvNw2?=
- =?us-ascii?Q?bGx0fh4LoD3N4ZG1Oufw8KnwoxvA7mMO1uVt9jeaRj/wWNYqR9QKCIUkr9Qn?=
- =?us-ascii?Q?63aVjHIiqQQKKlYGvgumgMoi6ed5nyKwiPQgO69MAnG1zUJtfsgB8vXl4lYh?=
- =?us-ascii?Q?lZLm7dUexWULUw0aCF9CrNMAufIOdEMnU5B8SXtDb+NXjRC83aoejoHvRK/q?=
- =?us-ascii?Q?y39v72mQPkuuVvOq3bThEl0p3gssGnQGpQxki1sKgNXj6I+QerpYbk1ARQEI?=
- =?us-ascii?Q?BBaavT9eGY+dTS40gJh1eAxEhnmIrx1pWlFjRP9Lr4Bu8xNsLvTLPe62vFFj?=
- =?us-ascii?Q?muh3IiSuyEu/lmuKBL/IUlvIFwmThy/Ms4ojAvjT/dTuOqtnOLLgT2nX7HB1?=
- =?us-ascii?Q?bzgaqbjoVrQ8/7t4n5kTdkSRmrwjn0DUVctOisM7gEVBFnIICE9sBGJYcIGx?=
- =?us-ascii?Q?PJ/TBdzb3QuQd0Ewxj+m4oAgzBgj0Dzutn+2yrQ53V1GuPmGxbptZf4WM6cl?=
- =?us-ascii?Q?28+1w/yjscXDV/f/gRTc0oRHJPvDmuZer+WRNrO9upTVlEYUj4UTEdoiyQCO?=
- =?us-ascii?Q?Y062h6VB6oA1qHlBB/vGlGU=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S234344AbiAMMGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 07:06:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234337AbiAMMGg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 07:06:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2A2C06173F;
+        Thu, 13 Jan 2022 04:06:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2C90619F7;
+        Thu, 13 Jan 2022 12:06:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C97FC36AE9;
+        Thu, 13 Jan 2022 12:06:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642075595;
+        bh=RgWni6LqPjl7/Jpt8i2S8g4ZDYjkMn/V4Ho5ACe93Sg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=oNVpHqPNHOATYSR5XjkS6VOg2OnhzMuQH50/qmDCtZe9oAPiZvlznmwfPcsLn0AcD
+         YWUdQMjzZP0fiJq7xZcsNaGMvjBWpnJP2pHhOWeapFCJpFptd0waFqDLFu5hLG0jJ9
+         xJBL3KkUyrdUX8VQpujKDuMVX40ljpMrh0cc7MIe2lnxbwA4BxH15+WgILRcUbZbeR
+         /hm6GzcBls0KDxy9mKJ2N6G04h86ETlWRYgESpXEsMoo19EXszxd6vxxIxSs1rdoo2
+         RPu8q/W5V4wq9erWlNUsr0p2NFnn7XCt7uXFcbnenGtEBK693w9Sst9KrZgagDs+su
+         qgp1o4z7rslAQ==
+Received: by mail-wr1-f48.google.com with SMTP id h10so9722751wrb.1;
+        Thu, 13 Jan 2022 04:06:35 -0800 (PST)
+X-Gm-Message-State: AOAM53151ymfEd47hbWNWPQdcGg0jGTeDynWGKHZMf/SPPlWLcnLfnup
+        hC82zu/hwHR5+VCwQRbjsZDinQupT+RhCdxTVBg=
+X-Google-Smtp-Source: ABdhPJy0Pn2iuF5yVcjcvxDoW/UYW/fi7cHyKrpSuw+7inPMuZ4pLI4PPSLoo85XQYx26oM7ei6px2KQFxi1oB97Km8=
+X-Received: by 2002:adf:f287:: with SMTP id k7mr3800465wro.417.1642075593549;
+ Thu, 13 Jan 2022 04:06:33 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR02MB8560.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f9505ad4-77c1-49c2-88c7-08d9d68b4333
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jan 2022 11:53:06.4791
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: OV3j/H/4W7e6VNJZqt1BiGIf0u8d/36q4Wm8nU4LHRbEMmHcU03V8fMaj4Tf094nLw+8FzUG/Jl1Pj98+DFQFQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB4919
+References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-3-Jason@zx2c4.com>
+ <87r19cftbr.fsf@toke.dk> <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
+ <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
+In-Reply-To: <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Thu, 13 Jan 2022 13:06:22 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXGz7_98B_b=SJER6-Q2g-nOT5X3cfN=nfhYoH0eHep5bw@mail.gmail.com>
+Message-ID: <CAMj1kXGz7_98B_b=SJER6-Q2g-nOT5X3cfN=nfhYoH0eHep5bw@mail.gmail.com>
+Subject: Re: [PATCH RFC v1 2/3] ipv6: move from sha1 to blake2s in address calculation
+To:     Hannes Frederic Sowa <hannes@stressinduktion.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Erik Kline <ek@google.com>,
+        Fernando Gont <fgont@si6networks.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        hideaki.yoshifuji@miraclelinux.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Robert Hancock <robert.hancock@calian.com>
-> Sent: Wednesday, January 12, 2022 11:07 PM
-> To: netdev@vger.kernel.org
-> Cc: Radhey Shyam Pandey <radheys@xilinx.com>; davem@davemloft.net;
-> kuba@kernel.org; linux-arm-kernel@lists.infradead.org; Michal Simek
-> <michals@xilinx.com>; ariane.keller@tik.ee.ethz.ch; daniel@iogearbox.net;
-> Robert Hancock <robert.hancock@calian.com>
-> Subject: [PATCH net v2 2/9] net: axienet: Wait for PhyRstCmplt after core=
- reset
->=20
-> When resetting the device, wait for the PhyRstCmplt bit to be set
-> in the interrupt status register before continuing initialization, to
-> ensure that the core is actually ready. The MgtRdy bit could also be
-> waited for, but unfortunately when using 7-series devices, the bit does
+On Thu, 13 Jan 2022 at 12:15, Hannes Frederic Sowa
+<hannes@stressinduktion.org> wrote:
+>
+> Hello,
+>
+> On 13.01.22 00:31, Jason A. Donenfeld wrote:
+> > On 1/13/22, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+> >> However, if we make this change, systems setting a stable_secret and
+> >> using addr_gen_mode 2 or 3 will come up with a completely different
+> >> address after a kernel upgrade. Which would be bad for any operator
+> >> expecting to be able to find their machine again after a reboot,
+> >> especially if it is accessed remotely.
+> >>
+> >> I haven't ever used this feature myself, though, or seen it in use. So=
+ I
+> >> don't know if this is purely a theoretical concern, or if the
+> >> stable_address feature is actually used in this way in practice. If it
+> >> is, I guess the switch would have to be opt-in, which kinda defeats th=
+e
+> >> purpose, no (i.e., we'd have to keep the SHA1 code around
+>
+> Yes, it is hard to tell if such a change would have real world impact
+> due to not knowing its actual usage in the field - but I would avoid
+> such a change. The reason for this standard is to have stable addresses
+> across reboots. The standard is widely used but most servers or desktops
+> might get their stable privacy addresses being generated by user space
+> network management systems (NetworkManager/networkd) nowadays. I would
+> guess it could be used in embedded installations.
+>
+> The impact of this change could be annoying though: users could suddenly
+> lose connectivity due to e.g. changes to the default gateway after an
+> upgrade.
+>
+> > I'm not even so sure that's true. That was my worry at first, but
+> > actually, looking at this more closely, DAD means that the address can
+> > be changed anyway - a byte counter is hashed in - so there's no
+> > gurantee there.
+>
+> The duplicate address detection counter is a way to merely provide basic
+> network connectivity in case of duplicate addresses on the network
+> (maybe some kind misconfiguration or L2 attack). Such detected addresses
+> would show up in the kernel log and an administrator should investigate
+> and clean up the situation. Afterwards bringing the interface down and
+> up again should revert the interface to its initial (dad_counter =3D=3D 0=
+)
+> address.
+>
+> > There's also the other aspect that open coding sha1_transform like
+> > this and prepending it with the secret (rather than a better
+> > construction) isn't so great... Take a look at the latest version of
+> > this in my branch to see a really nice simplification and security
+> > improvement:
+> >
+> > https://git.zx2c4.com/linux-dev/log/?h=3Dremove-sha1
+>
+> All in all, I consider the hash produced here as being part of uAPI
+> unfortunately and thus cannot be changed. It is unfortunate that it
+> can't easily be improved (I assume a separate mode for this is not
+> reasonable). The patches definitely look like a nice cleanup.
+>
+> Would this be the only user of sha_transform left?
+>
 
-Just to understand - can you share 7- series design details.
-Based on documentation - This MgtRdy bit indicates if the TEMAC core is
-out of reset and ready for use. In systems that use an serial transceiver,=
-=20
-this bit goes to 1 when the serial transceiver is ready to use.
+The question is not whether but when we can/will change this.
 
-Also if we don't wait for phy reset - what is the issue we are seeing?
+SHA-1 is broken and should be removed at *some* point, so unless the
+feature itself is going to be obsolete, its implementation will need
+to switch to a PRF that fulfils the requirements in RFC7217 once SHA-1
+ceases to do so.
 
-> not appear to work as documented (it seems to behave as some sort of
-> link state indication and not just an indication the transceiver is
-> ready) so it can't really be relied on.
->=20
-> Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethe=
-rnet
-> driver")
-> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-> ---
->  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->=20
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> index f950342f6467..f425a8404a9b 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> @@ -516,6 +516,16 @@ static int __axienet_device_reset(struct axienet_loc=
-al
-> *lp)
->  		return ret;
->  	}
->=20
-> +	/* Wait for PhyRstCmplt bit to be set, indicating the PHY reset has
-> finished */
-> +	ret =3D read_poll_timeout(axienet_ior, value,
-> +				value & XAE_INT_PHYRSTCMPLT_MASK,
-> +				DELAY_OF_ONE_MILLISEC, 50000, false, lp,
-> +				XAE_IS_OFFSET);
-> +	if (ret) {
-> +		dev_err(lp->dev, "%s: timeout waiting for PhyRstCmplt\n",
-> __func__);
-> +		return ret;
-> +	}
-> +
->  	return 0;
->  }
->=20
-> --
-> 2.31.1
+And I should also point out that the current implementation does not
+even use SHA-1 correctly, as it omits the finalization step. This may
+or may not matter in practice, but it deviates from crypto best
+practices, as well as from RFC7217
 
+I already pointed out to Jason (in private) that the PRF does not need
+to be based on a cryptographic hash, so as far as I can tell, siphash
+would be a suitable candidate here as well, and I already switched the
+TCP fastopen code to that in the past. But SHA-1 definitely has to go.
