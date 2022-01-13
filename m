@@ -2,64 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C55A48D02C
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 02:33:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47B4748D032
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 02:38:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231349AbiAMBd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 20:33:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58722 "EHLO
+        id S231373AbiAMBiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 20:38:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231324AbiAMBd4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 20:33:56 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9CCC06173F;
-        Wed, 12 Jan 2022 17:33:56 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id n11so5289152plf.4;
-        Wed, 12 Jan 2022 17:33:56 -0800 (PST)
+        with ESMTP id S231324AbiAMBiH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 20:38:07 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F9DC06173F;
+        Wed, 12 Jan 2022 17:38:06 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id ie23-20020a17090b401700b001b38a5318easo8540555pjb.2;
+        Wed, 12 Jan 2022 17:38:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=m18no3eU9YHeOBJ70PLazPrqlrGWJoUY+UtRV0RJfnE=;
-        b=UmuUGXve9r7RpYvZiev379MA7uABBPIy9NIzLlVQhCGARCNeA/XjbLXQelwd22Mej0
-         h5Iz1VIfFDIDHao2yWLxgdxlqhcWkTX26NtLyVoTbJszoXGMfwcedOCg8vcf3ZbCKDbA
-         NYEOMU3JWY3nuGgrPhMOfyQs1k3NewqmLeKJtNJIsJsd91tUMyU4g9PsuIkNxSH6JmBC
-         NDrtMv69cUP9EDabJI/kJZF4z4oXMfqsKhiLVDPl2rjwBU9Jc9+wXx7vcvehSkYXqBeq
-         HDS5kFfAXxOTFj494Qi1piZ4QZ0/9cfRHutIueLlMtDLAg5jHot2s3D8b2hTsNDaYKpc
-         s3+Q==
+        bh=1Zv2hfu98FpKbkQI6Mx3GlXR6/32ZuuHl0Apa07shxY=;
+        b=n0zfQ6+mcPdpYj0OGGQNDNtUMM4llTV2p6EZHb0i8BDrREac8PJWqlkBbyoLO12gkM
+         nUFSD46/e+NQ+skCIr+YGQJ4iHyS22LmAlcTBSG3Lt6lZe1ISRvJvitiqGU22XpfgHF9
+         CyAKe8XrHhq3niIT6jlzg24UNw3ohgNjstKNq04do1u/pt2PAraXbWKVrWHESIezT8ZU
+         7dyX29Jp6jzGDhEDQ/1AM/WYhMTQ8WRhINhnGnqRrD4o2UFnUn8dv8mu1jrjUksVu2Jx
+         cWmqvTwRQjLQHumrCBaYrmqDvA34fes0POE8OJhv3ioU/aZOgDcJgzePVk9i29iJ69M4
+         ddFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=m18no3eU9YHeOBJ70PLazPrqlrGWJoUY+UtRV0RJfnE=;
-        b=VVTEBGHRreeOmId70EU+TpmTEdR1lLZhHxcU8rZu4YwUDSNyRgtijiu+yXca7fO3yH
-         wnCFz9b3LF5NTtPaN+fUP+Pxt8iJsjd/OTgtbK4Wx6F+OKCohdF0Qkeoo2og/M5iNBoH
-         brUu2J77GsP79bN5mOIHqP8hNEl3EUV91jWo17SnqScVsnURrOQO/FqDsuCxXyrgh3/p
-         8xgTcPj3T+g3pAXfFRlP1YkonXC7IFcKegf3ExgtG2l5pSAX/4YjaIm5Mh14y5yidJNL
-         aUh7ejj9AoUzgFwytmxHzBIQ+EAbSMtCk3+bo+/+NZFuWQ7uW1F8080Kl1En5TGBDraU
-         aKDA==
-X-Gm-Message-State: AOAM5335Jm4Wnz5JU7TzJ7F4dWPVMO9dWnomlBMdzY1pDQeJr1kEd/TK
-        aKqVwuyk43mFKsq+Hfo1FXZ4lbVbNcoDAwefO1g=
-X-Google-Smtp-Source: ABdhPJz4qeYIqi1ZeoHta49vEZlTq7oCkXYJDmz+FrBq+qxv0Qi2VWJg4urS6VyhZlHFR5eZ9MN/iySryZKlDcCLMdE=
-X-Received: by 2002:a63:be49:: with SMTP id g9mr1967928pgo.375.1642037635993;
- Wed, 12 Jan 2022 17:33:55 -0800 (PST)
+        bh=1Zv2hfu98FpKbkQI6Mx3GlXR6/32ZuuHl0Apa07shxY=;
+        b=d6LG+XMq/smFBUuRuDj16rABFiZBOfl9cJF++ue+hWDBHo4BbL8BwXDg06zYdzKFNd
+         XDvb6fIDBLL1cJlmwvW/NgFTcMbpTOonpWNxwwkPE3U+8GAS6nO20NNVGG7MaHbJur2g
+         vaXJPjSyTe6ELOK/B/PhQhsVT+XGicTnE+wuKkug74qlj8FQ1X5Mo8qqrptcwKWTdaIx
+         bevzW2H9recNInHjcEhFx66mGD14eevFei9zW7RV1s//240281dJfD820/MGfpIYZaT1
+         pZ1TO5eQTI84xgHfrfdz62MxhuZ3AZhiPflQ4SfMygGzxaJ7S8Vc3gRKhN5MBj6zilYs
+         79hg==
+X-Gm-Message-State: AOAM530KiZTl0B7ILx3YbEJO4SlCyN0h4c/plgZZgFQaynZsms1qm5RW
+        YsWfVrmrgqMow7/IPI1S14AbkHfmhaitdKNroY4grfWB
+X-Google-Smtp-Source: ABdhPJzm2WzaNhMtVTWlgGfPKDlg4lkkaIq1vUEEbYn3v+/rAQfjZz7OA3jKu3ZIA8jmPbICxofmO0PAlh81eT3MQgw=
+X-Received: by 2002:a17:90b:34f:: with SMTP id fh15mr11917726pjb.122.1642037885810;
+ Wed, 12 Jan 2022 17:38:05 -0800 (PST)
 MIME-Version: 1.0
-References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-2-Jason@zx2c4.com>
- <87tue8ftrm.fsf@toke.dk>
-In-Reply-To: <87tue8ftrm.fsf@toke.dk>
+References: <20220107215438.321922-1-toke@redhat.com> <20220107215438.321922-2-toke@redhat.com>
+ <CAADnVQ+uftgnRQa5nvG4FTJga_=_FMAGxuiPB3O=AFKfEdOg=A@mail.gmail.com>
+ <87pmp28iwe.fsf@toke.dk> <CAADnVQLWjbm03-3NHYyEx98tWRN68LSaOd3R9fjJoHY5cYoEJg@mail.gmail.com>
+ <87mtk67zfm.fsf@toke.dk> <20220109022448.bxgatdsx3obvipbu@ast-mbp.dhcp.thefacebook.com>
+ <87ee5h852v.fsf@toke.dk>
+In-Reply-To: <87ee5h852v.fsf@toke.dk>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 12 Jan 2022 17:33:44 -0800
-Message-ID: <CAADnVQJqoHy+EQ-G5fUtkPpeHaA6YnqsOjjhUY6UW0v7eKSTZw@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 1/3] bpf: move from sha1 to blake2s in tag calculation
+Date:   Wed, 12 Jan 2022 17:37:54 -0800
+Message-ID: <CAADnVQLk6TLdA7EG8TKGHM_R93GgQf76J60PEJohjup8JaP+Xw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 1/3] bpf: Add "live packet" mode for XDP in bpf_prog_run()
 To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
         Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
         bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
@@ -67,32 +73,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 5:14 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
+On Sun, Jan 9, 2022 at 4:30 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
 >
-> [ adding the bpf list - please make sure to include that when sending
->   BPF-related patches, not everyone in BPF land follows netdev ]
->
-> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
->
-> > BLAKE2s is faster and more secure. SHA-1 has been broken for a long tim=
-e
-> > now. This also removes quite a bit of code, and lets us potentially
-> > remove sha1 from lib, which would further reduce vmlinux size.
->
-> AFAIU, the BPF tag is just used as an opaque (i.e., arbitrary) unique
-> identifier for BPF programs, without any guarantees of stability. Which
-> means changing it should be fine; at most we'd confuse some operators
-> who have memorised the tags of their BPF programs :)
->
-> The only other concern I could see would be if it somehow locked us into
-> that particular algorithm for other future use cases for computing
-> hashes of BPF programs (say, signing if that ends up being the direction
-> we go in). But obviously SHA1 would not be a good fit for that anyway,
-> so the algorithm choice would have to be part of that discussion in any
-> case.
->
-> So all in all, I don't see any issues with making this change for BPF.
+> I left that out on purpose: I feel it's exposing an internal
+> implementation detail as UAPI (as you said). And I'm not convinced it
+> really needed (or helpful) - see below.
 
-Nack.
-It's part of api. We cannot change it.
+It's irrelevant whether it's documented or not.
+Once this implementation detail is being relied upon
+by user space it becomes an undocumented uapi that we cannot change.
+
+> I'll try implementing a TCP stream mode in xdp_trafficgen just to make
+> sure I'm not missing something. But I believe that sending out a stream
+> of packets that looks like a coherent TCP stream should be simple
+> enough, at least. Dealing with the full handshake + CWND control loop
+> will be harder, though, and right now I think it'll require multiple
+> trips back to userspace.
+
+The patch set looks very close to being able to do such TCP streaming.
+Let's make sure nothing is missing from API before we land it.
