@@ -2,74 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C65548DC27
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 17:45:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CBA248DC92
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 18:07:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236879AbiAMQpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 11:45:20 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.167]:42863 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236868AbiAMQpU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 11:45:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1642092287;
-    s=strato-dkim-0002; d=fpond.eu;
-    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=eqEZwnnhqa9x5sUpmp5+dl8+luCawycK4EknAItN9o0=;
-    b=f/TX8xb4MNyOSeZTVcP3hLR3JTn+t4iOXGSwd94rgi5oH+6ahWPTCOITmKq66XbtTB
-    3XgED/0B43N+E7q95aDElRDWP1IdppfWy+f15q8l50ovEzckAQ8oJ6IW0gotcF/mwMP3
-    5+gpw8fwe/i9jnKss1cXs4rAy52GKb+QuTdQqbX71SEGPMcZuRBLG1Rexx2Q/eVqwt7c
-    gtul07yXn3vNx9LUgRfy+WQ648Xnc7JHgkunFIbxhc9Yb3fM4k//hOk2E7/O/kIKr884
-    b+Tyap5P8i6vTA0qxlwUzB8fQ0MsBmLLF2mTKXY4qdGu6vytd37cRcIzuhdvx+2mGaSP
-    //aw==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzvv3qxio1R8fCs/83N2Y0="
-X-RZG-CLASS-ID: mo00
-Received: from oxapp05-01.back.ox.d0m.de
-    by smtp.strato.de (RZmta 47.37.6 AUTH)
-    with ESMTPSA id a48ca5y0DGikQkB
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Thu, 13 Jan 2022 17:44:46 +0100 (CET)
-Date:   Thu, 13 Jan 2022 17:44:46 +0100 (CET)
-From:   Ulrich Hecht <uli@fpond.eu>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, linux-can@vger.kernel.org,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        biju.das.jz@bp.renesas.com, wsa@kernel.org,
-        yoshihiro.shimoda.uh@renesas.com, wg@grandegger.com,
-        kuba@kernel.org, mailhol.vincent@wanadoo.fr,
-        socketcan@hartkopp.net, geert@linux-m68k.org,
-        kieran.bingham@ideasonboard.com
-Message-ID: <1933768449.3343335.1642092286817@webmail.strato.com>
-In-Reply-To: <20220112184327.f7fwzgqvle23gfzv@pengutronix.de>
-References: <20220111162231.10390-1-uli+renesas@fpond.eu>
- <20220111162231.10390-3-uli+renesas@fpond.eu>
- <20220112184327.f7fwzgqvle23gfzv@pengutronix.de>
-Subject: Re: [PATCH v2 2/5] can: rcar_canfd: Add support for r8a779a0 SoC
+        id S233520AbiAMRHR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jan 2022 12:07:17 -0500
+Received: from relay1-d.mail.gandi.net ([217.70.183.193]:48395 "EHLO
+        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232285AbiAMRHQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 12:07:16 -0500
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 0898724000F;
+        Thu, 13 Jan 2022 17:07:10 +0000 (UTC)
+Date:   Thu, 13 Jan 2022 18:07:09 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Harry Morris <h.morris@cascoda.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "linux-wireless@vger.kernel.org Wireless" 
+        <linux-wireless@vger.kernel.org>
+Subject: Re: [wpan-next v2 18/27] net: mac802154: Handle scan requests
+Message-ID: <20220113180709.0dade123@xps13>
+In-Reply-To: <CAB_54W4PL1ty5XsqRoEKwsy-h8KL9gSGMK6N=HiWJDp6NHsb0A@mail.gmail.com>
+References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
+        <20220112173312.764660-19-miquel.raynal@bootlin.com>
+        <CAB_54W4PL1ty5XsqRoEKwsy-h8KL9gSGMK6N=HiWJDp6NHsb0A@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-Importance: Normal
-X-Mailer: Open-Xchange Mailer v7.10.5-Rev33
-X-Originating-Client: open-xchange-appsuite
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Alexander,
 
-> On 01/12/2022 7:43 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> > +#define IS_V3U (gpriv->chip_id == RENESAS_R8A779A0)
+alex.aring@gmail.com wrote on Wed, 12 Jan 2022 17:44:02 -0500:
+
+> Hi,
 > 
-> I really don't like this macro, as it silently relies on gpriv....and
-> I really don't like this use of this macro in the other macros that lead
-> to 2 or even 3 ternary operators hiding inside them. Is there any chance
-> to change this?
+> On Wed, 12 Jan 2022 at 12:33, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> ...
+> > +       return 0;
+> > +}
+> > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+> > index c829e4a75325..40656728c624 100644
+> > --- a/net/mac802154/tx.c
+> > +++ b/net/mac802154/tx.c
+> > @@ -54,6 +54,9 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
+> >         struct net_device *dev = skb->dev;
+> >         int ret;
+> >
+> > +       if (unlikely(mac802154_scan_is_ongoing(local)))
+> > +               return NETDEV_TX_BUSY;
+> > +  
+> 
+> Please look into the functions "ieee802154_wake_queue()" and
+> "ieee802154_stop_queue()" which prevent this function from being
+> called. Call stop before starting scanning and wake after scanning is
+> done or stopped.
 
-Good point. I guess I should turn that into a function.
+Mmmh all this is already done, isn't it?
+- mac802154_trigger_scan_locked() stops the queue before setting the
+  promiscuous mode
+- mac802154_end_of_scan() wakes the queue after resetting the
+  promiscuous mode to its original state
 
-CU
-Uli
+Should I drop the check which stands for an extra precaution?
+
+
+But overall I think I don't understand well this part. What is
+a bit foggy to me is why the (async) tx implementation does:
+
+*Core*                           *Driver*
+
+stop_queue()
+drv_async_xmit() -------
+                        \------> do something
+                         ------- calls ieee802154_xmit_complete()
+wakeup_queue() <--------/
+
+So we actually disable the queue for transmitting. Why??
+
+> Also there exists a race which exists in your way and also the one
+> mentioned above. There can still be some transmissions going on... We
+> need to wait until "all possible" tx completions are done... to be
+> sure there are really no transmissions going on. However we need to be
+> sure that a wake cannot be done if a tx completion is done, we need to
+> avoid it when the scan operation is ongoing as a workaround for this
+> race.
+> 
+> This race exists and should be fixed in future work?
+
+Yep, this is true, do you have any pointers? Because I looked at the
+code and for now it appears quite unpractical to add some kind of
+flushing mechanism on that net queue. I believe we cannot use the netif
+interface for that so we would have to implement our own mechanism in
+the ieee802154 core.
+
+Thanks,
+Miquèl
