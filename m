@@ -2,145 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 449C548DA29
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 15:52:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9EA948DA38
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 15:57:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233300AbiAMOwB convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jan 2022 09:52:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41212 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230016AbiAMOwA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 09:52:00 -0500
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2B7C06161C;
-        Thu, 13 Jan 2022 06:51:59 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 696502000F;
-        Thu, 13 Jan 2022 14:51:56 +0000 (UTC)
-Date:   Thu, 13 Jan 2022 15:51:54 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Harry Morris <h.morris@cascoda.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>
-Subject: Re: [wpan-next v2 19/27] net: ieee802154: Full PAN management
-Message-ID: <20220113155154.243c36ad@xps13>
-In-Reply-To: <202201130436.44AM2OXA-lkp@intel.com>
-References: <20220112173312.764660-20-miquel.raynal@bootlin.com>
-        <202201130436.44AM2OXA-lkp@intel.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S235845AbiAMO5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 09:57:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39093 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232444AbiAMO5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 09:57:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642085864;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=XPQLNQPANIIPTQKapMJiZGqrO9RpNgEkn+C1aN7vbUw=;
+        b=STT/RHJbafvwDwPih53K0gMLMTSpQInl1HxL8Blojv1WeJ2LGnJs1/DT0jVCT+4U+0zCnn
+        2HMqLo4d0x4pu56sGdJfhNZgCFbH1AUXX6YAxMZRoxqzhp9szM2zm5PDpnhp1Djpnay/TP
+        qvQSe9m1qAlOyCW1DwOh0B2fJUXVnIs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-584-naW7issGM7GEdZAvkdEntQ-1; Thu, 13 Jan 2022 09:57:41 -0500
+X-MC-Unique: naW7issGM7GEdZAvkdEntQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1A022100D842;
+        Thu, 13 Jan 2022 14:57:40 +0000 (UTC)
+Received: from steredhat.redhat.com (unknown [10.64.242.242])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4FD665E498;
+        Thu, 13 Jan 2022 14:57:04 +0000 (UTC)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     netdev@vger.kernel.org, stefanha@redhat.com,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [RFC PATCH] vhost: cache avail index in vhost_enable_notify()
+Date:   Thu, 13 Jan 2022 15:56:42 +0100
+Message-Id: <20220113145642.205388-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In vhost_enable_notify() we enable the notifications and we read
+the avail index to check if new buffers have become available in
+the meantime. In this case, the device would go to re-read avail
+index to access the descriptor.
 
-lkp@intel.com wrote on Thu, 13 Jan 2022 04:46:11 +0800:
+As we already do in other place, we can cache the value in `avail_idx`
+and compare it with `last_avail_idx` to check if there are new
+buffers available.
 
-> Hi Miquel,
-> 
-> I love your patch! Yet something to improve:
-> 
-> [auto build test ERROR on linus/master]
-> [also build test ERROR on v5.16 next-20220112]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Miquel-Raynal/IEEE-802-15-4-scan-support/20220113-013731
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git daadb3bd0e8d3e317e36bc2c1542e86c528665e5
-> config: riscv-randconfig-r042-20220112 (https://download.01.org/0day-ci/archive/20220113/202201130436.44AM2OXA-lkp@intel.com/config)
-> compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 244dd2913a43a200f5a6544d424cdc37b771028b)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install riscv cross compiling tool for clang build
->         # apt-get install binutils-riscv64-linux-gnu
->         # https://github.com/0day-ci/linux/commit/9c8fbd918a704432bbf6cdce1d111e9002c756b4
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Miquel-Raynal/IEEE-802-15-4-scan-support/20220113-013731
->         git checkout 9c8fbd918a704432bbf6cdce1d111e9002c756b4
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash net/ieee802154/
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
-> >> net/ieee802154/nl802154.c:1613:8: error: implicit declaration of function 'nl802154_prepare_wpan_dev_dump' [-Werror,-Wimplicit-function-declaration]  
->            err = nl802154_prepare_wpan_dev_dump(skb, cb, &rdev, &wpan_dev);
->                  ^
-> >> net/ieee802154/nl802154.c:1637:2: error: implicit declaration of function 'nl802154_finish_wpan_dev_dump' [-Werror,-Wimplicit-function-declaration]  
->            nl802154_finish_wpan_dev_dump(rdev);
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ drivers/vhost/vhost.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-These two helpers were defined within the experimental section. I will
-move them out of this section now that they have other users than
-experimental code.
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 59edb5a1ffe2..07363dff559e 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -2543,8 +2543,9 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
+ 		       &vq->avail->idx, r);
+ 		return false;
+ 	}
++	vq->avail_idx = vhost16_to_cpu(vq, avail_idx);
+ 
+-	return vhost16_to_cpu(vq, avail_idx) != vq->avail_idx;
++	return vq->avail_idx != vq->last_avail_idx;
+ }
+ EXPORT_SYMBOL_GPL(vhost_enable_notify);
+ 
+-- 
+2.31.1
 
->            ^
->    net/ieee802154/nl802154.c:1637:2: note: did you mean 'nl802154_prepare_wpan_dev_dump'?
->    net/ieee802154/nl802154.c:1613:8: note: 'nl802154_prepare_wpan_dev_dump' declared here
->            err = nl802154_prepare_wpan_dev_dump(skb, cb, &rdev, &wpan_dev);
->                  ^
->    2 errors generated.
-> 
-> 
-> vim +/nl802154_prepare_wpan_dev_dump +1613 net/ieee802154/nl802154.c
-> 
->   1605	
->   1606	static int nl802154_dump_pans(struct sk_buff *skb, struct netlink_callback *cb)
->   1607	{
->   1608		struct cfg802154_registered_device *rdev;
->   1609		struct cfg802154_internal_pan *pan;
->   1610		struct wpan_dev *wpan_dev;
->   1611		int err;
->   1612	
-> > 1613		err = nl802154_prepare_wpan_dev_dump(skb, cb, &rdev, &wpan_dev);  
->   1614		if (err)
->   1615			return err;
->   1616	
->   1617		spin_lock_bh(&rdev->pan_lock);
->   1618	
->   1619		if (cb->args[2])
->   1620			goto out;
->   1621	
->   1622		cb->seq = rdev->pan_generation;
->   1623	
->   1624		ieee802154_for_each_pan(pan, rdev) {
->   1625			err = nl802154_send_pan_info(skb, cb, cb->nlh->nlmsg_seq,
->   1626						     NLM_F_MULTI, rdev, wpan_dev, pan);
->   1627			if (err < 0)
->   1628				goto out_err;
->   1629		}
->   1630	
->   1631		cb->args[2] = 1;
->   1632	out:
->   1633		err = skb->len;
->   1634	out_err:
->   1635		spin_unlock_bh(&rdev->pan_lock);
->   1636	
-> > 1637		nl802154_finish_wpan_dev_dump(rdev);  
->   1638	
->   1639		return err;
->   1640	}
->   1641	
-> 
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-
-
-Thanks,
-Miquèl
