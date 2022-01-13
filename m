@@ -2,44 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F57C48DC1F
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 17:43:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA43A48DC0A
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 17:41:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236850AbiAMQnL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jan 2022 11:43:11 -0500
-Received: from smtp-mail.cyber.net.pk ([175.107.196.160]:37217 "EHLO
-        smtp-mail.cyber.net.pk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232199AbiAMQnK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 11:43:10 -0500
-Received: from mail-corp.cyber.net.pk (mail-corp.cyber.net.pk [203.101.175.36])
-        by smtp-mail.cyber.net.pk (Postfix) with ESMTP id F384382B5E7A;
-        Thu, 13 Jan 2022 21:38:40 +0500 (PKT)
-Received: from [197.211.61.35] by hyproptic.com with HTTP;
- Thu, 13 Jan 2022 21:34:26 +0500
-From:   rashid.shamsi@hyproptic.com
-Date:   Thu, 13 Jan 2022 21:34:26 +0500
-X-Mailer: Axigen WebMail
-Reply-To: rashid.shamsi@hyproptic.com
-Message-ID: <1642091666782001433@hyproptic.com>
-Subject: =?utf-8?Q?=E2=80=8B=E2=80=8BGood_day=2C?=
-Importance: Normal
+        id S236814AbiAMQlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 11:41:24 -0500
+Received: from giacobini.uberspace.de ([185.26.156.129]:34842 "EHLO
+        giacobini.uberspace.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236804AbiAMQlX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 11:41:23 -0500
+Received: (qmail 25316 invoked by uid 990); 13 Jan 2022 16:41:22 -0000
+Authentication-Results: giacobini.uberspace.de;
+        auth=pass (plain)
+From:   Soenke Huster <soenke.huster@eknoes.de>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Soenke Huster <soenke.huster@eknoes.de>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] Bluetooth: fix null ptr deref on hci_sync_conn_complete_evt
+Date:   Thu, 13 Jan 2022 17:40:42 +0100
+Message-Id: <20220113164042.259990-1-soenke.huster@eknoes.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain;       charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-Content-Disposition: inline
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Bar: ++
+X-Rspamd-Report: BAYES_HAM(-0.045106) R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
+X-Rspamd-Score: 2.854893
+Received: from unknown (HELO unkown) (::1)
+        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Thu, 13 Jan 2022 17:41:22 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This event is specified just for SCO and eSCO link types.
+On the reception of a HCI_Synchronous_Connection_Complete for a BDADDR
+of an existing LE connection, LE link type and a status that triggers the
+second case of the packet processing a NULL pointer dereference happens,
+as conn->link is NULL.
 
+Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
+---
+v2: Fixed the obviously wrong boolean comparison
 
-​​Good day,
+I found this null pointer dereference while fuzzing bluetooth-next.
+On the described behaviour, a null ptr deref in line 4723 happens, as
+conn->link is NULL. According to the Core spec, Link_Type must be SCO or eSCO,
+all other values are reserved for future use. Checking that mitigates a null
+pointer dereference.
 
-My name is Rashid Shamsi. I would like to discuss something 
-important that will benefit both of us. I will send you more 
-details upon your response
+ net/bluetooth/hci_event.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Regards
-Rashid Shamsi.
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 05997dff5666..d68f5640fb38 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4661,6 +4661,11 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev, void *data,
+ 	struct hci_ev_sync_conn_complete *ev = data;
+ 	struct hci_conn *conn;
+ 
++	if (!(ev->link_type == SCO_LINK || ev->link_type == ESCO_LINK)) {
++		bt_dev_err(hdev, "Ignoring connect complete event for invalid link type");
++		return;
++	}
++
+ 	bt_dev_dbg(hdev, "status 0x%2.2x", ev->status);
+ 
+ 	hci_dev_lock(hdev);
+-- 
+2.34.1
 
