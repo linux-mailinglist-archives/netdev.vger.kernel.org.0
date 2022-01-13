@@ -2,74 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77D0348DE53
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 20:46:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FBD948DE93
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 21:04:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235562AbiAMTq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 14:46:26 -0500
-Received: from mxout03.lancloud.ru ([45.84.86.113]:54592 "EHLO
-        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232895AbiAMTqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 14:46:17 -0500
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru 4723F206166A
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-To:     Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S231673AbiAMUED (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 15:04:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231193AbiAMUEC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 15:04:02 -0500
+Received: from wp126.webpack.hosteurope.de (wp126.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8485::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FBFC061574
+        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 12:04:02 -0800 (PST)
+Received: from p5098d998.dip0.t-ipconnect.de ([80.152.217.152] helo=hermes.fivetechno.de); authenticated
+        by wp126.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1n86KF-0006EQ-11; Thu, 13 Jan 2022 21:03:59 +0100
+X-Virus-Scanned: by amavisd-new 2.12.1 using newest ClamAV at
+        linuxbbg.five-lan.de
+Received: from odroid-x2.fritz.box (pd9e89d11.dip0.t-ipconnect.de [217.232.157.17])
+        (authenticated bits=0)
+        by hermes.fivetechno.de (8.15.2/8.16.1/SUSE Linux 0.8) with ESMTPSA id 20DK3shg011127
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Thu, 13 Jan 2022 21:03:55 +0100
+From:   Markus Reichl <m.reichl@fivetechno.de>
+To:     Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     <bcm-kernel-feedback-list@broadcom.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Subject: [PATCH] bcmgenet: add WOL IRQ check
-Organization: Open Mobile Platform
-Message-ID: <2b49e965-850c-9f71-cd54-6ca9b7571cc3@omp.ru>
-Date:   Thu, 13 Jan 2022 22:46:07 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Jakub Kicinski <kuba@kernel.org>,
+        Martyn Welch <martyn.welch@collabora.com>
+Cc:     Markus Reichl <m.reichl@fivetechno.de>,
+        Gabriel Hojda <ghojda@yo2urs.ro>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: usb: Correct reset handling of smsc95xx
+Date:   Thu, 13 Jan 2022 21:01:11 +0100
+Message-Id: <20220113200113.30702-1-m.reichl@fivetechno.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;m.reichl@fivetechno.de;1642104242;30535d97;
+X-HE-SMSGID: 1n86KF-0006EQ-11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver neglects to check the result of platform_get_irq_optional()'s
-call and blithely passes the negative error codes to devm_request_irq()
-(which takes *unsigned* IRQ #), causing it to fail with -EINVAL.
-Stop calling devm_request_irq() with the invalid IRQ #s.
+On boards with LAN9514 and no preconfigured MAC address we don't get an
+ip address from DHCP after commit a049a30fc27c ("net: usb: Correct PHY handling
+of smsc95xx") anymore. Adding an explicit reset before starting the phy
+fixes the issue.
 
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+[1]
+https://lore.kernel.org/netdev/199eebbd6b97f52b9119c9fa4fd8504f8a34de18.camel@collabora.com/
 
+From: Gabriel Hojda <ghojda@yo2urs.ro>
+Fixes: a049a30fc27c ("net: usb: Correct PHY handling of smsc95xx")
+Signed-off-by: Gabriel Hojda <ghojda@yo2urs.ro>
+Signed-off-by: Markus Reichl <m.reichl@fivetechno.de>
 ---
-This patch is against DaveM's 'net.git' repo.
+ drivers/net/usb/smsc95xx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
- drivers/net/ethernet/broadcom/genet/bcmgenet.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index abe0149ed917..bc1e3dd67c04 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -1962,7 +1962,8 @@ static const struct driver_info smsc95xx_info = {
+ 	.bind		= smsc95xx_bind,
+ 	.unbind		= smsc95xx_unbind,
+ 	.link_reset	= smsc95xx_link_reset,
+-	.reset		= smsc95xx_start_phy,
++	.reset		= smsc95xx_reset,
++	.check_connect	= smsc95xx_start_phy,
+ 	.stop		= smsc95xx_stop,
+ 	.rx_fixup	= smsc95xx_rx_fixup,
+ 	.tx_fixup	= smsc95xx_tx_fixup,
+-- 
+2.30.2
 
-Index: net/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-===================================================================
---- net.orig/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ net/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -4020,10 +4020,12 @@ static int bcmgenet_probe(struct platfor
- 
- 	/* Request the WOL interrupt and advertise suspend if available */
- 	priv->wol_irq_disabled = true;
--	err = devm_request_irq(&pdev->dev, priv->wol_irq, bcmgenet_wol_isr, 0,
--			       dev->name, priv);
--	if (!err)
--		device_set_wakeup_capable(&pdev->dev, 1);
-+	if (priv->wol_irq > 0) {
-+		err = devm_request_irq(&pdev->dev, priv->wol_irq,
-+				       bcmgenet_wol_isr, 0, dev->name, priv);
-+		if (!err)
-+			device_set_wakeup_capable(&pdev->dev, 1);
-+	}
- 
- 	/* Set the needed headroom to account for any possible
- 	 * features enabling/disabling at runtime
