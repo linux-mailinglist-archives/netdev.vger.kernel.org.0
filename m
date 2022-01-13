@@ -2,82 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72CC448D7DF
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 13:27:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2D4A48D7E7
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 13:27:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230428AbiAMM1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 07:27:31 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56552 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiAMM13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 07:27:29 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA222B8226A;
-        Thu, 13 Jan 2022 12:27:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BD9EC36AE9;
-        Thu, 13 Jan 2022 12:27:25 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="pNHTZ90I"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1642076843;
+        id S231761AbiAMM1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 07:27:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55981 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229660AbiAMM1j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 07:27:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642076859;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=RZmY2qIaiurYA/mKJE7ohEEiru8H9JdVZELIj1PxIoA=;
-        b=pNHTZ90IApTGB11vIl/VF0ODy6Loqda26jRcYs+JQGuKkhFz+WEgF7SguXvUtETp9+fJgq
-        N5a+hAPHhhOOiIyRH/y6VRInUkZyPEuShsYD1v3UChYodhWsWWe6PMJSV/pBDFkY4jXkfZ
-        OkoHXX6ZEYf0uXUum9WD5/LlUuu5VJM=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e8048666 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 13 Jan 2022 12:27:23 +0000 (UTC)
-Received: by mail-yb1-f178.google.com with SMTP id p187so14552328ybc.0;
-        Thu, 13 Jan 2022 04:27:23 -0800 (PST)
-X-Gm-Message-State: AOAM532mUUlUxyBCiQAVk6Caeuu1/5qGMQu6+8oJA0FepE7TWXo27vHM
-        6MC0M/PfcE7g1oly0n4TfCPS0FLWVOjVI4xLHiI=
-X-Google-Smtp-Source: ABdhPJyjblO80oVVfKtvp+fpCD1/tdJaccCxyhOaUzN+ACfnKycKaW4Jfx66NtSUKzLtNUvaew12fpw4QtJ8EzhwKwM=
-X-Received: by 2002:a25:8c4:: with SMTP id 187mr5368723ybi.245.1642076842465;
- Thu, 13 Jan 2022 04:27:22 -0800 (PST)
+        bh=ViQVHhS9TeU1GADrKolwOU4MxQRPJUjTMiV4znToNZg=;
+        b=S61E3PMcSiNkDJkvPVCzceJ9qfyhEJ3C2wN/Xz/GedDMNaGaHDfquIyBgQXMkdL0rs8cFq
+        2qb53tWtXcxZuBkuXe5+9VTWyycoRiAvJ6p07PdHpIXvFjLyr4iGGfbMkAMet3UBZCnVXl
+        a2gOjpm0nItJ+3FeJZ19ngUvXNuCu+A=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-572-mtFGF8BrNp2D39UrA2HCvw-1; Thu, 13 Jan 2022 07:27:37 -0500
+X-MC-Unique: mtFGF8BrNp2D39UrA2HCvw-1
+Received: by mail-ed1-f70.google.com with SMTP id m8-20020a056402510800b003f9d22c4d48so5169303edd.21
+        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 04:27:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ViQVHhS9TeU1GADrKolwOU4MxQRPJUjTMiV4znToNZg=;
+        b=YVd/HI4TOS9K987behwLibBceqWAKU2JhuZvbXtZVe0ivMGQGdju9XBbnQHK4b7pMs
+         MtGYgMevbiTtCJLwhqPSmxSK8qvuAoEOsAbc2zObfrYRIjRsZBQ6dndmDMuk9aWa6hcj
+         yMo503NqqbFyIKY+jQKsOoOINQbcClEpYK2DOOKZTlPRI0rxWNJzxweUkeHnSOwDKufw
+         fQWXTLKlinc9uufGFRnXx34jvBqnfogwCiCSiR7vhZA5025BroWEU6E5QjA8sCBw/HWn
+         Khf1eFeoJwunjnzMMBat0N011sN6Y0CQ+yJrR5NzXYglGggAecbYQ1TsG1k7Y2TcujdW
+         w69Q==
+X-Gm-Message-State: AOAM5300UKU3FydplEl/f9143+SfPS2LOeJ0mjHpBj5JJsOFiWWnCZ9x
+        NYax8wMrO3lVeMETiIVNKYmo13WYy8GQzbOmMjQkElghQN4hQuO/bRdDU6hpTfgLZt8VTf8UbGi
+        9JFWu12UR2ifWDfhw
+X-Received: by 2002:a17:906:da1b:: with SMTP id fi27mr3480789ejb.68.1642076856777;
+        Thu, 13 Jan 2022 04:27:36 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzzq8hitOmNz+ym3vvwJSFT3GdzZkSBYpwA288q5gf8tRuG+8tKBO7yzTkkVxcdxI0Vag+s+w==
+X-Received: by 2002:a17:906:da1b:: with SMTP id fi27mr3480767ejb.68.1642076856599;
+        Thu, 13 Jan 2022 04:27:36 -0800 (PST)
+Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id qa35sm836380ejc.67.2022.01.13.04.27.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Jan 2022 04:27:36 -0800 (PST)
+Date:   Thu, 13 Jan 2022 13:27:34 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH v2 0/8] fprobe: Introduce fprobe function entry/exit
+ probe
+Message-ID: <YeAatqQTKsrxmUkS@krava>
+References: <164199616622.1247129.783024987490980883.stgit@devnote2>
+ <Yd77SYWgtrkhFIYz@krava>
 MIME-Version: 1.0
-Received: by 2002:a05:7110:209:b0:11c:1b85:d007 with HTTP; Thu, 13 Jan 2022
- 04:27:22 -0800 (PST)
-In-Reply-To: <CAADnVQJqoHy+EQ-G5fUtkPpeHaA6YnqsOjjhUY6UW0v7eKSTZw@mail.gmail.com>
-References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-2-Jason@zx2c4.com>
- <87tue8ftrm.fsf@toke.dk> <CAADnVQJqoHy+EQ-G5fUtkPpeHaA6YnqsOjjhUY6UW0v7eKSTZw@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 13 Jan 2022 13:27:22 +0100
-X-Gmail-Original-Message-ID: <CAHmME9ork6wh-T=sRfX6X0B4j-Vb36GVO0v=Yda0Hac1hiN_KA@mail.gmail.com>
-Message-ID: <CAHmME9ork6wh-T=sRfX6X0B4j-Vb36GVO0v=Yda0Hac1hiN_KA@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 1/3] bpf: move from sha1 to blake2s in tag calculation
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yd77SYWgtrkhFIYz@krava>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexei,
+On Wed, Jan 12, 2022 at 05:01:15PM +0100, Jiri Olsa wrote:
+> On Wed, Jan 12, 2022 at 11:02:46PM +0900, Masami Hiramatsu wrote:
+> > Hi Jiri and Alexei,
+> > 
+> > Here is the 2nd version of fprobe. This version uses the
+> > ftrace_set_filter_ips() for reducing the registering overhead.
+> > Note that this also drops per-probe point private data, which
+> > is not used anyway.
+> > 
+> > This introduces the fprobe, the function entry/exit probe with
+> > multiple probe point support. This also introduces the rethook
+> > for hooking function return as same as kretprobe does. This
+> 
+> nice, I was going through the multi-user-graph support 
+> and was wondering that this might be a better way
+> 
+> > abstraction will help us to generalize the fgraph tracer,
+> > because we can just switch it from rethook in fprobe, depending
+> > on the kernel configuration.
+> > 
+> > The patch [1/8] and [7/8] are from your series[1]. Other libbpf
+> > patches will not be affected by this change.
+> 
+> I'll try the bpf selftests on top of this
 
-On 1/13/22, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> Nack.
-> It's part of api. We cannot change it.
+I'm getting crash and stall when running bpf selftests,
+the fprobe sample module works fine, I'll check on that
 
-This is an RFC patchset, so there's no chance that it'll actually be
-applied as-is, and hence there's no need for the strong hammer nack.
-The point of "request for comments" is comments. Specifically here,
-I'm searching for information on the ins and outs of *why* it might be
-hard to change. How does userspace use this? Why must this 64-bit
-number be unchanged? Why did you do things this way originally? Etc.
-If you could provide a bit of background, we might be able to shake
-out a solution somewhere in there.
+jirka
 
-Thanks,
-Jason
