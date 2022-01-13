@@ -2,204 +2,354 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7766E48D5C1
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 11:30:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C35848D5B8
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 11:30:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231461AbiAMKad (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 05:30:33 -0500
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:44720 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231269AbiAMKa3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 05:30:29 -0500
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20D8Mbg5031717;
-        Thu, 13 Jan 2022 10:30:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : in-reply-to : message-id : references : content-type :
- mime-version; s=corp-2021-07-09;
- bh=zz+sZCEHgTqlKkNzG73vvPKElm+fx6zlm6qlzjFhqwo=;
- b=iKgfODjmJmhG7cyvjoCFpf8FXY2A2glJ1Ef04kTpnKzXAtFgJe1MtYBIgpwSs/xSluPT
- HurnlPR6K4EJwXeb3LiukVcTvMl4E1Rmpc859arBI3/2Yw9XCh0Y5fNtZyy1qDTLVEhS
- dHbOCCVeEQT5JZZ6lAV55AX9OPUyDCyyT9kc1h1q6BIoCuzskBNRYjnpODVOBJykwIS2
- 4jPwEOEfW3TdU2DxDVXvpGJOe7LW09T/JWYko7UzLm5+gM2CCGraxuVAPoQU5nEXUoUj
- i9MOg1MH4zzpVmyAKOvHdGMjafUGYzPPyBL+RkDqkm0498madrXnKIWSErkqryywewU2 Hg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dgmk9grnm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 13 Jan 2022 10:30:13 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20DAFjAx030505;
-        Thu, 13 Jan 2022 10:30:12 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2108.outbound.protection.outlook.com [104.47.55.108])
-        by userp3020.oracle.com with ESMTP id 3df42ra4dc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 13 Jan 2022 10:30:12 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=msbYT63X3XMUO/DXVz6tcQTTgTqQYAZcxBhaEYviCdu5WKn9LMR+yOVHsCSUQlxhQp7dlfsB0MpSpuMyn7RCjRFYfZfX1vxE5LpPXQ6pA+BGMPj60SyZJLB5wyQ/35T8cXlbHymrJJjIRecjB2Qd/eLesyOjWgeufguyHXgOiZHR+ZA2BBKNXlNtW7vAwlFlKEYXTb9dcfyC/KqgnxcPTYQ9Q+4R4q9GCjCLsdmvj/ujxmqF7UVmQCSFAAm8yWwBYF0At4S0ye0y1uo2oySePDtGH8z1UuteVXnNdszA+0HxZuADlurVvbMeBRBs719cOlRBIFib3vI6f39NHeVoYg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zz+sZCEHgTqlKkNzG73vvPKElm+fx6zlm6qlzjFhqwo=;
- b=f/6LQic4AY7035FVS5DraaTPPcTdqPaKE+RSvWEzXaKY+yoLHqfpJK0i8ilEnPOsHaTaqXU9yYvhqgkfS/RdpK+O2ebYxkC14EbS+lgb6VI6vH7WNBN0eZiq3AJkkEinqrfVkbnJbisnQhYjP6q8TDzrIG5LCfS8UlGplSLdGgyRnbyw7s0C+S0JeZ/RYhdbtISUo4x23qEQjG+qSH20I2QuyEGOtPU9oEPV4ywP0bgfyj6FkyR3XHqiKrvYsJtiPnYbSQ3XyRZRo62iujJhe+++1B4EbbD8c44Iy/Hu+1NHa5I5r/nD3i7q+rAwG/sn08kdLALoFXDeQWMKQby/LA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zz+sZCEHgTqlKkNzG73vvPKElm+fx6zlm6qlzjFhqwo=;
- b=hjKoXcbJdASS/YAf5AcZ4HhDJuxGVo6b6V26ysw7+c+jWbPK9pNZV15F7TCocLx3LSsNitcFUlTfD8FCsJEspZlsFDkGlBVql6jQzML+1nsym6ESng6joEX6pGrYSKNWg/0WA/lUSmz1qgpNV+5tVjFHsBbGhoY3sAty7h58T38=
-Received: from BLAPR10MB5267.namprd10.prod.outlook.com (2603:10b6:208:30e::22)
- by DM6PR10MB3546.namprd10.prod.outlook.com (2603:10b6:5:17d::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Thu, 13 Jan
- 2022 10:30:08 +0000
-Received: from BLAPR10MB5267.namprd10.prod.outlook.com
- ([fe80::31c1:e20b:33a1:ba8c]) by BLAPR10MB5267.namprd10.prod.outlook.com
- ([fe80::31c1:e20b:33a1:ba8c%5]) with mapi id 15.20.4888.011; Thu, 13 Jan 2022
- 10:30:08 +0000
-Date:   Thu, 13 Jan 2022 10:29:35 +0000 (GMT)
-From:   Alan Maguire <alan.maguire@oracle.com>
-X-X-Sender: alan@localhost
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-cc:     Alan Maguire <alan.maguire@oracle.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        Yucong Sun <sunyucong@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [RFC bpf-next 0/4] libbpf: userspace attach by name
-In-Reply-To: <CAEf4BzYRLxzVHw00DUphqqdv2m_AU7Mu=S0JF0PZYN40hBvHgA@mail.gmail.com>
-Message-ID: <alpine.LRH.2.23.451.2201131025380.13423@localhost>
-References: <1642004329-23514-1-git-send-email-alan.maguire@oracle.com> <CAEf4BzYRLxzVHw00DUphqqdv2m_AU7Mu=S0JF0PZYN40hBvHgA@mail.gmail.com>
-Content-Type: text/plain; charset=US-ASCII
-X-ClientProxiedBy: SG2PR06CA0094.apcprd06.prod.outlook.com
- (2603:1096:3:14::20) To BLAPR10MB5267.namprd10.prod.outlook.com
- (2603:10b6:208:30e::22)
+        id S230274AbiAMKaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 05:30:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:46396 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229612AbiAMK36 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 05:29:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642069798;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/Ec0o9qzD1GRqtj/WcahqgAUhQgRhUtsvHZIoGoIcBg=;
+        b=hkkMeDdptJL2Nah4nWY3HplFmNyvpkjTrto3SoX5zd+dIEMO1JJuhNXhn40ue3Z1ncFwsK
+        WfcDSwXoJ9rhKJHDixap1Bn3cZx/0eJuOeN+vcn/JOXMQvtQYQ+4ASN8rGBcV1enfVv/Ho
+        XEgg1H74xIl9ssaM7J5bwEzbKej8FQk=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-551-x2mcrwMEOx274GACUFhEsw-1; Thu, 13 Jan 2022 05:29:54 -0500
+X-MC-Unique: x2mcrwMEOx274GACUFhEsw-1
+Received: by mail-ed1-f70.google.com with SMTP id g11-20020a056402090b00b003f8fd1ac475so4980547edz.1
+        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 02:29:54 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=/Ec0o9qzD1GRqtj/WcahqgAUhQgRhUtsvHZIoGoIcBg=;
+        b=U89E7dNNQ+4/rE4QjlTHY0m9DbERMHCRa91FCZM/pnmbqMPzEWCohoj7nOqkcWdv7m
+         osfqcxiipIF5x6msbQ2q15A4rNoKCQ6dulqBqRYAjV3wMReDmVIRmoQQ6Ko2+2UMsEOU
+         p5K4ztkvqC9VS9pPe1Bd1zsK+bZwBMq8Hn0d7tyD8GI0YllussD2dD46Jyw/vN2Dn7mY
+         QsFUEk+Jhw8SCmLRfZlffWbSJqp/bak3SIvQh8bBaRgBTVUyIve2SnYiuALKLwejrvO/
+         FD56NOoQj4rCh6nV43Dg04LQNazAgbLpw0P3XgwTCk3oMGTcK/AcEqLEoO5oH5aQsYqh
+         fyMw==
+X-Gm-Message-State: AOAM532a7oEPdKfDsU2PjF8r64r3ratEu1S5jfAzHiUvtEGp/hH5HWg1
+        jLWZb2cW06/JdVNz8jUzkeVEh2hWWjqGwDQ+2BOSvdIzM/5t35+ZU7R4kopLoZK2iwVRcqVejcj
+        7+D17bMZEa9IeoZ4e
+X-Received: by 2002:a17:907:86ab:: with SMTP id qa43mr3041584ejc.119.1642069793281;
+        Thu, 13 Jan 2022 02:29:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwgQiOTLT0DcJhewksl/RlrSfJmujTuCRfPqszInsHDpDN8KOpmmQmw8ML47HJAyzssLYiwsg==
+X-Received: by 2002:a17:907:86ab:: with SMTP id qa43mr3041568ejc.119.1642069792974;
+        Thu, 13 Jan 2022 02:29:52 -0800 (PST)
+Received: from redhat.com ([2.55.6.51])
+        by smtp.gmail.com with ESMTPSA id r2sm744771ejg.17.2022.01.13.02.29.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Jan 2022 02:29:52 -0800 (PST)
+Date:   Thu, 13 Jan 2022 05:29:49 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Cc:     jasowang@redhat.com, netdev@vger.kernel.org
+Subject: Re: [PATCH 7/7] vDPA/ifcvf: improve irq requester, to handle
+ per_vq/shared/config irq
+Message-ID: <20220113052821-mutt-send-email-mst@kernel.org>
+References: <20220110051851.84807-1-lingshan.zhu@intel.com>
+ <20220110051851.84807-8-lingshan.zhu@intel.com>
+ <20220110005612-mutt-send-email-mst@kernel.org>
+ <bc210134-4b1c-1b23-47f3-c90fb4b91b65@intel.com>
+ <d7610c1c-611f-86e2-5330-c4783db078f5@intel.com>
+ <20220113044642-mutt-send-email-mst@kernel.org>
+ <104ef2d4-fb89-58e6-0a07-f8bdaeb278e3@intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0eb7e2df-4718-4d06-2f3b-08d9d67fabec
-X-MS-TrafficTypeDiagnostic: DM6PR10MB3546:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR10MB3546CB54DFFEF52DE2C11DEAEF539@DM6PR10MB3546.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1201;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tjBZq4AdazVHlpHM0l7iwlsNRxTsTz2p50k1n9sK/Dxu7Zpe50whY6MTQb5IsXVbGo7V+quXLBuh3ZGoKRMBRYatsYP3cz5zxcSyh38HAkHKXI6CtrufBqYJzHM28Lx8hzJTjKDe1eUna3VjfHb+HE+sYUMtBpLvfy5ewlp22vTlHLVz/0/sDbtFgPYyo1rRIEAPLlpv+pKZHo7w/qjc3L4rsGaZ8+i9lcaGeMl8mVr3o4jsqd2NalnmCNXACF1EviczQ3qf1570HyAEGx4/yC//FS01rz7X9NX7ScYUdIxvRxgaXZlPMBaRn75PmSFypcIw++ltcCudLhZyNXaisbIFpywTfVqmDGl7lwPPTsjdxefyFjYVMMiOEsA6Pt6y6CiQDr8XPtiinIWOmlGCQCngShN8x0koDrm9snABo0CokyWPqexvXvBW9+0AMFztfdx7/5caMQJbh1QknqviCJqyIKDwrUQ1NS5TOXMe5cwnMyRj9mE0yot88ufiuH1lP0O8nkjOlPbhlCabGhc2b8GbMcLtwb39jnLQtGwkmwF4uYw7ZkxlCXvkg4n4Gbm3LdZmnf4YinK2ntMpJvVfs8i0AZPPxJACX6je/hZBHFi7Z2sG0nER8BR/2SYde0I0MP2bXGQhw7CMkER8XoqKaQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5267.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(44832011)(6666004)(6512007)(9686003)(66946007)(4326008)(5660300002)(66476007)(66556008)(7416002)(186003)(508600001)(2906002)(6486002)(86362001)(54906003)(316002)(8936002)(52116002)(53546011)(6506007)(8676002)(38100700002)(33716001)(6916009)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p21KMk1a3+BR1K+tA+H+79lLZHcL3WG7W7ZUPEKGAdRWvYo2UoxXG23I/PYy?=
- =?us-ascii?Q?uiowXLx6FXtG1y/wJsoQCtZn8rEYLulJubdksLezsTfxtAj57DYVQf2wl6yp?=
- =?us-ascii?Q?3++NtWOksuEfini+8LsPh9oKzpPC0DaFB9MHARBUPCpAaJKgIeJEh6lbO4a6?=
- =?us-ascii?Q?ZuT7LrAS41SfLIrSZmjmBnXtPKOja7nrZo8hrDCH4BZH9q48eJZw/y+u06EQ?=
- =?us-ascii?Q?D6jiIwWOX79QfHXhjSdY0cThvx1j4utP44YT5bTMT9hNQSBORp5axdVas683?=
- =?us-ascii?Q?l5zTNFXB7zgYcocGcjwULi/bvy34lYlcuSa0pab17f+nvNUdBgpLDvUA1rnB?=
- =?us-ascii?Q?VhVsPNrHg35/phVvlvBfilMMCiQMNiSebzo9KEg84/8JdY5N6YK494LFncNf?=
- =?us-ascii?Q?H+SRv8oKoJWnI+5XXU5UzBokfCvgjV7PdhvE5qCl5epsYaPkGfN8Jscq5cGM?=
- =?us-ascii?Q?tjGvKoqrtInSXKOMoqlp3xJqqsVyBm0lCBBZfQoA6N4ErvFHLqq9yeDg/+ZA?=
- =?us-ascii?Q?/MZK+pofyBZ+8Nz4vqUlmgCkhF2XiXu0s32eH3I3TE3FK8WvDz/c93TSJeGM?=
- =?us-ascii?Q?CZsLDiNlV5kkyQEScUmlb0nrjSXSCBhS5IZ9PnsCvZP/QYuzRUpexTqOngkJ?=
- =?us-ascii?Q?Q8BUMmJftPaemSbq67k0jtnZLxaj+bKva394kBIJ8xFxj3xOfSoPPrdIuq2K?=
- =?us-ascii?Q?OEpBjJTeIyK3Uh2QzE5vKktFvp+sO43qnibL4jpmACDewGDjQhiE1mSthZlO?=
- =?us-ascii?Q?qBS9bfYdiYrCJnyPuLJInrHqoDG29HN/+g17Xfr9vuPnS2gcvi63wptzUaPH?=
- =?us-ascii?Q?sOoNGR6Xy1JdKRjVTFSwqv9lEgzcnxfcQYO5npBLxXZYzKSotReYzhOBwnf6?=
- =?us-ascii?Q?KximYwfgWEDKNdBZyv+RsK11wVDfckOMRcCA3qhJfyIGWkCf2QiBnQJM/NOP?=
- =?us-ascii?Q?e6ocaI8D+9/jfB7Vdfyky/UcGJyT7nI8ogE0jP7M+xnLAr49X0tekHikYx+t?=
- =?us-ascii?Q?afcwOEfve3+0pYrGmMozo3MXuj+fho6tygfr6S7kG2GZFyuPFbOSj4zw6JFP?=
- =?us-ascii?Q?MmkJx3O2Q6DfEZy629/ydjocI8OGULty8YdamwJ7NBVS2kBbyAl28DPeOYu0?=
- =?us-ascii?Q?ALpbxAuNvQBNjQJDWVN9YNHl5PUf8oiYRwtf/REobQQJHcmqzJcbLYllU1X0?=
- =?us-ascii?Q?2gnOQ/acnYeur5ANdLW5n2YtsU8hsyDedeZFnj3fzK5WMGUaRDppOBzGO0Hf?=
- =?us-ascii?Q?f1MeAVtX0teADpgENwE+CV0vXdIyFHIvBvtEDE9TjfHcYAhZBU4T2XnHtg+g?=
- =?us-ascii?Q?lsaNZqhCFHDyaAFigoMNvMenqIgcOccq1sTd+bUJ8N8zsX0rg0RREmJ6MWyN?=
- =?us-ascii?Q?OmviY14fjenJe37bE2O3ph/f+ycH/Zu1UpsDuEK6tOd/1EzYx4ysG8vQBtax?=
- =?us-ascii?Q?sFTjEWr806vZH4gX4Ximox6ME1l+z2Mi7tjE3jiqBKJImPABIQjPWGloJTUz?=
- =?us-ascii?Q?r2jnJOlSBq7EMG5e5ctSrj/LWNWGuWz4gcb2JqsQMVISfrmtGoCJDks7FcgS?=
- =?us-ascii?Q?ww6+ElJ1chE9zh0DHqBdRGEFuxBrL81lT6kRWICU9zfzNeuIkmLOjuofT/kt?=
- =?us-ascii?Q?9Sy6RVpTilNffDJFReUTwVr9X/c2vJsosFPoHEn5E7Wp?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0eb7e2df-4718-4d06-2f3b-08d9d67fabec
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5267.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2022 10:30:08.5396
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Jk+9WAUUFzUJnx3/k3aVYitU1RmvZkurJpWlFTHFt4oGmlN385CY13GKxVFJBcMxPlWOPLSlV6NrHNDhrCjsbA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3546
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10225 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 phishscore=0
- mlxlogscore=999 spamscore=0 bulkscore=0 malwarescore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2201130061
-X-Proofpoint-GUID: UhPjIv_cr_aOTQ6Sy5GR_ZrJOacY0eDJ
-X-Proofpoint-ORIG-GUID: UhPjIv_cr_aOTQ6Sy5GR_ZrJOacY0eDJ
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <104ef2d4-fb89-58e6-0a07-f8bdaeb278e3@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Jan 2022, Andrii Nakryiko wrote:
-
-> On Wed, Jan 12, 2022 at 8:19 AM Alan Maguire <alan.maguire@oracle.com> wrote:
-> >
-> > This patch series is a rough attempt to support attach by name for
-> > uprobes and USDT (Userland Static Defined Tracing) probes.
-> > Currently attach for such probes is done by determining the offset
-> > manually, so the aim is to try and mimic the simplicity of kprobe
-> > attach, making use of uprobe opts.
-> >
-> > One restriction applies: uprobe attach supports system-wide probing
-> > by specifying "-1" for the pid.  That functionality is not supported,
-> > since we need a running process to determine the base address to
-> > subtract to get the uprobe-friendly offset.  There may be a way
-> > to do this without a running process, so any suggestions would
-> > be greatly appreciated.
-> >
-> > There are probably a bunch of subtleties missing here; the aim
-> > is to see if this is useful and if so hopefully we can refine
-> > it to deal with more complex cases.  I tried to handle one case
-> > that came to mind - weak library symbols - but there are probably
-> > other issues when determining which address to use I haven't
-> > thought of.
-> >
-> > Alan Maguire (4):
-> >   libbpf: support function name-based attach for uprobes
-> >   libbpf: support usdt provider/probe name-based attach for uprobes
-> >   selftests/bpf: add tests for u[ret]probe attach by name
-> >   selftests/bpf: add test for USDT uprobe attach by name
-> >
+On Thu, Jan 13, 2022 at 06:10:15PM +0800, Zhu, Lingshan wrote:
 > 
-> Hey Alan,
 > 
-> I've been working on USDT support last year. It's considerably more
-> code than in this RFC, but it handles not just finding a location of
-> USDT probe(s), but also fetching its arguments based on argument
-> location specification and more usability focused BPF-side APIs to
-> work with USDTs.
+> On 1/13/2022 5:52 PM, Michael S. Tsirkin wrote:
+> > On Thu, Jan 13, 2022 at 04:17:29PM +0800, Zhu, Lingshan wrote:
+> > > 
+> > > On 1/11/2022 3:11 PM, Zhu, Lingshan wrote:
+> > > 
+> > > 
+> > > 
+> > >      On 1/10/2022 2:04 PM, Michael S. Tsirkin wrote:
+> > > 
+> > >          On Mon, Jan 10, 2022 at 01:18:51PM +0800, Zhu Lingshan wrote:
+> > > 
+> > >              This commit expends irq requester abilities to handle per vq irq,
+> > >              shared irq and config irq.
+> > > 
+> > >              On some platforms, the device can not get enough vectors for every
+> > >              virtqueue and config interrupt, the device needs to work under such
+> > >              circumstances.
+> > > 
+> > >              Normally a device can get enough vectors, so every virtqueue and
+> > >              config interrupt can have its own vector/irq. If the total vector
+> > >              number is less than all virtqueues + 1(config interrupt), all
+> > >              virtqueues need to share a vector/irq and config interrupt is
+> > >              enabled. If the total vector number < 2, all vitequeues share
+> > >              a vector/irq, and config interrupt is disabled. Otherwise it will
+> > >              fail if allocation for vectors fails.
+> > > 
+> > >              This commit also made necessary chages to the irq cleaner to
+> > >              free per vq irq/shared irq and config irq.
+> > > 
+> > >              Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> > > 
+> > >          In this case, shouldn't you also check VIRTIO_PCI_ISR_CONFIG?
+> > >          doing that will skip the need
+> > > 
+> > >      Hello Michael,
+> > > 
+> > >      When insufficient MSIX vectors granted:
+> > >      If num_vectors >=2, there will be a vector for the config interrupt, and all vqs share one vector.
+> > >      If num_vectors =1, all vqs share the only one vector, and config interrupt is disabled.
+> > ATM linux falls back to INTX in that case, shared by config and vqs.
+> Yes, the same result. However this driver needs to drive VFs too, and VFs do
+> not support INTX,
+> so we need it to send msix dma.
+> > 
+> > >      currently vqs and config interrupt don't share vectors, so IMHO, no need to check .
+> > IMHO it does not matter much that current Linux drivers do not use it,
+> > the spec explicitly allows this option. If such hardware
+> > becomes more common (and you seem to want to improve support
+> > for managing interrupts so maybe yes) we'll add it in Linux.
+> (just see your another email coming), so I think I should implement a irq
+> handler
+> for num_vectors=1 case, a handler checks VIRTIO_PCI_ISR_CONFIG to tell
+> whether
+> it is a vq interrupt or config interrupt, then handle it(not disabling
+> config interrupt).
 > 
-> I don't remember how up to date it is, but the last "open source"
-> version of it can be found at [0]. I currently have the latest
-> debugged and tested version internally in the process of being
-> integrated into our profiling solution here at Meta. So far it seems
-> to be working fine and covers our production use cases well.
-> 
+> Thanks,
+> Zhu Lingshan
 
-This looks great Andrii! I really like the argument access work, and the
-global tracing part is solved too by using the ELF segment info instead
-of the process maps to get the relative offset, with (I think?) use of
-BPF cookies to disambiguate between different user attachments.
+Right. To be more exact, if status is bit 2 is not set you call
+vq interrupt, if set you call both vq and config interrupt,
+since with MSI only config interrupts have a status bit.
 
-The one piece that seems to be missing from my perspective - and this may 
-be in more recent versions - is uprobe function attachment by name. Most of 
-the work is  already done in libusdt so it's reasonably doable I think - at a 
-minimum  it would require an equivalent to the find_elf_func_offset() 
-function in my  patch 1. Now the name of the library libusdt suggests its 
-focus is on USDT of course, but I think having userspace function attach 
-by name too would be great. Is that part of your plans for this work?
+> > 
+> > >      I will send a V2 patch address your comments.
+> > > 
+> > >      Thanks,
+> > >      Zhu Lingshan
+> > > 
+> > >              ---
+> > >               drivers/vdpa/ifcvf/ifcvf_base.h |  6 +--
+> > >               drivers/vdpa/ifcvf/ifcvf_main.c | 78 +++++++++++++++------------------
+> > >               2 files changed, 38 insertions(+), 46 deletions(-)
+> > > 
+> > >              diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
+> > >              index 1d5431040d7d..1d0afb63f06c 100644
+> > >              --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+> > >              +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+> > >              @@ -27,8 +27,6 @@
+> > > 
+> > >               #define IFCVF_QUEUE_ALIGNMENT  PAGE_SIZE
+> > >               #define IFCVF_QUEUE_MAX                32768
+> > >              -#define IFCVF_MSI_CONFIG_OFF   0
+> > >              -#define IFCVF_MSI_QUEUE_OFF    1
+> > >               #define IFCVF_PCI_MAX_RESOURCE 6
+> > > 
+> > >               #define IFCVF_LM_CFG_SIZE              0x40
+> > >              @@ -102,11 +100,13 @@ struct ifcvf_hw {
+> > >                      u8 notify_bar;
+> > >                      /* Notificaiton bar address */
+> > >                      void __iomem *notify_base;
+> > >              +       u8 vector_per_vq;
+> > >              +       u16 padding;
+> > > 
+> > >          What is this padding doing?
+> > > 
+> > > for cacheline alignment
+> > > 
+> > > 
+> > > 
+> > >                      phys_addr_t notify_base_pa;
+> > >                      u32 notify_off_multiplier;
+> > >              +       u32 dev_type;
+> > >                      u64 req_features;
+> > >                      u64 hw_features;
+> > >              -       u32 dev_type;
+> > > 
+> > >          moving things around ... optimization? split out.
+> > > 
+> > > sure
+> > > 
+> > > 
+> > > 
+> > >                      struct virtio_pci_common_cfg __iomem *common_cfg;
+> > >                      void __iomem *net_cfg;
+> > >                      struct vring_info vring[IFCVF_MAX_QUEUES];
+> > >              diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+> > >              index 414b5dfd04ca..ec76e342bd7e 100644
+> > >              --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+> > >              +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+> > >              @@ -17,6 +17,8 @@
+> > >               #define DRIVER_AUTHOR   "Intel Corporation"
+> > >               #define IFCVF_DRIVER_NAME       "ifcvf"
+> > > 
+> > >              +static struct vdpa_config_ops ifc_vdpa_ops;
+> > >              +
+> > > 
+> > >          there can be multiple devices thinkably.
+> > >          reusing a global ops does not sound reasonable.
+> > > 
+> > > OK, I will set vq irq number to -EINVAL when vqs share irq,
+> > > then we can disable irq_bypass when see irq = -EINVAL,
+> > > no need to set get_vq_irq = NULL.
+> > > 
+> > > 
+> > > 
+> > > 
+> > >               static irqreturn_t ifcvf_config_changed(int irq, void *arg)
+> > >               {
+> > >                      struct ifcvf_hw *vf = arg;
+> > >              @@ -63,13 +65,20 @@ static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
+> > >                      struct ifcvf_hw *vf = &adapter->vf;
+> > >                      int i;
+> > > 
+> > >              +       if (vf->vector_per_vq)
+> > >              +               for (i = 0; i < queues; i++) {
+> > >              +                       devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
+> > >              +                       vf->vring[i].irq = -EINVAL;
+> > >              +               }
+> > >              +       else
+> > >              +               devm_free_irq(&pdev->dev, vf->vring[0].irq, vf);
+> > > 
+> > >              -       for (i = 0; i < queues; i++) {
+> > >              -               devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
+> > >              -               vf->vring[i].irq = -EINVAL;
+> > >              +
+> > >              +       if (vf->config_irq != -EINVAL) {
+> > >              +               devm_free_irq(&pdev->dev, vf->config_irq, vf);
+> > >              +               vf->config_irq = -EINVAL;
+> > >                      }
+> > > 
+> > >          what about other error types?
+> > > 
+> > > vf->config_irq is set to -EINVAL in ifcvf_request_config_irq(),
+> > > if no config irq(vector) is granted, or it should be a valid irq number,
+> > > so there can be no other error numbers. But I can change it
+> > > to  if (vf->config_irq < 0) for sure
+> > > 
+> > > 
+> > > 
+> > > 
+> > >              -       devm_free_irq(&pdev->dev, vf->config_irq, vf);
+> > >                      ifcvf_free_irq_vectors(pdev);
+> > >               }
+> > > 
+> > >              @@ -191,52 +200,35 @@ static int ifcvf_request_config_irq(struct ifcvf_adapter *adapter, int config_ve
+> > > 
+> > >               static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
+> > >               {
+> > >              -       struct pci_dev *pdev = adapter->pdev;
+> > >                      struct ifcvf_hw *vf = &adapter->vf;
+> > >              -       int vector, i, ret, irq;
+> > >              -       u16 max_intr;
+> > >              +       u16 nvectors, max_vectors;
+> > >              +       int config_vector, ret;
+> > > 
+> > >              -       /* all queues and config interrupt  */
+> > >              -       max_intr = vf->nr_vring + 1;
+> > >              +       nvectors = ifcvf_alloc_vectors(adapter);
+> > >              +       if (nvectors < 0)
+> > >              +               return nvectors;
+> > > 
+> > >              -       ret = pci_alloc_irq_vectors(pdev, max_intr,
+> > >              -                                   max_intr, PCI_IRQ_MSIX);
+> > >              -       if (ret < 0) {
+> > >              -               IFCVF_ERR(pdev, "Failed to alloc IRQ vectors\n");
+> > >              -               return ret;
+> > >              -       }
+> > >              +       vf->vector_per_vq = true;
+> > >              +       max_vectors = vf->nr_vring + 1;
+> > >              +       config_vector = vf->nr_vring;
+> > > 
+> > >              -       snprintf(vf->config_msix_name, 256, "ifcvf[%s]-config\n",
+> > >              -                pci_name(pdev));
+> > >              -       vector = 0;
+> > >              -       vf->config_irq = pci_irq_vector(pdev, vector);
+> > >              -       ret = devm_request_irq(&pdev->dev, vf->config_irq,
+> > >              -                              ifcvf_config_changed, 0,
+> > >              -                              vf->config_msix_name, vf);
+> > >              -       if (ret) {
+> > >              -               IFCVF_ERR(pdev, "Failed to request config irq\n");
+> > >              -               return ret;
+> > >              +       if (nvectors < max_vectors) {
+> > >              +               vf->vector_per_vq = false;
+> > >              +               config_vector = 1;
+> > >              +               ifc_vdpa_ops.get_vq_irq = NULL;
+> > >                      }
+> > > 
+> > >              -       for (i = 0; i < vf->nr_vring; i++) {
+> > >              -               snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
+> > >              -                        pci_name(pdev), i);
+> > >              -               vector = i + IFCVF_MSI_QUEUE_OFF;
+> > >              -               irq = pci_irq_vector(pdev, vector);
+> > >              -               ret = devm_request_irq(&pdev->dev, irq,
+> > >              -                                      ifcvf_intr_handler, 0,
+> > >              -                                      vf->vring[i].msix_name,
+> > >              -                                      &vf->vring[i]);
+> > >              -               if (ret) {
+> > >              -                       IFCVF_ERR(pdev,
+> > >              -                                 "Failed to request irq for vq %d\n", i);
+> > >              -                       ifcvf_free_irq(adapter, i);
+> > >              +       if (nvectors < 2)
+> > >              +               config_vector = 0;
+> > > 
+> > >              -                       return ret;
+> > >              -               }
+> > >              +       ret = ifcvf_request_vq_irq(adapter, vf->vector_per_vq);
+> > >              +       if (ret)
+> > >              +               return ret;
+> > > 
+> > >              -               vf->vring[i].irq = irq;
+> > >              -       }
+> > >              +       ret = ifcvf_request_config_irq(adapter, config_vector);
+> > >              +
+> > >              +       if (ret)
+> > >              +               return ret;
+> > > 
+> > >          here on error we need to cleanup vq irq we requested, need we not?
+> > > 
+> > > I think it may not be needed, it can work without config interrupt, though lame
+> > > 
+> > > Thanks for your comments!
+> > > Zhu Lingshan
+> > > 
+> > > 
+> > > 
+> > > 
+> > >                      return 0;
+> > >               }
+> > >              @@ -573,7 +565,7 @@ static struct vdpa_notification_area ifcvf_get_vq_notification(struct vdpa_devic
+> > >                * IFCVF currently does't have on-chip IOMMU, so not
+> > >                * implemented set_map()/dma_map()/dma_unmap()
+> > >                */
+> > >              -static const struct vdpa_config_ops ifc_vdpa_ops = {
+> > >              +static struct vdpa_config_ops ifc_vdpa_ops = {
+> > >                      .get_features   = ifcvf_vdpa_get_features,
+> > >                      .set_features   = ifcvf_vdpa_set_features,
+> > >                      .get_status     = ifcvf_vdpa_get_status,
+> > >              --
+> > >              2.27.0
+> > > 
+> > > 
+> > > 
+> > > 
 
-Thanks!
-
-Alan
