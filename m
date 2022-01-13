@@ -2,109 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2D4A48D7E7
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 13:27:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92A6748D7F2
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 13:29:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231761AbiAMM1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 07:27:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55981 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229660AbiAMM1j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 07:27:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642076859;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ViQVHhS9TeU1GADrKolwOU4MxQRPJUjTMiV4znToNZg=;
-        b=S61E3PMcSiNkDJkvPVCzceJ9qfyhEJ3C2wN/Xz/GedDMNaGaHDfquIyBgQXMkdL0rs8cFq
-        2qb53tWtXcxZuBkuXe5+9VTWyycoRiAvJ6p07PdHpIXvFjLyr4iGGfbMkAMet3UBZCnVXl
-        a2gOjpm0nItJ+3FeJZ19ngUvXNuCu+A=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-572-mtFGF8BrNp2D39UrA2HCvw-1; Thu, 13 Jan 2022 07:27:37 -0500
-X-MC-Unique: mtFGF8BrNp2D39UrA2HCvw-1
-Received: by mail-ed1-f70.google.com with SMTP id m8-20020a056402510800b003f9d22c4d48so5169303edd.21
-        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 04:27:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ViQVHhS9TeU1GADrKolwOU4MxQRPJUjTMiV4znToNZg=;
-        b=YVd/HI4TOS9K987behwLibBceqWAKU2JhuZvbXtZVe0ivMGQGdju9XBbnQHK4b7pMs
-         MtGYgMevbiTtCJLwhqPSmxSK8qvuAoEOsAbc2zObfrYRIjRsZBQ6dndmDMuk9aWa6hcj
-         yMo503NqqbFyIKY+jQKsOoOINQbcClEpYK2DOOKZTlPRI0rxWNJzxweUkeHnSOwDKufw
-         fQWXTLKlinc9uufGFRnXx34jvBqnfogwCiCSiR7vhZA5025BroWEU6E5QjA8sCBw/HWn
-         Khf1eFeoJwunjnzMMBat0N011sN6Y0CQ+yJrR5NzXYglGggAecbYQ1TsG1k7Y2TcujdW
-         w69Q==
-X-Gm-Message-State: AOAM5300UKU3FydplEl/f9143+SfPS2LOeJ0mjHpBj5JJsOFiWWnCZ9x
-        NYax8wMrO3lVeMETiIVNKYmo13WYy8GQzbOmMjQkElghQN4hQuO/bRdDU6hpTfgLZt8VTf8UbGi
-        9JFWu12UR2ifWDfhw
-X-Received: by 2002:a17:906:da1b:: with SMTP id fi27mr3480789ejb.68.1642076856777;
-        Thu, 13 Jan 2022 04:27:36 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzzq8hitOmNz+ym3vvwJSFT3GdzZkSBYpwA288q5gf8tRuG+8tKBO7yzTkkVxcdxI0Vag+s+w==
-X-Received: by 2002:a17:906:da1b:: with SMTP id fi27mr3480767ejb.68.1642076856599;
-        Thu, 13 Jan 2022 04:27:36 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id qa35sm836380ejc.67.2022.01.13.04.27.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 04:27:36 -0800 (PST)
-Date:   Thu, 13 Jan 2022 13:27:34 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH v2 0/8] fprobe: Introduce fprobe function entry/exit
- probe
-Message-ID: <YeAatqQTKsrxmUkS@krava>
-References: <164199616622.1247129.783024987490980883.stgit@devnote2>
- <Yd77SYWgtrkhFIYz@krava>
+        id S232927AbiAMM3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 07:29:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57400 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231301AbiAMM3z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 07:29:55 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE2BCB8226C;
+        Thu, 13 Jan 2022 12:29:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEFB1C36AEF;
+        Thu, 13 Jan 2022 12:29:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642076992;
+        bh=X5jETQgkQZS/2fpSntJpBBFhReQIN06u1o0hN2hor78=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=cm0l6TUG4CMMmVUp+jXxaKjNQyOVhj//O8GkLtbxT1csqRchAoKfMSsjZj228V4TM
+         chNGd7GNKBS0UVgZX/FWjNvTNZ/QA/JD3E4n9H9x3cHB5bGkWKQUzh+HSb++jm1827
+         RIK6RZYwgJopXuPX7MZ4S7YH8Dk9I148EVxeKLeKEcaF8YTleX+nFSqiN+Ja/iZ4sK
+         yA9OXCWOPfNswtKqUFLQPlRVmBS7TNJ8lLqIX6c9NNJIHFPfWz3AA6iIC7pyjLvn4m
+         GDaFm6XZTBTkNn6yE8ER+1kaOGUtTzIwDoC8OTwpnqcO4r+i/XTRPGEMFH04mqsdmi
+         QjsnxVMtkuKAA==
+Received: by mail-wr1-f53.google.com with SMTP id l25so9735844wrb.13;
+        Thu, 13 Jan 2022 04:29:52 -0800 (PST)
+X-Gm-Message-State: AOAM533Sq8el3gUZcNzIxJF9a9uO5FiDMuOTQQghhtZ02gMmVXc4hfuW
+        tj4m0oL2E1y3u7LzVPPPHPL2WrxUsBPEni4hk1Y=
+X-Google-Smtp-Source: ABdhPJzbEoF8BcekTlsuwHwDqGMGCkjXPqt10iYsm5hjT9bV1vFHGcxLmw+JEzXMd4aIE7HlJHP7IuBXHZh6PSFwxss=
+X-Received: by 2002:adf:f287:: with SMTP id k7mr3883893wro.417.1642076991005;
+ Thu, 13 Jan 2022 04:29:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yd77SYWgtrkhFIYz@krava>
+References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-3-Jason@zx2c4.com>
+ <87r19cftbr.fsf@toke.dk> <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
+ <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
+ <CAMj1kXGz7_98B_b=SJER6-Q2g-nOT5X3cfN=nfhYoH0eHep5bw@mail.gmail.com> <CAHmME9paa0Z+wBza4gDT3xPzKqhGk9AoL433sOu9H=NHxiZA_Q@mail.gmail.com>
+In-Reply-To: <CAHmME9paa0Z+wBza4gDT3xPzKqhGk9AoL433sOu9H=NHxiZA_Q@mail.gmail.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Thu, 13 Jan 2022 13:29:39 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXHHvm6jeoWZVcRuRtxos3MJajMkuFj4-Hu6ZADjxu=y3A@mail.gmail.com>
+Message-ID: <CAMj1kXHHvm6jeoWZVcRuRtxos3MJajMkuFj4-Hu6ZADjxu=y3A@mail.gmail.com>
+Subject: Re: [PATCH RFC v1 2/3] ipv6: move from sha1 to blake2s in address calculation
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Erik Kline <ek@google.com>,
+        Fernando Gont <fgont@si6networks.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        hideaki.yoshifuji@miraclelinux.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 05:01:15PM +0100, Jiri Olsa wrote:
-> On Wed, Jan 12, 2022 at 11:02:46PM +0900, Masami Hiramatsu wrote:
-> > Hi Jiri and Alexei,
-> > 
-> > Here is the 2nd version of fprobe. This version uses the
-> > ftrace_set_filter_ips() for reducing the registering overhead.
-> > Note that this also drops per-probe point private data, which
-> > is not used anyway.
-> > 
-> > This introduces the fprobe, the function entry/exit probe with
-> > multiple probe point support. This also introduces the rethook
-> > for hooking function return as same as kretprobe does. This
-> 
-> nice, I was going through the multi-user-graph support 
-> and was wondering that this might be a better way
-> 
-> > abstraction will help us to generalize the fgraph tracer,
-> > because we can just switch it from rethook in fprobe, depending
-> > on the kernel configuration.
-> > 
-> > The patch [1/8] and [7/8] are from your series[1]. Other libbpf
-> > patches will not be affected by this change.
-> 
-> I'll try the bpf selftests on top of this
+On Thu, 13 Jan 2022 at 13:22, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> On 1/13/22, Ard Biesheuvel <ardb@kernel.org> wrote:
+> >
+> > The question is not whether but when we can/will change this.
+> >
+> > SHA-1 is broken and should be removed at *some* point, so unless the
+> > feature itself is going to be obsolete, its implementation will need
+> > to switch to a PRF that fulfils the requirements in RFC7217 once SHA-1
+> > ceases to do so.
+> >
+> > And I should also point out that the current implementation does not
+> > even use SHA-1 correctly, as it omits the finalization step. This may
+> > or may not matter in practice, but it deviates from crypto best
+> > practices, as well as from RFC7217
+> >
+> > I already pointed out to Jason (in private) that the PRF does not need
+> > to be based on a cryptographic hash, so as far as I can tell, siphash
+> > would be a suitable candidate here as well, and I already switched the
+> > TCP fastopen code to that in the past. But SHA-1 definitely has to go.
+> >
+>
+> Correction: this should be a cryptographically secure.
 
-I'm getting crash and stall when running bpf selftests,
-the fprobe sample module works fine, I'll check on that
+Of course. I said it does not need to be based on a cryptographic *hash*.
 
-jirka
+> That's part of
+> the point of moving away from SHA-1 of course. But fortunately,
+> siphash *is*
+> considered to be cryptographically secure. Whether you want blake2s's
+> keyed mode or siphash doesn't really matter to me. I thought the
+> former's API mapped a bit neater here.
 
+Fair enough. This is not on a hot path anyway, so it doesn't really
+matter performance wise.
