@@ -2,145 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EE8F48D688
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 12:15:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C965148D68D
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 12:16:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234065AbiAMLPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 06:15:46 -0500
-Received: from wnew2-smtp.messagingengine.com ([64.147.123.27]:54451 "EHLO
-        wnew2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229670AbiAMLPm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 06:15:42 -0500
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.west.internal (Postfix) with ESMTP id BE7292B002A5;
-        Thu, 13 Jan 2022 06:15:40 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Thu, 13 Jan 2022 06:15:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        stressinduktion.org; h=message-id:date:mime-version:to:cc
-        :references:from:subject:in-reply-to:content-type
-        :content-transfer-encoding; s=fm2; bh=BFxJhU9E/D7kynUv0MHH4ibjf/
-        VNb2cjiy4UK//QHKU=; b=d+8DLM+IPsUA5YdAZffnOu95gVa2pMIzICDvNl10Yj
-        AYwa+pM3TLE/7nMdMN8Fh6AgwQwgzpVKcB17Q5euQh82ZHKkFRZGk/89eNLqq333
-        SDfiiPivUHJIHMmxOREbf8Za1huiR1etMbL2yQ4rdj7yQQkm6W1BvwjwWHOLWvLV
-        FMkULZoq3bx2Gd/vym+QdMUi1L6LriJ8goCwaZzGP07g2VfeD7iAlDqq6z2uUBte
-        peVal0PPW2BtxlFlSuUN6VPXAkVn+yW6igj3HwtpiwU4G2QGrguRiKS55vRX1PA7
-        vzQQk8PfIsiLfSNct6PcZK4v6mzx+3Bes6yaM18W6Tvw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=BFxJhU9E/D7kynUv0MHH4ibjf/VNb2cjiy4UK//QH
-        KU=; b=WWcfCNoFgzHCHhShbJ4DPw4PZzWmIRKySnfX060o/LIWbs2FREKoggQb3
-        sq2c6xFKZH052aASKAv8bj3GbiRgit28c+z6dTR/6dQZUSSy9fzZKmcT5s3W1t22
-        waGXz6IM9K9UTzHOCVl4Yg7FBxn26x4NQ7xjGw9MmRB45qmgW5fGCcIczBY+0PId
-        M/QiYILmrKFgepChbSeIwArruDcK1cQl+gAwqk07HM6qEGPUnPoeuIbPGl8P1LZl
-        gv5lw8KV4PmN2mu/GEaXWhV9dOjfDVTO8N/fm0VPRbRirYbBbvkQtYwpSRPNa7EW
-        ldK/uKBiCLSoOiZ4fLKZumo0p9Hdg==
-X-ME-Sender: <xms:2gngYa1zfmq2yC-KiPTpZshdY5jExC4qXQbEv4UebGvh415prVJ-sw>
-    <xme:2gngYdHKNuWPgj_k3SJgw07NazYRL_5-f3sUNAjAbC9JUef1HPkQYncAUs8UaTQ9a
-    nbJ9czGCCM_DX8OUg>
-X-ME-Received: <xmr:2gngYS55mAA1vnvvgEuFN8saBJzco4gUu7kbsMyAmsUhrg9RPy4RcIYKfrIQXCTqD4C5I0IfyFnmLZ9Hud91MlI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrtdefgddvgecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefkffggfgfvfhfhufgjtgfgsehtkeertddtfeejnecuhfhrohhmpefjrghnnhgv
-    shcuhfhrvgguvghrihgtucfuohifrgcuoehhrghnnhgvshesshhtrhgvshhsihhnughukh
-    htihhonhdrohhrgheqnecuggftrfgrthhtvghrnhepkeehieekfeetueeuteelgedttddu
-    veejueffvddthedthfejieeuieegkefhffffnecuffhomhgrihhnpeiigidvtgegrdgtoh
-    hmnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhephhgr
-    nhhnvghssehsthhrvghsshhinhguuhhkthhiohhnrdhorhhg
-X-ME-Proxy: <xmx:2gngYb1YFh3ygjka2ZEb0iwHP5Fjz-5kSY5F60NFkYVCXMUrWJ4Wtg>
-    <xmx:2gngYdFavWakDFC22laYtbnaZ2LMhVNWKDG15dhbX-he-bpycTgf9Q>
-    <xmx:2gngYU8NylXolvo_M5eHgoFTUcgA8--XFkGDLxpBp5X_mcgaW080RA>
-    <xmx:3AngYc8RykLem542incJQvZY3icSGdsnMluop3JO5hEoi5Ogwm2YTXrVcxI>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 13 Jan 2022 06:15:37 -0500 (EST)
-Message-ID: <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
-Date:   Thu, 13 Jan 2022 12:15:36 +0100
+        id S234106AbiAMLQx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jan 2022 06:16:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48278 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229670AbiAMLQw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 06:16:52 -0500
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEBCC06173F;
+        Thu, 13 Jan 2022 03:16:51 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 4C16820004;
+        Thu, 13 Jan 2022 11:16:47 +0000 (UTC)
+Date:   Thu, 13 Jan 2022 12:16:45 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Harry Morris <h.morris@cascoda.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "linux-wireless@vger.kernel.org Wireless" 
+        <linux-wireless@vger.kernel.org>
+Subject: Re: [wpan-next v2 08/27] net: ieee802154: Drop symbol duration
+ settings when the core does it already
+Message-ID: <20220113121645.434a6ef6@xps13>
+In-Reply-To: <CAB_54W5QU5JCtQYwvTKREd6ZeQWmC19LF4mj853U0Gz-mCObVQ@mail.gmail.com>
+References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
+        <20220112173312.764660-9-miquel.raynal@bootlin.com>
+        <CAB_54W5QU5JCtQYwvTKREd6ZeQWmC19LF4mj853U0Gz-mCObVQ@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-US
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        linux-crypto@vger.kernel.org, Erik Kline <ek@google.com>,
-        Fernando Gont <fgont@si6networks.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        hideaki.yoshifuji@miraclelinux.com
-References: <20220112131204.800307-1-Jason@zx2c4.com>
- <20220112131204.800307-3-Jason@zx2c4.com> <87r19cftbr.fsf@toke.dk>
- <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
-From:   Hannes Frederic Sowa <hannes@stressinduktion.org>
-Subject: Re: [PATCH RFC v1 2/3] ipv6: move from sha1 to blake2s in address
- calculation
-In-Reply-To: <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Alexander,
 
-On 13.01.22 00:31, Jason A. Donenfeld wrote:
-> On 1/13/22, Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->> However, if we make this change, systems setting a stable_secret and
->> using addr_gen_mode 2 or 3 will come up with a completely different
->> address after a kernel upgrade. Which would be bad for any operator
->> expecting to be able to find their machine again after a reboot,
->> especially if it is accessed remotely.
->>
->> I haven't ever used this feature myself, though, or seen it in use. So I
->> don't know if this is purely a theoretical concern, or if the
->> stable_address feature is actually used in this way in practice. If it
->> is, I guess the switch would have to be opt-in, which kinda defeats the
->> purpose, no (i.e., we'd have to keep the SHA1 code around
+alex.aring@gmail.com wrote on Wed, 12 Jan 2022 17:26:14 -0500:
 
-Yes, it is hard to tell if such a change would have real world impact 
-due to not knowing its actual usage in the field - but I would avoid 
-such a change. The reason for this standard is to have stable addresses 
-across reboots. The standard is widely used but most servers or desktops 
-might get their stable privacy addresses being generated by user space 
-network management systems (NetworkManager/networkd) nowadays. I would 
-guess it could be used in embedded installations.
-
-The impact of this change could be annoying though: users could suddenly 
-lose connectivity due to e.g. changes to the default gateway after an 
-upgrade.
-
-> I'm not even so sure that's true. That was my worry at first, but
-> actually, looking at this more closely, DAD means that the address can
-> be changed anyway - a byte counter is hashed in - so there's no
-> gurantee there.
-
-The duplicate address detection counter is a way to merely provide basic 
-network connectivity in case of duplicate addresses on the network 
-(maybe some kind misconfiguration or L2 attack). Such detected addresses 
-would show up in the kernel log and an administrator should investigate 
-and clean up the situation. Afterwards bringing the interface down and 
-up again should revert the interface to its initial (dad_counter == 0) 
-address.
-
-> There's also the other aspect that open coding sha1_transform like
-> this and prepending it with the secret (rather than a better
-> construction) isn't so great... Take a look at the latest version of
-> this in my branch to see a really nice simplification and security
-> improvement:
+> Hi,
 > 
-> https://git.zx2c4.com/linux-dev/log/?h=remove-sha1
+> On Wed, 12 Jan 2022 at 12:33, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> >
+> > The core now knows how to set the symbol duration in a few cases, when
+> > drivers correctly advertise the protocols used on each channel. For
+> > these drivers, there is no more need to bother with symbol duration, so
+> > just drop the duplicated code.
+> >
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >  drivers/net/ieee802154/ca8210.c | 1 -
+> >  drivers/net/ieee802154/mcr20a.c | 2 --
+> >  2 files changed, 3 deletions(-)
+> >
+> > diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
+> > index 82b2a173bdbd..d3a9e4fe05f4 100644
+> > --- a/drivers/net/ieee802154/ca8210.c
+> > +++ b/drivers/net/ieee802154/ca8210.c
+> > @@ -2977,7 +2977,6 @@ static void ca8210_hw_setup(struct ieee802154_hw *ca8210_hw)
+> >         ca8210_hw->phy->cca.mode = NL802154_CCA_ENERGY_CARRIER;
+> >         ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
+> >         ca8210_hw->phy->cca_ed_level = -9800;
+> > -       ca8210_hw->phy->symbol_duration = 16 * 1000;
+> >         ca8210_hw->phy->lifs_period = 40;
+> >         ca8210_hw->phy->sifs_period = 12;
+> >         ca8210_hw->flags =
+> > diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
+> > index 8aa87e9bf92e..da2ab19cb5ee 100644
+> > --- a/drivers/net/ieee802154/mcr20a.c
+> > +++ b/drivers/net/ieee802154/mcr20a.c
+> > @@ -975,7 +975,6 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
+> >
+> >         dev_dbg(printdev(lp), "%s\n", __func__);
+> >
+> > -       phy->symbol_duration = 16 * 1000;
+> >         phy->lifs_period = 40;
+> >         phy->sifs_period = 12;
+> >
+> > @@ -1010,7 +1009,6 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
+> >         phy->current_page = 0;
+> >         /* MCR20A default reset value */
+> >         phy->current_channel = 20;
+> > -       phy->symbol_duration = 16 * 1000;
+> >         phy->supported.tx_powers = mcr20a_powers;
+> >         phy->supported.tx_powers_size = ARRAY_SIZE(mcr20a_powers);
+> >         phy->cca_ed_level = phy->supported.cca_ed_levels[75];  
+> 
+> What's about the atrf86230 driver?
 
-All in all, I consider the hash produced here as being part of uAPI 
-unfortunately and thus cannot be changed. It is unfortunate that it 
-can't easily be improved (I assume a separate mode for this is not 
-reasonable). The patches definitely look like a nice cleanup.
+I couldn't find reliable information about what this meant:
 
-Would this be the only user of sha_transform left?
+	/* SUB:0 and BPSK:0 -> BPSK-20 */
+	/* SUB:1 and BPSK:0 -> BPSK-40 */
+	/* SUB:0 and BPSK:1 -> OQPSK-100/200/400 */
+	/* SUB:1 and BPSK:1 -> OQPSK-250/500/1000 */
 
-Bye,
-Hannes
+None of these comments match the spec so I don't know what to put
+there. If you know what these protocols are, I will immediately
+provide this information into the driver and ensure the core handles
+these durations properly before dropping the symbol_durations settings
+from the code.
+
+Thanks,
+Miquèl
