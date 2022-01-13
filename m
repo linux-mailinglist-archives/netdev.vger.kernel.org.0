@@ -2,70 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6C6148D38B
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 09:24:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5535248D3AF
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 09:37:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232989AbiAMIYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 03:24:03 -0500
-Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:48054 "EHLO
-        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232977AbiAMIYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 03:24:02 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R581e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V1ixvv7_1642062240;
-Received: from 30.225.24.75(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1ixvv7_1642062240)
+        id S232430AbiAMIgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 03:36:53 -0500
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:58698 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231140AbiAMIgx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 03:36:53 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R471e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V1imC6N_1642063002;
+Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1imC6N_1642063002)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 13 Jan 2022 16:24:00 +0800
-Message-ID: <420e9627-82fd-e667-f0c2-726933e58b21@linux.alibaba.com>
-Date:   Thu, 13 Jan 2022 16:23:59 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.0
-Subject: Re: [PATCH net] net/smc: Avoid setting clcsock options after clcsock
- released
-To:     Karsten Graul <kgraul@linux.ibm.com>, davem@davemloft.net,
-        kuba@kernel.org
+          Thu, 13 Jan 2022 16:36:51 +0800
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
 Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <1641807505-54454-1-git-send-email-guwen@linux.alibaba.com>
- <ac977743-9696-9723-5682-97ebbcca6828@linux.ibm.com>
- <719f264e-a70d-7bed-0873-ffbba8381841@linux.alibaba.com>
- <5dd7ffd1-28e2-24cc-9442-1defec27375e@linux.ibm.com>
-From:   Wen Gu <guwen@linux.alibaba.com>
-In-Reply-To: <5dd7ffd1-28e2-24cc-9442-1defec27375e@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH net v2 0/3] net/smc: Fixes for race in smc link group termination
+Date:   Thu, 13 Jan 2022 16:36:39 +0800
+Message-Id: <1642063002-45688-1-git-send-email-guwen@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for your reply.
+We encountered some crashes recently and they are caused by the
+race between the access and free of link/link group in abnormal
+smc link group termination. The crashes can be reproduced in
+frequent abnormal link group termination, like setting RNICs up/down.
 
-On 2022/1/12 5:38 pm, Karsten Graul wrote:
-> On 11/01/2022 17:34, Wen Gu wrote:
->> Thanks for your reply.
->>
->> On 2022/1/11 6:03 pm, Karsten Graul wrote:
->>> On 10/01/2022 10:38, Wen Gu wrote:
->>>> We encountered a crash in smc_setsockopt() and it is caused by
->>>> accessing smc->clcsock after clcsock was released.
-> 
-> I like the idea to use RCU with rcu_assign_pointer() to protect that pointer!
-> 
-> Lets go with your initial patch (improved to address the access in smc_switch_to_fallback())
-> for now because it solves your current problem.
-> 
+This set of patches tries to fix this by extending the life cycle
+of link/link group to ensure that they won't be referred to after
+cleared or freed.
 
-OK, I will improve the patch, adding check before clcsock access in smc_switch_to_fallback()
-and return an error (-EBADF) if smc->clcsock is NULL. The caller of smc_switch_to_fallback()
-will check the return value to identify whether fallback is possible.
+v1 -> v2:
+- Improve some comments.
 
-> I put that RCU thing on our list, but if either of us here starts working on that please let the
-> others know so we don't end up doing parallel work on this. But I doubt that we will be able to start working
-> on that soon.
-> 
-> Thanks for the good idea!
+- Move codes of waking up lgrs_deleted wait queue from smc_lgr_free()
+  to __smc_lgr_free().
 
-Thank you! If I start working on the RCU things, I will send a RFC to let you know.
+- Move codes of waking up links_deleted wait queue from smcr_link_clear()
+  to __smcr_link_clear().
 
-Thanks,
-Wen Gu
+- Move codes of smc_ibdev_cnt_dec() and put_device() from smcr_link_clear()
+  to __smcr_link_clear()
+
+- Move smc_lgr_put() to the end of __smcr_link_clear().
+
+- Call smc_lgr_put() after 'out' tag in smcr_link_init() when link
+  initialization fails.
+
+- Modify the location where smc connection holds the lgr or link.
+
+    before:
+      * hold lgr in smc_lgr_register_conn().
+      * hold link in smcr_lgr_conn_assign_link().
+    after:
+      * hold both lgr and link in smc_conn_create().
+
+  Modify the location to symmetrical with the place where smc connections
+  put the lgr or link, which is smc_conn_free().
+
+- Initialize conn->freed as zero in smc_conn_create().
+
+Wen Gu (3):
+  net/smc: Resolve the race between link group access and termination
+  net/smc: Introduce a new conn->lgr validity check helper
+  net/smc: Resolve the race between SMC-R link access and clear
+
+ net/smc/af_smc.c   |   6 ++-
+ net/smc/smc.h      |   1 +
+ net/smc/smc_cdc.c  |   3 +-
+ net/smc/smc_clc.c  |   2 +-
+ net/smc/smc_core.c | 120 +++++++++++++++++++++++++++++++++++++++++------------
+ net/smc/smc_core.h |  12 ++++++
+ net/smc/smc_diag.c |   6 +--
+ 7 files changed, 118 insertions(+), 32 deletions(-)
+
+-- 
+1.8.3.1
+
