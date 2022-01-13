@@ -2,30 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C366A48DB70
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 17:14:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CEA748DB77
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 17:16:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236296AbiAMQOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 11:14:20 -0500
-Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:59737 "EHLO
-        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229483AbiAMQOT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 11:14:19 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R741e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0V1kw-GB_1642090398;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0V1kw-GB_1642090398)
+        id S236518AbiAMQQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 11:16:10 -0500
+Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:39843 "EHLO
+        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229496AbiAMQQJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 11:16:09 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R331e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V1kkd9d_1642090558;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0V1kkd9d_1642090558)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 14 Jan 2022 00:14:16 +0800
+          Fri, 14 Jan 2022 00:16:07 +0800
 From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     ecree.xilinx@gmail.com
-Cc:     habetsm.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+To:     johannes@sipsolutions.net
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
         Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] sfc: Fix missing error code in efx_reset_up()
-Date:   Fri, 14 Jan 2022 00:13:15 +0800
-Message-Id: <20220113161315.126410-1-jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH] mac80211: Remove redundent assignment channel_type
+Date:   Fri, 14 Jan 2022 00:15:57 +0800
+Message-Id: <20220113161557.129427-1-jiapeng.chong@linux.alibaba.com>
 X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -33,36 +32,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The error code is missing in this code scenario, add the error code
-'-EINVAL' to the return value 'rc'.
+Fix the following coccicheck warnings:
 
-Eliminate the follow smatch warning:
-
-drivers/net/ethernet/sfc/efx_common.c:758 efx_reset_up() warn: missing
-error code 'rc'.
+net/mac80211/util.c:3265:3: warning: Value stored to 'channel_type' is
+never read [clang-analyzer-deadcode.DeadStores].
 
 Reported-by: Abaci Robot <abaci@linux.alibaba.com>
 Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
- drivers/net/ethernet/sfc/efx_common.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/mac80211/util.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
-index af37c990217e..bdfcda8bb5d0 100644
---- a/drivers/net/ethernet/sfc/efx_common.c
-+++ b/drivers/net/ethernet/sfc/efx_common.c
-@@ -754,8 +754,10 @@ int efx_reset_up(struct efx_nic *efx, enum reset_type method, bool ok)
- 		goto fail;
+diff --git a/net/mac80211/util.c b/net/mac80211/util.c
+index f71b042a5c8b..fea3d34e3ef3 100644
+--- a/net/mac80211/util.c
++++ b/net/mac80211/util.c
+@@ -3262,7 +3262,6 @@ bool ieee80211_chandef_ht_oper(const struct ieee80211_ht_operation *ht_oper,
+ 		channel_type = NL80211_CHAN_HT40MINUS;
+ 		break;
+ 	default:
+-		channel_type = NL80211_CHAN_NO_HT;
+ 		return false;
  	}
  
--	if (!ok)
-+	if (!ok) {
-+		rc = -EINVAL;
- 		goto fail;
-+	}
- 
- 	if (efx->port_initialized && method != RESET_TYPE_INVISIBLE &&
- 	    method != RESET_TYPE_DATAPATH) {
 -- 
 2.20.1.7.g153144c
 
