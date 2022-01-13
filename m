@@ -2,286 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC80448D5A5
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 11:24:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7766E48D5C1
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 11:30:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbiAMKWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 05:22:06 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41716 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229812AbiAMKWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 05:22:05 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7FE561C01;
-        Thu, 13 Jan 2022 10:22:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4C80C36AEC;
-        Thu, 13 Jan 2022 10:22:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642069324;
-        bh=I7HlexZS8NRdpazkeMv6xpnWlkXR+p+1i06vB6vDCmE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lUCcNk3AdyH+eGcui2xZzXvzv8BdHmZPfojz9V4NhAC+DaoWXr/VW62BMIMClwNCY
-         4fMHOp1n1OorYjC25emGA3r5WIIKpt+u143T5i3IwK94ZaUZd0YR8z6OGFv434GCGA
-         6fU3tFjGB78q/GQ5G2BcDVgo8pmWXmS56O50A8DlA+fruDk6BRS1qrJgO2x7ZNXGYn
-         sfyojyuEUxyXthVRi8LQ4afoTM4yXYguI123+MBZOSpp+tFb2puciGgPXqOekMJOn8
-         L6wmNB7dh0F8eS3J9ynXZbCJUSZHq+APnPz2MueNQZEuP5VlEuIoriLyrD9yngDyxw
-         y9NCdwrouDibA==
-Date:   Thu, 13 Jan 2022 11:22:00 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Zvi Effron <zeffron@riotgames.com>, brouer@redhat.com,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S231461AbiAMKad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 05:30:33 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:44720 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231269AbiAMKa3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 05:30:29 -0500
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20D8Mbg5031717;
+        Thu, 13 Jan 2022 10:30:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : in-reply-to : message-id : references : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=zz+sZCEHgTqlKkNzG73vvPKElm+fx6zlm6qlzjFhqwo=;
+ b=iKgfODjmJmhG7cyvjoCFpf8FXY2A2glJ1Ef04kTpnKzXAtFgJe1MtYBIgpwSs/xSluPT
+ HurnlPR6K4EJwXeb3LiukVcTvMl4E1Rmpc859arBI3/2Yw9XCh0Y5fNtZyy1qDTLVEhS
+ dHbOCCVeEQT5JZZ6lAV55AX9OPUyDCyyT9kc1h1q6BIoCuzskBNRYjnpODVOBJykwIS2
+ 4jPwEOEfW3TdU2DxDVXvpGJOe7LW09T/JWYko7UzLm5+gM2CCGraxuVAPoQU5nEXUoUj
+ i9MOg1MH4zzpVmyAKOvHdGMjafUGYzPPyBL+RkDqkm0498madrXnKIWSErkqryywewU2 Hg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dgmk9grnm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 13 Jan 2022 10:30:13 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20DAFjAx030505;
+        Thu, 13 Jan 2022 10:30:12 GMT
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2108.outbound.protection.outlook.com [104.47.55.108])
+        by userp3020.oracle.com with ESMTP id 3df42ra4dc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 13 Jan 2022 10:30:12 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=msbYT63X3XMUO/DXVz6tcQTTgTqQYAZcxBhaEYviCdu5WKn9LMR+yOVHsCSUQlxhQp7dlfsB0MpSpuMyn7RCjRFYfZfX1vxE5LpPXQ6pA+BGMPj60SyZJLB5wyQ/35T8cXlbHymrJJjIRecjB2Qd/eLesyOjWgeufguyHXgOiZHR+ZA2BBKNXlNtW7vAwlFlKEYXTb9dcfyC/KqgnxcPTYQ9Q+4R4q9GCjCLsdmvj/ujxmqF7UVmQCSFAAm8yWwBYF0At4S0ye0y1uo2oySePDtGH8z1UuteVXnNdszA+0HxZuADlurVvbMeBRBs719cOlRBIFib3vI6f39NHeVoYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zz+sZCEHgTqlKkNzG73vvPKElm+fx6zlm6qlzjFhqwo=;
+ b=f/6LQic4AY7035FVS5DraaTPPcTdqPaKE+RSvWEzXaKY+yoLHqfpJK0i8ilEnPOsHaTaqXU9yYvhqgkfS/RdpK+O2ebYxkC14EbS+lgb6VI6vH7WNBN0eZiq3AJkkEinqrfVkbnJbisnQhYjP6q8TDzrIG5LCfS8UlGplSLdGgyRnbyw7s0C+S0JeZ/RYhdbtISUo4x23qEQjG+qSH20I2QuyEGOtPU9oEPV4ywP0bgfyj6FkyR3XHqiKrvYsJtiPnYbSQ3XyRZRo62iujJhe+++1B4EbbD8c44Iy/Hu+1NHa5I5r/nD3i7q+rAwG/sn08kdLALoFXDeQWMKQby/LA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zz+sZCEHgTqlKkNzG73vvPKElm+fx6zlm6qlzjFhqwo=;
+ b=hjKoXcbJdASS/YAf5AcZ4HhDJuxGVo6b6V26ysw7+c+jWbPK9pNZV15F7TCocLx3LSsNitcFUlTfD8FCsJEspZlsFDkGlBVql6jQzML+1nsym6ESng6joEX6pGrYSKNWg/0WA/lUSmz1qgpNV+5tVjFHsBbGhoY3sAty7h58T38=
+Received: from BLAPR10MB5267.namprd10.prod.outlook.com (2603:10b6:208:30e::22)
+ by DM6PR10MB3546.namprd10.prod.outlook.com (2603:10b6:5:17d::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Thu, 13 Jan
+ 2022 10:30:08 +0000
+Received: from BLAPR10MB5267.namprd10.prod.outlook.com
+ ([fe80::31c1:e20b:33a1:ba8c]) by BLAPR10MB5267.namprd10.prod.outlook.com
+ ([fe80::31c1:e20b:33a1:ba8c%5]) with mapi id 15.20.4888.011; Thu, 13 Jan 2022
+ 10:30:08 +0000
+Date:   Thu, 13 Jan 2022 10:29:35 +0000 (GMT)
+From:   Alan Maguire <alan.maguire@oracle.com>
+X-X-Sender: alan@localhost
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+cc:     Alan Maguire <alan.maguire@oracle.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Shay Agroskin <shayagr@amazon.com>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         john fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        tirthendu.sarkar@intel.com
-Subject: Re: [PATCH v21 bpf-next 18/23] libbpf: Add SEC name for xdp_mb
- programs
-Message-ID: <Yd/9SPHAPH3CpSnN@lore-desk>
-References: <CAEf4BzbfDvH5CYNsWg9Dx7JcFEp4jNmNRR6H-6sJEUxDSy1zZw@mail.gmail.com>
- <Yd8bVIcA18KIH6+I@lore-desk>
- <CAEf4Bza+WO5U+Kw=S+GvQBgu5VHfPL29u7eLSQq34jvYzGnbBA@mail.gmail.com>
- <CAADnVQLGxjvOO3Ae3mGTWTyd0aHnACxYoF8daNi+z56NQyYQug@mail.gmail.com>
- <CAEf4BzZ4c1VwPf9oBRRdN7jdBWrk4pg=mw_50LMjLr99Mb0yfw@mail.gmail.com>
- <CAADnVQ+BiMy4TZNocfFSvazh-QTFwMD-3uQ9LLiku7ePLDn=MQ@mail.gmail.com>
- <CAC1LvL0CeTw+YKjO6r0f68Ly3tK4qhDyjV0ak82e0PpHURVQOw@mail.gmail.com>
- <Yd82J8vxSAR9tvQt@lore-desk>
- <8735lshapk.fsf@toke.dk>
- <47a3863b-080c-3ac2-ff2d-466b74d82c1c@redhat.com>
+        KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        Yucong Sun <sunyucong@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [RFC bpf-next 0/4] libbpf: userspace attach by name
+In-Reply-To: <CAEf4BzYRLxzVHw00DUphqqdv2m_AU7Mu=S0JF0PZYN40hBvHgA@mail.gmail.com>
+Message-ID: <alpine.LRH.2.23.451.2201131025380.13423@localhost>
+References: <1642004329-23514-1-git-send-email-alan.maguire@oracle.com> <CAEf4BzYRLxzVHw00DUphqqdv2m_AU7Mu=S0JF0PZYN40hBvHgA@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+X-ClientProxiedBy: SG2PR06CA0094.apcprd06.prod.outlook.com
+ (2603:1096:3:14::20) To BLAPR10MB5267.namprd10.prod.outlook.com
+ (2603:10b6:208:30e::22)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="/9SrXxM1u7AZoJOX"
-Content-Disposition: inline
-In-Reply-To: <47a3863b-080c-3ac2-ff2d-466b74d82c1c@redhat.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0eb7e2df-4718-4d06-2f3b-08d9d67fabec
+X-MS-TrafficTypeDiagnostic: DM6PR10MB3546:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR10MB3546CB54DFFEF52DE2C11DEAEF539@DM6PR10MB3546.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1201;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tjBZq4AdazVHlpHM0l7iwlsNRxTsTz2p50k1n9sK/Dxu7Zpe50whY6MTQb5IsXVbGo7V+quXLBuh3ZGoKRMBRYatsYP3cz5zxcSyh38HAkHKXI6CtrufBqYJzHM28Lx8hzJTjKDe1eUna3VjfHb+HE+sYUMtBpLvfy5ewlp22vTlHLVz/0/sDbtFgPYyo1rRIEAPLlpv+pKZHo7w/qjc3L4rsGaZ8+i9lcaGeMl8mVr3o4jsqd2NalnmCNXACF1EviczQ3qf1570HyAEGx4/yC//FS01rz7X9NX7ScYUdIxvRxgaXZlPMBaRn75PmSFypcIw++ltcCudLhZyNXaisbIFpywTfVqmDGl7lwPPTsjdxefyFjYVMMiOEsA6Pt6y6CiQDr8XPtiinIWOmlGCQCngShN8x0koDrm9snABo0CokyWPqexvXvBW9+0AMFztfdx7/5caMQJbh1QknqviCJqyIKDwrUQ1NS5TOXMe5cwnMyRj9mE0yot88ufiuH1lP0O8nkjOlPbhlCabGhc2b8GbMcLtwb39jnLQtGwkmwF4uYw7ZkxlCXvkg4n4Gbm3LdZmnf4YinK2ntMpJvVfs8i0AZPPxJACX6je/hZBHFi7Z2sG0nER8BR/2SYde0I0MP2bXGQhw7CMkER8XoqKaQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5267.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(44832011)(6666004)(6512007)(9686003)(66946007)(4326008)(5660300002)(66476007)(66556008)(7416002)(186003)(508600001)(2906002)(6486002)(86362001)(54906003)(316002)(8936002)(52116002)(53546011)(6506007)(8676002)(38100700002)(33716001)(6916009)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p21KMk1a3+BR1K+tA+H+79lLZHcL3WG7W7ZUPEKGAdRWvYo2UoxXG23I/PYy?=
+ =?us-ascii?Q?uiowXLx6FXtG1y/wJsoQCtZn8rEYLulJubdksLezsTfxtAj57DYVQf2wl6yp?=
+ =?us-ascii?Q?3++NtWOksuEfini+8LsPh9oKzpPC0DaFB9MHARBUPCpAaJKgIeJEh6lbO4a6?=
+ =?us-ascii?Q?ZuT7LrAS41SfLIrSZmjmBnXtPKOja7nrZo8hrDCH4BZH9q48eJZw/y+u06EQ?=
+ =?us-ascii?Q?D6jiIwWOX79QfHXhjSdY0cThvx1j4utP44YT5bTMT9hNQSBORp5axdVas683?=
+ =?us-ascii?Q?l5zTNFXB7zgYcocGcjwULi/bvy34lYlcuSa0pab17f+nvNUdBgpLDvUA1rnB?=
+ =?us-ascii?Q?VhVsPNrHg35/phVvlvBfilMMCiQMNiSebzo9KEg84/8JdY5N6YK494LFncNf?=
+ =?us-ascii?Q?H+SRv8oKoJWnI+5XXU5UzBokfCvgjV7PdhvE5qCl5epsYaPkGfN8Jscq5cGM?=
+ =?us-ascii?Q?tjGvKoqrtInSXKOMoqlp3xJqqsVyBm0lCBBZfQoA6N4ErvFHLqq9yeDg/+ZA?=
+ =?us-ascii?Q?/MZK+pofyBZ+8Nz4vqUlmgCkhF2XiXu0s32eH3I3TE3FK8WvDz/c93TSJeGM?=
+ =?us-ascii?Q?CZsLDiNlV5kkyQEScUmlb0nrjSXSCBhS5IZ9PnsCvZP/QYuzRUpexTqOngkJ?=
+ =?us-ascii?Q?Q8BUMmJftPaemSbq67k0jtnZLxaj+bKva394kBIJ8xFxj3xOfSoPPrdIuq2K?=
+ =?us-ascii?Q?OEpBjJTeIyK3Uh2QzE5vKktFvp+sO43qnibL4jpmACDewGDjQhiE1mSthZlO?=
+ =?us-ascii?Q?qBS9bfYdiYrCJnyPuLJInrHqoDG29HN/+g17Xfr9vuPnS2gcvi63wptzUaPH?=
+ =?us-ascii?Q?sOoNGR6Xy1JdKRjVTFSwqv9lEgzcnxfcQYO5npBLxXZYzKSotReYzhOBwnf6?=
+ =?us-ascii?Q?KximYwfgWEDKNdBZyv+RsK11wVDfckOMRcCA3qhJfyIGWkCf2QiBnQJM/NOP?=
+ =?us-ascii?Q?e6ocaI8D+9/jfB7Vdfyky/UcGJyT7nI8ogE0jP7M+xnLAr49X0tekHikYx+t?=
+ =?us-ascii?Q?afcwOEfve3+0pYrGmMozo3MXuj+fho6tygfr6S7kG2GZFyuPFbOSj4zw6JFP?=
+ =?us-ascii?Q?MmkJx3O2Q6DfEZy629/ydjocI8OGULty8YdamwJ7NBVS2kBbyAl28DPeOYu0?=
+ =?us-ascii?Q?ALpbxAuNvQBNjQJDWVN9YNHl5PUf8oiYRwtf/REobQQJHcmqzJcbLYllU1X0?=
+ =?us-ascii?Q?2gnOQ/acnYeur5ANdLW5n2YtsU8hsyDedeZFnj3fzK5WMGUaRDppOBzGO0Hf?=
+ =?us-ascii?Q?f1MeAVtX0teADpgENwE+CV0vXdIyFHIvBvtEDE9TjfHcYAhZBU4T2XnHtg+g?=
+ =?us-ascii?Q?lsaNZqhCFHDyaAFigoMNvMenqIgcOccq1sTd+bUJ8N8zsX0rg0RREmJ6MWyN?=
+ =?us-ascii?Q?OmviY14fjenJe37bE2O3ph/f+ycH/Zu1UpsDuEK6tOd/1EzYx4ysG8vQBtax?=
+ =?us-ascii?Q?sFTjEWr806vZH4gX4Ximox6ME1l+z2Mi7tjE3jiqBKJImPABIQjPWGloJTUz?=
+ =?us-ascii?Q?r2jnJOlSBq7EMG5e5ctSrj/LWNWGuWz4gcb2JqsQMVISfrmtGoCJDks7FcgS?=
+ =?us-ascii?Q?ww6+ElJ1chE9zh0DHqBdRGEFuxBrL81lT6kRWICU9zfzNeuIkmLOjuofT/kt?=
+ =?us-ascii?Q?9Sy6RVpTilNffDJFReUTwVr9X/c2vJsosFPoHEn5E7Wp?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0eb7e2df-4718-4d06-2f3b-08d9d67fabec
+X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5267.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2022 10:30:08.5396
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Jk+9WAUUFzUJnx3/k3aVYitU1RmvZkurJpWlFTHFt4oGmlN385CY13GKxVFJBcMxPlWOPLSlV6NrHNDhrCjsbA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3546
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10225 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 phishscore=0
+ mlxlogscore=999 spamscore=0 bulkscore=0 malwarescore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2201130061
+X-Proofpoint-GUID: UhPjIv_cr_aOTQ6Sy5GR_ZrJOacY0eDJ
+X-Proofpoint-ORIG-GUID: UhPjIv_cr_aOTQ6Sy5GR_ZrJOacY0eDJ
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 12 Jan 2022, Andrii Nakryiko wrote:
 
---/9SrXxM1u7AZoJOX
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On Wed, Jan 12, 2022 at 8:19 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+> >
+> > This patch series is a rough attempt to support attach by name for
+> > uprobes and USDT (Userland Static Defined Tracing) probes.
+> > Currently attach for such probes is done by determining the offset
+> > manually, so the aim is to try and mimic the simplicity of kprobe
+> > attach, making use of uprobe opts.
+> >
+> > One restriction applies: uprobe attach supports system-wide probing
+> > by specifying "-1" for the pid.  That functionality is not supported,
+> > since we need a running process to determine the base address to
+> > subtract to get the uprobe-friendly offset.  There may be a way
+> > to do this without a running process, so any suggestions would
+> > be greatly appreciated.
+> >
+> > There are probably a bunch of subtleties missing here; the aim
+> > is to see if this is useful and if so hopefully we can refine
+> > it to deal with more complex cases.  I tried to handle one case
+> > that came to mind - weak library symbols - but there are probably
+> > other issues when determining which address to use I haven't
+> > thought of.
+> >
+> > Alan Maguire (4):
+> >   libbpf: support function name-based attach for uprobes
+> >   libbpf: support usdt provider/probe name-based attach for uprobes
+> >   selftests/bpf: add tests for u[ret]probe attach by name
+> >   selftests/bpf: add test for USDT uprobe attach by name
+> >
+> 
+> Hey Alan,
+> 
+> I've been working on USDT support last year. It's considerably more
+> code than in this RFC, but it handles not just finding a location of
+> USDT probe(s), but also fetching its arguments based on argument
+> location specification and more usability focused BPF-side APIs to
+> work with USDTs.
+> 
+> I don't remember how up to date it is, but the last "open source"
+> version of it can be found at [0]. I currently have the latest
+> debugged and tested version internally in the process of being
+> integrated into our profiling solution here at Meta. So far it seems
+> to be working fine and covers our production use cases well.
+> 
 
->=20
->=20
-> On 12/01/2022 23.04, Toke H=F8iland-J=F8rgensen wrote:
-> > Lorenzo Bianconi <lorenzo.bianconi@redhat.com> writes:
-> >=20
-> > > > On Wed, Jan 12, 2022 at 11:47 AM Alexei Starovoitov
-> > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > >=20
-> > > > > On Wed, Jan 12, 2022 at 11:21 AM Andrii Nakryiko
-> > > > > <andrii.nakryiko@gmail.com> wrote:
-> > > > > >=20
-> > > > > > On Wed, Jan 12, 2022 at 11:17 AM Alexei Starovoitov
-> > > > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > > > >=20
-> > > > > > > On Wed, Jan 12, 2022 at 10:24 AM Andrii Nakryiko
-> > > > > > > <andrii.nakryiko@gmail.com> wrote:
-> > > > > > > >=20
-> > > > > > > > On Wed, Jan 12, 2022 at 10:18 AM Lorenzo Bianconi <lorenzo@=
-kernel.org> wrote:
-> > > > > > > > >=20
-> > > > > > > > > > On Sun, Jan 9, 2022 at 7:05 AM Lorenzo Bianconi <lorenz=
-o@kernel.org> wrote:
-> > > > > > > > > > >=20
-> > > > > > > > > > > Introduce support for the following SEC entries for X=
-DP multi-buff
-> > > > > > > > > > > property:
-> > > > > > > > > > > - SEC("xdp_mb/")
-> > > > > > > > > > > - SEC("xdp_devmap_mb/")
-> > > > > > > > > > > - SEC("xdp_cpumap_mb/")
-> > > > > > > > > >=20
-> > > > > > > > > > Libbpf seemed to went with .<suffix> rule (e.g., fentry=
-=2Es for
-> > > > > > > > > > sleepable, seems like we'll have kprobe.multi or  somet=
-hing along
-> > > > > > > > > > those lines as well), so let's stay consistent and call=
- this "xdp_mb",
-> > > > > > > > > > "xdp_devmap.mb", "xdp_cpumap.mb" (btw, is "mb" really a=
-ll that
-> > > > > > > > > > recognizable? would ".multibuf" be too verbose?). Also,=
- why the "/"
-> > > > > > > > > > part? Also it shouldn't be "sloppy" either. Neither exp=
-ected attach
-> > > > > > > > > > type should be optional.  Also not sure SEC_ATTACHABLE =
-is needed. So
-> > > > > > > > > > at most it should be SEC_XDP_MB, probably.
-> > > > > > > > >=20
-> > > > > > > > > ack, I fine with it. Something like:
-> > > > > > > > >=20
-> > > > > > > > >          SEC_DEF("lsm.s/",               LSM, BPF_LSM_MAC=
-, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_lsm),
-> > > > > > > > >          SEC_DEF("iter/",                TRACING, BPF_TRA=
-CE_ITER, SEC_ATTACH_BTF, attach_iter),
-> > > > > > > > >          SEC_DEF("syscall",              SYSCALL, 0, SEC_=
-SLEEPABLE),
-> > > > > > > > > +       SEC_DEF("xdp_devmap.multibuf",  XDP, BPF_XDP_DEVM=
-AP, 0),
-> > > > > > > > >          SEC_DEF("xdp_devmap/",          XDP, BPF_XDP_DEV=
-MAP, SEC_ATTACHABLE),
-> > > > > > > > > +       SEC_DEF("xdp_cpumap.multibuf",  XDP, BPF_XDP_CPUM=
-AP, 0),
-> > > > > > > > >          SEC_DEF("xdp_cpumap/",          XDP, BPF_XDP_CPU=
-MAP, SEC_ATTACHABLE),
-> > > > > > > > > +       SEC_DEF("xdp.multibuf",         XDP, BPF_XDP, 0),
-> > > > > > > >=20
-> > > > > > > > yep, but please use SEC_NONE instead of zero
-> > > > > > > >=20
-> > > > > > > > >          SEC_DEF("xdp",                  XDP, BPF_XDP, SE=
-C_ATTACHABLE_OPT | SEC_SLOPPY_PFX),
-> > > > > > > > >          SEC_DEF("perf_event",           PERF_EVENT, 0, S=
-EC_NONE | SEC_SLOPPY_PFX),
-> > > > > > > > >          SEC_DEF("lwt_in",               LWT_IN, 0, SEC_N=
-ONE | SEC_SLOPPY_PFX),
-> > > > > > > > >=20
-> > > > > > > > > >=20
-> > > > > > > > > > >=20
-> > > > > > > > > > > Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
-> > > > > > > > > > > Acked-by: John Fastabend <john.fastabend@gmail.com>
-> > > > > > > > > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > > > > > > > > > ---
-> > > > > > > > > > >   tools/lib/bpf/libbpf.c | 8 ++++++++
-> > > > > > > > > > >   1 file changed, 8 insertions(+)
-> > > > > > > > > > >=20
-> > > > > > > > > > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/l=
-ibbpf.c
-> > > > > > > > > > > index 7f10dd501a52..c93f6afef96c 100644
-> > > > > > > > > > > --- a/tools/lib/bpf/libbpf.c
-> > > > > > > > > > > +++ b/tools/lib/bpf/libbpf.c
-> > > > > > > > > > > @@ -235,6 +235,8 @@ enum sec_def_flags {
-> > > > > > > > > > >          SEC_SLEEPABLE =3D 8,
-> > > > > > > > > > >          /* allow non-strict prefix matching */
-> > > > > > > > > > >          SEC_SLOPPY_PFX =3D 16,
-> > > > > > > > > > > +       /* BPF program support XDP multi-buff */
-> > > > > > > > > > > +       SEC_XDP_MB =3D 32,
-> > > > > > > > > > >   };
-> > > > > > > > > > >=20
-> > > > > > > > > > >   struct bpf_sec_def {
-> > > > > > > > > > > @@ -6562,6 +6564,9 @@ static int libbpf_preload_prog(=
-struct bpf_program *prog,
-> > > > > > > > > > >          if (def & SEC_SLEEPABLE)
-> > > > > > > > > > >                  opts->prog_flags |=3D BPF_F_SLEEPABL=
-E;
-> > > > > > > > > > >=20
-> > > > > > > > > > > +       if (prog->type =3D=3D BPF_PROG_TYPE_XDP && (d=
-ef & SEC_XDP_MB))
-> > > > > > > > > > > +               opts->prog_flags |=3D BPF_F_XDP_MB;
-> > > > > > > > > >=20
-> > > > > > > > > > I'd say you don't even need SEC_XDP_MB flag at all, you=
- can just check
-> > > > > > > > > > that prog->sec_name is one of "xdp.mb", "xdp_devmap.mb"=
- or
-> > > > > > > > > > "xdp_cpumap.mb" and add the flag. SEC_XDP_MB doesn't se=
-em generic
-> > > > > > > > > > enough to warrant a flag.
-> > > > > > > > >=20
-> > > > > > > > > ack, something like:
-> > > > > > > > >=20
-> > > > > > > > > +       if (prog->type =3D=3D BPF_PROG_TYPE_XDP &&
-> > > > > > > > > +           (!strcmp(prog->sec_name, "xdp_devmap.multibuf=
-") ||
-> > > > > > > > > +            !strcmp(prog->sec_name, "xdp_cpumap.multibuf=
-") ||
-> > > > > > > > > +            !strcmp(prog->sec_name, "xdp.multibuf")))
-> > > > > > > > > +               opts->prog_flags |=3D BPF_F_XDP_MB;
-> > > > > > > >=20
-> > > > > > > > yep, can also simplify it a bit with strstr(prog->sec_name,
-> > > > > > > > ".multibuf") instead of three strcmp
-> > > > > > >=20
-> > > > > > > Maybe ".mb" ?
-> > > > > > > ".multibuf" is too verbose.
-> > > > > > > We're fine with ".s" for sleepable :)
-> > > > > >=20
-> > > > > >=20
-> > > > > > I had reservations about "mb" because the first and strong asso=
-ciation
-> > > > > > is "megabyte", not "multibuf". And it's not like anyone would h=
-ave
-> > > > > > tens of those programs in a single file so that ".multibuf" bec=
-omes
-> > > > > > way too verbose. But I don't feel too strongly about this, if t=
-he
-> > > > > > consensus is on ".mb".
-> > > > >=20
-> > > > > The rest of the patches are using _mb everywhere.
-> > > > > I would keep libbpf consistent.
-> > > >=20
-> > > > Should the rest of the patches maybe use "multibuf" instead of "mb"=
-? I've been
-> > > > following this patch series closely and excitedly, and I keep havin=
-g to remind
-> > > > myself that "mb" is "multibuff" and not "megabyte". If I'm having t=
-o correct
-> > > > myself while following the patch series, I'm wondering if future co=
-nfusion is
-> > > > inevitable?
-> > > >=20
-> > > > But, is it enough confusion to be worth updating many other patches=
-? I'm not
-> > > > sure.
-> > > >=20
-> > > > I agree consistency is more important than the specific term we're =
-consistent
-> > > > on.
-> > >=20
-> > > I would prefer to keep the "_mb" postfix, but naming is hard and I am
-> > > polarized :)
-> >=20
-> > I would lean towards keeping _mb as well, but if it does have to be
-> > changed why not _mbuf? At least that's not quite as verbose :)
->=20
-> I dislike the "mb" abbreviation as I forget it stands for multi-buffer.
-> I like the "mbuf" suggestion, even-though it conflicts with (Free)BSD mbu=
-fs
-> (which is their SKB).
+This looks great Andrii! I really like the argument access work, and the
+global tracing part is solved too by using the ELF segment info instead
+of the process maps to get the relative offset, with (I think?) use of
+BPF cookies to disambiguate between different user attachments.
 
-If we all agree, I can go over the series and substitute mb postfix with mb=
-uf.
-Any objections?
+The one piece that seems to be missing from my perspective - and this may 
+be in more recent versions - is uprobe function attachment by name. Most of 
+the work is  already done in libusdt so it's reasonably doable I think - at a 
+minimum  it would require an equivalent to the find_elf_func_offset() 
+function in my  patch 1. Now the name of the library libusdt suggests its 
+focus is on USDT of course, but I think having userspace function attach 
+by name too would be great. Is that part of your plans for this work?
 
->=20
-> I prefer/support the .<suffix> idea from Andrii.
-> Which would then be ".mbuf" for my taste.
+Thanks!
 
-ack, I have already implemented it, we need to define just the naming
-convention now.
-
-Regards,
-Lorenzo
-
->=20
-> --Jesper
-> p.s. I like the bikeshed red, meaning I don't feel too strongly about thi=
-s.
->=20
-
---/9SrXxM1u7AZoJOX
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYd/9SAAKCRA6cBh0uS2t
-rL02AQCp9KeOu3lnbwwOyjMDOOBWCJLlwougl4pl1veqTEaR1wD+PoBKboPMi2uz
-+x6q9fSX+kcXzvH4knjk4jiU+RqKYQA=
-=H6Op
------END PGP SIGNATURE-----
-
---/9SrXxM1u7AZoJOX--
+Alan
