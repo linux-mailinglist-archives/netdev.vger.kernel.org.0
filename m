@@ -2,77 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA43A48DC0A
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 17:41:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C65548DC27
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 17:45:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236814AbiAMQlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 11:41:24 -0500
-Received: from giacobini.uberspace.de ([185.26.156.129]:34842 "EHLO
-        giacobini.uberspace.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236804AbiAMQlX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 11:41:23 -0500
-Received: (qmail 25316 invoked by uid 990); 13 Jan 2022 16:41:22 -0000
-Authentication-Results: giacobini.uberspace.de;
-        auth=pass (plain)
-From:   Soenke Huster <soenke.huster@eknoes.de>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Soenke Huster <soenke.huster@eknoes.de>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] Bluetooth: fix null ptr deref on hci_sync_conn_complete_evt
-Date:   Thu, 13 Jan 2022 17:40:42 +0100
-Message-Id: <20220113164042.259990-1-soenke.huster@eknoes.de>
-X-Mailer: git-send-email 2.34.1
+        id S236879AbiAMQpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 11:45:20 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.167]:42863 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236868AbiAMQpU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 11:45:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1642092287;
+    s=strato-dkim-0002; d=fpond.eu;
+    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=eqEZwnnhqa9x5sUpmp5+dl8+luCawycK4EknAItN9o0=;
+    b=f/TX8xb4MNyOSeZTVcP3hLR3JTn+t4iOXGSwd94rgi5oH+6ahWPTCOITmKq66XbtTB
+    3XgED/0B43N+E7q95aDElRDWP1IdppfWy+f15q8l50ovEzckAQ8oJ6IW0gotcF/mwMP3
+    5+gpw8fwe/i9jnKss1cXs4rAy52GKb+QuTdQqbX71SEGPMcZuRBLG1Rexx2Q/eVqwt7c
+    gtul07yXn3vNx9LUgRfy+WQ648Xnc7JHgkunFIbxhc9Yb3fM4k//hOk2E7/O/kIKr884
+    b+Tyap5P8i6vTA0qxlwUzB8fQ0MsBmLLF2mTKXY4qdGu6vytd37cRcIzuhdvx+2mGaSP
+    //aw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzvv3qxio1R8fCs/83N2Y0="
+X-RZG-CLASS-ID: mo00
+Received: from oxapp05-01.back.ox.d0m.de
+    by smtp.strato.de (RZmta 47.37.6 AUTH)
+    with ESMTPSA id a48ca5y0DGikQkB
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Thu, 13 Jan 2022 17:44:46 +0100 (CET)
+Date:   Thu, 13 Jan 2022 17:44:46 +0100 (CET)
+From:   Ulrich Hecht <uli@fpond.eu>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, linux-can@vger.kernel.org,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        biju.das.jz@bp.renesas.com, wsa@kernel.org,
+        yoshihiro.shimoda.uh@renesas.com, wg@grandegger.com,
+        kuba@kernel.org, mailhol.vincent@wanadoo.fr,
+        socketcan@hartkopp.net, geert@linux-m68k.org,
+        kieran.bingham@ideasonboard.com
+Message-ID: <1933768449.3343335.1642092286817@webmail.strato.com>
+In-Reply-To: <20220112184327.f7fwzgqvle23gfzv@pengutronix.de>
+References: <20220111162231.10390-1-uli+renesas@fpond.eu>
+ <20220111162231.10390-3-uli+renesas@fpond.eu>
+ <20220112184327.f7fwzgqvle23gfzv@pengutronix.de>
+Subject: Re: [PATCH v2 2/5] can: rcar_canfd: Add support for r8a779a0 SoC
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: ++
-X-Rspamd-Report: BAYES_HAM(-0.045106) R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
-X-Rspamd-Score: 2.854893
-Received: from unknown (HELO unkown) (::1)
-        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Thu, 13 Jan 2022 17:41:22 +0100
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+Importance: Normal
+X-Mailer: Open-Xchange Mailer v7.10.5-Rev33
+X-Originating-Client: open-xchange-appsuite
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This event is specified just for SCO and eSCO link types.
-On the reception of a HCI_Synchronous_Connection_Complete for a BDADDR
-of an existing LE connection, LE link type and a status that triggers the
-second case of the packet processing a NULL pointer dereference happens,
-as conn->link is NULL.
 
-Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
----
-v2: Fixed the obviously wrong boolean comparison
+> On 01/12/2022 7:43 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> > +#define IS_V3U (gpriv->chip_id == RENESAS_R8A779A0)
+> 
+> I really don't like this macro, as it silently relies on gpriv....and
+> I really don't like this use of this macro in the other macros that lead
+> to 2 or even 3 ternary operators hiding inside them. Is there any chance
+> to change this?
 
-I found this null pointer dereference while fuzzing bluetooth-next.
-On the described behaviour, a null ptr deref in line 4723 happens, as
-conn->link is NULL. According to the Core spec, Link_Type must be SCO or eSCO,
-all other values are reserved for future use. Checking that mitigates a null
-pointer dereference.
+Good point. I guess I should turn that into a function.
 
- net/bluetooth/hci_event.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 05997dff5666..d68f5640fb38 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4661,6 +4661,11 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev, void *data,
- 	struct hci_ev_sync_conn_complete *ev = data;
- 	struct hci_conn *conn;
- 
-+	if (!(ev->link_type == SCO_LINK || ev->link_type == ESCO_LINK)) {
-+		bt_dev_err(hdev, "Ignoring connect complete event for invalid link type");
-+		return;
-+	}
-+
- 	bt_dev_dbg(hdev, "status 0x%2.2x", ev->status);
- 
- 	hci_dev_lock(hdev);
--- 
-2.34.1
-
+CU
+Uli
