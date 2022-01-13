@@ -2,160 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C3448D4ED
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 10:50:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 764E448D500
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 10:50:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231902AbiAMJWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 04:22:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230397AbiAMJWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 04:22:34 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1DE5C06173F
-        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 01:22:33 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id m13so9922284pji.3
-        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 01:22:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ufHTp4TO5+xEDfXeGT0tdei/uX7auWoH306bW8y6nHs=;
-        b=DJdFTRWFJNQ69LqanD+D+G65LVOe1e9Q/US4098cbL/T1Rs1PAjZP4oASOJWDdLg8W
-         o9dhHwI5Q0jcgFsGwvrFC4rAzTqWEwTCYDlSXC8hafRw3uT42gXaCMfJEGrFU1Mf2CgS
-         MQ2KV6my8Pf0erE8yEGN/siirc9/QS6q2kQ4w4+QGz9nLmi20gXZj0ql7iyiQO/XsITX
-         MIBcHhPs5BXyzfpfUq1VU9QweDQUBcQXeYIY5U6Cb0EID7YP2pbevDgkQ7QLSdU42DwF
-         LrINuZ115viMQ4oSaEbSE+h6W6l8UWkTgBX3vn1nMGlhC1lcxlpOi27wS+WOJt6RggNT
-         4++Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ufHTp4TO5+xEDfXeGT0tdei/uX7auWoH306bW8y6nHs=;
-        b=0AtK8B4WmvoKS2GLLnSGMtE9sy6xY2zTribEmpfIf3n6M1S97UkEBdvVFF61CUGhmm
-         DX2DAfoX0Z1u/YesrshOFXubFqaX9AlzEQX/zU8n3ib8xY8h68j4zrbimolCOpT1sM+A
-         MZ3EvqXDESNgiRZ5UqrbUh8k2GZrn7cCoG/gWFP6S6kJkLI8LNqFJiHTCIUr5Z+Vhnud
-         IpVLBTMH3G14m6VH8XRuZSgV+j9j/1dvgOe2nNT3Q+kyxRQwgL/0iP8VKZ8gleU1iIaa
-         Nr8tARr6pB7EJrYrSMJEaUmoLggIKC/xOHXMjjfDvxAiqnr7+87rc60FcG+F5NhZMKCG
-         M4VQ==
-X-Gm-Message-State: AOAM531P61DMCJcAC09XGhA9Bax6hT16dUT3XFTCpTMFFCX0yMFTkxLm
-        iQDBwEc1zfcDpU05mqGwWU4=
-X-Google-Smtp-Source: ABdhPJytwdjpDueskiDawp+5GkTKguYV2MNf0NR4PKMM6uryPFPYO/yYHCjB8SHCe9JOWPWGrUIJhA==
-X-Received: by 2002:a63:5752:: with SMTP id h18mr3226352pgm.520.1642065753310;
-        Thu, 13 Jan 2022 01:22:33 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:71fb:8fb9:9e73:fb22])
-        by smtp.gmail.com with ESMTPSA id q2sm2366478pfu.66.2022.01.13.01.22.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 01:22:32 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net] inet: frags: annotate races around fqdir->dead and fqdir->high_thresh
-Date:   Thu, 13 Jan 2022 01:22:29 -0800
-Message-Id: <20220113092229.1231267-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.34.1.575.g55b058a8bb-goog
+        id S233399AbiAMJaC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 13 Jan 2022 04:30:02 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:55679 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233382AbiAMJaB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 04:30:01 -0500
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id BB9BF6002D;
+        Thu, 13 Jan 2022 09:29:55 +0000 (UTC)
+Date:   Thu, 13 Jan 2022 10:29:54 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Harry Morris <h.morris@cascoda.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "linux-wireless@vger.kernel.org Wireless" 
+        <linux-wireless@vger.kernel.org>
+Subject: Re: [wpan-next v2 27/27] net: ieee802154: ca8210: Refuse most of
+ the scan operations
+Message-ID: <20220113102954.7a0e213e@xps13>
+In-Reply-To: <CAB_54W5ojqi2obtNLihCMXsZkh+aN_cVbSTRptq3=PXkpknzJQ@mail.gmail.com>
+References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
+        <20220112173312.764660-28-miquel.raynal@bootlin.com>
+        <CAB_54W5ojqi2obtNLihCMXsZkh+aN_cVbSTRptq3=PXkpknzJQ@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Hi Alexander,
 
-Both fields can be read/written without synchronization,
-add proper accessors and documentation.
+alex.aring@gmail.com wrote on Wed, 12 Jan 2022 17:48:59 -0500:
 
-Fixes: d5dd88794a13 ("inet: fix various use-after-free in defrags units")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/net/inet_frag.h  | 11 +++++++++--
- include/net/ipv6_frag.h  |  3 ++-
- net/ipv4/inet_fragment.c |  8 +++++---
- net/ipv4/ip_fragment.c   |  3 ++-
- 4 files changed, 18 insertions(+), 7 deletions(-)
+> Hi,
+> 
+> On Wed, 12 Jan 2022 at 12:34, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> >
+> > The Cascada 8210 hardware transceiver is kind of a hardMAC which
+> > interfaces with the softMAC and in practice does not support sending
+> > anything else than dataframes. This means we cannot send any BEACON_REQ
+> > during active scans nor any BEACON in general. Refuse these operations
+> > officially so that the user is aware of the limitation.
+> >
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >  drivers/net/ieee802154/ca8210.c | 25 ++++++++++++++++++++++++-
+> >  1 file changed, 24 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
+> > index d3a9e4fe05f4..49c274280e3c 100644
+> > --- a/drivers/net/ieee802154/ca8210.c
+> > +++ b/drivers/net/ieee802154/ca8210.c
+> > @@ -2385,6 +2385,25 @@ static int ca8210_set_promiscuous_mode(struct ieee802154_hw *hw, const bool on)
+> >         return link_to_linux_err(status);
+> >  }
+> >
+> > +static int ca8210_enter_scan_mode(struct ieee802154_hw *hw,
+> > +                                 struct cfg802154_scan_request *request)
+> > +{
+> > +       /* This xceiver can only send dataframes */
+> > +       if (request->type != NL802154_SCAN_PASSIVE)
+> > +               return -EOPNOTSUPP;
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +static int ca8210_enter_beacons_mode(struct ieee802154_hw *hw,
+> > +                                    struct cfg802154_beacons_request *request)
+> > +{
+> > +       /* This xceiver can only send dataframes */
+> > +       return -EOPNOTSUPP;
+> > +}
+> > +
+> > +static void ca8210_exit_scan_beacons_mode(struct ieee802154_hw *hw) { }
+> > +
+> >  static const struct ieee802154_ops ca8210_phy_ops = {
+> >         .start = ca8210_start,
+> >         .stop = ca8210_stop,
+> > @@ -2397,7 +2416,11 @@ static const struct ieee802154_ops ca8210_phy_ops = {
+> >         .set_cca_ed_level = ca8210_set_cca_ed_level,
+> >         .set_csma_params = ca8210_set_csma_params,
+> >         .set_frame_retries = ca8210_set_frame_retries,
+> > -       .set_promiscuous_mode = ca8210_set_promiscuous_mode
+> > +       .set_promiscuous_mode = ca8210_set_promiscuous_mode,
+> > +       .enter_scan_mode = ca8210_enter_scan_mode,
+> > +       .exit_scan_mode = ca8210_exit_scan_beacons_mode,
+> > +       .enter_beacons_mode = ca8210_enter_beacons_mode,
+> > +       .exit_beacons_mode = ca8210_exit_scan_beacons_mode,
+> >  };  
+> 
+> so there is no flag that this driver can't support scanning currently
+> and it works now because the offload functionality will return
+> -ENOTSUPP? This is misleading because I would assume if it's not
+> supported we can do it by software which the driver can't do.
 
-diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
-index 48cc5795ceda6bef86178fc1db0e1d6ee1dfd46d..63540be0fc34ac0f5270dd474bec96c65a5bdcbe 100644
---- a/include/net/inet_frag.h
-+++ b/include/net/inet_frag.h
-@@ -117,8 +117,15 @@ int fqdir_init(struct fqdir **fqdirp, struct inet_frags *f, struct net *net);
- 
- static inline void fqdir_pre_exit(struct fqdir *fqdir)
- {
--	fqdir->high_thresh = 0; /* prevent creation of new frags */
--	fqdir->dead = true;
-+	/* Prevent creation of new frags.
-+	 * Pairs with READ_ONCE() in inet_frag_find().
-+	 */
-+	WRITE_ONCE(fqdir->high_thresh, 0);
-+
-+	/* Pairs with READ_ONCE() in inet_frag_kill(), ip_expire()
-+	 * and ip6frag_expire_frag_queue().
-+	 */
-+	WRITE_ONCE(fqdir->dead, true);
- }
- void fqdir_exit(struct fqdir *fqdir);
- 
-diff --git a/include/net/ipv6_frag.h b/include/net/ipv6_frag.h
-index 851029ecff13cb617d41b4043f039ae59e832b82..0a4779175a5238d8989a777ef8417223b6157679 100644
---- a/include/net/ipv6_frag.h
-+++ b/include/net/ipv6_frag.h
-@@ -67,7 +67,8 @@ ip6frag_expire_frag_queue(struct net *net, struct frag_queue *fq)
- 	struct sk_buff *head;
- 
- 	rcu_read_lock();
--	if (fq->q.fqdir->dead)
-+	/* Paired with the WRITE_ONCE() in fqdir_pre_exit(). */
-+	if (READ_ONCE(fq->q.fqdir->dead))
- 		goto out_rcu_unlock;
- 	spin_lock(&fq->q.lock);
- 
-diff --git a/net/ipv4/inet_fragment.c b/net/ipv4/inet_fragment.c
-index 05cd198d7a6ba89ab9d12caf55108aba36c11fa0..341096807100cd65c4667031384ef59622771dac 100644
---- a/net/ipv4/inet_fragment.c
-+++ b/net/ipv4/inet_fragment.c
-@@ -235,9 +235,9 @@ void inet_frag_kill(struct inet_frag_queue *fq)
- 		/* The RCU read lock provides a memory barrier
- 		 * guaranteeing that if fqdir->dead is false then
- 		 * the hash table destruction will not start until
--		 * after we unlock.  Paired with inet_frags_exit_net().
-+		 * after we unlock.  Paired with fqdir_pre_exit().
- 		 */
--		if (!fqdir->dead) {
-+		if (!READ_ONCE(fqdir->dead)) {
- 			rhashtable_remove_fast(&fqdir->rhashtable, &fq->node,
- 					       fqdir->f->rhash_params);
- 			refcount_dec(&fq->refcnt);
-@@ -352,9 +352,11 @@ static struct inet_frag_queue *inet_frag_create(struct fqdir *fqdir,
- /* TODO : call from rcu_read_lock() and no longer use refcount_inc_not_zero() */
- struct inet_frag_queue *inet_frag_find(struct fqdir *fqdir, void *key)
- {
-+	/* This pairs with WRITE_ONCE() in fqdir_pre_exit(). */
-+	long high_thresh = READ_ONCE(fqdir->high_thresh);
- 	struct inet_frag_queue *fq = NULL, *prev;
- 
--	if (!fqdir->high_thresh || frag_mem_limit(fqdir) > fqdir->high_thresh)
-+	if (!high_thresh || frag_mem_limit(fqdir) > high_thresh)
- 		return NULL;
- 
- 	rcu_read_lock();
-diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
-index cfeb8890f94ee95b2246ba98beb338a33fc45d1d..fad803d2d711ef0d97f7150f0f710a35ac822946 100644
---- a/net/ipv4/ip_fragment.c
-+++ b/net/ipv4/ip_fragment.c
-@@ -144,7 +144,8 @@ static void ip_expire(struct timer_list *t)
- 
- 	rcu_read_lock();
- 
--	if (qp->q.fqdir->dead)
-+	/* Paired with WRITE_ONCE() in fqdir_pre_exit(). */
-+	if (READ_ONCE(qp->q.fqdir->dead))
- 		goto out_rcu_unlock;
- 
- 	spin_lock(&qp->q.lock);
--- 
-2.34.1.575.g55b058a8bb-goog
+I believe there is a misunderstanding.
 
+This is what I have understood from your previous comments in v1:
+"This driver does not support transmitting anything else than
+datagrams", which is what I assumed was a regular data packet. IOW,
+sending a MAC_CMD such as a beacon request or sending a beacon was not
+supported physically by the hardware. Hence, most of the scans
+operations cannot be performed and must be rejected (all but a passive
+scan, assuming that receiving beacons was okay).
+
+Please mind the update in that hook which currently is just an FYI from
+the mac to the drivers and not a "do it by yourself" injunction. So
+answering -EOPNOTSUPP to the mac here does not mean:
+	"I cannot handle it by myself, the scan cannot happen"
+but
+	"I cannot handle the forged frames, so let's just not try"
+ 
+> ... I see that the offload functions now are getting used and have a
+> reason to be upstream, but the use of it is wrong.
+
+As a personal matter of taste, I don't like flags when it comes to
+something complex like supporting a specific operation. Just in the
+scanning procedure there are 4 different actions and a driver might
+support only a subset of these, which is totally fine but hard to
+properly describe by well-named flags. Here the driver hooks say to
+the driver which are interested "here is what is going to happen" and
+then they can:
+- ignore the details by just not implementing the hooks, let the mac do
+  its job, they will then transmit the relevant frames forged by the
+  mac
+- eventually enter a specific mode internally for this operation, but
+  basically do the same as above, ie. transmitting the frames forged
+  by the mac
+- refuse the operation by returning an error code if something cannot
+  be done
+
+I've experienced a number of situations in the MTD world and later with
+IIO drivers where flags have been remodeled and reused in different
+manners, until the flag description gets totally wrong and
+undescriptive regarding what it actually does. Hence my main idea of
+letting drivers refuse these operations instead of having the mac doing
+it for them.
+
+I can definitely use flags if you want, but in this case, what flags do
+you want to see?
+
+Thanks,
+Miquèl
