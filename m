@@ -2,195 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 693D148D01B
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 02:24:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C55A48D02C
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 02:33:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231299AbiAMBYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 12 Jan 2022 20:24:14 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:22112 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231290AbiAMBYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 20:24:10 -0500
+        id S231349AbiAMBd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 12 Jan 2022 20:33:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58722 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231324AbiAMBd4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 12 Jan 2022 20:33:56 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9CCC06173F;
+        Wed, 12 Jan 2022 17:33:56 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id n11so5289152plf.4;
+        Wed, 12 Jan 2022 17:33:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1642037051; x=1673573051;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=iWCXlXyuMmPjYSfigyIyX2IYPfl2A7uP/vsSgT71UJI=;
-  b=qP0MQe7ndWkS7x4TSNe0UmrBVjAXNv1sOv9YnBhQRe0VePO28kD3GXkO
-   9FU1Y1eXKj4iHXaDNSkzrmashzUL55HAk02MQ+xQ9zeQ59iojbXGbomTi
-   vHyuQlLsSsnPd6PkmfthhVymIh+0tXole0PxkPlU5vNLbpktNQmuEqdSj
-   I=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 12 Jan 2022 17:24:10 -0800
-X-QCInternal: smtphost
-Received: from hu-twear-lv.qualcomm.com (HELO hu-devc-sd-u20-a-1.qualcomm.com) ([10.47.235.107])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 12 Jan 2022 17:24:10 -0800
-Received: by hu-devc-sd-u20-a-1.qualcomm.com (Postfix, from userid 202676)
-        id 40AA95DA; Wed, 12 Jan 2022 17:23:50 -0800 (PST)
-From:   Tyler Wear <quic_twear@quicinc.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     maze@google.com, yhs@fb.com, kafai@fb.com, toke@redhat.com,
-        daniel@iogearbox.net, song@kernel.org,
-        Tyler Wear <quic_twear@quicinc.com>
-Subject: [PATCH bpf-next v7 2/2] selftests/bpf: CGROUP_SKB test for skb_store_bytes()
-Date:   Wed, 12 Jan 2022 17:23:34 -0800
-Message-Id: <20220113012334.558689-2-quic_twear@quicinc.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220113012334.558689-1-quic_twear@quicinc.com>
-References: <20220113012334.558689-1-quic_twear@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=m18no3eU9YHeOBJ70PLazPrqlrGWJoUY+UtRV0RJfnE=;
+        b=UmuUGXve9r7RpYvZiev379MA7uABBPIy9NIzLlVQhCGARCNeA/XjbLXQelwd22Mej0
+         h5Iz1VIfFDIDHao2yWLxgdxlqhcWkTX26NtLyVoTbJszoXGMfwcedOCg8vcf3ZbCKDbA
+         NYEOMU3JWY3nuGgrPhMOfyQs1k3NewqmLeKJtNJIsJsd91tUMyU4g9PsuIkNxSH6JmBC
+         NDrtMv69cUP9EDabJI/kJZF4z4oXMfqsKhiLVDPl2rjwBU9Jc9+wXx7vcvehSkYXqBeq
+         HDS5kFfAXxOTFj494Qi1piZ4QZ0/9cfRHutIueLlMtDLAg5jHot2s3D8b2hTsNDaYKpc
+         s3+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=m18no3eU9YHeOBJ70PLazPrqlrGWJoUY+UtRV0RJfnE=;
+        b=VVTEBGHRreeOmId70EU+TpmTEdR1lLZhHxcU8rZu4YwUDSNyRgtijiu+yXca7fO3yH
+         wnCFz9b3LF5NTtPaN+fUP+Pxt8iJsjd/OTgtbK4Wx6F+OKCohdF0Qkeoo2og/M5iNBoH
+         brUu2J77GsP79bN5mOIHqP8hNEl3EUV91jWo17SnqScVsnURrOQO/FqDsuCxXyrgh3/p
+         8xgTcPj3T+g3pAXfFRlP1YkonXC7IFcKegf3ExgtG2l5pSAX/4YjaIm5Mh14y5yidJNL
+         aUh7ejj9AoUzgFwytmxHzBIQ+EAbSMtCk3+bo+/+NZFuWQ7uW1F8080Kl1En5TGBDraU
+         aKDA==
+X-Gm-Message-State: AOAM5335Jm4Wnz5JU7TzJ7F4dWPVMO9dWnomlBMdzY1pDQeJr1kEd/TK
+        aKqVwuyk43mFKsq+Hfo1FXZ4lbVbNcoDAwefO1g=
+X-Google-Smtp-Source: ABdhPJz4qeYIqi1ZeoHta49vEZlTq7oCkXYJDmz+FrBq+qxv0Qi2VWJg4urS6VyhZlHFR5eZ9MN/iySryZKlDcCLMdE=
+X-Received: by 2002:a63:be49:: with SMTP id g9mr1967928pgo.375.1642037635993;
+ Wed, 12 Jan 2022 17:33:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-2-Jason@zx2c4.com>
+ <87tue8ftrm.fsf@toke.dk>
+In-Reply-To: <87tue8ftrm.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 12 Jan 2022 17:33:44 -0800
+Message-ID: <CAADnVQJqoHy+EQ-G5fUtkPpeHaA6YnqsOjjhUY6UW0v7eKSTZw@mail.gmail.com>
+Subject: Re: [PATCH RFC v1 1/3] bpf: move from sha1 to blake2s in tag calculation
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test that the source port of an egress packet is changed
-via skb_store_bytes() for a BPF_PROG_TYPE_CGROUP_SKB prog.
+On Wed, Jan 12, 2022 at 5:14 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> [ adding the bpf list - please make sure to include that when sending
+>   BPF-related patches, not everyone in BPF land follows netdev ]
+>
+> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+>
+> > BLAKE2s is faster and more secure. SHA-1 has been broken for a long tim=
+e
+> > now. This also removes quite a bit of code, and lets us potentially
+> > remove sha1 from lib, which would further reduce vmlinux size.
+>
+> AFAIU, the BPF tag is just used as an opaque (i.e., arbitrary) unique
+> identifier for BPF programs, without any guarantees of stability. Which
+> means changing it should be fine; at most we'd confuse some operators
+> who have memorised the tags of their BPF programs :)
+>
+> The only other concern I could see would be if it somehow locked us into
+> that particular algorithm for other future use cases for computing
+> hashes of BPF programs (say, signing if that ends up being the direction
+> we go in). But obviously SHA1 would not be a good fit for that anyway,
+> so the algorithm choice would have to be part of that discussion in any
+> case.
+>
+> So all in all, I don't see any issues with making this change for BPF.
 
-Test creates a client and server and checks that the packet
-received on the server has the updated source IP and Port
-that the bpf program modifies.
-
-Signed-off-by: Tyler Wear <quic_twear@quicinc.com>
----
- .../bpf/prog_tests/cgroup_store_bytes.c       | 70 +++++++++++++++++++
- .../selftests/bpf/progs/cgroup_store_bytes.c  | 49 +++++++++++++
- 2 files changed, 119 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
- create mode 100644 tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c b/tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
-new file mode 100644
-index 000000000000..c6cabc19849e
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/cgroup_store_bytes.c
-@@ -0,0 +1,70 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <test_progs.h>
-+#include <network_helpers.h>
-+
-+#include "cgroup_store_bytes.skel.h"
-+
-+void test_cgroup_store_bytes(void)
-+{
-+	int server_fd, cgroup_fd, client_fd, err, bytes;
-+	struct sockaddr server_addr;
-+	socklen_t addrlen = sizeof(server_addr);
-+	char buf[] = "testing";
-+	struct sockaddr_storage ss;
-+	socklen_t slen = sizeof(ss);
-+	char recv_buf[BUFSIZ];
-+	struct in_addr addr;
-+	unsigned short port;
-+	struct cgroup_store_bytes *skel;
-+
-+	cgroup_fd = test__join_cgroup("/cgroup_store_bytes");
-+	if (!ASSERT_GE(cgroup_fd, 0, "cgroup_fd"))
-+		return;
-+
-+	skel = cgroup_store_bytes__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "skel"))
-+		goto close_cgroup_fd;
-+
-+	skel->links.cgroup_store_bytes = bpf_program__attach_cgroup(
-+			skel->progs.cgroup_store_bytes, cgroup_fd);
-+	if (!ASSERT_OK_PTR(skel->links.cgroup_store_bytes , "cgroup_store_bytes"))
-+		goto close_skeleton;
-+
-+	server_fd = start_server(AF_INET, SOCK_DGRAM, NULL, 0, 0);
-+	if (!ASSERT_GE(server_fd, 0, "server_fd"))
-+		goto close_skeleton;
-+
-+	client_fd = start_server(AF_INET, SOCK_DGRAM, NULL, 0, 0);
-+	if (!ASSERT_GE(client_fd, 0, "client_fd"))
-+		goto close_server_fd;
-+
-+	err = getsockname(server_fd, &server_addr, &addrlen);
-+	if (!ASSERT_OK(err, "getsockname"))
-+		goto close_client_fd;
-+
-+	bytes = sendto(client_fd, buf, sizeof(buf), 0, &server_addr,
-+			sizeof(server_addr));
-+	if (!ASSERT_EQ(bytes, sizeof(buf), "sendto"))
-+		goto close_client_fd;
-+
-+	bytes = recvfrom(server_fd, &recv_buf, sizeof(recv_buf), 0,
-+			(struct sockaddr *)&ss, &slen);
-+	if (!ASSERT_GE(bytes, 0, "recvfrom"))
-+		goto close_client_fd;
-+
-+	addr = ((struct sockaddr_in *)&ss)->sin_addr;
-+
-+	ASSERT_EQ(skel->bss->test_result, 1, "bpf program returned failure");
-+	port = ((struct sockaddr_in *)&ss)->sin_port;
-+	ASSERT_EQ(port, 5555, "bpf program failed to change port");
-+
-+close_client_fd:
-+	close(client_fd);
-+close_server_fd:
-+	close(server_fd);
-+close_skeleton:
-+	cgroup_store_bytes__destroy(skel);
-+close_cgroup_fd:
-+	close(cgroup_fd);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/cgroup_store_bytes.c b/tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
-new file mode 100644
-index 000000000000..4608083e18b7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/cgroup_store_bytes.c
-@@ -0,0 +1,49 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <errno.h>
-+#include <linux/bpf.h>
-+#include <linux/if_ether.h>
-+#include <linux/ip.h>
-+#include <netinet/in.h>
-+#include <netinet/udp.h>
-+#include <bpf/bpf_helpers.h>
-+
-+#define IP_SRC_OFF offsetof(struct iphdr, saddr)
-+#define UDP_SPORT_OFF (sizeof(struct iphdr) + offsetof(struct udphdr, source))
-+
-+#define IS_PSEUDO 0x10
-+
-+#define UDP_CSUM_OFF (sizeof(struct iphdr) + offsetof(struct udphdr, check))
-+#define IP_CSUM_OFF offsetof(struct iphdr, check)
-+
-+int test_result = 0;
-+
-+SEC("cgroup_skb/egress")
-+int cgroup_store_bytes(struct __sk_buff *skb)
-+{
-+	struct ethhdr eth;
-+	struct iphdr iph;
-+	struct udphdr udph;
-+
-+	__u32 map_key = 0;
-+	__u16 new_port = 5555;
-+	__u16 old_port;
-+	__u32 old_ip;
-+
-+	if (bpf_skb_load_bytes_relative(skb, 0, &iph, sizeof(iph), BPF_HDR_START_NET))
-+		goto fail;
-+
-+	if (bpf_skb_load_bytes_relative(skb, sizeof(iph), &udph, sizeof(udph), BPF_HDR_START_NET))
-+		goto fail;
-+
-+	old_port = udph.source;
-+	bpf_l4_csum_replace(skb, UDP_CSUM_OFF, old_port, new_port,
-+						IS_PSEUDO | sizeof(new_port));
-+	if (bpf_skb_store_bytes(skb, UDP_SPORT_OFF, &new_port, sizeof(new_port), 0) < 0)
-+		goto fail;
-+
-+	test_result = 1;
-+
-+fail:
-+	return 1;
-+}
--- 
-2.25.1
-
+Nack.
+It's part of api. We cannot change it.
