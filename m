@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3A6648E0DE
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 00:28:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8936C48E0FB
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 00:34:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238222AbiAMX1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 18:27:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45244 "EHLO
+        id S238236AbiAMXeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 18:34:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238190AbiAMX1n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 18:27:43 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E53C061574;
-        Thu, 13 Jan 2022 15:27:43 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id e9so12883897wra.2;
-        Thu, 13 Jan 2022 15:27:42 -0800 (PST)
+        with ESMTP id S238218AbiAMXeO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 18:34:14 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A63F7C06161C;
+        Thu, 13 Jan 2022 15:34:13 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id l25so12809738wrb.13;
+        Thu, 13 Jan 2022 15:34:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=tlvap2oP+61e2yvExfPH4KET6jHA0Dk431YlmavXzqU=;
-        b=mChYZ47QoBnVwuZ7TUmew2YmY2k2Fd9VJLUa4ZMdlJdaqxdwknfdf1vlF2T5ujpIcI
-         Y3o1patT8QbNgv5TJFzAGE37mkGq9Nbd/yE7fQpatI3fEkVnnIU5zQMS3aY9TFqJ5v8z
-         jdkgN0BAqj19Ocv+KUzaOyPgj+iR99b5Phow8WkjrvA6e2CzPv/80h08goiFN2FFLgVR
-         /eZ5qNzI/YHnRI6HCItTSYVQiiR4KRHQl7vyJcbOfEsPMuMQuCN6+m+n2V7JAIJKZrB+
-         TSzWf7j5BiM9fTibrsmV4bwqiFE8ZQcnNyKd1yF1rIyjSoQ4aIAC0hQeyjLOyDN1GLxh
-         akHA==
+        bh=MdTpEP43Y6K41askxgi7sRoWBbsxkKMukf1PIOUZT3U=;
+        b=a4Qdy+XaoF3+AigjiLuYeTJOsGhiw4i+U7AZFfForsDmOhLAC0o1PGkTvSo970sK5R
+         jku2D7GHb7hxWjwNd2YWeZda8HnqYMRN7+Rl3v5pnlbezrqJ4qF0BIfjfHJpR5yTuK8V
+         JGqi/tYbILJOZZY2VauHThPKn2HOfaB/jj1LR1biThGozVzfOZFQAIkfZb/fJHb/KEYn
+         JnB/cUVlhbRuO4Jfp9MG0NfwJWIkS3Vwm9buIRlmh4oVnaRj121F+/JOoudFVb0eLoYe
+         KW/7y9xsmCVNLuGsDB+/AJBN0V6hXp3+U8Fk/nTTE1E2cEdYRUKpvLMf01WU74vE+f9v
+         EyNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=tlvap2oP+61e2yvExfPH4KET6jHA0Dk431YlmavXzqU=;
-        b=oHwxaENCSDOI7gDvF3GGkNiNqvMt4ET/5Lf7JpbVbRcFIS+T9O960mSI7UxWqZhmOy
-         WjPIM9/XMcNoD5ElmpDRGGS7YVm/SHfuy0OdM2h75tKHBY2hVYX4gcvFRlizL61rWgYe
-         lUzfD9dthkCx181cS99V5ACPgSpcHciCXGbTV8aVeWKhGAe/NNBiBR0TlbsCaiWUYP0B
-         8gzWc2yocV7y05ndaXcwITg2cHm8NVXPqhZJ3+6xEC/DkqFLox0flM0Gx3SZkG6jGndI
-         dDCoWOrn3iYiOdZ+nC/7IArWRZhLivS94SfypX7Q8uzrpkt9WD0meAJjaA/d88kmpn5j
-         Lntg==
-X-Gm-Message-State: AOAM531p5Xp5/1f9Y5JSy9P3fSirQQUjHRmWb0NDQJXUhF/LHJI8jTDZ
-        UPdZP1sbd1ZT2pORbTHZO/n2NWGmvUEDGTuvFyI=
-X-Google-Smtp-Source: ABdhPJwWs42SDt5la+BM9YL/9s7okRdULRG1K9KKVQsUWVHlUOyOv6cxOtl71XJSPfS1TLNQsEt69tIAUvZreJic54E=
-X-Received: by 2002:a5d:4a02:: with SMTP id m2mr5913487wrq.154.1642116461572;
- Thu, 13 Jan 2022 15:27:41 -0800 (PST)
+        bh=MdTpEP43Y6K41askxgi7sRoWBbsxkKMukf1PIOUZT3U=;
+        b=jiNulxQ3otEC7/IfjlApW17pUKsw1Dkp9eCHLuwh+vUocWp3tknTwPGVzDxOKRtgCj
+         NGXlh6vB5wuYzX0zhUjXskAfGnLXebBO9/1H8xZkknbID8W4tatjXwWDk80aISvP/S4c
+         cm6JGglSAo6pcFE2owRj72RrcObNvdyLAt1N00kixuKsVN1CfjacaIJD7/uFY8ve1Gt5
+         yo/QiJpe8mVjW6TQZ9PNg+0PNPHaHEecMgwDxEMpainUli9H8DPSVKc33PuaTN5yopL3
+         X/klG/hLSA4Aidk4oWeXrBWDrmS+HLbj3WY9h/JOrTjaH590eJoV/rTLCMXnRGPr8NDH
+         hZaw==
+X-Gm-Message-State: AOAM533OQKRLRs9LVSyVfuvUSoNTTyQVwZYWtnQvYJZ9VbikKUxawH3c
+        h1JswabAapa4HqW0/sbWL/ttj5YC5k3Io4zRJvY=
+X-Google-Smtp-Source: ABdhPJw8+dgEmX4xc6Cx/lzXsv4oB9Lhqlni9WSZRAJ1RSqPyP6yYXdw6X1Q9XFrJqQWjviaJwT/57y4aLxjAV4WM7o=
+X-Received: by 2002:a05:6000:105:: with SMTP id o5mr260063wrx.56.1642116852264;
+ Thu, 13 Jan 2022 15:34:12 -0800 (PST)
 MIME-Version: 1.0
 References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
- <20220112173312.764660-2-miquel.raynal@bootlin.com> <CAB_54W7uEQ5RJZxKT2qimoT=pbu8NsUhbZWZRWg+QjXDoTPFuQ@mail.gmail.com>
- <20220113103229.64612657@xps13>
-In-Reply-To: <20220113103229.64612657@xps13>
+ <20220112173312.764660-9-miquel.raynal@bootlin.com> <CAB_54W5QU5JCtQYwvTKREd6ZeQWmC19LF4mj853U0Gz-mCObVQ@mail.gmail.com>
+ <20220113121645.434a6ef6@xps13>
+In-Reply-To: <20220113121645.434a6ef6@xps13>
 From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Thu, 13 Jan 2022 18:27:30 -0500
-Message-ID: <CAB_54W4LCS++_BCzPu1kbSKWPC4uLzWwCSEj4CNi7-h8KOVc4w@mail.gmail.com>
-Subject: Re: [wpan-next v2 01/27] net: mac802154: Split the set channel hook implementation
+Date:   Thu, 13 Jan 2022 18:34:00 -0500
+Message-ID: <CAB_54W5_x88zVgSJep=yK5WVjPvcWMy8dmyOJWcjy=5o0jCy0w@mail.gmail.com>
+Subject: Re: [wpan-next v2 08/27] net: ieee802154: Drop symbol duration
+ settings when the core does it already
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
@@ -76,50 +77,76 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Thu, 13 Jan 2022 at 04:32, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+On Thu, 13 Jan 2022 at 06:16, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
 > Hi Alexander,
 >
-> alex.aring@gmail.com wrote on Wed, 12 Jan 2022 17:30:35 -0500:
+> alex.aring@gmail.com wrote on Wed, 12 Jan 2022 17:26:14 -0500:
 >
 > > Hi,
 > >
 > > On Wed, 12 Jan 2022 at 12:33, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 > > >
-> > > As it is currently designed, the set_channel() cfg802154 hook
-> > > implemented in the softMAC is doing a couple of checks before actually
-> > > performing the channel change. However, as we enhance the support for
-> > > automatically setting the symbol duration during channel changes, it
-> > > will also be needed to ensure that the corresponding channel as properly
-> > > be selected at probe time. In order to verify this, we will need to
+> > > The core now knows how to set the symbol duration in a few cases, when
+> > > drivers correctly advertise the protocols used on each channel. For
+> > > these drivers, there is no more need to bother with symbol duration, so
+> > > just drop the duplicated code.
+> > >
+> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > ---
+> > >  drivers/net/ieee802154/ca8210.c | 1 -
+> > >  drivers/net/ieee802154/mcr20a.c | 2 --
+> > >  2 files changed, 3 deletions(-)
+> > >
+> > > diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
+> > > index 82b2a173bdbd..d3a9e4fe05f4 100644
+> > > --- a/drivers/net/ieee802154/ca8210.c
+> > > +++ b/drivers/net/ieee802154/ca8210.c
+> > > @@ -2977,7 +2977,6 @@ static void ca8210_hw_setup(struct ieee802154_hw *ca8210_hw)
+> > >         ca8210_hw->phy->cca.mode = NL802154_CCA_ENERGY_CARRIER;
+> > >         ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
+> > >         ca8210_hw->phy->cca_ed_level = -9800;
+> > > -       ca8210_hw->phy->symbol_duration = 16 * 1000;
+> > >         ca8210_hw->phy->lifs_period = 40;
+> > >         ca8210_hw->phy->sifs_period = 12;
+> > >         ca8210_hw->flags =
+> > > diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
+> > > index 8aa87e9bf92e..da2ab19cb5ee 100644
+> > > --- a/drivers/net/ieee802154/mcr20a.c
+> > > +++ b/drivers/net/ieee802154/mcr20a.c
+> > > @@ -975,7 +975,6 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
+> > >
+> > >         dev_dbg(printdev(lp), "%s\n", __func__);
+> > >
+> > > -       phy->symbol_duration = 16 * 1000;
+> > >         phy->lifs_period = 40;
+> > >         phy->sifs_period = 12;
+> > >
+> > > @@ -1010,7 +1009,6 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
+> > >         phy->current_page = 0;
+> > >         /* MCR20A default reset value */
+> > >         phy->current_channel = 20;
+> > > -       phy->symbol_duration = 16 * 1000;
+> > >         phy->supported.tx_powers = mcr20a_powers;
+> > >         phy->supported.tx_powers_size = ARRAY_SIZE(mcr20a_powers);
+> > >         phy->cca_ed_level = phy->supported.cca_ed_levels[75];
 > >
-> > no, we don't set channels at probe time. We set the
-> > current_page/channel whatever the default is according to the hardware
-> > datasheet. I think this channel should be dropped and all drivers set
-> > the defaults before registering hw as what we do at e.g. at86rf230,
-> > see [0].
+> > What's about the atrf86230 driver?
 >
-> Is there a reason for refusing to call ->set_channel() at probe time?
+> I couldn't find reliable information about what this meant:
 >
-
-because the current drivers work the way to not set the channel/page
-during probe time. Also the 802.15.4 spec states that this default
-value is hardware specific and this goes back whatever the vendor
-decides. Also you drop the check that if the same channel is already
-set don't set it which works like a shadow register for registers.
-Is there a reason why to set a channel during probe time? Are you
-setting the value which is the default one again? If the driver has a
-random default value it should choose some and stick to one, the
-others do whatever the datasheet has after resetting the hardware.
-
-I really don't see the sense here why every driver should introduce on
-driver level a set channel call. At probing time the transceiver
-registers are already in a state which we should reflect.
-
-> Anyway, I'll put the symbol duration setting in the registration helper
-> and I will fix hwsim aside.
+>         /* SUB:0 and BPSK:0 -> BPSK-20 */
+>         /* SUB:1 and BPSK:0 -> BPSK-40 */
+>         /* SUB:0 and BPSK:1 -> OQPSK-100/200/400 */
+>         /* SUB:1 and BPSK:1 -> OQPSK-250/500/1000 */
 >
+> None of these comments match the spec so I don't know what to put
+> there. If you know what these protocols are, I will immediately
+> provide this information into the driver and ensure the core handles
+> these durations properly before dropping the symbol_durations settings
+> from the code.
 
-ok, thanks.
+I think those are from the transceiver datasheets (which are free to
+access). Can you not simply merge them or is there a conflict?
 
 - Alex
