@@ -2,164 +2,330 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 650E048D54C
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 11:15:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A41348D56F
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 11:15:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233563AbiAMJ45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 04:56:57 -0500
-Received: from mga07.intel.com ([134.134.136.100]:21256 "EHLO mga07.intel.com"
+        id S229774AbiAMKKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 05:10:20 -0500
+Received: from mga12.intel.com ([192.55.52.136]:25769 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232227AbiAMJ4z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 13 Jan 2022 04:56:55 -0500
+        id S229737AbiAMKKT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jan 2022 05:10:19 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642067815; x=1673603815;
-  h=from:to:cc:subject:date:message-id;
-  bh=1F6Syt4etkdduZ3B/BUPPh56aIVAn6EAxdLQbjXRbPs=;
-  b=f18j+xNg93PbXTQgyZMih7OeLSigGr5wkk61PPQWpAtsofJysdrMw9k1
-   2tfJVipAgMB/dBmuLSycLhS5QnRlcRswxihNLChrxtXsj9i2ohUOu4cLH
-   MiPlpFc53U9a4t/gqDzQjqBOXXAUJs6eHxUzUqACZu8kJP3BPQPAK553O
-   6HBdFB8Hlf1Z05tj+jbYz11CUHrtXuuqG60VVQ4rL9OCiifm6gEt34Jfy
-   7uVMLa5+tMOS5hJk/oEgiQSC2kzKhmuoi0wAg82u7DUE7eZsAigUHS0AJ
-   IeaWeCtMeDJN1kjM74utvFTb3SlRdgapld2EueIlyl71qxgdIo3dT94AC
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="307321915"
+  t=1642068619; x=1673604619;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=VPakz69WokqAuxyzWrj35yW3FQTTCGRnryqWpLR4cd8=;
+  b=I8P2KhizkSejorXmWxq0z8HWWl6EtwSxi5ZAz2dJcrhBFpcEWsQmuC//
+   2VEhjjdrftQy4u9RYShd41/6H4D2J43uTa4Tnz3+oyp+fZufW1koIXnHf
+   hq2oxDkcfu/IIdd8wNWvnhVOU6SM1Ak1S9/qi8lahhYwgBJ4h3ZQ/hL3R
+   Yz+TxsuByaRqxqKjZQqYyMAH3mEmtzH3LGOJxpzz9XbEIc+ZPRhXebZDp
+   MOd3vbClE5CnbRHM9evx9vzLDK38NuTVFQ0+6/lpbIB8ytH+0iJfj/8b6
+   JQdNQ++Z1CpQo8Vd48k1pefZNE/jrXH44S2u5VKJeIn8bjPYrDvECUMSe
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="223960075"
 X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
-   d="scan'208";a="307321915"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 01:56:55 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="223960075"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 02:10:19 -0800
 X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
-   d="scan'208";a="613897881"
-Received: from mismail5-ilbpg0.png.intel.com ([10.88.229.13])
-  by FMSMGA003.fm.intel.com with ESMTP; 13 Jan 2022 01:56:52 -0800
-From:   Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mohammad.athari.ismail@intel.com, stable@vger.kernel.org
-Subject: [PATCH net v3] net: phy: marvell: add Marvell specific PHY loopback
-Date:   Thu, 13 Jan 2022 17:56:04 +0800
-Message-Id: <20220113095604.31827-1-mohammad.athari.ismail@intel.com>
-X-Mailer: git-send-email 2.17.1
+   d="scan'208";a="475255224"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.255.30.137]) ([10.255.30.137])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 02:10:17 -0800
+Message-ID: <104ef2d4-fb89-58e6-0a07-f8bdaeb278e3@intel.com>
+Date:   Thu, 13 Jan 2022 18:10:15 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.4.1
+Subject: Re: [PATCH 7/7] vDPA/ifcvf: improve irq requester, to handle
+ per_vq/shared/config irq
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     jasowang@redhat.com, netdev@vger.kernel.org
+References: <20220110051851.84807-1-lingshan.zhu@intel.com>
+ <20220110051851.84807-8-lingshan.zhu@intel.com>
+ <20220110005612-mutt-send-email-mst@kernel.org>
+ <bc210134-4b1c-1b23-47f3-c90fb4b91b65@intel.com>
+ <d7610c1c-611f-86e2-5330-c4783db078f5@intel.com>
+ <20220113044642-mutt-send-email-mst@kernel.org>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <20220113044642-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Existing genphy_loopback() is not applicable for Marvell PHY. Besides
-configuring bit-6 and bit-13 in Page 0 Register 0 (Copper Control
-Register), it is also required to configure same bits  in Page 2
-Register 21 (MAC Specific Control Register 2) according to speed of
-the loopback is operating.
 
-Tested working on Marvell88E1510 PHY for all speeds (1000/100/10Mbps).
 
-FIXME: Based on trial and error test, it seem 1G need to have delay between
-soft reset and loopback enablement.
+On 1/13/2022 5:52 PM, Michael S. Tsirkin wrote:
+> On Thu, Jan 13, 2022 at 04:17:29PM +0800, Zhu, Lingshan wrote:
+>>
+>> On 1/11/2022 3:11 PM, Zhu, Lingshan wrote:
+>>
+>>
+>>
+>>      On 1/10/2022 2:04 PM, Michael S. Tsirkin wrote:
+>>
+>>          On Mon, Jan 10, 2022 at 01:18:51PM +0800, Zhu Lingshan wrote:
+>>
+>>              This commit expends irq requester abilities to handle per vq irq,
+>>              shared irq and config irq.
+>>
+>>              On some platforms, the device can not get enough vectors for every
+>>              virtqueue and config interrupt, the device needs to work under such
+>>              circumstances.
+>>
+>>              Normally a device can get enough vectors, so every virtqueue and
+>>              config interrupt can have its own vector/irq. If the total vector
+>>              number is less than all virtqueues + 1(config interrupt), all
+>>              virtqueues need to share a vector/irq and config interrupt is
+>>              enabled. If the total vector number < 2, all vitequeues share
+>>              a vector/irq, and config interrupt is disabled. Otherwise it will
+>>              fail if allocation for vectors fails.
+>>
+>>              This commit also made necessary chages to the irq cleaner to
+>>              free per vq irq/shared irq and config irq.
+>>
+>>              Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>
+>>          In this case, shouldn't you also check VIRTIO_PCI_ISR_CONFIG?
+>>          doing that will skip the need
+>>
+>>      Hello Michael,
+>>
+>>      When insufficient MSIX vectors granted:
+>>      If num_vectors >=2, there will be a vector for the config interrupt, and all vqs share one vector.
+>>      If num_vectors =1, all vqs share the only one vector, and config interrupt is disabled.
+> ATM linux falls back to INTX in that case, shared by config and vqs.
+Yes, the same result. However this driver needs to drive VFs too, and 
+VFs do not support INTX,
+so we need it to send msix dma.
+>
+>>      currently vqs and config interrupt don't share vectors, so IMHO, no need to check .
+> IMHO it does not matter much that current Linux drivers do not use it,
+> the spec explicitly allows this option. If such hardware
+> becomes more common (and you seem to want to improve support
+> for managing interrupts so maybe yes) we'll add it in Linux.
+(just see your another email coming), so I think I should implement a 
+irq handler
+for num_vectors=1 case, a handler checks VIRTIO_PCI_ISR_CONFIG to tell 
+whether
+it is a vq interrupt or config interrupt, then handle it(not disabling 
+config interrupt).
 
-Fixes: 014068dcb5b1 ("net: phy: genphy_loopback: add link speed configuration")
-Cc: <stable@vger.kernel.org> # 5.15.x
-Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
----
-v3 changelog:
-- Use phy_write() to configure speed for BMCR.
-- Add error handling.
-All commented by Russell King <linux@armlinux.org.uk>
-
-v2 changelog:
-- For loopback enabled, add bit-6 and bit-13 configuration in both Page
-  0 Register 0 and Page 2 Register 21. Commented by Heiner Kallweit
-<hkallweit1@gmail.com>.
-- For loopback disabled, follow genphy_loopback() implementation
----
- drivers/net/phy/marvell.c | 56 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 55 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 4fcfca4e1702..5c371c2de9a0 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -189,6 +189,8 @@
- #define MII_88E1510_GEN_CTRL_REG_1_MODE_RGMII_SGMII	0x4
- #define MII_88E1510_GEN_CTRL_REG_1_RESET	0x8000	/* Soft reset */
- 
-+#define MII_88E1510_MSCR_2		0x15
-+
- #define MII_VCT5_TX_RX_MDI0_COUPLING	0x10
- #define MII_VCT5_TX_RX_MDI1_COUPLING	0x11
- #define MII_VCT5_TX_RX_MDI2_COUPLING	0x12
-@@ -1932,6 +1934,58 @@ static void marvell_get_stats(struct phy_device *phydev,
- 		data[i] = marvell_get_stat(phydev, i);
- }
- 
-+static int marvell_loopback(struct phy_device *phydev, bool enable)
-+{
-+	int err;
-+
-+	if (enable) {
-+		u16 bmcr_ctl = 0, mscr2_ctl = 0;
-+
-+		if (phydev->speed == SPEED_1000)
-+			bmcr_ctl = BMCR_SPEED1000;
-+		else if (phydev->speed == SPEED_100)
-+			bmcr_ctl = BMCR_SPEED100;
-+
-+		if (phydev->duplex == DUPLEX_FULL)
-+			bmcr_ctl |= BMCR_FULLDPLX;
-+
-+		err = phy_write(phydev, MII_BMCR, bmcr_ctl);
-+		if (err < 0)
-+			return err;
-+
-+		if (phydev->speed == SPEED_1000)
-+			mscr2_ctl = BMCR_SPEED1000;
-+		else if (phydev->speed == SPEED_100)
-+			mscr2_ctl = BMCR_SPEED100;
-+
-+		err = phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
-+				       MII_88E1510_MSCR_2, BMCR_SPEED1000 |
-+				       BMCR_SPEED100, mscr2_ctl);
-+		if (err < 0)
-+			return err;
-+
-+		/* Need soft reset to have speed configuration takes effect */
-+		err = genphy_soft_reset(phydev);
-+		if (err < 0)
-+			return err;
-+
-+		/* FIXME: Based on trial and error test, it seem 1G need to have
-+		 * delay between soft reset and loopback enablement.
-+		 */
-+		if (phydev->speed == SPEED_1000)
-+			msleep(1000);
-+
-+		return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
-+				  BMCR_LOOPBACK);
-+	} else {
-+		err = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, 0);
-+		if (err < 0)
-+			return err;
-+
-+		return phy_config_aneg(phydev);
-+	}
-+}
-+
- static int marvell_vct5_wait_complete(struct phy_device *phydev)
- {
- 	int i;
-@@ -3078,7 +3132,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_sset_count = marvell_get_sset_count,
- 		.get_strings = marvell_get_strings,
- 		.get_stats = marvell_get_stats,
--		.set_loopback = genphy_loopback,
-+		.set_loopback = marvell_loopback,
- 		.get_tunable = m88e1011_get_tunable,
- 		.set_tunable = m88e1011_set_tunable,
- 		.cable_test_start = marvell_vct7_cable_test_start,
--- 
-2.17.1
+Thanks,
+Zhu Lingshan
+>
+>>      I will send a V2 patch address your comments.
+>>
+>>      Thanks,
+>>      Zhu Lingshan
+>>
+>>              ---
+>>               drivers/vdpa/ifcvf/ifcvf_base.h |  6 +--
+>>               drivers/vdpa/ifcvf/ifcvf_main.c | 78 +++++++++++++++------------------
+>>               2 files changed, 38 insertions(+), 46 deletions(-)
+>>
+>>              diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>              index 1d5431040d7d..1d0afb63f06c 100644
+>>              --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+>>              +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+>>              @@ -27,8 +27,6 @@
+>>
+>>               #define IFCVF_QUEUE_ALIGNMENT  PAGE_SIZE
+>>               #define IFCVF_QUEUE_MAX                32768
+>>              -#define IFCVF_MSI_CONFIG_OFF   0
+>>              -#define IFCVF_MSI_QUEUE_OFF    1
+>>               #define IFCVF_PCI_MAX_RESOURCE 6
+>>
+>>               #define IFCVF_LM_CFG_SIZE              0x40
+>>              @@ -102,11 +100,13 @@ struct ifcvf_hw {
+>>                      u8 notify_bar;
+>>                      /* Notificaiton bar address */
+>>                      void __iomem *notify_base;
+>>              +       u8 vector_per_vq;
+>>              +       u16 padding;
+>>
+>>          What is this padding doing?
+>>
+>> for cacheline alignment
+>>
+>>
+>>
+>>                      phys_addr_t notify_base_pa;
+>>                      u32 notify_off_multiplier;
+>>              +       u32 dev_type;
+>>                      u64 req_features;
+>>                      u64 hw_features;
+>>              -       u32 dev_type;
+>>
+>>          moving things around ... optimization? split out.
+>>
+>> sure
+>>
+>>
+>>
+>>                      struct virtio_pci_common_cfg __iomem *common_cfg;
+>>                      void __iomem *net_cfg;
+>>                      struct vring_info vring[IFCVF_MAX_QUEUES];
+>>              diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>              index 414b5dfd04ca..ec76e342bd7e 100644
+>>              --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>>              +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>>              @@ -17,6 +17,8 @@
+>>               #define DRIVER_AUTHOR   "Intel Corporation"
+>>               #define IFCVF_DRIVER_NAME       "ifcvf"
+>>
+>>              +static struct vdpa_config_ops ifc_vdpa_ops;
+>>              +
+>>
+>>          there can be multiple devices thinkably.
+>>          reusing a global ops does not sound reasonable.
+>>
+>> OK, I will set vq irq number to -EINVAL when vqs share irq,
+>> then we can disable irq_bypass when see irq = -EINVAL,
+>> no need to set get_vq_irq = NULL.
+>>
+>>
+>>
+>>
+>>               static irqreturn_t ifcvf_config_changed(int irq, void *arg)
+>>               {
+>>                      struct ifcvf_hw *vf = arg;
+>>              @@ -63,13 +65,20 @@ static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
+>>                      struct ifcvf_hw *vf = &adapter->vf;
+>>                      int i;
+>>
+>>              +       if (vf->vector_per_vq)
+>>              +               for (i = 0; i < queues; i++) {
+>>              +                       devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
+>>              +                       vf->vring[i].irq = -EINVAL;
+>>              +               }
+>>              +       else
+>>              +               devm_free_irq(&pdev->dev, vf->vring[0].irq, vf);
+>>
+>>              -       for (i = 0; i < queues; i++) {
+>>              -               devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
+>>              -               vf->vring[i].irq = -EINVAL;
+>>              +
+>>              +       if (vf->config_irq != -EINVAL) {
+>>              +               devm_free_irq(&pdev->dev, vf->config_irq, vf);
+>>              +               vf->config_irq = -EINVAL;
+>>                      }
+>>
+>>          what about other error types?
+>>
+>> vf->config_irq is set to -EINVAL in ifcvf_request_config_irq(),
+>> if no config irq(vector) is granted, or it should be a valid irq number,
+>> so there can be no other error numbers. But I can change it
+>> to  if (vf->config_irq < 0) for sure
+>>
+>>
+>>
+>>
+>>              -       devm_free_irq(&pdev->dev, vf->config_irq, vf);
+>>                      ifcvf_free_irq_vectors(pdev);
+>>               }
+>>
+>>              @@ -191,52 +200,35 @@ static int ifcvf_request_config_irq(struct ifcvf_adapter *adapter, int config_ve
+>>
+>>               static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
+>>               {
+>>              -       struct pci_dev *pdev = adapter->pdev;
+>>                      struct ifcvf_hw *vf = &adapter->vf;
+>>              -       int vector, i, ret, irq;
+>>              -       u16 max_intr;
+>>              +       u16 nvectors, max_vectors;
+>>              +       int config_vector, ret;
+>>
+>>              -       /* all queues and config interrupt  */
+>>              -       max_intr = vf->nr_vring + 1;
+>>              +       nvectors = ifcvf_alloc_vectors(adapter);
+>>              +       if (nvectors < 0)
+>>              +               return nvectors;
+>>
+>>              -       ret = pci_alloc_irq_vectors(pdev, max_intr,
+>>              -                                   max_intr, PCI_IRQ_MSIX);
+>>              -       if (ret < 0) {
+>>              -               IFCVF_ERR(pdev, "Failed to alloc IRQ vectors\n");
+>>              -               return ret;
+>>              -       }
+>>              +       vf->vector_per_vq = true;
+>>              +       max_vectors = vf->nr_vring + 1;
+>>              +       config_vector = vf->nr_vring;
+>>
+>>              -       snprintf(vf->config_msix_name, 256, "ifcvf[%s]-config\n",
+>>              -                pci_name(pdev));
+>>              -       vector = 0;
+>>              -       vf->config_irq = pci_irq_vector(pdev, vector);
+>>              -       ret = devm_request_irq(&pdev->dev, vf->config_irq,
+>>              -                              ifcvf_config_changed, 0,
+>>              -                              vf->config_msix_name, vf);
+>>              -       if (ret) {
+>>              -               IFCVF_ERR(pdev, "Failed to request config irq\n");
+>>              -               return ret;
+>>              +       if (nvectors < max_vectors) {
+>>              +               vf->vector_per_vq = false;
+>>              +               config_vector = 1;
+>>              +               ifc_vdpa_ops.get_vq_irq = NULL;
+>>                      }
+>>
+>>              -       for (i = 0; i < vf->nr_vring; i++) {
+>>              -               snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
+>>              -                        pci_name(pdev), i);
+>>              -               vector = i + IFCVF_MSI_QUEUE_OFF;
+>>              -               irq = pci_irq_vector(pdev, vector);
+>>              -               ret = devm_request_irq(&pdev->dev, irq,
+>>              -                                      ifcvf_intr_handler, 0,
+>>              -                                      vf->vring[i].msix_name,
+>>              -                                      &vf->vring[i]);
+>>              -               if (ret) {
+>>              -                       IFCVF_ERR(pdev,
+>>              -                                 "Failed to request irq for vq %d\n", i);
+>>              -                       ifcvf_free_irq(adapter, i);
+>>              +       if (nvectors < 2)
+>>              +               config_vector = 0;
+>>
+>>              -                       return ret;
+>>              -               }
+>>              +       ret = ifcvf_request_vq_irq(adapter, vf->vector_per_vq);
+>>              +       if (ret)
+>>              +               return ret;
+>>
+>>              -               vf->vring[i].irq = irq;
+>>              -       }
+>>              +       ret = ifcvf_request_config_irq(adapter, config_vector);
+>>              +
+>>              +       if (ret)
+>>              +               return ret;
+>>
+>>          here on error we need to cleanup vq irq we requested, need we not?
+>>
+>> I think it may not be needed, it can work without config interrupt, though lame
+>>
+>> Thanks for your comments!
+>> Zhu Lingshan
+>>
+>>
+>>
+>>
+>>                      return 0;
+>>               }
+>>              @@ -573,7 +565,7 @@ static struct vdpa_notification_area ifcvf_get_vq_notification(struct vdpa_devic
+>>                * IFCVF currently does't have on-chip IOMMU, so not
+>>                * implemented set_map()/dma_map()/dma_unmap()
+>>                */
+>>              -static const struct vdpa_config_ops ifc_vdpa_ops = {
+>>              +static struct vdpa_config_ops ifc_vdpa_ops = {
+>>                      .get_features   = ifcvf_vdpa_get_features,
+>>                      .set_features   = ifcvf_vdpa_set_features,
+>>                      .get_status     = ifcvf_vdpa_get_status,
+>>              --
+>>              2.27.0
+>>
+>>
+>>
+>>
 
