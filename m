@@ -2,77 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E329248DCEF
-	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 18:29:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8D5148DD11
+	for <lists+netdev@lfdr.de>; Thu, 13 Jan 2022 18:44:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234385AbiAMR3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 12:29:11 -0500
-Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:53932 "EHLO
-        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231404AbiAMR3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 12:29:11 -0500
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 20DHSnc0019461
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 13 Jan 2022 12:28:50 -0500
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 8D35415C40F6; Thu, 13 Jan 2022 12:28:49 -0500 (EST)
-Date:   Thu, 13 Jan 2022 12:28:49 -0500
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Sandy Harris <sandyinchina@gmail.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Subject: Re: [PATCH RFC v1 0/3] remove remaining users of SHA-1
-Message-ID: <YeBhUTPkmAnLQSzm@mit.edu>
-References: <20220112131204.800307-1-Jason@zx2c4.com>
- <CACXcFmkauHRkTdD1zkr9QRCwG-uD8=7q9=Wk0_VFueRy-Oy+Nw@mail.gmail.com>
+        id S237213AbiAMRoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 12:44:05 -0500
+Received: from mail-ua1-f41.google.com ([209.85.222.41]:33442 "EHLO
+        mail-ua1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229702AbiAMRoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 12:44:04 -0500
+Received: by mail-ua1-f41.google.com with SMTP id u6so12709057uaq.0;
+        Thu, 13 Jan 2022 09:44:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ORKMunvRFTinL6Ez6yQ6x47XYXMKW+GNe6tXXjsqkmw=;
+        b=Z8PtEeRj1O5hGJb0T/L/u+NVH/L8FjWot30F2db64Xag6sz8STwiYh4dNdraVY1L7g
+         pnB+whzJAJVZ9bznMPZj9eoY+HJ46vdnCbledx7r/mz5u22PxaLc2/Cb0aZw3VKDoxvg
+         ab6lO5RO4e5VSfOpW/XomGmhLZGk1pmvsbCOqkOhLRHVEjLKl9gbjkvTmt5fMtj6d6Hf
+         AddIfwRIL2A1hHC1b1PmHU3XTZQQkfJVI1b2IEx3WtBrWsZKzqnF6yO+hZqarHrddrXu
+         V8rrhwRHrjM/q9CnUW5S1/DwYWSQzvJmdgiJQ3/XQHTRFcBEygTEynf3TFHdJQgYcXle
+         vffg==
+X-Gm-Message-State: AOAM5324OejFvpWMvXan95qK24GNqyUF7fBuAM1fk3Pfl636hJAMSaft
+        HPrLnI9po6yWTxf00aqDQsfG89OriEwhdg==
+X-Google-Smtp-Source: ABdhPJwl7YafDoNFkUqoNsE9U58xOfEiHc/UfwMaWiobf9wjNQuV4X3jPcyMChlN8ouf1PQ1gkaabg==
+X-Received: by 2002:ab0:447:: with SMTP id 65mr2801185uav.129.1642095843773;
+        Thu, 13 Jan 2022 09:44:03 -0800 (PST)
+Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com. [209.85.221.177])
+        by smtp.gmail.com with ESMTPSA id y8sm2098353vsj.12.2022.01.13.09.44.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Jan 2022 09:44:03 -0800 (PST)
+Received: by mail-vk1-f177.google.com with SMTP id v192so1321019vkv.4;
+        Thu, 13 Jan 2022 09:44:02 -0800 (PST)
+X-Received: by 2002:a1f:2344:: with SMTP id j65mr2729354vkj.7.1642095842588;
+ Thu, 13 Jan 2022 09:44:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACXcFmkauHRkTdD1zkr9QRCwG-uD8=7q9=Wk0_VFueRy-Oy+Nw@mail.gmail.com>
+References: <20220112181113.875567-1-robert.hancock@calian.com>
+ <20220112181113.875567-2-robert.hancock@calian.com> <d5952271-a90f-4794-0087-9781d2258e17@xilinx.com>
+ <b8612073ebd24e4bf9f4e729bd5ea7c4678494e2.camel@calian.com>
+In-Reply-To: <b8612073ebd24e4bf9f4e729bd5ea7c4678494e2.camel@calian.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 13 Jan 2022 18:43:51 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUyBF5XkoVVK9zrWf6f7cP+jEBC-dW_APfw_a=upqpDhQ@mail.gmail.com>
+Message-ID: <CAMuHMdUyBF5XkoVVK9zrWf6f7cP+jEBC-dW_APfw_a=upqpDhQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/3] macb: bindings doc: added generic PHY and
+ reset mappings for ZynqMP
+To:     Robert Hancock <robert.hancock@calian.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "geert+renesas@glider.be" <geert+renesas@glider.be>,
+        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 11:24:10AM +0800, Sandy Harris wrote:
-> Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> 
-> > There are currently two remaining users of SHA-1 left in the kernel: bpf
-> > tag generation, and ipv6 address calculation.
-> 
-> I think there are three, since drivers/char/random.c also uses it.
+Hi Robert,
 
-This was changed as of commit 9f9eff85a008 ("random: use BLAKE2s
-instead of SHA1 in extraction"), which just landed in Linus's tree.
+On Thu, Jan 13, 2022 at 5:34 PM Robert Hancock
+<robert.hancock@calian.com> wrote:
+> On Thu, 2022-01-13 at 08:25 +0100, Michal Simek wrote:
+> > On 1/12/22 19:11, Robert Hancock wrote:
+> > > Updated macb DT binding documentation to reflect the phy-names, phys,
+> > > resets, reset-names properties which are now used with ZynqMP GEM
+> > > devices, and added a ZynqMP-specific DT example.
+> > >
+> > > Signed-off-by: Robert Hancock <robert.hancock@calian.com>
 
-> Moreover, there's some inefficiency there (or was last time I
-> looked) since it produces a 160-bit hash then folds it in half
-> to give an 80-bit output.
+> > > --- a/Documentation/devicetree/bindings/net/macb.txt
+> > > +++ b/Documentation/devicetree/bindings/net/macb.txt
 
-This dates back to very early days of the /dev/random driver, back
-when all that was known about SHA-1 was that it was designed by the
-NSA using classified design principles, and it had not yet been as
-well studied outside of the halls of the NSA.  So folding the SHA-1
-hash in half was done deliberately, since at the time, performance was
-*not* the primary goal; security was.
+> > Geert already converted this file to yaml that's why you should target this
+> > version.
+>
+> Is that version in a tree somewhere that can be patched against?
 
-(This was also back in the days when encryption algorithms would run
-you into export control difficulties, since this is around the times
-when the source code of PGP was being published in an OCR font with a
-barcode containing the checksum of the content of every single page
-was being published by the MIT press, and we were publishing Kerberos
-with all of the *calls* to the crypto stripped out and calling it
-"Bones" since there were assertions that code that *called*
-cryptographic algoriothms might be subject to export control, even if
-it didn't have any crypto algorithms in the program themselves.  This
-is also why HMAC-based constructions were so popular.  People seem to
-forget how much things have changed since the late 1980's....)
+It has just entered upstream, and will be part of v5.17-rc1:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=4e5b6de1f46d0ea0
 
-       	   	       	    	    	  - Ted
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
