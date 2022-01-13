@@ -2,125 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4B248E117
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 00:42:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF0C48E153
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 00:58:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238268AbiAMXl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 18:41:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48474 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235773AbiAMXlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 18:41:55 -0500
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B68C06173E;
-        Thu, 13 Jan 2022 15:41:55 -0800 (PST)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id D3E00C01A; Fri, 14 Jan 2022 00:41:52 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1642117312; bh=2aEkqz5/AQOW2kreM22bx+J68/cwIwKWJKqmf4QjsjY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=fOCM/jGT4Vooq5gEl0Un1DBDULNAt5Y+iZKAL2CHv6Js5Wkfff6LKgMKcEND+dbIQ
-         FkV0j7bZdD6WfAcVvNP3vsyQ+v9rSPqbk0ZsCPYPFc7f99GHcxmD4GzcWW1Msx+zOq
-         cFxYVohFnbOqIaOnBOn1KoguhqxcubeH3pctTcspAPXigl0WMwcpDCTmpFoW0SdA2C
-         j2TadpDRx6tPf1gYAJHaFJeZ94VWHxqUCI9gmkCcKzHsjVHyn5v+hidi6rYVMjnjUI
-         UXhCmX9TywFDDmX5cdZk55j/u6Vj6cfviofSMl+6Kro12YJm4GzaJbr1XGFsDyuGGO
-         Ip95DHVI1XHjA==
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=unavailable version=3.3.2
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id E9BABC009;
-        Fri, 14 Jan 2022 00:41:50 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1642117312; bh=2aEkqz5/AQOW2kreM22bx+J68/cwIwKWJKqmf4QjsjY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=fOCM/jGT4Vooq5gEl0Un1DBDULNAt5Y+iZKAL2CHv6Js5Wkfff6LKgMKcEND+dbIQ
-         FkV0j7bZdD6WfAcVvNP3vsyQ+v9rSPqbk0ZsCPYPFc7f99GHcxmD4GzcWW1Msx+zOq
-         cFxYVohFnbOqIaOnBOn1KoguhqxcubeH3pctTcspAPXigl0WMwcpDCTmpFoW0SdA2C
-         j2TadpDRx6tPf1gYAJHaFJeZ94VWHxqUCI9gmkCcKzHsjVHyn5v+hidi6rYVMjnjUI
-         UXhCmX9TywFDDmX5cdZk55j/u6Vj6cfviofSMl+6Kro12YJm4GzaJbr1XGFsDyuGGO
-         Ip95DHVI1XHjA==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 0509ad97;
-        Thu, 13 Jan 2022 23:41:47 +0000 (UTC)
-Date:   Fri, 14 Jan 2022 08:41:32 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [GIT PULL] 9p for 5.17-rc1
-Message-ID: <YeC4rCJjQhLOJGlH@codewreck.org>
+        id S238328AbiAMX6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 18:58:49 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:54946 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235897AbiAMX6s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 18:58:48 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C18F7CE216E;
+        Thu, 13 Jan 2022 23:58:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 819F8C36AEA;
+        Thu, 13 Jan 2022 23:58:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642118325;
+        bh=EVg3Hrvzx6GYLATr0TyYWQDZofLGcg+Ix9ZtVWkVQAM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gTKsiYTFhJgSt+ecVm+dxiGao711y7GTcNfO5DC7CtR+Le0PvkZZFzPdnrR9KdHHp
+         8IdQu3s7P0IzIghAupvbajuvhmMJBHT/8hCw0KnXkI1/lLFdV0VRAQcx9T4bXcPMYq
+         DV0QOlTDBtotFwvOYKUHGgqK9joMOL21TYXbVcG1ZkKN7kekx+0Xky5yLjBo0BnDM0
+         ClVN72cRqp16NQ4Nr3AZMKO89eKvNqffMq1eDReB3m4LWN9w0UgTJiY/0PE4Ck519C
+         wn2wYhmBtErWyVnW/W2IbFeD+YtdQ0rgs/zbWFXYr3hyKVy+bHKGzqciKTWUuBIUsK
+         1dsXEWvOT3urQ==
+Date:   Fri, 14 Jan 2022 00:58:40 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Zvi Effron <zeffron@riotgames.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Shay Agroskin <shayagr@amazon.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com
+Subject: Re: [PATCH v21 bpf-next 18/23] libbpf: Add SEC name for xdp_mb
+ programs
+Message-ID: <YeC8sOAeZjpc4j8+@lore-desk>
+References: <CAEf4Bza+WO5U+Kw=S+GvQBgu5VHfPL29u7eLSQq34jvYzGnbBA@mail.gmail.com>
+ <CAADnVQLGxjvOO3Ae3mGTWTyd0aHnACxYoF8daNi+z56NQyYQug@mail.gmail.com>
+ <CAEf4BzZ4c1VwPf9oBRRdN7jdBWrk4pg=mw_50LMjLr99Mb0yfw@mail.gmail.com>
+ <CAADnVQ+BiMy4TZNocfFSvazh-QTFwMD-3uQ9LLiku7ePLDn=MQ@mail.gmail.com>
+ <CAC1LvL0CeTw+YKjO6r0f68Ly3tK4qhDyjV0ak82e0PpHURVQOw@mail.gmail.com>
+ <Yd82J8vxSAR9tvQt@lore-desk>
+ <8735lshapk.fsf@toke.dk>
+ <47a3863b-080c-3ac2-ff2d-466b74d82c1c@redhat.com>
+ <Yd/9SPHAPH3CpSnN@lore-desk>
+ <CAADnVQJaB8mmnD1Z4jxva0CqA2D0aQDmXggMEQPX2MRLZvoLzA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="nZm/TQme1PjwK7dz"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAADnVQJaB8mmnD1Z4jxva0CqA2D0aQDmXggMEQPX2MRLZvoLzA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 2585cf9dfaaddf00b069673f27bb3f8530e2039c:
 
-  Linux 5.16-rc5 (2021-12-12 14:53:01 -0800)
+--nZm/TQme1PjwK7dz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-are available in the Git repository at:
+> On Thu, Jan 13, 2022 at 2:22 AM Lorenzo Bianconi <lorenzo@kernel.org> wro=
+te:
+> > > > >
+> > > > > I would prefer to keep the "_mb" postfix, but naming is hard and =
+I am
+> > > > > polarized :)
+> > > >
+> > > > I would lean towards keeping _mb as well, but if it does have to be
+> > > > changed why not _mbuf? At least that's not quite as verbose :)
+> > >
+> > > I dislike the "mb" abbreviation as I forget it stands for multi-buffe=
+r.
+> > > I like the "mbuf" suggestion, even-though it conflicts with (Free)BSD=
+ mbufs
+> > > (which is their SKB).
+> >
+> > If we all agree, I can go over the series and substitute mb postfix wit=
+h mbuf.
+> > Any objections?
+>=20
+> mbuf has too much bsd taste.
+>=20
+> How about ".frags" instead?
 
-  git://github.com/martinetd/linux tags/9p-for-5.17-rc1
+I am fine with this (for me it is better than mb or mbuf).
+Do we all agree or do we prefer the "mb" suffix?
 
-for you to fetch changes up to 19d1c32652bbbf406063025354845fdddbcecd3a:
+> Then xdp_buff_is_mb() will be xdp_buff_has_frags().
+>=20
+> I agree that it's not obvious what "mb" suffix stands for,
+> but I don't buy at all that it can be confused with "megabyte".
+> It's the context that matters.
+> In "100mb" it's obvious that "mb" is likely "megabyte",
+> but in "xdp.mb" it's certainly not "xdp megabyte".
+> Such a sentence has no meaning.
+> Imagine we used that suffix for "tc"...
+> it would be "tc.mb"... "Traffic Control Megabyte" ??
+>=20
+> Anyway "xdp.frags" ?
 
-  9p: fix enodata when reading growing file (2022-01-11 15:21:53 +0900)
+agree
 
-----------------------------------------------------------------
-9p-for-5.17-rc1: fixes, split 9p_net_fd, new reviewer
+>=20
+> Btw "xdp_cpumap" should be cleaned up.
+> xdp_cpumap is an attach type. It's not prog type.
+> Probably it should be "xdp/cpumap" to align with "cgroup/bind[46]" ?
 
-- fix possible uninitialized memory usage for setattr
-- fix fscache reading hole in a file just after it's been grown
-- split net/9p/trans_fd.c in its own module like other transports
-  that module defaults to 9P_NET and is autoloaded if required so
-  users should not be impacted
-- add Christian Schoenebeck to 9p reviewers
-- some more trivial cleanup
+so for xdp "mb" or xdp "frags" it will be xdp/cpumap.mb (xdp/devmap.mb) or
+xdp/cpumap.frags (xdp/devmap.frags), right?
 
-----------------------------------------------------------------
-Changcheng Deng (1):
-      fs: 9p: remove unneeded variable
+>=20
+> In patch 22 there is a comment:
+> /* try to attach BPF_XDP_DEVMAP multi-buff program"
+>=20
+> It creates further confusion. There is no XDP_DEVMAP program type.
+> It should probably read
+> "Attach BPF_XDP program with frags to devmap"
 
-Christian Brauner (1):
-      9p: only copy valid iattrs in 9P2000.L setattr implementation
+ack, I will fix it.
 
-Christian Schoenebeck (2):
-      MAINTAINERS: 9p: add Christian Schoenebeck as reviewer
-      net/9p: show error message if user 'msize' cannot be satisfied
+>=20
+> Patch 21 still has "CHECK". Pls replace it with ASSERT.
 
-Dominique Martinet (1):
-      9p: fix enodata when reading growing file
+ack, I will fix it.
 
-Thomas Weißschuh (3):
-      9p/trans_fd: split into dedicated module
-      9p/xen: autoload when xenbus service is available
-      net/p9: load default transports
+Regards,
+Lorenzo
 
-Zhang Mingyu (1):
-      9p: Use BUG_ON instead of if condition followed by BUG.
+--nZm/TQme1PjwK7dz
+Content-Type: application/pgp-signature; name="signature.asc"
 
-zhuxinran (1):
-      9p/trans_virtio: Fix typo in the comment for p9_virtio_create()
+-----BEGIN PGP SIGNATURE-----
 
- MAINTAINERS                |  1 +
- fs/9p/vfs_addr.c           |  5 +++++
- fs/9p/vfs_file.c           |  6 ++----
- fs/9p/vfs_inode_dotl.c     | 29 ++++++++++++++++++++---------
- include/net/9p/9p.h        |  2 --
- include/net/9p/transport.h |  2 +-
- net/9p/Kconfig             |  7 +++++++
- net/9p/Makefile            |  5 ++++-
- net/9p/client.c            |  7 ++++++-
- net/9p/mod.c               | 15 +++++++++++----
- net/9p/trans_fd.c          | 14 ++++++++++++--
- net/9p/trans_virtio.c      |  2 +-
- net/9p/trans_xen.c         |  1 +
- 13 files changed, 71 insertions(+), 25 deletions(-)
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYeC8sAAKCRA6cBh0uS2t
+rOf4AQCaGzSEnw1hXKEWatDwR6JQ1FvtR+J0EzPZ+3qZ6vVIdgEA6pCHTZoY9aPr
+mSjJ5Pms7CXEJt7PVDR2CJujxM5XfQ8=
+=UXis
+-----END PGP SIGNATURE-----
 
--- 
-Dominique
+--nZm/TQme1PjwK7dz--
