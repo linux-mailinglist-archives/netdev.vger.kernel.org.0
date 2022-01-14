@@ -2,106 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD0B548E269
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 03:09:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D879F48E2C7
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 04:03:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236067AbiANCJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 21:09:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52888 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229881AbiANCJt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 21:09:49 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0F3C061574;
-        Thu, 13 Jan 2022 18:09:48 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id c6so3579284plh.6;
-        Thu, 13 Jan 2022 18:09:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XpJbac53fRpSunCAh1w84QujJ1RBhEaDKayiX5UID/w=;
-        b=LyYkVONhDx4r6c1AwSyDkBCogwgYo7jfSC5GXFv/PH7IvzWMxRg9D/xfBBDgfbFGzX
-         DHkEyRMacTi9Vv+VBYvU+48XOCWMAa1DMfwHVAP1fj8HDqWdHytxY51QwZIHv6K9gf9L
-         62sZJdW2csKqcfZPx2s6uX/rmSbYBAOonjCc1u2Y5xzLorpeRTDt5yXuA6FdbCVcw0RD
-         NvxXVe6vEiFEBbVUGLOZKzRWIlY4YKFZVEJczljl+hmMDrisag7FQuhy5fojzYFCbqR8
-         waeHteYMIOq2Kn0ndhuQWGF2G7nCH5B5vvp3vYmjkhnfkC3ASJcEXuHxDn48Yn2jlD6q
-         jFQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XpJbac53fRpSunCAh1w84QujJ1RBhEaDKayiX5UID/w=;
-        b=Wpn2D+aY9u9KMuDEswX7hJr3MFq/f3ISf/Cuw8G/0VeOALaNg/5tAxwgNuTRRigXYL
-         1uV1nnMMSbVnmL9EBR6GCBclrq0gpYXdyTyLLXXb2Kjed/Nf/BVjVAU6C04ABGJf0ovy
-         FKeEq0a1pQx+nT0HAzgcVGcD7DXEDZZG7DJn6k7J0j3m2wQg1Y1ETMop+vLzxz4FPp22
-         TEWfVvDC1zC+tEofJXPmLoDJjFVNdQQKkEn0/dhtB0U9FUmKPUo7BUZitduGSGxhkq9V
-         rz5CqQLmQqyDMdAzHKvFec2NJdeRK42IPHXbkJUNXIUSod5tQc2RQ7rn+SHC/6QgYSPA
-         PKOw==
-X-Gm-Message-State: AOAM533zt7hQiLIEUg6+q9Li9/3HXlV6unawXYh/A2GC5mAfQX0oEyNC
-        WJWrYMsZKRuBJpdK+W54C1aLrfeIbyjVNW9l0a4PlIz8TeQ=
-X-Google-Smtp-Source: ABdhPJww454elzu3ylVj2V6Fuz3l2o0RkPpE0EJjdIGmKiqeoRcnSWi6aa4Ckx3RMKyybtvsfB0hAYAmvV+FuGh7cv8=
-X-Received: by 2002:a17:902:ec82:b0:14a:30bd:94bf with SMTP id
- x2-20020a170902ec8200b0014a30bd94bfmr7483680plg.78.1642126188143; Thu, 13 Jan
- 2022 18:09:48 -0800 (PST)
+        id S238949AbiANDDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 22:03:15 -0500
+Received: from mail.cn.fujitsu.com ([183.91.158.132]:1834 "EHLO
+        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S238933AbiANDDP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 22:03:15 -0500
+IronPort-Data: =?us-ascii?q?A9a23=3AUYJBQq8g/E+//RGT351kDrUDJXyTJUtcMsCJ2f8?=
+ =?us-ascii?q?bfWQNrUp212ZRmzEXUGuFO6yPNGTycoh+Ptu2/EgF7cfWnNM3HVdlrnsFo1Bi8?=
+ =?us-ascii?q?5ScXYvDRqvT04J+FuWaFQQ/qZx2huDodKjYdVeB4Ef9WlTdhSMkj/vQH+OgULe?=
+ =?us-ascii?q?s1h1ZHmeIdg9w0HqPpMZp2uaEsfDha++8kYuaT//3YTdJ6BYoWo4g0J9vnTs01?=
+ =?us-ascii?q?BjEVJz0iXRlDRxDlAe2e3D4l/vzL4npR5fzatE88uJX24/+IL+FEmPxp3/BC/u?=
+ =?us-ascii?q?ulPD1b08LXqXPewOJjxK6WYD72l4b+HN0if19aZLwam8O49mNt9Rw2tVMt525T?=
+ =?us-ascii?q?y8nI6/NhP8AFRJfFkmSOIUfouecfSbm75H7I0ruNiGEL+9VJE0/I4Ad0up+H2x?=
+ =?us-ascii?q?L8fsWNHYLYwzrr+6tybK2UO9EicEqLc2tN4Qa0llj0DvQJfUrW5bOR+PN/9Aw9?=
+ =?us-ascii?q?Cwwm8lONfXTfcwUbXxodhuoSxlOPEoHTZEzhuGlglHhfDBC7lGYv6w65y7U1gM?=
+ =?us-ascii?q?Z+LzsNsfFP9+RSMFbgkuDukrY8GnjRBIXLtqSzXyC6H3ErunCgS/2RqoMG7Cis?=
+ =?us-ascii?q?P1nmluewioUEhJ+aLcRiZFVkWbnA5QGdRNSoXFo8MAPGIWQZoGVd3WFTLSs53b?=
+ =?us-ascii?q?wg+ZtLtA=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AnfT3VKgygfGuYF2TURVsRKUWnHBQXjIji2hC?=
+ =?us-ascii?q?6mlwRA09TySZ//rBoB19726RtN9xYgBGpTnuAsm9qB/nmaKdgrNhWItKPjOW21?=
+ =?us-ascii?q?dARbsKheCJrgEIcBeeygcy78hdmtBFeb/N5EZB/L3HyTj9A9A928OG7aztoe/f?=
+ =?us-ascii?q?yk1mRQZsZ7oI1XYBNi+rVl1xWBJdBYc0UL6V5s98rTKmfngNKuuhAH1tZZm6m/?=
+ =?us-ascii?q?T70ILhfQUdBwMqrC2HjTaT4rb8FBSCmjcyOgk/p4sfzQ=3D=3D?=
+X-IronPort-AV: E=Sophos;i="5.88,287,1635177600"; 
+   d="scan'208";a="120346165"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 14 Jan 2022 11:03:13 +0800
+Received: from G08CNEXMBPEKD04.g08.fujitsu.local (unknown [10.167.33.201])
+        by cn.fujitsu.com (Postfix) with ESMTP id 472024D15A4C;
+        Fri, 14 Jan 2022 11:03:11 +0800 (CST)
+Received: from G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) by
+ G08CNEXMBPEKD04.g08.fujitsu.local (10.167.33.201) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Fri, 14 Jan 2022 11:03:12 +0800
+Received: from FNSTPC.g08.fujitsu.local (10.167.226.45) by
+ G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Fri, 14 Jan 2022 11:03:11 +0800
+From:   Li Zhijian <lizhijian@fujitsu.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <shuah@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Li Zhijian <lizhijian@fujitsu.com>,
+        "David Ahern" <dsahern@gmail.com>
+Subject: [PATCH v2] kselftests/net: list all available tests in usage()
+Date:   Fri, 14 Jan 2022 11:02:46 +0800
+Message-ID: <20220114030246.4437-1-lizhijian@fujitsu.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <CAEf4Bza+WO5U+Kw=S+GvQBgu5VHfPL29u7eLSQq34jvYzGnbBA@mail.gmail.com>
- <CAADnVQLGxjvOO3Ae3mGTWTyd0aHnACxYoF8daNi+z56NQyYQug@mail.gmail.com>
- <CAEf4BzZ4c1VwPf9oBRRdN7jdBWrk4pg=mw_50LMjLr99Mb0yfw@mail.gmail.com>
- <CAADnVQ+BiMy4TZNocfFSvazh-QTFwMD-3uQ9LLiku7ePLDn=MQ@mail.gmail.com>
- <CAC1LvL0CeTw+YKjO6r0f68Ly3tK4qhDyjV0ak82e0PpHURVQOw@mail.gmail.com>
- <Yd82J8vxSAR9tvQt@lore-desk> <8735lshapk.fsf@toke.dk> <47a3863b-080c-3ac2-ff2d-466b74d82c1c@redhat.com>
- <Yd/9SPHAPH3CpSnN@lore-desk> <CAADnVQJaB8mmnD1Z4jxva0CqA2D0aQDmXggMEQPX2MRLZvoLzA@mail.gmail.com>
- <YeC8sOAeZjpc4j8+@lore-desk>
-In-Reply-To: <YeC8sOAeZjpc4j8+@lore-desk>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 13 Jan 2022 18:09:36 -0800
-Message-ID: <CAADnVQ+=0k1YBbkMmSKSBtkmiG8VCYZ5oKGjPPr4s9c53QF-mQ@mail.gmail.com>
-Subject: Re: [PATCH v21 bpf-next 18/23] libbpf: Add SEC name for xdp_mb programs
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Zvi Effron <zeffron@riotgames.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Shay Agroskin <shayagr@amazon.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        tirthendu.sarkar@intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: 472024D15A4C.AB7A2
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: lizhijian@fujitsu.com
+X-Spam-Status: No
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 3:58 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> >
-> > Btw "xdp_cpumap" should be cleaned up.
-> > xdp_cpumap is an attach type. It's not prog type.
-> > Probably it should be "xdp/cpumap" to align with "cgroup/bind[46]" ?
->
-> so for xdp "mb" or xdp "frags" it will be xdp/cpumap.mb (xdp/devmap.mb) or
-> xdp/cpumap.frags (xdp/devmap.frags), right?
+So that users can run/query them easily.
 
-xdp.frags/cpumap
-xdp.frags/devmap
+$ ./fcnal-test.sh -h
+usage: fcnal-test.sh OPTS
 
-The current de-facto standard for SEC("") in libbpf:
-prog_type.prog_flags/attach_place
+	-4          IPv4 tests only
+	-6          IPv6 tests only
+	-t <test>   Test name/set to run
+	-p          Pause on fail
+	-P          Pause after each test
+	-v          Be verbose
 
-"attach_place" is either function_name for fentry/, tp/, lsm/, etc.
-or attach_type/hook/target for cgroup/bind4, cgroup_skb/egress.
+Tests:
+	ipv4_ping ipv4_tcp ipv4_udp ipv4_bind ipv4_runtime ipv4_netfilter ipv6_ping ipv6_tcp ipv6_udp ipv6_bind ipv6_runtime ipv6_netfilter use_cases
 
-lsm.s/socket_bind -> prog_type = LSM, flags = SLEEPABLE
-lsm/socket_bind -> prog_type = LSM, non sleepable.
+Suggested-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
+---
+ tools/testing/selftests/net/fcnal-test.sh | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index 412d85205546..3f4c8cfe7aca 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -4059,6 +4059,9 @@ usage: ${0##*/} OPTS
+ 	-p          Pause on fail
+ 	-P          Pause after each test
+ 	-v          Be verbose
++
++Tests:
++	$TESTS_IPV4 $TESTS_IPV6 $TESTS_OTHER
+ EOF
+ }
+ 
+-- 
+2.33.0
+
+
+
