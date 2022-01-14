@@ -2,118 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 199FF48EA09
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 13:45:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E6EE48EA0D
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 13:46:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241021AbiANMpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 07:45:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47110 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229543AbiANMpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 07:45:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642164341;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=er6MELR4/wo1rA6heNzWM5PKfCy/ueOscQvUYlmKOB0=;
-        b=SRRI7AAKBrkfFswTc8O0WlgLlOAEa4hpUvypsMXz+vS8/x9xl2nZYKJaqwBw9Yt/cUfQW0
-        mg91owSHNWQRDj2R0H6QDc4BzkDeAeQkAZzTsC6Gpx1orqIpQZZFsJxtSPYmQUBrGgzC9U
-        H5Ys2D9aHduOAB+nCF56jsoIMTr6ohg=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-298-zBjhVUe5OsqE14-QI-lTUg-1; Fri, 14 Jan 2022 07:45:40 -0500
-X-MC-Unique: zBjhVUe5OsqE14-QI-lTUg-1
-Received: by mail-ed1-f69.google.com with SMTP id h1-20020aa7cdc1000000b0040042dd2fe4so6988772edw.17
-        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 04:45:40 -0800 (PST)
+        id S241101AbiANMqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 07:46:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235721AbiANMqr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 07:46:47 -0500
+Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9889FC061574
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 04:46:47 -0800 (PST)
+Received: by mail-oo1-xc33.google.com with SMTP id b15-20020a4a9bcf000000b002dc83a61053so2527235ook.1
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 04:46:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=ojUN0u5uVJ+Tz37BSBakEsN9ExsLdai8g+LsAJ0a/ow=;
+        b=MaE9M3gZzpiFmOadSeU2kqkaGU8wtUfh/lCOb6RavNTmzDTa5llIYozg8rMCRv8OE3
+         +rGwWvDtCyWMIf0xaqCZQ6aYpFpCNfKV4iPeGnyFrgmEXbNww/evCQI3+efAf3M4eN9S
+         j0J4zHJK0/6YPheHInXiFrdJATg2JnSOfMiPgSIzYhnlwOVrl4Ohtqog1k57vR/+MyRd
+         hKzzBj2e8IfsufaWc1bP0RCqlJVlgbBOE48/R3W81LV6SxnV8vwGUYscoe3/3GfEwtYp
+         igyamlR3GxHLrjydYPLywBSOZQNbTqoRSLZzKcT+/Jtca3wXNpasCIIRVxoVdMUVdIGX
+         3tog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=er6MELR4/wo1rA6heNzWM5PKfCy/ueOscQvUYlmKOB0=;
-        b=XdZ+6gBLCKReN643RV+xyAO1ipPNa7hoaPB4LyRzltXrkk4TWY3nDJ8cw9s4blMfWU
-         GxMomfFjoUkoyQbdRAXJTXzkB/VqU30Tg0rSVCH+gr3TiIT57wfeYvWprqTm5XCibbnF
-         PNJMuo8OUIRXlqI5L0vmorn8gT5PnWKy8TraiTQkdhNdCvdjV2KxhVY+/uuKFzFQ8Imr
-         EE1IKrv7IuWeQlV75D3DuPYTQaqdg7+MpK+E0C3NI+1DAfcZyichmI7VzTZjt2O/n5gH
-         fEQWW0qQcjYJX+x2X3LgOGVZxhbV5aGBqNBtgnhgjBYoNKfNJ6KpKwuJ44HZVSukMJXV
-         OY/w==
-X-Gm-Message-State: AOAM5305c/v/qyvR4QKfsYhV1OYw21ZZb8tE/ypW901rpmavw6wM9UJj
-        P95pfezxdf4GG/vgIwDqC+Dc3aIQ0baYXBmbWB/TSLfW+VpZktaUtsNOlYsdyX3a0bKhlRbp16b
-        7U2fFS+PDEracG/xO
-X-Received: by 2002:a05:6402:40d0:: with SMTP id z16mr8908899edb.68.1642164339320;
-        Fri, 14 Jan 2022 04:45:39 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxSRH3o6ei5Mw5iW6zgvruyjrCJ+sESmB6gyoqBksqi4jGepcg7bQdBJV7nxJYFL4y7oZRihw==
-X-Received: by 2002:a05:6402:40d0:: with SMTP id z16mr8908884edb.68.1642164339134;
-        Fri, 14 Jan 2022 04:45:39 -0800 (PST)
-Received: from redhat.com ([2.55.154.210])
-        by smtp.gmail.com with ESMTPSA id j5sm1815651ejo.171.2022.01.14.04.45.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 04:45:38 -0800 (PST)
-Date:   Fri, 14 Jan 2022 07:45:35 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, stefanha@redhat.com,
-        kvm@vger.kernel.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH v1] vhost: cache avail index in vhost_enable_notify()
-Message-ID: <20220114074454-mutt-send-email-mst@kernel.org>
-References: <20220114090508.36416-1-sgarzare@redhat.com>
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=ojUN0u5uVJ+Tz37BSBakEsN9ExsLdai8g+LsAJ0a/ow=;
+        b=sH8JBlw0I60nw9tUnN33pUfwPOY/VO/8bfTx8ye4TrbLA0a2V22T4Nrns0mmk7kcgl
+         QnvcVh+f6s7rOBSMdF3DKS5QWHI0oflayS9XDyx/85AstDwLO3F6UrIN1ip+phbFDqw9
+         LtF8GJLQbIuBNUm7M8F1ixqW08/uPWLqcjqck3x/ZqcdDNSdNNLqcQ1zc33o+kyOLmRX
+         cWrwAr2bYcZqn37tqY3KJMXdkVY7rDnmgWjJnGbo39M6eqZru123LYU7rnySF9Ym3ra8
+         L0FjV9zqJAG9kf/hR0gYQYjNyrxdEA9y2Onw854aXnkNJHYp3/X0RG4JgA+B39Tn8qOS
+         5xDA==
+X-Gm-Message-State: AOAM530FOq9PPmOLgwC9UTsT7K9V3i6zYgKWv52Td1A7M54/pf19uQEs
+        zr9kFj2tE5Gr7RCt/JK25vu+TsrrW3xUHJU62Gw=
+X-Google-Smtp-Source: ABdhPJw+8kKU/OLq6j3y2w3gP0m32KDdWuUxcer0ERML+Coh56wQuE94lvwMZ5EK72Zng11/RqMA4Li30frQTbxCX1w=
+X-Received: by 2002:a4a:9864:: with SMTP id z33mr6275312ooi.32.1642164406620;
+ Fri, 14 Jan 2022 04:46:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220114090508.36416-1-sgarzare@redhat.com>
+Sender: lila.lucas112@gmail.com
+Received: by 2002:a05:6830:4d9:0:0:0:0 with HTTP; Fri, 14 Jan 2022 04:46:45
+ -0800 (PST)
+From:   Sophia Erick <sdltdkggl3455@gmail.com>
+Date:   Fri, 14 Jan 2022 13:46:45 +0100
+X-Google-Sender-Auth: SPNLQXJvfrtwbFJPA48WprdoUUQ
+Message-ID: <CAAGLdM4jGmcTSDz36ym6Ap=pWcFPZ-FrBgOOh2yrtO8JwcvJ0A@mail.gmail.com>
+Subject: HELLO
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 10:05:08AM +0100, Stefano Garzarella wrote:
-> In vhost_enable_notify() we enable the notifications and we read
-> the avail index to check if new buffers have become available in
-> the meantime.
-> 
-> We are not caching the avail index, so when the device will call
-> vhost_get_vq_desc(), it will find the old value in the cache and
-> it will read the avail index again.
-> 
-> It would be better to refresh the cache every time we read avail
-> index, so let's change vhost_enable_notify() caching the value in
-> `avail_idx` and compare it with `last_avail_idx` to check if there
-> are new buffers available.
-> 
-> Anyway, we don't expect a significant performance boost because
-> the above path is not very common, indeed vhost_enable_notify()
-> is often called with unlikely(), expecting that avail index has
-> not been updated.
-> 
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+May the peace of God be with you ,
 
-... and can in theory even hurt due to an extra memory write.
-So ... performance test restults pls?
+   This letter might be a surprise to you, But I believe that you will
+be honest to fulfill my final wish. I bring peace and love to you. It
+is by the grace of god, I had no choice than to do what is lawful and
+right in the sight of God for eternal life and in the sight of man for
+witness of god=E2=80=99s mercy and glory upon my life. My dear, I sent this
+mail praying it will find you in a good condition, since I myself am
+in a very critical health condition in which I sleep every night
+without knowing if I may be alive to see the next day. I am Mrs.Sophia
+Erick, a widow suffering from a long time illness. I have some funds I
+inherited from my late husband, the sum of ($11,000,000.00, Eleven
+Million Dollars) my Doctor told me recently that I have serious
+sickness which is a cancer problem. What disturbs me most is my stroke
+sickness. Having known my condition, I decided to donate this fund to
+a good person that will utilize it the way I am going to instruct
+herein. I need a very honest and God fearing person who can claim this
+money and use it for Charity works, for orphanages and gives justice
+and help to the poor, needy and widows says The Lord." Jeremiah
+22:15-16.=E2=80=9C and also build schools for less privilege that will be
+named after my late husband if possible and to promote the word of god
+and the effort that the house of god is maintained.
 
-> ---
-> v1:
-> - improved the commit description [MST, Jason]
-> ---
->  drivers/vhost/vhost.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 59edb5a1ffe2..07363dff559e 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -2543,8 +2543,9 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
->  		       &vq->avail->idx, r);
->  		return false;
->  	}
-> +	vq->avail_idx = vhost16_to_cpu(vq, avail_idx);
->  
-> -	return vhost16_to_cpu(vq, avail_idx) != vq->avail_idx;
-> +	return vq->avail_idx != vq->last_avail_idx;
->  }
->  EXPORT_SYMBOL_GPL(vhost_enable_notify);
->  
-> -- 
-> 2.31.1
+ I do not want a situation where this money will be used in an ungodly
+manner. That's why I'm taking this decision. I'm not afraid of death,
+so I know where I'm going. I accept this decision because I do not
+have any child who will inherit this money after I die. Please I want
+your sincere and urgent answer to know if you will be able to execute
+this project, and I will give you more information on how the fund
+will be transferred to your bank account. May the grace, peace, love
+and the truth in the Word of god be with you and all those that you
+love and  care for.
 
+I am waiting for your reply.
+May God Bless you,
+Mrs. Sophia Erick.
