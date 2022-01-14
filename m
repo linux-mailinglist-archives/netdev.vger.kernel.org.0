@@ -2,109 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DB3D48EB70
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 15:17:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C87ED48EB86
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 15:20:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241536AbiANOQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 09:16:24 -0500
-Received: from mout.perfora.net ([74.208.4.194]:60377 "EHLO mout.perfora.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241548AbiANOQP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jan 2022 09:16:15 -0500
-Received: from localhost.localdomain ([81.221.144.115]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0LyWpM-1mEoHH3IRy-015mqE;
- Fri, 14 Jan 2022 15:15:46 +0100
-From:   Marcel Ziswiler <marcel@ziswiler.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Marek Vasut <marek.vasut@gmail.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Olof Johansson <olof@lixom.net>,
-        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
-        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 06/11] arm64: defconfig: enable bpf/cgroup firewalling
-Date:   Fri, 14 Jan 2022 15:15:02 +0100
-Message-Id: <20220114141507.395271-7-marcel@ziswiler.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220114141507.395271-1-marcel@ziswiler.com>
-References: <20220114141507.395271-1-marcel@ziswiler.com>
+        id S235332AbiANOUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 09:20:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233052AbiANOUh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 09:20:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ADD0C061574;
+        Fri, 14 Jan 2022 06:20:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FF6461D0D;
+        Fri, 14 Jan 2022 14:20:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 479CBC36AE5;
+        Fri, 14 Jan 2022 14:20:35 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Of2CtCO7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1642170033;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=p73GT/WOIEJH2mM8NA3RLurQZTMni+o2wzFAvGzs/BI=;
+        b=Of2CtCO7ODBOXhxJzAEn+WoBbYl0u+pO6pGwtBslsFhg4aDeAmh2ikSM5Aff8hGuZh11Hk
+        uw7iqGI74SPQqXchCG4HoFGEtNzOZaTLUAsgYI+OFYrbTq1TIkJsQbsNk+Eg8GS6UaZe+V
+        ATHmLo1f6B0OK2wnCKHeDjA2QmWX9pI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 11951d38 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 14 Jan 2022 14:20:32 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-crypto@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Ard Biesheuvel <ardb@kernel.org>, Erik Kline <ek@google.com>,
+        Fernando Gont <fgont@si6networks.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        Lorenzo Colitti <lorenzo@google.com>
+Subject: [PATCH RFC v2 0/3] remove remaining users of SHA-1
+Date:   Fri, 14 Jan 2022 15:20:12 +0100
+Message-Id: <20220114142015.87974-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:Ofqg1wotuIbE57yNqABxTBVgSmAfSFJy90qUd1xVrN841r+puQX
- vrbkeyjqLCscelGuMEk15e1JokwEPb6dgmJ9Bl49ObQ2jRXtKwvbI84VM66TWRg4O9YVV3m
- qPpDLWkHcDTe1APWezMlcSfolV0l7nLOW8+GIjT0k+9RNmrJl5Ux3otKY400ISIYg8Y06KL
- 2fbBQRTS7uVAxycGijAAA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:39udco0Sdnc=:VtMfCRrcjRlMIcVAHsOnix
- cL/t4SBsEm5c1LQX95avUXgo88CypVX9hyS4xwD23kHjhAhOHMaEb9h8KJgGeb+jE0trCHrOm
- WaWINOTrjqf2KAXUPQDLuiPl7ukVNMawNFJC47V003kM5fxzCVarhicSg0NmOtP9WgOsBY2HL
- 98kob5dfyGqQe1Jom2fUDIcsjX9K7FlhX7n3gUZyu4OIYe6m191DDApLhkzSf2252m4UR80dv
- kyeBYAK2LsrRWh7aB/l3KhuMON0B9aUDtowMWFLYgbzUK4nnZzEGnYgpqLd6mRl3SAa+TghcO
- 0Kt32eAEU4be2Ut2+PpFvNEwBvzciyi7N6aze9OFY6MTzkSe0c+If1KNJ6wnOH9mClXBPPXmy
- zUtj5bqWD2E1TXBBw4Vk+E6EOBsMge0zBAp5T4anlR5iCGmELvJzlZprUYxz+NogXGTy1TaJW
- cKHSPWjrrIY/bSEtBJgecc389JEHV4b7L7qEvBzgN7C3U77r6Ui/mUgqXRSfpbRQnn27IopXw
- +M5p5rxIrRAyi3+lR7yLQeC13YA/1Ci1PVlPnjGX27kZjmgN+T3Jz5pktUqOM+Ln88EJ5FkW3
- /ZD+G45cz00CnRdAyY/cx9JOAXVpqMIb0sbnrfuEzJEHPC/AfpjQWb2FpyifVjWsFM0OW7VLE
- tTG7CB2T3RW0KUe50IWfgV94jvkzhQz974+8Nh2bKvUNX7bovV8pFjPy4MF/DiV20Pzj3PI+t
- RWD7joQqwkBa26xt
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Hi,
 
-This avoids the following systemd warning:
+There are currently two remaining users of SHA-1 left in the kernel: bpf
+tag generation, and ipv6 address calculation. In an effort to reduce
+code size and rid ourselves of insecure primitives, this RFC patchset
+moves to using the more secure BLAKE2s function. I wanted to get your
+feedback on how feasible this patchset is, and if there is some
+remaining attachment to SHA-1, why exactly, and what could be done to
+mitigate it. Rather than sending a mailing list post just asking, "what
+do you think?" I figured it'd be easier to send this as an RFC patchset,
+so you see specifically what I mean.
 
-[    2.618538] systemd[1]: system-getty.slice: unit configures an IP
- firewall, but the local system does not support BPF/cgroup firewalling.
-[    2.630916] systemd[1]: (This warning is only shown for the first
- unit using IP firewalling.)
+Version 2 makes the ipv6 handling a bit cleaner and fixes a build
+warning from the last commit. Since this is just an RFC-for-discussion,
+there's not technically a need to be sending this, but from the looks of
+it, a real solution here might involve a bit more heavy lifting, so I
+wanted to at least get my latest on the list in case others want to play
+around with solutions in this space too. Also, the original recipient
+list was too narrow, so this v2 expands that a bit.
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Acked-by: Song Liu <songliubraving@fb.com>
+Thoughts? Comments?
 
----
+Thanks,
+Jason
 
-Changes in v2:
-- Add Song's acked-by tag.
+Cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Erik Kline <ek@google.com>
+Cc: Fernando Gont <fgont@si6networks.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
+Cc: Lorenzo Colitti <lorenzo@google.com>
 
- arch/arm64/configs/defconfig | 2 ++
- 1 file changed, 2 insertions(+)
+Jason A. Donenfeld (3):
+  bpf: move from sha1 to blake2s in tag calculation
+  ipv6: move from sha1 to blake2s in address calculation
+  crypto: sha1_generic - import lib/sha1.c locally
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index bc39559c1658..872b38613c6c 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -3,6 +3,7 @@ CONFIG_POSIX_MQUEUE=y
- CONFIG_AUDIT=y
- CONFIG_NO_HZ_IDLE=y
- CONFIG_HIGH_RES_TIMERS=y
-+CONFIG_BPF_SYSCALL=y
- CONFIG_BPF_JIT=y
- CONFIG_PREEMPT=y
- CONFIG_IRQ_TIME_ACCOUNTING=y
-@@ -22,6 +23,7 @@ CONFIG_CPUSETS=y
- CONFIG_CGROUP_DEVICE=y
- CONFIG_CGROUP_CPUACCT=y
- CONFIG_CGROUP_PERF=y
-+CONFIG_CGROUP_BPF=y
- CONFIG_USER_NS=y
- CONFIG_SCHED_AUTOGROUP=y
- CONFIG_BLK_DEV_INITRD=y
+ crypto/sha1_generic.c | 182 +++++++++++++++++++++++++++++++++++++
+ include/crypto/sha1.h |  10 ---
+ kernel/bpf/core.c     |  39 +-------
+ lib/Makefile          |   2 +-
+ lib/sha1.c            | 204 ------------------------------------------
+ net/ipv6/addrconf.c   |  56 +++---------
+ 6 files changed, 201 insertions(+), 292 deletions(-)
+ delete mode 100644 lib/sha1.c
+
 -- 
-2.33.1
+2.34.1
 
