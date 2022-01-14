@@ -2,241 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C0FF48E328
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 05:08:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A79548E324
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 05:08:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239107AbiANEIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 23:08:24 -0500
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:57270
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239095AbiANEIX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 23:08:23 -0500
-Received: from HP-EliteBook-840-G7.. (223-140-209-80.emome-ip.hinet.net [223.140.209.80])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id CFC7E40D48;
-        Fri, 14 Jan 2022 04:08:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642133302;
-        bh=gR2rWv4Rs5xoIZe6hJeo4oK3gVvpoLRh+lUPZPgU6kM=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=o85ieK+2Iya7Vv2JWErShAzs7tu9R1RKLrVIckit+MKTAey6kgGd4LBeR0VsMNN8H
-         9xcYyimdFKyqftwJM+MMGpYQ29GKP9piL4lhGFX0v4Pa+KkoewfoyNYmPkICq5b7X9
-         1Mkk8+DWyPhhNz69xS4fsBBFUzWTdZx+3JaVf0sXiYW9YZUTZcVqGvZlOaqtFdMiuE
-         m3dnXn940wEvkHo20UPNEQLYOerJBXcQnfWfkBcHp7Pveq4xEaAa6xBYFCq2S74up3
-         /72o0nWyLW3aM4Dbd3gmrivuIZjrKQDzagE06A/n3DwW6U8xGuQRfsJaasxPkFtXlB
-         e3SzBKeENy+9g==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        id S239087AbiANEIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 23:08:09 -0500
+Received: from mga14.intel.com ([192.55.52.115]:41780 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231851AbiANEII (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 13 Jan 2022 23:08:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642133288; x=1673669288;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=VA6xpRpMhgK2IKZvXRMDKxMJfILHshJRmVSxuySLhZ8=;
+  b=CxvUoCWp1On7sJVjoB2n/fEUySJCPPuEdQa9PRA1NYbwx8AOkieLHIH8
+   F37+WoS0oomjrUKQYK0UXh8D0LZeS4kxaN+U+yJ4c4mhasRVLs/fKOmAL
+   +5Y769K0WVikYrzQ2IEwiJGGj5ADmLDqtvbSblEBehbUa9cfjRJW2ZOvx
+   eHABvD57zoDZfvsJkMJtFtQovAaeCipSvrRT3qxv4z/2jELVi7/4LRPtu
+   VIoSKVIRY8mhQYMXsVSa4o2L4t9IejzP0ZOsBjRuv3NLiSt5FfsC3pqkf
+   PF37V+Mr7fpX2EF9khzGP0dEbztnWA4t6DfJ0ojwUxchLFODpjAzjbg1M
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="244382186"
+X-IronPort-AV: E=Sophos;i="5.88,287,1635231600"; 
+   d="scan'208";a="244382186"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 20:08:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,287,1635231600"; 
+   d="scan'208";a="516212220"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orsmga007.jf.intel.com with ESMTP; 13 Jan 2022 20:08:05 -0800
+Received: from orsmsx604.amr.corp.intel.com (10.22.229.17) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 13 Jan 2022 20:08:04 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Thu, 13 Jan 2022 20:08:04 -0800
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.101)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Thu, 13 Jan 2022 20:08:04 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=agoj9s3KuJtNnl6AQyR3Jkjorcw/wVyw1ijb09KEpSMH9gWL464uxU2tpAxMammW4gbkX7zaDwmQVNm9S9pqq7WIN3Iu7y8lMJzc83FReKtbV2YF0j52kLPzdvcL2ZY4Mznxnw4xDw0EXjlWNS8utbjc1hnXHczG4OOQUVgc+2HRK61Cx1feagN8Kvg5u+xLvgBR2LWU/hYVShSR0Tr9smucToKp0HZWyQ76LX3ACpbKYkO1LfnOek6Qs7O1uMUAMoMHOTfsKQ+TDw+L4EueMiWedhrYg5145a2xJkAhmVlTvQGdvY/r/rDrwJtzJCPGL4VRLwiroviTkAie/uhd8w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gx+3ULj5Q+hhfkfOfxLVhIypSHq8w+2uJR824CzOpmM=;
+ b=GEeoPi9AYydQCoYrX9mux6IxZwygnXhXF38K5d6do7Z4gb/zIUmZsFETbIJBNDHptV0tVjmustugEu0TTcG0kGAJJO1iU5fhLEXwI2wvUk9fl+7nD1RwV9hAJO53IGGMwrLvjN5L+b5oQDSBKzTxjJCjJhEatgSkprck84EohhJTd5n/ccyB6IoqS58z170IP6NwL9ATDSnWzJdIJPf5C2QkP+Yk2j2wEloFKfxVq833hdDDKawXgXgy9PzUm1KEVit23SBRUgk8YHcaH4klisCh/nnxFyGoa6dhNiS8DT59US1yepERXRjK+9aNHgRqmXPJnq4jLTt62GPJvBG7SQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com (2603:10b6:a03:79::29)
+ by BN7PR11MB2722.namprd11.prod.outlook.com (2603:10b6:406:b8::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Fri, 14 Jan
+ 2022 04:08:02 +0000
+Received: from BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::3162:31b:8e9c:173b]) by BYAPR11MB3367.namprd11.prod.outlook.com
+ ([fe80::3162:31b:8e9c:173b%4]) with mapi id 15.20.4888.011; Fri, 14 Jan 2022
+ 04:08:02 +0000
+From:   "G, GurucharanX" <gurucharanx.g@intel.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] stmmac: intel: Honor phy LED set by system firmware on a Dell hardware
-Date:   Fri, 14 Jan 2022 12:07:54 +0800
-Message-Id: <20220114040755.1314349-2-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220114040755.1314349-1-kai.heng.feng@canonical.com>
-References: <20220114040755.1314349-1-kai.heng.feng@canonical.com>
+        "Jakub Kicinski" <kuba@kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH] i40e: Remove useless DMA-32 fallback configuration
+Thread-Topic: [PATCH] i40e: Remove useless DMA-32 fallback configuration
+Thread-Index: AQHYCPxSNQKagERYUEe91lZJIIAT8A==
+Date:   Fri, 14 Jan 2022 04:08:02 +0000
+Message-ID: <BYAPR11MB3367C34AB2311D81468B457DFC549@BYAPR11MB3367.namprd11.prod.outlook.com>
+References: <869bbf806431086683c64ad32594ff96e85b6aa2.1641749374.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <869bbf806431086683c64ad32594ff96e85b6aa2.1641749374.git.christophe.jaillet@wanadoo.fr>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.6.200.16
+dlp-product: dlpe-windows
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 947f87af-ad8f-42f4-86ce-08d9d7137558
+x-ms-traffictypediagnostic: BN7PR11MB2722:EE_
+x-microsoft-antispam-prvs: <BN7PR11MB2722D28389DC67A4064957ABFC549@BN7PR11MB2722.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: zuxTuQIjK+sjYUssVDY9Jyu3CouoGopLWPoLkfCkFshWBUDlQzFrpgmOBdPWuOXRfOTJhW8pffh/VeEpondtOjEtuLIGGgOY4nMn7DuGe7qXjHZJngz6EetQaCrobypbm35CjgJ7OOu5fnoMe+yIOqnQ/dxT4HtzG+IFPPVThw69Vm7inSJo/bcikG+AqnodMJagh5s9deOfslsTK2h7y8ao0y4nkiBPPWPg5MCHsXqSmI0MukpxUbmSTRw5MQNIpmg3AIcM3aYTPujSmCUKUnDwVrH8NhmNgwiYHFkIKllErVDNvV+1AgeDUGzZs3EepOJyu7DbiKKycdPk0YLJ5NTd/8NZOdwa+oAwos4i1AU85UmCC7gu3tdu8gObIy673L/ZvnPzes/bo8WTYw9eihl5Ik5z9Ju+SaUQujyTpMd0+65ivCOSKxdNi768x6M+QEgQKgAeIyWbMoTwXqzotB55EnSQvYmD6aoOV+FVLMs0ogkOdkv9vikpZbhnIQgtLzdEd7UjTlJzS3Mxl6ju4Jg1D2BzFxNDGChpwhgo4yXJLXSD+eDg2mXJZMtTneD2pmXHOCBU/JZQvM9gsZfyhZWUxo4fKSoqtwlVu9ti8zVI4bSQzfkHtx0LmmQsBvLJddUCy1O4uWowNO832HExZoZemeKx8H4BYMfiv1UKd8QavKLusU10XuWynB5HIOndKxDE8iQNonvwTb0PRAZPI3ZaDbDXqP+SlS/ZdJ4kHDUQhMScRYoiy3wd2cICWwy9nwIuI9g9vDoLF+nkH1Bw4jAf8TI1LGiljNLouFl9h7k=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3367.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(2906002)(38100700002)(316002)(9686003)(71200400001)(26005)(38070700005)(186003)(122000001)(54906003)(33656002)(52536014)(110136005)(66946007)(82960400001)(6506007)(76116006)(7696005)(966005)(5660300002)(83380400001)(508600001)(86362001)(66556008)(4326008)(4744005)(8936002)(53546011)(55236004)(64756008)(55016003)(66446008)(66476007)(8676002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?cavcF0hq6Ko490Sd53KGpNcMcMzJ/wBplL6ZEHCriP87JgefnKCLqu+DPfKa?=
+ =?us-ascii?Q?wptBbUtxM+2T18n5MhQ6tWh69/ioOFyUIdouYy7E8w73wlCuojs0QGeqGSpZ?=
+ =?us-ascii?Q?PrOzBIwPKreTJgD8WUz5gXMOLZnh1AgUaFDXnLQ1/C3oT9I2pt9zFURZBTbe?=
+ =?us-ascii?Q?OXZp5kf5IlpGstwN35deKeAZzTjJO4bP4Ucjh4GSH84CqVU6xIHhVDANdN7h?=
+ =?us-ascii?Q?PomZue3/TdN/JxiLfhYYK4ovayJR2atU4xZv3D1ynKgS4ZRumoPOM4lKbs2L?=
+ =?us-ascii?Q?aGxARXCAaEqS6Jpx5Ns2pN58HtFn1LdLH2Q8icYA+7TqrvNSJf8+aA6dqgBY?=
+ =?us-ascii?Q?ULOvo4GnDo6ydTEnEZQE3Ek/BhukSQ/G4iIo1hBdCO6eThDS5kcMmqR3Mzln?=
+ =?us-ascii?Q?+/dYLa+j01vOWL4C4toGgwqZvVpXDN1coMb5/wiez7qt87jmgbcTL32i8TK8?=
+ =?us-ascii?Q?xqpSq+Y1jsqncWs3sLhgsGZz7ayBnGnRzsX0seVfbg+uVluDyIqZxbAL5BgS?=
+ =?us-ascii?Q?bxtA6XjIFBEaM6r0ETMNJyxzTGh89wcky2e51SOlLM3js/Xolifzy9oimE/0?=
+ =?us-ascii?Q?uP60ryMgnEu1BVfGvb59gvDKTbop0MMCT/S4zUjHoExFVpeYVRbD7BKRMRay?=
+ =?us-ascii?Q?6UhNdTpDYxCunIKoBVE3w45BDJIHyx4nVFD2UsqcGbMbDJDapFmLNb23MD+X?=
+ =?us-ascii?Q?6aeTew8pJNvi3hCdhu4IsBwaXC/qD8eeMsDRu6m+TQhPyRoJF6uvu6NduaV0?=
+ =?us-ascii?Q?KzSbQZ4nSpedT8lTfKhUYfhEM2sP7QO5cB3duJRIA1oFtib+hOteH9PNhYVs?=
+ =?us-ascii?Q?Eamu/cXFtGCrYcHQby9UoKwN59/JuQEaR/RhLH0+5chzMlJnL5TrVPOYzWuc?=
+ =?us-ascii?Q?n8wo5R99aCd7epVp2S5mmJqn5+Eh2BRW9IFnTeyB5kz3+a30dDCApVQPUOvB?=
+ =?us-ascii?Q?+tvy8IfoD02uLd+SmDLNETHr4rVvNj/tPLg9A7/VbMV6MZ6U28ItvsZh/1by?=
+ =?us-ascii?Q?0sBbIkUgvJrFIb3dkolFW5ssAL96Eyjs5f0pLzH/1GV+9A7/agvJRxbHokT9?=
+ =?us-ascii?Q?6IPmNb2kPiuoHBCJyrk4Yq8Lfuk0M7kS7tAzRa0V+MFM3nAMqpjfkkMO9UJN?=
+ =?us-ascii?Q?nb1hhqmwMyNjEPcfLSStFITtjPGvI7HEBQo3K+3TI7aquvVY6qYF3d1RE8gg?=
+ =?us-ascii?Q?FZosou8HCZ3lw77xbth6KY0yzA0l0RGXDlE8HCjEaGHYtsgQrpbgfpXBcyrQ?=
+ =?us-ascii?Q?R+F8Exy4uFG6HK5jozC/IsiJjgVh4fhPvXbRToKsn4ZWx75vvBzD5mixdbbe?=
+ =?us-ascii?Q?6tX0gkrdMNsWSITP3OoF0/I67vNb7GyAGQU3VRVvWkto/fqQ0Z2+J3pcUvMo?=
+ =?us-ascii?Q?fSIocMuCFUHk0rN+ibOCJzMH55cqrTOEp5GG64TJmQ7LaiLQt7cU7FjpErvO?=
+ =?us-ascii?Q?qPvx488Bv3LTKhUyN4pJMttNInY3g3B0ie1Bjz4nRc6Fcft+UUKJBIKh5ciQ?=
+ =?us-ascii?Q?PqsKUzIAyN3MWIaj2+KE3PgtYM09eIPMGVLlJpi4iG1eLV/QTIOPUfWRha0j?=
+ =?us-ascii?Q?wJ3tnGHJECWarM4ZF9xTaZ9oy3DqS8HWfRpoQ0CQ2fXGuh2IC+b+lKhA4ROm?=
+ =?us-ascii?Q?QQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3367.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 947f87af-ad8f-42f4-86ce-08d9d7137558
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jan 2022 04:08:02.1941
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zu6t8uPODj5+Tj0W4xX8Egrr1257m0TxlNSx2GnRtOB7btdCdiDUyoAHDtdZYZFYqzEMqqCmU8RQ6BTqkUWQQA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR11MB2722
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
-instead of setting another value, keep it untouched and restore the saved
-value on system resume.
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 16 +++++
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  2 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  4 ++
- drivers/net/phy/marvell.c                     | 58 ++++++++++++-------
- include/linux/marvell_phy.h                   |  1 +
- 5 files changed, 61 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 8e8778cfbbadd..f8a2879e0264a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -857,6 +857,16 @@ static const struct dmi_system_id quark_pci_dmi[] = {
- 	{}
- };
- 
-+static const struct dmi_system_id use_preset_led[] = {
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Dell EMC"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Edge Gateway 3200"),
-+		},
-+	},
-+	{}
-+};
-+
- static int quark_default_data(struct pci_dev *pdev,
- 			      struct plat_stmmacenet_data *plat)
- {
-@@ -989,6 +999,7 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
- 	struct intel_priv_data *intel_priv;
- 	struct plat_stmmacenet_data *plat;
- 	struct stmmac_resources res;
-+	struct stmmac_priv *priv;
- 	int ret;
- 
- 	intel_priv = devm_kzalloc(&pdev->dev, sizeof(*intel_priv), GFP_KERNEL);
-@@ -1075,6 +1086,11 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
- 		goto err_dvr_probe;
- 	}
- 
-+	if (dmi_check_system(use_preset_led)) {
-+		priv = netdev_priv(dev_get_drvdata(&pdev->dev));
-+		priv->use_preset_led = true;
-+	}
-+
- 	return 0;
- 
- err_dvr_probe:
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 40b5ed94cb54a..525701acbbdbb 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -319,6 +319,8 @@ struct stmmac_priv {
- 	/* XDP BPF Program */
- 	unsigned long *af_xdp_zc_qps;
- 	struct bpf_prog *xdp_prog;
-+
-+	bool use_preset_led;
- };
- 
- enum stmmac_state {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 63ff2dad8c85f..155412656b8bf 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -49,6 +49,7 @@
- #include "dwmac1000.h"
- #include "dwxgmac2.h"
- #include "hwif.h"
-+#include <linux/marvell_phy.h>
- 
- /* As long as the interface is active, we keep the timestamping counter enabled
-  * with fine resolution and binary rollover. This avoid non-monotonic behavior
-@@ -1236,6 +1237,9 @@ static int stmmac_init_phy(struct net_device *dev)
- 			return -ENODEV;
- 		}
- 
-+		if (priv->use_preset_led)
-+			phydev->dev_flags |= MARVELL_PHY_USE_PRESET_LED;
-+
- 		ret = phylink_connect_phy(priv->phylink, phydev);
- 	}
- 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 739859c0dfb18..45be432188781 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -304,6 +304,7 @@ struct marvell_priv {
- 	u32 last;
- 	u32 step;
- 	s8 pair;
-+	u16 led_def_config;
- };
- 
- static int marvell_read_page(struct phy_device *phydev)
-@@ -748,32 +749,49 @@ static int m88e1510_config_aneg(struct phy_device *phydev)
- 
- static void marvell_config_led(struct phy_device *phydev)
- {
--	u16 def_config;
-+	struct marvell_priv *priv = phydev->priv;
- 	int err;
- 
--	switch (MARVELL_PHY_FAMILY_ID(phydev->phy_id)) {
--	/* Default PHY LED config: LED[0] .. Link, LED[1] .. Activity */
--	case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1121R):
--	case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1318S):
--		def_config = MII_88E1121_PHY_LED_DEF;
--		break;
--	/* Default PHY LED config:
--	 * LED[0] .. 1000Mbps Link
--	 * LED[1] .. 100Mbps Link
--	 * LED[2] .. Blink, Activity
--	 */
--	case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1510):
--		if (phydev->dev_flags & MARVELL_PHY_LED0_LINK_LED1_ACTIVE)
--			def_config = MII_88E1510_PHY_LED0_LINK_LED1_ACTIVE;
--		else
--			def_config = MII_88E1510_PHY_LED_DEF;
--		break;
--	default:
-+	if (priv->led_def_config == -1)
- 		return;
-+
-+	if (priv->led_def_config)
-+		goto write;
-+
-+	if (phydev->dev_flags & MARVELL_PHY_USE_PRESET_LED) {
-+		priv->led_def_config = phy_read_paged(phydev, MII_MARVELL_LED_PAGE,
-+						      MII_PHY_LED_CTRL);
-+		if (priv->led_def_config < 0) {
-+			priv->led_def_config = -1;
-+			return;
-+		}
-+	} else {
-+		switch (MARVELL_PHY_FAMILY_ID(phydev->phy_id)) {
-+		/* Default PHY LED config: LED[0] .. Link, LED[1] .. Activity */
-+		case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1121R):
-+		case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1318S):
-+			priv->led_def_config = MII_88E1121_PHY_LED_DEF;
-+			break;
-+		/* Default PHY LED config:
-+		 * LED[0] .. 1000Mbps Link
-+		 * LED[1] .. 100Mbps Link
-+		 * LED[2] .. Blink, Activity
-+		 */
-+		case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1510):
-+			if (phydev->dev_flags & MARVELL_PHY_LED0_LINK_LED1_ACTIVE)
-+				priv->led_def_config = MII_88E1510_PHY_LED0_LINK_LED1_ACTIVE;
-+			else
-+				priv->led_def_config = MII_88E1510_PHY_LED_DEF;
-+			break;
-+		default:
-+			priv->led_def_config = -1;
-+			return;
-+		}
- 	}
- 
-+write:
- 	err = phy_write_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL,
--			      def_config);
-+			      priv->led_def_config);
- 	if (err < 0)
- 		phydev_warn(phydev, "Fail to config marvell phy LED.\n");
- }
-diff --git a/include/linux/marvell_phy.h b/include/linux/marvell_phy.h
-index ea5995d9ad6c1..492f07620b6c0 100644
---- a/include/linux/marvell_phy.h
-+++ b/include/linux/marvell_phy.h
-@@ -43,5 +43,6 @@
- #define MARVELL_PHY_M1145_FLAGS_RESISTANCE	BIT(0)
- #define MARVELL_PHY_M1118_DNS323_LEDS		BIT(1)
- #define MARVELL_PHY_LED0_LINK_LED1_ACTIVE	BIT(2)
-+#define MARVELL_PHY_USE_PRESET_LED		BIT(3)
- 
- #endif /* _MARVELL_PHY_H */
--- 
-2.33.1
+> -----Original Message-----
+> From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Sent: Sunday, January 9, 2022 11:00 PM
+> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L
+> <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>;
+> Jakub Kicinski <kuba@kernel.org>
+> Cc: linux-kernel@vger.kernel.org; kernel-janitors@vger.kernel.org;
+> Christophe JAILLET <christophe.jaillet@wanadoo.fr>; Christoph Hellwig
+> <hch@lst.de>; Lobakin, Alexandr <alexandr.lobakin@intel.com>; intel-wired=
+-
+> lan@lists.osuosl.org; netdev@vger.kernel.org
+> Subject: [PATCH] i40e: Remove useless DMA-32 fallback configuration
+>=20
+> As stated in [1], dma_set_mask() with a 64-bit mask never fails if
+> dev->dma_mask is non-NULL.
+> So, if it fails, the 32 bits case will also fail for the same reason.
+>=20
+> Simplify code and remove some dead code accordingly.
+>=20
+> [1]: https://lkml.org/lkml/2021/6/7/398
+>=20
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_main.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+>=20
 
+Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at I=
+ntel)
