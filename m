@@ -2,269 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44A4148E7A9
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 10:39:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1D7848E7B5
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 10:41:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239989AbiANJj1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 14 Jan 2022 04:39:27 -0500
-Received: from mail-vk1-f182.google.com ([209.85.221.182]:39619 "EHLO
-        mail-vk1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbiANJjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 04:39:23 -0500
-Received: by mail-vk1-f182.google.com with SMTP id n14so4303363vkk.6;
-        Fri, 14 Jan 2022 01:39:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XIsXuJfmE8JES6Mbtb18c2n3rWZVUZhPWhasZQeRi6Q=;
-        b=B6fVIblE2YvZVeCArGcMUv0EJNHL+C2rkW//YimybgZ4VFOF6qnKGPJBYjiX+q9Dq5
-         nJVlZ2LbWqXpD7YGOyGSeudPe2r8bTHf3AuHH/E/JTEQch+crQsQwq7Xesx6PJuRoHVG
-         vZLoGUjBK4/tgccEHiWg5NGcjFeo/ZYdd/pZ8EadRA5wmgmCgLLaxqlpFck3zhsk9R3g
-         s5LGB2neA5o/2//SrAax7o4hmZkvRNgswZ5FI80jKNxgcY0VxYt74iZSKZnFkopMg/Ad
-         PWLhMOBCniba9fgx5U5sdkjls0O8hAWjVUS70uDszzCGQvcy7c6UaGPWrEX+dVtkV8jd
-         iOSg==
-X-Gm-Message-State: AOAM532dOoWuvtPRgS471+cj2DoVR7o0lPqEF04Zasu/K8Gtvx/nMOFM
-        FIhIPsgx3PVt64ddBzE7FJ0b535mFnUbhej7
-X-Google-Smtp-Source: ABdhPJyk3O8GzDxpL3/PrxHmPJiIYnb05POlLBdMiX4/E5+LHj71bMHAwA4rtBlCUD6Pjl/GZG0tmg==
-X-Received: by 2002:a05:6122:208a:: with SMTP id i10mr366113vkd.16.1642153161863;
-        Fri, 14 Jan 2022 01:39:21 -0800 (PST)
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
-        by smtp.gmail.com with ESMTPSA id x128sm2072722vkx.14.2022.01.14.01.39.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jan 2022 01:39:19 -0800 (PST)
-Received: by mail-ua1-f41.google.com with SMTP id i5so15890425uaq.10;
-        Fri, 14 Jan 2022 01:39:19 -0800 (PST)
-X-Received: by 2002:a05:6102:3581:: with SMTP id h1mr3716211vsu.5.1642153159149;
- Fri, 14 Jan 2022 01:39:19 -0800 (PST)
+        id S240022AbiANJlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 04:41:52 -0500
+Received: from mail-dm6nam11on2078.outbound.protection.outlook.com ([40.107.223.78]:39905
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229785AbiANJlv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jan 2022 04:41:51 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VK83wbKPQOCWrrhQa2koH4Ur6+5Nh493RQyTU1xBqokGzFObSHmY8OCfr2QyNIOTQDozWuBKrgTGAXS15ad3xZ9JxCXRGPL3QkpQ7fOewwiFw65fmrvdXuxcv82I2JyjxUdL3e4EKWnnJJMZEZL2x2mH/lpShYIXTPvFVOeBV+ir6STPKkg8o2e1EWDPWDJC4j2W1+BOdjxztMPRpbFwkjOn465gCKtS4nFSJ75GH9zwcAtKNcDoluCUUfLyBINPJev9gVadRMIuIKXdFqTU+Fc/I9YCv5DmQ80Pg4QqP67Pb9zJkZjRs/O4jfJ6PJQA2pEL9CLi38zlxI3Z4+EP+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=n6BIkY6vUg0AMwew6dZIWQueZ2j1tSbq4VEkd2lfHGQ=;
+ b=jrhsmYfTtvtsKZKPwkLvZTJb3OMXqqiVajg4m+oGZWtV6/cEopm/DO3LH0AlfXC974nS4WRLw/cH1izuhbPTJXPjFV82kyMR1loyv+k9wW5INRag4+VNYKtt/GzAzym8hxcL18Mpn5hRhwT4pC9hdUtB+7YiXlj+Af7TH/R+R+ExTSCfN61XjJt8U+4F5lgq3OJG0ANCdWipLB81MK7KrzXpNMWXL5uHuNa4tAPYDDcgSfRCcpIJWLNji6q4qYjjAUsjxHEsDLIh8lDGcWISEK61SjGIwYZvPaE+fj5ttRTo42i9sdCcAtxNmd/koeIuqJ1/SMXN/atq025I1dlRgA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=davemloft.net smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=n6BIkY6vUg0AMwew6dZIWQueZ2j1tSbq4VEkd2lfHGQ=;
+ b=UrEzo0+p2O167xgTbKhJ3ZkHJYRf9T8xxd7rbn756GFJdrs+Q3T2ZZHlVUdNCPohj8J66GW/t+ey08Zt2NB4MZdFVAUfO96zqptyT4DZo9G2ZBkO5M+HSMJY+84UdDKvr90n4w+vrPe/fDr3J3z9e59MmbazT62150I3uzotPZ8=
+Received: from SA0PR12CA0010.namprd12.prod.outlook.com (2603:10b6:806:6f::15)
+ by PH0PR02MB8407.namprd02.prod.outlook.com (2603:10b6:510:10a::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10; Fri, 14 Jan
+ 2022 09:41:49 +0000
+Received: from SN1NAM02FT0030.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:806:6f:cafe::52) by SA0PR12CA0010.outlook.office365.com
+ (2603:10b6:806:6f::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.9 via Frontend
+ Transport; Fri, 14 Jan 2022 09:41:49 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0030.mail.protection.outlook.com (10.97.5.194) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4888.9 via Frontend Transport; Fri, 14 Jan 2022 09:41:48 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Fri, 14 Jan 2022 01:41:48 -0800
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Fri, 14 Jan 2022 01:41:48 -0800
+Envelope-to: davem@davemloft.net,
+ ecree.xilinx@gmail.com,
+ habetsm.xilinx@gmail.com,
+ john.fastabend@gmail.com,
+ daniel@iogearbox.net,
+ ast@kernel.org,
+ hawk@kernel.org,
+ kuba@kernel.org,
+ abaci@linux.alibaba.com,
+ jiapeng.chong@linux.alibaba.com,
+ bpf@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ netdev@vger.kernel.org
+Received: from [10.108.8.141] (port=44722 helo=xcbmartinh41x.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <martin.habets@xilinx.com>)
+        id 1n8J5g-0005Hz-3X; Fri, 14 Jan 2022 01:41:48 -0800
+Received: by xcbmartinh41x.xilinx.com (Postfix, from userid 4370)
+        id 8971787767; Fri, 14 Jan 2022 09:41:47 +0000 (GMT)
+Date:   Fri, 14 Jan 2022 09:41:47 +0000
+From:   Martin Habets <martin.habets@xilinx.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+CC:     <ecree.xilinx@gmail.com>, <habetsm.xilinx@gmail.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <hawk@kernel.org>,
+        <john.fastabend@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH] sfc: Fix missing error code in efx_reset_up()
+Message-ID: <20220114094147.GA52632@xcbmartinh41x.xilinx.com>
+Mail-Followup-To: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+References: <20220113161315.126410-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20220110195449.12448-1-s.shtylyov@omp.ru> <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220110201014.mtajyrfcfznfhyqm@pengutronix.de> <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de> <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de> <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru> <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
-In-Reply-To: <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 14 Jan 2022 10:39:07 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVcMNMYf82-rz8_057BGwYWyPyhjAh3e9ynrv82GMiHvg@mail.gmail.com>
-Message-ID: <CAMuHMdVcMNMYf82-rz8_057BGwYWyPyhjAh3e9ynrv82GMiHvg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Eric Auger <eric.auger@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220113161315.126410-1-jiapeng.chong@linux.alibaba.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 378e0fb5-fdb9-4f85-344a-08d9d742162d
+X-MS-TrafficTypeDiagnostic: PH0PR02MB8407:EE_
+X-Microsoft-Antispam-PRVS: <PH0PR02MB84074B1105BD430D213E37DAD2549@PH0PR02MB8407.namprd02.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GC5snhc6ce5VUCRz642Dv4kDTgtW4+ZCxYHQRn+pqKdimponRJqpY9tOIyHjkrnAS3hmx97pfIfuQ9UXT3givja5+gguR1djNlAZZR1qtv3lejzxvzDyCHX+5WHEFDU0I8pN4l0uAIbrkmw0eVGHoaZ2KrujDLQQgYdLzeDiSnJVuroyjpU9HJBzhiL5P0SkErtkkM767KufP9BA4mTqDdx5QloxL+6L1qtyRrCXG4IObx3IaRp2r0f60N/8ep2P8pTv/AaMerTsE9TA/V2Zuylo+zBC4qiPvitnpiXAtQV94L7Oo8otr2mSm8FTjXOr4zqHAVR5k4io839qeAUYQvK34L0gJORPefUV9rBSAbSbUWlG/SBnxYVSXVEoHQX3b0uKQJYom4HUbryZYiwhn8Mqmgckh/Ih20cRdfme65GZ1zGm+tBguaRsEFPlOTD6tGghtMAT0FnoyJNfqBSEfNPdRhz3sGNtBUjQ6NRUOlHX/xSQ35vfDlzuhCyu+Lr/1D2ZCSaDzycpVu5kOecyXWJILV/N5Mw45LhGCHGaRmk+3CT12FiExq+ERnaQkAM4gUitMkqU6ygUn917JXI4VMKQEmTfeMLC+y1AYgXG4OqwFFkhBa8uXjh84x2MYU8g3hVSjkUVXoTdwtmb8T1X9WY9wVH7RR6NhysX0oEF7oH1msk2CJL9w7QXpq/ZG4hxV7E56nwsz+rWoQRuBFJ43SWNoDWMs/lOD2I2sxOeKHM=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(356005)(70586007)(6916009)(316002)(2906002)(4326008)(508600001)(8936002)(336012)(1076003)(6266002)(70206006)(8676002)(83380400001)(54906003)(426003)(42186006)(36860700001)(7636003)(82310400004)(47076005)(44832011)(5660300002)(186003)(26005)(7416002)(33656002)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jan 2022 09:41:48.8729
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 378e0fb5-fdb9-4f85-344a-08d9d742162d
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0030.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR02MB8407
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Uwe,
+On Fri, Jan 14, 2022 at 12:13:15AM +0800, Jiapeng Chong wrote:
+> The error code is missing in this code scenario, add the error code
+> '-EINVAL' to the return value 'rc'.
+> 
+> Eliminate the follow smatch warning:
+> 
+> drivers/net/ethernet/sfc/efx_common.c:758 efx_reset_up() warn: missing
+> error code 'rc'.
 
-On Fri, Jan 14, 2022 at 10:26 AM Uwe Kleine-König
-<u.kleine-koenig@pengutronix.de> wrote:
-> On Thu, Jan 13, 2022 at 11:35:34PM +0300, Sergey Shtylyov wrote:
-> > On 1/13/22 12:45 AM, Mark Brown wrote:
-> > >>> To me it sounds much more logical for the driver to check if an
-> > >>> optional irq is non-zero (available) or zero (not available), than to
-> > >>> sprinkle around checks for -ENXIO. In addition, you have to remember
-> > >>> that this one returns -ENXIO, while other APIs use -ENOENT or -ENOSYS
-> > >>> (or some other error code) to indicate absence. I thought not having
-> > >>> to care about the actual error code was the main reason behind the
-> > >>> introduction of the *_optional() APIs.
-> > >
-> > >> No, the main benefit of gpiod_get_optional() (and clk_get_optional()) is
-> > >> that you can handle an absent GPIO (or clk) as if it were available.
-> >
-> >    Hm, I've just looked at these and must note that they match 1:1 with
-> > platform_get_irq_optional(). Unfortunately, we can't however behave the
-> > same way in request_irq() -- because it has to support IRQ0 for the sake
-> > of i8253 drivers in arch/...
->
-> Let me reformulate your statement to the IMHO equivalent:
->
->         If you set aside the differences between
->         platform_get_irq_optional() and gpiod_get_optional(),
->         platform_get_irq_optional() is like gpiod_get_optional().
->
-> The introduction of gpiod_get_optional() made it possible to simplify
-> the following code:
->
->         reset_gpio = gpiod_get(...)
->         if IS_ERR(reset_gpio):
->                 error = PTR_ERR(reset_gpio)
->                 if error != -ENDEV:
->                         return error
->         else:
->                 gpiod_set_direction(reset_gpiod, INACTIVE)
->
-> to
->
->         reset_gpio = gpiod_get_optional(....)
->         if IS_ERR(reset_gpio):
->                 return reset_gpio
->         gpiod_set_direction(reset_gpiod, INACTIVE)
->
-> and I never need to actually know if the reset_gpio actually exists.
-> Either the line is put into its inactive state, or it doesn't exist and
-> then gpiod_set_direction is a noop. For a regulator or a clk this works
-> in a similar way.
->
-> However for an interupt this cannot work. You will always have to check
-> if the irq is actually there or not because if it's not you cannot just
-> ignore that. So there is no benefit of an optional irq.
->
-> Leaving error message reporting aside, the introduction of
-> platform_get_irq_optional() allows to change
->
->         irq = platform_get_irq(...);
->         if (irq < 0 && irq != -ENXIO) {
->                 return irq;
->         } else if (irq >= 0) {
->                 ... setup irq operation ...
->         } else { /* irq == -ENXIO */
->                 ... setup polling ...
->         }
->
-> to
->
->         irq = platform_get_irq_optional(...);
->         if (irq < 0 && irq != -ENXIO) {
->                 return irq;
->         } else if (irq >= 0) {
->                 ... setup irq operation ...
->         } else { /* irq == -ENXIO */
->                 ... setup polling ...
->         }
->
-> which isn't a win. When changing the return value as you suggest, it can
-> be changed instead to:
->
->         irq = platform_get_irq_optional(...);
->         if (irq < 0) {
->                 return irq;
->         } else if (irq > 0) {
->                 ... setup irq operation ...
->         } else { /* irq == 0 */
->                 ... setup polling ...
->         }
->
-> which is a tad nicer. If that is your goal however I ask you to also
-> change the semantic of platform_get_irq() to return 0 on "not found".
+The warning is not correct. We want to return an rc of 0 in this case, and
+that is what rc is already set to given the earlier code.
 
-Please don't make that change. If platform_get_irq() would return 0 on
-"not found", all existing users have to be changed to:
+Martin
 
-        irq = platform_get_irq(...);
-        if (irq < 0) {
-                return irq;
-        } else if (!irq) {
-                return -ENOENT;
-        } else {
-                ... setup irq operation ...
-        }
-
-If the IRQ is not optional, there should be an error code when it is
-not present. This keeps error handling simple.
-
-The _optional() difference lies in the zero/NULL vs. error code in
-case of not present.
-
-> Note the win is considerably less compared to gpiod_get_optional vs
-> gpiod_get however. And then it still lacks the semantic of a dummy irq
-> which IMHO forfeits the right to call it ..._optional().
->
-> Now I'm unwilling to continue the discussion unless there pops up a
-> suggestion that results in a considerable part (say > 10%) of the
-> drivers using platform_get_irq_optional not having to check if the
-> return value corresponds to "not found".
-
-Usually drivers do have to check if the interrupt was present or
-not, because they may have to change the operation of the driver,
-depending on interrupt-based or timer/polling-based processing.
-
-Clocks, regulators, and resets are different, as their absence is
-really a no-op.  The absence of an interrupt is not a no-op (except
-for the separate interrupts vs. a single muxed interrupt case).
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> ---
+>  drivers/net/ethernet/sfc/efx_common.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
+> index af37c990217e..bdfcda8bb5d0 100644
+> --- a/drivers/net/ethernet/sfc/efx_common.c
+> +++ b/drivers/net/ethernet/sfc/efx_common.c
+> @@ -754,8 +754,10 @@ int efx_reset_up(struct efx_nic *efx, enum reset_type method, bool ok)
+>  		goto fail;
+>  	}
+>  
+> -	if (!ok)
+> +	if (!ok) {
+> +		rc = -EINVAL;
+>  		goto fail;
+> +	}
+>  
+>  	if (efx->port_initialized && method != RESET_TYPE_INVISIBLE &&
+>  	    method != RESET_TYPE_DATAPATH) {
+> -- 
+> 2.20.1.7.g153144c
