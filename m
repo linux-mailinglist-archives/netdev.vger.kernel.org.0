@@ -2,113 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 208E248ED6F
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 16:52:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD93D48EDA6
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 17:08:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242971AbiANPvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 10:51:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235936AbiANPvw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 10:51:52 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8E7C061574
-        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 07:51:51 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id j27so3081123pgj.3
-        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 07:51:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jNaxVdqcvxk4ig8CiPTI/3ybr3pqmqtJQMGQjw9Y0e4=;
-        b=Zvo62ixuU8bmNF6Y5DE2DlhCbe5x4+tyC0ye65STw4lO4Ah8L9UYJk+zp8t55vM6ZD
-         GN+fwIJz3c7F4cmvcdxjlrZ4S/98M78y1JgqeJ969ySE1bOBR8uC57y1PBg75jrkb6mf
-         HjqKBtKe31DVfoQilcoDIJhlboTPE7XsZYlU4uZchLeUHmVZrUB3XJbSG2t6GlMsN3ag
-         bLC0ZgPjRtdp6FX3VJpiWiA2jmO6oRS9CKk8KPH0EOn7TgHRjvKEF1RVqLumID/bv7cc
-         Ze6zX1RAzbquCMJTFGy4JqtLA7nfdKBKH9eZ3JHJJmmfj7r/G0JrTLuPdLd4Guky8GKK
-         VYXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jNaxVdqcvxk4ig8CiPTI/3ybr3pqmqtJQMGQjw9Y0e4=;
-        b=EuNTfG2UFpGG+seFeLXcCFVZ9sd/m5bNIBsmEDjCgjXmkcDHc3adsiEelukPey9oP2
-         EzpCgxUBhbKOd50hB1yHuYnr6WCgao/VGMNrCSv43EDNKnwV6aK2RMYRwO/znQzU+rsY
-         UXDFjqC9hi5r0i3bKCnVSCupEzayFMZXrMb68xvkMr62e+2qma8qdPTaOVrX5dpFZKRD
-         3MJHH+vK8rhgnbbKPn7rwntlAO1gm8aAPQDLfPGI9EpHBn8r+oqTzoSIYDjihRukKpnB
-         kAEz9HTk4lfntB3nHLthVDigfHLKtlMHceBuRHgufPZ+DIWwSHOqnh6XAg6npmBHU6nX
-         UR6Q==
-X-Gm-Message-State: AOAM531x3YZ1O87zBMyLwlwXwcELqGbbhFv/4DzPyvf2tSaM2YmJQnAl
-        EqqAMrwY6vw51Cno7bnMZ6Vg16xcBndTuZZH2v9/JQ==
-X-Google-Smtp-Source: ABdhPJzgHZqeEWqDXUo85yK/4TLC9lKPbuYydlH4vKlf0ew0eMz5Gxm3aqldYzdN8gM7ew8yiXzsRhsGiu1QDwCgWUc=
-X-Received: by 2002:a63:255:: with SMTP id 82mr8575780pgc.167.1642175510948;
- Fri, 14 Jan 2022 07:51:50 -0800 (PST)
+        id S243092AbiANQIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 11:08:16 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53226 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235975AbiANQIP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 11:08:15 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2034AB8295B;
+        Fri, 14 Jan 2022 16:08:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85631C36AE5;
+        Fri, 14 Jan 2022 16:08:12 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="hDSUo+JS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1642176489;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XoNUXMlaRqSo24jNIM6x457GTTkIBsbsy3/xGdNoalA=;
+        b=hDSUo+JSm4fTUnqQuKoBzcj4s5AQotzneqf9qiUme6TdpQHHx1K5IUI6AMnHRsdYqtK0KI
+        nt9CEVmGTx5D2MKkx00+x++Wfzdo7EPVyP8PuskmZ1isyip1Tf1lMUU01+21X409M+8BJ/
+        2iwR//63+rOWaVYTVOwpcoe1hwOYVy4=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7e8d5275 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 14 Jan 2022 16:08:09 +0000 (UTC)
+Received: by mail-yb1-f177.google.com with SMTP id v186so25183225ybg.1;
+        Fri, 14 Jan 2022 08:08:08 -0800 (PST)
+X-Gm-Message-State: AOAM531ibQ2WEeWXeJ2tTjKwBN4xV2wJkzFCAI9GCRLc4jgVhu76zled
+        yXgY9U6tFoXanky2Pt5xofldSeoXZT/IGKLSp3k=
+X-Google-Smtp-Source: ABdhPJwGHZubbMwimiyTKVZS5c/4gn9gtnOaoqmNV1fWQS9PD37kKZRkuLqJFdbKfzhQARBKDrL8wWD0WBXScsUTNCs=
+X-Received: by 2002:a25:aae2:: with SMTP id t89mr13844397ybi.638.1642176487356;
+ Fri, 14 Jan 2022 08:08:07 -0800 (PST)
 MIME-Version: 1.0
-References: <20220114100731.4033-1-slark_xiao@163.com>
-In-Reply-To: <20220114100731.4033-1-slark_xiao@163.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Fri, 14 Jan 2022 17:03:39 +0100
-Message-ID: <CAMZdPi8g2VxBFzS7Lw=TAN_NPQSuzwLuhEGB2akqn-Tjqer7vQ@mail.gmail.com>
-Subject: Re: [PATCH] Fix MRU mismatch issue which may lead to data connection lost
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     ryazanov.s.a@gmail.com, johannes@sipsolutions.net,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Shujun Wang <wsj20369@163.com>
+References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-3-Jason@zx2c4.com>
+ <87r19cftbr.fsf@toke.dk> <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
+ <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
+In-Reply-To: <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 14 Jan 2022 17:07:56 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pR+qTn72vyANq8Nxx0BtGy7a_+dRvZS_F7RCag8Rvxng@mail.gmail.com>
+Message-ID: <CAHmME9pR+qTn72vyANq8Nxx0BtGy7a_+dRvZS_F7RCag8Rvxng@mail.gmail.com>
+Subject: Re: [PATCH RFC v1 2/3] ipv6: move from sha1 to blake2s in address calculation
+To:     Hannes Frederic Sowa <hannes@stressinduktion.org>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Erik Kline <ek@google.com>,
+        Fernando Gont <fgont@si6networks.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        YOSHIFUJI Hideaki <hideaki.yoshifuji@miraclelinux.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Jan 2022 at 11:07, Slark Xiao <slark_xiao@163.com> wrote:
+Hi Hannes,
+
+On Thu, Jan 13, 2022 at 12:15 PM Hannes Frederic Sowa
+<hannes@stressinduktion.org> wrote:
+> > I'm not even so sure that's true. That was my worry at first, but
+> > actually, looking at this more closely, DAD means that the address can
+> > be changed anyway - a byte counter is hashed in - so there's no
+> > guarantee there.
 >
-> In pci_generic.c there is a 'mru_default' in struct mhi_pci_dev_info.
-> This value shall be used for whole mhi if it's given a value for a specific product.
-> But in function mhi_net_rx_refill_work(), it's still using hard code value MHI_DEFAULT_MRU.
-> 'mru_default' shall have higher priority than MHI_DEFAULT_MRU.
-> And after checking, this change could help fix a data connection lost issue.
+> The duplicate address detection counter is a way to merely provide basic
+> network connectivity in case of duplicate addresses on the network
+> (maybe some kind misconfiguration or L2 attack). Such detected addresses
+> would show up in the kernel log and an administrator should investigate
+> and clean up the situation.
 
-Interesting, not sure why it fixes data issues, since the device
-should comply with any size.Can you add a Fixes tag then? and add the
-correct [PATCH net] suffix in the subject:
-https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html
+I don't mean to belabor a point where I'm likely wrong anyway, but
+this DAD business has kept me thinking...
 
-With that:
+Attacker is hanging out on the network sending DAD responses, forcing
+those counters to increment, and thus making SHA1(stuff || counter)
+result in a different IPv6 address than usual. Outcomes:
+1) The administrator cannot handle this, did not understand the
+semantics of this address generation feature, and will now have a
+broken network;
+2) The administrator knows what he's doing, and will be able to handle
+a different IPv6 address coming up.
 
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+Do we really care about case (1)? That sounds like emacs spacebar
+heating https://xkcd.com/1172/. And case (2) seems like something that
+would tolerate us changing the hash function.
 
-Thanks,
-Loic
+> Afterwards bringing the interface down and
+> up again should revert the interface to its initial (dad_counter == 0)
+> address.
 
+Except the attacker is still on the network, and the administrator
+can't figure it out because the mac addresses keep changing and it's
+arriving from seemingly random switches! Plot twist: the attack is
+being conducted from an implant in the switch firmware. There are a
+lot of creative different takes on the same basic scenario. The point
+is - the administrator really _can't_ rely on the address always being
+the same, because it's simply out of his control.
 
+Given that the admin already *must* be prepared for the address to
+change, doesn't that give us some leeway to change the algorithm used
+between kernels?
 
+Or to put it differently, are there _actually_ braindead deployments
+out there that truly rely on the address never ever changing, and
+should we be going out of our way to support what is arguably a
+misreading and misdeployment of the feature?
 
->
-> Signed-off-by: Shujun Wang <wsj20369@163.com>
-> Signed-off-by: Slark Xiao <slark_xiao@163.com>
-> ---
->  drivers/net/wwan/mhi_wwan_mbim.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/wwan/mhi_wwan_mbim.c b/drivers/net/wwan/mhi_wwan_mbim.c
-> index 71bf9b4f769f..6872782e8dd8 100644
-> --- a/drivers/net/wwan/mhi_wwan_mbim.c
-> +++ b/drivers/net/wwan/mhi_wwan_mbim.c
-> @@ -385,13 +385,13 @@ static void mhi_net_rx_refill_work(struct work_struct *work)
->         int err;
->
->         while (!mhi_queue_is_full(mdev, DMA_FROM_DEVICE)) {
-> -               struct sk_buff *skb = alloc_skb(MHI_DEFAULT_MRU, GFP_KERNEL);
-> +               struct sk_buff *skb = alloc_skb(mbim->mru, GFP_KERNEL);
->
->                 if (unlikely(!skb))
->                         break;
->
->                 err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb,
-> -                                   MHI_DEFAULT_MRU, MHI_EOT);
-> +                                   mbim->mru, MHI_EOT);
->                 if (unlikely(err)) {
->                         kfree_skb(skb);
->                         break;
-> --
-> 2.25.1
->
+(Feel free to smack this line of argumentation down if you disagree. I
+just thought it should be a bit more thoroughly explored.)
+
+Jason
