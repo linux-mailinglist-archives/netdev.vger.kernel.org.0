@@ -2,147 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 944FF48E45C
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 07:48:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB8FE48E45F
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 07:48:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231423AbiANGrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 01:47:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57346 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229981AbiANGrn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 01:47:43 -0500
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A8BC061574
-        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 22:47:43 -0800 (PST)
-Received: by mail-il1-x12d.google.com with SMTP id b17so5958889ils.4
-        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 22:47:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=coIPDcnV+HnWEv56bf027+mB1pYRbPlLmW3kBkxW2fM=;
-        b=WTDBSACAqrj6H5Q3fjs7kqd/ZTCyi11zUQICyqiSTy9EfTsV3bTQBKiA04wgyQsD5/
-         zHwbNCCHXGHK1dHJugJOsIpD6Z2gAV+8aPEQO32v9jd3dY3ITbezrmE1UQn0sIYkoXW3
-         5S44cluqV1GBW41hfEEZaxFjOYPwfaDVTlH3E=
+        id S232700AbiANGsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 01:48:05 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:59256
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231620AbiANGsD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 01:48:03 -0500
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com [209.85.161.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 90AE6402A3
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 06:48:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1642142881;
+        bh=PKBAkmJ7or0T/bxHU0Wvyq29ugXtwBBaF+RK3mybysU=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=hDIiylRN/BhR3ijiiWn2wBFPyRwRb06nqYpmUx4C+aV6dTp5xI2nRrJGZ3n50E7O0
+         CbS1pO8x86DkqH4QUbPue5kg/sSXD9bqZpvAf6m2k82QB941iO2baagLssj9WarLQp
+         KLMiSonoqyTJSWEY/X1fHx6nD9jrRmdvDsSCvcQA131JdAOjfBHyzZEDjO6GLgkrRv
+         T4f0LMD1m9xLE6iEabDWROdRNcJxN7SJ1YiYOJpqX0/n+K9GaTyTVxQWEqYSQ/CYe/
+         G1NT0CiQdqFfO09vj0y7XGfVyJ8KK1+hN7FARhe5AJ5XMiXttlAht6j3CNnkTUH50B
+         CeV74hekx6AnQ==
+Received: by mail-oo1-f69.google.com with SMTP id z48-20020a4a9873000000b002c29a99164cso5426708ooi.20
+        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 22:48:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=coIPDcnV+HnWEv56bf027+mB1pYRbPlLmW3kBkxW2fM=;
-        b=EBsYVZTFQzr4B7aLNEO49WUZGRfeJbTYf9gOSrWCLPUfSjop7/nwYGCzUlADbx1yMg
-         nHE/V6ddLcw0lMXuNH2swNAtCpiBVcQ7xSksRLyj2lJ63ZLw0AQ6pL4YX6Xhuut9Pcbs
-         43BDgrnkvOlOVqYUiTmbbB5GfGIwtR6qJVCxnQw/qr8xOVIzRTz1CDdJWQhXf2NLs+sh
-         J6dUrvkralKdcSl1Gd5M7GMNsZwWkS3hMkfL2dAH3piKsm+rjfAmvi3YoZWeTn2C2LqI
-         rG8afX5Abb/eFRrowzHcyKXXQ49ykHHkm3zdboaa3NwpUdJmsdt/ZKE5hD5+ulPZkMJa
-         Fy+w==
-X-Gm-Message-State: AOAM530utTLpuntHvL7AlcJ3n6C+dpUD72VX05EsXI8hHnPAFfrNz9IO
-        18SPa4AWE5VPHlwyq/0Qh/MYZCDtk7k0oDzzoSSavH999hs=
-X-Google-Smtp-Source: ABdhPJyiXF3NuvXrV68vVsq5L3Bld5EeEj25jQd9Mtca7hCVahuYe+O27eWAcP8UIkj/Bd9C7mmPGoXxfQSoA3vkI3Y=
-X-Received: by 2002:a05:6e02:1786:: with SMTP id y6mr4099914ilu.99.1642142862486;
- Thu, 13 Jan 2022 22:47:42 -0800 (PST)
+        bh=PKBAkmJ7or0T/bxHU0Wvyq29ugXtwBBaF+RK3mybysU=;
+        b=pPkuhcHbesOU0E+0zLg8EuSUPEQkpACwDaqNDfajm89W4/rW0Zk19KvpleNend7Y8z
+         UeLa1JOHjlSV2mslPoqMzpfPeEcL9hEUND2M5/m9KiGBWK/OJBoeMdIlg0w7fsxf+GbP
+         Ro5gRp88A+VbeR+vEwLw8NI57QfXRJMLMIUJPoiB6h92hw6uXAsxclqCAT+xaADWFjqR
+         X5S+FuykD1Rp4SwZzUIRucvbQyOxWxauyIO+Yudls82FW1TPt0Mj9obuusSr7Rjn9Gdj
+         tzylvDr68PRGNMlqFDsZEKBnmfn3ESe7VxdwEE3w4vhf8iO7Fm7W8+p7ENrnmEd8xEkR
+         UgPw==
+X-Gm-Message-State: AOAM531tCyJf5SoJJgFpSx467A45hA9dFptDcp1AHW8Dnz1881fWsmbA
+        4yAGP1h2PWrG7ik2FtFswi6MuKUOGHl8ToAhlXemfcuaoFCZILkBb9bPuoudPnVpGAJmEDmERFD
+        nK15FTXp+/CN49b4Z/zzxnoSYXsnVWSzYkjG4NLKffdl9b4s8vw==
+X-Received: by 2002:a05:6808:293:: with SMTP id z19mr10972595oic.41.1642142879352;
+        Thu, 13 Jan 2022 22:47:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJye/IK1OGddDRHlpoRSRDwJDrr3evy3FfczWQgU60l1SslTO9lJxeMi9V5rBVY0jKXg6Ly5r0DmOwSH1F8j5i0=
+X-Received: by 2002:a05:6808:293:: with SMTP id z19mr10972566oic.41.1642142878837;
+ Thu, 13 Jan 2022 22:47:58 -0800 (PST)
 MIME-Version: 1.0
-References: <20220110231255.v2.1.Ie4dcc45b0bf365077303c596891d460d716bb4c5@changeid>
- <202201110851.5qAxfQJj-lkp@intel.com>
-In-Reply-To: <202201110851.5qAxfQJj-lkp@intel.com>
-From:   Abhishek Kumar <kuabhs@chromium.org>
-Date:   Thu, 13 Jan 2022 22:47:31 -0800
-Message-ID: <CACTWRwtCjXbpxkixAyRrmK5gRjWW7fMv5==9j=YcsdN-mnYhJw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] ath10k: search for default BDF name provided in DT
-To:     kernel test robot <lkp@intel.com>
-Cc:     kvalo@codeaurora.org, ath10k@lists.infradead.org,
-        kbuild-all@lists.01.org, pillair@codeaurora.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dianders@chromium.org, Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org
+References: <20220114040755.1314349-1-kai.heng.feng@canonical.com>
+ <20220114040755.1314349-2-kai.heng.feng@canonical.com> <20220113203523.310e13d3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220113203523.310e13d3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Fri, 14 Jan 2022 14:47:47 +0800
+Message-ID: <CAAd53p6rW7PcugY7okKsXybK2O=pS8qAhctMzsa-MEgJrKhEdg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] stmmac: intel: Honor phy LED set by system firmware
+ on a Dell hardware
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Reviewers,
+On Fri, Jan 14, 2022 at 12:35 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 14 Jan 2022 12:07:54 +0800 Kai-Heng Feng wrote:
+> > BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
+> > instead of setting another value, keep it untouched and restore the saved
+> > value on system resume.
+> >
+> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+>
+> I defer to PHY experts for review. Coincidentally the first Marvell
+> flag appears dead, nobody sets it:
+>
+> $ git grep MARVELL_PHY_M1145_FLAGS_RESISTANCE
+> drivers/net/phy/marvell.c:      if (phydev->dev_flags & MARVELL_PHY_M1145_FLAGS_RESISTANCE) {
+> include/linux/marvell_phy.h:#define MARVELL_PHY_M1145_FLAGS_RESISTANCE  0x00000001
+> $
+>
+> unless it's read from DT under different name or something.
 
-On this patch I have a kernel bot warning, which I intend to fix along
-with all the comments and discussion and push out V3. So, any
-comments/next steps are appreciated.
+It was introduced by 95d21ff4c645 without any user. Should we keep it?
 
-Thanks
-Abhishek
+>
+>
+> Once you get some reviews please wait for net-next to open:
+>
+> http://vger.kernel.org/~davem/net-next.html
+>
+> and repost. It should happen the week of Jan 24th. When you repost
+> please drop the first patch, I believe Russell does not like the BIT()
+> macro, his opinion overrides checkpatch.
 
-On Mon, Jan 10, 2022 at 5:08 PM kernel test robot <lkp@intel.com> wrote:
+Of course. I'll wait for the review and resubmit the 2nd patch.
+
+Kai-Heng
+
 >
-> Hi Abhishek,
->
-> Thank you for the patch! Perhaps something to improve:
->
-> [auto build test WARNING on kvalo-ath/ath-next]
-> [also build test WARNING on kvalo-wireless-drivers-next/master kvalo-wireless-drivers/master v5.16 next-20220110]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
->
-> url:    https://github.com/0day-ci/linux/commits/Abhishek-Kumar/ath10k-search-for-default-BDF-name-provided-in-DT/20220111-071636
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git ath-next
-> config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220111/202201110851.5qAxfQJj-lkp@intel.com/config)
-> compiler: arceb-elf-gcc (GCC) 11.2.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/0day-ci/linux/commit/50c4c7cb02cc786afcd9aff27616a6e20296c703
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Abhishek-Kumar/ath10k-search-for-default-BDF-name-provided-in-DT/20220111-071636
->         git checkout 50c4c7cb02cc786afcd9aff27616a6e20296c703
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/net/wireless/ath/ath10k/
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All warnings (new ones prefixed by >>):
->
->    drivers/net/wireless/ath/ath10k/core.c: In function 'ath10k_core_parse_default_bdf_dt':
-> >> drivers/net/wireless/ath/ath10k/core.c:1103:116: warning: format '%ld' expects argument of type 'long int', but argument 4 has type 'unsigned int' [-Wformat=]
->     1103 |                             "default board name is longer than allocated buffer, board_name: %s; allocated size: %ld\n",
->          |                                                                                                                  ~~^
->          |                                                                                                                    |
->          |                                                                                                                    long int
->          |                                                                                                                  %d
->     1104 |                             board_name, sizeof(ar->id.default_bdf));
->          |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~
->          |                                         |
->          |                                         unsigned int
->
->
-> vim +1103 drivers/net/wireless/ath/ath10k/core.c
->
->   1083
->   1084  int ath10k_core_parse_default_bdf_dt(struct ath10k *ar)
->   1085  {
->   1086          struct device_node *node;
->   1087          const char *board_name = NULL;
->   1088
->   1089          ar->id.default_bdf[0] = '\0';
->   1090
->   1091          node = ar->dev->of_node;
->   1092          if (!node)
->   1093                  return -ENOENT;
->   1094
->   1095          of_property_read_string(node, "qcom,ath10k-default-bdf",
->   1096                                  &board_name);
->   1097          if (!board_name)
->   1098                  return -ENODATA;
->   1099
->   1100          if (strscpy(ar->id.default_bdf,
->   1101                      board_name, sizeof(ar->id.default_bdf)) < 0)
->   1102                  ath10k_warn(ar,
-> > 1103                              "default board name is longer than allocated buffer, board_name: %s; allocated size: %ld\n",
->   1104                              board_name, sizeof(ar->id.default_bdf));
->   1105
->   1106          return 0;
->   1107  }
->   1108  EXPORT_SYMBOL(ath10k_core_parse_default_bdf_dt);
->   1109
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> Thanks!
