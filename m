@@ -2,133 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B44548E38A
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 06:22:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 406F148E3CF
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 06:38:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233883AbiANFWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 00:22:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiANFWO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 00:22:14 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866E6C061574;
-        Thu, 13 Jan 2022 21:22:13 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id p37so1811998pfh.4;
-        Thu, 13 Jan 2022 21:22:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hFEux4lGDMtlyP0qdztGJ0HFS8ku9s5gPosIQG83maw=;
-        b=jVVkr8cN5FcsuVLMNxO19jJzPfe83VU2iCj8cZX+cjmBalCjDH1s67TJhGezHY37v3
-         zkxNacxMdBodDbhWHRH7P2phh6cDQaHKWdBtVvBlIjEVohtQAk/C0hLRuoUZT2UenVhA
-         Q2KBoNXvW5wnFFy5Wq2rMfovkGy+iP/IuV7xbpCTukhzVQkOcHu3X20rnPaKistHI92G
-         Ujp7ka1opnwg7v3ZEPgwtbTdLWtjX3Ys2hFaqxngtd4WmJk9MhWDxq1IpdO+T9ZceRwr
-         39DUo9mt4AhgOEazwVhAXAzW4rpuRaMKn21IbaldxKbpVVbGjbMvLMXryar2+DS87vTO
-         S9NA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hFEux4lGDMtlyP0qdztGJ0HFS8ku9s5gPosIQG83maw=;
-        b=zbky1a3LVavg3Pvf2ZYRdGYjUMkbm8EQu8/gWVsACPlWQTjRqaUqmu4pyjdLCobm0Y
-         6b+Zq0TLJAGOEBXFPr4gktjmtrZ+lcs95VFBrO3rFN78Q2h9NWjaenyyv29yn2r5yszK
-         XuoDYhDOIQiIfSshbohNDgUyjfC70gn7/qSxXNwZemBdzzoOUjJZYYWorhyYGvlcCmX6
-         0AZRCcJ/qIwexcwiiqqk7kPpFmNO4fpjkn4New8LxQdeEVIL2Jkx9XcXxHfieOxrDZGf
-         uOws7fi6+sYDwHkb2ASxA/QjYazWT5MAVsiJSLb2XSn6Yco6uFI0uPu953jFdcmmzNtK
-         yaMw==
-X-Gm-Message-State: AOAM5330GC5/CtpbWtQDWyXB2/2W7hRQh/pwScOb/JjjSF84v2N9eODm
-        4Hw0Ysju4oao4v6U7MZ7sG0UyWTOoLNijQ==
-X-Google-Smtp-Source: ABdhPJzntD98Ne1CHNfo2imjoX+LsQ+68qoQ8AQNy+kb8aiSKaXDzVfGi5N7PvecCiPzdwOuilP76A==
-X-Received: by 2002:a05:6a00:1795:b0:4c1:e2f6:d0c8 with SMTP id s21-20020a056a00179500b004c1e2f6d0c8mr6450033pfg.47.1642137732909;
-        Thu, 13 Jan 2022 21:22:12 -0800 (PST)
-Received: from localhost ([2405:201:6014:d064:502e:73f4:8af1:9522])
-        by smtp.gmail.com with ESMTPSA id c82sm4239299pfc.1.2022.01.13.21.22.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 21:22:12 -0800 (PST)
-Date:   Fri, 14 Jan 2022 10:51:29 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH bpf-next v7 02/10] bpf: Populate kfunc BTF ID sets in
- struct btf
-Message-ID: <20220114052129.dwx7tvdjrwokw5sc@apollo.legion>
-References: <20220111180428.931466-1-memxor@gmail.com>
- <20220111180428.931466-3-memxor@gmail.com>
- <20220113223211.s2m5fkvafd6fk4tv@ast-mbp.dhcp.thefacebook.com>
- <20220114044950.24jr6juxbuzxskw2@apollo.legion>
+        id S234835AbiANFih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 00:38:37 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:53938 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234763AbiANFig (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 00:38:36 -0500
+X-UUID: 3abcf59a8c2d45249804e5ded4671120-20220114
+X-UUID: 3abcf59a8c2d45249804e5ded4671120-20220114
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1136806152; Fri, 14 Jan 2022 13:38:27 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 14 Jan 2022 13:38:25 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 14 Jan 2022 13:38:24 +0800
+Message-ID: <14636842a61bb7631584315901bcc06ccbdb0f90.camel@mediatek.com>
+Subject: Re: [PATCH net-next v10 6/6] net: dt-bindings: dwmac: add support
+ for mt8195
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     srv_heupstream <srv_heupstream@mediatek.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        David Miller <davem@davemloft.net>,
+        "moderated list:ARM/STM32 ARCHITECTURE" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        netdev <netdev@vger.kernel.org>, <dkirjanov@suse.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Macpaul Lin <macpaul.lin@mediatek.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        <devicetree@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>
+Date:   Fri, 14 Jan 2022 13:38:24 +0800
+In-Reply-To: <CAL_JsqLo7z-KWtwFx+Kng2aQuCpQwJaO6mHnyBzmCKCJDK5n+Q@mail.gmail.com>
+References: <20211216055328.15953-1-biao.huang@mediatek.com>
+         <20211216055328.15953-7-biao.huang@mediatek.com>
+         <1639662782.987227.4004875.nullmailer@robh.at.kernel.org>
+         <be023f9d2fb2a8f947bd0075e8732ba07cfd7b89.camel@mediatek.com>
+         <CAL_JsqLo7z-KWtwFx+Kng2aQuCpQwJaO6mHnyBzmCKCJDK5n+Q@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220114044950.24jr6juxbuzxskw2@apollo.legion>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 10:19:50AM IST, Kumar Kartikeya Dwivedi wrote:
-> On Fri, Jan 14, 2022 at 04:02:11AM IST, Alexei Starovoitov wrote:
-> > On Tue, Jan 11, 2022 at 11:34:20PM +0530, Kumar Kartikeya Dwivedi wrote:
-> > > [...]
-> > > +	/* Make sure all updates are visible before we go to MODULE_STATE_LIVE,
-> > > +	 * pairs with smp_rmb in btf_try_get_module (for success case).
-> > > +	 *
-> > > +	 * btf_populate_kfunc_set(...)
-> > > +	 * smp_wmb()	<-----------.
-> > > +	 * mod->state = LIVE	    |		if (mod->state == LIVE)
-> > > +	 *			    |		  atomic_inc_nz(mod)
-> > > +	 *			    `--------->	  smp_rmb()
-> > > +	 *					  btf_kfunc_id_set_contains(...)
-> > > +	 */
-> > > +	smp_wmb();
-> >
-> > This comment somehow implies that mod->state = LIVE
-> > and if (mod->state == LIVE && try_mod_get) can race.
-> > That's not the case.
-> > The patch 1 closed the race.
-> > btf_kfunc_id_set_contains() will be called only on LIVE modules.
-> > At that point all __init funcs of the module including register_btf_kfunc_id_set()
-> > have completed.
-> > This smp_wmb/rmb pair serves no purpose.
-> > Unless I'm missing something?
-> >
->
-> Right, I'm no expert on memory ordering, but even if we closed the race, to me
-> there seems to be no reason why the CPU cannot reorder the stores to tab (or its
-> hook/type slot) with mod->state = LIVE store.
->
-> Usually, the visibility is handled by whatever lock is used to register the
-> module somewhere in some subsystem, as the next acquirer can see all updates
-> from the previous registration.
->
-> In this case, we're directly assigning a pointer without holding any locks etc.
-> While it won't be concurrently accessed until module state is LIVE, it is
-> necessary to make all updates visible in the right order (that is, once state is
-> LIVE, everything stored previously in struct btf for module is also visible).
->
-> Once mod->state = LIVE is visible, we will start accessing kfunc_set_tab, but if
-> previous stores to it were not visible by then, we'll access a badly-formed
-> kfunc_set_tab.
->
-> For this particular case, you can think of mod->state = LIVE acting as a release
-> store, and the read for mod->state == LIVE acting as an acquire load.
->
+On Tue, 2022-01-11 at 17:36 -0600, Rob Herring wrote:
+> On Thu, Dec 16, 2021 at 8:06 PM Biao Huang <biao.huang@mediatek.com>
+> wrote:
+> > 
+> > Dear Rob,
+> >   Thanks for your comments~
+> > 
+> >   For mt8195, the eth device node will look like:
+> >   eth: ethernet@11021000 {
+> >     compatible = "mediatek,mt8195-gmac", "snps,dwmac-5.10a";
+> >     ...
+> >     clock-names = "axi",
+> >                   "apb",
+> >                   "mac_cg",
+> >                   "mac_main",
+> >                   "ptp_ref",
+> >                   "rmii_internal";
+> >     clocks = <&pericfg_ao CLK_PERI_AO_ETHERNET>,
+> >              <&pericfg_ao CLK_PERI_AO_ETHERNET_BUS>,
+> >              <&pericfg_ao CLK_PERI_AO_ETHERNET_MAC>,
+> >              <&topckgen CLK_TOP_SNPS_ETH_250M>,
+> >              <&topckgen CLK_TOP_SNPS_ETH_62P4M_PTP>,
+> >              <&topckgen CLK_TOP_SNPS_ETH_50M_RMII>;
+> >     ...
+> >   }
+> > 
+> > 1. "rmii_internal" is a special clock only required for
+> >    RMII phy interface, dwmac-mediatek.c will enable clocks
+> >    invoking clk_bulk_prepare_enable(xx, 6) for RMII,
+> >    and clk_bulk_prepare_enable(xx, 5) for other phy interfaces.
+> >    so, mt2712/mt8195 all put "rmii_internal" clock to the
+> >    end of clock list to simplify clock handling.
+> > 
+> >    If I put mac_cg as described above, a if condition is required
+> > for clocks description in dt-binding, just like what I do in v7
+> > send:
+> >   - if:
+> >       properties:
+> >         compatible:
+> >           contains:
+> >             enum:
+> >               - mediatek,mt2712-gmac
+> > 
+> >     then:
+> >       properties:
+> >         clocks:
+> >           minItems: 5
+> >           items:
+> >             - description: AXI clock
+> >             - description: APB clock
+> >             - description: MAC Main clock
+> >             - description: PTP clock
+> >             - description: RMII reference clock provided by MAC
+> > 
+> >         clock-names:
+> >           minItems: 5
+> >           items:
+> >             - const: axi
+> >             - const: apb
+> >             - const: mac_main
+> >             - const: ptp_ref
+> >             - const: rmii_internal
+> > 
+> >   - if:
+> >       properties:
+> >         compatible:
+> >           contains:
+> >             enum:
+> >               - mediatek,mt8195-gmac
+> > 
+> >     then:
+> >       properties:
+> >         clocks:
+> >           minItems: 6
+> >           items:
+> >             - description: AXI clock
+> >             - description: APB clock
+> >             - description: MAC clock gate
+> >             - description: MAC Main clock
+> >             - description: PTP clock
+> >             - description: RMII reference clock provided by MAC
+> > 
+> >    This introduces some duplicated description.
+> > 
+> > 2. If I put "mac_cg" to the end of clock list,
+> >    the dt-binding file can be simple just like
+> >    what we do in this v10 patch(need fix warnings reported by "make
+> > DT_CHECKER_FLAGS=-m dt_binding_check").
+> > 
+> >    But for mt8195:
+> >      the eth node in dts should be modified,
+> 
+> I hope you are defining the binding before you use it... That's not
+> good practice and not a valid argument.
+> 
+> >      and eth driver clock handling will be complex;
+> 
+> How so?
+> 
+> Rob
+OK, I'll add a driver patch to make clock setting more reasonable,
+and modify this patch as previous comments.
 
-Also, to be more precise, we're now synchronizing using btf_mod->flags, not
-mod->state, so I should atleast update the comment, but the idea is the same.
+Thanks for your comments~
 
-> But I'm probably being overtly cautious, please let me know why.
->
-
---
-Kartikeya
