@@ -2,149 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69B2C48F014
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 19:44:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E61FC48F022
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 19:46:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243099AbiANSoc convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 14 Jan 2022 13:44:32 -0500
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:50923 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236181AbiANSob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 13:44:31 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id E532FFF805;
-        Fri, 14 Jan 2022 18:44:26 +0000 (UTC)
-Date:   Fri, 14 Jan 2022 19:44:25 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S243370AbiANSqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 13:46:17 -0500
+Received: from mxout04.lancloud.ru ([45.84.86.114]:39038 "EHLO
+        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236181AbiANSqN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 13:46:13 -0500
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru CAE4720A74BC
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+To:     Mark Brown <broonie@kernel.org>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+CC:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-iio@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Amit Kucheria" <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        <linux-phy@lists.infradead.org>, <netdev@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        <openipmi-developer@lists.sourceforge.net>,
+        "Khuong Dinh" <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        "Lee Jones" <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "Daniel Lezcano" <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Harry Morris <h.morris@cascoda.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "linux-wireless@vger.kernel.org Wireless" 
-        <linux-wireless@vger.kernel.org>
-Subject: Re: [wpan-next v2 18/27] net: mac802154: Handle scan requests
-Message-ID: <20220114194425.3df06391@xps13>
-In-Reply-To: <CAB_54W4LdzH9=XS7-ZnxfyCMQFCTS-F5JkUmV+6HtWcCpUS-nQ@mail.gmail.com>
-References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
-        <20220112173312.764660-19-miquel.raynal@bootlin.com>
-        <CAB_54W4PL1ty5XsqRoEKwsy-h8KL9gSGMK6N=HiWJDp6NHsb0A@mail.gmail.com>
-        <20220113180709.0dade123@xps13>
-        <CAB_54W4LdzH9=XS7-ZnxfyCMQFCTS-F5JkUmV+6HtWcCpUS-nQ@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Zhang Rui <rui.zhang@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "John Garry" <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        "William Breathitt Gray" <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "Sebastian Reichel" <sre@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Takashi Iwai" <tiwai@suse.com>,
+        <platform-driver-x86@vger.kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        <linux-edac@vger.kernel.org>, Tony Luck <tony.luck@intel.com>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        "Linux MMC List" <linux-mmc@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        "James Morse" <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        "Pengutronix Kernel Team" <kernel@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        <linux-mediatek@lists.infradead.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20220110195449.12448-1-s.shtylyov@omp.ru>
+ <20220110195449.12448-2-s.shtylyov@omp.ru>
+ <20220110201014.mtajyrfcfznfhyqm@pengutronix.de> <YdyilpjC6rtz6toJ@lunn.ch>
+ <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
+ <20220112085009.dbasceh3obfok5dc@pengutronix.de>
+ <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
+ <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
+ <Yd9L9SZ+g13iyKab@sirena.org.uk>
+ <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <3a6b7348-ffcf-e26a-1874-830e78ae2d57@omp.ru>
+Date:   Fri, 14 Jan 2022 21:46:04 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+On 1/13/22 11:35 PM, Sergey Shtylyov wrote:
 
-alex.aring@gmail.com wrote on Thu, 13 Jan 2022 19:01:56 -0500:
-
-> Hi,
+[...]
+>> (Do we really need *all* the CCs here?)
 > 
-> On Thu, 13 Jan 2022 at 12:07, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> >
-> > Hi Alexander,
-> >
-> > alex.aring@gmail.com wrote on Wed, 12 Jan 2022 17:44:02 -0500:
-> >  
-> > > Hi,
-> > >
-> > > On Wed, 12 Jan 2022 at 12:33, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > > ...  
-> > > > +       return 0;
-> > > > +}
-> > > > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-> > > > index c829e4a75325..40656728c624 100644
-> > > > --- a/net/mac802154/tx.c
-> > > > +++ b/net/mac802154/tx.c
-> > > > @@ -54,6 +54,9 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
-> > > >         struct net_device *dev = skb->dev;
-> > > >         int ret;
-> > > >
-> > > > +       if (unlikely(mac802154_scan_is_ongoing(local)))
-> > > > +               return NETDEV_TX_BUSY;
-> > > > +  
-> > >
-> > > Please look into the functions "ieee802154_wake_queue()" and
-> > > "ieee802154_stop_queue()" which prevent this function from being
-> > > called. Call stop before starting scanning and wake after scanning is
-> > > done or stopped.  
-> >
-> > Mmmh all this is already done, isn't it?
-> > - mac802154_trigger_scan_locked() stops the queue before setting the
-> >   promiscuous mode
-> > - mac802154_end_of_scan() wakes the queue after resetting the
-> >   promiscuous mode to its original state
-> >
-> > Should I drop the check which stands for an extra precaution?
-> >  
-> 
-> no, I think then it should be a WARN_ON() more without any return
-> (hopefully it will survive). This case should never happen otherwise
-> we have a bug that we wake the queue when we "took control about
-> transmissions" only.
-> Change the name, I think it will be in future not only scan related.
-> Maybe "mac802154_queue_stopped()". Everything which is queued from
-> socket/upperlayer(6lowpan) goes this way.
+>    Yeah, 25 files were changed and that resulted in 75 persons/lists addressed.
+> I didn't expect such a wide audience myself... :-)
 
-Got it.
+   And, of course, I specified --nogit-fallback to scripts/get_maintainers.pl, so
+there's no random people...
 
-I've changed the name of the helper, and used an atomic variable there
-to follow the count. 
+[...]
 
-> > But overall I think I don't understand well this part. What is
-> > a bit foggy to me is why the (async) tx implementation does:
-> >
-> > *Core*                           *Driver*
-> >
-> > stop_queue()
-> > drv_async_xmit() -------
-> >                         \------> do something
-> >                          ------- calls ieee802154_xmit_complete()
-> > wakeup_queue() <--------/
-> >
-> > So we actually disable the queue for transmitting. Why??
-> >  
-> 
-> Because all transceivers have either _one_ transmit framebuffer or one
-> framebuffer for transmit and receive one time. We need to report to
-> stop giving us more skb's while we are busy with one to transmit.
-> This all will/must be changed in future if there is hardware outside
-> which is more powerful and the driver needs to control the flow here.
-> 
-> That ieee802154_xmit_complete() calls wakeup_queue need to be
-> forbidden when we are in "synchronous transmit mode"/the queue is
-> stopped. The synchronous transmit mode is not for any hotpath, it's
-> for MLME and I think we also need a per phy lock to avoid multiple
-> synchronous transmissions at one time. Please note that I don't think
-> here only about scan operation, also for other possible MLME-ops.
-> 
-
-First, thank you very much for all your guidance and reviews, I think I
-have a much clearer understanding now.
-
-I've tried to follow your advices, creating:
-- a way of tracking ongoing transmissions
-- a synchronous API for MLME transfers
-
-I've decided to use the wait_queue + atomic combo which looks nice.
-Everything seems to work, I just need a bit of time to clean and rework
-a bit the series before sending a v3.
-
-Thanks,
-Miquèl
+MBR, Sergey
