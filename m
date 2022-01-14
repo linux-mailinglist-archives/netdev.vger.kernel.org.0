@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2481E48E1A0
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 01:39:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F359148E1E0
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 02:01:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238470AbiANAj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 19:39:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32920 "EHLO
+        id S238586AbiANBBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 20:01:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238465AbiANAj2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 19:39:28 -0500
-Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D938C061574;
-        Thu, 13 Jan 2022 16:39:28 -0800 (PST)
-Received: by mail-ua1-x92f.google.com with SMTP id o1so14379417uap.4;
-        Thu, 13 Jan 2022 16:39:28 -0800 (PST)
+        with ESMTP id S233398AbiANBBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 20:01:06 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5757AC061574;
+        Thu, 13 Jan 2022 17:01:06 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id c66so5037419wma.5;
+        Thu, 13 Jan 2022 17:01:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=PHv6MSkP5VskTG0PwGalY8E+uOtxTwKQMcg1y1zQnE0=;
-        b=M2N5fcqvm76kd7Fft1L81xesiEdFNqwW8FeXDz4tBKIipT4zL3mu48fcMa1Ab51PUy
-         uNjYjWsNSEy6ZjG21AesRI7wxsIBghx0AOQecChQ/3EjjIHqVJEtKsVfCR5a9gm3HFI1
-         dtQfr2EFERS2LKiGuQO+3C0a1HHKDBCCZ1p9nmA2JGJD92ZWZvSyBzktIA2mbRDUQTwG
-         sft7tDWQHFFOb7NRGAiXnuIHHX4FCxQSOQWfFrSmr23dk9mmO9Euis5dP11XBxMWhOBl
-         nFYR/IZLFa2O5PvvNMUWzE6XDMl/QDCbg+ZCq+hhvTg4OBUadwmHLHvkkCOGfJvSrR92
-         Y2WA==
+        bh=I61hZPBrG67+JPoHlxt0GdEAvO6MYmLE6NzUjzDVLBU=;
+        b=jI7PML+lT0t5Z1vuRqsh9CWMNpREvVR4I7MDmcC9SwFkkrKfaaW/ZKMhK0SpbKRPie
+         SV/bchsZm6G4QYqwpsvZgkpBUMlVt2tGeYSXCjeBjBoBRJiiauYUlvVgWbylAeUwt4oI
+         iUW0+cPH2druLH0h3Fw1vZtRw8ArnZjglPDpee74Qr2W03XPUWmMx0BHLJ7cHsvstuw8
+         g9ZU+Yi2U/W75gruxep0V0m7NCHdxV9P7fq5iq3YcaMClDfvtZ2jpidQt0H8o7IcOMip
+         aLx4631FaHdFaMx9WzfHWBdBYCvTZqg7mmFtrPN4kwzY+yNcyo+d4AeeGN+ZqwWxYoeY
+         DxIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=PHv6MSkP5VskTG0PwGalY8E+uOtxTwKQMcg1y1zQnE0=;
-        b=l1GEmJyyWh1H50j3r7nVDN03deuXhlICLYFGdPi8RZXgsCpGMJgPhMKSMWKb3p0S3W
-         Fe2GraCWtyK3IjpWVUB/lztXfLA3XBv7A49wlB4QnXw1sQLwHS3iFOvOS/t+6Q233X/B
-         1PGL9pnuk9bSgMdY5/0rkg1jUI6o2uri70OGeDPYbpUJ7eOkkfizzn9Lv3xzFhiqstmg
-         NYOzwP3Lx4lr1Ysgu/q3lX7yHYOtJbApN1n2clsRclaPkJKbk76YRaA2+HM9vkX5gqt0
-         2tebljYEPDWvYQbAlDMPGzI+T6j7tYftGlDUuyzpKxOaB2ChvcLXNVpeSkZpQULLOzgL
-         l+bg==
-X-Gm-Message-State: AOAM530TW/JRoZkHM2/htMpxO0cINVH7muIjEuH8RyZxvPPRTPuCfibJ
-        aiRhMDIyXK+PbgSLRb2yXWgjP6U48hy4q2Fn0LY=
-X-Google-Smtp-Source: ABdhPJw9MLKLE5AGZ4zoqK+AOBs9pO+nw/NluwoF/M5a5v0Ejr487SRn+E3Vzp11i0r1SM0gX+kWCMFrV2ieEEGEZdY=
-X-Received: by 2002:a05:6130:411:: with SMTP id ba17mr3994486uab.70.1642120767669;
- Thu, 13 Jan 2022 16:39:27 -0800 (PST)
+        bh=I61hZPBrG67+JPoHlxt0GdEAvO6MYmLE6NzUjzDVLBU=;
+        b=0TjJdOScfHkiUGOokuDxOuj8hyb4kTzo7SxYeg/464PXdCoK/2PNqgXjLUnFfwWvdw
+         NoS3wmAJI/AjHW8VdvbK4H8+Ep7KIu+S73H8AUnuApeMxu4ncwMA7Q6YyPE4C7Z0zpIP
+         S4sSaATTRtUvyMhDRhzzarGSNtgmHl+aYkXVGEJV/TzmGdM4manDg6wyMFPHBQSbbf11
+         xp+O3037EiILeAA6YJ7RYMI/UwZqBaGSMH+PEXroK2TGBWPRZEITkD8dGiSjAmKAsxpR
+         BNdtWl42sHlqQ8eO8mFUAe3nFWb9977iFc7PdRNAY8BR7sSgF0e6ZbTPKkWdtqAWJTO4
+         duQQ==
+X-Gm-Message-State: AOAM533V4jo6sBu/aOkYe1eNjZeodrTtrHJ+msFyE9iFRA9oIPOA6e8y
+        a6Qj6a9FHDrhFTCTv0rwT/jdROuW+x4qy8ju818=
+X-Google-Smtp-Source: ABdhPJxFNYeE/3gUw6BGfSHGvfLLtNYffxQBpuHx3AA3i7/0JUZ/NdMeDsF+JJT8VMMrnY2lhfypulvEiBW4tF3K3jY=
+X-Received: by 2002:a1c:ed01:: with SMTP id l1mr13431487wmh.185.1642122064907;
+ Thu, 13 Jan 2022 17:01:04 -0800 (PST)
 MIME-Version: 1.0
 References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
- <20220112173312.764660-24-miquel.raynal@bootlin.com> <CAB_54W6bJ5oV1pTX03-xWaFohdyxrjy2WSa2kxp3rBzLqSo=UA@mail.gmail.com>
- <20220113181451.6aa5e60a@xps13> <CAB_54W7GzyQr05X3TUcPbAFPsvetAjX=vd3G9y9wQi+8msYGHQ@mail.gmail.com>
-In-Reply-To: <CAB_54W7GzyQr05X3TUcPbAFPsvetAjX=vd3G9y9wQi+8msYGHQ@mail.gmail.com>
+ <20220112173312.764660-28-miquel.raynal@bootlin.com> <CAB_54W5ojqi2obtNLihCMXsZkh+aN_cVbSTRptq3=PXkpknzJQ@mail.gmail.com>
+ <20220113102954.7a0e213e@xps13>
+In-Reply-To: <20220113102954.7a0e213e@xps13>
 From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Thu, 13 Jan 2022 19:39:16 -0500
-Message-ID: <CAB_54W4OGFabfXoTWU-3D_F3fSRNQn-bzthXoBDJ-ZBWUfos0Q@mail.gmail.com>
-Subject: Re: [wpan-next v2 23/27] net: mac802154: Add support for active scans
+Date:   Thu, 13 Jan 2022 20:00:53 -0500
+Message-ID: <CAB_54W6vnay29dBxpn4EPQXgx1HEXfPm5vsms0q-NpPa2NhE_g@mail.gmail.com>
+Subject: Re: [wpan-next v2 27/27] net: ieee802154: ca8210: Refuse most of the
+ scan operations
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
@@ -76,112 +77,152 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Thu, 13 Jan 2022 at 19:30, Alexander Aring <alex.aring@gmail.com> wrote:
+On Thu, 13 Jan 2022 at 04:30, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> Hi,
+> Hi Alexander,
 >
-> On Thu, 13 Jan 2022 at 12:14, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> alex.aring@gmail.com wrote on Wed, 12 Jan 2022 17:48:59 -0500:
+>
+> > Hi,
 > >
-> > Hi Alexander,
-> >
-> > alex.aring@gmail.com wrote on Wed, 12 Jan 2022 18:16:11 -0500:
-> >
-> > > Hi,
+> > On Wed, 12 Jan 2022 at 12:34, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 > > >
-> > > On Wed, 12 Jan 2022 at 12:34, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > > ...
-> > > > +static int mac802154_scan_send_beacon_req_locked(struct ieee802154_local *local)
-> > > > +{
-> > > > +       struct sk_buff *skb;
-> > > > +       int ret;
-> > > > +
-> > > > +       lockdep_assert_held(&local->scan_lock);
-> > > > +
-> > > > +       skb = alloc_skb(IEEE802154_BEACON_REQ_SKB_SZ, GFP_KERNEL);
-> > > > +       if (!skb)
-> > > > +               return -ENOBUFS;
-> > > > +
-> > > > +       ret = ieee802154_beacon_req_push(skb, &local->beacon_req);
-> > > > +       if (ret) {
-> > > > +               kfree_skb(skb);
-> > > > +               return ret;
-> > > > +       }
-> > > > +
-> > > > +       return drv_xmit_async(local, skb);
+> > > The Cascada 8210 hardware transceiver is kind of a hardMAC which
+> > > interfaces with the softMAC and in practice does not support sending
+> > > anything else than dataframes. This means we cannot send any BEACON_REQ
+> > > during active scans nor any BEACON in general. Refuse these operations
+> > > officially so that the user is aware of the limitation.
 > > >
-> > > I think you need to implement a sync transmit handling here.
+> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > ---
+> > >  drivers/net/ieee802154/ca8210.c | 25 ++++++++++++++++++++++++-
+> > >  1 file changed, 24 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
+> > > index d3a9e4fe05f4..49c274280e3c 100644
+> > > --- a/drivers/net/ieee802154/ca8210.c
+> > > +++ b/drivers/net/ieee802154/ca8210.c
+> > > @@ -2385,6 +2385,25 @@ static int ca8210_set_promiscuous_mode(struct ieee802154_hw *hw, const bool on)
+> > >         return link_to_linux_err(status);
+> > >  }
+> > >
+> > > +static int ca8210_enter_scan_mode(struct ieee802154_hw *hw,
+> > > +                                 struct cfg802154_scan_request *request)
+> > > +{
+> > > +       /* This xceiver can only send dataframes */
+> > > +       if (request->type != NL802154_SCAN_PASSIVE)
+> > > +               return -EOPNOTSUPP;
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static int ca8210_enter_beacons_mode(struct ieee802154_hw *hw,
+> > > +                                    struct cfg802154_beacons_request *request)
+> > > +{
+> > > +       /* This xceiver can only send dataframes */
+> > > +       return -EOPNOTSUPP;
+> > > +}
+> > > +
+> > > +static void ca8210_exit_scan_beacons_mode(struct ieee802154_hw *hw) { }
+> > > +
+> > >  static const struct ieee802154_ops ca8210_phy_ops = {
+> > >         .start = ca8210_start,
+> > >         .stop = ca8210_stop,
+> > > @@ -2397,7 +2416,11 @@ static const struct ieee802154_ops ca8210_phy_ops = {
+> > >         .set_cca_ed_level = ca8210_set_cca_ed_level,
+> > >         .set_csma_params = ca8210_set_csma_params,
+> > >         .set_frame_retries = ca8210_set_frame_retries,
+> > > -       .set_promiscuous_mode = ca8210_set_promiscuous_mode
+> > > +       .set_promiscuous_mode = ca8210_set_promiscuous_mode,
+> > > +       .enter_scan_mode = ca8210_enter_scan_mode,
+> > > +       .exit_scan_mode = ca8210_exit_scan_beacons_mode,
+> > > +       .enter_beacons_mode = ca8210_enter_beacons_mode,
+> > > +       .exit_beacons_mode = ca8210_exit_scan_beacons_mode,
+> > >  };
 > >
-> > True.
-> >
-> > > And what
-> > > I mean is not using dryv_xmit_sync() (It is a long story and should
-> > > not be used, it's just that the driver is allowed to call bus api
-> > > functions which can sleep).
-> >
-> > Understood.
-> >
+> > so there is no flag that this driver can't support scanning currently
+> > and it works now because the offload functionality will return
+> > -ENOTSUPP? This is misleading because I would assume if it's not
+> > supported we can do it by software which the driver can't do.
 >
-> I think we should care about drivers which use drv_xmit_sync() or we
-> disable scan operations for them... so the actual transmit function
-> should prefer async but use sync if it's not implemented. I am not a
-> fan of this inside the core, if some driver really want to workaround
-> their bus system because it's simpler to use or whatever they should
-> do that inside the driver and not let the core queue it for them in
-> the right context. There are reasons why xmit_do is in softirq
-> context.
+> I believe there is a misunderstanding.
 >
-> > > We don't have such a function yet (but I
-> > > think it can be implemented), you should wait until the transmission
-> > > is done. If we don't wait we fill framebuffers on the hardware while
-> > > the hardware is transmitting the framebuffer which is... bad.
-> >
-> > Do you already have something in mind?
-> >
-> > If I focus on the scan operation, it could be that we consider the
-> > queue empty, then we put this transfer, wait for completion and
-> > continue. But this only work for places where we know we have full
-> > control over what is transmitted (eg. during a scan) and not for all
-> > transfers. Would this fit your idea?
-> >
-> > Or do you want something more generic with some kind of an
-> > internal queue where we have the knowledge of what has been queued and
-> > a token to link with every xmit_done call that is made?
-> >
-> > I'm open to suggestions.
-> >
->
-> That we currently allow only one skb at one time (because ?all?
-> supported hardware doesn't have multiple tx framebuffers) this makes
-> everything for now pretty simple.
->
-> Don't let the queue run empty, the queue here is controlled by the
-> qdsic (I suppose and I hope we are talking about the same queue) we
-> already stop the queue which stops further skb to transmit to the
-> hardware but there can be one ongoing which we need to wait for. I
-> said in a previous mail a wait_for_completion()/complete() works here,
-> but I think now that could be problematic because scan-op ->
-> wait_for_completion() and complete() can run parallel in different
-> contexts. I think we need to do that over a waitqueue and a
-> wait_event(). Maybe you can track somehow with an atomic counter how
-> many transmissions are currently ongoing (should be never higher than
-> one currently). However the atomic counter will be future proofed when
-> we support filling up more than one framebuffer. So the condition for
-> wait_event() would be atomic_test(phy->ongoing_txs) - or something
-> like that. Increment in transmit path and decrement in xmit_done path,
-> if it hits zero wake_up() the queue so the condition will be checked
-> again.
+> This is what I have understood from your previous comments in v1:
+> "This driver does not support transmitting anything else than
+> datagrams", which is what I assumed was a regular data packet. IOW,
+> sending a MAC_CMD such as a beacon request or sending a beacon was not
+> supported physically by the hardware. Hence, most of the scans
+> operations cannot be performed and must be rejected (all but a passive
+> scan, assuming that receiving beacons was okay).
 >
 
-I am sorry, the wait_event() will fix the issue after calling
-stop_queue() to be sure there are no ongoing transmissions. Now we
-need to have some idea about how to implement the synchronous transmit
-function. We have the function (drv_xmit_async, or something higher
-level to take care of sync as well) to transmit a skb and the complete
-handler is xmit_complete(). As I mentioned we allow only one skb for
-one time... Somehow we need to have a wait here and a per phy
-wait_for_completion()/complete() will in this case work. Even if there
-is hardware outside which has more transmit buffers, we probably would
-send one skb at one for slowpath (having full control of
-transmissions) anyway.
+and I said that this driver is a HardMAC transceiver connected to the
+SoftMAC layer which is already wrong to exist (very special handling
+is required here).
+dataframes here are "data" type frames and I suppose it's also not
+able to deliver/receive other types than data to mac802154.
+
+It seems the author of this driver is happy to have data frames only
+but we need to take care that additional mac802154 handling is simply
+not possible to do here.
+
+> Please mind the update in that hook which currently is just an FYI from
+> the mac to the drivers and not a "do it by yourself" injunction. So
+> answering -EOPNOTSUPP to the mac here does not mean:
+>         "I cannot handle it by myself, the scan cannot happen"
+> but
+>         "I cannot handle the forged frames, so let's just not try"
+>
+
+The problem here is that a SoftMAC transceiver should always be
+capable of doing it by software so the "but case" makes no sense in
+this layer.
+On a mac802154 layer and "offload" driver functions as they are and
+they report me "-ENOTSUPP", I would assume that I can go back and do
+it by software which again should always be possible to do in
+mac802154.
+
+> > ... I see that the offload functions now are getting used and have a
+> > reason to be upstream, but the use of it is wrong.
+>
+> As a personal matter of taste, I don't like flags when it comes to
+> something complex like supporting a specific operation. Just in the
+> scanning procedure there are 4 different actions and a driver might
+> support only a subset of these, which is totally fine but hard to
+> properly describe by well-named flags. Here the driver hooks say to
+> the driver which are interested "here is what is going to happen" and
+> then they can:
+> - ignore the details by just not implementing the hooks, let the mac do
+>   its job, they will then transmit the relevant frames forged by the
+>   mac
+> - eventually enter a specific mode internally for this operation, but
+>   basically do the same as above, ie. transmitting the frames forged
+>   by the mac
+> - refuse the operation by returning an error code if something cannot
+>   be done
+>
+> I've experienced a number of situations in the MTD world and later with
+> IIO drivers where flags have been remodeled and reused in different
+> manners, until the flag description gets totally wrong and
+> undescriptive regarding what it actually does. Hence my main idea of
+> letting drivers refuse these operations instead of having the mac doing
+> it for them.
+>
+> I can definitely use flags if you want, but in this case, what flags do
+> you want to see?
+>
+
+Do some phy quirks flags which indicate that the transceiver is not
+capable of doing scan operation by software. Or just use a boolean in
+phy capabilities (but don't export them to userspace, note that this
+flag should be removed later) if this operation is not allowed.
+
+I don't like this flag either, it is a workaround to still support the
+driver as it is and don't allow new fancy things because it cannot
+handle it. We should work on it to remove this flag, but this is a
+longer process. Either the driver is implementing those hooks "real"
+to somehow run a scan (but at it's own risk) or it needs to be
+implemented as a HardMAC driver. This driver is already difficult to
+maintain because it doesn't fit here...
 
 - Alex
