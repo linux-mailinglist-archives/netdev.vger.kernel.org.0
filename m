@@ -2,70 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4001B48E95A
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 12:44:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C680C48E959
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 12:44:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240549AbiANLoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S234769AbiANLoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 14 Jan 2022 06:44:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46500 "EHLO
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34631 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232850AbiANLoF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 06:44:05 -0500
+        by vger.kernel.org with ESMTP id S234723AbiANLoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 06:44:04 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1642160643;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=VNic94IxSHz45hWht721ho+r9gYPsH1CdBTdhg8hMEw=;
-        b=gigB5MulzS6ZClw7iN9p0DNHyezLW5fiE0Alcl4KSgDMMGBs5Ig77CROQGbTvhyTg0KxzY
-        nb6W1SuNtUQPrrKMlWqaeaf0tVGXmwV/t14EM9+Ul+j4bfRmT1UN/zS4mWDi5B+pZd34a9
-        CarLAqiYbxr7EHzbU8v4GjYqX9Xfz9E=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BMS81FhIXAhrhd3SbohJHPgZgutuOpNyMHUEJRSUutc=;
+        b=WgZH+TgsnnVLfaKH+F8Y47YyvlD+v1jV9dYNlqldf+20vuTGiHbt98L08oyJsEMsqZSa1J
+        u0TSPv1/yujBPCgPv8mavou/KpV3wcDY2o9sB4wwYSE6tNd7AzApLKhtnxDPqJMFV1mZ+/
+        VTqqPUJqNwjpUdxDzClEZ6Ctv4dt3bc=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-606-vTHAC1gNOPWt22kdxLnAsg-1; Fri, 14 Jan 2022 06:43:58 -0500
-X-MC-Unique: vTHAC1gNOPWt22kdxLnAsg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+ us-mta-606-7BSwkcnzMnirAshM0sUFmw-1; Fri, 14 Jan 2022 06:43:58 -0500
+X-MC-Unique: 7BSwkcnzMnirAshM0sUFmw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 56435805733;
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 56972805744;
         Fri, 14 Jan 2022 11:43:57 +0000 (UTC)
 Received: from calimero.vinschen.de (ovpn-112-14.ams2.redhat.com [10.36.112.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 739D87B9FC;
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 73C0478805;
         Fri, 14 Jan 2022 11:43:56 +0000 (UTC)
 Received: by calimero.vinschen.de (Postfix, from userid 500)
-        id AFA0AA80D9B; Fri, 14 Jan 2022 12:43:54 +0100 (CET)
+        id B54EFA81052; Fri, 14 Jan 2022 12:43:54 +0100 (CET)
 From:   Corinna Vinschen <vinschen@redhat.com>
 To:     intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
         Vinicius Costa Gomes <vinicius.gomes@intel.com>
 Cc:     Lennert Buytenhek <buytenh@wantstofly.org>,
         Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH 0/2 net-next v2] igb/igc: fix XDP registration
-Date:   Fri, 14 Jan 2022 12:43:52 +0100
-Message-Id: <20220114114354.1071776-1-vinschen@redhat.com>
+Subject: [PATCH 1/2 net-next v2] igc: avoid kernel warning when changing RX ring parameters
+Date:   Fri, 14 Jan 2022 12:43:53 +0100
+Message-Id: <20220114114354.1071776-2-vinschen@redhat.com>
+In-Reply-To: <20220114114354.1071776-1-vinschen@redhat.com>
+References: <20220114114354.1071776-1-vinschen@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the kernel warning "Missing unregister, handled but fix driver"
-when running, e.g.,
+Calling ethtool changing the RX ring parameters like this:
 
   $ ethtool -G eth0 rx 1024
 
-on igc.  Remove memset hack from igb and align igb code to igc. 
+on igc triggers the "Missing unregister, handled but fix driver" warning in
+xdp_rxq_info_reg().
 
-Corinna Vinschen (2):
-  igc: avoid kernel warning when changing RX ring parameters
-  igb: refactor XDP registration
+igc_ethtool_set_ringparam() copies the igc_ring structure but neglects to
+reset the xdp_rxq_info member before calling igc_setup_rx_resources().
+This in turn calls xdp_rxq_info_reg() with an already registered xdp_rxq_info.
 
- drivers/net/ethernet/intel/igb/igb_ethtool.c |  4 ----
- drivers/net/ethernet/intel/igb/igb_main.c    | 15 +++++++++++----
- drivers/net/ethernet/intel/igc/igc_main.c    | 20 +++++++++++---------
- 3 files changed, 22 insertions(+), 17 deletions(-)
+Make sure to unregister the xdp_rxq_info structure first in
+igc_setup_rx_resources.  Move xdp_rxq_info handling down to bethe last
+action, thus allowing to remove the xdp_rxq_info_unreg call in the error path.
 
+Fixes: 73f1071c1d29 ("igc: Add support for XDP_TX action")
+Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
+---
+ drivers/net/ethernet/intel/igc/igc_main.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 2f17f36e94fd..97144f6db36e 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -505,14 +505,6 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
+ 	u8 index = rx_ring->queue_index;
+ 	int size, desc_len, res;
+ 
+-	res = xdp_rxq_info_reg(&rx_ring->xdp_rxq, ndev, index,
+-			       rx_ring->q_vector->napi.napi_id);
+-	if (res < 0) {
+-		netdev_err(ndev, "Failed to register xdp_rxq index %u\n",
+-			   index);
+-		return res;
+-	}
+-
+ 	size = sizeof(struct igc_rx_buffer) * rx_ring->count;
+ 	rx_ring->rx_buffer_info = vzalloc(size);
+ 	if (!rx_ring->rx_buffer_info)
+@@ -534,10 +526,20 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
+ 	rx_ring->next_to_clean = 0;
+ 	rx_ring->next_to_use = 0;
+ 
++	/* XDP RX-queue info */
++	if (xdp_rxq_info_is_reg(&rx_ring->xdp_rxq))
++		xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
++	res = xdp_rxq_info_reg(&rx_ring->xdp_rxq, ndev, index,
++			       rx_ring->q_vector->napi.napi_id);
++	if (res < 0) {
++		netdev_err(ndev, "Failed to register xdp_rxq index %u\n",
++			   index);
++		return res;
++	}
++
+ 	return 0;
+ 
+ err:
+-	xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
+ 	vfree(rx_ring->rx_buffer_info);
+ 	rx_ring->rx_buffer_info = NULL;
+ 	netdev_err(ndev, "Unable to allocate memory for Rx descriptor ring\n");
 -- 
 2.27.0
 
