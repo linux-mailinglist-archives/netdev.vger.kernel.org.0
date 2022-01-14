@@ -2,92 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9744448F1C2
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 21:58:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A65648F1EF
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 22:14:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229544AbiANU4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 15:56:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55156 "EHLO
+        id S229675AbiANVMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 16:12:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiANU4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 15:56:19 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9A8C06161C
-        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 12:56:18 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id bg19-20020a05600c3c9300b0034565e837b6so4151539wmb.1
-        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 12:56:18 -0800 (PST)
+        with ESMTP id S229659AbiANVMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 16:12:45 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA05C06161C
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 13:12:44 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id w7so8728473ioj.5
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 13:12:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=a2LK+XCzRUQuX/FKJ8hTnpMWPOfnbChf1uqBe6evn14=;
-        b=TatznFHqz4q/JNQk6ZcSu00tRi1lJns+grkgt68v4JlRwWUwEWskbD7Eo1/QtiimJb
-         2DsQk8udeSaRNeTIxoGMeKXeBZLrdk5C8MmBA4y49hugKr6IyKWjGfjAL5lix6bsA8YK
-         ulzIzHwIN6eFqCez+iFzFoHBlMIrO4dXddOB4EumZ7hYABe22bNEHQyiXlH2ZL2a1DS4
-         d/xnj0pe6mNUK9HfdoYjZ/VFHGZuZpM3k77VpECd0aRmjZop+vebKg17agfiYCAZxTlm
-         IYmfdW7BsxqYNuk4Fh3pl1C5qn2hoPNWzFvLJ5AmgrMfDaJ/Bt2nismRmwww3tSSzu+R
-         r6OQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tWtDNg5+Bhfmwr+j+Ylz4be/vWrJULlzFqrP8LZGXZE=;
+        b=MI5gS8rVm4F/rluiWHsEJAL5LozTs5mhjBH4RJ53ylQdhI7p7TdKQZiCFo0U3wjb47
+         Mkxg1v/FTuSpOhFy7tFH3lgKLPzkNE3IpD/elMer9blvvUCyPBDTZCOUa+U0yLTIVk6k
+         1qYZlKvF1+2bBA02JxDLTp5FC7m/JrWH/T70oYuMSAoWrmqF5lPVkvu5Ks4+QmYk3g9G
+         PB+feivIXF1T11/WBqrFtrngg0akG/LMsN/CXTRKryVJhFzhP+qtoOxvGajlnj/iHsN/
+         AgvpaOVzWH0ovSmMiAorRAtsLEGIQgKOsz9xGdhCrg91cGLI2I6Gz71jOtln+jhlyNYy
+         z5jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=a2LK+XCzRUQuX/FKJ8hTnpMWPOfnbChf1uqBe6evn14=;
-        b=qGwNfGfssUB8LGGxTt8sxA3QIYo6BxJvG2PoG+2rpWhHBMOScnTpLSlnEGjLKzQFzW
-         WdnG8azVYYewlWrR2YyCmSOKmoqKsaDSK5Ti7CEDbFXgYfTCnOQNeCSnk03NvQttZh+w
-         JN82jJwoz7QZ/4C2Gz8SHOhH4YVVf4XU0YT/5IFUJ52ildFokc3ENrM7s2SsNSjcTyN1
-         qDDaygqIfqvxWTisMfPAZUoKOseywSuvY361xUZuQ7NmyC4NPA4vbBaylkl/F7woBK1H
-         SUB8ea/co6Czc8ppa4Kxrtp/qfRx9RFkJSQBLR3c3PdPX4F9N2SxS0qZrWqf4SjKSdjp
-         rAwQ==
-X-Gm-Message-State: AOAM531P28Yq29SRem+Ew40Gun61LLEVu/tYhagQ9T2fxEf32OchpdDN
-        i+WfMWzhh7R4TamYQvJi5+L9HQ==
-X-Google-Smtp-Source: ABdhPJxEOp2Wo1ezLBKMdg3Rs8D9/4m/Bwa6/dloggb4D57MyDeWhvpnWUAVCmPkdzXMY6R9wWCD9A==
-X-Received: by 2002:a1c:1d17:: with SMTP id d23mr9767788wmd.46.1642193777164;
-        Fri, 14 Jan 2022 12:56:17 -0800 (PST)
-Received: from larix (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id p62sm6050452wmp.10.2022.01.14.12.56.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 12:56:16 -0800 (PST)
-Date:   Fri, 14 Jan 2022 20:56:14 +0000
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        christophe.jaillet@wanadoo.fr, dapeng1.mi@intel.com,
-        david@redhat.com, elic@nvidia.com, eperezma@redhat.com,
-        flyingpenghao@gmail.com, flyingpeng@tencent.com,
-        gregkh@linuxfoundation.org, guanjun@linux.alibaba.com,
-        jasowang@redhat.com, jiasheng@iscas.ac.cn, johan@kernel.org,
-        keescook@chromium.org, labbott@kernel.org, lingshan.zhu@intel.com,
-        lkp@intel.com, luolikang@nsfocus.com, lvivier@redhat.com,
-        pasic@linux.ibm.com, sgarzare@redhat.com, somlo@cmu.edu,
-        trix@redhat.com, wu000273@umn.edu, xianting.tian@linux.alibaba.com,
-        xuanzhuo@linux.alibaba.com, yun.wang@linux.alibaba.com
-Subject: Re: [GIT PULL] virtio,vdpa,qemu_fw_cfg: features, cleanups, fixes
-Message-ID: <YeHjbqjY8Dd+3o1E@larix>
-References: <20220114153515-mutt-send-email-mst@kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tWtDNg5+Bhfmwr+j+Ylz4be/vWrJULlzFqrP8LZGXZE=;
+        b=q+m1WOsDoXFNsin/L0nBz98rhIjkmSXLhnNnGk3SuuQdYXW+aVHCF5zIatP+RU+w1n
+         9eCFeqRXY4lOtWlYysxzo2dIza4AtxQh4il6CoiHdPqQKB4GiApHZBheNRlK09Nl6O0X
+         bAXz23XKnTspNTiBmYrWTq1eZs7YRtMALioLfucQR2LMJzlCQGan/EUMBKtDfktSoqYC
+         P7ZmnPMQFsvlpIlgtkP/I4Rr9mMEnbWc2TzaneSNLLLpN8BNmv2nAgQYRK1GAmAeh8sE
+         3QTg+fb+sr69WfviykZ2nmq+uENpMzgQRtX9us41/iBD2rzp3JDsCfWFnvilU/i+PIdo
+         x0QQ==
+X-Gm-Message-State: AOAM532BEFp/D7oQP5kOLH+6CjmyUmpSrHZbOJwvakR7Qt8vMJt0mXs0
+        /EschMK1prrp4Xa5zFOHy3uZ2Lj4pLFwsw==
+X-Google-Smtp-Source: ABdhPJwLfXGnz7mNSdOAYNKgTpuloQJPTbM0wM69mBS8YTtCinOD6FdvwU4CQ/zY9V1MSrDXibMWzA==
+X-Received: by 2002:a05:6602:587:: with SMTP id v7mr5186126iox.105.1642194763338;
+        Fri, 14 Jan 2022 13:12:43 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id t6sm5604000iov.39.2022.01.14.13.12.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jan 2022 13:12:42 -0800 (PST)
+Message-ID: <6d25d602-399e-0a25-1410-0e958237db11@linaro.org>
+Date:   Fri, 14 Jan 2022 15:12:41 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220114153515-mutt-send-email-mst@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: Port mirroring, v2 (RFC)
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <384e168b-8266-cb9b-196b-347a513c0d36@linaro.org>
+ <e666e0cb-5b65-1fe9-61ae-a3a3cea54ea0@linaro.org>
+ <9da2f1f6-fc7c-e131-400d-97ac3b8cdadc@linaro.org> <YeHhKDUNy8rU+xcG@lunn.ch>
+From:   Alex Elder <elder@linaro.org>
+In-Reply-To: <YeHhKDUNy8rU+xcG@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 1/14/22 2:46 PM, Andrew Lunn wrote:
+> On Fri, Jan 14, 2022 at 11:03:26AM -0600, Alex Elder wrote:
+>> Yikes!  I don't know why that turned out double-spaced.  I hope
+>> this one turns out better.
+>>
+>> 					-Alex
+>>
+>> This is a second RFC for a design to implement new functionality
+>> in the Qualcomm IPA driver.  Since last time I've looked into some
+>> options based on feedback.  This time I'll provide some more detail
+>> about the hardware, and what the feature is doing.  And I'll end
+>> with two possible implementations, and some questions.
+>>
+>> My objective is to get a general sense that what I plan to do
+>> is reasonable, so the patches that implement it will be acceptable.
+>>
+>>
+>> The feature provides the AP access to information about the packets
+>> that the IPA hardware processes as it carries them between its
+>> "ports".  It is intended as a debug/informational interface only.
+>> Before going further I'll briefly explain what the IPA hardware
+>> does.
+>>
+>> The upstream driver currently uses the hardware only as the path
+>> that provides access to a 5G/LTE cellular network via a modem
+>> embedded in a Qualcomm SoC.
+>>
+>>         \|/
+>>          |
+>>    ------+-----   ------
+>>    | 5G Modem |   | AP |
+>>    ------------   ------
+>>               \\    || <-- IPA channels, or "ports"
+>>              -----------
+>>              |   IPA   |
+>>              -----------
+> 
+> Hi Alex
+> 
+> I think i need to take a step back here. With my background, an AP is
+> an 802.11 Access Point.
 
-On Fri, Jan 14, 2022 at 03:35:15PM -0500, Michael S. Tsirkin wrote:
-> Jean-Philippe Brucker (5):
->       iommu/virtio: Add definitions for VIRTIO_IOMMU_F_BYPASS_CONFIG
->       iommu/virtio: Support bypass domains
->       iommu/virtio: Sort reserved regions
->       iommu/virtio: Pass end address to viommu_add_mapping()
->       iommu/virtio: Support identity-mapped domains
+Again, terminology problems!  Sorry about that.
 
-Please could you drop these patches, they are from an old version of the
-series. The newer version was already in Joerg's pull request and was
-merged, so this will conflict.
+Yes, when I say "AP" I mean "Application Processor".  Some people
+might call it "APSS" for "Application Processor Subsystem."
 
-Thanks,
-Jean
+> But here you mean Application Processor?
+> What does IPA standard for ?
+
+"IPA" stands for IP Accelerator, or Internet Protocol Accelerator.
+
+> MHI ?
+
+Modem-Host Interface (which is really a separate topic that I
+don't want to get too distracted by at this point).  It is
+basically a layer built over PCIe, that abstracts things to
+carry multiple logical channels of data over a PCIe bus.
+I'm working with others now to support MHI, but it's not
+at all present in the IPA driver at the moment.
+
+> I can probably figure these all out from context, but half the problem
+> here is making sure we are talking the same language when we are
+> considering using concepts from another part of the network stack.
+
+Yes!  It's one reason I asked for input on naming this
+feature.  Qualcomm has its own name (which could be fine),
+but I'd like to try to use something that avoids confusion
+as much as possible.
+
+I really appreciate your considering this Andrew.
+
+					-Alex
+
+> 
+> 	    Andrew
+> 
 
