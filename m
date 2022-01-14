@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4858248EE7B
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 17:41:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FFC448EE7E
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 17:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243518AbiANQlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 11:41:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53784 "EHLO
+        id S243532AbiANQlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 11:41:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243532AbiANQk6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 11:40:58 -0500
+        with ESMTP id S236485AbiANQk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 11:40:59 -0500
 Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79255C061748;
-        Fri, 14 Jan 2022 08:40:56 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id l10-20020a17090a384a00b001b22190e075so22561231pjf.3;
-        Fri, 14 Jan 2022 08:40:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DCDC061574;
+        Fri, 14 Jan 2022 08:40:59 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id o1so1772716pjr.2;
+        Fri, 14 Jan 2022 08:40:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FBiREOfEBhbUMv29T/zge0ghPZjMu7iQFAelgRPUW+0=;
-        b=aGwyA98NJCfZVHavVHVd8Y6BPse7qBYgJZNYPDk/1lI5sAMRU+3zQqbE0CDre2e3g8
-         W6uqaAFPGiweuy4Svd9RD3Bs+ZD/lgvFZWJtrwgWW3YBWiDs0Ji8a4CLj7/gUmrQh5/5
-         1LlnabpsDvxs5+2xwJ6tXLGE5ZQSsfMkwMUte0M0CFACKdW1xBnkn7vRD/CFLU4c+49s
-         4DK1M+owwEHgijI0DwMN+afhRC3M8SW+cl0LCZQi788XaavQywLr35Gns8kOSm+j242X
-         lc4KAqR2X3BYjVb1CqP9Q4pGlb+V6kpto2FhP6t/X3wpsi1ObFVLZLw3QLepEtlc6MhQ
-         QGcA==
+        bh=zqspzbwuUxYipw35AwVHM121exIj3XVwyhI+WFPTzfA=;
+        b=LEdKeCmACf5inRD5ID1hwW9B26RZi0OtjSukGQtTpHydcw45KTJsmOMyS7/Br5k9B5
+         Vq1PoMqxpCQI5i/3oN1ERGerkVNjWbtYlRjPEoZ7O90MSruCQJAA3M5Ma6AkuRWZ7mvF
+         D5Arlplr0qb5HjdfkjFDNq/ZiilXLhMvSAIAeoMqAdfJv16xrJBhLy2Y9YMBTSFM/nXC
+         mc6YAX6LydMcNDYF+QXJ/CNcY8L7Fv7pN3gyZ6ZTKMLfCPVv0k68O5yOCAdCm3nfeMVT
+         mwtPFo6YLbfsAKS2C1LzqcghlUidpwNDHmfLsQwa7uZAS/IVL2fxdkNl4OaqS58ID2Yk
+         fhmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FBiREOfEBhbUMv29T/zge0ghPZjMu7iQFAelgRPUW+0=;
-        b=OYxdzcDoF3u+wA7F/IYUaObATtF2kxxWrXrWTWYqjpehSH7UOmtt8Y69namXnbgDr1
-         O/5kEHq9ELuShbfIDfemAFScJ3mNJey8juh637nxOQYAx5D2BXizSAORrC8agfIosxaT
-         IYhqlzD2LdeYh8MITBrhh22PdNiW+AI9GdQy2+YKbM+DEyDIZoxBA+dVWcG0aywnRKNL
-         jrHKL2rI8sTcG50JXlObywZwrrBIEt+wrzCYZlb/Vj4MI1Vk458QQTuWuPdl9fqDuu/m
-         vhgdYVAajyoke+lyR9+6mdvC/pMKVl4q7Bj+PFLd5m5IBiaG8tf8SstqX6x3XzukwDWK
-         /hEw==
-X-Gm-Message-State: AOAM533NjqbhFeUaF9asctR2CApBnmFdxDPr8TZQ1uwqRqZnnFjR97ha
-        ZAkv2hqSzK8dO3KcgEX9CPNIPB+8y3pr+Q==
-X-Google-Smtp-Source: ABdhPJzp4MGUFNG+miifBfc6yZWWworkVopSmNTlWPHKxCM63mY61YIie1htDSqtMXvlcNlyolVS9g==
-X-Received: by 2002:a17:90a:c24d:: with SMTP id d13mr11455401pjx.238.1642178455612;
-        Fri, 14 Jan 2022 08:40:55 -0800 (PST)
+        bh=zqspzbwuUxYipw35AwVHM121exIj3XVwyhI+WFPTzfA=;
+        b=67OZjPZ0d+47O8GnogArVcWeXqQxxiPX/kRLsw9Lzbu7N2SkCMwHDhjCO3JVidJTPm
+         kwNVXr/wIrqnp8wcTx5tmEl7YmMrx96Qs/Q3WnkYkacnFrjx6u3D7CDtki8ob8uLfheW
+         pM7kdDqCbTiJlaqsuCv2mLXmp/cqC1vzNJviJ2js8lRHh+nyhD8FbpiMv4/4jFtfnnMM
+         MO80aZ8H1xOcO7jZCgXE3j+Qn5hYi67Fe+LxcuwzkD7rNj/jqAxJvHvKSNITjDbh4ILe
+         wOnWn+DPbOeVacO8uKWuydRJrD0fwLc90ZDhQW7Zzsslry1Io0m/mGtPPRLzqEjcl7nE
+         Gkbw==
+X-Gm-Message-State: AOAM532uzNSrN/10rUmm2Dd9TaPAC9duBQ15cAwtC9CwrBlxjyJDdvge
+        UXgjCs8+yozddENi6bK4rb4C5UU+gi5pfQ==
+X-Google-Smtp-Source: ABdhPJwfZSSA7OdOsFwh/nKd3rOu4gFJfwy2nY4g34box9CUHlE6u/WzN90RoQyCRYkLQ3zJyMb4MA==
+X-Received: by 2002:a17:90b:1b43:: with SMTP id nv3mr11533096pjb.136.1642178458660;
+        Fri, 14 Jan 2022 08:40:58 -0800 (PST)
 Received: from localhost ([2405:201:6014:d064:3d4e:6265:800c:dc84])
-        by smtp.gmail.com with ESMTPSA id h4sm6420726pfi.79.2022.01.14.08.40.54
+        by smtp.gmail.com with ESMTPSA id r26sm4968240pgu.65.2022.01.14.08.40.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 08:40:55 -0800 (PST)
+        Fri, 14 Jan 2022 08:40:58 -0800 (PST)
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
 To:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -60,272 +60,389 @@ Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
         Florian Westphal <fw@strlen.de>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf-next v8 05/10] bpf: Add reference tracking support to kfunc
-Date:   Fri, 14 Jan 2022 22:09:48 +0530
-Message-Id: <20220114163953.1455836-6-memxor@gmail.com>
+Subject: [PATCH bpf-next v8 06/10] net/netfilter: Add unstable CT lookup helpers for XDP and TC-BPF
+Date:   Fri, 14 Jan 2022 22:09:49 +0530
+Message-Id: <20220114163953.1455836-7-memxor@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114163953.1455836-1-memxor@gmail.com>
 References: <20220114163953.1455836-1-memxor@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=9960; h=from:subject; bh=5GEtpWXTk1Ua9tTQQmLb2lBcgWQbPJyKIaJkm+Lfy+o=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBh4acVdF2OcZY5MvzTas2H6bm3VD/KomGL1X2pGWXR nzx8YSCJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYeGnFQAKCRBM4MiGSL8RyklDD/ 904d0gMikOHM46ZCvnck6lM7toymi85gIwsbntzBN6pvSsV8GOVeNg4oR8w1XmWyKzLVRqWA0AV21t 09/Kep9LPshi0xEFLlER9Q1QDM9unFUGOfMCZfumOwUHRPtevqs3G4wVU3Tu3i2/z5Wx7iGOMyZpNz YS5T9bXCrKzPvD99fg2cfEX+V0S5mRmOEttAQCIR0vgd07nh3JsKopXM1YEMqjR2NLuUswrmDyuUGM TADlNGngW5xjTvPZlK2pc6sE7+imiQo85aBBvfA3I4Lvf50qNdSO4Obn/uzUGkzOOHM+swB58Pd8dl uS8ra5PaqXJvyTmWdKqhT29taGppbt7UraFa8CWTsUZJoelPyTDDDqOmvUID2/Sd2oqwiQ5SYveTzx rFEWmqPGDdYEGTjN0SS+F0EgCVYwkvQXjnfp/bOZr6TYhjl5sJlekBrP4mcxcKXBZnROonNUYxjFkg SA6N5G+ZjywWaz2NlWUSd14uXikslOeNB5wLIr799NHV8PJxqIZWzQE1pSdD9+MSoakLOKU8d//86T D2TGlmd53BaVbLqYNaeYvD31d2dLQh3HcgznIbIQGTwj+nMt30i0vHVSl7meJhsgHvjkTnvLKcOf2P IG3iCyluT41H+lJqcbxPUtof9mB4RFXOhxOz6tqRr7g8qwi/6ZMN3oo7Yh1g==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=12220; h=from:subject; bh=z82rITWGKFMq3oPO6PGDNI3rq5PLGJHKVv4wKr/VeH0=; b=owEBbQKS/ZANAwAIAUzgyIZIvxHKAcsmYgBh4acVXWFds3eZhkb1A/b84RMdiSk2BJIjNgwYiWsZ p4KSReCJAjMEAAEIAB0WIQRLvip+Buz51YI8YRFM4MiGSL8RygUCYeGnFQAKCRBM4MiGSL8RypmqEA CybaNWR/UZOWDDIyErXNNbmQzEdMlI9CmdixxsGk+pRyfx6rFV9PurfCt2TN0fHOXi1/b5aTPIW9F8 7ooDFxKP2v8tF+gXd4FjWQOMlLucE9QlrL1B6FE0uLDlSlMIUc45XaqG3O4HMZy18O+LDl5v+gXR6v 8xd4u4gSlmt/BTaVCsSvylM336obS3SSOj+DiwDv7HxxiqNvwsnaIrXRpBoy/cFwIXNBgT0xgk4dk9 IG0oTUTI2004BXmMJAAatjBZ9J9TdH9jn7Cdrdd3+E9cY/ZoZD+XsXBGjnUESw8y7J9zSw4/L8EzP+ DzLAPRWXyEAp/Ev3kBgP/Yb27MEku7B3U1wJX2QYDOFSN2YUdHGKz9ppZevWYm6JI5a+OqStXDZWQ3 y2x08Tk4oG07egN73HAqn1J88SvhZn8ic/nhm/0ulrSRwMkZ4R4pNEi3fmetdqwEDjcl84qqcNdwYa MBTSdv5Mcong8eCS/GHdD60R2fwv0ML9lNuHAkgqV4pAnIFVwN5EWrTEwdtbmQ2aTg08I0qwTblzlm jUDXVga2zSgrNaTp8tsMSCtGKnd7NZL6XAH99KfkGcKyeAD6VUWiAflqb0nqTlfkYscOQaKeXQfbAS HC/zKk9QDfNs82NxeqWZmnVkeZkS2Wh+Qt3dXjJKsKf9xp8um0eT9HNmxwoA==
 X-Developer-Key: i=memxor@gmail.com; a=openpgp; fpr=4BBE2A7E06ECF9D5823C61114CE0C88648BF11CA
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds verifier support for PTR_TO_BTF_ID return type of kfunc
-to be a reference, by reusing acquire_reference_state/release_reference
-support for existing in-kernel bpf helpers.
+This change adds conntrack lookup helpers using the unstable kfunc call
+interface for the XDP and TC-BPF hooks. The primary usecase is
+implementing a synproxy in XDP, see Maxim's patchset [0].
 
-We make use of the three kfunc types:
+Export get_net_ns_by_id as nf_conntrack_bpf.c needs to call it.
 
-- BTF_KFUNC_TYPE_ACQUIRE
-  Return true if kfunc_btf_id is an acquire kfunc.  This will
-  acquire_reference_state for the returned PTR_TO_BTF_ID (this is the
-  only allow return value). Note that acquire kfunc must always return a
-  PTR_TO_BTF_ID{_OR_NULL}, otherwise the program is rejected.
+This object is only built when CONFIG_DEBUG_INFO_BTF_MODULES is enabled.
 
-- BTF_KFUNC_TYPE_RELEASE
-  Return true if kfunc_btf_id is a release kfunc.  This will release the
-  reference to the passed in PTR_TO_BTF_ID which has a reference state
-  (from earlier acquire kfunc).
-  The btf_check_func_arg_match returns the regno (of argument register,
-  hence > 0) if the kfunc is a release kfunc, and a proper referenced
-  PTR_TO_BTF_ID is being passed to it.
-  This is similar to how helper call check uses bpf_call_arg_meta to
-  store the ref_obj_id that is later used to release the reference.
-  Similar to in-kernel helper, we only allow passing one referenced
-  PTR_TO_BTF_ID as an argument. It can also be passed in to normal
-  kfunc, but in case of release kfunc there must always be one
-  PTR_TO_BTF_ID argument that is referenced.
-
-- BTF_KFUNC_TYPE_RET_NULL
-  For kfunc returning PTR_TO_BTF_ID, tells if it can be NULL, hence
-  force caller to mark the pointer not null (using check) before
-  accessing it. Note that taking into account the case fixed by commit
-  93c230e3f5bd ("bpf: Enforce id generation for all may-be-null register type")
-  we assign a non-zero id for mark_ptr_or_null_reg logic. Later, if more
-  return types are supported by kfunc, which have a _OR_NULL variant, it
-  might be better to move this id generation under a common
-  reg_type_may_be_null check, similar to the case in the commit.
-
-Referenced PTR_TO_BTF_ID is currently only limited to kfunc, but can be
-extended in the future to other BPF helpers as well.  For now, we can
-rely on the btf_struct_ids_match check to ensure we get the pointer to
-the expected struct type. In the future, care needs to be taken to avoid
-ambiguity for reference PTR_TO_BTF_ID passed to release function, in
-case multiple candidates can release same BTF ID.
-
-e.g. there might be two release kfuncs (or kfunc and helper):
-
-foo(struct abc *p);
-bar(struct abc *p);
-
-... such that both release a PTR_TO_BTF_ID with btf_id of struct abc. In
-this case we would need to track the acquire function corresponding to
-the release function to avoid type confusion, and store this information
-in the register state so that an incorrect program can be rejected. This
-is not a problem right now, hence it is left as an exercise for the
-future patch introducing such a case in the kernel.
+  [0]: https://lore.kernel.org/bpf/20211019144655.3483197-1-maximmi@nvidia.com
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/bpf_verifier.h |  5 ++++
- kernel/bpf/btf.c             | 32 ++++++++++++++++++++--
- kernel/bpf/verifier.c        | 52 +++++++++++++++++++++++++++++-------
- 3 files changed, 77 insertions(+), 12 deletions(-)
+ include/net/netfilter/nf_conntrack_bpf.h |  23 ++
+ net/core/net_namespace.c                 |   1 +
+ net/netfilter/Makefile                   |   5 +
+ net/netfilter/nf_conntrack_bpf.c         | 257 +++++++++++++++++++++++
+ net/netfilter/nf_conntrack_core.c        |   8 +
+ 5 files changed, 294 insertions(+)
+ create mode 100644 include/net/netfilter/nf_conntrack_bpf.h
+ create mode 100644 net/netfilter/nf_conntrack_bpf.c
 
-diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-index 857fd687bdc2..ac4797155412 100644
---- a/include/linux/bpf_verifier.h
-+++ b/include/linux/bpf_verifier.h
-@@ -566,4 +566,9 @@ static inline u32 type_flag(u32 type)
- 	return type & ~BPF_BASE_TYPE_MASK;
- }
- 
-+static inline enum bpf_prog_type resolve_prog_type(struct bpf_prog *prog)
+diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
+new file mode 100644
+index 000000000000..a473b56842c5
+--- /dev/null
++++ b/include/net/netfilter/nf_conntrack_bpf.h
+@@ -0,0 +1,23 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef _NF_CONNTRACK_BPF_H
++#define _NF_CONNTRACK_BPF_H
++
++#include <linux/btf.h>
++#include <linux/kconfig.h>
++
++#if (IS_BUILTIN(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) || \
++    (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
++
++extern int register_nf_conntrack_bpf(void);
++
++#else
++
++static inline int register_nf_conntrack_bpf(void)
 +{
-+	return prog->aux->dst_prog ? prog->aux->dst_prog->type : prog->type;
++	return 0;
 +}
 +
- #endif /* _LINUX_BPF_VERIFIER_H */
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index cf46694cb266..57f5fd5af2f9 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -5686,11 +5686,13 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 				    bool ptr_to_mem_ok)
- {
- 	struct bpf_verifier_log *log = &env->log;
-+	u32 i, nargs, ref_id, ref_obj_id = 0;
- 	bool is_kfunc = btf_is_kernel(btf);
- 	const char *func_name, *ref_tname;
- 	const struct btf_type *t, *ref_t;
- 	const struct btf_param *args;
--	u32 i, nargs, ref_id;
-+	int ref_regno = 0;
-+	bool rel = false;
- 
- 	t = btf_type_by_id(btf, func_id);
- 	if (!t || !btf_type_is_func(t)) {
-@@ -5768,6 +5770,16 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 			if (reg->type == PTR_TO_BTF_ID) {
- 				reg_btf = reg->btf;
- 				reg_ref_id = reg->btf_id;
-+				/* Ensure only one argument is referenced PTR_TO_BTF_ID */
-+				if (reg->ref_obj_id) {
-+					if (ref_obj_id) {
-+						bpf_log(log, "verifier internal error: more than one arg with ref_obj_id R%d %u %u\n",
-+							regno, reg->ref_obj_id, ref_obj_id);
-+						return -EFAULT;
-+					}
-+					ref_regno = regno;
-+					ref_obj_id = reg->ref_obj_id;
-+				}
- 			} else {
- 				reg_btf = btf_vmlinux;
- 				reg_ref_id = *reg2btf_ids[reg->type];
-@@ -5838,7 +5850,23 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 		}
- 	}
- 
--	return 0;
-+	/* Either both are set, or neither */
-+	WARN_ON_ONCE((ref_obj_id && !ref_regno) || (!ref_obj_id && ref_regno));
-+	if (is_kfunc) {
-+		rel = btf_kfunc_id_set_contains(btf, resolve_prog_type(env->prog),
-+						BTF_KFUNC_TYPE_RELEASE, func_id);
-+		/* We already made sure ref_obj_id is set only for one argument */
-+		if (rel && !ref_obj_id) {
-+			bpf_log(log, "release kernel function %s expects refcounted PTR_TO_BTF_ID\n",
-+				func_name);
-+			return -EINVAL;
-+		}
-+		/* Allow (!rel && ref_obj_id), so that passing such referenced PTR_TO_BTF_ID to
-+		 * other kfuncs works
-+		 */
-+	}
-+	/* returns argument register number > 0 in case of reference release kfunc */
-+	return rel ? ref_regno : 0;
- }
- 
- /* Compare BTF of a function with given bpf_reg_state.
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 2b186185b6b2..8c5a46d41f28 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -452,7 +452,8 @@ static bool reg_type_may_be_refcounted_or_null(enum bpf_reg_type type)
- {
- 	return base_type(type) == PTR_TO_SOCKET ||
- 		base_type(type) == PTR_TO_TCP_SOCK ||
--		base_type(type) == PTR_TO_MEM;
-+		base_type(type) == PTR_TO_MEM ||
-+		base_type(type) == PTR_TO_BTF_ID;
- }
- 
- static bool type_is_rdonly_mem(u32 type)
-@@ -3493,11 +3494,6 @@ static int check_map_access(struct bpf_verifier_env *env, u32 regno,
- 
- #define MAX_PACKET_OFF 0xffff
- 
--static enum bpf_prog_type resolve_prog_type(struct bpf_prog *prog)
--{
--	return prog->aux->dst_prog ? prog->aux->dst_prog->type : prog->type;
--}
--
- static bool may_access_direct_pkt_data(struct bpf_verifier_env *env,
- 				       const struct bpf_call_arg_meta *meta,
- 				       enum bpf_access_type t)
-@@ -6845,15 +6841,17 @@ static void mark_btf_func_reg_size(struct bpf_verifier_env *env, u32 regno,
- 	}
- }
- 
--static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn)
-+static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
-+			    int *insn_idx_p)
- {
- 	const struct btf_type *t, *func, *func_proto, *ptr_type;
- 	struct bpf_reg_state *regs = cur_regs(env);
- 	const char *func_name, *ptr_type_name;
- 	u32 i, nargs, func_id, ptr_type_id;
-+	int err, insn_idx = *insn_idx_p;
- 	const struct btf_param *args;
- 	struct btf *desc_btf;
--	int err;
-+	bool acq;
- 
- 	/* skip for now, but return error when we find this in fixup_kfunc_call */
- 	if (!insn->imm)
-@@ -6875,16 +6873,36 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn)
- 		return -EACCES;
- 	}
- 
-+	acq = btf_kfunc_id_set_contains(desc_btf, resolve_prog_type(env->prog),
-+					BTF_KFUNC_TYPE_ACQUIRE, func_id);
++#endif
 +
- 	/* Check the arguments */
- 	err = btf_check_kfunc_arg_match(env, desc_btf, func_id, regs);
--	if (err)
-+	if (err < 0)
- 		return err;
-+	/* In case of release function, we get register number of refcounted
-+	 * PTR_TO_BTF_ID back from btf_check_kfunc_arg_match, do the release now
-+	 */
-+	if (err) {
-+		err = release_reference(env, regs[err].ref_obj_id);
-+		if (err) {
-+			verbose(env, "kfunc %s#%d reference has not been acquired before\n",
-+				func_name, func_id);
-+			return err;
-+		}
-+	}
++#endif /* _NF_CONNTRACK_BPF_H */
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index 9b7171c40434..3b471781327f 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -299,6 +299,7 @@ struct net *get_net_ns_by_id(const struct net *net, int id)
  
- 	for (i = 0; i < CALLER_SAVED_REGS; i++)
- 		mark_reg_not_init(env, regs, caller_saved[i]);
+ 	return peer;
+ }
++EXPORT_SYMBOL_GPL(get_net_ns_by_id);
  
- 	/* Check return type */
- 	t = btf_type_skip_modifiers(desc_btf, func_proto->type, NULL);
+ /*
+  * setup_net runs the initializers for the network namespace object.
+diff --git a/net/netfilter/Makefile b/net/netfilter/Makefile
+index a135b1a46014..238b6a620e88 100644
+--- a/net/netfilter/Makefile
++++ b/net/netfilter/Makefile
+@@ -14,6 +14,11 @@ nf_conntrack-$(CONFIG_NF_CONNTRACK_LABELS) += nf_conntrack_labels.o
+ nf_conntrack-$(CONFIG_NF_CT_PROTO_DCCP) += nf_conntrack_proto_dccp.o
+ nf_conntrack-$(CONFIG_NF_CT_PROTO_SCTP) += nf_conntrack_proto_sctp.o
+ nf_conntrack-$(CONFIG_NF_CT_PROTO_GRE) += nf_conntrack_proto_gre.o
++ifeq ($(CONFIG_NF_CONNTRACK),m)
++nf_conntrack-$(CONFIG_DEBUG_INFO_BTF_MODULES) += nf_conntrack_bpf.o
++else ifeq ($(CONFIG_NF_CONNTRACK),y)
++nf_conntrack-$(CONFIG_DEBUG_INFO_BTF) += nf_conntrack_bpf.o
++endif
+ 
+ obj-$(CONFIG_NETFILTER) = netfilter.o
+ 
+diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
+new file mode 100644
+index 000000000000..8ad3f52579f3
+--- /dev/null
++++ b/net/netfilter/nf_conntrack_bpf.c
+@@ -0,0 +1,257 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Unstable Conntrack Helpers for XDP and TC-BPF hook
++ *
++ * These are called from the XDP and SCHED_CLS BPF programs. Note that it is
++ * allowed to break compatibility for these functions since the interface they
++ * are exposed through to BPF programs is explicitly unstable.
++ */
 +
-+	if (acq && !btf_type_is_ptr(t)) {
-+		verbose(env, "acquire kernel function does not return PTR_TO_BTF_ID\n");
-+		return -EINVAL;
++#include <linux/bpf.h>
++#include <linux/btf.h>
++#include <linux/types.h>
++#include <linux/btf_ids.h>
++#include <linux/net_namespace.h>
++#include <net/netfilter/nf_conntrack.h>
++#include <net/netfilter/nf_conntrack_core.h>
++
++/* bpf_ct_opts - Options for CT lookup helpers
++ *
++ * Members:
++ * @netns_id   - Specify the network namespace for lookup
++ *		 Values:
++ *		   BPF_F_CURRENT_NETNS (-1)
++ *		     Use namespace associated with ctx (xdp_md, __sk_buff)
++ *		   [0, S32_MAX]
++ *		     Network Namespace ID
++ * @error      - Out parameter, set for any errors encountered
++ *		 Values:
++ *		   -EINVAL - Passed NULL for bpf_tuple pointer
++ *		   -EINVAL - opts->reserved is not 0
++ *		   -EINVAL - netns_id is less than -1
++ *		   -EINVAL - opts__sz isn't NF_BPF_CT_OPTS_SZ (12)
++ *		   -EPROTO - l4proto isn't one of IPPROTO_TCP or IPPROTO_UDP
++ *		   -ENONET - No network namespace found for netns_id
++ *		   -ENOENT - Conntrack lookup could not find entry for tuple
++ *		   -EAFNOSUPPORT - tuple__sz isn't one of sizeof(tuple->ipv4)
++ *				   or sizeof(tuple->ipv6)
++ * @l4proto    - Layer 4 protocol
++ *		 Values:
++ *		   IPPROTO_TCP, IPPROTO_UDP
++ * @reserved   - Reserved member, will be reused for more options in future
++ *		 Values:
++ *		   0
++ */
++struct bpf_ct_opts {
++	s32 netns_id;
++	s32 error;
++	u8 l4proto;
++	u8 reserved[3];
++};
++
++enum {
++	NF_BPF_CT_OPTS_SZ = 12,
++};
++
++static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
++					  struct bpf_sock_tuple *bpf_tuple,
++					  u32 tuple_len, u8 protonum,
++					  s32 netns_id)
++{
++	struct nf_conntrack_tuple_hash *hash;
++	struct nf_conntrack_tuple tuple;
++
++	if (unlikely(protonum != IPPROTO_TCP && protonum != IPPROTO_UDP))
++		return ERR_PTR(-EPROTO);
++	if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
++		return ERR_PTR(-EINVAL);
++
++	memset(&tuple, 0, sizeof(tuple));
++	switch (tuple_len) {
++	case sizeof(bpf_tuple->ipv4):
++		tuple.src.l3num = AF_INET;
++		tuple.src.u3.ip = bpf_tuple->ipv4.saddr;
++		tuple.src.u.tcp.port = bpf_tuple->ipv4.sport;
++		tuple.dst.u3.ip = bpf_tuple->ipv4.daddr;
++		tuple.dst.u.tcp.port = bpf_tuple->ipv4.dport;
++		break;
++	case sizeof(bpf_tuple->ipv6):
++		tuple.src.l3num = AF_INET6;
++		memcpy(tuple.src.u3.ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
++		tuple.src.u.tcp.port = bpf_tuple->ipv6.sport;
++		memcpy(tuple.dst.u3.ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
++		tuple.dst.u.tcp.port = bpf_tuple->ipv6.dport;
++		break;
++	default:
++		return ERR_PTR(-EAFNOSUPPORT);
 +	}
 +
- 	if (btf_type_is_scalar(t)) {
- 		mark_reg_unknown(env, regs, BPF_REG_0);
- 		mark_btf_func_reg_size(env, BPF_REG_0, t->size);
-@@ -6903,7 +6921,21 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn)
- 		regs[BPF_REG_0].btf = desc_btf;
- 		regs[BPF_REG_0].type = PTR_TO_BTF_ID;
- 		regs[BPF_REG_0].btf_id = ptr_type_id;
-+		if (btf_kfunc_id_set_contains(desc_btf, resolve_prog_type(env->prog),
-+					      BTF_KFUNC_TYPE_RET_NULL, func_id)) {
-+			regs[BPF_REG_0].type |= PTR_MAYBE_NULL;
-+			/* For mark_ptr_or_null_reg, see 93c230e3f5bd6 */
-+			regs[BPF_REG_0].id = ++env->id_gen;
-+		}
- 		mark_btf_func_reg_size(env, BPF_REG_0, sizeof(void *));
-+		if (acq) {
-+			int id = acquire_reference_state(env, insn_idx);
++	tuple.dst.protonum = protonum;
 +
-+			if (id < 0)
-+				return id;
-+			regs[BPF_REG_0].id = id;
-+			regs[BPF_REG_0].ref_obj_id = id;
-+		}
- 	} /* else { add_kfunc_call() ensures it is btf_type_is_void(t) } */
++	if (netns_id >= 0) {
++		net = get_net_ns_by_id(net, netns_id);
++		if (unlikely(!net))
++			return ERR_PTR(-ENONET);
++	}
++
++	hash = nf_conntrack_find_get(net, &nf_ct_zone_dflt, &tuple);
++	if (netns_id >= 0)
++		put_net(net);
++	if (!hash)
++		return ERR_PTR(-ENOENT);
++	return nf_ct_tuplehash_to_ctrack(hash);
++}
++
++__diag_push();
++__diag_ignore(GCC, 8, "-Wmissing-prototypes",
++	      "Global functions as their definitions will be in nf_conntrack BTF");
++
++/* bpf_xdp_ct_lookup - Lookup CT entry for the given tuple, and acquire a
++ *		       reference to it
++ *
++ * Parameters:
++ * @xdp_ctx	- Pointer to ctx (xdp_md) in XDP program
++ *		    Cannot be NULL
++ * @bpf_tuple	- Pointer to memory representing the tuple to look up
++ *		    Cannot be NULL
++ * @tuple__sz	- Length of the tuple structure
++ *		    Must be one of sizeof(bpf_tuple->ipv4) or
++ *		    sizeof(bpf_tuple->ipv6)
++ * @opts	- Additional options for lookup (documented above)
++ *		    Cannot be NULL
++ * @opts__sz	- Length of the bpf_ct_opts structure
++ *		    Must be NF_BPF_CT_OPTS_SZ (12)
++ */
++struct nf_conn *
++bpf_xdp_ct_lookup(struct xdp_md *xdp_ctx, struct bpf_sock_tuple *bpf_tuple,
++		  u32 tuple__sz, struct bpf_ct_opts *opts, u32 opts__sz)
++{
++	struct xdp_buff *ctx = (struct xdp_buff *)xdp_ctx;
++	struct net *caller_net;
++	struct nf_conn *nfct;
++
++	BUILD_BUG_ON(sizeof(struct bpf_ct_opts) != NF_BPF_CT_OPTS_SZ);
++
++	if (!opts)
++		return NULL;
++	if (!bpf_tuple || opts->reserved[0] || opts->reserved[1] ||
++	    opts->reserved[2] || opts__sz != NF_BPF_CT_OPTS_SZ) {
++		opts->error = -EINVAL;
++		return NULL;
++	}
++	caller_net = dev_net(ctx->rxq->dev);
++	nfct = __bpf_nf_ct_lookup(caller_net, bpf_tuple, tuple__sz, opts->l4proto,
++				  opts->netns_id);
++	if (IS_ERR(nfct)) {
++		opts->error = PTR_ERR(nfct);
++		return NULL;
++	}
++	return nfct;
++}
++
++/* bpf_skb_ct_lookup - Lookup CT entry for the given tuple, and acquire a
++ *		       reference to it
++ *
++ * Parameters:
++ * @skb_ctx	- Pointer to ctx (__sk_buff) in TC program
++ *		    Cannot be NULL
++ * @bpf_tuple	- Pointer to memory representing the tuple to look up
++ *		    Cannot be NULL
++ * @tuple__sz	- Length of the tuple structure
++ *		    Must be one of sizeof(bpf_tuple->ipv4) or
++ *		    sizeof(bpf_tuple->ipv6)
++ * @opts	- Additional options for lookup (documented above)
++ *		    Cannot be NULL
++ * @opts__sz	- Length of the bpf_ct_opts structure
++ *		    Must be NF_BPF_CT_OPTS_SZ (12)
++ */
++struct nf_conn *
++bpf_skb_ct_lookup(struct __sk_buff *skb_ctx, struct bpf_sock_tuple *bpf_tuple,
++		  u32 tuple__sz, struct bpf_ct_opts *opts, u32 opts__sz)
++{
++	struct sk_buff *skb = (struct sk_buff *)skb_ctx;
++	struct net *caller_net;
++	struct nf_conn *nfct;
++
++	BUILD_BUG_ON(sizeof(struct bpf_ct_opts) != NF_BPF_CT_OPTS_SZ);
++
++	if (!opts)
++		return NULL;
++	if (!bpf_tuple || opts->reserved[0] || opts->reserved[1] ||
++	    opts->reserved[2] || opts__sz != NF_BPF_CT_OPTS_SZ) {
++		opts->error = -EINVAL;
++		return NULL;
++	}
++	caller_net = skb->dev ? dev_net(skb->dev) : sock_net(skb->sk);
++	nfct = __bpf_nf_ct_lookup(caller_net, bpf_tuple, tuple__sz, opts->l4proto,
++				  opts->netns_id);
++	if (IS_ERR(nfct)) {
++		opts->error = PTR_ERR(nfct);
++		return NULL;
++	}
++	return nfct;
++}
++
++/* bpf_ct_release - Release acquired nf_conn object
++ *
++ * This must be invoked for referenced PTR_TO_BTF_ID, and the verifier rejects
++ * the program if any references remain in the program in all of the explored
++ * states.
++ *
++ * Parameters:
++ * @nf_conn	 - Pointer to referenced nf_conn object, obtained using
++ *		   bpf_xdp_ct_lookup or bpf_skb_ct_lookup.
++ */
++void bpf_ct_release(struct nf_conn *nfct)
++{
++	if (!nfct)
++		return;
++	nf_ct_put(nfct);
++}
++
++__diag_pop()
++
++BTF_SET_START(nf_ct_xdp_check_kfunc_ids)
++BTF_ID(func, bpf_xdp_ct_lookup)
++BTF_ID(func, bpf_ct_release)
++BTF_SET_END(nf_ct_xdp_check_kfunc_ids)
++
++BTF_SET_START(nf_ct_tc_check_kfunc_ids)
++BTF_ID(func, bpf_skb_ct_lookup)
++BTF_ID(func, bpf_ct_release)
++BTF_SET_END(nf_ct_tc_check_kfunc_ids)
++
++BTF_SET_START(nf_ct_acquire_kfunc_ids)
++BTF_ID(func, bpf_xdp_ct_lookup)
++BTF_ID(func, bpf_skb_ct_lookup)
++BTF_SET_END(nf_ct_acquire_kfunc_ids)
++
++BTF_SET_START(nf_ct_release_kfunc_ids)
++BTF_ID(func, bpf_ct_release)
++BTF_SET_END(nf_ct_release_kfunc_ids)
++
++/* Both sets are identical */
++#define nf_ct_ret_null_kfunc_ids nf_ct_acquire_kfunc_ids
++
++static const struct btf_kfunc_id_set nf_conntrack_xdp_kfunc_set = {
++	.owner        = THIS_MODULE,
++	.check_set    = &nf_ct_xdp_check_kfunc_ids,
++	.acquire_set  = &nf_ct_acquire_kfunc_ids,
++	.release_set  = &nf_ct_release_kfunc_ids,
++	.ret_null_set = &nf_ct_ret_null_kfunc_ids,
++};
++
++static const struct btf_kfunc_id_set nf_conntrack_tc_kfunc_set = {
++	.owner        = THIS_MODULE,
++	.check_set    = &nf_ct_tc_check_kfunc_ids,
++	.acquire_set  = &nf_ct_acquire_kfunc_ids,
++	.release_set  = &nf_ct_release_kfunc_ids,
++	.ret_null_set = &nf_ct_ret_null_kfunc_ids,
++};
++
++int register_nf_conntrack_bpf(void)
++{
++	int ret;
++
++	ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP, &nf_conntrack_xdp_kfunc_set);
++	return ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS, &nf_conntrack_tc_kfunc_set);
++}
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 894a325d39f2..3b60fca61920 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -34,6 +34,7 @@
+ #include <linux/rculist_nulls.h>
  
- 	nargs = btf_type_vlen(func_proto);
-@@ -11548,7 +11580,7 @@ static int do_check(struct bpf_verifier_env *env)
- 				if (insn->src_reg == BPF_PSEUDO_CALL)
- 					err = check_func_call(env, insn, &env->insn_idx);
- 				else if (insn->src_reg == BPF_PSEUDO_KFUNC_CALL)
--					err = check_kfunc_call(env, insn);
-+					err = check_kfunc_call(env, insn, &env->insn_idx);
- 				else
- 					err = check_helper_call(env, insn, &env->insn_idx);
- 				if (err)
+ #include <net/netfilter/nf_conntrack.h>
++#include <net/netfilter/nf_conntrack_bpf.h>
+ #include <net/netfilter/nf_conntrack_l4proto.h>
+ #include <net/netfilter/nf_conntrack_expect.h>
+ #include <net/netfilter/nf_conntrack_helper.h>
+@@ -2748,8 +2749,15 @@ int nf_conntrack_init_start(void)
+ 	conntrack_gc_work_init(&conntrack_gc_work);
+ 	queue_delayed_work(system_power_efficient_wq, &conntrack_gc_work.dwork, HZ);
+ 
++	ret = register_nf_conntrack_bpf();
++	if (ret < 0)
++		goto err_kfunc;
++
+ 	return 0;
+ 
++err_kfunc:
++	cancel_delayed_work_sync(&conntrack_gc_work.dwork);
++	nf_conntrack_proto_fini();
+ err_proto:
+ 	nf_conntrack_seqadj_fini();
+ err_seqadj:
 -- 
 2.34.1
 
