@@ -2,169 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 717BE48E47F
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 07:54:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C44448E486
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 07:55:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235381AbiANGyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 01:54:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
+        id S236618AbiANGzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 01:55:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239398AbiANGyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 01:54:39 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD63EC061574;
-        Thu, 13 Jan 2022 22:54:39 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id u15so12581124ple.2;
-        Thu, 13 Jan 2022 22:54:39 -0800 (PST)
+        with ESMTP id S234354AbiANGzh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 01:55:37 -0500
+Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05056C061574;
+        Thu, 13 Jan 2022 22:55:37 -0800 (PST)
+Received: by mail-ua1-x929.google.com with SMTP id x33so15361124uad.12;
+        Thu, 13 Jan 2022 22:55:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lP+FWeLatKIgWi4K1uF9Ut4u7DuYHyR3vsLHEPtX4Zs=;
-        b=KU4eR1cryTDNQ7A8gd3td28XecdUreEOHE2hNGXuP4aR0uQ7GF0Oo3Amb1NxFA3AoR
-         5TZ76WkFeA22lB2YniQTjSFJO2RDlbg9KmYW9nTH/90Xcm+w2SqrJCt/Ni2z06aqgoR1
-         G4R2Dn67iLvf93mUxjKOpvSRoBs7pohecn7s4WTrhKP8CjVxvYGf8qAIwUYFStk62caF
-         TSUZ81SjpQrqw40x2RWbBFwrYdiCXqE78tJgq1rU3Eh5p4UdGEfAK1cM2BKWZfz2mce+
-         OxBIuY5ARrRA5Wj4UkFG8n/dSRIwBcoLD9yyMxCzZFYybpbHBcnI6ydh2N8+Xs4Yk6DC
-         rf6A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d+JwdG0zfAD9delZPfW9ChzpcoiNXXynJtxy3L9+B2Y=;
+        b=hpKMa5Ej3YQFQTSgQXV53q1mmpKke9ERqJR8POXKS2b7kHeFwKXGTew+a0uZPEaq98
+         iXVsUZkLTsGcTRkOeidha9GZgTMydhixKlfR+h4P7xmTZMwo3o9WwzZTA1SsmjDDqUAs
+         qe59BdeIgCy90sQLhU5VJwox/BerK79bByb9BwKauo9b9986+Kr/vJcxRb/Hr9BU3dxV
+         PCSgqYDV4uuAGTusmab5a45++Vh2n9vzscuGcJh2zMV4D6EQAKK+dt6XoKhcXCiF+IXp
+         tJ9a5G6TfNV/kbTEl923B9FgJrJiewG5PxhTi7iUPrLTxZNlFJeluo+0rRd3mW5hqD3w
+         eQHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lP+FWeLatKIgWi4K1uF9Ut4u7DuYHyR3vsLHEPtX4Zs=;
-        b=HJ/l6YHW/IPSl/b49YMDFk5m1v2BZFW1XLeEM2a9C/bSWDL3y469p4m4fVWF4N4fQN
-         SqJmvTFo1E42urkX1FYVt3CpdPzdZG6k6kOFsihfvwuAqbfbL92O73RiZLG2Zvde6m9P
-         +MA1rg6KBZcuoYUtf9lD8//ow7l3eDs9BmK+VaoRi1n4E7gqcRQNlakVMBrlVnoDS25t
-         f3mhNG6NpCqJWOcbgMaDiInznncW+zHnfq+mjyNQPqlOCSm5rONZH1NPkPd1KDcP+cde
-         mzG9XjGOyADVvqLU3eTtARCinElSIQ/UHu9jLyNVh1paz0+3csqai70y/m7ZOfcj5DYb
-         0ZBA==
-X-Gm-Message-State: AOAM532JhuUhZUCRfPKOJ3ZlRrgavIygJ1PqdPG1xnP4w4LUpODL+Z1S
-        xasVvwX3tY24dckibB21fpKR6ntzj8gP6Q==
-X-Google-Smtp-Source: ABdhPJzyzjU/uZgZ9WDaZtLdgohJVVkoeQi9389BxFrLS3PC+cWNzAw3yccfqXmhvCOn5ZEtBHUidw==
-X-Received: by 2002:a17:90a:6782:: with SMTP id o2mr9106011pjj.116.1642143279166;
-        Thu, 13 Jan 2022 22:54:39 -0800 (PST)
-Received: from [0.0.0.0] ([20.187.112.107])
-        by smtp.gmail.com with ESMTPSA id y79sm4505412pfb.116.2022.01.13.22.54.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Jan 2022 22:54:38 -0800 (PST)
-Subject: Re: [PATCH net] ax25: use after free in ax25_connect
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>, jreuter@yaina.de,
-        ralf@linux-mips.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220111042048.43532-1-hbh25y@gmail.com>
- <f35292c0-621f-3f07-87ed-2533bfd1496e@gmail.com>
- <f48850cb-8e26-afa0-576c-691bb4be5587@gmail.com>
- <571c72e8-2111-6aa0-1bd7-e0af7fc50539@gmail.com>
- <80007b3e-eba8-1fbe-302d-4398830843dd@gmail.com>
-Message-ID: <ff65d70b-b6e1-3b35-8bd0-92f6f022cd5d@gmail.com>
-Date:   Fri, 14 Jan 2022 14:54:31 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d+JwdG0zfAD9delZPfW9ChzpcoiNXXynJtxy3L9+B2Y=;
+        b=dinW1ewvYkcihPQG4xyO6wWYO88YrFWLO1SL0FlmzXakrm2/qfclCIUqWRR2Cok88b
+         5AWJbFDctsgLjjgy04ENfqwVFRy+zp/M+8+zBt7HV16mZLK41q5B3pPek9pqfmq3VPSM
+         r0YNwpmfYniHRINgfgDr8fl61LXLATRxPxcZjF8KzPIiDmynW9wd3nnc1FrUYcSwqkQz
+         8Q9iPj1WJln+QREkzjb0pukhTDn3HW6bpjhGCK0u2zGSDq3ybJX0CZUxXF0CXU9HEDek
+         quPyMVKV2U1hbO0Ay2ShKVFenIdjXqJfTdhtCpW0RqK0okstu1aRGqHLPRB49cckQzkm
+         7aKg==
+X-Gm-Message-State: AOAM533hERarRRFQ78ApMBhszhAxDlLNcWwnkc5ZuxyCO2hldS4Wxqdl
+        1R6CBNPPrn8FH3HCeIeYtO7NdhVBRY8zYqZHU4Y=
+X-Google-Smtp-Source: ABdhPJwCWBOgyAay2e430T/PmmcQkABGWvipb5KARaqpVnMnNEPY2AdFbeJuzAfKtQ8mEJJUw3S+Z6nQmWgqv96HMVw=
+X-Received: by 2002:a67:f7c6:: with SMTP id a6mr3713563vsp.37.1642143336079;
+ Thu, 13 Jan 2022 22:55:36 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <80007b3e-eba8-1fbe-302d-4398830843dd@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20220113000650.514270-1-quic_twear@quicinc.com>
+ <CAADnVQLQ=JTiJm6FTWR-ZJ5PDOpGzoFOS4uFE+bNbr=Z06hnUQ@mail.gmail.com>
+ <BYAPR02MB523848C2591E467973B5592EAA539@BYAPR02MB5238.namprd02.prod.outlook.com>
+ <BYAPR02MB5238AEC23C7287A41C44C307AA549@BYAPR02MB5238.namprd02.prod.outlook.com>
+In-Reply-To: <BYAPR02MB5238AEC23C7287A41C44C307AA549@BYAPR02MB5238.namprd02.prod.outlook.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 13 Jan 2022 22:55:24 -0800
+Message-ID: <CAADnVQJc=qgz47S1OuUBmX5Rb_opZUCADKqzqGnBruxtJONO7Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 1/2] Add skb_store_bytes() for BPF_PROG_TYPE_CGROUP_SKB
+To:     "Tyler Wear (QUIC)" <quic_twear@quicinc.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <song@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Any suggestions for this patch ? Guys.
+On Thu, Jan 13, 2022 at 10:49 PM Tyler Wear (QUIC)
+<quic_twear@quicinc.com> wrote:
+>
+> > > This is wrong.
+> > > CGROUP_INET_EGRESS bpf prog cannot arbitrary change packet data.
+> > > The networking stack populated the IP header at that point.
+> > > If the prog changes it to something else it will be confusing other
+> > > layers of stack. neigh(L2) will be wrong, etc.
+> > > We can still change certain things in the packet, but not arbitrary bytes.
+> > >
+> > > We cannot change the DS field directly in the packet either.
+> > > It can only be changed by changing its value in the socket.
+> >
+> > Why is the DS field unchangeable, but ecn is changeable?
+>
+> Per spec the requirement is to modify the ds field of egress packets with DSCP value. Setting ds field on socket will not suffice here.
+> Another case is where device is a middle-man and needs to modify the packets of a connected tethered client with the DSCP value, using a sock will not be able to change the packet here.
 
-I think putting sk_to_ax25 after lock_sock(sk) here will avoid any 
-possilbe race conditions like other functions in ax25_proto_ops.
-
-On 2022/1/12 下午7:11, Hangyu Hua wrote:
-> Yes.
-> 
-> And there are two ways to release ax25, ax25_release and time expiry. I 
-> tested that ax25_release will not be invoked before ax25_connect is done 
-> by closing fd from user space. I think the reason is that __sys_connect 
-> use fdget() to protect fd. But i can't test if a function like 
-> ax25_std_heartbeat_expiry will release ax25 between sk_to_ax25(sk) and 
-> lock_sock(sk).
-> 
-> So i think it's better to protect sk_to_ax25(sk) by a lock. Beacause 
-> functions like ax25_release use sk_to_ax25 after a lock.
-> 
-> 
-> On 2022/1/12 下午5:59, Eric Dumazet wrote:
->>
->> On 1/11/22 18:13, Hangyu Hua wrote:
->>> I try to use ax25_release to trigger this bug like this:
->>> ax25_release                 ax25_connect
->>> lock_sock(sk);
->>> -----------------------------sk = sock->sk;
->>> -----------------------------ax25 = sk_to_ax25(sk);
->>> ax25_destroy_socket(ax25);
->>> release_sock(sk);
->>> -----------------------------lock_sock(sk);
->>> -----------------------------use ax25 again
->>>
->>> But i failed beacause their have large speed difference. And i
->>> don't have a physical device to test other function in ax25.
->>> Anyway, i still think there will have a function to trigger this
->>> race condition like ax25_destroy_timer. Beacause Any ohter
->>> functions in ax25_proto_ops like ax25_bind protect ax25_sock by 
->>> lock_sock(sk).
->>
->>
->> For a given sk pointer, sk_to_ax25(sk) is always returning the same 
->> value,
->>
->> regardless of sk lock being held or not.
->>
->> ax25_sk(sk)->cb  is set only from ax25_create() or ax25_make_new()
->>
->> ax25_connect can not be called until these operations have completed ?
->>
->>
->>
->>>
->>> Thanks.
->>>
->>>
->>>
->>>
->>> On 2022/1/12 上午4:56, Eric Dumazet wrote:
->>>>
->>>> On 1/10/22 20:20, Hangyu Hua wrote:
->>>>> sk_to_ax25(sk) needs to be called after lock_sock(sk) to avoid UAF
->>>>> caused by a race condition.
->>>>
->>>> Can you describe what race condition you have found exactly ?
->>>>
->>>> sk pointer can not change.
->>>>
->>>>
->>>>> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
->>>>> ---
->>>>>   net/ax25/af_ax25.c | 4 +++-
->>>>>   1 file changed, 3 insertions(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
->>>>> index cfca99e295b8..c5d62420a2a8 100644
->>>>> --- a/net/ax25/af_ax25.c
->>>>> +++ b/net/ax25/af_ax25.c
->>>>> @@ -1127,7 +1127,7 @@ static int __must_check ax25_connect(struct 
->>>>> socket *sock,
->>>>>       struct sockaddr *uaddr, int addr_len, int flags)
->>>>>   {
->>>>>       struct sock *sk = sock->sk;
->>>>> -    ax25_cb *ax25 = sk_to_ax25(sk), *ax25t;
->>>>> +    ax25_cb *ax25, *ax25t;
->>>>>       struct full_sockaddr_ax25 *fsa = (struct full_sockaddr_ax25 
->>>>> *)uaddr;
->>>>>       ax25_digi *digi = NULL;
->>>>>       int ct = 0, err = 0;
->>>>> @@ -1155,6 +1155,8 @@ static int __must_check ax25_connect(struct 
->>>>> socket *sock,
->>>>>       lock_sock(sk);
->>>>> +    ax25 = sk_to_ax25(sk);
->>>>> +
->>>>>       /* deal with restarts */
->>>>>       if (sock->state == SS_CONNECTING) {
->>>>>           switch (sk->sk_state) {
+If DS field needs to be changed differently for every packet
+it's better to use TC layer for this task.
+qdiscs may send packets with different DSs to different queues.
