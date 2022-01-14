@@ -2,121 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4B1648F071
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 20:25:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BADC48F07E
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 20:35:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236932AbiANTZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 14:25:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56466 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232539AbiANTZZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 14:25:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642188325;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gChq0Rq74zl99KBYEg0JKplyCgCrejoCg9jhvydHVlI=;
-        b=PqhDAS0NK0fRT8jagdEk4Hn+vv+nCO1ZPJgEdvIN6r/lYQY5aCIDoUT2sxUC7qzl/as+sI
-        gQee/ZDX44ak832oRqzDOJ2Up5mwHCAY3c8b3tDk6rFZ1a4ZjKChMepjyUOd2TuVrubQ6n
-        RE5FlITaPm7wjHmfxWjNiArnVsaSr98=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-464-x6UPzVwtOfaoOQE7v2MmIA-1; Fri, 14 Jan 2022 14:25:21 -0500
-X-MC-Unique: x6UPzVwtOfaoOQE7v2MmIA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2A8B8839A44;
-        Fri, 14 Jan 2022 19:25:20 +0000 (UTC)
-Received: from calimero.vinschen.de (ovpn-112-14.ams2.redhat.com [10.36.112.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id A7C525BE08;
-        Fri, 14 Jan 2022 19:25:19 +0000 (UTC)
-Received: by calimero.vinschen.de (Postfix, from userid 500)
-        id 2111AA80ED6; Fri, 14 Jan 2022 20:25:18 +0100 (CET)
-Date:   Fri, 14 Jan 2022 20:25:18 +0100
-From:   Corinna Vinschen <vinschen@redhat.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
-        Lennert Buytenhek <buytenh@wantstofly.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: Re: [PATCH 1/2 net-next v3] igc: avoid kernel warning when changing
- RX ring parameters
-Message-ID: <YeHOHp2vztm1Oi5V@calimero.vinschen.de>
-Mail-Followup-To: Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
-        Lennert Buytenhek <buytenh@wantstofly.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-References: <20220114165106.1085474-1-vinschen@redhat.com>
- <20220114165106.1085474-2-vinschen@redhat.com>
- <87czku6sm2.fsf@intel.com>
+        id S244119AbiANTfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 14:35:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36348 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244115AbiANTfR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 14:35:17 -0500
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB23C061574;
+        Fri, 14 Jan 2022 11:35:17 -0800 (PST)
+Received: by mail-il1-x12a.google.com with SMTP id b1so9225887ilj.2;
+        Fri, 14 Jan 2022 11:35:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WBw/MJ4zo+l9u4s/FhgIl55LwuJiTSEG+Eoot+09J00=;
+        b=hNqBH+Y7PtAE1OvVLN+NpsTHz5pWo4kZs/75QRkYx0SumG60tqVHni5eEgjDEnQT6H
+         YKZ6tYTr4mMjnNdJ8DQQ9wK12x/Vvz91h3u8qlDngr1OCzxL8EHPMLwoPCZEJdrNivtm
+         KmMyvz0IlQD6kRsWAvapuuVPqIrU7Y1XlBbrhpU6ioIdGmlBe7pI07wxMw3l0S3/1pdi
+         PWpUA0ISrfCjjERjxoL5iNXfJBUZzRNNvLw4X+vqCPDjfZ0uGMFRCJs4reg9HIW5bXu8
+         Ued9mBXD60PDQF+p17BaWdGHTiCPP0p9oChsV1L+JFEp9Bwg0fld56uTiXiP2/1igtSv
+         Jf6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WBw/MJ4zo+l9u4s/FhgIl55LwuJiTSEG+Eoot+09J00=;
+        b=ZzrV+/A+zICU4f5A/y27dp6gCzZ2gK8qfTokrXKoxrgPD2zRe3myFmZmDnBmqTvdmC
+         lBQh0N9MGiNk+2wDAWbt+fZ/WOQ0Tkt9Z1LPiMmRwTkgY0lFQJf+QBJXkO3seh2LBitA
+         5G1axy4OTWCfUhiAMdN0Zz5M4nfXNyPsVU0p02alBpsBQTlEg+ZwqufY5OQmSdiXI5xO
+         WqWA7n4XkcdoFsGUAh6pKjbY2Smoq67AhW+ehoa101cOzxvXn8Uvmbd98LRmVnQszYcu
+         cjz4cAataqR5rknTF+95CByjbmAwBfX9j6NTY7ptHvvigXTI4wDKHNdFs0/pebdGypnY
+         oDLw==
+X-Gm-Message-State: AOAM530+CVlJ8QHuFK71/rAAWHWJy42Cq9NZ/jYq26ngo5rG0jpp9ymB
+        EuGvTGx9X3N47SjL6OYa0Luq3Cj6zyOpwFC7/cE=
+X-Google-Smtp-Source: ABdhPJxJXyaITHunJxH+EqKjzkvnJOBNbtfNhB9osLTt05b3H5jZIaR42V56VYrrSBef//NqTKDPXU/KwJgFJ+hr0+0=
+X-Received: by 2002:a05:6e02:1c02:: with SMTP id l2mr5763618ilh.239.1642188916535;
+ Fri, 14 Jan 2022 11:35:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <87czku6sm2.fsf@intel.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+References: <CAEf4Bza+WO5U+Kw=S+GvQBgu5VHfPL29u7eLSQq34jvYzGnbBA@mail.gmail.com>
+ <CAADnVQLGxjvOO3Ae3mGTWTyd0aHnACxYoF8daNi+z56NQyYQug@mail.gmail.com>
+ <CAEf4BzZ4c1VwPf9oBRRdN7jdBWrk4pg=mw_50LMjLr99Mb0yfw@mail.gmail.com>
+ <CAADnVQ+BiMy4TZNocfFSvazh-QTFwMD-3uQ9LLiku7ePLDn=MQ@mail.gmail.com>
+ <CAC1LvL0CeTw+YKjO6r0f68Ly3tK4qhDyjV0ak82e0PpHURVQOw@mail.gmail.com>
+ <Yd82J8vxSAR9tvQt@lore-desk> <8735lshapk.fsf@toke.dk> <47a3863b-080c-3ac2-ff2d-466b74d82c1c@redhat.com>
+ <Yd/9SPHAPH3CpSnN@lore-desk> <CAADnVQJaB8mmnD1Z4jxva0CqA2D0aQDmXggMEQPX2MRLZvoLzA@mail.gmail.com>
+ <YeGmZDI6etoB0hKx@lore-desk>
+In-Reply-To: <YeGmZDI6etoB0hKx@lore-desk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 14 Jan 2022 11:35:05 -0800
+Message-ID: <CAEf4BzZFu-5FChGhQrHcu-2kJe-qO6xXCdmGO-L6cViMMmtbYg@mail.gmail.com>
+Subject: Re: [PATCH v21 bpf-next 18/23] libbpf: Add SEC name for xdp_mb programs
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Zvi Effron <zeffron@riotgames.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Shay Agroskin <shayagr@amazon.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Jan 14 11:10, Vinicius Costa Gomes wrote:
-> Corinna Vinschen <vinschen@redhat.com> writes:
-> 
-> > Calling ethtool changing the RX ring parameters like this:
+On Fri, Jan 14, 2022 at 8:35 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> > On Thu, Jan 13, 2022 at 2:22 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> > > > > >
+> > > > > > I would prefer to keep the "_mb" postfix, but naming is hard and I am
+> > > > > > polarized :)
+> > > > >
+> > > > > I would lean towards keeping _mb as well, but if it does have to be
+> > > > > changed why not _mbuf? At least that's not quite as verbose :)
+> > > >
+> > > > I dislike the "mb" abbreviation as I forget it stands for multi-buffer.
+> > > > I like the "mbuf" suggestion, even-though it conflicts with (Free)BSD mbufs
+> > > > (which is their SKB).
+> > >
+> > > If we all agree, I can go over the series and substitute mb postfix with mbuf.
+> > > Any objections?
 > >
-> >   $ ethtool -G eth0 rx 1024
+> > mbuf has too much bsd taste.
 > >
-> > on igc triggers the "Missing unregister, handled but fix driver" warning in
-> > xdp_rxq_info_reg().
+> > How about ".frags" instead?
+> > Then xdp_buff_is_mb() will be xdp_buff_has_frags().
 > >
-> > igc_ethtool_set_ringparam() copies the igc_ring structure but neglects to
-> > reset the xdp_rxq_info member before calling igc_setup_rx_resources().
-> > This in turn calls xdp_rxq_info_reg() with an already registered xdp_rxq_info.
+> > I agree that it's not obvious what "mb" suffix stands for,
+> > but I don't buy at all that it can be confused with "megabyte".
+> > It's the context that matters.
+> > In "100mb" it's obvious that "mb" is likely "megabyte",
+> > but in "xdp.mb" it's certainly not "xdp megabyte".
+> > Such a sentence has no meaning.
+> > Imagine we used that suffix for "tc"...
+> > it would be "tc.mb"... "Traffic Control Megabyte" ??
 > >
-> > Make sure to unregister the xdp_rxq_info structure first in
-> > igc_setup_rx_resources.  Move xdp_rxq_info handling down to bethe last
-> > action, thus allowing to remove the xdp_rxq_info_unreg call in the error path.
+> > Anyway "xdp.frags" ?
 > >
-> > Fixes: 73f1071c1d29 ("igc: Add support for XDP_TX action")
-> > Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
-> > ---
-> >  drivers/net/ethernet/intel/igc/igc_main.c | 20 +++++++++++---------
-> >  1 file changed, 11 insertions(+), 9 deletions(-)
-> > [...]
-> > @@ -534,10 +526,20 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
-> >  	rx_ring->next_to_clean = 0;
-> >  	rx_ring->next_to_use = 0;
-> >  
-> > +	/* XDP RX-queue info */
-> > +	if (xdp_rxq_info_is_reg(&rx_ring->xdp_rxq))
-> > +		xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
-> > +	res = xdp_rxq_info_reg(&rx_ring->xdp_rxq, ndev, index,
-> > +			       rx_ring->q_vector->napi.napi_id);
-> > +	if (res < 0) {
-> > +		netdev_err(ndev, "Failed to register xdp_rxq index %u\n",
-> > +			   index);
-> > +		return res;
-> 
-> Here and in the igb patch, it should be 'goto err', no?
+> > Btw "xdp_cpumap" should be cleaned up.
+> > xdp_cpumap is an attach type. It's not prog type.
+> > Probably it should be "xdp/cpumap" to align with "cgroup/bind[46]" ?
+>
+> If we change xdp_devmap/ in xdp/devmap (and xdp_cpumap/ in xdp/cpumap),
+> are we going to break backward compatibility?
+> Maybe there are programs already deployed using it.
+> This is not a xdp multi-buff problem since we are not breaking backward
+> compatibility there, we can just use:
+>
+> xdp.frags/devmap
+> xdp.frags/cpumap
+>
+> Moreover in samples/bpf we have something like:
+>
+> SEC("xdp_devmap/egress")
+>
+> It seems to me the egress postfix is not really used, right? Can we just drop
+> it?
 
-D'oh, of course.  Soory and thanks for catching.  I'll prepare a v4.
+Yeah, by current rules it should be just SEC("xdp_devmap"). This will
+break in libbpf 1.0 mode. For anyone who knows how to actually test
+BPF samples, it would be great to add
+libbpf_set_strict_mode(LIBBPF_STRICT_ALL); in every sample and make
+sure everything is still working. We've cleaned up selftests and all
+other places I knew about, but missed samples (and I can't test them
+properly).
 
-> Another suggestion is to add the warning that Lennert reported in the
-> commit message (the comment from Maciej in that other thread).
 
-The current commit message already mentiones the "Missing unregister,
-handled but fix driver" warning.  Do you mean the entire warning
-snippet including call stack?  If so, no problem.  I'll add it to v4,
-too.
-
-Shall I also add "Reported-by: Lennert ..."?  Funny enough we
-encountered the problem independently at almost the same time, so when I
-sent my v1 of the patch I wasn't even aware of the thread started by
-Lennert and only saw it afterwards :}
-
-> Apart from that, I think this is cleaner than what I had proposed.
-
-Thanks,
-Corinna
-
+>
+> Regards,
+> Lorenzo
+>
+> >
+> > In patch 22 there is a comment:
+> > /* try to attach BPF_XDP_DEVMAP multi-buff program"
+> >
+> > It creates further confusion. There is no XDP_DEVMAP program type.
+> > It should probably read
+> > "Attach BPF_XDP program with frags to devmap"
+> >
+> > Patch 21 still has "CHECK". Pls replace it with ASSERT.
