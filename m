@@ -2,161 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCF0C48E153
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 00:58:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAE1948E15A
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 01:02:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238328AbiAMX6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 18:58:49 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:54946 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235897AbiAMX6s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 18:58:48 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C18F7CE216E;
-        Thu, 13 Jan 2022 23:58:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 819F8C36AEA;
-        Thu, 13 Jan 2022 23:58:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642118325;
-        bh=EVg3Hrvzx6GYLATr0TyYWQDZofLGcg+Ix9ZtVWkVQAM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gTKsiYTFhJgSt+ecVm+dxiGao711y7GTcNfO5DC7CtR+Le0PvkZZFzPdnrR9KdHHp
-         8IdQu3s7P0IzIghAupvbajuvhmMJBHT/8hCw0KnXkI1/lLFdV0VRAQcx9T4bXcPMYq
-         DV0QOlTDBtotFwvOYKUHGgqK9joMOL21TYXbVcG1ZkKN7kekx+0Xky5yLjBo0BnDM0
-         ClVN72cRqp16NQ4Nr3AZMKO89eKvNqffMq1eDReB3m4LWN9w0UgTJiY/0PE4Ck519C
-         wn2wYhmBtErWyVnW/W2IbFeD+YtdQ0rgs/zbWFXYr3hyKVy+bHKGzqciKTWUuBIUsK
-         1dsXEWvOT3urQ==
-Date:   Fri, 14 Jan 2022 00:58:40 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Zvi Effron <zeffron@riotgames.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        id S235528AbiANACL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 19:02:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52998 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229995AbiANACJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 19:02:09 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE78C061574;
+        Thu, 13 Jan 2022 16:02:09 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id x4so12934573wru.7;
+        Thu, 13 Jan 2022 16:02:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZqV85jqpMu5U1nKTqX4UJcEgtxfIvDGTlM48tzo5X7Y=;
+        b=EIIrabWBegwkS/JPAOLAHOYHs9RSrWWUA6evRPXmTL326ue9pEZaEodWsuaDfqjY9i
+         ONPVRBgt6yPzID5Ngq5N5D9FUdEVGl5OvtMEZqN7jcL+ufX8GT2lE54vsfJPBVqtNrJJ
+         1aXHyR0rryeGyF5udMGt5lL/7sGFnhKPAVRxtyCVR8CYrKgUh8/lVqidJG1c8YzghF3M
+         GqYrUkQ+OKnldw1ta6T8O6TArr2xS5Cr6CiZ6fhi7/MITmvgfOVqq0QypcFhnkyGYpym
+         ZWJrFmjBymh5bLvvipCbtbzQVU7ArYCFejZ8CBl903DGA0vcoroJR0mPeJdx2q1aVJ/Q
+         IsLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZqV85jqpMu5U1nKTqX4UJcEgtxfIvDGTlM48tzo5X7Y=;
+        b=nNnhQwjYn3DWCHigRiYE81TdoVMKwcYdEUJjT00aeuhgWplnEicG2A5y5v6oxTPrWj
+         lQQTHoCsBQMV6MebNYfFzruVWMcF5vvVSFguARpvgX2f0s+EoslQPAFqBfsXjD4+krQt
+         kV5dyUGNG3Sw6tA+AaCxPMeJZ6REGi4IIHjMpIMe/w4mytOev5Om8yxYtCW7tvwtaXKw
+         VnM4wLx3j+fhf9bqFvwJLalp+0RexFQwhC8yfLm27ULHj8p/rQ1Kx0W5ynkkL6s+C7Se
+         vs275zOrt/3ZfwUctYFFmrHpFdYgcIt4rF7NrurQkngamZyPjgnlNwpSJsuDuHj4jzon
+         vNfw==
+X-Gm-Message-State: AOAM530jZgWifgjhYkbK2z+kB2nW8oTwnvmk3OBEsn5sCRlbdTCVCzRI
+        0WHx+zlnuEj0pEKUn3pygo9OroTYXk57ZHQE35I=
+X-Google-Smtp-Source: ABdhPJzHrlUjzVq/4GeK1zeUzZMAakBxu2nvWzh3DaCwdyQ9py+KmfaYWM53+TaW8wfzHoMLCE22QtPY51FuTN+pdRE=
+X-Received: by 2002:adf:ec92:: with SMTP id z18mr217913wrn.207.1642118527999;
+ Thu, 13 Jan 2022 16:02:07 -0800 (PST)
+MIME-Version: 1.0
+References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
+ <20220112173312.764660-19-miquel.raynal@bootlin.com> <CAB_54W4PL1ty5XsqRoEKwsy-h8KL9gSGMK6N=HiWJDp6NHsb0A@mail.gmail.com>
+ <20220113180709.0dade123@xps13>
+In-Reply-To: <20220113180709.0dade123@xps13>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Thu, 13 Jan 2022 19:01:56 -0500
+Message-ID: <CAB_54W4LdzH9=XS7-ZnxfyCMQFCTS-F5JkUmV+6HtWcCpUS-nQ@mail.gmail.com>
+Subject: Re: [wpan-next v2 18/27] net: mac802154: Handle scan requests
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Shay Agroskin <shayagr@amazon.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        tirthendu.sarkar@intel.com
-Subject: Re: [PATCH v21 bpf-next 18/23] libbpf: Add SEC name for xdp_mb
- programs
-Message-ID: <YeC8sOAeZjpc4j8+@lore-desk>
-References: <CAEf4Bza+WO5U+Kw=S+GvQBgu5VHfPL29u7eLSQq34jvYzGnbBA@mail.gmail.com>
- <CAADnVQLGxjvOO3Ae3mGTWTyd0aHnACxYoF8daNi+z56NQyYQug@mail.gmail.com>
- <CAEf4BzZ4c1VwPf9oBRRdN7jdBWrk4pg=mw_50LMjLr99Mb0yfw@mail.gmail.com>
- <CAADnVQ+BiMy4TZNocfFSvazh-QTFwMD-3uQ9LLiku7ePLDn=MQ@mail.gmail.com>
- <CAC1LvL0CeTw+YKjO6r0f68Ly3tK4qhDyjV0ak82e0PpHURVQOw@mail.gmail.com>
- <Yd82J8vxSAR9tvQt@lore-desk>
- <8735lshapk.fsf@toke.dk>
- <47a3863b-080c-3ac2-ff2d-466b74d82c1c@redhat.com>
- <Yd/9SPHAPH3CpSnN@lore-desk>
- <CAADnVQJaB8mmnD1Z4jxva0CqA2D0aQDmXggMEQPX2MRLZvoLzA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="nZm/TQme1PjwK7dz"
-Content-Disposition: inline
-In-Reply-To: <CAADnVQJaB8mmnD1Z4jxva0CqA2D0aQDmXggMEQPX2MRLZvoLzA@mail.gmail.com>
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Harry Morris <h.morris@cascoda.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "linux-wireless@vger.kernel.org Wireless" 
+        <linux-wireless@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
---nZm/TQme1PjwK7dz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-> On Thu, Jan 13, 2022 at 2:22 AM Lorenzo Bianconi <lorenzo@kernel.org> wro=
-te:
-> > > > >
-> > > > > I would prefer to keep the "_mb" postfix, but naming is hard and =
-I am
-> > > > > polarized :)
-> > > >
-> > > > I would lean towards keeping _mb as well, but if it does have to be
-> > > > changed why not _mbuf? At least that's not quite as verbose :)
-> > >
-> > > I dislike the "mb" abbreviation as I forget it stands for multi-buffe=
-r.
-> > > I like the "mbuf" suggestion, even-though it conflicts with (Free)BSD=
- mbufs
-> > > (which is their SKB).
+On Thu, 13 Jan 2022 at 12:07, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+> alex.aring@gmail.com wrote on Wed, 12 Jan 2022 17:44:02 -0500:
+>
+> > Hi,
 > >
-> > If we all agree, I can go over the series and substitute mb postfix wit=
-h mbuf.
-> > Any objections?
->=20
-> mbuf has too much bsd taste.
->=20
-> How about ".frags" instead?
+> > On Wed, 12 Jan 2022 at 12:33, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > ...
+> > > +       return 0;
+> > > +}
+> > > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+> > > index c829e4a75325..40656728c624 100644
+> > > --- a/net/mac802154/tx.c
+> > > +++ b/net/mac802154/tx.c
+> > > @@ -54,6 +54,9 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
+> > >         struct net_device *dev = skb->dev;
+> > >         int ret;
+> > >
+> > > +       if (unlikely(mac802154_scan_is_ongoing(local)))
+> > > +               return NETDEV_TX_BUSY;
+> > > +
+> >
+> > Please look into the functions "ieee802154_wake_queue()" and
+> > "ieee802154_stop_queue()" which prevent this function from being
+> > called. Call stop before starting scanning and wake after scanning is
+> > done or stopped.
+>
+> Mmmh all this is already done, isn't it?
+> - mac802154_trigger_scan_locked() stops the queue before setting the
+>   promiscuous mode
+> - mac802154_end_of_scan() wakes the queue after resetting the
+>   promiscuous mode to its original state
+>
+> Should I drop the check which stands for an extra precaution?
+>
 
-I am fine with this (for me it is better than mb or mbuf).
-Do we all agree or do we prefer the "mb" suffix?
+no, I think then it should be a WARN_ON() more without any return
+(hopefully it will survive). This case should never happen otherwise
+we have a bug that we wake the queue when we "took control about
+transmissions" only.
+Change the name, I think it will be in future not only scan related.
+Maybe "mac802154_queue_stopped()". Everything which is queued from
+socket/upperlayer(6lowpan) goes this way.
 
-> Then xdp_buff_is_mb() will be xdp_buff_has_frags().
->=20
-> I agree that it's not obvious what "mb" suffix stands for,
-> but I don't buy at all that it can be confused with "megabyte".
-> It's the context that matters.
-> In "100mb" it's obvious that "mb" is likely "megabyte",
-> but in "xdp.mb" it's certainly not "xdp megabyte".
-> Such a sentence has no meaning.
-> Imagine we used that suffix for "tc"...
-> it would be "tc.mb"... "Traffic Control Megabyte" ??
->=20
-> Anyway "xdp.frags" ?
+>
+> But overall I think I don't understand well this part. What is
+> a bit foggy to me is why the (async) tx implementation does:
+>
+> *Core*                           *Driver*
+>
+> stop_queue()
+> drv_async_xmit() -------
+>                         \------> do something
+>                          ------- calls ieee802154_xmit_complete()
+> wakeup_queue() <--------/
+>
+> So we actually disable the queue for transmitting. Why??
+>
 
-agree
+Because all transceivers have either _one_ transmit framebuffer or one
+framebuffer for transmit and receive one time. We need to report to
+stop giving us more skb's while we are busy with one to transmit.
+This all will/must be changed in future if there is hardware outside
+which is more powerful and the driver needs to control the flow here.
 
->=20
-> Btw "xdp_cpumap" should be cleaned up.
-> xdp_cpumap is an attach type. It's not prog type.
-> Probably it should be "xdp/cpumap" to align with "cgroup/bind[46]" ?
+That ieee802154_xmit_complete() calls wakeup_queue need to be
+forbidden when we are in "synchronous transmit mode"/the queue is
+stopped. The synchronous transmit mode is not for any hotpath, it's
+for MLME and I think we also need a per phy lock to avoid multiple
+synchronous transmissions at one time. Please note that I don't think
+here only about scan operation, also for other possible MLME-ops.
 
-so for xdp "mb" or xdp "frags" it will be xdp/cpumap.mb (xdp/devmap.mb) or
-xdp/cpumap.frags (xdp/devmap.frags), right?
+> > Also there exists a race which exists in your way and also the one
+> > mentioned above. There can still be some transmissions going on... We
+> > need to wait until "all possible" tx completions are done... to be
+> > sure there are really no transmissions going on. However we need to be
+> > sure that a wake cannot be done if a tx completion is done, we need to
+> > avoid it when the scan operation is ongoing as a workaround for this
+> > race.
+> >
+> > This race exists and should be fixed in future work?
+>
+> Yep, this is true, do you have any pointers? Because I looked at the
+> code and for now it appears quite unpractical to add some kind of
+> flushing mechanism on that net queue. I believe we cannot use the netif
+> interface for that so we would have to implement our own mechanism in
+> the ieee802154 core.
 
->=20
-> In patch 22 there is a comment:
-> /* try to attach BPF_XDP_DEVMAP multi-buff program"
->=20
-> It creates further confusion. There is no XDP_DEVMAP program type.
-> It should probably read
-> "Attach BPF_XDP program with frags to devmap"
+yes, we need some kind of "wait_for_completion()" and "complete()". We
+are currently lucky that we allow only one skb to be transmitted at
+one time. I think it is okay to put that on a per phy basis...
 
-ack, I will fix it.
-
->=20
-> Patch 21 still has "CHECK". Pls replace it with ASSERT.
-
-ack, I will fix it.
-
-Regards,
-Lorenzo
-
---nZm/TQme1PjwK7dz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYeC8sAAKCRA6cBh0uS2t
-rOf4AQCaGzSEnw1hXKEWatDwR6JQ1FvtR+J0EzPZ+3qZ6vVIdgEA6pCHTZoY9aPr
-mSjJ5Pms7CXEJt7PVDR2CJujxM5XfQ8=
-=UXis
------END PGP SIGNATURE-----
-
---nZm/TQme1PjwK7dz--
+- Alex
