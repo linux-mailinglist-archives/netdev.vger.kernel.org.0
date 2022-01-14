@@ -2,199 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AF4748F17B
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 21:35:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23C2148F17E
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 21:35:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244568AbiANUf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 15:35:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49630 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244797AbiANUeP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 15:34:15 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA16C061574;
-        Fri, 14 Jan 2022 12:34:14 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id f141-20020a1c1f93000000b003497aec3f86so7802398wmf.3;
-        Fri, 14 Jan 2022 12:34:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=PjikHxdu0mISOqtrWdj4/szGo6v35TIQfdPPlpfzmlE=;
-        b=brJGRwJeUNOMXm6JSTvcPBVcCRZweJn+/aM3reyB9sujVb36otfdmEgK/OinG4tMxV
-         iNo2Mo3YmlHKKANGK88VZXglAnuormpxLj5mcpV8X8TlqhflZD57YUUItUSEax+RWPuq
-         h7tJJ/Alx8cPKEytqj1g+yIWWm1koH8G6GrGMxrMQw0iK/1pUfgGrVckX11epqI9i6bf
-         s9J9nrU6fytSxcKPVIxGdEeuACNaF5VoWFFIc+1s3mkY5eKXBPVoaiuwiclfbQn4LfBF
-         mG68Ergj0yiZx+ceEChEU/b3sIMTnMx/JUbaBHoO9k+5GETOS3KaYVpi4P6TOf4xbZwD
-         /9jg==
+        id S240237AbiANUfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 15:35:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50681 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244498AbiANUf0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 15:35:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642192525;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=amgtrqtQMjyUksxLoOVhxEX1FtphBXOPchfSfNb8y6E=;
+        b=L1W3R8t+VksOfwhNhAIFdpT3XDZwEJLY0u6Q2tMlkKK1wpsVuxqcuK7KN0AZQN88kZIRsy
+        /qXLKPi0wOxJWCjZL1wLo0hyBdCGHVq7UyRlFE8tUIf3YlnwK8mHD6d7vZT+XkKCeE+IHu
+        /ie8F59+zqWdQ6C+1irzcCsfRkdlZvk=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-168-UvL1u_sLPDOB3AMnkzfwUQ-1; Fri, 14 Jan 2022 15:35:23 -0500
+X-MC-Unique: UvL1u_sLPDOB3AMnkzfwUQ-1
+Received: by mail-ed1-f71.google.com with SMTP id i9-20020a05640242c900b003fe97faab62so9069241edc.9
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 12:35:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=PjikHxdu0mISOqtrWdj4/szGo6v35TIQfdPPlpfzmlE=;
-        b=Zr8RaftFPWh9IXsT9ox4vgytpqotrSz9b5/lBRo2RgIJumyutzJOQS5Txpruv1H+Lp
-         56sqcs7svyda+3vq8o5czjNpMCWv4qk0a6Aq92C3/Jy+USjULHlaTZWQWzkFCgS2WyA+
-         QTUmxho9sClYD84P1rkkYhyA5Ev3O0oXF7YJus0Ui/UkQzyGAkr1kg9ARPNipPu7E9dO
-         5iie1kgSZ4JuGqRQKYE6ypzQtHbPtfWFnvJzuXeqDVWV/k7g3ogTYPtlOWXOHSEkdcR7
-         AhDnOt5qYLK1fpxiI6/8qwHiKVYcDAKcEt2yr3iDyHxiyP2nE6IT9xmCSeZqj2iYBuIB
-         +FIQ==
-X-Gm-Message-State: AOAM5317QtTUYEtQ8gVCov1XiViH4wVQt8O7Gslz6Ujl4ESsS+itCURv
-        6po856uViBFMxYFITTF6eYA=
-X-Google-Smtp-Source: ABdhPJwovGOmRex/6G1mlMrsrq+6R3LK9/PLEV2ibcrpyNO1YvqRFr05mfnJKt1uAp2z2Asw1X1bPg==
-X-Received: by 2002:a05:600c:33a7:: with SMTP id o39mr9481830wmp.6.1642192453519;
-        Fri, 14 Jan 2022 12:34:13 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f2f:5b00:8dca:5ce5:b6ef:4dea? (p200300ea8f2f5b008dca5ce5b6ef4dea.dip0.t-ipconnect.de. [2003:ea:8f2f:5b00:8dca:5ce5:b6ef:4dea])
-        by smtp.googlemail.com with ESMTPSA id e12sm3340985wrg.33.2022.01.14.12.34.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jan 2022 12:34:12 -0800 (PST)
-Message-ID: <cdd16632-d9ea-3556-f7b4-6909289b593c@gmail.com>
-Date:   Fri, 14 Jan 2022 21:34:03 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding;
+        bh=amgtrqtQMjyUksxLoOVhxEX1FtphBXOPchfSfNb8y6E=;
+        b=XXIM4E4KIxO4wXD2JMPjypZ7YMPaTQP/n/sC+9U5ZTrHr2njAIuy9yzJWMYOTsxC06
+         hWuAPXNU/MAPgw3wKn2EDwXVa2bHLEfCIY99I5HKZkLX5l2hv81BpTxOpGUYLn78Lp27
+         oE8eHgozZvY3Zd6it4rNuLz/bZ9YF9okGjHcMlGLwLt6UopDAUXg+t9EIQzbXTk7mcGu
+         2uyizRI0XXKD4c42wAs8DqzlO/dw1vo8UZ0LGrt9OtJW04oDxeUPRzqJnuobppwQvGWH
+         tGT9xzqmQBDHPpX2lMfakDtbKSJxP0Twxg0gFHipoMGy5NZ5ciBoy0EVYtD/qZwN1/m4
+         sHQw==
+X-Gm-Message-State: AOAM532RKiCmtsf6ot1IL5XMZOnoFcKeOjRpCyDhxBeOVZcDcPut6kIb
+        j2cRYusIWMNWLQbEn7Zwf9wgVfeIIdiJqNNE/B66aWm78DNQPSTNpmaO977fRedY2nIs31JPmve
+        sRMAFCLkLvaeD03ZK
+X-Received: by 2002:a17:906:819:: with SMTP id e25mr4853852ejd.63.1642192522657;
+        Fri, 14 Jan 2022 12:35:22 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwPI8pIhpFi/ZyGwDQrEvy99Xsw6RBcz7cfDlKQfktwhMLpdTccY1eNq0Y8ynYb5emG9NQgwg==
+X-Received: by 2002:a17:906:819:: with SMTP id e25mr4853826ejd.63.1642192522443;
+        Fri, 14 Jan 2022 12:35:22 -0800 (PST)
+Received: from redhat.com ([2.55.154.210])
+        by smtp.gmail.com with ESMTPSA id a20sm2709266eda.21.2022.01.14.12.35.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 12:35:21 -0800 (PST)
+Date:   Fri, 14 Jan 2022 15:35:15 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        christophe.jaillet@wanadoo.fr, dapeng1.mi@intel.com,
+        david@redhat.com, elic@nvidia.com, eperezma@redhat.com,
+        flyingpenghao@gmail.com, flyingpeng@tencent.com,
+        gregkh@linuxfoundation.org, guanjun@linux.alibaba.com,
+        jasowang@redhat.com, jean-philippe@linaro.org,
+        jiasheng@iscas.ac.cn, johan@kernel.org, keescook@chromium.org,
+        labbott@kernel.org, lingshan.zhu@intel.com, lkp@intel.com,
+        luolikang@nsfocus.com, lvivier@redhat.com, mst@redhat.com,
+        pasic@linux.ibm.com, sgarzare@redhat.com, somlo@cmu.edu,
+        trix@redhat.com, wu000273@umn.edu, xianting.tian@linux.alibaba.com,
+        xuanzhuo@linux.alibaba.com, yun.wang@linux.alibaba.com
+Subject: [GIT PULL] virtio,vdpa,qemu_fw_cfg: features, cleanups, fixes
+Message-ID: <20220114153515-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Content-Language: en-US
-To:     Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-References: <20220113095604.31827-1-mohammad.athari.ismail@intel.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net v3] net: phy: marvell: add Marvell specific PHY
- loopback
-In-Reply-To: <20220113095604.31827-1-mohammad.athari.ismail@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13.01.2022 10:56, Mohammad Athari Bin Ismail wrote:
-> Existing genphy_loopback() is not applicable for Marvell PHY. Besides
-> configuring bit-6 and bit-13 in Page 0 Register 0 (Copper Control
-> Register), it is also required to configure same bits  in Page 2
-> Register 21 (MAC Specific Control Register 2) according to speed of
-> the loopback is operating.
-> 
-> Tested working on Marvell88E1510 PHY for all speeds (1000/100/10Mbps).
-> 
-> FIXME: Based on trial and error test, it seem 1G need to have delay between
-> soft reset and loopback enablement.
-> 
-> Fixes: 014068dcb5b1 ("net: phy: genphy_loopback: add link speed configuration")
-> Cc: <stable@vger.kernel.org> # 5.15.x
-> Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-> ---
-> v3 changelog:
-> - Use phy_write() to configure speed for BMCR.
-> - Add error handling.
-> All commented by Russell King <linux@armlinux.org.uk>
-> 
-> v2 changelog:
-> - For loopback enabled, add bit-6 and bit-13 configuration in both Page
->   0 Register 0 and Page 2 Register 21. Commented by Heiner Kallweit
-> <hkallweit1@gmail.com>.
-> - For loopback disabled, follow genphy_loopback() implementation
-> ---
->  drivers/net/phy/marvell.c | 56 ++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 55 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-> index 4fcfca4e1702..5c371c2de9a0 100644
-> --- a/drivers/net/phy/marvell.c
-> +++ b/drivers/net/phy/marvell.c
-> @@ -189,6 +189,8 @@
->  #define MII_88E1510_GEN_CTRL_REG_1_MODE_RGMII_SGMII	0x4
->  #define MII_88E1510_GEN_CTRL_REG_1_RESET	0x8000	/* Soft reset */
->  
-> +#define MII_88E1510_MSCR_2		0x15
-> +
->  #define MII_VCT5_TX_RX_MDI0_COUPLING	0x10
->  #define MII_VCT5_TX_RX_MDI1_COUPLING	0x11
->  #define MII_VCT5_TX_RX_MDI2_COUPLING	0x12
-> @@ -1932,6 +1934,58 @@ static void marvell_get_stats(struct phy_device *phydev,
->  		data[i] = marvell_get_stat(phydev, i);
->  }
->  
-> +static int marvell_loopback(struct phy_device *phydev, bool enable)
+The following changes since commit c9e6606c7fe92b50a02ce51dda82586ebdf99b48:
 
-Marvell PHY's use different bits for the loopback speed, e.g.:
+  Linux 5.16-rc8 (2022-01-02 14:23:25 -0800)
 
-88E1510 bits 13, 6
-88E1545 bits 2..0
+are available in the Git repository at:
 
-Your function is usable with certain Marvell PHY's only, therefore
-the function name is misleading. At a first glance I see two options:
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-1. Leave the function name and add a version-specific section that returns
-   an error for (not yet) supported versions.
-2. Name it m88e1510_loopback()
+for you to fetch changes up to f04ac267029c8063fc35116b385cd37656b3c81a:
 
-> +{
-> +	int err;
-> +
-> +	if (enable) {
-> +		u16 bmcr_ctl = 0, mscr2_ctl = 0;
-> +
-> +		if (phydev->speed == SPEED_1000)
-> +			bmcr_ctl = BMCR_SPEED1000;
-> +		else if (phydev->speed == SPEED_100)
-> +			bmcr_ctl = BMCR_SPEED100;
-> +
-> +		if (phydev->duplex == DUPLEX_FULL)
-> +			bmcr_ctl |= BMCR_FULLDPLX;
-> +
-> +		err = phy_write(phydev, MII_BMCR, bmcr_ctl);
-> +		if (err < 0)
-> +			return err;
-> +
-> +		if (phydev->speed == SPEED_1000)
-> +			mscr2_ctl = BMCR_SPEED1000;
-> +		else if (phydev->speed == SPEED_100)
-> +			mscr2_ctl = BMCR_SPEED100;
-> +
-> +		err = phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
-> +				       MII_88E1510_MSCR_2, BMCR_SPEED1000 |
-> +				       BMCR_SPEED100, mscr2_ctl);
-> +		if (err < 0)
-> +			return err;
-> +
-> +		/* Need soft reset to have speed configuration takes effect */
-> +		err = genphy_soft_reset(phydev);
-> +		if (err < 0)
-> +			return err;
-> +
-> +		/* FIXME: Based on trial and error test, it seem 1G need to have
-> +		 * delay between soft reset and loopback enablement.
-> +		 */
-> +		if (phydev->speed == SPEED_1000)
-> +			msleep(1000);
-> +
-> +		return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
-> +				  BMCR_LOOPBACK);
-> +	} else {
-> +		err = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, 0);
-> +		if (err < 0)
-> +			return err;
-> +
-> +		return phy_config_aneg(phydev);
-> +	}
-> +}
-> +
->  static int marvell_vct5_wait_complete(struct phy_device *phydev)
->  {
->  	int i;
-> @@ -3078,7 +3132,7 @@ static struct phy_driver marvell_drivers[] = {
->  		.get_sset_count = marvell_get_sset_count,
->  		.get_strings = marvell_get_strings,
->  		.get_stats = marvell_get_stats,
-> -		.set_loopback = genphy_loopback,
-> +		.set_loopback = marvell_loopback,
->  		.get_tunable = m88e1011_get_tunable,
->  		.set_tunable = m88e1011_set_tunable,
->  		.cable_test_start = marvell_vct7_cable_test_start,
+  virtio: acknowledge all features before access (2022-01-14 14:58:41 -0500)
+
+----------------------------------------------------------------
+virtio,vdpa,qemu_fw_cfg: features, cleanups, fixes
+
+IOMMU bypass support in virtio-iommu
+partial support for < MAX_ORDER - 1 granularity for virtio-mem
+driver_override for vdpa
+sysfs ABI documentation for vdpa
+multiqueue config support for mlx5 vdpa
+
+Misc fixes, cleanups.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+Christophe JAILLET (1):
+      eni_vdpa: Simplify 'eni_vdpa_probe()'
+
+Dapeng Mi (1):
+      virtio: fix a typo in function "vp_modern_remove" comments.
+
+David Hildenbrand (2):
+      virtio-mem: prepare page onlining code for granularity smaller than MAX_ORDER - 1
+      virtio-mem: prepare fake page onlining code for granularity smaller than MAX_ORDER - 1
+
+Eli Cohen (20):
+      net/mlx5_vdpa: Offer VIRTIO_NET_F_MTU when setting MTU
+      vdpa/mlx5: Fix wrong configuration of virtio_version_1_0
+      vdpa: Provide interface to read driver features
+      vdpa/mlx5: Distribute RX virtqueues in RQT object
+      vdpa: Sync calls set/get config/status with cf_mutex
+      vdpa: Read device configuration only if FEATURES_OK
+      vdpa: Allow to configure max data virtqueues
+      vdpa/mlx5: Fix config_attr_mask assignment
+      vdpa/mlx5: Support configuring max data virtqueue
+      vdpa: Add support for returning device configuration information
+      vdpa/mlx5: Restore cur_num_vqs in case of failure in change_num_qps()
+      vdpa: Support reporting max device capabilities
+      vdpa/mlx5: Report max device capabilities
+      vdpa/vdpa_sim: Configure max supported virtqueues
+      vdpa: Use BIT_ULL for bit operations
+      vdpa/vdpa_sim_net: Report max device capabilities
+      vdpa: Avoid taking cf_mutex lock on get status
+      vdpa: Protect vdpa reset with cf_mutex
+      vdpa/mlx5: Fix is_index_valid() to refer to features
+      vdpa/mlx5: Fix tracking of current number of VQs
+
+Eugenio Pérez (2):
+      vdpa: Avoid duplicate call to vp_vdpa get_status
+      vdpa: Mark vdpa_config_ops.get_vq_notification as optional
+
+Guanjun (1):
+      vduse: moving kvfree into caller
+
+Jean-Philippe Brucker (5):
+      iommu/virtio: Add definitions for VIRTIO_IOMMU_F_BYPASS_CONFIG
+      iommu/virtio: Support bypass domains
+      iommu/virtio: Sort reserved regions
+      iommu/virtio: Pass end address to viommu_add_mapping()
+      iommu/virtio: Support identity-mapped domains
+
+Johan Hovold (4):
+      firmware: qemu_fw_cfg: fix NULL-pointer deref on duplicate entries
+      firmware: qemu_fw_cfg: fix kobject leak in probe error path
+      firmware: qemu_fw_cfg: fix sysfs information leak
+      firmware: qemu_fw_cfg: remove sysfs entries explicitly
+
+Laura Abbott (1):
+      vdpa: clean up get_config_size ret value handling
+
+Michael S. Tsirkin (5):
+      virtio: wrap config->reset calls
+      hwrng: virtio - unregister device before reset
+      virtio_ring: mark ring unused on error
+      virtio: unexport virtio_finalize_features
+      virtio: acknowledge all features before access
+
+Peng Hao (2):
+      virtio/virtio_mem: handle a possible NULL as a memcpy parameter
+      virtio/virtio_pci_legacy_dev: ensure the correct return value
+
+Stefano Garzarella (2):
+      docs: document sysfs ABI for vDPA bus
+      vdpa: add driver_override support
+
+Xianting Tian (1):
+      vhost/test: fix memory leak of vhost virtqueues
+
+Zhu Lingshan (1):
+      ifcvf/vDPA: fix misuse virtio-net device config size for blk dev
+
+王贇 (1):
+      virtio-pci: fix the confusing error message
+
+ Documentation/ABI/testing/sysfs-bus-vdpa   |  57 ++++++++++
+ MAINTAINERS                                |   1 +
+ arch/um/drivers/virt-pci.c                 |   2 +-
+ drivers/block/virtio_blk.c                 |   4 +-
+ drivers/bluetooth/virtio_bt.c              |   2 +-
+ drivers/char/hw_random/virtio-rng.c        |   2 +-
+ drivers/char/virtio_console.c              |   4 +-
+ drivers/crypto/virtio/virtio_crypto_core.c |   8 +-
+ drivers/firmware/arm_scmi/virtio.c         |   2 +-
+ drivers/firmware/qemu_fw_cfg.c             |  21 ++--
+ drivers/gpio/gpio-virtio.c                 |   2 +-
+ drivers/gpu/drm/virtio/virtgpu_kms.c       |   2 +-
+ drivers/i2c/busses/i2c-virtio.c            |   2 +-
+ drivers/iommu/virtio-iommu.c               | 115 ++++++++++++++++----
+ drivers/net/caif/caif_virtio.c             |   2 +-
+ drivers/net/virtio_net.c                   |   4 +-
+ drivers/net/wireless/mac80211_hwsim.c      |   2 +-
+ drivers/nvdimm/virtio_pmem.c               |   2 +-
+ drivers/rpmsg/virtio_rpmsg_bus.c           |   2 +-
+ drivers/scsi/virtio_scsi.c                 |   2 +-
+ drivers/vdpa/alibaba/eni_vdpa.c            |  28 +++--
+ drivers/vdpa/ifcvf/ifcvf_base.c            |  41 ++++++--
+ drivers/vdpa/ifcvf/ifcvf_base.h            |   9 +-
+ drivers/vdpa/ifcvf/ifcvf_main.c            |  40 +++----
+ drivers/vdpa/mlx5/net/mlx5_vnet.c          | 156 ++++++++++++++++-----------
+ drivers/vdpa/vdpa.c                        | 163 +++++++++++++++++++++++++----
+ drivers/vdpa/vdpa_sim/vdpa_sim.c           |  21 ++--
+ drivers/vdpa/vdpa_sim/vdpa_sim_net.c       |   2 +
+ drivers/vdpa/vdpa_user/vduse_dev.c         |  19 +++-
+ drivers/vdpa/virtio_pci/vp_vdpa.c          |  16 ++-
+ drivers/vhost/test.c                       |   1 +
+ drivers/vhost/vdpa.c                       |  12 +--
+ drivers/virtio/virtio.c                    |  40 ++++---
+ drivers/virtio/virtio_balloon.c            |   2 +-
+ drivers/virtio/virtio_input.c              |   2 +-
+ drivers/virtio/virtio_mem.c                | 114 +++++++++++++-------
+ drivers/virtio/virtio_pci_legacy.c         |   2 +-
+ drivers/virtio/virtio_pci_legacy_dev.c     |   4 +-
+ drivers/virtio/virtio_pci_modern_dev.c     |   2 +-
+ drivers/virtio/virtio_ring.c               |   4 +-
+ drivers/virtio/virtio_vdpa.c               |   7 +-
+ fs/fuse/virtio_fs.c                        |   4 +-
+ include/linux/vdpa.h                       |  39 +++++--
+ include/linux/virtio.h                     |   2 +-
+ include/uapi/linux/vdpa.h                  |   6 ++
+ include/uapi/linux/virtio_iommu.h          |   8 +-
+ net/9p/trans_virtio.c                      |   2 +-
+ net/vmw_vsock/virtio_transport.c           |   4 +-
+ sound/virtio/virtio_card.c                 |   4 +-
+ 49 files changed, 706 insertions(+), 286 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-vdpa
 
