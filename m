@@ -2,116 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BEC448E526
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 09:02:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43D1348E698
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 09:33:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235041AbiANICM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 03:02:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:30215 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234249AbiANICM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 03:02:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642147331;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=klb0nnUjuvobPotelSx3DfHypMSRSFWqMkVcwCb1ESI=;
-        b=PoqYoQXlFIWys5suqyfWfH3zPzUoXWBWJbZr9p/XNjHoBcBJurpp5fjcWfArv2QeuLQDkm
-        YbhxT6vuLL6hoCCHgEtsxdG6sHEMgAVLI3IvYQaypGsXu8g1TKK+Pa45Dtlx6Q3JS9Lrq+
-        T3xHCO8BB7SfiFova3Tjmo0OYgdGskk=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-17-YAlWiUIKOMaEOpF1MmkZjA-1; Fri, 14 Jan 2022 03:02:10 -0500
-X-MC-Unique: YAlWiUIKOMaEOpF1MmkZjA-1
-Received: by mail-wm1-f72.google.com with SMTP id n14-20020a7bcbce000000b003488820f0d9so5126048wmi.8
-        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 00:02:10 -0800 (PST)
+        id S234133AbiANIdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 03:33:49 -0500
+Received: from mail-ua1-f52.google.com ([209.85.222.52]:40820 "EHLO
+        mail-ua1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233622AbiANIdt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 03:33:49 -0500
+Received: by mail-ua1-f52.google.com with SMTP id w21so6260022uan.7;
+        Fri, 14 Jan 2022 00:33:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=klb0nnUjuvobPotelSx3DfHypMSRSFWqMkVcwCb1ESI=;
-        b=jBvBK/okkN+5AyN84Ggb6JLG4Vh5MsGso9pAMl80CbzfSCrL+PvGv5Qvkpyyby5XUa
-         cNLCvqes/aHWbHjPbIPlt+AR2qU34W5PV2bPRPTjtIhg8g+6bCWY71RT5N+kn/+wjcwd
-         5RXqsFpsi6aSCIt5VjqfzM7q+UrLP/7/wVmA6att6dbGob94gH2RXjXicMkrQYjwQWUE
-         aHnbu0SqBN49i5uhFYXybBUvA44VHsIh+QRFpW+Wuwp49daMq8s+GVy/xoEtMaYrQZ1K
-         VZqd+a3gkVB42UfYkbDIbxbRuJzAmotxVKuF+5dj+iKI3NEXxvoqaQExrfqHV/w9FhIN
-         qTKQ==
-X-Gm-Message-State: AOAM532p8tTK3HS1WlNoouRO6uEXB9rOKCb2jgAlN+RJJ9AF7P/nX6Rc
-        FFEjotn0h2Z7wXa63fEHPwtEJXAoEj/vLosl0wDF/NxzB53NWFWwP5RIPhHyjVBRqot8U46ayai
-        rLgLVaM9/WLjTmMdZ
-X-Received: by 2002:a05:6000:188d:: with SMTP id a13mr7447589wri.297.1642147329127;
-        Fri, 14 Jan 2022 00:02:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyjqJT5sGU0ZJyw8nvYxiwmgy2EIiuoaOLJLNLYx14PQLad/rO2oCWq7DkWPydBZBlnn2TR1Q==
-X-Received: by 2002:a05:6000:188d:: with SMTP id a13mr7447566wri.297.1642147328909;
-        Fri, 14 Jan 2022 00:02:08 -0800 (PST)
-Received: from steredhat (host-95-238-125-214.retail.telecomitalia.it. [95.238.125.214])
-        by smtp.gmail.com with ESMTPSA id o12sm5576911wrc.69.2022.01.14.00.02.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 00:02:08 -0800 (PST)
-Date:   Fri, 14 Jan 2022 09:02:05 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [RFC PATCH] vhost: cache avail index in vhost_enable_notify()
-Message-ID: <20220114080205.ls4txgj7qbqmc3q5@steredhat>
-References: <20220113145642.205388-1-sgarzare@redhat.com>
- <CACGkMEsqY5RHL=9=iny6xRVs_=EdACUCfX-Rmpq+itpdoT_rrg@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Sy7lT+eK8ipvfv0Ofk1ldO/tYfoiahfm+fHSJgI7+Xs=;
+        b=CxrkKtDb0bQBRSg8bGzObzfkMdWdLj+QaLq822JccgbrkrtZJ9qsALhOtRkSxpnAlJ
+         +LztWhgqlj+q0gde1w9ZTIWrepAi+U+Zv54+5uM047NoVi43FkAVp28d2X20DwgfN+sO
+         OdVftcRsaD4JmuvNDHnlIsTIfczli/RvobUGFa+UzTxo4qIr0sEicHl1W9e41ZTaJWlg
+         baWu3JFEUz6l06Hh5IvRvCKwltDZo0ZP1vOKz3+V6GUzsrk+606t9HFPwbnAJAQeqHKc
+         U4FqQMa7ZQY9LVVMaqVodT7e8Gm1Pgfhlye+WYllSPsaDKLGQ+5oHP9q3dF5KK1lzSBJ
+         n31A==
+X-Gm-Message-State: AOAM5314EITKksdxyh/QwVSin2Bx9CxICv01OJ2vqGKTgu2fdt8fkAPo
+        BDGNPd/TrI4OPZRK/Mr6WchoYdt35/C8pA==
+X-Google-Smtp-Source: ABdhPJznBeXDe9YRtuIahv0G00H8XbqbgcbaGO0fg9iFPtOdW6MJAg7mNOptcVSx7GL9N5nXHk4bQA==
+X-Received: by 2002:a05:6102:807:: with SMTP id g7mr3435871vsb.65.1642149228403;
+        Fri, 14 Jan 2022 00:33:48 -0800 (PST)
+Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
+        by smtp.gmail.com with ESMTPSA id c25sm2446948vsk.32.2022.01.14.00.33.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jan 2022 00:33:47 -0800 (PST)
+Received: by mail-ua1-f46.google.com with SMTP id o1so15732561uap.4;
+        Fri, 14 Jan 2022 00:33:47 -0800 (PST)
+X-Received: by 2002:a67:e905:: with SMTP id c5mr3691251vso.68.1642149227718;
+ Fri, 14 Jan 2022 00:33:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CACGkMEsqY5RHL=9=iny6xRVs_=EdACUCfX-Rmpq+itpdoT_rrg@mail.gmail.com>
+References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-2-Jason@zx2c4.com>
+ <87tue8ftrm.fsf@toke.dk> <CAADnVQJqoHy+EQ-G5fUtkPpeHaA6YnqsOjjhUY6UW0v7eKSTZw@mail.gmail.com>
+ <CAHmME9ork6wh-T=sRfX6X0B4j-Vb36GVO0v=Yda0Hac1hiN_KA@mail.gmail.com> <CAADnVQLF_tmNmNk+H+jP1Ubmw-MBhG1FevFmtZY6yw5xk2314g@mail.gmail.com>
+In-Reply-To: <CAADnVQLF_tmNmNk+H+jP1Ubmw-MBhG1FevFmtZY6yw5xk2314g@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 14 Jan 2022 09:33:36 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdV_4HjvbpDsbhomxO3JSv-MOWDzb-8vc2=prc_KgTPA1g@mail.gmail.com>
+Message-ID: <CAMuHMdV_4HjvbpDsbhomxO3JSv-MOWDzb-8vc2=prc_KgTPA1g@mail.gmail.com>
+Subject: Re: [PATCH RFC v1 1/3] bpf: move from sha1 to blake2s in tag calculation
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 02:18:01PM +0800, Jason Wang wrote:
->On Thu, Jan 13, 2022 at 10:57 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->>
->> In vhost_enable_notify() we enable the notifications and we read
->> the avail index to check if new buffers have become available in
->> the meantime. In this case, the device would go to re-read avail
->> index to access the descriptor.
->>
->> As we already do in other place, we can cache the value in `avail_idx`
->> and compare it with `last_avail_idx` to check if there are new
->> buffers available.
->>
->> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Hi Alexei,
+
+On Thu, Jan 13, 2022 at 11:45 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+> On Thu, Jan 13, 2022 at 4:27 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> > On 1/13/22, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> > > Nack.
+> > > It's part of api. We cannot change it.
+> >
+> > This is an RFC patchset, so there's no chance that it'll actually be
+> > applied as-is, and hence there's no need for the strong hammer nack.
+> > The point of "request for comments" is comments. Specifically here,
+> > I'm searching for information on the ins and outs of *why* it might be
+> > hard to change. How does userspace use this? Why must this 64-bit
+> > number be unchanged? Why did you do things this way originally? Etc.
+> > If you could provide a bit of background, we might be able to shake
+> > out a solution somewhere in there.
 >
->Patch looks fine but I guess we won't get performance improvement
->since it doesn't save any userspace/VM memory access?
+> There is no problem with the code and nothing to be fixed.
 
-It should save the memory access when vhost_enable_notify() find 
-something new in the VQ, so in this path:
+"Your Jedi mind tricks don't work on me."
 
-     vhost_enable_notify() <- VM memory access for avail index
-       == true
+The "problem" is that this is one of the few last users of SHA-1 in
+the kernel.
 
-     vhost_disable_notify()
-     ...
+Can you please answer the questions above, so we can get a better
+understanding?
+Thanks!
 
-     vhost_get_vq_desc()   <- VM memory access for avail index
-                              with the patch applied, this access is 
-                              avoided since avail index is cached
+Gr{oetje,eeting}s,
 
-In any case, I don't expect this to be a very common path, indeed we
-usually use unlikely() for this path:
+                        Geert
 
-     if (unlikely(vhost_enable_notify(dev, vq))) {
-         vhost_disable_notify(dev, vq);
-         continue;
-     }
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-So I don't expect a significant performance increase.
-
-v1 coming with a better commit description.
-
-Thanks,
-Stefano
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
