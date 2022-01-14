@@ -2,124 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2522748EF4E
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 18:41:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FC5F48EF57
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 18:44:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243905AbiANRlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 12:41:00 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:38484 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230300AbiANRk7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 12:40:59 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 9DA1921997;
-        Fri, 14 Jan 2022 17:40:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1642182058; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=L3P17Pz6zAv7sYoZ0/PeiYNyjbZ3Q7R4DqzufX0d/K8=;
-        b=KqZ5L/HQngPi8PNlMXE9/PZ9lt7eu2Pt73t461BWXImQ1FZ5sGaYmWIH8uf4z9zzV5H7e3
-        G4eBpwMBrx8XGZw0FUz3XMi3J+fhaz+3LqWsG+TfpyFHSH69RYzXZn+DhDWOCdh7QGfbbq
-        /5zKyakXNbX6L4vTK8XTJJypDbiYcqA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1642182058;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=L3P17Pz6zAv7sYoZ0/PeiYNyjbZ3Q7R4DqzufX0d/K8=;
-        b=7POdIZRGVjJvdo5p23qTqbG+b1NAAju6LQkRURQhSrQSBBAgEbJZqoBhMmPI+cOtNV4ijX
-        wATwUIlcWnPDiXDw==
-Received: from localhost (dwarf.suse.cz [10.100.12.32])
-        by relay2.suse.de (Postfix) with ESMTP id 47B4EA3B83;
-        Fri, 14 Jan 2022 17:40:58 +0000 (UTC)
-Date:   Fri, 14 Jan 2022 18:40:58 +0100
-From:   Jiri Bohac <jbohac@suse.cz>
-To:     Sabrina Dubroca <sd@queasysnail.net>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Mike Maloney <maloneykernel@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH] xfrm: fix MTU regression
-Message-ID: <20220114174058.rqhtuwpfhq6czldn@dwarf.suse.cz>
-References: <20220114173133.tzmdm2hy4flhblo3@dwarf.suse.cz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220114173133.tzmdm2hy4flhblo3@dwarf.suse.cz>
+        id S243914AbiANRoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 12:44:12 -0500
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:42241 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243918AbiANRoM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 12:44:12 -0500
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 2FEE5580183;
+        Fri, 14 Jan 2022 12:44:09 -0500 (EST)
+Received: from imap48 ([10.202.2.98])
+  by compute4.internal (MEProxy); Fri, 14 Jan 2022 12:44:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        stressinduktion.org; h=mime-version:message-id:in-reply-to
+        :references:date:from:to:cc:subject:content-type; s=fm2; bh=XC8x
+        7KXAcVBSo+8COeedpg7cEMYqOq1otu+UETusZEE=; b=JkO4dr9OnXIi2E5oBM5K
+        t66ge8M1MdOaiKC+cg+WCGTYPSOwvSHo58qUkzgvqULeHC1fZrOPnn3cvQ6Tf2vJ
+        lxuoYGE4+5Ec0LULpqmhcN2kcyeEzlo7N3cuBeWugdDNbK13fRUuNVqeM0rCBS9b
+        ddQIRMTYADY49oMEc1U0JRssBs8MX9sL49QHb196zqP8yHGD/7xEhyZhu+6QXv8A
+        cQ8KNKhfmiBKqDOibsRYi711kfuBvekag0zW6rYmT8bEAiG+iHctt5F8n1b0PEuj
+        U+mgmXBnQUnahqUky2UZczB84TlelCxsWyhg2kxr97EWeAqib+DNq+7QYnKEDYCn
+        2g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=XC8x7K
+        XAcVBSo+8COeedpg7cEMYqOq1otu+UETusZEE=; b=XxcYTeuCtnlGC7MarUYPyU
+        ddvAlD8qIyyumQtLdcNmyBqPSY6bdaBIdld6+Mgc0lD4ShzjMtBhh8AeP+30iO9G
+        rxqYC6i9zUuEd02xgX143G5o2jNxd3YwEDEhlLNCoUI20plomMgnylK5AsGt2NpB
+        N4nERzqjE6+bMxjDK8l3kkILv7mmwWc4qevzfVe2+fVDbxeYc66U3KxxsUcXAWwH
+        Zs92EJTLSbS/L6ZPkMj3fZUsNLGuq74mJR+xEllfbYqIUNrx1h3O4Agv0B/5jo61
+        pYMOQTXo0ACFFHhAtqR/WT6X2ziLjVzed/Cg0wLbebL4JCawb2QhdVTUGpdT2G0w
+        ==
+X-ME-Sender: <xms:Z7bhYawjmLXYGTgJAKyZ1FGbCylbfWwK1B1aQqIKvBHVTlf-zVILWg>
+    <xme:Z7bhYWTUWVR8aUIp1eK-sS1ALJZ0M7SDFoISDWpvpnpV1yYqr1PX0HK5yJ23j_MWs
+    HdQg1FIvemwLZzHEA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrtdehgddutdehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfjrghn
+    nhgvshcuhfhrvgguvghrihgtucfuohifrgdfuceohhgrnhhnvghssehsthhrvghsshhinh
+    guuhhkthhiohhnrdhorhhgqeenucggtffrrghtthgvrhhnpeehieeggeethedtgfdvtdek
+    ffduudegueevffekheefjeegvedugeetveffteetleenucffohhmrghinhepgihktggurd
+    gtohhmnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhep
+    hhgrnhhnvghssehsthhrvghsshhinhguuhhkthhiohhnrdhorhhg
+X-ME-Proxy: <xmx:Z7bhYcWeoRrx3NNL4AJ4L4l3e6fjFBT30oc09LqJ9b3p5GoqjvS0gA>
+    <xmx:Z7bhYQgE9QO-Zr2NhLl6GESvsvLlyiGDi-mgXrqLbIM48Yeeb90tCA>
+    <xmx:Z7bhYcCrlbSm9vbPNpS9oYGCuspUQKDONypysdZK9dFUxFmO1Gshmw>
+    <xmx:abbhYQ6uvmjAsuMFEM_JKvAwKKdZW48Ck8X5NcK9TwWNLoqyy1eV5A>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 7B93821E006E; Fri, 14 Jan 2022 12:44:07 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4569-g891f756243-fm-20220111.001-g891f7562
+Mime-Version: 1.0
+Message-Id: <3db9c306-ea22-444f-b932-f66f800a7a28@www.fastmail.com>
+In-Reply-To: <CAHmME9pR+qTn72vyANq8Nxx0BtGy7a_+dRvZS_F7RCag8Rvxng@mail.gmail.com>
+References: <20220112131204.800307-1-Jason@zx2c4.com>
+ <20220112131204.800307-3-Jason@zx2c4.com> <87r19cftbr.fsf@toke.dk>
+ <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
+ <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
+ <CAHmME9pR+qTn72vyANq8Nxx0BtGy7a_+dRvZS_F7RCag8Rvxng@mail.gmail.com>
+Date:   Fri, 14 Jan 2022 18:41:58 +0100
+From:   "Hannes Frederic Sowa" <hannes@stressinduktion.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Geert Uytterhoeven" <geert@linux-m68k.org>,
+        "Herbert Xu" <herbert@gondor.apana.org.au>,
+        "Ard Biesheuvel" <ardb@kernel.org>,
+        "Jean-Philippe Aumasson" <jeanphilippe.aumasson@gmail.com>,
+        "Linux Crypto Mailing List" <linux-crypto@vger.kernel.org>,
+        "Erik Kline" <ek@google.com>,
+        "Fernando Gont" <fgont@si6networks.com>,
+        "Lorenzo Colitti" <lorenzo@google.com>,
+        "Hideaki Yoshifuji" <hideaki.yoshifuji@miraclelinux.com>
+Subject: Re: [PATCH RFC v1 2/3] ipv6: move from sha1 to blake2s in address calculation
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 749439bfac6e1a2932c582e2699f91d329658196 ("ipv6: fix udpv6
-sendmsg crash caused by too small MTU") breaks PMTU for xfrm.
+Hello,
 
-A Packet Too Big ICMPv6 message received in response to an ESP
-packet will prevent all further communication through the tunnel
-if the reported MTU minus the ESP overhead is smaller than 1280.
+On Fri, Jan 14, 2022, at 17:07, Jason A. Donenfeld wrote:
+> On Thu, Jan 13, 2022 at 12:15 PM Hannes Frederic Sowa
+> <hannes@stressinduktion.org> wrote:
+>> > I'm not even so sure that's true. That was my worry at first, but
+>> > actually, looking at this more closely, DAD means that the address can
+>> > be changed anyway - a byte counter is hashed in - so there's no
+>> > guarantee there.
+>>
+>> The duplicate address detection counter is a way to merely provide basic
+>> network connectivity in case of duplicate addresses on the network
+>> (maybe some kind misconfiguration or L2 attack). Such detected addresses
+>> would show up in the kernel log and an administrator should investigate
+>> and clean up the situation.
+>
+> I don't mean to belabor a point where I'm likely wrong anyway, but
+> this DAD business has kept me thinking...
+>
+> Attacker is hanging out on the network sending DAD responses, forcing
+> those counters to increment, and thus making SHA1(stuff || counter)
+> result in a different IPv6 address than usual. Outcomes:
+> 1) The administrator cannot handle this, did not understand the
+> semantics of this address generation feature, and will now have a
+> broken network;
+> 2) The administrator knows what he's doing, and will be able to handle
+> a different IPv6 address coming up.
+>
+> Do we really care about case (1)? That sounds like emacs spacebar
+> heating https://xkcd.com/1172/. And case (2) seems like something that
+> would tolerate us changing the hash function.
 
-E.g. in a case of a tunnel-mode ESP with sha256/aes the overhead
-is 92 bytes. Receiving a PTB with MTU of 1371 or less will result
-in all further packets in the tunnel dropped. A ping through the
-tunnel fails with "ping: sendmsg: Invalid argument".
+Taking a step back, there is the base case where we don't have duplicate
+addresses on the network nor an attack is on-going. We would break those
+setups with that patch. And those are the ones that matter most. In
+particular those stable-random addresses are being used in router
+advertisements for announcing the next-hop/default gateway on the
+broadcast domain. During my time in IPv6 land I have seen lots of setups
+where those automatic advertisements got converted into static
+configuration for the sake of getting hands on a cool looking IPv6
+address on another host (I did that as well ;) ). In particular, in the
+last example, you might not only have one administrator at hand to
+handle the issue, but probably multiple roles are involved (host admin
+and network admin maybe from different organizations - how annoying -
+but that's a worst case scenario).
 
-Apparently the MTU on the xfrm route is smaller than 1280 and
-fails the check inside ip6_setup_cork() added by 749439bf.
+Furthermore most L2 attacks nowadays are stopped by smarter switches or
+wifi access points(?) anyway with per-port MAC learning and other
+hardening features. Obviously this only happens in more managed
+environments but probably already also at smaller home networks
+nowadays. Datacenters probably already limit access to the Layer 2 raw
+network in such a way that this attack is probably not possible either.
+Same for IoT stuff where you probably have a point-to-point IPv6
+connection anyway.
 
-We found this by debugging USGv6/ipv6ready failures. Failing
-tests are: "Phase-2 Interoperability Test Scenario IPsec" /
-5.3.11 and 5.4.11 (Tunnel Mode: Fragmentation).
+The worst case scenario is someone upgrading their kernel during a
+trip away from home, rebooting, and losing access to their system. If we
+experience just one of those cases we have violated Linux strict uAPI
+rules (in my opinion). Thus, yes, we care about both, (1) and (2) cases.
 
-Commit b515d2637276a3810d6595e10ab02c13bfd0b63a ("xfrm:
-xfrm_state_mtu should return at least 1280 for ipv6") attempted
-to fix this but caused another regression in TCP MSS calculations
-and had to be reverted.
+I don't think we can argue our way out of this by stating that there are
+no guarantees anyway, as much as I would like to change the hash
+function as well.
 
-The patch below fixes the situation by dropping the MTU
-check and instead checking for the underflows described in the
-749439bf commit message.
+As much as I know about the problems with SHA1 and would like to see it
+removed from the kernel as well, I fear that in this case it seems hard
+to do. I would propose putting sha1 into a compilation unit and
+overwrite the compiler flags to optimize the function optimized for size
+and maybe add another mode or knob to switch the hashing algorithm if
+necessary.
 
-Signed-off-by: Jiri Bohac <jbohac@suse.cz>
+>> Afterwards bringing the interface down and
+>> up again should revert the interface to its initial (dad_counter == 0)
+>> address.
+>
+> Except the attacker is still on the network, and the administrator
+> can't figure it out because the mac addresses keep changing and it's
+> arriving from seemingly random switches! Plot twist: the attack is
+> being conducted from an implant in the switch firmware. There are a
+> lot of creative different takes on the same basic scenario. The point
+> is - the administrator really _can't_ rely on the address always being
+> the same, because it's simply out of his control.
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index ff4f9ebcf7f6..171eb4ec1e67 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1402,8 +1402,6 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- 		if (np->frag_size)
- 			mtu = np->frag_size;
- 	}
--	if (mtu < IPV6_MIN_MTU)
--		return -EINVAL;
- 	cork->base.fragsize = mtu;
- 	cork->base.gso_size = ipc6->gso_size;
- 	cork->base.tx_flags = 0;
-@@ -1465,8 +1463,6 @@ static int __ip6_append_data(struct sock *sk,
- 
- 	fragheaderlen = sizeof(struct ipv6hdr) + rt->rt6i_nfheader_len +
- 			(opt ? opt->opt_nflen : 0);
--	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
--		     sizeof(struct frag_hdr);
- 
- 	headersize = sizeof(struct ipv6hdr) +
- 		     (opt ? opt->opt_flen + opt->opt_nflen : 0) +
-@@ -1474,6 +1470,13 @@ static int __ip6_append_data(struct sock *sk,
- 		      sizeof(struct frag_hdr) : 0) +
- 		     rt->rt6i_nfheader_len;
- 
-+	if (mtu < fragheaderlen ||
-+	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
-+		goto emsgsize;
-+
-+	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
-+		     sizeof(struct frag_hdr);
-+
- 	/* as per RFC 7112 section 5, the entire IPv6 Header Chain must fit
- 	 * the first fragment
- 	 */
+This is a very pessimistic scenario bordering a nightmare. I hope the
+new hashing algorithm will protect them. ;)
 
--- 
-Jiri Bohac <jbohac@suse.cz>
-SUSE Labs, Prague, Czechia
+> Given that the admin already *must* be prepared for the address to
+> change, doesn't that give us some leeway to change the algorithm used
+> between kernels?
+>
+> Or to put it differently, are there _actually_ braindead deployments
+> out there that truly rely on the address never ever changing, and
+> should we be going out of our way to support what is arguably a
+> misreading and misdeployment of the feature?
 
+Given the example above, users might hardcode this generated IP address
+as a default gateway in their configs on other hosts. This is actually a
+very common thing to do.
+
+> (Feel free to smack this line of argumentation down if you disagree. I
+> just thought it should be a bit more thoroughly explored.)
+
+I haven't investigated recent research into breakage of SHA1, I mostly
+remember the chosen-image and collision attacks against it. Given the
+particular usage of SHA1 in this case, do you think switching the
+hashing function increases security? I am asking because of the desire
+to decrease the instruction size of the kernel, but adding a switch
+will actually increase the size in the foreseeable future (and I agree
+with Toke that offloading this decision to distributions is probably
+not fair).
+
+Maybe at some point the networking subsystem will adapt a generic knob
+like LD_ASSUME_KERNEL? ;)
+
+Bye,
+Hannes
