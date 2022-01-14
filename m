@@ -2,102 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D879F48E2C7
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 04:03:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC78248E2DC
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 04:13:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238949AbiANDDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 13 Jan 2022 22:03:15 -0500
-Received: from mail.cn.fujitsu.com ([183.91.158.132]:1834 "EHLO
-        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S238933AbiANDDP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 22:03:15 -0500
-IronPort-Data: =?us-ascii?q?A9a23=3AUYJBQq8g/E+//RGT351kDrUDJXyTJUtcMsCJ2f8?=
- =?us-ascii?q?bfWQNrUp212ZRmzEXUGuFO6yPNGTycoh+Ptu2/EgF7cfWnNM3HVdlrnsFo1Bi8?=
- =?us-ascii?q?5ScXYvDRqvT04J+FuWaFQQ/qZx2huDodKjYdVeB4Ef9WlTdhSMkj/vQH+OgULe?=
- =?us-ascii?q?s1h1ZHmeIdg9w0HqPpMZp2uaEsfDha++8kYuaT//3YTdJ6BYoWo4g0J9vnTs01?=
- =?us-ascii?q?BjEVJz0iXRlDRxDlAe2e3D4l/vzL4npR5fzatE88uJX24/+IL+FEmPxp3/BC/u?=
- =?us-ascii?q?ulPD1b08LXqXPewOJjxK6WYD72l4b+HN0if19aZLwam8O49mNt9Rw2tVMt525T?=
- =?us-ascii?q?y8nI6/NhP8AFRJfFkmSOIUfouecfSbm75H7I0ruNiGEL+9VJE0/I4Ad0up+H2x?=
- =?us-ascii?q?L8fsWNHYLYwzrr+6tybK2UO9EicEqLc2tN4Qa0llj0DvQJfUrW5bOR+PN/9Aw9?=
- =?us-ascii?q?Cwwm8lONfXTfcwUbXxodhuoSxlOPEoHTZEzhuGlglHhfDBC7lGYv6w65y7U1gM?=
- =?us-ascii?q?Z+LzsNsfFP9+RSMFbgkuDukrY8GnjRBIXLtqSzXyC6H3ErunCgS/2RqoMG7Cis?=
- =?us-ascii?q?P1nmluewioUEhJ+aLcRiZFVkWbnA5QGdRNSoXFo8MAPGIWQZoGVd3WFTLSs53b?=
- =?us-ascii?q?wg+ZtLtA=3D?=
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AnfT3VKgygfGuYF2TURVsRKUWnHBQXjIji2hC?=
- =?us-ascii?q?6mlwRA09TySZ//rBoB19726RtN9xYgBGpTnuAsm9qB/nmaKdgrNhWItKPjOW21?=
- =?us-ascii?q?dARbsKheCJrgEIcBeeygcy78hdmtBFeb/N5EZB/L3HyTj9A9A928OG7aztoe/f?=
- =?us-ascii?q?yk1mRQZsZ7oI1XYBNi+rVl1xWBJdBYc0UL6V5s98rTKmfngNKuuhAH1tZZm6m/?=
- =?us-ascii?q?T70ILhfQUdBwMqrC2HjTaT4rb8FBSCmjcyOgk/p4sfzQ=3D=3D?=
-X-IronPort-AV: E=Sophos;i="5.88,287,1635177600"; 
-   d="scan'208";a="120346165"
-Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
-  by heian.cn.fujitsu.com with ESMTP; 14 Jan 2022 11:03:13 +0800
-Received: from G08CNEXMBPEKD04.g08.fujitsu.local (unknown [10.167.33.201])
-        by cn.fujitsu.com (Postfix) with ESMTP id 472024D15A4C;
-        Fri, 14 Jan 2022 11:03:11 +0800 (CST)
-Received: from G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) by
- G08CNEXMBPEKD04.g08.fujitsu.local (10.167.33.201) with Microsoft SMTP Server
- (TLS) id 15.0.1497.23; Fri, 14 Jan 2022 11:03:12 +0800
-Received: from FNSTPC.g08.fujitsu.local (10.167.226.45) by
- G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
- id 15.0.1497.23 via Frontend Transport; Fri, 14 Jan 2022 11:03:11 +0800
-From:   Li Zhijian <lizhijian@fujitsu.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <shuah@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Li Zhijian <lizhijian@fujitsu.com>,
-        "David Ahern" <dsahern@gmail.com>
-Subject: [PATCH v2] kselftests/net: list all available tests in usage()
-Date:   Fri, 14 Jan 2022 11:02:46 +0800
-Message-ID: <20220114030246.4437-1-lizhijian@fujitsu.com>
-X-Mailer: git-send-email 2.33.0
+        id S239007AbiANDNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 13 Jan 2022 22:13:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236150AbiANDNJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 13 Jan 2022 22:13:09 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95801C061574
+        for <netdev@vger.kernel.org>; Thu, 13 Jan 2022 19:13:08 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JZmZp5qZwz4xdl;
+        Fri, 14 Jan 2022 14:13:06 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1642129987;
+        bh=8Yq203lrwI/6CvDNyeW7ts27B3EwTRZJwnsZ2XiI3gk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qKGXyktILyZqYtch3Xexg9d+PUKM+pboAc1dpANuBtj4JHjkpD7X8BJahneYzCbmB
+         ohPiBFZ+oM2HXEmRUyv9ITHCTvbN+WLzqHDn07vR58GL4WrvMJDOiOFuJROp6RoCXl
+         /rkLXhMe/nTiRPw1dRekN9Rk2hEL/iRCbOLnRqi+upZJLR+bIdqza3wd9K5ZkEyHSr
+         ZJ0dP4w5g1eUw5VQ6GplpmjrIhuEcP47MJt8WR3Nw0Qm/3Ng8QMY9q1tYL3tZ/8vvw
+         sG7zRJn4ynwFgcuxTcZoeZKwZ+rXYyBXRy8wsEWRxjLfeipqNUwGXW7WaeS88uAYzx
+         Wi6xIABZAdoOg==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <davem@davemloft.net>
+Cc:     <linuxppc-dev@lists.ozlabs.org>
+Subject: [PATCH] net: apple: mace: Fix build since dev_addr constification
+Date:   Fri, 14 Jan 2022 14:12:52 +1100
+Message-Id: <20220114031252.2419042-1-mpe@ellerman.id.au>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-yoursite-MailScanner-ID: 472024D15A4C.AB7A2
-X-yoursite-MailScanner: Found to be clean
-X-yoursite-MailScanner-From: lizhijian@fujitsu.com
-X-Spam-Status: No
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So that users can run/query them easily.
+Since commit adeef3e32146 ("net: constify netdev->dev_addr") the mace
+driver no longer builds with various errors (pmac32_defconfig):
 
-$ ./fcnal-test.sh -h
-usage: fcnal-test.sh OPTS
+  linux/drivers/net/ethernet/apple/mace.c: In function ‘mace_probe’:
+  linux/drivers/net/ethernet/apple/mace.c:170:20: error: assignment of read-only location ‘*(dev->dev_addr + (sizetype)j)’
+    170 |   dev->dev_addr[j] = rev ? bitrev8(addr[j]): addr[j];
+        |                    ^
+  linux/drivers/net/ethernet/apple/mace.c: In function ‘mace_reset’:
+  linux/drivers/net/ethernet/apple/mace.c:349:32: warning: passing argument 2 of ‘__mace_set_address’ discards ‘const’ qualifier from pointer target type
+    349 |     __mace_set_address(dev, dev->dev_addr);
+        |                             ~~~^~~~~~~~~~
+  linux/drivers/net/ethernet/apple/mace.c:93:62: note: expected ‘void *’ but argument is of type ‘const unsigned char *’
+     93 | static void __mace_set_address(struct net_device *dev, void *addr);
+        |                                                        ~~~~~~^~~~
+  linux/drivers/net/ethernet/apple/mace.c: In function ‘__mace_set_address’:
+  linux/drivers/net/ethernet/apple/mace.c:388:36: error: assignment of read-only location ‘*(dev->dev_addr + (sizetype)i)’
+    388 |  out_8(&mb->padr, dev->dev_addr[i] = p[i]);
+        |                                    ^
 
-	-4          IPv4 tests only
-	-6          IPv6 tests only
-	-t <test>   Test name/set to run
-	-p          Pause on fail
-	-P          Pause after each test
-	-v          Be verbose
+Fix it by making the modifications to a local macaddr variable and then
+passing that to eth_hw_addr_set(), as well as adding some missing const
+qualifiers.
 
-Tests:
-	ipv4_ping ipv4_tcp ipv4_udp ipv4_bind ipv4_runtime ipv4_netfilter ipv6_ping ipv6_tcp ipv6_udp ipv6_bind ipv6_runtime ipv6_netfilter use_cases
-
-Suggested-by: David Ahern <dsahern@gmail.com>
-Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
 ---
- tools/testing/selftests/net/fcnal-test.sh | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/apple/mace.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 412d85205546..3f4c8cfe7aca 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -4059,6 +4059,9 @@ usage: ${0##*/} OPTS
- 	-p          Pause on fail
- 	-P          Pause after each test
- 	-v          Be verbose
-+
-+Tests:
-+	$TESTS_IPV4 $TESTS_IPV6 $TESTS_OTHER
- EOF
+diff --git a/drivers/net/ethernet/apple/mace.c b/drivers/net/ethernet/apple/mace.c
+index 4b80e3a52a19..6f8c91eb1263 100644
+--- a/drivers/net/ethernet/apple/mace.c
++++ b/drivers/net/ethernet/apple/mace.c
+@@ -90,7 +90,7 @@ static void mace_set_timeout(struct net_device *dev);
+ static void mace_tx_timeout(struct timer_list *t);
+ static inline void dbdma_reset(volatile struct dbdma_regs __iomem *dma);
+ static inline void mace_clean_rings(struct mace_data *mp);
+-static void __mace_set_address(struct net_device *dev, void *addr);
++static void __mace_set_address(struct net_device *dev, const void *addr);
+ 
+ /*
+  * If we can't get a skbuff when we need it, we use this area for DMA.
+@@ -112,6 +112,7 @@ static int mace_probe(struct macio_dev *mdev, const struct of_device_id *match)
+ 	struct net_device *dev;
+ 	struct mace_data *mp;
+ 	const unsigned char *addr;
++	u8 macaddr[ETH_ALEN];
+ 	int j, rev, rc = -EBUSY;
+ 
+ 	if (macio_resource_count(mdev) != 3 || macio_irq_count(mdev) != 3) {
+@@ -167,8 +168,9 @@ static int mace_probe(struct macio_dev *mdev, const struct of_device_id *match)
+ 
+ 	rev = addr[0] == 0 && addr[1] == 0xA0;
+ 	for (j = 0; j < 6; ++j) {
+-		dev->dev_addr[j] = rev ? bitrev8(addr[j]): addr[j];
++		macaddr[j] = rev ? bitrev8(addr[j]): addr[j];
+ 	}
++	eth_hw_addr_set(dev, macaddr);
+ 	mp->chipid = (in_8(&mp->mace->chipid_hi) << 8) |
+ 			in_8(&mp->mace->chipid_lo);
+ 
+@@ -369,11 +371,12 @@ static void mace_reset(struct net_device *dev)
+ 	out_8(&mb->plscc, PORTSEL_GPSI + ENPLSIO);
  }
  
+-static void __mace_set_address(struct net_device *dev, void *addr)
++static void __mace_set_address(struct net_device *dev, const void *addr)
+ {
+     struct mace_data *mp = netdev_priv(dev);
+     volatile struct mace __iomem *mb = mp->mace;
+-    unsigned char *p = addr;
++    const unsigned char *p = addr;
++    u8 macaddr[ETH_ALEN];
+     int i;
+ 
+     /* load up the hardware address */
+@@ -385,7 +388,10 @@ static void __mace_set_address(struct net_device *dev, void *addr)
+ 	    ;
+     }
+     for (i = 0; i < 6; ++i)
+-	out_8(&mb->padr, dev->dev_addr[i] = p[i]);
++        out_8(&mb->padr, macaddr[i] = p[i]);
++
++    eth_hw_addr_set(dev, macaddr);
++
+     if (mp->chipid != BROKEN_ADDRCHG_REV)
+         out_8(&mb->iac, 0);
+ }
 -- 
-2.33.0
-
-
+2.31.1
 
