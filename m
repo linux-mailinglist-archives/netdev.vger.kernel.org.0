@@ -2,235 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23C2148F17E
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 21:35:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2589D48F1A4
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 21:47:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240237AbiANUfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 15:35:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50681 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244498AbiANUf0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 15:35:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642192525;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=amgtrqtQMjyUksxLoOVhxEX1FtphBXOPchfSfNb8y6E=;
-        b=L1W3R8t+VksOfwhNhAIFdpT3XDZwEJLY0u6Q2tMlkKK1wpsVuxqcuK7KN0AZQN88kZIRsy
-        /qXLKPi0wOxJWCjZL1wLo0hyBdCGHVq7UyRlFE8tUIf3YlnwK8mHD6d7vZT+XkKCeE+IHu
-        /ie8F59+zqWdQ6C+1irzcCsfRkdlZvk=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-168-UvL1u_sLPDOB3AMnkzfwUQ-1; Fri, 14 Jan 2022 15:35:23 -0500
-X-MC-Unique: UvL1u_sLPDOB3AMnkzfwUQ-1
-Received: by mail-ed1-f71.google.com with SMTP id i9-20020a05640242c900b003fe97faab62so9069241edc.9
-        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 12:35:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:content-transfer-encoding;
-        bh=amgtrqtQMjyUksxLoOVhxEX1FtphBXOPchfSfNb8y6E=;
-        b=XXIM4E4KIxO4wXD2JMPjypZ7YMPaTQP/n/sC+9U5ZTrHr2njAIuy9yzJWMYOTsxC06
-         hWuAPXNU/MAPgw3wKn2EDwXVa2bHLEfCIY99I5HKZkLX5l2hv81BpTxOpGUYLn78Lp27
-         oE8eHgozZvY3Zd6it4rNuLz/bZ9YF9okGjHcMlGLwLt6UopDAUXg+t9EIQzbXTk7mcGu
-         2uyizRI0XXKD4c42wAs8DqzlO/dw1vo8UZ0LGrt9OtJW04oDxeUPRzqJnuobppwQvGWH
-         tGT9xzqmQBDHPpX2lMfakDtbKSJxP0Twxg0gFHipoMGy5NZ5ciBoy0EVYtD/qZwN1/m4
-         sHQw==
-X-Gm-Message-State: AOAM532RKiCmtsf6ot1IL5XMZOnoFcKeOjRpCyDhxBeOVZcDcPut6kIb
-        j2cRYusIWMNWLQbEn7Zwf9wgVfeIIdiJqNNE/B66aWm78DNQPSTNpmaO977fRedY2nIs31JPmve
-        sRMAFCLkLvaeD03ZK
-X-Received: by 2002:a17:906:819:: with SMTP id e25mr4853852ejd.63.1642192522657;
-        Fri, 14 Jan 2022 12:35:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwPI8pIhpFi/ZyGwDQrEvy99Xsw6RBcz7cfDlKQfktwhMLpdTccY1eNq0Y8ynYb5emG9NQgwg==
-X-Received: by 2002:a17:906:819:: with SMTP id e25mr4853826ejd.63.1642192522443;
-        Fri, 14 Jan 2022 12:35:22 -0800 (PST)
-Received: from redhat.com ([2.55.154.210])
-        by smtp.gmail.com with ESMTPSA id a20sm2709266eda.21.2022.01.14.12.35.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 12:35:21 -0800 (PST)
-Date:   Fri, 14 Jan 2022 15:35:15 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        christophe.jaillet@wanadoo.fr, dapeng1.mi@intel.com,
-        david@redhat.com, elic@nvidia.com, eperezma@redhat.com,
-        flyingpenghao@gmail.com, flyingpeng@tencent.com,
-        gregkh@linuxfoundation.org, guanjun@linux.alibaba.com,
-        jasowang@redhat.com, jean-philippe@linaro.org,
-        jiasheng@iscas.ac.cn, johan@kernel.org, keescook@chromium.org,
-        labbott@kernel.org, lingshan.zhu@intel.com, lkp@intel.com,
-        luolikang@nsfocus.com, lvivier@redhat.com, mst@redhat.com,
-        pasic@linux.ibm.com, sgarzare@redhat.com, somlo@cmu.edu,
-        trix@redhat.com, wu000273@umn.edu, xianting.tian@linux.alibaba.com,
-        xuanzhuo@linux.alibaba.com, yun.wang@linux.alibaba.com
-Subject: [GIT PULL] virtio,vdpa,qemu_fw_cfg: features, cleanups, fixes
-Message-ID: <20220114153515-mutt-send-email-mst@kernel.org>
+        id S239585AbiANUqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 15:46:39 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:38454 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232369AbiANUqj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jan 2022 15:46:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=QHtJdtffg6q8rQEKPtS1nDwVltrKenMKuKhNiKPAmXA=; b=eCfKvl68on5wTxnylEa40Ht/IQ
+        Su2vxBs4K5IlP7HXoYk7tffKCQTq2WifexqNmic30Mp8OfdqRguBzA1tO2J0j6869rPV8TXzfFDSQ
+        rxbNHbr876PXW7iBWGv+WYGFI08Qem7F7uFl+XphEFCZ3y1uggC76hFgC5S/x6tKsBmc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n8TSy-001Rl9-NU; Fri, 14 Jan 2022 21:46:32 +0100
+Date:   Fri, 14 Jan 2022 21:46:32 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Alex Elder <elder@linaro.org>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: Port mirroring, v2 (RFC)
+Message-ID: <YeHhKDUNy8rU+xcG@lunn.ch>
+References: <384e168b-8266-cb9b-196b-347a513c0d36@linaro.org>
+ <e666e0cb-5b65-1fe9-61ae-a3a3cea54ea0@linaro.org>
+ <9da2f1f6-fc7c-e131-400d-97ac3b8cdadc@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-X-Mutt-Fcc: =sent
+In-Reply-To: <9da2f1f6-fc7c-e131-400d-97ac3b8cdadc@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit c9e6606c7fe92b50a02ce51dda82586ebdf99b48:
+On Fri, Jan 14, 2022 at 11:03:26AM -0600, Alex Elder wrote:
+> Yikes!  I don't know why that turned out double-spaced.  I hope
+> this one turns out better.
+> 
+> 					-Alex
+> 
+> This is a second RFC for a design to implement new functionality
+> in the Qualcomm IPA driver.  Since last time I've looked into some
+> options based on feedback.  This time I'll provide some more detail
+> about the hardware, and what the feature is doing.  And I'll end
+> with two possible implementations, and some questions.
+> 
+> My objective is to get a general sense that what I plan to do
+> is reasonable, so the patches that implement it will be acceptable.
+> 
+> 
+> The feature provides the AP access to information about the packets
+> that the IPA hardware processes as it carries them between its
+> "ports".  It is intended as a debug/informational interface only.
+> Before going further I'll briefly explain what the IPA hardware
+> does.
+> 
+> The upstream driver currently uses the hardware only as the path
+> that provides access to a 5G/LTE cellular network via a modem
+> embedded in a Qualcomm SoC.
+> 
+>        \|/
+>         |
+>   ------+-----   ------
+>   | 5G Modem |   | AP |
+>   ------------   ------
+>              \\    || <-- IPA channels, or "ports"
+>             -----------
+>             |   IPA   |
+>             -----------
 
-  Linux 5.16-rc8 (2022-01-02 14:23:25 -0800)
+Hi Alex
 
-are available in the Git repository at:
+I think i need to take a step back here. With my background, an AP is
+an 802.11 Access Point.
+But here you mean Application Processor?
+What does IPA standard for ?
+MHI ?
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+I can probably figure these all out from context, but half the problem
+here is making sure we are talking the same language when we are
+considering using concepts from another part of the network stack.
 
-for you to fetch changes up to f04ac267029c8063fc35116b385cd37656b3c81a:
-
-  virtio: acknowledge all features before access (2022-01-14 14:58:41 -0500)
-
-----------------------------------------------------------------
-virtio,vdpa,qemu_fw_cfg: features, cleanups, fixes
-
-IOMMU bypass support in virtio-iommu
-partial support for < MAX_ORDER - 1 granularity for virtio-mem
-driver_override for vdpa
-sysfs ABI documentation for vdpa
-multiqueue config support for mlx5 vdpa
-
-Misc fixes, cleanups.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Christophe JAILLET (1):
-      eni_vdpa: Simplify 'eni_vdpa_probe()'
-
-Dapeng Mi (1):
-      virtio: fix a typo in function "vp_modern_remove" comments.
-
-David Hildenbrand (2):
-      virtio-mem: prepare page onlining code for granularity smaller than MAX_ORDER - 1
-      virtio-mem: prepare fake page onlining code for granularity smaller than MAX_ORDER - 1
-
-Eli Cohen (20):
-      net/mlx5_vdpa: Offer VIRTIO_NET_F_MTU when setting MTU
-      vdpa/mlx5: Fix wrong configuration of virtio_version_1_0
-      vdpa: Provide interface to read driver features
-      vdpa/mlx5: Distribute RX virtqueues in RQT object
-      vdpa: Sync calls set/get config/status with cf_mutex
-      vdpa: Read device configuration only if FEATURES_OK
-      vdpa: Allow to configure max data virtqueues
-      vdpa/mlx5: Fix config_attr_mask assignment
-      vdpa/mlx5: Support configuring max data virtqueue
-      vdpa: Add support for returning device configuration information
-      vdpa/mlx5: Restore cur_num_vqs in case of failure in change_num_qps()
-      vdpa: Support reporting max device capabilities
-      vdpa/mlx5: Report max device capabilities
-      vdpa/vdpa_sim: Configure max supported virtqueues
-      vdpa: Use BIT_ULL for bit operations
-      vdpa/vdpa_sim_net: Report max device capabilities
-      vdpa: Avoid taking cf_mutex lock on get status
-      vdpa: Protect vdpa reset with cf_mutex
-      vdpa/mlx5: Fix is_index_valid() to refer to features
-      vdpa/mlx5: Fix tracking of current number of VQs
-
-Eugenio Pérez (2):
-      vdpa: Avoid duplicate call to vp_vdpa get_status
-      vdpa: Mark vdpa_config_ops.get_vq_notification as optional
-
-Guanjun (1):
-      vduse: moving kvfree into caller
-
-Jean-Philippe Brucker (5):
-      iommu/virtio: Add definitions for VIRTIO_IOMMU_F_BYPASS_CONFIG
-      iommu/virtio: Support bypass domains
-      iommu/virtio: Sort reserved regions
-      iommu/virtio: Pass end address to viommu_add_mapping()
-      iommu/virtio: Support identity-mapped domains
-
-Johan Hovold (4):
-      firmware: qemu_fw_cfg: fix NULL-pointer deref on duplicate entries
-      firmware: qemu_fw_cfg: fix kobject leak in probe error path
-      firmware: qemu_fw_cfg: fix sysfs information leak
-      firmware: qemu_fw_cfg: remove sysfs entries explicitly
-
-Laura Abbott (1):
-      vdpa: clean up get_config_size ret value handling
-
-Michael S. Tsirkin (5):
-      virtio: wrap config->reset calls
-      hwrng: virtio - unregister device before reset
-      virtio_ring: mark ring unused on error
-      virtio: unexport virtio_finalize_features
-      virtio: acknowledge all features before access
-
-Peng Hao (2):
-      virtio/virtio_mem: handle a possible NULL as a memcpy parameter
-      virtio/virtio_pci_legacy_dev: ensure the correct return value
-
-Stefano Garzarella (2):
-      docs: document sysfs ABI for vDPA bus
-      vdpa: add driver_override support
-
-Xianting Tian (1):
-      vhost/test: fix memory leak of vhost virtqueues
-
-Zhu Lingshan (1):
-      ifcvf/vDPA: fix misuse virtio-net device config size for blk dev
-
-王贇 (1):
-      virtio-pci: fix the confusing error message
-
- Documentation/ABI/testing/sysfs-bus-vdpa   |  57 ++++++++++
- MAINTAINERS                                |   1 +
- arch/um/drivers/virt-pci.c                 |   2 +-
- drivers/block/virtio_blk.c                 |   4 +-
- drivers/bluetooth/virtio_bt.c              |   2 +-
- drivers/char/hw_random/virtio-rng.c        |   2 +-
- drivers/char/virtio_console.c              |   4 +-
- drivers/crypto/virtio/virtio_crypto_core.c |   8 +-
- drivers/firmware/arm_scmi/virtio.c         |   2 +-
- drivers/firmware/qemu_fw_cfg.c             |  21 ++--
- drivers/gpio/gpio-virtio.c                 |   2 +-
- drivers/gpu/drm/virtio/virtgpu_kms.c       |   2 +-
- drivers/i2c/busses/i2c-virtio.c            |   2 +-
- drivers/iommu/virtio-iommu.c               | 115 ++++++++++++++++----
- drivers/net/caif/caif_virtio.c             |   2 +-
- drivers/net/virtio_net.c                   |   4 +-
- drivers/net/wireless/mac80211_hwsim.c      |   2 +-
- drivers/nvdimm/virtio_pmem.c               |   2 +-
- drivers/rpmsg/virtio_rpmsg_bus.c           |   2 +-
- drivers/scsi/virtio_scsi.c                 |   2 +-
- drivers/vdpa/alibaba/eni_vdpa.c            |  28 +++--
- drivers/vdpa/ifcvf/ifcvf_base.c            |  41 ++++++--
- drivers/vdpa/ifcvf/ifcvf_base.h            |   9 +-
- drivers/vdpa/ifcvf/ifcvf_main.c            |  40 +++----
- drivers/vdpa/mlx5/net/mlx5_vnet.c          | 156 ++++++++++++++++-----------
- drivers/vdpa/vdpa.c                        | 163 +++++++++++++++++++++++++----
- drivers/vdpa/vdpa_sim/vdpa_sim.c           |  21 ++--
- drivers/vdpa/vdpa_sim/vdpa_sim_net.c       |   2 +
- drivers/vdpa/vdpa_user/vduse_dev.c         |  19 +++-
- drivers/vdpa/virtio_pci/vp_vdpa.c          |  16 ++-
- drivers/vhost/test.c                       |   1 +
- drivers/vhost/vdpa.c                       |  12 +--
- drivers/virtio/virtio.c                    |  40 ++++---
- drivers/virtio/virtio_balloon.c            |   2 +-
- drivers/virtio/virtio_input.c              |   2 +-
- drivers/virtio/virtio_mem.c                | 114 +++++++++++++-------
- drivers/virtio/virtio_pci_legacy.c         |   2 +-
- drivers/virtio/virtio_pci_legacy_dev.c     |   4 +-
- drivers/virtio/virtio_pci_modern_dev.c     |   2 +-
- drivers/virtio/virtio_ring.c               |   4 +-
- drivers/virtio/virtio_vdpa.c               |   7 +-
- fs/fuse/virtio_fs.c                        |   4 +-
- include/linux/vdpa.h                       |  39 +++++--
- include/linux/virtio.h                     |   2 +-
- include/uapi/linux/vdpa.h                  |   6 ++
- include/uapi/linux/virtio_iommu.h          |   8 +-
- net/9p/trans_virtio.c                      |   2 +-
- net/vmw_vsock/virtio_transport.c           |   4 +-
- sound/virtio/virtio_card.c                 |   4 +-
- 49 files changed, 706 insertions(+), 286 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-vdpa
-
+	    Andrew
