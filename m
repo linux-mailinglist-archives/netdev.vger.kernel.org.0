@@ -2,119 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 895AC48E95B
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 12:44:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3755A48E98D
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 12:59:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240748AbiANLoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 06:44:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:23685 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237600AbiANLoF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 06:44:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642160644;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iogx5i2QkC24IABpCodgDKaQcW1VO0VWZwvo0dBw1UA=;
-        b=QqXhh5alNyy1ZmsmkraPXxAZurITUImRRTrI0hse9IQQIhRvx0Si+ZANFWUvJbFz2avg6p
-        F7b5zt5uw6/D+EP4kzJyEBWCdv51UbZp9rD6ut1Y76jAkeeTwy07EKER+Hb4hjc27pcZHO
-        S7XnTqyextJkUtJgyW2Re8T8AKUerQQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-315-5Czr7m8KNjaCf9lBfcACrg-1; Fri, 14 Jan 2022 06:43:58 -0500
-X-MC-Unique: 5Czr7m8KNjaCf9lBfcACrg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 54B2F64143;
-        Fri, 14 Jan 2022 11:43:57 +0000 (UTC)
-Received: from calimero.vinschen.de (ovpn-112-14.ams2.redhat.com [10.36.112.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 73C222617D;
-        Fri, 14 Jan 2022 11:43:56 +0000 (UTC)
-Received: by calimero.vinschen.de (Postfix, from userid 500)
-        id BB189A81472; Fri, 14 Jan 2022 12:43:54 +0100 (CET)
-From:   Corinna Vinschen <vinschen@redhat.com>
-To:     intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     Lennert Buytenhek <buytenh@wantstofly.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH 2/2 net-next v2] igb: refactor XDP registration
-Date:   Fri, 14 Jan 2022 12:43:54 +0100
-Message-Id: <20220114114354.1071776-3-vinschen@redhat.com>
-In-Reply-To: <20220114114354.1071776-1-vinschen@redhat.com>
-References: <20220114114354.1071776-1-vinschen@redhat.com>
+        id S240939AbiANL6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 06:58:53 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:28104 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240915AbiANL6t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 06:58:49 -0500
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20EBqmls006270;
+        Fri, 14 Jan 2022 11:58:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=7a5Rr5NSCIa/jUx6lPSwalDwDCLvamBMnf9cJzqBIvY=;
+ b=iyFJXLcT9BEibaB22vd5+dinmtzBaxNbaVXe6iBPWhMilXDlbe9PSb4CdzUiaz+/evER
+ wXBr/WdBVduV46VV7Bk01Fy0piuaqAJiY13v0WyDFN4RKwfAoAVKqdW5+a3+Rzybic25
+ 2pkWc/uaVP+I1rMPlyCQTwJjWc9LZEmK4oDkhifQmMFPIeSSnQj5e/b3aJVin/q1ym1m
+ /MtCs5RLB+e61OXIZnmHkdCJEYcwzvVxOa2+IO5FZT3P84NhhKKo4AvZl1T3SuUs2qFX
+ RujBVUTB7d2hGDFBnSvZimLPyj+zREdFmCzEoQqWk2/hCdBybK1Qxnvi2bUcodoiokoQ Qw== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dk8pgr399-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 14 Jan 2022 11:58:44 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20EBut8q027120;
+        Fri, 14 Jan 2022 11:58:42 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma01fra.de.ibm.com with ESMTP id 3dfwhjx89f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 14 Jan 2022 11:58:42 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20EBwds542402244
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 Jan 2022 11:58:39 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 18F40A4051;
+        Fri, 14 Jan 2022 11:58:39 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A4EDDA4040;
+        Fri, 14 Jan 2022 11:58:38 +0000 (GMT)
+Received: from [9.145.186.190] (unknown [9.145.186.190])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 14 Jan 2022 11:58:38 +0000 (GMT)
+Message-ID: <45b2b8d0-b913-20cd-62ca-e6014505632c@linux.ibm.com>
+Date:   Fri, 14 Jan 2022 12:58:38 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [PATCH] s390/qeth: Remove redundant 'flush_workqueue()' calls
+Content-Language: en-US
+To:     Xu Wang <vulab@iscas.ac.cn>, wenjia@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@linux.ibm.com,
+        agordeev@linux.ibm.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220114084218.42586-1-vulab@iscas.ac.cn>
+From:   Alexandra Winter <wintera@linux.ibm.com>
+In-Reply-To: <20220114084218.42586-1-vulab@iscas.ac.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: NzWqRMjSy_WK9YdUYjrMAbT4yXh1RsUd
+X-Proofpoint-ORIG-GUID: NzWqRMjSy_WK9YdUYjrMAbT4yXh1RsUd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-14_04,2022-01-14_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ priorityscore=1501 phishscore=0 mlxlogscore=999 malwarescore=0
+ lowpriorityscore=0 adultscore=0 impostorscore=0 suspectscore=0
+ clxscore=1011 mlxscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2110150000 definitions=main-2201140077
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On changing the RX ring parameters igb uses a hack to avoid a warning
-when calling xdp_rxq_info_reg via igb_setup_rx_resources.  It just
-clears the struct xdp_rxq_info content.
 
-Change this to unregister if we're already registered instead.  ALign
-code to the igc code.
 
-Fixes: 9cbc948b5a20c ("igb: add XDP support")
-Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
----
- drivers/net/ethernet/intel/igb/igb_ethtool.c |  4 ----
- drivers/net/ethernet/intel/igb/igb_main.c    | 15 +++++++++++----
- 2 files changed, 11 insertions(+), 8 deletions(-)
+On 14.01.22 09:42, Xu Wang wrote:
+> 'destroy_workqueue()' already drains the queue before destroying it, so
+> there is no need to flush it explicitly.
+> 
+> Remove the redundant 'flush_workqueue()' calls.
+> 
+> Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+> ---
+>  drivers/s390/net/qeth_l3_main.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
+> index 9251ad276ee8..d2f422a9a4f7 100644
+> --- a/drivers/s390/net/qeth_l3_main.c
+> +++ b/drivers/s390/net/qeth_l3_main.c
+> @@ -1961,7 +1961,6 @@ static void qeth_l3_remove_device(struct ccwgroup_device *cgdev)
+>  	if (card->dev->reg_state == NETREG_REGISTERED)
+>  		unregister_netdev(card->dev);
+>  
+> -	flush_workqueue(card->cmd_wq);
+>  	destroy_workqueue(card->cmd_wq);
+>  	qeth_l3_clear_ip_htable(card, 0);
+>  	qeth_l3_clear_ipato_list(card);
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-index 51a2dcaf553d..2a5782063f4c 100644
---- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-+++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-@@ -965,10 +965,6 @@ static int igb_set_ringparam(struct net_device *netdev,
- 			memcpy(&temp_ring[i], adapter->rx_ring[i],
- 			       sizeof(struct igb_ring));
- 
--			/* Clear copied XDP RX-queue info */
--			memset(&temp_ring[i].xdp_rxq, 0,
--			       sizeof(temp_ring[i].xdp_rxq));
--
- 			temp_ring[i].count = new_rx_count;
- 			err = igb_setup_rx_resources(&temp_ring[i]);
- 			if (err) {
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 38ba92022cd4..9638cb9c6014 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -4352,7 +4352,7 @@ int igb_setup_rx_resources(struct igb_ring *rx_ring)
- {
- 	struct igb_adapter *adapter = netdev_priv(rx_ring->netdev);
- 	struct device *dev = rx_ring->dev;
--	int size;
-+	int size, res;
- 
- 	size = sizeof(struct igb_rx_buffer) * rx_ring->count;
- 
-@@ -4376,9 +4376,16 @@ int igb_setup_rx_resources(struct igb_ring *rx_ring)
- 	rx_ring->xdp_prog = adapter->xdp_prog;
- 
- 	/* XDP RX-queue info */
--	if (xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev,
--			     rx_ring->queue_index, 0) < 0)
--		goto err;
-+	if (xdp_rxq_info_is_reg(&rx_ring->xdp_rxq))
-+		xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
-+	res = xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev,
-+			       rx_ring->queue_index, 0);
-+	if (res < 0) {
-+		netdev_err(rx_ring->netdev,
-+			   "Failed to register xdp_rxq index %u\n",
-+			   rx_ring->queue_index);
-+		return res;
-+	}
- 
- 	return 0;
- 
--- 
-2.27.0
+Thanks for pointing this out!
 
+IMO, this can go to net-next as it is not a fix, but removes redundancy.
+
+Acked-by: Alexandra Winter <wintera@linux.ibm.com>
