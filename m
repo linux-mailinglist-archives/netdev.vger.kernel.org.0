@@ -2,143 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A40148F1A9
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 21:49:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9744448F1C2
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 21:58:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240383AbiANUs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 15:48:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53230 "EHLO
+        id S229544AbiANU4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 15:56:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239837AbiANUs6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 15:48:58 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E9EC06161C;
-        Fri, 14 Jan 2022 12:48:58 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id o9so3502068iob.3;
-        Fri, 14 Jan 2022 12:48:58 -0800 (PST)
+        with ESMTP id S229517AbiANU4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 15:56:19 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9A8C06161C
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 12:56:18 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id bg19-20020a05600c3c9300b0034565e837b6so4151539wmb.1
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 12:56:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BjIjIR3O/aMwfzpSELOHemGOc92BG3Ca1Aasq6OqpyQ=;
-        b=APQLfvU8YneYcaw46EopJ8mYidGSET8o+KOGFMBlniVUnDMVi16yS1X6ZVkt1pAbuK
-         PN5mpfLOzOXAdEaKOQcyVGuNrnc8K9XYl5JKnvU6A+aiIQZgxgBndMq0rUNeiYEX6TX1
-         Y6kSP6AbvF71tKx7DtZIPBjxjGQQM1w70T9tWndJz4xCiNGzEmpFAH4bKrrT6Jb0dKX4
-         iJi+ZwSiyWoRI7qj9jWo83W0sxeBqF/xtlszpBYcqJTHRMZHKULnDEb3cz/iAouoAKQm
-         CgKF1m7cFuuPCrnlRvb1tk9MlazCeRJwOQ6hlO6MqLctTNZ3BT+Svch2UqOaFKpTam+a
-         SNUQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=a2LK+XCzRUQuX/FKJ8hTnpMWPOfnbChf1uqBe6evn14=;
+        b=TatznFHqz4q/JNQk6ZcSu00tRi1lJns+grkgt68v4JlRwWUwEWskbD7Eo1/QtiimJb
+         2DsQk8udeSaRNeTIxoGMeKXeBZLrdk5C8MmBA4y49hugKr6IyKWjGfjAL5lix6bsA8YK
+         ulzIzHwIN6eFqCez+iFzFoHBlMIrO4dXddOB4EumZ7hYABe22bNEHQyiXlH2ZL2a1DS4
+         d/xnj0pe6mNUK9HfdoYjZ/VFHGZuZpM3k77VpECd0aRmjZop+vebKg17agfiYCAZxTlm
+         IYmfdW7BsxqYNuk4Fh3pl1C5qn2hoPNWzFvLJ5AmgrMfDaJ/Bt2nismRmwww3tSSzu+R
+         r6OQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BjIjIR3O/aMwfzpSELOHemGOc92BG3Ca1Aasq6OqpyQ=;
-        b=0ctXB6PAiEr+cJO+PvXiM3hvrNdtvjA5STCBdvou9zdpkdYhyqx7ZCapvUuWnOE/Hn
-         zVHQLmlhERS2FuIQk3dKKnYMs1VIs3FdFcfd0EbHQ/fZ84LVQZzV0SkX7kozOQNSxT2V
-         JkuLVHwEFsllHczBs88xc9J71pFQd79h5MKZIIjK8jMlIGP2P8zstKa/2I4dP3/3G3IN
-         lU4vYfUQ/EsvxC+xa/XuWD87L20gz18BH1gxs061Wk51kOas8v9+miR8qMwA8Le6foj3
-         rTXJKvn/d+uaZ2d2XxDY+TPoFkINGiSzKZZwZV7yuWK+8ZsxFq0YoI6aHBBa64dp6dD9
-         CqAQ==
-X-Gm-Message-State: AOAM5339nmE9vG+sgbAD0bgMWfvP9++6olHb/87CRDuhiqSDw6nkrvtg
-        oKN4P52g9yoFxXKHBHaVaD5VnLK3eEQD2cojVOg=
-X-Google-Smtp-Source: ABdhPJyuXm5hho9b64LCYB9uy/EFXuNyAabeQsvAA07LruGWjgghLhS2O/EQZV0u5uXiXRftlrEICx6/UfmcuRmuVxY=
-X-Received: by 2002:a5d:9155:: with SMTP id y21mr5076316ioq.112.1642193337386;
- Fri, 14 Jan 2022 12:48:57 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=a2LK+XCzRUQuX/FKJ8hTnpMWPOfnbChf1uqBe6evn14=;
+        b=qGwNfGfssUB8LGGxTt8sxA3QIYo6BxJvG2PoG+2rpWhHBMOScnTpLSlnEGjLKzQFzW
+         WdnG8azVYYewlWrR2YyCmSOKmoqKsaDSK5Ti7CEDbFXgYfTCnOQNeCSnk03NvQttZh+w
+         JN82jJwoz7QZ/4C2Gz8SHOhH4YVVf4XU0YT/5IFUJ52ildFokc3ENrM7s2SsNSjcTyN1
+         qDDaygqIfqvxWTisMfPAZUoKOseywSuvY361xUZuQ7NmyC4NPA4vbBaylkl/F7woBK1H
+         SUB8ea/co6Czc8ppa4Kxrtp/qfRx9RFkJSQBLR3c3PdPX4F9N2SxS0qZrWqf4SjKSdjp
+         rAwQ==
+X-Gm-Message-State: AOAM531P28Yq29SRem+Ew40Gun61LLEVu/tYhagQ9T2fxEf32OchpdDN
+        i+WfMWzhh7R4TamYQvJi5+L9HQ==
+X-Google-Smtp-Source: ABdhPJxEOp2Wo1ezLBKMdg3Rs8D9/4m/Bwa6/dloggb4D57MyDeWhvpnWUAVCmPkdzXMY6R9wWCD9A==
+X-Received: by 2002:a1c:1d17:: with SMTP id d23mr9767788wmd.46.1642193777164;
+        Fri, 14 Jan 2022 12:56:17 -0800 (PST)
+Received: from larix (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id p62sm6050452wmp.10.2022.01.14.12.56.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 12:56:16 -0800 (PST)
+Date:   Fri, 14 Jan 2022 20:56:14 +0000
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        christophe.jaillet@wanadoo.fr, dapeng1.mi@intel.com,
+        david@redhat.com, elic@nvidia.com, eperezma@redhat.com,
+        flyingpenghao@gmail.com, flyingpeng@tencent.com,
+        gregkh@linuxfoundation.org, guanjun@linux.alibaba.com,
+        jasowang@redhat.com, jiasheng@iscas.ac.cn, johan@kernel.org,
+        keescook@chromium.org, labbott@kernel.org, lingshan.zhu@intel.com,
+        lkp@intel.com, luolikang@nsfocus.com, lvivier@redhat.com,
+        pasic@linux.ibm.com, sgarzare@redhat.com, somlo@cmu.edu,
+        trix@redhat.com, wu000273@umn.edu, xianting.tian@linux.alibaba.com,
+        xuanzhuo@linux.alibaba.com, yun.wang@linux.alibaba.com
+Subject: Re: [GIT PULL] virtio,vdpa,qemu_fw_cfg: features, cleanups, fixes
+Message-ID: <YeHjbqjY8Dd+3o1E@larix>
+References: <20220114153515-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-References: <1642004329-23514-1-git-send-email-alan.maguire@oracle.com>
- <CAEf4BzYRLxzVHw00DUphqqdv2m_AU7Mu=S0JF0PZYN40hBvHgA@mail.gmail.com> <alpine.LRH.2.23.451.2201131025380.13423@localhost>
-In-Reply-To: <alpine.LRH.2.23.451.2201131025380.13423@localhost>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 14 Jan 2022 12:48:46 -0800
-Message-ID: <CAEf4BzaX70Ze2mdLuQvw8kNqCt7fQAOkO=Akm=T9Pjxf4eDpLA@mail.gmail.com>
-Subject: Re: [RFC bpf-next 0/4] libbpf: userspace attach by name
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        Yucong Sun <sunyucong@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220114153515-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 2:30 AM Alan Maguire <alan.maguire@oracle.com> wrote:
->
-> On Wed, 12 Jan 2022, Andrii Nakryiko wrote:
->
-> > On Wed, Jan 12, 2022 at 8:19 AM Alan Maguire <alan.maguire@oracle.com> wrote:
-> > >
-> > > This patch series is a rough attempt to support attach by name for
-> > > uprobes and USDT (Userland Static Defined Tracing) probes.
-> > > Currently attach for such probes is done by determining the offset
-> > > manually, so the aim is to try and mimic the simplicity of kprobe
-> > > attach, making use of uprobe opts.
-> > >
-> > > One restriction applies: uprobe attach supports system-wide probing
-> > > by specifying "-1" for the pid.  That functionality is not supported,
-> > > since we need a running process to determine the base address to
-> > > subtract to get the uprobe-friendly offset.  There may be a way
-> > > to do this without a running process, so any suggestions would
-> > > be greatly appreciated.
-> > >
-> > > There are probably a bunch of subtleties missing here; the aim
-> > > is to see if this is useful and if so hopefully we can refine
-> > > it to deal with more complex cases.  I tried to handle one case
-> > > that came to mind - weak library symbols - but there are probably
-> > > other issues when determining which address to use I haven't
-> > > thought of.
-> > >
-> > > Alan Maguire (4):
-> > >   libbpf: support function name-based attach for uprobes
-> > >   libbpf: support usdt provider/probe name-based attach for uprobes
-> > >   selftests/bpf: add tests for u[ret]probe attach by name
-> > >   selftests/bpf: add test for USDT uprobe attach by name
-> > >
-> >
-> > Hey Alan,
-> >
-> > I've been working on USDT support last year. It's considerably more
-> > code than in this RFC, but it handles not just finding a location of
-> > USDT probe(s), but also fetching its arguments based on argument
-> > location specification and more usability focused BPF-side APIs to
-> > work with USDTs.
-> >
-> > I don't remember how up to date it is, but the last "open source"
-> > version of it can be found at [0]. I currently have the latest
-> > debugged and tested version internally in the process of being
-> > integrated into our profiling solution here at Meta. So far it seems
-> > to be working fine and covers our production use cases well.
-> >
->
-> This looks great Andrii! I really like the argument access work, and the
-> global tracing part is solved too by using the ELF segment info instead
-> of the process maps to get the relative offset, with (I think?) use of
-> BPF cookies to disambiguate between different user attachments.
+Hi,
 
-BPF cookies are mandatory for when attaching to a shared library *and*
-NOT specifying PID. This is actually the mode that BCC doesn't seem to
-support. In all other cases BPF cookie shouldn't be mandatory.
+On Fri, Jan 14, 2022 at 03:35:15PM -0500, Michael S. Tsirkin wrote:
+> Jean-Philippe Brucker (5):
+>       iommu/virtio: Add definitions for VIRTIO_IOMMU_F_BYPASS_CONFIG
+>       iommu/virtio: Support bypass domains
+>       iommu/virtio: Sort reserved regions
+>       iommu/virtio: Pass end address to viommu_add_mapping()
+>       iommu/virtio: Support identity-mapped domains
 
->
-> The one piece that seems to be missing from my perspective - and this may
-> be in more recent versions - is uprobe function attachment by name. Most of
-> the work is  already done in libusdt so it's reasonably doable I think - at a
-> minimum  it would require an equivalent to the find_elf_func_offset()
-> function in my  patch 1. Now the name of the library libusdt suggests its
-> focus is on USDT of course, but I think having userspace function attach
-> by name too would be great. Is that part of your plans for this work?
+Please could you drop these patches, they are from an old version of the
+series. The newer version was already in Joerg's pull request and was
+merged, so this will conflict.
 
-True, uprobes don't supprot attaching by function name, which is quite
-annoying. It's certainly not a focus for libusdt (or whatever it will
-end up being called when open-sources). But if it's not much code and
-complexity we should probably just add that to libbpf directly for
-uprobes.
+Thanks,
+Jean
 
-
->
-> Thanks!
->
-> Alan
