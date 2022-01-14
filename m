@@ -2,333 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02AEC48E717
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 10:07:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CF6448E737
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 10:15:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237932AbiANJHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 04:07:18 -0500
-Received: from prt-mail.chinatelecom.cn ([42.123.76.228]:54845 "EHLO
-        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231254AbiANJHR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 04:07:17 -0500
-HMM_SOURCE_IP: 172.18.0.218:33104.234707419
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-10.133.11.244 (unknown [172.18.0.218])
-        by chinatelecom.cn (HERMES) with SMTP id 1BD3B280161;
-        Fri, 14 Jan 2022 17:07:07 +0800 (CST)
-X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.218])
-        by app0025 with ESMTP id 799b1b2ff01c400f9c4affa3954a96b0 for jay.vosburgh@canonical.com;
-        Fri, 14 Jan 2022 17:07:10 CST
-X-Transaction-ID: 799b1b2ff01c400f9c4affa3954a96b0
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.218
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-Message-ID: <5c8a286b-932b-135f-5da4-68d18cfcb891@chinatelecom.cn>
-Date:   Fri, 14 Jan 2022 17:07:04 +0800
+        id S232836AbiANJPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 04:15:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231493AbiANJPx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 04:15:53 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B422FC061574
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 01:15:52 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id c71so32686080edf.6
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 01:15:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=quryO0qOfzGa/kbX1EtKqH7pIhdfFZ4gpD2/EBowmNU=;
+        b=NcmehltNOwMqDD4FIm6JqVJrs2cJdPenUy1j3JpeRVnDIPifWelqqn7nh3pOo7TJzE
+         dsaje2M/UClAMfqM67XPx/SVUonzK0cXDg0cIrOAV2ihOiYi6GeYxJWn4LOkGRcrN7Kj
+         DZe6q18HeMNqJ6Ko+n1ofzCJth1ikgHvvw5c0+XTuhmmrbHyqYmf754lZRMVCKuWbKq2
+         UM0VMtKTBGIwr0rqhfAUbMnXLwqMggPUmAwfl7xnaAP6wZyy0Wi0RBh/sdaHrvObU/C7
+         4cujHCwH9KJD/DGv44Pfs4+pjBcr4anU6f0Y91NMOh2yc+L7fYTq0Of1fI+kC9vCOT9y
+         QeYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=quryO0qOfzGa/kbX1EtKqH7pIhdfFZ4gpD2/EBowmNU=;
+        b=tll1Oy4M9m+4bEErpbLecdm1zlSSpBCtvCkxe51Th1iPliedi75Dh4xmSw0juOIWwK
+         X4DEC+aGhF+9ZoY5p5xiRZgq0zTbEO9h+BdkevZsuDYrJ4sdVoVdaPL2ARIeJ23Cgf/8
+         HJU9qEuMFF8vM1KCFP+Mickc4HzUl1MYYS7g1p/QA3flAlnH8ZkhSsjUwP5EKRnlQ1S9
+         D0iaofnLHR6zxMUD4M3ivDUxVLbaK+QKJjxAJQHxFTxpRU2hhieiDIlbc7N6Oq/EBrqw
+         b3U8f9rQq7rJCwH6qYOjnKvgLOrOrzDk1cJWARlaIYWJvd3vsYIIGkaAdA3t8AeXgT1q
+         GyoQ==
+X-Gm-Message-State: AOAM531Pw+CJ7uZCY0zXZC5CxOKBuSd2VLhxvzu5Jf3P4f1S4Y1m6IPv
+        7EPIYCWhotuAs3JmEO9oE1EZog==
+X-Google-Smtp-Source: ABdhPJw+R4J3kKw7k7H1SSE3vDPJ4gH8TE5YpHwWkA6AjbWE/06mutrOaQPw/Oksb0afaaGoLkXjyQ==
+X-Received: by 2002:a05:6402:40cf:: with SMTP id z15mr7848222edb.185.1642151751207;
+        Fri, 14 Jan 2022 01:15:51 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id hs30sm1658263ejc.1.2022.01.14.01.15.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 01:15:50 -0800 (PST)
+Date:   Fri, 14 Jan 2022 10:15:49 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Parav Pandit <parav@nvidia.com>,
+        Sunil Sudhakar Rani <sunrani@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Bodong Wang <bodong@nvidia.com>
+Subject: Re: [PATCH net-next 1/2] devlink: Add support to set port function
+ as trusted
+Message-ID: <YeE/RfKb0bxQmJOq@nanopsycho>
+References: <5c4b51aecd1c5100bffdfab03bc76ef380c9799d.camel@nvidia.com>
+ <20211202093110.2a3e69e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <d0df87e28497a697cae6cd6f03c00d42bc24d764.camel@nvidia.com>
+ <20211215112204.4ec7cf1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <1da3385c7115c57fabd5c932033e893e5efc7e79.camel@nvidia.com>
+ <20211215150430.2dd8cd15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <SN1PR12MB2574E418C1C6E1A2C0096964D4779@SN1PR12MB2574.namprd12.prod.outlook.com>
+ <20211216082818.1fb2dff4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <PH0PR12MB54817CE7826A6E924AE50B9BDC519@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220111102005.4f0fa3a0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RESEND PATCH v5] net: bonding: Add support for IPV6 ns/na to
- balance-alb/balance-tlb mode
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, huyd12@chinatelecom.cn
-References: <20220110090410.70176-1-sunshouxin@chinatelecom.cn>
- <11285.1641842636@famine>
-From:   =?UTF-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
-In-Reply-To: <11285.1641842636@famine>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220111102005.4f0fa3a0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Tue, Jan 11, 2022 at 07:20:05PM CET, kuba@kernel.org wrote:
+>On Tue, 11 Jan 2022 16:57:54 +0000 Parav Pandit wrote:
+>> > > What shortcomings do you see in the finer granular approach we want to
+>> > > go to enable/disable On a per feature basis instead of global knob?  
+>> > 
+>> > I was replying to Saeed so I assumed some context which you probably lack.
+>> > Granular approach is indeed better, what I was referring to when I said "prefer
+>> > an API as created by this patch" was having an dedicated devlink op, instead of
+>> > the use of devlink params.  
+>> 
+>> This discussed got paused in yet another year-end holidays. :)
+>> Resuming now and refreshing everyone's cache.
+>> 
+>> We need to set/clear the capabilities of the function before deploying such function.
+>> As you suggested we discussed the granular approach and at present we have following features to on/off.
+>> 
+>> Generic features:
+>> 1. ipsec offload
+>
+>Why is ipsec offload a trusted feature?
+>
+>> 2. ptp device
+>
+>Makes sense.
+>
+>> Device specific:
+>> 1. sw steering
+>
+>No idea what that is/entails.
+>
+>> 2. physical port counters query
+>
+>Still don't know why VF needs to know phy counters.
+>
+>> It was implicit that a driver API callback addition for both types of features is not good.
+>> Devlink port function params enables to achieve both generic and device specific features.
+>> Shall we proceed with port function params? What do you think?
+>
+>I already addressed this. I don't like devlink params. They muddy the
+>water between vendor specific gunk and bona fide Linux uAPI. Build a
+>normal dedicated API.
 
-在 2022/1/11 3:23, Jay Vosburgh 写道:
-> 	I'm getting back to this after the holiday break, and have some
-> follow up from our prior discussions that I'll paste in below.
->
-> Sun Shouxin <sunshouxin@chinatelecom.cn> wrote:
->
->> Since ipv6 neighbor solicitation and advertisement messages
->> isn't handled gracefully in bonding6 driver, we can see packet
->> drop due to inconsistency bewteen mac address in the option
->> message and source MAC .
->>
->> Another examples is ipv6 neighbor solicitation and advertisement
->> messages from VM via tap attached to host brighe, the src mac
->> mighe be changed through balance-alb mode, but it is not synced
->> with Link-layer address in the option message.
->>
->> The patch implements bond6's tx handle for ipv6 neighbor
->> solicitation and advertisement messages.
->>> 	I'm not sure what you've changed here for v5 as there's no
->>> changelog, but I believe the observed problems to be a transmit side
->>> effect (i.e., it is induced by the balance-tlb mode balancing of
->>> outgoing traffic).  As such, the tlb side will rebalance all of the
->>> traffic every ten seconds, so any MAC ND_OPT_*_LL_ADDR option
->>> assignments in the outgoing NS/NA datagrams will only be valid for that
->>> length of time, correct?
->> Yes,  MAC ND_OPT_*_LL_ADDR option assignments in the outgoing NS/NA
->> datagrams will only be valid for that length of time ,and then,
->> it will be inconsistensy in the next ten seconds.
-> 	So, presumably then the original issue (with the topology
-> diagram that's now omitted) can recur 10 seconds later (after a TLB
-> rebalance)?  If so, I don't understand why this patch is an improvement.
->
->>> 	In any event, my real question is whether simply disabling tlb
->>> balancing for NS/NA datagrams will resolve the observed issues (i.e.,
->>> have bond_xmit_tlb_slave_get return NULL for IPv6 NS/NA datagrams).
->>> Doing so will cause all NS/NA traffic to egress through the active
->>> interface.  There's already a test in your logic to check for the
->>> tx_slave != bond->curr_active_slave, so presumably everything works
->>> correctly if the NS/NA goes out on the curr_active_slave.  If the "edit
->>> NS/NA datagrams" solution works even in the face of rebalance of
->>> traffic, then would simply assigning all NS/NA traffic to the
->>> curr_active_slave eliminate the problem?
->> Yes, assigning all Ns/Na traffic to the curr_active_slave can resolve the
->> difference between mac in the Ns/Na options with the source mac.
->> But this makes the rlb doesn't work in the alb mode,
->> one interface with bond6 will not receive any ingress packets.
->> It is mismatch Bond6 specification.
-> 	Does assigning all NS/NA to the curr_active_slave avoid the
-> inconsistency when a TLB side rebalance occurs?  I believe it should,
-> but want to confirm.
->
-> 	As for the RLB functionality (i.e., the balance-alb remote to
-> local load balance), that is not implemented for IPv6 and this patch is
-> not providing an implementation of the RLB logic for IPv6, so I'm
-> unclear why you expect it to work, or what the "mismatch Bond6
-> specification" is.
->
-> 	To be clear, implementing RLB for IPv6 would include what this
-> patch is doing (adjusting the content of NS/NA datagrams), but a
-> complete implementation requires additional logic that isn't here, e.g.,
-> adding IPv6 logic to the RLB rebalance code, connecting NS/NA
-> manipulation to rlb_choose_channel(), and likely other things that don't
-> come immediately to mind.
->
-> 	In summary, it sounds to me like the actual bug originally
-> reported (with the now-omitted diagram) would be resolved by assigning
-> NS/NA datagrams to the curr_active_slave, and supporting RLB for IPv6 is
-> a larger project than what's provided by this patch.  Am I understanding
-> correctly?
+Well, that is indeed true. But on the other hand, what is the alternative
+solution? There are still going to be things wich are generic and driver-
+specific. Params or no params. Or do you say we need some new well
+defined enum-based api for generic stuff and driver-speficic will just
+go to params?
 
-
-Thanks your comment.
-For the simplify, I would like to resolve the inconsistent mac at first 
-by assigning NS/NA datagrams to the curr_active_slave by V6 soon.
-Supporting RLB for IPv6, it looks like hard a bit and I wonder if we can 
-resolve it in another patch？
-any comments?
-
-
->
-> 	-J
->
->> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
->> Reported-by: kernel test robot <lkp@intel.com>
->> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
->> ---
->> drivers/net/bonding/bond_alb.c | 149 +++++++++++++++++++++++++++++++++
->> 1 file changed, 149 insertions(+)
->>
->> diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
->> index 533e476988f2..485e4863a365 100644
->> --- a/drivers/net/bonding/bond_alb.c
->> +++ b/drivers/net/bonding/bond_alb.c
->> @@ -22,6 +22,8 @@
->> #include <asm/byteorder.h>
->> #include <net/bonding.h>
->> #include <net/bond_alb.h>
->> +#include <net/ndisc.h>
->> +#include <net/ip6_checksum.h>
->>
->> static const u8 mac_v6_allmcast[ETH_ALEN + 2] __long_aligned = {
->> 	0x33, 0x33, 0x00, 0x00, 0x00, 0x01
->> @@ -1269,6 +1271,137 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
->> 	return res;
->> }
->>
->> +/*determine if the packet is NA or NS*/
->> +static bool __alb_determine_nd(struct icmp6hdr *hdr)
->> +{
->> +	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
->> +	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
->> +		return true;
->> +	}
->> +
->> +	return false;
->> +}
->> +
->> +static void alb_change_nd_option(struct sk_buff *skb, void *data)
->> +{
->> +	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
->> +	struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
->> +	struct net_device *dev = skb->dev;
->> +	struct icmp6hdr *icmp6h = icmp6_hdr(skb);
->> +	struct ipv6hdr *ip6hdr = ipv6_hdr(skb);
->> +	u8 *lladdr = NULL;
->> +	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
->> +				offsetof(struct nd_msg, opt));
->> +
->> +	while (ndoptlen) {
->> +		int l;
->> +
->> +		switch (nd_opt->nd_opt_type) {
->> +		case ND_OPT_SOURCE_LL_ADDR:
->> +		case ND_OPT_TARGET_LL_ADDR:
->> +			lladdr = ndisc_opt_addr_data(nd_opt, dev);
->> +			break;
->> +
->> +		default:
->> +			lladdr = NULL;
->> +			break;
->> +		}
->> +
->> +		l = nd_opt->nd_opt_len << 3;
->> +
->> +		if (ndoptlen < l || l == 0)
->> +			return;
->> +
->> +		if (lladdr) {
->> +			memcpy(lladdr, data, dev->addr_len);
->> +			icmp6h->icmp6_cksum = 0;
->> +
->> +			icmp6h->icmp6_cksum = csum_ipv6_magic(&ip6hdr->saddr,
->> +							      &ip6hdr->daddr,
->> +						ntohs(ip6hdr->payload_len),
->> +						IPPROTO_ICMPV6,
->> +						csum_partial(icmp6h,
->> +							     ntohs(ip6hdr->payload_len), 0));
->> +			return;
->> +		}
->> +		ndoptlen -= l;
->> +		nd_opt = ((void *)nd_opt) + l;
->> +	}
->> +}
->> +
->> +static u8 *alb_get_lladdr(struct sk_buff *skb)
->> +{
->> +	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
->> +	struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
->> +	struct net_device *dev = skb->dev;
->> +	u8 *lladdr = NULL;
->> +	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
->> +				offsetof(struct nd_msg, opt));
->> +
->> +	while (ndoptlen) {
->> +		int l;
->> +
->> +		switch (nd_opt->nd_opt_type) {
->> +		case ND_OPT_SOURCE_LL_ADDR:
->> +		case ND_OPT_TARGET_LL_ADDR:
->> +			lladdr = ndisc_opt_addr_data(nd_opt, dev);
->> +			break;
->> +
->> +		default:
->> +			break;
->> +		}
->> +
->> +		l = nd_opt->nd_opt_len << 3;
->> +
->> +		if (ndoptlen < l || l == 0)
->> +			return NULL;
->> +
->> +		if (lladdr)
->> +			return lladdr;
->> +
->> +		ndoptlen -= l;
->> +		nd_opt = ((void *)nd_opt) + l;
->> +	}
->> +
->> +	return lladdr;
->> +}
->> +
->> +static void alb_set_nd_option(struct sk_buff *skb, struct bonding *bond,
->> +			      struct slave *tx_slave)
->> +{
->> +	struct ipv6hdr *ip6hdr;
->> +	struct icmp6hdr *hdr;
->> +
->> +	if (skb->protocol == htons(ETH_P_IPV6)) {
->> +		if (tx_slave && tx_slave !=
->> +		    rcu_access_pointer(bond->curr_active_slave)) {
->> +			ip6hdr = ipv6_hdr(skb);
->> +			if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
->> +				hdr = icmp6_hdr(skb);
->> +				if (__alb_determine_nd(hdr))
->> +					alb_change_nd_option(skb, tx_slave->dev->dev_addr);
->> +			}
->> +		}
->> +	}
->> +}
->> +
->> +static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
->> +{
->> +	struct ipv6hdr *ip6hdr;
->> +	struct icmp6hdr *hdr;
->> +
->> +	if (skb->protocol == htons(ETH_P_IPV6)) {
->> +		ip6hdr = ipv6_hdr(skb);
->> +		if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
->> +			hdr = icmp6_hdr(skb);
->> +			if (__alb_determine_nd(hdr))
->> +				return true;
->> +		}
->> +	}
->> +
->> +	return false;
->> +}
->> +
->> /************************ exported alb functions ************************/
->>
->> int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
->> @@ -1350,6 +1483,9 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
->> 		switch (skb->protocol) {
->> 		case htons(ETH_P_IP):
->> 		case htons(ETH_P_IPV6):
->> +			if (alb_determine_nd(skb, bond))
->> +				break;
->> +
->> 			hash_index = bond_xmit_hash(bond, skb);
->> 			if (bond->params.tlb_dynamic_lb) {
->> 				tx_slave = tlb_choose_channel(bond,
->> @@ -1446,6 +1582,18 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
->> 			break;
->> 		}
->>
->> +		if (alb_determine_nd(skb, bond)) {
->> +			u8 *lladdr;
->> +
->> +			lladdr = alb_get_lladdr(skb);
->> +			if (lladdr) {
->> +				if (!bond_slave_has_mac_rx(bond, lladdr)) {
->> +					do_tx_balance = false;
->> +					break;
->> +				}
->> +			}
->> +		}
->> +
->> 		hash_start = (char *)&ip6hdr->daddr;
->> 		hash_size = sizeof(ip6hdr->daddr);
->> 		break;
->> @@ -1489,6 +1637,7 @@ netdev_tx_t bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev)
->> 	struct slave *tx_slave = NULL;
->>
->> 	tx_slave = bond_xmit_alb_slave_get(bond, skb);
->> +	alb_set_nd_option(skb, bond, tx_slave);
->> 	return bond_do_alb_xmit(skb, bond, tx_slave);
->> }
->>
->>
->> base-commit: 7a29b11da9651ef6a970e2f6bfd276f053aeb06a
->> -- 
->> 2.27.0
->>
-> ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
