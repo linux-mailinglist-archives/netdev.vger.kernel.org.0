@@ -2,165 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F09148EC3C
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 16:08:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7D3B48EC54
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 16:11:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242218AbiANPIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 10:08:36 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:32994 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235794AbiANPId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 10:08:33 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A07061EC0;
-        Fri, 14 Jan 2022 15:08:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABABDC36AEB;
-        Fri, 14 Jan 2022 15:08:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642172908;
-        bh=CtQ6ZOtNT7z1AMej504pXmMqMHKixdfvyoxsqixy7FM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=LM60DmKxPUQvy3gacRTdz07wJ/r5OcFJ21TEhgf4QvsOfoxlvFlrB/bPq7FiUGdCh
-         xvi8KLQzufTlLinlVes9gFygwj0bpOXE824z/ezdl+fjl6vpAI78OznNOldDjGSJlh
-         B2pxzoYNOat2ZDN3zztijbAGxq9YWRV2hHNZSCbE0UDKIrTm7XAvd7l9NgQnqY6rqi
-         AtKQ2+Jaf15Ri5aGAzNHtQKH0PBq/9YT5BhieBmq3MOWRiDRgmWfJ6s8uDlzzPXpbx
-         QSBYIhT67CM48GDLd2xL/2jfycJAoy9AVcypF6dpaXD+mhAIxQC0UQL7lBJN7ulW2G
-         G5Jqneflltn8g==
-Received: by mail-wr1-f54.google.com with SMTP id v6so16091010wra.8;
-        Fri, 14 Jan 2022 07:08:28 -0800 (PST)
-X-Gm-Message-State: AOAM532t21ZXqFeV0JYQ9e3OEas5Fu0f5ClE4yrgoZ6xl+2qJvYayUyb
-        WmAXFVf2hYxEajpcr+8MEFqaBh3vzs6aX60V5c0=
-X-Google-Smtp-Source: ABdhPJzn1XtOkPf3Uj/N7N6GWjY/AWhSkNxLOXT/oUWl44TmSou49XTna0hda7KdSVS3ckAPaCabVoldlNYLJKSmO8M=
-X-Received: by 2002:a05:6000:154c:: with SMTP id 12mr8620813wry.447.1642172906987;
- Fri, 14 Jan 2022 07:08:26 -0800 (PST)
+        id S238391AbiANPKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 10:10:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:31493 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235727AbiANPKy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 10:10:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642173053;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oWNup3WEK+Z5PYvEX6Ms7ECgpaqQd6Nt47Sgqvp9kdY=;
+        b=HJENiktQDRINq4WIJIhHT8eubGYyefKyH3l73YH39q3TuWOH5PIfPE+xqzeM/ERsll45T6
+        I7OZWsBgJLooM0zRZPwpW1Q/OQhx6yZV1hlH8bdvKVScWbQuHqBAp/xbk9sOnAl6iEfgfU
+        LguumwOl9tWY5IvVUw/SQhcIDdzQx94=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-515-I7eD-tH2OJ2jUKeI2cE77g-1; Fri, 14 Jan 2022 10:10:52 -0500
+X-MC-Unique: I7eD-tH2OJ2jUKeI2cE77g-1
+Received: by mail-wr1-f71.google.com with SMTP id r10-20020adfa14a000000b001a375e65e60so1877561wrr.2
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 07:10:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oWNup3WEK+Z5PYvEX6Ms7ECgpaqQd6Nt47Sgqvp9kdY=;
+        b=TWYLC8wlcE35T4Y8g2W7H9K4fQnGK8Rejw6lnI8HB8qFLTQ26lGrm5rdHlTQg26HvZ
+         Ut3pgov4HojYCgr+zhMN71buODCslcX/STvWU+oVXymxaTZ9LFfuvFgRRvV0uyIx+kMc
+         czA1Sahgf5D+hzc2++HEo2Zxg9AQFR/gs0G2W+T2rHPMkGkyWlEuWv24JWW4djWUPBJF
+         pq4LeBgt1K84cWCk/WGn3K4zQSzbZ+B2scvUD24Pgo/Slz+Ps7Qjx8WMTfAdmze21BZv
+         IHkjyPIPDpkTY9Q5t+ii6qs8eLVtylIEDiW6B/XlwZmwVVMiLN8B4Yf65KczuHShweTw
+         WPJQ==
+X-Gm-Message-State: AOAM5320EfdLk7MsHmS2aBJl/txo3m7x5KPGRSQzY8d4rk/REEsdGxN4
+        fRddKgGfzbnbTzM276aNTSK/3wevP3DyhJ2V3cZnmSpmzPFyDAN4XcZk97nvhqVgUXlIfayidKj
+        ZzKntLjX/pyGpjBQZ
+X-Received: by 2002:a05:6000:1b89:: with SMTP id r9mr8674441wru.21.1642173050399;
+        Fri, 14 Jan 2022 07:10:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzIxW0LiuEHZAvE09eBmv2dyUKtwMR7glNZj7KgwqRqhx1HI+o0ZcrknrMO+E1oJUHtv91AhQ==
+X-Received: by 2002:a05:6000:1b89:: with SMTP id r9mr8674412wru.21.1642173050166;
+        Fri, 14 Jan 2022 07:10:50 -0800 (PST)
+Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id p18sm5136909wma.40.2022.01.14.07.10.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 07:10:49 -0800 (PST)
+Date:   Fri, 14 Jan 2022 16:10:48 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH v2 0/8] fprobe: Introduce fprobe function entry/exit
+ probe
+Message-ID: <YeGSeGVnBnEHXTtj@krava>
+References: <164199616622.1247129.783024987490980883.stgit@devnote2>
+ <Yd77SYWgtrkhFIYz@krava>
+ <YeAatqQTKsrxmUkS@krava>
+ <20220114234704.41f28e8b5e63368c655d848e@kernel.org>
 MIME-Version: 1.0
-References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-2-Jason@zx2c4.com>
- <87tue8ftrm.fsf@toke.dk> <CAADnVQJqoHy+EQ-G5fUtkPpeHaA6YnqsOjjhUY6UW0v7eKSTZw@mail.gmail.com>
- <CAHmME9ork6wh-T=sRfX6X0B4j-Vb36GVO0v=Yda0Hac1hiN_KA@mail.gmail.com>
- <CAADnVQLF_tmNmNk+H+jP1Ubmw-MBhG1FevFmtZY6yw5xk2314g@mail.gmail.com> <CAHmME9oq36JdV8ap9sPZ=CDfNyaQd6mXd21ztAaZiL7pJh8RCw@mail.gmail.com>
-In-Reply-To: <CAHmME9oq36JdV8ap9sPZ=CDfNyaQd6mXd21ztAaZiL7pJh8RCw@mail.gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Fri, 14 Jan 2022 16:08:14 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXE3JtNjgF3FZjbL-GOQG41yODup4+XdEFP063F=-AWg8A@mail.gmail.com>
-Message-ID: <CAMj1kXE3JtNjgF3FZjbL-GOQG41yODup4+XdEFP063F=-AWg8A@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 1/3] bpf: move from sha1 to blake2s in tag calculation
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220114234704.41f28e8b5e63368c655d848e@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Jan 2022 at 15:12, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> Hi Alexei,
->
-> On Thu, Jan 13, 2022 at 11:45 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> > On Thu, Jan 13, 2022 at 4:27 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> > >
-> > > Hi Alexei,
-> > >
-> > > On 1/13/22, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > > > Nack.
-> > > > It's part of api. We cannot change it.
-> > >
-> > > This is an RFC patchset, so there's no chance that it'll actually be
-> > > applied as-is, and hence there's no need for the strong hammer nack.
-> > > The point of "request for comments" is comments. Specifically here,
-> > > I'm searching for information on the ins and outs of *why* it might be
-> > > hard to change. How does userspace use this? Why must this 64-bit
-> > > number be unchanged? Why did you do things this way originally? Etc.
-> > > If you could provide a bit of background, we might be able to shake
-> > > out a solution somewhere in there.
-> >
-> > There is no problem with the code and nothing to be fixed.
->
-> Yes yes, my mama says I'm the specialist snowflake of a boy too. That
-> makes two of us ice crystals, falling from the winter heavens,
-> blessing vim with our beautiful shapes and frosty code.
->
+On Fri, Jan 14, 2022 at 11:47:04PM +0900, Masami Hiramatsu wrote:
+> Hi Jiri and Alexei,
+> 
+> On Thu, 13 Jan 2022 13:27:34 +0100
+> Jiri Olsa <jolsa@redhat.com> wrote:
+> 
+> > On Wed, Jan 12, 2022 at 05:01:15PM +0100, Jiri Olsa wrote:
+> > > On Wed, Jan 12, 2022 at 11:02:46PM +0900, Masami Hiramatsu wrote:
+> > > > Hi Jiri and Alexei,
+> > > > 
+> > > > Here is the 2nd version of fprobe. This version uses the
+> > > > ftrace_set_filter_ips() for reducing the registering overhead.
+> > > > Note that this also drops per-probe point private data, which
+> > > > is not used anyway.
+> > > > 
+> > > > This introduces the fprobe, the function entry/exit probe with
+> > > > multiple probe point support. This also introduces the rethook
+> > > > for hooking function return as same as kretprobe does. This
+> > > 
+> > > nice, I was going through the multi-user-graph support 
+> > > and was wondering that this might be a better way
+> > > 
+> > > > abstraction will help us to generalize the fgraph tracer,
+> > > > because we can just switch it from rethook in fprobe, depending
+> > > > on the kernel configuration.
+> > > > 
+> > > > The patch [1/8] and [7/8] are from your series[1]. Other libbpf
+> > > > patches will not be affected by this change.
+> > > 
+> > > I'll try the bpf selftests on top of this
+> > 
+> > I'm getting crash and stall when running bpf selftests,
+> > the fprobe sample module works fine, I'll check on that
+> 
+> I've tried to build tools/testing/selftests/bpf on my machine,
+> but I got below errors. Would you know how I can setup to build
+> the bpf selftests correctly? (I tried "make M=samples/bpf", but same result)
 
-Can we please keep it professional, guys?
+what's your clang version? your distro might be behind,
+I'm using clang 14 compiled from sources:
 
-> Anyway, back to reality, as Geert points out, we're hoping to be able
-> to remove lib/sha1.c from vmlinux (see 3/3 of this series) for
-> codesize, and this bpf usage here is one of two remaining usages of
-> it. So I was hoping that by sending this RFC, it might elicit a bit
-> more information about the ecosystem around the usage of the function,
-> so that we can start trying to think of creative solutions to sunset
-> it.
->
+	$ /opt/clang/bin/clang --version
+	clang version 14.0.0 (https://github.com/llvm/llvm-project.git 9f8ffaaa0bddcefeec15a3df9858fd50b05fcbae)
+	Target: x86_64-unknown-linux-gnu
+	Thread model: posix
+	InstalledDir: /opt/clang/bin
 
-Yeah, so the issue is that, at *some* point, SHA-1 is going to have to
-go. So it would be helpful if Alexei could clarify *why* he doesn't
-see this as a problem. The fact that it is broken means that it is no
-longer intractable to forge collisions, which likley means that SHA-1
-no longer fulfills the task that you wanted it to do in the first
-place.
+and compiling bpf selftests with:
 
-And just dismissing the issue every time it comes up won't make the
-problem go away. There are people on this thread that have a much
-better handle on how to use crypto safely and responsibly, and it is
-in everybody's interest if we can come to an agreement about when and
-how SHA-1 will be phased out.
+	$ CLANG=/opt/clang/bin/clang make
+
+jirka
 
 
-> I started trying to figure out what's up there and wound up with some
-> more questions. My primary one is why you're okay with such a weak
-> "checksum" -- the thing is only 64-bits, and as you told Andy Polyakov
-> in 2016 when he tried to stop you from using SHA-1, "Andy, please read
-> the code. \ we could have used jhash there just as well. \ Collisions
-> are fine."
->
-> Looking at https://github.com/iovisor/bcc/blob/e17c4f7324d8fc5cc24ba8ee1db451666cd7ced3/src/cc/bpf_module.cc#L571
-> I see:
->
->   err = bpf_prog_compute_tag(insns, prog_len, &tag1);
->   if (err)
->     return err;
->   err = bpf_prog_get_tag(prog_fd, &tag2);
->   if (err)
->     return err;
->   if (tag1 != tag2) {
->     fprintf(stderr, "prog tag mismatch %llx %llx\n", tag1, tag2);
->
-> So it's clearly a check for something. A collision there might prove pesky:
->
->   char buf[128];
->   ::snprintf(buf, sizeof(buf), BCC_PROG_TAG_DIR "/bpf_prog_%llx", tag1);
->   err = mkdir(buf, 0777);
->
-> Maybe you don't really see a security problem here, because these
-> programs are root loadable anyway? But I imagine things will
-> ultimately get more complicated later on down the road when bpf
-> becomes more modular and less privileged and more namespaced -- the
-> usual evolution of these sorts of features.
->
-> So I'm wondering - why not just do this in a more robust way entirely,
-> and always export a sufficiently sized blake2s hash? That way we'll
-> never have these sorts of shenanigans to care about. If that's not a
-> sensible thing to do, it's likely that I _still_ don't quite grok the
-> purpose of the program tag, in which case, I'd be all ears to an
-> explanation.
->
-> Jason
->
-> [ PS: As an aside, I noticed some things in the userspace tag
-> calculation code at
-> https://github.com/iovisor/bcc/blob/aa7200b9b2a7a2ce2e8a6f0dc1f456f3f93af1da/src/cc/libbpf.c#L536
-> - you probably shouldn't use AF_ALG for things that are software based
-> and can be done in userspace faster. And the unconditional
-> __builtin_bswap64 there means that the code will fail on big endian
-> systems. I know you mostly only care about x86 and all, but <endian.h>
-> might make this easy to fix. ]
+> 
+> ~/ksrc/linux/tools/testing/selftests/bpf$ make 
+> [...]
+>   CLANG   /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool/pid_iter.bpf.o
+> skeleton/pid_iter.bpf.c:35:10: error: incomplete definition of type 'struct bpf_link'
+>                 return BPF_CORE_READ((struct bpf_link *)ent, id);
+>                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:403:2: note: expanded from macro 'BPF_CORE_READ'
+>         ___type((src), a, ##__VA_ARGS__) __r;                               \
+>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:274:29: note: expanded from macro '___type'
+> #define ___type(...) typeof(___arrow(__VA_ARGS__))
+>                             ^~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:272:23: note: expanded from macro '___arrow'
+> #define ___arrow(...) ___apply(___arrow, ___narg(__VA_ARGS__))(__VA_ARGS__)
+>                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> note: (skipping 1 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:223:25: note: expanded from macro '___concat'
+> #define ___concat(a, b) a ## b
+>                         ^
+> <scratch space>:16:1: note: expanded from here
+> ___arrow2
+> ^
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:263:26: note: expanded from macro '___arrow2'
+> #define ___arrow2(a, b) a->b
+>                         ~^
+> skeleton/pid_iter.bpf.c:35:32: note: forward declaration of 'struct bpf_link'
+>                 return BPF_CORE_READ((struct bpf_link *)ent, id);
+>                                              ^
+> skeleton/pid_iter.bpf.c:35:10: error: incomplete definition of type 'struct bpf_link'
+>                 return BPF_CORE_READ((struct bpf_link *)ent, id);
+>                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:404:2: note: expanded from macro 'BPF_CORE_READ'
+>         BPF_CORE_READ_INTO(&__r, (src), a, ##__VA_ARGS__);                  \
+>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:311:2: note: expanded from macro 'BPF_CORE_READ_INTO'
+>         ___core_read(bpf_core_read, bpf_core_read,                          \
+>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:302:2: note: expanded from macro '___core_read'
+>         ___apply(___core_read, ___empty(__VA_ARGS__))(fn, fn_ptr, dst,      \
+>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:296:2: note: expanded from macro '___core_read0'
+>         ___read(fn, dst, ___type(src), src, a);
+>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:277:59: note: expanded from macro '___read'
+>         read_fn((void *)(dst), sizeof(*(dst)), &((src_type)(src))->accessor)
+>         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:206:79: note: expanded from macro 'bpf_core_read'
+>         bpf_probe_read_kernel(dst, sz, (const void *)__builtin_preserve_access_index(src))
+>                                                                                      ^~~
+> skeleton/pid_iter.bpf.c:35:32: note: forward declaration of 'struct bpf_link'
+>                 return BPF_CORE_READ((struct bpf_link *)ent, id);
+>                                              ^
+> skeleton/pid_iter.bpf.c:35:10: error: returning 'void' from a function with incompatible result type '__u32' (aka 'unsigned int')
+>                 return BPF_CORE_READ((struct bpf_link *)ent, id);
+>                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:402:36: note: expanded from macro 'BPF_CORE_READ'
+> #define BPF_CORE_READ(src, a, ...) ({                                       \
+>                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> skeleton/pid_iter.bpf.c:42:17: warning: declaration of 'struct bpf_iter__task_file' will not be visible outside of this function [-Wvisibility]
+> int iter(struct bpf_iter__task_file *ctx)
+>                 ^
+> skeleton/pid_iter.bpf.c:44:25: error: incomplete definition of type 'struct bpf_iter__task_file'
+>         struct file *file = ctx->file;
+>                             ~~~^
+> skeleton/pid_iter.bpf.c:42:17: note: forward declaration of 'struct bpf_iter__task_file'
+> int iter(struct bpf_iter__task_file *ctx)
+>                 ^
+> skeleton/pid_iter.bpf.c:45:32: error: incomplete definition of type 'struct bpf_iter__task_file'
+>         struct task_struct *task = ctx->task;
+>                                    ~~~^
+> skeleton/pid_iter.bpf.c:42:17: note: forward declaration of 'struct bpf_iter__task_file'
+> int iter(struct bpf_iter__task_file *ctx)
+>                 ^
+> skeleton/pid_iter.bpf.c:76:19: error: incomplete definition of type 'struct bpf_iter__task_file'
+>         bpf_seq_write(ctx->meta->seq, &e, sizeof(e));
+>                       ~~~^
+> skeleton/pid_iter.bpf.c:42:17: note: forward declaration of 'struct bpf_iter__task_file'
+> int iter(struct bpf_iter__task_file *ctx)
+>                 ^
+> 1 warning and 6 errors generated.
+> make[1]: *** [Makefile:188: /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool/pid_iter.bpf.o] Error 1
+> make: *** [Makefile:219: /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/sbin/bpftool] Error 2
+> 
+> 
+> Thank you,
+> 
+> -- 
+> Masami Hiramatsu <mhiramat@kernel.org>
+> 
+
