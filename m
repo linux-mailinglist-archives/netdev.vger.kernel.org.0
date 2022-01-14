@@ -2,110 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07FB348F2CA
-	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 00:04:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5FB748F32A
+	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 00:49:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231270AbiANXE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 18:04:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55494 "EHLO
+        id S230318AbiANXsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 18:48:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbiANXE0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 18:04:26 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B672CC061574;
-        Fri, 14 Jan 2022 15:04:26 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id i65so4065901pfc.9;
-        Fri, 14 Jan 2022 15:04:26 -0800 (PST)
+        with ESMTP id S229785AbiANXsy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 18:48:54 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45F9C061574;
+        Fri, 14 Jan 2022 15:48:53 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id q141-20020a1ca793000000b00347b48dfb53so8466959wme.0;
+        Fri, 14 Jan 2022 15:48:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc:content-transfer-encoding;
-        bh=J4+lZIDd6o5zmH05CFS7Chus/4ckzIXTgk91SRnxUls=;
-        b=FTpEGS7qAx/sQGZEcABd019S7Hymf9UHf4a+Z/FjMnKETvgcSNOuprT2LqLixPDeU4
-         my/DZmh4kvT5trb5uQ3kQHJzq/69VUUie5znya1InMaurhjnGjQeyR5fxccRqI+cmpbC
-         w/WhOjbKT3fzbrAceqOtVrj3g5BC76OA3C5KYveiiPrCq9ufFYuHPali89mMa01htUNJ
-         MBap2BbkvaqdkGLioyzQFVXTrBD500qzM+J3gJVNk7Vv1kOTv2zyGl4Qqi0Ar/IuZlT3
-         7w0e/9eoys1y57wiS2gXvQqcdoAwBLuPKp6AB4VU0xZfs8Md1OWiAoeqVo8CVK2ITK95
-         t+Og==
+        d=googlemail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ySZL7RoYaL29XosJreK0Gzamm/2aPB7hvnnCs2NFPcU=;
+        b=FUH7o3wjCqJ/PC6aR8HO4iTtGuCuMVDs3n9dhuZR5fdcly8iMQXLzhjpdo1ws2l72f
+         +e5HbaKHZBcCKj/Sf9GEx+Q8BHmM0V4LmTo0StOS7xjPI1XTSrxnH85uJ1YS+yJGHSgX
+         ToAzrdC7IljLfmujYdWh5UE4qZrCjglQvDLaH6grSSKgiFhYNTCgaKYwPp0u0bX7LX8y
+         lFAzKSmVxlEmFcDaaiCsy0G51A6j9fKF+48Ao9GxR33E1nedBx7kcA09oPH0dZeAYQNZ
+         XRREP3BsktzZsQH1FLicu3IG5V9KvVYiN7OtlRAPlAwyJ+yDltv179WRdrj0ZrlUZCyu
+         uC5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc:content-transfer-encoding;
-        bh=J4+lZIDd6o5zmH05CFS7Chus/4ckzIXTgk91SRnxUls=;
-        b=foP2Z01vh5BnAH+Hp5OB+R4YIugPWpP6kob3kdKS/EsaUa6Kvdk5nGHJilvgeEYTKs
-         kFIFox3YIIx+W5ZkCqvaJPUn8h0I31RP0B7x4FfLvZMuIocMIS9JtFnDHN/t29l6bV65
-         ZJXRgBQOPLw8lCa8qiqBqQfHhZ3H/ejS0xg5FIGMWycKkVTUNeArsRhuIK31LKb16aXe
-         +A+BMXxByWB97z0cTSj087AuEiWnBf57i2woR1ngq1d9yYKrgyXcXkJ26mpmQpRHS0oA
-         HHvqLhWKGEokHafVpuAMUh2K/gN7iYTTeLLwEes5D9TqeDZWI3BFlw0HfmUh//I4xPD+
-         egyw==
-X-Gm-Message-State: AOAM533ie7LS/BP6JQfftXLXdSWXO3wCrTNWcjXSjTRWIWXewvXvREqn
-        Pc7xz6c/Fb4WNnXwec9zJgyIu4ebWIO9dFfdbng=
-X-Google-Smtp-Source: ABdhPJxiGyyevi/x/S48E/qQOg2S+H4ILpi11ez7OVZ6hwF0rP9lAfUr9XzA8Y1pOZL3sRiAWpW5jLpJ1QRsiRsHH4g=
-X-Received: by 2002:a63:a619:: with SMTP id t25mr9755116pge.235.1642201466182;
- Fri, 14 Jan 2022 15:04:26 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ySZL7RoYaL29XosJreK0Gzamm/2aPB7hvnnCs2NFPcU=;
+        b=4NlDKF6U970ie6DsiJ2Ztygq/spwWO4VIeNVapD96lBhka4+R+MsSqEavz/CeW5U9W
+         toQ5eP3OhptpG/otmQt+kGpI71LWZQqZcI30n7JIhIoxUkLL+nVpGG/j+dc8A7fzW0lC
+         HTlX+vF21WeM4NEOaIjAmRnmVhhsFvAdYWoeGFyJ9/SIVh6fEOc25CkGskn/lSOpAlZV
+         SW1Upbj8cAVHov76VJMcNuwXSJ1swpIxCJ6mCKguVaO5flOlBfpL+Y+YkVocnWIqPstJ
+         AR43aXPpTB6goSAC8kj8Hw0t7ejNyUBADNgPH8V7pAl3dW8uVwHkjwzS1QDeFT5JuGwC
+         AtzA==
+X-Gm-Message-State: AOAM53370B7/p8IEFYJdpnFDQG3mZu1rIAboLwta7j194DOz3WYohWgb
+        81tOosD4xM/xipcnzWBtlYD3HNtFBxg=
+X-Google-Smtp-Source: ABdhPJz0xmxj6j7iS5TecpFNyAuScZGxk31roquob9EYy8aC4AuLMydSXt38D7rgnBrPy+sBoUwatg==
+X-Received: by 2002:a7b:cb8a:: with SMTP id m10mr17641286wmi.165.1642204131880;
+        Fri, 14 Jan 2022 15:48:51 -0800 (PST)
+Received: from localhost.localdomain (dynamic-2a01-0c22-7684-7400-f22f-74ff-fe21-0725.c22.pool.telefonica.de. [2a01:c22:7684:7400:f22f:74ff:fe21:725])
+        by smtp.googlemail.com with ESMTPSA id i3sm5788533wmq.21.2022.01.14.15.48.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 15:48:51 -0800 (PST)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-wireless@vger.kernel.org
+Cc:     tony0620emma@gmail.com, kvalo@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Pkshih <pkshih@realtek.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 0/4] rtw88: four small code-cleanups and refactorings
+Date:   Sat, 15 Jan 2022 00:48:21 +0100
+Message-Id: <20220114234825.110502-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-2-Jason@zx2c4.com>
- <87tue8ftrm.fsf@toke.dk>
-In-Reply-To: <87tue8ftrm.fsf@toke.dk>
-Reply-To: noloader@gmail.com
-From:   Jeffrey Walton <noloader@gmail.com>
-Date:   Fri, 14 Jan 2022 18:04:14 -0500
-Message-ID: <CAH8yC8=+7p1i6a+_zq3fL5MqHem34vMDGxY+KGcZbjOg1H9q1Q@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 1/3] bpf: move from sha1 to blake2s in tag calculation
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 8:13 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> [ adding the bpf list - please make sure to include that when sending
->   BPF-related patches, not everyone in BPF land follows netdev ]
->
-> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
->
-> > BLAKE2s is faster and more secure. SHA-1 has been broken for a long tim=
-e
-> > now. This also removes quite a bit of code, and lets us potentially
-> > remove sha1 from lib, which would further reduce vmlinux size.
->
-> AFAIU, the BPF tag is just used as an opaque (i.e., arbitrary) unique
-> identifier for BPF programs, without any guarantees of stability. Which
-> means changing it should be fine; at most we'd confuse some operators
-> who have memorised the tags of their BPF programs :)
->
-> The only other concern I could see would be if it somehow locked us into
-> that particular algorithm for other future use cases for computing
-> hashes of BPF programs (say, signing if that ends up being the direction
-> we go in). But obviously SHA1 would not be a good fit for that anyway,
-> so the algorithm choice would have to be part of that discussion in any
-> case.
->
-> So all in all, I don't see any issues with making this change for BPF.
+Hello,
 
-Somewhat related, if BPF is going to move from SHA to something, then
-consider SipHash. Here are the numbers I regularly observe. They
-remain relative the same on 64-bit platforms:
+this series consists of four small patches which clean up and refactor
+existing code in preparation for SDIO support. Functionality is
+supposed to stay the same with these changes.
 
-    * SHA-1: 4.31 cpb using SSE2
-    * BLAKE2s: 4.84 cpb using SSE4.1
-    * BLAKE2b: 3.49 cpb using SSE4.1
-    * SipHash 2-4: 1.54 cpb using C/C++
-    * SipHash 4-8: 2.55 cpb using C/C++
+The goal of the first two patches is to make it easier to understand
+the allowed values in the queue by using enum rtw_tx_queue_type instead
+of u8.
 
-If BPF is Ok with 64-bit tags, then SipHash 2-4 is probably what you
-want on the wish list.
+The third patch in this series moves the rtw_tx_queue_type code out of
+pci.c so it can be re-used by SDIO (and also USB) HCIs.
 
-Jeff
+The last patch is another small cleanup to improve readability of the
+code by using (already existing) macros instead of magic BIT(n).
+
+This series is built on top of v3 of my other series called "rtw88:
+prepare locking for SDIO support" [0].
+
+
+[0] https://lore.kernel.org/linux-wireless/20220108005533.947787-1-martin.blumenstingl@googlemail.com/
+
+
+Martin Blumenstingl (4):
+  rtw88: pci: Change type of rtw_hw_queue_mapping() and ac_to_hwq to
+    enum
+  rtw88: pci: Change queue datatype from u8 to enum rtw_tx_queue_type
+  rtw88: Move enum rtw_tx_queue_type mapping code to tx.{c,h}
+  rtw88: mac: Use existing interface mask macros in rtw_pwr_seq_parser()
+
+ drivers/net/wireless/realtek/rtw88/mac.c |  4 +-
+ drivers/net/wireless/realtek/rtw88/pci.c | 47 ++++++------------------
+ drivers/net/wireless/realtek/rtw88/tx.c  | 35 ++++++++++++++++++
+ drivers/net/wireless/realtek/rtw88/tx.h  |  3 ++
+ 4 files changed, 51 insertions(+), 38 deletions(-)
+
+-- 
+2.34.1
+
