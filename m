@@ -2,102 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43D1348E698
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 09:33:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E6F348E6BD
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 09:43:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234133AbiANIdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 03:33:49 -0500
-Received: from mail-ua1-f52.google.com ([209.85.222.52]:40820 "EHLO
-        mail-ua1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233622AbiANIdt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 03:33:49 -0500
-Received: by mail-ua1-f52.google.com with SMTP id w21so6260022uan.7;
-        Fri, 14 Jan 2022 00:33:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Sy7lT+eK8ipvfv0Ofk1ldO/tYfoiahfm+fHSJgI7+Xs=;
-        b=CxrkKtDb0bQBRSg8bGzObzfkMdWdLj+QaLq822JccgbrkrtZJ9qsALhOtRkSxpnAlJ
-         +LztWhgqlj+q0gde1w9ZTIWrepAi+U+Zv54+5uM047NoVi43FkAVp28d2X20DwgfN+sO
-         OdVftcRsaD4JmuvNDHnlIsTIfczli/RvobUGFa+UzTxo4qIr0sEicHl1W9e41ZTaJWlg
-         baWu3JFEUz6l06Hh5IvRvCKwltDZo0ZP1vOKz3+V6GUzsrk+606t9HFPwbnAJAQeqHKc
-         U4FqQMa7ZQY9LVVMaqVodT7e8Gm1Pgfhlye+WYllSPsaDKLGQ+5oHP9q3dF5KK1lzSBJ
-         n31A==
-X-Gm-Message-State: AOAM5314EITKksdxyh/QwVSin2Bx9CxICv01OJ2vqGKTgu2fdt8fkAPo
-        BDGNPd/TrI4OPZRK/Mr6WchoYdt35/C8pA==
-X-Google-Smtp-Source: ABdhPJznBeXDe9YRtuIahv0G00H8XbqbgcbaGO0fg9iFPtOdW6MJAg7mNOptcVSx7GL9N5nXHk4bQA==
-X-Received: by 2002:a05:6102:807:: with SMTP id g7mr3435871vsb.65.1642149228403;
-        Fri, 14 Jan 2022 00:33:48 -0800 (PST)
-Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
-        by smtp.gmail.com with ESMTPSA id c25sm2446948vsk.32.2022.01.14.00.33.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jan 2022 00:33:47 -0800 (PST)
-Received: by mail-ua1-f46.google.com with SMTP id o1so15732561uap.4;
-        Fri, 14 Jan 2022 00:33:47 -0800 (PST)
-X-Received: by 2002:a67:e905:: with SMTP id c5mr3691251vso.68.1642149227718;
- Fri, 14 Jan 2022 00:33:47 -0800 (PST)
+        id S237155AbiANIm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 03:42:58 -0500
+Received: from smtp25.cstnet.cn ([159.226.251.25]:34770 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230049AbiANIm6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jan 2022 03:42:58 -0500
+Received: from localhost.localdomain (unknown [124.16.141.244])
+        by APP-05 (Coremail) with SMTP id zQCowAAXH39+N+FhaP8xBg--.45727S2;
+        Fri, 14 Jan 2022 16:42:38 +0800 (CST)
+From:   Xu Wang <vulab@iscas.ac.cn>
+To:     wintera@linux.ibm.com, wenjia@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, borntraeger@linux.ibm.com,
+        agordeev@linux.ibm.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] s390/qeth: Remove redundant 'flush_workqueue()' calls
+Date:   Fri, 14 Jan 2022 08:42:18 +0000
+Message-Id: <20220114084218.42586-1-vulab@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-2-Jason@zx2c4.com>
- <87tue8ftrm.fsf@toke.dk> <CAADnVQJqoHy+EQ-G5fUtkPpeHaA6YnqsOjjhUY6UW0v7eKSTZw@mail.gmail.com>
- <CAHmME9ork6wh-T=sRfX6X0B4j-Vb36GVO0v=Yda0Hac1hiN_KA@mail.gmail.com> <CAADnVQLF_tmNmNk+H+jP1Ubmw-MBhG1FevFmtZY6yw5xk2314g@mail.gmail.com>
-In-Reply-To: <CAADnVQLF_tmNmNk+H+jP1Ubmw-MBhG1FevFmtZY6yw5xk2314g@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 14 Jan 2022 09:33:36 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdV_4HjvbpDsbhomxO3JSv-MOWDzb-8vc2=prc_KgTPA1g@mail.gmail.com>
-Message-ID: <CAMuHMdV_4HjvbpDsbhomxO3JSv-MOWDzb-8vc2=prc_KgTPA1g@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 1/3] bpf: move from sha1 to blake2s in tag calculation
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowAAXH39+N+FhaP8xBg--.45727S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrKF1rKw18ZryDWrWkJr15twb_yoWfJwb_Gr
+        WxKrW2yr4DKr9F934YyFn5ZFyF9w1qg3WS9a9agrZ5Jw1UW345Xr1DZr4UW3yUX3yUGFy7
+        ZFyUX3WqvrnrCjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb2xYjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
+        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
+        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4
+        A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
+        w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMc
+        vjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE14v_GFyl42xK82IY
+        c2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s
+        026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF
+        0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0x
+        vE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E
+        87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUgwFxDUUUU
+X-Originating-IP: [124.16.141.244]
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBgkGA10Tf6iqfAACsH
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexei,
+'destroy_workqueue()' already drains the queue before destroying it, so
+there is no need to flush it explicitly.
 
-On Thu, Jan 13, 2022 at 11:45 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
-> On Thu, Jan 13, 2022 at 4:27 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> > On 1/13/22, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > > Nack.
-> > > It's part of api. We cannot change it.
-> >
-> > This is an RFC patchset, so there's no chance that it'll actually be
-> > applied as-is, and hence there's no need for the strong hammer nack.
-> > The point of "request for comments" is comments. Specifically here,
-> > I'm searching for information on the ins and outs of *why* it might be
-> > hard to change. How does userspace use this? Why must this 64-bit
-> > number be unchanged? Why did you do things this way originally? Etc.
-> > If you could provide a bit of background, we might be able to shake
-> > out a solution somewhere in there.
->
-> There is no problem with the code and nothing to be fixed.
+Remove the redundant 'flush_workqueue()' calls.
 
-"Your Jedi mind tricks don't work on me."
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+---
+ drivers/s390/net/qeth_l3_main.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-The "problem" is that this is one of the few last users of SHA-1 in
-the kernel.
+diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
+index 9251ad276ee8..d2f422a9a4f7 100644
+--- a/drivers/s390/net/qeth_l3_main.c
++++ b/drivers/s390/net/qeth_l3_main.c
+@@ -1961,7 +1961,6 @@ static void qeth_l3_remove_device(struct ccwgroup_device *cgdev)
+ 	if (card->dev->reg_state == NETREG_REGISTERED)
+ 		unregister_netdev(card->dev);
+ 
+-	flush_workqueue(card->cmd_wq);
+ 	destroy_workqueue(card->cmd_wq);
+ 	qeth_l3_clear_ip_htable(card, 0);
+ 	qeth_l3_clear_ipato_list(card);
+-- 
+2.25.1
 
-Can you please answer the questions above, so we can get a better
-understanding?
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
