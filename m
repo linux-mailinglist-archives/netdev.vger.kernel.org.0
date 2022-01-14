@@ -2,134 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E61FC48F022
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 19:46:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D53948F033
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 19:55:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243370AbiANSqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 13:46:17 -0500
-Received: from mxout04.lancloud.ru ([45.84.86.114]:39038 "EHLO
-        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236181AbiANSqN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 13:46:13 -0500
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru CAE4720A74BC
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-To:     Mark Brown <broonie@kernel.org>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-CC:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        <linux-iio@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "Amit Kucheria" <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        <linux-phy@lists.infradead.org>, <netdev@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        <openipmi-developer@lists.sourceforge.net>,
-        "Khuong Dinh" <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        "Lee Jones" <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        "Daniel Lezcano" <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "John Garry" <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        "William Breathitt Gray" <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "Sebastian Reichel" <sre@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Takashi Iwai" <tiwai@suse.com>,
-        <platform-driver-x86@vger.kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        <linux-edac@vger.kernel.org>, Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        "Linux MMC List" <linux-mmc@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        "James Morse" <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        "Pengutronix Kernel Team" <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        <linux-mediatek@lists.infradead.org>,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
- <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220110201014.mtajyrfcfznfhyqm@pengutronix.de> <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <3a6b7348-ffcf-e26a-1874-830e78ae2d57@omp.ru>
-Date:   Fri, 14 Jan 2022 21:46:04 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S243556AbiANSzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 13:55:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55820 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236181AbiANSzj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 13:55:39 -0500
+Received: from mail-vk1-xa61.google.com (mail-vk1-xa61.google.com [IPv6:2607:f8b0:4864:20::a61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFE6C061574
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 10:55:39 -0800 (PST)
+Received: by mail-vk1-xa61.google.com with SMTP id h16so6397965vkp.5
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 10:55:39 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:dkim-signature:mime-version:references
+         :in-reply-to:from:date:message-id:subject:to:cc;
+        bh=Hy5aZ4Roey3EFS/MVuvVyRUa8ToAzix3WO2/RHWO60I=;
+        b=UcApN0XDhOiStEavKj/sQpiA28Tj09GDpRBqMrjjPuJfzNQsDNgZK+5O8UdY617Zua
+         z4XcOhXnr/uzRKsziDfn5xCTLzXBB/ZZWeFu71PRX+7Eonrjy3gxYbG2JaUBQlQa8/Bw
+         njdRcM9qyK6E4lvpyI6sRX4NLe2S5cKomImXMIbwD/ZRdkBvB9sqiAN+954gxY5Yu9B0
+         sbToVk2MbMfwLvF76i6L18oG+XW3QO8UxD6y1qMXVYkyfQO0eV+ZkKCdOgoAkwLVRG+2
+         W5ESbzk3/4m98EvvpMjj2tJWwBHnONlYAPUq54JMS6PerdUfwRk1k7FDHFO5QvMPzOHP
+         7tlw==
+X-Gm-Message-State: AOAM532OMrMtO4s6UTLE7H5mLrEcFwOI5NGV2AbLLtoqBsUAqgQMUGyJ
+        M/FyFqdbf9NNGcsRZfbB/4xBLgLzGBWJmSkvhdkbGmGaRke91A==
+X-Google-Smtp-Source: ABdhPJxQkDlJx/bJN+y2A8p73DnAIcvFR61yELm/mXFtFUKl03+KYMRvJ3yUPOKajy7Ea0TYYTcrdXaIiyuu
+X-Received: by 2002:a05:6122:914:: with SMTP id j20mr5152228vka.20.1642186538265;
+        Fri, 14 Jan 2022 10:55:38 -0800 (PST)
+Received: from netskope.com ([163.116.128.203])
+        by smtp-relay.gmail.com with ESMTPS id g189sm1721512vkb.2.2022.01.14.10.55.37
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 10:55:38 -0800 (PST)
+X-Relaying-Domain: riotgames.com
+Received: by mail-pg1-f200.google.com with SMTP id t1-20020a6564c1000000b002e7f31cf59fso2357142pgv.14
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 10:55:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=riotgames.com; s=riotgames;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Hy5aZ4Roey3EFS/MVuvVyRUa8ToAzix3WO2/RHWO60I=;
+        b=YwWkfmnbohf8+9NcQ8MXUDzEzi1jb/TVO/GiB3NRMq+k2WWwXsHRzOBnrzTR/5nK5m
+         qtRwrrByNyDa0X9hePyHkSdgLIALPbKCFv/BZwKNbGx0cCVusuCoO8J3RCgVRPU7AdMW
+         HPWz9T0KpoAKL9MyULbPJsRIVd65/2w58R6yU=
+X-Received: by 2002:aa7:9510:0:b0:4bd:ce79:d158 with SMTP id b16-20020aa79510000000b004bdce79d158mr10108456pfp.24.1642186536550;
+        Fri, 14 Jan 2022 10:55:36 -0800 (PST)
+X-Received: by 2002:aa7:9510:0:b0:4bd:ce79:d158 with SMTP id
+ b16-20020aa79510000000b004bdce79d158mr10108421pfp.24.1642186536257; Fri, 14
+ Jan 2022 10:55:36 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+References: <CAEf4Bza+WO5U+Kw=S+GvQBgu5VHfPL29u7eLSQq34jvYzGnbBA@mail.gmail.com>
+ <CAADnVQLGxjvOO3Ae3mGTWTyd0aHnACxYoF8daNi+z56NQyYQug@mail.gmail.com>
+ <CAEf4BzZ4c1VwPf9oBRRdN7jdBWrk4pg=mw_50LMjLr99Mb0yfw@mail.gmail.com>
+ <CAADnVQ+BiMy4TZNocfFSvazh-QTFwMD-3uQ9LLiku7ePLDn=MQ@mail.gmail.com>
+ <CAC1LvL0CeTw+YKjO6r0f68Ly3tK4qhDyjV0ak82e0PpHURVQOw@mail.gmail.com>
+ <Yd82J8vxSAR9tvQt@lore-desk> <8735lshapk.fsf@toke.dk> <47a3863b-080c-3ac2-ff2d-466b74d82c1c@redhat.com>
+ <Yd/9SPHAPH3CpSnN@lore-desk> <CAADnVQJaB8mmnD1Z4jxva0CqA2D0aQDmXggMEQPX2MRLZvoLzA@mail.gmail.com>
+ <YeC8sOAeZjpc4j8+@lore-desk> <CAADnVQ+=0k1YBbkMmSKSBtkmiG8VCYZ5oKGjPPr4s9c53QF-mQ@mail.gmail.com>
+ <e86ccea8-af77-83bf-e90e-dce88b26f07c@redhat.com>
+In-Reply-To: <e86ccea8-af77-83bf-e90e-dce88b26f07c@redhat.com>
+From:   Zvi Effron <zeffron@riotgames.com>
+Date:   Fri, 14 Jan 2022 10:55:24 -0800
+Message-ID: <CAC1LvL3M9OaSanES0uzp=vvgK23qPGRPpcAR6Z_Vqcvma3K5Qg@mail.gmail.com>
+Subject: Re: [PATCH v21 bpf-next 18/23] libbpf: Add SEC name for xdp_mb programs
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, brouer@redhat.com,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Shay Agroskin <shayagr@amazon.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com
+Content-Type: text/plain; charset="UTF-8"
+x-netskope-inspected: true
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/13/22 11:35 PM, Sergey Shtylyov wrote:
+On Fri, Jan 14, 2022 at 8:50 AM Jesper Dangaard Brouer
+<jbrouer@redhat.com> wrote:
+>
+>
+>
+> On 14/01/2022 03.09, Alexei Starovoitov wrote:
+> > On Thu, Jan 13, 2022 at 3:58 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> >>>
+> >>> Btw "xdp_cpumap" should be cleaned up.
+> >>> xdp_cpumap is an attach type. It's not prog type.
+> >>> Probably it should be "xdp/cpumap" to align with "cgroup/bind[46]" ?
+> >>
+> >> so for xdp "mb" or xdp "frags" it will be xdp/cpumap.mb (xdp/devmap.mb) or
+> >> xdp/cpumap.frags (xdp/devmap.frags), right?
+> >
+> > xdp.frags/cpumap
+> > xdp.frags/devmap
+> >
+> > The current de-facto standard for SEC("") in libbpf:
+> > prog_type.prog_flags/attach_place
+>
+> Ups, did we make a mistake with SEC("xdp_devmap/")
+>
+> and can we correct without breaking existing programs?
+>
 
-[...]
->> (Do we really need *all* the CCs here?)
-> 
->    Yeah, 25 files were changed and that resulted in 75 persons/lists addressed.
-> I didn't expect such a wide audience myself... :-)
+We can (at the very least) add the correct sections, even if we leave the
+current incorrect ones as well. Ideally we'd mark the incorrect ones deprecated
+and either remove them before libbpf 1.0 or as part of 2.0?
 
-   And, of course, I specified --nogit-fallback to scripts/get_maintainers.pl, so
-there's no random people...
+--Zvi
 
-[...]
-
-MBR, Sergey
+> > "attach_place" is either function_name for fentry/, tp/, lsm/, etc.
+> > or attach_type/hook/target for cgroup/bind4, cgroup_skb/egress.
+> >
+> > lsm.s/socket_bind -> prog_type = LSM, flags = SLEEPABLE
+> > lsm/socket_bind -> prog_type = LSM, non sleepable.
+> >
+>
