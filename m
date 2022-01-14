@@ -2,289 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51E2548EEA8
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 17:50:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAA2A48EEB2
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 17:51:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243581AbiANQuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 11:50:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235625AbiANQuN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 11:50:13 -0500
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0BCEC061574
-        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 08:50:12 -0800 (PST)
-Received: by mail-qv1-xf2b.google.com with SMTP id iw1so10667220qvb.1
-        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 08:50:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=wtTQ9WBDBwDSvfu6oKIkILg6vorrn5QPW5+kcMwi4hw=;
-        b=qGSHZgCn0viByPWrXKr6booJglqWAJo79skFmLwdR8JZEu33ES7P4VrJJEyCF/Ngct
-         nwQd4fRiV9uRiElaaiogrA/VhtIU03c9j7UwNqTyc+YbEGGsCQ6LotDgHwNMRjGq514x
-         I0sg1wEkWNaD07lDSMV0y/5TrfP8MjrUIG+4fRNW2CUrbJ/6jHUXzYa9D3bOkZ+vSeq8
-         Ot0zbEmgxONXIDbpG6oo/k9jLwEfStPecKdFOsNXRGLm2jyhtlsHhZWItwIsm7gkw3bT
-         GUD3KLlH13SQ0lI/e4ce6h+TMGgPhvNwhnafxJwymyFiCtUYfNHu/nxeIAQ5lNbmR4LD
-         n5Ig==
+        id S243606AbiANQul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 11:50:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:41217 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243595AbiANQui (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 11:50:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642179038;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Aog+Xm4qfU3nqJAaFVSSDCOw9xaUbeG0yHB/PP3Bm0g=;
+        b=eWalXGnA2nzwy1bkREv+UeYevFOmkyQAVGuFh8jnYoyj2L32cZxJfvbr9Z+JtbZtanEbAP
+        cIuM8l+xhfD+YoQotoqyN9487SVKWWnhdm/KHeukU1NYLJy1PQFGhPUQWZLuzdxcIkD3f6
+        je4KhN9Z60Oy/7F/OOJoRUaBXNKu+XE=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-125-UDUspUinMTeR3zJoJZGBpg-1; Fri, 14 Jan 2022 11:50:27 -0500
+X-MC-Unique: UDUspUinMTeR3zJoJZGBpg-1
+Received: by mail-ed1-f71.google.com with SMTP id y18-20020a056402271200b003fa16a5debcso8607009edd.14
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 08:50:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
+        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
+         :subject:content-language:to:references:in-reply-to
          :content-transfer-encoding;
-        bh=wtTQ9WBDBwDSvfu6oKIkILg6vorrn5QPW5+kcMwi4hw=;
-        b=qzZYUFc61PDcp862FvJrxhgTA+DQM3xeJ2rUcu5Qnzdt+eILwViO2UYt1yyAWxLM2r
-         pKGsaAmQsg6LxwL3wwE6cKp0gH0fmtq2tG6tSL4WoLVlpwjMNz/3OmQUdzIHIbMjkm2a
-         xNtPNestruT2iVBaKHNX3ViUofdugnLp7jddvxaD8LLEZG0xlPRhp4MeRbLujr7iNF6G
-         te2C1K79XVQUXeQxFa5SrqyC4NMYj8Csqg2EAdQ3YgY+/Y9JtldXHwcvJEJQmLv1b6Vt
-         e3PzXs/V+hdep1n+kRfW/BqTdQyWpy6bKxtUF0JKvuUrLdBANpMd0qDZ2x16sWaJnUCW
-         03Kg==
-X-Gm-Message-State: AOAM533qEi/2nBMe7aJbCs4OUeH/sJU/vP+mXxDZ54tw7SIOh+M7NegI
-        OF8tQg28f+lXBVCw+OIHEitcuBvtOXeQfg==
-X-Google-Smtp-Source: ABdhPJwex/giWWtUX5vWvQfF+K/egye2vvgpkqIa1WQD7x5X3/Qw9j2FGYHYZVbjBK8LxPzjUCKlbg==
-X-Received: by 2002:a05:6214:19ec:: with SMTP id q12mr7385802qvc.2.1642179011305;
-        Fri, 14 Jan 2022 08:50:11 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id e24sm2205975qka.27.2022.01.14.08.50.09
+        bh=Aog+Xm4qfU3nqJAaFVSSDCOw9xaUbeG0yHB/PP3Bm0g=;
+        b=CQltSAYw7bpw/H/YIoIvXQPE1XQNXlTkhIPh+235r8UMOTHQLVjigCFAF3ZXvDdtdR
+         9V/LDk7OC8Z87bFd30O/s2LzrWljwA0H711ZLd1SVJIe3peiVmc+dMHAx6Sh+8Xulutc
+         OSKtqR2LbgPsi4y4dmA24mfZJa9wCeD/wE94ckdrlsaO9tIsWZ3roL2QCvMMfyJ7uD9+
+         MZquEAefAaJLuGSx29mP9z16SVKo6LKeJv4pegvMMJ8zIR3+UvmQOdg8FylsfVMDT0dQ
+         nY+PyRnouL4hTRDO7h8xjwPB2sq/ZOBawue9ZbN7gIWAKV7o5feFsccC0ya7Uq+kNGn0
+         Vx4g==
+X-Gm-Message-State: AOAM531afJZvg1qRZSnHDtiL0IPT6Nj+0i8grMNMvwF4Rr7SeoSqFHOq
+        MQUiJ3NQs4AZw9etpMW3hV1Ion4alPgtXCiJaLjURo4i2FFDWy1m4TzerYE7zIBVC9S9WvQZfTG
+        5wJ79NpaRqNrQvY3f
+X-Received: by 2002:a17:907:6e89:: with SMTP id sh9mr7871931ejc.309.1642179026589;
+        Fri, 14 Jan 2022 08:50:26 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx289mMFaskSpHlDQKd6krI58HMAi62MQ740w6gblEPsMNl6GOH2PzyU4F3wqziA3sWWpEG6g==
+X-Received: by 2002:a17:907:6e89:: with SMTP id sh9mr7871918ejc.309.1642179026343;
+        Fri, 14 Jan 2022 08:50:26 -0800 (PST)
+Received: from [192.168.2.20] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
+        by smtp.gmail.com with ESMTPSA id s3sm1982831ejs.145.2022.01.14.08.50.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jan 2022 08:50:10 -0800 (PST)
-Message-ID: <e666e0cb-5b65-1fe9-61ae-a3a3cea54ea0@linaro.org>
-Date:   Fri, 14 Jan 2022 10:50:09 -0600
+        Fri, 14 Jan 2022 08:50:25 -0800 (PST)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <e86ccea8-af77-83bf-e90e-dce88b26f07c@redhat.com>
+Date:   Fri, 14 Jan 2022 17:50:23 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Port mirroring, v2 (RFC)
+ Thunderbird/91.2.0
+Cc:     brouer@redhat.com, Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Zvi Effron <zeffron@riotgames.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Shay Agroskin <shayagr@amazon.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com
+Subject: Re: [PATCH v21 bpf-next 18/23] libbpf: Add SEC name for xdp_mb
+ programs
 Content-Language: en-US
-From:   Alex Elder <elder@linaro.org>
-To:     Network Development <netdev@vger.kernel.org>
-Cc:     "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <384e168b-8266-cb9b-196b-347a513c0d36@linaro.org>
-In-Reply-To: <384e168b-8266-cb9b-196b-347a513c0d36@linaro.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+References: <CAEf4Bza+WO5U+Kw=S+GvQBgu5VHfPL29u7eLSQq34jvYzGnbBA@mail.gmail.com>
+ <CAADnVQLGxjvOO3Ae3mGTWTyd0aHnACxYoF8daNi+z56NQyYQug@mail.gmail.com>
+ <CAEf4BzZ4c1VwPf9oBRRdN7jdBWrk4pg=mw_50LMjLr99Mb0yfw@mail.gmail.com>
+ <CAADnVQ+BiMy4TZNocfFSvazh-QTFwMD-3uQ9LLiku7ePLDn=MQ@mail.gmail.com>
+ <CAC1LvL0CeTw+YKjO6r0f68Ly3tK4qhDyjV0ak82e0PpHURVQOw@mail.gmail.com>
+ <Yd82J8vxSAR9tvQt@lore-desk> <8735lshapk.fsf@toke.dk>
+ <47a3863b-080c-3ac2-ff2d-466b74d82c1c@redhat.com>
+ <Yd/9SPHAPH3CpSnN@lore-desk>
+ <CAADnVQJaB8mmnD1Z4jxva0CqA2D0aQDmXggMEQPX2MRLZvoLzA@mail.gmail.com>
+ <YeC8sOAeZjpc4j8+@lore-desk>
+ <CAADnVQ+=0k1YBbkMmSKSBtkmiG8VCYZ5oKGjPPr4s9c53QF-mQ@mail.gmail.com>
+In-Reply-To: <CAADnVQ+=0k1YBbkMmSKSBtkmiG8VCYZ5oKGjPPr4s9c53QF-mQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a second RFC for a design to implement new functionality
 
-in the Qualcomm IPA driver.  Since last time I've looked into some
 
-options based on feedback.  This time I'll provide some more detail
+On 14/01/2022 03.09, Alexei Starovoitov wrote:
+> On Thu, Jan 13, 2022 at 3:58 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>>>
+>>> Btw "xdp_cpumap" should be cleaned up.
+>>> xdp_cpumap is an attach type. It's not prog type.
+>>> Probably it should be "xdp/cpumap" to align with "cgroup/bind[46]" ?
+>>
+>> so for xdp "mb" or xdp "frags" it will be xdp/cpumap.mb (xdp/devmap.mb) or
+>> xdp/cpumap.frags (xdp/devmap.frags), right?
+> 
+> xdp.frags/cpumap
+> xdp.frags/devmap
+> 
+> The current de-facto standard for SEC("") in libbpf:
+> prog_type.prog_flags/attach_place
+
+Ups, did we make a mistake with SEC("xdp_devmap/")
+
+and can we correct without breaking existing programs?
+
+> "attach_place" is either function_name for fentry/, tp/, lsm/, etc.
+> or attach_type/hook/target for cgroup/bind4, cgroup_skb/egress.
+> 
+> lsm.s/socket_bind -> prog_type = LSM, flags = SLEEPABLE
+> lsm/socket_bind -> prog_type = LSM, non sleepable.
+> 
 
-about the hardware, and what the feature is doing.  And I'll end
-
-with two possible implementations, and some questions.
-
-
-
-My objective is to get a general sense that what I plan to do
-
-is reasonable, so the patches that implement it will be acceptable.
-
-
-
-
-
-The feature provides the AP access to information about the packets
-
-that the IPA hardware processes as it carries them between its
-
-"ports".  It is intended as a debug/informational interface only.
-
-Before going further I'll briefly explain what the IPA hardware
-
-does.
-
-
-
-The upstream driver currently uses the hardware only as the path
-
-that provides access to a 5G/LTE cellular network via a modem
-
-embedded in a Qualcomm SoC.
-
-
-
-        \|/
-
-         |
-
-   ------+-----   ------
-
-   | 5G Modem |   | AP |
-
-   ------------   ------
-
-              \\    || <-- IPA channels, or "ports"
-
-             -----------
-
-             |   IPA   |
-
-             -----------
-
-
-But the hardware also provides a path to carry network traffic to
-
-and from other entities as well, such as a PCIe root complex (or
-
-endpoint).  For example an M.2 WiFi card can use a PCIe slot that
-
-is IPA connected, and the IPA hardware can carry packets between
-
-the AP and that WiFi card.  (A separate MHI host driver manages the
-
-interaction between PCIe and IPA in this case.)
-
-
-
-        \|/                PCIe bus --.     \|/
-
-         |                            |      |
-
-   ------+-----  ------   ----------- v ------+-----
-
-   | 5G Modem |  | AP |...| PCIe RC |===| M.2 WiFi |
-
-   ------------  ------   -----------   ------------
-
-              \\   ||    // <-- IPA channels
-
-               -----------
-
-               |   IPA   |
-
-               -----------
-
-
-
-In the above scenario, the IPA hardware is actually able to directly
-
-route packets between the embedded modem and the WiFi card without
-
-AP involvement.  But supporting that is a future problem, and I
-
-don't want to get ahead of myself.
-
-
-
-The point is that the IPA hardware can carry network packets between
-
-any pair of its "ports".  And the AP can get information about all
-
-of the traffic the IPA handles, using a special interface.
-
-
-
-The "information" consists of replicas of each packet transferred
-
-(possibly truncated), each preceded by a fixed-size "status" header.
-
-It amounts to a stream of packets delivered by the IPA hardware to
-
-the AP.  This stream is distinct from "normal" traffic (such as
-
-packets exchanged between the AP and modem); but note that even
-
-those packets would be replicated.
-
-
-
-
-
-I originally described this feature as "port mirroring" because it
-
-seemed to be similar to that feature of smart network switches.  But
-
-the "mirroring" term was interpreted as a something Linux would do,
-
-so at a minimum, that's the wrong term.  Andrew Lunn (and others)
-
-suggested that WiFi monitor mode might be a good model.  I looked
-
-into that, and I don't think that quite fits either.  I really think
-
-this should be represented separate from the "normal" network
-
-devices associated with IPA.
-
-
-
-
-
-Below I will describe two possible implementations I'm considering.
-
-I would like to know which approach makes the most sense (or if
-
-neither does, what alternative would be better).  On top of that I
-
-guess I'd like suggestions for the *name* for this (i.e., what
-
-should I call the interface that implements this?).
-
-
-
-The two alternative implementations I'm considering are a network
-
-device, and a "misc" (character) device.  In both cases, a user
-
-space program would open the interface and read from it.  The data
-
-read would just be the raw data received--a stream of the (possibly
-
-truncated) packets together with their "status" headers.  I envision
-
-either one could be a source of packets processed by libpcap/tcpdump.
-
-
-
-My preference is to use a network device.  I think it fits the
-
-"stream of packets" best, and existing networking code would take
-
-care of all the details of queueing and packet management.  One down
-
-side is that this is not a "normal" network interface--there is no
-
-reason to associate it with an IP stack, for example.
-
-
-
-A misc device would avoid the interface being treated as a "normal"
-
-network device.  It could present all packet data to user space, but
-
-the IPA driver would have to manage buffering, including limiting
-
-the amount of received buffers.  Implementing this would be fine,
-
-but I think it would just be nicer to use the network model.
-
-
-
-
-
-So bottom line, given what I've described above:
-
-- Is a distinct network device a reasonable and acceptable way of
-
-   implementing this feature?  If not, why not?
-
-- Would implementing this as a misc device be preferable?  Why?
-
-- Is there a better alternative than either of the above?
-
-- Can anyone suggest a name for this functionality, something that
-
-   is meaningful but would not be confused with other existing terms?
-
-
-
-Thanks.
-
-
-					-Alex
