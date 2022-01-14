@@ -2,137 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9511848EE0D
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 17:25:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA12E48EE2B
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 17:33:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233065AbiANQZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 11:25:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiANQZR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 11:25:17 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B64C061574
-        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 08:25:17 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id c10so25318168ybb.2
-        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 08:25:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Uyg+gfkuSLA4/LUPP+48TR0YFiBiqvtyjtxVKo9gv/o=;
-        b=aMtoa0Q5TYRR3DE3kjqQlHQxW/JrxU9VZkPIP5Wde/YcQqA6e4yxSbimUsFo3MV+du
-         bymnzzUM/tkboUJdI/3nywvWfJBtk6E8sF6cQ0QMdYZtGWDLW4yncsv0gNVCgeOdAydm
-         ixrWK/HDw/63E1e7KkMLDXi5f+4UafvNvE+CZbd6IT4/abVrfYZXZzVJXp3gz/+D2d7s
-         +LtIa0jmJ3Ba3TJtP4hSXOnHHX9UhhyGUb8/Q4MYjm0oDrl+OBZ5M+Ar+S5tuFQFS1Tr
-         Y7atlSClKFJwy/hXgyT8Il1sUjNgxf2oRQrRUVEXkHOTVoJu4yunpIyvM5xFbrljXJam
-         SZCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Uyg+gfkuSLA4/LUPP+48TR0YFiBiqvtyjtxVKo9gv/o=;
-        b=TMyumrgvLl1G2IF8nv1rSMnmnyHg5WFBFZAoqVBL8fxoQkl+07XWNTFebdBJCRl0KM
-         34KimSmUgewwChekGUQoO8WkBeS3MIz2N1LC2U6SBbhT7o+uIXqp1hYUAmmENpnTOJWb
-         wabO9SSlFFjVOhbrxLfTito2imB4A/38/TmhgWGrNhFVsK8PpJAN10cFHBmlLR5DxLzJ
-         vp9ppG2upN+7mAnOkSSk4PKZ136wNhOqDhpBCc3m3pZdb3L266yEY9A9aINdv9zZoWl0
-         DUwxtu/Lc75CLKCjsqocoFB+T49ELW/KaAyYIjrzXOEqp98tUKrWpfrtJ0U3+E46FPor
-         tZBQ==
-X-Gm-Message-State: AOAM532gr8OB26ENH0Uqy/eUAudcSlci3vPV8bxRTWpjZe/KdXbs2TS6
-        b9truN6sM3jnJMPWxyB+f5hSmcvD9UW+TThalaflxg==
-X-Google-Smtp-Source: ABdhPJxzEEibsJ4Fsr/EO3kETomouE8WQM566R5Yzhqm8cBT4qaKY0tWd2IZwTGUAEcO35jsCDhdLlLYI13IiU/hxGA=
-X-Received: by 2002:a25:b29c:: with SMTP id k28mr14093320ybj.711.1642177515943;
- Fri, 14 Jan 2022 08:25:15 -0800 (PST)
+        id S239093AbiANQdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 11:33:24 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36406 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230447AbiANQdX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 11:33:23 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B2EAB82963;
+        Fri, 14 Jan 2022 16:33:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E157C36AEF;
+        Fri, 14 Jan 2022 16:33:20 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="f8BE3bp8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1642177997;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fjhRN0D79I8OqjnhotxNxDTJr6R4g/K22rp1JS1C5Eo=;
+        b=f8BE3bp888e2UKyRZigZlucXrl3EdxDbtL2HX5Uh6swbq0rLANuLtzjzONNVXsYEFDHnUn
+        wv5dGEQ278DvKOHOOv0FuHhDaAj0Avb7lqA83+1xY++L96XuPTypYbcYQgFdf14t0lTllp
+        Qmub2ddKHXu8E2fLwGtJgLDGOam56y0=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3ee846df (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 14 Jan 2022 16:33:17 +0000 (UTC)
+Received: by mail-yb1-f169.google.com with SMTP id h14so25261919ybe.12;
+        Fri, 14 Jan 2022 08:33:17 -0800 (PST)
+X-Gm-Message-State: AOAM530kUVVuAQAdn4s+NCPDlRQNeZEEhFl57dlLIFzmxX9ei3a/7kH6
+        3qnpE1RNkhWfZnr36/fWNU3qd8Ba178JeYRF6mQ=
+X-Google-Smtp-Source: ABdhPJw+G76wCMtSJSIuOYt31tQHyRYk7zoC2KbYtKA7+I1KIxZdl0Ni/9vsDj9W+Rg1a6w300a7FLWP7S/v0KjtE5Y=
+X-Received: by 2002:a25:4109:: with SMTP id o9mr11071225yba.115.1642177996382;
+ Fri, 14 Jan 2022 08:33:16 -0800 (PST)
 MIME-Version: 1.0
-References: <20220114153902.1989393-1-eric.dumazet@gmail.com> <2f8ea7358c17449682f7e72eaed1ce54@AcuMS.aculab.com>
-In-Reply-To: <2f8ea7358c17449682f7e72eaed1ce54@AcuMS.aculab.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 14 Jan 2022 08:25:04 -0800
-Message-ID: <CANn89iKA32qt8X6VzFsissZwxHpar6pDEJT_dgYhnxfROcaqRA@mail.gmail.com>
-Subject: Re: [PATCH net] ipv4: make fib_info_cnt atomic
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
+References: <20220114142015.87974-1-Jason@zx2c4.com> <20220114142015.87974-2-Jason@zx2c4.com>
+ <CAADnVQJ1qsGacgrsKNiMme--+nwPVG+bd1D8rF8t8bDCvTgbLw@mail.gmail.com>
+In-Reply-To: <CAADnVQJ1qsGacgrsKNiMme--+nwPVG+bd1D8rF8t8bDCvTgbLw@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 14 Jan 2022 17:33:05 +0100
+X-Gmail-Original-Message-ID: <CAHmME9oV-KEU=3ZVHzN1APgUWP0vABt3T5FL4GX47KAUfp6ekw@mail.gmail.com>
+Message-ID: <CAHmME9oV-KEU=3ZVHzN1APgUWP0vABt3T5FL4GX47KAUfp6ekw@mail.gmail.com>
+Subject: Re: [PATCH RFC v2 1/3] bpf: move from sha1 to blake2s in tag calculation
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 7:50 AM David Laight <David.Laight@aculab.com> wrote:
+On Fri, Jan 14, 2022 at 5:20 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> From: Eric Dumazet
-> > Sent: 14 January 2022 15:39
+> On Fri, Jan 14, 2022 at 6:20 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
 > >
-> > Instead of making sure all free_fib_info() callers
-> > hold rtnl, it seems better to convert fib_info_cnt
-> > to an atomic_t.
+> > BLAKE2s is faster and more secure. SHA-1 has been broken for a long time
+> > now. This also removes quite a bit of code, and lets us potentially
+> > remove sha1 from lib, which would further reduce vmlinux size.
 >
-> Since fib_info_cnt is only used to control the size of the hash table
-> could it be incremented when a fid is added to the hash table and
-> decremented when it is removed.
->
-> This is all inside the fib_info_lock.
+> Same NACK as before.
+> Stop this spam. Pls.
 
-Sure, this will need some READ_ONCE()/WRITE_ONCE() annotations
-because the resize would read fib_info_cnt without this lock held.
+You can read the 0/3 for an explanation of why I sent this v2. I
+reject your characterization of this as "spam".
 
-I am not sure this is a stable candidate though, patch looks a bit more risky.
-
-This seems to suggest another issue...
-
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index 828de171708f599b56f63715514c0259c7cb08a2..45619c005b8dddd7ccd5c7029efa4ed69b6ce1de
-100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -249,7 +249,6 @@ void free_fib_info(struct fib_info *fi)
-                pr_warn("Freeing alive fib_info %p\n", fi);
-                return;
-        }
--       fib_info_cnt--;
-
-        call_rcu(&fi->rcu, free_fib_info_rcu);
- }
-@@ -260,6 +259,10 @@ void fib_release_info(struct fib_info *fi)
-        spin_lock_bh(&fib_info_lock);
-        if (fi && refcount_dec_and_test(&fi->fib_treeref)) {
-                hlist_del(&fi->fib_hash);
-+
-+               /* Paired with READ_ONCE() in fib_create_info(). */
-+               WRITE_ONCE(fib_info_cnt, fib_info_cnt - 1);
-+
-                if (fi->fib_prefsrc)
-                        hlist_del(&fi->fib_lhash);
-                if (fi->nh) {
-@@ -1430,7 +1433,9 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
- #endif
-
-        err = -ENOBUFS;
--       if (fib_info_cnt >= fib_info_hash_size) {
-+
-+       /* Paired with WRITE_ONCE() in fib_release_info() */
-+       if (READ_ONCE(fib_info_cnt) >= fib_info_hash_size) {
-                unsigned int new_size = fib_info_hash_size << 1;
-                struct hlist_head *new_info_hash;
-                struct hlist_head *new_laddrhash;
-@@ -1462,7 +1467,6 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
-                return ERR_PTR(err);
-        }
-
--       fib_info_cnt++;
-        fi->fib_net = net;
-        fi->fib_protocol = cfg->fc_protocol;
-        fi->fib_scope = cfg->fc_scope;
-@@ -1591,6 +1595,7 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
-        refcount_set(&fi->fib_treeref, 1);
-        refcount_set(&fi->fib_clntref, 1);
-        spin_lock_bh(&fib_info_lock);
-+       fib_info_cnt++;
-        hlist_add_head(&fi->fib_hash,
-                       &fib_info_hash[fib_info_hashfn(fi)]);
-        if (fi->fib_prefsrc) {
+Thanks,
+Jason
