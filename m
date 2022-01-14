@@ -2,403 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 527A648EAE0
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 14:38:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 211BD48EAE2
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 14:38:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236446AbiANNhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 08:37:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:58171 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236439AbiANNg6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 08:36:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642167417;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uWjdtn9qbXn+BqeO90BykZwZSsT6Vhb2SL5MrFDabwk=;
-        b=aSv25eNYnlR33ejdgRgcggmHTPEWhQRxYn/SQcXhVeW32LhvvbACMn3QZBmBlUrgRxpOgg
-        C1mJoKtclU0OIjuF+x/iRdt1bOzGk5CGIEiunug4hh4D4LmsagTzIisWFWyiP6hcUAbaqM
-        QF9F5zq787r+kVvvspBVJc0xENco0Mw=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-467-YziujfL5MXqvQQRHWrhLCw-1; Fri, 14 Jan 2022 08:36:56 -0500
-X-MC-Unique: YziujfL5MXqvQQRHWrhLCw-1
-Received: by mail-ed1-f69.google.com with SMTP id m16-20020a056402431000b003fb60bbe0e2so8349527edc.3
-        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 05:36:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=uWjdtn9qbXn+BqeO90BykZwZSsT6Vhb2SL5MrFDabwk=;
-        b=2n1OLTRXEpisCWH1AlPYgvudPJ5qFZhyEFOvx/HzRRN3MxRZSTZXNkHPhcXePmOyTi
-         odOq+6GqF30LvyWKT7KoYVPbITJdb8udd/pP0arjRKJWLU9Z8mghbhikxG1CHAfVeagO
-         6bOmWmuz0vJsZOzxdBaa3Olb0TLehbS1W7rUixXd5VvkQVdf3/4NlIoB696QX6RijILf
-         ISpI9d5Bmj6pvco5BoJlPTj8F9cwwnKyDOvj7kkicNtzAGsKCqH1DPjJqokDKexAdzYu
-         iSLO8uIpZS+oAklbtfp/WneQkTzX8RKthfWUQCvjbSd7NLigcQEdwXuYaZhCFjRtR0pV
-         BhAA==
-X-Gm-Message-State: AOAM530JPZlKuJAhreVVyEMfBiERy2hjCEgl7ZZf17eHEzpFkxNegJ4u
-        NvQosofypQONZ/GsF4qNncPxrivGNU0B7DJYqgh1BASl1gVWQeMSYQO1k7hueDbWSYdzbSEj2Nf
-        MjJjWVsW/ZVT+7YV4
-X-Received: by 2002:a17:907:1c1f:: with SMTP id nc31mr7635935ejc.624.1642167414871;
-        Fri, 14 Jan 2022 05:36:54 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyoqsqltLoITkum/Y4oyTbxWIyO8ACJ9pPzk7psHl67i3Di34il7FMGT269gR+CPZtEd3tT1Q==
-X-Received: by 2002:a17:907:1c1f:: with SMTP id nc31mr7635918ejc.624.1642167414566;
-        Fri, 14 Jan 2022 05:36:54 -0800 (PST)
-Received: from redhat.com ([2.55.154.210])
-        by smtp.gmail.com with ESMTPSA id f16sm2008114eds.6.2022.01.14.05.36.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 05:36:53 -0800 (PST)
-Date:   Fri, 14 Jan 2022 08:36:49 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Cc:     jasowang@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH 7/7] vDPA/ifcvf: improve irq requester, to handle
- per_vq/shared/config irq
-Message-ID: <20220114081043-mutt-send-email-mst@kernel.org>
-References: <20220110051851.84807-1-lingshan.zhu@intel.com>
- <20220110051851.84807-8-lingshan.zhu@intel.com>
- <20220110005612-mutt-send-email-mst@kernel.org>
- <bc210134-4b1c-1b23-47f3-c90fb4b91b65@intel.com>
- <d7610c1c-611f-86e2-5330-c4783db078f5@intel.com>
- <20220113044642-mutt-send-email-mst@kernel.org>
- <104ef2d4-fb89-58e6-0a07-f8bdaeb278e3@intel.com>
- <20220113052821-mutt-send-email-mst@kernel.org>
- <7546243d-1561-51fb-55d3-fe0ff1651e48@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7546243d-1561-51fb-55d3-fe0ff1651e48@intel.com>
+        id S236230AbiANNhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 08:37:54 -0500
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:49642 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230472AbiANNhy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 08:37:54 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R291e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V1p8aYo_1642167444;
+Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1p8aYo_1642167444)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 14 Jan 2022 21:37:52 +0800
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] net/smc: Fix hung_task when removing SMC-R devices
+Date:   Fri, 14 Jan 2022 21:37:24 +0800
+Message-Id: <1642167444-107744-1-git-send-email-guwen@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 08:32:24PM +0800, Zhu, Lingshan wrote:
-> 
-> 
-> On 1/13/2022 6:29 PM, Michael S. Tsirkin wrote:
-> 
->     On Thu, Jan 13, 2022 at 06:10:15PM +0800, Zhu, Lingshan wrote:
-> 
-> 
->         On 1/13/2022 5:52 PM, Michael S. Tsirkin wrote:
-> 
->             On Thu, Jan 13, 2022 at 04:17:29PM +0800, Zhu, Lingshan wrote:
-> 
->                 On 1/11/2022 3:11 PM, Zhu, Lingshan wrote:
-> 
-> 
-> 
->                      On 1/10/2022 2:04 PM, Michael S. Tsirkin wrote:
-> 
->                          On Mon, Jan 10, 2022 at 01:18:51PM +0800, Zhu Lingshan wrote:
-> 
->                              This commit expends irq requester abilities to handle per vq irq,
->                              shared irq and config irq.
-> 
->                              On some platforms, the device can not get enough vectors for every
->                              virtqueue and config interrupt, the device needs to work under such
->                              circumstances.
-> 
->                              Normally a device can get enough vectors, so every virtqueue and
->                              config interrupt can have its own vector/irq. If the total vector
->                              number is less than all virtqueues + 1(config interrupt), all
->                              virtqueues need to share a vector/irq and config interrupt is
->                              enabled. If the total vector number < 2, all vitequeues share
->                              a vector/irq, and config interrupt is disabled. Otherwise it will
->                              fail if allocation for vectors fails.
-> 
->                              This commit also made necessary chages to the irq cleaner to
->                              free per vq irq/shared irq and config irq.
-> 
->                              Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> 
->                          In this case, shouldn't you also check VIRTIO_PCI_ISR_CONFIG?
->                          doing that will skip the need
-> 
->                      Hello Michael,
-> 
->                      When insufficient MSIX vectors granted:
->                      If num_vectors >=2, there will be a vector for the config interrupt, and all vqs share one vector.
->                      If num_vectors =1, all vqs share the only one vector, and config interrupt is disabled.
-> 
->             ATM linux falls back to INTX in that case, shared by config and vqs.
-> 
->         Yes, the same result. However this driver needs to drive VFs too, and VFs do
->         not support INTX,
->         so we need it to send msix dma.
-> 
->                      currently vqs and config interrupt don't share vectors, so IMHO, no need to check .
-> 
->             IMHO it does not matter much that current Linux drivers do not use it,
->             the spec explicitly allows this option. If such hardware
->             becomes more common (and you seem to want to improve support
->             for managing interrupts so maybe yes) we'll add it in Linux.
-> 
->         (just see your another email coming), so I think I should implement a irq
->         handler
->         for num_vectors=1 case, a handler checks VIRTIO_PCI_ISR_CONFIG to tell
->         whether
->         it is a vq interrupt or config interrupt, then handle it(not disabling
->         config interrupt).
-> 
->         Thanks,
->         Zhu Lingshan
-> 
->     Right. To be more exact, if status is bit 2 is not set you call
->     vq interrupt, if set you call both vq and config interrupt,
->     since with MSI only config interrupts have a status bit.
-> 
-> Thanks! I guess I should call both vq and config interrupt handlers when they
-> share only one vector, because the spec says VIRTIO_PCI_CAP_ISR_CFG
-> is for INTx, but VFs don't support INTx as SRIOV spec required, so
-> isr may always be zero.
-> 
-> Thanks,
-> Zhu Lingshan
-> 
+A hung_task is observed when removing SMC-R devices. Suppose that
+a link group has two active links(lnk_A, lnk_B) associated with two
+different SMC-R devices(dev_A, dev_B). When dev_A is removed, the
+link group will be removed from smc_lgr_list and added into
+lgr_linkdown_list. lnk_A will be cleared and smcibdev(A)->lnk_cnt
+will reach to zero. However, when dev_B is removed then, the link
+group can't be found in smc_lgr_list and lnk_B won't be cleared,
+making smcibdev->lnk_cnt never reaches zero, which causes a hung_task.
 
-Yes. But on the other hand, the spec says:
+This patch fixes this issue by restoring the implementation of
+smc_smcr_terminate_all() to what it was before commit 349d43127dac
+("net/smc: fix kernel panic caused by race of smc_sock"). The original
+implementation also satisfies the intention that make sure QP destroy
+earlier than CQ destroy because we will always wait for smcibdev->lnk_cnt
+reaches zero, which guarantees QP has been destroyed.
 
-The device MUST present at least one VIRTIO_PCI_CAP_ISR_CFG capability.
-The device MUST set the Device Configuration Interrupt bit in ISR status before sending a device configu­
-ration change notification to the driver.
-If MSI­X capability is disabled, the device MUST set the Queue Interrupt bit in ISR status before sending a
-virtqueue notification to the driver.
+Fixes: 349d43127dac ("net/smc: fix kernel panic caused by race of smc_sock")
+Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+---
+ net/smc/smc_core.c | 13 +------------
+ 1 file changed, 1 insertion(+), 12 deletions(-)
 
-which to me implies that the Device Configuration Interrupt bit
-is set unconditionally.
-
-And yes it says:
-...to be used for INT#x interrupt handling
-but it does not say "exclusively".
-
-It is unfortunate that it does not copy this requirement in more places, but
-I think that device does have to set Device Configuration Interrupt bit
-unconditionally.
-
-
-What exactly does ifcvf do? Does it ever trigger config change
-interrupts? If it does, does it set the Device Configuration Interrupt
-when MSI is used?
-
-I will report a spec defect for the apparent inconsistency.
-
-> 
->                      I will send a V2 patch address your comments.
-> 
->                      Thanks,
->                      Zhu Lingshan
-> 
->                              ---
->                               drivers/vdpa/ifcvf/ifcvf_base.h |  6 +--
->                               drivers/vdpa/ifcvf/ifcvf_main.c | 78 +++++++++++++++------------------
->                               2 files changed, 38 insertions(+), 46 deletions(-)
-> 
->                              diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
->                              index 1d5431040d7d..1d0afb63f06c 100644
->                              --- a/drivers/vdpa/ifcvf/ifcvf_base.h
->                              +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
->                              @@ -27,8 +27,6 @@
-> 
->                               #define IFCVF_QUEUE_ALIGNMENT  PAGE_SIZE
->                               #define IFCVF_QUEUE_MAX                32768
->                              -#define IFCVF_MSI_CONFIG_OFF   0
->                              -#define IFCVF_MSI_QUEUE_OFF    1
->                               #define IFCVF_PCI_MAX_RESOURCE 6
-> 
->                               #define IFCVF_LM_CFG_SIZE              0x40
->                              @@ -102,11 +100,13 @@ struct ifcvf_hw {
->                                      u8 notify_bar;
->                                      /* Notificaiton bar address */
->                                      void __iomem *notify_base;
->                              +       u8 vector_per_vq;
->                              +       u16 padding;
-> 
->                          What is this padding doing?
-> 
->                 for cacheline alignment
-> 
-> 
-> 
->                                      phys_addr_t notify_base_pa;
->                                      u32 notify_off_multiplier;
->                              +       u32 dev_type;
->                                      u64 req_features;
->                                      u64 hw_features;
->                              -       u32 dev_type;
-> 
->                          moving things around ... optimization? split out.
-> 
->                 sure
-> 
-> 
-> 
->                                      struct virtio_pci_common_cfg __iomem *common_cfg;
->                                      void __iomem *net_cfg;
->                                      struct vring_info vring[IFCVF_MAX_QUEUES];
->                              diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
->                              index 414b5dfd04ca..ec76e342bd7e 100644
->                              --- a/drivers/vdpa/ifcvf/ifcvf_main.c
->                              +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
->                              @@ -17,6 +17,8 @@
->                               #define DRIVER_AUTHOR   "Intel Corporation"
->                               #define IFCVF_DRIVER_NAME       "ifcvf"
-> 
->                              +static struct vdpa_config_ops ifc_vdpa_ops;
->                              +
-> 
->                          there can be multiple devices thinkably.
->                          reusing a global ops does not sound reasonable.
-> 
->                 OK, I will set vq irq number to -EINVAL when vqs share irq,
->                 then we can disable irq_bypass when see irq = -EINVAL,
->                 no need to set get_vq_irq = NULL.
-> 
-> 
-> 
-> 
->                               static irqreturn_t ifcvf_config_changed(int irq, void *arg)
->                               {
->                                      struct ifcvf_hw *vf = arg;
->                              @@ -63,13 +65,20 @@ static void ifcvf_free_irq(struct ifcvf_adapter *adapter, int queues)
->                                      struct ifcvf_hw *vf = &adapter->vf;
->                                      int i;
-> 
->                              +       if (vf->vector_per_vq)
->                              +               for (i = 0; i < queues; i++) {
->                              +                       devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
->                              +                       vf->vring[i].irq = -EINVAL;
->                              +               }
->                              +       else
->                              +               devm_free_irq(&pdev->dev, vf->vring[0].irq, vf);
-> 
->                              -       for (i = 0; i < queues; i++) {
->                              -               devm_free_irq(&pdev->dev, vf->vring[i].irq, &vf->vring[i]);
->                              -               vf->vring[i].irq = -EINVAL;
->                              +
->                              +       if (vf->config_irq != -EINVAL) {
->                              +               devm_free_irq(&pdev->dev, vf->config_irq, vf);
->                              +               vf->config_irq = -EINVAL;
->                                      }
-> 
->                          what about other error types?
-> 
->                 vf->config_irq is set to -EINVAL in ifcvf_request_config_irq(),
->                 if no config irq(vector) is granted, or it should be a valid irq number,
->                 so there can be no other error numbers. But I can change it
->                 to  if (vf->config_irq < 0) for sure
-> 
-> 
-> 
-> 
->                              -       devm_free_irq(&pdev->dev, vf->config_irq, vf);
->                                      ifcvf_free_irq_vectors(pdev);
->                               }
-> 
->                              @@ -191,52 +200,35 @@ static int ifcvf_request_config_irq(struct ifcvf_adapter *adapter, int config_ve
-> 
->                               static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
->                               {
->                              -       struct pci_dev *pdev = adapter->pdev;
->                                      struct ifcvf_hw *vf = &adapter->vf;
->                              -       int vector, i, ret, irq;
->                              -       u16 max_intr;
->                              +       u16 nvectors, max_vectors;
->                              +       int config_vector, ret;
-> 
->                              -       /* all queues and config interrupt  */
->                              -       max_intr = vf->nr_vring + 1;
->                              +       nvectors = ifcvf_alloc_vectors(adapter);
->                              +       if (nvectors < 0)
->                              +               return nvectors;
-> 
->                              -       ret = pci_alloc_irq_vectors(pdev, max_intr,
->                              -                                   max_intr, PCI_IRQ_MSIX);
->                              -       if (ret < 0) {
->                              -               IFCVF_ERR(pdev, "Failed to alloc IRQ vectors\n");
->                              -               return ret;
->                              -       }
->                              +       vf->vector_per_vq = true;
->                              +       max_vectors = vf->nr_vring + 1;
->                              +       config_vector = vf->nr_vring;
-> 
->                              -       snprintf(vf->config_msix_name, 256, "ifcvf[%s]-config\n",
->                              -                pci_name(pdev));
->                              -       vector = 0;
->                              -       vf->config_irq = pci_irq_vector(pdev, vector);
->                              -       ret = devm_request_irq(&pdev->dev, vf->config_irq,
->                              -                              ifcvf_config_changed, 0,
->                              -                              vf->config_msix_name, vf);
->                              -       if (ret) {
->                              -               IFCVF_ERR(pdev, "Failed to request config irq\n");
->                              -               return ret;
->                              +       if (nvectors < max_vectors) {
->                              +               vf->vector_per_vq = false;
->                              +               config_vector = 1;
->                              +               ifc_vdpa_ops.get_vq_irq = NULL;
->                                      }
-> 
->                              -       for (i = 0; i < vf->nr_vring; i++) {
->                              -               snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
->                              -                        pci_name(pdev), i);
->                              -               vector = i + IFCVF_MSI_QUEUE_OFF;
->                              -               irq = pci_irq_vector(pdev, vector);
->                              -               ret = devm_request_irq(&pdev->dev, irq,
->                              -                                      ifcvf_intr_handler, 0,
->                              -                                      vf->vring[i].msix_name,
->                              -                                      &vf->vring[i]);
->                              -               if (ret) {
->                              -                       IFCVF_ERR(pdev,
->                              -                                 "Failed to request irq for vq %d\n", i);
->                              -                       ifcvf_free_irq(adapter, i);
->                              +       if (nvectors < 2)
->                              +               config_vector = 0;
-> 
->                              -                       return ret;
->                              -               }
->                              +       ret = ifcvf_request_vq_irq(adapter, vf->vector_per_vq);
->                              +       if (ret)
->                              +               return ret;
-> 
->                              -               vf->vring[i].irq = irq;
->                              -       }
->                              +       ret = ifcvf_request_config_irq(adapter, config_vector);
->                              +
->                              +       if (ret)
->                              +               return ret;
-> 
->                          here on error we need to cleanup vq irq we requested, need we not?
-> 
->                 I think it may not be needed, it can work without config interrupt, though lame
-> 
->                 Thanks for your comments!
->                 Zhu Lingshan
-> 
-> 
-> 
-> 
->                                      return 0;
->                               }
->                              @@ -573,7 +565,7 @@ static struct vdpa_notification_area ifcvf_get_vq_notification(struct vdpa_devic
->                                * IFCVF currently does't have on-chip IOMMU, so not
->                                * implemented set_map()/dma_map()/dma_unmap()
->                                */
->                              -static const struct vdpa_config_ops ifc_vdpa_ops = {
->                              +static struct vdpa_config_ops ifc_vdpa_ops = {
->                                      .get_features   = ifcvf_vdpa_get_features,
->                                      .set_features   = ifcvf_vdpa_set_features,
->                                      .get_status     = ifcvf_vdpa_get_status,
->                              --
->                              2.27.0
-> 
-> 
-> 
-> 
-> 
-> 
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index b19c0aa..1124594 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -1533,7 +1533,6 @@ void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
+ {
+ 	struct smc_link_group *lgr, *lg;
+ 	LIST_HEAD(lgr_free_list);
+-	LIST_HEAD(lgr_linkdown_list);
+ 	int i;
+ 
+ 	spin_lock_bh(&smc_lgr_list.lock);
+@@ -1545,7 +1544,7 @@ void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
+ 		list_for_each_entry_safe(lgr, lg, &smc_lgr_list.list, list) {
+ 			for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
+ 				if (lgr->lnk[i].smcibdev == smcibdev)
+-					list_move_tail(&lgr->list, &lgr_linkdown_list);
++					smcr_link_down_cond_sched(&lgr->lnk[i]);
+ 			}
+ 		}
+ 	}
+@@ -1557,16 +1556,6 @@ void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
+ 		__smc_lgr_terminate(lgr, false);
+ 	}
+ 
+-	list_for_each_entry_safe(lgr, lg, &lgr_linkdown_list, list) {
+-		for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
+-			if (lgr->lnk[i].smcibdev == smcibdev) {
+-				mutex_lock(&lgr->llc_conf_mutex);
+-				smcr_link_down_cond(&lgr->lnk[i]);
+-				mutex_unlock(&lgr->llc_conf_mutex);
+-			}
+-		}
+-	}
+-
+ 	if (smcibdev) {
+ 		if (atomic_read(&smcibdev->lnk_cnt))
+ 			wait_event(smcibdev->lnks_deleted,
+-- 
+1.8.3.1
 
