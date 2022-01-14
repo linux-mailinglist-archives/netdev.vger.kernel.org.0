@@ -2,96 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6323048EA81
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 14:20:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7470548EAC6
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 14:35:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241194AbiANNUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 08:20:34 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:37844 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231278AbiANNUd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jan 2022 08:20:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=rWZLer/iLNWHxUeBPp4gf/3AhfEUJd6bEpSN2CeHfZQ=; b=qUoxmfyQiBP1i+i1+kkftR2pR9
-        KcaTxqvAnHzmipxu6FVKzpKw1AhMQauwsg4PEC87+YzmXanJ7MVFkP+Nt/KDkQKNvIvEPygZHbZBR
-        iQmrqZKw6IPPU1WBPAi8V3Of+7uJ/AomEODzfQIHg3ImI1iIR3Fd4SlEot4drtwZjgxc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n8MV7-001Pgy-CB; Fri, 14 Jan 2022 14:20:17 +0100
-Date:   Fri, 14 Jan 2022 14:20:17 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] stmmac: intel: Honor phy LED set by system firmware
- on a Dell hardware
-Message-ID: <YeF4kbsqag+kZ7ji@lunn.ch>
-References: <20220114040755.1314349-1-kai.heng.feng@canonical.com>
- <20220114040755.1314349-2-kai.heng.feng@canonical.com>
+        id S241314AbiANNeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 08:34:21 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44384 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241303AbiANNeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 08:34:21 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2DA860AF5;
+        Fri, 14 Jan 2022 13:34:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1017DC36AEA;
+        Fri, 14 Jan 2022 13:34:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642167260;
+        bh=UJ12ZzFrlrSkHp+B0xLmJWpX/izxJhLv+rkiI9O7fkE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fb/sf4bQHIT4JPCHnyVyurN8idE3hOWg9RnIlAo89NhoAyXKnX/8WepKcr/5C4wu8
+         wfoqY8oZXtFTjQtuG81fgVI5lQaQxR3T1z+O+NwAPoJuudXEabqBRdioncCikv0k9Y
+         zFg0YXftB52JLkawldBhkay12p5GeuSSq4JG4dfC6CSpm1KaSywNKh5hp/d94TNALE
+         RnVvtkl9VXlwS8uR2P17+k5EKoy4KC/6Hvmgbb6cZ2x6NCIs+puQvGxgCDfH1deMcC
+         XIbu147RORUh2ciKVklvG4uw35w5ubDUcnbVnB5HpQqWnca61ur59JbQ00lNJiJ2JQ
+         CeeZqE1pPKX2w==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     linux-wireless@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sfr@canb.auug.org.au, lkp@intel.com
+Subject: [PATCH wireless] MAINTAINERS: add common wireless and wireless-next trees
+Date:   Fri, 14 Jan 2022 15:34:15 +0200
+Message-Id: <20220114133415.8008-1-kvalo@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220114040755.1314349-2-kai.heng.feng@canonical.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->  static void marvell_config_led(struct phy_device *phydev)
->  {
-> -	u16 def_config;
-> +	struct marvell_priv *priv = phydev->priv;
->  	int err;
->  
-> -	switch (MARVELL_PHY_FAMILY_ID(phydev->phy_id)) {
-> -	/* Default PHY LED config: LED[0] .. Link, LED[1] .. Activity */
-> -	case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1121R):
-> -	case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1318S):
-> -		def_config = MII_88E1121_PHY_LED_DEF;
-> -		break;
-> -	/* Default PHY LED config:
-> -	 * LED[0] .. 1000Mbps Link
-> -	 * LED[1] .. 100Mbps Link
-> -	 * LED[2] .. Blink, Activity
-> -	 */
-> -	case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1510):
-> -		if (phydev->dev_flags & MARVELL_PHY_LED0_LINK_LED1_ACTIVE)
-> -			def_config = MII_88E1510_PHY_LED0_LINK_LED1_ACTIVE;
-> -		else
-> -			def_config = MII_88E1510_PHY_LED_DEF;
-> -		break;
-> -	default:
-> +	if (priv->led_def_config == -1)
->  		return;
-> +
-> +	if (priv->led_def_config)
-> +		goto write;
+For easier maintenance we have decided to create common wireless and
+wireless-next trees for all wireless patches. Old mac80211 and wireless-drivers
+trees will not be used anymore.
 
-Really?
+While at it, add a wiki link to wireless drivers section and a patchwork link
+to 802.11, mac80211 and rfkill sections.
 
-Please restructure this code. Take it apart into helpers. You need:
+Acked-by: Johannes Berg <johannes@sipsolutions.net>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+---
 
-A function to set the actual LED configuration.
-A function to decide what, if any, configuration to set
-A function to store the current configuration on suspend.
-A function to restore the current configuration on resume.
+Stephen, please use these new trees in linux-next from now on.
 
-Lots of little functions will make it much easier to understand, and
-avoid 1980s BASIC style.
+Intel kernel test robot maintainers, please also update your configuration so
+that the new trees are build tested. Reports can be sent to
+linux-wireless@vger.kernel.org.
 
-I'm also surprised you need to deal with suspend/resume. Why does the
-BIOS not set the LED mode on resume, same as it does on power up?
+ MAINTAINERS | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-      Andrew
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 306de106f31b..d8db683d8b47 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -190,8 +190,9 @@ M:	Johannes Berg <johannes@sipsolutions.net>
+ L:	linux-wireless@vger.kernel.org
+ S:	Maintained
+ W:	https://wireless.wiki.kernel.org/
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git
++Q:	http://patchwork.kernel.org/project/linux-wireless/list/
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git
+ F:	Documentation/driver-api/80211/cfg80211.rst
+ F:	Documentation/networking/regulatory.rst
+ F:	include/linux/ieee80211.h
+@@ -11308,8 +11309,9 @@ M:	Johannes Berg <johannes@sipsolutions.net>
+ L:	linux-wireless@vger.kernel.org
+ S:	Maintained
+ W:	https://wireless.wiki.kernel.org/
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git
++Q:	http://patchwork.kernel.org/project/linux-wireless/list/
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git
+ F:	Documentation/networking/mac80211-injection.rst
+ F:	Documentation/networking/mac80211_hwsim/mac80211_hwsim.rst
+ F:	drivers/net/wireless/mac80211_hwsim.[ch]
+@@ -13302,9 +13304,10 @@ NETWORKING DRIVERS (WIRELESS)
+ M:	Kalle Valo <kvalo@kernel.org>
+ L:	linux-wireless@vger.kernel.org
+ S:	Maintained
++W:	https://wireless.wiki.kernel.org/
+ Q:	http://patchwork.kernel.org/project/linux-wireless/list/
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git
+ F:	Documentation/devicetree/bindings/net/wireless/
+ F:	drivers/net/wireless/
+ 
+@@ -16391,8 +16394,9 @@ M:	Johannes Berg <johannes@sipsolutions.net>
+ L:	linux-wireless@vger.kernel.org
+ S:	Maintained
+ W:	https://wireless.wiki.kernel.org/
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git
++Q:	http://patchwork.kernel.org/project/linux-wireless/list/
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git
+ F:	Documentation/ABI/stable/sysfs-class-rfkill
+ F:	Documentation/driver-api/rfkill.rst
+ F:	include/linux/rfkill.h
+-- 
+2.20.1
+
