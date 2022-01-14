@@ -2,203 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FC5F48EF57
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 18:44:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A000248EF89
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 18:55:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243914AbiANRoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 12:44:12 -0500
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:42241 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243918AbiANRoM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 12:44:12 -0500
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 2FEE5580183;
-        Fri, 14 Jan 2022 12:44:09 -0500 (EST)
-Received: from imap48 ([10.202.2.98])
-  by compute4.internal (MEProxy); Fri, 14 Jan 2022 12:44:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        stressinduktion.org; h=mime-version:message-id:in-reply-to
-        :references:date:from:to:cc:subject:content-type; s=fm2; bh=XC8x
-        7KXAcVBSo+8COeedpg7cEMYqOq1otu+UETusZEE=; b=JkO4dr9OnXIi2E5oBM5K
-        t66ge8M1MdOaiKC+cg+WCGTYPSOwvSHo58qUkzgvqULeHC1fZrOPnn3cvQ6Tf2vJ
-        lxuoYGE4+5Ec0LULpqmhcN2kcyeEzlo7N3cuBeWugdDNbK13fRUuNVqeM0rCBS9b
-        ddQIRMTYADY49oMEc1U0JRssBs8MX9sL49QHb196zqP8yHGD/7xEhyZhu+6QXv8A
-        cQ8KNKhfmiBKqDOibsRYi711kfuBvekag0zW6rYmT8bEAiG+iHctt5F8n1b0PEuj
-        U+mgmXBnQUnahqUky2UZczB84TlelCxsWyhg2kxr97EWeAqib+DNq+7QYnKEDYCn
-        2g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=XC8x7K
-        XAcVBSo+8COeedpg7cEMYqOq1otu+UETusZEE=; b=XxcYTeuCtnlGC7MarUYPyU
-        ddvAlD8qIyyumQtLdcNmyBqPSY6bdaBIdld6+Mgc0lD4ShzjMtBhh8AeP+30iO9G
-        rxqYC6i9zUuEd02xgX143G5o2jNxd3YwEDEhlLNCoUI20plomMgnylK5AsGt2NpB
-        N4nERzqjE6+bMxjDK8l3kkILv7mmwWc4qevzfVe2+fVDbxeYc66U3KxxsUcXAWwH
-        Zs92EJTLSbS/L6ZPkMj3fZUsNLGuq74mJR+xEllfbYqIUNrx1h3O4Agv0B/5jo61
-        pYMOQTXo0ACFFHhAtqR/WT6X2ziLjVzed/Cg0wLbebL4JCawb2QhdVTUGpdT2G0w
-        ==
-X-ME-Sender: <xms:Z7bhYawjmLXYGTgJAKyZ1FGbCylbfWwK1B1aQqIKvBHVTlf-zVILWg>
-    <xme:Z7bhYWTUWVR8aUIp1eK-sS1ALJZ0M7SDFoISDWpvpnpV1yYqr1PX0HK5yJ23j_MWs
-    HdQg1FIvemwLZzHEA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrtdehgddutdehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfjrghn
-    nhgvshcuhfhrvgguvghrihgtucfuohifrgdfuceohhgrnhhnvghssehsthhrvghsshhinh
-    guuhhkthhiohhnrdhorhhgqeenucggtffrrghtthgvrhhnpeehieeggeethedtgfdvtdek
-    ffduudegueevffekheefjeegvedugeetveffteetleenucffohhmrghinhepgihktggurd
-    gtohhmnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhep
-    hhgrnhhnvghssehsthhrvghsshhinhguuhhkthhiohhnrdhorhhg
-X-ME-Proxy: <xmx:Z7bhYcWeoRrx3NNL4AJ4L4l3e6fjFBT30oc09LqJ9b3p5GoqjvS0gA>
-    <xmx:Z7bhYQgE9QO-Zr2NhLl6GESvsvLlyiGDi-mgXrqLbIM48Yeeb90tCA>
-    <xmx:Z7bhYcCrlbSm9vbPNpS9oYGCuspUQKDONypysdZK9dFUxFmO1Gshmw>
-    <xmx:abbhYQ6uvmjAsuMFEM_JKvAwKKdZW48Ck8X5NcK9TwWNLoqyy1eV5A>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 7B93821E006E; Fri, 14 Jan 2022 12:44:07 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4569-g891f756243-fm-20220111.001-g891f7562
-Mime-Version: 1.0
-Message-Id: <3db9c306-ea22-444f-b932-f66f800a7a28@www.fastmail.com>
-In-Reply-To: <CAHmME9pR+qTn72vyANq8Nxx0BtGy7a_+dRvZS_F7RCag8Rvxng@mail.gmail.com>
-References: <20220112131204.800307-1-Jason@zx2c4.com>
- <20220112131204.800307-3-Jason@zx2c4.com> <87r19cftbr.fsf@toke.dk>
- <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
- <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
- <CAHmME9pR+qTn72vyANq8Nxx0BtGy7a_+dRvZS_F7RCag8Rvxng@mail.gmail.com>
-Date:   Fri, 14 Jan 2022 18:41:58 +0100
-From:   "Hannes Frederic Sowa" <hannes@stressinduktion.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
+        id S243998AbiANRzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 12:55:25 -0500
+Received: from mxout02.lancloud.ru ([45.84.86.82]:37634 "EHLO
+        mxout02.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244005AbiANRzR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 12:55:17 -0500
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru 02F2120606E9
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH] driver core: platform: Rename platform_get_irq_optional()
+ to platform_get_irq_silent()
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Mark Brown <broonie@kernel.org>
+CC:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-iio@vger.kernel.org>,
+        "Linus Walleij" <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        "ALSA Development Mailing List" <alsa-devel@alsa-project.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        <linux-phy@lists.infradead.org>, Jiri Slaby <jirislaby@kernel.org>,
+        <openipmi-developer@lists.sourceforge.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
         "Geert Uytterhoeven" <geert@linux-m68k.org>,
-        "Herbert Xu" <herbert@gondor.apana.org.au>,
-        "Ard Biesheuvel" <ardb@kernel.org>,
-        "Jean-Philippe Aumasson" <jeanphilippe.aumasson@gmail.com>,
-        "Linux Crypto Mailing List" <linux-crypto@vger.kernel.org>,
-        "Erik Kline" <ek@google.com>,
-        "Fernando Gont" <fgont@si6networks.com>,
-        "Lorenzo Colitti" <lorenzo@google.com>,
-        "Hideaki Yoshifuji" <hideaki.yoshifuji@miraclelinux.com>
-Subject: Re: [PATCH RFC v1 2/3] ipv6: move from sha1 to blake2s in address calculation
-Content-Type: text/plain
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        "William Breathitt Gray" <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "Borislav Petkov" <bp@alien8.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        <platform-driver-x86@vger.kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        <linux-edac@vger.kernel.org>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        "Eric Auger" <eric.auger@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        "Linux MMC List" <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        <linux-mediatek@lists.infradead.org>,
+        "Brian Norris" <computersforpeace@gmail.com>,
+        <netdev@vger.kernel.org>
+References: <20220110195449.12448-2-s.shtylyov@omp.ru>
+ <20220110201014.mtajyrfcfznfhyqm@pengutronix.de> <YdyilpjC6rtz6toJ@lunn.ch>
+ <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
+ <20220112085009.dbasceh3obfok5dc@pengutronix.de>
+ <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
+ <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
+ <Yd9L9SZ+g13iyKab@sirena.org.uk>
+ <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
+ <YeA7CjOyJFkpuhz/@sirena.org.uk>
+ <20220113194358.xnnbhsoyetihterb@pengutronix.de>
+ <745c601f-c782-0904-f786-c9bfced8f11c@gmail.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <cae0b73e-46df-a491-4a8e-415205038c2c@omp.ru>
+Date:   Fri, 14 Jan 2022 20:55:07 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+MIME-Version: 1.0
+In-Reply-To: <745c601f-c782-0904-f786-c9bfced8f11c@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 1/14/22 12:42 AM, Florian Fainelli wrote:
 
-On Fri, Jan 14, 2022, at 17:07, Jason A. Donenfeld wrote:
-> On Thu, Jan 13, 2022 at 12:15 PM Hannes Frederic Sowa
-> <hannes@stressinduktion.org> wrote:
->> > I'm not even so sure that's true. That was my worry at first, but
->> > actually, looking at this more closely, DAD means that the address can
->> > be changed anyway - a byte counter is hashed in - so there's no
->> > guarantee there.
+>> The subsystems regulator, clk and gpio have the concept of a dummy
+>> resource. For regulator, clk and gpio there is a semantic difference
+>> between the regular _get() function and the _get_optional() variant.
+>> (One might return the dummy resource, the other won't. Unfortunately
+>> which one implements which isn't the same for these three.) The
+>> difference between platform_get_irq() and platform_get_irq_optional() is
+>> only that the former might emit an error message and the later won't.
 >>
->> The duplicate address detection counter is a way to merely provide basic
->> network connectivity in case of duplicate addresses on the network
->> (maybe some kind misconfiguration or L2 attack). Such detected addresses
->> would show up in the kernel log and an administrator should investigate
->> and clean up the situation.
->
-> I don't mean to belabor a point where I'm likely wrong anyway, but
-> this DAD business has kept me thinking...
->
-> Attacker is hanging out on the network sending DAD responses, forcing
-> those counters to increment, and thus making SHA1(stuff || counter)
-> result in a different IPv6 address than usual. Outcomes:
-> 1) The administrator cannot handle this, did not understand the
-> semantics of this address generation feature, and will now have a
-> broken network;
-> 2) The administrator knows what he's doing, and will be able to handle
-> a different IPv6 address coming up.
->
-> Do we really care about case (1)? That sounds like emacs spacebar
-> heating https://xkcd.com/1172/. And case (2) seems like something that
-> would tolerate us changing the hash function.
+>> To prevent people's expectations that there is a semantic difference
+>> between these too, rename platform_get_irq_optional() to
+>> platform_get_irq_silent() to make the actual difference more obvious.
+>>
+>> The #define for the old name can and should be removed once all patches
+>> currently in flux still relying on platform_get_irq_optional() are
+>> fixed.
+>>
+>> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+[...]
+>>>> I think at least c) is easy to resolve because
+>>>> platform_get_irq_optional() isn't that old yet and mechanically
+>>>> replacing it by platform_get_irq_silent() should be easy and safe.
+>>>> And this is orthogonal to the discussion if -ENOXIO is a sensible return
+>>>> value and if it's as easy as it could be to work with errors on irq
+>>>> lookups.
+>>>
+>>> It'd certainly be good to name anything that doesn't correspond to one
+>>> of the existing semantics for the API (!) something different rather
+>>> than adding yet another potentially overloaded meaning.
+>>
+>> It seems we're (at least) three who agree about this. Here is a patch
+>> fixing the name.
+> 
+> From an API naming perspective this does not make much sense anymore with the name chosen,
+> it is understood that whent he function is called platform_get_irq_optional(), optional applies
+> to the IRQ. An optional IRQ is something people can reason about because it makes sense.
 
-Taking a step back, there is the base case where we don't have duplicate
-addresses on the network nor an attack is on-going. We would break those
-setups with that patch. And those are the ones that matter most. In
-particular those stable-random addresses are being used in router
-advertisements for announcing the next-hop/default gateway on the
-broadcast domain. During my time in IPv6 land I have seen lots of setups
-where those automatic advertisements got converted into static
-configuration for the sake of getting hands on a cool looking IPv6
-address on another host (I did that as well ;) ). In particular, in the
-last example, you might not only have one administrator at hand to
-handle the issue, but probably multiple roles are involved (host admin
-and network admin maybe from different organizations - how annoying -
-but that's a worst case scenario).
+   Right! :-)
 
-Furthermore most L2 attacks nowadays are stopped by smarter switches or
-wifi access points(?) anyway with per-port MAC learning and other
-hardening features. Obviously this only happens in more managed
-environments but probably already also at smaller home networks
-nowadays. Datacenters probably already limit access to the Layer 2 raw
-network in such a way that this attack is probably not possible either.
-Same for IoT stuff where you probably have a point-to-point IPv6
-connection anyway.
+> What is a a "silent" IRQ however? It does not apply to the object it is trying to fetch to
+> anymore, but to the message that may not be printed in case the resource failed to be obtained,
+> because said resource is optional. Woah, that's quite a stretch.
 
-The worst case scenario is someone upgrading their kernel during a
-trip away from home, rebooting, and losing access to their system. If we
-experience just one of those cases we have violated Linux strict uAPI
-rules (in my opinion). Thus, yes, we care about both, (1) and (2) cases.
+   Right again! :-)
 
-I don't think we can argue our way out of this by stating that there are
-no guarantees anyway, as much as I would like to change the hash
-function as well.
+> Following the discussion and original 2 patches set from Sergey, it is not entirely clear to me
+> anymore what is it that we are trying to fix.
 
-As much as I know about the problems with SHA1 and would like to see it
-removed from the kernel as well, I fear that in this case it seems hard
-to do. I would propose putting sha1 into a compilation unit and
-overwrite the compiler flags to optimize the function optimized for size
-and maybe add another mode or knob to switch the hashing algorithm if
-necessary.
+   Andy and me tried to fix the platform_get_irq[_byname]_optional() value, corresponding to
+a missing (optional) IRQ resource from -ENXIO to 0, in order to keep the callers error code
+agnostic. This change completely aligns e.g. platform_get_irq_optional() with clk_get_optional()
+and gpiod_get_optional()...
+   Unforunately, we can't "fix" request_irq() and company to treat 0 as missing IRQ -- they have
+to keep the ability to get called from the arch/ code (that doesn't use platform_get_irq(), etc.
 
->> Afterwards bringing the interface down and
->> up again should revert the interface to its initial (dad_counter == 0)
->> address.
->
-> Except the attacker is still on the network, and the administrator
-> can't figure it out because the mac addresses keep changing and it's
-> arriving from seemingly random switches! Plot twist: the attack is
-> being conducted from an implant in the switch firmware. There are a
-> lot of creative different takes on the same basic scenario. The point
-> is - the administrator really _can't_ rely on the address always being
-> the same, because it's simply out of his control.
+> I nearly forgot, I would paint it blue, sky blue, not navy blue, not light blue ;)
 
-This is a very pessimistic scenario bordering a nightmare. I hope the
-new hashing algorithm will protect them. ;)
+   :-)
 
-> Given that the admin already *must* be prepared for the address to
-> change, doesn't that give us some leeway to change the algorithm used
-> between kernels?
->
-> Or to put it differently, are there _actually_ braindead deployments
-> out there that truly rely on the address never ever changing, and
-> should we be going out of our way to support what is arguably a
-> misreading and misdeployment of the feature?
-
-Given the example above, users might hardcode this generated IP address
-as a default gateway in their configs on other hosts. This is actually a
-very common thing to do.
-
-> (Feel free to smack this line of argumentation down if you disagree. I
-> just thought it should be a bit more thoroughly explored.)
-
-I haven't investigated recent research into breakage of SHA1, I mostly
-remember the chosen-image and collision attacks against it. Given the
-particular usage of SHA1 in this case, do you think switching the
-hashing function increases security? I am asking because of the desire
-to decrease the instruction size of the kernel, but adding a switch
-will actually increase the size in the foreseeable future (and I agree
-with Toke that offloading this decision to distributions is probably
-not fair).
-
-Maybe at some point the networking subsystem will adapt a generic knob
-like LD_ASSUME_KERNEL? ;)
-
-Bye,
-Hannes
+PS: Florian, something was wrong with your mail client -- I had to manually wrap your quotes,
+else there were super long unbroken paragraphs...
