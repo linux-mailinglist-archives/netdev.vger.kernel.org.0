@@ -2,72 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE9B148EF35
-	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 18:25:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98FE848EF3E
+	for <lists+netdev@lfdr.de>; Fri, 14 Jan 2022 18:32:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243864AbiANRZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 12:25:57 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:38284 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229758AbiANRZ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jan 2022 12:25:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=JwoliXcJ7ab5c8+F4xKeDTkJ6noi7Vx/K/CQ+XG7ErE=; b=Ez6nvfIec49hV3Dsh4GUYRqhWB
-        fGpwDEyw3EXhakHWRoPB9/BpJ9jUnYqugH6S98n+/OQIr1a2ts414G0cdMTQb1mGeBlx5eD1U2mNz
-        A3GK7IJTX7datZmfZaoYS9A4Ue3fDF8a08l7vgZVKs5nk1PsjR9haYe5qtzTXDJcQXcY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n8QKb-001Qx9-N6; Fri, 14 Jan 2022 18:25:41 +0100
-Date:   Fri, 14 Jan 2022 18:25:41 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] stmmac: intel: Honor phy LED set by system firmware
- on a Dell hardware
-Message-ID: <YeGyFabsBAfzvnU+@lunn.ch>
-References: <20220114040755.1314349-1-kai.heng.feng@canonical.com>
- <20220114040755.1314349-2-kai.heng.feng@canonical.com>
- <YeF18mxKuO4/4G0V@lunn.ch>
- <CAAd53p5R2y-2JhWx3wp2=aBypJO=iV7fFS99eAgk6q7KBZMFMA@mail.gmail.com>
+        id S243884AbiANRbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 12:31:36 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:38078 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239454AbiANRbf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 12:31:35 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id A4D0721118;
+        Fri, 14 Jan 2022 17:31:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1642181494; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=Qj2DWEG9FLtdZ5XGz/yaWFJhMf407qW9nDx+tLyuh/Q=;
+        b=GP8r1PfNkwUtq73XRfk1vBsuEOEvTUaWi7qhsPjJ8U6q3FvXLE14UPU2VJNG1QF2oXPZbK
+        xBPO+8ytJIrmDFgrWNIxHTs9cnLRqa9vniSQfcOnKCGiyp4NLjMxtYLJekvPVy6v8S5moo
+        bvtRx/vSDiR+ljBYKqMAsl0NfTqKttY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1642181494;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=Qj2DWEG9FLtdZ5XGz/yaWFJhMf407qW9nDx+tLyuh/Q=;
+        b=Zz0S41fRJ9RavDDAhR/m1N0DsWd/m6PGcRMljQ7oozj4xksvb19FFxCvD5ugU2if+CWj2r
+        FaFec9wPBrRHlkCQ==
+Received: from localhost (dwarf.suse.cz [10.100.12.32])
+        by relay2.suse.de (Postfix) with ESMTP id 13F68A3B84;
+        Fri, 14 Jan 2022 17:31:34 +0000 (UTC)
+Date:   Fri, 14 Jan 2022 18:31:33 +0100
+From:   Jiri Bohac <jbohac@suse.cz>
+To:     Sabrina Dubroca <sd@queasysnail.net>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Mike Maloney <maloneykernel@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org
+Subject: xfrm regression: TCP MSS calculation broken by commit b515d263,
+ results in TCP stall
+Message-ID: <20220114173133.tzmdm2hy4flhblo3@dwarf.suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAAd53p5R2y-2JhWx3wp2=aBypJO=iV7fFS99eAgk6q7KBZMFMA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > This is a PHY property. Why is the MAC involved?
-> 
-> This is inspired by commit a93f7fe13454 ("net: phy: marvell: add new
-> default led configure for m88e151x") which passes the flag from MAC to
-> PHY.
+Hello,
 
-But in this case, the MAC does not care what the LEDs are. The
-platform wants them left alone, not the MAC.
+our customer found that commit
+b515d2637276a3810d6595e10ab02c13bfd0b63a ("xfrm: xfrm_state_mtu
+should return at least 1280 for ipv6") in v5.14 breaks the TCP
+MSS calculation in ipsec transport mode, resulting complete
+stalls of TCP connections. This happens when the (P)MTU is 1280
+or slighly larger.
 
-> > Please also think about how to make this generic, so any ACPI based
-> > system can use it, with any PHY.
+The desired formula for the MSS is:
+	MSS = (MTU - ESP_overhead) - IP header - TCP header
 
-...
+However, the above patch clamps the (MTU - ESP_overhead) to a
+minimum of 1280, turning the formula into
+	MSS = max(MTU - ESP overhead, 1280) -  IP header - TCP header
 
-> So the only approach I can think of is to use DMI match directly in PHY driver.
+With the (P)MTU near 1280, the calculated MSS is too large and
+the resulting TCP packets never make it to the destination
+because they are over the actual PMTU.
 
-In the phylib core. And the core then asks the specific PHY driver to
-not touch the LED configuration. It is then generic.
+Trying to fix the exact same problem as the broken patch, which I
+was unaware of, I sent an alternative patch in this thread of
+April 2021:
+https://lore.kernel.org/netdev/20210429170254.5grfgsz2hgy2qjhk@dwarf.suse.cz/
+(note the v1 is broken and followed by v2!)
 
-      Andrew
+In that thread I also found other problems with
+b515d2637276a3810d6595e10ab02c13bfd0b63a - in tunnel mode it
+causes suboptimal double fragmentation:
+https://lore.kernel.org/netdev/20210429202529.codhwpc7w6kbudug@dwarf.suse.cz/
+
+I therefore propose to revert
+b515d2637276a3810d6595e10ab02c13bfd0b63a and
+apply the v2 version of my patch, which I'll re-send in reply to
+this e-mail.
+
+Thanks,
+
+-- 
+Jiri Bohac <jbohac@suse.cz>
+SUSE Labs, Prague, Czechia
+
