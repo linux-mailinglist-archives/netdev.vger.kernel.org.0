@@ -2,136 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 584C748F6CA
-	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 13:27:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D708A48F6D1
+	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 13:27:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231391AbiAOM1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jan 2022 07:27:13 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:47542
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231290AbiAOM1G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 07:27:06 -0500
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 9E3AB40033
-        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 12:27:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642249624;
-        bh=Mdsn7AT474MZc2MQVfRJDSMS8EOfClYXR9EYCiW/6uw=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=U7pzAp9DK5Mmm1HPgDPU2mqOab1Df4U3g5TVODAipGIIPqZA+zLatKQF54Vp5NHnx
-         ofHbHDjlHzrNLjV+4uUMnxVhk+R6eyCzVAMwQX0PDL5sE3V/C/oyXtyaP3Q83ivm/e
-         3E303UrR/APJqkf/blzKe5KlokDLv5hK/faLBYkVT0/QUGwIKUuQvyI1ccq6hNEQpC
-         SKablJMbews5RzZR3rr6yhw2eRReNK2kgvN6cU5bDf8jXGgJeCHa3BOjsht8SABbsy
-         SprKH+l/KT4f8qVbc5wCiHMP6J0yEliK8t9hUZ8ouHPDaAx53p9dTjrEeQN4l/RhM6
-         s1GLHltuzyPrg==
-Received: by mail-wm1-f71.google.com with SMTP id 20-20020a05600c22d400b00349067fe7b7so3590924wmg.5
-        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 04:27:04 -0800 (PST)
+        id S232292AbiAOM1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jan 2022 07:27:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231531AbiAOM1m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 07:27:42 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E976DC06173F;
+        Sat, 15 Jan 2022 04:27:41 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id x7so39366744lfu.8;
+        Sat, 15 Jan 2022 04:27:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JJbm/APZKQh33EDDJ0deCmvbxjw0T/eT+AvAf6q6Q50=;
+        b=aRmsLlOM/p+Nex8FP09SSjq/DCDIYJlqBECcM2RlTvaQziXt2ou5pklx2rstPVOoPZ
+         afP5n+NvQpgoB8mrd8tBJ16NpNBJRDiQKGd4RyOG7VbF3vAU1I/TSbZOVJdkqSHA9JMV
+         3wjCT9A4/9r+h7PgMHFtD87EiGMl0ClOJPG2LHdJ2w9Zi4SdWJqTooikoPInWPVtiMbg
+         eoCTNqiCyB1t5eshA5iMnG6Hqogc0ZMfg/EoUHBEODI92VGXvOi2L2LWbyeYpOQPDI/P
+         6UQdoCunlO1M2H1QGkPz8kVsfAKqxIhLWuADTvkreFFLn4IlC2jGD/NBB3hHILa7fGVX
+         T6qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Mdsn7AT474MZc2MQVfRJDSMS8EOfClYXR9EYCiW/6uw=;
-        b=xxNEGglWmlO9DaQHPa7e9kFBkAt8HaG+k1VdwFQLFoMimj3kkqR5dCL5kaf9Y9rNUO
-         8pU6dHitDXQsXPsZ6Pqg4HcXHTvePuAsrw/1NHpLwnKYAQa9kgrCAHMa8FIR4ZveOGpl
-         K0Rt0sfLdOJhOyULRLEBpUPvsWT5KuMqYODtcYcHQOX8rZmW9VEJWU89cSMJQoH2jL6f
-         7tN8b4sBZK5j/3lTRgTqboXKlwZlJP33D64Sv1K2VrnJd5VhAJcbOUdzULjHW4/nxewX
-         LtXjwBizXhFXSZRCq+8UZvy0YjgIR+jDxJVu83Uq4upU8l/NEau9IOcGh8VgCxIFq3mx
-         vYyA==
-X-Gm-Message-State: AOAM533KAr6YhMU5/lrx/7Zc7a4IcT19zxp5Gx9LosrdkEiEbpmDEAWg
-        g+p+sZfmz9RJXO/v6h1kBWKsltfUXHkjLPAHS9/BX/1bLaUZqACH6gdSKOuFkzLq6DdUAdwbIR0
-        IQf3q00DlpieAFXp23ZIi1IwrIyFOhcnJqQ==
-X-Received: by 2002:adf:f0c8:: with SMTP id x8mr12500718wro.8.1642249623657;
-        Sat, 15 Jan 2022 04:27:03 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz+9/EJPNvF2Lg8TPggKvvKyZTnv0CkGSej/R9OMq8UBJ+esAn4SYxe7sYrdb7br5pj2o5aOQ==
-X-Received: by 2002:adf:f0c8:: with SMTP id x8mr12500703wro.8.1642249623522;
-        Sat, 15 Jan 2022 04:27:03 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id bk17sm7878476wrb.105.2022.01.15.04.27.02
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JJbm/APZKQh33EDDJ0deCmvbxjw0T/eT+AvAf6q6Q50=;
+        b=VOP850A+LaxiImgP3OvqmUx6fDX1ELYb4ZP+fVFxbkU8VEzmOiyME+t3AmeEvhd5iW
+         O+91QfKm+LiKWZo1mNcG56dZSws5SxklP08YdOXlsvpo3+j8trOBE2pOqYNFthvLgqSb
+         eLSuzujFjt6XWkEa9yThFZPFj3eFWRazxScMhBad8Ez+hCsDso4SDXsXETOZgF02/Xxm
+         p1YLPQ9+bxhvEkOru4kbEMiii+RRDslzeVPPLNtPA1xfMRcEu2QGW0vFNcXQcjNwixCD
+         Ay7AGJyq5Mjoa5bU4lqVVY8zOjiTUDy46NtpfZ39VY86TFe3K88riinP4ugbiOTU5h1n
+         Jofw==
+X-Gm-Message-State: AOAM532Uw+WBJKmCyEh2tr46SvNmNqMoOMeZnecYzOLr96eCXfOfldFa
+        o1YWd7wMqcJxSBJ47PanYzI=
+X-Google-Smtp-Source: ABdhPJxVwovjSBNmo+0FrBrzSimp8hZMZDwYn4WjWcvnXetAK3K/WKqhxb81sKEelOYcX8LMox9G+g==
+X-Received: by 2002:ac2:5459:: with SMTP id d25mr10026879lfn.231.1642249660225;
+        Sat, 15 Jan 2022 04:27:40 -0800 (PST)
+Received: from localhost.localdomain ([217.117.245.67])
+        by smtp.gmail.com with ESMTPSA id c21sm857160lfj.128.2022.01.15.04.27.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Jan 2022 04:27:03 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 7/7] nfc: llcp: Revert "NFC: Keep socket alive until the DISC PDU is actually sent"
-Date:   Sat, 15 Jan 2022 13:26:50 +0100
-Message-Id: <20220115122650.128182-8-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220115122650.128182-1-krzysztof.kozlowski@canonical.com>
-References: <20220115122650.128182-1-krzysztof.kozlowski@canonical.com>
+        Sat, 15 Jan 2022 04:27:39 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com,
+        vasanth@atheros.com, Sujith.Manoharan@atheros.com,
+        senthilkumar@atheros.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
+Subject: [PATCH] ath9k_htc: fix uninit value bugs
+Date:   Sat, 15 Jan 2022 15:27:33 +0300
+Message-Id: <20220115122733.11160-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 17f7ae16aef1f58bc4af4c7a16b8778a91a30255.
+Syzbot reported 2 KMSAN bugs in ath9k. All of them are caused by missing
+field initialization.
 
-The commit brought a new socket state LLCP_DISCONNECTING, which was
-never set, only read, so socket could never set to such state.
+In htc_connect_service() svc_meta_len and pad are not initialized. Based
+on code it looks like in current skb there is no service data, so simply
+initialize svc_meta_len to 0.
 
-Remove the dead code.
+htc_issue_send() does not initialize htc_frame_hdr::control array. Based
+on firmware code, it will initialize it by itself, so simply zero whole
+array to make KMSAN happy
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Fail logs:
+
+BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
+ usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
+ hif_usb_send_regout drivers/net/wireless/ath/ath9k/hif_usb.c:127 [inline]
+ hif_usb_send+0x5f0/0x16f0 drivers/net/wireless/ath/ath9k/hif_usb.c:479
+ htc_issue_send drivers/net/wireless/ath/ath9k/htc_hst.c:34 [inline]
+ htc_connect_service+0x143e/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:275
+...
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:524 [inline]
+ slab_alloc_node mm/slub.c:3251 [inline]
+ __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1126 [inline]
+ htc_connect_service+0x1029/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:258
+...
+
+Bytes 4-7 of 18 are uninitialized
+Memory access of size 18 starts at ffff888027377e00
+
+BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
+ usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
+ hif_usb_send_regout drivers/net/wireless/ath/ath9k/hif_usb.c:127 [inline]
+ hif_usb_send+0x5f0/0x16f0 drivers/net/wireless/ath/ath9k/hif_usb.c:479
+ htc_issue_send drivers/net/wireless/ath/ath9k/htc_hst.c:34 [inline]
+ htc_connect_service+0x143e/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:275
+...
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:524 [inline]
+ slab_alloc_node mm/slub.c:3251 [inline]
+ __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1126 [inline]
+ htc_connect_service+0x1029/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:258
+...
+
+Bytes 16-17 of 18 are uninitialized
+Memory access of size 18 starts at ffff888027377e00
+
+Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+Reported-by: syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
- net/nfc/llcp.h      | 1 -
- net/nfc/llcp_core.c | 7 -------
- net/nfc/llcp_sock.c | 7 -------
- 3 files changed, 15 deletions(-)
+ drivers/net/wireless/ath/ath9k/htc_hst.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/nfc/llcp.h b/net/nfc/llcp.h
-index d49d4bf2e37c..c1d9be636933 100644
---- a/net/nfc/llcp.h
-+++ b/net/nfc/llcp.h
-@@ -6,7 +6,6 @@
- enum llcp_state {
- 	LLCP_CONNECTED = 1, /* wait_for_packet() wants that */
- 	LLCP_CONNECTING,
--	LLCP_DISCONNECTING,
- 	LLCP_CLOSED,
- 	LLCP_BOUND,
- 	LLCP_LISTEN,
-diff --git a/net/nfc/llcp_core.c b/net/nfc/llcp_core.c
-index b70d5042bf74..3364caabef8b 100644
---- a/net/nfc/llcp_core.c
-+++ b/net/nfc/llcp_core.c
-@@ -737,13 +737,6 @@ static void nfc_llcp_tx_work(struct work_struct *work)
- 			print_hex_dump_debug("LLCP Tx: ", DUMP_PREFIX_OFFSET,
- 					     16, 1, skb->data, skb->len, true);
+diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
+index 510e61e97dbc..994ec48b2f66 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_hst.c
++++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
+@@ -30,6 +30,7 @@ static int htc_issue_send(struct htc_target *target, struct sk_buff* skb,
+ 	hdr->endpoint_id = epid;
+ 	hdr->flags = flags;
+ 	hdr->payload_len = cpu_to_be16(len);
++	memset(hdr->control, 0, sizeof(hdr->control));
  
--			if (ptype == LLCP_PDU_DISC && sk != NULL &&
--			    sk->sk_state == LLCP_DISCONNECTING) {
--				nfc_llcp_sock_unlink(&local->sockets, sk);
--				sock_orphan(sk);
--				sock_put(sk);
--			}
--
- 			if (ptype == LLCP_PDU_I)
- 				copy_skb = skb_copy(skb, GFP_ATOMIC);
+ 	status = target->hif->send(target->hif_dev, endpoint->ul_pipeid, skb);
  
-diff --git a/net/nfc/llcp_sock.c b/net/nfc/llcp_sock.c
-index 5c5705f5028b..4ca35791c93b 100644
---- a/net/nfc/llcp_sock.c
-+++ b/net/nfc/llcp_sock.c
-@@ -641,13 +641,6 @@ static int llcp_sock_release(struct socket *sock)
+@@ -272,6 +273,10 @@ int htc_connect_service(struct htc_target *target,
+ 	conn_msg->dl_pipeid = endpoint->dl_pipeid;
+ 	conn_msg->ul_pipeid = endpoint->ul_pipeid;
  
- 	release_sock(sk);
- 
--	/* Keep this sock alive and therefore do not remove it from the sockets
--	 * list until the DISC PDU has been actually sent. Otherwise we would
--	 * reply with DM PDUs before sending the DISC one.
--	 */
--	if (sk->sk_state == LLCP_DISCONNECTING)
--		return err;
--
- out:
- 	sock_orphan(sk);
- 	sock_put(sk);
++	/* To prevent infoleak */
++	conn_msg->svc_meta_len = 0;
++	conn_msg->pad = 0;
++
+ 	ret = htc_issue_send(target, skb, skb->len, 0, ENDPOINT0);
+ 	if (ret)
+ 		goto err;
 -- 
-2.32.0
+2.34.1
 
