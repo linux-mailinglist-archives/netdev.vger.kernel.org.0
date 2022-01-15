@@ -2,92 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF1C148F7BA
-	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 17:11:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7648A48F7F9
+	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 17:47:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233057AbiAOQLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jan 2022 11:11:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52364 "EHLO
+        id S232228AbiAOQrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jan 2022 11:47:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229732AbiAOQLB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 11:11:01 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1038C061574
-        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 08:11:00 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id m1so40832735lfq.4
-        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 08:11:00 -0800 (PST)
+        with ESMTP id S229471AbiAOQrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 11:47:07 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87903C061574;
+        Sat, 15 Jan 2022 08:47:06 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id a18so46360564edj.7;
+        Sat, 15 Jan 2022 08:47:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=ZKJThcZfaOfQNEh7LqpI6ONZNtq+9AM3QGtSLIPGs8Y=;
-        b=ibIs7nwbZ2wnbRoA9hJcVeIIN7rZ54rnX3KF+PWx/mlnen/z6ssXFi26+N46L++kKx
-         6Mnw5jrgfrhQSxBxLhfHAW0QvbmCLHqv6BP6C74+vlcu6h5ySaRvcxDpXyIlsHtOSp7z
-         3oWvx6nGP3aP40msdNCuRqD0gHLmUaW+6NnUFZnnIBuEtbOCQhOAdvpnPkdfF5Zjz0R7
-         Z32oUd6yPmq7S5oMjpF4NVMQFj2YRySf8H87VEZZJxO/QPHw0YDk62S69gIXf0AJXMzS
-         YH+Yhjbrx9DlRLpAUDyDUuaI/ZGwCiEz2twMsiEsQygiXL8WAbQgIdv4r1drtU4gOGjk
-         qmPw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=umg3fmIHEU7ouEUqxByuwXez80RylgBi5NxgeR5uNbQ=;
+        b=XtM7/t4yjYeD7SB0BHoS/8zjCi3EyHDHyN8e+nPG3/QFmujQ1mEftGtLVzA59gNri8
+         N5EOUb0FZImDOY6t+xgq0FqVwNXEMSuIGL651CgPH7ooF5ASBPja9tL8vOv4LsuCpXC9
+         EgTXJLVNtSwXVfPBRMcln6JzB52gwoca0kNu4Y7K6zU5I3Px4vCIY7c0c2AWIEBDAajA
+         YiI7OjPLq8qUmyPHDc9t8kBS+RCNmgXkyHxf8Y5PiTHKt7JXIkufiuhCaHc1KTuoWler
+         yeh7qkRQuaqLP65bFQrf1xvodxCRXRBFt4SlqstNUwoQ7nX73QeHJevivhiASdeiwZBi
+         9E2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=ZKJThcZfaOfQNEh7LqpI6ONZNtq+9AM3QGtSLIPGs8Y=;
-        b=1nAtUs+Cuh2fLW4BhlBhzUv5EQ7cGK1cJoE+MLw1WkyZ2q7sh55M7CWAwLA7PPFhMA
-         TLW9Eq3jjfkMQKsKQfjRedbCQ2QAK0DI2t5BNnng8KB4mMY0hhnkt3TK+z15fPdbkCYt
-         c/FwJgatn7pPvrvP0H5A+VWcPFXPzDgJth2nYS4tD7rcgO1KJ2uJo1KHk+uLyBirgAJb
-         mOwyPnlCNWln/UIwVeij4AJRBwbm1c7q/futLSMYdfjhqNJQJaSPeZrmcsA3S8bGS16E
-         JrCcjy0IKQ97J9n4cY/8kINDdtOaN/MjvkNl3H83JLn3ddvs2sImgpv4p+5H3wRPQFDd
-         f7xw==
-X-Gm-Message-State: AOAM531O/vmT8TPduV9PT3VRBBYx108a46VpF2yUKpRXY1Ukb+o/O+Ta
-        +8Zp2yuDM2qljo0xREBRmPpr3uQVHZwxLX8W4Js=
-X-Google-Smtp-Source: ABdhPJwssTcGipIXxFVfi/sqWB8QB5CABPoOt0TyZBjF2y9UaSc7urFPazLMfLCvPqNu+CwPUI6eSX0ZSemgnipy5x4=
-X-Received: by 2002:a05:651c:1507:: with SMTP id e7mr9381558ljf.159.1642263059072;
- Sat, 15 Jan 2022 08:10:59 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=umg3fmIHEU7ouEUqxByuwXez80RylgBi5NxgeR5uNbQ=;
+        b=BWeApdd+nIB72WcIRjsObTiIs/JOqW25mhqK+O+2+gVeXHwamRGuau35nZEbHmcqbh
+         3HPNtYY19R+ed3fF+GcQ9eCsoIX7N9rGc4y19yi0vnpCahZvoUr/55fFIF8TN9X6/7My
+         cd48yUWGA9uWgFULUY4GGXXx9RJcNK4AeNNa2A2JoBWmqK43rtIQLACBj+Q1VhoBiuwR
+         vVECPCRMbAcVP2d6rnQdfDXtSnbxT3OpKZJTkzg9IVlad+2JoxZQPRGTCZs/M2NRbtKp
+         L3GNiW72sz+vM7MAbu91EBINPilJaEjTEYmmGBPLCe2aVGARGfyBtymdZp2xXZS7HDbN
+         msaw==
+X-Gm-Message-State: AOAM533C9GfiLjjr8JdWNk+S3CUXqP6lQARe0aYLrWfECFA1PtcPJSgM
+        rxaCAFFqB5LA7JykS30DkX8faXoRhKyGSOSJl7g=
+X-Google-Smtp-Source: ABdhPJyH0UIPV8JqnNsONGk7+0AcajsTKmtphUYvVBb6LJAlzTTQZj8ELY3WoewqdICJa2EcIezozG5CquyVZSmgNis=
+X-Received: by 2002:a05:6402:289a:: with SMTP id eg26mr334586edb.318.1642265225026;
+ Sat, 15 Jan 2022 08:47:05 -0800 (PST)
 MIME-Version: 1.0
-Sender: madamaisha93@gmail.com
-Received: by 2002:a05:651c:178b:0:0:0:0 with HTTP; Sat, 15 Jan 2022 08:10:58
- -0800 (PST)
-From:   "MRS. Maya Olivia" <mrs.mayaolivia@gmail.com>
-Date:   Sat, 15 Jan 2022 16:10:58 +0000
-X-Google-Sender-Auth: TA8FBbC-RIDXtWyGCgXKYX9hmTU
-Message-ID: <CAOL7JY9XT+krXr2XTtCUSmRxAuw4kRXKE1rQLjHvGrqT6dJ9gA@mail.gmail.com>
-Subject: Hello My Dear friend.
-To:     undisclosed-recipients:;
+References: <20220111192952.49040-1-ivan@cloudflare.com> <CAA93jw6HKLh857nuh2eX2N=siYz5wwQknMaOtpkqLzpfWTGhuA@mail.gmail.com>
+ <CABWYdi0ZHYvzzP9SFOCJhnfyMP12Ot9ALEmXg75oeXBWRAD8KQ@mail.gmail.com>
+ <CAA93jw5+LjKLcCaNr5wJGPrXhbjvLhts8hqpKPFx7JeWG4g0AA@mail.gmail.com> <CABWYdi1p=rRQM3oySw2+N+mcrUq3bXA5MXm8cHmC3=qfCU5SDA@mail.gmail.com>
+In-Reply-To: <CABWYdi1p=rRQM3oySw2+N+mcrUq3bXA5MXm8cHmC3=qfCU5SDA@mail.gmail.com>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Sat, 15 Jan 2022 08:46:52 -0800
+Message-ID: <CAA93jw435mThYcBA_7Sf1Z6W_bZrLuK8FLHw8AgAwg0+3y6PBw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] tcp: bpf: Add TCP_BPF_RCV_SSTHRESH for bpf_setsockopt
+To:     Ivan Babrou <ivan@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello My Dear friend.
+On Fri, Jan 14, 2022 at 2:21 PM Ivan Babrou <ivan@cloudflare.com> wrote:
+>
+> On Thu, Jan 13, 2022 at 9:44 PM Dave Taht <dave.taht@gmail.com> wrote:
+> > Yes, but with the caveats below. I'm fine with you just saying round tr=
+ips,
+> > and making this api possible.
+> >
+> > It would comfort me further if you could provide an actual scenario.
+>
+> The actual scenario is getting a response as quickly as possible on a
+> fresh connection across long distances (200ms+ RTT). If an RPC
+> response doesn't fit into the initial 64k of rcv_ssthresh, we end up
+> requiring more roundrips to receive the response. Some customers are
+> very picky about the latency they measure and cutting the extra
+> roundtrips made a very visible difference in the tests.
+>
+> > See also:
+> >
+> > https://datatracker.ietf.org/doc/html/rfc6928
+> >
+> > which predates packet pacing (are you using sch_fq?)
+>
+> We are using fq and bbr.
+>
+> > > Congestion window is a learned property, not a static number. You
+> > > won't get a large initcwnd towards a poor connection.
+> >
+> > initcwnd is set globally or on a per route basis.
 
-I am Mrs. Maya Oliver, from Norway
-. Firstly, I am married to Mr. Patrick Oliver, A diamond and gold
-merchant who owns a small gold Mine in Burkina Faso and Egypt Cairo;
-He died of Cardiovascular Disease in mid-March 2011. During his
-lifetime he deposited the sum of =E2=82=AC 18.5 Million Euro) Eighteen
-million, Five hundred thousand Euros in a bank in Ouagadougou the
-capital city of Burkina Faso. The deposited money was from the sale of
-the shares, death benefits payment and entitlements of my deceased
-husband by his company.
+Like I said, retaining state from an existing connection as to the
+window is ok. i think arbitrarily declaring a window like this
+for a new connection is not.
 
-Since his death I decided not to remarry, When my late husband was
-Alive he deposited the sum of =E2=82=AC 8.5 Million Euro) Eight million, Fi=
-ve hundred
-thousand Euro) in a bank in Burkina Faso, Presently this money is
-still in bank. And My Doctor told me that I don't have much time to
-live because of the cancer problem,
+> With TCP_BPF_IW the world is your oyster.
 
-Having known my condition I decided to hand you over this fund to take
-care of the less-privileged people, you will utilize this money the
-way I am going to instruct herein. I want you to take 35% Percent of
-the total money for your personal use While 65% of the money will go
-to charity" people and helping the orphanage.
+The oyster has to co-habit in this ocean with all the other life
+there, and I would be comforted if your customer also tracked various
+other TCP_INFO statistics, like RTT growth, loss, marks, and
+retransmits, and was aware of not just the self harm inflicted but of
+collateral damage. In fact I really wish more were instrumenting
+everything with that, of late we've seen a lot of need for
+TCP_NOTSENT_LOWAT in things like apache traffic server in containers.
+A simple one line patch for an widely used app I can't talk about, did
+wonders for actual perceived throughput and responsiveness by the end
+user. Measuring from the reciever is far, far more important than
+measuring from the sender. Collecting long term statistics over many
+connections, also, from
+the real world. I hope y'all have been instrumenting your work as well
+as google has, on these fronts.
 
-I don't want my husband's efforts to be used by the Government. I grew
-up as an Orphan and I don't have anybody as my family member,
-I am expecting your respond. Through private email: (mrs.mayaolivia90@gmail=
-.com)
-Regards,
-Mrs. Maya Oliver,
-mrs.mayaolivia90@gmail.com
+I know that I'm getting old and crunchy and scarred by seeing so many
+(corporate wifi mostly) networks over the last decade essentially in
+congestion collapse!
+
+https://blog.apnic.net/2020/01/22/bufferbloat-may-be-solved-but-its-not-ove=
+r-yet/
+
+I'm very happy with how well sch_fq + packet pacing works to mitigate
+impuses like this, as well as with so many other things like BBR and
+BQL, but pacing out !=3D pacing in,
+and despite my fervent wish for more FQ+AQM techniques on more
+bottleneck links also, we're not there yet.
+
+I like very much that BPF is allowing rapid innovation, but with great
+power comes great responsibility.
+--=20
+I tried to build a better future, a few times:
+https://wayforward.archive.org/?site=3Dhttps%3A%2F%2Fwww.icei.org
+
+Dave T=C3=A4ht CEO, TekLibre, LLC
