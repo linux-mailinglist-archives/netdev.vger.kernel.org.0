@@ -2,146 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 497C748F44E
-	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 03:09:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D248648F452
+	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 03:10:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232141AbiAOCJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 21:09:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40506 "EHLO
+        id S232155AbiAOCKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 21:10:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231258AbiAOCJu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 21:09:50 -0500
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EBCC061574;
-        Fri, 14 Jan 2022 18:09:50 -0800 (PST)
-Received: by mail-il1-x12a.google.com with SMTP id v17so2178911ilg.4;
-        Fri, 14 Jan 2022 18:09:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=yJJXFXwDuA6TsUr0tR9KlBAJIXjs/afmjZHAGye8Lgc=;
-        b=KW55wvnbvB52DkPilJLKstPj+0aqvusOmtS2U2vMWGyXxRD16+dRLGYUK4QLoZ9gGb
-         sy6Gz0GVPLXgtfitYu5sgSfuHpcgcyK6cbAZryZBRECOCIdhuYkFxhUFl7qBZfdTq5At
-         u0nRDKJZNCca6AghMPweKBz2WE93ZVdz+4dUkvYr4iEiZZph113+f6nvcInpwZzhkwVB
-         EJzzN1/CEFdyrgHtwg21c0/xn3XsMNvRtQWHsGcw4xl+DSMxEF5q8QRqWkQkrumffiv5
-         w3gws/K+M8b1wQGETW3qjkvHQvFhrePlf98a/rYb8pIcmOumtTyejkT97yBGuW7vyLP9
-         jvsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=yJJXFXwDuA6TsUr0tR9KlBAJIXjs/afmjZHAGye8Lgc=;
-        b=AZjzxpsW4pIz7SA03bM4X0LjltIgGSEUUhz54G1n3QmkOaHk1Gxc2fWt6OsoOBC0dH
-         M3JYzHcPI+8gM73nJQQdcG2miI6deq8jPydvMxz+5PpzPvWmaVQqLFhB9PpaswUwBacA
-         Hxl+F21xbZE6I4a8iIdZNvNq4cqUd1ztWCNK56eNKn1jK4hVuizA+wM7VKR0mO985vFd
-         bEAp57vffv4mrostg2scC7WsnVLVCUpsyTmiD+EBJbVzzIMhI1huWyZhx9GYHRndVHnX
-         PPN0Iz92Tc791+uLCSKSvw++p8MCDaSPksThH6G7H96GeWC8CCiIdLRpNkiZk94rbVH5
-         9POw==
-X-Gm-Message-State: AOAM532fn2fFpuYiWJw4waFVjMTOzMggEeuOcrR+HKYu3+EvxcPDp71T
-        s32cDdJnQU27seIG6DNc3jel51LY0oWrbvjGUHo=
-X-Google-Smtp-Source: ABdhPJydAqQ+y+egtf4+eaUM0Gctqsj5aYo/3fBzlFaJf19BivGj183h4I1pNLolhaiP3UAQi24YVRDUacOSa1aclCE=
-X-Received: by 2002:a05:6e02:1748:: with SMTP id y8mr6271898ill.305.1642212589691;
- Fri, 14 Jan 2022 18:09:49 -0800 (PST)
+        with ESMTP id S232152AbiAOCKf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 21:10:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D36EDC061574
+        for <netdev@vger.kernel.org>; Fri, 14 Jan 2022 18:10:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33EB2B82A6B
+        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 02:10:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6630AC36AE9;
+        Sat, 15 Jan 2022 02:10:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642212631;
+        bh=g6dBg9QZgfEp6vTh8301SKd8VNrRI7D3RQ5tbP7WrKA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qiggvLlJt5shOC116ZqOJWzOjHSOiV+ZnK4qSh3Dl3Qoypmcjy93m82z9glRWjZF5
+         m2DltZwez97sFgmqINFGqkmCF493Q7PN1+6VL7V6MCUUBF/Yf5f4gF8qwKBx11cqee
+         ycBGIT+uPmf9sTZokwD0ZXQzdGkk9IYp3YkwE/62cacCQHhq6Xcnbe8fs3iIyntaLg
+         WXk4WkxUmX8Ewyspp4C58if8KsLwZj91mb0/e3CiQ3xrUHWuTSSkYnw7bUlFlc1Hxl
+         MRLamhBzbYrCbsJtG4eLLD60H6toyZ8QRmzD+lK570tzuf3Jn1EzdyF+iVwo7zATgl
+         XsFvRw/TRCXrg==
+Date:   Fri, 14 Jan 2022 18:10:29 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Parav Pandit <parav@nvidia.com>,
+        Sunil Sudhakar Rani <sunrani@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Bodong Wang <bodong@nvidia.com>
+Subject: Re: [PATCH net-next 1/2] devlink: Add support to set port function
+ as trusted
+Message-ID: <20220114181029.0b4f87d4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <YeE/RfKb0bxQmJOq@nanopsycho>
+References: <5c4b51aecd1c5100bffdfab03bc76ef380c9799d.camel@nvidia.com>
+        <20211202093110.2a3e69e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <d0df87e28497a697cae6cd6f03c00d42bc24d764.camel@nvidia.com>
+        <20211215112204.4ec7cf1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <1da3385c7115c57fabd5c932033e893e5efc7e79.camel@nvidia.com>
+        <20211215150430.2dd8cd15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <SN1PR12MB2574E418C1C6E1A2C0096964D4779@SN1PR12MB2574.namprd12.prod.outlook.com>
+        <20211216082818.1fb2dff4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <PH0PR12MB54817CE7826A6E924AE50B9BDC519@PH0PR12MB5481.namprd12.prod.outlook.com>
+        <20220111102005.4f0fa3a0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <YeE/RfKb0bxQmJOq@nanopsycho>
 MIME-Version: 1.0
-References: <20220112142709.102423-1-mauricio@kinvolk.io> <20220112142709.102423-4-mauricio@kinvolk.io>
-In-Reply-To: <20220112142709.102423-4-mauricio@kinvolk.io>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 14 Jan 2022 18:09:38 -0800
-Message-ID: <CAEf4BzZ2LEFzX1VoWY_NNowbS2+j04pCWS4DdrDi5nFe7CvcXw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 3/8] bpftool: Add gen btf command
-To:     =?UTF-8?Q?Mauricio_V=C3=A1squez?= <mauricio@kinvolk.io>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 6:27 AM Mauricio V=C3=A1squez <mauricio@kinvolk.io>=
- wrote:
->
-> This command is implemented under the "gen" command in bpftool and the
-> syntax is the following:
->
-> $ bpftool gen btf INPUT OUTPUT OBJECT(S)
+On Fri, 14 Jan 2022 10:15:49 +0100 Jiri Pirko wrote:
+>>> It was implicit that a driver API callback addition for both types of features is not good.
+>>> Devlink port function params enables to achieve both generic and device specific features.
+>>> Shall we proceed with port function params? What do you think?
+>>
+>> I already addressed this. I don't like devlink params. They muddy the
+>> water between vendor specific gunk and bona fide Linux uAPI. Build a
+>> normal dedicated API.
+> 
+> Well, that is indeed true. But on the other hand, what is the alternative
+> solution? There are still going to be things wich are generic and driver-
+> specific. Params or no params. Or do you say we need some new well
+> defined enum-based api for generic stuff and driver-speficic will just
+> go to params?
 
-"gen btf" doesn't really convey that it's a minimized BTF for CO-RE,
-maybe let's do something more verbose but also more precise, it's not
-like this is going to be used by everyone multiple times a day, so
-verboseness is not a bad thing here. Naming is hard, but something
-like `bpftool gen min_core_btf` probably would give a bit better
-pointer as to what this command is doing (minimal CO-RE BTF, right?)
-
->
-> INPUT can be either a single BTF file or a folder containing BTF files,
-> when it's a folder, a BTF file is generated for each BTF file contained
-> in this folder. OUTPUT is the file (or folder) where generated files are
-> stored and OBJECT(S) is the list of bpf objects we want to generate the
-> BTF file(s) for (each generated BTF file contains all the types needed
-> by all the objects).
->
-> Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
-> Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
-> Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
-> ---
->  tools/bpf/bpftool/gen.c | 117 ++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 117 insertions(+)
->
-
-[...]
-
-> +
-> +       while ((dir =3D readdir(d)) !=3D NULL) {
-> +               if (dir->d_type !=3D DT_REG)
-> +                       continue;
-> +
-> +               if (strncmp(dir->d_name + strlen(dir->d_name) - 4, ".btf"=
-, 4))
-> +                       continue;
-> +
-> +               snprintf(src_btf_path, sizeof(src_btf_path), "%s/%s", inp=
-ut, dir->d_name);
-> +               snprintf(dst_btf_path, sizeof(dst_btf_path), "%s/%s", out=
-put, dir->d_name);
-> +
-> +               printf("SBTF: %s\n", src_btf_path);
-
-What's SBTF? Is this part of bpftool "protocol" now? It should be
-something a bit more meaningful...
-
-> +
-> +               err =3D btfgen(src_btf_path, dst_btf_path, objs);
-> +               if (err)
-> +                       goto out;
-> +       }
-> +
-> +out:
-> +       if (!err)
-> +               printf("STAT: done!\n");
-
-similar, STAT? what's that? Do we need "done!" message in tool's output?
-
-> +       free(objs);
-> +       closedir(d);
-> +       return err;
-> +}
-> +
->  static const struct cmd cmds[] =3D {
->         { "object",     do_object },
->         { "skeleton",   do_skeleton },
-> +       { "btf",        do_gen_btf},
->         { "help",       do_help },
->         { 0 }
->  };
-> --
-> 2.25.1
->
+The latter is where my thinking is right now. I think devlink params
+are attracting too much vendor attention, when they should really be
+more of control for quirks.
