@@ -2,104 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9335648F88A
-	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 18:49:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2950048F8AD
+	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 19:13:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232287AbiAORth (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jan 2022 12:49:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53442 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232128AbiAORtg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 12:49:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642268975;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=5Ub1hbMwAGMv83XYOlhCXiwUBfOTPfG3vBCU3vhpmD4=;
-        b=bcQiEvYtgQRLWOgOqSvqtKaNu5prUQInnJLlYC0mb7dgS0hLPwO8WtC8lVEkw/7l6+GN25
-        ql54LDYV6xJVcQA8gBSSnYTFfcITHaXF0tRptPN1l1HTvyQp9gzpp1rVOOHCrE/tvJB+g7
-        uj6TdLGBq+ntb+GJb02ojMTYu4pDfs8=
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
- [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-52-G-wzdqq3MdGBi3ZXQ7YAVQ-1; Sat, 15 Jan 2022 12:49:33 -0500
-X-MC-Unique: G-wzdqq3MdGBi3ZXQ7YAVQ-1
-Received: by mail-oi1-f199.google.com with SMTP id k64-20020acaba43000000b002c8994ca6a3so8572018oif.15
-        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 09:49:33 -0800 (PST)
+        id S233414AbiAOSNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jan 2022 13:13:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51046 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233408AbiAOSNd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 13:13:33 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E02BC06161C
+        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 10:13:33 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id w16so46907748edc.11
+        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 10:13:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=NuRKD1EfaNlzG+tvgOZHc6RUfNbRXjp0EbETwMNGuic=;
+        b=g2suYDWxNJTeJd8L3At8XEAET2MeO+uT+TrzkQ9x6jhSBQEmFYJqUcOpGFEHd0Kgje
+         UlQ0TotGUAxZFt+6vGb1kVwKSdh5Hsnju2ch+P+esA/boPnVjAjw5NCB/EpE95R1Ahv3
+         pqd1OJ9ft2NAo7QmwvfxbpDeXTktCA7gYQe5YYq+VIxeCMgw+5Db3aph6ZTUWcUnly7a
+         U7S7+HJhe61WGjH/AbfYsvS8837sj346mlYjxTsC1BBADCXcugGjbpCQqaklH0LNKRKj
+         Ywa7qVyZovfdNMAH8VYGZmuvnEbd0mCpdOyDPazgcZ5TigbXe3tgfG+j0O1ej7sXdkxH
+         WC9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5Ub1hbMwAGMv83XYOlhCXiwUBfOTPfG3vBCU3vhpmD4=;
-        b=D49geYMqd1iPSP5kSAQCLUVr2fMrockQ9Cawjvv9RyX4aRxNXSjf4eYG2LJspWcjXo
-         sphjNGeykFcOuXeI+9i384pZ64Ggdax/sRh6CxyST5HR72TbNZ427ierB7pNEUX0s1vM
-         bwy37zY8Z3bvnIcz1txOvvpkpYcnHTEJdb1aHOz1N/TBQdZCuc9D80CVKMNpEBxUkSF6
-         f6Au1M06SNUy3ETcgTOPLSvVA7LMlTzNREY9Hs3ItGo/gASCabjR5Bcc9vg59KIMavSy
-         M7hGV/nF1MxIhnrboKpidxD9Ews5Lruwtobo/nKtwAmA8SJ5dYczm4jRtHob1YEqUFix
-         zEwQ==
-X-Gm-Message-State: AOAM532M+oq3JPnEQAiJnKvmypjCJGe2JtNOchPu7c7m2wug8WyrInKb
-        IBWQbok0Y4hJ3A9G6V+q4Vwc1qK0w4MnJlvK3Hzl15ji0vUXGx44Slt92FQ1Oucj6TUqlDkVD23
-        7+ZQO0+A4fVifMk0r
-X-Received: by 2002:a9d:6d90:: with SMTP id x16mr10349768otp.104.1642268973023;
-        Sat, 15 Jan 2022 09:49:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxR+KmHmEAcU1CSZCeT7bkPUleD6/z8y+Ucc7A0A1vb7OVK0PdYFegZBJKcQW1fj3jjvlhqdQ==
-X-Received: by 2002:a9d:6d90:: with SMTP id x16mr10349749otp.104.1642268972841;
-        Sat, 15 Jan 2022 09:49:32 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id w20sm3239438oti.69.2022.01.15.09.49.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Jan 2022 09:49:32 -0800 (PST)
-From:   trix@redhat.com
-To:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, davem@davemloft.net, kuba@kernel.org,
-        matthias.bgg@gmail.com, nathan@kernel.org, ndesaulniers@google.com,
-        opensource@vdorst.com
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
-Subject: [PATCH v2] net: ethernet: mtk_eth_soc: fix error checking in mtk_mac_config()
-Date:   Sat, 15 Jan 2022 09:49:18 -0800
-Message-Id: <20220115174918.297002-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=NuRKD1EfaNlzG+tvgOZHc6RUfNbRXjp0EbETwMNGuic=;
+        b=GBP4l6+MA37C6WMp9v6a50XVk9cgZ3MpaVFYUrVWAhvZBKMKRQv4rhZulhjwMGRMCp
+         4cpynxBuJaiDqC9oHdZR2PXmhVL7wnVlPtKg393/2wvD9ZgAlFCNyKvyNOM7gYOUoSp0
+         FhSia+scBDQhGmt/XPEdb/OYfT7NTuFCiBFCQOhVLVFu6zkfOzZoW06+7oH+IhF9VNap
+         SaIsYfs7bVvcV7U9OL5N0uBDIYxmBKDIXsRSj3cWNLsDXyum0CCqLIgqBSHcm1zjgM69
+         HW/KCigqqonR2LTEj6Qg0op+KGuyoMX9eHpTdMM68G9IH6VXFHF6GBQHZnzZ1CNtEEWr
+         iXxQ==
+X-Gm-Message-State: AOAM530IyiGcrSl3aUWv88KFhpFDY39fnKGTMo63pDn6V+KOhMtp1ciZ
+        USJZ9Qwj040H1JeUm0f43w2yz3btUpSd0Z/zbE4=
+X-Google-Smtp-Source: ABdhPJyf/QnlCeBZUmzhxDEB1gSS3U2opzxTbi8EBbwNAO/UsR0jyJy+vbdXTgO0APvt1oBgDy5OdAufcCMj1/fsFIQ=
+X-Received: by 2002:a17:906:1544:: with SMTP id c4mr11631817ejd.98.1642270411587;
+ Sat, 15 Jan 2022 10:13:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a05:6402:438f:0:0:0:0 with HTTP; Sat, 15 Jan 2022 10:13:30
+ -0800 (PST)
+Reply-To: uchennailobitenone@gmail.com
+From:   uchenna <nkeruoko@gmail.com>
+Date:   Sat, 15 Jan 2022 10:13:30 -0800
+Message-ID: <CAPyXva23gpVsOzTtA8LpGG3CY8Wd6qP3gXCkZRAhrowwEqvnVw@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Nech je s vami V=C5=A1emoh=C3=BAci P=C3=A1n....
+Som VDOVA PO P=C3=81NOM Davidovi HOLLANDOVI, M=C3=81M 59 .ROKOV. Moje meno =
+je
+Jozef=C3=ADna HOLLANDOV=C3=81. Som vydat=C3=A1 za zosnul=C3=A9ho p=C3=A1na =
+Davida HOLLANDA,
+ktor=C3=BD pracoval
+dev=C3=A4=C5=A5 rokov na franc=C3=BAzskom ve=C4=BEvyslanectve a tu v Lome-T=
+ogo v z=C3=A1padnej Afrike
+predt=C3=BDm, ako zomrel v
+rok 2019.
 
-Clang static analysis reports this problem
-mtk_eth_soc.c:394:7: warning: Branch condition evaluates
-  to a garbage value
-                if (err)
-                    ^~~
+Boli ste vybran=C3=AD, aby ste dostali finan=C4=8Dn=C3=BD dar m=C3=B4jho zo=
+snul=C3=A9ho man=C5=BEela
+ktor=C3=BD financuje 5,7 000 000 000 dol=C3=A1rov (p=C3=A4=C5=A5 mili=C3=B3=
+nov sedemstotis=C3=ADc
+americk=C3=BDch dol=C3=A1rov) na pomoc chudobn=C3=BDm a sirotincom prostred=
+n=C3=ADctvom v=C3=A1=C5=A1ho
+=C3=BAprimn=C3=BA pomoc pred mojou smr=C5=A5ou. Dlhodobo trp=C3=ADm rakovin=
+ou
+Prsia, zo v=C5=A1etk=C3=BDch indik=C3=A1ci=C3=AD sa m=C3=B4j stav naozaj zh=
+or=C5=A1uje
+a je =C3=BAplne zrejm=C3=A9, =C5=BEe by som u=C5=BE =C4=8Falej ne=C5=BEil
+m=C3=B4jmu lek=C3=A1rovi, preto=C5=BEe rakovina sa dostala do ve=C4=BEmi zl=
+=C3=A9ho =C5=A1t=C3=A1dia, =C5=BEe nie
+d=C3=BAfam, =C5=BEe budem op=C3=A4=C5=A5 =C5=BEivou osobou. V=C5=A1etko, =
+=C4=8Do od teba potrebujem, je tvoje
+=C3=BAprimnos=C5=A5 pou=C5=BEi=C5=A5 tieto prostriedky na realiz=C3=A1ciu t=
+ohto projektu tak,
+ako chcem a potrebujem
+va=C5=A1e inform=C3=A1cie o tom, kam bude moja banka posiela=C5=A5 prostrie=
+dky,
 
-err is not initialized and only conditionally set.
-So intitialize err.
+ako napr=C3=ADklad:
+Meno pr=C3=ADjemcu:_ Adresa:_ Telef=C3=B3n
+=C4=8D=C3=ADslo:_ Krajina:_
 
-Fixes: 7e538372694b ("net: ethernet: mediatek: Re-add support SGMII")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
-v2: change to initializing
+Pros=C3=ADm, neur=C3=A1=C5=BEajte sa t=C3=BDm, ak=C3=BDm sp=C3=B4sobom som =
+k v=C3=A1m pri=C5=A1iel ako a
+cudzinec, aby som to urobil, je to jedin=C3=BD sp=C3=B4sob, ako sa k tebe p=
+otom dosta=C5=A5
+prech=C3=A1dzanie ID va=C5=A1ich kontaktov. D=C3=A1m v=C3=A1m kontakty na
+breh. Pre legitimitu s poveren=C3=ADm, ktor=C3=A9 zalo=C5=BE=C3=AD
+vy ako m=C3=B4j menovan=C3=BD pr=C3=ADjemca t=C3=BDchto pe=C5=88az=C3=AD.
 
-drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+=C4=8Cak=C3=A1m na tvoju odpove=C4=8F.
+Od sestry Josephine HOLLAND.
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index b67b4323cff08..f02d07ec5ccbf 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -267,7 +267,7 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
- 					   phylink_config);
- 	struct mtk_eth *eth = mac->hw;
- 	u32 mcr_cur, mcr_new, sid, i;
--	int val, ge_mode, err;
-+	int val, ge_mode, err = 0;
- 
- 	/* MT76x8 has no hardware settings between for the MAC */
- 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) &&
--- 
-2.26.3
+Mali by ste ma kontaktova=C5=A5 prostredn=C3=ADctvom mojej s=C3=BAkromnej e=
+-mailovej adresy:
 
+hollandmrsjosephineeholland@gmail.com
