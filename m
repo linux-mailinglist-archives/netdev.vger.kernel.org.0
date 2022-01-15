@@ -2,155 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D708A48F6D1
-	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 13:27:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2781448F6D7
+	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 13:31:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232292AbiAOM1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jan 2022 07:27:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231531AbiAOM1m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 07:27:42 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E976DC06173F;
-        Sat, 15 Jan 2022 04:27:41 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id x7so39366744lfu.8;
-        Sat, 15 Jan 2022 04:27:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JJbm/APZKQh33EDDJ0deCmvbxjw0T/eT+AvAf6q6Q50=;
-        b=aRmsLlOM/p+Nex8FP09SSjq/DCDIYJlqBECcM2RlTvaQziXt2ou5pklx2rstPVOoPZ
-         afP5n+NvQpgoB8mrd8tBJ16NpNBJRDiQKGd4RyOG7VbF3vAU1I/TSbZOVJdkqSHA9JMV
-         3wjCT9A4/9r+h7PgMHFtD87EiGMl0ClOJPG2LHdJ2w9Zi4SdWJqTooikoPInWPVtiMbg
-         eoCTNqiCyB1t5eshA5iMnG6Hqogc0ZMfg/EoUHBEODI92VGXvOi2L2LWbyeYpOQPDI/P
-         6UQdoCunlO1M2H1QGkPz8kVsfAKqxIhLWuADTvkreFFLn4IlC2jGD/NBB3hHILa7fGVX
-         T6qg==
+        id S231474AbiAOMbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jan 2022 07:31:31 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:47640
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229572AbiAOMba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 07:31:30 -0500
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id C8E363F206
+        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 12:31:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1642249889;
+        bh=aTqcIxqAR/af1ox/8rd3oWXS3Q3nu+K4UOt20ffR+bM=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=G7ztRExuKM0IC07s1a9ehCKXEz+i3SbjI/c2M5UznEbYsU8xHwRUdZzycw8klXpYC
+         ZFg1NLK33IgsBoANU7BU6YL7kFlcExK6aGbpDjtFJ5fU4hzW/MC2/crqvJ2HlcUOQv
+         AUhY6MJYu8re88eJp6DPp+O05eTPPqG0WRZLozjyEXhQcby3/3//LSI2jfYSLn7vbh
+         ttN+UXMDaEdNsQv4L7+pFuyBAS8hQXCLG+fpICipeNmO5XOm1icc1yEhUo6i5SEzHn
+         9+Ccfi44FsRugVYgLnkM+mj0DzJcOHgupE0f3C9o1bfHNv3EkanhWBJvK6A9xJLdXb
+         fSHkGNKmhteew==
+Received: by mail-ed1-f71.google.com with SMTP id i9-20020a05640242c900b003fe97faab62so10293851edc.9
+        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 04:31:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=JJbm/APZKQh33EDDJ0deCmvbxjw0T/eT+AvAf6q6Q50=;
-        b=VOP850A+LaxiImgP3OvqmUx6fDX1ELYb4ZP+fVFxbkU8VEzmOiyME+t3AmeEvhd5iW
-         O+91QfKm+LiKWZo1mNcG56dZSws5SxklP08YdOXlsvpo3+j8trOBE2pOqYNFthvLgqSb
-         eLSuzujFjt6XWkEa9yThFZPFj3eFWRazxScMhBad8Ez+hCsDso4SDXsXETOZgF02/Xxm
-         p1YLPQ9+bxhvEkOru4kbEMiii+RRDslzeVPPLNtPA1xfMRcEu2QGW0vFNcXQcjNwixCD
-         Ay7AGJyq5Mjoa5bU4lqVVY8zOjiTUDy46NtpfZ39VY86TFe3K88riinP4ugbiOTU5h1n
-         Jofw==
-X-Gm-Message-State: AOAM532Uw+WBJKmCyEh2tr46SvNmNqMoOMeZnecYzOLr96eCXfOfldFa
-        o1YWd7wMqcJxSBJ47PanYzI=
-X-Google-Smtp-Source: ABdhPJxVwovjSBNmo+0FrBrzSimp8hZMZDwYn4WjWcvnXetAK3K/WKqhxb81sKEelOYcX8LMox9G+g==
-X-Received: by 2002:ac2:5459:: with SMTP id d25mr10026879lfn.231.1642249660225;
-        Sat, 15 Jan 2022 04:27:40 -0800 (PST)
-Received: from localhost.localdomain ([217.117.245.67])
-        by smtp.gmail.com with ESMTPSA id c21sm857160lfj.128.2022.01.15.04.27.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Jan 2022 04:27:39 -0800 (PST)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com,
-        vasanth@atheros.com, Sujith.Manoharan@atheros.com,
-        senthilkumar@atheros.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
-Subject: [PATCH] ath9k_htc: fix uninit value bugs
-Date:   Sat, 15 Jan 2022 15:27:33 +0300
-Message-Id: <20220115122733.11160-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        bh=aTqcIxqAR/af1ox/8rd3oWXS3Q3nu+K4UOt20ffR+bM=;
+        b=QsV3Kqz2qhkUwz0TPkZKOXi7FaJesoHp/aYMiu9ZbqK+TW5kiNVFprebNE9ypTG/SK
+         bqtQp0FaiwmH0BliY0hvAYuysgktXfo7nx0pXBkTMOPF4y71q2/DphXt5TM52NuIriym
+         I/XIRDNDHUcjTB2+rlrW1Fl1Y43gJ8jn+Jjke+oy4y5hMqD7/z6zIr9ZrZbjLMkRVz3M
+         keLTcX627qhdOG5Yzp8l02pSEqaRwZ2QUgj+B766lliQbnPYQzTdi24Cc0AzVO5E4gmh
+         zS8TGdD3yFDHy+TNziNBqkbkx9v+UxAZHtPcyIPArryR64wO30SZqbk1JeOghSRWS32y
+         Amug==
+X-Gm-Message-State: AOAM530qJ6Z13y91Pw2NRk8Xo2PDvFovhkNZvafPvfYm5huP3X18ZUHb
+        2HSIfdItDosE32JOTSn7N4bAAQEnL6XXWC1Y1Ucs//FNuh4+43WPfAOJBvkIXwmQHShT4oqhwho
+        8JSWCRhQNs1nP2jkI88zn4a3i6EbGMYKwhA==
+X-Received: by 2002:a05:6402:3591:: with SMTP id y17mr13177031edc.386.1642249889434;
+        Sat, 15 Jan 2022 04:31:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw76pBOLDbXNjXut5bnS0Si+Bt7OX9gzBeP9sOT2yOjk+C4gHjytpBv5MtB60q356CVn6Gh8Q==
+X-Received: by 2002:a05:6402:3591:: with SMTP id y17mr13177016edc.386.1642249889264;
+        Sat, 15 Jan 2022 04:31:29 -0800 (PST)
+Received: from [192.168.0.35] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id d1sm2577349ejo.176.2022.01.15.04.31.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 15 Jan 2022 04:31:28 -0800 (PST)
+Message-ID: <dc675285-1ece-cfc6-d68f-12f58c470c41@canonical.com>
+Date:   Sat, 15 Jan 2022 13:31:28 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH 1/7] nfc: llcp: fix NULL error pointer dereference on
+ sendmsg() after failed bind()
+Content-Language: en-US
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com,
+        stable@vger.kernel.org
+References: <20220115122650.128182-1-krzysztof.kozlowski@canonical.com>
+ <20220115122650.128182-2-krzysztof.kozlowski@canonical.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220115122650.128182-2-krzysztof.kozlowski@canonical.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported 2 KMSAN bugs in ath9k. All of them are caused by missing
-field initialization.
+On 15/01/2022 13:26, Krzysztof Kozlowski wrote:
+> Syzbot detected a NULL pointer dereference of nfc_llcp_sock->dev pointer
+> (which is a 'struct nfc_dev *') with calls to llcp_sock_sendmsg() after
+> a failed llcp_sock_bind(). The message being sent is a SOCK_DGRAM.
+> 
+> KASAN report:
+> 
+>   BUG: KASAN: null-ptr-deref in nfc_alloc_send_skb+0x2d/0xc0
+>   Read of size 4 at addr 00000000000005c8 by task llcp_sock_nfc_a/899
+> 
+>   CPU: 5 PID: 899 Comm: llcp_sock_nfc_a Not tainted 5.16.0-rc6-next-20211224-00001-gc6437fbf18b0 #125
+>   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+>   Call Trace:
+>    <TASK>
+>    dump_stack_lvl+0x45/0x59
+>    ? nfc_alloc_send_skb+0x2d/0xc0
+>    __kasan_report.cold+0x117/0x11c
+>    ? mark_lock+0x480/0x4f0
+>    ? nfc_alloc_send_skb+0x2d/0xc0
+>    kasan_report+0x38/0x50
+>    nfc_alloc_send_skb+0x2d/0xc0
+>    nfc_llcp_send_ui_frame+0x18c/0x2a0
+>    ? nfc_llcp_send_i_frame+0x230/0x230
+>    ? __local_bh_enable_ip+0x86/0xe0
+>    ? llcp_sock_connect+0x470/0x470
+>    ? llcp_sock_connect+0x470/0x470
+>    sock_sendmsg+0x8e/0xa0
+>    ____sys_sendmsg+0x253/0x3f0
+>    ...
+> 
+> The issue was visible only with multiple simultaneous calls to bind() and
+> sendmsg(), which resulted in most of the bind() calls to fail.  The
+> bind() was failing on checking if there is available WKS/SDP/SAP
+> (respective bit in 'struct nfc_llcp_local' fields).  When there was no
+> available WKS/SDP/SAP, the bind returned error but the sendmsg() to such
+> socket was able to trigger mentioned NULL pointer dereference of
+> nfc_llcp_sock->dev.
+> 
+> The code looks simply racy and currently it protects several paths
+> against race with checks for (!nfc_llcp_sock->local) which is NULL-ified
+> in error paths of bind().  The llcp_sock_sendmsg() did not have such
+> check but called function nfc_llcp_send_ui_frame() had, although not
+> protected with lock_sock().
+> 
+> Therefore the race could look like (same socket is used all the time):
+>   CPU0                                     CPU1
+>   ====                                     ====
+>   llcp_sock_bind()
+>   - lock_sock()
+>     - success
+>   - release_sock()
+>   - return 0
+>                                            llcp_sock_sendmsg()
+>                                            - lock_sock()
+>                                            - release_sock()
+>   llcp_sock_bind(), same socket
+>   - lock_sock()
+>     - error
+>                                            - nfc_llcp_send_ui_frame()
+>                                              - if (!llcp_sock->local)
+>     - llcp_sock->local = NULL
+>     - nfc_put_device(dev)
+>                                              - dereference llcp_sock->dev
+>   - release_sock()
+>   - return -ERRNO
+> 
+> The nfc_llcp_send_ui_frame() checked llcp_sock->local outside of the
+> lock, which is racy and ineffective check.  Instead, its caller
+> llcp_sock_sendmsg(), should perform the check inside lock_sock().
+> 
+> Reported-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
 
-In htc_connect_service() svc_meta_len and pad are not initialized. Based
-on code it looks like in current skb there is no service data, so simply
-initialize svc_meta_len to 0.
+Syzbot confirmed fix, so this could be replaced with:
 
-htc_issue_send() does not initialize htc_frame_hdr::control array. Based
-on firmware code, it will initialize it by itself, so simply zero whole
-array to make KMSAN happy
+Reported-and-tested-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
 
-Fail logs:
 
-BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
- usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
- hif_usb_send_regout drivers/net/wireless/ath/ath9k/hif_usb.c:127 [inline]
- hif_usb_send+0x5f0/0x16f0 drivers/net/wireless/ath/ath9k/hif_usb.c:479
- htc_issue_send drivers/net/wireless/ath/ath9k/htc_hst.c:34 [inline]
- htc_connect_service+0x143e/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:275
-...
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3251 [inline]
- __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1126 [inline]
- htc_connect_service+0x1029/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:258
-...
-
-Bytes 4-7 of 18 are uninitialized
-Memory access of size 18 starts at ffff888027377e00
-
-BUG: KMSAN: kernel-usb-infoleak in usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
- usb_submit_urb+0x6c1/0x2aa0 drivers/usb/core/urb.c:430
- hif_usb_send_regout drivers/net/wireless/ath/ath9k/hif_usb.c:127 [inline]
- hif_usb_send+0x5f0/0x16f0 drivers/net/wireless/ath/ath9k/hif_usb.c:479
- htc_issue_send drivers/net/wireless/ath/ath9k/htc_hst.c:34 [inline]
- htc_connect_service+0x143e/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:275
-...
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3251 [inline]
- __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1126 [inline]
- htc_connect_service+0x1029/0x1960 drivers/net/wireless/ath/ath9k/htc_hst.c:258
-...
-
-Bytes 16-17 of 18 are uninitialized
-Memory access of size 18 starts at ffff888027377e00
-
-Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-Reported-by: syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
- drivers/net/wireless/ath/ath9k/htc_hst.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
-index 510e61e97dbc..994ec48b2f66 100644
---- a/drivers/net/wireless/ath/ath9k/htc_hst.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
-@@ -30,6 +30,7 @@ static int htc_issue_send(struct htc_target *target, struct sk_buff* skb,
- 	hdr->endpoint_id = epid;
- 	hdr->flags = flags;
- 	hdr->payload_len = cpu_to_be16(len);
-+	memset(hdr->control, 0, sizeof(hdr->control));
- 
- 	status = target->hif->send(target->hif_dev, endpoint->ul_pipeid, skb);
- 
-@@ -272,6 +273,10 @@ int htc_connect_service(struct htc_target *target,
- 	conn_msg->dl_pipeid = endpoint->dl_pipeid;
- 	conn_msg->ul_pipeid = endpoint->ul_pipeid;
- 
-+	/* To prevent infoleak */
-+	conn_msg->svc_meta_len = 0;
-+	conn_msg->pad = 0;
-+
- 	ret = htc_issue_send(target, skb, skb->len, 0, ENDPOINT0);
- 	if (ret)
- 		goto err;
--- 
-2.34.1
-
+Best regards,
+Krzysztof
