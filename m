@@ -2,135 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9123E48F571
-	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 07:15:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 040AD48F61D
+	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 10:26:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232578AbiAOGPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jan 2022 01:15:51 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39434 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbiAOGPu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 01:15:50 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60A3660A76
-        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 06:15:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB8F6C36AE3;
-        Sat, 15 Jan 2022 06:15:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642227349;
-        bh=iM1oCA2s3y2tYDWu/upTl2KbFuqHhIS7ULas9Qw3qBM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YjyMATqi5ATkwZwtpt7teD3NizbIowil/gP1+EYqQgCJ7zbeRCM1P0oJUoMsi3c01
-         AvBICLsskVZvwAD2Dz1cTNLhi++7hTAsbXnbp5eNOASTnCXfA3Upb6eoY9ANrvFasK
-         rE90z9+PSwCwP+DUnE6XfoenMP9ES/XyccJCIzy9Ik7D4+kmhJs5mSe9x+3GDI71wz
-         JtrTU9BeDYmA4UBf4i0TiQ9ApZLwPXE8ctVgjnSs2RN/+qPA1YopCbpOH6TGDzc8rm
-         rIbjwlsWtWvzcsV+3Pf+zbnJBmbtacdXu3ZyOdNVaW0cMuRj7xARCnQb3kDzfLpExZ
-         vewtKhMHkPYew==
-Date:   Fri, 14 Jan 2022 22:15:48 -0800
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Parav Pandit <parav@nvidia.com>,
-        Sunil Sudhakar Rani <sunrani@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Bodong Wang <bodong@nvidia.com>
-Subject: Re: [PATCH net-next 1/2] devlink: Add support to set port function
- as trusted
-Message-ID: <20220115061548.4o2uldqzqd4rjcz5@sx1>
-References: <PH0PR12MB548176ED1E1B5ED1EF2BB88EDC519@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220111112418.2bbc0db4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <PH0PR12MB5481E3E9D38D0F8DE175A915DC519@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220111115704.4312d280@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <PH0PR12MB5481E33C9A07F2C3DEB77F38DC529@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220112163539.304a534d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <PH0PR12MB54813B900EF941852216C69BDC539@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220113204203.70ba8b54@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <PH0PR12MB54815445345CF98EAA25E2BCDC549@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220114183445.463c74f5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220114183445.463c74f5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        id S229687AbiAOJZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jan 2022 04:25:59 -0500
+Received: from mga17.intel.com ([192.55.52.151]:56218 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229507AbiAOJZ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Jan 2022 04:25:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642238758; x=1673774758;
+  h=from:to:cc:subject:date:message-id;
+  bh=EThxn/wE7fut9eVWRi+jhA0S/91AohvabwQFCKNPX7k=;
+  b=TLYKG0N+0vaiIs5UzFp9zpvStd2FBNNBWMM2gHS5j5VRBPWhCmb/L+S1
+   ED2HWzh2YOObKm4RjHvRJxxmPshMiFf59wwk508oxCw4bXLqZkQo3er6U
+   c3uku25jv44mXUNvpzFzfcKHWKB23fHSF57ZWvR/61GMXgZKxvpMSLHuZ
+   2J6SN6pJ2QNdXuq/KhCl56zRvW+z78BaBl1/eiugI43oy/yyilj7Mi8hU
+   nCfRzb8pl/hm6F2VlNDmryAhcKSt4/LL+duxJoI8HheWJr7vunWZiEb0S
+   N05ep3yqJd0VTAhEyN+gJnGCXjYXxcPxMWY/0duNI0P4ESSEcAQA0Pz+v
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10227"; a="225083493"
+X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
+   d="scan'208";a="225083493"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jan 2022 01:25:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
+   d="scan'208";a="559763229"
+Received: from mismail5-ilbpg0.png.intel.com ([10.88.229.13])
+  by orsmga001.jf.intel.com with ESMTP; 15 Jan 2022 01:25:55 -0800
+From:   Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mohammad.athari.ismail@intel.com, stable@vger.kernel.org
+Subject: [PATCH net v4] net: phy: marvell: add Marvell specific PHY loopback
+Date:   Sat, 15 Jan 2022 17:25:15 +0800
+Message-Id: <20220115092515.18143-1-mohammad.athari.ismail@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14 Jan 18:34, Jakub Kicinski wrote:
->On Fri, 14 Jan 2022 04:52:24 +0000 Parav Pandit wrote:
->> > > Each enabled feature consumes
->> > > (a) driver level memory resource such as querying ip sec capabilities and more later,
->> > > (b) time in querying those capabilities,
->> >
->> > These are on the VM's side, it's not hypervisors responsibility to help the client
->> > by stripping features.
->> >
->> HV is composing the device before giving it to the VM.
->> VM can always disable certain feature if it doesn't want to use by ethtool or other means.
->> But here we are discussing about offering/not offering the feature to the VF from HV.
->> HV can choose to not offer certain features based on some instruction received from orchestration.
->
->I'm still missing why go thru orchestration and HV rather than making
->the driver load more clever to avoid wasting time on initializing
->unnecessary caps.
+Existing genphy_loopback() is not applicable for Marvell PHY. Besides
+configuring bit-6 and bit-13 in Page 0 Register 0 (Copper Control
+Register), it is also required to configure same bits  in Page 2
+Register 21 (MAC Specific Control Register 2) according to speed of
+the loopback is operating.
 
-unfortunately for "smartnics" of this era, many of these initilizations
-and resources are only manged by FW and the details are hidden away from
-drivers, we need the knobs to tell the FW, hey we don't need all of these
-features for this particular vf, save the resources for something else.
-After all VF users need only a small portion of all the features we offer
-to them, but again unfortunately the FW pre-allocates precious HW
-resources to allow such features per VFs.
+Tested working on Marvell88E1510 PHY for all speeds (1000/100/10Mbps).
 
-I know in this case smartnic === dumb FW, and sometimes there is no way
-around it, this is the hw arch we have currently, not everything is a
-nice generic flexible resources, not when it has to be wrapped with FW
-"__awesome__" logic ;), and for proper virtualization we need this FW.
+FIXME: Based on trial and error test, it seem 1G need to have delay between
+soft reset and loopback enablement.
 
-But i totally agree with your point, when we can limit with resources, we
-should limit with resources, otherwise we need a knob to communicate to FW
-what is the user intention for this VF.
+Fixes: 014068dcb5b1 ("net: phy: genphy_loopback: add link speed configuration")
+Cc: <stable@vger.kernel.org> # 5.15.x
+Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+---
+v4 changelog:
+- Rename the function to m88e1510_loopback(). Commented by Heiner Kallweit
+<hkallweit1@gmail.com>.
 
->
->> > > (c) device level initialization in supporting this capability
->> > >
->> > > So for light weight devices which doesn't need it we want to keep it disabled.
->> >
->> > You need to explain this better. We are pretty far from "trust"
->> > settings, which are about privilege and not breaking isolation.
->>
->> We split the abstract trust to more granular settings, some related to privilege and some to capabilities.
->>
->> > "device level initialization" tells me nothing.
->> >
->> Above one belongs to capabilities bucket. Sw_steering belongs to trust bucket.
->>
->> > > No it is limited to tc offloads.
->> > > A VF netdev inserts flow steering rss rules on nic rx table.
->> > > This also uses the same smfs/dmfs when a VF is capable to do so.
->> >
->> > Given the above are you concerned about privilege or also just resources use
->> > here? Do VFs have SMFS today?
->> Privilege.
->> VFs have SMFS today, but by default it is disabled. The proposed knob will enable it.
->
->Could you rephrase? What does it mean that VFs have SMFS but it's
->disabled? Again - privilege means security, I'd think that it can't have
->security implications if you're freely admitting that it's exposed.
+v3 changelog:
+- Use phy_write() to configure speed for BMCR.
+- Add error handling.
+All commented by Russell King <linux@armlinux.org.uk>
 
-I think the term privilege is misused here, due to the global knob proposed
-initially. Anyway the issue is exactly as I explained above, SW steering requires
-FW pre-allocated resources and initializations, for VFs it is disabled
-since there was no demand for it and FW wanted to save on resources.
+v2 changelog:
+- For loopback enabled, add bit-6 and bit-13 configuration in both Page
+  0 Register 0 and Page 2 Register 21. Commented by Heiner Kallweit
+<hkallweit1@gmail.com>.
+- For loopback disabled, follow genphy_loopback() implementation
 
-Now as SW steering is catching up with FW steering in terms of
-functionality, people want it also on VFs to help with rule insertion rate
-for use cases other than switchdev and TC, e.g TLS, connection tracking,
-etc .. 
+---
+ drivers/net/phy/marvell.c | 56 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 55 insertions(+), 1 deletion(-)
 
-
-
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 4fcfca4e1702..0ff94400510f 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -189,6 +189,8 @@
+ #define MII_88E1510_GEN_CTRL_REG_1_MODE_RGMII_SGMII	0x4
+ #define MII_88E1510_GEN_CTRL_REG_1_RESET	0x8000	/* Soft reset */
+ 
++#define MII_88E1510_MSCR_2		0x15
++
+ #define MII_VCT5_TX_RX_MDI0_COUPLING	0x10
+ #define MII_VCT5_TX_RX_MDI1_COUPLING	0x11
+ #define MII_VCT5_TX_RX_MDI2_COUPLING	0x12
+@@ -1932,6 +1934,58 @@ static void marvell_get_stats(struct phy_device *phydev,
+ 		data[i] = marvell_get_stat(phydev, i);
+ }
+ 
++static int m88e1510_loopback(struct phy_device *phydev, bool enable)
++{
++	int err;
++
++	if (enable) {
++		u16 bmcr_ctl = 0, mscr2_ctl = 0;
++
++		if (phydev->speed == SPEED_1000)
++			bmcr_ctl = BMCR_SPEED1000;
++		else if (phydev->speed == SPEED_100)
++			bmcr_ctl = BMCR_SPEED100;
++
++		if (phydev->duplex == DUPLEX_FULL)
++			bmcr_ctl |= BMCR_FULLDPLX;
++
++		err = phy_write(phydev, MII_BMCR, bmcr_ctl);
++		if (err < 0)
++			return err;
++
++		if (phydev->speed == SPEED_1000)
++			mscr2_ctl = BMCR_SPEED1000;
++		else if (phydev->speed == SPEED_100)
++			mscr2_ctl = BMCR_SPEED100;
++
++		err = phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
++				       MII_88E1510_MSCR_2, BMCR_SPEED1000 |
++				       BMCR_SPEED100, mscr2_ctl);
++		if (err < 0)
++			return err;
++
++		/* Need soft reset to have speed configuration takes effect */
++		err = genphy_soft_reset(phydev);
++		if (err < 0)
++			return err;
++
++		/* FIXME: Based on trial and error test, it seem 1G need to have
++		 * delay between soft reset and loopback enablement.
++		 */
++		if (phydev->speed == SPEED_1000)
++			msleep(1000);
++
++		return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
++				  BMCR_LOOPBACK);
++	} else {
++		err = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, 0);
++		if (err < 0)
++			return err;
++
++		return phy_config_aneg(phydev);
++	}
++}
++
+ static int marvell_vct5_wait_complete(struct phy_device *phydev)
+ {
+ 	int i;
+@@ -3078,7 +3132,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_sset_count = marvell_get_sset_count,
+ 		.get_strings = marvell_get_strings,
+ 		.get_stats = marvell_get_stats,
+-		.set_loopback = genphy_loopback,
++		.set_loopback = m88e1510_loopback,
+ 		.get_tunable = m88e1011_get_tunable,
+ 		.set_tunable = m88e1011_set_tunable,
+ 		.cable_test_start = marvell_vct7_cable_test_start,
+-- 
+2.17.1
 
