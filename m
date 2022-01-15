@@ -2,79 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E12148F47A
-	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 03:36:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8371948F479
+	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 03:35:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232231AbiAOCgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 21:36:25 -0500
-Received: from m12-13.163.com ([220.181.12.13]:52901 "EHLO m12-13.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229471AbiAOCgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 14 Jan 2022 21:36:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=rClxz
-        2KeZNnbf+HK8OFRyXG4S63oZpvkXTjEBIqP104=; b=IcCSFEqPtmAAbfdQc4NQJ
-        N3YMaqfptiQfVlTCJ2/81R2IBCFHh3gepxGolC6qhr2ImCHqLp+uEb+qtuelzN/i
-        yjKLLmXizuZuc64Pu2CgdWlFVdqe1Vw6oNN113lFb7B6lGYTwi+zFHAmTiax55Iz
-        NaAsvRZoUluQpm+HmJCwWE=
-Received: from localhost.localdomain (unknown [223.104.68.79])
-        by smtp9 (Coremail) with SMTP id DcCowAAHEpi6MuJhfkbJAA--.14706S2;
-        Sat, 15 Jan 2022 10:34:35 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
-        johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Slark Xiao <slark_xiao@163.com>, Shujun Wang <wsj20369@163.com>
-Subject: [PATCH net] net: wwan: Fix MRU mismatch issue which may lead to data connection lost
-Date:   Sat, 15 Jan 2022 10:34:30 +0800
-Message-Id: <20220115023430.4659-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        id S230256AbiAOCes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 21:34:48 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60970 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229471AbiAOCes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 21:34:48 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8C3961994
+        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 02:34:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB902C36AE9;
+        Sat, 15 Jan 2022 02:34:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642214087;
+        bh=EQVutiLe/nZbj8PWlhJLvK1GEdH0t7yGDeyKJJYDXLk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Fr7MjDhBEx+ncpuKJpXfNTj3wJv8+yccO3bHivTcjuFMuaZQY9nVrrTHaDqY7LI5q
+         w1vLkNxIbIEv/sc6iyvKyaoFOupmgDSMIHL6+bjNHk+d9Rwc7Sl6g2FTCWfI7l5Iho
+         ATFhaNhXMhLoguEhg2lq/JZjcBoLg6jh8LeDgA59XwYRJD/0w3MXO63oiJxuY1kzE/
+         6iA/fJIe4jSDP9JcTVv1IFMJajUMEoy7ZwdrJd23jPQK9bSXoGb7UCxuQeypaOD4iW
+         G6QMw7x+6PjljQjqQOfY8rkbMXeKX4z6uyrt5T32nlqZtozuxfNfv5z05INiDJ3Zpm
+         3g8ZD4i4skFag==
+Date:   Fri, 14 Jan 2022 18:34:45 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Sunil Sudhakar Rani <sunrani@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Bodong Wang <bodong@nvidia.com>
+Subject: Re: [PATCH net-next 1/2] devlink: Add support to set port function
+ as trusted
+Message-ID: <20220114183445.463c74f5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <PH0PR12MB54815445345CF98EAA25E2BCDC549@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20211122144307.218021-1-sunrani@nvidia.com>
+        <20211216082818.1fb2dff4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <PH0PR12MB54817CE7826A6E924AE50B9BDC519@PH0PR12MB5481.namprd12.prod.outlook.com>
+        <20220111102005.4f0fa3a0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <PH0PR12MB548176ED1E1B5ED1EF2BB88EDC519@PH0PR12MB5481.namprd12.prod.outlook.com>
+        <20220111112418.2bbc0db4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <PH0PR12MB5481E3E9D38D0F8DE175A915DC519@PH0PR12MB5481.namprd12.prod.outlook.com>
+        <20220111115704.4312d280@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <PH0PR12MB5481E33C9A07F2C3DEB77F38DC529@PH0PR12MB5481.namprd12.prod.outlook.com>
+        <20220112163539.304a534d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <PH0PR12MB54813B900EF941852216C69BDC539@PH0PR12MB5481.namprd12.prod.outlook.com>
+        <20220113204203.70ba8b54@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <PH0PR12MB54815445345CF98EAA25E2BCDC549@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcCowAAHEpi6MuJhfkbJAA--.14706S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7AFyDWFW5KFyfZw4fCw4fAFb_yoW8GF4xpa
-        yY9343trs7X3y2ga1kGr1xZFyrK3Z8Wry7KrWa93yFqFn5ZFn0vrZ0gw10vr4Fyay8CF4j
-        yF4vqF47uan8u3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRHq2NUUUUU=
-X-Originating-IP: [223.104.68.79]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiJRyJZGAJmBcl3AAAsL
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In pci_generic.c there is a 'mru_default' in struct mhi_pci_dev_info.
-This value shall be used for whole mhi if it's given a value for a specific product.
-But in function mhi_net_rx_refill_work(), it's still using hard code value MHI_DEFAULT_MRU.
-'mru_default' shall have higher priority than MHI_DEFAULT_MRU.
-And after checking, this change could help fix a data connection lost issue.
+On Fri, 14 Jan 2022 04:52:24 +0000 Parav Pandit wrote:
+> > > Each enabled feature consumes
+> > > (a) driver level memory resource such as querying ip sec capabilities and more later,
+> > > (b) time in querying those capabilities,  
+> > 
+> > These are on the VM's side, it's not hypervisors responsibility to help the client
+> > by stripping features.
+> >   
+> HV is composing the device before giving it to the VM.
+> VM can always disable certain feature if it doesn't want to use by ethtool or other means.
+> But here we are discussing about offering/not offering the feature to the VF from HV.
+> HV can choose to not offer certain features based on some instruction received from orchestration.
 
-Fixes: 5c2c85315948 ("bus: mhi: pci-generic: configurable network interface MRU")
-Signed-off-by: Shujun Wang <wsj20369@163.com>
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- drivers/net/wwan/mhi_wwan_mbim.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I'm still missing why go thru orchestration and HV rather than making
+the driver load more clever to avoid wasting time on initializing
+unnecessary caps.
 
-diff --git a/drivers/net/wwan/mhi_wwan_mbim.c b/drivers/net/wwan/mhi_wwan_mbim.c
-index 71bf9b4f769f..6872782e8dd8 100644
---- a/drivers/net/wwan/mhi_wwan_mbim.c
-+++ b/drivers/net/wwan/mhi_wwan_mbim.c
-@@ -385,13 +385,13 @@ static void mhi_net_rx_refill_work(struct work_struct *work)
- 	int err;
- 
- 	while (!mhi_queue_is_full(mdev, DMA_FROM_DEVICE)) {
--		struct sk_buff *skb = alloc_skb(MHI_DEFAULT_MRU, GFP_KERNEL);
-+		struct sk_buff *skb = alloc_skb(mbim->mru, GFP_KERNEL);
- 
- 		if (unlikely(!skb))
- 			break;
- 
- 		err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb,
--				    MHI_DEFAULT_MRU, MHI_EOT);
-+				    mbim->mru, MHI_EOT);
- 		if (unlikely(err)) {
- 			kfree_skb(skb);
- 			break;
--- 
-2.25.1
+> > > (c) device level initialization in supporting this capability
+> > >
+> > > So for light weight devices which doesn't need it we want to keep it disabled.  
+> > 
+> > You need to explain this better. We are pretty far from "trust"
+> > settings, which are about privilege and not breaking isolation.
+> 
+> We split the abstract trust to more granular settings, some related to privilege and some to capabilities.
+>  
+> > "device level initialization" tells me nothing.
+> >  
+> Above one belongs to capabilities bucket. Sw_steering belongs to trust bucket.
+>
+> > > No it is limited to tc offloads.
+> > > A VF netdev inserts flow steering rss rules on nic rx table.
+> > > This also uses the same smfs/dmfs when a VF is capable to do so.  
+> > 
+> > Given the above are you concerned about privilege or also just resources use
+> > here? Do VFs have SMFS today?  
+> Privilege.
+> VFs have SMFS today, but by default it is disabled. The proposed knob will enable it.
 
+Could you rephrase? What does it mean that VFs have SMFS but it's
+disabled? Again - privilege means security, I'd think that it can't have
+security implications if you're freely admitting that it's exposed.
