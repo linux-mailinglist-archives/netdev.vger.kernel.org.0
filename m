@@ -2,110 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B774748F75A
-	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 15:54:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B4DA48F765
+	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 16:14:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232924AbiAOOyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jan 2022 09:54:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35686 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232918AbiAOOyF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 09:54:05 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38340C06161C
-        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 06:54:05 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id m1so5515253pfk.8
-        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 06:54:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UgQIufHzWPaegMvECWvqWJAVmHT2caDdTtGBI0wm+bY=;
-        b=wJotTsKisl222ZFNbwWXt89OP0zZLhuTKCI6cn8XcySMa8d2Upxzs08DVcNCuD1WBq
-         dAnI2CmtSa8guQHnAcDDOr8vmsutEXMkNw1ejSxlV1DCAseVODdEWGCd1tFkPKfyZOmz
-         +4v1zKGGQVj976yP+FGVHkBQM9dpJAdXVVtpcfhb3SVM5Cy5XxnJAB0IZRhCYCopLomW
-         BPkFyrbs69/TTU+l9KSyx/PsBbl/cUN3olmqBWONvLu5T97LPBIKsEfbh3kYAg2spCg8
-         d+alnQWzY08Vkm54baM4ECIexGywBE0/qL85aWOfEdxxhTQ/ocSrsQCP+guYtSYDKTLn
-         n+hA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UgQIufHzWPaegMvECWvqWJAVmHT2caDdTtGBI0wm+bY=;
-        b=nYX71POlTJSRRAg16twkSH+tngvF0d0eSuGCyRA3muP3rejRUUGxgKkinuS5G0MI6Y
-         ocvVeWNTraBJCg420qV/qPF49NJ0UBpcu/qpI2roGpdHxaXeLibMu6ekhX6uEhQd8kC/
-         PndslRqk9GdhsTnfDwpXHoIG2P07sQ3dPRLZtySQmxpglJvJJwIqeHzhx40TxWFSblJc
-         MgY9CwIZ8PcDrxt4/BpN8NKz0jrcbECdpfRwaQ4257yaEs6GP8yOLuyAUbQv5KC35qpJ
-         ZJy3rd7FonQcLvR7UuoO40KcoDgO9dFboemI24fY96Pzif4tHDalgdU5AI7dudpWG4eV
-         +CeQ==
-X-Gm-Message-State: AOAM533CEVuAQ55YZdvPrVQlqU5591hzNjljQwzNrMexDYXL6admWPno
-        lSjCWAWZ9UUJl9zvBtvOCyNVjLGfmF3lJDYcOcUH7A==
-X-Google-Smtp-Source: ABdhPJyqDv9BBM7fSpdA3Ox2OtzLMzWErXZOfD2bRUH0cVRfJKQKWSIwCUbxYk03gxUoQCVArI98ojtu0OF2tDa1L5s=
-X-Received: by 2002:aa7:8612:0:b0:4c1:3613:2e4b with SMTP id
- p18-20020aa78612000000b004c136132e4bmr13725663pfn.74.1642258444531; Sat, 15
- Jan 2022 06:54:04 -0800 (PST)
+        id S232893AbiAOPOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jan 2022 10:14:40 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:39016 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231273AbiAOPOj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 15 Jan 2022 10:14:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=xGr08XPKwyFXRJKwn2VM5E/mdA9lmAdWUbfidSQCm68=; b=EiAyme0Hw6uiYWpJm8r6dJ2u7T
+        W3VF/eqFGEFPRHw9NK/64laZLl7kPcfHRAbvHPtYEcWw/+mustkqRrpJzhL9pQPq8OUnkrBzmDQ8m
+        oC10hnpw08SShXZcmoNaX+0mDrzZg5pVw+h/2wLujw8NIIz293feSr3w9VGbFK6iF1p0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n8klJ-001UeQ-K3; Sat, 15 Jan 2022 16:14:37 +0100
+Date:   Sat, 15 Jan 2022 16:14:37 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Alex Elder <elder@linaro.org>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: Port mirroring, v2 (RFC)
+Message-ID: <YeLk3STfx2DO4+FO@lunn.ch>
+References: <384e168b-8266-cb9b-196b-347a513c0d36@linaro.org>
+ <e666e0cb-5b65-1fe9-61ae-a3a3cea54ea0@linaro.org>
+ <9da2f1f6-fc7c-e131-400d-97ac3b8cdadc@linaro.org>
 MIME-Version: 1.0
-References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com>
-In-Reply-To: <20220114010627.21104-1-ricardo.martinez@linux.intel.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Sat, 15 Jan 2022 15:53:28 +0100
-Message-ID: <CAMZdPi-4N=cRcoie=2zHRsCJra1oi3WBPiFbcjJZ-3Qm-yCKcA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 00/13] net: wwan: t7xx: PCIe driver for
- MediaTek M.2 modem
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, m.chetan.kumar@intel.com,
-        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        amir.hanania@intel.com, andriy.shevchenko@linux.intel.com,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        ilpo.johannes.jarvinen@intel.com, moises.veleta@intel.com,
-        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
-        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9da2f1f6-fc7c-e131-400d-97ac3b8cdadc@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Jan 2022 at 02:06, Ricardo Martinez
-<ricardo.martinez@linux.intel.com> wrote:
->
-> t7xx is the PCIe host device driver for Intel 5G 5000 M.2 solution which
-> is based on MediaTek's T700 modem to provide WWAN connectivity.
-> The driver uses the WWAN framework infrastructure to create the following
-> control ports and network interfaces:
-> * /dev/wwan0mbim0 - Interface conforming to the MBIM protocol.
->   Applications like libmbim [1] or Modem Manager [2] from v1.16 onwards
->   with [3][4] can use it to enable data communication towards WWAN.
-> * /dev/wwan0at0 - Interface that supports AT commands.
-> * wwan0 - Primary network interface for IP traffic.
->
-> The main blocks in t7xx driver are:
-> * PCIe layer - Implements probe, removal, and power management callbacks.
-> * Port-proxy - Provides a common interface to interact with different types
->   of ports such as WWAN ports.
-> * Modem control & status monitor - Implements the entry point for modem
->   initialization, reset and exit, as well as exception handling.
-> * CLDMA (Control Layer DMA) - Manages the HW used by the port layer to send
->   control messages to the modem using MediaTek's CCCI (Cross-Core
->   Communication Interface) protocol.
-> * DPMAIF (Data Plane Modem AP Interface) - Controls the HW that provides
->   uplink and downlink queues for the data path. The data exchange takes
->   place using circular buffers to share data buffer addresses and metadata
->   to describe the packets.
-> * MHCCIF (Modem Host Cross-Core Interface) - Provides interrupt channels
->   for bidirectional event notification such as handshake, exception, PM and
->   port enumeration.
->
-> The compilation of the t7xx driver is enabled by the CONFIG_MTK_T7XX config
-> option which depends on CONFIG_WWAN.
-> This driver was originally developed by MediaTek. Intel adapted t7xx to
-> the WWAN framework, optimized and refactored the driver source in close
-> collaboration with MediaTek. This will enable getting the t7xx driver on
-> Approved Vendor List for interested OEM's and ODM's productization plans
-> with Intel 5G 5000 M.2 solution.
+> Below I will describe two possible implementations I'm considering.
+> I would like to know which approach makes the most sense (or if
+> neither does, what alternative would be better).
 
-From a WWAN framework perspective:
+Hi Alex
 
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+Another corner of the kernel you could look for inspiration is usbmon.
+
+https://www.kernel.org/doc/html/latest/usb/usbmon.html
+
+This is similar to your misc char device, but it is actually
+implemented as a pseudo filesystem. It is intended for libpcap based
+applications and i've used it with tcpdump and wireshark. So exactly
+your use cases.
+
+Because it is not a network device, the extra header does not cause
+problems, and there is no confusion about what the 'monitoring' netdevs
+are good for.
+
+Since you are talking 5G and WiFi, you have a lot of packets
+here. Being able to use BPF with libpcap is probably useful to allow
+filtering of what packets are passed to user space. I've never looked
+at how the BPF core is attached to a netdev. But i suspect your extra
+header could be an issue. So you are going to need some custom code to
+give it an offset into the packet to the Ethernet header?
+
+Humm, actually, you called the IPA the IP accelerator. Are these L2
+frames or L3 packets? Do you see 3 or even 4 MAC addresses in an
+802.11 header? Two MAC addresses in an 802.3 header? etc.
+
+       Andrew
