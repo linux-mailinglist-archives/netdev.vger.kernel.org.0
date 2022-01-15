@@ -2,139 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7648A48F7F9
-	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 17:47:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F40048F7FC
+	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 17:47:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232228AbiAOQrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jan 2022 11:47:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiAOQrH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 11:47:07 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87903C061574;
-        Sat, 15 Jan 2022 08:47:06 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id a18so46360564edj.7;
-        Sat, 15 Jan 2022 08:47:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=umg3fmIHEU7ouEUqxByuwXez80RylgBi5NxgeR5uNbQ=;
-        b=XtM7/t4yjYeD7SB0BHoS/8zjCi3EyHDHyN8e+nPG3/QFmujQ1mEftGtLVzA59gNri8
-         N5EOUb0FZImDOY6t+xgq0FqVwNXEMSuIGL651CgPH7ooF5ASBPja9tL8vOv4LsuCpXC9
-         EgTXJLVNtSwXVfPBRMcln6JzB52gwoca0kNu4Y7K6zU5I3Px4vCIY7c0c2AWIEBDAajA
-         YiI7OjPLq8qUmyPHDc9t8kBS+RCNmgXkyHxf8Y5PiTHKt7JXIkufiuhCaHc1KTuoWler
-         yeh7qkRQuaqLP65bFQrf1xvodxCRXRBFt4SlqstNUwoQ7nX73QeHJevivhiASdeiwZBi
-         9E2g==
+        id S233190AbiAOQrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jan 2022 11:47:12 -0500
+Received: from mail-wm1-f41.google.com ([209.85.128.41]:50758 "EHLO
+        mail-wm1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233184AbiAOQrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 11:47:11 -0500
+Received: by mail-wm1-f41.google.com with SMTP id w26so11969117wmi.0;
+        Sat, 15 Jan 2022 08:47:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=umg3fmIHEU7ouEUqxByuwXez80RylgBi5NxgeR5uNbQ=;
-        b=BWeApdd+nIB72WcIRjsObTiIs/JOqW25mhqK+O+2+gVeXHwamRGuau35nZEbHmcqbh
-         3HPNtYY19R+ed3fF+GcQ9eCsoIX7N9rGc4y19yi0vnpCahZvoUr/55fFIF8TN9X6/7My
-         cd48yUWGA9uWgFULUY4GGXXx9RJcNK4AeNNa2A2JoBWmqK43rtIQLACBj+Q1VhoBiuwR
-         vVECPCRMbAcVP2d6rnQdfDXtSnbxT3OpKZJTkzg9IVlad+2JoxZQPRGTCZs/M2NRbtKp
-         L3GNiW72sz+vM7MAbu91EBINPilJaEjTEYmmGBPLCe2aVGARGfyBtymdZp2xXZS7HDbN
-         msaw==
-X-Gm-Message-State: AOAM533C9GfiLjjr8JdWNk+S3CUXqP6lQARe0aYLrWfECFA1PtcPJSgM
-        rxaCAFFqB5LA7JykS30DkX8faXoRhKyGSOSJl7g=
-X-Google-Smtp-Source: ABdhPJyH0UIPV8JqnNsONGk7+0AcajsTKmtphUYvVBb6LJAlzTTQZj8ELY3WoewqdICJa2EcIezozG5CquyVZSmgNis=
-X-Received: by 2002:a05:6402:289a:: with SMTP id eg26mr334586edb.318.1642265225026;
- Sat, 15 Jan 2022 08:47:05 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=f8++v/QtotaNfkwsEXb7nZ3NB0t7MyK+LUfHsrn7rZ0=;
+        b=YAxPf9ZNBOpxbH4jlDDOZeHT44f+ZWFne+OLFdjQDXDkaHRxrmibmqbeiOgrXK1Jb3
+         o/FfDtwS7C9DXosPLXJ1Msp6X4P6DxO0XGakFF2DJfLUBNRRFBldqLEcluGsxxGgYRMT
+         BSipczWGGOVkNsjs4xtRckTFbedkmWE7P8tP87zLw0PieQrfarzMe9LENPhgGfrxXAvN
+         uKZBpHlXnq7aXkI4GldgdPHUhs8XCIqzT1NaDHEJF0MjDJ3tLjmSbTURQ/bYYt9hRHz8
+         gJn+onPC+zQe5KXT1Tb5jkBDYfCre9/W+6k2+SVrUmiMDK7VEHCfhV4Zm8GveMU8G5i8
+         s7sw==
+X-Gm-Message-State: AOAM5300oGxNQq4fJnhIzulDkpy2Rqmtp+FuPOnFOQqiOOHcy9jtqMYg
+        7fm7hYRK3lMWiLsNEGT9RmM=
+X-Google-Smtp-Source: ABdhPJxLy0WYIHlAH0r1oBP3dkDCUOAzMprUTas+tNykvw+GVUdUniFRRphWV2H5uOi4gDsDc9IERQ==
+X-Received: by 2002:adf:e68b:: with SMTP id r11mr13043802wrm.568.1642265229905;
+        Sat, 15 Jan 2022 08:47:09 -0800 (PST)
+Received: from [192.168.0.35] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.googlemail.com with ESMTPSA id bg19sm15202256wmb.47.2022.01.15.08.47.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 15 Jan 2022 08:47:08 -0800 (PST)
+Message-ID: <a23661a4-0f49-858d-811c-0b9bfbeff4ad@kernel.org>
+Date:   Sat, 15 Jan 2022 17:47:07 +0100
 MIME-Version: 1.0
-References: <20220111192952.49040-1-ivan@cloudflare.com> <CAA93jw6HKLh857nuh2eX2N=siYz5wwQknMaOtpkqLzpfWTGhuA@mail.gmail.com>
- <CABWYdi0ZHYvzzP9SFOCJhnfyMP12Ot9ALEmXg75oeXBWRAD8KQ@mail.gmail.com>
- <CAA93jw5+LjKLcCaNr5wJGPrXhbjvLhts8hqpKPFx7JeWG4g0AA@mail.gmail.com> <CABWYdi1p=rRQM3oySw2+N+mcrUq3bXA5MXm8cHmC3=qfCU5SDA@mail.gmail.com>
-In-Reply-To: <CABWYdi1p=rRQM3oySw2+N+mcrUq3bXA5MXm8cHmC3=qfCU5SDA@mail.gmail.com>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Sat, 15 Jan 2022 08:46:52 -0800
-Message-ID: <CAA93jw435mThYcBA_7Sf1Z6W_bZrLuK8FLHw8AgAwg0+3y6PBw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] tcp: bpf: Add TCP_BPF_RCV_SSTHRESH for bpf_setsockopt
-To:     Ivan Babrou <ivan@cloudflare.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH v2 06/11] arm64: defconfig: enable bpf/cgroup firewalling
+Content-Language: en-US
+To:     Marcel Ziswiler <marcel@ziswiler.com>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Song Liu <songliubraving@fb.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Arnd Bergmann <arnd@arndb.de>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Olof Johansson <olof@lixom.net>,
+        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
+        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20220114141507.395271-1-marcel@ziswiler.com>
+ <20220114141507.395271-7-marcel@ziswiler.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220114141507.395271-7-marcel@ziswiler.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 2:21 PM Ivan Babrou <ivan@cloudflare.com> wrote:
->
-> On Thu, Jan 13, 2022 at 9:44 PM Dave Taht <dave.taht@gmail.com> wrote:
-> > Yes, but with the caveats below. I'm fine with you just saying round tr=
-ips,
-> > and making this api possible.
-> >
-> > It would comfort me further if you could provide an actual scenario.
->
-> The actual scenario is getting a response as quickly as possible on a
-> fresh connection across long distances (200ms+ RTT). If an RPC
-> response doesn't fit into the initial 64k of rcv_ssthresh, we end up
-> requiring more roundrips to receive the response. Some customers are
-> very picky about the latency they measure and cutting the extra
-> roundtrips made a very visible difference in the tests.
->
-> > See also:
-> >
-> > https://datatracker.ietf.org/doc/html/rfc6928
-> >
-> > which predates packet pacing (are you using sch_fq?)
->
-> We are using fq and bbr.
->
-> > > Congestion window is a learned property, not a static number. You
-> > > won't get a large initcwnd towards a poor connection.
-> >
-> > initcwnd is set globally or on a per route basis.
+On 14/01/2022 15:15, Marcel Ziswiler wrote:
+> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> 
+> This avoids the following systemd warning:
+> 
+> [    2.618538] systemd[1]: system-getty.slice: unit configures an IP
+>  firewall, but the local system does not support BPF/cgroup firewalling.
+> [    2.630916] systemd[1]: (This warning is only shown for the first
+>  unit using IP firewalling.)
+> 
+> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> Acked-by: Song Liu <songliubraving@fb.com>
+> 
+> ---
+> 
+> Changes in v2:
+> - Add Song's acked-by tag.
+> 
+>  arch/arm64/configs/defconfig | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-Like I said, retaining state from an existing connection as to the
-window is ok. i think arbitrarily declaring a window like this
-for a new connection is not.
+Make sense.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-> With TCP_BPF_IW the world is your oyster.
 
-The oyster has to co-habit in this ocean with all the other life
-there, and I would be comforted if your customer also tracked various
-other TCP_INFO statistics, like RTT growth, loss, marks, and
-retransmits, and was aware of not just the self harm inflicted but of
-collateral damage. In fact I really wish more were instrumenting
-everything with that, of late we've seen a lot of need for
-TCP_NOTSENT_LOWAT in things like apache traffic server in containers.
-A simple one line patch for an widely used app I can't talk about, did
-wonders for actual perceived throughput and responsiveness by the end
-user. Measuring from the reciever is far, far more important than
-measuring from the sender. Collecting long term statistics over many
-connections, also, from
-the real world. I hope y'all have been instrumenting your work as well
-as google has, on these fronts.
-
-I know that I'm getting old and crunchy and scarred by seeing so many
-(corporate wifi mostly) networks over the last decade essentially in
-congestion collapse!
-
-https://blog.apnic.net/2020/01/22/bufferbloat-may-be-solved-but-its-not-ove=
-r-yet/
-
-I'm very happy with how well sch_fq + packet pacing works to mitigate
-impuses like this, as well as with so many other things like BBR and
-BQL, but pacing out !=3D pacing in,
-and despite my fervent wish for more FQ+AQM techniques on more
-bottleneck links also, we're not there yet.
-
-I like very much that BPF is allowing rapid innovation, but with great
-power comes great responsibility.
---=20
-I tried to build a better future, a few times:
-https://wayforward.archive.org/?site=3Dhttps%3A%2F%2Fwww.icei.org
-
-Dave T=C3=A4ht CEO, TekLibre, LLC
+Best regards,
+Krzysztof
