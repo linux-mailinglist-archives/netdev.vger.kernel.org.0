@@ -2,83 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC13B48F462
-	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 03:26:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E12148F47A
+	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 03:36:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232171AbiAOC0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 14 Jan 2022 21:26:00 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54962 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbiAOCZ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 14 Jan 2022 21:25:59 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA43061828;
-        Sat, 15 Jan 2022 02:25:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9254C36AE9;
-        Sat, 15 Jan 2022 02:25:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642213558;
-        bh=Yk4Y6G2HryH0ZQKBp7+/9ICuGW+ToukcMKhMZUl37xE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=M6K3ylKXCK885VCvOCdzru+Wdq6dpiQaxgW/wpb7s+WGtzCGP3uW72L2KJxxMuJ95
-         UFvgHCA+Hq9xXUSKUQS3Ka5kBv57oEFINnyGH8tOgp1sZJ64manfneWEuvvCd1hiux
-         3NHd0RQ20IZHWrAarq+p2QnSzlGhszdjONAWSFk4q9YeBcr9zUrTZQCqGv+ai/NPtz
-         6PqeNwL3OY9+tllY6HGbkjjyFYKLt1wPWSh6ZrG16lLXa8+9d19rhOXRjy8WG+eh0E
-         /0uRDBM367p/JTPBZMBWYUnWavh/tUyOgAWbIj0RYMYt6MmZcuqqn6mx4qdTGlX+jc
-         Yhudlb332Empw==
-Date:   Fri, 14 Jan 2022 18:25:56 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexandra Winter <wintera@linux.ibm.com>
-Cc:     Xu Wang <vulab@iscas.ac.cn>, wenjia@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@linux.ibm.com,
-        agordeev@linux.ibm.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] s390/qeth: Remove redundant 'flush_workqueue()' calls
-Message-ID: <20220114182556.373a159b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <45b2b8d0-b913-20cd-62ca-e6014505632c@linux.ibm.com>
-References: <20220114084218.42586-1-vulab@iscas.ac.cn>
-        <45b2b8d0-b913-20cd-62ca-e6014505632c@linux.ibm.com>
+        id S232231AbiAOCgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 14 Jan 2022 21:36:25 -0500
+Received: from m12-13.163.com ([220.181.12.13]:52901 "EHLO m12-13.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229471AbiAOCgZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 14 Jan 2022 21:36:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=rClxz
+        2KeZNnbf+HK8OFRyXG4S63oZpvkXTjEBIqP104=; b=IcCSFEqPtmAAbfdQc4NQJ
+        N3YMaqfptiQfVlTCJ2/81R2IBCFHh3gepxGolC6qhr2ImCHqLp+uEb+qtuelzN/i
+        yjKLLmXizuZuc64Pu2CgdWlFVdqe1Vw6oNN113lFb7B6lGYTwi+zFHAmTiax55Iz
+        NaAsvRZoUluQpm+HmJCwWE=
+Received: from localhost.localdomain (unknown [223.104.68.79])
+        by smtp9 (Coremail) with SMTP id DcCowAAHEpi6MuJhfkbJAA--.14706S2;
+        Sat, 15 Jan 2022 10:34:35 +0800 (CST)
+From:   Slark Xiao <slark_xiao@163.com>
+To:     loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
+        johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Slark Xiao <slark_xiao@163.com>, Shujun Wang <wsj20369@163.com>
+Subject: [PATCH net] net: wwan: Fix MRU mismatch issue which may lead to data connection lost
+Date:   Sat, 15 Jan 2022 10:34:30 +0800
+Message-Id: <20220115023430.4659-1-slark_xiao@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcCowAAHEpi6MuJhfkbJAA--.14706S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7AFyDWFW5KFyfZw4fCw4fAFb_yoW8GF4xpa
+        yY9343trs7X3y2ga1kGr1xZFyrK3Z8Wry7KrWa93yFqFn5ZFn0vrZ0gw10vr4Fyay8CF4j
+        yF4vqF47uan8u3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRHq2NUUUUU=
+X-Originating-IP: [223.104.68.79]
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiJRyJZGAJmBcl3AAAsL
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 14 Jan 2022 12:58:38 +0100 Alexandra Winter wrote:
-> On 14.01.22 09:42, Xu Wang wrote:
-> > 'destroy_workqueue()' already drains the queue before destroying it, so
-> > there is no need to flush it explicitly.
-> > 
-> > Remove the redundant 'flush_workqueue()' calls.
-> > 
-> > Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
-> > ---
-> >  drivers/s390/net/qeth_l3_main.c | 1 -
-> >  1 file changed, 1 deletion(-)
-> > 
-> > diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-> > index 9251ad276ee8..d2f422a9a4f7 100644
-> > --- a/drivers/s390/net/qeth_l3_main.c
-> > +++ b/drivers/s390/net/qeth_l3_main.c
-> > @@ -1961,7 +1961,6 @@ static void qeth_l3_remove_device(struct ccwgroup_device *cgdev)
-> >  	if (card->dev->reg_state == NETREG_REGISTERED)
-> >  		unregister_netdev(card->dev);
-> >  
-> > -	flush_workqueue(card->cmd_wq);
-> >  	destroy_workqueue(card->cmd_wq);
-> >  	qeth_l3_clear_ip_htable(card, 0);
-> >  	qeth_l3_clear_ipato_list(card);  
-> 
-> Thanks for pointing this out!
-> 
-> IMO, this can go to net-next as it is not a fix, but removes redundancy.
+In pci_generic.c there is a 'mru_default' in struct mhi_pci_dev_info.
+This value shall be used for whole mhi if it's given a value for a specific product.
+But in function mhi_net_rx_refill_work(), it's still using hard code value MHI_DEFAULT_MRU.
+'mru_default' shall have higher priority than MHI_DEFAULT_MRU.
+And after checking, this change could help fix a data connection lost issue.
 
-Agreed.
+Fixes: 5c2c85315948 ("bus: mhi: pci-generic: configurable network interface MRU")
+Signed-off-by: Shujun Wang <wsj20369@163.com>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+---
+ drivers/net/wwan/mhi_wwan_mbim.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> Acked-by: Alexandra Winter <wintera@linux.ibm.com>
+diff --git a/drivers/net/wwan/mhi_wwan_mbim.c b/drivers/net/wwan/mhi_wwan_mbim.c
+index 71bf9b4f769f..6872782e8dd8 100644
+--- a/drivers/net/wwan/mhi_wwan_mbim.c
++++ b/drivers/net/wwan/mhi_wwan_mbim.c
+@@ -385,13 +385,13 @@ static void mhi_net_rx_refill_work(struct work_struct *work)
+ 	int err;
+ 
+ 	while (!mhi_queue_is_full(mdev, DMA_FROM_DEVICE)) {
+-		struct sk_buff *skb = alloc_skb(MHI_DEFAULT_MRU, GFP_KERNEL);
++		struct sk_buff *skb = alloc_skb(mbim->mru, GFP_KERNEL);
+ 
+ 		if (unlikely(!skb))
+ 			break;
+ 
+ 		err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb,
+-				    MHI_DEFAULT_MRU, MHI_EOT);
++				    mbim->mru, MHI_EOT);
+ 		if (unlikely(err)) {
+ 			kfree_skb(skb);
+ 			break;
+-- 
+2.25.1
 
-Please keep Alexandra's ack and repost in ~1.5 week -- after 5.17-rc1
-is tagged.
