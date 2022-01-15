@@ -2,151 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A1648F81A
-	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 17:59:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9335648F88A
+	for <lists+netdev@lfdr.de>; Sat, 15 Jan 2022 18:49:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231297AbiAOQ6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 15 Jan 2022 11:58:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230491AbiAOQ6r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 11:58:47 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A9AC061574
-        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 08:58:46 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id ay4-20020a05600c1e0400b0034a81a94607so10951550wmb.1
-        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 08:58:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=flpafWvQZH9VlFgsKJUbtGYcp5rCIiWdZqEGz4+K2CM=;
-        b=HJNzQDvFLnwWd5qBjS+hC/AbSlblSvOdkLTCMF439xmVrWXowNHXmKBV3MiHpjLIFs
-         nxONRzpX4mwm31Ns3F5vOS9dQAAcS2N2DOCyJX48zn+7vfPjxTwbhf/0BVSdwYHTeFF0
-         iDr8MhxgAIZNWNQGC1eJITixxsvuEA0gXjqWAV9Tduur8/1CTuGr0pZWAIAyQjqYMB/A
-         rM8y1EmmJ3uEbCceKsUP7c+TdBlDGknCEGsifyEx9hbgjcgXV1mO8aZ7mKfxuQdOZeJk
-         0hrgI+8ja6AIiS9BJLZLSaI8+PQBSdeV/pCa9rl639Ul/I/0C+F4O2rlnoPIgtP1ZIrt
-         vBOA==
+        id S232287AbiAORth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 15 Jan 2022 12:49:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53442 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232128AbiAORtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 15 Jan 2022 12:49:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642268975;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=5Ub1hbMwAGMv83XYOlhCXiwUBfOTPfG3vBCU3vhpmD4=;
+        b=bcQiEvYtgQRLWOgOqSvqtKaNu5prUQInnJLlYC0mb7dgS0hLPwO8WtC8lVEkw/7l6+GN25
+        ql54LDYV6xJVcQA8gBSSnYTFfcITHaXF0tRptPN1l1HTvyQp9gzpp1rVOOHCrE/tvJB+g7
+        uj6TdLGBq+ntb+GJb02ojMTYu4pDfs8=
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
+ [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-52-G-wzdqq3MdGBi3ZXQ7YAVQ-1; Sat, 15 Jan 2022 12:49:33 -0500
+X-MC-Unique: G-wzdqq3MdGBi3ZXQ7YAVQ-1
+Received: by mail-oi1-f199.google.com with SMTP id k64-20020acaba43000000b002c8994ca6a3so8572018oif.15
+        for <netdev@vger.kernel.org>; Sat, 15 Jan 2022 09:49:33 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=flpafWvQZH9VlFgsKJUbtGYcp5rCIiWdZqEGz4+K2CM=;
-        b=cTLErVGOw/13mWNmGlD8AVL3GlTBiATxUneU6uJrpMROJ69ExIGHB1DVcqMe5BGwhQ
-         4wdyXVSU1RRWol4FyuZkSX3rI8PiedrgE8FzrmzV8ijKyit84wYvSso9+TRXNTx2wtbl
-         kqcN1McCCi1qv4v6kWd4HQkWOmOivg+Jf9sDxmZ4zN8TKtYsxLT+ys55mfSz1Yy4+1+H
-         4hSNY3cn8Hl5aIQ69l5OWXmV45FydmICcGe2UjMU8m94PoMnvKw+7jzVMVXdxCmhM6Pb
-         ObxMyTrNy4RfNVG9rE40E1Um5W1Jg4XgzCB109P61FZf4D9GGHY0F8L5GdWrZ+7JBlHg
-         vFZA==
-X-Gm-Message-State: AOAM532D6srookhZuD5pmQXJPzP2UMRLY3EnBzMpb8UBsEgZDUzBLb7h
-        vl7iyvEIcYp/XIKaObhtaVQ=
-X-Google-Smtp-Source: ABdhPJw0zx8WUWXT6403vq+k1uYa+yvJDtijZmIZV+EXg10PfFFDGl14gZwAhqMFaopJeLhMNyCHPA==
-X-Received: by 2002:a5d:525a:: with SMTP id k26mr2579402wrc.625.1642265925233;
-        Sat, 15 Jan 2022 08:58:45 -0800 (PST)
-Received: from debian64.daheim (p4fd09498.dip0.t-ipconnect.de. [79.208.148.152])
-        by smtp.gmail.com with ESMTPSA id e12sm6449846wrg.33.2022.01.15.08.58.43
+        bh=5Ub1hbMwAGMv83XYOlhCXiwUBfOTPfG3vBCU3vhpmD4=;
+        b=D49geYMqd1iPSP5kSAQCLUVr2fMrockQ9Cawjvv9RyX4aRxNXSjf4eYG2LJspWcjXo
+         sphjNGeykFcOuXeI+9i384pZ64Ggdax/sRh6CxyST5HR72TbNZ427ierB7pNEUX0s1vM
+         bwy37zY8Z3bvnIcz1txOvvpkpYcnHTEJdb1aHOz1N/TBQdZCuc9D80CVKMNpEBxUkSF6
+         f6Au1M06SNUy3ETcgTOPLSvVA7LMlTzNREY9Hs3ItGo/gASCabjR5Bcc9vg59KIMavSy
+         M7hGV/nF1MxIhnrboKpidxD9Ews5Lruwtobo/nKtwAmA8SJ5dYczm4jRtHob1YEqUFix
+         zEwQ==
+X-Gm-Message-State: AOAM532M+oq3JPnEQAiJnKvmypjCJGe2JtNOchPu7c7m2wug8WyrInKb
+        IBWQbok0Y4hJ3A9G6V+q4Vwc1qK0w4MnJlvK3Hzl15ji0vUXGx44Slt92FQ1Oucj6TUqlDkVD23
+        7+ZQO0+A4fVifMk0r
+X-Received: by 2002:a9d:6d90:: with SMTP id x16mr10349768otp.104.1642268973023;
+        Sat, 15 Jan 2022 09:49:33 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxR+KmHmEAcU1CSZCeT7bkPUleD6/z8y+Ucc7A0A1vb7OVK0PdYFegZBJKcQW1fj3jjvlhqdQ==
+X-Received: by 2002:a9d:6d90:: with SMTP id x16mr10349749otp.104.1642268972841;
+        Sat, 15 Jan 2022 09:49:32 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id w20sm3239438oti.69.2022.01.15.09.49.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Jan 2022 08:58:44 -0800 (PST)
-Received: from localhost.daheim ([127.0.0.1])
-        by debian64.daheim with esmtp (Exim 4.95)
-        (envelope-from <chunkeey@gmail.com>)
-        id 1n8mO3-003BFB-Ih;
-        Sat, 15 Jan 2022 17:58:43 +0100
-Message-ID: <d4533eb7-97c1-5eb1-011d-60b59ff7ccbb@gmail.com>
-Date:   Sat, 15 Jan 2022 17:58:43 +0100
+        Sat, 15 Jan 2022 09:49:32 -0800 (PST)
+From:   trix@redhat.com
+To:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, kuba@kernel.org,
+        matthias.bgg@gmail.com, nathan@kernel.org, ndesaulniers@google.com,
+        opensource@vdorst.com
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
+Subject: [PATCH v2] net: ethernet: mtk_eth_soc: fix error checking in mtk_mac_config()
+Date:   Sat, 15 Jan 2022 09:49:18 -0800
+Message-Id: <20220115174918.297002-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net,stable] phy: sfp: fix high power modules without diag
- mode
-Content-Language: en-US
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
-        netdev@vger.kernel.org,
-        =?UTF-8?B?54Wn5bGx5ZGo5LiA6YOO?= <teruyama@springboard-inc.jp>
-References: <20211130073929.376942-1-bjorn@mork.no>
- <20211202175843.0210476e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YaoFkZ53m7cILdYu@shell.armlinux.org.uk>
- <YaoUW9KHyEQOt46b@shell.armlinux.org.uk>
-From:   Christian Lamparter <chunkeey@gmail.com>
-In-Reply-To: <YaoUW9KHyEQOt46b@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/12/2021 13:58, Russell King (Oracle) wrote:
-> On Fri, Dec 03, 2021 at 11:54:57AM +0000, Russell King (Oracle) wrote:
-> [...]
-> Thinking a little more, how about this:
->
->   drivers/net/phy/sfp.c | 25 +++++++++++++++++++++----
->   1 file changed, 21 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-> index 51a1da50c608..4c900d063b19 100644
-> --- a/drivers/net/phy/sfp.c
-> +++ b/drivers/net/phy/sfp.c
-> @@ -1752,17 +1752,20 @@ static int sfp_sm_probe_for_phy(struct sfp *sfp)
->   static int sfp_module_parse_power(struct sfp *sfp)
->   {
->   	u32 power_mW = 1000;
-> +	bool supports_a2;
->   
->   	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_POWER_DECL))
->   		power_mW = 1500;
->   	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_HIGH_POWER_LEVEL))
->   		power_mW = 2000;
->   
-> +	supports_a2 = sfp->id.ext.sff8472_compliance !=
-> +				SFP_SFF8472_COMPLIANCE_NONE ||
-> +		      sfp->id.ext.diagmon & SFP_DIAGMON_DDM;
-> +
->   	if (power_mW > sfp->max_power_mW) {
->   		/* Module power specification exceeds the allowed maximum. */
-> -		if (sfp->id.ext.sff8472_compliance ==
-> -			SFP_SFF8472_COMPLIANCE_NONE &&
-> -		    !(sfp->id.ext.diagmon & SFP_DIAGMON_DDM)) {
-> +		if (!supports_a2) {
->   			/* The module appears not to implement bus address
->   			 * 0xa2, so assume that the module powers up in the
->   			 * indicated mode.
-> @@ -1779,11 +1782,24 @@ static int sfp_module_parse_power(struct sfp *sfp)
->   		}
->   	}
->   
-> +	if (power_mW <= 1000) {
-> +		/* Modules below 1W do not require a power change sequence */
-> +		return 0;
-> +	}
-> +
-> +	if (!supports_a2) {
-> +		/* The module power level is below the host maximum and the
-> +		 * module appears not to implement bus address 0xa2, so assume
-> +		 * that the module powers up in the indicated mode.
-> +		 */
-> +		return 0;
-> +	}
-> +
->   	/* If the module requires a higher power mode, but also requires
->   	 * an address change sequence, warn the user that the module may
->   	 * not be functional.
->   	 */
-> -	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE && power_mW > 1000) {
-> +	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE) {
->   		dev_warn(sfp->dev,
->   			 "Address Change Sequence not supported but module requires %u.%uW, module may not be functional\n",
->   			 power_mW / 1000, (power_mW / 100) % 10);
->
+From: Tom Rix <trix@redhat.com>
 
-The reporter has problems reaching you. But from what I can tell in his reply to his
-OpenWrt Github PR:
-<https://github.com/openwrt/openwrt/pull/4802#issuecomment-1013439827>
+Clang static analysis reports this problem
+mtk_eth_soc.c:394:7: warning: Branch condition evaluates
+  to a garbage value
+                if (err)
+                    ^~~
 
-your approach is working perfectly. Could you spin this up as a fully-fledged patch (backports?)
+err is not initialized and only conditionally set.
+So intitialize err.
 
-Thank you & Cheers,
-Christian
+Fixes: 7e538372694b ("net: ethernet: mediatek: Re-add support SGMII")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+v2: change to initializing
+
+drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index b67b4323cff08..f02d07ec5ccbf 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -267,7 +267,7 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
+ 					   phylink_config);
+ 	struct mtk_eth *eth = mac->hw;
+ 	u32 mcr_cur, mcr_new, sid, i;
+-	int val, ge_mode, err;
++	int val, ge_mode, err = 0;
+ 
+ 	/* MT76x8 has no hardware settings between for the MAC */
+ 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) &&
+-- 
+2.26.3
+
