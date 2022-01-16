@@ -2,153 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B657A48FC25
-	for <lists+netdev@lfdr.de>; Sun, 16 Jan 2022 11:19:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C3B248FC4A
+	for <lists+netdev@lfdr.de>; Sun, 16 Jan 2022 12:19:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234819AbiAPKS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jan 2022 05:18:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60612 "EHLO
+        id S234867AbiAPLTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jan 2022 06:19:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229762AbiAPKS6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jan 2022 05:18:58 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6C56C061574
-        for <netdev@vger.kernel.org>; Sun, 16 Jan 2022 02:18:57 -0800 (PST)
-Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1n92cf-0002Co-0Q; Sun, 16 Jan 2022 11:18:53 +0100
-Message-ID: <221e1da9-e1c4-10ee-332a-117dee0d913d@leemhuis.info>
-Date:   Sun, 16 Jan 2022 11:18:52 +0100
+        with ESMTP id S234863AbiAPLTy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jan 2022 06:19:54 -0500
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B3B2C06173E
+        for <netdev@vger.kernel.org>; Sun, 16 Jan 2022 03:19:54 -0800 (PST)
+Received: by mail-qv1-xf34.google.com with SMTP id iw1so15169283qvb.1
+        for <netdev@vger.kernel.org>; Sun, 16 Jan 2022 03:19:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=dlmn2S3EI9CDldIlfu1tPwXSNwshKHAqPvTXHMrQOEE=;
+        b=KkADJSCYoB+8GduGbupfZNPK0w6gQ2pJIcXQkt+PvuX/H6jF46p+KqOYe/uJxpFCHW
+         RpJ2yOXPk1qpDRQjG2FOBxEVmrBwX+hs8w3BRfAI93O12ANu4eRV7I/cZhZgkBeWNT6H
+         aPVQQ7+1gdABhfWLa6rq5EILNDwXcT1HDWaEJtvSWAZdWVIxna1OVb8jDvy4GdJWyOSu
+         OiPXwqGIY8oNqH/pTc/caFGHA1KiTgxeNi8zrGUkteg2Dj+DqvUt1kWSQVOLf5SdGq++
+         FEgQnJ84LuMzE6SrfWxLGAof3wmug0o9rkeShDMXXDuRTk+23Jv3GJ5WQJ+V0GfIbBwT
+         N5aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=dlmn2S3EI9CDldIlfu1tPwXSNwshKHAqPvTXHMrQOEE=;
+        b=SODINs1BdcZYJ4jRtMaROR9n0irxcxcXKVezDeqQ/L81aeNT0+US0IKFNkdddU5x3c
+         CsE1KZaX+mnh1qMR8W2mwZhJ/QWZNymj70P7DOpLipoGq+73XH5axSfc8KHxUu3V9c1z
+         2XLcTa1lM2AZe0YRk4bQdqx2HvkU1Y5lWSKWEBFoTFP0untRvEQPWfvnHHqCto0DdlfK
+         3BOQS0EMMbagNuRbZx5kQo7ohSIBe5IDtUhqjaasEk6Fa1+4gElcZtfnz8a0t53n+M53
+         y2Hc38RizXJh1Bu/ZFzDmdgFsHOM9rRnSUc0+aPv4Fx0fe5Vn3rmZu+b76uF7T0KAQJ3
+         UR3A==
+X-Gm-Message-State: AOAM533v3akVMzNwQhvKtMjOKlav6WU9xu8Ob3cZcMoyoR1+tWa0vKKc
+        xKjlXB5U+aHfQJfLwpQtu5kx18j129fGiFEDSMA=
+X-Google-Smtp-Source: ABdhPJzUJl3BhP8bNc5BWD4ycbImkdieuB/uO7nMfqDNGjm71UYCx0dOTOQsNaNm6Lx5A2t54FgrBUD5n+rKCs4coUs=
+X-Received: by 2002:a05:6214:da6:: with SMTP id h6mr5745598qvh.91.1642331993710;
+ Sun, 16 Jan 2022 03:19:53 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: xfrm regression: TCP MSS calculation broken by commit b515d263,
- results in TCP stall
-Content-Language: en-BW
-To:     Jiri Bohac <jbohac@suse.cz>, Sabrina Dubroca <sd@queasysnail.net>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Mike Maloney <maloneykernel@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <20220114173133.tzmdm2hy4flhblo3@dwarf.suse.cz>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <20220114173133.tzmdm2hy4flhblo3@dwarf.suse.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1642328337;ceb021c3;
-X-HE-SMSGID: 1n92cf-0002Co-0Q
+Received: by 2002:a0c:f5c1:0:0:0:0:0 with HTTP; Sun, 16 Jan 2022 03:19:53
+ -0800 (PST)
+From:   "ghinahala759@gmail.com" <eliseboutouli@gmail.com>
+Date:   Sun, 16 Jan 2022 11:19:53 +0000
+Message-ID: <CAA8orfTUjDGyZzEkyiaOeNPOH7XQqJWT9SRX2=FoVfFkQPQJuA@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[TLDR: I'm adding this regression to regzbot, the Linux kernel
-regression tracking bot; most text you find below is compiled from a few
-templates paragraphs some of you might have seen already.]
-
-Top-posting for once, to make this easy accessible to everyone.
-
-On 14.01.22 18:31, Jiri Bohac wrote:
-> 
-> our customer found that commit
-> b515d2637276a3810d6595e10ab02c13bfd0b63a ("xfrm: xfrm_state_mtu
-> should return at least 1280 for ipv6") in v5.14 breaks the TCP
-> MSS calculation in ipsec transport mode, resulting complete
-> stalls of TCP connections. This happens when the (P)MTU is 1280
-> or slighly larger.
-> 
-> The desired formula for the MSS is:
-> 	MSS = (MTU - ESP_overhead) - IP header - TCP header
-> 
-> However, the above patch clamps the (MTU - ESP_overhead) to a
-> minimum of 1280, turning the formula into
-> 	MSS = max(MTU - ESP overhead, 1280) -  IP header - TCP header
-> 
-> With the (P)MTU near 1280, the calculated MSS is too large and
-> the resulting TCP packets never make it to the destination
-> because they are over the actual PMTU.
-> 
-> Trying to fix the exact same problem as the broken patch, which I
-> was unaware of, I sent an alternative patch in this thread of
-> April 2021:
-> https://lore.kernel.org/netdev/20210429170254.5grfgsz2hgy2qjhk@dwarf.suse.cz/
-> (note the v1 is broken and followed by v2!)
-> 
-> In that thread I also found other problems with
-> b515d2637276a3810d6595e10ab02c13bfd0b63a - in tunnel mode it
-> causes suboptimal double fragmentation:
-> https://lore.kernel.org/netdev/20210429202529.codhwpc7w6kbudug@dwarf.suse.cz/
-> 
-> I therefore propose to revert
-> b515d2637276a3810d6595e10ab02c13bfd0b63a and
-> apply the v2 version of my patch, which I'll re-send in reply to
-> this e-mail.
-
-Thanks for the report.
-
-To be sure this issue doesn't fall through the cracks unnoticed, I'm
-adding it to regzbot, my Linux kernel regression tracking bot:
-
-#regzbot ^introduced b515d2637276a3810d6595e10ab02c13bfd0b63a
-#regzbot title xfrm: TCP MSS calculation broken by commit b515d263,
-results in TCP stall
-#regzbot ignore-activity
-
-Reminder: when fixing the issue, please add a 'Link:' tag with the URL
-to the report (the parent of this mail) using the kernel.org redirector,
-as explained in 'Documentation/process/submitting-patches.rst'. Regzbot
-then will automatically mark the regression as resolved once the fix
-lands in the appropriate tree. For more details about regzbot see footer.
-
-Sending this to everyone that got the initial report, to make all aware
-of the tracking. I also hope that messages like this motivate people to
-directly get at least the regression mailing list and ideally even
-regzbot involved when dealing with regressions, as messages like this
-wouldn't be needed then.
-
-Don't worry, I'll send further messages wrt to this regression just to
-the lists (with a tag in the subject so people can filter them away), as
-long as they are intended just for regzbot. With a bit of luck no such
-messages will be needed anyway.
-
-Ciao, Thorsten (wearing his 'Linux kernel regression tracker' hat)
-
-P.S.: As a Linux kernel regression tracker I'm getting a lot of reports
-on my table. I can only look briefly into most of them. Unfortunately
-therefore I sometimes will get things wrong or miss something important.
-I hope that's not the case here; if you think it is, don't hesitate to
-tell me about it in a public reply, that's in everyone's interest.
-
-BTW, I have no personal interest in this issue, which is tracked using
-regzbot, my Linux kernel regression tracking bot
-(https://linux-regtracking.leemhuis.info/regzbot/). I'm only posting
-this mail to get things rolling again and hence don't need to be CC on
-all further activities wrt to this regression.
-
----
-Additional information about regzbot:
-
-If you want to know more about regzbot, check out its web-interface, the
-getting start guide, and/or the references documentation:
-
-https://linux-regtracking.leemhuis.info/regzbot/
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
-
-The last two documents will explain how you can interact with regzbot
-yourself if your want to.
-
-Hint for reporters: when reporting a regression it's in your interest to
-tell #regzbot about it in the report, as that will ensure the regression
-gets on the radar of regzbot and the regression tracker. That's in your
-interest, as they will make sure the report won't fall through the
-cracks unnoticed.
-
-Hint for developers: you normally don't need to care about regzbot once
-it's involved. Fix the issue as you normally would, just remember to
-include a 'Link:' tag to the report in the commit message, as explained
-in Documentation/process/submitting-patches.rst
-That aspect was recently was made more explicit in commit 1f57bd42b77c:
-https://git.kernel.org/linus/1f57bd42b77c
-
+44GT44KT44Gr44Gh44Gv44CB44GT44KT44Gr44Gh44Gv44CC44GC44Gq44Gf44Go5LiA57eS44Gr
+44GE44KJ44KM44Gm44GG44KM44GX44GE44Gn44GZ44CC56eB44Gu5ZCN5YmN44Gv44Ku44OK44O7
+44OP44Op44OT44Gn44GZ44CC56eB44Gv44Kk44K544Op44Ko44Or5Zu96Ziy6LuN44Go5Y2U5Yqb
+44GX44Gm44GE44KL5b6T6LuN55yL6K235amm44Gn44GZ44CCDQrnp4Hjga7ogbfmpa3jgIHkurrn
+qK7jgIHlm73nsY3jgpLmsJfjgavjgZfjgarjgYTjgafjgY/jgaDjgZXjgYTjgILnp4Hjga/jgYLj
+garjgZ/jgajoqbHjgZflkIjjgYbjgZ/jgoHjgavpnZ7luLjjgavph43opoHjgarjgZPjgajjgpLm
+jIHjgaPjgabjgYTjgb7jgZnjgIINCuWPi+aDheOBqOODkeODvOODiOODiuODvOOCt+ODg+ODl+OB
+q+OBpOOBhOOBpuipseOBl+OBpuOCguOCieOBiOOBvuOBmeOBi++8n+engeOBq+apn+S8muOCkuS4
+juOBiOOCi+OBk+OBqOOBjOOBp+OBjeOCi+OBi+OBqeOBhuOBi+OCj+OBi+OCiuOBvuOBm+OCk+OA
+guacrOW9k+OBq+engeOBqOOBruiJr+WlveOBp+e5geaghOOBl+OBn+OCs+ODn+ODpeODi+OCseOD
+vOOCt+ODp+ODs+OCkuOBl+OBn+OBhOOBruOBp+OBguOCjOOBsOOAgeS7peS4i+OBruengeOBruOD
+oeODvOODq+OCouODieODrOOCueOAgWdoaW5haGFsYTc1OQ0KQCBnbWFpbC5jb23jgb7jgafjg6Hj
+g7zjg6vjgZfjgabjgY/jgaDjgZXjgYTjgIINCg==
