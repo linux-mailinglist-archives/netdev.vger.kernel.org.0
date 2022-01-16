@@ -2,103 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83DD948FB87
-	for <lists+netdev@lfdr.de>; Sun, 16 Jan 2022 08:44:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2291E48FBC7
+	for <lists+netdev@lfdr.de>; Sun, 16 Jan 2022 09:46:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234478AbiAPHn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jan 2022 02:43:56 -0500
-Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:46159 "EHLO
-        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234559AbiAPHny (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jan 2022 02:43:54 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V1wFlz1_1642319022;
-Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1wFlz1_1642319022)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 16 Jan 2022 15:43:52 +0800
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
-Cc:     dust.li@linux.alibaba.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2] net/smc: Fix hung_task when removing SMC-R devices
-Date:   Sun, 16 Jan 2022 15:43:42 +0800
-Message-Id: <1642319022-99525-1-git-send-email-guwen@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S234606AbiAPIqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jan 2022 03:46:37 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:46463 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230421AbiAPIqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jan 2022 03:46:37 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 6C9915C0115;
+        Sun, 16 Jan 2022 03:46:36 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Sun, 16 Jan 2022 03:46:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=l7H5ny
+        lY+/q4IwM8kUw2Wd8rLDvCT2r6K7E1RaKOUiQ=; b=I00Jl2K1L3ywR5CjmiomUp
+        +yBsGVM5W4e0A6L6XXGcOH5RLuwNg3vs3OeH3SXjgwraiTS3mZvQQSU9lJDSxVki
+        caMOb2238eAs5WqzReKRjv/ybd5z7AsPNmtaeJaZchOJch9DlkaJq2D9v1WMOSqn
+        EwwxGhfmJ6ZgA/wp/BpcDLfOZOfDg9ieHd9yJrqMWM98MENctd3FlS9+pXbc27wP
+        bUIAE9ayWp5XiW5Gy1IzV6cinA/GuCh+pE84+osNxYFpP6Cx2AMda9Xh0/7KP1+l
+        +v4D5bjtovLaYrqp95iXn98RVo6j9gcisUJ1Agrv1eeS2eWm+Lt9xB4rpD663QPw
+        ==
+X-ME-Sender: <xms:bNvjYTsH4-a73AzpKhnZ90nHg5YcAU6FboF1nTyjx46qtVXJkMZTUQ>
+    <xme:bNvjYUcyg2Pa4TUdhAPX7zLlDtjmzjBQfrdfcC-VsCTsmKo-TtqUBQ_HTgM24XJya
+    TXelPwVkFtNQME>
+X-ME-Received: <xmr:bNvjYWyK3CDaStn4ramMudzc4XbHC6Otw_yYhKTqupUduEYedoglaXxm-lCUbRQSn18nxwZf32l2AE5_qlR5rBQ_T19XQA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrtdekgdduvddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    goufhushhpvggtthffohhmrghinhculdegledmnecujfgurhepfffhvffukfhfgggtuggj
+    sehttdertddttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthh
+    esihguohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpedvtdevgfevveevhfehgfei
+    udevueekffelteejgfeltddtffekleduvdefkeegvdenucffohhmrghinhepghhoohhglh
+    gvrdgtohhmnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhho
+    mhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:bNvjYSNkt6ry8wh6jLSYca-htgC0zSRMC9EPjmiNfsDJX2_XrME4dw>
+    <xmx:bNvjYT_ZlFrJZZ2bSb-eQA0vZWKqhDQceboBwYakSJwuYP7Zo-CHCw>
+    <xmx:bNvjYSW2ibXfvkK8KNgKJoF5NidXfnVpVi64x5PskS5lREV0cS_MnA>
+    <xmx:bNvjYTyx3Hfd66n_V4OlqwXnGQqp4FOtM94pMgSHNVjHsDWlPcyuIQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 16 Jan 2022 03:46:35 -0500 (EST)
+Date:   Sun, 16 Jan 2022 10:46:31 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzbot <syzkaller@googlegroups.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: Re: [PATCH net] ipv4: make fib_info_cnt atomic
+Message-ID: <YePbZ1FBOrZ5RufS@shredder>
+References: <20220114153902.1989393-1-eric.dumazet@gmail.com>
+ <2f8ea7358c17449682f7e72eaed1ce54@AcuMS.aculab.com>
+ <CANn89iKA32qt8X6VzFsissZwxHpar6pDEJT_dgYhnxfROcaqRA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iKA32qt8X6VzFsissZwxHpar6pDEJT_dgYhnxfROcaqRA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A hung_task is observed when removing SMC-R devices. Suppose that
-a link group has two active links(lnk_A, lnk_B) associated with two
-different SMC-R devices(dev_A, dev_B). When dev_A is removed, the
-link group will be removed from smc_lgr_list and added into
-lgr_linkdown_list. lnk_A will be cleared and smcibdev(A)->lnk_cnt
-will reach to zero. However, when dev_B is removed then, the link
-group can't be found in smc_lgr_list and lnk_B won't be cleared,
-making smcibdev->lnk_cnt never reaches zero, which causes a hung_task.
+On Fri, Jan 14, 2022 at 08:25:04AM -0800, 'Eric Dumazet' via syzkaller wrote:
+> On Fri, Jan 14, 2022 at 7:50 AM David Laight <David.Laight@aculab.com> wrote:
+> >
+> > From: Eric Dumazet
+> > > Sent: 14 January 2022 15:39
+> > >
+> > > Instead of making sure all free_fib_info() callers
+> > > hold rtnl, it seems better to convert fib_info_cnt
+> > > to an atomic_t.
+> >
+> > Since fib_info_cnt is only used to control the size of the hash table
+> > could it be incremented when a fid is added to the hash table and
+> > decremented when it is removed.
+> >
+> > This is all inside the fib_info_lock.
+> 
+> Sure, this will need some READ_ONCE()/WRITE_ONCE() annotations
+> because the resize would read fib_info_cnt without this lock held.
+> 
+> I am not sure this is a stable candidate though, patch looks a bit more risky.
+> 
+> This seems to suggest another issue...
+> 
+> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+> index 828de171708f599b56f63715514c0259c7cb08a2..45619c005b8dddd7ccd5c7029efa4ed69b6ce1de
+> 100644
+> --- a/net/ipv4/fib_semantics.c
+> +++ b/net/ipv4/fib_semantics.c
+> @@ -249,7 +249,6 @@ void free_fib_info(struct fib_info *fi)
+>                 pr_warn("Freeing alive fib_info %p\n", fi);
+>                 return;
+>         }
+> -       fib_info_cnt--;
+> 
+>         call_rcu(&fi->rcu, free_fib_info_rcu);
+>  }
+> @@ -260,6 +259,10 @@ void fib_release_info(struct fib_info *fi)
+>         spin_lock_bh(&fib_info_lock);
+>         if (fi && refcount_dec_and_test(&fi->fib_treeref)) {
+>                 hlist_del(&fi->fib_hash);
+> +
+> +               /* Paired with READ_ONCE() in fib_create_info(). */
+> +               WRITE_ONCE(fib_info_cnt, fib_info_cnt - 1);
+> +
+>                 if (fi->fib_prefsrc)
+>                         hlist_del(&fi->fib_lhash);
+>                 if (fi->nh) {
+> @@ -1430,7 +1433,9 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
+>  #endif
+> 
+>         err = -ENOBUFS;
+> -       if (fib_info_cnt >= fib_info_hash_size) {
+> +
+> +       /* Paired with WRITE_ONCE() in fib_release_info() */
+> +       if (READ_ONCE(fib_info_cnt) >= fib_info_hash_size) {
+>                 unsigned int new_size = fib_info_hash_size << 1;
+>                 struct hlist_head *new_info_hash;
+>                 struct hlist_head *new_laddrhash;
+> @@ -1462,7 +1467,6 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
+>                 return ERR_PTR(err);
+>         }
+> 
+> -       fib_info_cnt++;
+>         fi->fib_net = net;
+>         fi->fib_protocol = cfg->fc_protocol;
+>         fi->fib_scope = cfg->fc_scope;
+> @@ -1591,6 +1595,7 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
+>         refcount_set(&fi->fib_treeref, 1);
+>         refcount_set(&fi->fib_clntref, 1);
+>         spin_lock_bh(&fib_info_lock);
+> +       fib_info_cnt++;
+>         hlist_add_head(&fi->fib_hash,
+>                        &fib_info_hash[fib_info_hashfn(fi)]);
+>         if (fi->fib_prefsrc) {
 
-This patch fixes this issue by restoring the implementation of
-smc_smcr_terminate_all() to what it was before commit 349d43127dac
-("net/smc: fix kernel panic caused by race of smc_sock"). The original
-implementation also satisfies the intention that make sure QP destroy
-earlier than CQ destroy because we will always wait for smcibdev->lnk_cnt
-reaches zero, which guarantees QP has been destroyed.
+Thanks for the fix. Looks OK to me. The counter is incremented under the
+lock when adding to the hash table(s) and decremented under the lock
+upon removal. Do you intend to submit this version instead of the first
+one?
 
-Fixes: 349d43127dac ("net/smc: fix kernel panic caused by race of smc_sock")
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
----
-v1 -> v2:
-- Remove some comments.
----
- net/smc/smc_core.c | 17 +----------------
- 1 file changed, 1 insertion(+), 16 deletions(-)
-
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index b19c0aa..5fc84f0 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -1524,16 +1524,11 @@ void smc_smcd_terminate_all(struct smcd_dev *smcd)
- /* Called when an SMCR device is removed or the smc module is unloaded.
-  * If smcibdev is given, all SMCR link groups using this device are terminated.
-  * If smcibdev is NULL, all SMCR link groups are terminated.
-- *
-- * We must wait here for QPs been destroyed before we destroy the CQs,
-- * or we won't received any CQEs and cdc_pend_tx_wr cannot reach 0 thus
-- * smc_sock cannot be released.
-  */
- void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
- {
- 	struct smc_link_group *lgr, *lg;
- 	LIST_HEAD(lgr_free_list);
--	LIST_HEAD(lgr_linkdown_list);
- 	int i;
- 
- 	spin_lock_bh(&smc_lgr_list.lock);
-@@ -1545,7 +1540,7 @@ void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
- 		list_for_each_entry_safe(lgr, lg, &smc_lgr_list.list, list) {
- 			for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
- 				if (lgr->lnk[i].smcibdev == smcibdev)
--					list_move_tail(&lgr->list, &lgr_linkdown_list);
-+					smcr_link_down_cond_sched(&lgr->lnk[i]);
- 			}
- 		}
- 	}
-@@ -1557,16 +1552,6 @@ void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
- 		__smc_lgr_terminate(lgr, false);
- 	}
- 
--	list_for_each_entry_safe(lgr, lg, &lgr_linkdown_list, list) {
--		for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
--			if (lgr->lnk[i].smcibdev == smcibdev) {
--				mutex_lock(&lgr->llc_conf_mutex);
--				smcr_link_down_cond(&lgr->lnk[i]);
--				mutex_unlock(&lgr->llc_conf_mutex);
--			}
--		}
--	}
--
- 	if (smcibdev) {
- 		if (atomic_read(&smcibdev->lnk_cnt))
- 			wait_event(smcibdev->lnks_deleted,
--- 
-1.8.3.1
-
+> 
+> -- 
+> You received this message because you are subscribed to the Google Groups "syzkaller" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller/CANn89iKA32qt8X6VzFsissZwxHpar6pDEJT_dgYhnxfROcaqRA%40mail.gmail.com.
