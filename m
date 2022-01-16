@@ -2,125 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2CAE48FD6A
-	for <lists+netdev@lfdr.de>; Sun, 16 Jan 2022 15:19:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC5EA48FD7B
+	for <lists+netdev@lfdr.de>; Sun, 16 Jan 2022 15:42:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235440AbiAPOTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jan 2022 09:19:19 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50044 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbiAPOTM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jan 2022 09:19:12 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31DF260F2E;
-        Sun, 16 Jan 2022 14:19:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D360C36AE7;
-        Sun, 16 Jan 2022 14:19:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642342750;
-        bh=KujYZ44NbqHewC3hStYnBx16eqgxm1SsBiD7vgCzy1A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sKsNPdg/t/aehm0kbBx0+iaMt7Vs15thP7mY+lgsvv2wpHp7hhFp/CL3s/+VFunx8
-         VMGsJpG9T+206AG5qxqWiAVL+YwMP+lMdgO6G29sYG5yQOnXi5Wp9YcaTPGre6QZaH
-         1Q5W85dO5PtMcGij5VwJ57avVdKo6t7UZumaWiEk=
-Date:   Sun, 16 Jan 2022 15:19:06 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>, alsa-devel@alsa-project.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-phy@lists.infradead.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        kvm@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
-        John Garry <john.garry@huawei.com>,
-        Robert Richter <rric@kernel.org>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>, netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        linux-spi@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
- (summary)
-Message-ID: <YeQpWu2sUVOSaT9I@kroah.com>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
- <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220115183643.6zxalxqxrhkfgdfq@pengutronix.de>
+        id S235452AbiAPOmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jan 2022 09:42:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51010 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229785AbiAPOmT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jan 2022 09:42:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642344138;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=JRRT3Yl7+f6HbkWI411SEh1HSKqxqkLW8Pqe76fS2Gs=;
+        b=c9r1HtrTQmy2v1uvmEc51TO9JD0VGcGfRwEieTTj7+/i7fW8hSvp01ZMXM3nTS/kGfxhdU
+        dPmJWURTG5V8dFDz9Hye8ztv24Sq/YvlqUo5undOKcVRvhzNTzP5CdeoexEARaIVvqrJ+I
+        g2m/w3pCCrCpIhCfnyTSXwDUZ6I8os0=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-292-I6v5qvanN-GR2T8G4GkegQ-1; Sun, 16 Jan 2022 09:42:17 -0500
+X-MC-Unique: I6v5qvanN-GR2T8G4GkegQ-1
+Received: by mail-ot1-f69.google.com with SMTP id z33-20020a9d24a4000000b00579320f89ecso4345299ota.12
+        for <netdev@vger.kernel.org>; Sun, 16 Jan 2022 06:42:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JRRT3Yl7+f6HbkWI411SEh1HSKqxqkLW8Pqe76fS2Gs=;
+        b=7DcWV9GkoOAaMPZIKcl3bYa7iqXe2smGIsxFPOc5t+jmOD//ewCm5NShqbLjJuzciJ
+         GSVMsve3ek4IQxxwTQpmdQU7QS26Z+wBE6BlfKVW05i881zI0c/ZTUS/VIDE/U/XGN3u
+         anPthDHbxN+Y+5R0Hn367UhBft1RHJG5eKESH17O+aIAIdlXWwUqnz2SZ+FKInFCktha
+         iXG+l5P1Y9oG+AoZU849EcQnfcixZq+1wgPItF23HpGLxvfJQ4cgLrMIFKExWCGGV4o7
+         NsQuQ6IvP/97lmYmqPtOBGnmktgWTeX3Kvy8xfoLocWvtqdCaIEVESxg028X9ciROF10
+         nApg==
+X-Gm-Message-State: AOAM5321LJ5W6X2/yQ4pUSLemP/TEGLOGGKIjcDiLE/psNZOyAX3I9PB
+        Mh/evlSU2B9ClpIstbC4Hiw7nF7QQMpXxfjCey+6WPYB5ORbMwig/c7QLxEkXHnSh8kWj8mAt/X
+        +2QdjfvO/puGfaaZK
+X-Received: by 2002:aca:1c16:: with SMTP id c22mr4588774oic.83.1642344136529;
+        Sun, 16 Jan 2022 06:42:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwrmwZp7l+rQuzj7d+eeD89HQdHOy2AEvZ4lDFXM1Xjeb9/2maMuS4teFTtAREUYd6VJgPcwQ==
+X-Received: by 2002:aca:1c16:: with SMTP id c22mr4588753oic.83.1642344136355;
+        Sun, 16 Jan 2022 06:42:16 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id b22sm2168045otl.24.2022.01.16.06.42.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 16 Jan 2022 06:42:15 -0800 (PST)
+From:   trix@redhat.com
+To:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        nathan@kernel.org, ndesaulniers@google.com, akolli@codeaurora.org
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
+Subject: [PATCH] ath11k: fix error handling in ath11k_qmi_assign_target_mem_chunk()
+Date:   Sun, 16 Jan 2022 06:42:06 -0800
+Message-Id: <20220116144206.399385-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220115183643.6zxalxqxrhkfgdfq@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 15, 2022 at 07:36:43PM +0100, Uwe Kleine-König wrote:
-> A possible compromise: We can have both. We rename
-> platform_get_irq_optional() to platform_get_irq_silent() (or
-> platform_get_irq_silently() if this is preferred) and once all users are
-> are changed (which can be done mechanically), we reintroduce a
-> platform_get_irq_optional() with Sergey's suggested semantic (i.e.
-> return 0 on not-found, no error message printking).
+From: Tom Rix <trix@redhat.com>
 
-Please do not do that as anyone trying to forward-port an old driver
-will miss the abi change of functionality and get confused.  Make
-build-breaking changes, if the way a function currently works is
-changed in order to give people a chance.
+Clang static analysis reports this problem
+qmi.c:1935:5: warning: Undefined or garbage value returned to caller
+  return ret;
+  ^~~~~~~~~~
 
-thanks,
+ret is uninitialized.  When of_parse_phandle() fails, garbage is
+returned.  So return -EINVAL.
 
-greg k-h
+Fixes: 6ac04bdc5edb ("ath11k: Use reserved host DDR addresses from DT for PCI devices")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/wireless/ath/ath11k/qmi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
+index 65d3c6ba35ae6..81b2304b1fdeb 100644
+--- a/drivers/net/wireless/ath/ath11k/qmi.c
++++ b/drivers/net/wireless/ath/ath11k/qmi.c
+@@ -1932,7 +1932,7 @@ static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
+ 			if (!hremote_node) {
+ 				ath11k_dbg(ab, ATH11K_DBG_QMI,
+ 					   "qmi fail to get hremote_node\n");
+-				return ret;
++				return -EINVAL;
+ 			}
+ 
+ 			ret = of_address_to_resource(hremote_node, 0, &res);
+-- 
+2.26.3
+
