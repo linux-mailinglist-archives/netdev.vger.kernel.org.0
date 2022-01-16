@@ -2,63 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13DAC48FC6C
-	for <lists+netdev@lfdr.de>; Sun, 16 Jan 2022 12:55:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F07D548FCBE
+	for <lists+netdev@lfdr.de>; Sun, 16 Jan 2022 13:30:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234992AbiAPLzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jan 2022 06:55:13 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:53073 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232958AbiAPLzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jan 2022 06:55:13 -0500
-Received: by mail-il1-f199.google.com with SMTP id m3-20020a056e02158300b002b6e3d1f97cso9340658ilu.19
-        for <netdev@vger.kernel.org>; Sun, 16 Jan 2022 03:55:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=pcqghOLmFHQd4kNv1nK4ZF7/rBgU1CFGoN8hBRKSd1Q=;
-        b=QbvKfjm+wtOM1SSgfGbEoWfnr976V/t5+/5z2m6Vyb6Iqq6L43ER2eQu5/Pg3iBtKX
-         4wE3cOHfcjl8UFiSezFgiMacgqQ//Yr4uOrVtrHYPwo2tFDzBq/CxBMSx8oFljFam97I
-         eladeFampWw0vfV93IraZ2ej3Kz5cFs9k74KtC4nH5FLFxMigPbTOIw/DiiE2ViDE4KK
-         3UOQR20nCbPs8Wh4EwCcaYCesVEaa/uB+6SxxjtaB3fTrXEoYbQxVd56ZCtV/0nl/fSc
-         J/PCai0SrPJ9tNcwdoDjhr43k00jJBRDD7BPq+l72u0CsVJmv5TjCLnnhoGzIIC0UFni
-         glHg==
-X-Gm-Message-State: AOAM531ycHlunZ6TilxI4a5BDDnvNhNdgjDecrBoxB/S77yADWPbkobE
-        ILam4mg66rBgMZ7C+ziRzmvfi6pWRE0athiktBPccOYqG0ZR
-X-Google-Smtp-Source: ABdhPJyNE1UXBXOaJSv3x38kfUBkh6qf2pgvHb9ayYaWHoon7Wy48IkgOgp4MvqbPEA+S/toakjHMjXjn7ZqV3S9AeIh3XGkCmeF
+        id S233043AbiAPMaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jan 2022 07:30:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33312 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232133AbiAPMaM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jan 2022 07:30:12 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F76F60EB3
+        for <netdev@vger.kernel.org>; Sun, 16 Jan 2022 12:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E118BC36AE3;
+        Sun, 16 Jan 2022 12:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642336211;
+        bh=VMEOZYgbY3cJMFGvg4hVYUrIecNODcKONNjJT7hkK40=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=SJThUAogk7BpQHCgmMGgQCHPzFr9TaMlqoqzAYbwv/rBKsVUWJlMifFyDbqfyUgNR
+         oChi3VWb/spfZ5puilpS9sfZ1uOm50QsuCbX9UHuC3PkVDmEi3OOh/3+HEolf2Sqsv
+         sQ1f9vbl1k1pEiVsHnWsyH2SKdcovFRyLU6l3V3CkkABfn5rJNTJuVEqWhxk4U5NyE
+         X42EiKWPAXwb/wY5FIsy+NeQwmHzPLwaE+9KwSZRvucJGZ+siIeXfZVAuDqGJ7bbUa
+         +GSyQtMjtnjFsQa/+cZrvFmkM6LvAnvFq+kTvXCl4jrh7ENwdfl7UPmO1upwGHikpM
+         WqzUJ91gh45SQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C8FECF60799;
+        Sun, 16 Jan 2022 12:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-Received: by 2002:a02:856a:: with SMTP id g97mr3746783jai.199.1642334112626;
- Sun, 16 Jan 2022 03:55:12 -0800 (PST)
-Date:   Sun, 16 Jan 2022 03:55:12 -0800
-In-Reply-To: <20220116114236.2135-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000062bd0405d5b1b5ef@google.com>
-Subject: Re: [syzbot] general protection fault in nfc_alloc_send_skb
-From:   syzbot <syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, krzysztof.kozlowski@canonical.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        nixiaoming@huawei.com, paskripkin@gmail.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net] ipv4: update fib_info_cnt under spinlock protection
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164233621181.32546.2940878867903547273.git-patchwork-notify@kernel.org>
+Date:   Sun, 16 Jan 2022 12:30:11 +0000
+References: <20220116090220.2378360-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220116090220.2378360-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com, syzkaller@googlegroups.com,
+        David.Laight@ACULAB.COM, idosch@mellanox.com, jiri@mellanox.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello:
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Reported-and-tested-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
+On Sun, 16 Jan 2022 01:02:20 -0800 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> In the past, free_fib_info() was supposed to be called
+> under RTNL protection.
+> 
+> This eventually was no longer the case.
+> 
+> [...]
 
-Tested on:
+Here is the summary with links:
+  - [v2,net] ipv4: update fib_info_cnt under spinlock protection
+    https://git.kernel.org/netdev/net/c/0a6e6b3c7db6
 
-commit:         4d66020d Merge tag 'trace-v5.17' of git://git.kernel.o..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a4d92848a46d5895
-dashboard link: https://syzkaller.appspot.com/bug?extid=7f23bcddf626e0593a39
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=11b7cc60700000
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Note: testing is done by a robot and is best-effort only.
+
