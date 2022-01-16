@@ -2,99 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC5EA48FD7B
-	for <lists+netdev@lfdr.de>; Sun, 16 Jan 2022 15:42:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE2DF48FDAB
+	for <lists+netdev@lfdr.de>; Sun, 16 Jan 2022 16:39:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235452AbiAPOmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jan 2022 09:42:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51010 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229785AbiAPOmT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jan 2022 09:42:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642344138;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=JRRT3Yl7+f6HbkWI411SEh1HSKqxqkLW8Pqe76fS2Gs=;
-        b=c9r1HtrTQmy2v1uvmEc51TO9JD0VGcGfRwEieTTj7+/i7fW8hSvp01ZMXM3nTS/kGfxhdU
-        dPmJWURTG5V8dFDz9Hye8ztv24Sq/YvlqUo5undOKcVRvhzNTzP5CdeoexEARaIVvqrJ+I
-        g2m/w3pCCrCpIhCfnyTSXwDUZ6I8os0=
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
- [209.85.210.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-292-I6v5qvanN-GR2T8G4GkegQ-1; Sun, 16 Jan 2022 09:42:17 -0500
-X-MC-Unique: I6v5qvanN-GR2T8G4GkegQ-1
-Received: by mail-ot1-f69.google.com with SMTP id z33-20020a9d24a4000000b00579320f89ecso4345299ota.12
-        for <netdev@vger.kernel.org>; Sun, 16 Jan 2022 06:42:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JRRT3Yl7+f6HbkWI411SEh1HSKqxqkLW8Pqe76fS2Gs=;
-        b=7DcWV9GkoOAaMPZIKcl3bYa7iqXe2smGIsxFPOc5t+jmOD//ewCm5NShqbLjJuzciJ
-         GSVMsve3ek4IQxxwTQpmdQU7QS26Z+wBE6BlfKVW05i881zI0c/ZTUS/VIDE/U/XGN3u
-         anPthDHbxN+Y+5R0Hn367UhBft1RHJG5eKESH17O+aIAIdlXWwUqnz2SZ+FKInFCktha
-         iXG+l5P1Y9oG+AoZU849EcQnfcixZq+1wgPItF23HpGLxvfJQ4cgLrMIFKExWCGGV4o7
-         NsQuQ6IvP/97lmYmqPtOBGnmktgWTeX3Kvy8xfoLocWvtqdCaIEVESxg028X9ciROF10
-         nApg==
-X-Gm-Message-State: AOAM5321LJ5W6X2/yQ4pUSLemP/TEGLOGGKIjcDiLE/psNZOyAX3I9PB
-        Mh/evlSU2B9ClpIstbC4Hiw7nF7QQMpXxfjCey+6WPYB5ORbMwig/c7QLxEkXHnSh8kWj8mAt/X
-        +2QdjfvO/puGfaaZK
-X-Received: by 2002:aca:1c16:: with SMTP id c22mr4588774oic.83.1642344136529;
-        Sun, 16 Jan 2022 06:42:16 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwrmwZp7l+rQuzj7d+eeD89HQdHOy2AEvZ4lDFXM1Xjeb9/2maMuS4teFTtAREUYd6VJgPcwQ==
-X-Received: by 2002:aca:1c16:: with SMTP id c22mr4588753oic.83.1642344136355;
-        Sun, 16 Jan 2022 06:42:16 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id b22sm2168045otl.24.2022.01.16.06.42.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Jan 2022 06:42:15 -0800 (PST)
-From:   trix@redhat.com
-To:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        nathan@kernel.org, ndesaulniers@google.com, akolli@codeaurora.org
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
-Subject: [PATCH] ath11k: fix error handling in ath11k_qmi_assign_target_mem_chunk()
-Date:   Sun, 16 Jan 2022 06:42:06 -0800
-Message-Id: <20220116144206.399385-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        id S235524AbiAPPiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jan 2022 10:38:19 -0500
+Received: from mga14.intel.com ([192.55.52.115]:62118 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233304AbiAPPiT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 16 Jan 2022 10:38:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642347498; x=1673883498;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=glNv3OI3JbTJUCwTNsmkJ1SZaAvxAzvULziq2BBzk+s=;
+  b=bRTTlDT7bxunBm1bAlBXSxkMOySeNmiZzPS/3v+o3VnA6Bf6EipF2VEg
+   818qoJV6ODxfUi4DW+ZWWqMFWVQjnUl6ESQ/2SxvNKoxuTO0n49fBsO0f
+   IgCA3s5OneqdMnJyWwHGPO0ncC2xVvhQKDW/VAKiKcQ+oYzEz445kPp7e
+   60Pt5D8nQn5FWisdmd3nZRI4dXyvtzLCI2Uf8ZiNaEE/Dw8xwiOD/pWCq
+   g4J0OoP8Y9ivKIfMvIV7WyINIAsNNThLpVHsRUMhGulbA0x/ilomYtJV5
+   ltzy820j7rlo1Tvb76AyJLOiME0t3CjV6v+3O7OdTabSpb98LaBX0+nI7
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10228"; a="244694076"
+X-IronPort-AV: E=Sophos;i="5.88,293,1635231600"; 
+   d="scan'208";a="244694076"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2022 07:38:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,293,1635231600"; 
+   d="scan'208";a="492091230"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 16 Jan 2022 07:38:04 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n97bV-000AoG-6m; Sun, 16 Jan 2022 15:38:01 +0000
+Date:   Sun, 16 Jan 2022 23:37:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, kuba@kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
+        loic.poulain@linaro.org, m.chetan.kumar@intel.com,
+        chandrashekar.devegowda@intel.com, linuxwwan@intel.com
+Subject: Re: [PATCH net-next v4 03/13] net: wwan: t7xx: Add core components
+Message-ID: <202201162348.afiiNcX1-lkp@intel.com>
+References: <20220114010627.21104-4-ricardo.martinez@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220114010627.21104-4-ricardo.martinez@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Hi Ricardo,
 
-Clang static analysis reports this problem
-qmi.c:1935:5: warning: Undefined or garbage value returned to caller
-  return ret;
-  ^~~~~~~~~~
+Thank you for the patch! Yet something to improve:
 
-ret is uninitialized.  When of_parse_phandle() fails, garbage is
-returned.  So return -EINVAL.
+[auto build test ERROR on net-next/master]
 
-Fixes: 6ac04bdc5edb ("ath11k: Use reserved host DDR addresses from DT for PCI devices")
-Signed-off-by: Tom Rix <trix@redhat.com>
+url:    https://github.com/0day-ci/linux/commits/Ricardo-Martinez/net-wwan-t7xx-PCIe-driver-for-MediaTek-M-2-modem/20220114-090852
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 8aaaf2f3af2ae212428f4db1af34214225f5cec3
+config: ia64-randconfig-m031-20220116 (https://download.01.org/0day-ci/archive/20220116/202201162348.afiiNcX1-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/e62b3a8ab00c63ee38d0d31cd402a1a40e8b2769
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Ricardo-Martinez/net-wwan-t7xx-PCIe-driver-for-MediaTek-M-2-modem/20220114-090852
+        git checkout e62b3a8ab00c63ee38d0d31cd402a1a40e8b2769
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/net/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from arch/ia64/include/asm/pgtable.h:153,
+                    from include/linux/pgtable.h:6,
+                    from include/linux/mm.h:33,
+                    from include/linux/scatterlist.h:8,
+                    from include/linux/dma-mapping.h:10,
+                    from drivers/net/wwan/t7xx/t7xx_pci.c:23:
+   arch/ia64/include/asm/mmu_context.h: In function 'reload_context':
+>> arch/ia64/include/asm/mmu_context.h:127:48: error: variable 'old_rr4' set but not used [-Werror=unused-but-set-variable]
+     127 |         unsigned long rr0, rr1, rr2, rr3, rr4, old_rr4;
+         |                                                ^~~~~~~
+   cc1: all warnings being treated as errors
+
+
+vim +/old_rr4 +127 arch/ia64/include/asm/mmu_context.h
+
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  121  
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  122  static inline void
+badea125d7cbd9 include/asm-ia64/mmu_context.h David Mosberger-Tang 2005-07-25  123  reload_context (nv_mm_context_t context)
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  124  {
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  125  	unsigned long rid;
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  126  	unsigned long rid_incr = 0;
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16 @127  	unsigned long rr0, rr1, rr2, rr3, rr4, old_rr4;
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  128  
+0a41e250116058 include/asm-ia64/mmu_context.h Peter Chubb          2005-08-16  129  	old_rr4 = ia64_get_rr(RGN_BASE(RGN_HPAGE));
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  130  	rid = context << 3;	/* make space for encoding the region number */
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  131  	rid_incr = 1 << 8;
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  132  
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  133  	/* encode the region id, preferred page size, and VHPT enable bit: */
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  134  	rr0 = (rid << 8) | (PAGE_SHIFT << 2) | 1;
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  135  	rr1 = rr0 + 1*rid_incr;
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  136  	rr2 = rr0 + 2*rid_incr;
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  137  	rr3 = rr0 + 3*rid_incr;
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  138  	rr4 = rr0 + 4*rid_incr;
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  139  #ifdef  CONFIG_HUGETLB_PAGE
+^1da177e4c3f41 include/asm-ia64/mmu_context.h Linus Torvalds       2005-04-16  140  	rr4 = (rr4 & (~(0xfcUL))) | (old_rr4 & 0xfc);
+0a41e250116058 include/asm-ia64/mmu_context.h Peter Chubb          2005-08-16  141  
+
 ---
- drivers/net/wireless/ath/ath11k/qmi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index 65d3c6ba35ae6..81b2304b1fdeb 100644
---- a/drivers/net/wireless/ath/ath11k/qmi.c
-+++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -1932,7 +1932,7 @@ static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
- 			if (!hremote_node) {
- 				ath11k_dbg(ab, ATH11K_DBG_QMI,
- 					   "qmi fail to get hremote_node\n");
--				return ret;
-+				return -EINVAL;
- 			}
- 
- 			ret = of_address_to_resource(hremote_node, 0, &res);
--- 
-2.26.3
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
