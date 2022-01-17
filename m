@@ -2,32 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79854490F76
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 18:29:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C4A4490F7A
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 18:30:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236419AbiAQR3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 12:29:36 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45282 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238899AbiAQR3e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 12:29:34 -0500
+        id S236669AbiAQR3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 12:29:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237740AbiAQR3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 12:29:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C83AC06173F;
+        Mon, 17 Jan 2022 09:29:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9B8360B50;
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC92FB81142;
+        Mon, 17 Jan 2022 17:29:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0247C36AF5;
         Mon, 17 Jan 2022 17:29:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D082C36AEC;
-        Mon, 17 Jan 2022 17:29:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642440573;
-        bh=54DSah7iHoFbdLpUMhvsssfBFNx8hCTD/alDuIgXtX8=;
+        s=k20201202; t=1642440577;
+        bh=imbv1xmL2ewxJtYBY1lCR/5/SOQQ7SP35P6phUWrwDU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WZawhU4mDm1D+WIPj++S8wFBsu461O/KAstOrwIIAY/eImPzKBU0bVOKQEat6569v
-         cOVYymmBVN/a2t/mwWnraEF93Ep48xsxO8iVCW1aBZxTOurqPlvyAAaQ1iTp3dM+x8
-         b6sHBhUedTBMj4VfZd1zP6bOtUAUIr6MhVMQzm3U6TCFTJL993DBSrtnf00UpZ80WL
-         38G5jLrqrO6sMgpmyYd/L1TFjqVthSjWDlWLN2ZB/6jLPMU0uXqpFX9N1sPKaVq++9
-         /AaVQCxerfEHR4klSGrcNTMdo/VOPwTHJ5RpQ6NUPzKoFubMbHwKzZAcB0jXylLJ38
-         XhWxJ79JfRg9Q==
+        b=UCGrq58uXps90bq9SUDCjBO14NL383Qisf5aCJzcetJyNOiW+wHheJCukPoK+fwg1
+         wxissndp7kuF23zDSoUNi0pLNZ877syItMC5YZ7fiLIItMdaze2L5xAbqY+fgaqr8m
+         aGfAQA6Dqf5B2m+gjt1B058TPTAqTSQnnH3VYMozpfJ/6G2OJovpBR0pWyfQUO1WXl
+         bAe/YfU6WjuD8Ebut0Gx/UI72bmT0wZf4U/3zCKikDQ1ipjy7UQk7Z855hrExKPX2F
+         AWZZuGzWtogYfuN0kXWZnzawKRz+R4PeTR1eoA5eywjCaXrfv37UaOdPO/aj2SBIJM
+         J82HmNFQyRfUA==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -37,9 +40,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: [PATCH v22 bpf-next 05/23] net: xdp: add xdp_update_skb_shared_info utility routine
-Date:   Mon, 17 Jan 2022 18:28:17 +0100
-Message-Id: <f03171b0e462048c1626fda9c8cc65476d5c2a7f.1642439548.git.lorenzo@kernel.org>
+Subject: [PATCH v22 bpf-next 06/23] net: marvell: rely on xdp_update_skb_shared_info utility routine
+Date:   Mon, 17 Jan 2022 18:28:18 +0100
+Message-Id: <c888c1bce57ab256c53e25ad4f0a99c7b941ad0f.1642439548.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1642439548.git.lorenzo@kernel.org>
 References: <cover.1642439548.git.lorenzo@kernel.org>
@@ -49,128 +52,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce xdp_update_skb_shared_info routine to update frags array
-metadata in skb_shared_info data structure converting to a skb from
-a xdp_buff or xdp_frame.
-According to the current skb_shared_info architecture in
-xdp_frame/xdp_buff and to the xdp multi-frags support, there is
-no need to run skb_add_rx_frag() and reset frags array converting the buffer
-to a skb since the frag array will be in the same position for xdp_buff/xdp_frame
-and for the skb, we just need to update memory metadata.
-Introduce XDP_FLAGS_PF_MEMALLOC flag in xdp_buff_flags in order to mark
-the xdp_buff or xdp_frame as under memory-pressure if pages of the frags array
-are under memory pressure. Doing so we can avoid looping over all fragments in
-xdp_update_skb_shared_info routine. The driver is expected to set the
-flag constructing the xdp_buffer using xdp_buff_set_frag_pfmemalloc
-utility routine.
-Rely on xdp_update_skb_shared_info in __xdp_build_skb_from_frame routine
-converting the multi-frags xdp_frame to a skb after performing a XDP_REDIRECT.
+Rely on xdp_update_skb_shared_info routine in order to avoid
+resetting frags array in skb_shared_info structure building
+the skb in mvneta_swbm_build_skb(). Frags array is expected to
+be initialized by the receiving driver building the xdp_buff
+and here we just need to update memory metadata.
 
 Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
 Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- include/net/xdp.h | 33 ++++++++++++++++++++++++++++++++-
- net/core/xdp.c    | 12 ++++++++++++
- 2 files changed, 44 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/mvneta.c | 23 ++++++++++-------------
+ 1 file changed, 10 insertions(+), 13 deletions(-)
 
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 485e9495a690..54f18283a7e6 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -67,7 +67,10 @@ struct xdp_txq_info {
- };
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index bc70292dda43..f1fd93e89c73 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -2332,8 +2332,12 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
+ 		skb_frag_size_set(frag, data_len);
+ 		__skb_frag_set_page(frag, page);
  
- enum xdp_buff_flags {
--	XDP_FLAGS_HAS_FRAGS	= BIT(0), /* non-linear xdp buff */
-+	XDP_FLAGS_HAS_FRAGS		= BIT(0), /* non-linear xdp buff */
-+	XDP_FLAGS_FRAGS_PF_MEMALLOC	= BIT(1), /* xdp multi-frags paged memory
-+						   * is under pressure
-+						   */
- };
+-		if (!xdp_buff_has_frags(xdp))
++		if (!xdp_buff_has_frags(xdp)) {
++			sinfo->xdp_frags_size = *size;
+ 			xdp_buff_set_frags_flag(xdp);
++		}
++		if (page_is_pfmemalloc(page))
++			xdp_buff_set_frag_pfmemalloc(xdp);
+ 	} else {
+ 		page_pool_put_full_page(rxq->page_pool, page, true);
+ 	}
+@@ -2347,7 +2351,6 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+ 	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+ 	struct sk_buff *skb;
+ 	u8 num_frags;
+-	int i;
  
- struct xdp_buff {
-@@ -96,6 +99,16 @@ static __always_inline void xdp_buff_clear_frags_flag(struct xdp_buff *xdp)
- 	xdp->flags &= ~XDP_FLAGS_HAS_FRAGS;
- }
+ 	if (unlikely(xdp_buff_has_frags(xdp)))
+ 		num_frags = sinfo->nr_frags;
+@@ -2362,18 +2365,12 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+ 	skb_put(skb, xdp->data_end - xdp->data);
+ 	skb->ip_summed = mvneta_rx_csum(pp, desc_status);
  
-+static __always_inline bool xdp_buff_is_frag_pfmemalloc(struct xdp_buff *xdp)
-+{
-+	return !!(xdp->flags & XDP_FLAGS_FRAGS_PF_MEMALLOC);
-+}
-+
-+static __always_inline void xdp_buff_set_frag_pfmemalloc(struct xdp_buff *xdp)
-+{
-+	xdp->flags |= XDP_FLAGS_FRAGS_PF_MEMALLOC;
-+}
-+
- static __always_inline void
- xdp_init_buff(struct xdp_buff *xdp, u32 frame_sz, struct xdp_rxq_info *rxq)
- {
-@@ -151,6 +164,11 @@ static __always_inline bool xdp_frame_has_frags(struct xdp_frame *frame)
- 	return !!(frame->flags & XDP_FLAGS_HAS_FRAGS);
- }
- 
-+static __always_inline bool xdp_frame_is_frag_pfmemalloc(struct xdp_frame *frame)
-+{
-+	return !!(frame->flags & XDP_FLAGS_FRAGS_PF_MEMALLOC);
-+}
-+
- #define XDP_BULK_QUEUE_SIZE	16
- struct xdp_frame_bulk {
- 	int count;
-@@ -186,6 +204,19 @@ static inline void xdp_scrub_frame(struct xdp_frame *frame)
- 	frame->dev_rx = NULL;
- }
- 
-+static inline void
-+xdp_update_skb_shared_info(struct sk_buff *skb, u8 nr_frags,
-+			   unsigned int size, unsigned int truesize,
-+			   bool pfmemalloc)
-+{
-+	skb_shinfo(skb)->nr_frags = nr_frags;
-+
-+	skb->len += size;
-+	skb->data_len += size;
-+	skb->truesize += truesize;
-+	skb->pfmemalloc |= pfmemalloc;
-+}
-+
- /* Avoids inlining WARN macro in fast-path */
- void xdp_warn(const char *msg, const char *func, const int line);
- #define XDP_WARN(msg) xdp_warn(msg, __func__, __LINE__)
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 7aba35504986..e9a8381704c5 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -561,8 +561,14 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 					   struct sk_buff *skb,
- 					   struct net_device *dev)
- {
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_frame(xdpf);
- 	unsigned int headroom, frame_size;
- 	void *hard_start;
-+	u8 nr_frags;
-+
-+	/* xdp multi-frags frame */
-+	if (unlikely(xdp_frame_has_frags(xdpf)))
-+		nr_frags = sinfo->nr_frags;
- 
- 	/* Part of headroom was reserved to xdpf */
- 	headroom = sizeof(*xdpf) + xdpf->headroom;
-@@ -582,6 +588,12 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 	if (xdpf->metasize)
- 		skb_metadata_set(skb, xdpf->metasize);
- 
-+	if (unlikely(xdp_frame_has_frags(xdpf)))
-+		xdp_update_skb_shared_info(skb, nr_frags,
+-	if (likely(!xdp_buff_has_frags(xdp)))
+-		goto out;
+-
+-	for (i = 0; i < num_frags; i++) {
+-		skb_frag_t *frag = &sinfo->frags[i];
+-
+-		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+-				skb_frag_page(frag), skb_frag_off(frag),
+-				skb_frag_size(frag), PAGE_SIZE);
+-	}
++	if (unlikely(xdp_buff_has_frags(xdp)))
++		xdp_update_skb_shared_info(skb, num_frags,
 +					   sinfo->xdp_frags_size,
-+					   nr_frags * xdpf->frame_sz,
-+					   xdp_frame_is_frag_pfmemalloc(xdpf));
-+
- 	/* Essential SKB info: protocol and skb->dev */
- 	skb->protocol = eth_type_trans(skb, dev);
++					   num_frags * xdp->frame_sz,
++					   xdp_buff_is_frag_pfmemalloc(xdp));
+ 
+-out:
+ 	return skb;
+ }
  
 -- 
 2.34.1
