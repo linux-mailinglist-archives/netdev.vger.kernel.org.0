@@ -2,122 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 725B5490C7C
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 17:28:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E25F5490C96
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 17:40:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240814AbiAQQ2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 11:28:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235260AbiAQQ2U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 11:28:20 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C445DC061574
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 08:28:20 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id a12so17326904iod.9
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 08:28:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FKuvwksI9n1D5eeZK/jbIF9ogu2ww7rREgxcqTgZGeI=;
-        b=nAl0JX0XnfUvDUPXDdh1iHLGq3wdf7wV9/LL4pUDu+twKRqjsXcp1AWzBjAFNdncQh
-         qWiRBJGxtWuKgSEkkE8uu44o8gQL7gZWM4inggeEkJnw1jOMSnBFSBtzZr0R1DFEXsre
-         kHIwcNGp+4OOR3qHrWvmxzLH8FnOuqsIR3bmv3s/3mALN18EasUgsWUyehsrDLE1/EqV
-         69xSBOCFDW3zxrx/HRS2S1bMIIZJ1uaYA7erczDjD29CDR/X4+V2UpU1+0/9lyF/92Ng
-         fPkjOn+5d6z4A6EVw0R0imOyC8/rLDpJZ+EGS6nRoCCWBeQA1ACx0KZGt2J4jk5HMx+k
-         f1AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FKuvwksI9n1D5eeZK/jbIF9ogu2ww7rREgxcqTgZGeI=;
-        b=qZLrrC6qXdb6kn3eNZfYocq54maYEaLpmBC6uZYtIepad6niwgJL8htg17eKLrzIrg
-         KmXfMgu1B0wMxNqopnEqvrX6h8zNhfbXEjCYGJfBJV9xO1R0hSa/UDiAbgJSIeFXbdoR
-         ZRsp1Yk2H/qavIbgumWyLTEA1swlGh4ka/9oqmUo3CsQXWYgl0olmhJAwEzsjqf0/jt2
-         90PUAlKnhLjVPRfjs1cAe8DMyv88uig2L0ru9w1t2CGotxQfxO/LYcGOZVM1kEu8HD/Q
-         HDWd3XyJ7Zu30aW/IOJu7l1a2r6pTC1Dt9YhAK8oOBSBMoUdspVAz5r+GSERhZH79VIt
-         uyjw==
-X-Gm-Message-State: AOAM530jRqgTDmigUrpmFBDZAeryTy4A3picDpFy/GdIFoad0YzJ0gKL
-        yv/iHXN9rf4P1DUpQmXOWYgdgqT+fGWKEshG/y9BCA==
-X-Google-Smtp-Source: ABdhPJz6axRt7fn2ICl2LmGSHcYtuXt4UvPLKyBS1KE9e+92tT0xCZpbgOIajylVskNZBzDe+OtAkMdljyc5yTHfy20=
-X-Received: by 2002:a5e:890e:: with SMTP id k14mr2343801ioj.151.1642436900085;
- Mon, 17 Jan 2022 08:28:20 -0800 (PST)
+        id S240955AbiAQQkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 11:40:12 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39248 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237683AbiAQQkL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 11:40:11 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 783FEB810F3
+        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 16:40:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 46E40C36AEC;
+        Mon, 17 Jan 2022 16:40:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642437609;
+        bh=gbsLfLWC1EW3Lbg6SDXHbLF9JAUl0CvcoOPwnFnQJ0M=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=aZ8d75o7dymLo72ncTDIUJqOopuDCiqFf66XgXM9JLja+DnnbU+dHhfBMWRT2jE2S
+         j6k+tSYPpaP4JugbgC3K+G3qSYdFn16jhsDAtGIyXBSaQF02Tr8nBHQkD8wCnFVVPf
+         4L/8GsatNR5vuNMt4vuyWzCHiseV7fM3vqvkm0lvXBEeZktuMM1W+IFl09Ehc5m6oL
+         ZgLOoUq4CO+1nqOnQHxxXMXY6bmA2zy9kLBgL3MYDZgSqmsoJMz7M86oo85en+mN5o
+         YTGK6nfOcT9F5tV6B0ixvH7eXugquIef3wTNr7nkKmWX4liC4zeTqyNFiq3AQPvJpK
+         OM8fFRxr/xjZg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2DB3BF6079A;
+        Mon, 17 Jan 2022 16:40:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220114212102.179209-1-german.gomez@arm.com> <c2b960eb-a25e-7ce7-ee4b-2be557d8a213@arm.com>
- <35a4f70f-d7ef-6e3c-dc79-aa09d87f0271@arm.com>
-In-Reply-To: <35a4f70f-d7ef-6e3c-dc79-aa09d87f0271@arm.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Mon, 17 Jan 2022 08:28:07 -0800
-Message-ID: <CAP-5=fUHT29Z8Y5pMdTWK4mLKAXrNTtC5RBpet6UsAy4TLDfDw@mail.gmail.com>
-Subject: Re: [PATCH] perf record/arm-spe: Override attr->sample_period for
- non-libpfm4 events
-To:     German Gomez <german.gomez@arm.com>
-Cc:     James Clark <james.clark@arm.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        Chase Conklin <chase.conklin@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Stephane Eranian <eranian@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, "acme@kernel.org" <acme@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: sfp: fix high power modules without diagnostic
+ monitoring
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164243760918.27988.9049593181239477923.git-patchwork-notify@kernel.org>
+Date:   Mon, 17 Jan 2022 16:40:09 +0000
+References: <E1n9TN3-004CzC-TI@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1n9TN3-004CzC-TI@rmk-PC.armlinux.org.uk>
+To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        bjorn@mork.no, chunkeey@gmail.com, hkallweit1@gmail.com,
+        teruyama@springboard-inc.jp, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 2:27 AM German Gomez <german.gomez@arm.com> wrote:
->
-> Hi James,
->
-> On 17/01/2022 09:59, James Clark wrote:
-> >
-> > On 14/01/2022 21:21, German Gomez wrote:
-> >> A previous commit preventing attr->sample_period values from being
-> >> overridden in pfm events changed a related behaviour in arm_spe.
-> >>
-> >> Before this patch:
-> >> perf record -c 10000 -e arm_spe_0// -- sleep 1
-> >>
-> >> Would not yield an SPE event with period=10000, because the arm-spe code
-> > Just to clarify, this seems like it should say "Would yield", not "Would not yield",
-> > as in it was previously working?
->
-> "this patch" refers to the patch I'm sending, not the one it's fixing.
-> I might have to rewrite this to make it more clear. How about:
->
-> ===
-> A previous patch preventing "attr->sample_period" values from being
-> overridden in pfm events changed a related behaviour in arm-spe.
->
-> Before said patch:
-> perf record -c 10000 -e arm_spe_0// -- sleep 1
->
-> Would yield an SPE event with period=10000. After the patch, the period
-> in "-c 10000" was being ignored because the arm-spe code initializes
-> sample_period to a non-zero value.
->
-> This patch restores the previous behaviour for non-libpfm4 events.
-> ===
+Hello:
 
-Thanks for fixing this, I can add an acked-by for the v2 patch. Could
-we add a test for this to avoid future regressions? There are similar
-tests for frequency like:
-https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/tests/attr/test-record-freq
-based on the attr.py test:
-https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/tests/attr.py
-The test specifies a base type of event attribute and then what is
-modified by the test. It takes a little to get your head around but
-having a test for this would be a welcome addition.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Thanks!
-Ian
+On Mon, 17 Jan 2022 14:52:33 +0000 you wrote:
+> Commit 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change
+> modules") unintetionally changed the semantics for high power modules
+> without the digital diagnostics monitoring. We repeatedly attempt to
+> read the power status from the non-existing 0xa2 address in a futile
+> hope this failure is temporary:
+> 
+> [    8.856051] sfp sfp-eth3: module NTT              0000000000000000 rev 0000  sn 0000000000000000 dc 160408
+> [    8.865843] mvpp2 f4000000.ethernet eth3: switched to inband/1000base-x link mode
+> [    8.873469] sfp sfp-eth3: Failed to read EEPROM: -5
+> [    8.983251] sfp sfp-eth3: Failed to read EEPROM: -5
+> [    9.103250] sfp sfp-eth3: Failed to read EEPROM: -5
+> 
+> [...]
 
-> Thanks for the review,
-> German
+Here is the summary with links:
+  - [net] net: sfp: fix high power modules without diagnostic monitoring
+    https://git.kernel.org/netdev/net/c/5765cee119bf
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
