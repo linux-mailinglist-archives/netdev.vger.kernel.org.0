@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE9C849020E
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 07:39:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 394B7490234
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 07:57:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234761AbiAQGjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 01:39:11 -0500
-Received: from marcansoft.com ([212.63.210.85]:52262 "EHLO mail.marcansoft.com"
+        id S233029AbiAQG5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 01:57:37 -0500
+Received: from marcansoft.com ([212.63.210.85]:56888 "EHLO mail.marcansoft.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231189AbiAQGjL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jan 2022 01:39:11 -0500
+        id S231831AbiAQG5g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jan 2022 01:57:36 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
         (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 6C9773FA5E;
-        Mon, 17 Jan 2022 06:39:01 +0000 (UTC)
-Subject: Re: [PATCH v2 10/35] brcmfmac: firmware: Allow platform to override
- macaddr
-To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 05597425B7;
+        Mon, 17 Jan 2022 06:57:26 +0000 (UTC)
+Subject: Re: [PATCH v2 23/35] brcmfmac: cfg80211: Add support for scan params
+ v2
+To:     Arend Van Spriel <arend.vanspriel@broadcom.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -48,15 +48,15 @@ Cc:     Sven Peter <sven@svenpeter.dev>,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
 References: <20220104072658.69756-1-marcan@marcan.st>
- <20220104072658.69756-11-marcan@marcan.st>
- <199f0a6d-f80d-1600-842d-44fba9b7d5fc@broadcom.com>
+ <20220104072658.69756-24-marcan@marcan.st>
+ <17e26a0de80.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
 From:   Hector Martin <marcan@marcan.st>
-Message-ID: <ef7e23e3-ebbf-090c-f571-6993dac2d01d@marcan.st>
-Date:   Mon, 17 Jan 2022 15:38:59 +0900
+Message-ID: <773f6732-3b2d-3b73-c8e6-0aed89f6b415@marcan.st>
+Date:   Mon, 17 Jan 2022 15:57:24 +0900
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <199f0a6d-f80d-1600-842d-44fba9b7d5fc@broadcom.com>
+In-Reply-To: <17e26a0de80.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: es-ES
 Content-Transfer-Encoding: 7bit
@@ -64,33 +64,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/01/2022 05.14, Arend van Spriel wrote:
-> On 1/4/2022 8:26 AM, Hector Martin wrote:
->> On Device Tree platforms, it is customary to be able to set the MAC
->> address via the Device Tree, as it is often stored in system firmware.
->> This is particularly relevant for Apple ARM64 platforms, where this
->> information comes from system configuration and passed through by the
->> bootloader into the DT.
->>
->> Implement support for this by fetching the platform MAC address and
->> adding or replacing the macaddr= property in nvram. This becomes the
->> dongle's default MAC address.
->>
->> On platforms with an SROM MAC address, this overrides it. On platforms
->> without one, such as Apple ARM64 devices, this is required for the
->> firmware to boot (it will fail if it does not have a valid MAC at all).
+On 05/01/2022 04.46, Arend Van Spriel wrote:
+> On January 4, 2022 8:30:51 AM Hector Martin <marcan@marcan.st> wrote:
 > 
-> What overrides what. Can you elaborate a bit?
+>> This new API version is required for at least the BCM4387 firmware. Add
+>> support for it, with a fallback to the v1 API.
+>>
+>> Acked-by: Linus Walleij <linus.walleij@linaro.org>
+>> Signed-off-by: Hector Martin <marcan@marcan.st>
+>> ---
+>> .../broadcom/brcm80211/brcmfmac/cfg80211.c    | 113 ++++++++++++++----
+>> .../broadcom/brcm80211/brcmfmac/feature.c     |   1 +
+>> .../broadcom/brcm80211/brcmfmac/feature.h     |   4 +-
+>> .../broadcom/brcm80211/brcmfmac/fwil_types.h  |  49 +++++++-
+>> 4 files changed, 145 insertions(+), 22 deletions(-)
+> 
+> Compiling this patch with C=2 gives following warnings:
+> 
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1086:28: 
+> warning: incorrect type in assignment (different base types)
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1086:28: 
+> expected restricted __le16 [usertype] version
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1086:28: got int
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1148:38: 
+> warning: incorrect type in assignment (different base types)
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1148:38: 
+> expected restricted __le32 [usertype] scan_type
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:1148:38: got int
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:789:30: 
+> warning: incorrect type in assignment (different base types)
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:789:30: 
+> expected unsigned char [usertype] scan_type
+> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:789:30: got 
+> restricted __le32 [usertype] scan_type
+> 
+> Will check if this is a valid warning.
 
-The behavior seems to be:
-
-- Use the NVRAM MAC address, if any
-- Use the SROM MAC address, if any
-- Fail to boot
-
-So a platform with a module containing a MAC address may choose to
-override it using the DT mechanism with this patch. This is consistent
-with the behavior of other drivers implementing platform MAC support.
+Those are valid bugs (it'd break on big endian platforms), thanks for
+checking this. Fixed for v3 :)
 
 -- 
 Hector Martin (marcan@marcan.st)
