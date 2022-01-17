@@ -2,19 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CE12490493
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 10:04:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 343AC4904A1
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 10:12:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233687AbiAQJE1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 17 Jan 2022 04:04:27 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:38489 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233693AbiAQJEZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 04:04:25 -0500
+        id S233741AbiAQJMy convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 17 Jan 2022 04:12:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233409AbiAQJMw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 04:12:52 -0500
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC27CC061574;
+        Mon, 17 Jan 2022 01:12:50 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 108BC60010;
-        Mon, 17 Jan 2022 09:04:19 +0000 (UTC)
-Date:   Mon, 17 Jan 2022 10:04:18 +0100
+        by mail.gandi.net (Postfix) with ESMTPSA id 97F3560012;
+        Mon, 17 Jan 2022 09:12:46 +0000 (UTC)
+Date:   Mon, 17 Jan 2022 10:12:45 +0100
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -33,17 +36,17 @@ Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         "linux-wireless@vger.kernel.org Wireless" 
         <linux-wireless@vger.kernel.org>
-Subject: Re: [wpan-next v2 27/27] net: ieee802154: ca8210: Refuse most of
- the scan operations
-Message-ID: <20220117100418.29fe6840@xps13>
-In-Reply-To: <CAB_54W4MP0t1+PQG1hdyLrxhu7+VGUZFaFO85u=Qea095-P8hg@mail.gmail.com>
+Subject: Re: [wpan-next v2 08/27] net: ieee802154: Drop symbol duration
+ settings when the core does it already
+Message-ID: <20220117101245.1946e474@xps13>
+In-Reply-To: <CAB_54W77d_PjX_ZfKJdO4D4hHsAWjw0jWgRA7L0ewNnqApQhcQ@mail.gmail.com>
 References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
-        <20220112173312.764660-28-miquel.raynal@bootlin.com>
-        <CAB_54W5ojqi2obtNLihCMXsZkh+aN_cVbSTRptq3=PXkpknzJQ@mail.gmail.com>
-        <20220113102954.7a0e213e@xps13>
-        <CAB_54W6vnay29dBxpn4EPQXgx1HEXfPm5vsms0q-NpPa2NhE_g@mail.gmail.com>
-        <20220114193740.600f5f33@xps13>
-        <CAB_54W4MP0t1+PQG1hdyLrxhu7+VGUZFaFO85u=Qea095-P8hg@mail.gmail.com>
+        <20220112173312.764660-9-miquel.raynal@bootlin.com>
+        <CAB_54W5QU5JCtQYwvTKREd6ZeQWmC19LF4mj853U0Gz-mCObVQ@mail.gmail.com>
+        <20220113121645.434a6ef6@xps13>
+        <CAB_54W5_x88zVgSJep=yK5WVjPvcWMy8dmyOJWcjy=5o0jCy0w@mail.gmail.com>
+        <20220114112113.63661251@xps13>
+        <CAB_54W77d_PjX_ZfKJdO4D4hHsAWjw0jWgRA7L0ewNnqApQhcQ@mail.gmail.com>
 Organization: Bootlin
 X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
@@ -55,174 +58,145 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Alexander,
 
-alex.aring@gmail.com wrote on Sun, 16 Jan 2022 17:48:03 -0500:
+alex.aring@gmail.com wrote on Sun, 16 Jan 2022 18:21:16 -0500:
 
 > Hi,
 > 
-> On Fri, 14 Jan 2022 at 13:37, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> On Fri, 14 Jan 2022 at 05:21, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 > >
 > > Hi Alexander,
 > >
-> > alex.aring@gmail.com wrote on Thu, 13 Jan 2022 20:00:53 -0500:
+> > alex.aring@gmail.com wrote on Thu, 13 Jan 2022 18:34:00 -0500:
 > >  
 > > > Hi,
 > > >
-> > > On Thu, 13 Jan 2022 at 04:30, Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
+> > > On Thu, 13 Jan 2022 at 06:16, Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
 > > > >
 > > > > Hi Alexander,
 > > > >
-> > > > alex.aring@gmail.com wrote on Wed, 12 Jan 2022 17:48:59 -0500:
+> > > > alex.aring@gmail.com wrote on Wed, 12 Jan 2022 17:26:14 -0500:
 > > > >  
 > > > > > Hi,
 > > > > >
-> > > > > On Wed, 12 Jan 2022 at 12:34, Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
+> > > > > On Wed, 12 Jan 2022 at 12:33, Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
 > > > > > >
-> > > > > > The Cascada 8210 hardware transceiver is kind of a hardMAC which
-> > > > > > interfaces with the softMAC and in practice does not support sending
-> > > > > > anything else than dataframes. This means we cannot send any BEACON_REQ
-> > > > > > during active scans nor any BEACON in general. Refuse these operations
-> > > > > > officially so that the user is aware of the limitation.
+> > > > > > The core now knows how to set the symbol duration in a few cases, when
+> > > > > > drivers correctly advertise the protocols used on each channel. For
+> > > > > > these drivers, there is no more need to bother with symbol duration, so
+> > > > > > just drop the duplicated code.
 > > > > > >
 > > > > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > > > > > > ---
-> > > > > >  drivers/net/ieee802154/ca8210.c | 25 ++++++++++++++++++++++++-
-> > > > > >  1 file changed, 24 insertions(+), 1 deletion(-)
+> > > > > >  drivers/net/ieee802154/ca8210.c | 1 -
+> > > > > >  drivers/net/ieee802154/mcr20a.c | 2 --
+> > > > > >  2 files changed, 3 deletions(-)
 > > > > > >
 > > > > > > diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-> > > > > > index d3a9e4fe05f4..49c274280e3c 100644
+> > > > > > index 82b2a173bdbd..d3a9e4fe05f4 100644
 > > > > > > --- a/drivers/net/ieee802154/ca8210.c
 > > > > > > +++ b/drivers/net/ieee802154/ca8210.c
-> > > > > > @@ -2385,6 +2385,25 @@ static int ca8210_set_promiscuous_mode(struct ieee802154_hw *hw, const bool on)
-> > > > > >         return link_to_linux_err(status);
-> > > > > >  }
+> > > > > > @@ -2977,7 +2977,6 @@ static void ca8210_hw_setup(struct ieee802154_hw *ca8210_hw)
+> > > > > >         ca8210_hw->phy->cca.mode = NL802154_CCA_ENERGY_CARRIER;
+> > > > > >         ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
+> > > > > >         ca8210_hw->phy->cca_ed_level = -9800;
+> > > > > > -       ca8210_hw->phy->symbol_duration = 16 * 1000;
+> > > > > >         ca8210_hw->phy->lifs_period = 40;
+> > > > > >         ca8210_hw->phy->sifs_period = 12;
+> > > > > >         ca8210_hw->flags =
+> > > > > > diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
+> > > > > > index 8aa87e9bf92e..da2ab19cb5ee 100644
+> > > > > > --- a/drivers/net/ieee802154/mcr20a.c
+> > > > > > +++ b/drivers/net/ieee802154/mcr20a.c
+> > > > > > @@ -975,7 +975,6 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
 > > > > > >
-> > > > > > +static int ca8210_enter_scan_mode(struct ieee802154_hw *hw,
-> > > > > > +                                 struct cfg802154_scan_request *request)
-> > > > > > +{
-> > > > > > +       /* This xceiver can only send dataframes */
-> > > > > > +       if (request->type != NL802154_SCAN_PASSIVE)
-> > > > > > +               return -EOPNOTSUPP;
-> > > > > > +
-> > > > > > +       return 0;
-> > > > > > +}
-> > > > > > +
-> > > > > > +static int ca8210_enter_beacons_mode(struct ieee802154_hw *hw,
-> > > > > > +                                    struct cfg802154_beacons_request *request)
-> > > > > > +{
-> > > > > > +       /* This xceiver can only send dataframes */
-> > > > > > +       return -EOPNOTSUPP;
-> > > > > > +}
-> > > > > > +
-> > > > > > +static void ca8210_exit_scan_beacons_mode(struct ieee802154_hw *hw) { }
-> > > > > > +
-> > > > > >  static const struct ieee802154_ops ca8210_phy_ops = {
-> > > > > >         .start = ca8210_start,
-> > > > > >         .stop = ca8210_stop,
-> > > > > > @@ -2397,7 +2416,11 @@ static const struct ieee802154_ops ca8210_phy_ops = {
-> > > > > >         .set_cca_ed_level = ca8210_set_cca_ed_level,
-> > > > > >         .set_csma_params = ca8210_set_csma_params,
-> > > > > >         .set_frame_retries = ca8210_set_frame_retries,
-> > > > > > -       .set_promiscuous_mode = ca8210_set_promiscuous_mode
-> > > > > > +       .set_promiscuous_mode = ca8210_set_promiscuous_mode,
-> > > > > > +       .enter_scan_mode = ca8210_enter_scan_mode,
-> > > > > > +       .exit_scan_mode = ca8210_exit_scan_beacons_mode,
-> > > > > > +       .enter_beacons_mode = ca8210_enter_beacons_mode,
-> > > > > > +       .exit_beacons_mode = ca8210_exit_scan_beacons_mode,
-> > > > > >  };  
+> > > > > >         dev_dbg(printdev(lp), "%s\n", __func__);
+> > > > > >
+> > > > > > -       phy->symbol_duration = 16 * 1000;
+> > > > > >         phy->lifs_period = 40;
+> > > > > >         phy->sifs_period = 12;
+> > > > > >
+> > > > > > @@ -1010,7 +1009,6 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
+> > > > > >         phy->current_page = 0;
+> > > > > >         /* MCR20A default reset value */
+> > > > > >         phy->current_channel = 20;
+> > > > > > -       phy->symbol_duration = 16 * 1000;
+> > > > > >         phy->supported.tx_powers = mcr20a_powers;
+> > > > > >         phy->supported.tx_powers_size = ARRAY_SIZE(mcr20a_powers);
+> > > > > >         phy->cca_ed_level = phy->supported.cca_ed_levels[75];  
 > > > > >
-> > > > > so there is no flag that this driver can't support scanning currently
-> > > > > and it works now because the offload functionality will return
-> > > > > -ENOTSUPP? This is misleading because I would assume if it's not
-> > > > > supported we can do it by software which the driver can't do.  
+> > > > > What's about the atrf86230 driver?  
 > > > >
-> > > > I believe there is a misunderstanding.
+> > > > I couldn't find reliable information about what this meant:
 > > > >
-> > > > This is what I have understood from your previous comments in v1:
-> > > > "This driver does not support transmitting anything else than
-> > > > datagrams", which is what I assumed was a regular data packet. IOW,
-> > > > sending a MAC_CMD such as a beacon request or sending a beacon was not
-> > > > supported physically by the hardware. Hence, most of the scans
-> > > > operations cannot be performed and must be rejected (all but a passive
-> > > > scan, assuming that receiving beacons was okay).
-> > > >  
+> > > >         /* SUB:0 and BPSK:0 -> BPSK-20 */
+> > > >         /* SUB:1 and BPSK:0 -> BPSK-40 */
+> > > >         /* SUB:0 and BPSK:1 -> OQPSK-100/200/400 */
+> > > >         /* SUB:1 and BPSK:1 -> OQPSK-250/500/1000 */
+> > > >
+> > > > None of these comments match the spec so I don't know what to put
+> > > > there. If you know what these protocols are, I will immediately
+> > > > provide this information into the driver and ensure the core handles
+> > > > these durations properly before dropping the symbol_durations settings
+> > > > from the code.  
 > > >
-> > > and I said that this driver is a HardMAC transceiver connected to the
-> > > SoftMAC layer which is already wrong to exist (very special handling
-> > > is required here).
-> > > dataframes here are "data" type frames and I suppose it's also not
-> > > able to deliver/receive other types than data to mac802154.
-> > >
-> > > It seems the author of this driver is happy to have data frames only
-> > > but we need to take care that additional mac802154 handling is simply
-> > > not possible to do here.
-> > >  
-> > > > Please mind the update in that hook which currently is just an FYI from
-> > > > the mac to the drivers and not a "do it by yourself" injunction. So
-> > > > answering -EOPNOTSUPP to the mac here does not mean:
-> > > >         "I cannot handle it by myself, the scan cannot happen"
-> > > > but
-> > > >         "I cannot handle the forged frames, so let's just not try"
-> > > >  
-> > >
-> > > The problem here is that a SoftMAC transceiver should always be
-> > > capable of doing it by software so the "but case" makes no sense in
-> > > this layer.
-> > > On a mac802154 layer and "offload" driver functions as they are and
-> > > they report me "-ENOTSUPP", I would assume that I can go back and do
-> > > it by software which again should always be possible to do in
-> > > mac802154.
-> > >  
-> > > > > ... I see that the offload functions now are getting used and have a
-> > > > > reason to be upstream, but the use of it is wrong.  
-> > > >
-> > > > As a personal matter of taste, I don't like flags when it comes to
-> > > > something complex like supporting a specific operation. Just in the
-> > > > scanning procedure there are 4 different actions and a driver might
-> > > > support only a subset of these, which is totally fine but hard to
-> > > > properly describe by well-named flags. Here the driver hooks say to
-> > > > the driver which are interested "here is what is going to happen" and
-> > > > then they can:
-> > > > - ignore the details by just not implementing the hooks, let the mac do
-> > > >   its job, they will then transmit the relevant frames forged by the
-> > > >   mac
-> > > > - eventually enter a specific mode internally for this operation, but
-> > > >   basically do the same as above, ie. transmitting the frames forged
-> > > >   by the mac
-> > > > - refuse the operation by returning an error code if something cannot
-> > > >   be done
-> > > >
-> > > > I've experienced a number of situations in the MTD world and later with
-> > > > IIO drivers where flags have been remodeled and reused in different
-> > > > manners, until the flag description gets totally wrong and
-> > > > undescriptive regarding what it actually does. Hence my main idea of
-> > > > letting drivers refuse these operations instead of having the mac doing
-> > > > it for them.
-> > > >
-> > > > I can definitely use flags if you want, but in this case, what flags do
-> > > > you want to see?
-> > > >  
-> > >
-> > > Do some phy quirks flags which indicate that the transceiver is not
-> > > capable of doing scan operation by software. Or just use a boolean in
-> > > phy capabilities (but don't export them to userspace, note that this
-> > > flag should be removed later) if this operation is not allowed.  
+> > > I think those are from the transceiver datasheets (which are free to
+> > > access). Can you not simply merge them or is there a conflict?  
 > >
-> > I've added a phy flag to distinguish this driver as early as possible.  
+> > Actually I misread the driver, it supports several kind of chips with
+> > different channel settings and this disturbed me. I downloaded the
+> > datasheet and figured that the number after the protocol is the bit
+> > rate. This helped me to make the connection with what I already know,
+> > so both atusb and atrf86230 drivers have been converted too.  
 > 
-> I was thinking about this a lot and I think the driver is already
-> buggy in many ways e.g. what happens when we do AF_PACKET raw sockets
-> and do some different frame types than data. I have no idea, maybe we
-> should leave it as it is... and simply don't care? Maybe the driver
-> needs to drop a lot of frames if they are different... it runs already
-> different than other transceivers which we don't check at all.
+> and what is about hwsim? I think the table gets too large then...
 
-For now I've handled it with a flag, I'll send the patch as it is so
-that someone else can pick it up if you finally decide to not touch
-this driver for now and change your mind later on.
+I'm sorry but I don't follow you here, what do you mean by "the table
+gets too large"?
 
-I would however argue that having these constraint devices flagged in
-some way is better than nothing. You personally know the issue, but
-newcomers don't.
+> that's why I was thinking of moving that somehow to the regdb, however
+> this is another project as I said and this way is fine. Maybe we use a
+> kind of fallback then? The hwsim phy isn't really any 802.15.4 PHY,
+> it's just memcpy() but it would be nice to be able to test scan with
+> it. So far I understand it is already possible to make something with
+> hwsim here but what about the zero symbol rate and the "waiting
+> period" is zero?
+
+Before this series: many drivers would not set the symbol duration
+properly. In this case the scan will likely not work because wait
+periods will be too short. But that's how it is, we miss some
+information.
+
+But for hwsim, I've handled a lot of situations so yes, there are
+still channels that won't have a proper symbol duration because I just
+don't know them, but for most of them (several pages) it will work like
+a charm.
+
+> 
+> btw:
+> Also for testing with hwsim and the missing features which currently
+> exist. Can we implement some user space test program which replies
+> (active scan) or sends periodically something out via AF_PACKET raw
+> and a monitor interface that should work to test if it is working?
+
+We already have all this handled, no need for extra software. You can
+test active and passive scans between two hwsim devices already:
+
+# iwpan dev wpan0 beacons send interval 15
+# iwpan dev wpan1 scan type active duration 1
+# iwpan dev wpan0 beacons stop
+
+or
+
+# iwpan dev wpan0 beacons send interval 1
+# iwpan dev wpan1 scan type passive duration 2
+# iwpan dev wpan0 beacons stop
+
+> Ideally we could do that very easily with scapy (not sure about their
+> _upstream_ 802.15.4 support). I hope I got that right that there is
+> still something missing but we could fake it in such a way (just for
+> hwsim testing).
+
+I hope the above will match your expectations.
 
 Thanks,
 Miquèl
