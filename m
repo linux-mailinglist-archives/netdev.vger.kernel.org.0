@@ -2,80 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DA9049107E
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 19:56:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BED84910A2
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 20:25:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241447AbiAQSzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 13:55:47 -0500
-Received: from mga02.intel.com ([134.134.136.20]:1175 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233202AbiAQSzq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jan 2022 13:55:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642445746; x=1673981746;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=6lVm6lLsjz6rqvT91yxdYMdAQWa98dgFJHffUpwMuAs=;
-  b=Zl6/voHqYTY6Ov9y941pS9sjOVzzso+f9+cu7kZpks7dsOATbCSLRbvk
-   gty/N7IxseGpkRmLUM+KwmC2lE9jXhVLEViSDVnSKg3NCRVgyyDMshDV1
-   /OvwdpxRA7VvOQ32x9EtDpzYbPnBms2XRVT+2RGcXZG6G7R1t5CSycvqO
-   dqY+oCOg4fjOJHcFcaua/MqQprnb6ZX+CzaxG28TuoOa9vcaEvRtGtOE3
-   75TeqexBDcQMlel6UlfJoVW1cBRGumR7Nj9Lb7nZWmQVzmkpzZxb5+2b0
-   9lregcOISpM5qbiy2t0FGu6fNSyfHel7WXAzbm57MKvFewYXXZbTAnfjD
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="232035683"
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="232035683"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 10:55:46 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="578156706"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 17 Jan 2022 10:55:45 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n9XAO-000Bmh-Of; Mon, 17 Jan 2022 18:55:44 +0000
-Date:   Tue, 18 Jan 2022 02:55:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Gal Pressman <gal@nvidia.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
-Subject: [net:master 63/64] undefined reference to `__sk_defer_free_flush'
-Message-ID: <202201180234.dBCoLWV3-lkp@intel.com>
+        id S241867AbiAQTZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 14:25:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:59317 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233567AbiAQTZm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 14:25:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642447542;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=U7zgtcbyOQ2IQF61UyyXlGKr5QTHAhLGBJ9c6uw19tY=;
+        b=RvMctataiwi7DfenKA5s5EE6ReTa7Fk/Atfxdbyna1c9xX4MzOmN4kCNrLV40lELtw6W/1
+        h9xzTOcttuj5zKkwtsEiDE7T869yI6tUuUxbrfQ87D8CopqZrKLcq09U3iDvODYaN2Emk8
+        7qRrZzuA/AvPcb7nbvJuWHJNHzDKxmY=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-167-mqQfbAlaMembjufPWyOEnw-1; Mon, 17 Jan 2022 14:25:40 -0500
+X-MC-Unique: mqQfbAlaMembjufPWyOEnw-1
+Received: by mail-ed1-f70.google.com with SMTP id s9-20020aa7d789000000b004021d03e2dfso4701497edq.18
+        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 11:25:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=U7zgtcbyOQ2IQF61UyyXlGKr5QTHAhLGBJ9c6uw19tY=;
+        b=wRELp4F2nTyekajLG4RMMnPpDtUG832INXtq70YHqV8AtS5/TGHDHn/RZmtTLPFNUZ
+         Wk+twNdIqWbQlO9wvXimfeN7nmBQBL5kQJfIDF1kcspIbcXTqN1/ogO2nwM6iwrIBIXI
+         4ArOn7obRT2u6cVEtV7FfnGD6oiRompKP3Id/OuLkfcfoxJ9keAaJmeaP3BV6jm0tvWU
+         3PxJtxbLFJt2vke94UrTnnw20ZLzPt58+Dk1adFkwOZ1npXI2sh63oDwL7zEHBitdbOL
+         A0u7SW7mmrucdFe8wY12eRgA5WldQdr7VjrzhqzNn3v7B00+1e/TFdWMsJtUG047qXQz
+         lVbQ==
+X-Gm-Message-State: AOAM5313vukcrmBESM2tXbarUOn753cR9hKdT/9y/2pnXmXLrV/0PTLc
+        gkxQ/nmkpfEsRwHdGJmO7rq+Euxes8nKKmR8MJnZCt3OvhklEfJScBXC9Vx2WBmBPYHvIZh05yB
+        bZep/s9AVYWqQVhr2
+X-Received: by 2002:a05:6402:2706:: with SMTP id y6mr22018978edd.308.1642447539431;
+        Mon, 17 Jan 2022 11:25:39 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwYVNVfAcgJ2llPu7a/nMc/gn1UUYw9BssoK8m78sMP210nEi4Em2ltbJE5yjxFrlh7blWXyA==
+X-Received: by 2002:a05:6402:2706:: with SMTP id y6mr22018950edd.308.1642447539235;
+        Mon, 17 Jan 2022 11:25:39 -0800 (PST)
+Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id u12sm5442243eda.56.2022.01.17.11.25.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Jan 2022 11:25:38 -0800 (PST)
+Date:   Mon, 17 Jan 2022 20:25:37 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jussi Maki <joamaki@gmail.com>, Hangbin Liu <haliu@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCH] bpf/selftests: Fix namespace mount setup in tc_redirect
+Message-ID: <YeXCsTWsvE+a1cld@krava>
+References: <20220104121030.138216-1-jolsa@kernel.org>
+ <CAEf4BzZK1=zdy1_ZdwWXK7Ryk+uWQeSApcpxFT9yMp4bRNanDQ@mail.gmail.com>
+ <Ydabtmk+BmzIxKwJ@krava>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <Ydabtmk+BmzIxKwJ@krava>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git master
-head:   9ea674d7ca4f6ce080b813ac2d9a9397f13d2427
-commit: 79074a72d335dbd021a716d8cc65cba3b2f706ab [63/64] net: Flush deferred skb free on socket destroy
-config: h8300-randconfig-r006-20220116 (https://download.01.org/0day-ci/archive/20220118/202201180234.dBCoLWV3-lkp@intel.com/config)
-compiler: h8300-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=79074a72d335dbd021a716d8cc65cba3b2f706ab
-        git remote add net https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git
-        git fetch --no-tags net master
-        git checkout 79074a72d335dbd021a716d8cc65cba3b2f706ab
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=h8300 SHELL=/bin/bash
+On Thu, Jan 06, 2022 at 08:35:18AM +0100, Jiri Olsa wrote:
+> On Wed, Jan 05, 2022 at 12:40:34PM -0800, Andrii Nakryiko wrote:
+> > On Tue, Jan 4, 2022 at 4:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > >
+> > > The tc_redirect umounts /sys in the new namespace, which can be
+> > > mounted as shared and cause global umount. The lazy umount also
+> > > takes down mounted trees under /sys like debugfs, which won't be
+> > > available after sysfs mounts again and could cause fails in other
+> > > tests.
+> > >
+> > >   # cat /proc/self/mountinfo | grep debugfs
+> > >   34 23 0:7 / /sys/kernel/debug rw,nosuid,nodev,noexec,relatime shared:14 - debugfs debugfs rw
+> > >   # cat /proc/self/mountinfo | grep sysfs
+> > >   23 86 0:22 / /sys rw,nosuid,nodev,noexec,relatime shared:2 - sysfs sysfs rw
+> > >   # mount | grep debugfs
+> > >   debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
+> > >
+> > >   # ./test_progs -t tc_redirect
+> > >   #164 tc_redirect:OK
+> > >   Summary: 1/4 PASSED, 0 SKIPPED, 0 FAILED
+> > >
+> > >   # mount | grep debugfs
+> > >   # cat /proc/self/mountinfo | grep debugfs
+> > >   # cat /proc/self/mountinfo | grep sysfs
+> > >   25 86 0:22 / /sys rw,relatime shared:2 - sysfs sysfs rw
+> > >
+> > > Making the sysfs private under the new namespace so the umount won't
+> > > trigger the global sysfs umount.
+> > 
+> > Hey Jiri,
+> > 
+> > Thanks for the fix. Did you try making tc_redirect non-serial again
+> > (s/serial_test_tc_redirect/test_tc_redirect/) and doing parallelized
+> > test_progs run (./test_progs -j) in a tight loop for a while? I
+> > suspect this might have been an issue forcing us to make this test
+> > serial in the first place, so now that it's fixed, we can make
+> > parallel test_progs a bit faster.
+> 
+> hi,
+> right, will try
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+so I can't reproduce the issue in the first place - that means without my
+fix and with reverted serial_test_tc_redirect change - by running parallelized
+test_progs, could you guys try it?
 
-All errors (new ones prefixed by >>):
+jirka
 
-   h8300-linux-ld: section .init.text LMA [0000000000466120,0000000000498245] overlaps section .text LMA [0000000000000280,0000000000f8ea7f]
-   h8300-linux-ld: section .data VMA [0000000000400000,000000000046611f] overlaps section .text VMA [0000000000000280,0000000000f8ea7f]
-   h8300-linux-ld: net/core/sock.o: in function `sk_destruct':
->> (.text+0x51f1): undefined reference to `__sk_defer_free_flush'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
