@@ -2,110 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77544490B62
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 16:31:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A9DB490B7A
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 16:36:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240468AbiAQPbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 10:31:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233231AbiAQPbl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 10:31:41 -0500
-Received: from forwardcorp1o.mail.yandex.net (forwardcorp1o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9EBC061574
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 07:31:41 -0800 (PST)
-Received: from myt5-23f0be3aa648.qloud-c.yandex.net (myt5-23f0be3aa648.qloud-c.yandex.net [IPv6:2a02:6b8:c12:3e29:0:640:23f0:be3a])
-        by forwardcorp1o.mail.yandex.net (Yandex) with ESMTP id 6A1242E122C;
-        Mon, 17 Jan 2022 18:31:38 +0300 (MSK)
-Received: from myt6-81d8ab6a9f9d.qloud-c.yandex.net (myt6-81d8ab6a9f9d.qloud-c.yandex.net [2a02:6b8:c12:520a:0:640:81d8:ab6a])
-        by myt5-23f0be3aa648.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id LcEUaqS2OL-VbLuw4S7;
-        Mon, 17 Jan 2022 18:31:38 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1642433498; bh=8X7PZokn8LkHwxEgVM1BVQPe6AQ/Oc0frGYhRp5CekA=;
-        h=Message-Id:References:Date:Subject:Cc:To:In-Reply-To:From;
-        b=CdSL0eSZtfMwEHwou40+GjvZL0NlETfdJX/QDGi/gz9aVlziAVytnxV9oXO0F6rLl
-         9KMsZgtEkqnNGw5pdBF8QV9l7zdIMXBQbthSnUQKfNemGoYjv3D7/lpxM1ahvb47vz
-         AzmNNH5FtvfD9LxbsO6uLBczBRCPGDxz7eKDHrq4=
-Authentication-Results: myt5-23f0be3aa648.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from smtpclient.apple (dynamic-red.dhcp.yndx.net [2a02:6b8:0:40c:39d6:dbc7:816e:cad5])
-        by myt6-81d8ab6a9f9d.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id fLH6ksHfQu-VbPKZaU6;
-        Mon, 17 Jan 2022 18:31:37 +0300
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 2
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
-Subject: Re: [RFC PATCH v3 net-next 4/4] tcp: change SYN ACK retransmit
- behaviour to account for rehash
-From:   Akhmat Karakotov <hmukos@yandex-team.ru>
-In-Reply-To: <20211206191111.14376-5-hmukos@yandex-team.ru>
-Date:   Mon, 17 Jan 2022 18:31:37 +0300
-Cc:     edumazet@google.com, Eric Dumazet <eric.dumazet@gmail.com>,
-        Alexander Azimov <mitradir@yandex-team.ru>,
-        tom@herbertland.com, zeil@yandex-team.ru, davem@davemloft.net
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <614E2777-315B-4C47-94B8-F6E9D6F3E4B5@yandex-team.ru>
-References: <20211025203521.13507-1-hmukos@yandex-team.ru>
- <20211206191111.14376-1-hmukos@yandex-team.ru>
- <20211206191111.14376-5-hmukos@yandex-team.ru>
-To:     netdev@vger.kernel.org
-X-Mailer: Apple Mail (2.3654.100.0.2.22)
+        id S240504AbiAQPfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 10:35:52 -0500
+Received: from mail-ot1-f41.google.com ([209.85.210.41]:42957 "EHLO
+        mail-ot1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240489AbiAQPfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 10:35:48 -0500
+Received: by mail-ot1-f41.google.com with SMTP id z25-20020a0568301db900b005946f536d85so11254080oti.9;
+        Mon, 17 Jan 2022 07:35:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=uz9rWH9EExEde9e83L6Ci5xDXHmn67olZ/Bo1AaALIk=;
+        b=mskP4pawIKONJuzpHhQk7qFFaJFpeY2odfRfUpBgrGO0kk4og6k4JuhtFtJXot18wo
+         Zo0qbBM3noJLU7D+bXMop5aI5hWRMERNOwdu11BzWV/+pPzxI+4Vv85y8RIbrRDGQ2wD
+         daYzfcIqNFXaTQuRk90/zIZLsJPNhpzafKR69eJgRAhZ9IUffBppzveQMuGPyAFXWdcI
+         91A4pXPTpewzBFtntKwn9nv+3KOZahV/RHFJ17aACYs+EigfoZ7Ozxlb/ESW51OVD6OJ
+         IkqU/oDqJ7RswTV/8fPiYFMDmNkN8OUSOOPZNC11SFHLN4GHR1SDEOxlVlbbj+Zxm+4+
+         bwsA==
+X-Gm-Message-State: AOAM531Vf6GiUPxGG/cmzcIrwSHzzgULZwyU46LVR+5ZUu71BD2nCL3r
+        HJ32i6PCtnNTLXEARYycmA==
+X-Google-Smtp-Source: ABdhPJzAopoamav84cvKKv308QfSUylWTMQX34XDs9D8wI7eeXkkB7i7iaF0ajflyRA76l5dpV6RKg==
+X-Received: by 2002:a05:6830:1f56:: with SMTP id u22mr9420465oth.138.1642433746928;
+        Mon, 17 Jan 2022 07:35:46 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id bg17sm7015383oib.25.2022.01.17.07.35.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Jan 2022 07:35:45 -0800 (PST)
+Received: (nullmailer pid 3923087 invoked by uid 1000);
+        Mon, 17 Jan 2022 15:35:42 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     srv_heupstream@mediatek.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        angelogioacchino.delregno@collabora.com, macpaul.lin@mediatek.com,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        Jose Abreu <joabreu@synopsys.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        dkirjanov@suse.de, Maxime Coquelin <mcoquelin.stm32@gmail.com>
+In-Reply-To: <20220117070706.17853-8-biao.huang@mediatek.com>
+References: <20220117070706.17853-1-biao.huang@mediatek.com> <20220117070706.17853-8-biao.huang@mediatek.com>
+Subject: Re: [PATCH net-next v12 7/7] net: dt-bindings: dwmac: add support for mt8195
+Date:   Mon, 17 Jan 2022 09:35:42 -0600
+Message-Id: <1642433742.934070.3923086.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear David, We got the patch reviewed couple of weeks ago, please let us =
-know what further steps are required before merge. Thanks, Akhmat.
-
-> On Dec 6, 2021, at 22:11, Akhmat Karakotov <hmukos@yandex-team.ru> =
-wrote:
->=20
-> Disabling rehash behavior did not affect SYN ACK retransmits because =
-hash
-> was forcefully changed bypassing the sk_rethink_hash function. This =
-patch
-> adds a condition which checks for rehash mode before resetting hash.
->=20
-> Signed-off-by: Akhmat Karakotov <hmukos@yandex-team.ru>
+On Mon, 17 Jan 2022 15:07:06 +0800, Biao Huang wrote:
+> Add binding document for the ethernet on mt8195.
+> 
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
 > ---
-> net/core/sock.c       | 3 ++-
-> net/ipv4/tcp_output.c | 4 +++-
-> 2 files changed, 5 insertions(+), 2 deletions(-)
->=20
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index daace0d10156..f2515f657974 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -1372,7 +1372,8 @@ int sock_setsockopt(struct socket *sock, int =
-level, int optname,
-> ret =3D -EINVAL;
-> break;
-> }
-> - sk->sk_txrehash =3D (u8)val;
-> + /* Paired with READ_ONCE() in tcp_rtx_synack() */
-> + WRITE_ONCE(sk->sk_txrehash, (u8)val);
-> break;
->=20
-> default:
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index 6d72f3ea48c4..bbb5f68b947a 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -4108,7 +4108,9 @@ int tcp_rtx_synack(const struct sock *sk, struct =
-request_sock *req)
-> struct flowi fl;
-> int res;
->=20
-> - tcp_rsk(req)->txhash =3D net_tx_rndhash();
-> + /* Paired with WRITE_ONCE() in sock_setsockopt() */
-> + if (READ_ONCE(sk->sk_txrehash) =3D=3D SOCK_TXREHASH_ENABLED)
-> + tcp_rsk(req)->txhash =3D net_tx_rndhash();
-> res =3D af_ops->send_synack(sk, NULL, &fl, req, NULL, =
-TCP_SYNACK_NORMAL,
->  NULL);
-> if (!res) {
-> --=20
-> 2.17.1
->=20
+>  .../bindings/net/mediatek-dwmac.yaml          | 28 ++++++++++++++++---
+>  1 file changed, 24 insertions(+), 4 deletions(-)
+> 
+
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
+
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
+
+Full log is available here: https://patchwork.ozlabs.org/patch/1580608
+
+
+ethernet@1101c000: clock-names: ['axi', 'apb', 'mac_main', 'ptp_ref'] is too short
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: clocks: [[27, 34], [27, 37], [6, 154], [6, 155]] is too short
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: compatible: ['mediatek,mt2712-gmac'] does not contain items matching the given schema
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: compatible: 'oneOf' conditional failed, one must be fixed:
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
+
+ethernet@1101c000: Unevaluated properties are not allowed ('compatible', 'reg', 'interrupts', 'interrupt-names', 'mac-address', 'clock-names', 'clocks', 'power-domains', 'snps,axi-config', 'snps,mtl-rx-config', 'snps,mtl-tx-config', 'snps,txpbl', 'snps,rxpbl', 'clk_csr', 'phy-mode', 'phy-handle', 'snps,reset-gpio', 'mdio' were unexpected)
+	arch/arm64/boot/dts/mediatek/mt2712-evb.dt.yaml
 
