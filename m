@@ -2,146 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F1D7490AC3
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 15:52:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46897490B0A
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 16:02:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237204AbiAQOwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 09:52:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43472 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237192AbiAQOwh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 09:52:37 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D00C061574
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 06:52:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=NXxgQ1um308Mb4XjGp+w/eroauT4pOVuMvzOLNRaUoA=; b=E9FIzWop30hU+4WvYioE6Gmspg
-        d9ZW4l/rZhh9gBGVtelW5kxCIBMm0IXMjkxPfOiNZIr5HL4UbMqOo5x3mh+pPaxcniwA+tF8zGP9B
-        2zFNQYBDOYJu25GgYUSaUVw3XFYp6jinEzz9wVjH+nK8wM6piFj9KYhiJTuA//jd+YpGc7Y6huIE5
-        vHMFIAmM1l9SbmsPGDu34ZxFFxiWpYmy5q5H2jom49gNtRisN1u19arP/09vf7klCZPWjLQ4byVOp
-        +HFe5XKD7gOhDJmaFBeJg8lf7tzdm0Bp0J1dC+yaKIuFGd6XAnDggER7B/bf9BaOzs8oTHIvYFxvu
-        6VR2zkIw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:48162 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1n9TN4-0002io-FK; Mon, 17 Jan 2022 14:52:34 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1n9TN3-004CzC-TI; Mon, 17 Jan 2022 14:52:33 +0000
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        =?utf-8?B?54Wn5bGx5ZGo5LiA?= =?utf-8?B?6YOO?= 
-        <teruyama@springboard-inc.jp>, netdev@vger.kernel.org
-Subject: [PATCH net] net: sfp: fix high power modules without diagnostic
- monitoring
+        id S240074AbiAQPCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 10:02:50 -0500
+Received: from hmm.wantstofly.org ([213.239.204.108]:54250 "EHLO
+        mail.wantstofly.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235061AbiAQPCu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 10:02:50 -0500
+X-Greylist: delayed 312 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Jan 2022 10:02:50 EST
+Received: by mail.wantstofly.org (Postfix, from userid 1000)
+        id 5A6037F078; Mon, 17 Jan 2022 16:57:36 +0200 (EET)
+Date:   Mon, 17 Jan 2022 16:57:36 +0200
+From:   Lennert Buytenhek <buytenh@wantstofly.org>
+To:     Corinna Vinschen <vinschen@redhat.com>
+Cc:     intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: Re: [PATCH 1/2 net-next v4] igc: avoid kernel warning when changing
+ RX ring parameters
+Message-ID: <YeWD4OG+eYr5B8Sd@wantstofly.org>
+References: <20220114194520.1092894-1-vinschen@redhat.com>
+ <20220114194520.1092894-2-vinschen@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1n9TN3-004CzC-TI@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Mon, 17 Jan 2022 14:52:33 +0000
+In-Reply-To: <20220114194520.1092894-2-vinschen@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change
-modules") unintetionally changed the semantics for high power modules
-without the digital diagnostics monitoring. We repeatedly attempt to
-read the power status from the non-existing 0xa2 address in a futile
-hope this failure is temporary:
+On Fri, Jan 14, 2022 at 08:45:19PM +0100, Corinna Vinschen wrote:
 
-[    8.856051] sfp sfp-eth3: module NTT              0000000000000000 rev 0000  sn 0000000000000000 dc 160408
-[    8.865843] mvpp2 f4000000.ethernet eth3: switched to inband/1000base-x link mode
-[    8.873469] sfp sfp-eth3: Failed to read EEPROM: -5
-[    8.983251] sfp sfp-eth3: Failed to read EEPROM: -5
-[    9.103250] sfp sfp-eth3: Failed to read EEPROM: -5
+> Calling ethtool changing the RX ring parameters like this:
+> 
+>   $ ethtool -G eth0 rx 1024
+> 
+> on igc triggers kernel warnings like this:
+> 
+> [  225.198467] ------------[ cut here ]------------
+> [  225.198473] Missing unregister, handled but fix driver
+> [  225.198485] WARNING: CPU: 7 PID: 959 at net/core/xdp.c:168
+> xdp_rxq_info_reg+0x79/0xd0
+> [...]
+> [  225.198601] Call Trace:
+> [  225.198604]  <TASK>
+> [  225.198609]  igc_setup_rx_resources+0x3f/0xe0 [igc]
+> [  225.198617]  igc_ethtool_set_ringparam+0x30e/0x450 [igc]
+> [  225.198626]  ethnl_set_rings+0x18a/0x250
+> [  225.198631]  genl_family_rcv_msg_doit+0xca/0x110
+> [  225.198637]  genl_rcv_msg+0xce/0x1c0
+> [  225.198640]  ? rings_prepare_data+0x60/0x60
+> [  225.198644]  ? genl_get_cmd+0xd0/0xd0
+> [  225.198647]  netlink_rcv_skb+0x4e/0xf0
+> [  225.198652]  genl_rcv+0x24/0x40
+> [  225.198655]  netlink_unicast+0x20e/0x330
+> [  225.198659]  netlink_sendmsg+0x23f/0x480
+> [  225.198663]  sock_sendmsg+0x5b/0x60
+> [  225.198667]  __sys_sendto+0xf0/0x160
+> [  225.198671]  ? handle_mm_fault+0xb2/0x280
+> [  225.198676]  ? do_user_addr_fault+0x1eb/0x690
+> [  225.198680]  __x64_sys_sendto+0x20/0x30
+> [  225.198683]  do_syscall_64+0x38/0x90
+> [  225.198687]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> [  225.198693] RIP: 0033:0x7f7ae38ac3aa
+> 
+> igc_ethtool_set_ringparam() copies the igc_ring structure but neglects to
+> reset the xdp_rxq_info member before calling igc_setup_rx_resources().
+> This in turn calls xdp_rxq_info_reg() with an already registered xdp_rxq_info.
+> 
+> Make sure to unregister the xdp_rxq_info structure first in
+> igc_setup_rx_resources.  Move xdp_rxq_info handling down to be the last
+> action, thus allowing to remove the xdp_rxq_info_unreg call in the error path.
+> 
+> Fixes: 73f1071c1d29 ("igc: Add support for XDP_TX action")
+> Reported-by: Lennert Buytenhek <buytenh@arista.com>
+> Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
+> ---
+>  drivers/net/ethernet/intel/igc/igc_main.c | 20 +++++++++++---------
+>  1 file changed, 11 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+> index 2f17f36e94fd..56ed0f1463e5 100644
+> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+> @@ -505,14 +505,6 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
+>  	u8 index = rx_ring->queue_index;
+>  	int size, desc_len, res;
+>  
+> -	res = xdp_rxq_info_reg(&rx_ring->xdp_rxq, ndev, index,
+> -			       rx_ring->q_vector->napi.napi_id);
+> -	if (res < 0) {
+> -		netdev_err(ndev, "Failed to register xdp_rxq index %u\n",
+> -			   index);
+> -		return res;
+> -	}
+> -
+>  	size = sizeof(struct igc_rx_buffer) * rx_ring->count;
+>  	rx_ring->rx_buffer_info = vzalloc(size);
+>  	if (!rx_ring->rx_buffer_info)
+> @@ -534,10 +526,20 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
+>  	rx_ring->next_to_clean = 0;
+>  	rx_ring->next_to_use = 0;
+>  
+> +	/* XDP RX-queue info */
+> +	if (xdp_rxq_info_is_reg(&rx_ring->xdp_rxq))
+> +		xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
+> +	res = xdp_rxq_info_reg(&rx_ring->xdp_rxq, ndev, index,
+> +			       rx_ring->q_vector->napi.napi_id);
+> +	if (res < 0) {
+> +		netdev_err(ndev, "Failed to register xdp_rxq index %u\n",
+> +			   index);
+> +		goto err;
+> +	}
+> +
+>  	return 0;
+>  
+>  err:
+> -	xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
+>  	vfree(rx_ring->rx_buffer_info);
+>  	rx_ring->rx_buffer_info = NULL;
+>  	netdev_err(ndev, "Unable to allocate memory for Rx descriptor ring\n");
 
-We previosuly assumed such modules were powered up in the correct mode,
-continuing without further configuration as long as the required power
-class was supported by the host.
+This patch fixes the warning...
 
-Restore this behaviour, while preserving the intent of subsequent
-patches to avoid the "Address Change Sequence not supported" warning
-if we are not going to be accessing the DDM address.
+Tested-by: Lennert Buytenhek <buytenh@arista.com>
 
-Fixes: 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change modules")
-Reported-by: 照山周一郎 <teruyama@springboard-inc.jp>
-Tested-by: 照山周一郎 <teruyama@springboard-inc.jp>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/sfp.c | 25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+...but doesn't it now forget to free rx_ring->desc if xdp_rxq_info_reg()
+fails?
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index ab77a9f439ef..4720b24ca51b 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -1641,17 +1641,20 @@ static int sfp_sm_probe_for_phy(struct sfp *sfp)
- static int sfp_module_parse_power(struct sfp *sfp)
- {
- 	u32 power_mW = 1000;
-+	bool supports_a2;
- 
- 	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_POWER_DECL))
- 		power_mW = 1500;
- 	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_HIGH_POWER_LEVEL))
- 		power_mW = 2000;
- 
-+	supports_a2 = sfp->id.ext.sff8472_compliance !=
-+				SFP_SFF8472_COMPLIANCE_NONE ||
-+		      sfp->id.ext.diagmon & SFP_DIAGMON_DDM;
-+
- 	if (power_mW > sfp->max_power_mW) {
- 		/* Module power specification exceeds the allowed maximum. */
--		if (sfp->id.ext.sff8472_compliance ==
--			SFP_SFF8472_COMPLIANCE_NONE &&
--		    !(sfp->id.ext.diagmon & SFP_DIAGMON_DDM)) {
-+		if (!supports_a2) {
- 			/* The module appears not to implement bus address
- 			 * 0xa2, so assume that the module powers up in the
- 			 * indicated mode.
-@@ -1668,11 +1671,25 @@ static int sfp_module_parse_power(struct sfp *sfp)
- 		}
- 	}
- 
-+	if (power_mW <= 1000) {
-+		/* Modules below 1W do not require a power change sequence */
-+		sfp->module_power_mW = power_mW;
-+		return 0;
-+	}
-+
-+	if (!supports_a2) {
-+		/* The module power level is below the host maximum and the
-+		 * module appears not to implement bus address 0xa2, so assume
-+		 * that the module powers up in the indicated mode.
-+		 */
-+		return 0;
-+	}
-+
- 	/* If the module requires a higher power mode, but also requires
- 	 * an address change sequence, warn the user that the module may
- 	 * not be functional.
- 	 */
--	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE && power_mW > 1000) {
-+	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE) {
- 		dev_warn(sfp->dev,
- 			 "Address Change Sequence not supported but module requires %u.%uW, module may not be functional\n",
- 			 power_mW / 1000, (power_mW / 100) % 10);
--- 
-2.30.2
-
+Thank you!
