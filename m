@@ -2,80 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08E1D491154
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 22:33:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48AD249119D
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 23:09:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243269AbiAQVdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 16:33:15 -0500
-Received: from foss.arm.com ([217.140.110.172]:37478 "EHLO foss.arm.com"
+        id S243564AbiAQWJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 17:09:14 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:41134 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243263AbiAQVdP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jan 2022 16:33:15 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 27D21ED1;
-        Mon, 17 Jan 2022 13:33:14 -0800 (PST)
-Received: from [192.168.0.5] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8A1873F774;
-        Mon, 17 Jan 2022 13:33:11 -0800 (PST)
-Subject: Re: [PATCH] perf record/arm-spe: Override attr->sample_period for
- non-libpfm4 events
-To:     Ian Rogers <irogers@google.com>
-Cc:     James Clark <james.clark@arm.com>, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org,
-        Chase Conklin <chase.conklin@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Stephane Eranian <eranian@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, "acme@kernel.org" <acme@kernel.org>
-References: <20220114212102.179209-1-german.gomez@arm.com>
- <c2b960eb-a25e-7ce7-ee4b-2be557d8a213@arm.com>
- <35a4f70f-d7ef-6e3c-dc79-aa09d87f0271@arm.com>
- <CAP-5=fUHT29Z8Y5pMdTWK4mLKAXrNTtC5RBpet6UsAy4TLDfDw@mail.gmail.com>
-From:   German Gomez <german.gomez@arm.com>
-Message-ID: <10cc73f1-53fd-9c5a-7fe2-8cd3786fbe37@arm.com>
-Date:   Mon, 17 Jan 2022 21:32:55 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S243562AbiAQWJO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jan 2022 17:09:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=z9zTWupN5dysA9jrb8zJ+zQdgVK00kYikj0aRQIrxtg=; b=stgQO+eBQnFLwGrgixoOsMUdR1
+        3QTfxTqT18VDu3PqmA2OnW432ZkphqYL/qDXKyYN9PwfZF0pFX7nzlXdrDQUd2sy6zPqsykZp8yL/
+        vm8tuw2fHFgO4AApWmj3yZh/d+m/jszgufGCVZcjttDg0XgKq3UiWtD5bV+KxckboMzM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n9aBM-001gOi-LS; Mon, 17 Jan 2022 23:08:56 +0100
+Date:   Mon, 17 Jan 2022 23:08:56 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sergey Shtylyov <s.shtylyov@omp.ru>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH RFC] phy: make phy_set_max_speed() *void*
+Message-ID: <YeXo+G/roPb2G2rU@lunn.ch>
+References: <a2296c4e-884b-334a-570f-901831bfea3c@omp.ru>
 MIME-Version: 1.0
-In-Reply-To: <CAP-5=fUHT29Z8Y5pMdTWK4mLKAXrNTtC5RBpet6UsAy4TLDfDw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a2296c4e-884b-334a-570f-901831bfea3c@omp.ru>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ian,
+On Tue, Jan 18, 2022 at 12:18:58AM +0300, Sergey Shtylyov wrote:
+> After following the call tree of phy_set_max_speed(), it became clear
+> that this function never returns anything but 0, so we can change its
+> result type to *void* and drop the result checks from the three drivers
+> that actually bothered to do it...
+> 
+> Found by Linux Verification Center (linuxtesting.org) with the SVACE static
+> analysis tool.
+> 
+> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-On 17/01/2022 16:28, Ian Rogers wrote:
-> [...]
-> Thanks for fixing this, I can add an acked-by for the v2 patch. Could
-> we add a test for this to avoid future regressions? There are similar
-> tests for frequency like:
-> https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/tests/attr/test-record-freq
-> based on the attr.py test:
-> https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/tests/attr.py
-> The test specifies a base type of event attribute and then what is
-> modified by the test. It takes a little to get your head around but
-> having a test for this would be a welcome addition.
+Seems reasonable. net-next is closed at the moment, so please repost
+once it opens.
 
-I agree I should have included a test for this fix. I'll look into this for the v2.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Other events such as "-p 10000 -e cycles//" worked fine. Only the ones with aux area tracing (arm_spe, cs_etm, intel_pt) were ignoring the global config flags.
-
-Thank you for the pointers, and the review,
-German
-
->
-> Thanks!
-> Ian
->
->> Thanks for the review,
->> German
+    Andrew
