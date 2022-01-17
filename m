@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2FFE490FEC
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 18:50:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D24E490FED
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 18:50:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241801AbiAQRug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 12:50:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57350 "EHLO
+        id S241904AbiAQRuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 12:50:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241755AbiAQRub (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 12:50:31 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27174C06161C
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 09:50:31 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id t32so11529653pgm.7
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 09:50:31 -0800 (PST)
+        with ESMTP id S241566AbiAQRuc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 12:50:32 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599D6C06173E
+        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 09:50:32 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id q75so3821614pgq.5
+        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 09:50:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=s84gFD6K8nRbdQ0hYrguj6cIm1G19Cm9TiBvajI/L5k=;
-        b=vmNaGihsPygJDRrlTf5JqQ3BYMQfcGgdU9J27WmCEkmFi1kQ9JyNZY87qz8qZG5SJt
-         7mqXxLTNSdDyw4OHx5IW968rbKJPEI1oAPdiHYQGV7YU3jC3GUO88OT8LhxjHcfw7aLk
-         EtQQ9IvJUu+hE80FCBGtJB2+JyEek+M6ngybJ2yjljvA9Cko8hCP1kRUcNiz8CVGDx8X
-         4ZwGcVlLqdSit5tA0aKRHkOGpULdQOBGkapc86nQ4BESPYOQag79Kzh+sXFgaKg6RDty
-         zF1VuEAqBPGoQP+E8Bt4uw/PrCi4h8BfYe6eXWxv8ThC4ZSw0V3KXshPQjYMC3UwqRpH
-         ic/Q==
+        bh=+3obGd755fkb4WLBRvKFVMCj+KdKngjztSAqkM6Xwmk=;
+        b=YifXfObLp8mELHTj52CRs6o3kcWukAQ65Z5U6JH2G4pIffuoojBHhAAxAKhgOirqE5
+         o881PVgenWNKxJvzkB/6UhPkj9ISEC8chx9XHrz4AMLt8MCo1b03UjJBAisg8OwONYHy
+         UWQcGH2QoPjnproplAm99O9svxSUGP+COp244R2WvS0QIDyT8h6OqE0LPbiY/0UqVfKT
+         VSA6/LHltyBlmTkcCgjgazwH/vc2qdrvqGvNyB7nJOgfGL0aOaoH0lKMHHVQi8nZH86D
+         EqFmBCXm/RrlpNGI9RzqBjyyDfVUwAzfMkHAOH6ZgADRHqywszrjj2wCWx04dAJaRL/x
+         5RLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=s84gFD6K8nRbdQ0hYrguj6cIm1G19Cm9TiBvajI/L5k=;
-        b=qi7e+0YjWbYdP3ooYLfQt1HC3VgGOR9nd28nWudO/T6hUY1ylJf4Gwu2IMmfDe/ZtF
-         tiFHXeeAMxoFFNNqtFNzLCHrhxFGru64VuxmqRbipfcEXjNi3BOyTnDDPIYn5qQb5bPF
-         LuheWBrs9YAUUMXV78/dYOODZOqRLy8g7qsjSmpFQycvgDOcWcf20rFASc5xTJ+Yzpju
-         R4oGwChf9vSNTA0NjjdqnX7n6IaDK17yL34zgrKvqkIW5j9O0GZIX2ue83et37AGPSaV
-         w0lNInfNY4HBC0mGRSAH9qu+b5eo5hHlc/QEWXmTDMrt1QiQ4eKtBT4CTcbDmE3yUuhO
-         2iQA==
-X-Gm-Message-State: AOAM533HyZzJogbaJEpzrWiqBi3GLl2CoSa8JTaP7vsydXzeEkWzzmux
-        5SutC6mDjUsyCKdGCptEtFxEhYk2Vzs6IA==
-X-Google-Smtp-Source: ABdhPJxfNNlu2fnYPY2XOvRnEkrCNrep/OStYyLVRQwEPatWN3YA3y3WaoAHNCBoAevZE1YuxrPhXw==
-X-Received: by 2002:a63:7546:: with SMTP id f6mr20055977pgn.480.1642441830362;
-        Mon, 17 Jan 2022 09:50:30 -0800 (PST)
+        bh=+3obGd755fkb4WLBRvKFVMCj+KdKngjztSAqkM6Xwmk=;
+        b=JQsVy9BsfL47hCkoP35Ghv/IiVYLwBZVUfQ5E7FAahEW2F1tC2A62pYRhrL+/hyU5W
+         u9Cr67RjKM+1ZGgwh7czxLvarmDh1/u2MzSfxfZQ9Ca/xICSYDM+W9ygjhJGFQwwpUA3
+         Bg66TUcdjb/+NB4YIHWvAoFz0BISjXU8Krpcr/BAgLabvtiBOznvNWuzy7+L54g3YqbC
+         nLZth2cdclZr8MQDElvTPJvG531UVMG8P2Lv/NTH0tj9i50CF1GlYQB7msfG1goVgwGM
+         JMphDkdZ9eYXpwn4ELGOTmFR81Iu85iUsdURvGhwZ/8fEmkFwiFZjYuLgTdWWsG9X69n
+         XChg==
+X-Gm-Message-State: AOAM530z0/nq8iOrVbHCjQpHbpzyoesBxPL8evyLVRcZFuy7r1xx7HKc
+        qI8qPztsEl/UXNXhyHhJ+sYVONUh8TROmQ==
+X-Google-Smtp-Source: ABdhPJwqf3+qmdJJvOwI43UOIf/C9ZTjCNb46EPgx3o1mI0iNqRodK9sGp7L7zyCeaIaWzibOtAFzA==
+X-Received: by 2002:aa7:8394:0:b0:4be:ab79:fcfa with SMTP id u20-20020aa78394000000b004beab79fcfamr22157065pfm.3.1642441831551;
+        Mon, 17 Jan 2022 09:50:31 -0800 (PST)
 Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id q19sm15819117pfk.131.2022.01.17.09.50.29
+        by smtp.gmail.com with ESMTPSA id q19sm15819117pfk.131.2022.01.17.09.50.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 09:50:29 -0800 (PST)
+        Mon, 17 Jan 2022 09:50:30 -0800 (PST)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     netdev@vger.kernel.org
 Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH v3 iproute2-next 09/11] tunnel: fix clang warning
-Date:   Mon, 17 Jan 2022 09:50:17 -0800
-Message-Id: <20220117175019.13993-10-stephen@networkplumber.org>
+Subject: [PATCH v3 iproute2-next 10/11] libbpf: fix clang warning about format non-literal
+Date:   Mon, 17 Jan 2022 09:50:18 -0800
+Message-Id: <20220117175019.13993-11-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220117175019.13993-1-stephen@networkplumber.org>
 References: <20220117175019.13993-1-stephen@networkplumber.org>
@@ -62,34 +62,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To fix clang warning about passing non-format string split the
-print into two calls.
+Add format attribute to the format string in print routines.
 
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- ip/tunnel.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ lib/bpf_libbpf.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/ip/tunnel.c b/ip/tunnel.c
-index 88585cf3177b..f2632f43babf 100644
---- a/ip/tunnel.c
-+++ b/ip/tunnel.c
-@@ -298,14 +298,7 @@ void tnl_print_endpoint(const char *name, const struct rtattr *rta, int family)
- 			value = "unknown";
- 	}
+diff --git a/lib/bpf_libbpf.c b/lib/bpf_libbpf.c
+index 50ef16bd4612..921716aec8c6 100644
+--- a/lib/bpf_libbpf.c
++++ b/lib/bpf_libbpf.c
+@@ -23,12 +23,14 @@
  
--	if (is_json_context()) {
--		print_string(PRINT_JSON, name, NULL, value);
--	} else {
--		SPRINT_BUF(b1);
--
--		snprintf(b1, sizeof(b1), "%s %%s ", name);
--		print_string(PRINT_FP, NULL, b1, value);
--	}
-+	print_string_name_value(name, value);
+ #include "bpf_util.h"
+ 
+-static int verbose_print(enum libbpf_print_level level, const char *format, va_list args)
++static int __attribute__((format(printf, 2, 0)))
++verbose_print(enum libbpf_print_level level, const char *format, va_list args)
+ {
+ 	return vfprintf(stderr, format, args);
  }
  
- void tnl_print_gre_flags(__u8 proto,
+-static int silent_print(enum libbpf_print_level level, const char *format, va_list args)
++static int __attribute__((format(printf, 2, 0)))
++silent_print(enum libbpf_print_level level, const char *format, va_list args)
+ {
+ 	if (level > LIBBPF_WARN)
+ 		return 0;
 -- 
 2.30.2
 
