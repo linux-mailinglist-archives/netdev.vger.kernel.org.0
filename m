@@ -2,80 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEAFE49093D
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 14:10:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEDFB4909E1
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 15:01:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237126AbiAQNKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 08:10:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231740AbiAQNKM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 08:10:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8FFC061574;
-        Mon, 17 Jan 2022 05:10:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DF52B81014;
-        Mon, 17 Jan 2022 13:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6E589C36AEC;
-        Mon, 17 Jan 2022 13:10:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642425009;
-        bh=1KPr3RJ9vJZ9QbTuZ1L39nuwUAuef3jmkI+BhfeQFZs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fxu+ZB5mZ0CY66YvzvL4Uev03KmHUSJsp4DUEioMNjxqU6h7dRMZ7ds6s6fIpp9iI
-         LLOAEKhKWglnSjPxljyvPTtev+EsjXNIJg79wkme9YxCBQqgYaOmkO0mXqaxxMmtCq
-         fB+JIhgOeEaISFY8x2DR/HHe2Q23P+drK8+qJG1tzT33c1JOrdGProvosL58408agS
-         EHYFv/E0aT2gIUuIhorB6DgzEHWBTDRCqrNrvcKYgk9lRyqU1a5Ynr5tZvaphWSk+t
-         0JIaz/aUopoOK4Y+UMcB88g13+APBEt+jxFzjmIthw7WSOPROYauHtRFAT+FBNpAjl
-         CQibcp5a+MneQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 55401F6079A;
-        Mon, 17 Jan 2022 13:10:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232995AbiAQOBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 09:01:00 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:40590 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232569AbiAQOA7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jan 2022 09:00:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=YS790bExTfkh4PHW3hIrNVTP5XO0J1V7mlWfOzj2+hg=; b=kEgFdw/dWrg94oZxKo8cq/EkPK
+        V5dNV7H5YZA08vwuYe98OcgpKsQuy6JuvzVs5na5hcJsPZaPaGdUQIPZm413eitLoNlK5aUCwq/HR
+        FzjBO4L2dGo2JdZh7OQ//LFe9XTfQ7M2WuNHn0+6+ZxMCBtW2nBfvEuhcl3+lMfi6bQo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n9SYr-001e33-H2; Mon, 17 Jan 2022 15:00:41 +0100
+Date:   Mon, 17 Jan 2022 15:00:41 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, madalin.bucur@nxp.com,
+        robh+dt@kernel.org, mpe@ellerman.id.au, benh@kernel.crashing.org,
+        paulus@samba.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH net 1/4] net/fsl: xgmac_mdio: Add workaround for erratum
+ A-009885
+Message-ID: <YeV2idN2wPzrHI0n@lunn.ch>
+References: <20220116211529.25604-1-tobias@waldekranz.com>
+ <20220116211529.25604-2-tobias@waldekranz.com>
+ <YeSV67WeMTSDigUK@lunn.ch>
+ <87czkqdduh.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: ocelot: Fix the call to
- switchdev_bridge_port_offload
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164242500934.15907.2434323319190112955.git-patchwork-notify@kernel.org>
-Date:   Mon, 17 Jan 2022 13:10:09 +0000
-References: <20220117125300.2399394-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20220117125300.2399394-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, kuba@kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87czkqdduh.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Mon, 17 Jan 2022 13:53:00 +0100 you wrote:
-> In the blamed commit, the call to the function
-> switchdev_bridge_port_offload was passing the wrong argument for
-> atomic_nb. It was ocelot_netdevice_nb instead of ocelot_swtchdev_nb.
-> This patch fixes this issue.
+On Mon, Jan 17, 2022 at 08:24:22AM +0100, Tobias Waldekranz wrote:
+> On Sun, Jan 16, 2022 at 23:02, Andrew Lunn <andrew@lunn.ch> wrote:
+> > On Sun, Jan 16, 2022 at 10:15:26PM +0100, Tobias Waldekranz wrote:
+> >> Once an MDIO read transaction is initiated, we must read back the data
+> >> register within 16 MDC cycles after the transaction completes. Outside
+> >> of this window, reads may return corrupt data.
+> >> 
+> >> Therefore, disable local interrupts in the critical section, to
+> >> maximize the probability that we can satisfy this requirement.
+> >
+> > Since this is for net, a Fixes: tag would be nice. Maybe that would be
+> > for the commit which added this driver, or maybe when the DTSI files
+> > for the SOCs which have this errata we added?
 > 
-> Fixes: 4e51bf44a03af6 ("net: bridge: move the switchdev object replay helpers to "push" mode")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> 
-> [...]
+> Alright, I wasn't sure how to tag WAs for errata since it is more about
+> the hardware than the driver.
 
-Here is the summary with links:
-  - [net] net: ocelot: Fix the call to switchdev_bridge_port_offload
-    https://git.kernel.org/netdev/net/c/c0b7f7d7e0ad
+The tag gives the backporter an idea how far back to go. If support
+for this SoC has only recently been added, there is no need to
+backport a long way. If it is an old SoC, then maybe more effort
+should be put into the backport?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Should I send a v2 even if nothing else
+> pops up, or is this more of a if-you're-sending-a-v2-anyway type of
+> comment?
 
+If you reply with a Fixes: patchwork will automagically append it like
+it does Reviewed-by, Tested-by etc.
 
+   Andrew
