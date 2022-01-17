@@ -2,107 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 325C049085A
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 13:10:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F4BD49085D
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 13:12:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236883AbiAQMKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 07:10:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34760 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236825AbiAQMK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 07:10:29 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A754C061574
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 04:10:29 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id m196so16744766ybf.4
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 04:10:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=08UG9ldMiIKdmS2iZih9on1+nM9rLQX/zKMslKeCB3s=;
-        b=emibynnmj4EemfDu6T1rlrvbnLOnzyB3cFNGmi6t3wYeydZL9oaAkCxZl7iNPUTvq8
-         DaoK4ZtoO5mADE523sOFcHsLpANa1Igvc2VNYgPFr9bQtnWvpr+lHPV4RW835knmZjoB
-         AotliXGncABAgVJFHGW++3wCK7B9gAMEBCGaoyF9N3T73K8PBARDuWr86FCJbiHeZZfk
-         8Eqp/O7v2AQy0h8xwAv+MWPOS1+grfZMUaKsc7oqocJaHCjEUROqvLXAQzZWNjxAuIaM
-         m/4inTZbv8K+OV5Epxos3CcB4gC9B6RuTlyW+0jdsZu6cOfj7WMhxHDDSN2U95JhDeYF
-         bc1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=08UG9ldMiIKdmS2iZih9on1+nM9rLQX/zKMslKeCB3s=;
-        b=7vkVKvAFNPIHa8EC3o7LD38lojwEiYA8ksWW3wrK5Qr540cNELo88Mkr0XSoUUzkEl
-         6kLFqN4sNwgYT+8+h7zQCNUSwWGRkCl2QWXtUu+g3Sc95/seWSTyhNuSRA9Myc7dTl1C
-         mnWf/CHXEJTuKov8MxIlIM3Y/jAr8l65R/Wja8jal/FGL8f5GKp8nps724OkN9rnoqWq
-         JwuPT9TIY2WCR4Lyp+ed86zEX1P6+Gb3CYXON3O/d2V9XGv9Qtsygm/l4PW678ufR8ry
-         Vtn5+Ya2LTa70/iqotsDTZ83Ce9IIAbqXzy1Lswsjy3GGw3bW0gZ+bkEYUXQ+ow47Xf4
-         PxaA==
-X-Gm-Message-State: AOAM532t2LBrNJ4ZXQl4Nhx8LZsKHY9WZ8Qf1Ka7a9G/1Q5qgDk4PXh9
-        FplZsPcbpPCTFiqC1dsXypCVA1WNhhsuOGf59EQ=
-X-Google-Smtp-Source: ABdhPJylY6BsyWJCNB7oiEiKqydJrF5p+f96U5eAjqrEVwZUwB8sqrA18G59RkAP/hBasXtASZQ3TK2G9xcq22Nnmhc=
-X-Received: by 2002:a25:bcc9:: with SMTP id l9mr5208103ybm.176.1642421428594;
- Mon, 17 Jan 2022 04:10:28 -0800 (PST)
+        id S236946AbiAQML7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 07:11:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38528 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236825AbiAQML6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 07:11:58 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C8AE61171;
+        Mon, 17 Jan 2022 12:11:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDB9CC36AE3;
+        Mon, 17 Jan 2022 12:11:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642421517;
+        bh=6OapI7HG5+JvXcjhQ4RNwOTwEz8NgDsoFy++fuoJeZM=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=EF8ZbFnuYHoObTvwKrVGQ0PXhzn1zC43qh+q6J2ApP295CNJngmV6bDfdWsZ64CFG
+         YUaqIj4UYEEWtmIrGgE251aqAV6nnu4Y4uDnFAUhr12c+jvivCWyl4QgEf5GpqG//a
+         mlK1QEwQqVlWgu2xDeQLMfh5xZVng+1Fh+giyGkFZhGgnorBP1MLMQxnF/ifKrsRg6
+         NcpYtqk7dl8hG/h2NOmZCZ6OiZJPAizsXGEVUNxyhDYTEvX68wgz6eBdUeIfYfyiTN
+         R5NrComeByw1fw9+dgEHq0twqI+nOISHhDpnTnbLTMGg2ZIOoPV2dFEw8BzuVzZdOK
+         E5VHEbGqyhHLA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-wireless@vger.kernel.org, tony0620emma@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Pkshih <pkshih@realtek.com>
+Subject: Re: [PATCH 1/4] rtw88: pci: Change type of rtw_hw_queue_mapping() and ac_to_hwq to enum
+References: <20220114234825.110502-1-martin.blumenstingl@googlemail.com>
+        <20220114234825.110502-2-martin.blumenstingl@googlemail.com>
+Date:   Mon, 17 Jan 2022 14:11:50 +0200
+In-Reply-To: <20220114234825.110502-2-martin.blumenstingl@googlemail.com>
+        (Martin Blumenstingl's message of "Sat, 15 Jan 2022 00:48:22 +0100")
+Message-ID: <87k0eysgs9.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Received: by 2002:a05:7000:7e42:0:0:0:0 with HTTP; Mon, 17 Jan 2022 04:10:28
- -0800 (PST)
-Reply-To: fahham.abuahmad1971@aol.com
-From:   "Mr. Amir Aziz" <imfbenin16@gmail.com>
-Date:   Mon, 17 Jan 2022 13:10:28 +0100
-Message-ID: <CAE0dybHUBbrwYUSsvjBytSC_huVJSmk-cwYt2smFK4-6mQOdkA@mail.gmail.com>
-Subject: Dear friend Contact my secretary
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear friend Contact my secretary
+Martin Blumenstingl <martin.blumenstingl@googlemail.com> writes:
 
+> rtw_hw_queue_mapping() and ac_to_hwq[] hold values of type enum
+> rtw_tx_queue_type. Change their types to reflect this to make it easier
+> to understand this part of the code.
+>
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
+>  drivers/net/wireless/realtek/rtw88/pci.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+> index a0991d3f15c0..13f1f50b2867 100644
+> --- a/drivers/net/wireless/realtek/rtw88/pci.c
+> +++ b/drivers/net/wireless/realtek/rtw88/pci.c
+> @@ -669,7 +669,7 @@ static void rtw_pci_deep_ps(struct rtw_dev *rtwdev, bool enter)
+>  	spin_unlock_bh(&rtwpci->irq_lock);
+>  }
+>  
+> -static u8 ac_to_hwq[] = {
+> +static enum rtw_tx_queue_type ac_to_hwq[] = {
+>  	[IEEE80211_AC_VO] = RTW_TX_QUEUE_VO,
+>  	[IEEE80211_AC_VI] = RTW_TX_QUEUE_VI,
+>  	[IEEE80211_AC_BE] = RTW_TX_QUEUE_BE,
 
-I am sorry to tell you about my successes getting the fund remitted
-through a co-operation of new business partner from U-Emirates I tried
-my possible best to involves you=E2=80=99re in Gold and Diamond business,
-Almighty decided whole conditions I am presently in Bangladesh for
-project/investments with my owner percentage share of total fund sum
+Shouldn't ac_to_hwq be static const?
 
-I don=E2=80=99t forget you past attempts/effort for assists me in remittanc=
-e
-of the fund despite that it=E2=80=99s failed us that period time
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-You should contact my secretary in Burkina Faso his Name. Mr. fahham
-abuahmad and his Email.  fahham.abuahmad1971@aol.com
-
-Tell/advice him to send you ATM Visa Card sum of (USD $2,500,000) I
-kept for your compensations in all past attempts/effort you made for
-assist me in past I so much appreciated your assist/effort during the
-period time so feel free get in touch with my secretary his name Mr.
-fahham abuahmad instructs him where to send the ATM Visa Card worth of
-(USD $2,500,000) to you.
-
-This amount is me and my new partner contributed it to offered you
-amount (USD $1,500,000) is from my own percentage share then my new
-partner offered you (USD $1,000,000) from his own percentage share
-because I explained everything to him that you are the first person I
-contacted who assisting me but you couldn=E2=80=99t make it he says okay
-there=E2=80=99s no problem
-
-Now you should keep everything secret/confidential for my successfully
-because I know that it was only you knew how I made this money in life
-so kept everything secret/confidential, I hope you understood reason
-why this big amount of money was kept for you??
-
-Please du inform me immediately you received the ATM Visa Card sum of
-(USD $2,500,000) so that we will share our joys after all suffering at
-past time period, am here because I and my new partner having big
-investment projects at hands now
-
-You should remembered that I have forward instructions to the
-secretary on your behalf to send the ATM Visa Card to you immediately,
-so feel free to contact my secretary so that he will send the ATM Visa
-Card sum of Two Million Five-Hundred Thousand United State Dollars
-(USD $2,500,000) to you immediately without delay.
-
-Yours faithfully
-Mr. Amir Aziz
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
