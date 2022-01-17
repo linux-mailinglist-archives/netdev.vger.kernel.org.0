@@ -2,25 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11FF6490A4D
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 15:30:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4ED7490A53
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 15:30:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238744AbiAQOaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 09:30:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238653AbiAQOaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 09:30:25 -0500
-Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A13C061574;
-        Mon, 17 Jan 2022 06:30:24 -0800 (PST)
+        id S239062AbiAQOaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 09:30:35 -0500
+Received: from marcansoft.com ([212.63.210.85]:55760 "EHLO mail.marcansoft.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238653AbiAQOad (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jan 2022 09:30:33 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 19C1341AC8;
-        Mon, 17 Jan 2022 14:30:14 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 1055041E96;
+        Mon, 17 Jan 2022 14:30:22 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -48,46 +45,41 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH v3 0/9] misc brcmfmac fixes (M1/T2 series spin-off)
-Date:   Mon, 17 Jan 2022 23:29:10 +0900
-Message-Id: <20220117142919.207370-1-marcan@marcan.st>
+Subject: [PATCH v3 1/9] brcmfmac: pcie: Release firmwares in the brcmf_pcie_setup error path
+Date:   Mon, 17 Jan 2022 23:29:11 +0900
+Message-Id: <20220117142919.207370-2-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220117142919.207370-1-marcan@marcan.st>
+References: <20220117142919.207370-1-marcan@marcan.st>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi everyone,
+This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
+the CLM blob is released in the device remove path.
 
-This series contains just the fixes / misc improvements from the
-previously submitted series:
+Fixes: 82f93cf46d60 ("brcmfmac: get chip's default RAM info during PCIe setup")
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-brcmfmac: Support Apple T2 and M1 platforms
-
-Patches 8-9 aren't strictly bugfixes but rather just general
-improvements; they can be safely skipped, although patch 8 will be a
-dependency of the subsequent series to avoid a compile warning.
-
-Hector Martin (9):
-  brcmfmac: pcie: Release firmwares in the brcmf_pcie_setup error path
-  brcmfmac: firmware: Allocate space for default boardrev in nvram
-  brcmfmac: firmware: Do not crash on a NULL board_type
-  brcmfmac: pcie: Declare missing firmware files in pcie.c
-  brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
-  brcmfmac: pcie: Fix crashes due to early IRQs
-  brcmfmac: of: Use devm_kstrdup for board_type & check for errors
-  brcmfmac: fwil: Constify iovar name arguments
-  brcmfmac: pcie: Read the console on init and shutdown
-
- .../broadcom/brcm80211/brcmfmac/firmware.c    |  5 ++
- .../broadcom/brcm80211/brcmfmac/fwil.c        | 34 ++++----
- .../broadcom/brcm80211/brcmfmac/fwil.h        | 28 +++----
- .../wireless/broadcom/brcm80211/brcmfmac/of.c |  8 +-
- .../broadcom/brcm80211/brcmfmac/pcie.c        | 77 ++++++++-----------
- .../broadcom/brcm80211/brcmfmac/sdio.c        |  1 -
- 6 files changed, 72 insertions(+), 81 deletions(-)
-
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+index 8b149996fc00..f876b1d8d00d 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -1777,6 +1777,8 @@ static void brcmf_pcie_setup(struct device *dev, int ret,
+ 	ret = brcmf_chip_get_raminfo(devinfo->ci);
+ 	if (ret) {
+ 		brcmf_err(bus, "Failed to get RAM info\n");
++		release_firmware(fw);
++		brcmf_fw_nvram_free(nvram);
+ 		goto fail;
+ 	}
+ 
 -- 
 2.33.0
 
