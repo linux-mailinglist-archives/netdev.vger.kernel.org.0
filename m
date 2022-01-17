@@ -2,124 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BF9E49102C
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 19:20:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8191349102E
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 19:20:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242223AbiAQSUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 13:20:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35906 "EHLO
+        id S242421AbiAQSUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 13:20:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiAQSUF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 13:20:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E71BC061574;
-        Mon, 17 Jan 2022 10:20:05 -0800 (PST)
+        with ESMTP id S229657AbiAQSUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 13:20:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72279C061574;
+        Mon, 17 Jan 2022 10:20:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C6D06100E;
-        Mon, 17 Jan 2022 18:20:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D5F9C36AE3;
-        Mon, 17 Jan 2022 18:20:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3DE83B81151;
+        Mon, 17 Jan 2022 18:20:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE0C7C36AE7;
+        Mon, 17 Jan 2022 18:20:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642443604;
-        bh=zLGeYHy6RxeDRs/7PXGDuFwinvTJa8TuCQCs9UarAA4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=p9zXwaAL4xy9J7O61LYb/yOVEzDGdJIEey7bSgXyAzmaNLB0VeO1+5qpqDlbGqltL
-         6TAefnD6rPJCR5kjbJP7GzyMsjchB+p4Vkf38+l8SBiuWu/gwQnm9EWiolQ+gZ446z
-         7fSIHFTLKFwru9qV7WUS3nY4Jb34g7II62HgZhfIZMKbtFfdCLg3lvvDOEUbAeItFb
-         Pxj1J7M/Cf+HKTjXB1JaHfSVTi30U90dtgliQORx7UXYuqa14t4CbHGenBCPNeWWgr
-         TBsolNtD1YzzKGmBNxVeDUaglIdd8N+JTICVTzmil99857k25aVnkeRE7iOEkjQVLI
-         fR5C5dok9rs+Q==
+        s=k20201202; t=1642443606;
+        bh=XqlsuvsI2zGRiD3mhCiQ5ztRlavu05NdmDc6XNOtFlA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Z82aMkICwVjCVqU9T+ZFcw0IScnG2g7WamSA3SO7CyTEtM/uqHFkDuAJDNLt3xvUK
+         VgfzmTM++WlEl+1iIx/+Fz5UitnafnO7L3eUWRbv15vSvibdTAei5wRB8Afcr82kdG
+         HNHUbMqaptkxlGfO4uZ6IHVK1tUp0nntQ1AFTFv6gi5mGDstLMVDw+tyQCqlkCcGan
+         eKqROs7nixGXj2Yx4XRuZWH+z4uQQ6xacw3BpUsgA/85MOhnpyMUyipxZd7rUlLL/a
+         DSXFgo21ZbYfeDsh2qvWSVWixVXDgcjAB5UF4DUfjwTiYnWaLYlHjJVY4lMny2DfVX
+         E6L392oEvjbaw==
 From:   Kalle Valo <kvalo@kernel.org>
 To:     linux-wireless@vger.kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         sfr@canb.auug.org.au, lkp@intel.com
-Subject: [PATCH wireless v2 1/2] MAINTAINERS: add common wireless and wireless-next trees
-Date:   Mon, 17 Jan 2022 20:19:57 +0200
-Message-Id: <20220117181958.3509-1-kvalo@kernel.org>
+Subject: [PATCH wireless v2 2/2] MAINTAINERS: remove extra wireless section
+Date:   Mon, 17 Jan 2022 20:19:58 +0200
+Message-Id: <20220117181958.3509-2-kvalo@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220117181958.3509-1-kvalo@kernel.org>
+References: <20220117181958.3509-1-kvalo@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For easier maintenance we have decided to create common wireless and
-wireless-next trees for all wireless patches. Old mac80211 and wireless-drivers
-trees will not be used anymore.
-
-While at it, add a wiki link to wireless drivers section and a patchwork link
-to 802.11, mac80211 and rfkill sections. Also use https in patchwork links.
+There's an unneeded and almost empty wireless section in MAINTAINERS, seems to
+be leftovers from commit 0e324cf640fb ("MAINTAINERS: changes for wireless"). I
+don't see any need for that so let's remove it.
 
 Signed-off-by: Kalle Valo <kvalo@kernel.org>
 ---
 
-Intel kernel test robot maintainers, please update your configuration so
-that the new trees are build tested. Reports can be sent to
-linux-wireless@vger.kernel.org.
-
 v2:
 
-* use https on patchwork links
+* new patch
 
- MAINTAINERS | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ MAINTAINERS | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 306de106f31b..f67e7dae2c55 100644
+index f67e7dae2c55..ae00e2b5e8dc 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -190,8 +190,9 @@ M:	Johannes Berg <johannes@sipsolutions.net>
- L:	linux-wireless@vger.kernel.org
- S:	Maintained
- W:	https://wireless.wiki.kernel.org/
--T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git
--T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git
-+Q:	https://patchwork.kernel.org/project/linux-wireless/list/
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git
- F:	Documentation/driver-api/80211/cfg80211.rst
- F:	Documentation/networking/regulatory.rst
- F:	include/linux/ieee80211.h
-@@ -11308,8 +11309,9 @@ M:	Johannes Berg <johannes@sipsolutions.net>
- L:	linux-wireless@vger.kernel.org
- S:	Maintained
- W:	https://wireless.wiki.kernel.org/
--T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git
--T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git
-+Q:	https://patchwork.kernel.org/project/linux-wireless/list/
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git
- F:	Documentation/networking/mac80211-injection.rst
- F:	Documentation/networking/mac80211_hwsim/mac80211_hwsim.rst
- F:	drivers/net/wireless/mac80211_hwsim.[ch]
-@@ -13302,9 +13304,10 @@ NETWORKING DRIVERS (WIRELESS)
- M:	Kalle Valo <kvalo@kernel.org>
- L:	linux-wireless@vger.kernel.org
- S:	Maintained
--Q:	http://patchwork.kernel.org/project/linux-wireless/list/
--T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git
--T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git
-+W:	https://wireless.wiki.kernel.org/
-+Q:	https://patchwork.kernel.org/project/linux-wireless/list/
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git
- F:	Documentation/devicetree/bindings/net/wireless/
- F:	drivers/net/wireless/
+@@ -13441,10 +13441,6 @@ F:	include/net/tls.h
+ F:	include/uapi/linux/tls.h
+ F:	net/tls/*
  
-@@ -16391,8 +16394,9 @@ M:	Johannes Berg <johannes@sipsolutions.net>
- L:	linux-wireless@vger.kernel.org
- S:	Maintained
- W:	https://wireless.wiki.kernel.org/
--T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git
--T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git
-+Q:	https://patchwork.kernel.org/project/linux-wireless/list/
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git
- F:	Documentation/ABI/stable/sysfs-class-rfkill
- F:	Documentation/driver-api/rfkill.rst
- F:	include/linux/rfkill.h
+-NETWORKING [WIRELESS]
+-L:	linux-wireless@vger.kernel.org
+-Q:	http://patchwork.kernel.org/project/linux-wireless/list/
+-
+ NETXEN (1/10) GbE SUPPORT
+ M:	Manish Chopra <manishc@marvell.com>
+ M:	Rahul Verma <rahulv@marvell.com>
 -- 
 2.20.1
 
