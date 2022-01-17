@@ -2,94 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6F04911BC
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 23:31:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B6904911DC
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 23:44:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243613AbiAQWbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 17:31:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:26072 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238567AbiAQWbp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 17:31:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642458705;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FL822A+VhuSR8ouSoFdCDXJX7fbLnOA4cmggcaKq1ko=;
-        b=Te5sMuXo3EoowvB26sbT9xghEb9jHXJb2wpvOWM4HhwK4lWA0/v7M45iFoL85fCO6dhe2p
-        sFnO3qDLyKys4yXKU9hcqpphnVRkjaGKGOxugZ66BRpFRGx9z2/o9+6MTMPZiCMSaMioyZ
-        8Pe4VRH6gCA+mSI+WqhcjXNmu3KPc4o=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-671-1S6vjQOzMkOcmfUuiwq_lQ-1; Mon, 17 Jan 2022 17:31:43 -0500
-X-MC-Unique: 1S6vjQOzMkOcmfUuiwq_lQ-1
-Received: by mail-ed1-f71.google.com with SMTP id r14-20020aa7da0e000000b004021fa39843so4594880eds.15
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 14:31:43 -0800 (PST)
+        id S243658AbiAQWoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 17:44:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237619AbiAQWoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 17:44:02 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5994FC061574;
+        Mon, 17 Jan 2022 14:44:02 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id g81-20020a1c9d54000000b0034cd1acd9b5so1376696wme.1;
+        Mon, 17 Jan 2022 14:44:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Wao4zNgGs9ZKNZbt2qayI01/XFGowYUKQrNSetaj2LY=;
+        b=A/aSkySXAtUPt4vln9q5nyQym03kwx5QcKNTPHqtQOHVJN7raMjYotqF2qbi4m/OwT
+         1L6PkFG6xqWGPrXGYBL1upiG2I6hY1sL4NJrQOuyrhBrHaW2UJ8+2Y5i9DW3y/nL/oWe
+         ukWqlshoX1xETKh7m+dEFZrYLjqBoBxjvvfvQoNqsJIV1Q6YcyAs0EoDDXaLrJiKgIWM
+         1U2da+2M+aud/sCSJ3uAvl1JlcbryUZBkw/bvevD1V8K3fRBCD9yzybF+nCyMV3PalyV
+         6eYz6/2lhAlZfFk1N2kvZ4//i3QmcfuH82U3+nDvrtOT3ZVFyuis/dML8e8ALejhBa48
+         I02Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FL822A+VhuSR8ouSoFdCDXJX7fbLnOA4cmggcaKq1ko=;
-        b=dWLT+Fy2/Qyb1EaHu2ntOqtEXqAxm2hECdaIjS5UjwOcRLnq1pJeV4k9M+zHjI4BC/
-         dYAV/F7zgl0oW4dFMjUwKJFwpp8s3vcsc9ZpIjNe01Y38Lnvvb7HHf6O+R5PbkB13k52
-         Ilvi2lm5mXmaQQQfnzbSffqEWe0vjkIIWe1qU0KjhnYsUdW3OLk5AgPsEWqFQYA9eiDi
-         yZnHGxj+MlvJg+K1a3w+Ph6njsNbsJJDlydUJti67rIAHQMx19OFs1e8lmuzuKf3U0Sp
-         +NtDQ4f/mKKbwgBgOyy5dcatCqWuUYdrz927rTLJgm9w5MiLSuhsJ4keWNyPDTqQTkdw
-         rbPQ==
-X-Gm-Message-State: AOAM533Injil1QgPhNe+fku2acSASfy7tgh2eF6f7mobK/XewFvPc3aA
-        DL4ZNMt0oh6307eecFGNenhA7eh0MDCWTV1XVKfe8xRckl9C8Nz2lA10Mm9U6L5fI84V4DPCLs2
-        YlbM8IZ6HverOMG9W
-X-Received: by 2002:a17:907:3f94:: with SMTP id hr20mr8801513ejc.88.1642458702587;
-        Mon, 17 Jan 2022 14:31:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzFtcIaT07HfzGtTIKKXfoD/SNDOq7+REx2KhQH3zo4ePI7rSI/H0kRcW3ViUs+z49kNyQvBw==
-X-Received: by 2002:a17:907:3f94:: with SMTP id hr20mr8801484ejc.88.1642458702391;
-        Mon, 17 Jan 2022 14:31:42 -0800 (PST)
-Received: from redhat.com ([2.55.154.241])
-        by smtp.gmail.com with ESMTPSA id a1sm6330754edu.17.2022.01.17.14.31.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 14:31:39 -0800 (PST)
-Date:   Mon, 17 Jan 2022 17:31:30 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        christophe.jaillet@wanadoo.fr, dapeng1.mi@intel.com,
-        david@redhat.com, elic@nvidia.com, eperezma@redhat.com,
-        flyingpenghao@gmail.com, flyingpeng@tencent.com,
-        gregkh@linuxfoundation.org, guanjun@linux.alibaba.com,
-        jasowang@redhat.com, jean-philippe@linaro.org,
-        jiasheng@iscas.ac.cn, johan@kernel.org, keescook@chromium.org,
-        labbott@kernel.org, lingshan.zhu@intel.com, lkp@intel.com,
-        luolikang@nsfocus.com, lvivier@redhat.com, pasic@linux.ibm.com,
-        sgarzare@redhat.com, somlo@cmu.edu, trix@redhat.com,
-        wu000273@umn.edu, xianting.tian@linux.alibaba.com,
-        xuanzhuo@linux.alibaba.com, yun.wang@linux.alibaba.com
-Subject: Re: [GIT PULL] virtio,vdpa,qemu_fw_cfg: features, cleanups, fixes
-Message-ID: <20220117172924-mutt-send-email-mst@kernel.org>
-References: <20220114153515-mutt-send-email-mst@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Wao4zNgGs9ZKNZbt2qayI01/XFGowYUKQrNSetaj2LY=;
+        b=CzPbnvsyI8/xrLhHlHJWFbBv176JDzdOx+aQwY7/6ZU1RteOq9KWiCysNE7v+SU3BZ
+         JBNfpoEnaj144EsKkuL5UfN+0p0oEwPhQ7QPIYKOBcp6tDyqM2QftkCJxS9FGunqLTov
+         hMtVqc66cwcxinH6eW3cOjW1JvY4g0rxpO4qHkkGn0AFDuU8JSXBAcoj16Rm78bZaVHG
+         VAzKqXmsliELE8bLrvR4K4LjjVbLSuqv4Moqu1ITVWbn+KmSu0gWCMkT1N9c2yRnIva9
+         3WprJk0RgOR2KDCKVXI3J19k0CTjvtlAH6b87GXM3aKO/oI342WmoWn6AAefBe/bRRu5
+         MbXg==
+X-Gm-Message-State: AOAM533Zd87IrXT99C1KA4/z0AHUZSBN8mrqsqU3ymJ+ZVFbpjS52aHO
+        +FqEobSRrR2QY/mTy9Wh12h0hTyv8IX37rfqY5k=
+X-Google-Smtp-Source: ABdhPJyL58sAM8T6BbJ0TLFb0ZO9PYpAbLLBdRpgLkUDdtCXsSmV+4YUzHFTzOjz55/alteSgytrzoytPY/YNqLRCwU=
+X-Received: by 2002:a1c:ed01:: with SMTP id l1mr29835529wmh.185.1642459441022;
+ Mon, 17 Jan 2022 14:44:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220114153515-mutt-send-email-mst@kernel.org>
+References: <20220117115440.60296-1-miquel.raynal@bootlin.com> <20220117115440.60296-28-miquel.raynal@bootlin.com>
+In-Reply-To: <20220117115440.60296-28-miquel.raynal@bootlin.com>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Mon, 17 Jan 2022 17:43:49 -0500
+Message-ID: <CAB_54W562uzk3NzXDTgRLbQzi=hgQDntJOqmMDVZwaJ_eDZZMQ@mail.gmail.com>
+Subject: Re: [PATCH v3 27/41] net: mac802154: Introduce a tx queue flushing mechanism
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org Wireless" 
+        <linux-wireless@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 03:35:15PM -0500, Michael S. Tsirkin wrote:
-> Jean-Philippe Brucker (5):
->       iommu/virtio: Add definitions for VIRTIO_IOMMU_F_BYPASS_CONFIG
->       iommu/virtio: Support bypass domains
->       iommu/virtio: Sort reserved regions
->       iommu/virtio: Pass end address to viommu_add_mapping()
->       iommu/virtio: Support identity-mapped domains
+Hi,
 
-Linus, just making sure we are on the same page: Jean-Philippe
-asked me to drop these patches since another version has been
-accepted into another tree. So I did and sent v2 of the pull.
-Hope that's clear and sorry about the noise.
+On Mon, 17 Jan 2022 at 06:55, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+...
+>
+>         /* stop hardware - this must stop RX */
+> diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
+> index 0291e49058f2..37d5438fdb3f 100644
+> --- a/net/mac802154/ieee802154_i.h
+> +++ b/net/mac802154/ieee802154_i.h
+> @@ -122,6 +122,7 @@ extern struct ieee802154_mlme_ops mac802154_mlme_wpan;
+>
+>  void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb);
+>  void ieee802154_xmit_sync_worker(struct work_struct *work);
+> +void ieee802154_sync_tx(struct ieee802154_local *local);
+>  netdev_tx_t
+>  ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev);
+>  netdev_tx_t
+> diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+> index de5ecda80472..d1fd2cc67cbe 100644
+> --- a/net/mac802154/tx.c
+> +++ b/net/mac802154/tx.c
+> @@ -48,6 +48,7 @@ void ieee802154_xmit_sync_worker(struct work_struct *work)
+>
+>         kfree_skb(skb);
+>         atomic_dec(&local->phy->ongoing_txs);
+> +       wake_up(&local->phy->sync_txq);
 
--- 
-MST
+if (atomic_dec_and_test(&hw->phy->ongoing_txs))
+      wake_up(&hw->phy->sync_txq);
 
+>         netdev_dbg(dev, "transmission failed\n");
+>  }
+>
+> @@ -117,6 +118,11 @@ ieee802154_hot_tx(struct ieee802154_local *local, struct sk_buff *skb)
+>         return ieee802154_tx(local, skb);
+>  }
+>
+> +void ieee802154_sync_tx(struct ieee802154_local *local)
+> +{
+> +       wait_event(local->phy->sync_txq, !atomic_read(&local->phy->ongoing_txs));
+> +}
+> +
+>  netdev_tx_t
+>  ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>  {
+> diff --git a/net/mac802154/util.c b/net/mac802154/util.c
+> index db2ac53b937e..230fe3390df7 100644
+> --- a/net/mac802154/util.c
+> +++ b/net/mac802154/util.c
+> @@ -90,6 +90,7 @@ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
+>  after_wakeup:
+>         dev_consume_skb_any(skb);
+>         atomic_dec(&hw->phy->ongoing_txs);
+> +       wake_up(&hw->phy->sync_txq);
+
+if (atomic_dec_and_test(&hw->phy->ongoing_txs))
+      wake_up(&hw->phy->sync_txq);
+
+- Alex
