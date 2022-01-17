@@ -2,179 +2,384 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C712E49091E
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 14:01:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0364490935
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 14:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240078AbiAQNAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 08:00:38 -0500
-Received: from mail-db8eur05on2062.outbound.protection.outlook.com ([40.107.20.62]:39969
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229563AbiAQNAh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jan 2022 08:00:37 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SN2k/HRUMCGMj0k4+6IuDhTZox4lo46thQvSuPQiCUsE0xRmQ3swraXt3B9r8LL2geZby3Px5V4JbY5uE5CQFey1HnWSEzno6Xauysw4IRRrXBfciJVYZBjI4Qtl4t1zqlZtTY03dKMiVFwr2S3MZWdHFKiRzYrEaLvBzFpIRNWWgL7gXNRYBtS2pFZrB/GhDwb+rNlWHdXcn62uZfh0mB4E8Pv/r96ufShllpSVYq4DvT37bkNGrFL2PCBAUjEdZrRRfumUYCKjrrjnQMCh5NB4iVgvyiteUsw00FsbGcAoj97Di7FcJNoO+FSEAQZAm6UPUHn+h8tFcmgZmfioQQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1CaXDhLBfvLt6OgALKuKOTAujOp4J51eFKHMZjQ93mM=;
- b=Qb+eAu+/bALnpGGOE5vqltEET2/R1Y6060zOrv+cafXt0drkQ/gKdDAAJTqKwZ1dVT6DmnZOlYElzwt5OsxG4OfsP96BZKSHYt+RVUfNPxektEQp+8eRvfuSnNWCrkXrjo9bpz4yvfgtkWVXIXOFiipQ+FoE0ZeeUiupfIqbknkfDXPn/oaAHWtSmxjRpHjlJUU/+5gAnKM0slCcCPvVSInwlTpeslL4AsoTWtd8sXDZ03MJoyF4YMVpEoRGugWv/Uhu27PRhi2JuSwmkMZusOfjVZHcVIo1g6+vn7YiDBz1NEaNk6+A0jcpqIHeOy/PTcf8fktqVfgQTVo8PnEsag==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1CaXDhLBfvLt6OgALKuKOTAujOp4J51eFKHMZjQ93mM=;
- b=MN6NiMutNHbym0RcCeNTbc5dtMOVwt5bq9FDbaftO9cG3nd9xN1VNF18GNxbGiBmJrxM7AMdMNiWkx2qhlocUBgXUj0aM8sJJCWvLrOdSnPU8nNoCyAWzJkUWnEG2LaplpyaUQdDVUFD1MNVBjvOwlLaEAfIb4lBtnVLQy8XSSs=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0402MB3407.eurprd04.prod.outlook.com (2603:10a6:803:5::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.12; Mon, 17 Jan
- 2022 13:00:35 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4888.013; Mon, 17 Jan 2022
- 13:00:35 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: Re: [PATCH net] net: ocelot: Fix the call to
- switchdev_bridge_port_offload
-Thread-Topic: [PATCH net] net: ocelot: Fix the call to
- switchdev_bridge_port_offload
-Thread-Index: AQHYC6D0ZcgPGGB5b02M9wrfL+TskaxnLSsA
-Date:   Mon, 17 Jan 2022 13:00:35 +0000
-Message-ID: <20220117130034.jzm72mj42354y6fe@skbuf>
-References: <20220117125300.2399394-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20220117125300.2399394-1-horatiu.vultur@microchip.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4474083a-428b-4dc7-1941-08d9d9b95a32
-x-ms-traffictypediagnostic: VI1PR0402MB3407:EE_
-x-microsoft-antispam-prvs: <VI1PR0402MB340777C6F7ABDF8BCC4D6829E0579@VI1PR0402MB3407.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:494;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bmO+N5N4EMO9GHipUYfI6+BxHapwRwi2bRAduBds7DoWtN6kMD7ySm5g73t/3L6l0/zO0tMiv9wZari1lTUlCLdk/fp5UCeeMu+9IEehkTSfTyl0+VufmQ5zahhMZAvAwg8/TW+8m97QM/qCAOs3lKeLDF3docAN9uDMJIdE38JHnUiVSVsVjACnIWGDkNYokF34tNQMm6iClTvoWUUnq7gddxEqObRQFTuPW9D100lfhsMNrbZkWDSCJ2Se9e7elu+P2oOrsudpnKw8TiEQG6bhAFdVmdiDuejsBjx1TQNfPYOW4lLKyPcmPhcXCz/r6TELLo6N+lNoVuUkdGmJEwWmLRq85pOGgsnlek4hh0AOVnb2p5nJwJkLjwKT/BBdw2du+YuyKR42QwTWtzWhP0DdiL+Gq8sGRTRWpI07fMjHfeW2Hrjc8irIIGyaqwDbL6nF/FiuXARYmM5ElaOe3M7UlSO8zFKvzSGWVBseSNxyG07bhuN78j24+vPk12tXs28JSJKDXfHOknxIGgOg2dPsUUWrFxmvV2FeAeWzQj/IU3yGQjqOiPEE0UbZWsd5rSH0ZKyWByGjDPgC6OVTFkZ9KX0EuIlZXzI3xbb6U/Ufn1bILsffvBrz9kq8rGl2Y78ISW/dSyDSRtKgt2yLbYSHUKPZE0MVXvDjwYZFPpFpIMP+GOv2ZEacA1iOG39qOt2BVqrLkiAekkTTx3V5ag==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(91956017)(26005)(83380400001)(508600001)(6916009)(8936002)(66476007)(1076003)(6512007)(5660300002)(6506007)(66946007)(86362001)(76116006)(38070700005)(122000001)(44832011)(71200400001)(64756008)(186003)(66446008)(8676002)(66556008)(54906003)(316002)(33716001)(38100700002)(6486002)(2906002)(9686003)(4326008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ebrCjUSqqPbjfhnp+tir7mdgG5C9ReePlg+mlu74Br3qoxgeTo2P5v29TDMe?=
- =?us-ascii?Q?tJTevws0kDVWN6oI+HkICGsJYV/OwxIEzS3YHzVUsUvrg13Ygk/alITO1Vwt?=
- =?us-ascii?Q?pmnC99gPRCl6MdKV1BsysECybWRFkA7Nwxlji/IpdoI7WjB2E6V8KWjWhvAa?=
- =?us-ascii?Q?x4vDQadMU67vH550+1VJzWtKQ3i4tsLrbWR8t0lg1NgzdCjHzmkPpylNgB1O?=
- =?us-ascii?Q?TfiKGq7GAoa+cHKyNJORr8yZq6/xxH8mkTm4GJ/TcQJqGwR4JWYHnPAtNGxC?=
- =?us-ascii?Q?jOL2/XRM0HhBVb6ITRlLeaMKd7lPAWBQFDWnSug6LSWW1AXzOJq+OX95DFu/?=
- =?us-ascii?Q?DzFLES4tIB0DPKy6kgAoLZYzpKQ2ua14K04uNGeg+QyBuMpH1OvdbOjtd0bE?=
- =?us-ascii?Q?nNxlPikjN4LyZE66mQhWRMOkgtH5pvmmSu8kIMieUz+D1TctvA9NNc5Fir1/?=
- =?us-ascii?Q?T9ZZpNcz1iHsyCw8hcXqcsWiFQOAFM6UN/e/FefVlYvlDIjSCpOvrd1KFuOZ?=
- =?us-ascii?Q?wxh2y3MlJ4Fq9HCibegoAfmpB1NaAvp+1NSsxIc8PrxSdX7PFBFOk8mEwYC3?=
- =?us-ascii?Q?cEfOIgc76AyGjGEbWF85OUT4ZU3e0p3YNmLzeE/wjRNZ6EUAXHSXQtp52xAS?=
- =?us-ascii?Q?/okf0c1a9zcZRP6Bmlq4qcC/5RH8DuMAjdZ7Unjdxg5BTsCwCYwERcdFECr/?=
- =?us-ascii?Q?04kRo50a+IFQemcJd7if+6FUk4dOoi2yQDUgM6l2wuhhLz0bk8AcwjgATVRI?=
- =?us-ascii?Q?VISy8MQMsw44c5/WfUdGeAjTbnIsQan6lN1zVzaVFlM24N8YXj1B5CBgCiGD?=
- =?us-ascii?Q?tuan0p+KfEiIqyjrXc4/3+sr3EaUxd1B9CxH7BVtpxgt7g/pbSPnImFd70//?=
- =?us-ascii?Q?fEZ3sSrPOzg06zPUhMELflq4izeGo4guqn26mQybCerSDsbl3lTnbz0MD2jg?=
- =?us-ascii?Q?cX6c7dQeg41AhTdcT7SHeKheOVPpYy2c4btJ6OPacK5Fkh3VaKZufXOp9AaL?=
- =?us-ascii?Q?Dq+7UNQ9LeMo5UnyQxm/7SYiegs7SO2Iph92E9E0TDVlzdc0jFHI7Q9Xa11k?=
- =?us-ascii?Q?W//TT4ysRUwphjmo4JXOW38vrl9CgvgvdZ4Sa8vuP0IO5LU4Fz/Flum6JXpQ?=
- =?us-ascii?Q?jALUWCJjE6Noz26H4GD2fCIefdxoknK2tj2baSF9i/WNTYi3opFPdrDRJa78?=
- =?us-ascii?Q?j/NCVyzpEb53+zPQKpwL6UUN/EqBtw28Hw+zXjuv3JCDcE7Twx7tByEfq1nQ?=
- =?us-ascii?Q?Wkz+atXb/j5EjS6brMQ0/hlW/G+RDs0s8n1zlwjTifvD34olDQju/5TvhDW+?=
- =?us-ascii?Q?//CKAR+5JGat4gWl5M5U8WOlpFFpDiI4eYFTZO2KTc9uI68liAXLELRSIK1V?=
- =?us-ascii?Q?43VpanLnforjVypMXRWDNaSbgAzkKdwHUaUFqJiHxVAUU27HNZOUO8Clrah4?=
- =?us-ascii?Q?YKFOXsZEkUnjjN5ZILuXdFZySE80mkSQ6K1gAhYLtKwIWYhoq9TJ2rGlYNbr?=
- =?us-ascii?Q?xNPSrAC7GhCNS1XBenuDNzhGkC3/wWrwRaKu20BG/iZqlYIO3J3SYpgpX1Ey?=
- =?us-ascii?Q?QxwdpQFCl5QTuTppImm9pDbloVIHnlUUjCbkuJ5YyyBKRLPYDUjDKAJKv1Od?=
- =?us-ascii?Q?POQzkOL2PayOU5MFs0HTIN4=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <F22B98968113FE47B2A9F9A52AD6AADC@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S240113AbiAQNIj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 17 Jan 2022 08:08:39 -0500
+Received: from mail-vk1-f169.google.com ([209.85.221.169]:46789 "EHLO
+        mail-vk1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232521AbiAQNIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 08:08:35 -0500
+Received: by mail-vk1-f169.google.com with SMTP id bj47so10282848vkb.13;
+        Mon, 17 Jan 2022 05:08:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=LbGCIVR09xEJePWZW3UCqvYJkRRDeetDnk36pAUGg0E=;
+        b=ftkjAhMVJt7Qfzld6v1FIdOIb44AJ6uxI6bbMWFI5fLvXiFecNHI3oDKn0eNBua+XK
+         G3EDONvVg5OlZiLh17aCj9dW9BmhJ/exlPkFh+kMI6/nBUogDtfyMQhJKLtbFRV09W3I
+         Oao1NqvJgS4Io4wIVbgAsMurEM5JSP9iioOP1Ld2BVCKQThs0GU6RDjrfJwL4lWNEJ4Q
+         qkpOsefUDSD07WBvqJ6Dz6/Ylj5D1guWWUdptrA67zFrlVuOqz5IGITOaURa6gUZEtLB
+         uzxSY/u4aEHUuFfD+ZWTJjo1suaZZ1UKe7sDv+ROR4fAZTYN9bEcegXf9LDl5nwFJlZN
+         4Llw==
+X-Gm-Message-State: AOAM530YAlCz0nlDTLgje+pmKOh/rAKhxR+HiAjrH3meDDlxNBm8WxkG
+        /PSQOR0O6xrO/DVpjSvdmWFyBurEF6TlC8Ah
+X-Google-Smtp-Source: ABdhPJyTpIA6gzT5NBqz6holcKjSvHe1PT+vs5Dd5pVwzT2cMaFGOsXUErm0902hZvve4qj5O6AC5A==
+X-Received: by 2002:a1f:a010:: with SMTP id j16mr7392334vke.29.1642424914037;
+        Mon, 17 Jan 2022 05:08:34 -0800 (PST)
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
+        by smtp.gmail.com with ESMTPSA id b8sm3577395vsl.19.2022.01.17.05.08.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 05:08:32 -0800 (PST)
+Received: by mail-ua1-f51.google.com with SMTP id r15so30328315uao.3;
+        Mon, 17 Jan 2022 05:08:31 -0800 (PST)
+X-Received: by 2002:a67:e95a:: with SMTP id p26mr3535723vso.38.1642424911445;
+ Mon, 17 Jan 2022 05:08:31 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4474083a-428b-4dc7-1941-08d9d9b95a32
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jan 2022 13:00:35.3639
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jdnX1t1MIPXRli7UEuKUTZJYslwRRWfJC6nTVkgZTC0eSOqw3TCaLg5iUGchOsqqSKyd0TDl3DwRLOmbAy575g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3407
+References: <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
+ <Yd9L9SZ+g13iyKab@sirena.org.uk> <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
+ <20220114092557.jrkfx7ihg26ekzci@pengutronix.de> <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
+ <20220114202226.ugzklxv4wzr6egwj@pengutronix.de> <c9026f17-2b3f-ee94-0ea3-5630f981fbc1@omp.ru>
+ <CAMuHMdXVbRudGs69f9ZzaP1PXhteDNZiXA658eMFAwP4nr9r3w@mail.gmail.com>
+ <20220117092444.opoedfcf5k5u6otq@pengutronix.de> <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
+ <20220117114923.d5vajgitxneec7j7@pengutronix.de>
+In-Reply-To: <20220117114923.d5vajgitxneec7j7@pengutronix.de>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 17 Jan 2022 14:08:19 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
+Message-ID: <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
+        openipmi-developer@lists.sourceforge.net,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        platform-driver-x86@vger.kernel.org,
+        Benson Leung <bleung@chromium.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-edac@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        linux-mediatek@lists.infradead.org,
+        Brian Norris <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 01:53:00PM +0100, Horatiu Vultur wrote:
-> In the blamed commit, the call to the function
-> switchdev_bridge_port_offload was passing the wrong argument for
-> atomic_nb. It was ocelot_netdevice_nb instead of ocelot_swtchdev_nb.
-> This patch fixes this issue.
->=20
-> Fixes: 4e51bf44a03af6 ("net: bridge: move the switchdev object replay hel=
-pers to "push" mode")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  drivers/net/ethernet/mscc/ocelot_net.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/etherne=
-t/mscc/ocelot_net.c
-> index 8115c3db252e..e271b6225b72 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_net.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_net.c
-> @@ -1187,7 +1187,7 @@ static int ocelot_netdevice_bridge_join(struct net_=
-device *dev,
->  	ocelot_port_bridge_join(ocelot, port, bridge);
-> =20
->  	err =3D switchdev_bridge_port_offload(brport_dev, dev, priv,
-> -					    &ocelot_netdevice_nb,
-> +					    &ocelot_switchdev_nb,
->  					    &ocelot_switchdev_blocking_nb,
->  					    false, extack);
->  	if (err)
-> @@ -1201,7 +1201,7 @@ static int ocelot_netdevice_bridge_join(struct net_=
-device *dev,
-> =20
->  err_switchdev_sync:
->  	switchdev_bridge_port_unoffload(brport_dev, priv,
-> -					&ocelot_netdevice_nb,
-> +					&ocelot_switchdev_nb,
->  					&ocelot_switchdev_blocking_nb);
->  err_switchdev_offload:
->  	ocelot_port_bridge_leave(ocelot, port, bridge);
-> @@ -1214,7 +1214,7 @@ static void ocelot_netdevice_pre_bridge_leave(struc=
-t net_device *dev,
->  	struct ocelot_port_private *priv =3D netdev_priv(dev);
-> =20
->  	switchdev_bridge_port_unoffload(brport_dev, priv,
-> -					&ocelot_netdevice_nb,
-> +					&ocelot_switchdev_nb,
->  					&ocelot_switchdev_blocking_nb);
->  }
-> =20
-> --=20
-> 2.33.0
+Hi Uwe,
+
+On Mon, Jan 17, 2022 at 12:49 PM Uwe Kleine-König
+<u.kleine-koenig@pengutronix.de> wrote:
+> On Mon, Jan 17, 2022 at 11:35:52AM +0100, Geert Uytterhoeven wrote:
+> > On Mon, Jan 17, 2022 at 10:24 AM Uwe Kleine-König
+> > <u.kleine-koenig@pengutronix.de> wrote:
+> > > On Mon, Jan 17, 2022 at 09:41:42AM +0100, Geert Uytterhoeven wrote:
+> > > > On Sat, Jan 15, 2022 at 9:22 PM Sergey Shtylyov <s.shtylyov@omp.ru> wrote:
+> > > > > On 1/14/22 11:22 PM, Uwe Kleine-König wrote:
+> > > > > > You have to understand that for clk (and regulator and gpiod) NULL is a
+> > > > > > valid descriptor that can actually be used, it just has no effect. So
+> > > > > > this is a convenience value for the case "If the clk/regulator/gpiod in
+> > > > > > question isn't available, there is nothing to do". This is what makes
+> > > > > > clk_get_optional() and the others really useful and justifies their
+> > > > > > existence. This doesn't apply to platform_get_irq_optional().
+> > > > >
+> > > > >    I do understand that. However, IRQs are a different beast with their
+> > > > > own justifications...
+> > > >
+> > > > > > clk_get_optional() is sane and sensible for cases where the clk might be
+> > > > > > absent and it helps you because you don't have to differentiate between
+> > > > > > "not found" and "there is an actual resource".
+> > > > > >
+> > > > > > The reason for platform_get_irq_optional()'s existence is just that
+> > > > > > platform_get_irq() emits an error message which is wrong or suboptimal
+> > > > >
+> > > > >    I think you are very wrong here. The real reason is to simplify the
+> > > > > callers.
+> > > >
+> > > > Indeed.
+> > >
+> > > The commit that introduced platform_get_irq_optional() said:
+> > >
+> > >         Introduce a new platform_get_irq_optional() that works much like
+> > >         platform_get_irq() but does not output an error on failure to
+> > >         find the interrupt.
+> > >
+> > > So the author of 8973ea47901c81a1912bd05f1577bed9b5b52506 failed to
+> > > mention the real reason? Or look at
+> > > 31a8d8fa84c51d3ab00bf059158d5de6178cf890:
+> > >
+> > >         [...] use platform_get_irq_optional() to get second/third IRQ
+> > >         which are optional to avoid below error message during probe:
+> > >         [...]
+> > >
+> > > Look through the output of
+> > >
+> > >         git log -Splatform_get_irq_optional
+> > >
+> > > to find several more of these.
+> >
+> > Commit 8973ea47901c81a1 ("driver core: platform: Introduce
+> > platform_get_irq_optional()") and the various fixups fixed the ugly
+> > printing of error messages that were not applicable.
+> > In hindsight, probably commit 7723f4c5ecdb8d83 ("driver core:
+> > platform: Add an error message to platform_get_irq*()") should have
+> > been reverted instead, until a platform_get_irq_optional() with proper
+> > semantics was introduced.
 >
+> ack.
+>
+> > But as we were all in a hurry to kill the non-applicable error
+> > message, we went for the quick and dirty fix.
+> >
+> > > Also I fail to see how a caller of (today's) platform_get_irq_optional()
+> > > is simpler than a caller of platform_get_irq() given that there is no
+> > > semantic difference between the two. Please show me a single
+> > > conversion from platform_get_irq to platform_get_irq_optional that
+> > > yielded a simplification.
+> >
+> > That's exactly why we want to change the latter to return 0 ;-)
+>
+> OK. So you agree to my statement "The reason for
+> platform_get_irq_optional()'s existence is just that platform_get_irq()
+> emits an error message [...]". Actually you don't want to oppose but
+> say: It's unfortunate that the silent variant of platform_get_irq() took
+> the obvious name of a function that could have an improved return code
+> semantic.
+>
+> So my suggestion to rename todays platform_get_irq_optional() to
+> platform_get_irq_silently() and then introducing
+> platform_get_irq_optional() with your suggested semantic seems
+> intriguing and straigt forward to me.
 
-Oh my... I remember noticing this issue when preparing those patches,
-and also noticed that ocelot doesn't implement SWITCHDEV_FDB_{ADD,DEL}_TO_D=
-EVICE
-anyway. So I wanted to pass NULL anyway. I don't know what happened,
-I must have made the fixup on a branch which wasn't the branch that I poste=
-d.
-Anyway.
+I don't really see the point of needing platform_get_irq_silently(),
+unless as an intermediary step, where it's going to be removed again
+once the conversion has completed.
+Still, the rename would touch all users at once anyway.
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>=
+> Another thought: platform_get_irq emits an error message for all
+> problems. Wouldn't it be consistent to let platform_get_irq_optional()
+> emit an error message for all problems but "not found"?
+> Alternatively remove the error printk from platform_get_irq().
+
+Yes, all problems but not found are real errors.
+
+> > > So you need some more effort to convince me of your POV.
+> > >
+> > > > Even for clocks, you cannot assume that you can always blindly use
+> > > > the returned dummy (actually a NULL pointer) to call into the clk
+> > > > API.  While this works fine for simple use cases, where you just
+> > > > want to enable/disable an optional clock (clk_prepare_enable() and
+> > > > clk_disable_unprepare()), it does not work for more complex use cases.
+> > >
+> > > Agreed. But for clks and gpiods and regulators the simple case is quite
+> > > usual. For irqs it isn't.
+> >
+> > It is for devices that can have either separate interrupts, or a single
+> > multiplexed interrupt.
+> >
+> > The logic in e.g. drivers/tty/serial/sh-sci.c and
+> > drivers/spi/spi-rspi.c could be simplified and improved (currently
+> > it doesn't handle deferred probe) if platform_get_irq_optional()
+> > would return 0 instead of -ENXIO.
+>
+> Looking at sh-sci.c the irq handling logic could be improved even
+> without a changed platform_get_irq_optional():
+>
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index 968967d722d4..c7dc9fb84844 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -2873,11 +2873,13 @@ static int sci_init_single(struct platform_device *dev,
+>          * interrupt ID numbers, or muxed together with another interrupt.
+>          */
+>         if (sci_port->irqs[0] < 0)
+> -               return -ENXIO;
+> +               return sci_port->irqs[0];
+>
+> -       if (sci_port->irqs[1] < 0)
+> +       if (sci_port->irqs[1] == -ENXIO)
+>                 for (i = 1; i < ARRAY_SIZE(sci_port->irqs); i++)
+>                         sci_port->irqs[i] = sci_port->irqs[0];
+> +       else if (sci_port->irqs[1] < 0)
+> +               return sci_port->irqs[1];
+>
+>         sci_port->params = sci_probe_regmap(p);
+>         if (unlikely(sci_port->params == NULL))
+>
+> And then the code flow is actively irritating. sci_init_single() copies
+> irqs[0] to all other irqs[i] and then sci_request_irq() loops over the
+> already requested irqs and checks for duplicates. A single place that
+> identifies the exact set of required irqs would already help a lot.
+
+Yeah, it's ugly and convoluted, like the wide set of hardware the
+driver supports.
+
+> Also for spi-rspi.c I don't see how platform_get_irq_byname_optional()
+> returning 0 instead of -ENXIO would help. Please talk in patches.
+
+--- a/drivers/spi/spi-rspi.c
++++ b/drivers/spi/spi-rspi.c
+@@ -1420,17 +1420,25 @@ static int rspi_probe(struct platform_device *pdev)
+        ctlr->max_native_cs = rspi->ops->num_hw_ss;
+
+        ret = platform_get_irq_byname_optional(pdev, "rx");
+-       if (ret < 0) {
++       if (ret < 0)
++               goto error2;
++
++       if (!ret) {
+                ret = platform_get_irq_byname_optional(pdev, "mux");
+-               if (ret < 0)
++               if (!ret)
+                        ret = platform_get_irq(pdev, 0);
++               if (ret < 0)
++                       goto error2;
++
+                if (ret >= 0)
+                        rspi->rx_irq = rspi->tx_irq = ret;
+        } else {
+                rspi->rx_irq = ret;
+                ret = platform_get_irq_byname(pdev, "tx");
+-               if (ret >= 0)
+-                       rspi->tx_irq = ret;
++               if (ret < 0)
++                       goto error2;
++
++               rspi->tx_irq = ret;
+        }
+
+        if (rspi->rx_irq == rspi->tx_irq) {
+
+I like it when the "if (ret < ) ..." error handling is the first check to do.
+With -ENXIO, it becomes more convoluted. and looks less nice (IMHO).
+
+> Preferably first simplify in-driver logic to make the conversion to the
+> new platform_get_irq_optional() actually reviewable.
+
+So I have to choose between
+
+    if (ret < 0 && ret != -ENXIO)
+            return ret;
+
+    if (ret) {
+            ...
+    }
+
+and
+
+    if (ret == -ENXIO) {
+            ...
+    } else if (ret < 0)
+            return ret;
+    }
+
+with the final target being
+
+    if (ret < 0)
+            return ret;
+
+    if (ret) {
+            ...
+    }
+
+So the first option means the final change is smaller, but it looks less
+nice than the second option (IMHO).
+But the second option means more churn.
+
+> > So there are three reasons: because the absence of an optional IRQ
+> > is not an error, and thus that should not cause (a) an error code
+> > to be returned, and (b) an error message to be printed, and (c)
+> > because it can simplify the logic in device drivers.
+>
+> I don't agree to (a). If the value signaling not-found is -ENXIO or 0
+> (or -ENODEV) doesn't matter much. I wouldn't deviate from the return
+> code semantics of platform_get_irq() just for having to check against 0
+> instead of -ENXIO. Zero is then just another magic value.
+
+Zero is a natural magic value (also for pointers).
+Errors are always negative.
+Positive values are cookies (or pointers) associated with success.
+
+> (c) still has to be proven, see above.
+>
+> > Commit 8973ea47901c81a1 ("driver core: platform: Introduce
+> > platform_get_irq_optional()") fixed (b), but didn't address (a) and
+> > (c).
+>
+> Yes, it fixed (b) and picked a bad name for that.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
