@@ -2,21 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9D474907A7
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 12:55:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FE1A4907A3
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 12:55:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234039AbiAQLzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 06:55:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59376 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239359AbiAQLzR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 06:55:17 -0500
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B37C06173E;
-        Mon, 17 Jan 2022 03:55:16 -0800 (PST)
+        id S239400AbiAQLz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 06:55:26 -0500
+Received: from relay12.mail.gandi.net ([217.70.178.232]:56781 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239354AbiAQLzS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 06:55:18 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id C0C91200008;
-        Mon, 17 Jan 2022 11:55:13 +0000 (UTC)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 88F00200009;
+        Mon, 17 Jan 2022 11:55:15 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -32,9 +29,9 @@ Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
         Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v3 16/41] net: mac802154: Explain the use of ieee802154_wake/stop_queue()
-Date:   Mon, 17 Jan 2022 12:54:15 +0100
-Message-Id: <20220117115440.60296-17-miquel.raynal@bootlin.com>
+Subject: [PATCH v3 17/41] net: ieee802154: at86rf230: Call the complete helper when a transmission is over
+Date:   Mon, 17 Jan 2022 12:54:16 +0100
+Message-Id: <20220117115440.60296-18-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220117115440.60296-1-miquel.raynal@bootlin.com>
 References: <20220117115440.60296-1-miquel.raynal@bootlin.com>
@@ -45,46 +42,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is not straightforward to the newcomer that a single skb can be sent
-at a time and that the internal process is to stop the queue when
-processing a frame before re-enabling it. Make this clear by documenting
-the ieee802154_wake/stop_queue() helpers.
+ieee802154_xmit_complete() is the right helper to call when a
+transmission is over. The fact that it completed or not is not really a
+question, but drivers must tell the core that the completion is over,
+even if it was canceled. Do not call ieee802154_wake_queue() manually,
+in order to let full control of this task to the core.
+
+By using the complete helper we also avoid leacking the skb structure.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- include/net/mac802154.h | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/net/ieee802154/at86rf230.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/mac802154.h b/include/net/mac802154.h
-index d524ffb9eb25..94b2e3008e77 100644
---- a/include/net/mac802154.h
-+++ b/include/net/mac802154.h
-@@ -464,6 +464,12 @@ void ieee802154_rx_irqsafe(struct ieee802154_hw *hw, struct sk_buff *skb,
-  * ieee802154_wake_queue - wake ieee802154 queue
-  * @hw: pointer as obtained from ieee802154_alloc_hw().
-  *
-+ * Tranceivers have either one transmit framebuffer or one framebuffer for both
-+ * transmitting and receiving. Hence, the core only handles one frame at a time
-+ * for each phy, which means we had to stop the queue to avoid new skb to come
-+ * during the transmission. The queue then needs to be woken up after the
-+ * operation.
-+ *
-  * Drivers should use this function instead of netif_wake_queue.
-  */
- void ieee802154_wake_queue(struct ieee802154_hw *hw);
-@@ -472,6 +478,12 @@ void ieee802154_wake_queue(struct ieee802154_hw *hw);
-  * ieee802154_stop_queue - stop ieee802154 queue
-  * @hw: pointer as obtained from ieee802154_alloc_hw().
-  *
-+ * Tranceivers have either one transmit framebuffer or one framebuffer for both
-+ * transmitting and receiving. Hence, the core only handles one frame at a time
-+ * for each phy, which means we need to tell upper layers to stop giving us new
-+ * skbs while we are busy with the transmitted one. The queue must then be
-+ * stopped before transmitting.
-+ *
-  * Drivers should use this function instead of netif_stop_queue.
-  */
- void ieee802154_stop_queue(struct ieee802154_hw *hw);
+diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+index 583f835c317a..1941e1f3d2ef 100644
+--- a/drivers/net/ieee802154/at86rf230.c
++++ b/drivers/net/ieee802154/at86rf230.c
+@@ -343,7 +343,7 @@ at86rf230_async_error_recover_complete(void *context)
+ 	if (ctx->free)
+ 		kfree(ctx);
+ 
+-	ieee802154_wake_queue(lp->hw);
++	ieee802154_xmit_complete(lp->hw, lp->tx_skb, false);
+ }
+ 
+ static void
 -- 
 2.27.0
 
