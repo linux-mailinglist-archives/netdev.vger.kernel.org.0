@@ -2,502 +2,341 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A82A490F3E
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 18:17:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EFB2490F6B
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 18:29:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243057AbiAQRQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 12:16:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48042 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244421AbiAQRPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 12:15:16 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E10C08ED78
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 09:08:41 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9VSt-0007f8-E9; Mon, 17 Jan 2022 18:06:43 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9VSk-00Ar9W-EE; Mon, 17 Jan 2022 18:06:33 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9VSj-0002dO-9e; Mon, 17 Jan 2022 18:06:33 +0100
-Date:   Mon, 17 Jan 2022 18:06:09 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>, Takashi Iwai <tiwai@suse.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220117170609.yxaamvqdkivs56ju@pengutronix.de>
-References: <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
- <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
- <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
- <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
- <c9026f17-2b3f-ee94-0ea3-5630f981fbc1@omp.ru>
- <CAMuHMdXVbRudGs69f9ZzaP1PXhteDNZiXA658eMFAwP4nr9r3w@mail.gmail.com>
- <20220117092444.opoedfcf5k5u6otq@pengutronix.de>
- <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
- <20220117114923.d5vajgitxneec7j7@pengutronix.de>
- <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
+        id S235363AbiAQR3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 12:29:15 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40716 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235760AbiAQR3N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 12:29:13 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4855BB8113E;
+        Mon, 17 Jan 2022 17:29:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1826CC36AE3;
+        Mon, 17 Jan 2022 17:29:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642440550;
+        bh=3rL8s/okYXA4hC7v8O3NSgO8ogtJLzaQsy4jE+moH2c=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WQeQYN1ph4szM++xFI6YwLvDUzt9SB8pCy7F2j5eKnkLQ020Eh8gzAo2ePDrCC6kx
+         U1Z7KsTbSxNotRar/M3dHx2lB0QHley5SvIXUi0S7sJkgeTtvJ+X2AeoqjIaLHALg4
+         QSBZOM66kSEzX1kr5qb8HH0rvbmgsN0qPEnc/hq9W77aCThK9Dd7U0xHtoitNsVCUH
+         8TxDyYUc9dy8upIt9b8X5zSiZUUjzqHEIk0rkcZzJhauttnQixgN9rp5Ol9e96u69S
+         wEKmDdy5rWq96sNd21X8v5MiR9d1W3784YcIbTUdUZ2c2t99XrN4bW0lCqI5hlTg5M
+         WNv5E2DmSmLsQ==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+Subject: [PATCH v22 bpf-next 00/23] mvneta: introduce XDP multi-buffer support
+Date:   Mon, 17 Jan 2022 18:28:12 +0100
+Message-Id: <cover.1642439548.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="aw3dtkiiyid6id5x"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=y
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series introduce XDP multi-frags support. The mvneta driver is
+the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+please focus on how these new types of xdp_{buff,frame} packets
+traverse the different layers and the layout design. It is on purpose
+that BPF-helpers are kept simple, as we don't want to expose the
+internal layout to allow later changes.
 
---aw3dtkiiyid6id5x
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The main idea for the new multi-frags layout is to reuse the same
+structure used for non-linear SKB. This rely on the "skb_shared_info"
+struct at the end of the first buffer to link together subsequent
+buffers. Keeping the layout compatible with SKBs is also done to ease
+and speedup creating a SKB from an xdp_{buff,frame}.
+Converting xdp_frame to SKB and deliver it to the network stack is shown
+in patch 05/18 (e.g. cpumaps).
 
-On Mon, Jan 17, 2022 at 02:08:19PM +0100, Geert Uytterhoeven wrote:
-> Hi Uwe,
->=20
-> On Mon, Jan 17, 2022 at 12:49 PM Uwe Kleine-K=F6nig
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Mon, Jan 17, 2022 at 11:35:52AM +0100, Geert Uytterhoeven wrote:
-> > > On Mon, Jan 17, 2022 at 10:24 AM Uwe Kleine-K=F6nig
-> > > <u.kleine-koenig@pengutronix.de> wrote:
-> > > > On Mon, Jan 17, 2022 at 09:41:42AM +0100, Geert Uytterhoeven wrote:
-> > > > > On Sat, Jan 15, 2022 at 9:22 PM Sergey Shtylyov <s.shtylyov@omp.r=
-u> wrote:
-> > > > > > On 1/14/22 11:22 PM, Uwe Kleine-K=F6nig wrote:
-> > > > > > > You have to understand that for clk (and regulator and gpiod)=
- NULL is a
-> > > > > > > valid descriptor that can actually be used, it just has no ef=
-fect. So
-> > > > > > > this is a convenience value for the case "If the clk/regulato=
-r/gpiod in
-> > > > > > > question isn't available, there is nothing to do". This is wh=
-at makes
-> > > > > > > clk_get_optional() and the others really useful and justifies=
- their
-> > > > > > > existence. This doesn't apply to platform_get_irq_optional().
-> > > > > >
-> > > > > >    I do understand that. However, IRQs are a different beast wi=
-th their
-> > > > > > own justifications...
-> > > > >
-> > > > > > > clk_get_optional() is sane and sensible for cases where the c=
-lk might be
-> > > > > > > absent and it helps you because you don't have to differentia=
-te between
-> > > > > > > "not found" and "there is an actual resource".
-> > > > > > >
-> > > > > > > The reason for platform_get_irq_optional()'s existence is jus=
-t that
-> > > > > > > platform_get_irq() emits an error message which is wrong or s=
-uboptimal
-> > > > > >
-> > > > > >    I think you are very wrong here. The real reason is to simpl=
-ify the
-> > > > > > callers.
-> > > > >
-> > > > > Indeed.
-> > > >
-> > > > The commit that introduced platform_get_irq_optional() said:
-> > > >
-> > > >         Introduce a new platform_get_irq_optional() that works much=
- like
-> > > >         platform_get_irq() but does not output an error on failure =
-to
-> > > >         find the interrupt.
-> > > >
-> > > > So the author of 8973ea47901c81a1912bd05f1577bed9b5b52506 failed to
-> > > > mention the real reason? Or look at
-> > > > 31a8d8fa84c51d3ab00bf059158d5de6178cf890:
-> > > >
-> > > >         [...] use platform_get_irq_optional() to get second/third I=
-RQ
-> > > >         which are optional to avoid below error message during prob=
-e:
-> > > >         [...]
-> > > >
-> > > > Look through the output of
-> > > >
-> > > >         git log -Splatform_get_irq_optional
-> > > >
-> > > > to find several more of these.
-> > >
-> > > Commit 8973ea47901c81a1 ("driver core: platform: Introduce
-> > > platform_get_irq_optional()") and the various fixups fixed the ugly
-> > > printing of error messages that were not applicable.
-> > > In hindsight, probably commit 7723f4c5ecdb8d83 ("driver core:
-> > > platform: Add an error message to platform_get_irq*()") should have
-> > > been reverted instead, until a platform_get_irq_optional() with proper
-> > > semantics was introduced.
-> >
-> > ack.
-> >
-> > > But as we were all in a hurry to kill the non-applicable error
-> > > message, we went for the quick and dirty fix.
-> > >
-> > > > Also I fail to see how a caller of (today's) platform_get_irq_optio=
-nal()
-> > > > is simpler than a caller of platform_get_irq() given that there is =
-no
-> > > > semantic difference between the two. Please show me a single
-> > > > conversion from platform_get_irq to platform_get_irq_optional that
-> > > > yielded a simplification.
-> > >
-> > > That's exactly why we want to change the latter to return 0 ;-)
-> >
-> > OK. So you agree to my statement "The reason for
-> > platform_get_irq_optional()'s existence is just that platform_get_irq()
-> > emits an error message [...]". Actually you don't want to oppose but
-> > say: It's unfortunate that the silent variant of platform_get_irq() took
-> > the obvious name of a function that could have an improved return code
-> > semantic.
-> >
-> > So my suggestion to rename todays platform_get_irq_optional() to
-> > platform_get_irq_silently() and then introducing
-> > platform_get_irq_optional() with your suggested semantic seems
-> > intriguing and straigt forward to me.
->=20
-> I don't really see the point of needing platform_get_irq_silently(),
-> unless as an intermediary step, where it's going to be removed again
-> once the conversion has completed.
+A multi-frags bit (XDP_FLAGS_HAS_FRAGS) has been introduced in the flags
+field of xdp_{buff,frame} structure to notify the bpf/network layer if
+this is a xdp multi-frags frame (XDP_FLAGS_HAS_FRAGS set) or not
+(XDP_FLAGS_HAS_FRAGS not set).
+The multi-frags bit will be set by a xdp multi-frags capable driver only
+for non-linear frames maintaining the capability to receive linear frames
+without any extra cost since the skb_shared_info structure at the end
+of the first buffer will be initialized only if XDP_FLAGS_HAS_FRAGS bit
+is set. Moreover the flags field in xdp_{buff,frame} will be reused even for
+xdp rx csum offloading in future series.
 
-We agree that one of the two functions is enough, just differ in which
-of the two we want to have. :-)
+Typical use cases for this series are:
+- Jumbo-frames
+- Packet header split (please see Google’s use-case @ NetDevConf 0x14, [0])
+- TSO/GRO for XDP_REDIRECT
 
-If you think platform_get_irq_silently() is a good intermediate step for
-your goal, then we agree to rename platform_get_irq_optional(). So I
-suggest you ack my patch.
+The three following ebpf helpers (and related selftests) has been introduced:
+- bpf_xdp_load_bytes:
+  This helper is provided as an easy way to load data from a xdp buffer. It
+  can be used to load len bytes from offset from the frame associated to
+  xdp_md, into the buffer pointed by buf.
+- bpf_xdp_store_bytes:
+  Store len bytes from buffer buf into the frame associated to xdp_md, at
+  offset.
+- bpf_xdp_get_buff_len:
+  Return the total frame size (linear + paged parts)
 
-> Still, the rename would touch all users at once anyway.
+bpf_xdp_adjust_tail and bpf_xdp_copy helpers have been modified to take into
+account xdp multi-frags frames.
+Moreover, similar to skb_header_pointer, we introduced bpf_xdp_pointer utility
+routine to return a pointer to a given position in the xdp_buff if the
+requested area (offset + len) is contained in a contiguous memory area
+otherwise it must be copied in a bounce buffer provided by the caller running
+bpf_xdp_copy_buf().
 
-It would be more easy to keep the conversion regression-free however. A
-plain rename is simple to verify. And then converting to the new
-platform_get_irq_optional() can be done individually and without the
-need to do everything in a single step.
+BPF_F_XDP_HAS_FRAGS flag has been introduced to notify the kernel the
+eBPF program fully support xdp multi-frags.
+SEC("xdp.frags"), SEC_DEF("xdp.frags/devmap") and SEC_DEF("xdp.frags/cpumap")
+have been introduced to declare xdp multi-frags support.
+The NIC driver is expected to reject an eBPF program if it is running in XDP
+multi-frags mode and the program does not support XDP multi-frags.
+In the same way it is not possible to mix xdp multi-frags and xdp legacy
+programs in a CPUMAP/DEVMAP or tailcall a xdp multi-frags/legacy program from
+a legacy/multi-frags one.
 
-> > Another thought: platform_get_irq emits an error message for all
-> > problems. Wouldn't it be consistent to let platform_get_irq_optional()
-> > emit an error message for all problems but "not found"?
-> > Alternatively remove the error printk from platform_get_irq().
->=20
-> Yes, all problems but not found are real errors.
+More info about the main idea behind this approach can be found here [1][2].
 
-If you want to make platform_get_irq and its optional variant more
-similar to the others, dropping the error message is the way to go.
+Changes since v21:
+- rename *_mb in *_frags: e.g:
+  s/xdp_buff_is_mb/xdp_buff_has_frags
+- rely on ASSERT_* and not on CHECK in
+  bpf_xdp_load_bytes/bpf_xdp_store_bytes self-tests
+- change new multi.frags SEC definitions to use the following schema:
+  prog_type.prog_flags/attach_place
+- get rid of unnecessary properties in new multi.frags SEC definitions
+- rebase on top of bpf-next
 
-> > > > So you need some more effort to convince me of your POV.
-> > > >
-> > > > > Even for clocks, you cannot assume that you can always blindly use
-> > > > > the returned dummy (actually a NULL pointer) to call into the clk
-> > > > > API.  While this works fine for simple use cases, where you just
-> > > > > want to enable/disable an optional clock (clk_prepare_enable() and
-> > > > > clk_disable_unprepare()), it does not work for more complex use c=
-ases.
-> > > >
-> > > > Agreed. But for clks and gpiods and regulators the simple case is q=
-uite
-> > > > usual. For irqs it isn't.
-> > >
-> > > It is for devices that can have either separate interrupts, or a sing=
-le
-> > > multiplexed interrupt.
-> > >
-> > > The logic in e.g. drivers/tty/serial/sh-sci.c and
-> > > drivers/spi/spi-rspi.c could be simplified and improved (currently
-> > > it doesn't handle deferred probe) if platform_get_irq_optional()
-> > > would return 0 instead of -ENXIO.
-> >
-> > Looking at sh-sci.c the irq handling logic could be improved even
-> > without a changed platform_get_irq_optional():
-> >
-> > diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> > index 968967d722d4..c7dc9fb84844 100644
-> > --- a/drivers/tty/serial/sh-sci.c
-> > +++ b/drivers/tty/serial/sh-sci.c
-> > @@ -2873,11 +2873,13 @@ static int sci_init_single(struct platform_devi=
-ce *dev,
-> >          * interrupt ID numbers, or muxed together with another interru=
-pt.
-> >          */
-> >         if (sci_port->irqs[0] < 0)
-> > -               return -ENXIO;
-> > +               return sci_port->irqs[0];
-> >
-> > -       if (sci_port->irqs[1] < 0)
-> > +       if (sci_port->irqs[1] =3D=3D -ENXIO)
-> >                 for (i =3D 1; i < ARRAY_SIZE(sci_port->irqs); i++)
-> >                         sci_port->irqs[i] =3D sci_port->irqs[0];
-> > +       else if (sci_port->irqs[1] < 0)
-> > +               return sci_port->irqs[1];
-> >
-> >         sci_port->params =3D sci_probe_regmap(p);
-> >         if (unlikely(sci_port->params =3D=3D NULL))
-> >
-> > And then the code flow is actively irritating. sci_init_single() copies
-> > irqs[0] to all other irqs[i] and then sci_request_irq() loops over the
-> > already requested irqs and checks for duplicates. A single place that
-> > identifies the exact set of required irqs would already help a lot.
->=20
-> Yeah, it's ugly and convoluted, like the wide set of hardware the
-> driver supports.
->=20
-> > Also for spi-rspi.c I don't see how platform_get_irq_byname_optional()
-> > returning 0 instead of -ENXIO would help. Please talk in patches.
->=20
-> --- a/drivers/spi/spi-rspi.c
-> +++ b/drivers/spi/spi-rspi.c
-> @@ -1420,17 +1420,25 @@ static int rspi_probe(struct platform_device *pde=
-v)
->         ctlr->max_native_cs =3D rspi->ops->num_hw_ss;
->=20
->         ret =3D platform_get_irq_byname_optional(pdev, "rx");
-> -       if (ret < 0) {
-> +       if (ret < 0)
-> +               goto error2;
-> +
-> +       if (!ret) {
->                 ret =3D platform_get_irq_byname_optional(pdev, "mux");
-> -               if (ret < 0)
-> +               if (!ret)
->                         ret =3D platform_get_irq(pdev, 0);
-> +               if (ret < 0)
-> +                       goto error2;
-> +
->                 if (ret >=3D 0)
->                         rspi->rx_irq =3D rspi->tx_irq =3D ret;
->         } else {
->                 rspi->rx_irq =3D ret;
->                 ret =3D platform_get_irq_byname(pdev, "tx");
-> -               if (ret >=3D 0)
-> -                       rspi->tx_irq =3D ret;
-> +               if (ret < 0)
-> +                       goto error2;
-> +
-> +               rspi->tx_irq =3D ret;
->         }
->=20
->         if (rspi->rx_irq =3D=3D rspi->tx_irq) {
+Changes since v20:
+- rebase to current bpf-next
 
-This is not a simplification, just looking at the line count and the
-added gotos. That's because it also improves error handling and so the
-effect isn't easily spotted.
+Changes since v19:
+- do not run deprecated bpf_prog_load()
+- rely on skb_frag_size_add/skb_frag_size_sub in
+  bpf_xdp_mb_increase_tail/bpf_xdp_mb_shrink_tail
+- rely on sinfo->nr_frags in bpf_xdp_mb_shrink_tail to check if the frame has
+  been shrunk to a single-buffer one
+- allow XDP_REDIRECT of a xdp-mb frame into a CPUMAP
 
-> I like it when the "if (ret < ) ..." error handling is the first check to=
- do.
+Changes since v18:
+- fix bpf_xdp_copy_buf utility routine when we want to load/store data
+  contained in frag<n>
+- add a selftest for bpf_xdp_load_bytes/bpf_xdp_store_bytes when the caller
+  accesses data contained in frag<n> and frag<n+1>
 
-That's a relevant difference between us.
+Changes since v17:
+- rework bpf_xdp_copy to squash base and frag management
+- remove unused variable in bpf_xdp_mb_shrink_tail()
+- move bpf_xdp_copy_buf() out of bpf_xdp_pointer()
+- add sanity check for len in bpf_xdp_pointer()
+- remove EXPORT_SYMBOL for __xdp_return()
+- introduce frag_size field in xdp_rxq_info to let the driver specify max value
+  for xdp fragments. frag_size set to 0 means the tail increase of last the
+  fragment is not supported.
 
-> With -ENXIO, it becomes more convoluted. and looks less nice (IMHO).
->=20
-> > Preferably first simplify in-driver logic to make the conversion to the
-> > new platform_get_irq_optional() actually reviewable.
->=20
-> So I have to choose between
->=20
->     if (ret < 0 && ret !=3D -ENXIO)
->             return ret;
->=20
->     if (ret) {
->             ...
->     }
->=20
-> and
->=20
->     if (ret =3D=3D -ENXIO) {
->             ...
->     } else if (ret < 0)
->             return ret;
->     }
+Changes since v16:
+- do not allow tailcalling a xdp multi-buffer/legacy program from a
+  legacy/multi-buff one.
+- do not allow mixing xdp multi-buffer and xdp legacy programs in a
+  CPUMAP/DEVMAP
+- add selftests for CPUMAP/DEVMAP xdp mb compatibility
+- disable XDP_REDIRECT for xdp multi-buff for the moment
+- set max offset value to 0xffff in bpf_xdp_pointer
+- use ARG_PTR_TO_UNINIT_MEM and ARG_CONST_SIZE for arg3_type and arg4_type
+  of bpf_xdp_store_bytes/bpf_xdp_load_bytes
 
-I would do the latter, then it's in the normal order for error handling
+Changes since v15:
+- let the verifier check buf is not NULL in
+  bpf_xdp_load_bytes/bpf_xdp_store_bytes helpers
+- return an error if offset + length is over frame boundaries in
+  bpf_xdp_pointer routine
+- introduce BPF_F_XDP_MB flag for bpf_attr to notify the kernel the eBPF
+  program fully supports xdp multi-buffer.
+- reject a non XDP multi-buffer program if the driver is running in
+  XDP multi-buffer mode.
 
-	handle some specific errors;
-	forward unhandled errors up the stack;
-	handle success;
+Changes since v14:
+- intrudce bpf_xdp_pointer utility routine and
+  bpf_xdp_load_bytes/bpf_xdp_store_bytes helpers
+- drop bpf_xdp_adjust_data helper
+- drop xdp_frags_truesize in skb_shared_info
+- explode bpf_xdp_mb_adjust_tail in bpf_xdp_mb_increase_tail and
+  bpf_xdp_mb_shrink_tail
 
-but it seems you prefer to not call "not found" an error. Actually I
-think it's an advantage that the driver has to mention -ENXIO, feels
-like proper error handling to me. I guess we won't agree about that
-though.
+Changes since v13:
+- use u32 for xdp_buff/xdp_frame flags field
+- rename xdp_frags_tsize in xdp_frags_truesize
+- fixed comments
 
-What about the following idea (in pythonic pseudo code for simplicity):
+Changes since v12:
+- fix bpf_xdp_adjust_data helper for single-buffer use case
+- return -EFAULT in bpf_xdp_adjust_{head,tail} in case the data pointers are not
+  properly reset
+- collect ACKs from John
 
-	# the rspi device either has two irqs, one for rx and one for
-	# tx, or a single one for both together.
+Changes since v11:
+- add missing static to bpf_xdp_get_buff_len_proto structure
+- fix bpf_xdp_adjust_data helper when offset is smaller than linear area length.
 
-	def muxed_hander(irq):
-		status =3D readl(STATUS)
-		if status & IF_RX:
-			rx_handler()
-		if status & IF_TX:
-			tx_handler()
+Changes since v10:
+- move xdp->data to the requested payload offset instead of to the beginning of
+  the fragment in bpf_xdp_adjust_data()
 
-	def probe_muxed_irq():
-		irq =3D platform_get_irq_by_name("mux")
-		if irq < 0:
-			return irq;
+Changes since v9:
+- introduce bpf_xdp_adjust_data helper and related selftest
+- add xdp_frags_size and xdp_frags_tsize fields in skb_shared_info
+- introduce xdp_update_skb_shared_info utility routine in ordere to not reset
+  frags array in skb_shared_info converting from a xdp_buff/xdp_frame to a skb 
+- simplify bpf_xdp_copy routine
 
-		request_irq(irq, muxed_handler)
+Changes since v8:
+- add proper dma unmapping if XDP_TX fails on mvneta for a xdp multi-buff
+- switch back to skb_shared_info implementation from previous xdp_shared_info
+  one
+- avoid using a bietfield in xdp_buff/xdp_frame since it introduces performance
+  regressions. Tested now on 10G NIC (ixgbe) to verify there are no performance
+  penalties for regular codebase
+- add bpf_xdp_get_buff_len helper and remove frame_length field in xdp ctx
+- add data_len field in skb_shared_info struct
+- introduce XDP_FLAGS_FRAGS_PF_MEMALLOC flag
 
-	def probe_separate_irqs():
-		txirq =3D platform_get_irq_by_name("tx")
-		if txirq < 0:
-			return txirq
+Changes since v7:
+- rebase on top of bpf-next
+- fix sparse warnings
+- improve comments for frame_length in include/net/xdp.h
 
-		rxirq =3D platform_get_irq_by_name("rx")
-		if rxirq < 0:
-			return rxirq
+Changes since v6:
+- the main difference respect to previous versions is the new approach proposed
+  by Eelco to pass full length of the packet to eBPF layer in XDP context
+- reintroduce multi-buff support to eBPF kself-tests
+- reintroduce multi-buff support to bpf_xdp_adjust_tail helper
+- introduce multi-buffer support to bpf_xdp_copy helper
+- rebase on top of bpf-next
 
-		request_irq(txirq, tx_handler)
-		request_irq(rxirq, rx_handler)
+Changes since v5:
+- rebase on top of bpf-next
+- initialize mb bit in xdp_init_buff() and drop per-driver initialization
+- drop xdp->mb initialization in xdp_convert_zc_to_xdp_frame()
+- postpone introduction of frame_length field in XDP ctx to another series
+- minor changes
 
-	def probe():
-		ret =3D probe_separate_irqs()
-		if ret =3D=3D -ENXIO:
-			ret =3D probe_muxed_irq()
+Changes since v4:
+- rebase ontop of bpf-next
+- introduce xdp_shared_info to build xdp multi-buff instead of using the
+  skb_shared_info struct
+- introduce frame_length in xdp ctx
+- drop previous bpf helpers
+- fix bpf_xdp_adjust_tail for xdp multi-buff
+- introduce xdp multi-buff self-tests for bpf_xdp_adjust_tail
+- fix xdp_return_frame_bulk for xdp multi-buff
 
-		if ret < 0:
-			return ret
+Changes since v3:
+- rebase ontop of bpf-next
+- add patch 10/13 to copy back paged data from a xdp multi-buff frame to
+  userspace buffer for xdp multi-buff selftests
 
-looks clean (to me that is) and allows to skip the demuxing in
-tx_handler and rx_handler (which might or might not yield improved
-runtime behaviour). Maybe a bit more verbose, but simpler to grasp for a
-human, isn't it?
+Changes since v2:
+- add throughput measurements
+- drop bpf_xdp_adjust_mb_header bpf helper
+- introduce selftest for xdp multibuffer
+- addressed comments on bpf_xdp_get_frags_count
+- introduce xdp multi-buff support to cpumaps
 
-> with the final target being
->=20
->     if (ret < 0)
->             return ret;
->=20
->     if (ret) {
->             ...
->     }
->=20
-> So the first option means the final change is smaller, but it looks less
-> nice than the second option (IMHO).
-> But the second option means more churn.
->=20
-> > > So there are three reasons: because the absence of an optional IRQ
-> > > is not an error, and thus that should not cause (a) an error code
-> > > to be returned, and (b) an error message to be printed, and (c)
-> > > because it can simplify the logic in device drivers.
-> >
-> > I don't agree to (a). If the value signaling not-found is -ENXIO or 0
-> > (or -ENODEV) doesn't matter much. I wouldn't deviate from the return
-> > code semantics of platform_get_irq() just for having to check against 0
-> > instead of -ENXIO. Zero is then just another magic value.
->=20
-> Zero is a natural magic value (also for pointers).
-> Errors are always negative.
-> Positive values are cookies (or pointers) associated with success.
+Changes since v1:
+- Fix use-after-free in xdp_return_{buff/frame}
+- Introduce bpf helpers
+- Introduce xdp_mb sample program
+- access skb_shared_info->nr_frags only on the last fragment
 
-Yeah, the issue where we don't agree is if "not-found" is special enough
-to deserve the natural magic value. For me -ENXIO is magic enough to
-handle the absence of an irq line. I consider it even the better magic
-value.
+Changes since RFC:
+- squash multi-buffer bit initialization in a single patch
+- add mvneta non-linear XDP buff support for tx side
 
-> > (c) still has to be proven, see above.
+[0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
+[1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
+[2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver (XDPmulti-buffers section)
 
-Best regards
-Uwe
+Eelco Chaudron (3):
+  bpf: add multi-frags support to the bpf_xdp_adjust_tail() API
+  bpf: add multi-frags support to xdp copy helpers
+  bpf: selftests: update xdp_adjust_tail selftest to include multi-frags
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Lorenzo Bianconi (19):
+  net: skbuff: add size metadata to skb_shared_info for xdp
+  xdp: introduce flags field in xdp_buff/xdp_frame
+  net: mvneta: update multi-frags bit before passing the xdp buffer to
+    eBPF layer
+  net: mvneta: simplify mvneta_swbm_add_rx_fragment management
+  net: xdp: add xdp_update_skb_shared_info utility routine
+  net: marvell: rely on xdp_update_skb_shared_info utility routine
+  xdp: add multi-frags support to xdp_return_{buff/frame}
+  net: mvneta: add multi-frags support to XDP_TX
+  bpf: introduce BPF_F_XDP_HAS_FRAGS flag in prog_flags loading the ebpf
+    program
+  net: mvneta: enable jumbo frames if the loaded XDP program support
+    multi-frags
+  bpf: introduce bpf_xdp_get_buff_len helper
+  bpf: move user_size out of bpf_test_init
+  bpf: introduce multi-frags support to bpf_prog_test_run_xdp()
+  bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
+    signature
+  libbpf: Add SEC name for xdp multi-frags programs
+  net: xdp: introduce bpf_xdp_pointer utility routine
+  bpf: selftests: introduce bpf_xdp_{load,store}_bytes selftest
+  bpf: selftests: add CPUMAP/DEVMAP selftests for xdp multi-frags
+  xdp: disable XDP_REDIRECT for xdp multi-frags
 
---aw3dtkiiyid6id5x
-Content-Type: application/pgp-signature; name="signature.asc"
+Toke Hoiland-Jorgensen (1):
+  bpf: generalise tail call map compatibility check
 
------BEGIN PGP SIGNATURE-----
+ drivers/net/ethernet/marvell/mvneta.c         | 206 +++++++++------
+ include/linux/bpf.h                           |  31 ++-
+ include/linux/skbuff.h                        |   1 +
+ include/net/xdp.h                             | 108 +++++++-
+ include/uapi/linux/bpf.h                      |  30 +++
+ kernel/bpf/arraymap.c                         |   4 +-
+ kernel/bpf/core.c                             |  28 +-
+ kernel/bpf/cpumap.c                           |   8 +-
+ kernel/bpf/devmap.c                           |   3 +-
+ kernel/bpf/syscall.c                          |  25 +-
+ kernel/trace/bpf_trace.c                      |   3 +
+ net/bpf/test_run.c                            | 115 ++++++--
+ net/core/filter.c                             | 245 +++++++++++++++++-
+ net/core/xdp.c                                |  78 +++++-
+ tools/include/uapi/linux/bpf.h                |  30 +++
+ tools/lib/bpf/libbpf.c                        |   6 +
+ .../bpf/prog_tests/xdp_adjust_frags.c         |  98 +++++++
+ .../bpf/prog_tests/xdp_adjust_tail.c          | 131 ++++++++++
+ .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 151 ++++++++---
+ .../bpf/prog_tests/xdp_cpumap_attach.c        |  64 ++++-
+ .../bpf/prog_tests/xdp_devmap_attach.c        |  55 ++++
+ .../bpf/progs/test_xdp_adjust_tail_grow.c     |  10 +-
+ .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
+ .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
+ .../bpf/progs/test_xdp_update_frags.c         |  42 +++
+ .../bpf/progs/test_xdp_with_cpumap_helpers.c  |   6 +
+ ...test_xdp_with_cpumap_multi_frags_helpers.c |  27 ++
+ .../bpf/progs/test_xdp_with_devmap_helpers.c  |   7 +
+ ...test_xdp_with_devmap_multi_frags_helpers.c |  27 ++
+ 29 files changed, 1361 insertions(+), 212 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_adjust_frags.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_multi_frags_helpers.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_with_devmap_multi_frags_helpers.c
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHlof4ACgkQwfwUeK3K
-7Aniewf+MoaFo3EYfzYPpJGODkMHLkkxMbHUg8vSMqRQM6WJsf8c9vxwcsWAL4ve
-Et7WTI1iMsw9uc3Wiag0LUt2KFm0pxr+OCAyIEsfQ/5exnZOmiPovOmrt8eNPe8c
-hTXRJzXnsS9aZP/mJjPEqSZKaBTA/0WYUaKJUQsHq0cxBBtQCeUlMtXmCgCcRUFZ
-NK/trtp/5N3W9bLhTFaZ+tCe0aYS5iQAihlnquEZNjJjeTyuZfN/pCbeiAZdDFv1
-S85HGZU7QsH9jV00tdrlAze2aLGJ11VXdnibbL3l5ITXHpJKBdpBFZHGazA0P5iG
-b1PnP722liY900ec+sr8AE7Gyb3swA==
-=kGnZ
------END PGP SIGNATURE-----
+-- 
+2.34.1
 
---aw3dtkiiyid6id5x--
