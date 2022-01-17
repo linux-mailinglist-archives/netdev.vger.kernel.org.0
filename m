@@ -2,35 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4CE4490F86
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 18:30:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7520D490F88
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 18:30:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235331AbiAQRaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 12:30:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239100AbiAQRaG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 12:30:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE8AC061401;
-        Mon, 17 Jan 2022 09:30:06 -0800 (PST)
+        id S239047AbiAQRaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 12:30:23 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45698 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239176AbiAQRaI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 12:30:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7BEBB81136;
-        Mon, 17 Jan 2022 17:30:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBCACC36AE7;
-        Mon, 17 Jan 2022 17:29:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88C4460B50;
+        Mon, 17 Jan 2022 17:30:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D18BC36AF5;
+        Mon, 17 Jan 2022 17:30:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642440603;
-        bh=s5AmFZVUyY/UUvlptTEbG+/zJHg4mFgJLiJMFxu/o0s=;
+        s=k20201202; t=1642440608;
+        bh=0H7dC2Ew1zT6uRL38+k8E18xuJAhHhbK8fRE4S1qbVE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ghktZ/YMZzTmg+85OcTTXnSzbAx+B4Jg95M16i8bhRKw7lZUDlkj29mXQWpT3A4uF
-         RgGAbK1Gg0dTanD0POA6mbz7Lbf6pGd75dSyjAlU260DPB3SJiCqDKw81gB0fSdUlg
-         rpDfy+0EIjO9BUKh5cWbBVO+tTn+W97sZRlr5VHJ6qQmphzQ3WDET8EgoYORTVk0nW
-         lBbXMPNe7aWVrMKQELoWd+KrsXFn7GC+OLKgnYiFpzyxuDTD1CFlGqlhOf6j7BbT3X
-         A8YWiKIFZcgt3prUxjDyENZ2ZyZoMtYeJrpZLk07kMknsevGFakSYrxo1a+avfEFSs
-         gX6zwtvc8lSUQ==
+        b=Rlz2dlrSeyEpD+YOwAgxaCuWyR6GjFF9TJCy+DPQzEcFINd/2hwphC9L3HQK6PXLm
+         lDh8kd/SpHIRXt46ZrvV4ChDDBZkkyVjlB5B3bKAX5FDEO5rCtwWFZlD6uu/DC+qka
+         VTzoX6F+1tJ5o5oUP8IASq5YWyOyRcZx9T/1ot0S+S8rvcqUuMZzSUYZPAeeztQyM0
+         0GjmNf9hkv0UXwqjbkmU43HJy7OOPTBt0YBzyQeGrpt/CEKz/+qs3im3z3K3TFqwP+
+         4vOmC+FANHAXHMJ4rv6hCRMrUfHnYH2Lj0GGkN//kfWYssCv4kui6gZxHGWuX5Xby9
+         9PMbL+bsGzjjw==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -40,9 +37,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         alexander.duyck@gmail.com, saeed@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: [PATCH v22 bpf-next 12/23] bpf: add multi-frags support to the bpf_xdp_adjust_tail() API
-Date:   Mon, 17 Jan 2022 18:28:24 +0100
-Message-Id: <087fe9459f451a2dfed4054b693251029f57f848.1642439548.git.lorenzo@kernel.org>
+Subject: [PATCH v22 bpf-next 13/23] bpf: add multi-frags support to xdp copy helpers
+Date:   Mon, 17 Jan 2022 18:28:25 +0100
+Message-Id: <aba5967cc7bbd6341748c5f0783d4ef99e956e6a.1642439548.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1642439548.git.lorenzo@kernel.org>
 References: <cover.1642439548.git.lorenzo@kernel.org>
@@ -54,212 +51,336 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eelco Chaudron <echaudro@redhat.com>
 
-This change adds support for tail growing and shrinking for XDP multi-frags.
-
-When called on a multi-frags packet with a grow request, it will work
-on the last fragment of the packet. So the maximum grow size is the
-last fragments tailroom, i.e. no new buffer will be allocated.
-A XDP multi-frags capable driver is expected to set frag_size in
-xdp_rxq_info data structure to notify the XDP core the fragment size.
-frag_size set to 0 is interpreted by the XDP core as tail growing is
-not allowed.
-Introduce __xdp_rxq_info_reg utility routine to initialize frag_size field.
-
-When shrinking, it will work from the last fragment, all the way down to
-the base buffer depending on the shrinking size. It's important to mention
-that once you shrink down the fragment(s) are freed, so you can not grow
-again to the original size.
+This patch adds support for multi-frags for the following helpers:
+  - bpf_xdp_output()
+  - bpf_perf_event_output()
 
 Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
 Acked-by: John Fastabend <john.fastabend@gmail.com>
 Acked-by: Jakub Kicinski <kuba@kernel.org>
-Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/marvell/mvneta.c |  3 +-
- include/net/xdp.h                     | 16 ++++++-
- net/core/filter.c                     | 65 +++++++++++++++++++++++++++
- net/core/xdp.c                        | 12 ++---
- 4 files changed, 88 insertions(+), 8 deletions(-)
+ kernel/trace/bpf_trace.c                      |   3 +
+ net/core/filter.c                             |  57 ++++++-
+ .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 151 +++++++++++++-----
+ .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
+ 4 files changed, 168 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index fc3d19467de7..9a3ec41d5f12 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -3298,7 +3298,8 @@ static int mvneta_create_page_pool(struct mvneta_port *pp,
- 		return err;
- 	}
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 21aa30644219..06a9e220069e 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1562,6 +1562,7 @@ static const struct bpf_func_proto bpf_perf_event_output_proto_raw_tp = {
  
--	err = xdp_rxq_info_reg(&rxq->xdp_rxq, pp->dev, rxq->id, 0);
-+	err = __xdp_rxq_info_reg(&rxq->xdp_rxq, pp->dev, rxq->id, 0,
-+				 PAGE_SIZE);
- 	if (err < 0)
- 		goto err_free_pp;
+ extern const struct bpf_func_proto bpf_skb_output_proto;
+ extern const struct bpf_func_proto bpf_xdp_output_proto;
++extern const struct bpf_func_proto bpf_xdp_get_buff_len_trace_proto;
  
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 6caea9b633e4..9bb9a2b81ef2 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -60,6 +60,7 @@ struct xdp_rxq_info {
- 	u32 reg_state;
- 	struct xdp_mem_info mem;
- 	unsigned int napi_id;
-+	u32 frag_size;
- } ____cacheline_aligned; /* perf critical, avoid false-sharing */
- 
- struct xdp_txq_info {
-@@ -304,6 +305,8 @@ struct xdp_frame *xdp_convert_buff_to_frame(struct xdp_buff *xdp)
- 	return xdp_frame;
- }
- 
-+void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
-+		  struct xdp_buff *xdp);
- void xdp_return_frame(struct xdp_frame *xdpf);
- void xdp_return_frame_rx_napi(struct xdp_frame *xdpf);
- void xdp_return_buff(struct xdp_buff *xdp);
-@@ -340,8 +343,17 @@ static inline void xdp_release_frame(struct xdp_frame *xdpf)
- 	__xdp_release_frame(xdpf->data, mem);
- }
- 
--int xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
--		     struct net_device *dev, u32 queue_index, unsigned int napi_id);
-+int __xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
-+		       struct net_device *dev, u32 queue_index,
-+		       unsigned int napi_id, u32 frag_size);
-+static inline int
-+xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
-+		 struct net_device *dev, u32 queue_index,
-+		 unsigned int napi_id)
-+{
-+	return __xdp_rxq_info_reg(xdp_rxq, dev, queue_index, napi_id, 0);
-+}
-+
- void xdp_rxq_info_unreg(struct xdp_rxq_info *xdp_rxq);
- void xdp_rxq_info_unused(struct xdp_rxq_info *xdp_rxq);
- bool xdp_rxq_info_is_reg(struct xdp_rxq_info *xdp_rxq);
+ BPF_CALL_3(bpf_get_stackid_raw_tp, struct bpf_raw_tracepoint_args *, args,
+ 	   struct bpf_map *, map, u64, flags)
+@@ -1661,6 +1662,8 @@ tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_sock_from_file_proto;
+ 	case BPF_FUNC_get_socket_cookie:
+ 		return &bpf_get_socket_ptr_cookie_proto;
++	case BPF_FUNC_xdp_get_buff_len:
++		return &bpf_xdp_get_buff_len_trace_proto;
+ #endif
+ 	case BPF_FUNC_seq_printf:
+ 		return prog->expected_attach_type == BPF_TRACE_ITER ?
 diff --git a/net/core/filter.c b/net/core/filter.c
-index 332f8e7802bc..7fa699396dff 100644
+index 7fa699396dff..0b214e80a024 100644
 --- a/net/core/filter.c
 +++ b/net/core/filter.c
-@@ -3830,11 +3830,76 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
- 	.arg2_type	= ARG_ANYTHING,
+@@ -3796,6 +3796,15 @@ static const struct bpf_func_proto bpf_xdp_get_buff_len_proto = {
+ 	.arg1_type	= ARG_PTR_TO_CTX,
  };
  
-+static int bpf_xdp_multi_frags_increase_tail(struct xdp_buff *xdp, int offset)
-+{
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-+	skb_frag_t *frag = &sinfo->frags[sinfo->nr_frags - 1];
-+	struct xdp_rxq_info *rxq = xdp->rxq;
-+	unsigned int tailroom;
++BTF_ID_LIST_SINGLE(bpf_xdp_get_buff_len_bpf_ids, struct, xdp_buff)
 +
-+	if (!rxq->frag_size || rxq->frag_size > xdp->frame_sz)
-+		return -EOPNOTSUPP;
++const struct bpf_func_proto bpf_xdp_get_buff_len_trace_proto = {
++	.func		= bpf_xdp_get_buff_len,
++	.gpl_only	= false,
++	.arg1_type	= ARG_PTR_TO_BTF_ID,
++	.arg1_btf_id	= &bpf_xdp_get_buff_len_bpf_ids[0],
++};
 +
-+	tailroom = rxq->frag_size - skb_frag_size(frag) - skb_frag_off(frag);
-+	if (unlikely(offset > tailroom))
-+		return -EINVAL;
+ static unsigned long xdp_get_metalen(const struct xdp_buff *xdp)
+ {
+ 	return xdp_data_meta_unsupported(xdp) ? 0 :
+@@ -4668,10 +4677,48 @@ static const struct bpf_func_proto bpf_sk_ancestor_cgroup_id_proto = {
+ };
+ #endif
+ 
+-static unsigned long bpf_xdp_copy(void *dst_buff, const void *src_buff,
++static unsigned long bpf_xdp_copy(void *dst_buff, const void *ctx,
+ 				  unsigned long off, unsigned long len)
+ {
+-	memcpy(dst_buff, src_buff + off, len);
++	struct xdp_buff *xdp = (struct xdp_buff *)ctx;
++	unsigned long ptr_len, ptr_off = 0;
++	skb_frag_t *next_frag, *end_frag;
++	struct skb_shared_info *sinfo;
++	u8 *ptr_buf;
 +
-+	memset(skb_frag_address(frag) + skb_frag_size(frag), 0, offset);
-+	skb_frag_size_add(frag, offset);
-+	sinfo->xdp_frags_size += offset;
++	if (likely(xdp->data_end - xdp->data >= off + len)) {
++		memcpy(dst_buff, xdp->data + off, len);
++		return 0;
++	}
 +
-+	return 0;
-+}
++	sinfo = xdp_get_shared_info_from_buff(xdp);
++	end_frag = &sinfo->frags[sinfo->nr_frags];
++	next_frag = &sinfo->frags[0];
 +
-+static int bpf_xdp_multi_frags_shrink_tail(struct xdp_buff *xdp, int offset)
-+{
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-+	int i, n_frags_free = 0, len_free = 0;
++	ptr_len = xdp->data_end - xdp->data;
++	ptr_buf = xdp->data;
 +
-+	if (unlikely(offset > (int)xdp_get_buff_len(xdp) - ETH_HLEN))
-+		return -EINVAL;
++	while (true) {
++		if (off < ptr_off + ptr_len) {
++			unsigned long copy_off = off - ptr_off;
++			unsigned long copy_len = min(len, ptr_len - copy_off);
 +
-+	for (i = sinfo->nr_frags - 1; i >= 0 && offset > 0; i--) {
-+		skb_frag_t *frag = &sinfo->frags[i];
-+		int shrink = min_t(int, offset, skb_frag_size(frag));
++			memcpy(dst_buff, ptr_buf + copy_off, copy_len);
 +
-+		len_free += shrink;
-+		offset -= shrink;
-+
-+		if (skb_frag_size(frag) == shrink) {
-+			struct page *page = skb_frag_page(frag);
-+
-+			__xdp_return(page_address(page), &xdp->rxq->mem,
-+				     false, NULL);
-+			n_frags_free++;
-+		} else {
-+			skb_frag_size_sub(frag, shrink);
-+			break;
++			off += copy_len;
++			len -= copy_len;
++			dst_buff += copy_len;
 +		}
-+	}
-+	sinfo->nr_frags -= n_frags_free;
-+	sinfo->xdp_frags_size -= len_free;
 +
-+	if (unlikely(!sinfo->nr_frags)) {
-+		xdp_buff_clear_frags_flag(xdp);
-+		xdp->data_end -= offset;
-+	}
++		if (!len || next_frag == end_frag)
++			break;
 +
-+	return 0;
-+}
-+
- BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
- {
- 	void *data_hard_end = xdp_data_hard_end(xdp); /* use xdp->frame_sz */
- 	void *data_end = xdp->data_end + offset;
- 
-+	if (unlikely(xdp_buff_has_frags(xdp))) { /* xdp multi-frags */
-+		if (offset < 0)
-+			return bpf_xdp_multi_frags_shrink_tail(xdp, -offset);
-+
-+		return bpf_xdp_multi_frags_increase_tail(xdp, offset);
++		ptr_off += ptr_len;
++		ptr_buf = skb_frag_address(next_frag);
++		ptr_len = skb_frag_size(next_frag);
++		next_frag++;
 +	}
 +
- 	/* Notice that xdp_data_hard_end have reserved some tailroom */
- 	if (unlikely(data_end > data_hard_end))
- 		return -EINVAL;
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 3be94198d104..f989ac34dc39 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -162,8 +162,9 @@ static void xdp_rxq_info_init(struct xdp_rxq_info *xdp_rxq)
- }
- 
- /* Returns 0 on success, negative on failure */
--int xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
--		     struct net_device *dev, u32 queue_index, unsigned int napi_id)
-+int __xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
-+		       struct net_device *dev, u32 queue_index,
-+		       unsigned int napi_id, u32 frag_size)
- {
- 	if (!dev) {
- 		WARN(1, "Missing net_device from driver");
-@@ -185,11 +186,12 @@ int xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
- 	xdp_rxq->dev = dev;
- 	xdp_rxq->queue_index = queue_index;
- 	xdp_rxq->napi_id = napi_id;
-+	xdp_rxq->frag_size = frag_size;
- 
- 	xdp_rxq->reg_state = REG_STATE_REGISTERED;
  	return 0;
  }
--EXPORT_SYMBOL_GPL(xdp_rxq_info_reg);
-+EXPORT_SYMBOL_GPL(__xdp_rxq_info_reg);
  
- void xdp_rxq_info_unused(struct xdp_rxq_info *xdp_rxq)
+@@ -4682,11 +4729,11 @@ BPF_CALL_5(bpf_xdp_event_output, struct xdp_buff *, xdp, struct bpf_map *, map,
+ 
+ 	if (unlikely(flags & ~(BPF_F_CTXLEN_MASK | BPF_F_INDEX_MASK)))
+ 		return -EINVAL;
+-	if (unlikely(!xdp ||
+-		     xdp_size > (unsigned long)(xdp->data_end - xdp->data)))
++
++	if (unlikely(!xdp || xdp_size > xdp_get_buff_len(xdp)))
+ 		return -EFAULT;
+ 
+-	return bpf_event_output(map, flags, meta, meta_size, xdp->data,
++	return bpf_event_output(map, flags, meta, meta_size, xdp,
+ 				xdp_size, bpf_xdp_copy);
+ }
+ 
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c b/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
+index c98a897ad692..c5cff4f2d9de 100644
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
+@@ -10,11 +10,20 @@ struct meta {
+ 	int pkt_len;
+ };
+ 
++struct test_ctx_s {
++	bool passed;
++	int pkt_size;
++};
++
++struct test_ctx_s test_ctx;
++
+ static void on_sample(void *ctx, int cpu, void *data, __u32 size)
  {
-@@ -369,8 +371,8 @@ EXPORT_SYMBOL_GPL(xdp_rxq_info_reg_mem_model);
-  * is used for those calls sites.  Thus, allowing for faster recycling
-  * of xdp_frames/pages in those cases.
-  */
--static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
--			 struct xdp_buff *xdp)
-+void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
-+		  struct xdp_buff *xdp)
+-	int duration = 0;
+ 	struct meta *meta = (struct meta *)data;
+ 	struct ipv4_packet *trace_pkt_v4 = data + sizeof(*meta);
++	unsigned char *raw_pkt = data + sizeof(*meta);
++	struct test_ctx_s *tst_ctx = ctx;
++	int duration = 0;
+ 
+ 	if (CHECK(size < sizeof(pkt_v4) + sizeof(*meta),
+ 		  "check_size", "size %u < %zu\n",
+@@ -25,25 +34,114 @@ static void on_sample(void *ctx, int cpu, void *data, __u32 size)
+ 		  "meta->ifindex = %d\n", meta->ifindex))
+ 		return;
+ 
+-	if (CHECK(meta->pkt_len != sizeof(pkt_v4), "check_meta_pkt_len",
+-		  "meta->pkt_len = %zd\n", sizeof(pkt_v4)))
++	if (CHECK(meta->pkt_len != tst_ctx->pkt_size, "check_meta_pkt_len",
++		  "meta->pkt_len = %d\n", tst_ctx->pkt_size))
+ 		return;
+ 
+ 	if (CHECK(memcmp(trace_pkt_v4, &pkt_v4, sizeof(pkt_v4)),
+ 		  "check_packet_content", "content not the same\n"))
+ 		return;
+ 
+-	*(bool *)ctx = true;
++	if (meta->pkt_len > sizeof(pkt_v4)) {
++		for (int i = 0; i < (meta->pkt_len - sizeof(pkt_v4)); i++) {
++			if (raw_pkt[i + sizeof(pkt_v4)] != (unsigned char)i) {
++				CHECK(true, "check_packet_content",
++				      "byte %zu does not match %u != %u\n",
++				      i + sizeof(pkt_v4),
++				      raw_pkt[i + sizeof(pkt_v4)],
++				      (unsigned char)i);
++				break;
++			}
++		}
++	}
++
++	tst_ctx->passed = true;
+ }
+ 
+-void test_xdp_bpf2bpf(void)
++#define BUF_SZ	9000
++
++static int run_xdp_bpf2bpf_pkt_size(int pkt_fd, struct perf_buffer *pb,
++				    struct test_xdp_bpf2bpf *ftrace_skel,
++				    int pkt_size)
  {
- 	struct xdp_mem_allocator *xa;
- 	struct page *page;
+ 	__u32 duration = 0, retval, size;
+-	char buf[128];
++	__u8 *buf, *buf_in;
++	int err, ret = 0;
++
++	if (pkt_size > BUF_SZ || pkt_size < sizeof(pkt_v4))
++		return -EINVAL;
++
++	buf_in = malloc(BUF_SZ);
++	if (CHECK(!buf_in, "buf_in malloc()", "error:%s\n", strerror(errno)))
++		return -ENOMEM;
++
++	buf = malloc(BUF_SZ);
++	if (CHECK(!buf, "buf malloc()", "error:%s\n", strerror(errno))) {
++		ret = -ENOMEM;
++		goto free_buf_in;
++	}
++
++	test_ctx.passed = false;
++	test_ctx.pkt_size = pkt_size;
++
++	memcpy(buf_in, &pkt_v4, sizeof(pkt_v4));
++	if (pkt_size > sizeof(pkt_v4)) {
++		for (int i = 0; i < (pkt_size - sizeof(pkt_v4)); i++)
++			buf_in[i + sizeof(pkt_v4)] = i;
++	}
++
++	/* Run test program */
++	err = bpf_prog_test_run(pkt_fd, 1, buf_in, pkt_size,
++				buf, &size, &retval, &duration);
++
++	if (CHECK(err || retval != XDP_PASS || size != pkt_size,
++		  "ipv4", "err %d errno %d retval %d size %d\n",
++		  err, errno, retval, size)) {
++		ret = err ? err : -EINVAL;
++		goto free_buf;
++	}
++
++	/* Make sure bpf_xdp_output() was triggered and it sent the expected
++	 * data to the perf ring buffer.
++	 */
++	err = perf_buffer__poll(pb, 100);
++	if (CHECK(err <= 0, "perf_buffer__poll", "err %d\n", err)) {
++		ret = -EINVAL;
++		goto free_buf;
++	}
++
++	if (CHECK_FAIL(!test_ctx.passed)) {
++		ret = -EINVAL;
++		goto free_buf;
++	}
++
++	/* Verify test results */
++	if (CHECK(ftrace_skel->bss->test_result_fentry != if_nametoindex("lo"),
++		  "result", "fentry failed err %llu\n",
++		  ftrace_skel->bss->test_result_fentry)) {
++		ret = -EINVAL;
++		goto free_buf;
++	}
++
++	if (CHECK(ftrace_skel->bss->test_result_fexit != XDP_PASS, "result",
++		  "fexit failed err %llu\n",
++		  ftrace_skel->bss->test_result_fexit))
++		ret = -EINVAL;
++
++free_buf:
++	free(buf);
++free_buf_in:
++	free(buf_in);
++
++	return ret;
++}
++
++void test_xdp_bpf2bpf(void)
++{
+ 	int err, pkt_fd, map_fd;
+-	bool passed = false;
+-	struct iphdr iph;
+-	struct iptnl_info value4 = {.family = AF_INET};
++	__u32 duration = 0;
++	int pkt_sizes[] = {sizeof(pkt_v4), 1024, 4100, 8200};
++	struct iptnl_info value4 = {.family = AF_INET6};
+ 	struct test_xdp *pkt_skel = NULL;
+ 	struct test_xdp_bpf2bpf *ftrace_skel = NULL;
+ 	struct vip key4 = {.protocol = 6, .family = AF_INET};
+@@ -85,39 +183,14 @@ void test_xdp_bpf2bpf(void)
+ 		goto out;
+ 
+ 	/* Set up perf buffer */
+-	pb = perf_buffer__new(bpf_map__fd(ftrace_skel->maps.perf_buf_map), 1,
+-			      on_sample, NULL, &passed, NULL);
++	pb = perf_buffer__new(bpf_map__fd(ftrace_skel->maps.perf_buf_map), 8,
++			      on_sample, NULL, &test_ctx, NULL);
+ 	if (!ASSERT_OK_PTR(pb, "perf_buf__new"))
+ 		goto out;
+ 
+-	/* Run test program */
+-	err = bpf_prog_test_run(pkt_fd, 1, &pkt_v4, sizeof(pkt_v4),
+-				buf, &size, &retval, &duration);
+-	memcpy(&iph, buf + sizeof(struct ethhdr), sizeof(iph));
+-	if (CHECK(err || retval != XDP_TX || size != 74 ||
+-		  iph.protocol != IPPROTO_IPIP, "ipv4",
+-		  "err %d errno %d retval %d size %d\n",
+-		  err, errno, retval, size))
+-		goto out;
+-
+-	/* Make sure bpf_xdp_output() was triggered and it sent the expected
+-	 * data to the perf ring buffer.
+-	 */
+-	err = perf_buffer__poll(pb, 100);
+-	if (CHECK(err < 0, "perf_buffer__poll", "err %d\n", err))
+-		goto out;
+-
+-	CHECK_FAIL(!passed);
+-
+-	/* Verify test results */
+-	if (CHECK(ftrace_skel->bss->test_result_fentry != if_nametoindex("lo"),
+-		  "result", "fentry failed err %llu\n",
+-		  ftrace_skel->bss->test_result_fentry))
+-		goto out;
+-
+-	CHECK(ftrace_skel->bss->test_result_fexit != XDP_TX, "result",
+-	      "fexit failed err %llu\n", ftrace_skel->bss->test_result_fexit);
+-
++	for (int i = 0; i < ARRAY_SIZE(pkt_sizes); i++)
++		run_xdp_bpf2bpf_pkt_size(pkt_fd, pb, ftrace_skel,
++					 pkt_sizes[i]);
+ out:
+ 	if (pb)
+ 		perf_buffer__free(pb);
+diff --git a/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c b/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
+index 58cf4345f5cc..3379d303f41a 100644
+--- a/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
++++ b/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
+@@ -49,7 +49,7 @@ int BPF_PROG(trace_on_entry, struct xdp_buff *xdp)
+ 	void *data = (void *)(long)xdp->data;
+ 
+ 	meta.ifindex = xdp->rxq->dev->ifindex;
+-	meta.pkt_len = data_end - data;
++	meta.pkt_len = bpf_xdp_get_buff_len((struct xdp_md *)xdp);
+ 	bpf_xdp_output(xdp, &perf_buf_map,
+ 		       ((__u64) meta.pkt_len << 32) |
+ 		       BPF_F_CURRENT_CPU,
 -- 
 2.34.1
 
