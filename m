@@ -2,80 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D09F24911AB
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 23:19:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D6F04911BC
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 23:31:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230284AbiAQWTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 17:19:52 -0500
-Received: from mga09.intel.com ([134.134.136.24]:48097 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229783AbiAQWTv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jan 2022 17:19:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642457991; x=1673993991;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Ov1UX6sBHCPt5TWvK4Q04ZZjqgd30A878T+4krErDt8=;
-  b=CPeAr/3gxIHXxmbnXAa1ZIqCB8OAhTqDnZj1thaLuvPZJJEpltzzxqET
-   XqNykQ08EqUhMvmlkBzUfLD6gAzTvVbXnVT3/15cIQ8f0r4v/nxwfy6nl
-   RlNfzzJHBuuwKiXf1Phn8GMSr6DS5C+TjJVWDaK/+g7OltsKK06Au9CxG
-   Wn9Xx8S2hHlMRZ2IJE2lO/qP1rGW/SvZnSceZewFgzmigkwSHUu1o4quK
-   /Lz/KceSXhCeiL7LnTGoafJKaJA+OPvN6Q8Swff0BJ1HIAobfiOlacP0w
-   pPCoYVMLFzuev1tLQHxWOvKSLCoPj+9eEQ/tqVRZbis+MxDrWnU46rEM9
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="244496738"
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="244496738"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 14:19:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="531490856"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 17 Jan 2022 14:19:50 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n9aLt-000Buk-PT; Mon, 17 Jan 2022 22:19:49 +0000
-Date:   Tue, 18 Jan 2022 06:18:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Gal Pressman <gal@nvidia.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
-Subject: [net:master 63/65] csky-linux-ld: sock.c:undefined reference to
- `__sk_defer_free_flush'
-Message-ID: <202201180610.noKfNl47-lkp@intel.com>
+        id S243613AbiAQWbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 17:31:46 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:26072 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238567AbiAQWbp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 17:31:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642458705;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FL822A+VhuSR8ouSoFdCDXJX7fbLnOA4cmggcaKq1ko=;
+        b=Te5sMuXo3EoowvB26sbT9xghEb9jHXJb2wpvOWM4HhwK4lWA0/v7M45iFoL85fCO6dhe2p
+        sFnO3qDLyKys4yXKU9hcqpphnVRkjaGKGOxugZ66BRpFRGx9z2/o9+6MTMPZiCMSaMioyZ
+        8Pe4VRH6gCA+mSI+WqhcjXNmu3KPc4o=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-671-1S6vjQOzMkOcmfUuiwq_lQ-1; Mon, 17 Jan 2022 17:31:43 -0500
+X-MC-Unique: 1S6vjQOzMkOcmfUuiwq_lQ-1
+Received: by mail-ed1-f71.google.com with SMTP id r14-20020aa7da0e000000b004021fa39843so4594880eds.15
+        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 14:31:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FL822A+VhuSR8ouSoFdCDXJX7fbLnOA4cmggcaKq1ko=;
+        b=dWLT+Fy2/Qyb1EaHu2ntOqtEXqAxm2hECdaIjS5UjwOcRLnq1pJeV4k9M+zHjI4BC/
+         dYAV/F7zgl0oW4dFMjUwKJFwpp8s3vcsc9ZpIjNe01Y38Lnvvb7HHf6O+R5PbkB13k52
+         Ilvi2lm5mXmaQQQfnzbSffqEWe0vjkIIWe1qU0KjhnYsUdW3OLk5AgPsEWqFQYA9eiDi
+         yZnHGxj+MlvJg+K1a3w+Ph6njsNbsJJDlydUJti67rIAHQMx19OFs1e8lmuzuKf3U0Sp
+         +NtDQ4f/mKKbwgBgOyy5dcatCqWuUYdrz927rTLJgm9w5MiLSuhsJ4keWNyPDTqQTkdw
+         rbPQ==
+X-Gm-Message-State: AOAM533Injil1QgPhNe+fku2acSASfy7tgh2eF6f7mobK/XewFvPc3aA
+        DL4ZNMt0oh6307eecFGNenhA7eh0MDCWTV1XVKfe8xRckl9C8Nz2lA10Mm9U6L5fI84V4DPCLs2
+        YlbM8IZ6HverOMG9W
+X-Received: by 2002:a17:907:3f94:: with SMTP id hr20mr8801513ejc.88.1642458702587;
+        Mon, 17 Jan 2022 14:31:42 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzFtcIaT07HfzGtTIKKXfoD/SNDOq7+REx2KhQH3zo4ePI7rSI/H0kRcW3ViUs+z49kNyQvBw==
+X-Received: by 2002:a17:907:3f94:: with SMTP id hr20mr8801484ejc.88.1642458702391;
+        Mon, 17 Jan 2022 14:31:42 -0800 (PST)
+Received: from redhat.com ([2.55.154.241])
+        by smtp.gmail.com with ESMTPSA id a1sm6330754edu.17.2022.01.17.14.31.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Jan 2022 14:31:39 -0800 (PST)
+Date:   Mon, 17 Jan 2022 17:31:30 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        christophe.jaillet@wanadoo.fr, dapeng1.mi@intel.com,
+        david@redhat.com, elic@nvidia.com, eperezma@redhat.com,
+        flyingpenghao@gmail.com, flyingpeng@tencent.com,
+        gregkh@linuxfoundation.org, guanjun@linux.alibaba.com,
+        jasowang@redhat.com, jean-philippe@linaro.org,
+        jiasheng@iscas.ac.cn, johan@kernel.org, keescook@chromium.org,
+        labbott@kernel.org, lingshan.zhu@intel.com, lkp@intel.com,
+        luolikang@nsfocus.com, lvivier@redhat.com, pasic@linux.ibm.com,
+        sgarzare@redhat.com, somlo@cmu.edu, trix@redhat.com,
+        wu000273@umn.edu, xianting.tian@linux.alibaba.com,
+        xuanzhuo@linux.alibaba.com, yun.wang@linux.alibaba.com
+Subject: Re: [GIT PULL] virtio,vdpa,qemu_fw_cfg: features, cleanups, fixes
+Message-ID: <20220117172924-mutt-send-email-mst@kernel.org>
+References: <20220114153515-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220114153515-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git master
-head:   5765cee119bf5a36c94d20eceb37c445508934be
-commit: 79074a72d335dbd021a716d8cc65cba3b2f706ab [63/65] net: Flush deferred skb free on socket destroy
-config: csky-randconfig-r035-20220117 (https://download.01.org/0day-ci/archive/20220118/202201180610.noKfNl47-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=79074a72d335dbd021a716d8cc65cba3b2f706ab
-        git remote add net https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git
-        git fetch --no-tags net master
-        git checkout 79074a72d335dbd021a716d8cc65cba3b2f706ab
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=csky SHELL=/bin/bash
+On Fri, Jan 14, 2022 at 03:35:15PM -0500, Michael S. Tsirkin wrote:
+> Jean-Philippe Brucker (5):
+>       iommu/virtio: Add definitions for VIRTIO_IOMMU_F_BYPASS_CONFIG
+>       iommu/virtio: Support bypass domains
+>       iommu/virtio: Sort reserved regions
+>       iommu/virtio: Pass end address to viommu_add_mapping()
+>       iommu/virtio: Support identity-mapped domains
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Linus, just making sure we are on the same page: Jean-Philippe
+asked me to drop these patches since another version has been
+accepted into another tree. So I did and sent v2 of the pull.
+Hope that's clear and sorry about the noise.
 
-All errors (new ones prefixed by >>):
+-- 
+MST
 
-   csky-linux-ld: net/core/sock.o: in function `sk_destruct':
-   sock.c:(.text+0x1780): undefined reference to `__sk_defer_free_flush'
->> csky-linux-ld: sock.c:(.text+0x17c4): undefined reference to `__sk_defer_free_flush'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
