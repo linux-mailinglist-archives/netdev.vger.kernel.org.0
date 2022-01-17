@@ -2,344 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA4FE490761
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 12:50:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0F3A490771
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 12:54:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239245AbiAQLuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 06:50:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239246AbiAQLug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 06:50:36 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE491C06161C
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 03:50:35 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9QVx-0000fx-Mn; Mon, 17 Jan 2022 12:49:33 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9QVo-00AoYK-L6; Mon, 17 Jan 2022 12:49:23 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9QVn-0001x3-Fg; Mon, 17 Jan 2022 12:49:23 +0100
-Date:   Mon, 17 Jan 2022 12:49:23 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        id S239259AbiAQLyp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 06:54:45 -0500
+Received: from relay12.mail.gandi.net ([217.70.178.232]:51375 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236460AbiAQLyp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 06:54:45 -0500
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 5C11C200004;
+        Mon, 17 Jan 2022 11:54:41 +0000 (UTC)
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220117114923.d5vajgitxneec7j7@pengutronix.de>
-References: <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
- <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
- <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
- <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
- <c9026f17-2b3f-ee94-0ea3-5630f981fbc1@omp.ru>
- <CAMuHMdXVbRudGs69f9ZzaP1PXhteDNZiXA658eMFAwP4nr9r3w@mail.gmail.com>
- <20220117092444.opoedfcf5k5u6otq@pengutronix.de>
- <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH v3 00/41] IEEE 802.15.4 scan support
+Date:   Mon, 17 Jan 2022 12:53:59 +0100
+Message-Id: <20220117115440.60296-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="p6yh245p57zhiyck"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
---p6yh245p57zhiyck
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+	*** TLDR ***
 
-On Mon, Jan 17, 2022 at 11:35:52AM +0100, Geert Uytterhoeven wrote:
-> Hi Uwe,
->=20
-> On Mon, Jan 17, 2022 at 10:24 AM Uwe Kleine-K=F6nig
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Mon, Jan 17, 2022 at 09:41:42AM +0100, Geert Uytterhoeven wrote:
-> > > On Sat, Jan 15, 2022 at 9:22 PM Sergey Shtylyov <s.shtylyov@omp.ru> w=
-rote:
-> > > > On 1/14/22 11:22 PM, Uwe Kleine-K=F6nig wrote:
-> > > > > You have to understand that for clk (and regulator and gpiod) NUL=
-L is a
-> > > > > valid descriptor that can actually be used, it just has no effect=
-=2E So
-> > > > > this is a convenience value for the case "If the clk/regulator/gp=
-iod in
-> > > > > question isn't available, there is nothing to do". This is what m=
-akes
-> > > > > clk_get_optional() and the others really useful and justifies the=
-ir
-> > > > > existence. This doesn't apply to platform_get_irq_optional().
-> > > >
-> > > >    I do understand that. However, IRQs are a different beast with t=
-heir
-> > > > own justifications...
-> > >
-> > > > > clk_get_optional() is sane and sensible for cases where the clk m=
-ight be
-> > > > > absent and it helps you because you don't have to differentiate b=
-etween
-> > > > > "not found" and "there is an actual resource".
-> > > > >
-> > > > > The reason for platform_get_irq_optional()'s existence is just th=
-at
-> > > > > platform_get_irq() emits an error message which is wrong or subop=
-timal
-> > > >
-> > > >    I think you are very wrong here. The real reason is to simplify =
-the
-> > > > callers.
-> > >
-> > > Indeed.
-> >
-> > The commit that introduced platform_get_irq_optional() said:
-> >
-> >         Introduce a new platform_get_irq_optional() that works much like
-> >         platform_get_irq() but does not output an error on failure to
-> >         find the interrupt.
-> >
-> > So the author of 8973ea47901c81a1912bd05f1577bed9b5b52506 failed to
-> > mention the real reason? Or look at
-> > 31a8d8fa84c51d3ab00bf059158d5de6178cf890:
-> >
-> >         [...] use platform_get_irq_optional() to get second/third IRQ
-> >         which are optional to avoid below error message during probe:
-> >         [...]
-> >
-> > Look through the output of
-> >
-> >         git log -Splatform_get_irq_optional
-> >
-> > to find several more of these.
->=20
-> Commit 8973ea47901c81a1 ("driver core: platform: Introduce
-> platform_get_irq_optional()") and the various fixups fixed the ugly
-> printing of error messages that were not applicable.
-> In hindsight, probably commit 7723f4c5ecdb8d83 ("driver core:
-> platform: Add an error message to platform_get_irq*()") should have
-> been reverted instead, until a platform_get_irq_optional() with proper
-> semantics was introduced.
+Here is a series attempting to bring support for scans in the
+IEEE 802.15.4 stack. A number of improvements had to be made, including:
+* a better handling of the symbol durations
+* a few changes in Kconfig
+* a better handling of the tx queues
+* a synchronous Tx API
 
-ack.
+Active and passive scans can be locally tested only with hwsim.
 
-> But as we were all in a hurry to kill the non-applicable error
-> message, we went for the quick and dirty fix.
->=20
-> > Also I fail to see how a caller of (today's) platform_get_irq_optional()
-> > is simpler than a caller of platform_get_irq() given that there is no
-> > semantic difference between the two. Please show me a single
-> > conversion from platform_get_irq to platform_get_irq_optional that
-> > yielded a simplification.
->=20
-> That's exactly why we want to change the latter to return 0 ;-)
+Sorry for the big series, might be split in the near future.
 
-OK. So you agree to my statement "The reason for
-platform_get_irq_optional()'s existence is just that platform_get_irq()
-emits an error message [...]". Actually you don't want to oppose but
-say: It's unfortunate that the silent variant of platform_get_irq() took
-the obvious name of a function that could have an improved return code
-semantic.
+	************
 
-So my suggestion to rename todays platform_get_irq_optional() to
-platform_get_irq_silently() and then introducing
-platform_get_irq_optional() with your suggested semantic seems
-intriguing and straigt forward to me.
+A second series aligning the tooling with these changes is related,
+bringing support for a number of new features such as:
 
-Another thought: platform_get_irq emits an error message for all
-problems. Wouldn't it be consistent to let platform_get_irq_optional()
-emit an error message for all problems but "not found"?
-Alternatively remove the error printk from platform_get_irq().
+* Sending (or stopping) beacons. Intervals ranging from 0 to 14 are
+  valid for passively sending beacons at regular intervals. An interval
+  of 15 would request the core to answer to received BEACON_REQ.
+  # iwpan dev wpan0 beacons send interval 2 # send BEACON at a fixed rate
+  # iwpan dev wpan0 beacons send interval 15 # answer BEACON_REQ only
+  # iwpan dev wpan0 beacons stop # apply to both cases
 
-> > So you need some more effort to convince me of your POV.
-> >
-> > > Even for clocks, you cannot assume that you can always blindly use
-> > > the returned dummy (actually a NULL pointer) to call into the clk
-> > > API.  While this works fine for simple use cases, where you just
-> > > want to enable/disable an optional clock (clk_prepare_enable() and
-> > > clk_disable_unprepare()), it does not work for more complex use cases.
-> >
-> > Agreed. But for clks and gpiods and regulators the simple case is quite
-> > usual. For irqs it isn't.
->=20
-> It is for devices that can have either separate interrupts, or a single
-> multiplexed interrupt.
->=20
-> The logic in e.g. drivers/tty/serial/sh-sci.c and
-> drivers/spi/spi-rspi.c could be simplified and improved (currently
-> it doesn't handle deferred probe) if platform_get_irq_optional()
-> would return 0 instead of -ENXIO.
+* Scanning all the channels or only a subset:
+  # iwpan dev wpan1 scan type passive duration 3 # will not trigger BEACON_REQ
+  # iwpan dev wpan1 scan type active duration 3 # will trigger BEACON_REQ
 
-Looking at sh-sci.c the irq handling logic could be improved even
-without a changed platform_get_irq_optional():
+* If a beacon is received during a scan, the internal PAN list is
+  updated and can be dumped, flushed and configured with:
+  # iwpan dev wpan1 pans dump
+  PAN 0xffff (on wpan1)
+      coordinator 0x2efefdd4cdbf9330
+      page 0
+      channel 13
+      superframe spec. 0xcf22
+      LQI 0
+      seen 7156ms ago
+  # iwpan dev wpan1 pans flush
+  # iwpan dev wpan1 set max_pan_entries 100
+  # iwpan dev wpan1 set pans_expiration 3600
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 968967d722d4..c7dc9fb84844 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2873,11 +2873,13 @@ static int sci_init_single(struct platform_device *=
-dev,
- 	 * interrupt ID numbers, or muxed together with another interrupt.
- 	 */
- 	if (sci_port->irqs[0] < 0)
--		return -ENXIO;
-+		return sci_port->irqs[0];
-=20
--	if (sci_port->irqs[1] < 0)
-+	if (sci_port->irqs[1] =3D=3D -ENXIO)
- 		for (i =3D 1; i < ARRAY_SIZE(sci_port->irqs); i++)
- 			sci_port->irqs[i] =3D sci_port->irqs[0];
-+	else if (sci_port->irqs[1] < 0)
-+		return sci_port->irqs[1];
-=20
- 	sci_port->params =3D sci_probe_regmap(p);
- 	if (unlikely(sci_port->params =3D=3D NULL))
+* It is also possible to monitor the events with:
+  # iwpan event
 
-And then the code flow is actively irritating. sci_init_single() copies
-irqs[0] to all other irqs[i] and then sci_request_irq() loops over the
-already requested irqs and checks for duplicates. A single place that
-identifies the exact set of required irqs would already help a lot.
+* As well as triggering a non blocking scan:
+  # iwpan dev wpan1 scan trigger type passive duration 3
+  # iwpan dev wpan1 scan done
+  # iwpan dev wpan1 scan abort
 
-Also for spi-rspi.c I don't see how platform_get_irq_byname_optional()
-returning 0 instead of -ENXIO would help. Please talk in patches.
+The PAN list gets automatically updated by dropping the expired PANs
+each time the user requests access to the list.
 
-Preferably first simplify in-driver logic to make the conversion to the
-new platform_get_irq_optional() actually reviewable.
+Internally, both requests (scan/beacons) are handled periodically by
+delayed workqueues when relevant.
 
-> > And if you cannot blindly use the dummy, then you're not the targetted
-> > caller of *_get_optional() and should better use *_get() and handle
-> > -ENODEV explicitly.
->=20
-> No, because the janitors tend to consolidate error message handling,
-> by moving the printing up, inside the *_get() methods.  That's exactly
-> what happened here.
+So far the only technical point that is missing in this series is the
+possibility to grab a reference over the module driving the net device
+in order to prevent module unloading during a scan or when the beacons
+work is ongoing.
 
-This is in my eyes the root cause of the issues at hand. Moving the
-error message handling into a get function is only right for most of the
-callers. So the more conservative approach would be to introduce a noisy
-variant of the get function and convert all users that benefit
-separately while the unreviewed callers and those that don't want an
-error message can happily continue to use the silent variant.
+Finally, this series is a deep reshuffle of David Girault's original
+work, hence the fact that he is almost systematically credited, either
+by being the only author when I created the patches based on his changes
+with almost no modification, or with a Co-developped-by tag whenever the
+final code base is significantly different than his first proposal while
+still being greatly inspired from it.
 
-> So there are three reasons: because the absence of an optional IRQ
-> is not an error, and thus that should not cause (a) an error code
-> to be returned, and (b) an error message to be printed, and (c)
-> because it can simplify the logic in device drivers.
+Cheers,
+Miquèl
 
-I don't agree to (a). If the value signaling not-found is -ENXIO or 0
-(or -ENODEV) doesn't matter much. I wouldn't deviate from the return
-code semantics of platform_get_irq() just for having to check against 0
-instead of -ENXIO. Zero is then just another magic value.
-(c) still has to be proven, see above.
+Changes in v3:
+* Dropped two patches:
+  net: mac802154: Split the set channel hook implementation
+  net: mac802154: Ensure proper channel selection at probe time
+* Fixed a check against the supported channels list in
+  ieee802154_set_symbol_duration().
+* Reworded a bit the above helper to print different error messages and
+  dropped the goto statement in it.
+* Used the NSEC_PER_USEC macro in the symbol conversion from us to ns.
+* Stopped calling ->set_channel() at probe time.
+* Fixed hwsim which does not internally set the right channel.
+* Used definitions instead of hardcoded values when relevant.
+* Moved two helpers out of the experimental section because they are now
+  used outside of experimental code.
+* Did a number of renames. Added a couple of comments.
+* Updated several drivers to force them to use the core xmit complete
+  callback instead of workarounding it.
+* Created a helper checking if a queue must be kept on hold.
+* Created a couple of atomic variables and wait_queue_t per phy.
+* Created a sync API for MLME transmissions.
+* Created a hot path and a slow path.
+* Put the warning in the hot path.
+* Added a flag to prevent drivers supporting only datagrams to use the
+  different scanning features.
+* Dropped ieee802154_wake/stop_queue() from the exported
+  symbols. Drivers should not use these directly, but call other helpers
+  in order to fail the tx counters.
 
-> Commit 8973ea47901c81a1 ("driver core: platform: Introduce
-> platform_get_irq_optional()") fixed (b), but didn't address (a) and
-> (c).
+Changes in v2:
+* Create two new netlink commands to set the maximum number of PANs that
+  can be listed as well as their expiration time (in seconds).
+* Added a patch to the series to avoid ignoring bad frames in hwsim as
+  requested by Alexander.
+* Changed the symbol duration type to receive nanoseconds instead of
+  microseconds.
+* Dropped most of the hwsim patches and reworked how drivers advertise
+  their channels in order to be capable of deriving the symbol durations
+  automatically.
+* The scanning boolean gets turned into an atomic.
+* The ca8210 driver does not support scanning, implement the driver
+  hooks to reflect the situation.
+* Reworked a bit the content of each patch to ease the introduction of
+  active scans. 
+* Added active scan support.
 
-Yes, it fixed (b) and picked a bad name for that.
+David Girault (5):
+  net: ieee802154: Move IEEE 802.15.4 Kconfig main entry
+  net: mac802154: Include the softMAC stack inside the IEEE 802.15.4
+    menu
+  net: ieee802154: Move the address structure earlier
+  net: ieee802154: Add a kernel doc header to the ieee802154_addr
+    structure
+  net: ieee802154: Trace the registration of new PANs
 
-Best regards
-Uwe
+Miquel Raynal (36):
+  MAINTAINERS: Remove Harry Morris bouncing address
+  net: ieee802154: hwsim: Ensure proper channel selection at probe time
+  net: ieee802154: hwsim: Ensure frame checksum are valid
+  net: ieee802154: Use the IEEE802154_MAX_PAGE define when relevant
+  net: ieee802154: Improve the way supported channels are declared
+  net: ieee802154: Give more details to the core about the channel
+    configurations
+  net: ieee802154: mcr20a: Fix lifs/sifs periods
+  net: mac802154: Convert the symbol duration into nanoseconds
+  net: mac802154: Set the symbol duration automatically
+  net: ieee802154: Drop duration settings when the core does it already
+  net: ieee802154: Return meaningful error codes from the netlink
+    helpers
+  net: mac802154: Explain the use of ieee802154_wake/stop_queue()
+  net: ieee802154: at86rf230: Call the complete helper when a
+    transmission is over
+  net: ieee802154: atusb: Call the complete helper when a transmission
+    is over
+  net: ieee802154: ca8210: Call the complete helper when a transmission
+    is over
+  net: mac802154: Stop exporting ieee802154_wake/stop_queue()
+  net: mac802154: Rename the synchronous xmit worker
+  net: mac802154: Rename the main tx_work struct
+  net: mac802154: Follow the count of ongoing transmissions
+  net: mac802154: Hold the transmit queue when relevant
+  net: mac802154: Create a hot tx path
+  net: mac802154: Add a warning in the hot path
+  net: mac802154: Introduce a tx queue flushing mechanism
+  net: mac802154: Introduce a synchronous API for MLME commands
+  net: ieee802154: Add support for internal PAN management
+  net: ieee802154: Define a beacon frame header
+  net: ieee802154: Define frame types
+  net: ieee802154: Add support for scanning requests
+  net: mac802154: Handle scan requests
+  net: ieee802154: Full PAN management
+  net: ieee802154: Add beacons support
+  net: mac802154: Handle beacons requests
+  net: mac802154: Add support for active scans
+  net: mac802154: Add support for processing beacon requests
+  net: ieee802154: Handle limited devices with only datagram support
+  net: ieee802154: ca8210: Flag the driver as being limited
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+ MAINTAINERS                              |   3 +-
+ drivers/net/ieee802154/adf7242.c         |   3 +-
+ drivers/net/ieee802154/at86rf230.c       |  68 ++-
+ drivers/net/ieee802154/atusb.c           |  89 ++--
+ drivers/net/ieee802154/ca8210.c          |  17 +-
+ drivers/net/ieee802154/cc2520.c          |   3 +-
+ drivers/net/ieee802154/fakelb.c          |  43 +-
+ drivers/net/ieee802154/mac802154_hwsim.c |  88 +++-
+ drivers/net/ieee802154/mcr20a.c          |  11 +-
+ drivers/net/ieee802154/mrf24j40.c        |   3 +-
+ include/linux/ieee802154.h               |   7 +
+ include/net/cfg802154.h                  | 175 ++++++-
+ include/net/ieee802154_netdev.h          |  85 ++++
+ include/net/mac802154.h                  |  29 +-
+ include/net/nl802154.h                   |  99 ++++
+ net/Kconfig                              |   3 +-
+ net/ieee802154/Kconfig                   |   1 +
+ net/ieee802154/Makefile                  |   2 +-
+ net/ieee802154/core.c                    |   3 +
+ net/ieee802154/core.h                    |  31 ++
+ net/ieee802154/header_ops.c              |  67 +++
+ net/ieee802154/nl-phy.c                  |  13 +-
+ net/ieee802154/nl802154.c                | 556 ++++++++++++++++++++++-
+ net/ieee802154/nl802154.h                |   4 +
+ net/ieee802154/pan.c                     | 234 ++++++++++
+ net/ieee802154/rdev-ops.h                |  52 +++
+ net/ieee802154/trace.h                   |  86 ++++
+ net/mac802154/Makefile                   |   2 +-
+ net/mac802154/cfg.c                      |  82 +++-
+ net/mac802154/ieee802154_i.h             |  86 +++-
+ net/mac802154/main.c                     | 119 ++++-
+ net/mac802154/rx.c                       |  34 +-
+ net/mac802154/scan.c                     | 447 ++++++++++++++++++
+ net/mac802154/tx.c                       |  48 +-
+ net/mac802154/util.c                     |  38 +-
+ 35 files changed, 2413 insertions(+), 218 deletions(-)
+ create mode 100644 net/ieee802154/pan.c
+ create mode 100644 net/mac802154/scan.c
 
---p6yh245p57zhiyck
-Content-Type: application/pgp-signature; name="signature.asc"
+-- 
+2.27.0
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHlV8AACgkQwfwUeK3K
-7Am0GQf8CoKYtZsyB2Veq4tA4dVxwehDrqSNzD0/oee9gQ2W8Ug3o/BHJYBwahzq
-EvMyo3JUywFfBFS6fqP6q+5CXaw3qhcVdLIQIYR1NbdbDku9fPpYgUlMeO8FLj0S
-AjA1gReJzZffpqQa+j6sWHbwoCmV4ZWTYuhi2tnY6gxes4QcBTcXhrlPtPvEcvRj
-xiaHDNvm4yBJjau7t98dhCCfb9ioYwkuGybaTVJenP6u4ZB5QxTAKBsVZsaYscE9
-K/bTKX+pt+MFJrjy6AN6Qq4JYNuQK8v7MawD5u/q9qZHAELmMQaNyWTpBBDKqjGv
-Z8p6bAtXmJy2dTalO786GdRxwAWrMQ==
-=gT+3
------END PGP SIGNATURE-----
-
---p6yh245p57zhiyck--
