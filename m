@@ -2,103 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17EAC490613
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 11:38:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CECD0490748
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 12:47:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236147AbiAQKiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 05:38:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235751AbiAQKiU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 05:38:20 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38579C06161C;
-        Mon, 17 Jan 2022 02:38:20 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id AA09C1F437BF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642415898;
-        bh=jqiDzA7U4dHZTbnAE4kudgIyEogo59g2smc2wtyjBCQ=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=Q6wzCvc9qE0otYn2eiO7z1qOqwYBxHD2hj+a9xD+ZDbEhnoPnsww9q5sCVT0Ri90b
-         +awd9SB778AgeVBUFaDcC2d0vYHLTDNlR6B3P2Qs40ImprpGrZj8dfJigFwyVREDlB
-         g+YfVxD6EYxW0Q5gDY/5uEiedsqHf6Tg+ke3OIAPMgmjecb6RHfPaUpW/BjD0FrJXH
-         c3nEvZFMef538HdXkXk6pHUNI0NdpJsV6hl8eGnrD32iqbvqg+2UjZgGn90oO/QuXf
-         iX2yVyXjgpyM+Z8D6uzegZMrImvaYVEwywN/L9gHGyuYDgS96jvjZKHOkElscpyKyC
-         wR3X2XAYjOkoQ==
-Subject: Re: [PATCH net-next v12 3/7] stmmac: dwmac-mediatek: re-arrange clock
- setting
-To:     Biao Huang <biao.huang@mediatek.com>, davem@davemloft.net,
+        id S239196AbiAQLqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 06:46:36 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:39626 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239202AbiAQLqe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jan 2022 06:46:34 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 32E8D204FD;
+        Mon, 17 Jan 2022 12:46:33 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id lRs8tctdKHvn; Mon, 17 Jan 2022 12:46:32 +0100 (CET)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id AA7B4200BC;
+        Mon, 17 Jan 2022 12:46:32 +0100 (CET)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id A4B2080004A;
+        Mon, 17 Jan 2022 12:46:32 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 17 Jan 2022 12:46:32 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Mon, 17 Jan
+ 2022 12:46:32 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id C840F3183CD6; Mon, 17 Jan 2022 12:46:31 +0100 (CET)
+Date:   Mon, 17 Jan 2022 12:46:31 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Yan Yan <evitayan@google.com>
+CC:     <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        srv_heupstream@mediatek.com, macpaul.lin@mediatek.com,
-        dkirjanov@suse.de
-References: <20220117070706.17853-1-biao.huang@mediatek.com>
- <20220117070706.17853-4-biao.huang@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Message-ID: <2c62f337-5eb4-e525-7e3a-289435315c09@collabora.com>
-Date:   Mon, 17 Jan 2022 11:38:14 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        "Lorenzo Colitti" <lorenzo@google.com>,
+        Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
+        Nathan Harold <nharold@google.com>,
+        Benedict Wong <benedictwong@google.com>
+Subject: Re: [PATCH v1 1/2] xfrm: Check if_id in xfrm_migrate
+Message-ID: <20220117114631.GG1223722@gauss3.secunet.de>
+References: <20220108013230.56294-1-evitayan@google.com>
+ <20220112073242.GA1223722@gauss3.secunet.de>
+ <CADHa2dAaG4Pgxk7gmDbBnVSYJ_eBtJY3KaR94fY=wp+Pmt0EoA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20220117070706.17853-4-biao.huang@mediatek.com>
-Content-Type: text/plain; charset=iso-8859-15; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CADHa2dAaG4Pgxk7gmDbBnVSYJ_eBtJY3KaR94fY=wp+Pmt0EoA@mail.gmail.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Il 17/01/22 08:07, Biao Huang ha scritto:
-> The rmii_internal clock is needed only when PHY
-> interface is RMII, and reference clock is from MAC.
+Hi Yan,
+
+On Wed, Jan 12, 2022 at 02:53:31PM -0800, Yan Yan wrote:
+> Hi Steffen,
 > 
-> Re-arrange the clock setting as following:
-> 1. the optional "rmii_internal" is controlled by devm_clk_get(),
-> 2. other clocks still be configured by devm_clk_bulk_get().
+> The Jan 7th patch fixes the following warning (reported by the kernel
+> test robot) by adding parentheses.
+>    net/xfrm/xfrm_policy.c: In function 'xfrm_migrate':
+> >> net/xfrm/xfrm_policy.c:4403:21: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+>     4403 |                 if (x = xfrm_migrate_state_find(mp, net, if_id)) {
+>          |                     ^
 > 
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> ---
->   .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 72 +++++++++++++------
->   1 file changed, 49 insertions(+), 23 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> index 8747aa4403e8..2678d2deb26a 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> @@ -49,14 +49,15 @@ struct mac_delay_struct {
->   struct mediatek_dwmac_plat_data {
->   	const struct mediatek_dwmac_variant *variant;
->   	struct mac_delay_struct mac_delay;
-> +	struct clk *rmii_internal_clk;
->   	struct clk_bulk_data *clks;
-> -	struct device_node *np;
->   	struct regmap *peri_regmap;
-> +	struct device_node *np;
->   	struct device *dev;
->   	phy_interface_t phy_mode;
-> -	int num_clks_to_config;
->   	bool rmii_clk_from_mac;
->   	bool rmii_rxc;
-> +	int num_clks;
+> In the Jan 7th patch, this line becomes "if ((x =
+> xfrm_migrate_state_find(mp, net, if_id))) {"
 
-I don't see any need to get a num_clks here, at this point: since all functions
-reading this are getting passed a pointer to this entire structure, you can
-simply always access plat->variant->num_clks.
+I thought that was already fixed in the previous version.
+Please mark updated patches as v2 etc. and describe the
+changes you did in the new version.
 
-Please, drop the addition of num_clks in this struct.
+Please resend your patchset and add a proper 'Fixes:'
+tag to the patches.
 
-Regards,
-Angelo
-
+Thanks!
