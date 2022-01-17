@@ -2,90 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C89EC491148
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 22:14:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EED149114E
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 22:19:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230516AbiAQVOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 16:14:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45956 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbiAQVOS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 16:14:18 -0500
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5E7C061574
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 13:14:17 -0800 (PST)
-Received: by mail-il1-x141.google.com with SMTP id r16so15869382ile.8
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 13:14:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=UAOvT72nEzyjB3EaBfIB4vBLAlWNhJb9FUU2K5PC8fM=;
-        b=Js9gwGxXcy8KHRWENzwQeQmHeYTlVDdnDjO5S4rJA7V4vJFUjoXPda59vwXOeIQytR
-         v//nl26fAQkTtLfbI/OSO+0noJdBHfHzcPedde4Vj3WDS1gWK+5awNfyn6oolWEuVYcG
-         eFkMA8lZ8NepBjx+9Okkdzc4GdH1oOUGZzZPyPs2ny83rx7pFS4KIrU7f/c6+2DYQRHH
-         y8vP1fIK1lrcuirKwh2CMKfOE47jnrN2ZU5jkiU6c4QjuMbf605p+kNZXbXrvAZg0FqS
-         TxveHn8DlV5wlYCqGG/3Bqx4U8H6im/7ZSYIN5xKUT1rm+VF4Z7q+MJKPJiSDHoZ3mKV
-         4L8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=UAOvT72nEzyjB3EaBfIB4vBLAlWNhJb9FUU2K5PC8fM=;
-        b=ksZJNW827/397jOkNLsAUlROO1es9/llkMNaSUwfZCBTGeEsuA/EiEf/Kj8I9fREwl
-         i11r6mCPIR8MsBxWwt/4hcTFqbqvGIy6qXhsPy4HQvqqL5CgpiuIb/XGm2SG4CSS9ROE
-         Z0W8z3lculIxxx4kPrfHZGJ27p677wira3YLT5SIowCFmDme3E7n8JlhzVjg12178O05
-         Fkzet2K1L6/j/vm1mTEn18u18APN532dGDvpGR6NeSdNE+pE540L4pfWjTVQIvJSZr/b
-         UtsI6WPdGUwojIiI/1CO/6Wo+ysdF6QTADJ1Aih714VK3CnghlboA0c/SKpK03tLWZVm
-         ZMOA==
-X-Gm-Message-State: AOAM531ryiSmYcjQUU6nDFzwHcXQ1Ws2Jj+l/KU7o3CLk3B4UQ8B0C9A
-        UE04n/dOL30TFcgYQ5G09maH5JwM2rx52I1JaRFSaCe751mDEA==
-X-Google-Smtp-Source: ABdhPJyHoJ4lcBPABo8PchqhnIZUceICHTVFP9AWqDoaOEtSps90nKKRXjVwxDYzvMSgCPSVclQrwzMSbeuPTE53k5w=
-X-Received: by 2002:a05:6e02:1c08:: with SMTP id l8mr1899978ilh.212.1642454056032;
- Mon, 17 Jan 2022 13:14:16 -0800 (PST)
+        id S236070AbiAQVTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 16:19:02 -0500
+Received: from mxout03.lancloud.ru ([45.84.86.113]:55042 "EHLO
+        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229677AbiAQVTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 16:19:01 -0500
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru 5A35F20A4D72
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+To:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+CC:     <linux-renesas-soc@vger.kernel.org>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: [PATCH RFC] phy: make phy_set_max_speed() *void*
+Organization: Open Mobile Platform
+Message-ID: <a2296c4e-884b-334a-570f-901831bfea3c@omp.ru>
+Date:   Tue, 18 Jan 2022 00:18:58 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Reply-To: jennybezoss14@gmail.com
-Sender: nicolemartha246@gmail.com
-Received: by 2002:a5e:8c04:0:0:0:0:0 with HTTP; Mon, 17 Jan 2022 13:14:15
- -0800 (PST)
-From:   Mrs Jenny Bezos <jennybezos1@gmail.com>
-Date:   Mon, 17 Jan 2022 21:14:15 +0000
-X-Google-Sender-Auth: iTJYV1gLK95w04IKCc0LrDnKPqM
-Message-ID: <CAM6oAZ4S+v+CTvDmOuamSb9D622GUP8uKkSU68HgDqbo2etOBQ@mail.gmail.com>
-Subject: Dearest Friend,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Dearest Friend,
+After following the call tree of phy_set_max_speed(), it became clear
+that this function never returns anything but 0, so we can change its
+result type to *void* and drop the result checks from the three drivers
+that actually bothered to do it...
 
-I am Mrs. Jenny Bezos from America  USA, I decided to donate what I
-have to you  for investment towards the good work of charity
-organizations, and also  to help the motherless and the less
-privileged ones and to carry out charitable works in your Country and
-around the World on my Behalf.
+Found by Linux Verification Center (linuxtesting.org) with the SVACE static
+analysis tool.
 
-I am diagnosing of throat Cancer, hospitalize for good 2 years and
-some months now and quite obvious that I have few days to live, and I
-am a Widow no child; I decided to will/donate the sum of $7.8 million
-to you for the good work of God, and also to help the motherless and
-less privilege and also forth assistance of the widows. At the moment
-I cannot take any telephone calls right now due to the fact that my
-relatives (who have squandered the funds for this purpose before) are
-around me and my health also. I have adjusted my will and my Bank  is
-aware.
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
- I have willed those properties to you by quoting my Personal File
-Routing and Account Information. And I have also notified the bank
-that I am willing to give that property to you for good, effective and
-prudent work. It is right to say that I have been directed to do this
-by God. I will be going in for a surgery soon and I want to make sure
-that I make this donation before undergoing this surgery.  I will need
-your support to make this dream come through, could you let me know
-your interest to enable me to give you further information. And I
-hereby advise you to contact me by this email address.
+---
+This patch is against the DaveM's 'net-next.git' repo.
 
-Thanks
-Mrs. Jenny Bezos.
+ drivers/net/ethernet/renesas/ravb_main.c |    8 +-------
+ drivers/net/ethernet/renesas/sh_eth.c    |   10 ++--------
+ drivers/net/phy/aquantia_main.c          |    4 +---
+ drivers/net/phy/phy-core.c               |   22 ++++++++--------------
+ include/linux/phy.h                      |    2 +-
+ 5 files changed, 13 insertions(+), 33 deletions(-)
+
+Index: net-next/drivers/net/ethernet/renesas/ravb_main.c
+===================================================================
+--- net-next.orig/drivers/net/ethernet/renesas/ravb_main.c
++++ net-next/drivers/net/ethernet/renesas/ravb_main.c
+@@ -1432,11 +1432,7 @@ static int ravb_phy_init(struct net_devi
+ 	 * at this time.
+ 	 */
+ 	if (soc_device_match(r8a7795es10)) {
+-		err = phy_set_max_speed(phydev, SPEED_100);
+-		if (err) {
+-			netdev_err(ndev, "failed to limit PHY to 100Mbit/s\n");
+-			goto err_phy_disconnect;
+-		}
++		phy_set_max_speed(phydev, SPEED_100);
+ 
+ 		netdev_info(ndev, "limited PHY to 100Mbit/s\n");
+ 	}
+@@ -1457,8 +1453,6 @@ static int ravb_phy_init(struct net_devi
+ 
+ 	return 0;
+ 
+-err_phy_disconnect:
+-	phy_disconnect(phydev);
+ err_deregister_fixed_link:
+ 	if (of_phy_is_fixed_link(np))
+ 		of_phy_deregister_fixed_link(np);
+Index: net-next/drivers/net/ethernet/renesas/sh_eth.c
+===================================================================
+--- net-next.orig/drivers/net/ethernet/renesas/sh_eth.c
++++ net-next/drivers/net/ethernet/renesas/sh_eth.c
+@@ -2026,14 +2026,8 @@ static int sh_eth_phy_init(struct net_de
+ 	}
+ 
+ 	/* mask with MAC supported features */
+-	if (mdp->cd->register_type != SH_ETH_REG_GIGABIT) {
+-		int err = phy_set_max_speed(phydev, SPEED_100);
+-		if (err) {
+-			netdev_err(ndev, "failed to limit PHY to 100 Mbit/s\n");
+-			phy_disconnect(phydev);
+-			return err;
+-		}
+-	}
++	if (mdp->cd->register_type != SH_ETH_REG_GIGABIT)
++		phy_set_max_speed(phydev, SPEED_100);
+ 
+ 	phy_attached_info(phydev);
+ 
+Index: net-next/drivers/net/phy/aquantia_main.c
+===================================================================
+--- net-next.orig/drivers/net/phy/aquantia_main.c
++++ net-next/drivers/net/phy/aquantia_main.c
+@@ -533,9 +533,7 @@ static int aqcs109_config_init(struct ph
+ 	 * PMA speed ability bits are the same for all members of the family,
+ 	 * AQCS109 however supports speeds up to 2.5G only.
+ 	 */
+-	ret = phy_set_max_speed(phydev, SPEED_2500);
+-	if (ret)
+-		return ret;
++	phy_set_max_speed(phydev, SPEED_2500);
+ 
+ 	return aqr107_set_downshift(phydev, MDIO_AN_VEND_PROV_DOWNSHIFT_DFLT);
+ }
+Index: net-next/drivers/net/phy/phy-core.c
+===================================================================
+--- net-next.orig/drivers/net/phy/phy-core.c
++++ net-next/drivers/net/phy/phy-core.c
+@@ -243,7 +243,7 @@ size_t phy_speeds(unsigned int *speeds,
+ 	return count;
+ }
+ 
+-static int __set_linkmode_max_speed(u32 max_speed, unsigned long *addr)
++static void __set_linkmode_max_speed(u32 max_speed, unsigned long *addr)
+ {
+ 	const struct phy_setting *p;
+ 	int i;
+@@ -254,13 +254,11 @@ static int __set_linkmode_max_speed(u32
+ 		else
+ 			break;
+ 	}
+-
+-	return 0;
+ }
+ 
+-static int __set_phy_supported(struct phy_device *phydev, u32 max_speed)
++static void __set_phy_supported(struct phy_device *phydev, u32 max_speed)
+ {
+-	return __set_linkmode_max_speed(max_speed, phydev->supported);
++	__set_linkmode_max_speed(max_speed, phydev->supported);
+ }
+ 
+ /**
+@@ -273,17 +271,11 @@ static int __set_phy_supported(struct ph
+  * is connected to a 1G PHY. This function allows the MAC to indicate its
+  * maximum speed, and so limit what the PHY will advertise.
+  */
+-int phy_set_max_speed(struct phy_device *phydev, u32 max_speed)
++void phy_set_max_speed(struct phy_device *phydev, u32 max_speed)
+ {
+-	int err;
+-
+-	err = __set_phy_supported(phydev, max_speed);
+-	if (err)
+-		return err;
++	__set_phy_supported(phydev, max_speed);
+ 
+ 	phy_advertise_supported(phydev);
+-
+-	return 0;
+ }
+ EXPORT_SYMBOL(phy_set_max_speed);
+ 
+@@ -440,7 +432,9 @@ int phy_speed_down_core(struct phy_devic
+ 	if (min_common_speed == SPEED_UNKNOWN)
+ 		return -EINVAL;
+ 
+-	return __set_linkmode_max_speed(min_common_speed, phydev->advertising);
++	__set_linkmode_max_speed(min_common_speed, phydev->advertising);
++
++	return 0;
+ }
+ 
+ static void mmd_phy_indirect(struct mii_bus *bus, int phy_addr, int devad,
+Index: net-next/include/linux/phy.h
+===================================================================
+--- net-next.orig/include/linux/phy.h
++++ net-next/include/linux/phy.h
+@@ -1661,7 +1661,7 @@ int phy_disable_interrupts(struct phy_de
+ void phy_request_interrupt(struct phy_device *phydev);
+ void phy_free_interrupt(struct phy_device *phydev);
+ void phy_print_status(struct phy_device *phydev);
+-int phy_set_max_speed(struct phy_device *phydev, u32 max_speed);
++void phy_set_max_speed(struct phy_device *phydev, u32 max_speed);
+ void phy_remove_link_mode(struct phy_device *phydev, u32 link_mode);
+ void phy_advertise_supported(struct phy_device *phydev);
+ void phy_support_sym_pause(struct phy_device *phydev);
