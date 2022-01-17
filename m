@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03ECA490A6B
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 15:31:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B06C7490A77
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 15:32:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239963AbiAQObj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 09:31:39 -0500
-Received: from marcansoft.com ([212.63.210.85]:56132 "EHLO mail.marcansoft.com"
+        id S240266AbiAQObw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 09:31:52 -0500
+Received: from marcansoft.com ([212.63.210.85]:56182 "EHLO mail.marcansoft.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239983AbiAQObV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jan 2022 09:31:21 -0500
+        id S239675AbiAQOb2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jan 2022 09:31:28 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: hector@marcansoft.com)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 4E31A42137;
-        Mon, 17 Jan 2022 14:31:11 +0000 (UTC)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 3F33C4219F;
+        Mon, 17 Jan 2022 14:31:19 +0000 (UTC)
 From:   Hector Martin <marcan@marcan.st>
 To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -45,9 +45,9 @@ Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
-Subject: [PATCH v3 7/9] brcmfmac: of: Use devm_kstrdup for board_type & check for errors
-Date:   Mon, 17 Jan 2022 23:29:17 +0900
-Message-Id: <20220117142919.207370-8-marcan@marcan.st>
+Subject: [PATCH v3 8/9] brcmfmac: fwil: Constify iovar name arguments
+Date:   Mon, 17 Jan 2022 23:29:18 +0900
+Message-Id: <20220117142919.207370-9-marcan@marcan.st>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220117142919.207370-1-marcan@marcan.st>
 References: <20220117142919.207370-1-marcan@marcan.st>
@@ -57,33 +57,214 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This was missing a NULL check, and we can collapse the strlen/alloc/copy
-into a devm_kstrdup().
+Make all the iovar name arguments const char * instead of just char *.
 
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Hector Martin <marcan@marcan.st>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ .../broadcom/brcm80211/brcmfmac/fwil.c        | 34 +++++++++----------
+ .../broadcom/brcm80211/brcmfmac/fwil.h        | 28 +++++++--------
+ 2 files changed, 31 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-index 513c7e6421b2..5dc1e942e9e7 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-@@ -79,8 +79,12 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
+index d5578ca681bb..72fe8bce6eaf 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
+@@ -192,7 +192,7 @@ brcmf_fil_cmd_int_get(struct brcmf_if *ifp, u32 cmd, u32 *data)
+ }
  
- 		/* get rid of '/' in the compatible string to be able to find the FW */
- 		len = strlen(tmp) + 1;
--		board_type = devm_kzalloc(dev, len, GFP_KERNEL);
--		strscpy(board_type, tmp, len);
-+		board_type = devm_kstrdup(dev, tmp, GFP_KERNEL);
-+		if (!board_type) {
-+			brcmf_err("out of memory allocating board_type\n");
-+			of_node_put(root);
-+			return;
-+		}
- 		for (i = 0; i < board_type[i]; i++) {
- 			if (board_type[i] == '/')
- 				board_type[i] = '-';
+ static u32
+-brcmf_create_iovar(char *name, const char *data, u32 datalen,
++brcmf_create_iovar(const char *name, const char *data, u32 datalen,
+ 		   char *buf, u32 buflen)
+ {
+ 	u32 len;
+@@ -213,7 +213,7 @@ brcmf_create_iovar(char *name, const char *data, u32 datalen,
+ 
+ 
+ s32
+-brcmf_fil_iovar_data_set(struct brcmf_if *ifp, char *name, const void *data,
++brcmf_fil_iovar_data_set(struct brcmf_if *ifp, const char *name, const void *data,
+ 			 u32 len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+@@ -241,7 +241,7 @@ brcmf_fil_iovar_data_set(struct brcmf_if *ifp, char *name, const void *data,
+ }
+ 
+ s32
+-brcmf_fil_iovar_data_get(struct brcmf_if *ifp, char *name, void *data,
++brcmf_fil_iovar_data_get(struct brcmf_if *ifp, const char *name, void *data,
+ 			 u32 len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+@@ -272,7 +272,7 @@ brcmf_fil_iovar_data_get(struct brcmf_if *ifp, char *name, void *data,
+ }
+ 
+ s32
+-brcmf_fil_iovar_int_set(struct brcmf_if *ifp, char *name, u32 data)
++brcmf_fil_iovar_int_set(struct brcmf_if *ifp, const char *name, u32 data)
+ {
+ 	__le32 data_le = cpu_to_le32(data);
+ 
+@@ -280,7 +280,7 @@ brcmf_fil_iovar_int_set(struct brcmf_if *ifp, char *name, u32 data)
+ }
+ 
+ s32
+-brcmf_fil_iovar_int_get(struct brcmf_if *ifp, char *name, u32 *data)
++brcmf_fil_iovar_int_get(struct brcmf_if *ifp, const char *name, u32 *data)
+ {
+ 	__le32 data_le = cpu_to_le32(*data);
+ 	s32 err;
+@@ -292,7 +292,7 @@ brcmf_fil_iovar_int_get(struct brcmf_if *ifp, char *name, u32 *data)
+ }
+ 
+ static u32
+-brcmf_create_bsscfg(s32 bsscfgidx, char *name, char *data, u32 datalen,
++brcmf_create_bsscfg(s32 bsscfgidx, const char *name, char *data, u32 datalen,
+ 		    char *buf, u32 buflen)
+ {
+ 	const s8 *prefix = "bsscfg:";
+@@ -337,7 +337,7 @@ brcmf_create_bsscfg(s32 bsscfgidx, char *name, char *data, u32 datalen,
+ }
+ 
+ s32
+-brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, char *name,
++brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, const char *name,
+ 			  void *data, u32 len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+@@ -366,7 +366,7 @@ brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, char *name,
+ }
+ 
+ s32
+-brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, char *name,
++brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, const char *name,
+ 			  void *data, u32 len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+@@ -396,7 +396,7 @@ brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, char *name,
+ }
+ 
+ s32
+-brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, char *name, u32 data)
++brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, const char *name, u32 data)
+ {
+ 	__le32 data_le = cpu_to_le32(data);
+ 
+@@ -405,7 +405,7 @@ brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, char *name, u32 data)
+ }
+ 
+ s32
+-brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, char *name, u32 *data)
++brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, const char *name, u32 *data)
+ {
+ 	__le32 data_le = cpu_to_le32(*data);
+ 	s32 err;
+@@ -417,7 +417,7 @@ brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, char *name, u32 *data)
+ 	return err;
+ }
+ 
+-static u32 brcmf_create_xtlv(char *name, u16 id, char *data, u32 len,
++static u32 brcmf_create_xtlv(const char *name, u16 id, char *data, u32 len,
+ 			     char *buf, u32 buflen)
+ {
+ 	u32 iolen;
+@@ -438,7 +438,7 @@ static u32 brcmf_create_xtlv(char *name, u16 id, char *data, u32 len,
+ 	return iolen;
+ }
+ 
+-s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, char *name, u16 id,
++s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, const char *name, u16 id,
+ 			    void *data, u32 len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+@@ -466,7 +466,7 @@ s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, char *name, u16 id,
+ 	return err;
+ }
+ 
+-s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, char *name, u16 id,
++s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, const char *name, u16 id,
+ 			    void *data, u32 len)
+ {
+ 	struct brcmf_pub *drvr = ifp->drvr;
+@@ -495,7 +495,7 @@ s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, char *name, u16 id,
+ 	return err;
+ }
+ 
+-s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, char *name, u16 id, u32 data)
++s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, const char *name, u16 id, u32 data)
+ {
+ 	__le32 data_le = cpu_to_le32(data);
+ 
+@@ -503,7 +503,7 @@ s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, char *name, u16 id, u32 data)
+ 					 sizeof(data_le));
+ }
+ 
+-s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, char *name, u16 id, u32 *data)
++s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, const char *name, u16 id, u32 *data)
+ {
+ 	__le32 data_le = cpu_to_le32(*data);
+ 	s32 err;
+@@ -514,12 +514,12 @@ s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, char *name, u16 id, u32 *data)
+ 	return err;
+ }
+ 
+-s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, char *name, u16 id, u8 *data)
++s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, const char *name, u16 id, u8 *data)
+ {
+ 	return brcmf_fil_xtlv_data_get(ifp, name, id, data, sizeof(*data));
+ }
+ 
+-s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, char *name, u16 id, u16 *data)
++s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, const char *name, u16 id, u16 *data)
+ {
+ 	__le16 data_le = cpu_to_le16(*data);
+ 	s32 err;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h
+index cb26f8c59c21..bc693157c4b1 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h
+@@ -84,26 +84,26 @@ s32 brcmf_fil_cmd_data_get(struct brcmf_if *ifp, u32 cmd, void *data, u32 len);
+ s32 brcmf_fil_cmd_int_set(struct brcmf_if *ifp, u32 cmd, u32 data);
+ s32 brcmf_fil_cmd_int_get(struct brcmf_if *ifp, u32 cmd, u32 *data);
+ 
+-s32 brcmf_fil_iovar_data_set(struct brcmf_if *ifp, char *name, const void *data,
++s32 brcmf_fil_iovar_data_set(struct brcmf_if *ifp, const char *name, const void *data,
+ 			     u32 len);
+-s32 brcmf_fil_iovar_data_get(struct brcmf_if *ifp, char *name, void *data,
++s32 brcmf_fil_iovar_data_get(struct brcmf_if *ifp, const char *name, void *data,
+ 			     u32 len);
+-s32 brcmf_fil_iovar_int_set(struct brcmf_if *ifp, char *name, u32 data);
+-s32 brcmf_fil_iovar_int_get(struct brcmf_if *ifp, char *name, u32 *data);
++s32 brcmf_fil_iovar_int_set(struct brcmf_if *ifp, const char *name, u32 data);
++s32 brcmf_fil_iovar_int_get(struct brcmf_if *ifp, const char *name, u32 *data);
+ 
+-s32 brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, char *name, void *data,
++s32 brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, const char *name, void *data,
+ 			      u32 len);
+-s32 brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, char *name, void *data,
++s32 brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, const char *name, void *data,
+ 			      u32 len);
+-s32 brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, char *name, u32 data);
+-s32 brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, char *name, u32 *data);
+-s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, char *name, u16 id,
++s32 brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, const char *name, u32 data);
++s32 brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, const char *name, u32 *data);
++s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, const char *name, u16 id,
+ 			    void *data, u32 len);
+-s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, char *name, u16 id,
++s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, const char *name, u16 id,
+ 			    void *data, u32 len);
+-s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, char *name, u16 id, u32 data);
+-s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, char *name, u16 id, u32 *data);
+-s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, char *name, u16 id, u8 *data);
+-s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, char *name, u16 id, u16 *data);
++s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, const char *name, u16 id, u32 data);
++s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, const char *name, u16 id, u32 *data);
++s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, const char *name, u16 id, u8 *data);
++s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, const char *name, u16 id, u16 *data);
+ 
+ #endif /* _fwil_h_ */
 -- 
 2.33.0
 
