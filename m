@@ -2,21 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECC084907DB
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 12:56:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 573114907EC
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 12:56:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239420AbiAQL4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 06:56:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59538 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239480AbiAQLzy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 06:55:54 -0500
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21E1C061755;
-        Mon, 17 Jan 2022 03:55:43 -0800 (PST)
+        id S239484AbiAQL41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 06:56:27 -0500
+Received: from relay12.mail.gandi.net ([217.70.178.232]:56781 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239376AbiAQLzp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 06:55:45 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id C2EB6200012;
-        Mon, 17 Jan 2022 11:55:40 +0000 (UTC)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 6394B200014;
+        Mon, 17 Jan 2022 11:55:42 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -32,9 +29,9 @@ Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
         Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v3 32/41] net: ieee802154: Add support for scanning requests
-Date:   Mon, 17 Jan 2022 12:54:31 +0100
-Message-Id: <20220117115440.60296-33-miquel.raynal@bootlin.com>
+Subject: [PATCH v3 33/41] net: mac802154: Handle scan requests
+Date:   Mon, 17 Jan 2022 12:54:32 +0100
+Message-Id: <20220117115440.60296-34-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220117115440.60296-1-miquel.raynal@bootlin.com>
 References: <20220117115440.60296-1-miquel.raynal@bootlin.com>
@@ -45,554 +42,577 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This involves processing triggering scan requests, abort scan requests,
-as well as providing information about if the last scan was finished or
-not.
+Implement the core hooks in order to provide the softMAC layer support
+for scan requests and aborts.
 
-A scan request structure is created to list the requirements.
+Changing the channels is prohibited during the scan.
 
-A netlink multicast scan group is also created for the occasion so that
-listeners can only focus on scan activity.
+As transceiver enter in a promiscuous mode during scans, they might stop
+checking frame validity so we ensure this gets done at mac level.
 
-Mac layers may now implement the ->trigger_scan() and ->abort_scan()
-hooks.
+The implementation uses a workqueue triggered at a certain interval
+depending on the symbol duration for the current channel and the
+duration order provided.
+
+Received beacons during a passive scanning procedure are processed and
+either registered in the list of known PANs or the existing entry gets
+updated accordingly.
+
+Active scanning is not supported yet.
 
 Co-developed-by: David Girault <david.girault@qorvo.com>
 Signed-off-by: David Girault <david.girault@qorvo.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- include/linux/ieee802154.h |   3 +
- include/net/cfg802154.h    |  26 +++++
- include/net/nl802154.h     |  49 ++++++++
- net/ieee802154/core.h      |   3 +
- net/ieee802154/nl802154.c  | 234 +++++++++++++++++++++++++++++++++++++
- net/ieee802154/nl802154.h  |   4 +
- net/ieee802154/rdev-ops.h  |  28 +++++
- net/ieee802154/trace.h     |  40 +++++++
- 8 files changed, 387 insertions(+)
+ include/linux/ieee802154.h   |   4 +
+ include/net/mac802154.h      |  14 ++
+ net/mac802154/Makefile       |   2 +-
+ net/mac802154/cfg.c          |  39 ++++++
+ net/mac802154/ieee802154_i.h |  22 +++
+ net/mac802154/main.c         |   2 +-
+ net/mac802154/rx.c           |  21 ++-
+ net/mac802154/scan.c         | 259 +++++++++++++++++++++++++++++++++++
+ net/mac802154/tx.c           |   3 +
+ net/mac802154/util.c         |  26 ++++
+ 10 files changed, 385 insertions(+), 7 deletions(-)
+ create mode 100644 net/mac802154/scan.c
 
 diff --git a/include/linux/ieee802154.h b/include/linux/ieee802154.h
-index 95c831162212..41178c87c43c 100644
+index 41178c87c43c..57bf5317338e 100644
 --- a/include/linux/ieee802154.h
 +++ b/include/linux/ieee802154.h
-@@ -44,6 +44,9 @@
- #define IEEE802154_SHORT_ADDR_LEN	2
- #define IEEE802154_PAN_ID_LEN		2
- 
-+/* Duration in superframe order */
-+#define IEEE802154_MAX_SCAN_DURATION	14
-+#define IEEE802154_ACTIVE_SCAN_DURATION	15
+@@ -47,6 +47,10 @@
+ /* Duration in superframe order */
+ #define IEEE802154_MAX_SCAN_DURATION	14
+ #define IEEE802154_ACTIVE_SCAN_DURATION	15
++/* Superframe duration in slots */
++#define IEEE802154_SUPERFRAME_PERIOD	16
++/* Various periods expressed in symbols */
++#define IEEE802154_SLOT_PERIOD		60
  #define IEEE802154_LIFS_PERIOD		40
  #define IEEE802154_SIFS_PERIOD		12
  #define IEEE802154_MAX_SIFS_FRAME_SIZE	18
-diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-index 8999f87ccac6..15b9cb2c213a 100644
---- a/include/net/cfg802154.h
-+++ b/include/net/cfg802154.h
-@@ -66,6 +66,28 @@ struct ieee802154_pan_desc {
- 	bool gts_permit;
- };
+diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+index 13798867b8d3..a2eec8786628 100644
+--- a/include/net/mac802154.h
++++ b/include/net/mac802154.h
+@@ -471,4 +471,18 @@ void ieee802154_rx_irqsafe(struct ieee802154_hw *hw, struct sk_buff *skb,
+ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
+ 			      bool ifs_handling);
  
 +/**
-+ * struct cfg802154_scan_req - Scan request
++ * ieee802154_queue_delayed_work - add work onto the mac802154 workqueue
 + *
-+ * @type: type of scan to be performed
-+ * @flags: flags bitfield controlling the operation
-+ * @page: page on which to perform the scan
-+ * @channels: channels in te %page to be scanned
-+ * @duration: time spent on each channel, calculated with:
-+ *            aBaseSuperframeDuration * (2 ^ duration + 1)
-+ * @wpan_dev: the wpan device on which to perform the scan
-+ * @wpan_phy: the wpan phy on which to perform the scan
-+ */
-+struct cfg802154_scan_request {
-+	enum nl802154_scan_types type;
-+	u32 flags;
-+	u8 page;
-+	u32 channels;
-+	u8 duration;
-+	struct wpan_dev *wpan_dev;
-+	struct wpan_phy *wpan_phy;
-+};
-+
- struct cfg802154_ops {
- 	struct net_device * (*add_virtual_intf_deprecated)(struct wpan_phy *wpan_phy,
- 							   const char *name,
-@@ -104,6 +126,10 @@ struct cfg802154_ops {
- 				struct wpan_dev *wpan_dev, bool mode);
- 	int	(*set_ackreq_default)(struct wpan_phy *wpan_phy,
- 				      struct wpan_dev *wpan_dev, bool ackreq);
-+	int	(*trigger_scan)(struct wpan_phy *wpan_phy,
-+				struct cfg802154_scan_request *request);
-+	int	(*abort_scan)(struct wpan_phy *wpan_phy,
-+			      struct wpan_dev *wpan_dev);
- #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
- 	void	(*get_llsec_table)(struct wpan_phy *wpan_phy,
- 				   struct wpan_dev *wpan_dev,
-diff --git a/include/net/nl802154.h b/include/net/nl802154.h
-index 145acb8f2509..51eca3a2b14e 100644
---- a/include/net/nl802154.h
-+++ b/include/net/nl802154.h
-@@ -58,6 +58,10 @@ enum nl802154_commands {
- 
- 	NL802154_CMD_SET_WPAN_PHY_NETNS,
- 
-+	NL802154_CMD_TRIGGER_SCAN,
-+	NL802154_CMD_ABORT_SCAN,
-+	NL802154_CMD_SCAN_DONE,
-+
- 	/* add new commands above here */
- 
- #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
-@@ -133,6 +137,11 @@ enum nl802154_attrs {
- 	NL802154_ATTR_PID,
- 	NL802154_ATTR_NETNS_FD,
- 
-+	NL802154_ATTR_SCAN_TYPE,
-+	NL802154_ATTR_SCAN_FLAGS,
-+	NL802154_ATTR_SCAN_CHANNELS,
-+	NL802154_ATTR_SCAN_DURATION,
-+
- 	/* add attributes here, update the policy in nl802154.c */
- 
- #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
-@@ -218,6 +227,46 @@ enum nl802154_wpan_phy_capability_attr {
- 	NL802154_CAP_ATTR_MAX = __NL802154_CAP_ATTR_AFTER_LAST - 1
- };
- 
-+/**
-+ * enum nl802154_scan_types - Scan types
++ * Drivers and mac802154 use this to queue delayed work onto the mac802154
++ * workqueue.
 + *
-+ * @__NL802154_SCAN_INVALID: scan type number 0 is reserved
-+ * @NL802154_SCAN_ED: An ED scan allows a device to obtain a measure of the peak
-+ *	energy in each requested channel
-+ * @NL802154_SCAN_ACTIVE: Locate any coordinator transmitting Beacon frames using
-+ *	a Beacon Request command
-+ * @NL802154_SCAN_PASSIVE: Locate any coordinator transmitting Beacon frames
-+ * @NL802154_SCAN_ORPHAN: Relocate coordinator following a loss of synchronisation
-+ * @NL802154_SCAN_ENHANCED_ACTIVE: Same as Active using Enhanced Beacon Request
-+ *	command instead of Beacon Request command
-+ * @NL802154_SCAN_RIT_PASSIVE: Passive scan for RIT Data Request command frames
-+ *	instead of Beacon frames
-+ * @NL802154_SCAN_ATTR_MAX: Maximum SCAN attribute number
++ * @hw: the hardware struct for the interface we are adding work for
++ * @dwork: delayable work to queue onto the mac802154 workqueue
++ * @delay: number of jiffies to wait before queueing
 + */
-+enum nl802154_scan_types {
-+	__NL802154_SCAN_INVALID,
-+	NL802154_SCAN_ED,
-+	NL802154_SCAN_ACTIVE,
-+	NL802154_SCAN_PASSIVE,
-+	NL802154_SCAN_ORPHAN,
-+	NL802154_SCAN_ENHANCED_ACTIVE,
-+	NL802154_SCAN_RIT_PASSIVE,
++void ieee802154_queue_delayed_work(struct ieee802154_hw *hw,
++				   struct delayed_work *dwork,
++				   unsigned long delay);
 +
-+	/* keep last */
-+	NL802154_SCAN_ATTR_MAX,
-+};
-+
-+/**
-+ * enum nl802154_scan_flags - Scan request control flags
-+ *
-+ * @NL802154_SCAN_FLAG_RANDOM_ADDR: use a random MAC address for this scan (ie.
-+ *	a different one for every scan iteration). When the flag is set, full
-+ *	randomisation is assumed.
-+ */
-+enum nl802154_scan_flags {
-+	NL802154_SCAN_FLAG_RANDOM_ADDR = BIT(0),
-+};
-+
- /**
-  * enum nl802154_cca_modes - cca modes
-  *
-diff --git a/net/ieee802154/core.h b/net/ieee802154/core.h
-index 0d08d2f79ab9..9aa8f88b6920 100644
---- a/net/ieee802154/core.h
-+++ b/net/ieee802154/core.h
-@@ -30,6 +30,9 @@ struct cfg802154_registered_device {
- 	unsigned int pan_entries;
- 	unsigned int pan_generation;
+ #endif /* NET_MAC802154_H */
+diff --git a/net/mac802154/Makefile b/net/mac802154/Makefile
+index 4059295fdbf8..43d1347b37ee 100644
+--- a/net/mac802154/Makefile
++++ b/net/mac802154/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_MAC802154)	+= mac802154.o
+ mac802154-objs		:= main.o rx.o tx.o mac_cmd.o mib.o \
+-			   iface.o llsec.o util.o cfg.o trace.o
++			   iface.o llsec.o util.o cfg.o scan.o trace.o
  
-+	/* scanning */
-+	struct cfg802154_scan_request *scan_req;
-+
- 	/* must be last because of the way we do wpan_phy_priv(),
- 	 * and it should at least be aligned to NETDEV_ALIGN
- 	 */
-diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
-index bd1015611a7e..99cbad1f1381 100644
---- a/net/ieee802154/nl802154.c
-+++ b/net/ieee802154/nl802154.c
-@@ -26,10 +26,12 @@ static struct genl_family nl802154_fam;
- /* multicast groups */
- enum nl802154_multicast_groups {
- 	NL802154_MCGRP_CONFIG,
-+	NL802154_MCGRP_SCAN,
- };
+ CFLAGS_trace.o := -I$(src)
+diff --git a/net/mac802154/cfg.c b/net/mac802154/cfg.c
+index e2900c9b788c..958b609b8c1b 100644
+--- a/net/mac802154/cfg.c
++++ b/net/mac802154/cfg.c
+@@ -117,6 +117,10 @@ ieee802154_set_channel(struct wpan_phy *wpan_phy, u8 page, u8 channel)
+ 	    wpan_phy->current_channel == channel)
+ 		return 0;
  
- static const struct genl_multicast_group nl802154_mcgrps[] = {
- 	[NL802154_MCGRP_CONFIG] = { .name = "config", },
-+	[NL802154_MCGRP_SCAN] = { .name = "scan", },
- };
- 
- /* returns ERR_PTR values */
-@@ -216,6 +218,12 @@ static const struct nla_policy nl802154_policy[NL802154_ATTR_MAX+1] = {
- 
- 	[NL802154_ATTR_PID] = { .type = NLA_U32 },
- 	[NL802154_ATTR_NETNS_FD] = { .type = NLA_U32 },
++	/* Refuse to change channels during a scanning operation */
++	if (mac802154_scan_is_ongoing(local))
++		return -EBUSY;
 +
-+	[NL802154_ATTR_SCAN_TYPE] = { .type = NLA_U8 },
-+	[NL802154_ATTR_SCAN_FLAGS] = { .type = NLA_U32 },
-+	[NL802154_ATTR_SCAN_CHANNELS] = { .type = NLA_U32 },
-+	[NL802154_ATTR_SCAN_DURATION] = { .type = NLA_U8 },
-+
- #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
- 	[NL802154_ATTR_SEC_ENABLED] = { .type = NLA_U8, },
- 	[NL802154_ATTR_SEC_OUT_LEVEL] = { .type = NLA_U32, },
-@@ -1299,6 +1307,216 @@ static int nl802154_wpan_phy_netns(struct sk_buff *skb, struct genl_info *info)
- 	return err;
+ 	ret = drv_set_channel(local, page, channel);
+ 	if (!ret) {
+ 		wpan_phy->current_page = page;
+@@ -264,6 +268,39 @@ ieee802154_set_ackreq_default(struct wpan_phy *wpan_phy,
+ 	return 0;
  }
  
-+static int nl802154_trigger_scan(struct sk_buff *skb, struct genl_info *info)
++static int mac802154_trigger_scan(struct wpan_phy *wpan_phy,
++				  struct cfg802154_scan_request *req)
 +{
-+	struct cfg802154_registered_device *rdev = info->user_ptr[0];
-+	struct net_device *dev = info->user_ptr[1];
-+	struct wpan_dev *wpan_dev = dev->ieee802154_ptr;
-+	struct wpan_phy *wpan_phy = &rdev->wpan_phy;
-+	struct cfg802154_scan_request *request;
-+	u8 type;
-+	int err;
-+
-+	/* Test iftype and avoid scanning if monitor type. */
-+	if (wpan_dev->iftype == NL802154_IFTYPE_MONITOR)
-+		return -EOPNOTSUPP;
-+
-+	request = kzalloc(sizeof(*request), GFP_KERNEL);
-+	if (!request)
-+		return -ENOMEM;
-+
-+	request->wpan_dev = wpan_dev;
-+	request->wpan_phy = wpan_phy;
-+
-+	type = nla_get_u8(info->attrs[NL802154_ATTR_SCAN_TYPE]);
-+	switch (type) {
-+	case NL802154_SCAN_ACTIVE:
-+	case NL802154_SCAN_PASSIVE:
-+		request->type = type;
-+		break;
-+	default:
-+		pr_err("Invalid scan type: %d\n", type);
-+		err = -EINVAL;
-+		goto free_request;
-+	}
-+
-+	if (info->attrs[NL802154_ATTR_SCAN_FLAGS])
-+		request->flags = nla_get_u32(info->attrs[NL802154_ATTR_SCAN_FLAGS]);
-+
-+	if (info->attrs[NL802154_ATTR_PAGE]) {
-+		request->page = nla_get_u8(info->attrs[NL802154_ATTR_PAGE]);
-+		if (request->page > IEEE802154_MAX_PAGE) {
-+			pr_err("Invalid page %d > %d\n",
-+			       request->page, IEEE802154_MAX_PAGE);
-+			err = -EINVAL;
-+			goto free_request;
-+		}
-+	} else {
-+		/* Use current page by default */
-+		request->page = wpan_phy->current_page;
-+	}
-+
-+	if (info->attrs[NL802154_ATTR_SCAN_CHANNELS]) {
-+		request->channels = nla_get_u32(info->attrs[NL802154_ATTR_SCAN_CHANNELS]);
-+		if (request->channels >= BIT(IEEE802154_MAX_CHANNEL + 1)) {
-+			pr_err("Invalid channels bitfield %x ≥ %lx\n",
-+			       request->channels,
-+			       BIT(IEEE802154_MAX_CHANNEL + 1));
-+			err = -EINVAL;
-+			goto free_request;
-+		}
-+	} else {
-+		/* Scan all supported channels by default */
-+		request->channels = cfg802154_get_supported_chans(wpan_phy,
-+								  request->page);
-+	}
-+
-+	if (info->attrs[NL802154_ATTR_SCAN_DURATION]) {
-+		request->duration = nla_get_u8(info->attrs[NL802154_ATTR_SCAN_DURATION]);
-+		if (request->duration > IEEE802154_MAX_SCAN_DURATION) {
-+			pr_err("Duration is out of range\n");
-+			err = -EINVAL;
-+			goto free_request;
-+		}
-+	} else {
-+		/* Use maximum duration order by default */
-+		request->duration = IEEE802154_MAX_SCAN_DURATION;
-+	}
-+
-+	err = rdev_trigger_scan(rdev, request);
-+	if (err) {
-+		pr_err("Failure starting scanning (%d)\n", err);
-+		goto free_request;
-+	}
-+
-+	rdev->scan_req = request;
-+
-+	if (wpan_dev->netdev)
-+		dev_hold(wpan_dev->netdev);
-+
-+	return 0;
-+
-+free_request:
-+	kfree(request);
-+
-+	return err;
-+}
-+
-+static int nl802154_add_scan_req(struct sk_buff *msg,
-+				 struct cfg802154_scan_request *req)
-+{
-+	if (req->type &&
-+	    nla_put_u8(msg, NL802154_ATTR_SCAN_TYPE, req->type))
-+		goto nla_put_failure;
-+
-+	if (req->flags &&
-+	    nla_put_u32(msg, NL802154_ATTR_SCAN_FLAGS, req->flags))
-+		goto nla_put_failure;
-+
-+	if (req->page &&
-+	    nla_put_u8(msg, NL802154_ATTR_PAGE, req->page))
-+		goto nla_put_failure;
-+
-+	if (req->channels &&
-+	    nla_put_u32(msg, NL802154_ATTR_SCAN_CHANNELS, req->channels))
-+		goto nla_put_failure;
-+
-+	return 0;
-+
-+nla_put_failure:
-+	return -ENOBUFS;
-+}
-+
-+static int nl802154_prep_scan_msg(struct sk_buff *msg,
-+				  struct cfg802154_registered_device *rdev,
-+				  struct wpan_dev *wpan_dev,
-+				  u32 portid, u32 seq, int flags, u8 cmd)
-+{
-+	void *hdr;
-+
-+	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
-+	if (!hdr)
-+		return -ENOBUFS;
-+
-+	if (nla_put_u32(msg, NL802154_ATTR_WPAN_PHY, rdev->wpan_phy_idx))
-+		goto nla_put_failure;
-+
-+	if (wpan_dev->netdev &&
-+	    nla_put_u32(msg, NL802154_ATTR_IFINDEX, wpan_dev->netdev->ifindex))
-+		goto nla_put_failure;
-+
-+	if (nla_put_u64_64bit(msg, NL802154_ATTR_WPAN_DEV,
-+			      wpan_dev_id(wpan_dev), NL802154_ATTR_PAD))
-+		goto nla_put_failure;
-+
-+	if (nl802154_add_scan_req(msg, rdev->scan_req))
-+		goto nla_put_failure;
-+
-+	genlmsg_end(msg, hdr);
-+
-+	return 0;
-+
-+ nla_put_failure:
-+	genlmsg_cancel(msg, hdr);
-+
-+	return -EMSGSIZE;
-+}
-+
-+static int nl802154_send_scan_done_msg(struct cfg802154_registered_device *rdev,
-+				       struct wpan_dev *wpan_dev)
-+{
-+	struct sk_buff *msg;
++	struct ieee802154_local *local = wpan_phy_priv(wpan_phy);
++	struct ieee802154_sub_if_data *sdata;
 +	int ret;
 +
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
++	sdata = IEEE802154_WPAN_DEV_TO_SUB_IF(req->wpan_dev);
 +
-+	ret = nl802154_prep_scan_msg(msg, rdev, wpan_dev, 0, 0, 0,
-+				     NL802154_CMD_SCAN_DONE);
-+	if (ret < 0) {
-+		nlmsg_free(msg);
++	ASSERT_RTNL();
++
++	mutex_lock(&local->scan_lock);
++	ret = mac802154_trigger_scan_locked(sdata, req);
++	mutex_unlock(&local->scan_lock);
++
++	return ret;
++}
++
++static int mac802154_abort_scan(struct wpan_phy *wpan_phy,
++				struct wpan_dev *wpan_dev)
++{
++	struct ieee802154_local *local = wpan_phy_priv(wpan_phy);
++	int ret;
++
++	ASSERT_RTNL();
++
++	mutex_lock(&local->scan_lock);
++	ret = mac802154_abort_scan_locked(local);
++	mutex_unlock(&local->scan_lock);
++
++	return ret;
++}
++
+ #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+ static void
+ ieee802154_get_llsec_table(struct wpan_phy *wpan_phy,
+@@ -471,6 +508,8 @@ const struct cfg802154_ops mac802154_config_ops = {
+ 	.set_max_frame_retries = ieee802154_set_max_frame_retries,
+ 	.set_lbt_mode = ieee802154_set_lbt_mode,
+ 	.set_ackreq_default = ieee802154_set_ackreq_default,
++	.trigger_scan = mac802154_trigger_scan,
++	.abort_scan = mac802154_abort_scan,
+ #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+ 	.get_llsec_table = ieee802154_get_llsec_table,
+ 	.lock_llsec_table = ieee802154_lock_llsec_table,
+diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
+index 40195e2a6f1e..f7562f4cacdf 100644
+--- a/net/mac802154/ieee802154_i.h
++++ b/net/mac802154/ieee802154_i.h
+@@ -48,6 +48,15 @@ struct ieee802154_local {
+ 
+ 	struct hrtimer ifs_timer;
+ 
++	/* Scanning */
++	struct mutex scan_lock;
++	atomic_t scanning;
++	__le64 scan_addr;
++	int scan_channel_idx;
++	struct cfg802154_scan_request __rcu *scan_req;
++	struct ieee802154_sub_if_data __rcu *scan_sdata;
++	struct delayed_work scan_work;
++
+ 	bool started;
+ 	bool suspended;
+ 
+@@ -197,6 +206,19 @@ static inline bool mac802154_queue_is_stopped(struct ieee802154_local *local)
+ 	return atomic_read(&local->phy->hold_txs);
+ }
+ 
++/* scanning handling */
++void mac802154_scan_work(struct work_struct *work);
++int mac802154_trigger_scan_locked(struct ieee802154_sub_if_data *sdata,
++				  struct cfg802154_scan_request *request);
++int mac802154_abort_scan_locked(struct ieee802154_local *local);
++int mac802154_scan_process_beacon(struct ieee802154_local *local,
++				  struct sk_buff *skb);
++
++static inline bool mac802154_scan_is_ongoing(struct ieee802154_local *local)
++{
++	return atomic_read(&local->scanning);
++}
++
+ /* interface handling */
+ int ieee802154_iface_init(void);
+ void ieee802154_iface_exit(void);
+diff --git a/net/mac802154/main.c b/net/mac802154/main.c
+index 43fd4cc13b66..bd453b1c0223 100644
+--- a/net/mac802154/main.c
++++ b/net/mac802154/main.c
+@@ -90,6 +90,7 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
+ 
+ 	INIT_LIST_HEAD(&local->interfaces);
+ 	mutex_init(&local->iflist_mtx);
++	mutex_init(&local->scan_lock);
+ 
+ 	tasklet_setup(&local->tasklet, ieee802154_tasklet_handler);
+ 
+@@ -97,7 +98,6 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
+ 
+ 	INIT_WORK(&local->sync_tx_work, ieee802154_xmit_sync_worker);
+ 	INIT_DELAYED_WORK(&local->scan_work, mac802154_scan_work);
+-	INIT_DELAYED_WORK(&local->beacons_work, mac802154_beacons_work);
+ 
+ 	/* init supported flags with 802.15.4 default ranges */
+ 	phy->supported.max_minbe = 8;
+diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
+index b8ce84618a55..f2f3eca9bc20 100644
+--- a/net/mac802154/rx.c
++++ b/net/mac802154/rx.c
+@@ -94,10 +94,15 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
+ 
+ 	switch (mac_cb(skb)->type) {
+ 	case IEEE802154_FC_TYPE_BEACON:
+-	case IEEE802154_FC_TYPE_ACK:
++		if (mac802154_scan_is_ongoing(sdata->local)) {
++			rc = mac802154_scan_process_beacon(sdata->local, skb);
++			if (!rc)
++				goto success;
++		}
++		goto fail;
+ 	case IEEE802154_FC_TYPE_MAC_CMD:
++	case IEEE802154_FC_TYPE_ACK:
+ 		goto fail;
+-
+ 	case IEEE802154_FC_TYPE_DATA:
+ 		return ieee802154_deliver_skb(skb);
+ 	default:
+@@ -109,6 +114,10 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
+ fail:
+ 	kfree_skb(skb);
+ 	return NET_RX_DROP;
++
++success:
++	kfree_skb(skb);
++	return NET_RX_SUCCESS;
+ }
+ 
+ static void
+@@ -268,10 +277,12 @@ void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb)
+ 
+ 	ieee802154_monitors_rx(local, skb);
+ 
+-	/* Check if transceiver doesn't validate the checksum.
+-	 * If not we validate the checksum here.
++	/* Check if the transceiver doesn't validate the checksum, or if the
++	 * check might have been disabled like during a scan. In these cases,
++	 * we validate the checksum here.
+ 	 */
+-	if (local->hw.flags & IEEE802154_HW_RX_DROP_BAD_CKSUM) {
++	if (local->hw.flags & IEEE802154_HW_RX_DROP_BAD_CKSUM ||
++	    mac802154_scan_is_ongoing(local)) {
+ 		crc = crc_ccitt(0, skb->data, skb->len);
+ 		if (crc) {
+ 			rcu_read_unlock();
+diff --git a/net/mac802154/scan.c b/net/mac802154/scan.c
+new file mode 100644
+index 000000000000..3129cc95157a
+--- /dev/null
++++ b/net/mac802154/scan.c
+@@ -0,0 +1,259 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * IEEE 802.15.4 scanning management
++ *
++ * Copyright (C) Qorvo, 2021
++ * Authors:
++ *   - David Girault <david.girault@qorvo.com>
++ *   - Miquel Raynal <miquel.raynal@bootlin.com>
++ */
++
++#include <linux/module.h>
++#include <linux/random.h>
++#include <linux/rtnetlink.h>
++#include <net/mac802154.h>
++
++#include "ieee802154_i.h"
++#include "driver-ops.h"
++#include "../ieee802154/nl802154.h"
++
++static bool mac802154_check_promiscuous(struct ieee802154_local *local)
++{
++	struct ieee802154_sub_if_data *sdata;
++	bool promiscuous_on = false;
++
++	/* Check if one subif is already in promiscuous mode. Since the list is
++	 * protected by its own mutex, take it here to ensure no modification
++	 * occurs during the check.
++	 */
++	mutex_lock(&local->iflist_mtx);
++	list_for_each_entry(sdata, &local->interfaces, list) {
++		if (ieee802154_sdata_running(sdata) &&
++		    sdata->wpan_dev.promiscuous_mode) {
++			/* At least one is in promiscuous mode */
++			promiscuous_on = true;
++			break;
++		}
++	}
++	mutex_unlock(&local->iflist_mtx);
++	return promiscuous_on;
++}
++
++static int mac802154_set_promiscuous_mode(struct ieee802154_local *local,
++					  bool state)
++{
++	bool promiscuous_on = mac802154_check_promiscuous(local);
++	int ret;
++
++	if ((state && promiscuous_on) || (!state && !promiscuous_on))
++		return 0;
++
++	ret = drv_set_promiscuous_mode(local, state);
++	if (ret)
++		pr_err("Failed to %s promiscuous mode for SW scanning",
++		       state ? "set" : "reset");
++
++	return ret;
++}
++
++static int mac802154_send_scan_done(struct ieee802154_local *local)
++{
++	struct cfg802154_registered_device *rdev;
++	struct cfg802154_scan_request *scan_req;
++	struct wpan_dev *wpan_dev;
++
++	scan_req = rcu_dereference_protected(local->scan_req,
++					     lockdep_is_held(&local->scan_lock));
++	rdev = wpan_phy_to_rdev(scan_req->wpan_phy);
++	wpan_dev = scan_req->wpan_dev;
++
++	return nl802154_send_scan_done(rdev, wpan_dev);
++}
++
++static int mac802154_end_of_scan(struct ieee802154_local *local)
++{
++	drv_set_channel(local, local->phy->current_page,
++			local->phy->current_channel);
++	ieee802154_configure_durations(local->phy);
++	atomic_dec(&local->phy->hold_txs);
++	atomic_set(&local->scanning, 0);
++	mac802154_set_promiscuous_mode(local, false);
++	ieee802154_wake_queue(&local->hw);
++
++	return mac802154_send_scan_done(local);
++}
++
++int mac802154_abort_scan_locked(struct ieee802154_local *local)
++{
++	lockdep_assert_held(&local->scan_lock);
++
++	if (!mac802154_scan_is_ongoing(local))
++		return -ESRCH;
++
++	cancel_delayed_work(&local->scan_work);
++
++	return mac802154_end_of_scan(local);
++}
++
++static unsigned int mac802154_scan_get_channel_time(u8 duration_order,
++						    u8 symbol_duration)
++{
++	u64 base_super_frame_duration = (u64)symbol_duration *
++		IEEE802154_SUPERFRAME_PERIOD * IEEE802154_SLOT_PERIOD;
++
++	return usecs_to_jiffies(base_super_frame_duration *
++				(BIT(duration_order) + 1));
++}
++
++void mac802154_scan_work(struct work_struct *work)
++{
++	struct ieee802154_local *local =
++		container_of(work, struct ieee802154_local, scan_work.work);
++	struct cfg802154_scan_request *scan_req;
++	struct ieee802154_sub_if_data *sdata;
++	unsigned int scan_duration;
++	bool end_of_scan = false;
++	unsigned long chan;
++	int ret;
++
++	mutex_lock(&local->scan_lock);
++
++	if (!mac802154_scan_is_ongoing(local))
++		goto unlock_mutex;
++
++	sdata = rcu_dereference_protected(local->scan_sdata,
++					  lockdep_is_held(&local->scan_lock));
++	scan_req = rcu_dereference_protected(local->scan_req,
++					     lockdep_is_held(&local->scan_lock));
++
++	if (local->suspended || !ieee802154_sdata_running(sdata))
++		goto queue_work;
++
++	do {
++		chan = find_next_bit((const unsigned long *)&scan_req->channels,
++				     IEEE802154_MAX_CHANNEL + 1,
++				     local->scan_channel_idx + 1);
++
++		/* If there are no more channels left, complete the scan */
++		if (chan > IEEE802154_MAX_CHANNEL) {
++			end_of_scan = true;
++			goto unlock_mutex;
++		}
++
++		/* Channel switch cannot be made atomic so hide the chan number
++		 * in order to prevent beacon processing during this timeframe.
++		 */
++		local->scan_channel_idx = -1;
++		/* Bypass the stack on purpose */
++		ret = drv_set_channel(local, scan_req->page, chan);
++		local->scan_channel_idx = chan;
++		ieee802154_configure_durations(local->phy);
++	} while (ret);
++
++queue_work:
++	scan_duration = mac802154_scan_get_channel_time(scan_req->duration,
++							local->phy->symbol_duration);
++	pr_debug("Scan channel %lu of page %u for %ums\n",
++		 chan, scan_req->page, jiffies_to_msecs(scan_duration));
++	ieee802154_queue_delayed_work(&local->hw, &local->scan_work,
++				      scan_duration);
++
++unlock_mutex:
++	if (end_of_scan)
++		mac802154_end_of_scan(local);
++
++	mutex_unlock(&local->scan_lock);
++}
++
++int mac802154_trigger_scan_locked(struct ieee802154_sub_if_data *sdata,
++				  struct cfg802154_scan_request *request)
++{
++	struct ieee802154_local *local = sdata->local;
++	int ret;
++
++	lockdep_assert_held(&local->scan_lock);
++
++	if (mac802154_scan_is_ongoing(local))
++		return -EBUSY;
++
++	/* TODO: support other scanning type */
++	if (request->type != NL802154_SCAN_PASSIVE)
++		return -EOPNOTSUPP;
++
++	/* Store scanning parameters */
++	rcu_assign_pointer(local->scan_req, request);
++	rcu_assign_pointer(local->scan_sdata, sdata);
++
++	/* Configure scan_addr to use net_device addr or random */
++	if (request->flags & NL802154_SCAN_FLAG_RANDOM_ADDR)
++		get_random_bytes(&local->scan_addr, sizeof(local->scan_addr));
++	else
++		local->scan_addr = cpu_to_le64(get_unaligned_be64(sdata->dev->dev_addr));
++
++	local->scan_channel_idx = -1;
++	atomic_set(&local->scanning, 1);
++
++	/* Software scanning requires to set promiscuous mode, so we need to
++	 * pause the Tx queue
++	 */
++	atomic_inc(&local->phy->hold_txs);
++	ieee802154_stop_queue(&local->hw);
++	ieee802154_sync_tx(local);
++
++	ret = mac802154_set_promiscuous_mode(local, true);
++	if (ret)
++		return mac802154_end_of_scan(local);
++
++	ieee802154_queue_delayed_work(&local->hw, &local->scan_work, 0);
++
++	return 0;
++}
++
++int mac802154_scan_process_beacon(struct ieee802154_local *local,
++				  struct sk_buff *skb)
++{
++	struct ieee802154_beacon_hdr *bh = (void *)skb->data;
++	struct ieee802154_addr *src = &mac_cb(skb)->source;
++	struct cfg802154_scan_request *scan_req;
++	struct ieee802154_pan_desc desc = {};
++	int ret;
++
++	/* Check the validity of the frame length */
++	if (skb->len < sizeof(*bh))
++		return -EINVAL;
++
++	if (unlikely(src->mode == IEEE802154_ADDR_NONE))
++		return -EINVAL;
++
++	if (unlikely(!bh->pan_coordinator))
++		return -ENODEV;
++
++	scan_req = rcu_dereference(local->scan_req);
++	if (unlikely(!scan_req))
++		return -EINVAL;
++
++	if (unlikely(local->scan_channel_idx < 0)) {
++		pr_info("Dropping beacon received during channel change\n");
++		return 0;
++	}
++
++	pr_debug("Beacon received on channel %d of page %d\n",
++		 local->scan_channel_idx, scan_req->page);
++
++	/* Parse beacon and create PAN information */
++	desc.coord = src;
++	desc.page = scan_req->page;
++	desc.channel = local->scan_channel_idx;
++	desc.link_quality = mac_cb(skb)->lqi;
++	desc.superframe_spec = get_unaligned_le16(skb->data);
++	desc.gts_permit = bh->gts_permit;
++
++	/* Create or update the PAN entry in the management layer */
++	ret = cfg802154_record_pan(local->phy, &desc);
++	if (ret) {
++		pr_err("Failed to save PAN descriptor\n");
 +		return ret;
 +	}
 +
-+	return genlmsg_multicast_netns(&nl802154_fam,
-+				       wpan_phy_net(&rdev->wpan_phy), msg, 0,
-+				       NL802154_MCGRP_SCAN, GFP_KERNEL);
++	return 0;
 +}
-+
-+int nl802154_send_scan_done(struct cfg802154_registered_device *rdev,
-+			    struct wpan_dev *wpan_dev)
-+{
-+	int err;
-+
-+	err = nl802154_send_scan_done_msg(rdev, wpan_dev);
-+
-+	/* Ignore errors when there are no listeners */
-+	if (err == -ESRCH)
-+		err = 0;
-+
-+	if (wpan_dev->netdev)
-+		dev_put(wpan_dev->netdev);
-+
-+	kfree(rdev->scan_req);
-+	rdev->scan_req = NULL;
-+
-+	return err;
-+}
-+EXPORT_SYMBOL(nl802154_send_scan_done);
-+
-+static int nl802154_abort_scan(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct cfg802154_registered_device *rdev = info->user_ptr[0];
-+	struct net_device *dev = info->user_ptr[1];
-+	struct wpan_dev *wpan_dev = dev->ieee802154_ptr;
-+
-+	/* Resources will be released in the notification helper above when we
-+	 * are sure all actions have ended.
-+	 */
-+	return rdev_abort_scan(rdev, wpan_dev);
-+}
-+
- #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
- static const struct nla_policy nl802154_dev_addr_policy[NL802154_DEV_ADDR_ATTR_MAX + 1] = {
- 	[NL802154_DEV_ADDR_ATTR_PAN_ID] = { .type = NLA_U16 },
-@@ -2387,6 +2605,22 @@ static const struct genl_ops nl802154_ops[] = {
- 		.internal_flags = NL802154_FLAG_NEED_NETDEV |
- 				  NL802154_FLAG_NEED_RTNL,
- 	},
-+	{
-+		.cmd = NL802154_CMD_TRIGGER_SCAN,
-+		.doit = nl802154_trigger_scan,
-+		.flags = GENL_ADMIN_PERM,
-+		.internal_flags = NL802154_FLAG_NEED_NETDEV |
-+				  NL802154_FLAG_CHECK_NETDEV_UP |
-+				  NL802154_FLAG_NEED_RTNL,
-+	},
-+	{
-+		.cmd = NL802154_CMD_ABORT_SCAN,
-+		.doit = nl802154_abort_scan,
-+		.flags = GENL_ADMIN_PERM,
-+		.internal_flags = NL802154_FLAG_NEED_NETDEV |
-+				  NL802154_FLAG_CHECK_NETDEV_UP |
-+				  NL802154_FLAG_NEED_RTNL,
-+	},
- #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
- 	{
- 		.cmd = NL802154_CMD_SET_SEC_PARAMS,
-diff --git a/net/ieee802154/nl802154.h b/net/ieee802154/nl802154.h
-index 8c4b6d08954c..84567cd4ea83 100644
---- a/net/ieee802154/nl802154.h
-+++ b/net/ieee802154/nl802154.h
-@@ -2,7 +2,11 @@
- #ifndef __IEEE802154_NL802154_H
- #define __IEEE802154_NL802154_H
+diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+index 334843f66ec4..1849e5cb5945 100644
+--- a/net/mac802154/tx.c
++++ b/net/mac802154/tx.c
+@@ -58,6 +58,9 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
+ 	struct net_device *dev = skb->dev;
+ 	int ret;
  
-+#include "core.h"
++	if (unlikely(mac802154_scan_is_ongoing(local)))
++		return NETDEV_TX_BUSY;
 +
- int nl802154_init(void);
- void nl802154_exit(void);
-+int nl802154_send_scan_done(struct cfg802154_registered_device *rdev,
-+			    struct wpan_dev *wpan_dev);
- 
- #endif /* __IEEE802154_NL802154_H */
-diff --git a/net/ieee802154/rdev-ops.h b/net/ieee802154/rdev-ops.h
-index 598f5af49775..e171d74c3251 100644
---- a/net/ieee802154/rdev-ops.h
-+++ b/net/ieee802154/rdev-ops.h
-@@ -209,6 +209,34 @@ rdev_set_ackreq_default(struct cfg802154_registered_device *rdev,
- 	return ret;
+ 	if (!(local->hw.flags & IEEE802154_HW_TX_OMIT_CKSUM)) {
+ 		struct sk_buff *nskb;
+ 		u16 crc;
+diff --git a/net/mac802154/util.c b/net/mac802154/util.c
+index 230fe3390df7..5642a45df548 100644
+--- a/net/mac802154/util.c
++++ b/net/mac802154/util.c
+@@ -100,3 +100,29 @@ void ieee802154_stop_device(struct ieee802154_local *local)
+ 	hrtimer_cancel(&local->ifs_timer);
+ 	drv_stop(local);
  }
- 
-+static inline int rdev_trigger_scan(struct cfg802154_registered_device *rdev,
-+				    struct cfg802154_scan_request *request)
++
++/* Nothing should have been stuffed into the workqueue during
++ * the suspend->resume cycle.
++ */
++static bool ieee802154_can_queue_work(struct ieee802154_local *local)
 +{
-+	int ret;
++	if (local->suspended) {
++		pr_warn("queueing ieee802154 work while suspended\n");
++		return false;
++	}
 +
-+	if (!rdev->ops->trigger_scan)
-+		return -EOPNOTSUPP;
-+
-+	trace_802154_rdev_trigger_scan(&rdev->wpan_phy, request);
-+	ret = rdev->ops->trigger_scan(&rdev->wpan_phy, request);
-+	trace_802154_rdev_return_int(&rdev->wpan_phy, ret);
-+	return ret;
++	return true;
 +}
 +
-+static inline int rdev_abort_scan(struct cfg802154_registered_device *rdev,
-+				  struct wpan_dev *wpan_dev)
++void ieee802154_queue_delayed_work(struct ieee802154_hw *hw,
++				   struct delayed_work *dwork,
++				   unsigned long delay)
 +{
-+	int ret;
++	struct ieee802154_local *local = hw_to_local(hw);
 +
-+	if (!rdev->ops->abort_scan)
-+		return -EOPNOTSUPP;
++	if (!ieee802154_can_queue_work(local))
++		return;
 +
-+	trace_802154_rdev_abort_scan(&rdev->wpan_phy, wpan_dev);
-+	ret = rdev->ops->abort_scan(&rdev->wpan_phy, wpan_dev);
-+	trace_802154_rdev_return_int(&rdev->wpan_phy, ret);
-+	return ret;
++	queue_delayed_work(local->workqueue, dwork, delay);
 +}
-+
- #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
- /* TODO this is already a nl802154, so move into ieee802154 */
- static inline void
-diff --git a/net/ieee802154/trace.h b/net/ieee802154/trace.h
-index 19c2e5d60e76..e5405f737ded 100644
---- a/net/ieee802154/trace.h
-+++ b/net/ieee802154/trace.h
-@@ -295,6 +295,46 @@ TRACE_EVENT(802154_rdev_set_ackreq_default,
- 		WPAN_DEV_PR_ARG, BOOL_TO_STR(__entry->ackreq))
- );
- 
-+TRACE_EVENT(802154_rdev_trigger_scan,
-+	TP_PROTO(struct wpan_phy *wpan_phy,
-+		 struct cfg802154_scan_request *request),
-+	TP_ARGS(wpan_phy, request),
-+	TP_STRUCT__entry(
-+		WPAN_PHY_ENTRY
-+		__field(u8, page)
-+		__field(u32, channels)
-+		__field(u8, duration)
-+	),
-+	TP_fast_assign(
-+		WPAN_PHY_ASSIGN;
-+		__entry->page = request->page;
-+		__entry->channels = request->channels;
-+		__entry->duration = request->duration;
-+	),
-+	TP_printk(WPAN_PHY_PR_FMT ", scan, page: %d, channels: %x, duration %d",
-+		  WPAN_PHY_PR_ARG, __entry->page, __entry->channels, __entry->duration)
-+);
-+
-+DECLARE_EVENT_CLASS(802154_wdev_template,
-+	TP_PROTO(struct wpan_phy *wpan_phy, struct wpan_dev *wpan_dev),
-+	TP_ARGS(wpan_phy, wpan_dev),
-+	TP_STRUCT__entry(
-+		WPAN_PHY_ENTRY
-+		WPAN_DEV_ENTRY
-+	),
-+	TP_fast_assign(
-+		WPAN_PHY_ASSIGN;
-+		WPAN_DEV_ASSIGN;
-+	),
-+	TP_printk(WPAN_PHY_PR_FMT ", " WPAN_DEV_PR_FMT,
-+		  WPAN_PHY_PR_ARG, WPAN_DEV_PR_ARG)
-+);
-+
-+DEFINE_EVENT(802154_wdev_template, 802154_rdev_abort_scan,
-+	TP_PROTO(struct wpan_phy *wpan_phy, struct wpan_dev *wpan_dev),
-+	TP_ARGS(wpan_phy, wpan_dev)
-+);
-+
- TRACE_EVENT(802154_rdev_return_int,
- 	TP_PROTO(struct wpan_phy *wpan_phy, int ret),
- 	TP_ARGS(wpan_phy, ret),
++EXPORT_SYMBOL(ieee802154_queue_delayed_work);
 -- 
 2.27.0
 
