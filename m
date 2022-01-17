@@ -2,106 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97501490FEE
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 18:50:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BF9E49102C
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 19:20:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242051AbiAQRuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 12:50:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57370 "EHLO
+        id S242223AbiAQSUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 13:20:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241939AbiAQRud (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 12:50:33 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C374C061401
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 09:50:33 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id c3so22034508pls.5
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 09:50:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ib33Nc1WOE8/cBTRuaybrv6PK430iHqYq4REXeC17gw=;
-        b=v339RgVIQD4rLRHV7GXiBMLty9ZfRJn/gQCS4fxFMX2PZg7AvHrqmFI2K/jpqmQKGg
-         q4CwgOv1u4iStsAIdsL9F8UFjd9CC0uwWfoTgAM6wuuZE0Dsd1sDXBkgHdRopJEeliev
-         2ElKL1LbVTXSTn7AyE2+IDcngE+n8LXENNjQuE9ycVyyXBYI0UmhDZp25WmRs/wLyYGb
-         NR/6khXolqPBSUIhKjHglqKmH1HC6JdCkLzDGUr9WAriNzN73Kicm2RNtiHRjYV4eckC
-         cQuBR0j4+ax6h0Tnkvj4SjD+mxPuAYvxMuTX4c+Zvf2e1+CIoCUo0EAMsI67Z7VP+0ax
-         Fe2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ib33Nc1WOE8/cBTRuaybrv6PK430iHqYq4REXeC17gw=;
-        b=6FUJN6fW4URIVMtWWK0//P24rW40RK60vtxXufCOXKqUfBWFpXtiMXqYjwITF431r4
-         3uE5bJKH3AitLgxyfnnVUZ9/N/O3NAMBWaAm59M8lmTHOyFqeLb0dy0NDDBFLJc2G6AH
-         VNe6dYAJYFa7ZTacQxxTrsnbH2oxjnlC86bQd0AF7eqNQMwe9SqT6aGPbR8S8eI2mXl1
-         dKmjo4QjnvA25slVhTd9KUfEjEf0qj+F9bKNQ0yt9KDcM25Mv9u7lNzOveXfpl0wcGQG
-         FfoheKKUgWSojCk52l4qeywiH6mwl6C9Argc3Qf62EbvvwuQP+RcVMSb7OK+1UxjyA4q
-         nTEw==
-X-Gm-Message-State: AOAM530kOeFNwPTCfenMC1WgJrcyKqojVfYnliz5NqWDpEDSq3x3PH7F
-        tA5t6DTwehWXszXz1EANA+x9QC15m3pmog==
-X-Google-Smtp-Source: ABdhPJzt8r+g+2AkC1WyChsIIbKACn4YNnlgNZeRnhl6UFOPi3TBczkAaA4DzcHQVi8Xyzh9OJwBrw==
-X-Received: by 2002:a17:90a:d596:: with SMTP id v22mr7604696pju.87.1642441832463;
-        Mon, 17 Jan 2022 09:50:32 -0800 (PST)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id q19sm15819117pfk.131.2022.01.17.09.50.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 09:50:31 -0800 (PST)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH v3 iproute2-next 11/11] json_print: suppress clang format warning
-Date:   Mon, 17 Jan 2022 09:50:19 -0800
-Message-Id: <20220117175019.13993-12-stephen@networkplumber.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220117175019.13993-1-stephen@networkplumber.org>
-References: <20220117175019.13993-1-stephen@networkplumber.org>
+        with ESMTP id S229657AbiAQSUF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 13:20:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E71BC061574;
+        Mon, 17 Jan 2022 10:20:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C6D06100E;
+        Mon, 17 Jan 2022 18:20:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D5F9C36AE3;
+        Mon, 17 Jan 2022 18:20:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642443604;
+        bh=zLGeYHy6RxeDRs/7PXGDuFwinvTJa8TuCQCs9UarAA4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=p9zXwaAL4xy9J7O61LYb/yOVEzDGdJIEey7bSgXyAzmaNLB0VeO1+5qpqDlbGqltL
+         6TAefnD6rPJCR5kjbJP7GzyMsjchB+p4Vkf38+l8SBiuWu/gwQnm9EWiolQ+gZ446z
+         7fSIHFTLKFwru9qV7WUS3nY4Jb34g7II62HgZhfIZMKbtFfdCLg3lvvDOEUbAeItFb
+         Pxj1J7M/Cf+HKTjXB1JaHfSVTi30U90dtgliQORx7UXYuqa14t4CbHGenBCPNeWWgr
+         TBsolNtD1YzzKGmBNxVeDUaglIdd8N+JTICVTzmil99857k25aVnkeRE7iOEkjQVLI
+         fR5C5dok9rs+Q==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     linux-wireless@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sfr@canb.auug.org.au, lkp@intel.com
+Subject: [PATCH wireless v2 1/2] MAINTAINERS: add common wireless and wireless-next trees
+Date:   Mon, 17 Jan 2022 20:19:57 +0200
+Message-Id: <20220117181958.3509-1-kvalo@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang complains about using non-format string in print_color_tv.
-The ideal fix would be to put format attribute on all the print_XXX functions
-in json_print.h. But that leads to further complications because the existing
-code may pass a NULL as format if the format is unused since the print
-is being done only for JSON output.
+For easier maintenance we have decided to create common wireless and
+wireless-next trees for all wireless patches. Old mac80211 and wireless-drivers
+trees will not be used anymore.
 
-The compromise is to just disable the warning for the one place
-it shows up.
+While at it, add a wiki link to wireless drivers section and a patchwork link
+to 802.11, mac80211 and rfkill sections. Also use https in patchwork links.
 
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
 ---
- lib/json_print.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
 
-diff --git a/lib/json_print.c b/lib/json_print.c
-index e3a88375fe7c..741acdcff990 100644
---- a/lib/json_print.c
-+++ b/lib/json_print.c
-@@ -299,6 +299,13 @@ int print_color_null(enum output_type type,
- 	return ret;
- }
+Intel kernel test robot maintainers, please update your configuration so
+that the new trees are build tested. Reports can be sent to
+linux-wireless@vger.kernel.org.
+
+v2:
+
+* use https on patchwork links
+
+ MAINTAINERS | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 306de106f31b..f67e7dae2c55 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -190,8 +190,9 @@ M:	Johannes Berg <johannes@sipsolutions.net>
+ L:	linux-wireless@vger.kernel.org
+ S:	Maintained
+ W:	https://wireless.wiki.kernel.org/
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git
++Q:	https://patchwork.kernel.org/project/linux-wireless/list/
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git
+ F:	Documentation/driver-api/80211/cfg80211.rst
+ F:	Documentation/networking/regulatory.rst
+ F:	include/linux/ieee80211.h
+@@ -11308,8 +11309,9 @@ M:	Johannes Berg <johannes@sipsolutions.net>
+ L:	linux-wireless@vger.kernel.org
+ S:	Maintained
+ W:	https://wireless.wiki.kernel.org/
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git
++Q:	https://patchwork.kernel.org/project/linux-wireless/list/
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git
+ F:	Documentation/networking/mac80211-injection.rst
+ F:	Documentation/networking/mac80211_hwsim/mac80211_hwsim.rst
+ F:	drivers/net/wireless/mac80211_hwsim.[ch]
+@@ -13302,9 +13304,10 @@ NETWORKING DRIVERS (WIRELESS)
+ M:	Kalle Valo <kvalo@kernel.org>
+ L:	linux-wireless@vger.kernel.org
+ S:	Maintained
+-Q:	http://patchwork.kernel.org/project/linux-wireless/list/
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git
++W:	https://wireless.wiki.kernel.org/
++Q:	https://patchwork.kernel.org/project/linux-wireless/list/
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git
+ F:	Documentation/devicetree/bindings/net/wireless/
+ F:	drivers/net/wireless/
  
-+/*
-+ * This function does take printf style argument but applying
-+ * format attribute to causes more warnings since the print_XXX
-+ * functions are used with NULL for format if unused.
-+ */
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
- int print_color_tv(enum output_type type,
- 		   enum color_attr color,
- 		   const char *key,
-@@ -311,6 +318,7 @@ int print_color_tv(enum output_type type,
- 
- 	return print_color_float(type, color, key, fmt, time);
- }
-+#pragma GCC diagnostic pop
- 
- /* Print line separator (if not in JSON mode) */
- void print_nl(void)
+@@ -16391,8 +16394,9 @@ M:	Johannes Berg <johannes@sipsolutions.net>
+ L:	linux-wireless@vger.kernel.org
+ S:	Maintained
+ W:	https://wireless.wiki.kernel.org/
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git
++Q:	https://patchwork.kernel.org/project/linux-wireless/list/
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git
+ F:	Documentation/ABI/stable/sysfs-class-rfkill
+ F:	Documentation/driver-api/rfkill.rst
+ F:	include/linux/rfkill.h
 -- 
-2.30.2
+2.20.1
 
