@@ -2,274 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4185A490456
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 09:49:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BBD0490481
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 10:00:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232330AbiAQItK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 03:49:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45090 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231736AbiAQItH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 03:49:07 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B62DC06161C
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 00:49:07 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9Ng2-0001gr-D1; Mon, 17 Jan 2022 09:47:46 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9Nfp-00AmmL-Ku; Mon, 17 Jan 2022 09:47:32 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9Nfo-0000aW-I8; Mon, 17 Jan 2022 09:47:32 +0100
-Date:   Mon, 17 Jan 2022 09:47:32 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
+        id S233237AbiAQJAa convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 17 Jan 2022 04:00:30 -0500
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:59013 "EHLO
+        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229484AbiAQJA3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 04:00:29 -0500
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id B957E2000B;
+        Mon, 17 Jan 2022 09:00:08 +0000 (UTC)
+Date:   Mon, 17 Jan 2022 10:00:07 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220117084732.cdy2sash5hxp4lwo@pengutronix.de>
-References: <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
- <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
- <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
- <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
- <57af1851-9341-985e-7b28-d2ba86770ecb@omp.ru>
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Harry Morris <h.morris@cascoda.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "linux-wireless@vger.kernel.org Wireless" 
+        <linux-wireless@vger.kernel.org>
+Subject: Re: [wpan-next v2 18/27] net: mac802154: Handle scan requests
+Message-ID: <20220117094647.3cc5b4de@xps13>
+In-Reply-To: <CAB_54W5xJV-3fxOUyvdxBBfUZWYx7JU=BDVhTHFcjJ7SOEdeUw@mail.gmail.com>
+References: <20220112173312.764660-1-miquel.raynal@bootlin.com>
+        <20220112173312.764660-19-miquel.raynal@bootlin.com>
+        <CAB_54W4PL1ty5XsqRoEKwsy-h8KL9gSGMK6N=HiWJDp6NHsb0A@mail.gmail.com>
+        <20220113180709.0dade123@xps13>
+        <CAB_54W4LdzH9=XS7-ZnxfyCMQFCTS-F5JkUmV+6HtWcCpUS-nQ@mail.gmail.com>
+        <20220114194425.3df06391@xps13>
+        <CAB_54W5xJV-3fxOUyvdxBBfUZWYx7JU=BDVhTHFcjJ7SOEdeUw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="2mz4a6sr5yneo75s"
-Content-Disposition: inline
-In-Reply-To: <57af1851-9341-985e-7b28-d2ba86770ecb@omp.ru>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Alexander,
 
---2mz4a6sr5yneo75s
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+alex.aring@gmail.com wrote on Sun, 16 Jan 2022 17:44:18 -0500:
 
-Hello,
+> Hi,
+> 
+> On Fri, 14 Jan 2022 at 13:44, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> >
+> > Hi Alexander,
+> >
+> > alex.aring@gmail.com wrote on Thu, 13 Jan 2022 19:01:56 -0500:
+> >  
+> > > Hi,
+> > >
+> > > On Thu, 13 Jan 2022 at 12:07, Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
+> > > >
+> > > > Hi Alexander,
+> > > >
+> > > > alex.aring@gmail.com wrote on Wed, 12 Jan 2022 17:44:02 -0500:
+> > > >  
+> > > > > Hi,
+> > > > >
+> > > > > On Wed, 12 Jan 2022 at 12:33, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > > > > ...  
+> > > > > > +       return 0;
+> > > > > > +}
+> > > > > > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+> > > > > > index c829e4a75325..40656728c624 100644
+> > > > > > --- a/net/mac802154/tx.c
+> > > > > > +++ b/net/mac802154/tx.c
+> > > > > > @@ -54,6 +54,9 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
+> > > > > >         struct net_device *dev = skb->dev;
+> > > > > >         int ret;
+> > > > > >
+> > > > > > +       if (unlikely(mac802154_scan_is_ongoing(local)))
+> > > > > > +               return NETDEV_TX_BUSY;
+> > > > > > +  
+> > > > >
+> > > > > Please look into the functions "ieee802154_wake_queue()" and
+> > > > > "ieee802154_stop_queue()" which prevent this function from being
+> > > > > called. Call stop before starting scanning and wake after scanning is
+> > > > > done or stopped.  
+> > > >
+> > > > Mmmh all this is already done, isn't it?
+> > > > - mac802154_trigger_scan_locked() stops the queue before setting the
+> > > >   promiscuous mode
+> > > > - mac802154_end_of_scan() wakes the queue after resetting the
+> > > >   promiscuous mode to its original state
+> > > >
+> > > > Should I drop the check which stands for an extra precaution?
+> > > >  
+> > >
+> > > no, I think then it should be a WARN_ON() more without any return
+> > > (hopefully it will survive). This case should never happen otherwise
+> > > we have a bug that we wake the queue when we "took control about
+> > > transmissions" only.
+> > > Change the name, I think it will be in future not only scan related.
+> > > Maybe "mac802154_queue_stopped()". Everything which is queued from
+> > > socket/upperlayer(6lowpan) goes this way.  
+> >
+> > Got it.
+> >
+> > I've changed the name of the helper, and used an atomic variable there
+> > to follow the count.
+> >  
+> > > > But overall I think I don't understand well this part. What is
+> > > > a bit foggy to me is why the (async) tx implementation does:
+> > > >
+> > > > *Core*                           *Driver*
+> > > >
+> > > > stop_queue()
+> > > > drv_async_xmit() -------
+> > > >                         \------> do something
+> > > >                          ------- calls ieee802154_xmit_complete()
+> > > > wakeup_queue() <--------/
+> > > >
+> > > > So we actually disable the queue for transmitting. Why??
+> > > >  
+> > >
+> > > Because all transceivers have either _one_ transmit framebuffer or one
+> > > framebuffer for transmit and receive one time. We need to report to
+> > > stop giving us more skb's while we are busy with one to transmit.
+> > > This all will/must be changed in future if there is hardware outside
+> > > which is more powerful and the driver needs to control the flow here.
+> > >
+> > > That ieee802154_xmit_complete() calls wakeup_queue need to be
+> > > forbidden when we are in "synchronous transmit mode"/the queue is
+> > > stopped. The synchronous transmit mode is not for any hotpath, it's
+> > > for MLME and I think we also need a per phy lock to avoid multiple
+> > > synchronous transmissions at one time. Please note that I don't think
+> > > here only about scan operation, also for other possible MLME-ops.
+> > >  
+> >
+> > First, thank you very much for all your guidance and reviews, I think I
+> > have a much clearer understanding now.
+> >
+> > I've tried to follow your advices, creating:
+> > - a way of tracking ongoing transmissions
+> > - a synchronous API for MLME transfers
+> >  
+> 
+> Please note that I think we cannot use netif_stop_queue() from context
+> outside of netif xmit() callback. It's because the atomic counter
+> itself is racy in xmit(), we need to be sure xmit() can't occur while
+> stopping the queue.
 
-On Sun, Jan 16, 2022 at 09:15:20PM +0300, Sergey Shtylyov wrote:
-> On 1/14/22 11:22 PM, Uwe Kleine-K=F6nig wrote:
->=20
-> >>>>>>> To me it sounds much more logical for the driver to check if an
-> >>>>>>> optional irq is non-zero (available) or zero (not available), tha=
-n to
-> >>>>>>> sprinkle around checks for -ENXIO. In addition, you have to remem=
-ber
-> >>>>>>> that this one returns -ENXIO, while other APIs use -ENOENT or -EN=
-OSYS
-> >>>>>>> (or some other error code) to indicate absence. I thought not hav=
-ing
-> >>>>>>> to care about the actual error code was the main reason behind the
-> >>>>>>> introduction of the *_optional() APIs.
-> >>>>>
-> >>>>>> No, the main benefit of gpiod_get_optional() (and clk_get_optional=
-()) is
-> >>>>>> that you can handle an absent GPIO (or clk) as if it were availabl=
-e.
-> >>>>
-> >>>>    Hm, I've just looked at these and must note that they match 1:1 w=
-ith
-> >>>> platform_get_irq_optional(). Unfortunately, we can't however behave =
-the
-> >>>> same way in request_irq() -- because it has to support IRQ0 for the =
-sake
-> >>>> of i8253 drivers in arch/...
-> >>>
-> >>> Let me reformulate your statement to the IMHO equivalent:
-> >>>
-> >>> 	If you set aside the differences between
-> >>> 	platform_get_irq_optional() and gpiod_get_optional(),
-> >>
-> >>    Sorry, I should make it clear this is actually the diff between a w=
-ould-be
-> >> platform_get_irq_optional() after my patch, not the current code...
-> >=20
-> > The similarity is that with your patch both gpiod_get_optional() and
-> > platform_get_irq_optional() return NULL and 0 on not-found. The relevant
-> > difference however is that for a gpiod NULL is a dummy value, while for
-> > irqs it's not. So the similarity is only syntactically, but not
-> > semantically.
->=20
->    I have noting to say here, rather than optional IRQ could well have a =
-different
-> meaning than for clk/gpio/etc.
->=20
-> [...]
-> >>> However for an interupt this cannot work. You will always have to che=
-ck
-> >>> if the irq is actually there or not because if it's not you cannot ju=
-st
-> >>> ignore that. So there is no benefit of an optional irq.
-> >>>
-> >>> Leaving error message reporting aside, the introduction of
-> >>> platform_get_irq_optional() allows to change
-> >>>
-> >>> 	irq =3D platform_get_irq(...);
-> >>> 	if (irq < 0 && irq !=3D -ENXIO) {
-> >>> 		return irq;
-> >>> 	} else if (irq >=3D 0) {
-> >>
-> >>    Rather (irq > 0) actually, IRQ0 is considered invalid (but still re=
-turned).
-> >=20
-> > This is a topic I don't feel strong for, so I'm sloppy here. If changing
-> > this is all that is needed to convince you of my point ...
->=20
->    Note that we should absolutely (and first of all) stop returning 0 fro=
-m platform_get_irq()
-> on a "real" IRQ0. Handling that "still good" zero absolutely doesn't scal=
-e e.g. for the subsystems
-> (like libata) which take 0 as an indication that the polling mode should =
-be used... We can't afford
-> to be sloppy here. ;-)
+In my current implementation I don't see this as a real problem because
+for me, there is no real difference between:
 
-Then maybe do that really first? I didn't recheck, but is this what the
-driver changes in your patch is about?
+- a transfer is started
+- we call stop_queue()
+* right here a transfer is ongoing *
 
-After some more thoughts I wonder if your focus isn't to align
-platform_get_irq_optional to (clk|gpiod|regulator)_get_optional, but to
-simplify return code checking. Because with your change we have:
+and 
 
- - < 0 -> error
- - =3D=3D 0 -> no irq
- - > 0 -> irq
+- we call stop_queue()
+- the counter is racy hence a last transfer is started
+* right here a transfer is ongoing *
 
-For my part I'd say this doesn't justify the change, but at least I
-could better life with the reasoning. If you start at:
+because stopping the queue and "flushing" it are two different things.
+In the code I don't only rely on the queue being stopped but if I don't
+want any more transfer to happen after that, so I also sync the queue
+thanks to the new helpers introduced.
 
-	irq =3D platform_get_irq_optional(...)
-	if (irq < 0 && irq !=3D -ENXIO)
-		return irq
-	else if (irq > 0)
-		setup_irq(irq);
-	else
-		setup_polling()
+Please check v3 (which is coming very soon) and tell me what you think.
+Maybe I missed something.
 
-I'd change that to
+> I think maybe "netif_tx_disable()" is the right
+> call to stop from another context, because it holds the tx_lock, which
+> I believe is held while xmit().
+> Where the wake queue call should be fine to call..., maybe we can
+> remove some EXPORT_SYMBOL() then?
+> 
+> I saw that some drivers call "ieee802154_wake_queue()" in error cases,
+> may we introduce a new helper "?ieee802154_xmit_error?" for error
+> cases so you can also catch error cases in your sync tx. See `grep -r
+> "ieee802154_wake_queue" drivers/net/ieee802154`, if we have more
+> information we might add more meaning into the error cases (e.g.
+> proper errno).
 
-	irq =3D platform_get_irq_optional(...)
-	if (irq > 0) /* or >=3D 0 ? */
-		setup_irq(irq)
-	else if (irq =3D=3D -ENXIO)
-		setup_polling()
-	else
-		return irq
+Most of the time the calling functions are void functions. In fact they
+all simply hardcode the xmit_done helper and even worse, sometimes they
+simply leak the skb. I've handled that already by updating all these
+callers to be sure the only way out is to call xmit_done, which helps a
+lot tracking transfers.
 
-This still has to mention -ENXIO, but this is ok and checking for 0 just
-hardcodes a different return value.
+Also, you are right, we can certainly drop a couple of EXPORT_SYMBOLS
+:-)
 
-Anyhow, I think if you still want to change platform_get_irq_optional
-you should add a few patches converting some drivers which demonstrates
-the improvement for the callers.
+> > I've decided to use the wait_queue + atomic combo which looks nice.
+> > Everything seems to work, I just need a bit of time to clean and rework
+> > a bit the series before sending a v3.
+> >  
+> 
+> Okay, sounds good to implement both requirements.
+> 
+> - Alex
 
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---2mz4a6sr5yneo75s
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHlLSEACgkQwfwUeK3K
-7AmyYgf/XGQlmMOUl2lAj4GQW7CiS0lV2TuFuhlnDJf7F3PzQ2L1ZVscbjBxxIXN
-fsZPjxz917pgWPixWRPYgXzkeU3If7KNJ5f9/292eCe0By1fl+utu3I9WysE1hdr
-PuW7Agx3O7iU6i4vgBzZwgsXhX1Lsmncj4/gBgrEr2pBghxy0BIv+tTmGrYXlmtJ
-XRwbdG3Vvwwo7wBrJhY1BQafu9cvLp3DwecEhMLBuavyKMrZxRg81gVHsuuox+Bp
-OCOzyMTz2kRs5wf3x8L6Hytaa9Qy6EHRw/hfHWaJJE1zZ6vs89ZNbD5agngTlucq
-HqzlfNxrLhuHolxSw3kKK9ueKcEycg==
-=bX8l
------END PGP SIGNATURE-----
-
---2mz4a6sr5yneo75s--
+Thanks,
+Miquèl
