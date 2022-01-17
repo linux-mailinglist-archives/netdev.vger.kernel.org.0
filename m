@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E8EE4911F4
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 23:52:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDFBB491210
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 23:59:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238396AbiAQWwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 17:52:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39228 "EHLO
+        id S243745AbiAQW6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 17:58:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234402AbiAQWwX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 17:52:23 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A97C061574;
-        Mon, 17 Jan 2022 14:52:23 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id az27-20020a05600c601b00b0034d2956eb04so303752wmb.5;
-        Mon, 17 Jan 2022 14:52:23 -0800 (PST)
+        with ESMTP id S243737AbiAQW6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 17:58:32 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F81EC061574;
+        Mon, 17 Jan 2022 14:58:32 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id q141-20020a1ca793000000b00347b48dfb53so2864505wme.0;
+        Mon, 17 Jan 2022 14:58:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Ecp2IWUxBs19SZZEzNcvrKalvgeBC3iiDFe/qUWHaEg=;
-        b=kj7TSLpDnuyyi9yHEDlVpyb2p+DNAlR7Ol767/gy2cv5WLnBcaOylkgsdzkKST9o58
-         ZHhMRPskCCCt6DfTC9/Ya8qyShNxUw/Ip8DY48mLw9Y1v9Qkx47rQArRNibiVWdpah9D
-         3DYAZ28NqnRAggF5bgXSeNb9ATQSErsoXGE2yetP7XoOTi29EiN2qzN97tjc1alMDNYx
-         vJ2Jz00w3GFvEo4n1zVyoWivk6vPA6iC2sXTb18u0iBG5sNvGQ0CJMXqoKVyoeJgYX9+
-         /DRtSaskdU9QoFW2sxfG9h+kLqldkFBeD8u0gRjs9RoWfA1ig7+ZauysNsHMjOqblFgv
-         A/2Q==
+        bh=WdGqrPm5cWV7Fm8a2fqKbzq52QqMkIvECYtgC/E9yPM=;
+        b=AAcP4Hp3D8m9IhxRqBmYqoKvCN6EmbLO2SnnbybP7jbT5IuWq4MwS6fL43VvVj8H7d
+         Dn8+V/uZ6IuHc7XaBEgofHf0AJ6Td9nplkyunXpbyCOxVcBNDLQ95LvWfYyCqLpJVV4G
+         A1/uixI/bErREKFtAaF4zcXQr8hsUi8bnQVYhUlREQyDhfvI6k5isNgZkSp68Im+pzMB
+         bQnr9WRReBZ2XfBlX/zxUd84gL+GbQSE9WZEW//EtVKGM8T3R+mHFm1l9bhZpgsLIbBC
+         DlV1yamJkdb8ICSonaiAK1+/YseGjZGfclEpSzlB4LBEpOpsTxBzhqQPXZDjUfqn+cRk
+         CnOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Ecp2IWUxBs19SZZEzNcvrKalvgeBC3iiDFe/qUWHaEg=;
-        b=mLd8A2VQ14JtxtuejcFqLxhxwtrKAjIit44Dtc1FfbCy0CjXCGltjEgLjq0xOeVz0C
-         nW3inQm4raq/UAsD1zIfEIvTrSf46+V497wCZo/tGG79xaRARssJds4Wm4GDjY/4vRYp
-         vJsVKoFMXmyr+o7QRq7MpVKFq1JGFhrV4jyu0xnhgvLl0Dcn7VdOsm+6JMB9aCyq/Leq
-         1Q9rWaC6S/KBqBTPj8D0yz4UJwxBQlrCnar4hqEOL9KnMcim12lII7Xt9jPEE2mjKBvU
-         x687TJlelxJnhfaZq2wAzrAcgdyEGSFd6LZTHCuVD6NolLSlH9AK4AKf5OxgOr4J0azy
-         NeVg==
-X-Gm-Message-State: AOAM533FkLAEOwistN+Mu7bzY+6arKRzqtMIGb0orZGQGpfx9xqCmTgU
-        ZZfMcROxuuqVTrzBWqAjI4tZTlUpD8y3kLSGOik=
-X-Google-Smtp-Source: ABdhPJzDkOB2softr7ma2fhxCapX/vDo/lEBwbPpC55YgfTc4Scsmh7Wp5+mJzTMiH5RfUS/frKNHm40VkafsamijyQ=
-X-Received: by 2002:a05:600c:1f16:: with SMTP id bd22mr8399138wmb.91.1642459941775;
- Mon, 17 Jan 2022 14:52:21 -0800 (PST)
+        bh=WdGqrPm5cWV7Fm8a2fqKbzq52QqMkIvECYtgC/E9yPM=;
+        b=D6g6T2+0r2OsdzQGTy+p+t8nxSTG1Y6nfTYxHg98Y0rGoWNV/iJQvpaK3j+23BIe11
+         8mtAascRPBloOHKV0hbU9zPETbSTpe9PEPLu7evAqVKVrVptfyoTQpvlSKV75ugyUqon
+         bqZeBNqTE8yy1vu7a5b8Fid5F1ag6r8bCCq+sbfiBRCeV7fD3/Es3ta/gAv1RFqd9iVG
+         nzwfWhtntUQGDBNMXx2r0g/tX+WIqevBKh8knnm6j+fBpo1F+PXzoWhyXvYu8KXXxMTC
+         LmZaWMUQhHDwlpUB+8/B8Uf0xlASkcS+kDX3vhgNvEO/XKkuvXUtux/n8h9YtB5rSl+j
+         PlKA==
+X-Gm-Message-State: AOAM533BU4VILYnQa3soZjHBtOCJtbOtLIOo0OAYi2NO+JU4QuB8Rucd
+        +nbPYkm5zm7w6VBRqGTdrbZiX4eWQkdbhq81tEV2zy4HQno=
+X-Google-Smtp-Source: ABdhPJy+qCiV9JCmr+ZXjl7E8g7ZxYIvCzqUg/jaRY8O2kwwpT3/1R4GMV86whkmFyHMpibcUGjY/f8yKtXNzjuY36s=
+X-Received: by 2002:a5d:4a02:: with SMTP id m2mr21415320wrq.154.1642460311074;
+ Mon, 17 Jan 2022 14:58:31 -0800 (PST)
 MIME-Version: 1.0
-References: <20220117115440.60296-1-miquel.raynal@bootlin.com> <20220117115440.60296-8-miquel.raynal@bootlin.com>
-In-Reply-To: <20220117115440.60296-8-miquel.raynal@bootlin.com>
+References: <20220117115440.60296-1-miquel.raynal@bootlin.com> <20220117115440.60296-18-miquel.raynal@bootlin.com>
+In-Reply-To: <20220117115440.60296-18-miquel.raynal@bootlin.com>
 From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Mon, 17 Jan 2022 17:52:10 -0500
-Message-ID: <CAB_54W5_XoTk=DzMmm33csrEKe3m97KnNWnktRiyJsk7vfxO6w@mail.gmail.com>
-Subject: Re: [PATCH v3 07/41] net: ieee802154: mcr20a: Fix lifs/sifs periods
+Date:   Mon, 17 Jan 2022 17:58:20 -0500
+Message-ID: <CAB_54W71EnDyeE99UPuMoJ_EWVOSMv=_uqVz3jG=Jfz5UQMXDg@mail.gmail.com>
+Subject: Re: [PATCH v3 17/41] net: ieee802154: at86rf230: Call the complete
+ helper when a transmission is over
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
@@ -72,32 +73,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Mon, 17 Jan 2022 at 06:54, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+On Mon, 17 Jan 2022 at 06:55, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> These periods are expressed in time units (microseconds) while 40 and 12
-> are the number of symbol durations these periods will last. We need to
-> multiply them both with phy->symbol_duration in order to get these
-> values in microseconds.
+> ieee802154_xmit_complete() is the right helper to call when a
+> transmission is over. The fact that it completed or not is not really a
+> question, but drivers must tell the core that the completion is over,
+> even if it was canceled. Do not call ieee802154_wake_queue() manually,
+> in order to let full control of this task to the core.
 >
-> Fixes: 8c6ad9cc5157 ("ieee802154: Add NXP MCR20A IEEE 802.15.4 transceiver driver")
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> ---
->  drivers/net/ieee802154/mcr20a.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
-> index f0eb2d3b1c4e..e2c249aef430 100644
-> --- a/drivers/net/ieee802154/mcr20a.c
-> +++ b/drivers/net/ieee802154/mcr20a.c
-> @@ -976,8 +976,8 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
->         dev_dbg(printdev(lp), "%s\n", __func__);
->
->         phy->symbol_duration = 16;
-> -       phy->lifs_period = 40;
-> -       phy->sifs_period = 12;
-> +       phy->lifs_period = 40 * phy->symbol_duration;
-> +       phy->sifs_period = 12 * phy->symbol_duration;
 
-I thought we do that now in register_hw(). Why does this patch exist?
+This is not a cancellation of a transmission, it is something weird
+going on.  Introduce a xmit_error() for this, you call consume_skb()
+which is wrong for a non error case.
+
+> By using the complete helper we also avoid leacking the skb structure.
+>
+
+Yes, we are leaking here.
 
 - Alex
