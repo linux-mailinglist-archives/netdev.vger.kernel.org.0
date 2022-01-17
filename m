@@ -2,228 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BAF14904C1
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 10:25:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE4784904D1
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 10:27:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235626AbiAQJZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 04:25:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235622AbiAQJZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 04:25:46 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ECF1C061574
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 01:25:46 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9OFv-0006KR-Ei; Mon, 17 Jan 2022 10:24:51 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9OFp-00AnDX-Gd; Mon, 17 Jan 2022 10:24:44 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9OFo-0002fs-6r; Mon, 17 Jan 2022 10:24:44 +0100
-Date:   Mon, 17 Jan 2022 10:24:44 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        id S235667AbiAQJ1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 04:27:48 -0500
+Received: from mail-dm6nam08on2077.outbound.protection.outlook.com ([40.107.102.77]:10560
+        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235665AbiAQJ1r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jan 2022 04:27:47 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L+WsezLT6IZYKtLtM62hT3MHL6ncWWczfD9BJ7xfPilsMFSmOuyGx0AezKZ3VfLjJjk5vREYH19mZJkiIrHdZU3FgF5DHuWA78wyMhnJ0UaAvwmSJvJfUrrwNGb1d/TCQVScxbnmc6cP42ImbE9wgwi+dL8x9io2REsq48VGMrlh+2fw7bbLjNXqkeEG3vxc1Jh+USDqzgF4RomS8T2m7lnh7VL9GXZByEjaeOpbmSraYeHZ4D0WaAjDzrEGQpNeUO+fykW0NSRyOuMWmlhXu9tOVaquhjUd2jpXZZqizXo6SsooaNh8IYxDGEf4EKKYs1J8d36vtLFyA+XtLUXRsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=k4Hca/mPzt8LKlHjkLZVM2SH0NgxhXx0at9GMf4Xryo=;
+ b=myLVTNrtT94+auPihgTOLR3e3ih2QEHpMcOoHZxFvb0cq1zHm4ZqB2XbUZ89BKOnCIEgX5iS7n3RJL4oCv/+bEz7CMysExb2Cnw3/zRgWw+IRNYpEtxa6k58wQbnUcJyK4YEZPtUuqikavU+Htu2d5dMCkLHXhd/TiK64cbPmb6F+Mgpd5pxwfmCznmHu6QRAHxtX9a+Eu3YnyoIPGRKzuoeXcatPsPMNcJ5da7cECCGtgCqMPg0RZHY00r/f6Do5G94FhE9XKpnVmE7lOo3/VZEddjCN2jtC+zgBkJgabQ+QRBCaqSyM5rXKxram3XstN8bvv5xkFNU5z4TNhV0VA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=k4Hca/mPzt8LKlHjkLZVM2SH0NgxhXx0at9GMf4Xryo=;
+ b=Eq2keX3DEgINNlUbJLFeI/om+weUOHTTTDocMdsV3ltLYpLqxd8fCK4lYJw0fL2eCwRUMyUtp1QPq3eHlyrtP2VbHNvZ00rQGI2R5Hi7ylM7anqhp2xAsu3GdzLsf+cSF3UJ2wHj89SHFRTIxjJfYfl5f7mgNhwkJjdoCRnevYzFe1shdtHfHCr3TTc3il93UwRHYwmfadvblfCDBW6KTzDudX2yaKT4ZZFiCp0F7FhVLSWKeSBXXghNmatWeHkN5R91Ck0jlB5ySp0ty994TRYIvMkh67E/4xRxkgRRPSopugyALybhUxhbAbxdhDjWBIMZkFl3wcJa4PVz9IuEyw==
+Received: from BN6PR17CA0048.namprd17.prod.outlook.com (2603:10b6:405:75::37)
+ by DM6PR12MB2796.namprd12.prod.outlook.com (2603:10b6:5:50::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Mon, 17 Jan
+ 2022 09:27:46 +0000
+Received: from BN8NAM11FT063.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:75:cafe::2d) by BN6PR17CA0048.outlook.office365.com
+ (2603:10b6:405:75::37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10 via Frontend
+ Transport; Mon, 17 Jan 2022 09:27:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ BN8NAM11FT063.mail.protection.outlook.com (10.13.177.110) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4888.9 via Frontend Transport; Mon, 17 Jan 2022 09:27:45 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 17 Jan
+ 2022 09:27:42 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 17 Jan
+ 2022 09:27:41 +0000
+Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (172.20.187.13)
+ with Microsoft SMTP Server id 15.0.1497.18 via Frontend Transport; Mon, 17
+ Jan 2022 09:27:39 +0000
+From:   Gal Pressman <gal@nvidia.com>
+To:     Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>, Takashi Iwai <tiwai@suse.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220117092444.opoedfcf5k5u6otq@pengutronix.de>
-References: <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
- <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
- <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
- <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
- <c9026f17-2b3f-ee94-0ea3-5630f981fbc1@omp.ru>
- <CAMuHMdXVbRudGs69f9ZzaP1PXhteDNZiXA658eMFAwP4nr9r3w@mail.gmail.com>
+CC:     <netdev@vger.kernel.org>, Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>
+Subject: [PATCH net 0/2] Couple of skb memory leak fixes
+Date:   Mon, 17 Jan 2022 11:27:31 +0200
+Message-ID: <20220117092733.6627-1-gal@nvidia.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ycu5k3o6g2lyq6o4"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdXVbRudGs69f9ZzaP1PXhteDNZiXA658eMFAwP4nr9r3w@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 70a002f7-bbe2-46a7-b06f-08d9d99b9edb
+X-MS-TrafficTypeDiagnostic: DM6PR12MB2796:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB27963F43147EE9FB98E59D46C2579@DM6PR12MB2796.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3173;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SXNW8AuAhVVLaWNW7EKrzFP9tOuDQow9a4UfXkUWNCVCdpVoKvN2sNlQo8sBFbpHLvNkKDvb20wNyoUVstqnAAFEFngt5zAPg6dC+/C1U005AqzPIpaYQsIfwxRqknk+nsgYFgwzGI+37XfIpuOBxVAuq6MbgdW473SoMdjFEI0FzmiOzZx/D6DZ1E4ejI/QVradQOU/+A61bCc6yzKK9Ont3+1ICdQsrG4q2OP2wiPboDnlWqlLGHQUmKupiOo30iT/BiujPU5BfpsvzcyJ7YALy1bJrvNvEZ8yL7LHFbDu03fdy55WkqJSQGPijgCl3Hrm70TCCWrz0auPKEKJ0GSIJd3kj1+93A34fRMONklzde/n5OKniQCFIELNIUwxRrpcE+6YGOzNxyQ6OdMOXH/VwGNg2O4T1p5R91I9phd1CmOCQn1tSOw3OPuvC/HfrGeB+8KOM6oIVtyjHrfx7to/HmrmrB8p7vozAoXt1/wVZSrdu+oXUWtagRj1aV/C5E9tZxaK6jlbzIZ4u1+xQe5dq9oDSmDZLWBUWsVwLGA/twrTsfuUEq341v2HNoapVCjUAqTFy6BVJpqsNf5nsGN/dQulVF9h/Daw6RtMDfhgfIlQGgqy11Cna5KZI8wuEohglIqDiArpPncM4ffx+mj0lewCEPLt3CNsYFmJ43QCbKQ/Ov07XxPAifi7qjn9U4EJDOi1NmTzIFbvYdyGyLaLsEYvnLNGwW29HZmXNTOcY8P384tAJqX5t95czMvsrM92MBfvxDVbtiL/JVR0+6vzGH1PgANM/IF0fQtXA/3zfNPiCMcFcLhn3qFwupkFWaCe14O1DTgFmFbHBJ7bBrQBQBwsoDIY+LAzC+Q0QhawIwscf/yTUAw6vLdGcTIS
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700002)(36840700001)(46966006)(82310400004)(7696005)(70206006)(4744005)(6666004)(70586007)(110136005)(54906003)(316002)(2906002)(26005)(36860700001)(1076003)(83380400001)(4326008)(107886003)(508600001)(8676002)(966005)(186003)(2616005)(81166007)(8936002)(5660300002)(356005)(336012)(36756003)(426003)(86362001)(47076005)(40460700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2022 09:27:45.6273
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 70a002f7-bbe2-46a7-b06f-08d9d99b9edb
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT063.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2796
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+As discussed in:
+https://lore.kernel.org/netdev/20220102081253.9123-1-gal@nvidia.com/
 
---ycu5k3o6g2lyq6o4
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+These are the two followup suggestions from Eric and Jakub.
+Patch #1 adds a sk_defer_free_flush() call to the kTLS splice_read
+handler.
+Patch #2 verifies the defer list is empty on socket destroy, and calls a
+defer free flush as well.
 
-Hello Geert,
+Thanks!
 
-On Mon, Jan 17, 2022 at 09:41:42AM +0100, Geert Uytterhoeven wrote:
-> On Sat, Jan 15, 2022 at 9:22 PM Sergey Shtylyov <s.shtylyov@omp.ru> wrote:
-> > On 1/14/22 11:22 PM, Uwe Kleine-K=F6nig wrote:
-> > > You have to understand that for clk (and regulator and gpiod) NULL is=
- a
-> > > valid descriptor that can actually be used, it just has no effect. So
-> > > this is a convenience value for the case "If the clk/regulator/gpiod =
-in
-> > > question isn't available, there is nothing to do". This is what makes
-> > > clk_get_optional() and the others really useful and justifies their
-> > > existence. This doesn't apply to platform_get_irq_optional().
-> >
-> >    I do understand that. However, IRQs are a different beast with their
-> > own justifications...
->=20
-> > > clk_get_optional() is sane and sensible for cases where the clk might=
- be
-> > > absent and it helps you because you don't have to differentiate betwe=
-en
-> > > "not found" and "there is an actual resource".
-> > >
-> > > The reason for platform_get_irq_optional()'s existence is just that
-> > > platform_get_irq() emits an error message which is wrong or suboptimal
-> >
-> >    I think you are very wrong here. The real reason is to simplify the
-> > callers.
->=20
-> Indeed.
+Gal Pressman (2):
+  net/tls: Fix another skb memory leak when running kTLS traffic
+  net: Flush deferred skb free on socket destroy
 
-The commit that introduced platform_get_irq_optional() said:
+ net/core/sock.c  | 3 +++
+ net/tls/tls_sw.c | 1 +
+ 2 files changed, 4 insertions(+)
 
-	Introduce a new platform_get_irq_optional() that works much like
-	platform_get_irq() but does not output an error on failure to
-	find the interrupt.
+-- 
+2.25.1
 
-So the author of 8973ea47901c81a1912bd05f1577bed9b5b52506 failed to
-mention the real reason? Or look at
-31a8d8fa84c51d3ab00bf059158d5de6178cf890:
-
-	[...] use platform_get_irq_optional() to get second/third IRQ
-	which are optional to avoid below error message during probe:
-	[...]
-
-Look through the output of
-
-	git log -Splatform_get_irq_optional
-
-to find several more of these.
-
-Also I fail to see how a caller of (today's) platform_get_irq_optional()
-is simpler than a caller of platform_get_irq() given that there is no
-semantic difference between the two. Please show me a single
-conversion from platform_get_irq to platform_get_irq_optional that
-yielded a simplification.
-
-So you need some more effort to convince me of your POV.
-
-> Even for clocks, you cannot assume that you can always blindly use
-> the returned dummy (actually a NULL pointer) to call into the clk
-> API.  While this works fine for simple use cases, where you just
-> want to enable/disable an optional clock (clk_prepare_enable() and
-> clk_disable_unprepare()), it does not work for more complex use cases.
-
-Agreed. But for clks and gpiods and regulators the simple case is quite
-usual. For irqs it isn't.
-
-And if you cannot blindly use the dummy, then you're not the targetted
-caller of *_get_optional() and should better use *_get() and handle
--ENODEV explicitly.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---ycu5k3o6g2lyq6o4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHlNdMACgkQwfwUeK3K
-7AkbyQf/dzwfw39nzRfi8yss0CiqoAU/yS+7MsnZvnWGKQxcIojgK1OX/xdxiMKI
-C4HnYtImt4dRHJdZDTL5+BWmwrkKo3ytJl8YRHBffgzQdKfAXOit1Pce623dbYvd
-wKJedLR6H9VXuTa1ULEvTnC0cXupHaoxjvQbKkUhlz/PahrhX91+dNJcoWTB6eB2
-YSb6MMcqwMFJ6y2P4pDKDoCf0RNjt8EzTKMWUdx1zcCrqT+wDzA0Ub0UvM7EpUXn
-ziLd4JEC+3SxJZvr2Y8jPQUGb4RMr+Z20vfEOG154m+zZ5lZe7Pcp1ggo6wb+fZ9
-qM6JVYjExAvA43UcTTna2uSeE/+nfA==
-=gHVT
------END PGP SIGNATURE-----
-
---ycu5k3o6g2lyq6o4--
