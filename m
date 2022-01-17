@@ -2,114 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78503490BF0
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 16:57:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBACA490C3A
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 17:12:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234961AbiAQP5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 10:57:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:33354 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230172AbiAQP5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 10:57:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642435066;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rlvIrjXEeXhEFtRWn3AnWoo+xaG5A+dzL35dY7MweEc=;
-        b=MBp9Uo7fCeYa8kCux19Cz80Y/hnvtleEaUHeAim4Z320RcKxWmkNppoWkAEnDuseseaPhk
-        R/Vjlk+RZMeGTNi11thwWnfseAUMYSP/I5artzZXPwCwvrgdtU7I3WFj1gU1+CMUL1kwsa
-        x+qriJzyIluxvtoZVYunFf8+t5zUpyk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-622-7WdMD0SGMB-XILYH8j4TQQ-1; Mon, 17 Jan 2022 10:57:45 -0500
-X-MC-Unique: 7WdMD0SGMB-XILYH8j4TQQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DD7C784DA60;
-        Mon, 17 Jan 2022 15:57:31 +0000 (UTC)
-Received: from calimero.vinschen.de (ovpn-112-3.rdu2.redhat.com [10.10.112.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9E08E5442F;
-        Mon, 17 Jan 2022 15:57:31 +0000 (UTC)
-Received: by calimero.vinschen.de (Postfix, from userid 500)
-        id 6DF89A807AA; Mon, 17 Jan 2022 16:57:29 +0100 (CET)
-Date:   Mon, 17 Jan 2022 16:57:29 +0100
-From:   Corinna Vinschen <vinschen@redhat.com>
-To:     Lennert Buytenhek <buytenh@wantstofly.org>
-Cc:     intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: Re: [PATCH 1/2 net-next v4] igc: avoid kernel warning when changing
- RX ring parameters
-Message-ID: <YeWR6Q6stSFqIghS@calimero.vinschen.de>
-Mail-Followup-To: Lennert Buytenhek <buytenh@wantstofly.org>,
-        intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-References: <20220114194520.1092894-1-vinschen@redhat.com>
- <20220114194520.1092894-2-vinschen@redhat.com>
- <YeWD4OG+eYr5B8Sd@wantstofly.org>
+        id S240891AbiAQQMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 11:12:14 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:33439 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240866AbiAQQMM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 11:12:12 -0500
+Received: by mail-il1-f198.google.com with SMTP id q12-20020a056e0220ec00b002b4dfeb7b27so12033572ilv.0
+        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 08:12:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=xuzTZ41K566REjxDbPumQ9eQ7qYKtqQReAxXQBUHG4E=;
+        b=v1C+oNVRxtoLbjcVHeCu3uu9hQ7UxM4XVoTDricjs2aTsmZloTkoEGqLsBgQtpBwd4
+         zGzcI0/EOBeWBcTW1XXObKhlB7DggsXNYvLZb8olPDOF1gjsZ3oXcWW6lIml6NygRz8d
+         iU99EaE+dVa5CAw0r4AcmoHchA/bKr5jyOhO6DCoX2+v9r1y4qvdhaUUfxsNVlumCWhu
+         RcjdZ+VMZH+H/Q626+wBrjUbCJFxNggzQ3bLVd27WR64IDO6W3AT5jGgGQ/A9rCLzNuN
+         rqOUW9WNUQEtDSG4I9QLvL13ie32eaTIUDydrs2W9BMeAj78hMRbJasJRcrFudD14cUp
+         DwFA==
+X-Gm-Message-State: AOAM530zwLf4IIJ1IhYJcv1VgZy9UizXccuIzgHTgkqjUzpVY2iG8p+k
+        Av8ExbIxjnip+mZArZSbJAJjbv9q5XjsDKCnEyvPyP4ELkYH
+X-Google-Smtp-Source: ABdhPJz1jyyIXxHrExZi60mnLbKlhQ4qpcFnzsZJTX4wBUQTPJaJ+7xBoy1CZ1oYysLObagTp2nEyg6NE4o1+kQgvoMIAINQnGVz
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YeWD4OG+eYr5B8Sd@wantstofly.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Received: by 2002:a02:94a3:: with SMTP id x32mr10046790jah.185.1642435931560;
+ Mon, 17 Jan 2022 08:12:11 -0800 (PST)
+Date:   Mon, 17 Jan 2022 08:12:11 -0800
+In-Reply-To: <000000000000c0069f05d38f279d@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000044c19b05d5c96a09@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in nf_hook_entries_grow
+From:   syzbot <syzbot+e918523f77e62790d6d9@syzkaller.appspotmail.com>
+To:     antony.antony@secunet.com, coreteam@netfilter.org,
+        davem@davemloft.net, eyal.birger@gmail.com, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Jan 17 16:57, Lennert Buytenhek wrote:
-> On Fri, Jan 14, 2022 at 08:45:19PM +0100, Corinna Vinschen wrote:
-> 
-> > Calling ethtool changing the RX ring parameters like this:
-> > 
-> >   $ ethtool -G eth0 rx 1024
-> > 
-> > on igc triggers kernel warnings like this:
-> > 
-> > [  225.198467] ------------[ cut here ]------------
-> > [  225.198473] Missing unregister, handled but fix driver
-> > [  225.198485] WARNING: CPU: 7 PID: 959 at net/core/xdp.c:168
-> > xdp_rxq_info_reg+0x79/0xd0
-> > [...]
-> > @@ -534,10 +526,20 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
-> >  	rx_ring->next_to_clean = 0;
-> >  	rx_ring->next_to_use = 0;
-> >  
-> > +	/* XDP RX-queue info */
-> > +	if (xdp_rxq_info_is_reg(&rx_ring->xdp_rxq))
-> > +		xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
-> > +	res = xdp_rxq_info_reg(&rx_ring->xdp_rxq, ndev, index,
-> > +			       rx_ring->q_vector->napi.napi_id);
-> > +	if (res < 0) {
-> > +		netdev_err(ndev, "Failed to register xdp_rxq index %u\n",
-> > +			   index);
-> > +		goto err;
-> > +	}
-> > +
-> >  	return 0;
-> >  
-> >  err:
-> > -	xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
-> >  	vfree(rx_ring->rx_buffer_info);
-> >  	rx_ring->rx_buffer_info = NULL;
-> >  	netdev_err(ndev, "Unable to allocate memory for Rx descriptor ring\n");
-> 
-> This patch fixes the warning...
-> 
-> Tested-by: Lennert Buytenhek <buytenh@arista.com>
-> 
-> ...but doesn't it now forget to free rx_ring->desc if xdp_rxq_info_reg()
-> fails?
+syzbot suspects this issue was fixed by commit:
 
-Uhm... I see what you mean.  But then again, the same error was already
-present in igb.  Looks like a call to dma_free_coherent is missing there,
-too.
+commit 8dce43919566f06e865f7e8949f5c10d8c2493f5
+Author: Antony Antony <antony.antony@secunet.com>
+Date:   Sun Dec 12 10:34:30 2021 +0000
 
-I'll prepare YA patch.
+    xfrm: interface with if_id 0 should return error
 
-Thanks,
-Corinna
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10eb9bb0700000
+start commit:   9eaa88c7036e Merge tag 'libata-5.16-rc6' of git://git.kern..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=10f3f669b8093e95
+dashboard link: https://syzkaller.appspot.com/bug?extid=e918523f77e62790d6d9
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1781a643b00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15130199b00000
 
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: xfrm: interface with if_id 0 should return error
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
