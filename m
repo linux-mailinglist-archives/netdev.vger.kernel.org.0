@@ -2,97 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21F7F491063
-	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 19:35:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DA9049107E
+	for <lists+netdev@lfdr.de>; Mon, 17 Jan 2022 19:56:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242743AbiAQSfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 13:35:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242721AbiAQSf2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 13:35:28 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABC1C061747;
-        Mon, 17 Jan 2022 10:35:17 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id x11so35269422lfa.2;
-        Mon, 17 Jan 2022 10:35:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=z2LAhV4KSzEZogKZQmx+VN5D6iQExMOg1CIIQQv1a6c=;
-        b=h87/EoWOnR4jHU5VsE3cQlywU1F5aajaPPF6NBrQ7B136ytNj+vUCmFT2Ff6mEnICk
-         OZaElTNLEXhiiNqUQh2XXjICn19cekST5Z96lwa8zcLZv272+0CfD0ulWkMivlp3QOL5
-         +aBOX1Z9CMnKHcOn5lVUa9k98Ydyluw5/wLspul1yTAnJzAJ2ZGqJfRf/uy/zm7S09xC
-         265GFZFjCtzlvA6mY8PIl3JdTya3GQqM6K1Q+CB/gxRP4nC7esdQ7cW0MhXyTlWiK80u
-         GAmRqvNuiJMoBO6PpL9L1vcJrzTaqE4VACExsA0Tp2jUF8fSEEbGaB6dynLQ5kPQW0Lj
-         ONBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=z2LAhV4KSzEZogKZQmx+VN5D6iQExMOg1CIIQQv1a6c=;
-        b=znkQwNKjF07d2VP74WVOEOKUV695euIbqCyiiEBLDuXN5HiM7StAKZPm/8cHMuNU89
-         /1SiQEWvj2ZdVR6ZTxyGYwjWYmfpNNa6sJ1mK3HwTAZ0sFcq5i2aWOYOztJDWLSE/m5t
-         A1K2IEKl4Q3AyGmtfj19SWJ8RR8MqwjzTm3UAI7uNdPMMymfNrOEYPuTYbdmgLy/BYex
-         W9KR9KZ+Z/EcwFJOIuC5Jcj8/tTjBAGUg0C/9dUFDYHnBX0JDrIoQQas+S/WqX8BkrpI
-         YbYo/XtZS/7ag0mGRzYcpBAcVZ8p/MVdBan398NbTjQf3CvS/b+9oi+lFnxb8Q6UgDkb
-         2oXw==
-X-Gm-Message-State: AOAM532RaGYPwCsTWXc4cknnUYrCwEn+YqTTR9xRJdClikVMsYLAaHlx
-        sXm/wp2AJrKuRe68LH/9Bhg=
-X-Google-Smtp-Source: ABdhPJwPjWeTQQzIRDbxUo/5CKG8WBZxjXWryCjlZG50Z7qK7RwRsmt5226luHOYipkbH83k9xAeDA==
-X-Received: by 2002:a05:651c:547:: with SMTP id q7mr5630262ljp.464.1642444515624;
-        Mon, 17 Jan 2022 10:35:15 -0800 (PST)
-Received: from [192.168.1.11] ([94.103.227.208])
-        by smtp.gmail.com with ESMTPSA id k12sm1455871lfu.252.2022.01.17.10.35.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Jan 2022 10:35:15 -0800 (PST)
-Message-ID: <a63d6d9b-7e95-3e88-fcd2-2fe5e623dd5b@gmail.com>
-Date:   Mon, 17 Jan 2022 21:35:13 +0300
+        id S241447AbiAQSzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 13:55:47 -0500
+Received: from mga02.intel.com ([134.134.136.20]:1175 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233202AbiAQSzq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jan 2022 13:55:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642445746; x=1673981746;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=6lVm6lLsjz6rqvT91yxdYMdAQWa98dgFJHffUpwMuAs=;
+  b=Zl6/voHqYTY6Ov9y941pS9sjOVzzso+f9+cu7kZpks7dsOATbCSLRbvk
+   gty/N7IxseGpkRmLUM+KwmC2lE9jXhVLEViSDVnSKg3NCRVgyyDMshDV1
+   /OvwdpxRA7VvOQ32x9EtDpzYbPnBms2XRVT+2RGcXZG6G7R1t5CSycvqO
+   dqY+oCOg4fjOJHcFcaua/MqQprnb6ZX+CzaxG28TuoOa9vcaEvRtGtOE3
+   75TeqexBDcQMlel6UlfJoVW1cBRGumR7Nj9Lb7nZWmQVzmkpzZxb5+2b0
+   9lregcOISpM5qbiy2t0FGu6fNSyfHel7WXAzbm57MKvFewYXXZbTAnfjD
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="232035683"
+X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
+   d="scan'208";a="232035683"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 10:55:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
+   d="scan'208";a="578156706"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 17 Jan 2022 10:55:45 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n9XAO-000Bmh-Of; Mon, 17 Jan 2022 18:55:44 +0000
+Date:   Tue, 18 Jan 2022 02:55:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Gal Pressman <gal@nvidia.com>
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
+Subject: [net:master 63/64] undefined reference to `__sk_defer_free_flush'
+Message-ID: <202201180234.dBCoLWV3-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] ath9k_htc: fix uninit value bugs
-Content-Language: en-US
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com,
-        vasanth@atheros.com, Sujith.Manoharan@atheros.com,
-        senthilkumar@atheros.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
-References: <20220115122733.11160-1-paskripkin@gmail.com>
- <164242422410.16718.5618838300043178474.kvalo@kernel.org>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <164242422410.16718.5618838300043178474.kvalo@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kalle,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git master
+head:   9ea674d7ca4f6ce080b813ac2d9a9397f13d2427
+commit: 79074a72d335dbd021a716d8cc65cba3b2f706ab [63/64] net: Flush deferred skb free on socket destroy
+config: h8300-randconfig-r006-20220116 (https://download.01.org/0day-ci/archive/20220118/202201180234.dBCoLWV3-lkp@intel.com/config)
+compiler: h8300-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=79074a72d335dbd021a716d8cc65cba3b2f706ab
+        git remote add net https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git
+        git fetch --no-tags net master
+        git checkout 79074a72d335dbd021a716d8cc65cba3b2f706ab
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=h8300 SHELL=/bin/bash
 
-On 1/17/22 15:57, Kalle Valo wrote:
->> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
->> Reported-by: syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
->> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> 
-> How did you test this? As syzbot is mentioned I assume you did not test this on
-> a real device, it would help a lot if this is clearly mentioned in the commit
-> log. My trust on syzbot fixes is close to zero due to bad past history.
-> 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-You are right, I've tested only with syzbot's reproducer. I've followed 
-simple guess: if code works properly with random values in these fields 
-for 14+ years, then zeroing them won't hurt much.
+All errors (new ones prefixed by >>):
 
-I might be missing something, but unfortunately I don't have suitable hw 
-piece to test the change.
+   h8300-linux-ld: section .init.text LMA [0000000000466120,0000000000498245] overlaps section .text LMA [0000000000000280,0000000000f8ea7f]
+   h8300-linux-ld: section .data VMA [0000000000400000,000000000046611f] overlaps section .text VMA [0000000000000280,0000000000f8ea7f]
+   h8300-linux-ld: net/core/sock.o: in function `sk_destruct':
+>> (.text+0x51f1): undefined reference to `__sk_defer_free_flush'
 
-
-
-
-With regards,
-Pavel Skripkin
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
