@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 078DA493011
+	by mail.lfdr.de (Postfix) with ESMTP id EF0FD493014
 	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 22:44:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349466AbiARVmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 16:42:47 -0500
-Received: from mx0d-0054df01.pphosted.com ([67.231.150.19]:7967 "EHLO
-        mx0d-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349436AbiARVmp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 16:42:45 -0500
-Received: from pps.filterd (m0209000.ppops.net [127.0.0.1])
-        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20IBseYa030788;
-        Tue, 18 Jan 2022 16:42:26 -0500
-Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2057.outbound.protection.outlook.com [104.47.61.57])
-        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3dnbdu0rt8-2
+        id S1349657AbiARVnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 16:43:06 -0500
+Received: from mx0c-0054df01.pphosted.com ([67.231.159.91]:1123 "EHLO
+        mx0c-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1349549AbiARVmt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 16:42:49 -0500
+Received: from pps.filterd (m0208999.ppops.net [127.0.0.1])
+        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20ICiDwW001396;
+        Tue, 18 Jan 2022 16:42:28 -0500
+Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2053.outbound.protection.outlook.com [104.47.61.53])
+        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3dnapfs2m6-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 16:42:26 -0500
+        Tue, 18 Jan 2022 16:42:27 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mz/m22+5qzy9HeY9jdJaA86p1I05W/glSt1sO8sw1E0KZQNejFebwd+cslzmW80tVM1DTZ9/32p7LyS7+bytFWH52nzz3J2th/00JRZRbuq8F+l89fOj9zUk0w9fSaDlBzajkmfMtdDi46pQHMUwzijMwJQCViFhZ+Ie695Y0vm1pU5tyvwsqVJS1vzPU4I6ts1fbfJDWJ0VcThdJl8uQoewPYux+PCJ4qnen35yUkcOcbKNLGMarkQLDHmlF2UtqzeLL6f/k64qD1Y6XOfYCpjTSvYRQ1Gox6TwWElQxxrQHsuwL0xrTVUJRp+jIdIj3c+v/idRABcKaG/SwKvvPg==
+ b=Dj/ro1PhcZ1S/FIyT/xGfJwCN5L3N814+PUvrxHzHZjo6SjxR/vZ76BjRdWgBcdcEKVpO5KauSN+BsdYfh66sWQ9qa4d5Iy/tsnnuLQ6KKcieco7eJp3fYHiCMx25uVST0A6N0i6adw9veb3a+v49w9nBl3r5k1ioKnRD1uXKX4SRoCRwbNtoxwWLdMXf1AkLzp9oWx37p7sOeb/zuUyNWs/YAMK6waOuspJc8V2elOQnLI6VackUs18ytczrT6QPRNVofV/RX3I/fdHM1pIN/tROkVWxwvUOs1inhzF5LA/Mm2RgMfUhKZez+93rtgklpXXcZJsIIQ5pRXHHbKteg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rQDwv7K5I92pVNAUfKU/K6FGICV3JjVTyK7hQ+R2BWI=;
- b=Efx5wus724uJmWwcxweHwC86vU9IGiJ72lmZCOTag77G6t2GUoSReCcOSEeuo93MNfbAMKMOyWrZdizkDOmWkvj4Es5y02J1G8Xd8jdND6czRz9aUsdQYx40XePhX0Anzxjx0uJvuPPqsoQyptqim/3CcEXV8QQuarXHYqnWxlSxknzXGJPIdXMxSbk9uTvPuLXI0uJCoVALJfrNgKubxA9osmtmOoid2r+igbfW1DS1Pm1Xhi0Uq9pnmz/QlxrevTF2EbjFnqHIgO0s6d7aqllTrIQPztGeVjzgcJRCbRWeVcBJ0K/aRe1NZX1WcleCzZ5oD/XfTKclZcE/+00Sgw==
+ bh=mS9qW9h/D477kjIlSyIvVI+5gM++DTlsJEuoteorGBU=;
+ b=BdnSVBTeuedX4KylRa6aNqjhboMBMH3QExFsR4F35f0hh9jKOVCVhnMwUfPUuphF2+amzLMw+FMATK+RLhETVjUlPRnAUt1Chk0yTUCnHTyBjmEk+bIp9Rmr0VtvtsHXrnaaCwmxkWS8WK4AGFXxJZNb6lG/Av20Vsr5NiQZ6//payYcIlIZijAB1BN5CWqPUjbQRS1nMK43cUk1rJrK7SN1rJ0zMOodz+R/wPYV3kDkQ2/iFoKErwv7BM0Eug1o1MlvYXb6DtBJxVRrEfpE60k5C6LGLM3Aq/+Bkq+JH5QVPEhA5xAR1XWn8a65iz79CEU59at6DCgaSXE4aKmYLw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
  dkim=pass header.d=calian.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rQDwv7K5I92pVNAUfKU/K6FGICV3JjVTyK7hQ+R2BWI=;
- b=GKciGDdrrCP3DqGS4Ryt//YIhk+kdIbqMjhbHP51lclVw3c49t3u4+e0bdh44sXpbE47Ywqprp5mw5XX3/FHUsR+JLCeFaxSWIWotDRvFbv+XUf9GrctlEyfR847diDA0ae0u/9j+gndfc/IDDrU1KUbzKLyRB/LjenGr2Quk5w=
+ bh=mS9qW9h/D477kjIlSyIvVI+5gM++DTlsJEuoteorGBU=;
+ b=3WZuF4zoQVwefAcFTLjnC4FlApRSOCxBMo/aFj1WnFF3lW7Gep3K+TZUT/fd+p0HGq5bZaEgfxjhrf96gj2PVfY76P1zF6R6EZ3rGjCwEvMJ42UqsTUV3iOoJqhOuh1P+x2/5jzl2e+3d6jpZoSr89YFFPpSYgqv8cfBlzHkjd8=
 Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:6a::19)
  by YT3PR01MB6003.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:68::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Tue, 18 Jan
- 2022 21:42:25 +0000
+ 2022 21:42:26 +0000
 Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::6929:c39f:d893:b6c8]) by YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::6929:c39f:d893:b6c8%2]) with mapi id 15.20.4888.014; Tue, 18 Jan 2022
- 21:42:25 +0000
+ 21:42:26 +0000
 From:   Robert Hancock <robert.hancock@calian.com>
 To:     netdev@vger.kernel.org
 Cc:     radhey.shyam.pandey@xilinx.com, davem@davemloft.net,
         kuba@kernel.org, linux-arm-kernel@lists.infradead.org,
         michal.simek@xilinx.com, daniel@iogearbox.net, andrew@lunn.ch,
         Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH net v3 3/9] net: axienet: reset core on initialization prior to MDIO access
-Date:   Tue, 18 Jan 2022 15:41:26 -0600
-Message-Id: <20220118214132.357349-4-robert.hancock@calian.com>
+Subject: [PATCH net v3 4/9] net: axienet: add missing memory barriers
+Date:   Tue, 18 Jan 2022 15:41:27 -0600
+Message-Id: <20220118214132.357349-5-robert.hancock@calian.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220118214132.357349-1-robert.hancock@calian.com>
 References: <20220118214132.357349-1-robert.hancock@calian.com>
@@ -61,101 +61,128 @@ X-ClientProxiedBy: MWHPR03CA0009.namprd03.prod.outlook.com
  (2603:10b6:b01:6a::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 497c4ec0-5ea2-4271-11a8-08d9dacb6ab0
+X-MS-Office365-Filtering-Correlation-Id: fc3ecef2-a782-4f7d-e2a9-08d9dacb6b7a
 X-MS-TrafficTypeDiagnostic: YT3PR01MB6003:EE_
-X-Microsoft-Antispam-PRVS: <YT3PR01MB6003B6BED434F94CA98A0884EC589@YT3PR01MB6003.CANPRD01.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <YT3PR01MB600363B4611AB37B9F55F816EC589@YT3PR01MB6003.CANPRD01.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: leB7gjbBqZECx73x8PSxXdAO3Dse8gx4NxL7OySF1Exye7DmgFb7XNM5hIu4SaSkCkAAZkrQm9VI8HUGCWrJEWceKhP4F0Oakitp//L11ngEWfrYav9EF0sW80Z/iAVYAVK9iQ6ciinH/9pEk3r7MCZYIDkpmAe8QZVLGhlP3D43JlMbjIYUCm3hXw0XXcG8a1G2ovVq4gIYdAJ4pV/qnztIKkcCOqZLplSUfDA5J+OIEcXICOexB7hXhrHop2E0Kqixal8FRSd9lXxisAK2AFW0Szc2JUdFmY3bUDMOXUvveVvhmPu9wCjVIT5USh6yZFMYyLePZT1qOctHW1588AprkFFb2ts8r8eFSYlHhaf83hinATqOBukTu9JVg6L9JWplR8N9HNNYTE6fqkKx63use/df+41w9y22hi4bHrH1YNQQtNG3QzyBsluzzfemjG8ZgwFWi8KjsD3Z7mze6GnLQFJIQlVxtdOF8j1/ShtFYmUIf/6hfdw14fkRlALervuOKNe0CL2uK7ak3llzgs028XaF6upVTWKDX76tXe+BdTewO0A2iKrjwmgJ8wX98kqKEfjBH3oJeBqXxtB34CibXtuV2mdDaUuUSsZaMq8EgL9R7928oQKoApI9z3a4UJWB4yLlMdGbPxLmBFWsp3MzCOzWjDhQQzDAH2oJQ/+VsIyvAy0ZJrZujegM/UP3lS46bYAoqh+t5pqMEBQO7w==
+X-Microsoft-Antispam-Message-Info: lB5yIkC76vqsHkmpbVRmM91fI0gkfGj62ZplSjVlHufvYbvIMofut0wOcI0zlzdQMO6+WyORrEagQCj+BLth4kfoeemiV1HyywB00jyraa6d8nCAopAB2X2rBPwwhD1O7/ilXzWNbx1nfQO12Wqq1kwHsSh1aOepAu8zx3HTQ45CaAOcz80KJzRZFZJ1EV1h0XABWbeokoi0dkkclxjQeynK624QIU2mYAEQrG+Y4MWU4HtbdfbKhcAsyqcyN00EqZP03bwzQZ7/2u3B14oKf6rBuRMNLjBa1PjdfBB+HZ0aMguK/k2YWplJ6qFKnlZZBAZ2wz6ZrHgBdOPU48ya4CDXHxjeEIkvRbzxoR3ZZUkgCVfAnNP8itRlnN+GMTuB8TXab8h3SzMupSIDK1rn0Bj+6bdqa/yJK/hCI+RHKSCF2qF7Og2DHWl+SHEo+4G5bKCcpjotZorNRLdBb8lCoSHuMrTxiSPvgERjspy4QKNDVkmz+w8nPI4b4YAJ2UbqX9ijFVAMY31mV4I8NpyyrwCR1+dftxOMB/m7z6hdwMXiPMGJwqxc3z22EdXKFjkDetz7ZF7lYePsqIw+OdC15NbjFpmyU/Y6W6YMYH3wMCyC3JTv9c8w8hSfliEcv35mZy/bd3RBNXTVnGVVdMc6ThEvxQVY6nxLBfkCB/Ea0zkjDlTdUf+EG9zVB1yCUxDzCAeZaS/T8u6pa/7LitmyUg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(6506007)(1076003)(66556008)(6486002)(86362001)(66476007)(8676002)(38350700002)(83380400001)(186003)(66946007)(6916009)(26005)(2616005)(4326008)(36756003)(508600001)(2906002)(8936002)(38100700002)(52116002)(107886003)(44832011)(6512007)(5660300002)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wY8mMLWhtieIBBFjxYgEAyWlda2uLgf51yW3BcMTzOVX0UaoDN0nUzf84mM4?=
- =?us-ascii?Q?xk8Y0JyVu2fdnhKCv3G6yebh0l6Oag8X3jtBWMTxPcB7YuCKfPJcZM/ankyI?=
- =?us-ascii?Q?YiD9Cpc3Y1CNWqmEZ7p3OHrNhfiYA9jZepvE209D6+/4dhdiErJ+QzEKli8W?=
- =?us-ascii?Q?SKCJCr3AlkjLBrVRGcWsGuj2gKaLeJL7Kza6iSlVTtPgKMbhXvOW1XKPasNI?=
- =?us-ascii?Q?yQQZ9y2oMOxidZwEjHIsBJX0cPDDIIv02xXhscAfc9IQbhFB5r5zFehdTsl1?=
- =?us-ascii?Q?+ytyPogJb+T/xWDKy/BHrMUx/1eN2COnqWDKsyanbBHZKb2lRWK6bs5P709a?=
- =?us-ascii?Q?73IXDDUhtbOKoAJJ748E/K7qsRDU/gu711i4a6k3QDq0DzF/Qsy1SDaKFUKy?=
- =?us-ascii?Q?Dk6RkE8qfszchhRlaxX0nJ4cz5h0bHAF9OwrXcL9W8mGmKrC7gpolD6sTAh6?=
- =?us-ascii?Q?hAKkyCmHYPQ3Eu9Ho5doUuMpfjvKjJcgheM7YWSUpNKydfyaSCiD7Flz87AA?=
- =?us-ascii?Q?0NeIl3nRDnCadayjMJ6Id8mc4D5KwIOwFndD2YkjJpmVSKtOyBwwd+NpjxLU?=
- =?us-ascii?Q?wkb4XPYEnFB6zaQi1h4LSvBEYYnJf0c6DIULByVXw/e2O7IOl4zsjvk3YhOC?=
- =?us-ascii?Q?eUm8MGp7Uzj7b9SOhDP3dsUzqiyEa3H7UPlVoDJfs+OIsupKW9ok9i3g9OGO?=
- =?us-ascii?Q?T2GaUuA8UrWeYdH5ZUTH8BaW5yAaTWMClabqbvDAIxUSupKZFOIMJfs5iwHU?=
- =?us-ascii?Q?rPldp1KKVmpFH2rwJUfvdCezz+ilucEMDWJYMuv3gNHQ4Sr8ALdm6Wa/svfd?=
- =?us-ascii?Q?fuaaDyaR4CURyJ6pHj4dm9xusA+VKG1niF1DxR1Jt0IX0m7tTtoW4wpc2ZBd?=
- =?us-ascii?Q?fFQlfpU6fvx/5DpVOzIKhkLO+cZKLmK2cEqAXZ51iBq9lJV6gTyqMYwzNkrr?=
- =?us-ascii?Q?rAv1Xo7pEk2cYHtpZNjQyJbztpHoFzo/YHGAIo2wgBZwPRKAIhGgFrvuTxsJ?=
- =?us-ascii?Q?ixySERZI54PCXOTLwJlyOPV45XZkes1bYzSyJz7mOyUgdAOupiy9h4AZdQKy?=
- =?us-ascii?Q?0DwPO7dr070ZaUWVj95vP2miV2lJ4qZt71SCD4mcnvQoIJSftZnKfq1nIxq7?=
- =?us-ascii?Q?/Uv4pJ50POI7HMbU33jr4q0ndJEjCJ42Pvtxdj90et50fHidhBSpHIvww3rA?=
- =?us-ascii?Q?f5dD7XRG0iPeOaNbu00w9N1NEev7lWF5gnd1Q5MvMJq5vkrciCO0rHCkR/Lk?=
- =?us-ascii?Q?KacSorGW44zDLVKlNj8wutZw2gj14mWME45EfEXpSa5R+YYzlFEJDOCI8Iki?=
- =?us-ascii?Q?k7PwUfVfRVtRJj3gdBvgbzP/BdhvvK8cnEbtMrQjLnPThzcKVGX/3uUYR1g7?=
- =?us-ascii?Q?/YiYE5IAsaPYmVw5mpCqwsqBtThLo4efnDXRlvUZeu16wsxFhX/PxAels0Wc?=
- =?us-ascii?Q?RDGoKNWDtXSQ7GQcKutzwNSstQ6utUxo9NG8sgy2Zc72VCNhqZTJJ1vSj6Jn?=
- =?us-ascii?Q?Sj+j7s9YHX80LIgNjUMIQbSuEawsClaAaLv4IHqbblDVHibEhycJrtLYUNVc?=
- =?us-ascii?Q?zu2uMvZMBKXif+Bk30CX50dtAJJBXDQRxMyv7+9CB08si+n8+rBUlDr17AbB?=
- =?us-ascii?Q?Ufmqkx21epVASLNhaK/39axpweegZt+S4pAqgcnyUIZVWMNGgJunDQuR+tls?=
- =?us-ascii?Q?AbweFiSVbPEX/WLGuwm+sud0awg=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?u8ZPhqtHvB8FU1exd/VzK0oS4+pyNqQl6EXzLXGR5gfFwkN61jv7FG0BWxzj?=
+ =?us-ascii?Q?Ek+aROXFtst+Ww5yokvT9vdWxe4KNb/+liV3Zxtf2SwSNNlyIP0ZtNhZA0po?=
+ =?us-ascii?Q?OnFeB7U0Dg1xvJAhJJUA1F4QpczLK9QplsPOEUCtJEONpmVKKwO9htT/mE3X?=
+ =?us-ascii?Q?4tXAWf7/mynbGz4HYNxQz9cXaPK/fWvYwcbNznOdwywpBIBjk6NfL0iljT1V?=
+ =?us-ascii?Q?i5NZ9XztoJeKYhtEX3j79kBTeS6E9z8BZRT2K2ubYGNtZHwz5tmxN7r18ErZ?=
+ =?us-ascii?Q?oXC3jHBEr4zvTVG38jhhVy9tGDD+wkPDraWfhTKs0RTWjOdnBFyy9aABoHhK?=
+ =?us-ascii?Q?3r5gLgc/tu1D6iiUjlOl9PKzMzyzc/ZEzf1jhkMZOXCBX5Xn6T7FW2tsA8Ws?=
+ =?us-ascii?Q?gC6GQiQCO69CtCPJ7tfhMZj3okz+O9oXR3My5/dxHaZuc66z0BdES16pMh+0?=
+ =?us-ascii?Q?m1vT2834Xx3rK9Nd7eYFr4rVWsZzchJmmrXsJ0YZICuyZbAGRARhq6BYji9p?=
+ =?us-ascii?Q?1Z9QkcLqYANP9JufF/NmGjUiK2Prc+X8zAyJgtACDDHH7TUaafp1oPp9oxb7?=
+ =?us-ascii?Q?F/GN56JdbX94qyJc0SsiuXXFb50w5w2ziMk9zBl1iI5CmdV2dqDbz1Tx3kh2?=
+ =?us-ascii?Q?S8CA9J5hOkj4f5SZf7hz42MEggNw1vQOwnpusB0Qu+T+3/ux0SKlWGzOIYj0?=
+ =?us-ascii?Q?uLF9Dtdk4aL/IBprD9AL+SSBDdH0x6Ua3VP0mbT3U5LI6j1+yNbhJ/rBA04J?=
+ =?us-ascii?Q?cW7uccAl3GPjKNoZ+ATouUkiAHWGBtQbAiM6e+oOv9iMT+mQrKhtTiDObFj7?=
+ =?us-ascii?Q?ed7h26nSix20w2F0F0yhCZWZZoUbGvsKaIPnHP/NqJZs52JsY0eEal7CsMbp?=
+ =?us-ascii?Q?P//CnIb2U+n4NGW3e5fsGcdYLEa8YjgUhcRADHNfl3qSqHfTSL1McWrFEB/4?=
+ =?us-ascii?Q?vVwqLJ562TRNUXzfoK6zB48qqRqp+OCQg6RP8NBl7UsXuO2GAt9QxTGPfODw?=
+ =?us-ascii?Q?rqro9i0QCGJLW4whKpft0v0ncVRYtexJN+a/S5I2r/qdXQxK8lSh4T6yyByh?=
+ =?us-ascii?Q?1orkAA+7h7w9VAfamTDeGS0P2BSlpitTO1oCYzRfMf29A7PYE9ezFaCaDh8D?=
+ =?us-ascii?Q?rY0eOxDQKW3PwHRQP0IzxmEUfJLQrdx8sjOgJ4XgUYQFPOgpw0rnxOMhmjOe?=
+ =?us-ascii?Q?+FIi9rnqsH4IGEMSJRBFXy+9/xCCbwIStwHy4fUfVhjodmBL0VeXSUVK4G9i?=
+ =?us-ascii?Q?wHYhJ+wKcVxgoYOH4kwKCxxI8g8tGHSNlwdHbiXUkXPn3i64ZyhXrEILvBiV?=
+ =?us-ascii?Q?lQ/GCrBdalEHfDReE5rniPq3NdrCLAWt5wzb2BBx/kkaziOhlbxpsEdTYEAi?=
+ =?us-ascii?Q?0B1HTJAs8ZXGxmW1XqTbuVtlKo1aq7Aka7c9vHaBAdiw7YfDWuEHyfSncqF2?=
+ =?us-ascii?Q?gEkC7wzQY8tutKlOtorAkRe2tkAxsrN1n9PxVkuHiXff++iN9SegHL8nqofm?=
+ =?us-ascii?Q?nNC1n4WBx2dssr6sbdggkFT44U5rU77RkZ/FIoG57AhPsx38+MuLGuod3I3Z?=
+ =?us-ascii?Q?YOVgpZLu1KdE+XYb3N1fJrxr2UcFeVVyTtWViCHN8lpPCSqiBxAGB6cfaUoo?=
+ =?us-ascii?Q?f+kPwHvZIPuc3YWxGlK4iGR//X47RgeYJybZOx/QBA71YQBhPm12Qo6+IOiU?=
+ =?us-ascii?Q?4PKLe3aTaHAtICc3mO6ZRlrU30M=3D?=
 X-OriginatorOrg: calian.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 497c4ec0-5ea2-4271-11a8-08d9dacb6ab0
+X-MS-Exchange-CrossTenant-Network-Message-Id: fc3ecef2-a782-4f7d-e2a9-08d9dacb6b7a
 X-MS-Exchange-CrossTenant-AuthSource: YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 21:42:25.4338
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 21:42:26.7161
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Yv2Q7OQd5zn5vV8BF6WXSAe8/Eg37ETfgAvTVdlmdAB8KG5Sn/gxVa6Raj5Cj2S7lFFR0NJ6SGQgzUPZj1QXUTcTkr+tIZ8titYAo/ZrKkc=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2LWPHcyE9fz0YaKpTy6AWdLSARcc7gETTDYpF3/Uou6SVH8KKfsTQYm52eqBB1N12QXOJqLQtr5NmhUR3wSYRPeNCRbpEqysoGjZnrLohKM=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: YT3PR01MB6003
-X-Proofpoint-ORIG-GUID: kJuxFHgu2Qlihe8GHfcT5sIOQkmzBieW
-X-Proofpoint-GUID: kJuxFHgu2Qlihe8GHfcT5sIOQkmzBieW
+X-Proofpoint-GUID: DwqWuOldaR3XhlpfDicT4sGUJnGs15E5
+X-Proofpoint-ORIG-GUID: DwqWuOldaR3XhlpfDicT4sGUJnGs15E5
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-01-18_05,2022-01-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxscore=0
- suspectscore=0 impostorscore=0 lowpriorityscore=0 mlxlogscore=999
- clxscore=1015 priorityscore=1501 malwarescore=0 bulkscore=0 spamscore=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
+ mlxlogscore=652 priorityscore=1501 lowpriorityscore=0 bulkscore=0
+ spamscore=0 mlxscore=0 malwarescore=0 impostorscore=0 adultscore=0
  phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2110150000 definitions=main-2201180122
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In some cases where the Xilinx Ethernet core was used in 1000Base-X or
-SGMII modes, which use the internal PCS/PMA PHY, and the MGT
-transceiver clock source for the PCS was not running at the time the
-FPGA logic was loaded, the core would come up in a state where the
-PCS could not be found on the MDIO bus. To fix this, the Ethernet core
-(including the PCS) should be reset after enabling the clocks, prior to
-attempting to access the PCS using of_mdio_find_device.
+This driver was missing some required memory barriers:
 
-Fixes: 1a02556086fc (net: axienet: Properly handle PCS/PMA PHY for 1000BaseX mode)
+Use dma_rmb to ensure we see all updates to the descriptor after we see
+that an entry has been completed.
+
+Use wmb and rmb to avoid stale descriptor status between the TX path and
+TX complete IRQ path.
+
+Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
 Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 3a2d7e8c3f66..53ff38cbc37b 100644
+index 53ff38cbc37b..fb486a457c76 100644
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -2036,6 +2036,11 @@ static int axienet_probe(struct platform_device *pdev)
- 	lp->coalesce_count_rx = XAXIDMA_DFT_RX_THRESHOLD;
- 	lp->coalesce_count_tx = XAXIDMA_DFT_TX_THRESHOLD;
+@@ -632,6 +632,8 @@ static int axienet_free_tx_chain(struct net_device *ndev, u32 first_bd,
+ 		if (nr_bds == -1 && !(status & XAXIDMA_BD_STS_COMPLETE_MASK))
+ 			break;
  
-+	/* Reset core now that clocks are enabled, prior to accessing MDIO */
-+	ret = __axienet_device_reset(lp);
-+	if (ret)
-+		goto cleanup_clk;
++		/* Ensure we see complete descriptor update */
++		dma_rmb();
+ 		phys = desc_get_phys_addr(lp, cur_p);
+ 		dma_unmap_single(ndev->dev.parent, phys,
+ 				 (cur_p->cntrl & XAXIDMA_BD_CTRL_LENGTH_MASK),
+@@ -645,8 +647,10 @@ static int axienet_free_tx_chain(struct net_device *ndev, u32 first_bd,
+ 		cur_p->app1 = 0;
+ 		cur_p->app2 = 0;
+ 		cur_p->app4 = 0;
+-		cur_p->status = 0;
+ 		cur_p->skb = NULL;
++		/* ensure our transmit path and device don't prematurely see status cleared */
++		wmb();
++		cur_p->status = 0;
+ 
+ 		if (sizep)
+ 			*sizep += status & XAXIDMA_BD_STS_ACTUAL_LEN_MASK;
+@@ -704,6 +708,9 @@ static inline int axienet_check_tx_bd_space(struct axienet_local *lp,
+ 					    int num_frag)
+ {
+ 	struct axidma_bd *cur_p;
 +
- 	lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
- 	if (lp->phy_node) {
- 		ret = axienet_mdio_setup(lp);
++	/* Ensure we see all descriptor updates from device or TX IRQ path */
++	rmb();
+ 	cur_p = &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
+ 	if (cur_p->status & XAXIDMA_BD_STS_ALL_MASK)
+ 		return NETDEV_TX_BUSY;
+@@ -843,6 +850,8 @@ static void axienet_recv(struct net_device *ndev)
+ 
+ 		tail_p = lp->rx_bd_p + sizeof(*lp->rx_bd_v) * lp->rx_bd_ci;
+ 
++		/* Ensure we see complete descriptor update */
++		dma_rmb();
+ 		phys = desc_get_phys_addr(lp, cur_p);
+ 		dma_unmap_single(ndev->dev.parent, phys, lp->max_frm_size,
+ 				 DMA_FROM_DEVICE);
 -- 
 2.31.1
 
