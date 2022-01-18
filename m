@@ -2,67 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38FFC49317B
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 00:55:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0B8D49317D
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 00:57:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346669AbiARXyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 18:54:44 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41670 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238268AbiARXyo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 18:54:44 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        id S1349925AbiARX5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 18:57:09 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:54558 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238268AbiARX5J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 18:57:09 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 130AC1F37E;
+        Tue, 18 Jan 2022 23:57:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1642550228; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=fXyaxqjk/O3a+n31XUfy3MW22cqlrnm4Dsoc2Ap2ArY=;
+        b=UPa5RLSAMDMZu4iA3mEP3NskgnWM8TEZ5J+d067uPY6V5fFvQl1bO5430hd9WPGa82dnGQ
+        lFYdRrEOduSy+VcJ+m9uTbmSx2MucTs02XokfltYS7czD8YRaHRvHUrUGV7EHOLjVt//+d
+        1gYUzuCQWraVFeFyC3fzx0Ook8XrDpc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1642550228;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=fXyaxqjk/O3a+n31XUfy3MW22cqlrnm4Dsoc2Ap2ArY=;
+        b=/+1dx+sH72sejQSaTvB+4jBr7YH1adv4nrECFRRniTvymxAcaaeqKppbhO/7kD7Y9HWhW3
+        yQTJfQbzfzz5T0AA==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F14C5B81859
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 23:54:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85AC3C340E0;
-        Tue, 18 Jan 2022 23:54:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642550081;
-        bh=zfL3nb3Ett+dOrnFsJZ4YJk63pWkOCTfN1fozbhmoBI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NrmB7t5HIS0UzE6aC8RNW7fOiaNZKDvPvKEh73H3jSfmJLcIX77rp8Cbb9hejJLs8
-         /eMczSPv4Sd1R/D1+DFE6yP2ZbMP3vEynpMv4tfZLgIKA3xOrq13VzZEFIbqUelFuF
-         iNzCKMjkWkvAzLVRfNdjQ8fsNsvhpizHfm5O/Yxe+OUhua+UNfoyGfYUA4dkOF7Hnt
-         mmHcStCaduSn+HnDt6y7tEK0GYUQ6p5ymTkKRxlya01zV0jvBh98aJo/qFhp/hRdpH
-         AgRS+7FdItsdg5LSDl7/+dwKIB5Onynqmmw1RT7EhXfmUCILAocV+vCEx5SkdQVgFD
-         qs5KQdvTV85pA==
-Date:   Tue, 18 Jan 2022 15:54:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, michel@fb.com,
-        dcavalca@fb.com
-Subject: Re: ethtool 5.16 release / ethtool -m bug fix
-Message-ID: <20220118155439.6ef83f2a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220118231423.aa66a42vso3hvobp@lion.mk-sys.cz>
-References: <20220118145159.631fd6ed@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <20220118231423.aa66a42vso3hvobp@lion.mk-sys.cz>
+        by relay2.suse.de (Postfix) with ESMTPS id 03F10A3B83;
+        Tue, 18 Jan 2022 23:57:08 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id E06BD6053D; Wed, 19 Jan 2022 00:57:07 +0100 (CET)
+Date:   Wed, 19 Jan 2022 00:57:07 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>,
+        michel@fb.com, dcavalca@fb.com
+Subject: ethtool 5.16 released
+Message-ID: <20220118235707.mf2rrgijcq4kjsso@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ffvkqp3xt5g7cmcy"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Jan 2022 00:14:23 +0100 Michal Kubecek wrote:
-> On Tue, Jan 18, 2022 at 02:51:59PM -0800, Jakub Kicinski wrote:
-> > Hi Michal!
-> > 
-> > Sorry to hasten but I'm wondering if there is a plan to cut the 5.16
-> > ethtool release? Looks like there is a problem in SFP EEPROM parsing
-> > code, at least with QSFP28s, user space always requests page 3 now.
-> > This ends in an -EINVAL (at least for drivers not supporting the paged
-> > mode).
-> > 
-> > By the looks of it - Ido fixed this in 6e2b32a0d0ea ("sff-8636: Request
-> > specific pages for parsing in netlink path") but it may be too much code 
-> > to backport so I'm thinking it's easiest for distros to move to v5.16.  
-> 
-> Accidentally, I'm working on it right now. I need to run few more tests,
-> should be done in 20-30 minutes (if there are no complications).
 
-Perfect! That's lucky or unlucky depending on how you look at it :)
+--ffvkqp3xt5g7cmcy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I see the tag already, thanks!
+Hello,
+
+ethtool 5.16 has been released.
+
+Home page: https://www.kernel.org/pub/software/network/ethtool/
+Download link:
+https://www.kernel.org/pub/software/network/ethtool/ethtool-5.16.tar.xz
+
+Release notes:
+
+	* Feature: use memory maps for module EEPROM parsing (-m)
+	* Feature: show CMIS diagnostic information (-m)
+	* Fix: fix dumping advertised FEC modes (--show-fec)
+	* Fix: ignore cable test notifications from other devices (--cable-test)
+	* Fix: do not show duplicate options in help text (--help)
+
+Michal
+
+--ffvkqp3xt5g7cmcy
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmHnU80ACgkQ538sG/LR
+dpWdrQgAryUX79AXSFW2+EyXdlDocui+wLe7LJOIbd0RCyg/RF4R8TQBoyTTnIPW
+NWq9E6feZDDlNNxXPJ7nmaW9AgPQXLWAFA111RRXvEtdzSHz/EMaI47XINeNII1k
+QqvR9mS5aRdWjHrGAo32EpWFwPYB/yCY61d5b2H53JrL97dbL8BX85PXN9vdsydL
+b/6IrVgb8oQHXerRTD5zS5XTPfGFQxmf/8lQqtHxb+P2NjxYv0D0NfMnSkCmcEVc
+cO7WZumKJ16sKGooo+IICTB4HKH+BNzDufvfsowXv6cT9aaifINKqk7RsSB+RhWQ
+kmXOl/2cjrT0UWdamTJAAnA3hjNbjQ==
+=9bxf
+-----END PGP SIGNATURE-----
+
+--ffvkqp3xt5g7cmcy--
