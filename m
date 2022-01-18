@@ -2,41 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC1BC49141F
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:20:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B907C491425
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:20:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244386AbiARCUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:20:08 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34802 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244343AbiARCT7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:19:59 -0500
+        id S244600AbiARCUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:20:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244483AbiARCUG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:20:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 449F1C06174E;
+        Mon, 17 Jan 2022 18:20:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F18DB811FF;
-        Tue, 18 Jan 2022 02:19:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A8E8C36AE3;
-        Tue, 18 Jan 2022 02:19:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC825B81233;
+        Tue, 18 Jan 2022 02:20:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C6CFC36AE3;
+        Tue, 18 Jan 2022 02:19:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472397;
-        bh=xhoC9JEsQkh2x4CVlOItxInWCYdd7RSZiQ/yq62fugw=;
+        s=k20201202; t=1642472400;
+        bh=RCAXm/IjT3B6yE8K0IDp6JIGWscVB0c2c/ZLJ90b314=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OV6Gj9A9LcbnoRB8JnFSXZKYD24Dw/lSjKfiZwxoL3gHSg5CFJA26c5vj6uUq1Os4
-         /OZNzdh1ygTs1lKv6i7LO0ia752HFQNLTMlYrFrXDOnR++cI2CmNqdP1fZKLkGXUgI
-         SE04RRfJUQPubjBxnsRMvDunvcAHrSrx+/KSl30Ukrhb2afQnBxRf3G5CDKO2QvVqS
-         oVNS5WAcggVBdumqK+eT1FD35nN1ytHcpK3M5xa4zPed9LMx8xLgtDlWnBS939FkDw
-         xGRlKs/3QEesW3WyVdx8x4q2eA5kno3c2SfE2cBNpRW8EaHyBgn3Dkft0gTiH/iBlh
-         OWpyDqrzWgLqg==
+        b=Dw1CEwFR2ddLfnn+SpKOCWEaGUgHO65Wr9fQgpsXZ2ek9NQfVytQpwROpffnzi+BD
+         RVaS84tXwNjCaDqrxfHiI2YkmklDCy9kb97/FktUjYcq5ZQqqvfyyRIts3f6cO2N6J
+         zGwEfz00jI17jqTeh5DxEb680gxMbiqK0A8uuiumKhOwmi6ZjMVX9qA2ToMlGo2u2P
+         RYpogKJR7UTFKEzo/3XlVwS++t5fLyfyBu4FkkgpNpRtZXg66IdCGbs+OGTQrMlHhp
+         Hw2rWi2tR0aW51Tv1rrz4F3Yo7ymd6PB2YDooTSTBItvV8KpiHly6GrJ26ozL4j8/2
+         tNkrMw21QGIPw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Andrii Nakryiko <andrii@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
-        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 010/217] libbpf: Validate that .BTF and .BTF.ext sections contain data
-Date:   Mon, 17 Jan 2022 21:16:13 -0500
-Message-Id: <20220118021940.1942199-10-sashal@kernel.org>
+        Hengqi Chen <hengqi.chen@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        daniel@iogearbox.net, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 012/217] selftests/bpf: Fix memory leaks in btf_type_c_dump() helper
+Date:   Mon, 17 Jan 2022 21:16:15 -0500
+Message-Id: <20220118021940.1942199-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -50,39 +55,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit 62554d52e71797eefa3fc15b54008038837bb2d4 ]
+[ Upstream commit 8ba285874913da21ca39a46376e9cc5ce0f45f94 ]
 
-.BTF and .BTF.ext ELF sections should have SHT_PROGBITS type and contain
-data. If they are not, ELF is invalid or corrupted, so bail out.
-Otherwise this can lead to data->d_buf being NULL and SIGSEGV later on.
-Reported by oss-fuzz project.
+Free up memory and resources used by temporary allocated memstream and
+btf_dump instance.
 
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20211103173213.1376990-4-andrii@kernel.org
+Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
+Link: https://lore.kernel.org/bpf/20211107165521.9240-4-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ tools/testing/selftests/bpf/btf_helpers.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 18651e11b9ba3..7d27152dfb3a6 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3270,8 +3270,12 @@ static int bpf_object__elf_collect(struct bpf_object *obj)
- 		} else if (strcmp(name, MAPS_ELF_SEC) == 0) {
- 			obj->efile.btf_maps_shndx = idx;
- 		} else if (strcmp(name, BTF_ELF_SEC) == 0) {
-+			if (sh->sh_type != SHT_PROGBITS)
-+				return -LIBBPF_ERRNO__FORMAT;
- 			btf_data = data;
- 		} else if (strcmp(name, BTF_EXT_ELF_SEC) == 0) {
-+			if (sh->sh_type != SHT_PROGBITS)
-+				return -LIBBPF_ERRNO__FORMAT;
- 			btf_ext_data = data;
- 		} else if (sh->sh_type == SHT_SYMTAB) {
- 			/* already processed during the first pass above */
+diff --git a/tools/testing/selftests/bpf/btf_helpers.c b/tools/testing/selftests/bpf/btf_helpers.c
+index b5b6b013a245e..3d1a748d09d81 100644
+--- a/tools/testing/selftests/bpf/btf_helpers.c
++++ b/tools/testing/selftests/bpf/btf_helpers.c
+@@ -251,18 +251,23 @@ const char *btf_type_c_dump(const struct btf *btf)
+ 	d = btf_dump__new(btf, NULL, &opts, btf_dump_printf);
+ 	if (libbpf_get_error(d)) {
+ 		fprintf(stderr, "Failed to create btf_dump instance: %ld\n", libbpf_get_error(d));
+-		return NULL;
++		goto err_out;
+ 	}
+ 
+ 	for (i = 1; i < btf__type_cnt(btf); i++) {
+ 		err = btf_dump__dump_type(d, i);
+ 		if (err) {
+ 			fprintf(stderr, "Failed to dump type [%d]: %d\n", i, err);
+-			return NULL;
++			goto err_out;
+ 		}
+ 	}
+ 
++	btf_dump__free(d);
+ 	fflush(buf_file);
+ 	fclose(buf_file);
+ 	return buf;
++err_out:
++	btf_dump__free(d);
++	fclose(buf_file);
++	return NULL;
+ }
 -- 
 2.34.1
 
