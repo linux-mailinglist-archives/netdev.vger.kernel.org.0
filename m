@@ -2,78 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FA85492C18
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 18:15:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E02B492C2D
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 18:20:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347118AbiARRP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 12:15:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
+        id S243733AbiARRUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 12:20:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347121AbiARRPz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 12:15:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F35C061574;
-        Tue, 18 Jan 2022 09:15:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9C57B8170A;
-        Tue, 18 Jan 2022 17:15:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59AABC340E0;
-        Tue, 18 Jan 2022 17:15:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642526152;
-        bh=JN6V4ugw7NK4GTjm0AAcpeChxTI+dmoqh1YbGTFrRZA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=iCL6YV2aonl9dnD61DfDf/6Bn736K8gKspoHwblgh/cJi3eca8uVN0ig4IUod5XAY
-         s7wejLwp8ChN7rpUQuHvsKtHGJzQZ+luWWEMdeAsAKHSg8yj2sWv06VNWENP8YjwsZ
-         xpAO8vym+6oe5E8rDxkfMm+Q/KmwGPU9pIMTXbu37tcyvKXUie3BYKjacxpyohWglH
-         5atjL2t2yt1hyNqxIT80dtxBcdXskq84o7doWvXS2IAf8rf0EMxFln3O68YyIEj6c1
-         8pIBr5ku5VW70Mr1SKXqvFIx4j/vLcMPtLqDcCq4J8EKFFgvMFwyNDji3aWsYhJNSk
-         RhlXQOVmoO7/A==
-Date:   Tue, 18 Jan 2022 09:15:51 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     cgel.zte@gmail.com, Minghao Chi <chi.minghao@zte.com.cn>
-Cc:     Richard Cochran <richardcochran@gmail.com>, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] drivers/net/phy/dp83640: remove unneeded val variable
-Message-ID: <20220118091551.7aa44124@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220118151904.GA31192@hoboy.vegasvil.org>
-References: <20220118075438.925768-1-chi.minghao@zte.com.cn>
-        <20220118151904.GA31192@hoboy.vegasvil.org>
+        with ESMTP id S243729AbiARRUS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 12:20:18 -0500
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0663C061574
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 09:20:17 -0800 (PST)
+Received: by mail-ot1-x336.google.com with SMTP id a12-20020a0568301dcc00b005919e149b4cso25141416otj.8
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 09:20:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q58G43Dd6LyCCT5zsV5YGlgMttIjdvQX+Rs5GRII7ec=;
+        b=1qYFd+Sq/4+fBx82KH33Kei7sR1IXIJNUUCGrq2Jrn9aP1e0lCaVPhedJZzlZNcihN
+         doKVyYbveHxKhXzzUeQXGNv8Qmm6nE9LbGAB0X2t9ToX3V2kKBl0YdXGEIvOr1vevG8z
+         zBTrU96a+TXH+M0hOwbGRH5hz5DhtGMQwLSVOd8GdOefWNEklhfeBIDSWNgzv4jo6QaC
+         SMBa7AMh4MS2WBWTZQ76acLyCEqZibR/yJpE/mz0Ma4brEpVKKkrPEt3vAt3/g6UYAiW
+         11me60Gmo5481OPhWq1K9WgiaeHGz2DNVjRY1GIph0nUQ0rQ9sgIPL0cfANp5/uZKj1m
+         UBDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q58G43Dd6LyCCT5zsV5YGlgMttIjdvQX+Rs5GRII7ec=;
+        b=iDE+ExFdRN8lIs2U0aL+2FSqQh0r3OUQglrSQMoHy2b84DT09yRMNyMMUPeZSZF7xE
+         Sj9dzbxq/zq5dmdzVKZocwCrbZcURhv8QEOTh+Z4tmT1xttAZj2KF6Fj0ybJ1yoGck9f
+         FujfEw28AKLWRztJ5YwgUWSIzpE/kLyrpr9GsF1lbIuKF5vVb5pv8cCokMelbd9NrUfb
+         Dj49sYFsB7zrt4/ETvCydZJL4BrBTplQiDqBy64fHCZhBcH8rpvQVOkxfgveV+/2bxGo
+         uMHb1VsNIwOD70bStIaArVFkqZ+NJGpkPydL16hEpj7TVU8ZbrcxPhFaKe8HxY+6nBxK
+         /Sgg==
+X-Gm-Message-State: AOAM533qez02qWk8TzDynbtRsdMU4ktiOvbAkIYfK2SN/2GIN+2mvdOH
+        jrER+zVQ0Tv2vLqLRHDYjUpm0C+UtNtetJAaZdM=
+X-Google-Smtp-Source: ABdhPJwz1or9s05ZkWIXq5QJ+DVbUYTKpcmhXwThJgiR6Cu0dmYILKbxyh5GSJl0utYDpp9tM6rukA==
+X-Received: by 2002:a05:6830:1f56:: with SMTP id u22mr13667781oth.138.1642526417122;
+        Tue, 18 Jan 2022 09:20:17 -0800 (PST)
+Received: from localhost.localdomain ([191.34.69.98])
+        by smtp.gmail.com with ESMTPSA id t15sm7051833otc.17.2022.01.18.09.20.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Jan 2022 09:20:16 -0800 (PST)
+From:   Victor Nogueira <victor@mojatatu.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, kuba@kernel.org, kernel@mojatatu.com,
+        Victor Nogueira <victor@mojatatu.com>
+Subject: [PATCH net-next] net: sched: Clarify error message when qdisc kind is unknown
+Date:   Tue, 18 Jan 2022 14:19:09 -0300
+Message-Id: <20220118171909.4375-1-victor@mojatatu.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Jan 2022 07:19:04 -0800 Richard Cochran wrote:
-> On Tue, Jan 18, 2022 at 07:54:38AM +0000, cgel.zte@gmail.com wrote:
-> > From: Minghao Chi <chi.minghao@zte.com.cn>
-> > 
-> > Return value from phy_read() directly instead
-> > of taking this in another redundant variable.  
-> 
-> NAK this is purely cosmetic and not clearly better WRT CodingStyle.
->  
-> > Reported-by: Zeal Robot <zealci@zte.com.cn>  
-> 
-> Please make your robot less zealous or filter its results before
-> posting.
+When adding a tc rule with a qdisc kind that is not supported or not
+compiled into the kernel, the kernel emits the following error: "Error:
+Specified qdisc not found.". Found via tdc testing when ETS qdisc was not
+compiled in and it was not obvious right away what the message meant
+without looking at the kernel code.
 
-Plus what does it mean that the bot has signed this off?
+Change the error message to be more explicit and say the qdisc kind is
+unknown.
 
-> > Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
+Signed-off-by: Victor Nogueira <victor@mojatatu.com>
+---
+ net/sched/sch_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> This is the second time I told you.  It isn't wise to ignore feedback,
-> and it is also rude.
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index c9c6f49f9c28..eedb2df7cc6e 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1204,7 +1204,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+ 
+ 	err = -ENOENT;
+ 	if (!ops) {
+-		NL_SET_ERR_MSG(extack, "Specified qdisc not found");
++		NL_SET_ERR_MSG(extack, "Specified qdisc kind is unknown");
+ 		goto err_out;
+ 	}
+ 
+-- 
+2.34.1
 
-Same, you don't reply to emails and keep making the same mistakes.
-
-I asked you to realign the continuation lines in:
-https://lore.kernel.org/all/20220112083942.391fd0d7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net/
-And without replying you just posted:
-https://lore.kernel.org/all/20220118075159.925542-1-chi.minghao@zte.com.cn/
