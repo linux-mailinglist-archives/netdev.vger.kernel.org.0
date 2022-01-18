@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DCA84924E6
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:32:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 721654924EF
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:32:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241007AbiARLcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 06:32:13 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:35896 "EHLO
+        id S240909AbiARLcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 06:32:24 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:35926 "EHLO
         bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240722AbiARLbp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:31:45 -0500
+        with ESMTP id S238183AbiARLby (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:31:54 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: usama.anjum)
-        with ESMTPSA id 00AAA1F43EC4
+        with ESMTPSA id 311A41F43EC7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642505503;
-        bh=c6ARDNQMLSW4/+Jdr9UKAZU1s8LQbK0RFS42X6aonwI=;
+        s=mail; t=1642505512;
+        bh=j2O8LnNgJ6OKkizZGg+d3m4SsHwhUYOUVwABCSHGGkE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DYwPaVjIAAS+Kv60H7XU5+U0eu8tiWzYWlVpEUgumfIcWlmJ3B7H++AO8uBO4fZxZ
-         KlK9PEzqMm5QuGShVub8sw/L14AS/Vz3QS+2U4+W41vpq1oanHbZLnzdEeYuVhezej
-         CG5u7SKJWfx3bCYvaeT9vE3YgFt0QT/tznC9j0n5bXwzG5ifcNpd6eGlO30oKNApsf
-         DNAYzq9s49328zD0hCbUmthRcYWWKmWJNmLpMnZ0Q2/8E9xL2q6tTXBNULux8nB8+9
-         4SCkV4mR+h1LXha+GwEfOYbmewWnYodc1rh+BDH3PwCzbfVrMDtUBbU0mvBiKubV4H
-         d3xgU00DpLG8g==
+        b=BSrrDQ9XgSxkBN+e/R1kQvEzYgYdnpmph/vwRkROcAFvLEyL/vETunfoI0pRI4KXa
+         sytamsT3T59HnEdC2rMwvYUGxX6p3MGqGHZwlbrytDoCHKPr/re21UNqfCMG/nKsIN
+         yj3HA124c04FoItqlpV7KiBGdxs7MpJHMPBeFurHnl8nSHLSTg8vlGYImuIQ/pbY+t
+         GC9cSW1RAhQ5TEw92mRXm//8qg2EoAvjmjeeaedQ+dOBPTi+5SFMPCBAeTjb5OonHr
+         LkklzKgKg8OvQB7skIJldlBXd/IMFtVlBaiGs08FTwOeqT7ZqndRxHTQL8nI8PuNhn
+         xc35KbB8FpqQg==
 From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
 To:     Shuah Khan <shuah@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -49,9 +49,9 @@ To:     Shuah Khan <shuah@kernel.org>,
         linux-mm@kvack.org (open list:MEMORY MANAGEMENT)
 Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
         kernel@collabora.com
-Subject: [PATCH 07/10] selftests: net: Add the uapi headers include variable
-Date:   Tue, 18 Jan 2022 16:29:06 +0500
-Message-Id: <20220118112909.1885705-8-usama.anjum@collabora.com>
+Subject: [PATCH 08/10] selftests: mptcp: Add the uapi headers include variable
+Date:   Tue, 18 Jan 2022 16:29:07 +0500
+Message-Id: <20220118112909.1885705-9-usama.anjum@collabora.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220118112909.1885705-1-usama.anjum@collabora.com>
 References: <20220118112909.1885705-1-usama.anjum@collabora.com>
@@ -67,22 +67,24 @@ KHDR_INCLUDES to correctly reach the headers.
 
 Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 ---
- tools/testing/selftests/net/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/net/mptcp/Makefile | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 9897fa9ab953..22759591fc79 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -2,7 +2,7 @@
- # Makefile for net selftests
+diff --git a/tools/testing/selftests/net/mptcp/Makefile b/tools/testing/selftests/net/mptcp/Makefile
+index 0356c4501c99..fed6866d3b73 100644
+--- a/tools/testing/selftests/net/mptcp/Makefile
++++ b/tools/testing/selftests/net/mptcp/Makefile
+@@ -1,9 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0
  
- CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g
--CFLAGS += -I../../../../usr/include/
-+CFLAGS += $(KHDR_INCLUDES)
+-top_srcdir = ../../../../..
+ KSFT_KHDR_INSTALL := 1
  
- TEST_PROGS := run_netsocktests run_afpackettests test_bpf.sh netdevice.sh \
- 	      rtnetlink.sh xfrm_policy.sh test_blackhole_dev.sh
+-CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g  -I$(top_srcdir)/usr/include
++CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g $(KHDR_INCLUDES)
+ 
+ TEST_PROGS := mptcp_connect.sh pm_netlink.sh mptcp_join.sh diag.sh \
+ 	      simult_flows.sh mptcp_sockopt.sh
 -- 
 2.30.2
 
