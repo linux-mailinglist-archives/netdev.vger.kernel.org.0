@@ -2,45 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22852491CA9
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 04:18:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E000491CAC
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 04:18:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345682AbiARDRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 22:17:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39802 "EHLO
+        id S1348793AbiARDRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 22:17:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348884AbiARDIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 22:08:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1BFC033278;
-        Mon, 17 Jan 2022 18:49:16 -0800 (PST)
+        with ESMTP id S1351866AbiARDIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 22:08:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114D0C0611DA;
+        Mon, 17 Jan 2022 18:49:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FCE6B8123F;
-        Tue, 18 Jan 2022 02:49:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B33BC36AE3;
-        Tue, 18 Jan 2022 02:49:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61F22612E8;
+        Tue, 18 Jan 2022 02:49:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D909C36AE3;
+        Tue, 18 Jan 2022 02:49:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474154;
-        bh=Rl+seFCLIEA6ePAQhBWREbLa9pE10jUp93g1f8T3wvk=;
+        s=k20201202; t=1642474166;
+        bh=4k/SKNSsGbjCuaZEpGz13QvUt/XSg1eJ9l2IVsHUGmE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JeDz6yH3p8OTDAnw3bEvCErzbza99TMXnrZNU6ucHDvAsysqHoO3J1OFhfpLjmsU9
-         F2mOm1PoO4BUpwShOcniXoiDScWpctvXgnzQhwd00c8rXdQ83O75eX2a8H94P0zair
-         Jyc6dA8iKsokAQkwTTDbOiyEdtlFvPDdmpHjbPDUArMUvz8UKB8zRxKu+ry8QSdno1
-         awqQ6HOCahwr7hSScHQOXZmtBovW0pGaHDE490oERz8XdV1C9faNQV0XzP/MUMYilA
-         z63QjcU3+UXufVuxPNN6a2aLrWbp9HpKlYF1iRSYE63r/nqQG65dxZcfOMfSARvLPn
-         GX9MO8cwVzAVA==
+        b=N25sxPXL8Q33FtuHijTobwkNJLobDzYrnXXp1pqttZEwEzeANl0935O4pcOm+qy91
+         S2Jy7i52OYdAad48TyQIxLK+90HrZVwaRhGS8rh/fjY8mFlC8cwdCWSDaMjcRYg29U
+         p9/zUe5Y9tamS3iVL3Rve8Dq9MXX2PnNIkA18bAdcI3SBBlOx28AEvo8hOdrOS3KiT
+         C7ajgiUSdhOmjZ6BXfiuFS3ysHxhf4AcYy/Fqiu167l3dxE3qaRpn43xK74mziCuVW
+         cNeHTqrZj63yOJfNGPlJJT0nBF5bWL4aNY2Mv+725AYrgD+4nixWziu/DsDYx8w1Yi
+         DXaseKpo2/dFQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, pontus.fuchs@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 03/56] ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
-Date:   Mon, 17 Jan 2022 21:48:15 -0500
-Message-Id: <20220118024908.1953673-3-sashal@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 06/56] amd: a2065/ariadne: use eth_hw_addr_set()
+Date:   Mon, 17 Jan 2022 21:48:18 -0500
+Message-Id: <20220118024908.1953673-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
 References: <20220118024908.1953673-1-sashal@kernel.org>
@@ -52,61 +50,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit ae80b6033834342601e99f74f6a62ff5092b1cee ]
+[ Upstream commit 285e4c664d6461b175b4613fc77126b5006a1912 ]
 
-Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
-when ar->tx_cmd->odata is NULL. The patch adds a null check to
-prevent such case.
+dev_addr is initialized byte by byte from series.
 
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
- ar5523_cmd+0x46a/0x581 [ar5523]
- ar5523_probe.cold+0x1b7/0x18da [ar5523]
- ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
- ? __pm_runtime_set_status+0x54a/0x8f0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? pm_runtime_barrier+0x220/0x220
- ? __pm_runtime_resume+0xb1/0xf0
- usb_probe_interface+0x25b/0x710
- really_probe+0x209/0x5d0
- driver_probe_device+0xc6/0x1b0
- device_driver_attach+0xe2/0x120
+Fixes build on x86 (32bit).
 
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
-
-After fixing the code (fourth byte in usb packet) to WDCMSG_TARGET_START,
-I got the null-ptr-deref bug. I believe the bug is triggerable whenever
-cmd->odata is NULL. After patching, I tested with the same input and no
-longer see the KASAN report.
-
-This was NOT tested on a real device.
-
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ar5523/ar5523.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/amd/a2065.c   | 18 ++++++++++--------
+ drivers/net/ethernet/amd/ariadne.c | 20 +++++++++++---------
+ 2 files changed, 21 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index e1a1d27427cc9..bf43244f051c5 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -153,6 +153,10 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
- 			ar5523_err(ar, "Invalid reply to WDCMSG_TARGET_START");
- 			return;
- 		}
-+		if (!cmd->odata) {
-+			ar5523_err(ar, "Unexpected WDCMSG_TARGET_START reply");
-+			return;
-+		}
- 		memcpy(cmd->odata, hdr + 1, sizeof(u32));
- 		cmd->olen = sizeof(u32);
- 		cmd->res = 0;
+diff --git a/drivers/net/ethernet/amd/a2065.c b/drivers/net/ethernet/amd/a2065.c
+index e22f976a0d185..9b224f0d5f435 100644
+--- a/drivers/net/ethernet/amd/a2065.c
++++ b/drivers/net/ethernet/amd/a2065.c
+@@ -677,6 +677,7 @@ static int a2065_init_one(struct zorro_dev *z,
+ 	unsigned long base_addr = board + A2065_LANCE;
+ 	unsigned long mem_start = board + A2065_RAM;
+ 	struct resource *r1, *r2;
++	u8 addr[ETH_ALEN];
+ 	u32 serial;
+ 	int err;
+ 
+@@ -703,17 +704,18 @@ static int a2065_init_one(struct zorro_dev *z,
+ 	r2->name = dev->name;
+ 
+ 	serial = be32_to_cpu(z->rom.er_SerialNumber);
+-	dev->dev_addr[0] = 0x00;
++	addr[0] = 0x00;
+ 	if (z->id != ZORRO_PROD_AMERISTAR_A2065) {	/* Commodore */
+-		dev->dev_addr[1] = 0x80;
+-		dev->dev_addr[2] = 0x10;
++		addr[1] = 0x80;
++		addr[2] = 0x10;
+ 	} else {					/* Ameristar */
+-		dev->dev_addr[1] = 0x00;
+-		dev->dev_addr[2] = 0x9f;
++		addr[1] = 0x00;
++		addr[2] = 0x9f;
+ 	}
+-	dev->dev_addr[3] = (serial >> 16) & 0xff;
+-	dev->dev_addr[4] = (serial >> 8) & 0xff;
+-	dev->dev_addr[5] = serial & 0xff;
++	addr[3] = (serial >> 16) & 0xff;
++	addr[4] = (serial >> 8) & 0xff;
++	addr[5] = serial & 0xff;
++	eth_hw_addr_set(dev, addr);
+ 	dev->base_addr = (unsigned long)ZTWO_VADDR(base_addr);
+ 	dev->mem_start = (unsigned long)ZTWO_VADDR(mem_start);
+ 	dev->mem_end = dev->mem_start + A2065_RAM_SIZE;
+diff --git a/drivers/net/ethernet/amd/ariadne.c b/drivers/net/ethernet/amd/ariadne.c
+index 4b6a5cb85dd27..b2f740249b01d 100644
+--- a/drivers/net/ethernet/amd/ariadne.c
++++ b/drivers/net/ethernet/amd/ariadne.c
+@@ -441,11 +441,11 @@ static int ariadne_open(struct net_device *dev)
+ 
+ 	/* Set the Ethernet Hardware Address */
+ 	lance->RAP = CSR12;		/* Physical Address Register, PADR[15:0] */
+-	lance->RDP = ((u_short *)&dev->dev_addr[0])[0];
++	lance->RDP = ((const u_short *)&dev->dev_addr[0])[0];
+ 	lance->RAP = CSR13;		/* Physical Address Register, PADR[31:16] */
+-	lance->RDP = ((u_short *)&dev->dev_addr[0])[1];
++	lance->RDP = ((const u_short *)&dev->dev_addr[0])[1];
+ 	lance->RAP = CSR14;		/* Physical Address Register, PADR[47:32] */
+-	lance->RDP = ((u_short *)&dev->dev_addr[0])[2];
++	lance->RDP = ((const u_short *)&dev->dev_addr[0])[2];
+ 
+ 	/* Set the Init Block Mode */
+ 	lance->RAP = CSR15;		/* Mode Register */
+@@ -717,6 +717,7 @@ static int ariadne_init_one(struct zorro_dev *z,
+ 	unsigned long mem_start = board + ARIADNE_RAM;
+ 	struct resource *r1, *r2;
+ 	struct net_device *dev;
++	u8 addr[ETH_ALEN];
+ 	u32 serial;
+ 	int err;
+ 
+@@ -740,12 +741,13 @@ static int ariadne_init_one(struct zorro_dev *z,
+ 	r2->name = dev->name;
+ 
+ 	serial = be32_to_cpu(z->rom.er_SerialNumber);
+-	dev->dev_addr[0] = 0x00;
+-	dev->dev_addr[1] = 0x60;
+-	dev->dev_addr[2] = 0x30;
+-	dev->dev_addr[3] = (serial >> 16) & 0xff;
+-	dev->dev_addr[4] = (serial >> 8) & 0xff;
+-	dev->dev_addr[5] = serial & 0xff;
++	addr[0] = 0x00;
++	addr[1] = 0x60;
++	addr[2] = 0x30;
++	addr[3] = (serial >> 16) & 0xff;
++	addr[4] = (serial >> 8) & 0xff;
++	addr[5] = serial & 0xff;
++	eth_hw_addr_set(dev, addr);
+ 	dev->base_addr = (unsigned long)ZTWO_VADDR(base_addr);
+ 	dev->mem_start = (unsigned long)ZTWO_VADDR(mem_start);
+ 	dev->mem_end = dev->mem_start + ARIADNE_RAM_SIZE;
 -- 
 2.34.1
 
