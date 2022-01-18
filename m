@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 301F64924D0
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:31:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 048B14924D3
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:31:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239965AbiARLbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 06:31:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43608 "EHLO
+        id S240689AbiARLbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 06:31:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240169AbiARLbI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:31:08 -0500
+        with ESMTP id S240170AbiARLbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:31:17 -0500
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFEBC06173E;
-        Tue, 18 Jan 2022 03:31:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72EE3C06173E;
+        Tue, 18 Jan 2022 03:31:17 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: usama.anjum)
-        with ESMTPSA id 1CCBC1F43EA4
+        with ESMTPSA id E89C61F43EAC
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642505467;
-        bh=FL5woJicBxOM7EavfZYCVa1miYOdVihihV/Qs6cofek=;
+        s=mail; t=1642505476;
+        bh=quQqOgE+qpfCtHHrJtyaS3otvFZ8NW4tc4U/r/42qw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n0xKX4Vham5LQD/c8ClU/yBO1aOldvHQE5JKZOsXG09nJx5UgKM5qjXBKNxsMPFr8
-         YhzC0SOXspS1MLKYueeppaldTe3ugKtpXzLpaxorkCr0mp+ki8oYYzQ9xLcdf0JoI0
-         caYNp4KihbxmlIoufOwYzRfQw8/JumGCgRixD5dXFOz9AJQ94JaQTUx3QH2GtrqRTE
-         Aexm0+zrNSktNBMszHRKO3muSZdJRTF0ikaDnvPaHFswDxkytRhCUew90kYxKoXEam
-         I5W/gr/6JXZMdY0cD+ajO2yurpEjPGB5Vwtq7qphiwSuX6BDDxNI4EXADHzagWY7r+
-         v027n9eOAKUog==
+        b=cfpbNJrycuQvPqZSVP14/FBD+H5Oeq9sTIqpJKcjivtiq5qAXkGgvOIaZkSiwbvC3
+         bTKk2fd5FlzjHRxfb3QKhqEMTJYhvlCzCzd1ec46dG3OP2xU3OmmeKJWvKuMr/QR12
+         LJSt2GHQMm/OIfftguSj9DAm7AGsiDq7B7fzqmyaY1Xnb6dpl9rvP5Tx0ZHWV64JBX
+         g5KcB0mFJn4gieDsWGa3CJC1rLjghrYyW8q/VSFBwvXJswK+2GgNiLynZJ6MYhC5m4
+         RX4gwuslnAjCwpcQoz18UZwJqIBeACn01DSidYQWk86MLtNJZlmDRr1dPV27Dg/VjG
+         Tud39RsoOXw8g==
 From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
 To:     Shuah Khan <shuah@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -52,9 +52,9 @@ To:     Shuah Khan <shuah@kernel.org>,
         linux-mm@kvack.org (open list:MEMORY MANAGEMENT)
 Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
         kernel@collabora.com
-Subject: [PATCH 03/10] selftests: Correct the headers install path
-Date:   Tue, 18 Jan 2022 16:29:02 +0500
-Message-Id: <20220118112909.1885705-4-usama.anjum@collabora.com>
+Subject: [PATCH 04/10] selftests: futex: Add the uapi headers include variable
+Date:   Tue, 18 Jan 2022 16:29:03 +0500
+Message-Id: <20220118112909.1885705-5-usama.anjum@collabora.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220118112909.1885705-1-usama.anjum@collabora.com>
 References: <20220118112909.1885705-1-usama.anjum@collabora.com>
@@ -64,30 +64,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-uapi headers should be installed at the top of the object tree,
-"<obj_tree>/usr/include". There is no need for kernel headers to
-be present at kselftest build directory, "<obj_tree>/kselftest/usr/
-include" as well. This duplication can be avoided by correctly
-specifying the INSTALL_HDR_PATH.
+Out of tree build of this test fails if relative path of the output
+directory is specified. KBUILD_OUTPUT also doesn't point to the correct
+directory when relative path is used. Thus out of tree builds fail.
+Remove the un-needed include paths and use KHDR_INCLUDES to correctly
+reach the headers.
 
 Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 ---
- tools/testing/selftests/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/futex/functional/Makefile | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index 21f983dfd047..80e5498eab92 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -167,7 +167,7 @@ khdr:
- ifeq (1,$(DEFAULT_INSTALL_HDR_PATH))
- 	$(MAKE) --no-builtin-rules ARCH=$(ARCH) -C $(top_srcdir) headers_install
- else
--	$(MAKE) --no-builtin-rules INSTALL_HDR_PATH=$$BUILD/usr \
-+	$(MAKE) --no-builtin-rules INSTALL_HDR_PATH=$(abs_objtree)/usr \
- 		ARCH=$(ARCH) -C $(top_srcdir) headers_install
- endif
+diff --git a/tools/testing/selftests/futex/functional/Makefile b/tools/testing/selftests/futex/functional/Makefile
+index 5cc38de9d8ea..7ff1e764407b 100644
+--- a/tools/testing/selftests/futex/functional/Makefile
++++ b/tools/testing/selftests/futex/functional/Makefile
+@@ -1,7 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+-INCLUDES := -I../include -I../../ -I../../../../../usr/include/ \
+-	-I$(KBUILD_OUTPUT)/kselftest/usr/include
+-CFLAGS := $(CFLAGS) -g -O2 -Wall -D_GNU_SOURCE -pthread $(INCLUDES)
++INCLUDES := -I../include -I../../
++CFLAGS := $(CFLAGS) -g -O2 -Wall -D_GNU_SOURCE -pthread $(INCLUDES) $(KHDR_INCLUDES)
+ LDLIBS := -lpthread -lrt
  
+ HEADERS := \
 -- 
 2.30.2
 
