@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52EBC4924D8
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:32:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DCA84924E6
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:32:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240153AbiARLbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 06:31:55 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:35870 "EHLO
+        id S241007AbiARLcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 06:32:13 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:35896 "EHLO
         bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240630AbiARLbg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:31:36 -0500
+        with ESMTP id S240722AbiARLbp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:31:45 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: usama.anjum)
-        with ESMTPSA id C6F5A1F43EC0
+        with ESMTPSA id 00AAA1F43EC4
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642505494;
-        bh=f/au3CsQPO/GIa/zBleGlWIysQfk59tmnzMqq6fix88=;
+        s=mail; t=1642505503;
+        bh=c6ARDNQMLSW4/+Jdr9UKAZU1s8LQbK0RFS42X6aonwI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EoT+wn7pIb/F+auwrxvGpdTzbp0SSH2JL8xkak1SS8HMmCuYsT+Am7cIkV5Msc4Q/
-         U+u+NcYne87dY5LS9UYjqmQyaUxhANeFXA/yPruEpAebNQK+vG2A0Kly+8HsA8R50b
-         BR606G/NT9v0oZ8Ox7bpmRMBgvHxLU6uO3Obgs8N+tgB5F0HkzR5aXujTAaZIlqLop
-         tawMy3Yb/ojfzAe21P0fmQda0wV59wgLQX68h0tPMGSlJ4oLh1HBJN7UFHMwW0snTb
-         tkRKBRzN2qwb/MjfmqbSDme+oUImqsFukIY6lIayF0/iSaNrzP0sZ3PFr4xsfY+HDQ
-         XQlLxY9KjF6gg==
+        b=DYwPaVjIAAS+Kv60H7XU5+U0eu8tiWzYWlVpEUgumfIcWlmJ3B7H++AO8uBO4fZxZ
+         KlK9PEzqMm5QuGShVub8sw/L14AS/Vz3QS+2U4+W41vpq1oanHbZLnzdEeYuVhezej
+         CG5u7SKJWfx3bCYvaeT9vE3YgFt0QT/tznC9j0n5bXwzG5ifcNpd6eGlO30oKNApsf
+         DNAYzq9s49328zD0hCbUmthRcYWWKmWJNmLpMnZ0Q2/8E9xL2q6tTXBNULux8nB8+9
+         4SCkV4mR+h1LXha+GwEfOYbmewWnYodc1rh+BDH3PwCzbfVrMDtUBbU0mvBiKubV4H
+         d3xgU00DpLG8g==
 From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
 To:     Shuah Khan <shuah@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -49,9 +49,9 @@ To:     Shuah Khan <shuah@kernel.org>,
         linux-mm@kvack.org (open list:MEMORY MANAGEMENT)
 Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
         kernel@collabora.com
-Subject: [PATCH 06/10] selftests: landlock: Add the uapi headers include variable
-Date:   Tue, 18 Jan 2022 16:29:05 +0500
-Message-Id: <20220118112909.1885705-7-usama.anjum@collabora.com>
+Subject: [PATCH 07/10] selftests: net: Add the uapi headers include variable
+Date:   Tue, 18 Jan 2022 16:29:06 +0500
+Message-Id: <20220118112909.1885705-8-usama.anjum@collabora.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220118112909.1885705-1-usama.anjum@collabora.com>
 References: <20220118112909.1885705-1-usama.anjum@collabora.com>
@@ -67,37 +67,22 @@ KHDR_INCLUDES to correctly reach the headers.
 
 Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 ---
- tools/testing/selftests/landlock/Makefile | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ tools/testing/selftests/net/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/landlock/Makefile b/tools/testing/selftests/landlock/Makefile
-index a99596ca9882..44c724b38a37 100644
---- a/tools/testing/selftests/landlock/Makefile
-+++ b/tools/testing/selftests/landlock/Makefile
-@@ -1,6 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 9897fa9ab953..22759591fc79 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -2,7 +2,7 @@
+ # Makefile for net selftests
  
--CFLAGS += -Wall -O2
-+CFLAGS += -Wall -O2 $(KHDR_INCLUDES)
+ CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g
+-CFLAGS += -I../../../../usr/include/
++CFLAGS += $(KHDR_INCLUDES)
  
- src_test := $(wildcard *_test.c)
- 
-@@ -12,13 +12,8 @@ KSFT_KHDR_INSTALL := 1
- OVERRIDE_TARGETS := 1
- include ../lib.mk
- 
--khdr_dir = $(top_srcdir)/usr/include
--
--$(khdr_dir)/linux/landlock.h: khdr
--	@:
--
- $(OUTPUT)/true: true.c
- 	$(LINK.c) $< $(LDLIBS) -o $@ -static
- 
--$(OUTPUT)/%_test: %_test.c $(khdr_dir)/linux/landlock.h ../kselftest_harness.h common.h
--	$(LINK.c) $< $(LDLIBS) -o $@ -lcap -I$(khdr_dir)
-+$(OUTPUT)/%_test: %_test.c ../kselftest_harness.h common.h
-+	$(LINK.c) $< $(LDLIBS) -o $@ -lcap
+ TEST_PROGS := run_netsocktests run_afpackettests test_bpf.sh netdevice.sh \
+ 	      rtnetlink.sh xfrm_policy.sh test_blackhole_dev.sh
 -- 
 2.30.2
 
