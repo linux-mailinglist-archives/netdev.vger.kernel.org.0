@@ -2,77 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2ABE492164
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 09:40:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 703E6492167
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 09:41:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344674AbiARIkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 03:40:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
+        id S235028AbiARIlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 03:41:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240048AbiARIkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 03:40:52 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F61C061574
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 00:40:52 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id p27so55958012lfa.1
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 00:40:52 -0800 (PST)
+        with ESMTP id S1344683AbiARIlJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 03:41:09 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7918C06161C
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 00:41:08 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id g12so1339165ybh.4
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 00:41:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=eFp60zM566fMUXfSuCkgCFAYaA/B6xtn0oTLQVf7dtY=;
-        b=GYa/Ng60uMnUXuIDsrjGTxhPGC6+q3PUPOg6wzsKhejSjAJgS+AppUgZauK/wSefFR
-         wuf3WAw2VJeHrpX1HXmc8Gg6tTnHC5RFk4HuIXSK7z8E93IWaznwicN5FCsXtWzg4jH3
-         AtpLVYb+Cj2kfAe+wuQ8VrjtL0DPJ0yWlm2Ayw6dYtpqJRjbBT8N0Yyu3Bp+2rQ1dytW
-         8XVlYTIia4l3MC+mkolW/+Jf7lWx2y8UKzwz5GJFmFndBK+OHCbBv9qigDtcdzESHyVt
-         SO02zWQ5iqyr2WNizeTmkvr0L7sA4e34abMqhKC4tKkHbHD9pDEzNa5w10tVc8tNqNY9
-         QHAA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RFkYsmyKXVxPgy1SNKAFnzRSO2aG6JX2VOeyMG/TA8Y=;
+        b=XP8NwWLgL+XCYb0wC9m2BK/1T8Shj1KIZKM0l+yLNIJg2YkgI5EPN62q5BVBLToJLc
+         Ulz0z+cLA1JJmL4x5lRXrMnuaq0cM9IzlaWPg+dEFWf5iSUWhNV0ErVnTCRfVKQWeMEn
+         B9d3O8nIy1fm6PiQpekozB/aizCJ1rhaXrsAnY2sb43xGFPY8RtRACrusxpLgpoGAV3O
+         Gs/Rg+/r85jjc086VJOoOJfY7TQlDC2yg2GWX6HY6+DR4a0teunNQylw+bgjIsYaxHNu
+         +e22FNU2/edLcaSxfpAmAcFpVXPyz4s1/dBZWmyxziytmV/Dvca9qTfUgJWt1x0rdlP1
+         2P7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=eFp60zM566fMUXfSuCkgCFAYaA/B6xtn0oTLQVf7dtY=;
-        b=musSPqQsIAawgzH5ggWtfmurfGWYBy69kp1iWlr7imQgG5p53QlM7jr5U9P/VFtQte
-         NygbJowPqEv8nBOkInG9w9JjEsyU5GaZlHif4tIBogbyYKjdLW9nF9O6C4we6bSqYs+6
-         WMMEEhGO73O++qgE724CU6NkRU13RBjaMukxYw9g6s5iPrmKoP8J04XHIJiC+UXrGu5+
-         1GMGABNWwJgzLLJaNZpIAoYR1kHjZuODK6Z1Ktu3PAHtqiSKU4zuB9UmwDwv0xoCWAgC
-         01FtUFPQkifdrMER6eO4P5OcxUyt61HbI+IGBWPH7dJ0i7Gt9a4WUHAYauqQFFZKHJFW
-         lC4A==
-X-Gm-Message-State: AOAM530tcpA4ZQgy1cqgJah6Cgte+B2ZhOa6+tVrDXAVYb/tvHvoa6wn
-        K42Y9+D9T8ZZj/pDC2J37wwEsDDJlerFpQ==
-X-Google-Smtp-Source: ABdhPJxH3hWdGIoDEmjUyMLh7W6a1jE2bVAw+f9XKolwCCvlMjdgnS9W7TYYx+CF3BL9/Bzm2BImhw==
-X-Received: by 2002:ac2:4d86:: with SMTP id g6mr21321927lfe.682.1642495250673;
-        Tue, 18 Jan 2022 00:40:50 -0800 (PST)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id i15sm1615158lfu.108.2022.01.18.00.40.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 00:40:50 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     madalin.bucur@nxp.com, robh+dt@kernel.org, mpe@ellerman.id.au,
-        benh@kernel.crashing.org, paulus@samba.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH net 1/4] net/fsl: xgmac_mdio: Add workaround for erratum
- A-009885
-In-Reply-To: <20220116211529.25604-2-tobias@waldekranz.com>
-References: <20220116211529.25604-1-tobias@waldekranz.com>
- <20220116211529.25604-2-tobias@waldekranz.com>
-Date:   Tue, 18 Jan 2022 09:40:48 +0100
-Message-ID: <877daxcu7j.fsf@waldekranz.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RFkYsmyKXVxPgy1SNKAFnzRSO2aG6JX2VOeyMG/TA8Y=;
+        b=UdLvMdGBpuW61FXiXjvQFwOu3xTWRXU8BRDhuyyoNjSrr9Jf/z4NRqBrvgPCB24Dz0
+         V5WjanriObchqkPS12oxDVvRJxTk+rlpl4E5AxMK42vcV1GkC/EbRBLseQuFa52gebIm
+         /0NjDUJcLTQ0MjyxiV7ze5zLMBe8twBd1LaLGHgQK4/jDp4A16L3qwZpVUKbff3OrH1I
+         74gQ4UDTO8IJgnQnYqLjP+9SdM5J5zTjf/rxlVaOKk3DinILglU/tV2EO4B7FYGE6duu
+         phhmx7SE6lFdZXkjinr0YiehyPO+kpGQq5UcO0ox0fb3mzauZnIEI1WBsO+BPymPWC3T
+         bfhw==
+X-Gm-Message-State: AOAM531YAbtrBE5j/pN+uiiMTZfEiJMPnTgplsb92L+PngsHY7a8o8zX
+        8TnmbWWr++Ng0RaiBaourLDkSBANf7FLyQ+dOazvVbh+drM=
+X-Google-Smtp-Source: ABdhPJyrH1erOmQucbY+yL2P4kCN0PoStEu3D/B7MVpijeSb2GvJKCtvD40QfpN496HFdMwF/xY2AIxMstEKexTjiyY=
+X-Received: by 2002:a25:b683:: with SMTP id s3mr30498921ybj.293.1642495267198;
+ Tue, 18 Jan 2022 00:41:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220118070029.1157324-1-liu3101@purdue.edu>
+In-Reply-To: <20220118070029.1157324-1-liu3101@purdue.edu>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 18 Jan 2022 00:40:56 -0800
+Message-ID: <CANn89iJevGzP5r6sPXpX=pSxPJWZQHjKKYekZpFTG9xEq50pMg@mail.gmail.com>
+Subject: Re: [PATCH net] net: fix information leakage in /proc/net/ptype
+To:     Congyu Liu <liu3101@purdue.edu>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Willem de Bruijn <willemb@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>, rsanger@wand.net.nz,
+        Wang Hai <wanghai38@huawei.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        jiapeng.chong@linux.alibaba.com, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 16, 2022 at 22:15, Tobias Waldekranz <tobias@waldekranz.com> wrote:
-> Once an MDIO read transaction is initiated, we must read back the data
-> register within 16 MDC cycles after the transaction completes. Outside
-> of this window, reads may return corrupt data.
+On Mon, Jan 17, 2022 at 11:01 PM Congyu Liu <liu3101@purdue.edu> wrote:
 >
-> Therefore, disable local interrupts in the critical section, to
-> maximize the probability that we can satisfy this requirement.
+> In one net namespace, after creating a packet socket without binding
+> it to a device, users in other net namespaces can observe the new
+> `packet_type` added by this packet socket by reading `/proc/net/ptype`
+> file. I believe this is minor information leakage as packet socket is
+> namespace aware.
 >
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> Add a function pointer in `packet_type` to retrieve the net namespace
+> of corresponding packet socket. In `ptype_seq_show`, if this
+> function pointer is not NULL, use it to determine if certain ptype
+> should be shown.
+>
+> Signed-off-by: Congyu Liu <liu3101@purdue.edu>
+> ---
+>  include/linux/netdevice.h |  1 +
+>  net/core/net-procfs.c     |  3 ++-
+>  net/packet/af_packet.c    | 18 ++++++++++++++++++
+>  3 files changed, 21 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 3213c7227b59..72d3601850c5 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -2548,6 +2548,7 @@ struct packet_type {
+>                                               struct net_device *);
+>         bool                    (*id_match)(struct packet_type *ptype,
+>                                             struct sock *sk);
+> +       struct net              *(*get_net) (struct packet_type *ptype);
+>         void                    *af_packet_priv;
+>         struct list_head        list;
+>  };
 
-Fixes: d55ad2967d89 ("powerpc/mpc85xx: Create dts components for the FSL QorIQ DPAA FMan")
+Patch looks fine, but the question is:
+
+Can an af_packet socket created in netns A can be moved to netns B later ?
+
+As the answer is probably no, it seems we could simply add a 'struct
+net'  pointer
+ in 'struct packet type', no need for a function.
+
+Thanks.
