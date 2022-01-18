@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0583D4924CA
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:31:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 301F64924D0
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:31:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240034AbiARLbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 06:31:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
+        id S239965AbiARLbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 06:31:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240106AbiARLa6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:30:58 -0500
+        with ESMTP id S240169AbiARLbI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:31:08 -0500
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B756C06161C;
-        Tue, 18 Jan 2022 03:30:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFEBC06173E;
+        Tue, 18 Jan 2022 03:31:08 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: usama.anjum)
-        with ESMTPSA id D840D1F43E9D
+        with ESMTPSA id 1CCBC1F43EA4
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642505457;
-        bh=dpLad+4CdJOaMlTWmTiAawK1sEdubzbwv8rkOkH0hpM=;
+        s=mail; t=1642505467;
+        bh=FL5woJicBxOM7EavfZYCVa1miYOdVihihV/Qs6cofek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EWk48EtaaPvtMZ6NV+gyXS9Eo6lBlAQ2vge/1BuKuobi8Pp1fJxCHAWAWcakXF6U/
-         5fjTQd3jAAwsXK51uiAPDKasPaNsqbuE1zsmlkNHW55Dq1A+7FTDZZudZUlt3JLL9x
-         Z2CFjQXSnfcpM51B7QrKwS/OQWzDBHZZW7jo243Cz1gXCoKwR2Ov11/izrwuYfUMf2
-         V94JNSMORMu7lwZe+bdZHz4p/cWoNbzhZgosq6SGA0JJmQ4myZ8sIPVyMZHe8yKOBJ
-         9j85yAnraTQ0GR7ZOTae5N1NEkBSA+VKK+gvvzi8zILKYRhg/yDSABZmXoixlYetES
-         fP0UdH6ebqsrQ==
+        b=n0xKX4Vham5LQD/c8ClU/yBO1aOldvHQE5JKZOsXG09nJx5UgKM5qjXBKNxsMPFr8
+         YhzC0SOXspS1MLKYueeppaldTe3ugKtpXzLpaxorkCr0mp+ki8oYYzQ9xLcdf0JoI0
+         caYNp4KihbxmlIoufOwYzRfQw8/JumGCgRixD5dXFOz9AJQ94JaQTUx3QH2GtrqRTE
+         Aexm0+zrNSktNBMszHRKO3muSZdJRTF0ikaDnvPaHFswDxkytRhCUew90kYxKoXEam
+         I5W/gr/6JXZMdY0cD+ajO2yurpEjPGB5Vwtq7qphiwSuX6BDDxNI4EXADHzagWY7r+
+         v027n9eOAKUog==
 From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
 To:     Shuah Khan <shuah@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -52,9 +52,9 @@ To:     Shuah Khan <shuah@kernel.org>,
         linux-mm@kvack.org (open list:MEMORY MANAGEMENT)
 Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
         kernel@collabora.com
-Subject: [PATCH 02/10] selftests: Add and export a kernel uapi headers path
-Date:   Tue, 18 Jan 2022 16:29:01 +0500
-Message-Id: <20220118112909.1885705-3-usama.anjum@collabora.com>
+Subject: [PATCH 03/10] selftests: Correct the headers install path
+Date:   Tue, 18 Jan 2022 16:29:02 +0500
+Message-Id: <20220118112909.1885705-4-usama.anjum@collabora.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220118112909.1885705-1-usama.anjum@collabora.com>
 References: <20220118112909.1885705-1-usama.anjum@collabora.com>
@@ -64,41 +64,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kernel uapi headers can be present at different paths depending upon
-how the build was invoked. It becomes impossible for the tests to
-include the correct headers directory. Set and export KHDR_INCLUDES
-variable to make it possible for sub make files to include the header
-files.
+uapi headers should be installed at the top of the object tree,
+"<obj_tree>/usr/include". There is no need for kernel headers to
+be present at kselftest build directory, "<obj_tree>/kselftest/usr/
+include" as well. This duplication can be avoided by correctly
+specifying the INSTALL_HDR_PATH.
 
 Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 ---
- tools/testing/selftests/Makefile | 4 ++++
- 1 file changed, 4 insertions(+)
+ tools/testing/selftests/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index a7b63860b7bc..21f983dfd047 100644
+index 21f983dfd047..80e5498eab92 100644
 --- a/tools/testing/selftests/Makefile
 +++ b/tools/testing/selftests/Makefile
-@@ -129,8 +129,11 @@ ifneq ($(KBUILD_OUTPUT),)
-   # $(realpath ...) resolves symlinks
-   abs_objtree := $(realpath $(abs_objtree))
-   BUILD := $(abs_objtree)/kselftest
-+  KHDR_INCLUDES := -I${abs_objtree}/usr/include
+@@ -167,7 +167,7 @@ khdr:
+ ifeq (1,$(DEFAULT_INSTALL_HDR_PATH))
+ 	$(MAKE) --no-builtin-rules ARCH=$(ARCH) -C $(top_srcdir) headers_install
  else
-   BUILD := $(CURDIR)
-+  abs_srctree := $(shell cd $(top_srcdir) && pwd)
-+  KHDR_INCLUDES := -I${abs_srctree}/usr/include
-   DEFAULT_INSTALL_HDR_PATH := 1
+-	$(MAKE) --no-builtin-rules INSTALL_HDR_PATH=$$BUILD/usr \
++	$(MAKE) --no-builtin-rules INSTALL_HDR_PATH=$(abs_objtree)/usr \
+ 		ARCH=$(ARCH) -C $(top_srcdir) headers_install
  endif
  
-@@ -139,6 +142,7 @@ include $(top_srcdir)/scripts/subarch.include
- ARCH           ?= $(SUBARCH)
- export KSFT_KHDR_INSTALL_DONE := 1
- export BUILD
-+export KHDR_INCLUDES
- 
- # set default goal to all, so make without a target runs all, even when
- # all isn't the first target in the file.
 -- 
 2.30.2
 
