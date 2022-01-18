@@ -2,45 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 345AD491771
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:42:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDF2649170E
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:37:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347586AbiARClg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:41:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59804 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344793AbiARCh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:37:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC9EC0612EE;
-        Mon, 17 Jan 2022 18:33:59 -0800 (PST)
+        id S1346373AbiARChj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:37:39 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51370 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343672AbiARCeF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:34:05 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF758611A5;
-        Tue, 18 Jan 2022 02:33:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50E64C36AE3;
-        Tue, 18 Jan 2022 02:33:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6B1761268;
+        Tue, 18 Jan 2022 02:34:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DA79C36AEB;
+        Tue, 18 Jan 2022 02:34:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473238;
-        bh=m1BlRPMjqADOPfF+pcH7G6HNhcalXPTaj0y9Fw/8EN0=;
+        s=k20201202; t=1642473244;
+        bh=Eia1I/7kXiGFDysXVFjJwEP3xWDF4EvGMO70qbMvXbQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mLjlSzXSmw77kSCbvzTiCchmIg/LUeYBrrz+cu0t2vYPYaYTaEv+JLWcYbnlFZMii
-         DT43SvzmltUZH9ZmEBsmvBrlbdmQu6fG551P8wpMpnfT88faGfvyq69bnaf2nwg4UP
-         LQ81KZ4gHYz8mnWA2G2SEctsbmd1Ng1aX+MwWNERdDpNnA7MKUJTF1UPLdCn7C5mNy
-         AMMtP5tUMEmaGUCvKesmr6fNvb1U4hKCrd8qqcOq/PVsCJsl+vgB8QThmTarz5pUwm
-         pgb7bcfLDspr0Ygj80BdRZnHoaSbypPVD46sB/EtOPUpztAT/AJZNEQL/mVxQ9Fy4W
-         FWHV5T/dBq6lg==
+        b=Vn/M1ESlGoayUwMPh1va3lIdzWYfvkJOu/WYfN5dszdhbYuPbLrShZO85m4KUfMzK
+         DhYYzX8U6GNODAUj6E/kPWu1uORwBlTF9qxtWta1W1gnIWdvYQAhadqiCgAxCy7EqZ
+         cks9pgt6vtU/QX61t+ctW37LKkM5JJpSN3hQPmMCzKD26eeO6j3fMVle2CK3RDLbUw
+         3FqRhkvKCwrWBGBChYn+pTBePTZQQGqAG34Nnnhftdnlw4E/Rvg7QNPEZBTehctN/W
+         Yu6u33JBNN3c+GAmcnuOvKBJvwnVTKxGJR62xKWRFexNwQXbLEBygrw+p/xFMLGAUQ
+         E3VYMJ83zsm0Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, gregkh@linuxfoundation.org,
-        u.kleine-koenig@pengutronix.de, fthain@linux-m68k.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 036/188] 8390: mac8390: use eth_hw_addr_set()
-Date:   Mon, 17 Jan 2022 21:29:20 -0500
-Message-Id: <20220118023152.1948105-36-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, tanghui20@huawei.com,
+        arnd@arndb.de, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 038/188] smc9194: use eth_hw_addr_set()
+Date:   Mon, 17 Jan 2022 21:29:22 -0500
+Message-Id: <20220118023152.1948105-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -54,42 +50,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 973a34c087f43b61b26570110a284faf48d08d5d ]
+[ Upstream commit 80db345e7df0c507a83bd12ac7766fb054443804 ]
 
-Use temp to pass to the reading function, the function is generic
-so can't fix there.
+dev_addr is set from IO reads, and broken from a u16 value.
 
-Fixes m68k build.
+Fixes build on Alpha.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/8390/mac8390.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/smsc/smc9194.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/8390/mac8390.c b/drivers/net/ethernet/8390/mac8390.c
-index 91b04abfd6875..7fb819b9b89a5 100644
---- a/drivers/net/ethernet/8390/mac8390.c
-+++ b/drivers/net/ethernet/8390/mac8390.c
-@@ -292,6 +292,7 @@ static bool mac8390_rsrc_init(struct net_device *dev,
- 	struct nubus_dirent ent;
- 	int offset;
- 	volatile unsigned short *i;
+diff --git a/drivers/net/ethernet/smsc/smc9194.c b/drivers/net/ethernet/smsc/smc9194.c
+index 0ce403fa5f1a4..af661c65ffe2f 100644
+--- a/drivers/net/ethernet/smsc/smc9194.c
++++ b/drivers/net/ethernet/smsc/smc9194.c
+@@ -856,6 +856,7 @@ static int __init smc_probe(struct net_device *dev, int ioaddr)
+ 	word configuration_register;
+ 	word memory_info_register;
+ 	word memory_cfg_register;
 +	u8 addr[ETH_ALEN];
  
- 	dev->irq = SLOT2IRQ(board->slot);
- 	/* This is getting to be a habit */
-@@ -314,7 +315,8 @@ static bool mac8390_rsrc_init(struct net_device *dev,
- 		return false;
- 	}
+ 	/* Grab the region so that no one else tries to probe our ioports. */
+ 	if (!request_region(ioaddr, SMC_IO_EXTENT, DRV_NAME))
+@@ -924,9 +925,10 @@ static int __init smc_probe(struct net_device *dev, int ioaddr)
+ 		word	address;
  
--	nubus_get_rsrc_mem(dev->dev_addr, &ent, 6);
-+	nubus_get_rsrc_mem(addr, &ent, 6);
+ 		address = inw( ioaddr + ADDR0 + i  );
+-		dev->dev_addr[ i + 1] = address >> 8;
+-		dev->dev_addr[ i ] = address & 0xFF;
++		addr[i + 1] = address >> 8;
++		addr[i] = address & 0xFF;
+ 	}
 +	eth_hw_addr_set(dev, addr);
  
- 	if (useresources[cardtype] == 1) {
- 		nubus_rewinddir(&dir);
+ 	/* get the memory information */
+ 
 -- 
 2.34.1
 
