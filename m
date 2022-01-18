@@ -2,199 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6263E4922E7
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 10:38:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F283492390
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 11:13:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345696AbiARJhp convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 18 Jan 2022 04:37:45 -0500
-Received: from mail-ua1-f44.google.com ([209.85.222.44]:44993 "EHLO
-        mail-ua1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbiARJhl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 04:37:41 -0500
-Received: by mail-ua1-f44.google.com with SMTP id f24so1463520uab.11;
-        Tue, 18 Jan 2022 01:37:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=94RJUajJnozufTpAr/gV3w0KHJpzlohNQuBpMs4wyR0=;
-        b=MaJCYAKIZUUHoKESEVDo6QEMbUS0vkztkUHhvTyDRPuvl53gzl04ILCRAu0GnOtVRK
-         Fvsqi1dRCWirqq9t3YmOGL8oXLmj/c+ZZFTIODGLKPlzxX8Ns6wHkpRTbSPaEfsZ36u4
-         ORN6JM3Oeh3Dc1cjY/4ZEg13C7N7mPArKcEq7Xunw/e8ZvQsNOVSECVOCe87pXr4nh9N
-         126uQq6/jbqxCCxq2ZjYt3NQ0u+z0wbgBsZz9KBMihq0jkIt+i5HgIS0vNkewXXXDrgQ
-         OYktUJ7DOibltni3K4josLd5pAQEJihshjDkFlMyhvPPj/QLZQ+doQm3IWaMf8wZ+eqx
-         yM4w==
-X-Gm-Message-State: AOAM533+LPFA5XuBfxDmKTi3x58EAS+txDXKAUOxEGQc+6FNPhMYt6Ro
-        qt8Ud413mJQN8fsYU8zZH1yhJ+BVx0cQyYCj
-X-Google-Smtp-Source: ABdhPJyw+oic6AsAShUu1MGqZLa67XXZj9G+hQqL+tvjzZ6gUStjqN2CB20oVkNecThrkl9ruBrXVg==
-X-Received: by 2002:a9f:2424:: with SMTP id 33mr9064060uaq.67.1642498659372;
-        Tue, 18 Jan 2022 01:37:39 -0800 (PST)
-Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com. [209.85.222.53])
-        by smtp.gmail.com with ESMTPSA id s47sm3681740uad.17.2022.01.18.01.37.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Jan 2022 01:37:37 -0800 (PST)
-Received: by mail-ua1-f53.google.com with SMTP id c36so35282332uae.13;
-        Tue, 18 Jan 2022 01:37:37 -0800 (PST)
-X-Received: by 2002:a67:bc17:: with SMTP id t23mr5014894vsn.57.1642498657061;
- Tue, 18 Jan 2022 01:37:37 -0800 (PST)
+        id S236912AbiARKNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 05:13:48 -0500
+Received: from mail-eopbgr60102.outbound.protection.outlook.com ([40.107.6.102]:42627
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229514AbiARKNs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jan 2022 05:13:48 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lGMpMzYc/i+yYpxHmkMHaaALCE+C2B5ByvwTdOV4qYtKgZoXbWAe6Jklb5jGXiJgpLaYduXiEBN/PMqN9UqVNZcK8Cttlbk5bEkm962nzs5GqSaqKESEtn95cnHSE8xbtRyJiJ+//9MfJ3K6HZD9cubWePUnOWWwyXgU5vIxiUlPg08MhWjg53RrdZq+a5bPlmvwjvWf/Om17TwrQ9dhdKXA+yMv/fNNTcvPn5MJ6C0oUwvSStXKajXeQ/oK43gHw9+5zPXIZszaKXidB5v2Yl1HE2jzGeN+9FRwy1PhfMUQ0CKz3GAE61Alb50qT24bJrOrlkRozA17UO/o2XlIkw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=23TX2fmN01uzjutGmyK2Readbb/ButdsMG9JjRy4IN8=;
+ b=FZHPMlxEb/RpnnC8cypvMzQHjqBGZvoXiQpClRxYKI/J8dLNyIeZbs6CqZkmWWucHAoSzAsqzptffSbZjCG8KYqOuQmb+cnLmLbEp1/1Ymtxs3Voprok/mdZpLGoWzVQcMjBD2VFQOWkr0hfCJNuVZH4hjgOAC1bfgl6RdQAYjPMMEsmiErkxV6XwOCNtWaKEyYvUWHxZq2u39RGKYSefMpkCj0JNAUgwmgWTb3kN/rtC2STyiL1nTihafLXeII2pdt7EZSk0N9rSBLjRm8NguoutCEGy2jNLPTUvzZD3i91MA0yGwpY0JNiH8SJn/A5Wl3DMG/Ub7tzmqkvAiNd0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
+ header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=23TX2fmN01uzjutGmyK2Readbb/ButdsMG9JjRy4IN8=;
+ b=P06bkw7+8pqJsfd25DcsxOdK5Qscj0InXGoFvPklZ3RFQS9jSuzaJa5/gYvQsdL1Z48XhnVC3QvidCfJatjvwEXDrbGwIGXWYMDp9kiQrWcic+N+kjP0qM4Aqp9nSpYBxRHEjbBF1x9kcc/X228P6EVVQnKYKBQIPIrl6PazE30=
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com (2603:10a6:20b:26::24)
+ by DBBPR03MB7081.eurprd03.prod.outlook.com (2603:10a6:10:206::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10; Tue, 18 Jan
+ 2022 10:13:46 +0000
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::dd50:b902:a4d:312f]) by AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::dd50:b902:a4d:312f%5]) with mapi id 15.20.4888.014; Tue, 18 Jan 2022
+ 10:13:46 +0000
+From:   =?Windows-1252?Q?Alvin_=8Aipraga?= <ALSI@bang-olufsen.dk>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+CC:     Frank Wunderlich <frank-w@public-files.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
+Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
+ cpu ports, non cpu extint
+Thread-Topic: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
+ cpu ports, non cpu extint
+Thread-Index: AQHYDFQUBpv8Dc7KA0ysRCZOWA7ayA==
+Date:   Tue, 18 Jan 2022 10:13:46 +0000
+Message-ID: <87fspll5ba.fsf@bang-olufsen.dk>
+References: <20220105031515.29276-1-luizluca@gmail.com>
+        <20220105031515.29276-12-luizluca@gmail.com>    <87ee5fd80m.fsf@bang-olufsen.dk>
+        <trinity-ea8d98eb-9572-426a-a318-48406881dc7e-1641822815591@3c-app-gmx-bs62>
+        <87r19e5e8w.fsf@bang-olufsen.dk>
+        <trinity-4b35f0dc-6bc6-400a-8d4e-deb26e626391-1641926734521@3c-app-gmx-bap14>
+        <87v8ynbylk.fsf@bang-olufsen.dk>
+        <trinity-d858854a-ff84-4b28-81f4-f0becc878017-1642089370117@3c-app-gmx-bap49>
+        <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
+In-Reply-To: <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>       (Luiz
+ Angelo Daros de Luca's message of "Tue, 18 Jan 2022 01:58:39   -0300")
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 214140ac-35e4-4068-58fd-08d9da6b368f
+x-ms-traffictypediagnostic: DBBPR03MB7081:EE_
+x-microsoft-antispam-prvs: <DBBPR03MB7081BCBC0785CE76B5CA821D83589@DBBPR03MB7081.eurprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: DwAuEV4DbkyNaYhsbfOrVvUwufP+500gcxydFZqr3fkatWVDEaUyh2x72nLc8h8ANKeBP5/lwb9kVxCxLkJqJVG4g4y54vb1B7yMCjldDWXnNXDTqmAEPCmoJjp7nuXkwj/JEMyhm80Q5QcvCuTggdhgRuVF77BxsvoxUjAbIg0GOIC/+wjgQ7Q581wxXmTenoGeIKkiCx0TeH1e5sInG9fnUTZGG+8DSmFbrgInxu2m1DVQKMO78BycV73zqM+uK4fyQHZldd4HEk/MiP6NcQ84UFRzuvaVHXJE+fetwsSYsdAV/PYRrqpr1Smg7OWQ/0JDOkOrZNdPDoTLgcl1icfVizidRgTshq4lspsdiK42Af0Mq2ao24hY/IFMrL3gHJg8mNo+yWO9heQwO1wMOxYoAw7M0TTJ3YPsb1tRedWZCDRXVzL1IyIl6z3Z5zsQRdiCr2pWGEBer5Iwn3zwL3QG6McmAE1Xg+s1Cf6CAEyMfmrqN6LJ9+i8zskAvHEVL7S8su++NHeI/1t+YCSXdGJPyLOxLRM0XqlACfyKuJ+uF9KCLa+D81adnnfJRt6TuV+BtWNidwou+/AcQ+99VwEuOUdZtf/Rai4l0gzrN56oT8DFCg9BGvu0oiSl+Z1kBhHQ4rQCfE78iiywb9EcA5yQOqNM+96wHDPWXfGWKSjWy3rvXKU2PSmhqd4hXbQ/zuIb8E3v4QnuHBPy33cagQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR03MB3943.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8976002)(36756003)(5660300002)(8936002)(8676002)(6506007)(4744005)(38100700002)(186003)(83380400001)(71200400001)(508600001)(2616005)(6486002)(66476007)(66556008)(76116006)(122000001)(66446008)(64756008)(91956017)(316002)(54906003)(66946007)(38070700005)(6512007)(26005)(86362001)(2906002)(4326008)(6916009);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?Windows-1252?Q?kaxKx08pUpTHGQx7cwlAQCklQRGF6ECdM85MUPfSxavNPFKmur59fWoy?=
+ =?Windows-1252?Q?6kUF+yCbNmzuMtb6BOnnKkLS5oDhhI3x+jWTUAz1ndcQ9z3026RXaMNj?=
+ =?Windows-1252?Q?bymvr8LgL/wqCHO8zuKiby/+x15xtujpBMsKPJCKztJEWiaQwhQKs7uW?=
+ =?Windows-1252?Q?mZvke+9i4Govyw8RfSGW6Mcmm12gNCaAUXttCJ88TmtHfGGUBw4W/xQK?=
+ =?Windows-1252?Q?HUsiQNRQhcCVsCL2zygKxBX/4Id7mAE7zYLFcV7eLRInxEI+mxnZnvxk?=
+ =?Windows-1252?Q?83yw0ea/htPKxDgnE/aIjAxuoPelN5L7wNzORryC4zXxRJY2rUv5S7T7?=
+ =?Windows-1252?Q?zQ0DWNzCaNHw0Z+VY3jK3UNfQ+cCFj4qXZ2CLgx5bmJxMMPfZlkj4Y6Q?=
+ =?Windows-1252?Q?SPzMpzue2QL3w3WTeoiOGBn6gw6Ezl1kpexvJLcZ7gqCuTZdFz55yzU0?=
+ =?Windows-1252?Q?DxMKCVdgOrjBpApdYa4IcJWt73hD6JfWjLi9HUIoJp/ix6S4bdnwVxLU?=
+ =?Windows-1252?Q?pzR5qnDBxvYGc7OGsVH2p+6gCWnuksl4MbFZED8EEAtqRszw1MuKedEu?=
+ =?Windows-1252?Q?06AW4ywUW05bt2WaXWOmGR5CHA0cUAofGGUqF+zGA2Sw85TVcwlp8VYj?=
+ =?Windows-1252?Q?CwltxCOA+3YiZQQqtCsHNpFr55vkioxcelcMoUaZh+l4jiKa4qkxZATB?=
+ =?Windows-1252?Q?mUAGuJqpWYLhSIwLw+74+yxrsarfcNioOtsYYY0diE9g5vXclb6BZH9r?=
+ =?Windows-1252?Q?Bct+9rcDqrleYyhQhekiWCWW/Yq4drnAD++qXyWU2VxRQoKS7i0p0EcT?=
+ =?Windows-1252?Q?CljmjkoePpV0xfPWPUaLY7v3a07p4gx2VzaEsKO3OqdLt+LhriqdXYs8?=
+ =?Windows-1252?Q?e4Iw0WvMNx/PgF4M3w9rILjdAjFPgiUa4ictmzknG72YeLcJsqM63vat?=
+ =?Windows-1252?Q?JiaITZP/K1u3gSmk3a5fqRf7vXJDD/voqgtIlGdf3WlIePnlsbG5bZI0?=
+ =?Windows-1252?Q?Cj+0SdN69A2NuCzXXDjzzvrjhEwfYPiyEH46cJK+mZK/B3lDPPYycA6l?=
+ =?Windows-1252?Q?JuyYiF5sUBuC9JCDOsyVQTO/1BkHvxbWKFosBdWTSNpNsacUznpD97Wb?=
+ =?Windows-1252?Q?iqqduRtP8FhErggLXicXRGnls1EwgAMmSb6T08LvPEv+riax/AEpK/yU?=
+ =?Windows-1252?Q?Sxq5203impIoCmLX4ScUB5XojPYeLIhSGLwXJi/HPHiwC7149Ljtof42?=
+ =?Windows-1252?Q?ubtNL/75sXwf3QudIfDVP1mqZkzPpBcxytkodT8jL1tcQXBshCWvWkBc?=
+ =?Windows-1252?Q?nStivHN0klhB6ZK6+e2KAOFDvjhy125Yi6uWFg+rPCNzvDAQunRXO4SP?=
+ =?Windows-1252?Q?/I0L+hBcrsLtuaeCZVoEXhjrQBLhqVb5EnsMfSh8Dq6IA0Fvqpg3LXh+?=
+ =?Windows-1252?Q?FwkljxrRl0FzkAHYBODySRiMhuIHqPq4h5nz/lwrQsQnnQsVQ5N9JUQq?=
+ =?Windows-1252?Q?ixuwLkodYmKuhi+JuO8AGkTkBVy7HSHHJXeAAJiw2J5v2WPGSBUMzAX1?=
+ =?Windows-1252?Q?x+r+Reh0nsFa5CeYd1CbjUyRNXfSwmdxiVItOiKXs/s8F9kdvBCStuNw?=
+ =?Windows-1252?Q?JWdUKIxu7DOwoq1LnJ5Yk8LHsHicBeboYOM9GcOfinDDU+E8zmy3s8j3?=
+ =?Windows-1252?Q?Hennl7Hu1tBCP4NK4IxNYA1X3JA3flK54d37ixvxUpHGCYPeMvt4ZDPX?=
+ =?Windows-1252?Q?qS3wSDyEw1DS/VByeM8=3D?=
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru> <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
- <c9026f17-2b3f-ee94-0ea3-5630f981fbc1@omp.ru> <CAMuHMdXVbRudGs69f9ZzaP1PXhteDNZiXA658eMFAwP4nr9r3w@mail.gmail.com>
- <20220117092444.opoedfcf5k5u6otq@pengutronix.de> <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
- <20220117114923.d5vajgitxneec7j7@pengutronix.de> <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
- <20220117170609.yxaamvqdkivs56ju@pengutronix.de> <CAMuHMdXbuZqEpYivyS6hkaRN+CwTOGaHq_OROwVAWvDD6OXODQ@mail.gmail.com>
- <20220118090913.pjumkq4zf4iqtlha@pengutronix.de>
-In-Reply-To: <20220118090913.pjumkq4zf4iqtlha@pengutronix.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 18 Jan 2022 10:37:25 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUW8+Y_=uszD+JOZO3Lpa9oDayk+GO+cg276i2f2T285w@mail.gmail.com>
-Message-ID: <CAMuHMdUW8+Y_=uszD+JOZO3Lpa9oDayk+GO+cg276i2f2T285w@mail.gmail.com>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, netdev <netdev@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+X-OriginatorOrg: bang-olufsen.dk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR03MB3943.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 214140ac-35e4-4068-58fd-08d9da6b368f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jan 2022 10:13:46.0887
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YscG26+yr1Z4VbfdUEaioHeRD5coY2Pg6qj0juGjeVkG4Jrh2TWreKk/zZABSXNtVn4Aiev7qSW2kgnp+0Lsrg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR03MB7081
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Uwe,
+Luiz Angelo Daros de Luca <luizluca@gmail.com> writes:
 
-On Tue, Jan 18, 2022 at 10:09 AM Uwe Kleine-König
-<u.kleine-koenig@pengutronix.de> wrote:
-> On Tue, Jan 18, 2022 at 09:25:01AM +0100, Geert Uytterhoeven wrote:
-> > On Mon, Jan 17, 2022 at 6:06 PM Uwe Kleine-König
-> > <u.kleine-koenig@pengutronix.de> wrote:
-> > > On Mon, Jan 17, 2022 at 02:08:19PM +0100, Geert Uytterhoeven wrote:
-> > > > On Mon, Jan 17, 2022 at 12:49 PM Uwe Kleine-König
-> > > > <u.kleine-koenig@pengutronix.de> wrote:
-> > > > > > So there are three reasons: because the absence of an optional IRQ
-> > > > > > is not an error, and thus that should not cause (a) an error code
-> > > > > > to be returned, and (b) an error message to be printed, and (c)
-> > > > > > because it can simplify the logic in device drivers.
-> > > > >
-> > > > > I don't agree to (a). If the value signaling not-found is -ENXIO or 0
-> > > > > (or -ENODEV) doesn't matter much. I wouldn't deviate from the return
-> > > > > code semantics of platform_get_irq() just for having to check against 0
-> > > > > instead of -ENXIO. Zero is then just another magic value.
-> > > >
-> > > > Zero is a natural magic value (also for pointers).
-> > > > Errors are always negative.
-> > > > Positive values are cookies (or pointers) associated with success.
-> > >
-> > > Yeah, the issue where we don't agree is if "not-found" is special enough
-> > > to deserve the natural magic value. For me -ENXIO is magic enough to
-> > > handle the absence of an irq line. I consider it even the better magic
-> > > value.
-> >
-> > It differs from other subsystems (clk, gpio, reset), which do return
-> > zero on not found.
+>> the problem is checksum offloading on the gmac (soc-side)
 >
-> IMHO it doesn't matter at all that the return value is zero, relevant is
-> the semantic of the returned value. For clk, gpio, reset and regulator
-> NULL is a usable dummy, for irqs it's not. So what you do with the value
-> returned by platform_get_irq_whatever() is: you compare it with the
-> (magic?) not-found value, and if it matches, you enter a suitable
-> if-block.
->
-> For the (clk|gpiod|regulator)_get_optional() you don't have to check
-> against the magic not-found value (so no implementation detail magic
-> leaks into the caller code) and just pass it to the next API function.
-> (And my expectation would be that if you chose to represent not-found by
-> (void *)66 instead of NULL, you won't have to adapt any user, just the
-> framework internal checks. This is a good thing!)
+> I suggested it might be checksum problem because I'm also affected. In
+> my case, I have an mt7620a SoC connected to the rtl8367s switch. The
+> OS offloads checksum to HW but the mt7620a cannot calculate the
+> checksum with the (EtherType) Realtek CPU Tag in place. I'll try to
+> move the CPU tag to test if the mt7620a will then digest the frame
+> correctly.
 
-Ah, there is the wrong assumption: drivers sometimes do need to know
-if the resource was found, and thus do need to know about (void *)66,
--ENODEV, or -ENXIO.  I already gave examples for IRQ and clk before.
-I can imagine these exist for gpiod and regulator, too, as soon as
-you go beyond the trivial "enable" and "disable" use-cases.
+You have two choices:
 
-And 0/NULL vs. > 0 is the natural check here: missing, but not
-an error.  Even for IRQ this was envisioned before, when it was
-decided that vIRQ zero does not exist.
-(Inconsistent) Error codes are not, as missing optional resources
-are not error conditions.
+    enum rtl8365mb_cpu_position {
+            RTL8365MB_CPU_POS_AFTER_SA =3D 0,
+            RTL8365MB_CPU_POS_BEFORE_CRC =3D 1,
+    };
 
-Gr{oetje,eeting}s,
+I hardcoded it to AFTER_SA but if you find that this solves the problem
+for some MACs then it might be worth adding a device tree property for
+this to make it configurable. Of course remember to keep it
+backward-compatible, and add a note to future travellers in the bindings
+that this might solve checksum errors :-)
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Kind regards,
+Alvin=
