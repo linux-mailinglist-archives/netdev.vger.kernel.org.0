@@ -2,106 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77F73492129
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 09:26:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30E95492133
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 09:29:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242847AbiARI0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 03:26:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:42499 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232989AbiARI0J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 03:26:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642494368;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=A/b6yg4ShWdAV0SfuluaVdnvCZUNPg/qEytwysGwHTk=;
-        b=anxoryL9kroHXEv3z/lFxcdWVI3DhDLsR/LUBHhUAVk+6LUEpOcFpG21tSp83kyQuy343P
-        4ellT9LpeOQvrBnnG4hzAV78TYn7n9aco+ojkdWmAj6vYzY1UMw9VQjM8e+EnJE1SH4rjH
-        PazcFoHJDS9lEtiQzwHXQvtSmtxMTFk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-563-T--zKjN0PiqF09K4X1zXPQ-1; Tue, 18 Jan 2022 03:26:05 -0500
-X-MC-Unique: T--zKjN0PiqF09K4X1zXPQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1344539AbiARI3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 03:29:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57884 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344274AbiARI3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 03:29:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08302C061574;
+        Tue, 18 Jan 2022 00:29:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A07CC190D340;
-        Tue, 18 Jan 2022 08:26:03 +0000 (UTC)
-Received: from calimero.vinschen.de (ovpn-112-3.rdu2.redhat.com [10.10.112.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3451B7A230;
-        Tue, 18 Jan 2022 08:26:03 +0000 (UTC)
-Received: by calimero.vinschen.de (Postfix, from userid 500)
-        id 12AEFA8096F; Tue, 18 Jan 2022 09:26:01 +0100 (CET)
-Date:   Tue, 18 Jan 2022 09:26:01 +0100
-From:   Corinna Vinschen <vinschen@redhat.com>
-To:     Lennert Buytenhek <buytenh@wantstofly.org>
-Cc:     intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: Re: [PATCH 3/3 net-next v5] igb/igc: RX queues: fix DMA leak in
- error case
-Message-ID: <YeZ5mVY/SpThBi/O@calimero.vinschen.de>
-Mail-Followup-To: Lennert Buytenhek <buytenh@wantstofly.org>,
-        intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-References: <20220117182915.1283151-1-vinschen@redhat.com>
- <20220117182915.1283151-4-vinschen@redhat.com>
- <YeZXuoRa/39zzoEY@wantstofly.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YeZXuoRa/39zzoEY@wantstofly.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4F28B812A9;
+        Tue, 18 Jan 2022 08:29:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 63F39C340E6;
+        Tue, 18 Jan 2022 08:29:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642494551;
+        bh=ngfco9m5RC6ysn8lXvCShk4RMg7ryZFXstNW7rRs70s=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=nhcZgJJAwlftay688HihdC7itWdxDr1blrDcqAzbPX8/Tf1XL53dPiTw7SG4tEGiq
+         xtQ64e+0ILBF2cQkrSFPxdskWGLfLtxblp4HlLrPb8rnYkvyA88XyKevOyx8zVl2CX
+         05YezsFNGU6h31ts6oB7zVpNZuAOZf1YA7JA7FAiG/wjznYGkCjh+9Um/wOVhbV+cm
+         7G/ulkcgLqx33iBFCWBuxPLwk8HAkgy3GY/frWa62qHTYNy7+vd54qXonLtynKhgwQ
+         bkEMvKrquMmQs97IJO1EI4YVhSvyt5rOmUzUPhoRNmNonbnGw64NwvHz/pGLu8Crnb
+         JEsI7gXa4NW+Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4F20FF60797;
+        Tue, 18 Jan 2022 08:29:11 +0000 (UTC)
+Subject: Re: [GIT PULL v2] virtio,vdpa,qemu_fw_cfg: features, cleanups, fixes
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220114185734-mutt-send-email-mst@kernel.org>
+References: <20220114185734-mutt-send-email-mst@kernel.org>
+X-PR-Tracked-List-Id: Linux virtualization <virtualization.lists.linux-foundation.org>
+X-PR-Tracked-Message-Id: <20220114185734-mutt-send-email-mst@kernel.org>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+X-PR-Tracked-Commit-Id: b03fc43e73877e180c1803a33aea3e7396642367
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 3bf6a9e36e441714928d73a5adbc59562eb7ef19
+Message-Id: <164249455131.3500.5357538951870066126.pr-tracker-bot@kernel.org>
+Date:   Tue, 18 Jan 2022 08:29:11 +0000
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        yun.wang@linux.alibaba.com, kvm@vger.kernel.org, trix@redhat.com,
+        flyingpeng@tencent.com, virtualization@lists.linux-foundation.org,
+        elic@nvidia.com, guanjun@linux.alibaba.com, lkp@intel.com,
+        xianting.tian@linux.alibaba.com, mst@redhat.com,
+        eperezma@redhat.com, luolikang@nsfocus.com, wu000273@umn.edu,
+        lvivier@redhat.com, keescook@chromium.org, somlo@cmu.edu,
+        jiasheng@iscas.ac.cn, johan@kernel.org,
+        christophe.jaillet@wanadoo.fr, flyingpenghao@gmail.com,
+        dapeng1.mi@intel.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, labbott@kernel.org,
+        gregkh@linuxfoundation.org, lingshan.zhu@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Jan 18 08:01, Lennert Buytenhek wrote:
-> On Mon, Jan 17, 2022 at 07:29:15PM +0100, Corinna Vinschen wrote:
-> 
-> > When setting up the rx queues, igb and igc neglect to free DMA memory
-> > in error case.  Add matching dma_free_coherent calls.
-> > 
-> > Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
-> > ---
-> >  drivers/net/ethernet/intel/igb/igb_main.c | 1 +
-> >  drivers/net/ethernet/intel/igc/igc_main.c | 1 +
-> >  2 files changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> > index cea89d301bfd..343568d4ff7f 100644
-> > --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> > +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> > @@ -4389,6 +4389,7 @@ int igb_setup_rx_resources(struct igb_ring *rx_ring)
-> >  	return 0;
-> >  
-> >  err:
-> > +	dma_free_coherent(dev, rx_ring->size, rx_ring->desc, rx_ring->dma);
-> >  	vfree(rx_ring->rx_buffer_info);
-> >  	rx_ring->rx_buffer_info = NULL;
-> >  	dev_err(dev, "Unable to allocate memory for the Rx descriptor ring\n");
-> > diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-> > index 56ed0f1463e5..f323cec0b74f 100644
-> > --- a/drivers/net/ethernet/intel/igc/igc_main.c
-> > +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-> > @@ -540,6 +540,7 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
-> >  	return 0;
-> >  
-> >  err:
-> > +	dma_free_coherent(dev, rx_ring->size, rx_ring->desc, rx_ring->dma);
-> >  	vfree(rx_ring->rx_buffer_info);
-> >  	rx_ring->rx_buffer_info = NULL;
-> >  	netdev_err(ndev, "Unable to allocate memory for Rx descriptor ring\n");
-> 
-> If the vzalloc() call in igc_setup_rx_resources() fails, and we jump
-> to 'err' before dma_alloc_coherent() was reached, won't dma_free_coherent()
-> be called inadvertently here?
+The pull request you sent on Fri, 14 Jan 2022 18:57:34 -0500:
 
-These calls all check for a NULL pointer themselves.
+> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-Corinna
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/3bf6a9e36e441714928d73a5adbc59562eb7ef19
 
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
