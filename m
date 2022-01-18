@@ -2,48 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0308F491E42
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 04:48:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93703491E31
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 04:48:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355438AbiARDsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 22:48:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33192 "EHLO
+        id S1344060AbiARDsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 22:48:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346940AbiARCkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:40:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63346C061A82;
-        Mon, 17 Jan 2022 18:36:16 -0800 (PST)
+        with ESMTP id S1347164AbiARCkv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:40:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CD5C07E5FB;
+        Mon, 17 Jan 2022 18:36:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 259AFB81244;
-        Tue, 18 Jan 2022 02:36:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77D1AC36AE3;
-        Tue, 18 Jan 2022 02:36:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F372360C74;
+        Tue, 18 Jan 2022 02:36:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DD83C36AEF;
+        Tue, 18 Jan 2022 02:36:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473373;
-        bh=u/rMJCClADWqwrUINDSCBhqeHcpdAFdoMe++HuFFxeA=;
+        s=k20201202; t=1642473382;
+        bh=aCvZ7FsAPHlMvu1OlKxK/77h6I1jNP5DRmsbS14Xduc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pxA7rAlYNkxym2Wg+5Zl1MKLODMJsOXz8Y7dRX/b49IIyTOgSlEbsQZGa3IrTk9O/
-         a6GMFlu4UoqEDekw/SxpDHjzLDoIhTtTF2dYiU2j4AewLn4Ua2JKDMry48MBtSH4BK
-         7aLetZNZCkU3b+tA53AvqLyTjaur1skMPIFJz0obAh92tBI/q1XFKCjK9zk2uCXLBZ
-         zTimiMEm0JU3dRz2GR0We1bHHA4wFTB2i3A3BTiRRaRCrwch/DWeY9PuqzzWhHiy4i
-         kxrqH8GlwnTYNlUBAD5pfKR8Zkoj4PeAkHYGDQ03D6u+GYr4IOnNOGNjUxE651ixZ2
-         4vZRgsT9dO1yA==
+        b=bHNe9UfoNPaLohfYBJXIgKAD4XZ8UZFoivxGuFf5GT9MFAQPTVC7OEumSdPsP91rB
+         VQjnHZkXB3OCbufYU2yhWBVIr0cbafoSj1rlz9zYpkp1MT2xw/eD2FDbdEi1JgLti7
+         keNM6J8lfNW/Tk8jagbqmhazwt437cf8j5v60KwqjX2lktP9UkaIb/m2K0MuE2/V6Y
+         0sW2El+dE5Nwl8vkWywVbEUnn7P40CTU8g+n2x/T0XYJQ/U7wR0DE7xL4CAUTaE/TL
+         hVH+4SMDLw7zY7qeC4Onazd5nYZaxIcYyGlFvEtpvRO6SaKyFO9JrxAPAXmV5ppWx8
+         gvpznKf0Idozg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Maximilian Ernestus <maximilian@ernestus.de>,
-        Luca Coelho <luciano.coelho@intel.com>,
+Cc:     Wen Gong <quic_wgong@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        mordechay.goodstein@intel.com, miriam.rachel.korenblit@intel.com,
+        davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 090/188] iwlwifi: mvm: synchronize with FW after multicast commands
-Date:   Mon, 17 Jan 2022 21:30:14 -0500
-Message-Id: <20220118023152.1948105-90-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 094/188] ath11k: avoid deadlock by change ieee80211_queue_work for regd_update_work
+Date:   Mon, 17 Jan 2022 21:30:18 -0500
+Message-Id: <20220118023152.1948105-94-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -55,70 +52,202 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Wen Gong <quic_wgong@quicinc.com>
 
-[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
+[ Upstream commit ed05c7cf1286d7e31e7623bce55ff135723591bf ]
 
-If userspace installs a lot of multicast groups very quickly, then
-we may run out of command queue space as we send the updates in an
-asynchronous fashion (due to locking concerns), and the CPU can
-create them faster than the firmware can process them. This is true
-even when mac80211 has a work struct that gets scheduled.
+When enable debug config, it print below warning while shut down wlan
+interface shuh as run "ifconfig wlan0 down".
 
-Fix this by synchronizing with the firmware after sending all those
-commands - outside of the iteration we can send a synchronous echo
-command that just has the effect of the CPU waiting for the prior
-asynchronous commands to finish. This also will cause fewer of the
-commands to be sent to the firmware overall, because the work will
-only run once when rescheduled multiple times while it's running.
+The reason is because ar->regd_update_work is ran once, and it is will
+call wiphy_lock(ar->hw->wiphy) in function ath11k_regd_update() which
+is running in workqueue of ieee80211_local queued by ieee80211_queue_work().
+Another thread from "ifconfig wlan0 down" will also accuqire the lock
+by wiphy_lock(sdata->local->hw.wiphy) in function ieee80211_stop(), and
+then it call ieee80211_stop_device() to flush_workqueue(local->workqueue),
+this will wait the workqueue of ieee80211_local finished. Then deadlock
+will happen easily if the two thread run meanwhile.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
-Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Below warning disappeared after this change.
+
+[  914.088798] ath11k_pci 0000:05:00.0: mac remove interface (vdev 0)
+[  914.088806] ath11k_pci 0000:05:00.0: mac stop 11d scan
+[  914.088810] ath11k_pci 0000:05:00.0: mac stop 11d vdev id 0
+[  914.088827] ath11k_pci 0000:05:00.0: htc ep 2 consumed 1 credits (total 0)
+[  914.088841] ath11k_pci 0000:05:00.0: send 11d scan stop vdev id 0
+[  914.088849] ath11k_pci 0000:05:00.0: htc insufficient credits ep 2 required 1 available 0
+[  914.088856] ath11k_pci 0000:05:00.0: htc insufficient credits ep 2 required 1 available 0
+[  914.096434] ath11k_pci 0000:05:00.0: rx ce pipe 2 len 16
+[  914.096442] ath11k_pci 0000:05:00.0: htc ep 2 got 1 credits (total 1)
+[  914.096481] ath11k_pci 0000:05:00.0: htc ep 2 consumed 1 credits (total 0)
+[  914.096491] ath11k_pci 0000:05:00.0: WMI vdev delete id 0
+[  914.111598] ath11k_pci 0000:05:00.0: rx ce pipe 2 len 16
+[  914.111628] ath11k_pci 0000:05:00.0: htc ep 2 got 1 credits (total 1)
+[  914.114659] ath11k_pci 0000:05:00.0: rx ce pipe 2 len 20
+[  914.114742] ath11k_pci 0000:05:00.0: htc rx completion ep 2 skb         pK-error
+[  914.115977] ath11k_pci 0000:05:00.0: vdev delete resp for vdev id 0
+[  914.116685] ath11k_pci 0000:05:00.0: vdev 00:03:7f:29:61:11 deleted, vdev_id 0
+
+[  914.117583] ======================================================
+[  914.117592] WARNING: possible circular locking dependency detected
+[  914.117600] 5.16.0-rc1-wt-ath+ #1 Tainted: G           OE
+[  914.117611] ------------------------------------------------------
+[  914.117618] ifconfig/2805 is trying to acquire lock:
+[  914.117628] ffff9c00a62bb548 ((wq_completion)phy0){+.+.}-{0:0}, at: flush_workqueue+0x87/0x470
+[  914.117674]
+               but task is already holding lock:
+[  914.117682] ffff9c00baea07d0 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: ieee80211_stop+0x38/0x180 [mac80211]
+[  914.117872]
+               which lock already depends on the new lock.
+
+[  914.117880]
+               the existing dependency chain (in reverse order) is:
+[  914.117888]
+               -> #3 (&rdev->wiphy.mtx){+.+.}-{4:4}:
+[  914.117910]        __mutex_lock+0xa0/0x9c0
+[  914.117930]        mutex_lock_nested+0x1b/0x20
+[  914.117944]        reg_process_self_managed_hints+0x3a/0xb0 [cfg80211]
+[  914.118093]        wiphy_regulatory_register+0x47/0x80 [cfg80211]
+[  914.118229]        wiphy_register+0x84f/0x9c0 [cfg80211]
+[  914.118353]        ieee80211_register_hw+0x6b1/0xd90 [mac80211]
+[  914.118486]        ath11k_mac_register+0x6af/0xb60 [ath11k]
+[  914.118550]        ath11k_core_qmi_firmware_ready+0x383/0x4a0 [ath11k]
+[  914.118598]        ath11k_qmi_driver_event_work+0x347/0x4a0 [ath11k]
+[  914.118656]        process_one_work+0x228/0x670
+[  914.118669]        worker_thread+0x4d/0x440
+[  914.118680]        kthread+0x16d/0x1b0
+[  914.118697]        ret_from_fork+0x22/0x30
+[  914.118714]
+               -> #2 (rtnl_mutex){+.+.}-{4:4}:
+[  914.118736]        __mutex_lock+0xa0/0x9c0
+[  914.118751]        mutex_lock_nested+0x1b/0x20
+[  914.118767]        rtnl_lock+0x17/0x20
+[  914.118783]        ath11k_regd_update+0x15a/0x260 [ath11k]
+[  914.118841]        ath11k_regd_update_work+0x15/0x20 [ath11k]
+[  914.118897]        process_one_work+0x228/0x670
+[  914.118909]        worker_thread+0x4d/0x440
+[  914.118920]        kthread+0x16d/0x1b0
+[  914.118934]        ret_from_fork+0x22/0x30
+[  914.118948]
+               -> #1 ((work_completion)(&ar->regd_update_work)){+.+.}-{0:0}:
+[  914.118972]        process_one_work+0x1fa/0x670
+[  914.118984]        worker_thread+0x4d/0x440
+[  914.118996]        kthread+0x16d/0x1b0
+[  914.119010]        ret_from_fork+0x22/0x30
+[  914.119023]
+               -> #0 ((wq_completion)phy0){+.+.}-{0:0}:
+[  914.119045]        __lock_acquire+0x146d/0x1cf0
+[  914.119057]        lock_acquire+0x19b/0x360
+[  914.119067]        flush_workqueue+0xae/0x470
+[  914.119084]        ieee80211_stop_device+0x3b/0x50 [mac80211]
+[  914.119260]        ieee80211_do_stop+0x5d7/0x830 [mac80211]
+[  914.119409]        ieee80211_stop+0x45/0x180 [mac80211]
+[  914.119557]        __dev_close_many+0xb3/0x120
+[  914.119573]        __dev_change_flags+0xc3/0x1d0
+[  914.119590]        dev_change_flags+0x29/0x70
+[  914.119605]        devinet_ioctl+0x653/0x810
+[  914.119620]        inet_ioctl+0x193/0x1e0
+[  914.119631]        sock_do_ioctl+0x4d/0xf0
+[  914.119649]        sock_ioctl+0x262/0x340
+[  914.119665]        __x64_sys_ioctl+0x96/0xd0
+[  914.119678]        do_syscall_64+0x3d/0xd0
+[  914.119694]        entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  914.119709]
+               other info that might help us debug this:
+
+[  914.119717] Chain exists of:
+                 (wq_completion)phy0 --> rtnl_mutex --> &rdev->wiphy.mtx
+
+[  914.119745]  Possible unsafe locking scenario:
+
+[  914.119752]        CPU0                    CPU1
+[  914.119758]        ----                    ----
+[  914.119765]   lock(&rdev->wiphy.mtx);
+[  914.119778]                                lock(rtnl_mutex);
+[  914.119792]                                lock(&rdev->wiphy.mtx);
+[  914.119807]   lock((wq_completion)phy0);
+[  914.119819]
+                *** DEADLOCK ***
+
+[  914.119827] 2 locks held by ifconfig/2805:
+[  914.119837]  #0: ffffffffba3dc010 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock+0x17/0x20
+[  914.119872]  #1: ffff9c00baea07d0 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: ieee80211_stop+0x38/0x180 [mac80211]
+[  914.120039]
+               stack backtrace:
+[  914.120048] CPU: 0 PID: 2805 Comm: ifconfig Tainted: G           OE     5.16.0-rc1-wt-ath+ #1
+[  914.120064] Hardware name: LENOVO 418065C/418065C, BIOS 83ET63WW (1.33 ) 07/29/2011
+[  914.120074] Call Trace:
+[  914.120084]  <TASK>
+[  914.120094]  dump_stack_lvl+0x73/0xa4
+[  914.120119]  dump_stack+0x10/0x12
+[  914.120135]  print_circular_bug.isra.44+0x221/0x2e0
+[  914.120165]  check_noncircular+0x106/0x150
+[  914.120203]  __lock_acquire+0x146d/0x1cf0
+[  914.120215]  ? __lock_acquire+0x146d/0x1cf0
+[  914.120245]  lock_acquire+0x19b/0x360
+[  914.120259]  ? flush_workqueue+0x87/0x470
+[  914.120286]  ? lockdep_init_map_type+0x6b/0x250
+[  914.120310]  flush_workqueue+0xae/0x470
+[  914.120327]  ? flush_workqueue+0x87/0x470
+[  914.120344]  ? lockdep_hardirqs_on+0xd7/0x150
+[  914.120391]  ieee80211_stop_device+0x3b/0x50 [mac80211]
+[  914.120565]  ? ieee80211_stop_device+0x3b/0x50 [mac80211]
+[  914.120736]  ieee80211_do_stop+0x5d7/0x830 [mac80211]
+[  914.120906]  ieee80211_stop+0x45/0x180 [mac80211]
+[  914.121060]  __dev_close_many+0xb3/0x120
+[  914.121081]  __dev_change_flags+0xc3/0x1d0
+[  914.121109]  dev_change_flags+0x29/0x70
+[  914.121131]  devinet_ioctl+0x653/0x810
+[  914.121149]  ? __might_fault+0x77/0x80
+[  914.121179]  inet_ioctl+0x193/0x1e0
+[  914.121194]  ? inet_ioctl+0x193/0x1e0
+[  914.121218]  ? __might_fault+0x77/0x80
+[  914.121238]  ? _copy_to_user+0x68/0x80
+[  914.121266]  sock_do_ioctl+0x4d/0xf0
+[  914.121283]  ? inet_stream_connect+0x60/0x60
+[  914.121297]  ? sock_do_ioctl+0x4d/0xf0
+[  914.121329]  sock_ioctl+0x262/0x340
+[  914.121347]  ? sock_ioctl+0x262/0x340
+[  914.121362]  ? exit_to_user_mode_prepare+0x13b/0x280
+[  914.121388]  ? syscall_enter_from_user_mode+0x20/0x50
+[  914.121416]  __x64_sys_ioctl+0x96/0xd0
+[  914.121430]  ? br_ioctl_call+0x90/0x90
+[  914.121445]  ? __x64_sys_ioctl+0x96/0xd0
+[  914.121465]  do_syscall_64+0x3d/0xd0
+[  914.121482]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  914.121497] RIP: 0033:0x7f0ed051737b
+[  914.121513] Code: 0f 1e fa 48 8b 05 15 3b 0d 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e5 3a 0d 00 f7 d8 64 89 01 48
+[  914.121527] RSP: 002b:00007fff7be38b98 EFLAGS: 00000202 ORIG_RAX: 0000000000000010
+[  914.121544] RAX: ffffffffffffffda RBX: 00007fff7be38ba0 RCX: 00007f0ed051737b
+[  914.121555] RDX: 00007fff7be38ba0 RSI: 0000000000008914 RDI: 0000000000000004
+[  914.121566] RBP: 00007fff7be38c60 R08: 000000000000000a R09: 0000000000000001
+[  914.121576] R10: 0000000000000000 R11: 0000000000000202 R12: 00000000fffffffe
+[  914.121586] R13: 0000000000000004 R14: 0000000000000000 R15: 0000000000000000
+[  914.121620]  </TASK>
+
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
+
+Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20211201071745.17746-2-quic_wgong@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/mac80211.c   | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/net/wireless/ath/ath11k/wmi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 7e5ad943b20cb..750217393f480 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -1687,6 +1687,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	struct iwl_mvm_mc_iter_data iter_data = {
- 		.mvm = mvm,
- 	};
-+	int ret;
- 
- 	lockdep_assert_held(&mvm->mutex);
- 
-@@ -1696,6 +1697,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	ieee80211_iterate_active_interfaces_atomic(
- 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
- 		iwl_mvm_mc_iface_iterator, &iter_data);
-+
-+	/*
-+	 * Send a (synchronous) ech command so that we wait for the
-+	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
-+	 * the interface iterator. Otherwise, we might get here over
-+	 * and over again (by userspace just sending a lot of these)
-+	 * and the CPU can send them faster than the firmware can
-+	 * process them.
-+	 * Note that the CPU is still faster - but with this we'll
-+	 * actually send fewer commands overall because the CPU will
-+	 * not schedule the work in mac80211 as frequently if it's
-+	 * still running when rescheduled (possibly multiple times).
-+	 */
-+	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
-+	if (ret)
-+		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
- }
- 
- static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 99c0b81e496bf..cd86e25636884 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -5852,7 +5852,7 @@ static int ath11k_reg_chan_list_event(struct ath11k_base *ab, struct sk_buff *sk
+ 		ar = ab->pdevs[pdev_idx].ar;
+ 		kfree(ab->new_regd[pdev_idx]);
+ 		ab->new_regd[pdev_idx] = regd;
+-		ieee80211_queue_work(ar->hw, &ar->regd_update_work);
++		queue_work(ab->workqueue, &ar->regd_update_work);
+ 	} else {
+ 		/* This regd would be applied during mac registration and is
+ 		 * held constant throughout for regd intersection purpose
 -- 
 2.34.1
 
