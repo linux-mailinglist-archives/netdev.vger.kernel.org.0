@@ -2,268 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BBBA49286D
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 15:31:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20E21492893
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 15:39:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237788AbiARObG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 09:31:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238857AbiARObE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 09:31:04 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3580CC06173F
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 06:31:04 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9pUj-0000wL-Of; Tue, 18 Jan 2022 15:29:57 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9pUY-00B1DJ-N0; Tue, 18 Jan 2022 15:29:45 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9pUX-0003HD-OO; Tue, 18 Jan 2022 15:29:45 +0100
-Date:   Tue, 18 Jan 2022 15:29:45 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>, Takashi Iwai <tiwai@suse.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220118142945.6y3rmvzt44pjpr4z@pengutronix.de>
-References: <20220117092444.opoedfcf5k5u6otq@pengutronix.de>
- <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
- <20220117114923.d5vajgitxneec7j7@pengutronix.de>
- <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
- <20220117170609.yxaamvqdkivs56ju@pengutronix.de>
- <CAMuHMdXbuZqEpYivyS6hkaRN+CwTOGaHq_OROwVAWvDD6OXODQ@mail.gmail.com>
- <20220118090913.pjumkq4zf4iqtlha@pengutronix.de>
- <CAMuHMdUW8+Y_=uszD+JOZO3Lpa9oDayk+GO+cg276i2f2T285w@mail.gmail.com>
- <20220118120806.pbjsat4ulg3vnhsh@pengutronix.de>
- <CAMuHMdWkwV9XE_R5FZ=jPtDwLpDbEngG6+X2JmiDJCZJZvUjYA@mail.gmail.com>
+        id S1343499AbiAROjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 09:39:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:37666 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S245635AbiAROih (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 09:38:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642516715;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=L/3xiTwKonxDCzPOwDPfLLah1H5jM3BzmJPk13Up2Bg=;
+        b=b+ISggn0TjKed6vxo/9ZdfioD6H256LGfSsx8mGpCb0gB4M0Gfw4TnRdzpXuWoKCQjsurm
+        aRVD6t5RJrdqfUOVhgkfA5/3uBhBjUrHiDsn6Kjtx9hi3pZRRN4bpWbju5EZNc9F9R5p/u
+        Ds36tzpidk+pcKT1FWu6VEzyULYSkzY=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-459-TXMg09PpN6GU0jvEqH-dlg-1; Tue, 18 Jan 2022 09:38:34 -0500
+X-MC-Unique: TXMg09PpN6GU0jvEqH-dlg-1
+Received: by mail-ed1-f71.google.com with SMTP id h11-20020a05640250cb00b003fa024f87c2so17208407edb.4
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 06:38:33 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=L/3xiTwKonxDCzPOwDPfLLah1H5jM3BzmJPk13Up2Bg=;
+        b=jF464IL306x4oLjXYZLHBB7oqOCAkVQT1Je7M9Au2kuF2dlb6PyKxjh4BQSW4eM3Oo
+         iu3prxFxlR/lKvYxrZkpEB1yp+ian5VmYP0Q1eEKl6m3bRP0UqD/nTE2X93gOuxXSMSz
+         8Y6J9j81p1x2X6h3kmCTfueD1g31LQbO1gWLAN6HQugmTuv2I/y/MUSoEmIEAoW3wnXg
+         2eji9u648pdbCNDL2zYwYa//qiqzMwF5rtRmES/HzXChck7U+1VE88uZf/l/dSW7X8+C
+         F09hRspfd7mM4FzMJHk6tG5VdMHuePvMU5iUguGRRW7Lcj24rUhBmeMusrdnH/GXOnB9
+         Actw==
+X-Gm-Message-State: AOAM530JH+ZXvakwNBlPSNtG9UEChQR34YDaDF+4Tsxdpd1W6QiJMTiV
+        y9a1A5iYvEJcluqDihWxlZue1m+sdHLH+xn9QLtuPuwnYZMYOiIwur+J+mrfj8dHCU7QTI9y/Im
+        W9ofX1kMG7Pb4yq9G
+X-Received: by 2002:a05:6402:22d2:: with SMTP id dm18mr25313845edb.410.1642516712349;
+        Tue, 18 Jan 2022 06:38:32 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJypqPN9DQm94a1olWK3nqTc3tmoyxpKtTknk1gpNMzhugw4gQ/v2cnrt8sk2LTdvU5KY9yY4Q==
+X-Received: by 2002:a05:6402:22d2:: with SMTP id dm18mr25313829edb.410.1642516712165;
+        Tue, 18 Jan 2022 06:38:32 -0800 (PST)
+Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id q14sm7065206edv.79.2022.01.18.06.38.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Jan 2022 06:38:31 -0800 (PST)
+Date:   Tue, 18 Jan 2022 15:38:28 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH v2 0/8] fprobe: Introduce fprobe function entry/exit
+ probe
+Message-ID: <YebQ5E0dEvbFqxL3@krava>
+References: <164199616622.1247129.783024987490980883.stgit@devnote2>
+ <CAEf4BzY9qmzemZ=3JSto+eWq9k-kX7hZKgugJRO9zZ61-pasqg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="daitmup5biyyqkwr"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdWkwV9XE_R5FZ=jPtDwLpDbEngG6+X2JmiDJCZJZvUjYA@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <CAEf4BzY9qmzemZ=3JSto+eWq9k-kX7hZKgugJRO9zZ61-pasqg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---daitmup5biyyqkwr
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Jan 18, 2022 at 01:49:15PM +0100, Geert Uytterhoeven wrote:
-> nst the magic not-found value (so no implementation detail magic
-> > > > leaks into the caller code) and just pass it to the next API functi=
-on=3D
-> .
-> > > > (And my expectation would be that if you chose to represent not-fou=
-nd=3D
->  by
-> > > > (void *)66 instead of NULL, you won't have to adapt any user, just =
-th=3D
-> e
-> > > > framework internal checks. This is a good thing!)
-> > >
-> > > Ah, there is the wrong assumption: drivers sometimes do need to know
-> > > if the resource was found, and thus do need to know about (void *)66,
-> > > -ENODEV, or -ENXIO.  I already gave examples for IRQ and clk before.
-> > > I can imagine these exist for gpiod and regulator, too, as soon as
-> > > you go beyond the trivial "enable" and "disable" use-cases.
+On Fri, Jan 14, 2022 at 05:08:32PM -0800, Andrii Nakryiko wrote:
+> On Wed, Jan 12, 2022 at 6:02 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
 > >
-> > My premise is that every user who has to check for "not found"
-> > explicitly should not use (clk|gpiod)_get_optional() but
-> > (clk|gpiod)_get() and do proper (and explicit) error handling for
-> > -ENODEV. (clk|gpiod)_get_optional() is only for these trivial use-cases.
+> > Hi Jiri and Alexei,
 > >
-> > > And 0/NULL vs. > 0 is the natural check here: missing, but not
-> > > an error.
+> > Here is the 2nd version of fprobe. This version uses the
+> > ftrace_set_filter_ips() for reducing the registering overhead.
+> > Note that this also drops per-probe point private data, which
+> > is not used anyway.
+> 
+> This per-probe private data is necessary for the feature called BPF
+> cookie, in which each attachment has a unique user-provided u64 value
+> associated to it, accessible at runtime through
+> bpf_get_attach_cookie() helper. One way or another we'll need to
+> support this to make these multi-attach BPF programs really useful for
+> generic tracing applications.
+> 
+> Jiri,
+> 
+> We've discussed with Alexei this week how cookies can be supported for
+> multi-attach fentry (where it seems even more challenging than in
+> kprobe case), and agreed on rather simple solution, which roughly goes
+> like this. When multi-attaching either fentry/fexit program, save
+> sorted array of IP addresses and then sorted in the same order as IPs
+> list of u64 cookies. At runtime, bpf_get_attach_cookie() helper should
+> somehow get access to these two arrays and functions IP (that we
+> already have with bpf_get_func_ip()), perform binary search and locate
+> necessary cookie. This offloads the overhead of finding this cookie to
+> actual call site of bpf_get_attach_cookie() (and it's a log(N), so not
+> bad at all, especially if BPF program can be optimized to call this
+> helper just once).
+> 
+> I think something like that should be doable for Masami's fprobe-based
+> multi-attach kprobes, right? That would allow to have super-fast
+> attachment, but still support BPF cookie per each individual IP/kernel
+> function attachment. I haven't looked at code thoroughly, though,
+> please let me know if I'm missing something fundamental.
+
+ok, that seems doable, we should be able to get the link struct
+in bpf_get_attach_cookie_trace and reach both ips and cookies
+
+jirka
+
+> 
 > >
-> > For me it it 100% irrelevant if "not found" is an error for the query
-> > function or not. I just have to be able to check for "not found" and
-> > react accordingly.
+> > This introduces the fprobe, the function entry/exit probe with
+> > multiple probe point support. This also introduces the rethook
+> > for hooking function return as same as kretprobe does. This
+> > abstraction will help us to generalize the fgraph tracer,
+> > because we can just switch it from rethook in fprobe, depending
+> > on the kernel configuration.
 > >
-> > And adding a function
+> > The patch [1/8] and [7/8] are from your series[1]. Other libbpf
+> > patches will not be affected by this change.
 > >
-> >         def platform_get_irq_opional():
-> >                 ret =3D3D platform_get_irq()
-> >                 if ret =3D3D=3D3D -ENXIO:
-> >                         return 0
-> >                 return ret
+> > [1] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
 > >
-> > it's not a useful addition to the API if I cannot use 0 as a dummy
-> > because it doesn't simplify the caller enough to justify the additional
-> > function.
+> > I also added an out-of-tree (just for testing) patch at the
+> > end of this series ([8/8]) for adding a wildcard support to
+> > the sample program. With that patch, it shows how long the
+> > registration will take;
 > >
-> > The only thing I need to be able is to distinguish the cases "there is
-> > an irq", "there is no irq" and anything else is "there is a problem I
-> > cannot handle and so forward it to my caller". The semantic of
-> > platform_get_irq() is able to satisfy this requirement[1], so why intro=
-du=3D
-> ce
-> > platform_get_irq_opional() for the small advantage that I can check for
-> > not-found using
+> > # time insmod fprobe_example.ko symbol='btrfs_*'
+> > [   36.130947] fprobe_init: 1028 symbols found
+> > [   36.177901] fprobe_init: Planted fprobe at btrfs_*
+> > real    0m 0.08s
+> > user    0m 0.00s
+> > sys     0m 0.07s
 > >
-> >         if (!irq)
+> > Thank you,
 > >
-> > instead of
+> > ---
 > >
-> >         if (irq !=3D3D -ENXIO)
+> > Jiri Olsa (2):
+> >       ftrace: Add ftrace_set_filter_ips function
+> >       bpf: Add kprobe link for attaching raw kprobes
 > >
-> > ? The semantic of platform_get_irq() is easier ("Either a usable
-> > non-negative irq number or a negative error number") compared to
-> > platform_get_irq_optional() ("Either a usable positive irq number or a
-> > negative error number or 0 meaning not found"). Usage of
-> > platform_get_irq() isn't harder or more expensive (neither for a human
-> > reader nor for a maching running the resulting compiled code).
-> > For a human reader
+> > Masami Hiramatsu (6):
+> >       fprobe: Add ftrace based probe APIs
+> >       rethook: Add a generic return hook
+> >       rethook: x86: Add rethook x86 implementation
+> >       fprobe: Add exit_handler support
+> >       fprobe: Add sample program for fprobe
+> >       [DO NOT MERGE] Out-of-tree: Support wildcard symbol option to sample
 > >
-> >         if (irq !=3D3D -ENXIO)
 > >
-> > is even easier to understand because for
+> >  arch/x86/Kconfig                |    1
+> >  arch/x86/kernel/Makefile        |    1
+> >  arch/x86/kernel/rethook.c       |  115 ++++++++++++++++++++
+> >  include/linux/bpf_types.h       |    1
+> >  include/linux/fprobe.h          |   57 ++++++++++
+> >  include/linux/ftrace.h          |    3 +
+> >  include/linux/rethook.h         |   74 +++++++++++++
+> >  include/linux/sched.h           |    3 +
+> >  include/uapi/linux/bpf.h        |   12 ++
+> >  kernel/bpf/syscall.c            |  195 +++++++++++++++++++++++++++++++++-
+> >  kernel/exit.c                   |    2
+> >  kernel/fork.c                   |    3 +
+> >  kernel/kallsyms.c               |    1
+> >  kernel/trace/Kconfig            |   22 ++++
+> >  kernel/trace/Makefile           |    2
+> >  kernel/trace/fprobe.c           |  168 +++++++++++++++++++++++++++++
+> >  kernel/trace/ftrace.c           |   54 ++++++++-
+> >  kernel/trace/rethook.c          |  226 +++++++++++++++++++++++++++++++++++++++
+> >  samples/Kconfig                 |    7 +
+> >  samples/Makefile                |    1
+> >  samples/fprobe/Makefile         |    3 +
+> >  samples/fprobe/fprobe_example.c |  154 +++++++++++++++++++++++++++
+> >  tools/include/uapi/linux/bpf.h  |   12 ++
+> >  23 files changed, 1103 insertions(+), 14 deletions(-)
+> >  create mode 100644 arch/x86/kernel/rethook.c
+> >  create mode 100644 include/linux/fprobe.h
+> >  create mode 100644 include/linux/rethook.h
+> >  create mode 100644 kernel/trace/fprobe.c
+> >  create mode 100644 kernel/trace/rethook.c
+> >  create mode 100644 samples/fprobe/Makefile
+> >  create mode 100644 samples/fprobe/fprobe_example.c
 > >
-> >         if (!irq)
-> >
-> > they have to check where the value comes from, see it's
-> > platform_get_irq_optional() and understand that 0 means not-found.
->=20
-> "vIRQ zero does not exist."
+> > --
+> > Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
+> 
 
-With that statement in mind I would expect that a function that gives me
-an (v)irq number never returns 0.
-
-> > This function just adds overhead because as a irq framework user I have
-> > to understand another function. For me the added benefit is too small to
-> > justify the additional function. And you break out-of-tree drivers.
-> > These are all no major counter arguments, but as the advantage isn't
-> > major either, they still matter.
-> >
-> > Best regards
-> > Uwe
-> >
-> > [1] the only annoying thing is the error message.
->=20
-> So there's still a need for two functions.
-
-Or a single function not emitting an error message together with the
-callers being responsible for calling dev_err().
-
-So the options in my preference order (first is best) are:
-
- - Remove the printk from platform_get_irq() and remove
-   platform_get_irq_optional();
-
- - Rename platform_get_irq_optional() to platform_get_irq_silently()
-
- - Keep platform_get_irq_optional() as is
-
- - Collect underpants
-
- - ?
-
- - Change semantic of platform_get_irq_optional()
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---daitmup5biyyqkwr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHmztAACgkQwfwUeK3K
-7AlRQAf6AhYDCHaOxGO6hZ2L8wLnlnF6sFrLHSkHS2GJOuagJzvJ418JJIk3zkkN
-JJX1REM8rmAXGwIKEat5Ea7goFSWiSw4fr7r3eq/xyxBos5XFH7REZd9Le7ac4e7
-BrLcQENmj/gFhEdGk+DOgvOWGWAvWnwp2yKMj33qTbKi72A831OIMsB3+kFwqMt9
-f4X3Ng5JNb59Tl0UXy4GhU/8JdsULov6t3SdBUSdZvjE5yXA5IdEctWoZTaW6Rf9
-NILpiVlIFQCBsJ9haLtjfp1/EXNVmkb4+5eTiJQndvnAZGDV6FBtRn4PPAYSc3L/
-bqjzqdfJVKCdlgfMrOrsPAv2a0DZGQ==
-=l/Sj
------END PGP SIGNATURE-----
-
---daitmup5biyyqkwr--
