@@ -2,71 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85DAE492517
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:43:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E792149251D
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:44:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240809AbiARLnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 06:43:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46562 "EHLO
+        id S240925AbiARLnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 06:43:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237441AbiARLnR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:43:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE39C061574;
-        Tue, 18 Jan 2022 03:43:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ECD70612D2;
-        Tue, 18 Jan 2022 11:43:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B53D6C340E5;
-        Tue, 18 Jan 2022 11:43:14 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="UWhDxVOV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1642506192;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UY51soStDeX7hSwfxW/Nourib51ic30YjyXLLEp9HtA=;
-        b=UWhDxVOVNcUjzvUjwHhHyZQFX3zZLK5d4RfOkN0lnf3m9KvPS3j6bQjJKu4LDZbLIqNc1D
-        LOZX8oz9CBYHnFxK7r275wTMloTj8R9AJqU6I2NYT5FDs0zM946ELlHB3z3o4AyPMb5TjY
-        fp/rXFKHgo4ERVJ7g8yCS6L+u4GdKbc=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 19799da0 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 18 Jan 2022 11:43:12 +0000 (UTC)
-Received: by mail-yb1-f176.google.com with SMTP id m1so36183613ybo.5;
-        Tue, 18 Jan 2022 03:43:11 -0800 (PST)
-X-Gm-Message-State: AOAM531PKg4EhsUCoe1zdjAY6lMc0/aCdRE+MVZqPFWmdYh/TRtsMcQZ
-        Iabo7mxnR1VF9KpUzEJjd4VVcilBjxXk2drnIGI=
-X-Google-Smtp-Source: ABdhPJyEGJF0pwT3RY1nsH6lCBYOcSCuzgxGWqoaEC3w3XUMUZqr+gElLrE5UBtj52h3avkewVEljTNUn5n2TrbaiKo=
-X-Received: by 2002:a25:854f:: with SMTP id f15mr32699113ybn.121.1642506189835;
- Tue, 18 Jan 2022 03:43:09 -0800 (PST)
+        with ESMTP id S236427AbiARLnp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:43:45 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C94DC061574
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 03:43:45 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id 78so12814443pfu.10
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 03:43:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s+N7faLpbfNcs1Qm4WsP6feOfHuX0iiW37CaBCIfqYU=;
+        b=BrsHRdrtn3uehO5+h4WoiuHgsvGQQghjCkzhngusulWWD0K9mB4zJGnqZeue52MNnX
+         ngw4VcM0UbGJAKZoEq7QYk4JB0hCdcHte/QMQAJOm5zBGuxHBnTT27QQxVjtrJoP3qYa
+         wLUPjK9Bu1tFkP1CRWPAdzNKKhRUEUHQgDtxu2keF0gz6sW0At/hXx2NKoYJVdLgYR16
+         4zmhbE/hx/wO5Oi7jceZL/yCYbX51jVAe8/fyL+N55186r3jPEjLxx7KywcoCOdu7tBU
+         toLR+RudK3m5Cc64jQX7qg6bnf5U4GnQoA+ft2Cx5Nc7pMjYfo7jAgSiBve1QAkCAiAQ
+         fPuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s+N7faLpbfNcs1Qm4WsP6feOfHuX0iiW37CaBCIfqYU=;
+        b=0VLXJXFj5G4vakA4Y43GnVX7olPpIkjXzwTBDgPzj5enIXv4+sSzjJGDieglFM5w3V
+         nPoozydgBoEmP+TidB4F02lFB80fmUFe11l+P0hTmjOyIXcifZFR0eyN92g1n1RXDDGw
+         a80Kk+wFyw9o1ZEbk/T+vxjGT7F8U92NNyNFemJsTXLkBzIOIGh+E0xEjOeC408NW/5O
+         qFvgX2m47UYoHh98uHvG5bgOnPNoyaEU9G3+QegwQq0G/OLzNIaQ2VvL/hiGuFAiyM2t
+         NY4B+kFjTrPkjE558avVL6tUUbZjBU9a3CoLXx0kJ9pfVryLXAGN5V/1mUcP5BkXhe6y
+         RI4A==
+X-Gm-Message-State: AOAM532Vqoo8Uhw76gjIURjUiL41btLLOZqFO1/ZFJ6Pa/ApyBdGrKKJ
+        /mW6K8mXe/xKrLg1ej2KHVY=
+X-Google-Smtp-Source: ABdhPJysm6quwBZEIaXvP8NZQZlcnR1Ie+KMrzkhmYxcHaXy3vOJNd2HHZn2krr08ezdOq4htfBLjQ==
+X-Received: by 2002:a63:9043:: with SMTP id a64mr19436162pge.573.1642506225004;
+        Tue, 18 Jan 2022 03:43:45 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:6f4e:f5d3:49c4:16ca])
+        by smtp.gmail.com with ESMTPSA id n15sm2341282pjn.32.2022.01.18.03.43.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Jan 2022 03:43:44 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "Eric W . Biederman" <ebiederm@xmission.com>
+Subject: [PATCH net] netns: add schedule point in ops_exit_list()
+Date:   Tue, 18 Jan 2022 03:43:40 -0800
+Message-Id: <20220118114340.3322252-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
 MIME-Version: 1.0
-Received: by 2002:a05:7110:209:b0:11c:1b85:d007 with HTTP; Tue, 18 Jan 2022
- 03:43:09 -0800 (PST)
-In-Reply-To: <YeZhVGczxcBl0sI9@gondor.apana.org.au>
-References: <CAHmME9rxdksVZkN4DF_GabsEPrSDrKbo1cVQs77B_s-e2jZ64A@mail.gmail.com>
- <YeZhVGczxcBl0sI9@gondor.apana.org.au>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 18 Jan 2022 12:43:09 +0100
-X-Gmail-Original-Message-ID: <CAHmME9ogAW0o2PReNtsD+fFgwp28q2kP7WADtbd8kA7GsnKBpg@mail.gmail.com>
-Message-ID: <CAHmME9ogAW0o2PReNtsD+fFgwp28q2kP7WADtbd8kA7GsnKBpg@mail.gmail.com>
-Subject: Re: [PATCH crypto v3 0/2] reduce code size from blake2s on m68k and
- other small platforms
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     geert@linux-m68k.org, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org, wireguard@lists.zx2c4.com,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org, tytso@mit.edu,
-        gregkh@linuxfoundation.org, jeanphilippe.aumasson@gmail.com,
-        ardb@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/18/22, Herbert Xu <herbert@gondor.apana.org.au> wrote:
-> As the patches that triggered this weren't part of the crypto
-> tree, this will have to go through the random tree if you want
-> them for 5.17.
+From: Eric Dumazet <edumazet@google.com>
 
-Sure, will do.
+When under stress, cleanup_net() can have to dismantle
+netns in big numbers. ops_exit_list() currently calls
+many helpers [1] that have no schedule point, and we can
+end up with soft lockups, particularly on hosts
+with many cpus.
+
+Even for moderate amount of netns processed by cleanup_net()
+this patch avoids latency spikes.
+
+[1] Some of these helpers like fib_sync_up() and fib_sync_down_dev()
+are very slow because net/ipv4/fib_semantics.c uses host-wide hash tables,
+and ifindex is used as the only input of two hash functions.
+    ifindexes tend to be the same for all netns (lo.ifindex==1 per instance)
+    This will be fixed in a separate patch.
+
+Fixes: 72ad937abd0a ("net: Add support for batching network namespace cleanups")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Eric W. Biederman <ebiederm@xmission.com>
+---
+ net/core/net_namespace.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index 9b7171c40434985b869c1477975fc75447d78c3b..a5b5bb99c64462dac2513f7b3e28cb0763844c21 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -164,8 +164,10 @@ static void ops_exit_list(const struct pernet_operations *ops,
+ {
+ 	struct net *net;
+ 	if (ops->exit) {
+-		list_for_each_entry(net, net_exit_list, exit_list)
++		list_for_each_entry(net, net_exit_list, exit_list) {
+ 			ops->exit(net);
++			cond_resched();
++		}
+ 	}
+ 	if (ops->exit_batch)
+ 		ops->exit_batch(net_exit_list);
+-- 
+2.34.1.703.g22d0c6ccf7-goog
+
