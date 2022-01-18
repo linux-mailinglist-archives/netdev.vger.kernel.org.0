@@ -2,156 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F283492390
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 11:13:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A0E44923B6
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 11:22:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236912AbiARKNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 05:13:48 -0500
-Received: from mail-eopbgr60102.outbound.protection.outlook.com ([40.107.6.102]:42627
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229514AbiARKNs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jan 2022 05:13:48 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lGMpMzYc/i+yYpxHmkMHaaALCE+C2B5ByvwTdOV4qYtKgZoXbWAe6Jklb5jGXiJgpLaYduXiEBN/PMqN9UqVNZcK8Cttlbk5bEkm962nzs5GqSaqKESEtn95cnHSE8xbtRyJiJ+//9MfJ3K6HZD9cubWePUnOWWwyXgU5vIxiUlPg08MhWjg53RrdZq+a5bPlmvwjvWf/Om17TwrQ9dhdKXA+yMv/fNNTcvPn5MJ6C0oUwvSStXKajXeQ/oK43gHw9+5zPXIZszaKXidB5v2Yl1HE2jzGeN+9FRwy1PhfMUQ0CKz3GAE61Alb50qT24bJrOrlkRozA17UO/o2XlIkw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=23TX2fmN01uzjutGmyK2Readbb/ButdsMG9JjRy4IN8=;
- b=FZHPMlxEb/RpnnC8cypvMzQHjqBGZvoXiQpClRxYKI/J8dLNyIeZbs6CqZkmWWucHAoSzAsqzptffSbZjCG8KYqOuQmb+cnLmLbEp1/1Ymtxs3Voprok/mdZpLGoWzVQcMjBD2VFQOWkr0hfCJNuVZH4hjgOAC1bfgl6RdQAYjPMMEsmiErkxV6XwOCNtWaKEyYvUWHxZq2u39RGKYSefMpkCj0JNAUgwmgWTb3kN/rtC2STyiL1nTihafLXeII2pdt7EZSk0N9rSBLjRm8NguoutCEGy2jNLPTUvzZD3i91MA0yGwpY0JNiH8SJn/A5Wl3DMG/Ub7tzmqkvAiNd0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
- header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=23TX2fmN01uzjutGmyK2Readbb/ButdsMG9JjRy4IN8=;
- b=P06bkw7+8pqJsfd25DcsxOdK5Qscj0InXGoFvPklZ3RFQS9jSuzaJa5/gYvQsdL1Z48XhnVC3QvidCfJatjvwEXDrbGwIGXWYMDp9kiQrWcic+N+kjP0qM4Aqp9nSpYBxRHEjbBF1x9kcc/X228P6EVVQnKYKBQIPIrl6PazE30=
-Received: from AM6PR03MB3943.eurprd03.prod.outlook.com (2603:10a6:20b:26::24)
- by DBBPR03MB7081.eurprd03.prod.outlook.com (2603:10a6:10:206::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10; Tue, 18 Jan
- 2022 10:13:46 +0000
-Received: from AM6PR03MB3943.eurprd03.prod.outlook.com
- ([fe80::dd50:b902:a4d:312f]) by AM6PR03MB3943.eurprd03.prod.outlook.com
- ([fe80::dd50:b902:a4d:312f%5]) with mapi id 15.20.4888.014; Tue, 18 Jan 2022
- 10:13:46 +0000
-From:   =?Windows-1252?Q?Alvin_=8Aipraga?= <ALSI@bang-olufsen.dk>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-CC:     Frank Wunderlich <frank-w@public-files.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
- cpu ports, non cpu extint
-Thread-Topic: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
- cpu ports, non cpu extint
-Thread-Index: AQHYDFQUBpv8Dc7KA0ysRCZOWA7ayA==
-Date:   Tue, 18 Jan 2022 10:13:46 +0000
-Message-ID: <87fspll5ba.fsf@bang-olufsen.dk>
-References: <20220105031515.29276-1-luizluca@gmail.com>
-        <20220105031515.29276-12-luizluca@gmail.com>    <87ee5fd80m.fsf@bang-olufsen.dk>
-        <trinity-ea8d98eb-9572-426a-a318-48406881dc7e-1641822815591@3c-app-gmx-bs62>
-        <87r19e5e8w.fsf@bang-olufsen.dk>
-        <trinity-4b35f0dc-6bc6-400a-8d4e-deb26e626391-1641926734521@3c-app-gmx-bap14>
-        <87v8ynbylk.fsf@bang-olufsen.dk>
-        <trinity-d858854a-ff84-4b28-81f4-f0becc878017-1642089370117@3c-app-gmx-bap49>
-        <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
-In-Reply-To: <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>       (Luiz
- Angelo Daros de Luca's message of "Tue, 18 Jan 2022 01:58:39   -0300")
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 214140ac-35e4-4068-58fd-08d9da6b368f
-x-ms-traffictypediagnostic: DBBPR03MB7081:EE_
-x-microsoft-antispam-prvs: <DBBPR03MB7081BCBC0785CE76B5CA821D83589@DBBPR03MB7081.eurprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DwAuEV4DbkyNaYhsbfOrVvUwufP+500gcxydFZqr3fkatWVDEaUyh2x72nLc8h8ANKeBP5/lwb9kVxCxLkJqJVG4g4y54vb1B7yMCjldDWXnNXDTqmAEPCmoJjp7nuXkwj/JEMyhm80Q5QcvCuTggdhgRuVF77BxsvoxUjAbIg0GOIC/+wjgQ7Q581wxXmTenoGeIKkiCx0TeH1e5sInG9fnUTZGG+8DSmFbrgInxu2m1DVQKMO78BycV73zqM+uK4fyQHZldd4HEk/MiP6NcQ84UFRzuvaVHXJE+fetwsSYsdAV/PYRrqpr1Smg7OWQ/0JDOkOrZNdPDoTLgcl1icfVizidRgTshq4lspsdiK42Af0Mq2ao24hY/IFMrL3gHJg8mNo+yWO9heQwO1wMOxYoAw7M0TTJ3YPsb1tRedWZCDRXVzL1IyIl6z3Z5zsQRdiCr2pWGEBer5Iwn3zwL3QG6McmAE1Xg+s1Cf6CAEyMfmrqN6LJ9+i8zskAvHEVL7S8su++NHeI/1t+YCSXdGJPyLOxLRM0XqlACfyKuJ+uF9KCLa+D81adnnfJRt6TuV+BtWNidwou+/AcQ+99VwEuOUdZtf/Rai4l0gzrN56oT8DFCg9BGvu0oiSl+Z1kBhHQ4rQCfE78iiywb9EcA5yQOqNM+96wHDPWXfGWKSjWy3rvXKU2PSmhqd4hXbQ/zuIb8E3v4QnuHBPy33cagQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR03MB3943.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8976002)(36756003)(5660300002)(8936002)(8676002)(6506007)(4744005)(38100700002)(186003)(83380400001)(71200400001)(508600001)(2616005)(6486002)(66476007)(66556008)(76116006)(122000001)(66446008)(64756008)(91956017)(316002)(54906003)(66946007)(38070700005)(6512007)(26005)(86362001)(2906002)(4326008)(6916009);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?Windows-1252?Q?kaxKx08pUpTHGQx7cwlAQCklQRGF6ECdM85MUPfSxavNPFKmur59fWoy?=
- =?Windows-1252?Q?6kUF+yCbNmzuMtb6BOnnKkLS5oDhhI3x+jWTUAz1ndcQ9z3026RXaMNj?=
- =?Windows-1252?Q?bymvr8LgL/wqCHO8zuKiby/+x15xtujpBMsKPJCKztJEWiaQwhQKs7uW?=
- =?Windows-1252?Q?mZvke+9i4Govyw8RfSGW6Mcmm12gNCaAUXttCJ88TmtHfGGUBw4W/xQK?=
- =?Windows-1252?Q?HUsiQNRQhcCVsCL2zygKxBX/4Id7mAE7zYLFcV7eLRInxEI+mxnZnvxk?=
- =?Windows-1252?Q?83yw0ea/htPKxDgnE/aIjAxuoPelN5L7wNzORryC4zXxRJY2rUv5S7T7?=
- =?Windows-1252?Q?zQ0DWNzCaNHw0Z+VY3jK3UNfQ+cCFj4qXZ2CLgx5bmJxMMPfZlkj4Y6Q?=
- =?Windows-1252?Q?SPzMpzue2QL3w3WTeoiOGBn6gw6Ezl1kpexvJLcZ7gqCuTZdFz55yzU0?=
- =?Windows-1252?Q?DxMKCVdgOrjBpApdYa4IcJWt73hD6JfWjLi9HUIoJp/ix6S4bdnwVxLU?=
- =?Windows-1252?Q?pzR5qnDBxvYGc7OGsVH2p+6gCWnuksl4MbFZED8EEAtqRszw1MuKedEu?=
- =?Windows-1252?Q?06AW4ywUW05bt2WaXWOmGR5CHA0cUAofGGUqF+zGA2Sw85TVcwlp8VYj?=
- =?Windows-1252?Q?CwltxCOA+3YiZQQqtCsHNpFr55vkioxcelcMoUaZh+l4jiKa4qkxZATB?=
- =?Windows-1252?Q?mUAGuJqpWYLhSIwLw+74+yxrsarfcNioOtsYYY0diE9g5vXclb6BZH9r?=
- =?Windows-1252?Q?Bct+9rcDqrleYyhQhekiWCWW/Yq4drnAD++qXyWU2VxRQoKS7i0p0EcT?=
- =?Windows-1252?Q?CljmjkoePpV0xfPWPUaLY7v3a07p4gx2VzaEsKO3OqdLt+LhriqdXYs8?=
- =?Windows-1252?Q?e4Iw0WvMNx/PgF4M3w9rILjdAjFPgiUa4ictmzknG72YeLcJsqM63vat?=
- =?Windows-1252?Q?JiaITZP/K1u3gSmk3a5fqRf7vXJDD/voqgtIlGdf3WlIePnlsbG5bZI0?=
- =?Windows-1252?Q?Cj+0SdN69A2NuCzXXDjzzvrjhEwfYPiyEH46cJK+mZK/B3lDPPYycA6l?=
- =?Windows-1252?Q?JuyYiF5sUBuC9JCDOsyVQTO/1BkHvxbWKFosBdWTSNpNsacUznpD97Wb?=
- =?Windows-1252?Q?iqqduRtP8FhErggLXicXRGnls1EwgAMmSb6T08LvPEv+riax/AEpK/yU?=
- =?Windows-1252?Q?Sxq5203impIoCmLX4ScUB5XojPYeLIhSGLwXJi/HPHiwC7149Ljtof42?=
- =?Windows-1252?Q?ubtNL/75sXwf3QudIfDVP1mqZkzPpBcxytkodT8jL1tcQXBshCWvWkBc?=
- =?Windows-1252?Q?nStivHN0klhB6ZK6+e2KAOFDvjhy125Yi6uWFg+rPCNzvDAQunRXO4SP?=
- =?Windows-1252?Q?/I0L+hBcrsLtuaeCZVoEXhjrQBLhqVb5EnsMfSh8Dq6IA0Fvqpg3LXh+?=
- =?Windows-1252?Q?FwkljxrRl0FzkAHYBODySRiMhuIHqPq4h5nz/lwrQsQnnQsVQ5N9JUQq?=
- =?Windows-1252?Q?ixuwLkodYmKuhi+JuO8AGkTkBVy7HSHHJXeAAJiw2J5v2WPGSBUMzAX1?=
- =?Windows-1252?Q?x+r+Reh0nsFa5CeYd1CbjUyRNXfSwmdxiVItOiKXs/s8F9kdvBCStuNw?=
- =?Windows-1252?Q?JWdUKIxu7DOwoq1LnJ5Yk8LHsHicBeboYOM9GcOfinDDU+E8zmy3s8j3?=
- =?Windows-1252?Q?Hennl7Hu1tBCP4NK4IxNYA1X3JA3flK54d37ixvxUpHGCYPeMvt4ZDPX?=
- =?Windows-1252?Q?qS3wSDyEw1DS/VByeM8=3D?=
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
+        id S230254AbiARKWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 05:22:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229561AbiARKWQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 05:22:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C900C061574;
+        Tue, 18 Jan 2022 02:22:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C5E5612AF;
+        Tue, 18 Jan 2022 10:22:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4A21C00446;
+        Tue, 18 Jan 2022 10:22:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642501335;
+        bh=n2ayBOICvyWrfihLlmR5uPt2RCYfBgx6AyMG9eDIMXI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fxhlKW8hjLsNcLv+INfK5RAzcSqP1grlZZna7L++9ABVsrwAWZsiv8vmtsjQjl5Gt
+         JhopABXU/Q2TpE6w88+EDvC6HHDWoMy894MBZArTZsBJgHxayuFYZlxzn6hxZ5ZVw0
+         q/wkhoAON751sH5z3u7L+PcEAtS2d3ZjORE0m6spLhUlS0C3HNty1IC63ZnrujkMd9
+         6mhzOX+kVciQqjqYlIwQ56FCWVoxmkmuJFkQluvfks7vP8haTCSANkhVTQ3E+jgBdH
+         FaUV7VDttvZ9a7Mc98OuHU0aBm+aam5XvafHdS408roI7fmHAk94XH28sU5FGmau81
+         XbQhawVDlJlnw==
+From:   Ard Biesheuvel <ardb@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     linux-omap@vger.kernel.org, arnd@arndb.de, davem@davemloft.net,
+        kuba@kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: [PATCH net] net: cpsw: avoid alignment faults by taking NET_IP_ALIGN into account
+Date:   Tue, 18 Jan 2022 11:22:04 +0100
+Message-Id: <20220118102204.1258645-1-ardb@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-OriginatorOrg: bang-olufsen.dk
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR03MB3943.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 214140ac-35e4-4068-58fd-08d9da6b368f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jan 2022 10:13:46.0887
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YscG26+yr1Z4VbfdUEaioHeRD5coY2Pg6qj0juGjeVkG4Jrh2TWreKk/zZABSXNtVn4Aiev7qSW2kgnp+0Lsrg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR03MB7081
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3834; h=from:subject; bh=n2ayBOICvyWrfihLlmR5uPt2RCYfBgx6AyMG9eDIMXI=; b=owEB7QES/pANAwAKAcNPIjmS2Y8kAcsmYgBh5pTLcARWy9ZVS7+03uNKavkkDy7NTmTWxwE4Y3f+ oTey+b+JAbMEAAEKAB0WIQT72WJ8QGnJQhU3VynDTyI5ktmPJAUCYeaUywAKCRDDTyI5ktmPJJX7C/ 9ZcVoAWfoxnTJfDvpXi//ALHBSyu8soO+OaLPONzKFGLW8zZu66friwkbmcENqlPLVPj7J2JPtITkv J6k5tYiiRnzqTBMvls20rY19S/LKSEQ8Wzj130cqgAgGoOpQtmxSwi8xUQag1kIU9e5U0WK4ZN05Ed 8zX2UUYZYuG5ftBfReszXV8m1+4z9iRJv8Xpqum38lHpHtaXNFrMzBhf0tTyB5pGYOGsZmNkcDFUBe Fqch/JsQFu01OeBZh2Z8oBPzQcHtOBbstYWWl+WcXFOxNsEdmNpw7yIg+065eJ4tk1T2PeoE6F+Gb/ VjmwsDtzwT0H5UIME9uRzJddx/gOP8yCM1pGYUU5YS6QDSGb1rGjqfxoR+ipA6cNZPcXldu9H3VIQC MGCVDqezd/n9MOWpPB4YhLDrvhYKq2FTqJUXRYUoFNgYLTIrRfv5MhWrttDu5QrZA4/SSk1VQ2hzJ6 P6pBKqJN9PRTIQjnOmZ5Fkak6SynDVS7mJpNU+8heKWD0=
+X-Developer-Key: i=ardb@kernel.org; a=openpgp; fpr=F43D03328115A198C90016883D200E9CA6329909
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Luiz Angelo Daros de Luca <luizluca@gmail.com> writes:
+Both versions of the CPSW driver declare a CPSW_HEADROOM_NA macro that
+takes NET_IP_ALIGN into account, but fail to use it appropriately when
+storing incoming packets in memory. This results in the IPv4 source and
+destination addresses to appear misaligned in memory, which causes
+aligment faults that need to be fixed up in software.
 
->> the problem is checksum offloading on the gmac (soc-side)
->
-> I suggested it might be checksum problem because I'm also affected. In
-> my case, I have an mt7620a SoC connected to the rtl8367s switch. The
-> OS offloads checksum to HW but the mt7620a cannot calculate the
-> checksum with the (EtherType) Realtek CPU Tag in place. I'll try to
-> move the CPU tag to test if the mt7620a will then digest the frame
-> correctly.
+So let's switch from CPSW_HEADROOM to CPSW_HEADROOM_NA where needed.
+This gets rid of any alignment faults on the RX path on a Beaglebone
+White.
 
-You have two choices:
+Cc: Grygorii Strashko <grygorii.strashko@ti.com>
+Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+---
+ drivers/net/ethernet/ti/cpsw.c      | 6 +++---
+ drivers/net/ethernet/ti/cpsw_new.c  | 6 +++---
+ drivers/net/ethernet/ti/cpsw_priv.c | 2 +-
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
-    enum rtl8365mb_cpu_position {
-            RTL8365MB_CPU_POS_AFTER_SA =3D 0,
-            RTL8365MB_CPU_POS_BEFORE_CRC =3D 1,
-    };
+diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+index 33142d505fc8..03575c017500 100644
+--- a/drivers/net/ethernet/ti/cpsw.c
++++ b/drivers/net/ethernet/ti/cpsw.c
+@@ -349,7 +349,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
+ 	struct cpsw_common	*cpsw = ndev_to_cpsw(xmeta->ndev);
+ 	int			pkt_size = cpsw->rx_packet_max;
+ 	int			ret = 0, port, ch = xmeta->ch;
+-	int			headroom = CPSW_HEADROOM;
++	int			headroom = CPSW_HEADROOM_NA;
+ 	struct net_device	*ndev = xmeta->ndev;
+ 	struct cpsw_priv	*priv;
+ 	struct page_pool	*pool;
+@@ -392,7 +392,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
+ 	}
+ 
+ 	if (priv->xdp_prog) {
+-		int headroom = CPSW_HEADROOM, size = len;
++		int size = len;
+ 
+ 		xdp_init_buff(&xdp, PAGE_SIZE, &priv->xdp_rxq[ch]);
+ 		if (status & CPDMA_RX_VLAN_ENCAP) {
+@@ -442,7 +442,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
+ 	xmeta->ndev = ndev;
+ 	xmeta->ch = ch;
+ 
+-	dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM;
++	dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM_NA;
+ 	ret = cpdma_chan_submit_mapped(cpsw->rxv[ch].ch, new_page, dma,
+ 				       pkt_size, 0);
+ 	if (ret < 0) {
+diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
+index 279e261e4720..bd4b1528cf99 100644
+--- a/drivers/net/ethernet/ti/cpsw_new.c
++++ b/drivers/net/ethernet/ti/cpsw_new.c
+@@ -283,7 +283,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
+ {
+ 	struct page *new_page, *page = token;
+ 	void *pa = page_address(page);
+-	int headroom = CPSW_HEADROOM;
++	int headroom = CPSW_HEADROOM_NA;
+ 	struct cpsw_meta_xdp *xmeta;
+ 	struct cpsw_common *cpsw;
+ 	struct net_device *ndev;
+@@ -336,7 +336,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
+ 	}
+ 
+ 	if (priv->xdp_prog) {
+-		int headroom = CPSW_HEADROOM, size = len;
++		int size = len;
+ 
+ 		xdp_init_buff(&xdp, PAGE_SIZE, &priv->xdp_rxq[ch]);
+ 		if (status & CPDMA_RX_VLAN_ENCAP) {
+@@ -386,7 +386,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
+ 	xmeta->ndev = ndev;
+ 	xmeta->ch = ch;
+ 
+-	dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM;
++	dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM_NA;
+ 	ret = cpdma_chan_submit_mapped(cpsw->rxv[ch].ch, new_page, dma,
+ 				       pkt_size, 0);
+ 	if (ret < 0) {
+diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+index 3537502e5e8b..ba220593e6db 100644
+--- a/drivers/net/ethernet/ti/cpsw_priv.c
++++ b/drivers/net/ethernet/ti/cpsw_priv.c
+@@ -1122,7 +1122,7 @@ int cpsw_fill_rx_channels(struct cpsw_priv *priv)
+ 			xmeta->ndev = priv->ndev;
+ 			xmeta->ch = ch;
+ 
+-			dma = page_pool_get_dma_addr(page) + CPSW_HEADROOM;
++			dma = page_pool_get_dma_addr(page) + CPSW_HEADROOM_NA;
+ 			ret = cpdma_chan_idle_submit_mapped(cpsw->rxv[ch].ch,
+ 							    page, dma,
+ 							    cpsw->rx_packet_max,
+-- 
+2.30.2
 
-I hardcoded it to AFTER_SA but if you find that this solves the problem
-for some MACs then it might be worth adding a device tree property for
-this to make it configurable. Of course remember to keep it
-backward-compatible, and add a note to future travellers in the bindings
-that this might solve checksum errors :-)
-
-Kind regards,
-Alvin=
