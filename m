@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7880A4916F2
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:37:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D84964916F6
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:37:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344735AbiARChU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:37:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58704 "EHLO
+        id S1344757AbiARChW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:37:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236727AbiARCcy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:32:54 -0500
+        with ESMTP id S245674AbiARCc4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:32:56 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2671C06175C;
-        Mon, 17 Jan 2022 18:31:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBAF0C06175D;
+        Mon, 17 Jan 2022 18:32:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B489C61247;
-        Tue, 18 Jan 2022 02:31:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0256AC36AF4;
-        Tue, 18 Jan 2022 02:31:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2664F611FD;
+        Tue, 18 Jan 2022 02:32:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54B3BC36AE3;
+        Tue, 18 Jan 2022 02:32:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473117;
-        bh=KgD6qxy+fP2fvSM/3e8PrWESYFntT/ISgWQqCE2FJS0=;
+        s=k20201202; t=1642473121;
+        bh=y7DUbAYnbV+W1Whx7ceW4ohwB+O7PWFAmZ3Y6eWH30c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UzBF0/xsCf31Fr8Bap9oGaG9Np6QwUXl2i7JdGDPHjejXUeNxBgqLmEnDK+XQsk/t
-         kRKWx7hJJ5StptDgbBpsIW+PcFH+p5B5eAXvUCmQTqw+BGKg+ebZiAp4YLnzMtNsXj
-         78R1HCcI5jwiGBWjKonnUjAsMPT4OKHNiDnBnTDdxa8UpzJtgSo5vp0LOIf4AWiWZa
-         y88kNzaRO8xKsy4hVjzsKq5fDGaa+9VGyT153AVy+JfD8fOWQdUPs+WoY+efDq/ape
-         o6FJhmDOe60pcSgqXEOkjR5IEg3L+83bIvR5k38o+zFjBBLBp7fig8S89RyBhqMA5T
-         4ves3JZGs7//w==
+        b=a87Za1gQm8V86lQeLTM/To8U7s4gblrwavBKUxafxC+qUwwwOJHYtV/hWuceC6YeF
+         CWjL9yupCc05JYxx951ZmMtE4Ff1G3ytEE5jGGdG2fCRy8Bss5Aa1youGj0YMfJgg/
+         49ioELjlXTbZNk9RgaNQH5kOZCk0jjcNwd/E7fvG4NfW1teM2GqxrS2nZmBSg8Aa2Q
+         TzuIvl6M9Is0glrCkiBJYxT037GS5Mm6N25kutnhCJfPrRtl74m5f7gM4/kK8BxbED
+         9MFqIbqewKuOb3DtqML8LW1cqPHqbOnjmIwwI3/dAoJnewDhXxzFTchJg8nEONeIjU
+         9ZeOQilKLUocQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 002/188] Bluetooth: Fix memory leak of hci device
-Date:   Mon, 17 Jan 2022 21:28:46 -0500
-Message-Id: <20220118023152.1948105-2-sashal@kernel.org>
+Cc:     Archie Pusaka <apusaka@chromium.org>,
+        Sonny Sasaka <sonnysasaka@chromium.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 004/188] Bluetooth: Fix removing adv when processing cmd complete
+Date:   Mon, 17 Jan 2022 21:28:48 -0500
+Message-Id: <20220118023152.1948105-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -52,64 +54,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Archie Pusaka <apusaka@chromium.org>
 
-[ Upstream commit 75d9b8559ac36e059238ee4f8e33cd86086586ba ]
+[ Upstream commit 2128939fe2e771645dd88e1938c27fdf96bd1cd0 ]
 
-Fault injection test reported memory leak of hci device as follows:
+If we remove one instance of adv using Set Extended Adv Enable, there
+is a possibility of issue occurs when processing the Command Complete
+event. Especially, the adv_info might not be found since we already
+remove it in hci_req_clear_adv_instance() -> hci_remove_adv_instance().
+If that's the case, we will mistakenly proceed to remove all adv
+instances instead of just one single instance.
 
-unreferenced object 0xffff88800b858000 (size 8192):
-  comm "kworker/0:2", pid 167, jiffies 4294955747 (age 557.148s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 ad 4e ad de  .............N..
-  backtrace:
-    [<0000000070eb1059>] kmem_cache_alloc_trace mm/slub.c:3208
-    [<00000000015eb521>] hci_alloc_dev_priv include/linux/slab.h:591
-    [<00000000dcfc1e21>] bpa10x_probe include/net/bluetooth/hci_core.h:1240
-    [<000000005d3028c7>] usb_probe_interface drivers/usb/core/driver.c:397
-    [<00000000cbac9243>] really_probe drivers/base/dd.c:517
-    [<0000000024cab3f0>] __driver_probe_device drivers/base/dd.c:751
-    [<00000000202135cb>] driver_probe_device drivers/base/dd.c:782
-    [<000000000761f2bc>] __device_attach_driver drivers/base/dd.c:899
-    [<00000000f7d63134>] bus_for_each_drv drivers/base/bus.c:427
-    [<00000000c9551f0b>] __device_attach drivers/base/dd.c:971
-    [<000000007f79bd16>] bus_probe_device drivers/base/bus.c:487
-    [<000000007bb8b95a>] device_add drivers/base/core.c:3364
-    [<000000009564d9ea>] usb_set_configuration drivers/usb/core/message.c:2171
-    [<00000000e4657087>] usb_generic_driver_probe drivers/usb/core/generic.c:239
-    [<0000000071ede518>] usb_probe_device drivers/usb/core/driver.c:294
-    [<00000000cbac9243>] really_probe drivers/base/dd.c:517
+This patch fixes the issue by checking the content of the HCI command
+instead of checking whether the adv_info is found.
 
-hci_alloc_dev() do not init the device's flag. And hci_free_dev()
-using put_device() to free the memory allocated for this device,
-but it calls just put_device(dev) only in case of HCI_UNREGISTER
-flag is set, So any error handing before hci_register_dev() success
-will cause memory leak.
-
-To avoid this behaviour we can using kfree() to release dev before
-hci_register_dev() success.
-
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_sysfs.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/bluetooth/hci_event.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/hci_sysfs.c b/net/bluetooth/hci_sysfs.c
-index 7827639ecf5c3..4e3e0451b08c1 100644
---- a/net/bluetooth/hci_sysfs.c
-+++ b/net/bluetooth/hci_sysfs.c
-@@ -86,6 +86,8 @@ static void bt_host_release(struct device *dev)
- 
- 	if (hci_dev_test_flag(hdev, HCI_UNREGISTER))
- 		hci_release_dev(hdev);
-+	else
-+		kfree(hdev);
- 	module_put(THIS_MODULE);
- }
- 
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 0bca035bf2dcc..75116cf1b173d 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -1325,8 +1325,10 @@ static void hci_cc_le_set_ext_adv_enable(struct hci_dev *hdev,
+ 					   &conn->le_conn_timeout,
+ 					   conn->conn_timeout);
+ 	} else {
+-		if (adv) {
+-			adv->enabled = false;
++		if (cp->num_of_sets) {
++			if (adv)
++				adv->enabled = false;
++
+ 			/* If just one instance was disabled check if there are
+ 			 * any other instance enabled before clearing HCI_LE_ADV
+ 			 */
 -- 
 2.34.1
 
