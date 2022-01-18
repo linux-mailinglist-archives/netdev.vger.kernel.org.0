@@ -2,43 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CCEF491E49
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 04:49:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EB58491E3E
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 04:48:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346188AbiARDsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 22:48:46 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48952 "EHLO
+        id S1350984AbiARDs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 22:48:29 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:46150 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346905AbiARCkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:40:14 -0500
+        with ESMTP id S1346960AbiARCkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:40:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2AC35B81249;
-        Tue, 18 Jan 2022 02:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E61B6C36AE3;
-        Tue, 18 Jan 2022 02:40:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 655DFB811CF;
+        Tue, 18 Jan 2022 02:40:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5DC2C36AEB;
+        Tue, 18 Jan 2022 02:40:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473610;
-        bh=Am4JlF+3LE3QNxnbCrz5BtyOYey+mHZ/4iNz2HgS+MY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=OCaEpAVNKI7gdWm/RXd3AwrNXZeG+YICH5zPVU6R3gCfQJ6sP9FiwddJrcGfqoCeq
-         mQo28gN0FPwKyXeo092BZRlm+KdFtCnQJFrKcC991yburB+XTbAa1K+yb+7PLIYq+I
-         l4YbSVzINKNlveaq/71RHSvGOpgjaAJMBAgTIlMsay5cVwxoFI5BqEoPBXyCpsAbgk
-         /2IgZeptpMSkfOjxifpukWueEZ2p5gNxLNByGddSs3Oa8oblFHF92Tf3FyLKb8M5Vp
-         25gt4LvQdjYPpA0Np4aiJXo8w7Q2ULqnx/u5wgKxhv1BsJ5lHV3+/r8gYZY/of6z+f
-         BRSttpaZ1MZPA==
+        s=k20201202; t=1642473617;
+        bh=Adkz8tW47vbwofh7NrAPeUglOkNTCxORjd0loYPv954=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GL1euMVLqEJ4bRV+YoXRBZdaMGs1r3aWBL7al51zKAAW/f4R9NJtYgdoKCnbDSRFo
+         LHv+lFQgFiUmLPyqf2kI1Jm10/TUPyDMYqeyq7gw2JTQw3qHsTBsC9PI6WOf8azWBR
+         0JlZ5r2V6ZIcNA12VMQdaNVB7Gf7UKBpW/vQuNf2+yscx3CdUYJleTtAGOfVxFstMA
+         NIKpu/TE2weIc93999/KrZYKqzQxcUAYxspUC9Jjyhv8/UsPe+tdMLuCpdW3X00Lm2
+         XwVxJuqAK1Ao2Y7lkTQrlVzE8NwtaAXe/YYXDWuM/G2MjchPXzS08auCz/1tsUBfRp
+         krD3GdINLcgBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 001/116] Bluetooth: Fix debugfs entry leak in hci_register_dev()
-Date:   Mon, 17 Jan 2022 21:38:12 -0500
-Message-Id: <20220118024007.1950576-1-sashal@kernel.org>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Hengqi Chen <hengqi.chen@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        daniel@iogearbox.net, davemarchevsky@fb.com,
+        john.fastabend@gmail.com, ntspring@fb.com, vfedorenko@novek.ru,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 005/116] selftests/bpf: Fix bpf_object leak in skb_ctx selftest
+Date:   Mon, 17 Jan 2022 21:38:16 -0500
+Message-Id: <20220118024007.1950576-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -47,38 +52,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
+[ Upstream commit 8c7a95520184b6677ca6075e12df9c208d57d088 ]
 
-Fault injection test report debugfs entry leak as follows:
+skb_ctx selftest didn't close bpf_object implicitly allocated by
+bpf_prog_test_load() helper. Fix the problem by explicitly calling
+bpf_object__close() at the end of the test.
 
-debugfs: Directory 'hci0' with parent 'bluetooth' already present!
-
-When register_pm_notifier() failed in hci_register_dev(), the debugfs
-create by debugfs_create_dir() do not removed in the error handing path.
-
-Add the remove debugfs code to fix it.
-
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
+Link: https://lore.kernel.org/bpf/20211107165521.9240-10-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ tools/testing/selftests/bpf/prog_tests/skb_ctx.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 2ad66f64879f1..2e7998bad133b 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3810,6 +3810,7 @@ int hci_register_dev(struct hci_dev *hdev)
- 	return id;
- 
- err_wqueue:
-+	debugfs_remove_recursive(hdev->debugfs);
- 	destroy_workqueue(hdev->workqueue);
- 	destroy_workqueue(hdev->req_workqueue);
- err:
+diff --git a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
+index fafeddaad6a99..23915be6172d6 100644
+--- a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
++++ b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
+@@ -105,4 +105,6 @@ void test_skb_ctx(void)
+ 		   "ctx_out_mark",
+ 		   "skb->mark == %u, expected %d\n",
+ 		   skb.mark, 10);
++
++	bpf_object__close(obj);
+ }
 -- 
 2.34.1
 
