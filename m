@@ -2,80 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 990854926E5
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 14:16:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B6FD4926FE
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 14:19:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238974AbiARNQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 08:16:22 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:43046 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236141AbiARNQV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jan 2022 08:16:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=5uKSg1jbSZCAY3NiK22LI67jIWWN8OnNGPK10udHGpA=; b=haErt7NNRU791rmaOnnJH50v/W
-        k++PzDKUizEjqvLHKpaQd2Um86AUegdsCCRAxz7SIswSNjzI8Tm0952GkGbqCJY0voD9i44DeFMld
-        zm+/jxtRinsmlO4cluxfn48cpRZ0x42daCMiHlHeTTvZn/77i6csEUvFXSwEyXH/SYB0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n9oLR-001ls0-G2; Tue, 18 Jan 2022 14:16:17 +0100
-Date:   Tue, 18 Jan 2022 14:16:17 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Subject: Re: [PATCH net-next v4 05/11] net: dsa: realtek: use phy_read in
- ds->ops
-Message-ID: <Yea9oR0AteAMwjW2@lunn.ch>
-References: <20220105031515.29276-1-luizluca@gmail.com>
- <20220105031515.29276-6-luizluca@gmail.com>
- <79a9c7c2-9bd0-d5d1-6d5a-d505cdc564be@gmail.com>
- <CAJq09z4U5qmBuPUqBnGpT+qcG-vmtFwNMg5Uau3q3F53W-0YDA@mail.gmail.com>
+        id S242390AbiARNTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 08:19:19 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:36902 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242302AbiARNTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 08:19:12 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id 283A01F43568
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1642511949;
+        bh=NnA8DF5nv67Abok07B1FDD4ZaMq6Cy3stGYg/JYq7G0=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=gOOtBoB+LqcCGqcgcyaKvqu7qG58u5YJiGrs4xSCpwjbLSoAmu8d+ghKU2xzdrjGL
+         csHm1zQ4M9Wc1QqBiTxySkXIRBRsukryioI8Rf7kmqWuBU5sPYRtaI078IAg6rECbj
+         D0gSKpSnJE+wtTS6FKb9dGrhhjeSNSmKcI4rnGjdh56Eh3xAe8AOwK0B6pbhDNtkfH
+         4eUo0EBztcjo8Q7PvxJkf+3GUsCh7aiMJ49lTs1VYa3O+u/EVWLjGpvw4FLpQb3/8S
+         pg1o3CQba6wq9aviWjsg+dSN1rYUlNPGRE0vNwYjm+9EauBsD47BsSEwipQfRVWuh7
+         YyZXm6BLQxY/g==
+Message-ID: <a9f7185f-0a7f-3133-fcdd-bd790b51e6ae@collabora.com>
+Date:   Tue, 18 Jan 2022 18:18:59 +0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJq09z4U5qmBuPUqBnGpT+qcG-vmtFwNMg5Uau3q3F53W-0YDA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Cc:     usama.anjum@collabora.com, kernel@collabora.com
+Subject: Re: [PATCH 06/10] selftests: landlock: Add the uapi headers include
+ variable
+Content-Language: en-US
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@collabora.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        chiminghao <chi.minghao@zte.com.cn>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL VIRTUAL MACHINE (KVM)" <kvm@vger.kernel.org>,
+        "open list:LANDLOCK SECURITY MODULE" 
+        <linux-security-module@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        "open list:NETWORKING [MPTCP]" <mptcp@lists.linux.dev>,
+        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>
+References: <20220118112909.1885705-1-usama.anjum@collabora.com>
+ <20220118112909.1885705-7-usama.anjum@collabora.com>
+ <8ea3bd61-8251-a5b6-c0b4-6d15bac4d2c5@digikod.net>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <8ea3bd61-8251-a5b6-c0b4-6d15bac4d2c5@digikod.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Thanks, Florian. You should be correct. It might call
-> mdiobus_unregister() and mdiobus_free() twice, once inside the dsa
-> code and another one by the devm (if I understood how devm functions
-> work).
+
+
+On 1/18/22 5:35 PM, Mickaël Salaün wrote:
 > 
-> The issue is that the dsa switch is assuming that if slave_mii is
-> allocated and ds->ops->phy_read is defined, it has allocated the
-> slave_mii by itself and it should clean up the slave_mii during
-> teardown.
-
-Correct. Either the DSA core takes care of the mdiobus and uses the
-phy_read and phy_write ops, or the driver internally registers its own
-mdiobus, and phy_read and phy_write ops are not implemented. The core
-is not designed to mix those together.
-
-> if ds->ops->phy_read value should not tell if ds->slave_mii_bus should
-> be cleaned by the DSA switch.
+> On 18/01/2022 12:29, Muhammad Usama Anjum wrote:
+>> Out of tree build of this test fails if relative path of the output
+>> directory is specified. Remove the un-needed include paths and use
+>> KHDR_INCLUDES to correctly reach the headers.
+>>
+>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+>> ---
+>>   tools/testing/selftests/landlock/Makefile | 11 +++--------
+>>   1 file changed, 3 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/tools/testing/selftests/landlock/Makefile
+>> b/tools/testing/selftests/landlock/Makefile
+>> index a99596ca9882..44c724b38a37 100644
+>> --- a/tools/testing/selftests/landlock/Makefile
+>> +++ b/tools/testing/selftests/landlock/Makefile
+>> @@ -1,6 +1,6 @@
+>>   # SPDX-License-Identifier: GPL-2.0
+>>   -CFLAGS += -Wall -O2
+>> +CFLAGS += -Wall -O2 $(KHDR_INCLUDES)
+>>     src_test := $(wildcard *_test.c)
+>>   @@ -12,13 +12,8 @@ KSFT_KHDR_INSTALL := 1
+>>   OVERRIDE_TARGETS := 1
+>>   include ../lib.mk
+>>   -khdr_dir = $(top_srcdir)/usr/include
 > 
-> I would selfishly hope the correct one was the second option because
-> it would make my code much cleaner. If not, that's a complex issue to
-> solve without lots of duplications: realtek-smi drivers should not
-> have ds->ops->phy_read defined while realtek-mdio requires it. I'll
-> need to duplicate dsa_switch_ops for each subdriver only to unset
-> phy_read and also duplicate realtek_variant for each interface only to
-> reference that different dsa_switch_ops.
+> This should be updated to:
+> khdr_dir = ${abs_srctree}/usr/include
+> 
+> Using a global KHDR_DIR instead of khdr_dir could be useful for others too.
+> 
+>> -
+>> -$(khdr_dir)/linux/landlock.h: khdr
+>> -    @:
+> 
+> This should be kept as is, otherwise we loose this check to rebuild the
+> headers if linux/landlock.h is updated, which is handy for development.
+> KVM lost a similar behavior with this patch series.
+> 
+>> -
+>>   $(OUTPUT)/true: true.c
+>>       $(LINK.c) $< $(LDLIBS) -o $@ -static
+>>   -$(OUTPUT)/%_test: %_test.c $(khdr_dir)/linux/landlock.h
+>> ../kselftest_harness.h common.h
+> 
+> This should not be changed.
+> 
+>> -    $(LINK.c) $< $(LDLIBS) -o $@ -lcap -I$(khdr_dir)
+>> +$(OUTPUT)/%_test: %_test.c ../kselftest_harness.h common.h
+>> +    $(LINK.c) $< $(LDLIBS) -o $@ -lcap
+> 
+> This doesn't work when building in the local directory because
+> $abs_srctree and $KHDR_INCLUDES are empty:
+> cd tools/testing/selftests/landlock && make
+Hi,
 
-One option would be to provide a dummy mdiobus driver for
-realtek-mdio, which simply passes the access through to the existing
-MDIO bus.
+Thank you. I'll update this path and the kvm one. I'll send a V2.
 
-     Andrew
+Thanks,
+Usama
