@@ -2,43 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71A8449178F
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:42:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49DEB491A06
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:58:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346111AbiARCmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:42:16 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48696 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346607AbiARCjh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:39:37 -0500
+        id S245007AbiARC5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:57:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345655AbiARCs5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:48:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B053FC061774;
+        Mon, 17 Jan 2022 18:39:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE5F8B8125D;
-        Tue, 18 Jan 2022 02:39:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C4F5C36AF3;
-        Tue, 18 Jan 2022 02:39:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E19960C96;
+        Tue, 18 Jan 2022 02:39:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B561CC36AEF;
+        Tue, 18 Jan 2022 02:39:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473573;
-        bh=VnaSr4MhSWW2i7WWLbWLmwOjCnxmEcd4nHfq1PKfJy0=;
+        s=k20201202; t=1642473581;
+        bh=TvWm8VA0FL0gbTrcAIrjiYnHCBn+7z1eGZmV+NVBhVA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BXWhaZ8ESIiyQKDSNyyNmJkICuhEMfnhOs+R7f9rI8J82a0i4T6Q53LxugbLqBYTH
-         /SjuvCrsxYi3E7plsrMSJU3lhhHqdiRHyBQpWJpX+33/6SQzj4YiRXVUxvZJU3/uhk
-         6gE9+5X4tW8fZrL95EzAmS3302C1ze6SoqYb4U3MjOmUEpmpMS0ZFo9+ekgvq204ga
-         sSpynoayG4YA0A+BP9oOzRoWnT8S1xMlv9zMVuWHtuS7eW++vgHnPCOHicH7l2pbZP
-         Ipbrdsw48qChV7KfEUZF3oD3y8zO5VME86S1NHHj4nSOCkNdsqVpuaNjq6hOhpzcdV
-         mD7exzX6HOCgA==
+        b=UR6xN0y8hKg9B1C9J3XCk3jl20H0p5N+TJ4Mu91C2Dzl0uUzEm8QRs5eWdzxhgrXJ
+         HE8768UGImlhkAMyRwV0A4IRHjbC4EU9GNufGG5kwAXb0wYojpHDnFeTdmqAHfipeT
+         xkgbDwpSDagzdnsXM695fgESaoiH4rSp6yJQD3UpdUst/ZGVMPUXMUgdWWrWbOOx2i
+         ugafaXYLaw2/ovxKWXXNX0QJgskf3sXNe/FbBtqXvc7GZOgnckNTYsKuXdcbhK4+RL
+         WcmIldUe/0xNu9XYQaZF1VpUSYWMdnq7oNEb6o3SoIVjtZSAC1ZzP+yu2F4xP8QV5u
+         Yt2pzkG6/3/Sg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, andrew@lunn.ch,
-        vivien.didelot@gmail.com, olteanv@gmail.com, kuba@kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 174/188] net: dsa: hold rtnl_mutex when calling dsa_master_{setup,teardown}
-Date:   Mon, 17 Jan 2022 21:31:38 -0500
-Message-Id: <20220118023152.1948105-174-sashal@kernel.org>
+Cc:     Maher Sanalla <msanalla@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 180/188] net/mlx5: Update log_max_qp value to FW max capability
+Date:   Mon, 17 Jan 2022 21:31:44 -0500
+Message-Id: <20220118023152.1948105-180-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -50,87 +52,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Maher Sanalla <msanalla@nvidia.com>
 
-[ Upstream commit c146f9bc195a9dc3ad7fd000a14540e7c9df952d ]
+[ Upstream commit f79a609ea6bf54ad2d2c24e4de4524288b221666 ]
 
-DSA needs to simulate master tracking events when a binding is first
-with a DSA master established and torn down, in order to give drivers
-the simplifying guarantee that ->master_state_change calls are made
-only when the master's readiness state to pass traffic changes.
-master_state_change() provide a operational bool that DSA driver can use
-to understand if DSA master is operational or not.
-To avoid races, we need to block the reception of
-NETDEV_UP/NETDEV_CHANGE/NETDEV_GOING_DOWN events in the netdev notifier
-chain while we are changing the master's dev->dsa_ptr (this changes what
-netdev_uses_dsa(dev) reports).
+log_max_qp in driver's default profile #2 was set to 18, but FW actually
+supports 17 at the most - a situation that led to the concerning print
+when the driver is loaded:
+"log_max_qp value in current profile is 18, changing to HCA capabaility
+limit (17)"
 
-The dsa_master_setup() and dsa_master_teardown() functions optionally
-require the rtnl_mutex to be held, if the tagger needs the master to be
-promiscuous, these functions call dev_set_promiscuity(). Move the
-rtnl_lock() from that function and make it top-level.
+The expected behavior from mlx5_profile #2 is to match the maximum FW
+capability in regards to log_max_qp. Thus, log_max_qp in profile #2 is
+initialized to a defined static value (0xff) - which basically means that
+when loading this profile, log_max_qp value  will be what the currently
+installed FW supports at most.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Maher Sanalla <msanalla@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/dsa2.c   | 8 ++++++++
- net/dsa/master.c | 4 ++--
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index e9911b18bdbfa..db9cdfb190fc0 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1011,6 +1011,8 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
- 	struct dsa_port *dp;
- 	int err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 92b01858d7f3e..29b7297a836a5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -97,6 +97,8 @@ enum {
+ 	MLX5_ATOMIC_REQ_MODE_HOST_ENDIANNESS = 0x1,
+ };
  
-+	rtnl_lock();
++#define LOG_MAX_SUPPORTED_QPS 0xff
 +
- 	list_for_each_entry(dp, &dst->ports, list) {
- 		if (dsa_port_is_cpu(dp)) {
- 			err = dsa_master_setup(dp->master, dp);
-@@ -1019,6 +1021,8 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
- 		}
- 	}
+ static struct mlx5_profile profile[] = {
+ 	[0] = {
+ 		.mask           = 0,
+@@ -108,7 +110,7 @@ static struct mlx5_profile profile[] = {
+ 	[2] = {
+ 		.mask		= MLX5_PROF_MASK_QP_SIZE |
+ 				  MLX5_PROF_MASK_MR_CACHE,
+-		.log_max_qp	= 18,
++		.log_max_qp	= LOG_MAX_SUPPORTED_QPS,
+ 		.mr_cache[0]	= {
+ 			.size	= 500,
+ 			.limit	= 250
+@@ -513,7 +515,9 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
+ 		 to_fw_pkey_sz(dev, 128));
  
-+	rtnl_unlock();
-+
- 	return 0;
- }
- 
-@@ -1026,9 +1030,13 @@ static void dsa_tree_teardown_master(struct dsa_switch_tree *dst)
- {
- 	struct dsa_port *dp;
- 
-+	rtnl_lock();
-+
- 	list_for_each_entry(dp, &dst->ports, list)
- 		if (dsa_port_is_cpu(dp))
- 			dsa_master_teardown(dp->master);
-+
-+	rtnl_unlock();
- }
- 
- static int dsa_tree_setup_lags(struct dsa_switch_tree *dst)
-diff --git a/net/dsa/master.c b/net/dsa/master.c
-index e8e19857621bd..16b7dfd22bf5d 100644
---- a/net/dsa/master.c
-+++ b/net/dsa/master.c
-@@ -267,9 +267,9 @@ static void dsa_master_set_promiscuity(struct net_device *dev, int inc)
- 	if (!ops->promisc_on_master)
- 		return;
- 
--	rtnl_lock();
-+	ASSERT_RTNL();
-+
- 	dev_set_promiscuity(dev, inc);
--	rtnl_unlock();
- }
- 
- static ssize_t tagging_show(struct device *d, struct device_attribute *attr,
+ 	/* Check log_max_qp from HCA caps to set in current profile */
+-	if (MLX5_CAP_GEN_MAX(dev, log_max_qp) < prof->log_max_qp) {
++	if (prof->log_max_qp == LOG_MAX_SUPPORTED_QPS) {
++		prof->log_max_qp = MLX5_CAP_GEN_MAX(dev, log_max_qp);
++	} else if (MLX5_CAP_GEN_MAX(dev, log_max_qp) < prof->log_max_qp) {
+ 		mlx5_core_warn(dev, "log_max_qp value in current profile is %d, changing it to HCA capability limit (%d)\n",
+ 			       prof->log_max_qp,
+ 			       MLX5_CAP_GEN_MAX(dev, log_max_qp));
 -- 
 2.34.1
 
