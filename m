@@ -2,49 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C621C4919CC
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:56:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0B574919CE
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:56:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238048AbiARC4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:56:09 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53250 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348089AbiARCov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:44:51 -0500
+        id S1347000AbiARC4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:56:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37500 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348245AbiARCpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:45:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 507BDB81255;
-        Tue, 18 Jan 2022 02:44:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA476C36AEB;
-        Tue, 18 Jan 2022 02:44:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D7056130C;
+        Tue, 18 Jan 2022 02:45:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA0E6C36AF3;
+        Tue, 18 Jan 2022 02:45:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473888;
-        bh=J50OZHN0zvd2GM4+rHZ4BtCzAMe4iStWevzL2oEi4hY=;
+        s=k20201202; t=1642473905;
+        bh=ot27nxBOMITcF6fRXuYtehlwri265v9oIoxpy+iAVNs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SNG4+y2v9oauG8Prlidiv8+aOZEGFYX7LT3oyq0tOYNMBEUHF2ulvplxnjM/HKoOr
-         h8wWhvKNETznR4EwgTlSlGQGxu49wS2xO4WOV9Aw9Ri20oL8zz3E9WIht5BZZ6r5ME
-         Iibit9vUkrFrc1nf65cno9M1nJkIbC7N1CDAJBliPzTa2wa5R1r7ZFUER2qvkqhc3Z
-         Grndgt6fOnpo8oqTcbVLctq3/JylcMDgCOoKLWru5VfGFLj/nunj/56neuKc9BST0G
-         0Gu1cQhCV/6NX49m1FyJfOb9L1xrolSYrso1sm7M1bOprESxPwhkWVDO6NwoTlDO5s
-         8FPlTPfhsCUcw==
+        b=C3+6AP4dDtKlP0famHo//HDlKwNkRu97reMOcPDPQ4wETogPCtLmfWj0pWMGFbfL2
+         QrfQswithb5KBPrS7FdzdVncRd7X89FFrSK+uOJ1pZUSIgJ+BNeazA4QvNeCEIqbze
+         6vOuN3QpbKHPO6Yc+a1BCjn4IZaylvhdCFFxzu7GxCazdM3K3wKDdswtIx7DCeX18O
+         4zjw1SL0w+64wRKHkSEpIMLmijOGTqERbAb9hD2tuEERl7oo6zyLveHZdyAzNvZho9
+         9Vyk3zygyIfXJGzhTRSki7OXRXt1kUCacsMJnopDojcol1I0iy9pqcP/lsS2aV+Z7y
+         Ayap6RSfej0IA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
-        Tycho Andersen <tycho@tycho.pizza>,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Sasha Levin <sashal@kernel.org>, mareklindner@neomailbox.ch,
-        a@unstable.cc, davem@davemloft.net, kuba@kernel.org,
-        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 08/73] batman-adv: allow netlink usage in unprivileged containers
-Date:   Mon, 17 Jan 2022 21:43:27 -0500
-Message-Id: <20220118024432.1952028-8-sashal@kernel.org>
+Cc:     Danielle Ratson <danieller@nvidia.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 15/73] mlxsw: pci: Add shutdown method in PCI driver
+Date:   Mon, 17 Jan 2022 21:43:34 -0500
+Message-Id: <20220118024432.1952028-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
 References: <20220118024432.1952028-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,169 +50,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Linus Lüssing <linus.luessing@c0d3.blue>
+From: Danielle Ratson <danieller@nvidia.com>
 
-[ Upstream commit 9057d6c23e7388ee9d037fccc9a7bc8557ce277b ]
+[ Upstream commit c1020d3cf4752f61a6a413f632ea2ce2370e150d ]
 
-Currently, creating a batman-adv interface in an unprivileged LXD
-container and attaching secondary interfaces to it with "ip" or "batctl"
-works fine. However all batctl debug and configuration commands
-fail:
+On an arm64 platform with the Spectrum ASIC, after loading and executing
+a new kernel via kexec, the following trace [1] is observed. This seems
+to be caused by the fact that the device is not properly shutdown before
+executing the new kernel.
 
-  root@container:~# batctl originators
-  Error received: Operation not permitted
-  root@container:~# batctl orig_interval
-  1000
-  root@container:~# batctl orig_interval 2000
-  root@container:~# batctl orig_interval
-  1000
+Fix this by implementing a shutdown method which mirrors the remove
+method, as recommended by the kexec maintainer [2][3].
 
-To fix this change the generic netlink permissions from GENL_ADMIN_PERM
-to GENL_UNS_ADMIN_PERM. This way a batman-adv interface is fully
-maintainable as root from within a user namespace, from an unprivileged
-container.
+[1]
+BUG: Bad page state in process devlink pfn:22f73d
+page:fffffe00089dcf40 refcount:-1 mapcount:0 mapping:0000000000000000 index:0x0
+flags: 0x2ffff00000000000()
+raw: 2ffff00000000000 0000000000000000 ffffffff089d0201 0000000000000000
+raw: 0000000000000000 0000000000000000 ffffffffffffffff 0000000000000000
+page dumped because: nonzero _refcount
+Modules linked in:
+CPU: 1 PID: 16346 Comm: devlink Tainted: G B 5.8.0-rc6-custom-273020-gac6b365b1bf5 #44
+Hardware name: Marvell Armada 7040 TX4810M (DT)
+Call trace:
+ dump_backtrace+0x0/0x1d0
+ show_stack+0x1c/0x28
+ dump_stack+0xbc/0x118
+ bad_page+0xcc/0xf8
+ check_free_page_bad+0x80/0x88
+ __free_pages_ok+0x3f8/0x418
+ __free_pages+0x38/0x60
+ kmem_freepages+0x200/0x2a8
+ slab_destroy+0x28/0x68
+ slabs_destroy+0x60/0x90
+ ___cache_free+0x1b4/0x358
+ kfree+0xc0/0x1d0
+ skb_free_head+0x2c/0x38
+ skb_release_data+0x110/0x1a0
+ skb_release_all+0x2c/0x38
+ consume_skb+0x38/0x130
+ __dev_kfree_skb_any+0x44/0x50
+ mlxsw_pci_rdq_fini+0x8c/0xb0
+ mlxsw_pci_queue_fini.isra.0+0x28/0x58
+ mlxsw_pci_queue_group_fini+0x58/0x88
+ mlxsw_pci_aqs_fini+0x2c/0x60
+ mlxsw_pci_fini+0x34/0x50
+ mlxsw_core_bus_device_unregister+0x104/0x1d0
+ mlxsw_devlink_core_bus_device_reload_down+0x2c/0x48
+ devlink_reload+0x44/0x158
+ devlink_nl_cmd_reload+0x270/0x290
+ genl_rcv_msg+0x188/0x2f0
+ netlink_rcv_skb+0x5c/0x118
+ genl_rcv+0x3c/0x50
+ netlink_unicast+0x1bc/0x278
+ netlink_sendmsg+0x194/0x390
+ __sys_sendto+0xe0/0x158
+ __arm64_sys_sendto+0x2c/0x38
+ el0_svc_common.constprop.0+0x70/0x168
+ do_el0_svc+0x28/0x88
+ el0_sync_handler+0x88/0x190
+ el0_sync+0x140/0x180
 
-All except one batman-adv netlink setting are per interface and do not
-leak information or change settings from the host system and are
-therefore save to retrieve or modify as root from within an unprivileged
-container.
+[2]
+https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1195432.html
 
-"batctl routing_algo" / BATADV_CMD_GET_ROUTING_ALGOS is the only
-exception: It provides the batman-adv kernel module wide default routing
-algorithm. However it is read-only from netlink and an unprivileged
-container is still not allowed to modify
-/sys/module/batman_adv/parameters/routing_algo. Instead it is advised to
-use the newly introduced "batctl if create routing_algo RA_NAME" /
-IFLA_BATADV_ALGO_NAME to set the routing algorithm on interface
-creation, which already works fine in an unprivileged container.
+[3]
+https://patchwork.kernel.org/project/linux-scsi/patch/20170212214920.28866-1-anton@ozlabs.org/#20116693
 
-Cc: Tycho Andersen <tycho@tycho.pizza>
-Signed-off-by: Linus Lüssing <linus.luessing@c0d3.blue>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Cc: Eric Biederman <ebiederm@xmission.com>
+Signed-off-by: Danielle Ratson <danieller@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/netlink.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/batman-adv/netlink.c b/net/batman-adv/netlink.c
-index 7e052d6f759b6..e59c5aa27ee0b 100644
---- a/net/batman-adv/netlink.c
-+++ b/net/batman-adv/netlink.c
-@@ -1351,21 +1351,21 @@ static const struct genl_ops batadv_netlink_ops[] = {
- 	{
- 		.cmd = BATADV_CMD_TP_METER,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_tp_meter_start,
- 		.internal_flags = BATADV_FLAG_NEED_MESH,
- 	},
- 	{
- 		.cmd = BATADV_CMD_TP_METER_CANCEL,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_tp_meter_cancel,
- 		.internal_flags = BATADV_FLAG_NEED_MESH,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_ROUTING_ALGOS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_algo_dump,
- 	},
- 	{
-@@ -1380,68 +1380,68 @@ static const struct genl_ops batadv_netlink_ops[] = {
- 	{
- 		.cmd = BATADV_CMD_GET_TRANSTABLE_LOCAL,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_tt_local_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_TRANSTABLE_GLOBAL,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_tt_global_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_ORIGINATORS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_orig_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_NEIGHBORS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_hardif_neigh_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_GATEWAYS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_gw_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_BLA_CLAIM,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_bla_claim_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_BLA_BACKBONE,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_bla_backbone_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_DAT_CACHE,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_dat_cache_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_MCAST_FLAGS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_mcast_flags_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_SET_MESH,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_set_mesh,
- 		.internal_flags = BATADV_FLAG_NEED_MESH,
- 	},
- 	{
- 		.cmd = BATADV_CMD_SET_HARDIF,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_set_hardif,
- 		.internal_flags = BATADV_FLAG_NEED_MESH |
- 				  BATADV_FLAG_NEED_HARDIF,
-@@ -1457,7 +1457,7 @@ static const struct genl_ops batadv_netlink_ops[] = {
- 	{
- 		.cmd = BATADV_CMD_SET_VLAN,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_set_vlan,
- 		.internal_flags = BATADV_FLAG_NEED_MESH |
- 				  BATADV_FLAG_NEED_VLAN,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+index aa4fef7890841..ff331251a019a 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+@@ -1876,6 +1876,7 @@ int mlxsw_pci_driver_register(struct pci_driver *pci_driver)
+ {
+ 	pci_driver->probe = mlxsw_pci_probe;
+ 	pci_driver->remove = mlxsw_pci_remove;
++	pci_driver->shutdown = mlxsw_pci_remove;
+ 	return pci_register_driver(pci_driver);
+ }
+ EXPORT_SYMBOL(mlxsw_pci_driver_register);
 -- 
 2.34.1
 
