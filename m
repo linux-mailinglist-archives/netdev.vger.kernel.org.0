@@ -2,34 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C5C249227B
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 10:19:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BEFA4922CA
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 10:33:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345554AbiARJTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 04:19:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41440 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345549AbiARJTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 04:19:04 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A536DC06173E
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 01:19:03 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9kdD-0006Nd-T3; Tue, 18 Jan 2022 10:18:23 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9kdA-00Ayd5-Tc; Tue, 18 Jan 2022 10:18:20 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9kd9-0003a7-SE; Tue, 18 Jan 2022 10:18:19 +0100
-Date:   Tue, 18 Jan 2022 10:18:19 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        id S1345312AbiARJdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 04:33:07 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51592 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235807AbiARJc5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 04:32:57 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9DC1B81223;
+        Tue, 18 Jan 2022 09:32:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76C83C00446;
+        Tue, 18 Jan 2022 09:32:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1642498373;
+        bh=DQsfwtJhv3xPa9stElQYzBQziBxi/lTSvFxbATxprog=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IYXMJ0VPjFYSJY4NvlXmFWheHw/XkPbDg6jYdIXLJdD1zglfnvz6feJDneqRQF/Y7
+         Xd4h6nOb3hzFwTMGSfrGLMZs9cs+U1HvQaFyP49TIVznh2RAxc+V/DqmrD1t1xwr2a
+         25A0Y8zcDbS1ew90c5vIYgg7oo/j34B2Guk1t+0Y=
+Date:   Tue, 18 Jan 2022 10:32:50 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
 Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
         Vignesh Raghavendra <vigneshr@ti.com>, kvm@vger.kernel.org,
         "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
@@ -86,72 +85,46 @@ Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
         James Morse <james.morse@arm.com>,
         Zha Qipeng <qipeng.zha@intel.com>,
         Sebastian Reichel <sre@kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>,
         linux-mediatek@lists.infradead.org,
         Brian Norris <computersforpeace@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
 Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
  (summary)
-Message-ID: <20220118091819.zzxpffrxbckoxiys@pengutronix.de>
+Message-ID: <YeaJQnzxTqdarQ6T@kroah.com>
 References: <20220110195449.12448-1-s.shtylyov@omp.ru>
  <20220110195449.12448-2-s.shtylyov@omp.ru>
  <20220115183643.6zxalxqxrhkfgdfq@pengutronix.de>
  <YeQpWu2sUVOSaT9I@kroah.com>
+ <20220118091819.zzxpffrxbckoxiys@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="4nmi7jsy4ulpuolr"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <YeQpWu2sUVOSaT9I@kroah.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220118091819.zzxpffrxbckoxiys@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jan 18, 2022 at 10:18:19AM +0100, Uwe Kleine-König wrote:
+> On Sun, Jan 16, 2022 at 03:19:06PM +0100, Greg Kroah-Hartman wrote:
+> > On Sat, Jan 15, 2022 at 07:36:43PM +0100, Uwe Kleine-König wrote:
+> > > A possible compromise: We can have both. We rename
+> > > platform_get_irq_optional() to platform_get_irq_silent() (or
+> > > platform_get_irq_silently() if this is preferred) and once all users are
+> > > are changed (which can be done mechanically), we reintroduce a
+> > > platform_get_irq_optional() with Sergey's suggested semantic (i.e.
+> > > return 0 on not-found, no error message printking).
+> > 
+> > Please do not do that as anyone trying to forward-port an old driver
+> > will miss the abi change of functionality and get confused.  Make
+> > build-breaking changes, if the way a function currently works is
+> > changed in order to give people a chance.
+> 
+> Fine for me. I assume this is a Nack for Sergey's patch?
 
---4nmi7jsy4ulpuolr
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This set of patches is going nowhere as-is, sorry.  The thread is too
+confusing and people are not agreeing at all.
 
-On Sun, Jan 16, 2022 at 03:19:06PM +0100, Greg Kroah-Hartman wrote:
-> On Sat, Jan 15, 2022 at 07:36:43PM +0100, Uwe Kleine-K=F6nig wrote:
-> > A possible compromise: We can have both. We rename
-> > platform_get_irq_optional() to platform_get_irq_silent() (or
-> > platform_get_irq_silently() if this is preferred) and once all users are
-> > are changed (which can be done mechanically), we reintroduce a
-> > platform_get_irq_optional() with Sergey's suggested semantic (i.e.
-> > return 0 on not-found, no error message printking).
->=20
-> Please do not do that as anyone trying to forward-port an old driver
-> will miss the abi change of functionality and get confused.  Make
-> build-breaking changes, if the way a function currently works is
-> changed in order to give people a chance.
-
-Fine for me. I assume this is a Nack for Sergey's patch?
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---4nmi7jsy4ulpuolr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHmhdgACgkQwfwUeK3K
-7AlOfwf/RajwcOGZOaXu4/Hu0uIDDH01Izth3e7+cbt0DvzofBxZhrwLi6+7R8Ii
-FDvio63jvvz41IZoKpB3Sp3cJe6N5nHxfoeVbVFx1oDC5ZSb3xpzIKBpz6usYWSK
-mpEzG1FLl/zHhNcFBvzOrkoJNhHOKKqTkCMQ9+SMFB2QpzY2GlhGyeloYsR5wRlS
-36dfdheA3MnzMe+YgqcykvdU78oW4Ajcnq+31xfkY4u4FtLXz44Pz4j32buAaqtw
-/Ryrr0NnSSAdwMkNMebBf3XX8emOhXd3w/ActLJA50YN3K1ePF1ViBaNwB6wIGGA
-DmnwP6lCav2JoRm3yOWVlcLDeltVJA==
-=IrhS
------END PGP SIGNATURE-----
-
---4nmi7jsy4ulpuolr--
+greg k-h
