@@ -2,208 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DB7B49309C
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 23:23:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 571384930A2
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 23:23:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349865AbiARWWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 17:22:11 -0500
-Received: from mga09.intel.com ([134.134.136.24]:37200 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349846AbiARWWK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jan 2022 17:22:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642544530; x=1674080530;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=sNPUM+qRmsPiTphVYBIIBrvPwmB4t+WjPBDWdLipk24=;
-  b=PfZHNPGAjLvIt3MsBvfx0DhfmdfJZuv3Psf97mxMv6Ozk5L+oIqnnmVm
-   Xp0tMtv+uf1/lRS3m6aL+h8V90pqS581tu6DM/50APBb83kXK2bbEQCBQ
-   DRJLGwVri/6O9Ba2vI+4lT/RuB08RSQ+45QGBw3/nELyzS2ky/u5bTI4J
-   spUlRf8IghPy+AVCE8JGgNg5Mx/CUTD9oxR3+5AB0hNO0w8kMdYGlPeBK
-   S0kAt+o9Lk7g9Q4L3pKNKnmIZl38oJqqBCob1YaaS0Oo1DQZNFmeJf3Jw
-   DTz3xgYxlFVdTpwJguifWWOlk0HpaU1V8H9UdeMOQNsAYueyKztaHwBCC
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="244721332"
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="244721332"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 14:22:10 -0800
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="517936265"
-Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.209.77.211]) ([10.209.77.211])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 14:22:09 -0800
-Message-ID: <4a4b2848-d665-c9ba-c66a-dd4408e94ea5@linux.intel.com>
-Date:   Tue, 18 Jan 2022 14:22:08 -0800
+        id S1349910AbiARWXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 17:23:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349906AbiARWXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 17:23:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D67D3C061574;
+        Tue, 18 Jan 2022 14:23:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F89AB816E1;
+        Tue, 18 Jan 2022 22:23:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F8A6C340E0;
+        Tue, 18 Jan 2022 22:23:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642544596;
+        bh=hL8i0Ck3qNpQ9NParDC1L9x1Piqn3M/3xN4hX6O4sl0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ta6xL4auhxFYxMoJmZoFy8k1dIgQFTnGlAorNpg31r3G0QVycV+deRkEJfKOUZtad
+         GF/iuCKCUfMPW3iCHzpXi0/Z0Pk5ohlM1ArwCeiisWU3ObKjcZS547kxjwHwy9gsg5
+         6KggqAwUePnEumkQD+jo7wFi36QsvfbHd1xNFOmBimiFdgA9HV51JSqxzoC1re9ZLH
+         gfQgvqBbuAC7ndCUHFBMO0gS0ezpDEWZfnjLzuWp9/7OE20Eh6k4bYB5Mleir+sXkU
+         fKgFYo10iSB/qtVofpYZDPDLIa6I/1qXJGBYqX37kc0BtwhSxjQdwtIq2p/8pX3V2K
+         5TyZ5ct5Ve4tw==
+Date:   Tue, 18 Jan 2022 23:23:12 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+Subject: Re: [PATCH v22 bpf-next 17/23] bpf: selftests: update
+ xdp_adjust_tail selftest to include multi-frags
+Message-ID: <Yec90EIkR931IGwA@lore-desk>
+References: <cover.1642439548.git.lorenzo@kernel.org>
+ <f7d7d5ba9c132be0dbbebe3a2e4c2377ffa05834.1642439548.git.lorenzo@kernel.org>
+ <20220118201647.lwnexycnk2dq25z3@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net-next v4 02/13] net: wwan: t7xx: Add control DMA
- interface
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com
-References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com>
- <20220114010627.21104-3-ricardo.martinez@linux.intel.com>
- <d5854453-84b-1eba-7cc7-d94f41a185d@linux.intel.com>
-From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
-In-Reply-To: <d5854453-84b-1eba-7cc7-d94f41a185d@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="PL2zuOkGpTAB21Jd"
+Content-Disposition: inline
+In-Reply-To: <20220118201647.lwnexycnk2dq25z3@ast-mbp.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 1/18/2022 6:13 AM, Ilpo Järvinen wrote:
-> On Thu, 13 Jan 2022, Ricardo Martinez wrote:
-...
->> +#define CLDMA_NUM 2
-> I tried to understand its purpose but it seems that only one of the
-> indexes is used in the arrays where this define gives the size? Related to
-> this, ID_CLDMA0 is not used anywhere?
+--PL2zuOkGpTAB21Jd
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The modem HW has 2 CLDMAs, idx 0 for the app processor (SAP) and idx 1 
-for the modem (MD).
-
-CLDMA_NUM is defined as 2 to reflect the HW capabilities but mainly to 
-have a cleaner upcoming
-
-patches, which will use ID_CLDMA0.
-
-If having array's of size 1 is not a problem then we can define 
-CLDMA_NUM as 1 and
-
-play with the CLDMA indexes.
-
-...
-
-
->> +static void t7xx_cldma_enable_irq(struct cldma_ctrl *md_ctrl)
->> +{
->> +	t7xx_pcie_mac_set_int(md_ctrl->t7xx_dev, md_ctrl->hw_info.phy_interrupt_id);
->> +}
->> +
->> +static void t7xx_cldma_disable_irq(struct cldma_ctrl *md_ctrl)
->> +{
->> +	t7xx_pcie_mac_clear_int(md_ctrl->t7xx_dev, md_ctrl->hw_info.phy_interrupt_id);
->> +}
-> t7xx_pcie_mac_set_int and t7xx_pcie_mac_clear_int are only defined
-> by a later patch.
->
->> +static bool t7xx_cldma_qs_are_active(struct t7xx_cldma_hw *hw_info)
->> +{
->> +	unsigned int tx_active;
->> +	unsigned int rx_active;
->> +
->> +	tx_active = t7xx_cldma_hw_queue_status(hw_info, CLDMA_ALL_Q, MTK_TX);
->> +	rx_active = t7xx_cldma_hw_queue_status(hw_info, CLDMA_ALL_Q, MTK_RX);
->> +	if (tx_active == CLDMA_INVALID_STATUS || rx_active == CLDMA_INVALID_STATUS)
-> These cannot ever be true because of mask in t7xx_cldma_hw_queue_status().
-
-t7xx_cldma_hw_queue_status() shouldn't apply the mask for CLDMA_ALL_Q.
-
->> +static int t7xx_cldma_clear_rxq(struct cldma_ctrl *md_ctrl, int qnum)
->> +{
->> +	struct cldma_queue *rxq = &md_ctrl->rxq[qnum];
->> +	struct cldma_request *req;
->> +	struct cldma_rgpd *rgpd;
->> +	unsigned long flags;
->> +
->> +	spin_lock_irqsave(&rxq->ring_lock, flags);
->> +	t7xx_cldma_q_reset(rxq);
->> +	list_for_each_entry(req, &rxq->tr_ring->gpd_ring, entry) {
->> +		rgpd = req->gpd;
->> +		rgpd->gpd_flags = GPD_FLAGS_IOC | GPD_FLAGS_HWO;
->> +		rgpd->data_buff_len = 0;
->> +
->> +		if (req->skb) {
->> +			req->skb->len = 0;
->> +			skb_reset_tail_pointer(req->skb);
->> +		}
->> +	}
->> +
->> +	spin_unlock_irqrestore(&rxq->ring_lock, flags);
->> +	list_for_each_entry(req, &rxq->tr_ring->gpd_ring, entry) {
->> +		int ret;
-> I find this kind of newline+unlock+more code a bit odd groupingwise.
-> IMO, the newline should be after the unlock rather than just before it to
-> better indicate the critical sections visually.
-
-Agree. In general, the driver uses a newline after '}', unlock 
-operations should be an
-
-exception since it looks better to keep the critical section blocks 
-together.
-
-...
-
->> +/**
->> + * t7xx_cldma_send_skb() - Send control data to modem.
->> + * @md_ctrl: CLDMA context structure.
->> + * @qno: Queue number.
->> + * @skb: Socket buffer.
->> + * @blocking: True for blocking operation.
->> + *
->> + * Send control packet to modem using a ring buffer.
->> + * If blocking is set, it will wait for completion.
->> + *
->> + * Return:
->> + * * 0		- Success.
->> + * * -ENOMEM	- Allocation failure.
->> + * * -EINVAL	- Invalid queue request.
->> + * * -EBUSY	- Resource lock failure.
->> + */
->> +int t7xx_cldma_send_skb(struct cldma_ctrl *md_ctrl, int qno, struct sk_buff *skb, bool blocking)
->> +{
->> +	struct cldma_request *tx_req;
->> +	struct cldma_queue *queue;
->> +	unsigned long flags;
->> +	int ret;
->> +
->> +	if (qno >= CLDMA_TXQ_NUM)
->> +		return -EINVAL;
->> +
->> +	queue = &md_ctrl->txq[qno];
->> +
->> +	spin_lock_irqsave(&md_ctrl->cldma_lock, flags);
->> +	if (!(md_ctrl->txq_active & BIT(qno))) {
->> +		ret = -EBUSY;
->> +		spin_unlock_irqrestore(&md_ctrl->cldma_lock, flags);
->> +		goto allow_sleep;
->> +	}
+> On Mon, Jan 17, 2022 at 06:28:29PM +0100, Lorenzo Bianconi wrote:
+> > +
+> > +	CHECK(err || retval !=3D XDP_TX || size !=3D exp_size,
+> > +	      "9k-10b", "err %d errno %d retval %d[%d] size %d[%u]\n",
+> > +	      err, errno, retval, XDP_TX, size, exp_size);
 > ...
->> +		if (!blocking) {
->> +			ret = -EBUSY;
->> +			break;
->> +		}
->> +
->> +		ret = wait_event_interruptible_exclusive(queue->req_wq, queue->budget > 0);
->> +	} while (!ret);
->> +
->> +allow_sleep:
->> +	return ret;
->> +}
-> First of all, if I interpreted the call chains correctly, this function is
-> always called with blocking=true.
->
-> Second, the first codepath returning -EBUSY when not txq_active seems
-> twisted/reversed logic to me (not active => busy ?!?).
+> > +	CHECK(err || retval !=3D XDP_TX || size !=3D exp_size,
+> > +	      "9k-1p", "err %d errno %d retval %d[%d] size %d[%u]\n",
+> > +	      err, errno, retval, XDP_TX, size, exp_size);
+> ...
+> > +	CHECK(err || retval !=3D XDP_TX || size !=3D exp_size,
+> > +	      "9k-2p", "err %d errno %d retval %d[%d] size %d[%u]\n",
+> > +	      err, errno, retval, XDP_TX, size, exp_size);
+>=20
+> CHECK is deprecated.
+> That nit was mentioned many times. Please address it in all patches.
 
-What about -EINVAL?
+I kept the CHECK macro because there were other CHECK occurrences in
+xdp_adjust_tail.c (e.g. in test_xdp_adjust_tail_grow()).
+I guess we can add a preliminary patch to convert the other CHECK
+occurrences used in xdp_adjust_tail.c (the same for xdp_bpf2bpf.c).
+What do you think?
 
-Other codes considered: -EPERM, -ENETDOWN.
+Regards,
+Lorenzo
 
->
-...
+--PL2zuOkGpTAB21Jd
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYec9zwAKCRA6cBh0uS2t
+rAcUAQCQyoYWrvAKkaVk+r0RpPtEDvl01+qSh1csVjO3eOLjuQEAipD9Zy9t/Jvs
+OhIYylbYHemO1X8mVeIjTy5PGRzPDwU=
+=C3MK
+-----END PGP SIGNATURE-----
+
+--PL2zuOkGpTAB21Jd--
