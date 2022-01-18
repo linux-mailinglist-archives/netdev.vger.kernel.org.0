@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37A52491431
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:20:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2C8491450
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:21:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244519AbiARCUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:20:44 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35078 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244627AbiARCUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:20:21 -0500
+        id S244797AbiARCVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:21:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37838 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244686AbiARCVK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:21:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EC58B8123A;
-        Tue, 18 Jan 2022 02:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9B46C36AEB;
-        Tue, 18 Jan 2022 02:20:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C73D961163;
+        Tue, 18 Jan 2022 02:21:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E5CAC36AF2;
+        Tue, 18 Jan 2022 02:21:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472419;
-        bh=bz1hqXPikVfXBjdlfFqkzfQekXPW+TQfB3hTk5+n4r0=;
+        s=k20201202; t=1642472469;
+        bh=VbjM88vfkzibxjmt+y58uIpvisAVC02ljgpwkY+7PCM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KyThUFsZsHs2UrhNT/b1fjEc7SoYjw8/pZcnYH02guGEVFwqp5Xq8L7ve2z8VnFht
-         f+wkjA08h+vOU0nuhQmY6G0JgaZr82EOCw+TILh9sfef9RpNWbYz56jD2UKv3GrlPV
-         BExPx05tj3ky3zyiOSqy755Bk5aZnJWnmlHIPlSzOyFJeEVnETFxsW2vcLXTKaIbxf
-         ruR+vu9bS0zyte55mO4Ql6v5f42QLi6dgcYV6IkI/NZeaC4YJO6NHDRKzja8S+xQxr
-         ttusskD3U846vJDMprtyujUBnQ0PI7Mic4SzOgk1xpzGYoKwO0+nG6k0LKaYB0WNWR
-         XyxoL+cWW8Pcg==
+        b=IyIqOvMJqL7RaoEbzRxRgUDtWsbYLmZquDAk1r1YUi3abPpS4Rk5WRFB17kDXL8Hi
+         xCDivf4R3oaw613eqz3sXdXVM4IQG96lHeHeI5jVDHSqInVLlEj27ym/okj7o05KkB
+         X7Gnwmz8SvkmdG9tl5jxUynZ3VFmKrTF6iffT2iPJvI3uru8eqADfrIyNfKUDmzlA8
+         kZxYppO0vKJM3jgwkm+FUejK8MkvEdMagrWA5Pi+dFabkrufg8QdKp5JyJfuWxsLN8
+         GgFIh/7kSHPidd3ZR93i8AiaMkYVkgW8qrNI2q5sjJt35MctfT7pJ5jl3BnYjJPXrx
+         Y+R0mBthx2h6g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, pontus.fuchs@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 015/217] ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
-Date:   Mon, 17 Jan 2022 21:16:18 -0500
-Message-Id: <20220118021940.1942199-15-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.16 024/217] ath11k: enable IEEE80211_VHT_EXT_NSS_BW_CAPABLE if NSS ratio enabled
+Date:   Mon, 17 Jan 2022 21:16:27 -0500
+Message-Id: <20220118021940.1942199-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -49,61 +49,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Wen Gong <wgong@codeaurora.org>
 
-[ Upstream commit ae80b6033834342601e99f74f6a62ff5092b1cee ]
+[ Upstream commit 78406044bdd0cc8987bc082b76867c63ab1c6af8 ]
 
-Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
-when ar->tx_cmd->odata is NULL. The patch adds a null check to
-prevent such case.
+When NSS ratio enabled reported by firmware, SUPPORTS_VHT_EXT_NSS_BW
+is set in ath11k, meanwhile IEEE80211_VHT_EXT_NSS_BW_CAPABLE also
+need to be set, otherwise it is invalid because spec in IEEE Std
+802.11™‐2020 as below.
 
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
- ar5523_cmd+0x46a/0x581 [ar5523]
- ar5523_probe.cold+0x1b7/0x18da [ar5523]
- ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
- ? __pm_runtime_set_status+0x54a/0x8f0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? pm_runtime_barrier+0x220/0x220
- ? __pm_runtime_resume+0xb1/0xf0
- usb_probe_interface+0x25b/0x710
- really_probe+0x209/0x5d0
- driver_probe_device+0xc6/0x1b0
- device_driver_attach+0xe2/0x120
+Table 9-273-Supported VHT-MCS and NSS Set subfields, it has subfield
+VHT Extended NSS BW Capable, its definition is:
+Indicates whether the STA is capable of interpreting the Extended NSS
+BW Support subfield of the VHT Capabilities Information field.
 
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
+dmesg have a message without this patch:
 
-After fixing the code (fourth byte in usb packet) to WDCMSG_TARGET_START,
-I got the null-ptr-deref bug. I believe the bug is triggerable whenever
-cmd->odata is NULL. After patching, I tested with the same input and no
-longer see the KASAN report.
+ieee80211 phy0: copying sband (band 1) due to VHT EXT NSS BW flag
 
-This was NOT tested on a real device.
+It means mac80211 will set IEEE80211_VHT_EXT_NSS_BW_CAPABLE if ath11k not
+set it in ieee80211_register_hw(). So it is better to set it in ath11k.
 
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
+
+Signed-off-by: Wen Gong <wgong@codeaurora.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu
+Link: https://lore.kernel.org/r/20211013073704.15888-1-wgong@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ar5523/ar5523.c | 4 ++++
+ drivers/net/wireless/ath/ath11k/mac.c | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index 0e9bad33fac85..141c1b5a7b1f3 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -153,6 +153,10 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
- 			ar5523_err(ar, "Invalid reply to WDCMSG_TARGET_START");
- 			return;
- 		}
-+		if (!cmd->odata) {
-+			ar5523_err(ar, "Unexpected WDCMSG_TARGET_START reply");
-+			return;
-+		}
- 		memcpy(cmd->odata, hdr + 1, sizeof(u32));
- 		cmd->olen = sizeof(u32);
- 		cmd->res = 0;
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 1cc55602787bb..0a196fb3df9fd 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -4561,6 +4561,10 @@ ath11k_create_vht_cap(struct ath11k *ar, u32 rate_cap_tx_chainmask,
+ 	vht_cap.vht_supported = 1;
+ 	vht_cap.cap = ar->pdev->cap.vht_cap;
+ 
++	if (ar->pdev->cap.nss_ratio_enabled)
++		vht_cap.vht_mcs.tx_highest |=
++			cpu_to_le16(IEEE80211_VHT_EXT_NSS_BW_CAPABLE);
++
+ 	ath11k_set_vht_txbf_cap(ar, &vht_cap.cap);
+ 
+ 	rxmcs_map = 0;
 -- 
 2.34.1
 
