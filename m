@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72AC24914BB
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:24:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4265A4914C2
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:24:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245415AbiARCXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:23:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244399AbiARCWn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:22:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73905C06176A;
-        Mon, 17 Jan 2022 18:22:43 -0800 (PST)
+        id S244795AbiARCYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:24:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39554 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244793AbiARCW4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:22:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 384EBB8124B;
-        Tue, 18 Jan 2022 02:22:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B04AC36AE3;
-        Tue, 18 Jan 2022 02:22:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5326B60010;
+        Tue, 18 Jan 2022 02:22:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8982CC36AF3;
+        Tue, 18 Jan 2022 02:22:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472560;
-        bh=5jX8eDGS27Wfmkc8/P9LsCE6OkLNSfvuJ5z8AnFEDeA=;
+        s=k20201202; t=1642472575;
+        bh=rgstYFf8hJAZN1nCGJnttGKltvu+7dKK7FEZnsJpvbY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z7cvNur5/5h5fzJy9wAVWFmAURs6yBfJCxiNT0FaQtObyffcUL/utd3pFeK+wMmHV
-         J1e1FZZazgY0vmJ0nP04LyA14ZYy79CSasYMYkqm9gowaEmFIEMQiVE7AHRgsrmU5Z
-         cik/tEwKVYS+mN085UjhraznX/GDNclvM5xOvSiJb5OCuBEmMi5XaDF65yYQulKHhE
-         QD3EpgI2UnnBXcyhQBRvbYo7grQUugiL7oCISf/0Y2JIx53A/S2dN6BED0DnhhExot
-         OQGTzp2qiYQ9fPWO4RP4mv+PIBy3/VxuPmBEqgoIszDUoWa+sqxdKC2cvz1IPkSnJG
-         XE4HhfwOUss5A==
+        b=mIyYZ169DicBzkRx/GXxWMH5Br/CckeiwNZ+Sr27N195r65M1iJNPTxQ7K1FyxjTq
+         vb5KEIhF/eK0igHUIsTaETF5Bwa+GD4xW4KfYkLg/6xST+hnoEtziHSlMMh7eOq5yA
+         G6EqjNaEAM8NJp2GO7AO6KGLVI+TdZNHRfjpnJiUhBUJJnXfaalfIz54O+ywFGnUgj
+         ZpFvfz83BjgH3XWzQbq+H3ptdunY4kaEnmKGQBsGP0435QBIQFqupfZbBkRkoPd2Gh
+         ado/go28tgIT+FFVDXUzKvbWq8tgVC+tjwU+s32z/pO5ijcPM9T62sWNVXdS7Z/MYt
+         27obUWmZsMojQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, geert@linux-m68k.org,
-        linux@roeck-us.net, arnd@arndb.de, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 053/217] 82596: use eth_hw_addr_set()
-Date:   Mon, 17 Jan 2022 21:16:56 -0500
-Message-Id: <20220118021940.1942199-53-sashal@kernel.org>
+Cc:     Anilkumar Kolli <akolli@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 059/217] ath11k: Fix mon status ring rx tlv processing
+Date:   Mon, 17 Jan 2022 21:17:02 -0500
+Message-Id: <20220118021940.1942199-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -51,35 +49,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Anilkumar Kolli <akolli@codeaurora.org>
 
-[ Upstream commit 0f98d7e478430b64d9520a23585e02be5f8b1b2a ]
+[ Upstream commit 09f16f7390f302937409738d6cb6ce99b265f455 ]
 
-Byte by byte assignments.
+In HE monitor capture, HAL_TLV_STATUS_PPDU_DONE is received
+on processing multiple skb. Do not clear the ppdu_info
+till the HAL_TLV_STATUS_PPDU_DONE is received.
 
-Fixes build on m68k.
+This fixes below warning and packet drops in monitor mode.
+ "Rate marked as an HE rate but data is invalid: MCS: 6, NSS: 0"
+ WARNING: at
+ PC is at ieee80211_rx_napi+0x624/0x840 [mac80211]
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.4.0.1-01693-QCAHKSWPL_SILICONZ-1
+
+Signed-off-by: Anilkumar Kolli <akolli@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/1637249433-10316-1-git-send-email-akolli@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/i825xx/82596.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/dp_rx.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/i825xx/82596.c b/drivers/net/ethernet/i825xx/82596.c
-index b482f6f633bd5..3ee89ae496d0c 100644
---- a/drivers/net/ethernet/i825xx/82596.c
-+++ b/drivers/net/ethernet/i825xx/82596.c
-@@ -1178,7 +1178,8 @@ static struct net_device * __init i82596_probe(void)
- 	DEB(DEB_PROBE,printk(KERN_INFO "%s: 82596 at %#3lx,", dev->name, dev->base_addr));
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index c5320847b80a7..f7968aefaabc5 100644
+--- a/drivers/net/wireless/ath/ath11k/dp_rx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
+@@ -3064,10 +3064,10 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
+ 	if (!num_buffs_reaped)
+ 		goto exit;
  
- 	for (i = 0; i < 6; i++)
--		DEB(DEB_PROBE,printk(" %2.2X", dev->dev_addr[i] = eth_addr[i]));
-+		DEB(DEB_PROBE,printk(" %2.2X", eth_addr[i]));
-+	eth_hw_addr_set(dev, eth_addr);
+-	while ((skb = __skb_dequeue(&skb_list))) {
+-		memset(&ppdu_info, 0, sizeof(ppdu_info));
+-		ppdu_info.peer_id = HAL_INVALID_PEERID;
++	memset(&ppdu_info, 0, sizeof(ppdu_info));
++	ppdu_info.peer_id = HAL_INVALID_PEERID;
  
- 	DEB(DEB_PROBE,printk(" IRQ %d.\n", dev->irq));
++	while ((skb = __skb_dequeue(&skb_list))) {
+ 		if (ath11k_debugfs_is_pktlog_lite_mode_enabled(ar)) {
+ 			log_type = ATH11K_PKTLOG_TYPE_LITE_RX;
+ 			rx_buf_sz = DP_RX_BUFFER_SIZE_LITE;
+@@ -3095,10 +3095,7 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
+ 			ath11k_dbg(ab, ATH11K_DBG_DATA,
+ 				   "failed to find the peer with peer_id %d\n",
+ 				   ppdu_info.peer_id);
+-			spin_unlock_bh(&ab->base_lock);
+-			rcu_read_unlock();
+-			dev_kfree_skb_any(skb);
+-			continue;
++			goto next_skb;
+ 		}
  
+ 		arsta = (struct ath11k_sta *)peer->sta->drv_priv;
+@@ -3107,10 +3104,13 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
+ 		if (ath11k_debugfs_is_pktlog_peer_valid(ar, peer->addr))
+ 			trace_ath11k_htt_rxdesc(ar, skb->data, log_type, rx_buf_sz);
+ 
++next_skb:
+ 		spin_unlock_bh(&ab->base_lock);
+ 		rcu_read_unlock();
+ 
+ 		dev_kfree_skb_any(skb);
++		memset(&ppdu_info, 0, sizeof(ppdu_info));
++		ppdu_info.peer_id = HAL_INVALID_PEERID;
+ 	}
+ exit:
+ 	return num_buffs_reaped;
 -- 
 2.34.1
 
