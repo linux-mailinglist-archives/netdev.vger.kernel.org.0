@@ -2,45 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73E3F491A0A
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:58:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4794C4919B5
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:55:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344323AbiARC5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:57:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35864 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350370AbiARCvi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:51:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356F5C094266;
-        Mon, 17 Jan 2022 18:42:36 -0800 (PST)
+        id S1345415AbiARCzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:55:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33146 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347696AbiARCmh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:42:37 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DAF04B81243;
-        Tue, 18 Jan 2022 02:42:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 913F4C36AF5;
-        Tue, 18 Jan 2022 02:42:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18651612DE;
+        Tue, 18 Jan 2022 02:42:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8660EC36AEF;
+        Tue, 18 Jan 2022 02:42:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473753;
-        bh=HBx2Z0bo2vlrE7hqQN6Os7uEULxdugf4B9uv+P7rybc=;
+        s=k20201202; t=1642473756;
+        bh=+lpXt2QvzgIYVVxYWVN0oM5QZUSO2Opgpdlmv+PCAI8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rCwPVPN29lp49RVsu1TkrLdlUhZUJ24Y81+LKx/Z30DXJPkIeF2rhES/KbDGpvx9s
-         /rRbFvV5IR7MN32j2PJXVFLPFZuY9TjorRXaqBS3JKUo5FX57tKUiPJSiU+jgCA1pe
-         LxL6qURW6r+GuamDZZvy7vn7PX3dCFoQm6o4GfI/7a0vi0jHarN9WgeSsY6lSZkglF
-         +nAixBBXZvsU3Q7xpvXAywrY0PQVAz6p5capTl9U/DUWexmVlW9fnkrW3VY5Y9VX7x
-         afCyDlBVqOkO5fhxCdp4av2l5EnwUqKjj/WmIp9APEqOh1yU0X75bY4AgD84RkMfna
-         dmoATNO4pQXyg==
+        b=DmEdpPnpr0TjDVqTzZaFhshBmx7Y9FPFh16qfB5NX46flDgQPIB7xZwzO1ucxgNKC
+         AE2t1ScPaS9A613/EICE6zozw0GC8b0SXd6oI5FVoTDTgKqCByrT/A8HjP47+A39h1
+         O9pM+dA7n+8l5sZbTEnH6xR+qly/ISYKjKJtXhjiXrxCgN1oG5EqJyFk+wFXQTRSYH
+         Ma7k7W8Nbb5NWT4pX7Df0xqclilM6IR0E613AqYaRhRq877F1tfZpeC1W9jF9joNnF
+         XfCuUq2S4zGPrwY8duiqhKGYyqUrODZXSEnagbttfKa/ACBe74w1SRDYEC594neNBA
+         vQzE3qkxTruHQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sebastian Gottschall <s.gottschall@dd-wrt.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 054/116] ath10k: Fix tx hanging
-Date:   Mon, 17 Jan 2022 21:39:05 -0500
-Message-Id: <20220118024007.1950576-54-sashal@kernel.org>
+Cc:     Antoine Tenart <atenart@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, weiwan@google.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 055/116] net-sysfs: update the queue counts in the unregistration path
+Date:   Mon, 17 Jan 2022 21:39:06 -0500
+Message-Id: <20220118024007.1950576-55-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
@@ -52,54 +49,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sebastian Gottschall <s.gottschall@dd-wrt.com>
+From: Antoine Tenart <atenart@kernel.org>
 
-[ Upstream commit e8a91863eba3966a447d2daa1526082d52b5db2a ]
+[ Upstream commit d7dac083414eb5bb99a6d2ed53dc2c1b405224e5 ]
 
-While running stress tests in roaming scenarios (switching ap's every 5
-seconds, we discovered a issue which leads to tx hangings of exactly 5
-seconds while or after scanning for new accesspoints. We found out that
-this hanging is triggered by ath10k_mac_wait_tx_complete since the
-empty_tx_wq was not wake when the num_tx_pending counter reaches zero.
-To fix this, we simply move the wake_up call to htt_tx_dec_pending,
-since this call was missed on several locations within the ath10k code.
+When updating Rx and Tx queue kobjects, the queue count should always be
+updated to match the queue kobjects count. This was not done in the net
+device unregistration path, fix it. Tracking all queue count updates
+will allow in a following up patch to detect illegal updates.
 
-Signed-off-by: Sebastian Gottschall <s.gottschall@dd-wrt.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20210505085806.11474-1-s.gottschall@dd-wrt.com
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/htt_tx.c | 3 +++
- drivers/net/wireless/ath/ath10k/txrx.c   | 2 --
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ net/core/net-sysfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt_tx.c b/drivers/net/wireless/ath/ath10k/htt_tx.c
-index 1fc0a312ab587..5f67da47036cf 100644
---- a/drivers/net/wireless/ath/ath10k/htt_tx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
-@@ -147,6 +147,9 @@ void ath10k_htt_tx_dec_pending(struct ath10k_htt *htt)
- 	htt->num_pending_tx--;
- 	if (htt->num_pending_tx == htt->max_num_pending_tx - 1)
- 		ath10k_mac_tx_unlock(htt->ar, ATH10K_TX_PAUSE_Q_FULL);
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index af59123601055..99303897b7bb7 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1804,6 +1804,9 @@ static void remove_queue_kobjects(struct net_device *dev)
+ 
+ 	net_rx_queue_update_kobjects(dev, real_rx, 0);
+ 	netdev_queue_update_kobjects(dev, real_tx, 0);
 +
-+	if (htt->num_pending_tx == 0)
-+		wake_up(&htt->empty_tx_wq);
- }
- 
- int ath10k_htt_tx_inc_pending(struct ath10k_htt *htt)
-diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
-index aefe1f7f906c0..f51f1cf2c6a40 100644
---- a/drivers/net/wireless/ath/ath10k/txrx.c
-+++ b/drivers/net/wireless/ath/ath10k/txrx.c
-@@ -82,8 +82,6 @@ int ath10k_txrx_tx_unref(struct ath10k_htt *htt,
- 	flags = skb_cb->flags;
- 	ath10k_htt_tx_free_msdu_id(htt, tx_done->msdu_id);
- 	ath10k_htt_tx_dec_pending(htt);
--	if (htt->num_pending_tx == 0)
--		wake_up(&htt->empty_tx_wq);
- 	spin_unlock_bh(&htt->tx_lock);
- 
- 	rcu_read_lock();
++	dev->real_num_rx_queues = 0;
++	dev->real_num_tx_queues = 0;
+ #ifdef CONFIG_SYSFS
+ 	kset_unregister(dev->queues_kset);
+ #endif
 -- 
 2.34.1
 
