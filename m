@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D939491516
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:26:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F26D491546
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:27:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245421AbiARC0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:26:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245103AbiARCYN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:24:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9698FC0617B9;
-        Mon, 17 Jan 2022 18:23:48 -0800 (PST)
+        id S244815AbiARC1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:27:07 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41760 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244839AbiARCZD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:25:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E897760E99;
-        Tue, 18 Jan 2022 02:23:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E79EC36AF2;
-        Tue, 18 Jan 2022 02:23:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54C3160C89;
+        Tue, 18 Jan 2022 02:25:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E9A3C36AE3;
+        Tue, 18 Jan 2022 02:25:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472627;
-        bh=u4HZb+lyWjAaInD5P/fgVFne79KgKZfWz2IcpXa7bmA=;
+        s=k20201202; t=1642472702;
+        bh=02LVYUDW/mrOuwuMTZ8bCkojsOTTzLhDWhfOpPkpTUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DqRFNVTJ8a0ZcY85ZUvYGncVdAJz/6WoOZSFb3DNZIRv8GfwD0up1z7XOarjdf8hy
-         3Hdt6xuYd4HnU0YAPLUQkGuYM2fb2dTmEvKbU4g9GRmL1GE0OZRUGV0l+nVSDaO2O7
-         IP1B1VZsJVeuuB9Y48gKnsoEFN9VkXjz/medj7B9U9GlUFXZi37aU17IyH1vpPSpqH
-         N8sKOS5BwW7072IpbgGatYK9fTI4V+F+hDwu22OmY/iaJq89HkFIoc/fz+J+ZS8W5K
-         0hLV4mUK80LIqEb3E12eI/2slWiIN7F0sL09yDDqg1354MXBgAzVPhBoETJb1sIAOp
-         /XpvthoVWEp5Q==
+        b=QQHUmlFokZfzJe+mTsad4Yhw6ptWSoNjewMdQPFWVuYbBKdOYkpdfzkcmc1oHYhuE
+         H+y6JEGeWS1y7zqJkGSkLa+62iIgtsBVif++lGrex94r/+5mG776jmtb47TWCWLoLE
+         YAqBF0hIB9RO+HKz2dEVHrbC3Tht0M4Jg+VFuxW/fE3vOOY/vqhmAwoDPM8JBJzo11
+         1Lh9+ZugPvx+Aa1F+blcrdIOAHZg3jbmKj/84TqForRiAl0n2sqoTh0IxjvrSkVNJ5
+         O48+KnYuoZwQ58vDvQuWpvZ2NmRHuXwunsRwI4UoJ68Q35TGhiconFAXymZWGw5yZr
+         9rRhzcneo3dGg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sriram R <quic_srirrama@quicinc.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Maximilian Ernestus <maximilian@ernestus.de>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
+        davem@davemloft.net, kuba@kernel.org,
+        mordechay.goodstein@intel.com, miriam.rachel.korenblit@intel.com,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 079/217] ath11k: Avoid NULL ptr access during mgmt tx cleanup
-Date:   Mon, 17 Jan 2022 21:17:22 -0500
-Message-Id: <20220118021940.1942199-79-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.16 104/217] iwlwifi: mvm: synchronize with FW after multicast commands
+Date:   Mon, 17 Jan 2022 21:17:47 -0500
+Message-Id: <20220118021940.1942199-104-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -52,117 +52,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sriram R <quic_srirrama@quicinc.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit a93789ae541c7d5c1c2a4942013adb6bcc5e2848 ]
+[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
 
-Currently 'ar' reference is not added in skb_cb during
-WMI mgmt tx. Though this is generally not used during tx completion
-callbacks, on interface removal the remaining idr cleanup callback
-uses the ar ptr from skb_cb from mgmt txmgmt_idr. Hence
-fill them during tx call for proper usage.
+If userspace installs a lot of multicast groups very quickly, then
+we may run out of command queue space as we send the updates in an
+asynchronous fashion (due to locking concerns), and the CPU can
+create them faster than the firmware can process them. This is true
+even when mac80211 has a work struct that gets scheduled.
 
-Also free the skb which is missing currently in these
-callbacks.
+Fix this by synchronizing with the firmware after sending all those
+commands - outside of the iteration we can send a synchronous echo
+command that just has the effect of the CPU waiting for the prior
+asynchronous commands to finish. This also will cause fewer of the
+commands to be sent to the firmware overall, because the work will
+only run once when rescheduled multiple times while it's running.
 
-Crash_info:
-
-[19282.489476] Unable to handle kernel NULL pointer dereference at virtual address 00000000
-[19282.489515] pgd = 91eb8000
-[19282.496702] [00000000] *pgd=00000000
-[19282.502524] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-[19282.783728] PC is at ath11k_mac_vif_txmgmt_idr_remove+0x28/0xd8 [ath11k]
-[19282.789170] LR is at idr_for_each+0xa0/0xc8
-
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-00729-QCAHKSWPL_SILICONZ-3 v2
-Signed-off-by: Sriram R <quic_srirrama@quicinc.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1637832614-13831-1-git-send-email-quic_srirrama@quicinc.com
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
+Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 35 +++++++++++++++------------
- 1 file changed, 20 insertions(+), 15 deletions(-)
+ .../net/wireless/intel/iwlwifi/mvm/mac80211.c   | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 0a196fb3df9fd..dc9bbaecb28d3 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: BSD-3-Clause-Clear
- /*
-  * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2021 Qualcomm Innovation Center, Inc. All rights reserved.
-  */
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index 897e3b91ddb2f..9c5c10908f013 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -1688,6 +1688,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
+ 	struct iwl_mvm_mc_iter_data iter_data = {
+ 		.mvm = mvm,
+ 	};
++	int ret;
  
- #include <net/mac80211.h>
-@@ -4930,23 +4931,32 @@ static int __ath11k_set_antenna(struct ath11k *ar, u32 tx_ant, u32 rx_ant)
- 	return 0;
+ 	lockdep_assert_held(&mvm->mutex);
+ 
+@@ -1697,6 +1698,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
+ 	ieee80211_iterate_active_interfaces_atomic(
+ 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
+ 		iwl_mvm_mc_iface_iterator, &iter_data);
++
++	/*
++	 * Send a (synchronous) ech command so that we wait for the
++	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
++	 * the interface iterator. Otherwise, we might get here over
++	 * and over again (by userspace just sending a lot of these)
++	 * and the CPU can send them faster than the firmware can
++	 * process them.
++	 * Note that the CPU is still faster - but with this we'll
++	 * actually send fewer commands overall because the CPU will
++	 * not schedule the work in mac80211 as frequently if it's
++	 * still running when rescheduled (possibly multiple times).
++	 */
++	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
++	if (ret)
++		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
  }
  
--int ath11k_mac_tx_mgmt_pending_free(int buf_id, void *skb, void *ctx)
-+static void ath11k_mac_tx_mgmt_free(struct ath11k *ar, int buf_id)
- {
--	struct sk_buff *msdu = skb;
-+	struct sk_buff *msdu;
- 	struct ieee80211_tx_info *info;
--	struct ath11k *ar = ctx;
--	struct ath11k_base *ab = ar->ab;
- 
- 	spin_lock_bh(&ar->txmgmt_idr_lock);
--	idr_remove(&ar->txmgmt_idr, buf_id);
-+	msdu = idr_remove(&ar->txmgmt_idr, buf_id);
- 	spin_unlock_bh(&ar->txmgmt_idr_lock);
--	dma_unmap_single(ab->dev, ATH11K_SKB_CB(msdu)->paddr, msdu->len,
-+
-+	if (!msdu)
-+		return;
-+
-+	dma_unmap_single(ar->ab->dev, ATH11K_SKB_CB(msdu)->paddr, msdu->len,
- 			 DMA_TO_DEVICE);
- 
- 	info = IEEE80211_SKB_CB(msdu);
- 	memset(&info->status, 0, sizeof(info->status));
- 
- 	ieee80211_free_txskb(ar->hw, msdu);
-+}
-+
-+int ath11k_mac_tx_mgmt_pending_free(int buf_id, void *skb, void *ctx)
-+{
-+	struct ath11k *ar = ctx;
-+
-+	ath11k_mac_tx_mgmt_free(ar, buf_id);
- 
- 	return 0;
- }
-@@ -4955,17 +4965,10 @@ static int ath11k_mac_vif_txmgmt_idr_remove(int buf_id, void *skb, void *ctx)
- {
- 	struct ieee80211_vif *vif = ctx;
- 	struct ath11k_skb_cb *skb_cb = ATH11K_SKB_CB((struct sk_buff *)skb);
--	struct sk_buff *msdu = skb;
- 	struct ath11k *ar = skb_cb->ar;
--	struct ath11k_base *ab = ar->ab;
- 
--	if (skb_cb->vif == vif) {
--		spin_lock_bh(&ar->txmgmt_idr_lock);
--		idr_remove(&ar->txmgmt_idr, buf_id);
--		spin_unlock_bh(&ar->txmgmt_idr_lock);
--		dma_unmap_single(ab->dev, skb_cb->paddr, msdu->len,
--				 DMA_TO_DEVICE);
--	}
-+	if (skb_cb->vif == vif)
-+		ath11k_mac_tx_mgmt_free(ar, buf_id);
- 
- 	return 0;
- }
-@@ -4980,6 +4983,8 @@ static int ath11k_mac_mgmt_tx_wmi(struct ath11k *ar, struct ath11k_vif *arvif,
- 	int buf_id;
- 	int ret;
- 
-+	ATH11K_SKB_CB(skb)->ar = ar;
-+
- 	spin_lock_bh(&ar->txmgmt_idr_lock);
- 	buf_id = idr_alloc(&ar->txmgmt_idr, skb, 0,
- 			   ATH11K_TX_MGMT_NUM_PENDING_MAX, GFP_ATOMIC);
+ static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
 -- 
 2.34.1
 
