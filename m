@@ -2,122 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54B9449275F
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 14:41:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3509B492774
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 14:50:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242819AbiARNlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 08:41:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:51430 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242872AbiARNlV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 08:41:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642513280;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=OjmFL8JLFpwgH42MBB6gml2GfGQI5Vtp3QaY21Donc4=;
-        b=iiEmjCb1uJnvunEkuMUxkBf0LhJkzAYHfcnUGpiuW262DopI/nnjmHFcekFBBPM4fObkLI
-        m3on0jIM+x5B72eH+ovPDVj71S6yK1jTnVRmHDtgqIDLko+lQ8COE+UEjCBeqBRN5mLFmw
-        mIrexX2k0MuuW+woKqOB2e5zIl4+lnU=
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
- [209.85.161.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-103-ih279em0MIGzxHv4BQ8BHA-1; Tue, 18 Jan 2022 08:41:19 -0500
-X-MC-Unique: ih279em0MIGzxHv4BQ8BHA-1
-Received: by mail-oo1-f71.google.com with SMTP id m12-20020a4add0c000000b002e13ed4f7e7so2116002oou.0
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 05:41:19 -0800 (PST)
+        id S243017AbiARNt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 08:49:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47576 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239731AbiARNt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 08:49:57 -0500
+Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57798C061574
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 05:49:57 -0800 (PST)
+Received: by mail-ua1-x92b.google.com with SMTP id p1so36592269uap.9
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 05:49:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=CJ6lCw1ijmSGhHPAuPQejDlYTUw2m4SZyRsRBCqRdGw=;
+        b=ImrET9Bpngt3HV9En0J/UC56cNTSmjeiFCYsC3NVLHRzdKrQG30Wfn9DcqfmEEpM+w
+         BPNaFkLv+c6xzhWVajzq4pdY4w4mvOJmutUGsKL7NwxPXjR1TAkKiZpzGWFBuO/ueg00
+         rDQslh/FnrcYNzQB6XA7y2KwUk5LAo33VTyNoEWgEBqYCj2od6WkWEfLwSpuU/K3OXF6
+         KA1pvK8v9xCoZ3v+yq4OVtNBCfyvwaVQjTxREiKK5ZgietwJiixgrj/4mjoPxUDCIULU
+         a5SGjl2X+bgtOSAhBcnLIqbkNoDLIAo/JhT+3hh6VY+ct+6OtscGi/z+2UouKCytzInT
+         LdbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OjmFL8JLFpwgH42MBB6gml2GfGQI5Vtp3QaY21Donc4=;
-        b=3c5yXuZw7pHowxw5Tu2Py7loXiBKQC1D68NVJou0in7FeAyTMrvIrBKhmEOMnw8IJQ
-         AmMEeEf/1TFvutDqQC2JFrGfT9BXReIUuiHgr3JeHf6mlBVPYtsm07sTjFxZL/jlftWs
-         xFOUe++A4hcbMf7xc95NxT2/Y0rDWP5Wf3KMAa0eg2k290TSKev+fDJA+PVnjRgKpfvQ
-         Kao3nXWLB9AZhvezC4CpG5RRSq6sjLkdTq3g5LKT2eUZRxexqg9RqnDcTaHLqri31KyT
-         i6VvMtbdC6FNFuz3aFyHQGDW1JpHRkTfUCwco+wcGUItz9DCby7TMwWVtBRu2VKN9e0u
-         KyUw==
-X-Gm-Message-State: AOAM53339xL4v35Y9HEVgDxhOa03my598xCZIqzeGBl1x30tm27jMxav
-        a4Tesz4a/UivK0BTIB8FidLGhr4MkBA7RiTAL5x9OBMSAemBYu/TD2IIomWIeDYCxiC+ltqZI3x
-        eZbjfRGrew8HLh2HO
-X-Received: by 2002:aca:1e0b:: with SMTP id m11mr1660653oic.79.1642513278684;
-        Tue, 18 Jan 2022 05:41:18 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyghdC0ZhlAJPquJYviwFxMn7EFulClxi3MtgxmaXSfPu6GBNwy6CxT09cDO6MXpBK5Xk0YBw==
-X-Received: by 2002:aca:1e0b:: with SMTP id m11mr1660614oic.79.1642513278337;
-        Tue, 18 Jan 2022 05:41:18 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id f12sm6883770ote.75.2022.01.18.05.41.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 05:41:17 -0800 (PST)
-From:   trix@redhat.com
-To:     vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, davem@davemloft.net,
-        kuba@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
-        xiaoliang.yang_1@nxp.com
-Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] net: mscc: ocelot: fix using match before it is set
-Date:   Tue, 18 Jan 2022 05:41:10 -0800
-Message-Id: <20220118134110.591613-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=CJ6lCw1ijmSGhHPAuPQejDlYTUw2m4SZyRsRBCqRdGw=;
+        b=uhadpnCSyAp2AXKypMZHh4JeK7+yIbfTDcy7gdbD5120QX56hkV7DFFWx5hl7Hqb6K
+         p+BGKkryngnbXS8uJk2dm/T2sxlQE9j/modzRoDIxRp5RxbREu6yPCyTKWdtHjrR1Ko/
+         6taTb23ccODQPO3amzs2a7h06KpGLl93cbQE8LlkH5WXvGSCldwLwYlsJ04VMKWV8It5
+         jcyUQfrCAqfrc4Dk9QiwCrNOlb7xfr70ZjucSusLrCTEM86Sno4y2W0WzOzj3ZhU+4LT
+         VRDgr7/aAymqvxGXgqcdsSPzgN6hqpJr+3TbC/m2gqccaU5HTFXgUsNUqwlFZq1/kN9u
+         5Umw==
+X-Gm-Message-State: AOAM533yjhremqd/EOfx0XK83kxM0SaU4r/n56VUQQq8ApJCIH1dl9Mo
+        mztvqmxTERQSfg+6ai2Zo/pqMAvNf/ckaGuTPWk=
+X-Google-Smtp-Source: ABdhPJzqdt4Fq6T8K8d4Zk71zDdqbd34kDO9H44ixZt/mtkz3craBTRmr65lqST2pOORWckV6REvul114CP6ZaxFoXY=
+X-Received: by 2002:a1f:2186:: with SMTP id h128mr6531564vkh.4.1642513796469;
+ Tue, 18 Jan 2022 05:49:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a59:9b91:0:b0:277:e20e:d0a4 with HTTP; Tue, 18 Jan 2022
+ 05:49:56 -0800 (PST)
+Reply-To: orlandomoris56@gmail.com
+From:   orlando moris <barristermusa32@gmail.com>
+Date:   Tue, 18 Jan 2022 13:49:56 +0000
+Message-ID: <CA+gLmc_BOZOXkK9rd=ET=XizDG4QcveLuXpg32SYFzN1iQJ-uw@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
-
-Clang static analysis reports this issue
-ocelot_flower.c:563:8: warning: 1st function call argument
-  is an uninitialized value
-    !is_zero_ether_addr(match.mask->dst)) {
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The variable match is used before it is set.  So move the
-block.
-
-Fixes: 75944fda1dfe ("net: mscc: ocelot: offload ingress skbedit and vlan actions to VCAP IS1")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/ethernet/mscc/ocelot_flower.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index 4a0fda22d3436..949858891973d 100644
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -559,13 +559,6 @@ ocelot_flower_parse_key(struct ocelot *ocelot, int port, bool ingress,
- 			return -EOPNOTSUPP;
- 		}
- 
--		if (filter->block_id == VCAP_IS1 &&
--		    !is_zero_ether_addr(match.mask->dst)) {
--			NL_SET_ERR_MSG_MOD(extack,
--					   "Key type S1_NORMAL cannot match on destination MAC");
--			return -EOPNOTSUPP;
--		}
--
- 		/* The hw support mac matches only for MAC_ETYPE key,
- 		 * therefore if other matches(port, tcp flags, etc) are added
- 		 * then just bail out
-@@ -580,6 +573,14 @@ ocelot_flower_parse_key(struct ocelot *ocelot, int port, bool ingress,
- 			return -EOPNOTSUPP;
- 
- 		flow_rule_match_eth_addrs(rule, &match);
-+
-+		if (filter->block_id == VCAP_IS1 &&
-+		    !is_zero_ether_addr(match.mask->dst)) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Key type S1_NORMAL cannot match on destination MAC");
-+			return -EOPNOTSUPP;
-+		}
-+
- 		filter->key_type = OCELOT_VCAP_KEY_ETYPE;
- 		ether_addr_copy(filter->key.etype.dmac.value,
- 				match.key->dst);
--- 
-2.26.3
-
+SGFsbMOzLCB2aW5zYW1sZWdhIHZlcmnDsCB1cHBsw71zdCBhw7Agw75lc3NpIHTDtmx2dXDDs3N0
+dXIgc2VtIGtvbSDDrQ0KcMOzc3Row7NsZmnDsCDDvml0dCBlciBla2tpIHZpbGxhIGhlbGR1ciB2
+YXIgc8OpcnN0YWtsZWdhIGJlaW50IHRpbCDDvsOtbiB0aWwNCnNrb8OwdW5hci4gw4lnIGVyIG1l
+w7AgdGlsbMO2Z3UgdXBwIMOhICgkNy41MDAuMDAwLjAwKSBlZnRpciBsw6F0aW5uDQpza2rDs2xz
+dMOmw7BpbmcgbWlubiwgdmVya2Zyw6bDsGluZ2lubiBDYXJsb3Mgc2VtIGJlciBzYW1hIG5hZm4g
+b2cgw77Duiwgc2VtDQrDocOwdXIgdmFubiBvZyBiasOzIGjDqXIgw60gTG9tZSBUw7Nnw7MgTMOh
+dGlubiB2acOwc2tpcHRhdmludXIgbWlubiBvZw0KZmrDtmxza3lsZGEgbGVudHUgw60gYsOtbHNs
+eXNpIHNlbSB0w7NrIGzDrWYgw75laXJyYSAuIMOJZyBoZWYgc2FtYmFuZCB2acOwDQrDvmlnIHNl
+bSBuw6FudXN0dSBhw7BzdGFuZGVuZHVyIGhpbnMgbMOhdG5hIHN2byDDvsO6IGfDpnRpciBmZW5n
+acOwIGbDqcOwIHZpw7ANCmtyw7ZmdW0uIEVmdGlyIHNrasOzdCB2acOwYnLDtmfDsCDDvsOtbiBt
+dW4gw6lnIHVwcGzDvXNhIMO+aWcgdW0gaHZlcm5pZyDDoSBhw7ANCmZhcmENCmZyYW1rdsOmbWQg
+w75lc3NhIHPDoXR0bcOhbGEuLCBoYWbDsHUgc2FtYmFuZCB2acOwIG1pZyDDrSDDvmVzc3VtIHTD
+tmx2dXDDs3N0dW0NCihvcmxhbmRvbW9yaXM1NkBnbWFpbC5jb20pDQo=
