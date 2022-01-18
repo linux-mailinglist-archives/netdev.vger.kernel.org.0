@@ -2,185 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DEB3491E51
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 04:53:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2329491D58
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 04:35:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347142AbiARDxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 22:53:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344622AbiARDxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 22:53:23 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F70DC02B8DD
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 18:56:02 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id q25so6085994pfl.8
-        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 18:56:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=5wkWuCo7o/fPY7P+WJGLRyokZs5vvTs3KFkeaKk9wJM=;
-        b=aWvwCkm4Poi/Ton3i657px+Adzebr4dzbb+YguwyFySm0qbso7K09p7ran0fUcYecZ
-         6aqsg1MO5fDk4WPXPxC5yWJTbxu5EvVnIGjzdlYa3meqU9Zx1FZ0cX6qki3wQ2wjTkAo
-         LqsGkZYeX69Tik2rSZ3V9SRg14sOOmtBWUT5wEdKPfh7r074Hc9zEXATCH4+wOl7EWt1
-         XaodsICEmCb/TAaLTQJUugQED50CX8zuyQHRfoLkJlgyFUwPYL2TK1OUfxgrIRM89L1s
-         8D02pTiVEkeY8cssMMeuriDHYeMCNWgIB/kHO9v12LtKHMLPS4Xb612s2fJKcY0wzFFw
-         /jWA==
+        id S245651AbiARDfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 22:35:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:34909 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1354552AbiARDGy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 22:06:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642475213;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=m/T+xqeUAypi/EBSYpJv9W0hZEqvgrZKwX4x1rH2s4Q=;
+        b=XUPA0c9D1oZmlMbfU411dL7GElI8BEZ+GCMtCL3hilyuo1ESjaLyLB0D5n3LhuzJzhmkqK
+        hB7VXBRF7aYs3k8FGuP+Jh7NkT9OK8IrP4o9W2RG0yPxZXnKaF1rtKAz+xa2DKKAzIrH5Q
+        Ms/ddpcOn2JRPtQGhz5pFYIrjvtT1jE=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-657-btVMyiVwMI6zlRwkkkixhw-1; Mon, 17 Jan 2022 22:06:52 -0500
+X-MC-Unique: btVMyiVwMI6zlRwkkkixhw-1
+Received: by mail-pj1-f71.google.com with SMTP id ij17-20020a17090af81100b001b498904910so2109415pjb.5
+        for <netdev@vger.kernel.org>; Mon, 17 Jan 2022 19:06:52 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=5wkWuCo7o/fPY7P+WJGLRyokZs5vvTs3KFkeaKk9wJM=;
-        b=2CgI+umF3yvrX9gDv0yJ8xGTQmUJFPVuOaAz9lGb6DACyl8xvPXOo/vC3fiL5upPpZ
-         4QnyKnjNAJgcfFev98pom08YxnSWMIk9BBdbO6kmuUp7EEGTBgHGRA8a7TSS+HtDDiWb
-         H56Aj37RV0fLJCBjHUlAzOHS/hMMKxF+StipUMmnPpnadAwCTUlEVbXW8ra7vU6XWjr6
-         sTiBrzqonqWASh+ktuTnYKjCFohOkc9SaCdoM/P7cWjZPh8hmNB0fRVU9FR8AEPiJKT5
-         vaupw5g7q2iTSA0K46VmdnVeTPAQe640YCwyhFMJ0pe/vj1rk8w66WvXKYz0TCz7FcIc
-         dKsA==
-X-Gm-Message-State: AOAM5307/SA0AhX5+02Y0jP6BfaOEXK/rAlemOlfR/fz1UrndIJb28Jh
-        FXZ4h3czeeLbudzGyZ10eXZVZXDVrAZttWExwr3NL54HQLmeZQ==
-X-Google-Smtp-Source: ABdhPJxzPngMC3a6wnuLKxQAXJ6EU5jA6ZBUsI+ZaqPMjX8S+ETs7CQfxQ97iqnWEMt1S0h+Gl6VlUWpsoU0n8dQzpc=
-X-Received: by 2002:a05:6a00:1404:b0:4c2:7c7c:f3d9 with SMTP id
- l4-20020a056a00140400b004c27c7cf3d9mr18774159pfu.77.1642474561973; Mon, 17
- Jan 2022 18:56:01 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=m/T+xqeUAypi/EBSYpJv9W0hZEqvgrZKwX4x1rH2s4Q=;
+        b=aM4I8tMsUf3qadnp7BvNyYGcP5XRpMn9kEMPg3lqx+itQ3P+8fCbyYEa7QiMMr+lXK
+         wqBCUN0MZQm3yEJAvV/XkyXJA+DpdWmsbkU4BdeUJzxrLxcUvv2j+YIm8Xn6PbKw7G4+
+         Bg1vKXSUfWLcRCikGdb8ug+EL6Uja6UuZn+vZf0+4C7jrWkd4IKHzyFZA3DclSeNZV8g
+         ScQ82CnauKLnWrpU5ujFtEh7aI/OJqLCON0pnh3Pi6UVwHhT6BYuVwvjDeJJABRaDCZy
+         a0M0iO6cN44FIPufPPG8cUjgHbKVAxyB+7i6L7ZU4M5PMbEKLBiXrKaKdyPIJyO6C/x4
+         bV8A==
+X-Gm-Message-State: AOAM5321/Zg20SZodDo7r1xYrUQZH5n0KC7UqFROmuExC/1a6tV3DtQ2
+        Y/hZSC15PWkRNLQlfsJukRx8cBY81wTM6fBoNF/KqkdM2X893KGsCZA2Er0Ns5kfNgA7PgAY8GN
+        CBJPqzRo/9hD2OrdW
+X-Received: by 2002:a17:902:d505:b0:14a:77ac:1e8b with SMTP id b5-20020a170902d50500b0014a77ac1e8bmr25111384plg.1.1642475211597;
+        Mon, 17 Jan 2022 19:06:51 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzoQYXGFOiuE7DE7WvP6A/zKMhsh+2K8vED7mN/UdEi/ZVq6aYj54hRESwmfzpInEWZa5o65A==
+X-Received: by 2002:a17:902:d505:b0:14a:77ac:1e8b with SMTP id b5-20020a170902d50500b0014a77ac1e8bmr25111367plg.1.1642475211348;
+        Mon, 17 Jan 2022 19:06:51 -0800 (PST)
+Received: from [10.72.13.83] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id c19sm15280757pfo.91.2022.01.17.19.06.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 19:06:50 -0800 (PST)
+Message-ID: <ce3890b8-8f48-847d-b029-e29cc9261f18@redhat.com>
+Date:   Tue, 18 Jan 2022 11:06:42 +0800
 MIME-Version: 1.0
-References: <20220105031515.29276-1-luizluca@gmail.com> <20220105031515.29276-6-luizluca@gmail.com>
- <79a9c7c2-9bd0-d5d1-6d5a-d505cdc564be@gmail.com>
-In-Reply-To: <79a9c7c2-9bd0-d5d1-6d5a-d505cdc564be@gmail.com>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Mon, 17 Jan 2022 23:55:50 -0300
-Message-ID: <CAJq09z4U5qmBuPUqBnGpT+qcG-vmtFwNMg5Uau3q3F53W-0YDA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 05/11] net: dsa: realtek: use phy_read in ds->ops
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [RFC 1/3] vdpa: support exposing the config size to userspace
+Content-Language: en-US
+To:     "Longpeng(Mike)" <longpeng2@huawei.com>, mst@redhat.com,
+        sgarzare@redhat.com, stefanha@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        arei.gonglei@huawei.com, yechuan@huawei.com,
+        huangzhichao@huawei.com
+References: <20220117092921.1573-1-longpeng2@huawei.com>
+ <20220117092921.1573-2-longpeng2@huawei.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220117092921.1573-2-longpeng2@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On 1/4/2022 7:15 PM, Luiz Angelo Daros de Luca wrote:
-> > The ds->ops->phy_read will only be used if the ds->slave_mii_bus
-> > was not initialized. Calling realtek_smi_setup_mdio will create a
-> > ds->slave_mii_bus, making ds->ops->phy_read dormant.
-> >
-> > Using ds->ops->phy_read will allow switches connected through non-SMI
-> > interfaces (like mdio) to let ds allocate slave_mii_bus and reuse the
-> > same code.
-> >
-> > Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> > Tested-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
-> > Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+
+在 2022/1/17 下午5:29, Longpeng(Mike) 写道:
+> From: Longpeng <longpeng2@huawei.com>
 >
-> Humm assigning dsa_switch_ops::phy_read will force DSA into tearing down
-> the MDIO bus in dsa_switch_teardown() instead of letting your driver do
-> it and since realtek-smi-core.c uses devm_mdiobus_unregister(), it is
-> not clear to me what is going to happen but it sounds like a double free
-> might happen?
+> - GET_CONFIG_SIZE: the size of the virtio config space
 
-Thanks, Florian. You should be correct. It might call
-mdiobus_unregister() and mdiobus_free() twice, once inside the dsa
-code and another one by the devm (if I understood how devm functions
-work).
 
-The issue is that the dsa switch is assuming that if slave_mii is
-allocated and ds->ops->phy_read is defined, it has allocated the
-slave_mii by itself and it should clean up the slave_mii during
-teardown.
-That assumption came from commit
-5135e96a3dd2f4555ae6981c3155a62bcf3227f6 "So I can only guess that no
-driver that implements ds->ops->phy_read also allocates and registers
-ds->slave_mii_bus itself.". If that is true, the condition during
-dsa_switch_setup() is not correct.
+I think we need to be verbose here. And it would be better to quote what 
+spec said:
 
-During dsa_switch_setup(), if it does not fail, I know that
-ds->slave_mii_bus will be allocated, either by ds->ops->setup() or by
-itself.
+"
 
-dsa_switch_setup() {
-        ....
-        ds->ops->setup()
-        ....
-        if (!ds->slave_mii_bus && ds->ops->phy_read) {
-              ...allocate and register ds->slave_mii_bus...
-        }
-}
+The device MUST allow reading of any device-specific configuration field 
+before FEATURES_OK is set by the driver. This includes fields which are 
+conditional on feature bits, as long as those feature bits are offered 
+by the device.
 
-During the teardown, ds->slave_mii_bus will always be true (if not
-cleaning from an error before it was allocated). So, the test is
-really about having ds->ops->phy_read.
+"
 
-dsa_switch_teardown() {
-        ...
-        if (ds->slave_mii_bus && ds->ops->phy_read) {
-             ...unregister and free ds->slave_mii_bus...
-        }
-        ...
-        ds->ops->teardown();
-        ...
-}
+I guess the size should contain the conditional on features bits.
 
-As ds->ops->teardown() is called after slave_mii_bus is gone, there is
-no opportunity for ds->ops to clean the mii_slave_bus it might have
-allocated.
-It does not make sense for me to have those two "if" conditions
-working together. It should be either:
+(Or maybe we need to tweak the comment for get_config_size as well).
 
-dsa_switch_setup() {
-        ....
-        ds->ops->setup()
-        ....
-        if (ds->ops->phy_read) {
-              if (ds->slave_mii_bus)
-                    error("ds->ops->phy_read is set, I should be the
-one allocating ds->slave_mii_bus!")
-              ...allocate and register ds->slave_mii_bus...
-        }
-}
+Other looks good.
 
-if "no driver that implements ds->ops->phy_read also allocates and
-registers ds->slave_mii_bus itself" or:
+Thanks
 
-dsa_switch_teardown() {
-        ...
-        if (ds->slave_mii_bus && "slave_mii_bus was allocated by myself") {
-             ...unregister and free ds->slave_mii_bus...
-        }
-        ds->ops->teardown();
-        ...
-}
 
-if ds->ops->phy_read value should not tell if ds->slave_mii_bus should
-be cleaned by the DSA switch.
+>
+> Signed-off-by: Longpeng <longpeng2@huawei.com>
+> ---
+>   drivers/vhost/vdpa.c       | 17 +++++++++++++++++
+>   include/uapi/linux/vhost.h |  4 ++++
+>   2 files changed, 21 insertions(+)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 29cced1cd277..1eea14a4ea56 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -355,6 +355,20 @@ static long vhost_vdpa_get_iova_range(struct vhost_vdpa *v, u32 __user *argp)
+>   	return 0;
+>   }
+>   
+> +static long vhost_vdpa_get_config_size(struct vhost_vdpa *v, u32 __user *argp)
+> +{
+> +	struct vdpa_device *vdpa = v->vdpa;
+> +	const struct vdpa_config_ops *ops = vdpa->config;
+> +	u32 size;
+> +
+> +	size = ops->get_config_size(vdpa);
+> +
+> +	if (copy_to_user(argp, &size, sizeof(size)))
+> +		return -EFAULT;
+> +
+> +	return 0;
+> +}
+> +
+>   static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+>   				   void __user *argp)
+>   {
+> @@ -492,6 +506,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+>   	case VHOST_VDPA_GET_IOVA_RANGE:
+>   		r = vhost_vdpa_get_iova_range(v, argp);
+>   		break;
+> +	case VHOST_VDPA_GET_CONFIG_SIZE:
+> +		r = vhost_vdpa_get_config_size(v, argp);
+> +		break;
+>   	default:
+>   		r = vhost_dev_ioctl(&v->vdev, cmd, argp);
+>   		if (r == -ENOIOCTLCMD)
+> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+> index c998860d7bbc..bc74e95a273a 100644
+> --- a/include/uapi/linux/vhost.h
+> +++ b/include/uapi/linux/vhost.h
+> @@ -150,4 +150,8 @@
+>   /* Get the valid iova range */
+>   #define VHOST_VDPA_GET_IOVA_RANGE	_IOR(VHOST_VIRTIO, 0x78, \
+>   					     struct vhost_vdpa_iova_range)
+> +
+> +/* Get the config size */
+> +#define VHOST_VDPA_GET_CONFIG_SIZE	_IOR(VHOST_VIRTIO, 0x79, __u32)
+> +
+>   #endif
 
-I would selfishly hope the correct one was the second option because
-it would make my code much cleaner. If not, that's a complex issue to
-solve without lots of duplications: realtek-smi drivers should not
-have ds->ops->phy_read defined while realtek-mdio requires it. I'll
-need to duplicate dsa_switch_ops for each subdriver only to unset
-phy_read and also duplicate realtek_variant for each interface only to
-reference that different dsa_switch_ops.
-
-BTW, the realtek-smi calls
-of_node_put(priv->slave_mii_bus->dev.of_node) during shutdown while
-other dsa drivers do not seem to care. Wouldn't devm controls be
-enough for cleaning that mii_bus?
-Even if not, wouldn't the ds->ops->teardown be the correct place for
-that cleanup and not realtek_smi_remove()?
-
-> It seems more prudent to me to leave existing code.
-
-As I mentioned, It would require a good amount of duplications. But
-I'll do what needs to be done.
-
-Regards,
-
-Luiz
