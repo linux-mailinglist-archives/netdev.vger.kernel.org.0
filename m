@@ -2,124 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44A5B49313E
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 00:13:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FF6249313F
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 00:14:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350213AbiARXNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 18:13:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36402 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236171AbiARXNB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 18:13:01 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E3BC061574;
-        Tue, 18 Jan 2022 15:13:01 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id w26so1480247wmi.0;
-        Tue, 18 Jan 2022 15:13:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1W+xaCDXDvAJlEN1TanaAKIlI9w1S61ZKcKIY4ZvN34=;
-        b=XwCCwZw7otuDFLbTs78kHSJj//fcLQCz8QmA6Ggz5EcxuEBuTRnhyNCQrgcZLMGmmc
-         1CZBDzxju3X5m+vzjruvsXSs/Dg41k4b7aOaWWf+MSFse/l2x2Ibf9DE272MFrJUieh5
-         p37d0YlhA1Rk2Nmg/mjry7uexHauayJ1DBYZBN0SWO+eMHqhkuMeaEtywrKLXNfrUcr/
-         E+6vFmWSsiNTMEtV6UObduWqLK8LxXvxrlsOB+pia6qkzd5y8y0Zq55KiTVSHCiVMabV
-         s0H4XK/y8DEEOFiHLLnPi2bFgkrhsJinso80O7y7IOmFVWEXlkikUJ7V3IoTOcia+Vwt
-         rWbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1W+xaCDXDvAJlEN1TanaAKIlI9w1S61ZKcKIY4ZvN34=;
-        b=TF5oWb0KVzkbeOG8Re7NjjRxnCR/081oo54g5XaVXFFfJ/0dX6LTwlPC+h2M80eHkG
-         gmAw0zifYePD9bPBPgneRWlIuD1yC31/E+mUhvHzTvf5oEMcr4xOb6gRUkamem/KRGQd
-         a1NX17axENNDgepd2Ux68P/IH6OQxUTswIAMkfU1os0KZW5hc3zF9E6pNszWdZnxnchw
-         7B9O1ePCl2jc8/KoaZzxAoZf8GLk13Od/ja4jAtr1H89aoYVGK4jH8pk5mGh12l8ECVS
-         ZrpvOJMUPlKigSla1n4JpTKvjEgPLL3bDbBcK3I2q+WIW68NV6T8YK8AcnOTVLQooNhP
-         h9Vg==
-X-Gm-Message-State: AOAM530zckULVjaBO+8x7YPhB0X0QYoXt4CmTFZhNSN4d0qow+m7AVeV
-        u6L1s/n9lAfujVHOaokW6NmVfutHldbsxF5Jr6w=
-X-Google-Smtp-Source: ABdhPJx76GKEMmb3A0Psaz/0A15zJhnun8lqD2Gi7JtDUSk9QDUyLPdN/j0By6bYROySFRFr6v0upSSiKwR8qNLIIYg=
-X-Received: by 2002:adf:d1c7:: with SMTP id b7mr20758599wrd.81.1642547580086;
- Tue, 18 Jan 2022 15:13:00 -0800 (PST)
+        id S1345266AbiARXOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 18:14:39 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:56642 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236171AbiARXO1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 18:14:27 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id CCFD1212C3;
+        Tue, 18 Jan 2022 23:14:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1642547666; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gjk/ocpLrCq5mzno9/g86HL7PAGZ9UYl6ScXKn1UhPY=;
+        b=r8AtU9J7S+zYdm1uCTkfmJ3npnT2of53kyffiRl3zMrkx40ZLal3NhgnV+CBYv+vsa/n3M
+        Yt2iOsnXTo//wCiUk8s/QkzjEsLsOGFNpz1TwS2xumBdKYsxWKBohrIYS22o+CvvwYKQhO
+        Iz2SavY7L71MECA73hIFnslvmKBpr5c=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1642547666;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gjk/ocpLrCq5mzno9/g86HL7PAGZ9UYl6ScXKn1UhPY=;
+        b=Qz/x2hRFrZaLM2501TIoTs1UtuP4M/+pEaUY+UfYAY0jHPae3eNVXdLKpPqVOBbnGRMYEM
+        UKzB2LjBfIC05oDA==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id BD522A3B81;
+        Tue, 18 Jan 2022 23:14:26 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id A250D6053D; Wed, 19 Jan 2022 00:14:23 +0100 (CET)
+Date:   Wed, 19 Jan 2022 00:14:23 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, michel@fb.com,
+        dcavalca@fb.com
+Subject: Re: ethtool 5.16 release / ethtool -m bug fix
+Message-ID: <20220118231423.aa66a42vso3hvobp@lion.mk-sys.cz>
+References: <20220118145159.631fd6ed@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-References: <20220117115440.60296-1-miquel.raynal@bootlin.com>
- <CAB_54W4q9a1MRdfK6yJHMRt+Zfapn0ggie9RbbUYi4=Biefz_A@mail.gmail.com> <20220118114023.2d2c0207@xps13>
-In-Reply-To: <20220118114023.2d2c0207@xps13>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Tue, 18 Jan 2022 18:12:49 -0500
-Message-ID: <CAB_54W4jAZqSJ-7VuT0uOukHEnxAYpaGqZ6S6n9tYst26F+VWQ@mail.gmail.com>
-Subject: Re: [PATCH v3 00/41] IEEE 802.15.4 scan support
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org Wireless" 
-        <linux-wireless@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220118145159.631fd6ed@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Jan 18, 2022 at 02:51:59PM -0800, Jakub Kicinski wrote:
+> Hi Michal!
+> 
+> Sorry to hasten but I'm wondering if there is a plan to cut the 5.16
+> ethtool release? Looks like there is a problem in SFP EEPROM parsing
+> code, at least with QSFP28s, user space always requests page 3 now.
+> This ends in an -EINVAL (at least for drivers not supporting the paged
+> mode).
+> 
+> By the looks of it - Ido fixed this in 6e2b32a0d0ea ("sff-8636: Request
+> specific pages for parsing in netlink path") but it may be too much code 
+> to backport so I'm thinking it's easiest for distros to move to v5.16.
 
-On Tue, 18 Jan 2022 at 05:40, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> Hi Alexander,
->
-> > > So far the only technical point that is missing in this series is the
-> > > possibility to grab a reference over the module driving the net device
-> > > in order to prevent module unloading during a scan or when the beacons
-> > > work is ongoing.
->
-> Do you have any advises regarding this issue? That is the only
-> technical point that is left unaddressed IMHO.
->
+Accidentally, I'm working on it right now. I need to run few more tests,
+should be done in 20-30 minutes (if there are no complications).
 
-module_get()/module_put() or I don't see where the problem here is.
-You can avoid module unloading with it. Which module is the problem
-here?
-
-> > > Finally, this series is a deep reshuffle of David Girault's original
-> > > work, hence the fact that he is almost systematically credited, either
-> > > by being the only author when I created the patches based on his changes
-> > > with almost no modification, or with a Co-developped-by tag whenever the
-> > > final code base is significantly different than his first proposal while
-> > > still being greatly inspired from it.
-> > >
-> >
-> > can you please split this patch series, what I see is now:
-> >
-> > 1. cleanup patches
-> > 2. sync tx handling for mlme commands
-> > 3. scan support
->
-> Works for me. I just wanted to give the big picture but I'll split the
-> series.
->
-
-maybe also put some "symbol duration" series into it if it's getting
-too large? It is difficult to review 40 patches... in one step.
-
-> Also sorry for forgetting the 'wpan-next' subject prefix.
->
-
-no problem.
-
-I really appreciate your work and your willingness to work on all
-outstanding issues. I am really happy to see something that we can use
-for mlme-commands and to separate it from the hotpath transmission...
-It is good to see architecture for that which I think goes in the
-right direction.
-
-- Alex
+Michal
