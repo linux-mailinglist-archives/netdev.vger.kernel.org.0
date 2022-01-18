@@ -2,179 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4C7C492854
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 15:25:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BBBA49286D
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 15:31:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242710AbiAROZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 09:25:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:24982 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232372AbiAROZb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 09:25:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642515930;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=N0j/fQ4PflVYGPy/bLo8LyJo0AEkhVcyeqzgco+GTv8=;
-        b=VF8b9qOtBTViUT6+Slp36CzezAcdTXWL4olQown8KqKoP8K6N8gehy6fRjSepVu8G/p9JY
-        WsKdYZUwgHcGXSGHu3hbfxteNvpimitwxLCtdGyGXYg4inQ8JfdeDozdqAtEWUfnUeoADL
-        ltRSI3JuA1tBw8a50y2kPixXvjY2Lo8=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-536-_FRNal_eMbaXVKMYxOXA-g-1; Tue, 18 Jan 2022 09:25:29 -0500
-X-MC-Unique: _FRNal_eMbaXVKMYxOXA-g-1
-Received: by mail-ed1-f72.google.com with SMTP id s9-20020aa7d789000000b004021d03e2dfso6907012edq.18
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 06:25:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=N0j/fQ4PflVYGPy/bLo8LyJo0AEkhVcyeqzgco+GTv8=;
-        b=QDt978vVGrwcEVYbpEl5KrAcXj9KK6fikFNs4R2baV0vtekoyt0DtFUSvXRHpV37dp
-         rrwx2Nga7F5umuZqRX/+DCu7HoJT/SGPUWgH9Qn+IrXpy/hKUqyjTOg6KQmDftRqNjLG
-         +ubvWDWynjkn7nO3l2BUoJpvD7qz9sDkYrf7D21QZ0291uEUFX0BsrbE85qbv+khfCZC
-         zVcWmPHBf8aVNZdrk+ybH/SwbTVU//IcQ3E0YqvXJBO1IPw+9XuQf+d2Wi99XswWjWZv
-         67KHTBB/05dyK/MnClUbmfPfTzGuMM+0CEZnzHTUKW61kMxIZqN8L+GbosvTx/OBoIB/
-         23iA==
-X-Gm-Message-State: AOAM531lcCPN8PPIsjQ1f7j819fI3Nwxm3XzhjlgnJCsGuATqezxcweJ
-        6OkF0S9hPeEQsABHPq3XYG+mDEREbiE+vQXVj68M2+sJjE2MmPkBTNx7HDPg8jnvnapLzevlD/Z
-        K1snuMgSzhQtpee+o
-X-Received: by 2002:a17:907:6d22:: with SMTP id sa34mr19840875ejc.635.1642515928024;
-        Tue, 18 Jan 2022 06:25:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxt7mNYuWcPmCyBDWs9bQTDMSJk3irHRnoPYop007C8xxpW8ahyJvriCHSEP50GE/m7CBOxBQ==
-X-Received: by 2002:a17:907:6d22:: with SMTP id sa34mr19840848ejc.635.1642515927724;
-        Tue, 18 Jan 2022 06:25:27 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id cw6sm7205493edb.11.2022.01.18.06.25.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 06:25:27 -0800 (PST)
-Date:   Tue, 18 Jan 2022 15:25:25 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH v2 0/8] fprobe: Introduce fprobe function entry/exit
- probe
-Message-ID: <YebN1TIRxMX0sgs4@krava>
-References: <164199616622.1247129.783024987490980883.stgit@devnote2>
- <Yd77SYWgtrkhFIYz@krava>
- <YeAatqQTKsrxmUkS@krava>
- <20220115135219.64ef1cc6482d5de8a3bce9b0@kernel.org>
+        id S237788AbiARObG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 09:31:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238857AbiARObE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 09:31:04 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3580CC06173F
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 06:31:04 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n9pUj-0000wL-Of; Tue, 18 Jan 2022 15:29:57 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n9pUY-00B1DJ-N0; Tue, 18 Jan 2022 15:29:45 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n9pUX-0003HD-OO; Tue, 18 Jan 2022 15:29:45 +0100
+Date:   Tue, 18 Jan 2022 15:29:45 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-phy@lists.infradead.org,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        platform-driver-x86@vger.kernel.org,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>, Takashi Iwai <tiwai@suse.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        openipmi-developer@lists.sourceforge.net,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Richard Weinberger <richard@nod.at>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        linux-mediatek@lists.infradead.org,
+        Brian Norris <computersforpeace@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+Message-ID: <20220118142945.6y3rmvzt44pjpr4z@pengutronix.de>
+References: <20220117092444.opoedfcf5k5u6otq@pengutronix.de>
+ <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
+ <20220117114923.d5vajgitxneec7j7@pengutronix.de>
+ <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
+ <20220117170609.yxaamvqdkivs56ju@pengutronix.de>
+ <CAMuHMdXbuZqEpYivyS6hkaRN+CwTOGaHq_OROwVAWvDD6OXODQ@mail.gmail.com>
+ <20220118090913.pjumkq4zf4iqtlha@pengutronix.de>
+ <CAMuHMdUW8+Y_=uszD+JOZO3Lpa9oDayk+GO+cg276i2f2T285w@mail.gmail.com>
+ <20220118120806.pbjsat4ulg3vnhsh@pengutronix.de>
+ <CAMuHMdWkwV9XE_R5FZ=jPtDwLpDbEngG6+X2JmiDJCZJZvUjYA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="daitmup5biyyqkwr"
 Content-Disposition: inline
-In-Reply-To: <20220115135219.64ef1cc6482d5de8a3bce9b0@kernel.org>
+In-Reply-To: <CAMuHMdWkwV9XE_R5FZ=jPtDwLpDbEngG6+X2JmiDJCZJZvUjYA@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 15, 2022 at 01:52:19PM +0900, Masami Hiramatsu wrote:
-> On Thu, 13 Jan 2022 13:27:34 +0100
-> Jiri Olsa <jolsa@redhat.com> wrote:
-> 
-> > On Wed, Jan 12, 2022 at 05:01:15PM +0100, Jiri Olsa wrote:
-> > > On Wed, Jan 12, 2022 at 11:02:46PM +0900, Masami Hiramatsu wrote:
-> > > > Hi Jiri and Alexei,
-> > > > 
-> > > > Here is the 2nd version of fprobe. This version uses the
-> > > > ftrace_set_filter_ips() for reducing the registering overhead.
-> > > > Note that this also drops per-probe point private data, which
-> > > > is not used anyway.
-> > > > 
-> > > > This introduces the fprobe, the function entry/exit probe with
-> > > > multiple probe point support. This also introduces the rethook
-> > > > for hooking function return as same as kretprobe does. This
-> > > 
-> > > nice, I was going through the multi-user-graph support 
-> > > and was wondering that this might be a better way
-> > > 
-> > > > abstraction will help us to generalize the fgraph tracer,
-> > > > because we can just switch it from rethook in fprobe, depending
-> > > > on the kernel configuration.
-> > > > 
-> > > > The patch [1/8] and [7/8] are from your series[1]. Other libbpf
-> > > > patches will not be affected by this change.
-> > > 
-> > > I'll try the bpf selftests on top of this
-> > 
-> > I'm getting crash and stall when running bpf selftests,
-> > the fprobe sample module works fine, I'll check on that
-> 
-> OK, I got a kernel stall. I missed to enable CONFIG_FPROBE.
-> I think vmtest.sh should support menuconfig option.
-> 
-> #6 bind_perm:OK
-> #7 bloom_filter_map:OK
-> [  107.282403] clocksource: timekeeping watchdog on CPU0: Marking clocksource 'tsc' as unstable because the skew is too large:
-> [  107.283240] clocksource:                       'hpet' wd_nsec: 496216090 wd_now: 7ddc7120 wd_last: 7ae746b7 mask: ffffffff
-> [  107.284045] clocksource:                       'tsc' cs_nsec: 495996979 cs_now: 31fdb69b39 cs_last: 31c2d29219 mask: ffffffffffffffff
-> [  107.284926] clocksource:                       'tsc' is current clocksource.
-> [  107.285487] tsc: Marking TSC unstable due to clocksource watchdog
-> [  107.285973] TSC found unstable after boot, most likely due to broken BIOS. Use 'tsc=unstable'.
-> [  107.286616] sched_clock: Marking unstable (107240582544, 45390230)<-(107291410145, -5437339)
-> [  107.290408] clocksource: Not enough CPUs to check clocksource 'tsc'.
-> [  107.290879] clocksource: Switched to clocksource hpet
-> [  604.210415] INFO: rcu_tasks detected stalls on tasks:
-> [  604.210830] (____ptrval____): .. nvcsw: 86/86 holdout: 1 idle_cpu: -1/0
-> [  604.211314] task:test_progs      state:R  running task     stack:    0 pid:   87 ppid:    85 flags:0x00004000
-> [  604.212058] Call Trace:
-> [  604.212246]  <TASK>
-> [  604.212452]  __schedule+0x362/0xbb0
-> [  604.212723]  ? preempt_schedule_notrace_thunk+0x16/0x18
-> [  604.213107]  preempt_schedule_notrace+0x48/0x80
-> [  604.217403]  ? asm_sysvec_apic_timer_interrupt+0x12/0x20
-> [  604.217790]  ? ftrace_regs_call+0xd/0x52
-> [  604.218087]  ? bpf_test_finish.isra.0+0x190/0x190
-> [  604.218461]  ? bpf_fentry_test1+0x5/0x10
-> [  604.218750]  ? trace_clock_x86_tsc+0x10/0x10
-> [  604.219064]  ? __sys_bpf+0x8b1/0x2970
-> [  604.219337]  ? lock_is_held_type+0xd7/0x130
-> [  604.219680]  ? __x64_sys_bpf+0x1c/0x20
-> [  604.219957]  ? do_syscall_64+0x35/0x80
-> [  604.220237]  ? entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [  604.220653]  </TASK>
-> 
-> Jiri, is that what you had seen? 
 
-hi,
-sorry for late response
+--daitmup5biyyqkwr
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I did not get any backtrace for the stall, debugging showed 
-that the first probed function was called over and over for
-some reason
+On Tue, Jan 18, 2022 at 01:49:15PM +0100, Geert Uytterhoeven wrote:
+> nst the magic not-found value (so no implementation detail magic
+> > > > leaks into the caller code) and just pass it to the next API functi=
+on=3D
+> .
+> > > > (And my expectation would be that if you chose to represent not-fou=
+nd=3D
+>  by
+> > > > (void *)66 instead of NULL, you won't have to adapt any user, just =
+th=3D
+> e
+> > > > framework internal checks. This is a good thing!)
+> > >
+> > > Ah, there is the wrong assumption: drivers sometimes do need to know
+> > > if the resource was found, and thus do need to know about (void *)66,
+> > > -ENODEV, or -ENXIO.  I already gave examples for IRQ and clk before.
+> > > I can imagine these exist for gpiod and regulator, too, as soon as
+> > > you go beyond the trivial "enable" and "disable" use-cases.
+> >
+> > My premise is that every user who has to check for "not found"
+> > explicitly should not use (clk|gpiod)_get_optional() but
+> > (clk|gpiod)_get() and do proper (and explicit) error handling for
+> > -ENODEV. (clk|gpiod)_get_optional() is only for these trivial use-cases.
+> >
+> > > And 0/NULL vs. > 0 is the natural check here: missing, but not
+> > > an error.
+> >
+> > For me it it 100% irrelevant if "not found" is an error for the query
+> > function or not. I just have to be able to check for "not found" and
+> > react accordingly.
+> >
+> > And adding a function
+> >
+> >         def platform_get_irq_opional():
+> >                 ret =3D3D platform_get_irq()
+> >                 if ret =3D3D=3D3D -ENXIO:
+> >                         return 0
+> >                 return ret
+> >
+> > it's not a useful addition to the API if I cannot use 0 as a dummy
+> > because it doesn't simplify the caller enough to justify the additional
+> > function.
+> >
+> > The only thing I need to be able is to distinguish the cases "there is
+> > an irq", "there is no irq" and anything else is "there is a problem I
+> > cannot handle and so forward it to my caller". The semantic of
+> > platform_get_irq() is able to satisfy this requirement[1], so why intro=
+du=3D
+> ce
+> > platform_get_irq_opional() for the small advantage that I can check for
+> > not-found using
+> >
+> >         if (!irq)
+> >
+> > instead of
+> >
+> >         if (irq !=3D3D -ENXIO)
+> >
+> > ? The semantic of platform_get_irq() is easier ("Either a usable
+> > non-negative irq number or a negative error number") compared to
+> > platform_get_irq_optional() ("Either a usable positive irq number or a
+> > negative error number or 0 meaning not found"). Usage of
+> > platform_get_irq() isn't harder or more expensive (neither for a human
+> > reader nor for a maching running the resulting compiled code).
+> > For a human reader
+> >
+> >         if (irq !=3D3D -ENXIO)
+> >
+> > is even easier to understand because for
+> >
+> >         if (!irq)
+> >
+> > they have to check where the value comes from, see it's
+> > platform_get_irq_optional() and understand that 0 means not-found.
+>=20
+> "vIRQ zero does not exist."
 
-as for the crash I used the small fix below
+With that statement in mind I would expect that a function that gives me
+an (v)irq number never returns 0.
 
-do you have any newer version I could play with?
+> > This function just adds overhead because as a irq framework user I have
+> > to understand another function. For me the added benefit is too small to
+> > justify the additional function. And you break out-of-tree drivers.
+> > These are all no major counter arguments, but as the advantage isn't
+> > major either, they still matter.
+> >
+> > Best regards
+> > Uwe
+> >
+> > [1] the only annoying thing is the error message.
+>=20
+> So there's still a need for two functions.
 
-jirka
+Or a single function not emitting an error message together with the
+callers being responsible for calling dev_err().
 
+So the options in my preference order (first is best) are:
 
----
-diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-index 3333893e5217..883151275892 100644
---- a/kernel/trace/fprobe.c
-+++ b/kernel/trace/fprobe.c
-@@ -157,7 +157,8 @@ int unregister_fprobe(struct fprobe *fp)
- 	ret = unregister_ftrace_function(&fp->ftrace);
- 
- 	if (!ret) {
--		rethook_free(fp->rethook);
-+		if (fp->rethook)
-+			rethook_free(fp->rethook);
- 		if (fp->syms) {
- 			kfree(fp->addrs);
- 			fp->addrs = NULL;
+ - Remove the printk from platform_get_irq() and remove
+   platform_get_irq_optional();
 
+ - Rename platform_get_irq_optional() to platform_get_irq_silently()
+
+ - Keep platform_get_irq_optional() as is
+
+ - Collect underpants
+
+ - ?
+
+ - Change semantic of platform_get_irq_optional()
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--daitmup5biyyqkwr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHmztAACgkQwfwUeK3K
+7AlRQAf6AhYDCHaOxGO6hZ2L8wLnlnF6sFrLHSkHS2GJOuagJzvJ418JJIk3zkkN
+JJX1REM8rmAXGwIKEat5Ea7goFSWiSw4fr7r3eq/xyxBos5XFH7REZd9Le7ac4e7
+BrLcQENmj/gFhEdGk+DOgvOWGWAvWnwp2yKMj33qTbKi72A831OIMsB3+kFwqMt9
+f4X3Ng5JNb59Tl0UXy4GhU/8JdsULov6t3SdBUSdZvjE5yXA5IdEctWoZTaW6Rf9
+NILpiVlIFQCBsJ9haLtjfp1/EXNVmkb4+5eTiJQndvnAZGDV6FBtRn4PPAYSc3L/
+bqjzqdfJVKCdlgfMrOrsPAv2a0DZGQ==
+=l/Sj
+-----END PGP SIGNATURE-----
+
+--daitmup5biyyqkwr--
