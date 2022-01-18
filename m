@@ -2,45 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1516B49162C
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:33:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A53F9491557
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:27:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345953AbiARCcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:32:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57100 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343804AbiARC1S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:27:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC3AC06175E;
-        Mon, 17 Jan 2022 18:25:19 -0800 (PST)
+        id S244971AbiARC10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:27:26 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42242 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245724AbiARCZW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:25:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAC0460C8B;
-        Tue, 18 Jan 2022 02:25:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5207AC36AEB;
-        Tue, 18 Jan 2022 02:25:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1CBB610AB;
+        Tue, 18 Jan 2022 02:25:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38C66C36AEB;
+        Tue, 18 Jan 2022 02:25:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472718;
-        bh=s5IjFqMJ/dT0kIt8h9WrHQlrzu3r9T+bGFdI2o8kycU=;
+        s=k20201202; t=1642472721;
+        bh=KnyhTXWyAhQ6+TJyfkCxRN8k4+AZ9shB9T5IiZSCg30=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cwwK61Rua+hpj7KR55zcFdFP1zDDMAJdDhn9LtkTTp/9qUaTLhuR7Rc4A8Ncdz6Yv
-         kCn8VLOz0n/P5KARjsrO5kRInWs1hctIxjojpVCoBh3TH8xxtjGBkjOESYo1YwpQca
-         WtDnZXv+BzBqzxoC0Qlj9c19SkCq366+St1eCXMgrkUqw0OZZqS6+HFQP+d4SJzsBh
-         GzPo2XvoOzDkBU5lIN1kE9nPnV7/WOmkopk+lP5/KClTpRgMYf4Rwph3iBMZHJoBvz
-         bIf6fUKLTXQw4FI7+iRNAYtcNJfAlRkPDm0gzatj0sGKqEyyM5sdGRq+HTZPuaP6NY
-         nI5VsDbJiJuCA==
+        b=UVyZ+ITfaM1Bxng40gQmHAhb7ALZxTKy4X+TJQWC0RkL1LxPuIXSH2BqtVlqe2FAY
+         rVQ9qQPRnb2QGQ3Mbv4e2Z66cweSO28mOVrNIR2QJcO3TP6Tw9n/VdDmvdvHjXwy3f
+         uhrbVPflmgtam0WzAke5Sty4PZT4ano+WEXWA500YxI5Ha9srJ3dLjf+r0lvrtB7Te
+         LON34ffoNDUfwF5pd6F8JPWTpxQkqK+bUYFDm1N8+THEx6D94pcpInTQfqdObwKvYa
+         28p6o0koVaZS+XsDRCHlulZzuetwjRO/bVb0G7pEJdCIK+3MTEpstpEV/bVW9dRneO
+         MbKBt0+hF9FAg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 111/217] rtw89: don't kick off TX DMA if failed to write skb
-Date:   Mon, 17 Jan 2022 21:17:54 -0500
-Message-Id: <20220118021940.1942199-111-sashal@kernel.org>
+Cc:     Antoine Tenart <atenart@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, weiwan@google.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 112/217] net-sysfs: update the queue counts in the unregistration path
+Date:   Mon, 17 Jan 2022 21:17:55 -0500
+Message-Id: <20220118021940.1942199-112-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -52,39 +49,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ping-Ke Shih <pkshih@realtek.com>
+From: Antoine Tenart <atenart@kernel.org>
 
-[ Upstream commit a58fdb7c843a37d6598204c6513961feefdadc6a ]
+[ Upstream commit d7dac083414eb5bb99a6d2ed53dc2c1b405224e5 ]
 
-This is found by Smatch static checker warning:
-	drivers/net/wireless/realtek/rtw89/mac80211.c:31 rtw89_ops_tx()
-	error: uninitialized symbol 'qsel'.
+When updating Rx and Tx queue kobjects, the queue count should always be
+updated to match the queue kobjects count. This was not done in the net
+device unregistration path, fix it. Tracking all queue count updates
+will allow in a following up patch to detect illegal updates.
 
-The warning is because 'qsel' isn't filled by rtw89_core_tx_write() due to
-failed to write. The way to fix it is to avoid kicking off TX DMA, so add
-'return' to the failure case.
-
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20211201093816.13806-1-pkshih@realtek.com
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw89/mac80211.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/core/net-sysfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtw89/mac80211.c b/drivers/net/wireless/realtek/rtw89/mac80211.c
-index 16dc6fb7dbb0b..e9d61e55e2d92 100644
---- a/drivers/net/wireless/realtek/rtw89/mac80211.c
-+++ b/drivers/net/wireless/realtek/rtw89/mac80211.c
-@@ -27,6 +27,7 @@ static void rtw89_ops_tx(struct ieee80211_hw *hw,
- 	if (ret) {
- 		rtw89_err(rtwdev, "failed to transmit skb: %d\n", ret);
- 		ieee80211_free_txskb(hw, skb);
-+		return;
- 	}
- 	rtw89_core_tx_kick_off(rtwdev, qsel);
- }
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 9c01c642cf9ef..d7f9ee830d34c 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1820,6 +1820,9 @@ static void remove_queue_kobjects(struct net_device *dev)
+ 
+ 	net_rx_queue_update_kobjects(dev, real_rx, 0);
+ 	netdev_queue_update_kobjects(dev, real_tx, 0);
++
++	dev->real_num_rx_queues = 0;
++	dev->real_num_tx_queues = 0;
+ #ifdef CONFIG_SYSFS
+ 	kset_unregister(dev->queues_kset);
+ #endif
 -- 
 2.34.1
 
