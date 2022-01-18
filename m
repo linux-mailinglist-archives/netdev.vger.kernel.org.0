@@ -2,73 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3583949216A
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 09:41:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DCF7492231
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 10:07:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344721AbiARIlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 03:41:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60700 "EHLO
+        id S1345303AbiARJHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 04:07:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344701AbiARIlY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 03:41:24 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A803C061574
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 00:41:24 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id x7so67670167lfu.8
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 00:41:24 -0800 (PST)
+        with ESMTP id S1345346AbiARJHS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 04:07:18 -0500
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E66C06161C
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 01:07:17 -0800 (PST)
+Received: by mail-yb1-xb2c.google.com with SMTP id e195so23620791ybb.7
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 01:07:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=KayE+dD9BOJPbBI3dzY5YWHtd7b0tO6VXGPUQ7A3tSo=;
-        b=DCLSLN8WIBnU7Hxizbo3PUruGT2r/4vhs+wQQEEc2OOrewVjYLvioOSxRM7Nem8ruU
-         qqv+iahul3Comoky8pxi/sCjrwsqsb4ZH7q4h+KVMzCZCBd1EUpEadQTuuOb9cvNYglF
-         coVLRUBnbCLrdLK/Ho/sAy/z+fGIdn3FnsztK8vjNNvpQNG4+3hpBiETh6AYBi7AONNO
-         XZP3Eaz5EsoMNt/6rWjplvGywTFKYBwr3Zt4BFrudrP4cer3QEpM/vHF+ncCMOJZOAQw
-         ZkpB62Q8oaUz/Z7BF5E0/xascFRcZv465Axfu9pQj+iiX+VsTxvswI3sIpoViPSyIWla
-         Waqw==
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=AIHedDQeQ2nfeFyhlIY6iBZ7Eo/kAlP72EhStgPHV1I=;
+        b=YzhnDX/mPEneGMzgPa3dCb9MUrLbMllH77Iq4UrJ9q2c1DDyzQpvjwvZ5j+2VaOBoX
+         RFLE4f72gZu1cxPicl8LXrv+hMJvU05bdWpeEO85lAHtEVPc9o5s+0zzZw3h22/0Zfn/
+         z9ErGxTqHRqVxcYCU6r0+PXKJhVkymNIYBAxQQgxjU7fp9G+5u6mHogz6BaAcQX2Na7C
+         24qyjhq2TeqEQHXiYPb4ps4lQqX1baNEdfTjMj8Diftcrq3ilKNF+o5MIAieQ/ABz0IK
+         HCBZTYZUqbU9/lN4A2Zqy9Rht7BFZr0TQuE/2QB+SlISTshTCiD7XG2IkWY8wRjQ3ZVQ
+         wnpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=KayE+dD9BOJPbBI3dzY5YWHtd7b0tO6VXGPUQ7A3tSo=;
-        b=8ExH33AE9MM2VjBKQxLv6w4nSW25pyA9Wl9EUup3Uc5PIwgeeDqDPsh9x/itKXpKd7
-         YRkeiyru7DB5KqbREKR4MmeVM0aX2gdEVNp3hlI8bs3a/I9OffbXnz1/J+nVEWLIGEy5
-         Nk/ex9d+Af0IEemcuRO23xwSBEW2ilxjZc2VAbVAOnuS78n8ny1oUsC1Dp63Z0s5JLfO
-         C6hW67fukNoEc8NdtTvTT3r5Iz+sjhJ8FpPJAaTexAZF3AmMrnI1rdR+odK+G53OiTEu
-         7jxZWC6nsSY66djPNUlnOueGXaLkMQF1IZc+2EQHu+aJvaRDvdN4seQV5rReUSB5O097
-         dHGw==
-X-Gm-Message-State: AOAM532xsKJWasSfSBhypXvEt7MGMMW/kMyecyTSajKuEos3aMB5vSTT
-        mhOVVMsCg93VozbwWgQynKQAy5BoDBthAA==
-X-Google-Smtp-Source: ABdhPJwYYYw7AZR9dAg45TO/f05v2lVVcZQ6g00aO7hhIvX7+FI5r6NaI0qaM2apqWQ4D/SSaZVJxQ==
-X-Received: by 2002:a19:5f51:: with SMTP id a17mr19365584lfj.122.1642495282602;
-        Tue, 18 Jan 2022 00:41:22 -0800 (PST)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id k8sm779383lfg.1.2022.01.18.00.41.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 00:41:22 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     madalin.bucur@nxp.com, robh+dt@kernel.org, mpe@ellerman.id.au,
-        benh@kernel.crashing.org, paulus@samba.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH net 3/4] powerpc/fsl/dts: Enable WA for erratum A-009885
- on fman3l MDIO buses
-In-Reply-To: <20220116211529.25604-4-tobias@waldekranz.com>
-References: <20220116211529.25604-1-tobias@waldekranz.com>
- <20220116211529.25604-4-tobias@waldekranz.com>
-Date:   Tue, 18 Jan 2022 09:41:21 +0100
-Message-ID: <874k61cu6m.fsf@waldekranz.com>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=AIHedDQeQ2nfeFyhlIY6iBZ7Eo/kAlP72EhStgPHV1I=;
+        b=ulLY4UGmTTyjBjQiEwTls/KI0e8L6yydb56ZpekNBNLB8Cp9MIG8/xwi7L82QQnbwR
+         FP4ntjGqZ+ykycXmuKA+yFyDEA2QZmFTBG2A3ZRY9dS/ZXvH+QkImOCKVN/yNUMoRxJ4
+         7GTDTVs1cjEkZMzzyigiYY3pXAPNBXGo69MHko1r1NWj2DnBlIRu1WTU5IGgX7/OK3p/
+         6u9UDLMyvVRy9dwwD+6S1naM7shVytzLLt1sKeyxtfcEejTOjRQZNc7b/7EILU9r7Ryh
+         n/ykJgmoKeD/GwmMtfxmN6vKHU7VBrkKgzsA34MMN4M2tFOY7mUYaGwFT6h0JHXluyYl
+         zCgA==
+X-Gm-Message-State: AOAM531RpcO0hWfgQEBaWITdN9GVgktTpmOFZhLhD30OKnjuS038dvJW
+        LkfS6D42RZm3W29v3sClDhqqurEVUeRmv3YKspg=
+X-Google-Smtp-Source: ABdhPJyF+oV2TRIWyllHntkA4Yx2yE/7b0Ikh3gc5HxYSk3zamu0u4GmsZ5fzzhdzgSjkggpcij52/5j/gLzQF94eRM=
+X-Received: by 2002:a05:6902:1006:: with SMTP id w6mr18026417ybt.238.1642496836980;
+ Tue, 18 Jan 2022 01:07:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+Received: by 2002:a05:7108:3655:0:0:0:0 with HTTP; Tue, 18 Jan 2022 01:07:16
+ -0800 (PST)
+Reply-To: asil.ajwad@gmail.com
+From:   Asil Ajwad <graceyaogokamboule@gmail.com>
+Date:   Mon, 17 Jan 2022 21:07:16 -1200
+Message-ID: <CA+Yy_gBhEwRmOE8XtkDKWCw6voXv2DNRtj+9KZUeEP-BsnrQeQ@mail.gmail.com>
+Subject: Greetings,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 16, 2022 at 22:15, Tobias Waldekranz <tobias@waldekranz.com> wrote:
-> This block is used in (at least) T1024 and T1040, including their
-> variants like T1023 etc.
->
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+-- 
+Greetings,
 
-Fixes: d55ad2967d89 ("powerpc/mpc85xx: Create dts components for the FSL QorIQ DPAA FMan")
+I am Mr.Asil Ajwad, I work with United Bank of Africa, can you use
+an ATM Visa Card to withdraw money at, ATM Cash Machine in your
+country, if yes I want to transfer abounded fund the sum of $10.5million
+US-Dollars, to you from my country, this is part of the money that was
+abounded by our late old client a politician who unfortunately lost
+his life and was forced out of power Du to his greedy act, the bank will
+
+change the account details to your name, and apply for a Visa Card
+with your details, the Visa Card will be send to you, and you can be
+withdrawing money with it always, whatever any amount you withdraw
+daily, you will send 60% to me and you will take 40%, the Visa Card
+and the bank account will be on your name, I will be waiting for your
+response for more details, thanks to you a lot for giving me your time.
+
+regards,
+Mr.Asil Ajwad.
