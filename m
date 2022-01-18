@@ -2,168 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A8E04926E4
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 14:15:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65E684926E2
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 14:15:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238954AbiARNPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 08:15:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39556 "EHLO
+        id S235946AbiARNPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 08:15:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238634AbiARNPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 08:15:36 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEF2C061574
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 05:15:35 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id m6so55579885ybc.9
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 05:15:35 -0800 (PST)
+        with ESMTP id S233696AbiARNPX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 08:15:23 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA523C061574
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 05:15:23 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id n16-20020a17090a091000b001b46196d572so2749219pjn.5
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 05:15:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Rpi+gEQKxg6bybJKDC8voAnbib5Ei+cbtz3ckkEsVAQ=;
-        b=LY+8QQHhh69Tpsg8h5fW1dBYD9AdH++Fa97MtabI6639FFaSRrQLXKCZvtroTTPwIN
-         rre/fIdXz8g7oszQ7hB1jgpVXphMQX+NODYS//OVxc2ED9Pua0ocQzYYL5n/NDyWMrRS
-         JmVaI+x0IorIyz++2vqX8Tbd1jMG9NIpvmJEBFRSyPlJUYh4o8WEb917m9V2KM2eGp5v
-         Qe9LjgWRx1/viKTMW6BJ/dM0ysLwHz94HLlk5fVEjVUVINk6mKatOFYwhcZgsKDBHcUP
-         00dsfHZXf+gKqURTsnnm8wJhRU0BBSssK2OG+I95KWrNytFTV7/bxsJ+aSMSLP7SgWsK
-         NdxQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=3iGvvQG5DF7LlRE1vQBsiH//gVw9y5HtfofXpFVUB5A=;
+        b=qFB6Ytmvmi4f8yL3Gax0Ttfzw7G7ayF25sdfrbHDuuVcc5GzX+DHH9NfAxk9xhw1Zk
+         p19YMRlZ7Lpn6k+tcCdaDHyPFfOjUzSNv/2fCb3Q2ZeFd2tvmEsBelrKw3QS9Qbca8hj
+         lOEJ4EAlyv27LJoGYfo8J00EApIDyhZItN8YmoJt+ZASvKvZygeOW21sG6wNmAmfUKnw
+         nxkmR5tME5sdS2DPSvy07TQZKvHkel8Ryz87u+NnzTAXaBic7XIDMrMdWrDpn/UYqUkK
+         TqCzhp2jnVNlhpiANLd2H83Qz6CQyFHLXGLvjBK8TQEPeqEYCXqI0k3kY8ApIpvgTRqT
+         6M5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Rpi+gEQKxg6bybJKDC8voAnbib5Ei+cbtz3ckkEsVAQ=;
-        b=Epq50IBkBHiHUnMAgaBND8IeiEddKvzbRqDvNKAwfeqjhXIYEDruLTd1CNIqdvu0gZ
-         oJgyKd1SBqia5RGtmowJLJw/8RK83eHbZACc/Z+OggMG+nS6Q3hJxdEL7pea3WSZNkLm
-         icmuqrXXwz/ZPArzEIl5/RaPAAtnmwQstANduHciGp7uVM/++xOyt9IHuBbITSG7WlAy
-         ek+ygaWRcYxhx2FjlM2o0U2iy0TbOiGld6uXh+TRQBT0pvtHtgYNoTz+Vuzv7wxKyIi9
-         LQvxYnfEvghpIHa7RqJHrXLHrjgygQ92K2stkt1Pv0h/f4n7GYswT3ASQ91pgUdwJQyA
-         nF1g==
-X-Gm-Message-State: AOAM532iI4wwpsDlJpQ/77l+gjIYqrAYPRFZkc5qLVKGxZuNuQHgn+lw
-        zjzWTkUhVAIHaVAqyFcBV9t06dRTST20G7js64TK7FVkBqimCnAX
-X-Google-Smtp-Source: ABdhPJx7pgk46rlCiECDPMHx+dPfSzq6QAv2vCsZmt74l3UuLjEe5bamRvR/jnwqul+kGKDFZ+2dz718ATmSxT1+QMw=
-X-Received: by 2002:a25:9c45:: with SMTP id x5mr16773712ybo.91.1642511734948;
- Tue, 18 Jan 2022 05:15:34 -0800 (PST)
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=3iGvvQG5DF7LlRE1vQBsiH//gVw9y5HtfofXpFVUB5A=;
+        b=3uRX+EpYUm34s7dmD/956ijL0+RzkrdyGCZXeS9pw4cI+EBvK44Ca1PGJB42Z5K96h
+         N6uFCGj8vqB3JsyTmP6U2QigtqtZVK8DGmLI86KgW8+uhpAVeNHI+5LDKbbykohRBbHv
+         vq/JdNHUxcpxrJBXkzoiFjdA1Ldl8cgzlHKoq1H5PUUF7xMoYd9Jzu9Aw4ooDtMN9q3q
+         T7/sJv0EdwyQX3+9TQ/dssKRMH5bMjhrAHkFVVKVeE/GAfuksVnOeNduYb6ElPsGcdJK
+         6cEaOH/r5FG8nVwGLkrbMb/WFjAMLfU9EEya3iHwf0xPYMbiN4lyVrKgLVFVKGDvyPu7
+         KHzQ==
+X-Gm-Message-State: AOAM532ItYdDXMzWM0y4QV727VSrYsse3NU58hJFZTXjsJOretgnPNXC
+        PlrqnrP50sNyWF/z9Wfgv8PKsN8+YWJn4S4ixH0=
+X-Google-Smtp-Source: ABdhPJykAz5xmpzlfnJqa+sO1VT9bWfrUlLslo/NmKyWUyRgbl5S+ITrR98xryeFe2hC7b42e3sn6NFSjYh+hO+YvM0=
+X-Received: by 2002:a17:90b:1b50:: with SMTP id nv16mr18554169pjb.93.1642511723395;
+ Tue, 18 Jan 2022 05:15:23 -0800 (PST)
 MIME-Version: 1.0
-References: <20220118102204.1258645-1-ardb@kernel.org>
-In-Reply-To: <20220118102204.1258645-1-ardb@kernel.org>
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Date:   Tue, 18 Jan 2022 15:14:58 +0200
-Message-ID: <CAC_iWjJofXZAZt72tXvp0neWZ3FfbBrSucSRxuCwwwSh=J39Hg@mail.gmail.com>
-Subject: Re: [PATCH net] net: cpsw: avoid alignment faults by taking
- NET_IP_ALIGN into account
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-omap@vger.kernel.org, arnd@arndb.de,
-        davem@davemloft.net, kuba@kernel.org,
-        Grygorii Strashko <grygorii.strashko@ti.com>
+Sender: rhodamohammed2019@gmail.com
+Received: by 2002:a05:6a11:69e:0:0:0:0 with HTTP; Tue, 18 Jan 2022 05:15:23
+ -0800 (PST)
+From:   Halima Jammeh <halimamusajammeh2019@gmail.com>
+Date:   Tue, 18 Jan 2022 14:15:23 +0100
+X-Google-Sender-Auth: 8zF7yoQYMOtpTr90y-Xm1h5s8XA
+Message-ID: <CALRczm1Xp0e9QdrAhG01Cn4UPF=AtPsT3kkOH3kT+2AUhvNREw@mail.gmail.com>
+Subject: Miss.Halima Musa Jammeh / I NEED YOUR HELP
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ard,
-
-On Tue, 18 Jan 2022 at 12:22, Ard Biesheuvel <ardb@kernel.org> wrote:
->
-> Both versions of the CPSW driver declare a CPSW_HEADROOM_NA macro that
-> takes NET_IP_ALIGN into account, but fail to use it appropriately when
-> storing incoming packets in memory. This results in the IPv4 source and
-> destination addresses to appear misaligned in memory, which causes
-> aligment faults that need to be fixed up in software.
->
-> So let's switch from CPSW_HEADROOM to CPSW_HEADROOM_NA where needed.
-> This gets rid of any alignment faults on the RX path on a Beaglebone
-> White.
->
-> Cc: Grygorii Strashko <grygorii.strashko@ti.com>
-> Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-> ---
->  drivers/net/ethernet/ti/cpsw.c      | 6 +++---
->  drivers/net/ethernet/ti/cpsw_new.c  | 6 +++---
->  drivers/net/ethernet/ti/cpsw_priv.c | 2 +-
->  3 files changed, 7 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-> index 33142d505fc8..03575c017500 100644
-> --- a/drivers/net/ethernet/ti/cpsw.c
-> +++ b/drivers/net/ethernet/ti/cpsw.c
-> @@ -349,7 +349,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
->         struct cpsw_common      *cpsw = ndev_to_cpsw(xmeta->ndev);
->         int                     pkt_size = cpsw->rx_packet_max;
->         int                     ret = 0, port, ch = xmeta->ch;
-> -       int                     headroom = CPSW_HEADROOM;
-> +       int                     headroom = CPSW_HEADROOM_NA;
->         struct net_device       *ndev = xmeta->ndev;
->         struct cpsw_priv        *priv;
->         struct page_pool        *pool;
-> @@ -392,7 +392,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
->         }
->
->         if (priv->xdp_prog) {
-> -               int headroom = CPSW_HEADROOM, size = len;
-> +               int size = len;
->
->                 xdp_init_buff(&xdp, PAGE_SIZE, &priv->xdp_rxq[ch]);
->                 if (status & CPDMA_RX_VLAN_ENCAP) {
-> @@ -442,7 +442,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
->         xmeta->ndev = ndev;
->         xmeta->ch = ch;
->
-> -       dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM;
-> +       dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM_NA;
->         ret = cpdma_chan_submit_mapped(cpsw->rxv[ch].ch, new_page, dma,
->                                        pkt_size, 0);
->         if (ret < 0) {
-> diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-> index 279e261e4720..bd4b1528cf99 100644
-> --- a/drivers/net/ethernet/ti/cpsw_new.c
-> +++ b/drivers/net/ethernet/ti/cpsw_new.c
-> @@ -283,7 +283,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
->  {
->         struct page *new_page, *page = token;
->         void *pa = page_address(page);
-> -       int headroom = CPSW_HEADROOM;
-> +       int headroom = CPSW_HEADROOM_NA;
->         struct cpsw_meta_xdp *xmeta;
->         struct cpsw_common *cpsw;
->         struct net_device *ndev;
-> @@ -336,7 +336,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
->         }
->
->         if (priv->xdp_prog) {
-> -               int headroom = CPSW_HEADROOM, size = len;
-> +               int size = len;
->
->                 xdp_init_buff(&xdp, PAGE_SIZE, &priv->xdp_rxq[ch]);
->                 if (status & CPDMA_RX_VLAN_ENCAP) {
-> @@ -386,7 +386,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
->         xmeta->ndev = ndev;
->         xmeta->ch = ch;
->
-> -       dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM;
-> +       dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM_NA;
->         ret = cpdma_chan_submit_mapped(cpsw->rxv[ch].ch, new_page, dma,
->                                        pkt_size, 0);
->         if (ret < 0) {
-> diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-> index 3537502e5e8b..ba220593e6db 100644
-> --- a/drivers/net/ethernet/ti/cpsw_priv.c
-> +++ b/drivers/net/ethernet/ti/cpsw_priv.c
-> @@ -1122,7 +1122,7 @@ int cpsw_fill_rx_channels(struct cpsw_priv *priv)
->                         xmeta->ndev = priv->ndev;
->                         xmeta->ch = ch;
->
-> -                       dma = page_pool_get_dma_addr(page) + CPSW_HEADROOM;
-> +                       dma = page_pool_get_dma_addr(page) + CPSW_HEADROOM_NA;
->                         ret = cpdma_chan_idle_submit_mapped(cpsw->rxv[ch].ch,
->                                                             page, dma,
->                                                             cpsw->rx_packet_max,
-> --
-> 2.30.2
->
-
-This looks good to me.
-Grygorii I assume cpdma is ok with potential unaligned accesses?
-
-Thanks
-/Ilias
+Miss.Halima Musa Jammeh / Urgent Help Please reply me to my private
+email: ( halimaj908@gmail.com .) or full details ok, Dear Respected
+One,I am Miss Halima Musa Jammeh 20 years old  from the Republic of
+Gambia, the Daughter of Latea Major Musa Jammeh. My late respected
+beloved  father was the Principal Protection Officer to President
+Alhaji Dr. Yahya Abdul-Azziz.he died on the 19 Nov 2007 at the Royal
+Victoria Teaching Hospital following an illness at Sukuta Village,
+Kombo North Gambia,My late Father Depositeda big amount of money in
+one of the Global Finance Security Company on my name as the next of
+kin, I am looking for a serious Investor who is honest and trustworthy
+who will assist me Invest the money in your country, asyou know that I
+am small Girl and I don't know anything about investment, if you agree
+to help me I will introduce you to the Director of the Security
+Company as my late Father foreig Business partner, I will give you
+full details as soon as you get back to me to my  private email(
+halimaj908@gmail.com. )  Your Miss.Halima Jammeh
