@@ -2,135 +2,404 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D002749281B
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 15:15:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74C0749281D
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 15:15:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244008AbiARONl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 09:13:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:55309 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233774AbiARONk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 09:13:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642515220;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=IkxHaq0kCy4SsLO6SBaKmPU/IZqSsuPvVM6M3HwEwcE=;
-        b=AvHYOkRQOY8bruQbVIW+RAzqqFhwhN1ns5hQZ9GPM0iPsxQxSL1LznVvOceCw8Q9+rDvdu
-        RAxfAvt40rxExPArWvoYiHJBD+tcmVads+N2ox6XUEBFgpdZpO0AbidArmSKPCH1axnXho
-        qABkDrabvQkV9SC6rwSsPT6yUqqBXKk=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-163-SQL3bRvTP42DM-59d-Um_Q-1; Tue, 18 Jan 2022 09:13:39 -0500
-X-MC-Unique: SQL3bRvTP42DM-59d-Um_Q-1
-Received: by mail-ed1-f69.google.com with SMTP id c8-20020a05640227c800b003fdc1684cdeso17164621ede.12
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 06:13:38 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IkxHaq0kCy4SsLO6SBaKmPU/IZqSsuPvVM6M3HwEwcE=;
-        b=OtTIiAxabWBqaoi37CT96xetUTxIBjE8YA+QQ8XsCxJlo1L5miWw3VrttSJJHDXQzZ
-         5eaU8+ltEiz4R7r/yE2arDOi5sH924L7RZveItYSlU53x3FeOC3WQC7WyloMK2qpcj9W
-         4xfFBKoNrQ/FWyFunvgj2aWa0+wxGZ7apLHGM0OP/ifE+i85W9Y4rFTtAZhPbfTj5+QM
-         eUiJCcZS/pGESbAB4KBlB3lQ1gBnFooUUEc+e+nvnKzaHcTHqYRYNIRhXmXOrIqGe5tu
-         ivVUaMc9TaEsIrSe0T8PylDHA7p+11vwxpTfEsxn1J+8yGy3/UpacClrdTLpj6xCyRDq
-         MGtA==
-X-Gm-Message-State: AOAM532AORGRjYO9N8v6jwE5iIEZEW8RXdV7NfaVBhCwMNST1KZNqfdf
-        7XzPGjm/P4J8Ge1OLeubuCXtd/Gjx6APzVt7dk+HUAduhipBxAiGpmbAkU83sK74xQaBFHF/A3/
-        RdaA2VvBrTiyTHVOV
-X-Received: by 2002:a17:906:fcb0:: with SMTP id qw16mr283225ejb.560.1642515215735;
-        Tue, 18 Jan 2022 06:13:35 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwlqY3jnCFT+m23Tm5xwL91Ub2ICs+TnZJRMHixpWwJ4IGe1D2vK10fxdKhcnqZBgX9g3ivJA==
-X-Received: by 2002:a17:906:fcb0:: with SMTP id qw16mr283058ejb.560.1642515213178;
-        Tue, 18 Jan 2022 06:13:33 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id 20sm5369584ejy.105.2022.01.18.06.13.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 06:13:32 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id AFA491804EC; Tue, 18 Jan 2022 15:13:30 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf] libbpf: define BTF_KIND_* constants in btf.h to avoid compilation errors
-Date:   Tue, 18 Jan 2022 15:13:27 +0100
-Message-Id: <20220118141327.34231-1-toke@redhat.com>
-X-Mailer: git-send-email 2.34.1
+        id S244200AbiARONz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 09:13:55 -0500
+Received: from mga09.intel.com ([134.134.136.24]:44387 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244053AbiARONw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jan 2022 09:13:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642515232; x=1674051232;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=g3R0cIe4iqYCfLjz5VgE92FWcftNBXlwLtolMhyM68s=;
+  b=JJLw6E/Vyhq+x5Lw8f2OUAipOk2Lu9a5DiDda5vkau0VcOh7IuO2wTO1
+   OIP76woEK9v8y3uOhZsJ4JUI250u+Rbnyw9Q8OAUq6C+QdZnK4bbkUImO
+   oAwWHnXPyAHquz+wERHRZpNj5BHT9YpHDtgs8okX5d+ZivoNgyOahlDW8
+   ZMmzTiibXiPNf2RZ81iKGj43CnR98Q4sZ5BSjPi89pQbUeRuGVYWfITBz
+   kL4Uph1zfPSU2IfcD2dv40KW+wENUrpI5pkPr2Hif8Z+NyM4XvoS5D1x1
+   At22i3ez5v3h1L8W/5Xk6H0iO4vFHrWaKgJu1Fuq52/jGSIGqUCHtneTL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="244618390"
+X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
+   d="scan'208";a="244618390"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 06:13:50 -0800
+X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
+   d="scan'208";a="531811469"
+Received: from oelagadx-mobl2.ger.corp.intel.com ([10.251.219.73])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 06:13:44 -0800
+Date:   Tue, 18 Jan 2022 16:13:42 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
+cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
+        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
+        sreehari.kancharla@intel.com
+Subject: Re: [PATCH net-next v4 02/13] net: wwan: t7xx: Add control DMA
+ interface
+In-Reply-To: <20220114010627.21104-3-ricardo.martinez@linux.intel.com>
+Message-ID: <d5854453-84b-1eba-7cc7-d94f41a185d@linux.intel.com>
+References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com> <20220114010627.21104-3-ricardo.martinez@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The btf.h header included with libbpf contains inline helper functions to
-check for various BTF kinds. These helpers directly reference the
-BTF_KIND_* constants defined in the kernel header, and because the header
-file is included in user applications, this happens in the user application
-compile units.
+On Thu, 13 Jan 2022, Ricardo Martinez wrote:
 
-This presents a problem if a user application is compiled on a system with
-older kernel headers because the constants are not available. To avoid
-this, add #defines of the constants directly in btf.h before using them.
+> From: Haijun Liu <haijun.liu@mediatek.com>
+> 
+> Cross Layer DMA (CLDMA) Hardware interface (HIF) enables the control
+> path of Host-Modem data transfers. CLDMA HIF layer provides a common
+> interface to the Port Layer.
+> 
+> CLDMA manages 8 independent RX/TX physical channels with data flow
+> control in HW queues. CLDMA uses ring buffers of General Packet
+> Descriptors (GPD) for TX/RX. GPDs can represent multiple or single
+> data buffers (DB).
+> 
+> CLDMA HIF initializes GPD rings, registers ISR handlers for CLDMA
+> interrupts, and initializes CLDMA HW registers.
+> 
+> CLDMA TX flow:
+> 1. Port Layer write
+> 2. Get DB address
+> 3. Configure GPD
+> 4. Triggering processing via HW register write
+> 
+> CLDMA RX flow:
+> 1. CLDMA HW sends a RX "done" to host
+> 2. Driver starts thread to safely read GPD
+> 3. DB is sent to Port layer
+> 4. Create a new buffer for GPD ring
+> 
+> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> ---
 
-Since the kernel header moved to an enum for BTF_KIND_*, the #defines can
-shadow the enum values without any errors, so we only need #ifndef guards
-for the constants that predates the conversion to enum. We group these so
-there's only one guard for groups of values that were added together.
+In general, I felt it to be quite clean and understandable.
 
-  [0] Closes: https://github.com/libbpf/libbpf/issues/436
 
-Fixes: 223f903e9c83 ("bpf: Rename BTF_KIND_TAG to BTF_KIND_DECL_TAG")
-Fixes: 5b84bd10363e ("libbpf: Add support for BTF_KIND_TAG")
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- tools/lib/bpf/btf.h | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+> +#define CLDMA_NUM 2
 
-diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-index 061839f04525..51862fdee850 100644
---- a/tools/lib/bpf/btf.h
-+++ b/tools/lib/bpf/btf.h
-@@ -375,8 +375,28 @@ btf_dump__dump_type_data(struct btf_dump *d, __u32 id,
- 			 const struct btf_dump_type_data_opts *opts);
- 
- /*
-- * A set of helpers for easier BTF types handling
-+ * A set of helpers for easier BTF types handling.
-+ *
-+ * The inline functions below rely on constants from the kernel headers which
-+ * may not be available for applications including this header file. To avoid
-+ * compilation errors, we define all the constants here that were added after
-+ * the initial introduction of the BTF_KIND* constants.
-  */
-+#ifndef BTF_KIND_FUNC
-+#define BTF_KIND_FUNC		12	/* Function	*/
-+#define BTF_KIND_FUNC_PROTO	13	/* Function Proto	*/
-+#endif
-+#ifndef BTF_KIND_VAR
-+#define BTF_KIND_VAR		14	/* Variable	*/
-+#define BTF_KIND_DATASEC	15	/* Section	*/
-+#endif
-+#ifndef BTF_KIND_FLOAT
-+#define BTF_KIND_FLOAT		16	/* Floating point	*/
-+#endif
-+/* The kernel header switched to enums, so these two were never #defined */
-+#define BTF_KIND_DECL_TAG	17	/* Decl Tag */
-+#define BTF_KIND_TYPE_TAG	18	/* Type Tag */
-+
- static inline __u16 btf_kind(const struct btf_type *t)
- {
- 	return BTF_INFO_KIND(t->info);
+I tried to understand its purpose but it seems that only one of the 
+indexes is used in the arrays where this define gives the size? Related to 
+this, ID_CLDMA0 is not used anywhere?
+
+> +static int t7xx_cldma_gpd_rx_collect(struct cldma_queue *queue, int budget)
+> +{
+> +	struct cldma_ctrl *md_ctrl = queue->md_ctrl;
+> +	bool rx_not_done, over_budget = false;
+> +	struct t7xx_cldma_hw *hw_info;
+> +	unsigned int l2_rx_int;
+> +	unsigned long flags;
+> +	int ret;
+> +
+> +	hw_info = &md_ctrl->hw_info;
+> +
+> +	do {
+> +		rx_not_done = false;
+> +
+> +		ret = t7xx_cldma_gpd_rx_from_q(queue, budget, &over_budget);
+> +		if (ret == -ENODATA)
+> +			return 0;
+> +
+> +		if (ret)
+> +			return ret;
+> +
+> +		spin_lock_irqsave(&md_ctrl->cldma_lock, flags);
+> +		if (md_ctrl->rxq_active & BIT(queue->index)) {
+> +			if (!t7xx_cldma_hw_queue_status(hw_info, queue->index, MTK_RX))
+> +				t7xx_cldma_hw_resume_queue(hw_info, queue->index, MTK_RX);
+> +
+> +			l2_rx_int = t7xx_cldma_hw_int_status(hw_info, BIT(queue->index), MTK_RX);
+> +			if (l2_rx_int) {
+> +				t7xx_cldma_hw_rx_done(hw_info, l2_rx_int);
+> +
+> +				if (over_budget) {
+> +					spin_unlock_irqrestore(&md_ctrl->cldma_lock, flags);
+> +					return -EAGAIN;
+> +				}
+> +
+> +				rx_not_done = true;
+> +			}
+> +		}
+> +
+> +		spin_unlock_irqrestore(&md_ctrl->cldma_lock, flags);
+> +	} while (rx_not_done);
+> +
+> +	return 0;
+> +}
+
+Minor naming nit, rx_not_done doesn't seem to really tell if rx was being
+done or not but whether the loop should run another iteration?
+
+> +static void t7xx_cldma_ring_free(struct cldma_ctrl *md_ctrl,
+> +				 struct cldma_ring *ring, enum dma_data_direction tx_rx)
+> +{
+> +	struct cldma_request *req_cur, *req_next;
+> +
+> +	list_for_each_entry_safe(req_cur, req_next, &ring->gpd_ring, entry) {
+> +		if (req_cur->mapped_buff && req_cur->skb) {
+> +			dma_unmap_single(md_ctrl->dev, req_cur->mapped_buff,
+> +					 t7xx_skb_data_area_size(req_cur->skb), tx_rx);
+> +			req_cur->mapped_buff = 0;
+> +		}
+> +
+> +		dev_kfree_skb_any(req_cur->skb);
+> +
+> +		if (req_cur->gpd)
+> +			dma_pool_free(md_ctrl->gpd_dmapool, req_cur->gpd, req_cur->gpd_addr);
+> +
+> +		list_del(&req_cur->entry);
+> +		kfree_sensitive(req_cur);
+
+Why _sensitive for a bunch of addresses? There's another one in 10/13 
+which also looks bogus.
+
+> +static void t7xx_cldma_enable_irq(struct cldma_ctrl *md_ctrl)
+> +{
+> +	t7xx_pcie_mac_set_int(md_ctrl->t7xx_dev, md_ctrl->hw_info.phy_interrupt_id);
+> +}
+> +
+> +static void t7xx_cldma_disable_irq(struct cldma_ctrl *md_ctrl)
+> +{
+> +	t7xx_pcie_mac_clear_int(md_ctrl->t7xx_dev, md_ctrl->hw_info.phy_interrupt_id);
+> +}
+
+t7xx_pcie_mac_set_int and t7xx_pcie_mac_clear_int are only defined
+by a later patch.
+
+> +static bool t7xx_cldma_qs_are_active(struct t7xx_cldma_hw *hw_info)
+> +{
+> +	unsigned int tx_active;
+> +	unsigned int rx_active;
+> +
+> +	tx_active = t7xx_cldma_hw_queue_status(hw_info, CLDMA_ALL_Q, MTK_TX);
+> +	rx_active = t7xx_cldma_hw_queue_status(hw_info, CLDMA_ALL_Q, MTK_RX);
+> +	if (tx_active == CLDMA_INVALID_STATUS || rx_active == CLDMA_INVALID_STATUS)
+
+These cannot ever be true because of mask in t7xx_cldma_hw_queue_status().
+
+> +static int t7xx_cldma_clear_rxq(struct cldma_ctrl *md_ctrl, int qnum)
+> +{
+> +	struct cldma_queue *rxq = &md_ctrl->rxq[qnum];
+> +	struct cldma_request *req;
+> +	struct cldma_rgpd *rgpd;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&rxq->ring_lock, flags);
+> +	t7xx_cldma_q_reset(rxq);
+> +	list_for_each_entry(req, &rxq->tr_ring->gpd_ring, entry) {
+> +		rgpd = req->gpd;
+> +		rgpd->gpd_flags = GPD_FLAGS_IOC | GPD_FLAGS_HWO;
+> +		rgpd->data_buff_len = 0;
+> +
+> +		if (req->skb) {
+> +			req->skb->len = 0;
+> +			skb_reset_tail_pointer(req->skb);
+> +		}
+> +	}
+> +
+> +	spin_unlock_irqrestore(&rxq->ring_lock, flags);
+> +	list_for_each_entry(req, &rxq->tr_ring->gpd_ring, entry) {
+> +		int ret;
+
+I find this kind of newline+unlock+more code a bit odd groupingwise.
+IMO, the newline should be after the unlock rather than just before it to 
+better indicate the critical sections visually.
+
+> +static void t7xx_cldma_stop_q(struct cldma_ctrl *md_ctrl, unsigned char qno, enum mtk_txrx tx_rx)
+> +{
+> +	struct t7xx_cldma_hw *hw_info = &md_ctrl->hw_info;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&md_ctrl->cldma_lock, flags);
+> +	if (tx_rx == MTK_RX) {
+> +		t7xx_cldma_hw_irq_dis_eq(hw_info, qno, MTK_RX);
+> +		t7xx_cldma_hw_irq_dis_txrx(hw_info, qno, MTK_RX);
+> +
+> +		if (qno == CLDMA_ALL_Q)
+> +			md_ctrl->rxq_active &= ~TXRX_STATUS_BITMASK;
+> +		else
+> +			md_ctrl->rxq_active &= ~(TXRX_STATUS_BITMASK & BIT(qno));
+> +
+> +		t7xx_cldma_hw_stop_queue(hw_info, qno, MTK_RX);
+> +	} else if (tx_rx == MTK_TX) {
+> +		t7xx_cldma_hw_irq_dis_eq(hw_info, qno, MTK_TX);
+> +		t7xx_cldma_hw_irq_dis_txrx(hw_info, qno, MTK_TX);
+> +
+> +		if (qno == CLDMA_ALL_Q)
+> +			md_ctrl->txq_active &= ~TXRX_STATUS_BITMASK;
+> +		else
+> +			md_ctrl->txq_active &= ~(TXRX_STATUS_BITMASK & BIT(qno));
+> +
+> +		t7xx_cldma_hw_stop_queue(hw_info, qno, MTK_TX);
+> +	}
+> +
+> +	spin_unlock_irqrestore(&md_ctrl->cldma_lock, flags);
+> +}
+
+This is always called with CLDMA_ALL_Q, never with a single queue.
+
+> +/**
+> + * t7xx_cldma_send_skb() - Send control data to modem.
+> + * @md_ctrl: CLDMA context structure.
+> + * @qno: Queue number.
+> + * @skb: Socket buffer.
+> + * @blocking: True for blocking operation.
+> + *
+> + * Send control packet to modem using a ring buffer.
+> + * If blocking is set, it will wait for completion.
+> + *
+> + * Return:
+> + * * 0		- Success.
+> + * * -ENOMEM	- Allocation failure.
+> + * * -EINVAL	- Invalid queue request.
+> + * * -EBUSY	- Resource lock failure.
+> + */
+> +int t7xx_cldma_send_skb(struct cldma_ctrl *md_ctrl, int qno, struct sk_buff *skb, bool blocking)
+> +{
+> +	struct cldma_request *tx_req;
+> +	struct cldma_queue *queue;
+> +	unsigned long flags;
+> +	int ret;
+> +
+> +	if (qno >= CLDMA_TXQ_NUM)
+> +		return -EINVAL;
+> +
+> +	queue = &md_ctrl->txq[qno];
+> +
+> +	spin_lock_irqsave(&md_ctrl->cldma_lock, flags);
+> +	if (!(md_ctrl->txq_active & BIT(qno))) {
+> +		ret = -EBUSY;
+> +		spin_unlock_irqrestore(&md_ctrl->cldma_lock, flags);
+> +		goto allow_sleep;
+> +	}
+...
+> +		if (!blocking) {
+> +			ret = -EBUSY;
+> +			break;
+> +		}
+> +
+> +		ret = wait_event_interruptible_exclusive(queue->req_wq, queue->budget > 0);
+> +	} while (!ret);
+> +
+> +allow_sleep:
+> +	return ret;
+> +}
+
+First of all, if I interpreted the call chains correctly, this function is 
+always called with blocking=true.
+
+Second, the first codepath returning -EBUSY when not txq_active seems
+twisted/reversed logic to me (not active => busy ?!?).
+
+
+> +int t7xx_cldma_init(struct t7xx_modem *md, struct cldma_ctrl *md_ctrl)
+> +{
+> +	struct t7xx_cldma_hw *hw_info = &md_ctrl->hw_info;
+> +	int i;
+> +
+> +	md_ctrl->txq_active = 0;
+> +	md_ctrl->rxq_active = 0;
+> +	md_ctrl->is_late_init = false;
+> +
+> +	spin_lock_init(&md_ctrl->cldma_lock);
+> +	for (i = 0; i < CLDMA_TXQ_NUM; i++) {
+> +		md_cd_queue_struct_init(&md_ctrl->txq[i], md_ctrl, MTK_TX, i);
+> +		md_ctrl->txq[i].md = md;
+> +
+> +		md_ctrl->txq[i].worker =
+> +			alloc_workqueue("md_hif%d_tx%d_worker",
+> +					WQ_UNBOUND | WQ_MEM_RECLAIM | (i ? 0 : WQ_HIGHPRI),
+> +					1, md_ctrl->hif_id, i);
+> +		if (!md_ctrl->txq[i].worker)
+> +			return -ENOMEM;
+
+Leaks?
+
+> +		INIT_WORK(&md_ctrl->txq[i].cldma_work, t7xx_cldma_tx_done);
+> +	}
+> +
+> +	for (i = 0; i < CLDMA_RXQ_NUM; i++) {
+> +		md_cd_queue_struct_init(&md_ctrl->rxq[i], md_ctrl, MTK_RX, i);
+> +		md_ctrl->rxq[i].md = md;
+> +		INIT_WORK(&md_ctrl->rxq[i].cldma_work, t7xx_cldma_rx_done);
+> +
+> +		md_ctrl->rxq[i].worker = alloc_workqueue("md_hif%d_rx%d_worker",
+> +							 WQ_UNBOUND | WQ_MEM_RECLAIM,
+> +							 1, md_ctrl->hif_id, i);
+> +		if (!md_ctrl->rxq[i].worker)
+> +			return -ENOMEM;
+
+Ditto.
+
+> +enum cldma_id {
+> +	ID_CLDMA0,
+
+As mentioned above, this is not used anywhere.
+
+> +	ID_CLDMA1,
+> +};
+> +
+> +struct cldma_request {
+> +	void *gpd;		/* Virtual address for CPU */
+> +	dma_addr_t gpd_addr;	/* Physical address for DMA */
+> +	struct sk_buff *skb;
+> +	dma_addr_t mapped_buff;
+> +	struct list_head entry;
+> +};
+> +
+> +struct cldma_queue;
+
+Unnecessary fwd decl.
+
+> +struct cldma_ctrl;
+> +
+> +struct cldma_ring {
+> +	struct list_head gpd_ring;	/* Ring of struct cldma_request */
+> +	int length;			/* Number of struct cldma_request */
+> +	int pkt_size;
+> +};
+> +
+> +struct cldma_queue {
+> +	struct t7xx_modem *md;
+> +	struct cldma_ctrl *md_ctrl;
+> +	enum mtk_txrx dir;
+> +	unsigned char index;
+> +	struct cldma_ring *tr_ring;
+> +	struct cldma_request *tr_done;
+> +	struct cldma_request *rx_refill;
+> +	struct cldma_request *tx_xmit;
+
+Based on the name, I'd have expected this to point to something that is 
+currently under transmission but studying how it is used, it seems to 
+point to next available req. Maybe rename to tx_next_avail or something 
+along those lines? (Although when the ring is full, it isn't available 
+if I understood the code correctly).
+
+> +#define GPD_FLAGS_BDP		BIT(1)
+> +#define GPD_FLAGS_BPS		BIT(2)
+
+Unused.
+
+
 -- 
-2.34.1
+ i.
 
