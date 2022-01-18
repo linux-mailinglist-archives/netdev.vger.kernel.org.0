@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E000491CAC
+	by mail.lfdr.de (Postfix) with ESMTP id BA116491CAD
 	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 04:18:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348793AbiARDRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 22:17:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
+        id S1353517AbiARDR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 22:17:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351866AbiARDIM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 22:08:12 -0500
+        with ESMTP id S1351837AbiARDIN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 22:08:13 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114D0C0611DA;
-        Mon, 17 Jan 2022 18:49:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A0BC03327D;
+        Mon, 17 Jan 2022 18:49:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61F22612E8;
-        Tue, 18 Jan 2022 02:49:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D909C36AE3;
-        Tue, 18 Jan 2022 02:49:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85D336134B;
+        Tue, 18 Jan 2022 02:49:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FBA9C36AE3;
+        Tue, 18 Jan 2022 02:49:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474166;
-        bh=4k/SKNSsGbjCuaZEpGz13QvUt/XSg1eJ9l2IVsHUGmE=;
+        s=k20201202; t=1642474170;
+        bh=aTAPP8MrV7hwrV/EMWjgogy86CTelnvvD67qI1DQVeA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N25sxPXL8Q33FtuHijTobwkNJLobDzYrnXXp1pqttZEwEzeANl0935O4pcOm+qy91
-         S2Jy7i52OYdAad48TyQIxLK+90HrZVwaRhGS8rh/fjY8mFlC8cwdCWSDaMjcRYg29U
-         p9/zUe5Y9tamS3iVL3Rve8Dq9MXX2PnNIkA18bAdcI3SBBlOx28AEvo8hOdrOS3KiT
-         C7ajgiUSdhOmjZ6BXfiuFS3ysHxhf4AcYy/Fqiu167l3dxE3qaRpn43xK74mziCuVW
-         cNeHTqrZj63yOJfNGPlJJT0nBF5bWL4aNY2Mv+725AYrgD+4nixWziu/DsDYx8w1Yi
-         DXaseKpo2/dFQ==
+        b=TwkHH9lwxKMEjygTpc5NXOIJ/5KsDddXlfFD7P8SpQjx9AT2+hFDGdBvvHXQFXWkI
+         xd8+nNtZXZbVaqP1TanaKdyqB7ra0ChvBCwC6cPX9lnpdcHIdrGxahr1cr4PyuDmay
+         wqKTrzmXe3jd0zLE5V9je+zIt5/jtN+hbRc9LL8d2QNdyGLMhz388vduum49UWb6do
+         JnmJFB7mz2CaqaSouDE9ZKTTRZoj6ZOFKmkJfDAHwCG8qfuQ8ab46ajBdbNWlpAGP9
+         r0xTfd2RJa+DFIP8V326Dpqj+TFyR0k3lcYHgkMWNfrrGCODEaYgnggXxtfb3p5s7w
+         RCYp+QtRmK8hw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 06/56] amd: a2065/ariadne: use eth_hw_addr_set()
-Date:   Mon, 17 Jan 2022 21:48:18 -0500
-Message-Id: <20220118024908.1953673-6-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, liweihang@huawei.com,
+        liuyixing1@huawei.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 07/56] amd: hplance: use eth_hw_addr_set()
+Date:   Mon, 17 Jan 2022 21:48:19 -0500
+Message-Id: <20220118024908.1953673-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
 References: <20220118024908.1953673-1-sashal@kernel.org>
@@ -52,106 +53,43 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 285e4c664d6461b175b4613fc77126b5006a1912 ]
+[ Upstream commit 21942eef062781429b356974589d7965952940fb ]
 
-dev_addr is initialized byte by byte from series.
+Byte by byte assignments.
 
-Fixes build on x86 (32bit).
+Fixes build on m68k.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amd/a2065.c   | 18 ++++++++++--------
- drivers/net/ethernet/amd/ariadne.c | 20 +++++++++++---------
- 2 files changed, 21 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/amd/hplance.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amd/a2065.c b/drivers/net/ethernet/amd/a2065.c
-index e22f976a0d185..9b224f0d5f435 100644
---- a/drivers/net/ethernet/amd/a2065.c
-+++ b/drivers/net/ethernet/amd/a2065.c
-@@ -677,6 +677,7 @@ static int a2065_init_one(struct zorro_dev *z,
- 	unsigned long base_addr = board + A2065_LANCE;
- 	unsigned long mem_start = board + A2065_RAM;
- 	struct resource *r1, *r2;
+diff --git a/drivers/net/ethernet/amd/hplance.c b/drivers/net/ethernet/amd/hplance.c
+index c3dbf1c8a2699..e0df98ff6847f 100644
+--- a/drivers/net/ethernet/amd/hplance.c
++++ b/drivers/net/ethernet/amd/hplance.c
+@@ -128,6 +128,7 @@ static void hplance_init(struct net_device *dev, struct dio_dev *d)
+ {
+ 	unsigned long va = (d->resource.start + DIO_VIRADDRBASE);
+ 	struct hplance_private *lp;
 +	u8 addr[ETH_ALEN];
- 	u32 serial;
- 	int err;
+ 	int i;
  
-@@ -703,17 +704,18 @@ static int a2065_init_one(struct zorro_dev *z,
- 	r2->name = dev->name;
- 
- 	serial = be32_to_cpu(z->rom.er_SerialNumber);
--	dev->dev_addr[0] = 0x00;
-+	addr[0] = 0x00;
- 	if (z->id != ZORRO_PROD_AMERISTAR_A2065) {	/* Commodore */
--		dev->dev_addr[1] = 0x80;
--		dev->dev_addr[2] = 0x10;
-+		addr[1] = 0x80;
-+		addr[2] = 0x10;
- 	} else {					/* Ameristar */
--		dev->dev_addr[1] = 0x00;
--		dev->dev_addr[2] = 0x9f;
-+		addr[1] = 0x00;
-+		addr[2] = 0x9f;
+ 	/* reset the board */
+@@ -143,9 +144,10 @@ static void hplance_init(struct net_device *dev, struct dio_dev *d)
+ 		/* The NVRAM holds our ethernet address, one nibble per byte,
+ 		 * at bytes NVRAMOFF+1,3,5,7,9...
+ 		 */
+-		dev->dev_addr[i] = ((in_8(va + HPLANCE_NVRAMOFF + i*4 + 1) & 0xF) << 4)
++		addr[i] = ((in_8(va + HPLANCE_NVRAMOFF + i*4 + 1) & 0xF) << 4)
+ 			| (in_8(va + HPLANCE_NVRAMOFF + i*4 + 3) & 0xF);
  	}
--	dev->dev_addr[3] = (serial >> 16) & 0xff;
--	dev->dev_addr[4] = (serial >> 8) & 0xff;
--	dev->dev_addr[5] = serial & 0xff;
-+	addr[3] = (serial >> 16) & 0xff;
-+	addr[4] = (serial >> 8) & 0xff;
-+	addr[5] = serial & 0xff;
 +	eth_hw_addr_set(dev, addr);
- 	dev->base_addr = (unsigned long)ZTWO_VADDR(base_addr);
- 	dev->mem_start = (unsigned long)ZTWO_VADDR(mem_start);
- 	dev->mem_end = dev->mem_start + A2065_RAM_SIZE;
-diff --git a/drivers/net/ethernet/amd/ariadne.c b/drivers/net/ethernet/amd/ariadne.c
-index 4b6a5cb85dd27..b2f740249b01d 100644
---- a/drivers/net/ethernet/amd/ariadne.c
-+++ b/drivers/net/ethernet/amd/ariadne.c
-@@ -441,11 +441,11 @@ static int ariadne_open(struct net_device *dev)
  
- 	/* Set the Ethernet Hardware Address */
- 	lance->RAP = CSR12;		/* Physical Address Register, PADR[15:0] */
--	lance->RDP = ((u_short *)&dev->dev_addr[0])[0];
-+	lance->RDP = ((const u_short *)&dev->dev_addr[0])[0];
- 	lance->RAP = CSR13;		/* Physical Address Register, PADR[31:16] */
--	lance->RDP = ((u_short *)&dev->dev_addr[0])[1];
-+	lance->RDP = ((const u_short *)&dev->dev_addr[0])[1];
- 	lance->RAP = CSR14;		/* Physical Address Register, PADR[47:32] */
--	lance->RDP = ((u_short *)&dev->dev_addr[0])[2];
-+	lance->RDP = ((const u_short *)&dev->dev_addr[0])[2];
- 
- 	/* Set the Init Block Mode */
- 	lance->RAP = CSR15;		/* Mode Register */
-@@ -717,6 +717,7 @@ static int ariadne_init_one(struct zorro_dev *z,
- 	unsigned long mem_start = board + ARIADNE_RAM;
- 	struct resource *r1, *r2;
- 	struct net_device *dev;
-+	u8 addr[ETH_ALEN];
- 	u32 serial;
- 	int err;
- 
-@@ -740,12 +741,13 @@ static int ariadne_init_one(struct zorro_dev *z,
- 	r2->name = dev->name;
- 
- 	serial = be32_to_cpu(z->rom.er_SerialNumber);
--	dev->dev_addr[0] = 0x00;
--	dev->dev_addr[1] = 0x60;
--	dev->dev_addr[2] = 0x30;
--	dev->dev_addr[3] = (serial >> 16) & 0xff;
--	dev->dev_addr[4] = (serial >> 8) & 0xff;
--	dev->dev_addr[5] = serial & 0xff;
-+	addr[0] = 0x00;
-+	addr[1] = 0x60;
-+	addr[2] = 0x30;
-+	addr[3] = (serial >> 16) & 0xff;
-+	addr[4] = (serial >> 8) & 0xff;
-+	addr[5] = serial & 0xff;
-+	eth_hw_addr_set(dev, addr);
- 	dev->base_addr = (unsigned long)ZTWO_VADDR(base_addr);
- 	dev->mem_start = (unsigned long)ZTWO_VADDR(mem_start);
- 	dev->mem_end = dev->mem_start + ARIADNE_RAM_SIZE;
+ 	lp = netdev_priv(dev);
+ 	lp->lance.name = d->name;
 -- 
 2.34.1
 
