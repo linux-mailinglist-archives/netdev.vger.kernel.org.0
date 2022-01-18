@@ -2,41 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5025D49149E
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:23:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54EE24914AA
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:23:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245296AbiARCX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:23:28 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37078 "EHLO
+        id S245362AbiARCXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:23:41 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37140 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244939AbiARCWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:22:36 -0500
+        with ESMTP id S244903AbiARCWk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:22:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14021B81239;
-        Tue, 18 Jan 2022 02:22:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC4EEC36AF2;
-        Tue, 18 Jan 2022 02:22:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04BC9B81240;
+        Tue, 18 Jan 2022 02:22:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A057C36AE3;
+        Tue, 18 Jan 2022 02:22:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472553;
-        bh=NUz5bEw1H5iCy3mX3OOjMkUW9RMP1t+Ft02jmS8T3NQ=;
+        s=k20201202; t=1642472557;
+        bh=oLdh2IIQhyz8/cfQ/4uNzzA2+eaqF5O7TwGmsi6SxmI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iWhVmwVnq/PLyV16p3zTX9+z55T2r0ZPmpp7JAdOYKdy7TDXCEhZci+B0wN44aHWK
-         QrLnPsA68Uqpd0g9gMZFYoJNH1Plf2WOCC1LxziXO/yzxHxk22dVnt7caxQrgwXsXN
-         qRg4UXFKeEQdlGXUW7ZmOY8EOu7YxMCEfSfMHNqL8chAP/NPd5zb8Bk2bgtxPEYMVc
-         IuDLUlgWg48M8cXYKbLOZSyKpxzXZrd85IYezKf1kR2QhlDOOLowYKfikNvKMW9emV
-         Hn3VwdjOUbCxsPdjvFRMWGH0jGll2IvbWuqLETJAdg5AS99C7EVmzJJe3ki4Sw75JR
-         90C2En82k0U4Q==
+        b=dYBNbqlC9W8U3TzYkHpuR2erQ/eQdByLloStEOfqG7vJQfizOxndINIO4MMsQIMzZ
+         vtcmS9hVii1zudZNSrawIFCFduERmTxpaH8EGtBDiualMhLn4Gi3bbB/PrRe+4OYsu
+         316znsywo5wc1jFKHXdzv1v3qMh9rngsHtj2FzwyuTQgcJaeRYKL03+zO57B7SbzEA
+         9BdSGGxJijMpJYqXSn6RQQSNP5la1NIv6qX8ZTzE+lgEBAq5VtON7uhb8nYrfKacK7
+         BxDqC/BzEUuQzHPNkdNtWWD3gmo2g2CTQLRbRPis34Uyi9ukULcwCIrzAlw13+unGY
+         yuQM3LjPay1Pg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrii Nakryiko <andrii@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 051/217] libbpf: Accommodate DWARF/compiler bug with duplicated structs
-Date:   Mon, 17 Jan 2022 21:16:54 -0500
-Message-Id: <20220118021940.1942199-51-sashal@kernel.org>
+Cc:     Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        biju.das.jz@bp.renesas.com,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        yoshihiro.shimoda.uh@renesas.com, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 052/217] ethernet: renesas: Use div64_ul instead of do_div
+Date:   Mon, 17 Jan 2022 21:16:55 -0500
+Message-Id: <20220118021940.1942199-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -48,113 +54,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-[ Upstream commit efdd3eb8015e7447095f02a26eaabd164cd18004 ]
+[ Upstream commit d9f31aeaa1e5aefa68130878af3c3513d41c1e2d ]
 
-According to [0], compilers sometimes might produce duplicate DWARF
-definitions for exactly the same struct/union within the same
-compilation unit (CU). We've had similar issues with identical arrays
-and handled them with a similar workaround in 6b6e6b1d09aa ("libbpf:
-Accomodate DWARF/compiler bug with duplicated identical arrays"). Do the
-same for struct/union by ensuring that two structs/unions are exactly
-the same, down to the integer values of field referenced type IDs.
+do_div() does a 64-by-32 division. Here the divisor is an
+unsigned long which on some platforms is 64 bit wide. So use
+div64_ul instead of do_div to avoid a possible truncation.
 
-Solving this more generically (allowing referenced types to be
-equivalent, but using different type IDs, all within a single CU)
-requires a huge complexity increase to handle many-to-many mappings
-between canonidal and candidate type graphs. Before we invest in that,
-let's see if this approach handles all the instances of this issue in
-practice. Thankfully it's pretty rare, it seems.
+Eliminate the following coccicheck warning:
+./drivers/net/ethernet/renesas/ravb_main.c:2492:1-7: WARNING:
+do_div() does a 64-by-32 division, please consider using div64_ul
+instead.
 
-  [0] https://lore.kernel.org/bpf/YXr2NFlJTAhHdZqq@krava/
-
-Reported-by: Jiri Olsa <jolsa@kernel.org>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20211117194114.347675-1-andrii@kernel.org
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Link: https://lore.kernel.org/r/1637228883-100100-1-git-send-email-yang.lee@linux.alibaba.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/btf.c | 45 +++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 41 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/renesas/ravb_main.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 7e4c5586bd877..6ab66bd0ecdfb 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -3443,8 +3443,8 @@ static long btf_hash_struct(struct btf_type *t)
- }
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index b4c597f4040c8..151cce2fe36d5 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -30,8 +30,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/sys_soc.h>
+ #include <linux/reset.h>
+-
+-#include <asm/div64.h>
++#include <linux/math64.h>
  
- /*
-- * Check structural compatibility of two FUNC_PROTOs, ignoring referenced type
-- * IDs. This check is performed during type graph equivalence check and
-+ * Check structural compatibility of two STRUCTs/UNIONs, ignoring referenced
-+ * type IDs. This check is performed during type graph equivalence check and
-  * referenced types equivalence is checked separately.
-  */
- static bool btf_shallow_equal_struct(struct btf_type *t1, struct btf_type *t2)
-@@ -3817,6 +3817,31 @@ static int btf_dedup_identical_arrays(struct btf_dedup *d, __u32 id1, __u32 id2)
- 	return btf_equal_array(t1, t2);
- }
+ #include "ravb.h"
  
-+/* Check if given two types are identical STRUCT/UNION definitions */
-+static bool btf_dedup_identical_structs(struct btf_dedup *d, __u32 id1, __u32 id2)
-+{
-+	const struct btf_member *m1, *m2;
-+	struct btf_type *t1, *t2;
-+	int n, i;
-+
-+	t1 = btf_type_by_id(d->btf, id1);
-+	t2 = btf_type_by_id(d->btf, id2);
-+
-+	if (!btf_is_composite(t1) || btf_kind(t1) != btf_kind(t2))
-+		return false;
-+
-+	if (!btf_shallow_equal_struct(t1, t2))
-+		return false;
-+
-+	m1 = btf_members(t1);
-+	m2 = btf_members(t2);
-+	for (i = 0, n = btf_vlen(t1); i < n; i++, m1++, m2++) {
-+		if (m1->type != m2->type)
-+			return false;
-+	}
-+	return true;
-+}
-+
- /*
-  * Check equivalence of BTF type graph formed by candidate struct/union (we'll
-  * call it "candidate graph" in this description for brevity) to a type graph
-@@ -3928,6 +3953,8 @@ static int btf_dedup_is_equiv(struct btf_dedup *d, __u32 cand_id,
+@@ -2488,8 +2487,7 @@ static int ravb_set_gti(struct net_device *ndev)
+ 	if (!rate)
+ 		return -EINVAL;
  
- 	hypot_type_id = d->hypot_map[canon_id];
- 	if (hypot_type_id <= BTF_MAX_NR_TYPES) {
-+		if (hypot_type_id == cand_id)
-+			return 1;
- 		/* In some cases compiler will generate different DWARF types
- 		 * for *identical* array type definitions and use them for
- 		 * different fields within the *same* struct. This breaks type
-@@ -3936,8 +3963,18 @@ static int btf_dedup_is_equiv(struct btf_dedup *d, __u32 cand_id,
- 		 * types within a single CU. So work around that by explicitly
- 		 * allowing identical array types here.
- 		 */
--		return hypot_type_id == cand_id ||
--		       btf_dedup_identical_arrays(d, hypot_type_id, cand_id);
-+		if (btf_dedup_identical_arrays(d, hypot_type_id, cand_id))
-+			return 1;
-+		/* It turns out that similar situation can happen with
-+		 * struct/union sometimes, sigh... Handle the case where
-+		 * structs/unions are exactly the same, down to the referenced
-+		 * type IDs. Anything more complicated (e.g., if referenced
-+		 * types are different, but equivalent) is *way more*
-+		 * complicated and requires a many-to-many equivalence mapping.
-+		 */
-+		if (btf_dedup_identical_structs(d, hypot_type_id, cand_id))
-+			return 1;
-+		return 0;
- 	}
+-	inc = 1000000000ULL << 20;
+-	do_div(inc, rate);
++	inc = div64_ul(1000000000ULL << 20, rate);
  
- 	if (btf_dedup_hypot_map_add(d, canon_id, cand_id))
+ 	if (inc < GTI_TIV_MIN || inc > GTI_TIV_MAX) {
+ 		dev_err(dev, "gti.tiv increment 0x%llx is outside the range 0x%x - 0x%x\n",
 -- 
 2.34.1
 
