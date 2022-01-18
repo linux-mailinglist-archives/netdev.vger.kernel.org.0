@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF6034914FF
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:25:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC28B4914F7
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:25:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343492AbiARCZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:25:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57258 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244696AbiARCXy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:23:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B533C061768;
-        Mon, 17 Jan 2022 18:23:41 -0800 (PST)
+        id S245367AbiARCZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:25:24 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40348 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244478AbiARCXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:23:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5838B81233;
-        Tue, 18 Jan 2022 02:23:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7266FC36AF4;
-        Tue, 18 Jan 2022 02:23:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C9956093C;
+        Tue, 18 Jan 2022 02:23:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1091EC36AEB;
+        Tue, 18 Jan 2022 02:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472619;
-        bh=dkmUFr49CybcD04y+WFJD6jn5JBcCH1bqnANrKf9inE=;
+        s=k20201202; t=1642472621;
+        bh=mMVMuisXCIt+zCi8F5XYc+fsmSAixmNaldXMRbfRe4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xi+9E/9qpVuM3gopaa4Q5CYPUF/mUIW9PqBnxPg5BxhJv4Cie7BBN9OHBlKf0HQFl
-         EzWSHYqiSvIMkHlWh1tF6CFJJE11Pp3LRU7lVAEPw93S0k4F50wHDUIjku9rUteNTP
-         rMWTf6zd/krgzSUdywiAgYQ5YtVru+jJOPbvf2yCZMwbcwpWJvFNG3amp/9OHOmhwo
-         6h/QD8IlHNNnDCnMyLdrV84cGHh8jYclN3u7BJ3aaf85jTNeGDZvfw4WQh5MkXH+L0
-         eINQe03R3pcLkxKCxYsDmFL4v92m2jtJnDdj/YYoYYEoV05dB3giQM1ZUeg/+e8giO
-         sKFlgfcNeBIzQ==
+        b=Ty7eVEOUIHxBgBigVg7OlxCj8aa9VfkKLIEi6+ZMob36+cN/4VqO7nRDOh+AvzzcC
+         bwhFlbm/vvYXOxc1sMiUZQQxmXoJHIV7GpFIAESR8dRWfABc2g+VwL5bXMBgrGgqlS
+         B60RYn0/mO6HRQUekIFCXoMRu8AC8ngjLxqMjDfOHc/TyTPIapWuUI0FU6z6qztyJc
+         ossfj5gw+YrpN0TF32yh3THmciRIi1ug3tUgTGdfH4OVOgXNcrI1GuyoNb8jSvjVKL
+         3JR6tV+Pw/f2X1mZ0t8PmIqfosVX56F8NPv4taFNVHoCjj+VVM+0vmFjRsK3nalkTC
+         T0ONQJK/nTz3A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        rtl8821cerfe2 <rtl8821cerfe2@protonmail.com>,
+Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+        Brendan Dolan-Gavitt <brendandg@nyu.edu>,
         Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, tony0620emma@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 075/217] rtw88: add quirk to disable pci caps on HP 250 G7 Notebook PC
-Date:   Mon, 17 Jan 2022 21:17:18 -0500
-Message-Id: <20220118021940.1942199-75-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, amitkarwar@gmail.com,
+        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
+        huxinming820@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 076/217] mwifiex: Fix skb_over_panic in mwifiex_usb_recv()
+Date:   Mon, 17 Jan 2022 21:17:19 -0500
+Message-Id: <20220118021940.1942199-76-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -53,42 +52,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ping-Ke Shih <pkshih@realtek.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit c81edb8dddaa36c4defa26240cc19127f147283f ]
+[ Upstream commit 04d80663f67ccef893061b49ec8a42ff7045ae84 ]
 
-8821CE causes random freezes on HP 250 G7 Notebook PC. Add a quirk
-to disable pci ASPM capability.
+Currently, with an unknown recv_type, mwifiex_usb_recv
+just return -1 without restoring the skb. Next time
+mwifiex_usb_rx_complete is invoked with the same skb,
+calling skb_put causes skb_over_panic.
 
-Reported-by: rtl8821cerfe2 <rtl8821cerfe2@protonmail.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+The bug is triggerable with a compromised/malfunctioning
+usb device. After applying the patch, skb_over_panic
+no longer shows up with the same input.
+
+Attached is the panic report from fuzzing.
+skbuff: skb_over_panic: text:000000003bf1b5fa
+ len:2048 put:4 head:00000000dd6a115b data:000000000a9445d8
+ tail:0x844 end:0x840 dev:<NULL>
+kernel BUG at net/core/skbuff.c:109!
+invalid opcode: 0000 [#1] SMP KASAN NOPTI
+CPU: 0 PID: 198 Comm: in:imklog Not tainted 5.6.0 #60
+RIP: 0010:skb_panic+0x15f/0x161
+Call Trace:
+ <IRQ>
+ ? mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
+ skb_put.cold+0x24/0x24
+ mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __hrtimer_run_queues+0x316/0x740
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ irq_exit+0x114/0x140
+ smp_apic_timer_interrupt+0xde/0x380
+ apic_timer_interrupt+0xf/0x20
+ </IRQ>
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211119052437.8671-1-pkshih@realtek.com
+Link: https://lore.kernel.org/r/YX4CqjfRcTa6bVL+@Zekuns-MBP-16.fios-router.home
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw88/pci.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/wireless/marvell/mwifiex/usb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
-index a7a6ebfaa203c..3b367c9085eba 100644
---- a/drivers/net/wireless/realtek/rtw88/pci.c
-+++ b/drivers/net/wireless/realtek/rtw88/pci.c
-@@ -1738,6 +1738,15 @@ static const struct dmi_system_id rtw88_pci_quirks[] = {
- 		},
- 		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
- 	},
-+	{
-+		.callback = disable_pci_caps,
-+		.ident = "HP HP 250 G7 Notebook PC",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "HP 250 G7 Notebook PC"),
-+		},
-+		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
-+	},
- 	{}
- };
- 
+diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
+index 9736aa0ab7fd4..8f01fcbe93961 100644
+--- a/drivers/net/wireless/marvell/mwifiex/usb.c
++++ b/drivers/net/wireless/marvell/mwifiex/usb.c
+@@ -130,7 +130,8 @@ static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,
+ 		default:
+ 			mwifiex_dbg(adapter, ERROR,
+ 				    "unknown recv_type %#x\n", recv_type);
+-			return -1;
++			ret = -1;
++			goto exit_restore_skb;
+ 		}
+ 		break;
+ 	case MWIFIEX_USB_EP_DATA:
 -- 
 2.34.1
 
