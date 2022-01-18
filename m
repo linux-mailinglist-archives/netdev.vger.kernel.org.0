@@ -2,109 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C8F94913C4
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 02:51:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFEEE4913FC
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:19:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238364AbiARBvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 20:51:52 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:38748 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S236467AbiARBvv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 20:51:51 -0500
-X-UUID: 7fe5b39085b348c1972f0ae24ea6cf92-20220118
-X-UUID: 7fe5b39085b348c1972f0ae24ea6cf92-20220118
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 805230940; Tue, 18 Jan 2022 09:51:48 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 18 Jan 2022 09:51:47 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 18 Jan 2022 09:51:45 +0800
-Message-ID: <f9e3a862ecdb914a0efb52582989e975a742e918.camel@mediatek.com>
-Subject: Re: [PATCH net-next v12 3/7] stmmac: dwmac-mediatek: re-arrange
- clock setting
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <dkirjanov@suse.de>
-Date:   Tue, 18 Jan 2022 09:51:45 +0800
-In-Reply-To: <2c62f337-5eb4-e525-7e3a-289435315c09@collabora.com>
-References: <20220117070706.17853-1-biao.huang@mediatek.com>
-         <20220117070706.17853-4-biao.huang@mediatek.com>
-         <2c62f337-5eb4-e525-7e3a-289435315c09@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        id S244329AbiARCTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:19:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231611AbiARCTp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:19:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF981C061574;
+        Mon, 17 Jan 2022 18:19:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 360E6612BE;
+        Tue, 18 Jan 2022 02:19:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55668C36AEB;
+        Tue, 18 Jan 2022 02:19:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642472383;
+        bh=ePBaW9YD9SIwvLA46ELgC5rC7fjkynIpw6UKXVSMxew=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PYHkxLtkipoa2E6HucbExx9mFwwJ951fWgG9pgCl9/kpovqMGWqAVlHVSoiX5VtPA
+         E5T/8wYB6K0BSkB3Pb4iSS61UcxjnRppneHNS7ztptpZPT8/Tkd5C0GVNHv72nHulN
+         Ot61ANhQomBsuFxv24JbiHpKrl3PupMPrjlsxcyjbFCuqpTaLxPJZWvPm4WUXt30qR
+         07sYJW7oTFlJ5jV1UEFLyTHT/4HWfz0L0plpmZnt2V4X3G/6pT1MZ7HnQZbyTBWG/P
+         oG5tO/ZiYv0cZ1qUm4WnUMvUohAPNu4sBaB/hOMIPbCNhaBAFjrxbfjwB/zRTGxJHX
+         +dehexyopM7Lw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Nguyen Dinh Phi <phind.uet@gmail.com>,
+        syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 001/217] Bluetooth: hci_sock: purge socket queues in the destruct() callback
+Date:   Mon, 17 Jan 2022 21:16:04 -0500
+Message-Id: <20220118021940.1942199-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Angelo,
-	Thanks for your comments.
-On Mon, 2022-01-17 at 11:38 +0100, AngeloGioacchino Del Regno wrote:
-> Il 17/01/22 08:07, Biao Huang ha scritto:
-> > The rmii_internal clock is needed only when PHY
-> > interface is RMII, and reference clock is from MAC.
-> > 
-> > Re-arrange the clock setting as following:
-> > 1. the optional "rmii_internal" is controlled by devm_clk_get(),
-> > 2. other clocks still be configured by devm_clk_bulk_get().
-> > 
-> > Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> > ---
-> >   .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 72 +++++++++++++-
-> > -----
-> >   1 file changed, 49 insertions(+), 23 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> > b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> > index 8747aa4403e8..2678d2deb26a 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> > @@ -49,14 +49,15 @@ struct mac_delay_struct {
-> >   struct mediatek_dwmac_plat_data {
-> >   	const struct mediatek_dwmac_variant *variant;
-> >   	struct mac_delay_struct mac_delay;
-> > +	struct clk *rmii_internal_clk;
-> >   	struct clk_bulk_data *clks;
-> > -	struct device_node *np;
-> >   	struct regmap *peri_regmap;
-> > +	struct device_node *np;
-> >   	struct device *dev;
-> >   	phy_interface_t phy_mode;
-> > -	int num_clks_to_config;
-> >   	bool rmii_clk_from_mac;
-> >   	bool rmii_rxc;
-> > +	int num_clks;
-> 
-> I don't see any need to get a num_clks here, at this point: since all
-> functions
-> reading this are getting passed a pointer to this entire structure,
-> you can
-> simply always access plat->variant->num_clks.
-> 
-> Please, drop the addition of num_clks in this struct.
-> 
-> Regards,
-> Angelo
-OK, will remove it in next send.
+From: Nguyen Dinh Phi <phind.uet@gmail.com>
+
+[ Upstream commit 709fca500067524381e28a5f481882930eebac88 ]
+
+The receive path may take the socket right before hci_sock_release(),
+but it may enqueue the packets to the socket queues after the call to
+skb_queue_purge(), therefore the socket can be destroyed without clear
+its queues completely.
+
+Moving these skb_queue_purge() to the hci_sock_destruct() will fix this
+issue, because nothing is referencing the socket at this point.
+
+Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
+Reported-by: syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/bluetooth/hci_sock.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+index d0dad1fafe079..446573a125711 100644
+--- a/net/bluetooth/hci_sock.c
++++ b/net/bluetooth/hci_sock.c
+@@ -889,10 +889,6 @@ static int hci_sock_release(struct socket *sock)
+ 	}
+ 
+ 	sock_orphan(sk);
+-
+-	skb_queue_purge(&sk->sk_receive_queue);
+-	skb_queue_purge(&sk->sk_write_queue);
+-
+ 	release_sock(sk);
+ 	sock_put(sk);
+ 	return 0;
+@@ -2058,6 +2054,12 @@ static int hci_sock_getsockopt(struct socket *sock, int level, int optname,
+ 	return err;
+ }
+ 
++static void hci_sock_destruct(struct sock *sk)
++{
++	skb_queue_purge(&sk->sk_receive_queue);
++	skb_queue_purge(&sk->sk_write_queue);
++}
++
+ static const struct proto_ops hci_sock_ops = {
+ 	.family		= PF_BLUETOOTH,
+ 	.owner		= THIS_MODULE,
+@@ -2111,6 +2113,7 @@ static int hci_sock_create(struct net *net, struct socket *sock, int protocol,
+ 
+ 	sock->state = SS_UNCONNECTED;
+ 	sk->sk_state = BT_OPEN;
++	sk->sk_destruct = hci_sock_destruct;
+ 
+ 	bt_sock_link(&hci_sk_list, sk);
+ 	return 0;
+-- 
+2.34.1
 
