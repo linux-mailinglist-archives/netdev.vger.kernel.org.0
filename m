@@ -2,42 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 564EA4919BC
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:55:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6F7F4919BF
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:55:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347788AbiARCzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:55:47 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50332 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347881AbiARCn3 (ORCPT
+        id S1351843AbiARCzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:55:49 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34964 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347933AbiARCn3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:43:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77147B811CC;
-        Tue, 18 Jan 2022 02:43:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5761EC36AF2;
-        Tue, 18 Jan 2022 02:43:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C46D2612D4;
+        Tue, 18 Jan 2022 02:43:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2F66C36AEF;
+        Tue, 18 Jan 2022 02:43:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473804;
-        bh=/dLmxP0k5YulXdYMfs2D5bBa+Ba737FmT5TgawM3dGg=;
+        s=k20201202; t=1642473808;
+        bh=sDAo1XnIxCI4a6omn15xDtLahALW8/Pua+mmxRBmHWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uVgP0IXut0fzgvA7bK5nkIy5VRbhoq7kG9DowQ4RgHkcvty8x/LjmXOF6GqMtz3/E
-         JOvhLKRdrBUZy3dCuIjPoYL3IdGj2k2fI1T4utvLDPpfOGw2KAX54HUyO7XAFc/qyD
-         XP/WoF9BVbffFb+q+zDMxj5IorWackP6107XKlC1YoVSsoDpskA+k/ap4f1WD2uKX0
-         Dhvom4BYL8Lu2Rf0qHAr4nSL8U1XScszLJOWmbUS7JSzVvYoRPRUXxmBsM1ffpSz+B
-         0p5+BLHwYeNKP/lZzupuhbo48dn/tCoKEb0xNTyB9JPBFVHI1cR5vX1La32FFG9cu1
-         gDmv8jhGiURAw==
+        b=V5Ix/KPpJT3bIIdDoJw8RaoK0gbik4U++h7BtvwIFTsk99dYtLfEJ6au5wQzGs11I
+         XZkSbatKMY50IqwBc+fkOjsP4Qn7W8S3PdO9IuRuPEbZDNlqDRZLn4mUW8NzHAIgw7
+         1f7jARfJX1D9t+IHVjfH1lL5FgN2GrLVFNcW7Qw95tjunKlypog6fyDuSPoVIENoUO
+         vZfp8mfQeBFLl+G+FJ23V1cy5xtN1G8qK2AKqkQmfKi2WRG8MMqwTQoZi+tYkD0Lbr
+         uegSqRsQ6CHKdhmsiBiIaOrYo+aVEjM6BV5ic77wanoIw+1pqXzSEyrk/IBqKyVE26
+         7g+0U8NpIOrfA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
+Cc:     Ilan Peer <ilan.peer@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, johannes.berg@intel.com,
+        miriam.rachel.korenblit@intel.com, dan.carpenter@oracle.com,
+        avraham.stern@intel.com, emmanuel.grumbach@intel.com,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 081/116] iwlwifi: remove module loading failure message
-Date:   Mon, 17 Jan 2022 21:39:32 -0500
-Message-Id: <20220118024007.1950576-81-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 082/116] iwlwifi: mvm: Fix calculation of frame length
+Date:   Mon, 17 Jan 2022 21:39:33 -0500
+Message-Id: <20220118024007.1950576-82-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
@@ -49,49 +51,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Ilan Peer <ilan.peer@intel.com>
 
-[ Upstream commit 6518f83ffa51131daaf439b66094f684da3fb0ae ]
+[ Upstream commit 40a0b38d7a7f91a6027287e0df54f5f547e8d27e ]
 
-When CONFIG_DEBUG_TEST_DRIVER_REMOVE is set, iwlwifi crashes
-when the opmode module cannot be loaded, due to completing
-the completion before using drv->dev, which can then already
-be freed.
+The RADA might include in the Rx frame the MIC and CRC bytes.
+These bytes should be removed for non monitor interfaces and
+should not be passed to mac80211.
 
-Fix this by removing the (fairly useless) message. Moving the
-completion later causes a deadlock instead, so that's not an
-option.
+Fix the Rx processing to remove the extra bytes on non monitor
+cases.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Ilan Peer <ilan.peer@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/20211210091245.289008-2-luca@coelho.fi
+Link: https://lore.kernel.org/r/iwlwifi.20211219121514.098be12c801e.I1d81733d8a75b84c3b20eb6e0d14ab3405ca6a86@changeid
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c | 27 +++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-index 4bdfd6afa7324..30c6d7b18599a 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -1629,15 +1629,8 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	 * else from proceeding if the module fails to load
- 	 * or hangs loading.
- 	 */
--	if (load_module) {
-+	if (load_module)
- 		request_module("%s", op->name);
--#ifdef CONFIG_IWLWIFI_OPMODE_MODULAR
--		if (err)
--			IWL_ERR(drv,
--				"failed to load module %s (error %d), is dynamic loading enabled?\n",
--				op->name, err);
--#endif
--	}
- 	failure = false;
- 	goto free;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+index 838734fec5023..86b3fb321dfdd 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+@@ -177,12 +177,39 @@ static int iwl_mvm_create_skb(struct iwl_mvm *mvm, struct sk_buff *skb,
+ 	struct iwl_rx_mpdu_desc *desc = (void *)pkt->data;
+ 	unsigned int headlen, fraglen, pad_len = 0;
+ 	unsigned int hdrlen = ieee80211_hdrlen(hdr->frame_control);
++	u8 mic_crc_len = u8_get_bits(desc->mac_flags1,
++				     IWL_RX_MPDU_MFLG1_MIC_CRC_LEN_MASK) << 1;
  
+ 	if (desc->mac_flags2 & IWL_RX_MPDU_MFLG2_PAD) {
+ 		len -= 2;
+ 		pad_len = 2;
+ 	}
+ 
++	/*
++	 * For non monitor interface strip the bytes the RADA might not have
++	 * removed. As monitor interface cannot exist with other interfaces
++	 * this removal is safe.
++	 */
++	if (mic_crc_len && !ieee80211_hw_check(mvm->hw, RX_INCLUDES_FCS)) {
++		u32 pkt_flags = le32_to_cpu(pkt->len_n_flags);
++
++		/*
++		 * If RADA was not enabled then decryption was not performed so
++		 * the MIC cannot be removed.
++		 */
++		if (!(pkt_flags & FH_RSCSR_RADA_EN)) {
++			if (WARN_ON(crypt_len > mic_crc_len))
++				return -EINVAL;
++
++			mic_crc_len -= crypt_len;
++		}
++
++		if (WARN_ON(mic_crc_len > len))
++			return -EINVAL;
++
++		len -= mic_crc_len;
++	}
++
+ 	/* If frame is small enough to fit in skb->head, pull it completely.
+ 	 * If not, only pull ieee80211_hdr (including crypto if present, and
+ 	 * an additional 8 bytes for SNAP/ethertype, see below) so that
 -- 
 2.34.1
 
