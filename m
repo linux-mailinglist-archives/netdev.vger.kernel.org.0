@@ -2,44 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4E26491778
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:42:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0FB049171B
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:38:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343811AbiARClv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:41:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236945AbiARChn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:37:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D87DC0619C8;
-        Mon, 17 Jan 2022 18:34:28 -0800 (PST)
+        id S1344865AbiARChh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:37:37 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51206 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343933AbiARCd4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:33:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BC07B8123D;
-        Tue, 18 Jan 2022 02:33:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E08BC36AE3;
-        Tue, 18 Jan 2022 02:33:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E9F2611DC;
+        Tue, 18 Jan 2022 02:33:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 719E1C36AE3;
+        Tue, 18 Jan 2022 02:33:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473232;
-        bh=NuiIAk9+6AutmDT+wY0fXkJUI9tIu3M/c9EfX1hpyp8=;
+        s=k20201202; t=1642473235;
+        bh=lCt6s1XiY9IrHfXCjB2XzdbfCwBwul/BJaocMzVH0cI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SkE1Cht1TejurSEFoKeQQlIlrRjoNDqrXY35fOJAq9WHUznQnrJeGmVNLCV2AV1YZ
-         Uku4oIcmCIuU49HBlcRx5bVfcHpKUQrERhb4NrvFm6sGd/S878JR6UXFWeTG7mi8+b
-         Tms7oIQLE4wv3/6sNyaBTVUjq3+LV0F+xZ3jy0M8964np33WFLY2M5xDzIj7nWJ4NE
-         D1ZyPkLZwmSQLtGYvccGtbdTHS45zzPjp+ZZOeqaKuDvnEtG8ppdu7sWvODxtFDfJk
-         sRdHVTP5zDNbzVq0x4eyMGMPue8ug/VLEECd2MYZSzoxTDupsHhD1JXTsqItQtMEuG
-         /S2GTgSZxuDrA==
+        b=V5WLvXyUyc+wn5jjfDCf2eQCmeJVKvVc6gwf1RnHOdHDTbqRvO/I6rPBUTXW7/I6o
+         RFFsy5l91HZhyrUrGisJ5dRFo1CslWS67B6d4BpGNcXi+5cgLsLJLvqJVzU8UmfJrl
+         2Wr/YobRvxQYCBZ879ReKjZqQarjOD1Kvq+JXlgt9WQrgkXzFsuvQqAZbo4ja5qCUF
+         0KTj4njIPf+N3CUc1RqFy25JZ6WurH5xgeCkaVCjmy+hoqSil69gIcPWy3UfE0Mq/m
+         RwgfOCblc5MX7qRyGzMBFEusm5U+uMrQJ2elXBGzuMvqgkv3JcguEpleGu/niqmNS5
+         OKajIXyIwTPcQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, tanghui20@huawei.com,
-        arnd@arndb.de, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 034/188] 8390: smc-ultra: use eth_hw_addr_set()
-Date:   Mon, 17 Jan 2022 21:29:18 -0500
-Message-Id: <20220118023152.1948105-34-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 035/188] 8390: hydra: use eth_hw_addr_set()
+Date:   Mon, 17 Jan 2022 21:29:19 -0500
+Message-Id: <20220118023152.1948105-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -53,41 +49,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 5114ddf8dd881f9059147d3f130e9415ce94125e ]
+[ Upstream commit d7d28e90e229a8af0472421015c5828f5cd1ad2e ]
 
-IO reads, so save to an array then eth_hw_addr_set().
+Loop with offsetting to every second byte, so use a temp buffer.
 
-Fixes build on Alpha.
+Fixes m68k build.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/8390/smc-ultra.c | 4 +++-
+ drivers/net/ethernet/8390/hydra.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/8390/smc-ultra.c b/drivers/net/ethernet/8390/smc-ultra.c
-index 0890fa493f70f..6e62c37c94005 100644
---- a/drivers/net/ethernet/8390/smc-ultra.c
-+++ b/drivers/net/ethernet/8390/smc-ultra.c
-@@ -204,6 +204,7 @@ static int __init ultra_probe1(struct net_device *dev, int ioaddr)
- {
- 	int i, retval;
- 	int checksum = 0;
-+	u8 macaddr[ETH_ALEN];
- 	const char *model_name;
- 	unsigned char eeprom_irq = 0;
- 	static unsigned version_printed;
-@@ -239,7 +240,8 @@ static int __init ultra_probe1(struct net_device *dev, int ioaddr)
- 	model_name = (idreg & 0xF0) == 0x20 ? "SMC Ultra" : "SMC EtherEZ";
+diff --git a/drivers/net/ethernet/8390/hydra.c b/drivers/net/ethernet/8390/hydra.c
+index 941754ea78ecf..1df7601af86a4 100644
+--- a/drivers/net/ethernet/8390/hydra.c
++++ b/drivers/net/ethernet/8390/hydra.c
+@@ -116,6 +116,7 @@ static int hydra_init(struct zorro_dev *z)
+     unsigned long ioaddr = board+HYDRA_NIC_BASE;
+     const char name[] = "NE2000";
+     int start_page, stop_page;
++    u8 macaddr[ETH_ALEN];
+     int j;
+     int err;
  
- 	for (i = 0; i < 6; i++)
--		dev->dev_addr[i] = inb(ioaddr + 8 + i);
-+		macaddr[i] = inb(ioaddr + 8 + i);
-+	eth_hw_addr_set(dev, macaddr);
+@@ -129,7 +130,8 @@ static int hydra_init(struct zorro_dev *z)
+ 	return -ENOMEM;
  
- 	netdev_info(dev, "%s at %#3x, %pM", model_name,
- 		    ioaddr, dev->dev_addr);
+     for (j = 0; j < ETH_ALEN; j++)
+-	dev->dev_addr[j] = *((u8 *)(board + HYDRA_ADDRPROM + 2*j));
++	macaddr[j] = *((u8 *)(board + HYDRA_ADDRPROM + 2*j));
++    eth_hw_addr_set(dev, macaddr);
+ 
+     /* We must set the 8390 for word mode. */
+     z_writeb(0x4b, ioaddr + NE_EN0_DCFG);
 -- 
 2.34.1
 
