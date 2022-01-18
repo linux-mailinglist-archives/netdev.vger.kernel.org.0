@@ -2,115 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D4D44930C7
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 23:31:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAF5F4930D0
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 23:33:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349968AbiARWbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 17:31:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        id S1350006AbiARWd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 17:33:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349966AbiARWbe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 17:31:34 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724DFC061574;
-        Tue, 18 Jan 2022 14:31:34 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id f13so334723plg.0;
-        Tue, 18 Jan 2022 14:31:34 -0800 (PST)
+        with ESMTP id S1349995AbiARWdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 17:33:25 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37360C06161C;
+        Tue, 18 Jan 2022 14:33:25 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id r11so514493pgr.6;
+        Tue, 18 Jan 2022 14:33:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=LPZczM+c8hz21Ds4jQd5qcTfxmSj3ZOe2cuwWPUBMMA=;
-        b=KaNP4or8BCGe6kiX0PdoxkYmCksO4bl10XTCn6Pdy9kleuyOc+8Gh+fmM60JJMSf+a
-         WhQz0ktVMbdTJdC3fgFobFIfqQNr/MPo48bhUm0rOvWuYzWTL3+arSQEVRXAwyjrB8Vy
-         i10SQCeug2aUYzaRP6vGmKyouT6UtUKgGJiU87DBxxx9k/3fMgr/bdOhReWr1OaVt+e6
-         NqML5cHZEjLR5k0hWznFYRPfd8/gfjermyKOUKvMIJHpeBRxBsDgSoiVwSGmgTflbWJw
-         xKTZ2b5s0Zch0EX1HTtUEnxDlY+lbJQNo16VfOsXD5kzEz1zzX/WqiDVzQbZj7yCCyOQ
-         GRVw==
+         :cc;
+        bh=pQm7tI+BDw0i+hvexd46cMO7zhTpMqKt4y3N3SOm06M=;
+        b=CT/Z8gGlECkmnVwk9UXeh3Bq+y1+sDRR7P92BQ2IzrzjFOwGMqOnTQ1265G5UbHhvw
+         u7ncbe27R/h8uowF4WwyeVoBuAqgf8AsBwpIgiVCvTdXGOVskZ65XrDEL/6kMocsQbay
+         Fh0mJQ2F9W6wdPPN0nFzpK2MkdScHWUeuql5R2RKDi91yL8KK/hpPzbTfpdJ6h3TqtB4
+         5j2kKZmoArdLybbVMqxU3YB9+XIV5i1fTmf+VDg3jjHtS0wAf8xr0qtoDv0hX76PRzI8
+         SiSl9xD0BN3rPqZVTm3vAvpgfmblCqbYpMkHa537VE/Uw+DrrEiZYEAC7+KtNt1nRy3h
+         knBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LPZczM+c8hz21Ds4jQd5qcTfxmSj3ZOe2cuwWPUBMMA=;
-        b=MGXLo2oPwXobmWnwCgqFJ+5f8cQuBM7Sj0rp6yYmj0limUB+awsQr1NVIO3CCWP8kU
-         dqYPYmzignBIb+qnERg63DtXjhPlOhvUd7NNw63qM4+oku0Hb7LdRY1yqaNcrA5qvYnu
-         KgAjUbVQRLOBStrLHTxLxMylLaPEJYYYM/+qzHpSxEHfzLOpkhW+GhRhoXq/juKAUauz
-         hRTLzfM2hmue4idI9heWScBT6ElsP3fXLCPA+KeP+w7Q6LsCQYfeHBhW9+fEC5xHU7Ke
-         LaPI6zD0+++PZemCUyRB0qVtZdyoEGf1GzghLGFUfgBmRWCC+8SsAwqSDd4ZPuMEsVdR
-         +1AQ==
-X-Gm-Message-State: AOAM531/SAmjVLPechOR9siQDwja/xwCjiTalJ9WPBOpscQnP9Q1FzBM
-        x0B1GcfA2eqyGmWu6veo6YEnjyZJ4a4HH3RH5dc=
-X-Google-Smtp-Source: ABdhPJzpSmIVlGbPf61xC/QN0FuHMq9c8kK3MIWd2YeWcqJ1IfqVspZUlvnHGyvYMO0j9Nr1Fpugtwd69E37cH9nuGU=
-X-Received: by 2002:a17:902:6502:b0:149:1162:f0b5 with SMTP id
- b2-20020a170902650200b001491162f0b5mr28558580plk.126.1642545093945; Tue, 18
- Jan 2022 14:31:33 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=pQm7tI+BDw0i+hvexd46cMO7zhTpMqKt4y3N3SOm06M=;
+        b=xbTUNRpauP+6ggw9OkII709lg2wRMIrMinguo59kxkj7xNkPThGSZZUip6PpM1BCg/
+         yUkQh1agpvgFD+RBJrChR7onqZF5zziEdN5+6aHypG+7MqZ3SKhX4ePvEQKLTR3f0bUm
+         KpC2ctDqu9/y5837AaIEx82xKsJUm8wtE5PF+lhsZBI+OhwSHh7qERIhvdR1sAv4jJxi
+         LrmohFHl8Te6Ni1+yo2OcUISGdF0OHZA8iIHyYJrG/Z98TIZFmPeom5UysGnaoB7yopR
+         9fwTA9yxbe3sLsy6qYVjSZwM2+qf9fLMxIEMQhp9ocmDsJ7rGDtTnRU6CyOgrROIES4e
+         PTzw==
+X-Gm-Message-State: AOAM532+MbCsVCLEZkEUS5WsGnfiAB8zcYwz5C3zoQwseYa+TRR0VLKN
+        DuSdELlff5hDQ+rVOHulSZ3kQSYVPCje/ClYXvM=
+X-Google-Smtp-Source: ABdhPJzNgpkSaSkRctkC9F5Xn1FKsqXhRjEYOQAlPLuwryEy5mwRj1v7uyKx8vEM5vZkMcCp/AUzel/iD36rFSZ07qc=
+X-Received: by 2002:a63:1ca:: with SMTP id 193mr24337693pgb.497.1642545204714;
+ Tue, 18 Jan 2022 14:33:24 -0800 (PST)
 MIME-Version: 1.0
-References: <20220113000650.514270-1-quic_twear@quicinc.com>
- <CAADnVQLQ=JTiJm6FTWR-ZJ5PDOpGzoFOS4uFE+bNbr=Z06hnUQ@mail.gmail.com>
- <BYAPR02MB523848C2591E467973B5592EAA539@BYAPR02MB5238.namprd02.prod.outlook.com>
- <BYAPR02MB5238AEC23C7287A41C44C307AA549@BYAPR02MB5238.namprd02.prod.outlook.com>
- <CAADnVQJc=qgz47S1OuUBmX5Rb_opZUCADKqzqGnBruxtJONO7Q@mail.gmail.com>
- <CANP3RGfJ2G8P40hN2F=PGDYUc3pm84=SNppHp_J0V+YiDkLM_A@mail.gmail.com>
- <CAADnVQ+5YbkVOHqVGgusGYYYc0sB0uLKNJC+JKZu5Hs07=dgvw@mail.gmail.com> <BYAPR02MB523881040F40526ED9795993AA589@BYAPR02MB5238.namprd02.prod.outlook.com>
-In-Reply-To: <BYAPR02MB523881040F40526ED9795993AA589@BYAPR02MB5238.namprd02.prod.outlook.com>
+References: <cover.1642439548.git.lorenzo@kernel.org> <c2bdc436abe8e27a46aa8ba13f75d24f119e18a4.1642439548.git.lorenzo@kernel.org>
+ <20220118201449.sjqzif5qkpbu5tqx@ast-mbp.dhcp.thefacebook.com> <Yec/qu7idEImzqxc@lore-desk>
+In-Reply-To: <Yec/qu7idEImzqxc@lore-desk>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 18 Jan 2022 14:31:22 -0800
-Message-ID: <CAADnVQKHacT7gb1CMW8z_+SR-a8ZoS8ze=L-u9bh5-QZzXju7Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 1/2] Add skb_store_bytes() for BPF_PROG_TYPE_CGROUP_SKB
-To:     Tyler Wear <twear@quicinc.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        "Tyler Wear (QUIC)" <quic_twear@quicinc.com>,
+Date:   Tue, 18 Jan 2022 14:33:13 -0800
+Message-ID: <CAADnVQJgKVQ8vNfiazTcNbZVFTb2x=7G1WUda7O+LHM8Hs=KCw@mail.gmail.com>
+Subject: Re: [PATCH v22 bpf-next 18/23] libbpf: Add SEC name for xdp
+ multi-frags programs
+To:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>,
         Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <song@kernel.org>
+        Shay Agroskin <shayagr@amazon.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        tirthendu.sarkar@intel.com,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 2:23 PM Tyler Wear <twear@quicinc.com> wrote:
+On Tue, Jan 18, 2022 at 2:31 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 >
->
->
-> > -----Original Message-----
-> > From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> > Sent: Tuesday, January 18, 2022 12:38 PM
-> > To: Maciej =C5=BBenczykowski <maze@google.com>
-> > Cc: Tyler Wear (QUIC) <quic_twear@quicinc.com>; Network Development
-> > <netdev@vger.kernel.org>; bpf <bpf@vger.kernel.org>; Yonghong Song
-> > <yhs@fb.com>; Martin KaFai Lau <kafai@fb.com>; Toke H=C3=B8iland-J=C3=
-=B8rgensen
-> > <toke@redhat.com>; Daniel Borkmann <daniel@iogearbox.net>; Song Liu
-> > <song@kernel.org>
-> > Subject: Re: [PATCH bpf-next v6 1/2] Add skb_store_bytes() for
-> > BPF_PROG_TYPE_CGROUP_SKB
-> >
-> > WARNING: This email originated from outside of Qualcomm. Please be wary
-> > of any links or attachments, and do not enable macros.
-> >
-> > On Fri, Jan 14, 2022 at 1:18 PM Maciej =C5=BBenczykowski <maze@google.c=
-om>
-> > wrote:
+> > On Mon, Jan 17, 2022 at 06:28:30PM +0100, Lorenzo Bianconi wrote:
+> > > Introduce support for the following SEC entries for XDP multi-frags
+> > > property:
+> > > - SEC("xdp.frags")
+> > > - SEC("xdp.frags/devmap")
+> > > - SEC("xdp.frags/cpumap")
 > > >
-> > > > > > > This is wrong.
-> > > > > > > CGROUP_INET_EGRESS bpf prog cannot arbitrary change packet
-> > data.
+> > > Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
+> > > Acked-by: John Fastabend <john.fastabend@gmail.com>
+> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > ---
+> > >  tools/lib/bpf/libbpf.c | 6 ++++++
+> > >  1 file changed, 6 insertions(+)
 > > >
-> > > I agree with this sentiment, which is why the original proposal was
-> > > simply to add a helper which is only capable of modifying the
-> > > tos/tclass/dscp field, and not any arbitrary bytes.  (note: there
-> > > already is such a helper to set the ECN congestion notification bits,
-> > > so there's somewhat of a precedent)
+> > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > > index fdb3536afa7d..611e81357fb6 100644
+> > > --- a/tools/lib/bpf/libbpf.c
+> > > +++ b/tools/lib/bpf/libbpf.c
+> > > @@ -6562,6 +6562,9 @@ static int libbpf_preload_prog(struct bpf_program *prog,
+> > >     if (def & SEC_SLEEPABLE)
+> > >             opts->prog_flags |= BPF_F_SLEEPABLE;
+> > >
+> > > +   if (prog->type == BPF_PROG_TYPE_XDP && strstr(prog->sec_name, ".frags"))
+> > > +           opts->prog_flags |= BPF_F_XDP_HAS_FRAGS;
 > >
-> > True. bpf_skb_ecn_set_ce() is available to cg_skb progs.
-> > An arbitrary tos rewriting helper would screw it up.
+> > That's a bit sloppy.
+> > Could you handle it similar to SEC_SLEEPABLE?
+> >
+> > > +
+> > >     if ((prog->type == BPF_PROG_TYPE_TRACING ||
+> > >          prog->type == BPF_PROG_TYPE_LSM ||
+> > >          prog->type == BPF_PROG_TYPE_EXT) && !prog->attach_btf_id) {
+> > > @@ -8600,8 +8603,11 @@ static const struct bpf_sec_def section_defs[] = {
+> > >     SEC_DEF("lsm.s/",               LSM, BPF_LSM_MAC, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_lsm),
+> > >     SEC_DEF("iter/",                TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF, attach_iter),
+> > >     SEC_DEF("syscall",              SYSCALL, 0, SEC_SLEEPABLE),
+> > > +   SEC_DEF("xdp.frags/devmap",     XDP, BPF_XDP_DEVMAP, SEC_NONE),
+> > >     SEC_DEF("xdp_devmap/",          XDP, BPF_XDP_DEVMAP, SEC_ATTACHABLE),
+> > > +   SEC_DEF("xdp.frags/cpumap",     XDP, BPF_XDP_CPUMAP, SEC_NONE),
+> > >     SEC_DEF("xdp_cpumap/",          XDP, BPF_XDP_CPUMAP, SEC_ATTACHABLE),
+> > > +   SEC_DEF("xdp.frags",            XDP, BPF_XDP, SEC_NONE),
+> >
+> > It would be SEC_FRAGS here instead of SEC_NONE.
 >
-> Patch 1 was for a ds_field helper to modify the top 6 bits of TOS, not an=
- arbitrary rewriting.
-> This should suffice since it doesn't interfere with CE.
+> ack, I dropped SEC_FRAGS (SEC_XDP_MB before) from sec_def_flags because Andrii asked to remove
+> it but I am fine to add it back. Agree?
 
-I still don't hear the answer why tc bpf is not sufficient.
+Andrii,
+what was the motivation?
+imo that's cleaner than strstr.
