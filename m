@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F26D491546
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:27:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 927AE49153C
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:27:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244815AbiARC1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:27:07 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41760 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244839AbiARCZD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:25:03 -0500
+        id S245208AbiARC06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:26:58 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38952 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245218AbiARCZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:25:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54C3160C89;
-        Tue, 18 Jan 2022 02:25:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E9A3C36AE3;
-        Tue, 18 Jan 2022 02:25:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 077BAB81232;
+        Tue, 18 Jan 2022 02:25:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D1BCC36AE3;
+        Tue, 18 Jan 2022 02:25:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472702;
-        bh=02LVYUDW/mrOuwuMTZ8bCkojsOTTzLhDWhfOpPkpTUw=;
+        s=k20201202; t=1642472706;
+        bh=22TBzvVqrxec+4D1GlxVLaO6klk4pPbSwURl8EjB0iY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QQHUmlFokZfzJe+mTsad4Yhw6ptWSoNjewMdQPFWVuYbBKdOYkpdfzkcmc1oHYhuE
-         H+y6JEGeWS1y7zqJkGSkLa+62iIgtsBVif++lGrex94r/+5mG776jmtb47TWCWLoLE
-         YAqBF0hIB9RO+HKz2dEVHrbC3Tht0M4Jg+VFuxW/fE3vOOY/vqhmAwoDPM8JBJzo11
-         1Lh9+ZugPvx+Aa1F+blcrdIOAHZg3jbmKj/84TqForRiAl0n2sqoTh0IxjvrSkVNJ5
-         O48+KnYuoZwQ58vDvQuWpvZ2NmRHuXwunsRwI4UoJ68Q35TGhiconFAXymZWGw5yZr
-         9rRhzcneo3dGg==
+        b=Hi5viyUqKjnX7lAIwforbLN6GSq2rf1SnT7UE11LIyUrb0iDf8nl85O1uwvPmakcI
+         2NA8f8YEjZU+p5u0WvOM8iKK+UbTRXzJg0IGd0cIsRktHDkhpW6Q1HP4lQS+dQuttb
+         UIKwlHPe35xWujQEQa4uNiJEnjQ1JrHpNIvpzdsFQ8Y66pWDw7otttpgIFaqnLuD8i
+         /XnRsFwpCxmBkw2HsE2QPWpjQos5PwfMmrA5yCCncneEGgGJxlHvn+GZPsB0xBHFXo
+         CN04OBPzf9BNrK8thH/mSRIjk9MgjNcLE5MJAGmWsN9AxNBlH7Q+UdC/ZNyuCgYkQz
+         aCjHedDthnm6w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Maximilian Ernestus <maximilian@ernestus.de>,
+Cc:     Shaul Triebitz <shaul.triebitz@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        mordechay.goodstein@intel.com, miriam.rachel.korenblit@intel.com,
+        davem@davemloft.net, kuba@kernel.org, emmanuel.grumbach@intel.com,
+        avraham.stern@intel.com, ilan.peer@intel.com,
+        sara.sharon@intel.com, nathan.errera@intel.com,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 104/217] iwlwifi: mvm: synchronize with FW after multicast commands
-Date:   Mon, 17 Jan 2022 21:17:47 -0500
-Message-Id: <20220118021940.1942199-104-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.16 105/217] iwlwifi: mvm: avoid clearing a just saved session protection id
+Date:   Mon, 17 Jan 2022 21:17:48 -0500
+Message-Id: <20220118021940.1942199-105-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -52,70 +51,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Shaul Triebitz <shaul.triebitz@intel.com>
 
-[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
+[ Upstream commit 8e967c137df3b236d2075f9538cb888129425d1a ]
 
-If userspace installs a lot of multicast groups very quickly, then
-we may run out of command queue space as we send the updates in an
-asynchronous fashion (due to locking concerns), and the CPU can
-create them faster than the firmware can process them. This is true
-even when mac80211 has a work struct that gets scheduled.
+When scheduling a session protection the id is saved but
+then it may be cleared when calling iwl_mvm_te_clear_data
+(if a previous session protection is currently active).
+Fix it by saving the id after calling iwl_mvm_te_clear_data.
 
-Fix this by synchronizing with the firmware after sending all those
-commands - outside of the iteration we can send a synchronous echo
-command that just has the effect of the CPU waiting for the prior
-asynchronous commands to finish. This also will cause fewer of the
-commands to be sent to the firmware overall, because the work will
-only run once when rescheduled multiple times while it's running.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
-Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Shaul Triebitz <shaul.triebitz@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20211204130722.b0743a588d14.I098fef6677d0dab3ef1b6183ed206a10bab01eb2@changeid
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/mac80211.c   | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/time-event.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 897e3b91ddb2f..9c5c10908f013 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -1688,6 +1688,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	struct iwl_mvm_mc_iter_data iter_data = {
- 		.mvm = mvm,
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+index e91f8e889df70..e6813317edf35 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+@@ -1158,15 +1158,10 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
+ 			cpu_to_le32(FW_CMD_ID_AND_COLOR(mvmvif->id,
+ 							mvmvif->color)),
+ 		.action = cpu_to_le32(FW_CTXT_ACTION_ADD),
++		.conf_id = cpu_to_le32(SESSION_PROTECT_CONF_ASSOC),
+ 		.duration_tu = cpu_to_le32(MSEC_TO_TU(duration)),
  	};
-+	int ret;
  
+-	/* The time_event_data.id field is reused to save session
+-	 * protection's configuration.
+-	 */
+-	mvmvif->time_event_data.id = SESSION_PROTECT_CONF_ASSOC;
+-	cmd.conf_id = cpu_to_le32(mvmvif->time_event_data.id);
+-
  	lockdep_assert_held(&mvm->mutex);
  
-@@ -1697,6 +1698,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	ieee80211_iterate_active_interfaces_atomic(
- 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
- 		iwl_mvm_mc_iface_iterator, &iter_data);
-+
-+	/*
-+	 * Send a (synchronous) ech command so that we wait for the
-+	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
-+	 * the interface iterator. Otherwise, we might get here over
-+	 * and over again (by userspace just sending a lot of these)
-+	 * and the CPU can send them faster than the firmware can
-+	 * process them.
-+	 * Note that the CPU is still faster - but with this we'll
-+	 * actually send fewer commands overall because the CPU will
-+	 * not schedule the work in mac80211 as frequently if it's
-+	 * still running when rescheduled (possibly multiple times).
-+	 */
-+	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
-+	if (ret)
-+		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
- }
+ 	spin_lock_bh(&mvm->time_event_lock);
+@@ -1180,6 +1175,11 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
+ 	}
  
- static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
+ 	iwl_mvm_te_clear_data(mvm, te_data);
++	/*
++	 * The time_event_data.id field is reused to save session
++	 * protection's configuration.
++	 */
++	te_data->id = le32_to_cpu(cmd.conf_id);
+ 	te_data->duration = le32_to_cpu(cmd.duration_tu);
+ 	te_data->vif = vif;
+ 	spin_unlock_bh(&mvm->time_event_lock);
 -- 
 2.34.1
 
