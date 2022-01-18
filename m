@@ -2,113 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EF914925BB
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 13:32:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 576214925C9
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 13:37:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231984AbiARMcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 07:32:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57742 "EHLO
+        id S234965AbiARMgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 07:36:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbiARMce (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 07:32:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FABC061574;
-        Tue, 18 Jan 2022 04:32:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D929061380;
-        Tue, 18 Jan 2022 12:32:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 254E8C00446;
-        Tue, 18 Jan 2022 12:32:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642509153;
-        bh=F9Vu7ZI1/HnPH5QGZNUeqh85iKDiHrkRW8l6raKQS+M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WmrASj3abHpIKN7ju1MqlFtWwY+yzZqkpVOdWr9pT+nikc5uQwHJvmtPWBEot56md
-         8uvZW3fsAR01ws0X7LKtkgykQPuSBRUmSBVW4m6f7KaT0lwPDeBthRSs8PzjAhT7GA
-         R+0zSy1emkBLdDXSNtPlX4fzkCZ1zu1fVl2CGXHX86Il4GXhXQ0r6B1BFTwrtUyedw
-         JPLgOvn+LpML56YCXJMB+yUpqjTqQilfATvLW6sTKW5h5kjDZRw7ymla0/98zQKfIt
-         2qMA6YcSN2HomakS+9yo1mldhDfarQsr817bsuoRUg99WsnmP7vcvQl29uy82WyFss
-         9Ig7+VjIMb9vA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 86E8440714; Tue, 18 Jan 2022 09:32:30 -0300 (-03)
-Date:   Tue, 18 Jan 2022 09:32:30 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     German Gomez <german.gomez@arm.com>
-Cc:     Ian Rogers <irogers@google.com>, James Clark <james.clark@arm.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Chase Conklin <chase.conklin@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Stephane Eranian <eranian@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] perf record/arm-spe: Override attr->sample_period for
- non-libpfm4 events
-Message-ID: <YeazXmnjkET7h5LW@kernel.org>
-References: <20220114212102.179209-1-german.gomez@arm.com>
- <c2b960eb-a25e-7ce7-ee4b-2be557d8a213@arm.com>
- <35a4f70f-d7ef-6e3c-dc79-aa09d87f0271@arm.com>
- <CAP-5=fUHT29Z8Y5pMdTWK4mLKAXrNTtC5RBpet6UsAy4TLDfDw@mail.gmail.com>
- <10cc73f1-53fd-9c5a-7fe2-8cd3786fbe37@arm.com>
+        with ESMTP id S234550AbiARMgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 07:36:04 -0500
+Received: from smtp-8faa.mail.infomaniak.ch (smtp-8faa.mail.infomaniak.ch [IPv6:2001:1600:4:17::8faa])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BCEBC061574
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 04:36:04 -0800 (PST)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4JdStT1zBDzMq01B;
+        Tue, 18 Jan 2022 13:36:01 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4JdStQ5z5tzlhMBj;
+        Tue, 18 Jan 2022 13:35:58 +0100 (CET)
+Message-ID: <8ea3bd61-8251-a5b6-c0b4-6d15bac4d2c5@digikod.net>
+Date:   Tue, 18 Jan 2022 13:35:46 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <10cc73f1-53fd-9c5a-7fe2-8cd3786fbe37@arm.com>
-X-Url:  http://acmel.wordpress.com
+User-Agent: 
+Content-Language: en-US
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@collabora.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        chiminghao <chi.minghao@zte.com.cn>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL VIRTUAL MACHINE (KVM)" <kvm@vger.kernel.org>,
+        "open list:LANDLOCK SECURITY MODULE" 
+        <linux-security-module@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        "open list:NETWORKING [MPTCP]" <mptcp@lists.linux.dev>,
+        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>
+Cc:     kernel@collabora.com
+References: <20220118112909.1885705-1-usama.anjum@collabora.com>
+ <20220118112909.1885705-7-usama.anjum@collabora.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH 06/10] selftests: landlock: Add the uapi headers include
+ variable
+In-Reply-To: <20220118112909.1885705-7-usama.anjum@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Mon, Jan 17, 2022 at 09:32:55PM +0000, German Gomez escreveu:
-> Hi Ian,
+
+On 18/01/2022 12:29, Muhammad Usama Anjum wrote:
+> Out of tree build of this test fails if relative path of the output
+> directory is specified. Remove the un-needed include paths and use
+> KHDR_INCLUDES to correctly reach the headers.
 > 
-> On 17/01/2022 16:28, Ian Rogers wrote:
-> > [...]
-> > Thanks for fixing this, I can add an acked-by for the v2 patch. Could
-> > we add a test for this to avoid future regressions? There are similar
-> > tests for frequency like:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/tests/attr/test-record-freq
-> > based on the attr.py test:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/tests/attr.py
-> > The test specifies a base type of event attribute and then what is
-> > modified by the test. It takes a little to get your head around but
-> > having a test for this would be a welcome addition.
+> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> ---
+>   tools/testing/selftests/landlock/Makefile | 11 +++--------
+>   1 file changed, 3 insertions(+), 8 deletions(-)
 > 
-> I agree I should have included a test for this fix. I'll look into this for the v2.
+> diff --git a/tools/testing/selftests/landlock/Makefile b/tools/testing/selftests/landlock/Makefile
+> index a99596ca9882..44c724b38a37 100644
+> --- a/tools/testing/selftests/landlock/Makefile
+> +++ b/tools/testing/selftests/landlock/Makefile
+> @@ -1,6 +1,6 @@
+>   # SPDX-License-Identifier: GPL-2.0
+>   
+> -CFLAGS += -Wall -O2
+> +CFLAGS += -Wall -O2 $(KHDR_INCLUDES)
+>   
+>   src_test := $(wildcard *_test.c)
+>   
+> @@ -12,13 +12,8 @@ KSFT_KHDR_INSTALL := 1
+>   OVERRIDE_TARGETS := 1
+>   include ../lib.mk
+>   
+> -khdr_dir = $(top_srcdir)/usr/include
 
-A test is always good to have, we need more, yeah.
+This should be updated to:
+khdr_dir = ${abs_srctree}/usr/include
 
-But since this is a fix and what is needed for v2 is just to improve the
-wording, please don't let the test to prevent you from sending the
-updated fix.
+Using a global KHDR_DIR instead of khdr_dir could be useful for others too.
 
-Then you can go on and work on the test.
+> -
+> -$(khdr_dir)/linux/landlock.h: khdr
+> -	@:
 
-I say this because the merge window may close before the test gets ready
-and its better for us to have fixes merged as soon as possible so that
-we have more time to figure out if it has unintended consequences as it
-gets in place for longer.
- 
-> Other events such as "-p 10000 -e cycles//" worked fine. Only the ones with aux area tracing (arm_spe, cs_etm, intel_pt) were ignoring the global config flags.
-> 
-> Thank you for the pointers, and the review,
-> German
-> 
-> >
-> > Thanks!
-> > Ian
-> >
-> >> Thanks for the review,
-> >> German
+This should be kept as is, otherwise we loose this check to rebuild the 
+headers if linux/landlock.h is updated, which is handy for development.
+KVM lost a similar behavior with this patch series.
 
--- 
+> -
+>   $(OUTPUT)/true: true.c
+>   	$(LINK.c) $< $(LDLIBS) -o $@ -static
+>   
+> -$(OUTPUT)/%_test: %_test.c $(khdr_dir)/linux/landlock.h ../kselftest_harness.h common.h
 
-- Arnaldo
+This should not be changed.
+
+> -	$(LINK.c) $< $(LDLIBS) -o $@ -lcap -I$(khdr_dir)
+> +$(OUTPUT)/%_test: %_test.c ../kselftest_harness.h common.h
+> +	$(LINK.c) $< $(LDLIBS) -o $@ -lcap
+
+This doesn't work when building in the local directory because 
+$abs_srctree and $KHDR_INCLUDES are empty:
+cd tools/testing/selftests/landlock && make
