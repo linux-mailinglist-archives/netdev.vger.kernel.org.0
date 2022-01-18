@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5299E4912E4
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 01:35:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 201EA4912E8
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 01:36:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236030AbiARAfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 19:35:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33304 "EHLO
+        id S236099AbiARAgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 19:36:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbiARAfH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 19:35:07 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E9FCC061574;
-        Mon, 17 Jan 2022 16:35:07 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id e9-20020a05600c4e4900b0034d23cae3f0so998513wmq.2;
-        Mon, 17 Jan 2022 16:35:07 -0800 (PST)
+        with ESMTP id S229632AbiARAgw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 19:36:52 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17DCC061574;
+        Mon, 17 Jan 2022 16:36:51 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id q9-20020a7bce89000000b00349e697f2fbso1938729wmj.0;
+        Mon, 17 Jan 2022 16:36:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6AOppJO/V8yvDkWhxeW7C/0hwTcrFhBc3HivDlJi72o=;
-        b=eLmydbmDiA1LeCymS/o8/2xfIDkygrzgqeM9AjTALGeyFKWLswKiac0OveGH1V14ta
-         csYCQSMAwF/con0OPNnGdKTHwjLgt8N5wxdVXrWzgPep5EwhpjLe6mRamJb9JlQdw8qU
-         zZ3hLIbPRey2JNtR9r7V8g0qWkWfvxZ9KzSS01wNafDljHUAkOJVXdPgjRLxNBgr8QOl
-         p8S4wsrR/fNDMwtJFjd/2UBz+La30QX1YcJbeorrHZjR3wnTdAj+cIoFbrhg5U8dDhjH
-         9SkUA+AesTx2DSq5Pf/Q/W7PRXk0SIObZJrz8nj1+zV6bjhhnzBANiG+t/8ihQk5gAMY
-         mznw==
+        bh=MrV/5bhSCOAE/eZMpCGxQpdusce2IrkG903/Kn1QmA8=;
+        b=o4H2sw2syQe5pwQjH/DoWx1sPXRznthZ2HsxPfzyOjMvoY1gwSzTUHTSJvwQsGFIHu
+         LxYj8R81DVJNcxVCj86ZA/8haNNqHtmoBWke7568zUBWe7Rf9Q9Gj2c2w117EzGH+WgB
+         o/BvvYvr3bBX1SXXPksTjTsvtSzQUop9NeeUMiNe7fqOrOm0UugtKOAAJP0UlOrOO992
+         EyxiSmhBISD6Eh3GXbiysC8wEW06J63cChr9ETiOMqAnA16NMiPmiS7uPUXIuLdimsSi
+         n8ufHJN4FhPtTg+ZjmlkeTZjMlk/kwezbwPd/lgGAzbluifDzoiOU9M0S7UB8PebgoKO
+         w7qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6AOppJO/V8yvDkWhxeW7C/0hwTcrFhBc3HivDlJi72o=;
-        b=vocmHSQ5W2IOChlKUX4Tg6HKfTCuR7p0bzcN9V5qo/EzVADakw5wcKOIZLSkj8WY4c
-         8+kmwyagyg9Qs2Zp19aonVNPIukiFDMOMukwlTh3X5Ky2IVbv4xi7qjwY6UjNMYVdiWJ
-         2GcakixCPEFd7d2pTM4NsoosGYHOLRP15Z+f2WbuihEE9N5e/V4a0/TzdXaHHuksMmC9
-         i0GQ7zsGy6AHz6yQuX3doM8g/Li2pMojgskfPy7L01URRp9xjQS5xLPkoGoeF99t5T31
-         nIk/M1ZcrVeqRzArbYibZea6kE7LrY/aLgvTIqFgxL0YnODA6hMuVsGS3p3OLHznsNg/
-         mVQA==
-X-Gm-Message-State: AOAM531pjiFRSc4vT7K8npvWmzZ3Asb49nuH2LiUh08ukWfZVmos4w9Z
-        MbXjyhSDaQE4+F5hVDEZUuRGMxv19tvrTnK4vdk=
-X-Google-Smtp-Source: ABdhPJzH6UQmktnMQ1Ci1xbJlDCPtB18E4xECiN1KoOruObTyOBUjSIDstJiVb6tdUOSJKFEuo3HwYXfqBdYxud0sHo=
-X-Received: by 2002:a1c:545b:: with SMTP id p27mr29765104wmi.178.1642466106080;
- Mon, 17 Jan 2022 16:35:06 -0800 (PST)
+        bh=MrV/5bhSCOAE/eZMpCGxQpdusce2IrkG903/Kn1QmA8=;
+        b=4jp1NefOg7+H0Lvs7O/m2p7YOBl2OgJ608CmD+SGSX2eluj+hQhOrynJr4/ksNU1d3
+         JciQLkX04/n4UPmP+n6Rfu0UajNaOVEAfoniOgBks+ale1FysrFdEDXB5tQ9uJkBfI3r
+         qChAjI2IaJuy17fElOyqA1KbzZhJSLfHjboYrGAQKBiCoWxNbVC2PXw/YgWHRpdXLCW/
+         mNWTmScYTyOtXQPlLlYxgcwyDyLi37cQTVyGgIrs29vAIwHK6B/10++szngOXbGP1r1K
+         orWudHYO07+FnNAjaGC0HphE15bak0N8V1KlQt9juR2MDMhrpuHzEarSPeYK1rCysw24
+         sYcA==
+X-Gm-Message-State: AOAM531iKZuBKn5pKODIlxS373SdSJ1T8LFzbk3Uc4A+U4UN8QSH7qWf
+        jihuQhII2ojEILcvK0U8gVAO+EWvpbZ6obTvai4=
+X-Google-Smtp-Source: ABdhPJyZvLUNPEB6LCDJLsQG84xS7JMkP4t5c0tgKOONgVDbpLReDbkNuu+sq8E4cLOCN9DjsJXMYHKsUZQEzHvCg3w=
+X-Received: by 2002:a05:6000:105:: with SMTP id o5mr16404069wrx.56.1642466210320;
+ Mon, 17 Jan 2022 16:36:50 -0800 (PST)
 MIME-Version: 1.0
-References: <20220117115440.60296-1-miquel.raynal@bootlin.com> <20220117115440.60296-18-miquel.raynal@bootlin.com>
-In-Reply-To: <20220117115440.60296-18-miquel.raynal@bootlin.com>
+References: <20220117115440.60296-1-miquel.raynal@bootlin.com>
+ <20220117115440.60296-18-miquel.raynal@bootlin.com> <CAB_54W76X5vhaVMUv=s3e0pbWZgHRK3W=27N9m5LgEdLgAPAcA@mail.gmail.com>
+In-Reply-To: <CAB_54W76X5vhaVMUv=s3e0pbWZgHRK3W=27N9m5LgEdLgAPAcA@mail.gmail.com>
 From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Mon, 17 Jan 2022 19:34:55 -0500
-Message-ID: <CAB_54W76X5vhaVMUv=s3e0pbWZgHRK3W=27N9m5LgEdLgAPAcA@mail.gmail.com>
+Date:   Mon, 17 Jan 2022 19:36:39 -0500
+Message-ID: <CAB_54W5Uu9_hpqmeL0MC+1ps=yfn2j0-o46cBL7BeBxKXKHa4w@mail.gmail.com>
 Subject: Re: [PATCH v3 17/41] net: ieee802154: at86rf230: Call the complete
  helper when a transmission is over
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
@@ -73,34 +74,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Mon, 17 Jan 2022 at 06:55, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+On Mon, 17 Jan 2022 at 19:34, Alexander Aring <alex.aring@gmail.com> wrote:
 >
-> ieee802154_xmit_complete() is the right helper to call when a
-> transmission is over. The fact that it completed or not is not really a
-> question, but drivers must tell the core that the completion is over,
-> even if it was canceled. Do not call ieee802154_wake_queue() manually,
-> in order to let full control of this task to the core.
+> Hi,
 >
-> By using the complete helper we also avoid leacking the skb structure.
+> On Mon, 17 Jan 2022 at 06:55, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> >
+> > ieee802154_xmit_complete() is the right helper to call when a
+> > transmission is over. The fact that it completed or not is not really a
+> > question, but drivers must tell the core that the completion is over,
+> > even if it was canceled. Do not call ieee802154_wake_queue() manually,
+> > in order to let full control of this task to the core.
+> >
+> > By using the complete helper we also avoid leacking the skb structure.
+> >
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >  drivers/net/ieee802154/at86rf230.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+> > index 583f835c317a..1941e1f3d2ef 100644
+> > --- a/drivers/net/ieee802154/at86rf230.c
+> > +++ b/drivers/net/ieee802154/at86rf230.c
+> > @@ -343,7 +343,7 @@ at86rf230_async_error_recover_complete(void *context)
+> >         if (ctx->free)
+> >                 kfree(ctx);
+> >
+> > -       ieee802154_wake_queue(lp->hw);
+> > +       ieee802154_xmit_complete(lp->hw, lp->tx_skb, false);
 >
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> ---
->  drivers/net/ieee802154/at86rf230.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> also this lp->tx_skb can be a dangled pointer, after xmit_complete()
+> we need to set it to NULL in a xmit_error() we can check on NULL
+> before calling kfree_skb().
 >
-> diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-> index 583f835c317a..1941e1f3d2ef 100644
-> --- a/drivers/net/ieee802154/at86rf230.c
-> +++ b/drivers/net/ieee802154/at86rf230.c
-> @@ -343,7 +343,7 @@ at86rf230_async_error_recover_complete(void *context)
->         if (ctx->free)
->                 kfree(ctx);
->
-> -       ieee802154_wake_queue(lp->hw);
-> +       ieee802154_xmit_complete(lp->hw, lp->tx_skb, false);
 
-also this lp->tx_skb can be a dangled pointer, after xmit_complete()
-we need to set it to NULL in a xmit_error() we can check on NULL
-before calling kfree_skb().
+forget the NULL checking, it's already done by core. However in some
+cases this is called with a dangled pointer on lp->tx_skb.
 
 - Alex
