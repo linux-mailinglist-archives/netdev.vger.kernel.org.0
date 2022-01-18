@@ -2,415 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA8EE492E76
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 20:28:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D6EF492E93
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 20:43:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348224AbiART17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 14:27:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41946 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234118AbiART16 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 14:27:58 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DD7C061574;
-        Tue, 18 Jan 2022 11:27:58 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id o80so20838yba.6;
-        Tue, 18 Jan 2022 11:27:58 -0800 (PST)
+        id S1348837AbiARTnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 14:43:07 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:33512 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1348675AbiARTnH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 14:43:07 -0500
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20IHShJJ024417;
+        Tue, 18 Jan 2022 19:42:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=2TOhv6zDSaM+KnfLFy7fNYG3DteDgTWeqjXXvF/HLaA=;
+ b=xIfD9a5gVXywE8FWDjTWvwouTBaNjTXZqvcsMKIdOCcUPdINDnDk385omzbh0x04vDPj
+ 1uALrKvA/l/+vJt7iXQVG5CFec2VLwseihS0eciDh8hp2penDMccYCZuhg58LGnXSS09
+ MFSxhwx8lsWbEY7aqxjdoakbtnXst7uU8STlWbSzMjalp4eofqUad82iLCZ4KAy3Mo9O
+ TiYGVuuI3BEKbApTIBhb69nLCt02h5y3ZstZOvqaS9UpS6borfGYsOe5pAFsujproiWk
+ 0TOCYayyBAqO6TJtiCon2zKl906YxUEO1VhzjJYc6pdRavF+Ap1IUMiMzwHF9S2rrNIZ uw== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dnc4q30mj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 18 Jan 2022 19:42:58 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20IJaQN2092212;
+        Tue, 18 Jan 2022 19:42:57 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2169.outbound.protection.outlook.com [104.47.55.169])
+        by aserp3020.oracle.com with ESMTP id 3dkp34q55h-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 18 Jan 2022 19:42:57 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TOnHUKFgwBYlPFdPM+C+upuBDGZWHupFV6T/sizuv5GewBfMnRQEKew5e/MCoZ4wKXGdOkaLGUNbhwKx/4sY+cTUpmLWszdo16/3Aj3HlRlwQwP0Sh5AwIWyTVvUmYcwpCx6ahAe44vEPDKOFMQSrbqgIFRkdXpO+4W3FVvCMapzGUthzB+SN3mQYMbVMlLyVKogEGRTGESDWY77GH0l6oqARPnLwdo9TDmF5WTBpizNlQEoUh68hQKZDstkcxFj13jnRjCDgqcCAq5TPfIm+IAInC4UGPnwnNqKgAcuB+BsQzPIan0ZcgViYa3sE37LkoC+F0VBqlP6w3PbKRt/xA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2TOhv6zDSaM+KnfLFy7fNYG3DteDgTWeqjXXvF/HLaA=;
+ b=NWekrniu5a9Pre+uwZdra6nnStqf8qfbkohvwwc8/po22O3lrqmVsnwFPYWa9JydpPFcigS7iqeqd/2kD4oNIYm1KFGrm0KGduV+I48icFXecxV0mzAvhfKQTcto0R6qXic3zDcqX4Y9x9nQL1Wge7K+ftILwyeo2RwVi3XlsalmAWvBi9Pff6ul9Nm/iJAZczcuRi0wRSFh6t+STOe1xa+8ybx/x+6BiBbPLfWnrhi2NNyzBDtXEwVvtlsh8qvPBmgBvCc27uLjrR1aC9ZV2h9IrUywlWA/RyAVegd05iZ3KOkxzl9f2Z+dRwBO83m8QecRoOxRsaZ6A3nyEM0Ang==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=g9a+OHqgTEnS9KkrBEVgD+Ak1k3roA/SXFoySrW9Ugs=;
-        b=HaFtO40mYfrxdrEVf4+kEVNwsEACdTW4zLVce4g0DCs+/MeSuUjunr+X+CWSkrnGKo
-         gCr+7YHjacJxQ6NSMkirFzabx/E6N7914wqSWky2q16m2RhgqAq3oRwqmtimBf8ls/4l
-         kX9xQ4rXIaFwsUloRt2gxoESEFjLbdQ+7/afJ1V6VQwUmZbTIV0ElWlpU/2PaPRq7MWf
-         5QX3mLhxuoI0VhmEVZA72Y4s4xty8MC6o0F7bWsKSmwauguDKKZMcqaQkEQ/GBvm64gy
-         tTx5sOIo0g2AdXBe95o8njK0qnDmipb+bBoosXZX8O9OBH2qGLGqGTg7tGR+M8Zp2jrX
-         9Ipw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=g9a+OHqgTEnS9KkrBEVgD+Ak1k3roA/SXFoySrW9Ugs=;
-        b=DoFrWa9cl2I4vaqKj8UpyJ2si+aNF3lFeL2n0PJXYGH9hRIJctc3JsayGbj1tjV1Wm
-         W/JqK3GAm4z1+2Ry04eeUIuroRbTUJemVlZQKtdsNePAjMximyBynHugNRlLV1Pm8042
-         Eq4V5lzHEGmwBJaJcnHub/eTYnQ6mzIf0Ujd6rCbV3lRRpXdmEZ2+1w10Pv4dssNcQ2c
-         RNCLZaEVMyRpUYti/K0wxBft4X+Ovv8EGX8Tszerlqi94SM4ZJMeDPk258KK5/M/vwts
-         /tBE+0VCp/YvqNvYXKi09edLZPi+hEa9ru0NmzKwbWiuaiKUVR1eDujXK0XtBWEZrftb
-         1INA==
-X-Gm-Message-State: AOAM531P68msjbEm5UDtpQ/p+H80Hij6rX+CLGsHvYa/tV7bLySXdwse
-        mzyBOfLza2t95TxyR441dMQg7cg/H61nSGRH5NLDrnkk
-X-Google-Smtp-Source: ABdhPJwemz7pL+G4EN5uTISKKRkHNcpaoLI53pXS70lxVWwIX4yn1XvC61vtQ6eAHgie8Gg+dZJ090Wh3Sy+CkCkcvI=
-X-Received: by 2002:a25:bd8d:: with SMTP id f13mr29144973ybh.573.1642534077819;
- Tue, 18 Jan 2022 11:27:57 -0800 (PST)
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2TOhv6zDSaM+KnfLFy7fNYG3DteDgTWeqjXXvF/HLaA=;
+ b=YJH/a3KS5rb+94MShwpzmedtjM1f2UdAfC4RpZWAhYgU+8tOx8oalOGejT66e+1PgNqLljFKDre+sN4CYD3s4H+dQw9bNSeXtwPrZ/tsLV6gxVMfR6tCP8LNH4t2lETliKuMz2XNhRKg9sQ1EI44qSGDl3pCfJh3mnwlGzbLdwU=
+Received: from BYAPR10MB3270.namprd10.prod.outlook.com (2603:10b6:a03:159::25)
+ by SN6PR10MB2941.namprd10.prod.outlook.com (2603:10b6:805:dc::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Tue, 18 Jan
+ 2022 19:42:55 +0000
+Received: from BYAPR10MB3270.namprd10.prod.outlook.com
+ ([fe80::a990:7ead:6a5f:7577]) by BYAPR10MB3270.namprd10.prod.outlook.com
+ ([fe80::a990:7ead:6a5f:7577%4]) with mapi id 15.20.4888.014; Tue, 18 Jan 2022
+ 19:42:55 +0000
+From:   Santosh Shilimkar <santosh.shilimkar@oracle.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+CC:     Praveen Kannoju <praveen.kannoju@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Rama Nichanamatlu <rama.nichanamatlu@oracle.com>,
+        Rajesh Sivaramasubramaniom 
+        <rajesh.sivaramasubramaniom@oracle.com>
+Subject: Re: [PATCH RFC] rds: ib: Reduce the contention caused by the
+ asynchronous workers to flush the mr pool
+Thread-Topic: [PATCH RFC] rds: ib: Reduce the contention caused by the
+ asynchronous workers to flush the mr pool
+Thread-Index: AQHYDKOWiOwJtrci00KwdU7kpVIrMw==
+Date:   Tue, 18 Jan 2022 19:42:54 +0000
+Message-ID: <CEFD48B4-3360-4040-B41A-49B8046D28E8@oracle.com>
+References: <1642517238-9912-1-git-send-email-praveen.kannoju@oracle.com>
+ <53D98F26-FC52-4F3E-9700-ED0312756785@oracle.com>
+ <20220118191754.GG8034@ziepe.ca>
+In-Reply-To: <20220118191754.GG8034@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.120.23.2.4)
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cf42c7c7-2ef4-4c6e-b1ef-08d9dabab8ea
+x-ms-traffictypediagnostic: SN6PR10MB2941:EE_
+x-microsoft-antispam-prvs: <SN6PR10MB29418CB8FF07812F11570F0593589@SN6PR10MB2941.namprd10.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3044;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: SnrGs1jv9Td6j7dBOVPbt+ggyErJxCS0x0vQHqPZUQNxzalv3FTmyX+1UvTd47gBrwzWSoA+bpFnfpoL73rzECXO3b1AY9TS9HaDGjPWuQfbuPwNU2wE6M2c5qv6ua4oYXlI5YXPvVYcI7M2tR/ha3vTiI+bBojDo0q0JS+Vz7aWxzHmynzzngrmt9kJ0fJ414SXYKb3CLld9zEFa3/QCBtiG6QCdLD7z7/UWDZtVEt/mEux/eejdKFUCnA0EocflkX75Z/axM6TC9/CkLV566bENwMwtAUXKmxYA1XriW9pHLiVChOafhGwovlMxvpKwipEDaIHmvD70G79Qh19Brh8VWvnIqbjgKPZmf9Xp2k9WjvzXdxyTn3CJCV69QuPYDwo9M1hf08dsTgpuy1ohgiGHPC0OMwD/Klb8LALDj8iBhwv+RaDe/9ttWzhL9LkccWRjgrFVe1aSj5prEaeH3T33pQP99gKbwRdht3UNEXaICXfkU4bpnSfj6k7XtFlMISIPoU1m3NPO4QRrvzDwgvf/5igYQOanMh4acJlognorrWHRVXnsvTt16j67AyW23ILhmPFSqV3foyjUIv0iYqoPV832ny5aNc2eaPZ1pfjKr5TAkNoXwUKwXcxXBXFnlyotn9myI290tblr+B+DQmfGyq47paah38E8/I0G6fw96Tt905LFAG1yS1rAWlGIKQ/NKxHNJriu+8qAMN4Tv2prFuQvAU0/4L2hgy8yI4hENdoCM2pyzEL0ykJO33m
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB3270.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(6506007)(83380400001)(66946007)(91956017)(53546011)(66476007)(64756008)(66556008)(107886003)(38070700005)(26005)(8936002)(54906003)(44832011)(6486002)(76116006)(186003)(2616005)(38100700002)(86362001)(6512007)(2906002)(36756003)(8676002)(316002)(5660300002)(6916009)(4326008)(122000001)(33656002)(71200400001)(508600001)(66446008)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WlI4UnZZV2JLRVFqWEZldFBZS25aRWsvbGNZU3lKbzJ2cUV3NjdTWWtXN3l1?=
+ =?utf-8?B?ZXN4YXVWU1Z1cmwzbkpHQWE2TnJJdEFHM3V6V3ZlemZRa1NRNGZ1N1hreEZF?=
+ =?utf-8?B?djN0cVppLzVBQmZ2L3hTamxFQ0tBMUI1YXZueWd0SHRBTU5qSFlHa3FRNnhZ?=
+ =?utf-8?B?eFJvektNOUNVUzJJelVablZWQTMrbDVxb1FkRTl5M3ZHMXZxeGVSU0t5VVdL?=
+ =?utf-8?B?cWNMTlJSOXJPb1NnWXVWUmNSRG16Zzk2NFBYcU9heTROMENmYXNDWlVsY2tl?=
+ =?utf-8?B?RHFwU0grdEZjNlBiVHZRWDdDU2NubmVGUVhhNC9iTGZ4emZ6S09CTTYvSW5I?=
+ =?utf-8?B?L2lEZ3RrWE1sdzRxUm5haENCcCtBZndLRk1qMzJPalBxZGY1OWVNSU9jMkZR?=
+ =?utf-8?B?ZWQxaGlrY3RUL1pJOGtJOS9BYVJLS3dRTTIxMkxQMzB4bnRhcFBuVkpOQjdF?=
+ =?utf-8?B?bXRlUnFLVjhsbDMrenY0N1NKRmt1MTB0VXpIdnFQMktKTC9iK0MvWUp6d3J0?=
+ =?utf-8?B?VGRock56WHl4YXpmLzJHT20xUUNtbGFGNVdLdFhUMmZhQmZtYUtNRE9GV0g0?=
+ =?utf-8?B?YXFFQ1pWWk5nRFpxUXp0alVPT1drbVJxRjJpV2JsMHptb2hxZk1FSzh4cDdT?=
+ =?utf-8?B?QWxKeXlSVkFMUWdQREhpcjVpZDlqdE8rUHBPLzFocVBnM1FWd01YMzc3YjlS?=
+ =?utf-8?B?MUN5cU5laFA3RmYwcEM2WFArV29DaGJnYzcxa2dxZGFMTEtqRUM3ekg0Ujgz?=
+ =?utf-8?B?SVRFUzB4VUtJVzhFWUw1N1d3MGhtYlpBUGllMjc0Q0JZU2tJdmM2akF2NXNa?=
+ =?utf-8?B?Tm91YTM1d1B1c1BxQmZHU0lQYVc1UmhrMmp0R0NZdTZpOXNZaW1FRkNIOFVz?=
+ =?utf-8?B?YWk1N3Bpa0ZaSm5IM3Q2elFXNFZlU0dkbC9qN0dQUm1iSER0NElJRjNZeU53?=
+ =?utf-8?B?cktUUEliTXhIclZxQWc4RXZOblcvL1FCeVMwNEZ6eW8yeVdXRThhVXlJNTY3?=
+ =?utf-8?B?WXIyZlBhQkE0bzljU2hSL2U2U1lWcGFjQ3JtYVQ1ZTNxZXVVUXZYSFdQOU5j?=
+ =?utf-8?B?d0FSdzRBL29IWE11elA2Qk4zaXZKTGgxV001R3Q2cmwxR0d2OGpOa2dFSDhL?=
+ =?utf-8?B?bld0MVpGNmU4aWVUZVhTUUtWa2dlY0dxdjZCYWxrTUtZUU9qNHdBeWVSZjhR?=
+ =?utf-8?B?ZDloSTJteWJsek0vSjV0ZXVKdDBIcHJmam5jTm8yalkxcUk3cjRZNWprV01F?=
+ =?utf-8?B?T1QvQ0tFZitZbEk5TldrVDgybVJVUHNjVzdRQnZ3dUJKZERMdXNqUFYrLzgy?=
+ =?utf-8?B?bmluSEdBWUhqV2pwbzZiTzcrUFREZjNOUHIvSlNESzh5dERXT2ppcnVFQzh3?=
+ =?utf-8?B?dUMxZEpsQUNySC95K25LNWRscGRBMnY1RnR2eElQK2JqOXVYT083NmNmVFJI?=
+ =?utf-8?B?dHdvc2t4cnpySHFtL2I3UzZaS1B5bWhId2dETW9pc1pFU1hoVUk1VzFyUEZ6?=
+ =?utf-8?B?YzM0TXJiTEVrYTZ4TU9BMU53ZDFJOUptZ1VXRVlQWm5PcllOVzNWU2tnZU1B?=
+ =?utf-8?B?ZDRMOGYrenZFVFkrMWxNOXhoY2Y1Q0UyMy8yOWZUTlhrZlVlZXg0UjJsYjB6?=
+ =?utf-8?B?b0ZiN1M1Z0dXZ1Jmbk0xek1VT1ArTkxHMnBpRmlvM3kyTWZXMGNjdEFvRUxl?=
+ =?utf-8?B?d2dmcGR4T1oySHBwV09obTNVZUx2dHhCeVFwQWdCZXk5YTJpMmgwVDMxRU93?=
+ =?utf-8?B?dlJ1ZWRKeDlKbUZDWVk2Qm5DeW1wSHlWWFhpSWNHcGVZTWNoYy9qdnA5Kzdn?=
+ =?utf-8?B?c3dEc0dIeTFpaDd3cm5mUnE1SkhDaVZxNFpTVUJLWnRPQml1LzMzNXlHSXR0?=
+ =?utf-8?B?RVRXWEZZc2poUWxFWkl2c21EQ3hCeEdHdThSMW9WNjkwSi9sOFFDbk9GNDJ0?=
+ =?utf-8?B?amdhUDY2aUx5b3ZaMGR2Uy9HVTg3UjlreTUvanM2MzRaTFJpVTlCVDVQTGR4?=
+ =?utf-8?B?UVdSdzBKczBJQmhtdy9UMmF0ZHkxSForS2ZhTDF3TG9RU0FvZTQrODluSHVI?=
+ =?utf-8?B?ZXRWUTJvMGJ1R056NjR5WE1zRjZudUVlbWhKYkZ1am9uNWpCTThnbDRGMTF4?=
+ =?utf-8?B?SjZaZkRaRjZkOHBaNkhXanhCM09oc2l4YVJwSXBUcjBYQjFkUXFLa0NoUVBT?=
+ =?utf-8?B?dG94TnVXTk8xc0dPTFM2NlpyWGQ5Zm5xS01TK1kxWHJxWlQ2Z1FVejdGNlh6?=
+ =?utf-8?Q?rVEbJSXXAWCcLIE28jb9OZY1U2ZkiDNZtq/2iQWFrE=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <49ED443442E80344B7C84AC1419252D8@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220111081048.v10.1.Ic0a40b84dee3825302890aaea690e73165c71820@changeid>
- <CAGPPCLAF2vwqCEGed5keD+uFKW3YVXYbgeZZaXYJYHihrj+r1Q@mail.gmail.com>
-In-Reply-To: <CAGPPCLAF2vwqCEGed5keD+uFKW3YVXYbgeZZaXYJYHihrj+r1Q@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Tue, 18 Jan 2022 11:27:46 -0800
-Message-ID: <CABBYNZKXDRye-apdZJ8ASCcnrF9y1izo65CbS21qyZ-=YJhFCA@mail.gmail.com>
-Subject: Re: [PATCH v10 1/2] bluetooth: msft: Handle MSFT Monitor Device Event
-To:     Manish Mandlik <mmandlik@google.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        Miao-chen Chou <mcchou@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB3270.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cf42c7c7-2ef4-4c6e-b1ef-08d9dabab8ea
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jan 2022 19:42:54.9703
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: N9CBqhsMubYEnNxjbz82gTTcXeDWHkHvDr+zbSrA1AYZsYBz/uN68uP62fKHeC3dR8UQtMjYdvYD6VOM9LP7g0Z16o2WZJU0/GWYgr40S38=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR10MB2941
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10231 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0
+ mlxlogscore=999 adultscore=0 suspectscore=0 malwarescore=0 mlxscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201180116
+X-Proofpoint-GUID: kLE1Ty4UDZFfV8XkUaq771FwlnmaNC_5
+X-Proofpoint-ORIG-GUID: kLE1Ty4UDZFfV8XkUaq771FwlnmaNC_5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Manish,
-
-On Tue, Jan 18, 2022 at 10:32 AM Manish Mandlik <mmandlik@google.com> wrote:
->
-> Friendly ping to review this patch series. :)
->
-> On Tue, Jan 11, 2022 at 11:14 AM Manish Mandlik <mmandlik@google.com> wrote:
->>
->> Whenever the controller starts/stops monitoring a bt device, it sends
->> MSFT Monitor Device event. Add handler to read this vendor event.
->>
->> Test performed:
->> - Verified by logs that the MSFT Monitor Device event is received from
->>   the controller whenever it starts/stops monitoring a device.
->>
->> Signed-off-by: Manish Mandlik <mmandlik@google.com>
->> Reviewed-by: Miao-chen Chou <mcchou@google.com>
->> ---
->> Hello Bt-Maintainers,
->>
->> As mentioned in the bluez patch series [1], we need to capture the 'MSFT
->> Monitor Device' event from the controller and pass on the necessary
->> information to the bluetoothd.
->>
->> This is required to further optimize the power consumption by avoiding
->> handling of RSSI thresholds and timeouts in the user space and let the
->> controller do the RSSI tracking.
->>
->> This patch series adds support to read the MSFT vendor event
->> HCI_VS_MSFT_LE_Monitor_Device_Event and introduces new MGMT events
->> MGMT_EV_ADV_MONITOR_DEVICE_FOUND and MGMT_EV_ADV_MONITOR_DEVICE_LOST to
->> indicate that the controller has started/stopped tracking a particular
->> device.
->>
->> Please let me know what you think about this or if you have any further
->> questions.
->>
->> [1] https://patchwork.kernel.org/project/bluetooth/list/?series=583423
->>
->> Thanks,
->> Manish.
->>
->> Changes in v10:
->> - Create a helper function to delete monitor device.
->> - Fix inconsistent returns '&hdev->lock'.
->>
->> Changes in v9:
->> - Fix compiler error.
->>
->> Changes in v8:
->> - Fix use-after-free in msft_le_cancel_monitor_advertisement_cb().
->> - Use skb_pull_data() instead of skb_pull().
->>
->> Changes in v6:
->> - Fix compiler warning bt_dev_err() missing argument.
->>
->> Changes in v5:
->> - Split v4 into two patches.
->> - Buffer controller Device Found event and maintain the device tracking
->>   state in the kernel.
->>
->> Changes in v4:
->> - Add Advertisement Monitor Device Found event and update addr type.
->>
->> Changes in v3:
->> - Discard changes to the Device Found event and notify bluetoothd only
->>   when the controller stops monitoring the device via new Device Lost
->>   event.
->>
->> Changes in v2:
->> - Instead of creating a new 'Device Tracking' event, add a flag 'Device
->>   Tracked' in the existing 'Device Found' event and add a new 'Device
->>   Lost' event to indicate that the controller has stopped tracking that
->>   device.
->>
->>  include/net/bluetooth/hci_core.h |  11 +++
->>  net/bluetooth/hci_core.c         |   1 +
->>  net/bluetooth/msft.c             | 158 +++++++++++++++++++++++++++++--
->>  3 files changed, 162 insertions(+), 8 deletions(-)
->>
->> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
->> index 586f69d084a2..639fb9f57ae7 100644
->> --- a/include/net/bluetooth/hci_core.h
->> +++ b/include/net/bluetooth/hci_core.h
->> @@ -258,6 +258,15 @@ struct adv_info {
->>
->>  #define HCI_ADV_TX_POWER_NO_PREFERENCE 0x7F
->>
->> +struct monitored_device {
->> +       struct list_head list;
->> +
->> +       bdaddr_t bdaddr;
->> +       __u8     addr_type;
->> +       __u16    handle;
->> +       bool     notified;
->> +};
->> +
->>  struct adv_pattern {
->>         struct list_head list;
->>         __u8 ad_type;
->> @@ -591,6 +600,8 @@ struct hci_dev {
->>
->>         struct delayed_work     interleave_scan;
->>
->> +       struct list_head        monitored_devices;
->> +
->>  #if IS_ENABLED(CONFIG_BT_LEDS)
->>         struct led_trigger      *power_led;
->>  #endif
->> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
->> index 2b7bd3655b07..14c2da9d33ff 100644
->> --- a/net/bluetooth/hci_core.c
->> +++ b/net/bluetooth/hci_core.c
->> @@ -2503,6 +2503,7 @@ struct hci_dev *hci_alloc_dev_priv(int sizeof_priv)
->>         INIT_LIST_HEAD(&hdev->conn_hash.list);
->>         INIT_LIST_HEAD(&hdev->adv_instances);
->>         INIT_LIST_HEAD(&hdev->blocked_keys);
->> +       INIT_LIST_HEAD(&hdev->monitored_devices);
->>
->>         INIT_LIST_HEAD(&hdev->local_codecs);
->>         INIT_WORK(&hdev->rx_work, hci_rx_work);
->> diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
->> index 6a943634b31a..213eab2f085a 100644
->> --- a/net/bluetooth/msft.c
->> +++ b/net/bluetooth/msft.c
->> @@ -80,6 +80,14 @@ struct msft_rp_le_set_advertisement_filter_enable {
->>         __u8 sub_opcode;
->>  } __packed;
->>
->> +#define MSFT_EV_LE_MONITOR_DEVICE      0x02
->> +struct msft_ev_le_monitor_device {
->> +       __u8     addr_type;
->> +       bdaddr_t bdaddr;
->> +       __u8     monitor_handle;
->> +       __u8     monitor_state;
->> +} __packed;
->> +
->>  struct msft_monitor_advertisement_handle_data {
->>         __u8  msft_handle;
->>         __u16 mgmt_handle;
->> @@ -204,6 +212,30 @@ static struct msft_monitor_advertisement_handle_data *msft_find_handle_data
->>         return NULL;
->>  }
->>
->> +/* This function requires the caller holds hdev->lock */
->> +static int msft_monitor_device_del(struct hci_dev *hdev, __u16 mgmt_handle,
->> +                                  bdaddr_t *bdaddr, __u8 addr_type)
->> +{
->> +       struct monitored_device *dev, *tmp;
->> +       int count = 0;
->> +
->> +       list_for_each_entry_safe(dev, tmp, &hdev->monitored_devices, list) {
->> +               /* mgmt_handle == 0 indicates remove all devices, whereas,
->> +                * bdaddr == NULL indicates remove all devices matching the
->> +                * mgmt_handle.
->> +                */
->> +               if ((!mgmt_handle || dev->handle == mgmt_handle) &&
->> +                   (!bdaddr || (!bacmp(bdaddr, &dev->bdaddr) &&
->> +                                addr_type == dev->addr_type))) {
->> +                       list_del(&dev->list);
->> +                       kfree(dev);
->> +                       count++;
->> +               }
->> +       }
->> +
->> +       return count;
->> +}
->> +
->>  static void msft_le_monitor_advertisement_cb(struct hci_dev *hdev,
->>                                              u8 status, u16 opcode,
->>                                              struct sk_buff *skb)
->> @@ -294,6 +326,10 @@ static void msft_le_cancel_monitor_advertisement_cb(struct hci_dev *hdev,
->>                 if (monitor && !msft->suspending)
->>                         hci_free_adv_monitor(hdev, monitor);
->>
->> +               /* Clear any monitored devices by this Adv Monitor */
->> +               msft_monitor_device_del(hdev, handle_data->mgmt_handle, NULL,
->> +                                       0);
->> +
->>                 list_del(&handle_data->list);
->>                 kfree(handle_data);
->>         }
->> @@ -557,6 +593,13 @@ void msft_do_close(struct hci_dev *hdev)
->>                 list_del(&handle_data->list);
->>                 kfree(handle_data);
->>         }
->> +
->> +       hci_dev_lock(hdev);
->> +
->> +       /* Clear any devices that are being monitored */
->> +       msft_monitor_device_del(hdev, 0, NULL, 0);
->> +
->> +       hci_dev_unlock(hdev);
->>  }
->>
->>  void msft_register(struct hci_dev *hdev)
->> @@ -590,10 +633,97 @@ void msft_unregister(struct hci_dev *hdev)
->>         kfree(msft);
->>  }
->>
->> +/* This function requires the caller holds hdev->lock */
->> +static void msft_device_found(struct hci_dev *hdev, bdaddr_t *bdaddr,
->> +                             __u8 addr_type, __u16 mgmt_handle)
->> +{
->> +       struct monitored_device *dev;
->> +
->> +       dev = kmalloc(sizeof(*dev), GFP_KERNEL);
->> +       if (!dev) {
->> +               bt_dev_err(hdev, "MSFT vendor event %u: no memory",
->> +                          MSFT_EV_LE_MONITOR_DEVICE);
->> +               return;
->> +       }
->> +
->> +       bacpy(&dev->bdaddr, bdaddr);
->> +       dev->addr_type = addr_type;
->> +       dev->handle = mgmt_handle;
->> +       dev->notified = false;
->> +
->> +       INIT_LIST_HEAD(&dev->list);
->> +       list_add(&dev->list, &hdev->monitored_devices);
->> +}
->> +
->> +/* This function requires the caller holds hdev->lock */
->> +static void msft_device_lost(struct hci_dev *hdev, bdaddr_t *bdaddr,
->> +                            __u8 addr_type, __u16 mgmt_handle)
->> +{
->> +       if (!msft_monitor_device_del(hdev, mgmt_handle, bdaddr, addr_type)) {
->> +               bt_dev_err(hdev, "MSFT vendor event %u: dev %pMR not in list",
->> +                          MSFT_EV_LE_MONITOR_DEVICE, bdaddr);
->> +       }
->> +}
->> +
->> +static void *msft_skb_pull(struct hci_dev *hdev, struct sk_buff *skb,
->> +                          u8 ev, size_t len)
->> +{
->> +       void *data;
->> +
->> +       data = skb_pull_data(skb, len);
->> +       if (!data)
->> +               bt_dev_err(hdev, "Malformed MSFT vendor event: 0x%02x", ev);
->> +
->> +       return data;
->> +}
->> +
->> +/* This function requires the caller holds hdev->lock */
->> +static void msft_monitor_device_evt(struct hci_dev *hdev, struct sk_buff *skb)
->> +{
->> +       struct msft_ev_le_monitor_device *ev;
->> +       struct msft_monitor_advertisement_handle_data *handle_data;
->> +       u8 addr_type;
->> +
->> +       ev = msft_skb_pull(hdev, skb, MSFT_EV_LE_MONITOR_DEVICE, sizeof(*ev));
->> +       if (!ev)
->> +               return;
->> +
->> +       bt_dev_dbg(hdev,
->> +                  "MSFT vendor event 0x%02x: handle 0x%04x state %d addr %pMR",
->> +                  MSFT_EV_LE_MONITOR_DEVICE, ev->monitor_handle,
->> +                  ev->monitor_state, &ev->bdaddr);
->> +
->> +       handle_data = msft_find_handle_data(hdev, ev->monitor_handle, false);
->> +
->> +       switch (ev->addr_type) {
->> +       case ADDR_LE_DEV_PUBLIC:
->> +               addr_type = BDADDR_LE_PUBLIC;
->> +               break;
->> +
->> +       case ADDR_LE_DEV_RANDOM:
->> +               addr_type = BDADDR_LE_RANDOM;
->> +               break;
->> +
->> +       default:
->> +               bt_dev_err(hdev,
->> +                          "MSFT vendor event 0x%02x: unknown addr type 0x%02x",
->> +                          MSFT_EV_LE_MONITOR_DEVICE, ev->addr_type);
->> +               return;
->> +       }
->> +
->> +       if (ev->monitor_state)
->> +               msft_device_found(hdev, &ev->bdaddr, addr_type,
->> +                                 handle_data->mgmt_handle);
->> +       else
->> +               msft_device_lost(hdev, &ev->bdaddr, addr_type,
->> +                                handle_data->mgmt_handle);
->> +}
->> +
->>  void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk_buff *skb)
->>  {
->>         struct msft_data *msft = hdev->msft_data;
->> -       u8 event;
->> +       u8 *evt_prefix;
->> +       u8 *evt;
->>
->>         if (!msft)
->>                 return;
->> @@ -602,13 +732,12 @@ void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk_buff *skb)
->>          * matches, and otherwise just return.
->>          */
->>         if (msft->evt_prefix_len > 0) {
->> -               if (skb->len < msft->evt_prefix_len)
->> +               evt_prefix = msft_skb_pull(hdev, skb, 0, msft->evt_prefix_len);
->> +               if (!evt_prefix)
->>                         return;
->>
->> -               if (memcmp(skb->data, msft->evt_prefix, msft->evt_prefix_len))
->> +               if (memcmp(evt_prefix, msft->evt_prefix, msft->evt_prefix_len))
->>                         return;
->> -
->> -               skb_pull(skb, msft->evt_prefix_len);
->>         }
->>
->>         /* Every event starts at least with an event code and the rest of
->> @@ -617,10 +746,23 @@ void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk_buff *skb)
->>         if (skb->len < 1)
->>                 return;
->>
->> -       event = *skb->data;
->> -       skb_pull(skb, 1);
->> +       evt = msft_skb_pull(hdev, skb, 0, sizeof(*evt));
->> +       if (!evt)
->> +               return;
->> +
->> +       hci_dev_lock(hdev);
->> +
->> +       switch (*evt) {
->> +       case MSFT_EV_LE_MONITOR_DEVICE:
->> +               msft_monitor_device_evt(hdev, skb);
->> +               break;
->>
->> -       bt_dev_dbg(hdev, "MSFT vendor event %u", event);
->> +       default:
->> +               bt_dev_dbg(hdev, "MSFT vendor event 0x%02x", *evt);
->> +               break;
->> +       }
->> +
->> +       hci_dev_unlock(hdev);
->>  }
->>
->>  __u64 msft_get_features(struct hci_dev *hdev)
->> --
->> 2.34.1.575.g55b058a8bb-goog
->>
-
-Applied, thanks.
-
--- 
-Luiz Augusto von Dentz
+T24gSmFuIDE4LCAyMDIyLCBhdCAxMToxNyBBTSwgSmFzb24gR3VudGhvcnBlIDxqZ2dAemllcGUu
+Y2E+IHdyb3RlOg0KPiANCj4gT24gVHVlLCBKYW4gMTgsIDIwMjIgYXQgMDQ6NDg6NDNQTSArMDAw
+MCwgU2FudG9zaCBTaGlsaW1rYXIgd3JvdGU6DQo+PiANCj4+PiBPbiBKYW4gMTgsIDIwMjIsIGF0
+IDY6NDcgQU0sIFByYXZlZW4gS2Fubm9qdSA8cHJhdmVlbi5rYW5ub2p1QG9yYWNsZS5jb20+IHdy
+b3RlOg0KPj4+IA0KPj4+IFRoaXMgcGF0Y2ggYWltcyB0byByZWR1Y2UgdGhlIG51bWJlciBvZiBh
+c3luY2hyb25vdXMgd29ya2VycyBiZWluZyBzcGF3bmVkDQo+Pj4gdG8gZXhlY3V0ZSB0aGUgZnVu
+Y3Rpb24gInJkc19pYl9mbHVzaF9tcl9wb29sIiBkdXJpbmcgdGhlIGhpZ2ggSS9PDQo+Pj4gc2l0
+dWF0aW9ucy4gU3luY2hyb25vdXMgY2FsbCBwYXRoJ3MgdG8gdGhpcyBmdW5jdGlvbiAicmRzX2li
+X2ZsdXNoX21yX3Bvb2wiDQo+Pj4gd2lsbCBiZSBleGVjdXRlZCB3aXRob3V0IGJlaW5nIGRpc3R1
+cmJlZC4gQnkgcmVkdWNpbmcgdGhlIG51bWJlciBvZg0KPj4+IHByb2Nlc3NlcyBjb250ZW5kaW5n
+IHRvIGZsdXNoIHRoZSBtciBwb29sLCB0aGUgdG90YWwgbnVtYmVyIG9mIEQgc3RhdGUNCj4+PiBw
+cm9jZXNzZXMgd2FpdGluZyB0byBhY3F1aXJlIHRoZSBtdXRleCBsb2NrIHdpbGwgYmUgZ3JlYXRs
+eSByZWR1Y2VkLCB3aGljaA0KPj4+IG90aGVyd2lzZSB3ZXJlIGNhdXNpbmcgREIgaW5zdGFuY2Ug
+Y3Jhc2ggYXMgdGhlIGNvcnJlc3BvbmRpbmcgcHJvY2Vzc2VzDQo+Pj4gd2VyZSBub3QgcHJvZ3Jl
+c3Npbmcgd2hpbGUgd2FpdGluZyB0byBhY3F1aXJlIHRoZSBtdXRleCBsb2NrLg0KPj4+IA0KPj4+
+IFNpZ25lZC1vZmYtYnk6IFByYXZlZW4gS3VtYXIgS2Fubm9qdSA8cHJhdmVlbi5rYW5ub2p1QG9y
+YWNsZS5jb20+DQo+Pj4g4oCUDQo+Pj4gDQo+PiBb4oCmXQ0KPj4gDQo+Pj4gZGlmZiAtLWdpdCBh
+L25ldC9yZHMvaWJfcmRtYS5jIGIvbmV0L3Jkcy9pYl9yZG1hLmMNCj4+PiBpbmRleCA4ZjA3MGVl
+Li42YjY0MGI1IDEwMDY0NA0KPj4+ICsrKyBiL25ldC9yZHMvaWJfcmRtYS5jDQo+Pj4gQEAgLTM5
+Myw2ICszOTMsOCBAQCBpbnQgcmRzX2liX2ZsdXNoX21yX3Bvb2woc3RydWN0IHJkc19pYl9tcl9w
+b29sICpwb29sLA0KPj4+IAkgKi8NCj4+PiAJZGlydHlfdG9fY2xlYW4gPSBsbGlzdF9hcHBlbmRf
+dG9fbGlzdCgmcG9vbC0+ZHJvcF9saXN0LCAmdW5tYXBfbGlzdCk7DQo+Pj4gCWRpcnR5X3RvX2Ns
+ZWFuICs9IGxsaXN0X2FwcGVuZF90b19saXN0KCZwb29sLT5mcmVlX2xpc3QsICZ1bm1hcF9saXN0
+KTsNCj4+PiArCVdSSVRFX09OQ0UocG9vbC0+Zmx1c2hfb25nb2luZywgdHJ1ZSk7DQo+Pj4gKwlz
+bXBfd21iKCk7DQo+Pj4gCWlmIChmcmVlX2FsbCkgew0KPj4+IAkJdW5zaWduZWQgbG9uZyBmbGFn
+czsNCj4+PiANCj4+PiBAQCAtNDMwLDYgKzQzMiw4IEBAIGludCByZHNfaWJfZmx1c2hfbXJfcG9v
+bChzdHJ1Y3QgcmRzX2liX21yX3Bvb2wgKnBvb2wsDQo+Pj4gCWF0b21pY19zdWIobmZyZWVkLCAm
+cG9vbC0+aXRlbV9jb3VudCk7DQo+Pj4gDQo+Pj4gb3V0Og0KPj4+ICsJV1JJVEVfT05DRShwb29s
+LT5mbHVzaF9vbmdvaW5nLCBmYWxzZSk7DQo+Pj4gKwlzbXBfd21iKCk7DQo+Pj4gCW11dGV4X3Vu
+bG9jaygmcG9vbC0+Zmx1c2hfbG9jayk7DQo+Pj4gCWlmICh3YWl0cXVldWVfYWN0aXZlKCZwb29s
+LT5mbHVzaF93YWl0KSkNCj4+PiAJCXdha2VfdXAoJnBvb2wtPmZsdXNoX3dhaXQpOw0KPj4+IEBA
+IC01MDcsOCArNTExLDE3IEBAIHZvaWQgcmRzX2liX2ZyZWVfbXIodm9pZCAqdHJhbnNfcHJpdmF0
+ZSwgaW50IGludmFsaWRhdGUpDQo+Pj4gDQo+Pj4gCS8qIElmIHdlJ3ZlIHBpbm5lZCB0b28gbWFu
+eSBwYWdlcywgcmVxdWVzdCBhIGZsdXNoICovDQo+Pj4gCWlmIChhdG9taWNfcmVhZCgmcG9vbC0+
+ZnJlZV9waW5uZWQpID49IHBvb2wtPm1heF9mcmVlX3Bpbm5lZCB8fA0KPj4+IC0JICAgIGF0b21p
+Y19yZWFkKCZwb29sLT5kaXJ0eV9jb3VudCkgPj0gcG9vbC0+bWF4X2l0ZW1zIC8gNSkNCj4+PiAt
+CQlxdWV1ZV9kZWxheWVkX3dvcmsocmRzX2liX21yX3dxLCAmcG9vbC0+Zmx1c2hfd29ya2VyLCAx
+MCk7DQo+Pj4gKwkgICAgYXRvbWljX3JlYWQoJnBvb2wtPmRpcnR5X2NvdW50KSA+PSBwb29sLT5t
+YXhfaXRlbXMgLyA1KSB7DQo+Pj4gKwkJc21wX3JtYigpOw0KPj4gWW91IHdvbuKAmXQgbmVlZCB0
+aGVzZSBleHBsaWNpdCBiYXJyaWVycyBzaW5jZSBhYm92ZSBhdG9taWMgYW5kIHdyaXRlIG9uY2Ug
+YWxyZWFkeQ0KPj4gaXNzdWUgdGhlbS4NCj4gDQo+IE5vLCB0aGV5IGRvbid0LiBVc2Ugc21wX3N0
+b3JlX3JlbGVhc2UoKSBhbmQgc21wX2xvYWRfYWNxdWlyZSBpZiB5b3UNCj4gd2FudCB0byBkbyBz
+b21ldGhpbmcgbGlrZSB0aGlzLCBidXQgSSBzdGlsbCBjYW4ndCBxdWl0ZSBmaWd1cmUgb3V0IGlm
+DQo+IHRoaXMgdXNhZ2Ugb2YgdW5sb2NrZWQgbWVtb3J5IGFjY2Vzc2VzIG1ha2VzIGFueSBzZW5z
+ZSBhdCBhbGwuDQo+IA0KSW5kZWVkLCBJIHNlZSB0aGF0IG5vdywgdGhhbmtzLiBZZWFoLCB0aGVz
+ZSBtdWx0aSB2YXJpYWJsZSBjaGVja3MgY2FuIGluZGVlZA0KYmUgcmFjeSBidXQgdGhleSBhcmUg
+dW5kZXIgbG9jayBhdCBsZWFzdCBmb3IgdGhpcyBjb2RlIHBhdGguIEJ1dCB0aGVyZSBhcmUgZmV3
+DQpob3QgcGF0aCBwbGFjZXMgd2hlcmUgc2luZ2xlIHZhcmlhYmxlIHN0YXRlcyBhcmUgZXZhbHVh
+dGVkIGF0b21pY2FsbHkgaW5zdGVhZCBvZg0KaGVhdnkgbG9jay4gDQoNClJlZ2FyZHMsDQpTYW50
+b3NoDQoNCg==
