@@ -2,122 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57CDD4924F6
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:33:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64AC649250A
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:38:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240850AbiARLcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 06:32:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23180 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241127AbiARLci (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:32:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642505558;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gxIUZxKIctHJwL8z/L5myK/ubboYV+HhwGkSMX1RWeM=;
-        b=DNSmUkZd/7CSh+S/AW+V1uEGxrJhJSuZvXrab9/QuZqzkqSJ5mkuJ41SOuF3dqdlEbfA5D
-        d71PKVPPwazo5+UPs96Db/zzMtTQPRB68jTXEzcqMs1/+KDEYVlEcC4zd5Y3pC1s9q+VE9
-        ZV+O54g87pTS6GV3DelXB04Kec08HOU=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-290-ieb7yq9ZM8yfuiv_MCVfbQ-1; Tue, 18 Jan 2022 06:32:37 -0500
-X-MC-Unique: ieb7yq9ZM8yfuiv_MCVfbQ-1
-Received: by mail-wm1-f69.google.com with SMTP id bg32-20020a05600c3ca000b00349f2aca1beso1864831wmb.9
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 03:32:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gxIUZxKIctHJwL8z/L5myK/ubboYV+HhwGkSMX1RWeM=;
-        b=xB2JvrkHo/KOqc3yYHPlWfy+o9+fi7LzPf7mmwQ4uQeFT5MbPk1fH6fo0SfV2EPRMF
-         3nR6OMOoVjeN+LjP/tp8YdCA2DuAIOEGrHqulwE/ZzWYFPfKAWUNTtcr8bc4qwIlYxey
-         t5B4R9gN1YHgzqkF14Ah8fH2o2Tsftn70TmTOj0CiPamevVDTk0tIefwpTTU/l4WPAVl
-         B812tX/x+Icks0NWsJIcRMXX7BTgSNEG70IDjJCPHUUrUW5FDta+jgiShsp9RdqlD/d6
-         PHURbcjCMSoalxIiyvluExBahrc1H/DxFUhAugm6Edc+mUK0O3r1pZhSEWr7NgIDEvJB
-         Mitg==
-X-Gm-Message-State: AOAM533V7GNmFdPCMJWoizBibr8+bi0T60bbqQ1DLS5m5KKS1go3APYf
-        o6LvNIEavqZgNgR20KiyIilgMR7BgUDM3FKSSbo7HAQahRfBvpfwCzxjO3Xac8iDabvkUZemeFy
-        lS5tD1jOwUOO/wQRP
-X-Received: by 2002:adf:eec5:: with SMTP id a5mr22941960wrp.125.1642505555957;
-        Tue, 18 Jan 2022 03:32:35 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx2Z2Ir8v9YbJpsV5b8zAGMUVsvQSlizXWz0r6NetP68sBK/YKLA/n6veKoloXDcOw314VKwA==
-X-Received: by 2002:adf:eec5:: with SMTP id a5mr22941913wrp.125.1642505555610;
-        Tue, 18 Jan 2022 03:32:35 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id p4sm252431wrf.25.2022.01.18.03.32.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Jan 2022 03:32:35 -0800 (PST)
-Message-ID: <3d46c2e7-40a7-61e1-8bb5-063bb608b26f@redhat.com>
-Date:   Tue, 18 Jan 2022 12:32:33 +0100
+        id S240154AbiARLhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 06:37:54 -0500
+Received: from mail-co1nam11on2041.outbound.protection.outlook.com ([40.107.220.41]:28576
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232711AbiARLhx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jan 2022 06:37:53 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RdRLq1RzvQ0ZnjaAs5AysdT5QCi1yXX6mndJpCf1Yy1W1AiNEZFZfzCV4aD4TlJPNp+2q31AY6CT9BxOn4PA2JJ7ADoMKxUCm+rNtrHSIhzJxO43cC6BGoXwkch0XHHoXLVV5UkqUCHfiYcRTuGZGSK0g0nlGrBhdV0kYUvkFgaBQ1Tf1M/79UBQfxkNXvDqkJp+35HrU1pszC9XiD9use4gxGn58ipdm4d8c+Wth1ZJD0lNU8ABngUQpHK9JSYYZHwGVLpBMbELxUnrIa9h97tlZkLCjnLeeeLzp3hdEMdCsebXySzOCmo5zzLi+Y84zzWY8VkslJgWfy8Q7lhlxg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/LCRg3pAKcrRxc9K5xUaTzbw/ggBoD8YQb9bPqYOEwM=;
+ b=ixUDSPNC5F38HH9be/6wt36Esb78m16O54J/oZMJwTTacxenkE+pegYM2bTx8aPr6jWRjLaheNnR782zXR3hwuvh12N1BQNaVryYXbL4qBMdJ7QdBOiyUTT28ViTxDe3IxN2yPiiDM6m2JBwsvkJ/Ys6E5VG2tqac6TOPvk+JDW/ZZjvN4CrIIUkaRcwHm6SEqItS/4c3GYCmkG+gqRgd3G4IPheZ7VQemQN/vMeugn3jyr9eXN0Y156NemPSky16UsNwFlyT5lUbd8JUvkBOiDHUJwgGudGgMap+RYpe4eL/ztcH0MQvInuGuNcnlkUBBZDwD/HVzbu9QmU8IlkPQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=networkplumber.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/LCRg3pAKcrRxc9K5xUaTzbw/ggBoD8YQb9bPqYOEwM=;
+ b=RM2IccO5nMmmswmEiokHe2v8gBOKf/UfaH6WMT7yjr+kmnLgo+UpKvywHk5ubGKwBg+KMjPJs2fuQGxDO0bU6It092lZsox/5V7TkgcQIcHvLcTQW6bfooS53Ass5BRvAFpQ2BjdqB9upYgi0OcbUYazup7Ho6HhuTki99NYnXLVB7Kb4fVCMF6f9pzm4RnCaeOTxsQtRWKLsNdf89d1Z/GrAoGcfzfXPJ7VueDPpNE2tCVDKgcF0Ar3L3uis05aHRcp1KCxMjnjr+UcmgLZmsoISm6T2rgt99bBDGGihgsaDhwxrJgwnzyPTu5EU/bTOH9+jx5c/HVZLhbq7xX6DA==
+Received: from MW4PR04CA0225.namprd04.prod.outlook.com (2603:10b6:303:87::20)
+ by SN6PR12MB2621.namprd12.prod.outlook.com (2603:10b6:805:73::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.12; Tue, 18 Jan
+ 2022 11:37:51 +0000
+Received: from CO1NAM11FT059.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:87:cafe::62) by MW4PR04CA0225.outlook.office365.com
+ (2603:10b6:303:87::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10 via Frontend
+ Transport; Tue, 18 Jan 2022 11:37:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ CO1NAM11FT059.mail.protection.outlook.com (10.13.174.160) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4888.9 via Frontend Transport; Tue, 18 Jan 2022 11:37:50 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 18 Jan
+ 2022 11:37:50 +0000
+Received: from yaviefel.vdiclient.nvidia.com (10.126.230.35) by
+ rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.9;
+ Tue, 18 Jan 2022 03:37:48 -0800
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Petr Machata <petrm@nvidia.com>,
+        "Maksym Yaremchuk" <maksymy@nvidia.com>
+Subject: [PATCH iproute2] dcb: app: Add missing "dcb app show dev X default-prio"
+Date:   Tue, 18 Jan 2022 12:36:44 +0100
+Message-ID: <f6e07ca31e33a673f641c9282e81ee9c3be03d3c.1642505737.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH 09/10] selftests: vm: Add the uapi headers include
- variable
-Content-Language: en-US
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@collabora.com>,
-        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        chiminghao <chi.minghao@zte.com.cn>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL VIRTUAL MACHINE (KVM)" <kvm@vger.kernel.org>,
-        "open list:LANDLOCK SECURITY MODULE" 
-        <linux-security-module@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "open list:NETWORKING [MPTCP]" <mptcp@lists.linux.dev>,
-        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>
-Cc:     kernel@collabora.com
-References: <20220118112909.1885705-1-usama.anjum@collabora.com>
- <20220118112909.1885705-10-usama.anjum@collabora.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220118112909.1885705-10-usama.anjum@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e1edaecf-c9a3-435d-aeb2-08d9da76f597
+X-MS-TrafficTypeDiagnostic: SN6PR12MB2621:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR12MB26217675EC7BEE52D12886B8D6589@SN6PR12MB2621.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +pu06U0TEBc1tpZOgkeVp7yT+JOUdyeT2QZ0NVzaW2yooGQrp9Cg0Y/FG5+99PXVstX8QHCvrObAecDaiTfOoCelh1fox7XNUeL9o5bwt2wydQ+DQQG4cPoYIvOqu0kn7C/Zsl5LKOU3cGkd2agm0NAY0y5Vt03HCaClkB2BuRwDZ3vzLxGjKGTLAPheftwhC4eRuNbOuiCGmOzB7n0dn9iHNM71yvNU6GxISTXqQrxTTnbsKQ6XihKvvFUZi3PMlQjjOEMLfpZf1Fww3a95eJvBz+0vaOt1YePzaXvERAkYCT753Ye7KhlZtBI3lYJzyfURJ9vZ4CzLABHv/pQfcznh477a/qLpYNSaRg7EL0VU0v1LU/z3I6gYbW6k4yRwSrwZWgLJUUMH+R1O2a9XYsS8P2a+cLfFMYj3SdFPUK9lopg6T2zvcXb+e9dVOnQUQJzP2bta5MNqkSP6hIAHWFmRyyOH5E40xxO5NfT2q8xtZ9sCZ0DPzooHqA7Fw+UzIVx6Kq4Xpd5vXJmb4eH5wbs5AI1SZiRDTXiaQ+2nH2a2MELhJUF3kSTS05P/fDx3txW2NjE/y8JJZ+o6y4gW5EBdKtPIsof8zMHSrbJXHAM9/jeRB3VVDoTaSgvONW7z5QGO2xseFyWuco9lxVYtp2iQNSm1pTvjA0/oBuS719YRe7xPsS3SQ3Pi8mlb/7CMd30TfYLOrCH5w/xlCn7dAXS6Yv2BU5jBiXVoX0S0ChRP1gw9xMuxB8nGS1qCAwzAJMDqK4Xm9AJP/NTgBSoP0ONpLfq2yiGTxp2LK++xYoE=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(40470700002)(426003)(5660300002)(2616005)(47076005)(36756003)(508600001)(186003)(16526019)(356005)(4744005)(8676002)(316002)(54906003)(86362001)(7696005)(2906002)(26005)(6916009)(81166007)(336012)(6666004)(107886003)(70206006)(70586007)(40460700001)(8936002)(36860700001)(4326008)(82310400004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 11:37:50.9896
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e1edaecf-c9a3-435d-aeb2-08d9da76f597
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT059.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB2621
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/18/22 12:29, Muhammad Usama Anjum wrote:
-> Out of tree build of this test fails if relative path of the output
-> directory is specified. Remove the un-needed include paths and use
-> KHDR_INCLUDES to correctly reach the headers.
-> 
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-> ---
->   tools/testing/selftests/vm/Makefile | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-> index 7d100a7dc462..8dc428c8a3b0 100644
-> --- a/tools/testing/selftests/vm/Makefile
-> +++ b/tools/testing/selftests/vm/Makefile
-> @@ -23,7 +23,7 @@ MACHINE ?= $(shell echo $(uname_M) | sed -e 's/aarch64.*/arm64/' -e 's/ppc64.*/p
->   # LDLIBS.
->   MAKEFLAGS += --no-builtin-rules
->   
-> -CFLAGS = -Wall -I ../../../../usr/include $(EXTRA_CFLAGS)
-> +CFLAGS = -Wall $(EXTRA_CFLAGS) $(KHDR_INCLUDES)
->   LDLIBS = -lrt -lpthread
->   TEST_GEN_FILES = compaction_test
->   TEST_GEN_FILES += gup_test
+All the actual code exists, but we neglect to recognize "default-prio" as a
+CLI key for selection of what to show.
 
-Acked-by: Paolo Bonzini <pbonzini@redhat.com>
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Tested-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+---
+ dcb/dcb_app.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
+index 28f40614..54a95a07 100644
+--- a/dcb/dcb_app.c
++++ b/dcb/dcb_app.c
+@@ -646,6 +646,8 @@ static int dcb_cmd_app_show(struct dcb *dcb, const char *dev, int argc, char **a
+ 			goto out;
+ 		} else if (matches(*argv, "ethtype-prio") == 0) {
+ 			dcb_app_print_ethtype_prio(&tab);
++		} else if (matches(*argv, "default-prio") == 0) {
++			dcb_app_print_default_prio(&tab);
+ 		} else if (matches(*argv, "dscp-prio") == 0) {
+ 			dcb_app_print_dscp_prio(dcb, &tab);
+ 		} else if (matches(*argv, "stream-port-prio") == 0) {
+-- 
+2.31.1
 
