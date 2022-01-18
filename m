@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCE664916ED
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:37:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF384491708
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:37:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345519AbiARChR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:37:17 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43710 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239774AbiARCcZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:32:25 -0500
+        id S1344811AbiARCh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:37:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50344 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239896AbiARCdP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:33:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BAE02B8123A;
-        Tue, 18 Jan 2022 02:32:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61D43C36AF4;
-        Tue, 18 Jan 2022 02:32:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B3B461118;
+        Tue, 18 Jan 2022 02:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0CFFC36AEB;
+        Tue, 18 Jan 2022 02:33:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473141;
-        bh=z9Xl0iPAzJD3iaKf5VYmbyxLHCGM/Ya1QMtZ25AxyiM=;
+        s=k20201202; t=1642473192;
+        bh=eSOZJjsod7JXBVDUOGZX0mGYhD7AX7qWZXKijpCydxQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GNN5+k6hiI/xuPB2sU/nFT2HzhBbnnQpmZtetfgTZGdxNB6lOc6/nKSB580Pn4WYC
-         oNpBsliTbgzijNZ8pt4jzgvMjGM5/bcKTIZwsS8Sm1FHNWvheuUmz4I3WPNgfbHHGl
-         Yskkc4iyry1c7WgxUQLS6ZwKBX8xcUwvRn4dbQt7ERLZO2LPk462WPKpFxq0j7zScD
-         xxxBx72o8PUh5ORMysEQGvWQvHpKmXzzVTgdrz8G+AZv84GSDFDF92JmopCLElZCcV
-         alaAQ7T05yoyp5HiSPl2lwWAeJHco8G6Q8SRI3xdu36Bk4ngLQebZOTZQxdvpI5PNY
-         ABOQT9PlTmZSA==
+        b=RPJFwAuZ7F+/LjAeqkrnjjbjjMKAH1kSxhZp+u5sp0qQTYKnEtdXaiQzalM2JJ1Eq
+         Aup88MLe++ky2Dw/9DEv0C2dKvfIU+aoTW7PtnJdkcR/s66wADgj/8lEZIj+aZPGza
+         UvP2NShWoxAaMPJ9Ak5jGF+ei3V4Nxz+OgdLo6N1ubGNNLQXFZanHppjBldIbM4q+p
+         Hc9pU5xUNQ4AB98/yRUHz9V0TMGjlNgk1ORIqXGd2FKTu4gmev+y8k8Yzbk2MusXoZ
+         CiT5iat8SePcfGf4e4SfB6YWJle9J863wOdqZ0Kvb93VWGG/uNzj2uUhqxD0uDz1b9
+         ePfOT4dcr0DIw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, pontus.fuchs@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 011/188] ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
-Date:   Mon, 17 Jan 2022 21:28:55 -0500
-Message-Id: <20220118023152.1948105-11-sashal@kernel.org>
+Cc:     =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
+        Tycho Andersen <tycho@tycho.pizza>,
+        Sven Eckelmann <sven@narfation.org>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Sasha Levin <sashal@kernel.org>, mareklindner@neomailbox.ch,
+        a@unstable.cc, davem@davemloft.net, kuba@kernel.org,
+        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 020/188] batman-adv: allow netlink usage in unprivileged containers
+Date:   Mon, 17 Jan 2022 21:29:04 -0500
+Message-Id: <20220118023152.1948105-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -49,61 +52,169 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Linus Lüssing <linus.luessing@c0d3.blue>
 
-[ Upstream commit ae80b6033834342601e99f74f6a62ff5092b1cee ]
+[ Upstream commit 9057d6c23e7388ee9d037fccc9a7bc8557ce277b ]
 
-Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
-when ar->tx_cmd->odata is NULL. The patch adds a null check to
-prevent such case.
+Currently, creating a batman-adv interface in an unprivileged LXD
+container and attaching secondary interfaces to it with "ip" or "batctl"
+works fine. However all batctl debug and configuration commands
+fail:
 
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
- ar5523_cmd+0x46a/0x581 [ar5523]
- ar5523_probe.cold+0x1b7/0x18da [ar5523]
- ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
- ? __pm_runtime_set_status+0x54a/0x8f0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? pm_runtime_barrier+0x220/0x220
- ? __pm_runtime_resume+0xb1/0xf0
- usb_probe_interface+0x25b/0x710
- really_probe+0x209/0x5d0
- driver_probe_device+0xc6/0x1b0
- device_driver_attach+0xe2/0x120
+  root@container:~# batctl originators
+  Error received: Operation not permitted
+  root@container:~# batctl orig_interval
+  1000
+  root@container:~# batctl orig_interval 2000
+  root@container:~# batctl orig_interval
+  1000
 
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
+To fix this change the generic netlink permissions from GENL_ADMIN_PERM
+to GENL_UNS_ADMIN_PERM. This way a batman-adv interface is fully
+maintainable as root from within a user namespace, from an unprivileged
+container.
 
-After fixing the code (fourth byte in usb packet) to WDCMSG_TARGET_START,
-I got the null-ptr-deref bug. I believe the bug is triggerable whenever
-cmd->odata is NULL. After patching, I tested with the same input and no
-longer see the KASAN report.
+All except one batman-adv netlink setting are per interface and do not
+leak information or change settings from the host system and are
+therefore save to retrieve or modify as root from within an unprivileged
+container.
 
-This was NOT tested on a real device.
+"batctl routing_algo" / BATADV_CMD_GET_ROUTING_ALGOS is the only
+exception: It provides the batman-adv kernel module wide default routing
+algorithm. However it is read-only from netlink and an unprivileged
+container is still not allowed to modify
+/sys/module/batman_adv/parameters/routing_algo. Instead it is advised to
+use the newly introduced "batctl if create routing_algo RA_NAME" /
+IFLA_BATADV_ALGO_NAME to set the routing algorithm on interface
+creation, which already works fine in an unprivileged container.
 
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu
+Cc: Tycho Andersen <tycho@tycho.pizza>
+Signed-off-by: Linus Lüssing <linus.luessing@c0d3.blue>
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ar5523/ar5523.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/batman-adv/netlink.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index 49cc4b7ed5163..1baec4b412c8d 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -153,6 +153,10 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
- 			ar5523_err(ar, "Invalid reply to WDCMSG_TARGET_START");
- 			return;
- 		}
-+		if (!cmd->odata) {
-+			ar5523_err(ar, "Unexpected WDCMSG_TARGET_START reply");
-+			return;
-+		}
- 		memcpy(cmd->odata, hdr + 1, sizeof(u32));
- 		cmd->olen = sizeof(u32);
- 		cmd->res = 0;
+diff --git a/net/batman-adv/netlink.c b/net/batman-adv/netlink.c
+index 29276284d281c..00875e1d8c44c 100644
+--- a/net/batman-adv/netlink.c
++++ b/net/batman-adv/netlink.c
+@@ -1368,21 +1368,21 @@ static const struct genl_small_ops batadv_netlink_ops[] = {
+ 	{
+ 		.cmd = BATADV_CMD_TP_METER,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.doit = batadv_netlink_tp_meter_start,
+ 		.internal_flags = BATADV_FLAG_NEED_MESH,
+ 	},
+ 	{
+ 		.cmd = BATADV_CMD_TP_METER_CANCEL,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.doit = batadv_netlink_tp_meter_cancel,
+ 		.internal_flags = BATADV_FLAG_NEED_MESH,
+ 	},
+ 	{
+ 		.cmd = BATADV_CMD_GET_ROUTING_ALGOS,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.dumpit = batadv_algo_dump,
+ 	},
+ 	{
+@@ -1397,68 +1397,68 @@ static const struct genl_small_ops batadv_netlink_ops[] = {
+ 	{
+ 		.cmd = BATADV_CMD_GET_TRANSTABLE_LOCAL,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.dumpit = batadv_tt_local_dump,
+ 	},
+ 	{
+ 		.cmd = BATADV_CMD_GET_TRANSTABLE_GLOBAL,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.dumpit = batadv_tt_global_dump,
+ 	},
+ 	{
+ 		.cmd = BATADV_CMD_GET_ORIGINATORS,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.dumpit = batadv_orig_dump,
+ 	},
+ 	{
+ 		.cmd = BATADV_CMD_GET_NEIGHBORS,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.dumpit = batadv_hardif_neigh_dump,
+ 	},
+ 	{
+ 		.cmd = BATADV_CMD_GET_GATEWAYS,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.dumpit = batadv_gw_dump,
+ 	},
+ 	{
+ 		.cmd = BATADV_CMD_GET_BLA_CLAIM,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.dumpit = batadv_bla_claim_dump,
+ 	},
+ 	{
+ 		.cmd = BATADV_CMD_GET_BLA_BACKBONE,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.dumpit = batadv_bla_backbone_dump,
+ 	},
+ 	{
+ 		.cmd = BATADV_CMD_GET_DAT_CACHE,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.dumpit = batadv_dat_cache_dump,
+ 	},
+ 	{
+ 		.cmd = BATADV_CMD_GET_MCAST_FLAGS,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.dumpit = batadv_mcast_flags_dump,
+ 	},
+ 	{
+ 		.cmd = BATADV_CMD_SET_MESH,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.doit = batadv_netlink_set_mesh,
+ 		.internal_flags = BATADV_FLAG_NEED_MESH,
+ 	},
+ 	{
+ 		.cmd = BATADV_CMD_SET_HARDIF,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.doit = batadv_netlink_set_hardif,
+ 		.internal_flags = BATADV_FLAG_NEED_MESH |
+ 				  BATADV_FLAG_NEED_HARDIF,
+@@ -1474,7 +1474,7 @@ static const struct genl_small_ops batadv_netlink_ops[] = {
+ 	{
+ 		.cmd = BATADV_CMD_SET_VLAN,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+-		.flags = GENL_ADMIN_PERM,
++		.flags = GENL_UNS_ADMIN_PERM,
+ 		.doit = batadv_netlink_set_vlan,
+ 		.internal_flags = BATADV_FLAG_NEED_MESH |
+ 				  BATADV_FLAG_NEED_VLAN,
 -- 
 2.34.1
 
