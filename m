@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCB7F49152B
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:26:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3F054914FA
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:25:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245183AbiARC0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:26:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        id S245739AbiARCZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:25:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245237AbiARCXV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:23:21 -0500
+        with ESMTP id S245356AbiARCXk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:23:40 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28939C061786;
-        Mon, 17 Jan 2022 18:23:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E412C0617AA;
+        Mon, 17 Jan 2022 18:23:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AAD360ABB;
-        Tue, 18 Jan 2022 02:23:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6724C36AF5;
-        Tue, 18 Jan 2022 02:23:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88B9E60E99;
+        Tue, 18 Jan 2022 02:23:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3DA9C36AEB;
+        Tue, 18 Jan 2022 02:23:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472593;
-        bh=y1BrdKWyVxffW81kGbIO98I+Zu2GchAttOjh6y8BlKA=;
+        s=k20201202; t=1642472618;
+        bh=lGJRpRCjDTX1CV5Q8d9zP8u0eeWcNT5bB1+N9cZQVD8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ITS7+JPKDCBJT2zQoNRejnJJns7zEAU5E4jJU4ubrT8zF8PLjUOAbW7NdmlFmnlCo
-         peZPy+9UFlat9Sv/a9CLC8rJTL0kobc7zRCZDN6u6u5Rv8NNQkiT7ymsLmbk9mM7vd
-         AXfVCyXFynXoVbBHfIckqS5ES/wWRqDCjZhUwwbsmpU54Mro6oQ7gZs28paKisYEsQ
-         U0f+htq/cwPq8klQ69WHH7NR5eFmEAJwqcW3nz2aLTBKsSKJ/lkVJOU6h/nY0Cn10e
-         r/IUEeqsPKU4D7wTfwo+KKZ2qVBR0/ySaAOz/BirZq8/+GimQecbyMcF9zAdbXrQvg
-         K5vW69X1lwoKA==
+        b=NKjMZiSkUpw3XHPlqL0KiOD+wMhzf5prFedlFY+o8qnJdmZsD2PgGTezNT8YpCrdL
+         CxzmaM95/iLvy3OFUDApzmjLmumbg4vTBczTDOf9DCeQz+shOR/o4vHR0T46OhTIdF
+         KL/oQiVt9K8wb5X/waVkVVmD64XAacU2lppp6/sUXvXg9/RdIeaHISbzphVSE2YNKV
+         /H4o7PZ73CVp1/lq760eXiWppiRi+hEpkH872WcwNe9H7zSkK/IYJD/IPwlQjg7Ms5
+         H1GWwm940eDM1uoP/bjZrtLFK2JwIFiMAsjsiWFfoDXhc8HwXcJH40o4yNUFleTTq3
+         +5gT92+Mp+gWw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Danielle Ratson <danieller@nvidia.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 063/217] mlxsw: pci: Add shutdown method in PCI driver
-Date:   Mon, 17 Jan 2022 21:17:06 -0500
-Message-Id: <20220118021940.1942199-63-sashal@kernel.org>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 074/217] rtw89: fix potentially access out of range of RF register array
+Date:   Mon, 17 Jan 2022 21:17:17 -0500
+Message-Id: <20220118021940.1942199-74-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -53,94 +53,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Danielle Ratson <danieller@nvidia.com>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit c1020d3cf4752f61a6a413f632ea2ce2370e150d ]
+[ Upstream commit 30101812a09b37bc8aa409a83f603d4c072198f2 ]
 
-On an arm64 platform with the Spectrum ASIC, after loading and executing
-a new kernel via kexec, the following trace [1] is observed. This seems
-to be caused by the fact that the device is not properly shutdown before
-executing the new kernel.
+The RF register array is used to help firmware to restore RF settings.
+The original code can potentially access out of range, if the size is
+between (RTW89_H2C_RF_PAGE_SIZE * RTW89_H2C_RF_PAGE_NUM + 1) to
+((RTW89_H2C_RF_PAGE_SIZE + 1) * RTW89_H2C_RF_PAGE_NUM). Fortunately,
+current used size doesn't fall into the wrong case, and the size will not
+change if we don't update RF parameter.
 
-Fix this by implementing a shutdown method which mirrors the remove
-method, as recommended by the kexec maintainer [2][3].
-
-[1]
-BUG: Bad page state in process devlink pfn:22f73d
-page:fffffe00089dcf40 refcount:-1 mapcount:0 mapping:0000000000000000 index:0x0
-flags: 0x2ffff00000000000()
-raw: 2ffff00000000000 0000000000000000 ffffffff089d0201 0000000000000000
-raw: 0000000000000000 0000000000000000 ffffffffffffffff 0000000000000000
-page dumped because: nonzero _refcount
-Modules linked in:
-CPU: 1 PID: 16346 Comm: devlink Tainted: G B 5.8.0-rc6-custom-273020-gac6b365b1bf5 #44
-Hardware name: Marvell Armada 7040 TX4810M (DT)
-Call trace:
- dump_backtrace+0x0/0x1d0
- show_stack+0x1c/0x28
- dump_stack+0xbc/0x118
- bad_page+0xcc/0xf8
- check_free_page_bad+0x80/0x88
- __free_pages_ok+0x3f8/0x418
- __free_pages+0x38/0x60
- kmem_freepages+0x200/0x2a8
- slab_destroy+0x28/0x68
- slabs_destroy+0x60/0x90
- ___cache_free+0x1b4/0x358
- kfree+0xc0/0x1d0
- skb_free_head+0x2c/0x38
- skb_release_data+0x110/0x1a0
- skb_release_all+0x2c/0x38
- consume_skb+0x38/0x130
- __dev_kfree_skb_any+0x44/0x50
- mlxsw_pci_rdq_fini+0x8c/0xb0
- mlxsw_pci_queue_fini.isra.0+0x28/0x58
- mlxsw_pci_queue_group_fini+0x58/0x88
- mlxsw_pci_aqs_fini+0x2c/0x60
- mlxsw_pci_fini+0x34/0x50
- mlxsw_core_bus_device_unregister+0x104/0x1d0
- mlxsw_devlink_core_bus_device_reload_down+0x2c/0x48
- devlink_reload+0x44/0x158
- devlink_nl_cmd_reload+0x270/0x290
- genl_rcv_msg+0x188/0x2f0
- netlink_rcv_skb+0x5c/0x118
- genl_rcv+0x3c/0x50
- netlink_unicast+0x1bc/0x278
- netlink_sendmsg+0x194/0x390
- __sys_sendto+0xe0/0x158
- __arm64_sys_sendto+0x2c/0x38
- el0_svc_common.constprop.0+0x70/0x168
- do_el0_svc+0x28/0x88
- el0_sync_handler+0x88/0x190
- el0_sync+0x140/0x180
-
-[2]
-https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1195432.html
-
-[3]
-https://patchwork.kernel.org/project/linux-scsi/patch/20170212214920.28866-1-anton@ozlabs.org/#20116693
-
-Cc: Eric Biederman <ebiederm@xmission.com>
-Signed-off-by: Danielle Ratson <danieller@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211119055729.12826-1-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/pci.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/realtek/rtw89/phy.c | 33 ++++++++++++++----------
+ 1 file changed, 19 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index a15c95a10bae4..cd3331a077bbf 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -1973,6 +1973,7 @@ int mlxsw_pci_driver_register(struct pci_driver *pci_driver)
+diff --git a/drivers/net/wireless/realtek/rtw89/phy.c b/drivers/net/wireless/realtek/rtw89/phy.c
+index ab134856baac7..d75e9de8df7c6 100644
+--- a/drivers/net/wireless/realtek/rtw89/phy.c
++++ b/drivers/net/wireless/realtek/rtw89/phy.c
+@@ -654,6 +654,12 @@ rtw89_phy_cofig_rf_reg_store(struct rtw89_dev *rtwdev,
+ 	u16 idx = info->curr_idx % RTW89_H2C_RF_PAGE_SIZE;
+ 	u8 page = info->curr_idx / RTW89_H2C_RF_PAGE_SIZE;
+ 
++	if (page >= RTW89_H2C_RF_PAGE_NUM) {
++		rtw89_warn(rtwdev, "RF parameters exceed size. path=%d, idx=%d",
++			   rf_path, info->curr_idx);
++		return;
++	}
++
+ 	info->rtw89_phy_config_rf_h2c[page][idx] =
+ 		cpu_to_le32((reg->addr << 20) | reg->data);
+ 	info->curr_idx++;
+@@ -662,30 +668,29 @@ rtw89_phy_cofig_rf_reg_store(struct rtw89_dev *rtwdev,
+ static int rtw89_phy_config_rf_reg_fw(struct rtw89_dev *rtwdev,
+ 				      struct rtw89_fw_h2c_rf_reg_info *info)
  {
- 	pci_driver->probe = mlxsw_pci_probe;
- 	pci_driver->remove = mlxsw_pci_remove;
-+	pci_driver->shutdown = mlxsw_pci_remove;
- 	return pci_register_driver(pci_driver);
+-	u16 page = info->curr_idx / RTW89_H2C_RF_PAGE_SIZE;
+-	u16 len = (info->curr_idx % RTW89_H2C_RF_PAGE_SIZE) * 4;
++	u16 remain = info->curr_idx;
++	u16 len = 0;
+ 	u8 i;
+ 	int ret = 0;
+ 
+-	if (page > RTW89_H2C_RF_PAGE_NUM) {
++	if (remain > RTW89_H2C_RF_PAGE_NUM * RTW89_H2C_RF_PAGE_SIZE) {
+ 		rtw89_warn(rtwdev,
+-			   "rf reg h2c total page num %d larger than %d (RTW89_H2C_RF_PAGE_NUM)\n",
+-			   page, RTW89_H2C_RF_PAGE_NUM);
+-		return -EINVAL;
++			   "rf reg h2c total len %d larger than %d\n",
++			   remain, RTW89_H2C_RF_PAGE_NUM * RTW89_H2C_RF_PAGE_SIZE);
++		ret = -EINVAL;
++		goto out;
+ 	}
+ 
+-	for (i = 0; i < page; i++) {
+-		ret = rtw89_fw_h2c_rf_reg(rtwdev, info,
+-					  RTW89_H2C_RF_PAGE_SIZE * 4, i);
++	for (i = 0; i < RTW89_H2C_RF_PAGE_NUM && remain; i++, remain -= len) {
++		len = remain > RTW89_H2C_RF_PAGE_SIZE ? RTW89_H2C_RF_PAGE_SIZE : remain;
++		ret = rtw89_fw_h2c_rf_reg(rtwdev, info, len * 4, i);
+ 		if (ret)
+-			return ret;
++			goto out;
+ 	}
+-	ret = rtw89_fw_h2c_rf_reg(rtwdev, info, len, i);
+-	if (ret)
+-		return ret;
++out:
+ 	info->curr_idx = 0;
+ 
+-	return 0;
++	return ret;
  }
- EXPORT_SYMBOL(mlxsw_pci_driver_register);
+ 
+ static void rtw89_phy_config_rf_reg(struct rtw89_dev *rtwdev,
 -- 
 2.34.1
 
