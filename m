@@ -2,162 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A0754925D4
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 13:41:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55DBE4925EF
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 13:45:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235066AbiARMlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 07:41:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234111AbiARMlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 07:41:07 -0500
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0B2C061574;
-        Tue, 18 Jan 2022 04:41:07 -0800 (PST)
-Received: by mail-qk1-x732.google.com with SMTP id a21so8011212qkn.0;
-        Tue, 18 Jan 2022 04:41:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aTab+jiF9JQUXlYtyRf6lOH1unQ6BdWfkpXxrhfccsg=;
-        b=ZZ2u0eGtx7FdFPCguOedcfsxwA/XpXnDtj3SPvzlfVHtndhQqLVstpuluFoJGcFWgn
-         dw4k8OHceOdWT+KerVi2A/l1jmi0s+9w8B0sfIOmuB7qVshLHpjP5C9Pq8+JyqXpO5Qh
-         SDun3PUBAVV4t1TNVrgRGnzJIGH76f+acAl8az6+I8ZKaAqW5GG1FVOyWRfsO1MAL3kG
-         ZQ9As5QwGBXk5OdZMhYrDb+1nNhnjAj2QL+wVTcKS/ah16rK1viF4bgbGu1BvSyl+7S9
-         m6mfB0q8DSJaeouCog1nAReM1h8JciOU47lwpualO3unxceYLbLrMzwCA4Shc0Ff/kDz
-         sOzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aTab+jiF9JQUXlYtyRf6lOH1unQ6BdWfkpXxrhfccsg=;
-        b=SM3ikcsmwaMGDUfQ06JOpjtGVe0V/SBxHbugYJvBbYwyaJRWcquU3hQRrsn3LBTu7L
-         d0Wqat7wFtwExP8Qr09KEMsZYO/js7gwJXPm/QOuhzI6vASX38A0qwWxxjCBoettmgcl
-         6KfQVgGZuvZjcD4Od+oS0AmzRHVkc0ciSEJQ76XzlwpoRKwUO2l9Tggw0h8DxtTTkWgK
-         yvhJOQHWpoZkhLN2d4RSOKQNIyJ5jAk3feiuFVujCIVsMx6urjQFNVG9cvSXkZvgicnx
-         XTUTIt87FuM1EV3lFU0wnuM8DS9mm60KYJ6G0JP3scfBie1sk2dJ64aTs/dq+yjwvizg
-         RI1A==
-X-Gm-Message-State: AOAM532+3u//K80qJ5g5wdHfCqHkS8eXGJYS/eWsqQ8SDFOTUoyOi5Nz
-        XasYwT1RPdYSHGTd0wbrtmM=
-X-Google-Smtp-Source: ABdhPJy++U5VH5STgYpoQJOwqGjdqIs/SsFw7B2OwDvzHU2g83Zm2MdVWULY2wv41UhffR87JX5HOg==
-X-Received: by 2002:ae9:dc07:: with SMTP id q7mr11457411qkf.63.1642509666215;
-        Tue, 18 Jan 2022 04:41:06 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id o6sm9801510qtk.50.2022.01.18.04.41.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 04:41:05 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: xu.xin16@zte.com.cn
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, yoshfuji@linux-ipv6.org, edumazet@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xu xin <xu.xin16@zte.com.cn>, CGEL ZTE <cgel.zte@gmail.com>
-Subject: [PATCH] ipv4: Namespaceify min_adv_mss sysctl knob
-Date:   Tue, 18 Jan 2022 12:40:55 +0000
-Message-Id: <20220118124055.927605-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        id S238097AbiARMpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 07:45:04 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:25204 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237803AbiARMpA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 07:45:00 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-230-d_QmobujNXmDT8znvK2f3A-1; Tue, 18 Jan 2022 12:44:58 +0000
+X-MC-Unique: d_QmobujNXmDT8znvK2f3A-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Tue, 18 Jan 2022 12:44:57 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Tue, 18 Jan 2022 12:44:57 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Jason A. Donenfeld'" <Jason@zx2c4.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+CC:     "geert@linux-m68k.org" <geert@linux-m68k.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "wireguard@lists.zx2c4.com" <wireguard@lists.zx2c4.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "tytso@mit.edu" <tytso@mit.edu>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jeanphilippe.aumasson@gmail.com" <jeanphilippe.aumasson@gmail.com>,
+        "ardb@kernel.org" <ardb@kernel.org>
+Subject: RE: [PATCH crypto v3 0/2] reduce code size from blake2s on m68k and
+ other small platforms
+Thread-Topic: [PATCH crypto v3 0/2] reduce code size from blake2s on m68k and
+ other small platforms
+Thread-Index: AQHYDGCZ1hhaA5g8jUud5pQLYuQbPqxotdeQ
+Date:   Tue, 18 Jan 2022 12:44:57 +0000
+Message-ID: <ad862f5ad048404ab452e25bba074824@AcuMS.aculab.com>
+References: <CAHmME9rxdksVZkN4DF_GabsEPrSDrKbo1cVQs77B_s-e2jZ64A@mail.gmail.com>
+ <YeZhVGczxcBl0sI9@gondor.apana.org.au>
+ <CAHmME9ogAW0o2PReNtsD+fFgwp28q2kP7WADtbd8kA7GsnKBpg@mail.gmail.com>
+In-Reply-To: <CAHmME9ogAW0o2PReNtsD+fFgwp28q2kP7WADtbd8kA7GsnKBpg@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: xu xin <xu.xin16@zte.com.cn>
-
-Different netns have different requirement on the setting of min_adv_mss
-sysctl that the advertised MSS will be never lower than. The sysctl
-min_adv_mss can indirectly affects the segmentation efficiency of TCP.
-
-So enable min_adv_mss to be visible and configurable inside the netns.
-
-Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
-Signed-off-by: xu xin <xu.xin16@zte.com.cn>
----
- include/net/netns/ipv4.h |  1 +
- net/ipv4/route.c         | 21 +++++++++++----------
- 2 files changed, 12 insertions(+), 10 deletions(-)
-
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 7855764..8fea3cb 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -87,6 +87,7 @@ struct netns_ipv4 {
- 
- 	u32 ip_rt_min_pmtu;
- 	int ip_rt_mtu_expires;
-+	int ip_rt_min_advmss;
- 
- 	struct local_ports ip_local_ports;
- 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index ff6f91c..e42e283 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -112,14 +112,13 @@
- 
- #define DEFAULT_MIN_PMTU (512 + 20 + 20)
- #define DEFAULT_MTU_EXPIRES (10 * 60 * HZ)
--
-+#define DEFAULT_MIN_ADVMSS 256
- static int ip_rt_max_size;
- static int ip_rt_redirect_number __read_mostly	= 9;
- static int ip_rt_redirect_load __read_mostly	= HZ / 50;
- static int ip_rt_redirect_silence __read_mostly	= ((HZ / 50) << (9 + 1));
- static int ip_rt_error_cost __read_mostly	= HZ;
- static int ip_rt_error_burst __read_mostly	= 5 * HZ;
--static int ip_rt_min_advmss __read_mostly	= 256;
- 
- static int ip_rt_gc_timeout __read_mostly	= RT_GC_TIMEOUT;
- 
-@@ -1298,9 +1297,10 @@ static void set_class_tag(struct rtable *rt, u32 tag)
- 
- static unsigned int ipv4_default_advmss(const struct dst_entry *dst)
- {
-+	struct net *net = dev_net(dst->dev);
- 	unsigned int header_size = sizeof(struct tcphdr) + sizeof(struct iphdr);
- 	unsigned int advmss = max_t(unsigned int, ipv4_mtu(dst) - header_size,
--				    ip_rt_min_advmss);
-+				    net->ipv4.ip_rt_min_advmss);
- 
- 	return min(advmss, IPV4_MAX_PMTU - header_size);
- }
-@@ -3535,13 +3535,6 @@ static struct ctl_table ipv4_route_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
- 	},
--	{
--		.procname	= "min_adv_mss",
--		.data		= &ip_rt_min_advmss,
--		.maxlen		= sizeof(int),
--		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
--	},
- 	{ }
- };
- 
-@@ -3569,6 +3562,13 @@ static struct ctl_table ipv4_route_netns_table[] = {
- 		.mode           = 0644,
- 		.proc_handler   = proc_dointvec_jiffies,
- 	},
-+	{
-+		.procname   = "min_adv_mss",
-+		.data       = &init_net.ipv4.ip_rt_min_advmss,
-+		.maxlen     = sizeof(int),
-+		.mode       = 0644,
-+		.proc_handler   = proc_dointvec,
-+	},
- 	{ },
- };
- 
-@@ -3631,6 +3631,7 @@ static __net_init int netns_ip_rt_init(struct net *net)
- 	/* Set default value for namespaceified sysctls */
- 	net->ipv4.ip_rt_min_pmtu = DEFAULT_MIN_PMTU;
- 	net->ipv4.ip_rt_mtu_expires = DEFAULT_MTU_EXPIRES;
-+	net->ipv4.ip_rt_min_advmss = DEFAULT_MIN_ADVMSS;
- 	return 0;
- }
- 
--- 
-2.15.2
+RnJvbTogSmFzb24gQS4gRG9uZW5mZWxkDQo+IFNlbnQ6IDE4IEphbnVhcnkgMjAyMiAxMTo0Mw0K
+PiANCj4gT24gMS8xOC8yMiwgSGVyYmVydCBYdSA8aGVyYmVydEBnb25kb3IuYXBhbmEub3JnLmF1
+PiB3cm90ZToNCj4gPiBBcyB0aGUgcGF0Y2hlcyB0aGF0IHRyaWdnZXJlZCB0aGlzIHdlcmVuJ3Qg
+cGFydCBvZiB0aGUgY3J5cHRvDQo+ID4gdHJlZSwgdGhpcyB3aWxsIGhhdmUgdG8gZ28gdGhyb3Vn
+aCB0aGUgcmFuZG9tIHRyZWUgaWYgeW91IHdhbnQNCj4gPiB0aGVtIGZvciA1LjE3Lg0KPiANCj4g
+U3VyZSwgd2lsbCBkby4NCg0KSSd2ZSByYW1tZWQgdGhlIGNvZGUgdGhyb3VnaCBnb2Rib2x0Li4u
+IGh0dHBzOi8vZ29kYm9sdC5vcmcvei9XdjY0ejl6RzgNCg0KU29tZSB0aGluZ3MgSSd2ZSBub3Rp
+Y2VkOw0KDQoxKSBUaGVyZSBpcyBubyBwb2ludCBoYXZpbmcgYWxsIHRoZSBpbmxpbmUgZnVuY3Rp
+b25zLg0KICAgRmFyIGJldHRlciB0byBoYXZlIHJlYWwgZnVuY3Rpb25zIHRvIGRvIHRoZSB3b3Jr
+Lg0KICAgR2l2ZW4gdGhlIGNvc3Qgb2YgaGFzaGluZyA2NCBieXRlcyBvZiBkYXRhIHRoZSBleHRy
+YQ0KICAgZnVuY3Rpb24gY2FsbCB3b24ndCBtYXR0ZXIuDQogICBJbmRlZWQgZm9yIHJlcGVhdGVk
+IGNhbGxzIGl0IHdpbGwgaGVscCBiZWNhdXNlIHRoZSByZXF1aXJlZA0KICAgY29kZSB3aWxsIGJl
+IGluIHRoZSBJLWNhY2hlLg0KDQoyKSBUaGUgY29tcGlsZXMgSSB0cmllZCBkbyBtYW5hZ2UgdG8g
+cmVtb3ZlIHRoZSBibGFrZTJfc2lnbWFbXVtdDQogICB3aGVuIHVucm9sbGluZyBldmVyeXRoaW5n
+IC0gd2hpY2ggaXMgYSBzbGlnaHQgZ2FpbiBmb3IgdGhlIGZ1bGwNCiAgIHVucm9sbC4gQnV0IEkg
+ZG91YnQgaXQgaXMgdGhhdCBzaWduaWZpY2FudCBpZiB0aGUgYWNjZXNzIGNhbg0KICAgZ2V0IHNl
+bnNpYmx5IG9wdGltaXNlZC4NCiAgIEZvciBub24teDg2IHRoYXQgbWlnaHQgcmVxdWlyZSBhbGwg
+dGhlIHZhbHVlcyBieSBtdWx0aXBsaWVkIGJ5IDQuDQoNCjMpIEFsdGhvdWdoIEcoKSBpcyBhIG1h
+c3NpdmUgcmVnaXN0ZXIgZGVwZW5kZW5jeSBjaGFpbiB0aGUgY29tcGlsZXINCiAgIGtub3dzIHRo
+YXQgRygsWzAtM10sKSBhcmUgaW5kZXBlbmRlbnQgYW5kIGNhbiBleGVjdXRlIGluIHBhcmFsbGVs
+Lg0KICAgVGhpcyBkb2VzIGhlbHAgZXhlY3V0aW9uIHRpbWUgb24gbXVsdGktaXNzdWUgY3B1IChs
+aWtlIHg4NikuDQogICBXaXRoIGNhcmUgaXQgb3VnaHQgdG8gYmUgcG9zc2libGUgdG8gdXNlIHRo
+ZSBzYW1lIGNvZGUgZm9yIEcoLFs0LTddLCkNCiAgIHdpdGhvdXQgc3RvcHBpbmcgdGhlIGNvbXBp
+bGVyIGludGVybGVhdmluZyBhbGwgdGhlIGluc3RydWN0aW9ucy4NCg0KNCkgSSBzdHJvbmdseSBz
+dXNwZWN0IHRoYXQgdXNpbmcgYSBsb29wIGZvciB0aGUgcm91bmRzIHdpbGwgaGF2ZQ0KICAgbWlu
+aW1hbCBpbXBhY3Qgb24gcGVyZm9ybWFuY2UgLSBlc3BlY2lhbGx5IGlmIHRoZSBmaXJzdCBjYWxs
+IGlzDQogICAnY29sZCBjYWNoZScuDQogICBCdXQgSSd2ZSBub3QgZ290IHRpbWUgdG8gdGVzdCB0
+aGUgY29kZS4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJh
+bWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0
+cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
