@@ -2,74 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65E684926E2
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 14:15:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 990854926E5
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 14:16:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235946AbiARNPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 08:15:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39504 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233696AbiARNPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 08:15:23 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA523C061574
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 05:15:23 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id n16-20020a17090a091000b001b46196d572so2749219pjn.5
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 05:15:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=3iGvvQG5DF7LlRE1vQBsiH//gVw9y5HtfofXpFVUB5A=;
-        b=qFB6Ytmvmi4f8yL3Gax0Ttfzw7G7ayF25sdfrbHDuuVcc5GzX+DHH9NfAxk9xhw1Zk
-         p19YMRlZ7Lpn6k+tcCdaDHyPFfOjUzSNv/2fCb3Q2ZeFd2tvmEsBelrKw3QS9Qbca8hj
-         lOEJ4EAlyv27LJoGYfo8J00EApIDyhZItN8YmoJt+ZASvKvZygeOW21sG6wNmAmfUKnw
-         nxkmR5tME5sdS2DPSvy07TQZKvHkel8Ryz87u+NnzTAXaBic7XIDMrMdWrDpn/UYqUkK
-         TqCzhp2jnVNlhpiANLd2H83Qz6CQyFHLXGLvjBK8TQEPeqEYCXqI0k3kY8ApIpvgTRqT
-         6M5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=3iGvvQG5DF7LlRE1vQBsiH//gVw9y5HtfofXpFVUB5A=;
-        b=3uRX+EpYUm34s7dmD/956ijL0+RzkrdyGCZXeS9pw4cI+EBvK44Ca1PGJB42Z5K96h
-         N6uFCGj8vqB3JsyTmP6U2QigtqtZVK8DGmLI86KgW8+uhpAVeNHI+5LDKbbykohRBbHv
-         vq/JdNHUxcpxrJBXkzoiFjdA1Ldl8cgzlHKoq1H5PUUF7xMoYd9Jzu9Aw4ooDtMN9q3q
-         T7/sJv0EdwyQX3+9TQ/dssKRMH5bMjhrAHkFVVKVeE/GAfuksVnOeNduYb6ElPsGcdJK
-         6cEaOH/r5FG8nVwGLkrbMb/WFjAMLfU9EEya3iHwf0xPYMbiN4lyVrKgLVFVKGDvyPu7
-         KHzQ==
-X-Gm-Message-State: AOAM532ItYdDXMzWM0y4QV727VSrYsse3NU58hJFZTXjsJOretgnPNXC
-        PlrqnrP50sNyWF/z9Wfgv8PKsN8+YWJn4S4ixH0=
-X-Google-Smtp-Source: ABdhPJykAz5xmpzlfnJqa+sO1VT9bWfrUlLslo/NmKyWUyRgbl5S+ITrR98xryeFe2hC7b42e3sn6NFSjYh+hO+YvM0=
-X-Received: by 2002:a17:90b:1b50:: with SMTP id nv16mr18554169pjb.93.1642511723395;
- Tue, 18 Jan 2022 05:15:23 -0800 (PST)
+        id S238974AbiARNQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 08:16:22 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43046 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236141AbiARNQV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jan 2022 08:16:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=5uKSg1jbSZCAY3NiK22LI67jIWWN8OnNGPK10udHGpA=; b=haErt7NNRU791rmaOnnJH50v/W
+        k++PzDKUizEjqvLHKpaQd2Um86AUegdsCCRAxz7SIswSNjzI8Tm0952GkGbqCJY0voD9i44DeFMld
+        zm+/jxtRinsmlO4cluxfn48cpRZ0x42daCMiHlHeTTvZn/77i6csEUvFXSwEyXH/SYB0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n9oLR-001ls0-G2; Tue, 18 Jan 2022 14:16:17 +0100
+Date:   Tue, 18 Jan 2022 14:16:17 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Subject: Re: [PATCH net-next v4 05/11] net: dsa: realtek: use phy_read in
+ ds->ops
+Message-ID: <Yea9oR0AteAMwjW2@lunn.ch>
+References: <20220105031515.29276-1-luizluca@gmail.com>
+ <20220105031515.29276-6-luizluca@gmail.com>
+ <79a9c7c2-9bd0-d5d1-6d5a-d505cdc564be@gmail.com>
+ <CAJq09z4U5qmBuPUqBnGpT+qcG-vmtFwNMg5Uau3q3F53W-0YDA@mail.gmail.com>
 MIME-Version: 1.0
-Sender: rhodamohammed2019@gmail.com
-Received: by 2002:a05:6a11:69e:0:0:0:0 with HTTP; Tue, 18 Jan 2022 05:15:23
- -0800 (PST)
-From:   Halima Jammeh <halimamusajammeh2019@gmail.com>
-Date:   Tue, 18 Jan 2022 14:15:23 +0100
-X-Google-Sender-Auth: 8zF7yoQYMOtpTr90y-Xm1h5s8XA
-Message-ID: <CALRczm1Xp0e9QdrAhG01Cn4UPF=AtPsT3kkOH3kT+2AUhvNREw@mail.gmail.com>
-Subject: Miss.Halima Musa Jammeh / I NEED YOUR HELP
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJq09z4U5qmBuPUqBnGpT+qcG-vmtFwNMg5Uau3q3F53W-0YDA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Miss.Halima Musa Jammeh / Urgent Help Please reply me to my private
-email: ( halimaj908@gmail.com .) or full details ok, Dear Respected
-One,I am Miss Halima Musa Jammeh 20 years old  from the Republic of
-Gambia, the Daughter of Latea Major Musa Jammeh. My late respected
-beloved  father was the Principal Protection Officer to President
-Alhaji Dr. Yahya Abdul-Azziz.he died on the 19 Nov 2007 at the Royal
-Victoria Teaching Hospital following an illness at Sukuta Village,
-Kombo North Gambia,My late Father Depositeda big amount of money in
-one of the Global Finance Security Company on my name as the next of
-kin, I am looking for a serious Investor who is honest and trustworthy
-who will assist me Invest the money in your country, asyou know that I
-am small Girl and I don't know anything about investment, if you agree
-to help me I will introduce you to the Director of the Security
-Company as my late Father foreig Business partner, I will give you
-full details as soon as you get back to me to my  private email(
-halimaj908@gmail.com. )  Your Miss.Halima Jammeh
+> Thanks, Florian. You should be correct. It might call
+> mdiobus_unregister() and mdiobus_free() twice, once inside the dsa
+> code and another one by the devm (if I understood how devm functions
+> work).
+> 
+> The issue is that the dsa switch is assuming that if slave_mii is
+> allocated and ds->ops->phy_read is defined, it has allocated the
+> slave_mii by itself and it should clean up the slave_mii during
+> teardown.
+
+Correct. Either the DSA core takes care of the mdiobus and uses the
+phy_read and phy_write ops, or the driver internally registers its own
+mdiobus, and phy_read and phy_write ops are not implemented. The core
+is not designed to mix those together.
+
+> if ds->ops->phy_read value should not tell if ds->slave_mii_bus should
+> be cleaned by the DSA switch.
+> 
+> I would selfishly hope the correct one was the second option because
+> it would make my code much cleaner. If not, that's a complex issue to
+> solve without lots of duplications: realtek-smi drivers should not
+> have ds->ops->phy_read defined while realtek-mdio requires it. I'll
+> need to duplicate dsa_switch_ops for each subdriver only to unset
+> phy_read and also duplicate realtek_variant for each interface only to
+> reference that different dsa_switch_ops.
+
+One option would be to provide a dummy mdiobus driver for
+realtek-mdio, which simply passes the access through to the existing
+MDIO bus.
+
+     Andrew
