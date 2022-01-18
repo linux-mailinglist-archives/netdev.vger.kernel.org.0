@@ -2,81 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDA5249317A
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 00:54:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38FFC49317B
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 00:55:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349504AbiARXyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 18:54:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344932AbiARXx6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 18:53:58 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4198FC061574;
-        Tue, 18 Jan 2022 15:53:58 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id g2so656894pgo.9;
-        Tue, 18 Jan 2022 15:53:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2VYJaO2f2+oyJmGbk1m7upZoK/g8R4QgH1WZUP2CD74=;
-        b=Lu9xfHkDMBBStlM53OHLPoTJaTj+sWOHJNCoaJsgr4muaooeAbpP2Cw9iOUP00muTv
-         FHXc1qyyMuDcT7MkAJbZCuJX8/+dM7z6v4PZJdy1Xm6PfQUI1shqQC66uSNdiyAgn2vc
-         G2J2l4DD1djIaTHZlUFhal8FGZ6WYXC8hfLYcqEo2OxCqp/2qEZkncKf1Xkk05IqDuQC
-         +mDKU1AQvqar0mbJHhiUm2aHA0S1gEe8/3CYznM8yXpMVQguuKY0BFBYX5Cr6hf5/0Qb
-         Di0eqhxJL+DsySrqTSdCUk2q5ZfwGYJq8ogxq8+llo6D3QKtgxx0QPa3lTq6GGMkQp6r
-         jx7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2VYJaO2f2+oyJmGbk1m7upZoK/g8R4QgH1WZUP2CD74=;
-        b=PTOlIIPUKntr5qJIirWE3AjINLCf2FcbBX77vXIQDCrsKh26Drhd9I2mO7VpBYQcrM
-         vU32o9VZf1CDclJTF/Yt3mYqmH7cy9OHcatPMdkvTCY5l6Ak/PRigiXT03PxdcVKclm2
-         BKy+jatLirKlKVSX06uHmmuDePa+Oo+vokCuAegDf72ILvL3GNae9DlymtwMdH8LkNUT
-         McsTkRo/e2wWU6ljJsHOFTy2z6W5Qqo3aqSamVTwVGQ6DOXTGeZBsdxo/7xQ7DAYx15s
-         cjXUvXapn64hz5TbVYHXRi/AqInmgp69OzbYpqqEJS9RYM0ogYdL82nqmHm7FyWdT3XW
-         4uxw==
-X-Gm-Message-State: AOAM53066PdrmyGWXC9+tPorP2+Y72Mvvkxv9HNOvsNLhi3dPjkkQJzg
-        nDE+wfVM8x7mAtMabmuZMxrQM3kskTMkZlD9++I=
-X-Google-Smtp-Source: ABdhPJyIODfFujZGkv17/eb0qpafbNipM/F80U5IYRCxISAh9UP//MFXbMpFkUDA1n4ehozEkd0YQ8qSVWRWG+VZmVk=
-X-Received: by 2002:a62:6342:0:b0:4bc:c4f1:2abf with SMTP id
- x63-20020a626342000000b004bcc4f12abfmr28163781pfb.77.1642550037743; Tue, 18
- Jan 2022 15:53:57 -0800 (PST)
+        id S1346669AbiARXyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 18:54:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41670 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238268AbiARXyo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 18:54:44 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F14C5B81859
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 23:54:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85AC3C340E0;
+        Tue, 18 Jan 2022 23:54:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642550081;
+        bh=zfL3nb3Ett+dOrnFsJZ4YJk63pWkOCTfN1fozbhmoBI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NrmB7t5HIS0UzE6aC8RNW7fOiaNZKDvPvKEh73H3jSfmJLcIX77rp8Cbb9hejJLs8
+         /eMczSPv4Sd1R/D1+DFE6yP2ZbMP3vEynpMv4tfZLgIKA3xOrq13VzZEFIbqUelFuF
+         iNzCKMjkWkvAzLVRfNdjQ8fsNsvhpizHfm5O/Yxe+OUhua+UNfoyGfYUA4dkOF7Hnt
+         mmHcStCaduSn+HnDt6y7tEK0GYUQ6p5ymTkKRxlya01zV0jvBh98aJo/qFhp/hRdpH
+         AgRS+7FdItsdg5LSDl7/+dwKIB5Onynqmmw1RT7EhXfmUCILAocV+vCEx5SkdQVgFD
+         qs5KQdvTV85pA==
+Date:   Tue, 18 Jan 2022 15:54:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, michel@fb.com,
+        dcavalca@fb.com
+Subject: Re: ethtool 5.16 release / ethtool -m bug fix
+Message-ID: <20220118155439.6ef83f2a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220118231423.aa66a42vso3hvobp@lion.mk-sys.cz>
+References: <20220118145159.631fd6ed@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <20220118231423.aa66a42vso3hvobp@lion.mk-sys.cz>
 MIME-Version: 1.0
-References: <20220113002849.4384-1-kuniyu@amazon.co.jp>
-In-Reply-To: <20220113002849.4384-1-kuniyu@amazon.co.jp>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 18 Jan 2022 15:53:46 -0800
-Message-ID: <CAADnVQLf+HCOTyK3=ur34Lb1GWKAvbgDvvC4AGAYBGvF=BL+BQ@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 0/5] bpf: Batching iter for AF_UNIX sockets.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 4:29 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
->
-> Last year the commit afd20b9290e1 ("af_unix: Replace the big lock with
-> small locks.") landed on bpf-next.  Now we can use a batching algorithm
-> for AF_UNIX bpf iter as TCP bpf iter.
->
->
-> Changelog:
-> - Add the 1st patch.
-> - Call unix_get_first() in .start()/.next() to always acquire a lock in
->   each iteration in the 2nd patch.
+On Wed, 19 Jan 2022 00:14:23 +0100 Michal Kubecek wrote:
+> On Tue, Jan 18, 2022 at 02:51:59PM -0800, Jakub Kicinski wrote:
+> > Hi Michal!
+> > 
+> > Sorry to hasten but I'm wondering if there is a plan to cut the 5.16
+> > ethtool release? Looks like there is a problem in SFP EEPROM parsing
+> > code, at least with QSFP28s, user space always requests page 3 now.
+> > This ends in an -EINVAL (at least for drivers not supporting the paged
+> > mode).
+> > 
+> > By the looks of it - Ido fixed this in 6e2b32a0d0ea ("sff-8636: Request
+> > specific pages for parsing in netlink path") but it may be too much code 
+> > to backport so I'm thinking it's easiest for distros to move to v5.16.  
+> 
+> Accidentally, I'm working on it right now. I need to run few more tests,
+> should be done in 20-30 minutes (if there are no complications).
 
-Applied. Thanks
+Perfect! That's lucky or unlucky depending on how you look at it :)
+
+I see the tag already, thanks!
