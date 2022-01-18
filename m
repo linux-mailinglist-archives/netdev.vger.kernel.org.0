@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEAA949163B
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:33:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B3924915D9
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:32:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345857AbiARCcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:32:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58664 "EHLO
+        id S1345828AbiARCcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:32:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344077AbiARC2w (ORCPT
+        with ESMTP id S1344079AbiARC2w (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:28:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C0B3C0612AB;
-        Mon, 17 Jan 2022 18:26:00 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC63C0612AD;
+        Mon, 17 Jan 2022 18:26:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F0D3B81250;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2E0F60AE3;
+        Tue, 18 Jan 2022 02:26:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9579C36AEB;
         Tue, 18 Jan 2022 02:26:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACFF0C36AF2;
-        Tue, 18 Jan 2022 02:25:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472758;
-        bh=eFTZK+BDoNPOY/zrtFGms/hGWY8oU/F68SCn7MXvx3c=;
+        s=k20201202; t=1642472762;
+        bh=v4GfyUoxO/3i7wg7IBAZoBsHea3YJJ73B4jQ4QK/cWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kzR1MQvllkGvyp2CVrHCp+esmExNidVv91PN9wORziV67p9UoBxjB1CM3WDYt1d6O
-         No7sd422mc+7A/d2ThUwwWp/UZabExsHt2iBn4Rk1tIPKlR46Mx0I9hxalIYRRouw5
-         3OZh3/jBDdCSjikVey6lubJf3n4iGRnnzgzfnKtb2wW7OJORVC1WGRCrcx5Zebh/wU
-         jJ4nuc2y1nh+oc7XvKcMJlhFUSarcBwenGzfOx9W6sw2x1R6o4kS9QdjN4GI7isi2H
-         fSYT8rn2bznG/n0ZBxMNqYv1Wa9YI9sV87rgPuBPa7eWm76G8wIQFM/oy6SkGTPB9X
-         ZqKCGCbTS2tmA==
+        b=jmtH46wVrTx+CCCwsFGwTY5DZiIRwqLuCcKTYrTtjkXV/75cfXRQFad7PELcUg5EE
+         AeJWrJ5RXEgdfoFybDwKS3vsSopCObasYvwUxfmFJ743+UqnIJK/8C3wmtJIEs4pHk
+         2xlaJssl0LN5uWQaqR4xhKHda/jcwvSYK1IUYCFD3isRB9pJrer1pcxlbYx36+quXb
+         kLyu4IEtKIH5iQGd/araTzjcNSbJs3nBEAO6C1nES40KzhQKK4GmXkinN/aNpZu7Yc
+         p7cC0Yk1iqGdZa/UyTQ6edZbMDg8M0t5UtcQCydecN0tTs1hQPzTvguEluwu9V12ss
+         8csQ/Eft94XVQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Suresh Kumar <surkumar@redhat.com>,
-        Suresh Kumar <suresh2514@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 127/217] net: bonding: debug: avoid printing debug logs when bond is not notifying peers
-Date:   Mon, 17 Jan 2022 21:18:10 -0500
-Message-Id: <20220118021940.1942199-127-sashal@kernel.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 129/217] bpf: Do not WARN in bpf_warn_invalid_xdp_action()
+Date:   Mon, 17 Jan 2022 21:18:12 -0500
+Message-Id: <20220118021940.1942199-129-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,67 +55,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Suresh Kumar <surkumar@redhat.com>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit fee32de284ac277ba434a2d59f8ce46528ff3946 ]
+[ Upstream commit 2cbad989033bff0256675c38f96f5faab852af4b ]
 
-Currently "bond_should_notify_peers: slave ..." messages are printed whenever
-"bond_should_notify_peers" function is called.
+The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
+any bugged program, and even attaching a correct program to a NIC
+not supporting the given action.
 
-+++
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Received LACPDU on port 1
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Rx Machine: Port=1, Last State=6, Curr State=6
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): partner sync=1
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-...
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Received LACPDU on port 2
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Rx Machine: Port=2, Last State=6, Curr State=6
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): partner sync=1
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-+++
+The resulting splat, beyond polluting the logs, fouls automated tools:
+e.g. a syzkaller reproducers using an XDP program returning an
+unsupported action will never pass validation.
 
-This is confusing and can also clutter up debug logs.
-Print logs only when the peer notification happens.
+Replace the WARN_ONCE with a less intrusive pr_warn_once().
 
-Signed-off-by: Suresh Kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Link: https://lore.kernel.org/bpf/016ceec56e4817ebb2a9e35ce794d5c917df572c.1638189075.git.pabeni@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_main.c | 6 +++---
+ net/core/filter.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index ff8da720a33a7..0ac964359fbfe 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1096,9 +1096,6 @@ static bool bond_should_notify_peers(struct bonding *bond)
- 	slave = rcu_dereference(bond->curr_active_slave);
- 	rcu_read_unlock();
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 6102f093d59a5..04032f64e01bc 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -8185,9 +8185,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
+ {
+ 	const u32 act_max = XDP_REDIRECT;
  
--	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
--		   slave ? slave->dev->name : "NULL");
--
- 	if (!slave || !bond->send_peer_notif ||
- 	    bond->send_peer_notif %
- 	    max(1, bond->params.peer_notif_delay) != 0 ||
-@@ -1106,6 +1103,9 @@ static bool bond_should_notify_peers(struct bonding *bond)
- 	    test_bit(__LINK_STATE_LINKWATCH_PENDING, &slave->dev->state))
- 		return false;
- 
-+	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
-+		   slave ? slave->dev->name : "NULL");
-+
- 	return true;
+-	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
+-		  act > act_max ? "Illegal" : "Driver unsupported",
+-		  act);
++	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
++		     act > act_max ? "Illegal" : "Driver unsupported",
++		     act);
  }
+ EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
  
 -- 
 2.34.1
