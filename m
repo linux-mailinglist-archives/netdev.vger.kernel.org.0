@@ -2,42 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EFA2491652
+	by mail.lfdr.de (Postfix) with ESMTP id 90397491653
 	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 03:33:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345717AbiARCb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jan 2022 21:31:56 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39212 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244979AbiARCZZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:25:25 -0500
+        id S1345730AbiARCb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jan 2022 21:31:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343822AbiARC1S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jan 2022 21:27:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9065AC0617A9;
+        Mon, 17 Jan 2022 18:25:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B893B81247;
-        Tue, 18 Jan 2022 02:25:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA130C36AE3;
-        Tue, 18 Jan 2022 02:25:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23A6C60C95;
+        Tue, 18 Jan 2022 02:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 581A8C36AF3;
+        Tue, 18 Jan 2022 02:25:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472722;
-        bh=sdOOB4UKo5fjVxrk5O+5GVl9Uq6JG4ZrtYrtaSgng6U=;
+        s=k20201202; t=1642472724;
+        bh=oApYUgwpm7sP2/MB1uTCxP0eGg8ajqHEVrPO6uprhBs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gFfOelCrT4nQIYBGyn98lI97BcFpU432QKUXlV+zan+2XA5Dm58hcjqMS+4ItNGJs
-         +Czh5dQMI2fSt1f5+qcVbepymyFFwhJrY5WVFUpFC59vKM1f2ykOJ7NDRfL+A6em+Q
-         doH1WQsncQSFuA7orFQDXzcCHzeZEXTicHbA6FuHcs7iyyCIwhXobvyUkIhPzxzJez
-         GZJ2D8bvGjGHXMOBvUnsVz2BJAnCX5z6cwu6z3VY75A0+Af6DMQHiuAufMArnM5RYY
-         WRTa4zA0DKVBL3VemlJiyJ/GhnR3noRprb/OVtwAtvfXXbY+n0OX4PznRF5s5iZQtC
-         eMe9cLs6R7kVA==
+        b=VtVdCi6gSpop6JYiTTJ1Dvaz5vz1qu0AmcJJkq5YflZ6MrWpll09yBz3aSRRffQSi
+         a9N/evatoJXdch1VykBewuxPj1qejARbkoq6iNa4EP2Y79ft6NChVfPH5b0HAGa/ge
+         PsmUVf9neCbEUtboC6uDeHgZyF3eH0Bxkun77w5+C7AJGzfqiEk18PyYPTtpMrDX2V
+         WqgHxzybbUFlZBOLL8+RYOZyV65lvTg10tmXFNoyiroJotiyWKr7MSLs3LCUtODJYV
+         cWgyN8B1lXoiL+HjMyrkGTXVq2BH1bPt9+LNr/uyXO8TDoKW+146v9DABNto9AidE4
+         4WAnLW8lD4JRA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wen Gong <quic_wgong@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 113/217] ath10k: drop beacon and probe response which leak from other channel
-Date:   Mon, 17 Jan 2022 21:17:56 -0500
-Message-Id: <20220118021940.1942199-113-sashal@kernel.org>
+Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 114/217] net: phy: prefer 1000baseT over 1000baseKX
+Date:   Mon, 17 Jan 2022 21:17:57 -0500
+Message-Id: <20220118021940.1942199-114-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -49,75 +54,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-[ Upstream commit 3bf2537ec2e33310b431b53fd84be8833736c256 ]
+[ Upstream commit f20f94f7f52c4685c81754f489ffcc72186e8bdb ]
 
-When scan request on channel 1, it also receive beacon from other
-channels, and the beacon also indicate to mac80211 and wpa_supplicant,
-and then the bss info appears in radio measurement report of radio
-measurement sent from wpa_supplicant, thus lead RRM case fail.
+The PHY settings table is supposed to be sorted by descending match
+priority - in other words, earlier entries are preferred over later
+entries.
 
-This is to drop the beacon and probe response which is not the same
-channel of scanning.
+The order of 1000baseKX/Full and 1000baseT/Full is such that we
+prefer 1000baseKX/Full over 1000baseT/Full, but 1000baseKX/Full is
+a lot rarer than 1000baseT/Full, and thus is much less likely to
+be preferred.
 
-Tested-on: QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00049
+This causes phylink problems - it means a fixed link specifying a
+speed of 1G and full duplex gets an ethtool linkmode of 1000baseKX/Full
+rather than 1000baseT/Full as would be expected - and since we offer
+userspace a software emulation of a conventional copper PHY, we want
+to offer copper modes in preference to anything else. However, we do
+still want to allow the rarer modes as well.
 
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20211208061752.16564-1-quic_wgong@quicinc.com
+Hence, let's reorder these two modes to prefer copper.
+
+Tested-by: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reported-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/E1muvFO-00F6jY-1K@rmk-PC.armlinux.org.uk
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/wmi.c | 27 ++++++++++++++++++++++++++-
- 1 file changed, 26 insertions(+), 1 deletion(-)
+ drivers/net/phy/phy-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
-index 7c1c2658cb5f8..4733fd7fb169e 100644
---- a/drivers/net/wireless/ath/ath10k/wmi.c
-+++ b/drivers/net/wireless/ath/ath10k/wmi.c
-@@ -2611,9 +2611,30 @@ int ath10k_wmi_event_mgmt_rx(struct ath10k *ar, struct sk_buff *skb)
- 		ath10k_mac_handle_beacon(ar, skb);
- 
- 	if (ieee80211_is_beacon(hdr->frame_control) ||
--	    ieee80211_is_probe_resp(hdr->frame_control))
-+	    ieee80211_is_probe_resp(hdr->frame_control)) {
-+		struct ieee80211_mgmt *mgmt = (void *)skb->data;
-+		u8 *ies;
-+		int ies_ch;
-+
- 		status->boottime_ns = ktime_get_boottime_ns();
- 
-+		if (!ar->scan_channel)
-+			goto drop;
-+
-+		ies = mgmt->u.beacon.variable;
-+
-+		ies_ch = cfg80211_get_ies_channel_number(mgmt->u.beacon.variable,
-+							 skb_tail_pointer(skb) - ies,
-+							 sband->band);
-+
-+		if (ies_ch > 0 && ies_ch != channel) {
-+			ath10k_dbg(ar, ATH10K_DBG_MGMT,
-+				   "channel mismatched ds channel %d scan channel %d\n",
-+				   ies_ch, channel);
-+			goto drop;
-+		}
-+	}
-+
- 	ath10k_dbg(ar, ATH10K_DBG_MGMT,
- 		   "event mgmt rx skb %pK len %d ftype %02x stype %02x\n",
- 		   skb, skb->len,
-@@ -2627,6 +2648,10 @@ int ath10k_wmi_event_mgmt_rx(struct ath10k *ar, struct sk_buff *skb)
- 	ieee80211_rx_ni(ar->hw, skb);
- 
- 	return 0;
-+
-+drop:
-+	dev_kfree_skb(skb);
-+	return 0;
- }
- 
- static int freq_to_idx(struct ath10k *ar, int freq)
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index 2870c33b8975d..271fc01f7f7fd 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -162,11 +162,11 @@ static const struct phy_setting settings[] = {
+ 	PHY_SETTING(   2500, FULL,   2500baseT_Full		),
+ 	PHY_SETTING(   2500, FULL,   2500baseX_Full		),
+ 	/* 1G */
+-	PHY_SETTING(   1000, FULL,   1000baseKX_Full		),
+ 	PHY_SETTING(   1000, FULL,   1000baseT_Full		),
+ 	PHY_SETTING(   1000, HALF,   1000baseT_Half		),
+ 	PHY_SETTING(   1000, FULL,   1000baseT1_Full		),
+ 	PHY_SETTING(   1000, FULL,   1000baseX_Full		),
++	PHY_SETTING(   1000, FULL,   1000baseKX_Full		),
+ 	/* 100M */
+ 	PHY_SETTING(    100, FULL,    100baseT_Full		),
+ 	PHY_SETTING(    100, FULL,    100baseT1_Full		),
 -- 
 2.34.1
 
