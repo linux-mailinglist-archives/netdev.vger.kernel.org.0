@@ -2,128 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8CF349205E
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 08:35:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FF51492088
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 08:50:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244967AbiARHee (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 02:34:34 -0500
-Received: from prt-mail.chinatelecom.cn ([42.123.76.219]:59173 "EHLO
-        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S244562AbiARHec (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 02:34:32 -0500
-HMM_SOURCE_IP: 172.18.0.48:55314.41399111
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.38 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id 46EBB2800E5;
-        Tue, 18 Jan 2022 15:34:18 +0800 (CST)
-X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id 1dbaf14a1a624470952d15a519b8c483 for j.vosburgh@gmail.com;
-        Tue, 18 Jan 2022 15:34:23 CST
-X-Transaction-ID: 1dbaf14a1a624470952d15a519b8c483
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.48
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
-To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huyd12@chinatelecom.cn
-Subject: [PATCH v6] net: bonding: Add support for IPV6 ns/na to balance-alb/balance-tlb mode
-Date:   Tue, 18 Jan 2022 02:33:17 -0500
-Message-Id: <20220118073317.82968-1-sunshouxin@chinatelecom.cn>
-X-Mailer: git-send-email 2.27.0
+        id S245526AbiARHuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 02:50:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234433AbiARHuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 02:50:44 -0500
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B54C061574;
+        Mon, 17 Jan 2022 23:50:44 -0800 (PST)
+Received: by mail-qv1-xf2b.google.com with SMTP id kl12so20595704qvb.5;
+        Mon, 17 Jan 2022 23:50:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JM5oEuGQvwPu2uDjo5nnYULdKnPojfIxdAFkXu5OFrk=;
+        b=UQ8b/7ijatd4UqEhQ8HEe1uvKddfQg0IRy85KaedCIeRKLMV7vhUrHdho+p7KpILRc
+         4Q/rUoWjShNCCZ7cOEoJIQfsJAS9B4Pjs6ntPPjMnieuNxbQqCPDq17c9lCEq1thc8Kc
+         ug1dxe1Nvjirl64tM+GtjTOZzDpJEbA4jCz7Bom5xuzomnGWqZwG/Trmmab00zUgluOo
+         d0czBPs202XEcoBx/mJni5Clzr0Bok+1EuJRJZnqtJuxtX2hZJC9xqI2ifqUrUBGCp+X
+         u/mCAwj5b1+6w8jBDG9zwbNU2lvJCW26CBaQ/8G160EDcwl8fkNjjdMwBJTpg7Pu96u5
+         Ag5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JM5oEuGQvwPu2uDjo5nnYULdKnPojfIxdAFkXu5OFrk=;
+        b=FdamjifahFr+eBN1z2Fsqmhu0NhujcJUmKR+4PWh8dIoY9xuhXJyI25sfQJN30QX1b
+         36FU6sZ7jdBmhOkFBa7qCq+r88ylLKY37qonDjjKqUykF/VIqt7l/gbhjd2NFticics/
+         LRzYi9zunWCtoByZJ2W9wZcdDClswOwSJJZtql4wQVNKewyT2mDuG+QWbccpoI/Z+SDn
+         uHkbqybDHKREQ8iz6JQ84rPjoq5oz4UY1Q2DIkftU3s+/zfjGwTeMPTO2Pxn7xh0BgoP
+         48DqqRCfXk187C9hN6ypMj7FIftx/NFxfDPaBClYwjh0XeeRoTTR0fq0kctR6E1FuyeD
+         t+XQ==
+X-Gm-Message-State: AOAM532VpqeeuQ7pZhzMQbUleLBqIVNmv8//HyXLULtLVomX5cxqeWQm
+        X1PKQkw2L2MvExv8vi3/QHA=
+X-Google-Smtp-Source: ABdhPJwgzad8/tEfZa6sW8Zd1MtdAjv/pUTrNXCreSNZBS/qBG+COo/UYU+0nfl/YMTfCPZ31tDsKg==
+X-Received: by 2002:a05:6214:ca3:: with SMTP id s3mr18846174qvs.9.1642492243037;
+        Mon, 17 Jan 2022 23:50:43 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id l9sm9850610qkj.37.2022.01.17.23.50.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Jan 2022 23:50:42 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     marcel@holtmann.org
+Cc:     johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>, CGEL ZTE <cgel.zte@gmail.com>
+Subject: [PATCH] net/bluetooth: remove unneeded err variable
+Date:   Tue, 18 Jan 2022 07:50:33 +0000
+Message-Id: <20220118075033.925388-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since ipv6 neighbor solicitation and advertisement messages
-isn't handled gracefully in bonding6 driver, we can see packet
-drop due to inconsistency bewteen mac address in the option
-message and source MAC .
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Another examples is ipv6 neighbor solicitation and advertisement
-messages from VM via tap attached to host brighe, the src mac
-mighe be changed through balance-alb mode, but it is not synced
-with Link-layer address in the option message.
+Return value from mgmt_cmd_complete() directly instead
+of taking this in another redundant variable.
 
-The patch implements bond6's tx handle for ipv6 neighbor
-solicitation and advertisement messages.
-
-Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
 ---
- drivers/net/bonding/bond_alb.c | 36 ++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ net/bluetooth/mgmt.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index 533e476988f2..82b7071840b1 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -1269,6 +1269,34 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
- 	return res;
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 37087cf7dc5a..d0804648da32 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -8601,7 +8601,6 @@ static int get_adv_size_info(struct sock *sk, struct hci_dev *hdev,
+ 	struct mgmt_cp_get_adv_size_info *cp = data;
+ 	struct mgmt_rp_get_adv_size_info rp;
+ 	u32 flags, supported_flags;
+-	int err;
+ 
+ 	bt_dev_dbg(hdev, "sock %p", sk);
+ 
+@@ -8628,10 +8627,8 @@ static int get_adv_size_info(struct sock *sk, struct hci_dev *hdev,
+ 	rp.max_adv_data_len = tlv_data_max_len(hdev, flags, true);
+ 	rp.max_scan_rsp_len = tlv_data_max_len(hdev, flags, false);
+ 
+-	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_GET_ADV_SIZE_INFO,
++	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_GET_ADV_SIZE_INFO,
+ 				MGMT_STATUS_SUCCESS, &rp, sizeof(rp));
+-
+-	return err;
  }
  
-+/*determine if the packet is NA or NS*/
-+static bool __alb_determine_nd(struct icmp6hdr *hdr)
-+{
-+	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
-+	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
-+		return true;
-+	}
-+
-+	return false;
-+}
-+
-+static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
-+{
-+	struct ipv6hdr *ip6hdr;
-+	struct icmp6hdr *hdr;
-+
-+	if (skb->protocol == htons(ETH_P_IPV6)) {
-+		ip6hdr = ipv6_hdr(skb);
-+		if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
-+			hdr = icmp6_hdr(skb);
-+			if (__alb_determine_nd(hdr))
-+				return true;
-+		}
-+	}
-+
-+	return false;
-+}
-+
- /************************ exported alb functions ************************/
- 
- int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
-@@ -1350,6 +1378,9 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
- 		switch (skb->protocol) {
- 		case htons(ETH_P_IP):
- 		case htons(ETH_P_IPV6):
-+			if (alb_determine_nd(skb, bond))
-+				break;
-+
- 			hash_index = bond_xmit_hash(bond, skb);
- 			if (bond->params.tlb_dynamic_lb) {
- 				tx_slave = tlb_choose_channel(bond,
-@@ -1446,6 +1477,11 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
- 			break;
- 		}
- 
-+		if (alb_determine_nd(skb, bond)) {
-+			do_tx_balance = false;
-+			break;
-+		}
-+
- 		hash_start = (char *)&ip6hdr->daddr;
- 		hash_size = sizeof(ip6hdr->daddr);
- 		break;
-
-base-commit: 79e06c4c4950be2abd8ca5d2428a8c915aa62c24
+ static const struct hci_mgmt_handler mgmt_handlers[] = {
 -- 
-2.27.0
+2.25.1
 
