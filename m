@@ -2,88 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3E354929B0
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 16:32:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FD334929BD
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 16:36:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345777AbiARPct (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 10:32:49 -0500
-Received: from marcansoft.com ([212.63.210.85]:58404 "EHLO mail.marcansoft.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238270AbiARPcs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jan 2022 10:32:48 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        id S1345842AbiARPfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 10:35:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238270AbiARPfc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 10:35:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4929EC061574;
+        Tue, 18 Jan 2022 07:35:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 02C4A3FA5E;
-        Tue, 18 Jan 2022 15:32:38 +0000 (UTC)
-Subject: Re: [PATCH v3 0/9] misc brcmfmac fixes (M1/T2 series spin-off)
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20220117142919.207370-1-marcan@marcan.st>
- <CAHp75VfRiFokdTQ9cnEEH596mM7cb4FXQk4eXVt37cG4FcFMyA@mail.gmail.com>
-From:   Hector Martin <marcan@marcan.st>
-Message-ID: <e956e500-a59a-a03b-6be1-c7eca85c8741@marcan.st>
-Date:   Wed, 19 Jan 2022 00:32:36 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBB9D608C0;
+        Tue, 18 Jan 2022 15:35:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B3C8C00446;
+        Tue, 18 Jan 2022 15:35:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642520131;
+        bh=llO38vHsuSCs/rDP/NVCD+ResUy3xRA+7B4nJRSjHKI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ENapVa8duZZ9RUNv1L9BsTosnjY64d7IAncJpI44qfURpRxPkm3OKr8X9Xixd4p77
+         kK3nsAIoh0eD9ah3yiYQ5SCMTbYvpfj6o+yxMRIhjm2mEFs6F8DcrHj5Nb1rVNRqJ6
+         8wvZfbJJaSOcEkYzEmk/JnHZgFqKECP18EbncXY7dUN/YdL6Q4/hwVuZHWb+r7hd3h
+         zEvJwj/AatKHtjgwiNRpJHTBTXG+GwD1/7EEFw+SYtWAr5WE+87PpjXKcDDhsay9Rv
+         O3M4voHXGGctluTSNPHuHl0GlEZSRQ08xHSB8tbF97uy3HQsF2G+0PEAN79VbRXu5e
+         s+A/m6D5WRFlA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 5A00F40714; Tue, 18 Jan 2022 12:35:28 -0300 (-03)
+Date:   Tue, 18 Jan 2022 12:35:28 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf] libbpf: define BTF_KIND_* constants in btf.h to
+ avoid compilation errors
+Message-ID: <YebeQKsIDDaBMtpW@kernel.org>
+References: <20220118141327.34231-1-toke@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CAHp75VfRiFokdTQ9cnEEH596mM7cb4FXQk4eXVt37cG4FcFMyA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: es-ES
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220118141327.34231-1-toke@redhat.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/01/2022 19.43, Andy Shevchenko wrote:
-> On Mon, Jan 17, 2022 at 4:30 PM Hector Martin <marcan@marcan.st> wrote:
->>
->> Hi everyone,
->>
->> This series contains just the fixes / misc improvements from the
->> previously submitted series:
->>
->> brcmfmac: Support Apple T2 and M1 platforms
->>
->> Patches 8-9 aren't strictly bugfixes but rather just general
->> improvements; they can be safely skipped, although patch 8 will be a
->> dependency of the subsequent series to avoid a compile warning.
+Em Tue, Jan 18, 2022 at 03:13:27PM +0100, Toke Høiland-Jørgensen escreveu:
+> The btf.h header included with libbpf contains inline helper functions to
+> check for various BTF kinds. These helpers directly reference the
+> BTF_KIND_* constants defined in the kernel header, and because the header
+> file is included in user applications, this happens in the user application
+> compile units.
 > 
-> Have I given you a tag? If so, I do not see it applied in the patches...
+> This presents a problem if a user application is compiled on a system with
+> older kernel headers because the constants are not available. To avoid
+> this, add #defines of the constants directly in btf.h before using them.
+> 
+> Since the kernel header moved to an enum for BTF_KIND_*, the #defines can
+> shadow the enum values without any errors, so we only need #ifndef guards
+> for the constants that predates the conversion to enum. We group these so
+> there's only one guard for groups of values that were added together.
+> 
+>   [0] Closes: https://github.com/libbpf/libbpf/issues/436
 
-I didn't see any review tags from you in the previous thread. Did I miss
-any?
+The coexistence of enums with the defines (in turn #ifndef guarded) as
+something I hadn't considered, clever.
+
+Should fix lots of build errors in my test containers :-)
+
+FWIW:
+
+Acked-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+ 
+> Fixes: 223f903e9c83 ("bpf: Rename BTF_KIND_TAG to BTF_KIND_DECL_TAG")
+> Fixes: 5b84bd10363e ("libbpf: Add support for BTF_KIND_TAG")
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> ---
+>  tools/lib/bpf/btf.h | 22 +++++++++++++++++++++-
+>  1 file changed, 21 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
+> index 061839f04525..51862fdee850 100644
+> --- a/tools/lib/bpf/btf.h
+> +++ b/tools/lib/bpf/btf.h
+> @@ -375,8 +375,28 @@ btf_dump__dump_type_data(struct btf_dump *d, __u32 id,
+>  			 const struct btf_dump_type_data_opts *opts);
+>  
+>  /*
+> - * A set of helpers for easier BTF types handling
+> + * A set of helpers for easier BTF types handling.
+> + *
+> + * The inline functions below rely on constants from the kernel headers which
+> + * may not be available for applications including this header file. To avoid
+> + * compilation errors, we define all the constants here that were added after
+> + * the initial introduction of the BTF_KIND* constants.
+>   */
+> +#ifndef BTF_KIND_FUNC
+> +#define BTF_KIND_FUNC		12	/* Function	*/
+> +#define BTF_KIND_FUNC_PROTO	13	/* Function Proto	*/
+> +#endif
+> +#ifndef BTF_KIND_VAR
+> +#define BTF_KIND_VAR		14	/* Variable	*/
+> +#define BTF_KIND_DATASEC	15	/* Section	*/
+> +#endif
+> +#ifndef BTF_KIND_FLOAT
+> +#define BTF_KIND_FLOAT		16	/* Floating point	*/
+> +#endif
+> +/* The kernel header switched to enums, so these two were never #defined */
+> +#define BTF_KIND_DECL_TAG	17	/* Decl Tag */
+> +#define BTF_KIND_TYPE_TAG	18	/* Type Tag */
+> +
+>  static inline __u16 btf_kind(const struct btf_type *t)
+>  {
+>  	return BTF_INFO_KIND(t->info);
+> -- 
+> 2.34.1
 
 -- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+
+- Arnaldo
