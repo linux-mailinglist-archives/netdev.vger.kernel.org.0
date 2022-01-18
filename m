@@ -2,31 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CFFB4924DE
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:32:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52EBC4924D8
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 12:32:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240935AbiARLcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 06:32:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43748 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240107AbiARLbl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:31:41 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44085C06174E;
-        Tue, 18 Jan 2022 03:31:26 -0800 (PST)
+        id S240153AbiARLbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 06:31:55 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:35870 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240630AbiARLbg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 06:31:36 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: usama.anjum)
-        with ESMTPSA id E8C341F43EBE
+        with ESMTPSA id C6F5A1F43EC0
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642505485;
-        bh=JhpCsybLmT57CKBzdEYbEYfBTmlpwJ2taSfigXWMgdM=;
+        s=mail; t=1642505494;
+        bh=f/au3CsQPO/GIa/zBleGlWIysQfk59tmnzMqq6fix88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IKMPtZooC5RNGM8no7wd4TPQzJOAGg8P1rSLdb3XxWAB0M579B20iFwWjd75fNoOP
-         RgqW1Ng28T6lXniFr99oCcKCoLncT+26K0vt/slJlaja/RCDgQAoOmoXeRehH0rzb0
-         fFznJ1qtbioFbt5sovD4Njq0G4aL6CFFyBEd8LihVqYCwC0yvHV6w0VrVA19+Kbh0m
-         qOU1knAfZo6MvQpEsJbNcyslHVrsjcJIUkJbvEJ/N4Wc+IXoo7ImoAo6BgvYOqn15g
-         BbaFm9kuAUS+/DnNeYF47GwRW6t3mH28ps48hB4bmlB8wVaqi9diFiH2Sdn/F1/SAm
-         OrVeTzWOBLeOw==
+        b=EoT+wn7pIb/F+auwrxvGpdTzbp0SSH2JL8xkak1SS8HMmCuYsT+Am7cIkV5Msc4Q/
+         U+u+NcYne87dY5LS9UYjqmQyaUxhANeFXA/yPruEpAebNQK+vG2A0Kly+8HsA8R50b
+         BR606G/NT9v0oZ8Ox7bpmRMBgvHxLU6uO3Obgs8N+tgB5F0HkzR5aXujTAaZIlqLop
+         tawMy3Yb/ojfzAe21P0fmQda0wV59wgLQX68h0tPMGSlJ4oLh1HBJN7UFHMwW0snTb
+         tkRKBRzN2qwb/MjfmqbSDme+oUImqsFukIY6lIayF0/iSaNrzP0sZ3PFr4xsfY+HDQ
+         XQlLxY9KjF6gg==
 From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
 To:     Shuah Khan <shuah@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -52,9 +49,9 @@ To:     Shuah Khan <shuah@kernel.org>,
         linux-mm@kvack.org (open list:MEMORY MANAGEMENT)
 Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
         kernel@collabora.com
-Subject: [PATCH 05/10] selftests: kvm: Add the uapi headers include variable
-Date:   Tue, 18 Jan 2022 16:29:04 +0500
-Message-Id: <20220118112909.1885705-6-usama.anjum@collabora.com>
+Subject: [PATCH 06/10] selftests: landlock: Add the uapi headers include variable
+Date:   Tue, 18 Jan 2022 16:29:05 +0500
+Message-Id: <20220118112909.1885705-7-usama.anjum@collabora.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220118112909.1885705-1-usama.anjum@collabora.com>
 References: <20220118112909.1885705-1-usama.anjum@collabora.com>
@@ -70,40 +67,37 @@ KHDR_INCLUDES to correctly reach the headers.
 
 Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 ---
- tools/testing/selftests/kvm/Makefile | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ tools/testing/selftests/landlock/Makefile | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index ee8cf2149824..ce9c8857e14c 100644
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -136,8 +136,6 @@ TEST_GEN_PROGS_riscv += kvm_binary_stats_test
- TEST_GEN_PROGS += $(TEST_GEN_PROGS_$(UNAME_M))
- LIBKVM += $(LIBKVM_$(UNAME_M))
+diff --git a/tools/testing/selftests/landlock/Makefile b/tools/testing/selftests/landlock/Makefile
+index a99596ca9882..44c724b38a37 100644
+--- a/tools/testing/selftests/landlock/Makefile
++++ b/tools/testing/selftests/landlock/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
  
--INSTALL_HDR_PATH = $(top_srcdir)/usr
--LINUX_HDR_PATH = $(INSTALL_HDR_PATH)/include/
- LINUX_TOOL_INCLUDE = $(top_srcdir)/tools/include
- ifeq ($(ARCH),x86_64)
- LINUX_TOOL_ARCH_INCLUDE = $(top_srcdir)/tools/arch/x86/include
-@@ -146,7 +144,7 @@ LINUX_TOOL_ARCH_INCLUDE = $(top_srcdir)/tools/arch/$(ARCH)/include
- endif
- CFLAGS += -Wall -Wstrict-prototypes -Wuninitialized -O2 -g -std=gnu99 \
- 	-fno-stack-protector -fno-PIE -I$(LINUX_TOOL_INCLUDE) \
--	-I$(LINUX_TOOL_ARCH_INCLUDE) -I$(LINUX_HDR_PATH) -Iinclude \
-+	-I$(LINUX_TOOL_ARCH_INCLUDE) $(KHDR_INCLUDES) -Iinclude \
- 	-I$(<D) -Iinclude/$(UNAME_M) -I.. $(EXTRA_CFLAGS)
+-CFLAGS += -Wall -O2
++CFLAGS += -Wall -O2 $(KHDR_INCLUDES)
  
- no-pie-option := $(call try-run, echo 'int main() { return 0; }' | \
-@@ -185,7 +183,7 @@ x := $(shell mkdir -p $(sort $(dir $(TEST_GEN_PROGS))))
- all: $(STATIC_LIBS)
- $(TEST_GEN_PROGS): $(STATIC_LIBS)
+ src_test := $(wildcard *_test.c)
  
--cscope: include_paths = $(LINUX_TOOL_INCLUDE) $(LINUX_HDR_PATH) include lib ..
-+cscope: include_paths = $(LINUX_TOOL_INCLUDE) include lib ..
- cscope:
- 	$(RM) cscope.*
- 	(find $(include_paths) -name '*.h' \
+@@ -12,13 +12,8 @@ KSFT_KHDR_INSTALL := 1
+ OVERRIDE_TARGETS := 1
+ include ../lib.mk
+ 
+-khdr_dir = $(top_srcdir)/usr/include
+-
+-$(khdr_dir)/linux/landlock.h: khdr
+-	@:
+-
+ $(OUTPUT)/true: true.c
+ 	$(LINK.c) $< $(LDLIBS) -o $@ -static
+ 
+-$(OUTPUT)/%_test: %_test.c $(khdr_dir)/linux/landlock.h ../kselftest_harness.h common.h
+-	$(LINK.c) $< $(LDLIBS) -o $@ -lcap -I$(khdr_dir)
++$(OUTPUT)/%_test: %_test.c ../kselftest_harness.h common.h
++	$(LINK.c) $< $(LDLIBS) -o $@ -lcap
 -- 
 2.30.2
 
