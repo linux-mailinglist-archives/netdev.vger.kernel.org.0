@@ -2,132 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B6FD4926FE
-	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 14:19:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF735492702
+	for <lists+netdev@lfdr.de>; Tue, 18 Jan 2022 14:21:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242390AbiARNTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 08:19:19 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:36902 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242302AbiARNTM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 08:19:12 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 283A01F43568
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642511949;
-        bh=NnA8DF5nv67Abok07B1FDD4ZaMq6Cy3stGYg/JYq7G0=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=gOOtBoB+LqcCGqcgcyaKvqu7qG58u5YJiGrs4xSCpwjbLSoAmu8d+ghKU2xzdrjGL
-         csHm1zQ4M9Wc1QqBiTxySkXIRBRsukryioI8Rf7kmqWuBU5sPYRtaI078IAg6rECbj
-         D0gSKpSnJE+wtTS6FKb9dGrhhjeSNSmKcI4rnGjdh56Eh3xAe8AOwK0B6pbhDNtkfH
-         4eUo0EBztcjo8Q7PvxJkf+3GUsCh7aiMJ49lTs1VYa3O+u/EVWLjGpvw4FLpQb3/8S
-         pg1o3CQba6wq9aviWjsg+dSN1rYUlNPGRE0vNwYjm+9EauBsD47BsSEwipQfRVWuh7
-         YyZXm6BLQxY/g==
-Message-ID: <a9f7185f-0a7f-3133-fcdd-bd790b51e6ae@collabora.com>
-Date:   Tue, 18 Jan 2022 18:18:59 +0500
+        id S242492AbiARNVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 08:21:02 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:43076 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235530AbiARNVA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jan 2022 08:21:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=+0L1vGkv7QyC1GibGB67PjNxvpPnAN50mE8aqAqpKcI=; b=JQ9eArgdTrhBe/MleN/alTmGmL
+        SO4vciIkZAmKSS7/BlE1yMNVVbft/0Lm3/bssUk/FlrUQtjQ7xRWW8IYwvFlp4ikEXrIZ30V5OR20
+        ZMt8EJspxLhlLS7r/itsZTqv1X5QP+59PWDKqJ9xfgRSMyMCjAm459+NmTusWvI+4pzE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n9oPx-001luv-Pu; Tue, 18 Jan 2022 14:20:57 +0100
+Date:   Tue, 18 Jan 2022 14:20:57 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
+Subject: Re: Re: Re: Re: [PATCH net-next v4 11/11] net: dsa: realtek:
+ rtl8365mb: multiple cpu ports, non cpu extint
+Message-ID: <Yea+uTH+dh9/NMHn@lunn.ch>
+References: <20220105031515.29276-1-luizluca@gmail.com>
+ <20220105031515.29276-12-luizluca@gmail.com>
+ <87ee5fd80m.fsf@bang-olufsen.dk>
+ <trinity-ea8d98eb-9572-426a-a318-48406881dc7e-1641822815591@3c-app-gmx-bs62>
+ <87r19e5e8w.fsf@bang-olufsen.dk>
+ <trinity-4b35f0dc-6bc6-400a-8d4e-deb26e626391-1641926734521@3c-app-gmx-bap14>
+ <87v8ynbylk.fsf@bang-olufsen.dk>
+ <trinity-d858854a-ff84-4b28-81f4-f0becc878017-1642089370117@3c-app-gmx-bap49>
+ <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Cc:     usama.anjum@collabora.com, kernel@collabora.com
-Subject: Re: [PATCH 06/10] selftests: landlock: Add the uapi headers include
- variable
-Content-Language: en-US
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
-        Shuah Khan <shuah@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@collabora.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        chiminghao <chi.minghao@zte.com.cn>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL VIRTUAL MACHINE (KVM)" <kvm@vger.kernel.org>,
-        "open list:LANDLOCK SECURITY MODULE" 
-        <linux-security-module@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "open list:NETWORKING [MPTCP]" <mptcp@lists.linux.dev>,
-        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>
-References: <20220118112909.1885705-1-usama.anjum@collabora.com>
- <20220118112909.1885705-7-usama.anjum@collabora.com>
- <8ea3bd61-8251-a5b6-c0b4-6d15bac4d2c5@digikod.net>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <8ea3bd61-8251-a5b6-c0b4-6d15bac4d2c5@digikod.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jan 18, 2022 at 01:58:39AM -0300, Luiz Angelo Daros de Luca wrote:
+> > the problem is checksum offloading on the gmac (soc-side)
+> 
+> I suggested it might be checksum problem because I'm also affected. In
+> my case, I have an mt7620a SoC connected to the rtl8367s switch. The
+> OS offloads checksum to HW but the mt7620a cannot calculate the
+> checksum with the (EtherType) Realtek CPU Tag in place. I'll try to
+> move the CPU tag to test if the mt7620a will then digest the frame
+> correctly.
 
+Some MAC hardware you can tell it where the ether type value is in the
+frame. This is often used to skip over the VLAN header, but it can
+also be used to skip DSA headers. Check the datasheet for the hardware
+and see if there is anything like that.
 
-On 1/18/22 5:35 PM, Mickaël Salaün wrote:
-> 
-> On 18/01/2022 12:29, Muhammad Usama Anjum wrote:
->> Out of tree build of this test fails if relative path of the output
->> directory is specified. Remove the un-needed include paths and use
->> KHDR_INCLUDES to correctly reach the headers.
->>
->> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
->> ---
->>   tools/testing/selftests/landlock/Makefile | 11 +++--------
->>   1 file changed, 3 insertions(+), 8 deletions(-)
->>
->> diff --git a/tools/testing/selftests/landlock/Makefile
->> b/tools/testing/selftests/landlock/Makefile
->> index a99596ca9882..44c724b38a37 100644
->> --- a/tools/testing/selftests/landlock/Makefile
->> +++ b/tools/testing/selftests/landlock/Makefile
->> @@ -1,6 +1,6 @@
->>   # SPDX-License-Identifier: GPL-2.0
->>   -CFLAGS += -Wall -O2
->> +CFLAGS += -Wall -O2 $(KHDR_INCLUDES)
->>     src_test := $(wildcard *_test.c)
->>   @@ -12,13 +12,8 @@ KSFT_KHDR_INSTALL := 1
->>   OVERRIDE_TARGETS := 1
->>   include ../lib.mk
->>   -khdr_dir = $(top_srcdir)/usr/include
-> 
-> This should be updated to:
-> khdr_dir = ${abs_srctree}/usr/include
-> 
-> Using a global KHDR_DIR instead of khdr_dir could be useful for others too.
-> 
->> -
->> -$(khdr_dir)/linux/landlock.h: khdr
->> -    @:
-> 
-> This should be kept as is, otherwise we loose this check to rebuild the
-> headers if linux/landlock.h is updated, which is handy for development.
-> KVM lost a similar behavior with this patch series.
-> 
->> -
->>   $(OUTPUT)/true: true.c
->>       $(LINK.c) $< $(LDLIBS) -o $@ -static
->>   -$(OUTPUT)/%_test: %_test.c $(khdr_dir)/linux/landlock.h
->> ../kselftest_harness.h common.h
-> 
-> This should not be changed.
-> 
->> -    $(LINK.c) $< $(LDLIBS) -o $@ -lcap -I$(khdr_dir)
->> +$(OUTPUT)/%_test: %_test.c ../kselftest_harness.h common.h
->> +    $(LINK.c) $< $(LDLIBS) -o $@ -lcap
-> 
-> This doesn't work when building in the local directory because
-> $abs_srctree and $KHDR_INCLUDES are empty:
-> cd tools/testing/selftests/landlock && make
-Hi,
-
-Thank you. I'll update this path and the kvm one. I'll send a V2.
-
-Thanks,
-Usama
+    Andrew
