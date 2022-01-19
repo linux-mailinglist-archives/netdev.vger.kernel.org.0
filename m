@@ -2,115 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39957494313
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 23:35:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4858494339
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 23:45:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343916AbiASWf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 17:35:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
+        id S1344033AbiASWpq convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Jan 2022 17:45:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244097AbiASWf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 17:35:29 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A568C06173E
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 14:35:28 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id c24so17746466edy.4
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 14:35:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=O2Z9yctDCU3gTCdFxkuOTOOVaEio5IQFlKJF8LaggTg=;
-        b=mmd9J8gXsSomU9UUNBvOuBXVlSzYbQO+nfTxl/OBRbHYFV4RvXKpHULSlKe3BzkhZs
-         6tnMwcMq5t47+WNrTTdvtUf0JBg67Wg0aCNi0CJ8xmjiX4vXLa4IlrmJmPXilREu3Yui
-         sp2/n7hwAxPyaFgHFq/KT7AU5Jw//TYUZKz/mzHMmN4UbT81SY0CQggRmIEk+Kt7SCKl
-         1gcC5o5GXI7K0Gl30ohuE4FaUyf+Tk6L3fF+zoki/vDtHdBawJSTEcBCjU73AxFTJpPC
-         L08WNim15+swmDr/BBQguYjDZ5tzZUIY6Y3wQds1cDMm36GA6ezOwNtkI5hA+nPvzBX0
-         aSCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=O2Z9yctDCU3gTCdFxkuOTOOVaEio5IQFlKJF8LaggTg=;
-        b=DcWfiyb2a5Fc/ZQMQZIP/jDvVJFkfOigy2Fjl5hDX3ygnElrUx7uW/d8VuDIfYY+z7
-         m2AcOCf/5rxVwruV7gsy7L6V0lIWkjxdNNrVJ/ho8D3n0Xn1YGUBJioOBQ0Lh0RRGQpn
-         NcLN52+cr0L4m5X4W9cSWmOfwC97cZ4piVyiQYADejKkq33isrA1BUnkGu7YjA8FMY7R
-         ufVE7tPX/0agsX7wf1lgAnP0iPgDGVvOWUh0UZmYOZk5AOp/MB2vcd/CyEiHfnFm93Ai
-         rRDLQkxIm+NQNO5PvV3rASArRnSO5PxSZ6zEHsrx1/DvMlGSD0hP3in2ImpSxXJwAprL
-         2Gmw==
-X-Gm-Message-State: AOAM530R47FHYk1FZo6kLYZYHDOQDGUaWFjgMllJ02BV6STGkLpjB6b+
-        /y27EC6pOiP33V4Dktp8A2Pm+jGBtBWM9DEdZXk=
-X-Google-Smtp-Source: ABdhPJy1AOJWUgAkG9M0ApWVefQgFqlCHwuj5r6BLJ3Us7HRCzcOtwDzV/+W0LhRJLALaHoMOwEgMA==
-X-Received: by 2002:a17:907:60d5:: with SMTP id hv21mr26331732ejc.456.1642631726887;
-        Wed, 19 Jan 2022 14:35:26 -0800 (PST)
-Received: from ?IPV6:2a02:578:8593:1200:f030:6649:6eec:111? ([2a02:578:8593:1200:f030:6649:6eec:111])
-        by smtp.gmail.com with ESMTPSA id o14sm403138edr.6.2022.01.19.14.35.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Jan 2022 14:35:26 -0800 (PST)
-Message-ID: <853cf6e0-7890-90ef-b98d-d78bee0aba9e@tessares.net>
-Date:   Wed, 19 Jan 2022 23:35:24 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH V2 08/10] selftests: mptcp: Add the uapi headers include
- variable
-Content-Language: en-GB
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@collabora.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        chiminghao <chi.minghao@zte.com.cn>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL VIRTUAL MACHINE (KVM)" <kvm@vger.kernel.org>,
-        "open list:LANDLOCK SECURITY MODULE" 
-        <linux-security-module@vger.kernel.org>,
+        with ESMTP id S232112AbiASWpq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 17:45:46 -0500
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404A6C061574;
+        Wed, 19 Jan 2022 14:45:45 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id DF30120002;
+        Wed, 19 Jan 2022 22:45:41 +0000 (UTC)
+Date:   Wed, 19 Jan 2022 23:45:40 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
         "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "open list:NETWORKING [MPTCP]" <mptcp@lists.linux.dev>,
-        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>
-Cc:     kernel@collabora.com
-References: <20220119101531.2850400-1-usama.anjum@collabora.com>
- <20220119101531.2850400-9-usama.anjum@collabora.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20220119101531.2850400-9-usama.anjum@collabora.com>
+        "linux-wireless@vger.kernel.org Wireless" 
+        <linux-wireless@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v3 17/41] net: ieee802154: at86rf230: Call the complete
+ helper when a transmission is over
+Message-ID: <20220119234540.3374eb4e@xps13>
+In-Reply-To: <CAB_54W5Uu9_hpqmeL0MC+1ps=yfn2j0-o46cBL7BeBxKXKHa4w@mail.gmail.com>
+References: <20220117115440.60296-1-miquel.raynal@bootlin.com>
+        <20220117115440.60296-18-miquel.raynal@bootlin.com>
+        <CAB_54W76X5vhaVMUv=s3e0pbWZgHRK3W=27N9m5LgEdLgAPAcA@mail.gmail.com>
+        <CAB_54W5Uu9_hpqmeL0MC+1ps=yfn2j0-o46cBL7BeBxKXKHa4w@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Muhammad,
+Hi Alexander,
 
-On 19/01/2022 11:15, Muhammad Usama Anjum wrote:
-> Out of tree build of this test fails if relative path of the output
-> directory is specified. Add the KHDR_INCLUDES to correctly reach the
-> headers.
+alex.aring@gmail.com wrote on Mon, 17 Jan 2022 19:36:39 -0500:
+
+> Hi,
 > 
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-> ---
-> Changes in V2:
->         Revert the excessive cleanup which was breaking the individual
-> test build.
+> On Mon, 17 Jan 2022 at 19:34, Alexander Aring <alex.aring@gmail.com> wrote:
+> >
+> > Hi,
+> >
+> > On Mon, 17 Jan 2022 at 06:55, Miquel Raynal <miquel.raynal@bootlin.com> wrote:  
+> > >
+> > > ieee802154_xmit_complete() is the right helper to call when a
+> > > transmission is over. The fact that it completed or not is not really a
+> > > question, but drivers must tell the core that the completion is over,
+> > > even if it was canceled. Do not call ieee802154_wake_queue() manually,
+> > > in order to let full control of this task to the core.
+> > >
+> > > By using the complete helper we also avoid leacking the skb structure.
+> > >
+> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > ---
+> > >  drivers/net/ieee802154/at86rf230.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+> > > index 583f835c317a..1941e1f3d2ef 100644
+> > > --- a/drivers/net/ieee802154/at86rf230.c
+> > > +++ b/drivers/net/ieee802154/at86rf230.c
+> > > @@ -343,7 +343,7 @@ at86rf230_async_error_recover_complete(void *context)
+> > >         if (ctx->free)
+> > >                 kfree(ctx);
+> > >
+> > > -       ieee802154_wake_queue(lp->hw);
+> > > +       ieee802154_xmit_complete(lp->hw, lp->tx_skb, false);  
+> >
+> > also this lp->tx_skb can be a dangled pointer, after xmit_complete()
+> > we need to set it to NULL in a xmit_error() we can check on NULL
+> > before calling kfree_skb().
 
-Thank you for the v2, it looks safer that way and it no longer breaks
-our CI!
+I've created a xmit_error() helper as suggested, which call
+dev_kfree_skb_any() instead of *consume_skb*().
 
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> 
+> forget the NULL checking, it's already done by core.
 
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+Indeed, it is.
+
+> However in some
+> cases this is called with a dangled pointer on lp->tx_skb.
+
+I've fixed that by setting it to NULL after the call to the xmit_error
+helper.
+
+> 
+> - Alex
+
+
+Thanks,
+Miquèl
