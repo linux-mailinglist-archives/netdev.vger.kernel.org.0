@@ -2,127 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3748493D8E
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 16:46:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F896493DAB
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 16:50:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355893AbiASPpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 10:45:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34686 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242199AbiASPps (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 10:45:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF250C061574;
-        Wed, 19 Jan 2022 07:45:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97A37B81A0D;
-        Wed, 19 Jan 2022 15:45:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1238AC004E1;
-        Wed, 19 Jan 2022 15:45:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642607145;
-        bh=lGvpU5SU2oeO2Gj2gUOdONvIDUBxvoCyLVrP9LdAyK0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uFHSCn+eRhus5s0gMFtlk4M/7JhocnfANlW1cVHA0G6W01cpJd8F+h8fndGiFBKZn
-         nCZZCtAQC4k7abNvVhvbVvzHZ7dwbuD74/T+NiX/IT3CWwnmAbzJ0EI/MN3ouRA4NK
-         JcMa2vYnHRlxojVgmRVHQy8kAseKCb6RYvwbbz/tuDQ+FYrQPMEKinDs+/J/QCmOle
-         OH44fC1gV0pSNhO5CC8MUprlf5WJ73QIy9YW2JqYDexDIA+m9Gz2JyKjFMMikgheJ8
-         PhLYlTQI+6mhi8SuY2B8vNy7F68ziMiWUL/NDEe4veZOx2TcwQKBwmk2W+zhD/Bwkn
-         UzTQKF64F/eMw==
-Date:   Wed, 19 Jan 2022 15:45:29 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        id S1355958AbiASPu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 10:50:26 -0500
+Received: from mxout03.lancloud.ru ([45.84.86.113]:37512 "EHLO
+        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355931AbiASPuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 10:50:20 -0500
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru D78A320F7143
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
+        <linux-kernel@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        <linux-iio@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        <alsa-devel@alsa-project.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sebastian Reichel <sre@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-phy@lists.infradead.org>,
         Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-ide@vger.kernel.org, linux-crypto@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, dmaengine@vger.kernel.org,
-        linux-pm@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Improve phandle-array schemas
-Message-ID: <YegyGbGcwSNo49gY@sirena.org.uk>
-References: <20220119015038.2433585-1-robh@kernel.org>
+        <linux-mtd@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        <openipmi-developer@lists.sourceforge.net>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        <kvm@vger.kernel.org>, Kamal Dasu <kdasu.kdev@gmail.com>,
+        Richard Weinberger <richard@nod.at>,
+        "Bartosz Golaszewski" <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        <bcm-kernel-feedback-list@broadcom.com>,
+        <linux-serial@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Jaroslav Kysela" <perex@perex.cz>,
+        <platform-driver-x86@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        "Robert Richter" <rric@kernel.org>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Corey Minyard <minyard@acm.org>, <linux-pm@vger.kernel.org>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        "Mark Gross" <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Alex Williamson" <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-edac@vger.kernel.org>, Tony Luck <tony.luck@intel.com>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Eric Auger <eric.auger@redhat.com>, <netdev@vger.kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>, <linux-mmc@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        <linux-spi@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        "Pengutronix Kernel Team" <kernel@pengutronix.de>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        <linux-mediatek@lists.infradead.org>,
+        "Brian Norris" <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20220110195449.12448-1-s.shtylyov@omp.ru>
+ <20220110195449.12448-2-s.shtylyov@omp.ru>
+ <770fb569-03c8-78f9-c174-94b31e866017@omp.ru>
+ <20220119150238.5sru3vtuwsswdnkx@pengutronix.de>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <f0470e8b-67af-6788-0bca-0be03bb5d0b3@omp.ru>
+Date:   Wed, 19 Jan 2022 18:50:12 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="czK8d+IES+j+3Pl3"
-Content-Disposition: inline
-In-Reply-To: <20220119015038.2433585-1-robh@kernel.org>
-X-Cookie: This bag is recyclable.
+In-Reply-To: <20220119150238.5sru3vtuwsswdnkx@pengutronix.de>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 1/19/22 6:02 PM, Uwe Kleine-König wrote:
 
---czK8d+IES+j+3Pl3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+[...]
+>>> This patch is based on the former Andy Shevchenko's patch:
+>>>
+>>> https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko@linux.intel.com/
+>>>
+>>> Currently platform_get_irq_optional() returns an error code even if IRQ
+>>> resource simply has not been found. It prevents the callers from being
+>>> error code agnostic in their error handling:
+>>>
+>>> 	ret = platform_get_irq_optional(...);
+>>> 	if (ret < 0 && ret != -ENXIO)
+>>> 		return ret; // respect deferred probe
+>>> 	if (ret > 0)
+>>> 		...we get an IRQ...
+>>>
+>>> All other *_optional() APIs seem to return 0 or NULL in case an optional
+>>> resource is not available. Let's follow this good example, so that the
+>>> callers would look like:
+>>>
+>>> 	ret = platform_get_irq_optional(...);
+>>> 	if (ret < 0)
+>>> 		return ret;
+>>> 	if (ret > 0)
+>>> 		...we get an IRQ...
+>>>
+>>> Reported-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+>>> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+>> [...]
+>>
+>>    Please don't merge this as yet, I'm going thru this patch once again
+>> and have already found some sloppy code. :-/
+> 
+> Who would you expect to merge this? I would have expected Greg, but he
 
-On Tue, Jan 18, 2022 at 07:50:38PM -0600, Rob Herring wrote:
-> The 'phandle-array' type is a bit ambiguous. It can be either just an
-> array of phandles or an array of phandles plus args. Many schemas for
-> phandle-array properties aren't clear in the schema which case applies
-> though the description usually describes it.
+   Me too, it's his area, the message was addressed to Greg KH...
 
-Acked-by: Mark Brown <broonie@kernel.org>
+> seems to have given up this thread.
 
---czK8d+IES+j+3Pl3
-Content-Type: application/pgp-signature; name="signature.asc"
+   You instill too much uncertainty in him. :-)
 
------BEGIN PGP SIGNATURE-----
+>>> diff --git a/drivers/char/ipmi/bt-bmc.c b/drivers/char/ipmi/bt-bmc.c
+>>> index 7450904e330a..fdc63bfa5be4 100644
+>>> --- a/drivers/char/ipmi/bt-bmc.c
+>>> +++ b/drivers/char/ipmi/bt-bmc.c
+>>> @@ -382,12 +382,14 @@ static int bt_bmc_config_irq(struct bt_bmc *bt_bmc,
+>>>  	bt_bmc->irq = platform_get_irq_optional(pdev, 0);
+>>>  	if (bt_bmc->irq < 0)
+>>>  		return bt_bmc->irq;
+>>> +	if (!bt_bmc->irq)
+>>> +		return 0;
+>>
+>>    Hm, this is sloppy. Will recast and rebase to the -next branch.
+> 
+> I didn't think about what you mean with sloppy, but the code is
+> equivalent to
+> 
+> 	if (bt_bmc->irq <= 0)
+> 		return bt_bmc->irq;
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHoMhgACgkQJNaLcl1U
-h9AndQf6AqqY9YG2aSYiiYYVIPZoOOjUX2h6CnkvjYCVewt5gN+SxENXpgaLc0p7
-vUq1Rp5AXTu7uFjL2ebgJ8UZPO5cjNIcj81k5OTqRYCvRBqWrPJpsacwSvuNAIUC
-wrrUMNkFdRa0zaMGhMzVeaIAH9o5nqER6z2qXqGG9ccVbPBok8wg6W1xQCDlmyp8
-wzYMD1gLPXMihGy7mzkZd/BHFVdUjKVmYlGiUNl7GI9MVp6v8wt8BbDP4qng30Yz
-BLjhS3YyPDXdeYumU5Mvht+JzYmhn8Ihggw6dbQf6dO/UjwL+5ApN6em8mMhc0VH
-9cXSuI+tv6I8BrIvDkVLV+hVCpjdBg==
-=GpmZ
------END PGP SIGNATURE-----
+   Exactly.
 
---czK8d+IES+j+3Pl3--
+[...]
+>>> diff --git a/drivers/edac/xgene_edac.c b/drivers/edac/xgene_edac.c
+>>> index 2ccd1db5e98f..0d1bdd27cd78 100644
+>>> --- a/drivers/edac/xgene_edac.c
+>>> +++ b/drivers/edac/xgene_edac.c
+>>> @@ -1917,7 +1917,7 @@ static int xgene_edac_probe(struct platform_device *pdev)
+>>>  
+>>>  		for (i = 0; i < 3; i++) {
+>>>  			irq = platform_get_irq_optional(pdev, i);
+>>
+>>    Is *_optinal() even correct here?
+> 
+> _optinal isn't correct, _optional maybe is. :-)
+
+   No. :-)
+
+> Anyhow, look at e26124cd5f7099949109608845bba9e9bf96599c, the driver was
+> fixed not to print two error messages and the wrong option was picked.
+
+   I think this patch is wrong...
+
+>>> -			if (irq < 0) {
+>>> +			if (irq <= 0) {
+>>>  				dev_err(&pdev->dev, "No IRQ resource\n");
+
+   This is what needed to be thrown overboard... :-)
+
+>>>  				rc = -EINVAL;
+>>>  				goto out_err;
+> 
+> What's wrong here is that the return code is hardcoded ...
+
+  This is wrong as well -- kills the deferred probing. I have 2 separate patches
+for this driver now... just need some time to get 'em ready...
+
+[...]
+>>> index bdf924b73e47..51289700a7ac 100644
+>>> --- a/drivers/power/supply/mp2629_charger.c
+>>> +++ b/drivers/power/supply/mp2629_charger.c
+>>> @@ -581,9 +581,9 @@ static int mp2629_charger_probe(struct platform_device *pdev)
+>>>  	platform_set_drvdata(pdev, charger);
+>>>  
+>>>  	irq = platform_get_irq_optional(to_platform_device(dev->parent), 0);
+>>
+>>    Again, is *_optional() even correct here?
+>>
+>>> -	if (irq < 0) {
+>>> +	if (irq <= 0) {
+>>>  		dev_err(dev, "get irq fail: %d\n", irq);
+>>> -		return irq;
+>>> +		return irq < 0 ? irq : -ENXIO;
+> 
+> Ack, could be simplified by switching to platform_get_irq().
+
+   Have a draft patch...
+
+> Best regards
+> Uwe
+
+MBR, Sergey
