@@ -2,41 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA6B74940F9
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 20:35:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A50194940FF
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 20:37:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356990AbiASTfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 14:35:37 -0500
-Received: from mga14.intel.com ([192.55.52.115]:20338 "EHLO mga14.intel.com"
+        id S1357053AbiASTgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 14:36:35 -0500
+Received: from mga07.intel.com ([134.134.136.100]:5752 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240141AbiASTfe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jan 2022 14:35:34 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="245369850"
+        id S1357020AbiASTg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jan 2022 14:36:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642620987; x=1674156987;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Y7zetMO+F9o9TgvTfnNqU31+rhVBHq60hicGgEyx15I=;
+  b=HhzYV4lDUyY0zhE8U9LQ4rni4Lm3Ln4mXgY1xQjSoU0F2uTie+LxGlkM
+   oBRWJSzwQGh1DLAMGrizOHtiJEZmuHVs/sQ/H9wek9g+0jDqqizd21ahz
+   5Q6yuBeSbylYJ36SPljxQlWeqdMbmYGeqgD6driL4fn9Ed1koxRm6XfLl
+   z5U43+DqrU/2SojfAKvFemPc2jFBAJR0wJucfy+l95KoRsWQ0ZBDYX8Sh
+   /xiQwZyyoQftkKaXbMlqk+/fMXEOyY4f9m0w68N2+No83ldeVojKwQxcP
+   swXuoQLBb8M3RwThIz9M5DRnXpL7HCK6PUS3XTcXr6oOdv0dof51eYgIX
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="308510733"
 X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="245369850"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:24:18 -0800
+   d="scan'208";a="308510733"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:26:27 -0800
 X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="532444461"
+   d="scan'208";a="765057648"
 Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:24:08 -0800
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:26:19 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1nAGXp-00CEYE-CW;
-        Wed, 19 Jan 2022 21:22:57 +0200
-Date:   Wed, 19 Jan 2022 21:22:57 +0200
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'Steven Rostedt' <rostedt@goodmis.org>,
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nAGZw-00CEZW-RK;
+        Wed, 19 Jan 2022 21:25:08 +0200
+Date:   Wed, 19 Jan 2022 21:25:08 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Sakari Ailus <sakari.ailus@linux.intel.com>,
         Lucas De Marchi <lucas.demarchi@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        linux-security-module@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
         Alex Deucher <alexander.deucher@amd.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Ben Skeggs <bskeggs@redhat.com>,
@@ -61,37 +70,59 @@ Cc:     'Steven Rostedt' <rostedt@goodmis.org>,
         Raju Rangoju <rajur@chelsio.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
         Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
         Vishal Kulkarni <vishal@chelsio.com>
 Subject: Re: [PATCH 1/3] lib/string_helpers: Consolidate yesno()
  implementation
-Message-ID: <YehlEe1prbwhxZEv@smile.fi.intel.com>
+Message-ID: <YehllDq7wC3M2PQZ@smile.fi.intel.com>
 References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
  <20220119072450.2890107-2-lucas.demarchi@intel.com>
- <CAHp75Vf5QOD_UtDK8VbxNApEBuJvzUic0NkzDNmRo3Q7Ud+=qw@mail.gmail.com>
- <20220119100102.61f9bfde@gandalf.local.home>
- <06420a70f4434c2b8590cc89cad0dd6a@AcuMS.aculab.com>
- <9c26ca9bf75d494ea966059d9bcbc2b5@AcuMS.aculab.com>
+ <YefXg03hXtrdUj6y@paasikivi.fi.intel.com>
+ <20220119100635.6c45372b@gandalf.local.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9c26ca9bf75d494ea966059d9bcbc2b5@AcuMS.aculab.com>
+In-Reply-To: <20220119100635.6c45372b@gandalf.local.home>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 04:38:26PM +0000, David Laight wrote:
-> > > > > +static inline const char *yesno(bool v) { return v ? "yes" : "no"; }
+On Wed, Jan 19, 2022 at 10:06:35AM -0500, Steven Rostedt wrote:
+> On Wed, 19 Jan 2022 11:18:59 +0200
+> Sakari Ailus <sakari.ailus@linux.intel.com> wrote:
+> > On Tue, Jan 18, 2022 at 11:24:48PM -0800, Lucas De Marchi wrote:
+> > > @@ -1354,8 +1345,7 @@ static bool tomoyo_print_condition(struct tomoyo_io_buffer *head,
+> > >  	case 3:
+> > >  		if (cond->grant_log != TOMOYO_GRANTLOG_AUTO)
+> > >  			tomoyo_io_printf(head, " grant_log=%s",
+> > > -					 tomoyo_yesno(cond->grant_log ==
+> > > -						      TOMOYO_GRANTLOG_YES));
+> > > +					 yesno(cond->grant_log == TOMOYO_GRANTLOG_YES));  
 > > 
-> > 	return "yes\0no" + v * 4;
-> > 
-> > :-)
+> > This would be better split on two lines.
 > 
-> except '"no\0\0yes" + v * 4' works a bit better.
+> Really? Yuck!
+> 
+> I thought the "max line size" guideline was going to grow to a 100, but I
+> still see it as 80. But anyway...
+> 
+> 	cond->grant_log ==
+> 	TOMOYO_GRANTLOG_YES
+> 
+> is not readable at all. Not compared to
+> 
+> 	cond->grant_log == TOMOYO_GRANTLOG_YES
+> 
+> I say keep it one line!
+> 
+> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-Is it a C code obfuscation contest?
+I believe Sakari strongly follows the 80 rule, which means...
+
+> > Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+
+...chose either of these tags and be happy with :-)
 
 -- 
 With Best Regards,
