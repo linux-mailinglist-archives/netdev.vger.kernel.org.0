@@ -2,101 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30817493D74
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 16:43:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3748493D8E
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 16:46:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355855AbiASPmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 10:42:36 -0500
-Received: from www62.your-server.de ([213.133.104.62]:52166 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355832AbiASPmf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 10:42:35 -0500
-Received: from [78.46.152.42] (helo=sslproxy04.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nAD6S-000FUR-0G; Wed, 19 Jan 2022 16:42:28 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nAD6R-000O1M-Iy; Wed, 19 Jan 2022 16:42:27 +0100
-Subject: Re: [PATCH riscv-next] riscv: bpf: Fix eBPF's exception tables
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>, palmer@rivosinc.com
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Netdev <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Tong Tiangen <tongtiangen@huawei.com>
-References: <20220110165208.1826-1-jszhang@kernel.org>
- <Ydxljv2Q4YNDYRTx@xhacker>
- <CAJ+HfNiS7Ss0FJowPUrrKvuC+1Kn9gXb=VqNoqh3eWJDu=m4Mg@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <1b104397-8cb7-c5c2-92cb-11ce56c9a8de@iogearbox.net>
-Date:   Wed, 19 Jan 2022 16:42:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1355893AbiASPpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 10:45:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34686 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242199AbiASPps (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 10:45:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF250C061574;
+        Wed, 19 Jan 2022 07:45:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97A37B81A0D;
+        Wed, 19 Jan 2022 15:45:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1238AC004E1;
+        Wed, 19 Jan 2022 15:45:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642607145;
+        bh=lGvpU5SU2oeO2Gj2gUOdONvIDUBxvoCyLVrP9LdAyK0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uFHSCn+eRhus5s0gMFtlk4M/7JhocnfANlW1cVHA0G6W01cpJd8F+h8fndGiFBKZn
+         nCZZCtAQC4k7abNvVhvbVvzHZ7dwbuD74/T+NiX/IT3CWwnmAbzJ0EI/MN3ouRA4NK
+         JcMa2vYnHRlxojVgmRVHQy8kAseKCb6RYvwbbz/tuDQ+FYrQPMEKinDs+/J/QCmOle
+         OH44fC1gV0pSNhO5CC8MUprlf5WJ73QIy9YW2JqYDexDIA+m9Gz2JyKjFMMikgheJ8
+         PhLYlTQI+6mhi8SuY2B8vNy7F68ziMiWUL/NDEe4veZOx2TcwQKBwmk2W+zhD/Bwkn
+         UzTQKF64F/eMw==
+Date:   Wed, 19 Jan 2022 15:45:29 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-ide@vger.kernel.org, linux-crypto@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, dmaengine@vger.kernel.org,
+        linux-pm@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Improve phandle-array schemas
+Message-ID: <YegyGbGcwSNo49gY@sirena.org.uk>
+References: <20220119015038.2433585-1-robh@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CAJ+HfNiS7Ss0FJowPUrrKvuC+1Kn9gXb=VqNoqh3eWJDu=m4Mg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26427/Wed Jan 19 11:42:43 2022)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="czK8d+IES+j+3Pl3"
+Content-Disposition: inline
+In-Reply-To: <20220119015038.2433585-1-robh@kernel.org>
+X-Cookie: This bag is recyclable.
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/19/22 11:24 AM, Björn Töpel wrote:
-> On Mon, 10 Jan 2022 at 18:05, Jisheng Zhang <jszhang@kernel.org> wrote:
->> On Tue, Jan 11, 2022 at 12:52:08AM +0800, Jisheng Zhang wrote:
->>> eBPF's exception tables needs to be modified to relative synchronously.
->>>
->>> Suggested-by: Tong Tiangen <tongtiangen@huawei.com>
->>> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> 
-> Nice catch, and apologies for the slow response.
-> 
-> Acked-by: Björn Töpel <bjorn@kernel.org>
-> 
->>> ---
->>>   arch/riscv/net/bpf_jit_comp64.c | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
->>> index 69bab7e28f91..44c97535bc15 100644
->>> --- a/arch/riscv/net/bpf_jit_comp64.c
->>> +++ b/arch/riscv/net/bpf_jit_comp64.c
->>> @@ -498,7 +498,7 @@ static int add_exception_handler(const struct bpf_insn *insn,
->>>        offset = pc - (long)&ex->insn;
->>>        if (WARN_ON_ONCE(offset >= 0 || offset < INT_MIN))
->>>                return -ERANGE;
->>> -     ex->insn = pc;
->>> +     ex->insn = offset;
->>
->> Hi Palmer,
->>
->> Tong pointed out this issue but there was something wrong with my email
->> forwarding address, so I didn't get his reply. Today, I searched on
->> lore.kernel.org just found his reply, sorry for inconvenience.
-> 
-> AFAIK, Jisheng's extable work is still in Palmer's for-next tree.
-> 
-> Daniel/Alexei: This eBPF must follow commit 1f77ed9422cb ("riscv:
-> switch to relative extable and other improvements"), which is in
-> Palmer's tree. It cannot go via bpf-next.
 
-Thanks for letting us know, then lets route this fix via Palmer. Maybe he could
-also add Fixes tags when applying, so stable can pick it up later on.
+--czK8d+IES+j+3Pl3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Cheers,
-Daniel
+On Tue, Jan 18, 2022 at 07:50:38PM -0600, Rob Herring wrote:
+> The 'phandle-array' type is a bit ambiguous. It can be either just an
+> array of phandles or an array of phandles plus args. Many schemas for
+> phandle-array properties aren't clear in the schema which case applies
+> though the description usually describes it.
+
+Acked-by: Mark Brown <broonie@kernel.org>
+
+--czK8d+IES+j+3Pl3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHoMhgACgkQJNaLcl1U
+h9AndQf6AqqY9YG2aSYiiYYVIPZoOOjUX2h6CnkvjYCVewt5gN+SxENXpgaLc0p7
+vUq1Rp5AXTu7uFjL2ebgJ8UZPO5cjNIcj81k5OTqRYCvRBqWrPJpsacwSvuNAIUC
+wrrUMNkFdRa0zaMGhMzVeaIAH9o5nqER6z2qXqGG9ccVbPBok8wg6W1xQCDlmyp8
+wzYMD1gLPXMihGy7mzkZd/BHFVdUjKVmYlGiUNl7GI9MVp6v8wt8BbDP4qng30Yz
+BLjhS3YyPDXdeYumU5Mvht+JzYmhn8Ihggw6dbQf6dO/UjwL+5ApN6em8mMhc0VH
+9cXSuI+tv6I8BrIvDkVLV+hVCpjdBg==
+=GpmZ
+-----END PGP SIGNATURE-----
+
+--czK8d+IES+j+3Pl3--
