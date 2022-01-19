@@ -2,76 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B401493C3A
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 15:51:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE8F493C42
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 15:53:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355285AbiASOul (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 09:50:41 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:30289 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234438AbiASOui (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 09:50:38 -0500
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Jf7pR5qVdzbk4R;
-        Wed, 19 Jan 2022 22:49:51 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
- (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Wed, 19 Jan
- 2022 22:50:36 +0800
-From:   Hou Tao <houtao1@huawei.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Ard Biesheuvel <ard.biesheuvel@arm.com>
-CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <houtao1@huawei.com>
-Subject: [PATCH bpf-next] bpf, arm64: enable kfunc call
-Date:   Wed, 19 Jan 2022 22:49:42 +0800
-Message-ID: <20220119144942.305568-1-houtao1@huawei.com>
-X-Mailer: git-send-email 2.27.0
+        id S1355308AbiASOxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 09:53:10 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49149 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1355296AbiASOxI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 09:53:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642603987;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=QnoVnkWNJcRI9CxJFxEhranlUVrSFdV8X6+O7Egmt5A=;
+        b=Z2X8tpvHikZO+PksoCsBymSp27fsimIMuLq9xrBBnK12txQcG7pRhadAQgnyCerwN1IPZf
+        r96egfMZK2mvYkpWo7wAvinfu4poFVEMscfGO9Q7fcNd+l1mSX6PTcGWGkKhvDcQAwecFx
+        gNNX+vfNfW1qKnrmzNABVlRgLOqC0JQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-104-Oo5RWqqoOv2QT3ytND8nEA-1; Wed, 19 Jan 2022 09:53:02 -0500
+X-MC-Unique: Oo5RWqqoOv2QT3ytND8nEA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3D017343CA;
+        Wed, 19 Jan 2022 14:53:01 +0000 (UTC)
+Received: from calimero.vinschen.de (ovpn-112-9.ams2.redhat.com [10.36.112.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CC2242AA81;
+        Wed, 19 Jan 2022 14:53:00 +0000 (UTC)
+Received: by calimero.vinschen.de (Postfix, from userid 500)
+        id 5BDB9A80D67; Wed, 19 Jan 2022 15:52:59 +0100 (CET)
+From:   Corinna Vinschen <vinschen@redhat.com>
+To:     intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     Lennert Buytenhek <buytenh@wantstofly.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: [PATCH 0/2 net-next v6] igb/igc: fix XDP registration
+Date:   Wed, 19 Jan 2022 15:52:57 +0100
+Message-Id: <20220119145259.1790015-1-vinschen@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500025.china.huawei.com (7.185.36.35)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit b2eed9b58811 ("arm64/kernel: kaslr: reduce module
-randomization range to 2 GB"), for arm64 whether KASLR is enabled
-or not, the module is placed within 2GB of the kernel region, so
-s32 in bpf_kfunc_desc is sufficient to represente the offset of
-module function relative to __bpf_call_base. The only thing needed
-is to override bpf_jit_supports_kfunc_call().
+Fix the kernel warning "Missing unregister, handled but fix driver"
+when running, e.g.,
 
-Signed-off-by: Hou Tao <houtao1@huawei.com>
----
- arch/arm64/net/bpf_jit_comp.c | 5 +++++
- 1 file changed, 5 insertions(+)
+  $ ethtool -G eth0 rx 1024
 
-diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-index e96d4d87291f..74f9a9b6a053 100644
---- a/arch/arm64/net/bpf_jit_comp.c
-+++ b/arch/arm64/net/bpf_jit_comp.c
-@@ -1143,6 +1143,11 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	return prog;
- }
- 
-+bool bpf_jit_supports_kfunc_call(void)
-+{
-+	return true;
-+}
-+
- u64 bpf_jit_alloc_exec_limit(void)
- {
- 	return VMALLOC_END - VMALLOC_START;
+on igc.  Remove memset hack from igb and align igb code to igc. 
+
+v3: use dev_err rather than netdev_err, just as in error case.
+v4: fix a return copy/pasted from original igc code into the correct
+    `goto err', improve commit message.
+v5: add missing dma_free_coherent calls in error case.
+v6: refactor code to register with XDP first, as in igc originally.
+
+Corinna Vinschen (2):
+  igc: avoid kernel warning when changing RX ring parameters
+  igb: refactor XDP registration
+
+ drivers/net/ethernet/intel/igb/igb_ethtool.c |  4 ----
+ drivers/net/ethernet/intel/igb/igb_main.c    | 19 +++++++++++++------
+ drivers/net/ethernet/intel/igc/igc_main.c    |  3 +++
+ 3 files changed, 16 insertions(+), 10 deletions(-)
+
 -- 
 2.27.0
 
