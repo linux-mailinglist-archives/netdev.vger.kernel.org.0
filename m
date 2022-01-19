@@ -2,79 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CADC2493BEA
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 15:30:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2932493BEE
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 15:32:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238038AbiASOaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 09:30:11 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38902 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235332AbiASOaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 09:30:11 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D54E6133E;
-        Wed, 19 Jan 2022 14:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EB6A2C340E1;
-        Wed, 19 Jan 2022 14:30:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642602610;
-        bh=cqYXfpaFMP1VTeXlqw/vuOnER1tXJuFUpdLwPglyVZo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uWaJUYr9prJyLDPfC2fa18jZNPJ7BKqNSqSwAWvcLCI8NRHbPLfwnCA52cy2ozI1G
-         0vBXvtUZ7Z29OZ69GMdEpLxhBXb327Afi4I5cbS8UHSjs3Jb7OxWkAsoobTuv7wAOP
-         QrmUlhgo2F1Pu08+P90cttLDewOGr+DivwxtNbFmClQEyL3ghertRdpWbGSJ60DTIm
-         BtMeafAZHjZ9BpixAfQpovlxxC7slwk1ZxkTtWOWCmMBLXy1yr2PdHNTtxk4+gcjjl
-         EGNl6NQHgmShT7bWJvYSg/+OoLgexOgVnhd6MutpEJlkgO+jZkWNETwqjRHGBSM6pW
-         qim19LERW/lpQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CF0C2F60795;
-        Wed, 19 Jan 2022 14:30:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1355135AbiASObi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 09:31:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45528 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241578AbiASObg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 09:31:36 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CAFC061574
+        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 06:31:35 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id a18so12894616edj.7
+        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 06:31:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=rXarSKXjLvTr86CMHjdFWEkfCv6OvQ6EIg7MWpF4IVo=;
+        b=g7590Te0/CU1Q1W7qSXmsJ9OPa096esmOgzTg+HaEVJD+7/1at79pMwLQImn2Mae4z
+         OCczHTigQ+Kqyafhs0fkNFXfNl3gHZ2s0WTBCKaLRsLkYWihMhZYQxyHY8+61Y2t5YZw
+         hdycLTrMfWBAHgONdD+6eB52XwmE2zVG07PupuPJ6ierNxVYYzT/HHXcaEezKvI0go7I
+         gTsYvbgoM0fa8ow315FMhB9XYuFd9QNckACFfNCVLdqTrtwDD2ilHVVB7sZaNGEhP8Nq
+         7hMowNYidcXf/qQd89e2rmDmgdAf4TUcf4YiurUQqggrpu1/0kUw4pn0A5EQn7TmNyln
+         CEKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=rXarSKXjLvTr86CMHjdFWEkfCv6OvQ6EIg7MWpF4IVo=;
+        b=n1B0ZwGU06wrdAJNQtNf5FTCaKicAlOr+ftsPU6dluN7tfS3DAy3LI62K8UulgeM/N
+         /G5mZ0iImiYdlR7vPwTHptdGcm6mX5/6pDiBC1+O8lE6hnkGRjAyn6h75oayYjBa3PA8
+         UmrXiY/DTVCeME903t4b5ByEapYLdUtOJQgWKeJKHX/j4g8vlnLnWaG8MgfaqX/dgzfR
+         1mBN39CMrvhlm+kVJ/7RCUq0ND3o6lMbnGacnz7zExTvJRWhGjObcSmUfnH9+MGmoDLl
+         RzUfxQ6SquTRkV/cbD8GaC5DHFWLeUKEZ3C8KI6ry7z+pwevYNVPZX/YV63MKqOxEZpr
+         XElg==
+X-Gm-Message-State: AOAM533SjisO3lt/bE1EjcqasJtdvEQcZBkH0i+7M+jZAc/5xBngvTrB
+        Nmityus9mM+RlK8KGgxn8VBpYKNxT96WNnwQRP4=
+X-Google-Smtp-Source: ABdhPJxJU+UyG0nGMZPo5xx2kUu6Zo6E39YlyzLCQnZKPUwd1lRYS8sRJLJVOnJeqeYftoe61bIgjc41WL2TlcpwEIM=
+X-Received: by 2002:a17:907:1c91:: with SMTP id nb17mr24138391ejc.712.1642602693421;
+ Wed, 19 Jan 2022 06:31:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: phy: micrel: use kszphy_suspend()/kszphy_resume for irq
- aware devices
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164260260984.9645.1800345294074661941.git-patchwork-notify@kernel.org>
-Date:   Wed, 19 Jan 2022 14:30:09 +0000
-References: <20220118110812.1767997-1-claudiu.beznea@microchip.com>
-In-Reply-To: <20220118110812.1767997-1-claudiu.beznea@microchip.com>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, ioana.ciornei@nxp.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Received: by 2002:a54:2ec1:0:0:0:0:0 with HTTP; Wed, 19 Jan 2022 06:31:32
+ -0800 (PST)
+Reply-To: ibrahimidewu4@gmail.com
+From:   "Mr. Ibrahim Idewu" <lawal.asim@gmail.com>
+Date:   Wed, 19 Jan 2022 15:31:32 +0100
+Message-ID: <CAH7GpkWsN09J6+k_S2SpRUKHtR9C1cBkH5BomazfjHm-a+HbHw@mail.gmail.com>
+Subject: URGENT
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hello Dear Friend,
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+My name is Mr.Ibrahim Idewu. I have decided to seek a confidential
+co-operation  with you in the execution of the deal described
+here-under for our both  mutual benefit and I hope you will keep it a
+top secret because of the nature  of the transaction, During the
+course of our bank year auditing, I discovered  an unclaimed/abandoned
+fund, sum total of {US$19.3 Million United State  Dollars} in the bank
+account that belongs to a Saudi Arabia businessman Who unfortunately
+lost his life and entire family in a Motor Accident.
 
-On Tue, 18 Jan 2022 13:08:12 +0200 you wrote:
-> On a setup with KSZ9131 and MACB drivers it happens on suspend path, from
-> time to time, that the PHY interrupt arrives after PHY and MACB were
-> suspended (PHY via genphy_suspend(), MACB via macb_suspend()). In this
-> case the phy_read() at the beginning of kszphy_handle_interrupt() will
-> fail (as MACB driver is suspended at this time) leading to phy_error()
-> being called and a stack trace being displayed on console. To solve this
-> .suspend/.resume functions for all KSZ devices implementing
-> .handle_interrupt were replaced with kszphy_suspend()/kszphy_resume()
-> which disable/enable interrupt before/after calling
-> genphy_suspend()/genphy_resume().
-> 
-> [...]
+Now our bank has been waiting for any of the relatives to come-up for
+the claim but nobody has done that. I personally has been unsuccessful
+in locating any of the relatives, now, I sincerely seek your consent
+to present you as the next of kin / Will Beneficiary to the deceased
+so that the proceeds of this account valued at {US$19.3 Million United
+State Dollars} can be paid to you, which we will share in these
+percentages ratio, 60% to me and 40% to you. All I request is your
+utmost sincere co-operation; trust and maximum confidentiality to
+achieve this project successfully. I have carefully mapped out the
+moralities for execution of this transaction under a legitimate
+arrangement to protect you from any breach of the law both in your
+country and here in Burkina Faso when the fund is being transferred to
+your bank account.
 
-Here is the summary with links:
-  - net: phy: micrel: use kszphy_suspend()/kszphy_resume for irq aware devices
-    https://git.kernel.org/netdev/net/c/f1131b9c23fb
+I will have to provide all the relevant document that will be
+requested to indicate that you are the rightful beneficiary of this
+legacy and our bank will release the fund to you without any further
+delay, upon your consideration and acceptance of this offer, please
+send me the following information as stated below so we can proceed
+and get this fund transferred to your designated bank account
+immediately.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+-Your Full Name:
+-Your Contact Address:
+-Your direct Mobile telephone Number:
+-Your Date of Birth:
+-Your occupation:
 
+I await your swift response and re-assurance.
 
+Best regards,
+Mr.Ibrahim Idewu.
