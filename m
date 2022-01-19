@@ -2,99 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31E25493AD3
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 14:04:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6C3C493ADC
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 14:11:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354651AbiASNEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 08:04:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354633AbiASNEw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 08:04:52 -0500
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986EEC06161C
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 05:04:52 -0800 (PST)
-Received: by mail-qk1-x72b.google.com with SMTP id h2so2549444qkp.10
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 05:04:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PdBsLwTPPCRnlF0tAGck2uC9WYpIzKTvIZtFGv5axas=;
-        b=id2q0sYnHRhFNE9VD9xueoZt/qcezsUBeZvxMkZqSpN6A21B1azzpRyW7wgh4WjfiK
-         hWCfpAzLanOMfrKhduRcgE1Qru2f3jbOzbPV/YlF2ynDNO6GG5FrxtAmDqKFcvTLacg0
-         quqzUTMC/M7z2d3BrugWX/AAfPxHRmLksobHfRXyR3ZLBAeT9dqRjkECzPIzC3RpoAU7
-         HVM291if145vJdGYmP0D9AU4bBbiPb8ybnEpn9Li+DTcwBFOpCA0kkuMVAIJE/UQ3thI
-         87k6B1OkcXdfhY9iKZuBKJJfUeMxb5TRggbPHSjbsPstzr1wQHtWaF3SY408Zneh01zb
-         ZPsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PdBsLwTPPCRnlF0tAGck2uC9WYpIzKTvIZtFGv5axas=;
-        b=ontzGfD+HmiFUVqj+xWn41mqFZmuQEtaFFBndaH1kKAToxS+Szyc6QtWF+p9k7d74p
-         YQGp8B/9Jm7gB4y0dJKRRfXE+ZL+2WaNRbWCsntNL58hmG8J57l1CteBSl++g2A+iTZI
-         0p194iktGeA9yFhhDl1CbrEjHW6wnwQo0+gmyakrUw8KLac+rIXxrtnyP6/6jrybD38x
-         ZfTyQmzfB9SSbz4cf+5aI6Jd0qgL0Ys1QNMJnBFFwzpIDyGFF89hn4ahoBmkmtPCFU3r
-         VJpONVEeam5cfncDPOmEJZWalw6myQ5uutSDcAI44ei02Yg9i5BimUy1uLeR+DImV6cB
-         kOaA==
-X-Gm-Message-State: AOAM5336dQqbD+7SWOf1DE1dE+G5pxeymOJxTuG+BFDTUM5AV3NpiDuo
-        I3JjZnbep5ezKL1tfUvs9DGxPw==
-X-Google-Smtp-Source: ABdhPJwP2OqdieY5HOVRhMknqsPZXcnogOqeLFHeDfvJHpNa6Geya14CaF6r2cZylDrXsIK3Raih2g==
-X-Received: by 2002:a05:620a:12f6:: with SMTP id f22mr21806061qkl.652.1642597491724;
-        Wed, 19 Jan 2022 05:04:51 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id de3sm2993864qkb.79.2022.01.19.05.04.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jan 2022 05:04:51 -0800 (PST)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1nAAdu-001IJC-DT; Wed, 19 Jan 2022 09:04:50 -0400
-Date:   Wed, 19 Jan 2022 09:04:50 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Praveen Kannoju <praveen.kannoju@oracle.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
+        id S1354670AbiASNL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 08:11:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54114 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354498AbiASNL1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 08:11:27 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B277B81837;
+        Wed, 19 Jan 2022 13:11:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B7EC340E1;
+        Wed, 19 Jan 2022 13:11:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642597884;
+        bh=RHxDuyEXa0btBE9bl6vNwhNZUf3Bjj1q/NWYIKk6LYc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bvjdcT3RIZPs1sbwonlpWqzItBLu9YPViD9HLGl+cC7dXG4WjzL6OhAPMk3hDRa5i
+         cKpYdsgSe46oiCrjJ/3HKrKQAEjwSOKCM35sk5Z0VKUlwFt2CJxKrORi7GRdKMcDy1
+         h0T1rvgpwIJAbKdeoHhLwOf91PrDlDt41r9Q3dWjML0a7089fwnTOgBXlgNkH360tf
+         vH6f91TQy/ae+kmQoFF3cZZ7j9k9GgRSCRGm8Y3bkuyeKpGzf7gzlFRuNzBLy5m6Ji
+         XdGozlyuqp2sQw3JGCb49Mq7MOWmv6HNgb2qMqGzvRnCioNSZIrGgsNySXt/FXuwap
+         a8yifnjktjXqw==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Holger Brunck <holger.brunck@hitachienergy.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Rama Nichanamatlu <rama.nichanamatlu@oracle.com>,
-        Rajesh Sivaramasubramaniom 
-        <rajesh.sivaramasubramaniom@oracle.com>
-Subject: Re: [PATCH RFC] rds: ib: Reduce the contention caused by the
- asynchronous workers to flush the mr pool
-Message-ID: <20220119130450.GJ8034@ziepe.ca>
-References: <1642517238-9912-1-git-send-email-praveen.kannoju@oracle.com>
- <53D98F26-FC52-4F3E-9700-ED0312756785@oracle.com>
- <20220118191754.GG8034@ziepe.ca>
- <CEFD48B4-3360-4040-B41A-49B8046D28E8@oracle.com>
- <Yee2tMJBd4kC8axv@unreal>
- <PH0PR10MB5515E99CA5DF423BDEBB038E8C599@PH0PR10MB5515.namprd10.prod.outlook.com>
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-phy@lists.infradead.org, Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH devicetree v3] dt-bindings: phy: Add `tx-p2p-microvolt` property binding
+Date:   Wed, 19 Jan 2022 14:11:17 +0100
+Message-Id: <20220119131117.30245-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR10MB5515E99CA5DF423BDEBB038E8C599@PH0PR10MB5515.namprd10.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 11:46:16AM +0000, Praveen Kannoju wrote:
- 
-> 6. Jason, the only function "rds_ib_free_mr" which accesses the
-> introduced bool variable "flush_ongoing" to spawn a flush worker
-> does not crucially impact the availability of MR's, because the
-> flush happens from allocation path as well when necessary.  Hence
-> the Load-store ordering is not essentially needed here, because of
-> which we chose smp_rmb() and smp_wmb() over smp_load_acquire() and
-> smp_store_release().
+Common PHYs and network PCSes often have the possibility to specify
+peak-to-peak voltage on the differential pair - the default voltage
+sometimes needs to be changed for a particular board.
 
-That seems like a confusing statement, you added barriers which do the
-same things as acquire/release then say you didn't need acquire
-release?
+Add properties `tx-p2p-microvolt` and `tx-p2p-microvolt-names` for this
+purpose. The second property is needed to specify the mode for the
+corresponding voltage in the `tx-p2p-microvolt` property, if the voltage
+is to be used only for speficic mode. More voltage-mode pairs can be
+specified.
 
-I think this is using barriers wrong.
+Example usage with only one voltage (it will be used for all supported
+PHY modes, the `tx-p2p-microvolt-names` property is not needed in this
+case):
 
-Jason
+  tx-p2p-microvolt = <915000>;
+
+Example usage with voltages for multiple modes:
+
+  tx-p2p-microvolt = <915000>, <1100000>, <1200000>;
+  tx-p2p-microvolt-names = "2500base-x", "usb", "pcie";
+
+Add these properties into a separate file phy/transmit-amplitude.yaml,
+which should be referenced by any binding that uses it.
+
+Signed-off-by: Marek Behún <kabel@kernel.org>
+---
+Change since v2:
+- removed 'select:' as requested by Rob. Instead the schema should be
+  referenced by any binding that uses it. This also fixed indentation
+  warnings from Rob's bot, since they warned about lines in the select
+  statement
+---
+ .../bindings/phy/transmit-amplitude.yaml      | 103 ++++++++++++++++++
+ 1 file changed, 103 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/phy/transmit-amplitude.yaml
+
+diff --git a/Documentation/devicetree/bindings/phy/transmit-amplitude.yaml b/Documentation/devicetree/bindings/phy/transmit-amplitude.yaml
+new file mode 100644
+index 000000000000..51492fe738ec
+--- /dev/null
++++ b/Documentation/devicetree/bindings/phy/transmit-amplitude.yaml
+@@ -0,0 +1,103 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/phy/transmit-amplitude.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Common PHY and network PCS transmit amplitude property binding
++
++description:
++  Binding describing the peak-to-peak transmit amplitude for common PHYs
++  and network PCSes.
++
++maintainers:
++  - Marek Behún <kabel@kernel.org>
++
++properties:
++  tx-p2p-microvolt:
++    description:
++      Transmit amplitude voltages in microvolts, peak-to-peak. If this property
++      contains multiple values for various PHY modes, the
++      'tx-p2p-microvolt-names' property must be provided and contain
++      corresponding mode names.
++
++  tx-p2p-microvolt-names:
++    description: |
++      Names of the modes corresponding to voltages in the 'tx-p2p-microvolt'
++      property. Required only if multiple voltages are provided.
++
++      If a value of 'default' is provided, the system should use it for any PHY
++      mode that is otherwise not defined here. If 'default' is not provided, the
++      system should use manufacturer default value.
++    minItems: 1
++    maxItems: 16
++    items:
++      enum:
++        - default
++
++        # ethernet modes
++        - sgmii
++        - qsgmii
++        - xgmii
++        - 1000base-x
++        - 2500base-x
++        - 5gbase-r
++        - rxaui
++        - xaui
++        - 10gbase-kr
++        - usxgmii
++        - 10gbase-r
++        - 25gbase-r
++
++        # PCIe modes
++        - pcie
++        - pcie1
++        - pcie2
++        - pcie3
++        - pcie4
++        - pcie5
++        - pcie6
++
++        # USB modes
++        - usb
++        - usb-ls
++        - usb-fs
++        - usb-hs
++        - usb-ss
++        - usb-ss+
++        - usb-4
++
++        # storage modes
++        - sata
++        - ufs-hs
++        - ufs-hs-a
++        - ufs-hs-b
++
++        # display modes
++        - lvds
++        - dp
++        - dp-rbr
++        - dp-hbr
++        - dp-hbr2
++        - dp-hbr3
++        - dp-uhbr-10
++        - dp-uhbr-13.5
++        - dp-uhbr-20
++
++        # camera modes
++        - mipi-dphy
++        - mipi-dphy-univ
++        - mipi-dphy-v2.5-univ
++
++dependencies:
++  tx-p2p-microvolt-names: [ tx-p2p-microvolt ]
++
++additionalProperties: true
++
++examples:
++  - |
++    phy: phy {
++      #phy-cells = <1>;
++      tx-p2p-microvolt = <915000>, <1100000>, <1200000>;
++      tx-p2p-microvolt-names = "2500base-x", "usb-hs", "usb-ss";
++    };
+-- 
+2.34.1
+
