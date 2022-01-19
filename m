@@ -2,97 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EA2F493D65
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 16:41:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30817493D74
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 16:43:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355835AbiASPlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 10:41:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33458 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355826AbiASPk5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 10:40:57 -0500
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A284C061574
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 07:40:57 -0800 (PST)
-Received: by mail-il1-x134.google.com with SMTP id d14so2518455ila.1
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 07:40:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=unwF9QbB1EwW1U667yhctowhDFu5SZcl3y/KxnaePIE=;
-        b=l3YrgfO57SFwdrJjW/Nvp8k7Zb41PBf8jxAhxd3Vu81jZsL5wSw3bRcpeokZYcnn3y
-         gs9G++2vxGa0YDoRN0vQ5ES+sUic9w2vOVHwXwhffdXmbxISx3Ns3iEy0vgoGRCKBulV
-         ZUxiiR6X75CH2sfeME5t9t5gOrVP3mx0lUzW9YZPLO10yNBtsQttXTK12T9D2t6cwCr4
-         IDprsv7mrPXWdzgA3qWM493YqYz8DPDecb31iKIYckPIx/KpGhGiKdWOQ4uhbDQmEUd7
-         bdXo2yvd3PM/4EsUvDb8HkBvyp4wcaRs9uxIBYGO+SrJKXpL4YKLGAwPSBzw/o4XIo75
-         TxZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=unwF9QbB1EwW1U667yhctowhDFu5SZcl3y/KxnaePIE=;
-        b=aA9WAoK0JsT78pqs28hTjADPV2uqD74/OArZZFQRUegd6DsN4fRLXIdxPy4olWmWzq
-         dUp/ZrYUFAE7onfkMPtXrBH2Nbgl7gMD7EwF6rryQ1NpuafS0poP1VfWrgmI8xefd6S5
-         Yf6JpOngj9aikKzvFGwAf4McZ73rXHzPe4c6VM7bJ4Xv5S01jWXGJwVWEjZ3djRzRALK
-         Tb94b9VuVjhnvyWKEjixbhXdt6Gb4zNF1I/pTZOPQBmbRrzV1V6OkkUtzOS1vXAWrG9e
-         EtZIlLPWOv+bi/9rLfs3DMxCqJndIirStkwe/WkSRxA9M7LAhitfaHAC83ihnlDt3Coz
-         xBNQ==
-X-Gm-Message-State: AOAM5338ku57Z05boWBRsjL4QpHMM2pqPg7D7ugyW5qoRrDtTSQaQ/lN
-        oD95dfWGRiBiDv+1q+sXqadoTP91UhU=
-X-Google-Smtp-Source: ABdhPJxOVUD+sqNUyaQjhZWYeef82+XBi6m113ZDjUCZ31lZNyhvH53EbUZrCW1/F0F9b1F61UoUtQ==
-X-Received: by 2002:a92:d68b:: with SMTP id p11mr15528731iln.222.1642606856495;
-        Wed, 19 Jan 2022 07:40:56 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.58])
-        by smtp.googlemail.com with ESMTPSA id b11sm88413ilr.51.2022.01.19.07.40.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Jan 2022 07:40:55 -0800 (PST)
-Message-ID: <1432bf8b-dda9-0cd0-d04a-aab41cb216d2@gmail.com>
-Date:   Wed, 19 Jan 2022 08:40:54 -0700
+        id S1355855AbiASPmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 10:42:36 -0500
+Received: from www62.your-server.de ([213.133.104.62]:52166 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355832AbiASPmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 10:42:35 -0500
+Received: from [78.46.152.42] (helo=sslproxy04.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nAD6S-000FUR-0G; Wed, 19 Jan 2022 16:42:28 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nAD6R-000O1M-Iy; Wed, 19 Jan 2022 16:42:27 +0100
+Subject: Re: [PATCH riscv-next] riscv: bpf: Fix eBPF's exception tables
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Jisheng Zhang <jszhang@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>, palmer@rivosinc.com
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Tong Tiangen <tongtiangen@huawei.com>
+References: <20220110165208.1826-1-jszhang@kernel.org>
+ <Ydxljv2Q4YNDYRTx@xhacker>
+ <CAJ+HfNiS7Ss0FJowPUrrKvuC+1Kn9gXb=VqNoqh3eWJDu=m4Mg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1b104397-8cb7-c5c2-92cb-11ce56c9a8de@iogearbox.net>
+Date:   Wed, 19 Jan 2022 16:42:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.0
-Subject: Re: [PATCH v2 net 2/2] ipv4: add net_hash_mix() dispersion to
- fib_info_laddrhash keys
+In-Reply-To: <CAJ+HfNiS7Ss0FJowPUrrKvuC+1Kn9gXb=VqNoqh3eWJDu=m4Mg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-References: <20220119100413.4077866-1-eric.dumazet@gmail.com>
- <20220119100413.4077866-3-eric.dumazet@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220119100413.4077866-3-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26427/Wed Jan 19 11:42:43 2022)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/19/22 3:04 AM, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On 1/19/22 11:24 AM, Björn Töpel wrote:
+> On Mon, 10 Jan 2022 at 18:05, Jisheng Zhang <jszhang@kernel.org> wrote:
+>> On Tue, Jan 11, 2022 at 12:52:08AM +0800, Jisheng Zhang wrote:
+>>> eBPF's exception tables needs to be modified to relative synchronously.
+>>>
+>>> Suggested-by: Tong Tiangen <tongtiangen@huawei.com>
+>>> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 > 
-> net/ipv4/fib_semantics.c uses a hash table (fib_info_laddrhash)
-> in which fib_sync_down_addr() can locate fib_info
-> based on IPv4 local address.
+> Nice catch, and apologies for the slow response.
 > 
-> This hash table is resized based on total number of
-> hashed fib_info, but the hash function is only
-> using the local address.
+> Acked-by: Björn Töpel <bjorn@kernel.org>
 > 
-> For hosts having many active network namespaces,
-> all fib_info for loopback devices (IPv4 address 127.0.0.1)
-> are hashed into a single bucket, making netns dismantles
-> very slow.
+>>> ---
+>>>   arch/riscv/net/bpf_jit_comp64.c | 2 +-
+>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
+>>> index 69bab7e28f91..44c97535bc15 100644
+>>> --- a/arch/riscv/net/bpf_jit_comp64.c
+>>> +++ b/arch/riscv/net/bpf_jit_comp64.c
+>>> @@ -498,7 +498,7 @@ static int add_exception_handler(const struct bpf_insn *insn,
+>>>        offset = pc - (long)&ex->insn;
+>>>        if (WARN_ON_ONCE(offset >= 0 || offset < INT_MIN))
+>>>                return -ERANGE;
+>>> -     ex->insn = pc;
+>>> +     ex->insn = offset;
+>>
+>> Hi Palmer,
+>>
+>> Tong pointed out this issue but there was something wrong with my email
+>> forwarding address, so I didn't get his reply. Today, I searched on
+>> lore.kernel.org just found his reply, sorry for inconvenience.
 > 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> ---
->  net/ipv4/fib_semantics.c | 29 +++++++++++++++--------------
->  1 file changed, 15 insertions(+), 14 deletions(-)
+> AFAIK, Jisheng's extable work is still in Palmer's for-next tree.
 > 
+> Daniel/Alexei: This eBPF must follow commit 1f77ed9422cb ("riscv:
+> switch to relative extable and other improvements"), which is in
+> Palmer's tree. It cannot go via bpf-next.
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Thanks for letting us know, then lets route this fix via Palmer. Maybe he could
+also add Fixes tags when applying, so stable can pick it up later on.
 
-
+Cheers,
+Daniel
