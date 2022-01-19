@@ -2,98 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CFC149352E
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 07:59:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A9F7493531
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 07:59:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351231AbiASG6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 01:58:54 -0500
-Received: from helcar.hmeau.com ([216.24.177.18]:59680 "EHLO fornost.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345647AbiASG6x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jan 2022 01:58:53 -0500
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1nA4vY-0008Th-0i; Wed, 19 Jan 2022 17:58:41 +1100
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Wed, 19 Jan 2022 17:58:40 +1100
-Date:   Wed, 19 Jan 2022 17:58:40 +1100
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>
-Cc:     davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Subject: [PATCH] crypto: authenc - Fix sleep in atomic context in decrypt_tail
-Message-ID: <Yee2oKxPSLaYY31N@gondor.apana.org.au>
-References: <Yd1SIHUNdLIvKhzz@Red>
- <YeD4rt1OVnEMBr+A@gondor.apana.org.au>
- <YeD6vt47+pAl0SxG@gondor.apana.org.au>
- <YeEiWmkyNwfgQgmn@Red>
- <YeZx1aVL0HnT9tCB@Red>
+        id S1351853AbiASG7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 01:59:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242328AbiASG7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 01:59:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9DC3C061574;
+        Tue, 18 Jan 2022 22:59:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 796E7612C4;
+        Wed, 19 Jan 2022 06:59:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A6B2C004E1;
+        Wed, 19 Jan 2022 06:59:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642575545;
+        bh=Pt6R+AEyWFXdl8U2QBDrYxNGlP3nwbUyAONzX9MOrdo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MTdMtvyeQgpsClX00DEelSBLn913bNw7uxDN+W+kBWvauruTkTdCsaourTerq8u6c
+         wxsw+r9+VF+3kaODHvpTkjMIOSd+fFwlNx43Dwnqicr/X0cf0fSCdFPtmgVsOPMDKp
+         qZshUoXeHdr5AWUCOa2w9KraBYymGFktTBA5/p4P5WioLMRHOgcrheY0G+fqzvkodE
+         NfEaly2aSOZcmgS32qwnKA+jsjGiEa6lBRrs1jVZUN0ZCFP5XY6EV9AXeMFpWtaM1A
+         8BH9UMpGp3tMRIUEUdHN5UEDb/RrYWmav3w1zCDQkTBB1f5eqFzRar0Lf/mfHYHEJt
+         Y8NS8Ldl2m+YA==
+Date:   Wed, 19 Jan 2022 08:59:00 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
+        Praveen Kannoju <praveen.kannoju@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Rama Nichanamatlu <rama.nichanamatlu@oracle.com>,
+        Rajesh Sivaramasubramaniom 
+        <rajesh.sivaramasubramaniom@oracle.com>
+Subject: Re: [PATCH RFC] rds: ib: Reduce the contention caused by the
+ asynchronous workers to flush the mr pool
+Message-ID: <Yee2tMJBd4kC8axv@unreal>
+References: <1642517238-9912-1-git-send-email-praveen.kannoju@oracle.com>
+ <53D98F26-FC52-4F3E-9700-ED0312756785@oracle.com>
+ <20220118191754.GG8034@ziepe.ca>
+ <CEFD48B4-3360-4040-B41A-49B8046D28E8@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YeZx1aVL0HnT9tCB@Red>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CEFD48B4-3360-4040-B41A-49B8046D28E8@oracle.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 08:52:53AM +0100, Corentin Labbe wrote:
->
-> With my patch, I got:
-> [   38.515668] BUG: sleeping function called from invalid context at crypto/skcipher.c:482
-> [   38.523708] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 84, name: 1c15000.crypto-
-> [   38.532176] preempt_count: 200, expected: 0
-> [   38.536381] CPU: 6 PID: 84 Comm: 1c15000.crypto- Not tainted 5.16.0-next-20220115-00124-g13473e8fac33-dirty #116
-> [   38.546551] Hardware name: Allwinner A83t board
-> [   38.551100]  unwind_backtrace from show_stack+0x10/0x14
-> [   38.556358]  show_stack from dump_stack_lvl+0x40/0x4c
-> [   38.561428]  dump_stack_lvl from __might_resched+0x118/0x154
-> [   38.567107]  __might_resched from skcipher_walk_virt+0xe8/0xec
-> [   38.572955]  skcipher_walk_virt from crypto_cbc_decrypt+0x2c/0x170
-> [   38.579147]  crypto_cbc_decrypt from crypto_skcipher_decrypt+0x38/0x5c
-> [   38.585680]  crypto_skcipher_decrypt from authenc_verify_ahash_done+0x18/0x34
-> [   38.592825]  authenc_verify_ahash_done from crypto_finalize_request+0x6c/0xe4
-> [   38.599974]  crypto_finalize_request from sun8i_ss_hash_run+0x73c/0xb98
-> [   38.606602]  sun8i_ss_hash_run from crypto_pump_work+0x1a8/0x330
-> [   38.612616]  crypto_pump_work from kthread_worker_fn+0xa8/0x1c4
-> [   38.618550]  kthread_worker_fn from kthread+0xf0/0x110
-> [   38.623701]  kthread from ret_from_fork+0x14/0x2c
-> [   38.628414] Exception stack(0xc2247fb0 to 0xc2247ff8)
-> [   38.633468] 7fa0:                                     00000000 00000000 00000000 00000000
-> [   38.641640] 7fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-> [   38.649809] 7fe0:i 00000000 00000000 00000000 00000000 00000013 00000000
+On Tue, Jan 18, 2022 at 07:42:54PM +0000, Santosh Shilimkar wrote:
+> On Jan 18, 2022, at 11:17 AM, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> > 
+> > On Tue, Jan 18, 2022 at 04:48:43PM +0000, Santosh Shilimkar wrote:
+> >> 
+> >>> On Jan 18, 2022, at 6:47 AM, Praveen Kannoju <praveen.kannoju@oracle.com> wrote:
+> >>> 
+> >>> This patch aims to reduce the number of asynchronous workers being spawned
+> >>> to execute the function "rds_ib_flush_mr_pool" during the high I/O
+> >>> situations. Synchronous call path's to this function "rds_ib_flush_mr_pool"
+> >>> will be executed without being disturbed. By reducing the number of
+> >>> processes contending to flush the mr pool, the total number of D state
+> >>> processes waiting to acquire the mutex lock will be greatly reduced, which
+> >>> otherwise were causing DB instance crash as the corresponding processes
+> >>> were not progressing while waiting to acquire the mutex lock.
+> >>> 
+> >>> Signed-off-by: Praveen Kumar Kannoju <praveen.kannoju@oracle.com>
+> >>> —
+> >>> 
+> >> […]
+> >> 
+> >>> diff --git a/net/rds/ib_rdma.c b/net/rds/ib_rdma.c
+> >>> index 8f070ee..6b640b5 100644
+> >>> +++ b/net/rds/ib_rdma.c
+> >>> @@ -393,6 +393,8 @@ int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *pool,
+> >>> 	 */
+> >>> 	dirty_to_clean = llist_append_to_list(&pool->drop_list, &unmap_list);
+> >>> 	dirty_to_clean += llist_append_to_list(&pool->free_list, &unmap_list);
+> >>> +	WRITE_ONCE(pool->flush_ongoing, true);
+> >>> +	smp_wmb();
+> >>> 	if (free_all) {
+> >>> 		unsigned long flags;
+> >>> 
+> >>> @@ -430,6 +432,8 @@ int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *pool,
+> >>> 	atomic_sub(nfreed, &pool->item_count);
+> >>> 
+> >>> out:
+> >>> +	WRITE_ONCE(pool->flush_ongoing, false);
+> >>> +	smp_wmb();
+> >>> 	mutex_unlock(&pool->flush_lock);
+> >>> 	if (waitqueue_active(&pool->flush_wait))
+> >>> 		wake_up(&pool->flush_wait);
+> >>> @@ -507,8 +511,17 @@ void rds_ib_free_mr(void *trans_private, int invalidate)
+> >>> 
+> >>> 	/* If we've pinned too many pages, request a flush */
+> >>> 	if (atomic_read(&pool->free_pinned) >= pool->max_free_pinned ||
+> >>> -	    atomic_read(&pool->dirty_count) >= pool->max_items / 5)
+> >>> -		queue_delayed_work(rds_ib_mr_wq, &pool->flush_worker, 10);
+> >>> +	    atomic_read(&pool->dirty_count) >= pool->max_items / 5) {
+> >>> +		smp_rmb();
+> >> You won’t need these explicit barriers since above atomic and write once already
+> >> issue them.
+> > 
+> > No, they don't. Use smp_store_release() and smp_load_acquire if you
+> > want to do something like this, but I still can't quite figure out if
+> > this usage of unlocked memory accesses makes any sense at all.
+> > 
+> Indeed, I see that now, thanks. Yeah, these multi variable checks can indeed
+> be racy but they are under lock at least for this code path. But there are few
+> hot path places where single variable states are evaluated atomically instead of
+> heavy lock. 
+
+At least pool->dirty_count is not locked in rds_ib_free_mr() at all.
+
+Thanks
+
 > 
-> This is when testing hmac(sha1) on my crypto driver sun8i-ss and crypto testing authenc(hmac-sha1-sun8i-ss,cbc(aes-generic)).
+> Regards,
+> Santosh
 > 
-> Do you have any idea to better fix my issue ?
-
-This backtrace is caused by a bug in authenc:
-
----8<---
-The function crypto_authenc_decrypt_tail discards its flags
-argument and always relies on the flags from the original request
-when starting its sub-request.
-
-This is clearly wrong as it may cause the SLEEPABLE flag to be
-set when it shouldn't.
-
-Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-
-diff --git a/crypto/authenc.c b/crypto/authenc.c
-index 670bf1a01d00..17f674a7cdff 100644
---- a/crypto/authenc.c
-+++ b/crypto/authenc.c
-@@ -253,7 +253,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
- 		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
- 
- 	skcipher_request_set_tfm(skreq, ctx->enc);
--	skcipher_request_set_callback(skreq, aead_request_flags(req),
-+	skcipher_request_set_callback(skreq, flags,
- 				      req->base.complete, req->base.data);
- 	skcipher_request_set_crypt(skreq, src, dst,
- 				   req->cryptlen - authsize, req->iv);
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
