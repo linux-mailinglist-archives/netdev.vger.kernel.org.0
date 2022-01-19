@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4858494339
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 23:45:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81FCF494348
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 23:56:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344033AbiASWpq convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Jan 2022 17:45:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45586 "EHLO
+        id S1357612AbiASW4H convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Jan 2022 17:56:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232112AbiASWpq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 17:45:46 -0500
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404A6C061574;
-        Wed, 19 Jan 2022 14:45:45 -0800 (PST)
+        with ESMTP id S229716AbiASW4G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 17:56:06 -0500
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409BBC061574;
+        Wed, 19 Jan 2022 14:56:05 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id DF30120002;
-        Wed, 19 Jan 2022 22:45:41 +0000 (UTC)
-Date:   Wed, 19 Jan 2022 23:45:40 +0100
+        by mail.gandi.net (Postfix) with ESMTPSA id B397CFF807;
+        Wed, 19 Jan 2022 22:56:01 +0000 (UTC)
+Date:   Wed, 19 Jan 2022 23:56:00 +0100
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -36,7 +36,7 @@ Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 Subject: Re: [PATCH v3 17/41] net: ieee802154: at86rf230: Call the complete
  helper when a transmission is over
-Message-ID: <20220119234540.3374eb4e@xps13>
+Message-ID: <20220119235600.48173f5b@xps13>
 In-Reply-To: <CAB_54W5Uu9_hpqmeL0MC+1ps=yfn2j0-o46cBL7BeBxKXKHa4w@mail.gmail.com>
 References: <20220117115440.60296-1-miquel.raynal@bootlin.com>
         <20220117115440.60296-18-miquel.raynal@bootlin.com>
@@ -90,24 +90,16 @@ alex.aring@gmail.com wrote on Mon, 17 Jan 2022 19:36:39 -0500:
 > > also this lp->tx_skb can be a dangled pointer, after xmit_complete()
 > > we need to set it to NULL in a xmit_error() we can check on NULL
 > > before calling kfree_skb().
-
-I've created a xmit_error() helper as suggested, which call
-dev_kfree_skb_any() instead of *consume_skb*().
-
+> >  
 > 
-> forget the NULL checking, it's already done by core.
-
-Indeed, it is.
-
-> However in some
+> forget the NULL checking, it's already done by core. However in some
 > cases this is called with a dangled pointer on lp->tx_skb.
 
-I've fixed that by setting it to NULL after the call to the xmit_error
-helper.
+Actually I don't see why tx_skb is dangling?
 
-> 
-> - Alex
-
+There is no function that could accesses lp->tx_skb between the free
+operation and the next call to ->xmit() which does a lp->tx_skb = skb.
+Am I missing something?
 
 Thanks,
 Miquèl
