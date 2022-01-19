@@ -2,79 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DACE4933DC
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 05:00:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2638D493421
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 05:54:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351449AbiASEAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 23:00:15 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34652 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344750AbiASEAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 23:00:11 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 237A861583;
-        Wed, 19 Jan 2022 04:00:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 820DDC340E6;
-        Wed, 19 Jan 2022 04:00:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642564810;
-        bh=bsRL8UPBABskV1NUeV3b9gvLs8XSeLPjs+M2ng1wojM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=THr95Miuj6V5GTX8H5gK9hWK+kg2f80tRnLGyofB1BcNEE5RMqdj33UV3yVn/cLlY
-         Acd58iDEzh+B3dmMtALDeirdzrE96YGV/87kbhe1/P5jXhcjvDr+g389D1luJTL4ZY
-         NNCZodsALHcP8Ykhvy3SCDlIYwGRwu8na1Seza4EFMy/wiEjzh9ih8EE6pk+tD93f5
-         XLp4vNIwe8q9r+IUZ0EV5KNoEp5SYjMFfmtRpArJWDHZCjNH9jQj3h6/MO8DPEf56b
-         rr/8SOiyclaNYsiCtb3seTtxtb++mV0pgW8evGk10Dlgb9xOkt7LgS5WpxSylnBoMr
-         74m66jvee9MLA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6AF05F6079B;
-        Wed, 19 Jan 2022 04:00:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] libbpf: define BTF_KIND_* constants in btf.h to avoid
- compilation errors
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164256481043.833.159060725359078687.git-patchwork-notify@kernel.org>
-Date:   Wed, 19 Jan 2022 04:00:10 +0000
-References: <20220118141327.34231-1-toke@redhat.com>
-In-Reply-To: <20220118141327.34231-1-toke@redhat.com>
-To:     =?utf-8?b?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2VuIDx0b2tlQHJlZGhhdC5jb20+?=@ci.codeaurora.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
+        id S1351579AbiASExv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 23:53:51 -0500
+Received: from mo-csw1516.securemx.jp ([210.130.202.155]:48472 "EHLO
+        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351335AbiASExu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 23:53:50 -0500
+Received: by mo-csw.securemx.jp (mx-mo-csw1516) id 20J4qDKk018584; Wed, 19 Jan 2022 13:52:14 +0900
+X-Iguazu-Qid: 34trXZuAsxlohqpaPS
+X-Iguazu-QSIG: v=2; s=0; t=1642567933; q=34trXZuAsxlohqpaPS; m=0yidoEs59p9yDaB5qifBWEqQ4TxJweLoniwSrs5tqCI=
+Received: from imx12-a.toshiba.co.jp (imx12-a.toshiba.co.jp [61.202.160.135])
+        by relay.securemx.jp (mx-mr1513) id 20J4qBLp037215
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 19 Jan 2022 13:52:12 +0900
+X-SA-MID: 31820870
+From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        nobuhiro1.iwamatsu@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp
+Subject: [PATCH v2 0/2] net: stmmac: dwmac-visconti: Fix bit definitions and clock configuration for RMII mode
+Date:   Wed, 19 Jan 2022 13:46:46 +0900
+X-TSB-HOP: ON
+X-TSB-HOP2: ON
+Message-Id: <20220119044648.18094-1-yuji2.ishikawa@toshiba.co.jp>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi,
 
-This patch was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
+This series is a fix for RMII/MII operation mode of the dwmac-visconti driver.
+It is composed of two parts:
 
-On Tue, 18 Jan 2022 15:13:27 +0100 you wrote:
-> The btf.h header included with libbpf contains inline helper functions to
-> check for various BTF kinds. These helpers directly reference the
-> BTF_KIND_* constants defined in the kernel header, and because the header
-> file is included in user applications, this happens in the user application
-> compile units.
-> 
-> This presents a problem if a user application is compiled on a system with
-> older kernel headers because the constants are not available. To avoid
-> this, add #defines of the constants directly in btf.h before using them.
-> 
-> [...]
+* 1/2: fix constant definitions for cleared bits in ETHER_CLK_SEL register
+* 2/2: fix configuration of ETHER_CLK_SEL register for running in RMII operation mode.
 
-Here is the summary with links:
-  - [bpf] libbpf: define BTF_KIND_* constants in btf.h to avoid compilation errors
-    https://git.kernel.org/bpf/bpf-next/c/eaa266d83a37
+Best regards,
+  Yuji
 
-You are awesome, thank you!
+  net: stmmac: dwmac-visconti: Fix bit definitions for ETHER_CLK_SEL
+    v1 -> v2:
+      - added Fixes tag to commit message
+
+  net: stmmac: dwmac-visconti: Fix clock configuration for RMII mode
+    v1 -> v2:
+      - added Fixes tag to commit message
+
+Yuji Ishikawa (2):
+  net: stmmac: dwmac-visconti: Fix bit definitions for ETHER_CLK_SEL
+  net: stmmac: dwmac-visconti: Fix clock configuration for RMII mode
+
+ .../ethernet/stmicro/stmmac/dwmac-visconti.c  | 42 ++++++++++++-------
+ 1 file changed, 26 insertions(+), 16 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+2.17.1
 
 
