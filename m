@@ -2,182 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85B84493772
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 10:38:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B454493787
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 10:43:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352237AbiASJik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 04:38:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34542 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235918AbiASJij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 04:38:39 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B670EC061574;
-        Wed, 19 Jan 2022 01:38:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 12D19CE1C4E;
-        Wed, 19 Jan 2022 09:38:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA7F6C004E1;
-        Wed, 19 Jan 2022 09:38:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642585115;
-        bh=CKV+zi0KNehjLbHnOq5EedfhWZUHE0jo/uA0PO8/TPc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ShEy5xL3VN0F4Mn/n2MrSwD6L0/GyVf8sOxZcvhQCa3K03IxIlAP+JdHmvTR7VaAH
-         UcADT+pVHDPERF3deFxKKBUqxh6zbC5RyVKiQcm55nNhbq0eFe96/MAAuNC0mQ6JBe
-         Xxjc9jbfqGqPVo9xL2zYdbpSbvUPHM3DyCvQS95vTRloxraFV3UXzPIypB9W9MROxT
-         RPloCMbzh6fBkicK83KQDq4KE9TlVVJJHzC7Ucb1ppg2v9Paei5j+5J04PECp7JdCV
-         EkG/tCubpxHdWc29xmuJjjyvwUepNyBJ2D4k9xaq2766UXbCXzQONMFqWI4FhrCc7J
-         8+UADT/8cleZw==
-Date:   Wed, 19 Jan 2022 10:38:31 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1352877AbiASJmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 04:42:52 -0500
+Received: from mga01.intel.com ([192.55.52.88]:32092 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235918AbiASJmv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jan 2022 04:42:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642585371; x=1674121371;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LxWQZjhb/fNbEShE73X5g5DvnhYQLiQO3Stdcf1bZhA=;
+  b=PZlBTFIUoLS1PtpsQP14JHhklMx4Yedi4yLPuigaWjdeYYI7HZ+SBw2I
+   u1TuGl2uW0oYWknBTM3AgwQlVaHhYnJFnzKj4vjzBxLnJFQkaLssOZ2gi
+   cRDQgBA7fANq0KGW2EFVFHhxN4EQ1bucK4DhhAFh51DdAGepl8+c1YUa8
+   eoTB134DoOAFtd+yPhtejGZr597DosZnJv3qXRpvHsJa9RT0Bknf/xKwF
+   yewkX/4LBf4eTjyvEeEuCn1J0ceRI55UCG47VqTDbc3i7mR9kIJjpAIVG
+   RKS+tteXGKAcpEtm6r6MfXv9HRk3RjkhpsxSXTdbzaUKAotCnf8vxk0C+
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="269418425"
+X-IronPort-AV: E=Sophos;i="5.88,299,1635231600"; 
+   d="scan'208";a="269418425"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 01:42:50 -0800
+X-IronPort-AV: E=Sophos;i="5.88,299,1635231600"; 
+   d="scan'208";a="532207547"
+Received: from atefehad-mobl1.amr.corp.intel.com (HELO ldmartin-desk2) ([10.212.238.132])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 01:42:49 -0800
+Date:   Wed, 19 Jan 2022 01:42:49 -0800
+From:   Lucas De Marchi <lucas.demarchi@intel.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
+        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Shay Agroskin <shayagr@amazon.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        tirthendu.sarkar@intel.com,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCH v22 bpf-next 18/23] libbpf: Add SEC name for xdp
- multi-frags programs
-Message-ID: <YefcFzFSWJHf6kks@lore-desk>
-References: <cover.1642439548.git.lorenzo@kernel.org>
- <c2bdc436abe8e27a46aa8ba13f75d24f119e18a4.1642439548.git.lorenzo@kernel.org>
- <20220118201449.sjqzif5qkpbu5tqx@ast-mbp.dhcp.thefacebook.com>
- <Yec/qu7idEImzqxc@lore-desk>
- <CAADnVQJgKVQ8vNfiazTcNbZVFTb2x=7G1WUda7O+LHM8Hs=KCw@mail.gmail.com>
- <CAEf4BzYHyCz5QNwuuKnRRrqCTcP0c0Q6fdi0N5_Yp8yNXvxReQ@mail.gmail.com>
+        Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Eryk Brol <eryk.brol@amd.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 2/3] lib/string_helpers: Add helpers for
+ enable[d]/disable[d]
+Message-ID: <20220119094249.6g24562y2b4iwtvk@ldmartin-desk2>
+References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
+ <20220119072450.2890107-3-lucas.demarchi@intel.com>
+ <CAHp75Vc4bdu1OTi2t-fHeHkmnVgd6LCdeotnGEH_+q4EGk3OmQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qJ9cHp6/IZe/+g7y"
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzYHyCz5QNwuuKnRRrqCTcP0c0Q6fdi0N5_Yp8yNXvxReQ@mail.gmail.com>
+In-Reply-To: <CAHp75Vc4bdu1OTi2t-fHeHkmnVgd6LCdeotnGEH_+q4EGk3OmQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jan 19, 2022 at 11:20:38AM +0200, Andy Shevchenko wrote:
+>On Wednesday, January 19, 2022, Lucas De Marchi <lucas.demarchi@intel.com>
+>wrote:
+>
+>> Follow the yes/no logic and add helpers for enabled/disabled and
+>> enable/disable - those are not so common throughout the kernel,
+>> but they give a nice way to reuse the strings to log things as
+>> enabled/disabled or enable/disable.
+>>
+>> Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
+>> ---
+>>  drivers/gpu/drm/i915/i915_utils.h | 10 ----------
+>>  include/linux/string_helpers.h    |  2 ++
+>>  2 files changed, 2 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/i915/i915_utils.h
+>> b/drivers/gpu/drm/i915/i915_utils.h
+>> index 2a8781cc648b..cbec79bae0d2 100644
+>> --- a/drivers/gpu/drm/i915/i915_utils.h
+>> +++ b/drivers/gpu/drm/i915/i915_utils.h
+>> @@ -419,16 +419,6 @@ static inline const char *onoff(bool v)
+>>         return v ? "on" : "off";
+>>  }
+>>
+>> -static inline const char *enabledisable(bool v)
+>> -{
+>> -       return v ? "enable" : "disable";
+>> -}
+>> -
+>> -static inline const char *enableddisabled(bool v)
+>> -{
+>> -       return v ? "enabled" : "disabled";
+>> -}
+>> -
+>>  void add_taint_for_CI(struct drm_i915_private *i915, unsigned int taint);
+>>  static inline void __add_taint_for_CI(unsigned int taint)
+>>  {
+>> diff --git a/include/linux/string_helpers.h b/include/linux/string_
+>> helpers.h
+>> index e980dec05d31..e4b82f364ee1 100644
+>> --- a/include/linux/string_helpers.h
+>> +++ b/include/linux/string_helpers.h
+>> @@ -103,5 +103,7 @@ char *kstrdup_quotable_file(struct file *file, gfp_t
+>> gfp);
+>>  void kfree_strarray(char **array, size_t n);
+>>
+>>  static inline const char *yesno(bool v) { return v ? "yes" : "no"; }
+>> +static inline const char *enabledisable(bool v) { return v ? "enable" :
+>> "disable"; }
+>> +static inline const char *enableddisabled(bool v) { return v ? "enabled"
+>> : "disabled"; }
+>
+>
+>Looks not readable even if takes 80 characters. Please, keep original style.
+>
+>
+>I believe you wanted to have nice negative statistics from day 1, then you
+>may add more patches in the series to cleanup more users.
 
---qJ9cHp6/IZe/+g7y
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+not really the reason... it was just "this is small enough and
+checkpatch doesn't complain" (it checks for 100 chars nowadays). But yes,
+I can keep it in 4 lines.
 
-> On Tue, Jan 18, 2022 at 2:33 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Jan 18, 2022 at 2:31 PM Lorenzo Bianconi <lorenzo@kernel.org> w=
-rote:
-> > >
-> > > > On Mon, Jan 17, 2022 at 06:28:30PM +0100, Lorenzo Bianconi wrote:
-> > > > > Introduce support for the following SEC entries for XDP multi-fra=
-gs
-> > > > > property:
-> > > > > - SEC("xdp.frags")
-> > > > > - SEC("xdp.frags/devmap")
-> > > > > - SEC("xdp.frags/cpumap")
-> > > > >
-> > > > > Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
-> > > > > Acked-by: John Fastabend <john.fastabend@gmail.com>
-> > > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > > > ---
-> > > > >  tools/lib/bpf/libbpf.c | 6 ++++++
-> > > > >  1 file changed, 6 insertions(+)
-> > > > >
-> > > > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > > > > index fdb3536afa7d..611e81357fb6 100644
-> > > > > --- a/tools/lib/bpf/libbpf.c
-> > > > > +++ b/tools/lib/bpf/libbpf.c
-> > > > > @@ -6562,6 +6562,9 @@ static int libbpf_preload_prog(struct bpf_p=
-rogram *prog,
-> > > > >     if (def & SEC_SLEEPABLE)
-> > > > >             opts->prog_flags |=3D BPF_F_SLEEPABLE;
-> > > > >
-> > > > > +   if (prog->type =3D=3D BPF_PROG_TYPE_XDP && strstr(prog->sec_n=
-ame, ".frags"))
-> > > > > +           opts->prog_flags |=3D BPF_F_XDP_HAS_FRAGS;
-> > > >
-> > > > That's a bit sloppy.
-> > > > Could you handle it similar to SEC_SLEEPABLE?
-> > > >
-> > > > > +
-> > > > >     if ((prog->type =3D=3D BPF_PROG_TYPE_TRACING ||
-> > > > >          prog->type =3D=3D BPF_PROG_TYPE_LSM ||
-> > > > >          prog->type =3D=3D BPF_PROG_TYPE_EXT) && !prog->attach_bt=
-f_id) {
-> > > > > @@ -8600,8 +8603,11 @@ static const struct bpf_sec_def section_de=
-fs[] =3D {
-> > > > >     SEC_DEF("lsm.s/",               LSM, BPF_LSM_MAC, SEC_ATTACH_=
-BTF | SEC_SLEEPABLE, attach_lsm),
-> > > > >     SEC_DEF("iter/",                TRACING, BPF_TRACE_ITER, SEC_=
-ATTACH_BTF, attach_iter),
-> > > > >     SEC_DEF("syscall",              SYSCALL, 0, SEC_SLEEPABLE),
-> > > > > +   SEC_DEF("xdp.frags/devmap",     XDP, BPF_XDP_DEVMAP, SEC_NONE=
-),
-> > > > >     SEC_DEF("xdp_devmap/",          XDP, BPF_XDP_DEVMAP, SEC_ATTA=
-CHABLE),
-> > > > > +   SEC_DEF("xdp.frags/cpumap",     XDP, BPF_XDP_CPUMAP, SEC_NONE=
-),
-> > > > >     SEC_DEF("xdp_cpumap/",          XDP, BPF_XDP_CPUMAP, SEC_ATTA=
-CHABLE),
-> > > > > +   SEC_DEF("xdp.frags",            XDP, BPF_XDP, SEC_NONE),
-> > > >
-> > > > It would be SEC_FRAGS here instead of SEC_NONE.
-> > >
-> > > ack, I dropped SEC_FRAGS (SEC_XDP_MB before) from sec_def_flags becau=
-se Andrii asked to remove
-> > > it but I am fine to add it back. Agree?
-> >
-> > Andrii,
-> > what was the motivation?
-> > imo that's cleaner than strstr.
->=20
-> Given it was XDP-specific (as opposed to sleepable flag that applies
-> more widely), it felt cleaner ([0]) to handle that as a special case
-> in libbpf_preload_prog. But I didn't feel that strongly about that
-> back then and still don't, so if you think SEC_FRAGS is better, I'm
-> fine with it. I'd make it SEC_XDP_FRAGS to make it more obvious it's
-> still XDP-specific (there are no plans to extend it to non-XDP,
-> right?).
-
-I do not think so and anyway it is an internal flag so we can change it in =
-the
-future if necessary, right?
-
-Regards,
-Lorenzo
-
->=20
-> But whichever way, it's internal implementation detail and pretty
-> small one at that, so I don't care much.
->=20
->   [0] https://lore.kernel.org/bpf/CAEf4BzbfDvH5CYNsWg9Dx7JcFEp4jNmNRR6H-6=
-sJEUxDSy1zZw@mail.gmail.com/
-
---qJ9cHp6/IZe/+g7y
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYefcFwAKCRA6cBh0uS2t
-rCaJAQDwcLRcUG+CeWc8ko/YatfpFVuR8yPcPu04ezEEMny2gwD+PBvHRm9bD/Wf
-MkG1QX7rrbFM6Cw7sQkdAze8NKp0rgU=
-=p33r
------END PGP SIGNATURE-----
-
---qJ9cHp6/IZe/+g7y--
+thanks
+Lucas De Marchi
