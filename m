@@ -2,127 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C6B5493726
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 10:22:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE910493779
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 10:40:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240025AbiASJWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 04:22:55 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:56962 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353032AbiASJWy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 04:22:54 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 2F1941F384;
-        Wed, 19 Jan 2022 09:22:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1642584173; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a/XYmC+G3cYxoHtLK2gUJLpRJwEd33N2HoYF1S2/AZA=;
-        b=dfggs5uJZRXuQb2sLfk0bvUnvhqwVnN+t/e8gWwOm4TYEdk28sYqEwYkJhU5AaaEH6mivp
-        J41YJjdpz0jWWBQ0ZNf1ZPCNlts+Pmi+knukT1mrJXy9DdtUEFRJFtq5sj/8Ph89G+aAMc
-        gmwcvLl6Lsc4FQ4HTJ6jVmUkgmMltYM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1642584173;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a/XYmC+G3cYxoHtLK2gUJLpRJwEd33N2HoYF1S2/AZA=;
-        b=f8Ru8FX7DHmUUzpxaI8jgCHdtvMfBdz4uPuFEZGgZbo4JLdgZmj6EIuXTn5ChYAkWhHTOX
-        o69IUSG4DHUJgGAw==
-Received: from localhost (dwarf.suse.cz [10.100.12.32])
-        by relay2.suse.de (Postfix) with ESMTP id 25BFCA3B87;
-        Wed, 19 Jan 2022 09:22:53 +0000 (UTC)
-Date:   Wed, 19 Jan 2022 10:22:53 +0100
-From:   Jiri Bohac <jbohac@suse.cz>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Sabrina Dubroca <sd@queasysnail.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mike Maloney <maloneykernel@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v2] xfrm: fix MTU regression
-Message-ID: <20220119092253.osio2qsm3dfi6otz@dwarf.suse.cz>
-References: <20220114173133.tzmdm2hy4flhblo3@dwarf.suse.cz>
- <20220114174058.rqhtuwpfhq6czldn@dwarf.suse.cz>
- <20220119073519.GJ1223722@gauss3.secunet.de>
- <20220119091233.pzqdlzpcyicjavk5@dwarf.suse.cz>
+        id S1352777AbiASJi5 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Jan 2022 04:38:57 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:52393 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352533AbiASJix (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 04:38:53 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20J9cSYa9024415, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20J9cSYa9024415
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 19 Jan 2022 17:38:28 +0800
+Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 19 Jan 2022 17:38:28 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 19 Jan 2022 01:38:26 -0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
+ RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
+ 15.01.2308.020; Wed, 19 Jan 2022 17:38:26 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Ed Swierk <eswierk@gh.st>
+Subject: RE: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
+Thread-Topic: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
+Thread-Index: AQHYBCp/WStseF16x0uJ7VAbWo+1y6xqJTFA
+Date:   Wed, 19 Jan 2022 09:38:26 +0000
+Message-ID: <b1e89f471e824eaba27a5dcbc363974a@realtek.com>
+References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXDAG01.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/1/19_=3F=3F_08:01:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220119091233.pzqdlzpcyicjavk5@dwarf.suse.cz>
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 749439bfac6e1a2932c582e2699f91d329658196 ("ipv6: fix udpv6
-sendmsg crash caused by too small MTU") breaks PMTU for xfrm.
+Hi,
 
-A Packet Too Big ICMPv6 message received in response to an ESP
-packet will prevent all further communication through the tunnel
-if the reported MTU minus the ESP overhead is smaller than 1280.
+> -----Original Message-----
+> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Sent: Saturday, January 8, 2022 8:55 AM
+> To: linux-wireless@vger.kernel.org
+> Cc: tony0620emma@gmail.com; kvalo@codeaurora.org; johannes@sipsolutions.net; netdev@vger.kernel.org;
+> linux-kernel@vger.kernel.org; Neo Jou <neojou@gmail.com>; Jernej Skrabec <jernej.skrabec@gmail.com>;
+> Pkshih <pkshih@realtek.com>; Ed Swierk <eswierk@gh.st>; Martin Blumenstingl
+> <martin.blumenstingl@googlemail.com>
+> Subject: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
+> 
 
-E.g. in a case of a tunnel-mode ESP with sha256/aes the overhead
-is 92 bytes. Receiving a PTB with MTU of 1371 or less will result
-in all further packets in the tunnel dropped. A ping through the
-tunnel fails with "ping: sendmsg: Invalid argument".
+[...]
 
-Apparently the MTU on the xfrm route is smaller than 1280 and
-fails the check inside ip6_setup_cork() added by 749439bf.
+I do stressed test of connection and suspend, and it get stuck after about
+4 hours but no useful messages. I will re-build my kernel and turn on lockdep debug
+to see if it can tell me what is wrong.
 
-We found this by debugging USGv6/ipv6ready failures. Failing
-tests are: "Phase-2 Interoperability Test Scenario IPsec" /
-5.3.11 and 5.4.11 (Tunnel Mode: Fragmentation).
+--
+Ping-Ke
 
-Commit b515d2637276a3810d6595e10ab02c13bfd0b63a ("xfrm:
-xfrm_state_mtu should return at least 1280 for ipv6") attempted
-to fix this but caused another regression in TCP MSS calculations
-and had to be reverted.
-
-The patch below fixes the situation by dropping the MTU
-check and instead checking for the underflows described in the
-749439bf commit message.
-
-Signed-off-by: Jiri Bohac <jbohac@suse.cz>
-Fixes: 749439bfac6e ("ipv6: fix udpv6 sendmsg crash caused by too small MTU") 
-
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index ff4f9ebcf7f6..171eb4ec1e67 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1402,8 +1402,6 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- 		if (np->frag_size)
- 			mtu = np->frag_size;
- 	}
--	if (mtu < IPV6_MIN_MTU)
--		return -EINVAL;
- 	cork->base.fragsize = mtu;
- 	cork->base.gso_size = ipc6->gso_size;
- 	cork->base.tx_flags = 0;
-@@ -1465,8 +1463,6 @@ static int __ip6_append_data(struct sock *sk,
- 
- 	fragheaderlen = sizeof(struct ipv6hdr) + rt->rt6i_nfheader_len +
- 			(opt ? opt->opt_nflen : 0);
--	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
--		     sizeof(struct frag_hdr);
- 
- 	headersize = sizeof(struct ipv6hdr) +
- 		     (opt ? opt->opt_flen + opt->opt_nflen : 0) +
-@@ -1474,6 +1470,13 @@ static int __ip6_append_data(struct sock *sk,
- 		      sizeof(struct frag_hdr) : 0) +
- 		     rt->rt6i_nfheader_len;
- 
-+	if (mtu < fragheaderlen ||
-+	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
-+		goto emsgsize;
-+
-+	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
-+		     sizeof(struct frag_hdr);
-+
- 	/* as per RFC 7112 section 5, the entire IPv6 Header Chain must fit
- 	 * the first fragment
- 	 */
-
--- 
-Jiri Bohac <jbohac@suse.cz>
-SUSE Labs, Prague, Czechia
