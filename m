@@ -2,141 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEE774943E5
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 00:35:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2D6F4943E7
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 00:39:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344538AbiASXfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 18:35:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56726 "EHLO
+        id S1344552AbiASXjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 18:39:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232430AbiASXfC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 18:35:02 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69DDC061574;
-        Wed, 19 Jan 2022 15:35:01 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id e9-20020a05600c4e4900b0034d23cae3f0so9266122wmq.2;
-        Wed, 19 Jan 2022 15:35:01 -0800 (PST)
+        with ESMTP id S232430AbiASXjl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 18:39:41 -0500
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB53BC061574
+        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 15:39:40 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id r16so3599794ile.8
+        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 15:39:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9YlhDwZwhJdseLFri8B+QmEyJ1DKDdqZmCn1rJgVyQ8=;
-        b=M+Qx+tUaIlaog0g0TlMl8WptFfR4UZgFar8XgUCC4h2Ve+b4eZIsBzPqhjBFs3KSjM
-         QIEeT7O6VSswkKrGMtxAJs07R5OR1tZUDjmQvj+QeznNS9H73YuaxSajdOiyXyzJy8zx
-         k1MKUZEzJvOIkzjMqprp80dSOtJmZwzthzYuJCBP9kUSIa2bBDQ3PjisY7j0TUem+JEk
-         1RLe4tpcW1ckQg5jlipopAmDxpBewqrWDhpVky052r1dZIqLR5kxHxwEYUOuZWerq3Qg
-         wm9PEjV33eTIgBHG4BVKoyAFz3Ihg7lLFj/ikkFm+KUfvvKdZkU6KOxOlU/2TQ0zAqbt
-         mJNw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=EWUN3fCMMbK+Oq5s7EIvqPqD5Q1Xqm+eRw/CeN9TqOg=;
+        b=kCFqkCvdvk2+t4XrPEHZL71H3F4U+IAPEdY6TEJ7kzESrP5LCoTiu7CGUBK0HiOtKx
+         zvEuTcCjnl1sRJT52prKyFigb1C4zgDuOwDJK5F+8uFW9JcnsWHHqrxz/Fk5gAezUbiY
+         muuvu2+uGchlK+/Ig89QIwtXay4rJtbabKdCu21nsgkrS0qH93q79G1P4/5mKgKLzZmG
+         fnAf8nK9tA6eixrDHsNXnG5Ru+BfEZu6rVFLyR9lBvFvvMzHzqE8JaLzHCOuhDGur0or
+         HTOrXzag1r5Tvaw9cjKuJtVBXiVNbz6CDazPiW+HICLe1CgsoOSDbzrgCuGnQ3mVDpKW
+         1bVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9YlhDwZwhJdseLFri8B+QmEyJ1DKDdqZmCn1rJgVyQ8=;
-        b=ewNhdmmeDmUx+0ui3dxuiZoacOrYuwTCfkBrUnYhEoyQ1Z+CGoMftkm//XWYC9pcBt
-         tbsJCbcoNCZgv435jMdjh6bEQzaX9MSsGM/rjO0AGNtUBzG+ANilDi6RuOGkOcI4R6Z0
-         +g9rKXJobEfNz3iWPDycFEL0pamDNSSulvjZQjsLk8OPD28i2szu3kkWHPiwvm2Jl3jg
-         VUimwGGdvoOA0Q+vj6YdpziMWAN7KjBI8hOQfpFvUstBL5Mg7UQzx+L5ZmmZNP1vvq41
-         rr6cJc9P9vZzQjhuTSyaEZ5HM1asZ3qxIuRqSS+h+pcZZfdw5XZiDfRNjEdbb0+VNdh3
-         VrWw==
-X-Gm-Message-State: AOAM530PK9SLdn44rWX2MO5AS/v/bm+Uu32LfUN8O/+TKx37JUunycci
-        EaJj2Sez2gqHR4FjDOKX+Q8Pnuo3hoohp9EQ7VuepuKWF56xBA==
-X-Google-Smtp-Source: ABdhPJwkrFTcJtiN4MoGeyGFPFKtOyTMqGuf36PzelChwHd63J6t647y6fKToUm2BmWU22EqVFyJr0V2a735b++vGn0=
-X-Received: by 2002:adf:fa8d:: with SMTP id h13mr7838453wrr.154.1642635300064;
- Wed, 19 Jan 2022 15:35:00 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EWUN3fCMMbK+Oq5s7EIvqPqD5Q1Xqm+eRw/CeN9TqOg=;
+        b=KWURWvtvOheZdwJKQxjS6YpMtBdrY3sWPBjvaVUProWoIRGwgq7lnH6HYRaT5hYoaC
+         7tCtt44b85c1tQPFOmYZ3QoJS8rpnmgcgxxgfVGqGaLoHSijhxD4c12jX7Z3TJQeH+zQ
+         uJE6amEOI3okngoNAG24PziMNJoq/6yFcK59tHvrnML5vZkWuQrx7tGTRocpSkmky4OU
+         eYvbf/6tIlTiT8KLl4bWbWZc/Du2WTULXKwfS4VJ57q3lbpyCnFk0pGxHaXMZYrdb3UP
+         rs64d61WblCBS6JPi/9/ktMWxWaeLDKewWU9MXfd7q87LZ1UBJJBUGfCrFPqtv9oB4bl
+         taZQ==
+X-Gm-Message-State: AOAM5333V8EPHC82lA2i9c/dEa9zK8vcNOuHAIZ4M2zzFXA+lYQWwtPO
+        MwjQ00nNm8SoTwBTUcftktg=
+X-Google-Smtp-Source: ABdhPJzYz6Lv3A59aGuwDP38JY2ZiZ+HSpEszbUAxPTUBImL60GioCvTdodMjX+I4en7K5GUX82l9w==
+X-Received: by 2002:a05:6e02:2189:: with SMTP id j9mr18426346ila.264.1642635580146;
+        Wed, 19 Jan 2022 15:39:40 -0800 (PST)
+Received: from ?IPV6:2601:282:800:dc80:61a6:f44a:ed04:6638? ([2601:282:800:dc80:61a6:f44a:ed04:6638])
+        by smtp.googlemail.com with ESMTPSA id v3sm500196iol.43.2022.01.19.15.39.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Jan 2022 15:39:39 -0800 (PST)
+Message-ID: <28fa20e8-6ac6-4761-54a9-04b5ed05b66b@gmail.com>
+Date:   Wed, 19 Jan 2022 16:39:38 -0700
 MIME-Version: 1.0
-References: <20220117115440.60296-1-miquel.raynal@bootlin.com>
- <20220117115440.60296-18-miquel.raynal@bootlin.com> <CAB_54W76X5vhaVMUv=s3e0pbWZgHRK3W=27N9m5LgEdLgAPAcA@mail.gmail.com>
- <CAB_54W5Uu9_hpqmeL0MC+1ps=yfn2j0-o46cBL7BeBxKXKHa4w@mail.gmail.com> <20220119235600.48173f5b@xps13>
-In-Reply-To: <20220119235600.48173f5b@xps13>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Wed, 19 Jan 2022 18:34:49 -0500
-Message-ID: <CAB_54W4Dy13=EMD0ZEvwX6HLC3bM=nAp0esqDXBj9T+9Jjd_aw@mail.gmail.com>
-Subject: Re: [PATCH v3 17/41] net: ieee802154: at86rf230: Call the complete
- helper when a transmission is over
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org Wireless" 
-        <linux-wireless@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [PATCH iproute2] dcb: app: Add missing "dcb app show dev X
+ default-prio"
+Content-Language: en-US
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Petr Machata <petrm@nvidia.com>
+Cc:     netdev@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>
+References: <f6e07ca31e33a673f641c9282e81ee9c3be03d3c.1642505737.git.petrm@nvidia.com>
+ <0758f5ce-2461-95c2-edc0-9a24e44671d3@gmail.com> <87pmooove2.fsf@nvidia.com>
+ <20220119123506.2360b139@hermes.local>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220119123506.2360b139@hermes.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 1/19/22 1:35 PM, Stephen Hemminger wrote:
+> On Wed, 19 Jan 2022 11:38:54 +0100
+> Petr Machata <petrm@nvidia.com> wrote:
+> 
+>>>
+>>> In general, we are not allowing more uses of matches(). I think this one
+>>> can be an exception for consistency with the other options, so really
+>>> just a heads up.  
+>>
+>> The shortening that the matches() allows is very useful for typing. I do
+>> stuff like "ip l sh dev X up" and "ip a a dev X 192.0.2.1/28" all the
+>> time. I suppose there was a discussion about this, can you point me at
+>> the thread, or where & when approximately it took place so I can look it
+>> up?
+> 
+> The problem is that matches() doesn't handle conflicts well.
+> Using your example:
+>   ip l 
+> could match "ip link" or "ip l2tp" and the choice of "link" is only because
+> it was added first. This is bad UI, and creates tribal knowledge that makes
+> it harder for new users. Other utilities don't allow ambiguous matches.
 
-On Wed, 19 Jan 2022 at 17:56, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> Hi Alexander,
->
-> alex.aring@gmail.com wrote on Mon, 17 Jan 2022 19:36:39 -0500:
->
-> > Hi,
-> >
-> > On Mon, 17 Jan 2022 at 19:34, Alexander Aring <alex.aring@gmail.com> wrote:
-> > >
-> > > Hi,
-> > >
-> > > On Mon, 17 Jan 2022 at 06:55, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > > >
-> > > > ieee802154_xmit_complete() is the right helper to call when a
-> > > > transmission is over. The fact that it completed or not is not really a
-> > > > question, but drivers must tell the core that the completion is over,
-> > > > even if it was canceled. Do not call ieee802154_wake_queue() manually,
-> > > > in order to let full control of this task to the core.
-> > > >
-> > > > By using the complete helper we also avoid leacking the skb structure.
-> > > >
-> > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > ---
-> > > >  drivers/net/ieee802154/at86rf230.c | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-> > > > index 583f835c317a..1941e1f3d2ef 100644
-> > > > --- a/drivers/net/ieee802154/at86rf230.c
-> > > > +++ b/drivers/net/ieee802154/at86rf230.c
-> > > > @@ -343,7 +343,7 @@ at86rf230_async_error_recover_complete(void *context)
-> > > >         if (ctx->free)
-> > > >                 kfree(ctx);
-> > > >
-> > > > -       ieee802154_wake_queue(lp->hw);
-> > > > +       ieee802154_xmit_complete(lp->hw, lp->tx_skb, false);
-> > >
-> > > also this lp->tx_skb can be a dangled pointer, after xmit_complete()
-> > > we need to set it to NULL in a xmit_error() we can check on NULL
-> > > before calling kfree_skb().
-> > >
-> >
-> > forget the NULL checking, it's already done by core. However in some
-> > cases this is called with a dangled pointer on lp->tx_skb.
->
-> Actually I don't see why tx_skb is dangling?
->
-> There is no function that could accesses lp->tx_skb between the free
-> operation and the next call to ->xmit() which does a lp->tx_skb = skb.
-> Am I missing something?
->
-
-look into at86rf230_sync_state_change() it is a sync over async and
-the function "at86rf230_async_error_recover_complete()" is a generic
-error handling to recover from a state change. It's e.g. being used in
-e.g. at86rf230_start() which can occur in cases which are not xmit
-related.
-
-Indeed there is no dangled pointer in the irq handling, sorry. I
-thought maybe the receive handling but the transceiver is doing a lot
-of its own state change handling because of some framebuffer
-protection which is not the case.
-
-- Alex
+and the constant source of bugs when new options are added. This patch
+being a good example as Stephen noted.
