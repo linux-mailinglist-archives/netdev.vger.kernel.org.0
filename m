@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91CAF494291
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 22:37:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E56049429B
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 22:47:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357428AbiASVh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 16:37:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58734 "EHLO
+        id S1357452AbiASVrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 16:47:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234306AbiASVh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 16:37:28 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005FEC061574;
-        Wed, 19 Jan 2022 13:37:27 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id p12so19472690edq.9;
-        Wed, 19 Jan 2022 13:37:27 -0800 (PST)
+        with ESMTP id S1343606AbiASVrk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 16:47:40 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A7DC061574;
+        Wed, 19 Jan 2022 13:47:39 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id u18so5444141edt.6;
+        Wed, 19 Jan 2022 13:47:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=g9zZAriOrb5Xr0Ri01rwPR9vgbSqidck2HSWzQmnp0c=;
-        b=HnnBeMFGK0o7vxUSYMfOjy5xhxvtWG8mAcZGXgwnXIaYcKEYzKvqT7MylqeEdyxXOJ
-         W+rWhtMWn+LsxZ4nejDGYP4tE53tDtg/dUhhVDgJ6S9gflQ0NHyqANHGs1X3aZ+c/tBQ
-         8N4PO7OZTCeEon9rgR4wgCFA1NAvyCs3blKo4cFjme8gQf27qr0RlU29ht681vIHCRWb
-         Brqk968peXD6zDdVgNz/dx0XjAaQfjIEIgz8LfLhiltxKhXBow9sWrRK7xz+8dPV9D0V
-         TAqhwYzPdD3dAyQ5gRukN0E6pbbSUT9ByDuNffHUsrQ1TL9USBfc1sPDZV9EjStRG1Lj
-         JBMQ==
+        bh=pSWfoK1jnmO+T32koJ6nJsxNdVBxnqdtz0oVErlAr6A=;
+        b=PKLGbfleH5LN1drzDaSbqbsouBfvIOd5yUNFexmLU43zTI+g/ocZNTKQC7d9T6+2vO
+         B62w2pqphP+3i5XI6e28Mdc8J9sWkofstcAWt/4i1ESTYxwBf0DirC+NWw6PF8UwsGdH
+         HiqbXpnTtcI9hWh9pntLSI1GhRKxi51S/C1GjXUzVkC/5xz61b2uLJs9PNQs6xp7KOUu
+         nGBx1TUS5gpKH1Tei37toDjFiz4ICl+/IxLq79Ww/e8oekLthPtuyEiEM0DXvo5dr0gn
+         dQgR9VkT11kWZL3uLGQyoaPoDI/ik4C9SrByHXx87gVGKgUtuJfRSjVWtthG0n+DU8QA
+         d4Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=g9zZAriOrb5Xr0Ri01rwPR9vgbSqidck2HSWzQmnp0c=;
-        b=WZIupJ5pGe7ByGFETQro4odk30YQ4CPD1erCpfobZQ0Vh1Dq4UTvTeGigVZkhlirDW
-         jmwqUkkd9vaq9bjXC8yhjKV3ByrjsemcffsmYgT0ZlkejrKEiio7ruJtAD80ylbGOU5J
-         z4JDPDIEGLy2xeAtZTpwo/LRbtQ6aLP7OINZhWL8w0/cfTMoqvokA9kD8KAqBtqQg24E
-         XQhIvnVChPXmWZHpdoS6AYIGP8hOk7NNa2fwVnO7ZjhNhKQsxkLE7/HeIfgr1/uqmEMx
-         uG+1ILONG2CoPWEC3+7bIU1w7t2WDSswciNkKgJmrcdRNDwkmSFgmgKYOQUIw8c841rO
-         bMmw==
-X-Gm-Message-State: AOAM533rXR7RR/nDKTHwluJS6GtVvhnwKJeCSTF0KrZGlXLY+BcpOq2u
-        SXbWXQ9ALbtRZevxhgf7RJORgqCwB8bmcba6LGs=
-X-Google-Smtp-Source: ABdhPJyjjgVpATxmVD1aV35Xo9jAj8pXAk6bx2y/zBQJw/wSro/1lxKqon8RXutyujoIdjaoYPJ+cbXx5hAM2h1/rK4=
-X-Received: by 2002:a17:906:5d0f:: with SMTP id g15mr7687669ejt.44.1642628246319;
- Wed, 19 Jan 2022 13:37:26 -0800 (PST)
+        bh=pSWfoK1jnmO+T32koJ6nJsxNdVBxnqdtz0oVErlAr6A=;
+        b=Ez6RAS956Yvz1Q2opnXBrj7002anh93Alc8841fmvwAI9Q1WJUl3Rwjvyvgwup71C6
+         7U0JqHyqRYuYEviLW9OfhHWRu1FPMY5KcWX5puhDsH3t//u0MzuMDMhVFf74Y0xRHaDp
+         hPbbNobAhtQJCezCc9AsMyNcFqvtAckgbxjP0V49Z35Dwbut/I7xOPay0Mglc0nB2ofn
+         G+9gc9TutzkRbF2fH1c+i6o9Qd6KAj/g7kAbcAh/ovaY+E/TH/IJ2fzhZzR2IDxBDXF+
+         VtnLXogM49gRztDkaSTrEC6Bz6soltk5fkuw1HvBchMuzy12IL5pwsS7cgCJ0fMl8n+l
+         9bFg==
+X-Gm-Message-State: AOAM531QMQosLLfA6bNVXAp7FZ68s2YeCT2uvKGbMpOPJoQ6ZL16uOFG
+        tXnsVYZU0QD1/wSbF/ap8utU6J9oLJUsQ77/3gA=
+X-Google-Smtp-Source: ABdhPJw5ae+enqKq3tZAGEBdViyh1ObmCrWMSZh4dhwe3Lb0DW+cB4ZJueiWhsgjeqrAiAIqIeXqdHPsxGLmQv86w/0=
+X-Received: by 2002:aa7:c0c9:: with SMTP id j9mr3582784edp.270.1642628857879;
+ Wed, 19 Jan 2022 13:47:37 -0800 (PST)
 MIME-Version: 1.0
-References: <20220117142919.207370-1-marcan@marcan.st> <20220117142919.207370-3-marcan@marcan.st>
-In-Reply-To: <20220117142919.207370-3-marcan@marcan.st>
+References: <20220117142919.207370-1-marcan@marcan.st> <20220117142919.207370-4-marcan@marcan.st>
+In-Reply-To: <20220117142919.207370-4-marcan@marcan.st>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 19 Jan 2022 23:35:44 +0200
-Message-ID: <CAHp75VdZG4n1QySXyM+w1gJOWzq5Ng-Ym8dL1sSC_MLP2hqxAw@mail.gmail.com>
-Subject: Re: [PATCH v3 2/9] brcmfmac: firmware: Allocate space for default
- boardrev in nvram
+Date:   Wed, 19 Jan 2022 23:45:55 +0200
+Message-ID: <CAHp75VfZ+thU+AWeOQSC9Dqq3MO+GMb_8oPxqMEbaxYTH0PH5A@mail.gmail.com>
+Subject: Re: [PATCH v3 3/9] brcmfmac: firmware: Do not crash on a NULL board_type
 To:     Hector Martin <marcan@marcan.st>
 Cc:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -88,14 +87,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Jan 17, 2022 at 4:30 PM Hector Martin <marcan@marcan.st> wrote:
 >
-> If boardrev is missing from the NVRAM we add a default one, but this
-> might need more space in the output buffer than was allocated. Ensure
-> we have enough padding for this in the buffer.
+> This unbreaks support for USB devices, which do not have a board_type
+> to create an alt_path out of and thus were running into a NULL
+> dereference.
 
-Do you know this ahead (before allocation happens)?
-If yes, the size change should happen conditionally.
+In v5.16 we have two call sites:
 
-Alternatively, krealloc() may be used.
+1.
+  if (cur->type == BRCMF_FW_TYPE_NVRAM && fwctx->req->board_type) {
+    ...
+    alt_path = brcm_alt_fw_path(cur->path, fwctx->req->board_type);
+
+2.
+  alt_path = brcm_alt_fw_path(first->path, fwctx->req->board_type);
+  if (alt_path) {
+    ...
+
+Looking at them I would rather expect to see (as a quick fix, the
+better solution is to unify those call sites by splitting out a common
+helper):
+
+  if (fwctx->req->board_type) {
+    alt_path = brcm_alt_fw_path(first->path, fwctx->req->board_type);
+  else
+    alt_path = NULL;
+   ...
+
+
+> @@ -599,6 +599,9 @@ static char *brcm_alt_fw_path(const char *path, const char *board_type)
+>         char alt_path[BRCMF_FW_NAME_LEN];
+>         char suffix[5];
+>
+> +       if (!board_type)
+> +               return NULL;
+
 
 -- 
 With Best Regards,
