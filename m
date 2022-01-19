@@ -2,127 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A21FC4941FF
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 21:44:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AE7F49421E
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 21:53:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244868AbiASUoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 15:44:07 -0500
-Received: from mga14.intel.com ([192.55.52.115]:26609 "EHLO mga14.intel.com"
+        id S234399AbiASUxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 15:53:47 -0500
+Received: from mga09.intel.com ([134.134.136.24]:55117 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1357328AbiASUoA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jan 2022 15:44:00 -0500
+        id S229683AbiASUxq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jan 2022 15:53:46 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642625040; x=1674161040;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZnpQmdGf3petXh8fwqqd+ss75xCdI43Bzq3MlCXD9oc=;
-  b=XdRQO/U+I/0kVdm3l1H4OAKhWqCu/h82dtNf/SUXrmspL5BMOhNekXtL
-   s0g7kRh7sfP40ix27fMismSJGKSbZ19Fh2Dd9neBC0QcCdI43uh4ELcqo
-   AsgfQNvQ6ALZUswFJfbfPNjOWQJ2xle6M5Gc1nJ1aAbhYjDqs3ACYo46A
-   A6bkW1x/Db/Sy1C6v3V/0ctsSYYBtWea0f6pGh36OT30NdU2thn74/dPl
-   +1HqAExbkGR8EBKOIM3BNLckpC4Dc7EBOmNMPV6boTUhiiy0fNHh85fNM
-   GADXqU6nTEgA8n25XKFY6KdYGvFVTEJTQ+k5Y3mgX3/HF7EeNciiP4XCp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="245386545"
+  t=1642625626; x=1674161626;
+  h=date:from:to:subject:message-id:references:mime-version:
+   in-reply-to;
+  bh=cH3bHFZpGH0RESw8RskOlsgeHxPQYCpLCLkrUAgJ7oE=;
+  b=N5V9BrYPZPe3+kNXJlVabWxsBtq7kBqY2EhPMRwpa8ZvXa3m07nkcgr/
+   Q+lHFLsNHXStpIWuiUtZGItH2cEt2JEjDp7IQJTpE1i6EEtbODPef+3FU
+   OV/JI1IKdZzmKbu3U+fFKqWZAM9JILGZwX0/w1JRjA7j/1bceMy3tF8eF
+   EN9/KiqLGG0M5+BKMQoOgiNZCU8eJ6023VC7oUVfoRqWPrmTbq8eH1TPS
+   Op2CrI2jwEiWYjtMNpUz2MJjz0S8HFb3rlTkR0sVfjMqtPe3dQTpWMtyV
+   bbemB1boFVF2qw/ZhBHqoiVlLgZ0CaXQ4zhReCc21iP3I119Ia2wPqalu
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="244984193"
 X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="245386545"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 12:43:57 -0800
+   d="scan'208";a="244984193"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 12:53:45 -0800
 X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="518333103"
+   d="scan'208";a="765081592"
 Received: from atefehad-mobl1.amr.corp.intel.com (HELO ldmartin-desk2) ([10.212.238.132])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 12:43:56 -0800
-Date:   Wed, 19 Jan 2022 12:43:56 -0800
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 12:53:44 -0800
+Date:   Wed, 19 Jan 2022 12:53:43 -0800
 From:   Lucas De Marchi <lucas.demarchi@intel.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
-        nouveau@lists.freedesktop.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        dri-devel@lists.freedesktop.org,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Vishal Kulkarni <vishal@chelsio.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Mikita Lipski <mikita.lipski@amd.com>,
+To:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
         amd-gfx@lists.freedesktop.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Petr Mladek <pmladek@suse.com>, Leo Li <sunpeng.li@amd.com>,
-        intel-gfx@lists.freedesktop.org, Raju Rangoju <rajur@chelsio.com>,
-        Julia Lawall <julia.lawall@lip6.fr>,
-        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Eryk Brol <eryk.brol@amd.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
         Alex Deucher <alexander.deucher@amd.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [Intel-gfx] [PATCH 1/3] lib/string_helpers: Consolidate yesno()
- implementation
-Message-ID: <20220119204356.vizlstcs6wi6kn4b@ldmartin-desk2>
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Leo Li <sunpeng.li@amd.com>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vishal Kulkarni <vishal@chelsio.com>
+Subject: Re: [Intel-gfx] [PATCH 0/3] lib/string_helpers: Add a few string
+ helpers
+Message-ID: <20220119205343.kd5cwfzpg4mlsekk@ldmartin-desk2>
 X-Patchwork-Hint: comment
 References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
- <20220119072450.2890107-2-lucas.demarchi@intel.com>
- <YefXg03hXtrdUj6y@paasikivi.fi.intel.com>
- <20220119100635.6c45372b@gandalf.local.home>
+ <YegPiR7LU8aVisMf@alley>
+ <87tudzbykz.fsf@intel.com>
+ <Yeg5BpV8tknSPdSQ@phenom.ffwll.local>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220119100635.6c45372b@gandalf.local.home>
+In-Reply-To: <Yeg5BpV8tknSPdSQ@phenom.ffwll.local>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 10:06:35AM -0500, Steven Rostedt wrote:
->On Wed, 19 Jan 2022 11:18:59 +0200
->Sakari Ailus <sakari.ailus@linux.intel.com> wrote:
->
->> On Tue, Jan 18, 2022 at 11:24:48PM -0800, Lucas De Marchi wrote:
->> > @@ -1354,8 +1345,7 @@ static bool tomoyo_print_condition(struct tomoyo_io_buffer *head,
->> >  	case 3:
->> >  		if (cond->grant_log != TOMOYO_GRANTLOG_AUTO)
->> >  			tomoyo_io_printf(head, " grant_log=%s",
->> > -					 tomoyo_yesno(cond->grant_log ==
->> > -						      TOMOYO_GRANTLOG_YES));
->> > +					 yesno(cond->grant_log == TOMOYO_GRANTLOG_YES));
+On Wed, Jan 19, 2022 at 05:15:02PM +0100, Daniel Vetter wrote:
+>On Wed, Jan 19, 2022 at 04:16:12PM +0200, Jani Nikula wrote:
+>> On Wed, 19 Jan 2022, Petr Mladek <pmladek@suse.com> wrote:
+>> > On Tue 2022-01-18 23:24:47, Lucas De Marchi wrote:
+>> >> Add some helpers under lib/string_helpers.h so they can be used
+>> >> throughout the kernel. When I started doing this there were 2 other
+>> >> previous attempts I know of, not counting the iterations each of them
+>> >> had:
+>> >>
+>> >> 1) https://lore.kernel.org/all/20191023131308.9420-1-jani.nikula@intel.com/
+>> >> 2) https://lore.kernel.org/all/20210215142137.64476-1-andriy.shevchenko@linux.intel.com/#t
+>> >>
+>> >> Going through the comments I tried to find some common ground and
+>> >> justification for what is in here, addressing some of the concerns
+>> >> raised.
+>> >>
+>> >> d. This doesn't bring onoff() helper as there are some places in the
+>> >>    kernel with onoff as variable - another name is probably needed for
+>> >>    this function in order not to shadow the variable, or those variables
+>> >>    could be renamed.  Or if people wanting  <someprefix>
+>> >>    try to find a short one
+>> >
+>> > I would call it str_on_off().
+>> >
+>> > And I would actually suggest to use the same style also for
+>> > the other helpers.
+>> >
+>> > The "str_" prefix would make it clear that it is something with
+>> > string. There are other <prefix>_on_off() that affect some
+>> > functionality, e.g. mute_led_on_off(), e1000_vlan_filter_on_off().
+>> >
+>> > The dash '_' would significantly help to parse the name. yesno() and
+>> > onoff() are nicely short and kind of acceptable. But "enabledisable()"
+>> > is a puzzle.
+>> >
+>> > IMHO, str_yes_no(), str_on_off(), str_enable_disable() are a good
+>> > compromise.
+>> >
+>> > The main motivation should be code readability. You write the
+>> > code once. But many people will read it many times. Open coding
+>> > is sometimes better than misleading macro names.
+>> >
+>> > That said, I do not want to block this patchset. If others like
+>> > it... ;-)
 >>
->> This would be better split on two lines.
+>> I don't mind the names either way. Adding the prefix and dashes is
+>> helpful in that it's possible to add the functions first and convert
+>> users at leisure, though with a bunch of churn, while using names that
+>> collide with existing ones requires the changes to happen in one go.
+>>
+>> What I do mind is grinding this series to a halt once again. I sent a
+>> handful of versions of this three years ago, with inconclusive
+>> bikeshedding back and forth, eventually threw my hands up in disgust,
+>> and walked away.
 >
->Really? Yuck!
+>Yeah we can sed this anytime later we want to, but we need to get the foot
+>in the door. There's also a pile more of these all over.
 >
->I thought the "max line size" guideline was going to grow to a 100, but I
->still see it as 80. But anyway...
+>Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+>
+>on the series, maybe it helps? And yes let's merge this through drm-misc.
 
-Checking that: docs still say 80, but checkpatch was changed to warn
-only on 100. Commit bdc48fa11e46 ("checkpatch/coding-style: deprecate
-80-column warning") is clear why the discrepancy.
+Ok, it seems we are reaching some agreement here then:
+
+- Change it to use str_ prefix
+- Wait -rc1 to avoid conflict
+- Merge through drm-misc
+
+I will re-send the series again soon.
 
 Lucas De Marchi
-
->
->	cond->grant_log ==
->	TOMOYO_GRANTLOG_YES
->
->is not readable at all. Not compared to
->
->	cond->grant_log == TOMOYO_GRANTLOG_YES
->
->I say keep it one line!
->
->Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
->
->-- Steve
->
->>
->> Then,
->>
->> Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
->
