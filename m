@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21C83494091
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 20:15:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F3A649407C
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 20:12:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238488AbiASTPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 14:15:03 -0500
-Received: from mga17.intel.com ([192.55.52.151]:44491 "EHLO mga17.intel.com"
+        id S236465AbiASTMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 14:12:01 -0500
+Received: from mga09.intel.com ([134.134.136.24]:45846 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230121AbiASTO5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jan 2022 14:14:57 -0500
+        id S229783AbiASTL5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jan 2022 14:11:57 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642619697; x=1674155697;
+  t=1642619517; x=1674155517;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=UxCJC6eWdEdNah12KsCkH6nSMwzBaq9zmFaRweUROSw=;
-  b=LAc+xMae98biOIe5+1js4+13ymMtQfOZSUQURTlSus0gzNjipYYXMVRV
-   NyUait10iKdR/90KFN5Y1m05QCfp6q3qzq7aMUxV770tU54G7cYAhQtgv
-   pVX9FLJ0gZMdqxMkdJ7QwAtl/ocGGTqCzwLfUnZfBNXYBI0aw53UzRHZQ
-   htJvPpqnvZya6hmULFQD4Y5jo22ao12AxEHZ9RcdHd8qayiqfi6f/Vn+H
-   HDDeAnxl7jb2W+TuQI/wswZl5zM/+T11pBUstVIHHX+nQ191zFUOLeEu4
-   6a2gQVcdPCcvCyM7pE+7iucp6314FpQtnvO2DoPSUNQBK5Y2BdxezH8ST
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="225834857"
+  bh=pJ3GNueq7O6gH3lUcp2UWza1P3qxEpzR0oarM5vPP+c=;
+  b=UXLVajox5ZHllPCnKrC7EgcEY0WkG3m6cX5BGDcH3ZrXHJw+cD0doCzv
+   NcjaECXIeShaiMRsbLcZVcmNxKJRF36dpsiuorVfGGIGIUuBz8L8h7y6J
+   yq8vDhHqx15GUjymrF+eMLgmL4EF+kKerYykLDuLkdOPlLfwJ5ao9TBu3
+   /AFDXsjMJnw208Ua3r30h3ufnOYEAM3PxG1EuoNaAH9ckjycgCeQJRMAy
+   KoYSfIB/kqrI0neAGHwjB2R4DHGMNxevZv8xRU06XWDLxa/iijAYSe78q
+   k/9si/iJ0npCpGhv2oUNa725UWhV7x/9Xt5OjiesgCJf44N8M03cl2yRX
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="244957549"
 X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="225834857"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 10:38:30 -0800
+   d="scan'208";a="244957549"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 10:41:48 -0800
 X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="518285423"
+   d="scan'208";a="765040746"
 Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 10:38:09 -0800
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 10:41:32 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.95)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nAFpH-00CDps-NH;
-        Wed, 19 Jan 2022 20:36:55 +0200
-Date:   Wed, 19 Jan 2022 20:36:55 +0200
+        id 1nAFsa-00CDtL-3g;
+        Wed, 19 Jan 2022 20:40:20 +0200
+Date:   Wed, 19 Jan 2022 20:40:19 +0200
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
         <u.kleine-koenig@pengutronix.de>
@@ -116,7 +116,7 @@ Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
         "David S. Miller" <davem@davemloft.net>
 Subject: Re: [PATCH] driver core: platform: Rename
  platform_get_irq_optional() to platform_get_irq_silent()
-Message-ID: <YehaRwIe4LjymMhS@smile.fi.intel.com>
+Message-ID: <YehbE03fMBSuOleX@smile.fi.intel.com>
 References: <20220112085009.dbasceh3obfok5dc@pengutronix.de>
  <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
  <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
@@ -139,21 +139,16 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Sat, Jan 15, 2022 at 02:55:50PM +0100, Uwe Kleine-König wrote:
 > On Fri, Jan 14, 2022 at 08:55:07PM +0300, Sergey Shtylyov wrote:
-> > On 1/14/22 12:42 AM, Florian Fainelli wrote:
 
-> So you oppose to the name chosen, but not the renaming as such.
+> Or do you think kmalloc should better be called
+> kmalloc_optional because it returns NULL if there is no more memory
+> available?
 
-I oppose the name change. The unneeded churn right now since it won't fix
-the issues with the underneath API (platform_get_irq() in this case) and
-will require one more iteration over callers again.
+Oh, do you know that kmalloc() may return NULL and small cookie value and
+actually one has to check for that (yes, either before or after against
+different variables)?
 
-The main issue that platform_get_irq*() returns magic error code while
-treating 0 in a very special way (issuing WARN() and considering it as
-a successful cookie) and this all is quite confusing.
-
-If you are going to fix the underlying issue, welcome! Now I see only
-the step to somewhere. I.o.w. this change _standalone_ makes no sense
-to me.
+kmalloc() is exactly an example that justifies the Sergey's patch.
 
 -- 
 With Best Regards,
