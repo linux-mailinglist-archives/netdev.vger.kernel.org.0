@@ -2,28 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9034149382E
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 11:18:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61DC5493833
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 11:18:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353654AbiASKQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 05:16:55 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:47734 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353589AbiASKQt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 05:16:49 -0500
+        id S1353699AbiASKRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 05:17:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353589AbiASKQ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 05:16:57 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B3AC06161C;
+        Wed, 19 Jan 2022 02:16:57 -0800 (PST)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: usama.anjum)
-        with ESMTPSA id 944F31F44438
+        with ESMTPSA id 8B3A31F4443C
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642587408;
-        bh=x8a+/rhJUZAIKALDJjBBCDWlAg+uFUzuTVsPSCbnIHQ=;
+        s=mail; t=1642587416;
+        bh=b8IHaSyqZAkol0UTz6LpkkJkD6GfsdgRKfD7L0QLD4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AgNZ5WXHijtrat3Pgh3ZOaMi2tRnMkFgvN54h8z/dIuy6z3C94f9rIegI9PkZNLyW
-         +39iLHTOpr1enYSwhxr0yf1JwbLKHvP0rNGnKEjnxPhfry5gtoiU8RMSOgMF8t1xLs
-         iN26p9qCQLosHnwBjUWroyA1Zwi7tfVDotoRcc2C6nZ7Sm3OdJ5/QeGuoXNxtxiezA
-         ChphF0Y7Epi/NXBgoQ2SqM1EsPP2f+1a2iGqprWsxy9SmoQjEAers9rddnzNstVs8J
-         1C5JmA9m58hnjzCgCDM+w/2GsSZ+4IVWfWA//obZJ+igoaGSyYwSm3K8uT79FhRtgS
-         68e8rQwRxRZ+w==
+        b=Ct1ewDX16Y2/hsiVGPj7C6m6S17bUJz/BVwMtVBM9kuO5SjF+oQwy5xdo+J3hOovC
+         nv5+7F8MCCg+jqebTmv3FvRT+pf5xo2Sj3xvqbQuYt2HGxRYi4z0vwh6lSzjtGJAQI
+         n8boO5YtHOIyxS3ICyW6YkMbt5W1INqtw3i74UEnshWvBOOjOKF2siZ3CvxBPBXlpY
+         bfEOl7xQuFeedK37LsAeyTPaFB6JQBNj4FVSIeBfhi4aRiY88asnf4Y9NT4N2aVzHP
+         3O2kcvX0clF2FZ7TtdoUztz9uZ8Omh4JlWe7jGip2cQdhmqugmuDsFLqzM7e0ZEcJ6
+         SAgDk0MDw8yHg==
 From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
 To:     Shuah Khan <shuah@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -49,9 +52,9 @@ To:     Shuah Khan <shuah@kernel.org>,
         linux-mm@kvack.org (open list:MEMORY MANAGEMENT)
 Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
         kernel@collabora.com
-Subject: [PATCH V2 07/10] selftests: net: Add the uapi headers include variable
-Date:   Wed, 19 Jan 2022 15:15:28 +0500
-Message-Id: <20220119101531.2850400-8-usama.anjum@collabora.com>
+Subject: [PATCH V2 08/10] selftests: mptcp: Add the uapi headers include variable
+Date:   Wed, 19 Jan 2022 15:15:29 +0500
+Message-Id: <20220119101531.2850400-9-usama.anjum@collabora.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220119101531.2850400-1-usama.anjum@collabora.com>
 References: <20220119101531.2850400-1-usama.anjum@collabora.com>
@@ -71,22 +74,22 @@ Changes in V2:
         Revert the excessive cleanup which was breaking the individual
 test build.
 ---
- tools/testing/selftests/net/Makefile | 2 +-
+ tools/testing/selftests/net/mptcp/Makefile | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 9897fa9ab953..0b1488616c55 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -2,7 +2,7 @@
- # Makefile for net selftests
+diff --git a/tools/testing/selftests/net/mptcp/Makefile b/tools/testing/selftests/net/mptcp/Makefile
+index 0356c4501c99..f905d5358e68 100644
+--- a/tools/testing/selftests/net/mptcp/Makefile
++++ b/tools/testing/selftests/net/mptcp/Makefile
+@@ -3,7 +3,7 @@
+ top_srcdir = ../../../../..
+ KSFT_KHDR_INSTALL := 1
  
- CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g
--CFLAGS += -I../../../../usr/include/
-+CFLAGS += -I../../../../usr/include/ $(KHDR_INCLUDES)
+-CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g  -I$(top_srcdir)/usr/include
++CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g -I$(top_srcdir)/usr/include $(KHDR_INCLUDES)
  
- TEST_PROGS := run_netsocktests run_afpackettests test_bpf.sh netdevice.sh \
- 	      rtnetlink.sh xfrm_policy.sh test_blackhole_dev.sh
+ TEST_PROGS := mptcp_connect.sh pm_netlink.sh mptcp_join.sh diag.sh \
+ 	      simult_flows.sh mptcp_sockopt.sh
 -- 
 2.30.2
 
