@@ -2,32 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29D2C493C4E
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 15:57:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6697A493C52
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 15:57:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355347AbiASO4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 09:56:54 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44032 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355332AbiASO4x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 09:56:53 -0500
+        id S1355327AbiASO5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 09:57:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51310 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355317AbiASO5C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 09:57:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D09C06161C;
+        Wed, 19 Jan 2022 06:57:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17D5BB81A01;
-        Wed, 19 Jan 2022 14:56:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7B3DC004E1;
-        Wed, 19 Jan 2022 14:56:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5243D61325;
+        Wed, 19 Jan 2022 14:57:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D45CC340E1;
+        Wed, 19 Jan 2022 14:56:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642604210;
-        bh=YJqIQNyHYUUBiXc0OOms6j/SPOKm6rKZVkLjyaFO4Eo=;
+        s=k20201202; t=1642604221;
+        bh=UtmrQUg+QHgTKYr+YTBSAKpCMIVJ0RQetp9r0O+nF90=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U7R9GqjjsKf/+tBUOoAhW3qGGRzfhgGXwrhp1l1ULgbfPoCHequlmcu1kMHN5AxsT
-         qaxgThVK3ESthYKx4MGw7zStS7sFzBAsL+F8KesoxMKmi1pPtDO+C+Wv6GsaAOHdU4
-         ZYR1Dp5JtENU7XnLg1Kv/QP9U04B53e45zAQH0inTxHLoY7Z/o3uskCU9XAiUofZEU
-         jPx8LIPALA94aLGaVp6WGx0uF7fXSaNhgM/H4Frl5xiMHz9LGI5DUVmoeZztWvgjup
-         WVGhHxQiM5X+g4HdujB1WLLtrhGqXGTe3XpOY6yDclyflhQydAPO33QcRX3xdtcE84
-         MLUSFRTeyDSNg==
+        b=fnKYB/8oWfpE52JfTUvJegRytrpM5SZ6nHyz4vVJN+HO3juBSqqnOeYW/bpLBrH+v
+         mx22GqSTcrk08L04NSe5lP1aGCoGK1+904FMSDF8avHnygegdpUJ8p1KznTyRbcD+M
+         sFf7C4yC2aLnakWFzb6nDzXiroU6cTe6oewO9Hk3YU99DusMUoowqPzWKR9Vnjh185
+         nAfz8zSyAYs70iUfZswY0bRQKrMACCTi+z0UCp4krtI2sIZlCKvpAEOnoN+hcvF0vp
+         yy/u+SxKZmSWImHtvZReQysKrCHOWs2dwY9gt+PRd93Eg9Nbu3oBw3QDm2QEPcmza2
+         7m3umk6yHxRUw==
 From:   Masami Hiramatsu <mhiramat@kernel.org>
 To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
@@ -42,9 +45,9 @@ Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
         Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
         "David S . Miller" <davem@davemloft.net>
-Subject: [RFC PATCH v3 1/9] ftrace: Add ftrace_set_filter_ips function
-Date:   Wed, 19 Jan 2022 23:56:45 +0900
-Message-Id: <164260420549.657731.3435395478305733593.stgit@devnote2>
+Subject: [RFC PATCH v3 2/9] fprobe: Add ftrace based probe APIs
+Date:   Wed, 19 Jan 2022 23:56:56 +0900
+Message-Id: <164260421611.657731.15819765180139836537.stgit@devnote2>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <164260419349.657731.13913104835063027148.stgit@devnote2>
 References: <164260419349.657731.13913104835063027148.stgit@devnote2>
@@ -56,148 +59,275 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Olsa <jolsa@redhat.com>
+The fprobe is a wrapper API for ftrace function tracer.
+Unlike kprobes, this probes only supports the function entry, but
+it can probe multiple functions by one fprobe. The usage is almost
+same as the kprobe, user will specify the function names by
+fprobe::syms, the number of syms by fprobe::nentry,
+and the user handler by fprobe::entry_handler.
 
-Adding ftrace_set_filter_ips function to be able to set filter on
-multiple ip addresses at once.
+struct fprobe fp = { 0 };
+const char *targets[] = { "func1", "func2", "func3"};
 
-With the kprobe multi attach interface we have cases where we need to
-initialize ftrace_ops object with thousands of functions, so having
-single function diving into ftrace_hash_move_and_update_ops with
-ftrace_lock is faster.
+fp.handler = user_handler;
+fp.nentry = ARRAY_SIZE(targets);
+fp.syms = targets;
 
-The functions ips are passed as unsigned long array with count.
+ret = register_fprobe(&fp);
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
 ---
- include/linux/ftrace.h |    3 +++
- kernel/trace/ftrace.c  |   53 ++++++++++++++++++++++++++++++++++++++++--------
- 2 files changed, 47 insertions(+), 9 deletions(-)
+ Changes in v3:
+  - Update kerneldocs.
+---
+ include/linux/fprobe.h |   80 +++++++++++++++++++++++++++++++++
+ kernel/trace/Kconfig   |   10 ++++
+ kernel/trace/Makefile  |    1 
+ kernel/trace/fprobe.c  |  117 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 208 insertions(+)
+ create mode 100644 include/linux/fprobe.h
+ create mode 100644 kernel/trace/fprobe.c
 
-diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
-index 9999e29187de..60847cbce0da 100644
---- a/include/linux/ftrace.h
-+++ b/include/linux/ftrace.h
-@@ -512,6 +512,8 @@ struct dyn_ftrace {
+diff --git a/include/linux/fprobe.h b/include/linux/fprobe.h
+new file mode 100644
+index 000000000000..2fc487d933e3
+--- /dev/null
++++ b/include/linux/fprobe.h
+@@ -0,0 +1,80 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Simple ftrace probe wrapper */
++#ifndef _LINUX_FPROBE_H
++#define _LINUX_FPROBE_H
++
++#include <linux/compiler.h>
++#include <linux/ftrace.h>
++
++/**
++ * struct fprobe - ftrace based probe.
++ * @syms: The array of symbols to probe.
++ * @addrs: The array of address of the symbols.
++ * @nentry: The number of entries of @syms or @addrs.
++ * @ftrace: The ftrace_ops.
++ * @nmissed: The counter for missing events.
++ * @flags: The status flag.
++ * @entry_handler: The callback function for function entry.
++ *
++ * User must set either @syms or @addrs, but not both. If user sets
++ * only @syms, the @addrs are generated when registering the fprobe.
++ * That auto-generated @addrs will be freed when unregistering.
++ */
++struct fprobe {
++	const char		**syms;
++	unsigned long		*addrs;
++	unsigned int		nentry;
++
++	struct ftrace_ops	ftrace;
++	unsigned long		nmissed;
++	unsigned int		flags;
++	void (*entry_handler)(struct fprobe *fp, unsigned long entry_ip, struct pt_regs *regs);
++};
++
++#define FPROBE_FL_DISABLED	1
++
++static inline bool fprobe_disabled(struct fprobe *fp)
++{
++	return (fp) ? fp->flags & FPROBE_FL_DISABLED : false;
++}
++
++#ifdef CONFIG_FPROBE
++int register_fprobe(struct fprobe *fp);
++int unregister_fprobe(struct fprobe *fp);
++#else
++static inline int register_fprobe(struct fprobe *fp)
++{
++	return -EOPNOTSUPP;
++}
++static inline int unregister_fprobe(struct fprobe *fp)
++{
++	return -EOPNOTSUPP;
++}
++#endif
++
++/**
++ * disable_fprobe() - Disable fprobe
++ * @fp: The fprobe to be disabled.
++ *
++ * This will soft-disable @fp. Note that this doesn't remove the ftrace
++ * hooks from the function entry.
++ */
++static inline void disable_fprobe(struct fprobe *fp)
++{
++	if (fp)
++		fp->flags |= FPROBE_FL_DISABLED;
++}
++
++/**
++ * enable_fprobe() - Enable fprobe
++ * @fp: The fprobe to be enabled.
++ *
++ * This will soft-enable @fp.
++ */
++static inline void enable_fprobe(struct fprobe *fp)
++{
++	if (fp)
++		fp->flags &= ~FPROBE_FL_DISABLED;
++}
++
++#endif
+diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
+index 420ff4bc67fd..6834b0272798 100644
+--- a/kernel/trace/Kconfig
++++ b/kernel/trace/Kconfig
+@@ -223,6 +223,16 @@ config DYNAMIC_FTRACE_WITH_ARGS
+ 	depends on DYNAMIC_FTRACE
+ 	depends on HAVE_DYNAMIC_FTRACE_WITH_ARGS
  
- int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
- 			 int remove, int reset);
-+int ftrace_set_filter_ips(struct ftrace_ops *ops, unsigned long *ips,
-+			  unsigned int cnt, int remove, int reset);
- int ftrace_set_filter(struct ftrace_ops *ops, unsigned char *buf,
- 		       int len, int reset);
- int ftrace_set_notrace(struct ftrace_ops *ops, unsigned char *buf,
-@@ -802,6 +804,7 @@ static inline unsigned long ftrace_location(unsigned long ip)
- #define ftrace_regex_open(ops, flag, inod, file) ({ -ENODEV; })
- #define ftrace_set_early_filter(ops, buf, enable) do { } while (0)
- #define ftrace_set_filter_ip(ops, ip, remove, reset) ({ -ENODEV; })
-+#define ftrace_set_filter_ips(ops, ips, cnt, remove, reset) ({ -ENODEV; })
- #define ftrace_set_filter(ops, buf, len, reset) ({ -ENODEV; })
- #define ftrace_set_notrace(ops, buf, len, reset) ({ -ENODEV; })
- #define ftrace_free_filter(ops) do { } while (0)
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index be5f6b32a012..39350aa38649 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -4958,7 +4958,7 @@ ftrace_notrace_write(struct file *file, const char __user *ubuf,
- }
++config FPROBE
++	bool "Kernel Function Probe (fprobe)"
++	depends on FUNCTION_TRACER
++	depends on DYNAMIC_FTRACE_WITH_REGS
++	default n
++	help
++	  This option enables kernel function probe feature, which is
++	  similar to kprobes, but probes only for kernel function entries
++	  and it can probe multiple functions by one fprobe.
++
+ config FUNCTION_PROFILER
+ 	bool "Kernel function profiler"
+ 	depends on FUNCTION_TRACER
+diff --git a/kernel/trace/Makefile b/kernel/trace/Makefile
+index bedc5caceec7..79255f9de9a4 100644
+--- a/kernel/trace/Makefile
++++ b/kernel/trace/Makefile
+@@ -97,6 +97,7 @@ obj-$(CONFIG_PROBE_EVENTS) += trace_probe.o
+ obj-$(CONFIG_UPROBE_EVENTS) += trace_uprobe.o
+ obj-$(CONFIG_BOOTTIME_TRACING) += trace_boot.o
+ obj-$(CONFIG_FTRACE_RECORD_RECURSION) += trace_recursion_record.o
++obj-$(CONFIG_FPROBE) += fprobe.o
  
- static int
--ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
-+__ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
- {
- 	struct ftrace_func_entry *entry;
+ obj-$(CONFIG_TRACEPOINT_BENCHMARK) += trace_benchmark.o
  
-@@ -4976,9 +4976,25 @@ ftrace_match_addr(struct ftrace_hash *hash, unsigned long ip, int remove)
- 	return add_hash_entry(hash, ip);
- }
- 
-+static int
-+ftrace_match_addr(struct ftrace_hash *hash, unsigned long *ips,
-+		  unsigned int cnt, int remove)
+diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
+new file mode 100644
+index 000000000000..8b068deadc48
+--- /dev/null
++++ b/kernel/trace/fprobe.c
+@@ -0,0 +1,117 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * fprobe - Simple ftrace probe wrapper for function entry.
++ */
++#define pr_fmt(fmt) "fprobe: " fmt
++
++#include <linux/fprobe.h>
++#include <linux/kallsyms.h>
++#include <linux/kprobes.h>
++#include <linux/slab.h>
++#include <linux/sort.h>
++
++static void fprobe_handler(unsigned long ip, unsigned long parent_ip,
++			   struct ftrace_ops *ops, struct ftrace_regs *fregs)
++{
++	struct fprobe *fp;
++	int bit;
++
++	fp = container_of(ops, struct fprobe, ftrace);
++	if (fprobe_disabled(fp))
++		return;
++
++	bit = ftrace_test_recursion_trylock(ip, parent_ip);
++	if (bit < 0) {
++		fp->nmissed++;
++		return;
++	}
++
++	if (fp->entry_handler)
++		fp->entry_handler(fp, ip, ftrace_get_regs(fregs));
++
++	ftrace_test_recursion_unlock(bit);
++}
++NOKPROBE_SYMBOL(fprobe_handler);
++
++static int convert_func_addresses(struct fprobe *fp)
 +{
 +	unsigned int i;
-+	int err;
 +
-+	for (i = 0; i < cnt; i++) {
-+		err = __ftrace_match_addr(hash, ips[i], remove);
-+		if (err)
-+			return err;
++	if (!fp->syms)
++		return 0;
++
++	fp->addrs = kcalloc(fp->nentry, sizeof(*fp->addrs), GFP_KERNEL);
++	if (!fp->addrs)
++		return -ENOMEM;
++
++	for (i = 0; i < fp->nentry; i++) {
++
++		fp->addrs[i] = kallsyms_lookup_name(fp->syms[i]);
++		if (!fp->addrs[i])
++			return -ENOENT;
 +	}
++
 +	return 0;
 +}
 +
- static int
- ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
--		unsigned long ip, int remove, int reset, int enable)
-+		unsigned long *ips, unsigned int cnt,
-+		int remove, int reset, int enable)
- {
- 	struct ftrace_hash **orig_hash;
- 	struct ftrace_hash *hash;
-@@ -5008,8 +5024,8 @@ ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
- 		ret = -EINVAL;
- 		goto out_regex_unlock;
- 	}
--	if (ip) {
--		ret = ftrace_match_addr(hash, ip, remove);
-+	if (ips) {
-+		ret = ftrace_match_addr(hash, ips, cnt, remove);
- 		if (ret < 0)
- 			goto out_regex_unlock;
- 	}
-@@ -5026,10 +5042,10 @@ ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
- }
- 
- static int
--ftrace_set_addr(struct ftrace_ops *ops, unsigned long ip, int remove,
--		int reset, int enable)
-+ftrace_set_addr(struct ftrace_ops *ops, unsigned long *ips, unsigned int cnt,
-+		int remove, int reset, int enable)
- {
--	return ftrace_set_hash(ops, NULL, 0, ip, remove, reset, enable);
-+	return ftrace_set_hash(ops, NULL, 0, ips, cnt, remove, reset, enable);
- }
- 
- #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
-@@ -5634,10 +5650,29 @@ int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
- 			 int remove, int reset)
- {
- 	ftrace_ops_init(ops);
--	return ftrace_set_addr(ops, ip, remove, reset, 1);
-+	return ftrace_set_addr(ops, &ip, 1, remove, reset, 1);
- }
- EXPORT_SYMBOL_GPL(ftrace_set_filter_ip);
- 
 +/**
-+ * ftrace_set_filter_ips - set a functions to filter on in ftrace by addresses
-+ * @ops - the ops to set the filter with
-+ * @ips - the array of addresses to add to or remove from the filter.
-+ * @cnt - the number of addresses in @ips
-+ * @remove - non zero to remove ips from the filter
-+ * @reset - non zero to reset all filters before applying this filter.
++ * register_fprobe() - Register fprobe to ftrace
++ * @fp: A fprobe data structure to be registered.
 + *
-+ * Filters denote which functions should be enabled when tracing is enabled
-+ * If @ips array or any ip specified within is NULL , it fails to update filter.
++ * This expects the user set @fp::entry_handler, @fp::syms or @fp:addrs,
++ * and @fp::nentry.
++ * Note that you do not set both of @fp::addrs and @fp::syms.
 + */
-+int ftrace_set_filter_ips(struct ftrace_ops *ops, unsigned long *ips,
-+			  unsigned int cnt, int remove, int reset)
++int register_fprobe(struct fprobe *fp)
 +{
-+	ftrace_ops_init(ops);
-+	return ftrace_set_addr(ops, ips, cnt, remove, reset, 1);
-+}
-+EXPORT_SYMBOL_GPL(ftrace_set_filter_ips);
++	int ret;
 +
- /**
-  * ftrace_ops_set_global_filter - setup ops to use global filters
-  * @ops - the ops which will use the global filters
-@@ -5659,7 +5694,7 @@ static int
- ftrace_set_regex(struct ftrace_ops *ops, unsigned char *buf, int len,
- 		 int reset, int enable)
- {
--	return ftrace_set_hash(ops, buf, len, 0, 0, reset, enable);
-+	return ftrace_set_hash(ops, buf, len, NULL, 0, 0, reset, enable);
- }
- 
- /**
++	if (!fp || !fp->nentry || (!fp->syms && !fp->addrs) ||
++	    (fp->syms && fp->addrs))
++		return -EINVAL;
++
++	ret = convert_func_addresses(fp);
++	if (ret < 0)
++		return ret;
++
++	fp->nmissed = 0;
++	fp->ftrace.func = fprobe_handler;
++	fp->ftrace.flags = FTRACE_OPS_FL_SAVE_REGS;
++
++	ret = ftrace_set_filter_ips(&fp->ftrace, fp->addrs, fp->nentry, 0, 0);
++	if (!ret)
++		ret = register_ftrace_function(&fp->ftrace);
++
++	if (ret < 0 && fp->syms) {
++		kfree(fp->addrs);
++		fp->addrs = NULL;
++	}
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(register_fprobe);
++
++/**
++ * unregister_fprobe() - Unregister fprobe from ftrace
++ * @fp: A fprobe data structure to be unregistered.
++ *
++ * Unregister fprobe (and remove ftrace hooks from the function entries).
++ * If the @fp::addrs are generated by register_fprobe(), it will be removed
++ * automatically.
++ */
++int unregister_fprobe(struct fprobe *fp)
++{
++	int ret;
++
++	if (!fp || !fp->nentry || !fp->addrs)
++		return -EINVAL;
++
++	ret = unregister_ftrace_function(&fp->ftrace);
++
++	if (!ret && fp->syms) {
++		kfree(fp->addrs);
++		fp->addrs = NULL;
++	}
++	return ret;
++}
++EXPORT_SYMBOL_GPL(unregister_fprobe);
 
