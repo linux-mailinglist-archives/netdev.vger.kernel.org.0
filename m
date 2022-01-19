@@ -2,108 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B70664937A5
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 10:46:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 961EC4937C4
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 10:53:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353138AbiASJpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 04:45:49 -0500
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:55049 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1352938AbiASJps (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 04:45:48 -0500
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 16EA33201E5F;
-        Wed, 19 Jan 2022 04:45:48 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 19 Jan 2022 04:45:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=VEskvT
-        nowRvKDY4hR4JFQyZmf5YvsnZy7Zo1clfOU0E=; b=mFyjtEcI74IdWSRrZCJjLY
-        urC245hY/CZNialyPA7iyjSM7xWwtBZ7rgZSSB6WSwBBh359xeJzH3zpFu3otMjP
-        fCulwUc383ktfH9TevJcUNB8ePqVTC2ZMdUpWMiyRj+1LJ+hD5bZjXn3eQ+RjZXh
-        0w4EMzWDUvltuDx8nSX/KEsPnoIAd/SRCYxMFzC+DMXmRUD7tmSZCHL3YzxMUT94
-        LgZOom3XzI4NfBjJCuyOI9XqIHRF95PyQrS0YhALjYr4i0//2vmTUfkeFO8Q+NAL
-        KqUhgko/ae+Lzrxh6b9gcAYGQfld/wUoKpX1nSafpV74IbYxABPobtruFMZX8gwQ
-        ==
-X-ME-Sender: <xms:y93nYajWeBeXfDNgt4N9GTlwA52lJJvwyQ4YfyWLiQ-7WIPTa_MDKQ>
-    <xme:y93nYbBxJGrBplakunH0jKcSyZcE_PBd8W_Oi7ZrcOTTrvQbZxr7JFqAXpoM9iauB
-    nL0yQddBPagQ5U>
-X-ME-Received: <xmr:y93nYSHgSFXQRLprJ1ZsQEsQ8aFOqSO_axF5Ihn6M0SvHR9OVlqCLX08zDvToJZZfsgJvH-UCBTr3gV56lLTo-_L9xJjOQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudehgddtkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:y93nYTSAtEri8yiyyBcOFraQ2cj2Pjjt8B9IxQoN8AO18mCZyPoGAw>
-    <xmx:y93nYXwSPX4L_k6tN20-4Yb8x9AH406kOZm4k8b5tRbXzHOYMcHWIg>
-    <xmx:y93nYR7j0rEhZ1IE-aI06eWjCCDUi0l2hdw3a7IuomJ0JFLhqlDdKw>
-    <xmx:y93nYS9zEaGRPl3PUJvM56872rK5VvCh3pwkEqw-MyZ1B8yBDepktQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 19 Jan 2022 04:45:46 -0500 (EST)
-Date:   Wed, 19 Jan 2022 11:45:41 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, michel@fb.com,
-        dcavalca@fb.com
-Subject: Re: ethtool 5.16 release / ethtool -m bug fix
-Message-ID: <YefdxW/V/rjiiw2x@shredder>
-References: <20220118145159.631fd6ed@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        id S1353170AbiASJxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 04:53:06 -0500
+Received: from mga17.intel.com ([192.55.52.151]:44095 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1353108AbiASJxF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jan 2022 04:53:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642585985; x=1674121985;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=nbZxDijhz+Glybpj0vSn4exGWtl6B5PgaZnhuvzIbwY=;
+  b=QGYkRNz1iG8+vKzR9zNWlJXjH+jelFIU4cUv44DMPRr2KuOvCRfXSY5F
+   wykUvJJm2+cb7s+YbKdnd6eNvORmu5ncGFhFPW/oGtk66xWrcTEsMR33o
+   hsunN66hqZ+mB/RPKehsrAWRJWEcvbcA+NDAVE+F+6VhTYnctA2gBbDny
+   /1R9MBolZxoRk9X+ib0izgmpCSlkNTOj6CJhjUMYDqN4T9X32HTIrI1EC
+   y4lr8twoToMv+fSwcUDaW34LxD70ymARihXBzE8lvAelfczMaznS/r0Tm
+   jPGtNtr/qjrTbLe4wdD6MoZrdGC9uB2H5b+vTYcq8nH45LAqaVeZLaLCO
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="225703924"
+X-IronPort-AV: E=Sophos;i="5.88,299,1635231600"; 
+   d="scan'208";a="225703924"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 01:52:59 -0800
+X-IronPort-AV: E=Sophos;i="5.88,299,1635231600"; 
+   d="scan'208";a="615652288"
+Received: from unknown (HELO ijarvine-MOBL2.mshome.net) ([10.237.66.34])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 01:52:47 -0800
+Date:   Wed, 19 Jan 2022 11:52:40 +0200 (EET)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
+cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
+        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
+        sreehari.kancharla@intel.com
+Subject: Re: [PATCH net-next v4 02/13] net: wwan: t7xx: Add control DMA
+ interface
+In-Reply-To: <4a4b2848-d665-c9ba-c66a-dd4408e94ea5@linux.intel.com>
+Message-ID: <cb33ee41-b885-6523-199-b8a339c1a531@linux.intel.com>
+References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com> <20220114010627.21104-3-ricardo.martinez@linux.intel.com> <d5854453-84b-1eba-7cc7-d94f41a185d@linux.intel.com> <4a4b2848-d665-c9ba-c66a-dd4408e94ea5@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220118145159.631fd6ed@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: multipart/mixed; boundary="8323329-1619414095-1642585974=:1564"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 02:51:59PM -0800, Jakub Kicinski wrote:
-> Hi Michal!
-> 
-> Sorry to hasten but I'm wondering if there is a plan to cut the 5.16
-> ethtool release? Looks like there is a problem in SFP EEPROM parsing
-> code, at least with QSFP28s, user space always requests page 3 now.
-> This ends in an -EINVAL (at least for drivers not supporting the paged
-> mode).
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Jakub, are you sure you are dealing with QSFP and not SFP? I'm asking
-because I assume the driver in question is mlx5 that has this code in
-its implementation of get_module_eeprom_by_page():
+--8323329-1619414095-1642585974=:1564
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-```
-switch (module_id) {
-case MLX5_MODULE_ID_SFP:
-	if (params->page > 0)
-		return -EINVAL;
-	break;
-```
-
-And indeed, ethtool(8) commit fc47fdb7c364 ("ethtool: Refactor
-human-readable module EEPROM output for new API") always asks for Upper
-Page 03h, regardless of the module type.
-
-It is not optimal for ethtool(8) to ask for unsupported pages and I made
-sure it's not doing it anymore, but I believe it's wrong for the kernel
-to return an error. All the specifications that I'm aware of mandate
-that when an unsupported page is requested, the Page Select byte will
-revert to 0. That is why Upper Page 00h is always read-only.
-
-For reference, see section 10.3 in SFF-8472, section 6.2.11 in SFF-8636
-and section 8.2.13 in CMIS.
-
-Also, the entire point of the netlink interface is that the kernel can
-remain ignorant of the EEPROM layout and keep all the logic in user
-space.
+On Tue, 18 Jan 2022, Martinez, Ricardo wrote:
 
 > 
-> By the looks of it - Ido fixed this in 6e2b32a0d0ea ("sff-8636: Request
-> specific pages for parsing in netlink path") but it may be too much code 
-> to backport so I'm thinking it's easiest for distros to move to v5.16.
+> On 1/18/2022 6:13 AM, Ilpo Järvinen wrote:
+> > On Thu, 13 Jan 2022, Ricardo Martinez wrote:
+> ...
+> > > +#define CLDMA_NUM 2
+> > I tried to understand its purpose but it seems that only one of the
+> > indexes is used in the arrays where this define gives the size? Related to
+> > this, ID_CLDMA0 is not used anywhere?
+> 
+> The modem HW has 2 CLDMAs, idx 0 for the app processor (SAP) and idx 1 for the
+> modem (MD).
+> 
+> CLDMA_NUM is defined as 2 to reflect the HW capabilities but mainly to have a
+> cleaner upcoming
+> 
+> patches, which will use ID_CLDMA0.
 
-I did target fixes at 'ethtool' and features at 'ethtool-next', but I
-wasn't aware of this bug.
+Please note this in your commit message then and I think it should be 
+fine to leave it as is (or use 1 sized array, if you prefer to).
+
+> If having array's of size 1 is not a problem then we can define CLDMA_NUM as 1
+> and
+> 
+> play with the CLDMA indexes.
+> 
+> ...
+>
+> > > +static bool t7xx_cldma_qs_are_active(struct t7xx_cldma_hw *hw_info)
+> > > +{
+> > > +	unsigned int tx_active;
+> > > +	unsigned int rx_active;
+> > > +
+> > > +	tx_active = t7xx_cldma_hw_queue_status(hw_info, CLDMA_ALL_Q, MTK_TX);
+> > > +	rx_active = t7xx_cldma_hw_queue_status(hw_info, CLDMA_ALL_Q, MTK_RX);
+> > > +	if (tx_active == CLDMA_INVALID_STATUS || rx_active ==
+> > > CLDMA_INVALID_STATUS)
+> > These cannot ever be true because of mask in t7xx_cldma_hw_queue_status().
+> 
+> t7xx_cldma_hw_queue_status() shouldn't apply the mask for CLDMA_ALL_Q.
+
+I guess it shouldn't but it currently does apply 0xff (CLDMA_ALL_Q) as 
+mask in that case. However, this now raises another question, if 
+0xffffffff (CLDMA_INVALID_STATUS) means status is invalid, should all 
+callers both single Q and CLDMA_ALL_Q be returned/check/handle that value?
+
+Why would CLDMA_ALL_Q be special in this respect that the INVALID_STATUS 
+means invalid only with it?
+
+> > > +/**
+> > > + * t7xx_cldma_send_skb() - Send control data to modem.
+> > > + * @md_ctrl: CLDMA context structure.
+> > > + * @qno: Queue number.
+> > > + * @skb: Socket buffer.
+> > > + * @blocking: True for blocking operation.
+> > > + *
+> > > + * Send control packet to modem using a ring buffer.
+> > > + * If blocking is set, it will wait for completion.
+> > > + *
+> > > + * Return:
+> > > + * * 0		- Success.
+> > > + * * -ENOMEM	- Allocation failure.
+> > > + * * -EINVAL	- Invalid queue request.
+> > > + * * -EBUSY	- Resource lock failure.
+> > > + */
+> > > +int t7xx_cldma_send_skb(struct cldma_ctrl *md_ctrl, int qno, struct
+> > > sk_buff *skb, bool blocking)
+> > > +{
+> > > +	struct cldma_request *tx_req;
+> > > +	struct cldma_queue *queue;
+> > > +	unsigned long flags;
+> > > +	int ret;
+> > > +
+> > > +	if (qno >= CLDMA_TXQ_NUM)
+> > > +		return -EINVAL;
+> > > +
+> > > +	queue = &md_ctrl->txq[qno];
+> > > +
+> > > +	spin_lock_irqsave(&md_ctrl->cldma_lock, flags);
+> > > +	if (!(md_ctrl->txq_active & BIT(qno))) {
+> > > +		ret = -EBUSY;
+> > > +		spin_unlock_irqrestore(&md_ctrl->cldma_lock, flags);
+> > > +		goto allow_sleep;
+> > > +	}
+> > ...
+> > > +		if (!blocking) {
+> > > +			ret = -EBUSY;
+> > > +			break;
+> > > +		}
+> > > +
+> > > +		ret = wait_event_interruptible_exclusive(queue->req_wq,
+> > > queue->budget > 0);
+> > > +	} while (!ret);
+> > > +
+> > > +allow_sleep:
+> > > +	return ret;
+> > > +}
+> > First of all, if I interpreted the call chains correctly, this function is
+> > always called with blocking=true.
+> > 
+> > Second, the first codepath returning -EBUSY when not txq_active seems
+> > twisted/reversed logic to me (not active => busy ?!?).
+> 
+> What about -EINVAL?
+> 
+> Other codes considered: -EPERM, -ENETDOWN.
+
+How about -EIO.
+
+-- 
+ i.
+
+--8323329-1619414095-1642585974=:1564--
