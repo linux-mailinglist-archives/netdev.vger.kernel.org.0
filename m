@@ -2,122 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C12104933C2
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 04:49:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CFD84933C5
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 04:50:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351353AbiASDtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 22:49:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240579AbiASDtF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 22:49:05 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5BDC061574;
-        Tue, 18 Jan 2022 19:49:05 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id f24so1321423ioc.0;
-        Tue, 18 Jan 2022 19:49:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4UkxrBWYZSHawQTKo6vwK9yH1igAtKMWj2abRvMD+YI=;
-        b=T0zpgWhJrFnk0wjQLYJc5BzM1/07cFpSGt8a/3JaSPi7XrtakCXfc/98x9hmnpIqx7
-         YP1PF/AP4tNbeCfoTBF2Y77I8sSKD0bw9u2WD0FIKReKM244pte/Fy0oUJ5x8hT1gzBT
-         m8D0Abij5O2QgNG9vW6albgFGQaVF1YLXkYuAZT2OQaZ4us/4+ACEbg/doaOsQzhfQyH
-         d8x+fqGFqeBqncfhDso7r3MGjqdakKgtkoDxyn7HGX5OcuxXSdZrU53iKY2bQ8vVFPci
-         OsDS0m5AnNzP1ZUUeMewXoCP/SOXYd3rZlbp77/6qHPfvaeCQMooydKqljwS2qNVZZjd
-         CMmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4UkxrBWYZSHawQTKo6vwK9yH1igAtKMWj2abRvMD+YI=;
-        b=ld1puUgpNhvkCiWSZE3tSnd+X4d5nNBE3jGiFG65gs+oU5tTcWBAT2wSrFxfqyT22z
-         NefCpl6OIbQocm2yoRcVdyi1ckoRT49u1bEGNqGLdwk6q+NwKP6N0gEUOWJsA3QfKvro
-         44l2G7iub/xJKMvzQKnGMYA+Kkpw24+9iXUGGJR7om0GnvLUC0BykI2rHHTq7jUnWKKm
-         idGT912uQpJBVCVm2Ofr85yLa2nsjfb/EduvTzfc55qj0TAuDH5lGGjvax4J/KhXRxq5
-         6ca6ZNJ8DTsfdJddZTlFkAs57eOTASo6xIsVOECYaZjhkVh3EjoPFg4Ur6Nc2F6VNcVq
-         hCcQ==
-X-Gm-Message-State: AOAM533VyDv09hVyS+dWn0u4sspoOZGO0t/gcbIvXQ6FnUlNl3aYl4Et
-        uj3tKmY4lWOheDcMXSyApVdURSTF3M+SsBkrjLM=
-X-Google-Smtp-Source: ABdhPJzV6neFI7xxV3nldyPBGl6r9A9iZQoYrX6MwwBhbzp/vHpNHoDkZt8OHUGcg8fUjpAJyliTo/DWjcQ3ZduxsTc=
-X-Received: by 2002:a02:ca03:: with SMTP id i3mr13198575jak.234.1642564144774;
- Tue, 18 Jan 2022 19:49:04 -0800 (PST)
+        id S1351383AbiASDuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 22:50:11 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57752 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240579AbiASDuK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 22:50:10 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4854361578;
+        Wed, 19 Jan 2022 03:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A2B2CC340E3;
+        Wed, 19 Jan 2022 03:50:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642564209;
+        bh=DG/ebJHUYu5veefi7vtpJV/B2/oIE5ZHTz5ziKxm8NQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=AGfNrwWzTvZJdwoED62uS7kPvmbqexwXu/7b7uUgeyHnv9cb/refIll5sf9Qr10xr
+         fXOa86Cjis7wCj2KZ69CCkrAI7Bt17ljXtrbi3NyjyzWskSdp+ejyykK9RmwlkOabS
+         iziKkMEcUEwlZAxHmpqIgoKGFOXq9i9XFI0ZoTzuYByybw1AS9Y1yyNN8YXGxFzN9Z
+         dOtnyD2BTTnNahLCl7XYrGu1k3bZL3zgOqh9FvebikQ2e54QzJnSWf8jgMW4hB0ttG
+         rjwfyE77M+2GVdhfvtDYSBgEwyhPXalziWnoCVWz9G7AVY5q720dqwWBT/5/2S205G
+         7KLn/0hwKfWuw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8A2CCF60795;
+        Wed, 19 Jan 2022 03:50:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220104121030.138216-1-jolsa@kernel.org> <CAEf4BzZK1=zdy1_ZdwWXK7Ryk+uWQeSApcpxFT9yMp4bRNanDQ@mail.gmail.com>
- <Ydabtmk+BmzIxKwJ@krava> <YeXCsTWsvE+a1cld@krava>
-In-Reply-To: <YeXCsTWsvE+a1cld@krava>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 18 Jan 2022 19:48:52 -0800
-Message-ID: <CAEf4BzbdOsyDFzXuAgEiQnZYQWTwcXUAT+8hJAN-=KJi2t60ag@mail.gmail.com>
-Subject: Re: [PATCH] bpf/selftests: Fix namespace mount setup in tc_redirect
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jussi Maki <joamaki@gmail.com>, Hangbin Liu <haliu@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: bpf 2022-01-19
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164256420956.29050.17359978453947882108.git-patchwork-notify@kernel.org>
+Date:   Wed, 19 Jan 2022 03:50:09 +0000
+References: <20220119011825.9082-1-daniel@iogearbox.net>
+In-Reply-To: <20220119011825.9082-1-daniel@iogearbox.net>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        andrii@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 11:25 AM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Thu, Jan 06, 2022 at 08:35:18AM +0100, Jiri Olsa wrote:
-> > On Wed, Jan 05, 2022 at 12:40:34PM -0800, Andrii Nakryiko wrote:
-> > > On Tue, Jan 4, 2022 at 4:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > > >
-> > > > The tc_redirect umounts /sys in the new namespace, which can be
-> > > > mounted as shared and cause global umount. The lazy umount also
-> > > > takes down mounted trees under /sys like debugfs, which won't be
-> > > > available after sysfs mounts again and could cause fails in other
-> > > > tests.
-> > > >
-> > > >   # cat /proc/self/mountinfo | grep debugfs
-> > > >   34 23 0:7 / /sys/kernel/debug rw,nosuid,nodev,noexec,relatime shared:14 - debugfs debugfs rw
-> > > >   # cat /proc/self/mountinfo | grep sysfs
-> > > >   23 86 0:22 / /sys rw,nosuid,nodev,noexec,relatime shared:2 - sysfs sysfs rw
-> > > >   # mount | grep debugfs
-> > > >   debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
-> > > >
-> > > >   # ./test_progs -t tc_redirect
-> > > >   #164 tc_redirect:OK
-> > > >   Summary: 1/4 PASSED, 0 SKIPPED, 0 FAILED
-> > > >
-> > > >   # mount | grep debugfs
-> > > >   # cat /proc/self/mountinfo | grep debugfs
-> > > >   # cat /proc/self/mountinfo | grep sysfs
-> > > >   25 86 0:22 / /sys rw,relatime shared:2 - sysfs sysfs rw
-> > > >
-> > > > Making the sysfs private under the new namespace so the umount won't
-> > > > trigger the global sysfs umount.
-> > >
-> > > Hey Jiri,
-> > >
-> > > Thanks for the fix. Did you try making tc_redirect non-serial again
-> > > (s/serial_test_tc_redirect/test_tc_redirect/) and doing parallelized
-> > > test_progs run (./test_progs -j) in a tight loop for a while? I
-> > > suspect this might have been an issue forcing us to make this test
-> > > serial in the first place, so now that it's fixed, we can make
-> > > parallel test_progs a bit faster.
-> >
-> > hi,
-> > right, will try
->
-> so I can't reproduce the issue in the first place - that means without my
-> fix and with reverted serial_test_tc_redirect change - by running parallelized
-> test_progs, could you guys try it?
->
+Hello:
 
-I tried it for a bunch of iterations and didn't repro it either.
-Doesn't mean much as CI's environment is different, but I think it
-might be worth making it parallel again and see if it reproes in CI
-again.
+This pull request was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> jirka
->
+On Wed, 19 Jan 2022 02:18:25 +0100 you wrote:
+> Hi David, hi Jakub,
+> 
+> The following pull-request contains BPF updates for your *net* tree.
+> 
+> We've added 12 non-merge commits during the last 8 day(s) which contain
+> a total of 12 files changed, 262 insertions(+), 64 deletions(-).
+> 
+> [...]
+
+Here is the summary with links:
+  - pull-request: bpf 2022-01-19
+    https://git.kernel.org/netdev/net/c/99845220d3c3
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
