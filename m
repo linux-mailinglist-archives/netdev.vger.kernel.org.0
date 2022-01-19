@@ -2,98 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 434BC493189
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 01:03:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42FC549318C
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 01:04:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350324AbiASAD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jan 2022 19:03:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
+        id S1350348AbiASADq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jan 2022 19:03:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350320AbiASAD1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 19:03:27 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C27C061574
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 16:03:27 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id h14so1871677ybe.12
-        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 16:03:26 -0800 (PST)
+        with ESMTP id S1350331AbiASADp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jan 2022 19:03:45 -0500
+Received: from mail-vk1-xa2d.google.com (mail-vk1-xa2d.google.com [IPv6:2607:f8b0:4864:20::a2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BEF4C061574
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 16:03:45 -0800 (PST)
+Received: by mail-vk1-xa2d.google.com with SMTP id 191so440628vkc.1
+        for <netdev@vger.kernel.org>; Tue, 18 Jan 2022 16:03:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=3GMHeDlAK35WYsyM179iGuTtwsj0ExgjmIMnnhrvk7M=;
-        b=Y93A1bCkJYOwWYz5yB5mTmJd4/WQ7BlqGkpRUg/U3uwoAV+DUS+BnQ4EoTy9Qxef9i
-         2AqAViLfT23n67sEEwwMYnGij98pmJfR7js0ATw1zQXsrrLYuSaY+OFiOgKwi6Vq+r03
-         ktkfMs5kEP0ASrOkMT33brxVoHrCyPw6oh+iU=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4pK7f5GL6F7w/LmgOcH/k3Rkqhl1UmfiKcr2kEZMCjQ=;
+        b=lOqXItVdo5KcoAIy3ALB/sWXT/BvsuzOxB48fK2YKWIgdDTngYNd/OmOtKnT3Ro6VK
+         J2rrXOuB6qMMZgJeZxNO85fASJu6h1m+DE1Qs6BUrMlExSjec6DOhz/Y2Yugo2NvRxLD
+         dONeEXrLWOKVSGyssXtGraSv+vHwGA7ZLdWutS35iOe6rETwKjJaOn+j0fSwQFcZsftS
+         E5k78YqyFIl99/iioUQkPLsmzAD/VL3Q5956pwr/58KubN6UyrgLs3USXq6UXBlzjP/d
+         551NMzBY7BIA+dt60wYbjhirGeF3TwEUp7+L31CjNfXyj5lGWSr4rSB71nRyTHAJJHkt
+         lA+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=3GMHeDlAK35WYsyM179iGuTtwsj0ExgjmIMnnhrvk7M=;
-        b=z9BcLGlPBJ0ZBQ79s9l625MFkZewhFy2MorVP544GuuFyGTv5U/JiP3HIzf6X1q4zl
-         tq1Nm07R4Mk8XSyo30nOCVrmLPniZV79iAj40R9i2Z2TpwyX7xfQMHwkgcnv4LE5iwnk
-         Kp0jLZ7NccldcASEZ+oUxV4kUojq40FAYadiYmVFCcpY2VVf/5Ulx102CrbqEVroX+dh
-         hEf5X2RoGLWENVUbGJ+AwnbSgdxh201Oc0P6yWUQm/8IaI2Y8zANVbujhOFt0AfhzMt4
-         T/bEeaB46PT/S4rdVSMu6jYKbLLcztALgWmuVuHconqbCxrso7OuPK5ogWwAe2f3wfai
-         qDig==
-X-Gm-Message-State: AOAM533ApF7JTvCIcZpbTVO8/BMo+qP66dqiKY9mw8B3bjUHhZ/G+MW5
-        QAAg2OHQJqcJCLtowOkootyHkpAc8lZOAJCLSZnK3w==
-X-Google-Smtp-Source: ABdhPJwHwZP1t5nQCHL55GDSBw7vsNlQr6xwxkwcYNzK+rkoRcH1DulxEbjXXhJ67X7k6mSQ0uPoOjH3bWoLjK7fIq4=
-X-Received: by 2002:a25:d701:: with SMTP id o1mr35866679ybg.693.1642550606314;
- Tue, 18 Jan 2022 16:03:26 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4pK7f5GL6F7w/LmgOcH/k3Rkqhl1UmfiKcr2kEZMCjQ=;
+        b=zuzitVsbeI3ZwAlaXNypI9PrG7a0/Nu8nWOz8S7/rqSmL2X160o2VdZSj7WtQ1WGN5
+         sSh2tA3cjdD2gdRIKnhTGATDbaH+kIbMGixsusPxaYW76574wVfo6Zbt3A4bpRp7CF7U
+         YKyGMYb2SMopW04oVXys65eNGvvpMd0WDeAs1MpSjRjT8+4KFOsyTCqAgkKgm7QP6S1d
+         40H7G+HHi1yY1hnmxDEkjiqhrESF3VozXDVML1+FfdBKN89FIcO4pS9VpnWuIPhRi71v
+         F19s8earNwaWmXpEkuFjKFF5yziRw/sRyx4prPjVkFC10bmwty9GSFNTdkt3qSOgQNW/
+         8WpQ==
+X-Gm-Message-State: AOAM531HrYB2jLqdvkHzv+LbLBGZlA8iIrdIIghdAYS+x+cp27FEbFGx
+        B58DgnLHjPgmKmhDjV6EKcn/lHn+WiJUXGYqSOJ91vXdjlBo2g==
+X-Google-Smtp-Source: ABdhPJwUKEmUYVsEsf2wMbcUGmi0Y6al5MK5bwtqxGegS4Vu0NlN9hJAjyqj6Xq4VDj6EWGriK9Kixfsp3qzjm6AP24=
+X-Received: by 2002:a05:6122:90a:: with SMTP id j10mr11092194vka.12.1642550624307;
+ Tue, 18 Jan 2022 16:03:44 -0800 (PST)
 MIME-Version: 1.0
-From:   Ivan Babrou <ivan@cloudflare.com>
-Date:   Tue, 18 Jan 2022 16:03:15 -0800
-Message-ID: <CABWYdi1a7MKxM8XX9_1zRkp_h8AHGWT_GQTwAbJdz0iKEfrsEA@mail.gmail.com>
-Subject: Empty return from bond_eth_hash in 5.15
-To:     Jussi Maki <joamaki@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <20220106005251.2833941-1-evitayan@google.com> <20220106005251.2833941-3-evitayan@google.com>
+ <20220112075708.GB1223722@gauss3.secunet.de>
+In-Reply-To: <20220112075708.GB1223722@gauss3.secunet.de>
+From:   Yan Yan <evitayan@google.com>
+Date:   Tue, 18 Jan 2022 16:03:33 -0800
+Message-ID: <CADHa2dBqrVSEWD9YbuHXLoHS8pxj07VVpN5Q+ZSmG3e61v_gkg@mail.gmail.com>
+Subject: Re: [PATCH v1 2/2] xfrm: Fix xfrm migrate issues when address family changes
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     netdev@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        nharold@googlel.com, benedictwong@googlel.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Thanks Steffen, I will pull out xfrm_init_state() as you suggested.
 
-We noticed an issue on Linux 5.15 where it sends packets from a single
-connection via different bond members. Some of our machines are
-connected to multiple TORs, which means that BGP can attract the same
-connection to different servers, depending on which cable you
-traverse.
+On Tue, Jan 11, 2022 at 11:57 PM Steffen Klassert
+<steffen.klassert@secunet.com> wrote:
+>
+> On Wed, Jan 05, 2022 at 04:52:51PM -0800, Yan Yan wrote:
+>
+> ...
+>
+> > -static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
+> > -                                        struct xfrm_encap_tmpl *encap)
+> > +static struct xfrm_state *xfrm_state_clone1(struct xfrm_state *orig,
+> > +                                         struct xfrm_encap_tmpl *encap)
+> >  {
+> >       struct net *net = xs_net(orig);
+> >       struct xfrm_state *x = xfrm_state_alloc(net);
+> > @@ -1579,8 +1579,20 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
+> >       memcpy(&x->mark, &orig->mark, sizeof(x->mark));
+> >       memcpy(&x->props.smark, &orig->props.smark, sizeof(x->props.smark));
+> >
+> > -     if (xfrm_init_state(x) < 0)
+> > -             goto error;
+> > +     return x;
+> > +
+> > + error:
+> > +     xfrm_state_put(x);
+> > +out:
+> > +     return NULL;
+> > +}
+> > +
+> > +static int xfrm_state_clone2(struct xfrm_state *orig, struct xfrm_state *x)
+>
+> I'm not a frind of numbering function names, this just invites to
+> create xfrm_state_clone3 :)
+>
+> > +{
+> > +     int err = xfrm_init_state(x);
+> > +
+> > +     if (err < 0)
+> > +             return err;
+> >
+> >       x->props.flags = orig->props.flags;
+> >       x->props.extra_flags = orig->props.extra_flags;
+> > @@ -1595,12 +1607,7 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
+> >       x->replay = orig->replay;
+> >       x->preplay = orig->preplay;
+> >
+> > -     return x;
+> > -
+> > - error:
+> > -     xfrm_state_put(x);
+> > -out:
+> > -     return NULL;
+> > +     return 0;
+> >  }
+> >
+> >  struct xfrm_state *xfrm_migrate_state_find(struct xfrm_migrate *m, struct net *net,
+> > @@ -1661,10 +1668,14 @@ struct xfrm_state *xfrm_state_migrate(struct xfrm_state *x,
+> >  {
+> >       struct xfrm_state *xc;
+> >
+> > -     xc = xfrm_state_clone(x, encap);
+> > +     xc = xfrm_state_clone1(x, encap);
+> >       if (!xc)
+> >               return NULL;
+> >
+> > +     xc->props.family = m->new_family;
+> > +     if (xfrm_state_clone2(x, xc) < 0)
+> > +             goto error;
+>
+> xfrm_state_migrate() is the only function that calls xfrm_state_clone().
+> Wouldn't it be better to move xfrm_init_state() out of xfrm_state_clone()
+> and call it afterwards?
+>
+> This would also fix the replay window initialization on ESN because
+> currently x->props.flags (which holds XFRM_STATE_ESN) is initialized
+> after xfrm_init_state().
+>
 
-On Linux 5.10 I can see bond_xmit_hash always return the same hash for
-the same connection:
 
-$ sudo bpftrace --include linux/ip.h -e 'kprobe:bond_xmit_hash {
-@skbs[pid] = arg1 } kretprobe:bond_xmit_hash { $skb_ptr = @skbs[pid];
-if ($skb_ptr) { $skb = (struct sk_buff *) $skb_ptr; $ipheader =
-((struct iphdr *) ($skb->head + $skb->network_header)); printf("%s
-%x\n", ntop($ipheader->daddr), retval); } }' | fgrep --line-buffered
-x.y.z.205
-x.y.z.205 9f24591
-x.y.z.205 9f24591
-x.y.z.205 9f24591
-x.y.z.205 9f24591
-x.y.z.205 9f24591
-... many more of these
-
-On Linux 5.10 I get fewer lines, mostly zeros for hash and one actual hash:
-
-$ sudo bpftrace -e 'kprobe:bond_xmit_hash { @skbs[pid] = arg1 }
-kretprobe:bond_xmit_hash { $skb_ptr = @skbs[pid]; if ($skb_ptr) { $skb
-= (struct sk_buff *) $skb_ptr; $ipheader = ((struct iphdr *)
-($skb->head + $skb->network_header)); printf("%s %x\n",
-ntop($ipheader->daddr), retval); } }' | fgrep --line-buffered
-x.y.z.205
-x.y.z.205 0
-x.y.z.205 0
-x.y.z.205 215fec1b
-
-As I mentioned above, this ends up breaking connections for us, which
-is unfortunate.
-
-I suspect that "net, bonding: Refactor bond_xmit_hash for use with
-xdp_buff" commit a815bde56b1 has something to do with this. I don't
-think we use XDP on the machines I tested.
+-- 
+--
+Best,
+Yan
