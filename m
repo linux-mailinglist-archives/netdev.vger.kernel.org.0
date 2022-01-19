@@ -2,129 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4AC54942BB
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 23:02:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 285B24942C2
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 23:04:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357482AbiASWCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 17:02:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35840 "EHLO
+        id S1357512AbiASWDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 17:03:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343606AbiASWCO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 17:02:14 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B57BC061574;
-        Wed, 19 Jan 2022 14:02:14 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id y15so5540002lfa.9;
-        Wed, 19 Jan 2022 14:02:14 -0800 (PST)
+        with ESMTP id S1357511AbiASWDi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 17:03:38 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A487BC061574;
+        Wed, 19 Jan 2022 14:03:37 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id o64so3810925pjo.2;
+        Wed, 19 Jan 2022 14:03:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=InWqTkTbnVIeg3yZeoN2TSaiVZxmiWsL7/Xay8eEKBk=;
-        b=ZcngD6Ryru4yOLrl8Smj58YokDWbrp4IaIQ2lhSfd3QstRbbDbSXfjTAO0Fez5tQ+v
-         hzeMdk4KNa/CP+n6r0bCGeFT3dCUUaCNn/T5n4G8pDMVm+b6B0WlqpDWzz7EgwK0GFyK
-         U6bxs/SEG7ps7yB+O4KhbsCKYzCpUrH/L6FHK+hbj4Sgr9ZD1aarg7JuSbtBLOb8UPQt
-         Q3Tojc2pDX5f4GxLT/L0bHqzdtdqB2eHQHPKEmwwLJhdZ7EVHAc3N0PL7caeBmCvI4Hj
-         PqM9bJMIwdM/gSzBY0vIh4Qaxow0W6mkgRCj8JXgoD4HgikRm2s8SFUZ+tiqbXES9dWC
-         +jOA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IOjldLrnWWwpwY+JkWf0ExE0MpMLGJQlI8NdiUeY93k=;
+        b=kSEl/U/1h+1dwvDi0hIgtKSfplmCWl9uNrp2KkVmOGqXTw3Qwmd1cnzjLT97tkOzj+
+         Zp2XNWdH8ZH0Ya8qZSIl4+za5S/JcIWOBvnThLOUlDkR0vZ+DSJmM4vVETBIO5uE1gB5
+         WemdUYctYV3UseKEp7Tur2cSdm6qMJR/ENUd02x3NghpHewgIS3fW7Ng3RgUzVkT6UiL
+         qHzack50wKSJWqqgHsznMtLdSJ4T9hRFlO+O4IPmfUdFN3ys1pUZR+7b8bMX7WWxFbwc
+         UpddAjlDPLcoO69i7cj091TwgLVJ7Eur5UCeH6ZAeXeWQheaSUj0OrTxObGS9/eEYCBZ
+         FxhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=InWqTkTbnVIeg3yZeoN2TSaiVZxmiWsL7/Xay8eEKBk=;
-        b=2eGEWDFdIrVZPkN3vOdc6TDmcCxOoJtl73jeRvhHyK2JDduEqOcnMG9H34GM/7GGVT
-         h12PeTRw5tckimd1H6xMqpoZCjkIktdxnIfF5xkFb52EF5DvXtsrH4P0i5Lh35Bm3Puk
-         dveI3HG5BEvUkvCaItw/XVvFFe4NiXDrQUrPxix7cyom/FGPIzkFWCktpKvlAUGktOUA
-         PTk3MwfHj/JEMypavLuJ/HKlMfXfCo+/6N/mFHHyf80vd+Yfhkgd34FAXdpWzuDul2rl
-         9BSVWKpeIa6AuXqaAlFl6bNRuzVBdqXdbflSQrvBE31379u8Fq7DPxS6gsEZmXoJseV8
-         pMgg==
-X-Gm-Message-State: AOAM533oxEEBf8vmg3cMreMqqN16snqIp3v1YzjNRuDBziJu0ZDUMA6N
-        qV6QbKmVc7jITwGXITVnTKs=
-X-Google-Smtp-Source: ABdhPJyNXoA2WS6ShN1avPEC6d1v0hm8NZ5j/eKjxMJxBf16tCoJTMh+goTKLqVRbxz/R8aLjtg4vw==
-X-Received: by 2002:a05:6512:15aa:: with SMTP id bp42mr22245503lfb.217.1642629732614;
-        Wed, 19 Jan 2022 14:02:12 -0800 (PST)
-Received: from [192.168.2.145] (109-252-139-36.dynamic.spd-mgts.ru. [109.252.139.36])
-        by smtp.googlemail.com with ESMTPSA id s1sm87333lfs.215.2022.01.19.14.02.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Jan 2022 14:02:12 -0800 (PST)
-Message-ID: <be66ea27-c98a-68d3-40b1-f79ab62460d5@gmail.com>
-Date:   Thu, 20 Jan 2022 01:02:11 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IOjldLrnWWwpwY+JkWf0ExE0MpMLGJQlI8NdiUeY93k=;
+        b=JVXz3FhZZ/FH39AZJVyI+ShTjejaQ1tygsSP6jaBuRpzHYmjdWbei8BNi37pCOFIhf
+         VIlJcJVGel3cxUq0HfiSQUNHBhqRenMJ0t9NGgYbLubzjTvw3TDxEPMYqrRNsgOo+ewq
+         HB0UU7HhgPzAzBcbkKjJ+JSRbL8g9jRmejtFa08Kzn28RnBg4Af6FaIAWB5zdqUQIKmW
+         cmB7PxpywPhEYmGhaGkiZCuoAw66bC2ZyzgfvMuPUn8LnqSCnYHnv18f9nPHm1M9BnR8
+         pGUuYDB+9I14QdMSspTcq31J353Ov7yvBSkP3bFOmwkxQv/EhgvwoHopzUTNDIO2EpPD
+         b65A==
+X-Gm-Message-State: AOAM531nk0w3rns3P2/+4DokcJSWQJDbMPGfVEIjXppbdXM7X+AUuXFs
+        XwjGGdwOgo8g+/vEQ9vt5tzLFf+8r3ILsI1vAPU=
+X-Google-Smtp-Source: ABdhPJzV1oAx/xoKU++dv1R8kUyf32CYmSuCtq2M5RRSdynsPZSmD55U0LG7xKsRNsiyyG6JEjOIsGEiHHaAgYSi7xw=
+X-Received: by 2002:a17:902:860c:b0:149:1017:25f0 with SMTP id
+ f12-20020a170902860c00b00149101725f0mr34284326plo.116.1642629817114; Wed, 19
+ Jan 2022 14:03:37 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 3/9] brcmfmac: firmware: Do not crash on a NULL
- board_type
-Content-Language: en-US
-To:     Hector Martin <marcan@marcan.st>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20220117142919.207370-1-marcan@marcan.st>
- <20220117142919.207370-4-marcan@marcan.st>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <20220117142919.207370-4-marcan@marcan.st>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220113070245.791577-1-imagedong@tencent.com>
+In-Reply-To: <20220113070245.791577-1-imagedong@tencent.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 19 Jan 2022 14:03:26 -0800
+Message-ID: <CAADnVQKNCqUzPJAjSHMFr-Ewwtv5Cs3UCQpthaKDTd+YNRWqqg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct bpf_sock'
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        mengensun@tencent.com, flyingpeng@tencent.com,
+        mungerjiang@tencent.com, Menglong Dong <imagedong@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-17.01.2022 17:29, Hector Martin пишет:
-> This unbreaks support for USB devices, which do not have a board_type
-> to create an alt_path out of and thus were running into a NULL
-> dereference.
-> 
-> Fixes: 5ff013914c62 ("brcmfmac: firmware: Allow per-board firmware binaries")
-> Signed-off-by: Hector Martin <marcan@marcan.st>
+On Wed, Jan 12, 2022 at 11:03 PM <menglong8.dong@gmail.com> wrote:
+>
+> From: Menglong Dong <imagedong@tencent.com>
+>
+> The description of 'dst_port' in 'struct bpf_sock' is not accurated.
+> In fact, 'dst_port' is not in network byte order, it is 'partly' in
+> network byte order.
+>
+> We can see it in bpf_sock_convert_ctx_access():
+>
+> > case offsetof(struct bpf_sock, dst_port):
+> >       *insn++ = BPF_LDX_MEM(
+> >               BPF_FIELD_SIZEOF(struct sock_common, skc_dport),
+> >               si->dst_reg, si->src_reg,
+> >               bpf_target_off(struct sock_common, skc_dport,
+> >                              sizeof_field(struct sock_common,
+> >                                           skc_dport),
+> >                              target_size));
+>
+> It simply passes 'sock_common->skc_dport' to 'bpf_sock->dst_port',
+> which makes that the low 16-bits of 'dst_port' is equal to 'skc_port'
+> and is in network byte order, but the high 16-bites of 'dst_port' is
+> 0. And the actual port is 'bpf_ntohs((__u16)dst_port)', and
+> 'bpf_ntohl(dst_port)' is totally not the right port.
+>
+> This is different form 'remote_port' in 'struct bpf_sock_ops' or
+> 'struct __sk_buff':
+>
+> > case offsetof(struct __sk_buff, remote_port):
+> >       BUILD_BUG_ON(sizeof_field(struct sock_common, skc_dport) != 2);
+> >
+> >       *insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, sk),
+> >                             si->dst_reg, si->src_reg,
+> >                                     offsetof(struct sk_buff, sk));
+> >       *insn++ = BPF_LDX_MEM(BPF_H, si->dst_reg, si->dst_reg,
+> >                             bpf_target_off(struct sock_common,
+> >                                            skc_dport,
+> >                                            2, target_size));
+> > #ifndef __BIG_ENDIAN_BITFIELD
+> >       *insn++ = BPF_ALU32_IMM(BPF_LSH, si->dst_reg, 16);
+> > #endif
+>
+> We can see that it will left move 16-bits in little endian, which makes
+> the whole 'remote_port' is in network byte order, and the actual port
+> is bpf_ntohl(remote_port).
+>
+> Note this in the document of 'dst_port'. ( Maybe this should be unified
+> in the code? )
 
-Technically, all patches that are intended to be included into next
-stable kernel update require the "Cc: stable@vger.kernel.org" tag.
+Looks like
+ __sk_buff->remote_port
+ bpf_sock_ops->remote_port
+ sk_msg_md->remote_port
+are doing the right thing,
+but bpf_sock->dst_port is not correct?
 
-In practice such patches usually auto-picked by the patch bot, so no
-need to resend.
-
-> ---
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-> index 1001c8888bfe..63821856bbe1 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-> @@ -599,6 +599,9 @@ static char *brcm_alt_fw_path(const char *path, const char *board_type)
->  	char alt_path[BRCMF_FW_NAME_LEN];
->  	char suffix[5];
->  
-> +	if (!board_type)
-> +		return NULL;
-> +
->  	strscpy(alt_path, path, BRCMF_FW_NAME_LEN);
->  	/* At least one character + suffix */
->  	if (strlen(alt_path) < 5)
-
-Good catch!
-
-Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
+I think it's better to fix it,
+but probably need to consolidate it with
+convert_ctx_accesses() that deals with narrow access.
+I suspect reading u8 from three flavors of 'remote_port'
+won't be correct.
+'dst_port' works with a narrow load, but gets endianness wrong.
