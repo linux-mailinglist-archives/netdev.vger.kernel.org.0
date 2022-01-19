@@ -2,126 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01C0E493C41
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 15:53:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7FA493C47
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 15:56:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355299AbiASOxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 09:53:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:50202 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1355296AbiASOxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 09:53:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642603986;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WYpFN6jD3NddkSrlHA/3O9g9jz5Y6MIz520Okk741Oo=;
-        b=WkGHoS3rpnBzUq1Pl0cG6+tAA0LEPQbJDS3HtPw5u4IWAB9NpBYhPnGINIuaH2TcwubqWq
-        yZdCr+5LI9/LjLVtJkvUcmwsg14zH7DqUPJXQxhZjdHL113glzFQTM0CgeREjm+XyzvyOB
-        Gn4yz8cgHHrb0ctw8DzZykMzJOAwZbc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-315-JmE8UmHUPUmUtLQLIdyb5Q-1; Wed, 19 Jan 2022 09:53:02 -0500
-X-MC-Unique: JmE8UmHUPUmUtLQLIdyb5Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1355302AbiASO4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 09:56:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51162 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241974AbiASO4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 09:56:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE28C061574;
+        Wed, 19 Jan 2022 06:56:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3A72918B613D;
-        Wed, 19 Jan 2022 14:53:01 +0000 (UTC)
-Received: from calimero.vinschen.de (ovpn-112-9.ams2.redhat.com [10.36.112.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C311084D1A;
-        Wed, 19 Jan 2022 14:53:00 +0000 (UTC)
-Received: by calimero.vinschen.de (Postfix, from userid 500)
-        id 6713BA80D85; Wed, 19 Jan 2022 15:52:59 +0100 (CET)
-From:   Corinna Vinschen <vinschen@redhat.com>
-To:     intel-wired-lan@osuosl.org, netdev@vger.kernel.org,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     Lennert Buytenhek <buytenh@wantstofly.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH 2/2 net-next v6] igb: refactor XDP registration
-Date:   Wed, 19 Jan 2022 15:52:59 +0100
-Message-Id: <20220119145259.1790015-3-vinschen@redhat.com>
-In-Reply-To: <20220119145259.1790015-1-vinschen@redhat.com>
-References: <20220119145259.1790015-1-vinschen@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF1F161325;
+        Wed, 19 Jan 2022 14:56:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64ED7C004E1;
+        Wed, 19 Jan 2022 14:56:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642604192;
+        bh=vKdyhDa7x7ekEdR9ZJgIhxYGlXVtdN+RLqmznEg6cE8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BLm7F7JLptCHnspYhFoeOU8O8QeN/st7tz1oWncnlHrgwZXwsnCCLf594bjAyj4Nu
+         3GIT8R33Z09KSeCGJ8G768EFWibgHx7zgRitj7ZFAHTdceTyF4RcJ7AzGl+R15ZmDm
+         FACDdz7GP+VdxJpcqXRCXBHBxQME4L/a1Few0yJuqa0NVwy9PP7iWJSlWdWPPPVELI
+         CeEigs77iI78+tsUqsQqiIDL20B7BJMYglC9BX0oDkZtiaLf5TJEtjk4cKq0mItEdz
+         GhsSoWld2kcWq0rOR0B36tXW2x9r4OWaGffUegcltS4p4AUoxFUVfgH1RCD8OB0g4E
+         ni8XjqkS0ch1w==
+Date:   Wed, 19 Jan 2022 16:56:27 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Praveen Kannoju <praveen.kannoju@oracle.com>
+Cc:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "David S . Miller" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Rama Nichanamatlu <rama.nichanamatlu@oracle.com>,
+        Rajesh Sivaramasubramaniom 
+        <rajesh.sivaramasubramaniom@oracle.com>
+Subject: Re: [PATCH RFC] rds: ib: Reduce the contention caused by the
+ asynchronous workers to flush the mr pool
+Message-ID: <Yegmm4ksXfWiOMME@unreal>
+References: <1642517238-9912-1-git-send-email-praveen.kannoju@oracle.com>
+ <53D98F26-FC52-4F3E-9700-ED0312756785@oracle.com>
+ <20220118191754.GG8034@ziepe.ca>
+ <CEFD48B4-3360-4040-B41A-49B8046D28E8@oracle.com>
+ <Yee2tMJBd4kC8axv@unreal>
+ <PH0PR10MB5515E99CA5DF423BDEBB038E8C599@PH0PR10MB5515.namprd10.prod.outlook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+In-Reply-To: <PH0PR10MB5515E99CA5DF423BDEBB038E8C599@PH0PR10MB5515.namprd10.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On changing the RX ring parameters igb uses a hack to avoid a warning
-when calling xdp_rxq_info_reg via igb_setup_rx_resources.  It just
-clears the struct xdp_rxq_info content.
+On Wed, Jan 19, 2022 at 11:46:16AM +0000, Praveen Kannoju wrote:
+> -----Original Message-----
+> From: Leon Romanovsky [mailto:leon@kernel.org] 
+> Sent: 19 January 2022 12:29 PM
+> To: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+> Cc: Jason Gunthorpe <jgg@ziepe.ca>; Praveen Kannoju <praveen.kannoju@oracle.com>; David S . Miller <davem@davemloft.net>; kuba@kernel.org; netdev@vger.kernel.org; linux-rdma@vger.kernel.org; rds-devel@oss.oracle.com; linux-kernel@vger.kernel.org; Rama Nichanamatlu <rama.nichanamatlu@oracle.com>; Rajesh Sivaramasubramaniom <rajesh.sivaramasubramaniom@oracle.com>
+> Subject: Re: [PATCH RFC] rds: ib: Reduce the contention caused by the asynchronous workers to flush the mr pool
+> 
+> On Tue, Jan 18, 2022 at 07:42:54PM +0000, Santosh Shilimkar wrote:
+> > On Jan 18, 2022, at 11:17 AM, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> > > 
+> > > On Tue, Jan 18, 2022 at 04:48:43PM +0000, Santosh Shilimkar wrote:
+> > >> 
+> > >>> On Jan 18, 2022, at 6:47 AM, Praveen Kannoju <praveen.kannoju@oracle.com> wrote:
+> > >>> 
+> > >>> This patch aims to reduce the number of asynchronous workers being 
+> > >>> spawned to execute the function "rds_ib_flush_mr_pool" during the 
+> > >>> high I/O situations. Synchronous call path's to this function "rds_ib_flush_mr_pool"
+> > >>> will be executed without being disturbed. By reducing the number 
+> > >>> of processes contending to flush the mr pool, the total number of 
+> > >>> D state processes waiting to acquire the mutex lock will be 
+> > >>> greatly reduced, which otherwise were causing DB instance crash as 
+> > >>> the corresponding processes were not progressing while waiting to acquire the mutex lock.
+> > >>> 
+> > >>> Signed-off-by: Praveen Kumar Kannoju <praveen.kannoju@oracle.com> 
+> > >>> —
+> > >>> 
+> > >> […]
+> > >> 
+> > >>> diff --git a/net/rds/ib_rdma.c b/net/rds/ib_rdma.c index 
+> > >>> 8f070ee..6b640b5 100644
+> > >>> +++ b/net/rds/ib_rdma.c
+> > >>> @@ -393,6 +393,8 @@ int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *pool,
+> > >>> 	 */
+> > >>> 	dirty_to_clean = llist_append_to_list(&pool->drop_list, &unmap_list);
+> > >>> 	dirty_to_clean += llist_append_to_list(&pool->free_list, 
+> > >>> &unmap_list);
+> > >>> +	WRITE_ONCE(pool->flush_ongoing, true);
+> > >>> +	smp_wmb();
+> > >>> 	if (free_all) {
+> > >>> 		unsigned long flags;
+> > >>> 
+> > >>> @@ -430,6 +432,8 @@ int rds_ib_flush_mr_pool(struct rds_ib_mr_pool *pool,
+> > >>> 	atomic_sub(nfreed, &pool->item_count);
+> > >>> 
+> > >>> out:
+> > >>> +	WRITE_ONCE(pool->flush_ongoing, false);
+> > >>> +	smp_wmb();
+> > >>> 	mutex_unlock(&pool->flush_lock);
+> > >>> 	if (waitqueue_active(&pool->flush_wait))
+> > >>> 		wake_up(&pool->flush_wait);
+> > >>> @@ -507,8 +511,17 @@ void rds_ib_free_mr(void *trans_private, int 
+> > >>> invalidate)
+> > >>> 
+> > >>> 	/* If we've pinned too many pages, request a flush */
+> > >>> 	if (atomic_read(&pool->free_pinned) >= pool->max_free_pinned ||
+> > >>> -	    atomic_read(&pool->dirty_count) >= pool->max_items / 5)
+> > >>> -		queue_delayed_work(rds_ib_mr_wq, &pool->flush_worker, 10);
+> > >>> +	    atomic_read(&pool->dirty_count) >= pool->max_items / 5) {
+> > >>> +		smp_rmb();
+> > >> You won’t need these explicit barriers since above atomic and write 
+> > >> once already issue them.
+> > > 
+> > > No, they don't. Use smp_store_release() and smp_load_acquire if you 
+> > > want to do something like this, but I still can't quite figure out 
+> > > if this usage of unlocked memory accesses makes any sense at all.
+> > > 
+> > Indeed, I see that now, thanks. Yeah, these multi variable checks can 
+> > indeed be racy but they are under lock at least for this code path. 
+> > But there are few hot path places where single variable states are 
+> > evaluated atomically instead of heavy lock.
+> 
+> At least pool->dirty_count is not locked in rds_ib_free_mr() at all.
+> 
+> Thanks
+> 
+> > 
+> > Regards,
+> > Santosh
+> > 
+> 
+> Thank you Santosh, Leon and Jason for reviewing the Patch.
+> 
+> 1. Leon, the bool variable "flush_ongoing " introduced through the patch has to be accessed only after acquiring the mutex lock. Hence it is well protected.
 
-Instead, change this to unregister if we're already registered.  Align
-code to the igc code.
+I don't see any lock in rds_ib_free_mr() function where your perform
+"if (!READ_ONCE(pool->flush_ongoing)) { ...".
 
-Fixes: 9cbc948b5a20c ("igb: add XDP support")
-Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
----
- drivers/net/ethernet/intel/igb/igb_ethtool.c |  4 ----
- drivers/net/ethernet/intel/igb/igb_main.c    | 19 +++++++++++++------
- 2 files changed, 13 insertions(+), 10 deletions(-)
+> 
+> 2. As the commit message already conveys the reason, the check being made in the function "rds_ib_free_mr" is only to avoid the redundant asynchronous workers from being spawned.
+> 
+> 3. The synchronous flush path's through the function "rds_free_mr" with either cookie=0 or "invalidate" flag being set, have to be honoured as per the semantics and hence these paths have to execute the function "rds_ib_flush_mr_pool" unconditionally.
+> 
+> 4. It complicates the patch to identify, where from the function "rds_ib_flush_mr_pool", has been called. And hence, this patch uses the state of the bool variable to stop the asynchronous workers.
+> 
+> 5. We knew that "queue_delayed_work" will ensures only one work is running, but avoiding these async workers during high load situations, made way for the allocation and synchronous callers which would otherwise be waiting long for the flush to happen. Great reduction in the number of calls to the function "rds_ib_flush_mr_pool" has been observed with this patch. 
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-index 51a2dcaf553d..2a5782063f4c 100644
---- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
-+++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
-@@ -965,10 +965,6 @@ static int igb_set_ringparam(struct net_device *netdev,
- 			memcpy(&temp_ring[i], adapter->rx_ring[i],
- 			       sizeof(struct igb_ring));
- 
--			/* Clear copied XDP RX-queue info */
--			memset(&temp_ring[i].xdp_rxq, 0,
--			       sizeof(temp_ring[i].xdp_rxq));
--
- 			temp_ring[i].count = new_rx_count;
- 			err = igb_setup_rx_resources(&temp_ring[i]);
- 			if (err) {
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 38ba92022cd4..c1e4ad65b02d 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -4352,7 +4352,18 @@ int igb_setup_rx_resources(struct igb_ring *rx_ring)
- {
- 	struct igb_adapter *adapter = netdev_priv(rx_ring->netdev);
- 	struct device *dev = rx_ring->dev;
--	int size;
-+	int size, res;
-+
-+	/* XDP RX-queue info */
-+	if (xdp_rxq_info_is_reg(&rx_ring->xdp_rxq))
-+		xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
-+	res = xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev,
-+			       rx_ring->queue_index, 0);
-+	if (res < 0) {
-+		dev_err(dev, "Failed to register xdp_rxq index %u\n",
-+			rx_ring->queue_index);
-+		return res;
-+	}
- 
- 	size = sizeof(struct igb_rx_buffer) * rx_ring->count;
- 
-@@ -4375,14 +4386,10 @@ int igb_setup_rx_resources(struct igb_ring *rx_ring)
- 
- 	rx_ring->xdp_prog = adapter->xdp_prog;
- 
--	/* XDP RX-queue info */
--	if (xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev,
--			     rx_ring->queue_index, 0) < 0)
--		goto err;
--
- 	return 0;
- 
- err:
-+	xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
- 	vfree(rx_ring->rx_buffer_info);
- 	rx_ring->rx_buffer_info = NULL;
- 	dev_err(dev, "Unable to allocate memory for the Rx descriptor ring\n");
--- 
-2.27.0
+So if you understand that there is only one work in progress, why do
+you say workerS?
 
+Thanks
+
+> 
+> 6. Jason, the only function "rds_ib_free_mr" which accesses the introduced bool variable "flush_ongoing" to spawn a flush worker does not crucially impact the availability of MR's, because the flush happens from allocation path as well when necessary.   Hence the Load-store ordering is not essentially needed here, because of which we chose smp_rmb() and smp_wmb() over smp_load_acquire() and smp_store_release().
+> 
+> Regards,
+> Praveen.
