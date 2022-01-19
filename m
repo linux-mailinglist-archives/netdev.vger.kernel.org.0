@@ -2,170 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 173CD4938AD
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 11:36:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ED8D4938D8
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 11:46:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353840AbiASKfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 05:35:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348607AbiASKfs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 05:35:48 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A4DCC061574;
-        Wed, 19 Jan 2022 02:35:48 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id m11so8934533edi.13;
-        Wed, 19 Jan 2022 02:35:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OSDFZdcVmsxc9n5bq5153WrX2NPdR5H36ptL4DF/Ld8=;
-        b=YzN3hIDiV3bsIYsBRldtIUseIA+Xg7yiUwxhkQBN4CpuDkGRGuFL7tAwCFTPYxhsRL
-         HPHBSnHmlPJjpHnwXFn3XLaO3n9wa1rhK6vn59VsHIzMFUB6Jaq/3jsmguiQSKRchg1F
-         Rt8vJSiYrulpQPWwPqPi3M8d7DsPrMLpe1PuuNpPMpczmmAtVSklZu+pQaTuoZw/CFJz
-         zmTnBvK6MUoD+sXbx5PZpdbapVrA4zutuPKb+I0hcI1WoSE1tZMwas+pgK6nHJrD6hKt
-         eeU6QEdcKx7a9glyGv2v53ut+S9OpX/JqVokRLDZ4YgZwe4DtxLJ2DYjxyR/R4KjvJPB
-         tM2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OSDFZdcVmsxc9n5bq5153WrX2NPdR5H36ptL4DF/Ld8=;
-        b=DBjtVoWcNr/kqj3BWH6XNdTL4pmhrF90JG/EZtgC7boQa/08IcD8rpxiWq/zlWx/VI
-         hnbtbUlYQDS8ioChF5I0H7MN2IMWQ0/tpc6Icuzi+AKOBy6sAxRHCaF8H0T0KaUqIL+k
-         +VFYAW8wqY7pnYM0MFUEBeXpXjQEAZfMDW5DuSYmGgLj10A3G2+KBua9qT5oSzIoQUrj
-         e41d6WX0U1dRGCYtQeSTH3Psvw36x7GjuBMyIA9Mgns2yfs0iNSyOIggeQ7n4kqaccn/
-         4w0WSo4OkqYdgXLvOllUlFXwgGuo5EpiAEX62vqot39F8UFLvqW8nzUZLBhwMWXCATh0
-         ALAg==
-X-Gm-Message-State: AOAM533cM4yUAB0Wyi2CH9YokUaZltYgQQtEqVrywxgPnDZM2/qxvx/L
-        GmTPiRRGivP2II1MhA8bnMZaTjlJwMd0Sw==
-X-Google-Smtp-Source: ABdhPJxftTapCLkxAI0MUlBNg1QEZq+09+lN2uAiNmyiN4LnLKb1WAquBvnPN+ndGN2eyHqbgIspAw==
-X-Received: by 2002:a05:6402:4310:: with SMTP id m16mr13576339edc.344.1642588546591;
-        Wed, 19 Jan 2022 02:35:46 -0800 (PST)
-Received: from skbuf ([188.25.255.2])
-        by smtp.gmail.com with ESMTPSA id go41sm6349344ejc.200.2022.01.19.02.35.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jan 2022 02:35:46 -0800 (PST)
-Date:   Wed, 19 Jan 2022 12:35:42 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-ide@vger.kernel.org, linux-crypto@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, dmaengine@vger.kernel.org,
-        linux-pm@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Improve phandle-array schemas
-Message-ID: <20220119103542.el3yuqds6ihpkthn@skbuf>
-References: <20220119015038.2433585-1-robh@kernel.org>
+        id S237771AbiASKqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 05:46:52 -0500
+Received: from mail-dm6nam12on2071.outbound.protection.outlook.com ([40.107.243.71]:23777
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230132AbiASKqw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jan 2022 05:46:52 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JZG//PqSWsmMcVc4AYvaBQTTwGg8zOd4R8wxoF2Fx6VvkAbzaPip4pMB/opKP8dUqNIOQDiCKBLcmKR7ICrEts4LlWWt8y4Upb4p8qXKkQ+PG9IBD3jV1hbRHlTTF/Mi2UNw3i68qtnD54IdDGX6lCvEw+0/Xbd5lpC5QrzPRflpKnGU+2aYUNzSdUI4PS4Xy2P9y8kKiBa8e0rsMwiaXiCKkzOkxcr6RtZIhDIZcw2XCPRpvVkUdREE9aBLbgdsq3ecmxAbGDYdpQvOE5MKznAFFN4Ls6YCAJQa0AE6P78Z1QCjUFvfS+e5TKfMUdsPwzDUtMeMze7hc5a3jiQqcA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1A0R54uBLWB7ltKj6M61Z0180A/EsVYAbMTFXd3jrcg=;
+ b=jOluB0YpDeFL6oJHLcYNuj0NRwsVxJsfOdjXNQohZuRjUofvxaH71S9sSkCdcigLGN9s+GgOZJ/ErQnfCpnq2XdhYW9X8OIMKgr7X0yvagITawqq0q/ovGDZLd0cNwc46b5PVpUV/eoStqmv/Kdy/FIPg/bheV7Ukt0jgsLtuo+2K9MoRe/NZnZ6QkiAOlWRxRwAwYMnUTOCzuKOZxHZti5wfmopn/8j3XS3FMP/QfgVE4xghUF25wLxeFafoN8f3kUxmbUtkeTC+pQn5QXyN7NZGsODeze5lx330CYU+9QVeJfCbe1696GnzUWMJVUuF4qLTZWxX89brWLqkgT/Ug==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1A0R54uBLWB7ltKj6M61Z0180A/EsVYAbMTFXd3jrcg=;
+ b=Ko56ssBA5ciReLvi/L3Ty2TOrcYREGyon6+jdKFmuHYh0SzVdogdOA/K+R7QSAN0GKg129hIvNlqQkWBCQsZrhGh93i3fIpGN88b3jcJt7CLc6E7b9mfn7FIcr5wABBjYilbKYNM/cU8OM/5gMkUpF2Fr/ikHxpzSJ7xP6uRntJwpRu1C+L25uFAkBLKdaRuXEnaC1sla4obVRKjnQBH1TFPaOF+n4cZyfM8qhL2ngLe+4UcKHLjP/ZIjx/Cq19C8QthpIa+Ny6i1yYf9BNQ0Em/Whjuzcnp4L4WZVL/02A7hrsrYkfGbRAlpzVsmGZ66zrhosOMSHASYq9PDynPhQ==
+Received: from DM5PR15CA0052.namprd15.prod.outlook.com (2603:10b6:3:ae::14) by
+ DM6PR12MB2890.namprd12.prod.outlook.com (2603:10b6:5:15e::24) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4888.11; Wed, 19 Jan 2022 10:46:50 +0000
+Received: from DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:3:ae:cafe::a4) by DM5PR15CA0052.outlook.office365.com
+ (2603:10b6:3:ae::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7 via Frontend
+ Transport; Wed, 19 Jan 2022 10:46:50 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ DM6NAM11FT016.mail.protection.outlook.com (10.13.173.139) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4909.7 via Frontend Transport; Wed, 19 Jan 2022 10:46:50 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 19 Jan
+ 2022 10:46:49 +0000
+Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.9; Wed, 19 Jan 2022
+ 02:46:47 -0800
+References: <f6e07ca31e33a673f641c9282e81ee9c3be03d3c.1642505737.git.petrm@nvidia.com>
+ <0758f5ce-2461-95c2-edc0-9a24e44671d3@gmail.com>
+User-agent: mu4e 1.6.6; emacs 27.2
+From:   Petr Machata <petrm@nvidia.com>
+To:     David Ahern <dsahern@gmail.com>
+CC:     Petr Machata <petrm@nvidia.com>, <netdev@vger.kernel.org>,
+        "Stephen Hemminger" <stephen@networkplumber.org>,
+        Maksym Yaremchuk <maksymy@nvidia.com>
+Subject: Re: [PATCH iproute2] dcb: app: Add missing "dcb app show dev X
+ default-prio"
+Date:   Wed, 19 Jan 2022 11:38:54 +0100
+In-Reply-To: <0758f5ce-2461-95c2-edc0-9a24e44671d3@gmail.com>
+Message-ID: <87pmooove2.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220119015038.2433585-1-robh@kernel.org>
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 16bf64b9-267f-4c09-342c-08d9db38ffc4
+X-MS-TrafficTypeDiagnostic: DM6PR12MB2890:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB28900764865C96A6A372C6C8D6599@DM6PR12MB2890.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hn2oQzfvbX7rBElM7z/WqF2kpTU3u8ZdzDkkfiRBTJoYr7j3nF4uwWZndkH3SXG8XfFsdM/6+R3AMpkQTBlV3ZcemQLFnlAi3EMd0OzozhH+QkahJlN875FT/OJcj3W+q38DkgzLcZksmsDEf4/v939tIkotpo+cXuBpLDWvG4ACFzkx/ogqHDmLHGV9SZZCwVhcMBVlzOzNSa/UfytAL6PA2l1vx4toK+I2Z68O5b8j6bOcSbXEbePx2yIWwyGv8VR1gRiZO6GGO8TlNjF3M+nJdR9Ks8BOVIYRnvfmy4kI23Ct6o22O9SJCoCJSFYrVpf1uA1UZvk+i/r0R1IZKd2+LPrwn2dd2sY34azp2c7ppJOGnQbG+0C04ait4EZSdKGLUkn34VF6ah2Ej1Kl0Xx2etGbfMMfPeTYsX2OwkAdzltUjgFIKgSUoB90AFVwwNGj8x5PD5BEmwoixi8d49ySpsOsy8vDoJawOreygvVqelUiehXR9Osx/4lnGyiIdLCWvRtPtZ2A2HEATj9y/uhfUIUbFyW6MgNP+bsiTy7PDbhXXJp0cOciZZnMcawtJ7mwznW1zAqMsMw04b9SSwqPJPRCktovYN4t98ZIheMKYSo3MSDa6Wo+So9QyJKwWNaEiHnhMFNQno3Mrht3664gSfsaDk3fpAETciP/4CZfdfUCfVpabpsaPXsY4Y/VNkHaS3iCILmsuDQAoBOxGNkdz2zJNMpf14m8QHmc59CzNuXxIm+HlR6QnitouBV0EplPRdm62LMKapp8hjtjbUgufyhQ2za9ITVMftANPVY=
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(40470700002)(36840700001)(5660300002)(16526019)(356005)(53546011)(6666004)(81166007)(316002)(8936002)(54906003)(2616005)(86362001)(107886003)(4326008)(26005)(70586007)(70206006)(40460700001)(36860700001)(336012)(47076005)(82310400004)(2906002)(508600001)(6916009)(36756003)(186003)(426003)(8676002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2022 10:46:50.3929
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16bf64b9-267f-4c09-342c-08d9db38ffc4
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2890
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 07:50:38PM -0600, Rob Herring wrote:
-> The 'phandle-array' type is a bit ambiguous. It can be either just an
-> array of phandles or an array of phandles plus args. Many schemas for
-> phandle-array properties aren't clear in the schema which case applies
-> though the description usually describes it.
-> 
-> The array of phandles case boils down to needing:
-> 
-> items:
->   maxItems: 1
-> 
-> The phandle plus args cases should typically take this form:
-> 
-> items:
->   - items:
->       - description: A phandle
->       - description: 1st arg cell
->       - description: 2nd arg cell
-> 
-> With this change, some examples need updating so that the bracketing of
-> property values matches the schema.
-> ---
-(...)
-> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
-> index 702df848a71d..c504feeec6db 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
-> @@ -34,6 +34,8 @@ properties:
->        full routing information must be given, not just the one hop
->        routes to neighbouring switches
->      $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    items:
-> +      maxItems: 1
->  
->    ethernet:
->      description:
 
-For better or worse, the mainline cases of this property all take the
-form of:
+David Ahern <dsahern@gmail.com> writes:
 
-arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-				link = <&switch1port9 &switch2port9>;
-				link = <&switch1port10 &switch0port10>;
-arch/arm/boot/dts/vf610-zii-dev-rev-b.dts
-						link = <&switch1port6
-							&switch2port9>;
-						link = <&switch1port5
-							&switch0port5>;
-arch/arm/boot/dts/vf610-zii-scu4-aib.dts
-						link = <&switch1port10
-							&switch3port10
-							&switch2port10>;
-						link = <&switch3port10
-							&switch2port10>;
-						link = <&switch1port9
-							&switch0port10>;
+> On 1/18/22 4:36 AM, Petr Machata wrote:
+>> All the actual code exists, but we neglect to recognize "default-prio" as a
+>> CLI key for selection of what to show.
+>> 
+>> Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+>> Tested-by: Maksym Yaremchuk <maksymy@nvidia.com>
+>> Signed-off-by: Petr Machata <petrm@nvidia.com>
+>> ---
+>>  dcb/dcb_app.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>> 
+>> diff --git a/dcb/dcb_app.c b/dcb/dcb_app.c
+>> index 28f40614..54a95a07 100644
+>> --- a/dcb/dcb_app.c
+>> +++ b/dcb/dcb_app.c
+>> @@ -646,6 +646,8 @@ static int dcb_cmd_app_show(struct dcb *dcb, const char *dev, int argc, char **a
+>>  			goto out;
+>>  		} else if (matches(*argv, "ethtype-prio") == 0) {
+>>  			dcb_app_print_ethtype_prio(&tab);
+>> +		} else if (matches(*argv, "default-prio") == 0) {
+>> +			dcb_app_print_default_prio(&tab);
+>>  		} else if (matches(*argv, "dscp-prio") == 0) {
+>>  			dcb_app_print_dscp_prio(dcb, &tab);
+>>  		} else if (matches(*argv, "stream-port-prio") == 0) {
+>
+> In general, we are not allowing more uses of matches(). I think this one
+> can be an exception for consistency with the other options, so really
+> just a heads up.
 
-So not really an array of phandles.
+The shortening that the matches() allows is very useful for typing. I do
+stuff like "ip l sh dev X up" and "ip a a dev X 192.0.2.1/28" all the
+time. I suppose there was a discussion about this, can you point me at
+the thread, or where & when approximately it took place so I can look it
+up?
