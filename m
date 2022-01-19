@@ -2,164 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86BE149402D
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 19:50:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21C83494091
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 20:15:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243099AbiASStw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 13:49:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356903AbiASStt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 13:49:49 -0500
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD46C061574;
-        Wed, 19 Jan 2022 10:49:48 -0800 (PST)
-Received: by mail-io1-xd35.google.com with SMTP id z19so4055474ioj.1;
-        Wed, 19 Jan 2022 10:49:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nnuoU1KSe1lPzn+swqfrL4u+55EECpEPFhS5y1Mxsfk=;
-        b=hVhm31jvNS5wbREEluftIXgbqwXvIohRdyCpSa3EM9DRnsOK9TpSEpDGIXwzHHyTJv
-         /09mGm7RwutOmCCO0l63Lez0ehcH8Eo7jkJo29CaEFOZXEFG5GBwUoylHv1v7nSdw2wh
-         6tw9lYCjELz0NwOti7hYRUix5EwufXhk9rtYHxvF68M6Sk5qfMALLMlaec6VALG2wJVq
-         BU8AOcyZ5M3nxcM2ddse8hidhVflS/SWLC8Da2e9LxKOIdjR5wEXilqt4GivPi9FamKj
-         Onbz97KUaY8gNBEwEin8Y69Dg9rI80LxRMQ2ozeST+Sr4XiiKYYTgMUqsHwErReAqIl1
-         CaSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nnuoU1KSe1lPzn+swqfrL4u+55EECpEPFhS5y1Mxsfk=;
-        b=wzDsvSCzw+B3eUW5BpKwb6ZeaTAj6jQ24L7K21IDM1V6VX3cHShzMOuPoKHBUIt4js
-         1J0ngjvUAMa8kuIfamMmHkd7nR3EaxFTCmPDpejQoDlOdiSXotS5WyWpltCJmnvZBsWB
-         R7Zf+PNSpGFJjeO5VEo3ZVs+fgswYxYFMMo5mj14cM1JjH4vQiEGf4UDwJAKWBVKXMe+
-         5pQlNJG/6MYrCHQH9z/EBQsZrSnRl+FxLoL5vD/s87QWdtd8nApfP8Y+NZVeAlH5E4Dg
-         j4mDpiCpdbemGxrTv0Y+U3GGvm9YKWo6mdM+V5Ff4ZzZOqU+3tPv+6ljdwGqwpHWPivs
-         4gOg==
-X-Gm-Message-State: AOAM531/yVYKPMAFNw0ZFk3qmpg4tHdZgOgvC4DI3rji0xKYQDZ1bcuf
-        9DbGHEqJuoxNkV+XbCQ5V5dmtaxGAOqAgf0Ls7I=
-X-Google-Smtp-Source: ABdhPJzaMUfYG1ePvmrS2kcmYD9SEmK+HrpPRpPvfM5v7/7VWMNLgfZrwrtR/LhXQHGuRyOk48BEoK82DkbfzOwcTK8=
-X-Received: by 2002:a02:bb8d:: with SMTP id g13mr15231052jan.103.1642618187947;
- Wed, 19 Jan 2022 10:49:47 -0800 (PST)
+        id S238488AbiASTPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 14:15:03 -0500
+Received: from mga17.intel.com ([192.55.52.151]:44491 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230121AbiASTO5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jan 2022 14:14:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642619697; x=1674155697;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=UxCJC6eWdEdNah12KsCkH6nSMwzBaq9zmFaRweUROSw=;
+  b=LAc+xMae98biOIe5+1js4+13ymMtQfOZSUQURTlSus0gzNjipYYXMVRV
+   NyUait10iKdR/90KFN5Y1m05QCfp6q3qzq7aMUxV770tU54G7cYAhQtgv
+   pVX9FLJ0gZMdqxMkdJ7QwAtl/ocGGTqCzwLfUnZfBNXYBI0aw53UzRHZQ
+   htJvPpqnvZya6hmULFQD4Y5jo22ao12AxEHZ9RcdHd8qayiqfi6f/Vn+H
+   HDDeAnxl7jb2W+TuQI/wswZl5zM/+T11pBUstVIHHX+nQ191zFUOLeEu4
+   6a2gQVcdPCcvCyM7pE+7iucp6314FpQtnvO2DoPSUNQBK5Y2BdxezH8ST
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="225834857"
+X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
+   d="scan'208";a="225834857"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 10:38:30 -0800
+X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
+   d="scan'208";a="518285423"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 10:38:09 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nAFpH-00CDps-NH;
+        Wed, 19 Jan 2022 20:36:55 +0200
+Date:   Wed, 19 Jan 2022 20:36:55 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        platform-driver-x86@vger.kernel.org,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        John Garry <john.garry@huawei.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        openipmi-developer@lists.sourceforge.net,
+        Benson Leung <bleung@chromium.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Richard Weinberger <richard@nod.at>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>,
+        linux-mediatek@lists.infradead.org,
+        Brian Norris <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] driver core: platform: Rename
+ platform_get_irq_optional() to platform_get_irq_silent()
+Message-ID: <YehaRwIe4LjymMhS@smile.fi.intel.com>
+References: <20220112085009.dbasceh3obfok5dc@pengutronix.de>
+ <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
+ <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
+ <Yd9L9SZ+g13iyKab@sirena.org.uk>
+ <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
+ <YeA7CjOyJFkpuhz/@sirena.org.uk>
+ <20220113194358.xnnbhsoyetihterb@pengutronix.de>
+ <745c601f-c782-0904-f786-c9bfced8f11c@gmail.com>
+ <cae0b73e-46df-a491-4a8e-415205038c2c@omp.ru>
+ <20220115135550.dr4ngiz2c6rfs2rl@pengutronix.de>
 MIME-Version: 1.0
-References: <1642004329-23514-1-git-send-email-alan.maguire@oracle.com>
- <CAEf4BzYRLxzVHw00DUphqqdv2m_AU7Mu=S0JF0PZYN40hBvHgA@mail.gmail.com>
- <alpine.LRH.2.23.451.2201131025380.13423@localhost> <CAEf4BzaX70Ze2mdLuQvw8kNqCt7fQAOkO=Akm=T9Pjxf4eDpLA@mail.gmail.com>
- <alpine.LRH.2.23.451.2201191341380.10931@localhost>
-In-Reply-To: <alpine.LRH.2.23.451.2201191341380.10931@localhost>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 19 Jan 2022 10:49:36 -0800
-Message-ID: <CAEf4BzadgXvW_eDAG00a_hyFUKqyLFn=rNwGFgJqCpyRsLyNTw@mail.gmail.com>
-Subject: Re: [RFC bpf-next 0/4] libbpf: userspace attach by name
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        Yucong Sun <sunyucong@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220115135550.dr4ngiz2c6rfs2rl@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 6:04 AM Alan Maguire <alan.maguire@oracle.com> wrote:
->
-> On Fri, 14 Jan 2022, Andrii Nakryiko wrote:
->
-> > > The one piece that seems to be missing from my perspective - and this may
-> > > be in more recent versions - is uprobe function attachment by name. Most of
-> > > the work is  already done in libusdt so it's reasonably doable I think - at a
-> > > minimum  it would require an equivalent to the find_elf_func_offset()
-> > > function in my  patch 1. Now the name of the library libusdt suggests its
-> > > focus is on USDT of course, but I think having userspace function attach
-> > > by name too would be great. Is that part of your plans for this work?
-> >
-> > True, uprobes don't supprot attaching by function name, which is quite
-> > annoying. It's certainly not a focus for libusdt (or whatever it will
-> > end up being called when open-sources). But if it's not much code and
-> > complexity we should probably just add that to libbpf directly for
-> > uprobes.
-> >
->
-> I've been looking at this, and I've got the following cases working:
->
-> - local symbols in a binary. This involves symbol table lookup and
->   relative offset calcuation.
-> - shared object symbols in a shared object.  In this case, the symbol
->   table values suffice, no adjustment needed.
->
-> The former works using the program headers (instead of /proc/pid/maps for
-> offset computation), so can be run for all processes, lifting the
-> limitation in the RFC which only supported name lookup for a specific
-> process. Around a hundred lines for this makes it worthwhile I think.
->
-> There is one more case, which is a shared library function in a binary -
-> where I specify "malloc" as the function and /usr/bin/foo as the binary
-> path.  In this case, for dynamic symbols we can't just look up the symbol
-> table in the binary, since the associated values are 0.  Ideally it would
-> be nice if the user could just specify "malloc" and not need to use libc
-> as the binary path argument, but getting this working is proving to be
-> trickier. I've tried making use of PLT section information but no luck
-> yet (the idea being we try to use the trampoline address of malloc@@PLT
-> instead, but I'm still trying to figure out how to extract that).
->
-> So I'm wondering if we just fail lookup for that case, assuming the user
-> will specify the shared library path if they want to trace a shared library
-> function. What do you think? Thanks!
+On Sat, Jan 15, 2022 at 02:55:50PM +0100, Uwe Kleine-König wrote:
+> On Fri, Jan 14, 2022 at 08:55:07PM +0300, Sergey Shtylyov wrote:
+> > On 1/14/22 12:42 AM, Florian Fainelli wrote:
 
-I think it all makes sense (but let's see the code as well ;) ). For
-the latter, can you please double-check what sort of functionality BCC
-provides? Also make sure that you support specifying absolute address
-instead of function name as well (func+0x123 probably as well, just
-like for kprobes?).
+> So you oppose to the name chosen, but not the renaming as such.
 
-The annoying bit is libbpf's convention to use '/' as a separator in
-SEC() definitions. I think bpftrace/dtrace's ':' makes more sense, but
-it seems to disruptive to switch it now. Because of this, specifying
-absolute path to the binary would look weird:
+I oppose the name change. The unneeded churn right now since it won't fix
+the issues with the underneath API (platform_get_irq() in this case) and
+will require one more iteration over callers again.
 
-SEC("uprobe//usr/bin/bash/readline")
+The main issue that platform_get_irq*() returns magic error code while
+treating 0 in a very special way (issuing WARN() and considering it as
+a successful cookie) and this all is quite confusing.
 
-or something like that would consistent with current convention, but
-super weird.
+If you are going to fix the underlying issue, welcome! Now I see only
+the step to somewhere. I.o.w. this change _standalone_ makes no sense
+to me.
 
-Did you run into this issue during your experiments?
-
-I can see two improvements, more and less radical (short of switching
-from / to : completely):
-
-1. less radical is to use "custom" format for uprobe after the "uprobe/" part:
-
-SEC("uprobe//usr/bin/bash:readline")
-
-2. a bit more radical (but probably better long term) is to support
-'/' and ':' interchangeably (but only one of them in any given SEC()
-definition).  For existing definitions, we can say that both forms are
-supported now:
-
-SEC("kprobe/some_func") and SEC("kprobe:some_func")
-
-For uprobe I'd probably combine #1 and #2 and say that these two forms
-are supported:
-
-SEC("uprobe//usr/bin/bash:readline") (so function separator is always ':')
-
-and
-
-SEC("uprobe:/usr/bin/bash:readline") (nicer and more consistent).
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Thoughts?
-
-BTW, as much as I like consistency, the proposal to switch to ':'
-exclusively in libbpf 1.0 is a no-go, IMO, it's too much of a
-disruption for tons of users.
-
-
->
-> Alan
