@@ -2,121 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52DE749385E
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 11:25:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EA24493892
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 11:32:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353704AbiASKZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 05:25:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45540 "EHLO
+        id S1353870AbiASKcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 05:32:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238936AbiASKYa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 05:24:30 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2838BC061574;
-        Wed, 19 Jan 2022 02:24:30 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id h206-20020a1c21d7000000b0034d95625e1fso5297258wmh.4;
-        Wed, 19 Jan 2022 02:24:30 -0800 (PST)
+        with ESMTP id S1353805AbiASKcY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 05:32:24 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F66DC061749
+        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 02:32:24 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id bu18so7531808lfb.5
+        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 02:32:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=23T4xOW2I0F1J8h1VBHMXa/Hl9U+ZT3rpxlsT4/aGfc=;
-        b=YsEHE2FoxTIEDYdQkjHZoP/fMCSt7QDmBQ4JdVPHxM4mlnOCzYop6XchK4rNHKQtf+
-         EB550obMnV3f5ZhHcIk/AxpQ8rIFuitjP2WoGDxLwZPMERXqneeB/TZ8sQCaB/Na7dAD
-         gBFFTaU95S2gXYoC1ejMoGbHiqPSliY7DgwtbQkFJB0qfSMMdRfOMiiSSiPIlGi9YkfW
-         SF6KUmqLmY0Vm9eUK4+qdupPRPxxj4ZT74ftdKfK9m/t115DOzfVBBOGbky0j7JF+4xS
-         /laydDlP6PnfNM7FjGBWQC6AyMUnubEMwTk5FqFL60694tozYxQKd8zFSgAVHk04Owxb
-         LpWw==
+         :cc;
+        bh=Sr17yjVIJ3L6nqEXDMpIqK2xXImflLFzz6ALbEm9u68=;
+        b=Xp8s21ftcZ0WG13DDgbdH7NIUsuYX+ghvkD5zw1hiLod5qbV+yjC9/iw3BxedgypWz
+         j185xcOoN7LD6uCNH62mSJRvMAjwIi7qcbYCznd6Wd0VuvmCQ/sizMwR5aWhMScNA/rl
+         hmuEc+DbVv1NqMjk5IXcy/Hk3oFXKZ0haMWzOfivc06wvoxpEiX1vitoLqGmZuk04L2x
+         HC73i8VxJwVCI/4Mkmi2NET/E8BffuYg/4Zged81GUTCUySqRPVe2agczTV87+sP+2pN
+         pDJV7fJq03+xTsoQaVBtN6S+RGEn7oHeifzgS2DkyqcDDGnQ9aAHk1KN9hJBM2T+WaJf
+         EdtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=23T4xOW2I0F1J8h1VBHMXa/Hl9U+ZT3rpxlsT4/aGfc=;
-        b=wp71PNOw7uY9/OJcFWEXNEREiiehw2o2wtyR0AoKRfpKxjOVNAeuHDsU1xQhR+e/pf
-         4vTLMgzUjcBEyzK6XVxR5IaAis1Q4HLs/k5aKuk3I941zWh4DmpY7sGlfLzZlB4wswj/
-         ibNtmpIIO90BCA+e7IE54qfvDQPO27MCokYnZGddxbpFxldZCdzepuIoaGugLW54xs56
-         oD8iMR7P+yrCYxQNXecxtfpAL46IQFs+voh3rL2sVh1SNaKN7Sj4zujtnNvX3UxnCpdg
-         tfElr111tKLjJGKQb3yiZOPvW1hxw65giPYVy9B5zNqOVgtRXkIaJAzqxBrx9cCFhyIg
-         1ghA==
-X-Gm-Message-State: AOAM530N5Q7n+yD6DH151KyOplkCydNiKxJMv71N/7JN4E21sKh96hvL
-        k0N3MKJuyq9P6kVac7v15wO+2kXi812TE7t8E44=
-X-Google-Smtp-Source: ABdhPJyQ5Tdq7m8t7iLiOJAS4JTEijMM4at1JFtGA1ZF2R8mUGyIx8zXbXyxAiL39Qfm4S+aXM2whQ60Ky+y/NvZSKQ=
-X-Received: by 2002:adf:d08b:: with SMTP id y11mr27706022wrh.384.1642587868723;
- Wed, 19 Jan 2022 02:24:28 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=Sr17yjVIJ3L6nqEXDMpIqK2xXImflLFzz6ALbEm9u68=;
+        b=1NUDpMzJtQkt9xcgJIBFVdTfKJWOT1U5f6XkmXaUWyHOTLSYXQaVtGId8UGUphQmt3
+         mhjfsfPpgkRpxx7tORMlStkv0fGqHmc7DT1zYp2GjEDtsyioy6VBJ4CYIBn7nf45977w
+         eIvUVNU1D/7MTEXkArvpeJ/c1a2jWBWs9v1KJkTkt4pfHS0IWwb8Y+VaBX3tu/4HJJps
+         LCpVOFlYB+1xM96y9UcguEYtav4rIaeql4BSCbgB0c5SS4tF0uTRRrhcsGAFTpETI4rI
+         mg390fVe/z8yyYc+0GVYTApeIVXKMqEF93Mdn9V9w8ZuI9+hBtNlK2Mx1m1RloVS50q9
+         eFKw==
+X-Gm-Message-State: AOAM530LcNvcFPrni0d1eWazjY71xOIp1QYGfFmR0dzVJUai2BzqB77T
+        haausd2vh8TSQ7isTUttlfzHQhMgcB6roCCiIsEpMw==
+X-Google-Smtp-Source: ABdhPJz5t3UBuJxmMbI2E3pOLPGLQiV4ByMa0pgkUilXefnRDUK3bGbZ4bWfdB/wwOZVZ58x7DxfCbRQTc3tUAIioE8=
+X-Received: by 2002:a2e:a26d:: with SMTP id k13mr10012578ljm.300.1642588342599;
+ Wed, 19 Jan 2022 02:32:22 -0800 (PST)
 MIME-Version: 1.0
-References: <20220110165208.1826-1-jszhang@kernel.org> <Ydxljv2Q4YNDYRTx@xhacker>
-In-Reply-To: <Ydxljv2Q4YNDYRTx@xhacker>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Wed, 19 Jan 2022 11:24:16 +0100
-Message-ID: <CAJ+HfNiS7Ss0FJowPUrrKvuC+1Kn9gXb=VqNoqh3eWJDu=m4Mg@mail.gmail.com>
-Subject: Re: [PATCH riscv-next] riscv: bpf: Fix eBPF's exception tables
-To:     Jisheng Zhang <jszhang@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>, palmer@rivosinc.com,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Netdev <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Tong Tiangen <tongtiangen@huawei.com>
+References: <20220119015038.2433585-1-robh@kernel.org>
+In-Reply-To: <20220119015038.2433585-1-robh@kernel.org>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Wed, 19 Jan 2022 11:31:45 +0100
+Message-ID: <CAPDyKFr5uT3H8NaAvPyGajo2R6DriYC92y=RdAk=G4PMC4MxYw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: Improve phandle-array schemas
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-ide@vger.kernel.org, linux-crypto@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, dmaengine@vger.kernel.org,
+        linux-pm@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-usb@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jisheng/Palmer,
-
-On Mon, 10 Jan 2022 at 18:05, Jisheng Zhang <jszhang@kernel.org> wrote:
+On Wed, 19 Jan 2022 at 02:50, Rob Herring <robh@kernel.org> wrote:
 >
-> On Tue, Jan 11, 2022 at 12:52:08AM +0800, Jisheng Zhang wrote:
-> > eBPF's exception tables needs to be modified to relative synchronously.
-> >
-> > Suggested-by: Tong Tiangen <tongtiangen@huawei.com>
-> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-
-Nice catch, and apologies for the slow response.
-
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
-
-> > ---
-> >  arch/riscv/net/bpf_jit_comp64.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_c=
-omp64.c
-> > index 69bab7e28f91..44c97535bc15 100644
-> > --- a/arch/riscv/net/bpf_jit_comp64.c
-> > +++ b/arch/riscv/net/bpf_jit_comp64.c
-> > @@ -498,7 +498,7 @@ static int add_exception_handler(const struct bpf_i=
-nsn *insn,
-> >       offset =3D pc - (long)&ex->insn;
-> >       if (WARN_ON_ONCE(offset >=3D 0 || offset < INT_MIN))
-> >               return -ERANGE;
-> > -     ex->insn =3D pc;
-> > +     ex->insn =3D offset;
+> The 'phandle-array' type is a bit ambiguous. It can be either just an
+> array of phandles or an array of phandles plus args. Many schemas for
+> phandle-array properties aren't clear in the schema which case applies
+> though the description usually describes it.
 >
-> Hi Palmer,
+> The array of phandles case boils down to needing:
 >
-> Tong pointed out this issue but there was something wrong with my email
-> forwarding address, so I didn't get his reply. Today, I searched on
-> lore.kernel.org just found his reply, sorry for inconvenience.
+> items:
+>   maxItems: 1
 >
+> The phandle plus args cases should typically take this form:
+>
+> items:
+>   - items:
+>       - description: A phandle
+>       - description: 1st arg cell
+>       - description: 2nd arg cell
+>
+> With this change, some examples need updating so that the bracketing of
+> property values matches the schema.
+>
+> Cc: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+> Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> Cc: Philipp Zabel <p.zabel@pengutronix.de>
+> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Cc: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Georgi Djakov <djakov@kernel.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Daniel Thompson <daniel.thompson@linaro.org>
+> Cc: Jingoo Han <jingoohan1@gmail.com>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Wolfgang Grandegger <wg@grandegger.com>
+> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Vivien Didelot <vivien.didelot@gmail.com>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Vladimir Oltean <olteanv@gmail.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: Viresh Kumar <vireshk@kernel.org>
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Cc: Kevin Hilman <khilman@kernel.org>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: Zhang Rui <rui.zhang@intel.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Jonathan Hunter <jonathanh@nvidia.com>
+> Cc: Sudeep Holla <sudeep.holla@arm.com>
+> Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+> Cc: linux-ide@vger.kernel.org
+> Cc: linux-crypto@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: dmaengine@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: iommu@lists.linux-foundation.org
+> Cc: linux-leds@vger.kernel.org
+> Cc: linux-media@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-can@vger.kernel.org
+> Cc: linux-wireless@vger.kernel.org
+> Cc: linux-phy@lists.infradead.org
+> Cc: linux-gpio@vger.kernel.org
+> Cc: linux-riscv@lists.infradead.org
+> Cc: linux-remoteproc@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-usb@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
 
-AFAIK, Jisheng's extable work is still in Palmer's for-next tree.
+For CPUs and PM domains:
 
-Daniel/Alexei: This eBPF must follow commit 1f77ed9422cb ("riscv:
-switch to relative extable and other improvements"), which is in
-Palmer's tree. It cannot go via bpf-next.
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-Palmer, please pull this to your for-next tree.
-
-
-Thanks,
-Bj=C3=B6rn
+Kind regards
+Uffe
