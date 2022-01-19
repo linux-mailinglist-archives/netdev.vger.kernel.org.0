@@ -2,120 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8B9049364C
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 09:26:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3414936A2
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 09:55:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352426AbiASI0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 03:26:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46142 "EHLO
+        id S1352645AbiASIzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 03:55:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343541AbiASI0s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 03:26:48 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1BCC061574;
-        Wed, 19 Jan 2022 00:26:47 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id e9-20020a05600c4e4900b0034d23cae3f0so4206680wmq.2;
-        Wed, 19 Jan 2022 00:26:47 -0800 (PST)
+        with ESMTP id S1352641AbiASIzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 03:55:04 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06760C061574
+        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 00:55:04 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id h14so5209555ybe.12
+        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 00:55:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=OJqfjkc7grksCnSg/3JnGJQ3LuEV4ZfXzF6Rc4piP3w=;
-        b=CUKUQdDv8/ynrbgu8Ww/bTmlcj/BiH5Bby/13t2PdAtjxJ/JC1Q9w0TUbjPeX3yrvA
-         zxVFgUgMAk8FRjbGLeTv48cu++AuLwnJsCK0j3PP2Ig3fhhkdywpCm4dbFU79E2Nthki
-         cvWROpQbgG/ybC8SN9LzmUmR5x8U1PwqNOPkXsrajN8hrzYquChHlIQdAfYUZnwSjehF
-         2L5QGLXYN64UUnrWQSBsCD7CzuxYiI+1+reG0EzqDr/uD6xJZeT4ivqWuZB70Kso0RYX
-         jKKQH44R1hlHcIvdoWsRZYXSm/PTx0/Y7uBS17jAV6XoqJPglufLwsEnIMkS1mBS2AZG
-         BGsw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JZAagVbA/i07oNhTFvM2cyHUWajTLtxzUpHCcDLcCUs=;
+        b=aZjW63ddqlbcZvzsKduutBmJDVdui920oQWbOyZmoUPl6NMA4fiHVc3958W4JZxDHB
+         bDX0CKMRnQvbJSCTm+VWcaVpg3XUIXx/5W0jgA+RA00csIMmD9kpAqJrunLJdr1qvhND
+         zUuO7jHMPjibzTo9hUPXI1DmUAWxMQioi2CaBgldiB82Y7iQ4+zWGgnQATjrsN5vcRLu
+         tMx4ofB+F19t9upffxbsp43eQxcB48tqYLbP933C1H1AfCwS2hZdXjGG6jG1jMu0sdHD
+         +3Czil5200TV2gKNF4kFcCh23Hhvx3cACXP/4xUYk6Htsp9JNMLN0dYdcHlwbMsu5eMf
+         LvLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=OJqfjkc7grksCnSg/3JnGJQ3LuEV4ZfXzF6Rc4piP3w=;
-        b=c/Wjs5dLUUGgislgsaqEwNmaLE/eG9JEW3cOHYcoTv6Zj/Rtbn91/C5xNfsSSbvAsj
-         rf9LjIwVaIMGt7CPo97pKeq9JwuImtn9DKEUd3WiqyAqOpBqIPBuI7p6asBzxXoUCnSN
-         7EVUIaHmg7usRbIQSNgVrb+wZCJSGUjAwrkBAUVwHH0KxSi5+P1aDg/QbRmGoYDOKsvm
-         KnGq/wM5YdVeOFpNM4/0j00PLiaQZd3+W8yeBVkZ/6UQlL3d13tZ6+wXu/vJi+dvqvVm
-         nsOQqkzuCTVP13TzbKfleM+0FkaJBlfZFcahy6To3rbvp8p3P8rxs1nl4sJ9VpRr7jMd
-         EdYw==
-X-Gm-Message-State: AOAM533l1lDjz7bk7MJXZ10s+o5MVxOJ+zHb+37IRCj+LYF7NU/348Wo
-        /SWN7J7pFvSawUXv24K+Pdo=
-X-Google-Smtp-Source: ABdhPJyGrBaxmjbgviSCXOJnLDcmWI9cikBU8AG58dSMzxDuPImuBoB3M1r4hpvWq4GqhrqduRB3CA==
-X-Received: by 2002:a05:600c:3c92:: with SMTP id bg18mr2330907wmb.106.1642580806428;
-        Wed, 19 Jan 2022 00:26:46 -0800 (PST)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id a4sm7837403wri.9.2022.01.19.00.26.45
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 19 Jan 2022 00:26:46 -0800 (PST)
-Date:   Wed, 19 Jan 2022 08:26:43 +0000
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     cgel.zte@gmail.com
-Cc:     ecree.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] sfc/ef10: remove unneeded rc variable
-Message-ID: <20220119082643.mod7g7ikoviks22r@gmail.com>
-Mail-Followup-To: cgel.zte@gmail.com, ecree.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20220118075616.925855-1-chi.minghao@zte.com.cn>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JZAagVbA/i07oNhTFvM2cyHUWajTLtxzUpHCcDLcCUs=;
+        b=ptM0jr6VPbmj3vzqpuXtSDEwx24KUhAarIEyAh7EBzGLqVJFLLxixtG70U4zdO2uV6
+         XfDCEUIQRw39G430xx5PEgar2IlOmy2EvnAnQp9+glp91QUZ/I/NfwnIPpXKAPCs3H4l
+         0cyO+rscfdv5gjQGfoTQfSC6CLThQjxdFNFsJZL+Atc5Sld+4AtW0AgxA6AyHXYvks9w
+         L0ljgfGfPXgONR0CK5ixYi9wxVfpzV1u0PVBxebbTyTLfEFY99ZFMjMZhPG8/qopkv3S
+         WyR2JfxI2vPVRyb+2nOE9fi0s6p685bBG3+HVtJdyRAr0TpJ9jacQqbFQdQkwYA1IC7n
+         OcuA==
+X-Gm-Message-State: AOAM533/tdtmt09DR6ODmmEs5WgoYLFK5FOZkzaQULLwR5dy0JyQyaL8
+        OUatciFmQdLmBS6/Vy8wlaaTz4DJnBPhgkOQ5MOUyA==
+X-Google-Smtp-Source: ABdhPJzXofjjkJFwOwGWNo4DeaBaYcoumhhuuPvdoOd/LQN2Sh9bRvNzPI06xFtITByuyNH1pRthwA7vCmOkjIDV8NA=
+X-Received: by 2002:a25:8442:: with SMTP id r2mr12764543ybm.711.1642582502828;
+ Wed, 19 Jan 2022 00:55:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220118075616.925855-1-chi.minghao@zte.com.cn>
-User-Agent: NeoMutt/20170113 (1.7.2)
+References: <20220118204646.3977185-1-eric.dumazet@gmail.com>
+ <20220118204646.3977185-3-eric.dumazet@gmail.com> <1d570c92-8acc-fd82-ce8b-f23b2ce47a9f@gmail.com>
+In-Reply-To: <1d570c92-8acc-fd82-ce8b-f23b2ce47a9f@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 19 Jan 2022 00:54:51 -0800
+Message-ID: <CANn89i+=Sy5THwOxBRrDLEcgM32yC3OEs+9_KebO=tkxfzkRAA@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] ipv4: add net_hash_mix() dispersion to
+ fib_info_laddrhash keys
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 07:56:16AM +0000, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> Return value from efx_mcdi_rpc() directly instead
-> of taking this in another redundant variable.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
-> ---
->  drivers/net/ethernet/sfc/ef10.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-> index cf366ed2557c..991758292b7c 100644
-> --- a/drivers/net/ethernet/sfc/ef10.c
-> +++ b/drivers/net/ethernet/sfc/ef10.c
-> @@ -3627,7 +3627,6 @@ static int efx_ef10_rx_disable_timestamping(struct efx_channel *channel,
->  					    bool temp)
->  {
->  	MCDI_DECLARE_BUF(inbuf, MC_CMD_PTP_IN_TIME_EVENT_UNSUBSCRIBE_LEN);
-> -	int rc;
->  
->  	if (channel->sync_events_state == SYNC_EVENTS_DISABLED ||
->  	    (temp && channel->sync_events_state == SYNC_EVENTS_QUIESCENT))
-> @@ -3646,10 +3645,8 @@ static int efx_ef10_rx_disable_timestamping(struct efx_channel *channel,
->  	MCDI_SET_DWORD(inbuf, PTP_IN_TIME_EVENT_UNSUBSCRIBE_QUEUE,
->  		       channel->channel);
->  
-> -	rc = efx_mcdi_rpc(channel->efx, MC_CMD_PTP,
-> +	return efx_mcdi_rpc(channel->efx, MC_CMD_PTP,
->  			  inbuf, sizeof(inbuf), NULL, 0, NULL);
+On Tue, Jan 18, 2022 at 6:42 PM David Ahern <dsahern@gmail.com> wrote:
+>
+>
+> for consistency, make this hashfn and bucket lookup similar to
+> fib_devindex_hashfn and fib_info_devhash_bucket.
+>
+>
 
-Looks good, but indent the continuation line to align with the ( above
-it.
-
-This sort of cleanup is for net-next, which is closed at the moment.
-See https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
-
-Martin
-
-> -
-> -	return rc;
->  }
->  
->  static int efx_ef10_ptp_set_ts_sync_events(struct efx_nic *efx, bool en,
-> -- 
-> 2.25.1
+Ack, thanks for the suggestion.
