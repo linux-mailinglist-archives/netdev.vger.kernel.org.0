@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09A1A494369
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 00:06:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D1D0494380
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 00:07:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344046AbiASXGm convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Jan 2022 18:06:42 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:2282 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235743AbiASXGl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 18:06:41 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20JIs79R030798
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 15:06:40 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dpafj6kcx-3
+        id S1357648AbiASXHP convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Jan 2022 18:07:15 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:33528 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344277AbiASXHA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 18:07:00 -0500
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20JIs2sm000479
+        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 15:06:59 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dp89yf4kk-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 15:06:40 -0800
-Received: from twshared12416.02.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 15:06:59 -0800
+Received: from twshared11487.23.frc3.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 19 Jan 2022 15:06:40 -0800
+ 15.1.2308.20; Wed, 19 Jan 2022 15:06:49 -0800
 Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id E4DD828220C71; Wed, 19 Jan 2022 15:06:32 -0800 (PST)
+        id 00D6428220D24; Wed, 19 Jan 2022 15:06:34 -0800 (PST)
 From:   Song Liu <song@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
         <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
         Song Liu <song@kernel.org>
-Subject: [PATCH v4 bpf-next 4/7] bpf: add a pointer of bpf_binary_header to bpf_prog
-Date:   Wed, 19 Jan 2022 15:06:17 -0800
-Message-ID: <20220119230620.3137425-5-song@kernel.org>
+Subject: [PATCH v4 bpf-next 5/7] x86/alternative: introduce text_poke_copy
+Date:   Wed, 19 Jan 2022 15:06:18 -0800
+Message-ID: <20220119230620.3137425-6-song@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220119230620.3137425-1-song@kernel.org>
 References: <20220119230620.3137425-1-song@kernel.org>
@@ -40,83 +40,85 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: URtXrE8W3MtZlIaHwyd_NcsXC1MzkJKz
-X-Proofpoint-GUID: URtXrE8W3MtZlIaHwyd_NcsXC1MzkJKz
+X-Proofpoint-ORIG-GUID: zPRGkW00kP3DUFdm3BTpPCQ4gAsPo0Zr
+X-Proofpoint-GUID: zPRGkW00kP3DUFdm3BTpPCQ4gAsPo0Zr
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-01-19_12,2022-01-19_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 priorityscore=1501
- lowpriorityscore=0 clxscore=1015 suspectscore=0 mlxscore=0 phishscore=0
- adultscore=0 bulkscore=0 malwarescore=0 mlxlogscore=882 spamscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201190122
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 adultscore=0
+ priorityscore=1501 spamscore=0 suspectscore=0 mlxscore=0 malwarescore=0
+ bulkscore=0 phishscore=0 lowpriorityscore=0 mlxlogscore=350
+ impostorscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2110150000 definitions=main-2201190122
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With sub page allocation, we cannot simply use bpf_func & PAGE_MASK to
-find the bpf_binary_header. Add a pointer to struct bpf_prog to avoid
-this logic.
-
-Use this point for x86_64. If the pointer is not set by the jit engine,
-fall back to original logic.
+This will be used by BPF jit compiler to dump JITed binary to a RX huge
+page, and thus allow multiple BPF programs sharing the a huge (2MB) page.
 
 Signed-off-by: Song Liu <song@kernel.org>
 ---
- arch/x86/net/bpf_jit_comp.c |  2 ++
- include/linux/filter.h      | 10 ++++++++--
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/text-patching.h |  1 +
+ arch/x86/kernel/alternative.c        | 32 ++++++++++++++++++++++++++++
+ 2 files changed, 33 insertions(+)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index ce1f86f245c9..fe4f08e25a1d 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -2339,6 +2339,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 			if (header)
- 				bpf_jit_binary_free(header);
- 			prog = orig_prog;
-+			header = NULL;
- 			goto out_addrs;
- 		}
- 		if (image) {
-@@ -2406,6 +2407,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	if (tmp_blinded)
- 		bpf_jit_prog_release_other(prog, prog == orig_prog ?
- 					   tmp : orig_prog);
-+	prog->hdr = header;
- 	return prog;
+diff --git a/arch/x86/include/asm/text-patching.h b/arch/x86/include/asm/text-patching.h
+index b7421780e4e9..4cc18ba1b75e 100644
+--- a/arch/x86/include/asm/text-patching.h
++++ b/arch/x86/include/asm/text-patching.h
+@@ -44,6 +44,7 @@ extern void text_poke_early(void *addr, const void *opcode, size_t len);
+ extern void *text_poke(void *addr, const void *opcode, size_t len);
+ extern void text_poke_sync(void);
+ extern void *text_poke_kgdb(void *addr, const void *opcode, size_t len);
++extern void *text_poke_copy(void *addr, const void *opcode, size_t len);
+ extern int poke_int3_handler(struct pt_regs *regs);
+ extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void *emulate);
+ 
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index 23fb4d51a5da..903a415c19fa 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -1102,6 +1102,38 @@ void *text_poke_kgdb(void *addr, const void *opcode, size_t len)
+ 	return __text_poke(addr, opcode, len);
  }
  
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 6cc1ebf1f840..6bb00f343cc5 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -584,6 +584,7 @@ struct bpf_prog {
- 					    const struct bpf_insn *insn);
- 	struct bpf_prog_aux	*aux;		/* Auxiliary fields */
- 	struct sock_fprog_kern	*orig_prog;	/* Original BPF program */
-+	struct bpf_binary_header *hdr;
- 	/* Instructions for interpreter */
- 	union {
- 		DECLARE_FLEX_ARRAY(struct sock_filter, insns);
-@@ -893,9 +894,14 @@ static inline void bpf_jit_binary_lock_ro(struct bpf_binary_header *hdr)
- static inline struct bpf_binary_header *
- bpf_jit_binary_hdr(const struct bpf_prog *fp)
- {
--	unsigned long real_start = (unsigned long)fp->bpf_func;
--	unsigned long addr = real_start & PAGE_MASK;
-+	unsigned long real_start;
-+	unsigned long addr;
- 
-+	if (fp->hdr)
-+		return fp->hdr;
++/**
++ * text_poke_copy - Copy instructions into (an unused part of) RX memory
++ * @addr: address to modify
++ * @opcode: source of the copy
++ * @len: length to copy, could be more than 2x PAGE_SIZE
++ *
++ * Not safe against concurrent execution; useful for JITs to dump
++ * new code blocks into unused regions of RX memory. Can be used in
++ * conjunction with synchronize_rcu_tasks() to wait for existing
++ * execution to quiesce after having made sure no existing functions
++ * pointers are live.
++ */
++void *text_poke_copy(void *addr, const void *opcode, size_t len)
++{
++	unsigned long start = (unsigned long)addr;
++	size_t patched = 0;
 +
-+	real_start = (unsigned long)fp->bpf_func;
-+	addr = real_start & PAGE_MASK;
- 	return (void *)addr;
- }
- 
++	if (WARN_ON_ONCE(core_kernel_text(start)))
++		return NULL;
++
++	while (patched < len) {
++		unsigned long ptr = start + patched;
++		size_t s;
++
++		s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
++
++		__text_poke((void *)ptr, opcode + patched, s);
++		patched += s;
++	}
++	return addr;
++}
++
+ static void do_sync_core(void *info)
+ {
+ 	sync_core();
 -- 
 2.30.2
 
