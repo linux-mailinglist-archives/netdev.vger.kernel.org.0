@@ -2,110 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F2814934EC
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 07:20:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CFC149352E
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 07:59:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351765AbiASGUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 01:20:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52980 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350102AbiASGUD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 01:20:03 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 483B0B811CC;
-        Wed, 19 Jan 2022 06:20:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C27C004E1;
-        Wed, 19 Jan 2022 06:19:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642573201;
-        bh=+/ZjQ3Ir+rum0nwu103J/f9YAv7hVQpz3n0F5Ixkyc4=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=lesLyo+yE///z73mDnJfTRwJ6cZGH7ErAxRlnv70UeFMhPuqdlsiAkp7PM7kDzrBL
-         jZclQaLDF2MsX6gA0spNV88wxMl5y0actPxsZ8RPnSB/uXXvh+v+W2z9h4avud9XDA
-         TzhLJZznK6ZGO7Xvi7OicUR/yvZTg9uR6lLqWgY8QVhg5eWkOarn1b0IT9GC4Ly/2A
-         kddD9ozvKs0SLhrkQa0M5AhJH+vqXb6N3PT0/QdegMrx7v6HgM+KX9x8xb3/3cebl7
-         mUhVKo0OQDNB14Q6v25pLBAahX/UQxe7SXcWx2jarXEoN9iRCiT5OKTF7imBopoF75
-         XUQnHfoFCZXgA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Pkshih <pkshih@realtek.com>
-Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "tony0620emma\@gmail.com" <tony0620emma@gmail.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: Re: [PATCH 3/4] rtw88: Move enum rtw_tx_queue_type mapping code to tx.{c,h}
-References: <20220114234825.110502-1-martin.blumenstingl@googlemail.com>
-        <20220114234825.110502-4-martin.blumenstingl@googlemail.com>
-        <b2bf2bc5f04b488487797aa21c50a130@realtek.com>
-Date:   Wed, 19 Jan 2022 08:19:55 +0200
-In-Reply-To: <b2bf2bc5f04b488487797aa21c50a130@realtek.com> (Pkshih's message
-        of "Wed, 19 Jan 2022 06:04:45 +0000")
-Message-ID: <87czkogsc4.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1351231AbiASG6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 01:58:54 -0500
+Received: from helcar.hmeau.com ([216.24.177.18]:59680 "EHLO fornost.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1345647AbiASG6x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jan 2022 01:58:53 -0500
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1nA4vY-0008Th-0i; Wed, 19 Jan 2022 17:58:41 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Wed, 19 Jan 2022 17:58:40 +1100
+Date:   Wed, 19 Jan 2022 17:58:40 +1100
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Corentin Labbe <clabbe.montjoie@gmail.com>
+Cc:     davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Subject: [PATCH] crypto: authenc - Fix sleep in atomic context in decrypt_tail
+Message-ID: <Yee2oKxPSLaYY31N@gondor.apana.org.au>
+References: <Yd1SIHUNdLIvKhzz@Red>
+ <YeD4rt1OVnEMBr+A@gondor.apana.org.au>
+ <YeD6vt47+pAl0SxG@gondor.apana.org.au>
+ <YeEiWmkyNwfgQgmn@Red>
+ <YeZx1aVL0HnT9tCB@Red>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YeZx1aVL0HnT9tCB@Red>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pkshih <pkshih@realtek.com> writes:
-
->> -----Original Message-----
->> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
->> Sent: Saturday, January 15, 2022 7:48 AM
->> To: linux-wireless@vger.kernel.org
->> Cc: tony0620emma@gmail.com; kvalo@codeaurora.org;
->> netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
->> Neo Jou <neojou@gmail.com>; Jernej Skrabec
->> <jernej.skrabec@gmail.com>; Pkshih <pkshih@realtek.com>; Martin
->> Blumenstingl <martin.blumenstingl@googlemail.com>
->> Subject: [PATCH 3/4] rtw88: Move enum rtw_tx_queue_type mapping code to tx.{c,h}
->> 
->> This code is not specific to the PCIe bus type but can be re-used by USB
->> and SDIO bus types. Move it to tx.{c,h} to avoid code-duplication in the
->> future.
->> 
->> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+On Tue, Jan 18, 2022 at 08:52:53AM +0100, Corentin Labbe wrote:
 >
-> [...]
->
->> diff --git a/drivers/net/wireless/realtek/rtw88/tx.c b/drivers/net/wireless/realtek/rtw88/tx.c
->> index efcc1b0371a8..ec6a3683c3f8 100644
->> --- a/drivers/net/wireless/realtek/rtw88/tx.c
->> +++ b/drivers/net/wireless/realtek/rtw88/tx.c
->> @@ -665,3 +665,38 @@ void rtw_txq_cleanup(struct rtw_dev *rtwdev, struct ieee80211_txq *txq)
->>  		list_del_init(&rtwtxq->list);
->>  	spin_unlock_bh(&rtwdev->txq_lock);
->>  }
->> +
->> +static enum rtw_tx_queue_type ac_to_hwq[] = {
->> +	[IEEE80211_AC_VO] = RTW_TX_QUEUE_VO,
->> +	[IEEE80211_AC_VI] = RTW_TX_QUEUE_VI,
->> +	[IEEE80211_AC_BE] = RTW_TX_QUEUE_BE,
->> +	[IEEE80211_AC_BK] = RTW_TX_QUEUE_BK,
->> +};
->> +
->> +static_assert(ARRAY_SIZE(ac_to_hwq) == IEEE80211_NUM_ACS);
->> +
->> +enum rtw_tx_queue_type rtw_tx_ac_to_hwq(enum ieee80211_ac_numbers ac)
->> +{
->> +	return ac_to_hwq[ac];
->> +}
->> +EXPORT_SYMBOL(rtw_tx_ac_to_hwq);
->> +
->
-> Could I know why we can't just export the array ac_to_hwq[]?
-> Is there a strict rule?
+> With my patch, I got:
+> [   38.515668] BUG: sleeping function called from invalid context at crypto/skcipher.c:482
+> [   38.523708] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 84, name: 1c15000.crypto-
+> [   38.532176] preempt_count: 200, expected: 0
+> [   38.536381] CPU: 6 PID: 84 Comm: 1c15000.crypto- Not tainted 5.16.0-next-20220115-00124-g13473e8fac33-dirty #116
+> [   38.546551] Hardware name: Allwinner A83t board
+> [   38.551100]  unwind_backtrace from show_stack+0x10/0x14
+> [   38.556358]  show_stack from dump_stack_lvl+0x40/0x4c
+> [   38.561428]  dump_stack_lvl from __might_resched+0x118/0x154
+> [   38.567107]  __might_resched from skcipher_walk_virt+0xe8/0xec
+> [   38.572955]  skcipher_walk_virt from crypto_cbc_decrypt+0x2c/0x170
+> [   38.579147]  crypto_cbc_decrypt from crypto_skcipher_decrypt+0x38/0x5c
+> [   38.585680]  crypto_skcipher_decrypt from authenc_verify_ahash_done+0x18/0x34
+> [   38.592825]  authenc_verify_ahash_done from crypto_finalize_request+0x6c/0xe4
+> [   38.599974]  crypto_finalize_request from sun8i_ss_hash_run+0x73c/0xb98
+> [   38.606602]  sun8i_ss_hash_run from crypto_pump_work+0x1a8/0x330
+> [   38.612616]  crypto_pump_work from kthread_worker_fn+0xa8/0x1c4
+> [   38.618550]  kthread_worker_fn from kthread+0xf0/0x110
+> [   38.623701]  kthread from ret_from_fork+0x14/0x2c
+> [   38.628414] Exception stack(0xc2247fb0 to 0xc2247ff8)
+> [   38.633468] 7fa0:                                     00000000 00000000 00000000 00000000
+> [   38.641640] 7fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> [   38.649809] 7fe0:i 00000000 00000000 00000000 00000000 00000013 00000000
+> 
+> This is when testing hmac(sha1) on my crypto driver sun8i-ss and crypto testing authenc(hmac-sha1-sun8i-ss,cbc(aes-generic)).
+> 
+> Do you have any idea to better fix my issue ?
 
-I was about to answer that with a helper function it's easier to catch
-out of bands access, but then noticed the helper doesn't have a check
-for that. Should it have one?
+This backtrace is caused by a bug in authenc:
 
+---8<---
+The function crypto_authenc_decrypt_tail discards its flags
+argument and always relies on the flags from the original request
+when starting its sub-request.
+
+This is clearly wrong as it may cause the SLEEPABLE flag to be
+set when it shouldn't.
+
+Fixes: 92d95ba91772 ("crypto: authenc - Convert to new AEAD interface")
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+
+diff --git a/crypto/authenc.c b/crypto/authenc.c
+index 670bf1a01d00..17f674a7cdff 100644
+--- a/crypto/authenc.c
++++ b/crypto/authenc.c
+@@ -253,7 +253,7 @@ static int crypto_authenc_decrypt_tail(struct aead_request *req,
+ 		dst = scatterwalk_ffwd(areq_ctx->dst, req->dst, req->assoclen);
+ 
+ 	skcipher_request_set_tfm(skreq, ctx->enc);
+-	skcipher_request_set_callback(skreq, aead_request_flags(req),
++	skcipher_request_set_callback(skreq, flags,
+ 				      req->base.complete, req->base.data);
+ 	skcipher_request_set_crypt(skreq, src, dst,
+ 				   req->cryptlen - authsize, req->iv);
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
