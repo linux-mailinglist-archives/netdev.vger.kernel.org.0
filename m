@@ -2,137 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BC724940D5
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 20:27:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA6B74940F9
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 20:35:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239915AbiAST1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 14:27:18 -0500
-Received: from mga12.intel.com ([192.55.52.136]:65533 "EHLO mga12.intel.com"
+        id S1356990AbiASTfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 14:35:37 -0500
+Received: from mga14.intel.com ([192.55.52.115]:20338 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229593AbiAST1P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jan 2022 14:27:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642620434; x=1674156434;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=dmpN7qUU9C3uIKfow/OKVaXBm34Ban3OqHYGXm/yruw=;
-  b=HuENwB+KiblncFi7b4ON8zpexWmy7WU8DzDmU80D+4f8eqK/gg8Q75yk
-   Fxk0LTVozkuRFOz6PZ/hBfLXCp6A9IqxFmqz9kh/GNYg/pSw+9GSuwtxH
-   ySsBO8OAw2DIx2N35p8KdU4NUjboDk9LI7T2lboXoCo2IELMjjsBvaxcm
-   qKj+/WrMzbl0YYiefehGa4zlCYl17AGNDGFhHi7e22yzIPUX1Jk5exYGs
-   MQ96dqY187LazQn1+mrLDB1ZoNbAOhCEWuWiGifYSxJgruofVfTeKPLof
-   6Nsgx8bClFHPny7/ZzfTJE6e92SGxOZtQH5RU232m3SZNTvBYrXrYSsJp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="225147777"
+        id S240141AbiASTfe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jan 2022 14:35:34 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="245369850"
 X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="225147777"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:07:45 -0800
+   d="scan'208";a="245369850"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:24:18 -0800
 X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="477498862"
+   d="scan'208";a="532444461"
 Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:07:29 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:24:08 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nAGHg-00CEIt-Ug;
-        Wed, 19 Jan 2022 21:06:16 +0200
-Date:   Wed, 19 Jan 2022 21:06:16 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        (envelope-from <andy.shevchenko@gmail.com>)
+        id 1nAGXp-00CEYE-CW;
+        Wed, 19 Jan 2022 21:22:57 +0200
+Date:   Wed, 19 Jan 2022 21:22:57 +0200
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Steven Rostedt' <rostedt@goodmis.org>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>, alsa-devel@alsa-project.org,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-phy@lists.infradead.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        kvm@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
-        John Garry <john.garry@huawei.com>,
-        Robert Richter <rric@kernel.org>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>, netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        linux-spi@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
- (summary)
-Message-ID: <YehhKMl9ZIydj1fJ@smile.fi.intel.com>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
- <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220115183643.6zxalxqxrhkfgdfq@pengutronix.de>
+        Harry Wentland <harry.wentland@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Leo Li <sunpeng.li@amd.com>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Vishal Kulkarni <vishal@chelsio.com>
+Subject: Re: [PATCH 1/3] lib/string_helpers: Consolidate yesno()
+ implementation
+Message-ID: <YehlEe1prbwhxZEv@smile.fi.intel.com>
+References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
+ <20220119072450.2890107-2-lucas.demarchi@intel.com>
+ <CAHp75Vf5QOD_UtDK8VbxNApEBuJvzUic0NkzDNmRo3Q7Ud+=qw@mail.gmail.com>
+ <20220119100102.61f9bfde@gandalf.local.home>
+ <06420a70f4434c2b8590cc89cad0dd6a@AcuMS.aculab.com>
+ <9c26ca9bf75d494ea966059d9bcbc2b5@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220115183643.6zxalxqxrhkfgdfq@pengutronix.de>
+In-Reply-To: <9c26ca9bf75d494ea966059d9bcbc2b5@AcuMS.aculab.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 15, 2022 at 07:36:43PM +0100, Uwe Kleine-König wrote:
-> Hello,
+On Wed, Jan 19, 2022 at 04:38:26PM +0000, David Laight wrote:
+> > > > > +static inline const char *yesno(bool v) { return v ? "yes" : "no"; }
+> > 
+> > 	return "yes\0no" + v * 4;
+> > 
+> > :-)
 > 
-> I'm trying to objectively summarize the discussions in this thread in
-> the hope this helps finding a way that most people can live with.
-> 
-> First a description of the status quo:
+> except '"no\0\0yes" + v * 4' works a bit better.
 
-I do not really understand why we put an equal sign in all implications between
-meaning of the 0 cookie and NULL as an (non-existed) instance of an object?
-
-It's like comparing None object in Python to False.
+Is it a C code obfuscation contest?
 
 -- 
 With Best Regards,
