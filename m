@@ -2,103 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F67A4940C5
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 20:25:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BC724940D5
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 20:27:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239752AbiASTZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 14:25:31 -0500
-Received: from mga17.intel.com ([192.55.52.151]:45691 "EHLO mga17.intel.com"
+        id S239915AbiAST1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 14:27:18 -0500
+Received: from mga12.intel.com ([192.55.52.136]:65533 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229593AbiASTZb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jan 2022 14:25:31 -0500
+        id S229593AbiAST1P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jan 2022 14:27:15 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642620330; x=1674156330;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=S8PG7gZp2otKCowmiUMvM8LzYrUNIUF5vgPa0CPgwVY=;
-  b=ZjkTueiapwqwiOUrcd4OXbOxCLLSfCh/m+dQW8iVp5jz9hdcWFO1WmbJ
-   bGSqLJ7aYz5zJ9qi5LUi/EXeN9T/p9CJTVaJ+kj1o+b8kFOaPHHrosvTx
-   AOoBRqipBr5/5QQFxAFv3O1ezRkD/L6bi+s6K3WNhF2K7eNb/zixH+xSR
-   xk+78Mp6Fo4vfoVF98spqKO70s2E8cIjtIl0La/lOvyhgcr6q2MHlFdI/
-   jSpGH3/BdqLQcd0Res0L9vt+/yi7lol6iL3u7j0E3yNtWy32ERDwTC28q
-   5JaTVmTgxadGMgt2OX7DVXG6fTjIZUPn1fgsdWzEoODuhawMTpSoIwlSM
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="225839952"
+  t=1642620434; x=1674156434;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=dmpN7qUU9C3uIKfow/OKVaXBm34Ban3OqHYGXm/yruw=;
+  b=HuENwB+KiblncFi7b4ON8zpexWmy7WU8DzDmU80D+4f8eqK/gg8Q75yk
+   Fxk0LTVozkuRFOz6PZ/hBfLXCp6A9IqxFmqz9kh/GNYg/pSw+9GSuwtxH
+   ySsBO8OAw2DIx2N35p8KdU4NUjboDk9LI7T2lboXoCo2IELMjjsBvaxcm
+   qKj+/WrMzbl0YYiefehGa4zlCYl17AGNDGFhHi7e22yzIPUX1Jk5exYGs
+   MQ96dqY187LazQn1+mrLDB1ZoNbAOhCEWuWiGifYSxJgruofVfTeKPLof
+   6Nsgx8bClFHPny7/ZzfTJE6e92SGxOZtQH5RU232m3SZNTvBYrXrYSsJp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="225147777"
 X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="225839952"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:04:20 -0800
+   d="scan'208";a="225147777"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:07:45 -0800
 X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="578929424"
-Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.251.31.79]) ([10.251.31.79])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:04:19 -0800
-Message-ID: <e600686e-5f63-d1df-c7ae-4bc7c7a8403c@linux.intel.com>
-Date:   Wed, 19 Jan 2022 11:04:18 -0800
+   d="scan'208";a="477498862"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:07:29 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nAGHg-00CEIt-Ug;
+        Wed, 19 Jan 2022 21:06:16 +0200
+Date:   Wed, 19 Jan 2022 21:06:16 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>, alsa-devel@alsa-project.org,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-phy@lists.infradead.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
+        linux-gpio@vger.kernel.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        openipmi-developer@lists.sourceforge.net,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        kvm@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
+        Richard Weinberger <richard@nod.at>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
+        John Garry <john.garry@huawei.com>,
+        Robert Richter <rric@kernel.org>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        Tony Luck <tony.luck@intel.com>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Eric Auger <eric.auger@redhat.com>, netdev@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        linux-spi@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>,
+        linux-mediatek@lists.infradead.org,
+        Brian Norris <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+ (summary)
+Message-ID: <YehhKMl9ZIydj1fJ@smile.fi.intel.com>
+References: <20220110195449.12448-1-s.shtylyov@omp.ru>
+ <20220110195449.12448-2-s.shtylyov@omp.ru>
+ <20220115183643.6zxalxqxrhkfgdfq@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net-next v4 02/13] net: wwan: t7xx: Add control DMA
- interface
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com
-References: <20220114010627.21104-1-ricardo.martinez@linux.intel.com>
- <20220114010627.21104-3-ricardo.martinez@linux.intel.com>
- <d5854453-84b-1eba-7cc7-d94f41a185d@linux.intel.com>
- <4a4b2848-d665-c9ba-c66a-dd4408e94ea5@linux.intel.com>
- <cb33ee41-b885-6523-199-b8a339c1a531@linux.intel.com>
-From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
-In-Reply-To: <cb33ee41-b885-6523-199-b8a339c1a531@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220115183643.6zxalxqxrhkfgdfq@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Jan 15, 2022 at 07:36:43PM +0100, Uwe Kleine-K�nig wrote:
+> Hello,
+> 
+> I'm trying to objectively summarize the discussions in this thread in
+> the hope this helps finding a way that most people can live with.
+> 
+> First a description of the status quo:
 
-On 1/19/2022 1:52 AM, Ilpo Järvinen wrote:
-> On Tue, 18 Jan 2022, Martinez, Ricardo wrote:
->
->> On 1/18/2022 6:13 AM, Ilpo Järvinen wrote:
->>> On Thu, 13 Jan 2022, Ricardo Martinez wrote:
-...
->>> +static bool t7xx_cldma_qs_are_active(struct t7xx_cldma_hw *hw_info)
->>> +{
->>> +	unsigned int tx_active;
->>> +	unsigned int rx_active;
->>> +
->>> +	tx_active = t7xx_cldma_hw_queue_status(hw_info, CLDMA_ALL_Q, MTK_TX);
->>> +	rx_active = t7xx_cldma_hw_queue_status(hw_info, CLDMA_ALL_Q, MTK_RX);
->>> +	if (tx_active == CLDMA_INVALID_STATUS || rx_active ==
->>> CLDMA_INVALID_STATUS)
->>> These cannot ever be true because of mask in t7xx_cldma_hw_queue_status().
->> t7xx_cldma_hw_queue_status() shouldn't apply the mask for CLDMA_ALL_Q.
-> I guess it shouldn't but it currently does apply 0xff (CLDMA_ALL_Q) as
-> mask in that case. However, this now raises another question, if
-> 0xffffffff (CLDMA_INVALID_STATUS) means status is invalid, should all
-> callers both single Q and CLDMA_ALL_Q be returned/check/handle that value?
->
-> Why would CLDMA_ALL_Q be special in this respect that the INVALID_STATUS
-> means invalid only with it?
+I do not really understand why we put an equal sign in all implications between
+meaning of the 0 cookie and NULL as an (non-existed) instance of an object?
 
-Reading 0xffffffff is used to detect if the PCI link was disconnected,
-it is relevant in t7xx_cldma_qs_are_active() because it is a helper function
-polled by t7xx_cldma_stop() to wait until the queues are not active anymore.
+It's like comparing None object in Python to False.
 
-I think a cleaner implementation would be to use pci_device_is_present()
-instead of the CLDMA_INVALID_STATUS check inside t7xx_cldma_qs_are_active()
-and keep t7xx_cldma_hw_queue_status() free of that logic.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-...
 
