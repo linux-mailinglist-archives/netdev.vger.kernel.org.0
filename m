@@ -2,94 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C106493AEE
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 14:17:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C44BB493AF8
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 14:18:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354711AbiASNRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 08:17:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241201AbiASNRc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 08:17:32 -0500
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757BFC06173E
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 05:17:32 -0800 (PST)
-Received: by mail-qt1-x82c.google.com with SMTP id h15so2292560qtx.0
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 05:17:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uLFGZqyJySmbyBQ4sjesJ1t4m/84/5hhnfPmzo+DBaE=;
-        b=HQt2tqp6zGYhfblEra0zM0+FR6k6EeUJiZDEUZWXH2TZNLdPWXYj3HNzafScmi92E0
-         6ZwiRGFw8bnL8Fu6BT7PEjlwuEMVONf2ofHY/L5Zm3cdachcT8xjhh4icQvmmpFmQXkO
-         Alu2+h+b2rBAnr1viwICoF32r6L5GU4VjQtMYktCOVD5Bp8Pud77VHQvOJvANaKfk3Ej
-         /f0v9Q3eGOB1k3u+jaPh+UYk8XSzOZt08O9+1HIRfDAngLpd1S1IWB9zV/4jhRmeYK0C
-         /t7DktEQ0t/YYeDUjdVlErCHCMRg6ToT8TpX9gu4KqI8twNLG6WN2JfDFVR6iS1DUSuK
-         C6lA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uLFGZqyJySmbyBQ4sjesJ1t4m/84/5hhnfPmzo+DBaE=;
-        b=p1NmJ5yuVTj3PNqY2nHhN0ZBH1eJlqZkZZYbKqRkdmpK4D/qaYHdgc8E9GIjhxS5bU
-         fOpZL/NFlbTB8JjKYus23U6MYBgfmKceSxN/WuUFfzqj8yOyfooZ1zkkSq2yH6g66qBp
-         XKgkxMhyyEgW8Xa8qknjV00uyMTGL/oI4CShBYH4C9fH1NbukNZaXK+nTty5RYX2LVwQ
-         Ab2gZIA5YiMh22BPWMP5kxXW3QkYFPs8DtDDDkIUAxk15flF9Iuuy6j11XNgQGPGpSQM
-         XDpTTf/IX8kOAjQjFuXmJMhgNVuXg3RZnzsShM2W+YZzLAFKwtSAXJLeZG3QukvzPxgm
-         yKdw==
-X-Gm-Message-State: AOAM530v6ZvNX50lRujDiHsz3Lx0gM1qXt7JvNNs++OoH25bOPrXagIG
-        lbuPQhx23n11D04Zv5XDNeRwnYGZgcnjEQ==
-X-Google-Smtp-Source: ABdhPJw0y5MaVc+dgVB8CBigVZFZt3DgJA+Wkso3kEA+8IErd9EFFOFWXCTUIRdqKkU80gp5ZpjBBQ==
-X-Received: by 2002:ac8:5cd4:: with SMTP id s20mr18611650qta.299.1642598250063;
-        Wed, 19 Jan 2022 05:17:30 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id i14sm242296qko.18.2022.01.19.05.17.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jan 2022 05:17:29 -0800 (PST)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1nAAq8-001IVe-UU; Wed, 19 Jan 2022 09:17:28 -0400
-Date:   Wed, 19 Jan 2022 09:17:28 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Praveen Kannoju <praveen.kannoju@oracle.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        id S1354768AbiASNSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 08:18:12 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:34898 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354779AbiASNSF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 08:18:05 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 54C8621123;
+        Wed, 19 Jan 2022 13:18:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1642598283; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5030rwRdQVdGOVRRFHRTkRKqifOJXNno9J3Z4c5+1YA=;
+        b=X+sTq95MaR4ipOc0sga1XDfWcMiW9FTvop0fDJWvb/D9s4D7IGDBilB2aVkSGlh5aFcJD/
+        n/WEnrXPiJsFn6TQAANEUr68P561Vum2hTmCOBIaTd3It9Hqa5/LYx0lz0+wL5aAgSaYNR
+        fPvU2djzpoRxXztcSp7BAsmfXILijxY=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id DB985A3B89;
+        Wed, 19 Jan 2022 13:18:01 +0000 (UTC)
+Date:   Wed, 19 Jan 2022 14:18:01 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Lucas De Marchi <lucas.demarchi@intel.com>
+Cc:     linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        linux-security-module@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
         "David S . Miller" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Rama Nichanamatlu <rama.nichanamatlu@oracle.com>,
-        Rajesh Sivaramasubramaniom 
-        <rajesh.sivaramasubramaniom@oracle.com>
-Subject: Re: [PATCH RFC] rds: ib: Reduce the contention caused by the
- asynchronous workers to flush the mr pool
-Message-ID: <20220119131728.GK8034@ziepe.ca>
-References: <1642517238-9912-1-git-send-email-praveen.kannoju@oracle.com>
- <53D98F26-FC52-4F3E-9700-ED0312756785@oracle.com>
- <20220118191754.GG8034@ziepe.ca>
- <CEFD48B4-3360-4040-B41A-49B8046D28E8@oracle.com>
- <Yee2tMJBd4kC8axv@unreal>
- <PH0PR10MB5515E99CA5DF423BDEBB038E8C599@PH0PR10MB5515.namprd10.prod.outlook.com>
- <20220119130450.GJ8034@ziepe.ca>
- <PH0PR10MB551565CBAD2FF5CC0D3C69C48C599@PH0PR10MB5515.namprd10.prod.outlook.com>
+        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Leo Li <sunpeng.li@amd.com>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vishal Kulkarni <vishal@chelsio.com>
+Subject: Re: [PATCH 0/3] lib/string_helpers: Add a few string helpers
+Message-ID: <YegPiR7LU8aVisMf@alley>
+References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <PH0PR10MB551565CBAD2FF5CC0D3C69C48C599@PH0PR10MB5515.namprd10.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220119072450.2890107-1-lucas.demarchi@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 01:12:29PM +0000, Praveen Kannoju wrote:
+On Tue 2022-01-18 23:24:47, Lucas De Marchi wrote:
+> Add some helpers under lib/string_helpers.h so they can be used
+> throughout the kernel. When I started doing this there were 2 other
+> previous attempts I know of, not counting the iterations each of them
+> had:
+> 
+> 1) https://lore.kernel.org/all/20191023131308.9420-1-jani.nikula@intel.com/
+> 2) https://lore.kernel.org/all/20210215142137.64476-1-andriy.shevchenko@linux.intel.com/#t
+> 
+> Going through the comments I tried to find some common ground and
+> justification for what is in here, addressing some of the concerns
+> raised.
+> 
+> d. This doesn't bring onoff() helper as there are some places in the
+>    kernel with onoff as variable - another name is probably needed for
+>    this function in order not to shadow the variable, or those variables
+>    could be renamed.  Or if people wanting  <someprefix>
+>    try to find a short one
 
-> Yes, we are using the barriers. I was justifying the usage of
-> smp_rmb() and smp_wmb() over smp_load_acquire() and
-> smp_store_release() in the patch.
+I would call it str_on_off().
 
-You failed to justify it.
+And I would actually suggest to use the same style also for
+the other helpers.
 
-Jason
+The "str_" prefix would make it clear that it is something with
+string. There are other <prefix>_on_off() that affect some
+functionality, e.g. mute_led_on_off(), e1000_vlan_filter_on_off().
 
+The dash '_' would significantly help to parse the name. yesno() and
+onoff() are nicely short and kind of acceptable. But "enabledisable()"
+is a puzzle.
+
+IMHO, str_yes_no(), str_on_off(), str_enable_disable() are a good
+compromise.
+
+The main motivation should be code readability. You write the
+code once. But many people will read it many times. Open coding
+is sometimes better than misleading macro names.
+
+That said, I do not want to block this patchset. If others like
+it... ;-)
+
+
+> e. One alternative to all of this suggested by Christian König
+>    (43456ba7-c372-84cc-4949-dcb817188e21@amd.com) would be to add a
+>    printk format. But besides the comment, he also seemed to like
+>    the common function. This brought the argument from others that the
+>    simple yesno()/enabledisable() already used in the code is easier to
+>    remember and use than e.g. %py[DOY]
+
+Thanks for not going this way :-)
+
+> Last patch also has some additional conversion of open coded cases. I
+> preferred starting with drm/ since this is "closer to home".
+> 
+> I hope this is a good summary of the previous attempts and a way we can
+> move forward.
+> 
+> Andrew Morton, Petr Mladek, Andy Shevchenko: if this is accepted, my
+> proposal is to take first 2 patches either through mm tree or maybe
+> vsprintf. Last patch can be taken later through drm.
+
+I agree with Andy that it should go via drm tree. It would make it
+easier to handle potential conflicts.
+
+Just in case, you decide to go with str_yes_no() or something similar.
+Mass changes are typically done at the end on the merge window.
+The best solution is when it can be done by a script.
+
+Best Regards,
+Petr
