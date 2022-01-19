@@ -2,89 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE60A493E46
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 17:28:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36105493E4C
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 17:30:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356066AbiASQ2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 11:28:00 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55936 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231857AbiASQ2A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 11:28:00 -0500
+        id S1356120AbiASQaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 11:30:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231857AbiASQaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 11:30:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E4DC061574
+        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 08:30:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0CEB9B81A62
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 16:27:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65FF8C004E1;
-        Wed, 19 Jan 2022 16:27:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD706B81A65
+        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 16:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 75F57C340E5;
+        Wed, 19 Jan 2022 16:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642609677;
-        bh=4eBjvNo6BPPGThhmM3sQ0t2HSuT+q76Vuv3XRFOFlcM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AnB+SVsUjKLfgGzEPaYX8SbMEf4GpJkK5KNb751TwQKrRzC4Smh37aFHquYgk8N6q
-         ZcPap31qYg9pA7BTteKLYfLM8o9KhPx/mzFQ8b+ObflcngtrnlM3sHceoOKxVEcw/+
-         /8lGhaxEOQFLJ1lYsPd6v6OS0vFORe9sSXGYcLalW14JoIUnmW6DeEoL1VyPvKGcbb
-         fcGZezw7TopnQI7uDSBYWU5fs2F/WdfU939oRVtx8N3YKZPpfz4tnhJxXFr5ECZ8Pw
-         hfMYlGazSJHAqbpQuVX0fWQDTCfDHeJ3U0Vwh3j+cezzaBWTJO8ZQEbB/tL0INzeYJ
-         wFqdg87CG0D8g==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net] phylib: fix potential use-after-free
-Date:   Wed, 19 Jan 2022 17:27:48 +0100
-Message-Id: <20220119162748.32418-1-kabel@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        s=k20201202; t=1642609810;
+        bh=P2RwwqMmrgNT5XQTERJIxbCDmK3x+DZSczMR0mJpWZ8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=M68ZBY+m4nvdaAz72tqX5mVNHx4nFud5Kq5Bf+cSyFd03eHoHOl0+GldjdBjNXSRX
+         skfSq0ppQ4aepr9Ukq+2/XqMyfV4LEbQjlrh1L7mIWR8WIo6Oa05kZJq0HEvS+HXAt
+         TI7y5HSfm1fc7M9bKHJKaV7Ah/CMGJoa9/IBBz8CpY7APhoo+nVZpLtFpDcc+J/rsL
+         ExLPNAkgnOF1TTiqeQstEyxVR8JrGcXpyigwjZWc6HkMTHGkVjNzXhbdYsmHxpKpIL
+         Ay+7T4unuubkp6TAvi3CiTLQsrBHKo1jKOLaNV75JP9z/IqPWfixl6Pnn2NHsRScqU
+         jEJNgCkQrWDcg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5D962F6079B;
+        Wed, 19 Jan 2022 16:30:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net 0/4] net/fsl: xgmac_mdio: Add workaround for erratum
+ A-009885
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164260981037.11428.9139293914136449143.git-patchwork-notify@kernel.org>
+Date:   Wed, 19 Jan 2022 16:30:10 +0000
+References: <20220118215054.2629314-1-tobias@waldekranz.com>
+In-Reply-To: <20220118215054.2629314-1-tobias@waldekranz.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit bafbdd527d56 ("phylib: Add device reset GPIO support") added call
-to phy_device_reset(phydev) after the put_device() call in phy_detach().
+Hello:
 
-The comment before the put_device() call says that the phydev might go
-away with put_device().
+This series was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Fix potential use-after-free by calling phy_device_reset() before
-put_device().
+On Tue, 18 Jan 2022 22:50:49 +0100 you wrote:
+> The individual messages mostly speak for themselves.
+> 
+> It is very possible that there are more chips out there that are
+> impacted by this, but I only have access to the errata document for
+> the T1024 family, so I've limited the DT changes to the exact FMan
+> version used in that device. Hopefully someone from NXP can supply a
+> follow-up if need be.
+> 
+> [...]
 
-Fixes: bafbdd527d56 ("phylib: Add device reset GPIO support")
-Signed-off-by: Marek Behún <kabel@kernel.org>
----
- drivers/net/phy/phy_device.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Here is the summary with links:
+  - [v2,net,1/4] net/fsl: xgmac_mdio: Add workaround for erratum A-009885
+    https://git.kernel.org/netdev/net/c/6198c7220197
+  - [v2,net,2/4] dt-bindings: net: Document fsl,erratum-a009885
+    https://git.kernel.org/netdev/net/c/ea11fc509ff2
+  - [v2,net,3/4] powerpc/fsl/dts: Enable WA for erratum A-009885 on fman3l MDIO buses
+    https://git.kernel.org/netdev/net/c/0d375d610fa9
+  - [v2,net,4/4] net/fsl: xgmac_mdio: Fix incorrect iounmap when removing module
+    https://git.kernel.org/netdev/net/c/3f7c239c7844
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 74d8e1dc125f..ce0bb5951b81 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1746,6 +1746,9 @@ void phy_detach(struct phy_device *phydev)
- 	    phy_driver_is_genphy_10g(phydev))
- 		device_release_driver(&phydev->mdio.dev);
- 
-+	/* Assert the reset signal */
-+	phy_device_reset(phydev, 1);
-+
- 	/*
- 	 * The phydev might go away on the put_device() below, so avoid
- 	 * a use-after-free bug by reading the underlying bus first.
-@@ -1757,9 +1760,6 @@ void phy_detach(struct phy_device *phydev)
- 		ndev_owner = dev->dev.parent->driver->owner;
- 	if (ndev_owner != bus->owner)
- 		module_put(bus->owner);
--
--	/* Assert the reset signal */
--	phy_device_reset(phydev, 1);
- }
- EXPORT_SYMBOL(phy_detach);
- 
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
