@@ -2,145 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47F2F49379A
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 10:44:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B70664937A5
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 10:46:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353176AbiASJnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 04:43:23 -0500
-Received: from mail-vk1-f170.google.com ([209.85.221.170]:37799 "EHLO
-        mail-vk1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353101AbiASJnH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 04:43:07 -0500
-Received: by mail-vk1-f170.google.com with SMTP id v192so1145095vkv.4;
-        Wed, 19 Jan 2022 01:43:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Dbd6K2EXZQ3nddK61UlQKh6WscvPVU8DNsk9wwBVt84=;
-        b=CdpmIfi33wXFvj6oI3MxXGL+FxzZpJx2O4Bh8b/I7vQz6YBlG8hQaoseqpSUd+xhyh
-         51nHp3MgcAGh4ksYKj30x2uNkAu0AllR81Jn+csdOnbVYGC5khg9AJnalqS7TRmpP1WV
-         lKhCucCe6AeWWhtzK7WP25kUyZLLHTzL7qydbVfk87NxFvCtugyPiCTVex26eICglrqP
-         j/GpB0Bij8gYXbleMIaabYXNuqyEAtZ3xdxTluPsvNp0ltL8IRuUIqE/YWbOPEAayFyZ
-         v73XzUgP2YnS6q2vlHtuK16hbq67OhkwaQK4T1is6aboUqssGVKNQty1o7yaJx4UU+Xr
-         +dvg==
-X-Gm-Message-State: AOAM532k5oVd8oHrFJ1+dbjpDdCU95yB0aP4bv7xHhDKx87u9sE/MDPq
-        JQGejnSYa0EoKItvHxK55VobS+Vv9SdsGdeh
-X-Google-Smtp-Source: ABdhPJzCPMW4zH5y1Y5cNilAV02ZCJKMDBENeXiX1EkWR3rcLe9IH033mhRn+oDaSuzTE3AAm5il8g==
-X-Received: by 2002:a1f:a6d7:: with SMTP id p206mr11805978vke.31.1642585386061;
-        Wed, 19 Jan 2022 01:43:06 -0800 (PST)
-Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com. [209.85.221.178])
-        by smtp.gmail.com with ESMTPSA id p142sm1584040vkp.2.2022.01.19.01.43.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Jan 2022 01:43:04 -0800 (PST)
-Received: by mail-vk1-f178.google.com with SMTP id w5so1120624vke.12;
-        Wed, 19 Jan 2022 01:43:04 -0800 (PST)
-X-Received: by 2002:a1f:384b:: with SMTP id f72mr11960099vka.0.1642585384422;
- Wed, 19 Jan 2022 01:43:04 -0800 (PST)
+        id S1353138AbiASJpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 04:45:49 -0500
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:55049 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1352938AbiASJps (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 04:45:48 -0500
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 16EA33201E5F;
+        Wed, 19 Jan 2022 04:45:48 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Wed, 19 Jan 2022 04:45:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=VEskvT
+        nowRvKDY4hR4JFQyZmf5YvsnZy7Zo1clfOU0E=; b=mFyjtEcI74IdWSRrZCJjLY
+        urC245hY/CZNialyPA7iyjSM7xWwtBZ7rgZSSB6WSwBBh359xeJzH3zpFu3otMjP
+        fCulwUc383ktfH9TevJcUNB8ePqVTC2ZMdUpWMiyRj+1LJ+hD5bZjXn3eQ+RjZXh
+        0w4EMzWDUvltuDx8nSX/KEsPnoIAd/SRCYxMFzC+DMXmRUD7tmSZCHL3YzxMUT94
+        LgZOom3XzI4NfBjJCuyOI9XqIHRF95PyQrS0YhALjYr4i0//2vmTUfkeFO8Q+NAL
+        KqUhgko/ae+Lzrxh6b9gcAYGQfld/wUoKpX1nSafpV74IbYxABPobtruFMZX8gwQ
+        ==
+X-ME-Sender: <xms:y93nYajWeBeXfDNgt4N9GTlwA52lJJvwyQ4YfyWLiQ-7WIPTa_MDKQ>
+    <xme:y93nYbBxJGrBplakunH0jKcSyZcE_PBd8W_Oi7ZrcOTTrvQbZxr7JFqAXpoM9iauB
+    nL0yQddBPagQ5U>
+X-ME-Received: <xmr:y93nYSHgSFXQRLprJ1ZsQEsQ8aFOqSO_axF5Ihn6M0SvHR9OVlqCLX08zDvToJZZfsgJvH-UCBTr3gV56lLTo-_L9xJjOQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudehgddtkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:y93nYTSAtEri8yiyyBcOFraQ2cj2Pjjt8B9IxQoN8AO18mCZyPoGAw>
+    <xmx:y93nYXwSPX4L_k6tN20-4Yb8x9AH406kOZm4k8b5tRbXzHOYMcHWIg>
+    <xmx:y93nYR7j0rEhZ1IE-aI06eWjCCDUi0l2hdw3a7IuomJ0JFLhqlDdKw>
+    <xmx:y93nYS9zEaGRPl3PUJvM56872rK5VvCh3pwkEqw-MyZ1B8yBDepktQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 19 Jan 2022 04:45:46 -0500 (EST)
+Date:   Wed, 19 Jan 2022 11:45:41 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Michal Kubecek <mkubecek@suse.cz>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, michel@fb.com,
+        dcavalca@fb.com
+Subject: Re: ethtool 5.16 release / ethtool -m bug fix
+Message-ID: <YefdxW/V/rjiiw2x@shredder>
+References: <20220118145159.631fd6ed@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-References: <20220119015038.2433585-1-robh@kernel.org>
-In-Reply-To: <20220119015038.2433585-1-robh@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 19 Jan 2022 10:42:53 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVdja+XaXGP7YFfSgFCTHzOHQkuV5EF_9AFWY2tppyRWA@mail.gmail.com>
-Message-ID: <CAMuHMdVdja+XaXGP7YFfSgFCTHzOHQkuV5EF_9AFWY2tppyRWA@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: Improve phandle-array schemas
-To:     Rob Herring <robh@kernel.org>
-Cc:     "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-ide@vger.kernel.org, linux-crypto@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, dmaengine@vger.kernel.org,
-        linux-pm@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220118145159.631fd6ed@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
+On Tue, Jan 18, 2022 at 02:51:59PM -0800, Jakub Kicinski wrote:
+> Hi Michal!
+> 
+> Sorry to hasten but I'm wondering if there is a plan to cut the 5.16
+> ethtool release? Looks like there is a problem in SFP EEPROM parsing
+> code, at least with QSFP28s, user space always requests page 3 now.
+> This ends in an -EINVAL (at least for drivers not supporting the paged
+> mode).
 
-On Wed, Jan 19, 2022 at 2:50 AM Rob Herring <robh@kernel.org> wrote:
+Jakub, are you sure you are dealing with QSFP and not SFP? I'm asking
+because I assume the driver in question is mlx5 that has this code in
+its implementation of get_module_eeprom_by_page():
 
-> The 'phandle-array' type is a bit ambiguous. It can be either just an
-> array of phandles or an array of phandles plus args. Many schemas for
-> phandle-array properties aren't clear in the schema which case applies
-> though the description usually describes it.
->
-> The array of phandles case boils down to needing:
->
-> items:
->   maxItems: 1
->
-> The phandle plus args cases should typically take this form:
->
-> items:
->   - items:
->       - description: A phandle
->       - description: 1st arg cell
->       - description: 2nd arg cell
->
-> With this change, some examples need updating so that the bracketing of
-> property values matches the schema.
+```
+switch (module_id) {
+case MLX5_MODULE_ID_SFP:
+	if (params->page > 0)
+		return -EINVAL;
+	break;
+```
 
-> Signed-off-by: Rob Herring <robh@kernel.org>
+And indeed, ethtool(8) commit fc47fdb7c364 ("ethtool: Refactor
+human-readable module EEPROM output for new API") always asks for Upper
+Page 03h, regardless of the module type.
 
-The Renesas parts look good to me.
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+It is not optimal for ethtool(8) to ask for unsupported pages and I made
+sure it's not doing it anymore, but I believe it's wrong for the kernel
+to return an error. All the specifications that I'm aware of mandate
+that when an unsupported page is requested, the Page Select byte will
+revert to 0. That is why Upper Page 00h is always read-only.
 
-Gr{oetje,eeting}s,
+For reference, see section 10.3 in SFF-8472, section 6.2.11 in SFF-8636
+and section 8.2.13 in CMIS.
 
-                        Geert
+Also, the entire point of the netlink interface is that the kernel can
+remain ignorant of the EEPROM layout and keep all the logic in user
+space.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> By the looks of it - Ido fixed this in 6e2b32a0d0ea ("sff-8636: Request
+> specific pages for parsing in netlink path") but it may be too much code 
+> to backport so I'm thinking it's easiest for distros to move to v5.16.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+I did target fixes at 'ethtool' and features at 'ethtool-next', but I
+wasn't aware of this bug.
