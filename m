@@ -2,70 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DCEF493F18
-	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 18:33:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B402A493F5C
+	for <lists+netdev@lfdr.de>; Wed, 19 Jan 2022 18:50:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356432AbiASRdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 12:33:13 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:54265 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356426AbiASRdN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 12:33:13 -0500
-Received: by mail-il1-f198.google.com with SMTP id e15-20020a92de4f000000b002b930c4d727so2014287ilr.20
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 09:33:13 -0800 (PST)
+        id S1356530AbiASRut (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 12:50:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344353AbiASRur (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 12:50:47 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F310CC061574;
+        Wed, 19 Jan 2022 09:50:46 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id j23so11382882edp.5;
+        Wed, 19 Jan 2022 09:50:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gYqrzHKY6NZ+smDMyNLEdjverS9Vu94GwZDjRJxBkqA=;
+        b=fiV7KO5DntXelX0OfsQwMZ+mrbf1r4MX4LvHgm8nKHMgHVomhgK2EstxRyA3k2PNMo
+         ND6qE2dpDjcyySIVQbG5BVociAX9RQp1Iw2qF9YaZ8bK+TpyP2WhWG4CjdC+phk37eWk
+         lLU4ZS/QTAU83uE54abGHGwTiTF78dMbRBXLbAHzdf2cGD3TMKnot0FBpYSy0VuXQdFJ
+         fpfwBXTYPRk+DhGZXarUHtCFXfDTBis8RDS0htGQ9pw2KI/2kW2KZyGVJx3p385LD/Zk
+         w/lT4WXLAEeeZNFZK9yR9E6LxldsRj44MO9GAv5RdQcKLN/G97hSFd1FYwOzRjwrwQ1s
+         U71g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=krtATGllhtAyALqcC63oUyGRYkOjOXl+s46Pa7ysR9c=;
-        b=1ksdplbWbhCoZXSXipCcDDEjOZODbCtQf1UGurrXzeI1VthdHqGwEy3N21TDaPhRTe
-         iZIDTHHsMDW8t1nEjKwbawO9RpYTBPQUaewNcCMNQD2caFJX2bXJaRJ3Qqb2wMVG6OZN
-         ughMcY3rmn77NidZVwTPrEOrfXTFsrCarSfMmU49Usurxs3+fjjGaZTXEC58G6YRTHX3
-         kgsuebKNUnExFUC3NqRJ8yivs67qLJJIy5XWi+2AJGLnjBbBd66ZlaVT7k+72n8nFv1x
-         H6shqdNNYoJ1bKmCegOKGbD8WQKr8UftgrQudUQboE6uJXiX26CAE4jvhPK5tisFA7sR
-         bx1w==
-X-Gm-Message-State: AOAM532tz2OEU6BoKIhxZJrjXhi+Gla62Fk6I2QYAtPZNHA/ntcE62jI
-        H+h8TF2YiB46Ybf+iwNOM5gu4lNgDeScMZekxeALo8MQP40l
-X-Google-Smtp-Source: ABdhPJzaKzowQfVT+GHWXZ4UgeNZs4G8yUeWQIjhrpoxjIgMxBU+Sk0gF05xHP68cBU8Nk4qdQmB+F86UGe2oxxBm63RydRPrvJF
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gYqrzHKY6NZ+smDMyNLEdjverS9Vu94GwZDjRJxBkqA=;
+        b=yA5cMUcT/jqBKQVsjtM0NxjNGCfFKcI5812LRLRf2ehpeGpNQO1Ddn9ekLj4QMsFr5
+         XooxUAd/naHzr5w5H6S6tsyMQtqq6MdIOvsiMqc7vzJz380gXySjHg8mk7eXLiqdrKOC
+         9DgzfjIQIIlwd2pAwd9n9tYhK8hJOPY4p4FUXY8A/JsdHVQSLlTDEbJKbcwzbRmexfDY
+         T3PatmlK2NNxJNL0zePXM4s4cORqZVY2UEHZIb/dvTf+Pf0FST4d3sz/CvtvqBMXWc7Q
+         s/IxpKnrAEMufLwWUpoRr81sjDGdZyLNXnfB6PEIyQ8b/Nrv63725INjof2z16f97jSD
+         fKWg==
+X-Gm-Message-State: AOAM533fheJ3VJiSMU5ThDVYOucUUbFX5O442wMc/VlEoOvN1G0Pgl97
+        Lu3oTt87rOILNC744AAkjLshgyt4wFbr9GYJqgo=
+X-Google-Smtp-Source: ABdhPJxpCISVyWKWKmWvQqQZxVaOGKUDCOomH8fpNTQfnCEI6mNChEe1bV6hhw1xHpAzOHlmz0/2fU+h5aQ8rZLpMeU=
+X-Received: by 2002:a05:6402:4c5:: with SMTP id n5mr31968102edw.122.1642614645556;
+ Wed, 19 Jan 2022 09:50:45 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:174b:: with SMTP id y11mr18240493ill.256.1642613592883;
- Wed, 19 Jan 2022 09:33:12 -0800 (PST)
-Date:   Wed, 19 Jan 2022 09:33:12 -0800
-In-Reply-To: <000000000000c5c09805d313d03e@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b5085105d5f2c7ab@google.com>
-Subject: Re: [syzbot] BUG: sleeping function called from invalid context in tipc_crypto_start
-From:   syzbot <syzbot+73a4f2b28371d5526901@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, fw@strlen.de, hoang.h.le@dektech.com.au,
-        jmaloy@redhat.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        mathew.j.martineau@linux.intel.com, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, tadeusz.struk@linaro.org,
-        tipc-discussion@lists.sourceforge.net, yajun.deng@linux.dev,
-        ying.xue@windriver.com
+References: <20220117142919.207370-1-marcan@marcan.st> <20220117142919.207370-2-marcan@marcan.st>
+In-Reply-To: <20220117142919.207370-2-marcan@marcan.st>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 19 Jan 2022 19:49:03 +0200
+Message-ID: <CAHp75VfVuX-BG1MJcEoQrOW6jn=PSMZH0jTcwGj9PwWxocG_Gw@mail.gmail.com>
+Subject: Re: [PATCH v3 1/9] brcmfmac: pcie: Release firmwares in the
+ brcmf_pcie_setup error path
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        SHA-cyfmac-dev-list@infineon.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+On Mon, Jan 17, 2022 at 4:30 PM Hector Martin <marcan@marcan.st> wrote:
+>
+> This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
+> the CLM blob is released in the device remove path.
 
-commit f845fe5819efc4111c456c102f15db6d9ed3406e
-Author: Hoang Le <hoang.h.le@dektech.com.au>
-Date:   Fri Dec 17 03:00:59 2021 +0000
+...
 
-    Revert "tipc: use consistent GFP flags"
+>         if (ret) {
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17b09d88700000
-start commit:   28a2686c185e selftests: Fix IPv6 address bind tests
-git tree:       net
-kernel config:  https://syzkaller.appspot.com/x/.config?x=221ffc09e39ebbd1
-dashboard link: https://syzkaller.appspot.com/bug?extid=73a4f2b28371d5526901
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1066ce9db00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1398fc6db00000
+>                 brcmf_err(bus, "Failed to get RAM info\n");
+> +               release_firmware(fw);
+> +               brcmf_fw_nvram_free(nvram);
 
-If the result looks correct, please mark the issue as fixed by replying with:
+Can we first undo the things and only after print a message?
 
-#syz fix: Revert "tipc: use consistent GFP flags"
+>                 goto fail;
+>         }
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+
+-- 
+With Best Regards,
+Andy Shevchenko
