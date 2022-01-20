@@ -2,18 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 811A4494CCA
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 12:21:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E7C5494CCE
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 12:22:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231161AbiATLVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 06:21:44 -0500
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:34285 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231149AbiATLVa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 06:21:30 -0500
+        id S231325AbiATLWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 06:22:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45132 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230527AbiATLVd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 06:21:33 -0500
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFB9C061747;
+        Thu, 20 Jan 2022 03:21:32 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id ACAA9C000C;
-        Thu, 20 Jan 2022 11:21:27 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5AE37C0004;
+        Thu, 20 Jan 2022 11:21:29 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -29,9 +32,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-next v2 6/9] net: ieee802154: Use the IEEE802154_MAX_PAGE define when relevant
-Date:   Thu, 20 Jan 2022 12:21:12 +0100
-Message-Id: <20220120112115.448077-7-miquel.raynal@bootlin.com>
+Subject: [wpan-next v2 7/9] net: ieee802154: Return meaningful error codes from the netlink helpers
+Date:   Thu, 20 Jan 2022 12:21:13 +0100
+Message-Id: <20220120112115.448077-8-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220120112115.448077-1-miquel.raynal@bootlin.com>
 References: <20220120112115.448077-1-miquel.raynal@bootlin.com>
@@ -42,37 +45,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This define already exist but is hardcoded in nl-phy.c. Use the
-definition when relevant.
+Returning -1 does not indicate anything useful.
+
+Use a standard and meaningful error code instead.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- net/ieee802154/nl-phy.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/ieee802154/nl802154.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/ieee802154/nl-phy.c b/net/ieee802154/nl-phy.c
-index dd5a45f8a78a..02f6a53d0faa 100644
---- a/net/ieee802154/nl-phy.c
-+++ b/net/ieee802154/nl-phy.c
-@@ -30,7 +30,8 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
- {
- 	void *hdr;
- 	int i, pages = 0;
--	uint32_t *buf = kcalloc(32, sizeof(uint32_t), GFP_KERNEL);
-+	uint32_t *buf = kcalloc(IEEE802154_MAX_PAGE + 1, sizeof(uint32_t),
-+				GFP_KERNEL);
+diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+index 277124f206e0..e0b072aecf0f 100644
+--- a/net/ieee802154/nl802154.c
++++ b/net/ieee802154/nl802154.c
+@@ -1441,7 +1441,7 @@ static int nl802154_send_key(struct sk_buff *msg, u32 cmd, u32 portid,
  
- 	pr_debug("%s\n", __func__);
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
  
-@@ -47,7 +48,7 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
- 	    nla_put_u8(msg, IEEE802154_ATTR_PAGE, phy->current_page) ||
- 	    nla_put_u8(msg, IEEE802154_ATTR_CHANNEL, phy->current_channel))
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
  		goto nla_put_failure;
--	for (i = 0; i < 32; i++) {
-+	for (i = 0; i <= IEEE802154_MAX_PAGE; i++) {
- 		if (phy->supported.channels[i])
- 			buf[pages++] = phy->supported.channels[i] | (i << 27);
- 	}
+@@ -1634,7 +1634,7 @@ static int nl802154_send_device(struct sk_buff *msg, u32 cmd, u32 portid,
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -1812,7 +1812,7 @@ static int nl802154_send_devkey(struct sk_buff *msg, u32 cmd, u32 portid,
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
+@@ -1988,7 +1988,7 @@ static int nl802154_send_seclevel(struct sk_buff *msg, u32 cmd, u32 portid,
+ 
+ 	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
+ 	if (!hdr)
+-		return -1;
++		return -ENOBUFS;
+ 
+ 	if (nla_put_u32(msg, NL802154_ATTR_IFINDEX, dev->ifindex))
+ 		goto nla_put_failure;
 -- 
 2.27.0
 
