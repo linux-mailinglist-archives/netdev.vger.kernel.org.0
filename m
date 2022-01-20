@@ -2,98 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1476D495415
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 19:21:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A155495498
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 20:08:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346848AbiATSUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 13:20:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57824 "EHLO
+        id S1377392AbiATTIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 14:08:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346954AbiATSUf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 13:20:35 -0500
-Received: from smtp-190f.mail.infomaniak.ch (smtp-190f.mail.infomaniak.ch [IPv6:2001:1600:3:17::190f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE4BC06161C
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 10:20:34 -0800 (PST)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4JfrR30wHPzMpp4H;
-        Thu, 20 Jan 2022 19:20:31 +0100 (CET)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4JfrR04KcwzlhSM0;
-        Thu, 20 Jan 2022 19:20:28 +0100 (CET)
-Message-ID: <4d2b0f3f-4783-3681-382d-4084c6bf79fc@digikod.net>
-Date:   Thu, 20 Jan 2022 19:20:38 +0100
+        with ESMTP id S1346936AbiATTIL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 14:08:11 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B300C061574;
+        Thu, 20 Jan 2022 11:08:10 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id s11so8083627ioe.12;
+        Thu, 20 Jan 2022 11:08:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=c+32A77SAS8JOBp65RSQcGqcTi5g/XrAgKrbyrEwA5I=;
+        b=Uv70c5YW2JjG4J4DNfh9EeK8tvUNkxWKiW4sdE7oYBjKMYy6TWL6QZXR5eCwNvJJPK
+         iWGRx5YrkZZpxBPsTxe60ab+ggAWITdDuUZKJ0vPv8qL1zfe2jNvwFD7CGwN4sxcBbA3
+         ROVn1WK7RHKrXvBMtT1ZBbE+D0+5w+cFUoPuOjbkld0R+ztSDsEijQ7YnYymg0Azaqzy
+         R8FwosuiujRomBG8sP6atdX26mHieVUIiQxcXEEHPO2vshyRSSNbZlhJubIecAq1t4BQ
+         LXMvEgTsKuNVIERFfUN84KoCv9To7i+OgbTxPEFV2+calssgF8hOKToC38z8E+zpTAqe
+         ptoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=c+32A77SAS8JOBp65RSQcGqcTi5g/XrAgKrbyrEwA5I=;
+        b=FBH64kFbaMlpUv4tocJCnPRfEko6nBc/rP1bgbAM2SWDxO/YQ4H9Hx9WPFVIu1pGeJ
+         +lYcWRgJ6ArOzABg2iUNFbjyPf3XUXNxtltsO4Q7RUFSBB7+fvoksEAE99TveGdx587v
+         ceRRxCCbhnmjfPWTWGj7kd7sAuVdOKqJIvB3wX16N6hpkud+OZ5Qreu9XoLynKt9if/C
+         FFIdunZ8qtR94y6TNeymYFInJ9vtDyjVSj96ZyHxcV1B0aElHfwdMTkSsSmutEeL4Igj
+         ugGgncF5+efq9cEuXzUoD1vxvrmintae6qCx2tyY9X0j4aOMg12co4O/WbRXFMbGtnrt
+         p1lA==
+X-Gm-Message-State: AOAM532kDaVYVXR7uO/Besb8ujBMA8s86DXbyzJrIgJDTo1+8FMgjL1t
+        GP4ViC9HyyHOjD9OmjpjRJoHMDz4Xv4URIW2Ww4=
+X-Google-Smtp-Source: ABdhPJzuNrj9j8UouuqH6KAxX9EkTLqxtyRrMoq4dxPLpQ26fKRNa3K/g5iPIica6P9Bxi4f+TI7qq7UUx/ZM3MQ0ec=
+X-Received: by 2002:a02:bb8d:: with SMTP id g13mr88386jan.103.1642705689957;
+ Thu, 20 Jan 2022 11:08:09 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@collabora.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+References: <267a35a6-a045-c025-c2d9-78afbf6fc325@isovalent.com>
+ <CAEf4Bzbu4wc9anr19yG1AtFEcnxFsBrznynkrVZajQT1x_o6cA@mail.gmail.com> <ac3f95ed-bead-e8ea-b477-edcbd809452c@isovalent.com>
+In-Reply-To: <ac3f95ed-bead-e8ea-b477-edcbd809452c@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 20 Jan 2022 11:07:58 -0800
+Message-ID: <CAEf4BzaiUbAT4hBKTVYadGdygccA3c6jgPsu8VW9sLo+4Ofsvw@mail.gmail.com>
+Subject: Re: Bpftool mirror now available
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        chiminghao <chi.minghao@zte.com.cn>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL VIRTUAL MACHINE (KVM)" <kvm@vger.kernel.org>,
-        "open list:LANDLOCK SECURITY MODULE" 
-        <linux-security-module@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "open list:NETWORKING [MPTCP]" <mptcp@lists.linux.dev>,
-        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>
-Cc:     kernel@collabora.com
-References: <20220119101531.2850400-1-usama.anjum@collabora.com>
- <20220119101531.2850400-7-usama.anjum@collabora.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH V2 06/10] selftests: landlock: Add the uapi headers
- include variable
-In-Reply-To: <20220119101531.2850400-7-usama.anjum@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Andrii Nakryiko <andrii@kernel.org>,
+        Dave Thaler <dthaler@microsoft.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jan 20, 2022 at 4:35 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2022-01-19 22:25 UTC-0800 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > On Wed, Jan 19, 2022 at 6:47 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> [...]
+>
+> >> 2. Because it is easier to compile and ship, this mirror should
+> >> hopefully simplify bpftool packaging for distributions.
+> >
+> > Right, I hope disto packagers will be quick to adopt the new mirror
+> > repo for packaging bpftool. Let's figure out bpftool versioning schema
+> > as a next step. Given bpftool heavily relies on libbpf and isn't
+> > really coupled to kernel versions, it makes sense for bpftool to
+> > reflect libbpf version rather than kernel's. WDYT?
+>
+> Personally, I don't mind finding another scheme, as long as we keep it
+> consistent between the reference sources in the kernel repo and the mirror.
+>
+> I also agree that it would make sense to align it to libbpf, but that
+> would mean going backward on the numbers (current version is 5.16.0,
+> libbpf's is 0.7.0) and this will mess up with every script trying to
+> compare versions. We could maybe add a prefix to indicate that the
+> scheme has changed ('l_0.7.0), but similarly, it would break a good
+> number of tools that expect semantic versioning, I don't think this is
+> any better.
+>
+> The other alternative I see would be to pick a different major version
+> number and arbitrarily declare that bpftool's version is aligned on
+> libbpf's, but with a difference of 6 for the version number. So we would
+> start at 6.7.0 and reach 7.0.0 when libbpf 1.0.0 is released. This is
+> not ideal, but we would keep some consistency, and we can always add the
+> version of libbpf used for the build to "bpftool version"'s output. How
+> would you feel about it? Did you have something else in mind?
 
-On 19/01/2022 11:15, Muhammad Usama Anjum wrote:
-> Out of tree build of this test fails if relative path of the output
-> directory is specified. Add the KHDR_INCLUDES to correctly reach the
-> headers.
-> 
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-> ---
-> Changes in V2:
->          Revert the excessive cleanup which was breaking the individual
-> test build.
-> ---
->   tools/testing/selftests/landlock/Makefile | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/landlock/Makefile b/tools/testing/selftests/landlock/Makefile
-> index a99596ca9882..0b0049e133bb 100644
-> --- a/tools/testing/selftests/landlock/Makefile
-> +++ b/tools/testing/selftests/landlock/Makefile
-> @@ -1,6 +1,6 @@
->   # SPDX-License-Identifier: GPL-2.0
->   
-> -CFLAGS += -Wall -O2
-> +CFLAGS += -Wall -O2 $(KHDR_INCLUDES)
+Yeah, this off-by-6 major version difference seems ok-ish to me, I
+don't mind that. Another alternative is to have a completely
+independent versioning (and report used libbpf version in bpftool
+--version output  separately). But I think divorcing it from kernel
+version is a must, too much confusion.
 
-Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
-
-It works for me, but I'm wondering if a missing -I path could cause any 
-issue (cf. -I$(khdr_dir) bellow in this file). My GCC and clang ignore 
-such non-existent paths unless -Wmissing-include-dirs is used, which 
-would print a warning on your CI, but I guess that's OK.
-
->   
->   src_test := $(wildcard *_test.c)
->   
+>
+> Quentin
