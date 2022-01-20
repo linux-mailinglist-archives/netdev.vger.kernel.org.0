@@ -2,328 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D42024946BB
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 06:19:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 205AA494713
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 07:03:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358556AbiATFTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 00:19:43 -0500
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:46382
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236290AbiATFTl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 00:19:41 -0500
-Received: from localhost.localdomain (1-171-82-176.dynamic-ip.hinet.net [1.171.82.176])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id D061440D2E;
-        Thu, 20 Jan 2022 05:19:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642655979;
-        bh=LDTRKyufVIbBOkW2X/i15inUM9Sh3auq+doIIyGR024=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=fzqh5T5Gycbs8DJLrvgH2TroN8G+nvnVs2/97sXH2aqyjNLgr1Sxtry8hWGrcPxGs
-         VdhGKAFUt071AI+l0pBg3468VrM+CMqiTZd4GqjXOLURTo8OGxzaVmHIHqMPwQhLH1
-         49Rh4h8ki4aqJRGfKYAUjF8LnUgNh3E3mUxLOvrVVLL3MRJfmpVeiO7qIPcpkzaZMT
-         /HplfJpTuPHIPB1g7Egj4KTrkcl20pAt7U5POjSsU5JBZnC4atx2v+iPzGY9vG/ZzQ
-         Vtt9l+7Q3VbUoA/iZU0viOX9yQnxXiWgODWZJvPohvT2EYQqZjPAPXt/z5erHw7JiR
-         pmQXcC1Szn6Ow==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] net: phy: marvell: Honor phy LED set by system firmware on a Dell hardware
-Date:   Thu, 20 Jan 2022 13:19:29 +0800
-Message-Id: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.33.1
+        id S1358611AbiATGDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 01:03:44 -0500
+Received: from mail-dm6nam10on2040.outbound.protection.outlook.com ([40.107.93.40]:17729
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230385AbiATGDn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jan 2022 01:03:43 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=akFH19IJOZJg4OFeU1b8l7NtHUJPwSH2bgslOcUDNaBqhNXjaUxyGp3aTbPUPcoCWHOFFkHwjQ+PpyX3BRTbYrOhn7ImCoGk8nUUsNcFVPRrMegdWQWBGKr2XW3oeIR+7KzT94HIrhXdJ9MOVH7OP2m7beeTxMUDyfsGleHrAiCE/+UULS5JZi5krum03xviHZeS7DXV9x/FeuF4tBY3cbplju+n1ChQt/Z7dBo84mUApM7Sa7Ak1HBlM4btcaup7NidHIC9p6rDteDn/d9zMXjVvTLI4iCDLNEiRIeJm/ho6UYF4VAXHK2vfYsYJBDrlA4znwYipT6e+5gf4T+DBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=noTwU6a9BBVDPvUaD9wKZQ+YJIeGaMfP+eT9RV/NTLs=;
+ b=m2ruAARQM5YFK7EwEplXaZQsdftLnUY8VHDKOQntpyu+QRJgZ2fU6vLvI9xw+F5rcwd7hSNl5N3zhiS5qvDqp8ly7X+olBmJosuN/BsPwh5TfQK63szeGs3Lcc+KvlMPKD9PPFDsRcWNQrp6tpMcQPpxYzKbL7DWFCgb+rnHcgenZuu8hGUiI34FbnG/ra0NX+LIY+QrLQjfuVOg8nnfpJngbPSI5NfBdpQIQ4Yq5zgxp2QWELGY2FxgjRnedIpbxHoloro2KKxyNXk2HUCJC0pKJ0nX3mVXTHfdGu7cfWirsPqCAIfYTPLr7eoyO9H77drTNoD9I95k+2l84Q62tg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=noTwU6a9BBVDPvUaD9wKZQ+YJIeGaMfP+eT9RV/NTLs=;
+ b=VfAfeL1RTaNrJn6PnxqqmIwDMuoARiVo6J3zqofYxlmdKZQTjNgL2hWajTi3HqFgQLA5pcqysSOez1vji8nRjC+INphcexliMY2erNiBof+kN6fRLsa7JBvGHJMPYqbGRtuaD4lsXfP5xuu51jT9sWbUuEW1tzqOs9Qua6X0nF++VxBq5x66kaN/kq+U3h7N9kNvCqQLaFsHqREPjwRa4D6lLFlUyfPiWRyekbcIrxX+izUnN3HZuWL7oRvO9lieQTs+dIoYC6GJFP5SkPuXU6jWjXDJzgTVj46DTLcAwhjY4GiAUGfV7W1DOPGzwsVfXVJ/VutMCVt7QUqSN8FeDw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
+ by BY5PR12MB4116.namprd12.prod.outlook.com (2603:10b6:a03:210::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Thu, 20 Jan
+ 2022 06:03:40 +0000
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::35a1:8b68:d0f7:7496]) by BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::35a1:8b68:d0f7:7496%6]) with mapi id 15.20.4909.008; Thu, 20 Jan 2022
+ 06:03:40 +0000
+Date:   Wed, 19 Jan 2022 22:03:38 -0800
+From:   Saeed Mahameed <saeedm@nvidia.com>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Sunil Sudhakar Rani <sunrani@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Bodong Wang <bodong@nvidia.com>
+Subject: Re: [PATCH net-next 1/2] devlink: Add support to set port function
+ as trusted
+Message-ID: <20220120060338.itphn5yq4x62nxzk@sx1>
+References: <20220113204203.70ba8b54@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <PH0PR12MB54815445345CF98EAA25E2BCDC549@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220114183445.463c74f5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220115061548.4o2uldqzqd4rjcz5@sx1>
+ <20220118100235.412b557c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220118223328.tq5kopdrit5frvap@sx1>
+ <20220118161629.478a9d06@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <PH0PR12MB5481978B796DC00AF681FAC0DC599@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220120004039.qriwo4vrvizz7qry@sx1>
+ <PH0PR12MB5481F2B2B98BF7F76220F03DDC5A9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <PH0PR12MB5481F2B2B98BF7F76220F03DDC5A9@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-ClientProxiedBy: SJ0PR13CA0126.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c6::11) To BY5PR12MB4209.namprd12.prod.outlook.com
+ (2603:10b6:a03:20d::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 85d5bafd-e0b7-4d2a-1683-08d9dbda9aef
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4116:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB4116BB59C5FF46701CDAFFF0B35A9@BY5PR12MB4116.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: RXe49ZGyYS83MaZ9E7Z160u4ASsDleVEGyT88QhxG2+jTK+qlKRETaK4sgTNfVV1bMtwdeBlaQmHfJGAzUoEpVVAAu6hkmjvF1M7ilKgHFG73scTEa6rR9DJIOBNN6YhFBM/qE8SJo6WmNfK8T/wNc74EIvEs51kVz78Un1k0VZR/aJG2si0RVWS24ucdLQFiZfhbfqf8WBbff/HqgN6Hieg3FXG8rVh9h/dwguM4FrqrG4HSm+k9G/h2M2Gknzk7lewcBSLtUqAGqa4I98w4mmb8zPxNc0XufKKo32lONy1h/gNtoJpMcGAOBCBpSJA60gf7K7h2Yn0woTIpx1xXTabveFxPnifgypsh8cOnM6nW5xpOfuVxQ0fM2Irws+Q18O1u8BoyTvjrIFzQQ3C6Jrh+0inrWJib1Urc/vAPwbezFtx+ldDvNeWQapDAWojnLi8Aj6roPatjnmmqK06iOJ4XPFAdyZJzXNkj0HZXlyVbfqavRNoJ0OJzzZmK60y6JYhFMibXF3BP0V+oUCU85+nRZYanyPUxDo5NbFk3x/tGUOACMAvDKBnzr7aSUe9yzqQ8h6IxVXslUlFhElOhaavEo6KNULp66WYhrhqCKrMmHwfHLR5RykkYKBpmEGzrYR0xSVT6/E/aJQxzT9lACXOP+ZCyrbky5XZhWwqwFvz2EaQdfpuucn/mIeliKuXGEGYe6qBAACHA6yhq9zU+A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(38350700002)(9686003)(38100700002)(186003)(6512007)(26005)(86362001)(52116002)(6636002)(6506007)(66946007)(1076003)(316002)(83380400001)(8676002)(6486002)(107886003)(54906003)(508600001)(8936002)(6862004)(4326008)(5660300002)(66556008)(66476007)(33716001)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jDKDi3+onubszseshGLFiYeUIjUWq+wd3pb0pnbHOBAx8t4uOqHScH/1nFJU?=
+ =?us-ascii?Q?PPjRoxAWnJxS9LOH+iySDy0YwUdutl5NindvXJ0ObCVT9sPcr+Z6QLnnc7Qg?=
+ =?us-ascii?Q?gUZl8jMzwlhYNYtozPvLSL9P6tGqL88A2yYu75GwxmqyKeusNwyZXUW4Ezc+?=
+ =?us-ascii?Q?7youpk8D9mEmzVTXKpDq/iZUqNtbX1qBdU9FeA/CgZIVcWCVu7Rz9DZyc/z+?=
+ =?us-ascii?Q?VLUL/u4ZHdEkYd9YkLJqapowr30TBS81W8BfeU4Vbb2wQCFyS9AW5ONq8kUB?=
+ =?us-ascii?Q?QB8/UzOuk9kjiNRu1XiomVgt+J6rGanPcSi3CT8QMKMuR1aEmPnycJQWzxKM?=
+ =?us-ascii?Q?AwxQjTNox8/1WJ1usCDsqT0/yfljaXy1VWk+hy3EWUquaWVh1QqcY1lPbbj4?=
+ =?us-ascii?Q?jvM+kLi7HgpqNxr2V2IBb0KlviKyOZnfabipUtiPUrsaEiMIH5NlIJfLk/Gc?=
+ =?us-ascii?Q?0VMa8kRo0Y2B08mZqOaoMNeIlpR3ZPdRBJlcRxdleoqjHaBcivYvkuol2HEr?=
+ =?us-ascii?Q?OtkMvCyZJPPhl4W775cVUz7hcw4IM27GWOslFIBfnCXExJKMziScnagAcICN?=
+ =?us-ascii?Q?jxEf4A1H+b3GBO9aJrpKTng8Af61AVJQqv+rTBvl9VMe+7ZKJg9q7CX7wdB/?=
+ =?us-ascii?Q?gi8yMANpNBxF2VofsGePY8xIugSoBBRGlq4KfR268bau4pUofQ7aMDjv+yd7?=
+ =?us-ascii?Q?KSTosKqaDlJ+HppGgeUNgAnOZJSyOiLDW4O/wPqKNI7iw7YGGE5p2oWHYohd?=
+ =?us-ascii?Q?Wh7dCFRpIZ8elgTWrOyLqgPiVcgZF5CNfRT18gl90X/Gy+JXnIEORSuc3jjt?=
+ =?us-ascii?Q?of/GNdVv+3bvu6/e+feq5Owc2+B9/Xq5Lt1RcPpyCFUojv8UmOUUJXlKJmGU?=
+ =?us-ascii?Q?RDD2b/+Duu7tZnz2yUXd1gaYRQOzUvuUaPtNdwFcIGE5HOh8bOwbGOcpQq4A?=
+ =?us-ascii?Q?EFdaS/SHGAa0q32iNkXyBCjvqbhjqRBuFxWztQ7HgRP4t3yzbhqTbPv1i+/3?=
+ =?us-ascii?Q?suAaHxsjGjMfWRKX8VkBjv2Hr8aKLdwS/sXEg57S4/1rVkkH1Xv0S/4JVBT+?=
+ =?us-ascii?Q?P9ISrDTP6qDoEuEVVt/Kmdzi8HlGiXFFi9xigLTHAUxw/0wBLvaozJMYmjaA?=
+ =?us-ascii?Q?tU6GprnUSnEYqHjmpDCS3KU5J6Ug+A8kwqPZMusiW4r9wmavL/0qcdyTHV5e?=
+ =?us-ascii?Q?Xm2NvgqKEEGFWF/k/N7o4y81K6dOGSo4CSRUAuNh6GbyKKJj2P+Tvp49Y5MH?=
+ =?us-ascii?Q?CJtfPrvnU8Bg1jnEZgHUNDKO7c55CYSsIfkHih10XtehC1qRK04zcVhB9B8/?=
+ =?us-ascii?Q?keY752oPy78SAuG3PYARRSEUPtP7HhWpyIqagkTnDEbULrS0sUOyi3+QqaQc?=
+ =?us-ascii?Q?kLHiSxu6c7e46Tw7OBZH2zZH26kcVqE6StjK5xQ/NA7r/ip1vNnpa8RyWeRP?=
+ =?us-ascii?Q?fpt6smC7oBNWXl9bTUbydF8HYbbjySqkNRW3GsOA+tAOQgrTk+UPa261fU+T?=
+ =?us-ascii?Q?FYNYigs0/r3DN/U2cYNUY8tlfLBvO4rT658fAC9EiK3+MmmVnM+FZ3zFY5a+?=
+ =?us-ascii?Q?f3shWZB3iAnp56jX+CERWHC26RURwfJqm2msbki39FjW5R3RiB7QGbYZRFfS?=
+ =?us-ascii?Q?96tkE49VoLlMpwJlDuJAkeM=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 85d5bafd-e0b7-4d2a-1683-08d9dbda9aef
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2022 06:03:40.0536
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tPTa1eguI7JFdL/jp4mg4mSJPaTroWH+FTeIQcuh3e1KSiU6DdXWbwcsaRGgvNWMc5PZ8GOZjjbKkXPKoImDtQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4116
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
-instead of setting another value, keep it untouched and restore the saved
-value on system resume.
+On 20 Jan 04:52, Parav Pandit wrote:
+>
+>> From: Saeed Mahameed <saeedm@nvidia.com>
+>> Sent: Thursday, January 20, 2022 6:11 AM
+>
+>[..]
+>> >
+>> >I do agree you and Saeed that instead of port function param, port function
+>> resource is more suitable here even though its bool.
+>> >
+>>
+>> I believe flexibility can be achieved with some FW message? Parav can you
+>> investigate ? To be clear here the knob must be specific to sw_steering
+>> exposed as memory resource.
+>>
+>Sure.
+>I currently think of user interface something like below,
+>I will get back with more plumbing of netlink and enum/string.
+>
+># to enable
+>devlink port function resource set pci/0000:03:00.0/port_index device_memory/sw_steering 1
+>
 
-Introduce config_led() callback in phy_driver() to make the implemtation
-generic.
+this looks like an abuse of the interface, I literally meant to control the
+amount of ICM pages dedicated for SW steering per function, this requires
+some FW support, but i think this is the correct direction.
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
-v2:
- - Split with a new helper to find default LED config.
- - Make the patch more generic.
-
- drivers/net/phy/marvell.c    | 43 +++++++++++++++++++++++++++++-------
- drivers/net/phy/phy_device.c | 21 ++++++++++++++++++
- include/linux/phy.h          |  9 ++++++++
- 3 files changed, 65 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 739859c0dfb18..54ee54a6895c9 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -746,10 +746,14 @@ static int m88e1510_config_aneg(struct phy_device *phydev)
- 	return err;
- }
- 
--static void marvell_config_led(struct phy_device *phydev)
-+static int marvell_find_led_config(struct phy_device *phydev)
- {
--	u16 def_config;
--	int err;
-+	int def_config;
-+
-+	if (phydev->dev_flags & PHY_USE_FIRMWARE_LED) {
-+		def_config = phy_read_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL);
-+		return def_config < 0 ? -1 : def_config;
-+	}
- 
- 	switch (MARVELL_PHY_FAMILY_ID(phydev->phy_id)) {
- 	/* Default PHY LED config: LED[0] .. Link, LED[1] .. Activity */
-@@ -769,20 +773,30 @@ static void marvell_config_led(struct phy_device *phydev)
- 			def_config = MII_88E1510_PHY_LED_DEF;
- 		break;
- 	default:
--		return;
-+		return -1;
- 	}
- 
-+	return def_config;
-+}
-+
-+static void marvell_config_led(struct phy_device *phydev, bool resume)
-+{
-+	int err;
-+
-+	if (!resume)
-+		phydev->led_config = marvell_find_led_config(phydev);
-+
-+	if (phydev->led_config == -1)
-+		return;
-+
- 	err = phy_write_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL,
--			      def_config);
-+			      phydev->led_config);
- 	if (err < 0)
- 		phydev_warn(phydev, "Fail to config marvell phy LED.\n");
- }
- 
- static int marvell_config_init(struct phy_device *phydev)
- {
--	/* Set default LED */
--	marvell_config_led(phydev);
--
- 	/* Set registers from marvell,reg-init DT property */
- 	return marvell_of_reg_init(phydev);
- }
-@@ -2845,6 +2859,7 @@ static struct phy_driver marvell_drivers[] = {
- 		/* PHY_GBIT_FEATURES */
- 		.probe = marvell_probe,
- 		.config_init = marvell_config_init,
-+		.config_led = marvell_config_led,
- 		.config_aneg = m88e1101_config_aneg,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
-@@ -2944,6 +2959,7 @@ static struct phy_driver marvell_drivers[] = {
- 		/* PHY_GBIT_FEATURES */
- 		.probe = marvell_probe,
- 		.config_init = marvell_1011gbe_config_init,
-+		.config_led = marvell_config_led,
- 		.config_aneg = m88e1121_config_aneg,
- 		.read_status = marvell_read_status,
- 		.config_intr = marvell_config_intr,
-@@ -2965,6 +2981,7 @@ static struct phy_driver marvell_drivers[] = {
- 		/* PHY_GBIT_FEATURES */
- 		.probe = marvell_probe,
- 		.config_init = m88e1318_config_init,
-+		.config_led = marvell_config_led,
- 		.config_aneg = m88e1318_config_aneg,
- 		.read_status = marvell_read_status,
- 		.config_intr = marvell_config_intr,
-@@ -3044,6 +3061,7 @@ static struct phy_driver marvell_drivers[] = {
- 		/* PHY_GBIT_FEATURES */
- 		.probe = marvell_probe,
- 		.config_init = m88e1116r_config_init,
-+		.config_led = marvell_config_led,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-@@ -3065,6 +3083,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.flags = PHY_POLL_CABLE_TEST,
- 		.probe = m88e1510_probe,
- 		.config_init = m88e1510_config_init,
-+		.config_led = marvell_config_led,
- 		.config_aneg = m88e1510_config_aneg,
- 		.read_status = marvell_read_status,
- 		.config_intr = marvell_config_intr,
-@@ -3094,6 +3113,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.flags = PHY_POLL_CABLE_TEST,
- 		.probe = marvell_probe,
- 		.config_init = marvell_1011gbe_config_init,
-+		.config_led = marvell_config_led,
- 		.config_aneg = m88e1510_config_aneg,
- 		.read_status = marvell_read_status,
- 		.config_intr = marvell_config_intr,
-@@ -3120,6 +3140,7 @@ static struct phy_driver marvell_drivers[] = {
- 		/* PHY_GBIT_FEATURES */
- 		.flags = PHY_POLL_CABLE_TEST,
- 		.config_init = marvell_1011gbe_config_init,
-+		.config_led = marvell_config_led,
- 		.config_aneg = m88e1510_config_aneg,
- 		.read_status = marvell_read_status,
- 		.config_intr = marvell_config_intr,
-@@ -3144,6 +3165,7 @@ static struct phy_driver marvell_drivers[] = {
- 		/* PHY_BASIC_FEATURES */
- 		.probe = marvell_probe,
- 		.config_init = m88e3016_config_init,
-+		.config_led = marvell_config_led,
- 		.aneg_done = marvell_aneg_done,
- 		.read_status = marvell_read_status,
- 		.config_intr = marvell_config_intr,
-@@ -3165,6 +3187,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.flags = PHY_POLL_CABLE_TEST,
- 		.probe = marvell_probe,
- 		.config_init = marvell_1011gbe_config_init,
-+		.config_led = marvell_config_led,
- 		.config_aneg = m88e6390_config_aneg,
- 		.read_status = marvell_read_status,
- 		.config_intr = marvell_config_intr,
-@@ -3191,6 +3214,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.flags = PHY_POLL_CABLE_TEST,
- 		.probe = marvell_probe,
- 		.config_init = marvell_1011gbe_config_init,
-+		.config_led = marvell_config_led,
- 		.config_aneg = m88e6390_config_aneg,
- 		.read_status = marvell_read_status,
- 		.config_intr = marvell_config_intr,
-@@ -3217,6 +3241,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.flags = PHY_POLL_CABLE_TEST,
- 		.probe = marvell_probe,
- 		.config_init = marvell_1011gbe_config_init,
-+		.config_led = marvell_config_led,
- 		.config_aneg = m88e1510_config_aneg,
- 		.read_status = marvell_read_status,
- 		.config_intr = marvell_config_intr,
-@@ -3242,6 +3267,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.probe = marvell_probe,
- 		/* PHY_GBIT_FEATURES */
- 		.config_init = marvell_1011gbe_config_init,
-+		.config_led = marvell_config_led,
- 		.config_aneg = m88e1510_config_aneg,
- 		.read_status = marvell_read_status,
- 		.config_intr = marvell_config_intr,
-@@ -3264,6 +3290,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.probe = marvell_probe,
- 		.features = PHY_GBIT_FIBRE_FEATURES,
- 		.config_init = marvell_1011gbe_config_init,
-+		.config_led = marvell_config_led,
- 		.config_aneg = m88e1510_config_aneg,
- 		.read_status = marvell_read_status,
- 		.config_intr = marvell_config_intr,
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 74d8e1dc125f8..c9e97206aa9e8 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -12,6 +12,7 @@
- #include <linux/acpi.h>
- #include <linux/bitmap.h>
- #include <linux/delay.h>
-+#include <linux/dmi.h>
- #include <linux/errno.h>
- #include <linux/etherdevice.h>
- #include <linux/ethtool.h>
-@@ -1157,6 +1158,7 @@ static int phy_poll_reset(struct phy_device *phydev)
- int phy_init_hw(struct phy_device *phydev)
- {
- 	int ret = 0;
-+	bool resume = phydev->suspended;
- 
- 	/* Deassert the reset signal */
- 	phy_device_reset(phydev, 0);
-@@ -1184,6 +1186,9 @@ int phy_init_hw(struct phy_device *phydev)
- 			return ret;
- 	}
- 
-+	if (phydev->drv->config_led)
-+		phydev->drv->config_led(phydev, resume);
-+
- 	if (phydev->drv->config_intr) {
- 		ret = phydev->drv->config_intr(phydev);
- 		if (ret < 0)
-@@ -1342,6 +1347,17 @@ int phy_sfp_probe(struct phy_device *phydev,
- }
- EXPORT_SYMBOL(phy_sfp_probe);
- 
-+static const struct dmi_system_id platform_flags[] = {
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Dell EMC"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Edge Gateway 3200"),
-+		},
-+		.driver_data = (void *)PHY_USE_FIRMWARE_LED,
-+	},
-+	{}
-+};
-+
- /**
-  * phy_attach_direct - attach a network device to a given PHY device pointer
-  * @dev: network device to attach
-@@ -1363,6 +1379,7 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
- 	struct mii_bus *bus = phydev->mdio.bus;
- 	struct device *d = &phydev->mdio.dev;
- 	struct module *ndev_owner = NULL;
-+	const struct dmi_system_id *dmi;
- 	bool using_genphy = false;
- 	int err;
- 
-@@ -1443,6 +1460,10 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
- 			phydev_err(phydev, "error creating 'phy_standalone' sysfs entry\n");
- 	}
- 
-+	dmi = dmi_first_match(platform_flags);
-+	if (dmi)
-+		phydev->dev_flags |= (u32)dmi->driver_data;
-+
- 	phydev->dev_flags |= flags;
- 
- 	phydev->interface = interface;
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 6de8d7a90d78e..3a944a6564f43 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -517,6 +517,8 @@ struct phy_c45_device_ids {
- struct macsec_context;
- struct macsec_ops;
- 
-+#define PHY_USE_FIRMWARE_LED 0x1000000
-+
- /**
-  * struct phy_device - An instance of a PHY
-  *
-@@ -663,6 +665,7 @@ struct phy_device {
- 
- 	struct phy_led_trigger *led_link_trigger;
- #endif
-+	int led_config;
- 
- 	/*
- 	 * Interrupt number for this PHY
-@@ -776,6 +779,12 @@ struct phy_driver {
- 	 */
- 	int (*config_init)(struct phy_device *phydev);
- 
-+	/**
-+	 * @config_led: Called to config the PHY LED,
-+	 * Use the resume flag to indicate init or resume
-+	 */
-+	void (*config_led)(struct phy_device *phydev, bool resume);
-+
- 	/**
- 	 * @probe: Called during discovery.  Used to set
- 	 * up device-specific structures, if any
--- 
-2.33.1
-
+># to disable
+>devlink port function resource set pci/0000:03:00.0/port_index device_memory/sw_steering 0 (current default)
+>
+>Thanks Jakub, Saeed for the inputs and direction.
