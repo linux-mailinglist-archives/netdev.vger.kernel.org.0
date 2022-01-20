@@ -2,105 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A155495498
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 20:08:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9BE94954AC
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 20:13:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377392AbiATTIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 14:08:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40238 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346936AbiATTIL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 14:08:11 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B300C061574;
-        Thu, 20 Jan 2022 11:08:10 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id s11so8083627ioe.12;
-        Thu, 20 Jan 2022 11:08:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c+32A77SAS8JOBp65RSQcGqcTi5g/XrAgKrbyrEwA5I=;
-        b=Uv70c5YW2JjG4J4DNfh9EeK8tvUNkxWKiW4sdE7oYBjKMYy6TWL6QZXR5eCwNvJJPK
-         iWGRx5YrkZZpxBPsTxe60ab+ggAWITdDuUZKJ0vPv8qL1zfe2jNvwFD7CGwN4sxcBbA3
-         ROVn1WK7RHKrXvBMtT1ZBbE+D0+5w+cFUoPuOjbkld0R+ztSDsEijQ7YnYymg0Azaqzy
-         R8FwosuiujRomBG8sP6atdX26mHieVUIiQxcXEEHPO2vshyRSSNbZlhJubIecAq1t4BQ
-         LXMvEgTsKuNVIERFfUN84KoCv9To7i+OgbTxPEFV2+calssgF8hOKToC38z8E+zpTAqe
-         ptoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c+32A77SAS8JOBp65RSQcGqcTi5g/XrAgKrbyrEwA5I=;
-        b=FBH64kFbaMlpUv4tocJCnPRfEko6nBc/rP1bgbAM2SWDxO/YQ4H9Hx9WPFVIu1pGeJ
-         +lYcWRgJ6ArOzABg2iUNFbjyPf3XUXNxtltsO4Q7RUFSBB7+fvoksEAE99TveGdx587v
-         ceRRxCCbhnmjfPWTWGj7kd7sAuVdOKqJIvB3wX16N6hpkud+OZ5Qreu9XoLynKt9if/C
-         FFIdunZ8qtR94y6TNeymYFInJ9vtDyjVSj96ZyHxcV1B0aElHfwdMTkSsSmutEeL4Igj
-         ugGgncF5+efq9cEuXzUoD1vxvrmintae6qCx2tyY9X0j4aOMg12co4O/WbRXFMbGtnrt
-         p1lA==
-X-Gm-Message-State: AOAM532kDaVYVXR7uO/Besb8ujBMA8s86DXbyzJrIgJDTo1+8FMgjL1t
-        GP4ViC9HyyHOjD9OmjpjRJoHMDz4Xv4URIW2Ww4=
-X-Google-Smtp-Source: ABdhPJzuNrj9j8UouuqH6KAxX9EkTLqxtyRrMoq4dxPLpQ26fKRNa3K/g5iPIica6P9Bxi4f+TI7qq7UUx/ZM3MQ0ec=
-X-Received: by 2002:a02:bb8d:: with SMTP id g13mr88386jan.103.1642705689957;
- Thu, 20 Jan 2022 11:08:09 -0800 (PST)
+        id S1377410AbiATTNV convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Jan 2022 14:13:21 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:13442 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1377418AbiATTNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 14:13:20 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20KHwR41013259
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 11:13:20 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dpy7m4xth-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 11:13:20 -0800
+Received: from twshared3205.02.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 20 Jan 2022 11:13:17 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 2144328324561; Thu, 20 Jan 2022 11:13:13 -0800 (PST)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH v5 bpf-next 0/7] bpf_prog_pack allocator
+Date:   Thu, 20 Jan 2022 11:12:58 -0800
+Message-ID: <20220120191306.1801459-1-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <267a35a6-a045-c025-c2d9-78afbf6fc325@isovalent.com>
- <CAEf4Bzbu4wc9anr19yG1AtFEcnxFsBrznynkrVZajQT1x_o6cA@mail.gmail.com> <ac3f95ed-bead-e8ea-b477-edcbd809452c@isovalent.com>
-In-Reply-To: <ac3f95ed-bead-e8ea-b477-edcbd809452c@isovalent.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 20 Jan 2022 11:07:58 -0800
-Message-ID: <CAEf4BzaiUbAT4hBKTVYadGdygccA3c6jgPsu8VW9sLo+4Ofsvw@mail.gmail.com>
-Subject: Re: Bpftool mirror now available
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Dave Thaler <dthaler@microsoft.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: xS67tkogBf05b0O4HAupE7dOjwdFMTRE
+X-Proofpoint-GUID: xS67tkogBf05b0O4HAupE7dOjwdFMTRE
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-20_07,2022-01-20_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 phishscore=0
+ priorityscore=1501 mlxlogscore=654 impostorscore=0 adultscore=0
+ malwarescore=0 spamscore=0 lowpriorityscore=0 clxscore=1015 bulkscore=0
+ mlxscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201200097
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 4:35 AM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> 2022-01-19 22:25 UTC-0800 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> > On Wed, Jan 19, 2022 at 6:47 AM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> [...]
->
-> >> 2. Because it is easier to compile and ship, this mirror should
-> >> hopefully simplify bpftool packaging for distributions.
-> >
-> > Right, I hope disto packagers will be quick to adopt the new mirror
-> > repo for packaging bpftool. Let's figure out bpftool versioning schema
-> > as a next step. Given bpftool heavily relies on libbpf and isn't
-> > really coupled to kernel versions, it makes sense for bpftool to
-> > reflect libbpf version rather than kernel's. WDYT?
->
-> Personally, I don't mind finding another scheme, as long as we keep it
-> consistent between the reference sources in the kernel repo and the mirror.
->
-> I also agree that it would make sense to align it to libbpf, but that
-> would mean going backward on the numbers (current version is 5.16.0,
-> libbpf's is 0.7.0) and this will mess up with every script trying to
-> compare versions. We could maybe add a prefix to indicate that the
-> scheme has changed ('l_0.7.0), but similarly, it would break a good
-> number of tools that expect semantic versioning, I don't think this is
-> any better.
->
-> The other alternative I see would be to pick a different major version
-> number and arbitrarily declare that bpftool's version is aligned on
-> libbpf's, but with a difference of 6 for the version number. So we would
-> start at 6.7.0 and reach 7.0.0 when libbpf 1.0.0 is released. This is
-> not ideal, but we would keep some consistency, and we can always add the
-> version of libbpf used for the build to "bpftool version"'s output. How
-> would you feel about it? Did you have something else in mind?
+Changes v4 => v5:
+1. Do not use atomic64 for bpf_jit_current. (Alexei)
 
-Yeah, this off-by-6 major version difference seems ok-ish to me, I
-don't mind that. Another alternative is to have a completely
-independent versioning (and report used libbpf version in bpftool
---version output  separately). But I think divorcing it from kernel
-version is a must, too much confusion.
+Changes v3 => v4:
+1. Rename text_poke_jit() => text_poke_copy(). (Peter)
+2. Change comment style. (Peter)
 
->
-> Quentin
+Changes v2 => v3:
+1. Fix tailcall.
+
+Changes v1 => v2:
+1. Use text_poke instead of writing through linear mapping. (Peter)
+2. Avoid making changes to non-x86_64 code.
+
+Most BPF programs are small, but they consume a page each. For systems
+with busy traffic and many BPF programs, this could also add significant
+pressure to instruction TLB.
+
+This set tries to solve this problem with customized allocator that pack
+multiple programs into a huge page.
+
+Patches 1-5 prepare the work. Patch 6 contains key logic of the allocator.
+Patch 7 uses this allocator in x86_64 jit compiler.
+
+Song Liu (7):
+  x86/Kconfig: select HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
+  bpf: use bytes instead of pages for bpf_jit_[charge|uncharge]_modmem
+  bpf: use size instead of pages in bpf_binary_header
+  bpf: add a pointer of bpf_binary_header to bpf_prog
+  x86/alternative: introduce text_poke_copy
+  bpf: introduce bpf_prog_pack allocator
+  bpf, x86_64: use bpf_prog_pack allocator
+
+ arch/x86/Kconfig                     |   1 +
+ arch/x86/include/asm/text-patching.h |   1 +
+ arch/x86/kernel/alternative.c        |  32 ++++
+ arch/x86/net/bpf_jit_comp.c          | 136 +++++++++++++----
+ include/linux/bpf.h                  |   4 +-
+ include/linux/filter.h               |  23 ++-
+ kernel/bpf/core.c                    | 211 ++++++++++++++++++++++++---
+ kernel/bpf/trampoline.c              |   6 +-
+ 8 files changed, 356 insertions(+), 58 deletions(-)
+
+--
+2.30.2
