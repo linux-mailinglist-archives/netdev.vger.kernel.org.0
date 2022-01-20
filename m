@@ -2,205 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6532C4952B4
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 17:56:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DECEB4952E2
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 18:09:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377168AbiATQ4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 11:56:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:58861 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1377159AbiATQ4I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 11:56:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642697767;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8mR9FRdz8I70HhOfwdXd7Kde0lgoBA3u1XOQMHhojHo=;
-        b=UshQ8b68zAw9ofgGpCHj078SpJH/EQZ/JeQQ6R/58GSE0bT4wsHnZDHgfsYpuS5woOpvp8
-        SG9rWJ4/XDeRLSy8x7Wtr0+LczLPotfBOsdUNe9n9XVHW3NaRtgqwfw1ZQkXLK6hXadxVt
-        jSTE3k5MYciNct5vj0I1zIfNlY0RKng=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-377-MHlvMv-cOwOcHdiciqFN4w-1; Thu, 20 Jan 2022 11:56:06 -0500
-X-MC-Unique: MHlvMv-cOwOcHdiciqFN4w-1
-Received: by mail-wm1-f71.google.com with SMTP id l20-20020a05600c1d1400b0034c29cad547so7308877wms.2
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 08:56:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8mR9FRdz8I70HhOfwdXd7Kde0lgoBA3u1XOQMHhojHo=;
-        b=lbmhetyYB1L+EN/sXwR6lijHLCERovETyIB45nfRw+t4dEDX95kRM/MOdkzFWX68QX
-         DIOL0MyWTA7fCUANU/+hgsOIdfgBSkRZRGae7WvWsubMGvMooDH6Y0vJ1XPbAIAm2UgH
-         l1x+x/Dsu2UAu3RDMtktxlSc4p1Uw6OitVpg8/HjdK9GkPCKG69SUWbvw2n0/X3IFoXl
-         Bwr9/2rQBpQn+kHaeVEYYX07fFKfh7gXSSrJVdDkwq4oBg6eTJ3CE1LxEL7AOSKEDz3U
-         ffMhsKtTUeXgkYjyDXTAMZrZLwtsZ9Er5c71e4sZRWoyDd0Zx370LfvfdEufzHFdF/8X
-         Xg/Q==
-X-Gm-Message-State: AOAM532pWwrH+xF5Iy1BgIaB+KgetXSzqCacGcjhvlZHEQjwY2RD51vW
-        eKX7MSENPXtRuZtRXZRJHUJpJ3dm+d5HIUcAsA0bSTHDPAzOcCvF7y8p9ksVEno3i0d65hgbmE4
-        TkgQ4TKms5mUmRCFz
-X-Received: by 2002:a05:600c:4fd4:: with SMTP id o20mr9720470wmq.155.1642697764817;
-        Thu, 20 Jan 2022 08:56:04 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz602JhtDTuZNmSMn/pluyt75fBTOcXq6oo9TvSS1+J7M5aQjpPqI7Y4TSrYEBGLNgdGX93aA==
-X-Received: by 2002:a05:600c:4fd4:: with SMTP id o20mr9720458wmq.155.1642697764623;
-        Thu, 20 Jan 2022 08:56:04 -0800 (PST)
-Received: from redhat.com ([2.55.158.216])
-        by smtp.gmail.com with ESMTPSA id l13sm4525133wry.87.2022.01.20.08.56.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 08:56:03 -0800 (PST)
-Date:   Thu, 20 Jan 2022 11:55:53 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Linux Virtualization <virtualization@lists.linux-foundation.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        kvm <kvm@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH v1] vhost: cache avail index in vhost_enable_notify()
-Message-ID: <20220120115520-mutt-send-email-mst@kernel.org>
-References: <20220114090508.36416-1-sgarzare@redhat.com>
- <20220114074454-mutt-send-email-mst@kernel.org>
- <20220114133816.7niyaqygvdveddmi@steredhat>
- <20220114084016-mutt-send-email-mst@kernel.org>
- <CAGxU2F7r6cH9Ywygv1QNxKyfyn=yGoDPNDQ-tHkeFMUcbpfXYA@mail.gmail.com>
+        id S1377221AbiATRI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 12:08:56 -0500
+Received: from mail-am6eur05on2046.outbound.protection.outlook.com ([40.107.22.46]:3297
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1377219AbiATRIz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jan 2022 12:08:55 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ee6pu59Z4wD6NyLYqYuGriqP3kuJlWWpddkWkcTQR3Wy3m2eP/3EJX1hrnweYVBOBlYjkHtiMasIe25vaoADr/fF5OdDRtRGjeOFCZ1xEZu/4zF42uuU3j3lwQgFWb9xak0V77j31dgv0vv7X5x+x3H1wJAfwyuapy86IuLUUXLHjSMxmK/njbocc2hxgRn7fOh79Su6qDoK8Bw9ZeJ6RQ+BTvn58ZPS+Nq+bs0p7EXNJMe0dcFp4tiRhnMSzzzHi/LwYQSsg1YHRqWs3TvEVbxzLIwHID3qyMb+p8D46K9aBSDbqazh4K+55ngB/OPymxoupUuTPSW8RYK24qGeSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=w924WTbzUW66pmexjLRPf69IjzrbP1rkFIwIMbijW2o=;
+ b=O5oJmZIU+SEzCMaKNmpTBK5T43LUWDa0FnghklJy4TKQW2BEh4aHut/2Q/tAHyK/3r3JRBn/edFEnHqVcEKWA3DzNMfUOd21U+e2hCyvFLIR/lPZDcsL9p61KXsk1j23OSsbqlrCqnUzVIzRPtpOxWqxRvVEcHncL077mhJUkci91TqyujqXHUw2D0nquEiNVb/UaRdMUfkwcVQYskeVu1qrCYi4aGsVjD1O6WCNX/0FzbjhaOY9otwxw8Rsxbr3WS379jBl4upQUmeUMj0iEjofwDIzSUyn3Tp/71YA0CDoCgmqD+X4lfyZRFZijsvs2Kh5f8hxzDORWI221Dx6RA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=w924WTbzUW66pmexjLRPf69IjzrbP1rkFIwIMbijW2o=;
+ b=iEWhvkVPxVqNd06qch4waZm6ZbxNg4WUsQ7iAeZaZt72aXm87jB15ge7ltwiC02mlDrnPU9NiPOfGWiPgHM6LFZk7mIrZGSWOLXK0I+WuHu8KTi6b5fmPDGlgGbFfT9dVJsZ7IAYCCkZGtkISz1+FnPCexnmPbxWc3XNDh7LsKo=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DB6PR0401MB2679.eurprd04.prod.outlook.com (2603:10a6:4:37::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8; Thu, 20 Jan
+ 2022 17:08:53 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4909.010; Thu, 20 Jan 2022
+ 17:08:53 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "trix@redhat.com" <trix@redhat.com>
+CC:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "nathan@kernel.org" <nathan@kernel.org>,
+        "ndesaulniers@google.com" <ndesaulniers@google.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
+Subject: Re: [PATCH] net: mscc: ocelot: fix using match before it is set
+Thread-Topic: [PATCH] net: mscc: ocelot: fix using match before it is set
+Thread-Index: AQHYDHEVbkLSxIHvCUGVPCZgAiHnKKxsJ+kA
+Date:   Thu, 20 Jan 2022 17:08:53 +0000
+Message-ID: <20220120170852.d2iwgagxcu2eajj2@skbuf>
+References: <20220118134110.591613-1-trix@redhat.com>
+In-Reply-To: <20220118134110.591613-1-trix@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 80dfd5e3-3071-4ea8-f6d1-08d9dc37895b
+x-ms-traffictypediagnostic: DB6PR0401MB2679:EE_
+x-microsoft-antispam-prvs: <DB6PR0401MB26793787A17171D5B0D45242E05A9@DB6PR0401MB2679.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1227;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: r9GDwtaFM3GEdjhrxlA/3bBFY8/QoJRfzNjHoj1lagiE2HRQyw3+EYxh0thP4SxthF+wsKeVGZOz8ek9UehToySKymQjLBXPrsACpzRDgt1GXLVrtm14F+4/CL+28plgxddnS3qlR+Lc2KE/fMesTwu2qmuIMzM2dAmJjKjIcBhalv29/fd2hG08MwZIwUSgsgCnZZCUr08LteH13CWEwMMOUb6Y6jigV3/dXP1J7NfEe8LkgEyfFGnO4KdhFEh4rxtRnfJojV5qtAwzRWo6+txhn18E8RFfSvjMrUSPySypDE3vFyTgJ/0Lelpzu81RWbWe68uhQlmyX/sejWG1NGDAGtZGaTENydac+obT7+iVMo1lNlTFMQ0IS84F6Edk3HRw12o2iyjx6nBi/9LdMei8iLlXZn6MgdvvZPoxqmtzvuYhHylM259MOsVEk9OmT4xB+KkVmcFZUtx7uoIpt4QQiOmRnBLKkEihYjVUfu0R5GXaqIidFxjHVq5nQIeNclL2YwlzugRmyeK/Mo2Mu9G2KnDr86hLYAmCNu+xvFbspg2X85ywYq5al5pMxvPS87b15L2g24wuzEtxe3TSGn8IngqlGfoi3ssUfpr42QTbxjZ9agT19t1kcDSmuUkxOKCpPuHPScLZjbd6cextEcwgNhAsY75PUriJZk3CkMKBoLtHLUMCC5DG1bBsqpQyW4jFJRBXvhQG6XEeujQ7wQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(38100700002)(6916009)(38070700005)(2906002)(44832011)(5660300002)(4744005)(6512007)(9686003)(1076003)(66446008)(316002)(186003)(54906003)(4326008)(7416002)(122000001)(8676002)(66946007)(76116006)(86362001)(8936002)(26005)(66556008)(66476007)(6486002)(6506007)(33716001)(508600001)(83380400001)(64756008)(71200400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?lpodf4V/VHj0a45lNMx3DD1gNCfgAXBmq/jhlIR3oeATTPb3d32v4yrItJuV?=
+ =?us-ascii?Q?zVR2GlbXfSLsTIXOKYIwfozikz1fVvgg1rPtPXmRRRnbQbXBU8uKM/X35Ait?=
+ =?us-ascii?Q?r9qQiWvbvisleFfTE4HX/9iFihSjzpTHVi22x8ZCgv++8IASSGTfuZhruTQO?=
+ =?us-ascii?Q?Uqx9BP22ufXIPC9jDC4e2s92QgZcADTEko+Ofdur9oU0ej89dhf7aC4aHmH8?=
+ =?us-ascii?Q?QPZ3kFk5Qz7igET5zgcy+aUqg/Vrr/ADw3LgkXjFMyWr2D2hsFP1eC5Ww1Yk?=
+ =?us-ascii?Q?W3u1VC4IrAsQu7ogk3Sn/JbuxEtuvCaDx0phRF39BpHlSGAK+FaQ0asWGFxA?=
+ =?us-ascii?Q?1wC4Jte51ntEV4ZfIS3poDqYS4nd4Ob28VQNiHXkkZbuFyJ9SgXgEG9rsrAG?=
+ =?us-ascii?Q?Q4jxAFKixEKh4YO4zhdqSITfo4TIp07w7Ng9FQoC35vgE3SD/IGLb5feXOLF?=
+ =?us-ascii?Q?7WMmsUlQFR/UtzKuL/imFf/Iz3KG5tM5j+Z916603AXsv4DPA5JidnlEWCtd?=
+ =?us-ascii?Q?AyDTZYTfBxxc3XtaStZbzi7NhR2W1SYO2lN/5ofhyhcLY5pUmmVD9386oXJS?=
+ =?us-ascii?Q?eWI7JB2Jap3HCbE6rCmQNKsqEkkiKiPwG+O9znCyFbG82/cJa9VPMmBoz6gp?=
+ =?us-ascii?Q?hL0XQ4rnkXPM8922v+c3Rq0mxLebTsQ77S+WIEKYYiDb6lmCpoTXje+/gwkF?=
+ =?us-ascii?Q?nCfG2TkHZPBtJRmp8LrEvJVcRVDaz1vNgXVqOwB8snoC5+edQ4QMiTCrW+tn?=
+ =?us-ascii?Q?ZziyujB+Uw81YdhVAUIQp3KINn0zMwGXPYXnWH729XpyBuOIP1JPBHdEzMaQ?=
+ =?us-ascii?Q?zBB5fOiyLYkccKUx4Dq7SdLAEf1WwTZCeAz5j9S+6lU4m/pO9J7qJF5OAa2n?=
+ =?us-ascii?Q?jBl4BsiQDZwyyTtTcOyFAgZy3ONRZxI/ehpfLNHnrtldqrDApdrqWo7Ew1eH?=
+ =?us-ascii?Q?3FrmBxkEGAw5NXWpdTAQzpIXsYYJDyBg0X4ALKLr50UBbAuCwjMiq2lkueGq?=
+ =?us-ascii?Q?4hZl7SJBxYz1A+kn8CB8iuFbXs3TV9ZaVrUqK6r4Q961Fk6Ler2varQlL1gM?=
+ =?us-ascii?Q?edIjqMjyDaz1NvFm+11laBV00Ims6lOiGtjO3QGtUZomEMf4QxRUsRUkd9Du?=
+ =?us-ascii?Q?Mr6NB5XmqgGJ5/CcJSG9GOfdyH5rC60kZTlX3ePIjB4AxvjkyImUyqrvO/ay?=
+ =?us-ascii?Q?N4/LgCUAWKNmynssLgqY4MP3DhEUKfCvYuPaUfyLeE5FYSWDJWoFISMhl4z+?=
+ =?us-ascii?Q?atz5dfUx38M+cviRZlVDS8tqb+ehWUwGus88wkR5SZCEAVEx8EAQEXA7SDyW?=
+ =?us-ascii?Q?L93JJMiWAM6+zmpxstjRuI8osOBGxB6VdAcozJ4ZI5eWdEQDr3qAh/HPhVnd?=
+ =?us-ascii?Q?SH60MnWiJH3K1hKmrQv25h2X52dU/VrrdyYwbdezkGz/4pZJ48dMTNt0rHqr?=
+ =?us-ascii?Q?9rXVTQk9pwoOOmIyWvHXg+ga1AjS2fWmavC8sJqBFq+FwZEkhHGd+pc14HWj?=
+ =?us-ascii?Q?NTURvvskiZvxZhyy1ezOgGhQa5Z0sMcnlJcGZUdExhfL8CMs1HlTpPbXUkmv?=
+ =?us-ascii?Q?8gJ7rU2H0EFBKMxXoMFPxbhZRGmW3ZWXKRBDEvtH1IVazBePcycqIgFdOc3X?=
+ =?us-ascii?Q?zBCMAm5TGCZ8EnajZ/oIejQ=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <171C952FC89EC04A8C4FE42077331DC1@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGxU2F7r6cH9Ywygv1QNxKyfyn=yGoDPNDQ-tHkeFMUcbpfXYA@mail.gmail.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 80dfd5e3-3071-4ea8-f6d1-08d9dc37895b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jan 2022 17:08:53.3891
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: VIYJwKENWK5Uv/MgpjLEqn4Koi0RXJOeHWpT5pU5JkicY7brYjdgiYmyUVWhrMZdTMM0wBBzq9R2TMK82RNaNA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2679
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 04:08:39PM +0100, Stefano Garzarella wrote:
-> On Fri, Jan 14, 2022 at 2:40 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Fri, Jan 14, 2022 at 02:38:16PM +0100, Stefano Garzarella wrote:
-> > > On Fri, Jan 14, 2022 at 07:45:35AM -0500, Michael S. Tsirkin wrote:
-> > > > On Fri, Jan 14, 2022 at 10:05:08AM +0100, Stefano Garzarella wrote:
-> > > > > In vhost_enable_notify() we enable the notifications and we read
-> > > > > the avail index to check if new buffers have become available in
-> > > > > the meantime.
-> > > > >
-> > > > > We are not caching the avail index, so when the device will call
-> > > > > vhost_get_vq_desc(), it will find the old value in the cache and
-> > > > > it will read the avail index again.
-> > > > >
-> > > > > It would be better to refresh the cache every time we read avail
-> > > > > index, so let's change vhost_enable_notify() caching the value in
-> > > > > `avail_idx` and compare it with `last_avail_idx` to check if there
-> > > > > are new buffers available.
-> > > > >
-> > > > > Anyway, we don't expect a significant performance boost because
-> > > > > the above path is not very common, indeed vhost_enable_notify()
-> > > > > is often called with unlikely(), expecting that avail index has
-> > > > > not been updated.
-> > > > >
-> > > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > > >
-> > > > ... and can in theory even hurt due to an extra memory write.
-> > > > So ... performance test restults pls?
-> > >
-> > > Right, could be.
-> > >
-> > > I'll run some perf test with vsock, about net, do you have a test suite or
-> > > common step to follow to test it?
-> > >
-> > > Thanks,
-> > > Stefano
-> >
-> > You can use the vhost test as a unit test as well.
-> 
-> Thanks for the advice, I did indeed use it!
-> 
-> I run virtio_test (with vhost_test.ko) using 64 as batch to increase the 
-> chance of the path being taken. (I changed bufs=0x1000000 in 
-> virtio_test.c to increase the duration).
-> 
-> I used `perf stat` to take some numbers, running this command:
-> 
->    taskset -c 2 perf stat -r 10 --log-fd 1 -- ./virtio_test --batch=64
-> 
-> - Linux v5.16 without the patch applied
-> 
->  Performance counter stats for './virtio_test --batch=64' (10 runs):
-> 
->           2,791.70 msec task-clock                #    0.996 CPUs utilized            ( +-  0.36% )
->                 23      context-switches          #    8.209 /sec                     ( +-  2.75% )
->                  0      cpu-migrations            #    0.000 /sec
->                 79      page-faults               #   28.195 /sec                     ( +-  0.41% )
->      7,249,926,989      cycles                    #    2.587 GHz                      ( +-  0.36% )
->      7,711,999,656      instructions              #    1.06  insn per cycle           ( +-  1.08% )
->      1,838,436,806      branches                  #  656.134 M/sec                    ( +-  1.44% )
->          3,055,439      branch-misses             #    0.17% of all branches          ( +-  6.22% )
-> 
->             2.8024 +- 0.0100 seconds time elapsed  ( +-  0.36% )
-> 
-> - Linux v5.16 with this patch applied
-> 
->  Performance counter stats for './virtio_test --batch=64' (10 runs):
-> 
->           2,753.36 msec task-clock                #    0.998 CPUs utilized            ( +-  0.20% )
->                 24      context-switches          #    8.699 /sec                     ( +-  2.86% )
->                  0      cpu-migrations            #    0.000 /sec
->                 76      page-faults               #   27.545 /sec                     ( +-  0.56% )
->      7,150,358,721      cycles                    #    2.592 GHz                      ( +-  0.20% )
->      7,420,639,950      instructions              #    1.04  insn per cycle           ( +-  0.76% )
->      1,745,759,193      branches                  #  632.730 M/sec                    ( +-  1.03% )
->          3,022,508      branch-misses             #    0.17% of all branches          ( +-  3.24% )
-> 
->            2.75952 +- 0.00561 seconds time elapsed  ( +-  0.20% )
-> 
-> 
-> The difference seems minimal with a slight improvement.
-> 
-> To try to stress the patch more, I modified vhost_test.ko to call 
-> vhost_enable_notify()/vhost_disable_notify() on every cycle when calling 
-> vhost_get_vq_desc():
-> 
-> - Linux v5.16 modified without the patch applied
-> 
->  Performance counter stats for './virtio_test --batch=64' (10 runs):
-> 
->           4,126.66 msec task-clock                #    1.006 CPUs utilized            ( +-  0.25% )
->                 28      context-switches          #    6.826 /sec                     ( +-  3.41% )
->                  0      cpu-migrations            #    0.000 /sec
->                 85      page-faults               #   20.721 /sec                     ( +-  0.44% )
->     10,716,808,883      cycles                    #    2.612 GHz                      ( +-  0.25% )
->     11,804,381,462      instructions              #    1.11  insn per cycle           ( +-  0.86% )
->      3,138,813,438      branches                  #  765.153 M/sec                    ( +-  1.03% )
->         11,286,860      branch-misses             #    0.35% of all branches          ( +-  1.23% )
-> 
->             4.1027 +- 0.0103 seconds time elapsed  ( +-  0.25% )
-> 
-> - Linux v5.16 modified with this patch applied
-> 
->  Performance counter stats for './virtio_test --batch=64' (10 runs):
-> 
->           3,953.55 msec task-clock                #    1.001 CPUs utilized            ( +-  0.33% )
->                 29      context-switches          #    7.345 /sec                     ( +-  2.67% )
->                  0      cpu-migrations            #    0.000 /sec
->                 83      page-faults               #   21.021 /sec                     ( +-  0.65% )
->     10,267,242,653      cycles                    #    2.600 GHz                      ( +-  0.33% )
->      7,972,866,579      instructions              #    0.78  insn per cycle           ( +-  0.21% )
->      1,663,770,390      branches                  #  421.377 M/sec                    ( +-  0.45% )
->         16,986,093      branch-misses             #    1.02% of all branches          ( +-  0.47% )
-> 
->             3.9489 +- 0.0130 seconds time elapsed  ( +-  0.33% )
-> 
-> In this case the difference is bigger, with a reduction in execution 
-> time (3.7 %) and fewer branches and instructions. It should be the 
-> branch `if (vq->avail_idx == vq->last_avail_idx)` in vhost_get_vq_desc() 
-> that is not taken.
-> 
-> Should I resend the patch adding some more performance information?
-> 
-> Thanks,
-> Stefano
+On Tue, Jan 18, 2022 at 05:41:10AM -0800, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
+>=20
+> Clang static analysis reports this issue
+> ocelot_flower.c:563:8: warning: 1st function call argument
+>   is an uninitialized value
+>     !is_zero_ether_addr(match.mask->dst)) {
+>     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>=20
+> The variable match is used before it is set.  So move the
+> block.
+>=20
+> Fixes: 75944fda1dfe ("net: mscc: ocelot: offload ingress skbedit and vlan=
+ actions to VCAP IS1")
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> ---
 
-Yea, pls do. You can just summarize it in a couple of lines.
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
--- 
-MST
-
+(sorry for the delay)=
