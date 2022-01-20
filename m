@@ -2,106 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EABA94954E8
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 20:33:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B62D74954FC
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 20:37:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377413AbiATTdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 14:33:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45956 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347174AbiATTdd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 14:33:33 -0500
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE897C061574
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 11:33:32 -0800 (PST)
-Received: by mail-qk1-x730.google.com with SMTP id u3so7389110qku.1
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 11:33:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=6Gp/5hK4THZoVjgGoSiChxrkwYLiAHf/mRfYrr0vigE=;
-        b=7ophgrJsDikUw/SCBxe5AHhQE6lX+Vlm/k4xhcIKkrOYD6g6uVJRSF+6rOUhZOHzGx
-         JhKCo5y1R0ObtwWbdG5KJ+Vm2jG2lWfUIlLeL1Iiwl9GFENIUX4QSDAjPESLTNgnLxnE
-         /80jdIBeN8jvhZyCPjBqSMwPlva0Ug9D4AdE7yLIh3/yqY1lUoznrp2wRYqET1AeZvr4
-         zdZ0z/lGFxHn1FY5SEr7le/Bb/MylUO0tebeBAvKlGVrx2rdCdCw29uEreGPQltUmSMA
-         +x4vEo+cSdNuTkbayD5oE7l2J79fHRU5DtP8juG4eV0DBeplRji7Z/04kgXLCLZjhuje
-         Im0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6Gp/5hK4THZoVjgGoSiChxrkwYLiAHf/mRfYrr0vigE=;
-        b=MMgxpjL0rqeZHqxRGn5jy9a39tx4keoXbShvlBumOGbqwywcPKPDX0unuMEdBqbBYm
-         ZukZoRynNsYnM6b3sSwJI0kpYLTgSf0iuoe1hAgpKy5LJhXxa9oMYKObkiEKVSGBMLRc
-         qVdxaDldUdjckj2kLNZ6bonxOaK82pGXFcsbTR7djTsVUSgPid/tWOtYP5b6eLnubyxS
-         qjbdAxxa4/BK+xsYKB04NxqMYgA6iPxeBdHn3fjm0KjjOu19CZNGP9MaMw+2LtHr048w
-         lpOnLkwje7RhPon6etqflo+6oq6ig5cdaONIgyGjjwdrFKQ3F7jN+/vku0WPxG0tZ5Bz
-         w/MQ==
-X-Gm-Message-State: AOAM530f9ucVfrE9SeLiXT19xwKnwXVpgLqUn2f8/WdzlZ4X+21PyB7M
-        j/BZcJrEydTl0cFG4ypp3J78wQ==
-X-Google-Smtp-Source: ABdhPJyKXNaLOXEwD7m9Y3QZJfpPEoPkQgWRrG5RznAdTIoQYvXxsDCTV0OQoseJcdCEnJQs8lkUZQ==
-X-Received: by 2002:a05:620a:372b:: with SMTP id de43mr316131qkb.338.1642707211899;
-        Thu, 20 Jan 2022 11:33:31 -0800 (PST)
-Received: from [192.168.1.173] (bras-base-kntaon1617w-grc-28-184-148-47-74.dsl.bell.ca. [184.148.47.74])
-        by smtp.googlemail.com with ESMTPSA id i5sm2114055qkn.19.2022.01.20.11.33.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Jan 2022 11:33:31 -0800 (PST)
-Message-ID: <c4983694-0564-edca-7695-984f1d72367f@mojatatu.com>
-Date:   Thu, 20 Jan 2022 14:33:30 -0500
+        id S1377479AbiATTgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 14:36:47 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:3582 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1377469AbiATTgq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 14:36:46 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20KHwXfj013618
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 11:36:45 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=btV+CUJ4/5ZGUdKet+TOfhhauxw7f4oD0ZBMYIhj8cg=;
+ b=Xn8lZhO0WWjZw8sWwkRMeX2VLNCNrs+WlIye/L7c3YthponKUGG1Hz1o8k9efGefgFWy
+ 9ZvZjbKw9eHXYylY4f0OZ+vGWXdXz1kDswmONjD0cPnPzaPtm5HwnPzbjwwbByefiSdQ
+ iMXLgwtROej4mP0Y5Fqad0QQX9SgJ7a50VY= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dpyswcx8d-15
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 11:36:45 -0800
+Received: from twshared3399.25.prn2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 20 Jan 2022 11:36:42 -0800
+Received: by devvm5911.prn0.facebook.com (Postfix, from userid 190935)
+        id 88C29C1F073; Thu, 20 Jan 2022 11:36:40 -0800 (PST)
+From:   Alex Liu <liualex@fb.com>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+CC:     Alex Liu <liualex@fb.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+Subject: [PATCH] net/mlx5e: Add support for using xdp->data_meta
+Date:   Thu, 20 Jan 2022 11:34:59 -0800
+Message-ID: <20220120193459.3027981-1-liualex@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: tdc errors
-Content-Language: en-US
-To:     Victor Nogueira <victor@mojatatu.com>, baowen.zheng@corigine.com
-Cc:     simon.horman@corigine.com, netdev@vger.kernel.org,
-        Davide Caratti <dcaratti@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        David Ahern <dsahern@gmail.com>
-References: <CA+NMeC-xsHvQ5KPybDUV02UW_zyy02k6fQXBy3YOBg8Qnp=LZQ@mail.gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-In-Reply-To: <CA+NMeC-xsHvQ5KPybDUV02UW_zyy02k6fQXBy3YOBg8Qnp=LZQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: Z56r12RH2IfwzpxnmFAiIR-fY5K8I6GX
+X-Proofpoint-ORIG-GUID: Z56r12RH2IfwzpxnmFAiIR-fY5K8I6GX
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-20_08,2022-01-20_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 bulkscore=0
+ mlxlogscore=999 priorityscore=1501 impostorscore=0 phishscore=0
+ lowpriorityscore=0 adultscore=0 malwarescore=0 suspectscore=0 spamscore=0
+ clxscore=1011 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201200099
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-01-20 12:22, Victor Nogueira wrote:
-> Hi,
-> 
-> When running these 2 tdc tests:
-> 
-> 7d64 Add police action with skip_hw option
-> 3329 Validate flags of the matchall filter with skip_sw and
-> police action with skip_hw
-> I get this error:
-> 
-> Bad action type skip_hw
-> Usage: ... gact <ACTION> [RAND] [INDEX]
-> Where: ACTION := reclassify | drop | continue | pass | pipe |
-> goto chain <CHAIN_INDEX> | jump <JUMP_COUNT>
-> RAND := random <RANDTYPE> <ACTION> <VAL>
-> RANDTYPE := netrand | determ
-> VAL : = value not exceeding 10000
-> JUMP_COUNT := Absolute jump from start of action list
-> INDEX := index value used
-> 
-> I'm building the kernel on net-next.
-> 
-> I'm compiling the latest iproute2 version.
-> 
-> It seems like the problem is that support is lacking for skip_hw
-> in police action in iproute2.
-> 
+Add support for using xdp->data_meta for cross-program communication
 
+Pass "true" to the last argument of xdp_prepare_buff().
 
-So... How is the robot not reporting this as a regression?
-Davide? Basically kernel has the feature but code is missing
-in both iproute2 and iproute2-next..
+After SKB is built, call skb_metadata_set() if metadata was pushed.
 
-cheers,
-jamal
+Signed-off-by: Alex Liu <liualex@fb.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/en_rx.c
+index e86ccc22fb82..63ba4f3689f5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -1489,7 +1489,7 @@ static inline void mlx5e_complete_rx_cqe(struct mlx=
+5e_rq *rq,
+ static inline
+ struct sk_buff *mlx5e_build_linear_skb(struct mlx5e_rq *rq, void *va,
+ 				       u32 frag_size, u16 headroom,
+-				       u32 cqe_bcnt)
++				       u32 cqe_bcnt, u32 metasize)
+ {
+ 	struct sk_buff *skb =3D build_skb(va, frag_size);
+=20
+@@ -1501,6 +1501,9 @@ struct sk_buff *mlx5e_build_linear_skb(struct mlx5e=
+_rq *rq, void *va,
+ 	skb_reserve(skb, headroom);
+ 	skb_put(skb, cqe_bcnt);
+=20
++	if (metasize)
++		skb_metadata_set(skb, metasize);
++
+ 	return skb;
+ }
+=20
+@@ -1508,7 +1511,7 @@ static void mlx5e_fill_xdp_buff(struct mlx5e_rq *rq=
+, void *va, u16 headroom,
+ 				u32 len, struct xdp_buff *xdp)
+ {
+ 	xdp_init_buff(xdp, rq->buff.frame0_sz, &rq->xdp_rxq);
+-	xdp_prepare_buff(xdp, va, headroom, len, false);
++	xdp_prepare_buff(xdp, va, headroom, len, true);
+ }
+=20
+ static struct sk_buff *
+@@ -1521,6 +1524,7 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, stru=
+ct mlx5_cqe64 *cqe,
+ 	struct sk_buff *skb;
+ 	void *va, *data;
+ 	u32 frag_size;
++	u32 metasize;
+=20
+ 	va             =3D page_address(di->page) + wi->offset;
+ 	data           =3D va + rx_headroom;
+@@ -1537,7 +1541,8 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, stru=
+ct mlx5_cqe64 *cqe,
+=20
+ 	rx_headroom =3D xdp.data - xdp.data_hard_start;
+ 	frag_size =3D MLX5_SKB_FRAG_SZ(rx_headroom + cqe_bcnt);
+-	skb =3D mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt=
+);
++	metasize =3D xdp.data - xdp.data_meta;
++	skb =3D mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt=
+, metasize);
+ 	if (unlikely(!skb))
+ 		return NULL;
+=20
+@@ -1836,6 +1841,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq=
+, struct mlx5e_mpw_info *wi,
+ 	struct sk_buff *skb;
+ 	void *va, *data;
+ 	u32 frag_size;
++	u32 metasize;
+=20
+ 	/* Check packet size. Note LRO doesn't use linear SKB */
+ 	if (unlikely(cqe_bcnt > rq->hw_mtu)) {
+@@ -1861,7 +1867,8 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq=
+, struct mlx5e_mpw_info *wi,
+=20
+ 	rx_headroom =3D xdp.data - xdp.data_hard_start;
+ 	frag_size =3D MLX5_SKB_FRAG_SZ(rx_headroom + cqe_bcnt32);
+-	skb =3D mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt=
+32);
++	metasize =3D xdp.data - xdp.data_meta;
++	skb =3D mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt=
+32, metasize);
+ 	if (unlikely(!skb))
+ 		return NULL;
+=20
+@@ -1892,7 +1899,7 @@ mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, stru=
+ct mlx5e_mpw_info *wi,
+ 		dma_sync_single_range_for_cpu(rq->pdev, head->addr, 0, frag_size, DMA_=
+FROM_DEVICE);
+ 		prefetchw(hdr);
+ 		prefetch(data);
+-		skb =3D mlx5e_build_linear_skb(rq, hdr, frag_size, rx_headroom, head_s=
+ize);
++		skb =3D mlx5e_build_linear_skb(rq, hdr, frag_size, rx_headroom, head_s=
+ize, 0);
+=20
+ 		if (unlikely(!skb))
+ 			return;
+--=20
+2.30.2
+
