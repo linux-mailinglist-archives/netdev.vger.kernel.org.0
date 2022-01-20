@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDA08494CC6
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 12:21:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E3D494CC8
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 12:21:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231197AbiATLVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 06:21:36 -0500
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:54749 "EHLO
+        id S231231AbiATLVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 06:21:42 -0500
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:48071 "EHLO
         relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230523AbiATLV1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 06:21:27 -0500
+        with ESMTP id S229696AbiATLV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 06:21:28 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 1A1FDC000F;
-        Thu, 20 Jan 2022 11:21:24 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 0BA01C0006;
+        Thu, 20 Jan 2022 11:21:25 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -29,9 +29,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-next v2 4/9] net: ieee802154: at86rf230: Stop leaking skb's
-Date:   Thu, 20 Jan 2022 12:21:10 +0100
-Message-Id: <20220120112115.448077-5-miquel.raynal@bootlin.com>
+Subject: [wpan-next v2 5/9] net: ieee802154: ca8210: Stop leaking skb's
+Date:   Thu, 20 Jan 2022 12:21:11 +0100
+Message-Id: <20220120112115.448077-6-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220120112115.448077-1-miquel.raynal@bootlin.com>
 References: <20220120112115.448077-1-miquel.raynal@bootlin.com>
@@ -48,26 +48,24 @@ structure.
 
 Free the skb structure upon error before returning.
 
-There is no Fixes tag applying here, many changes have been made on this
-area and the issue kind of always existed.
-
+Fixes: ded845a781a5 ("ieee802154: Add CA8210 IEEE 802.15.4 device driver")
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/net/ieee802154/at86rf230.c | 1 +
+ drivers/net/ieee802154/ca8210.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-index 7d67f41387f5..0746150f78cf 100644
---- a/drivers/net/ieee802154/at86rf230.c
-+++ b/drivers/net/ieee802154/at86rf230.c
-@@ -344,6 +344,7 @@ at86rf230_async_error_recover_complete(void *context)
- 		kfree(ctx);
- 
- 	ieee802154_wake_queue(lp->hw);
-+	dev_kfree_skb_any(lp->tx_skb);
- }
- 
- static void
+diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
+index ece6ff6049f6..8e69441f1fff 100644
+--- a/drivers/net/ieee802154/ca8210.c
++++ b/drivers/net/ieee802154/ca8210.c
+@@ -1772,6 +1772,7 @@ static int ca8210_async_xmit_complete(
+ 		);
+ 		if (status != MAC_TRANSACTION_OVERFLOW) {
+ 			ieee802154_wake_queue(priv->hw);
++			dev_kfree_skb_any(priv->tx_skb);
+ 			return 0;
+ 		}
+ 	}
 -- 
 2.27.0
 
