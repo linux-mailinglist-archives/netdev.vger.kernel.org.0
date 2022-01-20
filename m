@@ -2,152 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D9AC4949B1
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 09:38:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58846494A03
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 09:49:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359312AbiATIiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 03:38:14 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:56146 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359292AbiATIiM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 03:38:12 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 1F79E1F391;
-        Thu, 20 Jan 2022 08:38:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1642667889; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=S1149P6IJdsdpbMcrXZq6Mc6WqPqJoBvK3pMWsa4MN8=;
-        b=mgVK2GKX4z682928eNQNmcKH4PlzeX6XpPLxSucJKp6GDejDBl9xGnHm3EQ7m1HB7u4s0x
-        HmV98Y94Jgx4BP2N49y70kzTAsfC49uladYoyY9u+lMOkRTYf7K7VjPT83DyGrKubQrpNL
-        4X9INnLQQrZk7xUamCgzquBLJDcbk7E=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1E602A3B81;
-        Thu, 20 Jan 2022 08:38:04 +0000 (UTC)
-Date:   Thu, 20 Jan 2022 09:38:04 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>
-Cc:     Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        linux-security-module@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Julia Lawall <julia.lawall@lip6.fr>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Leo Li <sunpeng.li@amd.com>,
-        Mikita Lipski <mikita.lipski@amd.com>,
-        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vishal Kulkarni <vishal@chelsio.com>
-Subject: Re: [PATCH 0/3] lib/string_helpers: Add a few string helpers
-Message-ID: <YekfbKMjOP9ecc5v@alley>
-References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
- <YegPiR7LU8aVisMf@alley>
- <87tudzbykz.fsf@intel.com>
+        id S240749AbiATItq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 03:49:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38320 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238141AbiATItp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 03:49:45 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44697C061574
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 00:49:45 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nAT8C-00017W-Kz; Thu, 20 Jan 2022 09:49:20 +0100
+Received: from pengutronix.de (unknown [195.138.59.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id C732A1E389;
+        Thu, 20 Jan 2022 08:49:17 +0000 (UTC)
+Date:   Thu, 20 Jan 2022 09:49:14 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Holger Brunck <holger.brunck@hitachienergy.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-phy@lists.infradead.org, Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>, ore@pengutronix.de,
+        alexandru.tachici@analog.com
+Subject: Re: [PATCH devicetree v3] dt-bindings: phy: Add `tx-p2p-microvolt`
+ property binding
+Message-ID: <20220120084914.ga7o372lyynbn4ly@pengutronix.de>
+References: <20220119131117.30245-1-kabel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="kvv4ypl26cp5w72m"
 Content-Disposition: inline
-In-Reply-To: <87tudzbykz.fsf@intel.com>
+In-Reply-To: <20220119131117.30245-1-kabel@kernel.org>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 2022-01-19 16:16:12, Jani Nikula wrote:
-> On Wed, 19 Jan 2022, Petr Mladek <pmladek@suse.com> wrote:
-> > On Tue 2022-01-18 23:24:47, Lucas De Marchi wrote:
-> >> d. This doesn't bring onoff() helper as there are some places in the
-> >>    kernel with onoff as variable - another name is probably needed for
-> >>    this function in order not to shadow the variable, or those variables
-> >>    could be renamed.  Or if people wanting  <someprefix>
-> >>    try to find a short one
-> >
-> > I would call it str_on_off().
-> >
-> > And I would actually suggest to use the same style also for
-> > the other helpers.
-> >
-> > The "str_" prefix would make it clear that it is something with
-> > string. There are other <prefix>_on_off() that affect some
-> > functionality, e.g. mute_led_on_off(), e1000_vlan_filter_on_off().
-> >
-> > The dash '_' would significantly help to parse the name. yesno() and
-> > onoff() are nicely short and kind of acceptable. But "enabledisable()"
-> > is a puzzle.
-> >
-> > IMHO, str_yes_no(), str_on_off(), str_enable_disable() are a good
-> > compromise.
-> >
-> > The main motivation should be code readability. You write the
-> > code once. But many people will read it many times. Open coding
-> > is sometimes better than misleading macro names.
-> >
-> > That said, I do not want to block this patchset. If others like
-> > it... ;-)
-> 
-> I don't mind the names either way. Adding the prefix and dashes is
-> helpful in that it's possible to add the functions first and convert
-> users at leisure, though with a bunch of churn, while using names that
-> collide with existing ones requires the changes to happen in one go.
 
-It is also possible to support both notations at the beginning.
-And convert the existing users in the 2nd step.
+--kvv4ypl26cp5w72m
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> What I do mind is grinding this series to a halt once again. I sent a
-> handful of versions of this three years ago, with inconclusive
-> bikeshedding back and forth, eventually threw my hands up in disgust,
-> and walked away.
+On 19.01.2022 14:11:17, Marek Beh=C3=BAn wrote:
+> Common PHYs and network PCSes often have the possibility to specify
+> peak-to-peak voltage on the differential pair - the default voltage
+> sometimes needs to be changed for a particular board.
+>=20
+> Add properties `tx-p2p-microvolt` and `tx-p2p-microvolt-names` for this
+> purpose. The second property is needed to specify the mode for the
+> corresponding voltage in the `tx-p2p-microvolt` property, if the voltage
+> is to be used only for speficic mode. More voltage-mode pairs can be
+> specified.
+>=20
+> Example usage with only one voltage (it will be used for all supported
+> PHY modes, the `tx-p2p-microvolt-names` property is not needed in this
+> case):
+>=20
+>   tx-p2p-microvolt =3D <915000>;
+>=20
+> Example usage with voltages for multiple modes:
+>=20
+>   tx-p2p-microvolt =3D <915000>, <1100000>, <1200000>;
+>   tx-p2p-microvolt-names =3D "2500base-x", "usb", "pcie";
+>=20
+> Add these properties into a separate file phy/transmit-amplitude.yaml,
+> which should be referenced by any binding that uses it.
 
-Yeah, and I am sorry for bikeshedding. Honestly, I do not know what is
-better. This is why I do not want to block this series when others
-like this.
+If I understand your use-case correctly, you need different voltage p2p
+levels in the connection between the Ethernet MAC and the Ethernet
+switch or Ethernet-PHY?
 
-My main motivation is to point out that:
+Some of the two wire Ethernet standards (10base-T1S, 10base-T1L,
+100base-T1, 1000base-T1) defines several p2p voltage levels on the wire,
+i.e. between the PHYs. Alexandru has posed a series where you can
+specify the between-PHY voltage levels:
 
-    enabledisable(enable)
+| https://lore.kernel.org/all/20211210110509.20970-8-alexandru.tachici@anal=
+og.com/
 
-might be, for some people, more eye bleeding than
+Can we make clear that your binding specifies the voltage level on the
+MII interface, in contrast Alexandru's binding?
 
-    enable ? "enable" : "disable"
+regards,
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-The problem is not that visible with yesno() and onoff(). But as you said,
-onoff() confliscts with variable names. And enabledisable() sucks.
-As a result, there is a non-trivial risk of two mass changes:
+--kvv4ypl26cp5w72m
+Content-Type: application/pgp-signature; name="signature.asc"
 
-now:
+-----BEGIN PGP SIGNATURE-----
 
-- contition ? "yes" : "no"
-+ yesno(condition)
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmHpIgcACgkQqclaivrt
+76m0QAf8CHZs1OBGLvXK0xMTJjOnlBpk4Ey7SjdgyBAKSqVuzT5CsLxxz0pjaN5m
++oJDadaBGfmLJ7EhSferqbHSyScH6GcPtExGWX3zTauRLYNU2SO7zIlseR29/Pc0
+1iPUOHsthgJkH7tTuC1UOvaECCjLqTjD6Awj4qj3UGe/XpJz6PUoLjLlw3tjrMl8
+1lCbHU/Kx9TA3+udo5n/ah3BZ2AjiQ//yB6xOclo0jK774hx2laAbSJYfK1a+4lP
+qQ6T5tAFCEfbGYeX5jZey2i1jTwBWLnTUqeluowKQn6H1HxyuI4LWuTcmiVdJOJC
+qJ+1uMyDgbMNZXoy6Q8c4GoJPXTQbQ==
+=KE6p
+-----END PGP SIGNATURE-----
 
-a few moths later:
-
-- yesno(condition)
-+ str_yes_no(condition)
-
-
-Best Regards,
-Petr
+--kvv4ypl26cp5w72m--
