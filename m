@@ -2,59 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 263F1494436
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:19:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D473494478
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:25:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357751AbiATATt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 19:19:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357737AbiATATs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 19:19:48 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3200CC061574;
-        Wed, 19 Jan 2022 16:19:48 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id az27-20020a05600c601b00b0034d2956eb04so9469905wmb.5;
-        Wed, 19 Jan 2022 16:19:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dodQjANZ5PCXc+ytYjE2SatA6sQLbldj+/e4HCBmgYI=;
-        b=HCoNj7X+OsAVv3LrWzwNq/f5rzxja0Cdjbcdzc1dpWFsBxOA067MGaCEgPzkFvZFaG
-         jKqt+v0qH1K8gv+PssqTAAyefB/578uEXkfnoNG37yYFdLydN38lOXJ8LTdEXnR5r3VV
-         hEWgdN3CvqU+2htvYtI0bdIDaYhrL61Jlxg7LNWoukYDcmuhEuTVoAEnpNjIVPcXRWQ7
-         MPv4JZLTAbzfpNj5xVtOF+zU+QMZLG4VMSATflgYGo9M0pix9EHqMs8yEFpaqFEKSyP4
-         KraC3YCp4JVnFAdFOi5GTzbxOP1B3kjARS/lyF1b+7hyOywrB3wwU+7SpI/hNWl5ODzN
-         PliA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dodQjANZ5PCXc+ytYjE2SatA6sQLbldj+/e4HCBmgYI=;
-        b=qk59BkD5p9mTE4e90tHaGAxcBf72Y4xTm/0Xob/HMMG8O/q65n78jcRxUSHo+gDu6+
-         7pm+8k5ZWsGf3JHpz6hwSEVBAocHoJjq4gl6zH2lNY7cyFU1+CAcnyOnMRu5HexZ9kQB
-         6+y7qseqtrR649zjkrXKQPmsGDtDgsDmQVq9e18cbk0OhuPcfekplqnaSlIk7bREZPdM
-         NwWwwK++xeiMg7dHwVIb6WVOs8KjggX7KyvPnb6qtnD+wnooSnsYmXuR/LXOiXaxJiJr
-         3QivMmkPfqnpkr0BIjrbWgvRigXZEmBxh4pwmF35ALlf6XLxlhYT6R3wr7Fzw0Y77Pfe
-         Yizw==
-X-Gm-Message-State: AOAM532oPXU4qSdq+rFIRqD/m/ANEFaggXlgt7Rt6AoNM9fChhqzuxNL
-        RzFaJs1cZm0PWi50XQhEt0IYJD6Pf3qZAD6L6Sc=
-X-Google-Smtp-Source: ABdhPJwqBbPwglKHGNlmDRPClR61u0jJdWV90on3kVCoJ3LdBKVXl1imW6IpA8LKWXBM0ZIrv5FZrA9p4rVcHC9Veoo=
-X-Received: by 2002:adf:fa8d:: with SMTP id h13mr7973400wrr.154.1642637986835;
- Wed, 19 Jan 2022 16:19:46 -0800 (PST)
-MIME-Version: 1.0
-References: <20220117115440.60296-1-miquel.raynal@bootlin.com>
- <20220117115440.60296-18-miquel.raynal@bootlin.com> <CAB_54W76X5vhaVMUv=s3e0pbWZgHRK3W=27N9m5LgEdLgAPAcA@mail.gmail.com>
- <CAB_54W5Uu9_hpqmeL0MC+1ps=yfn2j0-o46cBL7BeBxKXKHa4w@mail.gmail.com>
- <20220119235600.48173f5b@xps13> <CAB_54W4Dy13=EMD0ZEvwX6HLC3bM=nAp0esqDXBj9T+9Jjd_aw@mail.gmail.com>
-In-Reply-To: <CAB_54W4Dy13=EMD0ZEvwX6HLC3bM=nAp0esqDXBj9T+9Jjd_aw@mail.gmail.com>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Wed, 19 Jan 2022 19:19:35 -0500
-Message-ID: <CAB_54W7Cs8=zBokk_ka-LWAOoSQy-M-aHxn5kjCckfO5EqQGJg@mail.gmail.com>
-Subject: Re: [PATCH v3 17/41] net: ieee802154: at86rf230: Call the complete
- helper when a transmission is over
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
+        id S1345304AbiATAZE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Jan 2022 19:25:04 -0500
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:46737 "EHLO
+        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345289AbiATAZD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 19:25:03 -0500
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3DAB620003;
+        Thu, 20 Jan 2022 00:25:00 +0000 (UTC)
+Date:   Thu, 20 Jan 2022 01:24:59 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
         "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
@@ -69,78 +31,84 @@ Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         Varka Bhadram <varkabhadram@gmail.com>,
         Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH v3 00/41] IEEE 802.15.4 scan support
+Message-ID: <20220120012459.1e3ca85e@xps13>
+In-Reply-To: <CAB_54W4jAZqSJ-7VuT0uOukHEnxAYpaGqZ6S6n9tYst26F+VWQ@mail.gmail.com>
+References: <20220117115440.60296-1-miquel.raynal@bootlin.com>
+        <CAB_54W4q9a1MRdfK6yJHMRt+Zfapn0ggie9RbbUYi4=Biefz_A@mail.gmail.com>
+        <20220118114023.2d2c0207@xps13>
+        <CAB_54W4jAZqSJ-7VuT0uOukHEnxAYpaGqZ6S6n9tYst26F+VWQ@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Alexander,
 
-On Wed, 19 Jan 2022 at 18:34, Alexander Aring <alex.aring@gmail.com> wrote:
->
+alex.aring@gmail.com wrote on Tue, 18 Jan 2022 18:12:49 -0500:
+
 > Hi,
->
-> On Wed, 19 Jan 2022 at 17:56, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> 
+> On Tue, 18 Jan 2022 at 05:40, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 > >
 > > Hi Alexander,
+> >  
+> > > > So far the only technical point that is missing in this series is the
+> > > > possibility to grab a reference over the module driving the net device
+> > > > in order to prevent module unloading during a scan or when the beacons
+> > > > work is ongoing.  
 > >
-> > alex.aring@gmail.com wrote on Mon, 17 Jan 2022 19:36:39 -0500:
-> >
-> > > Hi,
-> > >
-> > > On Mon, 17 Jan 2022 at 19:34, Alexander Aring <alex.aring@gmail.com> wrote:
-> > > >
-> > > > Hi,
-> > > >
-> > > > On Mon, 17 Jan 2022 at 06:55, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > > > >
-> > > > > ieee802154_xmit_complete() is the right helper to call when a
-> > > > > transmission is over. The fact that it completed or not is not really a
-> > > > > question, but drivers must tell the core that the completion is over,
-> > > > > even if it was canceled. Do not call ieee802154_wake_queue() manually,
-> > > > > in order to let full control of this task to the core.
-> > > > >
-> > > > > By using the complete helper we also avoid leacking the skb structure.
-> > > > >
-> > > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > > ---
-> > > > >  drivers/net/ieee802154/at86rf230.c | 2 +-
-> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > >
-> > > > > diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-> > > > > index 583f835c317a..1941e1f3d2ef 100644
-> > > > > --- a/drivers/net/ieee802154/at86rf230.c
-> > > > > +++ b/drivers/net/ieee802154/at86rf230.c
-> > > > > @@ -343,7 +343,7 @@ at86rf230_async_error_recover_complete(void *context)
-> > > > >         if (ctx->free)
-> > > > >                 kfree(ctx);
-> > > > >
-> > > > > -       ieee802154_wake_queue(lp->hw);
-> > > > > +       ieee802154_xmit_complete(lp->hw, lp->tx_skb, false);
-> > > >
-> > > > also this lp->tx_skb can be a dangled pointer, after xmit_complete()
-> > > > we need to set it to NULL in a xmit_error() we can check on NULL
-> > > > before calling kfree_skb().
-> > > >
-> > >
-> > > forget the NULL checking, it's already done by core. However in some
-> > > cases this is called with a dangled pointer on lp->tx_skb.
-> >
-> > Actually I don't see why tx_skb is dangling?
-> >
-> > There is no function that could accesses lp->tx_skb between the free
-> > operation and the next call to ->xmit() which does a lp->tx_skb = skb.
-> > Am I missing something?
-> >
->
-> look into at86rf230_sync_state_change() it is a sync over async and
-> the function "at86rf230_async_error_recover_complete()" is a generic
-> error handling to recover from a state change. It's e.g. being used in
-> e.g. at86rf230_start() which can occur in cases which are not xmit
-> related.
->
+> > Do you have any advises regarding this issue? That is the only
+> > technical point that is left unaddressed IMHO.
+> >  
+> 
+> module_get()/module_put() or I don't see where the problem here is.
+> You can avoid module unloading with it. Which module is the problem
+> here?
 
-which means there is more being broken that we should not simply call
-to wake the queue in non-transmit cases...
+I'll give it another try, maybe when I first tried that I was missing a
+few mental peaces and did not understood the puzzle correctly.
 
-- Alex
+> > > > Finally, this series is a deep reshuffle of David Girault's original
+> > > > work, hence the fact that he is almost systematically credited, either
+> > > > by being the only author when I created the patches based on his changes
+> > > > with almost no modification, or with a Co-developped-by tag whenever the
+> > > > final code base is significantly different than his first proposal while
+> > > > still being greatly inspired from it.
+> > > >  
+> > >
+> > > can you please split this patch series, what I see is now:
+> > >
+> > > 1. cleanup patches
+> > > 2. sync tx handling for mlme commands
+> > > 3. scan support  
+> >
+> > Works for me. I just wanted to give the big picture but I'll split the
+> > series.
+> >  
+> 
+> maybe also put some "symbol duration" series into it if it's getting
+> too large? It is difficult to review 40 patches... in one step.
+
+Yep, I truly understand (and now 50+).
+
+> 
+> > Also sorry for forgetting the 'wpan-next' subject prefix.
+> >  
+> 
+> no problem.
+> 
+> I really appreciate your work and your willingness to work on all
+> outstanding issues. I am really happy to see something that we can use
+> for mlme-commands and to separate it from the hotpath transmission...
+> It is good to see architecture for that which I think goes in the
+> right direction.
+
+That is very stirring to read :)
+
+Thanks,
+Miquèl
