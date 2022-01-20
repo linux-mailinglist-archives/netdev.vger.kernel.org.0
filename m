@@ -2,18 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5C16494531
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:51:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97832494539
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:51:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358025AbiATAvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 19:51:44 -0500
-Received: from relay11.mail.gandi.net ([217.70.178.231]:47315 "EHLO
-        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358005AbiATAvm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 19:51:42 -0500
+        id S1358033AbiATAvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 19:51:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45628 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358030AbiATAvp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 19:51:45 -0500
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E20C061574;
+        Wed, 19 Jan 2022 16:51:44 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 97275100005;
-        Thu, 20 Jan 2022 00:51:40 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 0B079100006;
+        Thu, 20 Jan 2022 00:51:41 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -27,9 +30,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-next 11/14] net: mac802154: Create a hot tx path
-Date:   Thu, 20 Jan 2022 01:51:19 +0100
-Message-Id: <20220120005122.309104-12-miquel.raynal@bootlin.com>
+Subject: [wpan-next 12/14] net: mac802154: Add a warning in the hot path
+Date:   Thu, 20 Jan 2022 01:51:20 +0100
+Message-Id: <20220120005122.309104-13-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220120005122.309104-1-miquel.raynal@bootlin.com>
 References: <20220120005122.309104-1-miquel.raynal@bootlin.com>
@@ -40,47 +43,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let's rename the current tx path to show that this is the "hot" path. We
-will soon introduce a slower path for MLME commands.
+We should never start a transmission after the queue has been stopped.
+
+But because it might work we don't kill the function here but rather
+warn loudly the user that something is wrong.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- net/mac802154/tx.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ net/mac802154/tx.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-index a8d4d5e175b6..18ee6fcfcd7f 100644
+index 18ee6fcfcd7f..abd9a057521e 100644
 --- a/net/mac802154/tx.c
 +++ b/net/mac802154/tx.c
-@@ -109,6 +109,12 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
- 	return NETDEV_TX_OK;
- }
- 
-+static netdev_tx_t
-+ieee802154_hot_tx(struct ieee802154_local *local, struct sk_buff *skb)
-+{
-+	return ieee802154_tx(local, skb);
-+}
-+
- netdev_tx_t
- ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -112,6 +112,8 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
+ static netdev_tx_t
+ ieee802154_hot_tx(struct ieee802154_local *local, struct sk_buff *skb)
  {
-@@ -116,7 +122,7 @@ ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 	skb->skb_iif = dev->ifindex;
- 
--	return ieee802154_tx(sdata->local, skb);
-+	return ieee802154_hot_tx(sdata->local, skb);
++	WARN_ON_ONCE(mac802154_queue_is_stopped(local));
++
+ 	return ieee802154_tx(local, skb);
  }
  
- netdev_tx_t
-@@ -138,5 +144,5 @@ ieee802154_subif_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 	skb->skb_iif = dev->ifindex;
- 
--	return ieee802154_tx(sdata->local, skb);
-+	return ieee802154_hot_tx(sdata->local, skb);
- }
 -- 
 2.27.0
 
