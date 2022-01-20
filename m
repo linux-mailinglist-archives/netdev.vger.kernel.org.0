@@ -2,18 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 483014944E7
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:41:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F04B4944EB
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:41:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240551AbiATAla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 19:41:30 -0500
-Received: from relay12.mail.gandi.net ([217.70.178.232]:45255 "EHLO
-        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232101AbiATAl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 19:41:29 -0500
+        id S1345261AbiATAlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 19:41:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345055AbiATAlc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 19:41:32 -0500
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48EA0C06173E;
+        Wed, 19 Jan 2022 16:41:31 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id C80FF200008;
-        Thu, 20 Jan 2022 00:41:26 +0000 (UTC)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 6228E200007;
+        Thu, 20 Jan 2022 00:41:28 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -30,9 +33,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-next 3/5] net: mac802154: Convert the symbol duration into nanoseconds
-Date:   Thu, 20 Jan 2022 01:41:18 +0100
-Message-Id: <20220120004120.308709-4-miquel.raynal@bootlin.com>
+Subject: [wpan-next 4/5] net: mac802154: Set the symbol duration automatically
+Date:   Thu, 20 Jan 2022 01:41:19 +0100
+Message-Id: <20220120004120.308709-5-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220120004120.308709-1-miquel.raynal@bootlin.com>
 References: <20220120004120.308709-1-miquel.raynal@bootlin.com>
@@ -43,226 +46,175 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tdsym is often given in the spec as pretty small numbers in microseconds
-and hence was reflected in the code as symbol_duration and was stored as
-a u8. Actually, for UWB PHYs, the symbol duration is given in
-nanoseconds and are as precise as picoseconds. In order to handle better
-these PHYs, change the type of symbol_duration to u32 and store this
-value in nanoseconds.
+Now that we have access to all the basic information to know which
+symbol duration should be applied, let's set the symbol duration
+automatically. The two locations that must call for the symbol duration
+to be set are:
+- when manually requesting a channel change though the netlink interface
+- at PHY creation, ieee802154_alloc_hw() already calls
+  ieee802154_change_channel() which will now update the symbol duration
+  accordingly.
 
-All the users of this variable are updated in a mechanical change.
+If an information is missing, the symbol duration is not touched, a
+debug message is eventually printed. This keeps the compatibility with
+the unconverted drivers for which it was too complicated for me to find
+their precise information. If they initially provided a symbol duration,
+it would be kept. If they don't, the symbol duration value is left
+untouched.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/net/ieee802154/at86rf230.c | 22 +++++++++++-----------
- drivers/net/ieee802154/atusb.c     | 22 +++++++++++-----------
- drivers/net/ieee802154/ca8210.c    |  2 +-
- drivers/net/ieee802154/mcr20a.c    |  8 ++++----
- include/net/cfg802154.h            |  4 ++--
- net/mac802154/main.c               |  8 ++++----
- 6 files changed, 33 insertions(+), 33 deletions(-)
+ include/net/cfg802154.h |   2 +
+ net/mac802154/cfg.c     |   1 +
+ net/mac802154/main.c    | 105 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 108 insertions(+)
 
-diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-index 84e5dcd9df09..653931b20ab4 100644
---- a/drivers/net/ieee802154/at86rf230.c
-+++ b/drivers/net/ieee802154/at86rf230.c
-@@ -1067,24 +1067,24 @@ at86rf212_set_channel(struct at86rf230_local *lp, u8 page, u8 channel)
- 	if (channel == 0) {
- 		if (page == 0) {
- 			/* SUB:0 and BPSK:0 -> BPSK-20 */
--			lp->hw->phy->symbol_duration = 50;
-+			lp->hw->phy->symbol_duration = 50 * NSEC_PER_USEC;
- 		} else {
- 			/* SUB:1 and BPSK:0 -> BPSK-40 */
--			lp->hw->phy->symbol_duration = 25;
-+			lp->hw->phy->symbol_duration = 25 * NSEC_PER_USEC;
- 		}
- 	} else {
- 		if (page == 0)
- 			/* SUB:0 and BPSK:1 -> OQPSK-100/200/400 */
--			lp->hw->phy->symbol_duration = 40;
-+			lp->hw->phy->symbol_duration = 40 * NSEC_PER_USEC;
- 		else
- 			/* SUB:1 and BPSK:1 -> OQPSK-250/500/1000 */
--			lp->hw->phy->symbol_duration = 16;
-+			lp->hw->phy->symbol_duration = 16 * NSEC_PER_USEC;
- 	}
- 
--	lp->hw->phy->lifs_period = IEEE802154_LIFS_PERIOD *
--				   lp->hw->phy->symbol_duration;
--	lp->hw->phy->sifs_period = IEEE802154_SIFS_PERIOD *
--				   lp->hw->phy->symbol_duration;
-+	lp->hw->phy->lifs_period =
-+		(IEEE802154_LIFS_PERIOD * lp->hw->phy->symbol_duration) / 1000;
-+	lp->hw->phy->sifs_period =
-+		(IEEE802154_SIFS_PERIOD * lp->hw->phy->symbol_duration) / 1000;
- 
- 	return at86rf230_write_subreg(lp, SR_CHANNEL, channel);
- }
-@@ -1564,7 +1564,7 @@ at86rf230_detect_device(struct at86rf230_local *lp)
- 		lp->hw->phy->supported.page[0].chunk[0].protocol = IEEE802154_OQPSK_PHY;
- 		lp->hw->phy->supported.page[0].chunk[0].band = IEEE802154_2400_MHZ_BAND;
- 		lp->hw->phy->current_channel = 11;
--		lp->hw->phy->symbol_duration = 16;
-+		lp->hw->phy->symbol_duration = 16 * NSEC_PER_USEC;
- 		lp->hw->phy->supported.tx_powers = at86rf231_powers;
- 		lp->hw->phy->supported.tx_powers_size = ARRAY_SIZE(at86rf231_powers);
- 		lp->hw->phy->supported.cca_ed_levels = at86rf231_ed_levels;
-@@ -1596,7 +1596,7 @@ at86rf230_detect_device(struct at86rf230_local *lp)
- 		lp->hw->phy->supported.page[2].chunk[1].band = IEEE802154_915_MHZ_BAND;
- 
- 		lp->hw->phy->current_channel = 5;
--		lp->hw->phy->symbol_duration = 25;
-+		lp->hw->phy->symbol_duration = 25 * NSEC_PER_USEC;
- 		lp->hw->phy->supported.lbt = NL802154_SUPPORTED_BOOL_BOTH;
- 		lp->hw->phy->supported.tx_powers = at86rf212_powers;
- 		lp->hw->phy->supported.tx_powers_size = ARRAY_SIZE(at86rf212_powers);
-@@ -1611,7 +1611,7 @@ at86rf230_detect_device(struct at86rf230_local *lp)
- 		lp->hw->phy->supported.page[0].chunk[0].protocol = IEEE802154_OQPSK_PHY;
- 		lp->hw->phy->supported.page[0].chunk[0].band = IEEE802154_2400_MHZ_BAND;
- 		lp->hw->phy->current_channel = 13;
--		lp->hw->phy->symbol_duration = 16;
-+		lp->hw->phy->symbol_duration = 16 * NSEC_PER_USEC;
- 		lp->hw->phy->supported.tx_powers = at86rf233_powers;
- 		lp->hw->phy->supported.tx_powers_size = ARRAY_SIZE(at86rf233_powers);
- 		lp->hw->phy->supported.cca_ed_levels = at86rf233_ed_levels;
-diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
-index 7e8c9d6db7d7..80382919520e 100644
---- a/drivers/net/ieee802154/atusb.c
-+++ b/drivers/net/ieee802154/atusb.c
-@@ -678,24 +678,24 @@ static int hulusb_set_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
- 	if (channel == 0) {
- 		if (page == 0) {
- 			/* SUB:0 and BPSK:0 -> BPSK-20 */
--			lp->hw->phy->symbol_duration = 50;
-+			lp->hw->phy->symbol_duration = 50 * NSEC_PER_USEC;
- 		} else {
- 			/* SUB:1 and BPSK:0 -> BPSK-40 */
--			lp->hw->phy->symbol_duration = 25;
-+			lp->hw->phy->symbol_duration = 25 * NSEC_PER_USEC;
- 		}
- 	} else {
- 		if (page == 0)
- 			/* SUB:0 and BPSK:1 -> OQPSK-100/200/400 */
--			lp->hw->phy->symbol_duration = 40;
-+			lp->hw->phy->symbol_duration = 40 * NSEC_PER_USEC;
- 		else
- 			/* SUB:1 and BPSK:1 -> OQPSK-250/500/1000 */
--			lp->hw->phy->symbol_duration = 16;
-+			lp->hw->phy->symbol_duration = 16 * NSEC_PER_USEC;
- 	}
- 
--	lp->hw->phy->lifs_period = IEEE802154_LIFS_PERIOD *
--				   lp->hw->phy->symbol_duration;
--	lp->hw->phy->sifs_period = IEEE802154_SIFS_PERIOD *
--				   lp->hw->phy->symbol_duration;
-+	lp->hw->phy->lifs_period =
-+		(IEEE802154_LIFS_PERIOD * lp->hw->phy->symbol_duration) / 1000;
-+	lp->hw->phy->sifs_period =
-+		(IEEE802154_SIFS_PERIOD * lp->hw->phy->symbol_duration) / 1000;
- 
- 	return atusb_write_subreg(lp, SR_CHANNEL, channel);
- }
-@@ -919,7 +919,7 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
- 		atusb->hw->phy->supported.page[0].chunk[0].protocol = IEEE802154_OQPSK_PHY;
- 		atusb->hw->phy->supported.page[0].chunk[0].band = IEEE802154_2400_MHZ_BAND;
- 		atusb->hw->phy->current_channel = 11;	/* reset default */
--		atusb->hw->phy->symbol_duration = 16;
-+		atusb->hw->phy->symbol_duration = 16 * NSEC_PER_USEC;
- 		atusb->hw->phy->supported.tx_powers = atusb_powers;
- 		atusb->hw->phy->supported.tx_powers_size = ARRAY_SIZE(atusb_powers);
- 		hw->phy->supported.cca_ed_levels = atusb_ed_levels;
-@@ -932,7 +932,7 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
- 		atusb->hw->phy->supported.page[0].chunk[0].protocol = IEEE802154_OQPSK_PHY;
- 		atusb->hw->phy->supported.page[0].chunk[0].band = IEEE802154_2400_MHZ_BAND;
- 		atusb->hw->phy->current_channel = 11;	/* reset default */
--		atusb->hw->phy->symbol_duration = 16;
-+		atusb->hw->phy->symbol_duration = 16 * NSEC_PER_USEC;
- 		atusb->hw->phy->supported.tx_powers = atusb_powers;
- 		atusb->hw->phy->supported.tx_powers_size = ARRAY_SIZE(atusb_powers);
- 		hw->phy->supported.cca_ed_levels = atusb_ed_levels;
-@@ -963,7 +963,7 @@ static int atusb_get_and_conf_chip(struct atusb *atusb)
- 		atusb->hw->phy->supported.page[2].chunk[1].band = IEEE802154_915_MHZ_BAND;
- 
- 		atusb->hw->phy->current_channel = 5;
--		atusb->hw->phy->symbol_duration = 25;
-+		atusb->hw->phy->symbol_duration = 25 * NSEC_PER_USEC;
- 		atusb->hw->phy->supported.lbt = NL802154_SUPPORTED_BOOL_BOTH;
- 		atusb->hw->phy->supported.tx_powers = at86rf212_powers;
- 		atusb->hw->phy->supported.tx_powers_size = ARRAY_SIZE(at86rf212_powers);
-diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-index 6854ec7747c0..809514611712 100644
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -2978,7 +2978,7 @@ static void ca8210_hw_setup(struct ieee802154_hw *ca8210_hw)
- 	ca8210_hw->phy->cca.mode = NL802154_CCA_ENERGY_CARRIER;
- 	ca8210_hw->phy->cca.opt = NL802154_CCA_OPT_ENERGY_CARRIER_AND;
- 	ca8210_hw->phy->cca_ed_level = -9800;
--	ca8210_hw->phy->symbol_duration = 16;
-+	ca8210_hw->phy->symbol_duration = 16 * NSEC_PER_USEC;
- 	ca8210_hw->phy->lifs_period = 40;
- 	ca8210_hw->phy->sifs_period = 12;
- 	ca8210_hw->flags =
-diff --git a/drivers/net/ieee802154/mcr20a.c b/drivers/net/ieee802154/mcr20a.c
-index e2c249aef430..34063b7e663e 100644
---- a/drivers/net/ieee802154/mcr20a.c
-+++ b/drivers/net/ieee802154/mcr20a.c
-@@ -975,9 +975,9 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
- 
- 	dev_dbg(printdev(lp), "%s\n", __func__);
- 
--	phy->symbol_duration = 16;
--	phy->lifs_period = 40 * phy->symbol_duration;
--	phy->sifs_period = 12 * phy->symbol_duration;
-+	phy->symbol_duration = 16 * NSEC_PER_USEC;
-+	phy->lifs_period = (40 * phy->symbol_duration) / NSEC_PER_USEC;
-+	phy->sifs_period = (12 * phy->symbol_duration) / NSEC_PER_USEC;
- 
- 	hw->flags = IEEE802154_HW_TX_OMIT_CKSUM |
- 			IEEE802154_HW_AFILT |
-@@ -1010,7 +1010,7 @@ static void mcr20a_hw_setup(struct mcr20a_local *lp)
- 	phy->current_page = 0;
- 	/* MCR20A default reset value */
- 	phy->current_channel = 20;
--	phy->symbol_duration = 16;
-+	phy->symbol_duration = 16 * NSEC_PER_USEC;
- 	phy->supported.tx_powers = mcr20a_powers;
- 	phy->supported.tx_powers_size = ARRAY_SIZE(mcr20a_powers);
- 	phy->cca_ed_level = phy->supported.cca_ed_levels[75];
 diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-index 03c8008217fb..286709a9dd0b 100644
+index 286709a9dd0b..4491e2724ff2 100644
 --- a/include/net/cfg802154.h
 +++ b/include/net/cfg802154.h
-@@ -253,8 +253,8 @@ struct wpan_phy {
- 
- 	/* PHY depended MAC PIB values */
- 
--	/* 802.15.4 acronym: Tdsym in usec */
--	u8 symbol_duration;
-+	/* 802.15.4 acronym: Tdsym in nsec */
-+	u32 symbol_duration;
- 	/* lifs and sifs periods timing */
- 	u16 lifs_period;
- 	u16 sifs_period;
-diff --git a/net/mac802154/main.c b/net/mac802154/main.c
-index 520cedc594e1..53153367f9d0 100644
---- a/net/mac802154/main.c
-+++ b/net/mac802154/main.c
-@@ -131,10 +131,10 @@ static void ieee802154_setup_wpan_phy_pib(struct wpan_phy *wpan_phy)
- 	 * Should be done when all drivers sets this value.
- 	 */
- 
--	wpan_phy->lifs_period = IEEE802154_LIFS_PERIOD *
--				wpan_phy->symbol_duration;
--	wpan_phy->sifs_period = IEEE802154_SIFS_PERIOD *
--				wpan_phy->symbol_duration;
-+	wpan_phy->lifs_period =
-+		(IEEE802154_LIFS_PERIOD * wpan_phy->symbol_duration) / 1000;
-+	wpan_phy->sifs_period =
-+		(IEEE802154_SIFS_PERIOD * wpan_phy->symbol_duration) / 1000;
+@@ -455,4 +455,6 @@ static inline const char *wpan_phy_name(struct wpan_phy *phy)
+ 	return dev_name(&phy->dev);
  }
  
- int ieee802154_register_hw(struct ieee802154_hw *hw)
++void ieee802154_configure_durations(struct wpan_phy *phy);
++
+ #endif /* __NET_CFG802154_H */
+diff --git a/net/mac802154/cfg.c b/net/mac802154/cfg.c
+index fbeebe3bc31d..1e4a9f74ed43 100644
+--- a/net/mac802154/cfg.c
++++ b/net/mac802154/cfg.c
+@@ -118,6 +118,7 @@ ieee802154_set_channel(struct wpan_phy *wpan_phy, u8 page, u8 channel)
+ 	if (!ret) {
+ 		wpan_phy->current_page = page;
+ 		wpan_phy->current_channel = channel;
++		ieee802154_configure_durations(wpan_phy);
+ 	}
+ 
+ 	return ret;
+diff --git a/net/mac802154/main.c b/net/mac802154/main.c
+index 53153367f9d0..f08c34c27ea9 100644
+--- a/net/mac802154/main.c
++++ b/net/mac802154/main.c
+@@ -113,6 +113,109 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
+ }
+ EXPORT_SYMBOL(ieee802154_alloc_hw);
+ 
++void ieee802154_configure_durations(struct wpan_phy *phy)
++{
++	struct phy_page *page = &phy->supported.page[phy->current_page];
++	struct phy_channels *chan;
++	bool valid_band = false;
++	unsigned int chunk;
++	u32 duration = 0;
++
++	for (chunk = 0; chunk < page->nchunks; chunk++) {
++		if (page->chunk[chunk].channels & BIT(phy->current_channel))
++			break;
++	}
++
++	if (chunk == page->nchunks) {
++		pr_debug("Wrong channels description\n");
++		return;
++	}
++
++	chan = &page->chunk[chunk];
++	switch (chan->protocol) {
++	case IEEE802154_BPSK_PHY:
++		switch (chan->band) {
++		case IEEE802154_868_MHZ_BAND:
++			/* 868 MHz BPSK	802.15.4-2003: 20 ksym/s */
++			duration = 50 * NSEC_PER_USEC;
++			break;
++		case IEEE802154_915_MHZ_BAND:
++			/* 915 MHz BPSK	802.15.4-2003: 40 ksym/s */
++			duration = 25 * NSEC_PER_USEC;
++			break;
++		default:
++			break;
++		}
++		break;
++	case IEEE802154_OQPSK_PHY:
++		switch (chan->band) {
++		case IEEE802154_868_MHZ_BAND:
++			/* 868 MHz O-QPSK 802.15.4-2006: 25 ksym/s */
++			duration = 40 * NSEC_PER_USEC;
++			break;
++		case IEEE802154_915_MHZ_BAND:
++		case IEEE802154_2400_MHZ_BAND:
++			/* 915/2400 MHz O-QPSK 802.15.4-2006: 62.5 ksym/s */
++			duration = 16 * NSEC_PER_USEC;
++			break;
++		default:
++			break;
++		}
++		break;
++	case IEEE802154_CSS_PHY:
++		switch (chan->band) {
++		case IEEE802154_2400_MHZ_BAND:
++			/* 2.4 GHz CSS 802.15.4a-2007: 1/6 Msym/s */
++			duration = 6 * NSEC_PER_USEC;
++			break;
++		default:
++			break;
++		}
++		break;
++	case IEEE802154_HRP_UWB_PHY:
++		switch (chan->band) {
++		case IEEE802154_250_750_MHZ_BAND:
++		case IEEE802154_3100_4800_MHZ_BAND:
++		case IEEE802154_6000_10600_MHZ_BAND:
++			valid_band = true;
++			break;
++		default:
++			break;
++		}
++
++		if (!valid_band)
++			break;
++
++		/* UWB 802.15.4a-2007: 993.6 or 1017.6 or 3974.4 ns */
++		switch (chan->prf) {
++		case IEEE802154_16100KHZ_MEAN_PRF:
++			duration = 994;
++			break;
++		case IEEE802154_4030KHZ_MEAN_PRF:
++			duration = 3974;
++			break;
++		case IEEE802154_62890KHZ_MEAN_PRF:
++			duration = 1018;
++			break;
++		default:
++			break;
++		}
++		break;
++	default:
++		break;
++	}
++
++	if (!duration) {
++		pr_debug("Unknown PHY symbol duration\n");
++		return;
++	}
++
++	phy->symbol_duration = duration;
++	phy->lifs_period = (IEEE802154_LIFS_PERIOD * phy->symbol_duration) / NSEC_PER_SEC;
++	phy->sifs_period = (IEEE802154_SIFS_PERIOD * phy->symbol_duration) / NSEC_PER_SEC;
++}
++EXPORT_SYMBOL(ieee802154_configure_durations);
++
+ void ieee802154_free_hw(struct ieee802154_hw *hw)
+ {
+ 	struct ieee802154_local *local = hw_to_local(hw);
+@@ -157,6 +260,8 @@ int ieee802154_register_hw(struct ieee802154_hw *hw)
+ 
+ 	ieee802154_setup_wpan_phy_pib(local->phy);
+ 
++	ieee802154_configure_durations(local->phy);
++
+ 	if (!(hw->flags & IEEE802154_HW_CSMA_PARAMS)) {
+ 		local->phy->supported.min_csma_backoffs = 4;
+ 		local->phy->supported.max_csma_backoffs = 4;
 -- 
 2.27.0
 
