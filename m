@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F7374955D5
+	by mail.lfdr.de (Postfix) with ESMTP id BDDE34955D6
 	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 22:12:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377778AbiATVME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 16:12:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39460 "EHLO
+        id S1377779AbiATVMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 16:12:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377776AbiATVMD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 16:12:03 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656DAC06161C
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 13:12:03 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id 187so6158882pga.10
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 13:12:03 -0800 (PST)
+        with ESMTP id S1377777AbiATVME (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 16:12:04 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79972C061574
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 13:12:04 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id t18so6261577plg.9
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 13:12:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2CmMkcLMupEBjGGLQZwEV/RJ8zBm1D0fwzw031sSOqU=;
-        b=LYxdQNpL2ygSOeu29bkG1tv44wtxVNXfbose65mHFd1TUYM2w7cSihgBHE0LuBGppe
-         ha5ZxmZtpES2G6EoFsCHCJKI8H7/ARNpINWRJhca/8j+b3QHY3QcIpirvXxl1e1zgGR/
-         zU+JNTA11lO6GO0Pi8FVJUEjKyqmXYtBhMVdVjRgS5dkKvD6F7nvepgvJgWASAMdDpxv
-         6rdGddMlHek+YdMZca9vaof5sfHU0oI/cJrYMaWQaGsIVh+ZjJo3rQc1VZxHAJh0TkSV
-         z35bV6/rCS3dqqGerOASZnP51TiggZZkYawWTSWUfN5EtFH7cNt8J5CKdC6KfKLPG9YT
-         n4BQ==
+        bh=6Lu8Ofe9OiOomvfdmKceVGmq8zIVB6BYh6XUCUGTXdg=;
+        b=w1w6v8pEOL/+Ge1FFFavo5OL7raZfrz3kUhWo7RGBs2qv+U4sZaigCZzr1LJxcIWl6
+         LszkeFAmil9FYpy7OtChAXWGunjhW47Y1+BStxHupExnNdXiYxl1jx3TgqSS0CA86pgb
+         ZRcLsNXoDmhLA2Zf8xeKlXwqbBHIlQdeglHl8UB3ywzNZaXW7gbs5jbrsmuAJrUjb5Zx
+         41QtKyfeXnTDZ9PpsaPW0nbp8/ACwHEkZw26HbPA/V3oAH/WS72sJlXS2fm9tuLbGoU9
+         ys3sZxNmrgcIpnKGTcAvKLGO+FYx3d3GLRMrZ4CTq07b/3XbUM+vY/4xon35rW528xAG
+         plvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2CmMkcLMupEBjGGLQZwEV/RJ8zBm1D0fwzw031sSOqU=;
-        b=q2WWXR1Q7Qqj8cBZ3QypuLyoxc236csve78ag3Epkqgv8JL1kWlb84dRX4ICiTN2xb
-         RBbjkhA0xYZcSbnv+Q5WjbPAltTSc73w6A9Z2QXv8SP6TH9dxgdQYPI0KUY+ftgiRTrQ
-         8pnsZCeUSFgOIJGdw0FAyeMMwxz8HLHh+mBZoRSL0i9qVR8wuu1N9UGscD+nui8qERGq
-         QCEtunjEtm21pz7gOkh3eunNCqoUCSMYWNJv6Y610KgPzciIaGov8kaQJQY3jcuTyq8j
-         ywMfSxGzoAcopwbCc98jg8If6QGUeEWd1l7pBFd9wHVx6wSqYR2ySLx1p6HKvvP5d6bQ
-         ++1Q==
-X-Gm-Message-State: AOAM5333kY7v+M8qnxmfcYd5oxrmJgjx2Ww+LJl7i0wPJnZN4LB/ZFKd
-        AsRP52yUMkZMJBo5mrCvl4ChWv8mpXAsQg==
-X-Google-Smtp-Source: ABdhPJyjTvE6UIcB9mk/oghTfN27ZpM1rSz33re9SoNVHZjOYFORho4DUfmlYJNjrrI+Eco4D6rEcA==
-X-Received: by 2002:a63:710e:: with SMTP id m14mr476056pgc.277.1642713122657;
-        Thu, 20 Jan 2022 13:12:02 -0800 (PST)
+        bh=6Lu8Ofe9OiOomvfdmKceVGmq8zIVB6BYh6XUCUGTXdg=;
+        b=iAKa09CKbjYYw6F8TFaFptza1NONfkzCdGaL79WPM0hp+H6/n8Wr0MZJSU59fg7P4L
+         nGqpj3m41LhDGhBmhzAMgz2+Gs3vbNPGxPZDmty8s4hZPvIAnn/iNX+h6VKplLZmJGNM
+         xdZe4LA5VNFihXSr901uZKtl7sla/fztlxiHYaKZYa9yfw3DjswTOq8i8WiT5xkIUhuB
+         JSPWTvxfBuRtj2agNpb/J5+uG9qLTRgpUxETYsAuRX+YwdO7lqeW2YfpYSiZeu3PcDzv
+         tEPkyAPNGhL2VVEG2UIfB0Fq3TUf9zlCX854Cg9lzm4sGSLQf41ZvXjJ0OUHzW0H/aXX
+         qqTw==
+X-Gm-Message-State: AOAM530zaWt6d9Uw7NOu2PbbsHRgbQ0MJXgLTOCDuWjO7NUhqUfmsbcy
+        cl/QdoTRi6Zt8HHqcOMiUmu0g/dD4jptCw==
+X-Google-Smtp-Source: ABdhPJw9dHfdYJF/MQFO9ryObJNXV+ULwPiDddLVYsIjhDlN9MmoTcyFSGNoyKjwjivfrnhd2kLsIQ==
+X-Received: by 2002:a17:90b:1a8a:: with SMTP id ng10mr975280pjb.175.1642713123741;
+        Thu, 20 Jan 2022 13:12:03 -0800 (PST)
 Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id rj9sm3357187pjb.49.2022.01.20.13.12.01
+        by smtp.gmail.com with ESMTPSA id rj9sm3357187pjb.49.2022.01.20.13.12.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 13:12:02 -0800 (PST)
+        Thu, 20 Jan 2022 13:12:03 -0800 (PST)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     netdev@vger.kernel.org
 Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH v4 iproute2-next 06/11] ipl2tp: fix clang warning
-Date:   Thu, 20 Jan 2022 13:11:48 -0800
-Message-Id: <20220120211153.189476-7-stephen@networkplumber.org>
+Subject: [PATCH v4 iproute2-next 07/11] can: fix clang warning
+Date:   Thu, 20 Jan 2022 13:11:49 -0800
+Message-Id: <20220120211153.189476-8-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220120211153.189476-1-stephen@networkplumber.org>
 References: <20220120211153.189476-1-stephen@networkplumber.org>
@@ -62,29 +62,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang complains about passing non-format string.
+Fix warning about passing non-format string.
 
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- ip/ipl2tp.c | 5 +++--
+ ip/iplink_can.c | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/ip/ipl2tp.c b/ip/ipl2tp.c
-index 77bc3249c7ec..569723581ec2 100644
---- a/ip/ipl2tp.c
-+++ b/ip/ipl2tp.c
-@@ -191,8 +191,9 @@ static int delete_session(struct l2tp_parm *p)
- 	return 0;
+diff --git a/ip/iplink_can.c b/ip/iplink_can.c
+index 854ccc314e2b..6ea02a2a51c4 100644
+--- a/ip/iplink_can.c
++++ b/ip/iplink_can.c
+@@ -330,8 +330,9 @@ static void can_print_nl_indent(void)
+ 	print_string(PRINT_FP, NULL, "%s", "\t ");
  }
  
--static void print_cookie(const char *name, const char *fmt,
--			 const uint8_t *cookie, int len)
+-static void can_print_timing_min_max(const char *json_attr, const char *fp_attr,
+-				     int min, int max)
 +static void __attribute__((format(printf, 2, 0)))
-+print_cookie(const char *name, const char *fmt,
-+	     const uint8_t *cookie, int len)
++can_print_timing_min_max(const char *json_attr, const char *fp_attr,
++			 int min, int max)
  {
- 	char abuf[32];
- 	size_t n;
+ 	print_null(PRINT_FP, NULL, fp_attr, NULL);
+ 	open_json_object(json_attr);
 -- 
 2.30.2
 
