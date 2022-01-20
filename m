@@ -2,123 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 836BC494957
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 09:24:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D3D949495B
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 09:25:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359171AbiATIXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 03:23:23 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:45001 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359168AbiATIXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 03:23:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1642666992;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=xUi2CFRHQA8PfT0WTEWh9M/RewAzrWofT6FwbG3IocY=;
-    b=PoxixKvAPZlj2PmsvjVPirxSxZbJKM78uiUjlulB1lYe8TQ/RlPFurCRaFjE8RIiVV
-    ejA3S1xnTqM+jW7P3tgKFsPVtqV5PwrFfqsreuBiKkcApByL3rCly7M4SbZEl/HfbPKH
-    Xs9yeC0VnVzZOyPyvysFZuSDUkRdFclWpOhASJCqzhpb/d+w3LvPN/s5GiJvPdTLReCT
-    6PUIhnZwNgjeMCkrC6i2j9IUS2XlKb59WQpekth4RbHEugOjTJNDIhNMw1fRDUw3qkDi
-    IkfMyrN4rfp0uW2YuWZdJUaVx5hngV1plo+SBZ7sdj0SGeHV8neBlyPsRFJCaMADBoeB
-    LuRA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cfa:f900::b82]
-    by smtp.strato.de (RZmta 47.38.0 AUTH)
-    with ESMTPSA id zaacbfy0K8NB1Ta
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Thu, 20 Jan 2022 09:23:11 +0100 (CET)
-Message-ID: <1fb4407a-1269-ec50-0ad5-074e49f91144@hartkopp.net>
-Date:   Thu, 20 Jan 2022 09:23:06 +0100
+        id S1359174AbiATIZG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 03:25:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60766 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232274AbiATIZF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 03:25:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EE1C061574;
+        Thu, 20 Jan 2022 00:25:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 719B2B81D0A;
+        Thu, 20 Jan 2022 08:25:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94134C340E0;
+        Thu, 20 Jan 2022 08:25:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642667102;
+        bh=J7fp2W6HYZjVZNGtMZQ54GtqC/k7L5nnzFcph+ZWpc0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=j8W96MgPfh/LY4xQc9Dh4CPmsBLaKLSMhwZbLNuqQiEgJUXnJsWV+J1AhWYoaLmRS
+         LcIBmoP3+JXxcdETcAJ7WVNjEMr2ZTu5P7iTNUQy/1ziJTwpXu6m1jGck2YXOAO0yk
+         P3Y/SvTgXWddaeL3FmWNV3CjtPhHCbjVXrfiVjNkF+ocktvEYZjQaSwB7P3kCieZHa
+         ke0BNGPTvEYwJv8KYoaRXNugxjRRF6Com5ul52+qOz64LHDamv/sK6NB7HDG4TGL4n
+         mM5BlpbCITRn+Lg5h/78sG2BAMY/2iS3WLzXb9GmKQeRB+aHLbCOAYLVg/bgE0nSSy
+         38XpkYvBsW+eQ==
+Date:   Thu, 20 Jan 2022 10:24:57 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next] net/smc: Introduce receive queue flow
+ control support
+Message-ID: <YekcWYwg399vR18R@unreal>
+References: <20220120065140.5385-1-guangguan.wang@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
-Content-Language: en-US
-To:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
-        mkl@pengutronix.de
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220117120102.2395157-1-william.xuanziyang@huawei.com>
- <53279d6d-298c-5a85-4c16-887c95447825@hartkopp.net>
- <280e10c1-d1f4-f39e-fa90-debd56f1746d@huawei.com>
- <eaafaca3-f003-ca56-c04c-baf6cf4f7627@hartkopp.net>
- <890d8209-f400-a3b0-df9c-3e198e3834d6@huawei.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <890d8209-f400-a3b0-df9c-3e198e3834d6@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220120065140.5385-1-guangguan.wang@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 20.01.22 07:24, Ziyang Xuan (William) wrote:
-
-> I have reproduced the syz problem with Marc's commit, the commit can not fix the panic problem.
-> So I tried to find the root cause for panic and gave my solution.
+On Thu, Jan 20, 2022 at 02:51:40PM +0800, Guangguan Wang wrote:
+> This implement rq flow control in smc-r link layer. QPs
+> communicating without rq flow control, in the previous
+> version, may result in RNR (reveive not ready) error, which
+> means when sq sends a message to the remote qp, but the
+> remote qp's rq has no valid rq entities to receive the message.
+> In RNR condition, the rdma transport layer may retransmit
+> the messages again and again until the rq has any entities,
+> which may lower the performance, especially in heavy traffic.
+> Using credits to do rq flow control can avoid the occurrence
+> of RNR.
 > 
-> Marc's commit just fix the condition that packet size bigger than INT_MAX which trigger
-> tpcon::{idx,len} integer overflow, but the packet size is 4096 in the syz problem.
+> Test environment:
+> - CPU Intel Xeon Platinum 8 core, mem 32 GiB, nic Mellanox CX4.
+> - redis benchmark 6.2.3 and redis server 6.2.3.
+> - redis server: redis-server --save "" --appendonly no
+>   --protected-mode no --io-threads 7 --io-threads-do-reads yes
+> - redis client: redis-benchmark -h 192.168.26.36 -q -t set,get
+>   -P 1 --threads 7 -n 2000000 -c 200 -d 10
 > 
-> so->rx.len is 0 after the following logic in isotp_rcv_ff():
+>  Before:
+>  SET: 205229.23 requests per second, p50=0.799 msec
+>  GET: 212278.16 requests per second, p50=0.751 msec
 > 
-> /* get the FF_DL */
-> so->rx.len = (cf->data[ae] & 0x0F) << 8;
-> so->rx.len += cf->data[ae + 1];
+>  After:
+>  SET: 623674.69 requests per second, p50=0.303 msec
+>  GET: 688326.00 requests per second, p50=0.271 msec
 > 
-> so->rx.len is 4096 after the following logic in isotp_rcv_ff():
+> The test of redis-benchmark shows that more than 3X rps
+> improvement after the implementation of rq flow control.
 > 
-> /* FF_DL = 0 => get real length from next 4 bytes */
-> so->rx.len = cf->data[ae + 2] << 24;
-> so->rx.len += cf->data[ae + 3] << 16;
-> so->rx.len += cf->data[ae + 4] << 8;
-> so->rx.len += cf->data[ae + 5];
-> 
+> Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+> ---
+>  net/smc/af_smc.c   | 12 ++++++
+>  net/smc/smc_cdc.c  | 10 ++++-
+>  net/smc/smc_cdc.h  |  3 +-
+>  net/smc/smc_clc.c  |  3 ++
+>  net/smc/smc_clc.h  |  3 +-
+>  net/smc/smc_core.h | 17 ++++++++-
+>  net/smc/smc_ib.c   |  6 ++-
+>  net/smc/smc_llc.c  | 92 +++++++++++++++++++++++++++++++++++++++++++++-
+>  net/smc/smc_llc.h  |  5 +++
+>  net/smc/smc_wr.c   | 30 ++++++++++++---
+>  net/smc/smc_wr.h   | 54 ++++++++++++++++++++++++++-
+>  11 files changed, 222 insertions(+), 13 deletions(-)
 
-In these cases the values 0 could be the minimum value in so->rx.len - 
-but e.g. the value 0 can not show up in isotp_rcv_cf() as this function 
-requires so->rx.state to be ISOTP_WAIT_DATA.
+<...>
 
-And when so->rx.len is 0 in isotp_rcv_ff() this check
+> +		// set peer rq credits watermark, if less than init_credits * 2/3,
+> +		// then credit announcement is needed.
 
-if (so->rx.len + ae + off + ff_pci_sz < so->rx.ll_dl)
-         return 1;
+<...>
 
-will return from isotp_rcv_ff() before ISOTP_WAIT_DATA is set at the 
-end. So after that above check we are still in ISOTP_IDLE state.
+> +		// set peer rq credits watermark, if less than init_credits * 2/3,
+> +		// then credit announcement is needed.
 
-Or did I miss something here?
+<...>
 
-> so->rx.len is 0 before alloc_skb() and is 4096 after alloc_skb() in isotp_rcv_cf(). The following
-> skb_put() will trigger panic.
-> 
-> The following log is my reproducing log with Marc's commit and my debug modification in isotp_rcv_cf().
-> 
-> [  150.605776][    C6] isotp_rcv_cf: before alloc_skb so->rc.len: 0, after alloc_skb so->rx.len: 4096
+> +	// credits have already been announced to peer
 
+<...>
 
-But so->rx_len is not a value that is modified by alloc_skb():
+> +	// set local rq credits high watermark to lnk->wr_rx_cnt / 3,
+> +	// if local rq credits more than high watermark, announcement is needed.
 
-                 nskb = alloc_skb(so->rx.len, gfp_any());
-                 if (!nskb)
-                         return 1;
+<...>
 
-                 memcpy(skb_put(nskb, so->rx.len), so->rx.buf,
-                        so->rx.len);
+> +// get one tx credit, and peer rq credits dec
 
+<...>
 
-Can you send your debug modification changes please?
+> +// put tx credits, when some failures occurred after tx credits got
+> +// or receive announce credits msgs
+> +static inline void smc_wr_tx_put_credits(struct smc_link *link, int credits, bool wakeup)
 
-Best regards,
-Oliver
+<...>
 
-> [  150.611477][    C6] skbuff: skb_over_panic: text:ffffffff881ff7be len:4096 put:4096 head:ffff88807f93a800 data:ffff88807f93a800 tail:0x1000 end:0xc0 dev:<NULL>
-> [  150.615837][    C6] ------------[ cut here ]------------
-> [  150.617238][    C6] kernel BUG at net/core/skbuff.c:113!
-> 
+> +// to check whether peer rq credits is lower than watermark.
+> +static inline int smc_wr_tx_credits_need_announce(struct smc_link *link)
 
+<...>
+
+> +// get local rq credits and set credits to zero.
+> +// may called when announcing credits
+> +static inline int smc_wr_rx_get_credits(struct smc_link *link)
+
+Please try to use C-style comments.
+
+Thanks
