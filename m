@@ -2,75 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56571494E0D
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 13:39:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6251494E21
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 13:45:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231311AbiATMjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 07:39:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34920 "EHLO
+        id S242956AbiATMpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 07:45:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230448AbiATMjc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 07:39:32 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4900EC061574
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 04:39:32 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id g14so17298940ybs.8
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 04:39:32 -0800 (PST)
+        with ESMTP id S242806AbiATMpg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 07:45:36 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF15DC061574
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 04:45:35 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id h23so5264216pgk.11
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 04:45:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OtYThnuXZ64FC2xEm0MpHtJ+CGhuhRvjwKzN9HwfmLc=;
-        b=p3YkqnswccgQPuT+ZJajrr+bnSGGlZF6WfQ2aQkKzNyTChQ/6GAiloPiWQKNOmnYNs
-         yB7AYCLiuIq8ka2XTvTjdOjyvshaB6anjXlwUueG9wunDoNHV7UsU9e3ISpBtkkdn5yc
-         EsP10nlJ2wiReieLWNrIiGmQ+S29YvHPbKOtKA+Q8dK28YQI47BataQH6GJT1TtNqEQ5
-         CTEScHcOYlD7C/NL024M/mpQTe1NomVqfLpDazrPnGajY28I7++fE8AP66YP9KEELJdA
-         8j2uRw4qlx2BuL/zf15REjxDTf2q3TjHSoM9aEKLtqsaeD8iR7L7jCpWZddjxK8Fb7Ni
-         7JdQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YeFcL9tLlqmrw76U1McQ+9mTOu7/vyu2aqwGsyzCSMc=;
+        b=UA3DebP7SaGEooSc5dcPRzkA5+Uvq5HccMQrhHmsx8jyk+dM1TGBXPAsjDjb1Ry94T
+         h4oMevaqdjyt7OczAQcb1YjemMxe+bwvVQ2UI2EnFLxHBNzthIRg04aJIc2H7Ym+bBWE
+         sjwHRpZBPojYk2DbWehtn4f8D28wbJcFkDmW++MO1QtEsTWrRtaIfUWjcSv+doEiKyCO
+         7iACOGULwCT+2xEfeVGzTGES2KDpkDcOUE6w5Zh/c8II+FzUsFfTurfCzqTjocMt0IlP
+         4W1eh+/XNZEmrTdUdrTWog7pV/OgTYrao7KLJS/onuqRv+aDN1zcHQfHF6d/Iv3lf1pT
+         iDJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OtYThnuXZ64FC2xEm0MpHtJ+CGhuhRvjwKzN9HwfmLc=;
-        b=wubPxjnHIksfVV09cu3D11aMlftwEOyWGqEWw+BFq5R8TYV4nt21Z0zBWryJ/54LhP
-         WgkJsQ2YLxWi9b+o/fYZc3w9HxIqqS+sAc+Tzix90jgiRmqNJQnoOsX8O5OLzAo6YiCk
-         te2PdXuZ2Fhh5o47KuEGjoCjkwqnu2TGmfgMwbZLGTaIO9eeK9h1EzSCi3VoIWmHbrdT
-         OrUnVohGGQZuL1piTiz6Jtn7j/VNC/om7/lQVzI6iugG2MGF30bNW1oxnMW6JWPB0o0Q
-         dfbiIwEzFdToLfvbcdL+GkX24O9WnyXyfpULGkaBLjqB2Y4aoGlg54QXWI9KMG8RvE2k
-         RMSA==
-X-Gm-Message-State: AOAM532vPtHCmmWdTkP/3igZ3MwCjx9YhctSmrwc3A9YakH8QJJ0KZW8
-        5+rMjG6xVyg0dIeEevKscCmp0xCG2Y7xh6Pm0splMw==
-X-Google-Smtp-Source: ABdhPJzXG1m8gXlv7TrnnVJOnyWQCKOwl2dhPM8jFwFAs3ExiMG7+UKM2K0DpIztiOo59jjS4140Ibs6YH7YinOXtVk=
-X-Received: by 2002:a25:a10a:: with SMTP id z10mr49638116ybh.753.1642682371047;
- Thu, 20 Jan 2022 04:39:31 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YeFcL9tLlqmrw76U1McQ+9mTOu7/vyu2aqwGsyzCSMc=;
+        b=uCON+pwjbtz0VpctBp56nlKcGQNFRXOZgBap/oRMAFyis9yszqdNw3L4aLB/TWK0+t
+         Rj49YatSQ8QgERxwu66UtjR1MXIxGPgfwvCkxxlMEmn0UBQpF7Zxh+uB0zH3aM2USvLj
+         4fk6WoCiSrwtgAbJUn3pZjuyc792nH64EbXzYcJfaObIpSPQuZW0oRJBncx3BOFq59Z9
+         PU4NxxlcBSc83iBVLatBuDXLM9sQEIH630mnF34ShCgqNs+zs2580XlwRF6saxdWdrhZ
+         jDPrKVLKSzzhgA83vwJr69OWh2Uj+0+UzmOQl24/4plqvLE+cyHAQVVMHWlEGiZQbh9k
+         /6RQ==
+X-Gm-Message-State: AOAM530mXt6lVbFkEDeG82yUpxxlPJSbthIJPaGvDtU62SKYolAReo/w
+        ZTkbRmRhOPN0dhXJdq0t5/U=
+X-Google-Smtp-Source: ABdhPJwIrDx2QF9orUms6NRcp/9Ch3/oDNXmk4b/MZQhm4Js2jLKofyizWjrvlxiCwlyMl8chB1gWA==
+X-Received: by 2002:a63:ef18:: with SMTP id u24mr30127115pgh.362.1642682734668;
+        Thu, 20 Jan 2022 04:45:34 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:e06d:351f:4073:b0eb])
+        by smtp.gmail.com with ESMTPSA id f7sm3710095pfv.30.2022.01.20.04.45.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 04:45:34 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Gal Pressman <gal@nvidia.com>
+Subject: [PATCH net] tcp: add a missing sk_defer_free_flush() in tcp_splice_read()
+Date:   Thu, 20 Jan 2022 04:45:30 -0800
+Message-Id: <20220120124530.925607-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
 MIME-Version: 1.0
-References: <20220120123440.9088-1-gal@nvidia.com>
-In-Reply-To: <20220120123440.9088-1-gal@nvidia.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 20 Jan 2022 04:39:19 -0800
-Message-ID: <CANn89iK=2cxKC+8AFEu_QbANd1-LU+aUxNOfPvrjVJT5-e0ubA@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: Add a stub for sk_defer_free_flush()
-To:     Gal Pressman <gal@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 4:34 AM Gal Pressman <gal@nvidia.com> wrote:
->
-> When compiling the kernel with CONFIG_INET disabled, the
-> sk_defer_free_flush() should be defined as a nop.
->
-> This resolves the following compilation error:
->   ld: net/core/sock.o: in function `sk_defer_free_flush':
->   ./include/net/tcp.h:1378: undefined reference to `__sk_defer_free_flush'
+From: Eric Dumazet <edumazet@google.com>
 
-Yes, this is one way to fix this, thanks.
+Without it, splice users can hit the warning
+added in commit 79074a72d335 ("net: Flush deferred skb free on socket destroy")
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Fixes: f35f821935d8 ("tcp: defer skb freeing after socket lock is released")
+Fixes: 79074a72d335 ("net: Flush deferred skb free on socket destroy")
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Gal Pressman <gal@nvidia.com>
+---
+ net/ipv4/tcp.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 3b75836db19b07b0f178ef4457bda0ec641fd40d..78e81465f5f3632f54093495d2f2a064e60c7237 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -842,6 +842,7 @@ ssize_t tcp_splice_read(struct socket *sock, loff_t *ppos,
+ 	}
+ 
+ 	release_sock(sk);
++	sk_defer_free_flush(sk);
+ 
+ 	if (spliced)
+ 		return spliced;
+-- 
+2.34.1.703.g22d0c6ccf7-goog
+
