@@ -2,385 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51C40494D2B
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 12:42:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84770494D46
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 12:43:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231719AbiATLkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 06:40:45 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:44120
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231639AbiATLko (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 06:40:44 -0500
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E30C440045
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 11:40:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642678842;
-        bh=Tcm8ymYnIr/oNK6kxvfZkK1mXF5ZqPJ9vCeOTro3QTA=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=u9wPmLdNcIbvimPQywM7UhuR+H4jNUVIDrUcRPeaJuZHQtSQkt/05vOxyICOyUQoz
-         l08RgJtVnSfLtbP8Q70vD6YKJscvtcTi/xQrGehBtop5s2ijH3QCzpRioQrepKC/CO
-         uiGKXh8kUTmq8pORCIb810g8COx+P8PiNgqO72BkSGXu0w0UkGXYH/HBXOjnfsei8b
-         ePzlikSQFGDAMqgwXxcmpx7Gtg1P7/hapJLrFsXm67zM+3bwaW/noX/4zC1aCYoTxF
-         fxr+SQK7Qd5r43076+JMl4pWDDoB4pXTNl3cppK6DCg+sPcZ1sT4eG6ks9ZvhLtSlM
-         9MnFKZEituGwQ==
-Received: by mail-ot1-f69.google.com with SMTP id y11-20020a056830070b00b00595da7db813so3500654ots.16
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 03:40:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Tcm8ymYnIr/oNK6kxvfZkK1mXF5ZqPJ9vCeOTro3QTA=;
-        b=oqFvZxapLR73LZh1KUsgQ+Uztu9+vErjLCxgGUyKJNmZtqrf36gl93R83f8oju1t5I
-         zBq+lVZiveOd/blgLmpUPWcmOhQmnc/IbXiLoiQjy0DByH8IAVrAcO6hidQGARJ/pvQI
-         28K4xRNkxb2rlqnPaYzkg+5VGVp1svnxm0ociAfPROm7qCufnJhIrR5TfgZLOqo6pBgU
-         zrT3qxgovzuqrQpIubK+w55zNATkE4hxBpEgC+yBpQG4IdaKiyJMch/jdUuV0EyszQsG
-         A/PGt6DMPMNTYiFpD3dFBN4czgJ/fUGuOfYUtMtrUPzJSywFF2VIE1gqFS1BT9X0yV6F
-         lpmA==
-X-Gm-Message-State: AOAM530nnKkp7l8xv3XrYMtVfXQJMAzEQsjbefKTD/aIMoPqe0484eXl
-        9qa8kv8hMt3VbECreawKPdCTEeipm43Hvx+AnA04TCp7lIqC0TXyM8pLEvur+O6oJjY0spKAWv5
-        0lWktQBuxa/gRJpiy774yMA4OuWij5vploL5+LB4dLMrpHzrtJQ==
-X-Received: by 2002:a9d:480e:: with SMTP id c14mr3288449otf.233.1642678841730;
-        Thu, 20 Jan 2022 03:40:41 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz1+ikYRy/rF/6E1fnzu3ef59MO0znpHc0gVmvF3JA834OW1jIq6eKlBU5ARKTnlUsuG/fRFKhs2d/04V53jXw=
-X-Received: by 2002:a9d:480e:: with SMTP id c14mr3288435otf.233.1642678841369;
- Thu, 20 Jan 2022 03:40:41 -0800 (PST)
+        id S231931AbiATLnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 06:43:04 -0500
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:42868 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231593AbiATLnD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 06:43:03 -0500
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20K9UXO3001468;
+        Thu, 20 Jan 2022 11:42:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-type : mime-version;
+ s=corp-2021-07-09; bh=JdrC42gx8PrJ13yPopG2XAxyRTIq/dZC4cGea0M3kSw=;
+ b=GfkBnBdb8k31GdZ+4sGUDWaEVOv7Vtqv4qkZJQJDdNvTgLiNzG8norkh6k6WpFeShRn5
+ dqHgz9mkbsvOgkUkvQn4Rs6EXRN21g9XKo+IBvO5JLYfX6KjMAy3Rf5VVJlGXmnGAJGT
+ hjV/bgJo8pWOdkI5khUOplrH0OLwiM7nuVlBmMwxEdH/LUP30SWPWU4GmXDd5e+8s2HD
+ 8KjsdwtkWsE+luHFBVEIKKLhIZ6TGh+u+zM2pDVEh+Nudg4EWfbn0+vrIvHHXd0VCqmX
+ m5S5QOa8r43jsot9aMpQUzLRnMrGvlCjt2ZYbWUZlZQI25W4bsFAKbhuaezazVH2WgoT KA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dnc5f7x4m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 20 Jan 2022 11:42:47 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20KBaB30151224;
+        Thu, 20 Jan 2022 11:42:46 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2171.outbound.protection.outlook.com [104.47.55.171])
+        by userp3020.oracle.com with ESMTP id 3dkqqs9385-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 20 Jan 2022 11:42:45 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J79/beFF9tqk5PBz9qJRInqaoy7Ru+y+TLWPpueAjc2hCPPpjXd+uDgIeNN1R2sk5922EOC2sbCu4YgIJUX9s4IjEZcqFIqLDNy1dWRYdCaHd4IylAmUIgZA5z5ZQiUUfVSLmh/3GeRykT1PDSwvn7Wy0yF0XmxVto+X0xCPDWu6Mj47x9gmUcoFO9+MlqhDjmNZ+emkQQOXd+bXKzccBp/vrgfl/mDwoQMGzWnccmmDUPVPzKB9ZJZ2KG9ua6KyJ6dzOQ3K4TCMM1PueshGWOg0O799spV4KRioZRAs3nqAEDWz1+6wdimJ17QwqvtUpBZ01dkIylApyhcexKpkCA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JdrC42gx8PrJ13yPopG2XAxyRTIq/dZC4cGea0M3kSw=;
+ b=Dn9fxHv/MMXZHBoRgxn9pPnpJ2QpdJxFiN4wF21GJjmDb2XClzFIQKBElZskwr7vZECXncKdgYeXolqX4DT6nMlCvAVxhfTuWPWW+2P8cFQrvduc2SqGyNS4djGLLowT4mSK2kVcckjNJ6ch6rVEqNDHlNrp640nd3RLUfjWx0H6R4ViTWA7qDRj0lbO6SCHRIOgUTTl1iR7pEpxxWV53X6V3pYatoVu44ROatx4VSjzLfnSCwyQnMsCD7DSXPvkOV2V0uxdZsQaaF4SggkM4hQjrptt91UjjJfSYkWP1EO30KHKnb5sRemdXnb1vcIh1U+wO67ha7KBmctDa3n/9A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JdrC42gx8PrJ13yPopG2XAxyRTIq/dZC4cGea0M3kSw=;
+ b=rV4nQgZBvK+gp06yfbWXpuBHS5DvUlMAtAA4yaFoVFYhrAnQXpo3vowmglop0Ibw17oALdRX4/isRsLdpBVuM04mBbGC1EmGc3028FuzyYslh5tC2M0kNv6v3CZjEZCo5WsZsbidD6X2fidUARF76Fs1d7eD79Vw7UxS5/mb9xw=
+Received: from BLAPR10MB5267.namprd10.prod.outlook.com (2603:10b6:208:30e::22)
+ by DM6PR10MB2923.namprd10.prod.outlook.com (2603:10b6:5:70::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Thu, 20 Jan
+ 2022 11:42:36 +0000
+Received: from BLAPR10MB5267.namprd10.prod.outlook.com
+ ([fe80::49df:513e:bdbb:33a6]) by BLAPR10MB5267.namprd10.prod.outlook.com
+ ([fe80::49df:513e:bdbb:33a6%4]) with mapi id 15.20.4909.010; Thu, 20 Jan 2022
+ 11:42:35 +0000
+From:   Alan Maguire <alan.maguire@oracle.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, jolsa@kernel.org,
+        sunyucong@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Alan Maguire <alan.maguire@oracle.com>
+Subject: [RFC bpf-next 0/3] libbpf: name-based u[ret]probe attach
+Date:   Thu, 20 Jan 2022 11:42:27 +0000
+Message-Id: <1642678950-19584-1-git-send-email-alan.maguire@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: LO4P123CA0358.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:18d::21) To BLAPR10MB5267.namprd10.prod.outlook.com
+ (2603:10b6:208:30e::22)
 MIME-Version: 1.0
-References: <20220120051929.1625791-1-kai.heng.feng@canonical.com> <57131275-1d55-26f9-f1fa-ee5645c55ead@gmail.com>
-In-Reply-To: <57131275-1d55-26f9-f1fa-ee5645c55ead@gmail.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Thu, 20 Jan 2022 19:40:29 +0800
-Message-ID: <CAAd53p5LJC5xGivZgsLL1AY2fY-=mSWNndKCoA1Ae6_M8_yeTQ@mail.gmail.com>
-Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
- firmware on a Dell hardware
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     andrew@lunn.ch, linux@armlinux.org.uk,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e50ce0b9-ae76-4e3b-0e24-08d9dc09f41c
+X-MS-TrafficTypeDiagnostic: DM6PR10MB2923:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR10MB29234B2E7DFC8FA43EF8D3ACEF5A9@DM6PR10MB2923.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xRTaX+lwZPlndH8U5KVxQSLvmeXxpeJEzmO6HV2UxinzDLt9+Jdp9+ebEFk4DQdQbBbw2QQfB4PwbEbXfZdy1dGIAqcjdVevjywKILcBM+EXJkHsBpQLfVMy5ugWA7c+vvcEXxP2ruW6SdkEj7VeA3KQQqNGAYfQDMU80rqZxYfweFrJxP1Fozw5a46b0NlKfPrGFHqJAVON14zCUjWlo+5KSndyEytTAV4FEHlWs8ekWTwxE2uJ4t7q3eF1kV4/viNIIVaDfIdXVr+WmXNGq8InjweB1yEaYNYI6o8z4eWbtHrxJIbP3oCE3/uPX71iIsfS11HSHNIR77J7jjx/5NA63z1IwbM2FPG+tEw7wUJv5Vr+K2UuY5zznDiF95LouzEYhZmfBH6NP12i8io6xggpSlMivYteRUaZc4BSUR0e8adEgIGnb8PJgCsKOIHOJmHcXsy4Lujw0eY6hvbuaKbADG+tUEpewSjrTgk28sCMTrZ6u/h4GzxQZadUcgjCL1UzzwZ4pv+5iqA9PYJTFcleKZs4VPJ//UXFjKLAub31qZxAzpKdfRQfkRI85Sk7FilRexDXd054FrnPPOmq3CdJunIcbGbuPXmk3hGi6+aPwpV2gRNDgHWOqtPNplzE9UAHxRSryx9sBjvW2+Dy+Ihch60y5oTxd0AkRy2NJS6rb3Xf1pKd2k1zsASL2UDuWU/ayl7zr5YzalFjmSa23tSTBJTgHpGOfA5t3fKdQXJ1+dgLfETbz3CQw7V0tx++z6z8Z84KQoynYJUPSAZhQsFBpkbADhvwsGKP+XIodY5dQxpVj4Aeta7X0YVZi3HQXsnUJaJI6++gRIBksE5RVw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5267.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(316002)(2616005)(8936002)(186003)(86362001)(6666004)(6506007)(2906002)(44832011)(8676002)(26005)(107886003)(508600001)(36756003)(83380400001)(66476007)(66556008)(966005)(66946007)(52116002)(38350700002)(38100700002)(4326008)(6486002)(6512007)(5660300002)(7416002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oYzafmoICh2DdvoRXqWpUh6l2JJnYSdnGdU0x2AQ6yUOX2w4BJbMc7E0WF7t?=
+ =?us-ascii?Q?OdBYKIL0QLzBjclTUo9HxODvAKpegSrIOQpAVniC1bgEkotcXPbZJMtyvGk5?=
+ =?us-ascii?Q?+zsnd4ahbeVcyxyUGVZM4mpobb++gBGbMoO37Tioeg6h9hZOKajEudQdeY3W?=
+ =?us-ascii?Q?wVbY4KR77otYUhCX/lg+CkE5eXEKK4+TsWNKAM0/pLQP0uDVFyI993l6n585?=
+ =?us-ascii?Q?mW0OTEZOw2DXj5dc3G3rR38Ma3tE1/k4HDy9KNe2uG/lL95HWwHcDT5QHY0Q?=
+ =?us-ascii?Q?o0zq0VBGPs3miypr5eVKctHRaOFQiezwyta2laOSVvTpQOkCFLNYqEbYD7p+?=
+ =?us-ascii?Q?riXR8rRqOkPiJBWtyKlzk4EwdH5cbM2IEDftEeBdVzo+ZwEaruoKU+px2aKw?=
+ =?us-ascii?Q?Gm8iB6iY+4EoADoY/tEJ4y5CbtDo69S9EZN05K2qpzUfbZ+cr3KwpsMK03nU?=
+ =?us-ascii?Q?LeTuQDVxaKG/WTTrKlxbxSvtbywv3xWIRo2y9mXYrQKi+Ew1kgJ3ijEnnga7?=
+ =?us-ascii?Q?fox2pcFIRUf9PLU4gKKYl0VsJpnf+OKDkhBpM9+6G5pMP3KgRhrfv3SyhtyK?=
+ =?us-ascii?Q?ZLb+UOkhqXTZoFyvz3A0M3g7HJzrUygdnL87wOYSvuxBbLRbLkaLtt1UHpD3?=
+ =?us-ascii?Q?nRaxUM3Au96e3LH59ZJI1QL5rRUMNN9OE+sDomIYQbtUQvYSRhACjGczGPej?=
+ =?us-ascii?Q?ztkLaCBM/Q/PPL4gtEQ/Hr8D905iABNuq/TrTp6ASdP5r/SE8przsaaHbLcf?=
+ =?us-ascii?Q?6wlFUYqKt/+Foa1pdOwv6GPHT1CHcn+GffUbrhBsdb33zAErHY9b04ieRg+6?=
+ =?us-ascii?Q?+oic1P3LHHE2vjILjK/aU58sZ3D+OLdkZ4KjhnRc6pga8pdo8K8sIJ+l47tg?=
+ =?us-ascii?Q?MFRokNBvEsZXFgrLkgAE/bTdPBQN40jcqn5ddAXcO66uuTyi6bEiytmbw7ru?=
+ =?us-ascii?Q?eIkh/F/bH91WHCG5ZUsqSxMVXxHZN59OopLY7OfgkJgkTOz29GtAwjUPEDOs?=
+ =?us-ascii?Q?GlNKR3lAhl/IsCF1WLJ82Jmt/7odMeBJCjHLM/KQKvBKy48lo0o9oZY/+ubW?=
+ =?us-ascii?Q?M56+b73+l24ANrbIkk3aPHZx9V6eRa6lmEaezDReNNParZbWRa8hyNULFqRE?=
+ =?us-ascii?Q?AvauSReY56pS92KyTqAa5UWLe25vYOgVClocI3g7xb2E6I06YTDvY+HUFbrP?=
+ =?us-ascii?Q?Fnl2EPoTWiEvmexC4Np6tWIewyNhZyX+5lpJPuB88VFjCcL57l3NMC28kR0R?=
+ =?us-ascii?Q?C6X4jFFhQvV7c45+0q/HLZBnxSUz9lL4Slz9jrSczp9tTxYciEG+r/ghwx8a?=
+ =?us-ascii?Q?Vsi2N8j8GxSykzg7lFJCaxwj00wlOZ+FtGO+3Cs8AOw+k1QNz8/FcmS8mKxD?=
+ =?us-ascii?Q?8tuoalSRM7U/GzDwUDs2cfTXaEih6HYIhZdcz/hkiKme0vWlVf0UloMBVMF3?=
+ =?us-ascii?Q?46djXxmt0NxMsFir9VuvkX+6TYCH8XAwdAhobWi1PCJHMvBHBIF5dxo3OVo8?=
+ =?us-ascii?Q?N+fuaP7eUg94W9hOgDaSJVT9QFXKppy/r40gNMEURYmuLAI5mkZfg4uMgqVa?=
+ =?us-ascii?Q?MddgPpifQRYGKH2iuxLdZyLqKLJKSMVYGe38Dt7ozRR6UZqRUlSYtrAc5Lot?=
+ =?us-ascii?Q?/JWG5za1AmSXX0COlfQafTA=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e50ce0b9-ae76-4e3b-0e24-08d9dc09f41c
+X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5267.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2022 11:42:35.9493
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OyUy4MtSZgtYW+K8yGO+kWDiYviIBnS14PRhI1JdxSXUNN7vqnxUT6/0n4+rcReDNnhGvtjZT7jbB4qu1C7f5w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2923
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10232 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
+ mlxlogscore=999 malwarescore=0 bulkscore=0 suspectscore=0 spamscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201200059
+X-Proofpoint-GUID: CtwKWRvc_G7gmce4Zlljp44BIrxBbqs8
+X-Proofpoint-ORIG-GUID: CtwKWRvc_G7gmce4Zlljp44BIrxBbqs8
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Heiner,
+This patch series is a refinement of the RFC patchset [1], focusing
+on support for attach by name for uprobes and uretprobes.  Still
+marked RFC as there are unresolved questions.
 
-On Thu, Jan 20, 2022 at 3:58 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->
-> On 20.01.2022 06:19, Kai-Heng Feng wrote:
-> > BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
-> > instead of setting another value, keep it untouched and restore the saved
-> > value on system resume.
-> >
-> > Introduce config_led() callback in phy_driver() to make the implemtation
-> > generic.
-> >
-> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> > ---
-> > v2:
-> >  - Split with a new helper to find default LED config.
-> >  - Make the patch more generic.
-> >
-> >  drivers/net/phy/marvell.c    | 43 +++++++++++++++++++++++++++++-------
-> >  drivers/net/phy/phy_device.c | 21 ++++++++++++++++++
-> >  include/linux/phy.h          |  9 ++++++++
-> >  3 files changed, 65 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-> > index 739859c0dfb18..54ee54a6895c9 100644
-> > --- a/drivers/net/phy/marvell.c
-> > +++ b/drivers/net/phy/marvell.c
-> > @@ -746,10 +746,14 @@ static int m88e1510_config_aneg(struct phy_device *phydev)
-> >       return err;
-> >  }
-> >
-> > -static void marvell_config_led(struct phy_device *phydev)
-> > +static int marvell_find_led_config(struct phy_device *phydev)
-> >  {
-> > -     u16 def_config;
-> > -     int err;
-> > +     int def_config;
-> > +
-> > +     if (phydev->dev_flags & PHY_USE_FIRMWARE_LED) {
-> > +             def_config = phy_read_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL);
-> > +             return def_config < 0 ? -1 : def_config;
-> > +     }
-> >
-> >       switch (MARVELL_PHY_FAMILY_ID(phydev->phy_id)) {
-> >       /* Default PHY LED config: LED[0] .. Link, LED[1] .. Activity */
-> > @@ -769,20 +773,30 @@ static void marvell_config_led(struct phy_device *phydev)
-> >                       def_config = MII_88E1510_PHY_LED_DEF;
-> >               break;
-> >       default:
-> > -             return;
-> > +             return -1;
-> >       }
-> >
-> > +     return def_config;
-> > +}
-> > +
-> > +static void marvell_config_led(struct phy_device *phydev, bool resume)
-> > +{
-> > +     int err;
-> > +
-> > +     if (!resume)
-> > +             phydev->led_config = marvell_find_led_config(phydev);
-> > +
-> > +     if (phydev->led_config == -1)
-> > +             return;
-> > +
-> >       err = phy_write_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL,
-> > -                           def_config);
-> > +                           phydev->led_config);
-> >       if (err < 0)
-> >               phydev_warn(phydev, "Fail to config marvell phy LED.\n");
-> >  }
-> >
-> >  static int marvell_config_init(struct phy_device *phydev)
-> >  {
-> > -     /* Set default LED */
-> > -     marvell_config_led(phydev);
-> > -
-> >       /* Set registers from marvell,reg-init DT property */
-> >       return marvell_of_reg_init(phydev);
-> >  }
-> > @@ -2845,6 +2859,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               /* PHY_GBIT_FEATURES */
-> >               .probe = marvell_probe,
-> >               .config_init = marvell_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .config_aneg = m88e1101_config_aneg,
-> >               .config_intr = marvell_config_intr,
-> >               .handle_interrupt = marvell_handle_interrupt,
-> > @@ -2944,6 +2959,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               /* PHY_GBIT_FEATURES */
-> >               .probe = marvell_probe,
-> >               .config_init = marvell_1011gbe_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .config_aneg = m88e1121_config_aneg,
-> >               .read_status = marvell_read_status,
-> >               .config_intr = marvell_config_intr,
-> > @@ -2965,6 +2981,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               /* PHY_GBIT_FEATURES */
-> >               .probe = marvell_probe,
-> >               .config_init = m88e1318_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .config_aneg = m88e1318_config_aneg,
-> >               .read_status = marvell_read_status,
-> >               .config_intr = marvell_config_intr,
-> > @@ -3044,6 +3061,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               /* PHY_GBIT_FEATURES */
-> >               .probe = marvell_probe,
-> >               .config_init = m88e1116r_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .config_intr = marvell_config_intr,
-> >               .handle_interrupt = marvell_handle_interrupt,
-> >               .resume = genphy_resume,
-> > @@ -3065,6 +3083,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               .flags = PHY_POLL_CABLE_TEST,
-> >               .probe = m88e1510_probe,
-> >               .config_init = m88e1510_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .config_aneg = m88e1510_config_aneg,
-> >               .read_status = marvell_read_status,
-> >               .config_intr = marvell_config_intr,
-> > @@ -3094,6 +3113,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               .flags = PHY_POLL_CABLE_TEST,
-> >               .probe = marvell_probe,
-> >               .config_init = marvell_1011gbe_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .config_aneg = m88e1510_config_aneg,
-> >               .read_status = marvell_read_status,
-> >               .config_intr = marvell_config_intr,
-> > @@ -3120,6 +3140,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               /* PHY_GBIT_FEATURES */
-> >               .flags = PHY_POLL_CABLE_TEST,
-> >               .config_init = marvell_1011gbe_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .config_aneg = m88e1510_config_aneg,
-> >               .read_status = marvell_read_status,
-> >               .config_intr = marvell_config_intr,
-> > @@ -3144,6 +3165,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               /* PHY_BASIC_FEATURES */
-> >               .probe = marvell_probe,
-> >               .config_init = m88e3016_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .aneg_done = marvell_aneg_done,
-> >               .read_status = marvell_read_status,
-> >               .config_intr = marvell_config_intr,
-> > @@ -3165,6 +3187,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               .flags = PHY_POLL_CABLE_TEST,
-> >               .probe = marvell_probe,
-> >               .config_init = marvell_1011gbe_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .config_aneg = m88e6390_config_aneg,
-> >               .read_status = marvell_read_status,
-> >               .config_intr = marvell_config_intr,
-> > @@ -3191,6 +3214,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               .flags = PHY_POLL_CABLE_TEST,
-> >               .probe = marvell_probe,
-> >               .config_init = marvell_1011gbe_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .config_aneg = m88e6390_config_aneg,
-> >               .read_status = marvell_read_status,
-> >               .config_intr = marvell_config_intr,
-> > @@ -3217,6 +3241,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               .flags = PHY_POLL_CABLE_TEST,
-> >               .probe = marvell_probe,
-> >               .config_init = marvell_1011gbe_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .config_aneg = m88e1510_config_aneg,
-> >               .read_status = marvell_read_status,
-> >               .config_intr = marvell_config_intr,
-> > @@ -3242,6 +3267,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               .probe = marvell_probe,
-> >               /* PHY_GBIT_FEATURES */
-> >               .config_init = marvell_1011gbe_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .config_aneg = m88e1510_config_aneg,
-> >               .read_status = marvell_read_status,
-> >               .config_intr = marvell_config_intr,
-> > @@ -3264,6 +3290,7 @@ static struct phy_driver marvell_drivers[] = {
-> >               .probe = marvell_probe,
-> >               .features = PHY_GBIT_FIBRE_FEATURES,
-> >               .config_init = marvell_1011gbe_config_init,
-> > +             .config_led = marvell_config_led,
-> >               .config_aneg = m88e1510_config_aneg,
-> >               .read_status = marvell_read_status,
-> >               .config_intr = marvell_config_intr,
-> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> > index 74d8e1dc125f8..c9e97206aa9e8 100644
-> > --- a/drivers/net/phy/phy_device.c
-> > +++ b/drivers/net/phy/phy_device.c
-> > @@ -12,6 +12,7 @@
-> >  #include <linux/acpi.h>
-> >  #include <linux/bitmap.h>
-> >  #include <linux/delay.h>
-> > +#include <linux/dmi.h>
-> >  #include <linux/errno.h>
-> >  #include <linux/etherdevice.h>
-> >  #include <linux/ethtool.h>
-> > @@ -1157,6 +1158,7 @@ static int phy_poll_reset(struct phy_device *phydev)
-> >  int phy_init_hw(struct phy_device *phydev)
-> >  {
-> >       int ret = 0;
-> > +     bool resume = phydev->suspended;
-> >
-> >       /* Deassert the reset signal */
-> >       phy_device_reset(phydev, 0);
-> > @@ -1184,6 +1186,9 @@ int phy_init_hw(struct phy_device *phydev)
-> >                       return ret;
-> >       }
-> >
-> > +     if (phydev->drv->config_led)
-> > +             phydev->drv->config_led(phydev, resume);
-> > +
-> >       if (phydev->drv->config_intr) {
-> >               ret = phydev->drv->config_intr(phydev);
-> >               if (ret < 0)
-> > @@ -1342,6 +1347,17 @@ int phy_sfp_probe(struct phy_device *phydev,
-> >  }
-> >  EXPORT_SYMBOL(phy_sfp_probe);
-> >
-> > +static const struct dmi_system_id platform_flags[] = {
-> > +     {
-> > +             .matches = {
-> > +                     DMI_MATCH(DMI_SYS_VENDOR, "Dell EMC"),
-> > +                     DMI_MATCH(DMI_PRODUCT_NAME, "Edge Gateway 3200"),
-> > +             },
-> > +             .driver_data = (void *)PHY_USE_FIRMWARE_LED,
-> > +     },
-> > +     {}
-> > +};
-> > +
-> >  /**
-> >   * phy_attach_direct - attach a network device to a given PHY device pointer
-> >   * @dev: network device to attach
-> > @@ -1363,6 +1379,7 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
-> >       struct mii_bus *bus = phydev->mdio.bus;
-> >       struct device *d = &phydev->mdio.dev;
-> >       struct module *ndev_owner = NULL;
-> > +     const struct dmi_system_id *dmi;
-> >       bool using_genphy = false;
-> >       int err;
-> >
-> > @@ -1443,6 +1460,10 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
-> >                       phydev_err(phydev, "error creating 'phy_standalone' sysfs entry\n");
-> >       }
-> >
-> > +     dmi = dmi_first_match(platform_flags);
-> > +     if (dmi)
-> > +             phydev->dev_flags |= (u32)dmi->driver_data;
-> > +
-> >       phydev->dev_flags |= flags;
-> >
-> >       phydev->interface = interface;
-> > diff --git a/include/linux/phy.h b/include/linux/phy.h
-> > index 6de8d7a90d78e..3a944a6564f43 100644
-> > --- a/include/linux/phy.h
-> > +++ b/include/linux/phy.h
-> > @@ -517,6 +517,8 @@ struct phy_c45_device_ids {
-> >  struct macsec_context;
-> >  struct macsec_ops;
-> >
-> > +#define PHY_USE_FIRMWARE_LED 0x1000000
-> > +
-> >  /**
-> >   * struct phy_device - An instance of a PHY
-> >   *
-> > @@ -663,6 +665,7 @@ struct phy_device {
-> >
-> >       struct phy_led_trigger *led_link_trigger;
-> >  #endif
-> > +     int led_config;
-> >
-> >       /*
-> >        * Interrupt number for this PHY
-> > @@ -776,6 +779,12 @@ struct phy_driver {
-> >        */
-> >       int (*config_init)(struct phy_device *phydev);
-> >
-> > +     /**
-> > +      * @config_led: Called to config the PHY LED,
-> > +      * Use the resume flag to indicate init or resume
-> > +      */
-> > +     void (*config_led)(struct phy_device *phydev, bool resume);
-> > +
-> >       /**
-> >        * @probe: Called during discovery.  Used to set
-> >        * up device-specific structures, if any
->
-> All this looks quite hacky to me. Why do we touch the LED config at all
-> in the PHY driver? The current code deals with the LED Function Control
-> register only, for the LED Polarity Control and LED Timer Control we
-> rely on the boot loader anyway.
+Currently attach for such probes is done by determining the offset
+manually, so the aim is to try and mimic the simplicity of kprobe
+attach, making use of uprobe opts to specify a name string.
 
-If it's not advised to touch LED config in the PHY driver, where
-should we do it?
+uprobe attach is done by specifying a binary path, a pid (where
+0 means "this process" and -1 means "all processes") and an
+offset.  Here a 'func_name' option is added to 'struct uprobe_opts'
+and that name is searched for in symbol tables.  If the binary
+is a program, relative offset calcuation must be done to the
+symbol address as described in [2].
 
-> I see that previous LED-related changes like a93f7fe13454 ("net: phy:
-> marvell: add new default led configure for m88e151x") were committed
-> w/o involvement of the PHY maintainers.
-> Flags like MARVELL_PHY_LED0_LINK_LED1_ACTIVE I see as a workaround
-> because the feature as such isn't Marvell-specific. Most PHY's provide
-> means to configure whether LED pins are triggered by selected link speeds
-> and/or rx/tx activity.
+Having a name allows us to support auto-attach via SEC()
+specification, for example
 
-I guess that's why maintainers asked me to make the approach more generic?
+SEC("uprobe/usr/lib64/libc.so.6/malloc")
 
->
-> Unfortunately the discussion with the LED subsystem maintainers about
-> how to deal best with MAC/PHY-controlled LEDs (and hw triggers in general)
-> didn't result in anything tangible yet. Latest attempt I'm aware of:
-> https://lore.kernel.org/linux-leds/20211112153557.26941-1-ansuelsmth@gmail.com/T/#t
+Unresolved questions:
 
-This series is overkill for the issue I am addressing. The platform
-only needs two things:
-1) Use whatever LED config handed over by system firmware.
-2) Restore the saved LED config on system resume.
+ - the current scheme uses
 
-Kai-Heng
+u[ret]probe[/]/path/2/binary/function[+offset]
+
+   ...as SEC() format for auto-attach, for example
+
+SEC("uprobe/usr/lib64/libc.so.6/malloc")
+
+   It would be cleaner to delimit binary and function with ':'
+   as is done by bcc.  One simple way to achieve that would be
+   to support section string pre-processing, where instances of
+   ':' are replaced by a '/'; this would get us to supporting
+   a similar probe specification as bcc without the backward
+   compatibility headaches.  I can't think of any valid
+   cases where SEC() definitions have a ':' that we would
+   replace with '/' in error, but I might be missing something.
+
+ - the current scheme doesn't support a raw offset address, since
+   it felt un-portable to encourage that, but can add this support
+   if needed.
+
+ - The auto-attach behaviour is to attach to all processes.
+   It would be good to have a way to specify the attach process
+   target. A few possibilities that would be compatible with
+   BPF skeleton support are to use the open opts (feels kind of
+   wrong conceptually since it's an attach-time attribute) or
+   to support opts with attach pid field in "struct bpf_prog_skeleton".
+   Latter would even allow a skeleton to attach to multiple
+   different processes with prog-level granularity (perhaps a union
+   of the various attach opts or similar?). There may be other
+   ways to achieve this.
+
+Changes since RFC [1]:
+ - focused on uprobe entry/return, omitting USDT attach (Andrii)
+ - use ELF program headers in calculating relative offsets, as this
+   works for the case where we do not specify a process.  The
+   previous approach relied on /proc/pid/maps so would not work
+   for the "all processes" case (where pid is -1).
+ - add support for auto-attach (patch 2)
+ - fix selftests to use a real library function.  I didn't notice
+   selftests override the usleep(3) definition, so as a result of
+   this, the libc function wasn't being called, so usleep() should
+   not be used to test shared library attach.  Also switch to
+   using libc path as the binary argument for these cases, as
+   specifying a shared library function name for a program is
+   not supported.  Tests now instrument malloc/free.
+ - added selftest that verifies auto-attach.
+
+[1] https://lore.kernel.org/bpf/1642004329-23514-1-git-send-email-alan.maguire@oracle.com/
+[2] https://www.kernel.org/doc/html/latest/trace/uprobetracer.html
+
+Alan Maguire (3):
+  libbpf: support function name-based attach for uprobes
+  libbpf: add auto-attach for uprobes based on section name
+  selftests/bpf: add tests for u[ret]probe attach by name
+
+ tools/lib/bpf/libbpf.c                             | 259 ++++++++++++++++++++-
+ tools/lib/bpf/libbpf.h                             |  10 +-
+ .../selftests/bpf/prog_tests/attach_probe.c        | 114 +++++++--
+ .../selftests/bpf/progs/test_attach_probe.c        |  33 +++
+ 4 files changed, 396 insertions(+), 20 deletions(-)
+
+-- 
+1.8.3.1
+
