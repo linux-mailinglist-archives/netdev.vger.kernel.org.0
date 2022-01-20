@@ -2,159 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34461494AC8
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 10:32:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E23E3494AA8
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 10:25:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359591AbiATJcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 04:32:02 -0500
-Received: from dispatch1-eu1.ppe-hosted.com ([185.132.181.7]:38314 "EHLO
-        dispatch1-eu1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229687AbiATJcB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 04:32:01 -0500
-X-Greylist: delayed 531 seconds by postgrey-1.27 at vger.kernel.org; Thu, 20 Jan 2022 04:32:01 EST
-Received: from dispatch1-eu1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
-        by dispatch1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 50CE416090C
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 09:23:11 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-he1eur02lp2059.outbound.protection.outlook.com [104.47.5.59])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 112709C0093;
-        Thu, 20 Jan 2022 09:23:08 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mBJOwRoazizlLKDu8gvRG8LKxEMe0z00hdPIaFVHa/5NierFrdexda5ybZDV3DCz9BQu1LSDPLW64LwQXcjHkvg9ewuepApREOuYrLkAOZfmAU2wLYSCRny3y3wxu67j5vX/AYJeM3CTK7ecKnlcOWhmaI42QUKE9kzGja6c+TOmUPeCtxYAjFKvwIwhvFhxPfaSJJwcZ+IfaFcEQa6uXrXZQFa5LObchQ1nty9RbW+9XlNW2NiSAehPyhRqlzuosfacALTVPzm3ftBNPVBji2GnjkHh/wcrfwsrjwkR3A05LiYoy/PM/PR2N0R/zKwDRWx1QGd4FLt2Lvup5vWlbQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JFeb3rwnkYtDh2rjueASmSf3JoD0qgG+dseMNJduWRw=;
- b=YbhpDwUb2viGEqSt17j0/Plner+jCqTajxCL3FvAVIcGKbKlFwtDf6Cw59S2t2PBuPZID7Bqf79L587XmmtHgIxNNF0FLQlfM52wp7H6sl3H0VrsAhsAgBd++5IgH7xYJoztZ1en0KNLY7V63EiAAgNzOqJceMKBUpqNk/P37fRHs1S1DqhxlLNy/fba4kv7LS8ssqTCPt1NRiI6ueic4sKN9mGQSAbns2hEuKcWh8HsVuPjdIa2jykKMqfKRetaLabInfiQq8ev/1ixaIQQQdqQ62583++CHW3yU7iBXExm5Jlh04LGXYtmkHOi8f4iL2pSLSPyK5x/5MD4gpBZVg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=ellipsbv.onmicrosoft.com; s=selector2-ellipsbv-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JFeb3rwnkYtDh2rjueASmSf3JoD0qgG+dseMNJduWRw=;
- b=qyi1Xkgzso+A5dYAby4DOJoZY7Xg4mUzfjym6n6loCy8nRHm91xmgJmtg6k2kIZeSJBsCYP9x6NG8r49zs1TM+IQ6u+eprGVHFe8b8WwAmdAFzOc8bcyGeGnjk6LNGdnaAMPovaizL/RHyGL747QLb3XPPu524UCNAJnyB3AU/M=
-Received: from VI1PR02MB4142.eurprd02.prod.outlook.com (2603:10a6:803:85::27)
- by VI1PR0201MB2094.eurprd02.prod.outlook.com (2603:10a6:800:24::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8; Thu, 20 Jan
- 2022 09:23:06 +0000
-Received: from VI1PR02MB4142.eurprd02.prod.outlook.com
- ([fe80::e5ff:3f5d:5021:235]) by VI1PR02MB4142.eurprd02.prod.outlook.com
- ([fe80::e5ff:3f5d:5021:235%6]) with mapi id 15.20.4888.014; Thu, 20 Jan 2022
- 09:23:06 +0000
-From:   "Maurice Baijens (Ellips B.V.)" <maurice.baijens@ellips.com>
-To:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: ixgbe driver link down causes 100% load in ksoftirqd/x
-Thread-Topic: ixgbe driver link down causes 100% load in ksoftirqd/x
-Thread-Index: AdgN3k7I7vjd3hpWRMu+eZtY4Feu8g==
-Date:   Thu, 20 Jan 2022 09:23:06 +0000
-Message-ID: <VI1PR02MB4142A638EC38107B262DB32F885A9@VI1PR02MB4142.eurprd02.prod.outlook.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=ellips.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 160a9ef0-2e9d-451b-2b5c-08d9dbf677a1
-x-ms-traffictypediagnostic: VI1PR0201MB2094:EE_
-x-microsoft-antispam-prvs: <VI1PR0201MB2094A62F151D7386B4FA6851885A9@VI1PR0201MB2094.eurprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: BvISTqIWNTOXFm9EUpnRBguPh2EzbaF9nISQWDgkNOFEBx0JkMaPxWS7iyG/rbliYGBlKXQ+966mQa954Epng5/jo5Yiwx43+zZEawsbMdIkyrQyBD3BrZYpEw5K4AtccU2aVJ/ZOQYMsICjRzRaZzqcCGdvqodB8h/1X9C80+6dMT78w7qsLevX9b69G2jmv7ab6b9n0zw0iBvK0vORxQRwCEVRcdPZSac0E2gWV0nmTro0ZlLGNQap87YojASw5sEKncakN/yqvbjbMFESHrrrdK0rtXzQSVEKZZI6Vq69WtYcnVSLvys8sBwntj315BVB5rumA4bn2+k0oQ3CfT+W1vp90e0HFUS6w3nNG1TVO59Rd3Lr03v4vi2BdWstiM1QH/ZCi2Xt96NyqGO/JFTa+Y3knMKq9MBWLmTAkUPjC+OPJt8urTUylVuTuLAjS2cq0ZfqLZLe4rJdYtVgMcqDl95I1/b5gJ2eiuTnNN6eGDLcrnihQrEMuXqML5NhroCT8ht8d/6bkjZ6yB0EEONvEEA5OnC+V9XPOhgvNh9UpMMF9gF1kJkFQYtaVTfB+Auw7GLsJgzUTOq5doB+JB3L4Bo/AZ9GeyoymI8zC2u7CQY+yAup3gu9/pHfDWcUrLm7h5qCDK4smG9y/T7I/bFQ7j2zorPyUS4bIFGX/WBvNS6EO4CDPMaqe5WfHCIjq37hb1CikOAXjFqYqz5Xhw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR02MB4142.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(39830400003)(366004)(136003)(396003)(346002)(376002)(7696005)(71200400001)(9686003)(38100700002)(8676002)(38070700005)(508600001)(4326008)(26005)(55016003)(2906002)(8936002)(52536014)(122000001)(6506007)(76116006)(33656002)(6916009)(66476007)(66446008)(66556008)(64756008)(66946007)(86362001)(186003)(5660300002)(316002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?C390faV7mL9WmK89QbupNHrtV4DEr02apBfoWCqDIjHr63wBmKpeel1/SzUr?=
- =?us-ascii?Q?EIXbv3R1qXP+kZUcFNtcaFfibF9XX+oMcaux5Lfj+5K9qWepac17e4YNbYFN?=
- =?us-ascii?Q?Z1/fDY/GQs2hOCY7RYEq+80DTD29krfz0eSq/wyikF+/8FsY/kHFEIhfwm78?=
- =?us-ascii?Q?+V2BK4PUOQhONb+RlVLSIvqX0tWxFS5gFsWyFRjzRI4fbrT5VtZ9gUupKbHl?=
- =?us-ascii?Q?DKjXG19GPtp2ViEYp1OR47cv1/DKzgib7BG8KfOPmKTqcdht/DbOR+Hgmz8B?=
- =?us-ascii?Q?ekONM8H4i07hmfk7jTt9PepIrtt3rxYGQq8Po9SwLTKGxw+f6hI0ttVSLE4D?=
- =?us-ascii?Q?Y6UWSYKIay55+rz85IYCPFffJpry0RrwF6BS6fjigE9nXoFY5PuhC455cSmS?=
- =?us-ascii?Q?5i8Gg+DH4u4bXZpc2IOaOwMuL0hScnnrDMByzOKwpaW6FYtxHnVRQiH911ZE?=
- =?us-ascii?Q?oxkNRdasDvSyBLvvG5doHgwE5VCSKmvvEYyw3i+gVGoDZL1eQUMxpqFFaow5?=
- =?us-ascii?Q?jHv2N096Jg2JsaM8fn/YQlkv6ebtJW4Qhhz36FfF+CdpkRBA9xu1O+/ArEyV?=
- =?us-ascii?Q?3Np+m1R2KsCrTCpcllZq+4NtT6BQ10XF7zfngTR8AZ2gGULQlPd014hf6m+4?=
- =?us-ascii?Q?1C/aQmNfbGdQTH+oRJyaLEvqaXolSNaXzcpie2a5mTL5K7dJoSrujYz26nyi?=
- =?us-ascii?Q?hjfN1YeVlh2HSc4mGdSCdzlXmPJurfZpWQTXkrsncWksHs8H4HzvLSNm8STY?=
- =?us-ascii?Q?wK2qccvL/imLDgwCSaiiuag6vz6639V7XG5uzHhcWTL/sQGudLls8kunPLwp?=
- =?us-ascii?Q?XF/tv6fy7DrFCZAAlyvwA8PFyrXbZyAO9L8qls2GiNF3Dv1FLlUEnY8jsOdV?=
- =?us-ascii?Q?i7FTWo6wQq2a5+YUnJSWrI5HdJPcOVyCI8ooKSCwy5ODzS4z++jpBeDu7tUs?=
- =?us-ascii?Q?JHE/mytHZ/NkQ8PQz7SuzsQGPKgcvN4zmxgG7rMBO8J6VM3gIg+rw64eKG92?=
- =?us-ascii?Q?IaXv+tPBphYjcMCuAABq4f8grrkTEofU6r9NOPglh2PyO+HYfb7ZQ8J+TT7D?=
- =?us-ascii?Q?WzLopC7Kmz4boF3rPMnECIbp/iqWdZcsom0gkToAzJg6m2ut2+X5ZRAJZ5OK?=
- =?us-ascii?Q?KnD7IXLSXtjL0PGpN9qMFfcyr6bvaEQf6tVavIx3quy9UwlIRAskefsKj86k?=
- =?us-ascii?Q?XROOVgGMVyhn8PAjt2GLGJY7lZZvOIr4Py2r6bBpIgJBe7/e1yqG2FicaYqm?=
- =?us-ascii?Q?iTKveLTlYpqhh+Uyp7AakDP3zWMZC3dZOX4nz1Us2LrI2r0IHd6wSRixFmSE?=
- =?us-ascii?Q?jOqZyVoq05eTCW2rnddb8s+DsNFGNXIRowM3XvRFkPeZkeYyk80rbVBXh+47?=
- =?us-ascii?Q?np3vOLtkpxw6qXMFf7bAX1qgCP/xrqOIQhW7t0BOlOEyEtbfyxc1VbMUzBRd?=
- =?us-ascii?Q?P6rc/Nl9zWXq6wmoTB7YITax1yVNmbXlWd1349nGvXuAoeoF8rn+6oJb7ZXl?=
- =?us-ascii?Q?21RohhjI/WFzN1yYRUzplCLq9SYZ1cJHPOkBkigSO5OXE2SXHHNu9HglE1b9?=
- =?us-ascii?Q?11CgxlzMQ7VIdsPNGK15pCry9yUlI38wmcFTDxBBHqYDs+4nOu3hVIyFTCij?=
- =?us-ascii?Q?p0nFw8dzdCQSm2BaBAD92Ts=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1358659AbiATJZQ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Jan 2022 04:25:16 -0500
+Received: from relay12.mail.gandi.net ([217.70.178.232]:57829 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241888AbiATJZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 04:25:12 -0500
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 85D0320000F;
+        Thu, 20 Jan 2022 09:25:07 +0000 (UTC)
+Date:   Thu, 20 Jan 2022 10:25:06 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Xue Liu <liuxuenetmail@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harry Morris <harrymorris12@gmail.com>,
+        David Girault <david.girault@qorvo.com>
+Subject: Re: [wpan-next 5/9] net: ieee802154: ca8210: Stop leaking skb's
+Message-ID: <20220120102506.04d5ffb7@xps13>
+In-Reply-To: <202201201557.38baVRVX-lkp@intel.com>
+References: <20220120003645.308498-6-miquel.raynal@bootlin.com>
+        <202201201557.38baVRVX-lkp@intel.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-OriginatorOrg: ellips.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR02MB4142.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 160a9ef0-2e9d-451b-2b5c-08d9dbf677a1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jan 2022 09:23:06.4030
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53a902d4-22e7-42c6-a1ea-5776f15ccd54
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: LHJrJLca92AV1aHn62JLblWxrGKDkA4UR7Zi7WGaV9zPvtKIIj4XPA0gYNVJzwEY8VIJKgKoIkwAb2PPd6aUuw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0201MB2094
-X-MDID: 1642670589-PYMomZwb6aS5
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+
+lkp@intel.com wrote on Thu, 20 Jan 2022 15:31:39 +0800:
+
+> Hi Miquel,
+> 
+> I love your patch! Yet something to improve:
+> 
+> [auto build test ERROR on linus/master]
+> [also build test ERROR on v5.16 next-20220120]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Miquel-Raynal/ieee802154-A-bunch-of-fixes/20220120-083906
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 1d1df41c5a33359a00e919d54eaebfb789711fdc
+> config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220120/202201201557.38baVRVX-lkp@intel.com/config)
+> compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f7b7138a62648f4019c55e4671682af1f851f295)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/0day-ci/linux/commit/77d3026b30aff560ef269d03aecc09f8c46a9173
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review Miquel-Raynal/ieee802154-A-bunch-of-fixes/20220120-083906
+>         git checkout 77d3026b30aff560ef269d03aecc09f8c46a9173
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/ieee802154/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+> >> drivers/net/ieee802154/ca8210.c:1775:22: error: use of undeclared identifier 'atusb'  
+>                            dev_kfree_skb_any(atusb->tx_skb);
+>                                              ^
+>    1 error generated.
+> 
+> 
+> vim +/atusb +1775 drivers/net/ieee802154/ca8210.c
+> 
+>   1737	
+>   1738	/**
+>   1739	 * ca8210_async_xmit_complete() - Called to announce that an asynchronous
+>   1740	 *                                transmission has finished
+>   1741	 * @hw:          ieee802154_hw of ca8210 that has finished exchange
+>   1742	 * @msduhandle:  Identifier of transmission that has completed
+>   1743	 * @status:      Returned 802.15.4 status code of the transmission
+>   1744	 *
+>   1745	 * Return: 0 or linux error code
+>   1746	 */
+>   1747	static int ca8210_async_xmit_complete(
+>   1748		struct ieee802154_hw  *hw,
+>   1749		u8                     msduhandle,
+>   1750		u8                     status)
+>   1751	{
+>   1752		struct ca8210_priv *priv = hw->priv;
+>   1753	
+>   1754		if (priv->nextmsduhandle != msduhandle) {
+>   1755			dev_err(
+>   1756				&priv->spi->dev,
+>   1757				"Unexpected msdu_handle on data confirm, Expected %d, got %d\n",
+>   1758				priv->nextmsduhandle,
+>   1759				msduhandle
+>   1760			);
+>   1761			return -EIO;
+>   1762		}
+>   1763	
+>   1764		priv->async_tx_pending = false;
+>   1765		priv->nextmsduhandle++;
+>   1766	
+>   1767		if (status) {
+>   1768			dev_err(
+>   1769				&priv->spi->dev,
+>   1770				"Link transmission unsuccessful, status = %d\n",
+>   1771				status
+>   1772			);
+>   1773			if (status != MAC_TRANSACTION_OVERFLOW) {
+>   1774				ieee802154_wake_queue(priv->hw);
+> > 1775				dev_kfree_skb_any(atusb->tx_skb);  
+
+Looks like I messed with the configuration and this driver was not
+compile-tested anymore. I'll fix this.
+
+>   1776				return 0;
+>   1777			}
+>   1778		}
+>   1779		ieee802154_xmit_complete(priv->hw, priv->tx_skb, true);
+>   1780	
+>   1781		return 0;
+>   1782	}
+>   1783	
+> 
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
 
-I have an issue with the ixgbe driver and X550Tx network adapter.
-When I disconnect the network cable I end up with 100% load in ksoftirqd/x.=
- I am running the adapter in
-xdp mode (XDP_FLAGS_DRV_MODE). Problem seen in linux kernel 5.15.x and also=
- 5.16.0+ (head).
-
-I traced the problem down to function ixgbe_xmit_zc in ixgbe_xsk.c:
-
-if (unlikely(!ixgbe_desc_unused(xdp_ring)) ||
-    !netif_carrier_ok(xdp_ring->netdev)) {
-            work_done =3D false;
-            break;
-}
-
-This function is called from ixgbe_poll() function via ixgbe_clean_xdp_tx_i=
-rq(). It sets
-work_done to false if netif_carrier_ok() returns false (so if link is down)=
-. Because work_done
-is always false, ixgbe_poll keeps on polling forever.
-
-I made a fix by checking link in ixgbe_poll() function and if no link exiti=
-ng polling mode:
-
-/* If all work not completed, return budget and keep polling */
-if ((!clean_complete) && netif_carrier_ok(adapter->netdev))
-            return budget;
-
-This is probably fine for our application as we only run in xdpdrv mode, ho=
-wever I am not sure this
-is the correct way to fix this issue and the behaviour of the normal skb mo=
-de operation is=20
-also affected by my fix.
-
-So hopefully my observations are correct and someone here can fix the issue=
- and push it upstream.
-
-
-Best regards,
-	Maurice Baijens
+Thanks,
+Miquèl
