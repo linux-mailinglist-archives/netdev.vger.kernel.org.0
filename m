@@ -2,100 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D3E8494C0A
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 11:50:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44FD3494C25
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 11:51:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376389AbiATKpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 05:45:39 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:55526 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231222AbiATKpj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 05:45:39 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 971CA1F394;
-        Thu, 20 Jan 2022 10:45:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1642675537; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lNXsCxk1kmLzWZ3KuMXgc2QP7yNDhqQLgFtjl4LsFGg=;
-        b=s80Eh1CewTbGXaANSfdmhOC8yS7mIDv9FCt/I0hzu7cf9Pu9Si7tpC0AUMlifM6MhpyvNI
-        EdQykNw0T5LfW9CMRgRZQ36TExFEeiyITs3AE72J+aELbU1yWnXuKDUzDzoC1F8NJaMUMu
-        9y1MB7bqBlsK9YohaVnVWyOxwl7Ul6w=
-Received: from suse.cz (unknown [10.100.224.162])
+        id S229640AbiATKvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 05:51:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37804 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232804AbiATKuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 05:50:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05978C061574;
+        Thu, 20 Jan 2022 02:50:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 65535A3B81;
-        Thu, 20 Jan 2022 10:45:30 +0000 (UTC)
-Date:   Thu, 20 Jan 2022 11:45:36 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>
-Cc:     Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        linux-security-module@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Julia Lawall <julia.lawall@lip6.fr>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Leo Li <sunpeng.li@amd.com>,
-        Mikita Lipski <mikita.lipski@amd.com>,
-        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vishal Kulkarni <vishal@chelsio.com>
-Subject: Re: [PATCH 0/3] lib/string_helpers: Add a few string helpers
-Message-ID: <Yek9UEHpS16/9ajt@alley>
-References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
- <YegPiR7LU8aVisMf@alley>
- <87tudzbykz.fsf@intel.com>
- <YekfbKMjOP9ecc5v@alley>
- <8735libwjo.fsf@intel.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B6F76151B;
+        Thu, 20 Jan 2022 10:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EC172C340E2;
+        Thu, 20 Jan 2022 10:50:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642675810;
+        bh=NqowiAMeZDXoTZn1mzYNvP3gKL0n2MW5IpjY4dst0aM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KPhUmUvmhNZwdfeBhmuWepa9loN49yjSHyzxSsGBDHoEEBHh4Wmnj9JwVv/GYOjVx
+         IGDGwXg8o47UXbtLS0W3R83VJWqigS8+zPGs5zUPzEO/t13Z5vMvl2c3NjUplu0Bgx
+         f/5Op1rf8WDFiVsp4hZxdAKDcv67mnGcAw520rkk7xUGfg4ReNQMrZ5h0tU8caetl0
+         GK0lp5Q5h3rhXe5AOEONRQ9FGOBlBBtpNDFDeS3GNbKGIw5VJH+J0p5aJFa+XavXOr
+         cfuqRqc3DvpBNw+Dv3z1TzCXWQg8JKFkQIEYV93o9f9Fh0MmKGTOT+xRK7XFBgUrM1
+         kBnqtHlPPln+g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D5CC7F6079B;
+        Thu, 20 Jan 2022 10:50:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8735libwjo.fsf@intel.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net] net: fix information leakage in /proc/net/ptype
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164267580986.26718.1893811896925655041.git-patchwork-notify@kernel.org>
+Date:   Thu, 20 Jan 2022 10:50:09 +0000
+References: <20220118192013.1608432-1-liu3101@purdue.edu>
+In-Reply-To: <20220118192013.1608432-1-liu3101@purdue.edu>
+To:     Congyu Liu <liu3101@purdue.edu>
+Cc:     davem@davemloft.net, kuba@kernel.org, yajun.deng@linux.dev,
+        edumazet@google.com, willemb@google.com, mkl@pengutronix.de,
+        rsanger@wand.net.nz, wanghai38@huawei.com, pablo@netfilter.org,
+        jiapeng.chong@linux.alibaba.com, xemul@openvz.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu 2022-01-20 11:12:27, Jani Nikula wrote:
-> On Thu, 20 Jan 2022, Petr Mladek <pmladek@suse.com> wrote:
-> > The problem is not that visible with yesno() and onoff(). But as you said,
-> > onoff() confliscts with variable names. And enabledisable() sucks.
-> > As a result, there is a non-trivial risk of two mass changes:
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Tue, 18 Jan 2022 14:20:13 -0500 you wrote:
+> In one net namespace, after creating a packet socket without binding
+> it to a device, users in other net namespaces can observe the new
+> `packet_type` added by this packet socket by reading `/proc/net/ptype`
+> file. This is minor information leakage as packet socket is
+> namespace aware.
 > 
-> My point is, in the past three years we could have churned through more
-> than two mass renames just fine, if needed, *if* we had just managed to
-> merge something for a start!
+> Add a net pointer in `packet_type` to keep the net namespace of
+> of corresponding packet socket. In `ptype_seq_show`, this net pointer
+> must be checked when it is not NULL.
+> 
+> [...]
 
-Huh, this sound alarming.
+Here is the summary with links:
+  - [v2,net] net: fix information leakage in /proc/net/ptype
+    https://git.kernel.org/netdev/net/c/47934e06b656
 
-Cosmetic changes just complicate history. They make "git blame" useless.
-They also complicate backports. I know that it is not problem for
-mainline. But there are supported stable branches, ...
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-There should be a good reason for such changes. They should not be
-done light-heartedly.
 
-Best Regards,
-Petr
