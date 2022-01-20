@@ -2,86 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 192BD4945BA
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 03:15:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF9664945F5
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 04:07:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234530AbiATCPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 21:15:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35824 "EHLO
+        id S1358255AbiATDHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 22:07:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234294AbiATCPW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 21:15:22 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A58C061574
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 18:15:21 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id x11so15945279lfa.2
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 18:15:21 -0800 (PST)
+        with ESMTP id S229601AbiATDHR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 22:07:17 -0500
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A46C061574;
+        Wed, 19 Jan 2022 19:07:15 -0800 (PST)
+Received: by mail-ed1-x544.google.com with SMTP id c24so20196161edy.4;
+        Wed, 19 Jan 2022 19:07:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=51mpXfg7k7qDketSblbwy3oymqbMO4GZFD8rTFCIIgQ=;
-        b=MfVvkpRiZ/x7LL0Ynrsu9AUZl5Cae7W5pNNUB1ralFLm4MdJKEPwV7sbrIbp1nE7lA
-         hqi2AKzGvrnwTXJXstn1sbX+JXmj+p/I7en9agOgiOigPZj9Yszutf8V2aThCKS/WwP+
-         ZOyhyUZaxNFCfqEimuAciqdOhOpUwloPCfrCmVuDp9988HAUb0MaQxiIE5wq+UlyVrJq
-         QYZZZLuTBlOrnqxs8KiR6pXc5SAQfxVJcbjNCv3Gi9UxsayzWdLomu4MdPyU3O/2b0qV
-         WqyKaWsBdPHLXfCnDB8gVQQ/WcCtQ9tHKog3lPoEUQUMrjji5Ksebci0YMWwlIWCKlNM
-         8vmQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6AciR2AKfyPUvmQqqeZADltLycshLQ4pZRWrBxQwNds=;
+        b=au9z0HdVBZBLq5GfMsCVAczVs4JxTYHuhw8YWbzU3jXlJyCU6DL0bwgPzEtW8Q8pMO
+         w2QzOztChaWzGqqbCBStS3qGn94DQneWOlOTDG1rf8+JZ9spA8lXCOidJkdOepG+cHEr
+         /J0j1QXW9Ez241MyXdzdKzKCUecaofMtnlFj3posuMFpcDABBbEC2r0wkXW836j8KsDz
+         Jf2plTDfzee+VKHPwUt+gw0i/RuaN+WQqbP+akYY7AYCDR67q51uOuNr7q19WHiQHu3X
+         FzocVx7JtVwd3smRGeMxDwSbO1r79iQuhiJ1Jgw7q1e8Bdig/ilWPj1V22s9btrBfWBd
+         uNhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=51mpXfg7k7qDketSblbwy3oymqbMO4GZFD8rTFCIIgQ=;
-        b=u5HkuDDeQQzse0FRt9viVlOl7mr38+3XGE/lXWZfXX0ED6aYM8lYoOnQy/oQmL7hk3
-         cGYpg7yzpJw14xKiGKvMQLHUUfcAh8nPuX36kt2x0IX2eUyjCLM/gGnj63xkZGIQAA3y
-         FvPmoCTMkSN5BwFGJD1OyUZpq0R2+2OLjfMBfbsz/tUK4tIFdyDccd1MVpB+4yUNXZpb
-         o53fWmILAEtDBdPocKP4HJj/FYYcTTbNF1DGghR9rmr0ha4YsilNZDyEr4DpXO/xBLAi
-         ArUa1jKy29midZNhZKONyquYAzl0lXZ2oXMfIHAkugPRU7wOMX86AwVyY6aF62YrS6xG
-         kVXQ==
-X-Gm-Message-State: AOAM531DLiRzVbs8X9Xfxj7FlnNmZICsAvggkSNfNQ6ge/+tzeySsIVB
-        hjF1KqOPssiINC2SXVca0dmGAvvso5oXhIj1QL0=
-X-Google-Smtp-Source: ABdhPJzbIJxgb7fMHN4W8NOJpqSmVIYO1gbk10rPI8bsN94ltomR59/sUiiV738p0JTtwoev8J6VUq7xCFRUhkqx16o=
-X-Received: by 2002:ac2:59d0:: with SMTP id x16mr31464314lfn.47.1642644919837;
- Wed, 19 Jan 2022 18:15:19 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6AciR2AKfyPUvmQqqeZADltLycshLQ4pZRWrBxQwNds=;
+        b=zc76t+ayH30k4aoEfSxZcgqlEDPE3jSd+MwH+cJ6X+Vr8tGHC1OHqEu+i9r8jLYIiw
+         oJIFtvkpUwCYPgf9Wk5d2/Z8jPoRRq+evz72IhxQcqlSx6bJUoeRlo7UsZ5kh/GnzEuG
+         hvt5OnCaeHcP+9/Aa6eitKWRP/PgfieEoD22Rha3va18vT/r8sEZp4lay2FFleI9+LgM
+         9HjMkj3XD65xWsrcxyxwnFIKm+v8HwuIKiA2lTibgNr614bRrxFQb4JMy1d/rAeE4m7F
+         v7Ml8T9y/nmD5czybV2ufg55A7Ake/I9SEoZKo/z0D6bB6DJkTquNpQbD4tQ2WBGEOl8
+         JT7g==
+X-Gm-Message-State: AOAM533EaQRQL9P2rbjZ/bV5JUUvDVoDPkftGsGwYyTbz15SpfAZK+og
+        kYtJm4tSNNuCafgr27lfSLfyvLO0VnY+1fBM210=
+X-Google-Smtp-Source: ABdhPJwpcONPGuyA1L71cypckx0JcsiD/9+/f7BbFH1VxA84gPzARHiLqRySG4Pii6TEGarWECZLjL+KX0QAFxGFPMg=
+X-Received: by 2002:a05:6402:34c9:: with SMTP id w9mr34197425edc.403.1642648009169;
+ Wed, 19 Jan 2022 19:06:49 -0800 (PST)
 MIME-Version: 1.0
-Sender: alimahazem0@gmail.com
-Received: by 2002:a05:6520:25ca:b0:192:68ef:14cf with HTTP; Wed, 19 Jan 2022
- 18:15:19 -0800 (PST)
-From:   Anderson Thereza <anderson.thereza24@gmail.com>
-Date:   Wed, 19 Jan 2022 18:15:19 -0800
-X-Google-Sender-Auth: NrG23BRzKxnlj8TCZFx44gAFUp0
-Message-ID: <CAMPJMTchMBFTteMnJpykfSqY9ggDHEnw5r_VTatP7v0=MJfetA@mail.gmail.com>
-Subject: Re: Greetings My Dear,
-To:     undisclosed-recipients:;
+References: <20220113070245.791577-1-imagedong@tencent.com> <CAADnVQKNCqUzPJAjSHMFr-Ewwtv5Cs3UCQpthaKDTd+YNRWqqg@mail.gmail.com>
+In-Reply-To: <CAADnVQKNCqUzPJAjSHMFr-Ewwtv5Cs3UCQpthaKDTd+YNRWqqg@mail.gmail.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Thu, 20 Jan 2022 11:02:27 +0800
+Message-ID: <CADxym3bJZrcGHKH8=kKBkxh848dijAZ56n0fm_DvEh6Bbnrezg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct bpf_sock'
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Mengen Sun <mengensun@tencent.com>, flyingpeng@tencent.com,
+        mungerjiang@tencent.com, Menglong Dong <imagedong@tencent.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings,
+Hello!
 
-I sent this mail praying it will find you in a good condition, since I
-myself am in a very critical health condition in which I sleep every
-night without knowing if I may be alive to see the next day. I am
-Mrs.Anderson Theresa, a widow suffering from a long time illness. I
-have some funds I inherited from my late husband, the sum of
-($11,000,000.00, Eleven Million Dollars) my Doctor told me recently
-that I have serious sickness which is a cancer problem. What disturbs
-me most is my stroke sickness. Having known my condition, I decided to
-donate this fund to a good person that will utilize it the way I am
-going to instruct herein. I need a very honest God.
+On Thu, Jan 20, 2022 at 6:03 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+[...]
+>
+> Looks like
+>  __sk_buff->remote_port
+>  bpf_sock_ops->remote_port
+>  sk_msg_md->remote_port
+> are doing the right thing,
+> but bpf_sock->dst_port is not correct?
+>
+> I think it's better to fix it,
+> but probably need to consolidate it with
+> convert_ctx_accesses() that deals with narrow access.
+> I suspect reading u8 from three flavors of 'remote_port'
+> won't be correct.
 
-fearing a person who can claim this money and use it for Charity
-works, for orphanages, widows and also build schools for less
-privileges that will be named after my late husband if possible and to
-promote the word of God and the effort that the house of God is
-maintained. I do not want a situation where this money will be used in
-an ungodly manner. That's why I' making this decision. I'm not afraid
-of death so I know where I'm going. I accept this decision because I
-do not have any child who will inherit this money after I die. Please
-I want your sincere and urgent answer to know if you will be able to
-execute this project, and I will give you more information on how the
-fund will be transferred to your bank account. I am waiting for your
-reply.
+What's the meaning of 'narrow access'? Do you mean to
+make 'remote_port' u16? Or 'remote_port' should be made
+accessible with u8? In fact, '*((u16 *)&skops->remote_port + 1)'
+won't work, as it only is accessible with u32.
 
-May God Bless you,
-Mrs.Anderson Theresa,
+I can simply make 'dst_port' endianness right with what
+'remote_port' do.
+
+Thanks!
+Menglong Dong
+
+
+> 'dst_port' works with a narrow load, but gets endianness wrong.
