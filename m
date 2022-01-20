@@ -2,141 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E23E3494AA8
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 10:25:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8DB2494ADA
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 10:36:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358659AbiATJZQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Jan 2022 04:25:16 -0500
-Received: from relay12.mail.gandi.net ([217.70.178.232]:57829 "EHLO
-        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241888AbiATJZM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 04:25:12 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 85D0320000F;
-        Thu, 20 Jan 2022 09:25:07 +0000 (UTC)
-Date:   Thu, 20 Jan 2022 10:25:06 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Xue Liu <liuxuenetmail@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Harry Morris <harrymorris12@gmail.com>,
-        David Girault <david.girault@qorvo.com>
-Subject: Re: [wpan-next 5/9] net: ieee802154: ca8210: Stop leaking skb's
-Message-ID: <20220120102506.04d5ffb7@xps13>
-In-Reply-To: <202201201557.38baVRVX-lkp@intel.com>
-References: <20220120003645.308498-6-miquel.raynal@bootlin.com>
-        <202201201557.38baVRVX-lkp@intel.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S240540AbiATJgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 04:36:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47408 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237441AbiATJgC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 04:36:02 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5687660023;
+        Thu, 20 Jan 2022 09:36:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AAA05C340E3;
+        Thu, 20 Jan 2022 09:36:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642671361;
+        bh=Sw7dY4UqhVnbrcdw+2/HnvkUz97oA+g8rSgYwhLCVpw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cruU2VX8+QRVOQRjWZITJx+PtGlYmBP9v5aozQErjvpHHlCvwUB5OZwtPvhW/jvII
+         8tAn7VfjooDLcf5HGFFV7Dq8PioAVWa9GAQTtXdd0MfNYqzOZvzibzRVldUx25NzGQ
+         DjffSk0e9kBfM90FvVZlkiaxp7HziSI8vHS3cSzMQps+XY2dNbvXEvgEzroW/bvGeK
+         E6XPg+PjNFCUhGPPJKNWjjwp1H7rm4sjS22cnklfp0sd9Zfq8L6IV2r+RamBQw7yry
+         wjLEiVfqwWYZNVd8HWFAMOyHXZcCCY0IKHZEw5Plq4MQ6mV8HOAfWoGDybOKRK6VOK
+         bucQez+IfLQdA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 945BDF6079B;
+        Thu, 20 Jan 2022 09:36:01 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
+Subject: Re: [GIT PULL] Networking for 5.17-rc1
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164267136160.6560.3997159638009767273.git-patchwork-notify@kernel.org>
+Date:   Thu, 20 Jan 2022 09:36:01 +0000
+References: <20220119182611.400333-1-kuba@kernel.org>
+In-Reply-To: <20220119182611.400333-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-lkp@intel.com wrote on Thu, 20 Jan 2022 15:31:39 +0800:
+This pull request was applied to netdev/net.git (master)
+by Linus Torvalds <torvalds@linux-foundation.org>:
 
-> Hi Miquel,
+On Wed, 19 Jan 2022 10:26:11 -0800 you wrote:
+> Hi Linus!
 > 
-> I love your patch! Yet something to improve:
+> Quite a handful of old regression fixes but of those all are pre-5.16.
 > 
-> [auto build test ERROR on linus/master]
-> [also build test ERROR on v5.16 next-20220120]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
+> The following changes since commit fe8152b38d3a994c4c6fdbc0cd6551d569a5715a:
 > 
-> url:    https://github.com/0day-ci/linux/commits/Miquel-Raynal/ieee802154-A-bunch-of-fixes/20220120-083906
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 1d1df41c5a33359a00e919d54eaebfb789711fdc
-> config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220120/202201201557.38baVRVX-lkp@intel.com/config)
-> compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f7b7138a62648f4019c55e4671682af1f851f295)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/0day-ci/linux/commit/77d3026b30aff560ef269d03aecc09f8c46a9173
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Miquel-Raynal/ieee802154-A-bunch-of-fixes/20220120-083906
->         git checkout 77d3026b30aff560ef269d03aecc09f8c46a9173
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/ieee802154/
+>   Merge tag 'devprop-5.17-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm (2022-01-10 20:48:19 -0800)
 > 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
-> >> drivers/net/ieee802154/ca8210.c:1775:22: error: use of undeclared identifier 'atusb'  
->                            dev_kfree_skb_any(atusb->tx_skb);
->                                              ^
->    1 error generated.
-> 
-> 
-> vim +/atusb +1775 drivers/net/ieee802154/ca8210.c
-> 
->   1737	
->   1738	/**
->   1739	 * ca8210_async_xmit_complete() - Called to announce that an asynchronous
->   1740	 *                                transmission has finished
->   1741	 * @hw:          ieee802154_hw of ca8210 that has finished exchange
->   1742	 * @msduhandle:  Identifier of transmission that has completed
->   1743	 * @status:      Returned 802.15.4 status code of the transmission
->   1744	 *
->   1745	 * Return: 0 or linux error code
->   1746	 */
->   1747	static int ca8210_async_xmit_complete(
->   1748		struct ieee802154_hw  *hw,
->   1749		u8                     msduhandle,
->   1750		u8                     status)
->   1751	{
->   1752		struct ca8210_priv *priv = hw->priv;
->   1753	
->   1754		if (priv->nextmsduhandle != msduhandle) {
->   1755			dev_err(
->   1756				&priv->spi->dev,
->   1757				"Unexpected msdu_handle on data confirm, Expected %d, got %d\n",
->   1758				priv->nextmsduhandle,
->   1759				msduhandle
->   1760			);
->   1761			return -EIO;
->   1762		}
->   1763	
->   1764		priv->async_tx_pending = false;
->   1765		priv->nextmsduhandle++;
->   1766	
->   1767		if (status) {
->   1768			dev_err(
->   1769				&priv->spi->dev,
->   1770				"Link transmission unsuccessful, status = %d\n",
->   1771				status
->   1772			);
->   1773			if (status != MAC_TRANSACTION_OVERFLOW) {
->   1774				ieee802154_wake_queue(priv->hw);
-> > 1775				dev_kfree_skb_any(atusb->tx_skb);  
+> [...]
 
-Looks like I messed with the configuration and this driver was not
-compile-tested anymore. I'll fix this.
+Here is the summary with links:
+  - [GIT,PULL] Networking for 5.17-rc1
+    https://git.kernel.org/netdev/net/c/fa2e1ba3e9e3
 
->   1776				return 0;
->   1777			}
->   1778		}
->   1779		ieee802154_xmit_complete(priv->hw, priv->tx_skb, true);
->   1780	
->   1781		return 0;
->   1782	}
->   1783	
-> 
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Thanks,
-Miquèl
