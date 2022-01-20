@@ -2,90 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3710494F29
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 14:40:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BFAF494F83
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 14:47:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239230AbiATNjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 08:39:39 -0500
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:58092 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232587AbiATNji (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 08:39:38 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V2MrCwo_1642685974;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0V2MrCwo_1642685974)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 20 Jan 2022 21:39:34 +0800
-Date:   Thu, 20 Jan 2022 21:39:33 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Karsten Graul <kgraul@linux.ibm.com>
-Cc:     "D. Wythe" <alibuda@linux.alibaba.com>, dust.li@linux.alibaba.com,
-        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net/smc: Reduce overflow of smc clcsock
- listen queue
-Message-ID: <YelmFWn7ot0iQCYG@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <1641301961-59331-1-git-send-email-alibuda@linux.alibaba.com>
- <8a60dabb-1799-316c-80b5-14c920fe98ab@linux.ibm.com>
- <20220105044049.GA107642@e02h04389.eu6sqa>
- <20220105085748.GD31579@linux.alibaba.com>
- <b98aefce-e425-9501-aacc-8e5a4a12953e@linux.ibm.com>
- <20220105150612.GA75522@e02h04389.eu6sqa>
- <d35569df-e0e0-5ea7-9aeb-7ffaeef04b14@linux.ibm.com>
- <YdaUuOq+SkhYTWU8@TonyMac-Alibaba>
- <5a5ba1b6-93d7-5c1e-aab2-23a52727fbd1@linux.ibm.com>
+        id S236205AbiATNrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 08:47:02 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:46274 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235845AbiATNrB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jan 2022 08:47:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=LI7fgGU1QLBmTbo6Itbou4oEcT/ffjAEXYDBbz7bC8o=; b=DcGAfY3n9u4WLa8D6DpfOrUvEA
+        BWinE8CxJwNtOpCkJ0qNrH/j5cIt7/jIP/slGn/CFIBsWkB9yrPSoza2OPvy4fNXZmNa1q4mL6cgJ
+        VI135fzyhLv7Px03eaHzpnh/9ryUvD89FDRrG2b4VfjKxwYl31R8UdrIuAXfIjRUAWXM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nAXmA-001zjh-Ij; Thu, 20 Jan 2022 14:46:54 +0100
+Date:   Thu, 20 Jan 2022 14:46:54 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
+ firmware on a Dell hardware
+Message-ID: <Yelnzrrd0a4Bl5AL@lunn.ch>
+References: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5a5ba1b6-93d7-5c1e-aab2-23a52727fbd1@linux.ibm.com>
+In-Reply-To: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 09:07:51AM +0100, Karsten Graul wrote:
-> On 06/01/2022 08:05, Tony Lu wrote:
-> 
-> I think of the following approach: the default maximum of active workers in a
-> work queue is defined by WQ_MAX_ACTIVE (512). when this limit is hit then we
-> have slightly lesser than 512 parallel SMC handshakes running at the moment,
-> and new workers would be enqueued without to become active.
-> In that case (max active workers reached) I would tend to fallback new connections
-> to TCP. We would end up with lesser connections using SMC, but for the user space
-> applications there would be nearly no change compared to TCP (no dropped TCP connection
-> attempts, no need to reconnect).
-> Imho, most users will never run into this problem, so I think its fine to behave like this.
+On Thu, Jan 20, 2022 at 01:19:29PM +0800, Kai-Heng Feng wrote:
+> BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
+> instead of setting another value, keep it untouched and restore the saved
+> value on system resume.
 
-This makes sense to me, thanks.
+Please split this patch into two:
 
-> 
-> As far as I understand you, you still see a good reason in having another behavior 
-> implemented in parallel (controllable by user) which enqueues all incoming connections
-> like in your patch proposal? But how to deal with the out-of-memory problems that might 
-> happen with that?
+Don't touch the LEDs
 
-There is a possible scene, when the user only wants to use SMC protocol, such
-as performance benchmark, or explicitly specify SMC protocol, they can
-afford the lower speed of incoming connection creation, but enjoy the
-higher QPS after creation.
+Save and restore the LED configuration over suspend/resume.
 
-> Lets decide that when you have a specific control that you want to implement. 
-> I want to have a very good to introduce another interface into the SMC module,
-> making the code more complex and all of that. The decision for the netlink interface 
-> was also done because we have the impression that this is the NEW way to go, and
-> since we had no interface before we started with the most modern way to implement it.
-> 
-> TCP et al have a history with sysfs, so thats why it is still there. 
-> But I might be wrong on that...
+> -static void marvell_config_led(struct phy_device *phydev)
+> +static int marvell_find_led_config(struct phy_device *phydev)
+>  {
+> -	u16 def_config;
+> -	int err;
+> +	int def_config;
+> +
+> +	if (phydev->dev_flags & PHY_USE_FIRMWARE_LED) {
+> +		def_config = phy_read_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL);
+> +		return def_config < 0 ? -1 : def_config;
 
-Thanks for the information that I don't know about the decision for new
-control interface. I am understanding your decision about the interface.
-We are glad to contribute the knobs to smc_netlink.c in the next patches.
+What about the other two registers which configure the LEDs?
 
-There is something I want to discuss here about the persistent
-configuration, we need to store new config in system, and make sure that
-it could be loaded correctly after boot up. A possible solution is to
-extend smc-tools for new config, and work with systemd for auto-loading.
-If it works, we are glad to contribute these to smc-tools.
+Since you talked about suspend/resume, does this machine support WoL?
+Is the BIOS configuring LED2 to be used as an interrupt when WoL is
+enabled in the BIOS? Do you need to save/restore that configuration
+over suspend/review? And prevent the driver from changing the
+configuration?
 
-Thank you.
-Tony Lu
+> +static const struct dmi_system_id platform_flags[] = {
+> +	{
+> +		.matches = {
+> +			DMI_MATCH(DMI_SYS_VENDOR, "Dell EMC"),
+> +			DMI_MATCH(DMI_PRODUCT_NAME, "Edge Gateway 3200"),
+> +		},
+> +		.driver_data = (void *)PHY_USE_FIRMWARE_LED,
+> +	},
+
+This needs a big fat warning, that it will affect all LEDs for PHYs
+which linux is driving, on that machine. So PHYs on USB dongles, PHYs
+in SFPs, PHYs on plugin PCIe card etc.
+
+Have you talked with Dells Product Manager and do they understand the
+implications of this? 
+
+> +	{}
+> +};
+> +
+>  /**
+>   * phy_attach_direct - attach a network device to a given PHY device pointer
+>   * @dev: network device to attach
+> @@ -1363,6 +1379,7 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+>  	struct mii_bus *bus = phydev->mdio.bus;
+>  	struct device *d = &phydev->mdio.dev;
+>  	struct module *ndev_owner = NULL;
+> +	const struct dmi_system_id *dmi;
+>  	bool using_genphy = false;
+>  	int err;
+>  
+> @@ -1443,6 +1460,10 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+>  			phydev_err(phydev, "error creating 'phy_standalone' sysfs entry\n");
+>  	}
+>  
+> +	dmi = dmi_first_match(platform_flags);
+> +	if (dmi)
+> +		phydev->dev_flags |= (u32)dmi->driver_data;
+
+Please us your new flag directly. We don't want this abused to pass
+any old flag to the PHY.
+
+> +
+>  /**
+>   * struct phy_device - An instance of a PHY
+>   *
+> @@ -663,6 +665,7 @@ struct phy_device {
+>  
+>  	struct phy_led_trigger *led_link_trigger;
+>  #endif
+> +	int led_config;
+
+You cannot put this here because you don't know how many registers are
+used to hold the configuration. Marvell has 3, other drivers can have
+other numbers. The information needs to be saved into the drivers on
+priv structure.
+
+>  
+>  	/*
+>  	 * Interrupt number for this PHY
+> @@ -776,6 +779,12 @@ struct phy_driver {
+>  	 */
+>  	int (*config_init)(struct phy_device *phydev);
+>  
+> +	/**
+> +	 * @config_led: Called to config the PHY LED,
+> +	 * Use the resume flag to indicate init or resume
+> +	 */
+> +	void (*config_led)(struct phy_device *phydev, bool resume);
+
+I don't see any need for this.
+
+  Andrew
