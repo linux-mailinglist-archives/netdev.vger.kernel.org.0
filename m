@@ -2,68 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E615F494A5A
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 10:09:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C4B7494A72
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 10:12:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240185AbiATJIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 04:08:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42804 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235379AbiATJIa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 04:08:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7052C061574;
-        Thu, 20 Jan 2022 01:08:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEC61B81D14;
-        Thu, 20 Jan 2022 09:08:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 611FBC340E0;
-        Thu, 20 Jan 2022 09:08:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642669707;
-        bh=Ihaq100gCgC3qd3GwgMReAb8+0jwcjEbXu7rdkTJtc0=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=CNT1reJdThCtvvwMkvZ+lUnEPa35MUYjYPZoLYTjUd24u0HuwiD9ghv/qrvqaJIO4
-         KcXPgrbuphXsUBw1dTqts6qsCbijv0czWGwVnrlWgIc1VPbOHHZJFcTFu3wl9Mo0Am
-         WOOjcAMAWzEx7sBkPaTt9op2IW52/i42X+fUSCP1/IRt8Vw7stK/46yGIx8tBSZUJy
-         C6hxgYtQT2q1GGOy2jt0CqsCkqmEkGcvk7Lvuy9IBDLNNmLOMGxaP9VQ6549t7Z1Cb
-         i6sOSMEBHzCTfMtlmgpFTbkePoA01Uv5pbZTnW+MFOQVUeX6T8fLIQPIIQr1hP31l3
-         JagJRq3IOSUsg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5145EF60798;
-        Thu, 20 Jan 2022 09:08:27 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.17-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220119182611.400333-1-kuba@kernel.org>
-References: <20220119182611.400333-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220119182611.400333-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.17-rc1
-X-PR-Tracked-Commit-Id: ff9fc0a31d85fcf0011eb4bc4ecaf47d3cc9e21c
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: fa2e1ba3e9e39072fa7a6a9d11ac432c505b4ac7
-Message-Id: <164266970732.26345.11726794577930380253.pr-tracker-bot@kernel.org>
-Date:   Thu, 20 Jan 2022 09:08:27 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        id S236231AbiATJMG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Jan 2022 04:12:06 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:46730 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231572AbiATJMF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 04:12:05 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-19-bOMb94O0NjOs2-b-Mij-8A-1; Thu, 20 Jan 2022 09:12:03 +0000
+X-MC-Unique: bOMb94O0NjOs2-b-Mij-8A-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Thu, 20 Jan 2022 09:12:00 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Thu, 20 Jan 2022 09:12:00 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Petr Mladek' <pmladek@suse.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>
+CC:     Lucas De Marchi <lucas.demarchi@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        =?iso-8859-1?Q?Christian_K=F6nig?= <christian.koenig@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Leo Li <sunpeng.li@amd.com>,
+        "Mikita Lipski" <mikita.lipski@amd.com>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        "Rasmus Villemoes" <linux@rasmusvillemoes.dk>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Vishal Kulkarni" <vishal@chelsio.com>
+Subject: RE: [PATCH 0/3] lib/string_helpers: Add a few string helpers
+Thread-Topic: [PATCH 0/3] lib/string_helpers: Add a few string helpers
+Thread-Index: AQHYDdkRJfmi1u3vzker6akA52hdRqxrnz8Q
+Date:   Thu, 20 Jan 2022 09:12:00 +0000
+Message-ID: <d63b56112a2249c6b6cdce003dec4967@AcuMS.aculab.com>
+References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
+ <YegPiR7LU8aVisMf@alley> <87tudzbykz.fsf@intel.com> <YekfbKMjOP9ecc5v@alley>
+In-Reply-To: <YekfbKMjOP9ecc5v@alley>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Wed, 19 Jan 2022 10:26:11 -0800:
+...
+> Yeah, and I am sorry for bikeshedding. Honestly, I do not know what is
+> better. This is why I do not want to block this series when others
+> like this.
+> 
+> My main motivation is to point out that:
+> 
+>     enabledisable(enable)
+> 
+> might be, for some people, more eye bleeding than
+> 
+>     enable ? "enable" : "disable"
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.17-rc1
+Indeed - you need to look the former up, wasting brain time.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/fa2e1ba3e9e39072fa7a6a9d11ac432c505b4ac7
+> The problem is not that visible with yesno() and onoff(). But as you said,
+> onoff() confliscts with variable names. And enabledisable() sucks.
+> As a result, there is a non-trivial risk of two mass changes:
+> 
+> now:
+> 
+> - contition ? "yes" : "no"
+> + yesno(condition)
+> 
+> a few moths later:
+> 
+> - yesno(condition)
+> + str_yes_no(condition)
 
-Thank you!
+Followed by:
+- str_yes_no(x)
++ no_yes_str(x)
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
