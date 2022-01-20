@@ -2,165 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B62D74954FC
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 20:37:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47F11495511
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 20:51:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377479AbiATTgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 14:36:47 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:3582 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1377469AbiATTgq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 14:36:46 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20KHwXfj013618
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 11:36:45 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=btV+CUJ4/5ZGUdKet+TOfhhauxw7f4oD0ZBMYIhj8cg=;
- b=Xn8lZhO0WWjZw8sWwkRMeX2VLNCNrs+WlIye/L7c3YthponKUGG1Hz1o8k9efGefgFWy
- 9ZvZjbKw9eHXYylY4f0OZ+vGWXdXz1kDswmONjD0cPnPzaPtm5HwnPzbjwwbByefiSdQ
- iMXLgwtROej4mP0Y5Fqad0QQX9SgJ7a50VY= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dpyswcx8d-15
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 11:36:45 -0800
-Received: from twshared3399.25.prn2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 20 Jan 2022 11:36:42 -0800
-Received: by devvm5911.prn0.facebook.com (Postfix, from userid 190935)
-        id 88C29C1F073; Thu, 20 Jan 2022 11:36:40 -0800 (PST)
-From:   Alex Liu <liualex@fb.com>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-CC:     Alex Liu <liualex@fb.com>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-Subject: [PATCH] net/mlx5e: Add support for using xdp->data_meta
-Date:   Thu, 20 Jan 2022 11:34:59 -0800
-Message-ID: <20220120193459.3027981-1-liualex@fb.com>
-X-Mailer: git-send-email 2.30.2
+        id S1347222AbiATTvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 14:51:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232634AbiATTvh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 14:51:37 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C34C061574
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 11:51:37 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nAdSY-0007Mg-Tt; Thu, 20 Jan 2022 20:51:02 +0100
+Received: from pengutronix.de (unknown [195.138.59.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3C0831E958;
+        Thu, 20 Jan 2022 19:50:55 +0000 (UTC)
+Date:   Thu, 20 Jan 2022 20:50:51 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Holger Brunck <holger.brunck@hitachienergy.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-phy@lists.infradead.org, Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>, ore@pengutronix.de,
+        alexandru.tachici@analog.com
+Subject: Re: [PATCH devicetree v3] dt-bindings: phy: Add `tx-p2p-microvolt`
+ property binding
+Message-ID: <20220120195051.pb4k24uazqqe6ecd@pengutronix.de>
+References: <20220119131117.30245-1-kabel@kernel.org>
+ <20220120084914.ga7o372lyynbn4ly@pengutronix.de>
+ <20220120190155.717f2d52@thinkpad>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: Z56r12RH2IfwzpxnmFAiIR-fY5K8I6GX
-X-Proofpoint-ORIG-GUID: Z56r12RH2IfwzpxnmFAiIR-fY5K8I6GX
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-20_08,2022-01-20_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 bulkscore=0
- mlxlogscore=999 priorityscore=1501 impostorscore=0 phishscore=0
- lowpriorityscore=0 adultscore=0 malwarescore=0 suspectscore=0 spamscore=0
- clxscore=1011 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201200099
-X-FB-Internal: deliver
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ig2sp3rdmyz7xxgk"
+Content-Disposition: inline
+In-Reply-To: <20220120190155.717f2d52@thinkpad>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for using xdp->data_meta for cross-program communication
 
-Pass "true" to the last argument of xdp_prepare_buff().
+--ig2sp3rdmyz7xxgk
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-After SKB is built, call skb_metadata_set() if metadata was pushed.
+On 20.01.2022 19:01:55, Marek Beh=C3=BAn wrote:
+> On Thu, 20 Jan 2022 09:49:14 +0100
+> Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>=20
+> > On 19.01.2022 14:11:17, Marek Beh=C3=BAn wrote:
+> > > Common PHYs and network PCSes often have the possibility to specify
+> > > peak-to-peak voltage on the differential pair - the default voltage
+> > > sometimes needs to be changed for a particular board.
+> > >=20
+> > > Add properties `tx-p2p-microvolt` and `tx-p2p-microvolt-names` for th=
+is
+> > > purpose. The second property is needed to specify the mode for the
+> > > corresponding voltage in the `tx-p2p-microvolt` property, if the volt=
+age
+> > > is to be used only for speficic mode. More voltage-mode pairs can be
+> > > specified.
+> > >=20
+> > > Example usage with only one voltage (it will be used for all supported
+> > > PHY modes, the `tx-p2p-microvolt-names` property is not needed in this
+> > > case):
+> > >=20
+> > >   tx-p2p-microvolt =3D <915000>;
+> > >=20
+> > > Example usage with voltages for multiple modes:
+> > >=20
+> > >   tx-p2p-microvolt =3D <915000>, <1100000>, <1200000>;
+> > >   tx-p2p-microvolt-names =3D "2500base-x", "usb", "pcie";
+> > >=20
+> > > Add these properties into a separate file phy/transmit-amplitude.yaml,
+> > > which should be referenced by any binding that uses it. =20
+> >=20
+> > If I understand your use-case correctly, you need different voltage p2p
+> > levels in the connection between the Ethernet MAC and the Ethernet
+> > switch or Ethernet-PHY?
+>=20
+> This is a SerDes differential pair amplitude. So yes to your question,
+> if the MII interface uses differential pair, like sgmii, 10gbase-r, ...
+>=20
+> > Some of the two wire Ethernet standards (10base-T1S, 10base-T1L,
+> > 100base-T1, 1000base-T1) defines several p2p voltage levels on the wire,
+> > i.e. between the PHYs. Alexandru has posed a series where you can
+> > specify the between-PHY voltage levels:
+> >=20
+> > | https://lore.kernel.org/all/20211210110509.20970-8-alexandru.tachici@=
+analog.com/
+>=20
+> Copper ethernet is something different, so no conflict
+>=20
+> > Can we make clear that your binding specifies the voltage level on the
+> > MII interface, in contrast Alexandru's binding?
+>=20
+> The binding explicitly says "common PHY", not ethernet PHY. I don't
+> thing there will be any confusion. It can also be specified for USB3+
+> differential pairs, or PCIe differential pairs, or DisplayPort
+> differential pairs...
 
-Signed-off-by: Alex Liu <liualex@fb.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+Thanks for the clarification.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/en_rx.c
-index e86ccc22fb82..63ba4f3689f5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1489,7 +1489,7 @@ static inline void mlx5e_complete_rx_cqe(struct mlx=
-5e_rq *rq,
- static inline
- struct sk_buff *mlx5e_build_linear_skb(struct mlx5e_rq *rq, void *va,
- 				       u32 frag_size, u16 headroom,
--				       u32 cqe_bcnt)
-+				       u32 cqe_bcnt, u32 metasize)
- {
- 	struct sk_buff *skb =3D build_skb(va, frag_size);
-=20
-@@ -1501,6 +1501,9 @@ struct sk_buff *mlx5e_build_linear_skb(struct mlx5e=
-_rq *rq, void *va,
- 	skb_reserve(skb, headroom);
- 	skb_put(skb, cqe_bcnt);
-=20
-+	if (metasize)
-+		skb_metadata_set(skb, metasize);
-+
- 	return skb;
- }
-=20
-@@ -1508,7 +1511,7 @@ static void mlx5e_fill_xdp_buff(struct mlx5e_rq *rq=
-, void *va, u16 headroom,
- 				u32 len, struct xdp_buff *xdp)
- {
- 	xdp_init_buff(xdp, rq->buff.frame0_sz, &rq->xdp_rxq);
--	xdp_prepare_buff(xdp, va, headroom, len, false);
-+	xdp_prepare_buff(xdp, va, headroom, len, true);
- }
-=20
- static struct sk_buff *
-@@ -1521,6 +1524,7 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, stru=
-ct mlx5_cqe64 *cqe,
- 	struct sk_buff *skb;
- 	void *va, *data;
- 	u32 frag_size;
-+	u32 metasize;
-=20
- 	va             =3D page_address(di->page) + wi->offset;
- 	data           =3D va + rx_headroom;
-@@ -1537,7 +1541,8 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, stru=
-ct mlx5_cqe64 *cqe,
-=20
- 	rx_headroom =3D xdp.data - xdp.data_hard_start;
- 	frag_size =3D MLX5_SKB_FRAG_SZ(rx_headroom + cqe_bcnt);
--	skb =3D mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt=
-);
-+	metasize =3D xdp.data - xdp.data_meta;
-+	skb =3D mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt=
-, metasize);
- 	if (unlikely(!skb))
- 		return NULL;
-=20
-@@ -1836,6 +1841,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq=
-, struct mlx5e_mpw_info *wi,
- 	struct sk_buff *skb;
- 	void *va, *data;
- 	u32 frag_size;
-+	u32 metasize;
-=20
- 	/* Check packet size. Note LRO doesn't use linear SKB */
- 	if (unlikely(cqe_bcnt > rq->hw_mtu)) {
-@@ -1861,7 +1867,8 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq=
-, struct mlx5e_mpw_info *wi,
-=20
- 	rx_headroom =3D xdp.data - xdp.data_hard_start;
- 	frag_size =3D MLX5_SKB_FRAG_SZ(rx_headroom + cqe_bcnt32);
--	skb =3D mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt=
-32);
-+	metasize =3D xdp.data - xdp.data_meta;
-+	skb =3D mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt=
-32, metasize);
- 	if (unlikely(!skb))
- 		return NULL;
-=20
-@@ -1892,7 +1899,7 @@ mlx5e_skb_from_cqe_shampo(struct mlx5e_rq *rq, stru=
-ct mlx5e_mpw_info *wi,
- 		dma_sync_single_range_for_cpu(rq->pdev, head->addr, 0, frag_size, DMA_=
-FROM_DEVICE);
- 		prefetchw(hdr);
- 		prefetch(data);
--		skb =3D mlx5e_build_linear_skb(rq, hdr, frag_size, rx_headroom, head_s=
-ize);
-+		skb =3D mlx5e_build_linear_skb(rq, hdr, frag_size, rx_headroom, head_s=
-ize, 0);
-=20
- 		if (unlikely(!skb))
- 			return;
+regards,
+Marc
+
 --=20
-2.30.2
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+--ig2sp3rdmyz7xxgk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmHpvRkACgkQqclaivrt
+76lZvAf9H8GhbUiGcplGx0asB/AtptboYzDuuhpMpI/RluV2pGEH2Qyf7RU92oy8
+D01mIBwRnZIbOABBYVLf+gTbppmd9043lXuQwVKPijz0kqZsHthXDBP4QOQqDzRT
+Flamo7qjNMv3EOdbj20Ylx6KVVRejZopRDBAHF1RqoXQm7ZM4GWU0EBol4d9wbRa
+JZvOiIB0MAMIqs+NwsxXZPyfScZTsYMqXFNZXm9VKcilI61MnQ3sr/7Ls/XDkaQy
+XnRjZxOWPKsxGNf5xMMXp5SniUa4uOzMzeZr/r7gUYw/d4SD2ak+vS4P8efzxnLD
+HVwyYTjf+z0UKKfK/iK2LOc79zeETg==
+=IZJg
+-----END PGP SIGNATURE-----
+
+--ig2sp3rdmyz7xxgk--
