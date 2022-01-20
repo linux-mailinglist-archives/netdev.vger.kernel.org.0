@@ -2,101 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF9664945F5
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 04:07:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13265494650
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 05:10:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358255AbiATDHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 22:07:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
+        id S1358409AbiATEK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 23:10:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiATDHR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 22:07:17 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A46C061574;
-        Wed, 19 Jan 2022 19:07:15 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id c24so20196161edy.4;
-        Wed, 19 Jan 2022 19:07:15 -0800 (PST)
+        with ESMTP id S229787AbiATEK2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 23:10:28 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE711C061574;
+        Wed, 19 Jan 2022 20:10:28 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id y28so921298pff.2;
+        Wed, 19 Jan 2022 20:10:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6AciR2AKfyPUvmQqqeZADltLycshLQ4pZRWrBxQwNds=;
-        b=au9z0HdVBZBLq5GfMsCVAczVs4JxTYHuhw8YWbzU3jXlJyCU6DL0bwgPzEtW8Q8pMO
-         w2QzOztChaWzGqqbCBStS3qGn94DQneWOlOTDG1rf8+JZ9spA8lXCOidJkdOepG+cHEr
-         /J0j1QXW9Ez241MyXdzdKzKCUecaofMtnlFj3posuMFpcDABBbEC2r0wkXW836j8KsDz
-         Jf2plTDfzee+VKHPwUt+gw0i/RuaN+WQqbP+akYY7AYCDR67q51uOuNr7q19WHiQHu3X
-         FzocVx7JtVwd3smRGeMxDwSbO1r79iQuhiJ1Jgw7q1e8Bdig/ilWPj1V22s9btrBfWBd
-         uNhA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mGAPyUYBIV3DCXe8fTnatZkJXHHhQIJu+aokgtouN8I=;
+        b=BT4wFhaCh+wCDEB820c6gaF9MOj3OjJJr1pyj9JwIeSDwXzAnMy+URzlRtKPN3zWvU
+         rYhOOglEvQgUyXeY5eXCay5SPXiVXzQ4KF2zdp61NpdSpLecOsYRSiAh1UT39lNFLmfm
+         yT0SFsYmYoR9fbTGsc3TqOr5R1vFByiNPVhWjkV4U1HoFV586Cj8nJNm1OjNyAnSBBha
+         kQ1yqGiBDUU6rzlZiUFKyHOP6LVTT7B0Y/jSvv+QnK9Qn1kmZwAj5vzTp9/BsbLpAadn
+         VI40X214ztj68/V7hZN7fsUGpJMMw4JJyCYl3FAYScjGimnFTiCslAfcuwD1UeQSnMAp
+         FSKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6AciR2AKfyPUvmQqqeZADltLycshLQ4pZRWrBxQwNds=;
-        b=zc76t+ayH30k4aoEfSxZcgqlEDPE3jSd+MwH+cJ6X+Vr8tGHC1OHqEu+i9r8jLYIiw
-         oJIFtvkpUwCYPgf9Wk5d2/Z8jPoRRq+evz72IhxQcqlSx6bJUoeRlo7UsZ5kh/GnzEuG
-         hvt5OnCaeHcP+9/Aa6eitKWRP/PgfieEoD22Rha3va18vT/r8sEZp4lay2FFleI9+LgM
-         9HjMkj3XD65xWsrcxyxwnFIKm+v8HwuIKiA2lTibgNr614bRrxFQb4JMy1d/rAeE4m7F
-         v7Ml8T9y/nmD5czybV2ufg55A7Ake/I9SEoZKo/z0D6bB6DJkTquNpQbD4tQ2WBGEOl8
-         JT7g==
-X-Gm-Message-State: AOAM533EaQRQL9P2rbjZ/bV5JUUvDVoDPkftGsGwYyTbz15SpfAZK+og
-        kYtJm4tSNNuCafgr27lfSLfyvLO0VnY+1fBM210=
-X-Google-Smtp-Source: ABdhPJwpcONPGuyA1L71cypckx0JcsiD/9+/f7BbFH1VxA84gPzARHiLqRySG4Pii6TEGarWECZLjL+KX0QAFxGFPMg=
-X-Received: by 2002:a05:6402:34c9:: with SMTP id w9mr34197425edc.403.1642648009169;
- Wed, 19 Jan 2022 19:06:49 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mGAPyUYBIV3DCXe8fTnatZkJXHHhQIJu+aokgtouN8I=;
+        b=FfwnuynPegq8PtR5ftAYS0etGeLZ5WPjcDZ7QLc2JT542ZHjWOyIuJ89K834RCVbrb
+         tBu55QmZPLw3mEDn8VzBNt3kAgGL7JCEz75/5Fck84ovn7kSo2Mw/8yh3iR8cjGPVt6G
+         6mzCZm4FL36EmDwOAk5zFxXTlGoqnHXz5o0jiNe55o/Afch77Ty1GMMG+DbcVAEV+/Gi
+         pFXptRyW15cnCTeXrfdQ1932pAh/bFmPXmzdkWf+HQ/ayX8YQcFyIYI8e87v6AppRlON
+         uHj6PQM7A+QUHqHdXu8EOvPMWPUAym/zZ3+1RJ6rrDn5yJK/VQNsg9r8MnnOmuEmhof5
+         ledg==
+X-Gm-Message-State: AOAM5307wSbK64oOCgRKkY+lgij7mEmGtuKzJfjFmZME0UZq/FwjmOtl
+        ia8Diyg9+66SQajw5jbxXIc=
+X-Google-Smtp-Source: ABdhPJzO++zv+TW/BAXAfipNx5tbmOfU5E4CGLNAb6yQJFeh3y8FUeHh6bdVpDJdeicRQwIwJJpjuQ==
+X-Received: by 2002:a63:9809:: with SMTP id q9mr29992863pgd.509.1642651827944;
+        Wed, 19 Jan 2022 20:10:27 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:9dc9])
+        by smtp.gmail.com with ESMTPSA id b22sm1097155pfl.121.2022.01.19.20.10.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 20:10:27 -0800 (PST)
+Date:   Wed, 19 Jan 2022 20:10:25 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Song Liu <song@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kernel-team@fb.com, peterz@infradead.org,
+        x86@kernel.org, Song Liu <songliubraving@fb.com>
+Subject: Re: [PATCH v4 bpf-next 2/7] bpf: use bytes instead of pages for
+ bpf_jit_[charge|uncharge]_modmem
+Message-ID: <20220120041025.uhg2mgpgl32mnjtq@ast-mbp.dhcp.thefacebook.com>
+References: <20220119230620.3137425-1-song@kernel.org>
+ <20220119230620.3137425-3-song@kernel.org>
 MIME-Version: 1.0
-References: <20220113070245.791577-1-imagedong@tencent.com> <CAADnVQKNCqUzPJAjSHMFr-Ewwtv5Cs3UCQpthaKDTd+YNRWqqg@mail.gmail.com>
-In-Reply-To: <CAADnVQKNCqUzPJAjSHMFr-Ewwtv5Cs3UCQpthaKDTd+YNRWqqg@mail.gmail.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Thu, 20 Jan 2022 11:02:27 +0800
-Message-ID: <CADxym3bJZrcGHKH8=kKBkxh848dijAZ56n0fm_DvEh6Bbnrezg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct bpf_sock'
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Mengen Sun <mengensun@tencent.com>, flyingpeng@tencent.com,
-        mungerjiang@tencent.com, Menglong Dong <imagedong@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220119230620.3137425-3-song@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On Wed, Jan 19, 2022 at 03:06:15PM -0800, Song Liu wrote:
+> From: Song Liu <songliubraving@fb.com>
+> 
+> This enables sub-page memory charge and allocation.
+> 
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> ---
+>  include/linux/bpf.h     |  4 ++--
+>  kernel/bpf/core.c       | 19 +++++++++----------
+>  kernel/bpf/trampoline.c |  6 +++---
+>  3 files changed, 14 insertions(+), 15 deletions(-)
+> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 6d7346c54d83..920940f7be22 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -827,8 +827,8 @@ void bpf_image_ksym_add(void *data, struct bpf_ksym *ksym);
+>  void bpf_image_ksym_del(struct bpf_ksym *ksym);
+>  void bpf_ksym_add(struct bpf_ksym *ksym);
+>  void bpf_ksym_del(struct bpf_ksym *ksym);
+> -int bpf_jit_charge_modmem(u32 pages);
+> -void bpf_jit_uncharge_modmem(u32 pages);
+> +int bpf_jit_charge_modmem(u32 size);
+> +void bpf_jit_uncharge_modmem(u32 size);
+>  bool bpf_prog_has_trampoline(const struct bpf_prog *prog);
+>  #else
+>  static inline int bpf_trampoline_link_prog(struct bpf_prog *prog,
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index de3e5bc6781f..495e3b2c36ff 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -808,7 +808,7 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
+>  	return slot;
+>  }
+>  
+> -static atomic_long_t bpf_jit_current;
+> +static atomic64_t bpf_jit_current;
 
-On Thu, Jan 20, 2022 at 6:03 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-[...]
->
-> Looks like
->  __sk_buff->remote_port
->  bpf_sock_ops->remote_port
->  sk_msg_md->remote_port
-> are doing the right thing,
-> but bpf_sock->dst_port is not correct?
->
-> I think it's better to fix it,
-> but probably need to consolidate it with
-> convert_ctx_accesses() that deals with narrow access.
-> I suspect reading u8 from three flavors of 'remote_port'
-> won't be correct.
-
-What's the meaning of 'narrow access'? Do you mean to
-make 'remote_port' u16? Or 'remote_port' should be made
-accessible with u8? In fact, '*((u16 *)&skops->remote_port + 1)'
-won't work, as it only is accessible with u32.
-
-I can simply make 'dst_port' endianness right with what
-'remote_port' do.
-
-Thanks!
-Menglong Dong
-
-
-> 'dst_port' works with a narrow load, but gets endianness wrong.
+I don't understand the motivation for this change.
+bpf_jit_limit is type "long" and it's counting in bytes.
+So why change jit_current to atomic64?
+atomic_long will be fine even on 32-bit arch.
+What did I miss?
