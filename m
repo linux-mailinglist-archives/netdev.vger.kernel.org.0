@@ -2,184 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C85C0495656
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 23:25:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16C6E49566E
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 23:44:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378071AbiATWYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 17:24:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55596 "EHLO
+        id S233963AbiATWn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 17:43:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238984AbiATWY2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 17:24:28 -0500
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5BDC061574;
-        Thu, 20 Jan 2022 14:24:27 -0800 (PST)
-Received: by mail-il1-x130.google.com with SMTP id a18so6220984ilq.6;
-        Thu, 20 Jan 2022 14:24:27 -0800 (PST)
+        with ESMTP id S233826AbiATWn5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 17:43:57 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8469EC061574
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 14:43:56 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id f21so34942090eds.11
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 14:43:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6VwUv3cNz7g/RSSZ/ppqeuln5DSPNtnS50dC5TR7BTE=;
-        b=T/mvfkjiHyunaL9NZ8ciJ60yKOwLwg6uxL/W13+DSK06mOhTEU1VDZgC1AaoeDtmeg
-         7U/tBH3yCHIzlaepG+XHJnfbb70mhX1phtQIFFo/y3JNClJo9qQmeohE4x62vv/TKQKE
-         ZdF3R6diw3clOAAhsg0dbtPag3f3awuDw8lrWRQCAQ0rAOW791UHWo1h1Ysfl5+j4bnc
-         W74pGiEyq3moMLpvLkzvGd9Ep/UuvCUA8hogA8cXzDyUu6yB7h2wMA2a7PBXIf6Zi5h8
-         EXe782et69S7dtlNCmpdA5dpOEdqla2lbhw6Bq1xxnQQNidLe8CAljL3EJjbz7CT67VA
-         DkzA==
+        d=oldum-net.20210112.gappssmtp.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=enGhjxILGRnnQl6nute3Ght0JLasQgpcrNHT9XN3Abg=;
+        b=kQtujP0Ff8ZU4GAKSKVfEZYNNUyRIbKO7wb5tbmVojcBGeFOapIcnV678ybiJ+27nI
+         T2s8H0FsNkXb8kNulMull+cfiRthTjXiYfMTxoD8sxzikK2JfTT0LSA/La1FO3AuOuTa
+         0mqBU6ESfn7oKHuWjGOwtAnAgkhFg+9FMwmIU/FdjGgKODHi/4ewA9rNdMk3rYjuZlCM
+         8VulBk8kvz+3hj43Bn3uv8ujo4O2nu0u1df0dmhLx8HbwH114B0YhHm/Vd+TjofDh7Cr
+         cNXTsg/g3FlBTg9VzLHtiRm1Ri9TV41q27+MLUDzwIQxVww+gSFeY7cY3hc/vRL4b6KD
+         vX2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6VwUv3cNz7g/RSSZ/ppqeuln5DSPNtnS50dC5TR7BTE=;
-        b=KDeo0b4H45UGT3H7NeaDgABfT4jrUXueTdvEWNN5xk/zjnvCoQCjspTJnJy2ONR/Pe
-         gbt6g2OjcUKlqMj62kYW5e4Zo1D1y/w965Dvh1P+wrlloYDX5044uR+j6fCsyMy1CM81
-         gUBxmASYeIsfUo+DU8Nl735MKhCbpdezsTYnovJqJd1Dik2onzaNsvgMVPjP7jvmXNfq
-         D9k1bitqMTRbTMWMDriZbdDUZ+30TfpJDb9a8CdtxOCdhmV7iFT+Md8N7pO31nfE3IYM
-         Ds/P1iHNrQ9+fHzmdccKz+hNj9FReFsfAaNlGqOpV3CjVjRqovpC7j5xNvFb0iDUe8+B
-         A1xA==
-X-Gm-Message-State: AOAM533iLxfUktM4slOMqnYgRZKcTk1h2PFVVp4dFtpGtA5qOL/cmtpU
-        GWUBvqS7HKHFxoZzQVpzZMqsPPSpu5WE2/WXyDA=
-X-Google-Smtp-Source: ABdhPJwhLnj4TJOCJlgZSSzP4rrkjNcKzInQf//XnyLSzUggHiSIvoZBPDiakd3GZZtcyyoxhYyVHGb7ffY0nraFqLw=
-X-Received: by 2002:a05:6e02:1748:: with SMTP id y8mr572291ill.305.1642717466961;
- Thu, 20 Jan 2022 14:24:26 -0800 (PST)
-MIME-Version: 1.0
-References: <164260419349.657731.13913104835063027148.stgit@devnote2>
-In-Reply-To: <164260419349.657731.13913104835063027148.stgit@devnote2>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 20 Jan 2022 14:24:15 -0800
-Message-ID: <CAEf4Bzbbimea3ydwafXSHFiEffYx5zAcwGNKk8Zi6QZ==Vn0Ug@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 0/9] fprobe: Introduce fprobe function entry/exit probe
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=enGhjxILGRnnQl6nute3Ght0JLasQgpcrNHT9XN3Abg=;
+        b=LvOn5Y7uFMh7eISJP/3vFRJfuafaojcmjGxcnf4DZHPJat0cUaPVec6al1SlvWZytG
+         6DeFlZT50u4xVIhK/X7Hufd1omBhuqJ80PW5I7WY9IN6s9QQ7r1nZZOw2/7HBxk4bFiD
+         sdZNmpnwenCIo3tMw/hGI8GOrUpdWr5scAUnkMqYzzN2moSmyUMvw2iKIEihKLLaN/V+
+         YLWOS9RnkaLh5PXdelidWzpm/CRaYA3pwfScxNRActPy/S7nQl0T5GdmIBcgktpOIes9
+         eIhkloDFA/Sb7GuNoPNhG/Z7b4kJIQVq4mnTCvyvtXmGehMkDxTtHUg0HKPHUdvTG79+
+         IKog==
+X-Gm-Message-State: AOAM532UYHaAX8/TuMdD4RObxDwfGacbLpMnkcFI01cBE9cDixHWsVHq
+        TdrUjJ0J2/paycRSpXf56OhUDg==
+X-Google-Smtp-Source: ABdhPJz32HvfAg6KluA/KyEJBaaXAo0NZteHVXzJmGKrghlR6iadIKbzIU8Je/im80UePClykmrsKw==
+X-Received: by 2002:a17:906:36da:: with SMTP id b26mr886534ejc.213.1642718634939;
+        Thu, 20 Jan 2022 14:43:54 -0800 (PST)
+Received: from [10.1.0.200] (external.oldum.net. [82.161.240.76])
+        by smtp.googlemail.com with ESMTPSA id yy13sm1447749ejb.222.2022.01.20.14.43.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 14:43:54 -0800 (PST)
+Message-ID: <29a54acefd1c37d9612613d5275e4bf51e62a704.camel@oldum.net>
+Subject: Re: [PATCH v4 00/12] remove msize limit in virtio transport
+From:   Nikolay Kichukov <nikolay@oldum.net>
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        v9fs-developer@lists.sourceforge.net
+Cc:     netdev@vger.kernel.org,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
+Date:   Thu, 20 Jan 2022 23:43:46 +0100
+In-Reply-To: <cover.1640870037.git.linux_oss@crudebyte.com>
+References: <cover.1640870037.git.linux_oss@crudebyte.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 6:56 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> Hello Jiri,
->
-> Here is the 3rd version of fprobe. I added some comments and
-> fixed some issues. But I still saw some problems when I add
-> your selftest patches.
->
-> This series introduces the fprobe, the function entry/exit probe
-> with multiple probe point support. This also introduces the rethook
-> for hooking function return as same as kretprobe does. This
-> abstraction will help us to generalize the fgraph tracer,
-> because we can just switch it from rethook in fprobe, depending
-> on the kernel configuration.
->
-> The patch [1/9] and [7/9] are from Jiri's series[1]. Other libbpf
-> patches will not be affected by this change.
->
-> [1] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
->
-> However, when I applied all other patches on top of this series,
-> I saw the "#8 bpf_cookie" test case has been stacked (maybe related
-> to the bpf_cookie issue which Andrii and Jiri talked?) And when I
-> remove the last selftest patch[2], the selftest stopped at "#112
-> raw_tp_test_run".
->
-> [2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#m242d2b3a3775eeb5baba322424b15901e5e78483
->
-> Note that I used tools/testing/selftests/bpf/vmtest.sh to check it.
->
-> This added 2 more out-of-tree patches. [8/9] is for adding wildcard
-> support to the sample program, [9/9] is a testing patch for replacing
-> kretprobe trampoline with rethook.
-> According to this work, I noticed that using rethook in kretprobe
-> needs 2 steps.
->  1. port the rethook on all architectures which supports kretprobes.
->     (some arch requires CONFIG_KPROBES for rethook)
->  2. replace kretprobe trampoline with rethook for all archs, at once.
->     This must be done by one treewide patch.
->
-> Anyway, I'll do the kretprobe update in the next step as another series.
-> (This testing patch is just for confirming the rethook is correctly
->  implemented.)
->
-> BTW, on the x86, ftrace (with fentry) location address is same as
-> symbol address. But on other archs, it will be different (e.g. arm64
-> will need 2 instructions to save link-register and call ftrace, the
-> 2nd instruction will be the ftrace location.)
-> Does libbpf correctly handle it?
+Thanks for the patches. I've applied them on top of 5.16.2 kernel and it
+works for msize=1048576. Performance-wise, same throughput as the
+previous patches, basically limiting factor is the backend block
+storage.
 
-libbpf doesn't do anything there. The interface for kprobe is based on
-function name and kernel performs name lookups internally to resolve
-IP. For fentry it's similar (kernel handles IP resolution), but
-instead of function name we specify BTF ID of a function type.
+However, when I mount with msize=4194304, the system locks up upon first
+try to traverse the directory structure, ie 'ls'. Only solution is to
+'poweroff' the guest. Nothing in the logs.
 
->
-> Thank you,
->
-> ---
->
-> Jiri Olsa (2):
->       ftrace: Add ftrace_set_filter_ips function
->       bpf: Add kprobe link for attaching raw kprobes
->
-> Masami Hiramatsu (7):
->       fprobe: Add ftrace based probe APIs
->       rethook: Add a generic return hook
->       rethook: x86: Add rethook x86 implementation
->       fprobe: Add exit_handler support
->       fprobe: Add sample program for fprobe
->       [DO NOT MERGE] Out-of-tree: Support wildcard symbol option to sample
->       [DO NOT MERGE] out-of-tree: kprobes: Use rethook for kretprobe
->
->
->  arch/x86/Kconfig                |    1
->  arch/x86/include/asm/unwind.h   |    8 +
->  arch/x86/kernel/Makefile        |    1
->  arch/x86/kernel/kprobes/core.c  |  106 --------------
->  arch/x86/kernel/rethook.c       |  115 +++++++++++++++
->  include/linux/bpf_types.h       |    1
->  include/linux/fprobe.h          |   84 +++++++++++
->  include/linux/ftrace.h          |    3
->  include/linux/kprobes.h         |   85 +----------
->  include/linux/rethook.h         |   99 +++++++++++++
->  include/linux/sched.h           |    4 -
->  include/uapi/linux/bpf.h        |   12 ++
->  kernel/bpf/syscall.c            |  195 +++++++++++++++++++++++++-
->  kernel/exit.c                   |    3
->  kernel/fork.c                   |    4 -
->  kernel/kallsyms.c               |    1
->  kernel/kprobes.c                |  265 +++++------------------------------
->  kernel/trace/Kconfig            |   22 +++
->  kernel/trace/Makefile           |    2
->  kernel/trace/fprobe.c           |  179 ++++++++++++++++++++++++
->  kernel/trace/ftrace.c           |   54 ++++++-
->  kernel/trace/rethook.c          |  295 +++++++++++++++++++++++++++++++++++++++
->  kernel/trace/trace_kprobe.c     |    4 -
->  kernel/trace/trace_output.c     |    2
->  samples/Kconfig                 |    7 +
->  samples/Makefile                |    1
->  samples/fprobe/Makefile         |    3
->  samples/fprobe/fprobe_example.c |  154 ++++++++++++++++++++
->  tools/include/uapi/linux/bpf.h  |   12 ++
->  29 files changed, 1283 insertions(+), 439 deletions(-)
->  create mode 100644 arch/x86/kernel/rethook.c
->  create mode 100644 include/linux/fprobe.h
->  create mode 100644 include/linux/rethook.h
->  create mode 100644 kernel/trace/fprobe.c
->  create mode 100644 kernel/trace/rethook.c
->  create mode 100644 samples/fprobe/Makefile
->  create mode 100644 samples/fprobe/fprobe_example.c
->
-> --
-> Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
+Qemu 6.0.0 on the host has the following patches:
+
+01-fix-wrong-io-block-size-Rgetattr.patch
+02-dedupe-iounit-code.patch
+03-9pfs-simplify-blksize_to_iounit.patch
+
+The kernel patches were applied on the guest kernel only.
+
+I've generated them with the following command:
+git diff 783ba37c1566dd715b9a67d437efa3b77e3cd1a7^..8c305df4646b65218978fc6474aa0f5f29b216a0 > /tmp/kernel-5.16-9p-virtio-drop-msize-cap.patch
+
+The host runs 5.15.4 kernel.
+
+Cheers,
+-N
+
+On Thu, 2021-12-30 at 14:23 +0100, Christian Schoenebeck wrote:
+> This series aims to get get rid of the current 500k 'msize' limitation
+> in
+> the 9p virtio transport, which is currently a bottleneck for
+> performance
+> of 9p mounts.
+> 
+> To avoid confusion: it does remove the msize limit for the virtio
+> transport,
+> on 9p client level though the anticipated milestone for this series is
+> now
+> a max. 'msize' of 4 MB. See patch 8 for reason why.
+> 
+> This is a follow-up of the following series and discussion:
+> https://lore.kernel.org/netdev/cover.1632327421.git.linux_oss@crudebyte.com/
+> 
+> Latest version of this series:
+> https://github.com/cschoenebeck/linux/commits/9p-virtio-drop-msize-cap
+> 
+> 
+> OVERVIEW OF PATCHES:
+> 
+> * Patch 1 is just a trivial info message for the user to know why his
+> msize
+>   option got ignored by 9p client in case the value was larger than
+> what is
+>   supported by this 9p driver.
+> 
+> * Patches 2..7 remove the msize limitation from the 'virtio' transport
+>   (i.e. the 9p 'virtio' transport itself actually supports >4MB now,
+> tested
+>   successfully with an experimental QEMU version and some dirty 9p
+> Linux
+>   client hacks up to msize=128MB).
+> 
+> * Patch 8 limits msize for all transports to 4 MB for now as >4MB
+> would need
+>   more work on 9p client level (see commit log of patch 8 for
+> details).
+> 
+> * Patches 9..12 tremendously reduce unnecessarily huge 9p message
+> sizes and
+>   therefore provide performance gain as well. So far, almost all 9p
+> messages
+>   simply allocated message buffers exactly msize large, even for
+> messages
+>   that actually just needed few bytes. So these patches make sense by
+>   themselves, independent of this overall series, however for this
+> series
+>   even more, because the larger msize, the more this issue would have
+> hurt
+>   otherwise.
+> 
+> 
+> PREREQUISITES:
+> 
+> If you are testing with QEMU then please either use latest QEMU 6.2
+> release
+> or higher, or at least apply the following patch on QEMU side:
+> 
+>  
+> https://lore.kernel.org/qemu-devel/E1mT2Js-0000DW-OH@lizzy.crudebyte.com/
+> 
+> That QEMU patch is required if you are using a user space app that
+> automatically retrieves an optimum I/O block size by obeying stat's
+> st_blksize, which 'cat' for instance is doing, e.g.:
+> 
+>         time cat test_rnd.dat > /dev/null
+> 
+> Otherwise please use a user space app for performance testing that
+> allows
+> you to force a large block size and to avoid that QEMU issue, like
+> 'dd'
+> for instance, in that case you don't need to patch QEMU.
+> 
+> 
+> KNOWN LIMITATION:
+> 
+> With this series applied I can run
+> 
+>   QEMU host <-> 9P virtio <-> Linux guest
+> 
+> with up to slightly below 4 MB msize [4186112 = (1024-2) * 4096]. If I
+> try
+> to run it with exactly 4 MB (4194304) it currently hits a limitation
+> on
+> QEMU side:
+> 
+>   qemu-system-x86_64: virtio: too many write descriptors in indirect
+> table
+> 
+> That's because QEMU currently has a hard coded limit of max. 1024
+> virtio
+> descriptors per vring slot (i.e. per virtio message), see to do (1.)
+> below.
+> 
+> 
+> STILL TO DO:
+> 
+>   1. Negotiating virtio "Queue Indirect Size" (MANDATORY):
+> 
+>     The QEMU issue described above must be addressed by negotiating
+> the
+>     maximum length of virtio indirect descriptor tables on virtio
+> device
+>     initialization. This would not only avoid the QEMU error above,
+> but would
+>     also allow msize of >4MB in future. Before that change can be done
+> on
+>     Linux and QEMU sides though, it first requires a change to the
+> virtio
+>     specs. Work on that on the virtio specs is in progress:
+> 
+>     https://github.com/oasis-tcs/virtio-spec/issues/122
+> 
+>     This is not really an issue for testing this series. Just stick to
+> max.
+>     msize=4186112 as described above and you will be fine. However for
+> the
+>     final PR this should obviously be addressed in a clean way.
+> 
+>   2. Reduce readdir buffer sizes (optional - maybe later):
+> 
+>     This series already reduced the message buffers for most 9p
+> message
+>     types. This does not include Treaddir though yet, which is still
+> simply
+>     using msize. It would make sense to benchmark first whether this
+> is
+>     actually an issue that hurts. If it does, then one might use
+> already
+>     existing vfs knowledge to estimate the Treaddir size, or starting
+> with
+>     some reasonable hard coded small Treaddir size first and then
+> increasing
+>     it just on the 2nd Treaddir request if there are more directory
+> entries
+>     to fetch.
+> 
+>   3. Add more buffer caches (optional - maybe later):
+> 
+>     p9_fcall_init() uses kmem_cache_alloc() instead of kmalloc() for
+> very
+>     large buffers to reduce latency waiting for memory allocation to
+>     complete. Currently it does that only if the requested buffer size
+> is
+>     exactly msize large. As patch 11 already divided the 9p message
+> types
+>     into few message size categories, maybe it would make sense to use
+> e.g.
+>     4 separate caches for those memory category (e.g. 4k, 8k, msize/2,
+>     msize). Might be worth a benchmark test.
+> 
+> Testing and feedback appreciated!
+> 
+> v3 -> v4:
+> 
+>   * Limit msize to 4 MB for all transports [NEW patch 8].
+> 
+>   * Avoid unnecessarily huge 9p message buffers
+>     [NEW patch 9] .. [NEW patch 12].
+> 
+> Christian Schoenebeck (12):
+>   net/9p: show error message if user 'msize' cannot be satisfied
+>   9p/trans_virtio: separate allocation of scatter gather list
+>   9p/trans_virtio: turn amount of sg lists into runtime info
+>   9p/trans_virtio: introduce struct virtqueue_sg
+>   net/9p: add trans_maxsize to struct p9_client
+>   9p/trans_virtio: support larger msize values
+>   9p/trans_virtio: resize sg lists to whatever is possible
+>   net/9p: limit 'msize' to KMALLOC_MAX_SIZE for all transports
+>   net/9p: split message size argument into 't_size' and 'r_size' pair
+>   9p: add P9_ERRMAX for 9p2000 and 9p2000.u
+>   net/9p: add p9_msg_buf_size()
+>   net/9p: allocate appropriate reduced message buffers
+> 
+>  include/net/9p/9p.h     |   3 +
+>  include/net/9p/client.h |   2 +
+>  net/9p/client.c         |  67 +++++++--
+>  net/9p/protocol.c       | 154 ++++++++++++++++++++
+>  net/9p/protocol.h       |   2 +
+>  net/9p/trans_virtio.c   | 304 +++++++++++++++++++++++++++++++++++----
+> -
+>  6 files changed, 483 insertions(+), 49 deletions(-)
+> 
+
