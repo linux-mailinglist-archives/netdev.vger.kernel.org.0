@@ -2,77 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B87F494CFF
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 12:30:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40FBA494D13
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 12:33:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231585AbiATLaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 06:30:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231477AbiATLaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 06:30:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2588FC061574
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 03:30:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67C1FB81D46
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 11:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3C765C340E0;
-        Thu, 20 Jan 2022 11:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642678211;
-        bh=62alT1yT9gFiBDTdbbREB9uwyKY3TL4nx7WYNSJ48iE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Dn7SydM/qv/mx8RwTZwzEoxeifyXLu+iGeEtU6kjZuYsxeEla20F3G/uFnADEU2Tc
-         x65FQyDnc0A/LlzyOYnUjPnUfCEcqx8OcvG9DsFwkxWHL5Y5p5PNoyg5eu7j8Rq5cQ
-         +X43eEdpzBSL+SNBgb/8ffbWIGZUqFpPZT+iKtURF0ywZgfzbthTg6paxYaLuV0MGr
-         dyWJBu1Ki9v262RoXLwUoF4+LLzADlz3Iub2mSffzek1XiWBVPHKr7gnVtAmHOvnH+
-         YZQSjVbyALTvWiH2DG9fxJKjNnIiMV/saD6Zj98d8yzpfpLM6W9xs42JXG3U7f7eTf
-         HUUvule9xz6Og==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 282B6F6079C;
-        Thu, 20 Jan 2022 11:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231651AbiATLd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 06:33:29 -0500
+Received: from tartarus.angband.pl ([51.83.246.204]:47230 "EHLO
+        tartarus.angband.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230037AbiATLd3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 06:33:29 -0500
+Received: from kilobyte by tartarus.angband.pl with local (Exim 4.94.2)
+        (envelope-from <kilobyte@angband.pl>)
+        id 1nAVeu-007RBp-3X; Thu, 20 Jan 2022 12:31:16 +0100
+Date:   Thu, 20 Jan 2022 12:31:16 +0100
+From:   Adam Borowski <kilobyte@angband.pl>
+To:     Gal Pressman <gal@nvidia.com>
+Cc:     netdev@vger.kernel.org
+Subject: build failure: undef ref to __sk_defer_free_flush
+Message-ID: <YelIBI/yG7gzy0Sf@angband.pl>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: phy: broadcom: hook up soft_reset for BCM54616S
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164267821016.14873.13752803731967227641.git-patchwork-notify@kernel.org>
-Date:   Thu, 20 Jan 2022 11:30:10 +0000
-References: <20220118215243.359473-1-robert.hancock@calian.com>
-In-Reply-To: <20220118215243.359473-1-robert.hancock@calian.com>
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, bcm-kernel-feedback-list@broadcom.com
+X-Junkbait: aaron@angband.pl, zzyx@angband.pl
+X-SA-Exim-Connect-IP: <locally generated>
+X-SA-Exim-Mail-From: kilobyte@angband.pl
+X-SA-Exim-Scanned: No (on tartarus.angband.pl); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi!
+Your commit 79074a72d335dbd021a716d8cc65cba3b2f706ab
+     net: Flush deferred skb free on socket destroy
+causes a build failure if NET=y && INET=n
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+  LD      .tmp_vmlinux.kallsyms1
+ld: net/core/sock.o: in function `sk_defer_free_flush':
+/home/kilobyte/linux/./include/net/tcp.h:1378: undefined reference to `__sk_defer_free_flush'
 
-On Tue, 18 Jan 2022 15:52:43 -0600 you wrote:
-> A problem was encountered with the Bel-Fuse 1GBT-SFP05 SFP module (which
-> is a 1 Gbps copper module operating in SGMII mode with an internal
-> BCM54616S PHY device) using the Xilinx AXI Ethernet MAC core, where the
-> module would work properly on the initial insertion or boot of the
-> device, but after the device was rebooted, the link would either only
-> come up at 100 Mbps speeds or go up and down erratically.
-> 
-> [...]
 
-Here is the summary with links:
-  - [net] net: phy: broadcom: hook up soft_reset for BCM54616S
-    https://git.kernel.org/netdev/net/c/d15c7e875d44
-
-You are awesome, thank you!
+Meow!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+⢀⣴⠾⠻⢶⣦⠀ Aryans: split from other Indo-Europeans ~2900-2000BC → Ural →
+⣾⠁⢠⠒⠀⣿⡁     Bactria → settled 2000-1000BC in northwest India.
+⢿⡄⠘⠷⠚⠋⠀ Gypsies: came ~1000AD from northern India; aryan.
+⠈⠳⣄⠀⠀⠀⠀ Germans: IE people who came ~2800BC to Scandinavia; not aryan.
