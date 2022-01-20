@@ -2,84 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DA90494655
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 05:14:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E87E494659
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 05:18:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358419AbiATEOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 23:14:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33528 "EHLO
+        id S1358427AbiATER7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 23:17:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235622AbiATEOY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 23:14:24 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B855C061574;
-        Wed, 19 Jan 2022 20:14:24 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id h13so3601512plf.2;
-        Wed, 19 Jan 2022 20:14:24 -0800 (PST)
+        with ESMTP id S235622AbiATER6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 23:17:58 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4D4C061574;
+        Wed, 19 Jan 2022 20:17:57 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id v11-20020a17090a520b00b001b512482f36so1822149pjh.3;
+        Wed, 19 Jan 2022 20:17:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=zqcxYy7iwV5OyiHjWlpjXU1fz5t8Ectzi2BZCfiFr48=;
-        b=NPpNGnStIyLtNwudLCOWrB9SVyk7aXAePjqUCTYBIpieLDPxW7J3O0VAzEeKJj6VqT
-         xVOo3G2lzfU4dl3CFtYGI+yn9q4LnjG64xvDsopACyfcNC8IYw2D/+lesz8S2fXoukpb
-         tGTJ/yLCPFp30xrAdqljpKnWNG6H6PSXodelI3MiJexUcSAYEwGsQSJGrEe0s+TjDOwL
-         WFJqpEWR0UXeg820LBx16vwthOmL25uLqqbf5aaYLqW8UDHJPETesL0fAFAQzqWyXyfI
-         0fE5MU0dsGDviAaR0BrKHMkGMIb7yK7TR5jAboUgU0857L4PeLkFOMT0tIP3uv3A0D9v
-         76ag==
+        bh=5O9D7ASqdDFucJQiKUFfcDp4wBTBWg4Hgx0/kZPiSxU=;
+        b=ejvL66BnCYzDxKqG+DD3FBrnNi3QE4YCQFR1pXSIb0BJSeJ8fKlwkKhNg9XNmfCjvF
+         hd4vupjOjc4JmZnUUoGVbWYKz5jIunu41HFFQ0binTBWqMGQl5D3Rl5yzgMbp4rsxf4B
+         jPT7KdJ+ispFIHWS19l6NI78PIoPQGpRaMczWKeJGZj8e0Z7Pn7T4GSUvxd3svEO+OZk
+         6by35hcA1y2ACeA+ma6Weo5clinm5oAuX9cJRJ5pt6MXx9iOuTI1YAldaWf6el2SnF0x
+         J9I/D8/YoCLj5qg539NCA3DJLZGh5Hl13+HCWguO60kwIWKVKVDtjRDd1xpuH+2cL0v3
+         xzXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=zqcxYy7iwV5OyiHjWlpjXU1fz5t8Ectzi2BZCfiFr48=;
-        b=u00S97hy7F5kqqV2uX8uNjI1CVS76XgHDb5aYk07ZMp7nVrKF8U3q8TmCXW0IfmPz7
-         RY7zK5yBjiTFPwPdplBpBDDlcfnAHVeawXYrhNVeMIK4eoK//qi0/DrxDr6CQSPkZvXO
-         OFwugMUsA9B+Bwk47gc6v1Ezbu7YusdA/Rft5fFZgo+FzCG4H1hMQleH5nzQOGmBhKfx
-         wSKV9qw6jeXL9zU06MZscxDYNxNK1Vc+ameD5r/S4o/9Ns839Ys0SUKLULiL0ecyEJCg
-         7o7zN3u9j9ytukJoQ7Xa/rTrAx6i+YiMeiU9jDjhODtA9wTiRx5mfxK8ljqOZyYQv9WR
-         Zy5Q==
-X-Gm-Message-State: AOAM531qiZYvEsW/LKGl7F7YB+MIRG4rE7wL8ShFcTH7FnFdAUM4A1NV
-        HEOa8Qq4jQdAzl8PtwKInS+vHrU7jjM=
-X-Google-Smtp-Source: ABdhPJx/6+T51kSBHTFIAG/qo2tXUq+bL9zi5JdIR/vs3U+aGteylj3/iM3tj5xvKjDSI9HSuqHkzg==
-X-Received: by 2002:a17:90a:8b95:: with SMTP id z21mr8406149pjn.29.1642652063947;
-        Wed, 19 Jan 2022 20:14:23 -0800 (PST)
+        bh=5O9D7ASqdDFucJQiKUFfcDp4wBTBWg4Hgx0/kZPiSxU=;
+        b=ijAi+MKNfZl6kGX2H0iNbrGPYVIEUJC94QYjpMEFOyYMUxJzp+2diW38/YAkksbARB
+         38AjV3oJd14iSv+144JfA/gI5IjulYcq51nzGA9AydC3/VKImubUnugX1gZ1ZbU8LXBW
+         r4dLsPjWn7Zwqlf8uH37VoWxOhuzzMwI+tqVbY+Ui5JiAeZKsOSUzfQOpW4Esdg/Ifo/
+         93ROwMhnLMUj5gkeO1Q/6blOL6cgkUQrmrahMnCOX4IcuR+BXc8pGsT9fTTkzm+f2qHf
+         cH2zgFxpOiBWKrzGduhGkf4HePOq1gwnyJQJCvQ/F6tttmmz739mAO58oxfAUKedlFs0
+         rmYQ==
+X-Gm-Message-State: AOAM530kzOt3YlZUM629zIXUgU4oslCx/IbZrMY+yq+ZNVV4gQFbqDTg
+        xH84bYc4yvzzUTDUm6zWi74=
+X-Google-Smtp-Source: ABdhPJx9zwdvvp0KfNPlOQVjgmdvo0MDzxswBTuv1FV7k+WzAaKWrHpor7GZcg+SVh+cFaSFDGuKQA==
+X-Received: by 2002:a17:90a:2e09:: with SMTP id q9mr8409597pjd.2.1642652277409;
+        Wed, 19 Jan 2022 20:17:57 -0800 (PST)
 Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:9dc9])
-        by smtp.gmail.com with ESMTPSA id nl17sm744986pjb.43.2022.01.19.20.14.22
+        by smtp.gmail.com with ESMTPSA id m21sm1111708pfk.185.2022.01.19.20.17.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jan 2022 20:14:23 -0800 (PST)
-Date:   Wed, 19 Jan 2022 20:14:21 -0800
+        Wed, 19 Jan 2022 20:17:56 -0800 (PST)
+Date:   Wed, 19 Jan 2022 20:17:54 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kernel-team@fb.com, peterz@infradead.org,
-        x86@kernel.org, Song Liu <songliubraving@fb.com>
-Subject: Re: [PATCH v4 bpf-next 6/7] bpf: introduce bpf_prog_pack allocator
-Message-ID: <20220120041421.ngrxukhb4t6b7tlq@ast-mbp.dhcp.thefacebook.com>
-References: <20220119230620.3137425-1-song@kernel.org>
- <20220119230620.3137425-7-song@kernel.org>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Mengen Sun <mengensun@tencent.com>, flyingpeng@tencent.com,
+        mungerjiang@tencent.com, Menglong Dong <imagedong@tencent.com>
+Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct
+ bpf_sock'
+Message-ID: <20220120041754.scj3hsrxmwckl7pd@ast-mbp.dhcp.thefacebook.com>
+References: <20220113070245.791577-1-imagedong@tencent.com>
+ <CAADnVQKNCqUzPJAjSHMFr-Ewwtv5Cs3UCQpthaKDTd+YNRWqqg@mail.gmail.com>
+ <CADxym3bJZrcGHKH8=kKBkxh848dijAZ56n0fm_DvEh6Bbnrezg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220119230620.3137425-7-song@kernel.org>
+In-Reply-To: <CADxym3bJZrcGHKH8=kKBkxh848dijAZ56n0fm_DvEh6Bbnrezg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 03:06:19PM -0800, Song Liu wrote:
->  
-> +/*
-> + * BPF program pack allocator.
-> + *
-> + * Most BPF programs are pretty small. Allocating a hole page for each
-> + * program is sometime a waste. Many small bpf program also adds pressure
-> + * to instruction TLB. To solve this issue, we introduce a BPF program pack
-> + * allocator. The prog_pack allocator uses HPAGE_PMD_SIZE page (2MB on x86)
-> + * to host BPF programs.
-> + */
-> +#define BPF_PROG_PACK_SIZE	HPAGE_PMD_SIZE
-> +#define BPF_PROG_MAX_PACK_PROG_SIZE	HPAGE_PMD_SIZE
+On Thu, Jan 20, 2022 at 11:02:27AM +0800, Menglong Dong wrote:
+> Hello!
+> 
+> On Thu, Jan 20, 2022 at 6:03 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> [...]
+> >
+> > Looks like
+> >  __sk_buff->remote_port
+> >  bpf_sock_ops->remote_port
+> >  sk_msg_md->remote_port
+> > are doing the right thing,
+> > but bpf_sock->dst_port is not correct?
+> >
+> > I think it's better to fix it,
+> > but probably need to consolidate it with
+> > convert_ctx_accesses() that deals with narrow access.
+> > I suspect reading u8 from three flavors of 'remote_port'
+> > won't be correct.
+> 
+> What's the meaning of 'narrow access'? Do you mean to
+> make 'remote_port' u16? Or 'remote_port' should be made
+> accessible with u8? In fact, '*((u16 *)&skops->remote_port + 1)'
+> won't work, as it only is accessible with u32.
 
-We have a synthetic test with 1M bpf instructions. How did it JIT?
-Are you saying we were lucky that every BPF insn was JITed to <2 bytes x86?
-Did I misread the 2MB limit?
+u8 access to remote_port won't pass the verifier,
+but u8 access to dst_port will.
+Though it will return incorrect data.
+See how convert_ctx_accesses() handles narrow loads.
+I think we need to generalize it for different endian fields.
