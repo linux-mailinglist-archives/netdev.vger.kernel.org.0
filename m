@@ -2,132 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0E9C4953A6
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 18:57:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61AEB4953CE
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 19:02:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233162AbiATR5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 12:57:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52448 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbiATR5W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 12:57:22 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46F7C061574
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 09:57:21 -0800 (PST)
+        id S236597AbiATSCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 13:02:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45772 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234621AbiATSCE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 13:02:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 24C5ECE217D
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 17:57:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1B0AC340E0;
-        Thu, 20 Jan 2022 17:57:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54EF2B81E19;
+        Thu, 20 Jan 2022 18:02:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 689BCC340E0;
+        Thu, 20 Jan 2022 18:01:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642701438;
-        bh=hM/zKZmMnMwBviUYx8O8x3YMtIhG/jRQbQhiTboq1Jo=;
+        s=k20201202; t=1642701721;
+        bh=xC8OW4CUchMp0erk9wqkXdiLHGoZ3LLIAA7sgkPWiP0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AD5SJdxWMcq4yavGGmLOTrDtfkBFotFkXhKnf0IYuhembWFcIcrDr1nMosX8bw6+m
-         FhzF1QZjnJaUVjTiZ4EyIkLMCO9VGOzvU51XvZIC17/ToQ9CqO253zpc1U9ur+R3ky
-         gIwOc4tuHpQJMY0RfONzrTr+a4N4Kklq3DMsPq6IgDjI9ZYLULTaicSSbOb73anKa3
-         kbQYT85ubyO7nkT2/j2EAtX8X+88YQ8JvwY7+0edaCiG+USJgteTah/HcQxuWVzNkB
-         45uEVCopdH/b/szxd/rZfKNsPrMLViJ3rvu5knFF1wbs1OSdiDK7cFxB4unPrQGmqE
-         XQCJyKL1qNg/A==
-Date:   Thu, 20 Jan 2022 18:57:13 +0100
+        b=STqmId7/Gepb2e10OOESnjpCgVu+XYM9AIJ7eEWxDd3gFSyxf2LloLOmdjceOCH2u
+         LmaFwZdvyDTJGVSiPASaMhJMInGt9tTb0JBz5T3pa+WS6Gde1JtMoVsQV+0u3+iVQ6
+         AS3azklGnlI9JEVw8iJ2uFK0R6c2d3ycMqNfGKKoDYcrB1XvwjROFX/qJ+vQxBeLe6
+         WQeI7glnlt9n6RBnoOT4D5T09IONYBTot49F3Xm241WTMRs2nLYNVZD3xBb96ENPD5
+         y/AXWhi1jmGqlxirgROQecJ9LlqNW3tBEkYhopkYNIjdEeTKlkFOsqVpLXHnJWIQPb
+         iiva4lKWR1Wiw==
+Date:   Thu, 20 Jan 2022 19:01:55 +0100
 From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Holger Brunck <holger.brunck@hitachienergy.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [v3 2/2] dsa: mv88e6xxx: make serdes SGMII/Fiber output
- amplitude configurable
-Message-ID: <20220120185713.0a3ed53e@thinkpad>
-In-Reply-To: <AM0PR0602MB36663B72C5574E30DF7A6805F75A9@AM0PR0602MB3666.eurprd06.prod.outlook.com>
-References: <20211207190730.3076-1-holger.brunck@hitachienergy.com>
-        <20211207190730.3076-2-holger.brunck@hitachienergy.com>
-        <20211207202733.56a0cf15@thinkpad>
-        <AM6PR0602MB3671CC1FE1D6685FE2A503A6F76F9@AM6PR0602MB3671.eurprd06.prod.outlook.com>
-        <20211208162852.4d7361af@thinkpad>
-        <AM6PR0602MB36717361A85C1B0CA8FE94D0F76F9@AM6PR0602MB3671.eurprd06.prod.outlook.com>
-        <20211208171720.6a297011@thinkpad>
-        <YbDkldWhZNDRkZDO@lunn.ch>
-        <20211208181623.6cf39e15@thinkpad>
-        <AM0PR0602MB366630C33E7F36499BCD1C40F7769@AM0PR0602MB3666.eurprd06.prod.outlook.com>
-        <20211215215350.7a8b353a@thinkpad>
-        <AM0PR0602MB36663B72C5574E30DF7A6805F75A9@AM0PR0602MB3666.eurprd06.prod.outlook.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Holger Brunck <holger.brunck@hitachienergy.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-phy@lists.infradead.org, Vinod Koul <vkoul@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>, ore@pengutronix.de,
+        alexandru.tachici@analog.com
+Subject: Re: [PATCH devicetree v3] dt-bindings: phy: Add `tx-p2p-microvolt`
+ property binding
+Message-ID: <20220120190155.717f2d52@thinkpad>
+In-Reply-To: <20220120084914.ga7o372lyynbn4ly@pengutronix.de>
+References: <20220119131117.30245-1-kabel@kernel.org>
+        <20220120084914.ga7o372lyynbn4ly@pengutronix.de>
 X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Holger,
+On Thu, 20 Jan 2022 09:49:14 +0100
+Marc Kleine-Budde <mkl@pengutronix.de> wrote:
 
-On Thu, 20 Jan 2022 07:52:01 +0000
-Holger Brunck <holger.brunck@hitachienergy.com> wrote:
+> On 19.01.2022 14:11:17, Marek Beh=C3=BAn wrote:
+> > Common PHYs and network PCSes often have the possibility to specify
+> > peak-to-peak voltage on the differential pair - the default voltage
+> > sometimes needs to be changed for a particular board.
+> >=20
+> > Add properties `tx-p2p-microvolt` and `tx-p2p-microvolt-names` for this
+> > purpose. The second property is needed to specify the mode for the
+> > corresponding voltage in the `tx-p2p-microvolt` property, if the voltage
+> > is to be used only for speficic mode. More voltage-mode pairs can be
+> > specified.
+> >=20
+> > Example usage with only one voltage (it will be used for all supported
+> > PHY modes, the `tx-p2p-microvolt-names` property is not needed in this
+> > case):
+> >=20
+> >   tx-p2p-microvolt =3D <915000>;
+> >=20
+> > Example usage with voltages for multiple modes:
+> >=20
+> >   tx-p2p-microvolt =3D <915000>, <1100000>, <1200000>;
+> >   tx-p2p-microvolt-names =3D "2500base-x", "usb", "pcie";
+> >=20
+> > Add these properties into a separate file phy/transmit-amplitude.yaml,
+> > which should be referenced by any binding that uses it. =20
+>=20
+> If I understand your use-case correctly, you need different voltage p2p
+> levels in the connection between the Ethernet MAC and the Ethernet
+> switch or Ethernet-PHY?
 
-> Hi Marek,
-> 
-> > >  
-> > > > > This gets interesting when PCIe and USB needs to use this
-> > > > > property, what names are used, and if it is possible to combine
-> > > > > two different lists?  
-> > > >
-> > > > I don't think it is possible, I tried that once and couldn't get it to work.
-> > > >
-> > > > I am going to try write the proposal. But unfortunately PHY binding
-> > > > is not converted to YAML yet :(
-> > > >  
-> > >
-> > > I saw you recent patches to convert this. Thanks!
-> > >
-> > > This make my serdes.yaml obsolete then, correct? Should I then only
-> > > re-post my driver code, once your patches are accepted?  
-> > 
-> > Yes, please let's do it this way. It may take some time for Rob to review this,
-> > though, and he may require some changes.
-> >   
-> 
-> I saw your v3 patch for the bindings and I would adapt then my patch
-> accordingly to tx-p2p-microvolt. 
-> 
-> > Also I was thinking whether it wouldn't be better to put the property into a
-> > separate SerDes PHY node, i.e.
-> > 
-> >   switch {
-> >     compatible = "marvell,mv88e6085";
-> >     ...
-> > 
-> >     ports {
-> >       port@6 {
-> >         reg = <0x6>;
-> >         phy-handle = <&switch_serdes_phy>;
-> >       };
-> > 
-> >       ...
-> >     };
-> > 
-> >     mdio {
-> >       switch_serdes_phy: ethernet-phy@f {
-> >         reg = <0xf>;
-> >         tx-amplitude-microvolt = <1234567>;
-> >       };
-> > 
-> >       ...
-> >     };
-> >   };  
-> 
-> this would mean in regard to my patch instead of checking directly for the
-> property in mv88e6xxx_setup_port  I would parse for the phy-handle first
-> and then for the property? 
-> 
-> Should I wait until your patch is accepted and merged?
+This is a SerDes differential pair amplitude. So yes to your question,
+if the MII interface uses differential pair, like sgmii, 10gbase-r, ...
 
-I don't know if Rob will be merging it, but we need to wait at least
-for his review/acknowledgement. In the meantime you can prepare your
-patch as RFC, though.
+> Some of the two wire Ethernet standards (10base-T1S, 10base-T1L,
+> 100base-T1, 1000base-T1) defines several p2p voltage levels on the wire,
+> i.e. between the PHYs. Alexandru has posed a series where you can
+> specify the between-PHY voltage levels:
+>=20
+> | https://lore.kernel.org/all/20211210110509.20970-8-alexandru.tachici@an=
+alog.com/
 
-Also I want to add a function that will give you the voltage amplitude
-given a node and a mode, i.e.
+Copper ethernet is something different, so no conflict
 
-  fwnode_phy_get_tx_p2p_amplitude(fwnode, "1000base-x")
+> Can we make clear that your binding specifies the voltage level on the
+> MII interface, in contrast Alexandru's binding?
 
+The binding explicitly says "common PHY", not ethernet PHY. I don't
+thing there will be any confusion. It can also be specified for USB3+
+differential pairs, or PCIe differential pairs, or DisplayPort
+differential pairs...
+
+Marek
