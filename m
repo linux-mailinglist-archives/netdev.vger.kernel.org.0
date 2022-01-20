@@ -2,300 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0369F494C48
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 11:55:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FC2A494C50
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 11:57:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbiATKzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 05:55:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34685 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229896AbiATKzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 05:55:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642676122;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=R+WMX+rXFBlnmQkd+qto6BGtO5yiQl9ZhpYx2egERj4=;
-        b=EFBqrmqnSJazi+OlZYXkac+G+Xi4Ep6UaHk+JCJhA9cInd4lyF9q8KtcCirzV2WccJ96ow
-        P4CLoWcNiUucVweDh4AuCUytW8FXFo38bzHhmIq80aWjjGh3Tq3Cg9QImqIq07ZgneXpps
-        v7XoreR6p8c+lHnpogRS6q0grukPPPQ=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-136-ZChBQllmNAedL6m3uuwd2Q-1; Thu, 20 Jan 2022 05:55:20 -0500
-X-MC-Unique: ZChBQllmNAedL6m3uuwd2Q-1
-Received: by mail-wm1-f70.google.com with SMTP id 14-20020a05600c024e00b0034a83f7391aso3815851wmj.4
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 02:55:20 -0800 (PST)
+        id S229991AbiATK5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 05:57:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39500 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229971AbiATK5F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 05:57:05 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F123AC061574;
+        Thu, 20 Jan 2022 02:57:04 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id c24so24592761edy.4;
+        Thu, 20 Jan 2022 02:57:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VJFSujY0gawm0vuS1B+3onnPwXQ2aVqz3AH1Ci+gepI=;
+        b=H4/nz/vo+kTO/K3uRtiAAeZz3SGXVBo6YrTUQ+W7Ycvfez1rGht/zH9RmQP+HGdFVo
+         PnPybtNQi65V3jbC6OUUkg0QCQGp1ESHk1FiyBpqZnbsNCXh+d537X9sBIdC3X5SK4OP
+         aoKsZ8v/+4WDjUPIiGXHYsMqOrZHiI28+oBNcbduAjTz8iaG91Fb+v03qy7ZZIzVlLHC
+         cwjjuRyc1pANbTp2GCyJTe2zmO5dmbTDwqqLU+/pcUkp4v/9wqCyrgi3VTHQ7eF5iSxM
+         Dw63NjJxMZRWEjyGRa5kWakrI4w1Nixt3l4CGBIMqEYa8fQgncrQoeikSbKMFxufKjto
+         0boA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=R+WMX+rXFBlnmQkd+qto6BGtO5yiQl9ZhpYx2egERj4=;
-        b=HBGTQy4mO2F3BBX3MVCb/aPMJn4qteaMOcuVCUFQqKlX1WDsV2/8KkRRKp/x759Dic
-         5dUQvmPGa7MolRJPFznqeqRtFcjwxvVtn1LtxrzAzq7T3J3Qphy4KVuW4heFfMOtKyP8
-         NlAmcnAxLEDGsdpGZBreP+Z6NDoxi6MbjrRdxh9aeULavIFp+FZwwIgr3DTn0gW5UQUZ
-         uNMwv7DxZhzG8dchzirbiMTq7oShQCG1nbvvaiznvSED1q4P8nbhfPHMa9CNuD9/owlM
-         J+rhoQgdYSoA52FfAPBtMyGnKxOPl0lxZ6GS+ojSpUCsnIrTldxEnIiZGVdZjEj8ZuxY
-         Pn7A==
-X-Gm-Message-State: AOAM5318OR7sKV9YjUO0khHrqpJhCEMHoD5AVpoqI/WJGvlDSOPTCo0I
-        y+A+GGWtofPQ+ifazWIskPqEoV09eQb8+Ezv654CtQN522IHwQmg4elUMLsNEJOFA8KDap2Ux2v
-        IeygGiDqA7d/HRtfy
-X-Received: by 2002:a05:600c:2906:: with SMTP id i6mr8369908wmd.105.1642676119241;
-        Thu, 20 Jan 2022 02:55:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyLH+yMkVEJ5RGRzA3AllZsXHF8U7O92CKX4PkFa7MpIoiWLFs2vtpeFtuyRVq2zHMMtrCF0A==
-X-Received: by 2002:a05:600c:2906:: with SMTP id i6mr8369871wmd.105.1642676118930;
-        Thu, 20 Jan 2022 02:55:18 -0800 (PST)
-Received: from redhat.com ([2.55.158.216])
-        by smtp.gmail.com with ESMTPSA id i8sm2521246wmq.23.2022.01.20.02.55.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 02:55:18 -0800 (PST)
-Date:   Thu, 20 Jan 2022 05:55:14 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VJFSujY0gawm0vuS1B+3onnPwXQ2aVqz3AH1Ci+gepI=;
+        b=bu3G0KOm4o0ScV1wq8T9q7rEoCc6FNxFFvoLt51PmE6pIoYeOISKSOBeC07nkskbvm
+         JzgiIoSaKAcPsNMHMqSFL2OjO+kWCG9XeKtFNk7TvfkzMh8F1bPBaIVaOHwZ2w3kZGEA
+         fGb3QuWz05xE8lrQeo9I/uhrn18Wur2cb8lKMNRyMnBTpQX8U8af9PBOnQfxw0QjGz0k
+         ZvqtDpoktEmjwVW2nR/oTXfiUdNpWvRC/HdCYDxbl2O+kSMtgpgZF4QjYWUSzn1GJmBJ
+         /jhqNPIbg9EEFEanYQBvOKKCaC+EzlSdy1b31cQUGCBBXkZpTVVMPx2EtwXsPlaf+pI5
+         C+/g==
+X-Gm-Message-State: AOAM533Qi6+i8RAx7epgByEGRqKmactAV7XiF3RBCUv/dqmvNwuWopgd
+        9t6f4bglCTTI6916KDJawwXSGTRjnn2Bs2tvCTI=
+X-Google-Smtp-Source: ABdhPJy3XM0de+IEVOkIlJ0EiHVt6il1s31sj3OZSQPpdqexZ1vW8TAK6qllKAhg9nSYkjHK1td5+VScKb3gWzGNMgM=
+X-Received: by 2002:a05:6402:35d3:: with SMTP id z19mr20345363edc.29.1642676223381;
+ Thu, 20 Jan 2022 02:57:03 -0800 (PST)
+MIME-Version: 1.0
+References: <20220117142919.207370-1-marcan@marcan.st> <20220117142919.207370-9-marcan@marcan.st>
+In-Reply-To: <20220117142919.207370-9-marcan@marcan.st>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 20 Jan 2022 12:55:21 +0200
+Message-ID: <CAHp75Vd1VJhwTey=8FmmX=UaTCFnWzVjf0Y4Ctq=eLyVqi7_ig@mail.gmail.com>
+Subject: Re: [PATCH v3 8/9] brcmfmac: fwil: Constify iovar name arguments
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
-Subject: Re: [PATCH v2 07/12] virtio: queue_reset: pci: support
- VIRTIO_F_RING_RESET
-Message-ID: <20220120055227-mutt-send-email-mst@kernel.org>
-References: <20220120064303.106639-1-xuanzhuo@linux.alibaba.com>
- <20220120064303.106639-8-xuanzhuo@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220120064303.106639-8-xuanzhuo@linux.alibaba.com>
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        SHA-cyfmac-dev-list@infineon.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 02:42:58PM +0800, Xuan Zhuo wrote:
-> This patch implements virtio pci support for QUEUE RESET.
-> 
-> Performing reset on a queue is divided into two steps:
-> 
-> 1. reset_vq: reset one vq
-> 2. enable_reset_vq: re-enable the reset queue
-> 
-> In the first step, these tasks will be completed:
->    1. notify the hardware queue to reset
->    2. recycle the buffer from vq
->    3. delete the vq
-> 
-> When deleting a vq, vp_del_vq() will be called to release all the memory
-> of the vq. But this does not affect the process of deleting vqs, because
-> that is based on the queue to release all the vqs. During this process,
-> the vq has been removed from the queue.
-> 
-> When deleting vq, info and vq will be released, and I save msix_vec in
-> vp_dev->vqs[queue_index]. When re-enable, the current msix_vec can be
-> reused. And based on intx_enabled to determine which method to use to
-> enable this queue.
-> 
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+On Mon, Jan 17, 2022 at 4:31 PM Hector Martin <marcan@marcan.st> wrote:
+>
+> Make all the iovar name arguments const char * instead of just char *.
 
-There's something I don't understand here. It looks like
-you assume that when you reset a queue, you also
-reset the mapping from queue to event vector.
-The spec does not say it should, and I don't think it's
-useful to extend spec to do it - we already have a simple
-way to tweak the mapping.
+Makes sense.
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-Avoid doing that, and things will be much easier, with no need
-to interact with a transport, won't they?
-
-
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
 > ---
->  drivers/virtio/virtio_pci_common.c | 49 ++++++++++++++++++++
->  drivers/virtio/virtio_pci_common.h |  4 ++
->  drivers/virtio/virtio_pci_modern.c | 73 ++++++++++++++++++++++++++++++
->  3 files changed, 126 insertions(+)
-> 
-> diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
-> index 5afe207ce28a..28b5ffde4621 100644
-> --- a/drivers/virtio/virtio_pci_common.c
-> +++ b/drivers/virtio/virtio_pci_common.c
-> @@ -464,6 +464,55 @@ int vp_find_vqs(struct virtio_device *vdev, unsigned nvqs,
->  	return vp_find_vqs_intx(vdev, nvqs, vqs, callbacks, names, ctx);
+>  .../broadcom/brcm80211/brcmfmac/fwil.c        | 34 +++++++++----------
+>  .../broadcom/brcm80211/brcmfmac/fwil.h        | 28 +++++++--------
+>  2 files changed, 31 insertions(+), 31 deletions(-)
+>
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
+> index d5578ca681bb..72fe8bce6eaf 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.c
+> @@ -192,7 +192,7 @@ brcmf_fil_cmd_int_get(struct brcmf_if *ifp, u32 cmd, u32 *data)
 >  }
->  
-> +#define VQ_IS_DELETED(vp_dev, idx) ((unsigned long)vp_dev->vqs[idx] & 1)
-> +#define VQ_RESET_MSIX_VEC(vp_dev, idx) ((unsigned long)vp_dev->vqs[idx] >> 2)
-> +#define VQ_RESET_MARK(msix_vec) ((void *)(long)((msix_vec << 2) + 1))
-> +
-> +void vp_del_reset_vq(struct virtio_device *vdev, u16 queue_index)
-> +{
-> +	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-> +	struct virtio_pci_vq_info *info;
-> +	u16 msix_vec;
-> +
-> +	info = vp_dev->vqs[queue_index];
-> +
-> +	msix_vec = info->msix_vector;
-> +
-> +	/* delete vq */
-> +	vp_del_vq(info->vq);
-> +
-> +	/* Mark the vq has been deleted, and save the msix_vec. */
-> +	vp_dev->vqs[queue_index] = VQ_RESET_MARK(msix_vec);
-> +}
-> +
-> +struct virtqueue *vp_enable_reset_vq(struct virtio_device *vdev,
-> +				     int queue_index,
-> +				     vq_callback_t *callback,
-> +				     const char *name,
-> +				     const bool ctx)
-> +{
-> +	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-> +	struct virtqueue *vq;
-> +	u16 msix_vec;
-> +
-> +	if (!VQ_IS_DELETED(vp_dev, queue_index))
-> +		return ERR_PTR(-EPERM);
-> +
-> +	msix_vec = VQ_RESET_MSIX_VEC(vp_dev, queue_index);
-> +
-> +	if (vp_dev->intx_enabled)
-> +		vq = vp_setup_vq(vdev, queue_index, callback, name, ctx,
-> +				 VIRTIO_MSI_NO_VECTOR);
-> +	else
-> +		vq = vp_enable_vq_msix(vdev, queue_index, callback, name, ctx,
-> +				       msix_vec);
-> +
-> +	if (IS_ERR(vq))
-> +		vp_dev->vqs[queue_index] = VQ_RESET_MARK(msix_vec);
-> +
-> +	return vq;
-> +}
-> +
->  const char *vp_bus_name(struct virtio_device *vdev)
+>
+>  static u32
+> -brcmf_create_iovar(char *name, const char *data, u32 datalen,
+> +brcmf_create_iovar(const char *name, const char *data, u32 datalen,
+>                    char *buf, u32 buflen)
 >  {
->  	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-> diff --git a/drivers/virtio/virtio_pci_common.h b/drivers/virtio/virtio_pci_common.h
-> index 23f6c5c678d5..96c13b1398f8 100644
-> --- a/drivers/virtio/virtio_pci_common.h
-> +++ b/drivers/virtio/virtio_pci_common.h
-> @@ -115,6 +115,10 @@ int vp_find_vqs(struct virtio_device *vdev, unsigned nvqs,
->  		struct virtqueue *vqs[], vq_callback_t *callbacks[],
->  		const char * const names[], const bool *ctx,
->  		struct irq_affinity *desc);
-> +void vp_del_reset_vq(struct virtio_device *vdev, u16 queue_index);
-> +struct virtqueue *vp_enable_reset_vq(struct virtio_device *vdev, int queue_index,
-> +				     vq_callback_t *callback, const char *name,
-> +				     const bool ctx);
->  const char *vp_bus_name(struct virtio_device *vdev);
->  
->  /* Setup the affinity for a virtqueue:
-> diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
-> index 5455bc041fb6..fbf87239c920 100644
-> --- a/drivers/virtio/virtio_pci_modern.c
-> +++ b/drivers/virtio/virtio_pci_modern.c
-> @@ -34,6 +34,9 @@ static void vp_transport_features(struct virtio_device *vdev, u64 features)
->  	if ((features & BIT_ULL(VIRTIO_F_SR_IOV)) &&
->  			pci_find_ext_capability(pci_dev, PCI_EXT_CAP_ID_SRIOV))
->  		__virtio_set_bit(vdev, VIRTIO_F_SR_IOV);
-> +
-> +	if (features & BIT_ULL(VIRTIO_F_RING_RESET))
-> +		__virtio_set_bit(vdev, VIRTIO_F_RING_RESET);
->  }
->  
->  /* virtio config->finalize_features() implementation */
-> @@ -176,6 +179,72 @@ static void vp_reset(struct virtio_device *vdev)
->  	vp_disable_cbs(vdev);
->  }
->  
-> +static int vp_modern_reset_vq(struct virtio_device *vdev, u16 queue_index,
-> +			      vq_reset_callback_t *callback, void *data)
-> +{
-> +	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-> +	struct virtio_pci_modern_device *mdev = &vp_dev->mdev;
-> +	struct virtio_pci_vq_info *info;
-> +	u16 msix_vec;
-> +	void *buf;
-> +
-> +	if (!virtio_has_feature(vdev, VIRTIO_F_RING_RESET))
-> +		return -ENOENT;
-> +
-> +	vp_modern_set_queue_reset(mdev, queue_index);
-> +
-> +	/* After write 1 to queue reset, the driver MUST wait for a read of
-> +	 * queue reset to return 1.
-> +	 */
-> +	while (vp_modern_get_queue_reset(mdev, queue_index) != 1)
-> +		msleep(1);
-> +
-> +	info = vp_dev->vqs[queue_index];
-> +	msix_vec = info->msix_vector;
-> +
-> +	/* Disable VQ callback. */
-> +	if (vp_dev->per_vq_vectors && msix_vec != VIRTIO_MSI_NO_VECTOR)
-> +		disable_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec));
-> +
-> +	while ((buf = virtqueue_detach_unused_buf(info->vq)) != NULL)
-> +		callback(vdev, buf, data);
-> +
-> +	vp_del_reset_vq(vdev, queue_index);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct virtqueue *vp_modern_enable_reset_vq(struct virtio_device *vdev,
-> +						   u16 queue_index,
-> +						   vq_callback_t *callback,
-> +						   const char *name,
-> +						   const bool *ctx)
-> +{
-> +	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
-> +	struct virtio_pci_modern_device *mdev = &vp_dev->mdev;
-> +	struct virtqueue *vq;
-> +	u16 msix_vec;
-> +
-> +	if (!virtio_has_feature(vdev, VIRTIO_F_RING_RESET))
-> +		return ERR_PTR(-ENOENT);
-> +
-> +	/* check queue reset status */
-> +	if (vp_modern_get_queue_reset(mdev, queue_index) != 1)
-> +		return ERR_PTR(-EBUSY);
-> +
-> +	vq = vp_enable_reset_vq(vdev, queue_index, callback, name, ctx);
-> +	if (IS_ERR(vq))
-> +		return vq;
-> +
-> +	vp_modern_set_queue_enable(&vp_dev->mdev, vq->index, true);
-> +
-> +	msix_vec = vp_dev->vqs[queue_index]->msix_vector;
-> +	if (vp_dev->per_vq_vectors && msix_vec != VIRTIO_MSI_NO_VECTOR)
-> +		enable_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec));
-> +
-> +	return vq;
-> +}
-> +
->  static u16 vp_config_vector(struct virtio_pci_device *vp_dev, u16 vector)
+>         u32 len;
+> @@ -213,7 +213,7 @@ brcmf_create_iovar(char *name, const char *data, u32 datalen,
+>
+>
+>  s32
+> -brcmf_fil_iovar_data_set(struct brcmf_if *ifp, char *name, const void *data,
+> +brcmf_fil_iovar_data_set(struct brcmf_if *ifp, const char *name, const void *data,
+>                          u32 len)
 >  {
->  	return vp_modern_config_vector(&vp_dev->mdev, vector);
-> @@ -395,6 +464,8 @@ static const struct virtio_config_ops virtio_pci_config_nodev_ops = {
->  	.set_vq_affinity = vp_set_vq_affinity,
->  	.get_vq_affinity = vp_get_vq_affinity,
->  	.get_shm_region  = vp_get_shm_region,
-> +	.reset_vq	 = vp_modern_reset_vq,
-> +	.enable_reset_vq = vp_modern_enable_reset_vq,
->  };
->  
->  static const struct virtio_config_ops virtio_pci_config_ops = {
-> @@ -413,6 +484,8 @@ static const struct virtio_config_ops virtio_pci_config_ops = {
->  	.set_vq_affinity = vp_set_vq_affinity,
->  	.get_vq_affinity = vp_get_vq_affinity,
->  	.get_shm_region  = vp_get_shm_region,
-> +	.reset_vq	 = vp_modern_reset_vq,
-> +	.enable_reset_vq = vp_modern_enable_reset_vq,
->  };
->  
->  /* the PCI probing function */
-> -- 
-> 2.31.0
+>         struct brcmf_pub *drvr = ifp->drvr;
+> @@ -241,7 +241,7 @@ brcmf_fil_iovar_data_set(struct brcmf_if *ifp, char *name, const void *data,
+>  }
+>
+>  s32
+> -brcmf_fil_iovar_data_get(struct brcmf_if *ifp, char *name, void *data,
+> +brcmf_fil_iovar_data_get(struct brcmf_if *ifp, const char *name, void *data,
+>                          u32 len)
+>  {
+>         struct brcmf_pub *drvr = ifp->drvr;
+> @@ -272,7 +272,7 @@ brcmf_fil_iovar_data_get(struct brcmf_if *ifp, char *name, void *data,
+>  }
+>
+>  s32
+> -brcmf_fil_iovar_int_set(struct brcmf_if *ifp, char *name, u32 data)
+> +brcmf_fil_iovar_int_set(struct brcmf_if *ifp, const char *name, u32 data)
+>  {
+>         __le32 data_le = cpu_to_le32(data);
+>
+> @@ -280,7 +280,7 @@ brcmf_fil_iovar_int_set(struct brcmf_if *ifp, char *name, u32 data)
+>  }
+>
+>  s32
+> -brcmf_fil_iovar_int_get(struct brcmf_if *ifp, char *name, u32 *data)
+> +brcmf_fil_iovar_int_get(struct brcmf_if *ifp, const char *name, u32 *data)
+>  {
+>         __le32 data_le = cpu_to_le32(*data);
+>         s32 err;
+> @@ -292,7 +292,7 @@ brcmf_fil_iovar_int_get(struct brcmf_if *ifp, char *name, u32 *data)
+>  }
+>
+>  static u32
+> -brcmf_create_bsscfg(s32 bsscfgidx, char *name, char *data, u32 datalen,
+> +brcmf_create_bsscfg(s32 bsscfgidx, const char *name, char *data, u32 datalen,
+>                     char *buf, u32 buflen)
+>  {
+>         const s8 *prefix = "bsscfg:";
+> @@ -337,7 +337,7 @@ brcmf_create_bsscfg(s32 bsscfgidx, char *name, char *data, u32 datalen,
+>  }
+>
+>  s32
+> -brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, char *name,
+> +brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, const char *name,
+>                           void *data, u32 len)
+>  {
+>         struct brcmf_pub *drvr = ifp->drvr;
+> @@ -366,7 +366,7 @@ brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, char *name,
+>  }
+>
+>  s32
+> -brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, char *name,
+> +brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, const char *name,
+>                           void *data, u32 len)
+>  {
+>         struct brcmf_pub *drvr = ifp->drvr;
+> @@ -396,7 +396,7 @@ brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, char *name,
+>  }
+>
+>  s32
+> -brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, char *name, u32 data)
+> +brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, const char *name, u32 data)
+>  {
+>         __le32 data_le = cpu_to_le32(data);
+>
+> @@ -405,7 +405,7 @@ brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, char *name, u32 data)
+>  }
+>
+>  s32
+> -brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, char *name, u32 *data)
+> +brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, const char *name, u32 *data)
+>  {
+>         __le32 data_le = cpu_to_le32(*data);
+>         s32 err;
+> @@ -417,7 +417,7 @@ brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, char *name, u32 *data)
+>         return err;
+>  }
+>
+> -static u32 brcmf_create_xtlv(char *name, u16 id, char *data, u32 len,
+> +static u32 brcmf_create_xtlv(const char *name, u16 id, char *data, u32 len,
+>                              char *buf, u32 buflen)
+>  {
+>         u32 iolen;
+> @@ -438,7 +438,7 @@ static u32 brcmf_create_xtlv(char *name, u16 id, char *data, u32 len,
+>         return iolen;
+>  }
+>
+> -s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, char *name, u16 id,
+> +s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, const char *name, u16 id,
+>                             void *data, u32 len)
+>  {
+>         struct brcmf_pub *drvr = ifp->drvr;
+> @@ -466,7 +466,7 @@ s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, char *name, u16 id,
+>         return err;
+>  }
+>
+> -s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, char *name, u16 id,
+> +s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, const char *name, u16 id,
+>                             void *data, u32 len)
+>  {
+>         struct brcmf_pub *drvr = ifp->drvr;
+> @@ -495,7 +495,7 @@ s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, char *name, u16 id,
+>         return err;
+>  }
+>
+> -s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, char *name, u16 id, u32 data)
+> +s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, const char *name, u16 id, u32 data)
+>  {
+>         __le32 data_le = cpu_to_le32(data);
+>
+> @@ -503,7 +503,7 @@ s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, char *name, u16 id, u32 data)
+>                                          sizeof(data_le));
+>  }
+>
+> -s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, char *name, u16 id, u32 *data)
+> +s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, const char *name, u16 id, u32 *data)
+>  {
+>         __le32 data_le = cpu_to_le32(*data);
+>         s32 err;
+> @@ -514,12 +514,12 @@ s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, char *name, u16 id, u32 *data)
+>         return err;
+>  }
+>
+> -s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, char *name, u16 id, u8 *data)
+> +s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, const char *name, u16 id, u8 *data)
+>  {
+>         return brcmf_fil_xtlv_data_get(ifp, name, id, data, sizeof(*data));
+>  }
+>
+> -s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, char *name, u16 id, u16 *data)
+> +s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, const char *name, u16 id, u16 *data)
+>  {
+>         __le16 data_le = cpu_to_le16(*data);
+>         s32 err;
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h
+> index cb26f8c59c21..bc693157c4b1 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwil.h
+> @@ -84,26 +84,26 @@ s32 brcmf_fil_cmd_data_get(struct brcmf_if *ifp, u32 cmd, void *data, u32 len);
+>  s32 brcmf_fil_cmd_int_set(struct brcmf_if *ifp, u32 cmd, u32 data);
+>  s32 brcmf_fil_cmd_int_get(struct brcmf_if *ifp, u32 cmd, u32 *data);
+>
+> -s32 brcmf_fil_iovar_data_set(struct brcmf_if *ifp, char *name, const void *data,
+> +s32 brcmf_fil_iovar_data_set(struct brcmf_if *ifp, const char *name, const void *data,
+>                              u32 len);
+> -s32 brcmf_fil_iovar_data_get(struct brcmf_if *ifp, char *name, void *data,
+> +s32 brcmf_fil_iovar_data_get(struct brcmf_if *ifp, const char *name, void *data,
+>                              u32 len);
+> -s32 brcmf_fil_iovar_int_set(struct brcmf_if *ifp, char *name, u32 data);
+> -s32 brcmf_fil_iovar_int_get(struct brcmf_if *ifp, char *name, u32 *data);
+> +s32 brcmf_fil_iovar_int_set(struct brcmf_if *ifp, const char *name, u32 data);
+> +s32 brcmf_fil_iovar_int_get(struct brcmf_if *ifp, const char *name, u32 *data);
+>
+> -s32 brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, char *name, void *data,
+> +s32 brcmf_fil_bsscfg_data_set(struct brcmf_if *ifp, const char *name, void *data,
+>                               u32 len);
+> -s32 brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, char *name, void *data,
+> +s32 brcmf_fil_bsscfg_data_get(struct brcmf_if *ifp, const char *name, void *data,
+>                               u32 len);
+> -s32 brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, char *name, u32 data);
+> -s32 brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, char *name, u32 *data);
+> -s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, char *name, u16 id,
+> +s32 brcmf_fil_bsscfg_int_set(struct brcmf_if *ifp, const char *name, u32 data);
+> +s32 brcmf_fil_bsscfg_int_get(struct brcmf_if *ifp, const char *name, u32 *data);
+> +s32 brcmf_fil_xtlv_data_set(struct brcmf_if *ifp, const char *name, u16 id,
+>                             void *data, u32 len);
+> -s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, char *name, u16 id,
+> +s32 brcmf_fil_xtlv_data_get(struct brcmf_if *ifp, const char *name, u16 id,
+>                             void *data, u32 len);
+> -s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, char *name, u16 id, u32 data);
+> -s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, char *name, u16 id, u32 *data);
+> -s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, char *name, u16 id, u8 *data);
+> -s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, char *name, u16 id, u16 *data);
+> +s32 brcmf_fil_xtlv_int_set(struct brcmf_if *ifp, const char *name, u16 id, u32 data);
+> +s32 brcmf_fil_xtlv_int_get(struct brcmf_if *ifp, const char *name, u16 id, u32 *data);
+> +s32 brcmf_fil_xtlv_int8_get(struct brcmf_if *ifp, const char *name, u16 id, u8 *data);
+> +s32 brcmf_fil_xtlv_int16_get(struct brcmf_if *ifp, const char *name, u16 id, u16 *data);
+>
+>  #endif /* _fwil_h_ */
+> --
+> 2.33.0
+>
 
+
+-- 
+With Best Regards,
+Andy Shevchenko
