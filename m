@@ -2,61 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E05D9495344
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 18:30:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF2D0495363
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 18:37:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230167AbiATRaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 12:30:55 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58166 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiATRaz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 12:30:55 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA61AB81E01
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 17:30:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E59FC340E0;
-        Thu, 20 Jan 2022 17:30:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642699852;
-        bh=vNtcYmMDAf3NyX5HLs8XIs2jLBbhymJLy8MCiFCuvY8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vP4nOOiqsZfXwFg+le7gWzOsobETImOvWZCBBsrfUrUA+QnJf6WIRU3O+XomOHXfm
-         bbA+hqEhr8fnTE4vJLqubgBwxp/7GXSDe9Hw1aI1HrQD+hNJYc9BVIpcZmkpswmJjs
-         m2KBWnTKYdHoy02OiBQYymsBCjn74Mmj5EJkzeq2ygyRaTVFNepAG+qwFc7sK6rFq/
-         1Q57nRPq6iyehRiMQbqsASzAEPYBfUy2TTfOapfLtTiLaxINSyKQWlARcH4veleZup
-         bmoN/JvWojkONG8wwNnWbGUE7UvxKJtY7Ok78g+ObXvpuvjB9LxdY1zeGwQIV7frkv
-         QA0BBu7CplIwA==
-Date:   Thu, 20 Jan 2022 09:30:51 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, michel@fb.com,
-        dcavalca@fb.com, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: ethtool 5.16 release / ethtool -m bug fix
-Message-ID: <20220120093051.70845141@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <YekVLcKZxa7ojNYc@shredder>
-References: <20220118145159.631fd6ed@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <YefdxW/V/rjiiw2x@shredder>
-        <20220119073902.507f568c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <YekVLcKZxa7ojNYc@shredder>
+        id S231882AbiATRgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 12:36:42 -0500
+Received: from mail-ot1-f43.google.com ([209.85.210.43]:44613 "EHLO
+        mail-ot1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231818AbiATRgl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 12:36:41 -0500
+Received: by mail-ot1-f43.google.com with SMTP id a10-20020a9d260a000000b005991bd6ae3eso8456217otb.11;
+        Thu, 20 Jan 2022 09:36:41 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WrX4RV5ysW0eX2CGJIXQSl/WeTomxdQMP58KeR+spxE=;
+        b=I9OX+pEOqCIGnHNJ4+9sFjgWb1cKv9Jp+HnNOhFqQ40IvHxk/SLubcNmfRayl2rTMo
+         m3uDqQbmVSzLPaG1Ay/PFOL1j38m+Njzu66Z0HtbXr4fld2AxEOFUaPwrbYre1Wugg6a
+         0wPzwAj+EkCNROqR2UhVgBoNweqVbwwBdoBAcqwKfTTTxwV6ldCwzImUMo2uAhKOClAN
+         CzFrDcP99ftupja08jUO6k4TGqX4TvPVAEQ7CwB0N7ohE0eIR+I/x5PjKfgwn9ZisU8d
+         LReZp2eom3c44GQ7zolnD3SVdqaToROjM3Imi/H+NWWnWAUOZ69DZkEV6zkcMmTsX6aF
+         j12w==
+X-Gm-Message-State: AOAM533wLTARc7WbMK1xaGtjlZw9F/ktjt05hqmM+MfXTSOozhYzPqJL
+        p7ZW0c6Vbt5Bt4TwrWWMjQ==
+X-Google-Smtp-Source: ABdhPJxDTZOBw8MHBl2N7Vjg2CtBXyfBif+NH70e74zuFxGUs8bgC25UKRzfIjDXQ/+mTARQ5fTp6w==
+X-Received: by 2002:a9d:75d6:: with SMTP id c22mr9166540otl.273.1642700200671;
+        Thu, 20 Jan 2022 09:36:40 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id h5sm1446668oor.4.2022.01.20.09.36.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 09:36:39 -0800 (PST)
+Received: (nullmailer pid 1649046 invoked by uid 1000);
+        Thu, 20 Jan 2022 17:36:38 -0000
+Date:   Thu, 20 Jan 2022 11:36:38 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     netdev@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
+        linux-kernel@vger.kernel.org, Rui Miguel Silva <rmfrfs@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        Sriram Dash <sriram.dash@samsung.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-arm-kernel@lists.infradead.org,
+        Martin Kepplinger <martin.kepplinger@puri.sm>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org, linux-media@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: Fix array schemas encoded as matrices
+Message-ID: <YemdpgQqS8FX9/5g@robh.at.kernel.org>
+References: <20220119015627.2443334-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220119015627.2443334-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Jan 2022 09:54:21 +0200 Ido Schimmel wrote:
-> > What about drivers which do implement get_module_eeprom_by_page? Can we
-> > somehow ensure they DTRT and are consistent with the legacy / flat API?  
+On Tue, 18 Jan 2022 19:56:26 -0600, Rob Herring wrote:
+> The YAML DT encoding has leaked into some array properties. Properties
+> which are defined as an array should have a schema that's just an array.
+> That means there should only be a single level of 'minItems',
+> 'maxItems', and/or 'items'.
 > 
-> Not sure what you mean by that (I believe they are already doing the
-> right thing). Life is much easier for drivers that implement
-> get_module_eeprom_by_page() because they only need to fetch the
-> information user space is asking for. They need not perform any parsing
-> of the data, unlike in the legacy callbacks.
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/media/nxp,imx7-mipi-csi2.yaml    | 12 ++--
+>  .../bindings/media/nxp,imx8mq-mipi-csi2.yaml  | 12 ++--
+>  .../bindings/net/can/bosch,m_can.yaml         | 52 ++++++++--------
+>  .../bindings/net/ethernet-controller.yaml     | 59 +++++++++----------
+>  4 files changed, 62 insertions(+), 73 deletions(-)
+> 
 
-I see, my concern was that overzealous driver or FW may try to validate
-the page number rather than just performing the read.
+Applied, thanks!
