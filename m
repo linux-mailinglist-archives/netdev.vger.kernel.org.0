@@ -2,82 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44FD3494C25
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 11:51:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E823F494C36
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 11:54:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229640AbiATKvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 05:51:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37804 "EHLO
+        id S229728AbiATKyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 05:54:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232804AbiATKuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 05:50:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05978C061574;
-        Thu, 20 Jan 2022 02:50:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B6F76151B;
-        Thu, 20 Jan 2022 10:50:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EC172C340E2;
-        Thu, 20 Jan 2022 10:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642675810;
-        bh=NqowiAMeZDXoTZn1mzYNvP3gKL0n2MW5IpjY4dst0aM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KPhUmUvmhNZwdfeBhmuWepa9loN49yjSHyzxSsGBDHoEEBHh4Wmnj9JwVv/GYOjVx
-         IGDGwXg8o47UXbtLS0W3R83VJWqigS8+zPGs5zUPzEO/t13Z5vMvl2c3NjUplu0Bgx
-         f/5Op1rf8WDFiVsp4hZxdAKDcv67mnGcAw520rkk7xUGfg4ReNQMrZ5h0tU8caetl0
-         GK0lp5Q5h3rhXe5AOEONRQ9FGOBlBBtpNDFDeS3GNbKGIw5VJH+J0p5aJFa+XavXOr
-         cfuqRqc3DvpBNw+Dv3z1TzCXWQg8JKFkQIEYV93o9f9Fh0MmKGTOT+xRK7XFBgUrM1
-         kBnqtHlPPln+g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D5CC7F6079B;
-        Thu, 20 Jan 2022 10:50:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229526AbiATKyA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 05:54:00 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D93C061574;
+        Thu, 20 Jan 2022 02:54:00 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id cx27so27081209edb.1;
+        Thu, 20 Jan 2022 02:54:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rueY/jFC2lLrcjtQ698sMwfakQXnY26l1d8Z0p1kGzY=;
+        b=auLHWOAe3eLtUNRB3I/GnroHB9vg/WLVbd9NGSlwq2h+rIeyZH+SKh06qHVXiFcb8f
+         uaP5tk8wF84oK+Hbfr3uMQbhw5K0PhDKKZ3EqCrsccaGA2a9DCYMfk06T+1GVwbfxisi
+         ux+RFoTRcNJYsSVpS0Dx3lDQ57yBbv+lrzCWTBGtW5a2UPrsKrMS37iIwI2CcCz9+rgS
+         rpj42xGjO8qh5hvMJt9pgXsa4TK6tgP2a4wQ8RN9hqBIP5luq1IUSZgiel0Dlt3i+vEl
+         /wcGnxCKVrwphXZ1IbGQKdPCM1yhyDSZJgcADt1jQIEygY43mxzRvVj/GHjhc87yo5CV
+         qiiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rueY/jFC2lLrcjtQ698sMwfakQXnY26l1d8Z0p1kGzY=;
+        b=sF2HqiVwfIXNqqcGiuBf5nYMOwtvmBhS3b+Issex0v+uLzrEWmOvF1Bs25OWaJwBZc
+         /tU8bVfrktRP6/bByM+q+y6OW/RYZmld0vpIzRAxaG+9Y6BsGZnbfsTP2NIegqcOjNaL
+         LVXr+akzvKrBBDC9RpxiSMO6mIp8hULOPz5kOOO84RB0/iw3ErBTHlReRwoTTdX3D5vY
+         9On2EYfUFV53GUI05sHVXeecsICHXIqOUBf+cBNLhfzytcLFKm+FOuOebv19mFXY3dye
+         qzLyAHWZzO8pcRcUb6lkz+jZtcojLrcqceYbmiGsG5Et0z0dzapzqS4Rc7n7nCRzKEfG
+         udQQ==
+X-Gm-Message-State: AOAM533SwplEnSPyzdyWV5Hny0LArUATWkIHW+xV84kyK7iwOfgd3MG4
+        LlgUySgDypix9AZjx0XEDYK6oHdqBHQ8H2SFpY8=
+X-Google-Smtp-Source: ABdhPJxGiMU1xrv7ZzwueN4iKsoTSUGlAYddhd/BYPDmdrQuY89UiTfUdv/qHPTtG90np5GBNclAJjIoXTK8m1rJRVM=
+X-Received: by 2002:a17:907:968c:: with SMTP id hd12mr27927990ejc.639.1642676038694;
+ Thu, 20 Jan 2022 02:53:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net] net: fix information leakage in /proc/net/ptype
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164267580986.26718.1893811896925655041.git-patchwork-notify@kernel.org>
-Date:   Thu, 20 Jan 2022 10:50:09 +0000
-References: <20220118192013.1608432-1-liu3101@purdue.edu>
-In-Reply-To: <20220118192013.1608432-1-liu3101@purdue.edu>
-To:     Congyu Liu <liu3101@purdue.edu>
-Cc:     davem@davemloft.net, kuba@kernel.org, yajun.deng@linux.dev,
-        edumazet@google.com, willemb@google.com, mkl@pengutronix.de,
-        rsanger@wand.net.nz, wanghai38@huawei.com, pablo@netfilter.org,
-        jiapeng.chong@linux.alibaba.com, xemul@openvz.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220117142919.207370-1-marcan@marcan.st> <20220117142919.207370-8-marcan@marcan.st>
+In-Reply-To: <20220117142919.207370-8-marcan@marcan.st>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 20 Jan 2022 12:52:16 +0200
+Message-ID: <CAHp75Vfj-uqzmY24ByXLnhgyhEuaGpZckdczwUf=2OXL3aBuog@mail.gmail.com>
+Subject: Re: [PATCH v3 7/9] brcmfmac: of: Use devm_kstrdup for board_type &
+ check for errors
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        SHA-cyfmac-dev-list@infineon.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, Jan 17, 2022 at 4:31 PM Hector Martin <marcan@marcan.st> wrote:
+>
+> This was missing a NULL check, and we can collapse the strlen/alloc/copy
+> into a devm_kstrdup().
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Nice patch. After dropping the message,
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-On Tue, 18 Jan 2022 14:20:13 -0500 you wrote:
-> In one net namespace, after creating a packet socket without binding
-> it to a device, users in other net namespaces can observe the new
-> `packet_type` added by this packet socket by reading `/proc/net/ptype`
-> file. This is minor information leakage as packet socket is
-> namespace aware.
-> 
-> Add a net pointer in `packet_type` to keep the net namespace of
-> of corresponding packet socket. In `ptype_seq_show`, this net pointer
-> must be checked when it is not NULL.
-> 
-> [...]
+>                 /* get rid of '/' in the compatible string to be able to find the FW */
+>                 len = strlen(tmp) + 1;
+> -               board_type = devm_kzalloc(dev, len, GFP_KERNEL);
+> -               strscpy(board_type, tmp, len);
+> +               board_type = devm_kstrdup(dev, tmp, GFP_KERNEL);
+> +               if (!board_type) {
+> +                       brcmf_err("out of memory allocating board_type\n");
+> +                       of_node_put(root);
+> +                       return;
+> +               }
 
-Here is the summary with links:
-  - [v2,net] net: fix information leakage in /proc/net/ptype
-    https://git.kernel.org/netdev/net/c/47934e06b656
+>                 for (i = 0; i < board_type[i]; i++) {
+>                         if (board_type[i] == '/')
+>                                 board_type[i] = '-';
 
-You are awesome, thank you!
+Next step is to replace this with NIH strreplace()
+
+And
+  of_property_read_string_index(root, "compatible", 0, &tmp);
+with
+  of_property_read_string(root, "compatible", &tmp);
+
+And might add an error check, but I believe if there is no compatible
+property present, this can't be called.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+With Best Regards,
+Andy Shevchenko
