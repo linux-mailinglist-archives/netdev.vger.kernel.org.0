@@ -2,113 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D473494478
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:25:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7B7549449B
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:27:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345304AbiATAZE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Jan 2022 19:25:04 -0500
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:46737 "EHLO
-        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345289AbiATAZD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 19:25:03 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3DAB620003;
-        Thu, 20 Jan 2022 00:25:00 +0000 (UTC)
-Date:   Thu, 20 Jan 2022 01:24:59 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org Wireless" 
-        <linux-wireless@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v3 00/41] IEEE 802.15.4 scan support
-Message-ID: <20220120012459.1e3ca85e@xps13>
-In-Reply-To: <CAB_54W4jAZqSJ-7VuT0uOukHEnxAYpaGqZ6S6n9tYst26F+VWQ@mail.gmail.com>
-References: <20220117115440.60296-1-miquel.raynal@bootlin.com>
-        <CAB_54W4q9a1MRdfK6yJHMRt+Zfapn0ggie9RbbUYi4=Biefz_A@mail.gmail.com>
-        <20220118114023.2d2c0207@xps13>
-        <CAB_54W4jAZqSJ-7VuT0uOukHEnxAYpaGqZ6S6n9tYst26F+VWQ@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1345552AbiATA1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 19:27:42 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:45478 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1345540AbiATA1m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jan 2022 19:27:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=cg29zCKERMjuyPKxQcXZu/pWt7Yhte9nUmrkJZ6zC8E=; b=hS
+        8hHfGEuS+dkkj2QlYphisM5pnGO2BNa+ovE8lF8Vjq4V5D6oD6ramE5YJb/gHAHe1Yw/3Zi2nYjkD
+        RCktQtKVXp0pbwkdSwY0H+Ujb/3hQ5Q9TZJYPgCX25MC66JkJABc12EFpztIpOuMcurPAHGm4agXE
+        1CvT6D/6xxsOO2U=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nALIh-001we4-FM; Thu, 20 Jan 2022 01:27:39 +0100
+Date:   Thu, 20 Jan 2022 01:27:39 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net] phylib: fix potential use-after-free
+Message-ID: <Yeise7Fs/PCxONId@lunn.ch>
+References: <20220119162748.32418-1-kabel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220119162748.32418-1-kabel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
-
-alex.aring@gmail.com wrote on Tue, 18 Jan 2022 18:12:49 -0500:
-
-> Hi,
+On Wed, Jan 19, 2022 at 05:27:48PM +0100, Marek Behún wrote:
+> Commit bafbdd527d56 ("phylib: Add device reset GPIO support") added call
+> to phy_device_reset(phydev) after the put_device() call in phy_detach().
 > 
-> On Tue, 18 Jan 2022 at 05:40, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> >
-> > Hi Alexander,
-> >  
-> > > > So far the only technical point that is missing in this series is the
-> > > > possibility to grab a reference over the module driving the net device
-> > > > in order to prevent module unloading during a scan or when the beacons
-> > > > work is ongoing.  
-> >
-> > Do you have any advises regarding this issue? That is the only
-> > technical point that is left unaddressed IMHO.
-> >  
+> The comment before the put_device() call says that the phydev might go
+> away with put_device().
 > 
-> module_get()/module_put() or I don't see where the problem here is.
-> You can avoid module unloading with it. Which module is the problem
-> here?
-
-I'll give it another try, maybe when I first tried that I was missing a
-few mental peaces and did not understood the puzzle correctly.
-
-> > > > Finally, this series is a deep reshuffle of David Girault's original
-> > > > work, hence the fact that he is almost systematically credited, either
-> > > > by being the only author when I created the patches based on his changes
-> > > > with almost no modification, or with a Co-developped-by tag whenever the
-> > > > final code base is significantly different than his first proposal while
-> > > > still being greatly inspired from it.
-> > > >  
-> > >
-> > > can you please split this patch series, what I see is now:
-> > >
-> > > 1. cleanup patches
-> > > 2. sync tx handling for mlme commands
-> > > 3. scan support  
-> >
-> > Works for me. I just wanted to give the big picture but I'll split the
-> > series.
-> >  
+> Fix potential use-after-free by calling phy_device_reset() before
+> put_device().
 > 
-> maybe also put some "symbol duration" series into it if it's getting
-> too large? It is difficult to review 40 patches... in one step.
+> Fixes: bafbdd527d56 ("phylib: Add device reset GPIO support")
+> Signed-off-by: Marek Behún <kabel@kernel.org>
 
-Yep, I truly understand (and now 50+).
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-> 
-> > Also sorry for forgetting the 'wpan-next' subject prefix.
-> >  
-> 
-> no problem.
-> 
-> I really appreciate your work and your willingness to work on all
-> outstanding issues. I am really happy to see something that we can use
-> for mlme-commands and to separate it from the hotpath transmission...
-> It is good to see architecture for that which I think goes in the
-> right direction.
-
-That is very stirring to read :)
-
-Thanks,
-MiquÃ¨l
+    Andrew
