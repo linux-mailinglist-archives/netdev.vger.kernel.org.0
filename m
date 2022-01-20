@@ -2,170 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2D9F494A80
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 10:12:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D823494A8E
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 10:20:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241014AbiATJMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 04:12:51 -0500
-Received: from mga11.intel.com ([192.55.52.93]:41324 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237469AbiATJMu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jan 2022 04:12:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642669970; x=1674205970;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=O6+9vsSDVilrh7UjW1BQCXvdPjMTCzf/nC38lgkfjeM=;
-  b=AHA02wk5ouwuy6W2HYrPYzS3lrrL/+qHOg0CYICTR4e+NnGDFVlrPQJY
-   gUj38EYBjNh8qH1E352SLmi7aiETla3w5jUoSe+DLdc6dwhtORh48OxAB
-   wwXh0qh8dDeN8ZpYxipzfTpLjwedgt6UZTGuVuF0tPJWiTOD8Hb6lBqYz
-   TUbCocR9flrnZDvAlhu8UmnmUBvlBMKQk8+wBnGcT+5/+LbCwKTmYYJFo
-   5Zdbc2SDIn7jtDAU5Mcfjj2Ul9fOOFojNnFmVlLIhBT6wLzbLvZBezAhi
-   o0Krv3L9xYhq5xaiCt5g4CTKMsIURyXAl01a6ZaGbJ/PxuOdz23nu1+ji
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10232"; a="242871050"
-X-IronPort-AV: E=Sophos;i="5.88,302,1635231600"; 
-   d="scan'208";a="242871050"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 01:12:43 -0800
-X-IronPort-AV: E=Sophos;i="5.88,302,1635231600"; 
-   d="scan'208";a="532691996"
-Received: from davidfsc-mobl3.ger.corp.intel.com (HELO localhost) ([10.252.52.140])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 01:12:32 -0800
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        linux-security-module@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Christian =?utf-8?Q?K=C3=B6nig?= <christian.koenig@amd.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Julia Lawall <julia.lawall@lip6.fr>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Leo Li <sunpeng.li@amd.com>,
-        Mikita Lipski <mikita.lipski@amd.com>,
-        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vishal Kulkarni <vishal@chelsio.com>
-Subject: Re: [PATCH 0/3] lib/string_helpers: Add a few string helpers
-In-Reply-To: <YekfbKMjOP9ecc5v@alley>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
- <YegPiR7LU8aVisMf@alley> <87tudzbykz.fsf@intel.com>
- <YekfbKMjOP9ecc5v@alley>
-Date:   Thu, 20 Jan 2022 11:12:27 +0200
-Message-ID: <8735libwjo.fsf@intel.com>
+        id S241595AbiATJUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 04:20:06 -0500
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:48449 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239702AbiATJUF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 04:20:05 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=guangguan.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V2Lw44Q_1642670401;
+Received: from 30.43.104.217(mailfrom:guangguan.wang@linux.alibaba.com fp:SMTPD_---0V2Lw44Q_1642670401)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 20 Jan 2022 17:20:02 +0800
+Message-ID: <220be582-a2c2-bc3c-ce6b-0eda2a297ba1@linux.alibaba.com>
+Date:   Thu, 20 Jan 2022 17:20:01 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [RFC PATCH net-next] net/smc: Introduce receive queue flow
+ control support
+Content-Language: en-US
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220120065140.5385-1-guangguan.wang@linux.alibaba.com>
+ <YekcWYwg399vR18R@unreal>
+From:   Guangguan Wang <guangguan.wang@linux.alibaba.com>
+In-Reply-To: <YekcWYwg399vR18R@unreal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Jan 2022, Petr Mladek <pmladek@suse.com> wrote:
-> On Wed 2022-01-19 16:16:12, Jani Nikula wrote:
->> On Wed, 19 Jan 2022, Petr Mladek <pmladek@suse.com> wrote:
->> > On Tue 2022-01-18 23:24:47, Lucas De Marchi wrote:
->> >> d. This doesn't bring onoff() helper as there are some places in the
->> >>    kernel with onoff as variable - another name is probably needed for
->> >>    this function in order not to shadow the variable, or those variables
->> >>    could be renamed.  Or if people wanting  <someprefix>
->> >>    try to find a short one
->> >
->> > I would call it str_on_off().
->> >
->> > And I would actually suggest to use the same style also for
->> > the other helpers.
->> >
->> > The "str_" prefix would make it clear that it is something with
->> > string. There are other <prefix>_on_off() that affect some
->> > functionality, e.g. mute_led_on_off(), e1000_vlan_filter_on_off().
->> >
->> > The dash '_' would significantly help to parse the name. yesno() and
->> > onoff() are nicely short and kind of acceptable. But "enabledisable()"
->> > is a puzzle.
->> >
->> > IMHO, str_yes_no(), str_on_off(), str_enable_disable() are a good
->> > compromise.
->> >
->> > The main motivation should be code readability. You write the
->> > code once. But many people will read it many times. Open coding
->> > is sometimes better than misleading macro names.
->> >
->> > That said, I do not want to block this patchset. If others like
->> > it... ;-)
->> 
->> I don't mind the names either way. Adding the prefix and dashes is
->> helpful in that it's possible to add the functions first and convert
->> users at leisure, though with a bunch of churn, while using names that
->> collide with existing ones requires the changes to happen in one go.
->
-> It is also possible to support both notations at the beginning.
-> And convert the existing users in the 2nd step.
->
->> What I do mind is grinding this series to a halt once again. I sent a
->> handful of versions of this three years ago, with inconclusive
->> bikeshedding back and forth, eventually threw my hands up in disgust,
->> and walked away.
->
-> Yeah, and I am sorry for bikeshedding. Honestly, I do not know what is
-> better. This is why I do not want to block this series when others
-> like this.
->
-> My main motivation is to point out that:
->
->     enabledisable(enable)
->
-> might be, for some people, more eye bleeding than
->
->     enable ? "enable" : "disable"
->
->
-> The problem is not that visible with yesno() and onoff(). But as you said,
-> onoff() confliscts with variable names. And enabledisable() sucks.
-> As a result, there is a non-trivial risk of two mass changes:
+On 2022/1/20 16:24, Leon Romanovsky wrote:
+> On Thu, Jan 20, 2022 at 02:51:40PM +0800, Guangguan Wang wrote:
+>> This implement rq flow control in smc-r link layer. QPs
+>> communicating without rq flow control, in the previous
+>> version, may result in RNR (reveive not ready) error, which
+>> means when sq sends a message to the remote qp, but the
+>> remote qp's rq has no valid rq entities to receive the message.
+>> In RNR condition, the rdma transport layer may retransmit
+>> the messages again and again until the rq has any entities,
+>> which may lower the performance, especially in heavy traffic.
+>> Using credits to do rq flow control can avoid the occurrence
+>> of RNR.
+>>
+>> Test environment:
+>> - CPU Intel Xeon Platinum 8 core, mem 32 GiB, nic Mellanox CX4.
+>> - redis benchmark 6.2.3 and redis server 6.2.3.
+>> - redis server: redis-server --save "" --appendonly no
+>>   --protected-mode no --io-threads 7 --io-threads-do-reads yes
+>> - redis client: redis-benchmark -h 192.168.26.36 -q -t set,get
+>>   -P 1 --threads 7 -n 2000000 -c 200 -d 10
+>>
+>>  Before:
+>>  SET: 205229.23 requests per second, p50=0.799 msec
+>>  GET: 212278.16 requests per second, p50=0.751 msec
+>>
+>>  After:
+>>  SET: 623674.69 requests per second, p50=0.303 msec
+>>  GET: 688326.00 requests per second, p50=0.271 msec
+>>
+>> The test of redis-benchmark shows that more than 3X rps
+>> improvement after the implementation of rq flow control.
+>>
+>> Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+>> ---
+>>  net/smc/af_smc.c   | 12 ++++++
+>>  net/smc/smc_cdc.c  | 10 ++++-
+>>  net/smc/smc_cdc.h  |  3 +-
+>>  net/smc/smc_clc.c  |  3 ++
+>>  net/smc/smc_clc.h  |  3 +-
+>>  net/smc/smc_core.h | 17 ++++++++-
+>>  net/smc/smc_ib.c   |  6 ++-
+>>  net/smc/smc_llc.c  | 92 +++++++++++++++++++++++++++++++++++++++++++++-
+>>  net/smc/smc_llc.h  |  5 +++
+>>  net/smc/smc_wr.c   | 30 ++++++++++++---
+>>  net/smc/smc_wr.h   | 54 ++++++++++++++++++++++++++-
+>>  11 files changed, 222 insertions(+), 13 deletions(-)
+> 
+> <...>
+> 
+>> +		// set peer rq credits watermark, if less than init_credits * 2/3,
+>> +		// then credit announcement is needed.
+> 
+> <...>
+> 
+>> +		// set peer rq credits watermark, if less than init_credits * 2/3,
+>> +		// then credit announcement is needed.
+> 
+> <...>
+> 
+>> +	// credits have already been announced to peer
+> 
+> <...>
+> 
+>> +	// set local rq credits high watermark to lnk->wr_rx_cnt / 3,
+>> +	// if local rq credits more than high watermark, announcement is needed.
+> 
+> <...>
+> 
+>> +// get one tx credit, and peer rq credits dec
+> 
+> <...>
+> 
+>> +// put tx credits, when some failures occurred after tx credits got
+>> +// or receive announce credits msgs
+>> +static inline void smc_wr_tx_put_credits(struct smc_link *link, int credits, bool wakeup)
+> 
+> <...>
+> 
+>> +// to check whether peer rq credits is lower than watermark.
+>> +static inline int smc_wr_tx_credits_need_announce(struct smc_link *link)
+> 
+> <...>
+> 
+>> +// get local rq credits and set credits to zero.
+>> +// may called when announcing credits
+>> +static inline int smc_wr_rx_get_credits(struct smc_link *link)
+> 
+> Please try to use C-style comments.
+> 
+> Thanks
 
-My point is, in the past three years we could have churned through more
-than two mass renames just fine, if needed, *if* we had just managed to
-merge something for a start!
-
-BR,
-Jani.
-
->
-> now:
->
-> - contition ? "yes" : "no"
-> + yesno(condition)
->
-> a few moths later:
->
-> - yesno(condition)
-> + str_yes_no(condition)
->
->
-> Best Regards,
-> Petr
-
--- 
-Jani Nikula, Intel Open Source Graphics Center
+Thanks for your advice, I will modify it in the next version of patch.
