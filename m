@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42C5F4955D2
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 22:12:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51B134955D3
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 22:12:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377770AbiATVMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 16:12:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39440 "EHLO
+        id S1377775AbiATVMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 16:12:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233724AbiATVMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 16:12:00 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F2E2C061574
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 13:12:00 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id n11so6286197plf.4
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 13:12:00 -0800 (PST)
+        with ESMTP id S1377771AbiATVMB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 16:12:01 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B60AC061574
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 13:12:01 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id h20-20020a17090adb9400b001b518bf99ffso3895745pjv.1
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 13:12:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PLrtaU0fxXFhqRXeT0Jx0z02127t5xnDBA04neCpsbE=;
-        b=rIaoHDQdNByK61V7eXYipHjIW9GWUulX+GYwEHkvZRsGLC+mdWq9s+hpfL+dbkQSGL
-         eWPj+bXTa/4zK+FWMVoRbaMvoFqdPYFbbaX7ZnIX8ZftZlARKQGbpmGYb3NBvCnfQ+Rz
-         vShdFngArogosP1ZUavP6/jmuG2IKFUqkNaxBo6tsySX9fIyhtDk9BAwD1o+MftVc7+b
-         z7kfA8DL8AVQXl4HAYTOzoulRKYlN/6GADuD4yFLx/YOVCxeTKRXSGminAwvSNe8byh7
-         /+VoJpwQDyN/Q2rQAt5ipUVWXNx/22Hpc5TufD8kPrN+tGUeB55BqBWzf3cDBLllJqKg
-         pAdg==
+        bh=jqvz2LGyE7knId3mboqOpZqiWxGHqUhxacItbVAXPoM=;
+        b=pa06sAuIA3ZlMeH510153FlurSUQW0i8GFOrKtZEJKp/h9f3DQKz7x6cqKXEgOcOdp
+         Uk1HDxaYu2BR3FHttIOJimS648lVNBc9jYrvRDjPGRfO1+X5XrFsTteiqRAyczdmALVU
+         B4bUy5e6jSz3HpNd8qVnpZH2k+t8npuktK/kAIrtboUOJwqll5+xBBToehHxNnmguImL
+         fSwMFj29cHcIQoX3htpYv8WndgdtyxVu/hPXks+ap17jEscn3EDn+ToXMsoyogZTPBwP
+         JqOicj1hTTqh9eQjWJficxQXOj6RPoGNMv9EK0yGACTLT0CQKS9R6sp2q8cEw4necsKz
+         v8Qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PLrtaU0fxXFhqRXeT0Jx0z02127t5xnDBA04neCpsbE=;
-        b=1cTqGgqfGbjXuwFiLIP1A2ouRn/1kYskAaBdZT8S6dT3Upw+2Nf/skJYkUHvM24pQ8
-         rXD19GjSJ2X35tEab5tYzPE/8tH7Nb9Uo9coZtdbZCO3nB36ZkqDmLrsNaC0fuDArg4j
-         erkpIdgnT/pfeRYeekFnB1/BLKmjDcKFm9OmgyoFX6vtHoQfV4luzfyzIG3c1tIp4FMP
-         XA6ixdSMTPQufjKRs8nZVkrBtem4199MqrUsK9QuMkb6mcN+6/Xx8tE1OQKoQFdeaoAo
-         OWutV58oNnx9hrnMhqs9jDrHlwIgaZo4vvL7iG+oEkRJUbKvSKW2SV+X/sUG2eByzblQ
-         K/Hg==
-X-Gm-Message-State: AOAM531YMOa3b2bKbdG/gNHU5D7kS1+Cuw4dvcRIcumrKy/qGh7t4XWb
-        YjZbJIaG0cKRdIixryumDEOuSYLGu3RraA==
-X-Google-Smtp-Source: ABdhPJwIxAMz7uNO5ocauIyfccgOgQdIwuUiX5HL8ToAl3d5bR+9377i7jnimwWsDKNtX0n0Ns1svg==
-X-Received: by 2002:a17:902:aa88:b0:14a:bd99:24ad with SMTP id d8-20020a170902aa8800b0014abd9924admr880116plr.162.1642713119490;
-        Thu, 20 Jan 2022 13:11:59 -0800 (PST)
+        bh=jqvz2LGyE7knId3mboqOpZqiWxGHqUhxacItbVAXPoM=;
+        b=jiFa7RrL71Hgkuzp8T0fY74iRwZkBh8kO/Pq71WtZFliZCrPwDTkDgwjpzLsEaPDzi
+         blduySYaSg6ptHSc+HRkAktrLH3zHTamwOGYFMpD8Xgud96Ji7bTDADxvOF/yZnrRglF
+         QQFp04cRZZNG0diitcSPO6hj1hX7TUr3YhWtfFHPMlIeZPZvYLypKni92cGh3xc5oVIN
+         k9o326aJ8rWO4felQIjbcYiG8jwTE+F24On5nlKGa54ns2Es2EiMz6UFIiHne0+oOiTj
+         FB3f2i7+20QmuVPDXZl2agbgz8j69ifzQrP/5tbYV9geYhr/vcGDas8nvluoAvU/sXAW
+         z0QQ==
+X-Gm-Message-State: AOAM532AY03zJ5TseQoXID83agCC7AvPPebK8fy8c5YM1+fYcutzmQ2w
+        hXWkcHGCeAudYLeYdQrT/YDftr4GZm3UCw==
+X-Google-Smtp-Source: ABdhPJxv+MVvcxT9EX2Dp7Bh7pkM5096K1/4eR9yHP458UjGeSk7OLsPX8+AMDstY2aWxq2SRtsxuA==
+X-Received: by 2002:a17:90b:4b41:: with SMTP id mi1mr13130898pjb.1.1642713120622;
+        Thu, 20 Jan 2022 13:12:00 -0800 (PST)
 Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id rj9sm3357187pjb.49.2022.01.20.13.11.58
+        by smtp.gmail.com with ESMTPSA id rj9sm3357187pjb.49.2022.01.20.13.11.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 13:11:58 -0800 (PST)
+        Thu, 20 Jan 2022 13:11:59 -0800 (PST)
 From:   Stephen Hemminger <stephen@networkplumber.org>
 To:     netdev@vger.kernel.org
 Cc:     Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH v4 iproute2-next 03/11] netem: fix clang warnings
-Date:   Thu, 20 Jan 2022 13:11:45 -0800
-Message-Id: <20220120211153.189476-4-stephen@networkplumber.org>
+Subject: [PATCH v4 iproute2-next 04/11] flower: fix clang warnings
+Date:   Thu, 20 Jan 2022 13:11:46 -0800
+Message-Id: <20220120211153.189476-5-stephen@networkplumber.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220120211153.189476-1-stephen@networkplumber.org>
 References: <20220120211153.189476-1-stephen@networkplumber.org>
@@ -62,87 +62,173 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Netem is using empty format string to not print values.
-Clang complains about this hack so don't do it.
+Clang complains about passing non-format string to print_string.
+Handle this by splitting json and non-json parts.
 
 Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
 ---
- tc/q_netem.c | 33 ++++++++++++++++++++-------------
- 1 file changed, 20 insertions(+), 13 deletions(-)
+ tc/f_flower.c | 49 ++++++++++++++++++-------------------------------
+ 1 file changed, 18 insertions(+), 31 deletions(-)
 
-diff --git a/tc/q_netem.c b/tc/q_netem.c
-index 2e5a46ab7b25..c483386894ea 100644
---- a/tc/q_netem.c
-+++ b/tc/q_netem.c
-@@ -59,10 +59,12 @@ static void explain1(const char *arg)
- #define MAX_DIST	(16*1024)
- 
- /* Print values only if they are non-zero */
--static void __print_int_opt(const char *label_json, const char *label_fp,
--			    int val)
-+static void __attribute__((format(printf, 2, 0)))
-+__print_int_opt(const char *label_json, const char *label_fp, int val)
- {
--	print_int(PRINT_ANY, label_json, val ? label_fp : "", val);
-+	print_int(PRINT_JSON, label_json, NULL, val);
-+	if (val != 0)
-+		print_int(PRINT_FP, NULL, label_fp, val);
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index 6d70b92a2894..f4dd2ce194c4 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -102,6 +102,12 @@ static void explain(void)
+ 		"	to specify different mask, he has to use different prio.\n");
  }
- #define PRINT_INT_OPT(label, val)			\
- 	__print_int_opt(label, " " label " %d", (val))
-@@ -70,8 +72,8 @@ static void __print_int_opt(const char *label_json, const char *label_fp,
- /* Time print prints normally with varying units, but for JSON prints
-  * in seconds (1ms vs 0.001).
-  */
--static void __print_time64(const char *label_json, const char *label_fp,
--			   __u64 val)
-+static void __attribute__((format(printf, 2, 0)))
-+__print_time64(const char *label_json, const char *label_fp, __u64 val)
+ 
++static void print_indent_name_value(const char *name, const char *value)
++{
++	print_string(PRINT_FP, NULL, "%s  ", _SL_);
++	print_string_name_value(name, value);
++}
++
+ static int flower_parse_eth_addr(char *str, int addr_type, int mask_type,
+ 				 struct nlmsghdr *n)
  {
+@@ -1925,10 +1931,9 @@ static int __mask_bits(char *addr, size_t len)
+ 	return bits;
+ }
+ 
+-static void flower_print_eth_addr(char *name, struct rtattr *addr_attr,
++static void flower_print_eth_addr(const char *name, struct rtattr *addr_attr,
+ 				  struct rtattr *mask_attr)
+ {
+-	SPRINT_BUF(namefrm);
+ 	SPRINT_BUF(out);
  	SPRINT_BUF(b1);
- 
-@@ -85,8 +87,8 @@ static void __print_time64(const char *label_json, const char *label_fp,
- /* Percent print prints normally in percentage points, but for JSON prints
-  * an absolute value (1% vs 0.01).
-  */
--static void __print_percent(const char *label_json, const char *label_fp,
--			    __u32 per)
-+static void __attribute__((format(printf, 2, 0)))
-+__print_percent(const char *label_json, const char *label_fp, __u32 per)
- {
- 	print_float(PRINT_FP, NULL, label_fp, (100. * per) / UINT32_MAX);
- 	print_float(PRINT_JSON, label_json, NULL, (1. * per) / UINT32_MAX);
-@@ -802,9 +804,10 @@ static int netem_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 		rate64 = rate64 ? : rate->rate;
- 		tc_print_rate(PRINT_ANY, "rate", " rate %s", rate64);
- 		PRINT_INT_OPT("packetoverhead", rate->packet_overhead);
--		print_uint(PRINT_ANY, "cellsize",
--			   rate->cell_size ? " cellsize %u" : "",
--			   rate->cell_size);
-+
-+		print_uint(PRINT_JSON, "cellsize", NULL, rate->cell_size);
-+		if (rate->cell_size)
-+			print_uint(PRINT_FP, NULL, " cellsize %u", rate->cell_size);
- 		PRINT_INT_OPT("celloverhead", rate->cell_overhead);
- 		close_json_object();
- 	}
-@@ -824,9 +827,13 @@ static int netem_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 		close_json_object();
+ 	size_t done;
+@@ -1949,9 +1954,7 @@ static void flower_print_eth_addr(char *name, struct rtattr *addr_attr,
+ 			sprintf(out + done, "/%d", bits);
  	}
  
--	print_bool(PRINT_ANY, "ecn", ecn ? " ecn " : "", ecn);
--	print_luint(PRINT_ANY, "gap", qopt.gap ? " gap %lu" : "",
--		    (unsigned long)qopt.gap);
-+	print_bool(PRINT_JSON, "ecn", NULL, ecn);
-+	if (ecn)
-+		print_bool(PRINT_FP, NULL, " ecn ", ecn);
-+
-+	print_luint(PRINT_JSON, "gap", NULL, qopt.gap);
-+	if (qopt.gap)
-+		print_luint(PRINT_FP, NULL, " gap %lu", qopt.gap);
- 
- 	return 0;
+-	print_nl();
+-	sprintf(namefrm, "  %s %%s", name);
+-	print_string(PRINT_ANY, name, namefrm, out);
++	print_indent_name_value(name, out);
  }
+ 
+ static void flower_print_eth_type(__be16 *p_eth_type,
+@@ -2064,7 +2067,6 @@ static void flower_print_ip_addr(char *name, __be16 eth_type,
+ {
+ 	struct rtattr *addr_attr;
+ 	struct rtattr *mask_attr;
+-	SPRINT_BUF(namefrm);
+ 	SPRINT_BUF(out);
+ 	size_t done;
+ 	int family;
+@@ -2095,10 +2097,9 @@ static void flower_print_ip_addr(char *name, __be16 eth_type,
+ 	else if (bits < len * 8)
+ 		sprintf(out + done, "/%d", bits);
+ 
+-	print_nl();
+-	sprintf(namefrm, "  %s %%s", name);
+-	print_string(PRINT_ANY, name, namefrm, out);
++	print_indent_name_value(name, out);
+ }
++
+ static void flower_print_ip4_addr(char *name, struct rtattr *addr_attr,
+ 				  struct rtattr *mask_attr)
+ {
+@@ -2124,22 +2125,18 @@ static void flower_print_port_range(char *name, struct rtattr *min_attr,
+ 		print_hu(PRINT_JSON, "end", NULL, rta_getattr_be16(max_attr));
+ 		close_json_object();
+ 	} else {
+-		SPRINT_BUF(namefrm);
+ 		SPRINT_BUF(out);
+ 		size_t done;
+ 
+ 		done = sprintf(out, "%u", rta_getattr_be16(min_attr));
+ 		sprintf(out + done, "-%u", rta_getattr_be16(max_attr));
+-		print_nl();
+-		sprintf(namefrm, "  %s %%s", name);
+-		print_string(PRINT_ANY, name, namefrm, out);
++		print_indent_name_value(name, out);
+ 	}
+ }
+ 
+ static void flower_print_tcp_flags(const char *name, struct rtattr *flags_attr,
+ 				   struct rtattr *mask_attr)
+ {
+-	SPRINT_BUF(namefrm);
+ 	SPRINT_BUF(out);
+ 	size_t done;
+ 
+@@ -2150,9 +2147,7 @@ static void flower_print_tcp_flags(const char *name, struct rtattr *flags_attr,
+ 	if (mask_attr)
+ 		sprintf(out + done, "/%x", rta_getattr_be16(mask_attr));
+ 
+-	print_nl();
+-	sprintf(namefrm, "  %s %%s", name);
+-	print_string(PRINT_ANY, name, namefrm, out);
++	print_indent_name_value(name, out);
+ }
+ 
+ static void flower_print_ct_state(struct rtattr *flags_attr,
+@@ -2239,14 +2234,11 @@ static void flower_print_ct_mark(struct rtattr *attr,
+ 
+ static void flower_print_key_id(const char *name, struct rtattr *attr)
+ {
+-	SPRINT_BUF(namefrm);
+-
+ 	if (!attr)
+ 		return;
+ 
+ 	print_nl();
+-	sprintf(namefrm, "  %s %%u", name);
+-	print_uint(PRINT_ANY, name, namefrm, rta_getattr_be32(attr));
++	print_uint_name_value(name, rta_getattr_be32(attr));
+ }
+ 
+ static void flower_print_geneve_opts(const char *name, struct rtattr *attr,
+@@ -2342,8 +2334,9 @@ static void flower_print_erspan_opts(const char *name, struct rtattr *attr,
+ 	sprintf(strbuf, "%u:%u:%u:%u", ver, idx, dir, hwid);
+ }
+ 
+-static void flower_print_enc_parts(const char *name, const char *namefrm,
+-				   struct rtattr *attr, char *key, char *mask)
++static void __attribute__((format(printf, 2, 0)))
++flower_print_enc_parts(const char *name, const char *namefrm,
++		       struct rtattr *attr, char *key, char *mask)
+ {
+ 	char *key_token, *mask_token, *out;
+ 	int len;
+@@ -2431,7 +2424,6 @@ static void flower_print_masked_u8(const char *name, struct rtattr *attr,
+ {
+ 	const char *value_str = NULL;
+ 	__u8 value, mask;
+-	SPRINT_BUF(namefrm);
+ 	SPRINT_BUF(out);
+ 	size_t done;
+ 
+@@ -2451,9 +2443,7 @@ static void flower_print_masked_u8(const char *name, struct rtattr *attr,
+ 	if (mask != UINT8_MAX)
+ 		sprintf(out + done, "/%d", mask);
+ 
+-	print_nl();
+-	sprintf(namefrm, "  %s %%s", name);
+-	print_string(PRINT_ANY, name, namefrm, out);
++	print_indent_name_value(name, out);
+ }
+ 
+ static void flower_print_u8(const char *name, struct rtattr *attr)
+@@ -2463,14 +2453,11 @@ static void flower_print_u8(const char *name, struct rtattr *attr)
+ 
+ static void flower_print_u32(const char *name, struct rtattr *attr)
+ {
+-	SPRINT_BUF(namefrm);
+-
+ 	if (!attr)
+ 		return;
+ 
+ 	print_nl();
+-	sprintf(namefrm, "  %s %%u", name);
+-	print_uint(PRINT_ANY, name, namefrm, rta_getattr_u32(attr));
++	print_uint_name_value(name, rta_getattr_u32(attr));
+ }
+ 
+ static void flower_print_mpls_opt_lse(struct rtattr *lse)
 -- 
 2.30.2
 
