@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A26F54944FB
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:44:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 079F64944FF
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:44:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345347AbiATAoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 19:44:02 -0500
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:38695 "EHLO
+        id S1357942AbiATAoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 19:44:06 -0500
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:34809 "EHLO
         relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345298AbiATAn4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 19:43:56 -0500
+        with ESMTP id S1345503AbiATAn5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 19:43:57 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id C9C6F20004;
-        Thu, 20 Jan 2022 00:43:53 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 2525A20008;
+        Thu, 20 Jan 2022 00:43:55 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -27,9 +27,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-next 2/4] net: mac802154: Include the softMAC stack inside the IEEE 802.15.4 menu
-Date:   Thu, 20 Jan 2022 01:43:48 +0100
-Message-Id: <20220120004350.308866-3-miquel.raynal@bootlin.com>
+Subject: [wpan-next 3/4] net: ieee802154: Move the address structure earlier
+Date:   Thu, 20 Jan 2022 01:43:49 +0100
+Message-Id: <20220120004350.308866-4-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220120004350.308866-1-miquel.raynal@bootlin.com>
 References: <20220120004350.308866-1-miquel.raynal@bootlin.com>
@@ -42,41 +42,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Girault <david.girault@qorvo.com>
 
-The softMAC stack has no meaning outside of the IEEE 802.15.4 stack and
-cannot be used without it.
+Move the address structure earlier in the cfg802154.h header in order to
+use it in subsequent additions. There is no functional change here.
 
 Signed-off-by: David Girault <david.girault@qorvo.com>
 [miquel.raynal@bootlin.com: Isolate this change from a bigger commit]
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- net/Kconfig            | 1 -
- net/ieee802154/Kconfig | 1 +
- 2 files changed, 1 insertion(+), 1 deletion(-)
+ include/net/cfg802154.h | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/net/Kconfig b/net/Kconfig
-index 0da89d09ffa6..a5e31078fd14 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -228,7 +228,6 @@ source "net/x25/Kconfig"
- source "net/lapb/Kconfig"
- source "net/phonet/Kconfig"
- source "net/6lowpan/Kconfig"
--source "net/mac802154/Kconfig"
- source "net/sched/Kconfig"
- source "net/dcb/Kconfig"
- source "net/dns_resolver/Kconfig"
-diff --git a/net/ieee802154/Kconfig b/net/ieee802154/Kconfig
-index 31aed75fe62d..7e4b1d49d445 100644
---- a/net/ieee802154/Kconfig
-+++ b/net/ieee802154/Kconfig
-@@ -36,6 +36,7 @@ config IEEE802154_SOCKET
- 	  for 802.15.4 dataframes. Also RAW socket interface to build MAC
- 	  header from userspace.
+diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+index 4491e2724ff2..4193c242d96e 100644
+--- a/include/net/cfg802154.h
++++ b/include/net/cfg802154.h
+@@ -29,6 +29,15 @@ struct ieee802154_llsec_key_id;
+ struct ieee802154_llsec_key;
+ #endif /* CONFIG_IEEE802154_NL802154_EXPERIMENTAL */
  
-+source "net/mac802154/Kconfig"
- source "net/ieee802154/6lowpan/Kconfig"
++struct ieee802154_addr {
++	u8 mode;
++	__le16 pan_id;
++	union {
++		__le16 short_addr;
++		__le64 extended_addr;
++	};
++};
++
+ struct cfg802154_ops {
+ 	struct net_device * (*add_virtual_intf_deprecated)(struct wpan_phy *wpan_phy,
+ 							   const char *name,
+@@ -277,15 +286,6 @@ static inline void wpan_phy_net_set(struct wpan_phy *wpan_phy, struct net *net)
+ 	write_pnet(&wpan_phy->_net, net);
+ }
  
- endif
+-struct ieee802154_addr {
+-	u8 mode;
+-	__le16 pan_id;
+-	union {
+-		__le16 short_addr;
+-		__le64 extended_addr;
+-	};
+-};
+-
+ struct ieee802154_llsec_key_id {
+ 	u8 mode;
+ 	u8 id;
 -- 
 2.27.0
 
