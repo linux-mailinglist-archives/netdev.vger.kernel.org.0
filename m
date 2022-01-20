@@ -2,148 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE81A4947CA
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 08:05:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E6749484F
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 08:32:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237946AbiATHFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 02:05:36 -0500
-Received: from m12-15.163.com ([220.181.12.15]:14924 "EHLO m12-15.163.com"
+        id S1359020AbiATHb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 02:31:57 -0500
+Received: from mga17.intel.com ([192.55.52.151]:39039 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232999AbiATHFf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jan 2022 02:05:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Message-ID:Date:MIME-Version:From:Subject; bh=gUuxI
-        np6kIAi1Ks8ru5WQHcZS8rqBOsJ2rSgr1rJwg4=; b=XfLYk3PR6mRJFQykVgMfD
-        Zk7bdcDEwIuFQX8UXvvIR2H5wkWOudXBmBi8Pn6Dc34nf12g7q3qNvxysGMJv4eY
-        3/kd0EPt/0wcf1UzktWQCP4HvOIGzwUXYFbCt+lFe6SglX9dFBk5Jg6W6gL6Lcco
-        ZLLHNBRKyEFIUAz5+jw2KY=
-Received: from [192.168.16.100] (unknown [110.86.5.94])
-        by smtp11 (Coremail) with SMTP id D8CowACXOciZCelhCoZtAQ--.15S2;
-        Thu, 20 Jan 2022 15:05:16 +0800 (CST)
-Message-ID: <04a03a41-6d44-645e-4935-613de20afb2d@163.com>
-Date:   Thu, 20 Jan 2022 15:04:58 +0800
+        id S1359009AbiATHb5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jan 2022 02:31:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642663917; x=1674199917;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=7VYqLA8ntt7Lp1slrzIzKJovESqU7n1mPeZ9Fqm4IB8=;
+  b=V+cI2lBg588Kf45OyAZ/EXUzXnORV8Fl5g0IjPBpgvsTM1OFrWuYwOy6
+   YVcyqmW2knOC2BlOCZuc711ZnjXIujGH8t0YKysD7bmg6r0BgUwxaktpx
+   PXWBEH2oc/wmY2835KDBcp9RURalCprhMpHYVu/aR0rgnqOyB91CjCtbb
+   QSjpu2TXMaBdX2D/cYuhtsQhCJlOT86618yEmWdThZJ47Yz8v8urNnbBL
+   o/FDArcyUfZSICs9E/LB/29pVT4cFf7f9OYfQebF0RJpwvDycWbSMk7pk
+   KGg8cUeMEktsYEFYTBbjv1HLIOrcyEXDOXbxh9gfdNYFU46pmJNVCBvO7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10232"; a="225963657"
+X-IronPort-AV: E=Sophos;i="5.88,301,1635231600"; 
+   d="scan'208";a="225963657"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 23:31:56 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,301,1635231600"; 
+   d="scan'208";a="475430889"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 19 Jan 2022 23:31:53 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nARvE-000E73-RZ; Thu, 20 Jan 2022 07:31:52 +0000
+Date:   Thu, 20 Jan 2022 15:31:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, Xue Liu <liuxuenetmail@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harry Morris <harrymorris12@gmail.com>,
+        David Girault <david.girault@qorvo.com>
+Subject: Re: [wpan-next 5/9] net: ieee802154: ca8210: Stop leaking skb's
+Message-ID: <202201201557.38baVRVX-lkp@intel.com>
+References: <20220120003645.308498-6-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-To:     netdev@vger.kernel.org
-Cc:     shemminger@linux-foundation.org, noureddine@arista.com,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Jianguo Wu <wujianguo106@163.com>
-Subject: [PATCH] net-procfs: show net devices bound packet types
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: D8CowACXOciZCelhCoZtAQ--.15S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxCr4DKw17WFWxArWfZrWfGrg_yoW5WF4rpa
-        95ZFW5Jry8Gw43tr4fXFZFqryfXF4rG34fC3sF9wnak34Dtr1vqF1rKrW2vr15CF4rJas8
-        Ja10gFy5C347uaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UEsj8UUUUU=
-X-Originating-IP: [110.86.5.94]
-X-CM-SenderInfo: 5zxmxt5qjx0iiqw6il2tof0z/xtbBLQyOkFziaMS0uAAAsh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220120003645.308498-6-miquel.raynal@bootlin.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wujianguo <wujianguo@chinatelecom.cn>
+Hi Miquel,
 
-After commit:7866a621043f ("dev: add per net_device packet type chains"),
-we can not get packet types that are bound to a specified net device.
+I love your patch! Yet something to improve:
 
-So and a new net procfs(/proc/net/dev_ptype) to show packet types
-that are bound to a specified net device.
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.16 next-20220120]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Run "tcpdump -i ens192 udp -nns0" Before and after apply this patch:
+url:    https://github.com/0day-ci/linux/commits/Miquel-Raynal/ieee802154-A-bunch-of-fixes/20220120-083906
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 1d1df41c5a33359a00e919d54eaebfb789711fdc
+config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220120/202201201557.38baVRVX-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f7b7138a62648f4019c55e4671682af1f851f295)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/77d3026b30aff560ef269d03aecc09f8c46a9173
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Miquel-Raynal/ieee802154-A-bunch-of-fixes/20220120-083906
+        git checkout 77d3026b30aff560ef269d03aecc09f8c46a9173
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/ieee802154/
 
-Before:
-  [root@localhost ~]# cat /proc/net/ptype
-  Type Device      Function
-  0800          ip_rcv
-  0806          arp_rcv
-  86dd          ipv6_rcv
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-After:
-  [root@localhost ~]# cat /proc/net/ptype
-  Type Device      Function
-  0800          ip_rcv
-  0806          arp_rcv
-  86dd          ipv6_rcv
-  [root@localhost ~]# cat /proc/net/dev_ptype
-  Type Device      Function
-  ALL  ens192   tpacket_rcv
+All errors (new ones prefixed by >>):
 
-Signed-off-by: Jianguo Wu <wujianguo@chinatelecom.cn>
+>> drivers/net/ieee802154/ca8210.c:1775:22: error: use of undeclared identifier 'atusb'
+                           dev_kfree_skb_any(atusb->tx_skb);
+                                             ^
+   1 error generated.
+
+
+vim +/atusb +1775 drivers/net/ieee802154/ca8210.c
+
+  1737	
+  1738	/**
+  1739	 * ca8210_async_xmit_complete() - Called to announce that an asynchronous
+  1740	 *                                transmission has finished
+  1741	 * @hw:          ieee802154_hw of ca8210 that has finished exchange
+  1742	 * @msduhandle:  Identifier of transmission that has completed
+  1743	 * @status:      Returned 802.15.4 status code of the transmission
+  1744	 *
+  1745	 * Return: 0 or linux error code
+  1746	 */
+  1747	static int ca8210_async_xmit_complete(
+  1748		struct ieee802154_hw  *hw,
+  1749		u8                     msduhandle,
+  1750		u8                     status)
+  1751	{
+  1752		struct ca8210_priv *priv = hw->priv;
+  1753	
+  1754		if (priv->nextmsduhandle != msduhandle) {
+  1755			dev_err(
+  1756				&priv->spi->dev,
+  1757				"Unexpected msdu_handle on data confirm, Expected %d, got %d\n",
+  1758				priv->nextmsduhandle,
+  1759				msduhandle
+  1760			);
+  1761			return -EIO;
+  1762		}
+  1763	
+  1764		priv->async_tx_pending = false;
+  1765		priv->nextmsduhandle++;
+  1766	
+  1767		if (status) {
+  1768			dev_err(
+  1769				&priv->spi->dev,
+  1770				"Link transmission unsuccessful, status = %d\n",
+  1771				status
+  1772			);
+  1773			if (status != MAC_TRANSACTION_OVERFLOW) {
+  1774				ieee802154_wake_queue(priv->hw);
+> 1775				dev_kfree_skb_any(atusb->tx_skb);
+  1776				return 0;
+  1777			}
+  1778		}
+  1779		ieee802154_xmit_complete(priv->hw, priv->tx_skb, true);
+  1780	
+  1781		return 0;
+  1782	}
+  1783	
+
 ---
- net/core/net-procfs.c | 40 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 39 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-index d8b9dbabd4a4..9589e4faa51c 100644
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -280,6 +280,37 @@ static int ptype_seq_show(struct seq_file *seq, void *v)
- 	.show  = ptype_seq_show,
- };
-
-+static int dev_ptype_seq_show(struct seq_file *seq, void *v)
-+{
-+	struct net_device *dev = v;
-+	struct packet_type *pt = NULL;
-+	struct list_head *ptype_list = NULL;
-+
-+	if (v == SEQ_START_TOKEN) {
-+		seq_puts(seq, "Type Device      Function\n");
-+	} else {
-+		ptype_list = &dev->ptype_all;
-+		list_for_each_entry_rcu(pt, ptype_list, list) {
-+			if (pt->type == htons(ETH_P_ALL))
-+				seq_puts(seq, "ALL ");
-+			else
-+				seq_printf(seq, "%04x", ntohs(pt->type));
-+
-+			seq_printf(seq, " %-8s %ps\n",
-+				   pt->dev ? pt->dev->name : "", pt->func);
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct seq_operations dev_ptype_seq_ops = {
-+	.start = dev_seq_start,
-+	.next  = dev_seq_next,
-+	.stop  = dev_seq_stop,
-+	.show  = dev_ptype_seq_show,
-+};
-+
- static int __net_init dev_proc_net_init(struct net *net)
- {
- 	int rc = -ENOMEM;
-@@ -294,11 +325,17 @@ static int __net_init dev_proc_net_init(struct net *net)
- 			sizeof(struct seq_net_private)))
- 		goto out_softnet;
-
--	if (wext_proc_init(net))
-+	if (!proc_create_net("dev_ptype", 0444, net->proc_net, &dev_ptype_seq_ops,
-+			     sizeof(struct seq_net_private)))
- 		goto out_ptype;
-+
-+	if (wext_proc_init(net))
-+		goto out_dev_ptype;
- 	rc = 0;
- out:
- 	return rc;
-+out_dev_ptype:
-+	remove_proc_entry("dev_ptype", net->proc_net);
- out_ptype:
- 	remove_proc_entry("ptype", net->proc_net);
- out_softnet:
-@@ -312,6 +349,7 @@ static void __net_exit dev_proc_net_exit(struct net *net)
- {
- 	wext_proc_exit(net);
-
-+	remove_proc_entry("dev_ptype", net->proc_net);
- 	remove_proc_entry("ptype", net->proc_net);
- 	remove_proc_entry("softnet_stat", net->proc_net);
- 	remove_proc_entry("dev", net->proc_net);
--- 
-1.8.3.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
