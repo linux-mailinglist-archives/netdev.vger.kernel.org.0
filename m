@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7162D494512
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:51:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84F7A494514
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:51:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357918AbiATAv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 19:51:27 -0500
-Received: from relay11.mail.gandi.net ([217.70.178.231]:41075 "EHLO
+        id S1357930AbiATAv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 19:51:29 -0500
+Received: from relay11.mail.gandi.net ([217.70.178.231]:42765 "EHLO
         relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357906AbiATAv0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 19:51:26 -0500
+        with ESMTP id S1357906AbiATAv2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 19:51:28 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 4F6AF100002;
-        Thu, 20 Jan 2022 00:51:23 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7B530100004;
+        Thu, 20 Jan 2022 00:51:25 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -27,10 +27,12 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [wpan-next 00/14] ieee802154: Synchronous Tx API
-Date:   Thu, 20 Jan 2022 01:51:08 +0100
-Message-Id: <20220120005122.309104-1-miquel.raynal@bootlin.com>
+Subject: [wpan-next 01/14] net: ieee802154: Move the logic restarting the queue upon transmission
+Date:   Thu, 20 Jan 2022 01:51:09 +0100
+Message-Id: <20220120005122.309104-2-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220120005122.309104-1-miquel.raynal@bootlin.com>
+References: <20220120005122.309104-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -38,55 +40,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The idea here is to provide a fully synchronous Tx API and also be able
-to be sure that a transfer as finished. This will be used later by
-another series.
+Create a new helper with the logic restarting the queue upon
+transmission, so that we can create a second path for error conditions
+which can reuse that code easily.
 
-The first patches create an error helper and then use it in order to
-have only two "end of transmission" helpers that are always called.
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+---
+ net/mac802154/util.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-Then, a bit of cleanup regarding the naming and the locations of certain
-peaces of code is done.
-
-Finally, we create a hot and a slow path, add the necessary logic to be
-able to track ongoing transfers and when the queue must be kept on hold,
-until we finally create a helper to stop emitting after the last
-transfer, which we then use to create a synchronous MLME API.
-
-(Caution: I haven't fully tested that part yet, but as Alexander and me
-are on very different time slots I prefer to provide this tonight and
-eventually fix it tomorrow)
-
-Miquel Raynal (14):
-  net: ieee802154: Move the logic restarting the queue upon transmission
-  net: mac802154: Create a transmit error helper
-  net: ieee802154: at86rf230: Call _xmit_error() when a transmission
-    fails
-  net: ieee802154: atusb: Call _xmit_error() when a transmission fails
-  net: ieee802154: ca8210: Call _xmit_error() when a transmission fails
-  net: mac802154: Stop exporting ieee802154_wake/stop_queue()
-  net: mac802154: Rename the synchronous xmit worker
-  net: mac802154: Rename the main tx_work struct
-  net: mac802154: Follow the count of ongoing transmissions
-  net: mac802154: Hold the transmit queue when relevant
-  net: mac802154: Create a hot tx path
-  net: mac802154: Add a warning in the hot path
-  net: mac802154: Introduce a tx queue flushing mechanism
-  net: mac802154: Introduce a synchronous API for MLME commands
-
- drivers/net/ieee802154/at86rf230.c |  3 +-
- drivers/net/ieee802154/atusb.c     |  4 +--
- drivers/net/ieee802154/ca8210.c    | 12 ++++----
- include/net/cfg802154.h            |  5 ++++
- include/net/mac802154.h            | 37 +++++++----------------
- net/ieee802154/core.c              |  1 +
- net/mac802154/cfg.c                |  5 ++--
- net/mac802154/ieee802154_i.h       | 35 ++++++++++++++++++++--
- net/mac802154/main.c               |  2 +-
- net/mac802154/tx.c                 | 48 +++++++++++++++++++++++++-----
- net/mac802154/util.c               | 34 ++++++++++++++++++---
- 11 files changed, 132 insertions(+), 54 deletions(-)
-
+diff --git a/net/mac802154/util.c b/net/mac802154/util.c
+index f2078238718b..4c06a6bd391a 100644
+--- a/net/mac802154/util.c
++++ b/net/mac802154/util.c
+@@ -55,8 +55,9 @@ enum hrtimer_restart ieee802154_xmit_ifs_timer(struct hrtimer *timer)
+ 	return HRTIMER_NORESTART;
+ }
+ 
+-void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
+-			      bool ifs_handling)
++static void
++ieee802154_wakeup_after_xmit_done(struct ieee802154_hw *hw, struct sk_buff *skb,
++				  bool ifs_handling)
+ {
+ 	if (ifs_handling) {
+ 		struct ieee802154_local *local = hw_to_local(hw);
+@@ -83,7 +84,12 @@ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
+ 	} else {
+ 		ieee802154_wake_queue(hw);
+ 	}
++}
+ 
++void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
++			      bool ifs_handling)
++{
++	ieee802154_wakeup_after_xmit_done(hw, skb, ifs_handling);
+ 	dev_consume_skb_any(skb);
+ }
+ EXPORT_SYMBOL(ieee802154_xmit_complete);
 -- 
 2.27.0
 
