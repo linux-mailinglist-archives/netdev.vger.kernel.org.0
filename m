@@ -2,85 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C956B494E29
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 13:48:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B28F9494E34
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 13:48:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238917AbiATMrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 07:47:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36680 "EHLO
+        id S243248AbiATMs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 07:48:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236670AbiATMrN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 07:47:13 -0500
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26457C061574
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 04:47:13 -0800 (PST)
-Received: by mail-ot1-x330.google.com with SMTP id i7-20020a9d68c7000000b0059396529af8so7394067oto.4
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 04:47:13 -0800 (PST)
+        with ESMTP id S236774AbiATMs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 07:48:56 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1794CC061574
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 04:48:56 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id c2so11889438wml.1
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 04:48:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Rk7eQPMzlV6sL8ptWJnuutQSsSki+JiFQv8LSNSPdm4=;
-        b=kn7w5zPV84gKF8nAIY2Paqm2J/0ZA7+MIuI/7PhqrLKvBED+NZCrVfQNxvlKujs6+f
-         3X40Utng69tVjygwq8tFZfhPVHQVoZ7zKNA5RviVVKZHsxVgPI/q07GYJ8UeW8b/gq0e
-         lfdqU7uefntu2amaJhfH85KGrgftrrLj/9j7MPfO48vWU5MjyKMw06Fj1Oe5F6FLd58n
-         sPr8RBZyCoITAU6TgJxRV4HKvToNV6kRIicf+M2F27a3vcKSgLxfeigsVWHgj7Sxw/Ft
-         wCsrmRf8jSsQZjD/1D8KZgt9DDslJBy9Ug2I4Srea0mWmAMQ0fLFc3ZXgIYFj+PMD1iV
-         9i7g==
+        bh=lIhRsVQM89fOOn/pqPgkwPpB+n/X0P3c2czsugv+l2M=;
+        b=rl3pTj9LhDtldBrZ+GVn/MKMVIN6PyzQNXRg0oHPZiksCJoEVO9TQ+i+U/zj2/wys/
+         Mk9WIVPRgMfS0wQv2i4qupduWu9w0+PTklEQDEWw9drgOS4Q752ER0CD6EsHZVmEts2d
+         5eM/gNKk9szZC1JJIzulLNZdYlGCEQoQjhHYHKeCK9/NC5Yp+7x9iN8Cqqd/18GABG7n
+         gqu99O2zJStQLll/csZ0HXsb35jpAcqaLNqAlG9yYFf3SKHWy8ZiXxAjFeYVbmy4lcBc
+         c5hvoQj52ALFXlkq/xX9hGcy/VqhyA4oiqIwfarcCFZNqbP0KZF9sbLiVUh636ZDnMVd
+         0s0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Rk7eQPMzlV6sL8ptWJnuutQSsSki+JiFQv8LSNSPdm4=;
-        b=1IAj1QayINgb+3HLfPRsLFBXEoYky25DZ72GtJmWJm8YmG9RXEEWQN0TY3yGFAdCTy
-         QBYCuM5gRt46jQF5RR48PoRHe4zZo92sDeFKpL2sQEFvNeM5zlSZtae7MRmAk2ZpGrdT
-         6rLG5aATNl0o2mc4rYm9wuULlLS28uxqEb8+LHeXHfzYA6thAhErB23pDw+MGITq9kDN
-         7kjLIhio4pO3lgZAqURU/VlUREbDIdTpccLdWLfKy1ZoO9NLRumD+AIAVxW5P0arIGCb
-         rE5A5EH1na64U4VQUabPVxOCAXEXK1jvtnxiAPpp/gJdddKZG/fw3UOUL90S0PEdR/XP
-         c9HA==
-X-Gm-Message-State: AOAM531C8zJXjd1/XR+QZ3vjkYQx4JsoKTWn7M7zOr2kiAVx747hxXrd
-        c5tQccVx36fMjO6wHlTkWihTr7Dw4g8Hqpv8NIW57g==
-X-Google-Smtp-Source: ABdhPJxPoWJV9ghspjD7dWEKg1fSTyeC1ZWtdKPmP4tt0pi3XBbfF96GwhfuBtTqtjHWm8lm0KM8jcPjyhS5/93y144=
-X-Received: by 2002:a05:6830:244c:: with SMTP id x12mr26369761otr.194.1642682832288;
- Thu, 20 Jan 2022 04:47:12 -0800 (PST)
+        bh=lIhRsVQM89fOOn/pqPgkwPpB+n/X0P3c2czsugv+l2M=;
+        b=Tb3zWQagidHFy6vSSZWeVbjf1C58cxQb1640bh9T7HrhpU8XISF/51dqv/ugG4m4XE
+         JNq/RWgYv6YUdVSmuUV/ODUsdzQBzEpkZQHwRsbGkE4RXVNE11HVOXdJD5/mB+UIATam
+         5sDcCcPyPU58HT0Fkp803zZbzak9tp1VOgSayrlr1Q/W8aD3SwpuFXjTBC3Xdn5G+aZl
+         uzeHeQ7RNbQtY0H7eHvAij1d1wM1Fl22ky9Tvkkk809v3YojtOQ5I8fxRFc5/TOQzCsO
+         kaoNZmOopzeEuwjP0fdWkMCPuRL8qvI/6Zlb8OECK5NE4nF//I+du+VcxvDKfIz2ukUL
+         iZqw==
+X-Gm-Message-State: AOAM531HxfbxImUVTw1hdmU41l24mowNattzAE4equzIta4wdnDvsL3a
+        83GcxOogzva/aHgfsxBZcJ2/+iCHgV7s24hocXbeHw==
+X-Google-Smtp-Source: ABdhPJwVz0ZES7K7wO8S6SoBDernRzL84NBIWN+7AzcU7dEbbKnaR17Pjod8C5Th2qn1fHW9SIoDh4R7ZqtvompeQ7U=
+X-Received: by 2002:adf:d1e1:: with SMTP id g1mr21368862wrd.616.1642682934719;
+ Thu, 20 Jan 2022 04:48:54 -0800 (PST)
 MIME-Version: 1.0
-References: <000000000000c5c09805d313d03e@google.com> <000000000000b5085105d5f2c7ab@google.com>
-In-Reply-To: <000000000000b5085105d5f2c7ab@google.com>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 20 Jan 2022 13:47:00 +0100
-Message-ID: <CANpmjNN2BW-qPvVroCDho4zvq8h+VFh2RSBaFyCxQUZdqozz5A@mail.gmail.com>
-Subject: Re: [syzbot] BUG: sleeping function called from invalid context in tipc_crypto_start
-To:     syzbot <syzbot+73a4f2b28371d5526901@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, fw@strlen.de, hoang.h.le@dektech.com.au,
-        jmaloy@redhat.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        mathew.j.martineau@linux.intel.com, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, tadeusz.struk@linaro.org,
-        tipc-discussion@lists.sourceforge.net, yajun.deng@linux.dev,
-        ying.xue@windriver.com
+References: <20220111175438.21901-1-sthemmin@microsoft.com>
+ <95299213-6768-e9ed-ea82-1ecb903d86e3@gmail.com> <e8e78f5e-748b-6db4-7abe-4ccbf70eaaf0@mojatatu.com>
+In-Reply-To: <e8e78f5e-748b-6db4-7abe-4ccbf70eaaf0@mojatatu.com>
+From:   Victor Nogueira <victor@mojatatu.com>
+Date:   Thu, 20 Jan 2022 09:48:43 -0300
+Message-ID: <CA+NMeC8ksPxUbg_2M9=1oKFWAPg_Y8uaVndTCAdC+0xvFRMmFQ@mail.gmail.com>
+Subject: Re: [PATCH v2 iproute2-next 00/11] clang warning fixes
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org, Davide Caratti <dcaratti@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Jan 2022 at 18:33, syzbot
-<syzbot+73a4f2b28371d5526901@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit f845fe5819efc4111c456c102f15db6d9ed3406e
-> Author: Hoang Le <hoang.h.le@dektech.com.au>
-> Date:   Fri Dec 17 03:00:59 2021 +0000
->
->     Revert "tipc: use consistent GFP flags"
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17b09d88700000
-> start commit:   28a2686c185e selftests: Fix IPv6 address bind tests
-> git tree:       net
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=221ffc09e39ebbd1
-> dashboard link: https://syzkaller.appspot.com/bug?extid=73a4f2b28371d5526901
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1066ce9db00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1398fc6db00000
->
-> If the result looks correct, please mark the issue as fixed by replying with:
+Hi,
+Sorry for not responding sooner. I patched iproute2 and several
+existing tests failed.
+Example:
+Test 696a: Add simple ct action
 
-#syz fix: Revert "tipc: use consistent GFP flags"
+All test results:
+
+1..1
+not ok 1 696a - Add simple ct action
+Could not match regex pattern. Verify command output:
+total acts 1
+
+action order 0: ct
+zone 0 pipe
+index 42 ref 1 bind 0
+
+The problem is the additional new line added.
+
+WIthout this patch:
+https://patchwork.kernel.org/project/netdevbpf/patch/20220117175019.13993-6-stephen@networkplumber.org/
+it the output of tc actions list action ct is:
+
+total acts 1
+
+action order 0: ct zone 0 pipe
+index 42 ref 1 bind 0
+
+With it it is:
+
+total acts 1
+
+action order 0: ct
+zone 0 pipe
+index 42 ref 1 bind 0
+
+So I believe the problem is just formatting, however it still breaks some tests
+
+cheers,
+Victor
+
+On 17 Jan 2022, at 12:29, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+
+On 2022-01-16 18:18, David Ahern wrote:
+
+On 1/11/22 10:54 AM, Stephen Hemminger wrote:
+
+This patch set makes iproute2-next main branch compile without warnings
+on Clang 11 (and probably later versions).
+
+Still needs more testing before merge. There are likely to be some
+unnecessary output format changes from this.
+
+I think the tc patches are the only likely candidates. The
+print_string_name_value conversion should be clean.
+Jamal: As I recall you have a test suite for tc. Can you test this set?
+
+
+We try to push, whenever we can, to kernel tdc tests. The Intel robot
+should catch issues based on what we have there. If we make part of the
+acceptance process (incumbent on people who create the patches) to
+run those tests it would help getting cleaner submissions. Not sure
+if we can have a bot doing this..
+
+Punting to Victor(on Cc) to run the tests and double check if we
+have test  cases that cover for these changes.
+
+cheers,
+jamal
