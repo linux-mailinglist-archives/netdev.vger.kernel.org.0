@@ -2,59 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7B7549449B
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:27:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C6D34944BB
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 01:36:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345552AbiATA1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jan 2022 19:27:42 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:45478 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345540AbiATA1m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jan 2022 19:27:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=cg29zCKERMjuyPKxQcXZu/pWt7Yhte9nUmrkJZ6zC8E=; b=hS
-        8hHfGEuS+dkkj2QlYphisM5pnGO2BNa+ovE8lF8Vjq4V5D6oD6ramE5YJb/gHAHe1Yw/3Zi2nYjkD
-        RCktQtKVXp0pbwkdSwY0H+Ujb/3hQ5Q9TZJYPgCX25MC66JkJABc12EFpztIpOuMcurPAHGm4agXE
-        1CvT6D/6xxsOO2U=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nALIh-001we4-FM; Thu, 20 Jan 2022 01:27:39 +0100
-Date:   Thu, 20 Jan 2022 01:27:39 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] phylib: fix potential use-after-free
-Message-ID: <Yeise7Fs/PCxONId@lunn.ch>
-References: <20220119162748.32418-1-kabel@kernel.org>
+        id S1357831AbiATAgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jan 2022 19:36:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357827AbiATAgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jan 2022 19:36:50 -0500
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC66BC061574;
+        Wed, 19 Jan 2022 16:36:49 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id AC6FAC0003;
+        Thu, 20 Jan 2022 00:36:45 +0000 (UTC)
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, Xue Liu <liuxuenetmail@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harry Morris <harrymorris12@gmail.com>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [wpan-next 0/9] ieee802154: A bunch of fixes
+Date:   Thu, 20 Jan 2022 01:36:36 +0100
+Message-Id: <20220120003645.308498-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220119162748.32418-1-kabel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 05:27:48PM +0100, Marek Behún wrote:
-> Commit bafbdd527d56 ("phylib: Add device reset GPIO support") added call
-> to phy_device_reset(phydev) after the put_device() call in phy_detach().
-> 
-> The comment before the put_device() call says that the phydev might go
-> away with put_device().
-> 
-> Fix potential use-after-free by calling phy_device_reset() before
-> put_device().
-> 
-> Fixes: bafbdd527d56 ("phylib: Add device reset GPIO support")
-> Signed-off-by: Marek Behún <kabel@kernel.org>
+In preparation to a wider series, here are a number of small and random
+fixes across the subsystem.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Miquel Raynal (9):
+  net: ieee802154: hwsim: Ensure proper channel selection at probe time
+  net: ieee802154: hwsim: Ensure frame checksum are valid
+  net: ieee802154: mcr20a: Fix lifs/sifs periods
+  net: ieee802154: at86rf230: Stop leaking skb's
+  net: ieee802154: ca8210: Stop leaking skb's
+  net: ieee802154: Use the IEEE802154_MAX_PAGE define when relevant
+  net: ieee802154: Return meaningful error codes from the netlink
+    helpers
+  net: mac802154: Explain the use of ieee802154_wake/stop_queue()
+  MAINTAINERS: Remove Harry Morris bouncing address
 
-    Andrew
+ MAINTAINERS                              |  3 +--
+ drivers/net/ieee802154/at86rf230.c       |  1 +
+ drivers/net/ieee802154/ca8210.c          |  1 +
+ drivers/net/ieee802154/mac802154_hwsim.c | 12 ++----------
+ drivers/net/ieee802154/mcr20a.c          |  4 ++--
+ include/net/mac802154.h                  | 12 ++++++++++++
+ net/ieee802154/nl-phy.c                  |  5 +++--
+ net/ieee802154/nl802154.c                |  8 ++++----
+ 8 files changed, 26 insertions(+), 20 deletions(-)
+
+-- 
+2.27.0
+
