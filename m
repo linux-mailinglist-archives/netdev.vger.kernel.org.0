@@ -2,82 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CE25495056
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 15:37:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEBE349507A
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 15:44:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353350AbiATOhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 09:37:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238270AbiATOhp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 09:37:45 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306B1C061574
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 06:37:45 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id f21so29520734eds.11
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 06:37:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=6Ky7e2JTg7oiP9Jy3YWZ+HBrS/zKPzm5WUdAsQWaSIQ=;
-        b=JpiEm2+ReEiGmPE8ytt7H4kFTm7fMFTBFNYkJRcDyEBWBi+keLXiTdkweOsBkoAnXQ
-         Y/tJvg/7HiCwXkugPGYVjZ5P6S66VtdrMwTmyQtXnldehKtqEm2cHyavc3WHqmStQ92w
-         BUNQYlW76naRu4EcIV059BH/R2qs5C13vcqjXDa7NUQLqpSfWD3kJeydmx3N3Ilmt7cc
-         LL8094oDh36ufa2cNIZsFU/MmdAVQX9F0PhNR5Y9//7U4fAyiY3rtEXF8KmLZ/a+FCpa
-         SjtJNQNl/tTDNTc/IArRxoUC2bNhE08ocvB53dD3ZJw/GpYCIXolW1M9PILNTMWkd/0I
-         cADw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=6Ky7e2JTg7oiP9Jy3YWZ+HBrS/zKPzm5WUdAsQWaSIQ=;
-        b=3fRxm12EO0lpPqOvAx7SQdR1wZovXjWFunD33+LcP1xQvit/mTuS12Qm9s84XMP5ST
-         xteEv0r0YnYYG5TdW4UdJ4gDmb6R8al93CabMU0YZDK6Urji8GyU6BbaQzIP6ILLeh2W
-         o8vLiTyEbFViRpyI4APa1pRB/exG91pWzVyREHJYIDj0tNdB5y/p2IRrPWDBC8MSaUmB
-         8ZZCskldmytsXtT9HGvhV6hSG8XvpWyBIIvBI8KMZ1Nrz/yTRhDJ7Hs6N2HruH2Hp6ps
-         ER3Hz/enzUMsZJL/RIDA3UURmP9K3NlKxGJ+LK5qi8GnABeJTOuCpg1tEbuXoILbvZvI
-         tLAA==
-X-Gm-Message-State: AOAM533GC5qllb0GItF2Az/zf+0Ake0UcjJ87lMu0Z0XkU+CppifLV6E
-        ugVtUwRWF2pOs2EfH3rjLEU=
-X-Google-Smtp-Source: ABdhPJyc0yMaeR2VhTgN926+Ds7u/m2z8gjR7qNFy7MEb0TBmbnYAWrTttY+6kQbxxWkbYkytXaQvQ==
-X-Received: by 2002:a17:906:56ca:: with SMTP id an10mr2062059ejc.717.1642689463736;
-        Thu, 20 Jan 2022 06:37:43 -0800 (PST)
-Received: from skbuf ([188.25.255.2])
-        by smtp.gmail.com with ESMTPSA id f4sm1089075ejh.93.2022.01.20.06.37.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 06:37:43 -0800 (PST)
-Date:   Thu, 20 Jan 2022 16:37:42 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     netdev@vger.kernel.org, linus.walleij@linaro.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        alsi@bang-olufsen.dk, arinc.unal@arinc9.com,
-        frank-w@public-files.de
-Subject: Re: [PATCH net-next v4 02/11] net: dsa: realtek: rename realtek_smi
- to realtek_priv
-Message-ID: <20220120143742.dcfhp5vzx2o6jimr@skbuf>
-References: <20220105031515.29276-1-luizluca@gmail.com>
- <20220105031515.29276-3-luizluca@gmail.com>
+        id S1345845AbiATOnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 09:43:19 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:46358 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236043AbiATOnS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jan 2022 09:43:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=nxj5VSKBQ1eE2/4hawOM8H1yWQH46Q1DRgmPSIc4qPQ=; b=LD0Q+TUCVXDQFAt+qfd9WkSCtx
+        jjW3G1Jwcl3vHGGPk7d7YBmxzmMe0mcKbYnK6FhdMInE7BxtzohB1tk5w/gsRXL+Y8O7qnHYxzOZG
+        5XjMMZOxje/DJLHhGlialNFhJ+v4tXRUB5ze/TbsS1HcraQiMn+X/AkQPl8i1siHhAIU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nAYeg-002007-Ko; Thu, 20 Jan 2022 15:43:14 +0100
+Date:   Thu, 20 Jan 2022 15:43:14 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Moshe Tal <moshet@nvidia.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        Amit Cohen <amcohen@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>, Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [PATCH net] ethtool: Fix link extended state for big endian
+Message-ID: <Yel1AuSIcab+VUsO@lunn.ch>
+References: <20220120095550.5056-1-moshet@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220105031515.29276-3-luizluca@gmail.com>
+In-Reply-To: <20220120095550.5056-1-moshet@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 12:15:06AM -0300, Luiz Angelo Daros de Luca wrote:
-> In preparation to adding other interfaces, the private data structure
-> was renamed to priv. Also, realtek_smi_variant and realtek_smi_ops
-> were renamed to realtek_variant and realtek_ops as those structs are
-> not SMI specific.
+On Thu, Jan 20, 2022 at 11:55:50AM +0200, Moshe Tal wrote:
+> The link extended sub-states are assigned as enum that is an integer
+> size but read from a union as u8, this is working for small values on
+> little endian systems but for big endian this always give 0. Fix the
+> variable in the union to match the enum size.
 > 
-> Signed-off-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
-> Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Fixes: ecc31c60240b ("ethtool: Add link extended state")
+> Signed-off-by: Moshe Tal <moshet@nvidia.com>
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+> Tested-by: Ido Schimmel <idosch@nvidia.com>
+> Reviewed-by: Gal Pressman <gal@nvidia.com>
+> Reviewed-by: Amit Cohen <amcohen@nvidia.com>
 > ---
+>  include/linux/ethtool.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+> index a26f37a27167..11efc45de66a 100644
+> --- a/include/linux/ethtool.h
+> +++ b/include/linux/ethtool.h
+> @@ -111,7 +111,7 @@ struct ethtool_link_ext_state_info {
+>  		enum ethtool_link_ext_substate_bad_signal_integrity bad_signal_integrity;
+>  		enum ethtool_link_ext_substate_cable_issue cable_issue;
+>  		enum ethtool_link_ext_substate_module module;
+> -		u8 __link_ext_substate;
+> +		u32 __link_ext_substate;
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Not my area of expertise, but:
+
+static int linkstate_reply_size(const struct ethnl_req_info *req_base,
+                                const struct ethnl_reply_data *reply_base)
+{
+        struct linkstate_reply_data *data = LINKSTATE_REPDATA(reply_base);
+        int len;
+
+       if (data->ethtool_link_ext_state_info.__link_ext_substate)
+                len += nla_total_size(sizeof(u8)); /* LINKSTATE_EXT_SUBSTATE */
+
+and
+
+static int linkstate_fill_reply(struct sk_buff *skb,
+                                const struct ethnl_req_info *req_base,
+                                const struct ethnl_reply_data *reply_base)
+{
+
+		if (data->ethtool_link_ext_state_info.__link_ext_substate &&
+                    nla_put_u8(skb, ETHTOOL_A_LINKSTATE_EXT_SUBSTATE,
+                               data->ethtool_link_ext_state_info.__link_ext_substate))
+                        return -EMSGSIZE;
+
+This seems to suggest it is a u8, not a u32.
+
+I guess i don't understand something here...
+
+  Andrew
