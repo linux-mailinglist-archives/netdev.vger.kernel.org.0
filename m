@@ -2,248 +2,370 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEFE74948F9
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 08:59:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E51C4948EC
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 08:58:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357693AbiATH6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 02:58:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54676 "EHLO
+        id S238937AbiATH6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 02:58:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345455AbiATH6l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 02:58:41 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E56C061748
-        for <netdev@vger.kernel.org>; Wed, 19 Jan 2022 23:58:40 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nASK7-0002RI-3O; Thu, 20 Jan 2022 08:57:35 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nASJu-00BJom-IA; Thu, 20 Jan 2022 08:57:21 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nASJt-000Bvo-3V; Thu, 20 Jan 2022 08:57:21 +0100
-Date:   Thu, 20 Jan 2022 08:57:18 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>, netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] driver core: platform: Rename
- platform_get_irq_optional() to platform_get_irq_silent()
-Message-ID: <20220120075718.5qtrpc543kkykaow@pengutronix.de>
-References: <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
- <YeA7CjOyJFkpuhz/@sirena.org.uk>
- <20220113194358.xnnbhsoyetihterb@pengutronix.de>
- <YeF05vBOzkN+xYCq@smile.fi.intel.com>
- <20220115154539.j3tsz5ioqexq2yuu@pengutronix.de>
- <YehdsUPiOTwgZywq@smile.fi.intel.com>
+        with ESMTP id S230405AbiATH6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 02:58:22 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652F4C061574;
+        Wed, 19 Jan 2022 23:58:21 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id p12so24980731edq.9;
+        Wed, 19 Jan 2022 23:58:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=ScUw319X19wO3gO/vER3XhY7q1dyNmbEtMx0faGasjY=;
+        b=YCy5jtwYUJiehZA8kR9tfKAfRq7gsmlChSvusRoF5HoS5II4CaYwcY1cVV7GBEg/Jq
+         0q7CTWfNcGeI5QyEQo/hfMmLNGx1td+x5CWJ2+qdqumgWRn4X3SBm7XSGd+7lJ56hInu
+         6eFVX5mz7A1SQPGcyDUOLKJrNGuDvjIGSLehS7wuO4tkNghU3cbtKYP22n+BHdLMOCEG
+         drzuuoiFvfXgdzj0RKWL10aSKz4p+a7wWOtLF5t5la7L0rBy0PtdOmrtj/Czx6WCwXCo
+         nzOhZgeCwwK0nfZOyYe/ZSdMzjmKV7aONhkqbduo5UQMaIABlTC28whZBSor96tpdIgM
+         7CMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=ScUw319X19wO3gO/vER3XhY7q1dyNmbEtMx0faGasjY=;
+        b=TK7bLmPHQcFbklY7scyD2JsOZ+rffnY392RRsay4N5fquAwJtwtS4TiBO2+QXPbqC1
+         v6xj4wDsK4/NITxz2bN3X+V1rDYGnD3dhSoQ4aVPzNBnp1d15aNaFLgk32CjqubrIc1E
+         lgXhaV4aQLMD/w1jdXJGUMWdmqjnmtfkRktCbsXmjAreHGhiXIlT8t6JLWn7ot9OqNAT
+         rXehv6WwIUbqnK5ge6WsRTt892eq7oRKeLmLt++vFgEjsnOt4Svfdi6K0VUxndZOdiL8
+         wqiKfv77e131UyLIr1PB26nUbOxB0O36021NMrEbk2L/XaSBzgvFDuaEXZXpUMsfomKg
+         wc0g==
+X-Gm-Message-State: AOAM530jgZSDPnNbOJn7FkWGuzwc92aCzbSAJM5f2xGFPaokUs6gszw3
+        qdzLxSpJUneTJcgPOxyce7/GK07f+vg=
+X-Google-Smtp-Source: ABdhPJzeDYWpKRt+7LYAwhCynn7oc4ERqeUvqkW2KUAYfSqDEmy38te42f3rKySbzjrQ1DSKEa/TSA==
+X-Received: by 2002:a17:906:d552:: with SMTP id cr18mr27961890ejc.321.1642665499690;
+        Wed, 19 Jan 2022 23:58:19 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f2f:5b00:1c6a:f615:a783:b9eb? (p200300ea8f2f5b001c6af615a783b9eb.dip0.t-ipconnect.de. [2003:ea:8f2f:5b00:1c6a:f615:a783:b9eb])
+        by smtp.googlemail.com with ESMTPSA id vr6sm650444ejb.45.2022.01.19.23.58.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Jan 2022 23:58:19 -0800 (PST)
+Message-ID: <57131275-1d55-26f9-f1fa-ee5645c55ead@gmail.com>
+Date:   Thu, 20 Jan 2022 08:58:12 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vtmtr3soi3npiqhl"
-Content-Disposition: inline
-In-Reply-To: <YehdsUPiOTwgZywq@smile.fi.intel.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>, andrew@lunn.ch,
+        linux@armlinux.org.uk
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
+ firmware on a Dell hardware
+In-Reply-To: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 20.01.2022 06:19, Kai-Heng Feng wrote:
+> BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
+> instead of setting another value, keep it untouched and restore the saved
+> value on system resume.
+> 
+> Introduce config_led() callback in phy_driver() to make the implemtation
+> generic.
+> 
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+> v2:
+>  - Split with a new helper to find default LED config.
+>  - Make the patch more generic.
+> 
+>  drivers/net/phy/marvell.c    | 43 +++++++++++++++++++++++++++++-------
+>  drivers/net/phy/phy_device.c | 21 ++++++++++++++++++
+>  include/linux/phy.h          |  9 ++++++++
+>  3 files changed, 65 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+> index 739859c0dfb18..54ee54a6895c9 100644
+> --- a/drivers/net/phy/marvell.c
+> +++ b/drivers/net/phy/marvell.c
+> @@ -746,10 +746,14 @@ static int m88e1510_config_aneg(struct phy_device *phydev)
+>  	return err;
+>  }
+>  
+> -static void marvell_config_led(struct phy_device *phydev)
+> +static int marvell_find_led_config(struct phy_device *phydev)
+>  {
+> -	u16 def_config;
+> -	int err;
+> +	int def_config;
+> +
+> +	if (phydev->dev_flags & PHY_USE_FIRMWARE_LED) {
+> +		def_config = phy_read_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL);
+> +		return def_config < 0 ? -1 : def_config;
+> +	}
+>  
+>  	switch (MARVELL_PHY_FAMILY_ID(phydev->phy_id)) {
+>  	/* Default PHY LED config: LED[0] .. Link, LED[1] .. Activity */
+> @@ -769,20 +773,30 @@ static void marvell_config_led(struct phy_device *phydev)
+>  			def_config = MII_88E1510_PHY_LED_DEF;
+>  		break;
+>  	default:
+> -		return;
+> +		return -1;
+>  	}
+>  
+> +	return def_config;
+> +}
+> +
+> +static void marvell_config_led(struct phy_device *phydev, bool resume)
+> +{
+> +	int err;
+> +
+> +	if (!resume)
+> +		phydev->led_config = marvell_find_led_config(phydev);
+> +
+> +	if (phydev->led_config == -1)
+> +		return;
+> +
+>  	err = phy_write_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL,
+> -			      def_config);
+> +			      phydev->led_config);
+>  	if (err < 0)
+>  		phydev_warn(phydev, "Fail to config marvell phy LED.\n");
+>  }
+>  
+>  static int marvell_config_init(struct phy_device *phydev)
+>  {
+> -	/* Set default LED */
+> -	marvell_config_led(phydev);
+> -
+>  	/* Set registers from marvell,reg-init DT property */
+>  	return marvell_of_reg_init(phydev);
+>  }
+> @@ -2845,6 +2859,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		/* PHY_GBIT_FEATURES */
+>  		.probe = marvell_probe,
+>  		.config_init = marvell_config_init,
+> +		.config_led = marvell_config_led,
+>  		.config_aneg = m88e1101_config_aneg,
+>  		.config_intr = marvell_config_intr,
+>  		.handle_interrupt = marvell_handle_interrupt,
+> @@ -2944,6 +2959,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		/* PHY_GBIT_FEATURES */
+>  		.probe = marvell_probe,
+>  		.config_init = marvell_1011gbe_config_init,
+> +		.config_led = marvell_config_led,
+>  		.config_aneg = m88e1121_config_aneg,
+>  		.read_status = marvell_read_status,
+>  		.config_intr = marvell_config_intr,
+> @@ -2965,6 +2981,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		/* PHY_GBIT_FEATURES */
+>  		.probe = marvell_probe,
+>  		.config_init = m88e1318_config_init,
+> +		.config_led = marvell_config_led,
+>  		.config_aneg = m88e1318_config_aneg,
+>  		.read_status = marvell_read_status,
+>  		.config_intr = marvell_config_intr,
+> @@ -3044,6 +3061,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		/* PHY_GBIT_FEATURES */
+>  		.probe = marvell_probe,
+>  		.config_init = m88e1116r_config_init,
+> +		.config_led = marvell_config_led,
+>  		.config_intr = marvell_config_intr,
+>  		.handle_interrupt = marvell_handle_interrupt,
+>  		.resume = genphy_resume,
+> @@ -3065,6 +3083,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		.flags = PHY_POLL_CABLE_TEST,
+>  		.probe = m88e1510_probe,
+>  		.config_init = m88e1510_config_init,
+> +		.config_led = marvell_config_led,
+>  		.config_aneg = m88e1510_config_aneg,
+>  		.read_status = marvell_read_status,
+>  		.config_intr = marvell_config_intr,
+> @@ -3094,6 +3113,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		.flags = PHY_POLL_CABLE_TEST,
+>  		.probe = marvell_probe,
+>  		.config_init = marvell_1011gbe_config_init,
+> +		.config_led = marvell_config_led,
+>  		.config_aneg = m88e1510_config_aneg,
+>  		.read_status = marvell_read_status,
+>  		.config_intr = marvell_config_intr,
+> @@ -3120,6 +3140,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		/* PHY_GBIT_FEATURES */
+>  		.flags = PHY_POLL_CABLE_TEST,
+>  		.config_init = marvell_1011gbe_config_init,
+> +		.config_led = marvell_config_led,
+>  		.config_aneg = m88e1510_config_aneg,
+>  		.read_status = marvell_read_status,
+>  		.config_intr = marvell_config_intr,
+> @@ -3144,6 +3165,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		/* PHY_BASIC_FEATURES */
+>  		.probe = marvell_probe,
+>  		.config_init = m88e3016_config_init,
+> +		.config_led = marvell_config_led,
+>  		.aneg_done = marvell_aneg_done,
+>  		.read_status = marvell_read_status,
+>  		.config_intr = marvell_config_intr,
+> @@ -3165,6 +3187,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		.flags = PHY_POLL_CABLE_TEST,
+>  		.probe = marvell_probe,
+>  		.config_init = marvell_1011gbe_config_init,
+> +		.config_led = marvell_config_led,
+>  		.config_aneg = m88e6390_config_aneg,
+>  		.read_status = marvell_read_status,
+>  		.config_intr = marvell_config_intr,
+> @@ -3191,6 +3214,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		.flags = PHY_POLL_CABLE_TEST,
+>  		.probe = marvell_probe,
+>  		.config_init = marvell_1011gbe_config_init,
+> +		.config_led = marvell_config_led,
+>  		.config_aneg = m88e6390_config_aneg,
+>  		.read_status = marvell_read_status,
+>  		.config_intr = marvell_config_intr,
+> @@ -3217,6 +3241,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		.flags = PHY_POLL_CABLE_TEST,
+>  		.probe = marvell_probe,
+>  		.config_init = marvell_1011gbe_config_init,
+> +		.config_led = marvell_config_led,
+>  		.config_aneg = m88e1510_config_aneg,
+>  		.read_status = marvell_read_status,
+>  		.config_intr = marvell_config_intr,
+> @@ -3242,6 +3267,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		.probe = marvell_probe,
+>  		/* PHY_GBIT_FEATURES */
+>  		.config_init = marvell_1011gbe_config_init,
+> +		.config_led = marvell_config_led,
+>  		.config_aneg = m88e1510_config_aneg,
+>  		.read_status = marvell_read_status,
+>  		.config_intr = marvell_config_intr,
+> @@ -3264,6 +3290,7 @@ static struct phy_driver marvell_drivers[] = {
+>  		.probe = marvell_probe,
+>  		.features = PHY_GBIT_FIBRE_FEATURES,
+>  		.config_init = marvell_1011gbe_config_init,
+> +		.config_led = marvell_config_led,
+>  		.config_aneg = m88e1510_config_aneg,
+>  		.read_status = marvell_read_status,
+>  		.config_intr = marvell_config_intr,
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 74d8e1dc125f8..c9e97206aa9e8 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/acpi.h>
+>  #include <linux/bitmap.h>
+>  #include <linux/delay.h>
+> +#include <linux/dmi.h>
+>  #include <linux/errno.h>
+>  #include <linux/etherdevice.h>
+>  #include <linux/ethtool.h>
+> @@ -1157,6 +1158,7 @@ static int phy_poll_reset(struct phy_device *phydev)
+>  int phy_init_hw(struct phy_device *phydev)
+>  {
+>  	int ret = 0;
+> +	bool resume = phydev->suspended;
+>  
+>  	/* Deassert the reset signal */
+>  	phy_device_reset(phydev, 0);
+> @@ -1184,6 +1186,9 @@ int phy_init_hw(struct phy_device *phydev)
+>  			return ret;
+>  	}
+>  
+> +	if (phydev->drv->config_led)
+> +		phydev->drv->config_led(phydev, resume);
+> +
+>  	if (phydev->drv->config_intr) {
+>  		ret = phydev->drv->config_intr(phydev);
+>  		if (ret < 0)
+> @@ -1342,6 +1347,17 @@ int phy_sfp_probe(struct phy_device *phydev,
+>  }
+>  EXPORT_SYMBOL(phy_sfp_probe);
+>  
+> +static const struct dmi_system_id platform_flags[] = {
+> +	{
+> +		.matches = {
+> +			DMI_MATCH(DMI_SYS_VENDOR, "Dell EMC"),
+> +			DMI_MATCH(DMI_PRODUCT_NAME, "Edge Gateway 3200"),
+> +		},
+> +		.driver_data = (void *)PHY_USE_FIRMWARE_LED,
+> +	},
+> +	{}
+> +};
+> +
+>  /**
+>   * phy_attach_direct - attach a network device to a given PHY device pointer
+>   * @dev: network device to attach
+> @@ -1363,6 +1379,7 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+>  	struct mii_bus *bus = phydev->mdio.bus;
+>  	struct device *d = &phydev->mdio.dev;
+>  	struct module *ndev_owner = NULL;
+> +	const struct dmi_system_id *dmi;
+>  	bool using_genphy = false;
+>  	int err;
+>  
+> @@ -1443,6 +1460,10 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+>  			phydev_err(phydev, "error creating 'phy_standalone' sysfs entry\n");
+>  	}
+>  
+> +	dmi = dmi_first_match(platform_flags);
+> +	if (dmi)
+> +		phydev->dev_flags |= (u32)dmi->driver_data;
+> +
+>  	phydev->dev_flags |= flags;
+>  
+>  	phydev->interface = interface;
+> diff --git a/include/linux/phy.h b/include/linux/phy.h
+> index 6de8d7a90d78e..3a944a6564f43 100644
+> --- a/include/linux/phy.h
+> +++ b/include/linux/phy.h
+> @@ -517,6 +517,8 @@ struct phy_c45_device_ids {
+>  struct macsec_context;
+>  struct macsec_ops;
+>  
+> +#define PHY_USE_FIRMWARE_LED 0x1000000
+> +
+>  /**
+>   * struct phy_device - An instance of a PHY
+>   *
+> @@ -663,6 +665,7 @@ struct phy_device {
+>  
+>  	struct phy_led_trigger *led_link_trigger;
+>  #endif
+> +	int led_config;
+>  
+>  	/*
+>  	 * Interrupt number for this PHY
+> @@ -776,6 +779,12 @@ struct phy_driver {
+>  	 */
+>  	int (*config_init)(struct phy_device *phydev);
+>  
+> +	/**
+> +	 * @config_led: Called to config the PHY LED,
+> +	 * Use the resume flag to indicate init or resume
+> +	 */
+> +	void (*config_led)(struct phy_device *phydev, bool resume);
+> +
+>  	/**
+>  	 * @probe: Called during discovery.  Used to set
+>  	 * up device-specific structures, if any
 
---vtmtr3soi3npiqhl
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+All this looks quite hacky to me. Why do we touch the LED config at all
+in the PHY driver? The current code deals with the LED Function Control
+register only, for the LED Polarity Control and LED Timer Control we
+rely on the boot loader anyway.
+I see that previous LED-related changes like a93f7fe13454 ("net: phy:
+marvell: add new default led configure for m88e151x") were committed
+w/o involvement of the PHY maintainers.
+Flags like MARVELL_PHY_LED0_LINK_LED1_ACTIVE I see as a workaround
+because the feature as such isn't Marvell-specific. Most PHY's provide
+means to configure whether LED pins are triggered by selected link speeds
+and/or rx/tx activity.
 
-On Wed, Jan 19, 2022 at 08:51:29PM +0200, Andy Shevchenko wrote:
-> On Sat, Jan 15, 2022 at 04:45:39PM +0100, Uwe Kleine-K=F6nig wrote:
-> > On Fri, Jan 14, 2022 at 03:04:38PM +0200, Andy Shevchenko wrote:
-> > > On Thu, Jan 13, 2022 at 08:43:58PM +0100, Uwe Kleine-K=F6nig wrote:
-> > > > > It'd certainly be good to name anything that doesn't correspond t=
-o one
-> > > > > of the existing semantics for the API (!) something different rat=
-her
-> > > > > than adding yet another potentially overloaded meaning.
-> > > >=20
-> > > > It seems we're (at least) three who agree about this. Here is a pat=
-ch
-> > > > fixing the name.
-> > >=20
-> > > And similar number of people are on the other side.
-> >=20
-> > If someone already opposed to the renaming (and not only the name) I
-> > must have missed that.
-> >=20
-> > So you think it's a good idea to keep the name
-> > platform_get_irq_optional() despite the "not found" value returned by it
-> > isn't usable as if it were a normal irq number?
->=20
-> I meant that on the other side people who are in favour of Sergey's patch.
-> Since that I commented already that I opposed the renaming being a standa=
-lone
-> change.
->=20
-> Do you agree that we have several issues with platform_get_irq*() APIs?
->=20
-> 1. The unfortunate naming
-
-unfortunate naming for the currently implemented semantic, yes.
-
-> 2. The vIRQ0 handling: a) WARN() followed by b) returned value 0
-
-I'm happy with the vIRQ0 handling. Today platform_get_irq() and it's
-silent variant returns either a valid and usuable irq number or a
-negative error value. That's totally fine.
-
-> 3. The specific cookie for "IRQ not found, while no error happened" case
-
-Not sure what you mean here. I have no problem that a situation I can
-cope with is called an error for the query function. I just do error
-handling and continue happily. So the part "while no error happened" is
-irrelevant to me.
-
-Additionally I see the problems:
-
-4. The semantic as implemented in Sergey's patch isn't better than the
-current one. platform_get_irq*() is still considerably different from
-(clk|gpiod)_get* because the not-found value for the _optional variant
-isn't usuable for the irq case. For clk and gpio I get rid of a whole if
-branch, for irq I only change the if-condition. (And if that change is
-considered good or bad seems to be subjective.)
-
-For the idea to add a warning to platform_get_irq_optional for all but
--ENXIO (and -EPROBE_DEFER), I see the problem:
-
-5. platform_get_irq*() issuing an error message is only correct most of
-the time and given proper error handling in the caller (which might be
-able to handle not only -ENXIO but maybe also -EINVAL[1]) the error message
-is irritating. Today platform_get_irq() emits an error message for all
-but -EPROBE_DEFER. As soon as we find a driver that handles -EINVAL we
-need a function platform_get_irq_variant1 to be silent for -EINVAL,
--EPROBE_DEFER and -ENXIO (or platform_get_irq_variant2 that is only
-silent for -EINVAL and -EPROBE_DEFER?)
-
-IMHO a query function should always be silent and let the caller do the
-error handling. And if it's only because
-
-	mydev: IRQ index 0 not found
-
-is worse than
-
-	mydev: neither TX irq not a muxed RX/TX irq found
-
-=2E Also "index 0" is irritating for devices that are expected to have
-only a single irq (i.e. the majority of all devices).
-
-Yes, I admit, we can safe some code by pushing the error message in a
-query function. But that doesn't only have advantages.
-
-Best regards
-Uwe
-
-[1] Looking through the source I wonder: What are the errors that can happen
-    in platform_get_irq*()? (calling everything but a valid irq number
-    an error) Looking at many callers, they only seem to expect "not
-    found" and some "probe defer" (even platform_get_irq() interprets
-    everything but -EPROBE_DEFER as "IRQ index %u not found\n".)
-    IMHO before we should consider to introduce a platform_get_irq*()
-    variant with improved semantics, some cleanup in the internals of
-    the irq lookup are necessary.
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---vtmtr3soi3npiqhl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHpFdoACgkQwfwUeK3K
-7AlpCwf8CIVWD1ztALs4saPfU+hCAXGdHPMYsVb4ZTfj+uT0g5uOPF3Vn08Dfosw
-tyqmKEnwGKIMZpavCJ+pScDwmT2FfANDq+R3xZzWj1hEcEvhjMFWB/IDU+s33/IB
-9pbnCAE8Oa/2PGjM3+FGf5OA6q8vCcuO8XHluolGQqPqvajsCulKZytLIFnnTc9t
-UXm+5HxATeIlvcxF5NHMcNFRt2ADkTGVGj0zrEOxinsiT3edhaWLDR5/vSnbXySV
-NKWnnkWO/T3Huohcr85IS2dVfqbqxuMmfU6RyQKdMat7ZUzOqtffi2I6KdXRRjog
-OHR+PLT7KSOdf6ODGMs+9P8AMEotwg==
-=El6G
------END PGP SIGNATURE-----
-
---vtmtr3soi3npiqhl--
+Unfortunately the discussion with the LED subsystem maintainers about
+how to deal best with MAC/PHY-controlled LEDs (and hw triggers in general)
+didn't result in anything tangible yet. Latest attempt I'm aware of:
+https://lore.kernel.org/linux-leds/20211112153557.26941-1-ansuelsmth@gmail.com/T/#t
