@@ -2,84 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CBE0494EA2
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 14:11:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23D5C494EB4
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 14:15:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343821AbiATNKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 08:10:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42244 "EHLO
+        id S1359680AbiATNP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 08:15:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237896AbiATNKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 08:10:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31395C061574;
-        Thu, 20 Jan 2022 05:10:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5547616B7;
-        Thu, 20 Jan 2022 13:10:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B83A4C340E0;
-        Thu, 20 Jan 2022 13:10:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642684242;
-        bh=gGwrEjOgJPJihyAavR50xStBg7PD6ki0zNFrHHd3ZiE=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=eTZ/DunVp5l4tt0A7I5CC7GVOZXmt/H3qih3WhWEoLFcJZM9X93YgIm1uvAKIC4Ko
-         iiS9h91C8DGeXp8pnrmdkgwVybvBcYRIPZ5Ci6aNcwr41NhZFp6SSTqvWxq9ZVbiY1
-         rdLOplCW17HHp9j5vlm2UB6f46U1u6UOap1Y5Mj63BWywanG8Z56aztGr0vreZbQfj
-         CzM7pOKQcOeSjNhE1O6tADVG1AkuAJkvwzj4pCtKN0VMFIRUg9ZxsgscN4jopxFmtB
-         4oUShwloOUN5rNee2I2T3WZnBNwLoy5uTqKCrFhBgdVUKnvcuo5bm9B3FbmqoZXu9f
-         9nbtgdG2h5l0w==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [wpan-next 0/4] ieee802154: General preparation to scan support
-References: <20220120004350.308866-1-miquel.raynal@bootlin.com>
-Date:   Thu, 20 Jan 2022 15:10:37 +0200
-In-Reply-To: <20220120004350.308866-1-miquel.raynal@bootlin.com> (Miquel
-        Raynal's message of "Thu, 20 Jan 2022 01:43:46 +0100")
-Message-ID: <87r192imcy.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S1359583AbiATNP0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 08:15:26 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB91C061574;
+        Thu, 20 Jan 2022 05:15:25 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id p27so21587731lfa.1;
+        Thu, 20 Jan 2022 05:15:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Z8T4ODCid5Vg8gPhZXOgJAmkKij4UIWo8oSKzIeZ2Ac=;
+        b=YzlNFN3Tid4qpfZ4OzWnS5ZqKpoA6cMhAbaJXB9KrFeNuxk9gHzSVPsF8kOAzNU2Cd
+         ABRLnxcmKOZMNqC2D0kM8WzJZDk1rZ3OYs9TDwiR08rvBYcxKwOMuplhUmtwlavyBQU3
+         kQXSLI/CT0GYUT3tsQnhGf2+DH1otcOt55wymvj35ybfKD6IhC/oqvDfYPIdAozS0M2A
+         vdN1Mfdwz6msgIoT5O02PagbD3goD43WPQLM7bn+gkXAvfsH6M62W7OdFgd0EE0rKoPg
+         m+yS7xH9IUUerW7dlRglLzj08EZa4C68Kc6KyxTw1YcZGqvY4SnoeRjvmzCYUwtA06lc
+         hijw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Z8T4ODCid5Vg8gPhZXOgJAmkKij4UIWo8oSKzIeZ2Ac=;
+        b=q1swfJxsyf8Lff/8KU57hRdPmZhzWp3y5Z37xlHg//qo8ZBHQmE7VmuPuD3N2yFQnI
+         G31pzBg3plY+JTyZl0GEb9vX7VWaBOG1889OxkFXWrmGhtrWcequ0KvswGw2AmMKMpsp
+         0O8VX69iKbWDJrpjM868cGtbQRy+m9t8L5wVEmDUYTcH2IKCdZRMSHvThCqCwqCHYGZs
+         fllwUT7UCVjipVy88DyO5dqYePbh9XdtmXYoAN/rKs0ewP2rJ7f4Q+rrHA3kfI+Bct/K
+         iRSZMnN+ZU6aux8PZOuGK5jlYgBfcQP/4Me61Y1WtP/MX2DwkSNlaaQYBv8/Bu4848Ga
+         gaew==
+X-Gm-Message-State: AOAM530fKS7475CS5kg5oWDGBnwGxyRx62PBJpHEcsg9yFpLyJYy6hZe
+        kfqmCSi6bRFmua8gpVG/yKU=
+X-Google-Smtp-Source: ABdhPJycfCNrik94+hanjb71FiMe5oe1rEjXxkRErg+pWgi5Cabbu2OB2VF8HCGDq4zAfVtsnoJ1iA==
+X-Received: by 2002:a05:6512:2606:: with SMTP id bt6mr32394264lfb.202.1642684524235;
+        Thu, 20 Jan 2022 05:15:24 -0800 (PST)
+Received: from [192.168.2.145] (109-252-139-36.dynamic.spd-mgts.ru. [109.252.139.36])
+        by smtp.googlemail.com with ESMTPSA id m4sm21357lfq.204.2022.01.20.05.15.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Jan 2022 05:15:23 -0800 (PST)
+Message-ID: <5807426a-70e5-4513-53bf-c98e74daf42f@gmail.com>
+Date:   Thu, 20 Jan 2022 16:15:22 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 1/9] brcmfmac: pcie: Release firmwares in the
+ brcmf_pcie_setup error path
+Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Hector Martin <marcan@marcan.st>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20220117142919.207370-1-marcan@marcan.st>
+ <20220117142919.207370-2-marcan@marcan.st>
+ <CAHp75VfVuX-BG1MJcEoQrOW6jn=PSMZH0jTcwGj9PwWxocG_Gw@mail.gmail.com>
+ <9a222199-6620-15b7-395f-e079b8e6e529@gmail.com>
+ <CAHp75VdY1gNzVFNneEexEivx1RL_MiX8HxgHoFFd9TN8vXgGLQ@mail.gmail.com>
+From:   Dmitry Osipenko <digetx@gmail.com>
+In-Reply-To: <CAHp75VdY1gNzVFNneEexEivx1RL_MiX8HxgHoFFd9TN8vXgGLQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Miquel Raynal <miquel.raynal@bootlin.com> writes:
+20.01.2022 00:31, Andy Shevchenko пишет:
+> On Wed, Jan 19, 2022 at 11:22 PM Dmitry Osipenko <digetx@gmail.com> wrote:
+>>
+>> 19.01.2022 20:49, Andy Shevchenko пишет:
+>>> On Mon, Jan 17, 2022 at 4:30 PM Hector Martin <marcan@marcan.st> wrote:
+>>>>
+>>>> This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
+>>>> the CLM blob is released in the device remove path.
+>>>
+>>> ...
+>>>
+>>>>         if (ret) {
+>>>
+>>>>                 brcmf_err(bus, "Failed to get RAM info\n");
+>>>> +               release_firmware(fw);
+>>>> +               brcmf_fw_nvram_free(nvram);
+>>>
+>>> Can we first undo the things and only after print a message?
+>>
+>> Having message first usually is more preferred because at minimum you'll
+>> get the message if "undoing the things" crashes, i.e. will be more
+>> obvious what happened.
+> 
+> If "undo the things" crashes, I would rather like to see that crash
+> report, while serial UART at 9600 will continue flushing the message
+> and then hang without any pointers to what the heck happened. Not
+> here, but in general, messages are also good to be out of the locks.
 
-> These few patches are preparation patches and light cleanups before the
-> introduction of scan support.
->
-> David Girault (4):
->   net: ieee802154: Move IEEE 802.15.4 Kconfig main entry
->   net: mac802154: Include the softMAC stack inside the IEEE 802.15.4
->     menu
->   net: ieee802154: Move the address structure earlier
->   net: ieee802154: Add a kernel doc header to the ieee802154_addr
->     structure
->
->  include/net/cfg802154.h | 28 +++++++++++++++++++---------
->  net/Kconfig             |  3 +--
->  net/ieee802154/Kconfig  |  1 +
->  3 files changed, 21 insertions(+), 11 deletions(-)
-
-Is there a reason why you cc linux-wireless? It looks like there's a
-separate linux-wpan list now and people who are interested about wpan
-can join that list, right?
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+The hang is actually a better example. It's the most annoying when there
+is a silent hang and no error messages.
