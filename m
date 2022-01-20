@@ -2,97 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F14F0495709
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 00:36:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BD64495719
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 00:52:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230472AbiATXgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 18:36:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
+        id S1378237AbiATXvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 18:51:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348220AbiATXgG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 18:36:06 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235FDC061574
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 15:36:06 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id e8so6779304plh.8
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 15:36:06 -0800 (PST)
+        with ESMTP id S231502AbiATXvn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 18:51:43 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3362C061574
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 15:51:42 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id m11so35444319edi.13
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 15:51:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=34g3rMl550+BWcq65fs37Qd2djk3J9CHromgZfLekh8=;
-        b=n+FvnS9FtpGiN0Jo4Br5Lsk1SdYPHYAHTBu01eApe3SbtAZJS9kXJ9gY55vTpAhId8
-         baZlUlbg3Q6ArIDkDcmQw/NuwQcnFeg2jW0NrefC1mH/f4X8BScyiZLO1nJ39DDKJ0RV
-         MwDLJFUnUJodyAeX9o3OLFagjqaZ/LmM5tR6VEX9ZOV8sB8ndUsmsP7kdKxBCg+JZRu4
-         20dAnOo+EbQaejkJR1rYpqd7Gk1Os4lW2jtJzd137RhW+4MGhLwTsWZ1+uHAw1SJ9VEh
-         NU6GDAMpNASFX8xDWDuMey574KyHlBlIro3sBG75aZRCbddCPJFD5d7SHUJ7oNx5ehGj
-         tPXg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sxkq5kKrhJF/s8UYShrHhVwewBi5SFfV6LDh6mELfoQ=;
+        b=c8Axc67NFaxRgUCIh9eChUz+xNjIOBs4FLXBpjItVrc5Sq5lGek9j3pHgXJfqPi1uB
+         0sxLv/nqFT3cpT7nLC6qxSUTcCPFBy69aire2bbd3luKLW1Wzx6u0QbGIv9a6UjChpDB
+         4/FLwdZROSGCLio4Jbsl0nBVzlngvvVH0at3O6W2GuPVnzrfqRYdJEgTs4kfYKbfO2GR
+         h9Os10SyZLxFijpDidx6pZRf7+cdoxokdazpJs79jPgGsjGR/vrhvYpgDtvTji6Gw+Jh
+         7Z3anvw9rC591xLGVoNJDHxzeZZ5Auz+TodeDHRdNe1v7OVMwydLgQ9gDz1hnc2zCEFv
+         903A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=34g3rMl550+BWcq65fs37Qd2djk3J9CHromgZfLekh8=;
-        b=u2K/McrOW1ff5hhqYV2P/Hdp9A3/gq3GS4WhaFBsK0kjMy99tmxugGrktU0OwBLc1u
-         4NVqijKL+2v7Co58P35vUvVRlRwOdpnj4/OJAEuxsbGLY2MYKWw6aFx6CYB+M1u51bs2
-         Fyq7Tk5eI67Ynkgdm4U/oM3MLpjX0aQOMBfY1fxKwha7gMfFI8Xm6QPU1VMFknW2i3k4
-         VOmzMZfJJg5AyfHutqQISJ8xZHu6XZozdsmDUbkYIJXc5Z28rPllDfJcqnNWKVRlcCZx
-         S51qi+igAl1V0Ida0ZhBpWpD5HqtCnbSHh+/fYySYU7TmOWPdXMJDMEAms569AKSgbf2
-         TCag==
-X-Gm-Message-State: AOAM530owiqkdwhnbxCY8evgR5soHPrTbra8zzKeBt7grOVsspcMsyJ2
-        BpZrXF8JPTivMqyBASpxVev9d0SaEwu1LM23RfTw808F7ayXR1sC
-X-Google-Smtp-Source: ABdhPJzWMo/x8K+yAVYwDA7UfQfTJMOwqpAv6Bps+SlSmO0nHUYITX/a/aG9VQOwHsSYoJ6wwV4Uv2eH8Zwx5JJnvSQ=
-X-Received: by 2002:a17:902:8544:b0:14a:bea3:1899 with SMTP id
- d4-20020a170902854400b0014abea31899mr1110784plo.143.1642721765572; Thu, 20
- Jan 2022 15:36:05 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sxkq5kKrhJF/s8UYShrHhVwewBi5SFfV6LDh6mELfoQ=;
+        b=VKoXAirvYI8oYGj9BC2HAKkdii/nCHCdhjwsT1N3LheMXEIgT2yab7ActOMKsBU46k
+         VkkRM70HvI85w9/DC7UrOCa9oHoMW/DAYOqYi2njlI2IWugrmdD3NmdpVD3OEXL+jqqn
+         cLj1yqbxwzCzBxCpwL0+fTxeNsYZysySg9mZD5f2M8UlipO5+rcnb8vWRkzCqpOiiuMn
+         0tB9GJQxvZEszlGyhk6j9rPf1wFENGamnd0/unkzsdBHjL1VLSyGRLJYRNnbb8APuniu
+         6mGZTQjIWEPShzoqQMUYCk4DWguJLE1FfAsadFgQ/z11cvHrCDdpqde2eukmVZI18oL4
+         J8eg==
+X-Gm-Message-State: AOAM532QDVlbFnzRwS0xj2f+qoLbU7HCWeNyCwGiHmXcWZtalJIp/3CP
+        zr1V2Xjk9Z9FmhTvufV1nw==
+X-Google-Smtp-Source: ABdhPJwtKBrShbYMIiZC4pQkqZ6+Ah9P6bkvxEoUdh5ou64ueHy3m3JjE/z5yzeN6ZuyF+ixnSRR/Q==
+X-Received: by 2002:a17:906:3485:: with SMTP id g5mr1161724ejb.293.1642722701218;
+        Thu, 20 Jan 2022 15:51:41 -0800 (PST)
+Received: from localhost.localdomain ([2a02:2a8:1:20::49c6])
+        by smtp.gmail.com with ESMTPSA id p29sm1907436edi.11.2022.01.20.15.51.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 15:51:40 -0800 (PST)
+From:   Tomas Hlavacek <tmshlvck@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, Tomas Hlavacek <tmshlvck@gmail.com>
+Subject: [RFC PATCH] ipv4: fix fnhe dump record multiplication
+Date:   Fri, 21 Jan 2022 00:50:29 +0100
+Message-Id: <20220120235028.9040-1-tmshlvck@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220105031515.29276-1-luizluca@gmail.com> <20220105031515.29276-12-luizluca@gmail.com>
- <87ee5fd80m.fsf@bang-olufsen.dk> <trinity-ea8d98eb-9572-426a-a318-48406881dc7e-1641822815591@3c-app-gmx-bs62>
- <87r19e5e8w.fsf@bang-olufsen.dk> <trinity-4b35f0dc-6bc6-400a-8d4e-deb26e626391-1641926734521@3c-app-gmx-bap14>
- <87v8ynbylk.fsf@bang-olufsen.dk> <trinity-d858854a-ff84-4b28-81f4-f0becc878017-1642089370117@3c-app-gmx-bap49>
- <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
- <Yea+uTH+dh9/NMHn@lunn.ch> <20220120151222.dirhmsfyoumykalk@skbuf>
-In-Reply-To: <20220120151222.dirhmsfyoumykalk@skbuf>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Thu, 20 Jan 2022 20:35:54 -0300
-Message-ID: <CAJq09z6UE72zSVZfUi6rk_nBKGOBC0zjeyowHgsHDHh7WyH0jA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
- cpu ports, non cpu extint
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> And what is the problem if the hardware cannot calculate the checksum
-> with an unknown EtherType? Is it the DSA master that drops the packets
-> in hardware? What is the reported error counter?
+Fix the multiplication of the FNHE records during dump: Check in
+fnhe_dump_bucket() that the dumped record destination address falls
+within the key (prefix, prefixlen) of the FIB leaf that is being dumped.
 
-No, the issue is with outgoing packets and nothing is dropped inside
-the DSA device.
+FNHE table records can be dumped multiple times to netlink on RTM_GETROUTE
+command with NLM_F_DUMP flag - either to "ip route show cache" or to any
+routing daemon. The multiplication is substantial under specific
+conditions - it can produce over 120M netlink messages in one dump.
+It happens if there is one shared struct fib_nh linked through
+struct fib_info (->fib_nh) from many leafs in FIB over struct fib_alias.
 
-If the OS is configured to offload (I'm using OpenWrt.), it will send
-a packet with the wrong checksum expecting that the HW will fix that.
-After DSA is brought up, the OS is still expecting the HW to calculate
-the checksums. However, with the EtherType DSA tag from a , it cannot
-understand it anymore, leaving the checksum as is. The DSA switch
-(Realtek) passes the packet to the network and the other end receives
-a broken packet. Maybe if the DSA knew that the CPU Ethernet HW cannot
-handle that DSA tag, it could disable checksums by default. But it is
-difficult to foresee how each offload HW will digest each type of CPU
-tag.
+This situation can be triggered by importing a full BGP table over GRE
+tunnel. In this case there are ~800k routes that translates to ~120k leafs
+in FIB that all ulimately links the same next-hop (the other end of
+the GRE tunnel). The GRE tunnel creates one FNHE record for each
+destination IP that is routed to the tunnel because of PMTU. In my case
+I had around 1000 PMTU records after a few minutes in a lab connected to
+the public internet so the FNHE dump produced 120M records that easily
+stalled BIRD routing daemon as described here:
+http://trubka.network.cz/pipermail/bird-users/2022-January/015897.html
+(There is a work-around already committed to BIRD that removes unnecessary
+dumps of FNHE.)
 
-Is the kernel enabling checksum by default when the driver reports it
-is supported? If so, it would be nice to somehow disable offloading
-with some kind of device-tree dsa cpu port property.
+Signed-off-by: Tomas Hlavacek <tmshlvck@gmail.com>
+---
+ include/net/route.h |  3 ++-
+ net/ipv4/fib_trie.c |  3 ++-
+ net/ipv4/route.c    | 25 ++++++++++++++++++++++---
+ 3 files changed, 26 insertions(+), 5 deletions(-)
 
-Regards,
+diff --git a/include/net/route.h b/include/net/route.h
+index 2e6c0e153e3a..066eab9c5d99 100644
+--- a/include/net/route.h
++++ b/include/net/route.h
+@@ -244,7 +244,8 @@ void rt_del_uncached_list(struct rtable *rt);
+ 
+ int fib_dump_info_fnhe(struct sk_buff *skb, struct netlink_callback *cb,
+ 		       u32 table_id, struct fib_info *fi,
+-		       int *fa_index, int fa_start, unsigned int flags);
++		       int *fa_index, int fa_start, unsigned int flags,
++		       __be32 prefix, unsigned char prefixlen);
+ 
+ static inline void ip_rt_put(struct rtable *rt)
+ {
+diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+index 8060524f4256..7a42db70f46d 100644
+--- a/net/ipv4/fib_trie.c
++++ b/net/ipv4/fib_trie.c
+@@ -2313,7 +2313,8 @@ static int fn_trie_dump_leaf(struct key_vector *l, struct fib_table *tb,
+ 
+ 		if (filter->dump_exceptions) {
+ 			err = fib_dump_info_fnhe(skb, cb, tb->tb_id, fi,
+-						 &i_fa, s_fa, flags);
++						 &i_fa, s_fa, flags, xkey,
++						 (KEYLENGTH - fa->fa_slen));
+ 			if (err < 0)
+ 				goto stop;
+ 		}
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 0b4103b1e622..bc882c85228d 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -3049,10 +3049,25 @@ static int rt_fill_info(struct net *net, __be32 dst, __be32 src,
+ 	return -EMSGSIZE;
+ }
+ 
++static int fnhe_daddr_check(__be32 daddr, struct net *net, u32 table_id,
++			    __be32 prefix, unsigned char prefixlen)
++{
++	struct flowi4 fl4 = { .daddr = daddr };
++	struct fib_table *tb = fib_get_table(net, table_id);
++	struct fib_result res;
++	int err = fib_table_lookup(tb, &fl4, &res, FIB_LOOKUP_NOREF);
++
++	if (!err && res.prefix == prefix && res.prefixlen == prefixlen)
++		return 1;
++
++	return 0;
++}
++
+ static int fnhe_dump_bucket(struct net *net, struct sk_buff *skb,
+ 			    struct netlink_callback *cb, u32 table_id,
+ 			    struct fnhe_hash_bucket *bucket, int genid,
+-			    int *fa_index, int fa_start, unsigned int flags)
++			    int *fa_index, int fa_start, unsigned int flags,
++			    __be32 prefix, unsigned char prefixlen)
+ {
+ 	int i;
+ 
+@@ -3067,6 +3082,9 @@ static int fnhe_dump_bucket(struct net *net, struct sk_buff *skb,
+ 			if (*fa_index < fa_start)
+ 				goto next;
+ 
++			if (!fnhe_daddr_check(fnhe->fnhe_daddr, net, table_id, prefix, prefixlen))
++				goto next;
++
+ 			if (fnhe->fnhe_genid != genid)
+ 				goto next;
+ 
+@@ -3096,7 +3114,8 @@ static int fnhe_dump_bucket(struct net *net, struct sk_buff *skb,
+ 
+ int fib_dump_info_fnhe(struct sk_buff *skb, struct netlink_callback *cb,
+ 		       u32 table_id, struct fib_info *fi,
+-		       int *fa_index, int fa_start, unsigned int flags)
++		       int *fa_index, int fa_start, unsigned int flags,
++		       __be32 prefix, unsigned char prefixlen)
+ {
+ 	struct net *net = sock_net(cb->skb->sk);
+ 	int nhsel, genid = fnhe_genid(net);
+@@ -3115,7 +3134,7 @@ int fib_dump_info_fnhe(struct sk_buff *skb, struct netlink_callback *cb,
+ 		if (bucket)
+ 			err = fnhe_dump_bucket(net, skb, cb, table_id, bucket,
+ 					       genid, fa_index, fa_start,
+-					       flags);
++					       flags, prefix, prefixlen);
+ 		rcu_read_unlock();
+ 		if (err)
+ 			return err;
+-- 
+2.25.1
 
-Luiz
