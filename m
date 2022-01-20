@@ -2,115 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2EF7494740
-	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 07:24:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E88D0494744
+	for <lists+netdev@lfdr.de>; Thu, 20 Jan 2022 07:25:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358599AbiATGYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 01:24:49 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:31107 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiATGYt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 01:24:49 -0500
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JfXSr48pLz1FCqG;
-        Thu, 20 Jan 2022 14:21:00 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 20 Jan 2022 14:24:46 +0800
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
-To:     Oliver Hartkopp <socketcan@hartkopp.net>, <mkl@pengutronix.de>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220117120102.2395157-1-william.xuanziyang@huawei.com>
- <53279d6d-298c-5a85-4c16-887c95447825@hartkopp.net>
- <280e10c1-d1f4-f39e-fa90-debd56f1746d@huawei.com>
- <eaafaca3-f003-ca56-c04c-baf6cf4f7627@hartkopp.net>
-Message-ID: <890d8209-f400-a3b0-df9c-3e198e3834d6@huawei.com>
-Date:   Thu, 20 Jan 2022 14:24:46 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S1358705AbiATGZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 01:25:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229774AbiATGZa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 01:25:30 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97FC6C061574;
+        Wed, 19 Jan 2022 22:25:30 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id v6so5769469iom.6;
+        Wed, 19 Jan 2022 22:25:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+zqNsAToOm3edWbN/VwOAWMIUe2p5xGELgx3epyGqaE=;
+        b=IA7LhGtJV02NhGf7gkRp+RIL7xVKQvFXg8HnFLsJp2mBsypzdj2oi4vAFwDrT6bvnF
+         5kkV/JpAtx2QYSoz3TxHPtinXKSlc2qBUfK7YH/V18ACtlc7pIn05tf0QNDulJZQvG4K
+         gTk8JAwf/SfITLoZAzfcUS0cJMD7SwIr1J6rE3wm6EYvTJLoTHJgzemhkrIWHWoKIdX9
+         29IhTyAvXGlQ93BRvz4eCQarC+Wd1FeiDnA88bAfGzBmVAKezpdcm9da6KtmmD6O7a6s
+         Ucrrj87MX9QWED8Yd3x8eqlTMYf5EMb9pvGidPfE57ggOy1dre2M3DYuzhUacXwmev8E
+         SvNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+zqNsAToOm3edWbN/VwOAWMIUe2p5xGELgx3epyGqaE=;
+        b=sEFxkR/g74+E2YrpdXAEB+OZuSIjEXgbNth9YU2AqWShjASd84VPtbUWKmB8UukMMh
+         A7aysfHgDmHMo9+2Oz25agF3AwJjA331pEzPvXVrju5Auvl4UZUbZkXLyAhCvjn3w5+z
+         06Ey5jGEZcEGgqGDyhV5/0Idfw5DtPNgFkX3kANLepzg8wYnB8alxya3tYSoGoK68YnM
+         xjUIEituaJww42JdWvdLX7KfNG8mnLx8WHUsp3JOXHaM9OcInOIOGUsyFHxcwvfYf4G/
+         89q5ucM/Qb2mwTVehgaTWI3bDnGuAJc+kd471N7sx3P/kPbWmDQuVrbAQG9LRwWsOQYT
+         LpWA==
+X-Gm-Message-State: AOAM531uyljv/ir8zwYsYxngCm0URZNHq7gdPYOVK1XR7AbfDAIhsHVs
+        5GvNChS3QlP9Hmuyin1fX4pRJix2dHzl7xlLBlnjrFAB
+X-Google-Smtp-Source: ABdhPJy0COYGofV3Aehej3NMBdFvpBNoC+yMASkHst30WCGrsXkQucYBED2s6cNKAOEANRvEDGv/miU2mvcLlFpJPBw=
+X-Received: by 2002:a6b:c891:: with SMTP id y139mr17453664iof.63.1642659929838;
+ Wed, 19 Jan 2022 22:25:29 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <eaafaca3-f003-ca56-c04c-baf6cf4f7627@hartkopp.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+References: <267a35a6-a045-c025-c2d9-78afbf6fc325@isovalent.com>
+In-Reply-To: <267a35a6-a045-c025-c2d9-78afbf6fc325@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 19 Jan 2022 22:25:18 -0800
+Message-ID: <CAEf4Bzbu4wc9anr19yG1AtFEcnxFsBrznynkrVZajQT1x_o6cA@mail.gmail.com>
+Subject: Re: Bpftool mirror now available
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Dave Thaler <dthaler@microsoft.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On 18.01.22 13:46, Ziyang Xuan (William) wrote:
->>> Hi,
->>>
->>> the referenced syzbot issue has already been fixed in upstream here:
->>>
->>> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=5f33a09e769a9da0482f20a6770a342842443776
->>>
->>> ("can: isotp: convert struct tpcon::{idx,len} to unsigned int")
->>>
->>> Additionally this fix changes some behaviour that is required by the ISO 16765-2 specification (see below).
->>>
->>> On 17.01.22 13:01, Ziyang Xuan wrote:
->>>> When receive a FF, the current code logic does not consider the real
->>>> so->rx.state but set so->rx.state to ISOTP_IDLE directly. That will
->>>> make so->rx accessed by multiple receiving processes concurrently.
->>>
->>> This is intentionally. "multiple receiving processes" are not allowed resp. specified by ISO 15765-2.
->>
->> Does it can be a network attack?
-> 
-> Yes. You can see it like this. The ISO 15765-2 protocol is an unreliable UDP-like datagram protocol and the session layer takes care about timeouts and packet lost.
-> 
-> If you want to disturb that protocol you can also send PDUs with out-of-sync packet counters which will make the receiver drop the communication attempt.
-> 
-> This is 'CAN-style' ... as usually the bus is very reliable. Security and reliable communication is done on top of these protocols.
-> 
->> It receives packets from network, but unexpected packets order make server panic.
-> 
-> Haha, no :-)
-> 
-> Unexpected packets should not make the server panic but only drop the communication process.
+On Wed, Jan 19, 2022 at 6:47 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> Hi, I have the pleasure to announce the availability of a mirror for
+> bpftool on GitHub, at the following URL:
+>
+>     https://github.com/libbpf/bpftool
+>
 
-I have reproduced the syz problem with Marc's commit, the commit can not fix the panic problem.
-So I tried to find the root cause for panic and gave my solution.
+This is great! Thanks a lot for all the clean ups, fixes, and
+improvements to make it possible to mirror bpftool to Github repo!
 
-Marc's commit just fix the condition that packet size bigger than INT_MAX which trigger
-tpcon::{idx,len} integer overflow, but the packet size is 4096 in the syz problem.
+> This mirror is similar in spirit to the one for libbpf [0], and its
+> creation was lead by the following motivations.
+>
+> 1. The first goal is to provide a simpler way to build bpftool. So far,
+> building a binary would require downloading the entire kernel
+> repository. By contrast, the code in the GitHub mirror is mostly
+> self-sufficient (it still requires libelf and zlib, and uses libbpf from
+> its mirror as a git submodule), and offers an easy way to just clone and
+> compile the tool.
 
-so->rx.len is 0 after the following logic in isotp_rcv_ff():
+Yep, libbpf-bootstrap will benefit from this a lot. A bunch of people
+already asked about multi-platform support there and the need to
+precompile bpftool for each architecture was a big blocker. Now this
+blocker is gone as we can just compile bpftool from sources easily.
 
-/* get the FF_DL */
-so->rx.len = (cf->data[ae] & 0x0F) << 8;
-so->rx.len += cf->data[ae + 1];
+Same story with libbpf-tools in BCC repo, btw.
 
-so->rx.len is 4096 after the following logic in isotp_rcv_ff():
+>
+> 2. Because it is easier to compile and ship, this mirror should
+> hopefully simplify bpftool packaging for distributions.
 
-/* FF_DL = 0 => get real length from next 4 bytes */
-so->rx.len = cf->data[ae + 2] << 24;
-so->rx.len += cf->data[ae + 3] << 16;
-so->rx.len += cf->data[ae + 4] << 8;
-so->rx.len += cf->data[ae + 5];
+Right, I hope disto packagers will be quick to adopt the new mirror
+repo for packaging bpftool. Let's figure out bpftool versioning schema
+as a next step. Given bpftool heavily relies on libbpf and isn't
+really coupled to kernel versions, it makes sense for bpftool to
+reflect libbpf version rather than kernel's. WDYT?
 
-so->rx.len is 0 before alloc_skb() and is 4096 after alloc_skb() in isotp_rcv_cf(). The following
-skb_put() will trigger panic.
-
-The following log is my reproducing log with Marc's commit and my debug modification in isotp_rcv_cf().
-
-[  150.605776][    C6] isotp_rcv_cf: before alloc_skb so->rc.len: 0, after alloc_skb so->rx.len: 4096
-[  150.611477][    C6] skbuff: skb_over_panic: text:ffffffff881ff7be len:4096 put:4096 head:ffff88807f93a800 data:ffff88807f93a800 tail:0x1000 end:0xc0 dev:<NULL>
-[  150.615837][    C6] ------------[ cut here ]------------
-[  150.617238][    C6] kernel BUG at net/core/skbuff.c:113!
-
-> In the case pointed out by syzbot the unsigned 32 bit length information was stored in a signed 32 bit integer which caused a sanity check to fail.
-> 
-> This is now fixed with the patch from Marc.
-> 
-> Regards,
-> Oliver
-> .
+>
+> 3. Another objective was to help other projects build on top of the
+> existing sources for bpftool. I'm thinking in particular of
+> eBPF-for-Windows, which has been working on a proof-of-concept port of
+> the tool for Windows [1]. Bpftool's mirror keeps the minimal amount of
+> necessary headers, and stripped most of them from the definitions that
+> are not required in our context, which should make it easier to uncouple
+> bpftool from Linux.
+>
+> 4. At last, GitHub's automation features should help implement CI checks
+> for bpftool, very much like libbpf is using today. The recent work
+> conducted on libbpf's CI and turning some of the checks into reusable
+> GitHub Actions [2] may help for bpftool.
+>
+> Just to make it clear, bpftool's mirror does not change the fact that
+> all bpftool development happens on the kernel mailing-lists (in
+> particular, the BPF mailing-list), and that the sources hosted in the
+> kernel repository remain the reference for the tool. At this time the
+> GitHub repository is just a mirror, and will not accept pull requests on
+> bpftool's sources.
+>
+> Regarding synchronisation, the repository contains a script which should
+> help cherry-pick all commits related to bpftool from the kernel
+> repository. The idea is to regularly align bpftool on the latest version
+> from libbpf's mirror (that is to say, to cherry-pick all bpftool-related
+> commits from bpf-next and bpf trees, up to the commit at which libbpf's
+> mirror stopped), to avoid any discrepancy between the tool and the
+> library it relies on.
+>
+> GitHub was the original home of bpftool, before Jakub moved it to
+> kernel's tools/ with commit 71bb428fe2c1 ("tools: bpf: add bpftool")
+> back in 2017. More than four years and five hundred commits later, it is
+> time to have a stand-alone repository again! But over time, the build
+> system and the header dependencies got somewhat intertwined, and
+> extracting the tool again required a few careful steps. Some of them
+> happened upstream: we addressed the licensing of a few bpftool
+> dependencies, we switched to libbpf's hash map implementation (instead
+> of kernel's), we fixed the way bpftool picks up the development headers
+> from libbpf, and so on. Some other changes happened in the mirror, to
+> adjust bpftool's Makefile and build system. In the end, I'm rather happy
+> with the result: the main Makefile in bpftool's mirror only has a few
+> minor changes with the reference one, and the C sources need no change
+> at all. The tool you get from the mirror is the same as what you can
+> compile from tools/bpf/bpftool/.
+>
+> I hope that this mirror will make it easier to work and develop with
+> bpftool. Thanks to Andrii for his feedback, and to the folks behind
+> libbpf's mirroring for their work, some of which I was happy to reuse.
+>
+> Best regards,
+> Quentin
+>
+> [0] https://github.com/libbpf/libbpf
+> [1] https://github.com/dthaler/bpftool
+> [2] https://github.com/libbpf/ci
