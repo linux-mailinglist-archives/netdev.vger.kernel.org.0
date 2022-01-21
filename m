@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D947495D71
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 11:11:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 304AF495D73
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 11:12:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238127AbiAUKL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 05:11:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42486 "EHLO
+        id S1379920AbiAUKMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 05:12:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379912AbiAUKLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 05:11:55 -0500
+        with ESMTP id S1349875AbiAUKL7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 05:11:59 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB51FC061574;
-        Fri, 21 Jan 2022 02:11:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A5FC061574;
+        Fri, 21 Jan 2022 02:11:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2CEDB81F6D;
-        Fri, 21 Jan 2022 10:11:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50D88C340E2;
-        Fri, 21 Jan 2022 10:11:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30230B81F6D;
+        Fri, 21 Jan 2022 10:11:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0374C340E3;
+        Fri, 21 Jan 2022 10:11:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642759912;
-        bh=IptAcwBlJak5FpKFk1FxJAFbOREgQyt9aZmfboDXVlg=;
+        s=k20201202; t=1642759916;
+        bh=C4C9xzBfVHgYxbXZLcq114v/+pgTNzZ226e0416Uk5g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XgVt1GAxoU+YO97ES5Hk5Yw71zqyq4vBBqk8NU/vnm1zsj4lJ6HnFPtiQ21tkJy2A
-         ca/aWL8YXpjDUQ8Whv0xJqJE/cXsI/D0ljXwgKGx/Z5nUoxXgTtCsUQZ1sKjEuUDFx
-         IFrKiwANjqsulYj+rg6BhsE4sC91q7co1a9VvlV/3hKsEsr6WjUyNokJ5C0c53/pNd
-         lNjzMaMyFzKSsF2uwujWpHTVG1kxmfepC5J5DW6NZC5mSokVcX3xrBMvsoA75w048Z
-         cxvtzQUpHFJSPVRLWEeSPIRWlr1ge8FiK4bysL+/UczxmWOIXlUBcUr5gnJsKpN8R1
-         J8vMMjF830z5Q==
+        b=ZtN+PZOxAabOqQnLIW1iqWsjRXqoTcdoKpp05jtlMa9WC/NPn0vxFPRV2yHkRgrLj
+         NNTY/OI8ID0SQoG2lT/3ebjo3l34be0wZ6wsoO00XYGNUHNPzBCP2r+x42+lR4JfFi
+         HEi1vqLos03mGBDgNVvm6ElbmdpoaEVzvsP6qLXu9CId46D2K3O0Ii9h0R5JIKFla4
+         EdYUJhy9VB+xDVL11SvRTJ2XAgeMzkgYRIx7u5KKKpbhFzLcS82EQeX33tubfyDsYl
+         ntIIGdo1Kx64AXY4i7YtTf5277cfEk/K+pUYjJhsA/0jVEaBRt6hL5Pm5AFKg9zPCh
+         6iu+GkGH8n3hw==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -41,9 +41,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com,
         andrii.nakryiko@gmail.com
-Subject: [PATCH v23 bpf-next 16/23] bpf: test_run: add xdp_shared_info pointer in bpf_test_finish signature
-Date:   Fri, 21 Jan 2022 11:09:59 +0100
-Message-Id: <c803673798c786f915bcdd6c9338edaa9740d3d6.1642758637.git.lorenzo@kernel.org>
+Subject: [PATCH v23 bpf-next 17/23] bpf: selftests: update xdp_adjust_tail selftest to include xdp frags
+Date:   Fri, 21 Jan 2022 11:10:00 +0100
+Message-Id: <d2e6a0ebc52db6f89e62b9befe045032e5e0a5fe.1642758637.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1642758637.git.lorenzo@kernel.org>
 References: <cover.1642758637.git.lorenzo@kernel.org>
@@ -53,110 +53,241 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-introduce xdp_shared_info pointer in bpf_test_finish signature in order
-to copy back paged data from a xdp frags frame to userspace buffer
+From: Eelco Chaudron <echaudro@redhat.com>
+
+This change adds test cases for the xdp frags scenarios when shrinking
+and growing.
 
 Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
 Acked-by: John Fastabend <john.fastabend@gmail.com>
+Co-developed-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
 ---
- net/bpf/test_run.c | 48 +++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 39 insertions(+), 9 deletions(-)
+ .../bpf/prog_tests/xdp_adjust_tail.c          | 125 ++++++++++++++++++
+ .../bpf/progs/test_xdp_adjust_tail_grow.c     |  10 +-
+ .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++++-
+ 3 files changed, 160 insertions(+), 7 deletions(-)
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 394dd489b8f5..541933abd16f 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -131,7 +131,8 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
+diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+index d5ebe92b0ebb..ccc9e63254a8 100644
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
+@@ -118,6 +118,127 @@ static void test_xdp_adjust_tail_grow2(void)
+ 	bpf_object__close(obj);
+ }
  
- static int bpf_test_finish(const union bpf_attr *kattr,
- 			   union bpf_attr __user *uattr, const void *data,
--			   u32 size, u32 retval, u32 duration)
-+			   struct skb_shared_info *sinfo, u32 size,
-+			   u32 retval, u32 duration)
++void test_xdp_adjust_frags_tail_shrink(void)
++{
++	const char *file = "./test_xdp_adjust_tail_shrink.o";
++	__u32 duration, retval, size, exp_size;
++	struct bpf_program *prog;
++	struct bpf_object *obj;
++	int err, prog_fd;
++	__u8 *buf;
++
++	/* For the individual test cases, the first byte in the packet
++	 * indicates which test will be run.
++	 */
++	obj = bpf_object__open(file);
++	if (libbpf_get_error(obj))
++		return;
++
++	prog = bpf_object__next_program(obj, NULL);
++	if (bpf_object__load(obj))
++		return;
++
++	prog_fd = bpf_program__fd(prog);
++
++	buf = malloc(9000);
++	if (!ASSERT_OK_PTR(buf, "alloc buf 9Kb"))
++		goto out;
++
++	memset(buf, 0, 9000);
++
++	/* Test case removing 10 bytes from last frag, NOT freeing it */
++	exp_size = 8990; /* 9000 - 10 */
++	err = bpf_prog_test_run(prog_fd, 1, buf, 9000,
++				buf, &size, &retval, &duration);
++
++	ASSERT_OK(err, "9Kb-10b");
++	ASSERT_EQ(retval, XDP_TX, "9Kb-10b retval");
++	ASSERT_EQ(size, exp_size, "9Kb-10b size");
++
++	/* Test case removing one of two pages, assuming 4K pages */
++	buf[0] = 1;
++	exp_size = 4900; /* 9000 - 4100 */
++	err = bpf_prog_test_run(prog_fd, 1, buf, 9000,
++				buf, &size, &retval, &duration);
++
++	ASSERT_OK(err, "9Kb-4Kb");
++	ASSERT_EQ(retval, XDP_TX, "9Kb-4Kb retval");
++	ASSERT_EQ(size, exp_size, "9Kb-4Kb size");
++
++	/* Test case removing two pages resulting in a linear xdp_buff */
++	buf[0] = 2;
++	exp_size = 800; /* 9000 - 8200 */
++	err = bpf_prog_test_run(prog_fd, 1, buf, 9000,
++				buf, &size, &retval, &duration);
++
++	ASSERT_OK(err, "9Kb-9Kb");
++	ASSERT_EQ(retval, XDP_TX, "9Kb-9Kb retval");
++	ASSERT_EQ(size, exp_size, "9Kb-9Kb size");
++
++	free(buf);
++out:
++	bpf_object__close(obj);
++}
++
++void test_xdp_adjust_frags_tail_grow(void)
++{
++	const char *file = "./test_xdp_adjust_tail_grow.o";
++	__u32 duration, retval, size, exp_size;
++	struct bpf_program *prog;
++	struct bpf_object *obj;
++	int err, i, prog_fd;
++	__u8 *buf;
++
++	obj = bpf_object__open(file);
++	if (libbpf_get_error(obj))
++		return;
++
++	prog = bpf_object__next_program(obj, NULL);
++	if (bpf_object__load(obj))
++		return;
++
++	prog_fd = bpf_program__fd(prog);
++
++	buf = malloc(16384);
++	if (!ASSERT_OK_PTR(buf, "alloc buf 16Kb"))
++		goto out;
++
++	/* Test case add 10 bytes to last frag */
++	memset(buf, 1, 16384);
++	size = 9000;
++	exp_size = size + 10;
++	err = bpf_prog_test_run(prog_fd, 1, buf, size,
++				buf, &size, &retval, &duration);
++
++	ASSERT_OK(err, "9Kb+10b");
++	ASSERT_EQ(retval, XDP_TX, "9Kb+10b retval");
++	ASSERT_EQ(size, exp_size, "9Kb+10b size");
++
++	for (i = 0; i < 9000; i++)
++		ASSERT_EQ(buf[i], 1, "9Kb+10b-old");
++
++	for (i = 9000; i < 9010; i++)
++		ASSERT_EQ(buf[i], 0, "9Kb+10b-new");
++
++	for (i = 9010; i < 16384; i++)
++		ASSERT_EQ(buf[i], 1, "9Kb+10b-untouched");
++
++	/* Test a too large grow */
++	memset(buf, 1, 16384);
++	size = 9001;
++	exp_size = size;
++	err = bpf_prog_test_run(prog_fd, 1, buf, size,
++				buf, &size, &retval, &duration);
++
++	ASSERT_OK(err, "9Kb+10b");
++	ASSERT_EQ(retval, XDP_DROP, "9Kb+10b retval");
++	ASSERT_EQ(size, exp_size, "9Kb+10b size");
++
++	free(buf);
++out:
++	bpf_object__close(obj);
++}
++
+ void test_xdp_adjust_tail(void)
  {
- 	void __user *data_out = u64_to_user_ptr(kattr->test.data_out);
- 	int err = -EFAULT;
-@@ -146,8 +147,36 @@ static int bpf_test_finish(const union bpf_attr *kattr,
- 		err = -ENOSPC;
- 	}
+ 	if (test__start_subtest("xdp_adjust_tail_shrink"))
+@@ -126,4 +247,8 @@ void test_xdp_adjust_tail(void)
+ 		test_xdp_adjust_tail_grow();
+ 	if (test__start_subtest("xdp_adjust_tail_grow2"))
+ 		test_xdp_adjust_tail_grow2();
++	if (test__start_subtest("xdp_adjust_frags_tail_shrink"))
++		test_xdp_adjust_frags_tail_shrink();
++	if (test__start_subtest("xdp_adjust_frags_tail_grow"))
++		test_xdp_adjust_frags_tail_grow();
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_grow.c b/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_grow.c
+index 199c61b7d062..53b64c999450 100644
+--- a/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_grow.c
++++ b/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_grow.c
+@@ -7,11 +7,10 @@ int _xdp_adjust_tail_grow(struct xdp_md *xdp)
+ {
+ 	void *data_end = (void *)(long)xdp->data_end;
+ 	void *data = (void *)(long)xdp->data;
+-	unsigned int data_len;
++	int data_len = bpf_xdp_get_buff_len(xdp);
+ 	int offset = 0;
  
--	if (data_out && copy_to_user(data_out, data, copy_size))
--		goto out;
-+	if (data_out) {
-+		int len = sinfo ? copy_size - sinfo->xdp_frags_size : copy_size;
+ 	/* Data length determine test case */
+-	data_len = data_end - data;
+ 
+ 	if (data_len == 54) { /* sizeof(pkt_v4) */
+ 		offset = 4096; /* test too large offset */
+@@ -20,7 +19,12 @@ int _xdp_adjust_tail_grow(struct xdp_md *xdp)
+ 	} else if (data_len == 64) {
+ 		offset = 128;
+ 	} else if (data_len == 128) {
+-		offset = 4096 - 256 - 320 - data_len; /* Max tail grow 3520 */
++		/* Max tail grow 3520 */
++		offset = 4096 - 256 - 320 - data_len;
++	} else if (data_len == 9000) {
++		offset = 10;
++	} else if (data_len == 9001) {
++		offset = 4096;
+ 	} else {
+ 		return XDP_ABORTED; /* No matching test */
+ 	}
+diff --git a/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c b/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c
+index b7448253d135..ca68c038357c 100644
+--- a/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c
++++ b/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c
+@@ -12,14 +12,38 @@
+ SEC("xdp")
+ int _xdp_adjust_tail_shrink(struct xdp_md *xdp)
+ {
+-	void *data_end = (void *)(long)xdp->data_end;
+-	void *data = (void *)(long)xdp->data;
++	__u8 *data_end = (void *)(long)xdp->data_end;
++	__u8 *data = (void *)(long)xdp->data;
+ 	int offset = 0;
+ 
+-	if (data_end - data == 54) /* sizeof(pkt_v4) */
++	switch (bpf_xdp_get_buff_len(xdp)) {
++	case 54:
++		/* sizeof(pkt_v4) */
+ 		offset = 256; /* shrink too much */
+-	else
++		break;
++	case 9000:
++		/* non-linear buff test cases */
++		if (data + 1 > data_end)
++			return XDP_DROP;
 +
-+		if (copy_to_user(data_out, data, len))
-+			goto out;
-+
-+		if (sinfo) {
-+			int i, offset = len, data_len;
-+
-+			for (i = 0; i < sinfo->nr_frags; i++) {
-+				skb_frag_t *frag = &sinfo->frags[i];
-+
-+				if (offset >= copy_size) {
-+					err = -ENOSPC;
-+					break;
-+				}
-+
-+				data_len = min_t(int, copy_size - offset,
-+						 skb_frag_size(frag));
-+
-+				if (copy_to_user(data_out + offset,
-+						 skb_frag_address(frag),
-+						 data_len))
-+					goto out;
-+
-+				offset += data_len;
-+			}
++		switch (data[0]) {
++		case 0:
++			offset = 10;
++			break;
++		case 1:
++			offset = 4100;
++			break;
++		case 2:
++			offset = 8200;
++			break;
++		default:
++			return XDP_DROP;
 +		}
++		break;
++	default:
+ 		offset = 20;
++		break;
 +	}
-+
- 	if (copy_to_user(&uattr->test.data_size_out, &size, sizeof(size)))
- 		goto out;
- 	if (copy_to_user(&uattr->test.retval, &retval, sizeof(retval)))
-@@ -801,7 +830,8 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
- 	/* bpf program can never convert linear skb to non-linear */
- 	if (WARN_ON_ONCE(skb_is_nonlinear(skb)))
- 		size = skb_headlen(skb);
--	ret = bpf_test_finish(kattr, uattr, skb->data, size, retval, duration);
-+	ret = bpf_test_finish(kattr, uattr, skb->data, NULL, size, retval,
-+			      duration);
- 	if (!ret)
- 		ret = bpf_ctx_finish(kattr, uattr, ctx,
- 				     sizeof(struct __sk_buff));
-@@ -969,8 +999,8 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
- 		goto out;
- 
- 	size = xdp.data_end - xdp.data_meta + sinfo->xdp_frags_size;
--	ret = bpf_test_finish(kattr, uattr, xdp.data_meta, size, retval,
--			      duration);
-+	ret = bpf_test_finish(kattr, uattr, xdp.data_meta, sinfo, size,
-+			      retval, duration);
- 	if (!ret)
- 		ret = bpf_ctx_finish(kattr, uattr, ctx,
- 				     sizeof(struct xdp_md));
-@@ -1062,8 +1092,8 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
- 	if (ret < 0)
- 		goto out;
- 
--	ret = bpf_test_finish(kattr, uattr, &flow_keys, sizeof(flow_keys),
--			      retval, duration);
-+	ret = bpf_test_finish(kattr, uattr, &flow_keys, NULL,
-+			      sizeof(flow_keys), retval, duration);
- 	if (!ret)
- 		ret = bpf_ctx_finish(kattr, uattr, user_ctx,
- 				     sizeof(struct bpf_flow_keys));
-@@ -1167,7 +1197,7 @@ int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog, const union bpf_attr *kat
- 		user_ctx->cookie = sock_gen_cookie(ctx.selected_sk);
- 	}
- 
--	ret = bpf_test_finish(kattr, uattr, NULL, 0, retval, duration);
-+	ret = bpf_test_finish(kattr, uattr, NULL, NULL, 0, retval, duration);
- 	if (!ret)
- 		ret = bpf_ctx_finish(kattr, uattr, user_ctx, sizeof(*user_ctx));
- 
+ 	if (bpf_xdp_adjust_tail(xdp, 0 - offset))
+ 		return XDP_DROP;
+ 	return XDP_TX;
 -- 
 2.34.1
 
