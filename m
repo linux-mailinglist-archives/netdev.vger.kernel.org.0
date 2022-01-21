@@ -2,208 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6035F495B25
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 08:49:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00E27495B72
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 08:58:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349156AbiAUHts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 02:49:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231417AbiAUHtr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 02:49:47 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D838C061574;
-        Thu, 20 Jan 2022 23:49:47 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id r132-20020a1c448a000000b0034e043aaac7so3184726wma.5;
-        Thu, 20 Jan 2022 23:49:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=QI6F2iecTvvYpPIqk/Jd4Gkn6P4PVe+G1v/Ub6Itxz8=;
-        b=qDFMeL+2G0cPGfr34kR41XspC8tW66cJim6ekk+N5OOOaSIOzlupxgongDn2/fCkMJ
-         TfYzVzGhWYqNFpNSzsPROYK06q8+Yb4PHUB1aWKwl18AHOwyYgBkRb9J1eVDafkZGOwa
-         Fu7j6Yg3TYskvFGULHh10/kke8rrwP4Ocz09L5mlDzhnZ15MjB0QGlad1L2PtwS2704N
-         1istH+GjEC3yEiW2yM9x1HbtA2M8vSMNdYiW4TEeqOMccucmEnZLsoyfgdZhWfEan3jo
-         k5ULN+8/NayRwIHhrKKe7Hq1mjHcaoqzLhsVoFTxQDmD/KBkj2wJ739RESONpflMd5/U
-         /i8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=QI6F2iecTvvYpPIqk/Jd4Gkn6P4PVe+G1v/Ub6Itxz8=;
-        b=m9aKu2jUN0SKOCXwDLSNC01qFyBYJWG350DvI0pvy5n/VqZf0rBHTuyllWbTAoE5Fj
-         d8+PWMDh68MiCHIaL9yroiKHim7wySoqwEJCyyh3yX8zc8LAr/C7K/OUDXu1FMt+3GGJ
-         4iP7Ezg96EjDsZ+3z1rDM0W3bAv0uCQEae+7yLVFD1Qpx1ZFtnKuCmr0uzBR6U1xtE3+
-         gESqEKPRq5PaYYMwdAs1WG1OtOuss0/bleSrvFDu/05OP3Ww59hQH2t6XxGVw5zOYXBG
-         HmP+JQ3PIk/DNL+VtmZia+1btdcW212sLLZN1IDyIZVLAsLMLiRxC1IkWuWx+N1rBS8y
-         22aQ==
-X-Gm-Message-State: AOAM531uFZajKUjKmNOwij7ZDpCaHe5xvEfmaypBnLF0a8QSxkPGYMRZ
-        0Grm6g+KfD87qMWhT4/qG32uV35Tfow=
-X-Google-Smtp-Source: ABdhPJz0BZ4WXYzeGzcZlgzIJ52vB74sU95Z5wo3bgWtdCOSWdzwm0wy55aR6MiS8apD95K1ymGxpQ==
-X-Received: by 2002:a05:600c:3502:: with SMTP id h2mr2665530wmq.166.1642751385564;
-        Thu, 20 Jan 2022 23:49:45 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f08:c900:d807:b6a9:be4b:b7e0? (p200300ea8f08c900d807b6a9be4bb7e0.dip0.t-ipconnect.de. [2003:ea:8f08:c900:d807:b6a9:be4b:b7e0])
-        by smtp.googlemail.com with ESMTPSA id f6sm4760090wrj.26.2022.01.20.23.49.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Jan 2022 23:49:45 -0800 (PST)
-Message-ID: <ceead395-a641-7413-8d9f-77879dcaa36e@gmail.com>
-Date:   Fri, 21 Jan 2022 08:49:39 +0100
+        id S1379230AbiAUH6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 02:58:54 -0500
+Received: from mga05.intel.com ([192.55.52.43]:25458 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1379221AbiAUH6l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Jan 2022 02:58:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642751921; x=1674287921;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jE99VFNQyNXY2EoQUsne6SaOHvBhTpB5dl4BtBOCEEw=;
+  b=jFDroRi4SSRFOp6bl86fahFcYZ7RaZA4kGmm0lV7TxR365RPbmSvp2vg
+   YiE5AbHGf9PIGXn2/AxM+18JfG014VBXScYG9HbP8XawQrMpYPAmSE/lZ
+   AbQ1kppFXzxuR8Jw6LYTd73/oZuglZnfG1rXbyZA4oHvpRzamoGzbmxOh
+   k5IZq3X7JrR0NQ2SLF4Og8lw0ioqmkaooATRyOWDHWDjiqiiApnbbbRMf
+   OtQWjW67dKthx7Rh6N7a0d96v1UG9ugQd3ax0K0ofZxt9wzUVyp2Gby+D
+   z+BN4Ln+mZNxrwT+7v7xIX7R3dcgSwY7QxsRnKU5LApSWbX17esZCvei6
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="331943673"
+X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
+   d="scan'208";a="331943673"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 23:58:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
+   d="scan'208";a="596051366"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 20 Jan 2022 23:58:38 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nAoog-000F4j-0e; Fri, 21 Jan 2022 07:58:38 +0000
+Date:   Fri, 21 Jan 2022 15:58:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     ycaibb <ycaibb@gmail.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ycaibb@gmail.com
+Subject: Re: [PATCH] net: missing lock releases in ipmr_base.c
+Message-ID: <202201211542.TGuj5kMv-lkp@intel.com>
+References: <20220121032210.5829-1-ycaibb@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     linux@armlinux.org.uk, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
- <Yelnzrrd0a4Bl5AL@lunn.ch>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
- firmware on a Dell hardware
-In-Reply-To: <Yelnzrrd0a4Bl5AL@lunn.ch>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220121032210.5829-1-ycaibb@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.01.2022 14:46, Andrew Lunn wrote:
-> On Thu, Jan 20, 2022 at 01:19:29PM +0800, Kai-Heng Feng wrote:
->> BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
->> instead of setting another value, keep it untouched and restore the saved
->> value on system resume.
-> 
-> Please split this patch into two:
-> 
-> Don't touch the LEDs
-> 
-> Save and restore the LED configuration over suspend/resume.
-> 
->> -static void marvell_config_led(struct phy_device *phydev)
->> +static int marvell_find_led_config(struct phy_device *phydev)
->>  {
->> -	u16 def_config;
->> -	int err;
->> +	int def_config;
->> +
->> +	if (phydev->dev_flags & PHY_USE_FIRMWARE_LED) {
->> +		def_config = phy_read_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL);
->> +		return def_config < 0 ? -1 : def_config;
-> 
-> What about the other two registers which configure the LEDs?
-> 
-> Since you talked about suspend/resume, does this machine support WoL?
-> Is the BIOS configuring LED2 to be used as an interrupt when WoL is
-> enabled in the BIOS? Do you need to save/restore that configuration
-> over suspend/review? And prevent the driver from changing the
-> configuration?
-> 
->> +static const struct dmi_system_id platform_flags[] = {
->> +	{
->> +		.matches = {
->> +			DMI_MATCH(DMI_SYS_VENDOR, "Dell EMC"),
->> +			DMI_MATCH(DMI_PRODUCT_NAME, "Edge Gateway 3200"),
->> +		},
->> +		.driver_data = (void *)PHY_USE_FIRMWARE_LED,
->> +	},
-> 
-> This needs a big fat warning, that it will affect all LEDs for PHYs
-> which linux is driving, on that machine. So PHYs on USB dongles, PHYs
-> in SFPs, PHYs on plugin PCIe card etc.
-> 
-> Have you talked with Dells Product Manager and do they understand the
-> implications of this? 
-> 
->> +	{}
->> +};
->> +
->>  /**
->>   * phy_attach_direct - attach a network device to a given PHY device pointer
->>   * @dev: network device to attach
->> @@ -1363,6 +1379,7 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
->>  	struct mii_bus *bus = phydev->mdio.bus;
->>  	struct device *d = &phydev->mdio.dev;
->>  	struct module *ndev_owner = NULL;
->> +	const struct dmi_system_id *dmi;
->>  	bool using_genphy = false;
->>  	int err;
->>  
->> @@ -1443,6 +1460,10 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
->>  			phydev_err(phydev, "error creating 'phy_standalone' sysfs entry\n");
->>  	}
->>  
->> +	dmi = dmi_first_match(platform_flags);
->> +	if (dmi)
->> +		phydev->dev_flags |= (u32)dmi->driver_data;
-> 
-> Please us your new flag directly. We don't want this abused to pass
-> any old flag to the PHY.
-> 
->> +
->>  /**
->>   * struct phy_device - An instance of a PHY
->>   *
->> @@ -663,6 +665,7 @@ struct phy_device {
->>  
->>  	struct phy_led_trigger *led_link_trigger;
->>  #endif
->> +	int led_config;
-> 
-> You cannot put this here because you don't know how many registers are
-> used to hold the configuration. Marvell has 3, other drivers can have
-> other numbers. The information needs to be saved into the drivers on
-> priv structure.
-> 
->>  
->>  	/*
->>  	 * Interrupt number for this PHY
->> @@ -776,6 +779,12 @@ struct phy_driver {
->>  	 */
->>  	int (*config_init)(struct phy_device *phydev);
->>  
->> +	/**
->> +	 * @config_led: Called to config the PHY LED,
->> +	 * Use the resume flag to indicate init or resume
->> +	 */
->> +	void (*config_led)(struct phy_device *phydev, bool resume);
-> 
-> I don't see any need for this.
-> 
->   Andrew
+Hi ycaibb,
 
-I had a look at the history of LED settings in the Marvell PHY driver:
+Thank you for the patch! Perhaps something to improve:
 
-In marvell_config_aneg() we do
-phy_write(phydev, MII_M1111_PHY_LED_CONTROL, MII_M1111_PHY_LED_DIRECT);
+[auto build test WARNING on net-next/master]
+[also build test WARNING on net/master horms-ipvs/master linus/master v5.16 next-20220121]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-This originates from 2007: 76884679c644 ("phylib: Add support for Marvell 88e1111S and 88e1145")
-and sets the LED control to the reset default (for no obvious reason).
-Especially strange is that this is done in config_aneg.
-Only non-LED bit here is bit 11 that forces the interrupt pin to assert.
+url:    https://github.com/0day-ci/linux/commits/ycaibb/net-missing-lock-releases-in-ipmr_base-c/20220121-112603
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 8aaaf2f3af2ae212428f4db1af34214225f5cec3
+config: powerpc-allyesconfig (https://download.01.org/0day-ci/archive/20220121/202201211542.TGuj5kMv-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/33b03feacaf2155323b031274d2d67dab0cf561c
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review ycaibb/net-missing-lock-releases-in-ipmr_base-c/20220121-112603
+        git checkout 33b03feacaf2155323b031274d2d67dab0cf561c
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash net/ipv4/
 
-Simply wrong is that register MII_M1111_PHY_LED_CONTROL (reg 24, page 0)
-is written also on other chip versions (like 88E1112) where it's not
-defined and marked as reserved.
-I think we should remove this code.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Then we set some LED defaults in marvell_config_led().
-This also originates from > 10yrs ago:
-140bc9290328 ("phylib: Basic support for the M88E1121R Marvell chip")
-Again there's no obvious reason.
+All warnings (new ones prefixed by >>):
 
-Last but not least we have a93f7fe13454 ("net: phy: marvell: add new default led configure for m88e151x")
-This adds a flag to set the PHY LED mode from hns3 MAC driver.
-Intention of this patch is to set the LED mode for specific boards.
-The chosen approach doesn't seem to be the best. As it's meant to be
-board-specific maybe better the reg-init DT property would have been
-used.
+   net/ipv4/ipmr_base.c: In function 'mr_mfc_seq_idx':
+>> net/ipv4/ipmr_base.c:156:17: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+     156 |                 if (pos-- == 0)
+         |                 ^~
+   net/ipv4/ipmr_base.c:158:25: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+     158 |                         return mfc;
+         |                         ^~~~~~
+   net/ipv4/ipmr_base.c:164:17: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+     164 |                 if (pos-- == 0)
+         |                 ^~
+   net/ipv4/ipmr_base.c:166:25: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+     166 |                         return mfc;
+         |                         ^~~~~~
 
-I'd say we can remove all LED config code and accept whatever boot
-loader or BIOS set.
 
-Heiner
+vim +/if +156 net/ipv4/ipmr_base.c
 
+3feda6b46f7347 Yuval Mintz 2018-02-28  146  
+c8d61968032654 Yuval Mintz 2018-02-28  147  void *mr_mfc_seq_idx(struct net *net,
+c8d61968032654 Yuval Mintz 2018-02-28  148  		     struct mr_mfc_iter *it, loff_t pos)
+c8d61968032654 Yuval Mintz 2018-02-28  149  {
+c8d61968032654 Yuval Mintz 2018-02-28  150  	struct mr_table *mrt = it->mrt;
+c8d61968032654 Yuval Mintz 2018-02-28  151  	struct mr_mfc *mfc;
+c8d61968032654 Yuval Mintz 2018-02-28  152  
+c8d61968032654 Yuval Mintz 2018-02-28  153  	rcu_read_lock();
+c8d61968032654 Yuval Mintz 2018-02-28  154  	it->cache = &mrt->mfc_cache_list;
+c8d61968032654 Yuval Mintz 2018-02-28  155  	list_for_each_entry_rcu(mfc, &mrt->mfc_cache_list, list)
+c8d61968032654 Yuval Mintz 2018-02-28 @156  		if (pos-- == 0)
+33b03feacaf215 Ryan Cai    2022-01-21  157  			rcu_read_unlock();
+c8d61968032654 Yuval Mintz 2018-02-28  158  			return mfc;
+c8d61968032654 Yuval Mintz 2018-02-28  159  	rcu_read_unlock();
+c8d61968032654 Yuval Mintz 2018-02-28  160  
+c8d61968032654 Yuval Mintz 2018-02-28  161  	spin_lock_bh(it->lock);
+c8d61968032654 Yuval Mintz 2018-02-28  162  	it->cache = &mrt->mfc_unres_queue;
+c8d61968032654 Yuval Mintz 2018-02-28  163  	list_for_each_entry(mfc, it->cache, list)
+c8d61968032654 Yuval Mintz 2018-02-28  164  		if (pos-- == 0)
+33b03feacaf215 Ryan Cai    2022-01-21  165  			spin_unlock_bh(it->lock);
+c8d61968032654 Yuval Mintz 2018-02-28  166  			return mfc;
+c8d61968032654 Yuval Mintz 2018-02-28  167  	spin_unlock_bh(it->lock);
+c8d61968032654 Yuval Mintz 2018-02-28  168  
+c8d61968032654 Yuval Mintz 2018-02-28  169  	it->cache = NULL;
+c8d61968032654 Yuval Mintz 2018-02-28  170  	return NULL;
+c8d61968032654 Yuval Mintz 2018-02-28  171  }
+c8d61968032654 Yuval Mintz 2018-02-28  172  EXPORT_SYMBOL(mr_mfc_seq_idx);
+c8d61968032654 Yuval Mintz 2018-02-28  173  
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
