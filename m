@@ -2,101 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 283154958F8
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 05:38:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2ABE495905
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 05:55:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232466AbiAUEiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 23:38:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52676 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232128AbiAUEiA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 23:38:00 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F120FC061574
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 20:37:59 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id x37so3839818pfh.8
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 20:37:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m2S9t3/W74El99gibnTaIpHzNd+m7H9ZoIs11LobqnI=;
-        b=edksL+hEFUWH/dJ4Kq1pH79zo9zT+kXaNO04QVaRCGTd+/svK2g2vKGvyD+4JhukvE
-         nuryS7aE0RLHy92FRtzY+nFjMrQmUizvaULON4ZRP6dgj/cLBJbL1EezpJe4CRtYFNd/
-         FUNLpIhXDo8d92iFJ9FBW4QE++PY5oQHQYGi96RvphsKL77UU44/FBa3Iz704KrK/sD9
-         uy2iRetVLTaKt268u3gEH7EgnjIPfQKKCJDcdHFugKyCw5NIv1bAuXLyGfLY6f60ODg/
-         GudtnhCYDdqTstBgnz7BWeGAYEGSGUCbW5xRA3FN/WzADMNBhtEjm+yTjYcBGQgsGSty
-         /5Cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m2S9t3/W74El99gibnTaIpHzNd+m7H9ZoIs11LobqnI=;
-        b=d6ld896RxtBjb80K32dsVkGWHFpzZhtdLU3rQJckz3MGswx1B1aOdsvGDLt6WpWnEP
-         1MJwoCqqrZ+EpHhshe2RRp7WI0oJmU3icaDlpyFe55Vr0pTyIVLIhNBRqD8nkurJgZ+i
-         6jYPJVkl67KKC9Sn6+wkxm9lnNj9pcI5huabT5MToV6gqmtG0hQA34d5YyvQ5xDu+whn
-         ufXPoDEnuC4YWfzY2DnLhad5Fg5Gf7t04CPwKDiHZhqq7Uvei6xsn5eZp5rBn3MzoM8/
-         dM/szT296gqk/G0tI9ap74MgOm8hgHKhn2OBbs5aDaluO3ZzTDWVFsqexIAvcJSKYqIV
-         UxdA==
-X-Gm-Message-State: AOAM532rEcIaqPUDDdNnp7zZIykJRwCjr9aDnfOBA6qN23+NnJU/IXHz
-        YP+K2+ZIZjJX409JEFoxrswjudjxeFwMWvCfndY=
-X-Google-Smtp-Source: ABdhPJyv5iSA2eZdZHZ9jb5OScX/AVYBy8oIlqjEXYIHYjIMqtvClK8zhilrn58wTwWDXknAgIqeFuMd64ueQqfdTHk=
-X-Received: by 2002:a63:8a44:: with SMTP id y65mr1689226pgd.456.1642739879182;
- Thu, 20 Jan 2022 20:37:59 -0800 (PST)
-MIME-Version: 1.0
-References: <87ee5fd80m.fsf@bang-olufsen.dk> <trinity-ea8d98eb-9572-426a-a318-48406881dc7e-1641822815591@3c-app-gmx-bs62>
- <87r19e5e8w.fsf@bang-olufsen.dk> <trinity-4b35f0dc-6bc6-400a-8d4e-deb26e626391-1641926734521@3c-app-gmx-bap14>
- <87v8ynbylk.fsf@bang-olufsen.dk> <trinity-d858854a-ff84-4b28-81f4-f0becc878017-1642089370117@3c-app-gmx-bap49>
- <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
- <Yea+uTH+dh9/NMHn@lunn.ch> <20220120151222.dirhmsfyoumykalk@skbuf>
- <CAJq09z6UE72zSVZfUi6rk_nBKGOBC0zjeyowHgsHDHh7WyH0jA@mail.gmail.com>
- <20220121020627.spli3diixw7uxurr@skbuf> <CAJq09z5HbnNEcqN7LZs=TK4WR1RkjoefF_6ib-hFu2RLT54Nug@mail.gmail.com>
- <f85dcb52-1f66-f75a-d6de-83d238b5b69d@gmail.com> <CAJq09z5Pvo4tJNw0yKK2LYSNEdQTd4sXPpKFJbCNA-jUwmNctw@mail.gmail.com>
- <2091fa77-5578-c1bb-8457-3be4029b014d@gmail.com>
-In-Reply-To: <2091fa77-5578-c1bb-8457-3be4029b014d@gmail.com>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Fri, 21 Jan 2022 01:37:48 -0300
-Message-ID: <CAJq09z6U9UziSaMtmJ9D-SQFGMpK37jErxS82cpAZ876OCu_pQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
- cpu ports, non cpu extint
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S233652AbiAUEzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 23:55:19 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48124 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232128AbiAUEzS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 23:55:18 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08D6661561;
+        Fri, 21 Jan 2022 04:55:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB622C340E1;
+        Fri, 21 Jan 2022 04:55:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642740916;
+        bh=+aJniAQsQxWnqNmovNZC7GWa4V8aYyZwBUIj3qeFQ98=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=V23Enzuiwu9QvC19c7l8qySmJ3SGj9OLQqEXfhO6reKgqvtsnYfdgYH7eUb2c7fPZ
+         QXh8QSG/ZH9H8GOhxZ6Ew0pf7veq/70dfbWUxJMGSVQsj2dVS7ql1Ibhs0lV5VWz8S
+         FzkFr+SpolHNQtUeYKruFKEvAK49yoWzRk0qr2guyHIQYtgRnKfCC4doC/YKNerNyI
+         9ZaF4w/jSMqkpl4uGLSaRdYD9HsEHGFAobEikK9ykc2BQr5wFBmBkGLbuEPQwqBI4a
+         I8eAE38lTu3PKBqGtqAnJ5i1RFPuct3wa2UebbaEBEOpktJVc5OXjKo/oELTZLSXPz
+         uxbZ/1KTks0ng==
+Date:   Fri, 21 Jan 2022 13:55:10 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH v3 0/9] fprobe: Introduce fprobe function entry/exit
+ probe
+Message-Id: <20220121135510.7cfa6540e31824aa39b1c1b8@kernel.org>
+In-Reply-To: <CAEf4Bzbbimea3ydwafXSHFiEffYx5zAcwGNKk8Zi6QZ==Vn0Ug@mail.gmail.com>
+References: <164260419349.657731.13913104835063027148.stgit@devnote2>
+        <CAEf4Bzbbimea3ydwafXSHFiEffYx5zAcwGNKk8Zi6QZ==Vn0Ug@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >> Are we talking about an in tree driver? If so which is it?
-> >
-> > Yes, the one the patch touches: rtl8365mb.
->
-> I meant the DSA master network device, but you answered that, it uses a
-> mt7260a SoC, but there is no Ethernet driver upstream for it yet?
->
-> git grep ralink,mt7620-gsw *
-> Documentation/devicetree/bindings/net/mediatek,mt7620-gsw.txt:
-> compatible = "ralink,mt7620-gsw";
->
-> >
-> > My device uses a mt7620a SoC and traffic passes through its mt7530
-> > switch with vlan disabled before reaching the realtek switch. It still
-> > loads a swconfig driver but I think it might work without one.
->
-> Ah so you have a cascade of switches here, that could confuse your
-> Ethernet MAC. Do you have a knob to adjust where to calculate the
-> checksum from, say a L2 or L3 offset for instance?
+On Thu, 20 Jan 2022 14:24:15 -0800
+Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 
-Not that I could find in any docs. I just found registers to set it on
-and off. However, Realtek supports two locations for the CPU tag. I'll
-try the RTL8365MB_CPU_POS_BEFORE_CRC and hope the checksum will work
-as expected. But I might leave that test for a moment after this
-series is solved.
+> On Wed, Jan 19, 2022 at 6:56 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> >
+> > Hello Jiri,
+> >
+> > Here is the 3rd version of fprobe. I added some comments and
+> > fixed some issues. But I still saw some problems when I add
+> > your selftest patches.
+> >
+> > This series introduces the fprobe, the function entry/exit probe
+> > with multiple probe point support. This also introduces the rethook
+> > for hooking function return as same as kretprobe does. This
+> > abstraction will help us to generalize the fgraph tracer,
+> > because we can just switch it from rethook in fprobe, depending
+> > on the kernel configuration.
+> >
+> > The patch [1/9] and [7/9] are from Jiri's series[1]. Other libbpf
+> > patches will not be affected by this change.
+> >
+> > [1] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
+> >
+> > However, when I applied all other patches on top of this series,
+> > I saw the "#8 bpf_cookie" test case has been stacked (maybe related
+> > to the bpf_cookie issue which Andrii and Jiri talked?) And when I
+> > remove the last selftest patch[2], the selftest stopped at "#112
+> > raw_tp_test_run".
+> >
+> > [2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#m242d2b3a3775eeb5baba322424b15901e5e78483
+> >
+> > Note that I used tools/testing/selftests/bpf/vmtest.sh to check it.
+> >
+> > This added 2 more out-of-tree patches. [8/9] is for adding wildcard
+> > support to the sample program, [9/9] is a testing patch for replacing
+> > kretprobe trampoline with rethook.
+> > According to this work, I noticed that using rethook in kretprobe
+> > needs 2 steps.
+> >  1. port the rethook on all architectures which supports kretprobes.
+> >     (some arch requires CONFIG_KPROBES for rethook)
+> >  2. replace kretprobe trampoline with rethook for all archs, at once.
+> >     This must be done by one treewide patch.
+> >
+> > Anyway, I'll do the kretprobe update in the next step as another series.
+> > (This testing patch is just for confirming the rethook is correctly
+> >  implemented.)
+> >
+> > BTW, on the x86, ftrace (with fentry) location address is same as
+> > symbol address. But on other archs, it will be different (e.g. arm64
+> > will need 2 instructions to save link-register and call ftrace, the
+> > 2nd instruction will be the ftrace location.)
+> > Does libbpf correctly handle it?
+> 
+> libbpf doesn't do anything there. The interface for kprobe is based on
+> function name and kernel performs name lookups internally to resolve
+> IP. For fentry it's similar (kernel handles IP resolution), but
+> instead of function name we specify BTF ID of a function type.
 
-> --
-> Florian
+Hmm, according to Jiri's original patch, it seems to pass an array of
+addresses. So I thought that has been resolved by libbpf.
+
++			struct {
++				__aligned_u64	addrs;
++				__u32		cnt;
++				__u64		bpf_cookie;
++			} kprobe;
+
+Anyway, fprobe itself also has same issue. I'll try to fix it.
+
+Thank you!
+
+> 
+> >
+> > Thank you,
+> >
+> > ---
+> >
+> > Jiri Olsa (2):
+> >       ftrace: Add ftrace_set_filter_ips function
+> >       bpf: Add kprobe link for attaching raw kprobes
+> >
+> > Masami Hiramatsu (7):
+> >       fprobe: Add ftrace based probe APIs
+> >       rethook: Add a generic return hook
+> >       rethook: x86: Add rethook x86 implementation
+> >       fprobe: Add exit_handler support
+> >       fprobe: Add sample program for fprobe
+> >       [DO NOT MERGE] Out-of-tree: Support wildcard symbol option to sample
+> >       [DO NOT MERGE] out-of-tree: kprobes: Use rethook for kretprobe
+> >
+> >
+> >  arch/x86/Kconfig                |    1
+> >  arch/x86/include/asm/unwind.h   |    8 +
+> >  arch/x86/kernel/Makefile        |    1
+> >  arch/x86/kernel/kprobes/core.c  |  106 --------------
+> >  arch/x86/kernel/rethook.c       |  115 +++++++++++++++
+> >  include/linux/bpf_types.h       |    1
+> >  include/linux/fprobe.h          |   84 +++++++++++
+> >  include/linux/ftrace.h          |    3
+> >  include/linux/kprobes.h         |   85 +----------
+> >  include/linux/rethook.h         |   99 +++++++++++++
+> >  include/linux/sched.h           |    4 -
+> >  include/uapi/linux/bpf.h        |   12 ++
+> >  kernel/bpf/syscall.c            |  195 +++++++++++++++++++++++++-
+> >  kernel/exit.c                   |    3
+> >  kernel/fork.c                   |    4 -
+> >  kernel/kallsyms.c               |    1
+> >  kernel/kprobes.c                |  265 +++++------------------------------
+> >  kernel/trace/Kconfig            |   22 +++
+> >  kernel/trace/Makefile           |    2
+> >  kernel/trace/fprobe.c           |  179 ++++++++++++++++++++++++
+> >  kernel/trace/ftrace.c           |   54 ++++++-
+> >  kernel/trace/rethook.c          |  295 +++++++++++++++++++++++++++++++++++++++
+> >  kernel/trace/trace_kprobe.c     |    4 -
+> >  kernel/trace/trace_output.c     |    2
+> >  samples/Kconfig                 |    7 +
+> >  samples/Makefile                |    1
+> >  samples/fprobe/Makefile         |    3
+> >  samples/fprobe/fprobe_example.c |  154 ++++++++++++++++++++
+> >  tools/include/uapi/linux/bpf.h  |   12 ++
+> >  29 files changed, 1283 insertions(+), 439 deletions(-)
+> >  create mode 100644 arch/x86/kernel/rethook.c
+> >  create mode 100644 include/linux/fprobe.h
+> >  create mode 100644 include/linux/rethook.h
+> >  create mode 100644 kernel/trace/fprobe.c
+> >  create mode 100644 kernel/trace/rethook.c
+> >  create mode 100644 samples/fprobe/Makefile
+> >  create mode 100644 samples/fprobe/fprobe_example.c
+> >
+> > --
+> > Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
