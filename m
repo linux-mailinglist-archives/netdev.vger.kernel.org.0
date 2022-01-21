@@ -2,135 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CE3649674E
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 22:31:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BF8B49675D
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 22:35:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229892AbiAUVbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 16:31:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55710 "EHLO
+        id S230369AbiAUVfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 16:35:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229798AbiAUVbh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 16:31:37 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88A3C06173B;
-        Fri, 21 Jan 2022 13:31:36 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id p5so31091332ybd.13;
-        Fri, 21 Jan 2022 13:31:36 -0800 (PST)
+        with ESMTP id S229782AbiAUVfb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 16:35:31 -0500
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF38C06173B;
+        Fri, 21 Jan 2022 13:35:31 -0800 (PST)
+Received: by mail-il1-x134.google.com with SMTP id d14so8748490ila.1;
+        Fri, 21 Jan 2022 13:35:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=XBPXrK5d4Q3kr1rY61LzklnjBEDewcTywkOFDOQFUkc=;
-        b=emvhjIOrkbLkLK7QtoKAezEOQhTjn6XimYAssH9ANqpKpBVzZUO8qo+0n/4HO2bT1Z
-         UjSa8pHCocY/PZZ6+ZCtgarsqa0yFJz/eZPsZL/6u2lnfFPukQKGRJzBGFpmd7mTz3CE
-         qxcffHvPp3TSy2glIKET5KlOUENx/WHlbBKghYsVTWh+LF7YDkfiMzTz046rgztkBC04
-         fo1wkJiOu8TPhz0Z7nnb3UvV/eUEqCz5KbjFsJ0fMljNbko+ecdjeSyEL2qJ9aCV/Wwj
-         nvKmP1Sbu58tHUi5MlxcTI0fnjFeUexm1SH9g7bnkNp9f1aFkntCZisC5E7uZ1CHgwQP
-         Y1xA==
+        bh=D0u4tqSZu5OHqBrSWNItVL2jVtt5qRAhS5SK3VjuQEY=;
+        b=EI4udjqY3hP326UfB0pe6lxpDRyl14Sogkkf50RckV0f0TXqYmrbCXS3LMg/FNeHiu
+         kyEyp4MmFrJF4Cg97Uug7u7F+AZKolQHJw4kqFFwG0vyx2dxRUAErTU13VC3WRAhTLKh
+         MoJNTPIng7QsBuS7JyNG+V5c/ukDIf8b4OmAxzRX/fpxGAKTyZO/Djq7cCYBA5K9JI2C
+         7B/lJ5FPm8nB5DDMX4loAe3fTHn+CDpu71V8MSPeNBEQrXXE8EBLdNMNDYxhup/HAZak
+         mYqDew8upCu1F5aolkte9w6YaqTwOabnGQ7jbMtbwyP2tBO6yK7EVHMmUY9snBJRUpaW
+         yw6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XBPXrK5d4Q3kr1rY61LzklnjBEDewcTywkOFDOQFUkc=;
-        b=kgzwdXvOMVWcjHe8XaM2KqI0soKO4m5k1F1mAppXisAfH9U6jhxrNRjlHv59u8ED5O
-         fwKSOo3wQWEG0+zJGF8Uu2oY+URrFuHT5yZMRy7SBubLcFkFpu7mA9cRo/ja2EeBkyNJ
-         i9TrKcBuEqDDUwHZ/2n638Dln/r4L8M2Bnsct/HsaW3+U6eMvnbW+hu3gqp2NMCpbQYf
-         jYfTacFMKLSdP+YAtyibvj8OTYwLSV6wwGIbUdaWsiPaUbODHEyixsQKbwzw2aNRH1M5
-         GVySLfhqCkJ5sNCnH4s+wMkokfY8L/ZY31VD/iUZppRgfQqe0hMf9BenlJEBDXN5y6NA
-         ru+g==
-X-Gm-Message-State: AOAM532siZoDg/VZgyytL3cmCaFwWP625dLFWQ5KRqMYayQHfGGXU10E
-        6A6dFld98LOjlOkLQx8inCyQgrrSJ7LIk48seG8=
-X-Google-Smtp-Source: ABdhPJyosNI2jZMZmoRBd1lV9OFcMO4zy4soqrSDlvOGhQfzpGgMz6abZEWFOYbXpjZQUo/KfutPdvtrvu84Z2WAEww=
-X-Received: by 2002:a25:bd8d:: with SMTP id f13mr8920942ybh.573.1642800696041;
- Fri, 21 Jan 2022 13:31:36 -0800 (PST)
+        bh=D0u4tqSZu5OHqBrSWNItVL2jVtt5qRAhS5SK3VjuQEY=;
+        b=oFydb9Ds3dcuIDSW+eae4SoHivJ4YLVSqFekuVg21dgJ48x6zwQjLbxwqgM1p+Hjmt
+         O1JapkH/ezY88rxBLRvjBtnEBEFQoyfslxCBZ2jzlMuMpNKRRyqJNxBcCsZ2uL0+x4ig
+         ardlNii7k4EMiMwvTfOKZvwrMe8h5bBOBXw/gof2nyjrWYGmw26zXqyQq9y1t69eMSvd
+         ecdozkT7qp4TT0jZVFgA1VrZHG3BSJxul+tNWpjbX2dCEOw52+ZaqVTHV3SdGbaSOCoe
+         2n1ZFVeYB7v+g4yCwioflKZpRtERj1+mWCaoqC0fCRt+g4qywvxg6lwt9/TGvVWzueND
+         IYCQ==
+X-Gm-Message-State: AOAM531JPszWXMv5Y4NahxQ4T0xviUgEd0nWkQnwsGZOEewp0mtMFKtq
+        6yqJrLhs2zcWQUfzmDueiSYZjN0kdEunf6wHE5Y=
+X-Google-Smtp-Source: ABdhPJwt6siGY4Pd/Hz2o5mHSmMAiOsX8PNz5OeplorBTKJQjrdpPgCusgXg3zkRU8UTWkI2ui107xoeOYI7Pkk8lds=
+X-Received: by 2002:a05:6e02:1c01:: with SMTP id l1mr3376885ilh.239.1642800930842;
+ Fri, 21 Jan 2022 13:35:30 -0800 (PST)
 MIME-Version: 1.0
-References: <20220121173622.192744-1-soenke.huster@eknoes.de> <4f3d6dcf-c142-9a99-df97-6190c8f2abc9@eknoes.de>
-In-Reply-To: <4f3d6dcf-c142-9a99-df97-6190c8f2abc9@eknoes.de>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Fri, 21 Jan 2022 13:31:25 -0800
-Message-ID: <CABBYNZ+VQ3Gfw0n=PavFhnnOy2=+1OAeV5UT_S25Lz_4gWzWEQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] Bluetooth: hci_event: Ignore multiple conn complete events
-To:     =?UTF-8?Q?S=C3=B6nke_Huster?= <soenke.huster@eknoes.de>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220112142709.102423-1-mauricio@kinvolk.io> <20220112142709.102423-4-mauricio@kinvolk.io>
+ <33e77eec-524a-ffb0-9efc-a58da532a578@isovalent.com> <CAHap4ztH=EbFMtj1h5s3-23h06u_L3o8NU9cOL=6nzENZiq_XA@mail.gmail.com>
+In-Reply-To: <CAHap4ztH=EbFMtj1h5s3-23h06u_L3o8NU9cOL=6nzENZiq_XA@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 21 Jan 2022 13:35:19 -0800
+Message-ID: <CAEf4BzY0cxs02=jx3KJ-jvVWsCKz-x=oJCfw94a1SdO=WMd0VA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 3/8] bpftool: Add gen btf command
+To:     =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
+Cc:     Quentin Monnet <quentin@isovalent.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
+        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
+        Leonardo Di Donato <leonardo.didonato@elastic.co>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi S=C3=B6nke,
-
-On Fri, Jan 21, 2022 at 10:22 AM S=C3=B6nke Huster <soenke.huster@eknoes.de=
-> wrote:
+On Fri, Jan 21, 2022 at 12:40 PM Mauricio V=C3=A1squez Bernal
+<mauricio@kinvolk.io> wrote:
 >
-> I just noticed that just checking for handle does not work, as obviously =
-0x0 could also be a handle value and therefore it can't be distinguished, w=
-hether it is not set yet or it is 0x0.
-
-Yep, we should probably check its state, check for state !=3D BT_OPEN
-since that is what hci_conn_add initialize the state.
-
-> On 21.01.22 18:36, Soenke Huster wrote:
-> > When a HCI_CONNECTION_COMPLETE event is received multiple times
-> > for the same handle, the device is registered multiple times which lead=
+> On Wed, Jan 12, 2022 at 1:08 PM Quentin Monnet <quentin@isovalent.com> wr=
+ote:
+> >
+> > 2022-01-12 09:27 UTC-0500 ~ Mauricio V=C3=A1squez <mauricio@kinvolk.io>
+> > > This command is implemented under the "gen" command in bpftool and th=
+e
+> > > syntax is the following:
+> > >
+> > > $ bpftool gen btf INPUT OUTPUT OBJECT(S)
+> >
+> > Thanks a lot for this work!
+> >
+> > Please update the relevant manual page under Documentation, to let user=
 s
-> > to memory corruptions. Therefore, consequent events for a single
-> > connection are ignored.
+> > know how to use the feature. You may also consider adding an example at
+> > the end of that document.
 > >
-> > The conn->state can hold different values so conn->handle is
-> > checked to detect whether a connection is already set up.
+>
+> We're working on it, and will be part of the next spin.
+>
+> > The bash completion script should also be updated with the new "btf"
+> > subcommand for "gen". Given that all the arguments are directories and
+> > files, it should not be hard.
 > >
-> > Buglink: https://bugzilla.kernel.org/show_bug.cgi?id=3D215497
-> > Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
-> > ---
-> > This fixes the referenced bug and several use-after-free issues I disco=
-vered.
-> > I tagged it as RFC, as I am not 100% sure if checking the existence of =
-the
-> > handle is the correct approach, but to the best of my knowledge it must=
- be
-> > set for the first time in this function for valid connections of this e=
-vent,
-> > therefore it should be fine.
+>
+> Will do.
+>
+> > Have you considered adding tests for the feature? There are a few
+> > bpftool-related selftests under tools/testing/selftests/bpf/.
 > >
-> > net/bluetooth/hci_event.c | 11 +++++++++++
-> >  1 file changed, 11 insertions(+)
-> >
-> > diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-> > index 681c623aa380..71ccb12c928d 100644
-> > --- a/net/bluetooth/hci_event.c
-> > +++ b/net/bluetooth/hci_event.c
-> > @@ -3106,6 +3106,17 @@ static void hci_conn_complete_evt(struct hci_dev=
- *hdev, void *data,
-> >               }
-> >       }
-> >
-> > +     /* The HCI_Connection_Complete event is only sent once per connec=
-tion.
-> > +      * Processing it more than once per connection can corrupt kernel=
- memory.
-> > +      *
-> > +      * As the connection handle is set here for the first time, it in=
-dicates
-> > +      * whether the connection is already set up.
-> > +      */
-> > +     if (conn->handle) {
-> > +             bt_dev_err(hdev, "Ignoring HCI_Connection_Complete for ex=
-isting connection");
-> > +             goto unlock;
-> > +     }
-> > +
-> >       if (!ev->status) {
-> >               conn->handle =3D __le16_to_cpu(ev->handle);
-> >
+>
+> Yes, we have but it seems not that trivial. One idea I have is to
+> include a couple of BTF source files from
+> https://github.com/aquasecurity/btfhub-archive/ and create a test
+> program that generates some field, type and enum relocations. Then we
+> could check if the generated BTF file has the expected types, fields
+> and so on by parsing it and using the BTF API from libbpf. One concern
+> about it is the size of those two source BTF files (~5MB each),
+> perhaps we should not include a full file but something that is
+> already "trimmed"? Another possibility is to use
+> "/sys/kernel/btf/vmlinux" but it'll limit the test to machines with
+> CONFIG_DEBUG_INFO_BTF.
+>
+> Do you have any ideas / feedback on this one? Should the tests be
+> included in this series or can we push them later on?
+
+See how we test CO-RE relocations and how we use C files to get custom
+BTFs. See progs/btf_* and prog_tests/core_reloc.c selftests. You don't
+have to use real vmlinux BTF to test this functionality.
 
 
+>
+> > >
+> > > INPUT can be either a single BTF file or a folder containing BTF file=
+s,
+> > > when it's a folder, a BTF file is generated for each BTF file contain=
+ed
+> > > in this folder. OUTPUT is the file (or folder) where generated files =
+are
+> > > stored and OBJECT(S) is the list of bpf objects we want to generate t=
+he
+> > > BTF file(s) for (each generated BTF file contains all the types neede=
+d
+> > > by all the objects).
+> > >
+> > > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
+> > > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
+> > > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
+> > > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
+> > > ---
+> > >  tools/bpf/bpftool/gen.c | 117 ++++++++++++++++++++++++++++++++++++++=
+++
+> > >  1 file changed, 117 insertions(+)
+> > >
 
---=20
-Luiz Augusto von Dentz
+[...]
