@@ -2,237 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBAD14967FD
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 23:49:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11F2F49681F
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 00:13:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232588AbiAUWty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 17:49:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44878 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229926AbiAUWty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 17:49:54 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD32C06173B
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 14:49:53 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id ka4so3903301ejc.11
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 14:49:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=P6gqHv3otn5akYIX5An8ozu/4ZVB3bQK4xXrOnt7dxA=;
-        b=DK0zG+etXdL2babBL2oNuAmz3fVb81QXSw6MLqvlZbLlbBaWxGLVIwavmErFXwWhDf
-         JxoV7RGp1VPGVMhMAi/fYDIckJayAaurThl5ujd6bD7JWdKmSvLRReStUaGJJvK7Urbo
-         Rjc4kVTNJywTNsURI4gu4k5SiOs+0MaACxEzGj6IEmjhB+ndkjmVQ8xWTw9qDAzOaWDY
-         LAdgORAhvVPmEca3GRgAr00ohiX5gghae61HG4DOJIk/2ZYWNHGT0sBzxwaD5sOLduGh
-         8uE/GG9wX8ycdnI2ddk2bBSCtzIz93lw1OxhKBVfGKsOVxn2ZdLYllv748c/MaiRudam
-         1TlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=P6gqHv3otn5akYIX5An8ozu/4ZVB3bQK4xXrOnt7dxA=;
-        b=W45tHg9v5XEdKHDZk26Lo9YgjpbT8EV6sqeUHfLcgAxu44jZsI0ByppOM2dlcvijGB
-         qfQAdxKh7kG3JJw8oV6w5iu4NxfnK01cHhfhQ+/GtsvdE2E5B9F00LliTOcy+dNqPTPK
-         FeIoDySu8CCWM2CfQhxlChnb1fAzoPmclhBs08uQV5ggKA0Xlk1ieLElkU6Dk3zPgti1
-         7k37QiU12s0KTynOoCEHfkh2mnRKZMq8Sir956oYYz6k9U4MJNuy68MuhB0W8nFU/KSf
-         iRo+F2YX3WjLDImgXNCnh1OFsJ/uxoTpXm0OPK7vQuHsg8y9h10hEAgRYOYTHrWWlvoe
-         mtnQ==
-X-Gm-Message-State: AOAM531tylvI4xGwNK2KZHe9SqXW1UgrZFQhPtOMb8p9HmFOQyE711Kk
-        Tb/v77fm4xhIBOCbzDxB/dI=
-X-Google-Smtp-Source: ABdhPJygV4RV+co6TlF0OYP9kzMI/3rst0Qs2w1PA50ujjpIz5vqz7Ku+pDmtPn7Wqf39QPJ5Bp2EQ==
-X-Received: by 2002:a17:906:9746:: with SMTP id o6mr4803792ejy.112.1642805392067;
-        Fri, 21 Jan 2022 14:49:52 -0800 (PST)
-Received: from skbuf ([188.25.255.2])
-        by smtp.gmail.com with ESMTPSA id p11sm3050557eds.38.2022.01.21.14.49.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 14:49:51 -0800 (PST)
-Date:   Sat, 22 Jan 2022 00:49:49 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
- cpu ports, non cpu extint
-Message-ID: <20220121224949.xb3ra3qohlvoldol@skbuf>
-References: <87v8ynbylk.fsf@bang-olufsen.dk>
- <trinity-d858854a-ff84-4b28-81f4-f0becc878017-1642089370117@3c-app-gmx-bap49>
- <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
- <Yea+uTH+dh9/NMHn@lunn.ch>
- <20220120151222.dirhmsfyoumykalk@skbuf>
- <CAJq09z6UE72zSVZfUi6rk_nBKGOBC0zjeyowHgsHDHh7WyH0jA@mail.gmail.com>
- <20220121020627.spli3diixw7uxurr@skbuf>
- <CAJq09z5HbnNEcqN7LZs=TK4WR1RkjoefF_6ib-hFu2RLT54Nug@mail.gmail.com>
- <20220121185009.pfkh5kbejhj5o5cs@skbuf>
- <CAJq09z7v90AU=kxraf5CTT0D4S6ggEkVXTQNsk5uWPH-pGr7NA@mail.gmail.com>
+        id S229604AbiAUXNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 18:13:04 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41554 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229555AbiAUXND (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 18:13:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642806782;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=38CLyOOFGNpsCH2Hm5Xzqz1LpA2MMoJHumLXa5e8yw0=;
+        b=QnhfbvZqvJut7xASbRinIInUHhFgX5705sLsK/XbAUpXTXLGX1O0UbJ69ZZ7lQAoBf+Vvs
+        xBLmLdN2cNjxpDaSkvgruP+5VXYgoqkodeBgchBDUpy0Mjx7kV51a8jy2RtULN90PkdCuD
+        ERy7EXKTSAVEXC80oKfJ26fgBF78fTc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-632-PCfsLRkTMk60m92azzUROQ-1; Fri, 21 Jan 2022 18:13:01 -0500
+X-MC-Unique: PCfsLRkTMk60m92azzUROQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 97EAB8143E5;
+        Fri, 21 Jan 2022 23:13:00 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 876F9108AD;
+        Fri, 21 Jan 2022 23:12:59 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Adjust retransmission backoff
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Marc Dionne <marc.dionne@auristor.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Fri, 21 Jan 2022 23:12:58 +0000
+Message-ID: <164280677857.1397447.9028458701099013997.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJq09z7v90AU=kxraf5CTT0D4S6ggEkVXTQNsk5uWPH-pGr7NA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 06:51:14PM -0300, Luiz Angelo Daros de Luca wrote:
-> The code is from the OpenWrt tree.
-> https://github.com/openwrt/openwrt/tree/master/target/linux/ramips/files/drivers/net/ethernet/ralink
-> 
-> I only patched it to accept Jumbo Frames (it was dropping incoming
-> packets with MTU 1508)
-> https://patchwork.ozlabs.org/project/openwrt/list/?series=279773
-> 
-> > If that DSA
-> > master is a DSA switch itself, could you please unroll the chain all the
-> > way with more links to drivers? No matter whether upstream or downstream,
-> > just what you use.
-> 
-> OpenWrt (soc mt7620a) eth0 (mtk_eth_soc) connected to internal SoC
-> MT7530 switch port 6 (, mediatek,mt7620-gsw).
-> MT7530 port 5 connected to RTL8367S port 7 (RGMII).
-> 
-> The internal SoC switch is behaving as an unmanaged switch, with no
-> vlans. It would be just extra overhead to have it working as a DSA
-> switch, specially
-> as those two switches tags are not compatible. I still have the
-> swconfig driver installed but I was only using it for some debugging
-> (checking metrics). I think that the state the bootloader leaves that
-> switchis enough to make it forward packets to the Realtek switch. In
-> device-tree conf, I'm directly using that eth0 as the CPU port.
+Improve retransmission backoff by only backing off when we retransmit data
+packets rather than when we set the lost ack timer.
 
-There could be value in managing the internal switch with DSA too, for
-example in a situation like this:
+To this end:
 
- +-------------------------------------------------+
- |  SoC                                            |
- |                                                 |
- |  +----------------+--------+---------------+    |
- |  |                |        |               |    |
- |  | Internal       |        |               |    |
- |  |  switch        +--------+               |    |
- |  | (dsa,member = <0 0>;)                   |    |
- |  | +-------+ +-------+ +-------+ +-------+ |    |
- |  | |       | |       | |       | |       | |    |
- |  | | sw0p0 | | sw0p1 | | sw0p2 | | sw0p3 | |    |
- |  | |       | |       | |       | |       | |    |
- +--+-+-------+-+-------+-+-------+-+-------+-+----+
+ (1) In rxrpc_resend(), use rxrpc_get_rto_backoff() when setting the
+     retransmission timer and only tell it that we are retransmitting if we
+     actually have things to retransmit.
 
- +----+--------+------------------+
- |    |        |                  |
- |    +--------+                  |
- | External switch                |
- | (dsa,member = <1 0>;)          |
- |  +-------+ +-------+ +-------+ |
- |  |       | |       | |       | |
- |  | sw1p0 | | sw1p1 | | sw1p2 | |
- |  |       | |       | |       | |
- +--+-------+-+-------+-+-------+-+
+     Note that it's possible for the retransmission algorithm to race with
+     the processing of a received ACK, so we may see no packets needing
+     retransmission.
 
-where you'd create a bridge spanning all of sw0p1, sw0p2, sw0p3, sw1p0,
-sw1p1, sw1p2. Forwarding between the internal and the external switch is
-done in software, and that deals with the "impedance matching" between
-the tagging protocols too - first the packet is stripped of the DSA tag
-of the ingress switch, then the DSA tag of the egress switch is added.
-With a transparent internal switch (no driver), ports sw0p1, sw0p2,
-sw0p3 are dead, since if you'd connect them to a PHY, they'd spit out
-DSA-tagged packets from the external switch.
+ (2) In rxrpc_send_data_packet(), don't bump the backoff when setting the
+     ack_lost_at timer, as it may then get bumped twice.
 
-> > I hate to guess, but since both you and Arınç have mentioned the
-> > mt7620a/mt7621 SoCs,
-> 
-> Sorry for the incomplete answer. If it helps, this is my device
-> https://github.com/luizluca/openwrt/blob/tplink_c5v4_dsa/target/linux/ramips/dts/mt7620a_tplink_archer-c5-v4.dts
-> 
-> I try to keep my remote branch updated, although it has some dirty changes:
-> https://github.com/luizluca/openwrt/tree/tplink_c5v4_dsa
-> 
-> > I'd guess that the top-most DSA driver in both cases is "mediatek,eth-mac" (drivers/net/ethernet/mediatek/mtk_eth_soc.c).
-> 
-> Not in my case. The driver I use also supports mt7621 but the upstream
-> driver skipped the mt7620a support.
-> 
-> > If so, this would confirm my suspicions, since it sets its vlan_features
-> > to include NETIF_F_IP_CSUM and NETIF_F_IPV6_CSUM. Please confirm that
-> > master->vlan_features contains these 2 bits.
-> 
-> Yes.
+With this, when looking at one particular packet, the retransmission
+intervals were seen to be 1.5ms, 2ms, 3ms, 5ms, 9ms, 17ms, 33ms, 71ms,
+136ms, 264ms, 544ms, 1.088s, 2.1s, 4.2s and 8.3s.
 
-Ok. See the discussion with Lino Sanfilippo here:
-https://lore.kernel.org/netdev/YPAzZXaC%2FEn3s4ly@lunn.ch/
-Basically, the moving parts of this mechanism are:
+Fixes: c410bf01933e ("rxrpc: Fix the excessive initial retransmission timeout")
+Suggested-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+Tested-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: https://lore.kernel.org/r/164138117069.2023386.17446904856843997127.stgit@warthog.procyon.org.uk/
+---
 
-- when the DSA master doesn't understand DSA tags, the transmit
-  checksums must be calculated in software.
+ net/rxrpc/call_event.c |    8 +++-----
+ net/rxrpc/output.c     |    2 +-
+ 2 files changed, 4 insertions(+), 6 deletions(-)
 
-- this is already supported, we just need to make sure that the DSA
-  slave->features does not include any checksum offload bits
-  (NETIF_F_HW_CSUM, NETIF_F_IP_CSUM, NETIF_F_IPV6_CSUM), otherwise that
-  will be delegated to the device driver. The place that checks that
-  condition and calculates the checksum in software is validate_xmit_skb() ->
-  skb_csum_hwoffload_help().
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 6be2672a65ea..df864e692267 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -157,7 +157,7 @@ static void rxrpc_congestion_timeout(struct rxrpc_call *call)
+ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
+ {
+ 	struct sk_buff *skb;
+-	unsigned long resend_at, rto_j;
++	unsigned long resend_at;
+ 	rxrpc_seq_t cursor, seq, top;
+ 	ktime_t now, max_age, oldest, ack_ts;
+ 	int ix;
+@@ -165,10 +165,8 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
+ 
+ 	_enter("{%d,%d}", call->tx_hard_ack, call->tx_top);
+ 
+-	rto_j = call->peer->rto_j;
+-
+ 	now = ktime_get_real();
+-	max_age = ktime_sub(now, jiffies_to_usecs(rto_j));
++	max_age = ktime_sub(now, jiffies_to_usecs(call->peer->rto_j));
+ 
+ 	spin_lock_bh(&call->lock);
+ 
+@@ -213,7 +211,7 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
+ 	}
+ 
+ 	resend_at = nsecs_to_jiffies(ktime_to_ns(ktime_sub(now, oldest)));
+-	resend_at += jiffies + rto_j;
++	resend_at += jiffies + rxrpc_get_rto_backoff(call->peer, retrans);
+ 	WRITE_ONCE(call->resend_at, resend_at);
+ 
+ 	if (unacked)
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index 10f2bf2e9068..a45c83f22236 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -468,7 +468,7 @@ int rxrpc_send_data_packet(struct rxrpc_call *call, struct sk_buff *skb,
+ 			if (call->peer->rtt_count > 1) {
+ 				unsigned long nowj = jiffies, ack_lost_at;
+ 
+-				ack_lost_at = rxrpc_get_rto_backoff(call->peer, retrans);
++				ack_lost_at = rxrpc_get_rto_backoff(call->peer, false);
+ 				ack_lost_at += nowj;
+ 				WRITE_ONCE(call->ack_lost_at, ack_lost_at);
+ 				rxrpc_reduce_call_timer(call, ack_lost_at, nowj,
 
-- the checksum is evaluated on the skb before the DSA tag is even
-  inserted, and is preserved when DSA inserts the header, and is
-  therefore still correct by the time the skb reaches the DSA master
-  driver. A DSA-unaware master doesn't have to do anything for this
-  packet, the IP header checksum will still be correct despite the
-  hardware not recognizing the IP header.
 
-- the way DSA populates slave->features is by inheriting master->vlan_features
-  (vlan_features means "netdev features which are inheritable by VLAN
-  upper interfaces"). This directly makes or breaks what happens in
-  validate_xmit_skb() on a DSA slave interface.
-
-- the problem occurs when the DSA master puts checksum offload bits in
-  both dev->features and dev->vlan_features. The master thinks this
-  means: "I can offload IP checksumming for myself and for VLAN upper
-  interfaces (I can recognize the IP header past the VLAN header)."
-  Little does it know that DSA assumes this means it can also offload
-  checksumming in the presence of switch tags.
-
-So just stop inheriting NETIF_F_HW_CSUM and friends from
-master->vlan_features, right?
-
-Well, you can't help but wonder a bit how come it's 2022 and we could
-still have an obvious omission like that? And at the same time: but why
-does the mt7530 DSA driver work with the same DSA master, but not rtl8365mb?
-The answer to both, I think, is "some DSA masters do understand a
-particular DSA switch tag, particularly the one from the same vendor".
-So if we stop inheriting the checksum offload bits from vlan_features,
-we introduce a performance regression for those.
-
-We should instead ask the DSA master "for this DSA tagging protocol,
-what netdev features can DSA inherit"? Because of the variability per
-tagging protocol, this probably needs to be done through a new netdev
-operation, I don't know of any cleaner way.
-The complicated part is that we'd need to correctly identify the pairs
-of DSA master drivers and tagging protocols where some features can be
-safely inherited. Then, it's not too clear whether we want this new ndo
-to cover other functionality as well, or if netdev features are enough.
-
-So the sad news for you is that this is pretty much "net-next" material,
-even if it fixes what is essentially a design shortcoming. If we're
-quick, we could start doing this right as net-next reopens, and that
-would give other developers maximum opportunity to fix up the
-performance regressions caused by lack of TX checksumming.
-
-> > > Oh, this DSA driver still does not implement vlan nor bridge offload.
-> > > Maybe it would matter.
-> >
-> > It doesn't matter. The vlan_features is a confusing name for what it
-> > really does here. I'll explain in a bit once you clarify the other
-> > things I asked for.
-> 
-> That is good news as we can deal with it independently. I wish to
-> focus on that afterwards.
-> 
-> Regards,
-> 
-> Luiz
