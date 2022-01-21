@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD48A495D61
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 11:11:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B0DD495D63
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 11:11:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379904AbiAUKLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 05:11:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42304 "EHLO
+        id S1344013AbiAUKLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 05:11:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379918AbiAUKLT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 05:11:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C927C061749;
-        Fri, 21 Jan 2022 02:11:17 -0800 (PST)
+        with ESMTP id S1379869AbiAUKLa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 05:11:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B52C061757;
+        Fri, 21 Jan 2022 02:11:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF30F61A1B;
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2C49B81F88;
+        Fri, 21 Jan 2022 10:11:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2F23C340E3;
         Fri, 21 Jan 2022 10:11:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23662C340E9;
-        Fri, 21 Jan 2022 10:11:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642759876;
-        bh=+CC3PqzCWjv29FJ/ovt/ti3PrS9aIzwNKpq2CuodI+Y=;
+        s=k20201202; t=1642759880;
+        bh=EnVPOW6uizpU0WNx3CD2IV6soPhelu6v1BbQ7Y0YVA4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JRmkgBsc4JKr0lHzNyDS7Y4lQMay8DuHPZTslbP+CdroszjHgpBGp6M2vkltW/dlL
-         9+ybGdoAsnYnxW1RDlQEL47Uqfl5Ps9ZBTdyLJJ2ONrt71xNEkESmbN2Pu75PMhgc5
-         KZhcYAnkD1kdZ51nv/rc8jFrvtO2vBbLQgD5qvR61bOLguXW+nvatChO1b6kvM1B0o
-         rkmGMtNkF/rKQ9y2gNqaKPcuPMlxoD0HVban133ewzXYoiKNwT5hEpYMcuAfebyXUf
-         juF+PkvQdbP2YWTx1mjmrcmRZbxB6n56D7p5cfOLwzB6L59mBL4xnasdTok+ozxSjq
-         iGilU4K5kGKcw==
+        b=eXNeLC2q/1jHNpKVPZ7i6zG+Lldk/sd+5fsaDsj+LDAgnRMi0XJN6x7zhH4kUE8gX
+         Jwt6Z+XtQfczpF1sxRy+/UkyFbej2DQBW2FegOXIK15kENC3Qf2c70EGzn5MqXJh5m
+         POLnicflPbyXVj4Lsj4W0gTTD4k28c2wemQ0PCbAmuCVD51M27gXT3ZXffB2hctWzr
+         y1+bYWtSId0Ug0CmC8fM3AE3MR0gRDPqgfyJdtdMGG8jIuSzStzCZey1hfCnsMh+U0
+         kZwRNRKX7KHjDttbG3i0X8Bf0TY6PY1csYEvhQPmM+n+Cn7gwoj6sZn8SIQCH/uNMs
+         +4aFQ4SzsYpLA==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
@@ -41,9 +41,9 @@ Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
         tirthendu.sarkar@intel.com, toke@redhat.com,
         andrii.nakryiko@gmail.com
-Subject: [PATCH v23 bpf-next 08/23] net: mvneta: add frags support to XDP_TX
-Date:   Fri, 21 Jan 2022 11:09:51 +0100
-Message-Id: <5d46ab63870ffe96fb95e6075a7ff0c81ef6424d.1642758637.git.lorenzo@kernel.org>
+Subject: [PATCH v23 bpf-next 09/23] bpf: introduce BPF_F_XDP_HAS_FRAGS flag in prog_flags loading the ebpf program
+Date:   Fri, 21 Jan 2022 11:09:52 +0100
+Message-Id: <db2e8075b7032a356003f407d1b0deb99adaa0ed.1642758637.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1642758637.git.lorenzo@kernel.org>
 References: <cover.1642758637.git.lorenzo@kernel.org>
@@ -53,185 +53,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce the capability to map non-linear xdp buffer running
-mvneta_xdp_submit_frame() for XDP_TX and XDP_REDIRECT
+Introduce BPF_F_XDP_HAS_FRAGS and the related field in bpf_prog_aux
+in order to notify the driver the loaded program support xdp frags.
 
 Acked-by: Toke Hoiland-Jorgensen <toke@redhat.com>
 Acked-by: John Fastabend <john.fastabend@gmail.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/marvell/mvneta.c | 112 +++++++++++++++++---------
- 1 file changed, 76 insertions(+), 36 deletions(-)
+ include/linux/bpf.h            | 1 +
+ include/uapi/linux/bpf.h       | 5 +++++
+ kernel/bpf/syscall.c           | 4 +++-
+ tools/include/uapi/linux/bpf.h | 5 +++++
+ 4 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index f1fd93e89c73..c2248e23edcc 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -1884,8 +1884,8 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
- 			bytes_compl += buf->skb->len;
- 			pkts_compl++;
- 			dev_kfree_skb_any(buf->skb);
--		} else if (buf->type == MVNETA_TYPE_XDP_TX ||
--			   buf->type == MVNETA_TYPE_XDP_NDO) {
-+		} else if ((buf->type == MVNETA_TYPE_XDP_TX ||
-+			    buf->type == MVNETA_TYPE_XDP_NDO) && buf->xdpf) {
- 			if (napi && buf->type == MVNETA_TYPE_XDP_TX)
- 				xdp_return_frame_rx_napi(buf->xdpf);
- 			else
-@@ -2079,47 +2079,87 @@ mvneta_xdp_put_buff(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 80e3387ea3af..e93ed028a030 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -933,6 +933,7 @@ struct bpf_prog_aux {
+ 	bool func_proto_unreliable;
+ 	bool sleepable;
+ 	bool tail_call_reachable;
++	bool xdp_has_frags;
+ 	struct hlist_node tramp_hlist;
+ 	/* BTF_KIND_FUNC_PROTO for valid attach_btf_id */
+ 	const struct btf_type *attach_func_proto;
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index fe2272defcd9..945649c67e03 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -1113,6 +1113,11 @@ enum bpf_link_type {
+  */
+ #define BPF_F_SLEEPABLE		(1U << 4)
  
- static int
- mvneta_xdp_submit_frame(struct mvneta_port *pp, struct mvneta_tx_queue *txq,
--			struct xdp_frame *xdpf, bool dma_map)
-+			struct xdp_frame *xdpf, int *nxmit_byte, bool dma_map)
- {
--	struct mvneta_tx_desc *tx_desc;
--	struct mvneta_tx_buf *buf;
--	dma_addr_t dma_addr;
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_frame(xdpf);
-+	struct device *dev = pp->dev->dev.parent;
-+	struct mvneta_tx_desc *tx_desc = NULL;
-+	int i, num_frames = 1;
-+	struct page *page;
++/* If BPF_F_XDP_HAS_FRAGS is used in BPF_PROG_LOAD command, the loaded program
++ * fully support xdp frags.
++ */
++#define BPF_F_XDP_HAS_FRAGS	(1U << 5)
 +
-+	if (unlikely(xdp_frame_has_frags(xdpf)))
-+		num_frames += sinfo->nr_frags;
+ /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
+  * the following extensions:
+  *
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 9e0631f091a6..f29090643c6e 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2217,7 +2217,8 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
+ 				 BPF_F_ANY_ALIGNMENT |
+ 				 BPF_F_TEST_STATE_FREQ |
+ 				 BPF_F_SLEEPABLE |
+-				 BPF_F_TEST_RND_HI32))
++				 BPF_F_TEST_RND_HI32 |
++				 BPF_F_XDP_HAS_FRAGS))
+ 		return -EINVAL;
  
--	if (txq->count >= txq->tx_stop_threshold)
-+	if (txq->count + num_frames >= txq->size)
- 		return MVNETA_XDP_DROPPED;
+ 	if (!IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) &&
+@@ -2303,6 +2304,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr)
+ 	prog->aux->dst_prog = dst_prog;
+ 	prog->aux->offload_requested = !!attr->prog_ifindex;
+ 	prog->aux->sleepable = attr->prog_flags & BPF_F_SLEEPABLE;
++	prog->aux->xdp_has_frags = attr->prog_flags & BPF_F_XDP_HAS_FRAGS;
  
--	tx_desc = mvneta_txq_next_desc_get(txq);
-+	for (i = 0; i < num_frames; i++) {
-+		struct mvneta_tx_buf *buf = &txq->buf[txq->txq_put_index];
-+		skb_frag_t *frag = NULL;
-+		int len = xdpf->len;
-+		dma_addr_t dma_addr;
+ 	err = security_bpf_prog_alloc(prog->aux);
+ 	if (err)
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index fe2272defcd9..945649c67e03 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -1113,6 +1113,11 @@ enum bpf_link_type {
+  */
+ #define BPF_F_SLEEPABLE		(1U << 4)
  
--	buf = &txq->buf[txq->txq_put_index];
--	if (dma_map) {
--		/* ndo_xdp_xmit */
--		dma_addr = dma_map_single(pp->dev->dev.parent, xdpf->data,
--					  xdpf->len, DMA_TO_DEVICE);
--		if (dma_mapping_error(pp->dev->dev.parent, dma_addr)) {
--			mvneta_txq_desc_put(txq);
--			return MVNETA_XDP_DROPPED;
-+		if (unlikely(i)) { /* paged area */
-+			frag = &sinfo->frags[i - 1];
-+			len = skb_frag_size(frag);
- 		}
--		buf->type = MVNETA_TYPE_XDP_NDO;
--	} else {
--		struct page *page = virt_to_page(xdpf->data);
- 
--		dma_addr = page_pool_get_dma_addr(page) +
--			   sizeof(*xdpf) + xdpf->headroom;
--		dma_sync_single_for_device(pp->dev->dev.parent, dma_addr,
--					   xdpf->len, DMA_BIDIRECTIONAL);
--		buf->type = MVNETA_TYPE_XDP_TX;
-+		tx_desc = mvneta_txq_next_desc_get(txq);
-+		if (dma_map) {
-+			/* ndo_xdp_xmit */
-+			void *data;
++/* If BPF_F_XDP_HAS_FRAGS is used in BPF_PROG_LOAD command, the loaded program
++ * fully support xdp frags.
++ */
++#define BPF_F_XDP_HAS_FRAGS	(1U << 5)
 +
-+			data = unlikely(frag) ? skb_frag_address(frag)
-+					      : xdpf->data;
-+			dma_addr = dma_map_single(dev, data, len,
-+						  DMA_TO_DEVICE);
-+			if (dma_mapping_error(dev, dma_addr)) {
-+				mvneta_txq_desc_put(txq);
-+				goto unmap;
-+			}
-+
-+			buf->type = MVNETA_TYPE_XDP_NDO;
-+		} else {
-+			page = unlikely(frag) ? skb_frag_page(frag)
-+					      : virt_to_page(xdpf->data);
-+			dma_addr = page_pool_get_dma_addr(page);
-+			if (unlikely(frag))
-+				dma_addr += skb_frag_off(frag);
-+			else
-+				dma_addr += sizeof(*xdpf) + xdpf->headroom;
-+			dma_sync_single_for_device(dev, dma_addr, len,
-+						   DMA_BIDIRECTIONAL);
-+			buf->type = MVNETA_TYPE_XDP_TX;
-+		}
-+		buf->xdpf = unlikely(i) ? NULL : xdpf;
-+
-+		tx_desc->command = unlikely(i) ? 0 : MVNETA_TXD_F_DESC;
-+		tx_desc->buf_phys_addr = dma_addr;
-+		tx_desc->data_size = len;
-+		*nxmit_byte += len;
-+
-+		mvneta_txq_inc_put(txq);
- 	}
--	buf->xdpf = xdpf;
- 
--	tx_desc->command = MVNETA_TXD_FLZ_DESC;
--	tx_desc->buf_phys_addr = dma_addr;
--	tx_desc->data_size = xdpf->len;
-+	/*last descriptor */
-+	if (likely(tx_desc))
-+		tx_desc->command |= MVNETA_TXD_L_DESC | MVNETA_TXD_Z_PAD;
- 
--	mvneta_txq_inc_put(txq);
--	txq->pending++;
--	txq->count++;
-+	txq->pending += num_frames;
-+	txq->count += num_frames;
- 
- 	return MVNETA_XDP_TX;
-+
-+unmap:
-+	for (i--; i >= 0; i--) {
-+		mvneta_txq_desc_put(txq);
-+		tx_desc = txq->descs + txq->next_desc_to_proc;
-+		dma_unmap_single(dev, tx_desc->buf_phys_addr,
-+				 tx_desc->data_size,
-+				 DMA_TO_DEVICE);
-+	}
-+
-+	return MVNETA_XDP_DROPPED;
- }
- 
- static int
-@@ -2128,8 +2168,8 @@ mvneta_xdp_xmit_back(struct mvneta_port *pp, struct xdp_buff *xdp)
- 	struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
- 	struct mvneta_tx_queue *txq;
- 	struct netdev_queue *nq;
-+	int cpu, nxmit_byte = 0;
- 	struct xdp_frame *xdpf;
--	int cpu;
- 	u32 ret;
- 
- 	xdpf = xdp_convert_buff_to_frame(xdp);
-@@ -2141,10 +2181,10 @@ mvneta_xdp_xmit_back(struct mvneta_port *pp, struct xdp_buff *xdp)
- 	nq = netdev_get_tx_queue(pp->dev, txq->id);
- 
- 	__netif_tx_lock(nq, cpu);
--	ret = mvneta_xdp_submit_frame(pp, txq, xdpf, false);
-+	ret = mvneta_xdp_submit_frame(pp, txq, xdpf, &nxmit_byte, false);
- 	if (ret == MVNETA_XDP_TX) {
- 		u64_stats_update_begin(&stats->syncp);
--		stats->es.ps.tx_bytes += xdpf->len;
-+		stats->es.ps.tx_bytes += nxmit_byte;
- 		stats->es.ps.tx_packets++;
- 		stats->es.ps.xdp_tx++;
- 		u64_stats_update_end(&stats->syncp);
-@@ -2183,11 +2223,11 @@ mvneta_xdp_xmit(struct net_device *dev, int num_frame,
- 
- 	__netif_tx_lock(nq, cpu);
- 	for (i = 0; i < num_frame; i++) {
--		ret = mvneta_xdp_submit_frame(pp, txq, frames[i], true);
-+		ret = mvneta_xdp_submit_frame(pp, txq, frames[i], &nxmit_byte,
-+					      true);
- 		if (ret != MVNETA_XDP_TX)
- 			break;
- 
--		nxmit_byte += frames[i]->len;
- 		nxmit++;
- 	}
- 
+ /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
+  * the following extensions:
+  *
 -- 
 2.34.1
 
