@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE3DA495EC3
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 13:00:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E474495EC5
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 13:00:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350314AbiAUMAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 07:00:47 -0500
-Received: from mga01.intel.com ([192.55.52.88]:36375 "EHLO mga01.intel.com"
+        id S1350327AbiAUMAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 07:00:48 -0500
+Received: from mga01.intel.com ([192.55.52.88]:36380 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350220AbiAUMAm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1350225AbiAUMAm (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 21 Jan 2022 07:00:42 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1642766442; x=1674302442;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=iLjsMOyvW0x9RP/2xkHM4lCA6tDoPhElHKD4kxT1rdM=;
-  b=n/NfGNBLYFkBXdRQ1YUNO0UZvFlbIrUjJQoFHCeqVtxTYrjgn+uDDwCw
-   6h4KUpi9CJomlhJU7z+wbdBZIFq69lsWRofkFR8ESCv6QzJB+AqErQQvD
-   OoVzTLM+KyEATQ18V0rbKLweAJ3mXwK7LC5sHEaeOFwDGbKa7rflaYfGx
-   nF9gsHU2b3/KfaghPpShm+kIljBuip8+hZffwtMwH9hwUSGwiRuhoSdq7
-   FnRLiBya2BWn+cPicFsF2ZEATtrpCnXXz7ew3e3K+VMz5NZs5mnvGtQHz
-   69Q5MxyuSGNDbmb2CVceLhDLlzOaXLCp0SRctkBAvY5q08Gx8Fwk2Ogya
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="270058983"
+  bh=e96meKr8iFxX3uM9W/tXu/xLULrmnL90V1SmCe7/f90=;
+  b=ImszyKcSccifJkHZFeWqAptJZWdcGmiIcWWw6A52VFOjLn0bQxZpNb9E
+   7KrIBynhFTwHlr3pivxWvg79r77WFU0EN1G1Hdzr1t39nu1wInpi+05VE
+   s51JZVATJGxO2Me3L8PwMlkpVpOS6gi8kVF8Q0iyehXEVFomj/5lY2fwh
+   9SPlcjr5GTG9/z8gglJAEs9/lhQya1uGitj6uyVr5CnGp7tsSeEcwhtvb
+   DtvbqKrnsFG8bgxTxKQf/865foVaECHF12Bzagu9QeJOTSB9LDg5RNt+r
+   2YS4RsAYjrt8zHIRGsRdZbh92GZ3ZZ46EB+k2mZ2uExuBgdDOGY3Wxkot
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="270058999"
 X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="270058983"
+   d="scan'208";a="270058999"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 04:00:35 -0800
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 04:00:38 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="475924963"
+   d="scan'208";a="475924974"
 Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga003.jf.intel.com with ESMTP; 21 Jan 2022 04:00:33 -0800
+  by orsmga003.jf.intel.com with ESMTP; 21 Jan 2022 04:00:36 -0800
 From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        alexandr.lobakin@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH bpf-next v3 3/7] ice: make Tx threshold dependent on ring length
-Date:   Fri, 21 Jan 2022 13:00:07 +0100
-Message-Id: <20220121120011.49316-4-maciej.fijalkowski@intel.com>
+        alexandr.lobakin@intel.com
+Subject: [PATCH bpf-next v3 4/7] i40e: xsk: move tmp desc array from driver to pool
+Date:   Fri, 21 Jan 2022 13:00:08 +0100
+Message-Id: <20220121120011.49316-5-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220121120011.49316-1-maciej.fijalkowski@intel.com>
 References: <20220121120011.49316-1-maciej.fijalkowski@intel.com>
@@ -51,157 +50,242 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-XDP_TX workloads use a concept of Tx threshold that indicates the
-interval of setting RS bit on descriptors which in turn tells the HW to
-generate an interrupt to signal the completion of Tx on HW side. It is
-currently based on a constant value of 32 which might not work out well
-for various sizes of ring combined with for example batch size that can
-be set via SO_BUSY_POLL_BUDGET.
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Internal tests based on AF_XDP showed that most convenient setup of
-mentioned threshold is when it is equal to quarter of a ring length.
+Move desc_array from the driver to the pool. The reason behind this is
+that we can then reuse this array as a temporary storage for descriptors
+in all zero-copy drivers that use the batched interface. This will make
+it easier to add batching to more drivers.
 
-Introduce @tx_thresh field in ice_tx_ring struct that will store the
-value of threshold and use it in favor of ICE_TX_THRESH.
+i40e is the only driver that has a batched Tx zero-copy
+implementation, so no need to touch any other driver.
 
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_ethtool.c  |  3 +++
- drivers/net/ethernet/intel/ice/ice_main.c     |  5 +++--
- drivers/net/ethernet/intel/ice/ice_txrx.h     |  7 ++++++-
- drivers/net/ethernet/intel/ice/ice_txrx_lib.c | 14 ++++++++------
- 4 files changed, 20 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c | 11 -----------
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h |  1 -
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c  |  4 ++--
+ include/net/xdp_sock_drv.h                  |  5 ++---
+ include/net/xsk_buff_pool.h                 |  1 +
+ net/xdp/xsk.c                               | 13 ++++++-------
+ net/xdp/xsk_buff_pool.c                     |  7 +++++++
+ net/xdp/xsk_queue.h                         | 12 ++++++------
+ 8 files changed, 24 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index e2e3ef7fba7f..bfa5e5d167ab 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -2803,6 +2803,9 @@ ice_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring,
- 		/* clone ring and setup updated count */
- 		xdp_rings[i] = *vsi->xdp_rings[i];
- 		xdp_rings[i].count = new_tx_cnt;
-+		xdp_rings[i].tx_thresh = ice_get_tx_threshold(&xdp_rings[i]);
-+		xdp_rings[i].next_dd = xdp_rings[i].tx_thresh - 1;
-+		xdp_rings[i].next_rs = xdp_rings[i].tx_thresh - 1;
- 		xdp_rings[i].desc = NULL;
- 		xdp_rings[i].tx_buf = NULL;
- 		err = ice_setup_tx_ring(&xdp_rings[i]);
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 30814435f779..0fd12a7f6d22 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2495,10 +2495,11 @@ static int ice_xdp_alloc_setup_rings(struct ice_vsi *vsi)
- 		xdp_ring->reg_idx = vsi->txq_map[xdp_q_idx];
- 		xdp_ring->vsi = vsi;
- 		xdp_ring->netdev = NULL;
--		xdp_ring->next_dd = ICE_TX_THRESH - 1;
--		xdp_ring->next_rs = ICE_TX_THRESH - 1;
- 		xdp_ring->dev = dev;
- 		xdp_ring->count = vsi->num_tx_desc;
-+		xdp_ring->tx_thresh = ice_get_tx_threshold(xdp_ring);
-+		xdp_ring->next_dd = xdp_ring->tx_thresh - 1;
-+		xdp_ring->next_rs = xdp_ring->tx_thresh - 1;
- 		WRITE_ONCE(vsi->xdp_rings[i], xdp_ring);
- 		if (ice_setup_tx_ring(xdp_ring))
- 			goto free_xdp_rings;
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
-index 94a46e0e5ed0..09c8ad2f7403 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.h
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-@@ -13,7 +13,6 @@
- #define ICE_MAX_CHAINED_RX_BUFS	5
- #define ICE_MAX_BUF_TXD		8
- #define ICE_MIN_TX_LEN		17
--#define ICE_TX_THRESH		32
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index 66cc79500c10..af9c88e71452 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -830,8 +830,6 @@ void i40e_free_tx_resources(struct i40e_ring *tx_ring)
+ 	i40e_clean_tx_ring(tx_ring);
+ 	kfree(tx_ring->tx_bi);
+ 	tx_ring->tx_bi = NULL;
+-	kfree(tx_ring->xsk_descs);
+-	tx_ring->xsk_descs = NULL;
  
- /* The size limit for a transmit buffer in a descriptor is (16K - 1).
-  * In order to align with the read requests we will align the value to
-@@ -333,6 +332,7 @@ struct ice_tx_ring {
- 	struct ice_channel *ch;
- 	struct ice_ptp_tx *tx_tstamps;
- 	spinlock_t tx_lock;
-+	u16 tx_thresh;
- 	u32 txq_teid;			/* Added Tx queue TEID */
- #define ICE_TX_FLAGS_RING_XDP		BIT(0)
- 	u8 flags;
-@@ -355,6 +355,11 @@ static inline void ice_clear_ring_build_skb_ena(struct ice_rx_ring *ring)
- 	ring->flags &= ~ICE_RX_FLAGS_RING_BUILD_SKB;
+ 	if (tx_ring->desc) {
+ 		dma_free_coherent(tx_ring->dev, tx_ring->size,
+@@ -1433,13 +1431,6 @@ int i40e_setup_tx_descriptors(struct i40e_ring *tx_ring)
+ 	if (!tx_ring->tx_bi)
+ 		goto err;
+ 
+-	if (ring_is_xdp(tx_ring)) {
+-		tx_ring->xsk_descs = kcalloc(I40E_MAX_NUM_DESCRIPTORS, sizeof(*tx_ring->xsk_descs),
+-					     GFP_KERNEL);
+-		if (!tx_ring->xsk_descs)
+-			goto err;
+-	}
+-
+ 	u64_stats_init(&tx_ring->syncp);
+ 
+ 	/* round up to nearest 4K */
+@@ -1463,8 +1454,6 @@ int i40e_setup_tx_descriptors(struct i40e_ring *tx_ring)
+ 	return 0;
+ 
+ err:
+-	kfree(tx_ring->xsk_descs);
+-	tx_ring->xsk_descs = NULL;
+ 	kfree(tx_ring->tx_bi);
+ 	tx_ring->tx_bi = NULL;
+ 	return -ENOMEM;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.h b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+index bfc2845c99d1..f6d91fa1562e 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+@@ -390,7 +390,6 @@ struct i40e_ring {
+ 	u16 rx_offset;
+ 	struct xdp_rxq_info xdp_rxq;
+ 	struct xsk_buff_pool *xsk_pool;
+-	struct xdp_desc *xsk_descs;      /* For storing descriptors in the AF_XDP ZC path */
+ } ____cacheline_internodealigned_in_smp;
+ 
+ static inline bool ring_uses_build_skb(struct i40e_ring *ring)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index 945b1bb9c6f4..9f349aaca9ff 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -467,11 +467,11 @@ static void i40e_set_rs_bit(struct i40e_ring *xdp_ring)
+  **/
+ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+ {
+-	struct xdp_desc *descs = xdp_ring->xsk_descs;
++	struct xdp_desc *descs = xdp_ring->xsk_pool->tx_descs;
+ 	u32 nb_pkts, nb_processed = 0;
+ 	unsigned int total_bytes = 0;
+ 
+-	nb_pkts = xsk_tx_peek_release_desc_batch(xdp_ring->xsk_pool, descs, budget);
++	nb_pkts = xsk_tx_peek_release_desc_batch(xdp_ring->xsk_pool, budget);
+ 	if (!nb_pkts)
+ 		return true;
+ 
+diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
+index 443d45951564..4aa031849668 100644
+--- a/include/net/xdp_sock_drv.h
++++ b/include/net/xdp_sock_drv.h
+@@ -13,7 +13,7 @@
+ 
+ void xsk_tx_completed(struct xsk_buff_pool *pool, u32 nb_entries);
+ bool xsk_tx_peek_desc(struct xsk_buff_pool *pool, struct xdp_desc *desc);
+-u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *desc, u32 max);
++u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 max);
+ void xsk_tx_release(struct xsk_buff_pool *pool);
+ struct xsk_buff_pool *xsk_get_pool_from_qid(struct net_device *dev,
+ 					    u16 queue_id);
+@@ -142,8 +142,7 @@ static inline bool xsk_tx_peek_desc(struct xsk_buff_pool *pool,
+ 	return false;
  }
  
-+static inline u16 ice_get_tx_threshold(struct ice_tx_ring *tx_ring)
-+{
-+	return ICE_RING_QUARTER(tx_ring);
-+}
-+
- static inline bool ice_ring_ch_enabled(struct ice_tx_ring *ring)
+-static inline u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *desc,
+-						 u32 max)
++static inline u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 max)
  {
- 	return !!ring->ch;
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-index 0e87b98e0966..5706b5405373 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx_lib.c
-@@ -222,6 +222,7 @@ ice_receive_skb(struct ice_rx_ring *rx_ring, struct sk_buff *skb, u16 vlan_tag)
- static void ice_clean_xdp_irq(struct ice_tx_ring *xdp_ring)
+ 	return 0;
+ }
+diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+index ddeefc4a1040..5554ee75e7da 100644
+--- a/include/net/xsk_buff_pool.h
++++ b/include/net/xsk_buff_pool.h
+@@ -60,6 +60,7 @@ struct xsk_buff_pool {
+ 	 */
+ 	dma_addr_t *dma_pages;
+ 	struct xdp_buff_xsk *heads;
++	struct xdp_desc *tx_descs;
+ 	u64 chunk_mask;
+ 	u64 addrs_cnt;
+ 	u32 free_list_cnt;
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 28ef3f4465ae..2abd64e4d589 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -343,9 +343,9 @@ bool xsk_tx_peek_desc(struct xsk_buff_pool *pool, struct xdp_desc *desc)
+ }
+ EXPORT_SYMBOL(xsk_tx_peek_desc);
+ 
+-static u32 xsk_tx_peek_release_fallback(struct xsk_buff_pool *pool, struct xdp_desc *descs,
+-					u32 max_entries)
++static u32 xsk_tx_peek_release_fallback(struct xsk_buff_pool *pool, u32 max_entries)
  {
- 	unsigned int total_bytes = 0, total_pkts = 0;
-+	u16 tx_thresh = xdp_ring->tx_thresh;
- 	u16 ntc = xdp_ring->next_to_clean;
- 	struct ice_tx_desc *next_dd_desc;
- 	u16 next_dd = xdp_ring->next_dd;
-@@ -233,7 +234,7 @@ static void ice_clean_xdp_irq(struct ice_tx_ring *xdp_ring)
- 	    cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE)))
++	struct xdp_desc *descs = pool->tx_descs;
+ 	u32 nb_pkts = 0;
+ 
+ 	while (nb_pkts < max_entries && xsk_tx_peek_desc(pool, &descs[nb_pkts]))
+@@ -355,8 +355,7 @@ static u32 xsk_tx_peek_release_fallback(struct xsk_buff_pool *pool, struct xdp_d
+ 	return nb_pkts;
+ }
+ 
+-u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *descs,
+-				   u32 max_entries)
++u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 max_entries)
+ {
+ 	struct xdp_sock *xs;
+ 	u32 nb_pkts;
+@@ -365,7 +364,7 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *
+ 	if (!list_is_singular(&pool->xsk_tx_list)) {
+ 		/* Fallback to the non-batched version */
+ 		rcu_read_unlock();
+-		return xsk_tx_peek_release_fallback(pool, descs, max_entries);
++		return xsk_tx_peek_release_fallback(pool, max_entries);
+ 	}
+ 
+ 	xs = list_first_or_null_rcu(&pool->xsk_tx_list, struct xdp_sock, tx_list);
+@@ -374,7 +373,7 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *
+ 		goto out;
+ 	}
+ 
+-	nb_pkts = xskq_cons_peek_desc_batch(xs->tx, descs, pool, max_entries);
++	nb_pkts = xskq_cons_peek_desc_batch(xs->tx, pool, max_entries);
+ 	if (!nb_pkts) {
+ 		xs->tx->queue_empty_descs++;
+ 		goto out;
+@@ -386,7 +385,7 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *
+ 	 * packets. This avoids having to implement any buffering in
+ 	 * the Tx path.
+ 	 */
+-	nb_pkts = xskq_prod_reserve_addr_batch(pool->cq, descs, nb_pkts);
++	nb_pkts = xskq_prod_reserve_addr_batch(pool->cq, pool->tx_descs, nb_pkts);
+ 	if (!nb_pkts)
+ 		goto out;
+ 
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index fd39bb660ebc..b34fca6ada86 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -37,6 +37,7 @@ void xp_destroy(struct xsk_buff_pool *pool)
+ 	if (!pool)
  		return;
  
--	for (i = 0; i < ICE_TX_THRESH; i++) {
-+	for (i = 0; i < tx_thresh; i++) {
- 		tx_buf = &xdp_ring->tx_buf[ntc];
- 
- 		total_bytes += tx_buf->bytecount;
-@@ -254,9 +255,9 @@ static void ice_clean_xdp_irq(struct ice_tx_ring *xdp_ring)
- 	}
- 
- 	next_dd_desc->cmd_type_offset_bsz = 0;
--	xdp_ring->next_dd = xdp_ring->next_dd + ICE_TX_THRESH;
-+	xdp_ring->next_dd = xdp_ring->next_dd + tx_thresh;
- 	if (xdp_ring->next_dd > xdp_ring->count)
--		xdp_ring->next_dd = ICE_TX_THRESH - 1;
-+		xdp_ring->next_dd = tx_thresh - 1;
- 	xdp_ring->next_to_clean = ntc;
- 	ice_update_tx_ring_stats(xdp_ring, total_pkts, total_bytes);
++	kvfree(pool->tx_descs);
+ 	kvfree(pool->heads);
+ 	kvfree(pool);
  }
-@@ -269,12 +270,13 @@ static void ice_clean_xdp_irq(struct ice_tx_ring *xdp_ring)
-  */
- int ice_xmit_xdp_ring(void *data, u16 size, struct ice_tx_ring *xdp_ring)
+@@ -58,6 +59,12 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+ 	if (!pool->heads)
+ 		goto out;
+ 
++	if (xs->tx) {
++		pool->tx_descs = kcalloc(xs->tx->nentries, sizeof(*pool->tx_descs), GFP_KERNEL);
++		if (!pool->tx_descs)
++			goto out;
++	}
++
+ 	pool->chunk_mask = ~((u64)umem->chunk_size - 1);
+ 	pool->addrs_cnt = umem->size;
+ 	pool->heads_cnt = umem->chunks;
+diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+index e9aa2c236356..638138fbe475 100644
+--- a/net/xdp/xsk_queue.h
++++ b/net/xdp/xsk_queue.h
+@@ -205,11 +205,11 @@ static inline bool xskq_cons_read_desc(struct xsk_queue *q,
+ 	return false;
+ }
+ 
+-static inline u32 xskq_cons_read_desc_batch(struct xsk_queue *q,
+-					    struct xdp_desc *descs,
+-					    struct xsk_buff_pool *pool, u32 max)
++static inline u32 xskq_cons_read_desc_batch(struct xsk_queue *q, struct xsk_buff_pool *pool,
++					    u32 max)
  {
-+	u16 tx_thresh = xdp_ring->tx_thresh;
- 	u16 i = xdp_ring->next_to_use;
- 	struct ice_tx_desc *tx_desc;
- 	struct ice_tx_buf *tx_buf;
- 	dma_addr_t dma;
+ 	u32 cached_cons = q->cached_cons, nb_entries = 0;
++	struct xdp_desc *descs = pool->tx_descs;
  
--	if (ICE_DESC_UNUSED(xdp_ring) < ICE_TX_THRESH)
-+	if (ICE_DESC_UNUSED(xdp_ring) < tx_thresh)
- 		ice_clean_xdp_irq(xdp_ring);
+ 	while (cached_cons != q->cached_prod && nb_entries < max) {
+ 		struct xdp_rxtx_ring *ring = (struct xdp_rxtx_ring *)q->ring;
+@@ -282,12 +282,12 @@ static inline bool xskq_cons_peek_desc(struct xsk_queue *q,
+ 	return xskq_cons_read_desc(q, desc, pool);
+ }
  
- 	if (!unlikely(ICE_DESC_UNUSED(xdp_ring))) {
-@@ -306,7 +308,7 @@ int ice_xmit_xdp_ring(void *data, u16 size, struct ice_tx_ring *xdp_ring)
- 		tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_rs);
- 		tx_desc->cmd_type_offset_bsz |=
- 			cpu_to_le64(ICE_TX_DESC_CMD_RS << ICE_TXD_QW1_CMD_S);
--		xdp_ring->next_rs = ICE_TX_THRESH - 1;
-+		xdp_ring->next_rs = tx_thresh - 1;
- 	}
- 	xdp_ring->next_to_use = i;
+-static inline u32 xskq_cons_peek_desc_batch(struct xsk_queue *q, struct xdp_desc *descs,
+-					    struct xsk_buff_pool *pool, u32 max)
++static inline u32 xskq_cons_peek_desc_batch(struct xsk_queue *q, struct xsk_buff_pool *pool,
++					    u32 max)
+ {
+ 	u32 entries = xskq_cons_nb_entries(q, max);
  
-@@ -314,7 +316,7 @@ int ice_xmit_xdp_ring(void *data, u16 size, struct ice_tx_ring *xdp_ring)
- 		tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_rs);
- 		tx_desc->cmd_type_offset_bsz |=
- 			cpu_to_le64(ICE_TX_DESC_CMD_RS << ICE_TXD_QW1_CMD_S);
--		xdp_ring->next_rs += ICE_TX_THRESH;
-+		xdp_ring->next_rs += tx_thresh;
- 	}
+-	return xskq_cons_read_desc_batch(q, descs, pool, entries);
++	return xskq_cons_read_desc_batch(q, pool, entries);
+ }
  
- 	return ICE_XDP_TX;
+ /* To improve performance in the xskq_cons_release functions, only update local state here.
 -- 
 2.33.1
 
