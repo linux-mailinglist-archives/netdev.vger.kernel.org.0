@@ -2,128 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F87E495BD4
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 09:23:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6927B495BE3
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 09:26:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379541AbiAUIXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 03:23:21 -0500
-Received: from prt-mail.chinatelecom.cn ([42.123.76.223]:38782 "EHLO
-        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231208AbiAUIXU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 03:23:20 -0500
-HMM_SOURCE_IP: 172.18.0.188:48432.1615665580
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.38 (unknown [172.18.0.188])
-        by chinatelecom.cn (HERMES) with SMTP id 6D91F280114;
-        Fri, 21 Jan 2022 16:23:07 +0800 (CST)
-X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.188])
-        by app0023 with ESMTP id d7c3bb7e8efa438aa87da2bffbb667ed for j.vosburgh@gmail.com;
-        Fri, 21 Jan 2022 16:23:11 CST
-X-Transaction-ID: d7c3bb7e8efa438aa87da2bffbb667ed
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.188
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
-To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jay.vosburgh@canonical.com, huyd12@chinatelecom.cn
-Subject: [PATCH v7] net: bonding: Add support for IPV6 ns/na to balance-alb/balance-tlb mode
-Date:   Fri, 21 Jan 2022 03:22:43 -0500
-Message-Id: <20220121082243.88155-1-sunshouxin@chinatelecom.cn>
-X-Mailer: git-send-email 2.27.0
+        id S1379572AbiAUI0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 03:26:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47074 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379576AbiAUI0l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 03:26:41 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC2AC061574
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 00:26:41 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id h13so7189093plf.2
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 00:26:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Xm8//4+ThFnSznVbopOEeplOnc3QAR6P4C9SkxaG9Jc=;
+        b=mPwr21pt6K8t7EZH7cJaOYKYTT+O5lZ4DPzmqNNxRZC100cFtRPWhebXtzCa5/tbRY
+         5LyA8kRG24Di4cuFefcutkONRSxSvncf9vdy7VHUzKeVotTb/ALOSNyCeNNXv8b2mYqk
+         n4XozW+GfIQ6waOmwBPOPhkB0n4epYK8ulLSVdbG/Buajv5eaZYAXbBxYrDZyrlzxvot
+         KKY6dLe1b37K2PpIMJ6mx+3m61iAHFxw5bDqakwTmz4H1hsN5nWmUE4zekkPoInYiGJ+
+         r+afkGUxVdulqa6hNW5XPo1aZOJj32PF5BmEAEzkTaIDfs/vDHeRr6dwXSSRlykxV8rV
+         e4tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Xm8//4+ThFnSznVbopOEeplOnc3QAR6P4C9SkxaG9Jc=;
+        b=BxAf+TL3SeHOMbFfDEyFmri23nb+HliUSUv2HgDAf+1tLCqeM4Di4wRlSTpvi7kEkT
+         yMEEkvyHKuXQNVglvl4OgYHTDgvBP9WReuaIS85FuiooTCnkC30a32mXFjD1mgodjIfe
+         ugL0H6c8nQ62X9J6wZeAgKfK+rfDwsb3R3jri4Q+s0ulntJRxiPGbHD/6hkZykz4R0a+
+         IIAsrzMZYIiT8rGSgSGwADwwWdwbM0ELgxPau30/7eh+MQ8tooweRSj81JCDaB2k1NYx
+         cGXlJQd793gkVYL2l22cejc+JKI4gBW75a3V3nFcjjvfrm5F6pFtzoTEy5xjmRYCOpFG
+         rvrg==
+X-Gm-Message-State: AOAM532n5QK3xGGS32aGH1rhbUbqNeT1+CPBxt7j8rD/mK9lOCWshI7i
+        XyRU7gb4E8QKiM4cuyCFeZY+Zu8m/SQ=
+X-Google-Smtp-Source: ABdhPJwI4+CwLu6F4KSUlmufC1qdpWqOJoI7FLqUVX5Oc9qLWuhdEma4r4S95W7lrstHcFgNW6sdjg==
+X-Received: by 2002:a17:90a:de8e:: with SMTP id n14mr15361278pjv.122.1642753600123;
+        Fri, 21 Jan 2022 00:26:40 -0800 (PST)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id g20sm778344pfc.194.2022.01.21.00.26.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Jan 2022 00:26:39 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        David Miller <davem@davemloft.net>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] bonding: use rcu_dereference_rtnl when get bonding active slave
+Date:   Fri, 21 Jan 2022 16:25:18 +0800
+Message-Id: <20220121082518.1125142-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since ipv6 neighbor solicitation and advertisement messages
-isn't handled gracefully in bond6 driver, we can see packet
-drop due to inconsistency between mac address in the option
-message and source MAC .
+bond_option_active_slave_get_rcu() should not be used in rtnl_mutex as it
+use rcu_dereference(). Replace to rcu_dereference_rtnl() so we also can use
+this function in rtnl protected context.
 
-Another examples is ipv6 neighbor solicitation and advertisement
-messages from VM via tap attached to host bridge, the src mac
-might be changed through balance-alb mode, but it is not synced
-with Link-layer address in the option message.
+With this update, we can rmeove the rcu_read_lock/unlock in
+bonding .ndo_eth_ioctl and .get_ts_info.
 
-The patch implements bond6's tx handle for ipv6 neighbor
-solicitation and advertisement messages.
-
-Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+Reported-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Fixes: 94dd016ae538 ("bond: pass get_ts_info and SIOC[SG]HWTSTAMP ioctl to active device")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- drivers/net/bonding/bond_alb.c | 36 ++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ drivers/net/bonding/bond_main.c | 4 ----
+ include/net/bonding.h           | 2 +-
+ 2 files changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index 533e476988f2..82b7071840b1 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -1269,6 +1269,34 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
- 	return res;
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index ec498ce70f35..238b56d77c36 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -4133,9 +4133,7 @@ static int bond_eth_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cm
+ 
+ 		fallthrough;
+ 	case SIOCGHWTSTAMP:
+-		rcu_read_lock();
+ 		real_dev = bond_option_active_slave_get_rcu(bond);
+-		rcu_read_unlock();
+ 		if (!real_dev)
+ 			return -EOPNOTSUPP;
+ 
+@@ -5382,9 +5380,7 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
+ 	struct net_device *real_dev;
+ 	struct phy_device *phydev;
+ 
+-	rcu_read_lock();
+ 	real_dev = bond_option_active_slave_get_rcu(bond);
+-	rcu_read_unlock();
+ 	if (real_dev) {
+ 		ops = real_dev->ethtool_ops;
+ 		phydev = real_dev->phydev;
+diff --git a/include/net/bonding.h b/include/net/bonding.h
+index f6ae3a4baea4..83cfd2d70247 100644
+--- a/include/net/bonding.h
++++ b/include/net/bonding.h
+@@ -346,7 +346,7 @@ static inline bool bond_uses_primary(struct bonding *bond)
+ 
+ static inline struct net_device *bond_option_active_slave_get_rcu(struct bonding *bond)
+ {
+-	struct slave *slave = rcu_dereference(bond->curr_active_slave);
++	struct slave *slave = rcu_dereference_rtnl(bond->curr_active_slave);
+ 
+ 	return bond_uses_primary(bond) && slave ? slave->dev : NULL;
  }
- 
-+/*determine if the packet is NA or NS*/
-+static bool __alb_determine_nd(struct icmp6hdr *hdr)
-+{
-+	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
-+	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
-+		return true;
-+	}
-+
-+	return false;
-+}
-+
-+static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
-+{
-+	struct ipv6hdr *ip6hdr;
-+	struct icmp6hdr *hdr;
-+
-+	if (skb->protocol == htons(ETH_P_IPV6)) {
-+		ip6hdr = ipv6_hdr(skb);
-+		if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
-+			hdr = icmp6_hdr(skb);
-+			if (__alb_determine_nd(hdr))
-+				return true;
-+		}
-+	}
-+
-+	return false;
-+}
-+
- /************************ exported alb functions ************************/
- 
- int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
-@@ -1350,6 +1378,9 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
- 		switch (skb->protocol) {
- 		case htons(ETH_P_IP):
- 		case htons(ETH_P_IPV6):
-+			if (alb_determine_nd(skb, bond))
-+				break;
-+
- 			hash_index = bond_xmit_hash(bond, skb);
- 			if (bond->params.tlb_dynamic_lb) {
- 				tx_slave = tlb_choose_channel(bond,
-@@ -1446,6 +1477,11 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
- 			break;
- 		}
- 
-+		if (alb_determine_nd(skb, bond)) {
-+			do_tx_balance = false;
-+			break;
-+		}
-+
- 		hash_start = (char *)&ip6hdr->daddr;
- 		hash_size = sizeof(ip6hdr->daddr);
- 		break;
-
-base-commit: 79e06c4c4950be2abd8ca5d2428a8c915aa62c24
 -- 
-2.27.0
+2.31.1
 
