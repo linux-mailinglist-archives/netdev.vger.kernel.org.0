@@ -2,89 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E92C5495FC0
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 14:28:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 597D5496026
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 14:57:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350514AbiAUN2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 08:28:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346022AbiAUN2V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 08:28:21 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40202C061574
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 05:28:21 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id h14so27510132ybe.12
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 05:28:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=dy4Q63vwnui/mY3PyZTbcUeIPLCxMn026uu+8ErF5Jc=;
-        b=JAnvstMd2/DYw99SmSPmRYqx/VXmw4e9haNoEJjvmOk79GdGSvx0rPg1HqTFZHQgR3
-         6IynHBORa20p22rYPvvewOIXO696qvIzYjvArBs156XrOGOsTMoIw0DJqEp3Gqvkcc08
-         9nPG+8u/Px9gO6oUKu+vZFrZWY1mxIBnkUqwMPrSz7RrrAPD5FVoDU/MlWgL3va+VwhN
-         aXGF8JAIEZ2oVbTG8ve2S8caexjbIwU0UNxLy475AIC6BmdY6kJV7y6egGoBpBV9Vvod
-         57oh8Z3J5vdOBDfLWXEb7NC9VJyZ0sYfMPWnfQHTrAhveOq9Uk3Gip79PdnlzjktyQSt
-         VsfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=dy4Q63vwnui/mY3PyZTbcUeIPLCxMn026uu+8ErF5Jc=;
-        b=O1O6nW6oWKwm4D/MnumE2pzgKuAStjXWztzRRstTO1LFA3R8KyO+4VJnBqqBTMkG9y
-         ujI8eHoEPpG5aoCVdeOet1br9tTzSiyAIBDJigvUKp2uiYJmRbcJy5asQEs4DWXldv0O
-         076LmF/3eEBaFM2u6QCSezrb6BkuuSwTTRbxhSCHCxqzeF3pQXhbj6yNC3RtAYMNP9eC
-         pGU/TRFBxQyvvmNKF/PdlBp5Is3LqUF2nh/L++GQmP4sCYjx3nMwUeatAl/PY6ELqqxj
-         aEfwJefOfVHCbCeFNS+7vRfNHtR03aKiqv5YZLBqPTD4pZfZ3D7nSGdx89g6F+uweBup
-         kjyQ==
-X-Gm-Message-State: AOAM531NnNaRSWRnYV63uxibY/KeWjOWIVmD1NryxJQlG3BwQgiNKOtv
-        rs/75N5TsU6gZFUK5JSCbjF8pjX5HXpttoRSBNQ=
-X-Google-Smtp-Source: ABdhPJyTtmAc3098Kg5WVnj/J6yAt6Isj6Jc6Q/lCoAX5YFGJylbk7DdXET821gbBvR7gHrDhHoQHJufboY8m5KZ298=
-X-Received: by 2002:a25:3604:: with SMTP id d4mr6404707yba.354.1642771699936;
- Fri, 21 Jan 2022 05:28:19 -0800 (PST)
+        id S238680AbiAUN5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 08:57:36 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:31174 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350740AbiAUN5f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 08:57:35 -0500
+Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JgLTr5GCFz8wTF;
+        Fri, 21 Jan 2022 21:54:40 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by dggpeml500025.china.huawei.com
+ (7.185.36.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Fri, 21 Jan
+ 2022 21:57:32 +0800
+From:   Hou Tao <houtao1@huawei.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+CC:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <houtao1@huawei.com>, Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Julien Thierry <jthierry@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH bpf-next 0/2] arm64, bpf: support more atomic ops
+Date:   Fri, 21 Jan 2022 21:56:30 +0800
+Message-ID: <20220121135632.136976-1-houtao1@huawei.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Sender: hookersgroove@gmail.com
-Received: by 2002:a05:7010:3482:b0:1f9:66bd:b8cc with HTTP; Fri, 21 Jan 2022
- 05:28:19 -0800 (PST)
-From:   Ibrahim idewu <ibrahimidewu4@gmail.com>
-Date:   Fri, 21 Jan 2022 14:28:19 +0100
-X-Google-Sender-Auth: CfDhDgzLpyCIO53MYOaBYLodwag
-Message-ID: <CAEF8BQSkM2fuF7OpGgMWRiA9QaDs6GErNqgs7cq1Qp85fVm0dg@mail.gmail.com>
-Subject: URGENT
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500025.china.huawei.com (7.185.36.35)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+Hi,
 
-My name is Mr.Ibrahim Idewu.I have decided to seek a confidential
-co-operation  with you in the execution of the deal described
-here-under for our both  mutual benefit and I hope you will keep it a
-top secret because of the nature  of the transaction, During the
-course of our bank year auditing, I discovered  an unclaimed/abandoned
-fund, sum total of {US$19.3 Million United State  Dollars} in the bank
-account that belongs to a Saudi Arabia businessman Who unfortunately
-lost his life and entire family in a Motor Accident.
-I want to present you to the bank as the next of kin to the dead
-business man after the money will be sent to you we then share
-60percent to me and 40percent to you.
-All necessary arrangements to secure the fund have been made by
-me,upon consideration of this offer.
+Atomics support in bpf has already been done by "Atomics for eBPF"
+patch series [1], but it only adds support for x86, and this patchset
+adds support for arm64.
 
-send me the below information
+Patch #1 changes the type of test program from fentry/ to raw_tp/ for
+atomics test, because bpf trampoline is not available for arm64 now.
+After the change, atomics test will be available for arm64 and other
+arches.
 
+Patch #2 implements atomic[64]_fetch_add, atomic[64]_[fetch_]{and,or,xor}
+and atomic[64]_{xchg|cmpxchg} for arm64. For no-LSE-ATOMICS case and
+cpus_have_cap(ARM64_HAS_LSE_ATOMICS) case, both ./test_verifier and
+"./test_progs -t atomic" are exercised and passed correspondingly.
 
--Your Full Name:
--Your Contact Address:
--Your direct Mobile telephone Number:
--Your Date of Birth:
--Your occupation:
+Comments are always welcome.
 
+Regards,
+Tao
 
-I await your swift response and re-assurance.
+Hou Tao (2):
+  selftests/bpf: use raw_tp program for atomic test
+  arm64, bpf: support more atomic operations
 
+ arch/arm64/include/asm/insn.h                 |  45 +++-
+ arch/arm64/lib/insn.c                         | 155 +++++++++++--
+ arch/arm64/net/bpf_jit.h                      |  43 +++-
+ arch/arm64/net/bpf_jit_comp.c                 | 216 ++++++++++++++----
+ .../selftests/bpf/prog_tests/atomics.c        | 114 +++------
+ tools/testing/selftests/bpf/progs/atomics.c   |  29 +--
+ 6 files changed, 438 insertions(+), 164 deletions(-)
 
-Best regards,
-Mr.Ibrahim Idewu.
+-- 
+2.27.0
+
