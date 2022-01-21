@@ -2,178 +2,414 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56D77496541
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 19:50:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7FB5496543
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 19:50:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229877AbiAUSur (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 13:50:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47872 "EHLO
+        id S229452AbiAUSut (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 13:50:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbiAUSuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 13:50:16 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2338DC06173B
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 10:50:13 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id s13so2526425ejy.3
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 10:50:13 -0800 (PST)
+        with ESMTP id S229705AbiAUSuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 13:50:23 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFAAC061401
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 10:50:23 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id c76-20020a25c04f000000b00613e2c514e2so16974151ybf.21
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 10:50:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=DNRS8Anpj2A3AnDmPfNqzTpLxfMiFhjADv4KSwcHcow=;
-        b=XMSkemzpUdeapL7uTq54zathw9/884R4IzutN1UA8avYMdtfpFC1XVk7vIhjUhIioP
-         7Pyom5eVfw7CuKtf+qBo93h5OD7jECv0Ec9eGbt5AlTE9Hu4XF6xD2a/A24tzyIJmjCM
-         rW+t65sBp0mttfe0MAd//sMlYLf2bMl7K/hplaXZDLVY4iYHNVQwqCVJypJzcufemh58
-         bYXVvIrQ3GbsCR0Ts87iLOqjDZyhkoBqsvoZPdb7qO8+nKQbj+h5WaiTKPVYKxnsZ1MA
-         uX/V3WM717kKmzIJ9X0eLd1704wl/ZYiVXoeSPzEH3L3OlvjTPyCNbyLCS7cd+v0YR0x
-         5m5Q==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=1H4meivw/loyKrsClb/KtN41lQLgtIBeTyTOmK+neXM=;
+        b=qIeSx192yWlft4UZfkNhlHgQAabZL6NxhcgDjMt6426XQtbTInvnTsSEwKRnbe/Uak
+         SkVKspo8tAAMGKY9LU6JHHiC5X0ByZfN26g4QsDHoGt/Y57dJKlcg2rKXWaUjn4Fkamn
+         z9Ne1j+djpiwi25dCDHcZHIVdr5igqhetp0xRvgMmhxCF73YbdQKd47wO4s6TKX654n/
+         A1/3XjnDIgmSLlblHCY7f0L+0NG75dBdxTUbKoZIuLJFziTOJXUTTNIItidA6P89ifVS
+         8NXlIxxP8TfZX+4MnqUXJ4Ej2uAd/+XggRO76paBB7sf/EUD6IhUM92Ywo4CVY7Gekj1
+         xghA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=DNRS8Anpj2A3AnDmPfNqzTpLxfMiFhjADv4KSwcHcow=;
-        b=UNN5aFaMOGSdZWR4z55XVLHMBNdJ4e9moR/4Uxs+0/KIrNMW5C7QZz5Hrs3W75MyG2
-         G0dA+/eKc+4HNHEni+jo5MWFjE1nydHnKqLIRSZjSKXFVxJUyKVcJcrNyB3SEdanPG1Q
-         Wk6Y7FlZFjpjCoXhgit1DPIr0MMsXRY2I+656GesF8gGsVLKaEKiz8aPoWPYz9Jzy9A0
-         OX2BsvdKbwsP5m90Lwg2881DiJh2aGU0EgXJ6gEx9fNYfhn6MmMdxfV3BpWtK3fNC6Jh
-         ktE+IqgE6shPGg3glxU/yDIGzBNTcVA0seIDgAxk6bAcVH1O/2Rz3IyFKzld+RUdnp5u
-         cKSw==
-X-Gm-Message-State: AOAM530BXOOG9AMSmjCwXiltERbADdcL6uA7IHj8By8imlWnDxRG7jqs
-        d2jV/hkcxT1yVDMx3+OBtoM=
-X-Google-Smtp-Source: ABdhPJyFATJ5tODskkmN4jnwwGqMGZiWYCYwuaBqYQ9fXAnVtSsJtt4mFZAkY0WN5GuJQuU1eEUIgA==
-X-Received: by 2002:a17:906:53d5:: with SMTP id p21mr4127326ejo.315.1642791011486;
-        Fri, 21 Jan 2022 10:50:11 -0800 (PST)
-Received: from skbuf ([188.25.255.2])
-        by smtp.gmail.com with ESMTPSA id jt14sm2295382ejc.32.2022.01.21.10.50.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 10:50:10 -0800 (PST)
-Date:   Fri, 21 Jan 2022 20:50:09 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
- cpu ports, non cpu extint
-Message-ID: <20220121185009.pfkh5kbejhj5o5cs@skbuf>
-References: <87r19e5e8w.fsf@bang-olufsen.dk>
- <trinity-4b35f0dc-6bc6-400a-8d4e-deb26e626391-1641926734521@3c-app-gmx-bap14>
- <87v8ynbylk.fsf@bang-olufsen.dk>
- <trinity-d858854a-ff84-4b28-81f4-f0becc878017-1642089370117@3c-app-gmx-bap49>
- <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
- <Yea+uTH+dh9/NMHn@lunn.ch>
- <20220120151222.dirhmsfyoumykalk@skbuf>
- <CAJq09z6UE72zSVZfUi6rk_nBKGOBC0zjeyowHgsHDHh7WyH0jA@mail.gmail.com>
- <20220121020627.spli3diixw7uxurr@skbuf>
- <CAJq09z5HbnNEcqN7LZs=TK4WR1RkjoefF_6ib-hFu2RLT54Nug@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJq09z5HbnNEcqN7LZs=TK4WR1RkjoefF_6ib-hFu2RLT54Nug@mail.gmail.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=1H4meivw/loyKrsClb/KtN41lQLgtIBeTyTOmK+neXM=;
+        b=aUMwIw2RLCzB0NMWG5qeHkaap27IgS2zW7F7KTPqkGw80QXPyMoeLVS9vi+F3fVyNj
+         rpVo57xgcI570qul/DHsVj3b7s9FM4i31pYXKtRBFEyutKn0lCVTtxhVVtuJigSKSUe7
+         X3SGFPwTtTlogTgKbebQR61x59c88KiAz2NubETkQmSWJ5y6L6iMRirMSVD5YHQ5rzdu
+         H7cxI7oXzq7j8I7ywzd5AxiXeBFmPW9iDfO3lfLI7OBOlTFEHMdMroZtCfPFvC2zLVe2
+         3C/6kSv3rO7OiMEtFLaBZ807yqMGiER96uU7GlI+V4U/CYbFCo8WT5K45NqeKDVZB1Yu
+         0Plg==
+X-Gm-Message-State: AOAM5306QqPU8GpiftnPrnuCXj91Zg5TFLYMM2WsKZKGI3/9/PcrsUN0
+        ly5ehS8QAElBgWzY31frpi2mNIU=
+X-Google-Smtp-Source: ABdhPJwKOr3Rs+R/7DOdiGPkCkkMkDHRQ0bCr89pjPtZ2+F7WZu8evEqD5UGVoLgEN6V02Z4hw6jgRY=
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:a647:98e5:9f:3032])
+ (user=sdf job=sendgmr) by 2002:a25:e78a:: with SMTP id e132mr8291840ybh.515.1642791022754;
+ Fri, 21 Jan 2022 10:50:22 -0800 (PST)
+Date:   Fri, 21 Jan 2022 10:50:20 -0800
+In-Reply-To: <20220121073051.4180328-1-kafai@fb.com>
+Message-Id: <YesAbHLRYBJ8FwiK@google.com>
+Mime-Version: 1.0
+References: <20220121073026.4173996-1-kafai@fb.com> <20220121073051.4180328-1-kafai@fb.com>
+Subject: Re: [RFC PATCH v3 net-next 4/4] bpf: Add __sk_buff->mono_delivery_time
+ and handle __sk_buff->tstamp based on tc_at_ingress
+From:   sdf@google.com
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 12:13:58AM -0300, Luiz Angelo Daros de Luca wrote:
-> > :) device tree properties are not the fix for everything!
-> 
-> I'm still getting used to it ;-)
-> 
-> In this thread, Alvin suggested adding a new property to define which
-> port will be used as trap_port instead of using the last CPU port.
-> Should I try something different?
-> 
->         switch1 {
->                compatible = "realtek,rtl8367s";
->                reg = <29>;
-> 
->                realtek,trap-port = <&port7>;
-> 
->                ports {
->                         ....
->                         port7: port@7 {
->                             ...
->                        };
->         };
-> 
-> Should I do something differently?
+On 01/20, Martin KaFai Lau wrote:
+> __sk_buff->mono_delivery_time:
+> This patch adds __sk_buff->mono_delivery_time to
+> read and write the mono delivery_time in skb->tstamp.
 
-To clarify, I don't know what a trap_port is. I just saw this
-description in rtl8365mb.c:
+> The bpf rewrite is like:
+> /* BPF_READ: __u64 a = __sk_buff->mono_delivery_time; */
+> if (skb->mono_delivery_time)
+> 	a = skb->tstamp;
+> else
+> 	a = 0;
 
- * @trap_port: forward trapped frames to this port
+> /* BPF_WRITE: __sk_buff->mono_delivery_time = a; */
+> skb->tstamp = a;
+> skb->mono_delivery_time = !!a;
 
-but I still don't know to which packets does this configuration apply
-(where are the packet traps installed, and for what kind of packets).
+> __sk_buff->tstamp:
+> The bpf rewrite is like:
+> /* BPF_READ: __u64 a = __sk_buff->tstamp; */
+> if (skb->tc_at_ingress && skb->mono_delivery_time)
+> 	a = 0;
+> else
+> 	a = skb->tstamp;
 
-Speculating here, but it appears quite arbitrary, and I'd guess also
-broken, to make the trap_port the last CPU port. Is this also part of
-the things which you didn't really test? See commit 8d5f7954b7c8 ("net:
-dsa: felix: break at first CPU port during init and teardown") for a
-similar issue with this. When there are multiple 'ethernet = <&phandle>'
-properties in the device tree, DSA makes the owners of all those
-phandles a DSA master, and all those switch ports as CPU ports. But out
-of all those CPU ports, only the first one is an active CPU port. The
-others have no dp->cpu_dp pointing to them.
-See dsa_tree_setup_default_cpu() -> dsa_tree_find_first_cpu().
-Even when DSA gets full-blown support for multiple CPU ports, I think
-it's safe to say that this default will remain the way it is: a single
-CPU port will be active to begin with: the first one. Given that fact
-(and depending on what you need to do with the trap_port info exactly),
-it might be broken to set as the trap port a CPU port that isn't used.
-Stuff like dsa_port_host_fdb_add()/dsa_port_host_fdb_del() will be
-broken, because they rely on the dp->cpu_dp association, and
-dp->cpu_dp->index will be != trap_port.
+> /* BPF_WRITE: __sk_buff->tstamp = a; */
+> skb->tstamp = a;
+> if (skb->tc_at_ingress || !a)
+> 	skb->mono_delivery_time = 0;
 
-> > I think I know what the problem is. But I'd need to know what the driver
-> > for the DSA master is, to confirm. To be precise, what I'd like to check
-> > is the value of master->vlan_features.
-> 
-> Here it is 0x1099513266227 (I hope).
+> At egress, reading is the same as before.  All skb->tstamp
+> is the delivery_time.  Writing will not change the (kernel)
+> skb->mono_delivery_time also unless 0 is being written.  This
+> will be the same behavior as before.
 
-That's quite an extraordinary set of vlan_features. In that number, I
-notice BIT(2) is set, which corresponds to __UNUSED_NETIF_F_1. So it
-probably isn't correctly printed.
+> (#) At ingress, the current bpf prog can only expect the
+> (rcv) timestamp.  Thus, both reading and writing are now treated as
+> operating on the (rcv) timestamp for the existing bpf prog.
 
-This is what I would have liked to see:
+> During bpf load time, the verifier will learn if the
+> bpf prog has accessed the new __sk_buff->mono_delivery_time.
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 22241afcac81..b41f1b414c69 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1909,6 +1909,7 @@ void dsa_slave_setup_tagger(struct net_device *slave)
- 	p->xmit = cpu_dp->tag_ops->xmit;
- 
- 	slave->features = master->vlan_features | NETIF_F_HW_TC;
-+	netdev_err(slave, "master %s vlan_features 0x%llx\n", master->name, master->vlan_features);
- 	slave->hw_features |= NETIF_F_HW_TC;
- 	slave->features |= NETIF_F_LLTX;
- 	if (slave->needed_tailroom)
+> When reading at ingress, if the bpf prog does not access the
+> new __sk_buff->mono_delivery_time, it will be treated as the
+> existing behavior as mentioned in (#) above.  If the (kernel) skb->tstamp
+> currently has a delivery_time,  it will temporary be saved first and then
+> set the skb->tstamp to either the ktime_get_real() or zero.  After
+> the bpf prog finished running, if the bpf prog did not change
+> the skb->tstamp,  the saved delivery_time will be restored
+> back to the skb->tstamp.
 
-And I don't think you fully answered Florian's questions either, really.
-Can we see the a link to the code of the Ethernet controller whose role
-is to be a host port (DSA master) for the rtl8365mb switch? If that DSA
-master is a DSA switch itself, could you please unroll the chain all the
-way with more links to drivers? No matter whether upstream or downstream,
-just what you use.
+> When writing __sk_buff->tstamp at ingress, the
+> skb->mono_delivery_time will be cleared because of
+> the (#) mentioned above.
 
-I hate to guess, but since both you and Arınç have mentioned the
-mt7620a/mt7621 SoCs, I'd guess that the top-most DSA driver in both
-cases is "mediatek,eth-mac" (drivers/net/ethernet/mediatek/mtk_eth_soc.c).
-If so, this would confirm my suspicions, since it sets its vlan_features
-to include NETIF_F_IP_CSUM and NETIF_F_IPV6_CSUM. Please confirm that
-master->vlan_features contains these 2 bits.
+> If the bpf prog does access the new __sk_buff->mono_delivery_time
+> at ingress, it indicates that the bpf prog is aware of this new
+> kernel support:
+> the (kernel) skb->tstamp can have the delivery_time or the
+> (rcv) timestamp at ingress.  If the __sk_buff->mono_delivery_time
+> is available, the __sk_buff->tstamp will not be available and
+> it will be zero.
 
-> Oh, this DSA driver still does not implement vlan nor bridge offload.
-> Maybe it would matter.
+> The bpf rewrite needs to access the skb's mono_delivery_time
+> and tc_at_ingress bit.  They are moved up in sk_buff so
+> that bpf rewrite can be done at a fixed offset.  tc_skip_classify
+> is moved together with tc_at_ingress.  To get one bit for
+> mono_delivery_time, csum_not_inet is moved down and this bit
+> is currently used by sctp.
 
-It doesn't matter. The vlan_features is a confusing name for what it
-really does here. I'll explain in a bit once you clarify the other
-things I asked for.
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
+>   include/linux/filter.h         |  31 +++++++-
+>   include/linux/skbuff.h         |  20 +++--
+>   include/uapi/linux/bpf.h       |   1 +
+>   net/core/filter.c              | 134 ++++++++++++++++++++++++++++++---
+>   net/sched/act_bpf.c            |   5 +-
+>   net/sched/cls_bpf.c            |   6 +-
+>   tools/include/uapi/linux/bpf.h |   1 +
+>   7 files changed, 171 insertions(+), 27 deletions(-)
+
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 71fa57b88bfc..5cef695d6575 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -572,7 +572,8 @@ struct bpf_prog {
+>   				has_callchain_buf:1, /* callchain buffer allocated? */
+>   				enforce_expected_attach_type:1, /* Enforce expected_attach_type  
+> checking at attach time */
+>   				call_get_stack:1, /* Do we call bpf_get_stack() or bpf_get_stackid()  
+> */
+> -				call_get_func_ip:1; /* Do we call get_func_ip() */
+> +				call_get_func_ip:1, /* Do we call get_func_ip() */
+> +				delivery_time_access:1; /* Accessed __sk_buff->mono_delivery_time */
+>   	enum bpf_prog_type	type;		/* Type of BPF program */
+>   	enum bpf_attach_type	expected_attach_type; /* For some prog types */
+>   	u32			len;		/* Number of filter blocks */
+> @@ -699,6 +700,34 @@ static inline void bpf_compute_data_pointers(struct  
+> sk_buff *skb)
+>   	cb->data_end  = skb->data + skb_headlen(skb);
+>   }
+
+> +static __always_inline u32 bpf_prog_run_at_ingress(const struct bpf_prog  
+> *prog,
+> +						   struct sk_buff *skb)
+> +{
+> +	ktime_t tstamp, delivery_time = 0;
+> +	int filter_res;
+> +
+> +	if (unlikely(skb->mono_delivery_time) && !prog->delivery_time_access) {
+> +		delivery_time = skb->tstamp;
+> +		skb->mono_delivery_time = 0;
+> +		if (static_branch_unlikely(&netstamp_needed_key))
+> +			skb->tstamp = tstamp = ktime_get_real();
+> +		else
+> +			skb->tstamp = tstamp = 0;
+> +	}
+> +
+> +	/* It is safe to push/pull even if skb_shared() */
+> +	__skb_push(skb, skb->mac_len);
+> +	bpf_compute_data_pointers(skb);
+> +	filter_res = bpf_prog_run(prog, skb);
+> +	__skb_pull(skb, skb->mac_len);
+> +
+> +	/* __sk_buff->tstamp was not changed, restore the delivery_time */
+> +	if (unlikely(delivery_time) && skb_tstamp(skb) == tstamp)
+> +		skb_set_delivery_time(skb, delivery_time, true);
+> +
+> +	return filter_res;
+> +}
+> +
+>   /* Similar to bpf_compute_data_pointers(), except that save orginal
+>    * data in cb->data and cb->meta_data for restore.
+>    */
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 4677bb6c7279..a14b04b86c13 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -866,22 +866,23 @@ struct sk_buff {
+>   	__u8			vlan_present:1;	/* See PKT_VLAN_PRESENT_BIT */
+>   	__u8			csum_complete_sw:1;
+>   	__u8			csum_level:2;
+> -	__u8			csum_not_inet:1;
+>   	__u8			dst_pending_confirm:1;
+> +	__u8			mono_delivery_time:1;
+> +
+> +#ifdef CONFIG_NET_CLS_ACT
+> +	__u8			tc_skip_classify:1;
+> +	__u8			tc_at_ingress:1;
+> +#endif
+>   #ifdef CONFIG_IPV6_NDISC_NODETYPE
+>   	__u8			ndisc_nodetype:2;
+>   #endif
+> -
+> +	__u8			csum_not_inet:1;
+>   	__u8			ipvs_property:1;
+>   	__u8			inner_protocol_type:1;
+>   	__u8			remcsum_offload:1;
+>   #ifdef CONFIG_NET_SWITCHDEV
+>   	__u8			offload_fwd_mark:1;
+>   	__u8			offload_l3_fwd_mark:1;
+> -#endif
+> -#ifdef CONFIG_NET_CLS_ACT
+> -	__u8			tc_skip_classify:1;
+> -	__u8			tc_at_ingress:1;
+>   #endif
+>   	__u8			redirected:1;
+>   #ifdef CONFIG_NET_REDIRECT
+> @@ -894,7 +895,6 @@ struct sk_buff {
+>   	__u8			decrypted:1;
+>   #endif
+>   	__u8			slow_gro:1;
+> -	__u8			mono_delivery_time:1;
+
+>   #ifdef CONFIG_NET_SCHED
+>   	__u16			tc_index;	/* traffic control index */
+> @@ -972,10 +972,16 @@ struct sk_buff {
+>   /* if you move pkt_vlan_present around you also must adapt these  
+> constants */
+>   #ifdef __BIG_ENDIAN_BITFIELD
+>   #define PKT_VLAN_PRESENT_BIT	7
+> +#define TC_AT_INGRESS_SHIFT	0
+> +#define SKB_MONO_DELIVERY_TIME_SHIFT 2
+>   #else
+>   #define PKT_VLAN_PRESENT_BIT	0
+> +#define TC_AT_INGRESS_SHIFT	7
+> +#define SKB_MONO_DELIVERY_TIME_SHIFT 5
+>   #endif
+>   #define PKT_VLAN_PRESENT_OFFSET	offsetof(struct sk_buff,  
+> __pkt_vlan_present_offset)
+> +#define TC_AT_INGRESS_OFFSET offsetof(struct sk_buff,  
+> __pkt_vlan_present_offset)
+> +#define SKB_MONO_DELIVERY_TIME_OFFSET offsetof(struct sk_buff,  
+> __pkt_vlan_present_offset)
+
+>   #ifdef __KERNEL__
+>   /*
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index b0383d371b9a..83725c891f3c 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -5437,6 +5437,7 @@ struct __sk_buff {
+>   	__u32 gso_size;
+>   	__u32 :32;		/* Padding, future use. */
+>   	__u64 hwtstamp;
+> +	__u64 mono_delivery_time;
+>   };
+
+>   struct bpf_tunnel_key {
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 4fc53d645a01..db17812f0f8c 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -7832,6 +7832,7 @@ static bool bpf_skb_is_valid_access(int off, int  
+> size, enum bpf_access_type type
+>   			return false;
+>   		break;
+>   	case bpf_ctx_range(struct __sk_buff, tstamp):
+> +	case bpf_ctx_range(struct __sk_buff, mono_delivery_time):
+>   		if (size != sizeof(__u64))
+>   			return false;
+>   		break;
+> @@ -7872,6 +7873,7 @@ static bool sk_filter_is_valid_access(int off, int  
+> size,
+>   	case bpf_ctx_range(struct __sk_buff, tstamp):
+>   	case bpf_ctx_range(struct __sk_buff, wire_len):
+>   	case bpf_ctx_range(struct __sk_buff, hwtstamp):
+> +	case bpf_ctx_range(struct __sk_buff, mono_delivery_time):
+>   		return false;
+>   	}
+
+> @@ -7911,6 +7913,7 @@ static bool cg_skb_is_valid_access(int off, int  
+> size,
+>   		case bpf_ctx_range_till(struct __sk_buff, cb[0], cb[4]):
+>   			break;
+>   		case bpf_ctx_range(struct __sk_buff, tstamp):
+> +		case bpf_ctx_range(struct __sk_buff, mono_delivery_time):
+>   			if (!bpf_capable())
+>   				return false;
+>   			break;
+> @@ -7943,6 +7946,7 @@ static bool lwt_is_valid_access(int off, int size,
+>   	case bpf_ctx_range(struct __sk_buff, tstamp):
+>   	case bpf_ctx_range(struct __sk_buff, wire_len):
+>   	case bpf_ctx_range(struct __sk_buff, hwtstamp):
+> +	case bpf_ctx_range(struct __sk_buff, mono_delivery_time):
+>   		return false;
+>   	}
+
+> @@ -8169,6 +8173,7 @@ static bool tc_cls_act_is_valid_access(int off, int  
+> size,
+>   		case bpf_ctx_range_till(struct __sk_buff, cb[0], cb[4]):
+>   		case bpf_ctx_range(struct __sk_buff, tstamp):
+>   		case bpf_ctx_range(struct __sk_buff, queue_mapping):
+> +		case bpf_ctx_range(struct __sk_buff, mono_delivery_time):
+>   			break;
+>   		default:
+>   			return false;
+> @@ -8445,6 +8450,7 @@ static bool sk_skb_is_valid_access(int off, int  
+> size,
+>   	case bpf_ctx_range(struct __sk_buff, tstamp):
+>   	case bpf_ctx_range(struct __sk_buff, wire_len):
+>   	case bpf_ctx_range(struct __sk_buff, hwtstamp):
+> +	case bpf_ctx_range(struct __sk_buff, mono_delivery_time):
+>   		return false;
+>   	}
+
+> @@ -8603,6 +8609,114 @@ static struct bpf_insn  
+> *bpf_convert_shinfo_access(const struct bpf_insn *si,
+>   	return insn;
+>   }
+
+
+[..]
+
+> +static struct bpf_insn *bpf_convert_tstamp_read(const struct bpf_insn  
+> *si,
+> +						struct bpf_insn *insn)
+> +{
+> +	__u8 value_reg = si->dst_reg;
+> +	__u8 skb_reg = si->src_reg;
+> +	__u8 tmp_reg = BPF_REG_AX;
+> +
+> +#ifdef CONFIG_NET_CLS_ACT
+> +	*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg, TC_AT_INGRESS_OFFSET);
+> +	*insn++ = BPF_ALU32_IMM(BPF_AND, tmp_reg, 1 << TC_AT_INGRESS_SHIFT);
+> +	*insn++ = BPF_JMP32_IMM(BPF_JEQ, tmp_reg, 0, 5);
+> +	/* @ingress, read __sk_buff->tstamp as the (rcv) timestamp,
+> +	 * so check the skb->mono_delivery_time.
+> +	 */
+> +	*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg,
+> +			      SKB_MONO_DELIVERY_TIME_OFFSET);
+> +	*insn++ = BPF_ALU32_IMM(BPF_AND, tmp_reg,
+> +				1 << SKB_MONO_DELIVERY_TIME_SHIFT);
+> +	*insn++ = BPF_JMP32_IMM(BPF_JEQ, tmp_reg, 0, 2);
+> +	/* skb->mono_delivery_time is set, read 0 as the (rcv) timestamp. */
+> +	*insn++ = BPF_MOV64_IMM(value_reg, 0);
+> +	*insn++ = BPF_JMP_A(1);
+> +#endif
+> +
+> +	*insn++ = BPF_LDX_MEM(BPF_DW, value_reg, skb_reg,
+> +			      offsetof(struct sk_buff, tstamp));
+> +	return insn;
+> +}
+> +
+> +static struct bpf_insn *bpf_convert_tstamp_write(const struct bpf_insn  
+> *si,
+> +						 struct bpf_insn *insn)
+> +{
+> +	__u8 value_reg = si->src_reg;
+> +	__u8 skb_reg = si->dst_reg;
+> +	__u8 tmp_reg = BPF_REG_AX;
+> +
+> +	/* skb->tstamp = tstamp */
+> +	*insn++ = BPF_STX_MEM(BPF_DW, skb_reg, value_reg,
+> +			      offsetof(struct sk_buff, tstamp));
+> +
+> +#ifdef CONFIG_NET_CLS_ACT
+> +	*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg, TC_AT_INGRESS_OFFSET);
+> +	*insn++ = BPF_ALU32_IMM(BPF_AND, tmp_reg, 1 << TC_AT_INGRESS_SHIFT);
+> +	*insn++ = BPF_JMP32_IMM(BPF_JNE, tmp_reg, 0, 1);
+> +#endif
+> +
+> +	/* test tstamp != 0 */
+> +	*insn++ = BPF_JMP_IMM(BPF_JNE, value_reg, 0, 3);
+> +	/* writing __sk_buff->tstamp at ingress or writing 0,
+> +	 * clear the skb->mono_delivery_time.
+> +	 */
+> +	*insn++ = BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg,
+> +			      SKB_MONO_DELIVERY_TIME_OFFSET);
+> +	*insn++ = BPF_ALU32_IMM(BPF_AND, tmp_reg,
+> +				~(1 << SKB_MONO_DELIVERY_TIME_SHIFT));
+> +	*insn++ = BPF_STX_MEM(BPF_B, skb_reg, tmp_reg,
+> +			      SKB_MONO_DELIVERY_TIME_OFFSET);
+> +
+> +	return insn;
+> +}
+
+I wonder if we'll see the regression from this. We read/write tstamp
+frequently and I'm not sure we care about the forwarding case.
+
+As a future work/follow up, do you think we can support cases like
+bpf_prog_load(prog_type=SCHED_CLS expected_attach_type=TC_EGRESS) where
+we can generate bytecode with only BPF_LDX_MEM/BPF_STX_MEM for skb->tstamp?
+(essentially a bytecode as it was prior to your patch series)
+
+Since we know that that specific program will run only at egress,
+I'm assuming we can generate simpler bytecode? (of coarse it needs more
+work on cls_bpf to enforce this new expected_attach_type constraint)
