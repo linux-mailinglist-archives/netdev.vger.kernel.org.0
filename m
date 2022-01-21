@@ -2,218 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07C10495F31
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 13:43:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73ACF495F41
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 13:48:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380445AbiAUMn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 07:43:27 -0500
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:45569 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1380442AbiAUMn0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 07:43:26 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V2RitQW_1642768988;
-Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V2RitQW_1642768988)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 21 Jan 2022 20:43:24 +0800
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net v2] net/smc: Transitional solution for clcsock race issue
-Date:   Fri, 21 Jan 2022 20:43:08 +0800
-Message-Id: <1642768988-126174-1-git-send-email-guwen@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1380465AbiAUMsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 07:48:19 -0500
+Received: from proxima.lasnet.de ([78.47.171.185]:45096 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244399AbiAUMsS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 07:48:18 -0500
+Received: from [IPV6:2003:e9:d70c:7733:6a50:4603:7591:b048] (p200300e9d70c77336a5046037591b048.dip0.t-ipconnect.de [IPv6:2003:e9:d70c:7733:6a50:4603:7591:b048])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 83B0DC05A1;
+        Fri, 21 Jan 2022 13:48:16 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1642769296;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+dhz0F/V3adEU4+UC5E4OQzYWIX+X1i4+KWjCzuAs+I=;
+        b=j2ZVSJaa7aKx3W6KVskhU86CuPGTAD/eBZ6AaMZkrf6vwYIgKNaxrHu14g9JxYFAHpDDZS
+        BNetg6CE5yUwJZTeOQO4NmUjXPuuvYOTjYtpcgZjRscR2TBsztdhMTU4Fw0uwCenAbyXEs
+        Oycyg6cJPAizbrk7c00Wox1qHPDDmbGpYjxZb2LZn+OmiHih2t94ImSFuvrELakjXw8rJ2
+        sMWptsKp5GABsmcO1LBz2KJZgdL1scP9Ysxtzrf96MCYW2O7yLi6GOBwmBff7O/S5lEgGB
+        yv4y6ODYHoyqbf104acYPX/sEy5A7B/yqUai3wjF3sjONbMOUgQXcRFbbazZGg==
+Message-ID: <e401539a-6a05-9982-72a6-ac360b0bdf97@datenfreihafen.org>
+Date:   Fri, 21 Jan 2022 13:48:14 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [wpan-next v2 0/9] ieee802154: A bunch of fixes
+Content-Language: en-US
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <alex.aring@gmail.com>
+Cc:     linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Xue Liu <liuxuenetmail@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harry Morris <harrymorris12@gmail.com>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+References: <20220120112115.448077-1-miquel.raynal@bootlin.com>
+ <CAB_54W5_dALTBdvXSRMpiEJBFTqVkzewHJcBjgLn79=Ku6cR9A@mail.gmail.com>
+ <20220121092715.3d1de2ed@xps13>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20220121092715.3d1de2ed@xps13>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We encountered a crash in smc_setsockopt() and it is caused by
-accessing smc->clcsock after clcsock was released.
 
- BUG: kernel NULL pointer dereference, address: 0000000000000020
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0
- Oops: 0000 [#1] PREEMPT SMP PTI
- CPU: 1 PID: 50309 Comm: nginx Kdump: loaded Tainted: G E     5.16.0-rc4+ #53
- RIP: 0010:smc_setsockopt+0x59/0x280 [smc]
- Call Trace:
-  <TASK>
-  __sys_setsockopt+0xfc/0x190
-  __x64_sys_setsockopt+0x20/0x30
-  do_syscall_64+0x34/0x90
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7f16ba83918e
-  </TASK>
+Hello.
 
-This patch tries to fix it by holding clcsock_release_lock and
-checking whether clcsock has already been released before access.
+On 21.01.22 09:27, Miquel Raynal wrote:
+> Hi Alexander,
+> 
+> alex.aring@gmail.com wrote on Thu, 20 Jan 2022 17:52:57 -0500:
+> 
+>> Hi,
+>>
+>> On Thu, 20 Jan 2022 at 06:21, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>>>
+>>> In preparation to a wider series, here are a number of small and random
+>>> fixes across the subsystem.
+>>>
+>>> Changes in v2:
+>>> * Fixed the build error reported by a robot. It ended up being something
+>>>    which I fixed in a commit from a following series. I've now sorted
+>>>    this out and the patch now works on its own.
+>>>   
+>>
+>> This patch series should be reviewed first and have all current
+>> detected fixes, it also should be tagged "wpan" (no need to fix that
+>> now). Then there is a following up series for a new feature which you
+>> like to tackle, maybe the "more generic symbol duration handling"? It
+>> should be based on this "fixes" patch series, Stefan will then get
+>> things sorted out to queue them right for upstream.
+>> Stefan, please correct me if I'm wrong.
 
-In case that a crash of the same reason happens in smc_getsockopt()
-or smc_switch_to_fallback(), this patch also checkes smc->clcsock
-in them too. And the caller of smc_switch_to_fallback() will identify
-whether fallback succeeds according to the return value.
+Alex, agreed. I will take this series first and see if the patches apply 
+cleanly against my wpan tree. Once in they can be feed back into net, 
+net-next and finally wpan-next again.
 
-Fixes: fd57770dd198 ("net/smc: wait for pending work before clcsock release_sock")
-Link: https://lore.kernel.org/lkml/5dd7ffd1-28e2-24cc-9442-1defec27375e@linux.ibm.com/T/
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/af_smc.c | 63 +++++++++++++++++++++++++++++++++++++++++++++-----------
- 1 file changed, 51 insertions(+), 12 deletions(-)
+> Yup sorry that's not what I meant: the kernel robot detected that a
+> patch broke the build. This patch was part of the current series. The
+> issue was that I messed a copy paste error. But I didn't ran a
+> per-patch build test and another patch, which had nothing to do with
+> this fix, actually addressed the build issue. I very likely failed
+> something during my rebase operation. >
+> So yes, this series should come first. Then we'll tackle the symbol
+> duration series, the Kconfig cleanup and after that we can start thick
+> topics :)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 12c52c7..c625af3 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -566,12 +566,17 @@ static void smc_stat_fallback(struct smc_sock *smc)
- 	mutex_unlock(&net->smc.mutex_fback_rsn);
- }
- 
--static void smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
-+static int smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
- {
- 	wait_queue_head_t *smc_wait = sk_sleep(&smc->sk);
--	wait_queue_head_t *clc_wait = sk_sleep(smc->clcsock->sk);
-+	wait_queue_head_t *clc_wait;
- 	unsigned long flags;
- 
-+	mutex_lock(&smc->clcsock_release_lock);
-+	if (!smc->clcsock) {
-+		mutex_unlock(&smc->clcsock_release_lock);
-+		return -EBADF;
-+	}
- 	smc->use_fallback = true;
- 	smc->fallback_rsn = reason_code;
- 	smc_stat_fallback(smc);
-@@ -586,18 +591,30 @@ static void smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
- 		 * smc socket->wq, which should be removed
- 		 * to clcsocket->wq during the fallback.
- 		 */
-+		clc_wait = sk_sleep(smc->clcsock->sk);
- 		spin_lock_irqsave(&smc_wait->lock, flags);
- 		spin_lock_nested(&clc_wait->lock, SINGLE_DEPTH_NESTING);
- 		list_splice_init(&smc_wait->head, &clc_wait->head);
- 		spin_unlock(&clc_wait->lock);
- 		spin_unlock_irqrestore(&smc_wait->lock, flags);
- 	}
-+	mutex_unlock(&smc->clcsock_release_lock);
-+	return 0;
- }
- 
- /* fall back during connect */
- static int smc_connect_fallback(struct smc_sock *smc, int reason_code)
- {
--	smc_switch_to_fallback(smc, reason_code);
-+	struct net *net = sock_net(&smc->sk);
-+	int rc = 0;
-+
-+	rc = smc_switch_to_fallback(smc, reason_code);
-+	if (rc) { /* fallback fails */
-+		this_cpu_inc(net->smc.smc_stats->clnt_hshake_err_cnt);
-+		if (smc->sk.sk_state == SMC_INIT)
-+			sock_put(&smc->sk); /* passive closing */
-+		return rc;
-+	}
- 	smc_copy_sock_settings_to_clc(smc);
- 	smc->connect_nonblock = 0;
- 	if (smc->sk.sk_state == SMC_INIT)
-@@ -1518,11 +1535,12 @@ static void smc_listen_decline(struct smc_sock *new_smc, int reason_code,
- {
- 	/* RDMA setup failed, switch back to TCP */
- 	smc_conn_abort(new_smc, local_first);
--	if (reason_code < 0) { /* error, no fallback possible */
-+	if (reason_code < 0 ||
-+	    smc_switch_to_fallback(new_smc, reason_code)) {
-+		/* error, no fallback possible */
- 		smc_listen_out_err(new_smc);
- 		return;
- 	}
--	smc_switch_to_fallback(new_smc, reason_code);
- 	if (reason_code && reason_code != SMC_CLC_DECL_PEERDECL) {
- 		if (smc_clc_send_decline(new_smc, reason_code, version) < 0) {
- 			smc_listen_out_err(new_smc);
-@@ -1964,8 +1982,11 @@ static void smc_listen_work(struct work_struct *work)
- 
- 	/* check if peer is smc capable */
- 	if (!tcp_sk(newclcsock->sk)->syn_smc) {
--		smc_switch_to_fallback(new_smc, SMC_CLC_DECL_PEERNOSMC);
--		smc_listen_out_connected(new_smc);
-+		rc = smc_switch_to_fallback(new_smc, SMC_CLC_DECL_PEERNOSMC);
-+		if (rc)
-+			smc_listen_out_err(new_smc);
-+		else
-+			smc_listen_out_connected(new_smc);
- 		return;
- 	}
- 
-@@ -2254,7 +2275,9 @@ static int smc_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 
- 	if (msg->msg_flags & MSG_FASTOPEN) {
- 		if (sk->sk_state == SMC_INIT && !smc->connect_nonblock) {
--			smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
-+			rc = smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
-+			if (rc)
-+				goto out;
- 		} else {
- 			rc = -EINVAL;
- 			goto out;
-@@ -2447,6 +2470,11 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
- 	/* generic setsockopts reaching us here always apply to the
- 	 * CLC socket
- 	 */
-+	mutex_lock(&smc->clcsock_release_lock);
-+	if (!smc->clcsock) {
-+		mutex_unlock(&smc->clcsock_release_lock);
-+		return -EBADF;
-+	}
- 	if (unlikely(!smc->clcsock->ops->setsockopt))
- 		rc = -EOPNOTSUPP;
- 	else
-@@ -2456,6 +2484,7 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
- 		sk->sk_err = smc->clcsock->sk->sk_err;
- 		sk_error_report(sk);
- 	}
-+	mutex_unlock(&smc->clcsock_release_lock);
- 
- 	if (optlen < sizeof(int))
- 		return -EINVAL;
-@@ -2472,7 +2501,7 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
- 	case TCP_FASTOPEN_NO_COOKIE:
- 		/* option not supported by SMC */
- 		if (sk->sk_state == SMC_INIT && !smc->connect_nonblock) {
--			smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
-+			rc = smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
- 		} else {
- 			rc = -EINVAL;
- 		}
-@@ -2515,13 +2544,23 @@ static int smc_getsockopt(struct socket *sock, int level, int optname,
- 			  char __user *optval, int __user *optlen)
- {
- 	struct smc_sock *smc;
-+	int rc;
- 
- 	smc = smc_sk(sock->sk);
-+	mutex_lock(&smc->clcsock_release_lock);
-+	if (!smc->clcsock) {
-+		mutex_unlock(&smc->clcsock_release_lock);
-+		return -EBADF;
-+	}
- 	/* socket options apply to the CLC socket */
--	if (unlikely(!smc->clcsock->ops->getsockopt))
-+	if (unlikely(!smc->clcsock->ops->getsockopt)) {
-+		mutex_unlock(&smc->clcsock_release_lock);
- 		return -EOPNOTSUPP;
--	return smc->clcsock->ops->getsockopt(smc->clcsock, level, optname,
--					     optval, optlen);
-+	}
-+	rc = smc->clcsock->ops->getsockopt(smc->clcsock, level, optname,
-+					   optval, optlen);
-+	mutex_unlock(&smc->clcsock_release_lock);
-+	return rc;
- }
- 
- static int smc_ioctl(struct socket *sock, unsigned int cmd,
--- 
-1.8.3.1
+That sounds like a great plan to me. I know splitting the huge amount of 
+work you do up into digestible pieces is work not much liked, so I 
+appreciate that you take this without much grumble. :-)
 
+I also finally started to start my review backlog on your work. Catched 
+up on the big v3 patchset now. Will look over the newest sets over the 
+weekend so we should be ready to process the fixes series and maybe more 
+next week.
+
+>> Also, please give me the weekend to review this patch series.
+
+Alex, whenever you are ready with them please add you ack and I will doe 
+my review and testing in parallel.
+
+> Yes of course, you've been very (very) reactive so far, I try to be
+> also more reactive on my side but that's of course not a race!
+
+And being so reactive is very much appreciated. We just need to throttle 
+this a bit so we can keep up with reviewer resources. :-)
+
+regards
+Stefan Schmidt
