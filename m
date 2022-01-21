@@ -2,97 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92D094957D1
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 02:38:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C9DE4957E5
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 02:44:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235863AbiAUBiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 20:38:12 -0500
-Received: from relay036.a.hostedemail.com ([64.99.140.36]:2248 "EHLO
-        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S233355AbiAUBiM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 20:38:12 -0500
-Received: from omf06.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay06.hostedemail.com (Postfix) with ESMTP id DAEDB22DB5;
-        Fri, 21 Jan 2022 01:38:07 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf06.hostedemail.com (Postfix) with ESMTPA id 3264F20010;
-        Fri, 21 Jan 2022 01:37:54 +0000 (UTC)
-Message-ID: <5da3e02454c8c9ff3335c7199f3ae48af2864981.camel@perches.com>
-Subject: Re: [PATCH 1/3] lib/string_helpers: Consolidate yesno()
- implementation
-From:   Joe Perches <joe@perches.com>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        linux-security-module@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Julia Lawall <julia.lawall@lip6.fr>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Leo Li <sunpeng.li@amd.com>,
-        Mikita Lipski <mikita.lipski@amd.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Vishal Kulkarni <vishal@chelsio.com>
-Date:   Thu, 20 Jan 2022 17:37:53 -0800
-In-Reply-To: <20220119160017.65bd1fa5@gandalf.local.home>
-References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
-         <20220119072450.2890107-2-lucas.demarchi@intel.com>
-         <YefXg03hXtrdUj6y@paasikivi.fi.intel.com>
-         <20220119100635.6c45372b@gandalf.local.home>
-         <YehllDq7wC3M2PQZ@smile.fi.intel.com>
-         <20220119160017.65bd1fa5@gandalf.local.home>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        id S1348250AbiAUBoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 20:44:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348356AbiAUBob (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 20:44:31 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606DDC061574;
+        Thu, 20 Jan 2022 17:44:30 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id s9so5140573plg.7;
+        Thu, 20 Jan 2022 17:44:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wfl0pjMZM1Kbq/HRlo84Pj19EgrEOZiUYyD/ASOXiFM=;
+        b=Ea88lDttp5I9UDxXpdNPE26XJU+GnCC19e8y1o2wLNWBHL/dTRiXpshcb53DGe73iX
+         yzYIxP602yaP29iTfHhV1z6SGrqv5m0JlKxgR2ejjvgT5oit7yETQRULo9xNMP2JSa6x
+         tFaWmg1q8i3MXqeOJ9X3XHloL44RLVUm9zPdcs57mKjnTzheymUTv5KBeDAUQ4SnRZPb
+         03ZYQHCg+VS9XUrrAYsxLF8Vmf60o9fO4yHYrY6rb6WjBXobqhDSUbo1miZk6WVl3jV8
+         bBtugMoYHWTKnC8ibLCOO+h1duN3M7XPRva2QJQ0IpkNUCE8frgwZjRKDnytpJwBODva
+         iDAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wfl0pjMZM1Kbq/HRlo84Pj19EgrEOZiUYyD/ASOXiFM=;
+        b=P/hwLRkpwOQKlGUV5TTsndOINN+0aEgwF1ub2AQk7BslXhBJjS14uj0PrAtx9EQ/X5
+         ykCwIGzAdByrdzenwQDdeTmG+HCa8pfGFyVem2/FZUE0e18ceCbIB+V+EaCFMoxD1pvg
+         339M16jgVGLIKNbZ1MNrVaW3R6+Og2TyKeZMy1sOHcofWeAN13B/0VF3TOAAfP4PGReg
+         8utZwqsRnYp89pbQtDfu8nMxwUpqMbvWFdPaiWWqSH7HKh0vawnbUf904+VXYNbbucn7
+         AXpZpAQjP4P8Hcn1QtQVndggagcjqO6S4IJ7yGzWF24hL3jRJRP0fBYukoScfufArHT2
+         eEbg==
+X-Gm-Message-State: AOAM531YZ6rNYNW8ihsjkFfA3+19Kw8DwG16b4iex6hLy0ow+IjluDKk
+        Jfa9lp2QQh6gPVj9iDbLhcUZmUpGrONiwQvwvJg=
+X-Google-Smtp-Source: ABdhPJypOWnGm/gYyLTFh+/FRay60DL9kL5dlJIe+YOIF4HYVuvIfdI7xaVkZw7Ag2VaGXXicWn2Wld9Gd+PEGHKyCQ=
+X-Received: by 2002:a17:902:860c:b0:149:1017:25f0 with SMTP id
+ f12-20020a170902860c00b00149101725f0mr1824276plo.116.1642729469813; Thu, 20
+ Jan 2022 17:44:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: 7rtkhruhzyxmaz9kz4md8szkb6csicqt
-X-Rspamd-Server: rspamout03
-X-Rspamd-Queue-Id: 3264F20010
-X-Spam-Status: No, score=-0.98
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+2KBCQ3/oG0QJHNmpFhxNu1Bw+ZDwRWLg=
-X-HE-Tag: 1642729074-280175
+References: <1642678950-19584-1-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1642678950-19584-1-git-send-email-alan.maguire@oracle.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 20 Jan 2022 17:44:18 -0800
+Message-ID: <CAADnVQJMsVw_oD7BWoMhG7hNdqLcFFzTwSAhnJLCh0vEBMHZbQ@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/3] libbpf: name-based u[ret]probe attach
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        sunyucong@gmail.com, Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-01-19 at 16:00 -0500, Steven Rostedt wrote:
-> On Wed, 19 Jan 2022 21:25:08 +0200
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > > I say keep it one line!
-> > > 
-> > > Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>  
-> > 
-> > I believe Sakari strongly follows the 80 rule, which means...
-> 
-> Checkpatch says "100" I think we need to simply update the docs (the
-> documentation always lags the code ;-)
+On Thu, Jan 20, 2022 at 3:43 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+>
+> This patch series is a refinement of the RFC patchset [1], focusing
+> on support for attach by name for uprobes and uretprobes.  Still
+> marked RFC as there are unresolved questions.
+>
+> Currently attach for such probes is done by determining the offset
+> manually, so the aim is to try and mimic the simplicity of kprobe
+> attach, making use of uprobe opts to specify a name string.
+>
+> uprobe attach is done by specifying a binary path, a pid (where
+> 0 means "this process" and -1 means "all processes") and an
+> offset.  Here a 'func_name' option is added to 'struct uprobe_opts'
+> and that name is searched for in symbol tables.  If the binary
+> is a program, relative offset calcuation must be done to the
+> symbol address as described in [2].
 
-checkpatch doesn't say anything normally, it's a stupid script.
-It just mindlessly bleats a message when a line exceeds 100 chars...
-
-Just fyi: I think it's nicer on a single line too.
-
-
+I think the pid discussion here and in the patches only causes
+confusion. I think it's best to remove pid from the api.
+uprobes are attached to an inode. They're not attached to a pid
+or a process. Any existing process or future process started
+from that inode (executable file) will have that uprobe triggering.
+The kernel can do pid filtering through predicate mechanism,
+but bpf uprobe doesn't do any filtering. iirc.
+Similarly "attach to all processes" doesn't sound right either.
+It's attached to all current and future processes.
