@@ -2,97 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB9E94957C2
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 02:35:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92D094957D1
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 02:38:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343710AbiAUBfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 20:35:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239700AbiAUBfS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 20:35:18 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B607C061574;
-        Thu, 20 Jan 2022 17:35:18 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id k4so8824657qvt.6;
-        Thu, 20 Jan 2022 17:35:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XlpFI84bOjXDIKsLry0zm6Nf4XTJwuG9N3/EyF/LIkc=;
-        b=jBsFfq//SLOoNJa4YJ+vOS3PFmjtwBNRrgNNhCr3QPCYMtTiTnaoRPjcFOyqB73apc
-         wl4+pufIhtR8X62l1a279bVocUlgLRaKwzD3NzFprtdpQKRNH0DVeRmoS+nSF6zvk/fP
-         2PzEfSS9ZTbYSwDVZqzmG0NUT72u6IGDHQPr4lGlsza3c5Kpzwp4MjsTFcJ3SungAHO0
-         3h4cJj0baeOwsfJxIdw2uAvlNr6B33uVNIZeiuSiuXDg2suYPvxMxMs0K+opfBFiq0V2
-         ybNPmxoylp7qbvYQ4Pizh6ExhA0OqJR7Yk5MRD7ShsBSyQBL9dftH/9fPy1q56ZY+xWA
-         /Pvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XlpFI84bOjXDIKsLry0zm6Nf4XTJwuG9N3/EyF/LIkc=;
-        b=uBmGZDm+LIELkCOyFAEmp1rnPU8FuUlgCfpx2Tc47VXjxnN8yGaR09p82V7PTSyglB
-         1j+b1hQ6gjdGm7HwxOsxaeDptbF/eRGFqmRl8AaHjp614kR7GyfYyX2OKQskgAslLfJ1
-         Mv91AcTOaSU0hkaYmkVefE7eL5D0BEEW2qW/eWrqInWpkE9CaeTPKpsRkMxe+mqeGx4E
-         VFiAiC+7ZwfTYXh3N4NJGxwi/PUtviG3u9v7hSUniqmfkaOwAV7mPLkAe5YdQLqip3rG
-         KhUT239QVKhDZGwkYfOT54ez6GNMr9exrK4jV/caBRzwwEzHtyqc4c2ff505vqP1QoUn
-         y5jg==
-X-Gm-Message-State: AOAM531IG74DB5uCH/72eLjE/BxNF1/Wn700lDIG8PlfIFm5DoVwMzXn
-        qZRCdfHYKVL/l9UwFi7bZaY=
-X-Google-Smtp-Source: ABdhPJxj9wj/QOhdwWx6apVy7R7UlvurS5idAc669qDMKSuYo4IYeO5v8HHIeXSZmSL4acT+Gh253Q==
-X-Received: by 2002:a05:6214:627:: with SMTP id a7mr1666916qvx.114.1642728917637;
-        Thu, 20 Jan 2022 17:35:17 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id v25sm2264249qtc.96.2022.01.20.17.35.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 17:35:17 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: deng.changcheng@zte.com.cn
-To:     marcel@holtmann.org
-Cc:     johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] bluetooth: mgmt: Replace zero-length array with flexible-array member
-Date:   Fri, 21 Jan 2022 01:35:08 +0000
-Message-Id: <20220121013508.950175-1-deng.changcheng@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        id S235863AbiAUBiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 20:38:12 -0500
+Received: from relay036.a.hostedemail.com ([64.99.140.36]:2248 "EHLO
+        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S233355AbiAUBiM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 20:38:12 -0500
+Received: from omf06.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay06.hostedemail.com (Postfix) with ESMTP id DAEDB22DB5;
+        Fri, 21 Jan 2022 01:38:07 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf06.hostedemail.com (Postfix) with ESMTPA id 3264F20010;
+        Fri, 21 Jan 2022 01:37:54 +0000 (UTC)
+Message-ID: <5da3e02454c8c9ff3335c7199f3ae48af2864981.camel@perches.com>
+Subject: Re: [PATCH 1/3] lib/string_helpers: Consolidate yesno()
+ implementation
+From:   Joe Perches <joe@perches.com>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        linux-security-module@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Leo Li <sunpeng.li@amd.com>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Vishal Kulkarni <vishal@chelsio.com>
+Date:   Thu, 20 Jan 2022 17:37:53 -0800
+In-Reply-To: <20220119160017.65bd1fa5@gandalf.local.home>
+References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
+         <20220119072450.2890107-2-lucas.demarchi@intel.com>
+         <YefXg03hXtrdUj6y@paasikivi.fi.intel.com>
+         <20220119100635.6c45372b@gandalf.local.home>
+         <YehllDq7wC3M2PQZ@smile.fi.intel.com>
+         <20220119160017.65bd1fa5@gandalf.local.home>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: 7rtkhruhzyxmaz9kz4md8szkb6csicqt
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: 3264F20010
+X-Spam-Status: No, score=-0.98
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+2KBCQ3/oG0QJHNmpFhxNu1Bw+ZDwRWLg=
+X-HE-Tag: 1642729074-280175
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Changcheng Deng <deng.changcheng@zte.com.cn>
+On Wed, 2022-01-19 at 16:00 -0500, Steven Rostedt wrote:
+> On Wed, 19 Jan 2022 21:25:08 +0200
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> 
+> > > I say keep it one line!
+> > > 
+> > > Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>  
+> > 
+> > I believe Sakari strongly follows the 80 rule, which means...
+> 
+> Checkpatch says "100" I think we need to simply update the docs (the
+> documentation always lags the code ;-)
 
-There is a regular need in the kernel to provide a way to declare having
-a dynamically sized set of trailing elements in a structure. Kernel code
-should always use "flexible array members" for these cases. The older
-style of one-element or zero-length arrays should no longer be used.
-Reference:
-https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
+checkpatch doesn't say anything normally, it's a stupid script.
+It just mindlessly bleats a message when a line exceeds 100 chars...
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
----
- include/net/bluetooth/mgmt.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Just fyi: I think it's nicer on a single line too.
 
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index 99266f7aebdc..3d26e6a3478b 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -1112,7 +1112,7 @@ struct mgmt_ev_adv_monitor_device_found {
- 	__s8   rssi;
- 	__le32 flags;
- 	__le16 eir_len;
--	__u8   eir[0];
-+	__u8   eir[];
- } __packed;
- 
- #define MGMT_EV_ADV_MONITOR_DEVICE_LOST		0x0030
--- 
-2.25.1
 
