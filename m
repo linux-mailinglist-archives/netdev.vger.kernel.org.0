@@ -2,86 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7555A495DDA
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 11:40:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 579DA495DE2
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 11:42:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380039AbiAUKkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 05:40:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48824 "EHLO
+        id S1350082AbiAUKma (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 05:42:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380044AbiAUKkM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 05:40:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6B6C06173F
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 02:40:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29D8261A3E
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 10:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 810FDC340E1;
-        Fri, 21 Jan 2022 10:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642761611;
-        bh=A9yW3egq8szZJbVtwND2dU2aaY4zP6oBbCSMqE31PlI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MEEmnMLT5yjAPT+7dARcp2ua1uwZYiy4nqRSnIAUiiGkEkz4DWvIdSOfJwh1PweUf
-         /HbmbhFhRb55LXRXNe66IdY8J0yuW/NTMS7ivbHEcw5ncHvbPnyJK9T5Mzh4+10zf5
-         jI9MCIRJXyJLF0IJQxSwmjzX+oi8bv3aCxxX7Uzf5iNxufouv0sascqfkcTC29hAUX
-         NwmJSuL3p0s3Lhn9oLiz1+F9wQUWCqBwSQfF1Ds85GrtVF10HnK84fV1g38WhG7qaG
-         Q6nw1PwLzGhq43F5wQGIz8GzukQgRcKXjxWPhAjTOyjJIlUUw5B/rlq55evdwWUwb/
-         fzKrmngryo9GA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5BF3EF6079C;
-        Fri, 21 Jan 2022 10:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234910AbiAUKm3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 05:42:29 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35665C061574;
+        Fri, 21 Jan 2022 02:42:29 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id r10so10244693edt.1;
+        Fri, 21 Jan 2022 02:42:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zZhYAYN3n5WcZz7HwZEIgORGsu/PwseBwSd+OLunQyw=;
+        b=AZkri8tJKbxLBr2pMTKNZbbeX2q6oRSbHn/oCnZUnw3il4iNUAPXd0tpjydiyoPepj
+         H9eIHMz7F6+1mtpWkLyntJiRcO54bNPWuWpTKhYkZCXp/hfFqIWZRBE4h0xW4SZudxkY
+         4fiH2jHbp/EzHlyier9rBbAbln+YDkR/Oezl6q51r4tg94s2rQXDXKC+xKCjCtK2AlZr
+         f8yvobllJ45pMVuRZ+OQ5RH8oK3ybkp1YreB1iuwNd6XedJn4Ukz7i+9XBMylQmN1Cny
+         a+7w/TYLTpwseTj8dIrhCXu1Ia6IlI6tqLlvMGWmT9dmN7pQu7EuOl40c9J0obSpz3XP
+         2J8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zZhYAYN3n5WcZz7HwZEIgORGsu/PwseBwSd+OLunQyw=;
+        b=nizbspt0RSi4erlhnkbynOnhFCA26E/Wq48la5xSo4t9khCgGpIVeJu52EVWR/jxAB
+         1W9jaUpqXCK6htgXruGJSPgJl/xfTHkyNQlGeidRKW/wJ/SdnbMBwQQcJj43bxf0n5xQ
+         cxmav6W/9d4oCRXEfUuRqcPCCTNO/755pNh9TYAf0axTD7xu/12zPzWv8hM0zNsNDKNM
+         9w+RFgGLr8Su9RkIso3Lny49qrmWDptzXjEbaHG3zFfGzSjH3UBUg++YTCy7SEtnULJL
+         skwwMjOcxjDsF9qxhe6ly6IXVXNgx/Z+rrs/Z1o579Eao0o9hgeKr51PUAGWB9ll99ic
+         8moA==
+X-Gm-Message-State: AOAM532NPpJOHN9DRFNwCBdfHCaDAoy1HGAkRz3OINe4BrHFBrh+E0fN
+        Pxum8Ft4QC4wvtsrOQ4DTXtRFnZ0BysHnkPj+oc=
+X-Google-Smtp-Source: ABdhPJw7d/LF3frtLFtj3ko/qDw6dxnIG0GOLJlFyQl8D2J/p8srr1uyy4U1jX75suhpUUJ2hmEkbiuh9An3U1GrCBY=
+X-Received: by 2002:a17:907:948d:: with SMTP id dm13mr2790824ejc.497.1642761747389;
+ Fri, 21 Jan 2022 02:42:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/5][pull request] Intel Wired LAN Driver Updates
- 2022-01-20
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164276161137.32094.12700534189273034073.git-patchwork-notify@kernel.org>
-Date:   Fri, 21 Jan 2022 10:40:11 +0000
-References: <20220121000305.1423587-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220121000305.1423587-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com
+References: <20220121041428.6437-1-josright123@gmail.com> <20220121041428.6437-3-josright123@gmail.com>
+ <CAHp75Vc9pJMNfW2roUbdrcxCSvyGboTsJC0oTDCcTAS5bmF08w@mail.gmail.com>
+In-Reply-To: <CAHp75Vc9pJMNfW2roUbdrcxCSvyGboTsJC0oTDCcTAS5bmF08w@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 21 Jan 2022 12:41:50 +0200
+Message-ID: <CAHp75VcV4F_qLJXW_dZ3t2MGLt0ddKX6m6NzapLtVwvNXaH19A@mail.gmail.com>
+Subject: Re: [PATCH v12, 2/2] net: Add dm9051 driver
+To:     Joseph CHAMG <josright123@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Leon Romanovsky <leon@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Jan 21, 2022 at 12:37 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Fri, Jan 21, 2022 at 6:15 AM Joseph CHAMG <josright123@gmail.com> wrote:
 
-This series was applied to netdev/net.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+...
 
-On Thu, 20 Jan 2022 16:03:00 -0800 you wrote:
-> This series contains updates to i40e driver only.
-> 
-> Jedrzej increases delay for EMP reset and adds checks to ensure a VF
-> request to change queues can be met.
-> 
-> Sylwester moves the placement of the Flow Director queue as to not
-> fragment the queue pile which would cause later re-allocation issues.
-> 
-> [...]
+> > correctly use regmap bulk read/write/update_bits APIs
+> > use mdiobus to work to phylib and to this driver
+> > fine tune to arrange the source code to better usage
+>
+> This is not tagged properly. Also, I specifically removed everything
+> else to point out, please, read finally the article [1] and write a
+> proper commit message. And move changelog under the cutter '--- '
+> line. Without doing these two things nobody can do anything with your
+> contribution.
 
-Here is the summary with links:
-  - [net,1/5] i40e: Increase delay to 1 s after global EMP reset
-    https://git.kernel.org/netdev/net/c/9b13bd53134c
-  - [net,2/5] i40e: Fix issue when maximum queues is exceeded
-    https://git.kernel.org/netdev/net/c/d701658a50a4
-  - [net,3/5] i40e: Fix queues reservation for XDP
-    https://git.kernel.org/netdev/net/c/92947844b8be
-  - [net,4/5] i40e: Fix for failed to init adminq while VF reset
-    https://git.kernel.org/netdev/net/c/0f344c8129a5
-  - [net,5/5] i40e: fix unsigned stat widths
-    https://git.kernel.org/netdev/net/c/3b8428b84539
+Next comment, remove all those `unlickely()` calls. Otherwise you have
+to justify their appearance.
 
-You are awesome, thank you!
+> [1]: https://cbea.ms/git-commit/
+
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+With Best Regards,
+Andy Shevchenko
