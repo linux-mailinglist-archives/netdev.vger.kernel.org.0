@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8AC1495AC7
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 08:35:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6E9D495ACD
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 08:35:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378933AbiAUHfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 02:35:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
+        id S1379024AbiAUHfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 02:35:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378971AbiAUHfG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 02:35:06 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94CB1C061747
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 23:35:05 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id m4so39175008edb.10
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 23:35:05 -0800 (PST)
+        with ESMTP id S1379020AbiAUHfV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 02:35:21 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143BCC061401
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 23:35:21 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id m4so39177430edb.10
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 23:35:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to;
-        bh=YDoBKk4bS02PDZwr8XhGTXpHtFnp/u98f/TxO+KLwJ8=;
-        b=QKbLVQgysqa81CwV4FV75AOhs1GT88BMmXKuuNGOrx799OWpomUQnywCqpS+XLaPX6
-         u//dp8UEUTs3JKroIIEpRuhCPgXp0WV20G+PgJE29ajk6EN/3CTU4JySnCe7loMYXf9T
-         HKgSD2dfCxMjpJ7d/HWvFMNwODYzoxWdkfz2Y=
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:in-reply-to;
+        bh=yCZ7YIpePuoderVTa1VAYcp6Bj30mE1j0BewnZMZJ8s=;
+        b=Oe9rz5RFYQm+9t+tnBGG1RKdzPLVp/n12DhkElL9jVruFJz/C0FPMggmOV0+wUbtVK
+         BK5s0MpA1xvGqIE9X8oAx5JrSwnEakm+CBx+arpBaD/6JnCutxaq9yJsNQk61GZXygTM
+         UX9I6fBN9evvAiFkn31EKW+OoK1zz0CdB514E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to;
-        bh=YDoBKk4bS02PDZwr8XhGTXpHtFnp/u98f/TxO+KLwJ8=;
-        b=BHyy2fyeV3D2OPZB6Jk2q6pw3yHlXFwmNfAwB4rI6GJcySkx0HtjeQLaaZQj4Ttozv
-         McIiJtzajNF4JwjoOWPz5aLIQwpaKwJlaXSNg+4qtUEayvBoyfiFyaUp1+FJTJ7eMwR3
-         uENt/uZJTJn4OHw6beL9W2RBOzbLH/MrUZ1IhY9GnhnS04phnYfYCYxi81k7FJ7WZZCA
-         LS5K5sFymqW8KrNcOqdJ7NyeKfwVepugbrzPa1SJ9RGzxxDkX9aR+hKcG9sOa5Tk/8vJ
-         Tjf2Q2Obu4yG/3d8ICBSdmSUtdFycuz8BSn1VWwK5dbaQrMlVumD/CYeBQhw7i4Tyg8e
-         ZBYw==
-X-Gm-Message-State: AOAM53389IW/lE8oV7OPM7NxgLs9SqqIretbJ13mdF3sSllhebiK2+zS
-        zwAW3o2LEdsT1dn1Ko0HP+1yig==
-X-Google-Smtp-Source: ABdhPJwmihtqqggX0DWStrqbxUiRP6jfee7LpxUOmAA1VVoQh4RAX+tsuXNI5CdLIjDWehgzVDJIuQ==
-X-Received: by 2002:a17:907:7b99:: with SMTP id ne25mr2374801ejc.769.1642750503523;
-        Thu, 20 Jan 2022 23:35:03 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:in-reply-to;
+        bh=yCZ7YIpePuoderVTa1VAYcp6Bj30mE1j0BewnZMZJ8s=;
+        b=16zDkOv1e6lrB3TeMYw3Jqwnr4mtBkUmjhC6ZSnEhJaQPNPX8xoEqFPntMn3rIfsbc
+         LYFFE1iReA6FrV73dLAWPXJmTdXfZK/s6RUPaLWyUtwcb9T8t/hIJSQSAyd1KGx5trOa
+         W6i3lHT2xozNCe6bQ09m/bS9OvdTQmKqfW8He6Ywgzje3bhDZ8bwQ+yp4uxBKlxRj5RN
+         zLYAz4WeZx3QHU6hPDr5LRl23sq85W3etlKnlIIBxQf+Zww+3mLshaLVVLCYX/LsocQq
+         VdnpFHdIDSAyPLKyEVKvpBGxgZptDc4vxLimI65tY7DoSHbDQw2v7BAEeCTh796qS6Sh
+         tTRw==
+X-Gm-Message-State: AOAM5309b7VpLBbXtVbHFc3ZBbGOdImBJ6knRGZv13vcD+w3wRXQiGEu
+        dJr24N4oWTTUFMuO6KtSu4Wz1w==
+X-Google-Smtp-Source: ABdhPJwB3VAm9xnfUTHUDuNWaFWhXeZ7QQ17CaRD7k8ygeIwFI5zkFbNPE2M/q2m6ErWaf903/Rnyg==
+X-Received: by 2002:a17:907:3e93:: with SMTP id hs19mr2363087ejc.340.1642750519388;
+        Thu, 20 Jan 2022 23:35:19 -0800 (PST)
 Received: from [192.168.178.136] (f140230.upc-f.chello.nl. [80.56.140.230])
-        by smtp.gmail.com with ESMTPSA id lf16sm1735591ejc.25.2022.01.20.23.35.00
+        by smtp.gmail.com with ESMTPSA id h16sm1768293ejj.56.2022.01.20.23.35.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Jan 2022 23:35:01 -0800 (PST)
-Message-ID: <86e73289-0a38-0554-e81a-0fb223efb098@broadcom.com>
-Date:   Fri, 21 Jan 2022 08:35:00 +0100
+        Thu, 20 Jan 2022 23:35:18 -0800 (PST)
+Message-ID: <d94863f2-8e7e-801b-07db-459e81083932@broadcom.com>
+Date:   Fri, 21 Jan 2022 08:35:17 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v2 35/35] brcmfmac: common: Add support for external
- calibration blobs
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+Subject: Re: [PATCH v2 24/35] brcmfmac: feature: Add support for setting feats
+ based on WLC version
 To:     Hector Martin <marcan@marcan.st>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -79,40 +80,40 @@ Cc:     Sven Peter <sven@svenpeter.dev>,
         linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
         SHA-cyfmac-dev-list@infineon.com
 References: <20220104072658.69756-1-marcan@marcan.st>
- <20220104072658.69756-36-marcan@marcan.st>
-From:   Arend van Spriel <arend.vanspriel@broadcom.com>
-In-Reply-To: <20220104072658.69756-36-marcan@marcan.st>
+ <20220104072658.69756-25-marcan@marcan.st>
+In-Reply-To: <20220104072658.69756-25-marcan@marcan.st>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000003ce63405d612a827"
+        boundary="0000000000002f679a05d612a942"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000003ce63405d612a827
+--0000000000002f679a05d612a942
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 1/4/2022 8:26 AM, Hector Martin wrote:
-> The calibration blob for a chip is normally stored in SROM and loaded
-> internally by the firmware. However, Apple ARM64 platforms instead store
-> it as part of platform configuration data, and provide it via the Apple
-> Device Tree. We forward this into the Linux DT in the bootloader.
-> 
-> Add support for taking this blob from the DT and loading it into the
-> dongle. The loading mechanism is the same as used for the CLM and TxCap
-> blobs.
-> 
+> The "wlc_ver" iovar returns information on the WLC and EPI versions.
+> This can be used to determine whether the PMKID_V2 and _V3 features are
+> supported.
+
+I have my doubts whether this mechanism will be reliable, but we can 
+wait and see whatever hits the fan over time. I stayed away from this 
+because it is not well guarded. Especially when there are 4 entities 
+these days spinning firmware and tinkering on the firmware api without 
+much collaboration.
+
+Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
 > Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
 > Signed-off-by: Hector Martin <marcan@marcan.st>
 > ---
->   .../broadcom/brcm80211/brcmfmac/common.c      | 24 +++++++++++++++++++
->   .../broadcom/brcm80211/brcmfmac/common.h      |  2 ++
->   .../wireless/broadcom/brcm80211/brcmfmac/of.c |  8 +++++++
->   3 files changed, 34 insertions(+)
+>   .../broadcom/brcm80211/brcmfmac/feature.c     | 48 +++++++++++++++++++
+>   .../broadcom/brcm80211/brcmfmac/feature.h     |  4 +-
+>   .../broadcom/brcm80211/brcmfmac/fwil_types.h  | 25 ++++++++++
+>   3 files changed, 76 insertions(+), 1 deletion(-)
 
---0000000000003ce63405d612a827
+--0000000000002f679a05d612a942
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -183,14 +184,14 @@ aAwIDFKdqL0O19Kui0WI1qNsu1tE2wAZk0XE9FG0OKyY2a2oFwJ85c5IO0q53U7+YePIwv4/J5aP
 OGM6lFPJCVnfKc3H76g/FyPyaE4AL/hfdNP8ObvCB6N/BVCccjNdglRsL2ewttAG3GM06LkvrLhv
 UCvjMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
 YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMMSnY
-h9J/RI6gsHbuMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCASBBcbPP7cvFjl+fD0
-wVU22dnS1Og8mvNJGBvbpzVpVjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
-BTEPFw0yMjAxMjEwNzM1MDNaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
+h9J/RI6gsHbuMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCA+JkXjHnVnCPxFYqIz
+amwRsoBx4xnWshCSaOB7EkFW4jAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0yMjAxMjEwNzM1MTlaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
 AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
-BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAYFU7kvUWtMJ/FSflnROZArfonFRYeN4C3XFy
-o6HPTHVP+PeNK47rvJxsy2thTlFobSYR7ZXrMoVvAvsyb992BqM9fsmRLUfgGGe/DvYFh0sfGILl
-y4xRi85Ya5nn4sgZmXFdh6IGFeWlEFdKB/9yexAc457WpyZOMNxJM5yPm5+0aThOtS0KbDaaafYa
-SDhLskilJeSf8JQY8MZECma1d1s1Cc14Cr+nwnmOKBKAtBMjtbdk5vxiT8zBz/i3ZG1AXmu5AvU2
-O2ZWAyWfNXN0EGhP9r5rTvCDt0PdNjjTjwA+dsqoaTQxgM8GvSNmt+Q5tSHwI3ibnxbYTGSHGKV7
-tQ==
---0000000000003ce63405d612a827--
+BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAQ6rix5t7ZuP45A4mGidruGVrXlTqRtJuxj0Z
+5i2CExLcJnitZb8Xl52xPZxjZVxjKor8d+oZwQ5ulochv2tqXecS7ORXBnipu0/5vneVd9iOtRPh
+VXPycbrWS8PoBShZIupRkTsCyIzSRJ6fFvJHZznlSP8VIdJC0gDQX6DP86Wc1ZyoadwH7qo0iXUp
+x4HxynWNFHpn1jeqNidNZuAhrvemhU2+62tE8nXcQ3g6CavsJtVGeUV+sQakIEE/f6iTMpbqwGS3
+737iZlCfV5/br1dtaUVg36X3Q/U13v+lTbPgnVXhR8TaA+t3n9PHlHHcHPFsTPqwLRA7VZ+g4C32
+0A==
+--0000000000002f679a05d612a942--
