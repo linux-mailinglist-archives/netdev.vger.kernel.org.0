@@ -2,160 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EE7A495DD3
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 11:37:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7555A495DDA
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 11:40:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380020AbiAUKhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 05:37:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48264 "EHLO
+        id S1380039AbiAUKkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 05:40:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238090AbiAUKhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 05:37:38 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E16FC061574;
-        Fri, 21 Jan 2022 02:37:38 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id c24so38933454edy.4;
-        Fri, 21 Jan 2022 02:37:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Wtu938bAAaQ3ZnDK8gjmaHpiCBPkE7NzcrpnXEzoRwI=;
-        b=UdXBcRwHEEeo0wU3Qe7k3XoLo4cHDaMI8yY93id1Ju8jBQGqN4jFiJ4TH8DdTJdbV5
-         FoKfVRNdwBbJ7KzrRcBvcc+eJrBjW1lQ65hYQBPLeWO5teDhzNfhCw6gRTNSfN6oH0+D
-         X9UwUrQ+Yvft68uiwcjL+RoSaJcLVbYe3OVxLti9smoEh2nTqV+i83/+urqMqTYZTRMK
-         RzIPHXuVFKQMYq5LN+2hOJX8poA14nqCFon4qY5a/ZH64GqKP17N9YZgljOW9ZMqAEA1
-         VATpGRPUEwcZOxiGj47EJ83Ty+5zsP8yMBOJaaOdK3gbVIEXxwiqQiNbd/re43p0slnk
-         TIwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Wtu938bAAaQ3ZnDK8gjmaHpiCBPkE7NzcrpnXEzoRwI=;
-        b=2y8jKxYkknJph1py47Bj6X0dZBzHigFWc1XUEj2XStUSdwbGFtSz/aro/OFhq3BaSm
-         yh5fCyr/xmmJD1uLwWZE0MUrlD9gCuRcF8tJrtJlyf0772lBYXgsZMT6VDiwYF6W8+Rz
-         P01FKWCeCVfSHNoIVXCRRoKWoKMBi4X94Wei8CAnC3fFe28cbYUmi75JWS6YAM7Rwo4e
-         0fI2eA2CkbNBmrfGIYwcxcl2bqOx0VplmRtu7jVyuMNLasrIP4GSVCgs+z2OJlT3FxMy
-         m9qzTXMnfyoU28dKsuWAEr196x3w9R6sNQ+wagbVHMsTgngGfv/W2TyctxP1KjAMPosj
-         hSmA==
-X-Gm-Message-State: AOAM530SfUt3R+BvMOFZiMn6WSZdrsLVyl5Zsvenphhp4+vx1jzGp7qX
-        F3rK3MlKfmBd4KMfmVUrr/9tZYM0FboEGMM2Z6A=
-X-Google-Smtp-Source: ABdhPJy2dPZ5sFbj9ascaNf0QS1lzkHgAppi7foNYu8XKasCKwKVFgOk+oa3owvO5pgXGXQH3vlJKz4bML+iFmyePi4=
-X-Received: by 2002:a05:6402:35d3:: with SMTP id z19mr3569830edc.29.1642761456398;
- Fri, 21 Jan 2022 02:37:36 -0800 (PST)
+        with ESMTP id S1380044AbiAUKkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 05:40:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6B6C06173F
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 02:40:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29D8261A3E
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 10:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 810FDC340E1;
+        Fri, 21 Jan 2022 10:40:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642761611;
+        bh=A9yW3egq8szZJbVtwND2dU2aaY4zP6oBbCSMqE31PlI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MEEmnMLT5yjAPT+7dARcp2ua1uwZYiy4nqRSnIAUiiGkEkz4DWvIdSOfJwh1PweUf
+         /HbmbhFhRb55LXRXNe66IdY8J0yuW/NTMS7ivbHEcw5ncHvbPnyJK9T5Mzh4+10zf5
+         jI9MCIRJXyJLF0IJQxSwmjzX+oi8bv3aCxxX7Uzf5iNxufouv0sascqfkcTC29hAUX
+         NwmJSuL3p0s3Lhn9oLiz1+F9wQUWCqBwSQfF1Ds85GrtVF10HnK84fV1g38WhG7qaG
+         Q6nw1PwLzGhq43F5wQGIz8GzukQgRcKXjxWPhAjTOyjJIlUUw5B/rlq55evdwWUwb/
+         fzKrmngryo9GA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5BF3EF6079C;
+        Fri, 21 Jan 2022 10:40:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220121041428.6437-1-josright123@gmail.com> <20220121041428.6437-3-josright123@gmail.com>
-In-Reply-To: <20220121041428.6437-3-josright123@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 21 Jan 2022 12:37:00 +0200
-Message-ID: <CAHp75Vc9pJMNfW2roUbdrcxCSvyGboTsJC0oTDCcTAS5bmF08w@mail.gmail.com>
-Subject: Re: [PATCH v12, 2/2] net: Add dm9051 driver
-To:     Joseph CHAMG <josright123@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Leon Romanovsky <leon@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/5][pull request] Intel Wired LAN Driver Updates
+ 2022-01-20
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164276161137.32094.12700534189273034073.git-patchwork-notify@kernel.org>
+Date:   Fri, 21 Jan 2022 10:40:11 +0000
+References: <20220121000305.1423587-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220121000305.1423587-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sassmann@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 6:15 AM Joseph CHAMG <josright123@gmail.com> wrote:
->
-> v1-v4
->
-> Add davicom dm9051 spi ethernet driver. The driver work for the
-> device platform with spi master
->
-> Test ok with raspberry pi 2 and pi 4, the spi configure used in
-> my raspberry pi 4 is spi0.1, spi speed 31200000, and INT by pin 26.
->
-> v5
->
-> Work to eliminate the wrappers to be clear for read, swapped to
-> phylib for phy connection tasks.
->
-> Tested with raspberry pi 4. Test for netwroking function, CAT5
-> cable unplug/plug and also ethtool detect for link state, and
-> all are ok.
->
-> v6
->
-> remove the redundant code that phylib has support,
-> adjust to be the reasonable sequence,
-> fine tune comments, add comments for pause function support
->
-> Tested with raspberry pi 4. Test for netwroking function, CAT5
-> cable unplug/plug and also ethtool detect for link state, and
-> all are ok.
->
-> v7
->
-> read/write registers must return error code to the callet,
-> add to enable pause processing
->
-> v8
->
-> not parmanently set MAC by .ndo_set_mac_address
->
-> correct rx function such as clear ISR,
-> inblk avoid stack buffer,
-> simple skb buffer process and
-> easy use netif_rx_ni.
->
-> simplely queue init and wake the queues,
-> limit the start_xmit function use netif_stop_queue.
->
-> descript that schedule delay is essential
-> for tx_work and rxctrl_work
->
-> eliminate ____cacheline_aligned and
-> add static int msg_enable.
->
-> v9
->
-> use phylib, no need 'select MII' in Kconfig,
-> make it clear in dm9051_xfer when using spi_sync,
-> improve the registers read/write so that error code
-> return as far as possible up the call stack.
->
-> v10
->
-> use regmap APIs for SPI and MDIO,
-> modify to correcting such as include header files
-> and program check styles
->
-> v11
->
-> eliminate the redundant code for struct regmap_config data
-> use regmap_read_poll_timeout
-> use corresponding regmap APIs, i.e. MDIO, SPI
-> all read/write registers by regmap
-> all read/write registers with mutex lock by regmap
-> problem: regmap MDIO and SPI has no .reg_update_bits, I write it
-> in the driver
-> problem: this chip can support bulk read/write to rx/tx data, but
-> can not support bulk read/write to continue registers, so need
-> read/write register one by one
->
-> v12
->
-> correctly use regmap bulk read/write/update_bits APIs
-> use mdiobus to work to phylib and to this driver
-> fine tune to arrange the source code to better usage
+Hello:
 
-This is not tagged properly. Also, I specifically removed everything
-else to point out, please, read finally the article [1] and write a
-proper commit message. And move changelog under the cutter '--- '
-line. Without doing these two things nobody can do anything with your
-contribution.
+This series was applied to netdev/net.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-[1]: https://cbea.ms/git-commit/
+On Thu, 20 Jan 2022 16:03:00 -0800 you wrote:
+> This series contains updates to i40e driver only.
+> 
+> Jedrzej increases delay for EMP reset and adds checks to ensure a VF
+> request to change queues can be met.
+> 
+> Sylwester moves the placement of the Flow Director queue as to not
+> fragment the queue pile which would cause later re-allocation issues.
+> 
+> [...]
 
+Here is the summary with links:
+  - [net,1/5] i40e: Increase delay to 1 s after global EMP reset
+    https://git.kernel.org/netdev/net/c/9b13bd53134c
+  - [net,2/5] i40e: Fix issue when maximum queues is exceeded
+    https://git.kernel.org/netdev/net/c/d701658a50a4
+  - [net,3/5] i40e: Fix queues reservation for XDP
+    https://git.kernel.org/netdev/net/c/92947844b8be
+  - [net,4/5] i40e: Fix for failed to init adminq while VF reset
+    https://git.kernel.org/netdev/net/c/0f344c8129a5
+  - [net,5/5] i40e: fix unsigned stat widths
+    https://git.kernel.org/netdev/net/c/3b8428b84539
 
+You are awesome, thank you!
 -- 
-With Best Regards,
-Andy Shevchenko
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
