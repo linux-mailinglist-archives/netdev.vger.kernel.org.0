@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FC1F495769
+	by mail.lfdr.de (Postfix) with ESMTP id B19C149576A
 	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 01:35:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378422AbiAUAfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1378423AbiAUAfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 20 Jan 2022 19:35:38 -0500
 Received: from mga17.intel.com ([192.55.52.151]:65249 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1378419AbiAUAfh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jan 2022 19:35:37 -0500
+        id S1378409AbiAUAfi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jan 2022 19:35:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642725337; x=1674261337;
+  t=1642725338; x=1674261338;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=0BGbOTx/lurssaXCoUHuwmVPIkh6j2wbdvVsR1sRXc0=;
-  b=CBRdvi/AfzJN1HgdkrEZw4Ro/VvGBGCTh0oMor6x9LFxwHaX4Fdh1A8p
-   437U+E1Wakk+w+6bMpiRb94x5Z1uGT2t3brLg5oVaOZgbT+s9pljmupW1
-   JNW3DfY9cY6cGJalFK+s9Ix1t+TtljXM2h0bADSNwIbiNnKQXwTO3TRvf
-   0G75LM6M+QHGnITMCFRKCMMZN3n00TOhJKV+SBeU9E9UXK0YGduT16AEE
-   ShoUkrkcHCmHvLmLrQQ5EXDjw7w1092zuyu/7UJco73EC3m2xh7nDoJe8
-   cQqtZ8FteM0EiStrl8PXFfzocbNi89209E/uW07s/ZALJ3CdT1ovMSwuF
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="226200818"
+  bh=K6d0wzumL2zpgrbwhNb2ExiuQQiRc8+qhYIDnlEKDhk=;
+  b=ZOfNe4kOdcSaLudh7PGJBcmA5YK0d/+GCgSSCi0Kgt/aaC/6D1GHzY1s
+   xcDaqXWYj5raMgp7XBjRGVRfyoqwmxTB/tbe3bBPslEdrFFTdsoB+Gqtf
+   bLW1biFTUufT/uxLMWd8tN/1oI1l6Usk5k6qihfbrQcjznw8XUGSlwV0g
+   uTAxUjb5zg9zmjSIT5exyElQW2ceYiS2/SmpO2cQSyRn5Je8iZ7Qt3Nli
+   y8yMjfL9kYvlER38ENy1vofGaL2Nty3bt/wqU0fDZJ4A54KdzMlWPm8Vl
+   woxP+hnK3krob4H6AY5lxYcGrFE+0ESZr1mk8CoAqvMJwWdLpcxNbOtx+
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="226200822"
 X-IronPort-AV: E=Sophos;i="5.88,303,1635231600"; 
-   d="scan'208";a="226200818"
+   d="scan'208";a="226200822"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 16:35:37 -0800
 X-IronPort-AV: E=Sophos;i="5.88,303,1635231600"; 
-   d="scan'208";a="531215215"
+   d="scan'208";a="531215218"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.220.167])
   by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 16:35:37 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+Cc:     Geliang Tang <geliang.tang@suse.com>, davem@davemloft.net,
         kuba@kernel.org, matthieu.baerts@tessares.net,
-        geliang.tang@suse.com, mptcp@lists.linux.dev,
+        mptcp@lists.linux.dev, Paolo Abeni <pabeni@redhat.com>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net 1/3] mptcp: fix msk traversal in mptcp_nl_cmd_set_flags()
-Date:   Thu, 20 Jan 2022 16:35:27 -0800
-Message-Id: <20220121003529.54930-2-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net 2/3] mptcp: fix removing ids bitmap setting
+Date:   Thu, 20 Jan 2022 16:35:28 -0800
+Message-Id: <20220121003529.54930-3-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220121003529.54930-1-mathew.j.martineau@linux.intel.com>
 References: <20220121003529.54930-1-mathew.j.martineau@linux.intel.com>
@@ -51,78 +51,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Geliang Tang <geliang.tang@suse.com>
 
-The MPTCP endpoint list is under RCU protection, guarded by the
-pernet spinlock. mptcp_nl_cmd_set_flags() traverses the list
-without acquiring the spin-lock nor under the RCU critical section.
+In mptcp_pm_nl_rm_addr_or_subflow(), the bit of rm_list->ids[i] in the
+id_avail_bitmap should be set, not rm_list->ids[1]. This patch fixed it.
 
-This change addresses the issue performing the lookup and the endpoint
-update under the pernet spinlock.
-
-Fixes: 0f9f696a502e ("mptcp: add set_flags command in PM netlink")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 86e39e04482b ("mptcp: keep track of local endpoint still available for each msk")
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Geliang Tang <geliang.tang@suse.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/pm_netlink.c | 37 +++++++++++++++++++++++++++----------
- 1 file changed, 27 insertions(+), 10 deletions(-)
+ net/mptcp/pm_netlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 75af1f701e1d..f17a09f7fbf9 100644
+index f17a09f7fbf9..782b1d452269 100644
 --- a/net/mptcp/pm_netlink.c
 +++ b/net/mptcp/pm_netlink.c
-@@ -478,6 +478,20 @@ __lookup_addr_by_id(struct pm_nl_pernet *pernet, unsigned int id)
- 	return NULL;
- }
- 
-+static struct mptcp_pm_addr_entry *
-+__lookup_addr(struct pm_nl_pernet *pernet, const struct mptcp_addr_info *info,
-+	      bool lookup_by_id)
-+{
-+	struct mptcp_pm_addr_entry *entry;
-+
-+	list_for_each_entry(entry, &pernet->local_addr_list, list) {
-+		if ((!lookup_by_id && addresses_equal(&entry->addr, info, true)) ||
-+		    (lookup_by_id && entry->addr.id == info->id))
-+			return entry;
-+	}
-+	return NULL;
-+}
-+
- static int
- lookup_id_by_addr(struct pm_nl_pernet *pernet, const struct mptcp_addr_info *addr)
- {
-@@ -1763,18 +1777,21 @@ static int mptcp_nl_cmd_set_flags(struct sk_buff *skb, struct genl_info *info)
- 			return -EOPNOTSUPP;
- 	}
- 
--	list_for_each_entry(entry, &pernet->local_addr_list, list) {
--		if ((!lookup_by_id && addresses_equal(&entry->addr, &addr.addr, true)) ||
--		    (lookup_by_id && entry->addr.id == addr.addr.id)) {
--			mptcp_nl_addr_backup(net, &entry->addr, bkup);
--
--			if (bkup)
--				entry->flags |= MPTCP_PM_ADDR_FLAG_BACKUP;
--			else
--				entry->flags &= ~MPTCP_PM_ADDR_FLAG_BACKUP;
--		}
-+	spin_lock_bh(&pernet->lock);
-+	entry = __lookup_addr(pernet, &addr.addr, lookup_by_id);
-+	if (!entry) {
-+		spin_unlock_bh(&pernet->lock);
-+		return -EINVAL;
- 	}
- 
-+	if (bkup)
-+		entry->flags |= MPTCP_PM_ADDR_FLAG_BACKUP;
-+	else
-+		entry->flags &= ~MPTCP_PM_ADDR_FLAG_BACKUP;
-+	addr = *entry;
-+	spin_unlock_bh(&pernet->lock);
-+
-+	mptcp_nl_addr_backup(net, &addr.addr, bkup);
- 	return 0;
- }
+@@ -791,7 +791,7 @@ static void mptcp_pm_nl_rm_addr_or_subflow(struct mptcp_sock *msk,
+ 			removed = true;
+ 			__MPTCP_INC_STATS(sock_net(sk), rm_type);
+ 		}
+-		__set_bit(rm_list->ids[1], msk->pm.id_avail_bitmap);
++		__set_bit(rm_list->ids[i], msk->pm.id_avail_bitmap);
+ 		if (!removed)
+ 			continue;
  
 -- 
 2.34.1
