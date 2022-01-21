@@ -2,69 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14233495894
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 04:38:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2E29495897
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 04:43:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233481AbiAUDiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 22:38:14 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:46934 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233406AbiAUDiN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jan 2022 22:38:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ZU/PEYNTT8vpKNnUJQm48p21UVkPUjERoKoMWQWxJ+w=; b=sWaRUf2bSEEqGI/6plwuI5bslV
-        TASohLEFLU8G5sFo51j41w3onjHOFJeDo+jI3yPMVjpLkE3BL3S0BgbOU7vmgI04sJGV4aJWINt+V
-        2hojqtjW8h2sI3gFIpQN3iRup+Dd7OhQq67fxWyxxaGWnsskeBBHat5zS0ugLfUQw8m4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nAkkb-0022ro-86; Fri, 21 Jan 2022 04:38:09 +0100
-Date:   Fri, 21 Jan 2022 04:38:09 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Russell King <linux@arm.linux.org.uk>
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-Message-ID: <Yeoqof1onvrcWGNp@lunn.ch>
-References: <20220103232555.19791-4-richardcochran@gmail.com>
- <20220120164832.xdebp5vykib6h6dp@skbuf>
+        id S233521AbiAUDnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 22:43:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233406AbiAUDnJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 22:43:09 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B67D4C061574
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 19:43:08 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id v74so4453007pfc.1
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 19:43:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yqhczBMRKsOUw24Qte/I7JFi4WVSDDwpH9M4zhQm5Cw=;
+        b=jhS+UwOXraTlDz7g0YmQpk/Wi6cK4vngfTjMDIWFz145li5UMsrnt5G1/pNJgvKZKI
+         Gq313UYDahAJWl2xJ5MWw/yNjcE8xkaVBrJwQJVTTycHW+YxYMThwVn7eotN8Ecvrdm1
+         A7/dBY3pFp9k1at45VATbDfGJyXyzxD38i7X62sTNNigipei8VTziQMhVMj9GHBQXchE
+         pUU4kZzYm2R+FFn37TciC+Y6GB4AgAPHDLP118sx534NnasEgsmEXwz4VYi7nG3j2RRx
+         ZlsAbMZeYvPZHWkC9ZvNpV4XUMC/Nl2/nS0deGQrXT115EStsxqdlb1uLPlcAW4x9lov
+         T0ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yqhczBMRKsOUw24Qte/I7JFi4WVSDDwpH9M4zhQm5Cw=;
+        b=RaZbA2bllLf7SIW9A6FUZKFySz2egN/gw6VyN6jAl1vVTDV36znlfRjviJn3P70OPt
+         UVDaSA9CLCSBPt0JIIJMCj4CZ/KS2P+Rd40zYXOJGz7lLYC7pn/jKOoT201rssefD5VZ
+         tXRj7DUEoGqrN5G5Wjsj4ZP0vEjqwwDz9dfFECCfGGxnV7ft4Rs0Qb3icwLUTMZFwJvd
+         XY9l4kNCBls7QB217YAfm2C/Fbl3maAeqzMQbgayqN0KRHuoUu4Z8SnmOaE1ueaCCII0
+         7e3YTn2X8svoS0w59A88a503bAqeQH5XgaiK0op3M4Jnk5QDttDhvO32/3AEfaxJaPrq
+         7ovQ==
+X-Gm-Message-State: AOAM531GCav7z/5vBNUiSTNthVp+UmMrNgQuy6c7IOBrYrHxJyFw1LO6
+        x2RiCjpr3qYhFNYySzRITQYjjIJcraBen0kEnDM=
+X-Google-Smtp-Source: ABdhPJwbAlYt+vsnlqRkSbK4Gw2XsrMOVf7BpXO7pCCCL/HnrTGSU1x5azEgFuk7Qyvms949/D2RHkHThsAaiE0lluQ=
+X-Received: by 2002:a63:8a44:: with SMTP id y65mr1556168pgd.456.1642736588103;
+ Thu, 20 Jan 2022 19:43:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220120164832.xdebp5vykib6h6dp@skbuf>
+References: <87ee5fd80m.fsf@bang-olufsen.dk> <trinity-ea8d98eb-9572-426a-a318-48406881dc7e-1641822815591@3c-app-gmx-bs62>
+ <87r19e5e8w.fsf@bang-olufsen.dk> <trinity-4b35f0dc-6bc6-400a-8d4e-deb26e626391-1641926734521@3c-app-gmx-bap14>
+ <87v8ynbylk.fsf@bang-olufsen.dk> <trinity-d858854a-ff84-4b28-81f4-f0becc878017-1642089370117@3c-app-gmx-bap49>
+ <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
+ <Yea+uTH+dh9/NMHn@lunn.ch> <20220120151222.dirhmsfyoumykalk@skbuf>
+ <CAJq09z6UE72zSVZfUi6rk_nBKGOBC0zjeyowHgsHDHh7WyH0jA@mail.gmail.com>
+ <20220121020627.spli3diixw7uxurr@skbuf> <CAJq09z5HbnNEcqN7LZs=TK4WR1RkjoefF_6ib-hFu2RLT54Nug@mail.gmail.com>
+ <f85dcb52-1f66-f75a-d6de-83d238b5b69d@gmail.com>
+In-Reply-To: <f85dcb52-1f66-f75a-d6de-83d238b5b69d@gmail.com>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Fri, 21 Jan 2022 00:42:57 -0300
+Message-ID: <CAJq09z5Pvo4tJNw0yKK2LYSNEdQTd4sXPpKFJbCNA-jUwmNctw@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
+ cpu ports, non cpu extint
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> This is also the reason why DSA denies PTP timestamping on the master
-> interface, although there isn't any physical reason to do that. For the
-> same reason mentioned earlier, it would be nice to see hwtstamps for a
-> packet as it traverses DSA master -> DSA switch port -> PHY attached to
-> DSA switch.
+> Are we talking about an in tree driver? If so which is it?
 
-Don't forget there could be back to back PHYs between the master and
-the DSA switch port. In theory they could also be doing time stamping.
+Yes, the one the patch touches: rtl8365mb.
 
-Also consider the case of a switch port connected to a PHY which does
-media conversion to SFP. And the SFP has a copper module, so contains
-another PHY. So you could have the MAC and both PHYs doing time
-stamping?
-
-So in the extreme case, you have 7 time stamps, 3 from MACs and 4 from
-PHYs!
-
-I doubt we want to support this, is there a valid use case for it?
-
-  Andrew
+My device uses a mt7620a SoC and traffic passes through its mt7530
+switch with vlan disabled before reaching the realtek switch. It still
+loads a swconfig driver but I think it might work without one.
+I just didn't stop to try it yet.
