@@ -2,183 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19FA4496511
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 19:31:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56D77496541
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 19:50:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382132AbiAUSbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 13:31:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43610 "EHLO
+        id S229877AbiAUSur (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 13:50:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382138AbiAUSbM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 13:31:12 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16731C06173D;
-        Fri, 21 Jan 2022 10:31:12 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id o10so8416456ilh.0;
-        Fri, 21 Jan 2022 10:31:12 -0800 (PST)
+        with ESMTP id S230143AbiAUSuQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 13:50:16 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2338DC06173B
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 10:50:13 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id s13so2526425ejy.3
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 10:50:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7RosCskWkdt9rxG/Kn964mKmVE3e+ONowkWWNdWq2eU=;
-        b=WZxNZciYsovV1h2ayaikh9Jgy/b9nmUKn/GF2pyVnUpEmgikDCEWHt/fQ49tTBak2C
-         CzD07FGtY9d56lNjj9oovqBZcgCe6jjYExx/0yDsK3z3w/4ghXTLAVyvRUN2myRSsp4h
-         TrsBfeBIKl3KULenDa5fmMMEpFZui8b3Iw+pxe6tF/ukyonDMcE7Ae1fnTXpJnBVG+kJ
-         c1AO2B8QRmQZcSKcbdaQM/KKf2hXpWxlD3fDjY977uPkin6SyZSeTaDTmsJUqzPU1pu4
-         Ze2yOb9ykMHnStoEsJmd5wLAvzv4ttAeJd18DtYVDIpZKSvc+EzHTe2hRKjZkgSm+1FE
-         6Lzw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=DNRS8Anpj2A3AnDmPfNqzTpLxfMiFhjADv4KSwcHcow=;
+        b=XMSkemzpUdeapL7uTq54zathw9/884R4IzutN1UA8avYMdtfpFC1XVk7vIhjUhIioP
+         7Pyom5eVfw7CuKtf+qBo93h5OD7jECv0Ec9eGbt5AlTE9Hu4XF6xD2a/A24tzyIJmjCM
+         rW+t65sBp0mttfe0MAd//sMlYLf2bMl7K/hplaXZDLVY4iYHNVQwqCVJypJzcufemh58
+         bYXVvIrQ3GbsCR0Ts87iLOqjDZyhkoBqsvoZPdb7qO8+nKQbj+h5WaiTKPVYKxnsZ1MA
+         uX/V3WM717kKmzIJ9X0eLd1704wl/ZYiVXoeSPzEH3L3OlvjTPyCNbyLCS7cd+v0YR0x
+         5m5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7RosCskWkdt9rxG/Kn964mKmVE3e+ONowkWWNdWq2eU=;
-        b=bQd8haz00y0ZrKOyRseeucG6sd1Db1rxd/SE1W00oUXGshXaS/CXwMZ7Goz13RlM0/
-         p/fSRggLRfwf4nvHEZqZqz/VoQ4FOPbVyngeag+WnRhAElLQbq5mDlJ3D2wwZhu+VPz6
-         MYlGWb1XBOmp52ai2XoOFGpZyQuycvihL7nqB0NyGu1YbYWyqV9u5LsiK+OIt0gRIkOM
-         SfpPuymMP0xTay5kMEt5Zdx2Ywjo8Jy5BwcD/gNvsyxaHNVf29UAU57/08lqVtXQsqpm
-         TVpV9yf1F5DBcFCXGerJYpWs4heVVhgZOqtJjMIkb2EGK799EvwNmi2obSWCiPW6uuPD
-         k62w==
-X-Gm-Message-State: AOAM533WAR0JfK+q8UIkhIeHyW83j+IXqV4S6MLWLXhMFzpem0RDRG6U
-        y0e68TbTp/0t5JBbtMqKfmF3sYwXJei2N7DT0L8=
-X-Google-Smtp-Source: ABdhPJxSWA27NWAnAj0jlHUI7cKQDQkUxNDLI6I1Kg1bkjWhmPS2GhRYr1675hwEJJXODWWGRB+RCTzbZ7Gv1hKHJqA=
-X-Received: by 2002:a05:6e02:1749:: with SMTP id y9mr2732285ill.252.1642789871449;
- Fri, 21 Jan 2022 10:31:11 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=DNRS8Anpj2A3AnDmPfNqzTpLxfMiFhjADv4KSwcHcow=;
+        b=UNN5aFaMOGSdZWR4z55XVLHMBNdJ4e9moR/4Uxs+0/KIrNMW5C7QZz5Hrs3W75MyG2
+         G0dA+/eKc+4HNHEni+jo5MWFjE1nydHnKqLIRSZjSKXFVxJUyKVcJcrNyB3SEdanPG1Q
+         Wk6Y7FlZFjpjCoXhgit1DPIr0MMsXRY2I+656GesF8gGsVLKaEKiz8aPoWPYz9Jzy9A0
+         OX2BsvdKbwsP5m90Lwg2881DiJh2aGU0EgXJ6gEx9fNYfhn6MmMdxfV3BpWtK3fNC6Jh
+         ktE+IqgE6shPGg3glxU/yDIGzBNTcVA0seIDgAxk6bAcVH1O/2Rz3IyFKzld+RUdnp5u
+         cKSw==
+X-Gm-Message-State: AOAM530BXOOG9AMSmjCwXiltERbADdcL6uA7IHj8By8imlWnDxRG7jqs
+        d2jV/hkcxT1yVDMx3+OBtoM=
+X-Google-Smtp-Source: ABdhPJyFATJ5tODskkmN4jnwwGqMGZiWYCYwuaBqYQ9fXAnVtSsJtt4mFZAkY0WN5GuJQuU1eEUIgA==
+X-Received: by 2002:a17:906:53d5:: with SMTP id p21mr4127326ejo.315.1642791011486;
+        Fri, 21 Jan 2022 10:50:11 -0800 (PST)
+Received: from skbuf ([188.25.255.2])
+        by smtp.gmail.com with ESMTPSA id jt14sm2295382ejc.32.2022.01.21.10.50.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Jan 2022 10:50:10 -0800 (PST)
+Date:   Fri, 21 Jan 2022 20:50:09 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
+Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
+ cpu ports, non cpu extint
+Message-ID: <20220121185009.pfkh5kbejhj5o5cs@skbuf>
+References: <87r19e5e8w.fsf@bang-olufsen.dk>
+ <trinity-4b35f0dc-6bc6-400a-8d4e-deb26e626391-1641926734521@3c-app-gmx-bap14>
+ <87v8ynbylk.fsf@bang-olufsen.dk>
+ <trinity-d858854a-ff84-4b28-81f4-f0becc878017-1642089370117@3c-app-gmx-bap49>
+ <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
+ <Yea+uTH+dh9/NMHn@lunn.ch>
+ <20220120151222.dirhmsfyoumykalk@skbuf>
+ <CAJq09z6UE72zSVZfUi6rk_nBKGOBC0zjeyowHgsHDHh7WyH0jA@mail.gmail.com>
+ <20220121020627.spli3diixw7uxurr@skbuf>
+ <CAJq09z5HbnNEcqN7LZs=TK4WR1RkjoefF_6ib-hFu2RLT54Nug@mail.gmail.com>
 MIME-Version: 1.0
-References: <1642678950-19584-1-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1642678950-19584-1-git-send-email-alan.maguire@oracle.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 21 Jan 2022 10:31:00 -0800
-Message-ID: <CAEf4BzbG8Rx1NXiHQrsnJdXMPmW_VQ9CCJDe9Gf9FWv3Q7vtnA@mail.gmail.com>
-Subject: Re: [RFC bpf-next 0/3] libbpf: name-based u[ret]probe attach
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
-        Yucong Sun <sunyucong@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJq09z5HbnNEcqN7LZs=TK4WR1RkjoefF_6ib-hFu2RLT54Nug@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 3:43 AM Alan Maguire <alan.maguire@oracle.com> wrote:
->
-> This patch series is a refinement of the RFC patchset [1], focusing
-> on support for attach by name for uprobes and uretprobes.  Still
-> marked RFC as there are unresolved questions.
->
-> Currently attach for such probes is done by determining the offset
-> manually, so the aim is to try and mimic the simplicity of kprobe
-> attach, making use of uprobe opts to specify a name string.
->
-> uprobe attach is done by specifying a binary path, a pid (where
-> 0 means "this process" and -1 means "all processes") and an
-> offset.  Here a 'func_name' option is added to 'struct uprobe_opts'
-> and that name is searched for in symbol tables.  If the binary
-> is a program, relative offset calcuation must be done to the
-> symbol address as described in [2].
->
-> Having a name allows us to support auto-attach via SEC()
-> specification, for example
->
-> SEC("uprobe/usr/lib64/libc.so.6/malloc")
->
-> Unresolved questions:
->
->  - the current scheme uses
->
-> u[ret]probe[/]/path/2/binary/function[+offset]
+On Fri, Jan 21, 2022 at 12:13:58AM -0300, Luiz Angelo Daros de Luca wrote:
+> > :) device tree properties are not the fix for everything!
+> 
+> I'm still getting used to it ;-)
+> 
+> In this thread, Alvin suggested adding a new property to define which
+> port will be used as trap_port instead of using the last CPU port.
+> Should I try something different?
+> 
+>         switch1 {
+>                compatible = "realtek,rtl8367s";
+>                reg = <29>;
+> 
+>                realtek,trap-port = <&port7>;
+> 
+>                ports {
+>                         ....
+>                         port7: port@7 {
+>                             ...
+>                        };
+>         };
+> 
+> Should I do something differently?
 
-that / after uprobe is not optional. This should be parsed as
-"uprobe/<path-to-binary>/<func_name>[+<offset>]", in general. If
-<path-to-binary> doesn't have leading '/' it will be just treated as a
-relative path. Otherwise it's going to be ambiguous. So with your
-example SEC("uprobe/usr/lib64/libc.so.6/malloc") you are specifying
-"usr/lib64/libc.so.6", relative path, which is wrong. It has to be
-SEC("uprobe//usr/lib64/libc.so.6/malloc"), however ugly that might
-look.
+To clarify, I don't know what a trap_port is. I just saw this
+description in rtl8365mb.c:
 
->
->    ...as SEC() format for auto-attach, for example
->
-> SEC("uprobe/usr/lib64/libc.so.6/malloc")
->
->    It would be cleaner to delimit binary and function with ':'
->    as is done by bcc.  One simple way to achieve that would be
->    to support section string pre-processing, where instances of
->    ':' are replaced by a '/'; this would get us to supporting
->    a similar probe specification as bcc without the backward
->    compatibility headaches.  I can't think of any valid
->    cases where SEC() definitions have a ':' that we would
->    replace with '/' in error, but I might be missing something.
+ * @trap_port: forward trapped frames to this port
 
-I think at least for separating path and function name using ':' is
-much better. I'd go with
+but I still don't know to which packets does this configuration apply
+(where are the packet traps installed, and for what kind of packets).
 
-SEC("uprobe//usr/lib64/libc.so.6:malloc")
+Speculating here, but it appears quite arbitrary, and I'd guess also
+broken, to make the trap_port the last CPU port. Is this also part of
+the things which you didn't really test? See commit 8d5f7954b7c8 ("net:
+dsa: felix: break at first CPU port during init and teardown") for a
+similar issue with this. When there are multiple 'ethernet = <&phandle>'
+properties in the device tree, DSA makes the owners of all those
+phandles a DSA master, and all those switch ports as CPU ports. But out
+of all those CPU ports, only the first one is an active CPU port. The
+others have no dp->cpu_dp pointing to them.
+See dsa_tree_setup_default_cpu() -> dsa_tree_find_first_cpu().
+Even when DSA gets full-blown support for multiple CPU ports, I think
+it's safe to say that this default will remain the way it is: a single
+CPU port will be active to begin with: the first one. Given that fact
+(and depending on what you need to do with the trap_port info exactly),
+it might be broken to set as the trap port a CPU port that isn't used.
+Stuff like dsa_port_host_fdb_add()/dsa_port_host_fdb_del() will be
+broken, because they rely on the dp->cpu_dp association, and
+dp->cpu_dp->index will be != trap_port.
 
-for your example
+> > I think I know what the problem is. But I'd need to know what the driver
+> > for the DSA master is, to confirm. To be precise, what I'd like to check
+> > is the value of master->vlan_features.
+> 
+> Here it is 0x1099513266227 (I hope).
 
->
->  - the current scheme doesn't support a raw offset address, since
->    it felt un-portable to encourage that, but can add this support
->    if needed.
+That's quite an extraordinary set of vlan_features. In that number, I
+notice BIT(2) is set, which corresponds to __UNUSED_NETIF_F_1. So it
+probably isn't correctly printed.
 
-I think for consistency with kprobe it's good to support it. And there
-are local experimentation situations where this could be useful. So
-let's add (sscanf() is pretty great at parsing this anyways)
+This is what I would have liked to see:
 
->
->  - The auto-attach behaviour is to attach to all processes.
->    It would be good to have a way to specify the attach process
->    target. A few possibilities that would be compatible with
->    BPF skeleton support are to use the open opts (feels kind of
->    wrong conceptually since it's an attach-time attribute) or
->    to support opts with attach pid field in "struct bpf_prog_skeleton".
->    Latter would even allow a skeleton to attach to multiple
->    different processes with prog-level granularity (perhaps a union
->    of the various attach opts or similar?). There may be other
->    ways to achieve this.
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 22241afcac81..b41f1b414c69 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1909,6 +1909,7 @@ void dsa_slave_setup_tagger(struct net_device *slave)
+ 	p->xmit = cpu_dp->tag_ops->xmit;
+ 
+ 	slave->features = master->vlan_features | NETIF_F_HW_TC;
++	netdev_err(slave, "master %s vlan_features 0x%llx\n", master->name, master->vlan_features);
+ 	slave->hw_features |= NETIF_F_HW_TC;
+ 	slave->features |= NETIF_F_LLTX;
+ 	if (slave->needed_tailroom)
 
-Let's keep it simple and for auto-attach it's always -1 (all PIDs). If
-that's not satisfactory, user shouldn't use auto-attach. Skeleton's
-auto-attach (or bpf_program__attach()) is a convenience feature, not a
-mandatory step.
+And I don't think you fully answered Florian's questions either, really.
+Can we see the a link to the code of the Ethernet controller whose role
+is to be a host port (DSA master) for the rtl8365mb switch? If that DSA
+master is a DSA switch itself, could you please unroll the chain all the
+way with more links to drivers? No matter whether upstream or downstream,
+just what you use.
 
->
-> Changes since RFC [1]:
->  - focused on uprobe entry/return, omitting USDT attach (Andrii)
->  - use ELF program headers in calculating relative offsets, as this
->    works for the case where we do not specify a process.  The
->    previous approach relied on /proc/pid/maps so would not work
->    for the "all processes" case (where pid is -1).
->  - add support for auto-attach (patch 2)
->  - fix selftests to use a real library function.  I didn't notice
->    selftests override the usleep(3) definition, so as a result of
->    this, the libc function wasn't being called, so usleep() should
->    not be used to test shared library attach.  Also switch to
->    using libc path as the binary argument for these cases, as
->    specifying a shared library function name for a program is
->    not supported.  Tests now instrument malloc/free.
->  - added selftest that verifies auto-attach.
->
-> [1] https://lore.kernel.org/bpf/1642004329-23514-1-git-send-email-alan.maguire@oracle.com/
-> [2] https://www.kernel.org/doc/html/latest/trace/uprobetracer.html
->
-> Alan Maguire (3):
->   libbpf: support function name-based attach for uprobes
->   libbpf: add auto-attach for uprobes based on section name
->   selftests/bpf: add tests for u[ret]probe attach by name
->
->  tools/lib/bpf/libbpf.c                             | 259 ++++++++++++++++++++-
->  tools/lib/bpf/libbpf.h                             |  10 +-
->  .../selftests/bpf/prog_tests/attach_probe.c        | 114 +++++++--
->  .../selftests/bpf/progs/test_attach_probe.c        |  33 +++
->  4 files changed, 396 insertions(+), 20 deletions(-)
->
-> --
-> 1.8.3.1
->
+I hate to guess, but since both you and Arınç have mentioned the
+mt7620a/mt7621 SoCs, I'd guess that the top-most DSA driver in both
+cases is "mediatek,eth-mac" (drivers/net/ethernet/mediatek/mtk_eth_soc.c).
+If so, this would confirm my suspicions, since it sets its vlan_features
+to include NETIF_F_IP_CSUM and NETIF_F_IPV6_CSUM. Please confirm that
+master->vlan_features contains these 2 bits.
+
+> Oh, this DSA driver still does not implement vlan nor bridge offload.
+> Maybe it would matter.
+
+It doesn't matter. The vlan_features is a confusing name for what it
+really does here. I'll explain in a bit once you clarify the other
+things I asked for.
