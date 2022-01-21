@@ -2,174 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04E8C49683D
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 00:32:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0520049684F
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 00:52:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbiAUXck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 18:32:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54354 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiAUXcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 18:32:39 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E8BC06173B;
-        Fri, 21 Jan 2022 15:32:39 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id k31so30308685ybj.4;
-        Fri, 21 Jan 2022 15:32:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Zwd3APv0ADJGys6CshiGviZTyi6AcGSoKvHQ54dgGEA=;
-        b=EOa8041Fkz0j3IiE0wwKPL+IP3Wmii2yHtwUp5V1b6q6hIlFPaqqd+7yVkubi28yaW
-         uAJaAW4pojC3HzwGX+0ki2Jz33O3jzlKjs7WyhED/uB73Bdy89SF/1FlwyUWr6ckex+q
-         Pr1LFoeMZh2phlgSGURSargwyPivOtN6jpT2Uk5rr2+79bBuMEcA3cICf9+xeAZGl1zJ
-         Nwl/Tj1CXJEQ3sEQY1Q2tE2kHUS3bbOP6BOr+ToAGQy4X52rHoBWqDeRFUTtpm0U0VHI
-         DmFbFZ9NRi1f+i/ux8ENZv8KroynjmztIDbqKt30Nv/pbcOaz/Z+iOHaxuii+VXK2HrF
-         GKRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Zwd3APv0ADJGys6CshiGviZTyi6AcGSoKvHQ54dgGEA=;
-        b=GxznCVyW2oi5B9WEromzmk3uwQjw+Td50IRa0OCLwhjhUIk38iiSZcPBakwi48CgIk
-         VVvQGx8q1R1BKYeaybgJeCqQj8wcHktJkCC0AbGEJVfN67UP1DdnmvOr5G+DERJ19lvg
-         kLd3psvEMs2lGctoPyDU2Uyzk74ZXb0RnHXdRmnFdxyWXnrv+cKsGSklmvPN4/SclafR
-         H8j0nUm5kL75xKrIupAMW/3oc0GHNtAyP8pf9qp5HwuG5dI8X1/qBSgF/AV74eUmAz4K
-         Sr8nt5cNXBuncBXSNxUaxBlbL62Ha2CGeuPdktZkIjWO8ERVbnD993uIy7yPN7QYWLg1
-         yhKg==
-X-Gm-Message-State: AOAM531WKSTCXSYQUsbEdXXOf+swyTD/qsuAnC4q6Qd3B67jQGyM/I5v
-        n+TDsdax0xXZOs9ewSZcv7sUIL8CHVNXe5gN7mE=
-X-Google-Smtp-Source: ABdhPJzaYYbLUA+61242B7I5At2uPodx32WJVr/GOILh26xEZC1kNbyKF3Gm0gWTDBBH4lcD4lAI4x/KqqAE56HbK34=
-X-Received: by 2002:a5b:14a:: with SMTP id c10mr9033025ybp.752.1642807958777;
- Fri, 21 Jan 2022 15:32:38 -0800 (PST)
+        id S229826AbiAUXpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 18:45:55 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:48354 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229595AbiAUXpz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Jan 2022 18:45:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=gKF9AvJvtxDPWBGc9jdPUqD004sDg3ZMvVimzLe72ek=; b=EeWmxuHWyzxhZo/I9FrZYUi58g
+        LYGaXiNc1TkiVrJ27pvJKMm7oMttggujs2YA/wouiuQYou+BzbDc2WZ3tufZ9ZO4+WZ2IXTmTDQmw
+        ihUAF8KcAX8PWHQiLyXfUKbuJ/5L3y1YVL8qI7KrC7a6gIrV1+G9SI7RgkA1v13WcD7g=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nB3bN-002BJ1-Hy; Sat, 22 Jan 2022 00:45:53 +0100
+Date:   Sat, 22 Jan 2022 00:45:53 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sergei Trofimovich <slyich@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: atl1c drivers run 'napi/eth%d-385' named threads with
+ unsubstituted %d
+Message-ID: <YetFsbw6885xUwSg@lunn.ch>
+References: <YessW5YR285JeLf5@nz>
 MIME-Version: 1.0
-References: <20220121173622.192744-1-soenke.huster@eknoes.de>
- <4f3d6dcf-c142-9a99-df97-6190c8f2abc9@eknoes.de> <CABBYNZ+VQ3Gfw0n=PavFhnnOy2=+1OAeV5UT_S25Lz_4gWzWEQ@mail.gmail.com>
- <995e58bb-6dfb-b3db-c8a5-b9e30dbb104d@eknoes.de>
-In-Reply-To: <995e58bb-6dfb-b3db-c8a5-b9e30dbb104d@eknoes.de>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Fri, 21 Jan 2022 15:32:28 -0800
-Message-ID: <CABBYNZJx+UzHLRA8o=z-fkiHAmBJ6-WtY35eJtD6C6N6PhLbDQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] Bluetooth: hci_event: Ignore multiple conn complete events
-To:     =?UTF-8?Q?S=C3=B6nke_Huster?= <soenke.huster@eknoes.de>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YessW5YR285JeLf5@nz>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi S=C3=B6nke,
+On Fri, Jan 21, 2022 at 09:57:47PM +0000, Sergei Trofimovich wrote:
+> Hia atl1c maintainers!
+> 
+> This cosmetics bothered me for some time: atl1c driver
+> shows unexpanded % in kernel thread names. Looks like a
+> minor bug:
+> 
+>     $ ping -f 172.16.0.1  # host1
+>     $ top  # host2
+>     ...
+>     621 root 20 0 0 0 0 S 11.0 0.0 0:05.01 napi/eth%d-385
+>     622 root 20 0 0 0 0 S  5.6 0.0 0:02.64 napi/eth%d-386
+>     ...
+> 
+> Was happening for a few years. Likely not a recent regression.
+> 
+> System:
+> - linux-5.16.1
+> - x86_64
+> - 02:00.0 Ethernet controller: Qualcomm Atheros AR8151 v2.0 Gigabit Ethernet (rev c0)
+> 
+> >From what I understand thread name comes from somewhere around:
+> 
+>   net/core/dev.c:
+>     int dev_set_threaded(struct net_device *dev, bool threaded)
+>     ...
+>         err = napi_kthread_create(napi);
+>     ...
+>     static int napi_kthread_create(struct napi_struct *n)
+>     ...
+>         n->thread = kthread_run(napi_threaded_poll, n, "napi/%s-%d",
+> 
+>   drivers/net/ethernet/atheros/atl1c/atl1c_main.c:
+>     static int atl1c_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>     ...
+>         dev_set_threaded(netdev, true);
+> 
+>   ${somewhere} (not sure where):
+>     ...
+>       strcpy(netdev->name, "eth%d");
+> 
+> I was not able to pinpoint where expansion should ideally happen.
+> Looks like many driver do `strcpy(netdev->name, "eth%d");` style
+> initialization and almost none call `dev_set_threaded(netdev, true);`.
+> 
+> Can you help me find it out how it should be fixed?
 
-On Fri, Jan 21, 2022 at 3:18 PM S=C3=B6nke Huster <soenke.huster@eknoes.de>=
- wrote:
->
-> Hi Luiz,
->
-> On 21.01.22 22:31, Luiz Augusto von Dentz wrote:
-> > Hi S=C3=B6nke,
-> >
-> > On Fri, Jan 21, 2022 at 10:22 AM S=C3=B6nke Huster <soenke.huster@eknoe=
-s.de> wrote:
-> >>
-> >> I just noticed that just checking for handle does not work, as obvious=
-ly 0x0 could also be a handle value and therefore it can't be distinguished=
-, whether it is not set yet or it is 0x0.
-> >
-> > Yep, we should probably check its state, check for state !=3D BT_OPEN
-> > since that is what hci_conn_add initialize the state.
-> >
->
-> I thought there are more valid connection states for the first HCI_CONNEC=
-TION_COMPLETE event, as it also occurs e.g. after an HCI_Create_Connection =
-command, see Core 5.3 p.2170:
-> > This event also indicates to the Host which issued the HCI_Create_Conne=
-ction, HCI_Accept_-
-> > Connection_Request, or HCI_Reject_Connection_Request command, and
-> > then received an HCI_Command_Status event, if the issued command failed=
- or
-> > was successful.
->
-> For example in hci_conn.c hci_acl_create_connection (which triggers a HCI=
-_Create_Connection command as far as I understand), the state of the connec=
-tion is changed to BT_CONNECT or BT_CONNECT2.
-> But as I am quite new in the (Linux) Bluetooth world, I might have a wron=
-g understanding of that.
+Hi Sergei
 
-Yep, we would probably need a switch to capture which states are valid
-and which are not or we initialize the handle with something outside
-of the valid range of handles (0x0000 to 0x0EFF) so we can initialize
-it to e.g. 0xffff (using something like define HCI_CONN_HANDLE_UNSET)
-so we can really tell when it has been set or not.
+This is a fun one.
 
-> >> On 21.01.22 18:36, Soenke Huster wrote:
-> >>> When a HCI_CONNECTION_COMPLETE event is received multiple times
-> >>> for the same handle, the device is registered multiple times which le=
-ads
-> >>> to memory corruptions. Therefore, consequent events for a single
-> >>> connection are ignored.
-> >>>
-> >>> The conn->state can hold different values so conn->handle is
-> >>> checked to detect whether a connection is already set up.
-> >>>
-> >>> Buglink: https://bugzilla.kernel.org/show_bug.cgi?id=3D215497
-> >>> Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
-> >>> ---
-> >>> This fixes the referenced bug and several use-after-free issues I dis=
-covered.
-> >>> I tagged it as RFC, as I am not 100% sure if checking the existence o=
-f the
-> >>> handle is the correct approach, but to the best of my knowledge it mu=
-st be
-> >>> set for the first time in this function for valid connections of this=
- event,
-> >>> therefore it should be fine.
-> >>>
-> >>> net/bluetooth/hci_event.c | 11 +++++++++++
-> >>>  1 file changed, 11 insertions(+)
-> >>>
-> >>> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-> >>> index 681c623aa380..71ccb12c928d 100644
-> >>> --- a/net/bluetooth/hci_event.c
-> >>> +++ b/net/bluetooth/hci_event.c
-> >>> @@ -3106,6 +3106,17 @@ static void hci_conn_complete_evt(struct hci_d=
-ev *hdev, void *data,
-> >>>               }
-> >>>       }
-> >>>
-> >>> +     /* The HCI_Connection_Complete event is only sent once per conn=
-ection.
-> >>> +      * Processing it more than once per connection can corrupt kern=
-el memory.
-> >>> +      *
-> >>> +      * As the connection handle is set here for the first time, it =
-indicates
-> >>> +      * whether the connection is already set up.
-> >>> +      */
-> >>> +     if (conn->handle) {
-> >>> +             bt_dev_err(hdev, "Ignoring HCI_Connection_Complete for =
-existing connection");
-> >>> +             goto unlock;
-> >>> +     }
-> >>> +
-> >>>       if (!ev->status) {
-> >>>               conn->handle =3D __le16_to_cpu(ev->handle);
-> >>>
-> >
-> >
-> >
->
-> Best
-> S=C3=B6nke
+So, the driver does the usual alloc_etherdev_mq()
 
+https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/atheros/atl1c/atl1c_main.c#L2703
 
+which ends up here:
 
---=20
-Luiz Augusto von Dentz
+https://elixir.bootlin.com/linux/latest/source/net/ethernet/eth.c#L391
+
+struct net_device *alloc_etherdev_mqs(int sizeof_priv, unsigned int txqs,
+                                      unsigned int rxqs)
+{
+        return alloc_netdev_mqs(sizeof_priv, "eth%d", NET_NAME_UNKNOWN,
+                                ether_setup, txqs, rxqs);
+}
+
+So at this point in time, the device has the name "eth%d".
+
+The normal flow is that sometime later in probe, it calls
+register_netdev().
+
+https://elixir.bootlin.com/linux/latest/source/net/core/dev.c#L10454
+
+if you follow that down, you get to: __dev_alloc_name(), which does
+the expansion of the %d to an actual number:
+
+https://elixir.bootlin.com/linux/latest/source/net/core/dev.c#L1087
+
+So between alloc_etherdev_mq() and register_netdev(), the device name
+is not valid. And as you pointed out, dev_set_threaded() tries to use
+the name, and is called between these two.
+
+The atl1c driver appears to be the only driver actually doing
+this. There is a sysfs interface which can call dev_set_threaded(),
+but the sysfs interface is probably not available until after
+register_netdev() has given the interface its name.
+
+There is a fix for atl1c. Any time after alloc_etherdev_mq(), the
+driver can call dev_alloc_name().
+
+So please give this a try. I've not even compile tested it...
+
+iff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+index da595242bc13..983a52f77bda 100644
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+@@ -2706,6 +2706,10 @@ static int atl1c_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+                goto err_alloc_etherdev;
+        }
+ 
++       err = dev_alloc_name(netdev, netdev->name);
++       if (err < 0)
++               goto err_init_netdev;
++
+        err = atl1c_init_netdev(netdev, pdev);
+        if (err) {
+                dev_err(&pdev->dev, "init netdevice failed\n");
+
+If this works, i can turn it into a real patch submission.
+
+   Andrew
