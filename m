@@ -2,101 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A3204958B9
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 05:01:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C883A4958BC
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 05:05:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233800AbiAUEBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 23:01:50 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:49754
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233785AbiAUEBt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 23:01:49 -0500
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id DBDC43F17B
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 04:01:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642737707;
-        bh=4kHu2XYyfVu0N83f5P1MXdyIklLz/98ljBKcgS3bWe0=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=qzuvlzoG5lnNTrVSjlBskSoDIC4dn9KnIi9FUnSl7Jk0aNVZ/0XxL0pT1VpEaapZW
-         I6u7/nt9L7af3wxWfCPiwEkqPo9MdflgjPQmLe0kn/J626Wv5nVh+crZ2KF+W++FNd
-         jcLHHe3W90R3bQYwyTdz2A6YFEAUuK97+Svu6PxM9AgqWPSBAR2TNwoLZUHtj5HaPw
-         IGfo9D2QDPVP3nSEM+xm1cUq1HXNK1w+CKcM2GE1XVywXoo5TNCRT/pnj5DZxZasxg
-         22A4Wma28juqgvIKurC5QTrvKQn9PA44MKYa76/5dzmRwvJuIRmFZLxE0npH8sVJOh
-         ZwS3V7Qo5FqtA==
-Received: by mail-ot1-f71.google.com with SMTP id v22-20020a0568301bd600b00590a8d65e0fso4686511ota.4
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 20:01:47 -0800 (PST)
+        id S233845AbiAUEFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 23:05:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231519AbiAUEFM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 23:05:12 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49FB3C061574;
+        Thu, 20 Jan 2022 20:05:12 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id p125so7174859pga.2;
+        Thu, 20 Jan 2022 20:05:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=PXjzs2ORwNdG7MiCJrx7cQxN5MdTrOLJkoufb+btUjY=;
+        b=OT1Twxo4gieLaNzM8Jo6wtoGAKsVj/cMffoFSqf+MtOFGT+4xm9DVXYxBBwyHN3f3R
+         Fxu3poB2HImt13TgzfhsFPiuqxu4Rsa6ggglb2GVFYxPvDFFh3k/5WGnG+bajf2nifSE
+         VlngnsQNnOxs5LqCjFrGip2/RV9zS5jhjFcMB61SqX3+drZrkdcYMUoDuUoHyeFkLF6E
+         8GjhIQhWp6tQQyT0bvJZ7hwfbCavwIb0gsXzfYmrkRbZsm5YEmFAcFxN1K19671CgZ7d
+         uN8o2xyXSsLCIfr9ztFaZHXbz4NiDgKkHPWfnd88kcA4FHsAppV/mCm6D3mlsBp8Pb+Z
+         xEcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4kHu2XYyfVu0N83f5P1MXdyIklLz/98ljBKcgS3bWe0=;
-        b=plPsIIKoNbRI/OhUHAGwK/3uz3vVWoOJr9GFhXGZxEO/kQGyjw5r2zY+cjvyBUe5O5
-         5KAaQxvc2hOzvliSLk6/o9wI+wBbhCOzea7YLW6liGkm2mBwtZn76pj/LkeXF/T4PEWT
-         luGRwgonNDlx+1GPGIoQq6MXGQ5On6F8RMwPONXGfMSxIYX+YEQpGdixFKE2bBX0CK2k
-         7nknJM9UycuDl8IN9XZ8Vidz9WI9kp8PXDcY/yUCcmExjR3IVFBLYy0aVKoQTNCu6HBE
-         YopUv80jNarEfZp2YVnEQeGdvtXtqfxdwLsBU93ju/YmQPj+5hA3z8NtLMAdUolJ5Ct/
-         Fc4w==
-X-Gm-Message-State: AOAM532lb/F/q9nYj9tNXn6sSzIpGBhHm5fQBiKql7s3pgRuqNN/7eqw
-        PLEllxTajjxK7BnuKqlEQuGvU31t1slGqe4Etrp/lzEW2eea8hZN+capWbp8nztV48iqZzB/DZ1
-        G2tr1Jqy8y2yh7W5xi3B5Iuznss9HrPB61HmF716uaQ7wYzX5bQ==
-X-Received: by 2002:a9d:480e:: with SMTP id c14mr1511908otf.233.1642737706834;
-        Thu, 20 Jan 2022 20:01:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyseZj+ek4BeoHOtF//WkmuO66+iqWcXsWmB3o/kKx7ClQ5FpOwebYv2dscfj0+zK6N02U3WyJjFIqj5xm+ybY=
-X-Received: by 2002:a9d:480e:: with SMTP id c14mr1511895otf.233.1642737706604;
- Thu, 20 Jan 2022 20:01:46 -0800 (PST)
-MIME-Version: 1.0
-References: <20220120051929.1625791-1-kai.heng.feng@canonical.com> <YelxMFOiqnfIVmyy@lunn.ch>
-In-Reply-To: <YelxMFOiqnfIVmyy@lunn.ch>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Fri, 21 Jan 2022 12:01:35 +0800
-Message-ID: <CAAd53p7NjvzsBs2aWTP-3GMjoyefMmLB3ou+7fDcrNVfKwALHw@mail.gmail.com>
-Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
- firmware on a Dell hardware
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=PXjzs2ORwNdG7MiCJrx7cQxN5MdTrOLJkoufb+btUjY=;
+        b=SmCKe3GbdTWg4XuJ069sTqGz/jb7XlXKXG5G3xz9MlPtneVeQe/ii5QL9w1V6R/bvz
+         5zn3UJVvsjh/lL6XmLaW0J8fJ5YG8gY0WORNfT80rrKKGm27lYXpnpWEerjtk6KLlO/v
+         xWv9RTa0eeiX4HGs6oJmU1xsaFPB2WgcO3Nn6Yy7AK99VHNi+nfre/LlMvTf8C0Yr6Bj
+         LUj5pcHNF6S6rvSf1SgjJFPQ8DDTTX+MBnZo16Nu89zsDUZdYj/Tmxiqh1acNSlZUfoS
+         fZvpdv0/+/2vE3Kt17dpSKG5UWSyop7PJ+84TvNmvs3+UCpYla9s9b0WrPy9y70NtuGs
+         O2MA==
+X-Gm-Message-State: AOAM532ZzMeDrz0De2bEXpHabJVs5NlGIlxJss3P8Ky3ZGkjkkF+rxb8
+        d7GlAuugfls26+AsDykIEJo=
+X-Google-Smtp-Source: ABdhPJxsIrAwQLT5vKIUdy2z0rmKcpsFY+qjwmtwc0TE4iahtr4b86iCSZKz++wUTd21sM58KvPQbw==
+X-Received: by 2002:a63:81c8:: with SMTP id t191mr1638088pgd.135.1642737911690;
+        Thu, 20 Jan 2022 20:05:11 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id z17sm5214946pfe.10.2022.01.20.20.05.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 20:05:11 -0800 (PST)
+Date:   Thu, 20 Jan 2022 20:05:08 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Russell King <linux@arm.linux.org.uk>
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+Message-ID: <20220121040508.GA7588@hoboy.vegasvil.org>
+References: <20220103232555.19791-4-richardcochran@gmail.com>
+ <20220120164832.xdebp5vykib6h6dp@skbuf>
+ <Yeoqof1onvrcWGNp@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yeoqof1onvrcWGNp@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 10:26 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Thu, Jan 20, 2022 at 01:19:29PM +0800, Kai-Heng Feng wrote:
-> > BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
-> > instead of setting another value, keep it untouched and restore the saved
-> > value on system resume.
-> >
-> > Introduce config_led() callback in phy_driver() to make the implemtation
-> > generic.
->
-> I'm also wondering if we need to take a step back here and get the
-> ACPI guys involved. I don't know much about ACPI, but shouldn't it
-> provide a control method to configure the PHYs LEDs?
->
-> We already have the basics for defining a PHY in ACPI. See:
->
-> https://www.kernel.org/doc/html/latest/firmware-guide/acpi/dsd/phy.html
+On Fri, Jan 21, 2022 at 04:38:09AM +0100, Andrew Lunn wrote:
 
-These properties seem to come from device-tree.
+> So in the extreme case, you have 7 time stamps, 3 from MACs and 4 from
+> PHYs!
 
->
-> so you could extend this to include a method to configure the LEDs for
-> a specific PHY.
+:^)
+ 
+> I doubt we want to support this, is there a valid use case for it?
 
-How to add new properties? Is it required to add new properties to
-both DT and ACPI?
-Looks like many drivers use _DSD freely, but those properties are not
-defined in ACPI spec...
+Someday, someone will surely say it is important, but with any luck
+I'll be dead by then...
 
-Kai-Heng
-
->
->   Andrew
+Cheers,
+Richard
