@@ -2,181 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0B72495919
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 06:19:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6069949592F
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 06:21:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230247AbiAUFRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 00:17:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiAUFRj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 00:17:39 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE49DC061574;
-        Thu, 20 Jan 2022 21:17:38 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id l16so8388040pjl.4;
-        Thu, 20 Jan 2022 21:17:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bunDHCeKO61OtYgL6XTkwDh49ksDeJZwuYnkiCJjD/k=;
-        b=NUJtW1USk5ESjbrnfPaFxNndMaw6rESK9PforxuBh8OPDpgNPt3uf9069PBe0f9lX3
-         8qX7sJ3m3HWKQrbkG0yOSFJp3afKkgda+Vx9/SA2/aybRD7yH0y3aGmCTtzoStvNO1KX
-         7TzDMFicsgTRZrDcQNc3ukXTSL7jHbTYA/ZUliv2wmxhSzg8sVdXjBeJ08gDqJPtDKSU
-         gIDuP9XR61LcQcpOWJ3/ZpoURnwbgeDdRYXvkj/CMCsBT3KuMqIXrC4QJXbMvR1+CW3C
-         cWSXG73DQtkjfIDIHkcEAAs/D3mnfK0PVbMDiLag2NdySjUMU9JTJYyKZDWBqRSH03BW
-         tfeg==
+        id S234592AbiAUFUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 00:20:54 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:55664
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234044AbiAUFUr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 00:20:47 -0500
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 09FDC3F1DD
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 05:20:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1642742443;
+        bh=wVTM0hztIXfCr6VERNnZ+oanrOCPjJFihg5+LQI64SE=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=POSNok0KXBIxym6N+ah8Tr996m8ocsuRSYi3wJM10c9bQ8LuGFtbiXxzmbuQBQ0Jh
+         vejiFMEURj1bSqs3UJdFsCQYoidSHEqzJreOYPATFZc//qvJAhJlVB1V1VX+R1gz+j
+         uN92ZTga5cD2wVg+GXCLeS2fMX5sYqBqfK32EPg+A6zz4+ugctu+O70BceiyvSKgYN
+         q2/hHioUmzkbbJez38+f0eum8XYJj6rH2dW1+VvuJdNhb04us4clF1FDfKT52GYFFt
+         CgZJ745bK11Ysals23zcyJ8KnccXRw2YLx22ZEJ0ixBxcICcjXyuGxHXcgGEFXWrXu
+         mIKEsLPrxPkyA==
+Received: by mail-pj1-f69.google.com with SMTP id w15-20020a17090aea0f00b001b53b829d6bso742315pjy.5
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 21:20:42 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bunDHCeKO61OtYgL6XTkwDh49ksDeJZwuYnkiCJjD/k=;
-        b=vPNBtqC2ohqtRcXC+wefwgTKGK8JSEZ5eGC3AebJ9vgl6KKrdDlALGXuXfzaiAMvXx
-         Mtmweln5/zMKftgBz/K+Yw/y/cPSq0WLoClxLrpoyHOdITzzNtX7Z5uL4PbT3IuWqYSK
-         I+M0n1rplnyMWsC4g5I35UaUdbZ1vDmP25q2SYMhXaHbqSNq48d6TgajCPeo4G6ZjGTK
-         Z6vf2NyxWqaI95a6bK/P4V7TZx3BxzqNbAX3dbh2MKGPfFtLoNeCIn4w76bLmRWrlkMW
-         8+6/k0bphU+Pau+SUVVhSXzPEPdwHsud2G/0+FNpPQh4cByDeaxT2XBgHl5JbdW82Sbl
-         06hQ==
-X-Gm-Message-State: AOAM5330bX1qXP7MRt9EJnjWrRVUXr7xAqSJmEdNFLgdyMRiRp057QKo
-        P11s/CJk5bNz8PI2gRIEQsmFgWhFNxy1dmw/8l5Asf6OgYY=
-X-Google-Smtp-Source: ABdhPJxpL6VhKWBKwersAkHVm8gNgOSr/yFy2odoJ2PQAxJmS1cW2PZsEZ1sFbbQteV7LQTBmFnx+uqkPeMZsDhX870=
-X-Received: by 2002:a17:90a:de8e:: with SMTP id n14mr14803977pjv.122.1642742258116;
- Thu, 20 Jan 2022 21:17:38 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
+         :comments:mime-version:content-id:content-transfer-encoding:date
+         :message-id;
+        bh=wVTM0hztIXfCr6VERNnZ+oanrOCPjJFihg5+LQI64SE=;
+        b=N1vEQnQZp9wqzXNFd9Riq1aTFTjpPZzN/52yD3U8t7Efvj4E+JfOCFsSUupchS2KGc
+         6y0Cqo09PNIHRZNJLGantDBILMJW0Tk6mwfaIXGaFXxcb6y5g0gBhq9Kjto5cyhllNvc
+         xv9r1m1TmRxwPtzEnd749FjTKKg+urNRKmlLScBKdlmCODThh9/5Tmprz+4u+vNbk3tX
+         hdwSrBbHw2Rs62GuMvIp+Dhs4+BISDWeCF4BnC4gsZwi4zUX2cdEu///kYg9VyRoMHAM
+         lXx2/9b+i0/s1p1Mw8YEHMpyyOVPrM9F0TmQE4BK6+hGZNNRCffFTgJ0Slvy7rwI3s5d
+         VYzA==
+X-Gm-Message-State: AOAM532ydqYl2n6DLbR3UiZJ1Ae0TO1kdO4gpRfYn4K04Pasa4a07NtG
+        Eksefd8vFcVpaggCIffXN3OrOh8DY3miet7cM2JHsbCwcPvt+v3IX1bf/c0HnCWjnJaK2FZ9g2u
+        lQQxtVh+ov2DeL1G8Iw+jAG/rGAV6o5Vzwg==
+X-Received: by 2002:a17:903:230c:b0:14b:1f90:1caf with SMTP id d12-20020a170903230c00b0014b1f901cafmr1083946plh.56.1642742441655;
+        Thu, 20 Jan 2022 21:20:41 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzB5b29KmUT5Ex0X0xL3q8l6oU9nyhDbH92zpSPKF5WrKFImrNT06M8H4VUkBWZPVyw30L7aA==
+X-Received: by 2002:a17:903:230c:b0:14b:1f90:1caf with SMTP id d12-20020a170903230c00b0014b1f901cafmr1083927plh.56.1642742441375;
+        Thu, 20 Jan 2022 21:20:41 -0800 (PST)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id d1sm5047341pfu.206.2022.01.20.21.20.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 Jan 2022 21:20:40 -0800 (PST)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id B9A556093D; Thu, 20 Jan 2022 21:20:39 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id B337DA0B22;
+        Thu, 20 Jan 2022 21:20:39 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: Re: [PATCH RFC V1 net-next 1/4] net: ethtool: Refactor identical get_ts_info implementations.
+In-reply-to: <Yeou9TKzW1NcBOKW@Laptop-X1>
+References: <20220103232555.19791-2-richardcochran@gmail.com> <20220120161329.fbniou5kzn2x4rp7@skbuf> <Yeou9TKzW1NcBOKW@Laptop-X1>
+Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
+   message dated "Fri, 21 Jan 2022 11:56:37 +0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-References: <20220113070245.791577-1-imagedong@tencent.com>
- <CAADnVQKNCqUzPJAjSHMFr-Ewwtv5Cs3UCQpthaKDTd+YNRWqqg@mail.gmail.com>
- <CADxym3bJZrcGHKH8=kKBkxh848dijAZ56n0fm_DvEh6Bbnrezg@mail.gmail.com>
- <20220120041754.scj3hsrxmwckl7pd@ast-mbp.dhcp.thefacebook.com> <CADxym3b-Q6LyjKqTFcrssK9dVJ8hL6QkMb0MzLyn64r4LS=xtw@mail.gmail.com>
-In-Reply-To: <CADxym3b-Q6LyjKqTFcrssK9dVJ8hL6QkMb0MzLyn64r4LS=xtw@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 20 Jan 2022 21:17:27 -0800
-Message-ID: <CAADnVQKaaPKPkqYfhcM=YNCxodBL_ME6CMk3DPXF_Kq2zoyM=w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct bpf_sock'
-To:     Menglong Dong <menglong8.dong@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Mengen Sun <mengensun@tencent.com>, flyingpeng@tencent.com,
-        mungerjiang@tencent.com, Menglong Dong <imagedong@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <27564.1642742439.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Thu, 20 Jan 2022 21:20:39 -0800
+Message-ID: <27565.1642742439@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 6:18 AM Menglong Dong <menglong8.dong@gmail.com> wrote:
+Hangbin Liu <liuhangbin@gmail.com> wrote:
+
+>On Thu, Jan 20, 2022 at 04:13:29PM +0000, Vladimir Oltean wrote:
+>> > diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bo=
+nd_main.c
+>> > index b60e22f6394a..f28b88b67b9e 100644
+>> > --- a/drivers/net/bonding/bond_main.c
+>> > +++ b/drivers/net/bonding/bond_main.c
+>> > @@ -5353,23 +5353,13 @@ static int bond_ethtool_get_ts_info(struct ne=
+t_device *bond_dev,
+>> >  				    struct ethtool_ts_info *info)
+>> >  {
+>> >  	struct bonding *bond =3D netdev_priv(bond_dev);
+>> > -	const struct ethtool_ops *ops;
+>> >  	struct net_device *real_dev;
+>> > -	struct phy_device *phydev;
+>> >  =
+
+>> >  	rcu_read_lock();
+>> >  	real_dev =3D bond_option_active_slave_get_rcu(bond);
+>> >  	rcu_read_unlock();
+>> =
+
+>> Side note: I'm a bit confused about this rcu_read_lock() ->
+>> rcu_dereference_protected() -> rcu_read_unlock() pattern, and use of th=
+e
+>> real_dev outside the RCU critical section. Isn't ->get_ts_info()
+>> protected by the rtnl_mutex? Shouldn't there be a
+>> bond_option_active_slave_get() which uses rtnl_dereference()?
+>> I see the code has been recently added by Hangbin Liu.
 >
-> On Thu, Jan 20, 2022 at 12:17 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Thu, Jan 20, 2022 at 11:02:27AM +0800, Menglong Dong wrote:
-> > > Hello!
-> > >
-> > > On Thu, Jan 20, 2022 at 6:03 AM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > > >
-> > > [...]
-> > > >
-> > > > Looks like
-> > > >  __sk_buff->remote_port
-> > > >  bpf_sock_ops->remote_port
-> > > >  sk_msg_md->remote_port
-> > > > are doing the right thing,
-> > > > but bpf_sock->dst_port is not correct?
-> > > >
-> > > > I think it's better to fix it,
-> > > > but probably need to consolidate it with
-> > > > convert_ctx_accesses() that deals with narrow access.
-> > > > I suspect reading u8 from three flavors of 'remote_port'
-> > > > won't be correct.
-> > >
-> > > What's the meaning of 'narrow access'? Do you mean to
-> > > make 'remote_port' u16? Or 'remote_port' should be made
-> > > accessible with u8? In fact, '*((u16 *)&skops->remote_port + 1)'
-> > > won't work, as it only is accessible with u32.
-> >
-> > u8 access to remote_port won't pass the verifier,
-> > but u8 access to dst_port will.
-> > Though it will return incorrect data.
-> > See how convert_ctx_accesses() handles narrow loads.
-> > I think we need to generalize it for different endian fields.
+>Hi Vladimir,
 >
-> Yeah, I understand narrower load in convert_ctx_accesses()
-> now. Seems u8 access to dst_port can't pass the verifier too,
-> which can be seen form bpf_sock_is_valid_access():
+>Yes, it should be enough to use rtnl_dereference() since ->get_ts_info is
+>protected by the rtnl_lock. I just thought there is an existing get activ=
+e
+>slave function and rcu read should be OK to be used here. So I just used =
+the
+>existing one.
 >
-> $    switch (off) {
-> $    case offsetof(struct bpf_sock, state):
-> $    case offsetof(struct bpf_sock, family):
-> $    case offsetof(struct bpf_sock, type):
-> $    case offsetof(struct bpf_sock, protocol):
-> $    case offsetof(struct bpf_sock, dst_port):  // u8 access is not allowed
-> $    case offsetof(struct bpf_sock, src_port):
-> $    case offsetof(struct bpf_sock, rx_queue_mapping):
-> $    case bpf_ctx_range(struct bpf_sock, src_ip4):
-> $    case bpf_ctx_range_till(struct bpf_sock, src_ip6[0], src_ip6[3]):
-> $    case bpf_ctx_range(struct bpf_sock, dst_ip4):
-> $    case bpf_ctx_range_till(struct bpf_sock, dst_ip6[0], dst_ip6[3]):
-> $        bpf_ctx_record_field_size(info, size_default);
-> $        return bpf_ctx_narrow_access_ok(off, size, size_default);
-> $    }
+>Hi Jay,
 >
-> I'm still not sure what should we do now. Should we make all
-> remote_port and dst_port narrower accessable and endianness
-> right? For example the remote_port in struct bpf_sock_ops:
->
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -8414,6 +8414,7 @@ static bool sock_ops_is_valid_access(int off, int size,
->                                 return false;
->                         info->reg_type = PTR_TO_PACKET_END;
->                         break;
-> +               case bpf_ctx_range(struct bpf_sock_ops, remote_port):
+>Do you think if there is a need to add a rtnl version of
+>bond_option_active_slave_get()?
 
-Ahh. bpf_sock_ops don't have it.
-But bpf_sk_lookup and sk_msg_md have it.
+	I think the RCU primitives used should match the calling
+context, so, yes, there should be an "rtnl" flavor in this call path as
+that's really what's being relied upon.
 
-bpf_sk_lookup->remote_port
-supports narrow access.
+	You could add a "...active_slave_get_rtnl" variant, or there's
+rcu_deference_rtnl() that goes both ways (rcu_read_lock or RTNL).  That
+could be used in bond_option_active_slave_get_rcu() in place of the
+current rcu_dereference().  I don't have a strong preference one way or
+the other.
 
-When it accesses sport from bpf_sk_lookup_kern.
+	Either way, as mentioned, I agree that the rcu_read_lock/unlock
+in bond_ethtool_get_ts_info() is superfluous, since the whole call is
+under RTNL.
 
-and we have tests that do u8 access from remote_port.
-See verifier/ctx_sk_lookup.c
+	-J
 
->                 case offsetof(struct bpf_sock_ops, skb_tcp_flags):
->                         bpf_ctx_record_field_size(info, size_default);
->                         return bpf_ctx_narrow_access_ok(off, size,
->
-> If remote_port/dst_port are made narrower accessable, the
-> result will be right. Therefore, *((u16*)&sk->remote_port) will
-> be the port with network byte order. And the port in host byte
-> order can be get with:
-> bpf_ntohs(*((u16*)&sk->remote_port))
-> or
-> bpf_htonl(sk->remote_port)
-
-So u8, u16, u32 will work if we make them narrow-accessible, right?
-
-The summary if I understood it:
-. only bpf_sk_lookup->remote_port is doing it correctly for u8,u16,u32 ?
-. bpf_sock->dst_port is not correct for u32,
-  since it's missing bpf_ctx_range() ?
-. __sk_buff->remote_port
- bpf_sock_ops->remote_port
- sk_msg_md->remote_port
- correct for u32 access only. They don't support narrow access.
-
-but wait
-we have a test for bpf_sock->dst_port in progs/test_sock_fields.c.
-How does it work then?
-
-I think we need more eyes on the problem.
-cc-ing more experts.
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
