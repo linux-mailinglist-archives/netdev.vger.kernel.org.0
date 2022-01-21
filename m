@@ -2,107 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C43F496692
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 21:47:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 392FE49668D
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 21:45:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230206AbiAUUrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 15:47:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbiAUUrL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 15:47:11 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AC9DC06173B
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 12:46:29 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id x26so1882717ljd.4
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 12:46:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=hqWL/nHYnUBO+Ln1N3+JmH4jOEi3UlJnxazuE/NF8h0=;
-        b=VY7zjbOdtIGBRC8Jsf7LYuzWSMI63i9iqt2wn2NVA1BS4pUdJja02DAgATa7EXKNVC
-         59bMzMflXqqF1sasaJninuhXRFznZfDm4bu8Y37ORwQ/lq9pumRqQDUhcuTufCZtTXKn
-         dwZhMrTIyJvqfwdOjl2px+JzJmQ+KQThwRsbs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=hqWL/nHYnUBO+Ln1N3+JmH4jOEi3UlJnxazuE/NF8h0=;
-        b=20QBhQcO53DD6fTxCKAdgfBYdGSOs5/6OgbfCUjgwurSUjrAXrP+m7nO5mD8omrIsa
-         rm5zHkXdWNHV9wbb4SeBo1yuuwow9dWXtCauSCJHv6vD3quCBW92nTt/vsoPe6UqsogG
-         itdstnBvwx+6L5XNW/nwZ0xqYzmYefJcjSGpsp2oJeGBPrBJxK8sAhx4Fov5iSbrEUY7
-         QazQtyQR3eNS2RGBzL1hcZiPWSP2bhOh7QGHFwUpQPk1KUPpCU3RxxSfB0klfI42W4Lo
-         BckNoEFRmfiYlvT5R7Ohcob6rCMaDxejtbqqvvS/JNt2ubmBGjVl1rVaj68U9CozJH1y
-         2NWw==
-X-Gm-Message-State: AOAM533jQzAtmzQ45TsWoi2A0cmpA8QOwNOVrKTj48FfU/mZWuyPOYNa
-        YxcIEpiq3Wnl+HR3c7+geHGs8dzRpFJ9cPPXHsT4nw==
-X-Google-Smtp-Source: ABdhPJwOmghXusPS8BhldNXanor5xsas/PN+2MQZSq3Zr9ecOZwNDUhzQLHG09Xt1FLhQMwoZnJqyyLwGeQxktkybpM=
-X-Received: by 2002:a2e:9bce:: with SMTP id w14mr4385061ljj.110.1642797905119;
- Fri, 21 Jan 2022 12:45:05 -0800 (PST)
+        id S230296AbiAUUpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 15:45:02 -0500
+Received: from mga14.intel.com ([192.55.52.115]:45565 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230206AbiAUUpC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Jan 2022 15:45:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642797901; x=1674333901;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=3pkJrpiYFusXoDTrhJ/CUiPlq5DIDo4wnLNlUR3WS/Y=;
+  b=GnWCpBKcL8VBCiHjsTiU+aSybaJ90jkLPwvptajUHgxCU9fLJp8jbAu+
+   kXM3oYNV2swj4NCZdskuuPLy1rTNqS4gW1UshdsaxPw7nbtVqMg53xe8G
+   1OQJppWjDFH2NVD6fm3cu13+lilxQiuODcdHp988Fq5XmCxtDS1n6C/at
+   tOJxFPhjHRLwkLEjoaoDERAkSJOQzSTp+WpZxwup84Q1z0nV8GbSHCE8J
+   MOQuZaJAnByX57FhoigTue/Xs+dHc+QHFokjRFE8tOiMVOjXf7E56Og0r
+   SFm869AxWrI2TUxldR/wNfHvQq4nNTMTRpDYUFhfiBRC1Xv1V7v8ZP8Bp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10234"; a="245960629"
+X-IronPort-AV: E=Sophos;i="5.88,306,1635231600"; 
+   d="scan'208";a="245960629"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 12:44:56 -0800
+X-IronPort-AV: E=Sophos;i="5.88,306,1635231600"; 
+   d="scan'208";a="579725848"
+Received: from hma4-mobl2.amr.corp.intel.com ([10.212.239.251])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 12:44:56 -0800
+Date:   Fri, 21 Jan 2022 12:44:55 -0800 (PST)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Kees Cook <keescook@chromium.org>
+cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] mptcp: Use struct_group() to avoid cross-field
+ memset()
+In-Reply-To: <20220121073935.1154263-1-keescook@chromium.org>
+Message-ID: <73486c93-8ebb-2391-dc50-a2b2cb38743@linux.intel.com>
+References: <20220121073935.1154263-1-keescook@chromium.org>
 MIME-Version: 1.0
-References: <20220112142709.102423-1-mauricio@kinvolk.io> <20220112142709.102423-3-mauricio@kinvolk.io>
- <c1d96b78-5eda-6999-bd22-55514f4900dc@isovalent.com>
-In-Reply-To: <c1d96b78-5eda-6999-bd22-55514f4900dc@isovalent.com>
-From:   =?UTF-8?Q?Mauricio_V=C3=A1squez_Bernal?= <mauricio@kinvolk.io>
-Date:   Fri, 21 Jan 2022 15:44:54 -0500
-Message-ID: <CAHap4zsBxGCCZvzVNRV5mSSaggQDM2h5Fem38tZp7Fn2gsrdhA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 2/8] libbpf: Implement changes needed for
- BTFGen in bpftool
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Rafael David Tinoco <rafaeldtinoco@gmail.com>,
-        Lorenzo Fontana <lorenzo.fontana@elastic.co>,
-        Leonardo Di Donato <leonardo.didonato@elastic.co>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; format=flowed; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 1:08 PM Quentin Monnet <quentin@isovalent.com> wrot=
-e:
->
-> 2022-01-12 09:27 UTC-0500 ~ Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> > This commit extends libbpf with the features that are needed to
-> > implement BTFGen:
-> >
-> > - Implement bpf_core_create_cand_cache() and bpf_core_free_cand_cache()
-> > to handle candidates cache.
-> > - Expose bpf_core_add_cands() and bpf_core_free_cands to handle
-> > candidates list.
-> > - Expose bpf_core_calc_relo_insn() to bpftool.
-> >
-> > Signed-off-by: Mauricio V=C3=A1squez <mauricio@kinvolk.io>
-> > Signed-off-by: Rafael David Tinoco <rafael.tinoco@aquasec.com>
-> > Signed-off-by: Lorenzo Fontana <lorenzo.fontana@elastic.co>
-> > Signed-off-by: Leonardo Di Donato <leonardo.didonato@elastic.co>
-> > ---
-> >  tools/lib/bpf/Makefile          |  2 +-
-> >  tools/lib/bpf/libbpf.c          | 43 +++++++++++++++++++++------------
-> >  tools/lib/bpf/libbpf_internal.h | 12 +++++++++
-> >  3 files changed, 41 insertions(+), 16 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-> > index f947b61b2107..dba019ee2832 100644
-> > --- a/tools/lib/bpf/Makefile
-> > +++ b/tools/lib/bpf/Makefile
-> > @@ -239,7 +239,7 @@ install_lib: all_cmd
-> >
-> >  SRC_HDRS :=3D bpf.h libbpf.h btf.h libbpf_common.h libbpf_legacy.h xsk=
-.h            \
-> >           bpf_helpers.h bpf_tracing.h bpf_endian.h bpf_core_read.h     =
-    \
-> > -         skel_internal.h libbpf_version.h
-> > +         skel_internal.h libbpf_version.h relo_core.h libbpf_internal.=
-h
-> >  GEN_HDRS :=3D $(BPF_GENERATED)
->
-> I don't think these headers should be added to libbpf's SRC_HDRS. If we
-> must make them available to bpftool, we probably want to copy them
-> explicitly through LIBBPF_INTERNAL_HDRS in bpftool's Makefile.
+On Thu, 20 Jan 2022, Kees Cook wrote:
 
-I got confused, thanks for catching this up!
+> In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> field bounds checking for memcpy(), memmove(), and memset(), avoid
+> intentionally writing across neighboring fields.
+>
+> Use struct_group() to capture the fields to be reset, so that memset()
+> can be appropriately bounds-checked by the compiler.
+>
+> Cc: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> Cc: Matthieu Baerts <matthieu.baerts@tessares.net>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Cc: mptcp@lists.linux.dev
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+> net/mptcp/protocol.h | 6 +++---
+> 1 file changed, 3 insertions(+), 3 deletions(-)
+>
+
+Thanks Kees, looks good to me. I checked around for other MPTCP structs 
+that would need similar attention and didn't see any.
+
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+
+
+> diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+> index 0e6b42c76ea0..85317ce38e3f 100644
+> --- a/net/mptcp/protocol.h
+> +++ b/net/mptcp/protocol.h
+> @@ -408,7 +408,7 @@ DECLARE_PER_CPU(struct mptcp_delegated_action, mptcp_delegated_actions);
+> struct mptcp_subflow_context {
+> 	struct	list_head node;/* conn_list of subflows */
+>
+> -	char	reset_start[0];
+> +	struct_group(reset,
+>
+> 	unsigned long avg_pacing_rate; /* protected by msk socket lock */
+> 	u64	local_key;
+> @@ -458,7 +458,7 @@ struct mptcp_subflow_context {
+>
+> 	long	delegated_status;
+>
+> -	char	reset_end[0];
+> +	);
+>
+> 	struct	list_head delegated_node;   /* link into delegated_action, protected by local BH */
+>
+> @@ -494,7 +494,7 @@ mptcp_subflow_tcp_sock(const struct mptcp_subflow_context *subflow)
+> static inline void
+> mptcp_subflow_ctx_reset(struct mptcp_subflow_context *subflow)
+> {
+> -	memset(subflow->reset_start, 0, subflow->reset_end - subflow->reset_start);
+> +	memset(&subflow->reset, 0, sizeof(subflow->reset));
+> 	subflow->request_mptcp = 1;
+> }
+>
+> -- 
+> 2.30.2
+>
+>
+
+--
+Mat Martineau
+Intel
