@@ -2,82 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ED27495F64
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 14:05:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A2EC495F6A
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 14:07:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380525AbiAUNFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 08:05:13 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:47684 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1380522AbiAUNFN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jan 2022 08:05:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=er0oO0KQIatdPccLUW/Ds3BOKxbZJ4Hsl46YRpDl6GI=; b=LLW/XfM6vV3EJDL5WGKAWF+jAp
-        xaBR6ktXeFtFXHSiPOjgJaSB7LTTaxClspqR9HbV6qXoYjDbLRx5+zc7+qdfRLgGiR4iVliMNVEc8
-        ItKL3gn4vyblsUzg9/DSSCxH1k2U5LMQ47qnXid3sNHmtkvaZUlxoAzm//idE5kuxTac=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nAtb9-0025GS-EY; Fri, 21 Jan 2022 14:04:59 +0100
-Date:   Fri, 21 Jan 2022 14:04:59 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
- firmware on a Dell hardware
-Message-ID: <Yeqve+KhJKbZJNCL@lunn.ch>
-References: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
- <Yelnzrrd0a4Bl5AL@lunn.ch>
- <CAAd53p45BbLy0T8AG5QTKhP00zMBsMHfm7i-bTmZmQWM5DpLnQ@mail.gmail.com>
+        id S1380543AbiAUNHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 08:07:12 -0500
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:55858 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1380552AbiAUNG5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 08:06:57 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V2RxFW-_1642770412;
+Received: from 30.225.24.42(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V2RxFW-_1642770412)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 21 Jan 2022 21:06:52 +0800
+Message-ID: <9282186a-95d0-22df-1ddf-3d36d7efa1c4@linux.alibaba.com>
+Date:   Fri, 21 Jan 2022 21:06:52 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAd53p45BbLy0T8AG5QTKhP00zMBsMHfm7i-bTmZmQWM5DpLnQ@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+Subject: Re: [PATCH net v2] net/smc: Transitional solution for clcsock race
+ issue
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1642768988-126174-1-git-send-email-guwen@linux.alibaba.com>
+In-Reply-To: <1642768988-126174-1-git-send-email-guwen@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Since you talked about suspend/resume, does this machine support WoL?
-> > Is the BIOS configuring LED2 to be used as an interrupt when WoL is
-> > enabled in the BIOS? Do you need to save/restore that configuration
-> > over suspend/review? And prevent the driver from changing the
-> > configuration?
+
+On 2022/1/21 8:43 pm, Wen Gu wrote:
+> We encountered a crash in smc_setsockopt() and it is caused by
+> accessing smc->clcsock after clcsock was released.
 > 
-> This NIC on the machine doesn't support WoL.
-
-I'm surprised about that. Are you really sure?
-
-What are you doing for resume? pressing the power button?
-
-> > > +static const struct dmi_system_id platform_flags[] = {
-> > > +     {
-> > > +             .matches = {
-> > > +                     DMI_MATCH(DMI_SYS_VENDOR, "Dell EMC"),
-> > > +                     DMI_MATCH(DMI_PRODUCT_NAME, "Edge Gateway 3200"),
-> > > +             },
-> > > +             .driver_data = (void *)PHY_USE_FIRMWARE_LED,
-> > > +     },
-> >
-> > This needs a big fat warning, that it will affect all LEDs for PHYs
-> > which linux is driving, on that machine. So PHYs on USB dongles, PHYs
-> > in SFPs, PHYs on plugin PCIe card etc.
-> >
-> > Have you talked with Dells Product Manager and do they understand the
-> > implications of this?
+>   BUG: kernel NULL pointer dereference, address: 0000000000000020
+>   #PF: supervisor read access in kernel mode
+>   #PF: error_code(0x0000) - not-present page
+>   PGD 0 P4D 0
+>   Oops: 0000 [#1] PREEMPT SMP PTI
+>   CPU: 1 PID: 50309 Comm: nginx Kdump: loaded Tainted: G E     5.16.0-rc4+ #53
+>   RIP: 0010:smc_setsockopt+0x59/0x280 [smc]
+>   Call Trace:
+>    <TASK>
+>    __sys_setsockopt+0xfc/0x190
+>    __x64_sys_setsockopt+0x20/0x30
+>    do_syscall_64+0x34/0x90
+>    entry_SYSCALL_64_after_hwframe+0x44/0xae
+>   RIP: 0033:0x7f16ba83918e
+>    </TASK>
 > 
-> Right, that's why the original approach is passing the flag from the MAC driver.
-> That approach can be more specific and doesn't touch unrelated PHYs.
+> This patch tries to fix it by holding clcsock_release_lock and
+> checking whether clcsock has already been released before access.
+> 
+> In case that a crash of the same reason happens in smc_getsockopt()
+> or smc_switch_to_fallback(), this patch also checkes smc->clcsock
+> in them too. And the caller of smc_switch_to_fallback() will identify
+> whether fallback succeeds according to the return value.
+> 
+> Fixes: fd57770dd198 ("net/smc: wait for pending work before clcsock release_sock")
+> Link: https://lore.kernel.org/lkml/5dd7ffd1-28e2-24cc-9442-1defec27375e@linux.ibm.com/T/
+> Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+> Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+> ---
 
-More specific, but still will go wrong at some point, A PCEe card
-using that MAC etc. And this is general infrastructure you are adding
-here, it can be used by any machine, any combination of MAC and PHY
-etc. So you need to clearly document its limits so others are not
-surprised.
+I seem to have missed this:
 
-	Andrew
+---
+v2 -> v1:
+
+Add 'Fixes:' tag and 'Link:' tag.
+---
+
+
+Looks like I need a script to check the details to avoid mistake...
+
+
+Thanks,
+Wen Gu
+
