@@ -2,528 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59142495AB5
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 08:31:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8AC1495AC7
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 08:35:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378997AbiAUHbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 02:31:02 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:34690 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1378998AbiAUHa5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 02:30:57 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 20L04Rsf005971
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 23:30:56 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=Sg0ix8wtmyhIXwiOi+i3PRlqwkIUNiicrkJlSL/oteI=;
- b=YEa341z0tBsRQ+QttUHztehf7cALFTdflI3zoWwF18bbfPF//jvM1skO4sJ06Dab9hF7
- YAVIbbA3UOQaqC679UOtx+coIOXNpxZ2voXp8ZCzoWoZ1jh2bX+g0Rxt9xbcmNzmnH+/
- rZMH9/7pP2IkAwGgpcZDhHOXSapErHtQifI= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net (PPS) with ESMTPS id 3dqhy4hmsp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 23:30:56 -0800
-Received: from twshared18912.14.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 20 Jan 2022 23:30:55 -0800
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 69F975BDEC4B; Thu, 20 Jan 2022 23:30:51 -0800 (PST)
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, <kernel-team@fb.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: [RFC PATCH v3 net-next 4/4] bpf: Add __sk_buff->mono_delivery_time and handle __sk_buff->tstamp based on tc_at_ingress
-Date:   Thu, 20 Jan 2022 23:30:51 -0800
-Message-ID: <20220121073051.4180328-1-kafai@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220121073026.4173996-1-kafai@fb.com>
-References: <20220121073026.4173996-1-kafai@fb.com>
+        id S1378933AbiAUHfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 02:35:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378971AbiAUHfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 02:35:06 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94CB1C061747
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 23:35:05 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id m4so39175008edb.10
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 23:35:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to;
+        bh=YDoBKk4bS02PDZwr8XhGTXpHtFnp/u98f/TxO+KLwJ8=;
+        b=QKbLVQgysqa81CwV4FV75AOhs1GT88BMmXKuuNGOrx799OWpomUQnywCqpS+XLaPX6
+         u//dp8UEUTs3JKroIIEpRuhCPgXp0WV20G+PgJE29ajk6EN/3CTU4JySnCe7loMYXf9T
+         HKgSD2dfCxMjpJ7d/HWvFMNwODYzoxWdkfz2Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to;
+        bh=YDoBKk4bS02PDZwr8XhGTXpHtFnp/u98f/TxO+KLwJ8=;
+        b=BHyy2fyeV3D2OPZB6Jk2q6pw3yHlXFwmNfAwB4rI6GJcySkx0HtjeQLaaZQj4Ttozv
+         McIiJtzajNF4JwjoOWPz5aLIQwpaKwJlaXSNg+4qtUEayvBoyfiFyaUp1+FJTJ7eMwR3
+         uENt/uZJTJn4OHw6beL9W2RBOzbLH/MrUZ1IhY9GnhnS04phnYfYCYxi81k7FJ7WZZCA
+         LS5K5sFymqW8KrNcOqdJ7NyeKfwVepugbrzPa1SJ9RGzxxDkX9aR+hKcG9sOa5Tk/8vJ
+         Tjf2Q2Obu4yG/3d8ICBSdmSUtdFycuz8BSn1VWwK5dbaQrMlVumD/CYeBQhw7i4Tyg8e
+         ZBYw==
+X-Gm-Message-State: AOAM53389IW/lE8oV7OPM7NxgLs9SqqIretbJ13mdF3sSllhebiK2+zS
+        zwAW3o2LEdsT1dn1Ko0HP+1yig==
+X-Google-Smtp-Source: ABdhPJwmihtqqggX0DWStrqbxUiRP6jfee7LpxUOmAA1VVoQh4RAX+tsuXNI5CdLIjDWehgzVDJIuQ==
+X-Received: by 2002:a17:907:7b99:: with SMTP id ne25mr2374801ejc.769.1642750503523;
+        Thu, 20 Jan 2022 23:35:03 -0800 (PST)
+Received: from [192.168.178.136] (f140230.upc-f.chello.nl. [80.56.140.230])
+        by smtp.gmail.com with ESMTPSA id lf16sm1735591ejc.25.2022.01.20.23.35.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Jan 2022 23:35:01 -0800 (PST)
+Message-ID: <86e73289-0a38-0554-e81a-0fb223efb098@broadcom.com>
+Date:   Fri, 21 Jan 2022 08:35:00 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: dEthWMJbrKln4HcFSt_cP1PPK9Q6atp8
-X-Proofpoint-GUID: dEthWMJbrKln4HcFSt_cP1PPK9Q6atp8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-21_02,2022-01-20_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 impostorscore=0
- spamscore=0 malwarescore=0 adultscore=0 clxscore=1015 mlxlogscore=999
- bulkscore=0 phishscore=0 suspectscore=0 lowpriorityscore=0 mlxscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201210047
-X-FB-Internal: deliver
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 35/35] brcmfmac: common: Add support for external
+ calibration blobs
+To:     Hector Martin <marcan@marcan.st>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20220104072658.69756-1-marcan@marcan.st>
+ <20220104072658.69756-36-marcan@marcan.st>
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+In-Reply-To: <20220104072658.69756-36-marcan@marcan.st>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000003ce63405d612a827"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__sk_buff->mono_delivery_time:
-This patch adds __sk_buff->mono_delivery_time to
-read and write the mono delivery_time in skb->tstamp.
+--0000000000003ce63405d612a827
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The bpf rewrite is like:
-/* BPF_READ: __u64 a =3D __sk_buff->mono_delivery_time; */
-if (skb->mono_delivery_time)
-	a =3D skb->tstamp;
-else
-	a =3D 0;
+On 1/4/2022 8:26 AM, Hector Martin wrote:
+> The calibration blob for a chip is normally stored in SROM and loaded
+> internally by the firmware. However, Apple ARM64 platforms instead store
+> it as part of platform configuration data, and provide it via the Apple
+> Device Tree. We forward this into the Linux DT in the bootloader.
+> 
+> Add support for taking this blob from the DT and loading it into the
+> dongle. The loading mechanism is the same as used for the CLM and TxCap
+> blobs.
+> 
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+>   .../broadcom/brcm80211/brcmfmac/common.c      | 24 +++++++++++++++++++
+>   .../broadcom/brcm80211/brcmfmac/common.h      |  2 ++
+>   .../wireless/broadcom/brcm80211/brcmfmac/of.c |  8 +++++++
+>   3 files changed, 34 insertions(+)
 
-/* BPF_WRITE: __sk_buff->mono_delivery_time =3D a; */
-skb->tstamp =3D a;
-skb->mono_delivery_time =3D !!a;
+--0000000000003ce63405d612a827
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-__sk_buff->tstamp:
-The bpf rewrite is like:
-/* BPF_READ: __u64 a =3D __sk_buff->tstamp; */
-if (skb->tc_at_ingress && skb->mono_delivery_time)
-	a =3D 0;
-else
-	a =3D skb->tstamp;
-
-/* BPF_WRITE: __sk_buff->tstamp =3D a; */
-skb->tstamp =3D a;
-if (skb->tc_at_ingress || !a)
-	skb->mono_delivery_time =3D 0;
-
-At egress, reading is the same as before.  All skb->tstamp
-is the delivery_time.  Writing will not change the (kernel)
-skb->mono_delivery_time also unless 0 is being written.  This
-will be the same behavior as before.
-
-(#) At ingress, the current bpf prog can only expect the
-(rcv) timestamp.  Thus, both reading and writing are now treated as
-operating on the (rcv) timestamp for the existing bpf prog.
-
-During bpf load time, the verifier will learn if the
-bpf prog has accessed the new __sk_buff->mono_delivery_time.
-
-When reading at ingress, if the bpf prog does not access the
-new __sk_buff->mono_delivery_time, it will be treated as the
-existing behavior as mentioned in (#) above.  If the (kernel) skb->tstamp
-currently has a delivery_time,  it will temporary be saved first and then
-set the skb->tstamp to either the ktime_get_real() or zero.  After
-the bpf prog finished running, if the bpf prog did not change
-the skb->tstamp,  the saved delivery_time will be restored
-back to the skb->tstamp.
-
-When writing __sk_buff->tstamp at ingress, the
-skb->mono_delivery_time will be cleared because of
-the (#) mentioned above.
-
-If the bpf prog does access the new __sk_buff->mono_delivery_time
-at ingress, it indicates that the bpf prog is aware of this new
-kernel support:
-the (kernel) skb->tstamp can have the delivery_time or the
-(rcv) timestamp at ingress.  If the __sk_buff->mono_delivery_time
-is available, the __sk_buff->tstamp will not be available and
-it will be zero.
-
-The bpf rewrite needs to access the skb's mono_delivery_time
-and tc_at_ingress bit.  They are moved up in sk_buff so
-that bpf rewrite can be done at a fixed offset.  tc_skip_classify
-is moved together with tc_at_ingress.  To get one bit for
-mono_delivery_time, csum_not_inet is moved down and this bit
-is currently used by sctp.
-
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- include/linux/filter.h         |  31 +++++++-
- include/linux/skbuff.h         |  20 +++--
- include/uapi/linux/bpf.h       |   1 +
- net/core/filter.c              | 134 ++++++++++++++++++++++++++++++---
- net/sched/act_bpf.c            |   5 +-
- net/sched/cls_bpf.c            |   6 +-
- tools/include/uapi/linux/bpf.h |   1 +
- 7 files changed, 171 insertions(+), 27 deletions(-)
-
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 71fa57b88bfc..5cef695d6575 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -572,7 +572,8 @@ struct bpf_prog {
- 				has_callchain_buf:1, /* callchain buffer allocated? */
- 				enforce_expected_attach_type:1, /* Enforce expected_attach_type chec=
-king at attach time */
- 				call_get_stack:1, /* Do we call bpf_get_stack() or bpf_get_stackid()=
- */
--				call_get_func_ip:1; /* Do we call get_func_ip() */
-+				call_get_func_ip:1, /* Do we call get_func_ip() */
-+				delivery_time_access:1; /* Accessed __sk_buff->mono_delivery_time */
- 	enum bpf_prog_type	type;		/* Type of BPF program */
- 	enum bpf_attach_type	expected_attach_type; /* For some prog types */
- 	u32			len;		/* Number of filter blocks */
-@@ -699,6 +700,34 @@ static inline void bpf_compute_data_pointers(struct =
-sk_buff *skb)
- 	cb->data_end  =3D skb->data + skb_headlen(skb);
- }
-=20
-+static __always_inline u32 bpf_prog_run_at_ingress(const struct bpf_prog=
- *prog,
-+						   struct sk_buff *skb)
-+{
-+	ktime_t tstamp, delivery_time =3D 0;
-+	int filter_res;
-+
-+	if (unlikely(skb->mono_delivery_time) && !prog->delivery_time_access) {
-+		delivery_time =3D skb->tstamp;
-+		skb->mono_delivery_time =3D 0;
-+		if (static_branch_unlikely(&netstamp_needed_key))
-+			skb->tstamp =3D tstamp =3D ktime_get_real();
-+		else
-+			skb->tstamp =3D tstamp =3D 0;
-+	}
-+
-+	/* It is safe to push/pull even if skb_shared() */
-+	__skb_push(skb, skb->mac_len);
-+	bpf_compute_data_pointers(skb);
-+	filter_res =3D bpf_prog_run(prog, skb);
-+	__skb_pull(skb, skb->mac_len);
-+
-+	/* __sk_buff->tstamp was not changed, restore the delivery_time */
-+	if (unlikely(delivery_time) && skb_tstamp(skb) =3D=3D tstamp)
-+		skb_set_delivery_time(skb, delivery_time, true);
-+
-+	return filter_res;
-+}
-+
- /* Similar to bpf_compute_data_pointers(), except that save orginal
-  * data in cb->data and cb->meta_data for restore.
-  */
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 4677bb6c7279..a14b04b86c13 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -866,22 +866,23 @@ struct sk_buff {
- 	__u8			vlan_present:1;	/* See PKT_VLAN_PRESENT_BIT */
- 	__u8			csum_complete_sw:1;
- 	__u8			csum_level:2;
--	__u8			csum_not_inet:1;
- 	__u8			dst_pending_confirm:1;
-+	__u8			mono_delivery_time:1;
-+
-+#ifdef CONFIG_NET_CLS_ACT
-+	__u8			tc_skip_classify:1;
-+	__u8			tc_at_ingress:1;
-+#endif
- #ifdef CONFIG_IPV6_NDISC_NODETYPE
- 	__u8			ndisc_nodetype:2;
- #endif
--
-+	__u8			csum_not_inet:1;
- 	__u8			ipvs_property:1;
- 	__u8			inner_protocol_type:1;
- 	__u8			remcsum_offload:1;
- #ifdef CONFIG_NET_SWITCHDEV
- 	__u8			offload_fwd_mark:1;
- 	__u8			offload_l3_fwd_mark:1;
--#endif
--#ifdef CONFIG_NET_CLS_ACT
--	__u8			tc_skip_classify:1;
--	__u8			tc_at_ingress:1;
- #endif
- 	__u8			redirected:1;
- #ifdef CONFIG_NET_REDIRECT
-@@ -894,7 +895,6 @@ struct sk_buff {
- 	__u8			decrypted:1;
- #endif
- 	__u8			slow_gro:1;
--	__u8			mono_delivery_time:1;
-=20
- #ifdef CONFIG_NET_SCHED
- 	__u16			tc_index;	/* traffic control index */
-@@ -972,10 +972,16 @@ struct sk_buff {
- /* if you move pkt_vlan_present around you also must adapt these constan=
-ts */
- #ifdef __BIG_ENDIAN_BITFIELD
- #define PKT_VLAN_PRESENT_BIT	7
-+#define TC_AT_INGRESS_SHIFT	0
-+#define SKB_MONO_DELIVERY_TIME_SHIFT 2
- #else
- #define PKT_VLAN_PRESENT_BIT	0
-+#define TC_AT_INGRESS_SHIFT	7
-+#define SKB_MONO_DELIVERY_TIME_SHIFT 5
- #endif
- #define PKT_VLAN_PRESENT_OFFSET	offsetof(struct sk_buff, __pkt_vlan_pres=
-ent_offset)
-+#define TC_AT_INGRESS_OFFSET offsetof(struct sk_buff, __pkt_vlan_present=
-_offset)
-+#define SKB_MONO_DELIVERY_TIME_OFFSET offsetof(struct sk_buff, __pkt_vla=
-n_present_offset)
-=20
- #ifdef __KERNEL__
- /*
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index b0383d371b9a..83725c891f3c 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5437,6 +5437,7 @@ struct __sk_buff {
- 	__u32 gso_size;
- 	__u32 :32;		/* Padding, future use. */
- 	__u64 hwtstamp;
-+	__u64 mono_delivery_time;
- };
-=20
- struct bpf_tunnel_key {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 4fc53d645a01..db17812f0f8c 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7832,6 +7832,7 @@ static bool bpf_skb_is_valid_access(int off, int si=
-ze, enum bpf_access_type type
- 			return false;
- 		break;
- 	case bpf_ctx_range(struct __sk_buff, tstamp):
-+	case bpf_ctx_range(struct __sk_buff, mono_delivery_time):
- 		if (size !=3D sizeof(__u64))
- 			return false;
- 		break;
-@@ -7872,6 +7873,7 @@ static bool sk_filter_is_valid_access(int off, int =
-size,
- 	case bpf_ctx_range(struct __sk_buff, tstamp):
- 	case bpf_ctx_range(struct __sk_buff, wire_len):
- 	case bpf_ctx_range(struct __sk_buff, hwtstamp):
-+	case bpf_ctx_range(struct __sk_buff, mono_delivery_time):
- 		return false;
- 	}
-=20
-@@ -7911,6 +7913,7 @@ static bool cg_skb_is_valid_access(int off, int siz=
-e,
- 		case bpf_ctx_range_till(struct __sk_buff, cb[0], cb[4]):
- 			break;
- 		case bpf_ctx_range(struct __sk_buff, tstamp):
-+		case bpf_ctx_range(struct __sk_buff, mono_delivery_time):
- 			if (!bpf_capable())
- 				return false;
- 			break;
-@@ -7943,6 +7946,7 @@ static bool lwt_is_valid_access(int off, int size,
- 	case bpf_ctx_range(struct __sk_buff, tstamp):
- 	case bpf_ctx_range(struct __sk_buff, wire_len):
- 	case bpf_ctx_range(struct __sk_buff, hwtstamp):
-+	case bpf_ctx_range(struct __sk_buff, mono_delivery_time):
- 		return false;
- 	}
-=20
-@@ -8169,6 +8173,7 @@ static bool tc_cls_act_is_valid_access(int off, int=
- size,
- 		case bpf_ctx_range_till(struct __sk_buff, cb[0], cb[4]):
- 		case bpf_ctx_range(struct __sk_buff, tstamp):
- 		case bpf_ctx_range(struct __sk_buff, queue_mapping):
-+		case bpf_ctx_range(struct __sk_buff, mono_delivery_time):
- 			break;
- 		default:
- 			return false;
-@@ -8445,6 +8450,7 @@ static bool sk_skb_is_valid_access(int off, int siz=
-e,
- 	case bpf_ctx_range(struct __sk_buff, tstamp):
- 	case bpf_ctx_range(struct __sk_buff, wire_len):
- 	case bpf_ctx_range(struct __sk_buff, hwtstamp):
-+	case bpf_ctx_range(struct __sk_buff, mono_delivery_time):
- 		return false;
- 	}
-=20
-@@ -8603,6 +8609,114 @@ static struct bpf_insn *bpf_convert_shinfo_access=
-(const struct bpf_insn *si,
- 	return insn;
- }
-=20
-+static struct bpf_insn *bpf_convert_tstamp_read(const struct bpf_insn *s=
-i,
-+						struct bpf_insn *insn)
-+{
-+	__u8 value_reg =3D si->dst_reg;
-+	__u8 skb_reg =3D si->src_reg;
-+	__u8 tmp_reg =3D BPF_REG_AX;
-+
-+#ifdef CONFIG_NET_CLS_ACT
-+	*insn++ =3D BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg, TC_AT_INGRESS_OFFSET);
-+	*insn++ =3D BPF_ALU32_IMM(BPF_AND, tmp_reg, 1 << TC_AT_INGRESS_SHIFT);
-+	*insn++ =3D BPF_JMP32_IMM(BPF_JEQ, tmp_reg, 0, 5);
-+	/* @ingress, read __sk_buff->tstamp as the (rcv) timestamp,
-+	 * so check the skb->mono_delivery_time.
-+	 */
-+	*insn++ =3D BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg,
-+			      SKB_MONO_DELIVERY_TIME_OFFSET);
-+	*insn++ =3D BPF_ALU32_IMM(BPF_AND, tmp_reg,
-+				1 << SKB_MONO_DELIVERY_TIME_SHIFT);
-+	*insn++ =3D BPF_JMP32_IMM(BPF_JEQ, tmp_reg, 0, 2);
-+	/* skb->mono_delivery_time is set, read 0 as the (rcv) timestamp. */
-+	*insn++ =3D BPF_MOV64_IMM(value_reg, 0);
-+	*insn++ =3D BPF_JMP_A(1);
-+#endif
-+
-+	*insn++ =3D BPF_LDX_MEM(BPF_DW, value_reg, skb_reg,
-+			      offsetof(struct sk_buff, tstamp));
-+	return insn;
-+}
-+
-+static struct bpf_insn *bpf_convert_tstamp_write(const struct bpf_insn *=
-si,
-+						 struct bpf_insn *insn)
-+{
-+	__u8 value_reg =3D si->src_reg;
-+	__u8 skb_reg =3D si->dst_reg;
-+	__u8 tmp_reg =3D BPF_REG_AX;
-+
-+	/* skb->tstamp =3D tstamp */
-+	*insn++ =3D BPF_STX_MEM(BPF_DW, skb_reg, value_reg,
-+			      offsetof(struct sk_buff, tstamp));
-+
-+#ifdef CONFIG_NET_CLS_ACT
-+	*insn++ =3D BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg, TC_AT_INGRESS_OFFSET);
-+	*insn++ =3D BPF_ALU32_IMM(BPF_AND, tmp_reg, 1 << TC_AT_INGRESS_SHIFT);
-+	*insn++ =3D BPF_JMP32_IMM(BPF_JNE, tmp_reg, 0, 1);
-+#endif
-+
-+	/* test tstamp !=3D 0 */
-+	*insn++ =3D BPF_JMP_IMM(BPF_JNE, value_reg, 0, 3);
-+	/* writing __sk_buff->tstamp at ingress or writing 0,
-+	 * clear the skb->mono_delivery_time.
-+	 */
-+	*insn++ =3D BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg,
-+			      SKB_MONO_DELIVERY_TIME_OFFSET);
-+	*insn++ =3D BPF_ALU32_IMM(BPF_AND, tmp_reg,
-+				~(1 << SKB_MONO_DELIVERY_TIME_SHIFT));
-+	*insn++ =3D BPF_STX_MEM(BPF_B, skb_reg, tmp_reg,
-+			      SKB_MONO_DELIVERY_TIME_OFFSET);
-+
-+	return insn;
-+}
-+
-+static struct bpf_insn *
-+bpf_convert_mono_delivery_time_read(const struct bpf_insn *si,
-+				    struct bpf_insn *insn)
-+{
-+	__u8 value_reg =3D si->dst_reg;
-+	__u8 skb_reg =3D si->src_reg;
-+	__u8 tmp_reg =3D BPF_REG_AX;
-+
-+	*insn++ =3D BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg,
-+			      SKB_MONO_DELIVERY_TIME_OFFSET);
-+	*insn++ =3D BPF_ALU32_IMM(BPF_AND, tmp_reg,
-+				1 << SKB_MONO_DELIVERY_TIME_SHIFT);
-+	*insn++ =3D BPF_JMP32_IMM(BPF_JNE, tmp_reg, 0, 2);
-+	*insn++ =3D BPF_MOV64_IMM(value_reg, 0);
-+	*insn++ =3D BPF_JMP_A(1);
-+	*insn++ =3D BPF_LDX_MEM(BPF_DW, value_reg, skb_reg,
-+			      offsetof(struct sk_buff, tstamp));
-+
-+	return insn;
-+}
-+
-+static struct bpf_insn *
-+bpf_convert_mono_delivery_time_write(const struct bpf_insn *si,
-+				     struct bpf_insn *insn)
-+{
-+	__u8 value_reg =3D si->src_reg;
-+	__u8 skb_reg =3D si->dst_reg;
-+	__u8 tmp_reg =3D BPF_REG_AX;
-+
-+	*insn++ =3D BPF_STX_MEM(BPF_DW, skb_reg, value_reg,
-+			      offsetof(struct sk_buff, tstamp));
-+	*insn++ =3D BPF_LDX_MEM(BPF_B, tmp_reg, skb_reg,
-+			      SKB_MONO_DELIVERY_TIME_OFFSET);
-+	*insn++ =3D BPF_JMP_IMM(BPF_JNE, value_reg, 0, 2);
-+	/* write zero, clear the skb->mono_delivery_time */
-+	*insn++ =3D BPF_ALU32_IMM(BPF_AND, tmp_reg,
-+				~(1 << SKB_MONO_DELIVERY_TIME_SHIFT));
-+	*insn++ =3D BPF_JMP_A(1);
-+	/* write non zero, set skb->mono_delivery_time */
-+	*insn++ =3D BPF_ALU32_IMM(BPF_OR, tmp_reg,
-+				1 << SKB_MONO_DELIVERY_TIME_SHIFT);
-+	*insn++ =3D BPF_STX_MEM(BPF_B, skb_reg, tmp_reg,
-+			      SKB_MONO_DELIVERY_TIME_OFFSET);
-+
-+	return insn;
-+}
-+
- static u32 bpf_convert_ctx_access(enum bpf_access_type type,
- 				  const struct bpf_insn *si,
- 				  struct bpf_insn *insn_buf,
-@@ -8911,17 +9025,17 @@ static u32 bpf_convert_ctx_access(enum bpf_access=
-_type type,
- 		BUILD_BUG_ON(sizeof_field(struct sk_buff, tstamp) !=3D 8);
-=20
- 		if (type =3D=3D BPF_WRITE)
--			*insn++ =3D BPF_STX_MEM(BPF_DW,
--					      si->dst_reg, si->src_reg,
--					      bpf_target_off(struct sk_buff,
--							     tstamp, 8,
--							     target_size));
-+			insn =3D bpf_convert_tstamp_write(si, insn);
- 		else
--			*insn++ =3D BPF_LDX_MEM(BPF_DW,
--					      si->dst_reg, si->src_reg,
--					      bpf_target_off(struct sk_buff,
--							     tstamp, 8,
--							     target_size));
-+			insn =3D bpf_convert_tstamp_read(si, insn);
-+		break;
-+
-+	case offsetof(struct __sk_buff, mono_delivery_time):
-+		if (type =3D=3D BPF_WRITE)
-+			insn =3D bpf_convert_mono_delivery_time_write(si, insn);
-+		else
-+			insn =3D bpf_convert_mono_delivery_time_read(si, insn);
-+		prog->delivery_time_access =3D 1;
- 		break;
-=20
- 	case offsetof(struct __sk_buff, gso_segs):
-diff --git a/net/sched/act_bpf.c b/net/sched/act_bpf.c
-index a77d8908e737..14c3bd0a5088 100644
---- a/net/sched/act_bpf.c
-+++ b/net/sched/act_bpf.c
-@@ -45,10 +45,7 @@ static int tcf_bpf_act(struct sk_buff *skb, const stru=
-ct tc_action *act,
-=20
- 	filter =3D rcu_dereference(prog->filter);
- 	if (at_ingress) {
--		__skb_push(skb, skb->mac_len);
--		bpf_compute_data_pointers(skb);
--		filter_res =3D bpf_prog_run(filter, skb);
--		__skb_pull(skb, skb->mac_len);
-+		filter_res =3D bpf_prog_run_at_ingress(filter, skb);
- 	} else {
- 		bpf_compute_data_pointers(skb);
- 		filter_res =3D bpf_prog_run(filter, skb);
-diff --git a/net/sched/cls_bpf.c b/net/sched/cls_bpf.c
-index df19a847829e..036b2e1f74af 100644
---- a/net/sched/cls_bpf.c
-+++ b/net/sched/cls_bpf.c
-@@ -93,11 +93,7 @@ static int cls_bpf_classify(struct sk_buff *skb, const=
- struct tcf_proto *tp,
- 		if (tc_skip_sw(prog->gen_flags)) {
- 			filter_res =3D prog->exts_integrated ? TC_ACT_UNSPEC : 0;
- 		} else if (at_ingress) {
--			/* It is safe to push/pull even if skb_shared() */
--			__skb_push(skb, skb->mac_len);
--			bpf_compute_data_pointers(skb);
--			filter_res =3D bpf_prog_run(prog->filter, skb);
--			__skb_pull(skb, skb->mac_len);
-+			filter_res =3D bpf_prog_run_at_ingress(prog->filter, skb);
- 		} else {
- 			bpf_compute_data_pointers(skb);
- 			filter_res =3D bpf_prog_run(prog->filter, skb);
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bp=
-f.h
-index b0383d371b9a..83725c891f3c 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -5437,6 +5437,7 @@ struct __sk_buff {
- 	__u32 gso_size;
- 	__u32 :32;		/* Padding, future use. */
- 	__u64 hwtstamp;
-+	__u64 mono_delivery_time;
- };
-=20
- struct bpf_tunnel_key {
---=20
-2.30.2
-
+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
+XSlOP9s1dqWlRRnnNxV7BVC87lkKKy0+1M2DOF6qRYQlnW4EfOyCToYLAG5zeV+AjepMoX6J9bUz
+yj4BlDtwH4HFjaRIlPPbdLshUA54/tV84x8woATuLGBq+hTZEpkZAgMBAAGjggHdMIIB2TAOBgNV
+HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
+Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
+KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
+Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
+dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
+OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
+MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
+BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKb+3b9pz8zo
+0QsCHGb/p0UrBlU+MA0GCSqGSIb3DQEBCwUAA4IBAQCHisuRNqP0NfYfG3U3XF+bocf//aGLOCGj
+NvbnSbaUDT/ZkRFb9dQfDRVnZUJ7eDZWHfC+kukEzFwiSK1irDPZQAG9diwy4p9dM0xw5RXSAC1w
+FzQ0ClJvhK8PsjXF2yzITFmZsEhYEToTn2owD613HvBNijAnDDLV8D0K5gtDnVqkVB9TUAGjHsmo
+aAwIDFKdqL0O19Kui0WI1qNsu1tE2wAZk0XE9FG0OKyY2a2oFwJ85c5IO0q53U7+YePIwv4/J5aP
+OGM6lFPJCVnfKc3H76g/FyPyaE4AL/hfdNP8ObvCB6N/BVCccjNdglRsL2ewttAG3GM06LkvrLhv
+UCvjMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
+YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMMSnY
+h9J/RI6gsHbuMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCASBBcbPP7cvFjl+fD0
+wVU22dnS1Og8mvNJGBvbpzVpVjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0yMjAxMjEwNzM1MDNaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
+AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
+BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAYFU7kvUWtMJ/FSflnROZArfonFRYeN4C3XFy
+o6HPTHVP+PeNK47rvJxsy2thTlFobSYR7ZXrMoVvAvsyb992BqM9fsmRLUfgGGe/DvYFh0sfGILl
+y4xRi85Ya5nn4sgZmXFdh6IGFeWlEFdKB/9yexAc457WpyZOMNxJM5yPm5+0aThOtS0KbDaaafYa
+SDhLskilJeSf8JQY8MZECma1d1s1Cc14Cr+nwnmOKBKAtBMjtbdk5vxiT8zBz/i3ZG1AXmu5AvU2
+O2ZWAyWfNXN0EGhP9r5rTvCDt0PdNjjTjwA+dsqoaTQxgM8GvSNmt+Q5tSHwI3ibnxbYTGSHGKV7
+tQ==
+--0000000000003ce63405d612a827--
