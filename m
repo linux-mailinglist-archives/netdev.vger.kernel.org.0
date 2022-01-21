@@ -2,221 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 643C6495A00
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 07:35:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ACD5495A0F
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 07:38:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378727AbiAUGfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 01:35:30 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:45130 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1378725AbiAUGf2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 01:35:28 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20L05s8g029343;
-        Thu, 20 Jan 2022 22:35:25 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=HOKx4/jqW98EnimRMEfCWoPWqKhiM47ees0WogeddOQ=;
- b=iAog1DprqYt2PL1szOzokzVwbAgXrmDLPh6OOWC3q6DDjDM32eWEHGyHtUFGgiyNUJvS
- qLnblL5NruXGJ657Vg97GoWS16XpnvdLoc/f2Rp2YS2O8renzdyXB3sQzbir4CE1kY4E
- zrY3PuWmmwT9AGUiqkJXhrbwvDAq4S5wmmipW6fvsZeLvPFAtYEqr1UpwRv5tC07tG69
- cXuDVkrmT3IQzWOdtIz1UCtYNZts/AM/+DNEZnuVl6r5RVTeRhUFfaZ9TFtLI4eIANys
- 6ETg5BrKBYzHcWgg6MQ8NKErXzr85hMnJ+FPKr7B4OWnwPITZKYz6KqUaX4JM9CPepP2 iw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3dqj05gxyj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 20 Jan 2022 22:35:25 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 20 Jan
- 2022 22:35:23 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 20 Jan 2022 22:35:23 -0800
-Received: from hyd1358.marvell.com (unknown [10.29.37.11])
-        by maili.marvell.com (Postfix) with ESMTP id 6EC103F7060;
-        Thu, 20 Jan 2022 22:35:20 -0800 (PST)
-From:   Subbaraya Sundeep <sbhatta@marvell.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <sundeep.lkml@gmail.com>
-CC:     <hkelam@marvell.com>, <gakula@marvell.com>, <sgoutham@marvell.com>,
-        "Kiran Kumar K" <kirankumark@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [net PATCH 9/9] octeontx2-af: Add KPU changes to parse NGIO as separate layer
-Date:   Fri, 21 Jan 2022 12:04:47 +0530
-Message-ID: <1642746887-30924-10-git-send-email-sbhatta@marvell.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1642746887-30924-1-git-send-email-sbhatta@marvell.com>
-References: <1642746887-30924-1-git-send-email-sbhatta@marvell.com>
+        id S1378757AbiAUGiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 01:38:20 -0500
+Received: from prt-mail.chinatelecom.cn ([42.123.76.222]:32849 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1378752AbiAUGiU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 01:38:20 -0500
+HMM_SOURCE_IP: 172.18.0.218:42762.813230127
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-10.133.11.244 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id 41CE12800B7;
+        Fri, 21 Jan 2022 14:38:04 +0800 (CST)
+X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id 6f463a4339bf40e6a8ba36f414a7b440 for jay.vosburgh@canonical.com;
+        Fri, 21 Jan 2022 14:38:08 CST
+X-Transaction-ID: 6f463a4339bf40e6a8ba36f414a7b440
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+Message-ID: <661de9e7-216d-dfd1-afdc-3c58a88739c3@chinatelecom.cn>
+Date:   Fri, 21 Jan 2022 14:38:03 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: lUpM_ozyXQTIfCf_QB-1GfGt9a9jL3oM
-X-Proofpoint-ORIG-GUID: lUpM_ozyXQTIfCf_QB-1GfGt9a9jL3oM
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-21_02,2022-01-20_01,2021-12-02_01
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v6] net: bonding: Add support for IPV6 ns/na to
+ balance-alb/balance-tlb mode
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, huyd12@chinatelecom.cn
+References: <20220118073317.82968-1-sunshouxin@chinatelecom.cn>
+ <29469.1642746326@famine>
+From:   =?UTF-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
+In-Reply-To: <29469.1642746326@famine>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kiran Kumar K <kirankumark@marvell.com>
 
-With current KPU profile NGIO is being parsed along with CTAG as
-a single layer. Because of this MCAM/ntuple rules installed with
-ethertype as 0x8842 are not being hit. Adding KPU profile changes
-to parse NGIO in separate ltype and CTAG in separate ltype.
+在 2022/1/21 14:25, Jay Vosburgh 写道:
+> Sun Shouxin <sunshouxin@chinatelecom.cn> wrote:
+>
+>> Since ipv6 neighbor solicitation and advertisement messages
+>> isn't handled gracefully in bonding6 driver, we can see packet
+>> drop due to inconsistency bewteen mac address in the option
+>> message and source MAC .
+>>
+>> Another examples is ipv6 neighbor solicitation and advertisement
+>> messages from VM via tap attached to host brighe, the src mac
+>> mighe be changed through balance-alb mode, but it is not synced
+>> with Link-layer address in the option message.
+>>
+>> The patch implements bond6's tx handle for ipv6 neighbor
+>> solicitation and advertisement messages.
+> 	As previously discussed, this looks reasonable to me to resolve
+> the described MAC discrepancy.  One minor nit is a couple of misspelled
+> words in the description above, "brighe" and "mighe."
+>
+> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+>
+> 	-J
 
-Fixes: f9c49be90c05 ("octeontx2-af: Update the default KPU profile and fixes")
-Signed-off-by: Kiran Kumar K <kirankumark@marvell.com>
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- .../ethernet/marvell/octeontx2/af/npc_profile.h    | 70 +++++++++++-----------
- 1 file changed, 35 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h b/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
-index 0fe7ad3..4180376 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
-@@ -185,7 +185,6 @@ enum npc_kpu_parser_state {
- 	NPC_S_KPU2_QINQ,
- 	NPC_S_KPU2_ETAG,
- 	NPC_S_KPU2_EXDSA,
--	NPC_S_KPU2_NGIO,
- 	NPC_S_KPU2_CPT_CTAG,
- 	NPC_S_KPU2_CPT_QINQ,
- 	NPC_S_KPU3_CTAG,
-@@ -212,6 +211,7 @@ enum npc_kpu_parser_state {
- 	NPC_S_KPU5_NSH,
- 	NPC_S_KPU5_CPT_IP,
- 	NPC_S_KPU5_CPT_IP6,
-+	NPC_S_KPU5_NGIO,
- 	NPC_S_KPU6_IP6_EXT,
- 	NPC_S_KPU6_IP6_HOP_DEST,
- 	NPC_S_KPU6_IP6_ROUT,
-@@ -1124,15 +1124,6 @@ static struct npc_kpu_profile_cam kpu1_cam_entries[] = {
- 		NPC_S_KPU1_ETHER, 0xff,
- 		NPC_ETYPE_CTAG,
- 		0xffff,
--		NPC_ETYPE_NGIO,
--		0xffff,
--		0x0000,
--		0x0000,
--	},
--	{
--		NPC_S_KPU1_ETHER, 0xff,
--		NPC_ETYPE_CTAG,
--		0xffff,
- 		NPC_ETYPE_CTAG,
- 		0xffff,
- 		0x0000,
-@@ -1968,6 +1959,15 @@ static struct npc_kpu_profile_cam kpu2_cam_entries[] = {
- 	},
- 	{
- 		NPC_S_KPU2_CTAG, 0xff,
-+		NPC_ETYPE_NGIO,
-+		0xffff,
-+		0x0000,
-+		0x0000,
-+		0x0000,
-+		0x0000,
-+	},
-+	{
-+		NPC_S_KPU2_CTAG, 0xff,
- 		NPC_ETYPE_PPPOE,
- 		0xffff,
- 		0x0000,
-@@ -2750,15 +2750,6 @@ static struct npc_kpu_profile_cam kpu2_cam_entries[] = {
- 		0x0000,
- 	},
- 	{
--		NPC_S_KPU2_NGIO, 0xff,
--		0x0000,
--		0x0000,
--		0x0000,
--		0x0000,
--		0x0000,
--		0x0000,
--	},
--	{
- 		NPC_S_KPU2_CPT_CTAG, 0xff,
- 		NPC_ETYPE_IP,
- 		0xffff,
-@@ -5090,6 +5081,15 @@ static struct npc_kpu_profile_cam kpu5_cam_entries[] = {
- 		0x0000,
- 	},
- 	{
-+		NPC_S_KPU5_NGIO, 0xff,
-+		0x0000,
-+		0x0000,
-+		0x0000,
-+		0x0000,
-+		0x0000,
-+		0x0000,
-+	},
-+	{
- 		NPC_S_NA, 0X00,
- 		0x0000,
- 		0x0000,
-@@ -8425,14 +8425,6 @@ static struct npc_kpu_profile_action kpu1_action_entries[] = {
- 	{
- 		NPC_ERRLEV_RE, NPC_EC_NOERR,
- 		8, 12, 0, 0, 0,
--		NPC_S_KPU2_NGIO, 12, 1,
--		NPC_LID_LA, NPC_LT_LA_ETHER,
--		0,
--		0, 0, 0, 0,
--	},
--	{
--		NPC_ERRLEV_RE, NPC_EC_NOERR,
--		8, 12, 0, 0, 0,
- 		NPC_S_KPU2_CTAG2, 12, 1,
- 		NPC_LID_LA, NPC_LT_LA_ETHER,
- 		NPC_F_LA_U_HAS_TAG | NPC_F_LA_L_WITH_VLAN,
-@@ -9196,6 +9188,14 @@ static struct npc_kpu_profile_action kpu2_action_entries[] = {
- 	},
- 	{
- 		NPC_ERRLEV_RE, NPC_EC_NOERR,
-+		0, 0, 0, 2, 0,
-+		NPC_S_KPU5_NGIO, 6, 1,
-+		NPC_LID_LB, NPC_LT_LB_CTAG,
-+		0,
-+		0, 0, 0, 0,
-+	},
-+	{
-+		NPC_ERRLEV_RE, NPC_EC_NOERR,
- 		8, 0, 6, 2, 0,
- 		NPC_S_KPU5_IP, 14, 1,
- 		NPC_LID_LB, NPC_LT_LB_PPPOE,
-@@ -9892,14 +9892,6 @@ static struct npc_kpu_profile_action kpu2_action_entries[] = {
- 	},
- 	{
- 		NPC_ERRLEV_RE, NPC_EC_NOERR,
--		0, 0, 0, 0, 1,
--		NPC_S_NA, 0, 1,
--		NPC_LID_LC, NPC_LT_LC_NGIO,
--		0,
--		0, 0, 0, 0,
--	},
--	{
--		NPC_ERRLEV_RE, NPC_EC_NOERR,
- 		8, 0, 6, 2, 0,
- 		NPC_S_KPU5_CPT_IP, 6, 1,
- 		NPC_LID_LB, NPC_LT_LB_CTAG,
-@@ -11974,6 +11966,14 @@ static struct npc_kpu_profile_action kpu5_action_entries[] = {
- 		0, 0, 0, 0,
- 	},
- 	{
-+		NPC_ERRLEV_RE, NPC_EC_NOERR,
-+		0, 0, 0, 0, 1,
-+		NPC_S_NA, 0, 1,
-+		NPC_LID_LC, NPC_LT_LC_NGIO,
-+		0,
-+		0, 0, 0, 0,
-+	},
-+	{
- 		NPC_ERRLEV_LC, NPC_EC_UNK,
- 		0, 0, 0, 0, 1,
- 		NPC_S_NA, 0, 0,
--- 
-2.7.4
+Thanks your comment, I'll adjust it and send out V7 soon.
 
+
+>
+>> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+>> ---
+>> drivers/net/bonding/bond_alb.c | 36 ++++++++++++++++++++++++++++++++++
+>> 1 file changed, 36 insertions(+)
+>>
+>> diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
+>> index 533e476988f2..82b7071840b1 100644
+>> --- a/drivers/net/bonding/bond_alb.c
+>> +++ b/drivers/net/bonding/bond_alb.c
+>> @@ -1269,6 +1269,34 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
+>> 	return res;
+>> }
+>>
+>> +/*determine if the packet is NA or NS*/
+>> +static bool __alb_determine_nd(struct icmp6hdr *hdr)
+>> +{
+>> +	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
+>> +	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
+>> +		return true;
+>> +	}
+>> +
+>> +	return false;
+>> +}
+>> +
+>> +static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
+>> +{
+>> +	struct ipv6hdr *ip6hdr;
+>> +	struct icmp6hdr *hdr;
+>> +
+>> +	if (skb->protocol == htons(ETH_P_IPV6)) {
+>> +		ip6hdr = ipv6_hdr(skb);
+>> +		if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
+>> +			hdr = icmp6_hdr(skb);
+>> +			if (__alb_determine_nd(hdr))
+>> +				return true;
+>> +		}
+>> +	}
+>> +
+>> +	return false;
+>> +}
+>> +
+>> /************************ exported alb functions ************************/
+>>
+>> int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+>> @@ -1350,6 +1378,9 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
+>> 		switch (skb->protocol) {
+>> 		case htons(ETH_P_IP):
+>> 		case htons(ETH_P_IPV6):
+>> +			if (alb_determine_nd(skb, bond))
+>> +				break;
+>> +
+>> 			hash_index = bond_xmit_hash(bond, skb);
+>> 			if (bond->params.tlb_dynamic_lb) {
+>> 				tx_slave = tlb_choose_channel(bond,
+>> @@ -1446,6 +1477,11 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
+>> 			break;
+>> 		}
+>>
+>> +		if (alb_determine_nd(skb, bond)) {
+>> +			do_tx_balance = false;
+>> +			break;
+>> +		}
+>> +
+>> 		hash_start = (char *)&ip6hdr->daddr;
+>> 		hash_size = sizeof(ip6hdr->daddr);
+>> 		break;
+>>
+>> base-commit: 79e06c4c4950be2abd8ca5d2428a8c915aa62c24
+>> -- 
+>> 2.27.0
+>>
+> ---
+> 	-Jay Vosburgh, jay.vosburgh@canonical.com
