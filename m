@@ -2,90 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C883A4958BC
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 05:05:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFF564958BF
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 05:06:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233845AbiAUEFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 23:05:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45468 "EHLO
+        id S233874AbiAUEGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 23:06:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231519AbiAUEFM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 23:05:12 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49FB3C061574;
-        Thu, 20 Jan 2022 20:05:12 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id p125so7174859pga.2;
-        Thu, 20 Jan 2022 20:05:12 -0800 (PST)
+        with ESMTP id S231519AbiAUEGP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 23:06:15 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C022C061574;
+        Thu, 20 Jan 2022 20:06:15 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id 192so4295642pfz.3;
+        Thu, 20 Jan 2022 20:06:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=PXjzs2ORwNdG7MiCJrx7cQxN5MdTrOLJkoufb+btUjY=;
-        b=OT1Twxo4gieLaNzM8Jo6wtoGAKsVj/cMffoFSqf+MtOFGT+4xm9DVXYxBBwyHN3f3R
-         Fxu3poB2HImt13TgzfhsFPiuqxu4Rsa6ggglb2GVFYxPvDFFh3k/5WGnG+bajf2nifSE
-         VlngnsQNnOxs5LqCjFrGip2/RV9zS5jhjFcMB61SqX3+drZrkdcYMUoDuUoHyeFkLF6E
-         8GjhIQhWp6tQQyT0bvJZ7hwfbCavwIb0gsXzfYmrkRbZsm5YEmFAcFxN1K19671CgZ7d
-         uN8o2xyXSsLCIfr9ztFaZHXbz4NiDgKkHPWfnd88kcA4FHsAppV/mCm6D3mlsBp8Pb+Z
-         xEcA==
+        h=user-agent:date:subject:from:to:cc:message-id:thread-topic
+         :references:in-reply-to:mime-version:content-transfer-encoding;
+        bh=8+X6EhAbzBhA2wQmYG1k4Og2aMdttrSV1A0aWDvQLhI=;
+        b=JVEFPAffj9UhWIsMNUTKT8sKFatG3vC/bQtYcujpKlUHNRpDdpnTh1C7rFjfO0hEsV
+         eBuvgTr9oDbe0Iqk+f58SVjyeoU/TjHwwo0RaZ5EolviAgvRL2sPIsPoWEXmcgCLsn5K
+         9bvT8+4jUrJAIMM9l8ouu8NENjypeIraySAOE/NQo7l9XxdQ5XEz7NT0rO18GOjTolvf
+         KZU0gSj8vNAa7+TDj6fI7nJRyYEJLbRCoAoaiE81fXw+Bl2NDMwi+GHHG+eMq6vX7KMT
+         y73ZnXw70JyjUFEuYPrCaEcUmw7carb5uPQOQ2rAQ9xHzA5arHH1nb4MODWV274gj9AE
+         GPdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=PXjzs2ORwNdG7MiCJrx7cQxN5MdTrOLJkoufb+btUjY=;
-        b=SmCKe3GbdTWg4XuJ069sTqGz/jb7XlXKXG5G3xz9MlPtneVeQe/ii5QL9w1V6R/bvz
-         5zn3UJVvsjh/lL6XmLaW0J8fJ5YG8gY0WORNfT80rrKKGm27lYXpnpWEerjtk6KLlO/v
-         xWv9RTa0eeiX4HGs6oJmU1xsaFPB2WgcO3Nn6Yy7AK99VHNi+nfre/LlMvTf8C0Yr6Bj
-         LUj5pcHNF6S6rvSf1SgjJFPQ8DDTTX+MBnZo16Nu89zsDUZdYj/Tmxiqh1acNSlZUfoS
-         fZvpdv0/+/2vE3Kt17dpSKG5UWSyop7PJ+84TvNmvs3+UCpYla9s9b0WrPy9y70NtuGs
-         O2MA==
-X-Gm-Message-State: AOAM532ZzMeDrz0De2bEXpHabJVs5NlGIlxJss3P8Ky3ZGkjkkF+rxb8
-        d7GlAuugfls26+AsDykIEJo=
-X-Google-Smtp-Source: ABdhPJxsIrAwQLT5vKIUdy2z0rmKcpsFY+qjwmtwc0TE4iahtr4b86iCSZKz++wUTd21sM58KvPQbw==
-X-Received: by 2002:a63:81c8:: with SMTP id t191mr1638088pgd.135.1642737911690;
-        Thu, 20 Jan 2022 20:05:11 -0800 (PST)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id z17sm5214946pfe.10.2022.01.20.20.05.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 20:05:11 -0800 (PST)
-Date:   Thu, 20 Jan 2022 20:05:08 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Russell King <linux@arm.linux.org.uk>
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-Message-ID: <20220121040508.GA7588@hoboy.vegasvil.org>
-References: <20220103232555.19791-4-richardcochran@gmail.com>
- <20220120164832.xdebp5vykib6h6dp@skbuf>
- <Yeoqof1onvrcWGNp@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yeoqof1onvrcWGNp@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        h=x-gm-message-state:user-agent:date:subject:from:to:cc:message-id
+         :thread-topic:references:in-reply-to:mime-version
+         :content-transfer-encoding;
+        bh=8+X6EhAbzBhA2wQmYG1k4Og2aMdttrSV1A0aWDvQLhI=;
+        b=se6ZbRHX/Ep/viWkil4GbrXjoou2AkDx8JLzZxDVkxW+1EF9Sr5rzm3QDQ1LKL/p8E
+         4VB+86AgSZJLlFs+d1t1pizoYWjZNQHn1iKNUAw2Zim8y08apPyQM0Gvz31d8rQsE7DA
+         V2etQNrcIDe492utdN/sbkYwigdDH6CpumZqp0OfbtxlppTvclwI36UF2UWAVQyIQkOn
+         MIcq2RNGVK3F4GC7S0tNRiaSO6dokQI2cvnFeIzlxv9eyxwPJhCtbRnFCFrtXi04d0+k
+         N25ugbLy62XAdBrzUDEP9E8l7ZnH0lB0VpvV/3Tw17XkTnDqkMlBL8/XrDrY0jBjtGZs
+         ywCQ==
+X-Gm-Message-State: AOAM5311hq2wmnI0Ed436EwQnsobkMFgTp8hmj1TXfeFqrYHLmtgpBEa
+        O+AlsPmVIqWTNjx+uRF3LhQ=
+X-Google-Smtp-Source: ABdhPJxSlODE6zepSGl7wjrdReYE/DDryhJgFya9M2r0IDHO0lFm62e4/IYRrsN2zE5sXarunjG4aw==
+X-Received: by 2002:a63:211a:: with SMTP id h26mr1608979pgh.239.1642737974681;
+        Thu, 20 Jan 2022 20:06:14 -0800 (PST)
+Received: from [30.135.82.253] (ec2-34-221-172-227.us-west-2.compute.amazonaws.com. [34.221.172.227])
+        by smtp.gmail.com with ESMTPSA id ml16sm3554097pjb.10.2022.01.20.20.06.10
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 Jan 2022 20:06:14 -0800 (PST)
+User-Agent: Microsoft-MacOutlook/16.57.22011101
+Date:   Fri, 21 Jan 2022 12:06:06 +0800
+Subject: Re: [PATCH] ipv4: fix lock leaks
+From:   Ryan Cai <ycaibb@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <edumazet@google.com>, <davem@davemloft.net>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <john.fastabend@gmail.com>,
+        <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
+Message-ID: <BDEF9CF1-016A-48F2-A4F3-8B39CC219B4F@gmail.com>
+Thread-Topic: [PATCH] ipv4: fix lock leaks
+References: <20220121031108.4813-1-ycaibb@gmail.com>
+ <20220120194733.6a8b13e6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220120194733.6a8b13e6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Mime-version: 1.0
+Content-type: text/plain;
+        charset="UTF-8"
+Content-transfer-encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 04:38:09AM +0100, Andrew Lunn wrote:
+Sorry for reporting this false positive. Would be more careful next time. T=
+hank you for your checking.
 
-> So in the extreme case, you have 7 time stamps, 3 from MACs and 4 from
-> PHYs!
+Best,
+Ryan
 
-:^)
- 
-> I doubt we want to support this, is there a valid use case for it?
+=EF=BB=BFOn 21/1/2022, 11:47 AM, "Jakub Kicinski" <kuba@kernel.org> wrote:
 
-Someday, someone will surely say it is important, but with any luck
-I'll be dead by then...
+    On Fri, 21 Jan 2022 11:11:08 +0800 ycaibb wrote:
+    >  			if (seq_sk_match(seq, sk))
+    > +				spin_unlock_bh(lock);
+    >  				return sk;
 
-Cheers,
-Richard
+    Heh, also you're missing brackets so this is patently buggy.
+
+
