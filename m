@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9D3949614B
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 15:43:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5641D496158
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 15:45:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381135AbiAUOnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 09:43:37 -0500
-Received: from mail-ua1-f49.google.com ([209.85.222.49]:46911 "EHLO
-        mail-ua1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231265AbiAUOnf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 09:43:35 -0500
-Received: by mail-ua1-f49.google.com with SMTP id c36so17213213uae.13;
-        Fri, 21 Jan 2022 06:43:34 -0800 (PST)
+        id S1381249AbiAUOo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 09:44:58 -0500
+Received: from mail-ua1-f52.google.com ([209.85.222.52]:42881 "EHLO
+        mail-ua1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381221AbiAUOof (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 09:44:35 -0500
+Received: by mail-ua1-f52.google.com with SMTP id p1so17216741uap.9;
+        Fri, 21 Jan 2022 06:44:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=55AwSfSypaE2CtoXb7L0xkm1j87MyCbe6QHjOqmiD28=;
-        b=gljX+jPPXhkLWlxSZemNrIcCZUdyfQJnPoLZnlWjply+68akM3t6P5Fw33+Gfq/ICx
-         qWx3UXC0AaUHvd0gQUU0ttVhL4PXduQdy2UelqY7VVdr4sXS9ImXL3tLAjpmDl40Jkp2
-         rmOxeva+t3pfWMcRO/BALWCXi0pNooJU/CKCdwIRDh8IBPR6SvjAo/bCnDFMKnttYBFa
-         VJ3Q3+UtN01kmmmluqTXkZWlBWHTdd9oBIJqri1JGhxoGEaD3UlEWUs2qbdx+MHYtoVO
-         ExvMPn1yRIfLMQqNnTC63yhyVrcPHeP145sxa8AWDA8uKqLZ4YqAKU+tsVNx8KrHW8GU
-         U+iQ==
-X-Gm-Message-State: AOAM533a8Ur6ofnEhBXM82msE/RuX/zMyemxx+uWeBB5ZsDuwX8/+MwC
-        9oLpwDUBIPKD/51hTeP4ktPTlF+GyhrqJQ==
-X-Google-Smtp-Source: ABdhPJyXohDcYDK1tlK/7Rd9GTJ72zhebbYr5kZ9KuQM+iBFzNnXsKyV2PkSOIYpMf36LrNO31n3AA==
-X-Received: by 2002:ab0:3b0c:: with SMTP id n12mr1876164uaw.26.1642776214158;
-        Fri, 21 Jan 2022 06:43:34 -0800 (PST)
-Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com. [209.85.222.48])
-        by smtp.gmail.com with ESMTPSA id g13sm1392793vkp.15.2022.01.21.06.43.33
+        bh=ppj7k8YHsUrV0tlUN9ez99ZMN7NUmBnCHri5xyNPwoM=;
+        b=TzSNQa6dDG9WSLZ9P65dZESdUTf3LYLAnCPBDADehkW3hgVcKolC8XUkUavjv26L98
+         WRCG5dBUxot42F1NjTZNXf9ThhzCJEE2ukcgRCnscIWc/p8/feacuv6sp5GEsl27t+X7
+         3DJ/Z53H//CpJCZWTl7VIyRV5XqS8IdH5uGmrbUbcJoXacvw+V9dpOXTVbNk9xSNP9zh
+         jswG/5Ob52DAhUT5HZp5uHaFUKL7xe05I4yrMmSKP9IqOks4eTUlLtt7aJ4DWjOtMkyb
+         ifDbrH3UlWvNTGiKWdc1WvM+q7vwBhXCrr8HTcYtfIcDqgTkYHQFeWJhjx1JhwlMBcNr
+         6emA==
+X-Gm-Message-State: AOAM531bHvUne+/oiPiEUabzpVMTBqaXB47+7Oj01jgDOw1MgQN6V5gb
+        //Puo9KO8fdBUWwXGzYgEOAKSGz9tf5kYQ==
+X-Google-Smtp-Source: ABdhPJysj5cPqxJm7v6v3yT5ZoM/WM6NwNVpeR1/1Fp5BIrsYMs/edBZ72TyqoBseEKYQSSYEktt6A==
+X-Received: by 2002:a67:cb0d:: with SMTP id b13mr1829843vsl.81.1642776274130;
+        Fri, 21 Jan 2022 06:44:34 -0800 (PST)
+Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com. [209.85.222.53])
+        by smtp.gmail.com with ESMTPSA id u8sm1394624uaa.12.2022.01.21.06.44.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Jan 2022 06:43:33 -0800 (PST)
-Received: by mail-ua1-f48.google.com with SMTP id y4so17302888uad.1;
-        Fri, 21 Jan 2022 06:43:33 -0800 (PST)
-X-Received: by 2002:a67:e95a:: with SMTP id p26mr1708645vso.38.1642776213391;
- Fri, 21 Jan 2022 06:43:33 -0800 (PST)
+        Fri, 21 Jan 2022 06:44:33 -0800 (PST)
+Received: by mail-ua1-f53.google.com with SMTP id n15so15750215uaq.5;
+        Fri, 21 Jan 2022 06:44:33 -0800 (PST)
+X-Received: by 2002:a67:e905:: with SMTP id c5mr1898280vso.68.1642776273194;
+ Fri, 21 Jan 2022 06:44:33 -0800 (PST)
 MIME-Version: 1.0
-References: <20211221094717.16187-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20211221094717.16187-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20211221094717.16187-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20211221094717.16187-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20211221094717.16187-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20211221094717.16187-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 21 Jan 2022 15:43:22 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUZWwKLQAaqOsASUhrVmQ89sLL4K9O7x-crWHzFYqUCTQ@mail.gmail.com>
-Message-ID: <CAMuHMdUZWwKLQAaqOsASUhrVmQ89sLL4K9O7x-crWHzFYqUCTQ@mail.gmail.com>
-Subject: Re: [PATCH 01/16] dt-bindings: arm: renesas: Document Renesas RZ/V2L SoC
+Date:   Fri, 21 Jan 2022 15:44:22 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdV=EsFH6QsbdT-4fhXKNCoTMru3MmEt62ui2Qe2GokLzg@mail.gmail.com>
+Message-ID: <CAMuHMdV=EsFH6QsbdT-4fhXKNCoTMru3MmEt62ui2Qe2GokLzg@mail.gmail.com>
+Subject: Re: [PATCH 02/16] dt-bindings: arm: renesas: Document SMARC EVK
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Magnus Damm <magnus.damm@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -75,13 +75,16 @@ On Tue, Dec 21, 2021 at 10:47 AM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
 > From: Biju Das <biju.das.jz@bp.renesas.com>
 >
-> Document Renesas RZ/V2L SoC.
+> Document Renesas SMARC EVK board which is based on RZ/V2L (R9A07G054)
+> SoC. The SMARC EVK consists of RZ/V2L SoM module and SMARC carrier board,
+> the SoM module sits on top of the carrier board.
 >
 > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-devel for v5.18.
+i.e. will queue in renesas-devel for v5.18, merged with the previous
+patch.
 
 Gr{oetje,eeting}s,
 
