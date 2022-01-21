@@ -2,138 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F3A9495B97
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 09:09:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAFF5495B9B
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 09:12:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379153AbiAUIJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 03:09:45 -0500
-Received: from mga07.intel.com ([134.134.136.100]:6594 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343642AbiAUIJp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jan 2022 03:09:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642752585; x=1674288585;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OQeW5rUFYNb1LuME3+2ja/Sqh0ku+Ix4Xf4t/BS3sDs=;
-  b=evP4d2trlkyu0esCpgFOGnGcwws4MvgEiaQmNL48hWDQ87S3XeE9T9Jf
-   5yL0QXrfmjmQlBCF9/5CeG4cm84zyneMXPG6xe+z6O+p0H0jCpS9/4njt
-   XatfsTljLirGXPNWnZWD5S3lUI7cxml97M4p2bM0WbHwJSohY+juVJEsH
-   rwFIpohBiNobKlGU1808smE0gQjMGf07eQ6xTX+vDWHYg3bQlw2tLLvrR
-   KbtjzlrRjEg8p9RW6am0bqrltpDmZLJhCeAqCVePtXWPmeAPtCaSy5SDj
-   is9KVdStqZQTcwynGGQKf3KMvsUpw7q3jtSVyCl4HsFJ14+AzT54JTqVi
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="308926049"
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="308926049"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 00:09:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="579529041"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Jan 2022 00:09:39 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nAozK-000F5O-6L; Fri, 21 Jan 2022 08:09:38 +0000
-Date:   Fri, 21 Jan 2022 16:08:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     ycaibb <ycaibb@gmail.com>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ycaibb@gmail.com
-Subject: Re: [PATCH] net: missing lock releases in ipmr_base.c
-Message-ID: <202201211524.XaQUNPO4-lkp@intel.com>
-References: <20220121032210.5829-1-ycaibb@gmail.com>
+        id S1379152AbiAUIMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 03:12:48 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:52813 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343642AbiAUIMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 03:12:45 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20L8A8keC004318, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20L8A8keC004318
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 21 Jan 2022 16:10:08 +0800
+Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 21 Jan 2022 16:10:08 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 21 Jan 2022 00:10:08 -0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
+ RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
+ 15.01.2308.020; Fri, 21 Jan 2022 16:10:07 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Ed Swierk <eswierk@gh.st>
+Subject: RE: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
+Thread-Topic: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
+Thread-Index: AQHYBCp/WStseF16x0uJ7VAbWo+1y6xqJTFAgAMM/BA=
+Date:   Fri, 21 Jan 2022 08:10:07 +0000
+Message-ID: <423f474e15c948eda4db5bc9a50fd391@realtek.com>
+References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com> 
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/1/21_=3F=3F_07:29:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: multipart/mixed;
+        boundary="_002_423f474e15c948eda4db5bc9a50fd391realtekcom_"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220121032210.5829-1-ycaibb@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi ycaibb,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on net-next/master]
-[also build test WARNING on net/master horms-ipvs/master linus/master v5.16 next-20220121]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/ycaibb/net-missing-lock-releases-in-ipmr_base-c/20220121-112603
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 8aaaf2f3af2ae212428f4db1af34214225f5cec3
-config: mips-bmips_stb_defconfig (https://download.01.org/0day-ci/archive/20220121/202201211524.XaQUNPO4-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d4baf3b1322b84816aa623d8e8cb45a49cb68b84)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://github.com/0day-ci/linux/commit/33b03feacaf2155323b031274d2d67dab0cf561c
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review ycaibb/net-missing-lock-releases-in-ipmr_base-c/20220121-112603
-        git checkout 33b03feacaf2155323b031274d2d67dab0cf561c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash net/ipv4/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> net/ipv4/ipmr_base.c:158:4: warning: misleading indentation; statement is not part of the previous 'if' [-Wmisleading-indentation]
-                           return mfc;
-                           ^
-   net/ipv4/ipmr_base.c:156:3: note: previous statement is here
-                   if (pos-- == 0)
-                   ^
-   net/ipv4/ipmr_base.c:166:4: warning: misleading indentation; statement is not part of the previous 'if' [-Wmisleading-indentation]
-                           return mfc;
-                           ^
-   net/ipv4/ipmr_base.c:164:3: note: previous statement is here
-                   if (pos-- == 0)
-                   ^
-   2 warnings generated.
+--_002_423f474e15c948eda4db5bc9a50fd391realtekcom_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
 
-vim +/if +158 net/ipv4/ipmr_base.c
+> -----Original Message-----
+> From: Pkshih
+> Sent: Wednesday, January 19, 2022 5:38 PM
+> To: 'Martin Blumenstingl' <martin.blumenstingl@googlemail.com>; linux-wir=
+eless@vger.kernel.org
+> Cc: tony0620emma@gmail.com; kvalo@codeaurora.org; johannes@sipsolutions.n=
+et; netdev@vger.kernel.org;
+> linux-kernel@vger.kernel.org; Neo Jou <neojou@gmail.com>; Jernej Skrabec =
+<jernej.skrabec@gmail.com>; Ed
+> Swierk <eswierk@gh.st>
+> Subject: RE: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
+>=20
+> Hi,
+>=20
+> > -----Original Message-----
+> > From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> > Sent: Saturday, January 8, 2022 8:55 AM
+> > To: linux-wireless@vger.kernel.org
+> > Cc: tony0620emma@gmail.com; kvalo@codeaurora.org; johannes@sipsolutions=
+.net; netdev@vger.kernel.org;
+> > linux-kernel@vger.kernel.org; Neo Jou <neojou@gmail.com>; Jernej Skrabe=
+c <jernej.skrabec@gmail.com>;
+> > Pkshih <pkshih@realtek.com>; Ed Swierk <eswierk@gh.st>; Martin Blumenst=
+ingl
+> > <martin.blumenstingl@googlemail.com>
+> > Subject: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
+> >
+>=20
+> [...]
+>=20
+> I do stressed test of connection and suspend, and it get stuck after abou=
+t
+> 4 hours but no useful messages. I will re-build my kernel and turn on loc=
+kdep debug
+> to see if it can tell me what is wrong.
+>=20
 
-3feda6b46f7347 Yuval Mintz 2018-02-28  146  
-c8d61968032654 Yuval Mintz 2018-02-28  147  void *mr_mfc_seq_idx(struct net *net,
-c8d61968032654 Yuval Mintz 2018-02-28  148  		     struct mr_mfc_iter *it, loff_t pos)
-c8d61968032654 Yuval Mintz 2018-02-28  149  {
-c8d61968032654 Yuval Mintz 2018-02-28  150  	struct mr_table *mrt = it->mrt;
-c8d61968032654 Yuval Mintz 2018-02-28  151  	struct mr_mfc *mfc;
-c8d61968032654 Yuval Mintz 2018-02-28  152  
-c8d61968032654 Yuval Mintz 2018-02-28  153  	rcu_read_lock();
-c8d61968032654 Yuval Mintz 2018-02-28  154  	it->cache = &mrt->mfc_cache_list;
-c8d61968032654 Yuval Mintz 2018-02-28  155  	list_for_each_entry_rcu(mfc, &mrt->mfc_cache_list, list)
-c8d61968032654 Yuval Mintz 2018-02-28  156  		if (pos-- == 0)
-33b03feacaf215 Ryan Cai    2022-01-21  157  			rcu_read_unlock();
-c8d61968032654 Yuval Mintz 2018-02-28 @158  			return mfc;
-c8d61968032654 Yuval Mintz 2018-02-28  159  	rcu_read_unlock();
-c8d61968032654 Yuval Mintz 2018-02-28  160  
-c8d61968032654 Yuval Mintz 2018-02-28  161  	spin_lock_bh(it->lock);
-c8d61968032654 Yuval Mintz 2018-02-28  162  	it->cache = &mrt->mfc_unres_queue;
-c8d61968032654 Yuval Mintz 2018-02-28  163  	list_for_each_entry(mfc, it->cache, list)
-c8d61968032654 Yuval Mintz 2018-02-28  164  		if (pos-- == 0)
-33b03feacaf215 Ryan Cai    2022-01-21  165  			spin_unlock_bh(it->lock);
-c8d61968032654 Yuval Mintz 2018-02-28  166  			return mfc;
-c8d61968032654 Yuval Mintz 2018-02-28  167  	spin_unlock_bh(it->lock);
-c8d61968032654 Yuval Mintz 2018-02-28  168  
-c8d61968032654 Yuval Mintz 2018-02-28  169  	it->cache = NULL;
-c8d61968032654 Yuval Mintz 2018-02-28  170  	return NULL;
-c8d61968032654 Yuval Mintz 2018-02-28  171  }
-c8d61968032654 Yuval Mintz 2018-02-28  172  EXPORT_SYMBOL(mr_mfc_seq_idx);
-c8d61968032654 Yuval Mintz 2018-02-28  173  
+I found some deadlock:=20
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+[ 4891.169653]        CPU0                    CPU1
+[ 4891.169732]        ----                    ----
+[ 4891.169799]   lock(&rtwdev->mutex);
+[ 4891.169874]                                lock(&local->sta_mtx);
+[ 4891.169948]                                lock(&rtwdev->mutex);
+[ 4891.170050]   lock(&local->sta_mtx);
+
+
+[ 4919.598630]        CPU0                    CPU1
+[ 4919.598715]        ----                    ----
+[ 4919.598779]   lock(&local->iflist_mtx);
+[ 4919.598900]                                lock(&rtwdev->mutex);
+[ 4919.598995]                                lock(&local->iflist_mtx);
+[ 4919.599092]   lock(&rtwdev->mutex);
+
+So, I add wrappers to iterate rtw_iterate_stas() and rtw_iterate_vifs() tha=
+t
+use _atomic version to collect sta and vif, and use list_for_each() to iter=
+ate.
+Reference code is attached, and I'm still thinking if we can have better me=
+thod.
+
+--
+Ping-Ke
+
+
+--_002_423f474e15c948eda4db5bc9a50fd391realtekcom_
+Content-Type: application/octet-stream;
+	name="0001-rtw88-use-atomic-to-collect-stas-and-does-iterators.patch"
+Content-Description: 0001-rtw88-use-atomic-to-collect-stas-and-does-iterators.patch
+Content-Disposition: attachment;
+	filename="0001-rtw88-use-atomic-to-collect-stas-and-does-iterators.patch";
+	size=4314; creation-date="Fri, 21 Jan 2022 06:33:40 GMT";
+	modification-date="Fri, 21 Jan 2022 06:33:39 GMT"
+Content-Transfer-Encoding: base64
+
+RnJvbSBjOTUzOWVhNWZiYmQ2OTIwMzAzODFhNDJhZDMxZTA4NDkwZjViODA0IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBQaW5nLUtlIFNoaWggPHBrc2hpaEByZWFsdGVrLmNvbT4KRGF0
+ZTogRnJpLCAyMSBKYW4gMjAyMiAxMTowOTo0NSArMDgwMApTdWJqZWN0OiBbUEFUQ0hdIHJ0dzg4
+OiB1c2UgYXRvbWljIHRvIGNvbGxlY3Qgc3RhcyBhbmQgZG9lcyBpdGVyYXRvcnMKCkNoYW5nZS1J
+ZDogSTc2NjUyNjhkMGNhODU5ZDRlM2MzYTYwYjFmMTViNzZmNTQ0NGYwYWIKU2lnbmVkLW9mZi1i
+eTogUGluZy1LZSBTaGloIDxwa3NoaWhAcmVhbHRlay5jb20+Ci0tLQogdXRpbC5jIHwgOTIgKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwog
+dXRpbC5oIHwgMTMgKysrKystLS0tCiAyIGZpbGVzIGNoYW5nZWQsIDEwMCBpbnNlcnRpb25zKCsp
+LCA1IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL3V0aWwuYyBiL3V0aWwuYwppbmRleCAyYzUx
+NWFmMi4uMTgzNTk2OGYgMTAwNjQ0Ci0tLSBhL3V0aWwuYworKysgYi91dGlsLmMKQEAgLTEwNSwz
+ICsxMDUsOTUgQEAgdm9pZCBydHdfZGVzY190b19tY3NyYXRlKHUxNiByYXRlLCB1OCAqbWNzLCB1
+OCAqbnNzKQogCQkqbWNzID0gcmF0ZSAtIERFU0NfUkFURU1DUzA7CiAJfQogfQorCitzdHJ1Y3Qg
+cnR3X3N0YXNfZW50cnkgeworCXN0cnVjdCBsaXN0X2hlYWQgbGlzdDsKKwlzdHJ1Y3QgaWVlZTgw
+MjExX3N0YSAqc3RhOworfTsKKworc3RydWN0IHJ0d19pdGVyX3N0YXNfZGF0YSB7CisJc3RydWN0
+IHJ0d19kZXYgKnJ0d2RldjsKKwlzdHJ1Y3QgbGlzdF9oZWFkIGxpc3Q7Cit9OworCit2b2lkIHJ0
+d19jb2xsZWN0X3N0YV9pdGVyKHZvaWQgKmRhdGEsIHN0cnVjdCBpZWVlODAyMTFfc3RhICpzdGEp
+Cit7CisJc3RydWN0IHJ0d19pdGVyX3N0YXNfZGF0YSAqaXRlcl9zdGFzID0gKHN0cnVjdCBydHdf
+aXRlcl9zdGFzX2RhdGEgKilkYXRhOworCXN0cnVjdCBydHdfc3Rhc19lbnRyeSAqc3Rhc19lbnRy
+eTsKKworCXN0YXNfZW50cnkgPSBrbWFsbG9jKHNpemVvZigqc3Rhc19lbnRyeSksIEdGUF9BVE9N
+SUMpOworCWlmICghc3Rhc19lbnRyeSkKKwkJcmV0dXJuOworCisJc3Rhc19lbnRyeS0+c3RhID0g
+c3RhOworCWxpc3RfYWRkX3RhaWwoJnN0YXNfZW50cnktPmxpc3QsICZpdGVyX3N0YXMtPmxpc3Qp
+OworfQorCit2b2lkIHJ0d19pdGVyYXRlX3N0YXMoc3RydWN0IHJ0d19kZXYgKnJ0d2RldiwKKwkJ
+ICAgICAgdm9pZCAoKml0ZXJhdG9yKSh2b2lkICpkYXRhLAorCQkJCSAgICAgICBzdHJ1Y3QgaWVl
+ZTgwMjExX3N0YSAqc3RhKSwKKwkJCQkgICAgICAgdm9pZCAqZGF0YSkKK3sKKwlzdHJ1Y3QgcnR3
+X2l0ZXJfc3Rhc19kYXRhIGl0ZXJfZGF0YTsKKwlzdHJ1Y3QgcnR3X3N0YXNfZW50cnkgKnN0YV9l
+bnRyeSwgKnRtcDsKKworCWl0ZXJfZGF0YS5ydHdkZXYgPSBydHdkZXY7CisJSU5JVF9MSVNUX0hF
+QUQoJml0ZXJfZGF0YS5saXN0KTsKKworCWllZWU4MDIxMV9pdGVyYXRlX3N0YXRpb25zX2F0b21p
+YyhydHdkZXYtPmh3LCBydHdfY29sbGVjdF9zdGFfaXRlciwKKwkJCQkJICAmaXRlcl9kYXRhKTsK
+KworCWxpc3RfZm9yX2VhY2hfZW50cnlfc2FmZShzdGFfZW50cnksIHRtcCwgJml0ZXJfZGF0YS5s
+aXN0LAorCQkJCSBsaXN0KSB7CisJCWxpc3RfZGVsX2luaXQoJnN0YV9lbnRyeS0+bGlzdCk7CisJ
+CWl0ZXJhdG9yKGRhdGEsIHN0YV9lbnRyeS0+c3RhKTsKKwkJa2ZyZWUoc3RhX2VudHJ5KTsKKwl9
+Cit9CisKK3N0cnVjdCBydHdfdmlmc19lbnRyeSB7CisJc3RydWN0IGxpc3RfaGVhZCBsaXN0Owor
+CXN0cnVjdCBpZWVlODAyMTFfdmlmICp2aWY7CisJdTggbWFjW0VUSF9BTEVOXTsKK307CisKK3N0
+cnVjdCBydHdfaXRlcl92aWZzX2RhdGEgeworCXN0cnVjdCBydHdfZGV2ICpydHdkZXY7CisJc3Ry
+dWN0IGxpc3RfaGVhZCBsaXN0OworfTsKKwordm9pZCBydHdfY29sbGVjdF92aWZfaXRlcih2b2lk
+ICpkYXRhLCB1OCAqbWFjLCBzdHJ1Y3QgaWVlZTgwMjExX3ZpZiAqdmlmKQoreworCXN0cnVjdCBy
+dHdfaXRlcl92aWZzX2RhdGEgKml0ZXJfc3RhcyA9IChzdHJ1Y3QgcnR3X2l0ZXJfdmlmc19kYXRh
+ICopZGF0YTsKKwlzdHJ1Y3QgcnR3X3ZpZnNfZW50cnkgKnZpZnNfZW50cnk7CisKKwl2aWZzX2Vu
+dHJ5ID0ga21hbGxvYyhzaXplb2YoKnZpZnNfZW50cnkpLCBHRlBfQVRPTUlDKTsKKwlpZiAoIXZp
+ZnNfZW50cnkpCisJCXJldHVybjsKKworCXZpZnNfZW50cnktPnZpZiA9IHZpZjsKKwlldGhlcl9h
+ZGRyX2NvcHkodmlmc19lbnRyeS0+bWFjLCBtYWMpOworCWxpc3RfYWRkX3RhaWwoJnZpZnNfZW50
+cnktPmxpc3QsICZpdGVyX3N0YXMtPmxpc3QpOworfQorCit2b2lkIHJ0d19pdGVyYXRlX3ZpZnMo
+c3RydWN0IHJ0d19kZXYgKnJ0d2RldiwKKwkJICAgICAgdm9pZCAoKml0ZXJhdG9yKSh2b2lkICpk
+YXRhLCB1OCAqbWFjLAorCQkJCSAgICAgICBzdHJ1Y3QgaWVlZTgwMjExX3ZpZiAqdmlmKSwKKwkJ
+ICAgICAgdm9pZCAqZGF0YSkKK3sKKwlzdHJ1Y3QgcnR3X2l0ZXJfdmlmc19kYXRhIGl0ZXJfZGF0
+YTsKKwlzdHJ1Y3QgcnR3X3ZpZnNfZW50cnkgKnZpZl9lbnRyeSwgKnRtcDsKKworCWl0ZXJfZGF0
+YS5ydHdkZXYgPSBydHdkZXY7CisJSU5JVF9MSVNUX0hFQUQoJml0ZXJfZGF0YS5saXN0KTsKKwor
+CWllZWU4MDIxMV9pdGVyYXRlX2FjdGl2ZV9pbnRlcmZhY2VzX2F0b21pYyhydHdkZXYtPmh3LAor
+CQkJSUVFRTgwMjExX0lGQUNFX0lURVJfTk9STUFMLCBydHdfY29sbGVjdF92aWZfaXRlciwgJml0
+ZXJfZGF0YSk7CisKKwlsaXN0X2Zvcl9lYWNoX2VudHJ5X3NhZmUodmlmX2VudHJ5LCB0bXAsICZp
+dGVyX2RhdGEubGlzdCwKKwkJCQkgbGlzdCkgeworCQlsaXN0X2RlbF9pbml0KCZ2aWZfZW50cnkt
+Pmxpc3QpOworCQlpdGVyYXRvcihkYXRhLCB2aWZfZW50cnktPm1hYywgdmlmX2VudHJ5LT52aWYp
+OworCQlrZnJlZSh2aWZfZW50cnkpOworCX0KK30KZGlmZiAtLWdpdCBhL3V0aWwuaCBiL3V0aWwu
+aAppbmRleCAwNmE1YjRjNC4uZTQ5OTVkYmEgMTAwNjQ0Ci0tLSBhL3V0aWwuaAorKysgYi91dGls
+LmgKQEAgLTcsMTggKzcsMjEgQEAKIAogc3RydWN0IHJ0d19kZXY7CiAKLSNkZWZpbmUgcnR3X2l0
+ZXJhdGVfdmlmcyhydHdkZXYsIGl0ZXJhdG9yLCBkYXRhKSAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICBcCi0JaWVlZTgwMjExX2l0ZXJhdGVfYWN0aXZlX2ludGVyZmFjZXMocnR3ZGV2LT5o
+dywgICAgICAgICAgICAgICAgICAgICAgICBcCi0JCQlJRUVFODAyMTFfSUZBQ0VfSVRFUl9OT1JN
+QUwsIGl0ZXJhdG9yLCBkYXRhKQogI2RlZmluZSBydHdfaXRlcmF0ZV92aWZzX2F0b21pYyhydHdk
+ZXYsIGl0ZXJhdG9yLCBkYXRhKSAgICAgICAgICAgICAgICAgICAgICAgIFwKIAlpZWVlODAyMTFf
+aXRlcmF0ZV9hY3RpdmVfaW50ZXJmYWNlc19hdG9taWMocnR3ZGV2LT5odywgICAgICAgICAgICAg
+ICAgIFwKIAkJCUlFRUU4MDIxMV9JRkFDRV9JVEVSX05PUk1BTCwgaXRlcmF0b3IsIGRhdGEpCi0j
+ZGVmaW5lIHJ0d19pdGVyYXRlX3N0YXMocnR3ZGV2LCBpdGVyYXRvciwgZGF0YSkgICAgICAgICAg
+ICAgICAgICAgICAgICBcCi0JaWVlZTgwMjExX2l0ZXJhdGVfc3RhdGlvbnMocnR3ZGV2LT5odywg
+aXRlcmF0b3IsIGRhdGEpCiAjZGVmaW5lIHJ0d19pdGVyYXRlX3N0YXNfYXRvbWljKHJ0d2Rldiwg
+aXRlcmF0b3IsIGRhdGEpICAgICAgICAgICAgICAgICAgICAgICAgXAogCWllZWU4MDIxMV9pdGVy
+YXRlX3N0YXRpb25zX2F0b21pYyhydHdkZXYtPmh3LCBpdGVyYXRvciwgZGF0YSkKICNkZWZpbmUg
+cnR3X2l0ZXJhdGVfa2V5cyhydHdkZXYsIHZpZiwgaXRlcmF0b3IsIGRhdGEpCQkJICAgICAgIFwK
+IAlpZWVlODAyMTFfaXRlcl9rZXlzKHJ0d2Rldi0+aHcsIHZpZiwgaXRlcmF0b3IsIGRhdGEpCit2
+b2lkIHJ0d19pdGVyYXRlX3ZpZnMoc3RydWN0IHJ0d19kZXYgKnJ0d2RldiwKKwkJICAgICAgdm9p
+ZCAoKml0ZXJhdG9yKSh2b2lkICpkYXRhLCB1OCAqbWFjLAorCQkJCSAgICAgICBzdHJ1Y3QgaWVl
+ZTgwMjExX3ZpZiAqdmlmKSwKKwkJICAgICAgdm9pZCAqZGF0YSk7Cit2b2lkIHJ0d19pdGVyYXRl
+X3N0YXMoc3RydWN0IHJ0d19kZXYgKnJ0d2RldiwKKwkJICAgICAgdm9pZCAoKml0ZXJhdG9yKSh2
+b2lkICpkYXRhLAorCQkJCSAgICAgICBzdHJ1Y3QgaWVlZTgwMjExX3N0YSAqc3RhKSwKKwkJCQkg
+ICAgICAgdm9pZCAqZGF0YSk7CiAKIHN0YXRpYyBpbmxpbmUgdTggKmdldF9oZHJfYnNzaWQoc3Ry
+dWN0IGllZWU4MDIxMV9oZHIgKmhkcikKIHsKLS0gCjIuMjUuMQoK
+
+--_002_423f474e15c948eda4db5bc9a50fd391realtekcom_--
