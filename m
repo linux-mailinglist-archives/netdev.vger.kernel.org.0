@@ -2,63 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EDF2496371
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 17:58:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94DBB496340
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 17:57:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380007AbiAUQ6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 11:58:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49680 "EHLO
+        id S1379600AbiAUQ46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 11:56:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380025AbiAUQzS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 11:55:18 -0500
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894CBC061757;
-        Fri, 21 Jan 2022 08:55:07 -0800 (PST)
-Received: by mail-oo1-xc34.google.com with SMTP id q16-20020a4a3010000000b002dde2463e66so3486183oof.9;
-        Fri, 21 Jan 2022 08:55:07 -0800 (PST)
+        with ESMTP id S1379114AbiAUQ4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 11:56:19 -0500
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC483C06175B;
+        Fri, 21 Jan 2022 08:55:10 -0800 (PST)
+Received: by mail-oi1-x233.google.com with SMTP id bx18so14350749oib.7;
+        Fri, 21 Jan 2022 08:55:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=v7u/1reZfs0BoCSFwSj+daUOVIdy7CF8lGf6AzgFwV8=;
-        b=dUOYa3+iMqZXKhKXRcAf//V+c049D5heIy9QFjxhsiTO/lGEOqy6uNxoq+GzfKpUk5
-         MEZAMsqOpgmn3b+tyP42LjxdhK3iF8t2Vo9PJV+78hMvS6E3HTV7Ld+y2CpsX8SPaIbf
-         HlpuYROwuiBADozL4lPZ89RIcJGxAjwcflh8qmkWsTTdCTv41ic03v/lliYc1q2XriGH
-         GwCE6T/U7oYnOWM+Ikhp8+IjZYyCPw2Hev08/zkDx83ezLQHMUTJAFM9rqyesSoYtVVI
-         lPJFfEViD7jt9X3i5Ms/4rmyT+A3W2FzIaOjMlZ5DyE6MLCt7/WNDDI08HO5NvDZ2+kt
-         JEBQ==
+        bh=LECfU6cLXmTWAFEkOmILc0YJMNkX9LftVPNv4hejlLw=;
+        b=X1kgsEpBLZffAa6n2Zpdp3hS5eepWNOv7/NvBFCUrLPcDJE7Bb4iovVZguI/81N2Va
+         T9Izj9GCrpLlmiY3jAP7FHD32lbBBoDVYU9aFaII3Ci3mdxhCfgw18C5xGs6nhGcF1jA
+         OB9NWxVkn+zp78jd4frB+zrngn5WDc4SokFNup+Uv+Cl+NtmNhMjTjTKDrLiztSE5swy
+         kGcXylufL7Yg/0WuuFfpyI2wuIj6KLRC8oB27XMpp845Ykq7ovO8++bP0Mzlv8pSuFP6
+         QbpB8wwGNDPXycyEZV6d7lpuxftlO15tpuQ1t6nz/b2l4Yz02AUn4DgS7fqHEA6g9urH
+         yYPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=v7u/1reZfs0BoCSFwSj+daUOVIdy7CF8lGf6AzgFwV8=;
-        b=KwH9zXLoh8iTTSbAcdYjLFKgIVlZg4enexS2l5PTbmpABZeWkh4aOP2oDV7BjBljIT
-         dwIoziHO3rtQOQtaG5Xsbyd9dTAb9D5JwIEEW25P8SiytOu11kV+iar1uT8kn8F2iHxh
-         nFitbJgB2H9XRDOeOfzG+ELSXbpHRLgDFhYYnGGokll3kWD/11veNOA7UnYSoj4pfiIu
-         VL1kK0M74Y1hNvs7zdOwAaS91YkYAvjw/ud50xE3qRkLGRrBwIarDh+jZe0c/TgB3BE8
-         VIuwSlQdbUcD6ojvTZfHd+odxCaj2rWjK11eCzlBsMSgz2zaj5SYktIN/m34rC6v2Zn7
-         xfnw==
-X-Gm-Message-State: AOAM533tDJbIuDrtEiZbilpJCOCb11aAlyboN2z3Ymqt52jbaI5OQdjo
-        8lupqaesnG+NAZleBGObGjk=
-X-Google-Smtp-Source: ABdhPJx7+MxuKThO+YBT6naKuMHTwYdavYAds1jlnbwFonjq9bexJ87FdRlAV6oXlywXptGdgQ1aAQ==
-X-Received: by 2002:a4a:e60f:: with SMTP id f15mr3106188oot.75.1642784106971;
-        Fri, 21 Jan 2022 08:55:06 -0800 (PST)
+        bh=LECfU6cLXmTWAFEkOmILc0YJMNkX9LftVPNv4hejlLw=;
+        b=Xwxs0LT0kKh0cvNKWzDoiRLlpLt2MbZUY77hFn/bVQ0IEQ3dldS6TknoPDnZrQbxsR
+         31ezKaA8CyirypwkfqJnT0Vz1PaNnpMQNuANEx4aun3SaQOVFDUxdXSBAPPKuT1iOslg
+         xhbnN8yb2+erFuDsens1NHqIjIhTEbEqIMoJ9fCD8TWstkYZiVvjkC02uiJL1AVpb6GZ
+         Z63gWclAp3Ueo2raRxl7DR+KWJx1VjoKgk9A1qIRgcucmuJeJ7BB+EwM25TVhjxaV20e
+         MkLJHN14MZVZgA+eSuwmynLbWwQDr020h5Feuccku+JEqrAZKj3GoxCmjukjH9svM+ul
+         Q4Fg==
+X-Gm-Message-State: AOAM532xs3Sb4Xz3Q5HWxC5kfESFyGOqHdtW6yHgFxu+wHxNP0D4fZb8
+        YFPxWWnybFkI7imPjb+ZZvg=
+X-Google-Smtp-Source: ABdhPJwnMTm/HRYkycV0dhiJ7DZNarIXvBbprClF5tkRMIbPP/TqgF6weELN4MPUKaK2ZtRzAyN7JQ==
+X-Received: by 2002:a05:6808:f13:: with SMTP id m19mr1242656oiw.123.1642784109992;
+        Fri, 21 Jan 2022 08:55:09 -0800 (PST)
 Received: from thinkpad.localdomain ([2804:14d:5cd1:5d03:cf72:4317:3105:f6e5])
-        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.03
+        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 08:55:06 -0800 (PST)
+        Fri, 21 Jan 2022 08:55:09 -0800 (PST)
 From:   Luiz Sampaio <sampaio.ime@gmail.com>
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        Nick Kossifidis <mickflemm@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
+To:     Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath9k-devel@qca.qualcomm.com
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 14/31] net: wireless: ath: changing LED_* from enum led_brightness to actual value
-Date:   Fri, 21 Jan 2022 13:54:19 -0300
-Message-Id: <20220121165436.30956-15-sampaio.ime@gmail.com>
+Subject: [PATCH 15/31] net: wireless: atmel: changing LED_* from enum led_brightness to actual value
+Date:   Fri, 21 Jan 2022 13:54:20 -0300
+Message-Id: <20220121165436.30956-16-sampaio.ime@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220121165436.30956-1-sampaio.ime@gmail.com>
 References: <20220121165436.30956-1-sampaio.ime@gmail.com>
@@ -72,68 +69,26 @@ The enum led_brightness, which contains the declaration of LED_OFF,
 LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
 max_brightness.
 ---
- drivers/net/wireless/ath/ath5k/led.c          | 2 +-
- drivers/net/wireless/ath/ath9k/gpio.c         | 4 ++--
- drivers/net/wireless/ath/ath9k/htc_drv_gpio.c | 4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/wireless/atmel/at76c50x-usb.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath5k/led.c b/drivers/net/wireless/ath/ath5k/led.c
-index 33e9928af363..df3db4851bf3 100644
---- a/drivers/net/wireless/ath/ath5k/led.c
-+++ b/drivers/net/wireless/ath/ath5k/led.c
-@@ -118,7 +118,7 @@ ath5k_led_brightness_set(struct led_classdev *led_dev,
- 	struct ath5k_led *led = container_of(led_dev, struct ath5k_led,
- 		led_dev);
+diff --git a/drivers/net/wireless/atmel/at76c50x-usb.c b/drivers/net/wireless/atmel/at76c50x-usb.c
+index 7582761c61e2..3847c59b9672 100644
+--- a/drivers/net/wireless/atmel/at76c50x-usb.c
++++ b/drivers/net/wireless/atmel/at76c50x-usb.c
+@@ -523,10 +523,10 @@ static void at76_ledtrig_tx_timerfunc(struct timer_list *unused)
  
--	if (brightness == LED_OFF)
-+	if (brightness == 0)
- 		ath5k_led_off(led->ah);
- 	else
- 		ath5k_led_on(led->ah);
-diff --git a/drivers/net/wireless/ath/ath9k/gpio.c b/drivers/net/wireless/ath/ath9k/gpio.c
-index b457e52dd365..0828dc9d3503 100644
---- a/drivers/net/wireless/ath/ath9k/gpio.c
-+++ b/drivers/net/wireless/ath/ath9k/gpio.c
-@@ -52,7 +52,7 @@ static void ath_led_brightness(struct led_classdev *led_cdev,
- 			       enum led_brightness brightness)
- {
- 	struct ath_softc *sc = container_of(led_cdev, struct ath_softc, led_cdev);
--	u32 val = (brightness == LED_OFF);
-+	u32 val = (brightness == 0);
- 
- 	if (sc->sc_ah->config.led_active_high)
- 		val = !val;
-@@ -65,7 +65,7 @@ void ath_deinit_leds(struct ath_softc *sc)
- 	if (!sc->led_registered)
- 		return;
- 
--	ath_led_brightness(&sc->led_cdev, LED_OFF);
-+	ath_led_brightness(&sc->led_cdev, 0);
- 	led_classdev_unregister(&sc->led_cdev);
- 
- 	ath9k_hw_gpio_free(sc->sc_ah, sc->sc_ah->led_pin);
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_gpio.c b/drivers/net/wireless/ath/ath9k/htc_drv_gpio.c
-index ecb848b60725..7a9369f06534 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_gpio.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_gpio.c
-@@ -230,7 +230,7 @@ void ath9k_led_work(struct work_struct *work)
- 						   led_work);
- 
- 	ath9k_hw_set_gpio(priv->ah, priv->ah->led_pin,
--			  (priv->brightness == LED_OFF));
-+			  (priv->brightness == 0));
+ 	if (tx_lastactivity != tx_activity) {
+ 		tx_lastactivity = tx_activity;
+-		led_trigger_event(ledtrig_tx, LED_FULL);
++		led_trigger_event(ledtrig_tx, 255);
+ 		mod_timer(&ledtrig_tx_timer, jiffies + HZ / 4);
+ 	} else
+-		led_trigger_event(ledtrig_tx, LED_OFF);
++		led_trigger_event(ledtrig_tx, 0);
  }
  
- static void ath9k_led_brightness(struct led_classdev *led_cdev,
-@@ -250,7 +250,7 @@ void ath9k_deinit_leds(struct ath9k_htc_priv *priv)
- 	if (!priv->led_registered)
- 		return;
- 
--	ath9k_led_brightness(&priv->led_cdev, LED_OFF);
-+	ath9k_led_brightness(&priv->led_cdev, 0);
- 	led_classdev_unregister(&priv->led_cdev);
- 	cancel_work_sync(&priv->led_work);
- 
+ static void at76_ledtrig_tx_activity(void)
 -- 
 2.34.1
 
