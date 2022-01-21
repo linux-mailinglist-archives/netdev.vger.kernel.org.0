@@ -2,95 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4EE249588A
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 04:24:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AF84495889
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 04:22:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233106AbiAUDYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 22:24:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36584 "EHLO
+        id S232749AbiAUDWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 22:22:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230304AbiAUDYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 22:24:19 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC2AC061574;
-        Thu, 20 Jan 2022 19:24:18 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id e28so3226245pfj.5;
-        Thu, 20 Jan 2022 19:24:18 -0800 (PST)
+        with ESMTP id S230304AbiAUDWa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 22:22:30 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CBAC061574
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 19:22:30 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id l16so8187090pjl.4
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 19:22:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=i4QbHTZsLroI/F3v7ghAzppSaB2PYGF736LCpyMu98s=;
-        b=V71yUYiX4CJSgycnC0ue1TNs1tWa8PBmT2UCUblhD9gggziNxe4obJD4QyZVY7YLc5
-         XoEelx2xKEDn7kDN82F4rpcQzsAp+BkJkJuT9y/sBYVugp7suY1kwK4OfE5w51RdwBdB
-         2Us0/z70hEkQc5AaNU3FxpD1gTt0fZ2x1PZd3G3DgLdOHEUpsVwvzRWU8XvLI3zAvB67
-         tA2YFCUZuuSJulXadTg8iy0E4lxKM6e4X+OuqcDYzbOXGoInOeAG5BEDnnrn5PP1dx6w
-         yHi8p8ttY1qokesI0mQmrOO57qw2w6AO1jiMkQjq48Md2ZbH9MECTURM18z7vEzvGrKH
-         a9Gw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=f6ZwsHN8w2pKFYdZrQ/ipfCgAfYHDZjmYiuOvoiy96A=;
+        b=eOLkcQvqAWeRZblsYBglabvlWp1cYgCq8IkZv9Jx+8ZeHmW/fwBM0bD9FoeG01pzbi
+         vN8UwDb99WjQypCpT1WxkcEUJ9ccDIxIiKDPM/7X7jKySsEmISwJdKzIWBX6aODAOJRR
+         t9f1ktCErcmDQb0W3ljs7r+njAtZNH4kwFgdDsQyajceqQI7W5w+SEsnzZko61t4CcL4
+         hp+RGRMzAPzt/R2XxSNc845esjdG1R4xz5rrMxefHq25JrphD5pTelLTCKyr0afNaweN
+         2BnsfmEP04XfInlzEytU/wMSKuElemj7tNoBs0VvfMYXAhCKSEbhKPHMra0d90lfpMJ0
+         XTmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=i4QbHTZsLroI/F3v7ghAzppSaB2PYGF736LCpyMu98s=;
-        b=wAJtU79eclhyjnakGCtoWUjGJDfVknbTJWn7T9WcQU6iyZWl0t5T9jxOXTvDJ+fgBR
-         NSCvf+b1+a22ANTDZ9r3pgB+b51l0Q0smTDZ164oo7cOU7Mgdh1f7P6WRIIGr9mpiTDK
-         U4y6raq4erMaA54fBpHASKqKJxiTaImerAJ+9lSqRGjGuke2pZCDwLvJD5FAbooXYq/R
-         +AAbTKqqPqVTT8OLxJtvqsaAGJNEDzBY95kk8Bzj83TpYklI9aZ7ISKs/PSdak7rfDjH
-         hBRKslHOxUVALx+nFAHsjnPDJGZmibvL8AEt91wcEtaKajEWgxJq6yLrz3nCfv9tF+kp
-         bJDg==
-X-Gm-Message-State: AOAM531q7bq3tnr6nmzibdeOUrk+XJ3eEQLjVkRUZ1tLo1LA6cQYIZO0
-        VUk2W/fxPCkX8cTs4DuOeRM=
-X-Google-Smtp-Source: ABdhPJwl/1FoGgXedNhDH0Al5XfnUTqVSMh6l7iruP2FkK0EKaUpsKoHFuc6oCJZwTO1qBuq2pXhsw==
-X-Received: by 2002:a63:8ac4:: with SMTP id y187mr1495104pgd.261.1642735458292;
-        Thu, 20 Jan 2022 19:24:18 -0800 (PST)
-Received: from localhost.localdomain ([106.11.30.62])
-        by smtp.gmail.com with ESMTPSA id n22sm4553312pfu.193.2022.01.20.19.24.16
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jan 2022 19:24:18 -0800 (PST)
-From:   ycaibb <ycaibb@gmail.com>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ycaibb@gmail.com
-Subject: [PATCH] net: missing lock releases in ipmr_base.c
-Date:   Fri, 21 Jan 2022 11:22:10 +0800
-Message-Id: <20220121032210.5829-1-ycaibb@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        bh=f6ZwsHN8w2pKFYdZrQ/ipfCgAfYHDZjmYiuOvoiy96A=;
+        b=qYjSmbAFMfqdwtlxz8Ihm2BjR7xHXM2yPhBz/pqLsoAanhuLoGqZvDTc38sAfxprOu
+         AF430ihPIsRRL+It9oZ09iMcUDWLZKL/fZKDLiILIzVwRMIvSQQ0W0Pf/edx2M7s4Ksr
+         MjHdJlY0z/rxYj4WUn/iCwit3yhmD4E19wSRigLq/BTw2HIq76/rGHSoYw+ZBZhcLnX1
+         yRPx6dshYpOFt+iC1DeP9yRQJF3X51BI7NZvPiaJZ0k6diC/6QWuSggIFldDaG1JBqdj
+         Fi8z7B928udok0pzRsmoW3J34epzqQQLU7bPqw6ULIgYkIGUcH/D8wkIw3a1XmUF+MjD
+         Cirg==
+X-Gm-Message-State: AOAM533aql95eZqafxHNi3JcHpOPQ4Vlbp5MQxD9W1z3wbTaimo8MnHF
+        e9JoIOA9BVmF0YLTPVnGvLg=
+X-Google-Smtp-Source: ABdhPJwREZIjp60zRY9gUeG/GmcgsAynHv94DgDJSX80by4aC8aaUMvXjDnbqGvXPm6HyTeICVaUuw==
+X-Received: by 2002:a17:902:8a89:b0:149:a833:af2a with SMTP id p9-20020a1709028a8900b00149a833af2amr1936481plo.153.1642735350131;
+        Thu, 20 Jan 2022 19:22:30 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id q8sm5069115pfl.194.2022.01.20.19.22.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Jan 2022 19:22:29 -0800 (PST)
+Message-ID: <f85dcb52-1f66-f75a-d6de-83d238b5b69d@gmail.com>
+Date:   Thu, 20 Jan 2022 19:22:27 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
+ cpu ports, non cpu extint
+Content-Language: en-US
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <ALSI@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
+References: <87ee5fd80m.fsf@bang-olufsen.dk>
+ <trinity-ea8d98eb-9572-426a-a318-48406881dc7e-1641822815591@3c-app-gmx-bs62>
+ <87r19e5e8w.fsf@bang-olufsen.dk>
+ <trinity-4b35f0dc-6bc6-400a-8d4e-deb26e626391-1641926734521@3c-app-gmx-bap14>
+ <87v8ynbylk.fsf@bang-olufsen.dk>
+ <trinity-d858854a-ff84-4b28-81f4-f0becc878017-1642089370117@3c-app-gmx-bap49>
+ <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
+ <Yea+uTH+dh9/NMHn@lunn.ch> <20220120151222.dirhmsfyoumykalk@skbuf>
+ <CAJq09z6UE72zSVZfUi6rk_nBKGOBC0zjeyowHgsHDHh7WyH0jA@mail.gmail.com>
+ <20220121020627.spli3diixw7uxurr@skbuf>
+ <CAJq09z5HbnNEcqN7LZs=TK4WR1RkjoefF_6ib-hFu2RLT54Nug@mail.gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <CAJq09z5HbnNEcqN7LZs=TK4WR1RkjoefF_6ib-hFu2RLT54Nug@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ryan Cai <ycaibb@gmail.com>
 
-In method mr_mfc_seq_idx, the lock it->lock and rcu_read_lock are not released when pos-- == 0 is true.
 
-Signed-off-by: Ryan Cai <ycaibb@gmail.com>
----
- net/ipv4/ipmr_base.c | 2 ++
- 1 file changed, 2 insertions(+)
+On 1/20/2022 7:13 PM, Luiz Angelo Daros de Luca wrote:
+>> :) device tree properties are not the fix for everything!
+> 
+> I'm still getting used to it ;-)
+> 
+> In this thread, Alvin suggested adding a new property to define which
+> port will be used as trap_port instead of using the last CPU port.
+> Should I try something different?
+> 
+>          switch1 {
+>                 compatible = "realtek,rtl8367s";
+>                 reg = <29>;
+> 
+>                 realtek,trap-port = <&port7>;
+> 
+>                 ports {
+>                          ....
+>                          port7: port@7 {
+>                              ...
+>                         };
+>          };
+> 
+> Should I do something differently?
+> 
+>> I think I know what the problem is. But I'd need to know what the driver
+>> for the DSA master is, to confirm. To be precise, what I'd like to check
+>> is the value of master->vlan_features.
+> 
+> Here it is 0x1099513266227 (I hope). Oh, this DSA driver still does
+> not implement vlan nor bridge offload. Maybe it would matter.
 
-diff --git a/net/ipv4/ipmr_base.c b/net/ipv4/ipmr_base.c
-index aa8738a91210..c4a247024c85 100644
---- a/net/ipv4/ipmr_base.c
-+++ b/net/ipv4/ipmr_base.c
-@@ -154,6 +154,7 @@ void *mr_mfc_seq_idx(struct net *net,
- 	it->cache = &mrt->mfc_cache_list;
- 	list_for_each_entry_rcu(mfc, &mrt->mfc_cache_list, list)
- 		if (pos-- == 0)
-+			rcu_read_unlock();
- 			return mfc;
- 	rcu_read_unlock();
- 
-@@ -161,6 +162,7 @@ void *mr_mfc_seq_idx(struct net *net,
- 	it->cache = &mrt->mfc_unres_queue;
- 	list_for_each_entry(mfc, it->cache, list)
- 		if (pos-- == 0)
-+			spin_unlock_bh(it->lock);
- 			return mfc;
- 	spin_unlock_bh(it->lock);
- 
+Are we talking about an in tree driver? If so which is it?
 -- 
-2.33.0
-
+Florian
