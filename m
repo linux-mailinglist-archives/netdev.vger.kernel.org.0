@@ -2,89 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFF564958BF
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 05:06:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C3D34958D0
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 05:11:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233874AbiAUEGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 23:06:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45706 "EHLO
+        id S233983AbiAUEL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 23:11:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231519AbiAUEGP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 23:06:15 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C022C061574;
-        Thu, 20 Jan 2022 20:06:15 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id 192so4295642pfz.3;
-        Thu, 20 Jan 2022 20:06:15 -0800 (PST)
+        with ESMTP id S233558AbiAUELW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 23:11:22 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B73C061574;
+        Thu, 20 Jan 2022 20:11:21 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id 128so7734580pfe.12;
+        Thu, 20 Jan 2022 20:11:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=user-agent:date:subject:from:to:cc:message-id:thread-topic
-         :references:in-reply-to:mime-version:content-transfer-encoding;
-        bh=8+X6EhAbzBhA2wQmYG1k4Og2aMdttrSV1A0aWDvQLhI=;
-        b=JVEFPAffj9UhWIsMNUTKT8sKFatG3vC/bQtYcujpKlUHNRpDdpnTh1C7rFjfO0hEsV
-         eBuvgTr9oDbe0Iqk+f58SVjyeoU/TjHwwo0RaZ5EolviAgvRL2sPIsPoWEXmcgCLsn5K
-         9bvT8+4jUrJAIMM9l8ouu8NENjypeIraySAOE/NQo7l9XxdQ5XEz7NT0rO18GOjTolvf
-         KZU0gSj8vNAa7+TDj6fI7nJRyYEJLbRCoAoaiE81fXw+Bl2NDMwi+GHHG+eMq6vX7KMT
-         y73ZnXw70JyjUFEuYPrCaEcUmw7carb5uPQOQ2rAQ9xHzA5arHH1nb4MODWV274gj9AE
-         GPdg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HziZxNV+Yg2upBujmAjZKh5ywVi0eUQ5hp+WB+K2RfM=;
+        b=PVfKZMOuiPEAf33583XwiNp53DIKSyizFEZDUije4bCtwRvLd/GHoOYRC4u/sWakZJ
+         ufyeKlaPTLIQa7aAFtEAVTn/DJ7M+blv/OKfnwaX23qgZ8HNaIxbzUnfPF4Q7Rmks4ff
+         YKpSqx3B/Pa5OptDrJuhUF/dP1zuaHZQVI7+/Pgb7Y+DLlJ/C/IDiv8jc18USrDCGIKU
+         AbhiF16jFsz7Rm+HbD73A3MTvUYtiWQJgmPHWuQ1rvjbltr+mifW87TYZWEtppmPbGo8
+         tFCDzYkgcBCAHR0a3jqC8o7iBi7qE3nGKt3hYQHNfK9Z6ZJXYSVFnc6g0nQoZ8myHOG6
+         VnEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:user-agent:date:subject:from:to:cc:message-id
-         :thread-topic:references:in-reply-to:mime-version
-         :content-transfer-encoding;
-        bh=8+X6EhAbzBhA2wQmYG1k4Og2aMdttrSV1A0aWDvQLhI=;
-        b=se6ZbRHX/Ep/viWkil4GbrXjoou2AkDx8JLzZxDVkxW+1EF9Sr5rzm3QDQ1LKL/p8E
-         4VB+86AgSZJLlFs+d1t1pizoYWjZNQHn1iKNUAw2Zim8y08apPyQM0Gvz31d8rQsE7DA
-         V2etQNrcIDe492utdN/sbkYwigdDH6CpumZqp0OfbtxlppTvclwI36UF2UWAVQyIQkOn
-         MIcq2RNGVK3F4GC7S0tNRiaSO6dokQI2cvnFeIzlxv9eyxwPJhCtbRnFCFrtXi04d0+k
-         N25ugbLy62XAdBrzUDEP9E8l7ZnH0lB0VpvV/3Tw17XkTnDqkMlBL8/XrDrY0jBjtGZs
-         ywCQ==
-X-Gm-Message-State: AOAM5311hq2wmnI0Ed436EwQnsobkMFgTp8hmj1TXfeFqrYHLmtgpBEa
-        O+AlsPmVIqWTNjx+uRF3LhQ=
-X-Google-Smtp-Source: ABdhPJxSlODE6zepSGl7wjrdReYE/DDryhJgFya9M2r0IDHO0lFm62e4/IYRrsN2zE5sXarunjG4aw==
-X-Received: by 2002:a63:211a:: with SMTP id h26mr1608979pgh.239.1642737974681;
-        Thu, 20 Jan 2022 20:06:14 -0800 (PST)
-Received: from [30.135.82.253] (ec2-34-221-172-227.us-west-2.compute.amazonaws.com. [34.221.172.227])
-        by smtp.gmail.com with ESMTPSA id ml16sm3554097pjb.10.2022.01.20.20.06.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jan 2022 20:06:14 -0800 (PST)
-User-Agent: Microsoft-MacOutlook/16.57.22011101
-Date:   Fri, 21 Jan 2022 12:06:06 +0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HziZxNV+Yg2upBujmAjZKh5ywVi0eUQ5hp+WB+K2RfM=;
+        b=Hd+f7UsFtFIM2MxnKKUyzD7dIWfHHBqvT9g/HhTuoIaLla22n4L9v9U0nGZBvBG8cl
+         2U3dLP4sMdNkrCCEC9TcEDN46RXKgWNsUCi5h/HYhuWVNQ7O2EScOH+Y5ksM9svOCi/Y
+         jw4vmV7xZXeJ+lYAOao4IpVyNn7LASiVMfHNW9aCHGuonecgnt1b+QqzhZSEyu3IhAGi
+         Ik0ePkDa16uGTLo0Wqd97oVcgDhkX/YwhgKsoj8ooGXefo/rEdJAEddww6bcFwhNWX9u
+         CS+pwcVee8V3To2qSiCyMBxIjrSxJuwnPtdvQUlhmCtBFTyDawpUX/fxC+iXy2RVgm7H
+         R6UQ==
+X-Gm-Message-State: AOAM531mUBcLa9RZPxzt3iSX1UVNtoOIkqMXFnX8RKPCO1SjzaWrrdvL
+        gg3+/fa0qUTXfEEZR3XbWBGBPP34fDRQEsaz9HUoOjKr
+X-Google-Smtp-Source: ABdhPJzEl2C9ekMs62SzulgA7ti48Yjxwbu/nug/T4f62oP6p3e5asRIA2ehVT6d+u3f7jR4xTGBm274r+W78r8VQ80=
+X-Received: by 2002:a62:e30c:0:b0:4bd:776e:a41c with SMTP id
+ g12-20020a62e30c000000b004bd776ea41cmr1959073pfh.59.1642738281269; Thu, 20
+ Jan 2022 20:11:21 -0800 (PST)
+MIME-Version: 1.0
+References: <20220121031108.4813-1-ycaibb@gmail.com> <20220120194733.6a8b13e6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <BDEF9CF1-016A-48F2-A4F3-8B39CC219B4F@gmail.com>
+In-Reply-To: <BDEF9CF1-016A-48F2-A4F3-8B39CC219B4F@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 20 Jan 2022 20:11:10 -0800
+Message-ID: <CAADnVQJkCQthJ7OAByNBTMuKEY7mynvuMDR6y_L7cBwB6iyc9g@mail.gmail.com>
 Subject: Re: [PATCH] ipv4: fix lock leaks
-From:   Ryan Cai <ycaibb@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <edumazet@google.com>, <davem@davemloft.net>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andrii@kernel.org>, <kafai@fb.com>,
-        <songliubraving@fb.com>, <yhs@fb.com>, <john.fastabend@gmail.com>,
-        <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-Message-ID: <BDEF9CF1-016A-48F2-A4F3-8B39CC219B4F@gmail.com>
-Thread-Topic: [PATCH] ipv4: fix lock leaks
-References: <20220121031108.4813-1-ycaibb@gmail.com>
- <20220120194733.6a8b13e6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220120194733.6a8b13e6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Mime-version: 1.0
-Content-type: text/plain;
-        charset="UTF-8"
-Content-transfer-encoding: quoted-printable
+To:     Ryan Cai <ycaibb@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry for reporting this false positive. Would be more careful next time. T=
-hank you for your checking.
+On Thu, Jan 20, 2022 at 8:06 PM Ryan Cai <ycaibb@gmail.com> wrote:
+>
+> Sorry for reporting this false positive. Would be more careful next time. Thank you for your checking.
 
-Best,
-Ryan
-
-=EF=BB=BFOn 21/1/2022, 11:47 AM, "Jakub Kicinski" <kuba@kernel.org> wrote:
-
-    On Fri, 21 Jan 2022 11:11:08 +0800 ycaibb wrote:
-    >  			if (seq_sk_match(seq, sk))
-    > +				spin_unlock_bh(lock);
-    >  				return sk;
-
-    Heh, also you're missing brackets so this is patently buggy.
-
-
+In the past 3 weeks you've sent 4 subtly broken patches.
+Not a single valid one.
+Are you trying to test the maintainer's review skills?
+Is this another "lets hack the kernel" research project?
