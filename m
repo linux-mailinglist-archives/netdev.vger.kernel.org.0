@@ -2,366 +2,291 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A44454965ED
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 20:50:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB1DC496641
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 21:16:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232910AbiAUTuD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 21 Jan 2022 14:50:03 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:38684 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232890AbiAUTtx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 14:49:53 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 20LBhsIT009859
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 11:49:53 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net (PPS) with ESMTPS id 3dqhy4nhys-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 11:49:52 -0800
-Received: from twshared3115.02.ash8.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 21 Jan 2022 11:49:51 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 3CCFF284A5F6F; Fri, 21 Jan 2022 11:49:43 -0800 (PST)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH v6 bpf-next 7/7] bpf, x86_64: use bpf_prog_pack allocator
-Date:   Fri, 21 Jan 2022 11:49:26 -0800
-Message-ID: <20220121194926.1970172-8-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220121194926.1970172-1-song@kernel.org>
-References: <20220121194926.1970172-1-song@kernel.org>
-MIME-Version: 1.0
+        id S231717AbiAUUQL convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 21 Jan 2022 15:16:11 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:45621 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229815AbiAUUQK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 15:16:10 -0500
+Received: from smtpclient.apple (p4fefca45.dip0.t-ipconnect.de [79.239.202.69])
+        by mail.holtmann.org (Postfix) with ESMTPSA id BF3C6CED16;
+        Fri, 21 Jan 2022 21:16:06 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
+Subject: Re: [PATCH v1 1/2] Bluetooth: aosp: surface AOSP quality report
+ through mgmt
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220121192152.v1.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
+Date:   Fri, 21 Jan 2022 21:16:06 +0100
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        =?utf-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Joseph Hwang <josephsih@google.com>,
+        Archie Pusaka <apusaka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
 Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: V85DMJ9iwISTIbEPnS1fxyLQLST_FJ1n
-X-Proofpoint-GUID: V85DMJ9iwISTIbEPnS1fxyLQLST_FJ1n
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-21_09,2022-01-21_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 impostorscore=0
- spamscore=0 malwarescore=0 adultscore=0 clxscore=1015 mlxlogscore=846
- bulkscore=0 phishscore=0 suspectscore=0 lowpriorityscore=0 mlxscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201210128
-X-FB-Internal: deliver
+Message-Id: <5728C674-E467-4955-AEDC-6FFB05A9D869@holtmann.org>
+References: <20220121192152.v1.1.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
+To:     Joseph Hwang <josephsih@chromium.org>
+X-Mailer: Apple Mail (2.3693.40.0.1.81)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Song Liu <songliubraving@fb.com>
+Hi Joseph,
 
-Use bpf_prog_pack allocator in x86_64 jit.
+> When receiving a HCI vendor event, the kernel checks if it is an
+> AOSP bluetooth quality report. If yes, the event is sent to bluez
+> user space through the mgmt socket.
+> 
+> Signed-off-by: Joseph Hwang <josephsih@chromium.org>
+> Reviewed-by: Archie Pusaka <apusaka@chromium.org>
+> ---
+> 
+> include/net/bluetooth/hci_core.h |  2 ++
+> include/net/bluetooth/mgmt.h     |  7 ++++
+> net/bluetooth/aosp.c             | 61 ++++++++++++++++++++++++++++++++
+> net/bluetooth/aosp.h             | 12 +++++++
+> net/bluetooth/hci_event.c        | 33 ++++++++++++++++-
+> net/bluetooth/mgmt.c             | 22 ++++++++++++
+> 6 files changed, 136 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+> index 21eadb113a31..727cb9c056b2 100644
+> --- a/include/net/bluetooth/hci_core.h
+> +++ b/include/net/bluetooth/hci_core.h
+> @@ -1861,6 +1861,8 @@ int mgmt_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status);
+> int mgmt_remove_adv_monitor_complete(struct hci_dev *hdev, u8 status);
+> void mgmt_adv_monitor_device_lost(struct hci_dev *hdev, u16 handle,
+> 				  bdaddr_t *bdaddr, u8 addr_type);
+> +int mgmt_quality_report(struct hci_dev *hdev, struct sk_buff *skb,
+> +			u8 quality_spec);
+> 
+> u8 hci_le_conn_update(struct hci_conn *conn, u16 min, u16 max, u16 latency,
+> 		      u16 to_multiplier);
+> diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
+> index 99266f7aebdc..6a0fcb3aef8a 100644
+> --- a/include/net/bluetooth/mgmt.h
+> +++ b/include/net/bluetooth/mgmt.h
+> @@ -1120,3 +1120,10 @@ struct mgmt_ev_adv_monitor_device_lost {
+> 	__le16 monitor_handle;
+> 	struct mgmt_addr_info addr;
+> } __packed;
+> +
+> +#define MGMT_EV_QUALITY_REPORT			0x0031
+> +struct mgmt_ev_quality_report {
+> +	__u8 quality_spec;
+> +	__u8 data_len;
+> +	__u8 data[0];
+> +} __packed;
+> diff --git a/net/bluetooth/aosp.c b/net/bluetooth/aosp.c
+> index 432ae3aac9e3..9e3551627ad5 100644
+> --- a/net/bluetooth/aosp.c
+> +++ b/net/bluetooth/aosp.c
+> @@ -199,3 +199,64 @@ int aosp_set_quality_report(struct hci_dev *hdev, bool enable)
+> 	else
+> 		return disable_quality_report(hdev);
+> }
+> +
+> +#define BLUETOOTH_QUALITY_REPORT_EV		0x58
+> +struct bqr_data {
+> +	__u8 quality_report_id;
+> +	__u8 packet_type;
+> +	__le16 conn_handle;
+> +	__u8 conn_role;
+> +	__s8 tx_power_level;
+> +	__s8 rssi;
+> +	__u8 snr;
+> +	__u8 unused_afh_channel_count;
+> +	__u8 afh_select_unideal_channel_count;
+> +	__le16 lsto;
+> +	__le32 conn_piconet_clock;
+> +	__le32 retransmission_count;
+> +	__le32 no_rx_count;
+> +	__le32 nak_count;
+> +	__le32 last_tx_ack_timestamp;
+> +	__le32 flow_off_count;
+> +	__le32 last_flow_on_timestamp;
+> +	__le32 buffer_overflow_bytes;
+> +	__le32 buffer_underflow_bytes;
+> +
+> +	/* Vendor Specific Parameter */
+> +	__u8 vsp[0];
+> +} __packed;
+> +
+> +struct aosp_hci_vs_data {
+> +	__u8 code;
+> +	__u8 data[0];
+> +} __packed;
 
-The program header from bpf_prog_pack is read only during the jit process.
-Therefore, the binary is first written to a temporary buffer, and later
-copied to final location with text_poke_copy().
+unless you need these two for something, scrap them. You can define constants for the size check.
 
-Similarly, jit_fill_hole() is updated to fill the hole with 0xcc using
-text_poke_copy().
+> +
+> +bool aosp_is_quality_report_evt(struct sk_buff *skb)
+> +{
+> +	struct aosp_hci_vs_data *ev;
+> +
+> +	if (skb->len < sizeof(struct aosp_hci_vs_data))
+> +		return false;
+> +
+> +	ev = (struct aosp_hci_vs_data *)skb->data;
+> +
+> +	return ev->code == BLUETOOTH_QUALITY_REPORT_EV;
+> +}
+> +
+> +bool aosp_pull_quality_report_data(struct sk_buff *skb)
+> +{
+> +	size_t bqr_data_len = sizeof(struct bqr_data);
+> +
+> +	skb_pull(skb, sizeof(struct aosp_hci_vs_data));
+> +
+> +	/* skb->len is allowed to be larger than bqr_data_len to have
+> +	 * the Vendor Specific Parameter (vsp) field.
+> +	 */
+> +	if (skb->len < bqr_data_len) {
+> +		BT_ERR("AOSP evt data len %d too short (%u expected)",
+> +		       skb->len, bqr_data_len);
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- arch/x86/net/bpf_jit_comp.c | 141 ++++++++++++++++++++++++++++--------
- 1 file changed, 111 insertions(+), 30 deletions(-)
+This part I find a bit convoluted, just do a basic length check and then move on. The kernel has no interest in this data.
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index fe4f08e25a1d..fcdfec992184 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -216,11 +216,32 @@ static u8 simple_alu_opcodes[] = {
- 	[BPF_ARSH] = 0xF8,
- };
- 
-+#define BPF_X86_JIT_HOLE_BUFFER_SIZE 128
-+static char jit_hole_buffer[BPF_X86_JIT_HOLE_BUFFER_SIZE] = {};
-+
- static void jit_fill_hole(void *area, unsigned int size)
-+{
-+	struct bpf_binary_header *hdr = area;
-+
-+	/* fill the first and last 128 bytes of the buffer with INT3 */
-+	text_poke_copy(area, jit_hole_buffer, BPF_X86_JIT_HOLE_BUFFER_SIZE);
-+	text_poke_copy(area + size - BPF_X86_JIT_HOLE_BUFFER_SIZE,
-+		       jit_hole_buffer, BPF_X86_JIT_HOLE_BUFFER_SIZE);
-+
-+	/*
-+	 * bpf_jit_binary_alloc_pack cannot write size directly to the ro
-+	 * mapping. Write it here with text_poke_copy().
-+	 */
-+	text_poke_copy(&hdr->size, &size, sizeof(size));
-+}
-+
-+static int __init x86_jit_fill_hole_init(void)
- {
- 	/* Fill whole space with INT3 instructions */
--	memset(area, 0xcc, size);
-+	memset(jit_hole_buffer, 0xcc, BPF_X86_JIT_HOLE_BUFFER_SIZE);
-+	return 0;
- }
-+pure_initcall(x86_jit_fill_hole_init);
- 
- struct jit_context {
- 	int cleanup_addr; /* Epilogue code offset */
-@@ -361,14 +382,11 @@ static int __bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
- 
- 	ret = -EBUSY;
- 	mutex_lock(&text_mutex);
--	if (memcmp(ip, old_insn, X86_PATCH_SIZE))
-+	if (text_live && memcmp(ip, old_insn, X86_PATCH_SIZE))
- 		goto out;
- 	ret = 1;
- 	if (memcmp(ip, new_insn, X86_PATCH_SIZE)) {
--		if (text_live)
--			text_poke_bp(ip, new_insn, X86_PATCH_SIZE, NULL);
--		else
--			memcpy(ip, new_insn, X86_PATCH_SIZE);
-+		text_poke_bp(ip, new_insn, X86_PATCH_SIZE, NULL);
- 		ret = 0;
- 	}
- out:
-@@ -537,7 +555,7 @@ static void emit_bpf_tail_call_direct(struct bpf_jit_poke_descriptor *poke,
- 	*pprog = prog;
- }
- 
--static void bpf_tail_call_direct_fixup(struct bpf_prog *prog)
-+static void bpf_tail_call_direct_fixup(struct bpf_prog *prog, bool text_live)
- {
- 	struct bpf_jit_poke_descriptor *poke;
- 	struct bpf_array *array;
-@@ -558,24 +576,15 @@ static void bpf_tail_call_direct_fixup(struct bpf_prog *prog)
- 		mutex_lock(&array->aux->poke_mutex);
- 		target = array->ptrs[poke->tail_call.key];
- 		if (target) {
--			/* Plain memcpy is used when image is not live yet
--			 * and still not locked as read-only. Once poke
--			 * location is active (poke->tailcall_target_stable),
--			 * any parallel bpf_arch_text_poke() might occur
--			 * still on the read-write image until we finally
--			 * locked it as read-only. Both modifications on
--			 * the given image are under text_mutex to avoid
--			 * interference.
--			 */
- 			ret = __bpf_arch_text_poke(poke->tailcall_target,
- 						   BPF_MOD_JUMP, NULL,
- 						   (u8 *)target->bpf_func +
--						   poke->adj_off, false);
-+						   poke->adj_off, text_live);
- 			BUG_ON(ret < 0);
- 			ret = __bpf_arch_text_poke(poke->tailcall_bypass,
- 						   BPF_MOD_JUMP,
- 						   (u8 *)poke->tailcall_target +
--						   X86_PATCH_SIZE, NULL, false);
-+						   X86_PATCH_SIZE, NULL, text_live);
- 			BUG_ON(ret < 0);
- 		}
- 		WRITE_ONCE(poke->tailcall_target_stable, true);
-@@ -867,7 +876,7 @@ static void emit_nops(u8 **pprog, int len)
- 
- #define INSN_SZ_DIFF (((addrs[i] - addrs[i - 1]) - (prog - temp)))
- 
--static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
-+static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image, u8 *rw_image,
- 		  int oldproglen, struct jit_context *ctx, bool jmp_padding)
- {
- 	bool tail_call_reachable = bpf_prog->aux->tail_call_reachable;
-@@ -894,8 +903,8 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
- 	push_callee_regs(&prog, callee_regs_used);
- 
- 	ilen = prog - temp;
--	if (image)
--		memcpy(image + proglen, temp, ilen);
-+	if (rw_image)
-+		memcpy(rw_image + proglen, temp, ilen);
- 	proglen += ilen;
- 	addrs[0] = proglen;
- 	prog = temp;
-@@ -1324,8 +1333,10 @@ st:			if (is_imm8(insn->off))
- 					pr_err("extable->insn doesn't fit into 32-bit\n");
- 					return -EFAULT;
- 				}
--				ex->insn = delta;
-+				/* switch ex to temporary buffer for writes */
-+				ex = (void *)rw_image + ((void *)ex - (void *)image);
- 
-+				ex->insn = delta;
- 				ex->type = EX_TYPE_BPF;
- 
- 				if (dst_reg > BPF_REG_9) {
-@@ -1706,7 +1717,7 @@ st:			if (is_imm8(insn->off))
- 				pr_err("bpf_jit: fatal error\n");
- 				return -EFAULT;
- 			}
--			memcpy(image + proglen, temp, ilen);
-+			memcpy(rw_image + proglen, temp, ilen);
- 		}
- 		proglen += ilen;
- 		addrs[i] = proglen;
-@@ -2248,6 +2259,12 @@ int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs)
- 
- struct x64_jit_data {
- 	struct bpf_binary_header *header;
-+	/*
-+	 * With bpf_prog_pack, header points to read-only memory.
-+	 * rw_header holds a temporary rw buffer for JIT. When JIT is done,
-+	 * the binary is copied to header with text_poke_copy().
-+	 */
-+	struct bpf_binary_header *rw_header;
- 	int *addrs;
- 	u8 *image;
- 	int proglen;
-@@ -2259,6 +2276,7 @@ struct x64_jit_data {
- 
- struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- {
-+	struct bpf_binary_header *rw_header = NULL;
- 	struct bpf_binary_header *header = NULL;
- 	struct bpf_prog *tmp, *orig_prog = prog;
- 	struct x64_jit_data *jit_data;
-@@ -2267,6 +2285,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	bool tmp_blinded = false;
- 	bool extra_pass = false;
- 	bool padding = false;
-+	u8 *rw_image = NULL;
- 	u8 *image = NULL;
- 	int *addrs;
- 	int pass;
-@@ -2302,6 +2321,8 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 		oldproglen = jit_data->proglen;
- 		image = jit_data->image;
- 		header = jit_data->header;
-+		rw_header = jit_data->rw_header;
-+		rw_image = (void *)rw_header + ((void *)image - (void *)header);
- 		extra_pass = true;
- 		padding = true;
- 		goto skip_init_addrs;
-@@ -2332,14 +2353,18 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	for (pass = 0; pass < MAX_PASSES || image; pass++) {
- 		if (!padding && pass >= PADDING_PASSES)
- 			padding = true;
--		proglen = do_jit(prog, addrs, image, oldproglen, &ctx, padding);
-+		proglen = do_jit(prog, addrs, image, rw_image, oldproglen, &ctx, padding);
- 		if (proglen <= 0) {
- out_image:
- 			image = NULL;
--			if (header)
--				bpf_jit_binary_free(header);
-+			rw_image = NULL;
-+			if (header) {
-+				bpf_jit_binary_free_pack(header);
-+				kfree(rw_header);
-+			}
- 			prog = orig_prog;
- 			header = NULL;
-+			rw_header = NULL;
- 			goto out_addrs;
- 		}
- 		if (image) {
-@@ -2362,12 +2387,34 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 				sizeof(struct exception_table_entry);
- 
- 			/* allocate module memory for x86 insns and extable */
--			header = bpf_jit_binary_alloc(roundup(proglen, align) + extable_size,
--						      &image, align, jit_fill_hole);
-+			header = bpf_jit_binary_alloc_pack(roundup(proglen, align) + extable_size,
-+							   &image, align, jit_fill_hole);
- 			if (!header) {
- 				prog = orig_prog;
- 				goto out_addrs;
- 			}
-+			if (header->size > bpf_prog_pack_max_size()) {
-+				rw_header = header;
-+				rw_image = image;
-+			} else {
-+				/*
-+				 * With bpf_prog_pack, header and image
-+				 * points to read-only memory. Allocate a
-+				 * rw buffer for writes during JIT.
-+				 *
-+				 * When the JIT is done, the binary is copied
-+				 * to header with text_poke_copy().
-+				 */
-+				rw_header = kvmalloc(header->size, GFP_KERNEL | __GFP_ZERO);
-+				if (!rw_header) {
-+					bpf_jit_binary_free_pack(header);
-+					header = NULL;
-+					prog = orig_prog;
-+					goto out_addrs;
-+				}
-+				rw_header->size = header->size;
-+				rw_image = (void *)rw_header + ((void *)image - (void *)header);
-+			}
- 			prog->aux->extable = (void *) image + roundup(proglen, align);
- 		}
- 		oldproglen = proglen;
-@@ -2379,14 +2426,23 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 
- 	if (image) {
- 		if (!prog->is_func || extra_pass) {
--			bpf_tail_call_direct_fixup(prog);
--			bpf_jit_binary_lock_ro(header);
-+			if (header->size > bpf_prog_pack_max_size()) {
-+				/*
-+				 * bpf_prog_pack cannot handle too big
-+				 * program (> ~2MB). Fall back to regular
-+				 * module_alloc(), and do the fixup and
-+				 * lock_ro here.
-+				 */
-+				bpf_tail_call_direct_fixup(prog, false);
-+				bpf_jit_binary_lock_ro(header);
-+			}
- 		} else {
- 			jit_data->addrs = addrs;
- 			jit_data->ctx = ctx;
- 			jit_data->proglen = proglen;
- 			jit_data->image = image;
- 			jit_data->header = header;
-+			jit_data->rw_header = rw_header;
- 		}
- 		prog->bpf_func = (void *)image;
- 		prog->jited = 1;
-@@ -2402,6 +2458,17 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 		kvfree(addrs);
- 		kfree(jit_data);
- 		prog->aux->jit_data = NULL;
-+		jit_data = NULL;
-+		if (rw_header != header) {
-+			text_poke_copy(header, rw_header, header->size);
-+			kvfree(rw_header);
-+			/*
-+			 * Do the fixup after final text_poke_copy().
-+			 * Otherwise, the fix up will be overwritten by
-+			 * text_poke_copy().
-+			 */
-+			bpf_tail_call_direct_fixup(prog, true);
-+		}
- 	}
- out:
- 	if (tmp_blinded)
-@@ -2415,3 +2482,17 @@ bool bpf_jit_supports_kfunc_call(void)
- {
- 	return true;
- }
-+
-+void bpf_jit_free(struct bpf_prog *fp)
-+{
-+	if (fp->jited) {
-+		struct bpf_binary_header *hdr = bpf_jit_binary_hdr(fp);
-+
-+		if (hdr->size > bpf_prog_pack_max_size())
-+			bpf_jit_binary_free(hdr);
-+		else
-+			bpf_jit_binary_free_pack(hdr);
-+	}
-+
-+	bpf_prog_unlock_free(fp);
-+}
--- 
-2.30.2
+> diff --git a/net/bluetooth/aosp.h b/net/bluetooth/aosp.h
+> index 2fd8886d51b2..49894a995647 100644
+> --- a/net/bluetooth/aosp.h
+> +++ b/net/bluetooth/aosp.h
+> @@ -10,6 +10,8 @@ void aosp_do_close(struct hci_dev *hdev);
+> 
+> bool aosp_has_quality_report(struct hci_dev *hdev);
+> int aosp_set_quality_report(struct hci_dev *hdev, bool enable);
+> +bool aosp_is_quality_report_evt(struct sk_buff *skb);
+> +bool aosp_pull_quality_report_data(struct sk_buff *skb);
+> 
+> #else
+> 
+> @@ -26,4 +28,14 @@ static inline int aosp_set_quality_report(struct hci_dev *hdev, bool enable)
+> 	return -EOPNOTSUPP;
+> }
+> 
+> +static inline bool aosp_is_quality_report_evt(struct sk_buff *skb)
+> +{
+> +	return false;
+> +}
+> +
+> +static inline bool aosp_pull_quality_report_data(struct sk_buff *skb)
+> +{
+> +	return false;
+> +}
+> +
+> #endif
+> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> index 681c623aa380..bccb659a9454 100644
+> --- a/net/bluetooth/hci_event.c
+> +++ b/net/bluetooth/hci_event.c
+> @@ -37,6 +37,7 @@
+> #include "smp.h"
+> #include "msft.h"
+> #include "eir.h"
+> +#include "aosp.h"
+> 
+> #define ZERO_KEY "\x00\x00\x00\x00\x00\x00\x00\x00" \
+> 		 "\x00\x00\x00\x00\x00\x00\x00\x00"
+> @@ -4225,6 +4226,36 @@ static void hci_num_comp_blocks_evt(struct hci_dev *hdev, void *data,
+> 	queue_work(hdev->workqueue, &hdev->tx_work);
+> }
+> 
+> +#define QUALITY_SPEC_NA			0x0
+> +#define QUALITY_SPEC_INTEL_TELEMETRY	0x1
+> +#define QUALITY_SPEC_AOSP_BQR		0x2
+> +
+> +static bool quality_report_evt(struct hci_dev *hdev,  void *data,
+> +			       struct sk_buff *skb)
+> +{
+> +	if (aosp_is_quality_report_evt(skb)) {
+> +		if (aosp_has_quality_report(hdev) &&
+> +		    aosp_pull_quality_report_data(skb))
+> +			mgmt_quality_report(hdev, skb, QUALITY_SPEC_AOSP_BQR);
+> +
+> +		return true;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static void hci_vendor_evt(struct hci_dev *hdev, void *data,
+> +			   struct sk_buff *skb)
+> +{
+> +	/* Every distinct vendor specification must have a well-defined
+> +	 * condition to determine if an event meets the specification.
+> +	 * The skb is consumed by a specification only if the event meets
+> +	 * the specification.
+> +	 */
+> +	if (!quality_report_evt(hdev, data, skb))
+> +		msft_vendor_evt(hdev, data, skb);
+> +}
+
+No, not like this. This gets messy really quickly.
+
+We should allow for defining vendor event prefixes here. That AOSP decided to convolute the space 0x54 and above in unfortunate, but that is what we have to deal with.
+
+> +
+> static void hci_mode_change_evt(struct hci_dev *hdev, void *data,
+> 				struct sk_buff *skb)
+> {
+> @@ -6811,7 +6842,7 @@ static const struct hci_ev {
+> 	HCI_EV(HCI_EV_NUM_COMP_BLOCKS, hci_num_comp_blocks_evt,
+> 	       sizeof(struct hci_ev_num_comp_blocks)),
+> 	/* [0xff = HCI_EV_VENDOR] */
+> -	HCI_EV(HCI_EV_VENDOR, msft_vendor_evt, 0),
+> +	HCI_EV(HCI_EV_VENDOR, hci_vendor_evt, 0),
+> };
+> 
+> static void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
+> diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+> index 08d6494f1b34..78687ae885be 100644
+> --- a/net/bluetooth/mgmt.c
+> +++ b/net/bluetooth/mgmt.c
+> @@ -4389,6 +4389,28 @@ static int set_exp_feature(struct sock *sk, struct hci_dev *hdev,
+> 			       MGMT_STATUS_NOT_SUPPORTED);
+> }
+> 
+> +int mgmt_quality_report(struct hci_dev *hdev, struct sk_buff *skb,
+> +			u8 quality_spec)
+> +{
+> +	struct mgmt_ev_quality_report *ev;
+> +	size_t ev_len;
+> +	int err;
+> +
+> +	/* The ev comes with a variable-length data field. */
+> +	ev_len = sizeof(*ev) + skb->len;
+> +	ev = kmalloc(ev_len, GFP_KERNEL);
+> +	if (!ev)
+> +		return -ENOMEM;
+> +
+> +	ev->quality_spec = quality_spec;
+> +	ev->data_len = skb->len;
+> +	memcpy(ev->data, skb->data, skb->len);
+> +	err = mgmt_event(MGMT_EV_QUALITY_REPORT, hdev, ev, ev_len, NULL);
+> +	kfree(ev);
+> +
+> +	return err;
+> +}
+> +
+
+Don’t we have mgmt helper functions that allow us to add headers to a mgmt skb. I think there is really no point in allocating memory via kmalloc.
+
+Regards
+
+Marcel
 
