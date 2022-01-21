@@ -2,151 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34BC04962B7
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 17:23:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B16FA4962C6
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 17:28:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381785AbiAUQXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 11:23:31 -0500
-Received: from mail-eopbgr140089.outbound.protection.outlook.com ([40.107.14.89]:48868
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232442AbiAUQXa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:23:30 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=axDXxJ6v/0r1kLhjlxKrgaClDBvJwDAnYKSAUonAsMDvszEn7NeE7eg+gGXg3xAidik0uQ69nliNlAjQGPj1tZqdiZy46bzDIsnyGEBzp2Uxxf0SIhzPmQhFrpurN8QATkRtAFkAvsFadJ4qGL71J7l5esRsMgIpin/6GBMfZJoSSMwc4fjwwExY2LnyoFGMu0l4gM9EEQQZVllbbkOs5vDuTeaXsKEOttgdpIt7bjalYwouHmvLOYV5vsW9Ys6rIo0s5L9HPU3Xza4+bq34seUJKjesSdQE5rupWdyGdED7ZioZnvAnqmD3/B3i3yFWmSUY7N3yDDzEAvX8q8mPrQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ARBxoUs+k3PuVk/VPKoEhGQaWa6X8HxwMLuu+SbAfuA=;
- b=gNwYN+wUdzuCRrTy6q6YF8cv5gD53cjGDGYSe9Wxg0eQNAhHdpFqDxrw5DcvwGmFIogYco8D9wi5TrHIEQfGPHsknbgmytZYvW7Tw939M7/tjqsRdmCRTn60Yy43xHYBVxsqGyMrknK9p3Dm/8TGpYJAF5HANKs9V4YAIyRIKDoJv5/AuGeUdiQHIXebQJPHLOIH95MfySLT4YIyftCprr5DLzPdHK/EHamOAbtdA9H3635wdw0j0QOW7gvwKE10ZwBzPjfZe9vjZ/YO6vVRB3YPPmFXRCnx5tJnskNkxdD41hRBfs/2/UYMG+Qcjdchtb9musreNM8aX7UnoY+Hsg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ARBxoUs+k3PuVk/VPKoEhGQaWa6X8HxwMLuu+SbAfuA=;
- b=OX8ye0sJijkRh6BRFoaBSHxJ8CF6OL3wmMdHRiF4YLbad8hFs8r352FKH1pLG0LiLFyJp/Fc7TYC61p7ywwBRoPuD1TnBUUejuHMgatjaaMCtgqIm+jig+c8mSsaRR+uUWPYJx5gCkST3xEnGW1AMlyIgeThsRhKq7BeEcXIjoo=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DB6PR0401MB2311.eurprd04.prod.outlook.com (2603:10a6:4:49::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.12; Fri, 21 Jan
- 2022 16:23:28 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::f4d7:e110:4789:67b1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::f4d7:e110:4789:67b1%5]) with mapi id 15.20.4909.012; Fri, 21 Jan 2022
- 16:23:28 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Russell King <linux@arm.linux.org.uk>
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-Thread-Topic: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-Thread-Index: AQHYAPlHUZ7+aaeSVU6jmUK14JiGzaxsOSsAgAC1gICAAAeKAIAAtFaAgAAKjACAAA9mgA==
-Date:   Fri, 21 Jan 2022 16:23:27 +0000
-Message-ID: <20220121162327.4p3iqbtt4qtnknhp@skbuf>
-References: <20220103232555.19791-4-richardcochran@gmail.com>
- <20220120164832.xdebp5vykib6h6dp@skbuf> <Yeoqof1onvrcWGNp@lunn.ch>
- <20220121040508.GA7588@hoboy.vegasvil.org>
- <20220121145035.z4yv2qsub5mr7ljs@skbuf>
- <20220121152820.GA15600@hoboy.vegasvil.org>
-In-Reply-To: <20220121152820.GA15600@hoboy.vegasvil.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a050f50b-350f-4475-f1ba-08d9dcfa5b44
-x-ms-traffictypediagnostic: DB6PR0401MB2311:EE_
-x-microsoft-antispam-prvs: <DB6PR0401MB2311A373BB46BF20A9B41E7CE05B9@DB6PR0401MB2311.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: vO73gZ86uavaM274b3+o02Ir+HPXMdzkXBUmCMdOXpgBcNeQphuaSY/uF/mOPBmSLgyKypgH5TSRXvSuTMQtLYN4x+AN4jdiq458u8SinGCVekOHuvNqo3MTC1eVGMbv/LzDOtQB1VM28f9tpr4k+HL/xyhAiFgrWUXGmPIimbd31GOWaAp1JYJDWS26QsaIBijYy5l3Y7VplefB1fBgUt9gjAlj1SpKi8TWVFoEIdjeNIeiLIzgWJfj+mOyRnGffQmqL6rNszBoVjn3sRdA0EFtA/f4bl+PXmVasWJ+4ykZD99m2uQTg87JsLXRSFIPA9mI2tR3tgmxL2/A4u8nQNXt55cxv2I784yQC5ttHOmziqHtXc1Zl/jVtCzIOi4MrLFOEDmfntVrbVrX8ie2Ypf0bbcktrVsvDQoleuvXH/Jdi2L1Rd4CspUl3mZtIw5ZQKW5fPyak28TNPD1utMHhCgqRz2aHGurV8wqVj0rQcER5oRsVZl8CVqGZ4fhGT5oaCgXCBUpLdXrT93Sc+3n7BNGt/UUMLMMSNkXD/N7Obkl54Aj/UMfjjSv3yPisZOuGBb7v7gJUKrp6nG/FUObQzeIWmaF7PWwYhn60kSo/5LKDTteLatL3gTKuk/HvDMOg02kLMIkTx36FA905dQs8zYTLCMbXuUhP6ZefDD8vFVfxh6HRNyr/GbbIDZACnDmuNWlCIB6N53odl/hj/SeA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(2906002)(91956017)(26005)(4326008)(6512007)(9686003)(1076003)(76116006)(33716001)(6486002)(6916009)(8676002)(44832011)(66476007)(66556008)(64756008)(66446008)(54906003)(122000001)(66946007)(6506007)(7416002)(38070700005)(86362001)(316002)(8936002)(5660300002)(186003)(38100700002)(508600001)(71200400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?OT87O2T/5z29xygX69mAIwMqeZHQgEjzjog6cpTVYRtRblq+P4lkrv4JQdO8?=
- =?us-ascii?Q?LqJUFfw1JYZ2y+4tSasnFyMFCeHh8MMwhpZ/JQBO7sWHo2JAph2J0C6b/zoq?=
- =?us-ascii?Q?M3oPUe4bJoKjTkKIJzw01hQYXHZbAMxHbe29+ShQYqAYxtL01DsQ3MPHtAJY?=
- =?us-ascii?Q?GNGcSkS3gmWhElV8SAfCtFhargPKLudeEd0ydR51dEEcQqHft9pjfCph9KUR?=
- =?us-ascii?Q?u2KSWuED+Hb9jV6ZhrW0pVwRChqXVjxXQPNE11BX/FfxQbb/JGwdA0HZRyeY?=
- =?us-ascii?Q?yJTHcRYqLowaCmEWwpc+QO4egQaHdOgI8/D9XGZxRDGuya2b/DamDk+fOeUq?=
- =?us-ascii?Q?95rfZWFACW+JE+tb7imZnOfr4PmgHcwsikDcpig3D6WcN84R5q+kNMVDYJWX?=
- =?us-ascii?Q?5Fgo/zdQ6laBmJ1sJ82zt9sYXKYyXkMN8T3rTLzEtU8w/p13rcQ+MzYMTrJn?=
- =?us-ascii?Q?TXfw7cKYDoacUSqvwnNj9M7wjoFfHLw7kZBpxV29eCYgXy6B9oyS9/e+1VRF?=
- =?us-ascii?Q?j3WyT1gdwRCzETIXi0pyu5xCYAVFls/OZwHzXjatX+hLPzM9cZRgdUXgVEFW?=
- =?us-ascii?Q?ZtRypiGFqDdYpPYyEY+C2E96MvwWSkgbpuSZg63lx7xM0SjNnXxR1uhlFrde?=
- =?us-ascii?Q?5MWr0XiyvGStYyk4ag6gybhW8pbVIaE1qExpVZACFunPBg7NAPrTyJD+rpq8?=
- =?us-ascii?Q?Yb6LHPjp/ofLAVwQEGG16iAy61Ux7IQAw+YD18ODWprrOaFogHTKULjX3weD?=
- =?us-ascii?Q?mp/vv9yyUahmksWtZ5eJyRy1Gr7EZgsibn0iT4mRJYBR5bn/gaG6W2kgzObt?=
- =?us-ascii?Q?HrWWpoTO+J21F/FXyzk7pBvBNnMmaCIMxFepDt6QTjct5Tb4RE/Trm6S2kop?=
- =?us-ascii?Q?2u2fkdLawCOyMwk643ljjb2ual7N2yKCOfs/NmClZwjg0dvjQzoz38i7aZ3A?=
- =?us-ascii?Q?oV/rkuy8tsonag/0IDBnjbtxecRBMrze7z4ZFT00u6bbMP7DUBj65683qjhv?=
- =?us-ascii?Q?KmtGxwsdI0+m7ddRoJ3B6Zno3E+HR0n3bPBaR9xNhb6pyHls2cUGGFhGbq6+?=
- =?us-ascii?Q?DrDrKbUqmKaXk5eO4CoW36ixetgSbU69bK0CwhK7dianr3RdanJMrtjGxyyx?=
- =?us-ascii?Q?S+TszOEe2NXKeaxoLac+OiD9eyHjTUhCW9iCez30IB7tUsw8Lm0ZtQ0ooDzy?=
- =?us-ascii?Q?DP+TC0/Hl0rdHkMMWxNXryZWq9Oz+QnCCnuWl0CWQMzChA48eUqTeHsHNmr2?=
- =?us-ascii?Q?fMZmHXJB8DKUoLVRVXX6bEyXARS9vQ1CvJh+ucBESLcxZjJtveNlf+9m2lRT?=
- =?us-ascii?Q?zRxYbhEFleWduvTr6nXfcXt22v413ecDAo3CeutyQ6R/mqfL0U720eQcjE6F?=
- =?us-ascii?Q?jhHyZvcC+8AVFiDKy9VjbbZg7toGbX1oKBpNgNQTQbWOK/bvB0OLMCdPoDVh?=
- =?us-ascii?Q?sqkK124TqjVlAgg5f+64gnMwAgiPDlNs5AM0I5RD4heU7SbA/++Juju2uj8e?=
- =?us-ascii?Q?UROubqVtlbtuohTyZhUG2w6S0F8y9H1MEQNZKbKFaUvXFIitEG6AgKuWUgk6?=
- =?us-ascii?Q?bJwURFzlQ1R0GT8rElLh/a44ZvhtLJAwE5EmzqrZsCKrOx6G/CHevkCi9vrC?=
- =?us-ascii?Q?4TS1wAWcGGrbeUau17actX0=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2773BAB5E6BCE94ABDE184A97F424738@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S234216AbiAUQ2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 11:28:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43306 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232896AbiAUQ2A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 11:28:00 -0500
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3828BC06173B
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 08:28:00 -0800 (PST)
+Received: by mail-il1-x136.google.com with SMTP id o10so8121752ilh.0
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 08:28:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sABqR0v3jU7EcVT5on60hnrw/dr9UuIrsh0XyrwaR3g=;
+        b=gD/5HIdGX//bqhVAw6BEH9XjWChLVKFZl/8ZyuMUKyOLrtY8gewZP1GjUz8FVJQAke
+         wVVnsHtsz3gS+JowW+lGba08EovYswTacnekEgCtdx5+sD7diMHngKQBxBnxzlBLqEva
+         rSTkuadXumzGU/7WpIxR8fmUMes5FoyLGl5Ss=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sABqR0v3jU7EcVT5on60hnrw/dr9UuIrsh0XyrwaR3g=;
+        b=sqZ/sWEcC1UHQb9Sgcjm6Wr55I4kF64EnnmBQkhjRuuiVFSBzUYuv28eCZf4hicNsz
+         hwGzoyXsEvysg0SE9z4EeNmhNgfcGxlmS5Zu5rPXKzh716UxRsXAJ0ZJHhlohDI1+atI
+         B1J4SLtf8nYdD3SWZsKH3gY9T+GyDY37XQKBBaR/klXH+6wZTO+HVP3mAPeYsy4tYDpO
+         8CLD4yfs2BjyFR3uBQYqgmDs5bNxKc+jZC8uH6sSbAqlf7mjJdoYNYuJwaGuYDAmqLc4
+         dJbshBgfGYtMOVOTtRr86XOslzhJrVDXhPFYGQWEOq4T3IxSETacUmrMPhZRc7IgN2yF
+         bVlw==
+X-Gm-Message-State: AOAM5323VsUFTUKbJfuA7O69BwFJrzGI1o4SIp5iwrZLMvf4M5aKUlfs
+        v8K3h0nBDtVmeEX+su+2Lz/XlQ==
+X-Google-Smtp-Source: ABdhPJz9xUfCdzzV7fkvyVjN1NIa0melD9XX4yw4vlMnnNkd6yz7+39RPqnVdVoDKbmIntExp4Rt3w==
+X-Received: by 2002:a05:6e02:1c89:: with SMTP id w9mr2440188ill.205.1642782479524;
+        Fri, 21 Jan 2022 08:27:59 -0800 (PST)
+Received: from ?IPv6:2601:282:8200:4c:a678:b224:47c8:9f36? ([2601:282:8200:4c:a678:b224:47c8:9f36])
+        by smtp.gmail.com with ESMTPSA id x13sm1439302ilu.0.2022.01.21.08.27.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Jan 2022 08:27:59 -0800 (PST)
+Subject: Re: tdc errors
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Davide Caratti <dcaratti@redhat.com>
+Cc:     Victor Nogueira <victor@mojatatu.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        David Ahern <dsahern@gmail.com>, shuah@kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <CA+NMeC-xsHvQ5KPybDUV02UW_zyy02k6fQXBy3YOBg8Qnp=LZQ@mail.gmail.com>
+ <c4983694-0564-edca-7695-984f1d72367f@mojatatu.com>
+ <CAKa-r6teP-fL63MWZzEWfG4XzugN-dY4ZabNfTBubfetwDS-Rg@mail.gmail.com>
+ <a0051dc2-e626-915a-8925-416ff7effb94@mojatatu.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <69c4581e-09bd-4218-4d5f-d39564bce9bc@linuxfoundation.org>
+Date:   Fri, 21 Jan 2022 09:27:56 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a050f50b-350f-4475-f1ba-08d9dcfa5b44
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jan 2022 16:23:27.9409
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SFucUTXJbvB8IjM6/FpqYCvA7EGIO0DBQuHN7CHhbaTCClTFf0I8n4T2duPwcTDUJSwEUgk/zB6kwNUN9SMs2g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2311
+In-Reply-To: <a0051dc2-e626-915a-8925-416ff7effb94@mojatatu.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 07:28:20AM -0800, Richard Cochran wrote:
-> On Fri, Jan 21, 2022 at 02:50:36PM +0000, Vladimir Oltean wrote:
-> > So as I mentioned earlier, the use case would be hardware performance
-> > testing and diagnosing. You may consider that as not that important, bu=
-t
-> > this is basically what I had to do for several months, and even wrote
-> > a program for that, that collects packet timestamps at all possible poi=
-nts.
->=20
-> This is not possible without making a brand new CMSG to accommodate
-> time stamps from all the various layers.
->=20
-> That is completely out of scope for this series.
->=20
-> The only practical use case of this series is to switch from PHY back to =
-MAC.
+On 1/21/22 7:11 AM, Jamal Hadi Salim wrote:
+> On 2022-01-21 04:36, Davide Caratti wrote:
+>> On Thu, Jan 20, 2022 at 8:34 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+> 
+> [..]>>
+>>> So... How is the robot not reporting this as a regression?
+>>> Davide? Basically kernel has the feature but code is missing
+>>> in both iproute2 and iproute2-next..
+>>
+>> my guess (but it's only a guess) is that also the tc-testing code is
+>> less recent than the code of the kernel under test, so it does not not
+>> contain new items (like 7d64).
+> 
+> Which kernel(s) + iproute2 version does the bot test?
+> In this case, the tdc test is in the kernel already..
+> So in my opinion shouldve just ran and failed and a report
+> sent indicating failure. Where do the reports go?
+> 
+> +Cc Shuah.
+> 
+>> But even if we had the latest net-next test code and the latest
+>> net-next kernel under test, we would anyway see unstable test results,
+>> because of the gap with iproute2 code.  My suggestion is to push new
+>> tdc items (that require iproute2 bits, or some change to the kernel
+>> configuration in the build environment) using 'skip: yes' in the JSON
+>> (see [1]), and enable them only when we are sure that all the code
+>> propagated at least to stable trees.
+>>
+>> wdyt?
+>>
+> 
+> That's better than current status quo but: still has  human dependency
+> IMO. If we can remove human dependency the bot can do a better job.
+> Example:
+> One thing that is often a cause of failures in tdc is kernel config.
+> A lot of tests fail because the kernel doesnt have the config compiled
+> in.
+> Today, we work around that by providing a kernel config file in tdc.
+> Unfortunately we dont use that config file for anything
+> meaningful other than to tell the human what kernel options
+> to ensure are compiled in before running the tests (manually).
+> Infact the user has to inspect the config file first.
+> 
+> One idea that will help in automation is as follows:
+> Could we add a "environment dependency" check that will ensure
+> for a given test the right versions of things and configs exist?
+> Example check if CONFIG_NET_SCH_ETS is available in the running
+> kernel before executing "ets tests" or we have iproute2 version
+>  >= blah before running the policer test with skip_sw feature etc
+> I think some of this can be done via the pre-test-suite but we may
+> need granularity at per-test level.
+> 
 
-I don't think my proposal is out of scope. It deals with the same thing
-as what you propose: the kernel makes a selection by default, user space
-can change it. The need for PHC identification in the cmsg arises as a
-direct consequence of the fact that there are multiple PHCs in the path.
-It isn't a requirement that I introduced artificially. Your solution has
-a need to deal with that problem too, it's just that it omits to do so:
+Several tests check for config support for their dependencies in their
+test code - I don't see any of those in tc-testing. Individual tests
+are supposed to check for not just the config dependencies, but also
+any feature dependency e.g syscall/ioctl.
 
-|               When changing the value, some packets in the kernel
-|               networking stack may still be delivered with time
-|               stamps from the previous provider.=
+Couple of way to fix this problem for tc-testing - enhance the test to
+check for dependencies and skip with a clear message on why test is
+skipped.
+
+A second option is enhancing the tools/testing/selftests/kselftest_deps.sh
+script that checks for build depedencies. This tool can be enhanced easily
+to check for run-time dependencies and use this in your automation.
+
+Usage: ./kselftest_deps.sh -[p] <compiler> [test_name]
+
+	kselftest_deps.sh [-p] gcc
+	kselftest_deps.sh [-p] gcc vm
+	kselftest_deps.sh [-p] aarch64-linux-gnu-gcc
+	kselftest_deps.sh [-p] aarch64-linux-gnu-gcc vm
+
+- Should be run in selftests directory in the kernel repo.
+- Checks if Kselftests can be built/cross-built on a system.
+- Parses all test/sub-test Makefile to find library dependencies.
+- Runs compile test on a trivial C file with LDLIBS specified
+   in the test Makefiles to identify missing library dependencies.
+- Prints suggested target list for a system filtering out tests
+   failed the build dependency check from the TARGETS in Selftests
+   main Makefile when optional -p is specified.
+- Prints pass/fail dependency check for each tests/sub-test.
+- Prints pass/fail targets and libraries.
+- Default: runs dependency checks on all tests.
+- Optional test name can be specified to check dependencies for it.
+
+thanks,
+-- Shuah
+
+
