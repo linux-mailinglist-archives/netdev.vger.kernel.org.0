@@ -2,194 +2,410 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2ABE495905
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 05:55:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28E2849590E
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 05:59:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233652AbiAUEzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 23:55:19 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48124 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232128AbiAUEzS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 23:55:18 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08D6661561;
-        Fri, 21 Jan 2022 04:55:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB622C340E1;
-        Fri, 21 Jan 2022 04:55:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642740916;
-        bh=+aJniAQsQxWnqNmovNZC7GWa4V8aYyZwBUIj3qeFQ98=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V23Enzuiwu9QvC19c7l8qySmJ3SGj9OLQqEXfhO6reKgqvtsnYfdgYH7eUb2c7fPZ
-         QXh8QSG/ZH9H8GOhxZ6Ew0pf7veq/70dfbWUxJMGSVQsj2dVS7ql1Ibhs0lV5VWz8S
-         FzkFr+SpolHNQtUeYKruFKEvAK49yoWzRk0qr2guyHIQYtgRnKfCC4doC/YKNerNyI
-         9ZaF4w/jSMqkpl4uGLSaRdYD9HsEHGFAobEikK9ykc2BQr5wFBmBkGLbuEPQwqBI4a
-         I8eAE38lTu3PKBqGtqAnJ5i1RFPuct3wa2UebbaEBEOpktJVc5OXjKo/oELTZLSXPz
-         uxbZ/1KTks0ng==
-Date:   Fri, 21 Jan 2022 13:55:10 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        id S233829AbiAUE7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 23:59:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231278AbiAUE7X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 23:59:23 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F40C061574;
+        Thu, 20 Jan 2022 20:59:23 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id v11-20020a17090a520b00b001b512482f36so5255167pjh.3;
+        Thu, 20 Jan 2022 20:59:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QgZSkP5p5Dow30aome2sRmL62BpV73veAqG3YYmna/k=;
+        b=Zjn5sHqCtTDbCHBQQLnbgMKVRWzfwlRxX735uZgHsjQoKMAuIXMHwRWBp3FH69+NxD
+         1CYzg/deHxJZ7iQN4sStGRamUybHVBzBk9h+7KhRTfGsxv+elwlwakmaGD7XKjDo1QMi
+         6QidxpbUHqs2aLS6CLha2nwHo9sScU+um9gPXU2zuQrmWTc3C0DwwzJSdtzOtGThiFgF
+         7YL6Rrizl+Iu7Suzabr7us6P/Fu5IvpuXL7d4KHJY3sP+M+G8dqZBQnynvmoP7/A3Xnn
+         vU4Ru41+nNPinXxv1Qzf54NqDrJH/tdBlwgQFEtBf8M4yZEQN05xOSl9YsEEkhhUmM4n
+         PlbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QgZSkP5p5Dow30aome2sRmL62BpV73veAqG3YYmna/k=;
+        b=13AoOuPno8CgGmqTBQ7j9UTnyFMGRqlm6CmPpDa39k8DvUl2tfurPwQMXR43ovIbmF
+         dTimxS0X4tnPbS70M8O1t2PtjGf0PbsXM7XrgfV73g0DULIWBZ3QUthuVph+ahC/PE1R
+         aVdZlPmEUDEP+wD4ObgmHBKrO84wp+/qbwCqKWpaQe51LLePbzZT9eFLI1b+n5yhCVMu
+         4gPorh6GZytWGuoXGCQMjGIKqK16iy2E/m0M77AhlWipwBfjX3mhKIo8/xQe4U5wypOv
+         lR6efdQNdmBmMQjsYlBxmUjzy7fOixeSSey5lvNEPErIq3aMrTRpFoYL+8GLt+DToM21
+         cU4w==
+X-Gm-Message-State: AOAM530H8ctRwuauo+gf6N7WhWo6k8tSy5QPwewZ1+bEkhhf2kTCzfPd
+        +mJzgAGb+Fu2DhX1KGyIkPfPRI0Tu4+gMGSf4wJPx/cIXqw=
+X-Google-Smtp-Source: ABdhPJxoJN90Pq24cjwYZk9fCfpFC8HBmIYeUcSOEF1/6D9dcSMx2LMK7ldbE7GppTRMiHoXlBsyFkbisoutav9e1fI=
+X-Received: by 2002:a17:902:860c:b0:149:1017:25f0 with SMTP id
+ f12-20020a170902860c00b00149101725f0mr2466391plo.116.1642741163046; Thu, 20
+ Jan 2022 20:59:23 -0800 (PST)
+MIME-Version: 1.0
+References: <20220120191306.1801459-1-song@kernel.org> <20220120191306.1801459-8-song@kernel.org>
+In-Reply-To: <20220120191306.1801459-8-song@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 20 Jan 2022 20:59:11 -0800
+Message-ID: <CAADnVQL-TAZD6BbN-sXDpAs0OHFWGg3e=RafBQ10=ExXESNQgg@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 7/7] bpf, x86_64: use bpf_prog_pack allocator
+To:     Song Liu <song@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH v3 0/9] fprobe: Introduce fprobe function entry/exit
- probe
-Message-Id: <20220121135510.7cfa6540e31824aa39b1c1b8@kernel.org>
-In-Reply-To: <CAEf4Bzbbimea3ydwafXSHFiEffYx5zAcwGNKk8Zi6QZ==Vn0Ug@mail.gmail.com>
-References: <164260419349.657731.13913104835063027148.stgit@devnote2>
-        <CAEf4Bzbbimea3ydwafXSHFiEffYx5zAcwGNKk8Zi6QZ==Vn0Ug@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Kernel Team <kernel-team@fb.com>,
+        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
+        Song Liu <songliubraving@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Jan 2022 14:24:15 -0800
-Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+On Thu, Jan 20, 2022 at 11:13 AM Song Liu <song@kernel.org> wrote:
+>
+> From: Song Liu <songliubraving@fb.com>
+>
+> Use bpf_prog_pack allocator in x86_64 jit.
+>
+> The program header from bpf_prog_pack is read only during the jit process.
+> Therefore, the binary is first written to a temporary buffer, and later
+> copied to final location with text_poke_copy().
+>
+> Similarly, jit_fill_hole() is updated to fill the hole with 0xcc using
+> text_poke_copy().
+>
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> ---
+>  arch/x86/net/bpf_jit_comp.c | 134 +++++++++++++++++++++++++++---------
+>  1 file changed, 103 insertions(+), 31 deletions(-)
+>
+> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> index fe4f08e25a1d..6d97f7c24df2 100644
+> --- a/arch/x86/net/bpf_jit_comp.c
+> +++ b/arch/x86/net/bpf_jit_comp.c
+> @@ -216,11 +216,34 @@ static u8 simple_alu_opcodes[] = {
+>         [BPF_ARSH] = 0xF8,
+>  };
+>
+> +static char jit_hole_buffer[PAGE_SIZE] = {};
 
-> On Wed, Jan 19, 2022 at 6:56 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> >
-> > Hello Jiri,
-> >
-> > Here is the 3rd version of fprobe. I added some comments and
-> > fixed some issues. But I still saw some problems when I add
-> > your selftest patches.
-> >
-> > This series introduces the fprobe, the function entry/exit probe
-> > with multiple probe point support. This also introduces the rethook
-> > for hooking function return as same as kretprobe does. This
-> > abstraction will help us to generalize the fgraph tracer,
-> > because we can just switch it from rethook in fprobe, depending
-> > on the kernel configuration.
-> >
-> > The patch [1/9] and [7/9] are from Jiri's series[1]. Other libbpf
-> > patches will not be affected by this change.
-> >
-> > [1] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
-> >
-> > However, when I applied all other patches on top of this series,
-> > I saw the "#8 bpf_cookie" test case has been stacked (maybe related
-> > to the bpf_cookie issue which Andrii and Jiri talked?) And when I
-> > remove the last selftest patch[2], the selftest stopped at "#112
-> > raw_tp_test_run".
-> >
-> > [2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#m242d2b3a3775eeb5baba322424b15901e5e78483
-> >
-> > Note that I used tools/testing/selftests/bpf/vmtest.sh to check it.
-> >
-> > This added 2 more out-of-tree patches. [8/9] is for adding wildcard
-> > support to the sample program, [9/9] is a testing patch for replacing
-> > kretprobe trampoline with rethook.
-> > According to this work, I noticed that using rethook in kretprobe
-> > needs 2 steps.
-> >  1. port the rethook on all architectures which supports kretprobes.
-> >     (some arch requires CONFIG_KPROBES for rethook)
-> >  2. replace kretprobe trampoline with rethook for all archs, at once.
-> >     This must be done by one treewide patch.
-> >
-> > Anyway, I'll do the kretprobe update in the next step as another series.
-> > (This testing patch is just for confirming the rethook is correctly
-> >  implemented.)
-> >
-> > BTW, on the x86, ftrace (with fentry) location address is same as
-> > symbol address. But on other archs, it will be different (e.g. arm64
-> > will need 2 instructions to save link-register and call ftrace, the
-> > 2nd instruction will be the ftrace location.)
-> > Does libbpf correctly handle it?
-> 
-> libbpf doesn't do anything there. The interface for kprobe is based on
-> function name and kernel performs name lookups internally to resolve
-> IP. For fentry it's similar (kernel handles IP resolution), but
-> instead of function name we specify BTF ID of a function type.
+Let's not waste a page filled with 0xcc.
+The pack allocator will reserve 128 bytes at the front
+and will round up the tail to 64 bytes.
+So this can be a 128 byte array?
 
-Hmm, according to Jiri's original patch, it seems to pass an array of
-addresses. So I thought that has been resolved by libbpf.
+> +
+>  static void jit_fill_hole(void *area, unsigned int size)
+> +{
+> +       struct bpf_binary_header *hdr = area;
+> +       int i;
+> +
+> +       for (i = 0; i < roundup(size, PAGE_SIZE); i += PAGE_SIZE) {
 
-+			struct {
-+				__aligned_u64	addrs;
-+				__u32		cnt;
-+				__u64		bpf_cookie;
-+			} kprobe;
-
-Anyway, fprobe itself also has same issue. I'll try to fix it.
-
-Thank you!
-
-> 
-> >
-> > Thank you,
-> >
-> > ---
-> >
-> > Jiri Olsa (2):
-> >       ftrace: Add ftrace_set_filter_ips function
-> >       bpf: Add kprobe link for attaching raw kprobes
-> >
-> > Masami Hiramatsu (7):
-> >       fprobe: Add ftrace based probe APIs
-> >       rethook: Add a generic return hook
-> >       rethook: x86: Add rethook x86 implementation
-> >       fprobe: Add exit_handler support
-> >       fprobe: Add sample program for fprobe
-> >       [DO NOT MERGE] Out-of-tree: Support wildcard symbol option to sample
-> >       [DO NOT MERGE] out-of-tree: kprobes: Use rethook for kretprobe
-> >
-> >
-> >  arch/x86/Kconfig                |    1
-> >  arch/x86/include/asm/unwind.h   |    8 +
-> >  arch/x86/kernel/Makefile        |    1
-> >  arch/x86/kernel/kprobes/core.c  |  106 --------------
-> >  arch/x86/kernel/rethook.c       |  115 +++++++++++++++
-> >  include/linux/bpf_types.h       |    1
-> >  include/linux/fprobe.h          |   84 +++++++++++
-> >  include/linux/ftrace.h          |    3
-> >  include/linux/kprobes.h         |   85 +----------
-> >  include/linux/rethook.h         |   99 +++++++++++++
-> >  include/linux/sched.h           |    4 -
-> >  include/uapi/linux/bpf.h        |   12 ++
-> >  kernel/bpf/syscall.c            |  195 +++++++++++++++++++++++++-
-> >  kernel/exit.c                   |    3
-> >  kernel/fork.c                   |    4 -
-> >  kernel/kallsyms.c               |    1
-> >  kernel/kprobes.c                |  265 +++++------------------------------
-> >  kernel/trace/Kconfig            |   22 +++
-> >  kernel/trace/Makefile           |    2
-> >  kernel/trace/fprobe.c           |  179 ++++++++++++++++++++++++
-> >  kernel/trace/ftrace.c           |   54 ++++++-
-> >  kernel/trace/rethook.c          |  295 +++++++++++++++++++++++++++++++++++++++
-> >  kernel/trace/trace_kprobe.c     |    4 -
-> >  kernel/trace/trace_output.c     |    2
-> >  samples/Kconfig                 |    7 +
-> >  samples/Makefile                |    1
-> >  samples/fprobe/Makefile         |    3
-> >  samples/fprobe/fprobe_example.c |  154 ++++++++++++++++++++
-> >  tools/include/uapi/linux/bpf.h  |   12 ++
-> >  29 files changed, 1283 insertions(+), 439 deletions(-)
-> >  create mode 100644 arch/x86/kernel/rethook.c
-> >  create mode 100644 include/linux/fprobe.h
-> >  create mode 100644 include/linux/rethook.h
-> >  create mode 100644 kernel/trace/fprobe.c
-> >  create mode 100644 kernel/trace/rethook.c
-> >  create mode 100644 samples/fprobe/Makefile
-> >  create mode 100644 samples/fprobe/fprobe_example.c
-> >
-> > --
-> > Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
+multi page 0xcc-ing?
+Is it because bpf_jit_binary_alloc_pack() allocates 2MB
+and then populates the whole thing with this?
+Seems overkill.
+0xcc in the front of the prog and in the back is there
+to catch JIT bugs.
+No need to fill 2MB with it.
 
 
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+> +               int s;
+> +
+> +               s = min_t(int, PAGE_SIZE, size - i);
+> +               text_poke_copy(area + i, jit_hole_buffer, s);
+> +       }
+> +
+> +       /*
+> +        * bpf_jit_binary_alloc_pack cannot write size directly to the ro
+> +        * mapping. Write it here with text_poke_copy().
+> +        */
+> +       text_poke_copy(&hdr->size, &size, sizeof(size));
+> +}
+> +
+> +static int __init x86_jit_fill_hole_init(void)
+>  {
+>         /* Fill whole space with INT3 instructions */
+> -       memset(area, 0xcc, size);
+> +       memset(jit_hole_buffer, 0xcc, PAGE_SIZE);
+> +       return 0;
+>  }
+> +pure_initcall(x86_jit_fill_hole_init);
+>
+>  struct jit_context {
+>         int cleanup_addr; /* Epilogue code offset */
+> @@ -361,14 +384,11 @@ static int __bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
+>
+>         ret = -EBUSY;
+>         mutex_lock(&text_mutex);
+> -       if (memcmp(ip, old_insn, X86_PATCH_SIZE))
+> +       if (text_live && memcmp(ip, old_insn, X86_PATCH_SIZE))
+>                 goto out;
+>         ret = 1;
+>         if (memcmp(ip, new_insn, X86_PATCH_SIZE)) {
+> -               if (text_live)
+> -                       text_poke_bp(ip, new_insn, X86_PATCH_SIZE, NULL);
+> -               else
+> -                       memcpy(ip, new_insn, X86_PATCH_SIZE);
+> +               text_poke_bp(ip, new_insn, X86_PATCH_SIZE, NULL);
+>                 ret = 0;
+>         }
+>  out:
+> @@ -537,7 +557,7 @@ static void emit_bpf_tail_call_direct(struct bpf_jit_poke_descriptor *poke,
+>         *pprog = prog;
+>  }
+>
+> -static void bpf_tail_call_direct_fixup(struct bpf_prog *prog)
+> +static void bpf_tail_call_direct_fixup(struct bpf_prog *prog, bool text_live)
+>  {
+>         struct bpf_jit_poke_descriptor *poke;
+>         struct bpf_array *array;
+> @@ -558,24 +578,15 @@ static void bpf_tail_call_direct_fixup(struct bpf_prog *prog)
+>                 mutex_lock(&array->aux->poke_mutex);
+>                 target = array->ptrs[poke->tail_call.key];
+>                 if (target) {
+> -                       /* Plain memcpy is used when image is not live yet
+> -                        * and still not locked as read-only. Once poke
+> -                        * location is active (poke->tailcall_target_stable),
+> -                        * any parallel bpf_arch_text_poke() might occur
+> -                        * still on the read-write image until we finally
+> -                        * locked it as read-only. Both modifications on
+> -                        * the given image are under text_mutex to avoid
+> -                        * interference.
+> -                        */
+>                         ret = __bpf_arch_text_poke(poke->tailcall_target,
+>                                                    BPF_MOD_JUMP, NULL,
+>                                                    (u8 *)target->bpf_func +
+> -                                                  poke->adj_off, false);
+> +                                                  poke->adj_off, text_live);
+>                         BUG_ON(ret < 0);
+>                         ret = __bpf_arch_text_poke(poke->tailcall_bypass,
+>                                                    BPF_MOD_JUMP,
+>                                                    (u8 *)poke->tailcall_target +
+> -                                                  X86_PATCH_SIZE, NULL, false);
+> +                                                  X86_PATCH_SIZE, NULL, text_live);
+>                         BUG_ON(ret < 0);
+>                 }
+>                 WRITE_ONCE(poke->tailcall_target_stable, true);
+> @@ -867,7 +878,7 @@ static void emit_nops(u8 **pprog, int len)
+>
+>  #define INSN_SZ_DIFF (((addrs[i] - addrs[i - 1]) - (prog - temp)))
+>
+> -static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
+> +static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image, u8 *tmp_image,
+>                   int oldproglen, struct jit_context *ctx, bool jmp_padding)
+>  {
+>         bool tail_call_reachable = bpf_prog->aux->tail_call_reachable;
+> @@ -894,8 +905,8 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
+>         push_callee_regs(&prog, callee_regs_used);
+>
+>         ilen = prog - temp;
+> -       if (image)
+> -               memcpy(image + proglen, temp, ilen);
+> +       if (tmp_image)
+> +               memcpy(tmp_image + proglen, temp, ilen);
+>         proglen += ilen;
+>         addrs[0] = proglen;
+>         prog = temp;
+> @@ -1324,8 +1335,10 @@ st:                      if (is_imm8(insn->off))
+>                                         pr_err("extable->insn doesn't fit into 32-bit\n");
+>                                         return -EFAULT;
+>                                 }
+> -                               ex->insn = delta;
+> +                               /* switch ex to temporary buffer for writes */
+> +                               ex = (void *)tmp_image + ((void *)ex - (void *)image);
+>
+> +                               ex->insn = delta;
+>                                 ex->type = EX_TYPE_BPF;
+>
+>                                 if (dst_reg > BPF_REG_9) {
+> @@ -1706,7 +1719,7 @@ st:                       if (is_imm8(insn->off))
+>                                 pr_err("bpf_jit: fatal error\n");
+>                                 return -EFAULT;
+>                         }
+> -                       memcpy(image + proglen, temp, ilen);
+> +                       memcpy(tmp_image + proglen, temp, ilen);
+>                 }
+>                 proglen += ilen;
+>                 addrs[i] = proglen;
+> @@ -2248,8 +2261,10 @@ int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs)
+>
+>  struct x64_jit_data {
+>         struct bpf_binary_header *header;
+> +       struct bpf_binary_header *tmp_header;
+>         int *addrs;
+>         u8 *image;
+> +       u8 *tmp_image;
+
+Why add these two fields here?
+With new logic header and image will be zero always?
+Maybe rename them instead?
+Or both used during JIT-ing?
+
+>         int proglen;
+>         struct jit_context ctx;
+>  };
+> @@ -2259,6 +2274,7 @@ struct x64_jit_data {
+>
+>  struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>  {
+> +       struct bpf_binary_header *tmp_header = NULL;
+>         struct bpf_binary_header *header = NULL;
+>         struct bpf_prog *tmp, *orig_prog = prog;
+>         struct x64_jit_data *jit_data;
+> @@ -2267,6 +2283,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>         bool tmp_blinded = false;
+>         bool extra_pass = false;
+>         bool padding = false;
+> +       u8 *tmp_image = NULL;
+>         u8 *image = NULL;
+>         int *addrs;
+>         int pass;
+> @@ -2301,7 +2318,9 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>                 ctx = jit_data->ctx;
+>                 oldproglen = jit_data->proglen;
+>                 image = jit_data->image;
+> +               tmp_image = jit_data->tmp_image;
+>                 header = jit_data->header;
+> +               tmp_header = jit_data->tmp_header;
+>                 extra_pass = true;
+>                 padding = true;
+>                 goto skip_init_addrs;
+> @@ -2332,14 +2351,18 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>         for (pass = 0; pass < MAX_PASSES || image; pass++) {
+>                 if (!padding && pass >= PADDING_PASSES)
+>                         padding = true;
+> -               proglen = do_jit(prog, addrs, image, oldproglen, &ctx, padding);
+> +               proglen = do_jit(prog, addrs, image, tmp_image, oldproglen, &ctx, padding);
+>                 if (proglen <= 0) {
+>  out_image:
+>                         image = NULL;
+> -                       if (header)
+> -                               bpf_jit_binary_free(header);
+> +                       tmp_image = NULL;
+> +                       if (header) {
+> +                               bpf_jit_binary_free_pack(header);
+> +                               kfree(tmp_header);
+> +                       }
+>                         prog = orig_prog;
+>                         header = NULL;
+> +                       tmp_header = NULL;
+>                         goto out_addrs;
+>                 }
+>                 if (image) {
+> @@ -2362,13 +2385,27 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>                                 sizeof(struct exception_table_entry);
+>
+>                         /* allocate module memory for x86 insns and extable */
+> -                       header = bpf_jit_binary_alloc(roundup(proglen, align) + extable_size,
+> -                                                     &image, align, jit_fill_hole);
+> +                       header = bpf_jit_binary_alloc_pack(roundup(proglen, align) + extable_size,
+> +                                                          &image, align, jit_fill_hole);
+>                         if (!header) {
+>                                 prog = orig_prog;
+>                                 goto out_addrs;
+>                         }
+> -                       prog->aux->extable = (void *) image + roundup(proglen, align);
+> +                       if (header->size > bpf_prog_pack_max_size()) {
+> +                               tmp_header = header;
+> +                               tmp_image = image;
+> +                       } else {
+> +                               tmp_header = kzalloc(header->size, GFP_KERNEL);
+
+the header->size could be just below 2MB.
+I don't think kzalloc() can handle that.
+
+> +                               if (!tmp_header) {
+> +                                       bpf_jit_binary_free_pack(header);
+> +                                       header = NULL;
+> +                                       prog = orig_prog;
+> +                                       goto out_addrs;
+> +                               }
+> +                               tmp_header->size = header->size;
+> +                               tmp_image = (void *)tmp_header + ((void *)image - (void *)header);
+
+Why is 'tmp_image' needed at all?
+The above math can be done where necessary.
+
+> +                       }
+> +                       prog->aux->extable = (void *)image + roundup(proglen, align);
+
+I suspect if you didn't remove the space between (void *) and image
+the diff would be less confusing.
+This line didn't change, right?
+
+>                 }
+>                 oldproglen = proglen;
+>                 cond_resched();
+> @@ -2379,14 +2416,24 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>
+>         if (image) {
+>                 if (!prog->is_func || extra_pass) {
+> -                       bpf_tail_call_direct_fixup(prog);
+> -                       bpf_jit_binary_lock_ro(header);
+> +                       if (header->size > bpf_prog_pack_max_size()) {
+> +                               /*
+> +                                * bpf_prog_pack cannot handle too big
+> +                                * program (> ~2MB). Fall back to regular
+> +                                * module_alloc(), and do the fixup and
+> +                                * lock_ro here.
+> +                                */
+> +                               bpf_tail_call_direct_fixup(prog, false);
+> +                               bpf_jit_binary_lock_ro(header);
+> +                       }
+>                 } else {
+>                         jit_data->addrs = addrs;
+>                         jit_data->ctx = ctx;
+>                         jit_data->proglen = proglen;
+>                         jit_data->image = image;
+> +                       jit_data->tmp_image = tmp_image;
+>                         jit_data->header = header;
+> +                       jit_data->tmp_header = tmp_header;
+>                 }
+>                 prog->bpf_func = (void *)image;
+>                 prog->jited = 1;
+> @@ -2402,6 +2449,17 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>                 kvfree(addrs);
+>                 kfree(jit_data);
+>                 prog->aux->jit_data = NULL;
+> +               jit_data = NULL;
+> +               if (tmp_header != header) {
+> +                       text_poke_copy(header, tmp_header, header->size);
+> +                       kfree(tmp_header);
+> +                       /*
+> +                        * Do the fixup after final text_poke_copy().
+> +                        * Otherwise, the fix up will be overwritten by
+> +                        * text_poke_copy().
+> +                        */
+> +                       bpf_tail_call_direct_fixup(prog, true);
+> +               }
+>         }
+>  out:
+>         if (tmp_blinded)
+> @@ -2415,3 +2473,17 @@ bool bpf_jit_supports_kfunc_call(void)
+>  {
+>         return true;
+>  }
+> +
+> +void bpf_jit_free(struct bpf_prog *fp)
+> +{
+> +       if (fp->jited) {
+> +               struct bpf_binary_header *hdr = bpf_jit_binary_hdr(fp);
+> +
+> +               if (hdr->size > bpf_prog_pack_max_size())
+> +                       bpf_jit_binary_free(hdr);
+> +               else
+> +                       bpf_jit_binary_free_pack(hdr);
+> +       }
+> +
+> +       bpf_prog_unlock_free(fp);
+> +}
+> --
+> 2.30.2
+>
