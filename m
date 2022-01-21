@@ -2,92 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C531495FB6
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 14:22:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E92C5495FC0
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 14:28:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380659AbiAUNWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 08:22:21 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:47760 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1380583AbiAUNWU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jan 2022 08:22:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=87A/tDKQS+3qI1mDmEkAtXDZaWxRClH2krUZOoDdvz0=; b=HXUr11AwYknsAaClHt8ecVzUuM
-        g9RDS6j5MlWIUmcRhHagqgr/y5LX3BlUdfaa6eAmPSDV8ixDcm3WlGmwc0zisCpz7dgr2OsFdJROc
-        nL538wTMsDVLDIPLkhaVuqKGFeF0++g81fMlJjfCLqfM50QkJMJvuSNkwUpf1eHA2H1U=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nAtrr-0025Os-NJ; Fri, 21 Jan 2022 14:22:15 +0100
-Date:   Fri, 21 Jan 2022 14:22:15 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
- firmware on a Dell hardware
-Message-ID: <Yeqzhx3GbMzaIbj6@lunn.ch>
-References: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
- <YelxMFOiqnfIVmyy@lunn.ch>
- <CAAd53p7NjvzsBs2aWTP-3GMjoyefMmLB3ou+7fDcrNVfKwALHw@mail.gmail.com>
+        id S1350514AbiAUN2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 08:28:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346022AbiAUN2V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 08:28:21 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40202C061574
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 05:28:21 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id h14so27510132ybe.12
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 05:28:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=dy4Q63vwnui/mY3PyZTbcUeIPLCxMn026uu+8ErF5Jc=;
+        b=JAnvstMd2/DYw99SmSPmRYqx/VXmw4e9haNoEJjvmOk79GdGSvx0rPg1HqTFZHQgR3
+         6IynHBORa20p22rYPvvewOIXO696qvIzYjvArBs156XrOGOsTMoIw0DJqEp3Gqvkcc08
+         9nPG+8u/Px9gO6oUKu+vZFrZWY1mxIBnkUqwMPrSz7RrrAPD5FVoDU/MlWgL3va+VwhN
+         aXGF8JAIEZ2oVbTG8ve2S8caexjbIwU0UNxLy475AIC6BmdY6kJV7y6egGoBpBV9Vvod
+         57oh8Z3J5vdOBDfLWXEb7NC9VJyZ0sYfMPWnfQHTrAhveOq9Uk3Gip79PdnlzjktyQSt
+         VsfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=dy4Q63vwnui/mY3PyZTbcUeIPLCxMn026uu+8ErF5Jc=;
+        b=O1O6nW6oWKwm4D/MnumE2pzgKuAStjXWztzRRstTO1LFA3R8KyO+4VJnBqqBTMkG9y
+         ujI8eHoEPpG5aoCVdeOet1br9tTzSiyAIBDJigvUKp2uiYJmRbcJy5asQEs4DWXldv0O
+         076LmF/3eEBaFM2u6QCSezrb6BkuuSwTTRbxhSCHCxqzeF3pQXhbj6yNC3RtAYMNP9eC
+         pGU/TRFBxQyvvmNKF/PdlBp5Is3LqUF2nh/L++GQmP4sCYjx3nMwUeatAl/PY6ELqqxj
+         aEfwJefOfVHCbCeFNS+7vRfNHtR03aKiqv5YZLBqPTD4pZfZ3D7nSGdx89g6F+uweBup
+         kjyQ==
+X-Gm-Message-State: AOAM531NnNaRSWRnYV63uxibY/KeWjOWIVmD1NryxJQlG3BwQgiNKOtv
+        rs/75N5TsU6gZFUK5JSCbjF8pjX5HXpttoRSBNQ=
+X-Google-Smtp-Source: ABdhPJyTtmAc3098Kg5WVnj/J6yAt6Isj6Jc6Q/lCoAX5YFGJylbk7DdXET821gbBvR7gHrDhHoQHJufboY8m5KZ298=
+X-Received: by 2002:a25:3604:: with SMTP id d4mr6404707yba.354.1642771699936;
+ Fri, 21 Jan 2022 05:28:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAd53p7NjvzsBs2aWTP-3GMjoyefMmLB3ou+7fDcrNVfKwALHw@mail.gmail.com>
+Sender: hookersgroove@gmail.com
+Received: by 2002:a05:7010:3482:b0:1f9:66bd:b8cc with HTTP; Fri, 21 Jan 2022
+ 05:28:19 -0800 (PST)
+From:   Ibrahim idewu <ibrahimidewu4@gmail.com>
+Date:   Fri, 21 Jan 2022 14:28:19 +0100
+X-Google-Sender-Auth: CfDhDgzLpyCIO53MYOaBYLodwag
+Message-ID: <CAEF8BQSkM2fuF7OpGgMWRiA9QaDs6GErNqgs7cq1Qp85fVm0dg@mail.gmail.com>
+Subject: URGENT
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 12:01:35PM +0800, Kai-Heng Feng wrote:
-> On Thu, Jan 20, 2022 at 10:26 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > On Thu, Jan 20, 2022 at 01:19:29PM +0800, Kai-Heng Feng wrote:
-> > > BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
-> > > instead of setting another value, keep it untouched and restore the saved
-> > > value on system resume.
-> > >
-> > > Introduce config_led() callback in phy_driver() to make the implemtation
-> > > generic.
-> >
-> > I'm also wondering if we need to take a step back here and get the
-> > ACPI guys involved. I don't know much about ACPI, but shouldn't it
-> > provide a control method to configure the PHYs LEDs?
-> >
-> > We already have the basics for defining a PHY in ACPI. See:
-> >
-> > https://www.kernel.org/doc/html/latest/firmware-guide/acpi/dsd/phy.html
-> 
-> These properties seem to come from device-tree.
+Dear Friend,
 
-They are similar to what DT has, but expressed in an ACPI way. DT has
-been used with PHY drivers for a long time, but ACPI is new. The ACPI
-standard also says nothing about PHYs. So Linux has defined its own
-properties, which we expect all ACPI machine to use. According to the
-ACPI maintainers, this is within the ACPI standard. Maybe at some
-point somebody will submit the current definitions to the standards
-body for approval, or maybe the standard will do something completely
-different, but for the moment, this is what we have, and what you
-should use.
+My name is Mr.Ibrahim Idewu.I have decided to seek a confidential
+co-operation  with you in the execution of the deal described
+here-under for our both  mutual benefit and I hope you will keep it a
+top secret because of the nature  of the transaction, During the
+course of our bank year auditing, I discovered  an unclaimed/abandoned
+fund, sum total of {US$19.3 Million United State  Dollars} in the bank
+account that belongs to a Saudi Arabia businessman Who unfortunately
+lost his life and entire family in a Motor Accident.
+I want to present you to the bank as the next of kin to the dead
+business man after the money will be sent to you we then share
+60percent to me and 40percent to you.
+All necessary arrangements to secure the fund have been made by
+me,upon consideration of this offer.
 
-> > so you could extend this to include a method to configure the LEDs for
-> > a specific PHY.
-> 
-> How to add new properties? Is it required to add new properties to
-> both DT and ACPI?
+send me the below information
 
-Since all you are adding is a boolean, 'Don't touch the PHY LED
-configuration', it should be easy to do for both.
 
-What is interesting for Marvell PHYs is WoL, which is part of LED
-configuration. I've not checked, but i guess there are other PHYs
-which reuse LED output for a WoL interrupt. So it needs to be clearly
-defined if we expect the BIOS to also correctly configure WoL, or if
-Linux is responsible for configuring WoL, even though it means
-changing the LED configuration.
+-Your Full Name:
+-Your Contact Address:
+-Your direct Mobile telephone Number:
+-Your Date of Birth:
+-Your occupation:
 
-	 Andrew
+
+I await your swift response and re-assurance.
+
+
+Best regards,
+Mr.Ibrahim Idewu.
