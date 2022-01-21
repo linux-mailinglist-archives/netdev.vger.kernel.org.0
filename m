@@ -2,91 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C40949627D
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 17:00:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B795A496280
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 17:00:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351417AbiAUQAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 11:00:07 -0500
-Received: from mga06.intel.com ([134.134.136.31]:29755 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351037AbiAUQAD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:00:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642780803; x=1674316803;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HE6c8IgFI+DlexaYcDl10ukjIkHRiNr/Z8cFLm+BUoo=;
-  b=C2a6v+ikBHnJX3kMUMmqXKyKogqvMYeGx8xZospQOTJowODDUFesbxH+
-   mR5T2YqyDxjeVKUlPSNEpCp43R8QCQEd8Vn7vbq+u4CuGEqT8WJRqbvcS
-   sMDJMjDyTIjL+qCMKlRdtvdAEHmxtJPXvIrVyO9NS8FLC/o1BvTW1z6yv
-   2H5iyZAkjuAFIdgJJYT+G+BzbY2a+oeul3iI6AK9qyXjn5+9U9QM0+21V
-   Usfa+C7V3tG0rZx86TBMyqE1tifYZAV/SDUhcGFso1ZCBTs5lbTIIc1RL
-   XQ1psMkD+ak5jsaegcVZxrtysozktCJmxW1kcRq3oUDem+ATaEesL+PaP
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="306402869"
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="306402869"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 08:00:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="533320909"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by orsmga008.jf.intel.com with ESMTP; 21 Jan 2022 08:00:00 -0800
-Date:   Fri, 21 Jan 2022 17:00:00 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next] selftests: xsk: fix rx_full stats test
-Message-ID: <YerYgIFIqe8IM2YB@boxer>
-References: <20220121123508.12759-1-magnus.karlsson@gmail.com>
+        id S1381726AbiAUQAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 11:00:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381731AbiAUQAP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 11:00:15 -0500
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA0FC061401;
+        Fri, 21 Jan 2022 08:00:14 -0800 (PST)
+Received: from [IPV6:2003:e9:d70c:7733:6a50:4603:7591:b048] (p200300e9d70c77336a5046037591b048.dip0.t-ipconnect.de [IPv6:2003:e9:d70c:7733:6a50:4603:7591:b048])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 03DB6C05A4;
+        Fri, 21 Jan 2022 17:00:10 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1642780811;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iC5RnqdqkyoCjekA4tZvGpeSxet8pxQyzrvWnq6zJ60=;
+        b=RKKjHZgO862SvAXujd53vYCv0eFOXxI7TH5ZiQA6roBb+Hoqwx9ijZMju/wwPxSLapHVdd
+        QptSjgAKHi6HutqNGyXV65JNc2OOJxo9fGHIDJfK7rI/Ob/keX4eugI3lMt++ikKSmsiFm
+        AaZ/OVoGjz66b8oW6D4AuOZUYlCVsmFKxsVbNvQulboSNaxHSj4bJfhfPyYPeELEheAkHv
+        VuStPVcmk9t6nGO9Msi6xLLqtH761CokndPD+LNM/UlgzrVcQK2obSowD2OrQtSgpwNHcD
+        x2h0V2pnSqMDR9B6hdiOVMeQeqfADBWS++8e0Z6ihHDeGUUuhK7ngoENSmm+hw==
+Message-ID: <faea7b84-d89e-5ba0-9169-5fb8ddf98dc5@datenfreihafen.org>
+Date:   Fri, 21 Jan 2022 17:00:10 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220121123508.12759-1-magnus.karlsson@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [wpan-next v2 6/9] net: ieee802154: Use the IEEE802154_MAX_PAGE
+ define when relevant
+Content-Language: en-US
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Xue Liu <liuxuenetmail@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harry Morris <harrymorris12@gmail.com>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+References: <20220120112115.448077-1-miquel.raynal@bootlin.com>
+ <20220120112115.448077-7-miquel.raynal@bootlin.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20220120112115.448077-7-miquel.raynal@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 01:35:08PM +0100, Magnus Karlsson wrote:
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
+
+Hello.
+
+On 20.01.22 12:21, Miquel Raynal wrote:
+> This define already exist but is hardcoded in nl-phy.c. Use the
+> definition when relevant.
 > 
-> Fix the rx_full stats test so that it correctly reports pass even when
-> the fill ring is not full of buffers.
-> 
-> Fixes: 872a1184dbf2 ("selftests: xsk: Put the same buffer only once in the fill ring")
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-
-Fixes xdpxceiver hang on my side.
-
-Tested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->  tools/testing/selftests/bpf/xdpxceiver.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+>   net/ieee802154/nl-phy.c | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-> index 0a5d23da486d..ffa5502ad95e 100644
-> --- a/tools/testing/selftests/bpf/xdpxceiver.c
-> +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-> @@ -906,7 +906,10 @@ static bool rx_stats_are_valid(struct ifobject *ifobject)
->  			return true;
->  		case STAT_TEST_RX_FULL:
->  			xsk_stat = stats.rx_ring_full;
-> -			expected_stat -= RX_FULL_RXQSIZE;
-> +			if (ifobject->umem->num_frames < XSK_RING_PROD__DEFAULT_NUM_DESCS)
-> +				expected_stat = ifobject->umem->num_frames - RX_FULL_RXQSIZE;
-> +			else
-> +				expected_stat = XSK_RING_PROD__DEFAULT_NUM_DESCS - RX_FULL_RXQSIZE;
->  			break;
->  		case STAT_TEST_RX_FILL_EMPTY:
->  			xsk_stat = stats.rx_fill_ring_empty_descs;
+> diff --git a/net/ieee802154/nl-phy.c b/net/ieee802154/nl-phy.c
+> index dd5a45f8a78a..02f6a53d0faa 100644
+> --- a/net/ieee802154/nl-phy.c
+> +++ b/net/ieee802154/nl-phy.c
+> @@ -30,7 +30,8 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
+>   {
+>   	void *hdr;
+>   	int i, pages = 0;
+> -	uint32_t *buf = kcalloc(32, sizeof(uint32_t), GFP_KERNEL);
+> +	uint32_t *buf = kcalloc(IEEE802154_MAX_PAGE + 1, sizeof(uint32_t),
+
+Please use u32 here. I know we have some uint*_t leftovers but for new 
+code we should not use them anymore.
+
+> +				GFP_KERNEL);
+>   
+>   	pr_debug("%s\n", __func__);
+>   
+> @@ -47,7 +48,7 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
+>   	    nla_put_u8(msg, IEEE802154_ATTR_PAGE, phy->current_page) ||
+>   	    nla_put_u8(msg, IEEE802154_ATTR_CHANNEL, phy->current_channel))
+>   		goto nla_put_failure;
+> -	for (i = 0; i < 32; i++) {
+> +	for (i = 0; i <= IEEE802154_MAX_PAGE; i++) {
+>   		if (phy->supported.channels[i])
+>   			buf[pages++] = phy->supported.channels[i] | (i << 27);
+>   	}
 > 
-> base-commit: 820e6e227c4053b6b631ae65ef1f65d560cb392b
-> -- 
-> 2.34.1
-> 
+
+regards
+Stefan Schmidt
