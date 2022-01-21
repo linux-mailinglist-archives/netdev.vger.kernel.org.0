@@ -2,495 +2,366 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45640495FAD
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 14:19:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E66495FAF
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 14:20:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380677AbiAUNTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 08:19:18 -0500
-Received: from mga11.intel.com ([192.55.52.93]:30498 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350722AbiAUNTR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jan 2022 08:19:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642771157; x=1674307157;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=81kYj8Q3Bp9oksI0jvdgUP4BIl1FKvCtcelJN1Doyxo=;
-  b=fcn+e7JJlsxCFeXiw7e4ZB+e0n7NIUSdDC79OrrNl+0IUT4OSpVGdnyB
-   U8m0fx6mRvfMajhGeEOufhdwSDPAqKSzYdnyObkEQmUsF6r2R5O0GPI17
-   qwcNWU5zyXxiavoG3NeLR2fhLWxZGYvhRMXb2DlcEIvbRKgRlckPgQTxs
-   OfnhNXjuKTKz8QdSdARyfkJPOqONVeEQU/xEEbPvdb64f6LO2QCUrmKc6
-   r9YUeOdlEUY3OVoxcrSD3g/W7GUXroBRhtCDP0NZ8ebtd9EMd+b4tsd3j
-   28fA/n4Cb1y6W0Xm2rd/fQiwRzEuJ8vPdRtGBvbUtxdftreZbKReLC09/
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="243244256"
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="243244256"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 05:19:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="533271353"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga008.jf.intel.com with ESMTP; 21 Jan 2022 05:19:14 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20LDJDNU004960;
-        Fri, 21 Jan 2022 13:19:13 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com
-Subject: Re: [PATCH bpf-next v3 6/7] ice: xsk: improve AF_XDP ZC Tx and use batching API
-Date:   Fri, 21 Jan 2022 14:17:42 +0100
-Message-Id: <20220121131742.24424-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220121125447.24039-1-alexandr.lobakin@intel.com>
-References: <20220121120011.49316-1-maciej.fijalkowski@intel.com> <20220121120011.49316-7-maciej.fijalkowski@intel.com> <20220121125447.24039-1-alexandr.lobakin@intel.com>
+        id S1380684AbiAUNUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 08:20:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:32784 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1350722AbiAUNUG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 08:20:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642771204;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7LJGqmdjTpB0rnqiYfIJVO5Za8NUvvkBp7Ym5tK7oWw=;
+        b=fcf01uNLgm++h0IwfHOuyG2fiAvu4HGYKD4lzatHXdr0TXNRRwk/I7yOHB2Y7/btR0OXZh
+        E5WbDPnzWlql/OCNwVezFgtW3Sndl1yRmWwBK8CdhCE9qgMQVuoaQeWHvikS+VTj80sbOe
+        V8gBLhZ3ouv4ZKwh9cX93ANs5JXV8zQ=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-77-qAqvRQ1kNjCS1esUWTCoiA-1; Fri, 21 Jan 2022 08:20:03 -0500
+X-MC-Unique: qAqvRQ1kNjCS1esUWTCoiA-1
+Received: by mail-wm1-f72.google.com with SMTP id v190-20020a1cacc7000000b0034657bb6a66so4701704wme.6
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 05:20:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7LJGqmdjTpB0rnqiYfIJVO5Za8NUvvkBp7Ym5tK7oWw=;
+        b=pZT8stHsl8xoqw+H1tFbpqvyRNSu8Nwm6iOMrZ1ohKWxgkx2663VflC0kOV3I+m8au
+         TvY7X3S5ck4x+EgtMvEM0N4e9MAdtHt8nRh87scR8hvEZKl14MH1YNmqxg3cOhrMejn8
+         jJVMEodjy7XKTLTFXeP1oS5sDjtP1ANHLSptRifWTlXXAydLRAkJhtJhyB9NvG0Kquym
+         5k+VhVlzSWvX3iBssj0R5yNNV+RVhQo2iyeETscVKNDcf3nI5UOaaPIG+9FqazQe3nO5
+         568+GbzlcDuNLeOd4Yh2DkNGSrLIUTlRF3WC3nJF/igFpLjG3xmrzKKDarcJtI+lJF67
+         B9RA==
+X-Gm-Message-State: AOAM532jMXS0XCvKk+6wh6NqlCg9rUGp/Vkz72vNUDQPi6ppKvWqaAlS
+        f5nCNW1a4noxNNjyZ3T2cRBF50tJiWuVsOzZp0ikx9/rS2WUynjAjqeMS4EzDQm7u1mBvAHxxwg
+        3f5xiwgeojXBMZzp6
+X-Received: by 2002:a5d:64ee:: with SMTP id g14mr4030546wri.695.1642771202407;
+        Fri, 21 Jan 2022 05:20:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwBPQYiwtMgPEjjuHk8bLiSfx4eJYFREo9YiWJaLoDNlo93tlfPx2PYmc9ZQYHVzZikhKDlPg==
+X-Received: by 2002:a5d:64ee:: with SMTP id g14mr4030523wri.695.1642771202080;
+        Fri, 21 Jan 2022 05:20:02 -0800 (PST)
+Received: from redhat.com ([181.214.206.211])
+        by smtp.gmail.com with ESMTPSA id w8sm5438081wre.83.2022.01.21.05.19.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Jan 2022 05:20:00 -0800 (PST)
+Date:   Fri, 21 Jan 2022 08:19:55 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org
+Subject: Re: [PATCH v2 07/12] virtio: queue_reset: pci: support
+ VIRTIO_F_RING_RESET
+Message-ID: <20220121081931-mutt-send-email-mst@kernel.org>
+References: <20220121052241-mutt-send-email-mst@kernel.org>
+ <1642760793.1188169-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1642760793.1188169-1-xuanzhuo@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
-Date: Fri, 21 Jan 2022 13:54:47 +0100
+On Fri, Jan 21, 2022 at 06:26:33PM +0800, Xuan Zhuo wrote:
+> On Fri, 21 Jan 2022 05:22:59 -0500, Michael S. Tsirkin <mst@redhat.com> wrote:
+> > On Fri, Jan 21, 2022 at 05:22:29AM -0500, Michael S. Tsirkin wrote:
+> > > On Fri, Jan 21, 2022 at 10:22:59AM +0800, Xuan Zhuo wrote:
+> > > > On Thu, 20 Jan 2022 10:03:45 -0500, Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > > On Thu, Jan 20, 2022 at 07:46:20PM +0800, Xuan Zhuo wrote:
+> > > > > > On Thu, 20 Jan 2022 05:55:14 -0500, Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > > > > > On Thu, Jan 20, 2022 at 02:42:58PM +0800, Xuan Zhuo wrote:
+> > > > > > > > This patch implements virtio pci support for QUEUE RESET.
+> > > > > > > >
+> > > > > > > > Performing reset on a queue is divided into two steps:
+> > > > > > > >
+> > > > > > > > 1. reset_vq: reset one vq
+> > > > > > > > 2. enable_reset_vq: re-enable the reset queue
+> > > > > > > >
+> > > > > > > > In the first step, these tasks will be completed:
+> > > > > > > >    1. notify the hardware queue to reset
+> > > > > > > >    2. recycle the buffer from vq
+> > > > > > > >    3. delete the vq
+> > > > > > > >
+> > > > > > > > When deleting a vq, vp_del_vq() will be called to release all the memory
+> > > > > > > > of the vq. But this does not affect the process of deleting vqs, because
+> > > > > > > > that is based on the queue to release all the vqs. During this process,
+> > > > > > > > the vq has been removed from the queue.
+> > > > > > > >
+> > > > > > > > When deleting vq, info and vq will be released, and I save msix_vec in
+> > > > > > > > vp_dev->vqs[queue_index]. When re-enable, the current msix_vec can be
+> > > > > > > > reused. And based on intx_enabled to determine which method to use to
+> > > > > > > > enable this queue.
+> > > > > > > >
+> > > > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > > > >
+> > > > > > > There's something I don't understand here. It looks like
+> > > > > > > you assume that when you reset a queue, you also
+> > > > > > > reset the mapping from queue to event vector.
+> > > > > > > The spec does not say it should, and I don't think it's
+> > > > > > > useful to extend spec to do it - we already have a simple
+> > > > > > > way to tweak the mapping.
+> > > > > > >
+> > > > > >
+> > > > > > Sorry, what is the already existing method you are referring to, I didn't find
+> > > > > > it.
+> > > > >
+> > > > >
+> > > > > Write 0xffff into vector number.
+> > > >
+> > > > I wonder if there is some misunderstanding here.
+> > > >
+> > > > My purpose is to release vq, then for the vector used by vq, I hope that it can
+> > > > be reused when re-enable.
+> > > >
+> > > > But the vector number is not in a fixed order. When I re-enable it, I don't know
+> > > > what the original vector number is. So I found a place to save this number.
+> > > >
+> > > > The queue reset I implemented is divided into the following steps:
+> > > > 	1. notify the driver to queue reset
+> > > > 	2. disable_irq()
+> > > > 	3. free unused bufs
+> > > > 	4. free irq, free vq, free info
+> >
+> > step 4 here seems pointless.
+> 
+> 
+> The core operation is to release the vq. The release of the irq is indeed by the
+> way. We can leave the irq untouched.
+> 
+> 	1. notify the driver to queue reset
+> 	2. disable_irq()
+> 	3. free unused bufs
+> 	4. free vq, free info
+> 
+> Thanks.
 
-> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Date: Fri, 21 Jan 2022 13:00:10 +0100
-> 
-> > Apply the logic that was done for regular XDP from commit 9610bd988df9
-> > ("ice: optimize XDP_TX workloads") to the ZC side of the driver. On top
-> > of that, introduce batching to Tx that is inspired by i40e's
-> > implementation with adjustments to the cleaning logic - take into the
-> > account NAPI budget in ice_clean_xdp_irq_zc().
-> > 
-> > Separating the stats structs onto separate cache lines seemed to improve
-> > the performance.
-> > 
-> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > ---
-> >  drivers/net/ethernet/intel/ice/ice_txrx.c |   2 +-
-> >  drivers/net/ethernet/intel/ice/ice_txrx.h |   2 +-
-> >  drivers/net/ethernet/intel/ice/ice_xsk.c  | 256 ++++++++++++++--------
-> >  drivers/net/ethernet/intel/ice/ice_xsk.h  |  27 ++-
-> >  4 files changed, 186 insertions(+), 101 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-> > index bfb9158b10a4..7ab8c700c884 100644
-> > --- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-> > +++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-> > @@ -1463,7 +1463,7 @@ int ice_napi_poll(struct napi_struct *napi, int budget)
-> >  		bool wd;
-> >  
-> >  		if (tx_ring->xsk_pool)
-> > -			wd = ice_clean_tx_irq_zc(tx_ring, budget);
-> > +			wd = ice_xmit_zc(tx_ring, ICE_DESC_UNUSED(tx_ring), budget);
-> >  		else if (ice_ring_is_xdp(tx_ring))
-> >  			wd = true;
-> >  		else
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
-> > index 09c8ad2f7403..191f9b8c50ee 100644
-> > --- a/drivers/net/ethernet/intel/ice/ice_txrx.h
-> > +++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-> > @@ -322,9 +322,9 @@ struct ice_tx_ring {
-> >  	u16 count;			/* Number of descriptors */
-> >  	u16 q_index;			/* Queue number of ring */
-> >  	/* stats structs */
-> > +	struct ice_txq_stats tx_stats;
-> >  	struct ice_q_stats	stats;
-> >  	struct u64_stats_sync syncp;
-> > -	struct ice_txq_stats tx_stats;
-> >  
-> >  	/* CL3 - 3rd cacheline starts here */
-> >  	struct rcu_head rcu;		/* to avoid race on free */
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-> > index 0463fc594d08..4b6e54f75af6 100644
-> > --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-> > +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-> > @@ -671,134 +671,208 @@ int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget)
-> >  }
-> >  
-> >  /**
-> > - * ice_xmit_zc - Completes AF_XDP entries, and cleans XDP entries
-> > + * ice_clean_xdp_tx_buf - Free and unmap XDP Tx buffer
-> >   * @xdp_ring: XDP Tx ring
-> > - * @budget: max number of frames to xmit
-> > - *
-> > - * Returns true if cleanup/transmission is done.
-> > + * @tx_buf: Tx buffer to clean
-> >   */
-> > -static bool ice_xmit_zc(struct ice_tx_ring *xdp_ring, int budget)
-> > +static void
-> > +ice_clean_xdp_tx_buf(struct ice_tx_ring *xdp_ring, struct ice_tx_buf *tx_buf)
-> >  {
-> > -	struct ice_tx_desc *tx_desc = NULL;
-> > -	bool work_done = true;
-> > -	struct xdp_desc desc;
-> > -	dma_addr_t dma;
-> > -
-> > -	while (likely(budget-- > 0)) {
-> > -		struct ice_tx_buf *tx_buf;
-> > -
-> > -		if (unlikely(!ICE_DESC_UNUSED(xdp_ring))) {
-> > -			xdp_ring->tx_stats.tx_busy++;
-> > -			work_done = false;
-> > -			break;
-> > -		}
-> > +	xdp_return_frame((struct xdp_frame *)tx_buf->raw_buf);
-> > +	dma_unmap_single(xdp_ring->dev, dma_unmap_addr(tx_buf, dma),
-> > +			 dma_unmap_len(tx_buf, len), DMA_TO_DEVICE);
-> > +	dma_unmap_len_set(tx_buf, len, 0);
-> > +}
-> >  
-> > -		tx_buf = &xdp_ring->tx_buf[xdp_ring->next_to_use];
-> > +/**
-> > + * ice_clean_xdp_irq_zc - Reclaim resources after transmit completes on XDP ring
-> > + * @xdp_ring: XDP ring to clean
-> > + * @napi_budget: amount of descriptors that NAPI allows us to clean
-> > + *
-> > + * Returns count of cleaned descriptors
-> > + */
-> > +static u16 ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring, int napi_budget)
-> > +{
-> > +	u16 tx_thresh = xdp_ring->tx_thresh;
-> > +	int budget = napi_budget / tx_thresh;
-> > +	u16 ntc = xdp_ring->next_to_clean;
-> > +	struct ice_tx_desc *next_dd_desc;
-> 
-> @next_dd_desc is used only inside the `do { } while`, can be moved
-> there the reduce the scope.
-> 
-> > +	u16 next_dd = xdp_ring->next_dd;
-> > +	u16 desc_cnt = xdp_ring->count;
-> > +	struct ice_tx_buf *tx_buf;
-> > +	u16 cleared_dds = 0;
-> > +	u32 xsk_frames = 0;
-> > +	u16 i;
-> 
-> Same with these 5, from @desc_cnt to @i.
-> 
-> >  
-> > -		if (!xsk_tx_peek_desc(xdp_ring->xsk_pool, &desc))
-> > +	do {
-> > +		next_dd_desc = ICE_TX_DESC(xdp_ring, next_dd);
-> > +		if (!(next_dd_desc->cmd_type_offset_bsz &
-> > +		    cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE)))
-> >  			break;
-> >  
-> > -		dma = xsk_buff_raw_get_dma(xdp_ring->xsk_pool, desc.addr);
-> > -		xsk_buff_raw_dma_sync_for_device(xdp_ring->xsk_pool, dma,
-> > -						 desc.len);
-> > +		cleared_dds++;
-> > +		xsk_frames = 0;
-> >  
-> > -		tx_buf->bytecount = desc.len;
-> > +		for (i = 0; i < tx_thresh; i++) {
-> > +			tx_buf = &xdp_ring->tx_buf[ntc];
-> >  
-> > -		tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_to_use);
-> > -		tx_desc->buf_addr = cpu_to_le64(dma);
-> > -		tx_desc->cmd_type_offset_bsz =
-> > -			ice_build_ctob(ICE_TXD_LAST_DESC_CMD, 0, desc.len, 0);
-> > +			if (tx_buf->raw_buf) {
-> > +				ice_clean_xdp_tx_buf(xdp_ring, tx_buf);
-> > +				tx_buf->raw_buf = NULL;
-> > +			} else {
-> > +				xsk_frames++;
-> > +			}
-> >  
-> > -		xdp_ring->next_to_use++;
-> > -		if (xdp_ring->next_to_use == xdp_ring->count)
-> > -			xdp_ring->next_to_use = 0;
-> > -	}
-> > +			ntc++;
-> > +			if (ntc >= xdp_ring->count)
-> > +				ntc = 0;
-> > +		}
-> > +		if (xsk_frames)
-> > +			xsk_tx_completed(xdp_ring->xsk_pool, xsk_frames);
-> > +		next_dd_desc->cmd_type_offset_bsz = 0;
-> > +		next_dd = next_dd + tx_thresh;
-> > +		if (next_dd >= desc_cnt)
-> > +			next_dd = tx_thresh - 1;
-> > +	} while (budget--);
-> >  
-> > -	if (tx_desc) {
-> > -		ice_xdp_ring_update_tail(xdp_ring);
-> > -		xsk_tx_release(xdp_ring->xsk_pool);
-> > -	}
-> > +	xdp_ring->next_to_clean = ntc;
-> > +	xdp_ring->next_dd = next_dd;
-> >  
-> > -	return budget > 0 && work_done;
-> > +	return cleared_dds * tx_thresh;
-> >  }
-> >  
-> >  /**
-> > - * ice_clean_xdp_tx_buf - Free and unmap XDP Tx buffer
-> > - * @xdp_ring: XDP Tx ring
-> > - * @tx_buf: Tx buffer to clean
-> > + * ice_xmit_pkt - produce a single HW Tx descriptor out of AF_XDP descriptor
-> > + * @xdp_ring: XDP ring to produce the HW Tx descriptor on
-> > + * @desc: AF_XDP descriptor to pull the DMA address and length from
-> > + * @total_bytes: bytes accumulator that will be used for stats update
-> >   */
-> > -static void
-> > -ice_clean_xdp_tx_buf(struct ice_tx_ring *xdp_ring, struct ice_tx_buf *tx_buf)
-> > +static void ice_xmit_pkt(struct ice_tx_ring *xdp_ring, struct xdp_desc *desc,
-> > +			 unsigned int *total_bytes)
-> >  {
-> > -	xdp_return_frame((struct xdp_frame *)tx_buf->raw_buf);
-> > -	dma_unmap_single(xdp_ring->dev, dma_unmap_addr(tx_buf, dma),
-> > -			 dma_unmap_len(tx_buf, len), DMA_TO_DEVICE);
-> > -	dma_unmap_len_set(tx_buf, len, 0);
-> > +	struct ice_tx_desc *tx_desc;
-> > +	dma_addr_t dma;
-> > +
-> > +	dma = xsk_buff_raw_get_dma(xdp_ring->xsk_pool, desc->addr);
-> > +	xsk_buff_raw_dma_sync_for_device(xdp_ring->xsk_pool, dma, desc->len);
-> > +
-> > +	tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_to_use++);
-> > +	tx_desc->buf_addr = cpu_to_le64(dma);
-> > +	tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP,
-> > +						      0, desc->len, 0);
-> > +
-> > +	*total_bytes += desc->len;
-> >  }
-> >  
-> >  /**
-> > - * ice_clean_tx_irq_zc - Completes AF_XDP entries, and cleans XDP entries
-> > - * @xdp_ring: XDP Tx ring
-> > - * @budget: NAPI budget
-> > - *
-> > - * Returns true if cleanup/tranmission is done.
-> > + * ice_xmit_pkt_batch - produce a batch of HW Tx descriptors out of AF_XDP descriptors
-> > + * @xdp_ring: XDP ring to produce the HW Tx descriptors on
-> > + * @descs: AF_XDP descriptors to pull the DMA addresses and lengths from
-> > + * @total_bytes: bytes accumulator that will be used for stats update
-> >   */
-> > -bool ice_clean_tx_irq_zc(struct ice_tx_ring *xdp_ring, int budget)
-> > +static void ice_xmit_pkt_batch(struct ice_tx_ring *xdp_ring, struct xdp_desc *descs,
-> > +			       unsigned int *total_bytes)
-> >  {
-> > -	int total_packets = 0, total_bytes = 0;
-> > -	s16 ntc = xdp_ring->next_to_clean;
-> > +	u16 tx_thresh = xdp_ring->tx_thresh;
-> > +	u16 ntu = xdp_ring->next_to_use;
-> >  	struct ice_tx_desc *tx_desc;
-> > -	struct ice_tx_buf *tx_buf;
-> > -	u32 xsk_frames = 0;
-> > -	bool xmit_done;
-> > +	dma_addr_t dma;
-> 
-> Same with @dma here.
-> 
-> > +	u32 i;
-> >  
-> > -	tx_desc = ICE_TX_DESC(xdp_ring, ntc);
-> > -	tx_buf = &xdp_ring->tx_buf[ntc];
-> > -	ntc -= xdp_ring->count;
-> > +	loop_unrolled_for(i = 0; i < PKTS_PER_BATCH; i++) {
-> > +		dma = xsk_buff_raw_get_dma(xdp_ring->xsk_pool, descs[i].addr);
-> > +		xsk_buff_raw_dma_sync_for_device(xdp_ring->xsk_pool, dma, descs[i].len);
-> >  
-> > -	do {
-> > -		if (!(tx_desc->cmd_type_offset_bsz &
-> > -		      cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE)))
-> > -			break;
-> > +		tx_desc = ICE_TX_DESC(xdp_ring, ntu++);
-> > +		tx_desc->buf_addr = cpu_to_le64(dma);
-> > +		tx_desc->cmd_type_offset_bsz = ice_build_ctob(ICE_TX_DESC_CMD_EOP,
-> > +							      0, descs[i].len, 0);
-> >  
-> > -		total_bytes += tx_buf->bytecount;
-> > -		total_packets++;
-> > +		*total_bytes += descs[i].len;
-> > +	}
-> >  
-> > -		if (tx_buf->raw_buf) {
-> > -			ice_clean_xdp_tx_buf(xdp_ring, tx_buf);
-> > -			tx_buf->raw_buf = NULL;
-> > -		} else {
-> > -			xsk_frames++;
-> > -		}
-> > +	xdp_ring->next_to_use = ntu;
-> >  
-> > -		tx_desc->cmd_type_offset_bsz = 0;
-> > -		tx_buf++;
-> > -		tx_desc++;
-> > -		ntc++;
-> > +	if (xdp_ring->next_to_use > xdp_ring->next_rs) {
-> > +		tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_rs);
-> > +		tx_desc->cmd_type_offset_bsz |=
-> > +			cpu_to_le64(ICE_TX_DESC_CMD_RS << ICE_TXD_QW1_CMD_S);
-> > +		xdp_ring->next_rs += tx_thresh;
-> > +	}
-> > +}
-> >  
-> > -		if (unlikely(!ntc)) {
-> > -			ntc -= xdp_ring->count;
-> > -			tx_buf = xdp_ring->tx_buf;
-> > -			tx_desc = ICE_TX_DESC(xdp_ring, 0);
-> > -		}
-> > +/**
-> > + * ice_fill_tx_hw_ring - produce the number of Tx descriptors onto ring
-> > + * @xdp_ring: XDP ring to produce the HW Tx descriptors on
-> > + * @descs: AF_XDP descriptors to pull the DMA addresses and lengths from
-> > + * @nb_pkts: count of packets to be send
-> > + * @total_bytes: bytes accumulator that will be used for stats update
-> > + */
-> > +static void ice_fill_tx_hw_ring(struct ice_tx_ring *xdp_ring, struct xdp_desc *descs,
-> > +				u32 nb_pkts, unsigned int *total_bytes)
-> > +{
-> > +	u16 tx_thresh = xdp_ring->tx_thresh;
-> > +	struct ice_tx_desc *tx_desc;
-> 
-> And @tx_desc as well.
-> 
-> > +	u32 batched, leftover, i;
-> > +
-> > +	batched = nb_pkts & ~(PKTS_PER_BATCH - 1);
-> > +	leftover = nb_pkts & (PKTS_PER_BATCH - 1);
-> > +	for (i = 0; i < batched; i += PKTS_PER_BATCH)
-> > +		ice_xmit_pkt_batch(xdp_ring, &descs[i], total_bytes);
-> > +	for (i = batched; i < batched + leftover; i++)
+OK. why free the vq and info though?
 
-Breh, I overlooked that. @i will equal @batched after exiting the
-first loop, so the assignment here is redundant (probably harmless
-tho if the compilers are smart enough).
+> >
+> > > > The process of enable is divided into the following steps:
+> > > > 	1. Get the vector number used by the original vq and re-setup vq
+> > > > 	2. enable vq
+> > > > 	3. enable irq
+> > > >
+> > > > If there is anything unreasonable please let me know.
+> > > >
+> > > > Thanks.
+> > >
+> > > Why do you free irq?
+> > >
+> > > > >
+> > > > > > I think you mean that we don't have to reset the event vector, I think you are
+> > > > > > right.
+> > > > > >
+> > > > > >
+> > > > > >
+> > > > > > Thanks.
+> > > > > >
+> > > > > > > Avoid doing that, and things will be much easier, with no need
+> > > > > > > to interact with a transport, won't they?
+> > > > > > >
+> > > > > > >
+> > > > > > > > ---
+> > > > > > > >  drivers/virtio/virtio_pci_common.c | 49 ++++++++++++++++++++
+> > > > > > > >  drivers/virtio/virtio_pci_common.h |  4 ++
+> > > > > > > >  drivers/virtio/virtio_pci_modern.c | 73 ++++++++++++++++++++++++++++++
+> > > > > > > >  3 files changed, 126 insertions(+)
+> > > > > > > >
+> > > > > > > > diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
+> > > > > > > > index 5afe207ce28a..28b5ffde4621 100644
+> > > > > > > > --- a/drivers/virtio/virtio_pci_common.c
+> > > > > > > > +++ b/drivers/virtio/virtio_pci_common.c
+> > > > > > > > @@ -464,6 +464,55 @@ int vp_find_vqs(struct virtio_device *vdev, unsigned nvqs,
+> > > > > > > >  	return vp_find_vqs_intx(vdev, nvqs, vqs, callbacks, names, ctx);
+> > > > > > > >  }
+> > > > > > > >
+> > > > > > > > +#define VQ_IS_DELETED(vp_dev, idx) ((unsigned long)vp_dev->vqs[idx] & 1)
+> > > > > > > > +#define VQ_RESET_MSIX_VEC(vp_dev, idx) ((unsigned long)vp_dev->vqs[idx] >> 2)
+> > > > > > > > +#define VQ_RESET_MARK(msix_vec) ((void *)(long)((msix_vec << 2) + 1))
+> > > > > > > > +
+> > > > > > > > +void vp_del_reset_vq(struct virtio_device *vdev, u16 queue_index)
+> > > > > > > > +{
+> > > > > > > > +	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+> > > > > > > > +	struct virtio_pci_vq_info *info;
+> > > > > > > > +	u16 msix_vec;
+> > > > > > > > +
+> > > > > > > > +	info = vp_dev->vqs[queue_index];
+> > > > > > > > +
+> > > > > > > > +	msix_vec = info->msix_vector;
+> > > > > > > > +
+> > > > > > > > +	/* delete vq */
+> > > > > > > > +	vp_del_vq(info->vq);
+> > > > > > > > +
+> > > > > > > > +	/* Mark the vq has been deleted, and save the msix_vec. */
+> > > > > > > > +	vp_dev->vqs[queue_index] = VQ_RESET_MARK(msix_vec);
+> > > > > > > > +}
+> > > > > > > > +
+> > > > > > > > +struct virtqueue *vp_enable_reset_vq(struct virtio_device *vdev,
+> > > > > > > > +				     int queue_index,
+> > > > > > > > +				     vq_callback_t *callback,
+> > > > > > > > +				     const char *name,
+> > > > > > > > +				     const bool ctx)
+> > > > > > > > +{
+> > > > > > > > +	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+> > > > > > > > +	struct virtqueue *vq;
+> > > > > > > > +	u16 msix_vec;
+> > > > > > > > +
+> > > > > > > > +	if (!VQ_IS_DELETED(vp_dev, queue_index))
+> > > > > > > > +		return ERR_PTR(-EPERM);
+> > > > > > > > +
+> > > > > > > > +	msix_vec = VQ_RESET_MSIX_VEC(vp_dev, queue_index);
+> > > > > > > > +
+> > > > > > > > +	if (vp_dev->intx_enabled)
+> > > > > > > > +		vq = vp_setup_vq(vdev, queue_index, callback, name, ctx,
+> > > > > > > > +				 VIRTIO_MSI_NO_VECTOR);
+> > > > > > > > +	else
+> > > > > > > > +		vq = vp_enable_vq_msix(vdev, queue_index, callback, name, ctx,
+> > > > > > > > +				       msix_vec);
+> > > > > > > > +
+> > > > > > > > +	if (IS_ERR(vq))
+> > > > > > > > +		vp_dev->vqs[queue_index] = VQ_RESET_MARK(msix_vec);
+> > > > > > > > +
+> > > > > > > > +	return vq;
+> > > > > > > > +}
+> > > > > > > > +
+> > > > > > > >  const char *vp_bus_name(struct virtio_device *vdev)
+> > > > > > > >  {
+> > > > > > > >  	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+> > > > > > > > diff --git a/drivers/virtio/virtio_pci_common.h b/drivers/virtio/virtio_pci_common.h
+> > > > > > > > index 23f6c5c678d5..96c13b1398f8 100644
+> > > > > > > > --- a/drivers/virtio/virtio_pci_common.h
+> > > > > > > > +++ b/drivers/virtio/virtio_pci_common.h
+> > > > > > > > @@ -115,6 +115,10 @@ int vp_find_vqs(struct virtio_device *vdev, unsigned nvqs,
+> > > > > > > >  		struct virtqueue *vqs[], vq_callback_t *callbacks[],
+> > > > > > > >  		const char * const names[], const bool *ctx,
+> > > > > > > >  		struct irq_affinity *desc);
+> > > > > > > > +void vp_del_reset_vq(struct virtio_device *vdev, u16 queue_index);
+> > > > > > > > +struct virtqueue *vp_enable_reset_vq(struct virtio_device *vdev, int queue_index,
+> > > > > > > > +				     vq_callback_t *callback, const char *name,
+> > > > > > > > +				     const bool ctx);
+> > > > > > > >  const char *vp_bus_name(struct virtio_device *vdev);
+> > > > > > > >
+> > > > > > > >  /* Setup the affinity for a virtqueue:
+> > > > > > > > diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
+> > > > > > > > index 5455bc041fb6..fbf87239c920 100644
+> > > > > > > > --- a/drivers/virtio/virtio_pci_modern.c
+> > > > > > > > +++ b/drivers/virtio/virtio_pci_modern.c
+> > > > > > > > @@ -34,6 +34,9 @@ static void vp_transport_features(struct virtio_device *vdev, u64 features)
+> > > > > > > >  	if ((features & BIT_ULL(VIRTIO_F_SR_IOV)) &&
+> > > > > > > >  			pci_find_ext_capability(pci_dev, PCI_EXT_CAP_ID_SRIOV))
+> > > > > > > >  		__virtio_set_bit(vdev, VIRTIO_F_SR_IOV);
+> > > > > > > > +
+> > > > > > > > +	if (features & BIT_ULL(VIRTIO_F_RING_RESET))
+> > > > > > > > +		__virtio_set_bit(vdev, VIRTIO_F_RING_RESET);
+> > > > > > > >  }
+> > > > > > > >
+> > > > > > > >  /* virtio config->finalize_features() implementation */
+> > > > > > > > @@ -176,6 +179,72 @@ static void vp_reset(struct virtio_device *vdev)
+> > > > > > > >  	vp_disable_cbs(vdev);
+> > > > > > > >  }
+> > > > > > > >
+> > > > > > > > +static int vp_modern_reset_vq(struct virtio_device *vdev, u16 queue_index,
+> > > > > > > > +			      vq_reset_callback_t *callback, void *data)
+> > > > > > > > +{
+> > > > > > > > +	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+> > > > > > > > +	struct virtio_pci_modern_device *mdev = &vp_dev->mdev;
+> > > > > > > > +	struct virtio_pci_vq_info *info;
+> > > > > > > > +	u16 msix_vec;
+> > > > > > > > +	void *buf;
+> > > > > > > > +
+> > > > > > > > +	if (!virtio_has_feature(vdev, VIRTIO_F_RING_RESET))
+> > > > > > > > +		return -ENOENT;
+> > > > > > > > +
+> > > > > > > > +	vp_modern_set_queue_reset(mdev, queue_index);
+> > > > > > > > +
+> > > > > > > > +	/* After write 1 to queue reset, the driver MUST wait for a read of
+> > > > > > > > +	 * queue reset to return 1.
+> > > > > > > > +	 */
+> > > > > > > > +	while (vp_modern_get_queue_reset(mdev, queue_index) != 1)
+> > > > > > > > +		msleep(1);
+> > > > > > > > +
+> > > > > > > > +	info = vp_dev->vqs[queue_index];
+> > > > > > > > +	msix_vec = info->msix_vector;
+> > > > > > > > +
+> > > > > > > > +	/* Disable VQ callback. */
+> > > > > > > > +	if (vp_dev->per_vq_vectors && msix_vec != VIRTIO_MSI_NO_VECTOR)
+> > > > > > > > +		disable_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec));
+> > > > > > > > +
+> > > > > > > > +	while ((buf = virtqueue_detach_unused_buf(info->vq)) != NULL)
+> > > > > > > > +		callback(vdev, buf, data);
+> > > > > > > > +
+> > > > > > > > +	vp_del_reset_vq(vdev, queue_index);
+> > > > > > > > +
+> > > > > > > > +	return 0;
+> > > > > > > > +}
+> > > > > > > > +
+> > > > > > > > +static struct virtqueue *vp_modern_enable_reset_vq(struct virtio_device *vdev,
+> > > > > > > > +						   u16 queue_index,
+> > > > > > > > +						   vq_callback_t *callback,
+> > > > > > > > +						   const char *name,
+> > > > > > > > +						   const bool *ctx)
+> > > > > > > > +{
+> > > > > > > > +	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+> > > > > > > > +	struct virtio_pci_modern_device *mdev = &vp_dev->mdev;
+> > > > > > > > +	struct virtqueue *vq;
+> > > > > > > > +	u16 msix_vec;
+> > > > > > > > +
+> > > > > > > > +	if (!virtio_has_feature(vdev, VIRTIO_F_RING_RESET))
+> > > > > > > > +		return ERR_PTR(-ENOENT);
+> > > > > > > > +
+> > > > > > > > +	/* check queue reset status */
+> > > > > > > > +	if (vp_modern_get_queue_reset(mdev, queue_index) != 1)
+> > > > > > > > +		return ERR_PTR(-EBUSY);
+> > > > > > > > +
+> > > > > > > > +	vq = vp_enable_reset_vq(vdev, queue_index, callback, name, ctx);
+> > > > > > > > +	if (IS_ERR(vq))
+> > > > > > > > +		return vq;
+> > > > > > > > +
+> > > > > > > > +	vp_modern_set_queue_enable(&vp_dev->mdev, vq->index, true);
+> > > > > > > > +
+> > > > > > > > +	msix_vec = vp_dev->vqs[queue_index]->msix_vector;
+> > > > > > > > +	if (vp_dev->per_vq_vectors && msix_vec != VIRTIO_MSI_NO_VECTOR)
+> > > > > > > > +		enable_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec));
+> > > > > > > > +
+> > > > > > > > +	return vq;
+> > > > > > > > +}
+> > > > > > > > +
+> > > > > > > >  static u16 vp_config_vector(struct virtio_pci_device *vp_dev, u16 vector)
+> > > > > > > >  {
+> > > > > > > >  	return vp_modern_config_vector(&vp_dev->mdev, vector);
+> > > > > > > > @@ -395,6 +464,8 @@ static const struct virtio_config_ops virtio_pci_config_nodev_ops = {
+> > > > > > > >  	.set_vq_affinity = vp_set_vq_affinity,
+> > > > > > > >  	.get_vq_affinity = vp_get_vq_affinity,
+> > > > > > > >  	.get_shm_region  = vp_get_shm_region,
+> > > > > > > > +	.reset_vq	 = vp_modern_reset_vq,
+> > > > > > > > +	.enable_reset_vq = vp_modern_enable_reset_vq,
+> > > > > > > >  };
+> > > > > > > >
+> > > > > > > >  static const struct virtio_config_ops virtio_pci_config_ops = {
+> > > > > > > > @@ -413,6 +484,8 @@ static const struct virtio_config_ops virtio_pci_config_ops = {
+> > > > > > > >  	.set_vq_affinity = vp_set_vq_affinity,
+> > > > > > > >  	.get_vq_affinity = vp_get_vq_affinity,
+> > > > > > > >  	.get_shm_region  = vp_get_shm_region,
+> > > > > > > > +	.reset_vq	 = vp_modern_reset_vq,
+> > > > > > > > +	.enable_reset_vq = vp_modern_enable_reset_vq,
+> > > > > > > >  };
+> > > > > > > >
+> > > > > > > >  /* the PCI probing function */
+> > > > > > > > --
+> > > > > > > > 2.31.0
+> > > > > > >
+> > > > >
+> >
 
-> > +		ice_xmit_pkt(xdp_ring, &descs[i], total_bytes);
-> > +
-> > +	if (xdp_ring->next_to_use > xdp_ring->next_rs) {
-> > +		tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_rs);
-> > +		tx_desc->cmd_type_offset_bsz |=
-> > +			cpu_to_le64(ICE_TX_DESC_CMD_RS << ICE_TXD_QW1_CMD_S);
-> > +		xdp_ring->next_rs += tx_thresh;
-> > +	}
-> > +}
-> >  
-> > -		prefetch(tx_desc);
-> > +/**
-> > + * ice_xmit_zc - take entries from XSK Tx ring and place them onto HW Tx ring
-> > + * @xdp_ring: XDP ring to produce the HW Tx descriptors on
-> > + * @budget: number of free descriptors on HW Tx ring that can be used
-> > + * @napi_budget: amount of descriptors that NAPI allows us to clean
-> > + *
-> > + * Returns true if there is no more work that needs to be done, false otherwise
-> > + */
-> > +bool ice_xmit_zc(struct ice_tx_ring *xdp_ring, u32 budget, int napi_budget)
-> > +{
-> > +	struct xdp_desc *descs = xdp_ring->xsk_pool->tx_descs;
-> > +	u16 tx_thresh = xdp_ring->tx_thresh;
-> > +	u32 nb_pkts, nb_processed = 0;
-> > +	unsigned int total_bytes = 0;
-> > +	struct ice_tx_desc *tx_desc;
-> 
-> And this @tx_desc.
-> 
-> >  
-> > -	} while (likely(--budget));
-> > +	if (budget < tx_thresh)
-> > +		budget += ice_clean_xdp_irq_zc(xdp_ring, napi_budget);
-> > +
-> > +	nb_pkts = xsk_tx_peek_release_desc_batch(xdp_ring->xsk_pool, budget);
-> > +	if (!nb_pkts)
-> > +		return true;
-> > +
-> > +	if (xdp_ring->next_to_use + nb_pkts >= xdp_ring->count) {
-> > +		nb_processed = xdp_ring->count - xdp_ring->next_to_use;
-> > +		ice_fill_tx_hw_ring(xdp_ring, descs, nb_processed, &total_bytes);
-> > +		tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_rs);
-> > +		tx_desc->cmd_type_offset_bsz |=
-> > +			cpu_to_le64(ICE_TX_DESC_CMD_RS << ICE_TXD_QW1_CMD_S);
-> > +		xdp_ring->next_rs = tx_thresh - 1;
-> > +		xdp_ring->next_to_use = 0;
-> > +	}
-> >  
-> > -	ntc += xdp_ring->count;
-> > -	xdp_ring->next_to_clean = ntc;
-> > +	ice_fill_tx_hw_ring(xdp_ring, &descs[nb_processed], nb_pkts - nb_processed,
-> > +			    &total_bytes);
-> >  
-> > -	if (xsk_frames)
-> > -		xsk_tx_completed(xdp_ring->xsk_pool, xsk_frames);
-> > +	ice_xdp_ring_update_tail(xdp_ring);
-> > +	ice_update_tx_ring_stats(xdp_ring, nb_pkts, total_bytes);
-> >  
-> >  	if (xsk_uses_need_wakeup(xdp_ring->xsk_pool))
-> >  		xsk_set_tx_need_wakeup(xdp_ring->xsk_pool);
-> >  
-> > -	ice_update_tx_ring_stats(xdp_ring, total_packets, total_bytes);
-> > -	xmit_done = ice_xmit_zc(xdp_ring, ICE_DFLT_IRQ_WORK);
-> > -
-> > -	return budget > 0 && xmit_done;
-> > +	return nb_pkts < budget;
-> >  }
-> >  
-> >  /**
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.h b/drivers/net/ethernet/intel/ice/ice_xsk.h
-> > index 4c7bd8e9dfc4..0cbb5793b5b8 100644
-> > --- a/drivers/net/ethernet/intel/ice/ice_xsk.h
-> > +++ b/drivers/net/ethernet/intel/ice/ice_xsk.h
-> > @@ -6,19 +6,37 @@
-> >  #include "ice_txrx.h"
-> >  #include "ice.h"
-> >  
-> > +#define PKTS_PER_BATCH 8
-> > +
-> > +#ifdef __clang__
-> > +#define loop_unrolled_for _Pragma("clang loop unroll_count(8)") for
-> > +#elif __GNUC__ >= 4
-> > +#define loop_unrolled_for _Pragma("GCC unroll 8") for
-> > +#else
-> > +#define loop_unrolled_for for
-> > +#endif
-> > +
-> >  struct ice_vsi;
-> >  
-> >  #ifdef CONFIG_XDP_SOCKETS
-> >  int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool,
-> >  		       u16 qid);
-> >  int ice_clean_rx_irq_zc(struct ice_rx_ring *rx_ring, int budget);
-> > -bool ice_clean_tx_irq_zc(struct ice_tx_ring *xdp_ring, int budget);
-> >  int ice_xsk_wakeup(struct net_device *netdev, u32 queue_id, u32 flags);
-> >  bool ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count);
-> >  bool ice_xsk_any_rx_ring_ena(struct ice_vsi *vsi);
-> >  void ice_xsk_clean_rx_ring(struct ice_rx_ring *rx_ring);
-> >  void ice_xsk_clean_xdp_ring(struct ice_tx_ring *xdp_ring);
-> > +bool ice_xmit_zc(struct ice_tx_ring *xdp_ring, u32 budget, int napi_budget);
-> >  #else
-> > +static inline bool
-> > +ice_xmit_zc(struct ice_tx_ring __always_unused *xdp_ring,
-> > +	    u32 __always_unused budget,
-> > +	    int __always_unused napi_budget)
-> > +{
-> > +	return false;
-> > +}
-> > +
-> >  static inline int
-> >  ice_xsk_pool_setup(struct ice_vsi __always_unused *vsi,
-> >  		   struct xsk_buff_pool __always_unused *pool,
-> > @@ -34,13 +52,6 @@ ice_clean_rx_irq_zc(struct ice_rx_ring __always_unused *rx_ring,
-> >  	return 0;
-> >  }
-> >  
-> > -static inline bool
-> > -ice_clean_tx_irq_zc(struct ice_tx_ring __always_unused *xdp_ring,
-> > -		    int __always_unused budget)
-> > -{
-> > -	return false;
-> > -}
-> > -
-> >  static inline bool
-> >  ice_alloc_rx_bufs_zc(struct ice_rx_ring __always_unused *rx_ring,
-> >  		     u16 __always_unused count)
-> > -- 
-> > 2.33.1
-> 
-> Thanks,
-> Al
-
-Al
