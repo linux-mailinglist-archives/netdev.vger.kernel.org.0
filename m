@@ -2,133 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38C6849608F
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 15:17:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC7274960B3
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 15:27:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381005AbiAUORg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 09:17:36 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:45824
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1381000AbiAUORc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 09:17:32 -0500
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S1350535AbiAUO1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 09:27:05 -0500
+Received: from asav22.altibox.net ([109.247.116.9]:32964 "EHLO
+        asav22.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381032AbiAUO0p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 09:26:45 -0500
+Received: from canardo.mork.no (207.51-175-193.customer.lyse.net [51.175.193.207])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 05AAD3FFD9
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 14:17:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642774651;
-        bh=C15GD333u2dlFDIS89CpDK65jwsFW00MaLZn7bJW6aM=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=HO0VqGjtPHAW4zTrp6tLVPKu2yamcSIgNywRZECfZFHPG4QWljdwy9imxsb+ls8gw
-         xDLE8p9FFuaNH4n+oJwhBGXPHSfz84wVQbn+APoEYjjpDAIhWgxEHXd7V0geGvANVA
-         Zh2HPmwcZrLsIkytDC5fCnIyufGNUdF8DOAsTGjRDXh2TI/IOGyiHoQ4OFpdlZYPL2
-         cZKLadFmp5eIbXDZzMUvqhZ76U/JKqJnRpKsEgBoR6u23rbfHNBylGkww+jk9Xa1x1
-         rgJsa34F6J1DykLTsBEGRcjxKT8vN69fY5jKmEV+sWlN8OSefeXzeeOpGzGAEWp4SF
-         TlU6CyMnhYpUw==
-Received: by mail-oi1-f199.google.com with SMTP id o9-20020acaf009000000b002c84fff9098so5734026oih.17
-        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 06:17:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C15GD333u2dlFDIS89CpDK65jwsFW00MaLZn7bJW6aM=;
-        b=X+sW9m7u4FjFSL9+ymBnhDF+Ot2q/LwlZ42PzItu4MVpOPwDf/FoeSyP66lgZ1LZvs
-         X/FTJlb69dnFuomRA3YHqpHyCJbbaBulqae52MGrG0HcSpAxlZAwwmtWLgO/NMVtbgXN
-         bjcZSPaOlOd4Vh7D4Z4i6nDCwInfyHUosBETgJEZjmrHviEGMFxiM25C2czEtTWP3kjg
-         yy6GAtIiopDpVn44RACP/wQXiSP9/aJeaSJos6Ir+9NFmRTbaviV1zrkZXdFpxVXqa6l
-         0l3xVrIxhe9JnI4n8pbHav11yGu4z1fJuENfbdBOEr4ubjyfpW719LLiQm/hGz4lPYv8
-         OozQ==
-X-Gm-Message-State: AOAM533lcC+i9+Vb2bPJ/0X/jwvPA/y3OiWnY642ymJrpfeuRIzggfxI
-        8vtGEnRuJztjcBeqKDBK9WZzyr0Or3RAxcWtNv0N85UyEPJxKmkIKwo6nLIWHSE0kz0vtI2q7OK
-        b3r8PoyFmoCQFoFZvdxLcyMUH6VAerctI6s70sAoT7/Y8erslGA==
-X-Received: by 2002:a9d:6f0e:: with SMTP id n14mr2868605otq.269.1642774649889;
-        Fri, 21 Jan 2022 06:17:29 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyjyQYmJzzz2UYJ55dcEmEYSMnUIqWkplegZ1x9EtTl1rxIQz108FwtIFS1NvH6aznxz7/zf7zcr4m/Fbj1psg=
-X-Received: by 2002:a9d:6f0e:: with SMTP id n14mr2868583otq.269.1642774649588;
- Fri, 21 Jan 2022 06:17:29 -0800 (PST)
+        (Authenticated sender: bmork@altiboxmail.no)
+        by asav22.altibox.net (Postfix) with ESMTPSA id E680321080;
+        Fri, 21 Jan 2022 15:26:41 +0100 (CET)
+Received: from miraculix.mork.no ([IPv6:2a01:799:95f:8b0a:1e21:3a05:ad2e:f4a6])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 20LEQfS6137323
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Fri, 21 Jan 2022 15:26:41 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1642775201; bh=PBPG5wCwjmhlkp/d0m3QR81AmmLc7jVs9mBp8SFIIRw=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=X+hO9L3LMpD9r0jlYJLKqKJeCxPea50xMABZY/UrYfMP2zOckfFyT8bvWOKucgW8l
+         y7p9DKePp1Z3reEhjavrLhZ0U1LRqcSul7foz/jb7cNfROHCx9fyLjsQuNXnZIYZje
+         A+MoZdKYNwHPOOhDABwDBlPq9JWuSzVc0VAXuda8=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94.2)
+        (envelope-from <bjorn@mork.no>)
+        id 1nAus8-0009TD-0S; Fri, 21 Jan 2022 15:26:36 +0100
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: rfkill: wwan does not show up in rfkill command
+Organization: m
+References: <CAOMZO5BJRVt7dG=76j8RZ63Wgr4eyZdZNPU5dz=1uG+PBQGyMw@mail.gmail.com>
+Date:   Fri, 21 Jan 2022 15:26:35 +0100
+In-Reply-To: <CAOMZO5BJRVt7dG=76j8RZ63Wgr4eyZdZNPU5dz=1uG+PBQGyMw@mail.gmail.com>
+        (Fabio Estevam's message of "Fri, 21 Jan 2022 11:06:12 -0300")
+Message-ID: <87lez9w4f8.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-References: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
- <YelxMFOiqnfIVmyy@lunn.ch> <CAAd53p7NjvzsBs2aWTP-3GMjoyefMmLB3ou+7fDcrNVfKwALHw@mail.gmail.com>
- <Yeqzhx3GbMzaIbj6@lunn.ch>
-In-Reply-To: <Yeqzhx3GbMzaIbj6@lunn.ch>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Fri, 21 Jan 2022 22:17:18 +0800
-Message-ID: <CAAd53p5pF+SRfwGfJaBTPkH7+9Z6vhPHcuk-c=w8aPTzMBxPcg@mail.gmail.com>
-Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
- firmware on a Dell hardware
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.3 at canardo
+X-Virus-Status: Clean
+X-CMAE-Score: 0
+X-CMAE-Analysis: v=2.3 cv=f6Fm+t6M c=1 sm=1 tr=0
+        a=XJwvrae2Z7BQDql8RrqA4w==:117 a=XJwvrae2Z7BQDql8RrqA4w==:17
+        a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=DghFqjY3_ZEA:10 a=M51BFTxLslgA:10
+        a=pGLkceISAAAA:8 a=XQfiQ5jn4EtLdwmV2-kA:9 a=QEXdDO2ut3YA:10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 9:22 PM Andrew Lunn <andrew@lunn.ch> wrote:
+Fabio Estevam <festevam@gmail.com> writes:
+
+> Hi,
 >
-> On Fri, Jan 21, 2022 at 12:01:35PM +0800, Kai-Heng Feng wrote:
-> > On Thu, Jan 20, 2022 at 10:26 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > >
-> > > On Thu, Jan 20, 2022 at 01:19:29PM +0800, Kai-Heng Feng wrote:
-> > > > BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
-> > > > instead of setting another value, keep it untouched and restore the saved
-> > > > value on system resume.
-> > > >
-> > > > Introduce config_led() callback in phy_driver() to make the implemtation
-> > > > generic.
-> > >
-> > > I'm also wondering if we need to take a step back here and get the
-> > > ACPI guys involved. I don't know much about ACPI, but shouldn't it
-> > > provide a control method to configure the PHYs LEDs?
-> > >
-> > > We already have the basics for defining a PHY in ACPI. See:
-> > >
-> > > https://www.kernel.org/doc/html/latest/firmware-guide/acpi/dsd/phy.html
-> >
-> > These properties seem to come from device-tree.
+> I am running kernel 5.10.92 on an imx7d SoC.
 >
-> They are similar to what DT has, but expressed in an ACPI way. DT has
-> been used with PHY drivers for a long time, but ACPI is new. The ACPI
-> standard also says nothing about PHYs. So Linux has defined its own
-> properties, which we expect all ACPI machine to use. According to the
-> ACPI maintainers, this is within the ACPI standard. Maybe at some
-> point somebody will submit the current definitions to the standards
-> body for approval, or maybe the standard will do something completely
-> different, but for the moment, this is what we have, and what you
-> should use.
-
-Right, so we can add a new property, document it, and just use it?
-Maybe others will use the new property once we set the precedence?
-
+> The wwan interface is brought up:
 >
-> > > so you could extend this to include a method to configure the LEDs for
-> > > a specific PHY.
-> >
-> > How to add new properties? Is it required to add new properties to
-> > both DT and ACPI?
+> usb 2-1: New USB device found, idVendor=3D2c7c, idProduct=3D0296, bcdDevi=
+ce=3D 0.00
+> usb 2-1: New USB device strings: Mfr=3D3, Product=3D2, SerialNumber=3D4
+> usb 2-1: Product: Qualcomm CDMA Technologies MSM
+> usb 2-1: Manufacturer: Qualcomm, Incorporated
+> usb 2-1: SerialNumber: 7d1563c1
+> option 2-1:1.0: GSM modem (1-port) converter detected
+> usb 2-1: GSM modem (1-port) converter now attached to ttyUSB0
+> option 2-1:1.1: GSM modem (1-port) converter detected
+> usb 2-1: GSM modem (1-port) converter now attached to ttyUSB1
+> option 2-1:1.2: GSM modem (1-port) converter detected
+> usb 2-1: GSM modem (1-port) converter now attached to ttyUSB2
+> option 2-1:1.3: GSM modem (1-port) converter detected
+> usb 2-1: GSM modem (1-port) converter now attached to ttyUSB3
+> qmi_wwan 2-1:1.4: cdc-wdm0: USB WDM device
+> qmi_wwan 2-1:1.4 wwan0: register 'qmi_wwan' at usb-ci_hdrc.1-1,
+> WWAN/QMI device, 0e:31:86:6b:xx:xx
 >
-> Since all you are adding is a boolean, 'Don't touch the PHY LED
-> configuration', it should be easy to do for both.
-
-If adding a brand new property is acceptable, let me discuss it the vendor.
-
+> When I run the rfkill command, only the Wifi interface shows up:
 >
-> What is interesting for Marvell PHYs is WoL, which is part of LED
-> configuration. I've not checked, but i guess there are other PHYs
-> which reuse LED output for a WoL interrupt. So it needs to be clearly
-> defined if we expect the BIOS to also correctly configure WoL, or if
-> Linux is responsible for configuring WoL, even though it means
-> changing the LED configuration.
-
-How about what Heiner proposed? Maybe we should leave the LED as is,
-and restore it on system resume?
-
-Kai-Heng
-
+> root@CGW0000000:~# rfkill
+> ID TYPE DEVICE      SOFT      HARD
+>  0 wlan phy0   unblocked unblocked
 >
->          Andrew
+> Shouldn't the wwan interface also be listed in the rfkill output?
+
+This is a platform issue IMHO.  The externail W_DISABLE input is the
+only meaningful rfkill device.  Controlling it is platform specific,
+independent of the modem hardware.
+
+Mapping W_DISABLE to an rfkill device is by typically done be drivers
+like this ACPI driver in my Thinkpad:
+
+root@miraculix:/tmp# rfkill
+ID TYPE      DEVICE                   SOFT      HARD
+ 0 bluetooth tpacpi_bluetooth_sw unblocked unblocked
+ 1 wwan      tpacpi_wwan_sw      unblocked unblocked
+ 2 wlan      phy0                unblocked unblocked
+ 3 bluetooth hci0                unblocked unblocked
+
+
+In theory we could have had an rfkill implementation in the wwan
+subsystem too, similar to that redundant hci0 rfkill.  But I don't think
+it's currently going to fly, given that the modem radio typically is
+managed by multiple distinct drivers (tty, net, ++).
+
+> Is there anything that needs to be done for wwan to appear there?
+>
+> Also, there is a GPIO that connects to the modem (W_DISABLE) pin, but
+> it seems it is not possible currently to use rkfill gpio with device
+> tree, right? I saw some previous attempts to add rfkill gpio support
+> in devicetree, but none was accepted.
+
+This I don't know anything about...  But it does sound like a good
+solution for any platfrom using DT and a W_DISABLE GPIO.  Wonder why
+that wasn't accepted?
+
+
+Bj=C3=B8rn
