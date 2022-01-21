@@ -2,110 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5928D4958A7
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 04:50:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA1EE4958AC
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 04:54:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233631AbiAUDuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jan 2022 22:50:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232662AbiAUDuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 22:50:11 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9A3C061574
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 19:50:11 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id o64so8258619pjo.2
-        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 19:50:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=wf5Oov8Y7/t9bYCNaYg9k/QaVvwYnSNBGqzXBpA9thk=;
-        b=GxIyE05VeNqjrYVp+Qnond0zvaladSkIX/tzX1wKrYczQG265gL+pGHSTVTjqXuNUB
-         EpxTAlQ+4SrkV8151tcFct7QUzpKv6ypdnmzY5QWkdU4ccTGFiR+3awBcPTxh+MZccki
-         Qa2u61XnDO1wrPN100qVML7McxOz+XZc71I0TTKlMdEvVJVicG0XIhVXXIa4JjvtbMRB
-         g/a4WeOkarED7i5nf8f5ix06RGSjmbfvbbvhW14KM/F5Efl6WDg0SZm3x5nPxi1A/ZLw
-         XQjJymj+ezt6GFJO7/PAKWSUWf5bXYjsiQe1+EMj6Q6FsPmp3TzWj5qiGco0UFLrZGTC
-         4XnQ==
+        id S233685AbiAUDyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jan 2022 22:54:40 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:53750
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233679AbiAUDyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jan 2022 22:54:31 -0500
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A609D3F1C4
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 03:54:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1642737265;
+        bh=/qfmUciOYEO8XJhJTcmvwik+crZ7hTsDSnybic5K3Io=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=O5HGWTpHtwU2+FtNnuvi+e2g5Mzlh/tlryKCcj15bDU+CuRk8oJ3Jt3aPwt/oBp06
+         D+Y51zj1F413VBPLKDRG/RIMS7TNnEVGqi6F+woNUcJcQCqcpGtGgs1VwiY69dAexU
+         /3aP7PPJzEpmmSQFRAUcdwjmHKkvZZ2/QFSetVzRkTQp7ti8w+MNpIIrlkap7Pl6l9
+         /8btjIIU8gbBmvjDQNlRo4HkBOSIK5vaMjcE31xnASqTwQ61Jtzcg/b2LFDpk/UJ7n
+         Hq+OLImkARUUxdb3o5kqmQ3ou/5yjjXlBgp1d0moNzvfNE4ZWf3hLRLTVjUw18SKA2
+         PhBkUsUUQfiUQ==
+Received: by mail-oi1-f199.google.com with SMTP id v204-20020acaded5000000b002c896f409c4so5149848oig.6
+        for <netdev@vger.kernel.org>; Thu, 20 Jan 2022 19:54:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wf5Oov8Y7/t9bYCNaYg9k/QaVvwYnSNBGqzXBpA9thk=;
-        b=4hGqHPI75SS4L9pvnuYcQP84dT97gYGR29COzusD4YhMozMnlaVALiFimPfIuaVQfa
-         M0BzCie5a6Aa++zBAxX17fA1jtQ0oSUQfDlf7iZnY7dIMx7a2E/y8xAokGajGwkfQ6d9
-         OlMEVxXEDkmlDqK79MgSrQYPz9xhmXdVl8lTyRYdqWdarVtdRlt/0FE7uwc/O3xzZsC3
-         1wC9RCRcVXNmD78m33PL0gRcBiVGEdi3qm6BpoZLJtKQU3ufoxpJSwVqbFfGl+qppNU5
-         CBKHwHQq4Nt+joLMZIR80Ra5gH7wpmtc4rpL+Bgj1sxJ0SiUdPJJWPl5nYLaizATwxuX
-         nnFw==
-X-Gm-Message-State: AOAM531VtsxVV695y3km9eJdML3R+3hLh54ucaErKeqXFhpnVUqtJX+M
-        407n48ZbLs44gywIAInqTmk=
-X-Google-Smtp-Source: ABdhPJx8SUT8a1sknUiVX6BoxnTUCCqyOOVipC95m9JlyedPiXSfWBCpFehpP/wzyx9Ja3xgbVQYkg==
-X-Received: by 2002:a17:90b:4f4a:: with SMTP id pj10mr2668266pjb.68.1642737010566;
-        Thu, 20 Jan 2022 19:50:10 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id b6sm4936193pfl.126.2022.01.20.19.50.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Jan 2022 19:50:10 -0800 (PST)
-Message-ID: <2091fa77-5578-c1bb-8457-3be4029b014d@gmail.com>
-Date:   Thu, 20 Jan 2022 19:50:08 -0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/qfmUciOYEO8XJhJTcmvwik+crZ7hTsDSnybic5K3Io=;
+        b=bNF9qYEKris2DPEfXatgkXwP0SYHRsdpuLbIWWBQsg8TZC9to1jWHdycpEzr/qREcQ
+         dKv5lFto5XNrlS6VUEnuNfNQWYs0NM9vsgycHndrfaGUP7mdVfZnHWdvXb+o1LW9ydXe
+         t3AAbrq5RvtXReWMcLSl/wNOg7DPmaz5yhiFs9thN301EakL6+bixuaQN9i3RSFPIt0X
+         E0Rkhb+xIYwAPT/IsVsrVcVq/uv/DqJzewR4rdi5rCprIOZ69eYGiql4YFOQpDTxiVbV
+         Uqi196lpKqbdNDMTR+6OfHY1LQA5tuYGZv5JgWwQvPl6Du0bQ33DA1le1yQh3omaVNq8
+         0nDw==
+X-Gm-Message-State: AOAM5310zrY6yujXQe0ns9g36hyPsTjLfp4SbuDCJMP+CA6VF9fjGve4
+        Lec3XekmW2YZauBmw5e6sLFBY8Satbxix4DkuGkXCMm5IAydnF0cfaZ9c3o3autuUwNpUgVZh2A
+        Bd2/icESfXztW+bgdiQxTSy+s+p4YxcgpunU6/TNqJtp1/qP71w==
+X-Received: by 2002:a9d:480e:: with SMTP id c14mr1497887otf.233.1642737262394;
+        Thu, 20 Jan 2022 19:54:22 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxumutELwlkJ1LbF7ieXcxsoMfjpqlDCRYJLXNiBaEGXZ7YrJ1EBh/SKM0xWS9LaKrdEBUpoDw9vBdkIBgkLQ0=
+X-Received: by 2002:a9d:480e:: with SMTP id c14mr1497880otf.233.1642737262070;
+ Thu, 20 Jan 2022 19:54:22 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb: multiple
- cpu ports, non cpu extint
-Content-Language: en-US
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <ALSI@bang-olufsen.dk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
-References: <87ee5fd80m.fsf@bang-olufsen.dk>
- <trinity-ea8d98eb-9572-426a-a318-48406881dc7e-1641822815591@3c-app-gmx-bs62>
- <87r19e5e8w.fsf@bang-olufsen.dk>
- <trinity-4b35f0dc-6bc6-400a-8d4e-deb26e626391-1641926734521@3c-app-gmx-bap14>
- <87v8ynbylk.fsf@bang-olufsen.dk>
- <trinity-d858854a-ff84-4b28-81f4-f0becc878017-1642089370117@3c-app-gmx-bap49>
- <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
- <Yea+uTH+dh9/NMHn@lunn.ch> <20220120151222.dirhmsfyoumykalk@skbuf>
- <CAJq09z6UE72zSVZfUi6rk_nBKGOBC0zjeyowHgsHDHh7WyH0jA@mail.gmail.com>
- <20220121020627.spli3diixw7uxurr@skbuf>
- <CAJq09z5HbnNEcqN7LZs=TK4WR1RkjoefF_6ib-hFu2RLT54Nug@mail.gmail.com>
- <f85dcb52-1f66-f75a-d6de-83d238b5b69d@gmail.com>
- <CAJq09z5Pvo4tJNw0yKK2LYSNEdQTd4sXPpKFJbCNA-jUwmNctw@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <CAJq09z5Pvo4tJNw0yKK2LYSNEdQTd4sXPpKFJbCNA-jUwmNctw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220120051929.1625791-1-kai.heng.feng@canonical.com> <Yelnzrrd0a4Bl5AL@lunn.ch>
+In-Reply-To: <Yelnzrrd0a4Bl5AL@lunn.ch>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Fri, 21 Jan 2022 11:54:11 +0800
+Message-ID: <CAAd53p45BbLy0T8AG5QTKhP00zMBsMHfm7i-bTmZmQWM5DpLnQ@mail.gmail.com>
+Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
+ firmware on a Dell hardware
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jan 20, 2022 at 9:46 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Thu, Jan 20, 2022 at 01:19:29PM +0800, Kai-Heng Feng wrote:
+> > BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
+> > instead of setting another value, keep it untouched and restore the saved
+> > value on system resume.
+>
+> Please split this patch into two:
+>
+> Don't touch the LEDs
+>
+> Save and restore the LED configuration over suspend/resume.
 
+Will split into two patch for next iteration.
 
-On 1/20/2022 7:42 PM, Luiz Angelo Daros de Luca wrote:
->> Are we talking about an in tree driver? If so which is it?
-> 
-> Yes, the one the patch touches: rtl8365mb.
+>
+> > -static void marvell_config_led(struct phy_device *phydev)
+> > +static int marvell_find_led_config(struct phy_device *phydev)
+> >  {
+> > -     u16 def_config;
+> > -     int err;
+> > +     int def_config;
+> > +
+> > +     if (phydev->dev_flags & PHY_USE_FIRMWARE_LED) {
+> > +             def_config = phy_read_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL);
+> > +             return def_config < 0 ? -1 : def_config;
+>
+> What about the other two registers which configure the LEDs?
 
-I meant the DSA master network device, but you answered that, it uses a 
-mt7260a SoC, but there is no Ethernet driver upstream for it yet?
+Do you mean the other two LEDs? They are not used on this machine.
 
-git grep ralink,mt7620-gsw *
-Documentation/devicetree/bindings/net/mediatek,mt7620-gsw.txt: 
-compatible = "ralink,mt7620-gsw";
+>
+> Since you talked about suspend/resume, does this machine support WoL?
+> Is the BIOS configuring LED2 to be used as an interrupt when WoL is
+> enabled in the BIOS? Do you need to save/restore that configuration
+> over suspend/review? And prevent the driver from changing the
+> configuration?
 
-> 
-> My device uses a mt7620a SoC and traffic passes through its mt7530
-> switch with vlan disabled before reaching the realtek switch. It still
-> loads a swconfig driver but I think it might work without one.
+This NIC on the machine doesn't support WoL.
 
-Ah so you have a cascade of switches here, that could confuse your 
-Ethernet MAC. Do you have a knob to adjust where to calculate the 
-checksum from, say a L2 or L3 offset for instance?
--- 
-Florian
+>
+> > +static const struct dmi_system_id platform_flags[] = {
+> > +     {
+> > +             .matches = {
+> > +                     DMI_MATCH(DMI_SYS_VENDOR, "Dell EMC"),
+> > +                     DMI_MATCH(DMI_PRODUCT_NAME, "Edge Gateway 3200"),
+> > +             },
+> > +             .driver_data = (void *)PHY_USE_FIRMWARE_LED,
+> > +     },
+>
+> This needs a big fat warning, that it will affect all LEDs for PHYs
+> which linux is driving, on that machine. So PHYs on USB dongles, PHYs
+> in SFPs, PHYs on plugin PCIe card etc.
+>
+> Have you talked with Dells Product Manager and do they understand the
+> implications of this?
+
+Right, that's why the original approach is passing the flag from the MAC driver.
+That approach can be more specific and doesn't touch unrelated PHYs.
+
+>
+> > +     {}
+> > +};
+> > +
+> >  /**
+> >   * phy_attach_direct - attach a network device to a given PHY device pointer
+> >   * @dev: network device to attach
+> > @@ -1363,6 +1379,7 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+> >       struct mii_bus *bus = phydev->mdio.bus;
+> >       struct device *d = &phydev->mdio.dev;
+> >       struct module *ndev_owner = NULL;
+> > +     const struct dmi_system_id *dmi;
+> >       bool using_genphy = false;
+> >       int err;
+> >
+> > @@ -1443,6 +1460,10 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+> >                       phydev_err(phydev, "error creating 'phy_standalone' sysfs entry\n");
+> >       }
+> >
+> > +     dmi = dmi_first_match(platform_flags);
+> > +     if (dmi)
+> > +             phydev->dev_flags |= (u32)dmi->driver_data;
+>
+> Please us your new flag directly. We don't want this abused to pass
+> any old flag to the PHY.
+
+Will change it.
+
+>
+> > +
+> >  /**
+> >   * struct phy_device - An instance of a PHY
+> >   *
+> > @@ -663,6 +665,7 @@ struct phy_device {
+> >
+> >       struct phy_led_trigger *led_link_trigger;
+> >  #endif
+> > +     int led_config;
+>
+> You cannot put this here because you don't know how many registers are
+> used to hold the configuration. Marvell has 3, other drivers can have
+> other numbers. The information needs to be saved into the drivers on
+> priv structure.
+
+Ok.
+
+>
+> >
+> >       /*
+> >        * Interrupt number for this PHY
+> > @@ -776,6 +779,12 @@ struct phy_driver {
+> >        */
+> >       int (*config_init)(struct phy_device *phydev);
+> >
+> > +     /**
+> > +      * @config_led: Called to config the PHY LED,
+> > +      * Use the resume flag to indicate init or resume
+> > +      */
+> > +     void (*config_led)(struct phy_device *phydev, bool resume);
+>
+> I don't see any need for this.
+
+Ok.
+
+Kai-Heng
+
+>
+>   Andrew
