@@ -2,174 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B32D49630F
-	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 17:43:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61445496319
+	for <lists+netdev@lfdr.de>; Fri, 21 Jan 2022 17:48:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378569AbiAUQnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 11:43:31 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48000 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345050AbiAUQna (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:43:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=71LLfUhyDwMweskzZKXdE3f5ZkhuGFWfdviiAGRKnfg=; b=a5bJO3lG3XVMDyrs7pqXaXGfQk
-        fqWy8Mxk/L2Al9gf2dSC9mGG0vRL8FKKTrWulBelSBto0Ov6MkGCRpDuBEdVOtRTeHgeQRzwn7ZDI
-        uwemEENyAI84kSe3FfI79T0tUSVnSr3tpbOATjDVuuhCasETAeKsr0ZLH7GCwhTYDIOY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nAx0P-00274K-8N; Fri, 21 Jan 2022 17:43:17 +0100
-Date:   Fri, 21 Jan 2022 17:43:17 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Joseph CHAMG <josright123@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
-        Leon Romanovsky <leon@kernel.org>
-Subject: Re: [PATCH v12, 2/2] net: Add dm9051 driver
-Message-ID: <YeripbSOeq1s2U3u@lunn.ch>
-References: <20220121041428.6437-1-josright123@gmail.com>
- <20220121041428.6437-3-josright123@gmail.com>
+        id S1349736AbiAUQsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 11:48:43 -0500
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:33739 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1349221AbiAUQsk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 11:48:40 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R521e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=guangguan.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V2SWIhF_1642783712;
+Received: from 30.39.181.79(mailfrom:guangguan.wang@linux.alibaba.com fp:SMTPD_---0V2SWIhF_1642783712)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sat, 22 Jan 2022 00:48:33 +0800
+Message-ID: <0b73df73-d5e8-32a8-1495-63596b256392@linux.alibaba.com>
+Date:   Sat, 22 Jan 2022 00:48:32 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220121041428.6437-3-josright123@gmail.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [RFC PATCH net-next] net/smc: Introduce receive queue flow
+ control support
+Content-Language: en-US
+To:     Tony Lu <tonylu@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220120065140.5385-1-guangguan.wang@linux.alibaba.com>
+ <YelwGOBhjBFsVPxA@TonyMac-Alibaba>
+From:   Guangguan Wang <guangguan.wang@linux.alibaba.com>
+In-Reply-To: <YelwGOBhjBFsVPxA@TonyMac-Alibaba>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int ctrl_dm9051_phywrite(void *context, unsigned int reg, unsigned int val)
-> +{
-> +	/* chip internal operation need wait 1 ms for if power-up phy
-> +	 */
+On 2022/1/20 22:22, Tony Lu wrote:>>  #include "smc_ib.h"
+>>  
+>> -#define SMC_RMBS_PER_LGR_MAX	255	/* max. # of RMBs per link group */
+>> +#define SMC_RMBS_PER_LGR_MAX	32	/* max. # of RMBs per link group. Correspondingly,
+>> +					 * SMC_WR_BUF_CNT should not be less than 2 *
+>> +					 * SMC_RMBS_PER_LGR_MAX, since every connection at
+>> +					 * least has two rq/sq credits in average, otherwise
+>> +					 * may result in waiting for credits in sending process.
+>> +					 */
+> 
+> This gives a fixed limit for per link group connections. Using tunable
+> knobs to control this for different workload would be better. It also
+> reduce the completion of free slots in the same link group and link.
+> 
 
-> +	if (reg == MII_BMCR && !(val & BMCR_PDOWN))
-> +		mdelay(1);
-
-What PHY driver are you using? It would be much better to have this in
-the PHY driver. The MAC driver should not be touching the PHY.
-
-> +static int dm9051_phy_connect(struct board_info *db)
-> +{
-> +	char phy_id[MII_BUS_ID_SIZE + 3];
-> +
-> +	snprintf(phy_id, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
-> +		 db->mdiobus->id, DM9051_PHY_ID);
-> +
-> +	db->phydev = phy_connect(db->ndev, phy_id, dm9051_handle_link_change,
-> +				 PHY_INTERFACE_MODE_MII);
-> +	if (IS_ERR(db->phydev))
-> +		return PTR_ERR_OR_ZERO(db->phydev);
-
-Why PTR_ERR_OR_ZERO()
-
-> +static int dm9051_direct_fifo_reset(struct board_info *db)
-> +{
-> +	struct net_device *ndev = db->ndev;
-> +	int rxlen = le16_to_cpu(db->eth_rxhdr.rxlen);
-
-reverse christmas tree. There are a few more cases. Please review the
-whole driver.
-
-> +/* transmit a packet,
-> + * return value,
-> + *   0 - succeed
-> + *  -ETIMEDOUT - timeout error
-> + */
-> +static int dm9051_single_tx(struct board_info *db, u8 *buff, unsigned int len)
-> +{
-> +	int ret;
-> +
-> +	ret = dm9051_map_xmitpoll(db);
-> +	if (ret)
-> +		return -ETIMEDOUT;
-> +
-
-If dm9051_map_xmitpoll() returns an error code, use it. There needs to
-be a good reason to change the error code, and if you have such a good
-reason, please add a comment about it.
-
-> +static irqreturn_t dm9051_rx_threaded_irq(int irq, void *pw)
-> +{
-> +	struct board_info *db = pw;
-> +	int result, resul_tx;
-> +
-> +	mutex_lock(&db->spi_lockm); /* mutex essential */
-
-When are mutex's not essential? This commit seems to be
-meaningless. It gives the impression you don't understand mutex's and
-locking in general. You have just added mutex until it seems to work,
-not that you have a locking design.
-
-> +	if (netif_carrier_ok(db->ndev)) {
-> +		result = regmap_write(db->regmap_dm, DM9051_IMR, IMR_PAR); /* disable imr */
-> +		if (unlikely(result))
-> +			goto spi_err;
-> +
-> +		do {
-> +			result = dm9051_loop_rx(db); /* threaded irq rx */
-> +			if (result < 0)
-> +				goto spi_err;
-> +			resul_tx = dm9051_loop_tx(db); /* more tx better performance */
-> +			if (resul_tx < 0)
-
-result_tx
-     ^
-> +				goto spi_err;
-> +		} while (result > 0);
-> +
-> +		result = regmap_write(db->regmap_dm, DM9051_IMR, db->imr_all); /* enable imr */
-> +		if (unlikely(result))
-> +			goto spi_err;
-> +	}
-> +spi_err:
-> +	mutex_unlock(&db->spi_lockm); /* mutex essential */
-> +	return IRQ_HANDLED;
-> +}
-
-
-> +static int dm9051_map_phyup(struct board_info *db)
-> +{
-> +	int ret;
-> +
-> +	/* ~BMCR_PDOWN to power-up phyxcer
-> +	 */
-> +	ret = mdiobus_modify(db->mdiobus, DM9051_PHY_ID, MII_BMCR, BMCR_PDOWN, 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* chip internal operation need wait 1 ms for if GPR power-up phy
-> +	 */
-> +	ret = regmap_write(db->regmap_dm, DM9051_GPR, 0);
-> +	if (unlikely(ret))
-> +		return ret;
-> +	mdelay(1);
-
-The phy driver should do this. Again, what PHY driver are you using?
-
-> +static int dm9051_map_phydown(struct board_info *db)
-> +{
-> +	int ret;
-> +
-> +	ret = regmap_write(db->regmap_dm, DM9051_GPR, GPR_PHY_ON); /* Power-Down PHY */
-> +	if (unlikely(ret))
-> +		return ret;
-> +	return ret;
-> +}
-
-Cam you still access the PHY after this? Does it loose its
-configuration?
-
-> +	/* We may have start with auto negotiation */
-> +	db->phydev->autoneg = AUTONEG_ENABLE;
-> +	db->phydev->speed = 0;
-> +	db->phydev->duplex = 0;
-
-If you have to touch these, something is wrong. Please explain.
-
-   Andrew
+It is a good idea, but I find a patch (https://lore.kernel.org/linux-s390/20220114054852.38058-7-tonylu@linux.alibaba.com/) where you have already done this idea.
