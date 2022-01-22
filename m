@@ -2,97 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7250496B6F
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 10:34:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A245E496B8D
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 10:44:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230285AbiAVJeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jan 2022 04:34:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbiAVJeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 04:34:03 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664BEC06173B
-        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 01:34:03 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id n8so19625522wmk.3
-        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 01:34:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=82N3pZxTGQGdnKz7sduXPrq71J6/BJyEju5EUfigQB8=;
-        b=oyX7l3g94Ttb1StYjFB3QUH2fGkqbfooAqWUV1vJkHg8bNtdge9KhW1QgesNBVYCB9
-         CLJ1R8CqInksNh1q8QG0+OPJgZNavlTxhRAazPRapErAOkK/iQo6hX7O1LgoGTYD+Uyc
-         hdy1B1cwcXtzTLRp4H0bgzrIvr6ZZUk74Tlao3u6iFsv1rAKNMISlX1mgRj/ZVpUVOLI
-         3egGz4bqXp753gOUDlChV7bLefIQkWlCQYsm4MluBgDSLxE6m89MzKEHaKGKymDBegJO
-         CRVkzFgibMRB6BLwyjWxoS6HPyR74O0SbzjqIH6kREh62srmbVw5A+qKxqfcsacn9zwA
-         cPHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=82N3pZxTGQGdnKz7sduXPrq71J6/BJyEju5EUfigQB8=;
-        b=5WFdn8KqPhkl+H0ccv9Y9sQ7JTOSC3/CzjUqEqTxiqYvUsexMnXE94q52im/1QG07j
-         pxhTVeemBMW9ojC7KKCLMv/XH3azaLQ9Sg9U0j3zZe+TsjtcH0IGG0DrkFRoQXKhkLuU
-         Rn04zQ8E2gycjPlk4ZXtk0qm9josbC3KnBGHW8ZiSiT+NNrt4jINKO1tYStLEfWk1wm7
-         jhsTo7Ls5/y9R/qGubq1blynUXxsqwrCWyUM4S8J1QQ/2xhtJSAuRCPLEbs82v5avj6Z
-         xnDkWobcL+eoR4DGv3fVUCniOKhSNmKKz97bvzwODicN+W1YFC8LUfAqoIfeeoTrQ2d1
-         GTlg==
-X-Gm-Message-State: AOAM530GksTIv04QQy+2R6mPl0xMGLcrpGyS6SiDBzTZ0P5lpntz3Pit
-        skSS937x5aialejoUHA77891VOaXG7Q=
-X-Google-Smtp-Source: ABdhPJx2JVt+rs/6AY95b+3S5MmkCQEJ2Dz//Cwa0B9GwZ03HDOmRPx4KaGmBw/em+qk6iwLVNCAPQ==
-X-Received: by 2002:a05:600c:4fd5:: with SMTP id o21mr3783574wmq.184.1642844041769;
-        Sat, 22 Jan 2022 01:34:01 -0800 (PST)
-Received: from ?IPV6:2003:ea:8f08:c900:8441:97be:1ca5:d79? (p200300ea8f08c900844197be1ca50d79.dip0.t-ipconnect.de. [2003:ea:8f08:c900:8441:97be:1ca5:d79])
-        by smtp.googlemail.com with ESMTPSA id t17sm8297835wrs.10.2022.01.22.01.34.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 22 Jan 2022 01:34:01 -0800 (PST)
-Message-ID: <24747dcf-8442-6d53-626f-e03b3cafe246@gmail.com>
-Date:   Sat, 22 Jan 2022 10:33:55 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Tim Harvey <tharvey@gateworks.com>, netdev <netdev@vger.kernel.org>
-References: <CAJ+vNU1Grqy0qkqz3NiSMwDT=OX3zOpmtXyH78Fq2+mOsAFj4w@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: best way to disable ANEG and force ethernet link?
-In-Reply-To: <CAJ+vNU1Grqy0qkqz3NiSMwDT=OX3zOpmtXyH78Fq2+mOsAFj4w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        id S229483AbiAVJob (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jan 2022 04:44:31 -0500
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:46077 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230297AbiAVJoa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 04:44:30 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V2VIDVc_1642844589;
+Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V2VIDVc_1642844589)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sat, 22 Jan 2022 17:44:28 +0800
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net v2] net/smc: Transitional solution for clcsock race issue
+Date:   Sat, 22 Jan 2022 17:43:09 +0800
+Message-Id: <1642844589-23022-1-git-send-email-guwen@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21.01.2022 18:20, Tim Harvey wrote:
-> Greetings,
-> 
-> I'm troubleshooting a network issue and am looking for the best way to
-> force link speed/duplex without using auto-negotiation.
-> 
-> What is the best way to do this in Linux? Currently from a userspace
-> perspective I have only been able to using 'ifconfig' to bring the
-> link up, then 'mii-tool -F 100baseTx-FD <dev>' to force it. The
-> ethtool methods do not work on my MAC/PHY (not clear what ethtool
-> support is needed for that on a driver level). For testing purposes I
-> would like to avoid the link coming up at 1000mbps in the first place
-> and force it to 100mbps.
-> 
-> Before hacking the heck out of the phy layer in the kernel I was
-> hoping for some advice for the best place to do this.
-> 
-> In case it matters I have two boards that I would like to do this on:
-> an IMX8MM with FEC MAC and a CN803X with an RGMII (thunderx) vnic MAC.
-> Both have a GPY111 (Intel Xway) PHY.
-> 
-> Best regards,
-> 
-> Tim
+We encountered a crash in smc_setsockopt() and it is caused by
+accessing smc->clcsock after clcsock was released.
 
-ifconfig is a legacy tool, better use ip. ethtool should work for you.
-If not, please provide the details: Which command are you using, any error?
-The Intel Xway PHY driver is loaded?
-For just disabling Gbit mode you don't have to switch to forced mode.
-You can just disable advertising Gbit mode:
-ethtool -s <if> advertise 1000baseT/Full off
+ BUG: kernel NULL pointer dereference, address: 0000000000000020
+ #PF: supervisor read access in kernel mode
+ #PF: error_code(0x0000) - not-present page
+ PGD 0 P4D 0
+ Oops: 0000 [#1] PREEMPT SMP PTI
+ CPU: 1 PID: 50309 Comm: nginx Kdump: loaded Tainted: G E     5.16.0-rc4+ #53
+ RIP: 0010:smc_setsockopt+0x59/0x280 [smc]
+ Call Trace:
+  <TASK>
+  __sys_setsockopt+0xfc/0x190
+  __x64_sys_setsockopt+0x20/0x30
+  do_syscall_64+0x34/0x90
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7f16ba83918e
+  </TASK>
+
+This patch tries to fix it by holding clcsock_release_lock and
+checking whether clcsock has already been released before access.
+
+In case that a crash of the same reason happens in smc_getsockopt()
+or smc_switch_to_fallback(), this patch also checkes smc->clcsock
+in them too. And the caller of smc_switch_to_fallback() will identify
+whether fallback succeeds according to the return value.
+
+Fixes: fd57770dd198 ("net/smc: wait for pending work before clcsock release_sock")
+Link: https://lore.kernel.org/lkml/5dd7ffd1-28e2-24cc-9442-1defec27375e@linux.ibm.com/T/
+Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+---
+v1->v2:
+- Add 'Fixes' tag, 'Link' tag and 'Acked-by' tag.
+---
+ net/smc/af_smc.c | 63 +++++++++++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 51 insertions(+), 12 deletions(-)
+
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 12c52c7..c625af3 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -566,12 +566,17 @@ static void smc_stat_fallback(struct smc_sock *smc)
+ 	mutex_unlock(&net->smc.mutex_fback_rsn);
+ }
+ 
+-static void smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
++static int smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
+ {
+ 	wait_queue_head_t *smc_wait = sk_sleep(&smc->sk);
+-	wait_queue_head_t *clc_wait = sk_sleep(smc->clcsock->sk);
++	wait_queue_head_t *clc_wait;
+ 	unsigned long flags;
+ 
++	mutex_lock(&smc->clcsock_release_lock);
++	if (!smc->clcsock) {
++		mutex_unlock(&smc->clcsock_release_lock);
++		return -EBADF;
++	}
+ 	smc->use_fallback = true;
+ 	smc->fallback_rsn = reason_code;
+ 	smc_stat_fallback(smc);
+@@ -586,18 +591,30 @@ static void smc_switch_to_fallback(struct smc_sock *smc, int reason_code)
+ 		 * smc socket->wq, which should be removed
+ 		 * to clcsocket->wq during the fallback.
+ 		 */
++		clc_wait = sk_sleep(smc->clcsock->sk);
+ 		spin_lock_irqsave(&smc_wait->lock, flags);
+ 		spin_lock_nested(&clc_wait->lock, SINGLE_DEPTH_NESTING);
+ 		list_splice_init(&smc_wait->head, &clc_wait->head);
+ 		spin_unlock(&clc_wait->lock);
+ 		spin_unlock_irqrestore(&smc_wait->lock, flags);
+ 	}
++	mutex_unlock(&smc->clcsock_release_lock);
++	return 0;
+ }
+ 
+ /* fall back during connect */
+ static int smc_connect_fallback(struct smc_sock *smc, int reason_code)
+ {
+-	smc_switch_to_fallback(smc, reason_code);
++	struct net *net = sock_net(&smc->sk);
++	int rc = 0;
++
++	rc = smc_switch_to_fallback(smc, reason_code);
++	if (rc) { /* fallback fails */
++		this_cpu_inc(net->smc.smc_stats->clnt_hshake_err_cnt);
++		if (smc->sk.sk_state == SMC_INIT)
++			sock_put(&smc->sk); /* passive closing */
++		return rc;
++	}
+ 	smc_copy_sock_settings_to_clc(smc);
+ 	smc->connect_nonblock = 0;
+ 	if (smc->sk.sk_state == SMC_INIT)
+@@ -1518,11 +1535,12 @@ static void smc_listen_decline(struct smc_sock *new_smc, int reason_code,
+ {
+ 	/* RDMA setup failed, switch back to TCP */
+ 	smc_conn_abort(new_smc, local_first);
+-	if (reason_code < 0) { /* error, no fallback possible */
++	if (reason_code < 0 ||
++	    smc_switch_to_fallback(new_smc, reason_code)) {
++		/* error, no fallback possible */
+ 		smc_listen_out_err(new_smc);
+ 		return;
+ 	}
+-	smc_switch_to_fallback(new_smc, reason_code);
+ 	if (reason_code && reason_code != SMC_CLC_DECL_PEERDECL) {
+ 		if (smc_clc_send_decline(new_smc, reason_code, version) < 0) {
+ 			smc_listen_out_err(new_smc);
+@@ -1964,8 +1982,11 @@ static void smc_listen_work(struct work_struct *work)
+ 
+ 	/* check if peer is smc capable */
+ 	if (!tcp_sk(newclcsock->sk)->syn_smc) {
+-		smc_switch_to_fallback(new_smc, SMC_CLC_DECL_PEERNOSMC);
+-		smc_listen_out_connected(new_smc);
++		rc = smc_switch_to_fallback(new_smc, SMC_CLC_DECL_PEERNOSMC);
++		if (rc)
++			smc_listen_out_err(new_smc);
++		else
++			smc_listen_out_connected(new_smc);
+ 		return;
+ 	}
+ 
+@@ -2254,7 +2275,9 @@ static int smc_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 
+ 	if (msg->msg_flags & MSG_FASTOPEN) {
+ 		if (sk->sk_state == SMC_INIT && !smc->connect_nonblock) {
+-			smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
++			rc = smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
++			if (rc)
++				goto out;
+ 		} else {
+ 			rc = -EINVAL;
+ 			goto out;
+@@ -2447,6 +2470,11 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
+ 	/* generic setsockopts reaching us here always apply to the
+ 	 * CLC socket
+ 	 */
++	mutex_lock(&smc->clcsock_release_lock);
++	if (!smc->clcsock) {
++		mutex_unlock(&smc->clcsock_release_lock);
++		return -EBADF;
++	}
+ 	if (unlikely(!smc->clcsock->ops->setsockopt))
+ 		rc = -EOPNOTSUPP;
+ 	else
+@@ -2456,6 +2484,7 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
+ 		sk->sk_err = smc->clcsock->sk->sk_err;
+ 		sk_error_report(sk);
+ 	}
++	mutex_unlock(&smc->clcsock_release_lock);
+ 
+ 	if (optlen < sizeof(int))
+ 		return -EINVAL;
+@@ -2472,7 +2501,7 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
+ 	case TCP_FASTOPEN_NO_COOKIE:
+ 		/* option not supported by SMC */
+ 		if (sk->sk_state == SMC_INIT && !smc->connect_nonblock) {
+-			smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
++			rc = smc_switch_to_fallback(smc, SMC_CLC_DECL_OPTUNSUPP);
+ 		} else {
+ 			rc = -EINVAL;
+ 		}
+@@ -2515,13 +2544,23 @@ static int smc_getsockopt(struct socket *sock, int level, int optname,
+ 			  char __user *optval, int __user *optlen)
+ {
+ 	struct smc_sock *smc;
++	int rc;
+ 
+ 	smc = smc_sk(sock->sk);
++	mutex_lock(&smc->clcsock_release_lock);
++	if (!smc->clcsock) {
++		mutex_unlock(&smc->clcsock_release_lock);
++		return -EBADF;
++	}
+ 	/* socket options apply to the CLC socket */
+-	if (unlikely(!smc->clcsock->ops->getsockopt))
++	if (unlikely(!smc->clcsock->ops->getsockopt)) {
++		mutex_unlock(&smc->clcsock_release_lock);
+ 		return -EOPNOTSUPP;
+-	return smc->clcsock->ops->getsockopt(smc->clcsock, level, optname,
+-					     optval, optlen);
++	}
++	rc = smc->clcsock->ops->getsockopt(smc->clcsock, level, optname,
++					   optval, optlen);
++	mutex_unlock(&smc->clcsock_release_lock);
++	return rc;
+ }
+ 
+ static int smc_ioctl(struct socket *sock, unsigned int cmd,
+-- 
+1.8.3.1
+
