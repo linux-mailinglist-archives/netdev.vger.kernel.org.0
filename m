@@ -2,169 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE235496DAE
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 20:46:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC269496DB3
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 20:53:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234826AbiAVTq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jan 2022 14:46:27 -0500
-Received: from mail-dm6nam11on2131.outbound.protection.outlook.com ([40.107.223.131]:23585
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229534AbiAVTq0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 22 Jan 2022 14:46:26 -0500
+        id S234836AbiAVTw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jan 2022 14:52:58 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:61700 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229534AbiAVTw5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 14:52:57 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20MH1Q9H019406;
+        Sat, 22 Jan 2022 11:52:40 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=f+DzzQyM3FfGlnKpwYie7A1Xup5ka43xgY2qYGkyLjo=;
+ b=nhtBcwYoUQzjWzmLdy/OkpGKwjfwJsR/7sB8QwWraZDb0j4N/wbtjCWQm5aDmvqcVI17
+ 84cgn9ujL7yYSF668Er1aymYuBB5OyUw/BFVmCfrjSchR8fBsJACNz8WMarFKoHQcgpE
+ 0HxB9SCvPqk07s/EIG7u5ZtxwbBDqOCTpPo= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3drj45h7hm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sat, 22 Jan 2022 11:52:40 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 22 Jan 2022 11:52:33 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SIbyabuDJQOzE6hq244K3Yw+hLwHCrIag1Nz9xcfKgjqq2N3ID8FORTSYvilvRU0Dtqf7atCdBz6s3aq2dQQuUkJJB51qZH1cdjU+W8tQvOPkelg4tAlaCCRezgpz6wmLtZW+tMXYK1oaSNhFBAYjffLGbZvH7BFjy5nKas9ETLARriSb8MXDNDvRhsznEJQGpPrYKNguM5KGovg4HvwWgQg7KXOQruFrxjLoDpPR31YsuxEtD4LkA2jISRX/uLotCW4/MbmMKmEMpzWvKIpeVOVKkBJI8Oc1GZMWEPEbeAdOcnqiBvsxMBhp6BfqxaswsgN8J3DIAp0GvfpyKOnDQ==
+ b=YFd92gpgSUC9wzgAsYFkEZdcVamhvte7NQA3ujC13M3l7met3vELmTk6q02BLF1r1WiENjNIBqztjM1lSEWge4tgNNgkM6Uq3jYOGP028omboEiuwRs+uoI1xeTFUAk7DYCuNvHOjpeCxBDSRH17ASin6LTmsWxE6GuOY4FI28RC0TtckUlmhFog0p+HzEGziGHH/c6jqzrSUK/SfiyKG1YG/q0xyw6Njc6ofgqtHONnaEOIa3W0RWF1fDzSO2lH3b4UhBSXnIsoi9sfK8WOwN8gIFZB+UgEkigaDJFiXyiGSF7IwhJ9sQyJjskcQ0t/x4lvDEb7UaRxHtOo8qOmhw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6+A8I0IGmsqYJ8c2Hy1RY7N1zsNxbKFBser6ZyliCTg=;
- b=aLAhzFfFUjWnQo8CCQ0xb2UcaewWx2J/T00y+QWQi91MZOWi+GcJtjOI5X6iRe0rPWInocxD6doyJKtgO1tzKq7DPE+rRBvugkYSoOfzkE720VvGKc+5l/8MM3AQcXRc52d7AwTgCwexpr7vVPa8+ObnwCqO39d4SHLiLRexNa6YK198r7rdiP75xOUBGsmV4dO6VBPrtgJJhGt6YcOqKqic5JC2zpCNdtKoAXOdOa/NSJXh8AjnKuooEhin6xuqWzold0YToHcEJci9F58ULqtZAXug37T0GuyPr579X1+2/MBLM/MOHLkS7uU02ADWcqm0b7PjlRylkH5XrjbAXA==
+ bh=I3hyta9FbsBMJo0qqTr4xF9oesOcP7ofixpKOxWSHnQ=;
+ b=awVZcmXls5IYaQQV59K2ltasKAQ5IXMmOHMfOOoXJ4j18mXAdRdlnR0agXzbdIz6cpXuNGYZhHax9/sry3DnyJMD6EE+tE4mlwJINikNQgHAW+irpn99BxFMjiB9NaTjPXpPoRtOBcCjmBc4kAfjhFnhigg/Tmn/cQUhu25+hE90teLIze8yIznbTYHmh7E4vHv50phkO1q1ycTyLtZWfu5azYDn1R36AL/czAuMoM+M4rb+CvbJ0DCAHUA2FqhLbuh03X4zGCF9Tzs4ggC62F0DHgQ+OSpwlrOqEhZnpLJ/FVnYawzL97ygKZQR+eXfKEbJgSqINmhcR3hS8+vKkg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6+A8I0IGmsqYJ8c2Hy1RY7N1zsNxbKFBser6ZyliCTg=;
- b=EMDAgTETH+0GOnYTxMVOSAwxA1Yt8yZWpD5fzFvclFjCmbvG5tjZWLvNhFqeah85C2bIe5nAiyhF2s7r6cn+2FqVRRE0teD7qTgve3AJ84k48str18fzAy55cpyufFAFqKeIS0Mtd43CAljLtjcDgcLhtRSJXJZQ1BTjABmSfLA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by MWHPR10MB2045.namprd10.prod.outlook.com
- (2603:10b6:300:109::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.12; Sat, 22 Jan
- 2022 19:46:23 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4888.014; Sat, 22 Jan 2022
- 19:46:22 +0000
-Date:   Sat, 22 Jan 2022 11:46:15 -0800
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        brouer@redhat.com, LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+ by SA1PR15MB4806.namprd15.prod.outlook.com (2603:10b6:806:1e1::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.13; Sat, 22 Jan
+ 2022 19:52:32 +0000
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::b0ca:a63e:fb69:6437]) by SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::b0ca:a63e:fb69:6437%6]) with mapi id 15.20.4909.012; Sat, 22 Jan 2022
+ 19:52:31 +0000
+Date:   Sat, 22 Jan 2022 11:52:28 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: Re: [net RFC v1 1/1] page_pool: fix NULL dereference crash
-Message-ID: <20220122194615.GA914030@euler>
-References: <20220122005644.802352-1-colin.foster@in-advantage.com>
- <20220122005644.802352-2-colin.foster@in-advantage.com>
- <CAADnVQK8xrQ92+=wm8AoDkC93SEKz3G=CoOnkPgvs=spJk5UZA@mail.gmail.com>
- <20220122024051.GA905413@euler>
- <5bd8f1bd-1a21-df1b-6d6f-9fe5657fdd7c@redhat.com>
-Content-Type: text/plain; charset=us-ascii
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, <kernel-team@fb.com>
+Subject: Re: [RFC PATCH v3 net-next 1/4] net: Add skb->mono_delivery_time to
+ distinguish mono delivery_time from (rcv) timestamp
+Message-ID: <20220122195228.psu6bsodh3k3ds5q@kafai-mbp.dhcp.thefacebook.com>
+References: <20220121073026.4173996-1-kafai@fb.com>
+ <20220121073032.4176877-1-kafai@fb.com>
+ <CA+FuTSe1d91JC_bQvFGdoAaAEG4fur6KfzkNheA-ymnnMharXQ@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <5bd8f1bd-1a21-df1b-6d6f-9fe5657fdd7c@redhat.com>
-X-ClientProxiedBy: CO2PR05CA0009.namprd05.prod.outlook.com
- (2603:10b6:102:2::19) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
-MIME-Version: 1.0
+In-Reply-To: <CA+FuTSe1d91JC_bQvFGdoAaAEG4fur6KfzkNheA-ymnnMharXQ@mail.gmail.com>
+X-ClientProxiedBy: MWHPR13CA0009.namprd13.prod.outlook.com
+ (2603:10b6:300:16::19) To SA1PR15MB5016.namprd15.prod.outlook.com
+ (2603:10b6:806:1db::19)
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0dbb78b4-6c39-4bfe-0f04-08d9dddfde29
-X-MS-TrafficTypeDiagnostic: MWHPR10MB2045:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR10MB2045FB3E61F1ED7CBF4EB3BFA45C9@MWHPR10MB2045.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:655;
+X-MS-Office365-Filtering-Correlation-Id: f3cca16c-5770-4b24-c27e-08d9dde0ba47
+X-MS-TrafficTypeDiagnostic: SA1PR15MB4806:EE_
+X-Microsoft-Antispam-PRVS: <SA1PR15MB4806F86CED1D66892D6ECB0ED55C9@SA1PR15MB4806.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CMXtSE31axv2igiPOCZmAcTZsefoxCwewbDBgl47QN0gAF0Hwvyd4ZkFSqRixd993z1bA59TWOWOhM6MfPM27ZyqCZxn8/+qBG1CuRnbgeyBx0856p7Vqh56V7xIMtwz+77M6xRqKr6rn37FKcWo0u32ZNxoFanWYl86RjalyM4MsLMc28vCrsYYJRqeA+L0HcB9n1gpFXi624Lfw8R7lXKR9ObrARnV5C4vnCZonW08ds7ao5s3aRWHLh8ogo5vz2m6kHvZZZcs2hgWzsHr+26Q3/fl5dVFH2YZ5LwJUeuUjfzSzip/Z7Im1oIW9GmyOGv+7TEh6JZZWFO83Bu/4TPpCsvaX4mMZyHvL1ImCu9VXk7jV31ugs6IhBP9GbJQhqux7poxs/HU3a9wr+2nXtPW6ttWf5T/F4QgeWYPfcN/nFHB3SIHQJ4ifnyRP4M4gntlvGO6XrWBZVoz99RwyGRMixbqhfYe2PZPMI/xf2lt/zFeFzvpgb+fEnR8cYbl0nz2IDVofa6maCIsJfU/U5I2MqFO/SbkdH9r7WJQCVTfaKwuYTx2ISTlAUkDft8NFoBvcBkRuYpY/dhi8hGIUuXqT3i4c910x+HhV/7wzD0JU2WPKJGluKwALFCjrPUTtG0ktoyxDH9VHesiU8w1d9X+pdsZiZiCVgTpHMButujgU+6gSDVX4bHvBWY7HSgMsiNft/tFcesGzYIgMv689w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(346002)(376002)(42606007)(136003)(39830400003)(366004)(396003)(66556008)(186003)(38350700002)(6916009)(54906003)(6666004)(508600001)(5660300002)(26005)(7416002)(38100700002)(52116002)(66476007)(316002)(2906002)(4326008)(86362001)(6512007)(33656002)(33716001)(53546011)(1076003)(8676002)(66946007)(44832011)(9686003)(83380400001)(6486002)(6506007)(8936002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: cVyyPiL1zDvXKcWhgeYHvvAbsPWsI8oGrYFo9jZ2fI5ZbWWSZFt3JV2zbgrQI/XPrn3SxpedNdMqR/gwhBjebHDZXbY55+3Boc/4NWOTzGOUYufUzXxH9ToHKoESqJD7suOQpXI1XCB7kHDg5u63E/uO5fHks1ACSWYC6Ugp+E27nwh5dG+gId7WKyX/aw6maa5OEfC2UVS5I1GTWptbuMcE6kkdWPkEgr4dDFmIUnEmSkX4rpHmkrjXQ0ZCunGV5UuJ9tYFXdm6dEtiOZpc/H283Md9XCSl3BDFS0bAPIDhVv633DNW/Y7gmGtHysKkVKNBHnOrITyevb1+iooMXRVyoUfKVocvLtR7G+cpnDJkW/7DwAs13Fwa2qrn6/fHKPF/OIS4b3ELJJBZ8tmAMa4H1T0Cjyut4UTWK69ZivsHOiM7VWOuRkcMSCK9VBrC3Fy08Yv9tfo84G53y07cfuyv/2xYxnZCMcgyqXF5xydxi0C7CM6cafBKn//aLx/fe8q2jJCpOeL8FPf0sUxQWa9iILVjKe7wwoulFpB50NfaJQvnKhuI0maYMSnzR7kKisoAoHZAoCB1exDgVdFixvqkTzz81S5osAU1FdqPTezpBb4qAytYuAl4q/l9Tjq4v2Tji2GvWW7QspOX2DAAxw3FgkPNz8bzpBBmW+avMCfoZQSdLbuITmC8jRwhzGYTdNL8ednlM76oqI65j2AHR2nwJdMU7t8F0rIbf93cK28=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(83380400001)(4326008)(966005)(53546011)(6506007)(8936002)(86362001)(5660300002)(508600001)(9686003)(1076003)(6512007)(186003)(52116002)(54906003)(316002)(8676002)(6486002)(38100700002)(6666004)(66556008)(2906002)(66476007)(6916009)(66946007);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?g37wnPWBzgnlt0gKipfxvkxOrng65aP28eRftOCIQhtItSSaE/hs483unb/A?=
- =?us-ascii?Q?Hk4Yf/KS99JYBhCrfz9bWM9L7AMxK9oKeTV8lvBEgGwA/ArEYp4wC6t1n/Bd?=
- =?us-ascii?Q?1pB0AewCMcShR7820L4DibTLyINabR1QKmoRkkO15/sgLkIfQwy2eM/RaoQh?=
- =?us-ascii?Q?UAOUqUPUM6/2ruUDTncRQ6USnwWi5EhD8E3PG38y2HOBbBYKgl4tDOJG7WbU?=
- =?us-ascii?Q?7eUuAY3ksmcbMG5Z/EYOxesLVhpaYfPORKtQ985Wzc1kHRioDgyg0l8mDLry?=
- =?us-ascii?Q?0EIUb7qdW8piVzFz4CgTsLI8rlPst9u4mfF5ImiS1F8CeHs5XE3UxlRvP9Dy?=
- =?us-ascii?Q?xf4gQIUNW5L8rgQU/szJmiBKar0VU2GmPDJtO6349T1zEu6K5/amSCdNfPXa?=
- =?us-ascii?Q?dd/+pQ4k99b/sA0CoTDuu4s8pbBxVjsGBqFgGWbivqoobe80Derb3f/IJMmN?=
- =?us-ascii?Q?mgRfpbCm/YV9Y2EYGdWqdFmHkw+Fotm/E91bCSkDiTPs7M9HHddVlySBLJQY?=
- =?us-ascii?Q?69X76b5NpzQpyKc+2g5fcHSBLE218qe+kbf2Oz7dN8GAHmMsl7klPcIRDO/9?=
- =?us-ascii?Q?nNE647DmeB0WDZQ6GNNyZAXurLvwOSwBslwpacq1klOMPm9dnkVmaBf/lbBt?=
- =?us-ascii?Q?qkDRO+UbqjEL6mb1bj5aAG0WWq5JT+9brR4rU7nMzKPbJ+6FIB2I1V/W4L6L?=
- =?us-ascii?Q?G+MmITqXbTVO6a+wWvWVdufxpAjUY5+/sfssps0MZ2V6RWw6tD//Jt1yGTuJ?=
- =?us-ascii?Q?Y/yRNtI/QS2dY7tBbQlLuKD99O73TJZman+9RJwNDtPrf7YwMln7o/JYhZ3r?=
- =?us-ascii?Q?NFHBHjrhEuqp7O2G+mMYZ+xgU9GLT2J3FQbAfcMrwaKzuGSsYGdtZgrLvVj+?=
- =?us-ascii?Q?bkRwmaveUE76yZwiKVvLDYKsp1PMtV6KVabl+l0tM1V3y+VSo5q4VHkaJJFB?=
- =?us-ascii?Q?MBJ4Ps1XKVON6uOOVgfmHiO74+62amoau88DkxwVJiP4V+kHpRWGNTRy4f+S?=
- =?us-ascii?Q?1HtswftGxdaGzf3MDlmxPgBTuPfEOEmcwwYjE7tXECkOGAGDDrMhsCNh0l4L?=
- =?us-ascii?Q?3LnXVdcT90M9zkYLEeFNYje1ELgEwquRqP4DlE0c+LkaEug/ZRadgcziX3qX?=
- =?us-ascii?Q?JMUnXzmSldjbu6m31rjMkW4w9QsQ7StR3tU33F9MfULY/pWJ9OJalXUMce7W?=
- =?us-ascii?Q?l7H2Ft20TPL7FxymnYsJlPY7F4urZTIcIlE5jSDJ0NVIx+mG5a6srjBAUToA?=
- =?us-ascii?Q?g1psbafvp+9KP2b1rYDsMJOJXButzjQRHsR15FspcdogAKENC8KNJ5wu8C1V?=
- =?us-ascii?Q?nWRpFTQErwvfs0GnLruAWqso8hkptHZuxI6fvweu/YnKk37bvSdPNu+UmB6k?=
- =?us-ascii?Q?k6BWu3ztDg8QxlK5mDU1KT4tLL3a0g9JqZJPwiu2g8bpCPZ/cDkDvjbKKqXZ?=
- =?us-ascii?Q?jwtAX0hCzwBS8/DbAZD4oa+f3QnbuNNkdD5FMjIhmQMZEtD/6NUNjExBWrfi?=
- =?us-ascii?Q?cxLBVvfSLrB8lronWAvWBYdMApsyPtX5F2aNSwoBoFUxVlkVgBKO6/L+Y/IV?=
- =?us-ascii?Q?qWQDOgoa6Auo+/eSY1xhf25WLyFaBayLzTEf4L2mlQJ1HdNLQh2+W1scdTfW?=
- =?us-ascii?Q?S6Bi3tpToBvp21nmfITdf2HDbGYaHuBP3tTifIdqmPXps62uge3a794NrRBu?=
- =?us-ascii?Q?ItzeDg=3D=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0dbb78b4-6c39-4bfe-0f04-08d9dddfde29
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AAeURaIyavuKxSk7ZC6tAWf3mxPnBxCgbUYm+HUu/seYvroy/kA9l5BfXDUj?=
+ =?us-ascii?Q?u9TlgKdFZFCEoGn5xUriLisBrD7hLJxzhk+cQdrJq5tI7+Zjir1KnoUzDPLp?=
+ =?us-ascii?Q?AJr/TFKwxoWlsxWRzaTkEUHjRSwB8Gcf77tc+v1nL8h7G5DcxR5IoFHB3hu+?=
+ =?us-ascii?Q?9DJWjn6TiFSr5XxQZzWBBevAC3mhfs2vF5pALihmb0I0jFkBr9a2W53PDBLq?=
+ =?us-ascii?Q?MJsc1Dz5f9Ax3YxVt7gD0suQ0rS30O4VecSX47IBIaowECmKko0LautvNh+m?=
+ =?us-ascii?Q?lnHSBgmHaJ++lxVAveOpXU08DNEjcNHaM1+ntbEo+GcdKwAHJ0c1JRjeqADD?=
+ =?us-ascii?Q?PFJvU0LuFDtltOoBbKpXx/9f0XThCbLoPQozc9K8GBkxkZMq/KJ+d3LQd2Na?=
+ =?us-ascii?Q?ALmbfdcsACpekffk+amLFtcLUGW6rU1/gYf66YjEMfUUBjqmeyHPZFIu2O/p?=
+ =?us-ascii?Q?YL1vVOaAaIeleIB9jRZOk3wGzUl3ffxyksrIw0VtFaqN3V5Kvi9715YANcti?=
+ =?us-ascii?Q?FMAIew+OPbdV/GZqFuQGNdgoxvFIijvzeOTqJ3+gcjfqJkdaz6snfQnLx0HZ?=
+ =?us-ascii?Q?vPhohsQJmCtUvNJ+X1BfMbRT/966u5lTiFb8U+FhVuhzQclAWwMhbEVZfk29?=
+ =?us-ascii?Q?e4/kZqEC7r7NydzAh2lgpkWD2AvNfvxQa/98R1cgj1OmkefRV+917hiiVnGo?=
+ =?us-ascii?Q?p3yTLkH0SEAz8AQIYowI8VI7NA6w8cPRYqgqYsh26y9vxIC7Fk0ws0F6oYOf?=
+ =?us-ascii?Q?fo4otts+cltEHnxJDGbDfThzmPwbY85IJZY0VKYP34q+OWYQaXlXVh6ybw7d?=
+ =?us-ascii?Q?OAbPdbEvHGA55yjSu8v0NmvQSHTiMzk2fYx90EaGjdTjHVubSV6uO/2luJFi?=
+ =?us-ascii?Q?YEZjuDglEOydHIqfLvtgCiWnTFHtshKp8keKMdFBzhAVTV40I7k6cUKd+jKK?=
+ =?us-ascii?Q?p0GUzpHi5IoNZxnuQoxzipNC9zH+81Y7gLyf7XsDZ4HelX6uMQhRjKPcKIe4?=
+ =?us-ascii?Q?FbsEBcpOtX7XPHsYR2kcr4akwdUizpUjO60GGXMxrMZc9/0W5trvtUZr1n73?=
+ =?us-ascii?Q?c4BZ+/4xASPtCccrVpRZNihpRUiShd4v2Zq4NMArdq2UAW8GpfArT+lQv+H2?=
+ =?us-ascii?Q?gAumdVrfus1ih5qvUdyJRl03stKXQlGSRefea8RkSqE6FhC0xfYZ2Jchd83P?=
+ =?us-ascii?Q?THnSuwjmWafdwdY4iTqE9tcIhl3EB69qxs2IW92MGA7+k6xMfdtdMaSJp9/E?=
+ =?us-ascii?Q?abUR2JT2TCksi2xS4PIU4ZNKvMOH/59qBGl+741J4FE/dyGWfE198IrreBnf?=
+ =?us-ascii?Q?nuBNY0hA16UCU/ijDTzWmSa5aSeEdRlgVFb923JgnMx3BanEzsBd4Q5YkDnu?=
+ =?us-ascii?Q?WJCprovcjTUNpMm78sOFRPdzIzHeE4yu2nENmkwKTq2bty/zEWHp2dGOzXsI?=
+ =?us-ascii?Q?DukDwZlYDBZkOyF6z8CxL50sHMNVoll51nCOmyMIToGWSTlwgt+tID9n48BS?=
+ =?us-ascii?Q?hCHz5WpAMILN3BYMXhzuK0H014BVbrp0rNxrYSS6YGeUueW2rcSUFexhvutS?=
+ =?us-ascii?Q?dDYL9V9T70q42UIeler7wggr4A2gunxOsw0e52Fq?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3cca16c-5770-4b24-c27e-08d9dde0ba47
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2022 19:46:22.8063
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2022 19:52:31.8719
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ca2aztkyd+0WzWlb2TlfL4H7yKvLXj+GKnW74P+yMOw5zx/6jQTxxRtsP05qn+uCCf7nRoNA6SRSlpnP8y7Nx5xsENU2VzmhJBHdbZxH748=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB2045
+X-MS-Exchange-CrossTenant-UserPrincipalName: ER2tBamxHzaHQakEgOatG4Iyzvqxm2mkJSykrFXev+Gys/AXYJXTiDyfpEmPUT/b
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4806
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: 1iYCDZkSKOZ4o4hoUcHYKSkPZVkeROeY
+X-Proofpoint-GUID: 1iYCDZkSKOZ4o4hoUcHYKSkPZVkeROeY
+X-Proofpoint-UnRewURL: 1 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-22_09,2022-01-21_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 mlxscore=0
+ clxscore=1015 priorityscore=1501 malwarescore=0 phishscore=0
+ suspectscore=0 bulkscore=0 spamscore=0 mlxlogscore=999 adultscore=0
+ lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2201220142
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 22, 2022 at 09:31:17AM +0100, Jesper Dangaard Brouer wrote:
+On Sat, Jan 22, 2022 at 10:32:16AM -0500, Willem de Bruijn wrote:
+> On Fri, Jan 21, 2022 at 2:30 AM Martin KaFai Lau <kafai@fb.com> wrote:
+> >
+> > skb->tstamp was first used as the (rcv) timestamp in real time clock base.
+> > The major usage is to report it to the user (e.g. SO_TIMESTAMP).
+> >
+> > Later, skb->tstamp is also set as the (future) delivery_time (e.g. EDT in TCP)
+> > during egress and used by the qdisc (e.g. sch_fq) to make decision on when
+> > the skb can be passed to the dev.
+> >
+> > Currently, there is no way to tell skb->tstamp having the (rcv) timestamp
+> > or the delivery_time, so it is always reset to 0 whenever forwarded
+> > between egress and ingress.
+> >
+> > While it makes sense to always clear the (rcv) timestamp in skb->tstamp
+> > to avoid confusing sch_fq that expects the delivery_time, it is a
+> > performance issue [0] to clear the delivery_time if the skb finally
+> > egress to a fq@phy-dev.  For example, when forwarding from egress to
+> > ingress and then finally back to egress:
+> >
+> >             tcp-sender => veth@netns => veth@hostns => fq@eth0@hostns
+> >                                      ^              ^
+> >                                      reset          rest
+> >
+> > [0] (slide 22): https://linuxplumbersconf.org/event/11/contributions/953/attachments/867/1658/LPC_2021_BPF_Datapath_Extensions.pdf 
+> >
+> > This patch adds one bit skb->mono_delivery_time to flag the skb->tstamp
+> > is storing the mono delivery_time instead of the (rcv) timestamp.
+> >
+> > The current use case is to keep the TCP mono delivery_time (EDT) and
+> > to be used with sch_fq.  The later patch will also allow tc-bpf to read
+> > and change the mono delivery_time.
+> >
+> > In the future, another bit (e.g. skb->user_delivery_time) can be added
+> > for the SCM_TXTIME where the clock base is tracked by sk->sk_clockid.
+> >
+> > [ This patch is a prep work.  The following patch will
+> >   get the other parts of the stack ready first.  Then another patch
+> >   after that will finally set the skb->mono_delivery_time. ]
+> >
+> > skb_set_delivery_time() function is added.  It is used by the tcp_output.c
+> > and during ip[6] fragmentation to assign the delivery_time to
+> > the skb->tstamp and also set the skb->mono_delivery_time.
+> >
+> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > ---
+> >  include/linux/skbuff.h                     | 13 +++++++++++++
+> >  net/bridge/netfilter/nf_conntrack_bridge.c |  5 +++--
+> >  net/ipv4/ip_output.c                       |  5 +++--
+> >  net/ipv4/tcp_output.c                      | 16 +++++++++-------
+> >  net/ipv6/ip6_output.c                      |  5 +++--
+> >  net/ipv6/netfilter.c                       |  5 +++--
+> >  6 files changed, 34 insertions(+), 15 deletions(-)
+> >
+> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > index bf11e1fbd69b..b9e20187242a 100644
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -720,6 +720,10 @@ typedef unsigned char *sk_buff_data_t;
+> >   *     @dst_pending_confirm: need to confirm neighbour
+> >   *     @decrypted: Decrypted SKB
+> >   *     @slow_gro: state present at GRO time, slower prepare step required
+> > + *     @mono_delivery_time: When set, skb->tstamap has the
 > 
+> tstamp
 > 
-> On 22/01/2022 03.40, Colin Foster wrote:
-> > On Fri, Jan 21, 2022 at 05:13:28PM -0800, Alexei Starovoitov wrote:
-> > > On Fri, Jan 21, 2022 at 4:57 PM Colin Foster
-> > > <colin.foster@in-advantage.com> wrote:
-> > > > 
-> > > > Check for the existence of page pool params before dereferencing. This can
-> > > > cause crashes in certain conditions.
-> > > 
-> > > In what conditions?
-> > > Out of tree driver?
-> > > 
-> > > > Fixes: 35b2e549894b ("page_pool: Add callback to init pages when they are
-> > > > allocated")
-> > > > 
-> > > > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > > > ---
-> > > >   net/core/page_pool.c | 2 +-
-> > > >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > 
-> > > > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> > > > index bd62c01a2ec3..641f849c95e7 100644
-> > > > --- a/net/core/page_pool.c
-> > > > +++ b/net/core/page_pool.c
-> > > > @@ -213,7 +213,7 @@ static void page_pool_set_pp_info(struct page_pool *pool,
-> > > >   {
-> > > >          page->pp = pool;
-> > > >          page->pp_magic |= PP_SIGNATURE;
-> > > > -       if (pool->p.init_callback)
-> > > > +       if (pool->p && pool->p.init_callback)
-> > 
-> > And my apologies - this should be if (pool... not if (pool->p. kernelbot
-> > will be sure to tell me of this blunder soon
+> > + *             delivery_time in mono clock base (i.e. EDT).  Otherwise, the
+> > + *             skb->tstamp has the (rcv) timestamp at ingress and
+> > + *             delivery_time at egress.
+> >   *     @napi_id: id of the NAPI struct this skb came from
+> >   *     @sender_cpu: (aka @napi_id) source CPU in XPS
+> >   *     @secmark: security marking
+> > @@ -890,6 +894,7 @@ struct sk_buff {
+> >         __u8                    decrypted:1;
+> >  #endif
+> >         __u8                    slow_gro:1;
+> > +       __u8                    mono_delivery_time:1;
 > 
-> Can you confirm if your crash is fixed by this change?
+> This bit fills a hole, does not change sk_buff size, right?
+> 
+> >
+> >  #ifdef CONFIG_NET_SCHED
+> >         __u16                   tc_index;       /* traffic control index */
+> > @@ -3903,6 +3908,14 @@ static inline ktime_t net_invalid_timestamp(void)
+> >         return 0;
+> >  }
+> >
+> > +static inline void skb_set_delivery_time(struct sk_buff *skb, ktime_t kt,
+> > +                                        bool mono)
+> > +{
+> > +       skb->tstamp = kt;
+> > +       /* Setting mono_delivery_time will be enabled later */
+> > +       /* skb->mono_delivery_time = kt && mono; */
+> > +}
+> > +
+> >  static inline u8 skb_metadata_len(const struct sk_buff *skb)
+> >  {
+> >         return skb_shinfo(skb)->meta_len;
+> > diff --git a/net/bridge/netfilter/nf_conntrack_bridge.c b/net/bridge/netfilter/nf_conntrack_bridge.c
+> > index fdbed3158555..ebfb2a5c59e4 100644
+> > --- a/net/bridge/netfilter/nf_conntrack_bridge.c
+> > +++ b/net/bridge/netfilter/nf_conntrack_bridge.c
+> > @@ -32,6 +32,7 @@ static int nf_br_ip_fragment(struct net *net, struct sock *sk,
+> >                                            struct sk_buff *))
+> >  {
+> >         int frag_max_size = BR_INPUT_SKB_CB(skb)->frag_max_size;
+> > +       bool mono_delivery_time = skb->mono_delivery_time;
+> 
+> This use of a local variable is just a style choice, not needed for
+> correctness, correct?
+It is needed.  The current code also saves the very first
+skb->tstamp (two lines below):
 
-Yes, this is confirmed. I'd obviously like to make a more comprehensive
-commit message - my main question is "is this an issue for all DSA
-configurations?" Seemingly that is the case, but like I said, I'm
-unfamiliar with this code. I'll see if I can get a better understanding
-before sending the real patch early next week.
+> >         unsigned int hlen, ll_rs, mtu;
+> >         ktime_t tstamp = skb->tstamp;
 
-> 
-> 
-> > > >                  pool->p.init_callback(page, pool->p.init_arg);
-> > > >   }
-> 
+My understanding is all frags reuse the first (/original) skb tstamp info.
+The frags output() is one-by-one, meaning when sending the later frags,
+the first skb has already been output()-ed, so the first skb tstamp info
+needs to be saved in local variables.
