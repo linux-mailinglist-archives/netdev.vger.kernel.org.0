@@ -2,141 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 741854968ED
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 01:57:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DC934968F9
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 01:57:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231202AbiAVA5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 19:57:00 -0500
-Received: from mail-bn8nam08on2114.outbound.protection.outlook.com ([40.107.100.114]:63832
-        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231176AbiAVA47 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jan 2022 19:56:59 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dUO04d5Cs2NmyrefcduTlEdgKhsACIQdnoIVG+TUWk/OR437Qf21oSnMzqjLa5W78q5YrY5RtHrfBupvkJdi3S8lJaSTeh65/uUC22e6v9tEwfMHIRZzcDMiTUphhbIKK2Pqy77mkBp+EUYTZ7vNR2c13nKRX78QNbVNWXXE18pf+Jidq6S5Goq7+mzLRfcLXfUtLihzpWUq/0gBg+3NzCzVQqJ9g3iZSvXInIwrB1+AULwbCCOYqk8+eppFwgpFJYGSl8IBCbHGQ5Bf6z7+ErXYyMsYEq7QRR0CzfuKw5Ki3x86Nqv1rIbEnxdkLbTCGNj2S/aRfbXs40doDUXfUQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=V5sSXDpwZywJqIs52lS3AJHxZvX8PsfKexFxT4gu9nk=;
- b=DRUMzxS1435Q/Kv8TdZb0tGRzJfaJDWsYyMtAyUxLKvC9GBmRTZ+oG78ha4H1ldFWHXUmfVfRru0bN+5j/bD2A8DFIpFVhtkIKItCd8pOu5LCU6W+Ji+HkzjoxH4UsywuOmLOFgJ/dsaAPXCcNdQ/83a/N3V3NOatlSXVC0JudKHxc/BTbUwsEdwM9joI9ercjYvN3ckw/mbEP0sMyp1/by5kWsg3whT6kaw20pu46j18RgPRFtRy1wWHhoLqSkJmo6tkQI5JgyLy+KzFjH8kkWTdkXQVNFRKtB4xCOwZl8N4NKrwQV5z4N5pIWbb4Y4HN2fieWjeB2H+rXY7xc+hQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V5sSXDpwZywJqIs52lS3AJHxZvX8PsfKexFxT4gu9nk=;
- b=ViF8sUObTyjSm3vO20hvRyjA4smPQba1udbdWVX4aJZ420bpP3h2g00wgX3S9kTmYOUpB+xyhab0Z0PAklOh5Ky7NCcKWwoFrH4NWaq+hmoV9yuAt+eNZdMuBqKQP2KxvlUj9GQBpUENGSJh79uJB1IWHcN97nSwKmNESy0/bzI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by CH2PR10MB4022.namprd10.prod.outlook.com
- (2603:10b6:610:9::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10; Sat, 22 Jan
- 2022 00:56:57 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4888.014; Sat, 22 Jan 2022
- 00:56:57 +0000
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: [net RFC v1 1/1] page_pool: fix NULL dereference crash
-Date:   Fri, 21 Jan 2022 16:56:44 -0800
-Message-Id: <20220122005644.802352-2-colin.foster@in-advantage.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220122005644.802352-1-colin.foster@in-advantage.com>
-References: <20220122005644.802352-1-colin.foster@in-advantage.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MWHPR13CA0030.namprd13.prod.outlook.com
- (2603:10b6:300:95::16) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        id S231246AbiAVA5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 19:57:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58292 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231234AbiAVA5y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 19:57:54 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C78DB82163
+        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 00:57:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A37D2C340E1;
+        Sat, 22 Jan 2022 00:57:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642813072;
+        bh=7qO3ghq5boWW+8rjx83sQ2nzNXC9VOauMlIphLN1b+Y=;
+        h=From:To:Cc:Subject:Date:From;
+        b=k689i9zvAkTknvB7sMmYj7a147/XEU2HcT+JAsMuISZNmJUuDOV8xvksO2gMHMP8J
+         NDn1ZwRHfCtcl+Msb8NLq0xMV5W+hQjrpjCx6cilg3KRU/3gTmRpRd6cCaFavmDXE8
+         hc0RIx4Qb0jRjZewuPEunJhEmo1LEM9Yk3gB5vUOTRo1lPv5XABLruaJuT0Td6rVTp
+         SHvZUjNF87yE3cwra6Y4JYRPuEEKN7Gl5gketnNtsyt1bFGxRC2Ia2aYpJLQW1ThaG
+         lciZzUOI2VuIpO6d2cORF1eFIcNyoE2VIryp+O36ShF0TNxVS6zee7ub774XC4lqQ+
+         M9GkPd08C72IA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, pablo@netfilter.org,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        caixf <ooppublic@163.com>
+Subject: [PATCH net] ipv4: fix ip option filtering for locally generated fragments
+Date:   Fri, 21 Jan 2022 16:57:31 -0800
+Message-Id: <20220122005731.2115923-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0f740f91-3131-4724-95eb-08d9dd4216b7
-X-MS-TrafficTypeDiagnostic: CH2PR10MB4022:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR10MB4022E867D9E6F2146EC3BA89A45C9@CH2PR10MB4022.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +R8JoeIAv1wjn7ts0qbVzimsvKCLloe7qQMeIskZ1prECSwZ1Yo98er6+3V9MgOuRs8yRzFFaXxuO95dSxagfaEHlMjtq8uErSt4SNXCCjHflCmFrHgbZ3nvZVO1uLtA5+Waz+U8PgfhWfBreaDSeAMkaXfxSRQ0PDP8toA4C0mEGlZqBHW43F/fn2j8DGjRBJj+SsuaN++mnXz7sfDhpB/6RZUe+yVsqMP6HKQQLT55uFs3U46jUKP9t+tbFWTbHLwdHsNUTSHci6bWCwtDUhJbXOOdU3m77MgbMP7/tXZ0wuirBVj2rB8JTHIGanpqWfjpzKzv6DdfPPCfaR1z6LsYmpKWMwEvPwxazovr1JohAKGdOtzg7CwDR+043qogkeUZGa9+99i6TDnchEO0jysVLrehsuVhurKA3+rQCImIgsMbqpJehsD3zWmVeR1pEz+dZduhP8t6TS/CJIGJ20Q5jIZaVJ6Cgwf3D5IWY4O7pVYVrbdGA2/5G9I9dPOPGguPNgYEdemGaFt3OsaEL28nJQsaMgeH+YTPZeuRmR6sNR/VBAS+BzJFVcUlyHLmCaS4OPNPdC6hUK+vGIjfsARAB5NClTM3D56JGkQ9uroClmYnoVwmyGx/H6MMo0sgla8AYNElb4fg2PvGWD/Kshv0TE0QKuoKRhbLIUDCQxR3G/5rSt3OV3VjvUgViuZZfrWGY7O8E9bGhwQ4nsS/2A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(42606007)(39830400003)(376002)(366004)(136003)(346002)(396003)(2616005)(52116002)(2906002)(44832011)(6486002)(186003)(316002)(8676002)(6512007)(26005)(54906003)(8936002)(66946007)(66556008)(4326008)(66476007)(6666004)(4744005)(83380400001)(5660300002)(86362001)(38350700002)(38100700002)(6506007)(1076003)(508600001)(36756003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6ten8WLISnGr4S6lg4SEzkqCv/rPiXhtkle3veCmLk5jlCBHDow7xNij9fOg?=
- =?us-ascii?Q?rdkwL77Kz5cVYH3/R6XoIdBm2z+293Wyj7b/pHbzgIbRfckosdcGwzKNP5Vv?=
- =?us-ascii?Q?X38+r4O9oszyNhkrNFKFxqurdR79LgZ8HtOGDKLhFbQb32VkcPRyH6EMKGqC?=
- =?us-ascii?Q?261DLeUkJh1f7luAbkQsJ1GS7sm1GmJok4Fqf5dBOje6qgKy9UzB3QRZo9Ma?=
- =?us-ascii?Q?KYi9A13nwprmeLXmwmZDEEPI/YHrg9zgsqdYxz660usgnuWVEX77Cbiz3aFj?=
- =?us-ascii?Q?Hhi7mXLPfYBmon58LItx9xIMz3NcLQ5HZUNF53htsQoYNF/Wj1mxaES+1Hmj?=
- =?us-ascii?Q?tJtFEBopSlO3Kvw3ikzP9GpC5rBxc+xhTrOP9cFeniH4tVFy+1tDpbBZqsSF?=
- =?us-ascii?Q?nqv9DbC9Zs8ae+QTBvIkjb0WxoOwi+7xePpKh6bV9G30a/SrEZTwTwinnvFs?=
- =?us-ascii?Q?PB2bJ7z+kbC+jgLrnW3Nn7bl3DPuGNqHrfvKyb9X62T+4WUzMIfuHPGII+QY?=
- =?us-ascii?Q?4DFndn640ylO4xtKYRh6xAP/SegpIDa/so6nEN22hHQvJ+alLPC3BqWPVkrH?=
- =?us-ascii?Q?p+ZL4H6TDLI4yZlTxpz2uObjDkEAflBNAN7S2gkbau85ucpHVd4VO7x2c/5j?=
- =?us-ascii?Q?WxcQBn3mXaRgPwTZIb6TZrj4Q5LHbRpEK+eIoQv9tzUcXNczpHOcob5YCwXl?=
- =?us-ascii?Q?U5IP0ysCqiM5U9KZkAjiejrBr+WmuF95f9atxF6eJ4BGxihyZVPLoyJGLge+?=
- =?us-ascii?Q?34IdDoySsSBoIrrUgu4MgQSPQLJhbbquhDmhd0Fr5XiJDlPRs2rt/bjOZNx2?=
- =?us-ascii?Q?mwWkGTkHxDDd1faEcAUd9mMtZ7QWTBjMAp1jJQZHD6KH9MQYVCRenuiGVqmI?=
- =?us-ascii?Q?FRfT2Pzrq2SMx0qWMY131RXYdwALQ+p5aPbbX5pYfhCgS6fYward6zLUWxZm?=
- =?us-ascii?Q?G5ImRZKErH3y4uGI6KqSAoiZzLkg7Fpg2OZvgSWisPUDhcU8RI4xoWS8n+0r?=
- =?us-ascii?Q?kGd+9nvFBpLVRsMDbpxjebBoAByjvUZilDw8bgeDSLcMIgtOFMDtwgwAlpEI?=
- =?us-ascii?Q?RYy5jC+P5cawID5auv8/wrzUgBKO/PFaSokx8b/njuSOl+GsPuKl4+Lr8SXm?=
- =?us-ascii?Q?j5VUhL02mgXyzNx57IQXy+mizldo6OLrQHXHt9V3eLn7UikcB9qlv+klU8iZ?=
- =?us-ascii?Q?T+XeFdQULWrEPfWLtBHE3k+inCxKnbp8xFb8U8UhJqyVjOx2ERrk6uyQrDi0?=
- =?us-ascii?Q?c6ol/w9g8mBHrwKhHU5PZlXoVvl9tbkjo/qxO4CJfEdj6NkaOtVWK0xANKB5?=
- =?us-ascii?Q?lA53LLSM11zxMpuLAjDMF3lI1tjlAi1x/fObsKe0oT9+87mGEwZjP8IYnWC9?=
- =?us-ascii?Q?KTAd5kNuKqUlVxXp6Df8AG/dxEyb7HUNZkPWI8s6XHIf9yTXVFl6ceRlWFuj?=
- =?us-ascii?Q?ttD0g9HktQnIrZYicZu5cdWvJ8C8aE9BnxS4PgfcEYLjqQ1xVXylHydn0vD2?=
- =?us-ascii?Q?Ri8irO7DEO4IR8nwHXoXPVbi6yl5meoX+rNnLmqmm5Sm2ZPSX/T0FPNLHKuS?=
- =?us-ascii?Q?aoLws9+CbqqTfzsGnSPMgg3pvQp5f7/+owoBPzJBSDv7KP0t+qDqz0C1ET4b?=
- =?us-ascii?Q?qyo1yqOOLKQ2xfsz3thL8N+rQrhEJ81Mc4fX1Qy6bglOhuvEPR0Xx96GvQwe?=
- =?us-ascii?Q?jiOmJg=3D=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0f740f91-3131-4724-95eb-08d9dd4216b7
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2022 00:56:57.0377
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uCYP22+cH1KkrIulK2KC7JmC6PkOJrMuLr72FO5Hc2kK6hSa+6kZGhaimMgahZ7TIabl0ItIL4vTraKs/844TsGiZVvmFJrtMpVoLg8wKaM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR10MB4022
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check for the existence of page pool params before dereferencing. This can
-cause crashes in certain conditions.
+During IP fragmentation we sanitize IP options. This means overwriting
+options which should not be copied with NOPs. Only the first fragment
+has the original, full options.
 
-Fixes: 35b2e549894b ("page_pool: Add callback to init pages when they are
-allocated")
+ip_fraglist_prepare() copies the IP header and options from previous
+fragment to the next one. Commit 19c3401a917b ("net: ipv4: place control
+buffer handling away from fragmentation iterators") moved sanitizing
+options before ip_fraglist_prepare() which means options are sanitized
+and then overwritten again with the old values.
 
-Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+Fixing this is not enough, however, nor did the sanitization work
+prior to aforementioned commit.
+
+ip_options_fragment() (which does the sanitization) uses ipcb->opt.optlen
+for the length of the options. ipcb->opt of fragments is not populated
+(it's 0), only the head skb has the state properly built. So even when
+called at the right time ip_options_fragment() does nothing. This seems
+to date back all the way to v2.5.44 when the fast path for pre-fragmented
+skbs had been introduced. Prior to that ip_options_build() would have been
+called for every fragment (in fact ever since v2.5.44 the fragmentation
+handing in ip_options_build() has been dead code, I'll clean it up in
+-next).
+
+In the original patch (see Link) caixf mentions fixing the handling
+for fragments other than the second one, but I'm not sure how _any_
+fragment could have had their options sanitized with the code
+as it stood.
+
+Tested with python (MTU on lo lowered to 1000 to force fragmentation):
+
+  import socket
+  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+  s.setsockopt(socket.IPPROTO_IP, socket.IP_OPTIONS,
+               bytearray([7,4,5,192, 20|0x80,4,1,0]))
+  s.sendto(b'1'*2000, ('127.0.0.1', 1234))
+
+Before:
+
+IP (tos 0x0, ttl 64, id 1053, offset 0, flags [+], proto UDP (17), length 996, options (RR [bad length 4] [bad ptr 5] 192.148.4.1,,RA value 256))
+    localhost.36500 > localhost.search-agent: UDP, length 2000
+IP (tos 0x0, ttl 64, id 1053, offset 968, flags [+], proto UDP (17), length 996, options (RR [bad length 4] [bad ptr 5] 192.148.4.1,,RA value 256))
+    localhost > localhost: udp
+IP (tos 0x0, ttl 64, id 1053, offset 1936, flags [none], proto UDP (17), length 100, options (RR [bad length 4] [bad ptr 5] 192.148.4.1,,RA value 256))
+    localhost > localhost: udp
+
+After:
+
+IP (tos 0x0, ttl 96, id 42549, offset 0, flags [+], proto UDP (17), length 996, options (RR [bad length 4] [bad ptr 5] 192.148.4.1,,RA value 256))
+    localhost.51607 > localhost.search-agent: UDP, bad length 2000 > 960
+IP (tos 0x0, ttl 96, id 42549, offset 968, flags [+], proto UDP (17), length 996, options (NOP,NOP,NOP,NOP,RA value 256))
+    localhost > localhost: udp
+IP (tos 0x0, ttl 96, id 42549, offset 1936, flags [none], proto UDP (17), length 100, options (NOP,NOP,NOP,NOP,RA value 256))
+    localhost > localhost: udp
+
+RA (20 | 0x80) is now copied as expected, RR (7) is "NOPed out".
+
+Link: https://lore.kernel.org/netdev/20220107080559.122713-1-ooppublic@163.com/
+Fixes: 19c3401a917b ("net: ipv4: place control buffer handling away from fragmentation iterators")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: caixf <ooppublic@163.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/core/page_pool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/ip_output.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index bd62c01a2ec3..641f849c95e7 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -213,7 +213,7 @@ static void page_pool_set_pp_info(struct page_pool *pool,
- {
- 	page->pp = pool;
- 	page->pp_magic |= PP_SIGNATURE;
--	if (pool->p.init_callback)
-+	if (pool->p && pool->p.init_callback)
- 		pool->p.init_callback(page, pool->p.init_arg);
- }
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 57c1d8431386..e331c8d4e6cf 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -825,15 +825,24 @@ int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
+ 		/* Everything is OK. Generate! */
+ 		ip_fraglist_init(skb, iph, hlen, &iter);
  
+-		if (iter.frag)
+-			ip_options_fragment(iter.frag);
+-
+ 		for (;;) {
+ 			/* Prepare header of the next frame,
+ 			 * before previous one went down. */
+ 			if (iter.frag) {
++				bool first_frag = (iter.offset == 0);
++
+ 				IPCB(iter.frag)->flags = IPCB(skb)->flags;
+ 				ip_fraglist_prepare(skb, &iter);
++				if (first_frag && IPCB(skb)->opt.optlen) {
++					/* ipcb->opt is not populated for frags
++					 * coming from __ip_make_skb(),
++					 * ip_options_fragment() needs optlen
++					 */
++					IPCB(iter.frag)->opt.optlen =
++						IPCB(skb)->opt.optlen;
++					ip_options_fragment(iter.frag);
++					ip_send_check(iter.iph);
++				}
+ 			}
+ 
+ 			skb->tstamp = tstamp;
 -- 
-2.25.1
+2.31.1
 
