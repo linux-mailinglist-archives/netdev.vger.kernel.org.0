@@ -2,73 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CF9F496D71
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 19:51:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF4B3496D81
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 20:02:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234727AbiAVSvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jan 2022 13:51:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58574 "EHLO
+        id S229628AbiAVTCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jan 2022 14:02:41 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34912 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230437AbiAVSvS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 13:51:18 -0500
+        with ESMTP id S229472AbiAVTCl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 14:02:41 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62ABE60EA6;
-        Sat, 22 Jan 2022 18:51:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A92C340E4;
-        Sat, 22 Jan 2022 18:51:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D888E60EA8;
+        Sat, 22 Jan 2022 19:02:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20E6BC340E2;
+        Sat, 22 Jan 2022 19:02:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642877476;
-        bh=eDFJ0JvkUYQt0VUhHH3xRwKMAQTmz7VtgWrSGyhYsdo=;
+        s=k20201202; t=1642878160;
+        bh=SO36fcd9Ftwvt4jmydGyHNgBsA+Y6OnFF6+xWBsSfKY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=knla0GCS/tX+SXQsXvKOghLFoRA2cGwynzhpzR8WFQprnwyghvGmb3PbSrfU/RtH0
-         gQC9Sg/33EXmsQOTDXOxrpwgInXnZnTtI2F/sXIxXnqvzq7qwggTxg8Yl1EjGthpBv
-         6X8IETYGflMUpTtmvcjF41CW1/CKddiOqzYjTuoZlva8JWNth0gu0Dq217kSEyNTFA
-         QYQXrivZwnYWtEPZuyH5OWTda4E4P1ujykzTlf98WDLW9WvTS4JIcBEZC+CDkGgaeG
-         9JoQpTIVH9SUjv2pmDONFP1axnzCnC2o7GITWBUctdMULEWBiU7Vfb4+bBjG9buZ46
-         XrIMXYJllv7fA==
-Date:   Sat, 22 Jan 2022 13:51:13 -0500
+        b=JqEq5dbtbupfQ1SYtPOUX4Ef5KzYeLROmvNiDA7hScXrZepO6w0KRtCGBeqjAyFsU
+         SsIdypZIp+hSWpz8GyM1i6dCxp66Ahg7bw6uToNoAnjvEuEZTzRDK9O8J+SuNk2HtM
+         RLA4xQfrgR8Dnc/kc1rg42hIXk0yg1gnr0PCfiQ0nFJuELVSuaLLOePGD5T/LHX3UD
+         dM+BJeKfQm//v1iFKi1F6iUA4+Mfs0QLT4xq0LRCaKz/bQJIcr2vFEz4xRqUBgLtEI
+         4EpcqIi9UF03ABM4VZMU8/KNtO0wzKat/jpb//vql3vkRtOvuw4Gu+/qcN947Cir0c
+         a/zwz+RXibktQ==
+Date:   Sat, 22 Jan 2022 14:02:36 -0500
 From:   Sasha Levin <sashal@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.16 047/217] cirrus: mac89x0: use
- eth_hw_addr_set()
-Message-ID: <YexSIQFF/lXAt8L9@sashalap>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH AUTOSEL 5.16 108/217] net: dsa: ocelot: felix: Remove
+ requirement for PCS in felix devices
+Message-ID: <YexUzGPZVZrJ7RP2@sashalap>
 References: <20220118021940.1942199-1-sashal@kernel.org>
- <20220118021940.1942199-47-sashal@kernel.org>
- <20220118085641.6c0c7cc9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20220118021940.1942199-108-sashal@kernel.org>
+ <20220118122316.yas6mmyzog6said3@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220118085641.6c0c7cc9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220118122316.yas6mmyzog6said3@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 08:56:41AM -0800, Jakub Kicinski wrote:
->On Mon, 17 Jan 2022 21:16:50 -0500 Sasha Levin wrote:
->> From: Jakub Kicinski <kuba@kernel.org>
+On Tue, Jan 18, 2022 at 12:23:17PM +0000, Vladimir Oltean wrote:
+>Hello Sasha,
+>
+>On Mon, Jan 17, 2022 at 09:17:51PM -0500, Sasha Levin wrote:
+>> From: Colin Foster <colin.foster@in-advantage.com>
 >>
->> [ Upstream commit 9a962aedd30f7fceb828d3161a80e0526e358eb5 ]
+>> [ Upstream commit 49af6a7620c53b779572abfbfd7778e113154330 ]
 >>
->> Byte by byte assignments.
+>> Existing felix devices all have an initialized pcs array. Future devices
+>> might not, so running a NULL check on the array before dereferencing it
+>> will allow those future drivers to not crash at this point
 >>
->> Fixes build on m68k.
->>
+>> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+>> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 >> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
->> Signed-off-by: David S. Miller <davem@davemloft.net>
 >> Signed-off-by: Sasha Levin <sashal@kernel.org>
+>> ---
+>>  drivers/net/dsa/ocelot/felix.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+>> index f1a05e7dc8181..221440a61e17e 100644
+>> --- a/drivers/net/dsa/ocelot/felix.c
+>> +++ b/drivers/net/dsa/ocelot/felix.c
+>> @@ -823,7 +823,7 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+>>  	struct felix *felix = ocelot_to_felix(ocelot);
+>>  	struct dsa_port *dp = dsa_to_port(ds, port);
+>>
+>> -	if (felix->pcs[port])
+>> +	if (felix->pcs && felix->pcs[port])
+>>  		phylink_set_pcs(dp->pl, &felix->pcs[port]->pcs);
+>>  }
+>>
+>> --
+>> 2.34.1
+>>
 >
->Hi Sasha! You can drop all the eth_hw_addr_set() patches.
->They aren't fixes, I should have used a different verb, the point
->was to mention the arch where the driver is built. The patches are
->only needed in 5.17 where netdev->dev_addr becomes a const.
->
->I think that's patches 34-47, 53.
+>Please drop this patch from all stable branches (5.16, 5.15, 5.10).
 
-Will do, thanks!
+Dropped, thanks!
 
 -- 
 Thanks,
