@@ -2,155 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C062496971
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 03:41:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01000496977
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 03:48:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbiAVClC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 21:41:02 -0500
-Received: from mail-bn8nam12on2114.outbound.protection.outlook.com ([40.107.237.114]:38102
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229603AbiAVClB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jan 2022 21:41:01 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iUC5+NbE1e94xU4yzXm1tjhZrwUSHUmHUSPd/YLEZYO/wzaWM9TiLiCNpMj0oE35xohwHNcXkTUmk6q0200+ceowXAutzb1bru5hNJ1AD9tVVbisM2B7mK6C/f9phyR0xuYXAJ9l9hZw6FFZR1tsRKcGOIxrNvMRHiBxALsFH9pJOGEJsZzg+LoHxVosOhgSx+qBaEhn3e2mG2d3kp1c01UttWy+ZWTRAOji+r6NpaxNSawLu0A+rMcA/pdIbDArboayQ3xZMEs/LUogtz01f4/w3s+DOZL8OOeKVI7PUAIBXOuTbDMRq0vttFBdowTRZfeYS4F1k0697kBQ+G4gpQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=j9BoLsPO+w5iMqzv1V8UMsCDJ7hsdYtEGuw7b+EzV6c=;
- b=RFtcrqZrAeTgVRzzMUx62lB4NnAfmN9d6ZVMIOp+zymI36qhdJMmUpr5+4sM55keFPAFvGV+YgrRnbNIkaw5spL5uoUXuHz3toHGF7iHjelGlvx9hJwV2LYUZpLEIeCgdxmugB48ptwRb46bcxtaWAz5XUF/UvSNOrzHsCyJHyAw9nKBCvchiJFXXEciiBjzil5ZtVNCp4ENUmb4z3LucAQl6TUpTK9UxA+uYrmEj6k9OHUMsjougsVu7/pi5D59i+44/9yP3sMAm3QYgzgrKSBQQ9KyIlyYRmlOqRum3nkxn73/sOpPSpx1f/km469lnoX2n0xJPfpUdXzt+Rh8EA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
+        id S231629AbiAVCsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 21:48:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230513AbiAVCsD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 21:48:03 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C189C06173B;
+        Fri, 21 Jan 2022 18:48:03 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id 187so9464612pga.10;
+        Fri, 21 Jan 2022 18:48:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j9BoLsPO+w5iMqzv1V8UMsCDJ7hsdYtEGuw7b+EzV6c=;
- b=WoBs6cUJpfo6gwWjPxs5fICfASy5VpyzYaELekJsGq3wI4sTL/2hLrIuM4v3qyML1oF19Ud/t8pQTUyMQJf8fDKjZfEnChcoj1faPlKm82XTAWIUFe2XDsUT7vmazdaYmpVfHtlCRQBiNw6mbAN1eUSMpkSkjprQfEKOl4VPNqA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by DM5PR10MB1596.namprd10.prod.outlook.com
- (2603:10b6:3:14::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10; Sat, 22 Jan
- 2022 02:40:58 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4888.014; Sat, 22 Jan 2022
- 02:40:58 +0000
-Date:   Fri, 21 Jan 2022 18:40:51 -0800
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8k//EGYARWFYfi+4UhyOPO5EkW3yRaXLzIGT1w5hcYk=;
+        b=Jj+5PlZH651DEorUwIwXbjmmO8ahaqnhHuSbds4b1fh8sT0q/FQTrLvLcyisZXnD3k
+         QXpsRfK7g5vFxHjEquuIbP+pjuVKuYD/rcThbCZfJ55xf6o6HYpF2cZo23n5SEo4imS3
+         x5Dxpm/BtsZFfuGePMcfSi2ooSHtW/Y+NXcFi0CCstzB8zvwJhZBQjNcib66NPkrCEjz
+         xfOf7v6llVfRj51ISdacBs68t9/pA8ggNjHfY6/Bj4n17iyLRuRfY/rtYVKbxbzB4dh3
+         3lxt3diOSc3RfRz1pPSPM6aH0hjQd+zg2ezgSCtmXheDPuqbB9Zip3J8ip9JZ7OxycyV
+         sk3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8k//EGYARWFYfi+4UhyOPO5EkW3yRaXLzIGT1w5hcYk=;
+        b=XsKWwqbDcFZoAKt/1y0DOckh5xFLdiiJgib+NupY5crbChH5oC/mNGGbO+4J/Z9wUc
+         NYf8Y2yqdJab5EBp+cRrGe4/vaGmbU+LSS+Lmw6D4hAF9MK1HNXT0WxipvkMxAmOi37j
+         2NZzC6yrAKipBUfRBCzqqd1MJfMDYyEkH9J1GxEAkXlCjlW/BFJq4m5wtVOgsVCIfTqa
+         a51ofvkmzgOUrV1OOghWqIXnXrcNmbS/t0MgijPRBHVsyzGnmUt+sICHhstz66G8xFWL
+         k3o/LmmOsupu00WqbWmvWfitsw09rIs8g6iDiOU3JPxRYFNK+7IHK7zFp11jHIAW5aY1
+         nMJQ==
+X-Gm-Message-State: AOAM533R43/A5npMT8WN+w898cQ0TFPC/bRt4ds29T7m2jlYBpFQbGlw
+        qxAvEZ7r6WYPAZ8VrunYw3/a/xfBliV+TTxMNYs=
+X-Google-Smtp-Source: ABdhPJwut3siHc6zIJuQUKzsAI8eo3tKxOv1gdPuWsE4npYABDwLgSQ7bnUgURBzNrPzPevwl93v1bVOA283bAf6oBQ=
+X-Received: by 2002:a63:be49:: with SMTP id g9mr4782142pgo.375.1642819682689;
+ Fri, 21 Jan 2022 18:48:02 -0800 (PST)
+MIME-Version: 1.0
+References: <20220122005644.802352-1-colin.foster@in-advantage.com>
+ <20220122005644.802352-2-colin.foster@in-advantage.com> <CAADnVQK8xrQ92+=wm8AoDkC93SEKz3G=CoOnkPgvs=spJk5UZA@mail.gmail.com>
+ <20220122022047.GA803138@euler>
+In-Reply-To: <20220122022047.GA803138@euler>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 21 Jan 2022 18:47:51 -0800
+Message-ID: <CAADnVQ+UqKMfn+ZxgOkBcXidBWUGJDugU7gCEV+rGS6wscZjJw@mail.gmail.com>
+Subject: Re: [net RFC v1 1/1] page_pool: fix NULL dereference crash
+To:     Colin Foster <colin.foster@in-advantage.com>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
         Network Development <netdev@vger.kernel.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: Re: [net RFC v1 1/1] page_pool: fix NULL dereference crash
-Message-ID: <20220122024051.GA905413@euler>
-References: <20220122005644.802352-1-colin.foster@in-advantage.com>
- <20220122005644.802352-2-colin.foster@in-advantage.com>
- <CAADnVQK8xrQ92+=wm8AoDkC93SEKz3G=CoOnkPgvs=spJk5UZA@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQK8xrQ92+=wm8AoDkC93SEKz3G=CoOnkPgvs=spJk5UZA@mail.gmail.com>
-X-ClientProxiedBy: MWHPR15CA0033.namprd15.prod.outlook.com
- (2603:10b6:300:ad::19) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 66dbdd6e-d597-48b4-6dc2-08d9dd509eef
-X-MS-TrafficTypeDiagnostic: DM5PR10MB1596:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR10MB1596ABE141B37601DB4C19E0A45C9@DM5PR10MB1596.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: w3l4RMv8CjpMmAjns5cYFLrTSzzaYEQGUEpPffjaFs1VDat48/zhvjkS6Yp85zXNE9p4rpQmkyFxaK1NPhJPZNvsyJkaSYuXEVqN2hBEmYE+hgMxtBYq/MoxzO++OAd3OqFvQmu81ij4e357pfgzRVZo5zO0FXJc6ys4FSDo35h2sl3fNgwGPoWGgLiRR4bq/g8WcLr0lrOSmU6DVwBIGiqECu7dKQTmP3Mxtvq48CsZB7KrNz5rtEwXHNzgV5FrLK4GnM2GqJ5NhEpCtDW17C8YK9qJZziCTnIDgY1C7YgYbs5Dh7aeS4TtqvdTzjUY88HRTdXtoSlFemGki07h3EeaV1jpC+quQMb0sEHPUDTAbI5VsS1CyP7q7L6yDMEeYNKQcoW3tFlrPoV3cTxhyQP1MzZQtnxlK2fovQchCVWtdD9UeupqgtsTW6/Si26Qxrv4Oj9FWjs3dLryvJcrlJxPWeHuUL3Yn6EznqXWGz4jjm2R2wiqPzTKM6wxCopwVhXvblmb79VqWl9AH3Np0//R3pt5HfKOnhytmi9vpIoMV9jgJka5acES3Pcg+lbq+/jKNaVwijd0U586H4lbMNMGq6ge3j/idtVTQ1tLB+HubiCfUBoSVdqGccOJKThMfSFxYxR0B0j/3HHZoD2CCIt3s56X8HieOzd0op5o+dR5il5j2oHfyNAIypUZy3fdwDmvBCBEz599iwAKlLOjBw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(136003)(376002)(346002)(42606007)(366004)(39830400003)(396003)(33716001)(5660300002)(33656002)(6486002)(4326008)(66476007)(8936002)(38100700002)(44832011)(38350700002)(2906002)(66556008)(186003)(8676002)(53546011)(54906003)(7416002)(6506007)(316002)(9686003)(6512007)(52116002)(66946007)(508600001)(86362001)(26005)(6666004)(6916009)(83380400001)(1076003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mMtSS6OdGpKEDmE4XiM9Styg2lhHcGKOUtrM5lEthT/Om/idK1NyP1UF6o4U?=
- =?us-ascii?Q?ydyAV4cmcLbAphyCL2MQFpK0paN/LuNFQaStkwMMhqgJSB+bTgFDTrEkAie6?=
- =?us-ascii?Q?j2LmgUXxUjed81Zcqq3nvtvGOKfajTrN8/LJkFHBJ0cx4KcHbDQ+smH33onM?=
- =?us-ascii?Q?SrFINbVb9MZykcNqK3er6PK8BDUDluzFongQ2Hrmedy8WD4b2iDKRVznI5cV?=
- =?us-ascii?Q?QSrAysCg66KzBjjZzga6S5U17EhP99epUlQ0qvrfUQnZViSGkWg/RxlJYcqF?=
- =?us-ascii?Q?2RZxgSfVh9fCH4tvN73PHM26yNrHCEEqwC1HEXNkzrUh2UmdCRKKfQEzZl22?=
- =?us-ascii?Q?tGF3Ec2RmNRhNtOoSoQvKPchuUDmYU5GXjC6eJIDdfc25fzCu0XZAt5Cbx8t?=
- =?us-ascii?Q?arjC7ngf4uq41oQUCEEfmZa6pXi4bDC8yyw/Kdft6hCC852OHa5ZPpUZ/SY1?=
- =?us-ascii?Q?bN7uV+snG6qRnH0AlXrmZUjJA+ITC59S9/MaCnwZzYCWI9+hZz3gidRBcupm?=
- =?us-ascii?Q?vpCfvmkgGLZTgSIou/9V8Lo9Ple1eYR41T2jXLrBksnPM96q9BgJr92mvong?=
- =?us-ascii?Q?szPyyjFozQuCKeljpQSXw926QFxFeQmed1P9d9Ox7mXJgJTgvedVUCc5fyGu?=
- =?us-ascii?Q?emSjdr/+gYeq8J8Mhoyh6pAunhOI3r3FAwlbTLcMim1h2uQUoJfHn7kim+tS?=
- =?us-ascii?Q?hXgoUeRt6SZwVWQ9IWVoBy1ERDfbw7z6XjpvEVFebPkaUOonN9bk+loRG6X1?=
- =?us-ascii?Q?JxQamM44Jy8cmx3CLLeIez21W8ZSGviS3XWJGesSQfuk/vHhz9c9SV66U5a2?=
- =?us-ascii?Q?o6ie9DgUnJNhimtBqTEgy0Tc5W/tfUdKb4NCIq2Mqi2Z/XnZdyDg+cmglXz4?=
- =?us-ascii?Q?ijAh5VDcHtrWhA9b4MJWe0EzGr5Ky2M2YYDUvyGuSLnb+t1KHluULdaZcntb?=
- =?us-ascii?Q?45Dralu+VSl8j0u2Ok40EQjVP5R5NeOaPIvinBkE+ojm3odLWV5CnnkQ7ucX?=
- =?us-ascii?Q?x/xx3CRyewDjqR+HE3vTk2tqQ+t+Vh6b7i2As4vc98eWzoQQ/y43+VMs7YQ0?=
- =?us-ascii?Q?4RC+5vQ3y+9CogZGM80z22nlaCmPTORgkmKSf1QRg2/kcrFmbDfBb+qbmgLJ?=
- =?us-ascii?Q?BYeRRlTmVJoAao/tzsKyEx9gDmJMcsdkswpL38nykkjtG8m7vd8AWRowlja+?=
- =?us-ascii?Q?wj2LVzlFvWd8xbRhv5isQ36bvdrUoNilJcc+tgSiUrvKhONkGxkItTcJJmpF?=
- =?us-ascii?Q?u/mCNhbccCl5tdogOv6Nj99IDQNpP8Ax+RjosC0EvQNYs+Vcd2YViSFA5Mqb?=
- =?us-ascii?Q?DMiFAjIkYlpNAlDR2kxORxnfirvuDhDG+sl2a7om3qC6leS6pk9jsgnuqBR/?=
- =?us-ascii?Q?SBGXXSiTdgI/eABI/8kP7ZxiQ01laiagCBRhcrRYIUQo75FoPzqEEBvRdoLn?=
- =?us-ascii?Q?ChWmmXrlk5efz0Z2O1voumoX0LSIYMY7EOwhJXkRR961hdkPTcNrbglah2GW?=
- =?us-ascii?Q?P01R4rSNMRrux6PTXHKDOaxQUQYB2/CTHle69b9+XwOLnuExcGuguUUEBeY9?=
- =?us-ascii?Q?YOBZuopp5Y6BwrOxn0HV7qNzbl2sSaoPmQrwz93NNSI7ToWPV9Jt3gK77XHH?=
- =?us-ascii?Q?glerE2V1NY2uNLyGrLyHo9H1TYxUS/ImX64cNHUZdVPll78+f7DzDnL6WQ1s?=
- =?us-ascii?Q?B1vyt7QcLpt9joTbwgSiRgahS9c=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66dbdd6e-d597-48b4-6dc2-08d9dd509eef
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2022 02:40:58.6530
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qZTknn6VO8FZ7XNfwZLzbFGohNxR6ad9jdLVfvWb5O8Hsz8Qu9RbOHvhR/Mjl6rGLUd0yGrmKbiyb1LSeA2y7KRTcKq1DPriF/U3zmaDfNA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB1596
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 05:13:28PM -0800, Alexei Starovoitov wrote:
-> On Fri, Jan 21, 2022 at 4:57 PM Colin Foster
-> <colin.foster@in-advantage.com> wrote:
+On Fri, Jan 21, 2022 at 6:20 PM Colin Foster
+<colin.foster@in-advantage.com> wrote:
+>
+> On Fri, Jan 21, 2022 at 05:13:28PM -0800, Alexei Starovoitov wrote:
+> > On Fri, Jan 21, 2022 at 4:57 PM Colin Foster
+> > <colin.foster@in-advantage.com> wrote:
+> > >
+> > > Check for the existence of page pool params before dereferencing. This can
+> > > cause crashes in certain conditions.
 > >
-> > Check for the existence of page pool params before dereferencing. This can
-> > cause crashes in certain conditions.
-> 
-> In what conditions?
-> Out of tree driver?
-> 
-> > Fixes: 35b2e549894b ("page_pool: Add callback to init pages when they are
-> > allocated")
-> >
-> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > ---
-> >  net/core/page_pool.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> > index bd62c01a2ec3..641f849c95e7 100644
-> > --- a/net/core/page_pool.c
-> > +++ b/net/core/page_pool.c
-> > @@ -213,7 +213,7 @@ static void page_pool_set_pp_info(struct page_pool *pool,
-> >  {
-> >         page->pp = pool;
-> >         page->pp_magic |= PP_SIGNATURE;
-> > -       if (pool->p.init_callback)
-> > +       if (pool->p && pool->p.init_callback)
+> > In what conditions?
+> > Out of tree driver?
+>
+> Hi Alexei,
+>
+> Thanks for the quick response.
+>
+> I'm actively working on a DSA driver that is currently out-of-tree, but
+> trying to get it into mainline. But I'm not convinced that's the
+> problem...
+>
+> I'm using a beagelebone black with the cpsw_new driver. There are two
+> tweaks to that driver: the default vlan port is 10 and 11 so there's no
+> conflict between cpsw_new and DSA, and the ndev->max_mtu / rx_packet_max
+> have been increased to 1600 to allow for DSA frames larger than the
+> standard MTU of 1500.
+>
+> My focus is on the DSA driver, but the crash happens as soon as I run
+> "ip link set eth0 up" which is invoking the cpsw_new driver. Therefore I
+> suspect that the issue is not directly related to the DSA section
+> (ocelot / felix, much of which uses code that is mainline)
+>
+> As I suggested, I haven't dug into what is going on around the
+> page_pool yet. If there is something that is pre-loading memory at 1500
+> byte intervals and I broke that, that's entirely on me.
+>
+> [ removes 1600 byte MTU patch and pool patch ]
+>
+> I can confirm it still crashes when I don't modify the MTU in the
+> cpsw_new driver... so that doesn't seem to be it. That crash log is
+> below.
+>
+>
+> # ip link set eth0 up
+> [   18.074704] cpsw-switch 4a100000.switch: starting ndev. mode: dual_mac
+> [   18.174286] SMSC LAN8710/LAN8720 4a101000.mdio:00: attached PHY driver (mii_bus:phy_addr=4a101000.mdio:00, irq=POLL)
+> [   18.185458] 8<--- cut here ---
+> [   18.188554] Unable to handle kernel paging request at virtual address c3104440
+> [   18.195819] [c3104440] *pgd=8300041e(bad)
+> [   18.199885] Internal error: Oops: 8000000d [#1] SMP ARM
+> [   18.205148] Modules linked in:
+> [   18.208233] CPU: 0 PID: 168 Comm: ip Not tainted 5.16.0-05302-g8bd405e6e8a0-dirty #265
+> [   18.216201] Hardware name: Generic AM33XX (Flattened Device Tree)
+> [   18.222328] PC is at 0xc3104440
+> [   18.225500] LR is at __page_pool_alloc_pages_slow+0xbc/0x2e0
+> [   18.231222] pc : [<c3104440>]    lr : [<c0ee06c8>]    psr: a00b0013
+> [   18.237523] sp : c3104440  ip : 00000020  fp : c219e580
+> [   18.242778] r10: c1a04d54  r9 : 00000000  r8 : 00000000
+> [   18.248032] r7 : c36b9000  r6 : 00000000  r5 : c36b9084  r4 : 00000000
+> [   18.254595] r3 : c07a399c  r2 : 00000000  r1 : c325784c  r0 : dfa48bc0
+> [   18.261162] Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+> [   18.268343] Control: 10c5387d  Table: 836f0019  DAC: 00000051
+> [   18.274119] Register r0 information: non-slab/vmalloc memory
+> [   18.279825] Register r1 information: non-slab/vmalloc memory
+> [   18.285523] Register r2 information: NULL pointer
+> [   18.290260] Register r3 information: non-slab/vmalloc memory
+> [   18.295957] Register r4 information: NULL pointer
+> [   18.300693] Register r5 information: slab kmalloc-1k start c36b9000 pointer offset 132 size 1024
+> [   18.309569] Register r6 information: NULL pointer
+> [   18.314306] Register r7 information: slab kmalloc-1k start c36b9000 pointer offset 0 size 1024
+> [   18.322999] Register r8 information: NULL pointer
+> [   18.327736] Register r9 information: NULL pointer
+> [   18.332473] Register r10 information: non-slab/vmalloc memory
+> [   18.338257] Register r11 information: slab kmalloc-4k start c219e000 pointer offset 1408 size 4096
+> [   18.347301] Register r12 information: non-paged memory
+> [   18.352475] Process ip (pid: 168, stack limit = 0x7eb0d4ab)
+> [   18.358089] Stack: (0xc3104440 to 0xc3258000)
+> (too big a stack to show)
+>
+>
+> I can confirm that it crashes on net-next/master as well:
+> commit fe8152b38d3a, using the same DTB that defines the cpsw_new port
+> as the DSA master. Relevant DTS snippet from my in-development driver:
+>
+> +&spi0 {
+> +       #address-cells = <1>;
+> +       #size-cells = <0>;
+> +       status = "okay";
+> +
+> +       ocelot-chip@0 {
+> +               compatible = "mscc,vsc7512_mfd_spi";
+> +               spi-max-frequency = <2500000>;
+> +               reg = <0>;
+> +
+> +               ethernet-switch@0 {
+> +                       compatible = "mscc,vsc7512-ext-switch";
+> +                       ports {
+> +                               #address-cells = <1>;
+> +                               #size-cells = <0>;
+> +
+> +                               port@0 {
+> +                                       reg = <0>;
+> +                                       label = "cpu";
+> +                                       status = "okay";
+> +                                       ethernet = <&mac_sw>;
+> +                                       phy-handle = <&sw_phy0>;
+> +                                       phy-mode = "internal";
+> +                               };
+>
+>
+> I was hoping for an "oh, if a switch is set up in DSA the page_pool gets
+> set up this way" type scenario. I fully understand that might not be the
+> case, and the issue could be in something I'm doing incorrectly - it
+> certainly wouldn't be the first time.
+>
+> If this patch doesn't make sense I can look deeper. As mentioned, I'm
+> working to get this accepted upstream, so I'll have to figure it out one
+> way or another.
 
-And my apologies - this should be if (pool... not if (pool->p. kernelbot
-will be sure to tell me of this blunder soon
+With !pool tweak the patch makes sense.
 
-> >                 pool->p.init_callback(page, pool->p.init_arg);
-> >  }
-> >
-> > --
-> > 2.25.1
-> >
+Toke, wdyt?
