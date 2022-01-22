@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EBF34968EB
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 01:57:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 741854968ED
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 01:57:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231190AbiAVA47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 19:56:59 -0500
+        id S231202AbiAVA5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 19:57:00 -0500
 Received: from mail-bn8nam08on2114.outbound.protection.outlook.com ([40.107.100.114]:63832
         "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229457AbiAVA46 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jan 2022 19:56:58 -0500
+        id S231176AbiAVA47 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Jan 2022 19:56:59 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D3OlRgJWRiGIfXO1c1YtCVdEiEBmf7HxfH6ewbhr877RLANDPRmV6JPiZBfhU5PFnXhjwRXN+yJkKo/HGZTHDnGtZUVxUNliML5prLtgFr0mRVmC60JP1VbPQHsEPDZ3SJOsZAVObr5tYynfFbWIfZ1XgWPzc2ONwuGUrK3PMcEk5/k9WTy+bUj3bqmXL+Zo01f2O3NQreHKpoB5+OvxuLBEwPKIQ2EZ5XSQw5WVgVr+Z78Vsx6UxzA6iMEYeJ47yKDTXkxp8i5kYzEAD+R25S5WQrOKjiQa338bNw16ieRwAB057VnzNTtzlWX1wpzhsJPIDS6JFqF/+A5OvJjwFQ==
+ b=dUO04d5Cs2NmyrefcduTlEdgKhsACIQdnoIVG+TUWk/OR437Qf21oSnMzqjLa5W78q5YrY5RtHrfBupvkJdi3S8lJaSTeh65/uUC22e6v9tEwfMHIRZzcDMiTUphhbIKK2Pqy77mkBp+EUYTZ7vNR2c13nKRX78QNbVNWXXE18pf+Jidq6S5Goq7+mzLRfcLXfUtLihzpWUq/0gBg+3NzCzVQqJ9g3iZSvXInIwrB1+AULwbCCOYqk8+eppFwgpFJYGSl8IBCbHGQ5Bf6z7+ErXYyMsYEq7QRR0CzfuKw5Ki3x86Nqv1rIbEnxdkLbTCGNj2S/aRfbXs40doDUXfUQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=csOGeUerndB/exQwBHTXHTvA3zR/xmGXpFV4dZIU2wQ=;
- b=WhEIMsyhOG70zWOuk1uSNIzYt3SJL6skFzlE+1vhsGZ+efQdAvvuTriI0Vy8x4zSQwiaAzCloNNmE/da75VroEZJaL9GTh4OHahc1z9ia+WIp9QbfAaqUvMPv4UXNg7Fy95wIs/rgJwzbWOwb+BbjtMFXiAaAJMaAmUNt5jz+9LQhFM5l+1UO2zUUYlzMGaY/O0FLQzIgxZz7OHzIMzbKilk2fZjAxZFNIlKArc6XzVzq4cMdo62DIP6ElSTgtDr82KPTUuR6DWHQzH8GKeJZiDhvLz3+U7EedEJweksNz2p2GgczB2LfAyjaYa4AXiF8wXU5O2CBsWURFtOvpHVkA==
+ bh=V5sSXDpwZywJqIs52lS3AJHxZvX8PsfKexFxT4gu9nk=;
+ b=DRUMzxS1435Q/Kv8TdZb0tGRzJfaJDWsYyMtAyUxLKvC9GBmRTZ+oG78ha4H1ldFWHXUmfVfRru0bN+5j/bD2A8DFIpFVhtkIKItCd8pOu5LCU6W+Ji+HkzjoxH4UsywuOmLOFgJ/dsaAPXCcNdQ/83a/N3V3NOatlSXVC0JudKHxc/BTbUwsEdwM9joI9ercjYvN3ckw/mbEP0sMyp1/by5kWsg3whT6kaw20pu46j18RgPRFtRy1wWHhoLqSkJmo6tkQI5JgyLy+KzFjH8kkWTdkXQVNFRKtB4xCOwZl8N4NKrwQV5z4N5pIWbb4Y4HN2fieWjeB2H+rXY7xc+hQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=csOGeUerndB/exQwBHTXHTvA3zR/xmGXpFV4dZIU2wQ=;
- b=rV1v+7Hc5lN5mrIlZPZN95ll9aTK8iSgFop0ZrMUgtidcb7t3DGJLDCTomtQ48/aNp1XBov7y7gfenF+07Swfn033lQnrDzl0QogvoXP0nlnjIoxaTI5em0t3i9TKymbs/izLbmzArG+5AGBTxZf6X75pmqx1K1xBXxJ8K2A/2U=
+ bh=V5sSXDpwZywJqIs52lS3AJHxZvX8PsfKexFxT4gu9nk=;
+ b=ViF8sUObTyjSm3vO20hvRyjA4smPQba1udbdWVX4aJZ420bpP3h2g00wgX3S9kTmYOUpB+xyhab0Z0PAklOh5Ky7NCcKWwoFrH4NWaq+hmoV9yuAt+eNZdMuBqKQP2KxvlUj9GQBpUENGSJh79uJB1IWHcN97nSwKmNESy0/bzI=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37) by CH2PR10MB4022.namprd10.prod.outlook.com
  (2603:10b6:610:9::30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10; Sat, 22 Jan
- 2022 00:56:56 +0000
+ 2022 00:56:57 +0000
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4888.014; Sat, 22 Jan 2022
- 00:56:56 +0000
+ 00:56:57 +0000
 From:   Colin Foster <colin.foster@in-advantage.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
@@ -46,10 +46,12 @@ Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: [net RFC v1 0/1] Fix NULL pointer dereference in page_pool
-Date:   Fri, 21 Jan 2022 16:56:43 -0800
-Message-Id: <20220122005644.802352-1-colin.foster@in-advantage.com>
+Subject: [net RFC v1 1/1] page_pool: fix NULL dereference crash
+Date:   Fri, 21 Jan 2022 16:56:44 -0800
+Message-Id: <20220122005644.802352-2-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220122005644.802352-1-colin.foster@in-advantage.com>
+References: <20220122005644.802352-1-colin.foster@in-advantage.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: MWHPR13CA0030.namprd13.prod.outlook.com
@@ -57,85 +59,84 @@ X-ClientProxiedBy: MWHPR13CA0030.namprd13.prod.outlook.com
  (2603:10b6:301:35::37)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 30ce11d3-6d89-49b1-c4a6-08d9dd421642
+X-MS-Office365-Filtering-Correlation-Id: 0f740f91-3131-4724-95eb-08d9dd4216b7
 X-MS-TrafficTypeDiagnostic: CH2PR10MB4022:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR10MB40227BBEE64E46689CB2DA94A45C9@CH2PR10MB4022.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <CH2PR10MB4022E867D9E6F2146EC3BA89A45C9@CH2PR10MB4022.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: R+vJo7dz34uFzwGnDuDWhHc9Z92CGv027799U84gADJWXqzpxSwHIlbHRP56Aijge95pCni+/lTiZF+p3PNKILodeZfI9nmn9aG2FIvjtoUrb4b2DIFQusvmXksy1ybCsAUZ6O7m3kFaWmAnBavF2AXeF/+ON2s7iE1mwzOn9hgBayuM2UBGAb+E8mhco9E0mmE3IGVOIKNtRa3zdZuuJ2QEmg1hL5SY56udCOYMyQad7WjPMzBfxccFu5CKdbZtNc6QIx5AmF+fWBW4r2Ch1v/1Es5dt+RXH9XMNHQ5Ja3YUGLyOG0L2oEHsDOVGTmO6/KDCoRb4iAE6WmqIPz3ApTl/286O3YbZZ49Ucx4T4cithwct6flKUAoL79RPqqF6heLdRDiatIZP2GaAuva4AxZev6J6ikTT5O5TvHG+BiWl1hU1Zp/eZrdjnlVcUIMduoXiSPUILkR9E+LQvkO6nHFzW1OKnnOSROwQpoJRFapg/pAxCbY+URgh8GcF2DppZoB5k4uD6mHbh6IzLAoTPOQUi7qAS9WA7C6STllTRAQ25wNRg2XGX6qIsKOlARzUpQO+AHbQiqH2YSChj1CRYa0YRad5dzdD/7QjYqe7sXqTZ8pVMdOjlJYQhgsJmzFvGVgJlErJOFmPVaZVrpfOF6/j12IWhdCGhcTz84KVhf5dSUO16Ujp56l77dHhT/BFesNqIOVhI2KIoDtpbDwVQ==
+X-Microsoft-Antispam-Message-Info: +R8JoeIAv1wjn7ts0qbVzimsvKCLloe7qQMeIskZ1prECSwZ1Yo98er6+3V9MgOuRs8yRzFFaXxuO95dSxagfaEHlMjtq8uErSt4SNXCCjHflCmFrHgbZ3nvZVO1uLtA5+Waz+U8PgfhWfBreaDSeAMkaXfxSRQ0PDP8toA4C0mEGlZqBHW43F/fn2j8DGjRBJj+SsuaN++mnXz7sfDhpB/6RZUe+yVsqMP6HKQQLT55uFs3U46jUKP9t+tbFWTbHLwdHsNUTSHci6bWCwtDUhJbXOOdU3m77MgbMP7/tXZ0wuirBVj2rB8JTHIGanpqWfjpzKzv6DdfPPCfaR1z6LsYmpKWMwEvPwxazovr1JohAKGdOtzg7CwDR+043qogkeUZGa9+99i6TDnchEO0jysVLrehsuVhurKA3+rQCImIgsMbqpJehsD3zWmVeR1pEz+dZduhP8t6TS/CJIGJ20Q5jIZaVJ6Cgwf3D5IWY4O7pVYVrbdGA2/5G9I9dPOPGguPNgYEdemGaFt3OsaEL28nJQsaMgeH+YTPZeuRmR6sNR/VBAS+BzJFVcUlyHLmCaS4OPNPdC6hUK+vGIjfsARAB5NClTM3D56JGkQ9uroClmYnoVwmyGx/H6MMo0sgla8AYNElb4fg2PvGWD/Kshv0TE0QKuoKRhbLIUDCQxR3G/5rSt3OV3VjvUgViuZZfrWGY7O8E9bGhwQ4nsS/2A==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(42606007)(39830400003)(376002)(366004)(136003)(346002)(396003)(2616005)(52116002)(2906002)(44832011)(6486002)(186003)(316002)(8676002)(6512007)(26005)(54906003)(8936002)(66946007)(66556008)(4326008)(66476007)(6666004)(4744005)(83380400001)(5660300002)(86362001)(38350700002)(38100700002)(6506007)(1076003)(508600001)(36756003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?C0MSiNsITuz7Y0YO7jfZ5P2AMzOhZBwiRhM1gIfceVj+ZXCOMLGwueN3QAYj?=
- =?us-ascii?Q?rJm/hDyH07rFTPzJDCXJw5rJO+ddJtXvDL7/fGTbmGeSAD/+Pf3xKyir0BzM?=
- =?us-ascii?Q?Hqe3QFdDNb20wbJJ6482xoeQZV/Tp8lJvINF28eQE0GwhWlleSIly0tDZhSp?=
- =?us-ascii?Q?4CfC8XH5/3fC5DSgbqTUnGTR+gik+NbfoKU4FkN5C/Kt/TQMcV6XgnpaZV/o?=
- =?us-ascii?Q?mf+KNiLf4cb7122ft/WypKa2JxbpmtJ17FxNKUNsDJ2J3Ds0HaVtLeJzhvpI?=
- =?us-ascii?Q?VnrPpx11ydF/V3a9+18MZqQOG7kBsCywgOA1x2jBYNiHXWff38FxlipNp49/?=
- =?us-ascii?Q?yXYmh4ZNhr4dvw+bCtlbrECFqP5HRl64rBWWcVW7S3+WnfYgEBdQdo4emhIF?=
- =?us-ascii?Q?Syx3g5xTCHpjngvx2/UpisAKC5GAHfcX6/gGx/FOkSLXaht19QNgO20HwGmJ?=
- =?us-ascii?Q?wMgQUURqWGpuDbSsUUpdqgb9vLoSFeaOL7Fo5ZQqIhZ0BdxcCwiLtJ3Xiyhd?=
- =?us-ascii?Q?1BBaOm/MiWHZBqLrMI5NMt3EdfK9w7XJVVzbmW0CyYJFWsKDohWf71DoIkLj?=
- =?us-ascii?Q?uoF4ZpXwuqJoLAe20bOEMnovJ2020bgQNYfPYdeGs+e4lJjYR5mGPAzBfMPx?=
- =?us-ascii?Q?GhjNsFVruMsDxI9i6gxR1Wo69MgEZtLpS5sWTVaN5n2VFTeLuYevjoqHp+mn?=
- =?us-ascii?Q?Rb4xvJZDEFITthAK96Y0vXdCo39WUkFWOFeL2JE8kiTbS+rk7fdpy2rmfZYM?=
- =?us-ascii?Q?4t2pauYZE42yi/lCjyDPSJEiarsV2bf4AQy727KDnjJTZwwrXnDBVlSzJnyf?=
- =?us-ascii?Q?mDllrAsEsawmjDUzVlEh55Gh4f4yeFg8558O0FkwVg+5tw0LXg3xHgVhgGjl?=
- =?us-ascii?Q?UxsUd8HAMo5fesQlAN30e02M5Rv1PrPYjHTRkk/Vm9wfH4KIfd0aIbCTNtoE?=
- =?us-ascii?Q?YoDTek2mIt4pYOI9pc4VQn7V4EPl+zU3/rpCEL7yB7wtJUn78U2TrJn7wp1y?=
- =?us-ascii?Q?v3wE30eJgu33j3sXtncCrXijYJVWVBlE3MVv/zXzGN9sx2BzLyxWdhnq64lE?=
- =?us-ascii?Q?34eGZePG4kERF4RSazLslK8ujGa3fEaPYt5NRO8/jWl4eOLlGP4aB4uSSH5i?=
- =?us-ascii?Q?Hf4a1RFjZp5TW6dixVEBbAfYSwQHplKs3t8WIG5dGCOQFGyEgGENi50Pkb6n?=
- =?us-ascii?Q?vPre9h3No7djRhqNySVrW33hCSDa7RBLvMZwPqNwPLkR90idjSvdauh5HrnB?=
- =?us-ascii?Q?qdL5WffN6VoZds7bp85x0gXm9xbOkM7LM36v3yAw5r7Tpdi//0wcwXcWM5aN?=
- =?us-ascii?Q?uL4Uz9kZAO1kG1RJ22aDfK1Al91/hmh7vdxn2gQMm/ymAsutQLuvP16nmVRD?=
- =?us-ascii?Q?C3rfJrz1iMIowZ/GzJHsSU0OJLV0YwznY1bomnID9CQmpPHUTR1UgRi5fooU?=
- =?us-ascii?Q?1ktlnzrukIXmBkmGkNKQ99dCLvZGrRt7idgiU0/iWy4e6Bec2KcgvLXNUvzi?=
- =?us-ascii?Q?LcGZ7kcDC7EGOJGPG2TXbRppcU/zJ/ycwhgfzvQWcD64aiE15MXRsQfgP4wS?=
- =?us-ascii?Q?9OaPNobalIauPG/8sf9PL8jXziNbXcDFzrD7EeGeihLsnVZxtTdaVJfHwK6J?=
- =?us-ascii?Q?yg31RsnqgZdKaCZKpR6Oc7oxt4FNcyQ9f+v9MFbY1+7qIfuebV3EDhxtQ9sh?=
- =?us-ascii?Q?bAQfxA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6ten8WLISnGr4S6lg4SEzkqCv/rPiXhtkle3veCmLk5jlCBHDow7xNij9fOg?=
+ =?us-ascii?Q?rdkwL77Kz5cVYH3/R6XoIdBm2z+293Wyj7b/pHbzgIbRfckosdcGwzKNP5Vv?=
+ =?us-ascii?Q?X38+r4O9oszyNhkrNFKFxqurdR79LgZ8HtOGDKLhFbQb32VkcPRyH6EMKGqC?=
+ =?us-ascii?Q?261DLeUkJh1f7luAbkQsJ1GS7sm1GmJok4Fqf5dBOje6qgKy9UzB3QRZo9Ma?=
+ =?us-ascii?Q?KYi9A13nwprmeLXmwmZDEEPI/YHrg9zgsqdYxz660usgnuWVEX77Cbiz3aFj?=
+ =?us-ascii?Q?Hhi7mXLPfYBmon58LItx9xIMz3NcLQ5HZUNF53htsQoYNF/Wj1mxaES+1Hmj?=
+ =?us-ascii?Q?tJtFEBopSlO3Kvw3ikzP9GpC5rBxc+xhTrOP9cFeniH4tVFy+1tDpbBZqsSF?=
+ =?us-ascii?Q?nqv9DbC9Zs8ae+QTBvIkjb0WxoOwi+7xePpKh6bV9G30a/SrEZTwTwinnvFs?=
+ =?us-ascii?Q?PB2bJ7z+kbC+jgLrnW3Nn7bl3DPuGNqHrfvKyb9X62T+4WUzMIfuHPGII+QY?=
+ =?us-ascii?Q?4DFndn640ylO4xtKYRh6xAP/SegpIDa/so6nEN22hHQvJ+alLPC3BqWPVkrH?=
+ =?us-ascii?Q?p+ZL4H6TDLI4yZlTxpz2uObjDkEAflBNAN7S2gkbau85ucpHVd4VO7x2c/5j?=
+ =?us-ascii?Q?WxcQBn3mXaRgPwTZIb6TZrj4Q5LHbRpEK+eIoQv9tzUcXNczpHOcob5YCwXl?=
+ =?us-ascii?Q?U5IP0ysCqiM5U9KZkAjiejrBr+WmuF95f9atxF6eJ4BGxihyZVPLoyJGLge+?=
+ =?us-ascii?Q?34IdDoySsSBoIrrUgu4MgQSPQLJhbbquhDmhd0Fr5XiJDlPRs2rt/bjOZNx2?=
+ =?us-ascii?Q?mwWkGTkHxDDd1faEcAUd9mMtZ7QWTBjMAp1jJQZHD6KH9MQYVCRenuiGVqmI?=
+ =?us-ascii?Q?FRfT2Pzrq2SMx0qWMY131RXYdwALQ+p5aPbbX5pYfhCgS6fYward6zLUWxZm?=
+ =?us-ascii?Q?G5ImRZKErH3y4uGI6KqSAoiZzLkg7Fpg2OZvgSWisPUDhcU8RI4xoWS8n+0r?=
+ =?us-ascii?Q?kGd+9nvFBpLVRsMDbpxjebBoAByjvUZilDw8bgeDSLcMIgtOFMDtwgwAlpEI?=
+ =?us-ascii?Q?RYy5jC+P5cawID5auv8/wrzUgBKO/PFaSokx8b/njuSOl+GsPuKl4+Lr8SXm?=
+ =?us-ascii?Q?j5VUhL02mgXyzNx57IQXy+mizldo6OLrQHXHt9V3eLn7UikcB9qlv+klU8iZ?=
+ =?us-ascii?Q?T+XeFdQULWrEPfWLtBHE3k+inCxKnbp8xFb8U8UhJqyVjOx2ERrk6uyQrDi0?=
+ =?us-ascii?Q?c6ol/w9g8mBHrwKhHU5PZlXoVvl9tbkjo/qxO4CJfEdj6NkaOtVWK0xANKB5?=
+ =?us-ascii?Q?lA53LLSM11zxMpuLAjDMF3lI1tjlAi1x/fObsKe0oT9+87mGEwZjP8IYnWC9?=
+ =?us-ascii?Q?KTAd5kNuKqUlVxXp6Df8AG/dxEyb7HUNZkPWI8s6XHIf9yTXVFl6ceRlWFuj?=
+ =?us-ascii?Q?ttD0g9HktQnIrZYicZu5cdWvJ8C8aE9BnxS4PgfcEYLjqQ1xVXylHydn0vD2?=
+ =?us-ascii?Q?Ri8irO7DEO4IR8nwHXoXPVbi6yl5meoX+rNnLmqmm5Sm2ZPSX/T0FPNLHKuS?=
+ =?us-ascii?Q?aoLws9+CbqqTfzsGnSPMgg3pvQp5f7/+owoBPzJBSDv7KP0t+qDqz0C1ET4b?=
+ =?us-ascii?Q?qyo1yqOOLKQ2xfsz3thL8N+rQrhEJ81Mc4fX1Qy6bglOhuvEPR0Xx96GvQwe?=
+ =?us-ascii?Q?jiOmJg=3D=3D?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 30ce11d3-6d89-49b1-c4a6-08d9dd421642
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0f740f91-3131-4724-95eb-08d9dd4216b7
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2022 00:56:56.3971
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2022 00:56:57.0377
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: g6bYoowf37FopHv4deTvw1oIBsM/mYblV+kneUnnaA06xzM3Thr1JctU2/P7S7hNwPJBHdmif9pEjnS18AggueAIbIDP+I5CMLghfDTxGwU=
+X-MS-Exchange-CrossTenant-UserPrincipalName: uCYP22+cH1KkrIulK2KC7JmC6PkOJrMuLr72FO5Hc2kK6hSa+6kZGhaimMgahZ7TIabl0ItIL4vTraKs/844TsGiZVvmFJrtMpVoLg8wKaM=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR10MB4022
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I'm not sure if there's something wrong with my config, but as soon as I
-run "ip link set eth0 up" I would get a crash that would invoke a
-seemingly endless memory dump.
+Check for the existence of page pool params before dereferencing. This can
+cause crashes in certain conditions.
 
-git bisect led me to the page_pool, where there isn't the existence of
-page_pool_params inside of the pool. Therefore the check of
-if (pool->p.init_callback) would cause a crash.
+Fixes: 35b2e549894b ("page_pool: Add callback to init pages when they are
+allocated")
 
-I have some out-of-tree patches currently, so I'm not sure if my case is
-valid. Specifically the MTU of cpsw_new has been updated to 1520 to
-account for my setup (beaglebone with eth0 as the CPU port of a DSA).
-I'm also not familiar with much of net/core.
-
-If it is valid that page_pool might not have page_pool_params in a DSA
-scenario, then hopefully this patch is sufficient. If it isn't valid and
-something I'm doing is invoking a memory issue - then I've got my work
-cut out for me :-)
-
-
-Colin Foster (1):
-  page_pool: fix NULL dereference crash
-
+Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+---
  net/core/page_pool.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index bd62c01a2ec3..641f849c95e7 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -213,7 +213,7 @@ static void page_pool_set_pp_info(struct page_pool *pool,
+ {
+ 	page->pp = pool;
+ 	page->pp_magic |= PP_SIGNATURE;
+-	if (pool->p.init_callback)
++	if (pool->p && pool->p.init_callback)
+ 		pool->p.init_callback(page, pool->p.init_arg);
+ }
+ 
 -- 
 2.25.1
 
