@@ -2,151 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABC0E496C48
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 13:12:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C854496C55
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 13:33:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234469AbiAVMMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jan 2022 07:12:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50890 "EHLO
+        id S229738AbiAVMdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jan 2022 07:33:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234460AbiAVMMc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 07:12:32 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2CEEC06173B
-        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 04:12:31 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id p15so7531244ejc.7
-        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 04:12:31 -0800 (PST)
+        with ESMTP id S229546AbiAVMdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 07:33:02 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B92C06173B
+        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 04:33:02 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id h29so2064948wrb.5
+        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 04:33:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7/xqh+L4KZEjLRf9x358Hf7dwqbrJnWC0XErPPybLJk=;
-        b=eHMJ72qMZdSaI1jj6EzWWRj60ygDKfKzDnLh6EmAWLWNCabK3ZwldgKomWZA9TB0HM
-         P6oGT5DV5wma2CROWhnXF6JAsLeMN1GhufnE+f5VWMS575Nt0eFViaJOkjciCHHiR3s4
-         NnNL2/fjFAtylRmhed6hyvERrFm4l9KIzNV97/5ZQ3upqDMqBo24Xdbk49QrfIgCQ4G4
-         hCwLNiEHZYOt60s3IahWkqkaKuIiJIDaK68QdT0iRM7z5MTekARwPtfcmA/b0h/1D9Zg
-         rZDKdfPLoL+WvfgjvrLoqmd2LFlUqDSYq9rao/wtYQlLC9Z//6ncJqM7ocLuUv+HkIgZ
-         Bcsg==
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=QZNU9fj7yz/QO3BkTv7wNCRHLAXKVND9PUuJ109fZWI=;
+        b=BTMqHlbeUsJ00U5H0bdJR0yS1lS6pzRNIWRx6hGvjr7xTF9sFVyBt4cl2Cy0RlPPYq
+         G6xKx+1h72j5I/rHweC/NWPndqWmrwzss4hcVR7xqOWa0bO9PhdfS4DY2Bb2SzcuGrfO
+         PKUU1/3JAE2ArkYEQ8HgBeBQv8247Dx0a7lc96kJUH93gtJb61WnIfpPUyF7sXDDntM6
+         6A3q/lBiuyUJFJTkf2lR28reCYpLqLyqf0j3v70T7eiaJlerKTNsm7P4wM6mefT/DyLM
+         1OVRgFRAQSuCbDcP3Nh+ns5T2vgirDffTUjebgp43yASgLi6quXyPz1hQ9SdgzD6uu/d
+         VcYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7/xqh+L4KZEjLRf9x358Hf7dwqbrJnWC0XErPPybLJk=;
-        b=Sm8pO1XYj3u6ASyQV2v5sTFcyK0FupbalPQoDxgiN20O5GRtFwOugM+2BT2ASvmGE8
-         Rhnyh7y4VQ44Sqn06uq0iEBVuGrRnN50nfgqR8Hcp1BlgBbbTcXOKqLJyPTa+QJ6XI8L
-         eaDHVz4QdLYbMXKhRg0mTYKLw1uvZmzKcFdkxQxJxrdehsZUPxgRVH3FKE1zkQEr6q8O
-         dVFP/+joN9RnFsc7l6AULafKrE7euwYtBP2otCeeOgYr+1fpCQaCIUnjKd1dGDLMfsMm
-         pcqoV57lB8pbs/9JdLfpRChKxv5crcrWNNDvx473OA8Caq2ZbnNOi9io2lb8rNndRRVD
-         Zy6g==
-X-Gm-Message-State: AOAM532O4HmLlDv5H596peDZrhkoNY/8lj+60TqCO5BMx8WkVG2wxEud
-        8qZ+GlrmLWPfCzJ1T2irv5rmF7DcDFs=
-X-Google-Smtp-Source: ABdhPJx4RaBmOM/RSB+AuwQdz/SdtkRS4lm0LoZdS6P5nMtZ2hAquax73wh8+dy4iXi+h+bwjUOqCQ==
-X-Received: by 2002:a17:906:3004:: with SMTP id 4mr6282531ejz.579.1642853550406;
-        Sat, 22 Jan 2022 04:12:30 -0800 (PST)
-Received: from nz (host81-129-87-131.range81-129.btcentralplus.com. [81.129.87.131])
-        by smtp.gmail.com with ESMTPSA id v10sm3626060edx.36.2022.01.22.04.12.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Jan 2022 04:12:29 -0800 (PST)
-Date:   Sat, 22 Jan 2022 12:12:28 +0000
-From:   Sergei Trofimovich <slyich@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-Subject: Re: atl1c drivers run 'napi/eth%d-385' named threads with
- unsubstituted %d
-Message-ID: <20220122121228.3b73db2a@nz>
-In-Reply-To: <YetjpvBgQFApTRu0@lunn.ch>
-References: <YessW5YR285JeLf5@nz>
-        <YetFsbw6885xUwSg@lunn.ch>
-        <20220121170313.1d6ccf4d@hermes.local>
-        <YetjpvBgQFApTRu0@lunn.ch>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=QZNU9fj7yz/QO3BkTv7wNCRHLAXKVND9PUuJ109fZWI=;
+        b=td21Lc5dtwmR0ZFIBdMYiwVjuRJor+HQBWXZciKpsMS9FLSmXGLbCNhm5f8z0G3pCS
+         GheftqKpl8QpoYYrPBUgY1Ic+oMqU5ejrESvRjylIv3+0qiqOfpFzC+H5QdTQtod/r02
+         QMqCkZX0d27tASOM6Yvuary78KNHC1py7FQYAvXi3hUgqEqA/gFBN+DXJinLGxuoLZ0P
+         ovf/fggq/ZKkYQYuTaiemhYYX/Q0hsNtw36ohJRBbVEwHM8cpa7hd2zK8Co/lNtatu9j
+         2lTtxU6uBryMAVlWBL8oClWxVSTHex5C9ZZBpFnsqL71Xz7lP/yE9d5usbgg/yxdDcoK
+         7CKw==
+X-Gm-Message-State: AOAM530W1iNMDXNUWLVkbj5harn6zggf6pUoFIOW+BPD0J7eEM6tKivE
+        pMs+/mWUxCisozil5kCYSF+7zHv+uPLahVJAII0=
+X-Google-Smtp-Source: ABdhPJzL9FtlbVSYiOZYm/z5cumbUUp83/F9Gbu2TUqp4+KZugCnq6td6jUtcCDSYsyGfMK/Y3DmisB4S/m+UOaZLUQ=
+X-Received: by 2002:adf:8bdd:: with SMTP id w29mr7230863wra.666.1642854780797;
+ Sat, 22 Jan 2022 04:33:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Sender: miriamkipkalya10@gmail.com
+Received: by 2002:adf:a554:0:0:0:0:0 with HTTP; Sat, 22 Jan 2022 04:33:00
+ -0800 (PST)
+From:   "helen.carlsen" <helen.carlsen26@gmail.com>
+Date:   Sat, 22 Jan 2022 13:33:00 +0100
+X-Google-Sender-Auth: D1JbN1PxeIa0P2DukOhnNkUykp8
+Message-ID: <CAERXgTm9zMx5tOKDTyAqPxnz6uYx8w3ENhR3Gz3ZG7d4YMfeJg@mail.gmail.com>
+Subject: Dearest,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 22 Jan 2022 02:53:42 +0100
-Andrew Lunn <andrew@lunn.ch> wrote:
+ Dearest,
 
-> > > So please give this a try. I've not even compile tested it...
-> > > 
-> > > iff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-> > > index da595242bc13..983a52f77bda 100644
-> > > --- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-> > > +++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-> > > @@ -2706,6 +2706,10 @@ static int atl1c_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
-> > >                 goto err_alloc_etherdev;
-> > >         }
-> > >  
-> > > +       err = dev_alloc_name(netdev, netdev->name);
-> > > +       if (err < 0)
-> > > +               goto err_init_netdev;
-> > > +
-> > >         err = atl1c_init_netdev(netdev, pdev);
-> > >         if (err) {
-> > >                 dev_err(&pdev->dev, "init netdevice failed\n");
-> > > 
-> > > If this works, i can turn it into a real patch submission.
-> > > 
-> > >    Andrew  
-> > 
-> > 
-> > This may not work right because probe is not called with RTNL.
-> > And the alloc_name is using RTNL to prevent two devices from
-> > getting the same name.  
-> 
-> Oh, yes. I looked at some of the users. And some do take rtnl before
-> calling it. And some don't!
-> 
-> Looking at register_netdev(), it seems we need something like:
-> 
-> 	if (rtnl_lock_killable()) {
-> 	       err = -EINTR;
-> 	       goto err_init_netdev;
-> 	}
-> 	err = dev_alloc_name(netdev, netdev->name);
-> 	rtnl_unlock();
-> 	if (err < 0)
-> 		goto err_init_netdev;
-> 
-> 
-> It might also be a good idea to put a ASSERT_RTNL() in
-> __dev_alloc_name() to catch any driver doing this wrong.
 
-Thank you Andrew! I used this second version of your patch
-against 5.16.1 and it seems to work:
+ I sent this mail praying it will found you in a good condition of
+health, since I myself are in a very critical health condition in
+which I sleep every night without knowing if I may be alive to see the
+next day.am Mrs.Helen John carlsen, wife of late Mrs.Helen John
+carlsen, a widow suffering from long time illness.I have some funds I
+inherited from my late husband, the sum of($ 11.000.000,eleven million
+dollars) my Doctor told me recently that I have serious sickness which
+is cancer problem. What disturbs me most is my stroke sickness.Having
+known my condition, I decided to donate this fund to a good person
+that will utilize it the way i am going to instruct herein. I need a
+very honest and God fearing person who can claim this money and use it
+for Charity works,for orphanages, widows and also build schools for
+less privileges that will be named after my late husband if possible
+and to promote the word of God and the effort that the house of God is
+maintained.
 
-    $ sudo ping -f 172.16.0.1
+I do not want a situation where this money will be used in an ungodly
+manner.That's why am taking this decision.am not afraid of death so I
+know where am going.I accept this decision because I do not have any
+child who will inherit this money after I die.Please I want your
+sincerely and urgent answer to know if you will be able to execute
+this project, and I will give you more information on how the fund
+will be transferred to your bank account.am waiting for your reply.
 
-    613 root 20 0 0 0 0 S 11.0 0.0 0:07.46 napi/eth0-385
-    614 root 20 0 0 0 0 R  5.3 0.0 0:03.96 napi/eth0-386
-
-Posting used diff as is just in case:
-
-Tested-by: Sergei Trofimovich <slyich@gmail.com>
-
---- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-+++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-@@ -2706,6 +2706,15 @@ static int atl1c_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto err_alloc_etherdev;
- 	}
-
-+	if (rtnl_lock_killable()) {
-+		err = -EINTR;
-+		goto err_init_netdev;
-+	}
-+	err = dev_alloc_name(netdev, netdev->name);
-+	rtnl_unlock();
-+	if (err < 0)
-+		goto err_init_netdev;
-+
- 	err = atl1c_init_netdev(netdev, pdev);
- 	if (err) {
- 		dev_err(&pdev->dev, "init netdevice failed\n");
-
--- 
-
-  Sergei
+Best Regards,
+Mrs.Helen John carlsen,
