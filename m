@@ -2,69 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91F75496917
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 02:09:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A53249691D
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 02:12:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230465AbiAVBJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 20:09:02 -0500
-Received: from mail-ot1-f52.google.com ([209.85.210.52]:44730 "EHLO
-        mail-ot1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230013AbiAVBJA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 20:09:00 -0500
-Received: by mail-ot1-f52.google.com with SMTP id a10-20020a9d260a000000b005991bd6ae3eso13856311otb.11;
-        Fri, 21 Jan 2022 17:09:00 -0800 (PST)
+        id S231479AbiAVBM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 20:12:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48118 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230013AbiAVBM0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 20:12:26 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8107EC06173B;
+        Fri, 21 Jan 2022 17:12:26 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id d15-20020a17090a110f00b001b4e7d27474so10491193pja.2;
+        Fri, 21 Jan 2022 17:12:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eF7l1EMItic8HXnzow8ikDlVmQVMga9j0gwwj6e0+xM=;
+        b=dWpRwR6M3nZvqcY9+bWAl0nwignbdlGztsjsncKa4yrawHasah4JG1vHWpgpc/rfIf
+         NMjQLSVdOjy4kb5OcH/y/+OsnyIo0uTAi3lDgS/if7CRQ+zH6OcCcsaiv18e/OD5SutY
+         78P1Ta5IwKc9s1RLpiCcCO/UkiEyeKWnJuSPu5Ajzaz5saCA/cYFbfTv6X0HrmHJE3c1
+         ZuKO0f4hsbVq9RV7UOrkD6Nr4rS2wISEsNB06o039rzlEJhMcB9tMc3r9A9CFVf4sTeL
+         xTqUWse/LJaqp9KHIX8yXSi6geEnbSOkYHeVjZvQxTHHLXdjkXj3OQpGYmzSbvnD7x63
+         X1zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zzhzglmsoAM7Ny9GaYHPX3KggB0T0RmcO/TZVXvApo4=;
-        b=TIH04tp+UerCyyqUJCzA+VkJGMWqdDPORTa8U3EAOvSHeR/vOG1Kq8lJaw0my/5LxR
-         Fd9OVl9ewdVKxgZgv4SLy90R833duCY4+WKW/t9sWXBuYuIMVZIhOKtAILwVTyjeVjqB
-         AZX/7BmZRoRrRh40lJj0cCE/Q0+wx65G4/OXGbOCGtp5ih3AnKPqPU5Yz6Fck8uTKN0z
-         vXM3CCIz+l5mbr4FyyvyYpGutXCGACcNvUZTm5UV9WdvXWobeUvvQ0Z6fnprVLu24X30
-         6VTLJXslJdqECTGp9tdFPtKt3PrP8r13k3ejILRnpU3Y1RJVIcopsbl08hRmeOnUd9Dc
-         ehxA==
-X-Gm-Message-State: AOAM533LDE/g1SjlGkbeLxica3wRdjRGxjydwY+7kiCmsR2Zf3Rt1YCA
-        OsW6lmdu2nfSf2KZANoKCg==
-X-Google-Smtp-Source: ABdhPJyLDbAkOUdPRhZDwPr94FDjb9zmxxOfhr+SGVS+I7nZM9u0m88j7NWUBV4a09q+sOUSGH9Mgw==
-X-Received: by 2002:a9d:74c2:: with SMTP id a2mr4408801otl.23.1642813739978;
-        Fri, 21 Jan 2022 17:08:59 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id k14sm1538003ood.15.2022.01.21.17.08.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 17:08:59 -0800 (PST)
-Received: (nullmailer pid 1975721 invoked by uid 1000);
-        Sat, 22 Jan 2022 01:08:58 -0000
-Date:   Fri, 21 Jan 2022 19:08:58 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, marex@denx.de, woojung.huh@microchip.com,
-        andrew@lunn.ch, UNGLinuxDriver@microchip.com, olteanv@gmail.com,
-        f.fainelli@gmail.com, kuba@kernel.org, robh+dt@kernel.org,
-        vivien.didelot@gmail.com
-Subject: Re: [PATCH net-next 1/2] net: dsa: microchip: Document property to
- disable reference clock
-Message-ID: <YetZKi0nfphamvkd@robh.at.kernel.org>
-References: <20220112182251.876098-1-robert.hancock@calian.com>
- <20220112182251.876098-2-robert.hancock@calian.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eF7l1EMItic8HXnzow8ikDlVmQVMga9j0gwwj6e0+xM=;
+        b=aVEju8f+yAPnHgbJDEAWuuQSI3sDO8btYSSyFuZcFQNR/OcfO21tlPoiMzHR4/EQvs
+         mp3nVnyZv9pj5JkKViaoVHRoTjWmWiZmfyjJpUZ76/zydmPHtGMTJZpL0iBzJFuRmfKp
+         IkWyrkNpGXxdjg1PEDQt0OxL5tTWOI3XBWTl51+GD1gS36FrAZTDpOURRqN89wZf0wXm
+         rOLczY1zATI1OazGODjsjT0QO1h9UyzaIz57hBMii6hdT1DSIVYgUpTzla6Q6pjuqjHD
+         12VscRhbjdBHkdE6+mu2ZEddkYqkCh+htonFNHVnAo58bukEb76LA4YyPV86iVILqdVR
+         QMrg==
+X-Gm-Message-State: AOAM533M1OGYLoowz+6UbwyF8rFDe1OQVEmjTYnUqzBZGetdqpO/+UDv
+        qh7oSSaoqHTSMm70oo87TCS1CyXeoC4AvLzyIXM=
+X-Google-Smtp-Source: ABdhPJxBtkUY5VxHayzinqRPe3mhFLFzbt7okZ57+l7dRyZrjrNeGXiUfy7isgaQaCHYw7X9/d0Rlqcu76vMGjYx1kA=
+X-Received: by 2002:a17:90a:c78b:: with SMTP id gn11mr3243207pjb.138.1642813945938;
+ Fri, 21 Jan 2022 17:12:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220112182251.876098-2-robert.hancock@calian.com>
+References: <20220121194926.1970172-1-song@kernel.org> <20220121194926.1970172-7-song@kernel.org>
+ <CAADnVQK6+gWTUDo2z1H6AE5_DtuBBetW+VTwwKz03tpVdfuoHA@mail.gmail.com>
+ <7393B983-3295-4B14-9528-B7BD04A82709@fb.com> <CAADnVQJLHXaU7tUJN=EM-Nt28xtu4vw9+Ox_uQsjh-E-4VNKoA@mail.gmail.com>
+ <5407DA0E-C0F8-4DA9-B407-3DE657301BB2@fb.com>
+In-Reply-To: <5407DA0E-C0F8-4DA9-B407-3DE657301BB2@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 21 Jan 2022 17:12:14 -0800
+Message-ID: <CAADnVQLOpgGG9qfR4EAgzrdMrfSg9ftCY=9psR46GeBWP7aDvQ@mail.gmail.com>
+Subject: Re: [PATCH v6 bpf-next 6/7] bpf: introduce bpf_prog_pack allocator
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 12 Jan 2022 12:22:50 -0600, Robert Hancock wrote:
-> Document the new microchip,synclko-disable property which can be
-> specified to disable the reference clock output from the device if not
-> required by the board design.
-> 
-> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-> ---
->  Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
+On Fri, Jan 21, 2022 at 5:01 PM Song Liu <songliubraving@fb.com> wrote:
+>
+> In this way, we need to allocate rw_image here, and free it in
+> bpf_jit_comp.c. This feels a little weird to me, but I guess that
+> is still the cleanest solution for now.
 
-Acked-by: Rob Herring <robh@kernel.org>
+You mean inside bpf_jit_binary_alloc?
+That won't be arch independent.
+It needs to be split into generic piece that stays in core.c
+and callbacks like bpf_jit_fill_hole_t
+or into multiple helpers with prep in-between.
+Don't worry if all archs need to be touched.
