@@ -2,68 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B72AD49699E
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 04:41:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D832C4969F9
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 05:05:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231438AbiAVDlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jan 2022 22:41:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43644 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbiAVDlB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 22:41:01 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25002B81E19;
-        Sat, 22 Jan 2022 03:41:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F242C340E1;
-        Sat, 22 Jan 2022 03:40:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642822858;
-        bh=igEU1QuiHanlHIFCByVGoT1A/m68UIGIsY0mOD/CqdA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Lff2RYkwS/qEobQS3/JbW6I+jGSUHhKefhpZqvIgA6DA/PEO+RzzADhCif78S53ew
-         sQtqIDERna42Ql0BpsqBhyroFNTjKa8med8QoXj55IZRz1lwpwVQB+wXmmzobcr3zA
-         9yzqrxXJ+vJ29E2hd8Csf/Hgzp5bPr+uZFg6MIqJz352EArJ4u/Po6/dbs3CepmCLP
-         Oos9PV/f1QOaahscV/I6E1Cn48FGhjNyVl0W2nV3g8vLWO0/3ICtWfKwaWbjT0Axit
-         t6PUbqheqY8I+cYhdphyh4ltAK+joFk5dVBncOpaAh14GqOWIrPkzorVpAGrLDsQYZ
-         QYMB7P1P4U2xA==
-Date:   Fri, 21 Jan 2022 19:40:57 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jeffrey Ji <jeffreyjilinux@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Brian Vazquez <brianvv@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jeffreyji <jeffreyji@google.com>
-Subject: Re: [PATCH net-next] net-core: add InMacErrors counter
-Message-ID: <20220121194057.17079951@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220122000301.1872828-1-jeffreyji@google.com>
-References: <20220122000301.1872828-1-jeffreyji@google.com>
+        id S232382AbiAVEFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jan 2022 23:05:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231825AbiAVEFr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jan 2022 23:05:47 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDE09C06173B
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 20:05:46 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id z26so2996329lji.6
+        for <netdev@vger.kernel.org>; Fri, 21 Jan 2022 20:05:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=uq8tJCkKOiXoyBiS8gGIh+j+7+mkLzrEHB0wcJe3xaY=;
+        b=Lm1FIOt4GJGAyzbLiNuJcjCAlkM1THpp6MfMUyKgeP5WS8HTilKEfjVDtgmRWR8Gx2
+         CM2OYMHS6FQu1Uw8UpDqj7LClXRDMSe9tIq9JzLgYkkQCRuoDY1joRqZXKaMkib8aJLQ
+         40sZJweKDcLzjr5Rr9azdTocaHoikwuMXooZMUbgmXwIAKmq4Kv0fdRmjxC4G/aiS8qJ
+         d7wqUv0lGku4FvsdAxQv+OcHn5Td57Ix4YIB6LB6BFI0uD+fsQNNVuUCtmLXoACuSXAZ
+         jYHVUwxya+MxGhGu2h0W80Cg/sLcgAnTNzGbZ8CPgBNDC6fcSEbe+UL7iFgUu8t42iuL
+         EICA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=uq8tJCkKOiXoyBiS8gGIh+j+7+mkLzrEHB0wcJe3xaY=;
+        b=29fobEOr1RTtKxCVJ1ENMBpqwkiCIbbp5G15sAXOZ/JI5OaH/GGbygl2PiaGK11NCp
+         HN1bSCWP35RvlFl6kmfsO0ODUdnZoTxd6Ui0acnYk8jo+Ekq6WdEyTfSqNn49KImipMj
+         OTsS1i8CCUIihbM6d9wNHhRDLrZjoEn50FlvXC8u41EbTC8GxQiALIcO4aJpvci+hIOW
+         ro7Tg3tb23MnP5rpR93QCmsw2d8O7T4gJd/XYHVO+Jym5Sje+6S3MO82LVRpsqz+fpE1
+         VE3pTC96wlULljNPhRMsPa8IEA9XrPE1dyBy1KG9JP6dy2GIwnAtrBulR++7tQCsJxli
+         ENBg==
+X-Gm-Message-State: AOAM532d9DR8S+IcYEUonXX3KjwdtGTiq71PhIE/1XGIDMZTDdJD+DCY
+        m7NO3YdVBrNMBz27K/xgZ+uT9jiZLq0N2NREQE0=
+X-Google-Smtp-Source: ABdhPJyiv5SnUY56pSdvjVP7Uo/BMi+K9inC6BI9URlN11GcnYtHrvO0+I2lF/caMbnucRSLHXiGga2g+P4Rj3+O0Bo=
+X-Received: by 2002:a2e:9209:: with SMTP id k9mr4934217ljg.165.1642824345055;
+ Fri, 21 Jan 2022 20:05:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Received: by 2002:ab3:7d84:0:0:0:0:0 with HTTP; Fri, 21 Jan 2022 20:05:44
+ -0800 (PST)
+Reply-To: miss.yasmineibrahim101@gmail.com
+From:   Yasmine Ibrahim <mrsoliunadubeam@gmail.com>
+Date:   Fri, 21 Jan 2022 20:05:44 -0800
+Message-ID: <CAECjriE1DHiruhgP2VPym2NCPAt6tXE+sGYckOA7bWHCQvLc3g@mail.gmail.com>
+Subject: Greetings
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 22 Jan 2022 00:03:01 +0000 Jeffrey Ji wrote:
-> From: jeffreyji <jeffreyji@google.com>
-> 
-> Increment InMacErrors counter when packet dropped due to incorrect dest
-> MAC addr.
-> 
-> example output from nstat:
-> \~# nstat -z "*InMac*"
-> \#kernel
-> Ip6InMacErrors                  0                  0.0
-> IpExtInMacErrors                1                  0.0
-> 
-> Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
-> with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
-> counter was incremented.
-> 
-> Signed-off-by: jeffreyji <jeffreyji@google.com>
+-- 
+Hello Dear
 
-How about we use the new kfree_skb_reason() instead to avoid allocating
-per-netns memory the stats?
+greetings from Burkina Faso, I am Miss Yasmine Ibrahim Coulibaly 24
+years old female from the Republic of Ivory Coast, West Africa, am the
+Daughter of Late Chief Sgt.  Warlord Ibrahim Coulibaly (a.k.a General
+IB). My late father was a well known Ivory Coast militia leader. He
+died on Thursday 28 April 2011 following a fight with the Republican
+Forces of Ivory Coast (FRCI). I am constrained to contact you because
+of the maltreatment which I am receiving from my step mother, you can
+read more about my late Father death through the below links:
+
+https://www.theguardian.com/world/2011/apr/28/ivory-coast-renegade-warlord-ibrahim-coulibaly.
+
+I am seeking a long term relationship and investment assistance. My
+father of blessed memory deposited the sum of US$ 14.5 Million in one
+bank in Burkina Faso with my name as the next of kin. So If you are
+interested please contact me in my private email address
+(yasmineibrahimm@outlook.com) for more details.
+
+Thanking you a lot in anticipation of your quick response. I will give
+you details in my next mail after receiving your acceptance mail to
+help me,
+
+Yours sincerely
+Miss Yasmine Ibrahim.
