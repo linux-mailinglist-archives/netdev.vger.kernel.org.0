@@ -2,87 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C854496C55
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 13:33:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9832496CB2
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 15:15:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbiAVMdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jan 2022 07:33:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbiAVMdC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 07:33:02 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B92C06173B
-        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 04:33:02 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id h29so2064948wrb.5
-        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 04:33:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=QZNU9fj7yz/QO3BkTv7wNCRHLAXKVND9PUuJ109fZWI=;
-        b=BTMqHlbeUsJ00U5H0bdJR0yS1lS6pzRNIWRx6hGvjr7xTF9sFVyBt4cl2Cy0RlPPYq
-         G6xKx+1h72j5I/rHweC/NWPndqWmrwzss4hcVR7xqOWa0bO9PhdfS4DY2Bb2SzcuGrfO
-         PKUU1/3JAE2ArkYEQ8HgBeBQv8247Dx0a7lc96kJUH93gtJb61WnIfpPUyF7sXDDntM6
-         6A3q/lBiuyUJFJTkf2lR28reCYpLqLyqf0j3v70T7eiaJlerKTNsm7P4wM6mefT/DyLM
-         1OVRgFRAQSuCbDcP3Nh+ns5T2vgirDffTUjebgp43yASgLi6quXyPz1hQ9SdgzD6uu/d
-         VcYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=QZNU9fj7yz/QO3BkTv7wNCRHLAXKVND9PUuJ109fZWI=;
-        b=td21Lc5dtwmR0ZFIBdMYiwVjuRJor+HQBWXZciKpsMS9FLSmXGLbCNhm5f8z0G3pCS
-         GheftqKpl8QpoYYrPBUgY1Ic+oMqU5ejrESvRjylIv3+0qiqOfpFzC+H5QdTQtod/r02
-         QMqCkZX0d27tASOM6Yvuary78KNHC1py7FQYAvXi3hUgqEqA/gFBN+DXJinLGxuoLZ0P
-         ovf/fggq/ZKkYQYuTaiemhYYX/Q0hsNtw36ohJRBbVEwHM8cpa7hd2zK8Co/lNtatu9j
-         2lTtxU6uBryMAVlWBL8oClWxVSTHex5C9ZZBpFnsqL71Xz7lP/yE9d5usbgg/yxdDcoK
-         7CKw==
-X-Gm-Message-State: AOAM530W1iNMDXNUWLVkbj5harn6zggf6pUoFIOW+BPD0J7eEM6tKivE
-        pMs+/mWUxCisozil5kCYSF+7zHv+uPLahVJAII0=
-X-Google-Smtp-Source: ABdhPJzL9FtlbVSYiOZYm/z5cumbUUp83/F9Gbu2TUqp4+KZugCnq6td6jUtcCDSYsyGfMK/Y3DmisB4S/m+UOaZLUQ=
-X-Received: by 2002:adf:8bdd:: with SMTP id w29mr7230863wra.666.1642854780797;
- Sat, 22 Jan 2022 04:33:00 -0800 (PST)
+        id S233896AbiAVOPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jan 2022 09:15:49 -0500
+Received: from kylie.crudebyte.com ([5.189.157.229]:57167 "EHLO
+        kylie.crudebyte.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233792AbiAVOPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 09:15:48 -0500
+X-Greylist: delayed 2479 seconds by postgrey-1.27 at vger.kernel.org; Sat, 22 Jan 2022 09:15:48 EST
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=7tVvPw1gbjN1VQGvs1wPWPfPeY44jYM8vCN3iw8Q8mY=; b=YG2T92gSjy+9+Cr1l2pEg96PqR
+        wdnblpAX9r7DdwUX0H2932PXncxDoVmjkBRj7lyk4MYltQqsL7Vunl5dUuCysWPnpHSm0I4p05W2q
+        C/F8XcrDr4WDDViTQziHwY9E2ig4yi38HFaOZuoRHPzjhxYrQnQ747Z6havpuTqS09WjQpm4BY4uW
+        PZjNhi47rWkP5SzQ6EwORGTLxmQPYFg9oLjlv4TKyE+LwH7UElwe7KHQY2kqjCSIOcGe3jwWNL6tW
+        OD0imTgWnjXZ9ddxbSMPP1KwSBURhTJiJ4GDcR7f/ahteL2VyQQvMEM0DdUp+9dPt4vj7uADBvETh
+        mr25wlrUiStenSnOmJTm5I9QgJfVV2O+nJxR1FyX1yyC7L7Zd4jkCzPQn3eOXoUBZpOjcRyhVWM4P
+        EI7+swDZG4xad/3/G/H50TyIIRCZp9Br+4GWuIg1gZcyoITpA6dgsKPRa0oCMwlurhauiUtaK+Nwe
+        MFa7d23OJfJBf3/aPqvxNyo0Al53ZWBN2pajyfZa3qSoMFXSmyMc23jCMh75IQnHOcQ6O7to11hzb
+        SdKeks++Z7D4Q+P5NweXRJotLW/z1r6ksoQInKUc/NelApP8DaJeTXIuFopJu0T8PNFF+1If+HEuU
+        gAZdKavfGy3HFtymHBOfBd73s1g6nj519aR+Ecdzk=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Nikolay Kichukov <nikolay@oldum.net>
+Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
+Subject: Re: [PATCH v4 00/12] remove msize limit in virtio transport
+Date:   Sat, 22 Jan 2022 14:34:24 +0100
+Message-ID: <1835287.xbJIPCv9Fc@silver>
+In-Reply-To: <29a54acefd1c37d9612613d5275e4bf51e62a704.camel@oldum.net>
+References: <cover.1640870037.git.linux_oss@crudebyte.com> <29a54acefd1c37d9612613d5275e4bf51e62a704.camel@oldum.net>
 MIME-Version: 1.0
-Sender: miriamkipkalya10@gmail.com
-Received: by 2002:adf:a554:0:0:0:0:0 with HTTP; Sat, 22 Jan 2022 04:33:00
- -0800 (PST)
-From:   "helen.carlsen" <helen.carlsen26@gmail.com>
-Date:   Sat, 22 Jan 2022 13:33:00 +0100
-X-Google-Sender-Auth: D1JbN1PxeIa0P2DukOhnNkUykp8
-Message-ID: <CAERXgTm9zMx5tOKDTyAqPxnz6uYx8w3ENhR3Gz3ZG7d4YMfeJg@mail.gmail.com>
-Subject: Dearest,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- Dearest,
+On Donnerstag, 20. Januar 2022 23:43:46 CET Nikolay Kichukov wrote:
+> Thanks for the patches. I've applied them on top of 5.16.2 kernel and it
+> works for msize=1048576. Performance-wise, same throughput as the
+> previous patches, basically limiting factor is the backend block
+> storage.
+
+Depends on how you were testing exactly. I assume you just booted a guest and 
+then mounted a humble 9p directory in guest to perform some isolated I/O 
+throughput tests on a single file. In this test scenario yes, you would not 
+see much of a difference between v3 vs. v4 of this series.
+
+However in my tests I went much further than that by running an entire guest 
+on top of 9p as its root filesystem:
+https://wiki.qemu.org/Documentation/9p_root_fs
+With this 9p rootfs setup you get a completely different picture. For instance 
+you'll notice with v3 that guest boot time *increases* with rising msize, 
+whereas with v4 it shrinks. And also when you benchmark throughput on a file 
+in this 9p rootfs setup with v3 you get worse results than with v4, sometimes 
+with v3 even worse than without patches at all. With v4 applied though it 
+clearly outperforms any other kernel version in all aspects.
+
+I highly recommend this 9p rootfs setup as a heterogenous 9p test environment, 
+as it is a very good real world test scenario for all kinds of aspects.
+
+> However, when I mount with msize=4194304, the system locks up upon first
+> try to traverse the directory structure, ie 'ls'. Only solution is to
+> 'poweroff' the guest. Nothing in the logs.
+
+I've described this in detail in the cover letter under "KNOWN LIMITATIONS" 
+already. Use max. msize 4186112.
+
+> Qemu 6.0.0 on the host has the following patches:
+> 
+> 01-fix-wrong-io-block-size-Rgetattr.patch
+> 02-dedupe-iounit-code.patch
+> 03-9pfs-simplify-blksize_to_iounit.patch
+
+I recommend just using QEMU 6.2. It is not worth to patch that old QEMU 
+version. E.g. you would have a lousy readdir performance with that QEMU 
+version and what not.
+
+You don't need to install QEMU. You can directly run it from the build 
+directory.
+
+> The kernel patches were applied on the guest kernel only.
+> 
+> I've generated them with the following command:
+> git diff
+> 783ba37c1566dd715b9a67d437efa3b77e3cd1a7^..8c305df4646b65218978fc6474aa0f5f
+> 29b216a0 > /tmp/kernel-5.16-9p-virtio-drop-msize-cap.patch
+> 
+> The host runs 5.15.4 kernel.
+
+Host kernel version currently does not matter for this series.
+
+Best regards,
+Christian Schoenebeck
 
 
- I sent this mail praying it will found you in a good condition of
-health, since I myself are in a very critical health condition in
-which I sleep every night without knowing if I may be alive to see the
-next day.am Mrs.Helen John carlsen, wife of late Mrs.Helen John
-carlsen, a widow suffering from long time illness.I have some funds I
-inherited from my late husband, the sum of($ 11.000.000,eleven million
-dollars) my Doctor told me recently that I have serious sickness which
-is cancer problem. What disturbs me most is my stroke sickness.Having
-known my condition, I decided to donate this fund to a good person
-that will utilize it the way i am going to instruct herein. I need a
-very honest and God fearing person who can claim this money and use it
-for Charity works,for orphanages, widows and also build schools for
-less privileges that will be named after my late husband if possible
-and to promote the word of God and the effort that the house of God is
-maintained.
-
-I do not want a situation where this money will be used in an ungodly
-manner.That's why am taking this decision.am not afraid of death so I
-know where am going.I accept this decision because I do not have any
-child who will inherit this money after I die.Please I want your
-sincerely and urgent answer to know if you will be able to execute
-this project, and I will give you more information on how the fund
-will be transferred to your bank account.am waiting for your reply.
-
-Best Regards,
-Mrs.Helen John carlsen,
