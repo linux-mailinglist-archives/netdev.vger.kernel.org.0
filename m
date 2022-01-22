@@ -2,72 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0D5B496BD6
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 12:09:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8D16496C3B
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 12:41:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234106AbiAVLJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jan 2022 06:09:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37184 "EHLO
+        id S231293AbiAVLlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jan 2022 06:41:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233972AbiAVLJw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 06:09:52 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F852C06173B
-        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 03:09:52 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id c6so35212152ybk.3
-        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 03:09:52 -0800 (PST)
+        with ESMTP id S231180AbiAVLlC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 06:41:02 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462E9C06173B
+        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 03:41:02 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id j5-20020a05600c1c0500b0034d2e956aadso24354789wms.4
+        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 03:41:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=siIUGN7ikpV++GeMqVxj3L2ZvjDwDfE3KrxEg3AC/Fk=;
-        b=cduyIFyDcLsypT6znBhctJjX8qjE+Q8ebk7johAPXLNmu7SB8eRlrGmW3Hk4nhm9nn
-         +PYLvbPHUJDCPpV/hDPK3S2R2DOZKTMOHb4KHMVB+lPrwrFs+WiyZ20q6+GmgLH9c+m4
-         KAlzazWt8t6EXYt7z9zrULMY7qCPwW6Q5xrIn9RW76qw61Y0bzYfo345udJRfAvHD4em
-         3zusBz01B+HtrzEYEFEImgFX8taMSxzJ0wi4/HXhjQOMujPzVabRuUYu17o7qH5a1/+a
-         n9wEay9CVfqKxMMmV0TUrUQRzsU3bglD/L4NMb0Q11unWSThUzthFvsynHjNahS23t7J
-         TUIQ==
+        bh=81H3x9oJNsbZIX2rvqjbCUTazok+XvxuJ34prg+NCRM=;
+        b=kmxGW8LIgQm3DmUQBDDSO7rIekCvLXo4Tq7w6x5tEsCX/jUZ1Gyjusngcp7jh5W2w1
+         dM+aGbX+BgYOFIT8KrZoN+dJOf6gwqfMdBPOBbVoXFu7SC3hXA05pkV4sOdhQIK4vQWa
+         r22H8wCFj4IAEpfbG/TtWmGZ5UQ6Y7kW2necjCawDIjuPrEX2YUeNuT4q3WAGA+BiouL
+         Ghkd9pbw43r5GJ7jBu9psc16ad3M2CXGX+nrZusKNtDG5VOotaxeg745T+k1n/BaTZ6c
+         oy4igQn1h3hNrb2e1pvCWSJkqdbTUYP0KYklqM3gyDRg+aQLoYnd+DWzbKYr9PNDge0y
+         b4uQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=siIUGN7ikpV++GeMqVxj3L2ZvjDwDfE3KrxEg3AC/Fk=;
-        b=RRQpyAPtLeAbfOSI6vv66GKeJsPiiN3KyYHUPsVRhYm4T4OEe2GB2FxkNW5Qzo4zmw
-         r/tklJ9cIZTrMSNulx5vi+ttoTuQLvCcRE60SGJxXPK2mD2IDXIqWsnUCr7FyCemlK0G
-         6u6kkj1x6OZMgTSkiGIMFKBKFm7o6PYGwa+lVb0l8utXFfQ/ZpfKbbolHVqgEgy/qUZF
-         24kUYEruppBjF3/6h1RZtKxQ8tRp0mHXJehm8YPgDgZjzyqM5hAc3R4Citfk5Q87EvDh
-         HQqTrVmUzk4C87GHdC7zo2XXBw1lT+/dApygnCRQ/sqS04il/yZ8+i4oRqKIO94SM+0l
-         b00Q==
-X-Gm-Message-State: AOAM531VWfLDZgShS/PuDD6u8JYBwRPWQKTymQwqSTAUBa4boIbcBhg4
-        nOdmw8dJFlG5+XXkH+yC9/DaMWJ9Hj6Y8BZWnuU=
-X-Google-Smtp-Source: ABdhPJwIVZXZjXHkbi00s52s8caOpz+ZOsmudMZBzhtc4Aus6An1jkWE7mhZ5ScYfbFUCWg+V7qUrlC6P7FDm0xV0BE=
-X-Received: by 2002:a05:6902:1c5:: with SMTP id u5mr11505915ybh.555.1642849791331;
- Sat, 22 Jan 2022 03:09:51 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=81H3x9oJNsbZIX2rvqjbCUTazok+XvxuJ34prg+NCRM=;
+        b=wo4ltRqdUjiKMh252WCGKfl5Fk/hfatKPgaDUvrYwmpBp0ryQHPKO6NFq8K3KKVgJr
+         HV6wUiajN1L8oGu5fNBV07KbfeM3nAvGCpBZl5JzwSNEpPUqj9HAtfx7qP2EIEeYMALI
+         zi222XcrTAxKObluE9H6zGG14CeEqo1gAoP/oIREqyWVDlrLd8bEuLzbgzDagpwRbwza
+         mb8qcc5XVi5O2/Y1fLNKcT3V+lDxJ8jKwZ9S8bLAz3thaha1CyAZsaSK/Cr5w+bO42WN
+         W3nbRimp99S/nmKdvIvY8l19IzWH36HBVFF/hAByEU3AFXjpFzAHhQYv2867ENjfCaFE
+         OVlQ==
+X-Gm-Message-State: AOAM530795Tyd4KzW/YtyrThWBbzSxMBcOP9YRejb+3MOo67M1ztq6z2
+        NkORg/XiKw4vi1GqkZu8XQbXZ2bbpJc=
+X-Google-Smtp-Source: ABdhPJwjXdB21w6xcmkMrCY4onO1d4yeZYHGzwmOO60Ip5rELXE/vk8rcgAai0Arjc+tifsRTdNW8A==
+X-Received: by 2002:a1c:3b55:: with SMTP id i82mr4320174wma.22.1642851660399;
+        Sat, 22 Jan 2022 03:41:00 -0800 (PST)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id y7sm2278265wrr.74.2022.01.22.03.40.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 22 Jan 2022 03:40:59 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Vasiliy Kulikov <segoon@openwall.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] ping: fix the sk_bound_dev_if match in ping_lookup
+Date:   Sat, 22 Jan 2022 06:40:56 -0500
+Message-Id: <9a0135a36d3f5b14af375a23459325d7bc97bb9c.1642851656.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Sender: gabrieledgallome@gmail.com
-Received: by 2002:a05:7000:8651:0:0:0:0 with HTTP; Sat, 22 Jan 2022 03:09:50
- -0800 (PST)
-From:   Aycan Cumert <aycancumertlawfirm.infor@gmail.com>
-Date:   Sat, 22 Jan 2022 11:09:50 +0000
-X-Google-Sender-Auth: eH0SoGWT7ipZniM7UvfppAJGMWQ
-Message-ID: <CAATdJEBqZewxLMFpKrZYx8DRZm+48oYA3cDejH=v_an0=oYawg@mail.gmail.com>
-Subject: Greetings
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I am barrister=C2=A0Aycan Cumert=C2=A0from Turkey but i live in=C2=A0Lome-T=
-ogo,=C2=A0=C2=A0=C2=A0a
-solicitor at law.=C2=A0 I am making this proposal to you in respect of a
-dead client, who was my client until his death in a motor accident
-leaving the sum of=C2=A0 $ 9.3 Million in a bank here. I seek your consent
-to present you as the next of kin to my late client since you are a
-foreigner and you have the same surname with him so the bank will
-transfer the money to you for our mutual benefit. This request came to
-be as a result of my inability to locate the original relatives of my
-late client.
+When 'ping' changes to use PING socket instead of RAW socket by:
 
-Kindly indicate your interest if you can work with me on this project.
+   # sysctl -w net.ipv4.ping_group_range="0 100"
+
+the selftests 'router_broadcast.sh' will fail, as such command
+
+  # ip vrf exec vrf-h1 ping -I veth0 198.51.100.255 -b
+
+can't receive the response skb by the PING socket. It's caused by mismatch
+of sk_bound_dev_if and dif in ping_rcv() when looking up the PING socket,
+as dif is vrf-h1 if dif's master was set to vrf-h1.
+
+This patch is to fix this regression by also checking the sk_bound_dev_if
+against sdif so that the packets can stil be received even if the socket
+is not bound to the vrf device but to the real iif.
+
+Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
+Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/ipv4/ping.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+index 0e56df3a45e2..bcf7bc71cb56 100644
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -220,7 +220,8 @@ static struct sock *ping_lookup(struct net *net, struct sk_buff *skb, u16 ident)
+ 			continue;
+ 		}
+ 
+-		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif)
++		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif &&
++		    sk->sk_bound_dev_if != inet_sdif(skb))
+ 			continue;
+ 
+ 		sock_hold(sk);
+-- 
+2.27.0
+
