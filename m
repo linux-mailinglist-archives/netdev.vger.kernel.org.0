@@ -2,80 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4D88496CD7
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 16:54:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2B74496CEC
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 17:37:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234135AbiAVPys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jan 2022 10:54:48 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48908 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229581AbiAVPyr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 22 Jan 2022 10:54:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=/NBSKtd7whqJIJtzGKx0M/b3+V996RekHxiVT2ao8ho=; b=q1QO/k+CTojrmj3jIsQIEe2fmf
-        h2rz+VvsDNKlw1vBCLc17mtPbtgwK/RUt6j1mSrqGQ99locXdk4H8vJXR+rXAy06WerGIPXt9t/8l
-        uajMQ2K2hqX3q+3umn47AGjzKcVTElHrWygZwcYDlWrRhi7sDG7oQOp5jVdlqj71187M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nBIiz-002IzR-P6; Sat, 22 Jan 2022 16:54:45 +0100
-Date:   Sat, 22 Jan 2022 16:54:45 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sergei Trofimovich <slyich@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-Subject: Re: atl1c drivers run 'napi/eth%d-385' named threads with
- unsubstituted %d
-Message-ID: <YewoxYh2jNBnanUM@lunn.ch>
-References: <YessW5YR285JeLf5@nz>
- <YetFsbw6885xUwSg@lunn.ch>
- <20220121170313.1d6ccf4d@hermes.local>
- <YetjpvBgQFApTRu0@lunn.ch>
- <20220122121228.3b73db2a@nz>
+        id S234535AbiAVQhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jan 2022 11:37:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51074 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230457AbiAVQhH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 11:37:07 -0500
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 928ABC06173B
+        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 08:37:07 -0800 (PST)
+Received: by mail-ot1-x32b.google.com with SMTP id t4-20020a05683022e400b00591aaf48277so15944465otc.13
+        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 08:37:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=nQfnDsNAwBhiTzvcCVWAW+CtmC1+ndx2xo4KA92H/eA=;
+        b=lOvmxgmq9GpbTSQfd+ZMOUCrgP2Z9ebtFKrmDF53dJYX/c8icafiNfu59uSvoiRP+z
+         r7/hjR0alstPoPV+L4rI8i7DP05RowYcJzdW3a8KGKOYCkeqmbt22FJJ7iHOE/HCHAka
+         DTIb66/8K+Mfo/fk7Hu5LFZPIPWpZtjW8jD8WfoQTJokDY82ulKFPJLLGMOWJ/DjAH5K
+         2mI2lg/2FIU5yG2bgvH/a5v136ZvJEbt4rTCTLFJpSNBAIhV2b1VyDaKBZIkPPL2ZEo0
+         NjL6qI/s/1hStAug11rd5vhsFgbFq8zV8BXks3AOPk2uRhE00UCLALehecChc+3YEiUE
+         Vh8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=nQfnDsNAwBhiTzvcCVWAW+CtmC1+ndx2xo4KA92H/eA=;
+        b=1FH7yfhOqmSbOx/HT1qSQL9sAcBQiobsiE8zcZdzkb7ynSxVv6Jk2qGaVdt9IoPsy8
+         LOsP/29VKI6mgXb1EgxA1tpgntOtChfS8mNIKhvMz8PIUQSM3MMFYisibJklYZDYT78D
+         BloWHbSicuzrOTATZKwhoKToW1QaV9r3pR7q55WAJWxlzPlEsIuK0cAVkhsWxpgfKGKZ
+         Ow9MoLmtmcvO/OQrDA6iftLVH76eY4plg3ejDBliHUKaeMwZexcBg2SVlaH87x9I4nDd
+         GSKj63re5HwZN0SQ1YFBHpMb7f+w8rXtSmaxDT1PguZ7n6r9nmpeYer1o6BCECVYdNte
+         LkZg==
+X-Gm-Message-State: AOAM533uri0t+W3nMS/GuenT4fRKNs62+cJHajx4D2e/MWgy+1NCKfr6
+        1zjeMuxufkaWJ0kEuZ+n5zNEh49rUdbS1/buiKY=
+X-Google-Smtp-Source: ABdhPJy45GdFGFWqtDRRnY6spEsR1CPXS4Ge8WGwaFz4ageK291v+0ix2Hyj3ZAvMWfg7wze84c8x70U1VKXNRrbU2I=
+X-Received: by 2002:a9d:6e94:: with SMTP id a20mr6245428otr.378.1642869426734;
+ Sat, 22 Jan 2022 08:37:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220122121228.3b73db2a@nz>
+Received: by 2002:ac9:56d7:0:0:0:0:0 with HTTP; Sat, 22 Jan 2022 08:37:06
+ -0800 (PST)
+Reply-To: nelsonbile450@gmail.com
+From:   Nelson Bile <addamss.petter19@gmail.com>
+Date:   Sat, 22 Jan 2022 17:37:06 +0100
+Message-ID: <CA+gU1v3=xjMo0tNZUVw-rNnwrhRsAhkGsc5s-KmgBxTVM5F2Eg@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Thank you Andrew! I used this second version of your patch
-> against 5.16.1 and it seems to work:
-> 
->     $ sudo ping -f 172.16.0.1
-> 
->     613 root 20 0 0 0 0 S 11.0 0.0 0:07.46 napi/eth0-385
->     614 root 20 0 0 0 0 R  5.3 0.0 0:03.96 napi/eth0-386
-> 
-> Posting used diff as is just in case:
-> 
-> Tested-by: Sergei Trofimovich <slyich@gmail.com>
-
-Great, thanks for testing.
-
-> 
-> --- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-> +++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
-> @@ -2706,6 +2706,15 @@ static int atl1c_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  		goto err_alloc_etherdev;
->  	}
-> 
-> +	if (rtnl_lock_killable()) {
-> +		err = -EINTR;
-> +		goto err_init_netdev;
-> +	}
-> +	err = dev_alloc_name(netdev, netdev->name);
-> +	rtnl_unlock();
-> +	if (err < 0)
-> +		goto err_init_netdev;
-
-Since there are multiple users of dev_alloc_name() and it appears some
-get locking wrong, it makes sense to add a helper in the code which
-does the locking. So i will work on a patchset to add such a helper
-and convert other drivers.
-
-    Andrew
+Greetings I sent you an email a few days ago. Did you receive my
+message? urgent response please
