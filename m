@@ -2,125 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D34F496B04
-	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 09:37:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7250496B6F
+	for <lists+netdev@lfdr.de>; Sat, 22 Jan 2022 10:34:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233135AbiAVIb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jan 2022 03:31:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34286 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232958AbiAVIb1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 03:31:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642840286;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jCimr63v8CEPF1zIfZIJt01XQ0IyOhIWO0SMYz9s+Rg=;
-        b=HqkRc3fEFXT5TQSfjK4pS+IhO7KqvS2VP4AmLTeB95lPLOvzt/s3f3F71YrlE6wKA0ce4/
-        yOuiPc7q18/HFtwwVi8BNZpLpWcyOhSezdkd3Th/0gSQ4kfonrQPssR76oytHYBMBglR2r
-        ID+fiYGfNDRHiUAkrMx3O9eIKYqG0bw=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-604-ITA31kLTOne9-2bOjPOfAg-1; Sat, 22 Jan 2022 03:31:21 -0500
-X-MC-Unique: ITA31kLTOne9-2bOjPOfAg-1
-Received: by mail-lj1-f199.google.com with SMTP id l7-20020a2e9087000000b00236c156bf9bso426023ljg.2
-        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 00:31:21 -0800 (PST)
+        id S230285AbiAVJeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jan 2022 04:34:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230011AbiAVJeD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 04:34:03 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664BEC06173B
+        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 01:34:03 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id n8so19625522wmk.3
+        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 01:34:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=82N3pZxTGQGdnKz7sduXPrq71J6/BJyEju5EUfigQB8=;
+        b=oyX7l3g94Ttb1StYjFB3QUH2fGkqbfooAqWUV1vJkHg8bNtdge9KhW1QgesNBVYCB9
+         CLJ1R8CqInksNh1q8QG0+OPJgZNavlTxhRAazPRapErAOkK/iQo6hX7O1LgoGTYD+Uyc
+         hdy1B1cwcXtzTLRp4H0bgzrIvr6ZZUk74Tlao3u6iFsv1rAKNMISlX1mgRj/ZVpUVOLI
+         3egGz4bqXp753gOUDlChV7bLefIQkWlCQYsm4MluBgDSLxE6m89MzKEHaKGKymDBegJO
+         CRVkzFgibMRB6BLwyjWxoS6HPyR74O0SbzjqIH6kREh62srmbVw5A+qKxqfcsacn9zwA
+         cPHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:references:from:subject:in-reply-to
          :content-transfer-encoding;
-        bh=jCimr63v8CEPF1zIfZIJt01XQ0IyOhIWO0SMYz9s+Rg=;
-        b=dR9vORxmNj/0OPv4acWDdHMALupux+XuT2+5b37h8RaeTjeRuMIs3y2QPld+LMkI+j
-         DiA/ib+KJCXvxiII/yIkRtcnzuqQZ5/oJgN1h2VHS+oc/8NJOCrurONFB3SitYJPibR/
-         X2O/te1qQzO0CRjS3EeU4iixRwgMGWRAmiu4tb5WJC/6V3ZZWkr7H57AekCyfKRrs1FA
-         hndcJgxxPxwh0Az3yz3cMtGy0Xq1nek77Z6lO2pOoIpMs652JiWlFpN1skOsQV+2oaYe
-         OeZ2kBLbhh19AI/tHhiw9YIGKQfFwU1Dp3UhL7i3Kr+Z6UEbeQ8uvlppuv1YmUV/EQs2
-         NS3w==
-X-Gm-Message-State: AOAM533RRQkcJjleEwDrZZ9EOCFO3Ya1DXMJ9pnP+nAEfkaKxTZdyzEl
-        fCEm0imgW9UydyRU52ovA8qoJge6EqH+QG1fRXh70NBESl2x6bemrJDNd6gdhavsQugADLs4HJ0
-        q1uolAvPxHyklV5IF
-X-Received: by 2002:a05:6512:3f9f:: with SMTP id x31mr6454748lfa.391.1642840279845;
-        Sat, 22 Jan 2022 00:31:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz0D9mLT48oagApjNXUtIGHXX+OV4Zfpp2S4ieJGhsRdBvoOn+TY1JNX2UZMUSKJkkpz8+ATw==
-X-Received: by 2002:a05:6512:3f9f:: with SMTP id x31mr6454741lfa.391.1642840279670;
-        Sat, 22 Jan 2022 00:31:19 -0800 (PST)
-Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
-        by smtp.gmail.com with ESMTPSA id n21sm497430lfe.153.2022.01.22.00.31.18
+        bh=82N3pZxTGQGdnKz7sduXPrq71J6/BJyEju5EUfigQB8=;
+        b=5WFdn8KqPhkl+H0ccv9Y9sQ7JTOSC3/CzjUqEqTxiqYvUsexMnXE94q52im/1QG07j
+         pxhTVeemBMW9ojC7KKCLMv/XH3azaLQ9Sg9U0j3zZe+TsjtcH0IGG0DrkFRoQXKhkLuU
+         Rn04zQ8E2gycjPlk4ZXtk0qm9josbC3KnBGHW8ZiSiT+NNrt4jINKO1tYStLEfWk1wm7
+         jhsTo7Ls5/y9R/qGubq1blynUXxsqwrCWyUM4S8J1QQ/2xhtJSAuRCPLEbs82v5avj6Z
+         xnDkWobcL+eoR4DGv3fVUCniOKhSNmKKz97bvzwODicN+W1YFC8LUfAqoIfeeoTrQ2d1
+         GTlg==
+X-Gm-Message-State: AOAM530GksTIv04QQy+2R6mPl0xMGLcrpGyS6SiDBzTZ0P5lpntz3Pit
+        skSS937x5aialejoUHA77891VOaXG7Q=
+X-Google-Smtp-Source: ABdhPJx2JVt+rs/6AY95b+3S5MmkCQEJ2Dz//Cwa0B9GwZ03HDOmRPx4KaGmBw/em+qk6iwLVNCAPQ==
+X-Received: by 2002:a05:600c:4fd5:: with SMTP id o21mr3783574wmq.184.1642844041769;
+        Sat, 22 Jan 2022 01:34:01 -0800 (PST)
+Received: from ?IPV6:2003:ea:8f08:c900:8441:97be:1ca5:d79? (p200300ea8f08c900844197be1ca50d79.dip0.t-ipconnect.de. [2003:ea:8f08:c900:8441:97be:1ca5:d79])
+        by smtp.googlemail.com with ESMTPSA id t17sm8297835wrs.10.2022.01.22.01.34.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 22 Jan 2022 00:31:18 -0800 (PST)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <5bd8f1bd-1a21-df1b-6d6f-9fe5657fdd7c@redhat.com>
-Date:   Sat, 22 Jan 2022 09:31:17 +0100
+        Sat, 22 Jan 2022 01:34:01 -0800 (PST)
+Message-ID: <24747dcf-8442-6d53-626f-e03b3cafe246@gmail.com>
+Date:   Sat, 22 Jan 2022 10:33:55 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Cc:     brouer@redhat.com, LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: Re: [net RFC v1 1/1] page_pool: fix NULL dereference crash
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
 Content-Language: en-US
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-References: <20220122005644.802352-1-colin.foster@in-advantage.com>
- <20220122005644.802352-2-colin.foster@in-advantage.com>
- <CAADnVQK8xrQ92+=wm8AoDkC93SEKz3G=CoOnkPgvs=spJk5UZA@mail.gmail.com>
- <20220122024051.GA905413@euler>
-In-Reply-To: <20220122024051.GA905413@euler>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Tim Harvey <tharvey@gateworks.com>, netdev <netdev@vger.kernel.org>
+References: <CAJ+vNU1Grqy0qkqz3NiSMwDT=OX3zOpmtXyH78Fq2+mOsAFj4w@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: best way to disable ANEG and force ethernet link?
+In-Reply-To: <CAJ+vNU1Grqy0qkqz3NiSMwDT=OX3zOpmtXyH78Fq2+mOsAFj4w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 22/01/2022 03.40, Colin Foster wrote:
-> On Fri, Jan 21, 2022 at 05:13:28PM -0800, Alexei Starovoitov wrote:
->> On Fri, Jan 21, 2022 at 4:57 PM Colin Foster
->> <colin.foster@in-advantage.com> wrote:
->>>
->>> Check for the existence of page pool params before dereferencing. This can
->>> cause crashes in certain conditions.
->>
->> In what conditions?
->> Out of tree driver?
->>
->>> Fixes: 35b2e549894b ("page_pool: Add callback to init pages when they are
->>> allocated")
->>>
->>> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
->>> ---
->>>   net/core/page_pool.c | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
->>> index bd62c01a2ec3..641f849c95e7 100644
->>> --- a/net/core/page_pool.c
->>> +++ b/net/core/page_pool.c
->>> @@ -213,7 +213,7 @@ static void page_pool_set_pp_info(struct page_pool *pool,
->>>   {
->>>          page->pp = pool;
->>>          page->pp_magic |= PP_SIGNATURE;
->>> -       if (pool->p.init_callback)
->>> +       if (pool->p && pool->p.init_callback)
+On 21.01.2022 18:20, Tim Harvey wrote:
+> Greetings,
 > 
-> And my apologies - this should be if (pool... not if (pool->p. kernelbot
-> will be sure to tell me of this blunder soon
+> I'm troubleshooting a network issue and am looking for the best way to
+> force link speed/duplex without using auto-negotiation.
+> 
+> What is the best way to do this in Linux? Currently from a userspace
+> perspective I have only been able to using 'ifconfig' to bring the
+> link up, then 'mii-tool -F 100baseTx-FD <dev>' to force it. The
+> ethtool methods do not work on my MAC/PHY (not clear what ethtool
+> support is needed for that on a driver level). For testing purposes I
+> would like to avoid the link coming up at 1000mbps in the first place
+> and force it to 100mbps.
+> 
+> Before hacking the heck out of the phy layer in the kernel I was
+> hoping for some advice for the best place to do this.
+> 
+> In case it matters I have two boards that I would like to do this on:
+> an IMX8MM with FEC MAC and a CN803X with an RGMII (thunderx) vnic MAC.
+> Both have a GPY111 (Intel Xway) PHY.
+> 
+> Best regards,
+> 
+> Tim
 
-Can you confirm if your crash is fixed by this change?
-
-
->>>                  pool->p.init_callback(page, pool->p.init_arg);
->>>   }
-
+ifconfig is a legacy tool, better use ip. ethtool should work for you.
+If not, please provide the details: Which command are you using, any error?
+The Intel Xway PHY driver is loaded?
+For just disabling Gbit mode you don't have to switch to forced mode.
+You can just disable advertising Gbit mode:
+ethtool -s <if> advertise 1000baseT/Full off
