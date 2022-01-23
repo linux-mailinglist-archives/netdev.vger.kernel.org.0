@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 509C1497584
-	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 21:34:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A94B497588
+	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 21:43:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240085AbiAWUea (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jan 2022 15:34:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50816 "EHLO
+        id S240096AbiAWUnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jan 2022 15:43:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240057AbiAWUe2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 15:34:28 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96262C06173B;
-        Sun, 23 Jan 2022 12:34:27 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id r14so9945533wrp.2;
-        Sun, 23 Jan 2022 12:34:27 -0800 (PST)
+        with ESMTP id S240057AbiAWUne (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 15:43:34 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC49C06173B;
+        Sun, 23 Jan 2022 12:43:34 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id j5-20020a05600c1c0500b0034d2e956aadso26251749wms.4;
+        Sun, 23 Jan 2022 12:43:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=YZxT4uV4PwpwGlJaj3MnvyKTfRRb+lSbjvia5bSbrQQ=;
-        b=cYizXUgsgne72pKUwH7zQjLmVYeUz7tVVlp0uMv+2rTKF8Zn706uR0rUjEZmppttrX
-         5CwaoIa9rOP7rcoTu3zqnwhAYnhfA23rI1k80KkCRz629R+XVShxW/jRsbWeEOma6IpW
-         PTOvPwkhN3taJx5AyfBb2u4MUhOvl2834GPbxR/bJ+xVK8pkBfLHalbFRxiRC0RUXfLw
-         rihjSUxr6LQC7LxEZ8pzzoXstfJans1Pz2ZkIW5TYuYuSvNlBfovgh8MJ9LcOkie7ZKV
-         2vf6O+A8t0mkB40XaZ29amH7iB+YFwS8vxOcUaLZ3yweRkhBhDccpaAyxsgiBy7QraLQ
-         mLsA==
+        bh=/r6am+3N6osUA/Dj/zZE3T0O61T+nuhMcTokJz7x4t4=;
+        b=F74q1ACftHexnodeBoYFJHTwiP+7EOpoGurC+YX6RANADb7BRaqgAOXx40HPiX330p
+         /blP5JOz16HVHXI1Tvq8pLvNVKEkDjiQHZFXYtuvy2zgPVzwC/BUCzyky4OFj106rtPn
+         smc/gu7qXdMZGVepK/8bcc4SItDEOvBL6Ye/FNpGHlHEjowftG1g+r89OfHxglZdQ19z
+         dsGnKGE0e+Tc27AxXT/kaXPPei7PNkMGXcS+9/LED/WsoWi+PWI36E6qobIlJY9ttfSG
+         JnNVYsM+rENONcokLm0Ae+bqaR2vR28Q+xvXRCX+giHVWSxWgT3w71LUTqe+LcKVL4ZS
+         9QxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=YZxT4uV4PwpwGlJaj3MnvyKTfRRb+lSbjvia5bSbrQQ=;
-        b=ApOMJrPURRL12d9tHt33zuK9EIWTYsJMa3vl/ix4j9CuzCOP4bLZay6s2f5hrvK9gj
-         R8KeyFGWR8hgyDRfMrNYNrBac0Tvsr0/Qpfy7y9fFhgbRKL6DTwa3S/sNsmZTAE9mmbH
-         ydEbb1+CJah6OwquQB9RAQFMph+6Buc1V3l7BK0hYJQdF/xBOl7H/fP9t2K6bs17++Li
-         ah8E2wfo55Keu2q9zmJ4YWjO3IIAAvFykQXkuHB3yF+V6mUxRkRRKawPnKApcJelChTC
-         rKcQNwBn/gVxRsxkbQL9+hSOdw6qU7f4vDCn2xoGEIfh4F8gPT2WdFES8ln2RU8gQnNT
-         lTNA==
-X-Gm-Message-State: AOAM531QuYP2WrxYIXMDfvnKLrVv0dfcA/nZu/3wrAYBXd3Fkj/Ti3Yc
-        TzMmP9eFl0LLdmGA2lVI818J6VzKjmnGewBMlXb9CMOLnY0=
-X-Google-Smtp-Source: ABdhPJyl4DWssv39RVRPUw/5XlZsZKDNGqtAHyO/Ap6YhAZ2hQ/+a2szc0PnZT3ltnwO50ZM10bVeP6Kq9sywYfdpq0=
-X-Received: by 2002:a05:6000:18ac:: with SMTP id b12mr1439007wri.81.1642970066074;
- Sun, 23 Jan 2022 12:34:26 -0800 (PST)
+        bh=/r6am+3N6osUA/Dj/zZE3T0O61T+nuhMcTokJz7x4t4=;
+        b=s2s5ObxHeef45Vxvvmx6cTIqWbeDe+gFDTwetmzw58NIdJuR+0UgH/bAHz2itXUdUP
+         RkCEe7EwfW7oPUj7nE8q+HAYOCh17EJ0xO57wii3xL2hqEGesSP/QfvfTF8V4tfyU2Cy
+         bnSfdMGxVQdpMUtomGjrANWGTpZPZlW0ivM9uy6wqsj4fszJqEkVCFZnB+RNjJIy2NgU
+         jHc6MnZVQulMYrG7SJXyi9CaYdUaA8C5tDe5kzc24RKuELp0hKQmDvHo4LV1bDaT2Atq
+         dry35+x2fhKrVylLn9kZXbZroD/QgNbAdqIEW3HQwNbpQobQRxyPsS8x1qsebsfQZW/Z
+         HtBQ==
+X-Gm-Message-State: AOAM530j46dyjzXjWOQXNRKdb1xwXtkZDav3dwpoNiQUSOkh9IMxCCzt
+        nqCb+aIORk2gnq+Hbfv4R+tPOn+tc71d2PpQpDw=
+X-Google-Smtp-Source: ABdhPJxD6EAlgI2Bh9T88FoM41kBM7KAX0HZGuE11nCud0zVPMsm/hzzAf/qanvJFWiNyXLqYERyqjiHqPTaZ6Dyhb8=
+X-Received: by 2002:a05:600c:2052:: with SMTP id p18mr1853060wmg.178.1642970613048;
+ Sun, 23 Jan 2022 12:43:33 -0800 (PST)
 MIME-Version: 1.0
-References: <20220120112115.448077-1-miquel.raynal@bootlin.com> <20220120112115.448077-2-miquel.raynal@bootlin.com>
-In-Reply-To: <20220120112115.448077-2-miquel.raynal@bootlin.com>
+References: <20220120112115.448077-1-miquel.raynal@bootlin.com> <20220120112115.448077-5-miquel.raynal@bootlin.com>
+In-Reply-To: <20220120112115.448077-5-miquel.raynal@bootlin.com>
 From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Sun, 23 Jan 2022 15:34:14 -0500
-Message-ID: <CAB_54W5k-AUJhcS0Wf7==5qApYo3-ZAU7VyDWLgdpKusZO093A@mail.gmail.com>
-Subject: Re: [wpan-next v2 1/9] net: ieee802154: hwsim: Ensure proper channel
- selection at probe time
+Date:   Sun, 23 Jan 2022 15:43:21 -0500
+Message-ID: <CAB_54W721DFUw+qu6_UR58GFvjLxshmxiTE0DX-DNNY-XLskoQ@mail.gmail.com>
+Subject: Re: [wpan-next v2 4/9] net: ieee802154: at86rf230: Stop leaking skb's
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
@@ -74,52 +73,40 @@ Hi,
 
 On Thu, 20 Jan 2022 at 06:21, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> Drivers are expected to set the PHY current_channel and current_page
-> according to their default state. The hwsim driver is advertising being
-> configured on channel 13 by default but that is not reflected in its own
-> internal pib structure. In order to ensure that this driver consider the
-> current channel as being 13 internally, we can call hwsim_hw_channel()
-> instead of creating an empty pib structure.
+> Upon error the ieee802154_xmit_complete() helper is not called. Only
+> ieee802154_wake_queue() is called manually. We then leak the skb
+> structure.
 >
-> We assume here that kvfree_rcu(NULL) is a valid call.
+> Free the skb structure upon error before returning.
 >
-> Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+> There is no Fixes tag applying here, many changes have been made on this
+> area and the issue kind of always existed.
+>
 > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->  drivers/net/ieee802154/mac802154_hwsim.c | 10 +---------
->  1 file changed, 1 insertion(+), 9 deletions(-)
+>  drivers/net/ieee802154/at86rf230.c | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
-> index 8caa61ec718f..795f8eb5387b 100644
-> --- a/drivers/net/ieee802154/mac802154_hwsim.c
-> +++ b/drivers/net/ieee802154/mac802154_hwsim.c
-> @@ -732,7 +732,6 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
->  {
->         struct ieee802154_hw *hw;
->         struct hwsim_phy *phy;
-> -       struct hwsim_pib *pib;
->         int idx;
->         int err;
+> diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+> index 7d67f41387f5..0746150f78cf 100644
+> --- a/drivers/net/ieee802154/at86rf230.c
+> +++ b/drivers/net/ieee802154/at86rf230.c
+> @@ -344,6 +344,7 @@ at86rf230_async_error_recover_complete(void *context)
+>                 kfree(ctx);
 >
-> @@ -780,13 +779,8 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
->
->         /* hwsim phy channel 13 as default */
->         hw->phy->current_channel = 13;
-> -       pib = kzalloc(sizeof(*pib), GFP_KERNEL);
-> -       if (!pib) {
-> -               err = -ENOMEM;
-> -               goto err_pib;
-> -       }
-> +       hwsim_hw_channel(hw, hw->phy->current_page, hw->phy->current_channel);
+>         ieee802154_wake_queue(lp->hw);
+> +       dev_kfree_skb_any(lp->tx_skb);
 
-Probably you saw it already; this will end in a
-"suspicious_RCU_usage", that's because of an additional lock check in
-hwsim_hw_channel() which checks if rtnl is held. However, in this
-situation it's not necessary to hold the rtnl lock because we know the
-phy is not being registered yet.
+as I said in other mails there is more broken, we need a:
 
-Either we change it to rcu_derefence() but then we would reduce the
-check if rtnl lock is being held or just simply initial the default
-pib->channel here to 13 which makes that whole patch a one line fix.
+if (lp->is_tx) {
+        ieee802154_wake_queue(lp->hw);
+        dev_kfree_skb_any(lp->tx_skb);
+        lp->is_tx = 0;
+}
+
+in at86rf230_async_error_recover().
+
+Thanks.
 
 - Alex
