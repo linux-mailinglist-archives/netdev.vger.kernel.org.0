@@ -2,89 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3072497455
-	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 19:34:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44598497463
+	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 19:39:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239540AbiAWSeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jan 2022 13:34:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
+        id S239575AbiAWSjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jan 2022 13:39:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239319AbiAWSen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 13:34:43 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A940C06173B;
-        Sun, 23 Jan 2022 10:34:43 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id l25so9619392wrb.13;
-        Sun, 23 Jan 2022 10:34:42 -0800 (PST)
+        with ESMTP id S239568AbiAWSjw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 13:39:52 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA6CC06173D;
+        Sun, 23 Jan 2022 10:39:52 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id 128so13764292pfe.12;
+        Sun, 23 Jan 2022 10:39:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=QiOgKgP5kmmtK6S2g8otnbNPdYlZLH4U555IDjUUehY=;
-        b=nDJa+pX98uzuM/z6giz9sAVqUM+UxvHpSI+ak+tFIV+VsQhibkftoxoVqZcyas5rdI
-         W72ERGnTedeamZkE3O9wBpaNLMOWFXWQPFnZt1M+4Fkk7qaYpk+9GNMGgvNmxDxD4gZV
-         IjE6pvb7n/rVg3jPIhgH0u4peW1YMLkULdf69L27p/5lm2Mhx0yBXWVusZdfAl28+ZSk
-         6517Up2hcUM7WVHe0Oi6ImLBAmhMr1b+ep9j3JAf1Zx+dXR8Q8J2ZMi8Rc06FBv4cskK
-         Wlcw5NX5D3Rniwj+0NaRn3CWKri8mxiKKAvofEHvTqWCAuZqeLYeA8rE4ObY7iYcvRfk
-         JqTg==
+        bh=/+jlT2lVXINBwoznetut/x5ZWQNE1yPkmkCWTyEGTdo=;
+        b=WlBppxzgPlWg5Fo+7JOPT7hwoRV2dBbTOigaUI478r8KWllyra55XVUV9RfIMfsKlO
+         lK/Z57nJOs3uZJYYR89Z627ep2lilGBNNvV51oOLJEUCil+VoUQzDO3iVymmYDo4Jr6e
+         8Pyu5ceHZYdzwjGEgpUaLqykJppsp8vGmwcMd0U3+Vf+sNStZCYZXINjTdKftHLtxeWb
+         aBx2DfLfxsA1E9xout1XqlvKwHGiV9lsTjLlaQNrIs63fkeq/ynEUrmKNYiJo/0bdiFn
+         HTpQbXeGvTWjrpcuEkQ2jAVwneAiSL0tCPDcazSQIsW+u1L8DjED/rWgyW5uC1H810jF
+         Rw/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QiOgKgP5kmmtK6S2g8otnbNPdYlZLH4U555IDjUUehY=;
-        b=njr+jfj2GpoEQ4Ybe4t4QP3AR7IEuT2Z33TZficL1CGBq//unz7Vf6UzCZ0Fq4jfEE
-         MH6/xKElj7TvC0qXr6/cYcvS9e0iTC95/AaSnDVNiyr3yYzuiWPVSQSzK8zEi1keoSRZ
-         8pyfs70077v0lf8Y59lfqYB7F3k6tKmDjzwIBVrQiw2xHt0+fkeobPXMX9kXv9FYENWk
-         H35VuC+vryRQaysdie1yHWHk63xCo8/6Lt6JdLkKXETdwLsX25DE3OjyZ1zyylA0TmdD
-         wh/ruZDs9n3ThdUik5W43cPQfbw2QnY5LckNOlyKSqV455SLpvil25UW/lA/HuyvHqvk
-         UQ4w==
-X-Gm-Message-State: AOAM533y3/j89Rv7APJwcW29IVqAMdt15FEfAJZMOgnDKvJnIag14mfn
-        v7i5kPRKVUK1Lk9my4g6EK8=
-X-Google-Smtp-Source: ABdhPJwU1FAvTXxySatmqT04kn0Ftxclc8hnPgTQTB4cHvIVPkkWlHZ3Mm8VSqVCriYkzORvj/sbIQ==
-X-Received: by 2002:adf:ea0a:: with SMTP id q10mr11817653wrm.670.1642962881663;
-        Sun, 23 Jan 2022 10:34:41 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id m5sm10988955wms.4.2022.01.23.10.34.41
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=/+jlT2lVXINBwoznetut/x5ZWQNE1yPkmkCWTyEGTdo=;
+        b=wTgqhyuCVM8sdtLxgQ4f8dLXBcPsA7S4AdHU82L8kLbPhCLao506z1diJaspBFp/gJ
+         4Jfhf7CDOs8fpYlG/1ubMgiFdxWml7Csl1eTFoadbmOVSP6U6glxW1Bh6/1eWx0ylGxL
+         dgLPNPA0bXedJqWPFwc+WEkI1bIol5hThy0jm0IMck/jAT1QPKWPQma92UnNZuRQ8dKK
+         YNEaGeKcuWYqYFdnoYlivUoDjCot81ZtZcPB/oBOpcGwIbtVP31A94Xxfz0dG6UKqnTM
+         aR7sIJsW86ox5MdE7H/t2Lmqzpmg1O4oBS1t1/1Ts4jpqwTGBgQU4VZRWo7CGL1AC4TL
+         782w==
+X-Gm-Message-State: AOAM532dv9MgCuODvfLqhVBz3f4CDwbdnwOEYvUTy47eSqAMSCUA10OB
+        bTecohEYwyNs1BWkftz6llk=
+X-Google-Smtp-Source: ABdhPJyHoKweRJ5zu+v4p1cIq4SLrkNpd6lpq/L4ePkg2QgQmYL9OAo+KD4DfHvS+HqH4DK46mH0xA==
+X-Received: by 2002:a63:2b03:: with SMTP id r3mr9393877pgr.201.1642963191866;
+        Sun, 23 Jan 2022 10:39:51 -0800 (PST)
+Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
+        by smtp.gmail.com with ESMTPSA id c26sm9566324pgb.53.2022.01.23.10.39.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 10:34:41 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-parisc@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: tulip: remove redundant assignment to variable new_csr6
-Date:   Sun, 23 Jan 2022 18:34:40 +0000
-Message-Id: <20220123183440.112495-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        Sun, 23 Jan 2022 10:39:51 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH 01/54] net/dsa: don't use bitmap_weight() in b53_arl_read()
+Date:   Sun, 23 Jan 2022 10:38:32 -0800
+Message-Id: <20220123183925.1052919-2-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220123183925.1052919-1-yury.norov@gmail.com>
+References: <20220123183925.1052919-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Variable new_csr6 is being initialized with a value that is never
-read, it is being re-assigned later on. The assignment is redundant
-and can be removed.
+Don't call bitmap_weight() if the following code can get by
+without it.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- drivers/net/ethernet/dec/tulip/pnic.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/b53/b53_common.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/dec/tulip/pnic.c b/drivers/net/ethernet/dec/tulip/pnic.c
-index 3fb39e32e1b4..653bde48ef44 100644
---- a/drivers/net/ethernet/dec/tulip/pnic.c
-+++ b/drivers/net/ethernet/dec/tulip/pnic.c
-@@ -21,7 +21,7 @@ void pnic_do_nway(struct net_device *dev)
- 	struct tulip_private *tp = netdev_priv(dev);
- 	void __iomem *ioaddr = tp->base_addr;
- 	u32 phy_reg = ioread32(ioaddr + 0xB8);
--	u32 new_csr6 = tp->csr6 & ~0x40C40200;
-+	u32 new_csr6;
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index 3867f3d4545f..9a10d80125d9 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1620,12 +1620,8 @@ static int b53_arl_read(struct b53_device *dev, u64 mac,
+ 		return 0;
+ 	}
  
- 	if (phy_reg & 0x78000000) { /* Ignore baseT4 */
- 		if (phy_reg & 0x20000000)		dev->if_port = 5;
+-	if (bitmap_weight(free_bins, dev->num_arl_bins) == 0)
+-		return -ENOSPC;
+-
+ 	*idx = find_first_bit(free_bins, dev->num_arl_bins);
+-
+-	return -ENOENT;
++	return *idx >= dev->num_arl_bins ? -ENOSPC : -ENOENT;
+ }
+ 
+ static int b53_arl_op(struct b53_device *dev, int op, int port,
 -- 
-2.33.1
+2.30.2
 
