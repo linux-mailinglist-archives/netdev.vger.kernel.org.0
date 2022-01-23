@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A94B497588
-	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 21:43:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A64649758D
+	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 21:45:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240096AbiAWUnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jan 2022 15:43:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52770 "EHLO
+        id S240123AbiAWUpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jan 2022 15:45:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240057AbiAWUne (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 15:43:34 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC49C06173B;
-        Sun, 23 Jan 2022 12:43:34 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id j5-20020a05600c1c0500b0034d2e956aadso26251749wms.4;
-        Sun, 23 Jan 2022 12:43:34 -0800 (PST)
+        with ESMTP id S240098AbiAWUpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 15:45:12 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC08AC06173B;
+        Sun, 23 Jan 2022 12:45:11 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id v13so9962575wrv.10;
+        Sun, 23 Jan 2022 12:45:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/r6am+3N6osUA/Dj/zZE3T0O61T+nuhMcTokJz7x4t4=;
-        b=F74q1ACftHexnodeBoYFJHTwiP+7EOpoGurC+YX6RANADb7BRaqgAOXx40HPiX330p
-         /blP5JOz16HVHXI1Tvq8pLvNVKEkDjiQHZFXYtuvy2zgPVzwC/BUCzyky4OFj106rtPn
-         smc/gu7qXdMZGVepK/8bcc4SItDEOvBL6Ye/FNpGHlHEjowftG1g+r89OfHxglZdQ19z
-         dsGnKGE0e+Tc27AxXT/kaXPPei7PNkMGXcS+9/LED/WsoWi+PWI36E6qobIlJY9ttfSG
-         JnNVYsM+rENONcokLm0Ae+bqaR2vR28Q+xvXRCX+giHVWSxWgT3w71LUTqe+LcKVL4ZS
-         9QxQ==
+        bh=JjOTyMYqSntifnM/IFbfpSh6njlmCNgHOt+K/JvQg2U=;
+        b=caCbhYHo8KZJJy3wEBf561/PsU9EHiFELjtAJVLNPOLOkuhw/1ZYc5AVOnZ5aqaxsV
+         dlTmx/AXTZ51H199Qd+l3ndeicUH77/TT/w2YksIfOVctmrrCxPr1huwvGveV7YPf1J7
+         hpjMscLXmLc9WMpM6Ne23UTxMe3PJ77ZWl7jB8/mwYpHOZsTYmz+EJ4F5xnopr4RUmMe
+         +k/xtj1ZRYrhEi6u1XMwB3ENRjg31H67JHTwFRChCj0PT1jMse4dYrUu7rzv6zT5tcNH
+         ifo1OSUFNO3uSNgCy7kMWvve0sArZwXgW7/0xB9mxwmVOiqFzc3tgco3Q9WULhss0FOh
+         eRzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/r6am+3N6osUA/Dj/zZE3T0O61T+nuhMcTokJz7x4t4=;
-        b=s2s5ObxHeef45Vxvvmx6cTIqWbeDe+gFDTwetmzw58NIdJuR+0UgH/bAHz2itXUdUP
-         RkCEe7EwfW7oPUj7nE8q+HAYOCh17EJ0xO57wii3xL2hqEGesSP/QfvfTF8V4tfyU2Cy
-         bnSfdMGxVQdpMUtomGjrANWGTpZPZlW0ivM9uy6wqsj4fszJqEkVCFZnB+RNjJIy2NgU
-         jHc6MnZVQulMYrG7SJXyi9CaYdUaA8C5tDe5kzc24RKuELp0hKQmDvHo4LV1bDaT2Atq
-         dry35+x2fhKrVylLn9kZXbZroD/QgNbAdqIEW3HQwNbpQobQRxyPsS8x1qsebsfQZW/Z
-         HtBQ==
-X-Gm-Message-State: AOAM530j46dyjzXjWOQXNRKdb1xwXtkZDav3dwpoNiQUSOkh9IMxCCzt
-        nqCb+aIORk2gnq+Hbfv4R+tPOn+tc71d2PpQpDw=
-X-Google-Smtp-Source: ABdhPJxD6EAlgI2Bh9T88FoM41kBM7KAX0HZGuE11nCud0zVPMsm/hzzAf/qanvJFWiNyXLqYERyqjiHqPTaZ6Dyhb8=
-X-Received: by 2002:a05:600c:2052:: with SMTP id p18mr1853060wmg.178.1642970613048;
- Sun, 23 Jan 2022 12:43:33 -0800 (PST)
+        bh=JjOTyMYqSntifnM/IFbfpSh6njlmCNgHOt+K/JvQg2U=;
+        b=uQ7zjXQf0zF7eZ/P7HI3UAulNCAIxiRvNV+bLH+VKJR3iZRqTGvmpMxUftsNIxJ2uY
+         6tej5ETXTAXMVn/F4JDJaM6bwaJqF8oMMgNTsMIzjexUmIlDEmbbl6gvio6wdVL3Adqo
+         +ezDgi/h/GMno2LtrxiLlnCaahOO7MuQzaF/Mwjp3S051iyLyA957n+IvVk0lb4FpJi1
+         cGqCfMHKtIQiRV/WBUdzTBOdHAO/b91lueokQMPqsMgEkbz0eSHxdOS+2QzoTG0k8YC4
+         poDGrblgDKzmXUiALodR9UCSVGK+g0/ARYUqHpAi2pS5GhB7SWh2rmH18VvsKWjs6Wr7
+         /Teg==
+X-Gm-Message-State: AOAM532iP8N49HGDFWW0jYt5PjWbPNoRGeec8j28O3xsDJ0fw4nMTqiv
+        F3h7Kw8KeMTGPEAgkRYL3Huu8kQdgmo22vPrg1s=
+X-Google-Smtp-Source: ABdhPJypeRGFPhoSRKAiSw+ZAsEH42Er4jXYNgdJlfdB+IiUUCP1Atm18MMjWpJHybJT7A4yW7YWobWOq4PAYJFaUzg=
+X-Received: by 2002:adf:fa8d:: with SMTP id h13mr11728924wrr.154.1642970710307;
+ Sun, 23 Jan 2022 12:45:10 -0800 (PST)
 MIME-Version: 1.0
-References: <20220120112115.448077-1-miquel.raynal@bootlin.com> <20220120112115.448077-5-miquel.raynal@bootlin.com>
-In-Reply-To: <20220120112115.448077-5-miquel.raynal@bootlin.com>
+References: <20220120112115.448077-1-miquel.raynal@bootlin.com> <20220120112115.448077-7-miquel.raynal@bootlin.com>
+In-Reply-To: <20220120112115.448077-7-miquel.raynal@bootlin.com>
 From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Sun, 23 Jan 2022 15:43:21 -0500
-Message-ID: <CAB_54W721DFUw+qu6_UR58GFvjLxshmxiTE0DX-DNNY-XLskoQ@mail.gmail.com>
-Subject: Re: [wpan-next v2 4/9] net: ieee802154: at86rf230: Stop leaking skb's
+Date:   Sun, 23 Jan 2022 15:44:59 -0500
+Message-ID: <CAB_54W5DfNa8QSTiejL=1ywEShkK07bwvJeHkhcVowLtOtZrUw@mail.gmail.com>
+Subject: Re: [wpan-next v2 6/9] net: ieee802154: Use the IEEE802154_MAX_PAGE
+ define when relevant
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
@@ -73,40 +74,38 @@ Hi,
 
 On Thu, 20 Jan 2022 at 06:21, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> Upon error the ieee802154_xmit_complete() helper is not called. Only
-> ieee802154_wake_queue() is called manually. We then leak the skb
-> structure.
->
-> Free the skb structure upon error before returning.
->
-> There is no Fixes tag applying here, many changes have been made on this
-> area and the issue kind of always existed.
+> This define already exist but is hardcoded in nl-phy.c. Use the
+> definition when relevant.
 >
 > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->  drivers/net/ieee802154/at86rf230.c | 1 +
->  1 file changed, 1 insertion(+)
+>  net/ieee802154/nl-phy.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 >
-> diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-> index 7d67f41387f5..0746150f78cf 100644
-> --- a/drivers/net/ieee802154/at86rf230.c
-> +++ b/drivers/net/ieee802154/at86rf230.c
-> @@ -344,6 +344,7 @@ at86rf230_async_error_recover_complete(void *context)
->                 kfree(ctx);
+> diff --git a/net/ieee802154/nl-phy.c b/net/ieee802154/nl-phy.c
+> index dd5a45f8a78a..02f6a53d0faa 100644
+> --- a/net/ieee802154/nl-phy.c
+> +++ b/net/ieee802154/nl-phy.c
+> @@ -30,7 +30,8 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
+>  {
+>         void *hdr;
+>         int i, pages = 0;
+> -       uint32_t *buf = kcalloc(32, sizeof(uint32_t), GFP_KERNEL);
+> +       uint32_t *buf = kcalloc(IEEE802154_MAX_PAGE + 1, sizeof(uint32_t),
+> +                               GFP_KERNEL);
 >
->         ieee802154_wake_queue(lp->hw);
-> +       dev_kfree_skb_any(lp->tx_skb);
+>         pr_debug("%s\n", __func__);
+>
+> @@ -47,7 +48,7 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
+>             nla_put_u8(msg, IEEE802154_ATTR_PAGE, phy->current_page) ||
+>             nla_put_u8(msg, IEEE802154_ATTR_CHANNEL, phy->current_channel))
+>                 goto nla_put_failure;
+> -       for (i = 0; i < 32; i++) {
+> +       for (i = 0; i <= IEEE802154_MAX_PAGE; i++) {
+>                 if (phy->supported.channels[i])
+>                         buf[pages++] = phy->supported.channels[i] | (i << 27);
+>         }
 
-as I said in other mails there is more broken, we need a:
-
-if (lp->is_tx) {
-        ieee802154_wake_queue(lp->hw);
-        dev_kfree_skb_any(lp->tx_skb);
-        lp->is_tx = 0;
-}
-
-in at86rf230_async_error_recover().
-
-Thanks.
+Where is the fix here?
 
 - Alex
