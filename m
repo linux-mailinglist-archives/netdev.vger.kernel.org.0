@@ -2,82 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A464249717E
-	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 13:35:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CE0B49718F
+	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 13:57:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236322AbiAWMfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jan 2022 07:35:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
+        id S236365AbiAWM5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jan 2022 07:57:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231757AbiAWMff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 07:35:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA6DC06173B;
-        Sun, 23 Jan 2022 04:35:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BDD260C03;
-        Sun, 23 Jan 2022 12:35:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19892C340E2;
-        Sun, 23 Jan 2022 12:35:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642941334;
-        bh=S7js9MyhutpXKmExYcJoR4zt9vRfN4FPoO8fosVNf8o=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lMhV36RUtivGR2ajyZ4IVzQdcYtCJWjwS95KCwl4XFCV4p9oePljYqgy8SyABn0MQ
-         B94uTywz1BX/96guAzyapy72PshjyqR07AIn8RSi6QNDsTLzM7W+yNYxODPm24BFTN
-         9w+h9/ugmHo6q3x0++ji6hGie0YouDnfGwZ6Z3Gl3IAaxiKBiQMwy+KdtkZlhivo/x
-         iJ2BygJPf40eKwxuICcKKX2ugytVlZKpViwbAFJhX64vRqVW5myo3bhk0OwlGx4UAQ
-         VfCXuWUnHoTyRkVcUzFugC5zHcUJf5C9SSZEAy4DsDeSAdNDFOPySEO2p1Mb3DVB8J
-         69kjbOQEBnRoA==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        with ESMTP id S236358AbiAWM5a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 07:57:30 -0500
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A481C06173D
+        for <netdev@vger.kernel.org>; Sun, 23 Jan 2022 04:57:28 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:20cc:b383:efc8:c1b8])
+        by baptiste.telenet-ops.be with bizsmtp
+        id mCxK2600D4688xB01CxKR4; Sun, 23 Jan 2022 13:57:27 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nBcQp-00B8uY-Fz; Sun, 23 Jan 2022 13:57:19 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nBcQo-00B9ed-Uy; Sun, 23 Jan 2022 13:57:18 +0100
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: stmmac: remove unused members in struct stmmac_priv
-Date:   Sun, 23 Jan 2022 20:27:58 +0800
-Message-Id: <20220123122758.2876-1-jszhang@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] netfilter: Remove flowtable relics
+Date:   Sun, 23 Jan 2022 13:57:17 +0100
+Message-Id: <20220123125717.2658676-1-geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tx_coalesce and mii_irq are not used at all now, so remove them.
+NF_FLOW_TABLE_IPV4 and NF_FLOW_TABLE_IPV6 are invisble, selected by
+nothing (so they can no longer be enabled), and their last real users
+have been removed (nf_flow_table_ipv6.c is empty).
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Clean up the leftovers.
+
+Fixes: c42ba4290b2147aa ("netfilter: flowtable: remove ipv4/ipv6 modules")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac.h | 2 --
- 1 file changed, 2 deletions(-)
+ net/ipv4/netfilter/Kconfig              | 4 ----
+ net/ipv6/netfilter/Kconfig              | 4 ----
+ net/ipv6/netfilter/Makefile             | 3 ---
+ net/ipv6/netfilter/nf_flow_table_ipv6.c | 0
+ 4 files changed, 11 deletions(-)
+ delete mode 100644 net/ipv6/netfilter/nf_flow_table_ipv6.c
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 40b5ed94cb54..5b195d5051d6 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -194,7 +194,6 @@ struct stmmac_priv {
- 	u32 tx_coal_timer[MTL_MAX_TX_QUEUES];
- 	u32 rx_coal_frames[MTL_MAX_TX_QUEUES];
+diff --git a/net/ipv4/netfilter/Kconfig b/net/ipv4/netfilter/Kconfig
+index 67087f95579fdea6..aab384126f61ffb9 100644
+--- a/net/ipv4/netfilter/Kconfig
++++ b/net/ipv4/netfilter/Kconfig
+@@ -58,10 +58,6 @@ config NF_TABLES_ARP
  
--	int tx_coalesce;
- 	int hwts_tx_en;
- 	bool tx_path_in_lpi_mode;
- 	bool tso;
-@@ -229,7 +228,6 @@ struct stmmac_priv {
- 	unsigned int flow_ctrl;
- 	unsigned int pause;
- 	struct mii_bus *mii;
--	int mii_irq[PHY_MAX_ADDR];
+ endif # NF_TABLES
  
- 	struct phylink_config phylink_config;
- 	struct phylink *phylink;
+-config NF_FLOW_TABLE_IPV4
+-	tristate
+-	select NF_FLOW_TABLE_INET
+-
+ config NF_DUP_IPV4
+ 	tristate "Netfilter IPv4 packet duplication to alternate destination"
+ 	depends on !NF_CONNTRACK || NF_CONNTRACK
+diff --git a/net/ipv6/netfilter/Kconfig b/net/ipv6/netfilter/Kconfig
+index 97d3d1b36dbceb60..0ba62f4868f97695 100644
+--- a/net/ipv6/netfilter/Kconfig
++++ b/net/ipv6/netfilter/Kconfig
+@@ -47,10 +47,6 @@ config NFT_FIB_IPV6
+ endif # NF_TABLES_IPV6
+ endif # NF_TABLES
+ 
+-config NF_FLOW_TABLE_IPV6
+-	tristate
+-	select NF_FLOW_TABLE_INET
+-
+ config NF_DUP_IPV6
+ 	tristate "Netfilter IPv6 packet duplication to alternate destination"
+ 	depends on !NF_CONNTRACK || NF_CONNTRACK
+diff --git a/net/ipv6/netfilter/Makefile b/net/ipv6/netfilter/Makefile
+index b85383606df71b5c..b8d6dc9aeeb6f403 100644
+--- a/net/ipv6/netfilter/Makefile
++++ b/net/ipv6/netfilter/Makefile
+@@ -28,9 +28,6 @@ obj-$(CONFIG_NFT_REJECT_IPV6) += nft_reject_ipv6.o
+ obj-$(CONFIG_NFT_DUP_IPV6) += nft_dup_ipv6.o
+ obj-$(CONFIG_NFT_FIB_IPV6) += nft_fib_ipv6.o
+ 
+-# flow table support
+-obj-$(CONFIG_NF_FLOW_TABLE_IPV6) += nf_flow_table_ipv6.o
+-
+ # matches
+ obj-$(CONFIG_IP6_NF_MATCH_AH) += ip6t_ah.o
+ obj-$(CONFIG_IP6_NF_MATCH_EUI64) += ip6t_eui64.o
+diff --git a/net/ipv6/netfilter/nf_flow_table_ipv6.c b/net/ipv6/netfilter/nf_flow_table_ipv6.c
+deleted file mode 100644
+index e69de29bb2d1d643..0000000000000000
 -- 
-2.34.1
+2.25.1
 
