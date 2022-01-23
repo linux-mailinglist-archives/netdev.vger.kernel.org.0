@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF1DF496F77
-	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 02:34:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2B0E496F74
+	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 02:34:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235461AbiAWBeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jan 2022 20:34:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54642 "EHLO
+        id S235248AbiAWBeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jan 2022 20:34:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235334AbiAWBdz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 20:33:55 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899BCC06174E;
-        Sat, 22 Jan 2022 17:33:54 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id me13so11158719ejb.12;
-        Sat, 22 Jan 2022 17:33:54 -0800 (PST)
+        with ESMTP id S235352AbiAWBd4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jan 2022 20:33:56 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5BD1C06173B;
+        Sat, 22 Jan 2022 17:33:55 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id j2so49593206edj.8;
+        Sat, 22 Jan 2022 17:33:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0ibOThFTH1OowTHawPEwM965WZFmhVW87OFPYcjfEZk=;
-        b=csy2HAJTrnowVENntnhd/z5SPuXCEo/XmTqn+TFb87IBpCZA8PMcxO4jKDitn7CvJg
-         Qy/gROISDkJxG4usvxrAwJKGseB1m6EEQ3oqY4Na/8slb4qQ9yfWSGQRNHNz7vH4IJ7o
-         ZOf+j9iTcxBlP046q/KMYYsDHK03nXJAVfto3qyRW1QYfPgU3hxBDZ2G/Lf7WbZdn2gT
-         NEFmC00E2Eix3v85xXTFtCz2+UwBvDweTxNCLaq6088WpD71Po99zDxcseRFAuBhZau9
-         UcSeV8L4xlzo7cpliwpuwyDB/cZIc+6T/7pgMrXZQo7AjsH1YorAEmHEfhLh+3QqQauo
-         UE1g==
+        bh=f3K5O/YpvqFOEiBsb8rfwDwH92nPibKXJLXc8NBPwGo=;
+        b=TT2ZMh3W9Oa3C5fsAB8m1OKAP6r02u7tEBrRB5U+X3GQY6IrpruxXLgpPYCEKIMjZx
+         ChwdA4qey3DVjCu0ANLCqBRsaaL5iKWk7L2r+NhfGva643Q0KriwcbIKRWhN3SrOWpBs
+         qQ08cAjDed4gTLQFLndqG7IXnOakTIa9Prxphux2wR+IMCaVFh+f5RBocs1d0SE/4EpT
+         nQlHm40DuC3XCyA8iNEa4AIV3ox9JrA8COxI7ZXdPIFuzJXwjV1uVpeg2tGYdp248bc6
+         sqj2s5TE9c4unVI59PkgLxT6i7Vbl6S1KZ8bz+3il/01R/9QvEnppL5aBoA5h+E6RFMO
+         QgIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0ibOThFTH1OowTHawPEwM965WZFmhVW87OFPYcjfEZk=;
-        b=5v++oOmCmmtXc5BhY8ovSgyyExhXRJF0FuvpsxoWq0QkwzQoR/9ph3We1IdXmsTUbZ
-         XA3YdulGSdM7R0EPHvd3QmMr7o7b4oIwOXpUFgKoSCFuBx6XMjv29S/njLzUmYZtN1XA
-         QXkP1/iZUVUHt2JQFxS91auH0XwUR7lbOGMKDEFtAwfC4Z6ycioyEclqA45kq4ySDheZ
-         Jx1YKhCSYJc2HrUKSCFfWx2kmzSfz1wpx6dWfIi5zwrW9s5cdPfnA+wz+idH2mptrztP
-         jb3sR0JeNS+LhwTlmFXTqAMdQR9xaDi/Alfw/httkSLC5CfGvjpHN7L+H6iAVieBjaI0
-         oHpA==
-X-Gm-Message-State: AOAM530LKgIrV0GRivP53w4gcpmLwP+PvU3KEMPqBQdvI2P1FEWN6zR0
-        L6FOMQYQ24Ems7ML8fKkbmU=
-X-Google-Smtp-Source: ABdhPJxnk1B69CCZRfoK1ywreoU+Rospyl9e0De/sKrLnW/xRGL7Gg1eMnb0T1NC2Cu+/dCzZ81y/Q==
-X-Received: by 2002:a17:907:6d01:: with SMTP id sa1mr8165150ejc.517.1642901633098;
-        Sat, 22 Jan 2022 17:33:53 -0800 (PST)
+        bh=f3K5O/YpvqFOEiBsb8rfwDwH92nPibKXJLXc8NBPwGo=;
+        b=1TR12hO6I4pWN7/LG2u8acn1xVpfhCmPD73LrNoERl/xeEzeyNwmq0RnpapQ1bvE+V
+         FUXyfep8XypseBKQlVVyJpptgdVcYWX1+Q6JFMTMgax/wAPrNkIyZAutR2N5ePkQSgwn
+         rHy1NzAtfVQmxFNPS3EBD/tqDC/SYRoQF1l9lloT6MM0vDUDmwg87Cd+guFb5yetC5+4
+         YdB7D2ZumOV0mLVOnWQo5n2RPzdX4OLboGsF2dEY+6OnsBYXoggNLyn47ZlYzVdmBK3B
+         +GJErB3Um35zmc+JBJGrxNY4PKrNSl3hU7q3Yc+GSWy+Hz9RBEZ58dlO3AJAcBGsI+qa
+         h5rQ==
+X-Gm-Message-State: AOAM532jLVvVxJUwMq2x/iFxGQsD/KsGWVtWZDOP9PZu6luYg6DzmEku
+        nhcU4OT3c/7x0cvyKLrWaDATS2rq1qM=
+X-Google-Smtp-Source: ABdhPJyznc3txJSrTU4b2J3znljieEdHCDxsi9n4A7LBgqaU6pRGJFKjzJ8xGjNa0/ZYAI8uTuRBAA==
+X-Received: by 2002:a05:6402:5216:: with SMTP id s22mr10082431edd.44.1642901634146;
+        Sat, 22 Jan 2022 17:33:54 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id fy40sm3259866ejc.36.2022.01.22.17.33.52
+        by smtp.googlemail.com with ESMTPSA id fy40sm3259866ejc.36.2022.01.22.17.33.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Jan 2022 17:33:52 -0800 (PST)
+        Sat, 22 Jan 2022 17:33:53 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,9 +56,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [RFC PATCH v7 12/16] net: dsa: qca8k: add support for phy read/write with mgmt Ethernet
-Date:   Sun, 23 Jan 2022 02:33:33 +0100
-Message-Id: <20220123013337.20945-13-ansuelsmth@gmail.com>
+Subject: [RFC PATCH v7 13/16] net: dsa: qca8k: move page cache to driver priv
+Date:   Sun, 23 Jan 2022 02:33:34 +0100
+Message-Id: <20220123013337.20945-14-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220123013337.20945-1-ansuelsmth@gmail.com>
 References: <20220123013337.20945-1-ansuelsmth@gmail.com>
@@ -68,265 +68,234 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use mgmt Ethernet also for phy read/write if availabale. Use a different
-seq number to make sure we receive the correct packet.
-On any error, we fallback to the legacy mdio read/write.
+There can be multiple qca8k switch on the same system. Move the static
+qca8k_current_page to qca8k_priv and make it specific for each switch.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 191 ++++++++++++++++++++++++++++++++++++++++
- drivers/net/dsa/qca8k.h |   1 +
- 2 files changed, 192 insertions(+)
+ drivers/net/dsa/qca8k.c | 47 +++++++++++++++++++++++------------------
+ drivers/net/dsa/qca8k.h |  9 ++++++++
+ 2 files changed, 36 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index f51a6d8993ff..e7bc0770bae9 100644
+index e7bc0770bae9..c2f5414033d8 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -848,6 +848,166 @@ qca8k_port_set_status(struct qca8k_priv *priv, int port, int enable)
- 		regmap_clear_bits(priv->regmap, QCA8K_REG_PORT_STATUS(port), mask);
+@@ -75,12 +75,6 @@ static const struct qca8k_mib_desc ar8327_mib[] = {
+ 	MIB_DESC(1, 0xac, "TXUnicast"),
+ };
+ 
+-/* The 32bit switch registers are accessed indirectly. To achieve this we need
+- * to set the page of the register. Track the last page that was set to reduce
+- * mdio writes
+- */
+-static u16 qca8k_current_page = 0xffff;
+-
+ static void
+ qca8k_split_addr(u32 regaddr, u16 *r1, u16 *r2, u16 *page)
+ {
+@@ -134,11 +128,11 @@ qca8k_mii_write32(struct mii_bus *bus, int phy_id, u32 regnum, u32 val)
  }
  
-+static int
-+qca8k_phy_eth_busy_wait(struct qca8k_mgmt_hdr_data *phy_hdr_data,
-+			struct sk_buff *read_skb, u32 *val)
-+{
-+	struct sk_buff *skb = skb_copy(read_skb, GFP_KERNEL);
-+	bool ack;
-+	int ret;
-+
-+	reinit_completion(&phy_hdr_data->rw_done);
-+	phy_hdr_data->seq = 400;
-+	phy_hdr_data->ack = false;
-+
-+	dev_queue_xmit(skb);
-+
-+	ret = wait_for_completion_timeout(&phy_hdr_data->rw_done,
-+					  QCA8K_ETHERNET_TIMEOUT);
-+
-+	ack = phy_hdr_data->ack;
-+
-+	if (ret <= 0)
-+		return -ETIMEDOUT;
-+
-+	if (!ack)
-+		return -EINVAL;
-+
-+	*val = phy_hdr_data->data[0];
-+
-+	return 0;
-+}
-+
-+static int
-+qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
-+		      int regnum, u16 data)
-+{
-+	struct sk_buff *write_skb, *clear_skb, *read_skb;
-+	struct qca8k_mgmt_hdr_data *phy_hdr_data;
-+	const struct net_device *mgmt_master;
-+	u32 write_val, clear_val = 0, val;
-+	int seq_num = 400;
-+	int ret, ret1;
-+	bool ack;
-+
-+	if (regnum >= QCA8K_MDIO_MASTER_MAX_REG)
-+		return -EINVAL;
-+
-+	phy_hdr_data = &priv->mgmt_hdr_data;
-+
-+	write_val = QCA8K_MDIO_MASTER_BUSY | QCA8K_MDIO_MASTER_EN |
-+		    QCA8K_MDIO_MASTER_PHY_ADDR(phy) |
-+		    QCA8K_MDIO_MASTER_REG_ADDR(regnum);
-+
-+	if (read) {
-+		write_val |= QCA8K_MDIO_MASTER_READ;
-+	} else {
-+		write_val |= QCA8K_MDIO_MASTER_WRITE;
-+		write_val |= QCA8K_MDIO_MASTER_DATA(data);
-+	}
-+
-+	/* Prealloc all the needed skb before the lock */
-+	write_skb = qca8k_alloc_mdio_header(MDIO_WRITE, QCA8K_MDIO_MASTER_CTRL,
-+					    &write_val, seq_num, QCA8K_ETHERNET_PHY_PRIORITY);
-+	if (!write_skb)
-+		return -ENOMEM;
-+
-+	clear_skb = qca8k_alloc_mdio_header(MDIO_WRITE, QCA8K_MDIO_MASTER_CTRL,
-+					    &clear_val, seq_num, QCA8K_ETHERNET_PHY_PRIORITY);
-+	if (!write_skb)
-+		return -ENOMEM;
-+
-+	read_skb = qca8k_alloc_mdio_header(MDIO_READ, QCA8K_MDIO_MASTER_CTRL,
-+					   &clear_val, seq_num, QCA8K_ETHERNET_PHY_PRIORITY);
-+	if (!write_skb)
-+		return -ENOMEM;
-+
-+	/* Actually start the request:
-+	 * 1. Send mdio master packet
-+	 * 2. Busy Wait for mdio master command
-+	 * 3. Get the data if we are reading
-+	 * 4. Reset the mdio master (even with error)
-+	 */
-+	mutex_lock(&phy_hdr_data->mutex);
-+
-+	/* Recheck mgmt_master under lock to make sure it's operational */
-+	mgmt_master = priv->mgmt_master;
-+	if (!mgmt_master)
-+		return -EINVAL;
-+
-+	read_skb->dev = (struct net_device *)mgmt_master;
-+	clear_skb->dev = (struct net_device *)mgmt_master;
-+	write_skb->dev = (struct net_device *)mgmt_master;
-+
-+	reinit_completion(&phy_hdr_data->rw_done);
-+	phy_hdr_data->ack = false;
-+	phy_hdr_data->seq = seq_num;
-+
-+	dev_queue_xmit(write_skb);
-+
-+	ret = wait_for_completion_timeout(&phy_hdr_data->rw_done,
-+					  QCA8K_ETHERNET_TIMEOUT);
-+
-+	ack = phy_hdr_data->ack;
-+
-+	if (ret <= 0) {
-+		ret = -ETIMEDOUT;
-+		goto exit;
-+	}
-+
-+	if (!ack) {
-+		ret = -EINVAL;
-+		goto exit;
-+	}
-+
-+	ret = read_poll_timeout(qca8k_phy_eth_busy_wait, ret1,
-+				!(val & QCA8K_MDIO_MASTER_BUSY), 0,
-+				QCA8K_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC, false,
-+				phy_hdr_data, read_skb, &val);
-+
-+	if (ret < 0 && ret1 < 0) {
-+		ret = ret1;
-+		goto exit;
-+	}
-+
-+	if (read) {
-+		reinit_completion(&phy_hdr_data->rw_done);
-+		phy_hdr_data->ack = false;
-+
-+		dev_queue_xmit(read_skb);
-+
-+		ret = wait_for_completion_timeout(&phy_hdr_data->rw_done,
-+						  QCA8K_ETHERNET_TIMEOUT);
-+
-+		ack = phy_hdr_data->ack;
-+
-+		if (ret <= 0) {
-+			ret = -ETIMEDOUT;
-+			goto exit;
-+		}
-+
-+		if (!ack) {
-+			ret = -EINVAL;
-+			goto exit;
-+		}
-+
-+		ret = phy_hdr_data->data[0] & QCA8K_MDIO_MASTER_DATA_MASK;
-+	}
-+
-+exit:
-+	reinit_completion(&phy_hdr_data->rw_done);
-+	phy_hdr_data->ack = false;
-+
-+	dev_queue_xmit(clear_skb);
-+
-+	wait_for_completion_timeout(&phy_hdr_data->rw_done,
-+				    QCA8K_ETHERNET_TIMEOUT);
-+
-+	mutex_unlock(&phy_hdr_data->mutex);
-+
-+	return ret;
-+}
-+
- static u32
- qca8k_port_to_phy(int port)
+ static int
+-qca8k_set_page(struct mii_bus *bus, u16 page)
++qca8k_set_page(struct mii_bus *bus, u16 page, u16 *cached_page)
  {
-@@ -970,6 +1130,14 @@ qca8k_internal_mdio_write(struct mii_bus *slave_bus, int phy, int regnum, u16 da
+ 	int ret;
+ 
+-	if (page == qca8k_current_page)
++	if (page == *cached_page)
+ 		return 0;
+ 
+ 	ret = bus->write(bus, 0x18, 0, page);
+@@ -148,7 +142,7 @@ qca8k_set_page(struct mii_bus *bus, u16 page)
+ 		return ret;
+ 	}
+ 
+-	qca8k_current_page = page;
++	*cached_page = page;
+ 	usleep_range(1000, 2000);
+ 	return 0;
+ }
+@@ -343,6 +337,7 @@ static int
+ qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
  {
- 	struct qca8k_priv *priv = slave_bus->priv;
+ 	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
++	struct qca8k_mdio_cache *mdio_cache;
  	struct mii_bus *bus = priv->bus;
-+	int ret;
-+
-+	/* Use mdio Ethernet when available, fallback to legacy one on error */
-+	if (priv->mgmt_master) {
-+		ret = qca8k_phy_eth_command(priv, false, phy, regnum, data);
-+		if (!ret)
-+			return 0;
-+	}
+ 	u16 r1, r2, page;
+ 	int ret;
+@@ -350,11 +345,13 @@ qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
+ 	if (priv->mgmt_master && !qca8k_read_eth(priv, reg, val))
+ 		return 0;
  
- 	return qca8k_mdio_write(bus, phy, regnum, data);
- }
-@@ -979,6 +1147,14 @@ qca8k_internal_mdio_read(struct mii_bus *slave_bus, int phy, int regnum)
++	mdio_cache = &priv->mdio_cache;
++
+ 	qca8k_split_addr(reg, &r1, &r2, &page);
+ 
+ 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+ 
+-	ret = qca8k_set_page(bus, page);
++	ret = qca8k_set_page(bus, page, &mdio_cache->page);
+ 	if (ret < 0)
+ 		goto exit;
+ 
+@@ -369,6 +366,7 @@ static int
+ qca8k_regmap_write(void *ctx, uint32_t reg, uint32_t val)
  {
- 	struct qca8k_priv *priv = slave_bus->priv;
+ 	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
++	struct qca8k_mdio_cache *mdio_cache;
  	struct mii_bus *bus = priv->bus;
-+	int ret;
-+
-+	/* Use mdio Ethernet when available, fallback to legacy one on error */
-+	if (priv->mgmt_master) {
-+		ret = qca8k_phy_eth_command(priv, true, phy, regnum, 0);
-+		if (ret >= 0)
-+			return ret;
-+	}
+ 	u16 r1, r2, page;
+ 	int ret;
+@@ -376,11 +374,13 @@ qca8k_regmap_write(void *ctx, uint32_t reg, uint32_t val)
+ 	if (priv->mgmt_master && !qca8k_write_eth(priv, reg, val))
+ 		return 0;
  
- 	return qca8k_mdio_read(bus, phy, regnum);
- }
-@@ -987,6 +1163,7 @@ static int
- qca8k_phy_write(struct dsa_switch *ds, int port, int regnum, u16 data)
++	mdio_cache = &priv->mdio_cache;
++
+ 	qca8k_split_addr(reg, &r1, &r2, &page);
+ 
+ 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+ 
+-	ret = qca8k_set_page(bus, page);
++	ret = qca8k_set_page(bus, page, &mdio_cache->page);
+ 	if (ret < 0)
+ 		goto exit;
+ 
+@@ -395,6 +395,7 @@ static int
+ qca8k_regmap_update_bits(void *ctx, uint32_t reg, uint32_t mask, uint32_t write_val)
  {
- 	struct qca8k_priv *priv = ds->priv;
-+	int ret;
+ 	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
++	struct qca8k_mdio_cache *mdio_cache;
+ 	struct mii_bus *bus = priv->bus;
+ 	u16 r1, r2, page;
+ 	u32 val;
+@@ -404,11 +405,13 @@ qca8k_regmap_update_bits(void *ctx, uint32_t reg, uint32_t mask, uint32_t write_
+ 	    !qca8k_regmap_update_bits_eth(priv, reg, mask, write_val))
+ 		return 0;
  
- 	/* Check if the legacy mapping should be used and the
- 	 * port is not correctly mapped to the right PHY in the
-@@ -995,6 +1172,13 @@ qca8k_phy_write(struct dsa_switch *ds, int port, int regnum, u16 data)
- 	if (priv->legacy_phy_port_mapping)
- 		port = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
- 
-+	/* Use mdio Ethernet when available, fallback to legacy one on error */
-+	if (priv->mgmt_master) {
-+		ret = qca8k_phy_eth_command(priv, true, port, regnum, 0);
-+		if (!ret)
-+			return ret;
-+	}
++	mdio_cache = &priv->mdio_cache;
 +
- 	return qca8k_mdio_write(priv->bus, port, regnum, data);
+ 	qca8k_split_addr(reg, &r1, &r2, &page);
+ 
+ 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+ 
+-	ret = qca8k_set_page(bus, page);
++	ret = qca8k_set_page(bus, page, &mdio_cache->page);
+ 	if (ret < 0)
+ 		goto exit;
+ 
+@@ -1046,7 +1049,8 @@ qca8k_mdio_busy_wait(struct mii_bus *bus, u32 reg, u32 mask)
  }
  
-@@ -1011,6 +1195,13 @@ qca8k_phy_read(struct dsa_switch *ds, int port, int regnum)
- 	if (priv->legacy_phy_port_mapping)
- 		port = qca8k_port_to_phy(port) % PHY_MAX_ADDR;
+ static int
+-qca8k_mdio_write(struct mii_bus *bus, int phy, int regnum, u16 data)
++qca8k_mdio_write(struct mii_bus *bus, struct qca8k_mdio_cache *cache,
++		 int phy, int regnum, u16 data)
+ {
+ 	u16 r1, r2, page;
+ 	u32 val;
+@@ -1064,7 +1068,7 @@ qca8k_mdio_write(struct mii_bus *bus, int phy, int regnum, u16 data)
  
-+	/* Use mdio Ethernet when available, fallback to legacy one on error */
-+	if (priv->mgmt_master) {
-+		ret = qca8k_phy_eth_command(priv, true, port, regnum, 0);
-+		if (ret >= 0)
-+			return ret;
-+	}
-+
- 	ret = qca8k_mdio_read(priv->bus, port, regnum);
+ 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+ 
+-	ret = qca8k_set_page(bus, page);
++	ret = qca8k_set_page(bus, page, &cache->page);
+ 	if (ret)
+ 		goto exit;
+ 
+@@ -1083,7 +1087,8 @@ qca8k_mdio_write(struct mii_bus *bus, int phy, int regnum, u16 data)
+ }
+ 
+ static int
+-qca8k_mdio_read(struct mii_bus *bus, int phy, int regnum)
++qca8k_mdio_read(struct mii_bus *bus, struct qca8k_mdio_cache *cache,
++		int phy, int regnum)
+ {
+ 	u16 r1, r2, page;
+ 	u32 val;
+@@ -1100,7 +1105,7 @@ qca8k_mdio_read(struct mii_bus *bus, int phy, int regnum)
+ 
+ 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+ 
+-	ret = qca8k_set_page(bus, page);
++	ret = qca8k_set_page(bus, page, &cache->page);
+ 	if (ret)
+ 		goto exit;
+ 
+@@ -1139,7 +1144,7 @@ qca8k_internal_mdio_write(struct mii_bus *slave_bus, int phy, int regnum, u16 da
+ 			return 0;
+ 	}
+ 
+-	return qca8k_mdio_write(bus, phy, regnum, data);
++	return qca8k_mdio_write(bus, &priv->mdio_cache, phy, regnum, data);
+ }
+ 
+ static int
+@@ -1156,7 +1161,7 @@ qca8k_internal_mdio_read(struct mii_bus *slave_bus, int phy, int regnum)
+ 			return ret;
+ 	}
+ 
+-	return qca8k_mdio_read(bus, phy, regnum);
++	return qca8k_mdio_read(bus, &priv->mdio_cache, phy, regnum);
+ }
+ 
+ static int
+@@ -1179,7 +1184,7 @@ qca8k_phy_write(struct dsa_switch *ds, int port, int regnum, u16 data)
+ 			return ret;
+ 	}
+ 
+-	return qca8k_mdio_write(priv->bus, port, regnum, data);
++	return qca8k_mdio_write(priv->bus, &priv->mdio_cache, port, regnum, data);
+ }
+ 
+ static int
+@@ -1202,7 +1207,7 @@ qca8k_phy_read(struct dsa_switch *ds, int port, int regnum)
+ 			return ret;
+ 	}
+ 
+-	ret = qca8k_mdio_read(priv->bus, port, regnum);
++	ret = qca8k_mdio_read(priv->bus, &priv->mdio_cache, port, regnum);
  
  	if (ret < 0)
+ 		return 0xffff;
+@@ -3001,6 +3006,8 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
+ 		return PTR_ERR(priv->regmap);
+ 	}
+ 
++	priv->mdio_cache.page = 0xffff;
++
+ 	/* Check the detected switch id */
+ 	ret = qca8k_read_switch_id(priv);
+ 	if (ret)
 diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-index dc1365542aa3..952217db2047 100644
+index 952217db2047..77ffdc7b5aaa 100644
 --- a/drivers/net/dsa/qca8k.h
 +++ b/drivers/net/dsa/qca8k.h
-@@ -14,6 +14,7 @@
- #include <linux/dsa/tag_qca.h>
+@@ -363,6 +363,14 @@ struct qca8k_ports_config {
+ 	u8 rgmii_tx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
+ };
  
- #define QCA8K_ETHERNET_MDIO_PRIORITY			7
-+#define QCA8K_ETHERNET_PHY_PRIORITY			6
- #define QCA8K_ETHERNET_TIMEOUT				100
++struct qca8k_mdio_cache {
++/* The 32bit switch registers are accessed indirectly. To achieve this we need
++ * to set the page of the register. Track the last page that was set to reduce
++ * mdio writes
++ */
++	u16 page;
++};
++
+ struct qca8k_priv {
+ 	u8 switch_id;
+ 	u8 switch_revision;
+@@ -383,6 +391,7 @@ struct qca8k_priv {
+ 	const struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
+ 	struct qca8k_mgmt_hdr_data mgmt_hdr_data;
+ 	struct qca8k_mib_hdr_data mib_hdr_data;
++	struct qca8k_mdio_cache mdio_cache;
+ };
  
- #define QCA8K_NUM_PORTS					7
+ struct qca8k_mib_desc {
 -- 
 2.33.1
 
