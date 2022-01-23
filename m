@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44598497463
-	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 19:39:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C069E497465
+	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 19:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239575AbiAWSjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jan 2022 13:39:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
+        id S239580AbiAWSkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jan 2022 13:40:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239568AbiAWSjw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 13:39:52 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA6CC06173D;
-        Sun, 23 Jan 2022 10:39:52 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id 128so13764292pfe.12;
-        Sun, 23 Jan 2022 10:39:52 -0800 (PST)
+        with ESMTP id S239584AbiAWSjz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 13:39:55 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58292C06173B;
+        Sun, 23 Jan 2022 10:39:55 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id l16so14124384pjl.4;
+        Sun, 23 Jan 2022 10:39:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=/+jlT2lVXINBwoznetut/x5ZWQNE1yPkmkCWTyEGTdo=;
-        b=WlBppxzgPlWg5Fo+7JOPT7hwoRV2dBbTOigaUI478r8KWllyra55XVUV9RfIMfsKlO
-         lK/Z57nJOs3uZJYYR89Z627ep2lilGBNNvV51oOLJEUCil+VoUQzDO3iVymmYDo4Jr6e
-         8Pyu5ceHZYdzwjGEgpUaLqykJppsp8vGmwcMd0U3+Vf+sNStZCYZXINjTdKftHLtxeWb
-         aBx2DfLfxsA1E9xout1XqlvKwHGiV9lsTjLlaQNrIs63fkeq/ynEUrmKNYiJo/0bdiFn
-         HTpQbXeGvTWjrpcuEkQ2jAVwneAiSL0tCPDcazSQIsW+u1L8DjED/rWgyW5uC1H810jF
-         Rw/Q==
+        bh=JVlgIOfm3MirYG6wT3KmStCSBcBsfAc0KKMNuO1EDBQ=;
+        b=IRJeAZll5KWb5nZplfSeU6guRB4GiFVlmwRWN5THO4+nOHnkye//P3+ooMx1qU0Idu
+         fFZVRqj/QyGAVXmatp5tgfaYpJXYAtpnjBBxRWu5Wvkmnwsx3g8Tjgh9oQwBR2wPW++P
+         wLdOy3uqaoPu+EyqNkH5kZ+fUz4ohWrcIVJxTC3MCifIpKCWGz1qFS6FNHxpXxFe0PoC
+         AT3uXJOngA4y0EhtxI53KfYaPrJAqJrWOBT1HOtR03NOY7P0vt4kZgHhC2coLJKo7Us3
+         W80ZyTrpVomG2skPaPmorlVBJwVUANQ70fcVX6xsG5vtQhhZlfbAeqKRjnknAq4cVDJ8
+         6T7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/+jlT2lVXINBwoznetut/x5ZWQNE1yPkmkCWTyEGTdo=;
-        b=wTgqhyuCVM8sdtLxgQ4f8dLXBcPsA7S4AdHU82L8kLbPhCLao506z1diJaspBFp/gJ
-         4Jfhf7CDOs8fpYlG/1ubMgiFdxWml7Csl1eTFoadbmOVSP6U6glxW1Bh6/1eWx0ylGxL
-         dgLPNPA0bXedJqWPFwc+WEkI1bIol5hThy0jm0IMck/jAT1QPKWPQma92UnNZuRQ8dKK
-         YNEaGeKcuWYqYFdnoYlivUoDjCot81ZtZcPB/oBOpcGwIbtVP31A94Xxfz0dG6UKqnTM
-         aR7sIJsW86ox5MdE7H/t2Lmqzpmg1O4oBS1t1/1Ts4jpqwTGBgQU4VZRWo7CGL1AC4TL
-         782w==
-X-Gm-Message-State: AOAM532dv9MgCuODvfLqhVBz3f4CDwbdnwOEYvUTy47eSqAMSCUA10OB
-        bTecohEYwyNs1BWkftz6llk=
-X-Google-Smtp-Source: ABdhPJyHoKweRJ5zu+v4p1cIq4SLrkNpd6lpq/L4ePkg2QgQmYL9OAo+KD4DfHvS+HqH4DK46mH0xA==
-X-Received: by 2002:a63:2b03:: with SMTP id r3mr9393877pgr.201.1642963191866;
-        Sun, 23 Jan 2022 10:39:51 -0800 (PST)
+        bh=JVlgIOfm3MirYG6wT3KmStCSBcBsfAc0KKMNuO1EDBQ=;
+        b=LY27OMni/Ch9QPMSY9/fawSBd29VXXhViJjf7V5KOlyuU5a5Z0hVdoHGUVlkjOnoiJ
+         6E2TaawilckyX6XMpXTXUO9qcdgNGpgf/gLelj7ekTSZlP3e3wdCmwilKSMt/PVRwAwI
+         H945s3KkQKZDuNSy2eid0mXDhohxrB5gIMHhs21TW9jLC0zQ1rghGes0NG3p0rlbF45I
+         zOQ7DeKqs5JhhUIkEWAXmXcazyU0syqxqAsYtOirvlIUVxFhKSTY1TFIZw15ETsXk+4+
+         vqKMOV3v24tbaKbtm5euFuOs9DTbo5O5NgMog3NUWIHZ1F0g6GVQe7NxmHxRn/P/IQHE
+         QXCw==
+X-Gm-Message-State: AOAM532vCQX9D/SVJ6A5fFxxob4yc7SlO/E4k+uvqZDn0pepd9vdvjN3
+        HaY7Gs9xANKkLwitvctgqkU=
+X-Google-Smtp-Source: ABdhPJxoxLg5zqGpwJYdAVGDViNYQ/g58elCQIgqh6DVg5oaESBFyRvjiA+IS22GevMehG0R2Obh9g==
+X-Received: by 2002:a17:90b:1e05:: with SMTP id pg5mr9787026pjb.188.1642963194829;
+        Sun, 23 Jan 2022 10:39:54 -0800 (PST)
 Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id c26sm9566324pgb.53.2022.01.23.10.39.51
+        by smtp.gmail.com with ESMTPSA id h9sm2038248pfi.54.2022.01.23.10.39.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 10:39:51 -0800 (PST)
+        Sun, 23 Jan 2022 10:39:54 -0800 (PST)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Yury Norov <yury.norov@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -63,14 +63,12 @@ To:     Yury Norov <yury.norov@gmail.com>,
         Alexey Klimov <aklimov@redhat.com>,
         linux-kernel@vger.kernel.org,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 01/54] net/dsa: don't use bitmap_weight() in b53_arl_read()
-Date:   Sun, 23 Jan 2022 10:38:32 -0800
-Message-Id: <20220123183925.1052919-2-yury.norov@gmail.com>
+        "David S . Miller " <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+Subject: [PATCH 02/54] net/ethernet: don't use bitmap_weight() in bcm_sysport_rule_set()
+Date:   Sun, 23 Jan 2022 10:38:33 -0800
+Message-Id: <20220123183925.1052919-3-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220123183925.1052919-1-yury.norov@gmail.com>
 References: <20220123183925.1052919-1-yury.norov@gmail.com>
@@ -85,27 +83,28 @@ without it.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- drivers/net/dsa/b53/b53_common.c | 6 +-----
+ drivers/net/ethernet/broadcom/bcmsysport.c | 6 +-----
  1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 3867f3d4545f..9a10d80125d9 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1620,12 +1620,8 @@ static int b53_arl_read(struct b53_device *dev, u64 mac,
- 		return 0;
- 	}
+diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
+index 60dde29974bf..5284a5c961db 100644
+--- a/drivers/net/ethernet/broadcom/bcmsysport.c
++++ b/drivers/net/ethernet/broadcom/bcmsysport.c
+@@ -2180,13 +2180,9 @@ static int bcm_sysport_rule_set(struct bcm_sysport_priv *priv,
+ 	if (nfc->fs.ring_cookie != RX_CLS_FLOW_WAKE)
+ 		return -EOPNOTSUPP;
  
--	if (bitmap_weight(free_bins, dev->num_arl_bins) == 0)
+-	/* All filters are already in use, we cannot match more rules */
+-	if (bitmap_weight(priv->filters, RXCHK_BRCM_TAG_MAX) ==
+-	    RXCHK_BRCM_TAG_MAX)
 -		return -ENOSPC;
 -
- 	*idx = find_first_bit(free_bins, dev->num_arl_bins);
--
--	return -ENOENT;
-+	return *idx >= dev->num_arl_bins ? -ENOSPC : -ENOENT;
- }
+ 	index = find_first_zero_bit(priv->filters, RXCHK_BRCM_TAG_MAX);
+ 	if (index >= RXCHK_BRCM_TAG_MAX)
++		/* All filters are already in use, we cannot match more rules */
+ 		return -ENOSPC;
  
- static int b53_arl_op(struct b53_device *dev, int op, int port,
+ 	/* Location is the classification ID, and index is the position
 -- 
 2.30.2
 
