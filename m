@@ -2,66 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D04A49704C
-	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 06:57:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FF9849704F
+	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 06:59:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235664AbiAWF52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jan 2022 00:57:28 -0500
-Received: from giacobini.uberspace.de ([185.26.156.129]:58836 "EHLO
-        giacobini.uberspace.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiAWF51 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 00:57:27 -0500
-Received: (qmail 12117 invoked by uid 990); 23 Jan 2022 05:57:25 -0000
-Authentication-Results: giacobini.uberspace.de;
-        auth=pass (plain)
-From:   Soenke Huster <soenke.huster@eknoes.de>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Soenke Huster <soenke.huster@eknoes.de>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] Bluetooth: msft: fix null pointer deref on msft_monitor_device_evt
-Date:   Sun, 23 Jan 2022 06:57:09 +0100
-Message-Id: <20220123055709.7925-1-soenke.huster@eknoes.de>
-X-Mailer: git-send-email 2.34.1
+        id S235649AbiAWF7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jan 2022 00:59:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235612AbiAWF7T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 00:59:19 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10896C06173D
+        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 21:59:18 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id j14so6308522lja.3
+        for <netdev@vger.kernel.org>; Sat, 22 Jan 2022 21:59:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=/rL+TycpMQLfB5P4Zn9xgGfUWg8yPCNTwrE46ZNldMM=;
+        b=CYbaMycKzb4qUsPZGJwcI9hR7eKq9AgoB78/l8p4IuFy606QyAwthkml19Nei4XdMQ
+         7cPxgHuNa5/pt1JzkP+2aEEHEZNna+L1aAwED5GVo152iiCL4mpwykJJYpbMJEexPgiq
+         aTh5fUJBUS6lMHJlVBlj/pa4jRX29ZnlNAWnNEOhOxNeCqpGKaNbF5G3q2lMWHeTC/gx
+         XX68ZxV7dMNB8qKZIrrPl9LUTNTZeWgRtnisHVW70fqxCkaKmHSQttUNSVtmXbwnPpM2
+         eXq8hEqSfQcEmubSIPs7Zkrh2meV7QhnWVVX8a+ejokM1xd6QGcqgy1VULoAYmPsOQBN
+         gPIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=/rL+TycpMQLfB5P4Zn9xgGfUWg8yPCNTwrE46ZNldMM=;
+        b=zwSZ2gUxd0pdga7El+g+t8aueHBgB9Ls3YNMNrdogeztrvM7W2LGOVmyEg1NkJw4+/
+         +YnEC2iGgwdsnM926rlG/Xcr+D66HA+qG/yWkS7PDTctzsf6bQMgyw+zLSNGpQG1bKYS
+         xOGfVsOnQcaqxvqCXYa7oDWeGkoE/1z5tsZfwCdfjNH84/M+GPUKuj9rq9IE43ka0x6W
+         ac5qUOIt9DcW/3u1TEZSmCTV/4XiyBMSJlIE/cLM/8ye+HTV6EaGqFBMpTu0EQLU1+4q
+         DJPBVhtmHsjr9ik9EgIDii4un5h50QxwU7mUwYdbWx+fXw4KV2Y9z9dJf+Q23i9SCYJb
+         sB+Q==
+X-Gm-Message-State: AOAM530/B67Ns5zcAYrwzLum9OtrcvwZJS+b7PRht0FLYWTZpmAVhuaE
+        jt1gMm6vvzG9MEqgu3Xm6PqCH/Qw4JDkIsVUagA=
+X-Google-Smtp-Source: ABdhPJxTAU1xhHW89Lvfdf3I31VPMrTFAv/PmaA8EMnherp/jyFSHuKORE1uMq+CoEfM5LltiRpIra7zz1A92RStmIc=
+X-Received: by 2002:a2e:58b:: with SMTP id 133mr531934ljf.192.1642917556121;
+ Sat, 22 Jan 2022 21:59:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: /
-X-Rspamd-Report: BAYES_HAM(-2.999986) R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
-X-Rspamd-Score: -0.099986
-Received: from unknown (HELO unkown) (::1)
-        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Sun, 23 Jan 2022 06:57:25 +0100
+Received: by 2002:a05:6512:31d2:0:0:0:0 with HTTP; Sat, 22 Jan 2022 21:59:14
+ -0800 (PST)
+Reply-To: dravasmith27@gmail.com
+From:   Dr Ava Smith <raqsacrx@gmail.com>
+Date:   Sat, 22 Jan 2022 21:59:14 -0800
+Message-ID: <CAP7=Wk78VOT2xHny=birXxWewh_qvwYtin2NsL41LseGXj_ptA@mail.gmail.com>
+Subject: GREETINGS FROM DR AVA SMITH
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-msft_find_handle_data returns NULL if it can't find the handle.
-Therefore, handle_data must be checked, otherwise a null pointer
-is dereferenced.
-
-Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
----
-v2: Remove empty line
-
- net/bluetooth/msft.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-index 484540855863..9a3d77d3ca86 100644
---- a/net/bluetooth/msft.c
-+++ b/net/bluetooth/msft.c
-@@ -704,6 +704,8 @@ static void msft_monitor_device_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		   ev->monitor_state, &ev->bdaddr);
- 
- 	handle_data = msft_find_handle_data(hdev, ev->monitor_handle, false);
-+	if (!handle_data)
-+		return;
- 
- 	switch (ev->addr_type) {
- 	case ADDR_LE_DEV_PUBLIC:
 -- 
-2.34.1
-
+Hello Dear,
+how are you today?hope you are fine
+My name is Dr Ava Smith ,Am an English and French nationalities.
+I will give you pictures and more details about me as soon as i hear from you
+Thanks
+Ava
