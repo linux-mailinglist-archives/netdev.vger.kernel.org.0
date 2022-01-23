@@ -2,78 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B4A8497567
-	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 20:57:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8754497578
+	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 21:17:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239753AbiAWT5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jan 2022 14:57:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42812 "EHLO
+        id S240070AbiAWURi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jan 2022 15:17:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234957AbiAWT5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 14:57:46 -0500
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7507CC06173B;
-        Sun, 23 Jan 2022 11:57:46 -0800 (PST)
-Received: by mail-qt1-x835.google.com with SMTP id f5so17155322qtp.11;
-        Sun, 23 Jan 2022 11:57:46 -0800 (PST)
+        with ESMTP id S239855AbiAWURi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 15:17:38 -0500
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8A7C06173B
+        for <netdev@vger.kernel.org>; Sun, 23 Jan 2022 12:17:37 -0800 (PST)
+Received: by mail-ot1-x335.google.com with SMTP id c3-20020a9d6c83000000b00590b9c8819aso19441056otr.6
+        for <netdev@vger.kernel.org>; Sun, 23 Jan 2022 12:17:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=vUBxUoo0e8G16QaWMdWu9QFYTFLGS+0ehY8WAD+BN28=;
-        b=UGmommU6ZoC0S/JBVlhZvYrIDgZPcAa1UVMldu69+OUVlqjN/GRRQNq07y2VykwWng
-         3OwXXRp3RepsuVS7pmbXTCoKqYFUpGd1FGUyUYlZ9kUwkVMYzQMVshkLdbU5xEjnIZJE
-         97/dAjXtf/DZvB0uO0iI25yfZCQ4P9rDkna5tjPMvHPlhuBivWNt6LmGX33hvPjCPTMQ
-         ZdIrOwilzxGt8T8lggcSI2pKLjf80D2TJ8sdKUXRMHYDb73VD66kp0SbE/oGMuE0GsE2
-         SY7ZjItWctaonHBePFO/eFGK4BoHpSUu+quEmOyRYrl++VNNgaDzWc91RVYTzwC0BT+n
-         WiBw==
+        bh=ve/6CfQXAN51eaHCHon7HCmkvvwRj2/WB6mv0tDWaH4=;
+        b=colF8fmZK5RibniqaInFzjG/OOA9pkD124ip2fkNSwEekQWhhUcs4xWvu//moIwhOJ
+         BqoEBTM7FcngOEYEc3wDdTywhEfJl6WwiRxxlB4lyZ5ZettCfsUiJbt1pcfk+/6fRyOk
+         LSwvMnceLZP+fwJoVr//TncnAq7LDkdkHjsbzIptF6WOnG9zSFEHXRvb3NHvIoN6lCTD
+         ixaBLMfz/LYQ7s51fJ9W7djVP8UZJg3oNcvIJHbByPoQAelYSytXlIz2wNLa/2gjBL0x
+         Q0dnoL8/y2Z4/TBgcDCi9LJdXzFeWtR9tb28dMEbbIEFIA373fTNhGP4Q5xEkeqDudjH
+         APpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=vUBxUoo0e8G16QaWMdWu9QFYTFLGS+0ehY8WAD+BN28=;
-        b=TfARsEUggyn3iv0fyG1+tdABcYbQIepDEX0IeyQ3tck+IgZlpa9fBADJB1Q1MpI2WL
-         Z6pYW/wnZkwdm/tjccgk0HA0SIrUfmPrr6vZon8h4vB5UxlTAmfWkrwPjCSG+RKrX+O6
-         HVTpqZj+49XOAToCuDzg9CRtJET0tkktuB15aPIaLnmLU8YRBOMoyvDEDf46sCbbc+Tp
-         jdPQHdGBvSFilo1+nK45oLrbRdKk5YKhUgPsSTIxxEDvVc74uHp6xZ6xtGePLRqUmC+5
-         S00u6R1xvBTRCp5UWeJSTrgtNYADQrLwcSHI5WjDheL0g+2f8VIhAhX7eyy0PRF8f8tr
-         vhKQ==
-X-Gm-Message-State: AOAM531Nh8w+wFQ2pgvPngDLnFZD29kbnCqtLmBqxy37/g+c3TLOLfJU
-        10wJWZJOkQJSwwBwVC9jVX0=
-X-Google-Smtp-Source: ABdhPJwVw1TX+Yob6QtHJ6Mqb0oIqdp/TuqrFris3bv+LUL4oUT69O9qdgISfZxTCJzioVx3caAKJA==
-X-Received: by 2002:a05:622a:14a:: with SMTP id v10mr10395206qtw.446.1642967865549;
-        Sun, 23 Jan 2022 11:57:45 -0800 (PST)
+        bh=ve/6CfQXAN51eaHCHon7HCmkvvwRj2/WB6mv0tDWaH4=;
+        b=JCXP/Ym/Ib0MkZz75u5yVIzw1xvVcouRlW7bWRwbCVyk2/3VeBhW8ZqZdQ1WyvN3Y0
+         YF7keZp3r8I8Np3zCWHDUJpe7+K3kgnrcwEixk4xZHqy4si3TPelnFuYbCafAcOoBiiT
+         CRBOrWvYjUhvl9rV3dE2yZdKt1f+0z+Hh2jjp1yhF0mL1KlsLU6ENswp9dE6GOWoAI3v
+         uH8e57pEY57je3K8OdbZYW2Gt4mu+KWt6hd2xAYH0z9CS/adsvEXp2NqFTOBqvL+SxLv
+         dkupAcLsrPNzXgrwMCek4cgNDQU7kQog9PWE5qBc4vpT0OwywaJnaU6zEJEfkhMi7L88
+         zDJg==
+X-Gm-Message-State: AOAM532h1MjG8a36WZgCjk02lcJJ8RTigMO4C3XanRgA94sE8ZzAtHEj
+        t6rjSeu7YRtCF72WwYICq/ibuMtkNhg=
+X-Google-Smtp-Source: ABdhPJyYMsZt7YhTe2blI8nHAweS91AyDlxKY59mcKthMmip+yPALcesst/XQkq5TbiLXOIUfcZ7bg==
+X-Received: by 2002:a9d:6d85:: with SMTP id x5mr9640417otp.253.1642969057327;
+        Sun, 23 Jan 2022 12:17:37 -0800 (PST)
 Received: from localhost ([2600:1700:65a0:ab60:4388:ab9b:beec:5dea])
-        by smtp.gmail.com with ESMTPSA id y5sm1466588qkj.28.2022.01.23.11.57.44
+        by smtp.gmail.com with ESMTPSA id f2sm4578453oiw.50.2022.01.23.12.17.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 11:57:45 -0800 (PST)
-Date:   Sun, 23 Jan 2022 11:57:43 -0800
+        Sun, 23 Jan 2022 12:17:37 -0800 (PST)
+Date:   Sun, 23 Jan 2022 12:17:36 -0800
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     ycaibb <ycaibb@gmail.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] inet: missing lock releases in udp.c
-Message-ID: <Ye2zN0R/R9uKEUNa@pop-os.localdomain>
-References: <20220121031553.5342-1-ycaibb@gmail.com>
+To:     Joe Damato <jdamato@fastly.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Subject: Re: [PATCH net-next] sock: add sndbuff full perf trace event
+Message-ID: <Ye234Pb0f1SusMbA@pop-os.localdomain>
+References: <1642716150-100589-1-git-send-email-jdamato@fastly.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220121031553.5342-1-ycaibb@gmail.com>
+In-Reply-To: <1642716150-100589-1-git-send-email-jdamato@fastly.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 11:15:53AM +0800, ycaibb wrote:
-> From: Ryan Cai <ycaibb@gmail.com>
+On Thu, Jan 20, 2022 at 02:02:30PM -0800, Joe Damato wrote:
+> Calls to sock_alloc_send_pskb can fail or trigger a wait if there is no
+> sndbuf space available.
 > 
-> In method udp_get_first, the lock hslot->lock is not released when afinfo->family == AF_UNSPEC || sk->sk_family == afinfo->family is true. This patch fixes the problem by adding the unlock statement.
+> Add a perf trace event to help users monitor when and how this occurs so
+> appropriate application level changes can be made, if necessary.
 > 
+> Signed-off-by: Joe Damato <jdamato@fastly.com>
+> ---
+>  include/trace/events/sock.h | 21 +++++++++++++++++++++
+>  net/core/sock.c             |  1 +
+>  2 files changed, 22 insertions(+)
 
-It should be unlocked by udp_seq_stop(). Do you see any real lockdep
-warning or bug report?
+There are more places where we set the SOCKWQ_ASYNC_NOSPACE bit, so
+it looks like your patch is incomplete.
 
 Thanks.
