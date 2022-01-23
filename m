@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A64649758D
-	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 21:45:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9410B497599
+	for <lists+netdev@lfdr.de>; Sun, 23 Jan 2022 21:56:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240123AbiAWUpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jan 2022 15:45:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53124 "EHLO
+        id S240136AbiAWU4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jan 2022 15:56:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240098AbiAWUpM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 15:45:12 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC08AC06173B;
-        Sun, 23 Jan 2022 12:45:11 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id v13so9962575wrv.10;
-        Sun, 23 Jan 2022 12:45:11 -0800 (PST)
+        with ESMTP id S237715AbiAWU4f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 15:56:35 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0864EC06173B;
+        Sun, 23 Jan 2022 12:56:35 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id e8so8243898wrc.0;
+        Sun, 23 Jan 2022 12:56:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JjOTyMYqSntifnM/IFbfpSh6njlmCNgHOt+K/JvQg2U=;
-        b=caCbhYHo8KZJJy3wEBf561/PsU9EHiFELjtAJVLNPOLOkuhw/1ZYc5AVOnZ5aqaxsV
-         dlTmx/AXTZ51H199Qd+l3ndeicUH77/TT/w2YksIfOVctmrrCxPr1huwvGveV7YPf1J7
-         hpjMscLXmLc9WMpM6Ne23UTxMe3PJ77ZWl7jB8/mwYpHOZsTYmz+EJ4F5xnopr4RUmMe
-         +k/xtj1ZRYrhEi6u1XMwB3ENRjg31H67JHTwFRChCj0PT1jMse4dYrUu7rzv6zT5tcNH
-         ifo1OSUFNO3uSNgCy7kMWvve0sArZwXgW7/0xB9mxwmVOiqFzc3tgco3Q9WULhss0FOh
-         eRzA==
+        bh=oLUpvTubRre2GuJW4nxw/st0JyHO82V6iM7x14BWgmk=;
+        b=i97Fp2gztbbsC2VywPxhLECYixczBqRDn9gWDofEeHJm1I6jtL6wuBa0BzkQAS1YeF
+         5lktoXq02uRe+bu9PYvu128dd8R8ICdwhNcg24M2go+L21XHBKf0OQsAXk3cb82n/5mJ
+         0PjHDZUpOvdp9u/K46HSgatHXasucDJTzqGOD09AcRD89wgFRFiZ5sQC2V8kmpH1BRka
+         o4KjJ40GuQnmx1XxEdeI2g8KlyHCC+4/eXOWHou6KTrK8XIBVVO0J9ADHgi8bgw5DONU
+         ikngxb5id1mPH9KxsnHYWH8+epJw2HBONWKJozBrMrzTX40tGAQb37DH6Eg/lrd7JgCL
+         fr/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JjOTyMYqSntifnM/IFbfpSh6njlmCNgHOt+K/JvQg2U=;
-        b=uQ7zjXQf0zF7eZ/P7HI3UAulNCAIxiRvNV+bLH+VKJR3iZRqTGvmpMxUftsNIxJ2uY
-         6tej5ETXTAXMVn/F4JDJaM6bwaJqF8oMMgNTsMIzjexUmIlDEmbbl6gvio6wdVL3Adqo
-         +ezDgi/h/GMno2LtrxiLlnCaahOO7MuQzaF/Mwjp3S051iyLyA957n+IvVk0lb4FpJi1
-         cGqCfMHKtIQiRV/WBUdzTBOdHAO/b91lueokQMPqsMgEkbz0eSHxdOS+2QzoTG0k8YC4
-         poDGrblgDKzmXUiALodR9UCSVGK+g0/ARYUqHpAi2pS5GhB7SWh2rmH18VvsKWjs6Wr7
-         /Teg==
-X-Gm-Message-State: AOAM532iP8N49HGDFWW0jYt5PjWbPNoRGeec8j28O3xsDJ0fw4nMTqiv
-        F3h7Kw8KeMTGPEAgkRYL3Huu8kQdgmo22vPrg1s=
-X-Google-Smtp-Source: ABdhPJypeRGFPhoSRKAiSw+ZAsEH42Er4jXYNgdJlfdB+IiUUCP1Atm18MMjWpJHybJT7A4yW7YWobWOq4PAYJFaUzg=
-X-Received: by 2002:adf:fa8d:: with SMTP id h13mr11728924wrr.154.1642970710307;
- Sun, 23 Jan 2022 12:45:10 -0800 (PST)
+        bh=oLUpvTubRre2GuJW4nxw/st0JyHO82V6iM7x14BWgmk=;
+        b=xxww5IQszJoqyxdMOACrWgdC4r+CfO/mZx8Of7gMLdic42GZ5nTu6tn8HhMku4hnTT
+         URCPYEZ60P7D7Bh8VuodQiY9K30Jf3ATwn93itCz2NgmWgtUdohOAs4MlD6G4Hqr5s4O
+         XTWrzsP5FGFoiX8RX85uS1nXA9R3VQXFEDWYOlVXLK448pACUlkij8I69qj3vxa3GmLr
+         TaBTTfOi8JCpkO+C2UJqAuMFCXivYlnNgiI+NXm2AQQCD5ocj4Gx+LOo7vlpKbzTKHsv
+         dommv4UHfQSOtxeyQOVW2+Vi9ixoCgrDmyKs2J9cgj4wkiPKN0NBAE2U66puI99R2ycX
+         Cs4Q==
+X-Gm-Message-State: AOAM5334Dpv3jDXRcVjDmX9tCCYCw4PqYakTbqSEsgVRN/qEf6b6B5sK
+        n9hAOc3hPbwfUW3NTgtoRUTKV5VlYFQ7psM/IwWwQSpN
+X-Google-Smtp-Source: ABdhPJxFg2MOwMwUmMVEWRR1p9aUu1VwyLGekZGfJ5L+EoFDAa/GigU4HkH0QAHGkJcyCxArT3aTDuu2t2uI7Eb68qE=
+X-Received: by 2002:a05:6000:168f:: with SMTP id y15mr1695564wrd.205.1642971393578;
+ Sun, 23 Jan 2022 12:56:33 -0800 (PST)
 MIME-Version: 1.0
-References: <20220120112115.448077-1-miquel.raynal@bootlin.com> <20220120112115.448077-7-miquel.raynal@bootlin.com>
-In-Reply-To: <20220120112115.448077-7-miquel.raynal@bootlin.com>
+References: <20220120112115.448077-1-miquel.raynal@bootlin.com> <20220120112115.448077-9-miquel.raynal@bootlin.com>
+In-Reply-To: <20220120112115.448077-9-miquel.raynal@bootlin.com>
 From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Sun, 23 Jan 2022 15:44:59 -0500
-Message-ID: <CAB_54W5DfNa8QSTiejL=1ywEShkK07bwvJeHkhcVowLtOtZrUw@mail.gmail.com>
-Subject: Re: [wpan-next v2 6/9] net: ieee802154: Use the IEEE802154_MAX_PAGE
- define when relevant
+Date:   Sun, 23 Jan 2022 15:56:22 -0500
+Message-ID: <CAB_54W6dCoEinhdq-HAQj0CQ9_wf-xK9ESOfvB6K4JMwHo7Vaw@mail.gmail.com>
+Subject: Re: [wpan-next v2 8/9] net: mac802154: Explain the use of ieee802154_wake/stop_queue()
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
@@ -74,37 +73,56 @@ Hi,
 
 On Thu, 20 Jan 2022 at 06:21, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> This define already exist but is hardcoded in nl-phy.c. Use the
-> definition when relevant.
+> It is not straightforward to the newcomer that a single skb can be sent
+> at a time and that the internal process is to stop the queue when
+> processing a frame before re-enabling it. Make this clear by documenting
+> the ieee802154_wake/stop_queue() helpers.
 >
 > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->  net/ieee802154/nl-phy.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+>  include/net/mac802154.h | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
 >
-> diff --git a/net/ieee802154/nl-phy.c b/net/ieee802154/nl-phy.c
-> index dd5a45f8a78a..02f6a53d0faa 100644
-> --- a/net/ieee802154/nl-phy.c
-> +++ b/net/ieee802154/nl-phy.c
-> @@ -30,7 +30,8 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
->  {
->         void *hdr;
->         int i, pages = 0;
-> -       uint32_t *buf = kcalloc(32, sizeof(uint32_t), GFP_KERNEL);
-> +       uint32_t *buf = kcalloc(IEEE802154_MAX_PAGE + 1, sizeof(uint32_t),
-> +                               GFP_KERNEL);
->
->         pr_debug("%s\n", __func__);
->
-> @@ -47,7 +48,7 @@ static int ieee802154_nl_fill_phy(struct sk_buff *msg, u32 portid,
->             nla_put_u8(msg, IEEE802154_ATTR_PAGE, phy->current_page) ||
->             nla_put_u8(msg, IEEE802154_ATTR_CHANNEL, phy->current_channel))
->                 goto nla_put_failure;
-> -       for (i = 0; i < 32; i++) {
-> +       for (i = 0; i <= IEEE802154_MAX_PAGE; i++) {
->                 if (phy->supported.channels[i])
->                         buf[pages++] = phy->supported.channels[i] | (i << 27);
->         }
+> diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+> index d524ffb9eb25..94b2e3008e77 100644
+> --- a/include/net/mac802154.h
+> +++ b/include/net/mac802154.h
+> @@ -464,6 +464,12 @@ void ieee802154_rx_irqsafe(struct ieee802154_hw *hw, struct sk_buff *skb,
+>   * ieee802154_wake_queue - wake ieee802154 queue
+>   * @hw: pointer as obtained from ieee802154_alloc_hw().
+>   *
+> + * Tranceivers have either one transmit framebuffer or one framebuffer for both
+> + * transmitting and receiving. Hence, the core only handles one frame at a time
+
+this is not a fundamental physical law, they might exist but not supported yet.
+
+> + * for each phy, which means we had to stop the queue to avoid new skb to come
+> + * during the transmission. The queue then needs to be woken up after the
+> + * operation.
+> + *
+>   * Drivers should use this function instead of netif_wake_queue.
+
+It's a must.
+
+>   */
+>  void ieee802154_wake_queue(struct ieee802154_hw *hw);
+> @@ -472,6 +478,12 @@ void ieee802154_wake_queue(struct ieee802154_hw *hw);
+>   * ieee802154_stop_queue - stop ieee802154 queue
+>   * @hw: pointer as obtained from ieee802154_alloc_hw().
+>   *
+> + * Tranceivers have either one transmit framebuffer or one framebuffer for both
+> + * transmitting and receiving. Hence, the core only handles one frame at a time
+> + * for each phy, which means we need to tell upper layers to stop giving us new
+> + * skbs while we are busy with the transmitted one. The queue must then be
+> + * stopped before transmitting.
+> + *
+>   * Drivers should use this function instead of netif_stop_queue.
+>   */
+>  void ieee802154_stop_queue(struct ieee802154_hw *hw);
+
+Same for stop, stop has something additional here... it is never used
+by any driver because we do that on mac802154 layer. Simply, they
+don't use this function.
 
 Where is the fix here?
 
