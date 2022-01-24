@@ -2,187 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C4C4498D1A
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 20:33:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37968498D98
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 20:34:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351682AbiAXT1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 14:27:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350847AbiAXTZZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 14:25:25 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722DDC02B86E;
-        Mon, 24 Jan 2022 11:12:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=630GZf2pl7dUC09jByd2lRVEJ71rHFIBrI9U48V8bzA=; b=l0WJXVDaYcmJ3/V3RWFezwDDer
-        C44GbJGe7OjLN0KX4PaF1IWCv0kAoNTjNLYvwuH+jZell6Ad2JgbYr55poxlvv5DL8vopnnR/7kMY
-        vn/kveSmXCK7I5QKtfyV0XYyRC15LtirFVJpZLpus0tksAvWxi6l/uO/J6VOZyNLBn7KViVZO+pmi
-        tCMavBPk+ocRsC6yujO5bPnGRcZhKLBisgW7TtJG3/FxTW3BAp4mXk9rBm2YHM6MqRSSbpG11QU3K
-        iU0eefreID+Mspii6FT8TND1o3Wgkgcez5ouyqVdYFPOacbzF1GFPC3zVTqT0YP/NTts2M908BtFX
-        6ETemMoQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nC4l3-003F5b-C0; Mon, 24 Jan 2022 19:12:05 +0000
-Message-ID: <aca104cf-5f5f-b696-754a-35e62dbe64c3@infradead.org>
-Date:   Mon, 24 Jan 2022 11:11:56 -0800
+        id S1353287AbiAXTdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 14:33:50 -0500
+Received: from mga01.intel.com ([192.55.52.88]:25935 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1353011AbiAXTbr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jan 2022 14:31:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643052707; x=1674588707;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5XG7X738CWvd7suN2wlyDFHC/wjdaa796xjLxBwionw=;
+  b=IOXOBzWnzHIypJQ7BMvnS8hJOvXGnVStfQ5OCPLIZizn9QPTxscXZkVu
+   WCvT09dBd7wjcPvcpK/n7Hf1ZVu3Tyl2syTLDXEcOWm4ugmxvgcxPKX8p
+   gYV/B6uRZ9hPt0PLvrY3ofJK2RrKMbG98nQqrz7VdR1w4Rghb0Cn1ZevO
+   WvfWdSGKv+CPv/p9OjiyB0D2WQElBlrn8KN3qUC8MlVnpTgGAIsH2QVh5
+   JegTTmH+mOvyZgLrjXebv8JVWdIrm07W5FFn0w2ih8jwi3L+57+0F0O1U
+   PcvotWPCjJG9o4Ww9Cxz8AL3kTdb+jmPiM+36P72L+AXc9VB9PZ61MhMj
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="270567026"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="270567026"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 11:24:05 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="596884144"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 24 Jan 2022 11:24:03 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nC4wc-000Inp-KR; Mon, 24 Jan 2022 19:24:02 +0000
+Date:   Tue, 25 Jan 2022 03:23:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        edumazet@google.com
+Cc:     kbuild-all@lists.01.org, dsahern@gmail.com, pabeni@redhat.com,
+        herbert@gondor.apana.org.au, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net] ipv6: gro: flush instead of assuming different flows
+ on hop_limit mismatch
+Message-ID: <202201250210.roaIok2H-lkp@intel.com>
+References: <20220121011941.1123392-1-kuba@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: Build regressions/improvements in v5.17-rc1
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Alex Deucher <alexdeucher@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        KVM list <kvm@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        "Tobin C. Harding" <me@tobin.cc>
-References: <20220123125737.2658758-1-geert@linux-m68k.org>
- <alpine.DEB.2.22.394.2201240851560.2674757@ramsan.of.borg>
- <CADnq5_MUq0fX7wMLJyUUxxa+2xoRinonL-TzD8tUhXALRfY8-A@mail.gmail.com>
- <CAMuHMdWUWqHYbbavtMT-XAD_sarDPC5xnc3c0pX1ZAh3Wuzuzg@mail.gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <CAMuHMdWUWqHYbbavtMT-XAD_sarDPC5xnc3c0pX1ZAh3Wuzuzg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220121011941.1123392-1-kuba@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Jakub,
+
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on net/master]
+
+url:    https://github.com/0day-ci/linux/commits/Jakub-Kicinski/ipv6-gro-flush-instead-of-assuming-different-flows-on-hop_limit-mismatch/20220121-092033
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 57afdc0aab094b4c811b3fe030b2567812a495f3
+config: x86_64-randconfig-s022 (https://download.01.org/0day-ci/archive/20220125/202201250210.roaIok2H-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/6f8f3e541288381a67df8b670068d5add231d082
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Jakub-Kicinski/ipv6-gro-flush-instead-of-assuming-different-flows-on-hop_limit-mismatch/20220121-092033
+        git checkout 6f8f3e541288381a67df8b670068d5add231d082
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash net/ipv6/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
-On 1/24/22 10:55, Geert Uytterhoeven wrote:
-> Hi Alex,
-> 
-> On Mon, Jan 24, 2022 at 7:52 PM Alex Deucher <alexdeucher@gmail.com> wrote:
->> On Mon, Jan 24, 2022 at 5:25 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->>> On Sun, 23 Jan 2022, Geert Uytterhoeven wrote:
->>>>  + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: error: control reaches end of non-void function [-Werror=return-type]:  => 1560:1
->>
->> I don't really see what's going on here:
->>
->> #ifdef CONFIG_X86_64
->> return cpu_data(first_cpu_of_numa_node).apicid;
->> #else
->> return first_cpu_of_numa_node;
->> #endif
-> 
-> Ah, the actual failure causing this was not included:
-> 
-> In file included from /kisskb/src/arch/x86/um/asm/processor.h:41:0,
->                  from /kisskb/src/include/linux/mutex.h:19,
->                  from /kisskb/src/include/linux/kernfs.h:11,
->                  from /kisskb/src/include/linux/sysfs.h:16,
->                  from /kisskb/src/include/linux/kobject.h:20,
->                  from /kisskb/src/include/linux/pci.h:35,
->                  from
-> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:25:
-> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: In
-> function 'kfd_cpumask_to_apic_id':
-> /kisskb/src/arch/um/include/asm/processor-generic.h:103:18: error:
-> called object is not a function or function pointer
->  #define cpu_data (&boot_cpu_data)
->                   ^
-> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1556:9:
-> note: in expansion of macro 'cpu_data'
->   return cpu_data(first_cpu_of_numa_node).apicid;
->          ^
-> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1560:1:
-> error: control reaches end of non-void function [-Werror=return-type]
->  }
->  ^
+sparse warnings: (new ones prefixed by >>)
+>> net/ipv6/ip6_offload.c:264:57: sparse: sparse: restricted __be32 degrades to integer
+>> net/ipv6/ip6_offload.c:263:48: sparse: sparse: dubious: x | !y
 
-ah yes, UML.
-I have a bunch of UML fixes that I have been hesitant to post.
+vim +264 net/ipv6/ip6_offload.c
 
-This is one of them.
-What do people think about this?
-
-thanks.
+   182	
+   183	INDIRECT_CALLABLE_SCOPE struct sk_buff *ipv6_gro_receive(struct list_head *head,
+   184								 struct sk_buff *skb)
+   185	{
+   186		const struct net_offload *ops;
+   187		struct sk_buff *pp = NULL;
+   188		struct sk_buff *p;
+   189		struct ipv6hdr *iph;
+   190		unsigned int nlen;
+   191		unsigned int hlen;
+   192		unsigned int off;
+   193		u16 flush = 1;
+   194		int proto;
+   195	
+   196		off = skb_gro_offset(skb);
+   197		hlen = off + sizeof(*iph);
+   198		iph = skb_gro_header_fast(skb, off);
+   199		if (skb_gro_header_hard(skb, hlen)) {
+   200			iph = skb_gro_header_slow(skb, hlen, off);
+   201			if (unlikely(!iph))
+   202				goto out;
+   203		}
+   204	
+   205		skb_set_network_header(skb, off);
+   206		skb_gro_pull(skb, sizeof(*iph));
+   207		skb_set_transport_header(skb, skb_gro_offset(skb));
+   208	
+   209		flush += ntohs(iph->payload_len) != skb_gro_len(skb);
+   210	
+   211		proto = iph->nexthdr;
+   212		ops = rcu_dereference(inet6_offloads[proto]);
+   213		if (!ops || !ops->callbacks.gro_receive) {
+   214			__pskb_pull(skb, skb_gro_offset(skb));
+   215			skb_gro_frag0_invalidate(skb);
+   216			proto = ipv6_gso_pull_exthdrs(skb, proto);
+   217			skb_gro_pull(skb, -skb_transport_offset(skb));
+   218			skb_reset_transport_header(skb);
+   219			__skb_push(skb, skb_gro_offset(skb));
+   220	
+   221			ops = rcu_dereference(inet6_offloads[proto]);
+   222			if (!ops || !ops->callbacks.gro_receive)
+   223				goto out;
+   224	
+   225			iph = ipv6_hdr(skb);
+   226		}
+   227	
+   228		NAPI_GRO_CB(skb)->proto = proto;
+   229	
+   230		flush--;
+   231		nlen = skb_network_header_len(skb);
+   232	
+   233		list_for_each_entry(p, head, list) {
+   234			const struct ipv6hdr *iph2;
+   235			__be32 first_word; /* <Version:4><Traffic_Class:8><Flow_Label:20> */
+   236	
+   237			if (!NAPI_GRO_CB(p)->same_flow)
+   238				continue;
+   239	
+   240			iph2 = (struct ipv6hdr *)(p->data + off);
+   241			first_word = *(__be32 *)iph ^ *(__be32 *)iph2;
+   242	
+   243			/* All fields must match except length and Traffic Class.
+   244			 * XXX skbs on the gro_list have all been parsed and pulled
+   245			 * already so we don't need to compare nlen
+   246			 * (nlen != (sizeof(*iph2) + ipv6_exthdrs_len(iph2, &ops)))
+   247			 * memcmp() alone below is sufficient, right?
+   248			 */
+   249			 if ((first_word & htonl(0xF00FFFFF)) ||
+   250			     !ipv6_addr_equal(&iph->saddr, &iph2->saddr) ||
+   251			     !ipv6_addr_equal(&iph->daddr, &iph2->daddr) ||
+   252			     iph->nexthdr != iph2->nexthdr) {
+   253	not_same_flow:
+   254				NAPI_GRO_CB(p)->same_flow = 0;
+   255				continue;
+   256			}
+   257			if (unlikely(nlen > sizeof(struct ipv6hdr))) {
+   258				if (memcmp(iph + 1, iph2 + 1,
+   259					   nlen - sizeof(struct ipv6hdr)))
+   260					goto not_same_flow;
+   261			}
+   262			/* flush if Traffic Class fields are different */
+ > 263			NAPI_GRO_CB(p)->flush |= flush |
+ > 264						 !!((first_word & htonl(0x0FF00000)) |
+   265						    (iph->hop_limit ^ iph2->hop_limit));
+   266	
+   267			/* If the previous IP ID value was based on an atomic
+   268			 * datagram we can overwrite the value and ignore it.
+   269			 */
+   270			if (NAPI_GRO_CB(skb)->is_atomic)
+   271				NAPI_GRO_CB(p)->flush_id = 0;
+   272		}
+   273	
+   274		NAPI_GRO_CB(skb)->is_atomic = true;
+   275		NAPI_GRO_CB(skb)->flush |= flush;
+   276	
+   277		skb_gro_postpull_rcsum(skb, iph, nlen);
+   278	
+   279		pp = indirect_call_gro_receive_l4(tcp6_gro_receive, udp6_gro_receive,
+   280						 ops->callbacks.gro_receive, head, skb);
+   281	
+   282	out:
+   283		skb_gro_flush_final(skb, pp, flush);
+   284	
+   285		return pp;
+   286	}
+   287	
 
 ---
-From: Randy Dunlap <rdunlap@infradead.org>
-
-
-../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1556:9: note: in expansion of macro ‘cpu_data’
-  return cpu_data(first_cpu_of_numa_node).apicid;
-         ^~~~~~~~
-../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1560:1: error: control reaches end of non-void function [-Werror=return-type]
-
-../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c: In function ‘kfd_fill_iolink_info_for_cpu’:
-../arch/um/include/asm/processor-generic.h:103:19: error: called object is not a function or function pointer
- #define cpu_data (&boot_cpu_data)
-                  ~^~~~~~~~~~~~~~~
-../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1688:27: note: in expansion of macro ‘cpu_data’
-  struct cpuinfo_x86 *c = &cpu_data(0);
-                           ^~~~~~~~
-../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1691:7: error: dereferencing pointer to incomplete type ‘struct cpuinfo_x86’
-  if (c->x86_vendor == X86_VENDOR_AMD)
-       ^~
-../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1691:23: error: ‘X86_VENDOR_AMD’ undeclared (first use in this function); did you mean ‘X86_VENDOR_ANY’?
-  if (c->x86_vendor == X86_VENDOR_AMD)
-                       ^~~~~~~~~~~~~~
-                       X86_VENDOR_ANY
-
-../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c: In function ‘kfd_create_vcrat_image_cpu’:
-../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1742:11: warning: unused variable ‘entries’ [-Wunused-variable]
-  uint32_t entries = 0;
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
----
- drivers/gpu/drm/amd/amdkfd/kfd_crat.c     |    6 +++---
- drivers/gpu/drm/amd/amdkfd/kfd_topology.c |    2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
-
---- linux-next-20220107.orig/drivers/gpu/drm/amd/amdkfd/kfd_topology.c
-+++ linux-next-20220107/drivers/gpu/drm/amd/amdkfd/kfd_topology.c
-@@ -1552,7 +1552,7 @@ static int kfd_cpumask_to_apic_id(const
- 	first_cpu_of_numa_node = cpumask_first(cpumask);
- 	if (first_cpu_of_numa_node >= nr_cpu_ids)
- 		return -1;
--#ifdef CONFIG_X86_64
-+#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
- 	return cpu_data(first_cpu_of_numa_node).apicid;
- #else
- 	return first_cpu_of_numa_node;
---- linux-next-20220107.orig/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-+++ linux-next-20220107/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
-@@ -1679,7 +1679,7 @@ static int kfd_fill_mem_info_for_cpu(int
- 	return 0;
- }
- 
--#ifdef CONFIG_X86_64
-+#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
- static int kfd_fill_iolink_info_for_cpu(int numa_node_id, int *avail_size,
- 				uint32_t *num_entries,
- 				struct crat_subtype_iolink *sub_type_hdr)
-@@ -1738,7 +1738,7 @@ static int kfd_create_vcrat_image_cpu(vo
- 	struct crat_subtype_generic *sub_type_hdr;
- 	int avail_size = *size;
- 	int numa_node_id;
--#ifdef CONFIG_X86_64
-+#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
- 	uint32_t entries = 0;
- #endif
- 	int ret = 0;
-@@ -1803,7 +1803,7 @@ static int kfd_create_vcrat_image_cpu(vo
- 			sub_type_hdr->length);
- 
- 		/* Fill in Subtype: IO Link */
--#ifdef CONFIG_X86_64
-+#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
- 		ret = kfd_fill_iolink_info_for_cpu(numa_node_id, &avail_size,
- 				&entries,
- 				(struct crat_subtype_iolink *)sub_type_hdr);
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
