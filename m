@@ -2,139 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F38B0499624
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 22:17:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA8BF499C01
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 23:06:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443870AbiAXU7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 15:59:24 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42268 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391681AbiAXUsW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 15:48:22 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9A5760C3E;
-        Mon, 24 Jan 2022 20:48:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 623B1C340E5;
-        Mon, 24 Jan 2022 20:48:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057301;
-        bh=eipPTW4zUA2Y7C6/tT/Xx48Qu8AVSVvCdWRcAwJbjbs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mDdknbIGQysdIcgik43P379chCn2IYSxtxjZ/H+yf2L3x8UfDGw3662PxvrwaTwIn
-         YsLCeGmwsPDraojRWxDj2WZ2Rv5A7UaQ2OuCuf28OylHrRyGCVjdo6Fr/hI9kwS950
-         q3mY5ejd8JOElUJayRiepTn6t8AEXvva2dLQJNMA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chase Conklin <chase.conklin@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Stephane Eranian <eranian@google.com>,
-        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.15 768/846] perf evsel: Override attr->sample_period for non-libpfm4 events
-Date:   Mon, 24 Jan 2022 19:44:45 +0100
-Message-Id: <20220124184127.452102489@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        id S1350107AbiAXV6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 16:58:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1453926AbiAXVbS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 16:31:18 -0500
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD988C0AD1AE;
+        Mon, 24 Jan 2022 12:20:01 -0800 (PST)
+Received: by mail-qt1-x82a.google.com with SMTP id b5so3558109qtq.11;
+        Mon, 24 Jan 2022 12:20:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Gnv2KdJcWev5DXG7Zqmo5Ay+2m+nYtTgLdGUtEWY2Fo=;
+        b=ZKm4XrV0bDIIfSfrRa1cBCMem6IENGQKiz41veeGoGimaA0Rzii13gOZYfiO+KP/x5
+         +K3c9M15mBOnYky1E+sVZNL7Xlq4fyAL3E3usJWu6Mj9Jp0B9SsAfSsMmPkh5M5Fe5X+
+         hIV7wfy5rsIAZKTEB4OTqfq09ZKInPLMQR8aag4/stNwGFdndh6N0ZfFPHeMw96OeTHw
+         v0/CDRQD6GsjS8evqiCrxi2xa0dJdfGkk/m/F6kzdLk1xwDsPtm5n8BFEZX7jBANyD+Z
+         RSgfFHU5foRYa1u+9BwbI0OjQHqzWFV5PyUtL4p2bNwrHV6U1Z3bnVqhMozv9JTvrumD
+         j5Rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Gnv2KdJcWev5DXG7Zqmo5Ay+2m+nYtTgLdGUtEWY2Fo=;
+        b=F47DzfZzzN5+tEzMnP/SH9uvUFcsEoLzJDon6l4WU6dHKhIm0xNbx+++YvtxuPr2Ix
+         eWD0DR6TXUN/KIEaznHDdTyRDcErUfCz18ohxZeQ5bI1oH5FTHHZyhVZrpzNI26qTGRc
+         Dimf1Z0i3Bn81ivLIvFehL6rbn3HvtG2F9W6GdFPRevUfNYXwJqKYMhutGgOSObafrsJ
+         HUYLz414d8lZf/sdJuQzLjk/9hQiDEuDZxeUvBakh1LWcqHKh17pQuE3mJCqVqR8EnPD
+         a6b3zYVQXxqlSNWCQndcsvkxyYUt2NDMBdYSuKGy1TumNMf9ccPROJAehBKPuc6dCYq5
+         F+cw==
+X-Gm-Message-State: AOAM5326S9hs7PeluI2Eiznz9/atlf3y2RzVZYBBc0z3h1js8/nBox+9
+        0Zsg0wgNvsfT9f1f04lu2/E=
+X-Google-Smtp-Source: ABdhPJx1x3LrfGZm1OMEN8K3yQ/Ev5a2v6oVIol5yow2jgTH1jCA1UCUOJ/M2hV/mZnJDCBxN9KUvA==
+X-Received: by 2002:a05:622a:120a:: with SMTP id y10mr13844793qtx.429.1643055601015;
+        Mon, 24 Jan 2022 12:20:01 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:8937:675:3cb3:d613])
+        by smtp.gmail.com with ESMTPSA id t29sm7922203qtc.47.2022.01.24.12.20.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 12:20:00 -0800 (PST)
+Date:   Mon, 24 Jan 2022 12:19:58 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Brian Vazquez <brianvv@google.com>,
+        Jeffrey Ji <jeffreyjilinux@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jeffreyji <jeffreyji@google.com>
+Subject: Re: [PATCH net-next] net-core: add InMacErrors counter
+Message-ID: <Ye8J7rMiiTwNNA6T@pop-os.localdomain>
+References: <20220122000301.1872828-1-jeffreyji@google.com>
+ <20220121194057.17079951@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAMzD94QW5uK2wAZfYWu5J=2HqCcLrT=y7u6+0PgJvHBb0YTz_Q@mail.gmail.com>
+ <20220124092924.0eb17027@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124092924.0eb17027@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: German Gomez <german.gomez@arm.com>
+On Mon, Jan 24, 2022 at 09:29:24AM -0800, Jakub Kicinski wrote:
+> On Mon, 24 Jan 2022 09:13:12 -0800 Brian Vazquez wrote:
+> > On Fri, Jan 21, 2022 at 7:41 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > On Sat, 22 Jan 2022 00:03:01 +0000 Jeffrey Ji wrote:  
+> > > > From: jeffreyji <jeffreyji@google.com>
+> > > >
+> > > > Increment InMacErrors counter when packet dropped due to incorrect dest
+> > > > MAC addr.
+> > > >
+> > > > example output from nstat:
+> > > > \~# nstat -z "*InMac*"
+> > > > \#kernel
+> > > > Ip6InMacErrors                  0                  0.0
+> > > > IpExtInMacErrors                1                  0.0
+> > > >
+> > > > Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+> > > > with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
+> > > > counter was incremented.
+> > > >
+> > > > Signed-off-by: jeffreyji <jeffreyji@google.com>  
+> > >
+> > > How about we use the new kfree_skb_reason() instead to avoid allocating
+> > > per-netns memory the stats?  
+> > 
+> > I'm not too familiar with the new kfree_skb_reason , but my
+> > understanding is that it needs either the drop_monitor  or ebpf to get
+> > the reason from the tracepoint, right? This is not too different from
+> > using perf tool to find where the pkt is being dropped.
+> > 
+> > The idea here was to have a high level metric that is easier to find
+> > for users that have less expertise on using more advance tools.
+> 
+> That much it's understood, but it's a trade off. This drop point
+> existed for 20 years, why do we need to consume extra memory now?
 
-commit 3606c0e1a1050d397ad759a62607e419fd8b0ccb upstream.
+kfree_skb_reason() is for tracing and tracing has overhead in
+production, which is higher than just a percpu counter.
 
-A previous patch preventing "attr->sample_period" values from being
-overridden in pfm events changed a related behaviour in arm-spe.
+What memory overhead are you talking about? We have ~37 IP related
+SNMP counters, this patch merely adds 1/37 memory overhead. So, what's the
+point? :-/
 
-Before said patch:
-
-  perf record -c 10000 -e arm_spe_0// -- sleep 1
-
-Would yield an SPE event with period=10000. After the patch, the period
-in "-c 10000" was being ignored because the arm-spe code initializes
-sample_period to a non-zero value.
-
-This patch restores the previous behaviour for non-libpfm4 events.
-
-Fixes: ae5dcc8abe31 (“perf record: Prevent override of attr->sample_period for libpfm4 events”)
-Reported-by: Chase Conklin <chase.conklin@arm.com>
-Signed-off-by: German Gomez <german.gomez@arm.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: bpf@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Link: http://lore.kernel.org/lkml/20220118144054.2541-1-german.gomez@arm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- tools/perf/util/evsel.c |   25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
-
---- a/tools/perf/util/evsel.c
-+++ b/tools/perf/util/evsel.c
-@@ -1047,6 +1047,17 @@ void __weak arch_evsel__set_sample_weigh
- 	evsel__set_sample_bit(evsel, WEIGHT);
- }
- 
-+static void evsel__set_default_freq_period(struct record_opts *opts,
-+					   struct perf_event_attr *attr)
-+{
-+	if (opts->freq) {
-+		attr->freq = 1;
-+		attr->sample_freq = opts->freq;
-+	} else {
-+		attr->sample_period = opts->default_interval;
-+	}
-+}
-+
- /*
-  * The enable_on_exec/disabled value strategy:
-  *
-@@ -1113,14 +1124,12 @@ void evsel__config(struct evsel *evsel,
- 	 * We default some events to have a default interval. But keep
- 	 * it a weak assumption overridable by the user.
- 	 */
--	if (!attr->sample_period) {
--		if (opts->freq) {
--			attr->freq		= 1;
--			attr->sample_freq	= opts->freq;
--		} else {
--			attr->sample_period = opts->default_interval;
--		}
--	}
-+	if ((evsel->is_libpfm_event && !attr->sample_period) ||
-+	    (!evsel->is_libpfm_event && (!attr->sample_period ||
-+					 opts->user_freq != UINT_MAX ||
-+					 opts->user_interval != ULLONG_MAX)))
-+		evsel__set_default_freq_period(opts, attr);
-+
- 	/*
- 	 * If attr->freq was set (here or earlier), ask for period
- 	 * to be sampled.
-
-
+Thanks.
