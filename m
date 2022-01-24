@@ -2,75 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C556497E17
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 12:34:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E96A4497E2B
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 12:42:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237490AbiAXLea (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 06:34:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
+        id S237830AbiAXLmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 06:42:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237414AbiAXLe3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 06:34:29 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A5FC06173B
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 03:34:29 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id g14so50167973ybs.8
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 03:34:29 -0800 (PST)
+        with ESMTP id S237756AbiAXLma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 06:42:30 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6648BC06173B;
+        Mon, 24 Jan 2022 03:42:30 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id n23so10652408ljg.1;
+        Mon, 24 Jan 2022 03:42:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=17Nff13ZduB4cT7crgR0AD2g9NS5kSKWAjyqUQuJZQc=;
-        b=lKaXp+mXSWB+0gr39wDCNLCMrJvRZA42QWqYP8zdgRnZuY+/FHH3/f46JD5cIB08kL
-         duqinwBvy+Ws4gYBTnHmspvfIVvaHm2Rw1UroVVr0fzeXbsMnjUUWkbBcM4Amk8xnCgJ
-         2QVDilS4e1NFdkjH0UYwdazJomPBCG3rTFRXeMDdE8rwRYzM8ibh2//L7XEcfpUiSgG5
-         MncXVDSvK/4zPclt09n41WGO8W0a+PiyYUO6scgtnjJghe6m7+9+XG5PTsh/rwLVKJZC
-         bTuCVNSReB0f2J3XKqpO9lFr+dD08nCqqm+UjOty7G0SGZoI9zrs+GN5kpGqW9GrZZSO
-         +GIg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fK9aIW3UzZKCiVlPcUGVx7E5P904jn6nRwrBK6XG390=;
+        b=SHY2Esua8OM6IcNOWmZSipT6NmfJ5XXVc6fq772y50OV7AwoMaMlaZtUuWflyZN/ks
+         I1V53kzPMUIX/Q74lBSdrjNa6Ea+vN9cewBpEDS7gHNhZv+Eod2x5lbIiGYa/alwoDFH
+         iavIL6VuEXyTreUbYUmTIx3rguCEG1DAbzU/jDYdxwrNEMCQjqoNljxSjSvWQ1JpHIo9
+         TglGoCJMtcyq21wR+Ea+YGauvKsj6vRjb6h8NcgfdePQSxqxJjMykG23sP0KD1kpT5js
+         7ETNe1ryFgT8Su6djjj816kIMTonGHyxe7P2Y7xp4zHrKrsrjU3d64UBs1H3IT2TijwY
+         KKWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=17Nff13ZduB4cT7crgR0AD2g9NS5kSKWAjyqUQuJZQc=;
-        b=sxlgHVeQLJYDdQ5+OTq5+1mTBrVCEIGuXUlMZ9/xtUwGZQiecfuKWCxuEYn5BDujbq
-         z+54UiYc55Nihh9HjN+GWD+mjq2exXhisUYxOn0qIUQ2+o01XPwZWwmp5qKNzkgXI8/W
-         p91PPhZfVp/k3dYFW995c729jdltmGqhILme974dz5zYaid0epoWdKG+vlXBSzwd9nXD
-         CXBySweSYTnbdkO87QqK23Paj1DkKepGuY7RThiIncW5V3w72th43gOPD9AO8ttwACcX
-         IOVSJUSPD75TYC6FHVXQojdDarXu9fU5yct51FnsgtGB3IuafzmGVrNI6pSUV7vhlpMx
-         2waA==
-X-Gm-Message-State: AOAM532zN+ifid9YbZyIP5TUsRV3OmUqHuopOY9aXWu3AbLZ6c3iQrwn
-        K6B/a8M1UwOTwNKtrlwoPJUKTgRIXkrXr7QmDqY=
-X-Google-Smtp-Source: ABdhPJw2Xze9HF628Cmr8+eonb4yN21uNp3whmwQwa6BPTzsOroRtbSXjd1OhT8Xf7jNK2NCvknwLMYPmarOxeYKiRo=
-X-Received: by 2002:a25:c790:: with SMTP id w138mr22519284ybe.646.1643024068332;
- Mon, 24 Jan 2022 03:34:28 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fK9aIW3UzZKCiVlPcUGVx7E5P904jn6nRwrBK6XG390=;
+        b=JAfs2CT/7gzIDW6iJrl5NgkyWSGWVo2zI0TU8Sq8xYhQKlC3Yq6BtY5yKcx49s2JnK
+         +472rJpIzjqg0m7GovenpdM2Hkm1ATMypePsCE5OYu7XZSOcRWDvhr8bHzVWrPbogHZX
+         oEmcfFlxU0C1vJaUbNeG7ttrNozguexlcasv7OsqPs+EmXmY8doI7pPw81DEtkIA/5Pk
+         0GqS170KJrTGVbNtKnDla8vHe8LoxCI1w6AAheyD6AcR/VSifpa7OVGRvpp2gxPlU/Ee
+         sWvBLyO60bJrhDg0FaiHutZWggoAiUakUidJF6Vkm8qsFtKfnREKDRrichVrU5VxDNPJ
+         vf8w==
+X-Gm-Message-State: AOAM5315ZnhtDzoDwhZ2j+BmRAPMxfPvKdVK7pxD470gupJ+nlvyQIAv
+        1tGFszPXxJjR1pPpaupOcpu6banYaIpdJ7IUTXh5nAtmIjiUXQ==
+X-Google-Smtp-Source: ABdhPJygjNVUHkoE8BDdEVfMhS670G5P+BPcwj16DBpSv47hRzzoonZhVcPwh2uM6ogAzS3ZF5ftkeOF9pTJYZdpWKM=
+X-Received: by 2002:a2e:b747:: with SMTP id k7mr11089297ljo.182.1643024548694;
+ Mon, 24 Jan 2022 03:42:28 -0800 (PST)
 MIME-Version: 1.0
-Sender: ibrahimvivane65@gmail.com
-Received: by 2002:a05:7000:d54d:0:0:0:0 with HTTP; Mon, 24 Jan 2022 03:34:27
- -0800 (PST)
-From:   Sophia Erick <sdltdkggl3455@gmail.com>
-Date:   Mon, 24 Jan 2022 12:34:27 +0100
-X-Google-Sender-Auth: y95I-ET-wRYFFHLk-apHYUEAEvM
-Message-ID: <CAGCMmKeJBBDphstQwexXxsiejNuhJdomKG97UNP1UxSSTjQ_Rg@mail.gmail.com>
-Subject: HELLO
-To:     undisclosed-recipients:;
+References: <000000000000367c2205d2549cb9@google.com> <0000000000009fa8ee05d60428f1@google.com>
+In-Reply-To: <0000000000009fa8ee05d60428f1@google.com>
+From:   Vegard Nossum <vegard.nossum@gmail.com>
+Date:   Mon, 24 Jan 2022 12:42:16 +0100
+Message-ID: <CAOMGZ=E9Gmv6Fb_pi4p9RhQ_MvJVYs_6rkf37XfG0DYEMFNbNA@mail.gmail.com>
+Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Read in __bpf_prog_put
+To:     syzbot <syzbot+5027de09e0964fd78ce1@syzkaller.appspotmail.com>
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, "David S. Miller" <davem@davemloft.net>,
+        fgheet255t@gmail.com, hawk@kernel.org, jakub@cloudflare.com,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        lmb@cloudflare.com, Linux Netdev List <netdev@vger.kernel.org>,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-May the peace of God be with you ,
+On Thu, 20 Jan 2022 at 15:17, syzbot
+<syzbot+5027de09e0964fd78ce1@syzkaller.appspotmail.com> wrote:
+>
+> syzbot suspects this issue was fixed by commit:
+>
+> commit 218d747a4142f281a256687bb513a135c905867b
+> Author: John Fastabend <john.fastabend@gmail.com>
+> Date:   Tue Jan 4 21:46:45 2022 +0000
+>
+>     bpf, sockmap: Fix double bpf_prog_put on error case in map_link
 
-It is my pleasure to communicate with you, I know that this message
-will be a surprise to you my name is Mrs. Sophia Erick, I am diagnosed
-with ovarian cancer which my doctor have confirmed that I have only
-some weeks to live so I have decided you handover the sum of($
-11,000,000.00, Eleven Million Dollars) through I decided handover the
-money in my account to you for help of the orphanage homes and the
-needy once
+I can confirm the above commit fixes the issue, but it references a
+slightly different report. Looks like the only difference is
+__bpf_prog_put instead of bpf_prog_put:
 
-Please   kindly reply me here as soon as possible to enable me give
-you more information but before handing over my details to you please
-assure me that you will only take 30%  of the money and share the rest
-to the poor orphanage home and the needy once, thank you am waiting to
-hear from you
+KASAN: vmalloc-out-of-bounds Read in __bpf_prog_put
+KASAN: vmalloc-out-of-bounds Read in bpf_prog_put
 
-Mrs Sophia Erick.
+However, looking at the stack traces for the two bugs shows that
+__bpf_prog_put() is really the location for both reports, see:
+
+https://syzkaller.appspot.com/bug?id=797cd651dd0d9bd921e4fa51b792f5afdc3f390f
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:450 mm/kasan/report.c:450
+ __bpf_prog_put.constprop.0+0x1dd/0x220 kernel/bpf/syscall.c:1812
+kernel/bpf/syscall.c:1812
+ bpf_prog_put kernel/bpf/syscall.c:1829 [inline]
+ bpf_prog_put kernel/bpf/syscall.c:1829 [inline] kernel/bpf/syscall.c:1837
+
+vs.
+
+https://syzkaller.appspot.com/bug?extid=bb73e71cf4b8fd376a4f
+ kasan_report+0x19a/0x1f0 mm/kasan/report.c:450 mm/kasan/report.c:450
+ __bpf_prog_put kernel/bpf/syscall.c:1812 [inline]
+ __bpf_prog_put kernel/bpf/syscall.c:1812 [inline] kernel/bpf/syscall.c:1829
+ bpf_prog_put+0x8c/0x4f0 kernel/bpf/syscall.c:1829 kernel/bpf/syscall.c:1829
+
+Looks to me like the compiler's inlining decision caused syzbot to see
+__bpf_prog_put() instead of bpf_prog_put(), but I can't tell if it's
+because it got inlined or because of the .constprop.0 suffix... I
+guess syzbot skips the [inline] entries when deciding which function
+to report the bug in?
+
+In any case:
+
+#syz dup: KASAN: vmalloc-out-of-bounds Read in bpf_prog_put
+
+
+Vegard
