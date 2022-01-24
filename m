@@ -2,92 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD7AE498625
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 18:14:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34E8E49862F
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 18:14:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244286AbiAXROA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 12:14:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47742 "EHLO
+        id S244506AbiAXROX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 12:14:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241439AbiAXRNl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 12:13:41 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E862C06175C
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 09:13:25 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id p27so51415138lfa.1
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 09:13:25 -0800 (PST)
+        with ESMTP id S244324AbiAXRNx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 12:13:53 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911C6C06173D;
+        Mon, 24 Jan 2022 09:13:42 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id c3so16161230pls.5;
+        Mon, 24 Jan 2022 09:13:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zYBnJwYU6kdgRrUuU4GKLshNyRjBtazPAW6pSfcKBSo=;
-        b=NcjYumzr7dyaLLba4i3YqmYaQwCFsch778PYRKN+5YsJOLcUESv+T3GtfcswO8H0jj
-         Dp85CIXgcjciAnpA/s893+nzu2TEnjiuoypcdIAFWfjTRgv5FUyu88T1peEZAFCeEp3t
-         3IsDPOfRnahTAy18/h87YprIIENFCSR8fjfAd7GjEUDIyXkzvhnuArmgjJGNMbChmw0P
-         qgjrs2Avg59Hbs+QLF7i8yRBzHzqTVf6Y+aZAndEhHNJ4pyo5OFqZyL+c8SXCr3Io7RW
-         Cgz6XcCwhimT1NUEz2/xVlMqDl5LrXsQOEejcshXH95pOidgw0n8hUWetgiLWIocW1g0
-         LxZg==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Yz3Kx4MHq06ExPu9kTL/jl3NneB6Xj2/dNX33XiW2j0=;
+        b=gDMwYCxEfk6Fg2wCwnriYNJAh7na79iw0SgOg2pyoNDgmJ0+JZcb8+1nY4Do7tGpe9
+         iD7guUzqpQjCPvIwokQ6TOrFznPIeMz5bgsobMpnXcvImycwdHYe/A4AP+Xt2bCGA+Rg
+         7e66N7FbFHFicGbWd+/0CRz1wMM6KFbrRUOErGujgym4uTa/x52vDuwHXouuhZt89W/W
+         hpQ/PsX3BtXWPEs1MKy6ooB92YI8IWnnyjhSHVRMzwnlWNPr1evKukjfiOEi4IJiidyG
+         6XL0OJ8EDODesRjw6utIaE00T5KJcxSY/hSh/DPZHN5gtcXmeLTvCmnRc3GsMaKkaiwq
+         I1dQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zYBnJwYU6kdgRrUuU4GKLshNyRjBtazPAW6pSfcKBSo=;
-        b=2vCP+G34cxIxCQR/lt8idNbEZFq37ui5048HuPYrFH2oozjEGrAcg8aYP/b+v3wOMW
-         hEc2ap0UlgINjHpQK7YcmHVYJpddSL9PnFlQAahACqdZ+MC82KgZ0yY/nAjXYnQSO0Kt
-         2jiRwsPzww+jh2mNQHA/PPj7H3bsW7HDE6qmbk9yp+eESpvnv3J3ULq6PZZ2iqW99qu4
-         KK/c/XIoTRQdn+7i5muzW/aJfXod6G6/fAL7u0gVFdQWiPpc5uVyfaeau6a+YOTFPKiU
-         OCbUniihJmBtYQGNyZ36ynGDV4GRA8AftItrzjFB6gcc/6sGcI6YCLgJ6WENkTE5Qj48
-         Ct+Q==
-X-Gm-Message-State: AOAM532De2SHrMB3PQuNgtsCxatWl98DxsZtxrFaMG+GLMTkwbtz+nrP
-        Lh63kXlBWGAk423K58ZPU/rq5rDHOGMjZEllX4+sKA==
-X-Google-Smtp-Source: ABdhPJwcwz1TFtdILav2BCQzaf2RRBwGXgYmpytSwR/lKtfy8RCSLHjUwnxpVg+DAXCGJGrh1UFB8F9gZUESXZgFAfA=
-X-Received: by 2002:a05:6512:b04:: with SMTP id w4mr1061895lfu.545.1643044403748;
- Mon, 24 Jan 2022 09:13:23 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Yz3Kx4MHq06ExPu9kTL/jl3NneB6Xj2/dNX33XiW2j0=;
+        b=xG7BijVVPefcVvtj9PDap1UpMIHBnOffwaxcOAPNmm0t2sor17kxeqZvZZG9YVuYEu
+         TV5ArczPP3GAw2xghnNW2K8SlvLrBqedgmFnU4swN0MppkqssBProW1lZBnLiZ7faUQp
+         jxvYxOTTBjy8R6th5z43pqnOr7anP44Oi9OLlQnzYrx2bILHdCAzUK/I5iZPhfT71qOq
+         nJcWKd8Kca3okdmF4u5qyC7JxooQ22Mb/JqLnEkilwy0y7I1TqV6zFpaBwJ9PP14g8X7
+         jfZ0S9LtsLfuTnMryyeAzZdBHrgF1NV/sZ7wNz25yeG7fvbcPZcRqGxziUB/4wDwf7ku
+         Vftg==
+X-Gm-Message-State: AOAM531bx+THV8N2O1RFwxdWpPnCsbDTq1uUCqgq9FJL8Ji34wpLpdFR
+        RiIEGlTgKNLXRArDXWcns1Y=
+X-Google-Smtp-Source: ABdhPJyt8Q8UYMb8ZPX5O55xt98T26QcckoaPZ4g6z41q+Z+eKVHji1BFoUdALgiWj9A/kZe4ZZ2og==
+X-Received: by 2002:a17:90b:4d11:: with SMTP id mw17mr2845071pjb.100.1643044421921;
+        Mon, 24 Jan 2022 09:13:41 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id t3sm17894634pfg.28.2022.01.24.09.13.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 09:13:41 -0800 (PST)
+Message-ID: <acf98ec3-1120-bcc0-2a2f-85d97c48febd@gmail.com>
+Date:   Mon, 24 Jan 2022 09:13:38 -0800
 MIME-Version: 1.0
-References: <20220122000301.1872828-1-jeffreyji@google.com> <20220121194057.17079951@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220121194057.17079951@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Brian Vazquez <brianvv@google.com>
-Date:   Mon, 24 Jan 2022 09:13:12 -0800
-Message-ID: <CAMzD94QW5uK2wAZfYWu5J=2HqCcLrT=y7u6+0PgJvHBb0YTz_Q@mail.gmail.com>
-Subject: Re: [PATCH net-next] net-core: add InMacErrors counter
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jeffrey Ji <jeffreyjilinux@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jeffreyji <jeffreyji@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: MT7621 SoC Traffic Won't Flow on RGMII2 Bus/2nd GMAC
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     DENG Qingfang <dqfext@gmail.com>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Siddhant Gupta <siddhantgupta416@gmail.com>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>, linux-mips@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, openwrt-devel@lists.openwrt.org,
+        erkin.bozoglu@xeront.com
+References: <83a35aa3-6cb8-2bc4-2ff4-64278bbcd8c8@arinc9.com>
+ <CALW65jZ4N_YRJd8F-uaETWm1Hs3rNcy95csf++rz7vTk8G8oOg@mail.gmail.com>
+ <02ecce91-7aad-4392-c9d7-f45ca1b31e0b@arinc9.com> <Ye1zwIFUa5LPQbQm@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <Ye1zwIFUa5LPQbQm@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 7:41 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Sat, 22 Jan 2022 00:03:01 +0000 Jeffrey Ji wrote:
-> > From: jeffreyji <jeffreyji@google.com>
-> >
-> > Increment InMacErrors counter when packet dropped due to incorrect dest
-> > MAC addr.
-> >
-> > example output from nstat:
-> > \~# nstat -z "*InMac*"
-> > \#kernel
-> > Ip6InMacErrors                  0                  0.0
-> > IpExtInMacErrors                1                  0.0
-> >
-> > Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
-> > with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
-> > counter was incremented.
-> >
-> > Signed-off-by: jeffreyji <jeffreyji@google.com>
->
-> How about we use the new kfree_skb_reason() instead to avoid allocating
-> per-netns memory the stats?
 
-I'm not too familiar with the new kfree_skb_reason , but my
-understanding is that it needs either the drop_monitor  or ebpf to get
-the reason from the tracepoint, right? This is not too different from
-using perf tool to find where the pkt is being dropped.
 
-The idea here was to have a high level metric that is easier to find
-for users that have less expertise on using more advance tools.
+On 1/23/2022 7:26 AM, Andrew Lunn wrote:
+> On Sun, Jan 23, 2022 at 11:33:04AM +0300, Arınç ÜNAL wrote:
+>> Hey Deng,
+>>
+>> On 23/01/2022 09:51, DENG Qingfang wrote:
+>>> Hi,
+>>>
+>>> Do you set the ethernet pinmux correctly?
+>>>
+>>> &ethernet {
+>>>       pinctrl-names = "default";
+>>>       pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
+>>> };
+>>
+>> This fixed it! We did have &rgmii2_pins on the gmac1 node (it was originally
+>> on external_phy) so we never thought to investigate the pinctrl
+>> configuration further! Turns out &rgmii2_pins needs to be defined on the
+>> ethernet node instead.
+> 
+> PHYs are generally external, so pinmux on them makes no sense. PHYs in
+> DT are not devices in the usual sense, so i don't think the driver
+> core will handle pinmux for them, even if you did list them.
+
+Not sure I understand your comment here, this is configuring the pinmux 
+on the SoC side in order for the second RGMII interface's data path to work.
+
+It is not uncommon for the same set of I/O pads to be used by different 
+functions within the chip. For instance the chips I work with happily 
+offer RGMII, MTSIF, PDM (I2S), TSIO on the same pads via different 
+pinmuxing options.
+
+Also, this is declaring a pinmuxing function for the Ethernet MAC, which 
+is a perfectly valid use case and typically how pinmuxing is declared 
+for a given SoC.
+-- 
+Florian
