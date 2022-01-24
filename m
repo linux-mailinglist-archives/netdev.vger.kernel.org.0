@@ -2,25 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD9C94978C8
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 07:06:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22DAA49789C
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 06:38:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241541AbiAXGGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 01:06:17 -0500
-Received: from mail-m963.mail.126.com ([123.126.96.3]:7284 "EHLO
-        mail-m963.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230091AbiAXGGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 01:06:16 -0500
-X-Greylist: delayed 1843 seconds by postgrey-1.27 at vger.kernel.org; Mon, 24 Jan 2022 01:06:15 EST
+        id S241180AbiAXFh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 00:37:56 -0500
+Received: from mail-m965.mail.126.com ([123.126.96.5]:36079 "EHLO
+        mail-m965.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229623AbiAXFhz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 00:37:55 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=XYu6s
-        9Db7kDwGgFtgnHeOa8tOqzXQ7vZNh8M1bSmULw=; b=JPMQa4nMmlGb2AOLV6dyy
-        aXWejwP88CrSyDPM4TwpN4We9MmD/jU6Q3hLkXJByvXD5kTZgXPdWeUBafnU1YV6
-        UsbdeZPtC5/vNuxlOLhNfyHTe++KFHIbG0zM2/G7+p9p3tDV/7stxOQOVBeoY56s
-        uRCqo/GeDCQ7bLSky4cyC0=
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=p80ms
+        PMQpJL6/ZC9j6FEhROYEhBkBcmgh8Hs1TbpcGM=; b=fHGVxNrvX1BiTetfV+0/K
+        DCYQQvErSiuIaY1n1/idJq4NzfPEacfGJaqUW87XsX4aryaY8EkngrDdghWiEFcl
+        Q3cfDwjS7h1SJF04/zVH+A/SGP99xOmCEBDCacZoVaEJFOjCVXGwqosJCtGga+eL
+        LlECg8kyUvj8t+iLbrd14c=
 Received: from firebird.. (unknown [222.128.181.171])
-        by smtp8 (Coremail) with SMTP id NORpCgAHetyAOu5hNla1Aw--.1441S2;
-        Mon, 24 Jan 2022 13:34:57 +0800 (CST)
+        by smtp10 (Coremail) with SMTP id NuRpCgDnJZIdO+5hZbydAw--.15673S2;
+        Mon, 24 Jan 2022 13:37:34 +0800 (CST)
 From:   kai zhang <zhangkaiheb@126.com>
 To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
         davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
@@ -29,23 +28,26 @@ To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
         linux-kernel@vger.kernel.org
 Cc:     kai zhang <zhangkaiheb@126.com>
 Subject: [PATCH] net: fix duplicate logs of iptables TRACE target
-Date:   Mon, 24 Jan 2022 05:34:55 +0000
-Message-Id: <20220124053455.55858-1-zhangkaiheb@126.com>
+Date:   Mon, 24 Jan 2022 05:37:32 +0000
+Message-Id: <20220124053732.55985-1-zhangkaiheb@126.com>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NORpCgAHetyAOu5hNla1Aw--.1441S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Kr4xuF1xKFyDGw18tr43Wrg_yoW8Cw47pF
-        98Kas8trs3Xr4jyFs7X3WUAr1rGwsxJrZxGFy3A34rKw4DtrWjga1Skryava1IvrsIgFW5
-        XFWYvr4Yyws8Cw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zirb15UUUUU=
+X-CM-TRANSID: NuRpCgDnJZIdO+5hZbydAw--.15673S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Kr4xAFykCF48Aw43Jw4fXwb_yoW8Zw1rpF
+        98Kas8trs3JrWjyFs7X3WUAFyrGws3JrZxGFy3A34rKw1DtrWUKa1Skry29a10vrsIgFW5
+        XFWFvr4Yyws8Cw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UaksgUUUUU=
 X-Originating-IP: [222.128.181.171]
-X-CM-SenderInfo: x2kd0wxndlxvbe6rjloofrz/1tbi2QGS-lpEDTKOcgAAsp
+X-CM-SenderInfo: x2kd0wxndlxvbe6rjloofrz/1tbi2R6S-lpEDTKR-wAAsk
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Below configuration, mangle,filter and security tables have no rule:
+
+# iptables -t raw -I PREROUTING 1 -p tcp --dport 22 -j TRACE
+# sysctl net.netfilter.nf_log.2=nf_log_ipv4
 
 There are 5 logs for incoming ssh packet:
 
