@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 653A3499C10
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 23:06:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8C4D499C0C
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 23:06:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380461AbiAXV7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 16:59:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
+        id S1576102AbiAXV7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 16:59:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456556AbiAXVjb (ORCPT
+        with ESMTP id S1456557AbiAXVjb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 16:39:31 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB7AC0417CE
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 12:25:06 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id u10so12611237pfg.10
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 12:25:06 -0800 (PST)
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE0BC0417CF
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 12:25:08 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id z131so5380676pgz.12
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 12:25:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/6C7q8//RS9PyIZsoudaUf2fJ6pFVbwD2v5ucpzbo5E=;
-        b=c8JCM0dUBK5GAOcTjWwgG9ebJI/i4rpXgG08xQ7jd6jH18Um8qeMQ0wqkwhFNxbTQ5
-         izYlgRb6XMRhdARTLNfHoXaC/YIeNEsLy8WIp7/xiba3VxiYUYozv8zRO1Lc8AjyMJxl
-         3aTqnxqwrXHQYjrNilNW4tEXUd/rgKjVhV3sLqshNWnQ5FwlIc6Ivm8vAXcs1EY+HDDs
-         37hPZAVgl1QqY6NeRXY84wLIEazmuE4n+HlVv44hBWSev5iAw6RhQA4GGhQYFBnx4gJU
-         sZY5nM4/DP2TKAQGC6wsmMWy2I23qneaS1NycZ33uyo5egKv7y9uSsLQVcr87c7psKV+
-         T/sQ==
+        bh=tFjgLXrRuL7F2KSwzfEoWVhMB06yvCvTNDbKGRLmzI8=;
+        b=mURdRWQwUrU8+IX86vcFEfrEaZHWiZOi1c5WB1rUUZ9SgxLpWWvTJPqoY6csF5hdiy
+         m5ryDUQlPioD5xmw/WybPBkgrZP6sK9gBZhEPvtfw6j/xOZIHBP1RNMydDzbUbBt2oz/
+         5gSeLo5Ek5jJpjhVhSPAg+PLTRY0OhOoYNbSXmHfRwiDflWFOzLOFjsYXkZCnaMYSibv
+         mT6VkFJYblbmjZ3OrMGrteaxqgjtYlWwRWzETFQi9nEPu+GXvjUioDoyFaeo3PqubPJu
+         701y8kp3+N/K059GzuIQIn7h+VXvhitozpwoiofDXckSAgmyL6TwFOh2iYeIxd0vJF3R
+         9fuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/6C7q8//RS9PyIZsoudaUf2fJ6pFVbwD2v5ucpzbo5E=;
-        b=ZpetpKK9TLW9WgGFWRy+JauBBmPgEmF/KEnIcAH3ar0WZK8UIqo26PzaW4emZ5Mc8F
-         CV/TSG2bsLTZ2aKMYI7/bwOMI3jlBVAtFH8TkQe2wADu6bFsmpHGHMq1WAEPwAe3SkvU
-         cegNJWdpQBaZMhNOr7TJWr/jfuv6cSI8ntXzhM/3LavpT9e+qR86S0x+yM9TgMLkyKI8
-         +W7LcDjKIuHnYZKER5bWcwWdUZQs6CeNZswyaOt/s8+nEYwKt6or19s+3qtgphDPGBTz
-         niT0MGRrz3UNtnO7l5GivLJKSsO+WNlFycxS1tuezgB5/IunTL9eM977SeMgh2rCRdjN
-         mN4w==
-X-Gm-Message-State: AOAM531CgiGVJYO00tTWDO6Z5ts1kKv0wIWBRvP3ll5hw8/353yyPqWB
-        J4IFL8K8+vW70pAkNUOZqMg=
-X-Google-Smtp-Source: ABdhPJxh5xgSSLu/Vdt/RZxOLZUsvaJr5Sjew+VbDbkNav4JVKrQ3yHdacJDNRHXAAMXqigspJk9zg==
-X-Received: by 2002:a63:115c:: with SMTP id 28mr12850850pgr.382.1643055906526;
-        Mon, 24 Jan 2022 12:25:06 -0800 (PST)
+        bh=tFjgLXrRuL7F2KSwzfEoWVhMB06yvCvTNDbKGRLmzI8=;
+        b=WWszy0ir760exwVPpFpY/MLCE7q9ugEp3AKRKj1sZKRxfRXXpGUkGe2Jjvi/IWgtko
+         O/GQp8nD7//wJClwGgB+Y38XvI148HAwT1DGGew00n5hJCiM9Yc6V65u+udl7XGSblSn
+         t7ZE87Hfy2tadGfWuXyhXupG5+9U4ZVLtUTlwOc/eD/B40+ty5OV4maWBav5Va2KJtfz
+         /WcO6snH/y5S0gkPvREJRQbWI7RJOxHxNDUxwNFDiEOtoHmPzkoX2naeHQaOXdROygjw
+         XuwJDEH7Jqm1tganwSJTKlBUf9zkV87Ml0Uze3x9YbQObCUcNdosK01tydmYWfxYnUwe
+         HC4A==
+X-Gm-Message-State: AOAM533NLH7hjfdRyL0iJypQm58VMUjzX3iPvQZdnjUN/OpqCrzzucTa
+        uSPRG1CpVX4ZgJJjge+orFI=
+X-Google-Smtp-Source: ABdhPJyf+b5q8P7A/2RslQpYwzn6Qeq0pf9qBOl8ZOMaLy+63IB5jqctT0iCbnGhJyhcNBJIOs6Z0w==
+X-Received: by 2002:a63:2502:: with SMTP id l2mr5027045pgl.162.1643055908448;
+        Mon, 24 Jan 2022 12:25:08 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:e903:2adf:9289:9a45])
-        by smtp.gmail.com with ESMTPSA id c19sm17871115pfv.76.2022.01.24.12.25.05
+        by smtp.gmail.com with ESMTPSA id c19sm17871115pfv.76.2022.01.24.12.25.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 12:25:06 -0800 (PST)
+        Mon, 24 Jan 2022 12:25:08 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 1/6] tcp/dccp: add tw->tw_bslot
-Date:   Mon, 24 Jan 2022 12:24:52 -0800
-Message-Id: <20220124202457.3450198-2-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 2/6] tcp/dccp: no longer use twsk_net(tw) from tw_timer_handler()
+Date:   Mon, 24 Jan 2022 12:24:53 -0800
+Message-Id: <20220124202457.3450198-3-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
 In-Reply-To: <20220124202457.3450198-1-eric.dumazet@gmail.com>
 References: <20220124202457.3450198-1-eric.dumazet@gmail.com>
@@ -67,59 +67,66 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-We want to allow inet_twsk_kill() working even if netns
-has been dismantled/freed, to get rid of inet_twsk_purge().
+We will soon get rid of inet_twsk_purge().
 
-This patch adds tw->tw_bslot to cache the bind bucket slot
-so that inet_twsk_kill() no longer needs to dereference twsk_net(tw)
+This means that tw_timer_handler() might fire after
+a netns has been dismantled/freed.
+
+Instead of adding a function (and data structure) to find a netns
+from tw->tw_net_cookie, just update the SNMP counters
+a bit earlier, when the netns is known to be alive.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/inet_timewait_sock.h |  1 +
- net/ipv4/inet_timewait_sock.c    | 11 +++++++----
- 2 files changed, 8 insertions(+), 4 deletions(-)
+ include/net/inet_timewait_sock.h | 5 ++---
+ net/ipv4/inet_timewait_sock.c    | 9 ++++-----
+ 2 files changed, 6 insertions(+), 8 deletions(-)
 
 diff --git a/include/net/inet_timewait_sock.h b/include/net/inet_timewait_sock.h
-index dfd919b3119e8efcbc436a67e3e6fbd02091db10..c221fe2b77dd24d8e0d13db9819cdf3ac13fe742 100644
+index c221fe2b77dd24d8e0d13db9819cdf3ac13fe742..b323db969b8b6df98ad84a9bb9aad646b4a8730c 100644
 --- a/include/net/inet_timewait_sock.h
 +++ b/include/net/inet_timewait_sock.h
-@@ -72,6 +72,7 @@ struct inet_timewait_sock {
+@@ -65,10 +65,9 @@ struct inet_timewait_sock {
+ 	/* these three are in inet_sock */
+ 	__be16			tw_sport;
+ 	/* And these are ours. */
+-	unsigned int		tw_kill		: 1,
+-				tw_transparent  : 1,
++	unsigned int		tw_transparent  : 1,
+ 				tw_flowlabel	: 20,
+-				tw_pad		: 2,	/* 2 bits hole */
++				tw_pad		: 3,	/* 3 bits hole */
  				tw_tos		: 8;
  	u32			tw_txhash;
  	u32			tw_priority;
-+	u32			tw_bslot; /* bind bucket slot */
- 	struct timer_list	tw_timer;
- 	struct inet_bind_bucket	*tw_tb;
- };
 diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-index 437afe392e667c7c54509920d1e624f759f9215b..6e8f4a6cd222e89b1c7f9fdd73b10d336ff026a1 100644
+index 6e8f4a6cd222e89b1c7f9fdd73b10d336ff026a1..e37e4852711c52bf8f6d01877297266cd19294ed 100644
 --- a/net/ipv4/inet_timewait_sock.c
 +++ b/net/ipv4/inet_timewait_sock.c
-@@ -52,8 +52,7 @@ static void inet_twsk_kill(struct inet_timewait_sock *tw)
- 	spin_unlock(lock);
+@@ -148,10 +148,6 @@ static void tw_timer_handler(struct timer_list *t)
+ {
+ 	struct inet_timewait_sock *tw = from_timer(tw, t, tw_timer);
  
- 	/* Disassociate with bind bucket. */
--	bhead = &hashinfo->bhash[inet_bhashfn(twsk_net(tw), tw->tw_num,
--			hashinfo->bhash_size)];
-+	bhead = &hashinfo->bhash[tw->tw_bslot];
+-	if (tw->tw_kill)
+-		__NET_INC_STATS(twsk_net(tw), LINUX_MIB_TIMEWAITKILLED);
+-	else
+-		__NET_INC_STATS(twsk_net(tw), LINUX_MIB_TIMEWAITED);
+ 	inet_twsk_kill(tw);
+ }
  
- 	spin_lock(&bhead->lock);
- 	inet_twsk_bind_unhash(tw, hashinfo);
-@@ -110,8 +109,12 @@ void inet_twsk_hashdance(struct inet_timewait_sock *tw, struct sock *sk,
- 	   Note, that any socket with inet->num != 0 MUST be bound in
- 	   binding cache, even if it is closed.
+@@ -247,8 +243,11 @@ void __inet_twsk_schedule(struct inet_timewait_sock *tw, int timeo, bool rearm)
+ 	 * of PAWS.
  	 */
--	bhead = &hashinfo->bhash[inet_bhashfn(twsk_net(tw), inet->inet_num,
--			hashinfo->bhash_size)];
-+	/* Cache inet_bhashfn(), because 'struct net' might be no longer
-+	 * available later in inet_twsk_kill().
-+	 */
-+	tw->tw_bslot = inet_bhashfn(twsk_net(tw), inet->inet_num,
-+				    hashinfo->bhash_size);
-+	bhead = &hashinfo->bhash[tw->tw_bslot];
- 	spin_lock(&bhead->lock);
- 	tw->tw_tb = icsk->icsk_bind_hash;
- 	WARN_ON(!icsk->icsk_bind_hash);
+ 
+-	tw->tw_kill = timeo <= 4*HZ;
+ 	if (!rearm) {
++		bool kill = timeo <= 4*HZ;
++
++		__NET_INC_STATS(twsk_net(tw), kill ? LINUX_MIB_TIMEWAITKILLED :
++						     LINUX_MIB_TIMEWAITED);
+ 		BUG_ON(mod_timer(&tw->tw_timer, jiffies + timeo));
+ 		atomic_inc(&tw->tw_dr->tw_count);
+ 	} else {
 -- 
 2.35.0.rc0.227.g00780c9af4-goog
 
