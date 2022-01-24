@@ -2,75 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F188C497FC2
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 13:45:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04808497FF0
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 13:49:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241733AbiAXMpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 07:45:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40366 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234462AbiAXMpl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 07:45:41 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58334C06173B;
-        Mon, 24 Jan 2022 04:45:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=EMEz1rACRULVBrKHzXgo2kunk9zl7ssga+Po9YSgMds=; b=GIX/sPYE/AU2KLF59arUOB3Wx8
-        DDIu/x/4XnAmMZHkDHwFbUEV3sEEEIKiBGQpTkmog4sxOBFCNx5bZGnOgVaWFOALZG5ZBDKjTfcpH
-        pwEMEbPs71j6SwllrDW4vQGJWi1lTADrzrDJPomOzzVQ4We1muqPai912uGbmdjnPKeBT1kshPhXo
-        heAMRMKe+gW2WsSFZk261JczqbK2UA3mlN2gwPkejmBulCWb3KheBHerXhaVqP2aoRdR7fhGZ0HX/
-        cPPuHNB2K+OCdC9DBgnrTu1pfhZQ+Nm6N3Rcgy8FE/j9AXLIqYOCisA7pzrTrSRP9A2Gsl1S7oqZq
-        yxy6hDWA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nByip-000dUC-R8; Mon, 24 Jan 2022 12:45:24 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 41CCE300222;
-        Mon, 24 Jan 2022 13:45:22 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 23B282027C5FC; Mon, 24 Jan 2022 13:45:22 +0100 (CET)
-Date:   Mon, 24 Jan 2022 13:45:22 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>, X86 ML <x86@kernel.org>
-Subject: Re: [PATCH v6 bpf-next 6/7] bpf: introduce bpf_prog_pack allocator
-Message-ID: <Ye6fYhwF9f+0NvhI@hirez.programming.kicks-ass.net>
-References: <20220121194926.1970172-1-song@kernel.org>
- <20220121194926.1970172-7-song@kernel.org>
- <CAADnVQK6+gWTUDo2z1H6AE5_DtuBBetW+VTwwKz03tpVdfuoHA@mail.gmail.com>
- <7393B983-3295-4B14-9528-B7BD04A82709@fb.com>
- <CAADnVQJLHXaU7tUJN=EM-Nt28xtu4vw9+Ox_uQsjh-E-4VNKoA@mail.gmail.com>
- <5407DA0E-C0F8-4DA9-B407-3DE657301BB2@fb.com>
- <CAADnVQLOpgGG9qfR4EAgzrdMrfSg9ftCY=9psR46GeBWP7aDvQ@mail.gmail.com>
- <5F4DEFB2-5F5A-4703-B5E5-BBCE05CD3651@fb.com>
- <CAADnVQLXGu_eF8VT6NmxKVxOHmfx7C=mWmmWF8KmsjFXg6P5OA@mail.gmail.com>
- <5E70BF53-E3FB-4F7A-B55D-199C54A8FDCA@fb.com>
+        id S242419AbiAXMt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 07:49:27 -0500
+Received: from mga09.intel.com ([134.134.136.24]:14200 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242536AbiAXMt0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jan 2022 07:49:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643028566; x=1674564566;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=t5fxNB8z6pSku/t+EGOjDH0q4PUVYX8rnOSgZH4UVPU=;
+  b=cWRe5CYLXk0Rjhw1QyNYaByNN2ZcxstHXPM2v1XhJpdC+xaJuT9Ny+LW
+   E/H7/XMvhSwLb/fqijlU9dtDWbaW3xYESL+/VuMtrhCNVjHyDJNoesDWb
+   KkW/fZ2MDLYIwXxIFIsZHER46ol+a0pwFXKa7X+gxH+gatQWRqDniEYrJ
+   1nN/+0Df6KfSR1DgGT0qhDVXTGE22OlFJnaADXze46ZXdzxVXjib5A4PF
+   116rwem/RKM/gRcm4odPp4qpp/paQ0AY+nqneAa4oZ6hUJUZuIRF/3aLr
+   uJ0oThggWnu87MTG7EOMR4odQ/bJ7VZqwhh79S8tF1OuocgZ/QVTTyb8W
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="245817550"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="245817550"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 04:49:26 -0800
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="494607640"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 04:49:21 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nBylZ-00DtIl-85;
+        Mon, 24 Jan 2022 14:48:13 +0200
+Date:   Mon, 24 Jan 2022 14:48:12 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH 33/54] net: ethernet: replace bitmap_weight with
+ bitmap_weight_{eq,gt,ge,lt,le} for mellanox
+Message-ID: <Ye6gDK2MA+cshctS@smile.fi.intel.com>
+References: <20220123183925.1052919-1-yury.norov@gmail.com>
+ <20220123183925.1052919-34-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5E70BF53-E3FB-4F7A-B55D-199C54A8FDCA@fb.com>
+In-Reply-To: <20220123183925.1052919-34-yury.norov@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 23, 2022 at 01:03:25AM +0000, Song Liu wrote:
+On Sun, Jan 23, 2022 at 10:39:04AM -0800, Yury Norov wrote:
+> Mellanox code uses bitmap_weight() to compare the weight of bitmap with
+> a given number. We can do it more efficiently with bitmap_weight_{eq, ...}
+> because conditional bitmap_weight may stop traversing the bitmap earlier,
+> as soon as condition is met.
 
-> I guess we can introduce something similar to bpf_arch_text_poke() 
-> for this? 
+> -	if (port <= 0 || port > m)
+> +	if (port <= 0 || bitmap_weight_lt(actv_ports.ports, dev->caps.num_ports, port))
+>  		return -EINVAL;
 
-IIRC the s390 version of the text_poke_copy() function is called
-s390_kernel_write().
+Can we eliminate now the port <= 0 check? Or at least make it port == 0?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
