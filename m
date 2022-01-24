@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51566498456
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 17:10:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 588A549845C
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 17:10:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243303AbiAXQKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 11:10:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60792 "EHLO
+        id S235896AbiAXQKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 11:10:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243569AbiAXQK2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 11:10:28 -0500
+        with ESMTP id S243594AbiAXQKj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 11:10:39 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D83FC061748;
-        Mon, 24 Jan 2022 08:10:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52314C06173D;
+        Mon, 24 Jan 2022 08:10:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 659B7B8110D;
-        Mon, 24 Jan 2022 16:10:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 843EAC340E5;
-        Mon, 24 Jan 2022 16:10:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C7D3B81107;
+        Mon, 24 Jan 2022 16:10:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0847BC36AEB;
+        Mon, 24 Jan 2022 16:10:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643040625;
-        bh=KLF7MeQzMSwksMcwOWZWT5QYkmgawKjGT2SemmO7Zqk=;
+        s=k20201202; t=1643040636;
+        bh=WZmeFdH8ElYIGUJVoLmuFMDYeopFMvSyUPu3X++ZsIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ovmfzWbCz4gXUZJgOgIvNgjrwm0tqKE7uhp6Shh8y1B5U9/H5zIG8zXxbMyXq9ypB
-         4CaEaMhN/JfitVd3yVZiGuKzhwaXkqC68VFdaMjagR9LLldA4LpR8UGSv0ovFzoXyr
-         /MHek9sxbO4cVCu2Tk0CCa+eYBQOqlgDVLam+D55dKKIrKXJPxBgMefAwAMUMDFpXu
-         In1rPeSZz5Mw+k0x4f3Jy6p+qBxCY08qfk0Sz8bNYQZLkQIEVfCL456EM8wGqOBtUF
-         gDPm6yJb+mf5/wfbFL647Gf8mKWVvMWykPmK65rwj78r/hs/o0KEO92rFz4D+Ao8Q5
-         Xxem5fOd/nPKw==
+        b=OdVEy3jO32j3+qxeW2ohGlGynWhZNJw8nbkdBIm4gHboebPtUDEozG3iSJraa6J0x
+         V2OWh7puK2axheDEll1hqQcKnclrNzThDv80RLYLV+GbL//OLZc6ow91+2aA6S2UDb
+         FkpXN8vl5DfAxT1TMjD0agCklb0kq2ZeO0W13P9J2yCX7zIY10YJwf+oj4jNNtLITI
+         QmwivXuNcpjSBXlR0NK4891FQcGwlpZQb3rzK5JATHfRoDgmZp+Y5byPDHy1eKe4LC
+         cKQ6twrZ5tKcCp9BZNe/e7XxBbaJSffoMq82mvGBI2L5E5islo0c8fyx2jQNLRpWu2
+         rR5UAKFPZk0GQ==
 From:   Masami Hiramatsu <mhiramat@kernel.org>
 To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
@@ -45,9 +45,9 @@ Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
         Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
         "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v4 5/9] ARM: rethook: Add rethook arm implementation
-Date:   Tue, 25 Jan 2022 01:10:19 +0900
-Message-Id: <164304061932.1680787.11603911228891618150.stgit@devnote2>
+Subject: [PATCH v4 6/9] arm64: rethook: Add arm64 rethook implementation
+Date:   Tue, 25 Jan 2022 01:10:30 +0900
+Message-Id: <164304063053.1680787.17728029474747738793.stgit@devnote2>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <164304056155.1680787.14081905648619647218.stgit@devnote2>
 References: <164304056155.1680787.14081905648619647218.stgit@devnote2>
@@ -61,131 +61,179 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
 ---
- arch/arm/Kconfig             |    1 +
- arch/arm/kernel/stacktrace.c |    4 ++
- arch/arm/probes/Makefile     |    1 +
- arch/arm/probes/rethook.c    |   71 ++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 77 insertions(+)
- create mode 100644 arch/arm/probes/rethook.c
+ arch/arm64/Kconfig                            |    1 
+ arch/arm64/kernel/probes/Makefile             |    1 
+ arch/arm64/kernel/probes/rethook.c            |   25 +++++++
+ arch/arm64/kernel/probes/rethook_trampoline.S |   87 +++++++++++++++++++++++++
+ arch/arm64/kernel/stacktrace.c                |    3 +
+ 5 files changed, 117 insertions(+)
+ create mode 100644 arch/arm64/kernel/probes/rethook.c
+ create mode 100644 arch/arm64/kernel/probes/rethook_trampoline.S
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index c2724d986fa0..2fe24bbca618 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -106,6 +106,7 @@ config ARM
- 	select HAVE_MOD_ARCH_SPECIFIC
- 	select HAVE_NMI
- 	select HAVE_OPTPROBES if !THUMB2_KERNEL
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index c4207cf9bb17..c706ed25ea50 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -201,6 +201,7 @@ config ARM64
+ 	select HAVE_SYSCALL_TRACEPOINTS
+ 	select HAVE_KPROBES
+ 	select HAVE_KRETPROBES
 +	select HAVE_RETHOOK
- 	select HAVE_PERF_EVENTS
- 	select HAVE_PERF_REGS
- 	select HAVE_PERF_USER_STACK_DUMP
-diff --git a/arch/arm/kernel/stacktrace.c b/arch/arm/kernel/stacktrace.c
-index 75e905508f27..3c2a9d7024bc 100644
---- a/arch/arm/kernel/stacktrace.c
-+++ b/arch/arm/kernel/stacktrace.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-only
- #include <linux/export.h>
- #include <linux/kprobes.h>
-+#include <linux/rethook.h>
- #include <linux/sched.h>
- #include <linux/sched/debug.h>
- #include <linux/stacktrace.h>
-@@ -66,6 +67,9 @@ int notrace unwind_frame(struct stackframe *frame)
- 	frame->sp = *(unsigned long *)(fp - 8);
- 	frame->pc = *(unsigned long *)(fp - 4);
- #endif
-+	if (IS_ENABLED(CONFIG_RETHOOK) && is_rethook_trampoline(frame->pc))
-+		frame->pc = rethook_find_ret_addr(frame->tsk, frame->fp,
-+						  &frame->kr_cur);
- #ifdef CONFIG_KRETPROBES
- 	if (is_kretprobe_trampoline(frame->pc))
- 		frame->pc = kretprobe_find_ret_addr(frame->tsk,
-diff --git a/arch/arm/probes/Makefile b/arch/arm/probes/Makefile
-index 8b0ea5ace100..10c083a22223 100644
---- a/arch/arm/probes/Makefile
-+++ b/arch/arm/probes/Makefile
-@@ -6,3 +6,4 @@ obj-$(CONFIG_KPROBES)		+= decode-thumb.o
- else
- obj-$(CONFIG_KPROBES)		+= decode-arm.o
- endif
-+obj-$(CONFIG_RETHOOK)		+= rethook.o
-diff --git a/arch/arm/probes/rethook.c b/arch/arm/probes/rethook.c
+ 	select HAVE_GENERIC_VDSO
+ 	select IOMMU_DMA if IOMMU_SUPPORT
+ 	select IRQ_DOMAIN
+diff --git a/arch/arm64/kernel/probes/Makefile b/arch/arm64/kernel/probes/Makefile
+index 8e4be92e25b1..24e689f44c32 100644
+--- a/arch/arm64/kernel/probes/Makefile
++++ b/arch/arm64/kernel/probes/Makefile
+@@ -4,3 +4,4 @@ obj-$(CONFIG_KPROBES)		+= kprobes.o decode-insn.o	\
+ 				   simulate-insn.o
+ obj-$(CONFIG_UPROBES)		+= uprobes.o decode-insn.o	\
+ 				   simulate-insn.o
++obj-$(CONFIG_RETHOOK)		+= rethook.o rethook_trampoline.o
+diff --git a/arch/arm64/kernel/probes/rethook.c b/arch/arm64/kernel/probes/rethook.c
 new file mode 100644
-index 000000000000..adc16cdf358a
+index 000000000000..38c33c81438b
 --- /dev/null
-+++ b/arch/arm/probes/rethook.c
-@@ -0,0 +1,71 @@
++++ b/arch/arm64/kernel/probes/rethook.c
+@@ -0,0 +1,25 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * arm implementation of rethook. Mostly copied from arch/arm/probes/kprobes/core.c
++ * Generic return hook for arm64.
++ * Most of the code is copied from arch/arm64/kernel/probes/kprobes.c
 + */
 +
 +#include <linux/kprobes.h>
 +#include <linux/rethook.h>
 +
-+/* Called from arch_rethook_trampoline */
-+static __used unsigned long arch_rethook_trampoline_callback(struct pt_regs *regs)
++/* This is called from arch_rethook_trampoline() */
++unsigned long __used arch_rethook_trampoline_callback(struct pt_regs *regs)
 +{
-+	return rethook_trampoline_handler(regs, regs->ARM_fp);
++	return rethook_trampoline_handler(regs, regs->regs[29]);
 +}
 +NOKPROBE_SYMBOL(arch_rethook_trampoline_callback);
 +
-+/*
-+ * When a rethook'ed function returns, it returns to arch_rethook_trampoline
-+ * which calls rethook callback. We construct a struct pt_regs to
-+ * give a view of registers r0-r11, sp, lr, and pc to the user
-+ * return-handler. This is not a complete pt_regs structure, but that
-+ * should be enough for stacktrace from the return handler with or
-+ * without pt_regs.
-+ */
-+void __naked arch_rethook_trampoline(void)
++void arch_rethook_prepare(struct rethook_node *rhn, struct pt_regs *regs)
 +{
-+	__asm__ __volatile__ (
-+#ifdef CONFIG_FRAME_POINTER
-+		"ldr	lr, =arch_rethook_trampoline	\n\t"
-+	/* this makes a framepointer on pt_regs. */
-+#ifdef CONFIG_CC_IS_CLANG
-+		"stmdb	sp, {sp, lr, pc}	\n\t"
-+		"sub	sp, sp, #12		\n\t"
-+		/* In clang case, pt_regs->ip = lr. */
-+		"stmdb	sp!, {r0 - r11, lr}	\n\t"
-+		/* fp points regs->r11 (fp) */
-+		"add	fp, sp,	#44		\n\t"
-+#else /* !CONFIG_CC_IS_CLANG */
-+		/* In gcc case, pt_regs->ip = fp. */
-+		"stmdb	sp, {fp, sp, lr, pc}	\n\t"
-+		"sub	sp, sp, #16		\n\t"
-+		"stmdb	sp!, {r0 - r11}		\n\t"
-+		/* fp points regs->r15 (pc) */
-+		"add	fp, sp, #60		\n\t"
-+#endif /* CONFIG_CC_IS_CLANG */
-+#else /* !CONFIG_FRAME_POINTER */
-+		"sub	sp, sp, #16		\n\t"
-+		"stmdb	sp!, {r0 - r11}		\n\t"
-+#endif /* CONFIG_FRAME_POINTER */
-+		"mov	r0, sp			\n\t"
-+		"bl	arch_rethook_trampoline_callback	\n\t"
-+		"mov	lr, r0			\n\t"
-+		"ldmia	sp!, {r0 - r11}		\n\t"
-+		"add	sp, sp, #16		\n\t"
-+#ifdef CONFIG_THUMB2_KERNEL
-+		"bx	lr			\n\t"
-+#else
-+		"mov	pc, lr			\n\t"
-+#endif
-+		: : : "memory");
-+}
-+NOKPROBE_SYMBOL(arch_rethook_trampoline);
++	rhn->ret_addr = regs->regs[30];
++	rhn->frame = regs->regs[29];
 +
-+void arch_rethook_prepare(struct rethook_node *rh, struct pt_regs *regs)
-+{
-+	rh->ret_addr = regs->ARM_lr;
-+	rh->frame = regs->ARM_fp;
-+
-+	/* Replace the return addr with trampoline addr. */
-+	regs->ARM_lr = (unsigned long)arch_rethook_trampoline;
++	/* replace return addr (x30) with trampoline */
++	regs->regs[30] = (u64)arch_rethook_trampoline;
 +}
 +NOKPROBE_SYMBOL(arch_rethook_prepare);
+diff --git a/arch/arm64/kernel/probes/rethook_trampoline.S b/arch/arm64/kernel/probes/rethook_trampoline.S
+new file mode 100644
+index 000000000000..610f520ee72b
+--- /dev/null
++++ b/arch/arm64/kernel/probes/rethook_trampoline.S
+@@ -0,0 +1,87 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * trampoline entry and return code for rethook.
++ * Copied from arch/arm64/kernel/probes/kprobes_trampoline.S
++ */
++
++#include <linux/linkage.h>
++#include <asm/asm-offsets.h>
++#include <asm/assembler.h>
++
++	.text
++
++	.macro	save_all_base_regs
++	stp x0, x1, [sp, #S_X0]
++	stp x2, x3, [sp, #S_X2]
++	stp x4, x5, [sp, #S_X4]
++	stp x6, x7, [sp, #S_X6]
++	stp x8, x9, [sp, #S_X8]
++	stp x10, x11, [sp, #S_X10]
++	stp x12, x13, [sp, #S_X12]
++	stp x14, x15, [sp, #S_X14]
++	stp x16, x17, [sp, #S_X16]
++	stp x18, x19, [sp, #S_X18]
++	stp x20, x21, [sp, #S_X20]
++	stp x22, x23, [sp, #S_X22]
++	stp x24, x25, [sp, #S_X24]
++	stp x26, x27, [sp, #S_X26]
++	stp x28, x29, [sp, #S_X28]
++	add x0, sp, #PT_REGS_SIZE
++	stp lr, x0, [sp, #S_LR]
++	/*
++	 * Construct a useful saved PSTATE
++	 */
++	mrs x0, nzcv
++	mrs x1, daif
++	orr x0, x0, x1
++	mrs x1, CurrentEL
++	orr x0, x0, x1
++	mrs x1, SPSel
++	orr x0, x0, x1
++	stp xzr, x0, [sp, #S_PC]
++	.endm
++
++	.macro	restore_all_base_regs
++	ldr x0, [sp, #S_PSTATE]
++	and x0, x0, #(PSR_N_BIT | PSR_Z_BIT | PSR_C_BIT | PSR_V_BIT)
++	msr nzcv, x0
++	ldp x0, x1, [sp, #S_X0]
++	ldp x2, x3, [sp, #S_X2]
++	ldp x4, x5, [sp, #S_X4]
++	ldp x6, x7, [sp, #S_X6]
++	ldp x8, x9, [sp, #S_X8]
++	ldp x10, x11, [sp, #S_X10]
++	ldp x12, x13, [sp, #S_X12]
++	ldp x14, x15, [sp, #S_X14]
++	ldp x16, x17, [sp, #S_X16]
++	ldp x18, x19, [sp, #S_X18]
++	ldp x20, x21, [sp, #S_X20]
++	ldp x22, x23, [sp, #S_X22]
++	ldp x24, x25, [sp, #S_X24]
++	ldp x26, x27, [sp, #S_X26]
++	ldp x28, x29, [sp, #S_X28]
++	.endm
++
++SYM_CODE_START(arch_rethook_trampoline)
++	sub sp, sp, #PT_REGS_SIZE
++
++	save_all_base_regs
++
++	/* Setup a frame pointer. */
++	add x29, sp, #S_FP
++
++	mov x0, sp
++	bl arch_rethook_trampoline_callback
++	/*
++	 * Replace trampoline address in lr with actual orig_ret_addr return
++	 * address.
++	 */
++	mov lr, x0
++
++	/* The frame pointer (x29) is restored with other registers. */
++	restore_all_base_regs
++
++	add sp, sp, #PT_REGS_SIZE
++	ret
++
++SYM_CODE_END(arch_rethook_trampoline)
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index b0f21677764d..d0883d0fa61c 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -8,6 +8,7 @@
+ #include <linux/export.h>
+ #include <linux/ftrace.h>
+ #include <linux/kprobes.h>
++#include <linux/rethook.h>
+ #include <linux/sched.h>
+ #include <linux/sched/debug.h>
+ #include <linux/sched/task_stack.h>
+@@ -137,6 +138,8 @@ int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
+ 	if (is_kretprobe_trampoline(frame->pc))
+ 		frame->pc = kretprobe_find_ret_addr(tsk, (void *)frame->fp, &frame->kr_cur);
+ #endif
++	if (IS_ENABLED(CONFIG_RETHOOK) && is_rethook_trampoline(frame->pc))
++		frame->pc = rethook_find_ret_addr(tsk, frame->fp, &frame->kr_cur);
+ 
+ 	return 0;
+ }
 
