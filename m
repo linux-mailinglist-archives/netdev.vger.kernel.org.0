@@ -2,408 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55A184979EC
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 09:02:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94B044979FA
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 09:06:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241973AbiAXICb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 03:02:31 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4443 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241970AbiAXICZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 03:02:25 -0500
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jj2R663zVz67Y3C;
-        Mon, 24 Jan 2022 15:58:10 +0800 (CST)
-Received: from mscphispre00059.huawei.com (10.123.71.64) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Mon, 24 Jan 2022 09:02:22 +0100
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-To:     <mic@digikod.net>
-CC:     <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>
-Subject: [RFC PATCH 2/2] landlock: selftests for bind and connect hooks
-Date:   Mon, 24 Jan 2022 16:02:15 +0800
-Message-ID: <20220124080215.265538-3-konstantin.meskhidze@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
-References: <20220124080215.265538-1-konstantin.meskhidze@huawei.com>
-MIME-Version: 1.0
+        id S242004AbiAXIGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 03:06:41 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:39184 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236250AbiAXIGk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 03:06:40 -0500
+Received: from [IPv6:2a0d:e40:0:4000:a33d:5e2a:b8b4:d3c4] (unknown [IPv6:2a0d:e40:0:4000:a33d:5e2a:b8b4:d3c4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: nuclearcat)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 79F2B1F43273;
+        Mon, 24 Jan 2022 08:06:39 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1643011599;
+        bh=LXw65sXpVfyO0HcV3HG1DRZJJJL4Krcc+0LZ8b9mNQM=;
+        h=Subject:From:To:Cc:Date:From;
+        b=RnZbEy/6J0J8Q/WUWCeqSOptRyCE0bbj0elVZ41BW3kH00rT4Cb6zqdRWT4cC4lBY
+         BYg1ZrLuGvfa57+WajeCbrqWjzF8PEr8M87ynPTEcSwonQFWL0I/th6o/z70CN4Ogw
+         T+IVXYsW9d9Q+4JW+X57gx3mWf5LVnE5HeQzmewz8R0ODn2wDohcnoVXJNarX6ty4A
+         TNxJsBZmZ8CTu2nZbu0ypVvAjilY+Pq3ExGknw8Jvsh3qK2HdUF7pPf24+IRBQmZXv
+         HF1nZ6NhCVvhU6xzeZ3ZmxLbIIYay+9oj3tNgqm7JlkDPSUQY7w/TA4qrsXCLtuQ8i
+         rQP8VvGgi6H3g==
+Message-ID: <5577ef768eaaab6dd3fc7af5dcc32fb8bbbee68c.camel@collabora.com>
+Subject: [PATCH ethtool-next v2] features: add --json support
+From:   Denys Fedoryshchenko <denys.f@collabora.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org
+Date:   Mon, 24 Jan 2022 10:06:35 +0200
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.123.71.64]
-X-ClientProxiedBy: mscpeml100002.china.huawei.com (7.188.26.75) To
- fraeml704-chm.china.huawei.com (10.206.15.53)
-X-CFilter-Loop: Reflected
+User-Agent: Evolution 3.38.3-1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support 4 tests for bind and connect networks actions:
-1. bind() a socket with no landlock restrictions.
-2. bind() sockets with landllock restrictions.
-3. connect() a socket to listening one with no landlock restricitons.
-4. connect() sockets with landlock restrictions.
+Adding json to make ethtool more machine friendly.
+No change in normal text output:
 
-Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Features for enx0c37961ce55a:
+rx-checksumming: off [fixed]
+tx-checksumming: off
+	tx-checksum-ipv4: off [fixed]
+	tx-checksum-ip-generic: off [fixed]
+	tx-checksum-ipv6: off [fixed]
+	tx-checksum-fcoe-crc: off [fixed]
+	tx-checksum-sctp: off [fixed]
+scatter-gather: off
+	tx-scatter-gather: off [fixed]
+	tx-scatter-gather-fraglist: off [fixed]
+tcp-segmentation-offload: off
+	tx-tcp-segmentation: off [fixed]
+	tx-tcp-ecn-segmentation: off [fixed]
+	tx-tcp-mangleid-segmentation: off [fixed]
+	tx-tcp6-segmentation: off [fixed]
+generic-segmentation-offload: off [requested on]
+
+...skip similar lines...
+
+JSON output:
+[ {
+        "ifname": "enx0c37961ce55a",
+        "rx-checksumming": {
+            "active": false,
+            "fixed": true,
+            "requested": false
+        },
+        "tx-checksumming": {
+            "active": false
+        },
+        "tx-checksum-ipv4": {
+            "active": false,
+            "fixed": true,
+            "requested": false
+        },
+        "tx-checksum-ip-generic": {
+            "active": false,
+            "fixed": true,
+            "requested": false
+        },
+        "tx-checksum-ipv6": {
+            "active": false,
+            "fixed": true,
+            "requested": false
+        },
+        "tx-checksum-fcoe-crc": {
+            "active": false,
+            "fixed": true,
+            "requested": false
+        },
+        "tx-checksum-sctp": {
+            "active": false,
+            "fixed": true,
+            "requested": false
+        },
+        "scatter-gather": {
+            "active": false
+        },
+        "tx-scatter-gather": {
+            "active": false,
+            "fixed": true,
+            "requested": false
+        },
+
+...skip similar lines...
+
+v2:
+ - formatting fixes
+ - show each feature as object with available attributes
+
 ---
- .../testing/selftests/landlock/network_test.c | 346 ++++++++++++++++++
- 1 file changed, 346 insertions(+)
- create mode 100644 tools/testing/selftests/landlock/network_test.c
+ ethtool.c          |  1 +
+ netlink/features.c | 35 ++++++++++++++++++++++++++++-------
+ 2 files changed, 29 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/landlock/network_test.c b/tools/testing/selftests/landlock/network_test.c
-new file mode 100644
-index 000000000000..9dfe37a2fb20
---- /dev/null
-+++ b/tools/testing/selftests/landlock/network_test.c
-@@ -0,0 +1,346 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Landlock tests - Common user space base
-+ *
-+ * Copyright © 2017-2020 Mickaël Salaün <mic@digikod.net>
-+ * Copyright © 2019-2020 ANSSI
-+ */
-+
-+#define _GNU_SOURCE
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <linux/landlock.h>
-+#include <string.h>
-+#include <sys/prctl.h>
-+#include <sys/socket.h>
-+#include <sys/types.h>
-+#include <netinet/in.h>
-+#include <arpa/inet.h>
-+
-+#include "common.h"
-+
-+#define SOCK_PORT_1 3470
-+#define SOCK_PORT_2 3480
-+#define SOCK_PORT_3 3490
-+
-+#define IP_ADDRESS "127.0.0.1"
-+
-+/* Number pending connections queue tobe hold */
-+#define BACKLOG 10
-+
-+TEST(socket_bind_no_restrictions) {
-+
-+	int sockfd;
-+	struct sockaddr_in addr;
-+	const int one = 1;
-+
-+	/* Create a socket */
-+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-+	ASSERT_LE(0, sockfd);
-+	/* Allow reuse of local addresses */
-+	ASSERT_EQ(0, setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)));
-+
-+	/* Set socket address parameters */
-+	addr.sin_family = AF_INET;
-+	addr.sin_port = htons(SOCK_PORT_1);
-+	addr.sin_addr.s_addr = inet_addr(IP_ADDRESS);
-+	memset(&(addr.sin_zero), '\0', 8);
-+
-+	/* Bind the socket to IP address */
-+	ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)));
-+}
-+
-+TEST(sockets_bind_with_restrictions) {
-+
-+	int sockfd_1, sockfd_2, sockfd_3;
-+	struct sockaddr_in addr_1, addr_2, addr_3;
-+	const int one = 1;
-+
-+	struct landlock_ruleset_attr ruleset_attr = {
-+		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
-+				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
-+	};
-+	struct landlock_net_service_attr net_service_1 = {
-+		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
-+				  LANDLOCK_ACCESS_NET_CONNECT_TCP,
-+		.port = SOCK_PORT_1,
-+	};
-+	struct landlock_net_service_attr net_service_2 = {
-+		.allowed_access = LANDLOCK_ACCESS_NET_CONNECT_TCP,
-+		.port = SOCK_PORT_2,
-+	};
-+	struct landlock_net_service_attr net_service_3 = {
-+		.allowed_access = 0,
-+		.port = SOCK_PORT_3,
-+	};
-+
-+	const int ruleset_fd = landlock_create_ruleset(&ruleset_attr,
-+			sizeof(ruleset_attr), 0);
-+	ASSERT_LE(0, ruleset_fd);
-+
-+	/* Allow connect and bind operations to the SOCK_PORT_1 socket "object" */
-+	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
-+				&net_service_1, 0));
-+	/* Allow connect and deny bind operations to the SOCK_PORT_2 socket "object" */
-+	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
-+				&net_service_2, 0));
-+	/* Empty allowed_access (i.e. deny rules) are ignored in network actions
-+	 * for SOCK_PORT_3 socket "object"
-+	 */
-+	ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
-+				&net_service_3, 0));
-+	ASSERT_EQ(ENOMSG, errno);
-+
-+	/* Enforces the ruleset. */
-+	ASSERT_EQ(0, prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
-+	ASSERT_EQ(0, landlock_restrict_self(ruleset_fd, 0));
-+	ASSERT_EQ(0, close(ruleset_fd));
-+
-+	/* Create a socket 1 */
-+	sockfd_1 = socket(AF_INET, SOCK_STREAM, 0);
-+	ASSERT_LE(0, sockfd_1);
-+	/* Allow reuse of local addresses */
-+	ASSERT_EQ(0, setsockopt(sockfd_1, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)));
-+
-+	/* Set socket 1 address parameters */
-+	addr_1.sin_family = AF_INET;
-+	addr_1.sin_port = htons(SOCK_PORT_1);
-+	addr_1.sin_addr.s_addr = inet_addr(IP_ADDRESS);
-+	memset(&(addr_1.sin_zero), '\0', 8);
-+	/* Bind the socket 1 to IP address */
-+	ASSERT_EQ(0, bind(sockfd_1, (struct sockaddr  *)&addr_1, sizeof(addr_1)));
-+
-+	/* Create a socket 2 */
-+	sockfd_2 = socket(AF_INET, SOCK_STREAM, 0);
-+	ASSERT_LE(0, sockfd_2);
-+	/* Allow reuse of local addresses */
-+	ASSERT_EQ(0, setsockopt(sockfd_2, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)));
-+
-+	/* Set socket 2 address parameters */
-+	addr_2.sin_family = AF_INET;
-+	addr_2.sin_port = htons(SOCK_PORT_2);
-+	addr_2.sin_addr.s_addr = inet_addr(IP_ADDRESS);
-+	memset(&(addr_2.sin_zero), '\0', 8);
-+	/* Bind the socket 2 to IP address */
-+	ASSERT_EQ(-1, bind(sockfd_2, (struct sockaddr *)&addr_2, sizeof(addr_2)));
-+	ASSERT_EQ(EACCES, errno);
-+
-+	/* Create a socket 3 */
-+	sockfd_3 = socket(AF_INET, SOCK_STREAM, 0);
-+	ASSERT_LE(0, sockfd_3);
-+	/* Allow reuse of local addresses */
-+	ASSERT_EQ(0, setsockopt(sockfd_3, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)));
-+
-+	/* Set socket 3 address parameters */
-+	addr_3.sin_family = AF_INET;
-+	addr_3.sin_port = htons(SOCK_PORT_3);
-+	addr_3.sin_addr.s_addr = inet_addr(IP_ADDRESS);
-+	memset(&(addr_3.sin_zero), '\0', 8);
-+	/* Bind the socket 3 to IP address */
-+	ASSERT_EQ(0, bind(sockfd_3, (struct sockaddr *)&addr_3, sizeof(addr_3)));
-+}
-+
-+TEST(socket_connect_no_restrictions) {
-+
-+	int sockfd, new_fd;
-+	struct sockaddr_in addr;
-+	pid_t child;
-+	int status;
-+	const int one = 1;
-+
-+	/* Create a server socket */
-+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
-+	ASSERT_LE(0, sockfd);
-+	/* Allow reuse of local addresses */
-+	ASSERT_EQ(0, setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)));
-+
-+	/* Set socket address parameters */
-+	addr.sin_family = AF_INET;
-+	addr.sin_port = htons(SOCK_PORT_1);
-+	addr.sin_addr.s_addr = inet_addr(IP_ADDRESS);
-+	memset(&(addr.sin_zero), '\0', 8);
-+
-+	/* Bind the socket to IP address */
-+	ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)));
-+
-+	/* Make listening socket */
-+	ASSERT_EQ(0, listen(sockfd, BACKLOG));
-+
-+	child = fork();
-+	ASSERT_LE(0, child);
-+	if (child == 0) {
-+		int child_sockfd;
-+		struct sockaddr_in connect_addr;
-+
-+		/* Close listening socket for the child */
-+		ASSERT_EQ(0, close(sockfd));
-+		/* Create a stream client socket */
-+		child_sockfd = socket(AF_INET, SOCK_STREAM, 0);
-+		ASSERT_LE(0, child_sockfd);
-+
-+		/* Set server's socket address parameters*/
-+		connect_addr.sin_family = AF_INET;
-+		connect_addr.sin_port = htons(SOCK_PORT_1);
-+		connect_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-+		memset(&(connect_addr.sin_zero), '\0', 8);
-+
-+		/* Make connection to the listening socket */
-+		ASSERT_EQ(0, connect(child_sockfd, (struct sockaddr *)&connect_addr,
-+					   sizeof(struct sockaddr)));
-+		_exit(_metadata->passed ? EXIT_SUCCESS : EXIT_FAILURE);
-+		return;
+diff --git a/ethtool.c b/ethtool.c
+index 5d718a2..28ecf69 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -5734,6 +5734,7 @@ static const struct option args[] = {
+ 	},
+ 	{
+ 		.opts	= "-k|--show-features|--show-offload",
++		.json	= true,
+ 		.func	= do_gfeatures,
+ 		.nlfunc	= nl_gfeatures,
+ 		.help	= "Get state of protocol offload and other features"
+diff --git a/netlink/features.c b/netlink/features.c
+index 2a0899e..a7b66d8 100644
+--- a/netlink/features.c
++++ b/netlink/features.c
+@@ -82,8 +82,17 @@ static void dump_feature(const struct feature_results *results,
+ 		 feature_on(results->wanted, idx))
+ 		suffix = feature_on(results->wanted, idx) ?
+ 			" [requested on]" : " [requested off]";
+-	printf("%s%s: %s%s\n", prefix, name,
+-	       feature_on(results->active, idx) ? "on" : "off", suffix);
++	if (is_json_context()) {
++		open_json_object(name);
++		print_bool(PRINT_JSON, "active", NULL, feature_on(results->active, idx));
++		print_bool(PRINT_JSON, "fixed", NULL,
++			   (!feature_on(results->hw, idx) || feature_on(results->nochange, idx)));
++		print_bool(PRINT_JSON, "requested", NULL, feature_on(results->wanted, idx));
++		close_json_object();
++	} else {
++		printf("%s%s: %s%s\n", prefix, name,
++		       feature_on(results->active, idx) ? "on" : "off", suffix);
 +	}
-+	/* Accept connection from the child */
-+	new_fd = accept(sockfd, NULL, 0);
-+	ASSERT_LE(0, new_fd);
+ }
+ 
+ /* this assumes pattern contains no more than one asterisk */
+@@ -153,9 +162,14 @@ int dump_features(const struct nlattr *const *tb,
+ 					feature_on(results.active, j);
+ 			}
+ 		}
+-		if (n_match != 1)
+-			printf("%s: %s\n", off_flag_def[i].long_name,
+-			       flag_value ? "on" : "off");
++		if (n_match != 1) {
++			if (is_json_context()) {
++				print_bool(PRINT_JSON, off_flag_def[i].long_name, NULL, flag_value);
++			} else {
++				printf("%s: %s\n", off_flag_def[i].long_name,
++				       flag_value ? "on" : "off");
++			}
++		}
+ 		if (n_match == 0)
+ 			continue;
+ 		for (j = 0; j < results.count; j++) {
+@@ -210,8 +224,10 @@ int features_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+ 
+ 	if (silent)
+ 		putchar('\n');
+-	printf("Features for %s:\n", nlctx->devname);
++	open_json_object(NULL);
++	print_string(PRINT_ANY, "ifname", "Features for %s:\n", nlctx->devname);
+ 	ret = dump_features(tb, feature_names);
++	close_json_object();
+ 	return (silent || !ret) ? MNL_CB_OK : MNL_CB_ERROR;
+ }
+ 
+@@ -234,7 +250,12 @@ int nl_gfeatures(struct cmd_context *ctx)
+ 				      ETHTOOL_FLAG_COMPACT_BITSETS);
+ 	if (ret < 0)
+ 		return ret;
+-	return nlsock_send_get_request(nlsk, features_reply_cb);
 +
-+	/* Close connection */
-+	ASSERT_EQ(0, close(new_fd));
++	new_json_obj(ctx->json);
++	ret = nlsock_send_get_request(nlsk, features_reply_cb);
++	delete_json_obj();
 +
-+	ASSERT_EQ(child, waitpid(child, &status, 0));
-+	ASSERT_EQ(1, WIFEXITED(status));
-+	ASSERT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
-+}
-+
-+TEST(sockets_connect_with_restrictions) {
-+
-+	int new_fd;
-+	int sockfd_1, sockfd_2;
-+	struct sockaddr_in addr_1, addr_2;
-+	pid_t child_1, child_2;
-+	int status;
-+	const int one = 1;
-+
-+	struct landlock_ruleset_attr ruleset_attr = {
-+		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
-+				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
-+	};
-+	struct landlock_net_service_attr net_service_1 = {
-+		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
-+				  LANDLOCK_ACCESS_NET_CONNECT_TCP,
-+		.port = SOCK_PORT_1,
-+	};
-+	struct landlock_net_service_attr net_service_2 = {
-+		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
-+		.port = SOCK_PORT_2,
-+	};
-+
-+	const int ruleset_fd = landlock_create_ruleset(&ruleset_attr,
-+			sizeof(ruleset_attr), 0);
-+	ASSERT_LE(0, ruleset_fd);
-+
-+	/* Allow connect and bind operations to the SOCK_PORT_1 socket "object" */
-+	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
-+				&net_service_1, 0));
-+	/* Allow connect and deny bind operations to the SOCK_PORT_2 socket "object" */
-+	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
-+				&net_service_2, 0));
-+
-+	/* Enforces the ruleset. */
-+	ASSERT_EQ(0, prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
-+	ASSERT_EQ(0, landlock_restrict_self(ruleset_fd, 0));
-+	ASSERT_EQ(0, close(ruleset_fd));
-+
-+	/* Create a server socket 1 */
-+	sockfd_1 = socket(AF_INET, SOCK_STREAM, 0);
-+	ASSERT_LE(0, sockfd_1);
-+	/* Allow reuse of local addresses */
-+	ASSERT_EQ(0, setsockopt(sockfd_1, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)));
-+
-+	/* Set socket 1 address parameters */
-+	addr_1.sin_family = AF_INET;
-+	addr_1.sin_port = htons(SOCK_PORT_1);
-+	addr_1.sin_addr.s_addr = inet_addr(IP_ADDRESS);
-+	memset(&(addr_1.sin_zero), '\0', 8);
-+
-+	/* Bind the socket 1 to IP address */
-+	ASSERT_EQ(0, bind(sockfd_1, (struct sockaddr *)&addr_1, sizeof(addr_1)));
-+
-+	/* Make listening socket 1 */
-+	ASSERT_EQ(0, listen(sockfd_1, BACKLOG));
-+
-+	child_1 = fork();
-+	ASSERT_LE(0, child_1);
-+	if (child_1 == 0) {
-+		int child_sockfd;
-+		struct sockaddr_in connect_addr;
-+
-+		/* Close listening socket for the child */
-+		ASSERT_EQ(0, close(sockfd_1));
-+		/* Create a stream client socket */
-+		child_sockfd = socket(AF_INET, SOCK_STREAM, 0);
-+		ASSERT_LE(0, child_sockfd);
-+
-+		/* Set server's socket 1 address parameters*/
-+		connect_addr.sin_family = AF_INET;
-+		connect_addr.sin_port = htons(SOCK_PORT_1);
-+		connect_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-+		memset(&(connect_addr.sin_zero), '\0', 8);
-+
-+		/* Make connection to the listening socket 1 */
-+		ASSERT_EQ(0, connect(child_sockfd, (struct sockaddr *)&connect_addr,
-+					   sizeof(struct sockaddr)));
-+		_exit(_metadata->passed ? EXIT_SUCCESS : EXIT_FAILURE);
-+		return;
-+	}
-+	/* Accept connection from the child 1 */
-+	new_fd = accept(sockfd_1, NULL, 0);
-+	ASSERT_LE(0, new_fd);
-+
-+	/* Close connection */
-+	ASSERT_EQ(0, close(new_fd));
-+
-+	ASSERT_EQ(child_1, waitpid(child_1, &status, 0));
-+	ASSERT_EQ(1, WIFEXITED(status));
-+	ASSERT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
-+
-+	/* Create a server socket 2 */
-+	sockfd_2 = socket(AF_INET, SOCK_STREAM, 0);
-+	ASSERT_LE(0, sockfd_2);
-+	/* Allow reuse of local addresses */
-+	ASSERT_EQ(0, setsockopt(sockfd_2, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one)));
-+
-+	/* Set socket 2 address parameters */
-+	addr_2.sin_family = AF_INET;
-+	addr_2.sin_port = htons(SOCK_PORT_2);
-+	addr_2.sin_addr.s_addr = inet_addr(IP_ADDRESS);
-+	memset(&(addr_2.sin_zero), '\0', 8);
-+
-+	/* Bind the socket 2 to IP address */
-+	ASSERT_EQ(0, bind(sockfd_2, (struct sockaddr *)&addr_2, sizeof(addr_2)));
-+
-+	/* Make listening socket 2 */
-+	ASSERT_EQ(0, listen(sockfd_2, BACKLOG));
-+
-+	child_2 = fork();
-+	ASSERT_LE(0, child_2);
-+	if (child_2 == 0) {
-+		int child_sockfd;
-+		struct sockaddr_in connect_addr;
-+
-+		/* Close listening socket for the child */
-+		ASSERT_EQ(0, close(sockfd_2));
-+		/* Create a stream client socket */
-+		child_sockfd = socket(AF_INET, SOCK_STREAM, 0);
-+		ASSERT_LE(0, child_sockfd);
-+
-+		/* Set server's socket address parameters*/
-+		connect_addr.sin_family = AF_INET;
-+		connect_addr.sin_port = htons(SOCK_PORT_2);
-+		connect_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-+		memset(&(connect_addr.sin_zero), '\0', 8);
-+
-+		/* Make connection to the listening socket */
-+		ASSERT_EQ(-1, connect(child_sockfd, (struct sockaddr *)&connect_addr,
-+					   sizeof(struct sockaddr)));
-+		ASSERT_EQ(EACCES, errno);
-+		_exit(_metadata->passed ? EXIT_SUCCESS : EXIT_FAILURE);
-+		return;
-+	}
-+
-+	ASSERT_EQ(child_2, waitpid(child_2, &status, 0));
-+	ASSERT_EQ(1, WIFEXITED(status));
-+	ASSERT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
-+}
-+
-+TEST_HARNESS_MAIN
++	return ret;
+ }
+ 
+ /* FEATURES_SET */
 -- 
-2.25.1
+2.30.2
+
+
 
