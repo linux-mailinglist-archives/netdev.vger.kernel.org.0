@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3804498343
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 16:13:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBEA1498346
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 16:13:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240648AbiAXPNS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 10:13:18 -0500
-Received: from mail-dm6nam08on2087.outbound.protection.outlook.com ([40.107.102.87]:52289
-        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
+        id S240628AbiAXPNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 10:13:54 -0500
+Received: from mail-mw2nam12on2054.outbound.protection.outlook.com ([40.107.244.54]:51393
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S240599AbiAXPNP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jan 2022 10:13:15 -0500
+        id S240533AbiAXPNw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jan 2022 10:13:52 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jsy9OgU/WmGaO4ryFyuqVUMk5uuzU/sfnBBNWaZ90z6+5KKMwvPBIZQJDqBOPWNaQve9bqpX47eN4X0wRmbsp4ubmZ8vsgErP1FrbjqL6hXP5Sh9/FrgIWNcXcSASZSWHhY1YNXZ1URG1wbdR3NtA0Pwu4K2qHuwijy+Grk09bJpVUnYUmzca3sNDr9DG5XYXUFIVsiq3RoIlqRpqMEakySwEq8W5RTpvLE8WDmgZIKjpug54NvzVEhiyxmVKmyx/5dEiLjBYUsuZidIUdwjx9CIVFjQeScPe6xdYyOfV0AYNaAkjRBSP0z/6c5kvifISzFYIVKDmb5foVZufzUI/g==
+ b=RdyorE6NVmCabQqjXfYRWrGH3J4EEhJmdZVHn/shWWzTg0y9Q/wBmRRu4EfSF61hLctKV/llGmePndLUU+vAo/jF9u1lnKv52IPX3KFquknpxAYlV8q5R1il7tqTuzJC/W4sokXUCiay80OgLAFzvn/sO9xkYa666zw/JIZY/lB/ZPk45ZgmxaDvW6EpUdwXLvZTLlrQxKAbDbVA92/MuQ1qZjvH1nTmZcDteNjux/+NIa86iTD8J/RZEzmpa56OaoNOB2khp9F+x1Cm0S/W+bl4Cnt78TyRKshp8BljeTwFQSRvcOdx5XoZhqRVY0NtYboII5xZJ21FpfDBaGYNBQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=k8pGPkeKFB2fwW6nVl+IHstHP3XdoLL44R7qMXvc4RQ=;
- b=Ym2AP46wGVPc3o+Hk5hL1pbwskzD+RtA4Fv1eenGHy5U81lEwmEgG8+axjypHQZjH8UDr692XGYLDv72pa3vcXu1MBjAbly1wcrvWfvH2FB4i8Hwsu6NQxxnMM4BCLtXYkZUbN1JFYtU2X7ulAO6CYTh5Yvpb9tIGpZopRlw+GpLYdUi1/yjRJdAH1tazEBqgw3ANWJ7fNWDsB8jf+JypRCe0X4J3n3OMUFcKEtBPmwkuinr3POu7xsBWZM/FRxtdOD3JWd0P4BHIeRKBhvXL7HGo77H18E8Pi1m1mazNpgkoLQYm7eJVxrExOPFzOIMTeKtt8Mx0BEuRf6KyeQEEw==
+ bh=Wix0i5uWXQX1vhRW8LIW1NjaKF8l7wcuUohhrqeVGgw=;
+ b=eO+mfyqDzCO8NBUIsiu8lq0DY5QNiAFURcnw/alsged9pkz5xuBy+PpnNXTKbNdoPYo9LPF1JaXfrHC9x/PIsWQWxZA3uAOUiAsO1TmKRxiHzD6xpOH1wx/CkQkVo2+FoH2UYlS7MCkWuSc0eo6K8lmqxYAepir8MO9nw+BYahdJol8iPGUsxhoLM0i9HeDAwZBtWkYGT1tv8rbFFTJ9nSjyUk1pjr6ECuOYWeYa4wLS6Wyg32r25nEyxdtgBKqmDDLSuzVHwQZu+VoZXmlUowSDQStUccP4hZ49g58EsKIOGUpnMzzaXs56IaWVbf5eBp97xUDKQ08tJock0rPL3A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=fb.com smtp.mailfrom=nvidia.com; dmarc=pass
- (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
- (message not signed); arc=none
+ 12.22.5.238) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k8pGPkeKFB2fwW6nVl+IHstHP3XdoLL44R7qMXvc4RQ=;
- b=MnqSrXe/JpdRnjaoOFtB9I500QCESNroHRRpe5Bx4t2HEDAt6YLyCL32eeGUln+2KSM9Y7yj8wkLi4BC9MQch4H4xJtdQ4X1dg2lAiq1J0rYA4yQa08dEeVkNR1gMhQRK6HMWaRkXTeOXS5Rky5w3VFedKCtEhJJp/3IO5uu3jlqpU3iR66REmcaX+yOzvGnvIX0G6jlyGqpayqClaFcYSAwWobszbOSpdXtoJmnvzTmQMMdr2K5eRBWpV7lbrf4Qizq2Z6pXsXgLUVscdE6XWC58tF91t46xUpq76z9bG8uDNR/TvUoghE5PmYxhN1N7xI/EUOHE9+a+7JC+Ung1w==
-Received: from BN9PR03CA0607.namprd03.prod.outlook.com (2603:10b6:408:106::12)
- by CH2PR12MB3831.namprd12.prod.outlook.com (2603:10b6:610:29::13) with
+ bh=Wix0i5uWXQX1vhRW8LIW1NjaKF8l7wcuUohhrqeVGgw=;
+ b=NtR+Wo3hOHCO7bgWkVsJBn6OK/4C1Xh0aHashYd6anLABSHPfJpuB0N8lf0IX2eDKISVOA59W8mj/e6JiGDQjecZ7rbY5Gyk/4/Lyyo6fhjGXjZPYzG1/m/aQ5COp+uDXFTdt9OChpNe3uwkMKqCgmf8jXPDp6XLZjrnCUrLWTFWBI1DzSSgFVVUmX5dtwHubs1/hY6xJfPoF+BCbrNUnP/UjjAbhBX2PvgXXjTWBiA4jIZAiZ7R27iam8KE4E0gJ8UO/knjndKnijdxAD78uNLZIikpg2g+Ir9WZusrpGaGBJIE3oL2EPyeYdCIbWH/6SCtdHLPeIGWR93/M5hNyQ==
+Received: from BN9PR03CA0379.namprd03.prod.outlook.com (2603:10b6:408:f7::24)
+ by SA1PR12MB5669.namprd12.prod.outlook.com (2603:10b6:806:237::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10; Mon, 24 Jan
- 2022 15:13:14 +0000
-Received: from BN8NAM11FT023.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:106:cafe::13) by BN9PR03CA0607.outlook.office365.com
- (2603:10b6:408:106::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8 via Frontend
- Transport; Mon, 24 Jan 2022 15:13:13 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.12; Mon, 24 Jan
+ 2022 15:13:50 +0000
+Received: from BN8NAM11FT055.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f7:cafe::8e) by BN9PR03CA0379.outlook.office365.com
+ (2603:10b6:408:f7::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10 via Frontend
+ Transport; Mon, 24 Jan 2022 15:13:50 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- BN8NAM11FT023.mail.protection.outlook.com (10.13.177.103) with Microsoft SMTP
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ BN8NAM11FT055.mail.protection.outlook.com (10.13.177.62) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4909.7 via Frontend Transport; Mon, 24 Jan 2022 15:13:13 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.18; Mon, 24 Jan 2022 15:13:12 +0000
+ 15.20.4909.7 via Frontend Transport; Mon, 24 Jan 2022 15:13:50 +0000
 Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.18; Mon, 24 Jan 2022 15:13:49 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9;
- Mon, 24 Jan 2022 07:13:12 -0800
+ Mon, 24 Jan 2022 07:13:48 -0800
 Received: from vdi.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server id 15.2.986.9 via Frontend
- Transport; Mon, 24 Jan 2022 07:13:08 -0800
+ (10.126.190.182) with Microsoft SMTP Server id 15.2.986.9 via Frontend
+ Transport; Mon, 24 Jan 2022 07:13:42 -0800
 From:   Maxim Mikityanskiy <maximmi@nvidia.com>
 To:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         "Daniel Borkmann" <daniel@iogearbox.net>,
@@ -71,102 +71,103 @@ CC:     Tariq Toukan <tariqt@nvidia.com>, Martin KaFai Lau <kafai@fb.com>,
         Petar Penkov <ppenkov@google.com>,
         Lorenz Bauer <lmb@cloudflare.com>,
         Eric Dumazet <edumazet@google.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH bpf v2 4/4] bpf: Fix documentation of th_len in bpf_tcp_{gen,check}_syncookie
-Date:   Mon, 24 Jan 2022 17:11:46 +0200
-Message-ID: <20220124151146.376446-5-maximmi@nvidia.com>
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "David Ahern" <dsahern@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        "Jesper Dangaard Brouer" <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Nick Desaulniers" <ndesaulniers@google.com>,
+        Joe Stringer <joe@cilium.io>,
+        "Florent Revest" <revest@chromium.org>,
+        <linux-kselftest@vger.kernel.org>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        "Kumar Kartikeya Dwivedi" <memxor@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        "Maxim Mikityanskiy" <maximmi@nvidia.com>
+Subject: [PATCH bpf-next v2 0/3] New BPF helpers to accelerate synproxy
+Date:   Mon, 24 Jan 2022 17:13:37 +0200
+Message-ID: <20220124151340.376807-1-maximmi@nvidia.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220124151146.376446-1-maximmi@nvidia.com>
-References: <20220124151146.376446-1-maximmi@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fc14715b-d894-4b05-b2f9-08d9df4c0a9e
-X-MS-TrafficTypeDiagnostic: CH2PR12MB3831:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR12MB3831D61A575CA741FD3DEFEFDC5E9@CH2PR12MB3831.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Office365-Filtering-Correlation-Id: 4193cfae-5cdb-4020-d9ed-08d9df4c2049
+X-MS-TrafficTypeDiagnostic: SA1PR12MB5669:EE_
+X-Microsoft-Antispam-PRVS: <SA1PR12MB566904A65685802C13DEA911DC5E9@SA1PR12MB5669.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ub/yR0zgynUXGnJ8oR8/91wvR8F52C4Zun0Zn40zgEh4uwgTlcSCDnB9U/5bNWejvfMcGTVjzv+HATH+io4JCUTA+rbf//W1vie3BjeIvTSS+ReGVOfrxvnQiZNPNktT+wnP6ZdP18Dzjs5y0PFXLNlb9DzN8AUwtL2Erl1jP4HDMg0HuXraBLaJndLqj3jQsd78oIh26eE9rHWdhUw0OyBrcyho8bUMYIu2XBD4RYrtCfZ+hxkMkU8pxPMfJXI48xY2D9laW/iVaXLkiAlrm2gi0ttrHGoEPBXFHMxsTT04tYsjjWH1mWDPfF5b6GOy1RsWA9snO5LGXYPTgz69eNcuTLgkQJ55fYpGqOQYje52r+tfIbVrTGB1EbpQePFYQuTSL2iiwz4Krc54jtndBYLFiiDPMB5VmDRsT1D0jMPzQHQAljCBKNdgwzPITK592dFBUiY2FzeDaWLnR2NzY5W5aDxbeGxc0TOnV4YbNBoWRev/eGAbJyPkl5hLt1U+3kLQYqpjxzAPNO0899/3xx5hMMEX6kJ/SlpUim2XmfiCxcU19Q0Jjn/p86s67v8cp8hwUkklSVj2vIAIA74dakubTzHCeXmmYAl77LkxKil2Pn+c8G2q1yq1DpsQhSX+XCT4zLYWdSzyRqethaAGrFYU8o1NqewbHMKUUfPSW8l1spECQ8qaME3EGx6MnYXedEmMx59ZyvIqVPUQpJ1i2YBpshbcUWeR1/cMmj7XBXcE6LFsYBsjnx8dP86iwcPlA+P/IHhLghxztR7JSQDG8g/EU87CFbcn9pZlAKqYP1M=
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700004)(36840700001)(46966006)(336012)(8676002)(40460700003)(36756003)(2616005)(426003)(36860700001)(1076003)(7416002)(26005)(70586007)(7696005)(508600001)(82310400004)(356005)(186003)(70206006)(8936002)(5660300002)(83380400001)(81166007)(54906003)(4326008)(2906002)(107886003)(110136005)(86362001)(316002)(6666004)(47076005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 6+m5f36K6QIuHBdpImPZ3jISNTkFZQdA1xUSbgWKjcLmZZ5H5tph0mpw5/e/ndOK8eX41RQPmsnTx/elbLcsV3kqSyXRcc4qoLh9PG7ciFG+Lr+N8ltEjdv/+92pEyTZkfz7mT0NzY9r1ijVxW2PZk+MuPnQxenB/8nsTrehFDD8p6xLJ35Iq9+MVU58qJ89A/n7Sy7xRqMjxGDaFeqnrmw4wNWn3v/7rETaaMKZ4MV3xr8zvCozUNElqcthA2nqLQ6ESrjW3zDM6q/XobH7YPlTA0Zopf+0zrGY6nRyod4CYr2Oe27AC94Yn2V6325yGIzttrP2k75bN19qlVHmDT25Py2A6NqX25/yxOHLbD4KSE3SRa19+YHRIL1pKYeSErHtZ8SJi+Ke3wyeccqeZh/FPl8VuMk93nfp0CanDpKDqfdH/lAfyMiZF73+mWd6D3A/RMVPwXOyOAzmE/KvN5Cj79BKeKX5ooJDdKB710ex/mgeCAYCIezw4ojNpiJbeF8+FpXG6opERFdtSlQx5b7L5pzLHVYLKFZZV6RRBOhv7YMe+w+qKgBOOfXohIglPwL2bHBzV2encrpvQoYJeXJiMwe+rlB+LDTQPsDwssBGEHezbglgTdmarp5E2R3bcWNuYhIKwrcBaw1lSNHYyUP/NYr4brHe3OCBWbFiELzjAKhLZ86GJsJ5l234yAV1m8Es5pag0tldbgwM7qBD3W6wvNqFjLAsxW1ipjKXPGMPWACz1+FIqB8CmAuUQgEbdGb/oYiJGtf5fCfIWzyC766pD56ZIfmmTld1b8n4TWVKylwphF8LLT6Pm9ML3wU8QU6qISGSRv9oB1n97y0pB2+sMscDdsPgb+N+JjseUQVXoUPVZVtrZvMm9M1WwiXQnm+Mu9z819H4YRkFX3MyIRX+AUW6OlwPYjVVMp5jKoo=
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(40470700004)(1076003)(7416002)(5660300002)(40460700003)(110136005)(36756003)(966005)(70206006)(86362001)(2616005)(508600001)(356005)(8676002)(186003)(26005)(54906003)(2906002)(316002)(4326008)(336012)(8936002)(6666004)(47076005)(70586007)(83380400001)(82310400004)(107886003)(81166007)(36860700001)(7696005)(426003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2022 15:13:13.6598
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2022 15:13:50.0292
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fc14715b-d894-4b05-b2f9-08d9df4c0a9e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4193cfae-5cdb-4020-d9ed-08d9df4c2049
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT023.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT055.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3831
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB5669
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_tcp_gen_syncookie and bpf_tcp_check_syncookie expect the full length
-of the TCP header (with all extensions). Fix the documentation that says
-it should be sizeof(struct tcphdr).
+The first patch of this series is an improvement to the existing
+syncookie BPF helper.
 
-Fixes: 399040847084 ("bpf: add helper to check for a valid SYN cookie")
-Fixes: 70d66244317e ("bpf: add bpf_tcp_gen_syncookie helper")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
----
- include/uapi/linux/bpf.h       | 6 ++++--
- tools/include/uapi/linux/bpf.h | 6 ++++--
- 2 files changed, 8 insertions(+), 4 deletions(-)
+The two other patches add new functionality that allows XDP to
+accelerate iptables synproxy.
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index b0383d371b9a..520f1e557dce 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -3553,7 +3553,8 @@ union bpf_attr {
-  * 		**sizeof**\ (**struct ip6hdr**).
-  *
-  * 		*th* points to the start of the TCP header, while *th_len*
-- * 		contains **sizeof**\ (**struct tcphdr**).
-+ *		contains the length of the TCP header (at least
-+ *		**sizeof**\ (**struct tcphdr**)).
-  * 	Return
-  * 		0 if *iph* and *th* are a valid SYN cookie ACK, or a negative
-  * 		error otherwise.
-@@ -3739,7 +3740,8 @@ union bpf_attr {
-  *		**sizeof**\ (**struct ip6hdr**).
-  *
-  *		*th* points to the start of the TCP header, while *th_len*
-- *		contains the length of the TCP header.
-+ *		contains the length of the TCP header (at least
-+ *		**sizeof**\ (**struct tcphdr**)).
-  *	Return
-  *		On success, lower 32 bits hold the generated SYN cookie in
-  *		followed by 16 bits which hold the MSS value for that cookie,
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index b0383d371b9a..520f1e557dce 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -3553,7 +3553,8 @@ union bpf_attr {
-  * 		**sizeof**\ (**struct ip6hdr**).
-  *
-  * 		*th* points to the start of the TCP header, while *th_len*
-- * 		contains **sizeof**\ (**struct tcphdr**).
-+ *		contains the length of the TCP header (at least
-+ *		**sizeof**\ (**struct tcphdr**)).
-  * 	Return
-  * 		0 if *iph* and *th* are a valid SYN cookie ACK, or a negative
-  * 		error otherwise.
-@@ -3739,7 +3740,8 @@ union bpf_attr {
-  *		**sizeof**\ (**struct ip6hdr**).
-  *
-  *		*th* points to the start of the TCP header, while *th_len*
-- *		contains the length of the TCP header.
-+ *		contains the length of the TCP header (at least
-+ *		**sizeof**\ (**struct tcphdr**)).
-  *	Return
-  *		On success, lower 32 bits hold the generated SYN cookie in
-  *		followed by 16 bits which hold the MSS value for that cookie,
+v1 of this series [1] used to include a patch that exposed conntrack
+lookup to BPF using stable helpers. It was superseded by series [2] by
+Kumar Kartikeya Dwivedi, which implements this functionality using
+unstable helpers.
+
+The second patch adds new helpers to issue and check SYN cookies without
+binding to a socket, which is useful in the synproxy scenario.
+
+The third patch adds a selftest, which consists of a script, an XDP
+program and a userspace control application. The XDP program uses
+socketless SYN cookie helpers and queries conntrack status instead of
+socket status. The userspace control application allows to tune
+parameters of the XDP program. This program also serves as a minimal
+example of usage of the new functionality.
+
+The draft of the new functionality was presented on Netdev 0x15 [3].
+
+v2 changes:
+
+Split into two series, submitted bugfixes to bpf, dropped the conntrack
+patches, implemented the timestamp cookie in BPF using bpf_loop, dropped
+the timestamp cookie patch.
+
+[1]: https://lore.kernel.org/bpf/20211020095815.GJ28644@breakpoint.cc/t/
+[2]: https://lore.kernel.org/bpf/20220114163953.1455836-1-memxor@gmail.com/
+[3]: https://netdevconf.info/0x15/session.html?Accelerating-synproxy-with-XDP
+
+Maxim Mikityanskiy (3):
+  bpf: Make errors of bpf_tcp_check_syncookie distinguishable
+  bpf: Add helpers to issue and check SYN cookies in XDP
+  bpf: Add selftests for raw syncookie helpers
+
+ include/net/tcp.h                             |   1 +
+ include/uapi/linux/bpf.h                      |  75 +-
+ net/core/filter.c                             | 128 ++-
+ net/ipv4/tcp_input.c                          |   3 +-
+ tools/include/uapi/linux/bpf.h                |  75 +-
+ tools/testing/selftests/bpf/.gitignore        |   1 +
+ tools/testing/selftests/bpf/Makefile          |   5 +-
+ .../selftests/bpf/progs/xdp_synproxy_kern.c   | 743 ++++++++++++++++++
+ .../selftests/bpf/test_xdp_synproxy.sh        |  71 ++
+ tools/testing/selftests/bpf/xdp_synproxy.c    | 418 ++++++++++
+ 10 files changed, 1510 insertions(+), 10 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_synproxy.sh
+ create mode 100644 tools/testing/selftests/bpf/xdp_synproxy.c
+
 -- 
 2.30.2
 
