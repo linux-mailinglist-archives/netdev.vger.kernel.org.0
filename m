@@ -2,121 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08417497D46
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 11:37:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AC49497D8C
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 12:03:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234307AbiAXKhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 05:37:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
+        id S236897AbiAXLDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 06:03:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234273AbiAXKhd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 05:37:33 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C21C06173B
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 02:37:33 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id m11so55645698edi.13
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 02:37:32 -0800 (PST)
+        with ESMTP id S236492AbiAXLDQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 06:03:16 -0500
+Received: from mail-vk1-xa34.google.com (mail-vk1-xa34.google.com [IPv6:2607:f8b0:4864:20::a34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C0EC061744
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 03:03:16 -0800 (PST)
+Received: by mail-vk1-xa34.google.com with SMTP id l196so6995169vki.5
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 03:03:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rSQeUpcdlaVxnlyHPZlA/Ygg7QddjkAcIgXh5+dK4ZA=;
-        b=E7O+yFPXvOVsUYSz5zQWo2D9xtg2H9UXlQ/JIEjYlqzFFujW2FXR+rOUbFixqb7Jkz
-         Wfk/OrqKKQWA8d4CjyOBoCP81Zko9goCKO7TNH0/1vTgTNgorhJqUlVoKkYpbXZeEUpV
-         9NB9AOG+qstYRWdjMmRIYPs15/2Xtghvqt8it/7WXoKRwwLZjJNcZHHa0FMu7rxXvmgP
-         dECAy3gFD9OMGs+HH3bSmTZVb4+jQfEwrkz3lBw9mZTvvH+SiMCozWU4Xqf+jf9kicKn
-         eTRi0QzYUU78TFKg6S2WxE5aC3LsxcKI089As6Fdq427ctQ6+2ju96BZezLkrvlWkFTo
-         L1pA==
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=JxKe5/w3Sw6bQzimXk5dzl9v/qFdYrygrwsRoUYCaIs=;
+        b=AmRIksR32TNysgo+mqKXTpUJ7d8zdsocp0aW/d/1J5U1PXmx2Y4Y1QYC5qbxH7PxQE
+         yOpI+fUps9NO6f1+y9t2Lu/j/EGZomIsfP4G0AVSpkx+jaz4Yh/HOTjVW8yJEis07d1N
+         PVEwfyFfjOJyIRrjVoMEamuK7tmlksV3sJNIgjlII/Ku74jbNtM2T+1txkyJJ5I1le5z
+         by2KHDGxujnZEb7Ts/zLaFj2wGcwSh5YkKxjG/3UTwGC5TCfUevMKxqChX9QRSigtmB7
+         605aKhlk46wzQzr2qCYCFmnMo3/jW41V6CrNOew1v01BhtKnY5JaK94kQDgU9wx+MT6M
+         D4lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rSQeUpcdlaVxnlyHPZlA/Ygg7QddjkAcIgXh5+dK4ZA=;
-        b=nmHaaG1mTaQrHe/hsKCpA9MM0YrsARI3InMSz5chOKg0S48sg/oHiSU85Fm25CB5bN
-         hDx7y0QoooISZmJ1RhMa76Kne1ze6F4XR5GHMdnaYBINWxeab5tHL5HG/2usFg/97AxZ
-         W6MXXhh0h5KIUZxAmq3vPpEMmetotZw0pKJ7W/FHWrPYCbKSt7OivHc0wftW517GzCoh
-         6tiVm6Wy9QtGhSed6we9Xpqt3MT111DFVZEgfgeyLZFFW2XvlIfeTWAlfMQ7YEreAHTX
-         MLAyNE7PiDhcPByJ1TcxYUFbdN8AjpBRgRQGTzfI98e7K0DxhibfJpTplUqmhP7FmJPr
-         XfHg==
-X-Gm-Message-State: AOAM5335MAR09FO2Dcv1stbEFlrxqOqRJjxVJz+INxLlvkxEidPTxhzU
-        53IaromVrRBbY1aSwhSjwxH+mw==
-X-Google-Smtp-Source: ABdhPJyR81z+nPMmqT+s+6dYEX7jRS7cDIaT4GXBCfwJpdqDc6v9er/YadU9xc6kuBfX2Zm0MzhDig==
-X-Received: by 2002:a05:6402:34c1:: with SMTP id w1mr10663162edc.403.1643020651530;
-        Mon, 24 Jan 2022 02:37:31 -0800 (PST)
-Received: from [192.168.1.8] ([149.86.95.103])
-        by smtp.gmail.com with ESMTPSA id oz3sm4690259ejb.219.2022.01.24.02.37.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 02:37:30 -0800 (PST)
-Message-ID: <15f76929-a953-e540-014f-170dd95dddb1@isovalent.com>
-Date:   Mon, 24 Jan 2022 10:37:30 +0000
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=JxKe5/w3Sw6bQzimXk5dzl9v/qFdYrygrwsRoUYCaIs=;
+        b=TAkcc2PWi7HRjc9u5xLRrIZhKM2uUoVmlp4znrnXIlH2zfwCDaSn8AxWNqR2cV3dOI
+         qaUUcows5KmrY2vdyR8huU8393R7+rboLxktqHRvh27CQ0uenw/XzbRi50xcmWsYOePb
+         ytcuO8yr+y8Y/9fsXxufWcCjBanyPuZ+8nLXcLg72K9rBr5++grKvggTxuysUtrFwCi6
+         OtZuhXL6S6LlrxQSqmrztJLDeDgtVvGC3PxuT9BYbiqrytkBc/cgIpFwqNBFhoJ7BeX3
+         4uXbDeGLI3TRp51VnhfzzynnSSadPQ+IgWoTFFysTKzDa9VbRHxRzfRM40e8gRTJUwBu
+         sPoA==
+X-Gm-Message-State: AOAM530zoqeFFcgbO7wQjWfPIH4Qw/us5mpIqDq5aUHYXsl5JCkrZ1Sx
+        Cb2grOerSCKalCYkzWIzsiYX9I5ovKqHH2zLlAM=
+X-Google-Smtp-Source: ABdhPJywIn+7j+MeEfp/Wh6ksoOa9VJ+e+8TUM/jvi5drs3+OxkxfQ9fg4FsCS8RCWLSFbAp7JQn4/jKdAn1N6preD0=
+X-Received: by 2002:a05:6122:ca1:: with SMTP id ba33mr1030934vkb.39.1643022195306;
+ Mon, 24 Jan 2022 03:03:15 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: Bpftool mirror now available
-Content-Language: en-GB
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Dave Thaler <dthaler@microsoft.com>
-References: <267a35a6-a045-c025-c2d9-78afbf6fc325@isovalent.com>
- <CAEf4Bzbu4wc9anr19yG1AtFEcnxFsBrznynkrVZajQT1x_o6cA@mail.gmail.com>
- <ac3f95ed-bead-e8ea-b477-edcbd809452c@isovalent.com>
- <CAEf4BzaiUbAT4hBKTVYadGdygccA3c6jgPsu8VW9sLo+4Ofsvw@mail.gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <CAEf4BzaiUbAT4hBKTVYadGdygccA3c6jgPsu8VW9sLo+4Ofsvw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:6102:913:0:0:0:0 with HTTP; Mon, 24 Jan 2022 03:03:14
+ -0800 (PST)
+Reply-To: ibrahimajudgejohnson20@gmail.com
+From:   "Mrs. Shalla Bruce" <richardwilliam465@gmail.com>
+Date:   Mon, 24 Jan 2022 03:03:14 -0800
+Message-ID: <CAHaeUQA_2brc7Hwk_EdX47NuvUCo38_yERFWJbTMTFFzFQyp2A@mail.gmail.com>
+Subject: Attention Dear Fund Owner
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2022-01-20 11:07 UTC-0800 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> On Thu, Jan 20, 2022 at 4:35 AM Quentin Monnet <quentin@isovalent.com> wrote:
->>
->> 2022-01-19 22:25 UTC-0800 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
->>> On Wed, Jan 19, 2022 at 6:47 AM Quentin Monnet <quentin@isovalent.com> wrote:
->>
->> [...]
->>
->>>> 2. Because it is easier to compile and ship, this mirror should
->>>> hopefully simplify bpftool packaging for distributions.
->>>
->>> Right, I hope disto packagers will be quick to adopt the new mirror
->>> repo for packaging bpftool. Let's figure out bpftool versioning schema
->>> as a next step. Given bpftool heavily relies on libbpf and isn't
->>> really coupled to kernel versions, it makes sense for bpftool to
->>> reflect libbpf version rather than kernel's. WDYT?
->>
->> Personally, I don't mind finding another scheme, as long as we keep it
->> consistent between the reference sources in the kernel repo and the mirror.
->>
->> I also agree that it would make sense to align it to libbpf, but that
->> would mean going backward on the numbers (current version is 5.16.0,
->> libbpf's is 0.7.0) and this will mess up with every script trying to
->> compare versions. We could maybe add a prefix to indicate that the
->> scheme has changed ('l_0.7.0), but similarly, it would break a good
->> number of tools that expect semantic versioning, I don't think this is
->> any better.
->>
->> The other alternative I see would be to pick a different major version
->> number and arbitrarily declare that bpftool's version is aligned on
->> libbpf's, but with a difference of 6 for the version number. So we would
->> start at 6.7.0 and reach 7.0.0 when libbpf 1.0.0 is released. This is
->> not ideal, but we would keep some consistency, and we can always add the
->> version of libbpf used for the build to "bpftool version"'s output. How
->> would you feel about it? Did you have something else in mind?
-> 
-> Yeah, this off-by-6 major version difference seems ok-ish to me, I
-> don't mind that. Another alternative is to have a completely
-> independent versioning (and report used libbpf version in bpftool
-> --version output  separately). But I think divorcing it from kernel
-> version is a must, too much confusion.
+-- 
+Attention Beneficiary,
 
-Right, let's not tie it to libbpf either, having an independent
-versioning scheme is probably the best solution indeed. I'll send a
-patchset shortly to update the version and also print the one from libbpf.
+We have concluded to effect your payment of $9.5Million, through Money
+Gram transfer office, but the maximum amount you will be receiving
+each day is $25,000.00 daily until the funds is completely
+transferred. i need all your information and address right now, So
+that i can go the UBA BANK Office Managements Director to submit your
+account number information immediately,
 
-Thanks,
-Quentin
+Fill your details below for reference purposes:
+NAME OF CUSTOMER:
+ADDRESS:
+COUNTRY:
+OCCUPATION:
+DIRECT PHONE NUMBER:
+
+Contact Person:Chief Mr Judge Ibrahima Johnson
+Phone:Mobile:Tele:..+22969457855.
+Email;;(ibrahimajudgejohnson20@gmail.com)
+
+then to enable him transfer your Funds and give you the Reference No#,
+sender name and question/answer to pick the $25,000.00 also to
+continue sending rest of your payment till your total payment of
+$9.5Million is complete.
+
+Thanks for your Prompt Response.
+Thanks, And Best Regards.
+Mrs Shalla Bruce
