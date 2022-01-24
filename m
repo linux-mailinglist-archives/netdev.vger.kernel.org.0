@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5397849898A
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 19:57:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D08D4989A5
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 19:57:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245519AbiAXS46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 13:56:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43030 "EHLO
+        id S245752AbiAXS5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 13:57:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344564AbiAXSys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 13:54:48 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D410C061776
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 10:53:42 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id l17so10456983plg.1
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 10:53:42 -0800 (PST)
+        with ESMTP id S1344591AbiAXSyv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 13:54:51 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16432C061361
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 10:53:44 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id d18so3963307plg.2
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 10:53:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=bz5OSIhu8tiUBZ2woPncS24gjC0NBZkHI9Xptd2J15Y=;
-        b=oGbCyt/2eQJkSETc6yVa0XvS2hDM5VjAQRijEKP6rEDMmKGVzqO8coiuXjON/SPeSG
-         etKGzgf0hJrCcC4ap/Iwo5WlGR2jL/XTnRvoIvhECUhlFDk45YJNn71a1pLdNRVCxEXK
-         f6EpdeIlfhR70gpM7i9g6c5ggIVaWw1F+U9hfEW9A7ymampwUY6Zh08cZSFnEvVCSPPo
-         H2nQnXe4DAnFMTq5/eJj6Xq/0FWFcb6LbqAr1qT76XLX1xwD+B0NJ3JP1XbdiFcQDZ3u
-         l7ApuTZ9i8LY+ID7l2NQwFVhY6bl8oaWrFM7Pedn5z3mQw3KMRGi0sWceJoJP+uw6wSI
-         5ujQ==
+        bh=LDiJ4O9YgSkrxT2JnPNMqnuvU7WYXCkaM3BNfwrpAdc=;
+        b=fHPBknhuLvoz6SHTLBa70TtjGR49UMyqoi2r2uar1ka0DatPD+I4UUhiqpa5LbN3lm
+         52f3UMfCmztQNOmF9yaXm/hUKuvKwNwqwSUfzaw3kmsBHX/dx4SQh1/N/bjoenKW/USL
+         4rawtvYGk0PVioQlUabyogDOX4IpzU0ZMP0oWAp/7hXk6fwH9TmNq6OyEMGKBdDVM2ah
+         yL4CH4/EYJCMi9uPbiQt4poqMCWCOAbdSHdgwsUZQG8EERw3jnLqJW+ljgXc3eh4btmX
+         hlXG1cZpzZ2nYRkmsy30BYYKU/t7Z1DLFgNsrOKEMg7AHV/soGtN7FSc6LdsKgneSzr6
+         fspA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=bz5OSIhu8tiUBZ2woPncS24gjC0NBZkHI9Xptd2J15Y=;
-        b=rLmcbaPPNOielkbh5NjmYz4TmIJdFDGN6pboD3IW3wvRUUTAgTodRyeo5lRFxZADHc
-         Gmd2ecoDXcPn09M4vTtfdO58I9PByRADxxOTxu+4SEK8OXvpuo4EQb1j5dQ1AAIK+sNN
-         ZJMGMvjSzaO5jux5aWDicu3y2o245YxRCRp98zr/ik149iiB3elBEHgwGsKsvk2qerAJ
-         ArW8IH//xtx24ES7NUacMv4dg+40PLRQw8weiLMNEss3IZk1Pz9HndfJ0vIWcoVk0E+k
-         wyYUsd5NwQMWoyqz83Qc2qhPGSdBAEZp6uckSyuAFtWtagjGE7xiHJd3QUkJc5k97/rb
-         af4w==
-X-Gm-Message-State: AOAM531rciNMNHzoAPkirmFETHQjonqG/M3HOTgD1u0ZXA/DZykZVbVy
-        UUf/iCp53Oef5YELHaF2bcY1tfNHdW+P1A==
-X-Google-Smtp-Source: ABdhPJwa6ojTNQ/rZtP8/PpYUXu8H9JTi3+uJx6rLU9V2e8rgDgg4TZW3AXM93NCPxiW7x2wLW13qw==
-X-Received: by 2002:a17:902:be08:b0:14a:ef2e:60e2 with SMTP id r8-20020a170902be0800b0014aef2e60e2mr15164204pls.128.1643050422056;
-        Mon, 24 Jan 2022 10:53:42 -0800 (PST)
+        bh=LDiJ4O9YgSkrxT2JnPNMqnuvU7WYXCkaM3BNfwrpAdc=;
+        b=T8CmAGSC0ELiuYrr9SNXNa/O36BKhU6dcxjk4DNgsKEDAjgh42ZzJ5CQpaKBibjrcR
+         F2Q7dydDM/n7KJZf/4ofxfhyvZmEQ8grvGwxplOI9nz1kBXP/bpk3TzDQFBGElxdM5Ra
+         h6XHqVwP7MYUIpDe63MCq1wNLqbHeN1JktLwIw/YjCBO2eT9bAGUAHvYbtP69GMyT0Lv
+         AwOTa3lru/Q7WCblsAJiE+nXEtklTcCMczfnSqGC56tzKH9Ha4cm4JFLHN2c83pt12x7
+         HuVclKAAEDnUg5gTrdyC20lWthYWIiiVpeTupeixxBycFXyG12wTT9npTeHC7yFvi1l8
+         /2JQ==
+X-Gm-Message-State: AOAM531l495WZAw3WGl7N0GR1Mg/AQJlud2wKnaorxQB2Exr3y3RpnG6
+        Rsp/Np8dIA106AJcoN4Mkg7faA==
+X-Google-Smtp-Source: ABdhPJwjiiDDr9foIUX9zVWNrEEAVdN8rv+KZpkfrr0IrpN80n+jWV95SspZu5ikJlTA5vHfXH68xg==
+X-Received: by 2002:a17:903:2443:b0:14b:3758:f07b with SMTP id l3-20020a170903244300b0014b3758f07bmr9390302pls.28.1643050423555;
+        Mon, 24 Jan 2022 10:53:43 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id cq14sm85177pjb.33.2022.01.24.10.53.40
+        by smtp.gmail.com with ESMTPSA id cq14sm85177pjb.33.2022.01.24.10.53.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 10:53:41 -0800 (PST)
+        Mon, 24 Jan 2022 10:53:42 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net 14/16] ionic: remove the dbid_inuse bitmap
-Date:   Mon, 24 Jan 2022 10:53:10 -0800
-Message-Id: <20220124185312.72646-15-snelson@pensando.io>
+Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>,
+        Brett Creeley <brett@pensando.io>
+Subject: [PATCH net 15/16] ionic: stretch heartbeat detection
+Date:   Mon, 24 Jan 2022 10:53:11 -0800
+Message-Id: <20220124185312.72646-16-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220124185312.72646-1-snelson@pensando.io>
 References: <20220124185312.72646-1-snelson@pensando.io>
@@ -59,74 +60,160 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The dbid_inuse bitmap is not useful in this driver so remove it.
+The driver can be premature in detecting stalled firmware
+when the heartbeat is not updated because the firmware can
+occasionally take a long time (more than 2 seconds) to service
+a request, and doesn't update the heartbeat during that time.
 
-Fixes: 6461b446f2a0 ("ionic: Add interrupts and doorbells")
+The firmware heartbeat is not necessarily a steady 1 second
+periodic beat, but better described as something that should
+progress at least once in every DECVMD_TIMEOUT period.
+The single-threaded design in the FW means that if a devcmd
+or adminq request launches a large internal job, it is stuck
+waiting for that job to finish before it can get back to
+updating the heartbeat.  Since all requests are "guaranteed"
+to finish within the DEVCMD_TIMEOUT period, the driver needs
+to less aggressive in checking the heartbeat progress.
+
+We change our current 2 second window to something bigger than
+DEVCMD_TIMEOUT which should take care of most of the issue.
+We stop checking for the heartbeat while waiting for a request,
+as long as we're still watching for the FW status.  Lastly,
+we make sure our FW status is up to date before running a
+devcmd request.
+
+Once we do this, we need to not check the heartbeat on DEV
+commands because it may be stalled while we're on the fw_down
+path.  Instead, we can rely on the is_fw_running check.
+
+Fixes: b2b9a8d7ed13 ("ionic: avoid races in ionic_heartbeat_check")
+Signed-off-by: Brett Creeley <brett@pensando.io>
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 17 +----------------
- drivers/net/ethernet/pensando/ionic/ionic_lif.h |  1 -
- 2 files changed, 1 insertion(+), 17 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic.h   |  2 +-
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  6 ++--
+ .../net/ethernet/pensando/ionic/ionic_lif.c   |  2 +-
+ .../net/ethernet/pensando/ionic/ionic_main.c  | 34 ++++++++-----------
+ 4 files changed, 20 insertions(+), 24 deletions(-)
 
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
+index 04fdaf5c1a02..602f4d45d529 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic.h
+@@ -18,7 +18,7 @@ struct ionic_lif;
+ #define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF	0x1002
+ #define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF	0x1003
+ 
+-#define DEVCMD_TIMEOUT  10
++#define DEVCMD_TIMEOUT			5
+ #define IONIC_ADMINQ_TIME_SLICE		msecs_to_jiffies(100)
+ 
+ #define IONIC_PHC_UPDATE_NS	10000000000	    /* 10s in nanoseconds */
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+index 1535a40a5fab..51d36a549ef7 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+@@ -236,9 +236,11 @@ int ionic_heartbeat_check(struct ionic *ionic)
+ 	if (!idev->fw_status_ready)
+ 		return -ENXIO;
+ 
+-	/* wait at least one watchdog period since the last heartbeat */
++	/* Because of some variability in the actual FW heartbeat, we
++	 * wait longer than the DEVCMD_TIMEOUT before checking again.
++	 */
+ 	last_check_time = idev->last_hb_time;
+-	if (time_before(check_time, last_check_time + ionic->watchdog_period))
++	if (time_before(check_time, last_check_time + DEVCMD_TIMEOUT * 2 * HZ))
+ 		return 0;
+ 
+ 	fw_hb = ioread32(&idev->dev_info_regs->fw_heartbeat);
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index c9535f4863ba..e84a01edc4e4 100644
+index e84a01edc4e4..05dd8c4f5466 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -3014,8 +3014,6 @@ void ionic_lif_free(struct ionic_lif *lif)
- 	/* unmap doorbell page */
- 	ionic_bus_unmap_dbpage(lif->ionic, lif->kern_dbpage);
- 	lif->kern_dbpage = NULL;
--	kfree(lif->dbid_inuse);
--	lif->dbid_inuse = NULL;
+@@ -1787,7 +1787,7 @@ static void ionic_lif_quiesce(struct ionic_lif *lif)
  
- 	mutex_destroy(&lif->config_lock);
- 	mutex_destroy(&lif->queue_lock);
-@@ -3215,22 +3213,12 @@ int ionic_lif_init(struct ionic_lif *lif)
- 		return -EINVAL;
- 	}
- 
--	lif->dbid_inuse = bitmap_zalloc(lif->dbid_count, GFP_KERNEL);
--	if (!lif->dbid_inuse) {
--		dev_err(dev, "Failed alloc doorbell id bitmap, aborting\n");
--		return -ENOMEM;
--	}
--
--	/* first doorbell id reserved for kernel (dbid aka pid == zero) */
--	set_bit(0, lif->dbid_inuse);
- 	lif->kern_pid = 0;
--
- 	dbpage_num = ionic_db_page_num(lif, lif->kern_pid);
- 	lif->kern_dbpage = ionic_bus_map_dbpage(lif->ionic, dbpage_num);
- 	if (!lif->kern_dbpage) {
- 		dev_err(dev, "Cannot map dbpage, aborting\n");
--		err = -ENOMEM;
--		goto err_out_free_dbid;
-+		return -ENOMEM;
- 	}
- 
- 	err = ionic_lif_adminq_init(lif);
-@@ -3273,9 +3261,6 @@ int ionic_lif_init(struct ionic_lif *lif)
- 	ionic_lif_reset(lif);
- 	ionic_bus_unmap_dbpage(lif->ionic, lif->kern_dbpage);
- 	lif->kern_dbpage = NULL;
--err_out_free_dbid:
--	kfree(lif->dbid_inuse);
--	lif->dbid_inuse = NULL;
- 
- 	return err;
+ 	err = ionic_adminq_post_wait(lif, &ctx);
+ 	if (err)
+-		netdev_err(lif->netdev, "lif quiesce failed %d\n", err);
++		netdev_dbg(lif->netdev, "lif quiesce failed %d\n", err);
  }
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-index 2db708df6b55..a53984bf3544 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-@@ -214,7 +214,6 @@ struct ionic_lif {
- 	u32 rx_coalesce_hw;		/* what the hw is using */
- 	u32 tx_coalesce_usecs;		/* what the user asked for */
- 	u32 tx_coalesce_hw;		/* what the hw is using */
--	unsigned long *dbid_inuse;
- 	unsigned int dbid_count;
  
- 	struct ionic_phc *phc;
+ static void ionic_txrx_disable(struct ionic_lif *lif)
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+index 78771663808a..4029b4e021f8 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+@@ -358,13 +358,14 @@ int ionic_adminq_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx,
+ 		if (remaining)
+ 			break;
+ 
+-		/* interrupt the wait if FW stopped */
++		/* force a check of FW status and break out if FW reset */
++		(void)ionic_heartbeat_check(lif->ionic);
+ 		if ((test_bit(IONIC_LIF_F_FW_RESET, lif->state) &&
+ 		     !lif->ionic->idev.fw_status_ready) ||
+ 		    test_bit(IONIC_LIF_F_FW_STOPPING, lif->state)) {
+ 			if (do_msg)
+-				netdev_err(netdev, "%s (%d) interrupted, FW in reset\n",
+-					   name, ctx->cmd.cmd.opcode);
++				netdev_warn(netdev, "%s (%d) interrupted, FW in reset\n",
++					    name, ctx->cmd.cmd.opcode);
+ 			ctx->comp.comp.status = IONIC_RC_ERROR;
+ 			return -ENXIO;
+ 		}
+@@ -425,9 +426,9 @@ static int __ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds,
+ 	unsigned long start_time;
+ 	unsigned long max_wait;
+ 	unsigned long duration;
++	int done = 0;
++	bool fw_up;
+ 	int opcode;
+-	int hb = 0;
+-	int done;
+ 	int err;
+ 
+ 	/* Wait for dev cmd to complete, retrying if we get EAGAIN,
+@@ -437,31 +438,24 @@ static int __ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds,
+ try_again:
+ 	opcode = readb(&idev->dev_cmd_regs->cmd.cmd.opcode);
+ 	start_time = jiffies;
+-	do {
++	for (fw_up = ionic_is_fw_running(idev);
++	     !done && fw_up && time_before(jiffies, max_wait);
++	     fw_up = ionic_is_fw_running(idev)) {
+ 		done = ionic_dev_cmd_done(idev);
+ 		if (done)
+ 			break;
+ 		usleep_range(100, 200);
+-
+-		/* Don't check the heartbeat on FW_CONTROL commands as they are
+-		 * notorious for interrupting the firmware's heartbeat update.
+-		 */
+-		if (opcode != IONIC_CMD_FW_CONTROL)
+-			hb = ionic_heartbeat_check(ionic);
+-	} while (!done && !hb && time_before(jiffies, max_wait));
++	}
+ 	duration = jiffies - start_time;
+ 
+ 	dev_dbg(ionic->dev, "DEVCMD %s (%d) done=%d took %ld secs (%ld jiffies)\n",
+ 		ionic_opcode_to_str(opcode), opcode,
+ 		done, duration / HZ, duration);
+ 
+-	if (!done && hb) {
+-		/* It is possible (but unlikely) that FW was busy and missed a
+-		 * heartbeat check but is still alive and will process this
+-		 * request, so don't clean the dev_cmd in this case.
+-		 */
+-		dev_dbg(ionic->dev, "DEVCMD %s (%d) failed - FW halted\n",
+-			ionic_opcode_to_str(opcode), opcode);
++	if (!done && !fw_up) {
++		ionic_dev_cmd_clean(ionic);
++		dev_warn(ionic->dev, "DEVCMD %s (%d) interrupted - FW is down\n",
++			 ionic_opcode_to_str(opcode), opcode);
+ 		return -ENXIO;
+ 	}
+ 
 -- 
 2.17.1
 
