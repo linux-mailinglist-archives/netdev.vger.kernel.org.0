@@ -2,56 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CF9F498879
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 19:39:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 535E0498886
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 19:43:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245283AbiAXSjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 13:39:42 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42898 "EHLO
+        id S244566AbiAXSnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 13:43:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45316 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiAXSjf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 13:39:35 -0500
+        with ESMTP id S230499AbiAXSny (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 13:43:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD7F861480;
-        Mon, 24 Jan 2022 18:39:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EF8DC340E5;
-        Mon, 24 Jan 2022 18:39:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CE99614D0;
+        Mon, 24 Jan 2022 18:43:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F03F6C340E5;
+        Mon, 24 Jan 2022 18:43:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643049574;
-        bh=wtnMK1/PnKkXRPibVwQq/p8YTvI52RSABlhYxeqqrnM=;
+        s=k20201202; t=1643049833;
+        bh=fjJSY7FugE5Gp1KTxk0Zobf8q54Y/LM7PG/4KE3Tjb4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ESfn/4wPty1DGAuUQm6HHBtZ4Wfk6BDpfLDkL4XeKGGdCVLcyJxIEQjaItV5glwOV
-         AgnrCwhmhCHgJ30ic5SRCAAux7JRxF6jbjTT+wDW4JHvh1FvXVCAnPWJ99v8AnZOTF
-         sYG7WiGKoKLljU1koxaaYJX5/3MIwbHEWL0g4c6c+AANqPZzrbyuqT3n4aJyOFgRLN
-         euO0laQHumh9HDhizJwYzK6xIfudhIkaIwXkaNs9ptbpBWoeLsuQO2cpyGuYn8yP2w
-         6eMLsAVzGRFaKn07FB93xlR30flBz1icWl7L+XRWcTMwK2a4+hPEQOmpCJf6+2rFgQ
-         NLTlbEOpWTpWg==
-Date:   Mon, 24 Jan 2022 10:39:32 -0800
+        b=UCfBDborgjCRg9qTZ252s9MeFIaljnltkwv73lPNL5IDOBRJRNujJaZuSgRc4mbMG
+         Xa0zNzG/X9lqY5RF4Nk273KuNDvTD7cUsbW7F6EcmHi+g5e6xvcoezUCb9bNmDmAL9
+         X4VK6HcYU6JgH3x6u+nF5Snh4+868bjkaKeI3V39m/ByQAZ5DGfPxxkm0/lCgr0Oq7
+         cc3Ln3jEKVpF6mCHFSeixXap8HeV+LVZjnt0APiJ2BWiDisFipoRtdp1h9GqTn0LGb
+         Ot91vltjJd38nPLkBsIyKcwnmGgmBTKAZncplUAc352I6aCDDMDajSE7BDOpWlF8G7
+         rOiwv+e5EilZg==
+Date:   Mon, 24 Jan 2022 10:43:51 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leonard Crestez <cdleonard@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Philip Paeps <philip@trouble.is>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Ivan Delalande <colona@arista.com>,
-        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev,
+        linux-stm32@st-md-mailman.stormreply.com,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 00/20] tcp: Initial support for RFC5925 auth option
-Message-ID: <20220124103932.5d22fad2@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <cover.1643026076.git.cdleonard@gmail.com>
-References: <cover.1643026076.git.cdleonard@gmail.com>
+Subject: Re: [PATCH] net: stmmac: dwmac-sun8i: fix double disable and
+ unprepare "stmmaceth" clk
+Message-ID: <20220124104351.2d5cab46@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220123132805.758-1-jszhang@kernel.org>
+References: <20220123132805.758-1-jszhang@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,21 +55,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 24 Jan 2022 14:12:46 +0200 Leonard Crestez wrote:
-> This is similar to TCP-MD5 in functionality but it's sufficiently
-> different that packet formats and interfaces are incompatible.
-> Compared to TCP-MD5 more algorithms are supported and multiple keys
-> can be used on the same connection but there is still no negotiation
-> mechanism.
+On Sun, 23 Jan 2022 21:28:05 +0800 Jisheng Zhang wrote:
+> Fix warnings on Allwinner D1 platform:
 > 
-> [...]
+> [    1.604695] ------------[ cut here ]------------
+> [    1.609328] bus-emac already disabled
 
-Could you make sure that each individual patch builds cleanly with W=1
-C=1? There is a bunch of missing "static" and unused function warnings 
-in the first few patches. I presume they are made moot by later patches
-but with kernel defaulting to Werror now it's a dangerous game to play,
-we don't want to break bisection.
-
-Also I spotted this:
-
-include/net/tcp_authopt.h:59: warning: Function parameter or member 'prefixlen' not described in 'tcp_authopt_key_info'
+Reading Samuel's feedback it sounds like the change will have to be
+reposted with a different commit message (either explaining why the
+fixes indeed works or as a clean up not a fix). 
+Marking Changes Requested in patchwork.
