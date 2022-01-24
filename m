@@ -2,163 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B412649851A
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 17:45:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C5C498526
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 17:47:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243868AbiAXQo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 11:44:59 -0500
-Received: from mga02.intel.com ([134.134.136.20]:29791 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243857AbiAXQo4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jan 2022 11:44:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643042696; x=1674578696;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LlSir2LcINVCfusLwLZhh2D3eRwTsIXL/4YlxY1UD/s=;
-  b=a9nGb8mR53kXq6mlI8IuQd03pIL64itIt3+Y7dNiLp2CJgJJYlt5c+gL
-   d7K8LD33WaLjo6J6GkYIsVZCsDJi7Zr+RKmjy0Rpg71HC7BFvkD8Ay9TJ
-   XiGI7Hj4t1vtp0vbpsVssCYoOO7llJWkWXytgJBhYIu5v1LO4UYtMr/sh
-   Q8iK7Z2f2HpYdoagAQ7sB+SkfXcSutOWaluj0e321/kci5SbXj+tElx67
-   jr12hmf41nkZXyGxe9eDbGHKPtWo/e1KyXcWTTl3wlktFvSezp1Gi+O5S
-   65JL17gCm+Qg4118t7DxlBDyJ1QHiRDfrbm0TwV2PdHw19cdOopGaCYEP
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="233450453"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="233450453"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 08:44:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="479142935"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by orsmga006.jf.intel.com with ESMTP; 24 Jan 2022 08:44:53 -0800
-Date:   Mon, 24 Jan 2022 17:44:52 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        jesse.brandeburg@intel.com
-Subject: Re: [PATCH bpf-next v3 2/7] ice: xsk: handle SW XDP ring wrap and
- bump tail more often
-Message-ID: <Ye7XhNFwC/5RggCL@boxer>
-References: <20220121120011.49316-1-maciej.fijalkowski@intel.com>
- <20220121120011.49316-3-maciej.fijalkowski@intel.com>
- <20220121122920.23679-1-alexandr.lobakin@intel.com>
- <YerDwy7il806OqJD@boxer>
+        id S243882AbiAXQq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 11:46:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243897AbiAXQqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 11:46:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE51AC061401
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 08:46:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9D3EB81145
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 16:46:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00BF8C340E5;
+        Mon, 24 Jan 2022 16:46:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643042811;
+        bh=BvRf80LbhAJRbx8R65apxv18iSzzg/gd0C2URGCy0ug=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=esLLYD/Z/Z2HLFVwG7SqONRYwaPhuBmTglqFNw5PmEk6SjHWWlm2tFsFGjiOJmyEN
+         hSRSVg8yOSiALww8JtPEp03zBE2Nym55amiIs7pl1JYondkb7qbJSN0xyUMzYfIcTh
+         xHczIUPp4jt6gBUrGXiwuVwt+QHCYsV3wMRsd3cQfHhznWcnGfIjMz5jykDi1vsyD6
+         0qBx7F1WXtcnpN9hCmwZOWR7kOGkr1MaFtpxPDiohCnMeXQsGowgoOv+vRrx5pYQl8
+         nLJJYhpCxOdIkvtaWJ+6q2FCAISQpUFGxvzfBtFjQgNhraCY46KAy5hgTbo2ExBwST
+         jz53fOzq3+v7Q==
+Date:   Mon, 24 Jan 2022 08:46:49 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "arinc.unal@arinc9.com" <arinc.unal@arinc9.com>
+Subject: Re: [PATCH net-next v4 11/11] net: dsa: realtek: rtl8365mb:
+ multiple cpu ports, non cpu extint
+Message-ID: <20220124084649.0918ba5c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220124153147.agpxxune53crfawy@skbuf>
+References: <CAJq09z7jC8EpJRGF2NLsSLZpaPJMyc_TzuPK_BJ3ct7dtLu+hw@mail.gmail.com>
+        <Yea+uTH+dh9/NMHn@lunn.ch>
+        <20220120151222.dirhmsfyoumykalk@skbuf>
+        <CAJq09z6UE72zSVZfUi6rk_nBKGOBC0zjeyowHgsHDHh7WyH0jA@mail.gmail.com>
+        <20220121020627.spli3diixw7uxurr@skbuf>
+        <CAJq09z5HbnNEcqN7LZs=TK4WR1RkjoefF_6ib-hFu2RLT54Nug@mail.gmail.com>
+        <20220121185009.pfkh5kbejhj5o5cs@skbuf>
+        <CAJq09z7v90AU=kxraf5CTT0D4S6ggEkVXTQNsk5uWPH-pGr7NA@mail.gmail.com>
+        <20220121224949.xb3ra3qohlvoldol@skbuf>
+        <CAJq09z6aYKhjdXm_hpaKm1ZOXNopP5oD5MvwEmgRwwfZiR+7vg@mail.gmail.com>
+        <20220124153147.agpxxune53crfawy@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YerDwy7il806OqJD@boxer>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 03:31:31PM +0100, Maciej Fijalkowski wrote:
-> On Fri, Jan 21, 2022 at 01:29:20PM +0100, Alexander Lobakin wrote:
-> > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > Date: Fri, 21 Jan 2022 13:00:06 +0100
+On Mon, 24 Jan 2022 17:31:47 +0200 Vladimir Oltean wrote:
+> > I checked DSA doc again and it says:
 > > 
-> > > Currently, if ice_clean_rx_irq_zc() processed the whole ring and
-> > > next_to_use != 0, then ice_alloc_rx_buf_zc() would not refill the whole
-> > > ring even if the XSK buffer pool would have enough free entries (either
-> > > from fill ring or the internal recycle mechanism) - it is because ring
-> > > wrap is not handled.
-> > > 
-> > > Improve the logic in ice_alloc_rx_buf_zc() to address the problem above.
-> > > Do not clamp the count of buffers that is passed to
-> > > xsk_buff_alloc_batch() in case when next_to_use + buffer count >=
-> > > rx_ring->count,  but rather split it and have two calls to the mentioned
-> > > function - one for the part up until the wrap and one for the part after
-> > > the wrap.
-> > > 
-> > > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > > ---
-> > >  drivers/net/ethernet/intel/ice/ice_txrx.h |  2 +
-> > >  drivers/net/ethernet/intel/ice/ice_xsk.c  | 99 ++++++++++++++++++-----
-> > >  2 files changed, 81 insertions(+), 20 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
-> > > index b7b3bd4816f0..94a46e0e5ed0 100644
-> > > --- a/drivers/net/ethernet/intel/ice/ice_txrx.h
-> > > +++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-> > > @@ -111,6 +111,8 @@ static inline int ice_skb_pad(void)
-> > >  	(u16)((((R)->next_to_clean > (R)->next_to_use) ? 0 : (R)->count) + \
-> > >  	      (R)->next_to_clean - (R)->next_to_use - 1)
-> > >  
-> > > +#define ICE_RING_QUARTER(R) ((R)->count / 4)
+> > "Since tagging protocols in category 1 and 2 break software (and most
+> > often also hardware) packet dissection on the DSA master, features
+> > such as RPS (Receive Packet Steering) on the DSA master would be
+> > broken. The DSA framework deals with this by hooking into the flow
+> > dissector and shifting the offset at which the IP header is to be
+> > found in the tagged frame as seen by the DSA master. This behavior is
+> > automatic based on the overhead value of the tagging protocol. If not
+> > all packets are of equal size, the tagger can implement the
+> > flow_dissect method of the struct dsa_device_ops and override this
+> > default behavior by specifying the correct offset incurred by each
+> > individual RX packet. Tail taggers do not cause issues to the flow
+> > dissector."
 > > 
-> > I would use `>> 2` here just to show off :D
-> 
-> :)
-> 
-> 
-> (...)
-> 
+> > It makes me think that it is the master network driver that does not
+> > implement that IP header location shift. Anyway, I believe it also
+> > depends on HW capabilities to inform that shift, right?
 > > 
-> > > +
-> > > +/**
-> > > + * ice_alloc_rx_bufs_zc - allocate a number of Rx buffers
-> > > + * @rx_ring: Rx ring
-> > > + * @count: The number of buffers to allocate
-> > > + *
-> > > + * Wrapper for internal allocation routine; figure out how many tail
-> > > + * bumps should take place based on the given threshold
-> > > + *
-> > > + * Returns true if all calls to internal alloc routine succeeded
-> > > + */
-> > > +bool ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count)
-> > > +{
-> > > +	u16 rx_thresh = ICE_RING_QUARTER(rx_ring);
-> > > +	u16 batched, leftover, i, tail_bumps;
-> > > +
-> > > +	batched = count & ~(rx_thresh - 1);
-> > 
-> > The ring size can be a non power-of-two unfortunately, it is rather
-> > aligned to just 32: [0]. So it can be e.g. 96 and the mask will
-> > break then.
+> > I'm trying to think as a DSA newbie (which is exactly what I am).
+> > Differently from an isolated ethernet driver, with DSA, the system
+> > does have control of "something" after the offload should be applied:
+> > the dsa switch. Can't we have a generic way to send a packet to the
+> > switch and make it bounce back to the CPU (passing through the offload
+> > engine)? Would it work if I set the destination port as the CPU port?
+> > This way, we could simply detect if the offload worked and disable
+> > those features that did not work. It could work with a generic
+> > implementation or, if needed, a specialized optional ds_switch_ops
+> > function just to setup that temporary lookback forwarding rule.  
 > 
-> Ugh nice catch!
+> To be clear, do you consider this simpler than an ndo operation that
+> returns true or false if a certain DSA master can offload a certain
+> netdev feature in the presence of a certain DSA tag?
 > 
-> > You could use roundup_pow_of_two(ICE_RING_QUARTER(rx_ring)), but
-> > might can be a little slower due to fls_long() (bitsearch) inside.
-> > 
-> > (I would generally prohibit non-pow-2 ring sizes at all from inside
-> >  the Ethtool callbacks since it makes no sense to me :p)
+> Ignoring the fact that there are subtly different ways in which various
+> hardware manufacturers implement packet injection from the CPU (and this
+> is reflected in the various struct dsa_device_ops :: xmit operation),
+> plus the fact that dsa_device_ops :: xmit takes a slave net_device as
+> argument, for which there is none to represent the CPU port. These
+> points mean that you'd need to implement a separate, hardware-specific
+> loopback xmit for each tagging protocol. But again, ignoring that for a
+> second.
 > 
-> Although user would some of the freedom it makes a lot of sense to me.
-> Jesse, what's your view?
+> When would be a good time to probe for DSA master features? The DSA
+> master might be down when DSA switches probe. What should we do with
+> packets sent on a DSA port until we've finished probing for DSA master
+> capabilities?
 
-I decided to go with an approach that forbids xsk socket attachment when
-ring length (either tx or rx) is not pow(2). Sending v4 with a separate
-patch for that.
-
-> 
-> > 
-> > Also, it's not recommended to open-code align-down since we got
-> > the ALIGN_DOWN(value, pow_of_two_alignment) macro. The macro hell
-> > inside expands to the same op you do in here.
-> 
-> ack I'll try to use existing macros.
-> 
-> > 
-> > > +	tail_bumps = batched / rx_thresh;
-> > > +	leftover = count & (rx_thresh - 1);
-> > >  
-> > > -	return count == nb_buffs;
-> > > +	for (i = 0; i < tail_bumps; i++)
-> > > +		if (!__ice_alloc_rx_bufs_zc(rx_ring, rx_thresh))
-> > > +			return false;
-> > > +	return __ice_alloc_rx_bufs_zc(rx_ring, leftover);
-> > >  }
-> > >  
-> > >  /**
-> > > -- 
-> > > 2.33.1
-> > 
-> > [0] https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/intel/ice/ice_ethtool.c#L2729
-> > 
-> > Thanks,
-> > Al
+I thought for drivers setting the legacy NETIF_F_IP*_CSUM feature
+it's driver's responsibility to validate the geometry of the packet
+will work with the parser the device has. Or at least I think that's
+what Tom was pushing for when he was cleaning up the checksumming last
+(and wrote the long comment on the subject in skbuff.h).
