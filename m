@@ -2,533 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9F5D4986EB
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 18:33:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D33454986F4
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 18:34:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244707AbiAXRd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 12:33:26 -0500
-Received: from mga17.intel.com ([192.55.52.151]:16093 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244671AbiAXRdU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jan 2022 12:33:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643045600; x=1674581600;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=gZqimtRzu5wF1fDqE5G7NopEsGNpcEmrpuiOvwmSMjI=;
-  b=fG25Q/TOur5dh722ZsfAsErd8+SoqVCirXdjX32dOCmnl2uNkIBR3dwX
-   dvGVDYpMp77V2hPwdW7iWCBIA9ToKnH2CgiuYpRMMYpBudPW8Kr/xMK98
-   b4BvUU8rvPjwwgjzfN8PZP6U7CfVO7xV6kWqw4X3cAvZmScRZ96gV7Vst
-   eFRU7f90Q8AsBxHioPi9D4GJSuxJxanebSKjfaJ2EKW9oPE0cc6MhQ/lR
-   jKEIwQW+B5gaiiskthsi7SNjlWGSRht1WzC0/dFV3GNeBLJhcd900C0je
-   oyjHkq71r5G+LxRGUHtF/fDAw1rFyeK/ErihbOv1V3qdMBmP62lVhEY9b
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="226773831"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="226773831"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 09:33:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="520030867"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga007.jf.intel.com with ESMTP; 24 Jan 2022 09:33:01 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20OHWuIt010465;
-        Mon, 24 Jan 2022 17:33:00 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: ice: Add support for inner etype in switchdev
-Date:   Mon, 24 Jan 2022 18:31:16 +0100
-Message-Id: <20220124173116.739083-6-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124173116.739083-1-alexandr.lobakin@intel.com>
-References: <20220124173116.739083-1-alexandr.lobakin@intel.com>
+        id S241883AbiAXRe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 12:34:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53132 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236694AbiAXRe1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 12:34:27 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E82C06173B;
+        Mon, 24 Jan 2022 09:34:27 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id g2so16003468pgo.9;
+        Mon, 24 Jan 2022 09:34:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZyDNjyTk1g5RHID85BarMSjV5u48polFgmuVs6EELTc=;
+        b=fQlDXQHTJYMjYvbnXqHdGAykkgWwHhP7VJ3dDIAvDCxb2ywj07Dqxr41jgWLAdNqii
+         qnXkcy2N4001VUlkE9BEdGglIc80QYhxCXNqMpA6APHgPkf7P0Wp+P2v53QSKsHw1jAD
+         mhlgR4MVK7YdVIBk9Y3lJyLPWufxeyInJnEgfYHwvoIHDGPsJkDGuJDhydy+sFq6zMjt
+         lxmIueLbwLWOMcQSm+8xV8JSSz1sGtRzeIbAQhXc5aXsKexJIDVuwby1fzWnPgIvd5a5
+         ZBWlhnDmQXzjZM0ySO0G/wtPCji8sG/KUPwDjGbEBnnQOldBiHMWKEIK7MDEX7jHHK6R
+         xnKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZyDNjyTk1g5RHID85BarMSjV5u48polFgmuVs6EELTc=;
+        b=k+t7Eg4K9sTf4H7wxMmvGPOX5jnkumRw8ezm1FT5ZcxBUuDiZtLYy6nFxpkH8tTTI+
+         yhD1bcCJw+pVuPqUpFgqY0GciGCwyujf14BL/x8+H14GJWXGcTGt0U2IY0QhnsYD1rHY
+         Q9x+IgjKgKIpFgFzjmc0Zk03pFCtBEqsB8Vc2ri+gRoXdzpm/AMIsYHKqky/eXAPBZLt
+         r72HZ30JiTVwI9sHi/PDVw0IEPWQM/VXjkZMgJMwzRKo7V26thzpmP6aZH8N1wnRydzZ
+         d6dZdPUZ1pRQktLlhMEgBPagvIDzK4DBkqPKZFgJSD1cm5vC83vXzM1MkWpFBo/p2SFE
+         Ooiw==
+X-Gm-Message-State: AOAM532RVzaI5twxsiv853TRcCFTZXU/b4e1laQ7Ex8OJaj1YdjG/wm+
+        t1XjkMWhOv0YsHiEAeZW/uk=
+X-Google-Smtp-Source: ABdhPJxEMy4wan/+d+ujiXjIpF3AAO0pFS5nxHMHA0D8KpXdACgqaIiBMtuARCp2I3vT/O90wVTDvw==
+X-Received: by 2002:a63:87c6:: with SMTP id i189mr5221362pge.261.1643045666452;
+        Mon, 24 Jan 2022 09:34:26 -0800 (PST)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id o11sm12949904pgj.33.2022.01.24.09.34.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 09:34:25 -0800 (PST)
+Message-ID: <4fd93933-9b98-175a-d6f2-8cb3ddc30c51@gmail.com>
+Date:   Mon, 24 Jan 2022 09:34:23 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: MT7621 SoC Traffic Won't Flow on RGMII2 Bus/2nd GMAC
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        John Crispin <john@phrozen.org>,
+        Siddhant Gupta <siddhantgupta416@gmail.com>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>, linux-mips@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, openwrt-devel@lists.openwrt.org,
+        erkin.bozoglu@xeront.com
+References: <83a35aa3-6cb8-2bc4-2ff4-64278bbcd8c8@arinc9.com>
+ <CALW65jZ4N_YRJd8F-uaETWm1Hs3rNcy95csf++rz7vTk8G8oOg@mail.gmail.com>
+ <02ecce91-7aad-4392-c9d7-f45ca1b31e0b@arinc9.com> <Ye1zwIFUa5LPQbQm@lunn.ch>
+ <acf98ec3-1120-bcc0-2a2f-85d97c48febd@gmail.com>
+ <Ye7hMWRR4URUnSFp@shell.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <Ye7hMWRR4URUnSFp@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>
 
-Enable support for adding TC rules that filter on the inner
-EtherType field of tunneled packet headers.
 
-Signed-off-by: Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_protocol_type.h |   2 +
- drivers/net/ethernet/intel/ice/ice_switch.c        | 272 ++++++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_tc_lib.c        |  15 +-
- 3 files changed, 277 insertions(+), 12 deletions(-)
+On 1/24/2022 9:26 AM, Russell King (Oracle) wrote:
+> On Mon, Jan 24, 2022 at 09:13:38AM -0800, Florian Fainelli wrote:
+>> On 1/23/2022 7:26 AM, Andrew Lunn wrote:
+>>> On Sun, Jan 23, 2022 at 11:33:04AM +0300, Arınç ÜNAL wrote:
+>>>> Hey Deng,
+>>>>
+>>>> On 23/01/2022 09:51, DENG Qingfang wrote:
+>>>>> Hi,
+>>>>>
+>>>>> Do you set the ethernet pinmux correctly?
+>>>>>
+>>>>> &ethernet {
+>>>>>        pinctrl-names = "default";
+>>>>>        pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
+>>>>> };
+>>>>
+>>>> This fixed it! We did have &rgmii2_pins on the gmac1 node (it was originally
+>>>> on external_phy) so we never thought to investigate the pinctrl
+>>>> configuration further! Turns out &rgmii2_pins needs to be defined on the
+>>>> ethernet node instead.
+>>>
+>>> PHYs are generally external, so pinmux on them makes no sense. PHYs in
+>>> DT are not devices in the usual sense, so i don't think the driver
+>>> core will handle pinmux for them, even if you did list them.
+>>
+>> Not sure I understand your comment here, this is configuring the pinmux on
+>> the SoC side in order for the second RGMII interface's data path to work.
+> 
+> The pinmux configuration was listed under the external PHY node, which
+> is qutie unusual. In the case of phylib and external ethernet PHYs,
+> this can be a problem.
+> 
+> The pinmux configuration is normally handled at device probe time by
+> the device model, but remember phylib bypasses that when it attaches
+> the generic PHY driver - meaning you don't get the pinmux configured.
+> 
+> What this means is that pinmux configuration in ethernet PHY nodes is
+> unreliable. It will only happen if we have a specific driver for the
+> PHY and the driver model binds that driver.
+> 
+> Of course, if we killed the generic driver, that would get around this
+> issue by requiring every PHY to have its own specific driver, but there
+> would be many complaints because likely lots would stop working.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_protocol_type.h b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-index 695b6dd61dc27..385deaa021acb 100644
---- a/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-@@ -29,6 +29,7 @@ enum ice_protocol_type {
- 	ICE_MAC_OFOS = 0,
- 	ICE_MAC_IL,
- 	ICE_ETYPE_OL,
-+	ICE_ETYPE_IL,
- 	ICE_VLAN_OFOS,
- 	ICE_IPV4_OFOS,
- 	ICE_IPV4_IL,
-@@ -92,6 +93,7 @@ enum ice_prot_id {
- #define ICE_MAC_OFOS_HW		1
- #define ICE_MAC_IL_HW		4
- #define ICE_ETYPE_OL_HW		9
-+#define ICE_ETYPE_IL_HW		10
- #define ICE_VLAN_OF_HW		16
- #define ICE_VLAN_OL_HW		17
- #define ICE_IPV4_OFOS_HW	32
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 9c40a8d58c715..d98aa35c03377 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -41,6 +41,7 @@ static const struct ice_dummy_pkt_offsets dummy_gre_tcp_packet_offsets[] = {
- 	{ ICE_IPV4_OFOS,	14 },
- 	{ ICE_NVGRE,		34 },
- 	{ ICE_MAC_IL,		42 },
-+	{ ICE_ETYPE_IL,		54 },
- 	{ ICE_IPV4_IL,		56 },
- 	{ ICE_TCP_IL,		76 },
- 	{ ICE_PROTOCOL_LAST,	0 },
-@@ -65,7 +66,8 @@ static const u8 dummy_gre_tcp_packet[] = {
- 	0x00, 0x00, 0x00, 0x00,	/* ICE_MAC_IL 42 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
--	0x08, 0x00,
-+
-+	0x08, 0x00,		/* ICE_ETYPE_IL 54 */
- 
- 	0x45, 0x00, 0x00, 0x14,	/* ICE_IPV4_IL 56 */
- 	0x00, 0x00, 0x00, 0x00,
-@@ -86,6 +88,7 @@ static const struct ice_dummy_pkt_offsets dummy_gre_udp_packet_offsets[] = {
- 	{ ICE_IPV4_OFOS,	14 },
- 	{ ICE_NVGRE,		34 },
- 	{ ICE_MAC_IL,		42 },
-+	{ ICE_ETYPE_IL,		54 },
- 	{ ICE_IPV4_IL,		56 },
- 	{ ICE_UDP_ILOS,		76 },
- 	{ ICE_PROTOCOL_LAST,	0 },
-@@ -110,7 +113,8 @@ static const u8 dummy_gre_udp_packet[] = {
- 	0x00, 0x00, 0x00, 0x00,	/* ICE_MAC_IL 42 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
--	0x08, 0x00,
-+
-+	0x08, 0x00,		/* ICE_ETYPE_IL 54 */
- 
- 	0x45, 0x00, 0x00, 0x14,	/* ICE_IPV4_IL 56 */
- 	0x00, 0x00, 0x00, 0x00,
-@@ -131,6 +135,7 @@ static const struct ice_dummy_pkt_offsets dummy_udp_tun_tcp_packet_offsets[] = {
- 	{ ICE_GENEVE,		42 },
- 	{ ICE_VXLAN_GPE,	42 },
- 	{ ICE_MAC_IL,		50 },
-+	{ ICE_ETYPE_IL,		62 },
- 	{ ICE_IPV4_IL,		64 },
- 	{ ICE_TCP_IL,		84 },
- 	{ ICE_PROTOCOL_LAST,	0 },
-@@ -158,7 +163,8 @@ static const u8 dummy_udp_tun_tcp_packet[] = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_IL 50 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
--	0x08, 0x00,
-+
-+	0x08, 0x00,		/* ICE_ETYPE_IL 62 */
- 
- 	0x45, 0x00, 0x00, 0x28, /* ICE_IPV4_IL 64 */
- 	0x00, 0x01, 0x00, 0x00,
-@@ -182,6 +188,7 @@ static const struct ice_dummy_pkt_offsets dummy_udp_tun_udp_packet_offsets[] = {
- 	{ ICE_GENEVE,		42 },
- 	{ ICE_VXLAN_GPE,	42 },
- 	{ ICE_MAC_IL,		50 },
-+	{ ICE_ETYPE_IL,		62 },
- 	{ ICE_IPV4_IL,		64 },
- 	{ ICE_UDP_ILOS,		84 },
- 	{ ICE_PROTOCOL_LAST,	0 },
-@@ -209,7 +216,8 @@ static const u8 dummy_udp_tun_udp_packet[] = {
- 	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_IL 50 */
- 	0x00, 0x00, 0x00, 0x00,
- 	0x00, 0x00, 0x00, 0x00,
--	0x08, 0x00,
-+
-+	0x08, 0x00,		/* ICE_ETYPE_IL 62 */
- 
- 	0x45, 0x00, 0x00, 0x1c, /* ICE_IPV4_IL 64 */
- 	0x00, 0x01, 0x00, 0x00,
-@@ -221,6 +229,224 @@ static const u8 dummy_udp_tun_udp_packet[] = {
- 	0x00, 0x08, 0x00, 0x00,
- };
- 
-+static const struct ice_dummy_pkt_offsets
-+dummy_gre_ipv6_tcp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_ETYPE_OL,		12 },
-+	{ ICE_IPV4_OFOS,	14 },
-+	{ ICE_NVGRE,		34 },
-+	{ ICE_MAC_IL,		42 },
-+	{ ICE_ETYPE_IL,		54 },
-+	{ ICE_IPV6_IL,		56 },
-+	{ ICE_TCP_IL,		96 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_gre_ipv6_tcp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x08, 0x00,		/* ICE_ETYPE_OL 12 */
-+
-+	0x45, 0x00, 0x00, 0x66, /* ICE_IPV4_OFOS 14 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x2F, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x80, 0x00, 0x65, 0x58, /* ICE_NVGRE 34 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_IL 42 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x86, 0xdd,		/* ICE_ETYPE_IL 54 */
-+
-+	0x60, 0x00, 0x00, 0x00, /* ICE_IPV6_IL 56 */
-+	0x00, 0x08, 0x06, 0x40,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_TCP_IL 96 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x50, 0x02, 0x20, 0x00,
-+	0x00, 0x00, 0x00, 0x00
-+};
-+
-+static const struct ice_dummy_pkt_offsets
-+dummy_gre_ipv6_udp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_ETYPE_OL,		12 },
-+	{ ICE_IPV4_OFOS,	14 },
-+	{ ICE_NVGRE,		34 },
-+	{ ICE_MAC_IL,		42 },
-+	{ ICE_ETYPE_IL,		54 },
-+	{ ICE_IPV6_IL,		56 },
-+	{ ICE_UDP_ILOS,		96 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_gre_ipv6_udp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x08, 0x00,		/* ICE_ETYPE_OL 12 */
-+
-+	0x45, 0x00, 0x00, 0x5a, /* ICE_IPV4_OFOS 14 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x2F, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x80, 0x00, 0x65, 0x58, /* ICE_NVGRE 34 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_IL 42 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x86, 0xdd,		/* ICE_ETYPE_IL 54 */
-+
-+	0x60, 0x00, 0x00, 0x00, /* ICE_IPV6_IL 56 */
-+	0x00, 0x08, 0x11, 0x40,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_UDP_ILOS 96 */
-+	0x00, 0x08, 0x00, 0x00,
-+};
-+
-+static const struct ice_dummy_pkt_offsets
-+dummy_udp_tun_ipv6_tcp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_ETYPE_OL,		12 },
-+	{ ICE_IPV4_OFOS,	14 },
-+	{ ICE_UDP_OF,		34 },
-+	{ ICE_VXLAN,		42 },
-+	{ ICE_GENEVE,		42 },
-+	{ ICE_VXLAN_GPE,	42 },
-+	{ ICE_MAC_IL,		50 },
-+	{ ICE_ETYPE_IL,		62 },
-+	{ ICE_IPV6_IL,		64 },
-+	{ ICE_TCP_IL,		104 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_udp_tun_ipv6_tcp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00,  /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x08, 0x00,		/* ICE_ETYPE_OL 12 */
-+
-+	0x45, 0x00, 0x00, 0x6e, /* ICE_IPV4_OFOS 14 */
-+	0x00, 0x01, 0x00, 0x00,
-+	0x40, 0x11, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x12, 0xb5, /* ICE_UDP_OF 34 */
-+	0x00, 0x5a, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x65, 0x58, /* ICE_VXLAN 42 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_IL 50 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x86, 0xdd,		/* ICE_ETYPE_IL 62 */
-+
-+	0x60, 0x00, 0x00, 0x00, /* ICE_IPV6_IL 64 */
-+	0x00, 0x08, 0x06, 0x40,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_TCP_IL 104 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x50, 0x02, 0x20, 0x00,
-+	0x00, 0x00, 0x00, 0x00
-+};
-+
-+static const struct ice_dummy_pkt_offsets
-+dummy_udp_tun_ipv6_udp_packet_offsets[] = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_ETYPE_OL,		12 },
-+	{ ICE_IPV4_OFOS,	14 },
-+	{ ICE_UDP_OF,		34 },
-+	{ ICE_VXLAN,		42 },
-+	{ ICE_GENEVE,		42 },
-+	{ ICE_VXLAN_GPE,	42 },
-+	{ ICE_MAC_IL,		50 },
-+	{ ICE_ETYPE_IL,		62 },
-+	{ ICE_IPV6_IL,		64 },
-+	{ ICE_UDP_ILOS,		104 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+static const u8 dummy_udp_tun_ipv6_udp_packet[] = {
-+	0x00, 0x00, 0x00, 0x00,  /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x08, 0x00,		/* ICE_ETYPE_OL 12 */
-+
-+	0x45, 0x00, 0x00, 0x62, /* ICE_IPV4_OFOS 14 */
-+	0x00, 0x01, 0x00, 0x00,
-+	0x00, 0x11, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x12, 0xb5, /* ICE_UDP_OF 34 */
-+	0x00, 0x4e, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x65, 0x58, /* ICE_VXLAN 42 */
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_IL 50 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x86, 0xdd,		/* ICE_ETYPE_IL 62 */
-+
-+	0x60, 0x00, 0x00, 0x00, /* ICE_IPV6_IL 64 */
-+	0x00, 0x08, 0x11, 0x40,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_UDP_ILOS 104 */
-+	0x00, 0x08, 0x00, 0x00,
-+};
-+
- /* offset info for MAC + IPv4 + UDP dummy packet */
- static const struct ice_dummy_pkt_offsets dummy_udp_packet_offsets[] = {
- 	{ ICE_MAC_OFOS,		0 },
-@@ -3818,6 +4044,7 @@ static const struct ice_prot_ext_tbl_entry ice_prot_ext[ICE_PROTOCOL_LAST] = {
- 	{ ICE_MAC_OFOS,		{ 0, 2, 4, 6, 8, 10, 12 } },
- 	{ ICE_MAC_IL,		{ 0, 2, 4, 6, 8, 10, 12 } },
- 	{ ICE_ETYPE_OL,		{ 0 } },
-+	{ ICE_ETYPE_IL,		{ 0 } },
- 	{ ICE_VLAN_OFOS,	{ 2, 0 } },
- 	{ ICE_IPV4_OFOS,	{ 0, 2, 4, 6, 8, 10, 12, 14, 16, 18 } },
- 	{ ICE_IPV4_IL,		{ 0, 2, 4, 6, 8, 10, 12, 14, 16, 18 } },
-@@ -3837,6 +4064,7 @@ static struct ice_protocol_entry ice_prot_id_tbl[ICE_PROTOCOL_LAST] = {
- 	{ ICE_MAC_OFOS,		ICE_MAC_OFOS_HW },
- 	{ ICE_MAC_IL,		ICE_MAC_IL_HW },
- 	{ ICE_ETYPE_OL,		ICE_ETYPE_OL_HW },
-+	{ ICE_ETYPE_IL,		ICE_ETYPE_IL_HW },
- 	{ ICE_VLAN_OFOS,	ICE_VLAN_OL_HW },
- 	{ ICE_IPV4_OFOS,	ICE_IPV4_OFOS_HW },
- 	{ ICE_IPV4_IL,		ICE_IPV4_IL_HW },
-@@ -4818,6 +5046,7 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 		      const struct ice_dummy_pkt_offsets **offsets)
- {
- 	bool tcp = false, udp = false, ipv6 = false, vlan = false;
-+	bool ipv6_il = false;
- 	u16 i;
- 
- 	for (i = 0; i < lkups_cnt; i++) {
-@@ -4833,18 +5062,35 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 			 lkups[i].h_u.ethertype.ethtype_id ==
- 				cpu_to_be16(ICE_IPV6_ETHER_ID) &&
- 			 lkups[i].m_u.ethertype.ethtype_id ==
--					cpu_to_be16(0xFFFF))
-+				cpu_to_be16(0xFFFF))
- 			ipv6 = true;
-+		else if (lkups[i].type == ICE_ETYPE_IL &&
-+			 lkups[i].h_u.ethertype.ethtype_id ==
-+				cpu_to_be16(ICE_IPV6_ETHER_ID) &&
-+			 lkups[i].m_u.ethertype.ethtype_id ==
-+				cpu_to_be16(0xFFFF))
-+			ipv6_il = true;
- 	}
- 
- 	if (tun_type == ICE_SW_TUN_NVGRE) {
-+		if (tcp && ipv6_il) {
-+			*pkt = dummy_gre_ipv6_tcp_packet;
-+			*pkt_len = sizeof(dummy_gre_ipv6_tcp_packet);
-+			*offsets = dummy_gre_ipv6_tcp_packet_offsets;
-+			return;
-+		}
- 		if (tcp) {
- 			*pkt = dummy_gre_tcp_packet;
- 			*pkt_len = sizeof(dummy_gre_tcp_packet);
- 			*offsets = dummy_gre_tcp_packet_offsets;
- 			return;
- 		}
--
-+		if (ipv6_il) {
-+			*pkt = dummy_gre_ipv6_udp_packet;
-+			*pkt_len = sizeof(dummy_gre_ipv6_udp_packet);
-+			*offsets = dummy_gre_ipv6_udp_packet_offsets;
-+			return;
-+		}
- 		*pkt = dummy_gre_udp_packet;
- 		*pkt_len = sizeof(dummy_gre_udp_packet);
- 		*offsets = dummy_gre_udp_packet_offsets;
-@@ -4853,13 +5099,24 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 
- 	if (tun_type == ICE_SW_TUN_VXLAN ||
- 	    tun_type == ICE_SW_TUN_GENEVE) {
-+		if (tcp && ipv6_il) {
-+			*pkt = dummy_udp_tun_ipv6_tcp_packet;
-+			*pkt_len = sizeof(dummy_udp_tun_ipv6_tcp_packet);
-+			*offsets = dummy_udp_tun_ipv6_tcp_packet_offsets;
-+			return;
-+		}
- 		if (tcp) {
- 			*pkt = dummy_udp_tun_tcp_packet;
- 			*pkt_len = sizeof(dummy_udp_tun_tcp_packet);
- 			*offsets = dummy_udp_tun_tcp_packet_offsets;
- 			return;
- 		}
--
-+		if (ipv6_il) {
-+			*pkt = dummy_udp_tun_ipv6_udp_packet;
-+			*pkt_len = sizeof(dummy_udp_tun_ipv6_udp_packet);
-+			*offsets = dummy_udp_tun_ipv6_udp_packet_offsets;
-+			return;
-+		}
- 		*pkt = dummy_udp_tun_udp_packet;
- 		*pkt_len = sizeof(dummy_udp_tun_udp_packet);
- 		*offsets = dummy_udp_tun_udp_packet_offsets;
-@@ -4965,6 +5222,7 @@ ice_fill_adv_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 			len = sizeof(struct ice_ether_hdr);
- 			break;
- 		case ICE_ETYPE_OL:
-+		case ICE_ETYPE_IL:
- 			len = sizeof(struct ice_ethtype_hdr);
- 			break;
- 		case ICE_VLAN_OFOS:
-diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-index 65cf32eb40466..424c74ca7d693 100644
---- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-@@ -33,9 +33,7 @@ ice_tc_count_lkups(u32 flags, struct ice_tc_flower_lyr_2_4_hdrs *headers,
- 	if (flags & ICE_TC_FLWR_FIELD_ENC_DEST_L4_PORT)
- 		lkups_cnt++;
- 
--	/* currently inner etype filter isn't supported */
--	if ((flags & ICE_TC_FLWR_FIELD_ETH_TYPE_ID) &&
--	    fltr->tunnel_type == TNL_LAST)
-+	if (flags & ICE_TC_FLWR_FIELD_ETH_TYPE_ID)
- 		lkups_cnt++;
- 
- 	/* are MAC fields specified? */
-@@ -64,6 +62,11 @@ static enum ice_protocol_type ice_proto_type_from_mac(bool inner)
- 	return inner ? ICE_MAC_IL : ICE_MAC_OFOS;
- }
- 
-+static enum ice_protocol_type ice_proto_type_from_etype(bool inner)
-+{
-+	return inner ? ICE_ETYPE_IL : ICE_ETYPE_OL;
-+}
-+
- static enum ice_protocol_type ice_proto_type_from_ipv4(bool inner)
- {
- 	return inner ? ICE_IPV4_IL : ICE_IPV4_OFOS;
-@@ -224,8 +227,10 @@ ice_tc_fill_rules(struct ice_hw *hw, u32 flags,
- 
- 		headers = &tc_fltr->inner_headers;
- 		inner = true;
--	} else if (flags & ICE_TC_FLWR_FIELD_ETH_TYPE_ID) {
--		list[i].type = ICE_ETYPE_OL;
-+	}
-+
-+	if (flags & ICE_TC_FLWR_FIELD_ETH_TYPE_ID) {
-+		list[i].type = ice_proto_type_from_etype(inner);
- 		list[i].h_u.ethertype.ethtype_id = headers->l2_key.n_proto;
- 		list[i].m_u.ethertype.ethtype_id = headers->l2_mask.n_proto;
- 		i++;
+I suppose that explains why this is still in staging then :) Andrew's 
+answer makes more sense now, thanks.
 -- 
-cgit 1.2.3-1.el7
-
+Florian
