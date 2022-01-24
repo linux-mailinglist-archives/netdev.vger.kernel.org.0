@@ -2,200 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2614498934
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 19:53:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C9EB498924
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 19:53:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344110AbiAXSxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 13:53:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343614AbiAXSwI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 13:52:08 -0500
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B6FCC061770;
-        Mon, 24 Jan 2022 10:52:00 -0800 (PST)
-Received: by mail-ot1-x32a.google.com with SMTP id m8-20020a9d4c88000000b00592bae7944bso23549757otf.1;
-        Mon, 24 Jan 2022 10:52:00 -0800 (PST)
+        id S236176AbiAXSxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 13:53:09 -0500
+Received: from mail-mw2nam08on2104.outbound.protection.outlook.com ([40.107.101.104]:26247
+        "EHLO NAM04-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S245412AbiAXSvv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jan 2022 13:51:51 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oFF06zMHizJQBxiQDxkzfWxonfc5KXBAv9fY6ClWwXPePCj1L53da6r1isnrMyoqjcUl3rWJlfcD+TdF/8Dymypc4BuhzotwiRmJKpPeM7Sq64od28ECcg3/S9gu9lCi+E0fueq2IbDpiKh3HGNFL13lTZ6vvjqazEV0jwPWOthatAxx8DIFzgJ1VbodxcSQCItvt58A46veVEs7ao+nkNFUerrPEeecMUzcixxQB/STaCTiSQLJa9Xv6xVfHPc9mGTnh2D06Jx1F/V7dzGWYZVp1J47EF5U12ejEhkfFAi3+Jjb5OHQ2rW89NTdev9eo9gwJ6fsvGNJRriBrv5OrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fRI5ZXI/DL+ERF9ZdhVa1jjW8ChgMqLVNm4iWJguf3E=;
+ b=WmRwlvyQ6h84U9pfNj5eyj9tuq10MX4TiWe29BnroUqkfs/aGB7N6aPE+4CVCjN3tmC0NnJpjsfexQ4Cjk7nAtiYM5zM1hFjMbPXkfiPCJENjgg1y0Tw0P+08FGLzSLPZMdqzObpiw3Mv2EwCWF27o6O2zKXKaqRst7r2Mb96kRfEeBhrR1l7sAaGuHDZKxuIGhQYRZe7nnpaFlXBOtyi2fKxzPjpUefyP1hv3lvigDhkpQ5NGML6baMrDm0ocT6+P7JW2ChXOpqr5XhKyOA/2DjZ2wUE1q9dQqx/DHuHPUcjUb3GC0cAQhyVq6/cnOrj/ktcI5wkXVrByOtuBWJiQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=r9ORcgxwPP4ycG1Uxe8mTwFvOudbcps3q5Aj2rRnpck=;
-        b=e0jdHKVOQgUpteOMfqGIsKj6bppWqqtxb5ZahWfm3lk77uMULiAbyRMiAKafk9wKhT
-         obaUU1owPGL5j6q0WlyHQe9AZXD63iBfKn5yQBktSaUkSZYotefpB1vQhY2MmOd20UBa
-         fdBk/sNOEbcRNXpK/Co7No3CejVyF+9fEZtBPov/vxP85W1L74LxnkeMRUb11+lGqngi
-         KbyoW40hJ9R+ETAV8kSKkfrsiXWCw57UPUGDO88HRIlqTpbTn5NCBbuFoyhnfHe2+k+i
-         GhAQO4/ddpnm1G0bgPsxgqM79TPbDXHjC18GDBxasAnV+4V0d2cXD4/AM/CNIFipJ34V
-         Fudw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=r9ORcgxwPP4ycG1Uxe8mTwFvOudbcps3q5Aj2rRnpck=;
-        b=rJWUKkupxwaVuEF05cdSSNiaTo+Sigj9wkGFdORJKgSTxudK7LHOJzGWru4x4OId2G
-         muaDe6u++v7t5xiKz5B2LWM4EcbwW8IO0k3MZTiBpZ4GEEV0P8acIOAwPR4b01aVBPp8
-         RUuuuQFtSMJG0+A53tKS7cwuFuJ99YkRDnnTWydPXKFoR7XGQreYSKXXQvbsMRzYBwO0
-         +9LUmHWKdYrw9c3fsrSm4eN4GlKFER9QumOPM18e+ASAQAjzDJ86IecbVSTej2a+FgCD
-         RiFi2aze+K2GdTSU4pGCOW+gdxvva3w/J7eidUlEhqRnmECEyUYos5eCbAlAs9D1KG1z
-         3F9w==
-X-Gm-Message-State: AOAM532vDpxoK0S+bNEagJp1c0cHVzL9tcc9Hh0K9slbPDoAzLdRHl2+
-        tYfKt2UNxhoQvFz2MEvgf//Sp9989W6TqPnvo5Y=
-X-Google-Smtp-Source: ABdhPJz1Khf3SO0+bH9fYxpAMD7XCc9wWdnY55JgNJ7kmV9RJ/cvxr18HoDYHDiBJbnuymI0c1uy0F3r7GxxZrlfypU=
-X-Received: by 2002:a9d:601a:: with SMTP id h26mr3092033otj.357.1643050319496;
- Mon, 24 Jan 2022 10:51:59 -0800 (PST)
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fRI5ZXI/DL+ERF9ZdhVa1jjW8ChgMqLVNm4iWJguf3E=;
+ b=fvDjsCzlrywEuxAK70gXb7/oACJZwpMBjI50JaWHofRG5u7z+rfQUGmOOk+KSi2Fff7uqpkHGmzOwakWoFxt4xPOQlyLtNSgZkXP+fre3EgZtOAniT8QRmqUeEYiVdK/tXYCDFqv5+0b7916l6R1rmGV4/5ZdsN7ki9UcMWTWP4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by MN2PR10MB4237.namprd10.prod.outlook.com
+ (2603:10b6:208:1dc::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8; Mon, 24 Jan
+ 2022 18:51:48 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4909.017; Mon, 24 Jan 2022
+ 18:51:48 +0000
+Date:   Mon, 24 Jan 2022 10:51:49 -0800
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: cpsw: Properly initialise struct
+ page_pool_params
+Message-ID: <20220124185149.GA15153@COLIN-DESKTOP1.localdomain>
+References: <20220124143531.361005-1-toke@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220124143531.361005-1-toke@redhat.com>
+X-ClientProxiedBy: MWHPR1401CA0002.namprd14.prod.outlook.com
+ (2603:10b6:301:4b::12) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-References: <20220123125737.2658758-1-geert@linux-m68k.org> <alpine.DEB.2.22.394.2201240851560.2674757@ramsan.of.borg>
-In-Reply-To: <alpine.DEB.2.22.394.2201240851560.2674757@ramsan.of.borg>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Mon, 24 Jan 2022 13:51:48 -0500
-Message-ID: <CADnq5_MUq0fX7wMLJyUUxxa+2xoRinonL-TzD8tUhXALRfY8-A@mail.gmail.com>
-Subject: Re: Build regressions/improvements in v5.17-rc1
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, alsa-devel@alsa-project.org,
-        kvm@vger.kernel.org, Network Development <netdev@vger.kernel.org>,
-        linux-um@lists.infradead.org, linux-mips@vger.kernel.org,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
-        sparclinux@vger.kernel.org,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        "Tobin C. Harding" <me@tobin.cc>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7633bd32-3f22-4759-41aa-08d9df6a9341
+X-MS-TrafficTypeDiagnostic: MN2PR10MB4237:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR10MB4237357595086A037273271FA45E9@MN2PR10MB4237.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uUcU2Cg1eYvpenmpecGvPiqrvYDYag2mck4Lgru94hkt3QQp1KfU/v/PsMqS5hdPDYssvwhYQpn0fcR/jVczsuatgBko9sDCqD0xCylhcvWeXvLptx3K8+zun6p76bV93T9MKhpDa+gFspFvxABIz0CHsJtieb9+WrhdZMJKwpzgaPtn/eb9Ih0aidmg6cihRYatKPDM2jPng1OoHH1wzEMf40SmkqwI/ntz3hoW1w7lLqAIq3LW/Im2GrZ4wGqrJ+e10HNzqtGvpiFtFqIfUeSsgTKcS6e9x9B0meLm5TC0mh1MZYGuw1RgFXRGQ7CQtL8A9MnTgy8ikN2R40z1AOVhCaCN/zVtzmRlUj3wTNZ6cL8eH9m2YPKmQOlB40KLDYQOeDlUP4Z8lQ3P8rYq4qbKM42D/dpNEgLoBTdXtCeXcIL7Ep1gT3p5ib3kNbpB3f0zI23up33MGZT16FucLpZVlFq4Cmbx1MMfq5pQDPO9fTw81QvNtsCoa0IiXueUjDC8HPzTkkE1A5+QhrILBUSkXWjirnH5vSDA12KhLGOBTsaSmA7Y4WcmYLzmktyrLKeLHitd2ERl13J23zNl6mIPjegyobgEkd5HiGdZI99+6fC3+d/B495DIEPSkcaKXeWnSrFgoJ5xQJhki9JgBKpkwmP49sOCLyRZKcc8CcKS5rMT1ghNC7CQztu891V3+zq+OESoGwJiHDree1F8CQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(39830400003)(376002)(396003)(346002)(136003)(366004)(42606007)(6916009)(26005)(6486002)(8676002)(1076003)(7416002)(9686003)(54906003)(66574015)(2906002)(8936002)(316002)(66556008)(66946007)(5660300002)(52116002)(6506007)(4326008)(66476007)(186003)(508600001)(38100700002)(44832011)(83380400001)(38350700002)(6512007)(33656002)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?V2tFVVMvMThySHNZaVd3OVRybS9GeVA3ekw5eFhRV1dUQXBESjJ4WUNjTGNn?=
+ =?utf-8?B?bkQrY0lxVEdYVkIzeG1kN3RlV3NLTkxmelZFNnVVWDV4Wm9EUWFmRFZ2WjNu?=
+ =?utf-8?B?Unh2ZFRhOHE0UEFVeGFodVl6dDYvSWVtVjIzTTZNUExPUm5qejB0WjNCbWpl?=
+ =?utf-8?B?M3grYVNSWkM5QlZ0ODcxMHBETW0wTWFxc1Q4bk80UkFMSjQwOTVwdUhvVlph?=
+ =?utf-8?B?UVhQWGRoUlFaM0lCY0JrZWFTdXB5dGtWek4rNVl5ZFppaUJqOXJXc3cwUkVT?=
+ =?utf-8?B?QnBzd01lM3N1T2xzQXhOTTBVd1JpUWVXZ3BaZ0NUaHRVUmY1Ty9QSHhZN3hE?=
+ =?utf-8?B?VnhEZFgvUjJqQytXbEE1N0U2UjltdC93cmlEZy9ueSs4MEUvcTJwYnpMMnhC?=
+ =?utf-8?B?QUw2ZlFGU0ZQVnBmVTIvS2tFVUNDMjhsTnI5Qjcra1p6UXhZUzVJcGtycjNp?=
+ =?utf-8?B?Q1gxalBOY1d4Q2p6VU1HWk5qV3p6MkxOWXNPQlRWMlYxNnRzZ1I4TlQ4cEZ1?=
+ =?utf-8?B?ZXArTHhFdUt3bEc4SFJGdStrc0ErSGkxdWtNM0FhcGt4K25zbGYxUXVaSEoy?=
+ =?utf-8?B?ZEQzeEtXR2x3MEhSTnNWYnRRU0dRTEM2Qmp6VGllQnB4ZnpwWGJEZ2FRcitp?=
+ =?utf-8?B?THQ1c1g0dk1IRERUT0w3OEx4aXN5bjVzMDRyeC94aFppUFNjLzUrcXQ1YlR3?=
+ =?utf-8?B?MEZFMG14d3dHeEdNU0dwS0o5dDRTUm41QzNSaHcyTVRtS2g2TUJSSWN2YWp1?=
+ =?utf-8?B?bnBEcnVramt0V0U5aGdWWWc1VkVuQU4rTWhwMURSdlZXWWYwT3RkN1VuQlZt?=
+ =?utf-8?B?VjJuNEZieDlKNlVhWmd2bzArS3VYUlpPOVhVWFQ4Zko1RkRIOTh2L1lNRFpL?=
+ =?utf-8?B?QWEwZFhsdlByNG0yUWdzVjNjSG5hdjVQcHN6aXZjL0RFVSsvMm40NUJ3eTBZ?=
+ =?utf-8?B?cTZuSkp6Z1FXbWdrem9UbjcxMnhab1NuUk1RQmt6SEN4TjNYcWsvNnVBVHJ6?=
+ =?utf-8?B?VXVZRmJrTWJBNk0wSVJzYlM0R3d6c1ZTY1Erek42c1V1YnAwOVlOMS9iaTlt?=
+ =?utf-8?B?T3BreHZGcGtpY0FJNk1oYXdTUHBwZElLdDdZV0h4ZzJ4V3pnblVUS3BPM2Ur?=
+ =?utf-8?B?MmdNbjhLa0J3cGhvbXo5TnpHcDNQelZMNGZrNGZrSko2RE0vcnk2eG5xSytv?=
+ =?utf-8?B?cUhMdFhZL21wVEJma0FPYlhtcWZlMFRZSGNySFVBQmlJdlV4bnkzaENrUW80?=
+ =?utf-8?B?blJaU2ZpSGl1SDhxZmM3WW1hSVkzYmNMcFl6N0ltTWJLYytHNlpibmxBYWhP?=
+ =?utf-8?B?QkNCVE16S3lOekM0OFZtU2VEQitIbnE4SGtkMVdHa2JhUlA1ak9VL0JEdjhD?=
+ =?utf-8?B?NzZPTnZJaHArS01iNFNJNk5Wb2RWOHQ4NTB6emd5OGhOM2FBamZINUV3b1Z2?=
+ =?utf-8?B?eHF4ZlpWWUlTUWE5M3l2SFoyNm90SlVsUzdhRVNOOHNVTjUzRkFVTUJFejZk?=
+ =?utf-8?B?YzR5Zlg3NCtwWjJUUnJWdHpleTEycUJ2amtVR0xFT2VpUzBMV1V5VmxNQm1W?=
+ =?utf-8?B?UEltSHBuNXkyMXpwZXdYUW5objg3L3BVendHOE9Udi9wY1BHOTJDZjhjUVh1?=
+ =?utf-8?B?cFBxa2ViUUhaZFRHOElpaElVTmFNZFk1c2lhaTNHQ09CNTdqWDFBY0Z6c1dk?=
+ =?utf-8?B?amswYjByQ0hEcWI3SDlzdzZHM2psL1BVNWZlWWZwb2RWd1JYY1p6OTdHUXlX?=
+ =?utf-8?B?a0FyY29UNzgwZ0l2cnErYUt4amFINnF0Qm5HaGdSRWtLQmNKek1DUnovb1dw?=
+ =?utf-8?B?bElqMm10NDZoeFRLNk1RYkorblJKci9tWEdlSytuSzlLcFhUNXNLQ093YTl6?=
+ =?utf-8?B?R3VLdTNhMEVKZFVleHVRb0owTzRpUFJNQlBsOGxyTEY4aTVxMFVNOHc1STVu?=
+ =?utf-8?B?b1BIRnpMcHYwbjB1VmZuaWtxSlNPTHdLVE0yNldyZ25PVisxT0I0S3ZNbzFm?=
+ =?utf-8?B?d2lGZ0NXNTNzeWp1dmRBNDdzKzMzQUZHOUFhUkJRc2V4WWZmdDdZMnY5enNw?=
+ =?utf-8?B?THl4eExKbzI0N2l4d2lVN2gxREg4REdKQjI3ZngzTU9KckF0MHFMUkx1akpz?=
+ =?utf-8?B?OWlUbHVrZ05XcGsvdmVoaEdGY1NrN3I3U2habXBOWXBiWU5sRHY1bDRkeVM3?=
+ =?utf-8?B?M3NQM21BRldVM0oxSUZQcjloWk8waDRGRkR0ZXVnSlRUdnFDRXN4SWdXQ2hh?=
+ =?utf-8?B?UkViQWYrYVZ1MEI4Wjk5V2F4clVRPT0=?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7633bd32-3f22-4759-41aa-08d9df6a9341
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2022 18:51:48.2971
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NXE53s3YY7Lg6felQl6SHLWNq6CBlxojfpxMpK5umxMZkCWGxKBpa308Y+fe76cBZXf0QlzhtArtVWLlYDF0iU04BxCjavnznsOAZ0RZ5PE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB4237
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 5:25 AM Geert Uytterhoeven <geert@linux-m68k.org> w=
-rote:
->
-> On Sun, 23 Jan 2022, Geert Uytterhoeven wrote:
-> > Below is the list of build error/warning regressions/improvements in
-> > v5.17-rc1[1] compared to v5.16[2].
-> >
-> > Summarized:
-> >  - build errors: +17/-2
-> >  - build warnings: +23/-25
-> >
-> > Note that there may be false regressions, as some logs are incomplete.
-> > Still, they're build errors/warnings.
-> >
-> > Happy fixing! ;-)
-> >
-> > Thanks to the linux-next team for providing the build service.
-> >
-> > [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/e783362eb54cd=
-99b2cac8b3a9aeac942e6f6ac07/ (all 99 configs)
-> > [2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/df0cc57e057f1=
-8e44dac8e6c18aba47ab53202f9/ (98 out of 99 configs)
-> >
-> >
-> > *** ERRORS ***
-> >
-> > 17 error regressions:
-> >  + /kisskb/src/arch/powerpc/kernel/stacktrace.c: error: implicit declar=
-ation of function 'nmi_cpu_backtrace' [-Werror=3Dimplicit-function-declarat=
-ion]:  =3D> 171:2
-> >  + /kisskb/src/arch/powerpc/kernel/stacktrace.c: error: implicit declar=
-ation of function 'nmi_trigger_cpumask_backtrace' [-Werror=3Dimplicit-funct=
-ion-declaration]:  =3D> 226:2
->
-> powerpc-gcc5/skiroot_defconfig
->
-> >  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible =
-function types from 'void (*)(long unsigned int)' to 'void (*)(long unsigne=
-d int,  long unsigned int,  long unsigned int,  long unsigned int,  long un=
-signed int)' [-Werror=3Dcast-function-type]:  =3D> 1756:13, 1639:13
-> >  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible =
-function types from 'void (*)(struct mm_struct *)' to 'void (*)(long unsign=
-ed int,  long unsigned int,  long unsigned int,  long unsigned int,  long u=
-nsigned int)' [-Werror=3Dcast-function-type]:  =3D> 1674:29, 1662:29
-> >  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible =
-function types from 'void (*)(struct mm_struct *, long unsigned int)' to 'v=
-oid (*)(long unsigned int,  long unsigned int,  long unsigned int,  long un=
-signed int,  long unsigned int)' [-Werror=3Dcast-function-type]:  =3D> 1767=
-:21
-> >  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible =
-function types from 'void (*)(struct vm_area_struct *, long unsigned int)' =
-to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  lo=
-ng unsigned int,  long unsigned int)' [-Werror=3Dcast-function-type]:  =3D>=
- 1741:29, 1726:29
-> >  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible =
-function types from 'void (*)(struct vm_area_struct *, long unsigned int,  =
-long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  lo=
-ng unsigned int,  long unsigned int,  long unsigned int)' [-Werror=3Dcast-f=
-unction-type]:  =3D> 1694:29, 1711:29
->
-> sparc64-gcc11/sparc-allmodconfig
->
-> >  + /kisskb/src/arch/um/include/asm/processor-generic.h: error: called o=
-bject is not a function or function pointer:  =3D> 103:18
-> >  + /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: assignment make=
-s pointer from integer without a cast [-Werror=3Dint-conversion]:  =3D> 324=
-:9, 317:9
-> >  + /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit declar=
-ation of function 'ioport_map' [-Werror=3Dimplicit-function-declaration]:  =
-=3D> 317:11
-> >  + /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit declar=
-ation of function 'ioport_unmap' [-Werror=3Dimplicit-function-declaration]:=
-  =3D> 338:15
->
-> um-x86_64/um-allyesconfig
->
-> >  + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: err=
-or: control reaches end of non-void function [-Werror=3Dreturn-type]:  =3D>=
- 1560:1
 
-I don't really see what's going on here:
+Hi Toke,
 
-#ifdef CONFIG_X86_64
-return cpu_data(first_cpu_of_numa_node).apicid;
-#else
-return first_cpu_of_numa_node;
-#endif
+Thanks for looking into this. I'll this patch this evening when I have
+access to hardware.
 
-Alex
+Colin Foster
 
->
-> um-x86_64/um-all{mod,yes}config
->
-> >  + /kisskb/src/drivers/net/ethernet/freescale/fec_mpc52xx.c: error: pas=
-sing argument 2 of 'mpc52xx_fec_set_paddr' discards 'const' qualifier from =
-pointer target type [-Werror=3Ddiscarded-qualifiers]:  =3D> 659:29
->
-> powerpc-gcc5/ppc32_allmodconfig
->
-> >  + /kisskb/src/drivers/pinctrl/pinctrl-thunderbay.c: error: assignment =
-discards 'const' qualifier from pointer target type [-Werror=3Ddiscarded-qu=
-alifiers]:  =3D> 815:8, 815:29
->
-> arm64-gcc5.4/arm64-allmodconfig
-> arm64-gcc8/arm64-allmodconfig
->
-> >  + /kisskb/src/lib/test_printf.c: error: "PTR" redefined [-Werror]:  =
-=3D> 247:0, 247
-> >  + /kisskb/src/sound/pci/ca0106/ca0106.h: error: "PTR" redefined [-Werr=
-or]:  =3D> 62, 62:0
->
-> mips-gcc8/mips-allmodconfig
-> mipsel/mips-allmodconfig
->
-> >  + error: arch/powerpc/kvm/book3s_64_entry.o: relocation truncated to f=
-it: R_PPC64_REL14 (stub) against symbol `machine_check_common' defined in .=
-text section in arch/powerpc/kernel/head_64.o:  =3D> (.text+0x3e4)
->
-> powerpc-gcc5/powerpc-allyesconfig
->
-> Gr{oetje,eeting}s,
->
->                                                 Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
-8k.org
->
-> In personal conversations with technical people, I call myself a hacker. =
-But
-> when I'm talking to journalists I just say "programmer" or something like=
- that.
->                                                             -- Linus Torv=
-alds
+On Mon, Jan 24, 2022 at 03:35:29PM +0100, Toke Høiland-Jørgensen wrote:
+> The cpsw driver didn't properly initialise the struct page_pool_params
+> before calling page_pool_create(), which leads to crashes after the struct
+> has been expanded with new parameters.
+> 
+> The second Fixes tag below is where the buggy code was introduced, but
+> because the code was moved around this patch will only apply on top of the
+> commit in the first Fixes tag.
+> 
+> Fixes: c5013ac1dd0e ("net: ethernet: ti: cpsw: move set of common functions in cpsw_priv")
+> Fixes: 9ed4050c0d75 ("net: ethernet: ti: cpsw: add XDP support")
+> Reported-by: Colin Foster <colin.foster@in-advantage.com>
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> ---
+>  drivers/net/ethernet/ti/cpsw_priv.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+> index ba220593e6db..8f6817f346ba 100644
+> --- a/drivers/net/ethernet/ti/cpsw_priv.c
+> +++ b/drivers/net/ethernet/ti/cpsw_priv.c
+> @@ -1146,7 +1146,7 @@ int cpsw_fill_rx_channels(struct cpsw_priv *priv)
+>  static struct page_pool *cpsw_create_page_pool(struct cpsw_common *cpsw,
+>  					       int size)
+>  {
+> -	struct page_pool_params pp_params;
+> +	struct page_pool_params pp_params = {};
+>  	struct page_pool *pool;
+>  
+>  	pp_params.order = 0;
+> -- 
+> 2.34.1
+> 
