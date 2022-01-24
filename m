@@ -2,96 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 397C6497BF5
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 10:28:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54157497BF9
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 10:30:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233754AbiAXJ2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 04:28:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26204 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233715AbiAXJ2g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 04:28:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643016515;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PU7JbFuDwdFKk/VjKzygUczh9Zjw5LHX5d/gO46ICZ4=;
-        b=VfGViklEVimD6k0TdE77xCrQNDYEnfO6MXn4H8IWAYqMHlW3vwHzwHJXpyjJ003lnx9ceD
-        l47dFaGEr5/rwAPkK1SijzF/pT4CHc1exySixscdsaFy4qF+Tkg08Mms2K4a33Erql1jNg
-        OYis1GtnDCQ+3AkdTReJtM+gua6LUtU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-664-h86HWp00MZiTOBQxiU5KBw-1; Mon, 24 Jan 2022 04:28:29 -0500
-X-MC-Unique: h86HWp00MZiTOBQxiU5KBw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6CE8B5108D;
-        Mon, 24 Jan 2022 09:28:27 +0000 (UTC)
-Received: from localhost (unknown [10.43.135.229])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C25C770D52;
-        Mon, 24 Jan 2022 09:28:24 +0000 (UTC)
-Date:   Mon, 24 Jan 2022 10:28:23 +0100
-From:   Miroslav Lichvar <mlichvar@redhat.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
+        id S233756AbiAXJ3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 04:29:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51498 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233888AbiAXJ3i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 04:29:38 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C1FC06173D
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 01:29:37 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id a18so55289004edj.7
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 01:29:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oC9HNsvbmipJaI7/3GLC383YFKywT6rDBqGjOn8JyvI=;
+        b=nZAt5N2Jo6rWor+1/pb5P5RoORYE/ctNCULwQTr5Jjvv+zSvAW7uxDnILVSXZZ1RaV
+         a7Zy/arNWBNllHfyoR5RmOie573vjoA5hzkuGzzAxYPu3wZbBDiOA7YW6TWgiKpmvDT9
+         fOI3Abq7XW7NvzAxv1QQ6uK9+BHwo4vCTQqhteysaA6oyqT9BINS2i04Iac888Ul7vuC
+         0zk2zmKiviRk6ZPAitr5GBCsEueY3KylmDSsiwlvrYOfUZKZHgrIT/xEWgxIwhdBDTQO
+         7ROp5m5paj9moyiPbYXY3PY6yL0y6inwtFEmNSOb7nMkmbeVMy6i1+OSkLgt7IQH5+En
+         sKqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oC9HNsvbmipJaI7/3GLC383YFKywT6rDBqGjOn8JyvI=;
+        b=RmM/od3ceOxyPrwI2FOAg+nGZb7RK53YcEgFvKB2TDQb6UIYVe3XDAszl/A+51gjTX
+         ZnPbJp5v/kjzGfN+wo/eIpceRv5PUiufQNa5RrCMd5+tBm7er5V+6aU2LiR75EocYXky
+         7ZBAXIAds/VwwFpaUHptsQYtaY91kP0vV2wjao2vkCeeLzcnA0anQ3At4tEdyAZ1kx/b
+         tcWzDbs7v29fcyVbFhr/aPnim/kILlfwlLzT+LhMOUepjz4BKBq+Qh1uewuCSSEIEpap
+         eil8viQ7eyJZqIqCdm4Gu2B6iVKLHNhCRbDAO1yyTFVQZ0ZA+8hT9dbOskA07KoTU8A4
+         VF/A==
+X-Gm-Message-State: AOAM532JaF9NW8X+K+btGVFJSjUF4Osjh5CgRLxZAGOslm/SraQ2wKY2
+        OsPSkPyD063wx4OvsD12Baxr3g==
+X-Google-Smtp-Source: ABdhPJz/dWRJH3zsAQEGgsKWGUG7d9kYAfxghvUOyOChDrjndARlY2TJM66H2aMRp2nhXORS1trhmA==
+X-Received: by 2002:a05:6402:5190:: with SMTP id q16mr15192181edd.157.1643016576173;
+        Mon, 24 Jan 2022 01:29:36 -0800 (PST)
+Received: from leoy-ThinkPad-X240s ([104.245.96.239])
+        by smtp.gmail.com with ESMTPSA id cf25sm3175786edb.63.2022.01.24.01.29.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 01:29:35 -0800 (PST)
+Date:   Mon, 24 Jan 2022 17:29:28 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Russell King <linux@arm.linux.org.uk>
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-Message-ID: <Ye5xN6sQvsfX1lmn@localhost>
-References: <20220103232555.19791-4-richardcochran@gmail.com>
- <20220120164832.xdebp5vykib6h6dp@skbuf>
- <Yeoqof1onvrcWGNp@lunn.ch>
- <20220121040508.GA7588@hoboy.vegasvil.org>
- <20220121145035.z4yv2qsub5mr7ljs@skbuf>
- <20220121152820.GA15600@hoboy.vegasvil.org>
+        Leon Romanovsky <leon@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jan Harkes <jaharkes@cs.cmu.edu>, coda@cs.cmu.edu,
+        Paul Moore <paul@paul-moore.com>,
+        Eric Paris <eparis@redhat.com>,
+        Balbir Singh <bsingharora@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, codalist@coda.cs.cmu.edu,
+        linux-audit@redhat.com
+Subject: Re: [PATCH v2 0/7] pid: Introduce helper task_is_in_root_ns()
+Message-ID: <20220124092928.GA1167041@leoy-ThinkPad-X240s>
+References: <20211208083320.472503-1-leo.yan@linaro.org>
+ <20220112064046.GA3316542@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220121152820.GA15600@hoboy.vegasvil.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <20220112064046.GA3316542@leoy-ThinkPad-X240s>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 07:28:20AM -0800, Richard Cochran wrote:
-> On Fri, Jan 21, 2022 at 02:50:36PM +0000, Vladimir Oltean wrote:
-> > So as I mentioned earlier, the use case would be hardware performance
-> > testing and diagnosing. You may consider that as not that important, but
-> > this is basically what I had to do for several months, and even wrote
-> > a program for that, that collects packet timestamps at all possible points.
+On Wed, Jan 12, 2022 at 02:40:47PM +0800, Leo Yan wrote:
+> Hi David,
 > 
-> This is not possible without making a brand new CMSG to accommodate
-> time stamps from all the various layers.
-
-FWIW, scm_timestamping has three fields and the middle one no longer
-seems to be used. If a new socket/timestamping option enabled all
-three (SW, MAC, PHY) timestamps in the cmsg, I think that would be a
-nice feature.
-
-There are applications that receive both SW and HW timestamps in order
-to fall back to SW when a HW timestamp glitched or is missing. This
-could be extended to three levels with MAC and PHY timestamps.
-
-> That is completely out of scope for this series.
+> On Wed, Dec 08, 2021 at 04:33:13PM +0800, Leo Yan wrote:
+> > The kernel uses open code to check if a process is in root PID namespace
+> > or not in several places.
+> > 
+> > Suggested by Suzuki, this patch set is to create a helper function
+> > task_is_in_init_pid_ns() to replace open code.
+> > 
+> > This patch set has been applied on the mainline kernel and built for
+> > Arm64 kernel with enabling all relevant modules.
 > 
-> The only practical use case of this series is to switch from PHY back to MAC.
+> I'd like sync for how to merging this patch set.  Except patch 05/07,
+> all of other patches in this patch set have been received the reviewed
+> or acked tags.  So could you pick up this patch set?
+> 
+> Furthermore, we have another patch set "coresight: etm: Correct PID
+> tracing for non-root namespace" [1], which is dependent on the current
+> patch set and it has been Acked by Suzuki.
+> 
+> I'd like to get opinions from David and CoreSight maintainers Mathieu
+> and Suzuki, should we merge the patch set [1] via David's tree as well
+> to avoid dependency issue, or prefer to merge it via CoreSight tree?
+> If David prefers the prior option, I can resend the patch set [1] with
+> looping David.
 
-From an admin point of view, it makes sense to me to have an option to
-disable PHY timestamps for the whole device if there are issues with
-it. For debugging and applications, it would be nice to have an option
-to get all of them at the same time.
+Gentle ping, Dave.
 
--- 
-Miroslav Lichvar
+I verified the current patch set and CoreSight patch set, both can apply
+clearly on the latest mainline kernel (with last commit
+dd81e1c7d5fb "Merge tag 'powerpc-5.17-2' of
+git://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux").
 
+Thanks,
+Leo
+
+> [1] https://lore.kernel.org/lkml/20211213121323.1887180-1-leo.yan@linaro.org/
