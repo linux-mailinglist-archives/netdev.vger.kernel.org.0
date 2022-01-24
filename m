@@ -2,66 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 436A249803F
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 14:01:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A50EB498046
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 14:02:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239739AbiAXNBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 08:01:03 -0500
-Received: from mail.netfilter.org ([217.70.188.207]:45086 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiAXNBC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 08:01:02 -0500
-Received: from netfilter.org (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 361E06002A;
-        Mon, 24 Jan 2022 13:57:59 +0100 (CET)
-Date:   Mon, 24 Jan 2022 14:00:57 +0100
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-announce@lists.netfilter.org
-Cc:     netfilter-devel@vger.kernel.org, netfilter@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [ANNOUNCE] Settlement with Patrick McHardy
-Message-ID: <Ye6jCQm7z0Yr3bqA@salvia>
+        id S242782AbiAXNCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 08:02:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44500 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239721AbiAXNC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 08:02:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82383C06173B;
+        Mon, 24 Jan 2022 05:02:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08F1CB80F98;
+        Mon, 24 Jan 2022 13:02:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B1322C340E1;
+        Mon, 24 Jan 2022 13:02:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643029345;
+        bh=nje50B4517VqOu/GSvwxl8SaiOfls+mUGaMg7iQTLF8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=u/n7aYw2fZZjdNW+0jTkYJADmHP/3tSgp3xAOs2ZVEebSCh88sszP40CNLhoZAS/n
+         phzF6hINq0o4DjfIv3kx7GXSg3JqYXInuK9keOP8DU617iALOitzA0Az8U+dM/FzPk
+         UnkyfNU2+Bf4QAjdUd3xmZePYpM+huR+UuZiGhKSEOAdEL9Ttm4h9M9JLdNEyZHerk
+         dI9FYXzmFIF8uUvtl4tYu0KPW9zWet5iwduEklVAaCAaPIim5q7LwoYy7ptvaXzbJS
+         j5x0KH73gYMBK1EFXTvGN1EBUWJkAaQRvE3pf91xix5bD3oU5PdIQAYJJj5liKB0CQ
+         AsdlijJioI1sg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 98996F6079B;
+        Mon, 24 Jan 2022 13:02:25 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: atlantic: Use the bitmap API instead of hand-writing it
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164302934562.10228.6268047056193544757.git-patchwork-notify@kernel.org>
+Date:   Mon, 24 Jan 2022 13:02:25 +0000
+References: <27b498801eb6d9d9876b35165c57b7f8606f4da8.1642920729.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <27b498801eb6d9d9876b35165c57b7f8606f4da8.1642920729.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     irusskikh@marvell.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The netfilter project announces a settlement with Patrick McHardy.
-This settlement is legally binding and it governs any legal enforcement
-activities concerning all programs and program libraries published by
-the netfilter/iptables project on its website [1] as well as the Linux
-kernel [2]. Please, see the court order [3] (in German) and/or the
-translation of the court order for further details [4].
+Hello:
 
-After losing contact with Patrick in regard to questions about his
-unilateral enforcement activities and his subsequent suspension from
-the core team in 2016, three current and former core team members
-decided to file a lawsuit against Patrick in 2020. During this
-lawsuit, communication with Patrick was re-established in 2021, and a
-settlement could be reached.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-This settlement establishes that any decision-making around
-netfilter-related enforcement activities should be based on a majority
-vote. Thus, each active coreteam member [5] at the time of the
-enforcement request holds one right to vote. This settlement covers
-past and new enforcement, as well as the enforcement of contractual
-penalties related to past declarations to cease-and-desist.
+On Sun, 23 Jan 2022 07:53:46 +0100 you wrote:
+> Simplify code by using bitmap_weight() and bitmap_zero() instead of
+> hand-writing these functions.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/net/ethernet/aquantia/atlantic/aq_filters.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
 
-The netfilter project continues to endorse "The Principles of
-Community-Oriented GPL Enforcement" [6]. Therefore, this settlement does
-not release third parties from their obligations to comply with the
-license [7] hereinafter.
+Here is the summary with links:
+  - net: atlantic: Use the bitmap API instead of hand-writing it
+    https://git.kernel.org/netdev/net/c/ebe0582bee78
 
-The netfilter coreteam and I personally would like to thank everyone
-that has been helping and supportive in these difficult years for making
-possible this legal solution.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-[1] https://www.netfilter.org
-[2] https://www.kernel.org
-[3] https://www.netfilter.org/files/2022-01-24-Beschluss_und_Vergleich.pdf
-[4] https://www.netfilter.org/files/2022-01-24-Translation_Court_Order_and_Settlement.pdf
-[5] https://www.netfilter.org/about.html#coreteam
-[6] http://www.netfilter.org/files/statement.pdf
-[7] https://www.netfilter.org/licensing.html
+
