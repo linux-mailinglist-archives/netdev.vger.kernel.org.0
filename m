@@ -2,191 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BBB1499EB5
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 00:10:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A387499E76
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 00:09:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383213AbiAXWms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 17:42:48 -0500
-Received: from mga12.intel.com ([192.55.52.136]:46514 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1588220AbiAXWbo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:31:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643063503; x=1674599503;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MlBqFzOGHIqRIuV84uGl2sQ80qahuQb+v1H8qqH9+uE=;
-  b=Ur3gemQ/tJSz1KO6/iWLb+7Bv2HtN33s3NsmisnhjNdSn6LheNB1xFQZ
-   /m4oMnx8/HyBV8dR/wlxrggbLhVkP67pekpMBualkwrRdM1gIziJlZmbB
-   Prj+XvBfFKUyKlC1q3ep4nHfThO9Rsy2b+H5Gh+kFZmUY3/tXTq7F1FBZ
-   m7PClu2QaTM/Djl7ioTFQaSOE5EWYBG2D6QrTilpOJS6ynitrtTrbUWA+
-   GQChFCaypaG2dsJb99kJurdCP4pdaH7V/bIXN+/ZmWSD9lJsi/9V7nPE9
-   TtoWSiJRtGPGq0+aOP+WYIz8T4Qd632t+oHn5/FXpj+c5Mdt8syw2o6vr
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226141043"
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="226141043"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 14:24:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="562817637"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 24 Jan 2022 14:24:10 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nC7kv-000IzD-LI; Mon, 24 Jan 2022 22:24:09 +0000
-Date:   Tue, 25 Jan 2022 06:23:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     kbuild-all@lists.01.org, Daniel Borkmann <daniel@iogearbox.net>,
+        id S1588922AbiAXWeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 17:34:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36349 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1453445AbiAXWX2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 17:23:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643063005;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=067mQ/rXiwBk6yJpI9gB9PMeq9lk0HWia8mGv4MMwCI=;
+        b=d8S6C39CcQL7U1uNwZh01brtN8E+9uheYcUYUZDwUjVy6bYvFVfLmBTSkScokeoMzjUbpm
+        iR6R4tJdaSBSIKU37GFfwl/GtbucZgo8awdV5Klbx+XJ3FThN2SlgckMNZ6HWvQlTdDAcQ
+        qCpLdmbdQyzCzezYGB3gbM/7qhIJc7A=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-308-GVX4t62XOi2iMZWtHvin-A-1; Mon, 24 Jan 2022 17:23:24 -0500
+X-MC-Unique: GVX4t62XOi2iMZWtHvin-A-1
+Received: by mail-ed1-f69.google.com with SMTP id j1-20020aa7c341000000b0040417b84efeso13757854edr.21
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 14:23:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=067mQ/rXiwBk6yJpI9gB9PMeq9lk0HWia8mGv4MMwCI=;
+        b=Dk8e8rvpZkkmHLX/rmOUyKuzGNncD54aaN35W2cm1yUTvuVTeZghhCon1sVnQ/sK9x
+         5cmn11njZn2auokqsZGTn8hJN4hY09eocGNFK9OXCuIBzrVMb0VLi7eBNK3TfQlOjvmj
+         jQ5Cgq/IAfU7lqJmhFNVnDckdrNjoQIvMHkvKu8K2pL/ZDFb90WZd9BQfydGnbHSUTae
+         WioGIohILamjTtbmh1LU5eXUPb3OUqutTQD6VBoF6kvgvhvrhjdhlYIjyuOpcirawEYu
+         xUo7TDYL0EZmiPri3OSsqYUSATlaoT4e6wBdi3bh/hZGaPIGhhvXEXubqdNPpwNO+yri
+         GGSQ==
+X-Gm-Message-State: AOAM531LFlwkKQ1LUvi/NgN6DvcJUcIzPKUPVlV3PKFDvpyZIuDvB7/Z
+        U7ESBh9FSplavMPPkMvdEGERtCaP+wCSy23QFGnKs++vv6hPJfxkO1a4VWbKtNk1S75Zi4csi5R
+        vcBDp9z4LVYxPlTC0
+X-Received: by 2002:a17:906:6a1a:: with SMTP id qw26mr5794947ejc.454.1643063003279;
+        Mon, 24 Jan 2022 14:23:23 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw/8716fksKjT7h1gtcfWcvIT83G/teXeHSfZuelcx9XPN1OZLtilO1FMN72ciP7y3cZa5/tA==
+X-Received: by 2002:a17:906:6a1a:: with SMTP id qw26mr5794923ejc.454.1643063002990;
+        Mon, 24 Jan 2022 14:23:22 -0800 (PST)
+Received: from krava ([83.240.63.12])
+        by smtp.gmail.com with ESMTPSA id l2sm7162047eds.28.2022.01.24.14.23.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 14:23:22 -0800 (PST)
+Date:   Mon, 24 Jan 2022 23:23:20 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>
-Subject: Re: [PATCH v4 6/9] arm64: rethook: Add arm64 rethook implementation
-Message-ID: <202201250403.5YnZvb4K-lkp@intel.com>
-References: <164304063053.1680787.17728029474747738793.stgit@devnote2>
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH v3 0/9] fprobe: Introduce fprobe function entry/exit
+ probe
+Message-ID: <Ye8m2CpVI8VOiMTH@krava>
+References: <164260419349.657731.13913104835063027148.stgit@devnote2>
+ <CAEf4Bzbbimea3ydwafXSHFiEffYx5zAcwGNKk8Zi6QZ==Vn0Ug@mail.gmail.com>
+ <20220121135510.7cfa6540e31824aa39b1c1b8@kernel.org>
+ <CAEf4Bza0eTft2kjcm9HhKpAm=AuXnGwZfZ+sYpVVBvj93PBreQ@mail.gmail.com>
+ <Ye3ptcW0eAFRYm58@krava>
+ <20220124092405.665e9e0fc3ce14b16a1a9fcf@kernel.org>
+ <Ye6ZyeHQtPfUoSvX@krava>
+ <CAEf4BzbrVBXDJA4qbCgudiiLGtHNyUQAOuE=AUwfxzMrF=Wr=w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <164304063053.1680787.17728029474747738793.stgit@devnote2>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAEf4BzbrVBXDJA4qbCgudiiLGtHNyUQAOuE=AUwfxzMrF=Wr=w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Masami,
+On Mon, Jan 24, 2022 at 12:22:10PM -0800, Andrii Nakryiko wrote:
 
-I love your patch! Yet something to improve:
+SNIP
 
-[auto build test ERROR on rostedt-trace/for-next]
-[also build test ERROR on arm64/for-next/core tip/x86/core linus/master v5.17-rc1 next-20220124]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> > > > > > > > (This testing patch is just for confirming the rethook is correctly
+> > > > > > > >  implemented.)
+> > > > > > > >
+> > > > > > > > BTW, on the x86, ftrace (with fentry) location address is same as
+> > > > > > > > symbol address. But on other archs, it will be different (e.g. arm64
+> > > > > > > > will need 2 instructions to save link-register and call ftrace, the
+> > > > > > > > 2nd instruction will be the ftrace location.)
+> > > > > > > > Does libbpf correctly handle it?
+> > > >
+> > > > hm, I'm probably missing something, but should this be handled by arm
+> > > > specific kernel code? user passes whatever is found in kallsyms, right?
+> > >
+> > > In x86, fentry nop is always placed at the first instruction of the function,
+> > > but the other arches couldn't do that if they use LR (link register) for
+> > > storing return address instead of stack. E.g. arm64 saves lr and call the
+> > > ftrace. Then ftrace location address of a function is not the symbol address.
+> > >
+> > > Anyway, I updated fprobe to handle those cases. I also found some issues
+> > > on rethook, so let me update the series again.
+> >
+> > great, I reworked the bpf fprobe link change and need to add the
+> > symbols attachment support, so you don't need to include it in
+> > new version.. I'll rebase it and send on top of your patchset
+> 
+> Using just addresses (IPs) for retsnoop and bpftrace is fine because
+> such generic tools are already parsing kallsyms and probably building
+> some lookup table. But in general, having IP-based attachment is a
+> regression from current perf_event_open-based kprobe, where user is
+> expected to pass symbolic function name. Using IPs has an advantage of
+> being unambiguous (e.g., when same static function name in kernel
+> belongs to multiple actual functions), so there is that. But I was
+> also wondering wouldn't kernel need to do symbol to IP resolution
+> anyways just to check that we are attaching to function entry?
 
-url:    https://github.com/0day-ci/linux/commits/Masami-Hiramatsu/fprobe-Introduce-fprobe-function-entry-exit-probe/20220125-001253
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git for-next
-config: arm64-randconfig-r033-20220124 (https://download.01.org/0day-ci/archive/20220125/202201250403.5YnZvb4K-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/981b0378461c912ba2d7b10412dd6fe21c316055
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Masami-Hiramatsu/fprobe-Introduce-fprobe-function-entry-exit-probe/20220125-001253
-        git checkout 981b0378461c912ba2d7b10412dd6fe21c316055
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
+ftrace does its own check for address to attach, it keeps record
+for every attachable address.. so less work for us ;-)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> 
+> I'll wait for your patch set to see how did you go about it in a new revision.
 
-All errors (new ones prefixed by >>):
+I agree we should have the support to use symbols as well, I'll add it
 
-   arch/arm64/kernel/stacktrace.c: In function 'unwind_frame':
->> arch/arm64/kernel/stacktrace.c:141:73: error: 'struct stackframe' has no member named 'kr_cur'
-     141 |                 frame->pc = rethook_find_ret_addr(tsk, frame->fp, &frame->kr_cur);
-         |                                                                         ^~
+jirka
 
-
-vim +141 arch/arm64/kernel/stacktrace.c
-
-    59	
-    60	/*
-    61	 * Unwind from one frame record (A) to the next frame record (B).
-    62	 *
-    63	 * We terminate early if the location of B indicates a malformed chain of frame
-    64	 * records (e.g. a cycle), determined based on the location and fp value of A
-    65	 * and the location (but not the fp value) of B.
-    66	 */
-    67	int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
-    68	{
-    69		unsigned long fp = frame->fp;
-    70		struct stack_info info;
-    71	
-    72		if (!tsk)
-    73			tsk = current;
-    74	
-    75		/* Final frame; nothing to unwind */
-    76		if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
-    77			return -ENOENT;
-    78	
-    79		if (fp & 0x7)
-    80			return -EINVAL;
-    81	
-    82		if (!on_accessible_stack(tsk, fp, 16, &info))
-    83			return -EINVAL;
-    84	
-    85		if (test_bit(info.type, frame->stacks_done))
-    86			return -EINVAL;
-    87	
-    88		/*
-    89		 * As stacks grow downward, any valid record on the same stack must be
-    90		 * at a strictly higher address than the prior record.
-    91		 *
-    92		 * Stacks can nest in several valid orders, e.g.
-    93		 *
-    94		 * TASK -> IRQ -> OVERFLOW -> SDEI_NORMAL
-    95		 * TASK -> SDEI_NORMAL -> SDEI_CRITICAL -> OVERFLOW
-    96		 *
-    97		 * ... but the nesting itself is strict. Once we transition from one
-    98		 * stack to another, it's never valid to unwind back to that first
-    99		 * stack.
-   100		 */
-   101		if (info.type == frame->prev_type) {
-   102			if (fp <= frame->prev_fp)
-   103				return -EINVAL;
-   104		} else {
-   105			set_bit(frame->prev_type, frame->stacks_done);
-   106		}
-   107	
-   108		/*
-   109		 * Record this frame record's values and location. The prev_fp and
-   110		 * prev_type are only meaningful to the next unwind_frame() invocation.
-   111		 */
-   112		frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
-   113		frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 8));
-   114		frame->prev_fp = fp;
-   115		frame->prev_type = info.type;
-   116	
-   117		frame->pc = ptrauth_strip_insn_pac(frame->pc);
-   118	
-   119	#ifdef CONFIG_FUNCTION_GRAPH_TRACER
-   120		if (tsk->ret_stack &&
-   121			(frame->pc == (unsigned long)return_to_handler)) {
-   122			unsigned long orig_pc;
-   123			/*
-   124			 * This is a case where function graph tracer has
-   125			 * modified a return address (LR) in a stack frame
-   126			 * to hook a function return.
-   127			 * So replace it to an original value.
-   128			 */
-   129			orig_pc = ftrace_graph_ret_addr(tsk, NULL, frame->pc,
-   130							(void *)frame->fp);
-   131			if (WARN_ON_ONCE(frame->pc == orig_pc))
-   132				return -EINVAL;
-   133			frame->pc = orig_pc;
-   134		}
-   135	#endif /* CONFIG_FUNCTION_GRAPH_TRACER */
-   136	#ifdef CONFIG_KRETPROBES
-   137		if (is_kretprobe_trampoline(frame->pc))
-   138			frame->pc = kretprobe_find_ret_addr(tsk, (void *)frame->fp, &frame->kr_cur);
-   139	#endif
-   140		if (IS_ENABLED(CONFIG_RETHOOK) && is_rethook_trampoline(frame->pc))
- > 141			frame->pc = rethook_find_ret_addr(tsk, frame->fp, &frame->kr_cur);
-   142	
-   143		return 0;
-   144	}
-   145	NOKPROBE_SYMBOL(unwind_frame);
-   146	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
