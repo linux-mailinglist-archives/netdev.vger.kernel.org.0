@@ -2,460 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2617E49852D
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 17:48:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C3A498569
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 17:55:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243888AbiAXQsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 11:48:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235273AbiAXQsg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 11:48:36 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B6CC06173B;
-        Mon, 24 Jan 2022 08:48:36 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id h7so23064660ejf.1;
-        Mon, 24 Jan 2022 08:48:36 -0800 (PST)
+        id S243987AbiAXQzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 11:55:49 -0500
+Received: from mta-p6.oit.umn.edu ([134.84.196.206]:55378 "EHLO
+        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243985AbiAXQzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 11:55:48 -0500
+X-Greylist: delayed 411 seconds by postgrey-1.27 at vger.kernel.org; Mon, 24 Jan 2022 11:55:48 EST
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 4JjGCY1xlTz9vf8J
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 16:48:57 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p6.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id mQTN7gpS1hIM for <netdev@vger.kernel.org>;
+        Mon, 24 Jan 2022 10:48:57 -0600 (CST)
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com [209.85.215.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 4JjGCX6zjzz9vf7v
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 10:48:56 -0600 (CST)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p6.oit.umn.edu 4JjGCX6zjzz9vf7v
+DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p6.oit.umn.edu 4JjGCX6zjzz9vf7v
+Received: by mail-pg1-f198.google.com with SMTP id n6-20020a63b446000000b0034c0280aa73so10207460pgu.15
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 08:48:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AO//yXSSd8olvAy3BiGnax8jCG+dxsLs/CUQMKQy1qU=;
-        b=a1Hv4Sxb9ArJWMiF3u2mcPJYemXUOWNbp3r8AZ+m10iSQiFdLRGnfjNiF+Pdkt0vW4
-         5M2nZweCnmbu33U7L+/6uHCaJyr10ftKc1MG5XS8+RnDMmDokf5QlvqRDqbV4BSGX+zp
-         i4z5OGFH/0mI55Tdl8baM7TAOz1uPs7JO2k8WWabHhCr4geva1hX5nIgyfso/Fgf/IB8
-         dYb9BOvG7Ph93uhpauH/9iw2BXCAVKjEJDYyuVJbiTQ25vG6CD75zwokXppNXb/dmDeP
-         opjSLexuuAeV1airFw33u3wwHfWVe9bTBlG4AWws6pSMxwXhSLnokId5I9KZnqttGuZr
-         DcGQ==
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=M1EN+FFfNlSfEsgNncNXUF0963zI+nXvNLe38e5GCuc=;
+        b=EUlsAfVHOklvtJlvPGglcopNF7hGSrGhyl+5EOTYu1cimvRfBoJmB+7+os6JyrK9eR
+         RVzoMRWj0SJeh8cBEW6GQ2B5BXVin9rot1GVkmQRYbb9GCJgu0RFdtROol9bBk1OERPi
+         qoRRQsL542Cb1KYk2e+cugN7kvRrkUQeG0zMotp1DbzPMGzZf79FFNqzqx6QPqXyoFdN
+         Rg/TzQFjr7APM90mhrqHw+ebUhHKpWKy7jRSbaqIAbcyLP8NExOreFCdF+mfTKr/NqDm
+         45zaAg/5tg7EQ3c0lxdn8VCqqXeNumN9R6YGkTtP8fyMGuHZQUJFqXM2X80kfSqbnleD
+         Kbow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AO//yXSSd8olvAy3BiGnax8jCG+dxsLs/CUQMKQy1qU=;
-        b=5NIdw5Hikdxl1C86V+XPHhWSpblyvsRqM8JFZqQqO8PyjdxppyVS0LVWL1LDKDn3qh
-         Yi8LKdQ3QpdWzE5pzofZCOyG1POY4TUrcm2DIknplk4Ce0mVcv6AvTx9Bj+JnZKZ8nNT
-         1NG+JpWqnWok3uiWS0O7uyRFNEOozJ9SIC/avif7lPGoia9PJJJIygbYPZMHHrL8tY9h
-         0MoKCOHhiqajBk38sJJ6TNrpMi6ihDAROPouIWk7QSDSgYOWMwTIdtYpF0ifi4pac+ct
-         L/R/JYztNepjZhnAFoPnvrhtWxryOs7PEtXgyaxW+6EIPpR1ewjAVniseBGEiploVw33
-         r2jQ==
-X-Gm-Message-State: AOAM532KxNm2kYtiAjy2bCrVLkpsbIG8n8mboS5kPNZrV952qdC0L6Ds
-        jwhhp6yRmcPb30A/dGMTnTDAlmdX/eM=
-X-Google-Smtp-Source: ABdhPJzoaTTYdAK7Mgi2z3TWpEuPd6vO5Fk4+M/KC4/DUChSn8zmXEabPYUi0l5lIRoKY9KRGHkIfA==
-X-Received: by 2002:a17:906:2856:: with SMTP id s22mr13359863ejc.330.1643042914364;
-        Mon, 24 Jan 2022 08:48:34 -0800 (PST)
-Received: from Ansuel-xps. (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.gmail.com with ESMTPSA id q5sm5105227ejc.115.2022.01.24.08.48.33
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=M1EN+FFfNlSfEsgNncNXUF0963zI+nXvNLe38e5GCuc=;
+        b=kyy3iFA+I3XL5PDVvm6FCIgFW6b9NBncLhN7BBglLxX0cRmYewe+1cSduvX7V6XMZq
+         CAmbvfsNZUNB2/vKerfYBU3JAWh0HhBOnib8zOVuZ8rs4GeUkTEcnbFQ+NT/XfTc8uc/
+         Kp2HMydKyJdeaVRUfm02vBnoMmy1/Zr1o9Wm607TwJB52P8Fz87Le0PJ+yF0UqPTCyMB
+         R/rkZX27a877Du/1jUwtoGrSpwgDt+KgH4NYk05HElZ7x64Ri3ye0rMyb4yfQoHoNmFd
+         6l7EYYTkWVGALwIPocM+b0mHJKuMpf1Ggz3OZkQIF1L5dQvOfr8H9ipmJ+UXJFZiJGDb
+         gPmA==
+X-Gm-Message-State: AOAM531HX7c5+BEKq3Qp292gw1AcApHqEDKcGQZdnHZ6tfaeI/46sbXX
+        JntHsrEqrA2W4EipgFjciEg32TYdsX1X/hX8VQY6CZYJMKRdSSiCUIQn6QLV0Dw13jndiBn1SVx
+        1JGA97oRESq9WZW2uqNDk
+X-Received: by 2002:a05:6a00:ace:b0:4c5:35c:db8 with SMTP id c14-20020a056a000ace00b004c5035c0db8mr14818320pfl.51.1643042935280;
+        Mon, 24 Jan 2022 08:48:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwDmDFHUTEi0HFNEt70JZNrZypUVX+E57kTTIb1ig2mN4js04He3RiIqLXXvmVcq8wcVRlWEw==
+X-Received: by 2002:a05:6a00:ace:b0:4c5:35c:db8 with SMTP id c14-20020a056a000ace00b004c5035c0db8mr14818298pfl.51.1643042935042;
+        Mon, 24 Jan 2022 08:48:55 -0800 (PST)
+Received: from zqy787-GE5S.lan ([36.4.61.248])
+        by smtp.gmail.com with ESMTPSA id qe12sm3929319pjb.14.2022.01.24.08.48.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 08:48:33 -0800 (PST)
-Message-ID: <61eed861.1c69fb81.d14ad.62cf@mx.google.com>
-X-Google-Original-Message-ID: <Ye7YYGqXG2Ro7tjC@Ansuel-xps.>
-Date:   Mon, 24 Jan 2022 17:48:32 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Mon, 24 Jan 2022 08:48:54 -0800 (PST)
+From:   Zhou Qingyang <zhou1615@umn.edu>
+To:     zhou1615@umn.edu
+Cc:     kjlu@umn.edu, Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH v7 10/16] net: dsa: qca8k: add support for mgmt
- read/write in Ethernet packet
-References: <20220123013337.20945-1-ansuelsmth@gmail.com>
- <20220123013337.20945-11-ansuelsmth@gmail.com>
- <20220124163236.yrrjn32jylc2kx6o@skbuf>
+        Jakub Kicinski <kuba@kernel.org>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Angus Ainslie <angus@akkea.ca>,
+        "Daniel (Deognyoun) Kim" <dekim@broadcom.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] brcmfmac: Fix a wild pointer dereference bug in brcmf_chip_recognition()
+Date:   Tue, 25 Jan 2022 00:48:45 +0800
+Message-Id: <20220124164847.54002-1-zhou1615@umn.edu>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124163236.yrrjn32jylc2kx6o@skbuf>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 06:32:36PM +0200, Vladimir Oltean wrote:
-> On Sun, Jan 23, 2022 at 02:33:31AM +0100, Ansuel Smith wrote:
-> > Add qca8k side support for mgmt read/write in Ethernet packet.
-> > qca8k supports some specially crafted Ethernet packet that can be used
-> > for mgmt read/write instead of the legacy method uart/internal mdio.
-> > This add support for the qca8k side to craft the packet and enqueue it.
-> > Each port and the qca8k_priv have a special struct to put data in it.
-> > The completion API is used to wait for the packet to be received back
-> > with the requested data.
-> > 
-> > The various steps are:
-> > 1. Craft the special packet with the qca hdr set to mgmt read/write
-> >    mode.
-> > 2. Set the lock in the dedicated mgmt struct.
-> > 3. Reinit the completion.
-> > 4. Enqueue the packet.
-> > 5. Wait the packet to be received.
-> > 6. Use the data set by the tagger to complete the mdio operation.
-> > 
-> > If the completion timeouts or the ack value is not true, the legacy
-> > mdio way is used.
-> > 
-> > It has to be considered that in the initial setup mdio is still used and
-> > mdio is still used until DSA is ready to accept and tag packet.
-> > 
-> > tag_proto_connect() is used to fill the required handler for the tagger
-> > to correctly parse and elaborate the special Ethernet mdio packet.
-> > 
-> > Locking is added to qca8k_master_change() to make sure no mgmt Ethernet
-> > are in progress.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> >  drivers/net/dsa/qca8k.c | 206 ++++++++++++++++++++++++++++++++++++++++
-> >  drivers/net/dsa/qca8k.h |  13 +++
-> >  2 files changed, 219 insertions(+)
-> > 
-> > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> > index 4bc5064414b5..35711d010eb4 100644
-> > --- a/drivers/net/dsa/qca8k.c
-> > +++ b/drivers/net/dsa/qca8k.c
-> > @@ -20,6 +20,7 @@
-> >  #include <linux/phylink.h>
-> >  #include <linux/gpio/consumer.h>
-> >  #include <linux/etherdevice.h>
-> > +#include <linux/dsa/tag_qca.h>
-> >  
-> >  #include "qca8k.h"
-> >  
-> > @@ -170,6 +171,174 @@ qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val)
-> >  	return regmap_update_bits(priv->regmap, reg, mask, write_val);
-> >  }
-> >  
-> > +static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
-> > +{
-> > +	struct qca8k_mgmt_hdr_data *mgmt_hdr_data;
-> > +	struct qca8k_priv *priv = ds->priv;
-> > +	struct mgmt_ethhdr *mgmt_ethhdr;
-> > +	u8 len, cmd;
-> > +
-> > +	mgmt_ethhdr = (struct mgmt_ethhdr *)skb_mac_header(skb);
-> > +	mgmt_hdr_data = &priv->mgmt_hdr_data;
-> > +
-> > +	cmd = FIELD_GET(QCA_HDR_MGMT_CMD, mgmt_ethhdr->command);
-> > +	len = FIELD_GET(QCA_HDR_MGMT_LENGTH, mgmt_ethhdr->command);
-> > +
-> > +	/* Make sure the seq match the requested packet */
-> > +	if (mgmt_ethhdr->seq == mgmt_hdr_data->seq)
-> > +		mgmt_hdr_data->ack = true;
-> > +
-> > +	if (cmd == MDIO_READ) {
-> > +		mgmt_hdr_data->data[0] = mgmt_ethhdr->mdio_data;
-> > +
-> > +		/* Get the rest of the 12 byte of data */
-> > +		if (len > QCA_HDR_MGMT_DATA1_LEN)
-> > +			memcpy(mgmt_hdr_data->data + 1, skb->data,
-> > +			       QCA_HDR_MGMT_DATA2_LEN);
-> > +	}
-> > +
-> > +	complete(&mgmt_hdr_data->rw_done);
-> > +}
-> > +
-> > +static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *val,
-> > +					       int seq_num, int priority)
-> > +{
-> > +	struct mgmt_ethhdr *mgmt_ethhdr;
-> > +	struct sk_buff *skb;
-> > +	u16 hdr;
-> > +
-> > +	skb = dev_alloc_skb(QCA_HDR_MGMT_PKG_LEN);
-> > +	if (!skb)
-> > +		return NULL;
-> > +
-> > +	skb_reset_mac_header(skb);
-> > +	skb_set_network_header(skb, skb->len);
-> > +
-> > +	mgmt_ethhdr = skb_push(skb, QCA_HDR_MGMT_HEADER_LEN + QCA_HDR_LEN);
-> > +
-> > +	hdr = FIELD_PREP(QCA_HDR_XMIT_VERSION, QCA_HDR_VERSION);
-> > +	hdr |= FIELD_PREP(QCA_HDR_XMIT_PRIORITY, priority);
-> > +	hdr |= QCA_HDR_XMIT_FROM_CPU;
-> > +	hdr |= FIELD_PREP(QCA_HDR_XMIT_DP_BIT, BIT(0));
-> > +	hdr |= FIELD_PREP(QCA_HDR_XMIT_CONTROL, QCA_HDR_XMIT_TYPE_RW_REG);
-> > +
-> > +	mgmt_ethhdr->seq = FIELD_PREP(QCA_HDR_MGMT_SEQ_NUM, seq_num);
-> > +
-> > +	mgmt_ethhdr->command = FIELD_PREP(QCA_HDR_MGMT_ADDR, reg);
-> > +	mgmt_ethhdr->command |= FIELD_PREP(QCA_HDR_MGMT_LENGTH, 4);
-> > +	mgmt_ethhdr->command |= FIELD_PREP(QCA_HDR_MGMT_CMD, cmd);
-> > +	mgmt_ethhdr->command |= FIELD_PREP(QCA_HDR_MGMT_CHECK_CODE,
-> > +					   QCA_HDR_MGMT_CHECK_CODE_VAL);
-> > +
-> > +	if (cmd == MDIO_WRITE)
-> > +		mgmt_ethhdr->mdio_data = *val;
-> > +
-> > +	mgmt_ethhdr->hdr = htons(hdr);
-> > +
-> > +	skb_put_zero(skb, QCA_HDR_MGMT_DATA2_LEN + QCA_HDR_MGMT_PADDING_LEN);
-> > +
-> > +	return skb;
-> > +}
-> > +
-> > +static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val)
-> > +{
-> > +	struct qca8k_mgmt_hdr_data *mgmt_hdr_data = &priv->mgmt_hdr_data;
-> > +	struct sk_buff *skb;
-> > +	bool ack;
-> > +	int ret;
-> > +
-> > +	skb = qca8k_alloc_mdio_header(MDIO_READ, reg, NULL, 200, QCA8K_ETHERNET_MDIO_PRIORITY);
-> > +	if (!skb)
-> > +		return -ENOMEM;
-> > +
-> > +	mutex_lock(&mgmt_hdr_data->mutex);
-> > +
-> > +	/* Recheck mgmt_master under lock to make sure it's operational */
-> > +	if (!priv->mgmt_master)
-> 
-> mutex_unlock and kfree_skb
-> 
-> Also, why "recheck under lock"? Why not check just under lock?
->
+In brcmf_chip_recognition(), the return value of brcmf_chip_add_core()
+is assigned to core and is passed to brcmf_chip_sb_corerev(). In
+brcmf_chip_sb_corerev(), there exists dereference of core without check.
+the return value of brcmf_chip_add_core() could be ERR_PTR on failure of
+allocation, which could lead to a NULL pointer dereference bug.
 
-Tell me if the logic is wrong.
-We use the mgmt_master (outside lock) to understand if the eth mgmt is
-available. Then to make sure it's actually usable when the operation is
-actually done (and to prevent any panic if the master is dropped or for
-whatever reason mgmt_master is not available anymore) we do the check
-another time under lock.
+Fix this bug by adding IS_ERR check for every variable core.
 
-It's really just to save extra lock when mgmt_master is not available.
-The check under lock is to handle case when the mgmt_master is removed
-while a mgmt eth is pending (corner case but still worth checking).
+This bug was found by a static analyzer.
 
-If you have suggestions on how to handle this corner case without
-introducing an extra lock in the read/write function, I would really
-appreaciate it.
-Now that I think about it, considering eth mgmt will be the main way and
-mdio as a fallback... wonder if the extra lock is acceptable anyway.
-In the near future ipq40xx will use qca8k, but will have his own regmap
-functions so we they won't be affected by these extra locking.
+Builds with 'make allyesconfig' show no new warnings,
+and our static analyzer no longer warns about this code
 
-Don't know what is worst. Extra locking when mgmt_master is not
-avaialable or double check. (I assume for a cleaner code the extra lock
-is preferred)
+Fixes: cb7cf7be9eba ("brcmfmac: make chip related functions host interface independent")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+---
+The analysis employs differential checking to identify inconsistent 
+security operations (e.g., checks or kfrees) between two code paths 
+and confirms that the inconsistent operations are not recovered in the
+current function or the callers, so they constitute bugs. 
 
-> > +		return -EINVAL;
-> > +
-> > +	skb->dev = (struct net_device *)priv->mgmt_master;
-> > +
-> > +	reinit_completion(&mgmt_hdr_data->rw_done);
-> > +	mgmt_hdr_data->seq = 200;
-> > +	mgmt_hdr_data->ack = false;
-> > +
-> > +	dev_queue_xmit(skb);
-> > +
-> > +	ret = wait_for_completion_timeout(&mgmt_hdr_data->rw_done,
-> > +					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
-> > +
-> > +	*val = mgmt_hdr_data->data[0];
-> > +	ack = mgmt_hdr_data->ack;
-> > +
-> > +	mutex_unlock(&mgmt_hdr_data->mutex);
-> > +
-> > +	if (ret <= 0)
-> > +		return -ETIMEDOUT;
-> > +
-> > +	if (!ack)
-> > +		return -EINVAL;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 val)
-> > +{
-> > +	struct qca8k_mgmt_hdr_data *mgmt_hdr_data = &priv->mgmt_hdr_data;
-> > +	struct sk_buff *skb;
-> > +	bool ack;
-> > +	int ret;
-> > +
-> > +	skb = qca8k_alloc_mdio_header(MDIO_WRITE, reg, &val, 200, QCA8K_ETHERNET_MDIO_PRIORITY);
-> > +	if (!skb)
-> > +		return -ENOMEM;
-> > +
-> > +	mutex_lock(&mgmt_hdr_data->mutex);
-> > +
-> > +	/* Recheck mgmt_master under lock to make sure it's operational */
-> > +	if (!priv->mgmt_master)
-> 
-> mutex_unlock and kfree_skb
-> 
-> > +		return -EINVAL;
-> > +
-> > +	skb->dev = (struct net_device *)priv->mgmt_master;
-> > +
-> > +	reinit_completion(&mgmt_hdr_data->rw_done);
-> > +	mgmt_hdr_data->ack = false;
-> > +	mgmt_hdr_data->seq = 200;
-> > +
-> > +	dev_queue_xmit(skb);
-> > +
-> > +	ret = wait_for_completion_timeout(&mgmt_hdr_data->rw_done,
-> > +					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
-> > +
-> > +	ack = mgmt_hdr_data->ack;
-> > +
-> > +	mutex_unlock(&mgmt_hdr_data->mutex);
-> > +
-> > +	if (ret <= 0)
-> > +		return -ETIMEDOUT;
-> > +
-> > +	if (!ack)
-> > +		return -EINVAL;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int
-> > +qca8k_regmap_update_bits_eth(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val)
-> > +{
-> > +	u32 val = 0;
-> > +	int ret;
-> > +
-> > +	ret = qca8k_read_eth(priv, reg, &val);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	val &= ~mask;
-> > +	val |= write_val;
-> > +
-> > +	return qca8k_write_eth(priv, reg, val);
-> > +}
-> > +
-> >  static int
-> >  qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
-> >  {
-> > @@ -178,6 +347,9 @@ qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
-> >  	u16 r1, r2, page;
-> >  	int ret;
-> >  
-> > +	if (priv->mgmt_master && !qca8k_read_eth(priv, reg, val))
-> 
-> What happens if you remove this priv->mgmt_master check from outside the
-> lock, and reorder the skb allocation with the priv->mgmt_master check?
-> 
-> > +		return 0;
-> > +
-> >  	qca8k_split_addr(reg, &r1, &r2, &page);
-> >  
-> >  	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-> > @@ -201,6 +373,9 @@ qca8k_regmap_write(void *ctx, uint32_t reg, uint32_t val)
-> >  	u16 r1, r2, page;
-> >  	int ret;
-> >  
-> > +	if (priv->mgmt_master && !qca8k_write_eth(priv, reg, val))
-> > +		return 0;
-> > +
-> >  	qca8k_split_addr(reg, &r1, &r2, &page);
-> >  
-> >  	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-> > @@ -225,6 +400,10 @@ qca8k_regmap_update_bits(void *ctx, uint32_t reg, uint32_t mask, uint32_t write_
-> >  	u32 val;
-> >  	int ret;
-> >  
-> > +	if (priv->mgmt_master &&
-> > +	    !qca8k_regmap_update_bits_eth(priv, reg, mask, write_val))
-> > +		return 0;
-> > +
-> >  	qca8k_split_addr(reg, &r1, &r2, &page);
-> >  
-> >  	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-> > @@ -2394,10 +2573,33 @@ qca8k_master_change(struct dsa_switch *ds, const struct net_device *master,
-> >  	if (dp->index != 0)
-> >  		return;
-> >  
-> > +	mutex_lock(&priv->mgmt_hdr_data.mutex);
-> > +
-> >  	if (operational)
-> >  		priv->mgmt_master = master;
-> >  	else
-> >  		priv->mgmt_master = NULL;
-> > +
-> > +	mutex_unlock(&priv->mgmt_hdr_data.mutex);
-> > +}
-> > +
-> > +static int qca8k_connect_tag_protocol(struct dsa_switch *ds,
-> > +				      enum dsa_tag_protocol proto)
-> > +{
-> > +	struct qca_tagger_data *tagger_data;
-> > +
-> > +	switch (proto) {
-> > +	case DSA_TAG_PROTO_QCA:
-> > +		tagger_data = ds->tagger_data;
-> > +
-> > +		tagger_data->rw_reg_ack_handler = qca8k_rw_reg_ack_handler;
-> > +
-> > +		break;
-> > +	default:
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +
-> > +	return 0;
-> >  }
-> >  
-> >  static const struct dsa_switch_ops qca8k_switch_ops = {
-> > @@ -2436,6 +2638,7 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
-> >  	.port_lag_join		= qca8k_port_lag_join,
-> >  	.port_lag_leave		= qca8k_port_lag_leave,
-> >  	.master_state_change	= qca8k_master_change,
-> > +	.connect_tag_protocol	= qca8k_connect_tag_protocol,
-> >  };
-> >  
-> >  static int qca8k_read_switch_id(struct qca8k_priv *priv)
-> > @@ -2515,6 +2718,9 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
-> >  	if (!priv->ds)
-> >  		return -ENOMEM;
-> >  
-> > +	mutex_init(&priv->mgmt_hdr_data.mutex);
-> > +	init_completion(&priv->mgmt_hdr_data.rw_done);
-> > +
-> >  	priv->ds->dev = &mdiodev->dev;
-> >  	priv->ds->num_ports = QCA8K_NUM_PORTS;
-> >  	priv->ds->priv = priv;
-> > diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-> > index 9437369c60ca..a358a67044d3 100644
-> > --- a/drivers/net/dsa/qca8k.h
-> > +++ b/drivers/net/dsa/qca8k.h
-> > @@ -11,6 +11,10 @@
-> >  #include <linux/delay.h>
-> >  #include <linux/regmap.h>
-> >  #include <linux/gpio.h>
-> > +#include <linux/dsa/tag_qca.h>
-> > +
-> > +#define QCA8K_ETHERNET_MDIO_PRIORITY			7
-> > +#define QCA8K_ETHERNET_TIMEOUT				100
-> >  
-> >  #define QCA8K_NUM_PORTS					7
-> >  #define QCA8K_NUM_CPU_PORTS				2
-> > @@ -328,6 +332,14 @@ enum {
-> >  	QCA8K_CPU_PORT6,
-> >  };
-> >  
-> > +struct qca8k_mgmt_hdr_data {
-> > +	struct completion rw_done;
-> > +	struct mutex mutex; /* Enforce one mdio read/write at time */
-> > +	bool ack;
-> > +	u32 seq;
-> > +	u32 data[4];
-> > +};
-> > +
-> >  struct qca8k_ports_config {
-> >  	bool sgmii_rx_clk_falling_edge;
-> >  	bool sgmii_tx_clk_falling_edge;
-> > @@ -354,6 +366,7 @@ struct qca8k_priv {
-> >  	struct gpio_desc *reset_gpio;
-> >  	unsigned int port_mtu[QCA8K_NUM_PORTS];
-> >  	const struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
-> > +	struct qca8k_mgmt_hdr_data mgmt_hdr_data;
-> >  };
-> >  
-> >  struct qca8k_mib_desc {
-> > -- 
-> > 2.33.1
-> > 
-> 
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
 
+ .../net/wireless/broadcom/brcm80211/brcmfmac/chip.c    | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
+index 1ee49f9e325d..4d91cb107cd7 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
+@@ -986,18 +986,28 @@ static int brcmf_chip_recognition(struct brcmf_chip_priv *ci)
+ 
+ 		core = brcmf_chip_add_core(ci, BCMA_CORE_CHIPCOMMON,
+ 					   SI_ENUM_BASE_DEFAULT, 0);
++		if (IS_ERR(core))
++			return PTR_ERR(core);
+ 		brcmf_chip_sb_corerev(ci, core);
+ 		core = brcmf_chip_add_core(ci, BCMA_CORE_SDIO_DEV,
+ 					   BCM4329_CORE_BUS_BASE, 0);
++		if (IS_ERR(core))
++			return PTR_ERR(core);
+ 		brcmf_chip_sb_corerev(ci, core);
+ 		core = brcmf_chip_add_core(ci, BCMA_CORE_INTERNAL_MEM,
+ 					   BCM4329_CORE_SOCRAM_BASE, 0);
++		if (IS_ERR(core))
++			return PTR_ERR(core);
+ 		brcmf_chip_sb_corerev(ci, core);
+ 		core = brcmf_chip_add_core(ci, BCMA_CORE_ARM_CM3,
+ 					   BCM4329_CORE_ARM_BASE, 0);
++		if (IS_ERR(core))
++			return PTR_ERR(core);
+ 		brcmf_chip_sb_corerev(ci, core);
+ 
+ 		core = brcmf_chip_add_core(ci, BCMA_CORE_80211, 0x18001000, 0);
++		if (IS_ERR(core))
++			return PTR_ERR(core);
+ 		brcmf_chip_sb_corerev(ci, core);
+ 	} else if (socitype == SOCI_AI) {
+ 		ci->iscoreup = brcmf_chip_ai_iscoreup;
 -- 
-	Ansuel
+2.25.1
+
