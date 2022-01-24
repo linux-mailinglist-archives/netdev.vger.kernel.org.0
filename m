@@ -2,263 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A90874982EA
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 16:03:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A04C64982D8
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 16:02:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243327AbiAXPDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 10:03:01 -0500
-Received: from mga01.intel.com ([192.55.52.88]:64673 "EHLO mga01.intel.com"
+        id S243207AbiAXPCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 10:02:44 -0500
+Received: from mga12.intel.com ([192.55.52.136]:5547 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240371AbiAXPCi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jan 2022 10:02:38 -0500
+        id S240105AbiAXPCd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jan 2022 10:02:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643036558; x=1674572558;
+  t=1643036553; x=1674572553;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=12MT7URXnDq/Fp4XFhkmyf3ldBVGzHv0vwmewAlkDXU=;
-  b=IPKhfZGutDbLgX1Gl6K7AHXxdRZiKGKCxsWmlR6uG19CVC2Rc1IH575a
-   vGgBmd51mXvuucgLWSIdKv/b4sl33QhDMrkKFoPwXS12mhqddAWNlTewi
-   Zh/8LvTCsa6YCkYAwxvD6UbMqmcMKribfOEa8VHdAGjChbc12ryon87Qq
-   zVHWingleh5M3cZtBvEZe0EXO7v0di4TZzLFIKoH8xVX6c9RdgkB3m0zk
-   aTXjMdyh1jOvWPWlU2oc8EZ8r1tNBvLJrZMH96B34Qkddo+64/GWFNjR/
-   /kQJvraHQWWAqedUQXBrWWYXL0QE+atahSbs4aLe2D5aFmbUgY4s5TBi8
+   mime-version:in-reply-to;
+  bh=QfWyV+HXtcs6rILaxpwLONmm+UzDSrHuA/oNh1yavC0=;
+  b=hJ4DA+v6VOrYtnC7REwEKDh4vUtys4WpBNm6kxRrklPWGxyfHDxrUn8n
+   Nf+w+qBLm6y67GCYrSblQUSn8NW9sznQeKohdYKJfVF9zv1YGUfn61+TX
+   X9j7vo1anHhNa9YW4D4JFmhlMcgviM6pUZ2+FLX1fgOG6H1l2leFCqD1c
+   YqSLhIY+3iWFrys90XVvRi2MLuhhRvtRQTuqPCQ0gn7ZOZa8lbNU/zn8f
+   wYJntJBbqdd2mwi7vjRicxC00/qlSd/kDbwkU+zEdO74pvQ2BXZLPROby
+   r/I/JYVkVRgbLCjLXTHq20vHuarxPI0MgTmhceHHce+Lex4oxC5tJn2mi
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="270498703"
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="226042904"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="270498703"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:37 -0800
+   d="scan'208";a="226042904"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:01:50 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="519972062"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:20 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nC0qE-00Dvkq-Jt;
-        Mon, 24 Jan 2022 17:01:10 +0200
-Date:   Mon, 24 Jan 2022 17:01:10 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
+   d="scan'208";a="596809947"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 24 Jan 2022 07:01:47 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nC0qo-000IUh-Iq; Mon, 24 Jan 2022 15:01:46 +0000
+Date:   Mon, 24 Jan 2022 23:01:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hao Xu <haoxu@linux.alibaba.com>, netdev@vger.kernel.org,
+        io-uring@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>, netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] driver core: platform: Rename
- platform_get_irq_optional() to platform_get_irq_silent()
-Message-ID: <Ye6/NgfxsZnpXE09@smile.fi.intel.com>
-References: <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
- <YeA7CjOyJFkpuhz/@sirena.org.uk>
- <20220113194358.xnnbhsoyetihterb@pengutronix.de>
- <YeF05vBOzkN+xYCq@smile.fi.intel.com>
- <20220115154539.j3tsz5ioqexq2yuu@pengutronix.de>
- <YehdsUPiOTwgZywq@smile.fi.intel.com>
- <20220120075718.5qtrpc543kkykaow@pengutronix.de>
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>
+Subject: Re: [PATCH 3/3] io_uring: zerocopy receive
+Message-ID: <202201242233.64QOWQZ1-lkp@intel.com>
+References: <20220124094320.900713-4-haoxu@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220120075718.5qtrpc543kkykaow@pengutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220124094320.900713-4-haoxu@linux.alibaba.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 08:57:18AM +0100, Uwe Kleine-König wrote:
-> On Wed, Jan 19, 2022 at 08:51:29PM +0200, Andy Shevchenko wrote:
-> > On Sat, Jan 15, 2022 at 04:45:39PM +0100, Uwe Kleine-König wrote:
-> > > On Fri, Jan 14, 2022 at 03:04:38PM +0200, Andy Shevchenko wrote:
-> > > > On Thu, Jan 13, 2022 at 08:43:58PM +0100, Uwe Kleine-König wrote:
-> > > > > > It'd certainly be good to name anything that doesn't correspond to one
-> > > > > > of the existing semantics for the API (!) something different rather
-> > > > > > than adding yet another potentially overloaded meaning.
-> > > > > 
-> > > > > It seems we're (at least) three who agree about this. Here is a patch
-> > > > > fixing the name.
-> > > > 
-> > > > And similar number of people are on the other side.
-> > > 
-> > > If someone already opposed to the renaming (and not only the name) I
-> > > must have missed that.
-> > > 
-> > > So you think it's a good idea to keep the name
-> > > platform_get_irq_optional() despite the "not found" value returned by it
-> > > isn't usable as if it were a normal irq number?
-> > 
-> > I meant that on the other side people who are in favour of Sergey's patch.
-> > Since that I commented already that I opposed the renaming being a standalone
-> > change.
-> > 
-> > Do you agree that we have several issues with platform_get_irq*() APIs?
-> > 
-> > 1. The unfortunate naming
-> 
-> unfortunate naming for the currently implemented semantic, yes.
+Hi Hao,
 
-Yes.
+Thank you for the patch! Yet something to improve:
 
-> > 2. The vIRQ0 handling: a) WARN() followed by b) returned value 0
-> 
-> I'm happy with the vIRQ0 handling. Today platform_get_irq() and it's
-> silent variant returns either a valid and usuable irq number or a
-> negative error value. That's totally fine.
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.17-rc1 next-20220124]
+[cannot apply to horms-ipvs/master]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-It might return 0.
-Actually it seems that the WARN() can only be issued in two cases:
-- SPARC with vIRQ0 in one of the array member
-- fallback to ACPI for GPIO IRQ resource with index 0
+url:    https://github.com/0day-ci/linux/commits/Hao-Xu/io_uring-zerocopy-receive/20220124-174546
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
+config: s390-buildonly-randconfig-r004-20220124 (https://download.01.org/0day-ci/archive/20220124/202201242233.64QOWQZ1-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 2e58a18910867ba6795066e044293e6daf89edf5)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/0day-ci/linux/commit/295704165d394635876364522d3ac1451b62da66
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Hao-Xu/io_uring-zerocopy-receive/20220124-174546
+        git checkout 295704165d394635876364522d3ac1451b62da66
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
-But the latter is bogus, because it would mean a bug in the ACPI code.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The bottom line here is the SPARC case. Anybody familiar with the platform
-can shed a light on this. If there is no such case, we may remove warning
-along with ret = 0 case from platfrom_get_irq().
+All errors (new ones prefixed by >>):
 
-> > 3. The specific cookie for "IRQ not found, while no error happened" case
-> 
-> Not sure what you mean here. I have no problem that a situation I can
-> cope with is called an error for the query function. I just do error
-> handling and continue happily. So the part "while no error happened" is
-> irrelevant to me.
+   In file included from fs/io_uring.c:60:
+   In file included from include/linux/blk-mq.h:8:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from fs/io_uring.c:60:
+   In file included from include/linux/blk-mq.h:8:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from fs/io_uring.c:60:
+   In file included from include/linux/blk-mq.h:8:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> fs/io_uring.c:6639:10: error: implicit declaration of function 'io_recvzc_prep' [-Werror,-Wimplicit-function-declaration]
+                   return io_recvzc_prep(req, sqe);
+                          ^
+   fs/io_uring.c:6639:10: note: did you mean 'io_recvmsg_prep'?
+   fs/io_uring.c:5462:1: note: 'io_recvmsg_prep' declared here
+   IO_NETOP_PREP_ASYNC(recvmsg);
+   ^
+   fs/io_uring.c:5454:38: note: expanded from macro 'IO_NETOP_PREP_ASYNC'
+   #define IO_NETOP_PREP_ASYNC(op)                                         \
+                                                                           ^
+   fs/io_uring.c:5449:12: note: expanded from macro '\
+   IO_NETOP_PREP'
+   static int io_##op##_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe) \
+              ^
+   <scratch space>:22:1: note: expanded from here
+   io_recvmsg_prep
+   ^
+>> fs/io_uring.c:6924:9: error: implicit declaration of function 'io_recvzc' [-Werror,-Wimplicit-function-declaration]
+                   ret = io_recvzc(req, issue_flags);
+                         ^
+   fs/io_uring.c:6924:9: note: did you mean 'io_recv'?
+   fs/io_uring.c:5466:1: note: 'io_recv' declared here
+   IO_NETOP_FN(recv);
+   ^
+   fs/io_uring.c:5442:12: note: expanded from macro 'IO_NETOP_FN'
+   static int io_##op(struct io_kiocb *req, unsigned int issue_flags)      \
+              ^
+   <scratch space>:34:1: note: expanded from here
+   io_recv
+   ^
+   12 warnings and 2 errors generated.
 
-I meant that instead of using special error code, 0 is very much good for
-the cases when IRQ is not found. It allows to distinguish -ENXIO from the
-low layer from -ENXIO with this magic meaning.
 
-> Additionally I see the problems:
-> 
-> 4. The semantic as implemented in Sergey's patch isn't better than the
-> current one.
+vim +/io_recvzc_prep +6639 fs/io_uring.c
 
-I disagree on this. See above on why.
+  6560	
+  6561	static int io_req_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+  6562	{
+  6563		switch (req->opcode) {
+  6564		case IORING_OP_NOP:
+  6565			return 0;
+  6566		case IORING_OP_READV:
+  6567		case IORING_OP_READ_FIXED:
+  6568		case IORING_OP_READ:
+  6569			return io_read_prep(req, sqe);
+  6570		case IORING_OP_WRITEV:
+  6571		case IORING_OP_WRITE_FIXED:
+  6572		case IORING_OP_WRITE:
+  6573			return io_write_prep(req, sqe);
+  6574		case IORING_OP_POLL_ADD:
+  6575			return io_poll_add_prep(req, sqe);
+  6576		case IORING_OP_POLL_REMOVE:
+  6577			return io_poll_update_prep(req, sqe);
+  6578		case IORING_OP_FSYNC:
+  6579			return io_fsync_prep(req, sqe);
+  6580		case IORING_OP_SYNC_FILE_RANGE:
+  6581			return io_sfr_prep(req, sqe);
+  6582		case IORING_OP_SENDMSG:
+  6583		case IORING_OP_SEND:
+  6584			return io_sendmsg_prep(req, sqe);
+  6585		case IORING_OP_RECVMSG:
+  6586		case IORING_OP_RECV:
+  6587			return io_recvmsg_prep(req, sqe);
+  6588		case IORING_OP_CONNECT:
+  6589			return io_connect_prep(req, sqe);
+  6590		case IORING_OP_TIMEOUT:
+  6591			return io_timeout_prep(req, sqe, false);
+  6592		case IORING_OP_TIMEOUT_REMOVE:
+  6593			return io_timeout_remove_prep(req, sqe);
+  6594		case IORING_OP_ASYNC_CANCEL:
+  6595			return io_async_cancel_prep(req, sqe);
+  6596		case IORING_OP_LINK_TIMEOUT:
+  6597			return io_timeout_prep(req, sqe, true);
+  6598		case IORING_OP_ACCEPT:
+  6599			return io_accept_prep(req, sqe);
+  6600		case IORING_OP_FALLOCATE:
+  6601			return io_fallocate_prep(req, sqe);
+  6602		case IORING_OP_OPENAT:
+  6603			return io_openat_prep(req, sqe);
+  6604		case IORING_OP_CLOSE:
+  6605			return io_close_prep(req, sqe);
+  6606		case IORING_OP_FILES_UPDATE:
+  6607			return io_rsrc_update_prep(req, sqe);
+  6608		case IORING_OP_STATX:
+  6609			return io_statx_prep(req, sqe);
+  6610		case IORING_OP_FADVISE:
+  6611			return io_fadvise_prep(req, sqe);
+  6612		case IORING_OP_MADVISE:
+  6613			return io_madvise_prep(req, sqe);
+  6614		case IORING_OP_OPENAT2:
+  6615			return io_openat2_prep(req, sqe);
+  6616		case IORING_OP_EPOLL_CTL:
+  6617			return io_epoll_ctl_prep(req, sqe);
+  6618		case IORING_OP_SPLICE:
+  6619			return io_splice_prep(req, sqe);
+  6620		case IORING_OP_PROVIDE_BUFFERS:
+  6621			return io_provide_buffers_prep(req, sqe);
+  6622		case IORING_OP_REMOVE_BUFFERS:
+  6623			return io_remove_buffers_prep(req, sqe);
+  6624		case IORING_OP_TEE:
+  6625			return io_tee_prep(req, sqe);
+  6626		case IORING_OP_SHUTDOWN:
+  6627			return io_shutdown_prep(req, sqe);
+  6628		case IORING_OP_RENAMEAT:
+  6629			return io_renameat_prep(req, sqe);
+  6630		case IORING_OP_UNLINKAT:
+  6631			return io_unlinkat_prep(req, sqe);
+  6632		case IORING_OP_MKDIRAT:
+  6633			return io_mkdirat_prep(req, sqe);
+  6634		case IORING_OP_SYMLINKAT:
+  6635			return io_symlinkat_prep(req, sqe);
+  6636		case IORING_OP_LINKAT:
+  6637			return io_linkat_prep(req, sqe);
+  6638		case IORING_OP_RECVZC:
+> 6639			return io_recvzc_prep(req, sqe);
+  6640		}
+  6641	
+  6642		printk_once(KERN_WARNING "io_uring: unhandled opcode %d\n",
+  6643				req->opcode);
+  6644		return -EINVAL;
+  6645	}
+  6646	
 
-> platform_get_irq*() is still considerably different from
-> (clk|gpiod)_get* because the not-found value for the _optional variant
-> isn't usuable for the irq case. For clk and gpio I get rid of a whole if
-> branch, for irq I only change the if-condition. (And if that change is
-> considered good or bad seems to be subjective.)
-
-You are mixing up two things:
- - semantics of the pointer
- - semantics of the cookie
-
-Like I said previously the mistake is in putting an equal sign between apples
-and oranges (or in terms of Python, which is a good example here, None and
-False objects, where in both case 0 is magic and Python `if X`, `while `X` will
-work in the same way, the `typeof(X)` is different semantically).
-
-> For the idea to add a warning to platform_get_irq_optional for all but
-> -ENXIO (and -EPROBE_DEFER), I see the problem:
-> 
-> 5. platform_get_irq*() issuing an error message is only correct most of
-> the time and given proper error handling in the caller (which might be
-> able to handle not only -ENXIO but maybe also -EINVAL[1]) the error message
-> is irritating. Today platform_get_irq() emits an error message for all
-> but -EPROBE_DEFER. As soon as we find a driver that handles -EINVAL we
-> need a function platform_get_irq_variant1 to be silent for -EINVAL,
-> -EPROBE_DEFER and -ENXIO (or platform_get_irq_variant2 that is only
-> silent for -EINVAL and -EPROBE_DEFER?)
-> 
-> IMHO a query function should always be silent and let the caller do the
-> error handling. And if it's only because
-> 
-> 	mydev: IRQ index 0 not found
-> 
-> is worse than
-> 
-> 	mydev: neither TX irq not a muxed RX/TX irq found
-> 
-> . Also "index 0" is irritating for devices that are expected to have
-> only a single irq (i.e. the majority of all devices).
-
-Yeah, ack the #5.
-
-> Yes, I admit, we can safe some code by pushing the error message in a
-> query function. But that doesn't only have advantages.
-
-> [1] Looking through the source I wonder: What are the errors that can happen
->     in platform_get_irq*()? (calling everything but a valid irq number
->     an error) Looking at many callers, they only seem to expect "not
->     found" and some "probe defer" (even platform_get_irq() interprets
->     everything but -EPROBE_DEFER as "IRQ index %u not found\n".)
->     IMHO before we should consider to introduce a platform_get_irq*()
->     variant with improved semantics, some cleanup in the internals of
->     the irq lookup are necessary.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
