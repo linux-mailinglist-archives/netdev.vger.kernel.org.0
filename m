@@ -2,41 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 419B3498667
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 18:20:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1DE0498678
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 18:21:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244423AbiAXRUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 12:20:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56166 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244398AbiAXRUc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 12:20:32 -0500
+        id S244515AbiAXRVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 12:21:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49678 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244428AbiAXRU6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 12:20:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C29FC061747;
+        Mon, 24 Jan 2022 09:20:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51872612FA;
-        Mon, 24 Jan 2022 17:20:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 038A7C340E7;
-        Mon, 24 Jan 2022 17:20:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA1D2B81193;
+        Mon, 24 Jan 2022 17:20:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B14D2C36AE2;
+        Mon, 24 Jan 2022 17:20:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643044831;
-        bh=2stwZ5ekO5a4ROCROuQftRDYtnk3zAKl0kZa60Avkjo=;
+        s=k20201202; t=1643044836;
+        bh=rkXseVn1QFXcCnhlvK1TaREQozBZtgriKVAq/yfYSpQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AGXAnDlImLxMK98x2PuAQzTnmgxmraT+LgGG1n/bQRN/TRI8wMk7xM2ss7ndGZXRo
-         cZNQOMc6URKADHZeJ/UyZ6RZaKbSmN9TQ34LyK9msKFGLCZHuNzu6Nc9XjgbUF1vAY
-         RkYVIG7q6zEdlbY8azjyewJSwETUOdl7ZLvZsdPi3HAKk55DjMYuWPr6yaz2+YIBR7
-         TKJAfBmUtOZ/2h8Xno58IDqaG2nZX5HvuixLFB2eFt0ZGja3B2GNTfRJh2vBBWoDyO
-         V4R08GC2mKmOwb+g3Amk5dwVmjgKB8Z//z5AF0eVehT6ZNVdaR+asiPsCAykBwOMaJ
-         8acaUPVPZ8z9A==
+        b=KPTgZEWkLpPbJnS6Tm9OBpAgM+mcxCldBjB2W+IKPLYVgOwZIxrknSJi+6PDvgMCD
+         piUGVoxa0qza/dz52c8irysf/EDTVqsHPOEMDvn/1wnrEVLFF1ZU4Ia/rWevvMEZE1
+         jAn94fVV+rB2PCUTEwv9pz9zNddy/jOLXYSiRLg9xrmXd01a/iF5pNaU+Rq7fkg0K2
+         rz5h032d7Vb/YvUYeQfWgLp+WfirWsSI9sXkSWcGMNRkQz1WUt63YCwwDEbzw/D5D+
+         SVlM14I0dZUAZrZoOeZW5pF+jE7K3IINAKmcz+5KlLPOVMc7D4M5fkthZddkXYwb0l
+         dao3frnlza7oA==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
 Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
         ast@kernel.org, daniel@iogearbox.net, dsahern@kernel.org,
         komachi.yoshiki@gmail.com, brouer@redhat.com, toke@redhat.com,
         memxor@gmail.com, andrii.nakryiko@gmail.com
-Subject: [RFC bpf-next 1/2] net: bridge: add unstable br_fdb_find_port_from_ifindex helper
-Date:   Mon, 24 Jan 2022 18:20:15 +0100
-Message-Id: <720907692575488526f06edc2cf5c8f783777d4f.1643044381.git.lorenzo@kernel.org>
+Subject: [RFC bpf-next 2/2] samples: bpf: add xdp fdb lookup program
+Date:   Mon, 24 Jan 2022 18:20:16 +0100
+Message-Id: <17db48a98b53d95db980b85704f1a42a8555f9a6.1643044381.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1643044381.git.lorenzo@kernel.org>
 References: <cover.1643044381.git.lorenzo@kernel.org>
@@ -46,187 +49,314 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to bpf_xdp_ct_lookup routine, introduce
-br_fdb_find_port_from_ifindex unstable helper in order to accelerate
-linux bridge with XDP. br_fdb_find_port_from_ifindex will perform a
-lookup in the associated bridge fdb table and it will return the
-output ifindex if the destination address is associated to a bridge
-port or -ENODEV for BOM traffic or if lookup fails.
+This patch adds an example of a xdp-based bridge with the new
+br_fdb_find_port_from_ifindex unstable helper.
+This program simply forwards packets based on the destination address
+running a fdb lookup on a bridge fdb table in the kernel.
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- net/bridge/br.c         | 21 +++++++++++++
- net/bridge/br_fdb.c     | 67 +++++++++++++++++++++++++++++++++++------
- net/bridge/br_private.h | 12 ++++++++
- 3 files changed, 91 insertions(+), 9 deletions(-)
+ samples/bpf/Makefile       |   9 ++-
+ samples/bpf/xdp_fdb.bpf.c  |  68 +++++++++++++++++
+ samples/bpf/xdp_fdb_user.c | 152 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 228 insertions(+), 1 deletion(-)
+ create mode 100644 samples/bpf/xdp_fdb.bpf.c
+ create mode 100644 samples/bpf/xdp_fdb_user.c
 
-diff --git a/net/bridge/br.c b/net/bridge/br.c
-index 1fac72cc617f..d2d1c2341d9c 100644
---- a/net/bridge/br.c
-+++ b/net/bridge/br.c
-@@ -16,6 +16,8 @@
- #include <net/llc.h>
- #include <net/stp.h>
- #include <net/switchdev.h>
-+#include <linux/btf.h>
-+#include <linux/btf_ids.h>
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 38638845db9d..1fb4544a66a7 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -59,6 +59,7 @@ tprogs-y += xdp_redirect_map_multi
+ tprogs-y += xdp_redirect_map
+ tprogs-y += xdp_redirect
+ tprogs-y += xdp_monitor
++tprogs-y += xdp_fdb
  
- #include "br_private.h"
+ # Libbpf dependencies
+ LIBBPF_SRC = $(TOOLS_PATH)/lib/bpf
+@@ -124,6 +125,7 @@ xdp_redirect_cpu-objs := xdp_redirect_cpu_user.o $(XDP_SAMPLE)
+ xdp_redirect_map-objs := xdp_redirect_map_user.o $(XDP_SAMPLE)
+ xdp_redirect-objs := xdp_redirect_user.o $(XDP_SAMPLE)
+ xdp_monitor-objs := xdp_monitor_user.o $(XDP_SAMPLE)
++xdp_fdb-objs := xdp_fdb_user.o $(XDP_SAMPLE)
  
-@@ -365,6 +367,17 @@ static const struct stp_proto br_stp_proto = {
- 	.rcv	= br_stp_rcv,
- };
+ # Tell kbuild to always build the programs
+ always-y := $(tprogs-y)
+@@ -226,6 +228,7 @@ TPROGLDLIBS_map_perf_test	+= -lrt
+ TPROGLDLIBS_test_overhead	+= -lrt
+ TPROGLDLIBS_xdpsock		+= -pthread -lcap
+ TPROGLDLIBS_xsk_fwd		+= -pthread
++TPROGLDLIBS_xdp_fdb		+= -lm
  
-+#if (IS_ENABLED(CONFIG_DEBUG_INFO_BTF) || IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
-+BTF_SET_START(br_xdp_fdb_check_kfunc_ids)
-+BTF_ID(func, br_fdb_find_port_from_ifindex)
-+BTF_SET_END(br_xdp_fdb_check_kfunc_ids)
-+
-+static const struct btf_kfunc_id_set br_xdp_fdb_kfunc_set = {
-+	.owner     = THIS_MODULE,
-+	.check_set = &br_xdp_fdb_check_kfunc_ids,
-+};
-+#endif
-+
- static int __init br_init(void)
- {
- 	int err;
-@@ -417,6 +430,14 @@ static int __init br_init(void)
- 		"need this.\n");
- #endif
+ # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
+ # make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
+@@ -342,6 +345,7 @@ $(obj)/xdp_redirect_map_multi_user.o: $(obj)/xdp_redirect_map_multi.skel.h
+ $(obj)/xdp_redirect_map_user.o: $(obj)/xdp_redirect_map.skel.h
+ $(obj)/xdp_redirect_user.o: $(obj)/xdp_redirect.skel.h
+ $(obj)/xdp_monitor_user.o: $(obj)/xdp_monitor.skel.h
++$(obj)/xdp_fdb_user.o: $(obj)/xdp_fdb.skel.h
  
-+#if (IS_ENABLED(CONFIG_DEBUG_INFO_BTF) || IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
-+	err = register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP, &br_xdp_fdb_kfunc_set);
-+	if (err < 0) {
-+		br_netlink_fini();
-+		goto err_out6;
-+	}
-+#endif
-+
- 	return 0;
+ $(obj)/tracex5_kern.o: $(obj)/syscall_nrs.h
+ $(obj)/hbm_out_kern.o: $(src)/hbm.h $(src)/hbm_kern.h
+@@ -399,6 +403,7 @@ $(obj)/xdp_redirect_map_multi.bpf.o: $(obj)/xdp_sample.bpf.o
+ $(obj)/xdp_redirect_map.bpf.o: $(obj)/xdp_sample.bpf.o
+ $(obj)/xdp_redirect.bpf.o: $(obj)/xdp_sample.bpf.o
+ $(obj)/xdp_monitor.bpf.o: $(obj)/xdp_sample.bpf.o
++$(obj)/xdp_fdb.bpf.o: $(obj)/xdp_sample.bpf.o
  
- err_out6:
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 6ccda68bd473..cd3afa240298 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -235,30 +235,79 @@ static struct net_bridge_fdb_entry *br_fdb_find(struct net_bridge *br,
- 	return fdb;
- }
+ $(obj)/%.bpf.o: $(src)/%.bpf.c $(obj)/vmlinux.h $(src)/xdp_sample.bpf.h $(src)/xdp_sample_shared.h
+ 	@echo "  CLANG-BPF " $@
+@@ -409,7 +414,8 @@ $(obj)/%.bpf.o: $(src)/%.bpf.c $(obj)/vmlinux.h $(src)/xdp_sample.bpf.h $(src)/x
+ 		-c $(filter %.bpf.c,$^) -o $@
  
--struct net_device *br_fdb_find_port(const struct net_device *br_dev,
--				    const unsigned char *addr,
--				    __u16 vid)
-+static struct net_device *
-+__br_fdb_find_port(const struct net_device *br_dev,
-+		   const unsigned char *addr,
-+		   __u16 vid, bool ts_update)
- {
- 	struct net_bridge_fdb_entry *f;
--	struct net_device *dev = NULL;
- 	struct net_bridge *br;
+ LINKED_SKELS := xdp_redirect_cpu.skel.h xdp_redirect_map_multi.skel.h \
+-		xdp_redirect_map.skel.h xdp_redirect.skel.h xdp_monitor.skel.h
++		xdp_redirect_map.skel.h xdp_redirect.skel.h xdp_monitor.skel.h \
++		xdp_fdb.skel.h
+ clean-files += $(LINKED_SKELS)
  
--	ASSERT_RTNL();
--
- 	if (!netif_is_bridge_master(br_dev))
- 		return NULL;
+ xdp_redirect_cpu.skel.h-deps := xdp_redirect_cpu.bpf.o xdp_sample.bpf.o
+@@ -417,6 +423,7 @@ xdp_redirect_map_multi.skel.h-deps := xdp_redirect_map_multi.bpf.o xdp_sample.bp
+ xdp_redirect_map.skel.h-deps := xdp_redirect_map.bpf.o xdp_sample.bpf.o
+ xdp_redirect.skel.h-deps := xdp_redirect.bpf.o xdp_sample.bpf.o
+ xdp_monitor.skel.h-deps := xdp_monitor.bpf.o xdp_sample.bpf.o
++xdp_fdb.skel.h-deps := xdp_fdb.bpf.o xdp_sample.bpf.o
  
- 	br = netdev_priv(br_dev);
--	rcu_read_lock();
- 	f = br_fdb_find_rcu(br, addr, vid);
--	if (f && f->dst)
--		dev = f->dst->dev;
-+
-+	if (f && f->dst) {
-+		f->updated = jiffies;
-+		f->used = f->updated;
-+		return f->dst->dev;
-+	}
-+	return NULL;
-+}
-+
-+struct net_device *br_fdb_find_port(const struct net_device *br_dev,
-+				    const unsigned char *addr,
-+				    __u16 vid)
-+{
-+	struct net_device *dev;
-+
-+	ASSERT_RTNL();
-+
-+	rcu_read_lock();
-+	dev = __br_fdb_find_port(br_dev, addr, vid, false);
- 	rcu_read_unlock();
+ LINKED_BPF_SRCS := $(patsubst %.bpf.o,%.bpf.c,$(foreach skel,$(LINKED_SKELS),$($(skel)-deps)))
  
- 	return dev;
- }
- EXPORT_SYMBOL_GPL(br_fdb_find_port);
- 
-+int br_fdb_find_port_from_ifindex(struct xdp_md *xdp_ctx,
-+				  struct bpf_fdb_lookup *opt,
-+				  u32 opt__sz)
-+{
-+	struct xdp_buff *ctx = (struct xdp_buff *)xdp_ctx;
-+	struct net_bridge_port *port;
-+	struct net_device *dev;
-+	int ret = -ENODEV;
+diff --git a/samples/bpf/xdp_fdb.bpf.c b/samples/bpf/xdp_fdb.bpf.c
+new file mode 100644
+index 000000000000..7c797bfb7300
+--- /dev/null
++++ b/samples/bpf/xdp_fdb.bpf.c
+@@ -0,0 +1,68 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of version 2 of the GNU General Public
++ * License as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++ * General Public License for more details.
++ */
++#define KBUILD_MODNAME "foo"
 +
-+	BUILD_BUG_ON(sizeof(struct bpf_fdb_lookup) != NF_BPF_FDB_OPTS_SZ);
-+	if (!opt || opt__sz != sizeof(struct bpf_fdb_lookup))
-+		return -ENODEV;
++#include "vmlinux.h"
++#include "xdp_sample.bpf.h"
++#include "xdp_sample_shared.h"
 +
-+	rcu_read_lock();
++struct {
++	__uint(type, BPF_MAP_TYPE_DEVMAP_HASH);
++	__uint(key_size, sizeof(int));
++	__uint(value_size, sizeof(int));
++	__uint(max_entries, 64);
++} br_ports SEC(".maps");
 +
-+	dev = dev_get_by_index_rcu(dev_net(ctx->rxq->dev), opt->ifindex);
-+	if (!dev)
-+		goto out;
-+
-+	if (unlikely(!netif_is_bridge_port(dev)))
-+		goto out;
-+
-+	port = br_port_get_check_rcu(dev);
-+	if (unlikely(!port || !port->br))
-+		goto out;
-+
-+	dev = __br_fdb_find_port(port->br->dev, opt->addr, opt->vid, true);
-+	if (dev)
-+		ret = dev->ifindex;
-+out:
-+	rcu_read_unlock();
-+
-+	return ret;
-+}
-+
- struct net_bridge_fdb_entry *br_fdb_find_rcu(struct net_bridge *br,
- 					     const unsigned char *addr,
- 					     __u16 vid)
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 2661dda1a92b..64d4f1727da2 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -18,6 +18,7 @@
- #include <linux/if_vlan.h>
- #include <linux/rhashtable.h>
- #include <linux/refcount.h>
-+#include <linux/bpf.h>
- 
- #define BR_HASH_BITS 8
- #define BR_HASH_SIZE (1 << BR_HASH_BITS)
-@@ -2094,4 +2095,15 @@ void br_do_proxy_suppress_arp(struct sk_buff *skb, struct net_bridge *br,
- void br_do_suppress_nd(struct sk_buff *skb, struct net_bridge *br,
- 		       u16 vid, struct net_bridge_port *p, struct nd_msg *msg);
- struct nd_msg *br_is_nd_neigh_msg(struct sk_buff *skb, struct nd_msg *m);
-+
-+#define NF_BPF_FDB_OPTS_SZ	12
 +struct bpf_fdb_lookup {
-+	u8	addr[ETH_ALEN]; /* ETH_ALEN */
-+	u16	vid;
-+	u32	ifindex;
++	__u8	addr[ETH_ALEN];
++	__u16	vid;
++	__u32	ifindex;
 +};
 +
 +int br_fdb_find_port_from_ifindex(struct xdp_md *xdp_ctx,
 +				  struct bpf_fdb_lookup *opt,
-+				  u32 opt__sz);
- #endif
++				  u32 opt__sz) __ksym;
++
++SEC("xdp")
++int xdp_fdb_lookup(struct xdp_md *ctx)
++{
++	void *data_end = (void *)(long)ctx->data_end;
++	void *data = (void *)(long)ctx->data;
++	u32 key = bpf_get_smp_processor_id();
++	struct bpf_fdb_lookup params = {
++		.ifindex = ctx->ingress_ifindex,
++	};
++	struct ethhdr *eth = data;
++	u64 nh_off = sizeof(*eth);
++	struct datarec *rec;
++	int ret;
++
++	if (data + nh_off > data_end)
++		return XDP_DROP;
++
++	rec = bpf_map_lookup_elem(&rx_cnt, &key);
++	if (!rec)
++		return XDP_PASS;
++
++	NO_TEAR_INC(rec->processed);
++
++	__builtin_memcpy(params.addr, eth->h_dest, ETH_ALEN);
++	ret = br_fdb_find_port_from_ifindex(ctx, &params,
++					    sizeof(struct bpf_fdb_lookup));
++	if (ret < 0)
++		/* In cases of flooding, XDP_PASS will be returned here */
++		return XDP_PASS;
++
++	return bpf_redirect_map(&br_ports, ret, 0);
++}
++
++char _license[] SEC("license") = "GPL";
+diff --git a/samples/bpf/xdp_fdb_user.c b/samples/bpf/xdp_fdb_user.c
+new file mode 100644
+index 000000000000..c3bc073f273d
+--- /dev/null
++++ b/samples/bpf/xdp_fdb_user.c
+@@ -0,0 +1,152 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++static const char *__doc__ =
++"XDP fdb lookup tool, using BPF_MAP_TYPE_DEVMAP\n"
++"Usage: xdp_fdb <IFINDEX_0> <IFINDEX_1> ... <IFINDEX_n>\n";
++
++#include <linux/bpf.h>
++#include <linux/if_link.h>
++#include <assert.h>
++#include <errno.h>
++#include <signal.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <stdbool.h>
++#include <string.h>
++#include <net/if.h>
++#include <unistd.h>
++#include <libgen.h>
++#include <getopt.h>
++#include <bpf/bpf.h>
++#include <bpf/libbpf.h>
++#include "bpf_util.h"
++#include "xdp_sample_user.h"
++#include "xdp_fdb.skel.h"
++
++static int mask = SAMPLE_RX_CNT | SAMPLE_REDIRECT_ERR_MAP_CNT |
++		  SAMPLE_EXCEPTION_CNT | SAMPLE_DEVMAP_XMIT_CNT_MULTI |
++		  SAMPLE_REDIRECT_MAP_CNT;
++
++DEFINE_SAMPLE_INIT(xdp_fdb);
++
++static const struct option long_options[] = {
++	{ "help", no_argument, NULL, 'h' },
++	{ "force", no_argument, NULL, 'F' },
++	{ "interval", required_argument, NULL, 'i' },
++	{ "verbose", no_argument, NULL, 'v' },
++	{}
++};
++
++#define IFINDEX_LIST_SZ	32
++static int ifindex_list[IFINDEX_LIST_SZ];
++static int ifindex_num;
++
++int main(int argc, char **argv)
++{
++	int i, opt, ret = EXIT_FAIL_OPTION;
++	bool error = true, force = false;
++	unsigned long interval = 2;
++	struct xdp_fdb *skel;
++
++	while ((opt = getopt_long(argc, argv, "hFi:v",
++				  long_options, NULL)) != -1) {
++		switch (opt) {
++		case 'F':
++			force = true;
++			break;
++		case 'i':
++			interval = strtoul(optarg, NULL, 0);
++			break;
++		case 'v':
++			sample_switch_mode();
++			break;
++		case 'h':
++			error = false;
++		default:
++			sample_usage(argv, long_options, __doc__, mask, error);
++			return ret;
++		}
++	}
++
++	if (argc <= optind + 1) {
++		sample_usage(argv, long_options, __doc__, mask, true);
++		goto end;
++	}
++
++	for (i = optind; i < argc && i < IFINDEX_LIST_SZ; i++) {
++		int index;
++
++		index = if_nametoindex(argv[i]);
++
++		if (!index)
++			index = strtoul(argv[i], NULL, 0);
++		if (index)
++			ifindex_list[ifindex_num++] = index;
++	}
++
++	if (!ifindex_num) {
++		fprintf(stderr, "Bad interface index or name\n");
++		sample_usage(argv, long_options, __doc__, mask, true);
++		goto end;
++	}
++
++	skel = xdp_fdb__open();
++	if (!skel) {
++		fprintf(stderr, "Failed to xdp_fdb__open: %s\n",
++			strerror(errno));
++		ret = EXIT_FAIL_BPF;
++		goto end;
++	}
++
++	ret = sample_init_pre_load(skel);
++	if (ret < 0) {
++		fprintf(stderr, "Failed to sample_init_pre_load: %s\n", strerror(-ret));
++		ret = EXIT_FAIL_BPF;
++		goto end_destroy;
++	}
++
++	ret = xdp_fdb__load(skel);
++	if (ret < 0) {
++		fprintf(stderr, "Failed to xdp_fdb__load: %s\n",
++			strerror(errno));
++		ret = EXIT_FAIL_BPF;
++		goto end_destroy;
++	}
++
++	ret = sample_init(skel, mask);
++	if (ret < 0) {
++		fprintf(stderr, "Failed to initialize sample: %s\n", strerror(-ret));
++		ret = EXIT_FAIL;
++		goto end_destroy;
++	}
++
++	for (i = 0; i < ifindex_num; i++) {
++		if (sample_install_xdp(skel->progs.xdp_fdb_lookup,
++				       ifindex_list[i], false, force) < 0) {
++			ret = EXIT_FAIL_XDP;
++			goto end_destroy;
++		}
++
++		if (bpf_map_update_elem(bpf_map__fd(skel->maps.br_ports),
++					&ifindex_list[i],
++					&ifindex_list[i], 0) < 0) {
++			fprintf(stderr, "Failed to update devmap value: %s\n",
++				strerror(errno));
++			ret = EXIT_FAIL_BPF;
++			goto end_destroy;
++		}
++	}
++
++	ret = sample_run(interval, NULL, NULL);
++	if (ret < 0) {
++		fprintf(stderr, "Failed during sample run: %s\n", strerror(-ret));
++		ret = EXIT_FAIL;
++		goto end_destroy;
++	}
++	ret = EXIT_OK;
++
++end_destroy:
++	xdp_fdb__destroy(skel);
++end:
++	sample_exit(ret);
++}
 -- 
 2.34.1
 
