@@ -2,99 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DC214985EA
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 18:09:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD7AE498625
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 18:14:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244029AbiAXRJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 12:09:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46840 "EHLO
+        id S244286AbiAXROA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 12:14:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244230AbiAXRJo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 12:09:44 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB27FC06173B;
-        Mon, 24 Jan 2022 09:09:44 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id d15-20020a17090a110f00b001b4e7d27474so439954pja.2;
-        Mon, 24 Jan 2022 09:09:44 -0800 (PST)
+        with ESMTP id S241439AbiAXRNl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 12:13:41 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E862C06175C
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 09:13:25 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id p27so51415138lfa.1
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 09:13:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=QE8pJtTMoYdDHJAtBqji1V9DieZJck0kxv9CAHW5UMY=;
-        b=crjmhB1Z+RS1q8ktQBw3YUhkzD7s7woazxvUAgl3Rrg1e0fOzcxmWRil91UdTZB7cs
-         O5I7mhZVpzQAd6ZWPStIQVNkNP7AkoIJvyM+SWRtU2LdAWVI5FNctkqLgYMTz+QOrnXV
-         1fH9p1vB7wXtDXz3vz4jRogELrTguBqjnG6ObubR+1/DJ+3S4Ejm8tlXcUvYuGAZT5Qg
-         WQIdmnNsRzc2rdhl1T+kF+Jw0zb5sUrr1YUEtSAMU9LtxZ34eJ/s2Rt7pmp3fR5PqZzy
-         oOuagTQP4oYb1rIEo6bIP8pYFs54esR4/FfC0a0bePIFrTx2RWCxtbSU+7idhPcXDop6
-         35iw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zYBnJwYU6kdgRrUuU4GKLshNyRjBtazPAW6pSfcKBSo=;
+        b=NcjYumzr7dyaLLba4i3YqmYaQwCFsch778PYRKN+5YsJOLcUESv+T3GtfcswO8H0jj
+         Dp85CIXgcjciAnpA/s893+nzu2TEnjiuoypcdIAFWfjTRgv5FUyu88T1peEZAFCeEp3t
+         3IsDPOfRnahTAy18/h87YprIIENFCSR8fjfAd7GjEUDIyXkzvhnuArmgjJGNMbChmw0P
+         qgjrs2Avg59Hbs+QLF7i8yRBzHzqTVf6Y+aZAndEhHNJ4pyo5OFqZyL+c8SXCr3Io7RW
+         Cgz6XcCwhimT1NUEz2/xVlMqDl5LrXsQOEejcshXH95pOidgw0n8hUWetgiLWIocW1g0
+         LxZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=QE8pJtTMoYdDHJAtBqji1V9DieZJck0kxv9CAHW5UMY=;
-        b=VS4/rbUDyly4WJOFzRLq+6g3e//NknsKzQBNbAAeJQl0jng19tZatlhKtbxeoF2CVU
-         lEG03stEYc+Abgl20xmxHPnvwnxj/6380hSMrdjfGgQTotdxJxeNLo2SdLsRLxBq2Qbt
-         0W6x3K+OCM0PUstBRWzHwz5nihcTrm67OjmfuypHH7BKpcLm6FN9OJvhwAkq7I8jOS53
-         ghRxLRD7zIEwjpZeNbKp1PN090kRScZE9yEB00mYYPFpHZl5cIcrRiIEMSpVfgjO8XLN
-         9Qiu5W4TaI5up+25hxTEGta4UFIjVqnwiVPcmTzhzlAr9RMPJDksbT9sJ3vBnADg2eet
-         XJhg==
-X-Gm-Message-State: AOAM533LfXF4KtmHw2aREqkZcROjZH7UXYG5Gy6p8OHlXoZH0gLY78sI
-        nUP0uSm4EYZXLVuogl0hYYI=
-X-Google-Smtp-Source: ABdhPJyCHG1ScNMOYjKnM4xN/inKbAncgw3P2Yy6QvhmPW7XJcuRbtEhsblpix6z34++DrJTm6TFAg==
-X-Received: by 2002:a17:90b:4f49:: with SMTP id pj9mr2837537pjb.211.1643044183996;
-        Mon, 24 Jan 2022 09:09:43 -0800 (PST)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id g5sm13502751pjj.36.2022.01.24.09.09.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 09:09:43 -0800 (PST)
-Message-ID: <562d9627-fe34-fbef-e908-d06a1cdd7cb4@gmail.com>
-Date:   Mon, 24 Jan 2022 09:09:41 -0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zYBnJwYU6kdgRrUuU4GKLshNyRjBtazPAW6pSfcKBSo=;
+        b=2vCP+G34cxIxCQR/lt8idNbEZFq37ui5048HuPYrFH2oozjEGrAcg8aYP/b+v3wOMW
+         hEc2ap0UlgINjHpQK7YcmHVYJpddSL9PnFlQAahACqdZ+MC82KgZ0yY/nAjXYnQSO0Kt
+         2jiRwsPzww+jh2mNQHA/PPj7H3bsW7HDE6qmbk9yp+eESpvnv3J3ULq6PZZ2iqW99qu4
+         KK/c/XIoTRQdn+7i5muzW/aJfXod6G6/fAL7u0gVFdQWiPpc5uVyfaeau6a+YOTFPKiU
+         OCbUniihJmBtYQGNyZ36ynGDV4GRA8AftItrzjFB6gcc/6sGcI6YCLgJ6WENkTE5Qj48
+         Ct+Q==
+X-Gm-Message-State: AOAM532De2SHrMB3PQuNgtsCxatWl98DxsZtxrFaMG+GLMTkwbtz+nrP
+        Lh63kXlBWGAk423K58ZPU/rq5rDHOGMjZEllX4+sKA==
+X-Google-Smtp-Source: ABdhPJwcwz1TFtdILav2BCQzaf2RRBwGXgYmpytSwR/lKtfy8RCSLHjUwnxpVg+DAXCGJGrh1UFB8F9gZUESXZgFAfA=
+X-Received: by 2002:a05:6512:b04:: with SMTP id w4mr1061895lfu.545.1643044403748;
+ Mon, 24 Jan 2022 09:13:23 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] net: dsa|ethernet: use bool values to pass bool param of
- phy_init_eee
-Content-Language: en-US
-To:     Jisheng Zhang <jszhang@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+References: <20220122000301.1872828-1-jeffreyji@google.com> <20220121194057.17079951@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220121194057.17079951@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Brian Vazquez <brianvv@google.com>
+Date:   Mon, 24 Jan 2022 09:13:12 -0800
+Message-ID: <CAMzD94QW5uK2wAZfYWu5J=2HqCcLrT=y7u6+0PgJvHBb0YTz_Q@mail.gmail.com>
+Subject: Re: [PATCH net-next] net-core: add InMacErrors counter
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jeffrey Ji <jeffreyjilinux@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        UNGLinuxDriver@microchip.com, Byungho An <bh74.an@samsung.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bcm-kernel-feedback-list@broadcom.com
-References: <20220123152241.1480-1-jszhang@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220123152241.1480-1-jszhang@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jeffreyji <jeffreyji@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jan 21, 2022 at 7:41 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Sat, 22 Jan 2022 00:03:01 +0000 Jeffrey Ji wrote:
+> > From: jeffreyji <jeffreyji@google.com>
+> >
+> > Increment InMacErrors counter when packet dropped due to incorrect dest
+> > MAC addr.
+> >
+> > example output from nstat:
+> > \~# nstat -z "*InMac*"
+> > \#kernel
+> > Ip6InMacErrors                  0                  0.0
+> > IpExtInMacErrors                1                  0.0
+> >
+> > Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+> > with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
+> > counter was incremented.
+> >
+> > Signed-off-by: jeffreyji <jeffreyji@google.com>
+>
+> How about we use the new kfree_skb_reason() instead to avoid allocating
+> per-netns memory the stats?
 
+I'm not too familiar with the new kfree_skb_reason , but my
+understanding is that it needs either the drop_monitor  or ebpf to get
+the reason from the tracepoint, right? This is not too different from
+using perf tool to find where the pkt is being dropped.
 
-On 1/23/2022 7:22 AM, Jisheng Zhang wrote:
-> The 2nd param of phy_init_eee(): clk_stop_enable is a bool param, use
-> true or false instead of 1/0.
-> 
-> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-
-Nit: for future changes, if your patch spans multiple 
-subsystems/directories, just go with the top-most subject prefix, for 
-instance here "net: " would have been sufficient. Thanks!
--- 
-Florian
+The idea here was to have a high level metric that is easier to find
+for users that have less expertise on using more advance tools.
