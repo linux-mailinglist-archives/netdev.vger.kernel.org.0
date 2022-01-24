@@ -2,114 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB8244989B1
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 19:57:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48C63499193
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 21:13:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344059AbiAXS5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 13:57:47 -0500
-Received: from mail-ua1-f52.google.com ([209.85.222.52]:40701 "EHLO
-        mail-ua1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242445AbiAXSzp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 13:55:45 -0500
-Received: by mail-ua1-f52.google.com with SMTP id w21so32801061uan.7;
-        Mon, 24 Jan 2022 10:55:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ME4XZXZ5PNYvzDH4OmBox2BIuMK+Mc5MwbGfrqjcLBM=;
-        b=krwgaVuE7IDC/rxMSMdLVC6uJSa/IKo1aMFUsDzc8QqnxQzkUgm+00n86vnoUFQF0V
-         t/afEQFBE5qkd4PwgnEWzJiBnrV7wjOjH4Yb+FUufm3HBdIfbdx50jPutmKTFXqjodzD
-         m6d4F7+l5FYX18rXQ8oFFekvkdnh5QYpS7ERz7sQzH/FdjHdTbT1Krdgfs5LyaZp6DuS
-         2k3pAQCkj1l7z8k0wEvEF4rEwZr1u0se7eCCCLbKgTn3uZQvaHOx1tM+JdSCp3wDmegH
-         7ou9UbdSXcUwNwZwBtQjgczB7V0ZYrbyp/+JMycS0bXEEBxeqplavCDDZroxzta12JMF
-         MuRw==
-X-Gm-Message-State: AOAM532Rwk+fClYn7Oie+oxm1D0fIxBdQ6oQRFbAG59aU59Nu1WSe/Va
-        0vQ8LjJLPDlEPSEr3TyoFZpJdxMmjGia0w==
-X-Google-Smtp-Source: ABdhPJzErMxVydBitJvV9DhLIxXl2tkEu3hu1ychn50c2rXn3rVSZyzIt49BJeS/bJthEGNUNJ53Cw==
-X-Received: by 2002:ab0:5e93:: with SMTP id y19mr6435088uag.13.1643050543868;
-        Mon, 24 Jan 2022 10:55:43 -0800 (PST)
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com. [209.85.222.47])
-        by smtp.gmail.com with ESMTPSA id e194sm257894vke.37.2022.01.24.10.55.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 10:55:43 -0800 (PST)
-Received: by mail-ua1-f47.google.com with SMTP id 2so32864999uax.10;
-        Mon, 24 Jan 2022 10:55:43 -0800 (PST)
-X-Received: by 2002:a9f:2070:: with SMTP id 103mr2821729uam.122.1643050543058;
- Mon, 24 Jan 2022 10:55:43 -0800 (PST)
+        id S1379662AbiAXUMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 15:12:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49662 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378266AbiAXUGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 15:06:43 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E42CB8124F;
+        Mon, 24 Jan 2022 20:06:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C61C340E5;
+        Mon, 24 Jan 2022 20:06:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643054800;
+        bh=8qphzB9DIKFYeekh22vyIkpyTJNnlON5enOGNgmM+ZM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XHtu7o+AGXFMas5iaCTdivZ6VNdOZPxB8S64VaEPBQIKfmyQ+rFC/PL1eUSeOQ3bO
+         kcvu10d05oBhQJqCEgJVxbVy42gUbBOH6pc3/bHGfWbfQXPZBlt0vqN+UP/WSGnQnl
+         NYxhXv70r36mAvNN4PdTOgsFJkVVn6O5y6t8gvRo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Chase Conklin <chase.conklin@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Stephane Eranian <eranian@google.com>,
+        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 508/563] perf evsel: Override attr->sample_period for non-libpfm4 events
+Date:   Mon, 24 Jan 2022 19:44:33 +0100
+Message-Id: <20220124184042.036113932@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220123125737.2658758-1-geert@linux-m68k.org>
- <alpine.DEB.2.22.394.2201240851560.2674757@ramsan.of.borg> <CADnq5_MUq0fX7wMLJyUUxxa+2xoRinonL-TzD8tUhXALRfY8-A@mail.gmail.com>
-In-Reply-To: <CADnq5_MUq0fX7wMLJyUUxxa+2xoRinonL-TzD8tUhXALRfY8-A@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 24 Jan 2022 19:55:32 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWUWqHYbbavtMT-XAD_sarDPC5xnc3c0pX1ZAh3Wuzuzg@mail.gmail.com>
-Message-ID: <CAMuHMdWUWqHYbbavtMT-XAD_sarDPC5xnc3c0pX1ZAh3Wuzuzg@mail.gmail.com>
-Subject: Re: Build regressions/improvements in v5.17-rc1
-To:     Alex Deucher <alexdeucher@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        KVM list <kvm@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        "Tobin C. Harding" <me@tobin.cc>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alex,
+From: German Gomez <german.gomez@arm.com>
 
-On Mon, Jan 24, 2022 at 7:52 PM Alex Deucher <alexdeucher@gmail.com> wrote:
-> On Mon, Jan 24, 2022 at 5:25 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Sun, 23 Jan 2022, Geert Uytterhoeven wrote:
-> > >  + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: error: control reaches end of non-void function [-Werror=return-type]:  => 1560:1
->
-> I don't really see what's going on here:
->
-> #ifdef CONFIG_X86_64
-> return cpu_data(first_cpu_of_numa_node).apicid;
-> #else
-> return first_cpu_of_numa_node;
-> #endif
+commit 3606c0e1a1050d397ad759a62607e419fd8b0ccb upstream.
 
-Ah, the actual failure causing this was not included:
+A previous patch preventing "attr->sample_period" values from being
+overridden in pfm events changed a related behaviour in arm-spe.
 
-In file included from /kisskb/src/arch/x86/um/asm/processor.h:41:0,
-                 from /kisskb/src/include/linux/mutex.h:19,
-                 from /kisskb/src/include/linux/kernfs.h:11,
-                 from /kisskb/src/include/linux/sysfs.h:16,
-                 from /kisskb/src/include/linux/kobject.h:20,
-                 from /kisskb/src/include/linux/pci.h:35,
-                 from
-/kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:25:
-/kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: In
-function 'kfd_cpumask_to_apic_id':
-/kisskb/src/arch/um/include/asm/processor-generic.h:103:18: error:
-called object is not a function or function pointer
- #define cpu_data (&boot_cpu_data)
-                  ^
-/kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1556:9:
-note: in expansion of macro 'cpu_data'
-  return cpu_data(first_cpu_of_numa_node).apicid;
-         ^
-/kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1560:1:
-error: control reaches end of non-void function [-Werror=return-type]
+Before said patch:
+
+  perf record -c 10000 -e arm_spe_0// -- sleep 1
+
+Would yield an SPE event with period=10000. After the patch, the period
+in "-c 10000" was being ignored because the arm-spe code initializes
+sample_period to a non-zero value.
+
+This patch restores the previous behaviour for non-libpfm4 events.
+
+Fixes: ae5dcc8abe31 (“perf record: Prevent override of attr->sample_period for libpfm4 events”)
+Reported-by: Chase Conklin <chase.conklin@arm.com>
+Signed-off-by: German Gomez <german.gomez@arm.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: KP Singh <kpsingh@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Stephane Eranian <eranian@google.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: bpf@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Link: http://lore.kernel.org/lkml/20220118144054.2541-1-german.gomez@arm.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ tools/perf/util/evsel.c |   25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
+
+--- a/tools/perf/util/evsel.c
++++ b/tools/perf/util/evsel.c
+@@ -1014,6 +1014,17 @@ struct evsel_config_term *__evsel__get_c
+ 	return found_term;
  }
- ^
+ 
++static void evsel__set_default_freq_period(struct record_opts *opts,
++					   struct perf_event_attr *attr)
++{
++	if (opts->freq) {
++		attr->freq = 1;
++		attr->sample_freq = opts->freq;
++	} else {
++		attr->sample_period = opts->default_interval;
++	}
++}
++
+ /*
+  * The enable_on_exec/disabled value strategy:
+  *
+@@ -1080,14 +1091,12 @@ void evsel__config(struct evsel *evsel,
+ 	 * We default some events to have a default interval. But keep
+ 	 * it a weak assumption overridable by the user.
+ 	 */
+-	if (!attr->sample_period) {
+-		if (opts->freq) {
+-			attr->freq		= 1;
+-			attr->sample_freq	= opts->freq;
+-		} else {
+-			attr->sample_period = opts->default_interval;
+-		}
+-	}
++	if ((evsel->is_libpfm_event && !attr->sample_period) ||
++	    (!evsel->is_libpfm_event && (!attr->sample_period ||
++					 opts->user_freq != UINT_MAX ||
++					 opts->user_interval != ULLONG_MAX)))
++		evsel__set_default_freq_period(opts, attr);
++
+ 	/*
+ 	 * If attr->freq was set (here or earlier), ask for period
+ 	 * to be sampled.
 
-Gr{oetje,eeting}s,
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
