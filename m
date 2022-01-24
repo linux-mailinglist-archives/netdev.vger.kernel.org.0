@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC68D499C16
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 23:06:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4D40499C18
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 23:06:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1577223AbiAXV7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 16:59:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
+        id S1577259AbiAXV7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 16:59:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456643AbiAXVjl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 16:39:41 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60C1C0419C0
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 12:25:14 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id h5so8746987pfv.13
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 12:25:14 -0800 (PST)
+        with ESMTP id S1456649AbiAXVjo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 16:39:44 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52995C0613A7
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 12:25:17 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id d18so4274258plg.2
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 12:25:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6CydK47Ky2gdeZ9+T+LmQeSomVA0WgcQeU/YTKDdi8s=;
-        b=jYzcYUqib3aKPT93H/ctey0ingTEMyOMa5/LbyTPBGOe7eP8fdf47cDW0+bMpSxhzn
-         L0CU7czQAanHqE7PpQA4PuNqkKp36q9qnadsWZVMnfAnZxqujK3YhRjqYDmBJD8LWsaU
-         HVQREReCnhLOjvZPKlEBQBXMY6vJ+BhVSwyhckiqrWeWkrm9ABCx/S8h1C/NeRJRkuJe
-         UI+pzo5JNBOergWK4wrNYUyMBcA58A8iDxR6Bq06oKI2raLRSELmTA1Jyg0h0hA6zouA
-         ou+UDhDlwL5Mv/o17sKf3Ef5QAVDNDp/BatOdzrgt1xj1LKb/YWjHzmJBLLlC3dFhD+G
-         367Q==
+        bh=ySlUS0rUDwK62yVJf2rN33yPK8KDaorlC/HRAX7+p4w=;
+        b=hu7vnhUxLxJ3FKtKigjKIGC3UyA6PJKoJi9CIXE6yVh4OfiTMbuF/3OqyhxmXAfanF
+         rOqxeiqTFmo75BTEW8LDEcG8tveAjQsHqh2rLBSdlmcrLay8OZDgdc3oNUhbCtusC5KN
+         8ybp18qNPBu8zlDYhOq1BAsdrftosLNKZQhmv24QD4xdU3y/Cd6jBoeBOtk8VCx5y37i
+         t1hARtlbz6+H4T22NSjTYl6yWvxN5OhpOwxR7zrmA2uu9rmi4o9QHnEWlZNeTtdtyFY8
+         XhTn69KZSjrSnAual3iClGePdvlx+Rt9vtyQcGwQnQVS0kurYTfnSzDApqyzaxk1eOMJ
+         4DGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6CydK47Ky2gdeZ9+T+LmQeSomVA0WgcQeU/YTKDdi8s=;
-        b=5aqahau96XvQcyskuUKLafXiGpk6Zm0ql2AaTiMLlOyoiiAvl+Cx0IseS0jrwe+/Kq
-         jMH5COcCnrdSw7twnUWi0y+1EBw7BZAiao/Iq1a30t8eDmFwiUupLnEj55ke9cZ3EuJl
-         8aasS8ckTzEb4YRFXdssA6X4WSGWoDsDtJPPdq9aGWYMoAY77hKdXxYilD51uaT1Pszz
-         nRAsHVM/qSKTwMELAPOxheC6YxjP7unTcJs1YwLD4FcpfDvT9vtqBnsUNDSXZRO33f62
-         yFTqf8kvp0hbbVw3HRiLtKpnFKaMzN1csUE1Pd5uanoXwQSvIgZ/Z6TW2fmDT4AXYgSy
-         W/9Q==
-X-Gm-Message-State: AOAM530zRZONHUPpJVS/GhyhwzF6JJY0pzJMlBWkW/xAw56da8hy51e9
-        MRP0LPZhBR+m36urBCDXnIg=
-X-Google-Smtp-Source: ABdhPJxGTSj4Eihgh3PbLQO9jLOVDi3IAAS6NCn8lncnZ96ZIzulOQd1US8e9YehsZIJfSMy+40Vvw==
-X-Received: by 2002:a63:120b:: with SMTP id h11mr12715676pgl.611.1643055914282;
-        Mon, 24 Jan 2022 12:25:14 -0800 (PST)
+        bh=ySlUS0rUDwK62yVJf2rN33yPK8KDaorlC/HRAX7+p4w=;
+        b=4hofR7ea03C9Su+BK4bdYJzI+8wR0LjFKjKBJM0ylo34knq8Vqu5LPpjT2htDm7SjK
+         Rp8+0gVG0ych2oFMsNoLbchR7ABCsaJwevXJ4Vz595yHg3YfJM3vzOIaomqw7kL9P76M
+         0gQJbhz6xERfbBvninozeNsq85rLApX8iz+C/yLBWNxWx/vRo5bh1ITH1+Ju2atA8Vnd
+         7W19QVbB3cnS2pyFYVn75n3KLppoIzugDIaOk0CF4gHExHpXZpAvExCCU6A3kwGEsox3
+         ENbcQph4SayrXsnSjjAgG9KWwMcFruHyEYA7VNYatBUGgdXPWUUTR6EvbHIci7Tc7knj
+         R+tQ==
+X-Gm-Message-State: AOAM531064rxs8YgRO82nArh3Fkh6a2+3YFCb1NpHbuRteD+XuY4UATA
+        QnqpK6BojkoCeUJgmlR/Qwo=
+X-Google-Smtp-Source: ABdhPJzVPrwdQMweof3gpkLwzDICMm0P2NfovynBbl+TaTl57leUTJIMbkq691n9dAjbDesSaySr5Q==
+X-Received: by 2002:a17:90a:a90:: with SMTP id 16mr32207pjw.125.1643055916844;
+        Mon, 24 Jan 2022 12:25:16 -0800 (PST)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:e903:2adf:9289:9a45])
-        by smtp.gmail.com with ESMTPSA id c19sm17871115pfv.76.2022.01.24.12.25.13
+        by smtp.gmail.com with ESMTPSA id c19sm17871115pfv.76.2022.01.24.12.25.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 12:25:14 -0800 (PST)
+        Mon, 24 Jan 2022 12:25:16 -0800 (PST)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 5/6] ipv6: do not use per netns icmp sockets
-Date:   Mon, 24 Jan 2022 12:24:56 -0800
-Message-Id: <20220124202457.3450198-6-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 6/6] ipv4/tcp: do not use per netns ctl sockets
+Date:   Mon, 24 Jan 2022 12:24:57 -0800
+Message-Id: <20220124202457.3450198-7-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
 In-Reply-To: <20220124202457.3450198-1-eric.dumazet@gmail.com>
 References: <20220124202457.3450198-1-eric.dumazet@gmail.com>
@@ -67,172 +67,168 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-Back in linux-2.6.25 (commit 98c6d1b261e7 "[NETNS]: Make icmpv6_sk per namespace.",
-we added private per-cpu/per-netns ipv6 icmp sockets.
+TCP ipv4 uses per-cpu/per-netns ctl sockets in order to send
+RST and some ACK packets (on behalf of TIMEWAIT sockets).
 
 This adds memory and cpu costs, which do not seem needed.
 Now typical servers have 256 or more cores, this adds considerable
 tax to netns users.
 
-icmp sockets are used from BH context, are not receiving packets,
-and do not store any persistent state but the 'struct net' pointer.
+tcp sockets are used from BH context, are not receiving packets,
+and do not store any persistent state but the 'struct net' pointer
+in order to be able to use IPv4 output functions.
 
-icmpv6_xmit_lock() already makes sure to lock the chosen per-cpu
-socket.
+Note that I attempted a related change in the past, that had
+to be hot-fixed in commit bdbbb8527b6f ("ipv4: tcp: get rid of ugly unicast_sock")
 
-This patch has a considerable impact on the number of netns
-that the worker thread in cleanup_net() can dismantle per second,
-because ip6mr_sk_done() is no longer called, meaning we no longer
-acquire the rtnl mutex, competing with other threads adding new netns.
+This patch could very well surface old bugs, on layers not
+taking care of sk->sk_kern_sock properly.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/netns/ipv6.h |  1 -
- net/ipv6/icmp.c          | 62 +++++++---------------------------------
- 2 files changed, 10 insertions(+), 53 deletions(-)
+ include/net/netns/ipv4.h |  1 -
+ net/ipv4/tcp_ipv4.c      | 61 ++++++++++++++++++----------------------
+ 2 files changed, 27 insertions(+), 35 deletions(-)
 
-diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
-index a4b55038031652601444e46006c489a4e23b0ab7..30cdfc4e1615424b1c691b53499a1987d7fd0496 100644
---- a/include/net/netns/ipv6.h
-+++ b/include/net/netns/ipv6.h
-@@ -88,7 +88,6 @@ struct netns_ipv6 {
- 	struct fib6_table       *fib6_local_tbl;
- 	struct fib_rules_ops    *fib6_rules_ops;
- #endif
--	struct sock * __percpu	*icmp_sk;
- 	struct sock             *ndisc_sk;
- 	struct sock             *tcp_sk;
- 	struct sock             *igmp_sk;
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index 96c5cc0f30cebb02280a8384e34234701989f0d6..e6b978ea0e87fe595121a977d2030a308437eff3 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -69,17 +69,7 @@
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index 639a31638159b23e7ec1d16f621a7953b885729c..22b4c6df1d2b383cd10dd3dc11cf8c39388c50bf 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -73,7 +73,6 @@ struct netns_ipv4 {
+ 	struct sock		*mc_autojoin_sk;
  
- #include <linux/uaccess.h>
+ 	struct inet_peer_base	*peers;
+-	struct sock  * __percpu	*tcp_sk;
+ 	struct fqdir		*fqdir;
  
--/*
-- *	The ICMP socket(s). This is the most convenient way to flow control
-- *	our ICMP output as well as maintain a clean interface throughout
-- *	all layers. All Socketless IP sends will soon be gone.
-- *
-- *	On SMP we have one ICMP socket per-cpu.
-- */
--static struct sock *icmpv6_sk(struct net *net)
--{
--	return this_cpu_read(*net->ipv6.icmp_sk);
--}
-+static DEFINE_PER_CPU(struct sock *, ipv6_icmp_sk);
+ 	u8 sysctl_icmp_echo_ignore_all;
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 8e94b99882044d3d9927d83512d18f34dc2f5b43..a7d83ceea42076e89862619f4b0cd7ae9277e7de 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -91,6 +91,8 @@ static int tcp_v4_md5_hash_hdr(char *md5_hash, const struct tcp_md5sig_key *key,
+ struct inet_hashinfo tcp_hashinfo;
+ EXPORT_SYMBOL(tcp_hashinfo);
  
- static int icmpv6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
- 		       u8 type, u8 code, int offset, __be32 info)
-@@ -110,11 +100,11 @@ static const struct inet6_protocol icmpv6_protocol = {
- };
- 
- /* Called with BH disabled */
--static __inline__ struct sock *icmpv6_xmit_lock(struct net *net)
-+static struct sock *icmpv6_xmit_lock(struct net *net)
++static DEFINE_PER_CPU(struct sock *, ipv4_tcp_sk);
++
+ static u32 tcp_v4_init_seq(const struct sk_buff *skb)
  {
- 	struct sock *sk;
+ 	return secure_tcp_seq(ip_hdr(skb)->daddr,
+@@ -810,7 +812,8 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 	arg.tos = ip_hdr(skb)->tos;
+ 	arg.uid = sock_net_uid(net, sk && sk_fullsock(sk) ? sk : NULL);
+ 	local_bh_disable();
+-	ctl_sk = this_cpu_read(*net->ipv4.tcp_sk);
++	ctl_sk = this_cpu_read(ipv4_tcp_sk);
++	sock_net_set(ctl_sk, net);
+ 	if (sk) {
+ 		ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
+ 				   inet_twsk(sk)->tw_mark : sk->sk_mark;
+@@ -825,6 +828,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 			      transmit_time);
  
--	sk = icmpv6_sk(net);
-+	sk = this_cpu_read(ipv6_icmp_sk);
- 	if (unlikely(!spin_trylock(&sk->sk_lock.slock))) {
- 		/* This can happen if the output path (f.e. SIT or
- 		 * ip6ip6 tunnel) signals dst_link_failure() for an
-@@ -122,11 +112,13 @@ static __inline__ struct sock *icmpv6_xmit_lock(struct net *net)
- 		 */
- 		return NULL;
- 	}
-+	sock_net_set(sk, net);
- 	return sk;
+ 	ctl_sk->sk_mark = 0;
++	sock_net_set(ctl_sk, &init_net);
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTRSTS);
+ 	local_bh_enable();
+@@ -908,7 +912,8 @@ static void tcp_v4_send_ack(const struct sock *sk,
+ 	arg.tos = tos;
+ 	arg.uid = sock_net_uid(net, sk_fullsock(sk) ? sk : NULL);
+ 	local_bh_disable();
+-	ctl_sk = this_cpu_read(*net->ipv4.tcp_sk);
++	ctl_sk = this_cpu_read(ipv4_tcp_sk);
++	sock_net_set(ctl_sk, net);
+ 	ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
+ 			   inet_twsk(sk)->tw_mark : sk->sk_mark;
+ 	ctl_sk->sk_priority = (sk->sk_state == TCP_TIME_WAIT) ?
+@@ -921,6 +926,7 @@ static void tcp_v4_send_ack(const struct sock *sk,
+ 			      transmit_time);
+ 
+ 	ctl_sk->sk_mark = 0;
++	sock_net_set(ctl_sk, &init_net);
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
+ 	local_bh_enable();
  }
+@@ -3111,41 +3117,14 @@ EXPORT_SYMBOL(tcp_prot);
  
--static __inline__ void icmpv6_xmit_unlock(struct sock *sk)
-+static void icmpv6_xmit_unlock(struct sock *sk)
+ static void __net_exit tcp_sk_exit(struct net *net)
  {
-+	sock_net_set(sk, &init_net);
- 	spin_unlock(&sk->sk_lock.slock);
- }
- 
-@@ -1034,59 +1026,27 @@ void icmpv6_flow_init(struct sock *sk, struct flowi6 *fl6,
- 	security_sk_classify_flow(sk, flowi6_to_flowi_common(fl6));
- }
- 
--static void __net_exit icmpv6_sk_exit(struct net *net)
--{
--	int i;
+-	int cpu;
 -
--	for_each_possible_cpu(i)
--		inet_ctl_sock_destroy(*per_cpu_ptr(net->ipv6.icmp_sk, i));
--	free_percpu(net->ipv6.icmp_sk);
--}
+ 	if (net->ipv4.tcp_congestion_control)
+ 		bpf_module_put(net->ipv4.tcp_congestion_control,
+ 			       net->ipv4.tcp_congestion_control->owner);
 -
--static int __net_init icmpv6_sk_init(struct net *net)
-+int __init icmpv6_init(void)
- {
- 	struct sock *sk;
- 	int err, i;
+-	for_each_possible_cpu(cpu)
+-		inet_ctl_sock_destroy(*per_cpu_ptr(net->ipv4.tcp_sk, cpu));
+-	free_percpu(net->ipv4.tcp_sk);
+ }
  
--	net->ipv6.icmp_sk = alloc_percpu(struct sock *);
--	if (!net->ipv6.icmp_sk)
+ static int __net_init tcp_sk_init(struct net *net)
+ {
+-	int res, cpu, cnt;
+-
+-	net->ipv4.tcp_sk = alloc_percpu(struct sock *);
+-	if (!net->ipv4.tcp_sk)
 -		return -ENOMEM;
 -
- 	for_each_possible_cpu(i) {
- 		err = inet_ctl_sock_create(&sk, PF_INET6,
--					   SOCK_RAW, IPPROTO_ICMPV6, net);
-+					   SOCK_RAW, IPPROTO_ICMPV6, &init_net);
- 		if (err < 0) {
- 			pr_err("Failed to initialize the ICMP6 control socket (err %d)\n",
- 			       err);
+-	for_each_possible_cpu(cpu) {
+-		struct sock *sk;
+-
+-		res = inet_ctl_sock_create(&sk, PF_INET, SOCK_RAW,
+-					   IPPROTO_TCP, net);
+-		if (res)
 -			goto fail;
-+			return err;
- 		}
+-		sock_set_flag(sk, SOCK_USE_WRITE_QUEUE);
+-
+-		/* Please enforce IP_DF and IPID==0 for RST and
+-		 * ACK sent in SYN-RECV and TIME-WAIT state.
+-		 */
+-		inet_sk(sk)->pmtudisc = IP_PMTUDISC_DO;
+-
+-		*per_cpu_ptr(net->ipv4.tcp_sk, cpu) = sk;
+-	}
++	int cnt;
  
--		*per_cpu_ptr(net->ipv6.icmp_sk, i) = sk;
-+		per_cpu(ipv6_icmp_sk, i) = sk;
+ 	net->ipv4.sysctl_tcp_ecn = 2;
+ 	net->ipv4.sysctl_tcp_ecn_fallback = 1;
+@@ -3229,10 +3208,6 @@ static int __net_init tcp_sk_init(struct net *net)
+ 		net->ipv4.tcp_congestion_control = &tcp_reno;
  
- 		/* Enough space for 2 64K ICMP packets, including
- 		 * sk_buff struct overhead.
- 		 */
- 		sk->sk_sndbuf = 2 * SKB_TRUESIZE(64 * 1024);
- 	}
--	return 0;
+ 	return 0;
+-fail:
+-	tcp_sk_exit(net);
 -
-- fail:
--	icmpv6_sk_exit(net);
--	return err;
--}
--
--static struct pernet_operations icmpv6_sk_ops = {
--	.init = icmpv6_sk_init,
--	.exit = icmpv6_sk_exit,
--};
--
--int __init icmpv6_init(void)
--{
--	int err;
--
--	err = register_pernet_subsys(&icmpv6_sk_ops);
--	if (err < 0)
--		return err;
- 
- 	err = -EAGAIN;
- 	if (inet6_add_protocol(&icmpv6_protocol, IPPROTO_ICMPV6) < 0)
-@@ -1101,14 +1061,12 @@ int __init icmpv6_init(void)
- 	inet6_del_protocol(&icmpv6_protocol, IPPROTO_ICMPV6);
- fail:
- 	pr_err("Failed to register ICMP6 protocol\n");
--	unregister_pernet_subsys(&icmpv6_sk_ops);
- 	return err;
+-	return res;
  }
  
- void icmpv6_cleanup(void)
+ static void __net_exit tcp_sk_exit_batch(struct list_head *net_exit_list)
+@@ -3324,6 +3299,24 @@ static void __init bpf_iter_register(void)
+ 
+ void __init tcp_v4_init(void)
  {
- 	inet6_unregister_icmp_sender(icmp6_send);
--	unregister_pernet_subsys(&icmpv6_sk_ops);
- 	inet6_del_protocol(&icmpv6_protocol, IPPROTO_ICMPV6);
- }
++	int cpu, res;
++
++	for_each_possible_cpu(cpu) {
++		struct sock *sk;
++
++		res = inet_ctl_sock_create(&sk, PF_INET, SOCK_RAW,
++					   IPPROTO_TCP, &init_net);
++		if (res)
++			panic("Failed to create the TCP control socket.\n");
++		sock_set_flag(sk, SOCK_USE_WRITE_QUEUE);
++
++		/* Please enforce IP_DF and IPID==0 for RST and
++		 * ACK sent in SYN-RECV and TIME-WAIT state.
++		 */
++		inet_sk(sk)->pmtudisc = IP_PMTUDISC_DO;
++
++		per_cpu(ipv4_tcp_sk, cpu) = sk;
++	}
+ 	if (register_pernet_subsys(&tcp_sk_ops))
+ 		panic("Failed to create the TCP control socket.\n");
  
 -- 
 2.35.0.rc0.227.g00780c9af4-goog
