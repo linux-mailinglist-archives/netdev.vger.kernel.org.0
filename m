@@ -2,86 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AC49497D8C
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 12:03:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86715497D98
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 12:07:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236897AbiAXLDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 06:03:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
+        id S237055AbiAXLHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 06:07:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236492AbiAXLDQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 06:03:16 -0500
-Received: from mail-vk1-xa34.google.com (mail-vk1-xa34.google.com [IPv6:2607:f8b0:4864:20::a34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C0EC061744
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 03:03:16 -0800 (PST)
-Received: by mail-vk1-xa34.google.com with SMTP id l196so6995169vki.5
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 03:03:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=JxKe5/w3Sw6bQzimXk5dzl9v/qFdYrygrwsRoUYCaIs=;
-        b=AmRIksR32TNysgo+mqKXTpUJ7d8zdsocp0aW/d/1J5U1PXmx2Y4Y1QYC5qbxH7PxQE
-         yOpI+fUps9NO6f1+y9t2Lu/j/EGZomIsfP4G0AVSpkx+jaz4Yh/HOTjVW8yJEis07d1N
-         PVEwfyFfjOJyIRrjVoMEamuK7tmlksV3sJNIgjlII/Ku74jbNtM2T+1txkyJJ5I1le5z
-         by2KHDGxujnZEb7Ts/zLaFj2wGcwSh5YkKxjG/3UTwGC5TCfUevMKxqChX9QRSigtmB7
-         605aKhlk46wzQzr2qCYCFmnMo3/jW41V6CrNOew1v01BhtKnY5JaK94kQDgU9wx+MT6M
-         D4lA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=JxKe5/w3Sw6bQzimXk5dzl9v/qFdYrygrwsRoUYCaIs=;
-        b=TAkcc2PWi7HRjc9u5xLRrIZhKM2uUoVmlp4znrnXIlH2zfwCDaSn8AxWNqR2cV3dOI
-         qaUUcows5KmrY2vdyR8huU8393R7+rboLxktqHRvh27CQ0uenw/XzbRi50xcmWsYOePb
-         ytcuO8yr+y8Y/9fsXxufWcCjBanyPuZ+8nLXcLg72K9rBr5++grKvggTxuysUtrFwCi6
-         OtZuhXL6S6LlrxQSqmrztJLDeDgtVvGC3PxuT9BYbiqrytkBc/cgIpFwqNBFhoJ7BeX3
-         4uXbDeGLI3TRp51VnhfzzynnSSadPQ+IgWoTFFysTKzDa9VbRHxRzfRM40e8gRTJUwBu
-         sPoA==
-X-Gm-Message-State: AOAM530zoqeFFcgbO7wQjWfPIH4Qw/us5mpIqDq5aUHYXsl5JCkrZ1Sx
-        Cb2grOerSCKalCYkzWIzsiYX9I5ovKqHH2zLlAM=
-X-Google-Smtp-Source: ABdhPJywIn+7j+MeEfp/Wh6ksoOa9VJ+e+8TUM/jvi5drs3+OxkxfQ9fg4FsCS8RCWLSFbAp7JQn4/jKdAn1N6preD0=
-X-Received: by 2002:a05:6122:ca1:: with SMTP id ba33mr1030934vkb.39.1643022195306;
- Mon, 24 Jan 2022 03:03:15 -0800 (PST)
+        with ESMTP id S234207AbiAXLHp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 06:07:45 -0500
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2FEC06173B
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 03:07:44 -0800 (PST)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 3FDECC020; Mon, 24 Jan 2022 12:07:42 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1643022462; bh=906aLdz+I0qRY+XLR4gRuQlCFXv/vWmRdftupy1Lgho=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hSTRij+LjZvgH3iI09q+YCYC3/nYSyMJggUHag9ITyl6B5rvvi0AnqpANX7T9j7Kb
+         Oa+XwWV9Qtr8wpS21mW4DxN/0j61pRDt8poCjpBlVotPKkRoft0tPeIlMsnmIYaaqH
+         ScrB4XB+AjB9Bq1qfpaub3Mw7yuOO/Lgj9CWMd6N/ggG5vPP07rxMnh5Jlmh5S+KVy
+         MAriMAuIfRh38qi0D8nCAF/z7EtcYl/oKXOAq3ECAL8rxbtiDxvemSiIEf8WZamcK5
+         sCJDIz2fKZShc8VrWHEVefKlyJCEOn93Ppo3kWur1kAFXwxxcxQu9FDfIPpNnteLpx
+         WWWCMz9JGatjw==
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=unavailable version=3.3.2
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 026DDC009;
+        Mon, 24 Jan 2022 12:07:38 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1643022461; bh=906aLdz+I0qRY+XLR4gRuQlCFXv/vWmRdftupy1Lgho=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sv12hwipGD3L76wBT+IIKrDkWsrmRVO5141hMCyIXuXjEQUg2XALVqYYkpn3ZbMHG
+         +cSn0wJXYRHnQDWD8U6qzQL04bqaNMcJSPtD0p25tce0zyC45PffOjv58nNq5Ux5Hn
+         +3dysbxuHI2Cz/Jpx18wAbLrp1PcfzGkoAa/zmr0lRE6wWQbDj1obn+cEhyc5t0TK9
+         PmAkcaBqOo5KfstN8QQDr+wcVrKk64QD/JMm21w03PmlT7XnhRKh3R3/9HYkS16Zca
+         KhIoiavYKcaHcfBAggLg7g8LL32YlEh9BIzLHza9izYT9iEZPe/MeX1nw8jBNYzfDw
+         +o+ThYtJCR8yw==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id b04e8f30;
+        Mon, 24 Jan 2022 11:07:35 +0000 (UTC)
+Date:   Mon, 24 Jan 2022 20:07:20 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Nikolay Kichukov <nikolay@oldum.net>
+Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
+Subject: Re: [PATCH v4 00/12] remove msize limit in virtio transport
+Message-ID: <Ye6IaIqQcwAKv0vb@codewreck.org>
+References: <cover.1640870037.git.linux_oss@crudebyte.com>
+ <29a54acefd1c37d9612613d5275e4bf51e62a704.camel@oldum.net>
+ <1835287.xbJIPCv9Fc@silver>
+ <5111aae45d30df13e42073b0af4f16caf9bc79f0.camel@oldum.net>
 MIME-Version: 1.0
-Received: by 2002:a05:6102:913:0:0:0:0 with HTTP; Mon, 24 Jan 2022 03:03:14
- -0800 (PST)
-Reply-To: ibrahimajudgejohnson20@gmail.com
-From:   "Mrs. Shalla Bruce" <richardwilliam465@gmail.com>
-Date:   Mon, 24 Jan 2022 03:03:14 -0800
-Message-ID: <CAHaeUQA_2brc7Hwk_EdX47NuvUCo38_yERFWJbTMTFFzFQyp2A@mail.gmail.com>
-Subject: Attention Dear Fund Owner
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <5111aae45d30df13e42073b0af4f16caf9bc79f0.camel@oldum.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Nikolay Kichukov wrote on Mon, Jan 24, 2022 at 11:21:08AM +0100:
+> It works, sorry for overlooking the 'known limitations' in the first
+> place. When do we expect these patches to be merged upstream?
+
+We're just starting a new development cycle for 5.18 while 5.17 is
+stabilizing, so this mostly depends on the ability to check if a msize
+given in parameter is valid as described in the first "STILL TO DO"
+point listed in the cover letter.
+
+I personally would be happy considering this series for this cycle with
+just a max msize of 4MB-8k and leave that further bump for later if
+we're sure qemu will handle it.
+We're still seeing a boost for that and the smaller buffers for small
+messages will benefit all transport types, so that would get in in
+roughly two months for 5.18-rc1, then another two months for 5.18 to
+actually be released and start hitting production code.
+
+
+I'm not sure when exactly but I'll run some tests with it as well and
+redo a proper code review within the next few weeks, so we can get this
+in -next for a little while before the merge window.
+
 -- 
-Attention Beneficiary,
-
-We have concluded to effect your payment of $9.5Million, through Money
-Gram transfer office, but the maximum amount you will be receiving
-each day is $25,000.00 daily until the funds is completely
-transferred. i need all your information and address right now, So
-that i can go the UBA BANK Office Managements Director to submit your
-account number information immediately,
-
-Fill your details below for reference purposes:
-NAME OF CUSTOMER:
-ADDRESS:
-COUNTRY:
-OCCUPATION:
-DIRECT PHONE NUMBER:
-
-Contact Person:Chief Mr Judge Ibrahima Johnson
-Phone:Mobile:Tele:..+22969457855.
-Email;;(ibrahimajudgejohnson20@gmail.com)
-
-then to enable him transfer your Funds and give you the Reference No#,
-sender name and question/answer to pick the $25,000.00 also to
-continue sending rest of your payment till your total payment of
-$9.5Million is complete.
-
-Thanks for your Prompt Response.
-Thanks, And Best Regards.
-Mrs Shalla Bruce
+Dominique
