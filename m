@@ -2,234 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4D40499C18
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 23:06:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0033499627
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 22:17:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1577259AbiAXV7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 16:59:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456649AbiAXVjo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 16:39:44 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52995C0613A7
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 12:25:17 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id d18so4274258plg.2
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 12:25:17 -0800 (PST)
+        id S1443919AbiAXU7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 15:59:34 -0500
+Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:23591 "EHLO
+        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442619AbiAXUzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 15:55:00 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ySlUS0rUDwK62yVJf2rN33yPK8KDaorlC/HRAX7+p4w=;
-        b=hu7vnhUxLxJ3FKtKigjKIGC3UyA6PJKoJi9CIXE6yVh4OfiTMbuF/3OqyhxmXAfanF
-         rOqxeiqTFmo75BTEW8LDEcG8tveAjQsHqh2rLBSdlmcrLay8OZDgdc3oNUhbCtusC5KN
-         8ybp18qNPBu8zlDYhOq1BAsdrftosLNKZQhmv24QD4xdU3y/Cd6jBoeBOtk8VCx5y37i
-         t1hARtlbz6+H4T22NSjTYl6yWvxN5OhpOwxR7zrmA2uu9rmi4o9QHnEWlZNeTtdtyFY8
-         XhTn69KZSjrSnAual3iClGePdvlx+Rt9vtyQcGwQnQVS0kurYTfnSzDApqyzaxk1eOMJ
-         4DGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ySlUS0rUDwK62yVJf2rN33yPK8KDaorlC/HRAX7+p4w=;
-        b=4hofR7ea03C9Su+BK4bdYJzI+8wR0LjFKjKBJM0ylo34knq8Vqu5LPpjT2htDm7SjK
-         Rp8+0gVG0ych2oFMsNoLbchR7ABCsaJwevXJ4Vz595yHg3YfJM3vzOIaomqw7kL9P76M
-         0gQJbhz6xERfbBvninozeNsq85rLApX8iz+C/yLBWNxWx/vRo5bh1ITH1+Ju2atA8Vnd
-         7W19QVbB3cnS2pyFYVn75n3KLppoIzugDIaOk0CF4gHExHpXZpAvExCCU6A3kwGEsox3
-         ENbcQph4SayrXsnSjjAgG9KWwMcFruHyEYA7VNYatBUGgdXPWUUTR6EvbHIci7Tc7knj
-         R+tQ==
-X-Gm-Message-State: AOAM531064rxs8YgRO82nArh3Fkh6a2+3YFCb1NpHbuRteD+XuY4UATA
-        QnqpK6BojkoCeUJgmlR/Qwo=
-X-Google-Smtp-Source: ABdhPJzVPrwdQMweof3gpkLwzDICMm0P2NfovynBbl+TaTl57leUTJIMbkq691n9dAjbDesSaySr5Q==
-X-Received: by 2002:a17:90a:a90:: with SMTP id 16mr32207pjw.125.1643055916844;
-        Mon, 24 Jan 2022 12:25:16 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:e903:2adf:9289:9a45])
-        by smtp.gmail.com with ESMTPSA id c19sm17871115pfv.76.2022.01.24.12.25.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 12:25:16 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 6/6] ipv4/tcp: do not use per netns ctl sockets
-Date:   Mon, 24 Jan 2022 12:24:57 -0800
-Message-Id: <20220124202457.3450198-7-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-In-Reply-To: <20220124202457.3450198-1-eric.dumazet@gmail.com>
-References: <20220124202457.3450198-1-eric.dumazet@gmail.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1643057699; x=1674593699;
+  h=references:from:to:cc:subject:date:in-reply-to:
+   message-id:mime-version;
+  bh=nHiNLCkgEf9z5Kqzg4eastfyk3dGxgQ262HjhHcEk5Q=;
+  b=CGOgA295K8VEuVh85zh/u4tl9FHeiPBo1PowaZKtgwnVv8DlqSyKHYZI
+   L+18X652n+CO+Mcs6gPxHt++zl5oqpu74OG+8oBu8DLY62zJ8xEvFCiFP
+   FwLjucUnzOwRJGFbgqv1A/y9C+nJnDydoBGmqkJaA+WJ19M63FTkVRx18
+   g=;
+X-IronPort-AV: E=Sophos;i="5.88,313,1635206400"; 
+   d="scan'208";a="57694596"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-28a78e3f.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 24 Jan 2022 20:50:55 +0000
+Received: from EX13D28EUC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-28a78e3f.us-west-2.amazon.com (Postfix) with ESMTPS id E7B30A275E;
+        Mon, 24 Jan 2022 20:50:54 +0000 (UTC)
+Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.160.209) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Mon, 24 Jan 2022 20:50:47 +0000
+References: <20220123115623.94843-1-42.hyeyoo@gmail.com>
+ <f835cbb3-a028-1daf-c038-516dd47ce47c@gmail.com>
+ <5cca8bdd-bed0-f26a-6c96-d18947d3a50b@gmail.com>
+User-agent: mu4e 1.7.5; emacs 28.0.50
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Julian Wiedmann <jwiedmann.dev@gmail.com>
+CC:     Hyeonggon Yoo <42.hyeyoo@gmail.com>, <netdev@vger.kernel.org>,
+        "Arthur Kiyanovski" <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        "Noam Dagan" <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Sameeh Jubran <sameehj@amazon.com>,
+        "Wei Yongjun" <weiyongjun1@huawei.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: ena: Do not waste napi skb cache
+Date:   Mon, 24 Jan 2022 22:50:05 +0200
+In-Reply-To: <5cca8bdd-bed0-f26a-6c96-d18947d3a50b@gmail.com>
+Message-ID: <pj41zlmtjk7t9a.fsf@u570694869fb251.ant.amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.160.209]
+X-ClientProxiedBy: EX13D16UWB003.ant.amazon.com (10.43.161.194) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
 
-TCP ipv4 uses per-cpu/per-netns ctl sockets in order to send
-RST and some ACK packets (on behalf of TIMEWAIT sockets).
+Julian Wiedmann <jwiedmann.dev@gmail.com> writes:
 
-This adds memory and cpu costs, which do not seem needed.
-Now typical servers have 256 or more cores, this adds considerable
-tax to netns users.
+> On 24.01.22 10:57, Julian Wiedmann wrote:
+>> On 23.01.22 13:56, Hyeonggon Yoo wrote:
+>>> By profiling, discovered that ena device driver allocates skb 
+>>> by
+>>> build_skb() and frees by napi_skb_cache_put(). Because the 
+>>> driver
+>>> does not use napi skb cache in allocation path, napi skb cache 
+>>> is
+>>> periodically filled and flushed. This is waste of napi skb 
+>>> cache.
+>>>
+>>> As ena_alloc_skb() is called only in napi, Use 
+>>> napi_build_skb()
+>>> instead of build_skb() to when allocating skb.
+>>>
+>>> This patch was tested on aws a1.metal instance.
+>>>
+>>> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+>>> ---
+>>>  drivers/net/ethernet/amazon/ena/ena_netdev.c | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
+>>> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>> index c72f0c7ff4aa..2c67fb1703c5 100644
+>>> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>> @@ -1407,7 +1407,7 @@ static struct sk_buff 
+>>> *ena_alloc_skb(struct ena_ring *rx_ring, void *first_frag)
+>>>  		skb = netdev_alloc_skb_ip_align(rx_ring->netdev,
+>>>  						rx_ring->rx_copybreak);
+>> 
+>> To keep things consistent, this should then also be 
+>> napi_alloc_skb().
+>> 
+>
+> And on closer look, this copybreak path also looks buggy. If 
+> rx_copybreak
+> gets reduced _while_ receiving a frame, the allocated skb can 
+> end up too
+> small to take all the data.
+>
+> @ ena maintainers: can you please fix this?
+>
 
-tcp sockets are used from BH context, are not receiving packets,
-and do not store any persistent state but the 'struct net' pointer
-in order to be able to use IPv4 output functions.
+Updating the copybreak value is done through ena_ethtool.c 
+(ena_set_tunable()) which updates `adapter->rx_copybreak`.
+The adapter->rx_copybreak value is "propagated back" to the ring 
+local attributes (rx_ring->rx_copybreak) only after an interface 
+toggle which stops the napi routine first.
 
-Note that I attempted a related change in the past, that had
-to be hot-fixed in commit bdbbb8527b6f ("ipv4: tcp: get rid of ugly unicast_sock")
+Unless I'm missing something here I don't think the bug you're 
+describing exists.
 
-This patch could very well surface old bugs, on layers not
-taking care of sk->sk_kern_sock properly.
+I agree that the netdev_alloc_skb_ip_align() can become 
+napi_alloc_skb(). Hyeonggon Yoo, can you please apply this change 
+as well to this patch?
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/net/netns/ipv4.h |  1 -
- net/ipv4/tcp_ipv4.c      | 61 ++++++++++++++++++----------------------
- 2 files changed, 27 insertions(+), 35 deletions(-)
+Thanks,
+Shay
 
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 639a31638159b23e7ec1d16f621a7953b885729c..22b4c6df1d2b383cd10dd3dc11cf8c39388c50bf 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -73,7 +73,6 @@ struct netns_ipv4 {
- 	struct sock		*mc_autojoin_sk;
- 
- 	struct inet_peer_base	*peers;
--	struct sock  * __percpu	*tcp_sk;
- 	struct fqdir		*fqdir;
- 
- 	u8 sysctl_icmp_echo_ignore_all;
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 8e94b99882044d3d9927d83512d18f34dc2f5b43..a7d83ceea42076e89862619f4b0cd7ae9277e7de 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -91,6 +91,8 @@ static int tcp_v4_md5_hash_hdr(char *md5_hash, const struct tcp_md5sig_key *key,
- struct inet_hashinfo tcp_hashinfo;
- EXPORT_SYMBOL(tcp_hashinfo);
- 
-+static DEFINE_PER_CPU(struct sock *, ipv4_tcp_sk);
-+
- static u32 tcp_v4_init_seq(const struct sk_buff *skb)
- {
- 	return secure_tcp_seq(ip_hdr(skb)->daddr,
-@@ -810,7 +812,8 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
- 	arg.tos = ip_hdr(skb)->tos;
- 	arg.uid = sock_net_uid(net, sk && sk_fullsock(sk) ? sk : NULL);
- 	local_bh_disable();
--	ctl_sk = this_cpu_read(*net->ipv4.tcp_sk);
-+	ctl_sk = this_cpu_read(ipv4_tcp_sk);
-+	sock_net_set(ctl_sk, net);
- 	if (sk) {
- 		ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
- 				   inet_twsk(sk)->tw_mark : sk->sk_mark;
-@@ -825,6 +828,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
- 			      transmit_time);
- 
- 	ctl_sk->sk_mark = 0;
-+	sock_net_set(ctl_sk, &init_net);
- 	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
- 	__TCP_INC_STATS(net, TCP_MIB_OUTRSTS);
- 	local_bh_enable();
-@@ -908,7 +912,8 @@ static void tcp_v4_send_ack(const struct sock *sk,
- 	arg.tos = tos;
- 	arg.uid = sock_net_uid(net, sk_fullsock(sk) ? sk : NULL);
- 	local_bh_disable();
--	ctl_sk = this_cpu_read(*net->ipv4.tcp_sk);
-+	ctl_sk = this_cpu_read(ipv4_tcp_sk);
-+	sock_net_set(ctl_sk, net);
- 	ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
- 			   inet_twsk(sk)->tw_mark : sk->sk_mark;
- 	ctl_sk->sk_priority = (sk->sk_state == TCP_TIME_WAIT) ?
-@@ -921,6 +926,7 @@ static void tcp_v4_send_ack(const struct sock *sk,
- 			      transmit_time);
- 
- 	ctl_sk->sk_mark = 0;
-+	sock_net_set(ctl_sk, &init_net);
- 	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
- 	local_bh_enable();
- }
-@@ -3111,41 +3117,14 @@ EXPORT_SYMBOL(tcp_prot);
- 
- static void __net_exit tcp_sk_exit(struct net *net)
- {
--	int cpu;
--
- 	if (net->ipv4.tcp_congestion_control)
- 		bpf_module_put(net->ipv4.tcp_congestion_control,
- 			       net->ipv4.tcp_congestion_control->owner);
--
--	for_each_possible_cpu(cpu)
--		inet_ctl_sock_destroy(*per_cpu_ptr(net->ipv4.tcp_sk, cpu));
--	free_percpu(net->ipv4.tcp_sk);
- }
- 
- static int __net_init tcp_sk_init(struct net *net)
- {
--	int res, cpu, cnt;
--
--	net->ipv4.tcp_sk = alloc_percpu(struct sock *);
--	if (!net->ipv4.tcp_sk)
--		return -ENOMEM;
--
--	for_each_possible_cpu(cpu) {
--		struct sock *sk;
--
--		res = inet_ctl_sock_create(&sk, PF_INET, SOCK_RAW,
--					   IPPROTO_TCP, net);
--		if (res)
--			goto fail;
--		sock_set_flag(sk, SOCK_USE_WRITE_QUEUE);
--
--		/* Please enforce IP_DF and IPID==0 for RST and
--		 * ACK sent in SYN-RECV and TIME-WAIT state.
--		 */
--		inet_sk(sk)->pmtudisc = IP_PMTUDISC_DO;
--
--		*per_cpu_ptr(net->ipv4.tcp_sk, cpu) = sk;
--	}
-+	int cnt;
- 
- 	net->ipv4.sysctl_tcp_ecn = 2;
- 	net->ipv4.sysctl_tcp_ecn_fallback = 1;
-@@ -3229,10 +3208,6 @@ static int __net_init tcp_sk_init(struct net *net)
- 		net->ipv4.tcp_congestion_control = &tcp_reno;
- 
- 	return 0;
--fail:
--	tcp_sk_exit(net);
--
--	return res;
- }
- 
- static void __net_exit tcp_sk_exit_batch(struct list_head *net_exit_list)
-@@ -3324,6 +3299,24 @@ static void __init bpf_iter_register(void)
- 
- void __init tcp_v4_init(void)
- {
-+	int cpu, res;
-+
-+	for_each_possible_cpu(cpu) {
-+		struct sock *sk;
-+
-+		res = inet_ctl_sock_create(&sk, PF_INET, SOCK_RAW,
-+					   IPPROTO_TCP, &init_net);
-+		if (res)
-+			panic("Failed to create the TCP control socket.\n");
-+		sock_set_flag(sk, SOCK_USE_WRITE_QUEUE);
-+
-+		/* Please enforce IP_DF and IPID==0 for RST and
-+		 * ACK sent in SYN-RECV and TIME-WAIT state.
-+		 */
-+		inet_sk(sk)->pmtudisc = IP_PMTUDISC_DO;
-+
-+		per_cpu(ipv4_tcp_sk, cpu) = sk;
-+	}
- 	if (register_pernet_subsys(&tcp_sk_ops))
- 		panic("Failed to create the TCP control socket.\n");
- 
--- 
-2.35.0.rc0.227.g00780c9af4-goog
 
+>>>  	else
+>>> -		skb = build_skb(first_frag, ENA_PAGE_SIZE);
+>>> +		skb = napi_build_skb(first_frag, ENA_PAGE_SIZE);
+>>>  
+>>>  	if (unlikely(!skb)) {
+>>>  		ena_increase_stat(&rx_ring->rx_stats.skb_alloc_fail, 
+>>>  1,
+>> 
