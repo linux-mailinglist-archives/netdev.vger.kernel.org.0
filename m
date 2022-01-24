@@ -2,75 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41ECF4983D9
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 16:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EE4A4983E1
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 16:55:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234453AbiAXPwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 10:52:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56382 "EHLO
+        id S234596AbiAXPz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 10:55:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233066AbiAXPwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 10:52:13 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D274C06173B;
-        Mon, 24 Jan 2022 07:52:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BFAE1CE1177;
-        Mon, 24 Jan 2022 15:52:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E58F5C340E5;
-        Mon, 24 Jan 2022 15:52:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643039530;
-        bh=Za2nmmdrBsvvSiJM+At4GnGZhaz4oLqU5FLsbm9dpsM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=W+U08PP/CUGugEvX4Z2D80VWBUftxJKYh8onjWuqzhLzddbRneREAg9MNvNu8vkZ/
-         qDq7xhDibvQQoFgR8G5mYJHK+vMSkFcFOviqSp5dLj/vNUQ/1AQDRW6SPXScJHSdiz
-         IlZrY8WKGJjkGijJBqqsFXFkqfOJ6qcguMvuHNIfagEWNtwUY5RV/TnFpz2t+dP3WM
-         9MewCMHFpd5g1Zi2B+G/hdSv6tW1DidmrXMXeJFaPhPNkjPl6MvUKUkQmJPI1R/P5V
-         H12uH4OS3Q6JYN/YXSdoCVSSrQmFDd78bFxHz0XPLL1uPj9ZnVBvRU76cZUsaNi9xv
-         AfVhO1QZjBIkA==
-Date:   Mon, 24 Jan 2022 07:52:08 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        "David S . Miller" <davem@davemloft.net>, tanghui20@huawei.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.16 12/19] net: apple: bmac: Fix build since
- dev_addr constification
-Message-ID: <20220124075208.24c30dcc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220123001113.2460140-12-sashal@kernel.org>
-References: <20220123001113.2460140-1-sashal@kernel.org>
-        <20220123001113.2460140-12-sashal@kernel.org>
+        with ESMTP id S234236AbiAXPz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 10:55:26 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C657FC06173B
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 07:55:25 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id d188so5707897iof.7
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 07:55:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PAk46n1MPi9gPpAjJNci/8kPlMhpslWLN7yEsIjhWq4=;
+        b=GewqqABG6/7V/ms2Yxh7ww0Nktw+O/cM64/81V2i9uPU+eqLQGhPIxs51HP/nA4dY3
+         NBwP5hsYz/pkFblWVNpzZWr2f1OLQNhVUcqIZaiWJK0qbBeZ/mhUzr5oUmVvgxDGxLdS
+         Yc2pEbNFbzn8HwdF0zHkzo0nTuUQqmtK9e0zY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PAk46n1MPi9gPpAjJNci/8kPlMhpslWLN7yEsIjhWq4=;
+        b=6XwgV8VVGT/Mw8KXL5b8BBeZdmvckIBV8/NvJx6ES06EBI66FdSTom+4HUFAL9t5LM
+         7gX3qZSMRrXFu1/6sb8b/vAWVn6Y8aasQzkk0KI1CqM4LyjrC2OEgNg/AoDke1GIuQvb
+         gdor8t8CLeBOMmr+KwHJXp1C+/6CqfUX/JFAu6rKGr3R6mMOIHMGgtGhazQ+NDsWYDGF
+         tEPywgZCqaTcUHFTEf1BGQ8eWJL+OtB4Z6OgRjEeDKi/NCufFUs2eP27Ees+DXDm3yvh
+         j3JrDkBdY3YYKkWiwxsnmwxABkIANLRFhHg+OKFuq7cMxz+btabUrHNyK/lL2NBhCs+A
+         /Fng==
+X-Gm-Message-State: AOAM531ls5uyPX6Ay41qn4jXKmoOGECPCtl0l4Cef06BOYnya5NxTLKU
+        D0O3wkw6IZwm62XRjeYjOGD96LMPFJUaKaAHQOmcFQ==
+X-Google-Smtp-Source: ABdhPJyxBqzCdPqA56UWB4jv/1dn8GxVWqJQuoJalf6pMaCqUpsM+VCbcLeIjIQvF+SRKk4FjmW02qOpqmaS1PtY8Pg=
+X-Received: by 2002:a02:6d04:: with SMTP id m4mr6392976jac.80.1643039725076;
+ Mon, 24 Jan 2022 07:55:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220123001258.2460594-1-sashal@kernel.org> <20220123001258.2460594-3-sashal@kernel.org>
+ <20220124075041.13c015a6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220124075041.13c015a6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Ignat Korchagin <ignat@cloudflare.com>
+Date:   Mon, 24 Jan 2022 15:55:14 +0000
+Message-ID: <CALrw=nFwuo=OWzDimGK0MyqLs4LBu9_WkKxXLpw+e2oTJAD8Lw@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.10 3/9] sit: allow encapsulated IPv6 traffic to
+ be delivered locally
+To:     Jakub Kicinski <kuba@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        stable@vger.kernel.org, netdev <netdev@vger.kernel.org>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Amir Razmjou <arazmjou@cloudflare.com>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 22 Jan 2022 19:11:05 -0500 Sasha Levin wrote:
-> From: Michael Ellerman <mpe@ellerman.id.au>
->=20
-> [ Upstream commit ea938248557a52e231a31f338eac4baee36a8626 ]
->=20
-> Since commit adeef3e32146 ("net: constify netdev->dev_addr") the bmac
-> driver no longer builds with the following errors (pmac32_defconfig):
->=20
->   linux/drivers/net/ethernet/apple/bmac.c: In function =E2=80=98bmac_prob=
-e=E2=80=99:
->   linux/drivers/net/ethernet/apple/bmac.c:1287:20: error: assignment of r=
-ead-only location =E2=80=98*(dev->dev_addr + (sizetype)j)=E2=80=99
->    1287 |   dev->dev_addr[j] =3D rev ? bitrev8(addr[j]): addr[j];
->         |                    ^
->=20
-> Fix it by making the modifications to a local macaddr variable and then
-> passing that to eth_hw_addr_set().
->=20
-> We don't use the existing addr variable because the bitrev8() would
-> mutate it, but it is already used unreversed later in the function.
+On Mon, Jan 24, 2022 at 3:50 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Sat, 22 Jan 2022 19:12:52 -0500 Sasha Levin wrote:
+> > From: Ignat Korchagin <ignat@cloudflare.com>
+> >
+> > [ Upstream commit ed6ae5ca437d9d238117d90e95f7f2cc27da1b31 ]
+> >
+> > While experimenting with FOU encapsulation Amir noticed that encapsulated IPv6
+> > traffic fails to be delivered, if the peer IP address is configured locally.
+>
+> Unless Ignat and Amir need it I'd vote for not backporting this to LTS.
+> This patch is firmly in the "this configuration was never supported"
+> category. 5.15 and 5.16 are probably fine.
 
-Patches 11 and 12 are another case of prep for netdev->dev_addr
-being const in 5.17, we don't need those backported.
+We planned to use it on 5.15 and onwards. Not backporting to 5.10 is
+fine for us.
