@@ -2,147 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4BE2498000
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 13:56:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BCBD49803D
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 14:00:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240124AbiAXM4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 07:56:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43000 "EHLO
+        id S242949AbiAXM73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 07:59:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230123AbiAXM4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 07:56:45 -0500
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428AEC06173B
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 04:56:45 -0800 (PST)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id B572FC020; Mon, 24 Jan 2022 13:56:41 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1643029001; bh=6JseWqubkmwnt9lHAQktZszwisBSVcxFLmnfh66TQgo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GzOavpODz14oqxbv5RbdR2wLXq7pTEcI5u52H8PadYg0JmPfnhk9oeWKJfZBn8vkB
-         I4MsutqTgDaVtMyvRpwLbWYRwycqZwYHIjGoyUxzTT/IyixGRlMH5w27qKi4Guh4md
-         Ljuc5UaY10+V3Jfe/MGnYbWa65xJdr4AJlG6QBCDig2ShklBcd+u+XuYMVoJl4v+Hj
-         hVd/j1AzpEDvjhvfHiTTnvBCWyVJ3SHCbLo2I8P3aycgn7D5q7i41+Ij4vUDRevgil
-         iSv/0fCxf28N/66hLsQhwmG/ck0RRLj49nB4nid8Oby+JWeEe8keFyboDZMUIq0WLh
-         UXTrClGc+YaWg==
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=unavailable version=3.3.2
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 3EE97C009;
-        Mon, 24 Jan 2022 13:56:37 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1643029000; bh=6JseWqubkmwnt9lHAQktZszwisBSVcxFLmnfh66TQgo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gYbYbt/ayX1dCV2uNBYlm4FO5W0WDRsU+1mzAuT1ae9ai3t+B4Us7miCxTydHAqct
-         cSLnGZUa0J9eRHFJ2Z4c7mvhv4uwvBFIXmjQkz+ATLe0b/ULwo5ZQtuIpr8b6CVumQ
-         lJ7dO4pOhJjqUTxtzGXCFdY+XlsIiJt8qAP0iQtDFoubx4E8R3iKHZin0dhO60O5jr
-         pue+e51LHe4ybTtwchjHKulBLYkT50roiafWWo1dCB4Rfj0I5JA8frBzYk79GH1TOa
-         kpgLpdxAKw3dScYBZi+6HGhgFVV4UyIKJeDgN5TJaxZax9F69ROTjjztamMyk5SbCx
-         ELo51HZsZFS/g==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id a5f2f446;
-        Mon, 24 Jan 2022 12:56:32 +0000 (UTC)
-Date:   Mon, 24 Jan 2022 21:56:17 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Christian Schoenebeck <linux_oss@crudebyte.com>
-Cc:     Nikolay Kichukov <nikolay@oldum.net>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
-Subject: Re: [PATCH v4 00/12] remove msize limit in virtio transport
-Message-ID: <Ye6h8U/NJcx3ErHa@codewreck.org>
-References: <cover.1640870037.git.linux_oss@crudebyte.com>
- <5111aae45d30df13e42073b0af4f16caf9bc79f0.camel@oldum.net>
- <Ye6IaIqQcwAKv0vb@codewreck.org>
- <22204794.ZpPF1Y2lYg@silver>
+        with ESMTP id S242887AbiAXM7M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 07:59:12 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C19CC061756;
+        Mon, 24 Jan 2022 04:59:11 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id x11so49085789lfa.2;
+        Mon, 24 Jan 2022 04:59:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=hy9h7krpA8HSqyaSzpL6OuBy89OEy4yHH0P9Egx8wMU=;
+        b=nqOBZDOFIM1Lg2pZJTU9REB16Pi35arSZfYjb2hDggpiW/R9YROp+HImquIJNCHScq
+         vUV7GbyRji32u+80rl/FZNU+1+4x258iXkLwQC4h/JbSwq2WWkiRf58rOstVz881uP0+
+         0h7atkDx1N572sJ6VjRdjzu0e0GzHQe0NcmZOKhjm49a0U565HYU4c0DHLmGWaXcI4EK
+         7vTK/fcUCh9tAYy2vse1gZrpiDX91m+GhlDkrH3R6a98FdjuCeilnIEHaJVxRYfftTdc
+         LHrcrt6zVABs/EP9TVSZrebf1s9TEl175+68+WU1BVvbI+dv2ErCW7QjWXl67R7pmWh9
+         TJBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hy9h7krpA8HSqyaSzpL6OuBy89OEy4yHH0P9Egx8wMU=;
+        b=KFxDMGQu2h08ZRYc7cHRGWNO41V7yeNgMjpnu3ouMpIu9dC+E5Sh1rLQ1vOxzKKG+r
+         EBSB8sg4rJvWGzgFbmT5h50rYtVLiW7R0rRoWEUBHBDS5pAGFP7Za+uXDPZwci0IwuqJ
+         6KZaD44KawXTaA42HayuMynTC03SWo7wArdSfTGcYv6gSJ0PpZ5AX8eC2UQfWO3A8awC
+         1SZuKLrLLtwb22Jgki9OaxxvpOqixW/cDBxMd6X26mDuG3kB8K+wyeRP7P34HD2nMwdE
+         2ygd6/XeQ1Wm8vSIVq5d5bAYwmJiQYMyhv5dNV4V4ZziofMu8iBw0ViGU/P982uRcrxL
+         hMXQ==
+X-Gm-Message-State: AOAM532LB+W5OjIQ32WzocwrZ7SpGkPaM+wd4wKitPvks2QyU9AT8bFh
+        TJkjXOKmczAUN5ppnKWqeCY=
+X-Google-Smtp-Source: ABdhPJwI/7v8+jOw7RZaWhse02D+Um2AWJGt9KRF2IS1WPJN5qzN/xCjROOPzwZeTh7NCh2Z2/nRiw==
+X-Received: by 2002:a19:6b0b:: with SMTP id d11mr12892908lfa.594.1643029149450;
+        Mon, 24 Jan 2022 04:59:09 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.227.208])
+        by smtp.gmail.com with ESMTPSA id i6sm1162352lfe.52.2022.01.24.04.59.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 04:59:08 -0800 (PST)
+Message-ID: <3d071cde-9eff-c6c3-63bc-827e74f2e9ea@gmail.com>
+Date:   Mon, 24 Jan 2022 15:59:07 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <22204794.ZpPF1Y2lYg@silver>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [syzbot] UBSAN: shift-out-of-bounds in nl802154_new_interface
+Content-Language: en-US
+To:     syzbot <syzbot+7bf7b22759195c9a21e9@syzkaller.appspotmail.com>,
+        aahringo@redhat.com, alex.aring@gmail.com,
+        anant.thazhemadam@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, stefan@datenfreihafen.org,
+        syzkaller-bugs@googlegroups.com
+References: <000000000000f09fca05d41a8aee@google.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <000000000000f09fca05d41a8aee@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christian Schoenebeck wrote on Mon, Jan 24, 2022 at 12:57:35PM +0100:
-> > We're just starting a new development cycle for 5.18 while 5.17 is
-> > stabilizing, so this mostly depends on the ability to check if a msize
-> > given in parameter is valid as described in the first "STILL TO DO"
-> > point listed in the cover letter.
+On 12/27/21 09:09, syzbot wrote:
+> syzbot suspects this issue was fixed by commit:
 > 
-> I will ping the Redhat guys on the open virtio spec issue this week. If you 
-> want I can CC you Dominique on the discussion regarding the virtio spec 
-> changes. It's a somewhat dry topic though.
-
-I don't have much expertise on virtio stuff so don't think I'll bring
-much to the discussion, but always happy to fill my inbox :)
-It's always good to keep an eye on things at least.
-
-> > I personally would be happy considering this series for this cycle with
-> > just a max msize of 4MB-8k and leave that further bump for later if
-> > we're sure qemu will handle it.
+> commit 451dc48c806a7ce9fbec5e7a24ccf4b2c936e834
+> Author: Alexander Aring <aahringo@redhat.com>
+> Date:   Fri Nov 12 03:09:16 2021 +0000
 > 
-> I haven't actually checked whether there was any old QEMU version that did not 
-> support exceeding the virtio queue size. So it might be possible that a very 
-> ancient QEMU version might error out if msize > (128 * 4096 = 512k).
-
-Even if the spec gets implemented we need the default msize to work for
-reasonably older versions of qemu (at least a few years e.g. supported
-versions of debian/rhel can go quite a while back), and ideally have a
-somewhat sensible error if we go above some max...
-
-> Besides QEMU, what other 9p server implementations are actually out there, and 
-> how would they behave on this? A test on their side would definitely be a good 
-> idea.
-
-9p virtio would only be qemu as far as I know.
-
-For tcp/fd there are a few:
- - https://github.com/chaos/diod (also supports rdma iirc, I don't have
-any hardware for rdma tests anymore though)
- - https://github.com/nfs-ganesha/nfs-ganesha (also rdma)
- - I was pointed at https://github.com/lionkov/go9p in a recent bug
-report
- - http://repo.cat-v.org/libixp/ is also a server implementation I
-haven't tested with the linux client in a while but iirc it used to work
-
-
-I normally run some tests with qemu (virtio) and ganesha (tcp) before
-pushing to my linux-next branch, so we hopefully don't make too many
-assumptions that are specific to a server
-
-
-> > We're still seeing a boost for that and the smaller buffers for small
-> > messages will benefit all transport types, so that would get in in
-> > roughly two months for 5.18-rc1, then another two months for 5.18 to
-> > actually be released and start hitting production code.
-> > 
-> > 
-> > I'm not sure when exactly but I'll run some tests with it as well and
-> > redo a proper code review within the next few weeks, so we can get this
-> > in -next for a little while before the merge window.
+>      net: ieee802154: handle iftypes as u32
 > 
-> Especially the buffer size reduction patches needs a proper review. Those 
-> changes can be tricky. So far I have not encountered any issues with tests at 
-> least. OTOH these patches could be pushed through separately already, no 
-> matter what the decision regarding the virtio issue will be.
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1084d10db00000
+> start commit:   ec681c53f8d2 Merge tag 'net-5.15-rc6' of git://git.kernel...
+> git tree:       upstream
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=bab9d35f204746a7
+> dashboard link: https://syzkaller.appspot.com/bug?extid=7bf7b22759195c9a21e9
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14398d94b00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=117fc40cb00000
+> 
+> If the result looks correct, please mark the issue as fixed by replying with:
+> 
+> #syz fix: net: ieee802154: handle iftypes as u32
+> 
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
-Yes, I've had a first look and it's quite different from what I'd have
-done, but it didn't look bad and I just wanted to spend a bit more time
-on it.
-On a very high level I'm not fond of the logical duplication brought by
-deciding the size in a different function (duplicates format strings for
-checks and brings in a huge case with all formats) when we already have
-one function per call which could take the size decision directly
-without going through the format varargs, but it's not like the protocol
-has evolved over the past ten years so it's not really a problem -- I
-just need to get down to it and check it all matches up.
+#syz fix: net: ieee802154: handle iftypes as u32
 
-I also agree it's totally orthogonal to the virtio size extension so if
-you want to wait for the new virtio standard I'll focus on this part
-first.
 
--- 
-Dominique
+
+
+With regards,
+Pavel Skripkin
