@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65BF4499EAC
-	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 00:10:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05E1C499EAB
+	for <lists+netdev@lfdr.de>; Tue, 25 Jan 2022 00:10:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355824AbiAXWlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 17:41:49 -0500
-Received: from mga02.intel.com ([134.134.136.20]:60473 "EHLO mga02.intel.com"
+        id S1345643AbiAXWlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 17:41:44 -0500
+Received: from mga06.intel.com ([134.134.136.31]:63722 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1588427AbiAXWcW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:32:22 -0500
+        id S1589198AbiAXWfS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jan 2022 17:35:18 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643063542; x=1674599542;
+  t=1643063716; x=1674599716;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=eThUF4pkPELvLwLaXV2tV81aUqgFxt2NJFDyVuk8E9o=;
-  b=U8haR0g1Bqg8iF01oOm9yJDCpKo5A4uCjKWlAZi4ztjcPae7yRvouXHR
-   rATx450D9vONli/Y3nl9ZUTV4Ds+gv0d4TlCiIOIXNPl9Gej1NB8iXLRf
-   MFZcGXLAmBtyrp95iCjD8Nu7d8kkWUYzIyhS2uNeE25P/r56qCHDfOTlQ
-   Al6FLL44ljC+B9JlohIOi2C5ofyVBbNrcRymIC2qusZRojIRGuyQzI6uy
-   vBEMXFIfvsybJ+HR5mLY1vXLN1XJCulLbtFC/0p5Qsc//UdD+AzXZ244r
-   twDML2666LMEPXjxAA2cQiPwKJlXURlvMezJcXZysCo3HI/Hg/qxqKneA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="233526832"
+  bh=gs5uFgkarw9TrpxSXanR98HstBe7M+jbd4pZwSe/TDA=;
+  b=eGBlceNs3vwAthJZMi902BjXo5ZAau7U48CAiDhPpkjb/7/M1KF3Ylpp
+   aNQGEXMY6b8urGq39pPDML3qLji5Ev4LNOKa4htrENh91ISIkJqTubGRl
+   kkFQgdR23R2xXGCbRkwq+EY1rNdORS/6GJUGgg7mbpxQmHCbX7F211yUz
+   znWgbew10zUs98j3tEwwIbyAduw9a1v9ErOEpZCjiXMBwqw5wGk5Zg0DT
+   1o8oF9G/AqqLZOZQstp8WRUlv/k4MpPq9GIPFA/D5Zt2n8eDZS/53sS5q
+   fbB39xuuwLZii33M6kEIy13sNZofFJqdVqV6hhiylmeFsiTNXbMicgW9D
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="306877364"
 X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="233526832"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 14:25:12 -0800
+   d="scan'208";a="306877364"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 14:25:12 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="673775609"
+   d="scan'208";a="627671702"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Jan 2022 14:25:10 -0800
+  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 14:25:10 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nC7lu-000J0g-03; Mon, 24 Jan 2022 22:25:10 +0000
-Date:   Tue, 25 Jan 2022 06:24:41 +0800
+        id 1nC7lt-000J0O-QV; Mon, 24 Jan 2022 22:25:09 +0000
+Date:   Tue, 25 Jan 2022 06:24:44 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Jeffrey Ji <jeffreyjilinux@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
@@ -47,7 +47,7 @@ Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         jeffreyjilinux@gmail.com, jeffreyji <jeffreyji@google.com>
 Subject: Re: [PATCH net-next] net-core: add InMacErrors counter
-Message-ID: <202201250416.QEl2tmqY-lkp@intel.com>
+Message-ID: <202201250449.tTXEfxm8-lkp@intel.com>
 References: <20220122000301.1872828-1-jeffreyji@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -66,18 +66,20 @@ Thank you for the patch! Perhaps something to improve:
 
 url:    https://github.com/0day-ci/linux/commits/Jeffrey-Ji/net-core-add-InMacErrors-counter/20220122-080455
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 8aaaf2f3af2ae212428f4db1af34214225f5cec3
-config: x86_64-randconfig-a001-20220117 (https://download.01.org/0day-ci/archive/20220125/202201250416.QEl2tmqY-lkp@intel.com/config)
+config: mips-maltaaprp_defconfig (https://download.01.org/0day-ci/archive/20220125/202201250449.tTXEfxm8-lkp@intel.com/config)
 compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 7b3d30728816403d1fd73cc5082e9fb761262bce)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
         # https://github.com/0day-ci/linux/commit/f8ea346d278c116f830459bae2a910fdc5e96a35
         git remote add linux-review https://github.com/0day-ci/linux
         git fetch --no-tags linux-review Jeffrey-Ji/net-core-add-InMacErrors-counter/20220122-080455
         git checkout f8ea346d278c116f830459bae2a910fdc5e96a35
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/ipv6/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash net/ipv6/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
