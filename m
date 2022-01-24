@@ -2,70 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6BAE497E66
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 13:00:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77C79497E8A
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 13:10:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238071AbiAXMAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jan 2022 07:00:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59752 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234568AbiAXMAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 07:00:13 -0500
+        id S238289AbiAXMKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jan 2022 07:10:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41980 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238269AbiAXMKL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 07:10:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D5C3B80EFD;
-        Mon, 24 Jan 2022 12:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 027A2C340E7;
-        Mon, 24 Jan 2022 12:00:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A55860C9B
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 12:10:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CE7D2C340EA;
+        Mon, 24 Jan 2022 12:10:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643025611;
-        bh=DT8OYthDG798LEBWYIZPpNqKNhR8EiuZXTCrK9rPmyc=;
+        s=k20201202; t=1643026210;
+        bh=UnKYZIkQGjD9SDkuMVw6hSc6VEvoaeW0JYLr7xoJ0jk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QsINNchFg02zDiSr1zDtOE/8DHO8lsm1oKczmtEpndrk3M8BGO+lnsU9NDXyKuB6y
-         YAScTwjDNGzZvRuSoV+qPbFMEYK0yGsdwuCUQTZ02RfkbWuC9IHCtjnTDBdXgL93tt
-         n9sqTsz8G1o0HjVJln6qHhjw1rCsDNYeo7mgXLf6VEvI0E//pf00n2BKf8UoQb2aus
-         SgyX4vJ+9bdlI4WmqsYoy1uXgDWBxVtHClc3Hh+7CvyrrDD1iBAUV8Fuf8ZYxppyjv
-         79QQEgctphc3epPosesSOcApumzlsgHcrMHHMwl2arJWU4RsBASsc7Vvnnw6+SlCKR
-         hux/YF6q2PYIA==
+        b=NbOAuADr1PcA2x6c1YvjNH3z0WwZ8/bJw0TpPtXjt7fg8x3EmsEeWtG5OumIHIQZT
+         jpx7+YR6vqNWdAz1iwEAtpVx96cCi68al8fbCW/ruwsu3Xd25wCpfTjV663+lldUlO
+         4uLyiI7Lhh3ucdEaFfN0/L6mmjLWRjBoFkJcFZDcOTtR9vcuTaFi/VOckGZzaH37YN
+         YDdaX2+Pu7Fq+DbsYJtWNjHcxVUfKrs9w6axMPpL56pSRgUGnT5YtLG6p3+LSHSvib
+         I6+aePIJfioyfhMBA57pWS+MdXI6EsEMbH/SysiAwNc6NdX1ZLxQdSa+YP4jrY/yaN
+         8JZCxQ5X6Qp1w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DCC7DF6079F;
-        Mon, 24 Jan 2022 12:00:10 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B9FC7F60790;
+        Mon, 24 Jan 2022 12:10:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: sfp: ignore disabled SFP node
+Subject: Re: [PATCH net 1/4] ibmvnic: Allow extra failures before disabling
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164302561089.14817.10802410141680621538.git-patchwork-notify@kernel.org>
-Date:   Mon, 24 Jan 2022 12:00:10 +0000
-References: <20220119164455.1397-1-kabel@kernel.org>
-In-Reply-To: <20220119164455.1397-1-kabel@kernel.org>
-To:     =?utf-8?q?Marek_Beh=C3=BAn_=3Ckabel=40kernel=2Eorg=3E?=@ci.codeaurora.org
-Cc:     netdev@vger.kernel.org, rmk+kernel@armlinux.org.uk, andrew@lunn.ch,
-        davem@davemloft.net, stable@vger.kernel.org
+Message-Id: <164302621075.19022.2004898566451431707.git-patchwork-notify@kernel.org>
+Date:   Mon, 24 Jan 2022 12:10:10 +0000
+References: <20220122025921.199446-1-sukadev@linux.ibm.com>
+In-Reply-To: <20220122025921.199446-1-sukadev@linux.ibm.com>
+To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, brking@linux.ibm.com, drt@linux.ibm.com,
+        ricklind@linux.ibm.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This series was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Wed, 19 Jan 2022 17:44:55 +0100 you wrote:
-> Commit ce0aa27ff3f6 ("sfp: add sfp-bus to bridge between network devices
-> and sfp cages") added code which finds SFP bus DT node even if the node
-> is disabled with status = "disabled". Because of this, when phylink is
-> created, it ends with non-null .sfp_bus member, even though the SFP
-> module is not probed (because the node is disabled).
+On Fri, 21 Jan 2022 18:59:18 -0800 you wrote:
+> If auto-priority-failover (APF) is enabled and there are at least two
+> backing devices of different priorities, some resets like fail-over,
+> change-param etc can cause at least two back to back failovers. (Failover
+> from high priority backing device to lower priority one and then back
+> to the higher priority one if that is still functional).
 > 
-> We need to ignore disabled SFP bus node.
+> Depending on the timimg of the two failovers it is possible to trigger
+> a "hard" reset and for the hard reset to fail due to failovers. When this
+> occurs, the driver assumes that the network is unstable and disables the
+> VNIC for a 60-second "settling time". This in turn can cause the ethtool
+> command to fail with "No such device" while the vnic automatically recovers
+> a little while later.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: sfp: ignore disabled SFP node
-    https://git.kernel.org/netdev/net/c/2148927e6ed4
+  - [net,1/4] ibmvnic: Allow extra failures before disabling
+    https://git.kernel.org/netdev/net/c/db9f0e8bf79e
+  - [net,2/4] ibmvnic: init ->running_cap_crqs early
+    https://git.kernel.org/netdev/net/c/151b6a5c06b6
+  - [net,3/4] ibmvnic: don't spin in tasklet
+    https://git.kernel.org/netdev/net/c/48079e7fdd02
+  - [net,4/4] ibmvnic: remove unused ->wait_capability
+    https://git.kernel.org/netdev/net/c/3a5d9db7fbdf
 
 You are awesome, thank you!
 -- 
