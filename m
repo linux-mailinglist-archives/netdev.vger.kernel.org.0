@@ -2,95 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F7A8497799
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 04:11:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD86C4977B1
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 04:30:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240985AbiAXDLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jan 2022 22:11:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
+        id S241053AbiAXDae (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jan 2022 22:30:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240977AbiAXDLe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 22:11:34 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB54C06173B;
-        Sun, 23 Jan 2022 19:11:34 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id w12-20020a17090a528c00b001b276aa3aabso19464540pjh.0;
-        Sun, 23 Jan 2022 19:11:34 -0800 (PST)
+        with ESMTP id S241038AbiAXDad (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jan 2022 22:30:33 -0500
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F025C06173B;
+        Sun, 23 Jan 2022 19:30:32 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id d5so12651565pjk.5;
+        Sun, 23 Jan 2022 19:30:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=ngdcx5M1+3hpr61oSCKB6Asopn1L3OGrgWMCvfbgA58=;
-        b=phsGvUiGdErZNfIQ7O94rTBjcrw/qCtZzEu8oxQG/T71ap9PrhTtqd+jAGb8VtgsKw
-         zk3Cukyr4rLwpqpWQMRyCJaoeRBi+Kb1rH4IOzpSxW2x5R2USOMgckQG5yYCleBUnD6T
-         ZKwdqAItudQWnQ3Ks0phtGTIuskcoj9ypM/WlXodeIotZExbuEWGbeT4tQGgNc1z9VZb
-         KODNGngXJ/k+nzO2RrBEMre6OSMcDdaZzUQtcKFaTgG/OU7Bnpadk/5JgMn97+vovIc6
-         S7I1Yc1qayhXeCpXgTCkjYiOcNn1Ew8xqBD2ZtOFS8gI+KsVdNWHYhwgB0DUJ7ANzDTv
-         hunQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RX6Av1jIiyqXvZYjcpZEeGLsyORkpiw+PH/GcVKGsHk=;
+        b=TVighjXmld8xjrLsacTJCmUi8xhvnHU+SU2zVkR93VRMOoaA5A+oScrkxaodwFq50j
+         78/84wVestiPhMtV2WWr3chJ1UgTcgLk21X1vCXpcT9tjr6Isqd3Aq88uLTDu4l6QeTO
+         p2FqyiqbFX6Vqh88Hxkswi+eXed7BvZ5NmtHAMAXow3ydduW6bWMnZBn6EExFHWi9tpK
+         CQpBl3KoSRE93i6HsJw1reE+KifNt06FM+UG0NVK6AXRBikPLAJt6SQSMExulX9fcCVv
+         cHvmrh8L3NxdjvkxG7HfsSoA81UzF1MR9ckRBb27O8nll8mJvC2UkOUIDXYYA+mNcIQe
+         16EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=ngdcx5M1+3hpr61oSCKB6Asopn1L3OGrgWMCvfbgA58=;
-        b=GRHEOz6uq9M4e5IO6AsQkxtDxihN5yvoq9m8OLQ7uFvG1lO5EG0zlQADkuUY4jgLbN
-         t/E58CazjgxRyQt/3C+cdclZoO60rAo96uG+LLj1KdaxtwclpwMQIydhttsErRKc47yK
-         ufCTUzDVvcRTAu5kPjWmSAKfSi+ZtgOgKret4o53IGT9DefDYYPJRaIiJNazwrXmwCba
-         LRCLqTJCSHS09YjPRfJjiYzvB1T+NgyfCIawUX46Vtc7Otg7xHa8Jbwa9rnUR8vY8cuT
-         58Q99QQAzX4FMDg/HZVyFwDbXYxYO+lsmSoxdIaA8bqcWKgZcVui9DRKgR+RYnHnEGLn
-         sH/A==
-X-Gm-Message-State: AOAM533xf5SceE2VCl4662AClVkUrFKrzKm68d6SE8IWPuS0PhHDgm5x
-        yTu+DwP4UzkAcQWE315XuzM=
-X-Google-Smtp-Source: ABdhPJwrtLcF/btxfxb4QnWFj6jb6J38TexNp2eUnjzz/DGNPKQMH1qowkpMkSX0SSRmeSRpBnggbQ==
-X-Received: by 2002:a17:902:a70b:b0:149:75ae:4d63 with SMTP id w11-20020a170902a70b00b0014975ae4d63mr13208287plq.50.1642993893555;
-        Sun, 23 Jan 2022 19:11:33 -0800 (PST)
-Received: from ?IPV6:2600:8802:b00:4a48:5d89:db9e:1ac7:6fdc? ([2600:8802:b00:4a48:5d89:db9e:1ac7:6fdc])
-        by smtp.gmail.com with ESMTPSA id ms14sm11715278pjb.15.2022.01.23.19.11.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 23 Jan 2022 19:11:32 -0800 (PST)
-Message-ID: <b9b73ab6-662c-5343-da75-29ed25fd1b35@gmail.com>
-Date:   Sun, 23 Jan 2022 19:11:31 -0800
+        bh=RX6Av1jIiyqXvZYjcpZEeGLsyORkpiw+PH/GcVKGsHk=;
+        b=MUzGXrhvvj6i1YKDjDZYkqWeB5hKrqGfyEBN2QpZiaWWbu7Q3oNLzUmGMKGQkhUkAM
+         /Ho18jAuwfkW74TOjYzFnOM9fZdu71sMzR4+VCv2oZJWYXI9bc56/qIP41m/FqqJ+6VV
+         Xa19xsIMSs5GY9j97XzrhVyeKENxjU0qHHNEJOqc0ew+xu6BWNDlYqSimQ5YY5CWSGqs
+         fmegjVUC964dljPxPv0k87gHmJIHInnYAKhY38hcESqzkQGQvqv6zD3CaMb6C+dfpmmw
+         fOhyFsFmSsyvw7RnT0MtS6D0wxDZvUA2Ng4OzejpaV7W4FTQsEcw+9C34qmVcXrCEnU/
+         wpWQ==
+X-Gm-Message-State: AOAM533pkZiBnIUkSoMKNweN9aB6ferfAllNMv+Eql8BjvnYPWHyQrGB
+        tXfPz8rRmeIZBKS+DQFNXIc=
+X-Google-Smtp-Source: ABdhPJxrBHaemBkBFmBL3KV9+t104TL5EBzibAlxur7Q5S263lmO2RJah0zWLOE2BsDv4OW4o3DJSQ==
+X-Received: by 2002:a17:90b:3a85:: with SMTP id om5mr56077pjb.150.1642995032168;
+        Sun, 23 Jan 2022 19:30:32 -0800 (PST)
+Received: from slim.das-security.cn ([103.84.139.53])
+        by smtp.gmail.com with ESMTPSA id g5sm11178639pjj.36.2022.01.23.19.30.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Jan 2022 19:30:31 -0800 (PST)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     jpr@f6fbb.org, davem@davemloft.net, kuba@kernel.org,
+        wang6495@umn.edu
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH] yam: fix a memory leak in yam_siocdevprivate()
+Date:   Mon, 24 Jan 2022 11:29:54 +0800
+Message-Id: <20220124032954.18283-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 02/54] net/ethernet: don't use bitmap_weight() in
- bcm_sysport_rule_set()
-Content-Language: en-US
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-References: <20220123183925.1052919-1-yury.norov@gmail.com>
- <20220123183925.1052919-3-yury.norov@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220123183925.1052919-3-yury.norov@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+ym needs to be free when ym->cmd != SIOCYAMSMCS.
 
+Fixes: 0781168e23a2 ("yam: fix a missing-check bug")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+---
+ drivers/net/hamradio/yam.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-On 1/23/2022 10:38 AM, Yury Norov wrote:
-> Don't call bitmap_weight() if the following code can get by
-> without it.
-> 
-> Signed-off-by: Yury Norov <yury.norov@gmail.com>
-
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+diff --git a/drivers/net/hamradio/yam.c b/drivers/net/hamradio/yam.c
+index 6376b8485976..980f2be32f05 100644
+--- a/drivers/net/hamradio/yam.c
++++ b/drivers/net/hamradio/yam.c
+@@ -950,9 +950,7 @@ static int yam_siocdevprivate(struct net_device *dev, struct ifreq *ifr, void __
+ 		ym = memdup_user(data, sizeof(struct yamdrv_ioctl_mcs));
+ 		if (IS_ERR(ym))
+ 			return PTR_ERR(ym);
+-		if (ym->cmd != SIOCYAMSMCS)
+-			return -EINVAL;
+-		if (ym->bitrate > YAM_MAXBITRATE) {
++		if (ym->cmd != SIOCYAMSMCS || ym->bitrate > YAM_MAXBITRATE) {
+ 			kfree(ym);
+ 			return -EINVAL;
+ 		}
 -- 
-Florian
+2.25.1
+
