@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D08D4989A5
-	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 19:57:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D94154989A3
+	for <lists+netdev@lfdr.de>; Mon, 24 Jan 2022 19:57:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245752AbiAXS5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S233167AbiAXS5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 24 Jan 2022 13:57:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43040 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344591AbiAXSyv (ORCPT
+        with ESMTP id S1344596AbiAXSyv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 24 Jan 2022 13:54:51 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16432C061361
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 10:53:44 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id d18so3963307plg.2
-        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 10:53:44 -0800 (PST)
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13894C061364
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 10:53:45 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id d18so3963386plg.2
+        for <netdev@vger.kernel.org>; Mon, 24 Jan 2022 10:53:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=LDiJ4O9YgSkrxT2JnPNMqnuvU7WYXCkaM3BNfwrpAdc=;
-        b=fHPBknhuLvoz6SHTLBa70TtjGR49UMyqoi2r2uar1ka0DatPD+I4UUhiqpa5LbN3lm
-         52f3UMfCmztQNOmF9yaXm/hUKuvKwNwqwSUfzaw3kmsBHX/dx4SQh1/N/bjoenKW/USL
-         4rawtvYGk0PVioQlUabyogDOX4IpzU0ZMP0oWAp/7hXk6fwH9TmNq6OyEMGKBdDVM2ah
-         yL4CH4/EYJCMi9uPbiQt4poqMCWCOAbdSHdgwsUZQG8EERw3jnLqJW+ljgXc3eh4btmX
-         hlXG1cZpzZ2nYRkmsy30BYYKU/t7Z1DLFgNsrOKEMg7AHV/soGtN7FSc6LdsKgneSzr6
-         fspA==
+        bh=atiah5p2M2X+8gNdWdE4V/GZ2Lqe02AcZhr/ftx73qc=;
+        b=rls3E/gUZQhz22fb9GcMK+oXI8lITtRhlmq9ptuWWwF/PZ6Mmv9YOABDTpMiQCp9+w
+         evP8GeTMc1lxzd37fOQbuCgLt1wM55ElS/fI+2LiWTLdp9r6cKsPUtI3hXPvpZT34fXT
+         LORdcK7r+m2XVcSTUOEhPID+Cf4OIIxjY3s+kWE0gtHNGr/FUjdtnuo6cx8Fw+vQJDDh
+         DxZB3IQQgS/7o+M1fuw2R+HhkG2rPelCoOHvUHorenMhR/UmX9yP5j/eBbuQA4n5xCYJ
+         mXVcXIy8Kj5wX6zumRLZ4nQ2exX12+3nGhDnoHQO/eRoy1g7szrqV+GHOOfyeCAoXICd
+         hjMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=LDiJ4O9YgSkrxT2JnPNMqnuvU7WYXCkaM3BNfwrpAdc=;
-        b=T8CmAGSC0ELiuYrr9SNXNa/O36BKhU6dcxjk4DNgsKEDAjgh42ZzJ5CQpaKBibjrcR
-         F2Q7dydDM/n7KJZf/4ofxfhyvZmEQ8grvGwxplOI9nz1kBXP/bpk3TzDQFBGElxdM5Ra
-         h6XHqVwP7MYUIpDe63MCq1wNLqbHeN1JktLwIw/YjCBO2eT9bAGUAHvYbtP69GMyT0Lv
-         AwOTa3lru/Q7WCblsAJiE+nXEtklTcCMczfnSqGC56tzKH9Ha4cm4JFLHN2c83pt12x7
-         HuVclKAAEDnUg5gTrdyC20lWthYWIiiVpeTupeixxBycFXyG12wTT9npTeHC7yFvi1l8
-         /2JQ==
-X-Gm-Message-State: AOAM531l495WZAw3WGl7N0GR1Mg/AQJlud2wKnaorxQB2Exr3y3RpnG6
-        Rsp/Np8dIA106AJcoN4Mkg7faA==
-X-Google-Smtp-Source: ABdhPJwjiiDDr9foIUX9zVWNrEEAVdN8rv+KZpkfrr0IrpN80n+jWV95SspZu5ikJlTA5vHfXH68xg==
-X-Received: by 2002:a17:903:2443:b0:14b:3758:f07b with SMTP id l3-20020a170903244300b0014b3758f07bmr9390302pls.28.1643050423555;
-        Mon, 24 Jan 2022 10:53:43 -0800 (PST)
+        bh=atiah5p2M2X+8gNdWdE4V/GZ2Lqe02AcZhr/ftx73qc=;
+        b=tCBpH/P0D1WLII9Mq77Yc93PD9jQLXE2SOOwJJmyvabX8H7m8Yl0NVTCbQ4i6taIk6
+         nGlcOwZ2lNnpaZMKsa+aQvnRwXTikWhWPO6B+RnKWBrA9s8dbdNJd7z8f+6LZSvFrVqc
+         lexpbLF5jDnpWCfnvX+WST4oG+TWDe1sBMBsNggdKc9wlv9vn+MbNfUT0YOSQYJXu+8c
+         ojp/DUXL9qLgAiOWXGU0DUrnSwda6cN6L0WYPDwMiIaAhz6/7wlEIHMozD92DL2WmXT5
+         xaaoH/f8Jbz3TLdcTGLf3Ks9lB21fcYxY3wP7DDwf7N0J+1HwiImYJKpN3r5TTI/2TWW
+         nypA==
+X-Gm-Message-State: AOAM530zLOhgJr4bfqQXIj4pQv1lHmqUzNzFx6Doj65PQWr9T7rWmf67
+        LVbcVVJ0t1qzPuiHgiYG11HinQ==
+X-Google-Smtp-Source: ABdhPJzOFlRLKWxnwKmRg/INMZMFCqEinSJg1GCrMru/7AG8PBChtz5jbKx2dec+b6vjA2Tc9a5Zrg==
+X-Received: by 2002:a17:903:41c9:b0:14b:54e6:c6b7 with SMTP id u9-20020a17090341c900b0014b54e6c6b7mr5276536ple.36.1643050424573;
+        Mon, 24 Jan 2022 10:53:44 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id cq14sm85177pjb.33.2022.01.24.10.53.42
+        by smtp.gmail.com with ESMTPSA id cq14sm85177pjb.33.2022.01.24.10.53.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 10:53:42 -0800 (PST)
+        Mon, 24 Jan 2022 10:53:44 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>,
-        Brett Creeley <brett@pensando.io>
-Subject: [PATCH net 15/16] ionic: stretch heartbeat detection
-Date:   Mon, 24 Jan 2022 10:53:11 -0800
-Message-Id: <20220124185312.72646-16-snelson@pensando.io>
+Cc:     drivers@pensando.io, Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH net 16/16] ionic: replace set_vf data with union
+Date:   Mon, 24 Jan 2022 10:53:12 -0800
+Message-Id: <20220124185312.72646-17-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220124185312.72646-1-snelson@pensando.io>
 References: <20220124185312.72646-1-snelson@pensando.io>
@@ -60,160 +59,308 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver can be premature in detecting stalled firmware
-when the heartbeat is not updated because the firmware can
-occasionally take a long time (more than 2 seconds) to service
-a request, and doesn't update the heartbeat during that time.
+This (ab)use of a data buffer made some static code checkers
+rather itchy, so we replace the a generic data buffer with
+the union in the struct ionic_vf_setattr_cmd.
 
-The firmware heartbeat is not necessarily a steady 1 second
-periodic beat, but better described as something that should
-progress at least once in every DECVMD_TIMEOUT period.
-The single-threaded design in the FW means that if a devcmd
-or adminq request launches a large internal job, it is stuck
-waiting for that job to finish before it can get back to
-updating the heartbeat.  Since all requests are "guaranteed"
-to finish within the DEVCMD_TIMEOUT period, the driver needs
-to less aggressive in checking the heartbeat progress.
-
-We change our current 2 second window to something bigger than
-DEVCMD_TIMEOUT which should take care of most of the issue.
-We stop checking for the heartbeat while waiting for a request,
-as long as we're still watching for the FW status.  Lastly,
-we make sure our FW status is up to date before running a
-devcmd request.
-
-Once we do this, we need to not check the heartbeat on DEV
-commands because it may be stalled while we're on the fw_down
-path.  Instead, we can rely on the is_fw_running check.
-
-Fixes: b2b9a8d7ed13 ("ionic: avoid races in ionic_heartbeat_check")
-Signed-off-by: Brett Creeley <brett@pensando.io>
+Fixes: fbb39807e9ae ("ionic: support sr-iov operations")
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/ionic.h   |  2 +-
- .../net/ethernet/pensando/ionic/ionic_dev.c   |  6 ++--
- .../net/ethernet/pensando/ionic/ionic_lif.c   |  2 +-
- .../net/ethernet/pensando/ionic/ionic_main.c  | 34 ++++++++-----------
- 4 files changed, 20 insertions(+), 24 deletions(-)
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   | 13 ++--
+ .../net/ethernet/pensando/ionic/ionic_dev.c   | 45 ++------------
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |  3 +-
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 61 +++++++++++++------
+ 4 files changed, 55 insertions(+), 67 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
-index 04fdaf5c1a02..602f4d45d529 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic.h
-@@ -18,7 +18,7 @@ struct ionic_lif;
- #define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF	0x1002
- #define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF	0x1003
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+index 40fa5bce2ac2..6ffc62c41165 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+@@ -109,8 +109,8 @@ void ionic_bus_unmap_dbpage(struct ionic *ionic, void __iomem *page)
  
--#define DEVCMD_TIMEOUT  10
-+#define DEVCMD_TIMEOUT			5
- #define IONIC_ADMINQ_TIME_SLICE		msecs_to_jiffies(100)
+ static void ionic_vf_dealloc_locked(struct ionic *ionic)
+ {
++	struct ionic_vf_setattr_cmd vfc = { .attr = IONIC_VF_ATTR_STATSADDR };
+ 	struct ionic_vf *v;
+-	dma_addr_t dma = 0;
+ 	int i;
  
- #define IONIC_PHC_UPDATE_NS	10000000000	    /* 10s in nanoseconds */
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-index 1535a40a5fab..51d36a549ef7 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-@@ -236,9 +236,11 @@ int ionic_heartbeat_check(struct ionic *ionic)
- 	if (!idev->fw_status_ready)
- 		return -ENXIO;
+ 	if (!ionic->vfs)
+@@ -120,9 +120,8 @@ static void ionic_vf_dealloc_locked(struct ionic *ionic)
+ 		v = &ionic->vfs[i];
  
--	/* wait at least one watchdog period since the last heartbeat */
-+	/* Because of some variability in the actual FW heartbeat, we
-+	 * wait longer than the DEVCMD_TIMEOUT before checking again.
-+	 */
- 	last_check_time = idev->last_hb_time;
--	if (time_before(check_time, last_check_time + ionic->watchdog_period))
-+	if (time_before(check_time, last_check_time + DEVCMD_TIMEOUT * 2 * HZ))
- 		return 0;
+ 		if (v->stats_pa) {
+-			(void)ionic_set_vf_config(ionic, i,
+-						  IONIC_VF_ATTR_STATSADDR,
+-						  (u8 *)&dma);
++			vfc.stats_pa = 0;
++			(void)ionic_set_vf_config(ionic, i, &vfc);
+ 			dma_unmap_single(ionic->dev, v->stats_pa,
+ 					 sizeof(v->stats), DMA_FROM_DEVICE);
+ 			v->stats_pa = 0;
+@@ -143,6 +142,7 @@ static void ionic_vf_dealloc(struct ionic *ionic)
  
- 	fw_hb = ioread32(&idev->dev_info_regs->fw_heartbeat);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index e84a01edc4e4..05dd8c4f5466 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -1787,7 +1787,7 @@ static void ionic_lif_quiesce(struct ionic_lif *lif)
- 
- 	err = ionic_adminq_post_wait(lif, &ctx);
- 	if (err)
--		netdev_err(lif->netdev, "lif quiesce failed %d\n", err);
-+		netdev_dbg(lif->netdev, "lif quiesce failed %d\n", err);
- }
- 
- static void ionic_txrx_disable(struct ionic_lif *lif)
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index 78771663808a..4029b4e021f8 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -358,13 +358,14 @@ int ionic_adminq_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx,
- 		if (remaining)
- 			break;
- 
--		/* interrupt the wait if FW stopped */
-+		/* force a check of FW status and break out if FW reset */
-+		(void)ionic_heartbeat_check(lif->ionic);
- 		if ((test_bit(IONIC_LIF_F_FW_RESET, lif->state) &&
- 		     !lif->ionic->idev.fw_status_ready) ||
- 		    test_bit(IONIC_LIF_F_FW_STOPPING, lif->state)) {
- 			if (do_msg)
--				netdev_err(netdev, "%s (%d) interrupted, FW in reset\n",
--					   name, ctx->cmd.cmd.opcode);
-+				netdev_warn(netdev, "%s (%d) interrupted, FW in reset\n",
-+					    name, ctx->cmd.cmd.opcode);
- 			ctx->comp.comp.status = IONIC_RC_ERROR;
- 			return -ENXIO;
+ static int ionic_vf_alloc(struct ionic *ionic, int num_vfs)
+ {
++	struct ionic_vf_setattr_cmd vfc = { .attr = IONIC_VF_ATTR_STATSADDR };
+ 	struct ionic_vf *v;
+ 	int err = 0;
+ 	int i;
+@@ -166,9 +166,10 @@ static int ionic_vf_alloc(struct ionic *ionic, int num_vfs)
  		}
-@@ -425,9 +426,9 @@ static int __ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds,
- 	unsigned long start_time;
- 	unsigned long max_wait;
- 	unsigned long duration;
-+	int done = 0;
-+	bool fw_up;
- 	int opcode;
--	int hb = 0;
--	int done;
- 	int err;
  
- 	/* Wait for dev cmd to complete, retrying if we get EAGAIN,
-@@ -437,31 +438,24 @@ static int __ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds,
- try_again:
- 	opcode = readb(&idev->dev_cmd_regs->cmd.cmd.opcode);
- 	start_time = jiffies;
--	do {
-+	for (fw_up = ionic_is_fw_running(idev);
-+	     !done && fw_up && time_before(jiffies, max_wait);
-+	     fw_up = ionic_is_fw_running(idev)) {
- 		done = ionic_dev_cmd_done(idev);
- 		if (done)
- 			break;
- 		usleep_range(100, 200);
--
--		/* Don't check the heartbeat on FW_CONTROL commands as they are
--		 * notorious for interrupting the firmware's heartbeat update.
--		 */
--		if (opcode != IONIC_CMD_FW_CONTROL)
--			hb = ionic_heartbeat_check(ionic);
--	} while (!done && !hb && time_before(jiffies, max_wait));
-+	}
- 	duration = jiffies - start_time;
- 
- 	dev_dbg(ionic->dev, "DEVCMD %s (%d) done=%d took %ld secs (%ld jiffies)\n",
- 		ionic_opcode_to_str(opcode), opcode,
- 		done, duration / HZ, duration);
- 
--	if (!done && hb) {
--		/* It is possible (but unlikely) that FW was busy and missed a
--		 * heartbeat check but is still alive and will process this
--		 * request, so don't clean the dev_cmd in this case.
--		 */
--		dev_dbg(ionic->dev, "DEVCMD %s (%d) failed - FW halted\n",
--			ionic_opcode_to_str(opcode), opcode);
-+	if (!done && !fw_up) {
-+		ionic_dev_cmd_clean(ionic);
-+		dev_warn(ionic->dev, "DEVCMD %s (%d) interrupted - FW is down\n",
-+			 ionic_opcode_to_str(opcode), opcode);
- 		return -ENXIO;
+ 		ionic->num_vfs++;
++
+ 		/* ignore failures from older FW, we just won't get stats */
+-		(void)ionic_set_vf_config(ionic, i, IONIC_VF_ATTR_STATSADDR,
+-					  (u8 *)&v->stats_pa);
++		vfc.stats_pa = cpu_to_le64(v->stats_pa);
++		(void)ionic_set_vf_config(ionic, i, &vfc);
  	}
  
+ out:
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+index 51d36a549ef7..52a1b5cfd8e7 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+@@ -417,54 +417,17 @@ void ionic_dev_cmd_port_pause(struct ionic_dev *idev, u8 pause_type)
+ }
+ 
+ /* VF commands */
+-int ionic_set_vf_config(struct ionic *ionic, int vf, u8 attr, u8 *data)
++int ionic_set_vf_config(struct ionic *ionic, int vf,
++			struct ionic_vf_setattr_cmd *vfc)
+ {
+ 	union ionic_dev_cmd cmd = {
+ 		.vf_setattr.opcode = IONIC_CMD_VF_SETATTR,
+-		.vf_setattr.attr = attr,
++		.vf_setattr.attr = vfc->attr,
+ 		.vf_setattr.vf_index = cpu_to_le16(vf),
+ 	};
+ 	int err;
+ 
+-	switch (attr) {
+-	case IONIC_VF_ATTR_SPOOFCHK:
+-		cmd.vf_setattr.spoofchk = *data;
+-		dev_dbg(ionic->dev, "%s: vf %d spoof %d\n",
+-			__func__, vf, *data);
+-		break;
+-	case IONIC_VF_ATTR_TRUST:
+-		cmd.vf_setattr.trust = *data;
+-		dev_dbg(ionic->dev, "%s: vf %d trust %d\n",
+-			__func__, vf, *data);
+-		break;
+-	case IONIC_VF_ATTR_LINKSTATE:
+-		cmd.vf_setattr.linkstate = *data;
+-		dev_dbg(ionic->dev, "%s: vf %d linkstate %d\n",
+-			__func__, vf, *data);
+-		break;
+-	case IONIC_VF_ATTR_MAC:
+-		ether_addr_copy(cmd.vf_setattr.macaddr, data);
+-		dev_dbg(ionic->dev, "%s: vf %d macaddr %pM\n",
+-			__func__, vf, data);
+-		break;
+-	case IONIC_VF_ATTR_VLAN:
+-		cmd.vf_setattr.vlanid = cpu_to_le16(*(u16 *)data);
+-		dev_dbg(ionic->dev, "%s: vf %d vlan %d\n",
+-			__func__, vf, *(u16 *)data);
+-		break;
+-	case IONIC_VF_ATTR_RATE:
+-		cmd.vf_setattr.maxrate = cpu_to_le32(*(u32 *)data);
+-		dev_dbg(ionic->dev, "%s: vf %d maxrate %d\n",
+-			__func__, vf, *(u32 *)data);
+-		break;
+-	case IONIC_VF_ATTR_STATSADDR:
+-		cmd.vf_setattr.stats_pa = cpu_to_le64(*(u64 *)data);
+-		dev_dbg(ionic->dev, "%s: vf %d stats_pa 0x%08llx\n",
+-			__func__, vf, *(u64 *)data);
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
++	memcpy(cmd.vf_setattr.pad, vfc->pad, sizeof(vfc->pad));
+ 
+ 	mutex_lock(&ionic->dev_cmd_lock);
+ 	ionic_dev_cmd_go(&ionic->idev, &cmd);
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+index 564c148f5fb4..563c302eb033 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+@@ -318,7 +318,8 @@ void ionic_dev_cmd_port_autoneg(struct ionic_dev *idev, u8 an_enable);
+ void ionic_dev_cmd_port_fec(struct ionic_dev *idev, u8 fec_type);
+ void ionic_dev_cmd_port_pause(struct ionic_dev *idev, u8 pause_type);
+ 
+-int ionic_set_vf_config(struct ionic *ionic, int vf, u8 attr, u8 *data);
++int ionic_set_vf_config(struct ionic *ionic, int vf,
++			struct ionic_vf_setattr_cmd *vfc);
+ int ionic_dev_cmd_vf_getattr(struct ionic *ionic, int vf, u8 attr,
+ 			     struct ionic_vf_getattr_comp *comp);
+ void ionic_dev_cmd_queue_identify(struct ionic_dev *idev,
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 05dd8c4f5466..542e395fb037 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -2299,6 +2299,7 @@ static int ionic_get_vf_stats(struct net_device *netdev, int vf,
+ 
+ static int ionic_set_vf_mac(struct net_device *netdev, int vf, u8 *mac)
+ {
++	struct ionic_vf_setattr_cmd vfc = { .attr = IONIC_VF_ATTR_MAC };
+ 	struct ionic_lif *lif = netdev_priv(netdev);
+ 	struct ionic *ionic = lif->ionic;
+ 	int ret;
+@@ -2314,7 +2315,11 @@ static int ionic_set_vf_mac(struct net_device *netdev, int vf, u8 *mac)
+ 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
+ 		ret = -EINVAL;
+ 	} else {
+-		ret = ionic_set_vf_config(ionic, vf, IONIC_VF_ATTR_MAC, mac);
++		ether_addr_copy(vfc.macaddr, mac);
++		dev_dbg(ionic->dev, "%s: vf %d macaddr %pM\n",
++			__func__, vf, vfc.macaddr);
++
++		ret = ionic_set_vf_config(ionic, vf, &vfc);
+ 		if (!ret)
+ 			ether_addr_copy(ionic->vfs[vf].macaddr, mac);
+ 	}
+@@ -2326,6 +2331,7 @@ static int ionic_set_vf_mac(struct net_device *netdev, int vf, u8 *mac)
+ static int ionic_set_vf_vlan(struct net_device *netdev, int vf, u16 vlan,
+ 			     u8 qos, __be16 proto)
+ {
++	struct ionic_vf_setattr_cmd vfc = { .attr = IONIC_VF_ATTR_VLAN };
+ 	struct ionic_lif *lif = netdev_priv(netdev);
+ 	struct ionic *ionic = lif->ionic;
+ 	int ret;
+@@ -2348,8 +2354,11 @@ static int ionic_set_vf_vlan(struct net_device *netdev, int vf, u16 vlan,
+ 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
+ 		ret = -EINVAL;
+ 	} else {
+-		ret = ionic_set_vf_config(ionic, vf,
+-					  IONIC_VF_ATTR_VLAN, (u8 *)&vlan);
++		vfc.vlanid = cpu_to_le16(vlan);
++		dev_dbg(ionic->dev, "%s: vf %d vlan %d\n",
++			__func__, vf, le16_to_cpu(vfc.vlanid));
++
++		ret = ionic_set_vf_config(ionic, vf, &vfc);
+ 		if (!ret)
+ 			ionic->vfs[vf].vlanid = cpu_to_le16(vlan);
+ 	}
+@@ -2361,6 +2370,7 @@ static int ionic_set_vf_vlan(struct net_device *netdev, int vf, u16 vlan,
+ static int ionic_set_vf_rate(struct net_device *netdev, int vf,
+ 			     int tx_min, int tx_max)
+ {
++	struct ionic_vf_setattr_cmd vfc = { .attr = IONIC_VF_ATTR_RATE };
+ 	struct ionic_lif *lif = netdev_priv(netdev);
+ 	struct ionic *ionic = lif->ionic;
+ 	int ret;
+@@ -2377,8 +2387,11 @@ static int ionic_set_vf_rate(struct net_device *netdev, int vf,
+ 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
+ 		ret = -EINVAL;
+ 	} else {
+-		ret = ionic_set_vf_config(ionic, vf,
+-					  IONIC_VF_ATTR_RATE, (u8 *)&tx_max);
++		vfc.maxrate = cpu_to_le32(tx_max);
++		dev_dbg(ionic->dev, "%s: vf %d maxrate %d\n",
++			__func__, vf, le32_to_cpu(vfc.maxrate));
++
++		ret = ionic_set_vf_config(ionic, vf, &vfc);
+ 		if (!ret)
+ 			lif->ionic->vfs[vf].maxrate = cpu_to_le32(tx_max);
+ 	}
+@@ -2389,9 +2402,9 @@ static int ionic_set_vf_rate(struct net_device *netdev, int vf,
+ 
+ static int ionic_set_vf_spoofchk(struct net_device *netdev, int vf, bool set)
+ {
++	struct ionic_vf_setattr_cmd vfc = { .attr = IONIC_VF_ATTR_SPOOFCHK };
+ 	struct ionic_lif *lif = netdev_priv(netdev);
+ 	struct ionic *ionic = lif->ionic;
+-	u8 data = set;  /* convert to u8 for config */
+ 	int ret;
+ 
+ 	if (!netif_device_present(netdev))
+@@ -2402,10 +2415,13 @@ static int ionic_set_vf_spoofchk(struct net_device *netdev, int vf, bool set)
+ 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
+ 		ret = -EINVAL;
+ 	} else {
+-		ret = ionic_set_vf_config(ionic, vf,
+-					  IONIC_VF_ATTR_SPOOFCHK, &data);
++		vfc.spoofchk = set;
++		dev_dbg(ionic->dev, "%s: vf %d spoof %d\n",
++			__func__, vf, vfc.spoofchk);
++
++		ret = ionic_set_vf_config(ionic, vf, &vfc);
+ 		if (!ret)
+-			ionic->vfs[vf].spoofchk = data;
++			ionic->vfs[vf].spoofchk = set;
+ 	}
+ 
+ 	up_write(&ionic->vf_op_lock);
+@@ -2414,9 +2430,9 @@ static int ionic_set_vf_spoofchk(struct net_device *netdev, int vf, bool set)
+ 
+ static int ionic_set_vf_trust(struct net_device *netdev, int vf, bool set)
+ {
++	struct ionic_vf_setattr_cmd vfc = { .attr = IONIC_VF_ATTR_TRUST };
+ 	struct ionic_lif *lif = netdev_priv(netdev);
+ 	struct ionic *ionic = lif->ionic;
+-	u8 data = set;  /* convert to u8 for config */
+ 	int ret;
+ 
+ 	if (!netif_device_present(netdev))
+@@ -2427,10 +2443,13 @@ static int ionic_set_vf_trust(struct net_device *netdev, int vf, bool set)
+ 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
+ 		ret = -EINVAL;
+ 	} else {
+-		ret = ionic_set_vf_config(ionic, vf,
+-					  IONIC_VF_ATTR_TRUST, &data);
++		vfc.trust = set;
++		dev_dbg(ionic->dev, "%s: vf %d trust %d\n",
++			__func__, vf, vfc.trust);
++
++		ret = ionic_set_vf_config(ionic, vf, &vfc);
+ 		if (!ret)
+-			ionic->vfs[vf].trusted = data;
++			ionic->vfs[vf].trusted = set;
+ 	}
+ 
+ 	up_write(&ionic->vf_op_lock);
+@@ -2439,20 +2458,21 @@ static int ionic_set_vf_trust(struct net_device *netdev, int vf, bool set)
+ 
+ static int ionic_set_vf_link_state(struct net_device *netdev, int vf, int set)
+ {
++	struct ionic_vf_setattr_cmd vfc = { .attr = IONIC_VF_ATTR_LINKSTATE };
+ 	struct ionic_lif *lif = netdev_priv(netdev);
+ 	struct ionic *ionic = lif->ionic;
+-	u8 data;
++	u8 vfls;
+ 	int ret;
+ 
+ 	switch (set) {
+ 	case IFLA_VF_LINK_STATE_ENABLE:
+-		data = IONIC_VF_LINK_STATUS_UP;
++		vfls = IONIC_VF_LINK_STATUS_UP;
+ 		break;
+ 	case IFLA_VF_LINK_STATE_DISABLE:
+-		data = IONIC_VF_LINK_STATUS_DOWN;
++		vfls = IONIC_VF_LINK_STATUS_DOWN;
+ 		break;
+ 	case IFLA_VF_LINK_STATE_AUTO:
+-		data = IONIC_VF_LINK_STATUS_AUTO;
++		vfls = IONIC_VF_LINK_STATUS_AUTO;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -2466,8 +2486,11 @@ static int ionic_set_vf_link_state(struct net_device *netdev, int vf, int set)
+ 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
+ 		ret = -EINVAL;
+ 	} else {
+-		ret = ionic_set_vf_config(ionic, vf,
+-					  IONIC_VF_ATTR_LINKSTATE, &data);
++		vfc.linkstate = vfls;
++		dev_dbg(ionic->dev, "%s: vf %d linkstate %d\n",
++			__func__, vf, vfc.linkstate);
++
++		ret = ionic_set_vf_config(ionic, vf, &vfc);
+ 		if (!ret)
+ 			ionic->vfs[vf].linkstate = set;
+ 	}
 -- 
 2.17.1
 
